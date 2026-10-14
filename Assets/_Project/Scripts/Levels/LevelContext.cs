@@ -4,6 +4,7 @@ using Game.Core;
 using Game.Economy;
 using Game.Hero;
 using Game.Towers;
+using UnityEngine;
 
 namespace Game.Levels
 {
@@ -109,6 +110,15 @@ namespace Game.Levels
 
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
+
+        /// <summary>Asks for the hero's emergency repair, which costs money.</summary>
+        public GameEvent HeroRepairRequested { get; } = new GameEvent();
+
+        /// <summary>The grid cell where the hero stands for each post, in the same order as the post names.</summary>
+        public Vector2Int[] HeroPostCells { get; set; } = new Vector2Int[0];
+
+        /// <summary>The post whose spot the player clicked, or -1. Opens the hero panel or the "move here" icon.</summary>
+        public int HeroMenuPost { get; set; } = -1;
 
         public PlayerModifiers ModifiersFor(TowerDefinition tower)
         {

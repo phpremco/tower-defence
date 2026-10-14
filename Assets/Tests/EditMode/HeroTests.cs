@@ -8,7 +8,7 @@ namespace Game.Tests
 {
     public sealed class HeroTests
     {
-        private sealed class FakePost : IGuardable
+        private sealed class FakeGuarded : IGuardable
         {
             public Vector3 Position { get; set; }
 
@@ -22,8 +22,7 @@ namespace Game.Tests
         private HeroDefinition _definition;
         private GameObject _go;
         private Commander _hero;
-        private FakePost _first;
-        private FakePost _second;
+        private FakeGuarded _first;
 
         [SetUp]
         public void SetUp()
@@ -31,11 +30,14 @@ namespace Game.Tests
             _definition = ScriptableObject.CreateInstance<HeroDefinition>();
             _go = new GameObject("Hero");
             _hero = _go.AddComponent<Commander>();
-            _first = new FakePost { Position = Vector3.zero };
-            _second = new FakePost { Position = new Vector3(5f, 0f, 0f) };
-            var targets = new TargetRegistry();
-            var projectiles = new ProjectilePool(targets, _go.transform);
-            _hero.Initialize(_definition, targets, projectiles, new List<IGuardable> { _first, _second }, 0);
+            _first = new FakeGuarded { Position = Vector3.zero };
+            var second = new FakeGuarded { Position = new Vector3(5f, 0f, 0f) };
+            var posts = new List<HeroPost>
+            {
+                new HeroPost(_first, new Vector3(-0.65f, 0f, 0f), Vector3.right),
+                new HeroPost(second, new Vector3(4.35f, 0f, 0f), Vector3.right),
+            };
+            _hero.Initialize(_definition, new TargetRegistry(), posts, 0);
         }
 
         [TearDown]
@@ -43,6 +45,13 @@ namespace Game.Tests
         {
             Object.DestroyImmediate(_go);
             Object.DestroyImmediate(_definition);
+        }
+
+        [Test]
+        public void Hero_StandsInFrontOfTheGuardedStructure()
+        {
+            Assert.AreEqual(-0.65f, _go.transform.position.x, 0.001f);
+            Assert.IsTrue(_hero.IsAt(_first.Position));
         }
 
         [Test]
@@ -79,8 +88,10 @@ namespace Game.Tests
         [Test]
         public void EmergencyRepair_RestoresThePostOnceAndThenCoolsDown()
         {
+            Assert.IsTrue(_hero.CanEmergencyRepair);
             Assert.IsTrue(_hero.TryEmergencyRepair());
             Assert.AreEqual(_definition.RepairFraction, _first.Restored, 0.001f);
+            Assert.IsFalse(_hero.CanEmergencyRepair);
             Assert.IsFalse(_hero.TryEmergencyRepair());
         }
     }

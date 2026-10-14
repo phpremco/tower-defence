@@ -18,6 +18,5 @@ namespace Game.Levels
 
         public IDamageGuard Guard { get; set; }
 
-        public void Restore(float fraction) => _health.Heal(_health.Max * fraction);
-    }
+        public void Restore(float fraction) => _health.Heal(_health.Max * fraction);    }
 }

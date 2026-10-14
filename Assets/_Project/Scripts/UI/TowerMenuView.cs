@@ -24,6 +24,7 @@ namespace Game.UI
         private const float BelowOffset = 240f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Unavailable = new Color(0.5f, 0.5f, 0.55f);
+        private static readonly Color TooExpensive = new Color(1f, 0.5f, 0.45f);
         private static readonly Color UpgradeTint = new Color(0.3f, 0.85f, 0.45f);
         private static readonly Color RepairTint = new Color(0.35f, 0.65f, 1f);
         private static readonly Color SellTint = new Color(1f, 0.78f, 0.25f);
@@ -187,8 +188,9 @@ namespace Game.UI
             string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
             _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
             _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? "Hero\nhere" : "Send\nhero";
-            _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
-            _repairPrice.color = canRepair ? TextColor : Unavailable;
+            // Grey when there is nothing to buy, red when there is but the player cannot pay yet.
+            _upgradePrice.color = canUpgrade ? TextColor : tower.CanUpgrade ? TooExpensive : Unavailable;
+            _repairPrice.color = canRepair ? TextColor : tower.NeedsRepair ? TooExpensive : Unavailable;
 
             string state = tower.IsWrecked ? "wrecked" : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
             _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}" + UpgradePreview(tower);

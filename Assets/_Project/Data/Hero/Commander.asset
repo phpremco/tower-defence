@@ -15,10 +15,10 @@ MonoBehaviour:
   _displayName: Commander
   _maxHealth: 200
   _walkSpeed: 5
-  _damage: 12
-  _range: 3
-  _fireInterval: 0.6
-  _projectileSpeed: 14
+  _damage: 18
+  _reach: 1.5
+  _strikeInterval: 0.7
+  _standDistance: 0.65
   _guardShare: 0.4
   _reviveSeconds: 15
   _shockwaveDamage: 40
@@ -26,4 +26,5 @@ MonoBehaviour:
   _shockwaveCooldown: 20
   _repairFraction: 0.4
   _repairCooldown: 25
-  _color: {r: 0.4, g: 0.85, b: 1, a: 1}
+  _repairCost: 30
+  _color: {r: 1, g: 0.85, b: 0.3, a: 1}

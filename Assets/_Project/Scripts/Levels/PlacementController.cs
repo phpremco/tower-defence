@@ -187,6 +187,12 @@ namespace Game.Levels
 
             Debug.Log($"[Placement] confirm: mode={_context.Mode} cell={_cursor} canBuild={_buildGrid.CanBuild(_cursor)} road={_buildGrid.IsRoad(_cursor)} blocked={_buildGrid.IsBlocked(_cursor)} selected={(_context.SelectedTower != null ? _context.SelectedTower.name : "none")} money={_context.Wallet.Money}");
 
+            // A click away from the hero's spot closes its panel, then acts on the cell as usual.
+            if (_context.HeroMenuPost >= 0 && HeroPostAt(_cursor) != _context.HeroMenuPost)
+            {
+                _context.HeroMenuPost = -1;
+            }
+
             switch (_context.Mode)
             {
                 case PlacementMode.Browsing:
@@ -214,6 +220,11 @@ namespace Game.Levels
                 _context.SelectedPlacedTower = tower;
                 _context.Mode = PlacementMode.TowerMenu;
             }
+            else if (HeroPostAt(_cursor) >= 0)
+            {
+                _context.HeroMenuPost = HeroPostAt(_cursor);
+                _cellMessage = string.Empty;
+            }
             else if (_buildGrid.CanBuild(_cursor) && _context.SelectedTower != null)
             {
                 _cellMessage = string.Empty;
@@ -227,10 +238,32 @@ namespace Game.Levels
             Refresh();
         }
 
+        // The index of the hero post whose standing spot is this cell, or -1.
+        private int HeroPostAt(Vector2Int cell)
+        {
+            Vector2Int[] cells = _context.HeroPostCells;
+            for (int i = 0; i < cells.Length; i++)
+            {
+                if (cells[i] == cell)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         private void OnCancelled()
         {
             if (_context.Paused)
             {
+                return;
+            }
+
+            if (_context.HeroMenuPost >= 0)
+            {
+                _context.HeroMenuPost = -1;
+                Refresh();
                 return;
             }
 

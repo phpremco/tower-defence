@@ -79,6 +79,13 @@ namespace Game.Editor
             ConfigureTheme(theme);
             LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
             HeroDefinition hero = LoadOrCreate<HeroDefinition>($"{DataRoot}/Hero/Commander.asset");
+            var heroProps = new SerializedObject(hero);
+            heroProps.FindProperty("_damage").floatValue = 18f;
+            heroProps.FindProperty("_reach").floatValue = 1.5f;
+            heroProps.FindProperty("_strikeInterval").floatValue = 0.7f;
+            heroProps.FindProperty("_repairCost").intValue = 30;
+            heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
+            heroProps.ApplyModifiedPropertiesWithoutUndo();
             ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Game.Combat;
 using Game.Hero;
 using Game.Platform;
 using Game.Towers;
@@ -8,12 +7,14 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// Creates the commander and connects it to the level: the posts it can stand at (every blockade and the base),
-    /// the shortcut keys and the "send hero here" request from a blockade's menu.
+    /// Creates the commander and connects it to the level: the posts it can hold (in front of every blockade and
+    /// at the base), the shortcut keys, the "send hero here" request from a blockade's menu and the money the
+    /// emergency repair costs.
     /// </summary>
     public sealed class HeroController : MonoBehaviour
     {
         private const string BaseName = "Base";
+        private const float BaseStandDistance = 1f;
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -32,32 +33,46 @@ namespace Game.Levels
             _input = input;
             _blockades = blockades;
 
-            var posts = new List<IGuardable>(blockades.Count + 1);
+            GridMap grid = context.Level.Grid;
+            var posts = new List<HeroPost>(blockades.Count + 1);
             var names = new string[blockades.Count + 1];
+            var cells = new Vector2Int[blockades.Count + 1];
             for (int i = 0; i < blockades.Count; i++)
             {
-                posts.Add(blockades[i]);
+                Vector3 position = blockades[i].Position;
+                Vector3 along = RoadDirection.At(context.Level, grid.WorldToCell(position));
+                posts.Add(new HeroPost(blockades[i], position - along * definition.StandDistance, -along));
                 names[i] = $"Blockade {i + 1}";
             }
 
             Vector2Int[] road = context.Level.MainRoad;
-            Vector3 basePosition = context.Level.Grid.CellToWorld(road[road.Length - 1]);
-            posts.Add(new BasePost(basePosition, context.BaseHealth));
+            Vector2Int baseCell = road[road.Length - 1];
+            Vector3 basePosition = grid.CellToWorld(baseCell);
+            Vector3 baseAlong = RoadDirection.At(context.Level, baseCell);
+            var basePost = new BasePost(basePosition, context.BaseHealth);
+            posts.Add(new HeroPost(basePost, basePosition - baseAlong * BaseStandDistance, -baseAlong));
             names[blockades.Count] = BaseName;
+
+            for (int i = 0; i < posts.Count; i++)
+            {
+                cells[i] = grid.WorldToCell(posts[i].Stand);
+            }
 
             var go = new GameObject("Hero");
             go.transform.SetParent(parent, false);
             _hero = go.AddComponent<Commander>();
-            _hero.Initialize(definition, context.Targets, context.Projectiles, posts, 0);
+            _hero.Initialize(definition, context.Targets, posts, 0);
             go.AddComponent<HeroView>().Initialize(_hero);
 
             context.Hero = _hero;
             context.HeroPostNames = names;
+            context.HeroPostCells = cells;
 
             _input.HeroPostPressed += OnNextPost;
             _input.ShockwavePressed += OnShockwave;
             _input.EmergencyRepairPressed += OnRepair;
             _context.HeroSendRequested.Subscribe(OnSendHere);
+            _context.HeroRepairRequested.Subscribe(OnRepair);
         }
 
         private void OnDestroy()
@@ -71,6 +86,7 @@ namespace Game.Levels
             _input.ShockwavePressed -= OnShockwave;
             _input.EmergencyRepairPressed -= OnRepair;
             _context.HeroSendRequested.Unsubscribe(OnSendHere);
+            _context.HeroRepairRequested.Unsubscribe(OnRepair);
         }
 
         private bool CanAct => _context.Outcome == LevelOutcome.Running && !_context.Paused;
@@ -91,11 +107,13 @@ namespace Game.Levels
             }
         }
 
+        // Pays only when the repair can actually happen, so a press during the cooldown costs nothing.
         private void OnRepair()
         {
-            if (CanAct)
+            if (CanAct && _hero.CanEmergencyRepair && _context.Wallet.TrySpend(_hero.Definition.RepairCost))
             {
                 _hero.TryEmergencyRepair();
+                _context.Changed.Raise();
             }
         }
 

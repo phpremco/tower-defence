@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Game.Hero
 {
     /// <summary>
-    /// The commander. Stands at one post (a blockade or the base), shoots what comes near and takes a share of the
-    /// hits on a guarded blockade. When its health runs out it is down for a while and then stands up again.
-    /// Has no knowledge of how it looks.
+    /// The commander. Stands at one post in front of a blockade (or at the base), hits the enemies that come within
+    /// reach and takes a share of the hits on a guarded blockade. When its health runs out it is down for a while
+    /// and then stands up again. Has no knowledge of how it looks.
     /// </summary>
     public sealed class Commander : MonoBehaviour, IDamageGuard
     {
@@ -18,10 +18,9 @@ namespace Game.Hero
 
         private HeroDefinition _definition;
         private TargetRegistry _targets;
-        private ProjectilePool _projectiles;
-        private IReadOnlyList<IGuardable> _posts;
+        private IReadOnlyList<HeroPost> _posts;
         private int _postIndex;
-        private float _fireCooldown;
+        private float _strikeCooldown;
         private float _reviveRemaining;
         private float _shockwaveRemaining;
         private float _repairRemaining;
@@ -34,6 +33,9 @@ namespace Game.Hero
 
         public bool IsWalking { get; private set; }
 
+        /// <summary>Direction on the ground plane the hero currently looks in.</summary>
+        public Vector3 Facing { get; private set; } = Vector3.forward;
+
         /// <summary>Index of the post the hero stands at, or is walking to.</summary>
         public int PostIndex => _postIndex;
 
@@ -41,39 +43,45 @@ namespace Game.Hero
 
         public float ReviveRemaining => _reviveRemaining;
 
-        /// <summary>True when the hero stands at, or is walking to, the post at this position.</summary>
-        public bool IsAt(Vector3 postPosition)
-        {
-            Vector3 delta = _posts[_postIndex].Position - postPosition;
-            delta.y = 0f;
-            return delta.sqrMagnitude < 0.01f;
-        }
-
         /// <summary>One when the ability can be used, growing from zero while it cools down.</summary>
         public float ShockwaveReady => 1f - Mathf.Clamp01(_shockwaveRemaining / _definition.ShockwaveCooldown);
 
         public float RepairReady => 1f - Mathf.Clamp01(_repairRemaining / _definition.RepairCooldown);
 
+        /// <summary>True when the emergency repair could be used right now, apart from what it costs.</summary>
+        public bool CanEmergencyRepair => !IsDown && !IsWalking && _repairRemaining <= 0f;
+
+        /// <summary>Where the hero stands for a post, so the HUD can find the spot to click.</summary>
+        public Vector3 StandAt(int postIndex) => _posts[postIndex].Stand;
+
+        /// <summary>True when the hero stands at, or is walking to, the post that guards the structure at this position.</summary>
+        public bool IsAt(Vector3 guardedPosition)
+        {
+            Vector3 delta = _posts[_postIndex].Guarded.Position - guardedPosition;
+            delta.y = 0f;
+            return delta.sqrMagnitude < 0.01f;
+        }
+
         /// <summary>Raised when anything the HUD shows changes: post, down state, health or cooldowns.</summary>
         public event Action Changed;
 
-        /// <summary>Raised with the target position whenever the hero shoots.</summary>
-        public event Action<Vector3> Fired;
+        /// <summary>Raised with the enemy's position whenever the hero swings.</summary>
+        public event Action<Vector3> Struck;
 
         /// <summary>Raised with the centre and radius when the shockwave goes off.</summary>
         public event Action<Vector3, float> ShockwaveReleased;
 
-        public void Initialize(HeroDefinition definition, TargetRegistry targets, ProjectilePool projectiles, IReadOnlyList<IGuardable> posts, int startPost)
+        public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost)
         {
             _definition = definition;
             _targets = targets;
-            _projectiles = projectiles;
             _posts = posts;
             Health = new Health(definition.MaxHealth);
             Health.Died += OnDied;
             Health.Changed += OnHealthChanged;
             _postIndex = Mathf.Clamp(startPost, 0, posts.Count - 1);
-            transform.position = _posts[_postIndex].Position;
+            transform.position = _posts[_postIndex].Stand;
+            Facing = _posts[_postIndex].Facing;
             Arrive();
         }
 
@@ -98,7 +106,8 @@ namespace Game.Hero
             _postIndex = postIndex;
             if (IsDown)
             {
-                transform.position = _posts[_postIndex].Position;
+                transform.position = _posts[_postIndex].Stand;
+                Facing = _posts[_postIndex].Facing;
             }
             else
             {
@@ -115,7 +124,7 @@ namespace Game.Hero
                 return false;
             }
 
-            _targets.FindInRadius(transform.position, _definition.ShockwaveRadius, _definition.Targets, _buffer);
+            _targets.FindInRadius(transform.position, _definition.ShockwaveRadius, _definition.ShockwaveTargets, _buffer);
             for (int i = 0; i < _buffer.Count; i++)
             {
                 _buffer[i].TakeDamage(_definition.ShockwaveDamage);
@@ -129,12 +138,12 @@ namespace Game.Hero
 
         public bool TryEmergencyRepair()
         {
-            if (IsDown || IsWalking || _repairRemaining > 0f)
+            if (!CanEmergencyRepair)
             {
                 return false;
             }
 
-            _posts[_postIndex].Restore(_definition.RepairFraction);
+            _posts[_postIndex].Guarded.Restore(_definition.RepairFraction);
             _repairRemaining = _definition.RepairCooldown;
             Changed?.Invoke();
             return true;
@@ -175,8 +184,10 @@ namespace Game.Hero
             {
                 Walk();
             }
-
-            Shoot();
+            else
+            {
+                Strike();
+            }
         }
 
         private void TickCooldowns()
@@ -192,51 +203,62 @@ namespace Game.Hero
 
         private void Walk()
         {
-            Vector3 destination = _posts[_postIndex].Position;
+            Vector3 destination = _posts[_postIndex].Stand;
             Vector3 toTarget = destination - transform.position;
+            toTarget.y = 0f;
             float step = _definition.WalkSpeed * Time.deltaTime;
             if (toTarget.magnitude <= step + ArrivalDistance)
             {
                 transform.position = destination;
+                Facing = _posts[_postIndex].Facing;
                 Arrive();
                 Changed?.Invoke();
                 return;
             }
 
+            Facing = toTarget.normalized;
             transform.position += toTarget.normalized * step;
         }
 
         private void Arrive()
         {
             IsWalking = false;
-            _posts[_postIndex].Guard = this;
+            _posts[_postIndex].Guarded.Guard = this;
         }
 
         private void ReleaseGuard()
         {
-            if (ReferenceEquals(_posts[_postIndex].Guard, this))
+            if (ReferenceEquals(_posts[_postIndex].Guarded.Guard, this))
             {
-                _posts[_postIndex].Guard = null;
+                _posts[_postIndex].Guarded.Guard = null;
             }
         }
 
-        private void Shoot()
+        // A melee hit: the enemy takes the damage straight away and the view plays the swing.
+        private void Strike()
         {
-            _fireCooldown -= Time.deltaTime;
-            if (_fireCooldown > 0f)
+            _strikeCooldown -= Time.deltaTime;
+            if (_strikeCooldown > 0f)
             {
                 return;
             }
 
-            ITargetable target = _targets.FindBest(transform.position, _definition.Range, _definition.Targets);
+            ITargetable target = _targets.FindBest(transform.position, _definition.Reach, _definition.Targets);
             if (target == null)
             {
                 return;
             }
 
-            _projectiles.Fire(transform.position + Vector3.up, target, _definition.Damage, _definition.ProjectileSpeed, 0f, _definition.Targets);
-            Fired?.Invoke(target.Position);
-            _fireCooldown = _definition.FireInterval;
+            Vector3 toTarget = target.Position - transform.position;
+            toTarget.y = 0f;
+            if (toTarget.sqrMagnitude > 0.0001f)
+            {
+                Facing = toTarget.normalized;
+            }
+
+            target.TakeDamage(_definition.Damage);
+            Struck?.Invoke(target.Position);
+            _strikeCooldown = _definition.StrikeInterval;
         }
 
         private void OnDied()

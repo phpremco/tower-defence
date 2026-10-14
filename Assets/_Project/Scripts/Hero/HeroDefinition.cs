@@ -10,10 +10,17 @@ namespace Game.Hero
         [SerializeField] private string _displayName = "Commander";
         [SerializeField] [Min(1f)] private float _maxHealth = 200f;
         [SerializeField] [Min(0.5f)] private float _walkSpeed = 5f;
-        [SerializeField] [Min(1f)] private float _damage = 12f;
-        [SerializeField] [Min(0.5f)] private float _range = 3f;
-        [SerializeField] [Min(0.05f)] private float _fireInterval = 0.6f;
-        [SerializeField] [Min(1f)] private float _projectileSpeed = 14f;
+
+        /// <summary>Damage of one melee hit.</summary>
+        [SerializeField] [Min(1f)] private float _damage = 18f;
+
+        /// <summary>How far from the hero an enemy can be and still be hit.</summary>
+        [SerializeField] [Min(0.5f)] private float _reach = 1.5f;
+
+        [SerializeField] [Min(0.05f)] private float _strikeInterval = 0.7f;
+
+        /// <summary>How far in front of a blockade the hero stands, on the side the enemies come from.</summary>
+        [SerializeField] [Min(0.3f)] private float _standDistance = 0.65f;
 
         /// <summary>Share of the hits on the guarded blockade that the hero takes instead.</summary>
         [SerializeField] [Range(0f, 1f)] private float _guardShare = 0.4f;
@@ -28,15 +35,18 @@ namespace Game.Hero
         [SerializeField] [Range(0.05f, 1f)] private float _repairFraction = 0.4f;
         [SerializeField] [Min(1f)] private float _repairCooldown = 25f;
 
-        [SerializeField] private Color _color = new Color(0.4f, 0.85f, 1f);
+        /// <summary>Money the emergency repair costs, shown on its button.</summary>
+        [SerializeField] [Min(0)] private int _repairCost = 30;
+
+        [SerializeField] private Color _color = new Color(1f, 0.85f, 0.3f);
 
         public string DisplayName => _displayName;
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
         public float Damage => _damage;
-        public float Range => _range;
-        public float FireInterval => _fireInterval;
-        public float ProjectileSpeed => _projectileSpeed;
+        public float Reach => _reach;
+        public float StrikeInterval => _strikeInterval;
+        public float StandDistance => _standDistance;
         public float GuardShare => _guardShare;
         public float ReviveSeconds => _reviveSeconds;
         public float ShockwaveDamage => _shockwaveDamage;
@@ -44,7 +54,12 @@ namespace Game.Hero
         public float ShockwaveCooldown => _shockwaveCooldown;
         public float RepairFraction => _repairFraction;
         public float RepairCooldown => _repairCooldown;
+        public int RepairCost => _repairCost;
         public Color Color => _color;
-        public TargetLayers Targets => TargetLayers.Ground | TargetLayers.Air;
+
+        /// <summary>The hero fights on the ground, in melee.</summary>
+        public TargetLayers Targets => TargetLayers.Ground;
+
+        public TargetLayers ShockwaveTargets => TargetLayers.Ground | TargetLayers.Air;
     }
 }

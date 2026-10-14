@@ -66,7 +66,7 @@ namespace Game.UI
             BuildTexts(safe);
             BuildTowerBar(safe);
             BuildIcons(safe);
-            gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, _font);
+            gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, Game.Core.Services.Get<Game.Platform.IInputProvider>());
