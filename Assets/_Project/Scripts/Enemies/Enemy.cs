@@ -50,6 +50,9 @@ namespace Game.Enemies
 
         public event Action<Enemy> ReachedEnd;
 
+        /// <summary>Raised each time this enemy hits a structure, with the place it hit, so a view can play the attack.</summary>
+        public event Action<Vector3> Attacked;
+
         public void Initialize(
             EnemyDefinition definition,
             Vector3[] waypoints,
@@ -186,6 +189,7 @@ namespace Game.Enemies
             if (_attackCooldown <= 0f)
             {
                 blocker.TakeDamage(_definition.BlockadeDamage);
+                Attacked?.Invoke(blocker.Position);
                 _attackCooldown = _definition.AttackInterval;
             }
 
@@ -209,6 +213,7 @@ namespace Game.Enemies
             if (target != null)
             {
                 target.TakeDamage(_definition.AttackDamage);
+                Attacked?.Invoke(target.Position);
                 _attackCooldown = _definition.AttackInterval;
             }
         }

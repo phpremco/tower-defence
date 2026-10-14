@@ -100,8 +100,8 @@ namespace Game.Editor
             PathObjectDefinition barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 140f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f));
             PathObjectDefinition groundDrone = CreatePathObject("GroundDrone", "Drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f));
             PathObjectDefinition antiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f));
-            DroneDefinition repairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 8f, new Color(0.4f, 0.9f, 1f));
-            DroneDefinition collectorDrone = CreateDrone("CollectorDrone", "Collector drone", DroneKind.Collector, 4f, 30f, 0f, new Color(1f, 0.9f, 0.3f));
+            DroneDefinition repairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 8f, 40f, new Color(0.4f, 0.9f, 1f));
+            DroneDefinition collectorDrone = CreateDrone("CollectorDrone", "Collector drone", DroneKind.Collector, 4f, 30f, 0f, 60f, new Color(1f, 0.9f, 0.3f));
             CombineRecipe[] recipes =
             {
                 CreateRecipe("Artillery", roster.Cannon, roster.Rocket, roster.Artillery, 150),
@@ -617,8 +617,8 @@ namespace Game.Editor
 
             // Drones are paid in power currency. One level is one more drone, up to three repair and two collector drones.
             const string DroneText = "Drones work on their own: repair damaged defences and collect loot. Paid in power currency.";
-            all.Add(CreateUpgrade("Drone_Repair", "Repair drone: one more per level", UpgradeTarget.RepairDrones, new[] { 3, 6, 10 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
-            all.Add(CreateUpgrade("Drone_Collector", "Collector drone: one more per level", UpgradeTarget.CollectorDrones, new[] { 4, 8 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
+            all.Add(CreateUpgrade("Drone_Repair", "Start each level with one more repair drone", UpgradeTarget.RepairDrones, new[] { 3, 6, 10 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
+            all.Add(CreateUpgrade("Drone_Collector", "Start each level with one more collector drone", UpgradeTarget.CollectorDrones, new[] { 4, 8 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
             all.Add(CreateUpgrade("Drone_Speed", "Drone speed +25% per level", UpgradeTarget.DroneSpeed, new[] { 4, 8, 12 }, 0.25f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
 
             var catalog = LoadOrCreate<UpgradeCatalog>($"{DataRoot}/Upgrades/UpgradeCatalog.asset");

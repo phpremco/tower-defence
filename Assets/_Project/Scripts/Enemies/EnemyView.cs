@@ -34,6 +34,20 @@ namespace Game.Enemies
         private const float LungeSpeed = 7f;
         private const float LungeDistance = 1f;
         private const float StandStillDistance = 0.05f;
+        private const float AttackSeconds = 0.5f;
+        private const float RearShare = 0.4f;
+        private const float AttackLunge = 0.35f;
+        private const float AttackRearBack = 0.12f;
+        private const float AttackRearDegrees = 28f;
+        private const float AttackStrikeDegrees = 32f;
+        private const float ClawDegrees = 50f;
+        private const int FrontLegs = 2;
+        private const float HitSeconds = 0.18f;
+        private const float FlashSeconds = 0.08f;
+        private const float FlashEmission = 2.5f;
+        private const float HitKnockBack = 0.1f;
+        private const float HitFlinchDegrees = -14f;
+        private const float HitSquash = 0.12f;
         private static readonly Color BarColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color ShadowColor = new Color(0f, 0f, 0f);
         private static readonly Color EyeColor = new Color(1f, 0.95f, 0.6f);
@@ -53,16 +67,25 @@ namespace Game.Enemies
         private Transform[] _wings;
         private float _clock;
         private float _barHeight;
+        private float _attackTime = float.PositiveInfinity;
+        private float _hitTime = float.PositiveInfinity;
+        private float _lastFraction = 1f;
+        private Renderer _shellRenderer;
+        private bool _flashing;
+        private Material[] _shellMaterials;
+        private Material[] _flashMaterials;
 
         private void Awake()
         {
             _enemy = GetComponent<Enemy>();
             _enemy.Initialized += OnInitialized;
+            _enemy.Attacked += OnAttacked;
         }
 
         private void OnDestroy()
         {
             _enemy.Initialized -= OnInitialized;
+            _enemy.Attacked -= OnAttacked;
         }
 
         private void LateUpdate()
@@ -104,6 +127,9 @@ namespace Game.Enemies
 
             _lastPosition = enemy.Position;
             _health = enemy.Health;
+            _lastFraction = 1f;
+            _hitTime = float.PositiveInfinity;
+            _attackTime = float.PositiveInfinity;
             _health.Changed += OnHealthChanged;
             SetBar(1f);
         }
@@ -122,7 +148,15 @@ namespace Game.Enemies
             var shell = new GameObject("Shell");
             shell.transform.SetParent(body, false);
             shell.AddComponent<MeshFilter>().sharedMesh = parts.Body;
-            shell.AddComponent<MeshRenderer>().sharedMaterials = materials;
+            _shellRenderer = shell.AddComponent<MeshRenderer>();
+            _shellRenderer.sharedMaterials = materials;
+            _shellMaterials = materials;
+            _flashMaterials = new Material[materials.Length];
+            Material flash = SurfaceMaterials.Create(Color.white, FlashEmission, 0.3f);
+            for (int i = 0; i < _flashMaterials.Length; i++)
+            {
+                _flashMaterials[i] = flash;
+            }
 
             _legs = new Transform[parts.Legs.Count];
             _legPhases = new float[parts.Legs.Count];
@@ -175,11 +209,67 @@ namespace Game.Enemies
                 _wings[i].localRotation = Quaternion.Euler(0f, 0f, i == 0 ? beat : -beat);
             }
 
-            // Walking bounces the body; standing still (held at a blockade) makes it rear and lunge.
+            // Walking bounces the body; standing still it breathes. An attack rears back, strikes and settles.
             float bob = walking ? Mathf.Abs(Mathf.Sin(_gait)) * BobHeight : Mathf.Sin(_clock * HoverSpeed) * HoverHeight;
-            float lunge = walking ? 0f : Mathf.Max(0f, Mathf.Sin(_clock * LungeSpeed)) * LungeDistance;
-            _body.localPosition = new Vector3(0f, bob * _creatureScale, 0f);
-            _body.localScale = Vector3.one * (_creatureScale * (1f + (walking ? 0f : lunge * 0.1f)));
+            float strike = AttackCurve(out float rear);
+            float knock = HitCurve();
+
+            Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
+            _body.position = _enemy.Position + Vector3.up * (bob * _creatureScale) + forward * ((strike * AttackLunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale);
+            Quaternion pitch = Quaternion.Euler(rear * -AttackRearDegrees + strike * AttackStrikeDegrees + knock * HitFlinchDegrees, 0f, 0f);
+            if (_enemy.Heading.sqrMagnitude > 0.0001f)
+            {
+                _body.rotation = Quaternion.LookRotation(_enemy.Heading) * pitch;
+            }
+
+            _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash));
+
+            // The front legs claw during the strike.
+            for (int i = 0; i < _legs.Length && i < FrontLegs; i++)
+            {
+                _legs[i].localRotation *= Quaternion.Euler(0f, 0f, strike * ClawDegrees);
+            }
+
+            bool flash = _hitTime < FlashSeconds;
+            if (flash != _flashing)
+            {
+                _flashing = flash;
+                _shellRenderer.sharedMaterials = flash ? _flashMaterials : _shellMaterials;
+            }
+        }
+
+        // Zero at rest; rises during the wind-up (rear), peaks at the bite (strike) and falls back.
+        private float AttackCurve(out float rear)
+        {
+            rear = 0f;
+            if (_attackTime > AttackSeconds)
+            {
+                return 0f;
+            }
+
+            _attackTime += Time.deltaTime;
+            float t = Mathf.Clamp01(_attackTime / AttackSeconds);
+            if (t < RearShare)
+            {
+                rear = Mathf.SmoothStep(0f, 1f, t / RearShare);
+                return 0f;
+            }
+
+            float k = (t - RearShare) / (1f - RearShare);
+            rear = 1f - Mathf.SmoothStep(0f, 1f, k * 3f);
+            rear = Mathf.Max(rear, 0f);
+            return Mathf.Sin(Mathf.Clamp01(k) * Mathf.PI);
+        }
+
+        private float HitCurve()
+        {
+            if (_hitTime > HitSeconds)
+            {
+                return 0f;
+            }
+
+            _hitTime += Time.deltaTime;
+            return 1f - Mathf.Clamp01(_hitTime / HitSeconds);
         }
 
         private void Build(EnemyDefinition definition)
@@ -227,7 +317,22 @@ namespace Game.Enemies
             }
         }
 
-        private void OnHealthChanged(float _) => SetBar(_health.Fraction);
+        private void OnHealthChanged(float _)
+        {
+            float fraction = _health.Fraction;
+            if (fraction < _lastFraction)
+            {
+                _hitTime = 0f;
+            }
+
+            _lastFraction = fraction;
+            SetBar(fraction);
+        }
+
+        private void OnAttacked(Vector3 _)
+        {
+            _attackTime = 0f;
+        }
 
         private void SetBar(float fraction)
         {

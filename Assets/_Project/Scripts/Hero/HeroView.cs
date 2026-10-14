@@ -13,9 +13,22 @@ namespace Game.Hero
         private const float TurnSpeed = 14f;
         private const float IdleSpeed = 2.2f;
         private const float IdleHeight = 0.02f;
-        private const float SwingSeconds = 0.26f;
-        private const float SwingRaised = -80f;
-        private const float SwingLow = 55f;
+        private const float WalkBobSpeed = 11f;
+        private const float WalkBobHeight = 0.07f;
+        private const float SwingSeconds = 0.42f;
+        private const float WindupShare = 0.3f;
+        private const float StrikeShare = 0.28f;
+        private const float WindupPitch = -60f;
+        private const float WindupYaw = -65f;
+        private const float StrikePitch = 25f;
+        private const float StrikeYaw = 70f;
+        private const float RestPitch = -25f;
+        private const float LungeDistance = 0.32f;
+        private const float LeanDegrees = 16f;
+        private const float WalkLeanDegrees = 8f;
+        private const float TrailSeconds = 0.22f;
+        private const float TrailWidth = 0.35f;
+        private static readonly Color TrailColor = new Color(0.4f, 0.95f, 1f, 0.9f);
         private const float RingSeconds = 0.45f;
         private const float RingAlpha = 0.35f;
         private const float RingEmission = 2.5f;
@@ -29,6 +42,9 @@ namespace Game.Hero
         private Commander _hero;
         private Transform _figure;
         private Transform _arm;
+        private Transform _shell;
+        private TrailRenderer _trail;
+        private float _lunge;
         private Renderer[] _figureRenderers;
         private Material[][] _figureMaterials;
         private Transform _bar;
@@ -72,6 +88,7 @@ namespace Game.Hero
             shell.transform.SetParent(figure, false);
             shell.AddComponent<MeshFilter>().sharedMesh = parts.Body;
             shell.AddComponent<MeshRenderer>().sharedMaterials = materials;
+            _shell = shell.transform;
 
             var arm = new GameObject("Arm").transform;
             arm.SetParent(figure, false);
@@ -79,6 +96,7 @@ namespace Game.Hero
             arm.gameObject.AddComponent<MeshFilter>().sharedMesh = parts.Arm;
             arm.gameObject.AddComponent<MeshRenderer>().sharedMaterials = materials;
             _arm = arm;
+            _trail = CreateTrail(arm);
 
             _figureRenderers = figure.GetComponentsInChildren<Renderer>();
             _figureMaterials = new Material[_figureRenderers.Length][];
@@ -155,7 +173,9 @@ namespace Game.Hero
                 return;
             }
 
-            _figure.localPosition = new Vector3(0f, Mathf.Sin(Time.time * IdleSpeed) * IdleHeight, 0f);
+            Vector3 forward = _hero.Facing.sqrMagnitude > 0.0001f ? _hero.Facing.normalized : Vector3.forward;
+            float bob = _hero.IsWalking ? Mathf.Abs(Mathf.Sin(Time.time * WalkBobSpeed)) * WalkBobHeight : Mathf.Sin(Time.time * IdleSpeed) * IdleHeight;
+            _figure.localPosition = forward * _lunge + Vector3.up * bob;
         }
 
         private void TurnTowardsFacing()
@@ -175,19 +195,75 @@ namespace Game.Hero
             _figure.rotation = Quaternion.Slerp(_figure.rotation, wanted, 1f - Mathf.Exp(-TurnSpeed * Time.deltaTime));
         }
 
-        // The blade is raised, brought down fast and returned: the angle follows a short triangle over the swing time.
+        // Wind up behind the shoulder, cut across in a wide arc with a step and a lean into it, then settle back.
+        // The trail behind the blade only shows during the cut.
         private void Swing()
         {
-            if (_swingTime > SwingSeconds)
+            float t = _swingTime / SwingSeconds;
+            if (t >= 1f)
             {
-                _arm.localRotation = Quaternion.Euler(SwingRaised * 0.35f, 0f, 0f);
+                _arm.localRotation = Quaternion.Euler(RestPitch, 0f, 0f);
+                _lunge = 0f;
+                _trail.emitting = false;
+                float walkLean = _hero.IsWalking && !_hero.IsDown ? WalkLeanDegrees : 0f;
+                _shell.localRotation = Quaternion.Euler(walkLean, 0f, 0f);
                 return;
             }
 
             _swingTime += Time.deltaTime;
-            float t = Mathf.Clamp01(_swingTime / SwingSeconds);
-            float angle = t < 0.4f ? Mathf.Lerp(SwingRaised, SwingLow, t / 0.4f) : Mathf.Lerp(SwingLow, SwingRaised * 0.35f, (t - 0.4f) / 0.6f);
-            _arm.localRotation = Quaternion.Euler(angle, 0f, 0f);
+            t = Mathf.Clamp01(_swingTime / SwingSeconds);
+
+            float pitch;
+            float yaw;
+            float strike;
+            if (t < WindupShare)
+            {
+                float k = Smooth(t / WindupShare);
+                pitch = Mathf.Lerp(RestPitch, WindupPitch, k);
+                yaw = Mathf.Lerp(0f, WindupYaw, k);
+                strike = 0f;
+            }
+            else if (t < WindupShare + StrikeShare)
+            {
+                float k = Smooth((t - WindupShare) / StrikeShare);
+                pitch = Mathf.Lerp(WindupPitch, StrikePitch, k);
+                yaw = Mathf.Lerp(WindupYaw, StrikeYaw, k);
+                strike = k;
+            }
+            else
+            {
+                float k = Smooth((t - WindupShare - StrikeShare) / (1f - WindupShare - StrikeShare));
+                pitch = Mathf.Lerp(StrikePitch, RestPitch, k);
+                yaw = Mathf.Lerp(StrikeYaw, 0f, k);
+                strike = 1f - k;
+            }
+
+            _arm.localRotation = Quaternion.Euler(pitch, yaw, 0f);
+            _lunge = LungeDistance * strike;
+            _shell.localRotation = Quaternion.Euler(LeanDegrees * strike, yaw * 0.25f, 0f);
+            _trail.emitting = t >= WindupShare * 0.7f && t < WindupShare + StrikeShare + 0.12f;
+        }
+
+        private static float Smooth(float t) => t * t * (3f - 2f * t);
+
+        private TrailRenderer CreateTrail(Transform arm)
+        {
+            var tip = new GameObject("BladeTip").transform;
+            tip.SetParent(arm, false);
+            tip.localPosition = new Vector3(0.04f, -0.33f, 1.45f);
+
+            var trail = tip.gameObject.AddComponent<TrailRenderer>();
+            trail.time = TrailSeconds;
+            trail.widthMultiplier = TrailWidth;
+            trail.minVertexDistance = 0.02f;
+            trail.emitting = false;
+            trail.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            var gradient = new Gradient();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(TrailColor, 0f), new GradientColorKey(TrailColor, 1f) },
+                new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0f, 1f) });
+            trail.colorGradient = gradient;
+            return trail;
         }
 
         private void Pulse()

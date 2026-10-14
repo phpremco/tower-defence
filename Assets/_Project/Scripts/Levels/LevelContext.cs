@@ -119,6 +119,21 @@ namespace Game.Levels
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
 
+        /// <summary>Energy that gathers over time and pays for drones.</summary>
+        public EnergyPool Energy { get; set; }
+
+        /// <summary>The HUD asks for a drone of the given type; the drone controller buys it if energy and room allow.</summary>
+        public GameEvent<DroneDefinition> DroneRequested { get; } = new GameEvent<DroneDefinition>();
+
+        private readonly Dictionary<DroneDefinition, int> _activeDrones = new Dictionary<DroneDefinition, int>();
+
+        public int ActiveDrones(DroneDefinition definition) => definition != null && _activeDrones.TryGetValue(definition, out int count) ? count : 0;
+
+        public void SetActiveDrones(DroneDefinition definition, int count) => _activeDrones[definition] = count;
+
+        /// <summary>Raised when the number of flying drones changes, so the HUD can grey out a full type.</summary>
+        public GameEvent DronesChanged { get; } = new GameEvent();
+
         /// <summary>The path object that is chosen for placing, or null when towers are being placed.</summary>
         public PathObjectDefinition SelectedPathObject { get; set; }
 

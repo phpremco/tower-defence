@@ -160,7 +160,7 @@ namespace Game.Editor
             return asset;
         }
 
-        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, float repair, Color color)
+        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, float repair, float energyCost, Color color)
         {
             var asset = LoadOrCreate<DroneDefinition>($"{DataRoot}/Drones/{id}.asset");
             var so = new SerializedObject(asset);
@@ -169,6 +169,7 @@ namespace Game.Editor
             so.FindProperty("_speed").floatValue = speed;
             so.FindProperty("_maxHealth").floatValue = health;
             so.FindProperty("_repairPerSecond").floatValue = repair;
+            so.FindProperty("_energyCost").floatValue = energyCost;
             so.FindProperty("_color").colorValue = color;
             so.ApplyModifiedPropertiesWithoutUndo();
             return asset;

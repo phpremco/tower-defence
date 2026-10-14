@@ -17,4 +17,6 @@ MonoBehaviour:
   _speed: 4
   _maxHealth: 30
   _repairPerSecond: 0
+  _energyCost: 60
+  _maxActive: 4
   _color: {r: 1, g: 0.9, b: 0.3, a: 1}

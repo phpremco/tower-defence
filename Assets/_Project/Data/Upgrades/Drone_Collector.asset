@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Drone_Collector
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: 'Collector drone: one more per level'
+  _displayName: Start each level with one more collector drone
   _target: 9
   _towerId: 
   _groupName: Drones

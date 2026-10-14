@@ -27,6 +27,9 @@ namespace Game.Levels
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
         [SerializeField] private HeroDefinition _hero;
+        /// <summary>How much energy the level can store, and how much it gathers per second. Drones are paid with it.</summary>
+        [SerializeField] [Min(1f)] private float _energyMax = 100f;
+        [SerializeField] [Min(0f)] private float _energyPerSecond = 1.5f;
         [SerializeField] private DroneDefinition _repairDrone;
         [SerializeField] private DroneDefinition _collectorDrone;
         [SerializeField] private CombineRecipe[] _recipes = new CombineRecipe[0];
@@ -85,6 +88,8 @@ namespace Game.Levels
         public HeroDefinition Hero => _hero;
 
         /// <summary>The kinds of drone this level uses. How many fly comes from permanent upgrades.</summary>
+        public float EnergyMax => _energyMax;
+        public float EnergyPerSecond => _energyPerSecond;
         public DroneDefinition RepairDrone => _repairDrone;
         public DroneDefinition CollectorDrone => _collectorDrone;
 
