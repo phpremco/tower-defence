@@ -1,0 +1,44 @@
+﻿# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE and generated project files
+/.vs/
+/.vscode/
+/.idea/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.unityproj
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Build outputs and crash dumps
+*.apk
+*.aab
+*.unitypackage
+*.app
+crashlytics-build.properties
+sysinfo.txt
+
+# Test results and Unity CLI output
+results.xml
+TestResults*.xml
+
+# Bee build system
+/[Aa]ssets/Plugins/Editor/JetBrains*
+[Bb]ee/
