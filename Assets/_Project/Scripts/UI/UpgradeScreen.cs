@@ -130,7 +130,7 @@ namespace Game.UI
             Text header = UiKit.CreateFixedText(panel, group.Name, 58, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(30f, -20f), new Vector2(1000f, 80f));
             header.color = PipOn;
 
-            string subtitle = tower != null ? $"Targets {Targets(tower)}    Health {Mathf.RoundToInt(tower.MaxHealth)}" : "Improvements for your base and its blockades";
+            string subtitle = tower != null ? $"Targets {Targets(tower)}    Health {Mathf.RoundToInt(tower.MaxHealth)}" : IsHeroGroup(group.Name) ? "Improvements for your commander" : "Improvements for your base and its blockades";
             Text sub = UiKit.CreateFixedText(panel, subtitle, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(30f, -92f), new Vector2(1200f, 50f));
             sub.color = Muted;
 
@@ -276,6 +276,20 @@ namespace Game.UI
             _maxHealth = Mathf.Max(1f, _maxHealth);
         }
 
+        private bool IsHeroGroup(string groupName)
+        {
+            foreach (UpgradeDefinition upgrade in _catalog.Upgrades)
+            {
+                bool hero = upgrade.Target == UpgradeTarget.HeroDamage || upgrade.Target == UpgradeTarget.HeroHealth;
+                if (hero && upgrade.GroupName == groupName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private IEnumerable<string> GroupNames()
         {
             var seen = new List<string>();
@@ -320,8 +334,10 @@ namespace Game.UI
 
             if (_preview != null)
             {
-                GameObject model = selected.Tower != null ? selected.Tower.Model : BaseModel();
-                Color tint = selected.Tower != null ? Color.Lerp(Color.white, selected.Tower.Color, 0.55f) : Color.white;
+                // The hero has no imported model yet, so its group shows an empty frame instead of the base.
+                GameObject model = selected.Tower != null ? selected.Tower.Model : IsHeroGroup(selected.Name) ? null : BaseModel();
+                bool tinted = selected.Tower != null && !selected.Tower.KeepModelColours;
+                Color tint = tinted ? Color.Lerp(Color.white, selected.Tower.Color, 0.55f) : Color.white;
                 float scale = selected.Tower != null ? selected.Tower.ModelScale : 1f;
                 _preview.Show(model, scale, tint);
             }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Combat;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Hero
@@ -20,6 +21,7 @@ namespace Game.Hero
         private TargetRegistry _targets;
         private IReadOnlyList<HeroPost> _posts;
         private int _postIndex;
+        private float _damage;
         private float _strikeCooldown;
         private float _reviveRemaining;
         private float _shockwaveRemaining;
@@ -71,12 +73,13 @@ namespace Game.Hero
         /// <summary>Raised with the centre and radius when the shockwave goes off.</summary>
         public event Action<Vector3, float> ShockwaveReleased;
 
-        public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost)
+        public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost, PlayerModifiers modifiers)
         {
             _definition = definition;
             _targets = targets;
             _posts = posts;
-            Health = new Health(definition.MaxHealth);
+            _damage = definition.Damage * modifiers.HeroDamageMultiplier;
+            Health = new Health(definition.MaxHealth * modifiers.HeroHealthMultiplier);
             Health.Died += OnDied;
             Health.Changed += OnHealthChanged;
             _postIndex = Mathf.Clamp(startPost, 0, posts.Count - 1);
@@ -256,7 +259,7 @@ namespace Game.Hero
                 Facing = toTarget.normalized;
             }
 
-            target.TakeDamage(_definition.Damage);
+            target.TakeDamage(_damage);
             Struck?.Invoke(target.Position);
             _strikeCooldown = _definition.StrikeInterval;
         }

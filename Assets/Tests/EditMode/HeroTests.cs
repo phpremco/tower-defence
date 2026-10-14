@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Combat;
+using Game.Core;
 using Game.Hero;
 using NUnit.Framework;
 using UnityEngine;
@@ -37,7 +38,7 @@ namespace Game.Tests
                 new HeroPost(_first, new Vector3(-0.65f, 0f, 0f), Vector3.right),
                 new HeroPost(second, new Vector3(4.35f, 0f, 0f), Vector3.right),
             };
-            _hero.Initialize(_definition, new TargetRegistry(), posts, 0);
+            _hero.Initialize(_definition, new TargetRegistry(), posts, 0, PlayerModifiers.None);
         }
 
         [TearDown]

@@ -312,6 +312,10 @@ namespace Game.Levels
                 _blockades.Add(blockade);
                 _towers[spot.Cell] = blockade;
                 _buildGrid.Occupy(spot.Cell);
+
+                // The cell in front of the blockade is the hero's place and stays free of anything else.
+                Vector3 along = RoadDirection.At(_context.Level, spot.Cell);
+                _buildGrid.Occupy(spot.Cell - new Vector2Int(Mathf.RoundToInt(along.x), Mathf.RoundToInt(along.z)));
             }
         }
 

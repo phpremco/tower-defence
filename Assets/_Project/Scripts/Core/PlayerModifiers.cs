@@ -9,7 +9,9 @@
             float towerFireRateMultiplier,
             float towerHealthMultiplier,
             int baseHealthBonus,
-            float blockadeHealthMultiplier)
+            float blockadeHealthMultiplier,
+            float heroDamageMultiplier = 1f,
+            float heroHealthMultiplier = 1f)
         {
             TowerDamageMultiplier = towerDamageMultiplier;
             TowerRangeMultiplier = towerRangeMultiplier;
@@ -17,6 +19,8 @@
             TowerHealthMultiplier = towerHealthMultiplier;
             BaseHealthBonus = baseHealthBonus;
             BlockadeHealthMultiplier = blockadeHealthMultiplier;
+            HeroDamageMultiplier = heroDamageMultiplier;
+            HeroHealthMultiplier = heroHealthMultiplier;
         }
 
         public static PlayerModifiers None => new PlayerModifiers(1f, 1f, 1f, 1f, 0, 1f);
@@ -26,8 +30,8 @@
         public float TowerFireRateMultiplier { get; }
         public float TowerHealthMultiplier { get; }
         public int BaseHealthBonus { get; }
-
-        /// <summary>Stored now, used once blockades exist.</summary>
         public float BlockadeHealthMultiplier { get; }
+        public float HeroDamageMultiplier { get; }
+        public float HeroHealthMultiplier { get; }
     }
 }

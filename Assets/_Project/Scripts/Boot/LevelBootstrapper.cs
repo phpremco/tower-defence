@@ -111,6 +111,7 @@ namespace Game.Boot
             var wallet = new Wallet(level.StartingMoney, infiniteMoney);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
+            context.GlobalModifiers = global;
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();

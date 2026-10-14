@@ -10,8 +10,8 @@ namespace Game.Enemies
     {
         private const float ArrivalDistance = 0.02f;
 
-        // Slightly under one cell, so enemies queue in front of a blockade instead of on top of it.
-        private const float BlockadeStopDistance = 0.85f;
+        // One cell is kept free in front of a blockade for the hero, so enemies halt just before that cell.
+        private const float BlockadeStopDistance = 1.4f;
 
         private EnemyDefinition _definition;
         private Vector3[] _waypoints;

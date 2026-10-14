@@ -19,9 +19,6 @@ namespace Game.Hero
 
         [SerializeField] [Min(0.05f)] private float _strikeInterval = 0.7f;
 
-        /// <summary>How far in front of a blockade the hero stands, on the side the enemies come from.</summary>
-        [SerializeField] [Min(0.3f)] private float _standDistance = 0.65f;
-
         /// <summary>Share of the hits on the guarded blockade that the hero takes instead.</summary>
         [SerializeField] [Range(0f, 1f)] private float _guardShare = 0.4f;
 
@@ -46,7 +43,6 @@ namespace Game.Hero
         public float Damage => _damage;
         public float Reach => _reach;
         public float StrikeInterval => _strikeInterval;
-        public float StandDistance => _standDistance;
         public float GuardShare => _guardShare;
         public float ReviveSeconds => _reviveSeconds;
         public float ShockwaveDamage => _shockwaveDamage;

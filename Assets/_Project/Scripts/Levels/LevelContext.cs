@@ -58,6 +58,9 @@ namespace Game.Levels
         /// <summary>The towers the player may build right now.</summary>
         public IReadOnlyList<TowerDefinition> AvailableTowers { get; }
 
+        /// <summary>Permanent upgrades that do not belong to one tower: base, blockades and hero.</summary>
+        public PlayerModifiers GlobalModifiers { get; set; } = PlayerModifiers.None;
+
         public int WaveCount { get; }
 
         /// <summary>The test mode lets the player skip to the next wave.</summary>

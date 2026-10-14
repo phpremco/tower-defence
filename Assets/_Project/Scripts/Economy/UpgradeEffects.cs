@@ -11,7 +11,7 @@ namespace Game.Economy
             return Compute(progress, catalog, towerId, includeGlobal: false);
         }
 
-        /// <summary>Modifiers that do not belong to a tower: base health and blockade strength.</summary>
+        /// <summary>Modifiers that do not belong to a tower: base health, blockade strength and the hero.</summary>
         public static PlayerModifiers ComputeGlobal(ProgressService progress, UpgradeCatalog catalog)
         {
             return Compute(progress, catalog, string.Empty, includeGlobal: true);
@@ -25,6 +25,8 @@ namespace Game.Economy
             float health = 1f;
             float baseHealth = 0f;
             float blockade = 1f;
+            float heroDamage = 1f;
+            float heroHealth = 1f;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
@@ -55,10 +57,16 @@ namespace Game.Economy
                     case UpgradeTarget.BlockadeHealth:
                         blockade += bonus;
                         break;
+                    case UpgradeTarget.HeroDamage:
+                        heroDamage += bonus;
+                        break;
+                    case UpgradeTarget.HeroHealth:
+                        heroHealth += bonus;
+                        break;
                 }
             }
 
-            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade);
+            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth);
         }
     }
 }

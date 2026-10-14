@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Hero;
 using Game.Platform;
 using Game.Towers;
@@ -14,7 +15,10 @@ namespace Game.Levels
     public sealed class HeroController : MonoBehaviour
     {
         private const string BaseName = "Base";
-        private const float BaseStandDistance = 1f;
+        private const float SpotHeight = 0.07f;
+        private const float SpotAlpha = 0.28f;
+        private const float SpotEmission = 1.2f;
+        private static readonly Color SpotColor = new Color(1f, 0.85f, 0.3f);
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -41,7 +45,7 @@ namespace Game.Levels
             {
                 Vector3 position = blockades[i].Position;
                 Vector3 along = RoadDirection.At(context.Level, grid.WorldToCell(position));
-                posts.Add(new HeroPost(blockades[i], position - along * definition.StandDistance, -along));
+                posts.Add(new HeroPost(blockades[i], position - along * grid.CellSize, -along));
                 names[i] = $"Blockade {i + 1}";
             }
 
@@ -50,18 +54,19 @@ namespace Game.Levels
             Vector3 basePosition = grid.CellToWorld(baseCell);
             Vector3 baseAlong = RoadDirection.At(context.Level, baseCell);
             var basePost = new BasePost(basePosition, context.BaseHealth);
-            posts.Add(new HeroPost(basePost, basePosition - baseAlong * BaseStandDistance, -baseAlong));
+            posts.Add(new HeroPost(basePost, basePosition - baseAlong * grid.CellSize, -baseAlong));
             names[blockades.Count] = BaseName;
 
             for (int i = 0; i < posts.Count; i++)
             {
                 cells[i] = grid.WorldToCell(posts[i].Stand);
+                CreateSpotMarker(posts[i].Stand, grid.CellSize, parent);
             }
 
             var go = new GameObject("Hero");
             go.transform.SetParent(parent, false);
             _hero = go.AddComponent<Commander>();
-            _hero.Initialize(definition, context.Targets, posts, 0);
+            _hero.Initialize(definition, context.Targets, posts, 0, context.GlobalModifiers);
             go.AddComponent<HeroView>().Initialize(_hero);
 
             context.Hero = _hero;
@@ -87,6 +92,15 @@ namespace Game.Levels
             _input.EmergencyRepairPressed -= OnRepair;
             _context.HeroSendRequested.Unsubscribe(OnSendHere);
             _context.HeroRepairRequested.Unsubscribe(OnRepair);
+        }
+
+        // A glowing tile shows the cell that is kept free for the hero, and where to click to move it there.
+        private static void CreateSpotMarker(Vector3 position, float cellSize, Transform parent)
+        {
+            GameObject marker = PlaceholderVisuals.CreatePrimitive(
+                PrimitiveType.Cube, SpotColor, parent, position + Vector3.up * SpotHeight, new Vector3(cellSize * 0.9f, 0.02f, cellSize * 0.9f));
+            marker.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(SpotColor, SpotAlpha, SpotEmission);
+            marker.name = "HeroSpot";
         }
 
         private bool CanAct => _context.Outcome == LevelOutcome.Running && !_context.Paused;

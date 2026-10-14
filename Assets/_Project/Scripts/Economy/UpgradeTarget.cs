@@ -9,5 +9,7 @@
         TowerHealth,
         BaseHealth,
         BlockadeHealth,
+        HeroDamage,
+        HeroHealth,
     }
 }
