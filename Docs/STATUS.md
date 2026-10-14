@@ -77,3 +77,27 @@ Choices made without asking, because the design doc leaves them open. All are da
 
 Still open / known gaps: hero and drone models are placeholders, no per-tower second upgrade path from level 3 (design
 mentions two paths), boss abilities, endless mode, real audio, menu navigation by gamepad has not been tried on hardware.
+
+## Look, maps and drones (2026-10-14, evening)
+
+- **Maps:** 20x12 (Landing), 26x14 (Forest), 22x16 (Lava), 28x16 (Ruins), 24x14 (Nest). Roads, blockades, flight routes and
+  terrain are authored in `ProjectGenerator.World.cs`; rock formations and mining nodes are placed from a fixed seed
+  (`ProjectGenerator.Terrain.cs`). A side road is merged into the main road after the junction (`MergeIntoMain`) and the
+  validator rejects any road that does not end at the base.
+- **Landscape:** `TerrainField` (heights and masks) -> `TerrainPainter` (ground texture, cobbled road) ->
+  `TerrainSurfaceBuilder`, `TerrainLiquidBuilder`, `PropScatterBuilder`, `AmbientParticlesBuilder`. The generator bakes the ground
+  texture to `Art/Terrain/*.png` (`BakeTerrain`); without it the level paints at load time. Terrain is data on the level
+  (`TerrainPatch`: Raised, Water, Lava, Quicksand; liquids are not buildable, raised ground lifts towers).
+- **Models:** all procedural (`PropMeshBuilder` and the `*ModelFactory` classes). Towers, enemies and path objects choose
+  their model by an enum on their definition (`TowerShape`, `EnemyShape`, `PathObjectLook`). The Pulse Rifle keeps the
+  imported machine gun and gets add-ons per level (`TowerShape.PulseRifle`).
+- **Animation:** enemies walk with distance-synced legs, rear/strike/flinch on attack and hit; the commander winds up and cuts
+  with a lunge and a blade trail. Tower barrels recoil.
+- **Camera:** WASD / arrows / right stick pan, wheel / `-` `+` / stick clicks zoom (`CameraPanZoom`, `FixedCameraRig.SetView`).
+  The keyboard no longer moves the build cursor (the mouse and the left stick do).
+- **Drones:** bought in the level with energy (`EnergyPool`, `LevelDefinition.EnergyMax/EnergyPerSecond`, starts at 0). Collectors
+  take loot first, otherwise mine one of the level's `MineCells` and carry the yield home. Permanent upgrades only add free
+  starting drones.
+- **Known gaps:** death animation, hero leg animation, boss abilities, endless mode, real audio, balance on the bigger maps
+  (see the probe results below if present), gamepad testing on hardware.
+- **Test tooling:** the Unity CLI test runner returns 0 tests for PlayMode; run PlayMode with Unity closed (see COMMANDS.md).

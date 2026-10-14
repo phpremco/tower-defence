@@ -125,3 +125,15 @@ Start-Process $unity -ArgumentList '-batchmode','-nographics','-projectPath','.'
 ```
 
 Do not start tests through the CLI while the Editor is in Play Mode: the run fails and leaves red errors in the console.
+
+## Windows build (added 2026-10-14)
+
+```powershell
+# Unity must be closed. Writes Builds/Windows/TowerDefense.exe (git ignores Builds/).
+& "C:\Program Files\Unity\Hub\Editor\6000.6.5f1\Editor\Unity.exe" -batchmode -quit -projectPath . -executeMethod Game.Editor.BuildScript.BuildWindows -logFile Logs\build.log
+```
+
+The same build is in the editor menu `Tools/Build/Windows Player`. The build starts in borderless full screen at the desktop
+resolution (Alt+Enter toggles windowed). Quit from the main menu.
+
+PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTests -testPlatform PlayMode` as above.
