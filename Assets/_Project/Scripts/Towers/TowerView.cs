@@ -108,8 +108,9 @@ namespace Game.Towers
 
         private void PlaceModel(GameObject source, TowerDefinition definition)
         {
-            Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
-            _currentModel = ModelFit.Place(source, _head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
+            bool keep = definition.KeepModelColours;
+            Color tint = keep ? Color.white : Color.Lerp(Color.white, definition.Color, ModelTintStrength);
+            _currentModel = ModelFit.Place(source, _head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, keep ? 0f : ModelEmission);
             _currentModelSource = source;
             _modelRenderers = _currentModel.GetComponentsInChildren<Renderer>();
             _modelMaterials = new Material[_modelRenderers.Length][];

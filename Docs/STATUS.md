@@ -39,3 +39,12 @@ The HUD blocking check now only counts real buttons under the pointer.
   keys H / F / G (X, LT, RT on a gamepad), or the third icon of a blockade menu ("Send hero"). Guards a blockade (takes
   `GuardShare` of the hits), goes down when its health runs out and returns after `ReviveSeconds`.
 - Not done yet: permanent hero upgrades in the upgrade screen, hero visuals beyond placeholders, balance pass for hard/psycho.
+
+## Custom (AI) models
+
+- Put a single-mesh `.glb` in `Assets/_Project/Art/Models/Custom/`, add a recipe for it in `ModelRecipe.For` (parts are
+  chosen by where a triangle sits in the model's bounding box), run `Tools/Generate/Build Custom Models` (also part of the
+  starter-data generator). It writes mesh, materials and prefab to `Custom/Built/`.
+- `GlbMeshReader` only reads positions and triangles. Models with textures or several materials need a real glTF
+  importer (glTFast package), which is not installed.
+- A tower using such a model sets `KeepModelColours` so the tower tint and glow are not applied (pulse rifle does).

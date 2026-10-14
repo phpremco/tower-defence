@@ -34,6 +34,9 @@ namespace Game.Towers
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
 
+        /// <summary>Show the model with its own materials, without the tower tint and glow. For hand-coloured models.</summary>
+        [SerializeField] private bool _keepModelColours;
+
         public string Id => name;
         public string DisplayName => _displayName;
         public TargetLayers Targets => _targets;
@@ -50,6 +53,7 @@ namespace Game.Towers
         /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>
         public GameObject Model => _model;
         public float ModelScale => _modelScale;
+        public bool KeepModelColours => _keepModelColours;
         public int MaxLevelIndex => _levels.Length - 1;
 
         /// <summary>Price to build the tower, which is the cost of its first level.</summary>

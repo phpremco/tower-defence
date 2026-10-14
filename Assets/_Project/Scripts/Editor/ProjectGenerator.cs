@@ -39,6 +39,8 @@ namespace Game.Editor
         [MenuItem("Tools/Generate/Scenes and Starter Data")]
         public static void GenerateAll()
         {
+            CustomModelBuilder.BuildAll();
+
             TowerDefinition pulse = CreateTower("PulseRifle", "Pulse Rifle", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
                 new[] { Lvl(50, 4f, 3f, 0.35f), Lvl(60, 6f, 3.3f, 0.3f), Lvl(90, 9f, 3.6f, 0.25f) }, 80f);
             TowerDefinition cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, 1.2f, new Color(1f, 0.8f, 0.3f),
@@ -87,7 +89,8 @@ namespace Game.Editor
             unlockProps.ApplyModifiedPropertiesWithoutUndo();
 
             var debug = LoadOrCreate<PlaytestSettings>(DebugAssetPath);
-            SetModel(pulse, "turret_single", 1.5f);
+            // The pulse rifle uses the hand-made gatling model, coloured by its recipe in CustomModelBuilder.
+            SetCustomModel(pulse, "machinegun", 1.15f);
             SetModel(cannon, "turret_double", 1.4f);
             SetModel(rocket, "satelliteDish_large", 1.5f);
             SetModel(scout, "alien", 0.9f);
@@ -118,6 +121,16 @@ namespace Game.Editor
         }
 
         private static GameObject Model(string name) => AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelFolder}{name}.fbx");
+
+        private static void SetCustomModel(Object asset, string modelName, float scale)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{CustomModelBuilder.OutputFolder}/{modelName}.prefab");
+            var so = new SerializedObject(asset);
+            so.FindProperty("_model").objectReferenceValue = prefab;
+            so.FindProperty("_modelScale").floatValue = scale;
+            so.FindProperty("_keepModelColours").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         private static void SetModel(Object asset, string modelName, float scale)
         {
