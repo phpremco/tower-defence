@@ -17,5 +17,8 @@ namespace Game.Combat
         bool IsAlive { get; }
 
         void TakeDamage(float amount);
+
+        /// <summary>Slows movement to a share of normal speed for a short time. The strongest slow wins.</summary>
+        void ApplySlow(float speedFactor, float seconds);
     }
 }

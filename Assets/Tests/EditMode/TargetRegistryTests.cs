@@ -15,6 +15,8 @@ namespace Game.Tests
             public float PathProgress { get; set; }
             public bool IsAlive { get; set; } = true;
             public void TakeDamage(float amount) { }
+
+            public void ApplySlow(float speedFactor, float seconds) { }
         }
 
         [Test]

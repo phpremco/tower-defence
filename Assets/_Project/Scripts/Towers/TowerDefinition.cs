@@ -27,6 +27,18 @@ namespace Game.Towers
         /// <summary>Power of a nearly destroyed tower: 1 is no penalty, 0.5 means half damage and half fire rate.</summary>
         [SerializeField] [Range(0f, 1f)] private float _damagedPowerFloor = 0.5f;
 
+        /// <summary>Speed share enemies hit by this tower are slowed to. One means no slow.</summary>
+        [SerializeField] [Range(0.1f, 1f)] private float _slowFactor = 1f;
+
+        [SerializeField] [Min(0f)] private float _slowSeconds;
+
+        /// <summary>A support tower does no damage. It boosts the range and fire rate of towers within its range.</summary>
+        [SerializeField] private bool _isSupport;
+
+        [SerializeField] [Min(0f)] private float _supportRangeBonus;
+
+        [SerializeField] [Min(0f)] private float _supportRateBonus;
+
         /// <summary>A blockade stops ground enemies until it is destroyed. It is set in the level and cannot be sold.</summary>
         [SerializeField] private bool _blocksGroundEnemies;
 
@@ -47,6 +59,11 @@ namespace Game.Towers
         public float ScrapFraction => _scrapFraction;
         public float RepairCostPerHealth => _repairCostPerHealth;
         public float DamagedPowerFloor => _damagedPowerFloor;
+        public float SlowFactor => _slowFactor;
+        public float SlowSeconds => _slowSeconds;
+        public bool IsSupport => _isSupport;
+        public float SupportRangeBonus => _supportRangeBonus;
+        public float SupportRateBonus => _supportRateBonus;
         public bool BlocksGroundEnemies => _blocksGroundEnemies;
         public Color Color => _color;
 

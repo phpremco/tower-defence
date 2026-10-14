@@ -13,5 +13,11 @@ namespace Game.Combat
         bool BlocksGround { get; }
 
         void TakeDamage(float amount);
+
+        /// <summary>Share of maximum health left, from 0 to 1.</summary>
+        float HealthFraction { get; }
+
+        /// <summary>Restores hit points, used by repair drones.</summary>
+        void Repair(float amount);
     }
 }

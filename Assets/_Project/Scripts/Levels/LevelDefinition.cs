@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using Game.Drones;
 using Game.Hero;
+using Game.PathObjects;
 using Game.Towers;
 
 namespace Game.Levels
@@ -19,7 +21,13 @@ namespace Game.Levels
         [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
+        /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
+        [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
         [SerializeField] private HeroDefinition _hero;
+        [SerializeField] private DroneDefinition _repairDrone;
+        [SerializeField] private DroneDefinition _collectorDrone;
+        [SerializeField] private CombineRecipe[] _recipes = new CombineRecipe[0];
+        [SerializeField] private PathObjectDefinition[] _pathObjects = new PathObjectDefinition[0];
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
@@ -59,7 +67,18 @@ namespace Game.Levels
         public BlockadeSpot[] Blockades => _blockades;
 
         /// <summary>The commander for this level, or null for a level without one.</summary>
+        public float EnemyHealthMultiplier => _enemyHealthMultiplier;
         public HeroDefinition Hero => _hero;
+
+        /// <summary>The kinds of drone this level uses. How many fly comes from permanent upgrades.</summary>
+        public DroneDefinition RepairDrone => _repairDrone;
+        public DroneDefinition CollectorDrone => _collectorDrone;
+
+        /// <summary>Recipes the player can use in this level to combine neighbouring towers.</summary>
+        public CombineRecipe[] Recipes => _recipes;
+
+        /// <summary>Path objects that are for sale in this level.</summary>
+        public PathObjectDefinition[] PathObjects => _pathObjects;
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;

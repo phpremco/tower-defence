@@ -14,6 +14,12 @@ namespace Game.Tests
 
             public bool BlocksGround { get; set; }
 
+            public float HealthFraction => 1f;
+
+            public void Repair(float amount)
+            {
+            }
+
             public void TakeDamage(float amount)
             {
             }

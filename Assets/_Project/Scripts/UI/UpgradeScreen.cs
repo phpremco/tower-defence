@@ -130,7 +130,7 @@ namespace Game.UI
             Text header = UiKit.CreateFixedText(panel, group.Name, 58, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(30f, -20f), new Vector2(1000f, 80f));
             header.color = PipOn;
 
-            string subtitle = tower != null ? $"Targets {Targets(tower)}    Health {Mathf.RoundToInt(tower.MaxHealth)}" : IsHeroGroup(group.Name) ? "Improvements for your commander" : "Improvements for your base and its blockades";
+            string subtitle = tower != null ? $"Targets {Targets(tower)}    Health {Mathf.RoundToInt(tower.MaxHealth)}" : DescriptionOf(group.Name) ?? "Improvements for your base and its blockades";
             Text sub = UiKit.CreateFixedText(panel, subtitle, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(30f, -92f), new Vector2(1200f, 50f));
             sub.color = Muted;
 
@@ -276,18 +276,18 @@ namespace Game.UI
             _maxHealth = Mathf.Max(1f, _maxHealth);
         }
 
-        private bool IsHeroGroup(string groupName)
+        // The line a group shows under its heading, or null when its upgrades give none (such as the base).
+        private string DescriptionOf(string groupName)
         {
             foreach (UpgradeDefinition upgrade in _catalog.Upgrades)
             {
-                bool hero = upgrade.Target == UpgradeTarget.HeroDamage || upgrade.Target == UpgradeTarget.HeroHealth;
-                if (hero && upgrade.GroupName == groupName)
+                if (upgrade.GroupName == groupName && !string.IsNullOrEmpty(upgrade.GroupDescription))
                 {
-                    return true;
+                    return upgrade.GroupDescription;
                 }
             }
 
-            return false;
+            return null;
         }
 
         private IEnumerable<string> GroupNames()
@@ -335,7 +335,7 @@ namespace Game.UI
             if (_preview != null)
             {
                 // The hero has no imported model yet, so its group shows an empty frame instead of the base.
-                GameObject model = selected.Tower != null ? selected.Tower.Model : IsHeroGroup(selected.Name) ? null : BaseModel();
+                GameObject model = selected.Tower != null ? selected.Tower.Model : DescriptionOf(selected.Name) != null ? null : BaseModel();
                 bool tinted = selected.Tower != null && !selected.Tower.KeepModelColours;
                 Color tint = tinted ? Color.Lerp(Color.white, selected.Tower.Color, 0.55f) : Color.white;
                 float scale = selected.Tower != null ? selected.Tower.ModelScale : 1f;
@@ -363,12 +363,13 @@ namespace Game.UI
                     int level = Progress.GetUpgradeLevel(row.Upgrade.Id);
                     bool maxed = level >= row.Upgrade.MaxLevel;
                     int cost = maxed ? 0 : row.Upgrade.CostForNextLevel(level);
-                    bool affordable = Progress.Data.ResearchPoints >= cost;
+                    bool affordable = Progress.CanAfford(row.Upgrade, cost);
+                    string unit = row.Upgrade.Currency == UpgradeCurrency.PowerCurrency ? "power" : "points";
 
                     row.Button.interactable = !locked && !maxed && affordable;
                     row.Label.text = locked ? $"{row.Upgrade.DisplayName}\nlocked until the weapon is found"
                         : maxed ? $"{row.Upgrade.DisplayName}\nmaximum level"
-                        : $"{row.Upgrade.DisplayName}\ncost {cost}";
+                        : $"{row.Upgrade.DisplayName}\ncost {cost} {unit}";
 
                     for (int i = 0; i < row.Pips.Length; i++)
                     {

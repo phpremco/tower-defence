@@ -18,16 +18,16 @@ MonoBehaviour:
     Level: {fileID: 11400000, guid: ce4469ed87baed04d9f868403cc4ade3, type: 2}
   - DisplayName: Glowing Forest
     MapPosition: {x: 0.3, y: 0.7}
-    Level: {fileID: 0}
+    Level: {fileID: 11400000, guid: 99cf5d84e855d624fbbe8142d2f3f8fd, type: 2}
   - DisplayName: Lava Caves
     MapPosition: {x: 0.5, y: 0.3}
-    Level: {fileID: 0}
+    Level: {fileID: 11400000, guid: f1bffcf8b970ae0479a732f1f81ca6cc, type: 2}
   - DisplayName: Ancient Ruins
     MapPosition: {x: 0.7, y: 0.75}
-    Level: {fileID: 0}
+    Level: {fileID: 11400000, guid: d010e547e04d74b4785d86b25a4be20f, type: 2}
   - DisplayName: The Nest
     MapPosition: {x: 0.9, y: 0.35}
-    Level: {fileID: 0}
+    Level: {fileID: 11400000, guid: 39aa07e4da6b62341a7f9d2e67c6d9b3, type: 2}
   _difficulties:
   - {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
   - {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}

@@ -122,6 +122,13 @@ namespace Game.Economy
             return 0;
         }
 
+        /// <summary>True when the player holds enough of the currency this upgrade is paid in.</summary>
+        public bool CanAfford(UpgradeDefinition upgrade, int cost)
+        {
+            int held = upgrade.Currency == UpgradeCurrency.PowerCurrency ? Data.PowerCurrency : Data.ResearchPoints;
+            return held >= cost;
+        }
+
         public bool TryBuyUpgrade(UpgradeDefinition upgrade)
         {
             int level = GetUpgradeLevel(upgrade.Id);
@@ -131,12 +138,20 @@ namespace Game.Economy
             }
 
             int cost = upgrade.CostForNextLevel(level);
-            if (Data.ResearchPoints < cost)
+            if (!CanAfford(upgrade, cost))
             {
                 return false;
             }
 
-            Data.ResearchPoints -= cost;
+            if (upgrade.Currency == UpgradeCurrency.PowerCurrency)
+            {
+                Data.PowerCurrency -= cost;
+            }
+            else
+            {
+                Data.ResearchPoints -= cost;
+            }
+
             SetUpgradeLevel(upgrade.Id, level + 1);
             Save();
             return true;

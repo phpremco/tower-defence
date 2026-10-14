@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
+  m_Name: Laser
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
+  _displayName: Laser
+  _targets: 1
+  _levels:
+  - Cost: 110
+    Damage: 6
+    Range: 3.4
+    FireInterval: 0.2
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 130
+    Damage: 9
+    Range: 3.6
+    FireInterval: 0.18
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 190
+    Damage: 13
+    Range: 3.9
+    FireInterval: 0.15
+    HealthBonus: 0
+    Model: {fileID: 0}
+  _projectileSpeed: 40
+  _splashRadius: 0
+  _maxHealth: 90
+  _sellRefundFraction: 0.7
+  _scrapFraction: 0.3
+  _repairCostPerHealth: 0.4
+  _damagedPowerFloor: 0.5
+  _slowFactor: 1
+  _slowSeconds: 0
+  _isSupport: 0
+  _supportRangeBonus: 0
+  _supportRateBonus: 0
+  _blocksGroundEnemies: 0
+  _color: {r: 1, g: 0.35, b: 0.45, a: 1}
+  _model: {fileID: 919132149155446097, guid: 633c2ce74cc8cda45a3d64a62e91f5d9, type: 3}
+  _modelScale: 1.35
+  _keepModelColours: 0

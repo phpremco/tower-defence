@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f03f3509cb48684ebd22b87c831fbb6, type: 3}
+  m_Name: StormRifle
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.CombineRecipe
+  _first: {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  _second: {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  _result: {fileID: 11400000, guid: ea914d7b08e4ec54bb5ad5ee129c7331, type: 2}
+  _cost: 120

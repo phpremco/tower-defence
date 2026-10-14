@@ -28,6 +28,7 @@ namespace Game.UI
         private static readonly Color UpgradeTint = new Color(0.3f, 0.85f, 0.45f);
         private static readonly Color RepairTint = new Color(0.35f, 0.65f, 1f);
         private static readonly Color SellTint = new Color(1f, 0.78f, 0.25f);
+        private static readonly Color CombineTint = new Color(0.8f, 0.5f, 1f);
 
         private LevelContext _context;
         private RectTransform _root;
@@ -42,6 +43,8 @@ namespace Game.UI
         private Text _repairPrice;
         private Text _sellPrice;
         private Image _thirdIcon;
+        private Button _combine;
+        private Text _combinePrice;
         private bool _wasOpen;
         private float _nextRefresh;
 
@@ -97,6 +100,7 @@ namespace Game.UI
             _repair = CreateIcon(IconType.Repair, 1, RepairTint, () => _context.RepairRequested.Raise(), out _repairPrice);
             _sell = CreateIcon(IconType.Sell, 2, SellTint, OnThirdAction, out _sellPrice);
             _thirdIcon = _sell.transform.Find("Icon").GetComponent<Image>();
+            _combine = CreateIcon(IconType.Combine, 3, CombineTint, () => _context.CombineRequested.Raise(), out _combinePrice);
             _panel.gameObject.SetActive(false);
         }
 
@@ -188,6 +192,18 @@ namespace Game.UI
             string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
             _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
             _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? "Hero\nhere" : "Send\nhero";
+
+            // The combine icon only appears when a neighbouring tower forms a recipe with this one.
+            CombineRecipe offer = _context.CombineOffer;
+            _combine.gameObject.SetActive(offer != null);
+            _combinePrice.gameObject.SetActive(offer != null);
+            if (offer != null)
+            {
+                bool canCombine = _context.Wallet.CanAfford(offer.Cost);
+                _combine.interactable = canCombine;
+                _combinePrice.text = $"Combine\n{offer.Cost}";
+                _combinePrice.color = canCombine ? TextColor : TooExpensive;
+            }
             // Grey when there is nothing to buy, red when there is but the player cannot pay yet.
             _upgradePrice.color = canUpgrade ? TextColor : tower.CanUpgrade ? TooExpensive : Unavailable;
             _repairPrice.color = canRepair ? TextColor : tower.NeedsRepair ? TooExpensive : Unavailable;

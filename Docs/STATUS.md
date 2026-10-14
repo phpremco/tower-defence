@@ -48,3 +48,32 @@ The HUD blocking check now only counts real buttons under the pointer.
 - `GlbMeshReader` only reads positions and triangles. Models with textures or several materials need a real glTF
   importer (glTFast package), which is not installed.
 - A tower using such a model sets `KeepModelColours` so the tower tint and glow are not applied (pulse rifle does).
+
+## Milestones 6 to 10 - first versions (built unattended on 2026-10-14, please review)
+
+Choices made without asking, because the design doc leaves them open. All are data or small code, easy to change:
+
+- **Drones:** work on their own (no manual steering). Repair drones heal the most damaged tower or blockade for free,
+  collector drones pick up loot that defeated enemies drop (a bonus of half the reward, only while collectors fly).
+  Bought between levels with power currency, as upgrade levels in the "Drones" group (one level = one more drone).
+  Flying enemies can shoot them down; lost drones stay lost for that level.
+- **Path objects** (`PathObjectDefinition`, kinds Mine / SlowField / Roller): consumed on use or after a lifetime, not
+  upgradeable. Each level sells a subset (see `LevelDefinition.PathObjects`). Placed like towers (select in the bar, click a
+  cell, click again). Road objects need a free road cell; "beside" objects a free build cell.
+- **Combining:** `CombineRecipe` (two kinds + result + price). Select a tower next to its partner and a fourth icon
+  "Combine" appears. Both towers become one hybrid (value of both is kept for selling). Only level 5 lists recipes, as in
+  the design table. Hybrids: Artillery (Cannon+Rocket), Storm Rifle (Pulse+Tesla), Cryo Beam (Laser+Cryo).
+- **Towers:** all eight standard towers exist (Laser and Tesla are plain fast/splash shooters for now, Cryo slows, Support
+  boosts range and fire rate nearby). Railgun and Support are not rewarded in world 1 (as designed), only reachable with
+  the unlock-all test option.
+- **Levels 2 to 5** are generated data (`ProjectGenerator.World.cs`): own palette, road layout, blockades, bosses on 2/4/5,
+  second entrance on 2 and 5, a new weapon as reward each. Enemy health scales per level (`EnemyHealthMultiplier`).
+- **In-level kill money no longer scales with difficulty** (it made hard levels easier); research and power rewards still do.
+- **Audio** is generated at runtime (`ProceduralSfx`, played by `SfxPlayer`): shots, kills, explosions, base hits.
+- **Balance probe:** `BalanceProbeTests` plays all levels and difficulties with a greedy bot and logs the outcome.
+  With the current numbers the bot wins Easy on every level and loses Psycho on all but the first. Real players have
+  upgrades, hero and drones, so expect it to be easier for them. Tune `CountScale`/`HealthScale` per level in the generator.
+- **Screenshots without the editor:** `ScreenshotTests` writes `Logs/screenshot_level5.png`.
+
+Still open / known gaps: hero and drone models are placeholders, no per-tower second upgrade path from level 3 (design
+mentions two paths), boss abilities, endless mode, real audio, menu navigation by gamepad has not been tried on hardware.

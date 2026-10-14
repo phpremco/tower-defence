@@ -9,14 +9,20 @@ namespace Game.Towers
     /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
     /// Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Tower : MonoBehaviour, IStructure, IGuardable
+    public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource
     {
+        private const float SupportLevelGrowth = 0.5f;
+        private const float SupportRefreshSeconds = 0.25f;
+
         private TowerDefinition _definition;
         private TargetRegistry _registry;
         private StructureRegistry _structures;
         private ProjectilePool _projectiles;
         private PlayerModifiers _modifiers;
         private float _cooldown;
+        private float _supportRange;
+        private float _supportRate;
+        private float _supportTimer;
 
         public TowerDefinition Definition => _definition;
 
@@ -39,13 +45,24 @@ namespace Game.Towers
         public float Power => IsWrecked ? 0f : _definition.DamagedPowerFloor + (1f - _definition.DamagedPowerFloor) * Health.Fraction;
 
         /// <summary>Range after upgrades, in world units.</summary>
-        public float Range => _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier;
+        public float Range => _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier * (_definition.IsSupport ? 1f : 1f + _supportRange);
+
+        /// <summary>Value carried over from the towers this one was combined from, so selling it is fair.</summary>
+        public int InheritedValue { get; set; }
+
+        public float HealthFraction => Health.Fraction;
+
+        public float SupportRadius => _definition.IsSupport && IsAlive ? _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier : 0f;
+
+        public float RangeBonus => _definition.SupportRangeBonus * (1f + SupportLevelGrowth * LevelIndex);
+
+        public float RateBonus => _definition.SupportRateBonus * (1f + SupportLevelGrowth * LevelIndex);
 
         public int TotalSpent
         {
             get
             {
-                int total = 0;
+                int total = InheritedValue;
                 for (int i = 0; i <= LevelIndex; i++)
                 {
                     total += _definition.GetLevel(i).Cost;
@@ -129,6 +146,14 @@ namespace Game.Towers
 
         public void RepairFully() => Health.Heal(Health.Max);
 
+        public void Repair(float amount)
+        {
+            if (!IsWrecked)
+            {
+                Health.Heal(amount);
+            }
+        }
+
         public void Upgrade()
         {
             if (!CanUpgrade)
@@ -145,6 +170,7 @@ namespace Game.Towers
 
         private void Update()
         {
+            RefreshSupport();
             _cooldown -= Time.deltaTime;
             if (_cooldown > 0f || IsWrecked)
             {
@@ -165,9 +191,22 @@ namespace Game.Towers
             }
 
             float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
-            _projectiles.Fire(transform.position + Vector3.up, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets);
+            _projectiles.Fire(transform.position + Vector3.up, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, _definition.SlowFactor, _definition.SlowSeconds);
             Fired?.Invoke(target.Position);
-            _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * Mathf.Max(0.05f, Power));
+            _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power));
+        }
+
+        // Support towers nearby boost range and fire rate. Checked a few times per second, not every frame.
+        private void RefreshSupport()
+        {
+            _supportTimer -= Time.deltaTime;
+            if (_supportTimer > 0f || _structures == null)
+            {
+                return;
+            }
+
+            _supportTimer = SupportRefreshSeconds;
+            _structures.SupportAt(transform.position, out _supportRange, out _supportRate);
         }
 
         private void OnHealthChanged(float _) => StateChanged?.Invoke(this);

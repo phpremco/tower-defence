@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_Lava
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: Lava Caves
+  _gridSize: {x: 16, y: 10}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: d7483e12a2f7abd409d568eceb885ed3, type: 2}
+  _camera:
+    PitchDegrees: 55
+    YawDegrees: 0
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 8}
+    - {x: 13, y: 8}
+    - {x: 13, y: 6}
+    - {x: 2, y: 6}
+    - {x: 2, y: 4}
+    - {x: 13, y: 4}
+    - {x: 13, y: 2}
+    - {x: 15, y: 2}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 9}
+    - {x: 15, y: 2}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 0}
+    - {x: 8, y: 5}
+    - {x: 15, y: 2}
+  _blockedCells:
+  - {x: 1, y: 9}
+  - {x: 5, y: 9}
+  - {x: 10, y: 9}
+  - {x: 1, y: 0}
+  - {x: 5, y: 0}
+  - {x: 9, y: 0}
+  - {x: 14, y: 5}
+  - {x: 14, y: 7}
+  - {x: 0, y: 5}
+  - {x: 0, y: 3}
+  - {x: 6, y: 3}
+  - {x: 7, y: 7}
+  _blockades:
+  - Cell: {x: 7, y: 6}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 7, y: 4}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _enemyHealthMultiplier: 1.3
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
+  _recipes: []
+  _pathObjects:
+  - {fileID: 11400000, guid: 0a2ff893e70c1a249b2f79da2deca428, type: 2}
+  - {fileID: 11400000, guid: 948d439d98e313c4ca680b6505cc6396, type: 2}
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
+  _startingMoney: 210
+  _baseHealth: 20
+  _difficultyWaves:
+  - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: be19ac71d034c35469b6fdd34f40792a, type: 2}
+    - {fileID: 11400000, guid: bc3fd72888d419f4ea3d84a62ef4c216, type: 2}
+    - {fileID: 11400000, guid: 67adba2fec347e44096968d5e2729417, type: 2}
+    - {fileID: 11400000, guid: 2a727f735a926ec40bf1c64760a01bf3, type: 2}
+    - {fileID: 11400000, guid: 3804010c47c0d3a46b431c8fff884950, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 08189d38b58206c4d8aa877ada1b6f42, type: 2}
+    - {fileID: 11400000, guid: a8519cc27f878b24d96be89881ae476f, type: 2}
+    - {fileID: 11400000, guid: 914580d14f9384f4388a43792df06255, type: 2}
+    - {fileID: 11400000, guid: 694edc60f1fa81b49910cde6cbdfbd10, type: 2}
+    - {fileID: 11400000, guid: 45fb5560acb7ba74e9b44e7cca5803cc, type: 2}
+    - {fileID: 11400000, guid: de4c7fdb495967849bd49a2d38144963, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 535228e0f941e5b41aefd88554e5f557, type: 2}
+    - {fileID: 11400000, guid: 6b94098b04f737b488e3966deffa8b33, type: 2}
+    - {fileID: 11400000, guid: c3464e4af1bd5ed43aefb254139426e3, type: 2}
+    - {fileID: 11400000, guid: c85c80b405708d647b1911c0dc892cfa, type: 2}
+    - {fileID: 11400000, guid: 5d8de7545758c264792c986e181c3975, type: 2}
+    - {fileID: 11400000, guid: 128adce8f6766594da9df649084c541d, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: bb0be1fd25b0a624e8d56673697895d8, type: 2}
+    - {fileID: 11400000, guid: cb7655fbe0add294f8c8a99a7dafe276, type: 2}
+    - {fileID: 11400000, guid: 30d68c62005b4504b97deb878640ca6a, type: 2}
+    - {fileID: 11400000, guid: 37df7be0734537046908450798a20687, type: 2}
+    - {fileID: 11400000, guid: c02ba439504135244ba458b0072379be, type: 2}
+    - {fileID: 11400000, guid: a24482d81c28aec47a99a14441e005d3, type: 2}
+    - {fileID: 11400000, guid: 72ad9441c817a794cb54953baa57f9e3, type: 2}
+  _reward:
+    ResearchPoints: 18
+    PowerCurrency: 9
+    NewTower: {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+    Source: 2
+    Story: 'Home sent the focusing crystals they refined from our first samples: a laser design.'
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9

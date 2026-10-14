@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
+  m_Name: Railgun
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
+  _displayName: Railgun
+  _targets: 3
+  _levels:
+  - Cost: 220
+    Damage: 80
+    Range: 5.5
+    FireInterval: 2.2
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 260
+    Damage: 120
+    Range: 6
+    FireInterval: 2
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 360
+    Damage: 180
+    Range: 6.5
+    FireInterval: 1.8
+    HealthBonus: 0
+    Model: {fileID: 0}
+  _projectileSpeed: 40
+  _splashRadius: 0
+  _maxHealth: 100
+  _sellRefundFraction: 0.7
+  _scrapFraction: 0.3
+  _repairCostPerHealth: 0.4
+  _damagedPowerFloor: 0.5
+  _slowFactor: 1
+  _slowSeconds: 0
+  _isSupport: 0
+  _supportRangeBonus: 0
+  _supportRateBonus: 0
+  _blocksGroundEnemies: 0
+  _color: {r: 1, g: 1, b: 1, a: 1}
+  _model: {fileID: 919132149155446097, guid: 1779dc3a90ab9e24495ea13cd483d62d, type: 3}
+  _modelScale: 1.6
+  _keepModelColours: 0

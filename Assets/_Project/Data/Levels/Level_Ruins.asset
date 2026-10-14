@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_Ruins
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: Ancient Ruins
+  _gridSize: {x: 16, y: 10}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: 8ef114d5f69c56d4aa64817dc054ea78, type: 2}
+  _camera:
+    PitchDegrees: 55
+    YawDegrees: 0
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 5}
+    - {x: 10, y: 5}
+    - {x: 10, y: 8}
+    - {x: 13, y: 8}
+    - {x: 13, y: 2}
+    - {x: 7, y: 2}
+    - {x: 7, y: 7}
+    - {x: 2, y: 7}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 15, y: 9}
+    - {x: 2, y: 7}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 15, y: 0}
+    - {x: 2, y: 7}
+  _blockedCells:
+  - {x: 4, y: 3}
+  - {x: 5, y: 3}
+  - {x: 4, y: 9}
+  - {x: 5, y: 9}
+  - {x: 11, y: 5}
+  - {x: 11, y: 4}
+  - {x: 14, y: 4}
+  - {x: 14, y: 3}
+  - {x: 1, y: 2}
+  - {x: 2, y: 2}
+  - {x: 9, y: 0}
+  - {x: 0, y: 8}
+  _blockades:
+  - Cell: {x: 5, y: 5}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 13, y: 5}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _enemyHealthMultiplier: 1.5
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
+  _recipes: []
+  _pathObjects:
+  - {fileID: 11400000, guid: 6c5ec85bf02c5f1488b5606a37bcb40a, type: 2}
+  - {fileID: 11400000, guid: ccab07459d22cf84d8fec779a85df4d6, type: 2}
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
+  _startingMoney: 240
+  _baseHealth: 20
+  _difficultyWaves:
+  - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 005b0b166114aed489cc491f62806947, type: 2}
+    - {fileID: 11400000, guid: 1a00a95d8db667d41a601035f16fdb8d, type: 2}
+    - {fileID: 11400000, guid: 0b12c3b8597bb4941b6750f866bf382a, type: 2}
+    - {fileID: 11400000, guid: c3125c8c9735c334bad10d18682108a1, type: 2}
+    - {fileID: 11400000, guid: ca4fcf57e482b3c42b6efad7c2b11aaf, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: c4730179fea784347a3aab17bc1d3367, type: 2}
+    - {fileID: 11400000, guid: cab75850cff073444b42c1d61bda15ca, type: 2}
+    - {fileID: 11400000, guid: 78f8be3b072792b4bbe82aaa8a85c04c, type: 2}
+    - {fileID: 11400000, guid: b7951c180455d1b47926b589359daa6f, type: 2}
+    - {fileID: 11400000, guid: 7266e587ada9b4649900bedbcff50e2a, type: 2}
+    - {fileID: 11400000, guid: 0ead6608eb9ba764396813d8d4aab6c5, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 5cbf0469143ca334198de31aa0f0d353, type: 2}
+    - {fileID: 11400000, guid: dad95a490258b8346b8ac4e0e6f4a88c, type: 2}
+    - {fileID: 11400000, guid: 004ff3e2ff886d5478a1ece4496a29f2, type: 2}
+    - {fileID: 11400000, guid: ec47f48dbebca5640a484f26727c827f, type: 2}
+    - {fileID: 11400000, guid: fff4cca7163646047b84a2c63b70a934, type: 2}
+    - {fileID: 11400000, guid: 2b76a613ae6be8446855400f20633b9d, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 99663b8c231c31446bdb3fb501194989, type: 2}
+    - {fileID: 11400000, guid: 158bebd991a8e3544899a401e5974ed0, type: 2}
+    - {fileID: 11400000, guid: e8f754b3efb6c3441a389fe6a2c34f42, type: 2}
+    - {fileID: 11400000, guid: 10dc96df06e783e4f890301fb5aae75c, type: 2}
+    - {fileID: 11400000, guid: 340bcadd8eb46c348bce995fdd6e900a, type: 2}
+    - {fileID: 11400000, guid: 2b2b0a5dee222e04fb3b694fe86cfeb1, type: 2}
+    - {fileID: 11400000, guid: 8a66e256e07016347a6318966bf9bb85, type: 2}
+  _reward:
+    ResearchPoints: 22
+    PowerCurrency: 12
+    NewTower: {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+    Source: 1
+    Story: The ruin vaults held guidance gear. With it our rocket launchers can finally lock on to flyers.
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9

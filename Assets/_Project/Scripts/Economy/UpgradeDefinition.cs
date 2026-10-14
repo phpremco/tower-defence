@@ -16,6 +16,12 @@ namespace Game.Economy
         [SerializeField] private string _groupName = "General";
         [SerializeField] private int[] _costs = { 5, 10, 15 };
 
+        /// <summary>Which currency pays for this upgrade.</summary>
+        [SerializeField] private UpgradeCurrency _currency = UpgradeCurrency.ResearchPoints;
+
+        /// <summary>One line shown under the group heading on the upgrade screen. The first upgrade of a group provides it.</summary>
+        [SerializeField] private string _groupDescription = string.Empty;
+
         /// <summary>Added per level. A fraction (0.1 is +10%) for multipliers, a flat amount for base health.</summary>
         [SerializeField] private float _bonusPerLevel = 0.1f;
 
@@ -24,6 +30,8 @@ namespace Game.Economy
         public UpgradeTarget Target => _target;
         public string TowerId => _towerId;
         public string GroupName => _groupName;
+        public UpgradeCurrency Currency => _currency;
+        public string GroupDescription => _groupDescription;
         public float BonusPerLevel => _bonusPerLevel;
         public int MaxLevel => _costs.Length;
 

@@ -10,6 +10,8 @@ namespace Game.Levels
     public sealed class EnemySpawner
     {
         private const float AirHeight = 1.6f;
+        private const float DeathBurstRadius = 0.5f;
+        private const float LootShare = 0.5f;
 
         private readonly LevelContext _context;
         private readonly Transform _parent;
@@ -41,8 +43,8 @@ namespace Game.Levels
             enemy.Initialize(
                 definition,
                 _paths[pathIndex],
-                difficulty.HealthMultiplier,
-                difficulty.RewardMultiplier,
+                difficulty.HealthMultiplier * _context.Level.EnemyHealthMultiplier,
+                1f,
                 air ? AirHeight : 0f,
                 _context.Targets,
                 _context.Structures);
@@ -75,7 +77,19 @@ namespace Game.Levels
         private void OnKilled(Enemy enemy)
         {
             _context.Wallet.Add(enemy.Reward);
+            _context.Projectiles.Burst(enemy.Position, DeathBurstRadius);
+            _context.EnemyDefeated.Raise();
+            DropLoot(enemy);
             Release(enemy);
+        }
+
+        // With collector drones in the level a defeated enemy also leaves loot worth half its reward.
+        private void DropLoot(Enemy enemy)
+        {
+            if (_context.Pickups != null && _context.GlobalModifiers.CollectorDroneCount > 0)
+            {
+                _context.Pickups.Drop(enemy.Position, Mathf.CeilToInt(enemy.Reward * LootShare));
+            }
         }
 
         private void OnReachedEnd(Enemy enemy)

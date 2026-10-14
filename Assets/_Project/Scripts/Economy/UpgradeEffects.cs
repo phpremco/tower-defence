@@ -27,6 +27,9 @@ namespace Game.Economy
             float blockade = 1f;
             float heroDamage = 1f;
             float heroHealth = 1f;
+            float repairDrones = 0f;
+            float collectorDrones = 0f;
+            float droneSpeed = 1f;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
@@ -63,10 +66,19 @@ namespace Game.Economy
                     case UpgradeTarget.HeroHealth:
                         heroHealth += bonus;
                         break;
+                    case UpgradeTarget.RepairDrones:
+                        repairDrones += bonus;
+                        break;
+                    case UpgradeTarget.CollectorDrones:
+                        collectorDrones += bonus;
+                        break;
+                    case UpgradeTarget.DroneSpeed:
+                        droneSpeed += bonus;
+                        break;
                 }
             }
 
-            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth);
+            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, (int)System.Math.Round(repairDrones), (int)System.Math.Round(collectorDrones), droneSpeed);
         }
     }
 }

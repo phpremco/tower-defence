@@ -6,6 +6,8 @@
                        "Game.Combat",
                        "Game.Enemies",
                        "Game.Towers",
+                       "Game.PathObjects",
+                       "Game.Drones",
                        "Game.Hero",
                        "Game.Economy",
                        "Game.Levels",

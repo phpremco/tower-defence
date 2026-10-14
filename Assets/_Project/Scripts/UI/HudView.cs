@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Towers;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,6 +24,7 @@ namespace Game.UI
         private const float BarButtonWidth = 250f;
         private const float BarButtonHeight = 110f;
         private const float BarSpacing = 14f;
+        private const float MinBarButtonWidth = 96f;
         private const float IconSize = 76f;
         private const float TopBarHeight = 110f;
         private const float BottomBarHeight = 190f;
@@ -45,10 +48,18 @@ namespace Game.UI
         private Text _statusText;
         private Font _font;
         private TowerButton[] _towerButtons;
+        private PathObjectButton[] _pathObjectButtons;
 
         private struct TowerButton
         {
             public TowerDefinition Tower;
+            public Image Fill;
+            public Text Label;
+        }
+
+        private struct PathObjectButton
+        {
+            public PathObjectDefinition Definition;
             public Image Fill;
             public Text Label;
         }
@@ -195,6 +206,10 @@ namespace Game.UI
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             int count = _context.AllTowers.Count;
+            // Eight towers and several path objects must fit one row, so the buttons shrink as the bar fills.
+            int total = count + _context.AvailablePathObjects.Count;
+            float fitted = (ReferenceWidth - Margin * 2f - BarSpacing * Mathf.Max(0, total - 1)) / Mathf.Max(1, total);
+            float buttonWidth = Mathf.Clamp(fitted, MinBarButtonWidth, BarButtonWidth);
             _towerButtons = new TowerButton[count];
             for (int i = 0; i < count; i++)
             {
@@ -202,14 +217,37 @@ namespace Game.UI
                 Button button = UiKit.CreateButton(bar, tower.DisplayName, () => OnTowerClicked(tower));
                 button.navigation = new Navigation { mode = Navigation.Mode.None };
                 var element = button.GetComponent<LayoutElement>();
-                element.preferredWidth = BarButtonWidth;
+                element.preferredWidth = buttonWidth;
                 element.preferredHeight = BarButtonHeight;
-                button.GetComponent<RectTransform>().sizeDelta = new Vector2(BarButtonWidth, BarButtonHeight);
+                button.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonWidth, BarButtonHeight);
 
                 Text label = button.GetComponentInChildren<Text>();
                 label.resizeTextMaxSize = SmallFontSize;
                 _towerButtons[i] = new TowerButton { Tower = tower, Fill = button.GetComponent<Image>(), Label = label };
             }
+
+            IReadOnlyList<PathObjectDefinition> objects = _context.AvailablePathObjects;
+            _pathObjectButtons = new PathObjectButton[objects.Count];
+            for (int i = 0; i < objects.Count; i++)
+            {
+                PathObjectDefinition definition = objects[i];
+                Button button = UiKit.CreateButton(bar, definition.DisplayName, () => OnPathObjectClicked(definition));
+                button.navigation = new Navigation { mode = Navigation.Mode.None };
+                var element = button.GetComponent<LayoutElement>();
+                element.preferredWidth = buttonWidth;
+                element.preferredHeight = BarButtonHeight;
+                button.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonWidth, BarButtonHeight);
+
+                Text label = button.GetComponentInChildren<Text>();
+                label.resizeTextMaxSize = SmallFontSize;
+                _pathObjectButtons[i] = new PathObjectButton { Definition = definition, Fill = button.GetComponent<Image>(), Label = label };
+            }
+        }
+
+        private void OnPathObjectClicked(PathObjectDefinition definition)
+        {
+            _context.SelectPathObject(definition);
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void OnTowerClicked(TowerDefinition tower)
@@ -247,6 +285,7 @@ namespace Game.UI
             _moneyText.text = $"Money {_context.Wallet.Money}";
             _statusText.text = _context.Status;
             RefreshTowerBar();
+            RefreshPathObjects();
         }
 
         private void RefreshTowerBar()
@@ -256,11 +295,25 @@ namespace Game.UI
                 TowerButton entry = _towerButtons[i];
                 bool unlocked = _context.IsUnlocked(entry.Tower);
                 bool affordable = _context.Wallet.CanAfford(entry.Tower.BuildCost);
-                bool selected = entry.Tower == _context.SelectedTower;
+                bool selected = entry.Tower == _context.SelectedTower && _context.SelectedPathObject == null;
 
                 entry.Fill.color = !unlocked ? LockedFill : selected ? SelectedFill : NormalFill;
                 entry.Label.color = !unlocked ? Dim : affordable ? TextColor : Unaffordable;
                 entry.Label.text = unlocked ? $"{entry.Tower.DisplayName}\n{entry.Tower.BuildCost}" : $"{entry.Tower.DisplayName}\nLocked";
+            }
+        }
+
+        private void RefreshPathObjects()
+        {
+            for (int i = 0; i < _pathObjectButtons.Length; i++)
+            {
+                PathObjectButton entry = _pathObjectButtons[i];
+                bool affordable = _context.Wallet.CanAfford(entry.Definition.Cost);
+                bool selected = entry.Definition == _context.SelectedPathObject;
+
+                entry.Fill.color = selected ? SelectedFill : NormalFill;
+                entry.Label.color = affordable ? TextColor : Unaffordable;
+                entry.Label.text = $"{entry.Definition.DisplayName}\n{entry.Definition.Cost}";
             }
         }
 

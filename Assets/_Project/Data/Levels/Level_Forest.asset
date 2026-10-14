@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_Forest
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: Glowing Forest
+  _gridSize: {x: 16, y: 10}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: 975ee77db68f1e440a2d64388699b814, type: 2}
+  _camera:
+    PitchDegrees: 55
+    YawDegrees: 0
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 8}
+    - {x: 6, y: 8}
+    - {x: 6, y: 5}
+    - {x: 10, y: 5}
+    - {x: 10, y: 2}
+    - {x: 15, y: 2}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 9}
+    - {x: 15, y: 2}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 0}
+    - {x: 9, y: 5}
+    - {x: 15, y: 2}
+  - Name: Second road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 1}
+    - {x: 6, y: 1}
+    - {x: 6, y: 5}
+  _blockedCells:
+  - {x: 3, y: 6}
+  - {x: 4, y: 6}
+  - {x: 8, y: 7}
+  - {x: 9, y: 7}
+  - {x: 2, y: 3}
+  - {x: 3, y: 3}
+  - {x: 12, y: 4}
+  - {x: 13, y: 4}
+  - {x: 12, y: 0}
+  - {x: 13, y: 0}
+  - {x: 8, y: 0}
+  - {x: 14, y: 5}
+  _blockades:
+  - Cell: {x: 8, y: 5}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 10, y: 3}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _enemyHealthMultiplier: 1.05
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
+  _recipes: []
+  _pathObjects:
+  - {fileID: 11400000, guid: ad32ed5b399e7b649bb629f157969cdc, type: 2}
+  - {fileID: 11400000, guid: a45e44668f4551d47aa88a90cbcf8b62, type: 2}
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
+  _startingMoney: 180
+  _baseHealth: 20
+  _difficultyWaves:
+  - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 7fbc3ea0687952a40a2ac7df338bdec7, type: 2}
+    - {fileID: 11400000, guid: 1ac720900ab06624881fbaad9e43e89c, type: 2}
+    - {fileID: 11400000, guid: 162a9a591aaaa95459eb18499ad2abd6, type: 2}
+    - {fileID: 11400000, guid: c2492d27705b6a34ca21115613f03dfe, type: 2}
+    - {fileID: 11400000, guid: 1f888b3afff3a924b8a271e8c2fe9f43, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 82d2a3bdccb85314eb1ecf40b84ee5a0, type: 2}
+    - {fileID: 11400000, guid: 55767b3f34fd016478bcfea25bdbb765, type: 2}
+    - {fileID: 11400000, guid: 9f357e8cf632c14429b0a9ed06921ff2, type: 2}
+    - {fileID: 11400000, guid: f9f1917378e20a7428f490cad66135fd, type: 2}
+    - {fileID: 11400000, guid: 6cabfdcbe26c34f419e2c4c3ac03a34e, type: 2}
+    - {fileID: 11400000, guid: df025ac4fb9a6404c830c2b2bba334fb, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 2140e73819cd089478bd952c514e6597, type: 2}
+    - {fileID: 11400000, guid: 9d3dac3fff5b6b9438dd64f6784d2c76, type: 2}
+    - {fileID: 11400000, guid: 5108c841526dc8f459b434bcf53f9129, type: 2}
+    - {fileID: 11400000, guid: 64090bd13f40d444daf9a9e697ba685b, type: 2}
+    - {fileID: 11400000, guid: 27064dd40d961644abceed7da563ea8f, type: 2}
+    - {fileID: 11400000, guid: ff3edb8e500d0674fb9e7e88175776e7, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 9a42fcda70e464e4580d9b6cbf059ba1, type: 2}
+    - {fileID: 11400000, guid: 0b83fc7bd96dc5146b69cce727438e44, type: 2}
+    - {fileID: 11400000, guid: 0569454a15620da4e820f8bcaac133d2, type: 2}
+    - {fileID: 11400000, guid: b85cff8bfb8ae51428f2763dfdc83ffe, type: 2}
+    - {fileID: 11400000, guid: 0e9792bdae9c51c49b3912a6c64a68db, type: 2}
+    - {fileID: 11400000, guid: b58c54d774cc95a43ba7b008a206015b, type: 2}
+    - {fileID: 11400000, guid: f853b9c87d1f3484dae4d3c3747f7c89, type: 2}
+  _reward:
+    ResearchPoints: 14
+    PowerCurrency: 6
+    NewTower: {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
+    Source: 1
+    Story: Alien crystals in the forest turned out to hold a cold-field emitter. Our engineers adapted it.
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9

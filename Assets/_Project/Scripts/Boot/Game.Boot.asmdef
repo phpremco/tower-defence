@@ -8,6 +8,8 @@
                        "Game.Levels",
                        "Game.Economy",
                        "Game.Towers",
+                       "Game.PathObjects",
+                       "Game.Drones",
                        "Game.Hero",
                        "Game.Enemies",
                        "Game.UI",

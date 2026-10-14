@@ -9,6 +9,7 @@ namespace Game.Enemies
     public sealed class Enemy : MonoBehaviour, ITargetable
     {
         private const float ArrivalDistance = 0.02f;
+        private const float MinSpeedFactor = 0.1f;
 
         // One cell is kept free in front of a blockade for the hero, so enemies halt just before that cell.
         private const float BlockadeStopDistance = 1.4f;
@@ -22,6 +23,8 @@ namespace Game.Enemies
         private StructureRegistry _structures;
         private float _attackCooldown;
         private bool _active;
+        private float _slowFactor = 1f;
+        private float _slowRemaining;
 
         public EnemyDefinition Definition => _definition;
 
@@ -64,6 +67,8 @@ namespace Game.Enemies
             _registry = registry;
             _structures = structures;
             _attackCooldown = 0f;
+            _slowFactor = 1f;
+            _slowRemaining = 0f;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
             Health = new Health(definition.MaxHealth * healthMultiplier);
             Health.Died += OnDied;
@@ -74,6 +79,22 @@ namespace Game.Enemies
         }
 
         public void TakeDamage(float amount) => Health?.TakeDamage(amount);
+
+        public void ApplySlow(float speedFactor, float seconds)
+        {
+            if (!_active || seconds <= 0f)
+            {
+                return;
+            }
+
+            // The strongest slow wins, and a weaker one never shortens a stronger one that is still running.
+            if (_slowRemaining <= 0f || speedFactor <= _slowFactor)
+            {
+                _slowFactor = Mathf.Clamp(speedFactor, MinSpeedFactor, 1f);
+            }
+
+            _slowRemaining = Mathf.Max(_slowRemaining, seconds);
+        }
 
         /// <summary>Called by whoever pools this enemy when it is released.</summary>
         public void Deactivate()
@@ -102,7 +123,7 @@ namespace Game.Enemies
 
             TryAttackStructure();
 
-            float remaining = _definition.Speed * Time.deltaTime;
+            float remaining = _definition.Speed * CurrentSpeedFactor() * Time.deltaTime;
 
             while (remaining > 0f && _nextWaypoint < _waypoints.Length)
             {
@@ -137,6 +158,17 @@ namespace Game.Enemies
         }
 
         // Ground enemies cannot pass a living blockade: they stop in front of it and hit it until it falls.
+        private float CurrentSpeedFactor()
+        {
+            if (_slowRemaining <= 0f)
+            {
+                return 1f;
+            }
+
+            _slowRemaining -= Time.deltaTime;
+            return _slowFactor;
+        }
+
         private bool IsHeldByBlockade()
         {
             if (_definition.Layer != TargetLayers.Ground)

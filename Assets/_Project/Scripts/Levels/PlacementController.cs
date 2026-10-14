@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
+using Game.PathObjects;
 using Game.Platform;
 using Game.Towers;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace Game.Levels
 
         private readonly Dictionary<Vector2Int, Tower> _towers = new Dictionary<Vector2Int, Tower>();
 
+        private static readonly Vector2Int[] NeighbourSteps = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        private readonly HashSet<Vector2Int> _pathObjectCells = new HashSet<Vector2Int>();
+        private Tower _combinePartner;
         private readonly List<Tower> _blockades = new List<Tower>();
 
         private LevelContext _context;
@@ -78,6 +83,7 @@ namespace Game.Levels
             _context.UpgradeRequested.Subscribe(OnUpgrade);
             _context.RepairRequested.Subscribe(OnRepair);
             _context.SellRequested.Subscribe(OnSell);
+            _context.CombineRequested.Subscribe(OnCombine);
             Refresh();
         }
 
@@ -99,6 +105,7 @@ namespace Game.Levels
                 _context.UpgradeRequested.Unsubscribe(OnUpgrade);
                 _context.RepairRequested.Unsubscribe(OnRepair);
                 _context.SellRequested.Unsubscribe(OnSell);
+                _context.CombineRequested.Unsubscribe(OnCombine);
             }
         }
 
@@ -225,7 +232,12 @@ namespace Game.Levels
                 _context.HeroMenuPost = HeroPostAt(_cursor);
                 _cellMessage = string.Empty;
             }
-            else if (_buildGrid.CanBuild(_cursor) && _context.SelectedTower != null)
+            else if (_context.SelectedPathObject != null && CanPlacePathObject(_context.SelectedPathObject, _cursor))
+            {
+                _cellMessage = string.Empty;
+                _context.Mode = PlacementMode.Placing;
+            }
+            else if (_context.SelectedPathObject == null && _buildGrid.CanBuild(_cursor) && _context.SelectedTower != null)
             {
                 _cellMessage = string.Empty;
                 _context.Mode = PlacementMode.Placing;
@@ -288,6 +300,12 @@ namespace Game.Levels
 
         private void TryPlace()
         {
+            if (_context.SelectedPathObject != null)
+            {
+                TryPlacePathObject(_context.SelectedPathObject);
+                return;
+            }
+
             TowerDefinition definition = _context.SelectedTower;
             if (definition == null || !_buildGrid.CanBuild(_cursor) || !_context.Wallet.TrySpend(definition.BuildCost))
             {
@@ -427,16 +445,23 @@ namespace Game.Levels
             bool hasTower = _towers.TryGetValue(_cursor, out Tower hovered);
             bool placing = _context.Mode == PlacementMode.Placing;
             TowerDefinition selected = _context.SelectedTower;
-            bool valid = !hasTower && _buildGrid.CanBuild(_cursor) && selected != null && _context.Wallet.CanAfford(selected.BuildCost);
+            PathObjectDefinition pathObject = _context.SelectedPathObject;
+            bool cellFree = pathObject != null ? CanPlacePathObject(pathObject, _cursor) : _buildGrid.CanBuild(_cursor);
+            int price = pathObject != null ? pathObject.Cost : selected != null ? selected.BuildCost : 0;
+            bool valid = !hasTower && cellFree && (pathObject != null || selected != null) && _context.Wallet.CanAfford(price);
 
             _marker.gameObject.SetActive(_context.Mode != PlacementMode.TowerMenu);
-            bool cellFree = _buildGrid.CanBuild(_cursor);
             _markerRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor, MarkerEmission);
 
-            UpdateGhost(placing, selected, world);
-            UpdateRange(placing, selected, valid, hasTower, hovered, world);
+            UpdateOffer();
+            UpdateGhost(placing && pathObject == null, selected, world);
+            UpdateRange(placing, pathObject != null ? null : selected, valid, hasTower, hovered, world);
+            if (placing && pathObject != null)
+            {
+                _range.Show(world, pathObject.Radius, valid ? ValidColor : InvalidColor);
+            }
 
-            _context.Status = placing ? PlacingStatus(selected, valid) : _cellMessage;
+            _context.Status = placing ? (pathObject != null ? PathObjectStatus(pathObject, valid) : PlacingStatus(selected, valid)) : _cellMessage;
             _context.Changed.Raise();
         }
 
@@ -490,8 +515,147 @@ namespace Game.Levels
             }
         }
 
+        // Road objects need a free road cell (blockades and the hero's cells count as taken), the others a free build cell.
+        private bool CanPlacePathObject(PathObjectDefinition definition, Vector2Int cell)
+        {
+            if (_towers.ContainsKey(cell) || _pathObjectCells.Contains(cell))
+            {
+                return false;
+            }
+
+            if (definition.Placement == PathObjectPlacement.Road)
+            {
+                return _buildGrid.IsRoad(cell) && !_buildGrid.IsOccupied(cell);
+            }
+
+            return _buildGrid.CanBuild(cell);
+        }
+
+        private void TryPlacePathObject(PathObjectDefinition definition)
+        {
+            if (!CanPlacePathObject(definition, _cursor) || !_context.Wallet.TrySpend(definition.Cost))
+            {
+                return;
+            }
+
+            var go = new GameObject($"PathObject_{definition.DisplayName}");
+            go.transform.SetParent(_parent, false);
+            go.transform.position = _map.CellToWorld(_cursor);
+
+            Vector3[] road = new Vector3[0];
+            int next = 0;
+            if (definition.Kind == PathObjectKind.Roller && RoadLocator.TryLocate(_context.Level, _cursor, out Vector2Int[] waypoints, out int nextIndex))
+            {
+                road = new Vector3[waypoints.Length];
+                for (int i = 0; i < waypoints.Length; i++)
+                {
+                    road[i] = _map.CellToWorld(waypoints[i]);
+                }
+
+                next = nextIndex;
+            }
+
+            var pathObject = go.AddComponent<PathObject>();
+            pathObject.Initialize(definition, _context.Targets, road, next);
+            go.AddComponent<PathObjectView>().Initialize(pathObject);
+
+            Vector2Int cell = _cursor;
+            _pathObjectCells.Add(cell);
+            pathObject.Triggered += (position, radius) => _context.Projectiles.Burst(position, radius);
+            pathObject.Finished += finished =>
+            {
+                _pathObjectCells.Remove(cell);
+                Destroy(finished.gameObject);
+            };
+
+            _context.Mode = PlacementMode.Browsing;
+            Refresh();
+        }
+
+        private string PathObjectStatus(PathObjectDefinition definition, bool valid)
+        {
+            if (valid)
+            {
+                return $"{definition.DisplayName} ({definition.Cost})";
+            }
+
+            return CanPlacePathObject(definition, _cursor) ? "Not enough money" : "Cannot place here";
+        }
+
+        // Works out whether the selected tower has a neighbour it can be combined with, so the menu can offer it.
+        private void UpdateOffer()
+        {
+            _combinePartner = null;
+            _context.CombineOffer = null;
+            Tower selected = _context.SelectedPlacedTower;
+            if (_context.Mode != PlacementMode.TowerMenu || selected == null || selected.Definition.BlocksGroundEnemies || selected.IsWrecked)
+            {
+                return;
+            }
+
+            Vector2Int cell = _map.WorldToCell(selected.Position);
+            foreach (Vector2Int step in NeighbourSteps)
+            {
+                if (!_towers.TryGetValue(cell + step, out Tower neighbour) || neighbour.IsWrecked || neighbour.Definition.BlocksGroundEnemies)
+                {
+                    continue;
+                }
+
+                foreach (CombineRecipe recipe in _context.Level.Recipes)
+                {
+                    if (recipe.Matches(selected.Definition, neighbour.Definition))
+                    {
+                        _combinePartner = neighbour;
+                        _context.CombineOffer = recipe;
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Both towers go and one hybrid takes the selected tower's place; the value of both carries over for selling.
+        private void OnCombine()
+        {
+            Tower selected = _context.SelectedPlacedTower;
+            CombineRecipe recipe = _context.CombineOffer;
+            Tower partner = _combinePartner;
+            if (_context.Mode != PlacementMode.TowerMenu || selected == null || partner == null || recipe == null || !_context.Wallet.TrySpend(recipe.Cost))
+            {
+                return;
+            }
+
+            Vector2Int cell = _map.WorldToCell(selected.Position);
+            Vector2Int partnerCell = _map.WorldToCell(partner.Position);
+            int inherited = selected.TotalSpent + partner.TotalSpent;
+
+            RemoveTower(selected, cell, release: false);
+            RemoveTower(partner, partnerCell, release: true);
+
+            Tower hybrid = CreateTower(recipe.Result, cell, preview: false);
+            hybrid.InheritedValue = inherited;
+            _towers[cell] = hybrid;
+            CloseMenu();
+        }
+
+        private void RemoveTower(Tower tower, Vector2Int cell, bool release)
+        {
+            _towers.Remove(cell);
+            if (release)
+            {
+                _buildGrid.Release(cell);
+            }
+
+            tower.Retire();
+            Destroy(tower.gameObject);
+        }
+
         private string DescribeBlockedCell()
         {
+            if (_context.SelectedPathObject != null)
+            {
+                return _context.SelectedPathObject.Placement == PathObjectPlacement.Road ? "This goes on the road" : "This goes next to the road";
+            }
+
             if (_context.SelectedTower == null)
             {
                 return "Pick a tower first";

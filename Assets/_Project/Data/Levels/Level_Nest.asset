@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_Nest
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: The Nest
+  _gridSize: {x: 16, y: 10}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: 31488d1edfad792479ffd1d508223dd7, type: 2}
+  _camera:
+    PitchDegrees: 55
+    YawDegrees: 0
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 8}
+    - {x: 9, y: 8}
+    - {x: 9, y: 5}
+    - {x: 15, y: 5}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 9}
+    - {x: 15, y: 5}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 0}
+    - {x: 15, y: 5}
+  - Name: Second road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 2}
+    - {x: 9, y: 2}
+    - {x: 9, y: 5}
+  _blockedCells:
+  - {x: 3, y: 6}
+  - {x: 4, y: 6}
+  - {x: 3, y: 4}
+  - {x: 4, y: 4}
+  - {x: 12, y: 7}
+  - {x: 12, y: 3}
+  - {x: 13, y: 7}
+  - {x: 13, y: 3}
+  - {x: 6, y: 6}
+  - {x: 6, y: 4}
+  - {x: 14, y: 9}
+  - {x: 14, y: 1}
+  _blockades:
+  - Cell: {x: 5, y: 8}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 5, y: 2}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 12, y: 5}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _enemyHealthMultiplier: 1.4
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
+  _recipes:
+  - {fileID: 11400000, guid: 9449f9c6b50c44b4f9dc4cf1f09c17f7, type: 2}
+  - {fileID: 11400000, guid: fd150faf0c0e2584ebe22fa307823e63, type: 2}
+  - {fileID: 11400000, guid: 00b97bd8b51df4c4bb394cf0e3a38606, type: 2}
+  _pathObjects:
+  - {fileID: 11400000, guid: ad32ed5b399e7b649bb629f157969cdc, type: 2}
+  - {fileID: 11400000, guid: a45e44668f4551d47aa88a90cbcf8b62, type: 2}
+  - {fileID: 11400000, guid: 0a2ff893e70c1a249b2f79da2deca428, type: 2}
+  - {fileID: 11400000, guid: 948d439d98e313c4ca680b6505cc6396, type: 2}
+  - {fileID: 11400000, guid: 6c5ec85bf02c5f1488b5606a37bcb40a, type: 2}
+  - {fileID: 11400000, guid: ccab07459d22cf84d8fec779a85df4d6, type: 2}
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
+  _startingMoney: 270
+  _baseHealth: 20
+  _difficultyWaves:
+  - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: b3e4eee8fc00306488ad4ce7f2068805, type: 2}
+    - {fileID: 11400000, guid: 78ea81339d9595f4984e27d560eae4f2, type: 2}
+    - {fileID: 11400000, guid: 692994fd0d69f8f459fb4a5d0fd44725, type: 2}
+    - {fileID: 11400000, guid: dd7f9079a95597d499ecb2b3e20f3b0b, type: 2}
+    - {fileID: 11400000, guid: 1347ef3fac923504eaddd29c6097cbc5, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 14b635ee03f826442956efaf357cad7e, type: 2}
+    - {fileID: 11400000, guid: 6e6078fd3ebfab3459429a8ec4255119, type: 2}
+    - {fileID: 11400000, guid: 7ea8663a3c4c4f040a4ef8d5f51bff35, type: 2}
+    - {fileID: 11400000, guid: d22571226b74abc4eaf68c5112f142a6, type: 2}
+    - {fileID: 11400000, guid: cae1ed2b930206743b0957f989d13b13, type: 2}
+    - {fileID: 11400000, guid: 721e768271293aa488e26e805daadad0, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 885e18cc351f6e749adbd4a74b6eb4a6, type: 2}
+    - {fileID: 11400000, guid: e092e3f6e5dd484439107169f25a8eea, type: 2}
+    - {fileID: 11400000, guid: f8dc7117946ac4b40af7ca65620ebe6a, type: 2}
+    - {fileID: 11400000, guid: d548bdc2a0781714a88a5920f18d997c, type: 2}
+    - {fileID: 11400000, guid: 72e3c32989aa7ec4f9172afc405d30b9, type: 2}
+    - {fileID: 11400000, guid: b59cd6c644ffaaf468fdc1681ea5b29f, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: c0af1fef41bf4ca45b5b77c4dd19012a, type: 2}
+    - {fileID: 11400000, guid: 0cfbd5d1d0a48db40965ba37d5a42ce3, type: 2}
+    - {fileID: 11400000, guid: 07c7d77e0466dc54e97f5f355008f993, type: 2}
+    - {fileID: 11400000, guid: 06bbf2fe6e2a0704ba7c532ef666881e, type: 2}
+    - {fileID: 11400000, guid: 8754c5a4d932ee34a855defe88de7b33, type: 2}
+    - {fileID: 11400000, guid: 6004111460d1db547972242d9aa89f90, type: 2}
+    - {fileID: 11400000, guid: efdeaae9fea680c4890ccb0fc58f6649, type: 2}
+  _reward:
+    ResearchPoints: 30
+    PowerCurrency: 18
+    NewTower: {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+    Source: 1
+    Story: The queen's nest was powered by living coils. We took one, and with it the first hybrid designs.
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9

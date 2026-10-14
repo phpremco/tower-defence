@@ -47,12 +47,31 @@ namespace Game.Tests
         }
 
         [Test]
+        public void SecondLevelOpensAfterTheFirstIsCompleted()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+            Assert.IsFalse(CampaignRules.IsOpen(_catalog, 1, progress));
+
+            progress.MarkCompleted(_level.Id, _medium.name);
+
+            Assert.IsTrue(CampaignRules.IsOpen(_catalog, 1, progress));
+        }
+
+        [Test]
         public void NodeWithoutLevelStaysClosedEvenAfterPreviousIsCompleted()
         {
+            var catalog = ScriptableObject.CreateInstance<CampaignCatalog>();
+            var so = new SerializedObject(catalog);
+            SerializedProperty nodes = so.FindProperty("_nodes");
+            nodes.arraySize = 2;
+            nodes.GetArrayElementAtIndex(0).FindPropertyRelative("Level").objectReferenceValue = _level;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
             var progress = new ProgressService(new MemorySave(), new string[0]);
             progress.MarkCompleted(_level.Id, _medium.name);
 
-            Assert.IsFalse(CampaignRules.IsOpen(_catalog, 1, progress));
+            Assert.IsFalse(CampaignRules.IsOpen(catalog, 1, progress));
+            Object.DestroyImmediate(catalog);
         }
 
         [Test]

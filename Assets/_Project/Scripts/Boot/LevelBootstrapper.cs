@@ -115,6 +115,8 @@ namespace Game.Boot
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
+            var drones = new GameObject("Drones").AddComponent<DroneController>();
+            drones.Initialize(context, root);
             var spawner = new EnemySpawner(context, root);
 
             var controllers = new GameObject("Controllers");
@@ -126,6 +128,7 @@ namespace Game.Boot
             controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
+            controllers.AddComponent<SfxPlayer>().Initialize(context);
             var hud = controllers.AddComponent<HudView>();
             hud.Initialize(context, time, _camera);
         }

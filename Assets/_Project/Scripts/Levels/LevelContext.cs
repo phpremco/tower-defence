@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
+using Game.Drones;
 using Game.Economy;
+using Game.PathObjects;
 using Game.Hero;
 using Game.Towers;
 using UnityEngine;
@@ -105,6 +107,9 @@ namespace Game.Levels
         public GameEvent SellRequested { get; } = new GameEvent();
         public GameEvent SkipWaveRequested { get; } = new GameEvent();
 
+        /// <summary>Raised whenever an enemy is defeated, for audio and effects.</summary>
+        public GameEvent EnemyDefeated { get; } = new GameEvent();
+
         /// <summary>The commander, or null when the level has none.</summary>
         public Commander Hero { get; set; }
 
@@ -113,6 +118,21 @@ namespace Game.Levels
 
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
+
+        /// <summary>The path object that is chosen for placing, or null when towers are being placed.</summary>
+        public PathObjectDefinition SelectedPathObject { get; set; }
+
+        /// <summary>Path objects the level sells, in the order of the bar.</summary>
+        public IReadOnlyList<PathObjectDefinition> AvailablePathObjects => Level.PathObjects;
+
+        /// <summary>The recipe the selected placed tower can use with a neighbour right now, or null.</summary>
+        public CombineRecipe CombineOffer { get; set; }
+
+        /// <summary>Asks to combine the selected placed tower with its neighbour.</summary>
+        public GameEvent CombineRequested { get; } = new GameEvent();
+
+        /// <summary>Loot left by defeated enemies, for collector drones. Set once the level is built.</summary>
+        public PickupField Pickups { get; set; }
 
         /// <summary>Asks for the hero's emergency repair, which costs money.</summary>
         public GameEvent HeroRepairRequested { get; } = new GameEvent();
@@ -144,9 +164,20 @@ namespace Game.Levels
         /// <summary>Selects a tower to build. Ignored for towers that are not unlocked.</summary>
         public void SelectTower(TowerDefinition tower)
         {
-            if (tower != null && IsUnlocked(tower) && tower != SelectedTower)
+            if (tower != null && IsUnlocked(tower) && (tower != SelectedTower || SelectedPathObject != null))
             {
                 SelectedTower = tower;
+                SelectedPathObject = null;
+                Changed.Raise();
+            }
+        }
+
+        /// <summary>Selects a path object to place instead of a tower.</summary>
+        public void SelectPathObject(PathObjectDefinition definition)
+        {
+            if (definition != null && definition != SelectedPathObject)
+            {
+                SelectedPathObject = definition;
                 Changed.Raise();
             }
         }

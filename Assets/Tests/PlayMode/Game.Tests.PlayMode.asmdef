@@ -5,6 +5,10 @@
                        "Game.Core",
                        "Game.Levels",
                        "Game.Hero",
+                       "Game.Towers",
+                       "Game.Combat",
+                       "Game.PathObjects",
+                       "Game.Drones",
                        "Game.Economy",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
@@ -29,3 +33,4 @@
                        ],
     "noEngineReferences":  false
 }
+

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using Game.Boot;
 using Game.Core;
+using Game.Drones;
 using Game.Economy;
 using Game.Enemies;
 using Game.Hero;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Towers;
 using Game.UI;
 using UnityEditor;
@@ -21,7 +23,7 @@ namespace Game.Editor
     /// Generates the data assets and scenes for the first playable level. Safe to run repeatedly:
     /// existing assets are reused (and their values refreshed) and scenes are rebuilt in place.
     /// </summary>
-    public static class ProjectGenerator
+    public static partial class ProjectGenerator
     {
         private const string DataRoot = "Assets/_Project/Data";
         private const string ScenesFolder = "Assets/_Project/Scenes";
@@ -56,6 +58,9 @@ namespace Game.Editor
             EnemyDefinition grunt = CreateEnemy("Grunt", TargetLayers.Ground, 50f, 2f, 8, 2, new Color(0.85f, 0.25f, 0.15f), 0.6f, blockadeDamage: 5f);
             EnemyDefinition brute = CreateEnemy("Brute", TargetLayers.Ground, 250f, 1.2f, 25, 5, new Color(0.55f, 0.1f, 0.15f), 0.95f, blockadeDamage: 20f);
             EnemyDefinition flyer = CreateEnemy("Flyer", TargetLayers.Air, 30f, 2.5f, 10, 2, new Color(0.5f, 0.9f, 0.3f), 0.5f, 6f);
+            EnemyDefinition overseer = CreateEnemy("Overseer", TargetLayers.Ground, 500f, 1f, 120, 8, new Color(0.7f, 0.3f, 0.9f), 1.3f, blockadeDamage: 40f);
+            EnemyDefinition warden = CreateEnemy("Warden", TargetLayers.Ground, 1600f, 0.9f, 250, 12, new Color(0.8f, 0.65f, 0.2f), 1.6f, blockadeDamage: 70f);
+            EnemyDefinition queen = CreateEnemy("HiveQueen", TargetLayers.Ground, 2500f, 0.8f, 500, 20, new Color(0.6f, 0.05f, 0.1f), 2f, blockadeDamage: 120f);
 
             var difficulties = new[]
             {
@@ -71,7 +76,7 @@ namespace Game.Editor
                 waveSets.Add(new DifficultyWaves
                 {
                     Difficulty = difficulties[d],
-                    Waves = CreateWaves(DifficultyNames[d], d == 0 ? 5 : d == 3 ? 7 : 6, scout, grunt, brute, flyer),
+                    Waves = CreateWaves("Landing", DifficultyNames[d], d == 0 ? 5 : d == 3 ? 7 : 6, scout, grunt, brute, flyer, 1f, null, -1),
                 });
             }
 
@@ -87,6 +92,29 @@ namespace Game.Editor
             heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
             heroProps.ApplyModifiedPropertiesWithoutUndo();
             ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
+
+            Roster roster = CreateRoster(pulse, cannon, rocket);
+            PathObjectDefinition slowField = CreatePathObject("SlowField", "Slow field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 40, 1.3f, 0.5f, 0f, 0.5f, 0f, 25f, new Color(0.4f, 0.8f, 1f));
+            PathObjectDefinition mine = CreatePathObject("Mine", "Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 90f, 1f, 0f, 0f, new Color(1f, 0.3f, 0.2f));
+            PathObjectDefinition lavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f));
+            PathObjectDefinition barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 140f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f));
+            PathObjectDefinition groundDrone = CreatePathObject("GroundDrone", "Drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f));
+            PathObjectDefinition antiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f));
+            DroneDefinition repairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 8f, new Color(0.4f, 0.9f, 1f));
+            DroneDefinition collectorDrone = CreateDrone("CollectorDrone", "Collector drone", DroneKind.Collector, 4f, 30f, 0f, new Color(1f, 0.9f, 0.3f));
+            CombineRecipe[] recipes =
+            {
+                CreateRecipe("Artillery", roster.Cannon, roster.Rocket, roster.Artillery, 150),
+                CreateRecipe("StormRifle", roster.Pulse, roster.Tesla, roster.StormRifle, 120),
+                CreateRecipe("CryoBeam", roster.Laser, roster.Cryo, roster.CryoBeam, 140),
+            };
+            ConfigureLevelExtras(level, new[] { slowField }, new CombineRecipe[0], repairDrone, collectorDrone);
+            LevelDefinition[] worldLevels = CreateWorldLevels(
+                level, roster, difficulties, scout, grunt, brute, flyer, overseer, warden, queen, blockade, hero,
+                slowField, mine, lavaBall, barrel, groundDrone, antiAir, recipes, repairDrone, collectorDrone);
+            var allLevels = new LevelDefinition[worldLevels.Length + 1];
+            allLevels[0] = level;
+            worldLevels.CopyTo(allLevels, 1);
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
@@ -104,10 +132,13 @@ namespace Game.Editor
             SetModel(grunt, "alien", 1.2f);
             SetModel(brute, "alien", 1.9f);
             SetModel(flyer, "craft_speederA", 0.5f);
+            SetModel(overseer, "alien", 2.6f);
+            SetModel(warden, "alien", 3.2f);
+            SetModel(queen, "alien", 4.2f);
 
-            UpgradeCatalog upgradeCatalog = CreateUpgrades(pulse, cannon, rocket);
+            UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard);
             UiSkin skin = CreateSkin();
-            CampaignCatalog campaign = CreateCampaign(level, difficulties);
+            CampaignCatalog campaign = CreateCampaign(allLevels, difficulties);
 
             CreateBootScene(campaign, upgradeCatalog, unlocks, debug, skin);
             CreateLevelScene();
@@ -150,11 +181,16 @@ namespace Game.Editor
         private static TowerLevel Lvl(int cost, float damage, float range, float interval, float healthBonus = 0f) =>
             new TowerLevel { Cost = cost, Damage = damage, Range = range, FireInterval = interval, HealthBonus = healthBonus };
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
             so.FindProperty("_blocksGroundEnemies").boolValue = blocksGround;
+            so.FindProperty("_slowFactor").floatValue = slowFactor;
+            so.FindProperty("_slowSeconds").floatValue = slowSeconds;
+            so.FindProperty("_isSupport").boolValue = support;
+            so.FindProperty("_supportRangeBonus").floatValue = rangeBonus;
+            so.FindProperty("_supportRateBonus").floatValue = rateBonus;
             so.FindProperty("_displayName").stringValue = displayName;
             so.FindProperty("_targets").intValue = (int)targets;
             so.FindProperty("_projectileSpeed").floatValue = projectileSpeed;
@@ -209,7 +245,17 @@ namespace Game.Editor
             return profile;
         }
 
-        private static WaveDefinition[] CreateWaves(string difficultyName, int count, EnemyDefinition scout, EnemyDefinition grunt, EnemyDefinition brute, EnemyDefinition flyer)
+        private static WaveDefinition[] CreateWaves(
+            string levelKey,
+            string difficultyName,
+            int count,
+            EnemyDefinition scout,
+            EnemyDefinition grunt,
+            EnemyDefinition brute,
+            EnemyDefinition flyer,
+            float countScale,
+            EnemyDefinition boss,
+            int secondRoad)
         {
             // Level 1 teaches the game: ground waves first, the first flyers only from wave 5.
             var templates = new List<SpawnGroup[]>
@@ -225,11 +271,11 @@ namespace Game.Editor
             var waves = new WaveDefinition[count];
             for (int i = 0; i < count; i++)
             {
-                var wave = LoadOrCreate<WaveDefinition>($"{DataRoot}/Waves/Landing_{difficultyName}_{i + 1}.asset");
+                var wave = LoadOrCreate<WaveDefinition>($"{DataRoot}/Waves/{levelKey}_{difficultyName}_{i + 1}.asset");
                 var so = new SerializedObject(wave);
                 so.FindProperty("_startDelay").floatValue = i == 0 ? 10f : 8f;
                 SerializedProperty groups = so.FindProperty("_groups");
-                SpawnGroup[] template = templates[i];
+                SpawnGroup[] template = ScaleTemplate(templates[i], countScale, secondRoad, i == count - 1 ? boss : null);
                 groups.arraySize = template.Length;
                 for (int g = 0; g < template.Length; g++)
                 {
@@ -247,6 +293,33 @@ namespace Game.Editor
 
             return waves;
         }
+
+        private static SpawnGroup[] ScaleTemplate(SpawnGroup[] source, float scale, int secondRoad, EnemyDefinition boss)
+        {
+            var result = new List<SpawnGroup>();
+            for (int i = 0; i < source.Length; i++)
+            {
+                SpawnGroup group = source[i];
+                group.Count = Mathf.Max(1, Mathf.RoundToInt(group.Count * scale));
+
+                // Every other ground group takes the second entrance, so both roads see traffic in every wave.
+                if (secondRoad >= 0 && group.Enemy.Layer == TargetLayers.Ground && i % 2 == 1)
+                {
+                    group.PathIndex = secondRoad;
+                }
+
+                result.Add(group);
+            }
+
+            if (boss != null)
+            {
+                result.Add(new SpawnGroup { Enemy = boss, Count = 1, Interval = 1f, Delay = BossDelaySeconds, PathIndex = Road });
+            }
+
+            return result.ToArray();
+        }
+
+        private const float BossDelaySeconds = 14f;
 
         private const int Road = 0;
         private const int NorthAirRoute = 1;
@@ -363,10 +436,27 @@ namespace Game.Editor
         // Landing Zone palette: grey and blue on an open plain, glowing cyan accents.
         private static void ConfigureTheme(VisualTheme theme)
         {
+            ConfigureThemePalette(theme, new Palette
+            {
+                Background = new Color(0.02f, 0.03f, 0.06f),
+                Ground = new Color(0.16f, 0.26f, 0.4f),
+                Path = new Color(0.55f, 0.8f, 1f),
+                Slot = new Color(0.2f, 0.55f, 1f),
+                Base = new Color(0.3f, 0.85f, 1f),
+                Light = new Color(0.75f, 0.85f, 1f),
+                LightIntensity = 1.1f,
+                Fog = new Color(0.03f, 0.04f, 0.08f),
+                FogDensity = 0.01f,
+                Bloom = 1.2f,
+            });
+        }
+
+        private static void ConfigureThemePalette(VisualTheme theme, Palette p)
+        {
             var so = new SerializedObject(theme);
-            so.FindProperty("_backgroundColor").colorValue = new Color(0.02f, 0.03f, 0.06f);
-            so.FindProperty("_groundColor").colorValue = new Color(0.16f, 0.26f, 0.4f);
-            so.FindProperty("_pathColor").colorValue = new Color(0.55f, 0.8f, 1f);
+            so.FindProperty("_backgroundColor").colorValue = p.Background;
+            so.FindProperty("_groundColor").colorValue = p.Ground;
+            so.FindProperty("_pathColor").colorValue = p.Path;
             so.FindProperty("_groundTile").objectReferenceValue = Model("terrain");
             so.FindProperty("_roadStraight").objectReferenceValue = Model("terrain_roadStraight");
             so.FindProperty("_roadCorner").objectReferenceValue = Model("terrain_roadCorner");
@@ -376,13 +466,13 @@ namespace Game.Editor
             so.FindProperty("_spawnModel").objectReferenceValue = Model("gate_simple");
             SetObjects(so.FindProperty("_blockedProps"), "rock_largeA", "rock_largeB", "rock_crystals", "meteor");
             SetObjects(so.FindProperty("_scenery"), "rocks_smallA", "rocks_smallB", "crater", "craterLarge", "rock_crystalsLargeA", "rock_largeA", "meteor");
-            so.FindProperty("_slotColor").colorValue = new Color(0.2f, 0.55f, 1f);
-            so.FindProperty("_baseColor").colorValue = new Color(0.3f, 0.85f, 1f);
-            so.FindProperty("_lightColor").colorValue = new Color(0.75f, 0.85f, 1f);
-            so.FindProperty("_lightIntensity").floatValue = 1.1f;
-            so.FindProperty("_fogColor").colorValue = new Color(0.03f, 0.04f, 0.08f);
-            so.FindProperty("_fogDensity").floatValue = 0.01f;
-            so.FindProperty("_bloomIntensity").floatValue = 1.2f;
+            so.FindProperty("_slotColor").colorValue = p.Slot;
+            so.FindProperty("_baseColor").colorValue = p.Base;
+            so.FindProperty("_lightColor").colorValue = p.Light;
+            so.FindProperty("_lightIntensity").floatValue = p.LightIntensity;
+            so.FindProperty("_fogColor").colorValue = p.Fog;
+            so.FindProperty("_fogDensity").floatValue = p.FogDensity;
+            so.FindProperty("_bloomIntensity").floatValue = p.Bloom;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -449,8 +539,15 @@ namespace Game.Editor
             all.Add(CreateUpgrade("BaseHealth", "Base armour +5 HP per level", UpgradeTarget.BaseHealth, new[] { 4, 8, 12 }, 5f, string.Empty, "Base"));
             all.Add(CreateUpgrade("BlockadeHealth", "Blockade strength +20% per level", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f, string.Empty, "Base"));
 
-            all.Add(CreateUpgrade("Hero_Damage", "Blade damage +15% per level", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Hero"));
-            all.Add(CreateUpgrade("Hero_Health", "Armour +20% per level", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Hero"));
+            const string HeroText = "Improvements for your commander";
+            all.Add(CreateUpgrade("Hero_Damage", "Blade damage +15% per level", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Hero", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Health", "Armour +20% per level", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Hero", UpgradeCurrency.ResearchPoints, HeroText));
+
+            // Drones are paid in power currency. One level is one more drone, up to three repair and two collector drones.
+            const string DroneText = "Drones work on their own: repair damaged defences and collect loot. Paid in power currency.";
+            all.Add(CreateUpgrade("Drone_Repair", "Repair drone: one more per level", UpgradeTarget.RepairDrones, new[] { 3, 6, 10 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
+            all.Add(CreateUpgrade("Drone_Collector", "Collector drone: one more per level", UpgradeTarget.CollectorDrones, new[] { 4, 8 }, 1f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
+            all.Add(CreateUpgrade("Drone_Speed", "Drone speed +25% per level", UpgradeTarget.DroneSpeed, new[] { 4, 8, 12 }, 0.25f, string.Empty, "Drones", UpgradeCurrency.PowerCurrency, DroneText));
 
             var catalog = LoadOrCreate<UpgradeCatalog>($"{DataRoot}/Upgrades/UpgradeCatalog.asset");
             var so = new SerializedObject(catalog);
@@ -464,7 +561,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             return catalog;
         }
-        private static UpgradeDefinition CreateUpgrade(string id, string displayName, UpgradeTarget target, int[] costs, float bonus, string towerId, string groupName)
+        private static UpgradeDefinition CreateUpgrade(string id, string displayName, UpgradeTarget target, int[] costs, float bonus, string towerId, string groupName, UpgradeCurrency currency = UpgradeCurrency.ResearchPoints, string description = "")
         {
             var upgrade = LoadOrCreate<UpgradeDefinition>($"{DataRoot}/Upgrades/{id}.asset");
             var so = new SerializedObject(upgrade);
@@ -473,6 +570,8 @@ namespace Game.Editor
             so.FindProperty("_bonusPerLevel").floatValue = bonus;
             so.FindProperty("_towerId").stringValue = towerId;
             so.FindProperty("_groupName").stringValue = groupName;
+            so.FindProperty("_currency").enumValueIndex = (int)currency;
+            so.FindProperty("_groupDescription").stringValue = description;
             SerializedProperty array = so.FindProperty("_costs");
             array.arraySize = costs.Length;
             for (int i = 0; i < costs.Length; i++)
@@ -484,18 +583,18 @@ namespace Game.Editor
             return upgrade;
         }
 
-        private static CampaignCatalog CreateCampaign(LevelDefinition level, DifficultyProfile[] difficulties)
+        private static CampaignCatalog CreateCampaign(LevelDefinition[] levels, DifficultyProfile[] difficulties)
         {
             var catalog = LoadOrCreate<CampaignCatalog>($"{DataRoot}/Levels/CampaignCatalog.asset");
             var so = new SerializedObject(catalog);
 
             var nodes = new (string Name, Vector2 Position, LevelDefinition Level)[]
             {
-                ("Landing Zone", new Vector2(0.1f, 0.25f), level),
-                ("Glowing Forest", new Vector2(0.3f, 0.7f), null),
-                ("Lava Caves", new Vector2(0.5f, 0.3f), null),
-                ("Ancient Ruins", new Vector2(0.7f, 0.75f), null),
-                ("The Nest", new Vector2(0.9f, 0.35f), null),
+                ("Landing Zone", new Vector2(0.1f, 0.25f), levels[0]),
+                ("Glowing Forest", new Vector2(0.3f, 0.7f), levels[1]),
+                ("Lava Caves", new Vector2(0.5f, 0.3f), levels[2]),
+                ("Ancient Ruins", new Vector2(0.7f, 0.75f), levels[3]),
+                ("The Nest", new Vector2(0.9f, 0.35f), levels[4]),
             };
 
             SerializedProperty nodeArray = so.FindProperty("_nodes");

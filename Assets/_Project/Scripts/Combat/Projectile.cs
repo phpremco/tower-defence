@@ -20,6 +20,8 @@ namespace Game.Combat
         private float _speed;
         private float _splashRadius;
         private TargetLayers _mask;
+        private float _slowFactor = 1f;
+        private float _slowSeconds;
 
         /// <summary>Raised when the projectile lands: world position and splash radius (zero for single target).</summary>
         public event Action<Vector3, float> Impacted;
@@ -32,7 +34,9 @@ namespace Game.Combat
             float splashRadius,
             TargetLayers mask,
             TargetRegistry registry,
-            Action<Projectile> release)
+            Action<Projectile> release,
+            float slowFactor = 1f,
+            float slowSeconds = 0f)
         {
             transform.position = from;
             var trail = GetComponent<TrailRenderer>();
@@ -49,6 +53,8 @@ namespace Game.Combat
             _mask = mask;
             _registry = registry;
             _release = release;
+            _slowFactor = slowFactor;
+            _slowSeconds = slowSeconds;
         }
 
         private void Update()
@@ -78,11 +84,13 @@ namespace Game.Combat
                 for (int i = 0; i < _splashTargets.Count; i++)
                 {
                     _splashTargets[i].TakeDamage(_damage);
+                    _splashTargets[i].ApplySlow(_slowFactor, _slowSeconds);
                 }
             }
             else if (_target != null && _target.IsAlive)
             {
                 _target.TakeDamage(_damage);
+                _target.ApplySlow(_slowFactor, _slowSeconds);
             }
 
             Impacted?.Invoke(_lastTargetPosition, _splashRadius);

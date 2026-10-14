@@ -20,11 +20,18 @@ namespace Game.Combat
             _flashes = new ObjectPool<ImpactFlash>(CreateFlash, f => f.gameObject.SetActive(true), f => f.gameObject.SetActive(false));
         }
 
-        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask)
+        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f)
         {
             Projectile projectile = _pool.Get();
-            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release);
+            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds);
+            Shot?.Invoke(from);
         }
+
+        /// <summary>Raised with the muzzle position whenever something fires, so audio can react.</summary>
+        public event System.Action<Vector3> Shot;
+
+        /// <summary>Plays the impact flash alone, for explosions that are not projectiles, such as a dying enemy.</summary>
+        public void Burst(Vector3 position, float radius) => _flashes.Get().Show(position, radius, _flashes.Release);
 
         private Projectile Create()
         {
@@ -36,8 +43,16 @@ namespace Game.Combat
             return projectile;
         }
 
+        /// <summary>Raised with position and radius when a splash projectile lands, so audio can react.</summary>
+        public event System.Action<Vector3, float> Exploded;
+
         private void OnImpact(Vector3 position, float radius)
         {
+            if (radius > 0f)
+            {
+                Exploded?.Invoke(position, radius);
+            }
+
             _flashes.Get().Show(position, radius, _flashes.Release);
         }
 

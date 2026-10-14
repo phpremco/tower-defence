@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
+  m_Name: Artillery
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
+  _displayName: Artillery
+  _targets: 3
+  _levels:
+  - Cost: 0
+    Damage: 60
+    Range: 4.6
+    FireInterval: 1.6
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 120
+    Damage: 90
+    Range: 5
+    FireInterval: 1.4
+    HealthBonus: 0
+    Model: {fileID: 0}
+  - Cost: 180
+    Damage: 130
+    Range: 5.4
+    FireInterval: 1.2
+    HealthBonus: 0
+    Model: {fileID: 0}
+  _projectileSpeed: 8
+  _splashRadius: 1.8
+  _maxHealth: 140
+  _sellRefundFraction: 0.7
+  _scrapFraction: 0.3
+  _repairCostPerHealth: 0.4
+  _damagedPowerFloor: 0.5
+  _slowFactor: 1
+  _slowSeconds: 0
+  _isSupport: 0
+  _supportRangeBonus: 0
+  _supportRateBonus: 0
+  _blocksGroundEnemies: 0
+  _color: {r: 1, g: 0.6, b: 0.2, a: 1}
+  _model: {fileID: 919132149155446097, guid: e6d5134f3eacf474489bde12aad2880a, type: 3}
+  _modelScale: 1.7
+  _keepModelColours: 0

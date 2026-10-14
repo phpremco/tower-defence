@@ -16,6 +16,7 @@ namespace Game.UI
         Check,
         Hero,
         Shockwave,
+        Combine,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -67,6 +68,9 @@ namespace Game.UI
                 case IconType.Hero:
                     // A shield: a flat top that narrows to a point.
                     return (u, v) => (v > 0.5f && v < 0.86f && Mathf.Abs(u - 0.5f) < 0.3f) || Triangle(u, v, 0.2f, 0.5f, 0.8f, 0.5f, 0.5f, 0.1f);
+                case IconType.Combine:
+                    // Two circles that overlap, joined in the middle.
+                    return (u, v) => Mathf.Sqrt((u - 0.33f) * (u - 0.33f) + (v - 0.5f) * (v - 0.5f)) < 0.24f || Mathf.Sqrt((u - 0.67f) * (u - 0.67f) + (v - 0.5f) * (v - 0.5f)) < 0.24f;
                 case IconType.Shockwave:
                     return (u, v) =>
                     {
