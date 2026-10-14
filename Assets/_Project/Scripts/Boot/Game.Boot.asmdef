@@ -3,8 +3,13 @@
     "rootNamespace":  "Game.Boot",
     "references":  [
                        "Game.Core",
+                       "Game.Combat",
                        "Game.Platform",
                        "Game.Levels",
+                       "Game.Economy",
+                       "Game.Towers",
+                       "Game.Enemies",
+                       "Game.UI",
                        "Unity.InputSystem"
                    ],
     "includePlatforms":  [

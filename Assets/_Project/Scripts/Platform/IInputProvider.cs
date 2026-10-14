@@ -16,5 +16,9 @@ namespace Game.Platform
         event Action Cancelled;
         event Action PauseToggled;
         event Action SpeedToggled;
+        event Action NextTower;
+        event Action PreviousTower;
+        event Action SkipWave;
     }
 }
+

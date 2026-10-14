@@ -3,6 +3,10 @@
     "rootNamespace":  "Game.Tests",
     "references":  [
                        "Game.Core",
+                       "Game.Combat",
+                       "Game.Enemies",
+                       "Game.Towers",
+                       "Game.Economy",
                        "Game.Levels",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"

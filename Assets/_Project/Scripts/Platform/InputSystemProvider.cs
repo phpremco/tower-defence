@@ -14,6 +14,9 @@ namespace Game.Platform
         private const string CancelAction = "Cancel";
         private const string PauseAction = "Pause";
         private const string SpeedAction = "Speed";
+        private const string NextTowerAction = "NextTower";
+        private const string PreviousTowerAction = "PreviousTower";
+        private const string SkipWaveAction = "SkipWave";
 
         private readonly InputActionMap _map;
         private readonly InputAction _move;
@@ -22,6 +25,9 @@ namespace Game.Platform
         private readonly InputAction _cancel;
         private readonly InputAction _pause;
         private readonly InputAction _speed;
+        private readonly InputAction _nextTower;
+        private readonly InputAction _previousTower;
+        private readonly InputAction _skipWave;
 
         public InputSystemProvider(InputActionAsset asset)
         {
@@ -32,11 +38,17 @@ namespace Game.Platform
             _cancel = _map.FindAction(CancelAction, true);
             _pause = _map.FindAction(PauseAction, true);
             _speed = _map.FindAction(SpeedAction, true);
+            _nextTower = _map.FindAction(NextTowerAction, true);
+            _previousTower = _map.FindAction(PreviousTowerAction, true);
+            _skipWave = _map.FindAction(SkipWaveAction, true);
 
             _confirm.performed += OnConfirm;
             _cancel.performed += OnCancel;
             _pause.performed += OnPause;
             _speed.performed += OnSpeed;
+            _nextTower.performed += OnNextTower;
+            _previousTower.performed += OnPreviousTower;
+            _skipWave.performed += OnSkipWave;
             _map.Enable();
         }
 
@@ -48,6 +60,9 @@ namespace Game.Platform
         public event Action Cancelled;
         public event Action PauseToggled;
         public event Action SpeedToggled;
+        public event Action NextTower;
+        public event Action PreviousTower;
+        public event Action SkipWave;
 
         public void Dispose()
         {
@@ -55,6 +70,9 @@ namespace Game.Platform
             _cancel.performed -= OnCancel;
             _pause.performed -= OnPause;
             _speed.performed -= OnSpeed;
+            _nextTower.performed -= OnNextTower;
+            _previousTower.performed -= OnPreviousTower;
+            _skipWave.performed -= OnSkipWave;
             _map.Disable();
         }
 
@@ -65,5 +83,12 @@ namespace Game.Platform
         private void OnPause(InputAction.CallbackContext _) => PauseToggled?.Invoke();
 
         private void OnSpeed(InputAction.CallbackContext _) => SpeedToggled?.Invoke();
+
+        private void OnNextTower(InputAction.CallbackContext _) => NextTower?.Invoke();
+
+        private void OnPreviousTower(InputAction.CallbackContext _) => PreviousTower?.Invoke();
+
+        private void OnSkipWave(InputAction.CallbackContext _) => SkipWave?.Invoke();
     }
 }
+
