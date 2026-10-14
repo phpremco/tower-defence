@@ -1,5 +1,6 @@
 ﻿using System;
 using Game.Combat;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Towers
@@ -10,6 +11,7 @@ namespace Game.Towers
         private TowerDefinition _definition;
         private TargetRegistry _registry;
         private ProjectilePool _projectiles;
+        private PlayerModifiers _modifiers;
         private float _cooldown;
 
         public TowerDefinition Definition => _definition;
@@ -26,11 +28,12 @@ namespace Game.Towers
         /// <summary>Raised with the world position of the target whenever the tower fires.</summary>
         public event Action<Vector3> Fired;
 
-        public void Initialize(TowerDefinition definition, TargetRegistry registry, ProjectilePool projectiles)
+        public void Initialize(TowerDefinition definition, TargetRegistry registry, ProjectilePool projectiles, PlayerModifiers modifiers)
         {
             _definition = definition;
             _registry = registry;
             _projectiles = projectiles;
+            _modifiers = modifiers;
             LevelIndex = 0;
             LevelChanged?.Invoke(this);
         }
@@ -55,15 +58,16 @@ namespace Game.Towers
             }
 
             TowerLevel level = _definition.GetLevel(LevelIndex);
-            ITargetable target = _registry.FindBest(transform.position, level.Range, _definition.Targets);
+            ITargetable target = _registry.FindBest(transform.position, level.Range * _modifiers.TowerRangeMultiplier, _definition.Targets);
             if (target == null)
             {
                 return;
             }
 
-            _projectiles.Fire(transform.position + Vector3.up, target, level.Damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets);
+            _projectiles.Fire(transform.position + Vector3.up, target, level.Damage * _modifiers.TowerDamageMultiplier, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets);
             Fired?.Invoke(target.Position);
             _cooldown = level.FireInterval;
         }
     }
 }
+

@@ -79,11 +79,12 @@ namespace Game.Boot
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
             bool skipAllowed = debug != null && debug.AllowSkipWave;
 
-            Services.TryGet(out UnlockState unlocks);
+            ProgressService progress = Services.Get<ProgressService>();
+            PlayerModifiers modifiers = UpgradeEffects.Compute(progress, Services.Get<UpgradeCatalog>());
             var towers = new List<TowerDefinition>();
             foreach (TowerDefinition tower in level.AvailableTowers)
             {
-                if (unlockAll || (unlocks != null && unlocks.IsTowerUnlocked(tower.Id)))
+                if (unlockAll || progress.IsTowerUnlocked(tower.Id))
                 {
                     towers.Add(tower);
                 }
@@ -93,8 +94,8 @@ namespace Game.Boot
             var targets = new TargetRegistry();
             var projectiles = new ProjectilePool(targets, root);
             var wallet = new Wallet(level.StartingMoney, infiniteMoney);
-            var baseHealth = new Health(level.BaseHealth);
-            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, projectiles, towers, waves.Length);
+            var baseHealth = new Health(level.BaseHealth + modifiers.BaseHealthBonus);
+            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, projectiles, towers, modifiers, waves.Length);
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
@@ -102,7 +103,7 @@ namespace Game.Boot
 
             var controllers = new GameObject("Controllers");
             var levelController = controllers.AddComponent<LevelController>();
-            levelController.Initialize(context, waves, spawner, input, skipAllowed);
+            levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
             var time = controllers.AddComponent<TimeController>();
@@ -112,5 +113,6 @@ namespace Game.Boot
         }
     }
 }
+
 
 

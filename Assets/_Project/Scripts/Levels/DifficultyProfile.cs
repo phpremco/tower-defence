@@ -11,6 +11,7 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _countMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _spawnIntervalMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _rewardMultiplier = 1f;
+        [SerializeField] [Min(0f)] private float _powerCurrencyMultiplier = 1f;
 
         public string DisplayName => _displayName;
         public float HealthMultiplier => _healthMultiplier;
@@ -19,5 +20,9 @@ namespace Game.Levels
 
         /// <summary>Scales kill rewards. Higher difficulties pay more so levels are worth replaying.</summary>
         public float RewardMultiplier => _rewardMultiplier;
+
+        /// <summary>Scales the power currency reward. Zero on easy, so drones need harder difficulties.</summary>
+        public float PowerCurrencyMultiplier => _powerCurrencyMultiplier;
     }
 }
+

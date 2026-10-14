@@ -4,6 +4,7 @@
     "references":  [
                        "Game.Core",
                        "Game.Levels",
+                       "Game.Economy",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
                    ],

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
+using Game.Economy;
 using Game.Enemies;
 using Game.Platform;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace Game.Levels
 {
-    /// <summary>Runs the wave timeline and decides win or loss. Restarts the game from Boot once the level has ended.</summary>
+    /// <summary>Runs the wave timeline, decides win or loss and hands out the reward. After the level, confirm leads to the upgrade screen (win) or the map (loss).</summary>
     public sealed class LevelController : MonoBehaviour
     {
         private readonly List<EnemyDefinition> _due = new List<EnemyDefinition>();
@@ -19,14 +20,16 @@ namespace Game.Levels
         private WaveScheduler _scheduler;
         private int _nextWaveIndex;
         private bool _skipAllowed;
+        private ProgressService _progress;
 
-        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, bool skipAllowed)
+        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, bool skipAllowed)
         {
             _context = context;
             _waves = waves;
             _spawner = spawner;
             _input = input;
             _skipAllowed = skipAllowed;
+            _progress = progress;
 
             _context.NextWaveCountdown = waves[0].StartDelay;
             _context.BaseHealth.Died += OnBaseDied;
@@ -123,6 +126,8 @@ namespace Game.Levels
             }
 
             _context.Outcome = outcome;
+            _context.Result = RewardCalculator.Compute(_context.Level, _context.Difficulty, _progress, outcome == LevelOutcome.Won);
+            RewardCalculator.Apply(_context.Result, _context.Level, _context.Difficulty, _progress);
             _context.Changed.Raise();
         }
 
@@ -131,8 +136,9 @@ namespace Game.Levels
             if (_context.Outcome != LevelOutcome.Running)
             {
                 Time.timeScale = 1f;
-                SceneManager.LoadScene(SceneNames.Boot);
+                SceneManager.LoadScene(_context.Outcome == LevelOutcome.Won ? SceneNames.Base : SceneNames.WorldMap);
             }
         }
     }
 }
+

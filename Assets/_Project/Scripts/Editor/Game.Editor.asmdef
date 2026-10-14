@@ -9,6 +9,7 @@
                        "Game.Economy",
                        "Game.Levels",
                        "Game.Boot",
+                       "Game.UI",
                        "Unity.InputSystem"
                    ],
     "includePlatforms":  [

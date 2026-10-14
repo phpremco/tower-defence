@@ -15,7 +15,7 @@ namespace Game.UI
         private const float ReferenceWidth = 1920f;
         private const float ReferenceHeight = 1080f;
         private const int FontSize = 34;
-        private const int BigFontSize = 72;
+        private const int BigFontSize = 44;
         private const float Margin = 24f;
         private const float LineHeight = 52f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
@@ -156,17 +156,44 @@ namespace Game.UI
                 : $"{tower.Definition.DisplayName} {tower.LevelIndex + 1}/{TowerDefinition.LevelCount}: max level";
         }
 
+        private string WonLine(LevelResult result)
+        {
+            _builder.Clear();
+            _builder.Append("Victory\n");
+            _builder.Append("Research points +").Append(result.ResearchPoints);
+            if (result.PowerCurrency > 0)
+            {
+                _builder.Append("   Power +").Append(result.PowerCurrency);
+            }
+
+            if (result.NewTower != null)
+            {
+                string source = result.Source == UnlockSource.StolenAlienTech ? "stolen alien tech" : "intel from the home planet";
+                _builder.Append("\nNew weapon: ").Append(result.NewTower.DisplayName).Append(" (").Append(source).Append(")");
+                if (!string.IsNullOrEmpty(result.Story))
+                {
+                    _builder.Append("\n").Append(result.Story);
+                }
+            }
+
+            _builder.Append("\nPress confirm to continue");
+            return _builder.ToString();
+        }
+
         private string OutcomeLine()
         {
+            LevelResult result = _context.Result;
             switch (_context.Outcome)
             {
                 case LevelOutcome.Won:
-                    return "Victory\nPress confirm to restart";
+                    return WonLine(result);
                 case LevelOutcome.Lost:
-                    return "Defeat\nPress confirm to restart";
+                    return "Defeat\nPress confirm to return to the map";
                 default:
                     return string.Empty;
             }
         }
     }
 }
+
+

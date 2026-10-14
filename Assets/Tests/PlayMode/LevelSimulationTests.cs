@@ -13,11 +13,18 @@ namespace Game.Tests
     {
         private const float SimulationSpeed = 20f;
         private const float TimeoutSeconds = 60f;
+        private const int MediumDifficultyIndex = 1;
 
         [UnityTest]
         public IEnumerator Level1_WithoutTowers_IsLostWithoutErrors()
         {
             SceneManager.LoadScene(SceneNames.Boot);
+            yield return null;
+            yield return null;
+
+            var catalog = Services.Get<CampaignCatalog>();
+            Services.Register(new LevelSession(catalog.Nodes[0].Level, catalog.Difficulties[MediumDifficultyIndex]));
+            SceneManager.LoadScene(SceneNames.Level);
             yield return null;
             yield return null;
 

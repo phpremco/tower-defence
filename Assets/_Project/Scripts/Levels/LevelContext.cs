@@ -20,6 +20,7 @@ namespace Game.Levels
             TargetRegistry targets,
             ProjectilePool projectiles,
             IReadOnlyList<TowerDefinition> availableTowers,
+            PlayerModifiers modifiers,
             int waveCount)
         {
             Level = level;
@@ -29,6 +30,7 @@ namespace Game.Levels
             Targets = targets;
             Projectiles = projectiles;
             AvailableTowers = availableTowers;
+            Modifiers = modifiers;
             WaveCount = waveCount;
         }
 
@@ -39,12 +41,16 @@ namespace Game.Levels
         public TargetRegistry Targets { get; }
         public ProjectilePool Projectiles { get; }
         public IReadOnlyList<TowerDefinition> AvailableTowers { get; }
+        public PlayerModifiers Modifiers { get; }
         public int WaveCount { get; }
 
         /// <summary>Number of the wave that started most recently, zero before the first wave.</summary>
         public int WaveNumber { get; set; }
 
         public LevelOutcome Outcome { get; set; }
+
+        /// <summary>Set once the level has ended.</summary>
+        public LevelResult Result { get; set; }
 
         public TowerDefinition SelectedTower { get; set; }
 
@@ -58,3 +64,5 @@ namespace Game.Levels
         public GameEvent Changed { get; } = new GameEvent();
     }
 }
+
+

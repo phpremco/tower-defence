@@ -22,6 +22,7 @@ namespace Game.Levels
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
         [SerializeField] private DifficultyWaves[] _difficultyWaves = new DifficultyWaves[0];
+        [SerializeField] private LevelReward _reward;
 
         public string Id => name;
         public string DisplayName => _displayName;
@@ -36,6 +37,7 @@ namespace Game.Levels
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;
         public DifficultyWaves[] DifficultyWaves => _difficultyWaves;
+        public LevelReward Reward => _reward;
 
         public GridMap Grid => new GridMap(_gridSize, _cellSize);
 
@@ -90,3 +92,4 @@ namespace Game.Levels
         }
     }
 }
+

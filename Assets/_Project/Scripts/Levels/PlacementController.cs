@@ -172,7 +172,7 @@ namespace Game.Levels
             go.transform.position = _slotPositions[_cursor];
             var tower = go.AddComponent<Tower>();
             go.AddComponent<TowerView>();
-            tower.Initialize(definition, _context.Targets, _context.Projectiles);
+            tower.Initialize(definition, _context.Targets, _context.Projectiles, _context.Modifiers);
             _towers[_cursor] = tower;
         }
 
@@ -194,3 +194,4 @@ namespace Game.Levels
         }
     }
 }
+

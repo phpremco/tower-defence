@@ -2,7 +2,8 @@
     "name":  "Game.Economy",
     "rootNamespace":  "Game.Economy",
     "references":  [
-                       "Game.Core"
+                       "Game.Core",
+                       "Game.Platform"
                    ],
     "includePlatforms":  [
 

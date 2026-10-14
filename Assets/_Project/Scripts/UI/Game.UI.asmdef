@@ -9,7 +9,8 @@
                        "Game.Towers",
                        "Game.Enemies",
                        "Game.Platform",
-                       "UnityEngine.UI"
+                       "UnityEngine.UI",
+                       "Unity.InputSystem"
                    ],
     "includePlatforms":  [
 

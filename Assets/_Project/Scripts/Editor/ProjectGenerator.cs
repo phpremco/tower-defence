@@ -6,6 +6,7 @@ using Game.Economy;
 using Game.Enemies;
 using Game.Levels;
 using Game.Towers;
+using Game.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -48,10 +49,10 @@ namespace Game.Editor
 
             var difficulties = new[]
             {
-                CreateDifficulty("Easy", 0.8f, 0.8f, 1.2f, 1f),
-                CreateDifficulty("Medium", 1f, 1f, 1f, 1.25f),
-                CreateDifficulty("Hard", 1.4f, 1.3f, 0.85f, 1.6f),
-                CreateDifficulty("Psycho", 2f, 1.7f, 0.7f, 2.5f),
+                CreateDifficulty("Easy", 0.8f, 0.8f, 1.2f, 1f, 0f),
+                CreateDifficulty("Medium", 1f, 1f, 1f, 1.25f, 0.5f),
+                CreateDifficulty("Hard", 1.4f, 1.3f, 0.85f, 1.6f, 1f),
+                CreateDifficulty("Psycho", 2f, 1.7f, 0.7f, 2.5f, 2f),
             };
 
             var waveSets = new List<DifficultyWaves>();
@@ -66,7 +67,7 @@ namespace Game.Editor
 
             VisualTheme theme = LoadOrCreate<VisualTheme>(ThemeAssetPath);
             LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
-            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets);
+            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon);
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
@@ -76,13 +77,21 @@ namespace Game.Editor
             unlockProps.ApplyModifiedPropertiesWithoutUndo();
 
             var debug = LoadOrCreate<PlaytestSettings>(DebugAssetPath);
+            UpgradeCatalog upgradeCatalog = CreateUpgrades();
+            CampaignCatalog campaign = CreateCampaign(level, difficulties);
 
-            CreateBootScene(level, difficulties[1], unlocks, debug);
+            CreateBootScene(campaign, upgradeCatalog, unlocks, debug);
             CreateLevelScene();
+            CreateMenuScene<MainMenuScreen>(SceneNames.MainMenu);
+            CreateMenuScene<WorldMapScreen>(SceneNames.WorldMap);
+            CreateMenuScene<UpgradeScreen>(SceneNames.Base);
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Boot}.unity", true),
+                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.MainMenu}.unity", true),
+                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.WorldMap}.unity", true),
                 new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Level}.unity", true),
+                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Base}.unity", true),
             };
 
             AssetDatabase.SaveAssets();
@@ -132,7 +141,7 @@ namespace Game.Editor
             return enemy;
         }
 
-        private static DifficultyProfile CreateDifficulty(string id, float health, float count, float interval, float reward)
+        private static DifficultyProfile CreateDifficulty(string id, float health, float count, float interval, float reward, float power)
         {
             var profile = LoadOrCreate<DifficultyProfile>($"{DataRoot}/Difficulty/{id}.asset");
             var so = new SerializedObject(profile);
@@ -141,6 +150,7 @@ namespace Game.Editor
             so.FindProperty("_countMultiplier").floatValue = count;
             so.FindProperty("_spawnIntervalMultiplier").floatValue = interval;
             so.FindProperty("_rewardMultiplier").floatValue = reward;
+            so.FindProperty("_powerCurrencyMultiplier").floatValue = power;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }
@@ -186,7 +196,7 @@ namespace Game.Editor
         private static SpawnGroup Group(EnemyDefinition enemy, int count, float interval, float delay) =>
             new SpawnGroup { Enemy = enemy, Count = count, Interval = interval, Delay = delay };
 
-        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets)
+        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower)
         {
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = "Landing Zone";
@@ -195,6 +205,13 @@ namespace Game.Editor
             so.FindProperty("_theme").objectReferenceValue = theme;
             so.FindProperty("_startingMoney").intValue = 150;
             so.FindProperty("_baseHealth").intValue = 20;
+
+            SerializedProperty reward = so.FindProperty("_reward");
+            reward.FindPropertyRelative("ResearchPoints").intValue = 10;
+            reward.FindPropertyRelative("PowerCurrency").intValue = 4;
+            reward.FindPropertyRelative("NewTower").objectReferenceValue = rewardTower;
+            reward.FindPropertyRelative("Source").intValue = (int)UnlockSource.HomePlanetIntel;
+            reward.FindPropertyRelative("Story").stringValue = "The home planet sent schematics for a heavy cannon.";
 
             WriteCells(so.FindProperty("_landPath"), new[]
             {
@@ -264,27 +281,108 @@ namespace Game.Editor
             return asset;
         }
 
-        private static void CreateBootScene(LevelDefinition level, DifficultyProfile difficulty, UnlockTable unlocks, PlaytestSettings debug)
+        private static UpgradeCatalog CreateUpgrades()
+        {
+            UpgradeDefinition damage = CreateUpgrade("TowerDamage", "Tower damage +10% per level", UpgradeTarget.TowerDamage, new[] { 5, 10, 15 }, 0.1f);
+            UpgradeDefinition range = CreateUpgrade("TowerRange", "Tower range +5% per level", UpgradeTarget.TowerRange, new[] { 5, 10, 15 }, 0.05f);
+            UpgradeDefinition baseHealth = CreateUpgrade("BaseHealth", "Base armour +5 HP per level", UpgradeTarget.BaseHealth, new[] { 4, 8, 12 }, 5f);
+            UpgradeDefinition blockade = CreateUpgrade("BlockadeHealth", "Blockade strength +20% per level", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f);
+
+            var catalog = LoadOrCreate<UpgradeCatalog>($"{DataRoot}/Upgrades/UpgradeCatalog.asset");
+            var so = new SerializedObject(catalog);
+            SerializedProperty list = so.FindProperty("_upgrades");
+            var all = new[] { damage, range, baseHealth, blockade };
+            list.arraySize = all.Length;
+            for (int i = 0; i < all.Length; i++)
+            {
+                list.GetArrayElementAtIndex(i).objectReferenceValue = all[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return catalog;
+        }
+
+        private static UpgradeDefinition CreateUpgrade(string id, string displayName, UpgradeTarget target, int[] costs, float bonus)
+        {
+            var upgrade = LoadOrCreate<UpgradeDefinition>($"{DataRoot}/Upgrades/{id}.asset");
+            var so = new SerializedObject(upgrade);
+            so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("_target").enumValueIndex = (int)target;
+            so.FindProperty("_bonusPerLevel").floatValue = bonus;
+            SerializedProperty array = so.FindProperty("_costs");
+            array.arraySize = costs.Length;
+            for (int i = 0; i < costs.Length; i++)
+            {
+                array.GetArrayElementAtIndex(i).intValue = costs[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return upgrade;
+        }
+
+        private static CampaignCatalog CreateCampaign(LevelDefinition level, DifficultyProfile[] difficulties)
+        {
+            var catalog = LoadOrCreate<CampaignCatalog>($"{DataRoot}/Levels/CampaignCatalog.asset");
+            var so = new SerializedObject(catalog);
+
+            var nodes = new (string Name, Vector2 Position, LevelDefinition Level)[]
+            {
+                ("Landing Zone", new Vector2(0.1f, 0.25f), level),
+                ("Glowing Forest", new Vector2(0.3f, 0.7f), null),
+                ("Lava Caves", new Vector2(0.5f, 0.3f), null),
+                ("Ancient Ruins", new Vector2(0.7f, 0.75f), null),
+                ("The Nest", new Vector2(0.9f, 0.35f), null),
+            };
+
+            SerializedProperty nodeArray = so.FindProperty("_nodes");
+            nodeArray.arraySize = nodes.Length;
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                SerializedProperty element = nodeArray.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("DisplayName").stringValue = nodes[i].Name;
+                element.FindPropertyRelative("MapPosition").vector2Value = nodes[i].Position;
+                element.FindPropertyRelative("Level").objectReferenceValue = nodes[i].Level;
+            }
+
+            SerializedProperty difficultyArray = so.FindProperty("_difficulties");
+            difficultyArray.arraySize = difficulties.Length;
+            for (int i = 0; i < difficulties.Length; i++)
+            {
+                difficultyArray.GetArrayElementAtIndex(i).objectReferenceValue = difficulties[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return catalog;
+        }
+
+        private static void CreateBootScene(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, PlaytestSettings playtest)
         {
             // NewScene unloads assets nobody references yet, so remember the paths and load them again afterwards.
-            string levelPath = AssetDatabase.GetAssetPath(level);
-            string difficultyPath = AssetDatabase.GetAssetPath(difficulty);
+            string campaignPath = AssetDatabase.GetAssetPath(campaign);
+            string upgradesPath = AssetDatabase.GetAssetPath(upgrades);
             string unlocksPath = AssetDatabase.GetAssetPath(unlocks);
-            string debugPath = AssetDatabase.GetAssetPath(debug);
+            string playtestPath = AssetDatabase.GetAssetPath(playtest);
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var go = new GameObject("Bootstrapper");
             var bootstrapper = go.AddComponent<Bootstrapper>();
             var so = new SerializedObject(bootstrapper);
             so.FindProperty("_inputActions").objectReferenceValue = AssetDatabase.LoadAssetAtPath<InputActionAsset>(InputAssetPath);
-            so.FindProperty("_startLevel").objectReferenceValue = AssetDatabase.LoadAssetAtPath<LevelDefinition>(levelPath);
-            so.FindProperty("_startDifficulty").objectReferenceValue = AssetDatabase.LoadAssetAtPath<DifficultyProfile>(difficultyPath);
+            so.FindProperty("_campaign").objectReferenceValue = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(campaignPath);
+            so.FindProperty("_upgrades").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(upgradesPath);
             so.FindProperty("_unlockTable").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UnlockTable>(unlocksPath);
-            so.FindProperty("_playtestSettings").objectReferenceValue = AssetDatabase.LoadAssetAtPath<PlaytestSettings>(debugPath);
+            so.FindProperty("_playtestSettings").objectReferenceValue = AssetDatabase.LoadAssetAtPath<PlaytestSettings>(playtestPath);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneNames.Boot}.unity");
         }
 
+        private static void CreateMenuScene<T>(string sceneName) where T : Component
+        {
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var go = new GameObject(typeof(T).Name);
+            go.AddComponent<T>();
+            EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{sceneName}.unity");
+        }
         private static void CreateLevelScene()
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -305,6 +403,7 @@ namespace Game.Editor
         }
     }
 }
+
 
 
 

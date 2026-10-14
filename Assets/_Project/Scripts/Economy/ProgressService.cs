@@ -1,0 +1,139 @@
+﻿using System;
+using System.Collections.Generic;
+using Game.Platform;
+
+namespace Game.Economy
+{
+    /// <summary>Owns the saved progress: currencies, unlocked weapons, completed levels and bought upgrades.</summary>
+    public sealed class ProgressService
+    {
+        private const string SaveKey = "progress";
+
+        private readonly ISaveService _save;
+
+        public ProgressService(ISaveService save, IEnumerable<string> startingTowerIds)
+        {
+            _save = save;
+            if (!_save.TryLoad(SaveKey, out ProgressData data) || data == null)
+            {
+                data = new ProgressData();
+            }
+
+            Data = data;
+            foreach (string id in startingTowerIds)
+            {
+                UnlockTower(id);
+            }
+        }
+
+        public ProgressData Data { get; }
+
+        public event Action Changed;
+
+        public bool IsTowerUnlocked(string towerId) => Data.UnlockedTowerIds.Contains(towerId);
+
+        /// <summary>Returns true when the tower was not unlocked before.</summary>
+        public bool UnlockTower(string towerId)
+        {
+            if (IsTowerUnlocked(towerId))
+            {
+                return false;
+            }
+
+            Data.UnlockedTowerIds.Add(towerId);
+            return true;
+        }
+
+        public bool IsCompleted(string levelId, string difficultyId) => Data.CompletedLevels.Contains(Key(levelId, difficultyId));
+
+        public bool IsLevelCompleted(string levelId)
+        {
+            string prefix = levelId + "/";
+            foreach (string entry in Data.CompletedLevels)
+            {
+                if (entry.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void MarkCompleted(string levelId, string difficultyId)
+        {
+            string key = Key(levelId, difficultyId);
+            if (!Data.CompletedLevels.Contains(key))
+            {
+                Data.CompletedLevels.Add(key);
+            }
+        }
+
+        public void AddRewards(int researchPoints, int powerCurrency)
+        {
+            Data.ResearchPoints += researchPoints;
+            Data.PowerCurrency += powerCurrency;
+        }
+
+        public int GetUpgradeLevel(string upgradeId)
+        {
+            foreach (UpgradeLevel entry in Data.Upgrades)
+            {
+                if (entry.Id == upgradeId)
+                {
+                    return entry.Level;
+                }
+            }
+
+            return 0;
+        }
+
+        public bool TryBuyUpgrade(UpgradeDefinition upgrade)
+        {
+            int level = GetUpgradeLevel(upgrade.Id);
+            if (level >= upgrade.MaxLevel)
+            {
+                return false;
+            }
+
+            int cost = upgrade.CostForNextLevel(level);
+            if (Data.ResearchPoints < cost)
+            {
+                return false;
+            }
+
+            Data.ResearchPoints -= cost;
+            SetUpgradeLevel(upgrade.Id, level + 1);
+            Save();
+            return true;
+        }
+
+        public void SetVolume(int percent)
+        {
+            Data.MasterVolumePercent = percent;
+            Save();
+        }
+
+        public void Save()
+        {
+            _save.Save(SaveKey, Data);
+            Changed?.Invoke();
+        }
+
+        private void SetUpgradeLevel(string upgradeId, int level)
+        {
+            for (int i = 0; i < Data.Upgrades.Count; i++)
+            {
+                if (Data.Upgrades[i].Id == upgradeId)
+                {
+                    Data.Upgrades[i] = new UpgradeLevel { Id = upgradeId, Level = level };
+                    return;
+                }
+            }
+
+            Data.Upgrades.Add(new UpgradeLevel { Id = upgradeId, Level = level });
+        }
+
+        private static string Key(string levelId, string difficultyId) => levelId + "/" + difficultyId;
+    }
+}
