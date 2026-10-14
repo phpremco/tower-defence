@@ -175,8 +175,11 @@ namespace Game.Levels
         {
             if (_context.Outcome != LevelOutcome.Running || _context.Paused || _context.PointerOverUi)
             {
+                Debug.Log($"[Placement] confirm ignored: outcome={_context.Outcome} paused={_context.Paused} pointerOverUi={_context.PointerOverUi}");
                 return;
             }
+
+            Debug.Log($"[Placement] confirm: mode={_context.Mode} cell={_cursor} canBuild={_buildGrid.CanBuild(_cursor)} road={_buildGrid.IsRoad(_cursor)} blocked={_buildGrid.IsBlocked(_cursor)} selected={(_context.SelectedTower != null ? _context.SelectedTower.name : "none")} money={_context.Wallet.Money}");
 
             switch (_context.Mode)
             {
@@ -249,6 +252,7 @@ namespace Game.Levels
             TowerDefinition definition = _context.SelectedTower;
             if (definition == null || !_buildGrid.CanBuild(_cursor) || !_context.Wallet.TrySpend(definition.BuildCost))
             {
+                Debug.Log($"[Placement] place refused: tower={(definition != null ? definition.name : "none")} canBuild={_buildGrid.CanBuild(_cursor)} money={_context.Wallet.Money}");
                 return;
             }
 
@@ -454,5 +458,6 @@ namespace Game.Levels
         }
     }
 }
+
 
 

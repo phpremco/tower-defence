@@ -33,6 +33,9 @@ namespace Game.UI
         private static readonly Color LockedFill = new Color(0.07f, 0.07f, 0.09f, 0.9f);
 
         private readonly StringBuilder _builder = new StringBuilder(128);
+        private readonly System.Collections.Generic.List<RaycastResult> _hits = new System.Collections.Generic.List<RaycastResult>();
+        private PointerEventData _pointerData;
+        private Game.Platform.IInputProvider _input;
 
         private LevelContext _context;
         private TimeController _time;
@@ -54,6 +57,7 @@ namespace Game.UI
         {
             _context = context;
             _time = time;
+            _input = Game.Core.Services.Get<Game.Platform.IInputProvider>();
             _font = UiKit.DefaultFont;
             UiKit.EnsureEventSystem();
 
@@ -84,10 +88,32 @@ namespace Game.UI
             _context.BaseHealth.Changed -= OnBaseChanged;
         }
 
+        // Only an interactive element (a button) under the pointer blocks the field. Plain text or backdrops never do.
         private void Update()
         {
             EventSystem current = EventSystem.current;
-            _context.PointerOverUi = current != null && current.IsPointerOverGameObject();
+            if (current == null || _input == null)
+            {
+                _context.PointerOverUi = false;
+                return;
+            }
+
+            if (_pointerData == null)
+            {
+                _pointerData = new PointerEventData(current);
+            }
+
+            _pointerData.position = _input.PointerPosition;
+            _hits.Clear();
+            current.RaycastAll(_pointerData, _hits);
+
+            bool blocked = false;
+            for (int i = 0; i < _hits.Count && !blocked; i++)
+            {
+                blocked = _hits[i].gameObject.GetComponentInParent<Selectable>() != null;
+            }
+
+            _context.PointerOverUi = blocked;
         }
 
         private void OnMoneyChanged(int _) => Refresh();
@@ -255,5 +281,6 @@ namespace Game.UI
         }
     }
 }
+
 
 
