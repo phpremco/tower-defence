@@ -6,6 +6,9 @@ namespace Game.Levels
     public sealed class LevelResult
     {
         public bool Won { get; set; }
+
+        /// <summary>One to three stars for a win, based on how much of the base was left.</summary>
+        public int Stars { get; set; }
         public int ResearchPoints { get; set; }
         public int PowerCurrency { get; set; }
         public TowerDefinition NewTower { get; set; }
@@ -13,3 +16,4 @@ namespace Game.Levels
         public string Story { get; set; }
     }
 }
+

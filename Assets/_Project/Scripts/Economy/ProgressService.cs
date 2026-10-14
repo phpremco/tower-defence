@@ -69,6 +69,40 @@ namespace Game.Economy
             }
         }
 
+        public int GetStars(string levelId, string difficultyId)
+        {
+            string key = Key(levelId, difficultyId);
+            foreach (StarRecord record in Data.Stars)
+            {
+                if (record.Key == key)
+                {
+                    return record.Stars;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>Remembers the best rating for a level and difficulty.</summary>
+        public void RecordStars(string levelId, string difficultyId, int stars)
+        {
+            string key = Key(levelId, difficultyId);
+            for (int i = 0; i < Data.Stars.Count; i++)
+            {
+                if (Data.Stars[i].Key == key)
+                {
+                    if (stars > Data.Stars[i].Stars)
+                    {
+                        Data.Stars[i] = new StarRecord { Key = key, Stars = stars };
+                    }
+
+                    return;
+                }
+            }
+
+            Data.Stars.Add(new StarRecord { Key = key, Stars = stars });
+        }
+
         public void AddRewards(int researchPoints, int powerCurrency)
         {
             Data.ResearchPoints += researchPoints;
@@ -137,3 +171,4 @@ namespace Game.Economy
         private static string Key(string levelId, string difficultyId) => levelId + "/" + difficultyId;
     }
 }
+

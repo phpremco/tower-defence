@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &20109406
+--- !u!1 &1597516638
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,10 +127,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 20109410}
-  - component: {fileID: 20109407}
-  - component: {fileID: 20109409}
-  - component: {fileID: 20109408}
+  - component: {fileID: 1597516642}
+  - component: {fileID: 1597516639}
+  - component: {fileID: 1597516641}
+  - component: {fileID: 1597516640}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -138,13 +138,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!20 &20109407
+--- !u!20 &1597516639
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20109406}
+  m_GameObject: {fileID: 1597516638}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -189,33 +189,33 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &20109408
+--- !u!114 &1597516640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20109406}
+  m_GameObject: {fileID: 1597516638}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f644ad17565f5e440988d19da59a192a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Levels::Game.Levels.FixedCameraRig
---- !u!81 &20109409
+--- !u!81 &1597516641
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20109406}
+  m_GameObject: {fileID: 1597516638}
   m_Enabled: 1
---- !u!4 &20109410
+--- !u!4 &1597516642
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20109406}
+  m_GameObject: {fileID: 1597516638}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -224,7 +224,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &408915245
+--- !u!1 &1807951572
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,8 +232,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 408915247}
-  - component: {fileID: 408915246}
+  - component: {fileID: 1807951574}
+  - component: {fileID: 1807951573}
   m_Layer: 0
   m_Name: LevelBootstrapper
   m_TagString: Untagged
@@ -241,27 +241,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &408915246
+--- !u!114 &1807951573
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408915245}
+  m_GameObject: {fileID: 1807951572}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 964fee718403f104ba060c8a6a04a531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Boot::Game.Boot.LevelBootstrapper
-  _cameraRig: {fileID: 20109408}
-  _camera: {fileID: 20109407}
---- !u!4 &408915247
+  _cameraRig: {fileID: 1597516640}
+  _camera: {fileID: 1597516639}
+--- !u!4 &1807951574
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408915245}
+  m_GameObject: {fileID: 1807951572}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -274,5 +274,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 20109410}
-  - {fileID: 408915247}
+  - {fileID: 1597516642}
+  - {fileID: 1807951574}

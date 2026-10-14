@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace Game.Levels
 {
-    /// <summary>Runs the wave timeline, decides win or loss and hands out the reward. After the level, confirm leads to the upgrade screen (win) or the map (loss).</summary>
+    /// <summary>Runs the wave timeline, decides win or loss and hands out the reward. What happens next is up to the result screen.</summary>
     public sealed class LevelController : MonoBehaviour
     {
         private readonly List<SpawnRequest> _due = new List<SpawnRequest>();
@@ -34,7 +34,6 @@ namespace Game.Levels
             PublishRoutes(0);
             _context.BaseHealth.Died += OnBaseDied;
             _input.SkipWave += OnSkipWave;
-            _input.Confirmed += OnConfirmed;
             _context.SkipWaveRequested.Subscribe(OnSkipWave);
         }
 
@@ -43,7 +42,6 @@ namespace Game.Levels
             if (_input != null)
             {
                 _input.SkipWave -= OnSkipWave;
-                _input.Confirmed -= OnConfirmed;
             }
 
             _context?.SkipWaveRequested.Unsubscribe(OnSkipWave);
@@ -149,22 +147,10 @@ namespace Game.Levels
             }
 
             _context.Outcome = outcome;
-            _context.Result = RewardCalculator.Compute(_context.Level, _context.Difficulty, _progress, outcome == LevelOutcome.Won);
+            _context.Result = RewardCalculator.Compute(_context.Level, _context.Difficulty, _progress, outcome == LevelOutcome.Won, _context.BaseHealth.Fraction);
             RewardCalculator.Apply(_context.Result, _context.Level, _context.Difficulty, _progress);
             _context.Changed.Raise();
         }
-
-        private void OnConfirmed()
-        {
-            if (_context.Outcome != LevelOutcome.Running)
-            {
-                Time.timeScale = 1f;
-                SceneManager.LoadScene(_context.Outcome == LevelOutcome.Won ? SceneNames.Base : SceneNames.WorldMap);
-            }
-        }
     }
 }
-
-
-
 

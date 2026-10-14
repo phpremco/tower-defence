@@ -60,9 +60,9 @@ namespace Game.Tests
         {
             var progress = new ProgressService(new MemorySave(), new[] { "PulseRifle" });
 
-            LevelResult first = RewardCalculator.Compute(_level, _medium, progress, true);
+            LevelResult first = RewardCalculator.Compute(_level, _medium, progress, true, 1f);
             RewardCalculator.Apply(first, _level, _medium, progress);
-            LevelResult second = RewardCalculator.Compute(_level, _medium, progress, true);
+            LevelResult second = RewardCalculator.Compute(_level, _medium, progress, true, 1f);
 
             Assert.IsNotNull(first.NewTower);
             Assert.IsTrue(progress.IsTowerUnlocked(first.NewTower.Id));
@@ -71,11 +71,30 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Stars_FollowRemainingBaseHealth()
+        {
+            Assert.AreEqual(1, RewardCalculator.StarsFor(_level, 0.2f));
+            Assert.AreEqual(2, RewardCalculator.StarsFor(_level, 0.6f));
+            Assert.AreEqual(3, RewardCalculator.StarsFor(_level, 1f));
+        }
+
+        [Test]
+        public void Stars_KeepTheBestRatingPerDifficulty()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+
+            progress.RecordStars(_level.Id, _medium.name, 2);
+            progress.RecordStars(_level.Id, _medium.name, 1);
+
+            Assert.AreEqual(2, progress.GetStars(_level.Id, _medium.name));
+        }
+
+        [Test]
         public void Loss_GivesNothing()
         {
             var progress = new ProgressService(new MemorySave(), new string[0]);
 
-            LevelResult result = RewardCalculator.Compute(_level, _medium, progress, false);
+            LevelResult result = RewardCalculator.Compute(_level, _medium, progress, false, 0f);
             RewardCalculator.Apply(result, _level, _medium, progress);
 
             Assert.AreEqual(0, progress.Data.ResearchPoints);
@@ -127,3 +146,4 @@ namespace Game.Tests
         }
     }
 }
+

@@ -13,6 +13,15 @@ namespace Game.Economy
         public List<string> UnlockedTowerIds = new List<string>();
         public List<string> CompletedLevels = new List<string>();
         public List<UpgradeLevel> Upgrades = new List<UpgradeLevel>();
+        public List<StarRecord> Stars = new List<StarRecord>();
+    }
+
+    /// <summary>Best star rating (1 to 3) for one level on one difficulty. Key is "levelId/difficultyId".</summary>
+    [Serializable]
+    public struct StarRecord
+    {
+        public string Key;
+        public int Stars;
     }
 
     [Serializable]
@@ -22,3 +31,4 @@ namespace Game.Economy
         public int Level;
     }
 }
+

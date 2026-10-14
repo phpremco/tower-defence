@@ -182,17 +182,17 @@ namespace Game.Editor
 
         private static WaveDefinition[] CreateWaves(string difficultyName, int count, EnemyDefinition scout, EnemyDefinition grunt, EnemyDefinition brute, EnemyDefinition flyer)
         {
+            // Level 1 teaches the game: ground waves first, the first flyers only from wave 5.
             var templates = new List<SpawnGroup[]>
             {
                 new[] { Group(scout, 6, 1f, 0f) },
                 new[] { Group(grunt, 8, 1.2f, 0f) },
-                new[] { Group(scout, 8, 0.8f, 0f), Group(flyer, 4, 1.5f, 3f, NorthAirRoute) },
-                new[] { Group(grunt, 10, 1f, 0f), Group(brute, 2, 3f, 5f), Group(flyer, 3, 2f, 4f, Road) },
-                new[] { Group(flyer, 5, 1f, 0f, NorthAirRoute), Group(flyer, 5, 1f, 0.5f, SouthAirRoute), Group(scout, 10, 0.6f, 2f) },
-                new[] { Group(brute, 5, 2.5f, 0f), Group(grunt, 12, 0.8f, 2f), Group(flyer, 6, 1.2f, 4f, SouthAirRoute), Group(flyer, 3, 1.5f, 6f, Road) },
-                new[] { Group(brute, 8, 2f, 0f), Group(flyer, 6, 0.8f, 3f, NorthAirRoute), Group(flyer, 6, 0.8f, 3.4f, SouthAirRoute), Group(grunt, 16, 0.6f, 6f) },
+                new[] { Group(scout, 8, 0.8f, 0f), Group(grunt, 4, 1.2f, 4f) },
+                new[] { Group(grunt, 10, 1f, 0f), Group(brute, 1, 3f, 6f) },
+                new[] { Group(grunt, 10, 0.9f, 0f), Group(brute, 2, 3f, 5f), Group(flyer, 2, 2.5f, 8f, NorthAirRoute), Group(flyer, 2, 2.5f, 10f, Road) },
+                new[] { Group(brute, 3, 2.5f, 0f), Group(grunt, 12, 0.8f, 2f), Group(flyer, 3, 2f, 5f, NorthAirRoute), Group(flyer, 2, 2.5f, 8f, SouthAirRoute) },
+                new[] { Group(brute, 5, 2f, 0f), Group(grunt, 16, 0.6f, 4f), Group(flyer, 4, 1.5f, 6f, NorthAirRoute), Group(flyer, 4, 1.5f, 6.5f, SouthAirRoute) },
             };
-
             var waves = new WaveDefinition[count];
             for (int i = 0; i < count; i++)
             {
@@ -239,6 +239,10 @@ namespace Game.Editor
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = 150;
             so.FindProperty("_baseHealth").intValue = 20;
+            SerializedProperty stars = so.FindProperty("_starBaseHealthFractions");
+            stars.arraySize = 2;
+            stars.GetArrayElementAtIndex(0).floatValue = 0.5f;
+            stars.GetArrayElementAtIndex(1).floatValue = 0.9f;
 
             SerializedProperty reward = so.FindProperty("_reward");
             reward.FindPropertyRelative("ResearchPoints").intValue = 10;
@@ -520,6 +524,7 @@ namespace Game.Editor
         }
     }
 }
+
 
 
 

@@ -23,6 +23,9 @@ namespace Game.Levels
         [SerializeField] private DifficultyWaves[] _difficultyWaves = new DifficultyWaves[0];
         [SerializeField] private LevelReward _reward;
 
+        /// <summary>Share of base health that must be left for two and for three stars, in that order.</summary>
+        [SerializeField] private float[] _starBaseHealthFractions = { 0.5f, 0.9f };
+
         public string Id => name;
         public string DisplayName => _displayName;
         public Vector2Int GridSize => _gridSize;
@@ -54,6 +57,7 @@ namespace Game.Levels
         public int BaseHealth => _baseHealth;
         public DifficultyWaves[] DifficultyWaves => _difficultyWaves;
         public LevelReward Reward => _reward;
+        public float[] StarBaseHealthFractions => _starBaseHealthFractions;
 
         public GridMap Grid => new GridMap(_gridSize, _cellSize);
 
@@ -108,6 +112,7 @@ namespace Game.Levels
         }
     }
 }
+
 
 
 

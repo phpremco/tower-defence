@@ -12,20 +12,32 @@ namespace Game.UI
     /// </summary>
     public sealed class WorldMapScreen : ScreenBase
     {
-        private const float MapWidth = 1400f;
+        private const float MapWidth = 1500f;
         private const float MapHeight = 560f;
-        private const float NodeWidth = 300f;
-        private const float NodeHeight = 110f;
+        private const float NodeWidth = 330f;
+        private const float NodeHeight = 150f;
         private const int NodeFontSize = 28;
         private const float ActionWidth = 480f;
         private const int PlanetTexture = 512;
         private const float PlanetSize = 1150f;
         private const float LineThickness = 8f;
+        private const float BadgeSize = 34f;
+        private const float BadgeGap = 8f;
+        private const float DifficultyButtonWidth = 760f;
         private static readonly Color LineColor = new Color(0.4f, 0.9f, 1f, 0.7f);
+        private static readonly Color BadgeOff = new Color(0.12f, 0.14f, 0.2f, 0.9f);
+        private static readonly Color[] BadgeOn =
+        {
+            new Color(0.4f, 0.95f, 0.5f),
+            new Color(1f, 0.9f, 0.3f),
+            new Color(1f, 0.6f, 0.2f),
+            new Color(1f, 0.3f, 0.3f),
+        };
 
         private CampaignCatalog _catalog;
-        private int _difficultyIndex;
-        private Button _difficultyButton;
+        private RectTransform _root;
+        private GameObject _difficultyPanel;
+        private Button _returnFocus;
         private readonly List<Button> _nodeButtons = new List<Button>();
 
         protected override void Build(RectTransform root)
@@ -36,7 +48,8 @@ namespace Game.UI
                 return;
             }
 
-            UiKit.CreateFixedText(root, "Select a level", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -60f), new Vector2(1200f, 100f));
+            _root = root;
+            UiKit.CreateFixedText(root, "Select a level", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
 
             var map = new GameObject("Map", typeof(RectTransform)).GetComponent<RectTransform>();
             map.SetParent(root, false);
@@ -44,7 +57,7 @@ namespace Game.UI
             map.anchorMax = new Vector2(0.5f, 0.5f);
             map.pivot = new Vector2(0.5f, 0.5f);
             map.sizeDelta = new Vector2(MapWidth, MapHeight);
-            map.anchoredPosition = new Vector2(0f, 30f);
+            map.anchoredPosition = new Vector2(0f, 20f);
 
             BuildPlanet(map);
             BuildConnections(map);
@@ -60,6 +73,12 @@ namespace Game.UI
                 }
             }
 
+            BuildActionRow(root);
+            SetFirstSelected(firstOpen != null ? firstOpen : _nodeButtons[0]);
+        }
+
+        private void BuildActionRow(RectTransform root)
+        {
             var row = new GameObject("Actions", typeof(RectTransform)).GetComponent<RectTransform>();
             row.SetParent(root, false);
             row.anchorMin = new Vector2(0.5f, 0f);
@@ -74,14 +93,12 @@ namespace Game.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            _difficultyButton = UiKit.CreateButton(row, DifficultyLabel(), CycleDifficulty);
             UiKit.CreateButton(row, "Upgrades", () => Go(SceneNames.Base));
             UiKit.CreateButton(row, "Back", () => Go(SceneNames.MainMenu));
             foreach (Button button in row.GetComponentsInChildren<Button>())
             {
                 button.GetComponent<RectTransform>().sizeDelta = new Vector2(ActionWidth, UiKit.ButtonHeight);
             }
-            SetFirstSelected(firstOpen != null ? firstOpen : _difficultyButton);
         }
 
         // A procedural planet behind the level nodes: noisy land and sea colours with a bright atmosphere rim.
@@ -159,44 +176,177 @@ namespace Game.UI
             }
         }
 
+        // A node shows the level name and four badges, one per difficulty, lit once that difficulty is completed.
         private Button CreateNode(RectTransform map, int index)
         {
             MapNode node = _catalog.Nodes[index];
             bool open = CampaignRules.IsOpen(_catalog, index, Progress);
-            bool completed = CampaignRules.IsCompleted(_catalog, index, Progress);
+            string status = node.Level == null ? "Coming soon" : open ? string.Empty : "Locked";
+            string label = status.Length == 0 ? $"{index + 1}. {node.DisplayName}" : $"{index + 1}. {node.DisplayName}\n{status}";
 
-            string status = node.Level == null ? "Coming soon" : completed ? "Completed" : open ? "Open" : "Locked";
-            Button button = UiKit.CreateButton(map, $"{index + 1}. {node.DisplayName}\n{status}", open ? (UnityEngine.Events.UnityAction)(() => StartLevel(index)) : null);
+            Button button = UiKit.CreateButton(map, label, open ? (UnityEngine.Events.UnityAction)(() => OpenDifficulties(index)) : null);
             button.interactable = open;
 
-            var layout = button.GetComponent<LayoutElement>();
-            Destroy(layout);
+            Destroy(button.GetComponent<LayoutElement>());
             RectTransform rect = button.GetComponent<RectTransform>();
             rect.anchorMin = node.MapPosition;
             rect.anchorMax = node.MapPosition;
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = new Vector2(NodeWidth, NodeHeight);
             rect.anchoredPosition = Vector2.zero;
-            button.GetComponentInChildren<Text>().resizeTextMaxSize = NodeFontSize;
+
+            Text text = button.GetComponentInChildren<Text>();
+            text.resizeTextMaxSize = NodeFontSize;
+            text.alignment = TextAnchor.UpperCenter;
+            text.rectTransform.offsetMin = new Vector2(12f, BadgeSize + 18f);
+            text.rectTransform.offsetMax = new Vector2(-12f, -8f);
+
+            if (node.Level != null)
+            {
+                BuildBadges(rect, node.Level);
+            }
+
             return button;
         }
 
-        private void CycleDifficulty()
+        private void BuildBadges(RectTransform parent, LevelDefinition level)
         {
-            _difficultyIndex = (_difficultyIndex + 1) % _catalog.Difficulties.Count;
-            UiKit.SetLabel(_difficultyButton, DifficultyLabel());
+            int count = _catalog.Difficulties.Count;
+            float width = count * BadgeSize + (count - 1) * BadgeGap;
+            for (int i = 0; i < count; i++)
+            {
+                bool done = Progress.IsCompleted(level.Id, _catalog.Difficulties[i].name);
+
+                var go = new GameObject("Badge", typeof(RectTransform));
+                go.transform.SetParent(parent, false);
+                var image = go.AddComponent<Image>();
+                UiKit.StyleSliced(image, UiKit.Skin != null ? UiKit.Skin.ButtonSquare : null);
+                image.color = done ? BadgeOn[Mathf.Min(i, BadgeOn.Length - 1)] : BadgeOff;
+                image.raycastTarget = false;
+                RectTransform rect = image.rectTransform;
+                rect.anchorMin = new Vector2(0.5f, 0f);
+                rect.anchorMax = new Vector2(0.5f, 0f);
+                rect.pivot = new Vector2(0.5f, 0f);
+                rect.sizeDelta = new Vector2(BadgeSize, BadgeSize);
+                rect.anchoredPosition = new Vector2(-width * 0.5f + BadgeSize * 0.5f + i * (BadgeSize + BadgeGap), 10f);
+
+                if (done)
+                {
+                    var tick = new GameObject("Check", typeof(RectTransform)).AddComponent<Image>();
+                    tick.transform.SetParent(rect, false);
+                    tick.sprite = IconFactory.Get(IconType.Check);
+                    tick.color = new Color(0.05f, 0.1f, 0.15f);
+                    tick.raycastTarget = false;
+                    RectTransform tickRect = tick.rectTransform;
+                    tickRect.anchorMin = Vector2.zero;
+                    tickRect.anchorMax = Vector2.one;
+                    tickRect.offsetMin = new Vector2(3f, 3f);
+                    tickRect.offsetMax = new Vector2(-3f, -3f);
+                }
+            }
         }
 
-        private string DifficultyLabel() => $"Difficulty: {_catalog.Difficulties[_difficultyIndex].DisplayName}";
-
-        private void StartLevel(int index)
+        // Choosing a level opens the four difficulties with their completion marks and star ratings.
+        private void OpenDifficulties(int index)
         {
             LevelDefinition level = _catalog.Nodes[index].Level;
-            Services.Register(new LevelSession(level, _catalog.Difficulties[_difficultyIndex]));
+            _returnFocus = _nodeButtons[index];
+
+            Image dim = UiKit.CreatePanel(_root, "DifficultyDim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.7f));
+            dim.raycastTarget = true;
+            _difficultyPanel = dim.gameObject;
+
+            Image panel = UiKit.CreatePanel(dim.rectTransform, "DifficultyPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0.14f, 0.22f, 0.4f, 0.98f));
+            panel.rectTransform.sizeDelta = new Vector2(DifficultyButtonWidth + 120f, 700f);
+
+            UiKit.CreateFixedText(panel.rectTransform, level.DisplayName, 56, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(DifficultyButtonWidth, 80f));
+            UiKit.CreateFixedText(panel.rectTransform, "Choose a difficulty", 30, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -110f), new Vector2(DifficultyButtonWidth, 50f));
+
+            Button first = null;
+            float y = -180f;
+            for (int i = 0; i < _catalog.Difficulties.Count; i++)
+            {
+                DifficultyProfile difficulty = _catalog.Difficulties[i];
+                Button button = CreateDifficultyButton(panel.rectTransform, level, difficulty, i, y);
+                first = first != null ? first : button;
+                y -= UiKit.ButtonHeight + 20f;
+            }
+
+            Button cancel = UiKit.CreateButton(panel.rectTransform, "Cancel", CloseDifficulties);
+            Destroy(cancel.GetComponent<LayoutElement>());
+            RectTransform cancelRect = cancel.GetComponent<RectTransform>();
+            cancelRect.anchorMin = new Vector2(0.5f, 0f);
+            cancelRect.anchorMax = new Vector2(0.5f, 0f);
+            cancelRect.pivot = new Vector2(0.5f, 0f);
+            cancelRect.sizeDelta = new Vector2(DifficultyButtonWidth, UiKit.ButtonHeight);
+            cancelRect.anchoredPosition = new Vector2(0f, 24f);
+
+            UiKit.Select(first);
+        }
+
+        private Button CreateDifficultyButton(RectTransform panel, LevelDefinition level, DifficultyProfile difficulty, int index, float y)
+        {
+            bool done = Progress.IsCompleted(level.Id, difficulty.name);
+            int stars = Progress.GetStars(level.Id, difficulty.name);
+
+            Button button = UiKit.CreateButton(panel, difficulty.DisplayName, () => StartLevel(level, difficulty));
+            Destroy(button.GetComponent<LayoutElement>());
+            RectTransform rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.sizeDelta = new Vector2(DifficultyButtonWidth, UiKit.ButtonHeight);
+            rect.anchoredPosition = new Vector2(0f, y);
+
+            Text label = button.GetComponentInChildren<Text>();
+            label.alignment = TextAnchor.MiddleLeft;
+            label.rectTransform.offsetMin = new Vector2(30f, 4f);
+            label.rectTransform.offsetMax = new Vector2(-240f, -4f);
+
+            // Three small stars on the right: lit for the stars earned on this difficulty.
+            for (int s = 0; s < 3; s++)
+            {
+                var go = new GameObject("Star", typeof(RectTransform)).AddComponent<Image>();
+                go.transform.SetParent(rect, false);
+                go.sprite = IconFactory.Get(IconType.Star);
+                go.color = s < stars ? new Color(1f, 0.85f, 0.25f) : new Color(0.12f, 0.16f, 0.26f);
+                go.raycastTarget = false;
+                RectTransform starRect = go.rectTransform;
+                starRect.anchorMin = new Vector2(1f, 0.5f);
+                starRect.anchorMax = new Vector2(1f, 0.5f);
+                starRect.pivot = new Vector2(1f, 0.5f);
+                starRect.sizeDelta = new Vector2(46f, 46f);
+                starRect.anchoredPosition = new Vector2(-30f - (2 - s) * 52f, 0f);
+            }
+
+            if (done)
+            {
+                var tick = new GameObject("Done", typeof(RectTransform)).AddComponent<Image>();
+                tick.transform.SetParent(rect, false);
+                tick.sprite = IconFactory.Get(IconType.Check);
+                tick.color = BadgeOn[Mathf.Min(index, BadgeOn.Length - 1)];
+                tick.raycastTarget = false;
+                RectTransform tickRect = tick.rectTransform;
+                tickRect.anchorMin = new Vector2(0f, 0.5f);
+                tickRect.anchorMax = new Vector2(0f, 0.5f);
+                tickRect.pivot = new Vector2(0f, 0.5f);
+                tickRect.sizeDelta = new Vector2(46f, 46f);
+                tickRect.anchoredPosition = new Vector2(270f, 0f);
+            }
+
+            return button;
+        }
+
+        private void CloseDifficulties()
+        {
+            Destroy(_difficultyPanel);
+            UiKit.Select(_returnFocus);
+        }
+
+        private static void StartLevel(LevelDefinition level, DifficultyProfile difficulty)
+        {
+            Services.Register(new LevelSession(level, difficulty));
             Go(SceneNames.Level);
         }
     }
 }
-
-
-

@@ -12,6 +12,8 @@ namespace Game.UI
         Speed,
         Pause,
         SkipWave,
+        Star,
+        Check,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -56,7 +58,11 @@ namespace Game.UI
                 case IconType.Repair:
                     return Wrench;
                 case IconType.Sell:
-                    return Coin;                case IconType.Speed:
+                    return Coin;                case IconType.Star:
+                    return Star;
+                case IconType.Check:
+                    return Check;
+                case IconType.Speed:
                     return (u, v) => Triangle(u, v, 0.15f, 0.2f, 0.15f, 0.8f, 0.5f, 0.5f) || Triangle(u, v, 0.5f, 0.2f, 0.5f, 0.8f, 0.85f, 0.5f);
                 case IconType.Pause:
                     return (u, v) => v > 0.2f && v < 0.8f && ((u > 0.25f && u < 0.4f) || (u > 0.6f && u < 0.75f));
@@ -85,6 +91,37 @@ namespace Game.UI
             return inRing && !notch;
         }
 
+        // A five pointed star: the boundary radius runs from the outer radius at a tip to the inner radius in a valley.
+        private static bool Star(float u, float v)
+        {
+            const float OuterRadius = 0.47f;
+            const float InnerRadius = 0.2f;
+            float dx = u - 0.5f;
+            float dy = v - 0.46f;
+            float distance = Mathf.Sqrt(dx * dx + dy * dy);
+            float sector = Mathf.PI * 2f / 5f;
+            float angle = Mathf.Repeat(Mathf.Atan2(dy, dx) - Mathf.PI * 0.5f, sector);
+            float fromTip = Mathf.Min(angle, sector - angle) / (sector * 0.5f);
+            return distance < Mathf.Lerp(OuterRadius, InnerRadius, fromTip);
+        }
+        // A tick mark made of two thick strokes.
+        private static bool Check(float u, float v)
+        {
+            return Stroke(u, v, 0.18f, 0.5f, 0.4f, 0.28f, 0.085f) || Stroke(u, v, 0.4f, 0.28f, 0.82f, 0.74f, 0.085f);
+        }
+
+        private static bool Stroke(float px, float py, float ax, float ay, float bx, float by, float halfWidth)
+        {
+            float abx = bx - ax;
+            float aby = by - ay;
+            float t = Mathf.Clamp01(((px - ax) * abx + (py - ay) * aby) / (abx * abx + aby * aby));
+            float cx = ax + abx * t;
+            float cy = ay + aby * t;
+            float dx = px - cx;
+            float dy = py - cy;
+            return dx * dx + dy * dy < halfWidth * halfWidth;
+        }
+
         // A coin: thick ring with a smaller solid disc inside.
         private static bool Coin(float u, float v)
         {
@@ -103,5 +140,7 @@ namespace Game.UI
         }
     }
 }
+
+
 
 

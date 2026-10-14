@@ -15,7 +15,7 @@ MonoBehaviour:
   _startDelay: 8
   _groups:
   - Enemy: {fileID: 11400000, guid: 759f074a27b64f64e8fd89847e806123, type: 2}
-    Count: 5
+    Count: 3
     PathIndex: 0
     Interval: 2.5
     Delay: 0
@@ -25,12 +25,12 @@ MonoBehaviour:
     Interval: 0.8
     Delay: 2
   - Enemy: {fileID: 11400000, guid: 367f64d355ab66646a061aee7815b8d2, type: 2}
-    Count: 6
-    PathIndex: 2
-    Interval: 1.2
-    Delay: 4
-  - Enemy: {fileID: 11400000, guid: 367f64d355ab66646a061aee7815b8d2, type: 2}
     Count: 3
-    PathIndex: 0
-    Interval: 1.5
-    Delay: 6
+    PathIndex: 1
+    Interval: 2
+    Delay: 5
+  - Enemy: {fileID: 11400000, guid: 367f64d355ab66646a061aee7815b8d2, type: 2}
+    Count: 2
+    PathIndex: 2
+    Interval: 2.5
+    Delay: 8

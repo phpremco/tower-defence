@@ -6,7 +6,7 @@ namespace Game.Levels
     /// <summary>Works out and applies the reward for a finished level. Higher difficulties pay more.</summary>
     public static class RewardCalculator
     {
-        public static LevelResult Compute(LevelDefinition level, DifficultyProfile difficulty, ProgressService progress, bool won)
+        public static LevelResult Compute(LevelDefinition level, DifficultyProfile difficulty, ProgressService progress, bool won, float baseHealthFraction)
         {
             if (!won)
             {
@@ -20,12 +20,28 @@ namespace Game.Levels
             return new LevelResult
             {
                 Won = true,
+                Stars = StarsFor(level, baseHealthFraction),
                 ResearchPoints = Mathf.RoundToInt(reward.ResearchPoints * difficulty.RewardMultiplier),
                 PowerCurrency = Mathf.RoundToInt(reward.PowerCurrency * difficulty.PowerCurrencyMultiplier),
                 NewTower = giveWeapon ? reward.NewTower : null,
                 Source = giveWeapon ? reward.Source : UnlockSource.None,
                 Story = giveWeapon ? reward.Story : null,
             };
+        }
+
+        /// <summary>One star for winning, one more for each threshold the remaining base health reaches.</summary>
+        public static int StarsFor(LevelDefinition level, float baseHealthFraction)
+        {
+            int stars = 1;
+            foreach (float threshold in level.StarBaseHealthFractions)
+            {
+                if (baseHealthFraction >= threshold)
+                {
+                    stars++;
+                }
+            }
+
+            return Mathf.Min(stars, 3);
         }
 
         public static void Apply(LevelResult result, LevelDefinition level, DifficultyProfile difficulty, ProgressService progress)
@@ -37,6 +53,7 @@ namespace Game.Levels
 
             progress.AddRewards(result.ResearchPoints, result.PowerCurrency);
             progress.MarkCompleted(level.Id, difficulty.name);
+            progress.RecordStars(level.Id, difficulty.name, result.Stars);
             if (result.NewTower != null)
             {
                 progress.UnlockTower(result.NewTower.Id);

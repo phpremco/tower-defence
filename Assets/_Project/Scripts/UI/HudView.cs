@@ -17,7 +17,6 @@ namespace Game.UI
         private const float ReferenceWidth = 1920f;
         private const int FontSize = 34;
         private const int SmallFontSize = 26;
-        private const int BigFontSize = 44;
         private const float Margin = 24f;
         private const float LineHeight = 52f;
         private const float BarButtonWidth = 250f;
@@ -41,7 +40,6 @@ namespace Game.UI
         private Text _baseText;
         private Text _moneyText;
         private Text _statusText;
-        private Text _outcomeText;
         private Font _font;
         private TowerButton[] _towerButtons;
 
@@ -65,6 +63,7 @@ namespace Game.UI
             BuildTowerBar(safe);
             BuildIcons(safe);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
+            gameObject.AddComponent<ResultView>().Initialize(context, safe);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, Game.Core.Services.Get<Game.Platform.IInputProvider>());
 
             _context.Changed.Subscribe(Refresh);
@@ -109,7 +108,6 @@ namespace Game.UI
             _baseText = CreateText(safe, "Base", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, -Margin), FontSize);
             _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, Margin), FontSize);
             _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, Margin), FontSize);
-            _outcomeText = CreateText(safe, "Outcome", TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, BigFontSize);
         }
 
         // Speed, pause and (in the test mode) skip wave. The keys remain as shortcuts.
@@ -221,7 +219,6 @@ namespace Game.UI
             _baseText.text = $"Base {Mathf.CeilToInt(_context.BaseHealth.Current)}/{Mathf.CeilToInt(_context.BaseHealth.Max)}";
             _moneyText.text = $"Money {_context.Wallet.Money}";
             _statusText.text = _context.Status;
-            _outcomeText.text = OutcomeLine();
             RefreshTowerBar();
         }
 
@@ -254,44 +251,6 @@ namespace Game.UI
                 _builder.Append("  speed x").Append(_time.CurrentSpeed);
             }
 
-            return _builder.ToString();
-        }
-
-        private string OutcomeLine()
-        {
-            LevelResult result = _context.Result;
-            switch (_context.Outcome)
-            {
-                case LevelOutcome.Won:
-                    return WonLine(result);
-                case LevelOutcome.Lost:
-                    return "Defeat\nPress confirm to return to the map";
-                default:
-                    return string.Empty;
-            }
-        }
-
-        private string WonLine(LevelResult result)
-        {
-            _builder.Clear();
-            _builder.Append("Victory\n");
-            _builder.Append("Research points +").Append(result.ResearchPoints);
-            if (result.PowerCurrency > 0)
-            {
-                _builder.Append("   Power +").Append(result.PowerCurrency);
-            }
-
-            if (result.NewTower != null)
-            {
-                string source = result.Source == UnlockSource.StolenAlienTech ? "stolen alien tech" : "intel from the home planet";
-                _builder.Append("\nNew weapon: ").Append(result.NewTower.DisplayName).Append(" (").Append(source).Append(")");
-                if (!string.IsNullOrEmpty(result.Story))
-                {
-                    _builder.Append("\n").Append(result.Story);
-                }
-            }
-
-            _builder.Append("\nPress confirm to continue");
             return _builder.ToString();
         }
     }

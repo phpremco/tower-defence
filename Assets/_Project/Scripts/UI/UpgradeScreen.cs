@@ -113,7 +113,6 @@ namespace Game.UI
             group.ListButton = UiKit.CreateButton(root, name, () => Show(group));
             Destroy(group.ListButton.GetComponent<LayoutElement>());
             PlaceTopLeft(group.ListButton.GetComponent<RectTransform>(), new Vector2(Margin, -y), new Vector2(ListWidth, ListRowHeight));
-            group.ListButton.gameObject.AddComponent<SelectNotifier>().Selected = () => Show(group);
 
             Image panel = UiKit.CreatePanel(root, name + " panel", new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, Vector2.zero, PanelTint);
             RectTransform panelRect = panel.rectTransform;
@@ -371,6 +370,7 @@ namespace Game.UI
         }
     }
 }
+
 
 
 
