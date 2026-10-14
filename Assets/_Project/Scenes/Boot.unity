@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1965409764
+--- !u!1 &252742510
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1965409766}
-  - component: {fileID: 1965409765}
+  - component: {fileID: 252742512}
+  - component: {fileID: 252742511}
   m_Layer: 0
   m_Name: Bootstrapper
   m_TagString: Untagged
@@ -136,13 +136,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1965409765
+--- !u!114 &252742511
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965409764}
+  m_GameObject: {fileID: 252742510}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 509151cc143cb9d48ab286982f070078, type: 3}
@@ -153,13 +153,14 @@ MonoBehaviour:
   _upgrades: {fileID: 11400000, guid: a1d92650069a2a2409f7df1e7e344452, type: 2}
   _unlockTable: {fileID: 11400000, guid: d20636ac6490bf94ab925094ed88dc57, type: 2}
   _playtestSettings: {fileID: 11400000, guid: 16b0c4a8641778a4e9e6f0ca49e556f4, type: 2}
---- !u!4 &1965409766
+  _uiSkin: {fileID: 11400000, guid: d4565a92cfb0e50499db477f4e475879, type: 2}
+--- !u!4 &252742512
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965409764}
+  m_GameObject: {fileID: 252742510}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -172,4 +173,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1965409766}
+  - {fileID: 252742512}

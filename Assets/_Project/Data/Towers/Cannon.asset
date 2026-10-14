@@ -35,3 +35,5 @@ MonoBehaviour:
   _repairCostPerHealth: 0.4
   _damagedPowerFloor: 0.5
   _color: {r: 1, g: 0.8, b: 0.3, a: 1}
+  _model: {fileID: 919132149155446097, guid: e6d5134f3eacf474489bde12aad2880a, type: 3}
+  _modelScale: 1.4
