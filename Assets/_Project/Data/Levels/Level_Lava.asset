@@ -45,26 +45,21 @@ MonoBehaviour:
     - {x: 0, y: 0}
     - {x: 11, y: 7}
     - {x: 21, y: 2}
-  _blockedCells: []
+  _blockedCells:
+  - {x: 1, y: 5}
+  - {x: 1, y: 9}
+  - {x: 20, y: 6}
   _blockades:
   - Cell: {x: 10, y: 11}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   - Cell: {x: 10, y: 5}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 5, y: 12}
-    Kind: 3
   - Cell: {x: 5, y: 13}
     Kind: 3
   - Cell: {x: 6, y: 12}
     Kind: 3
-  - Cell: {x: 6, y: 13}
-    Kind: 3
-  - Cell: {x: 7, y: 12}
-    Kind: 3
   - Cell: {x: 7, y: 13}
-    Kind: 3
-  - Cell: {x: 8, y: 12}
     Kind: 3
   - Cell: {x: 8, y: 13}
     Kind: 3
@@ -78,33 +73,19 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 15, y: 12}
     Kind: 3
-  - Cell: {x: 15, y: 13}
-    Kind: 3
   - Cell: {x: 16, y: 12}
     Kind: 3
   - Cell: {x: 16, y: 13}
     Kind: 3
   - Cell: {x: 6, y: 9}
     Kind: 3
-  - Cell: {x: 6, y: 10}
-    Kind: 3
   - Cell: {x: 7, y: 9}
-    Kind: 3
-  - Cell: {x: 7, y: 10}
     Kind: 3
   - Cell: {x: 8, y: 9}
     Kind: 3
   - Cell: {x: 8, y: 10}
     Kind: 3
-  - Cell: {x: 9, y: 9}
-    Kind: 3
-  - Cell: {x: 12, y: 6}
-    Kind: 3
-  - Cell: {x: 12, y: 7}
-    Kind: 3
   - Cell: {x: 13, y: 6}
-    Kind: 3
-  - Cell: {x: 13, y: 7}
     Kind: 3
   - Cell: {x: 14, y: 6}
     Kind: 3
@@ -112,19 +93,7 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 15, y: 6}
     Kind: 3
-  - Cell: {x: 15, y: 7}
-    Kind: 3
-  - Cell: {x: 4, y: 0}
-    Kind: 3
-  - Cell: {x: 4, y: 1}
-    Kind: 3
-  - Cell: {x: 5, y: 0}
-    Kind: 3
-  - Cell: {x: 5, y: 1}
-    Kind: 3
   - Cell: {x: 6, y: 0}
-    Kind: 3
-  - Cell: {x: 6, y: 1}
     Kind: 3
   - Cell: {x: 7, y: 0}
     Kind: 3
@@ -133,10 +102,6 @@ MonoBehaviour:
   - Cell: {x: 8, y: 0}
     Kind: 3
   - Cell: {x: 8, y: 1}
-    Kind: 3
-  - Cell: {x: 9, y: 0}
-    Kind: 3
-  - Cell: {x: 9, y: 1}
     Kind: 3
   - Cell: {x: 10, y: 0}
     Kind: 3
@@ -147,10 +112,6 @@ MonoBehaviour:
   - Cell: {x: 11, y: 1}
     Kind: 3
   - Cell: {x: 12, y: 0}
-    Kind: 3
-  - Cell: {x: 12, y: 1}
-    Kind: 3
-  - Cell: {x: 20, y: 7}
     Kind: 3
   - Cell: {x: 20, y: 8}
     Kind: 3
@@ -164,8 +125,6 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 20, y: 13}
     Kind: 3
-  - Cell: {x: 21, y: 7}
-    Kind: 3
   - Cell: {x: 21, y: 8}
     Kind: 3
   - Cell: {x: 21, y: 9}
@@ -177,8 +136,6 @@ MonoBehaviour:
   - Cell: {x: 21, y: 12}
     Kind: 3
   - Cell: {x: 21, y: 13}
-    Kind: 3
-  - Cell: {x: 22, y: 7}
     Kind: 3
   - Cell: {x: 22, y: 8}
     Kind: 3
@@ -192,8 +149,6 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 22, y: 13}
     Kind: 3
-  - Cell: {x: 23, y: 7}
-    Kind: 3
   - Cell: {x: 23, y: 8}
     Kind: 3
   - Cell: {x: 23, y: 9}
@@ -206,8 +161,6 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 23, y: 13}
     Kind: 3
-  - Cell: {x: 24, y: 7}
-    Kind: 3
   - Cell: {x: 24, y: 8}
     Kind: 3
   - Cell: {x: 24, y: 9}
@@ -217,10 +170,6 @@ MonoBehaviour:
   - Cell: {x: 24, y: 11}
     Kind: 3
   - Cell: {x: 24, y: 12}
-    Kind: 3
-  - Cell: {x: 24, y: 13}
-    Kind: 3
-  - Cell: {x: 25, y: 7}
     Kind: 3
   - Cell: {x: 25, y: 8}
     Kind: 3
@@ -234,10 +183,6 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 25, y: 13}
     Kind: 3
-  - Cell: {x: 26, y: 7}
-    Kind: 3
-  - Cell: {x: 26, y: 8}
-    Kind: 3
   - Cell: {x: 26, y: 9}
     Kind: 3
   - Cell: {x: 26, y: 10}
@@ -248,25 +193,11 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 26, y: 13}
     Kind: 3
-  - Cell: {x: 0, y: 12}
-    Kind: 1
-  - Cell: {x: 0, y: 13}
-    Kind: 1
   - Cell: {x: 1, y: 12}
-    Kind: 1
-  - Cell: {x: 1, y: 13}
     Kind: 1
   - Cell: {x: 2, y: 12}
     Kind: 1
   - Cell: {x: 2, y: 13}
-    Kind: 1
-  - Cell: {x: 0, y: 6}
-    Kind: 1
-  - Cell: {x: 0, y: 7}
-    Kind: 1
-  - Cell: {x: 1, y: 6}
-    Kind: 1
-  - Cell: {x: 1, y: 7}
     Kind: 1
   - Cell: {x: 19, y: 3}
     Kind: 1
@@ -274,25 +205,13 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 20, y: 3}
     Kind: 1
-  - Cell: {x: 20, y: 4}
-    Kind: 1
   - Cell: {x: 10, y: 9}
-    Kind: 1
-  - Cell: {x: 10, y: 10}
-    Kind: 1
-  - Cell: {x: 11, y: 9}
     Kind: 1
   - Cell: {x: 11, y: 10}
     Kind: 1
   - Cell: {x: 12, y: 9}
     Kind: 1
-  - Cell: {x: 12, y: 10}
-    Kind: 1
-  - Cell: {x: 13, y: 9}
-    Kind: 1
   - Cell: {x: 13, y: 10}
-    Kind: 1
-  - Cell: {x: 14, y: 9}
     Kind: 1
   - Cell: {x: 14, y: 10}
     Kind: 1

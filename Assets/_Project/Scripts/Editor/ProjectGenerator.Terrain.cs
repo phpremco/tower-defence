@@ -10,7 +10,7 @@ namespace Game.Editor
     /// <summary>Generator part for level layouts: how big the landing zone is and where rock formations stand.</summary>
     public static partial class ProjectGenerator
     {
-        private const float BlockedFraction = 0.05f;
+        private const float BlockedFraction = 0.13f;
         private static readonly Vector2Int LandingSize = new Vector2Int(20, 12);
         private static readonly Vector2Int[] LandingRoad = Cells(0, 10, 15, 10, 15, 7, 4, 7, 4, 4, 14, 4, 14, 1, 19, 1);
 

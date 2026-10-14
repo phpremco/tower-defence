@@ -44,34 +44,33 @@ MonoBehaviour:
     - {x: 3, y: 9}
   _blockedCells:
   - {x: 1, y: 8}
+  - {x: 5, y: 3}
   - {x: 11, y: 14}
+  - {x: 13, y: 14}
+  - {x: 14, y: 1}
   - {x: 16, y: 1}
+  - {x: 20, y: 4}
+  - {x: 20, y: 14}
   - {x: 21, y: 9}
+  - {x: 21, y: 10}
   - {x: 21, y: 14}
   - {x: 26, y: 4}
+  - {x: 26, y: 14}
   _blockades:
   - Cell: {x: 5, y: 6}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   - Cell: {x: 18, y: 8}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 20, y: 5}
-    Kind: 4
   - Cell: {x: 20, y: 6}
     Kind: 4
   - Cell: {x: 20, y: 7}
-    Kind: 4
-  - Cell: {x: 20, y: 8}
-    Kind: 4
-  - Cell: {x: 21, y: 5}
     Kind: 4
   - Cell: {x: 21, y: 6}
     Kind: 4
   - Cell: {x: 21, y: 7}
     Kind: 4
   - Cell: {x: 21, y: 8}
-    Kind: 4
-  - Cell: {x: 22, y: 5}
     Kind: 4
   - Cell: {x: 22, y: 6}
     Kind: 4
@@ -89,20 +88,14 @@ MonoBehaviour:
     Kind: 4
   - Cell: {x: 9, y: 4}
     Kind: 4
-  - Cell: {x: 9, y: 5}
-    Kind: 4
   - Cell: {x: 10, y: 4}
     Kind: 4
   - Cell: {x: 10, y: 5}
     Kind: 4
   - Cell: {x: 11, y: 4}
     Kind: 4
-  - Cell: {x: 11, y: 5}
-    Kind: 4
   - Cell: {x: 2, y: 11}
     Kind: 4
-  - Cell: {x: 2, y: 12}
-    Kind: 1
   - Cell: {x: 2, y: 13}
     Kind: 1
   - Cell: {x: 3, y: 11}
@@ -111,19 +104,11 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 3, y: 13}
     Kind: 1
-  - Cell: {x: 4, y: 11}
-    Kind: 4
   - Cell: {x: 4, y: 12}
     Kind: 1
   - Cell: {x: 4, y: 13}
     Kind: 1
-  - Cell: {x: 22, y: 0}
-    Kind: 2
-  - Cell: {x: 22, y: 1}
-    Kind: 2
   - Cell: {x: 22, y: 2}
-    Kind: 2
-  - Cell: {x: 23, y: 0}
     Kind: 2
   - Cell: {x: 23, y: 1}
     Kind: 2
@@ -135,21 +120,9 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 24, y: 2}
     Kind: 2
-  - Cell: {x: 25, y: 0}
-    Kind: 2
   - Cell: {x: 25, y: 1}
     Kind: 2
-  - Cell: {x: 25, y: 2}
-    Kind: 2
-  - Cell: {x: 26, y: 0}
-    Kind: 2
-  - Cell: {x: 26, y: 1}
-    Kind: 2
-  - Cell: {x: 26, y: 2}
-    Kind: 2
   - Cell: {x: 14, y: 7}
-    Kind: 1
-  - Cell: {x: 14, y: 8}
     Kind: 1
   - Cell: {x: 14, y: 9}
     Kind: 1
@@ -160,10 +133,6 @@ MonoBehaviour:
   - Cell: {x: 15, y: 9}
     Kind: 1
   - Cell: {x: 16, y: 7}
-    Kind: 1
-  - Cell: {x: 16, y: 8}
-    Kind: 1
-  - Cell: {x: 16, y: 9}
     Kind: 1
   - Cell: {x: 0, y: 12}
     Kind: 1
@@ -176,10 +145,6 @@ MonoBehaviour:
   - Cell: {x: 1, y: 13}
     Kind: 1
   - Cell: {x: 1, y: 14}
-    Kind: 1
-  - Cell: {x: 2, y: 14}
-    Kind: 1
-  - Cell: {x: 3, y: 14}
     Kind: 1
   - Cell: {x: 4, y: 14}
     Kind: 1
@@ -195,21 +160,11 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 6, y: 14}
     Kind: 1
-  - Cell: {x: 24, y: 6}
-    Kind: 1
   - Cell: {x: 24, y: 7}
-    Kind: 1
-  - Cell: {x: 24, y: 8}
     Kind: 1
   - Cell: {x: 24, y: 9}
     Kind: 1
-  - Cell: {x: 24, y: 10}
-    Kind: 1
   - Cell: {x: 24, y: 11}
-    Kind: 1
-  - Cell: {x: 24, y: 12}
-    Kind: 1
-  - Cell: {x: 25, y: 6}
     Kind: 1
   - Cell: {x: 25, y: 7}
     Kind: 1
@@ -220,8 +175,6 @@ MonoBehaviour:
   - Cell: {x: 25, y: 10}
     Kind: 1
   - Cell: {x: 25, y: 11}
-    Kind: 1
-  - Cell: {x: 25, y: 12}
     Kind: 1
   - Cell: {x: 26, y: 6}
     Kind: 1
@@ -235,10 +188,6 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 26, y: 11}
     Kind: 1
-  - Cell: {x: 26, y: 12}
-    Kind: 1
-  - Cell: {x: 27, y: 6}
-    Kind: 1
   - Cell: {x: 27, y: 7}
     Kind: 1
   - Cell: {x: 27, y: 8}
@@ -249,13 +198,7 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 27, y: 11}
     Kind: 1
-  - Cell: {x: 27, y: 12}
-    Kind: 1
-  - Cell: {x: 1, y: 0}
-    Kind: 1
   - Cell: {x: 1, y: 1}
-    Kind: 1
-  - Cell: {x: 1, y: 2}
     Kind: 1
   - Cell: {x: 2, y: 0}
     Kind: 1
@@ -263,17 +206,9 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 2, y: 2}
     Kind: 1
-  - Cell: {x: 3, y: 0}
-    Kind: 1
   - Cell: {x: 3, y: 1}
     Kind: 1
-  - Cell: {x: 3, y: 2}
-    Kind: 1
-  - Cell: {x: 4, y: 0}
-    Kind: 1
   - Cell: {x: 4, y: 1}
-    Kind: 1
-  - Cell: {x: 4, y: 2}
     Kind: 1
   - Cell: {x: 5, y: 0}
     Kind: 1
@@ -282,8 +217,6 @@ MonoBehaviour:
   - Cell: {x: 5, y: 2}
     Kind: 1
   - Cell: {x: 6, y: 0}
-    Kind: 1
-  - Cell: {x: 6, y: 1}
     Kind: 1
   - Cell: {x: 6, y: 2}
     Kind: 1
