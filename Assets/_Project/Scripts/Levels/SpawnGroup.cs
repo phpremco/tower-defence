@@ -19,6 +19,12 @@ namespace Game.Levels
 
         /// <summary>Seconds after the wave starts before the first enemy appears.</summary>
         [Min(0f)] public float Delay;
+
+        /// <summary>
+        /// Extra seconds before the first enemy that, unlike <see cref="Delay"/>, shrink with the difficulty's
+        /// spawn interval. Clusters of one stream use it so a harder level compresses the whole rhythm.
+        /// </summary>
+        [Min(0f)] public float Stagger;
     }
 }
 

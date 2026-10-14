@@ -15,7 +15,32 @@ MonoBehaviour:
   _startDelay: 8
   _groups:
   - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 10
+    Count: 3
     PathIndex: 0
-    Interval: 1.2
+    Interval: 0.6
     Delay: 0
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Count: 1
+    PathIndex: 0
+    Interval: 0.6
+    Delay: 0
+    Stagger: 3.6000001
+  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Count: 2
+    PathIndex: 0
+    Interval: 0.6
+    Delay: 0
+    Stagger: 4.8
+  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Count: 3
+    PathIndex: 0
+    Interval: 0.6
+    Delay: 0
+    Stagger: 7.2000003
+  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Count: 1
+    PathIndex: 0
+    Interval: 0.6
+    Delay: 0
+    Stagger: 10.8

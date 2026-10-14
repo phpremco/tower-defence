@@ -58,7 +58,7 @@ namespace Game.Levels
             }
         }
 
-        private float SpawnTime(SpawnGroup group, int index) => group.Delay + index * group.Interval * _intervalMultiplier;
+        private float SpawnTime(SpawnGroup group, int index) => group.Delay + (group.Stagger + index * group.Interval) * _intervalMultiplier;
     }
 }
 

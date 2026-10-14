@@ -5,6 +5,7 @@ using Game.Economy;
 using Game.Levels;
 using Game.Towers;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.UI
@@ -18,6 +19,9 @@ namespace Game.UI
     {
         private const float Margin = 60f;
         private const float TopOffset = 170f;
+        private const float ReferenceHeight = 1080f;
+        private const float BackButtonClearance = 140f;
+        private const float ScrollSensitivity = 40f;
         private const float ListWidth = 420f;
         private const float ListRowHeight = 100f;
         private const float ListRowGap = 14f;
@@ -46,6 +50,7 @@ namespace Game.UI
         private CampaignCatalog _campaign;
         private UpgradeCatalog _catalog;
         private Text _pointsText;
+        private ScrollRect _scroll;
         private ModelPreview _preview;
         private float _maxDamage;
         private float _maxRange;
@@ -84,13 +89,16 @@ namespace Game.UI
             _pointsText = UiKit.CreateFixedText(root, string.Empty, 30, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -100f), new Vector2(1200f, 50f));
 
             _preview = null;
-            float y = TopOffset;
+            RectTransform list = BuildScrollList(root);
+            float y = 0f;
             foreach (string name in GroupNames())
             {
-                Group group = BuildGroup(root, name, y);
+                Group group = BuildGroup(root, list, name, y);
                 _groups.Add(group);
                 y += ListRowHeight + ListRowGap;
             }
+
+            list.sizeDelta = new Vector2(ListWidth, y);
 
             Button back = UiKit.CreateButton(root, "Back to map", () => Go(SceneNames.WorldMap));
             Destroy(back.GetComponent<LayoutElement>());
@@ -106,13 +114,69 @@ namespace Game.UI
             SetFirstSelected(_groups[0].ListButton);
         }
 
-        private Group BuildGroup(RectTransform root, string name, float y)
+        // The list holds more entries than fit under the title, so it lives in a scrolling window that
+        // stops above the back button. Returns the content rectangle the entries are placed in.
+        private RectTransform BuildScrollList(RectTransform root)
+        {
+            float height = ReferenceHeight - TopOffset - BackButtonClearance;
+
+            var viewport = new GameObject("List viewport", typeof(RectTransform), typeof(RectMask2D));
+            viewport.transform.SetParent(root, false);
+            PlaceTopLeft((RectTransform)viewport.transform, new Vector2(Margin, -TopOffset), new Vector2(ListWidth, height));
+
+            var content = new GameObject("List content", typeof(RectTransform));
+            content.transform.SetParent(viewport.transform, false);
+            var contentRect = (RectTransform)content.transform;
+            PlaceTopLeft(contentRect, Vector2.zero, new Vector2(ListWidth, height));
+
+            _scroll = viewport.AddComponent<ScrollRect>();
+            _scroll.viewport = (RectTransform)viewport.transform;
+            _scroll.content = contentRect;
+            _scroll.horizontal = false;
+            _scroll.movementType = ScrollRect.MovementType.Clamped;
+            _scroll.scrollSensitivity = ScrollSensitivity;
+            return contentRect;
+        }
+
+        // Keeps the entry that gamepad or keyboard navigation selected inside the window.
+        private void Update()
+        {
+            if (_scroll == null || EventSystem.current == null)
+            {
+                return;
+            }
+
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            if (selected == null || selected.transform.parent != _scroll.content)
+            {
+                return;
+            }
+
+            var rect = (RectTransform)selected.transform;
+            float top = -rect.anchoredPosition.y;
+            float bottom = top + rect.rect.height;
+            float viewHeight = ((RectTransform)_scroll.viewport).rect.height;
+            Vector2 position = _scroll.content.anchoredPosition;
+
+            if (top < position.y)
+            {
+                position.y = top;
+            }
+            else if (bottom > position.y + viewHeight)
+            {
+                position.y = bottom - viewHeight;
+            }
+
+            _scroll.content.anchoredPosition = position;
+        }
+
+        private Group BuildGroup(RectTransform root, RectTransform list, string name, float y)
         {
             var group = new Group { Name = name, Tower = FindTower(name) };
 
-            group.ListButton = UiKit.CreateButton(root, name, () => Show(group));
+            group.ListButton = UiKit.CreateButton(list, name, () => Show(group));
             Destroy(group.ListButton.GetComponent<LayoutElement>());
-            PlaceTopLeft(group.ListButton.GetComponent<RectTransform>(), new Vector2(Margin, -y), new Vector2(ListWidth, ListRowHeight));
+            PlaceTopLeft(group.ListButton.GetComponent<RectTransform>(), new Vector2(0f, -y), new Vector2(ListWidth, ListRowHeight));
 
             Image panel = UiKit.CreatePanel(root, name + " panel", new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, Vector2.zero, PanelTint);
             RectTransform panelRect = panel.rectTransform;
