@@ -26,7 +26,8 @@ namespace Game.Levels
         private const float RouteDotSpacing = 0.9f;
         private const float RouteDashLength = 0.45f;
         private const float RouteHeight = 0.12f;
-        private const float RouteEmission = 2.2f;
+        private const float RouteEmission = 1.4f;
+        private const float RouteAlpha = 0.45f;
         private const float MarkerEmission = 1.1f;
         private const float BaseScale = 1.25f;
         private const int StarCount = 700;
@@ -38,7 +39,8 @@ namespace Game.Levels
         private static readonly Color SpawnColor = new Color(1f, 0.4f, 0.25f);
         private static readonly Color StarColor = new Color(0.8f, 0.9f, 1f);
 
-        public static void Build(LevelDefinition level, Transform parent)
+        /// <summary>Builds the level and returns the flight route objects by path index, hidden until a wave uses them.</summary>
+        public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent)
         {
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
@@ -47,10 +49,11 @@ namespace Game.Levels
 
             BuildGround(level, theme, grid, road, blocked, parent);
             BuildRoadArrows(level, grid, parent);
-            BuildMarkers(level, theme, grid, parent);
+            Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildEdges(theme, parent, level.WorldSize);
             BuildScenery(level, theme, grid, parent);
             BuildStarfield(parent, level.WorldSize);
+            return routes;
         }
 
         private static void BuildGround(LevelDefinition level, VisualTheme theme, GridMap grid, HashSet<Vector2Int> road, HashSet<Vector2Int> blocked, Transform parent)
@@ -128,7 +131,7 @@ namespace Game.Levels
             }
         }
 
-        private static void PlaceChevron(Vector3 center, Vector3 forward, Transform parent)
+        private static void PlaceChevron(Vector3 center, Vector3 forward, Transform parent, bool transparent = false)
         {
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             for (int side = -1; side <= 1; side += 2)
@@ -137,14 +140,20 @@ namespace Game.Levels
                 GameObject arm = PlaceholderVisuals.CreatePrimitive(
                     PrimitiveType.Cube, ArrowColor, parent, center + offset + Vector3.up * ArrowHeight, new Vector3(0.07f, 0.03f, 0.28f), ArrowEmission);
                 arm.transform.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(0f, -side * 40f, 0f);
+                if (transparent)
+                {
+                    arm.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(RouteColor, RouteAlpha, RouteEmission);
+                }
             }
         }
 
         // Where enemies come from (red rings), the flight routes (dashes) and the base.
-        private static void BuildMarkers(LevelDefinition level, VisualTheme theme, GridMap grid, Transform parent)
+        private static Dictionary<int, GameObject> BuildMarkers(LevelDefinition level, VisualTheme theme, GridMap grid, Transform parent)
         {
-            foreach (EnemyPath path in level.Paths)
+            var routes = new Dictionary<int, GameObject>();
+            for (int index = 0; index < level.Paths.Length; index++)
             {
+                EnemyPath path = level.Paths[index];
                 if (path.Waypoints == null || path.Waypoints.Length < 2)
                 {
                     continue;
@@ -159,7 +168,11 @@ namespace Game.Levels
 
                 if (path.Flying)
                 {
-                    BuildFlightRoute(grid, path, parent);
+                    var routeRoot = new GameObject($"FlightRoute_{index}");
+                    routeRoot.transform.SetParent(parent, false);
+                    BuildFlightRoute(grid, path, routeRoot.transform);
+                    routeRoot.SetActive(false);
+                    routes[index] = routeRoot;
                 }
             }
 
@@ -177,6 +190,8 @@ namespace Game.Levels
                     PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, theme.BaseColor, parent, baseCenter + Vector3.up * 0.6f, new Vector3(1.2f, 0.6f, 1.2f), 2.5f);
                 }
             }
+
+            return routes;
         }
 
         // A dashed line with a small arrow head at the end of each segment shows where flyers travel.
@@ -195,10 +210,11 @@ namespace Game.Levels
                     GameObject dash = PlaceholderVisuals.CreatePrimitive(
                         PrimitiveType.Cube, RouteColor, parent, new Vector3(center.x, RouteHeight, center.z), new Vector3(0.08f, 0.03f, RouteDashLength), RouteEmission);
                     dash.transform.rotation = Quaternion.LookRotation(direction);
+                    dash.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(RouteColor, RouteAlpha, RouteEmission);
                 }
 
                 Vector3 head = to - direction * 0.6f;
-                PlaceChevron(new Vector3(head.x, RouteHeight - ArrowHeight, head.z), direction, parent);
+                PlaceChevron(new Vector3(head.x, RouteHeight - ArrowHeight, head.z), direction, parent, transparent: true);
             }
         }
 
@@ -285,4 +301,5 @@ namespace Game.Levels
         }
     }
 }
+
 

@@ -37,6 +37,7 @@ namespace Game.Levels
         private RangeIndicator _range;
         private Tower _ghost;
         private TowerDefinition _ghostDefinition;
+        private string _cellMessage = string.Empty;
         private float _repeatTimer;
         private float _lastPointerMove = float.NegativeInfinity;
         private Vector2 _lastPointer;
@@ -97,13 +98,17 @@ namespace Game.Levels
 
         private void Update()
         {
-            if (_context == null || _context.Outcome != LevelOutcome.Running || _context.Mode == PlacementMode.TowerMenu)
+            if (_context == null || _context.Outcome != LevelOutcome.Running || _context.Paused)
             {
                 return;
             }
 
-            UpdateStick();
+            // The mouse is tracked in every mode so a click away from an open menu lands on the cell under it.
             UpdatePointer();
+            if (_context.Mode != PlacementMode.TowerMenu)
+            {
+                UpdateStick();
+            }
         }
 
         private bool PointerActive => Time.unscaledTime - _lastPointerMove < PointerActiveSeconds;
@@ -162,12 +167,13 @@ namespace Game.Levels
             }
 
             _cursor = cell;
+            _cellMessage = string.Empty;
             Refresh();
         }
 
         private void OnConfirmed()
         {
-            if (_context.Outcome != LevelOutcome.Running || _context.PointerOverUi)
+            if (_context.Outcome != LevelOutcome.Running || _context.Paused || _context.PointerOverUi)
             {
                 return;
             }
@@ -201,7 +207,12 @@ namespace Game.Levels
             }
             else if (_buildGrid.CanBuild(_cursor) && _context.SelectedTower != null)
             {
+                _cellMessage = string.Empty;
                 _context.Mode = PlacementMode.Placing;
+            }
+            else
+            {
+                _cellMessage = DescribeBlockedCell();
             }
 
             Refresh();
@@ -209,6 +220,11 @@ namespace Game.Levels
 
         private void OnCancelled()
         {
+            if (_context.Paused)
+            {
+                return;
+            }
+
             switch (_context.Mode)
             {
                 case PlacementMode.Placing:
@@ -347,12 +363,13 @@ namespace Game.Levels
             bool valid = !hasTower && _buildGrid.CanBuild(_cursor) && selected != null && _context.Wallet.CanAfford(selected.BuildCost);
 
             _marker.gameObject.SetActive(_context.Mode != PlacementMode.TowerMenu);
-            _markerRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(hasTower ? TowerColor : valid || !placing ? ValidColor : InvalidColor, MarkerEmission);
+            bool cellFree = _buildGrid.CanBuild(_cursor);
+            _markerRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor, MarkerEmission);
 
             UpdateGhost(placing, selected, world);
             UpdateRange(placing, selected, valid, hasTower, hovered, world);
 
-            _context.Status = placing ? PlacingStatus(selected, valid) : string.Empty;
+            _context.Status = placing ? PlacingStatus(selected, valid) : _cellMessage;
             _context.Changed.Raise();
         }
 
@@ -406,6 +423,21 @@ namespace Game.Levels
             }
         }
 
+        private string DescribeBlockedCell()
+        {
+            if (_context.SelectedTower == null)
+            {
+                return "Pick a tower first";
+            }
+
+            if (_buildGrid.IsRoad(_cursor))
+            {
+                return "Towers cannot be built on the road";
+            }
+
+            return _buildGrid.IsBlocked(_cursor) ? "Something is in the way here" : "Cannot build here";
+        }
+
         private string PlacingStatus(TowerDefinition selected, bool valid)
         {
             if (valid)
@@ -422,3 +454,5 @@ namespace Game.Levels
         }
     }
 }
+
+

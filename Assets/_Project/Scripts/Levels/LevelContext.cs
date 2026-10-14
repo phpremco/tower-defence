@@ -90,6 +90,11 @@ namespace Game.Levels
         /// <summary>Raised whenever something the HUD shows has changed.</summary>
         public GameEvent Changed { get; } = new GameEvent();
 
+        /// <summary>Indices of the flying paths the current or upcoming wave will use. Only these routes are drawn.</summary>
+        public HashSet<int> ActiveRoutes { get; } = new HashSet<int>();
+
+        public GameEvent RoutesChanged { get; } = new GameEvent();
+
         public GameEvent UpgradeRequested { get; } = new GameEvent();
         public GameEvent RepairRequested { get; } = new GameEvent();
         public GameEvent SellRequested { get; } = new GameEvent();
@@ -124,3 +129,4 @@ namespace Game.Levels
         }
     }
 }
+

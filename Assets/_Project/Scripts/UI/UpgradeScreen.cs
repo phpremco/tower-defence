@@ -100,6 +100,7 @@ namespace Game.UI
             back.GetComponent<RectTransform>().pivot = new Vector2(0f, 0f);
             back.GetComponent<RectTransform>().anchoredPosition = new Vector2(Margin, 40f);
 
+            BuildSharedPreview(root);
             Show(_groups[0]);
             Refresh();
             SetFirstSelected(_groups[0].ListButton);
@@ -134,7 +135,6 @@ namespace Game.UI
             Text sub = UiKit.CreateFixedText(panel, subtitle, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(30f, -92f), new Vector2(1200f, 50f));
             sub.color = Muted;
 
-            BuildPreview(panel, group);
             if (tower != null)
             {
                 BuildStats(panel, tower);
@@ -153,23 +153,19 @@ namespace Game.UI
             }
         }
 
-        private void BuildPreview(RectTransform panel, Group group)
+        // One shared preview for the whole screen: every group used to build its own rig at the same spot,
+        // so each showed a pile of all the towers instead of the one being upgraded.
+        private void BuildSharedPreview(RectTransform root)
         {
-            Image frame = UiKit.CreatePanel(panel, "Preview frame", new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, Vector2.zero, new Color(0.08f, 0.12f, 0.2f, 1f));
-            PlaceTopLeft(frame.rectTransform, new Vector2(30f, -StatsY), new Vector2(PreviewSize + 20f, PreviewSize + 20f));
+            Image frame = UiKit.CreatePanel(root, "Preview frame", new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, Vector2.zero, new Color(0.08f, 0.12f, 0.2f, 1f));
+            PlaceTopLeft(frame.rectTransform, new Vector2(DetailX + 30f, -(TopOffset + StatsY)), new Vector2(PreviewSize + 20f, PreviewSize + 20f));
 
-            ModelPreview preview = ModelPreview.Create(frame.rectTransform, new Vector2(PreviewSize, PreviewSize));
-            RectTransform rect = preview.GetComponent<RectTransform>();
+            _preview = ModelPreview.Create(frame.rectTransform, new Vector2(PreviewSize, PreviewSize));
+            RectTransform rect = _preview.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
-
-            GameObject model = group.Tower != null ? group.Tower.Model : BaseModel();
-            Color tint = group.Tower != null ? Color.Lerp(Color.white, group.Tower.Color, 0.55f) : Color.white;
-            float scale = group.Tower != null ? group.Tower.ModelScale : 1f;
-            preview.Show(model, scale, tint);
         }
-
         private GameObject BaseModel()
         {
             foreach (MapNode node in _campaign.Nodes)
@@ -322,6 +318,14 @@ namespace Game.UI
             {
                 group.Panel.SetActive(group == selected);
             }
+
+            if (_preview != null)
+            {
+                GameObject model = selected.Tower != null ? selected.Tower.Model : BaseModel();
+                Color tint = selected.Tower != null ? Color.Lerp(Color.white, selected.Tower.Color, 0.55f) : Color.white;
+                float scale = selected.Tower != null ? selected.Tower.ModelScale : 1f;
+                _preview.Show(model, scale, tint);
+            }
         }
 
         private void Buy(UpgradeDefinition upgrade)
@@ -367,5 +371,6 @@ namespace Game.UI
         }
     }
 }
+
 
 

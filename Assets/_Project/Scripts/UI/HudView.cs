@@ -65,6 +65,7 @@ namespace Game.UI
             BuildTowerBar(safe);
             BuildIcons(safe);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
+            gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, Game.Core.Services.Get<Game.Platform.IInputProvider>());
 
             _context.Changed.Subscribe(Refresh);
             _context.Wallet.Changed += OnMoneyChanged;
@@ -266,7 +267,7 @@ namespace Game.UI
                 case LevelOutcome.Lost:
                     return "Defeat\nPress confirm to return to the map";
                 default:
-                    return _context.Paused ? "Paused" : string.Empty;
+                    return string.Empty;
             }
         }
 
@@ -295,4 +296,5 @@ namespace Game.UI
         }
     }
 }
+
 

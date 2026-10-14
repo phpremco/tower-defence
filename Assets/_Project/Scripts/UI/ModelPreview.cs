@@ -15,6 +15,7 @@ namespace Game.UI
         private const float TurnDegreesPerSecond = 28f;
         private const float CameraHeight = 1.3f;
         private const float CameraBack = 4.4f;
+        private const float LookDownDegrees = 7f;
         private static readonly Color Background = new Color(0.05f, 0.08f, 0.13f, 1f);
 
         private Transform _rig;
@@ -64,7 +65,7 @@ namespace Game.UI
             var cameraGo = new GameObject("PreviewCamera");
             cameraGo.transform.SetParent(_rig, false);
             cameraGo.transform.localPosition = new Vector3(0f, CameraHeight, -CameraBack);
-            cameraGo.transform.localRotation = Quaternion.Euler(22f, 0f, 0f);
+            cameraGo.transform.localRotation = Quaternion.Euler(LookDownDegrees, 0f, 0f);
             var camera = cameraGo.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Background;
@@ -103,4 +104,5 @@ namespace Game.UI
         }
     }
 }
+
 

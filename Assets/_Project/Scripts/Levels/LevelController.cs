@@ -31,6 +31,7 @@ namespace Game.Levels
             _progress = progress;
 
             _context.NextWaveCountdown = waves[0].StartDelay;
+            PublishRoutes(0);
             _context.BaseHealth.Died += OnBaseDied;
             _input.SkipWave += OnSkipWave;
             _input.Confirmed += OnConfirmed;
@@ -87,6 +88,7 @@ namespace Game.Levels
             {
                 _scheduler = null;
                 _context.NextWaveCountdown = _nextWaveIndex < _waves.Length ? _waves[_nextWaveIndex].StartDelay : 0f;
+                PublishRoutes(_nextWaveIndex);
                 _context.Changed.Raise();
             }
         }
@@ -94,10 +96,29 @@ namespace Game.Levels
         private void StartNextWave()
         {
             _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty);
+            PublishRoutes(_nextWaveIndex);
             _nextWaveIndex++;
             _context.WaveNumber = _nextWaveIndex;
             _context.NextWaveCountdown = 0f;
             _context.Changed.Raise();
+        }
+
+        // Tells the view which flying routes the given wave uses. Beyond the last wave nothing is shown.
+        private void PublishRoutes(int waveIndex)
+        {
+            _context.ActiveRoutes.Clear();
+            if (waveIndex < _waves.Length)
+            {
+                foreach (SpawnGroup group in _waves[waveIndex].Groups)
+                {
+                    if (group.PathIndex >= 0 && group.PathIndex < _context.Level.Paths.Length && _context.Level.Paths[group.PathIndex].Flying)
+                    {
+                        _context.ActiveRoutes.Add(group.PathIndex);
+                    }
+                }
+            }
+
+            _context.RoutesChanged.Raise();
         }
 
         private void OnSkipWave()
@@ -143,6 +164,7 @@ namespace Game.Levels
         }
     }
 }
+
 
 
 

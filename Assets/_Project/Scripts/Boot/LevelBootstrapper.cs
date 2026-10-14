@@ -48,11 +48,11 @@ namespace Game.Boot
             Services.TryGet(out PlaytestSettings debug);
             _cameraRig.Apply(level);
             PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
-            BuildEnvironment(level);
-            BuildGameplay(level, session.Difficulty, waves, debug);
+            Dictionary<int, GameObject> routes = BuildEnvironment(level);
+            BuildGameplay(level, session.Difficulty, waves, debug, routes);
         }
 
-        private static void BuildEnvironment(LevelDefinition level)
+        private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
         {
             VisualTheme theme = level.Theme;
             var sun = new GameObject("Sun");
@@ -71,10 +71,10 @@ namespace Game.Boot
             RenderSettings.ambientLight = theme.FogColor;
 
             var visuals = new GameObject("LevelVisuals").transform;
-            LevelVisualBuilder.Build(level, visuals);
+            return LevelVisualBuilder.Build(level, visuals);
         }
 
-        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug)
+        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes)
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
@@ -111,6 +111,7 @@ namespace Game.Boot
             var spawner = new EnemySpawner(context, root);
 
             var controllers = new GameObject("Controllers");
+            controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
             var levelController = controllers.AddComponent<LevelController>();
             levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);
             var placement = controllers.AddComponent<PlacementController>();
@@ -122,6 +123,8 @@ namespace Game.Boot
         }
     }
 }
+
+
 
 
 
