@@ -25,7 +25,15 @@ namespace Game.Core
             float emission = 0f)
         {
             GameObject go = GameObject.CreatePrimitive(type);
-            Object.Destroy(go.GetComponent<Collider>());
+            // Edit mode only happens in editor tools and previews, where Destroy is not allowed.
+            if (Application.isPlaying)
+            {
+                Object.Destroy(go.GetComponent<Collider>());
+            }
+            else
+            {
+                Object.DestroyImmediate(go.GetComponent<Collider>());
+            }
             go.transform.SetParent(parent, false);
             go.transform.localPosition = localPosition;
             go.transform.localScale = localScale;
