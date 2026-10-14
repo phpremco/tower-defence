@@ -29,3 +29,13 @@ The HUD blocking check now only counts real buttons under the pointer.
 - Unity CLI path and commands: see `Docs/COMMANDS.md`.
 - Regenerate data and scenes: menu `Tools/Generate/Scenes and Starter Data`. It is idempotent and overwrites generated assets.
 - Play Mode only advances when the Editor window is focused; for automated checks step frames with `EditorApplication.Step()`.
+
+## Milestone 5 (blockades and hero) - first slice
+
+- **Blockades** are `TowerDefinition`s with `BlocksGroundEnemies` placed by `LevelDefinition.Blockades` (cell + definition).
+  They reuse Tower: levels, HP bonus per level (`TowerLevel.HealthBonus`), guns from level 2, repair, and "rebuild" when wrecked
+  (level 0 cost). Ground enemies stop within 0.85 of a living blockade and hit it (`EnemyDefinition.BlockadeDamage`).
+- **Hero** (`Game.Hero.Commander`, `HeroDefinition`): posts = every blockade + the base. Move with the HUD panel (bottom left),
+  keys H / F / G (X, LT, RT on a gamepad), or the third icon of a blockade menu ("Send hero"). Guards a blockade (takes
+  `GuardShare` of the hits), goes down when its health runs out and returns after `ReviveSeconds`.
+- Not done yet: permanent hero upgrades in the upgrade screen, hero visuals beyond placeholders, balance pass for hard/psycho.

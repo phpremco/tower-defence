@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Game.Hero;
 using Game.Towers;
 
 namespace Game.Levels
@@ -18,6 +19,7 @@ namespace Game.Levels
         [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
+        [SerializeField] private HeroDefinition _hero;
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
@@ -55,6 +57,9 @@ namespace Game.Levels
         public Vector2Int[] BlockedCells => _blockedCells;
         /// <summary>Fixed blockades on the road. Ground enemies stop at them until they are destroyed.</summary>
         public BlockadeSpot[] Blockades => _blockades;
+
+        /// <summary>The commander for this level, or null for a level without one.</summary>
+        public HeroDefinition Hero => _hero;
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;

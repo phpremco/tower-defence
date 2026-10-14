@@ -61,6 +61,7 @@ MonoBehaviour:
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   - Cell: {x: 10, y: 2}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _availableTowers:
   - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
   - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}

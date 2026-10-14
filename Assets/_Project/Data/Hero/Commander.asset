@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25523c49d0fc0b34295f5707f98a0a3d, type: 3}
+  m_Name: Commander
+  m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroDefinition
+  _displayName: Commander
+  _maxHealth: 200
+  _walkSpeed: 5
+  _damage: 12
+  _range: 3
+  _fireInterval: 0.6
+  _projectileSpeed: 14
+  _guardShare: 0.4
+  _reviveSeconds: 15
+  _shockwaveDamage: 40
+  _shockwaveRadius: 3.2
+  _shockwaveCooldown: 20
+  _repairFraction: 0.4
+  _repairCooldown: 25
+  _color: {r: 0.4, g: 0.85, b: 1, a: 1}

@@ -14,6 +14,8 @@ namespace Game.UI
         SkipWave,
         Star,
         Check,
+        Hero,
+        Shockwave,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -62,6 +64,15 @@ namespace Game.UI
                     return Star;
                 case IconType.Check:
                     return Check;
+                case IconType.Hero:
+                    // A shield: a flat top that narrows to a point.
+                    return (u, v) => (v > 0.5f && v < 0.86f && Mathf.Abs(u - 0.5f) < 0.3f) || Triangle(u, v, 0.2f, 0.5f, 0.8f, 0.5f, 0.5f, 0.1f);
+                case IconType.Shockwave:
+                    return (u, v) =>
+                    {
+                        float d = Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f));
+                        return d < 0.1f || (d > 0.22f && d < 0.3f) || (d > 0.4f && d < 0.47f);
+                    };
                 case IconType.Speed:
                     return (u, v) => Triangle(u, v, 0.15f, 0.2f, 0.15f, 0.8f, 0.5f, 0.5f) || Triangle(u, v, 0.5f, 0.2f, 0.5f, 0.8f, 0.85f, 0.5f);
                 case IconType.Pause:

@@ -112,6 +112,33 @@
                                          "processors":  "",
                                          "interactions":  "",
                                          "initialStateCheck":  false
+                                     },
+                                     {
+                                         "name":  "HeroPost",
+                                         "type":  "Button",
+                                         "id":  "5a0f6c1e-3b7d-4e21-8c52-0d9a41b7e301",
+                                         "expectedControlType":  "Button",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  false
+                                     },
+                                     {
+                                         "name":  "Shockwave",
+                                         "type":  "Button",
+                                         "id":  "5a0f6c1e-3b7d-4e21-8c52-0d9a41b7e302",
+                                         "expectedControlType":  "Button",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  false
+                                     },
+                                     {
+                                         "name":  "EmergencyRepair",
+                                         "type":  "Button",
+                                         "id":  "5a0f6c1e-3b7d-4e21-8c52-0d9a41b7e303",
+                                         "expectedControlType":  "Button",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  false
                                      }
                                  ],
                      "bindings":  [
@@ -409,6 +436,72 @@
                                           "processors":  "",
                                           "groups":  "",
                                           "action":  "Sell",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c11",
+                                          "path":  "<Keyboard>/h",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "HeroPost",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c12",
+                                          "path":  "<Gamepad>/buttonWest",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "HeroPost",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c13",
+                                          "path":  "<Keyboard>/f",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Shockwave",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c14",
+                                          "path":  "<Gamepad>/leftTrigger",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Shockwave",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c15",
+                                          "path":  "<Keyboard>/g",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "EmergencyRepair",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "7c1d2e90-4a5b-4f6c-9d01-1e2f3a4b5c16",
+                                          "path":  "<Gamepad>/rightTrigger",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "EmergencyRepair",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       }

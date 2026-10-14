@@ -6,6 +6,7 @@
                        "Game.Combat",
                        "Game.Enemies",
                        "Game.Towers",
+                       "Game.Hero",
                        "Game.Economy",
                        "Game.Platform"
                    ],

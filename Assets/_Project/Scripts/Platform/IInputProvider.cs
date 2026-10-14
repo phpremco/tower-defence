@@ -22,6 +22,9 @@ namespace Game.Platform
         event Action UpgradePressed;
         event Action RepairPressed;
         event Action SellPressed;
+        event Action HeroPostPressed;
+        event Action ShockwavePressed;
+        event Action EmergencyRepairPressed;
     }
 }
 

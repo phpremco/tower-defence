@@ -9,7 +9,7 @@ namespace Game.Towers
     /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
     /// Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Tower : MonoBehaviour, IStructure
+    public sealed class Tower : MonoBehaviour, IStructure, IGuardable
     {
         private TowerDefinition _definition;
         private TargetRegistry _registry;
@@ -111,7 +111,21 @@ namespace Game.Towers
             Health.Changed -= OnHealthChanged;
         }
 
-        public void TakeDamage(float amount) => Health.TakeDamage(amount);
+        /// <summary>The hero standing here, if any. It takes a share of every hit.</summary>
+        public IDamageGuard Guard { get; set; }
+
+        public void TakeDamage(float amount)
+        {
+            Health.TakeDamage(Guard != null ? Guard.Absorb(amount) : amount);
+        }
+
+        public void Restore(float fraction)
+        {
+            if (!IsWrecked)
+            {
+                Health.Heal(Health.Max * fraction);
+            }
+        }
 
         public void RepairFully() => Health.Heal(Health.Max);
 

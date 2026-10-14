@@ -25,6 +25,8 @@ namespace Game.Levels
 
         private readonly Dictionary<Vector2Int, Tower> _towers = new Dictionary<Vector2Int, Tower>();
 
+        private readonly List<Tower> _blockades = new List<Tower>();
+
         private LevelContext _context;
         private IInputProvider _input;
         private Camera _camera;
@@ -41,6 +43,9 @@ namespace Game.Levels
         private float _repeatTimer;
         private float _lastPointerMove = float.NegativeInfinity;
         private Vector2 _lastPointer;
+
+        /// <summary>The level's fixed blockades, in the order the level lists them.</summary>
+        public IReadOnlyList<Tower> Blockades => _blockades;
 
         public void Initialize(LevelContext context, IInputProvider input, Camera camera, Transform parent)
         {
@@ -271,6 +276,7 @@ namespace Game.Levels
             {
                 Tower blockade = CreateTower(spot.Blockade, spot.Cell, preview: false);
                 blockade.transform.rotation = Quaternion.LookRotation(RoadDirection.At(_context.Level, spot.Cell));
+                _blockades.Add(blockade);
                 _towers[spot.Cell] = blockade;
                 _buildGrid.Occupy(spot.Cell);
             }
@@ -329,8 +335,15 @@ namespace Game.Levels
         private void OnSell()
         {
             Tower tower = _context.SelectedPlacedTower;
-            if (_context.Mode != PlacementMode.TowerMenu || tower == null || !tower.CanBeSold)
+            if (_context.Mode != PlacementMode.TowerMenu || tower == null)
             {
+                return;
+            }
+
+            if (!tower.CanBeSold)
+            {
+                // The sell shortcut is the "send hero here" shortcut on a blockade.
+                _context.HeroSendRequested.Raise();
                 return;
             }
 

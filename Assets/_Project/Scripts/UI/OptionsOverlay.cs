@@ -24,7 +24,8 @@ namespace Game.UI
             "Cancel               B    Esc    Right click\n" +
             "Switch tower         LB / RB    Q / E\n" +
             "Tower icons          Stick / D-pad to pick, A to use, B to close\n" +
-            "Upgrade / Repair / Sell   U / R / X\n" +
+            "Upgrade / Repair / Sell   U / R / X   (X on a blockade sends the hero)\n" +
+            "Hero: next post / shockwave / repair post   X button / LT / RT    H / F / G\n" +
             "Game speed           Y    Space\n" +
             "Pause                Start    P\n" +
             "Skip wave (test)     Select    N";

@@ -122,6 +122,7 @@ namespace Game.Boot
             levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
+            controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
             var hud = controllers.AddComponent<HudView>();

@@ -4,6 +4,7 @@ using Game.Boot;
 using Game.Core;
 using Game.Economy;
 using Game.Enemies;
+using Game.Hero;
 using Game.Levels;
 using Game.Towers;
 using Game.UI;
@@ -75,7 +76,8 @@ namespace Game.Editor
             VisualTheme theme = LoadOrCreate<VisualTheme>(ThemeAssetPath);
             ConfigureTheme(theme);
             LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
-            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade);
+            HeroDefinition hero = LoadOrCreate<HeroDefinition>($"{DataRoot}/Hero/Commander.asset");
+            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
@@ -233,7 +235,7 @@ namespace Game.Editor
         private static SpawnGroup Group(EnemyDefinition enemy, int count, float interval, float delay, int path = Road) =>
             new SpawnGroup { Enemy = enemy, Count = count, Interval = interval, Delay = delay, PathIndex = path };
 
-        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower, TowerDefinition blockade)
+        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower, TowerDefinition blockade, HeroDefinition hero)
         {
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = "Landing Zone";
@@ -278,6 +280,8 @@ namespace Game.Editor
                 new Vector2Int(2, 0), new Vector2Int(8, 0), new Vector2Int(5, 3), new Vector2Int(0, 4),
                 new Vector2Int(1, 3), new Vector2Int(10, 4),
             });
+            so.FindProperty("_hero").objectReferenceValue = hero;
+
             // One blockade across the middle leg of the road and one on the last leg before the base.
             var blockadeCells = new[] { new Vector2Int(7, 5), new Vector2Int(10, 2) };
             SerializedProperty blockades = so.FindProperty("_blockades");

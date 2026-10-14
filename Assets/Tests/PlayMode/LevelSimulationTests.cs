@@ -50,6 +50,8 @@ namespace Game.Tests
             Time.timeScale = 1f;
             Assert.IsNotNull(context, "LevelContext was never registered.");
             Assert.AreEqual(LevelOutcome.Lost, context.Outcome);
+            Assert.IsNotNull(context.Hero, "Level 1 should have a hero.");
+            Assert.AreEqual(context.Level.Blockades.Length + 1, context.HeroPostNames.Length, "Hero posts are every blockade plus the base.");
             LogAssert.NoUnexpectedReceived();
         }
     }

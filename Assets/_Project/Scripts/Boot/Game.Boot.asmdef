@@ -8,6 +8,7 @@
                        "Game.Levels",
                        "Game.Economy",
                        "Game.Towers",
+                       "Game.Hero",
                        "Game.Enemies",
                        "Game.UI",
                        "Unity.InputSystem",

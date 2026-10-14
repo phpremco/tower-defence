@@ -2,6 +2,7 @@
 using Game.Combat;
 using Game.Core;
 using Game.Economy;
+using Game.Hero;
 using Game.Towers;
 
 namespace Game.Levels
@@ -99,6 +100,15 @@ namespace Game.Levels
         public GameEvent RepairRequested { get; } = new GameEvent();
         public GameEvent SellRequested { get; } = new GameEvent();
         public GameEvent SkipWaveRequested { get; } = new GameEvent();
+
+        /// <summary>The commander, or null when the level has none.</summary>
+        public Commander Hero { get; set; }
+
+        /// <summary>Display names of the hero's posts, in the order the hero indexes them.</summary>
+        public string[] HeroPostNames { get; set; } = new string[0];
+
+        /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
+        public GameEvent HeroSendRequested { get; } = new GameEvent();
 
         public PlayerModifiers ModifiersFor(TowerDefinition tower)
         {

@@ -40,6 +40,7 @@ namespace Game.UI
         private Text _upgradePrice;
         private Text _repairPrice;
         private Text _sellPrice;
+        private Image _thirdIcon;
         private bool _wasOpen;
         private float _nextRefresh;
 
@@ -93,8 +94,27 @@ namespace Game.UI
 
             _upgrade = CreateIcon(IconType.Upgrade, 0, UpgradeTint, () => _context.UpgradeRequested.Raise(), out _upgradePrice);
             _repair = CreateIcon(IconType.Repair, 1, RepairTint, () => _context.RepairRequested.Raise(), out _repairPrice);
-            _sell = CreateIcon(IconType.Sell, 2, SellTint, () => _context.SellRequested.Raise(), out _sellPrice);
+            _sell = CreateIcon(IconType.Sell, 2, SellTint, OnThirdAction, out _sellPrice);
+            _thirdIcon = _sell.transform.Find("Icon").GetComponent<Image>();
             _panel.gameObject.SetActive(false);
+        }
+
+        private void OnThirdAction()
+        {
+            Tower selected = _context.SelectedPlacedTower;
+            if (selected != null && selected.CanBeSold)
+            {
+                _context.SellRequested.Raise();
+            }
+            else
+            {
+                _context.HeroSendRequested.Raise();
+            }
+        }
+
+        private bool IsHeroHere(Tower tower)
+        {
+            return _context.Hero != null && _context.Hero.IsAt(tower.Position);
         }
 
         private Button CreateIcon(IconType type, int index, Color tint, UnityEngine.Events.UnityAction action, out Text price)
@@ -159,11 +179,14 @@ namespace Game.UI
 
             _upgrade.interactable = canUpgrade;
             _repair.interactable = canRepair;
-            _sell.interactable = tower.CanBeSold;
+            // The third icon sells a tower. A blockade cannot be sold, so it sends the hero there instead.
+            bool hasHero = _context.Hero != null;
+            _thirdIcon.sprite = IconFactory.Get(tower.CanBeSold ? IconType.Sell : IconType.Hero);
+            _sell.interactable = tower.CanBeSold || (hasHero && !IsHeroHere(tower));
             _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "MAX\nlevel";
             string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
             _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
-            _sellPrice.text = !tower.CanBeSold ? "Fixed\npost" : (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
+            _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? "Hero\nhere" : "Send\nhero";
             _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
             _repairPrice.color = canRepair ? TextColor : Unavailable;
 
