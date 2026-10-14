@@ -15,7 +15,11 @@ namespace Game.Levels
             go.transform.SetParent(parent, false);
             go.AddComponent<MeshFilter>().sharedMesh = BuildMesh(field);
 
-            TerrainPainter.Result textures = TerrainPainter.Paint(level, theme, field, road);
+            // The generator bakes the textures; painting at load time is only the fallback for a level without them.
+            bool baked = level.TerrainAlbedo != null && level.TerrainEmission != null;
+            TerrainPainter.Result textures = baked
+                ? new TerrainPainter.Result(level.TerrainAlbedo, level.TerrainEmission)
+                : TerrainPainter.Paint(level, theme, field, road);
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
             material.SetTexture("_BaseMap", textures.Albedo);
             material.SetColor("_BaseColor", Color.white);
@@ -28,7 +32,7 @@ namespace Game.Levels
 
             var renderer = go.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = material;
-            renderer.shadowCastingMode = ShadowCastingMode.On;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = true;
             return go;
         }

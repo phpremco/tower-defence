@@ -10,7 +10,7 @@ namespace Game.Levels
     /// </summary>
     public static class TerrainPainter
     {
-        private const float TexelsPerUnit = 36f;
+        private const float TexelsPerUnit = 30f;
         private const int MaxTextureSize = 2048;
         private const float GridLineWidth = 0.014f;
         private const float GridLineLift = 0.1f;

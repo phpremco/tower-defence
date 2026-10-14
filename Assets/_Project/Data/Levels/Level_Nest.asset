@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level_Nest
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
   _displayName: The Nest
-  _gridSize: {x: 16, y: 10}
+  _gridSize: {x: 24, y: 14}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 31488d1edfad792479ffd1d508223dd7, type: 2}
   _camera:
@@ -24,135 +24,232 @@ MonoBehaviour:
   - Name: Road
     Flying: 0
     Waypoints:
-    - {x: 0, y: 8}
-    - {x: 9, y: 8}
-    - {x: 9, y: 5}
-    - {x: 15, y: 5}
+    - {x: 0, y: 11}
+    - {x: 11, y: 11}
+    - {x: 11, y: 6}
+    - {x: 23, y: 6}
   - Name: North air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 9}
-    - {x: 15, y: 5}
+    - {x: 0, y: 13}
+    - {x: 23, y: 6}
   - Name: South air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 0}
-    - {x: 15, y: 5}
+    - {x: 23, y: 6}
   - Name: Second road
     Flying: 0
     Waypoints:
     - {x: 0, y: 2}
-    - {x: 9, y: 2}
-    - {x: 9, y: 5}
+    - {x: 11, y: 2}
+    - {x: 11, y: 6}
   _blockedCells:
-  - {x: 3, y: 6}
-  - {x: 4, y: 6}
   - {x: 3, y: 4}
-  - {x: 4, y: 4}
-  - {x: 12, y: 7}
-  - {x: 12, y: 3}
-  - {x: 13, y: 7}
-  - {x: 13, y: 3}
-  - {x: 6, y: 6}
-  - {x: 6, y: 4}
-  - {x: 14, y: 9}
-  - {x: 14, y: 1}
+  - {x: 5, y: 5}
+  - {x: 15, y: 12}
+  - {x: 20, y: 4}
+  - {x: 22, y: 2}
   _blockades:
-  - Cell: {x: 5, y: 8}
+  - Cell: {x: 6, y: 11}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 5, y: 2}
+  - Cell: {x: 6, y: 2}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 12, y: 5}
+  - Cell: {x: 17, y: 6}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 14, y: 7}
+  - Cell: {x: 18, y: 9}
     Kind: 2
-  - Cell: {x: 14, y: 8}
+  - Cell: {x: 18, y: 10}
     Kind: 2
-  - Cell: {x: 15, y: 7}
+  - Cell: {x: 18, y: 11}
     Kind: 2
-  - Cell: {x: 15, y: 8}
+  - Cell: {x: 18, y: 12}
     Kind: 2
-  - Cell: {x: 16, y: 7}
+  - Cell: {x: 19, y: 9}
     Kind: 2
-  - Cell: {x: 16, y: 8}
+  - Cell: {x: 19, y: 10}
     Kind: 2
-  - Cell: {x: 17, y: 7}
+  - Cell: {x: 19, y: 11}
     Kind: 2
-  - Cell: {x: 17, y: 8}
+  - Cell: {x: 19, y: 12}
     Kind: 2
-  - Cell: {x: 13, y: 0}
+  - Cell: {x: 20, y: 9}
     Kind: 2
-  - Cell: {x: 13, y: 1}
+  - Cell: {x: 20, y: 10}
     Kind: 2
-  - Cell: {x: 14, y: 0}
+  - Cell: {x: 20, y: 11}
     Kind: 2
-  - Cell: {x: 14, y: 1}
+  - Cell: {x: 20, y: 12}
+    Kind: 2
+  - Cell: {x: 21, y: 9}
+    Kind: 2
+  - Cell: {x: 21, y: 10}
+    Kind: 2
+  - Cell: {x: 21, y: 11}
+    Kind: 2
+  - Cell: {x: 21, y: 12}
+    Kind: 2
+  - Cell: {x: 22, y: 9}
+    Kind: 2
+  - Cell: {x: 22, y: 10}
+    Kind: 2
+  - Cell: {x: 22, y: 11}
+    Kind: 2
+  - Cell: {x: 22, y: 12}
+    Kind: 2
+  - Cell: {x: 23, y: 9}
+    Kind: 2
+  - Cell: {x: 23, y: 10}
+    Kind: 2
+  - Cell: {x: 23, y: 11}
+    Kind: 2
+  - Cell: {x: 23, y: 12}
     Kind: 2
   - Cell: {x: 15, y: 0}
     Kind: 2
   - Cell: {x: 15, y: 1}
     Kind: 2
+  - Cell: {x: 15, y: 2}
+    Kind: 2
+  - Cell: {x: 15, y: 3}
+    Kind: 2
   - Cell: {x: 16, y: 0}
     Kind: 2
   - Cell: {x: 16, y: 1}
     Kind: 2
-  - Cell: {x: 10, y: 9}
+  - Cell: {x: 16, y: 2}
     Kind: 2
-  - Cell: {x: 10, y: 10}
+  - Cell: {x: 16, y: 3}
     Kind: 2
-  - Cell: {x: 10, y: 11}
+  - Cell: {x: 17, y: 0}
     Kind: 2
-  - Cell: {x: 10, y: 12}
+  - Cell: {x: 17, y: 1}
     Kind: 2
-  - Cell: {x: 11, y: 9}
+  - Cell: {x: 17, y: 2}
     Kind: 2
-  - Cell: {x: 11, y: 10}
+  - Cell: {x: 17, y: 3}
     Kind: 2
-  - Cell: {x: 11, y: 11}
+  - Cell: {x: 18, y: 0}
     Kind: 2
-  - Cell: {x: 11, y: 12}
+  - Cell: {x: 18, y: 1}
     Kind: 2
-  - Cell: {x: 12, y: 9}
+  - Cell: {x: 18, y: 2}
     Kind: 2
-  - Cell: {x: 12, y: 10}
+  - Cell: {x: 18, y: 3}
     Kind: 2
-  - Cell: {x: 12, y: 11}
+  - Cell: {x: 19, y: 0}
     Kind: 2
-  - Cell: {x: 12, y: 12}
+  - Cell: {x: 19, y: 1}
     Kind: 2
-  - Cell: {x: 1, y: 3}
+  - Cell: {x: 19, y: 2}
+    Kind: 2
+  - Cell: {x: 19, y: 3}
+    Kind: 2
+  - Cell: {x: 20, y: 0}
+    Kind: 2
+  - Cell: {x: 20, y: 1}
+    Kind: 2
+  - Cell: {x: 20, y: 2}
+    Kind: 2
+  - Cell: {x: 20, y: 3}
+    Kind: 2
+  - Cell: {x: 21, y: 13}
+    Kind: 2
+  - Cell: {x: 21, y: 14}
+    Kind: 2
+  - Cell: {x: 21, y: 15}
+    Kind: 2
+  - Cell: {x: 21, y: 16}
+    Kind: 2
+  - Cell: {x: 22, y: 13}
+    Kind: 2
+  - Cell: {x: 22, y: 14}
+    Kind: 2
+  - Cell: {x: 22, y: 15}
+    Kind: 2
+  - Cell: {x: 22, y: 16}
+    Kind: 2
+  - Cell: {x: 23, y: 13}
+    Kind: 2
+  - Cell: {x: 23, y: 14}
+    Kind: 2
+  - Cell: {x: 23, y: 15}
+    Kind: 2
+  - Cell: {x: 23, y: 16}
+    Kind: 2
+  - Cell: {x: 2, y: 6}
     Kind: 4
-  - Cell: {x: 2, y: 3}
+  - Cell: {x: 2, y: 7}
     Kind: 4
-  - Cell: {x: 7, y: 6}
+  - Cell: {x: 3, y: 6}
     Kind: 4
-  - Cell: {x: 7, y: 7}
+  - Cell: {x: 3, y: 7}
     Kind: 4
-  - Cell: {x: 8, y: 6}
-    Kind: 4
-  - Cell: {x: 8, y: 7}
-    Kind: 4
-  - Cell: {x: 7, y: 3}
-    Kind: 1
   - Cell: {x: 7, y: 4}
-    Kind: 1
-  - Cell: {x: 8, y: 3}
-    Kind: 1
+    Kind: 4
+  - Cell: {x: 7, y: 5}
+    Kind: 4
   - Cell: {x: 8, y: 4}
+    Kind: 4
+  - Cell: {x: 8, y: 5}
+    Kind: 4
+  - Cell: {x: 0, y: 8}
     Kind: 1
-  - Cell: {x: 0, y: 4}
+  - Cell: {x: 0, y: 9}
     Kind: 1
-  - Cell: {x: 0, y: 5}
+  - Cell: {x: 1, y: 8}
     Kind: 1
-  - Cell: {x: 0, y: 6}
+  - Cell: {x: 1, y: 9}
     Kind: 1
-  - Cell: {x: 1, y: 4}
+  - Cell: {x: 13, y: 8}
     Kind: 1
-  - Cell: {x: 1, y: 5}
+  - Cell: {x: 13, y: 9}
     Kind: 1
-  - Cell: {x: 1, y: 6}
+  - Cell: {x: 14, y: 8}
     Kind: 1
+  - Cell: {x: 14, y: 9}
+    Kind: 1
+  - Cell: {x: 15, y: 8}
+    Kind: 1
+  - Cell: {x: 15, y: 9}
+    Kind: 1
+  - Cell: {x: 16, y: 8}
+    Kind: 1
+  - Cell: {x: 16, y: 9}
+    Kind: 1
+  - Cell: {x: 5, y: 7}
+    Kind: 1
+  - Cell: {x: 5, y: 8}
+    Kind: 1
+  - Cell: {x: 5, y: 9}
+    Kind: 1
+  - Cell: {x: 6, y: 7}
+    Kind: 1
+  - Cell: {x: 6, y: 8}
+    Kind: 1
+  - Cell: {x: 6, y: 9}
+    Kind: 1
+  - Cell: {x: 7, y: 7}
+    Kind: 1
+  - Cell: {x: 7, y: 8}
+    Kind: 1
+  - Cell: {x: 7, y: 9}
+    Kind: 1
+  - Cell: {x: 8, y: 7}
+    Kind: 1
+  - Cell: {x: 8, y: 8}
+    Kind: 1
+  - Cell: {x: 8, y: 9}
+    Kind: 1
+  - Cell: {x: 9, y: 7}
+    Kind: 1
+  - Cell: {x: 9, y: 8}
+    Kind: 1
+  - Cell: {x: 9, y: 9}
+    Kind: 1
+  _terrainAlbedo: {fileID: 2800000, guid: d593cda95a3da4b4ebbd45cdd7065a80, type: 3}
+  _terrainEmission: {fileID: 2800000, guid: ba20492f63119694bbb65f489284e7b5, type: 3}
   _enemyHealthMultiplier: 1.4
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

@@ -50,9 +50,10 @@ namespace Game.Editor
             public Vector2Int[] SecondRoad;
             public Vector2Int[] NorthAir;
             public Vector2Int[] SouthAir;
-            public Vector2Int[] BlockedCandidates;
-            public Vector2Int[] BlockadeCells;
+                        public Vector2Int[] BlockadeCells;
             public TerrainPatch[] Terrain;
+            public Vector2Int Size;
+            public int BlockedSeed;
             public int Money;
             public int BaseHealth;
             public float CountScale;
@@ -286,16 +287,18 @@ namespace Game.Editor
                         AmbientRate = 30f,
                         AmbientRise = 0.18f,
                     },
-                    Road = Cells(0, 8, 6, 8, 6, 5, 10, 5, 10, 2, 15, 2),
-                    SecondRoad = Cells(0, 1, 6, 1, 6, 5),
-                    NorthAir = Cells(0, 9, 15, 2),
-                    SouthAir = Cells(0, 0, 9, 5, 15, 2),
-                    BlockedCandidates = Cells(3, 6, 4, 6, 8, 7, 9, 7, 2, 3, 3, 3, 12, 4, 13, 4, 12, 0, 13, 0, 8, 0, 14, 5),
-                    BlockadeCells = Cells(8, 5, 10, 3),
+                    Size = new Vector2Int(26, 14),
+                    Road = Cells(0, 12, 8, 12, 8, 8, 16, 8, 16, 3, 25, 3),
+                    SecondRoad = Cells(0, 1, 8, 1, 8, 8),
+                    NorthAir = Cells(0, 13, 25, 3),
+                    SouthAir = Cells(0, 0, 13, 7, 25, 3),
+                    BlockadeCells = Cells(12, 8, 16, 5),
+                    BlockedSeed = 21,
                     Terrain = Terrain(
-                        Area(TerrainKind.Water, 14, 8, 14, 12), Area(TerrainKind.Water, 13, 7, 13, 8), Area(TerrainKind.Water, 12, 6, 12, 7),
-                        Area(TerrainKind.Water, 11, 4, 11, 6), Area(TerrainKind.Water, 7, 3, 8, 4),
-                        Area(TerrainKind.Raised, 0, 5, 2, 7), Area(TerrainKind.Raised, 7, 8, 9, 9), Area(TerrainKind.Raised, 14, 0, 15, 1)),
+                        Area(TerrainKind.Water, 21, 13, 22, 17), Area(TerrainKind.Water, 20, 10, 21, 12), Area(TerrainKind.Water, 19, 8, 20, 9),
+                        Area(TerrainKind.Water, 18, 5, 19, 7), Area(TerrainKind.Water, 3, 5, 5, 6),
+                        Area(TerrainKind.Raised, 0, 8, 3, 10), Area(TerrainKind.Raised, 10, 10, 14, 12), Area(TerrainKind.Raised, 21, 5, 25, 7),
+                        Area(TerrainKind.Raised, 12, 0, 18, 1)),
                     Money = 180,
                     BaseHealth = 20,
                     CountScale = 1.1f,
@@ -335,16 +338,18 @@ namespace Game.Editor
                         AmbientRate = 26f,
                         AmbientRise = 0.5f,
                     },
-                    Road = Cells(0, 8, 13, 8, 13, 6, 2, 6, 2, 4, 13, 4, 13, 2, 15, 2),
+                    Size = new Vector2Int(22, 16),
+                    Road = Cells(0, 14, 18, 14, 18, 11, 3, 11, 3, 8, 18, 8, 18, 5, 3, 5, 3, 2, 21, 2),
                     SecondRoad = null,
-                    NorthAir = Cells(0, 9, 15, 2),
-                    SouthAir = Cells(0, 0, 8, 5, 15, 2),
-                    BlockedCandidates = Cells(1, 9, 5, 9, 10, 9, 1, 0, 5, 0, 9, 0, 14, 5, 14, 7, 0, 5, 0, 3, 6, 3, 7, 7),
-                    BlockadeCells = Cells(7, 6, 7, 4),
+                    NorthAir = Cells(0, 15, 21, 2),
+                    SouthAir = Cells(0, 0, 11, 7, 21, 2),
+                    BlockadeCells = Cells(10, 11, 10, 5),
+                    BlockedSeed = 33,
                     Terrain = Terrain(
-                        Area(TerrainKind.Lava, 4, 5, 5, 5), Area(TerrainKind.Lava, 10, 5, 12, 5), Area(TerrainKind.Lava, 6, 0, 12, 1),
-                        Area(TerrainKind.Lava, 15, 8, 17, 12),
-                        Area(TerrainKind.Raised, 6, 9, 9, 9), Area(TerrainKind.Raised, 0, 7, 1, 7), Area(TerrainKind.Raised, 3, 3, 5, 3)),
+                        Area(TerrainKind.Lava, 5, 12, 8, 13), Area(TerrainKind.Lava, 13, 12, 16, 13), Area(TerrainKind.Lava, 6, 9, 9, 10),
+                        Area(TerrainKind.Lava, 12, 6, 15, 7), Area(TerrainKind.Lava, 4, 0, 12, 1), Area(TerrainKind.Lava, 20, 7, 26, 13),
+                        Area(TerrainKind.Raised, 0, 12, 2, 13), Area(TerrainKind.Raised, 0, 6, 1, 7), Area(TerrainKind.Raised, 19, 3, 20, 4),
+                        Area(TerrainKind.Raised, 10, 9, 14, 10)),
                     Money = 210,
                     BaseHealth = 20,
                     CountScale = 1.3f,
@@ -384,15 +389,18 @@ namespace Game.Editor
                         AmbientRate = 14f,
                         AmbientRise = 0.05f,
                     },
-                    Road = Cells(0, 5, 10, 5, 10, 8, 13, 8, 13, 2, 7, 2, 7, 7, 2, 7),
+                    Size = new Vector2Int(28, 16),
+                    Road = Cells(0, 6, 12, 6, 12, 12, 18, 12, 18, 3, 8, 3, 8, 9, 3, 9),
                     SecondRoad = null,
-                    NorthAir = Cells(15, 9, 2, 7),
-                    SouthAir = Cells(15, 0, 2, 7),
-                    BlockedCandidates = Cells(4, 3, 5, 3, 4, 9, 5, 9, 11, 5, 11, 4, 14, 4, 14, 3, 1, 2, 2, 2, 9, 0, 0, 8),
-                    BlockadeCells = Cells(5, 5, 13, 5),
+                    NorthAir = Cells(27, 15, 3, 9),
+                    SouthAir = Cells(27, 0, 3, 9),
+                    BlockadeCells = Cells(5, 6, 18, 8),
+                    BlockedSeed = 45,
                     Terrain = Terrain(
-                        Area(TerrainKind.Quicksand, 8, 3, 9, 4), Area(TerrainKind.Quicksand, 14, 6, 15, 7), Area(TerrainKind.Water, 10, 0, 12, 1),
-                        Area(TerrainKind.Raised, 3, 8, 6, 8), Area(TerrainKind.Raised, 11, 6, 12, 7), Area(TerrainKind.Raised, 0, 0, 3, 1)),
+                        Area(TerrainKind.Quicksand, 20, 5, 23, 8), Area(TerrainKind.Quicksand, 9, 4, 11, 5), Area(TerrainKind.Quicksand, 2, 11, 4, 13),
+                        Area(TerrainKind.Water, 22, 0, 26, 2),
+                        Area(TerrainKind.Raised, 14, 7, 16, 9), Area(TerrainKind.Raised, 0, 12, 6, 14), Area(TerrainKind.Raised, 24, 6, 27, 12),
+                        Area(TerrainKind.Raised, 1, 0, 6, 2)),
                     Money = 240,
                     BaseHealth = 20,
                     CountScale = 1.45f,
@@ -432,16 +440,17 @@ namespace Game.Editor
                         AmbientRate = 22f,
                         AmbientRise = -0.12f,
                     },
-                    Road = Cells(0, 8, 9, 8, 9, 5, 15, 5),
-                    SecondRoad = Cells(0, 2, 9, 2, 9, 5),
-                    NorthAir = Cells(0, 9, 15, 5),
-                    SouthAir = Cells(0, 0, 15, 5),
-                    BlockedCandidates = Cells(3, 6, 4, 6, 3, 4, 4, 4, 12, 7, 12, 3, 13, 7, 13, 3, 6, 6, 6, 4, 14, 9, 14, 1),
-                    BlockadeCells = Cells(5, 8, 5, 2, 12, 5),
+                    Size = new Vector2Int(24, 14),
+                    Road = Cells(0, 11, 11, 11, 11, 6, 23, 6),
+                    SecondRoad = Cells(0, 2, 11, 2, 11, 6),
+                    NorthAir = Cells(0, 13, 23, 6),
+                    SouthAir = Cells(0, 0, 23, 6),
+                    BlockadeCells = Cells(6, 11, 6, 2, 17, 6),
+                    BlockedSeed = 57,
                     Terrain = Terrain(
-                        Area(TerrainKind.Water, 14, 7, 17, 8), Area(TerrainKind.Water, 13, 0, 16, 1), Area(TerrainKind.Water, 10, 9, 12, 12),
-                        Area(TerrainKind.Quicksand, 1, 3, 2, 3), Area(TerrainKind.Quicksand, 7, 6, 8, 7),
-                        Area(TerrainKind.Raised, 7, 3, 8, 4), Area(TerrainKind.Raised, 0, 4, 1, 6)),
+                        Area(TerrainKind.Water, 18, 9, 23, 12), Area(TerrainKind.Water, 15, 0, 20, 3), Area(TerrainKind.Water, 21, 13, 23, 16),
+                        Area(TerrainKind.Quicksand, 2, 6, 3, 7), Area(TerrainKind.Quicksand, 7, 4, 8, 5),
+                        Area(TerrainKind.Raised, 0, 8, 1, 9), Area(TerrainKind.Raised, 13, 8, 16, 9), Area(TerrainKind.Raised, 5, 7, 9, 9)),
                     Money = 270,
                     BaseHealth = 20,
                     CountScale = 1.35f,
@@ -480,9 +489,35 @@ namespace Game.Editor
 
         private static TerrainPatch[] Terrain(params IEnumerable<TerrainPatch>[] areas) => areas.SelectMany(a => a).ToArray();
 
+        // Rectangles look like building plots. Cells on the outline are dropped now and then (the same ones every
+        // run), which turns them into rough natural shapes; interior cells are never touched.
+        private static TerrainPatch[] Erode(TerrainPatch[] patches)
+        {
+            var byCell = patches.GroupBy(p => p.Cell).ToDictionary(g => g.Key, g => g.Last().Kind);
+            var kept = new List<TerrainPatch>();
+            var random = new System.Random(7);
+            Vector2Int[] steps = { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down };
+
+            foreach (var pair in byCell)
+            {
+                bool outline = steps.Any(s => !byCell.TryGetValue(pair.Key + s, out TerrainKind other) || other != pair.Value);
+                if (outline && random.NextDouble() < ErodeChance)
+                {
+                    continue;
+                }
+
+                kept.Add(new TerrainPatch { Cell = pair.Key, Kind = pair.Value });
+            }
+
+            return kept.ToArray();
+        }
+
+        private const double ErodeChance = 0.4;
+
         // Terrain never covers the road, and liquid keeps clear of the blockades where the hero stands.
         private static void WriteTerrain(SerializedProperty array, TerrainPatch[] patches, HashSet<Vector2Int> road, Vector2Int[] blockades)
         {
+            patches = Erode(patches);
             TerrainPatch[] kept = patches
                 .Where(p => !road.Contains(p.Cell))
                 .Where(p => !TerrainMap.IsLiquid(p.Kind) || !blockades.Any(b => Mathf.Abs(b.x - p.Cell.x) <= 1 && Mathf.Abs(b.y - p.Cell.y) <= 1))
@@ -529,7 +564,7 @@ namespace Game.Editor
             var level = LoadOrCreate<LevelDefinition>($"{DataRoot}/Levels/Level_{spec.Key}.asset");
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = spec.Name;
-            so.FindProperty("_gridSize").vector2IntValue = new Vector2Int(16, 10);
+            so.FindProperty("_gridSize").vector2IntValue = spec.Size;
             so.FindProperty("_cellSize").floatValue = 1f;
             so.FindProperty("_theme").objectReferenceValue = theme;
             SerializedProperty camera = so.FindProperty("_camera");
@@ -566,16 +601,15 @@ namespace Game.Editor
 
             WritePaths(so.FindProperty("_paths"), paths.ToArray());
 
-            // Candidate decoration cells are dropped when they fall on the road, so a layout edit cannot break a level.
             var road = new HashSet<Vector2Int>(LevelValidator.LandPathCells(spec.Road));
             if (spec.SecondRoad != null)
             {
                 road.UnionWith(LevelValidator.LandPathCells(spec.SecondRoad));
             }
 
-            Vector2Int[] blocked = spec.BlockedCandidates.Where(cell => !road.Contains(cell) && !spec.BlockadeCells.Contains(cell)).Distinct().ToArray();
-            WriteCells(so.FindProperty("_blockedCells"), blocked);
-            WriteTerrain(so.FindProperty("_terrain"), spec.Terrain ?? new TerrainPatch[0], road, spec.BlockadeCells);
+            TerrainPatch[] terrain = spec.Terrain ?? new TerrainPatch[0];
+            WriteCells(so.FindProperty("_blockedCells"), ScatterBlocked(spec.Size, road, terrain, spec.BlockadeCells, spec.BlockedSeed, BlockedFraction));
+            WriteTerrain(so.FindProperty("_terrain"), terrain, road, spec.BlockadeCells);
 
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = spec.BlockadeCells.Length;

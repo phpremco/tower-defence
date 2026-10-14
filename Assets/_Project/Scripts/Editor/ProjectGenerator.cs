@@ -115,6 +115,11 @@ namespace Game.Editor
             var allLevels = new LevelDefinition[worldLevels.Length + 1];
             allLevels[0] = level;
             worldLevels.CopyTo(allLevels, 1);
+            foreach (LevelDefinition baked in allLevels)
+            {
+                BakeTerrain(baked);
+            }
+
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
@@ -380,7 +385,7 @@ namespace Game.Editor
         {
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = "Landing Zone";
-            so.FindProperty("_gridSize").vector2IntValue = new Vector2Int(16, 10);
+            so.FindProperty("_gridSize").vector2IntValue = LandingSize;
             so.FindProperty("_cellSize").floatValue = 1f;
             so.FindProperty("_theme").objectReferenceValue = theme;
             SerializedProperty camera = so.FindProperty("_camera");
@@ -403,38 +408,22 @@ namespace Game.Editor
 
             WritePaths(so.FindProperty("_paths"), new[]
             {
-                (
-                    "Road",
-                    false,
-                    new[]
-                    {
-                        new Vector2Int(0, 8), new Vector2Int(12, 8), new Vector2Int(12, 5),
-                        new Vector2Int(3, 5), new Vector2Int(3, 2), new Vector2Int(15, 2),
-                    }),
-                ("North air route", true, new[] { new Vector2Int(0, 9), new Vector2Int(15, 2) }),
-                ("South air route", true, new[] { new Vector2Int(0, 0), new Vector2Int(8, 5), new Vector2Int(15, 2) }),
-            });
-            WriteCells(so.FindProperty("_blockedCells"), new[]
-            {
-                new Vector2Int(6, 6), new Vector2Int(7, 6), new Vector2Int(7, 7), new Vector2Int(9, 7),
-                new Vector2Int(13, 4), new Vector2Int(14, 4), new Vector2Int(14, 5), new Vector2Int(1, 0),
-                new Vector2Int(2, 0), new Vector2Int(8, 0), new Vector2Int(5, 3), new Vector2Int(0, 4),
-                new Vector2Int(1, 3), new Vector2Int(10, 4),
+                ("Road", false, LandingRoad),
+                ("North air route", true, Cells(0, 11, 19, 1)),
+                ("South air route", true, Cells(0, 0, 10, 6, 19, 1)),
             });
             so.FindProperty("_hero").objectReferenceValue = hero;
 
-            // One blockade across the middle leg of the road and one on the last leg before the base.
-            var blockadeCells = new[] { new Vector2Int(7, 5), new Vector2Int(10, 2) };
+            // One blockade on the first leg of the road and one across the long middle leg.
+            var blockadeCells = Cells(9, 10, 9, 4);
 
             // A lake that drains off the right edge, a pond below the road, and low ridges on the free corners.
-            var landingRoad = new HashSet<Vector2Int>(LevelValidator.LandPathCells(Cells(0, 8, 12, 8, 12, 5, 3, 5, 3, 2, 15, 2)));
-            WriteTerrain(
-                so.FindProperty("_terrain"),
-                Terrain(
-                    Area(TerrainKind.Water, 13, 6, 17, 7), Area(TerrainKind.Water, 11, 0, 14, 1), Area(TerrainKind.Water, 12, -3, 13, -1),
-                    Area(TerrainKind.Raised, 0, 0, 2, 1), Area(TerrainKind.Raised, 5, 9, 7, 9), Area(TerrainKind.Raised, 13, 3, 15, 3), Area(TerrainKind.Raised, 15, 4, 15, 5)),
-                landingRoad,
-                blockadeCells);
+            var landingRoad = new HashSet<Vector2Int>(LevelValidator.LandPathCells(LandingRoad));
+            TerrainPatch[] landingTerrain = Terrain(
+                Area(TerrainKind.Water, 17, 5, 22, 9), Area(TerrainKind.Water, 7, 0, 10, 2), Area(TerrainKind.Water, 8, -4, 9, -1),
+                Area(TerrainKind.Raised, 0, 5, 2, 6), Area(TerrainKind.Raised, 5, 8, 9, 9), Area(TerrainKind.Raised, 16, 3, 19, 3), Area(TerrainKind.Raised, 0, 0, 3, 2));
+            WriteCells(so.FindProperty("_blockedCells"), ScatterBlocked(LandingSize, landingRoad, landingTerrain, blockadeCells, 11, 0.045f));
+            WriteTerrain(so.FindProperty("_terrain"), landingTerrain, landingRoad, blockadeCells);
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = blockadeCells.Length;
             for (int i = 0; i < blockadeCells.Length; i++)

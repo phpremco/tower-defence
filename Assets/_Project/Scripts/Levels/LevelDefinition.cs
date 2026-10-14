@@ -22,6 +22,8 @@ namespace Game.Levels
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
         [SerializeField] private TerrainPatch[] _terrain = new TerrainPatch[0];
+        [SerializeField] private Texture2D _terrainAlbedo;
+        [SerializeField] private Texture2D _terrainEmission;
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
         [SerializeField] private HeroDefinition _hero;
@@ -69,6 +71,11 @@ namespace Game.Levels
 
         /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
         public TerrainPatch[] TerrainPatches => _terrain;
+
+        /// <summary>The ground texture painted ahead of time by the generator, or null to paint it when the level loads.</summary>
+        public Texture2D TerrainAlbedo => _terrainAlbedo;
+
+        public Texture2D TerrainEmission => _terrainEmission;
 
         /// <summary>Lookup built from <see cref="TerrainPatches"/>, cached because several systems ask for it.</summary>
         public TerrainMap Terrain => _terrainMap ??= new TerrainMap(_terrain);

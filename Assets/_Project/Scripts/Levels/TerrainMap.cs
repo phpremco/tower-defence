@@ -10,7 +10,7 @@ namespace Game.Levels
     public sealed class TerrainMap
     {
         /// <summary>How far raised ground stands above the plain, in world units. Towers on it are lifted by this much.</summary>
-        public const float PlateauHeight = 0.35f;
+        public const float PlateauHeight = 0.55f;
 
         private readonly Dictionary<Vector2Int, TerrainKind> _kinds = new Dictionary<Vector2Int, TerrainKind>();
 

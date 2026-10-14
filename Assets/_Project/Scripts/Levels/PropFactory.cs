@@ -52,6 +52,7 @@ namespace Game.Levels
                 case PropKind.Spike: BuildSpikes(builder, rng); break;
                 case PropKind.Egg: BuildEggs(builder, rng); break;
                 case PropKind.Frond: BuildFronds(builder, rng); break;
+                case PropKind.Spire: BuildSpire(builder, rng); break;
             }
 
             return builder.ToMesh($"{kind}_{variant}");
@@ -263,6 +264,34 @@ namespace Game.Levels
                     b.AddBlob(spot, Vector3.one * size * 0.18f, 3, 6, 0f, 0, GlowA, false);
                 }
             }
+        }
+
+        // A tall leaning rock needle with a glowing crystal crown: the big shapes that give the far edge of the map height.
+        private static void BuildSpire(PropMeshBuilder b, Random rng)
+        {
+            float height = Range(rng, 2.2f, 3.4f);
+            float radius = Range(rng, 0.45f, 0.7f);
+            Vector3 lean = new Vector3(Range(rng, -0.3f, 0.3f), 0f, Range(rng, -0.3f, 0.3f));
+            var path = new[]
+            {
+                Vector3.zero,
+                lean * 0.3f + Vector3.up * height * 0.35f,
+                lean * 0.7f + Vector3.up * height * 0.7f,
+                lean + Vector3.up * height,
+            };
+            b.AddTube(path, new[] { radius, radius * 0.7f, radius * 0.42f, 0f }, 6, Body, true);
+
+            int crystals = rng.Next(2, 5);
+            for (int i = 0; i < crystals; i++)
+            {
+                Vector3 baseCenter = lean * Range(rng, 0.5f, 0.9f) + Vector3.up * height * Range(rng, 0.45f, 0.8f) + Ring(rng, radius * 0.5f);
+                Vector3 axis = Tilted(rng, 50f);
+                float length = Range(rng, 0.5f, 1f);
+                float size = Range(rng, 0.07f, 0.12f);
+                b.AddTube(new[] { baseCenter, baseCenter + axis * length }, new[] { size, 0f }, 5, i % 2 == 0 ? GlowA : GlowB, true);
+            }
+
+            b.AddBlob(new Vector3(0f, 0.15f, 0f), new Vector3(radius * 1.5f, 0.3f, radius * 1.5f), 4, 8, 0.25f, rng.Next(100), Dark, true);
         }
 
         // A tuft of thin curved blades, tipped with light.

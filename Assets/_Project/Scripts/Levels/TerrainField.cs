@@ -13,11 +13,11 @@ namespace Game.Levels
         public const int MarginCells = 9;
 
         private const float EdgeWander = 0.7f;
-        private const float BasinDepth = 0.42f;
+        private const float BasinDepth = 0.6f;
         private const float SandDepth = 0.16f;
         private const float RimStartCells = 1.5f;
         private const float RimEndCells = 7f;
-        private const float RimHeight = 2.2f;
+        private const float RimHeight = 3.6f;
         public const float RoadHalfWidthCells = 0.4f;
         private const float RoadShoulderCells = 0.3f;
         private const float OuterBumpHeight = 0.1f;

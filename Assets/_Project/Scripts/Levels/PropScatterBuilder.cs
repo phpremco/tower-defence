@@ -17,6 +17,8 @@ namespace Game.Levels
         private const float TuftChance = 0.2f;
         private const float TuftScale = 0.4f;
         private const float TuftCornerOffset = 0.36f;
+        private const float SpireMinDistance = 3f;
+        private const int SpireChancePercent = 9;
         private const float LiquidAvoid = 0.12f;
         private const float SinkIntoGround = 0.03f;
         private const int OuterRingCells = TerrainField.MarginCells - 1;
@@ -72,6 +74,12 @@ namespace Game.Levels
 
                     float jitterX = ((hash >> 3) % 100) / 100f - 0.5f;
                     float jitterZ = ((hash >> 11) % 100) / 100f - 0.5f;
+                    if (distance > SpireMinDistance && (hash >> 9) % 100 < SpireChancePercent)
+                    {
+                        placer.Place(PropKind.Spire, hash, centre.x + jitterX, centre.z + jitterZ, 0.8f + (hash % 5) * 0.12f);
+                        continue;
+                    }
+
                     float scale = 0.85f + (hash % 7) * 0.05f + distance * OuterScaleGrowth;
                     placer.Place(kinds[(hash >> 5) % kinds.Length], hash, centre.x + jitterX * 0.9f, centre.z + jitterZ * 0.9f, scale);
                 }

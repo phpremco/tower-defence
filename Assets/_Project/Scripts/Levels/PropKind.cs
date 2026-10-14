@@ -13,5 +13,6 @@ namespace Game.Levels
         Spike = 7,
         Egg = 8,
         Frond = 9,
+        Spire = 10,
     }
 }
