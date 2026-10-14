@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_Landing
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: New Level
+  _gridSize: {x: 16, y: 10}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: aff118a86b1eec348881c3aa22519802, type: 2}
+  _camera:
+    PitchDegrees: 55
+    YawDegrees: 0
+    OrthographicSize: 7

@@ -1,0 +1,27 @@
+﻿{
+    "name":  "Game.Hero",
+    "rootNamespace":  "Game.Hero",
+    "references":  [
+                       "Game.Core",
+                       "Game.Combat"
+                   ],
+    "includePlatforms":  [
+
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  true,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}

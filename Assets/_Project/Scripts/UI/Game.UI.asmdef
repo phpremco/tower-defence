@@ -1,0 +1,33 @@
+﻿{
+    "name":  "Game.UI",
+    "rootNamespace":  "Game.UI",
+    "references":  [
+                       "Game.Core",
+                       "Game.Levels",
+                       "Game.Economy",
+                       "Game.Towers",
+                       "Game.Enemies",
+                       "Game.Hero",
+                       "Game.Drones",
+                       "Game.PathObjects"
+                   ],
+    "includePlatforms":  [
+
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  true,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}

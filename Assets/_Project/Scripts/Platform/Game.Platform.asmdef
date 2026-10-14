@@ -1,0 +1,27 @@
+﻿{
+    "name":  "Game.Platform",
+    "rootNamespace":  "Game.Platform",
+    "references":  [
+                       "Game.Core",
+                       "Unity.InputSystem"
+                   ],
+    "includePlatforms":  [
+
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  true,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}
