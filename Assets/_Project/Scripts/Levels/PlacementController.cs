@@ -51,6 +51,7 @@ namespace Game.Levels
             _map = context.Level.Grid;
             _buildGrid = new BuildGrid(context.Level);
             _context.SelectedTower = context.AvailableTowers.Count > 0 ? context.AvailableTowers[0] : null;
+            SpawnBlockades();
 
             float size = _map.CellSize;
             GameObject marker = PlaceholderVisuals.CreatePrimitive(
@@ -263,6 +264,18 @@ namespace Game.Levels
             Refresh();
         }
 
+        // Blockades are part of the level, so they stand from the start and use the same menu as towers.
+        private void SpawnBlockades()
+        {
+            foreach (BlockadeSpot spot in _context.Level.Blockades)
+            {
+                Tower blockade = CreateTower(spot.Blockade, spot.Cell, preview: false);
+                blockade.transform.rotation = Quaternion.LookRotation(RoadDirection.At(_context.Level, spot.Cell));
+                _towers[spot.Cell] = blockade;
+                _buildGrid.Occupy(spot.Cell);
+            }
+        }
+
         private Tower CreateTower(TowerDefinition definition, Vector2Int cell, bool preview)
         {
             var go = new GameObject(preview ? "TowerPreview" : $"Tower_{definition.DisplayName}");
@@ -316,7 +329,7 @@ namespace Game.Levels
         private void OnSell()
         {
             Tower tower = _context.SelectedPlacedTower;
-            if (_context.Mode != PlacementMode.TowerMenu || tower == null)
+            if (_context.Mode != PlacementMode.TowerMenu || tower == null || !tower.CanBeSold)
             {
                 return;
             }

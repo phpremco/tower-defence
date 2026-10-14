@@ -14,6 +14,7 @@ namespace Game.Enemies
         [SerializeField] [Min(0)] private int _reward = 5;
         [SerializeField] [Min(1)] private int _baseDamage = 1;
         [SerializeField] [Min(0f)] private float _attackDamage;
+        [SerializeField] [Min(0f)] private float _blockadeDamage = 4f;
         [SerializeField] [Min(0.5f)] private float _attackRange = 2.5f;
         [SerializeField] [Min(0.1f)] private float _attackInterval = 1.2f;
         [SerializeField] private Color _color = new Color(0.9f, 0.3f, 0.15f);
@@ -29,6 +30,8 @@ namespace Game.Enemies
         public int BaseDamage => _baseDamage;
         /// <summary>Damage to structures per attack. Zero means this enemy does not attack structures.</summary>
         public float AttackDamage => _attackDamage;
+        /// <summary>Damage per attack to a blockade that holds this enemy up. Only ground enemies meet blockades.</summary>
+        public float BlockadeDamage => _blockadeDamage;
         public float AttackRange => _attackRange;
         public float AttackInterval => _attackInterval;
         public Color Color => _color;

@@ -17,6 +17,7 @@ namespace Game.Levels
         [SerializeField] private CameraSettings _camera = CameraSettings.Default;
         [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
+        [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
@@ -52,6 +53,8 @@ namespace Game.Levels
         }
         /// <summary>Cells where nothing can be built. Every other cell off the road is buildable.</summary>
         public Vector2Int[] BlockedCells => _blockedCells;
+        /// <summary>Fixed blockades on the road. Ground enemies stop at them until they are destroyed.</summary>
+        public BlockadeSpot[] Blockades => _blockades;
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;

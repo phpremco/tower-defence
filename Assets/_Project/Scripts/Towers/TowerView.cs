@@ -23,6 +23,8 @@ namespace Game.Towers
         private const float BarHeight = 0.1f;
         private const float BarY = 2.1f;
         private const float BarEmission = 1.5f;
+        private const float WallWidth = 1.05f;
+        private const float WallDepth = 0.34f;
         private static readonly Color BaseColor = new Color(0.1f, 0.12f, 0.18f);
         private static readonly Color RingColor = new Color(0.4f, 0.8f, 1f);
         private static readonly Color StarColor = new Color(1f, 0.9f, 0.3f);
@@ -68,6 +70,12 @@ namespace Game.Towers
             }
 
             SwapModelForLevel(tower);
+
+            // A blockade only shows its gun once the level has one.
+            if (tower.Definition.BlocksGroundEnemies)
+            {
+                _head.gameObject.SetActive(tower.Definition.GetLevel(tower.LevelIndex).Damage > 0f);
+            }
 
             for (int i = 0; i < _stars.Length; i++)
             {
@@ -157,12 +165,23 @@ namespace Game.Towers
 
         private void Build(TowerDefinition definition)
         {
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, BaseColor, transform, new Vector3(0f, 0.2f, 0f), new Vector3(0.85f, 0.2f, 0.85f));
-            GameObject ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, RingColor, transform, new Vector3(0f, 0.42f, 0f), new Vector3(0.9f, 0.03f, 0.9f), BarrelEmission);
+            bool wall = definition.BlocksGroundEnemies;
+            GameObject ring;
+            if (wall)
+            {
+                // A low wall across the road with a glowing top edge. Its gun sits on top and appears with the first gun upgrade.
+                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BaseColor, transform, new Vector3(0f, 0.3f, 0f), new Vector3(WallWidth, 0.6f, WallDepth));
+                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, transform, new Vector3(0f, 0.63f, 0f), new Vector3(WallWidth + 0.04f, 0.06f, WallDepth + 0.04f), BarrelEmission);
+            }
+            else
+            {
+                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, BaseColor, transform, new Vector3(0f, 0.2f, 0f), new Vector3(0.85f, 0.2f, 0.85f));
+                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, RingColor, transform, new Vector3(0f, 0.42f, 0f), new Vector3(0.9f, 0.03f, 0.9f), BarrelEmission);
+            }
 
             var head = new GameObject("Head").transform;
             head.SetParent(transform, false);
-            head.localPosition = new Vector3(0f, 0.8f, 0f);
+            head.localPosition = new Vector3(0f, wall ? 0.95f : 0.8f, 0f);
             _head = head;
 
             if (definition.Model != null)

@@ -19,6 +19,7 @@ MonoBehaviour:
   _reward: 8
   _baseDamage: 2
   _attackDamage: 0
+  _blockadeDamage: 5
   _attackRange: 2.5
   _attackInterval: 1.2
   _color: {r: 0.85, g: 0.25, b: 0.15, a: 1}

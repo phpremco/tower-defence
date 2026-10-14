@@ -10,6 +10,9 @@ namespace Game.Enemies
     {
         private const float ArrivalDistance = 0.02f;
 
+        // Slightly under one cell, so enemies queue in front of a blockade instead of on top of it.
+        private const float BlockadeStopDistance = 0.85f;
+
         private EnemyDefinition _definition;
         private Vector3[] _waypoints;
         private int _nextWaypoint;
@@ -92,6 +95,11 @@ namespace Game.Enemies
                 return;
             }
 
+            if (IsHeldByBlockade())
+            {
+                return;
+            }
+
             TryAttackStructure();
 
             float remaining = _definition.Speed * Time.deltaTime;
@@ -126,6 +134,30 @@ namespace Game.Enemies
             {
                 ReachedEnd?.Invoke(this);
             }
+        }
+
+        // Ground enemies cannot pass a living blockade: they stop in front of it and hit it until it falls.
+        private bool IsHeldByBlockade()
+        {
+            if (_definition.Layer != TargetLayers.Ground)
+            {
+                return false;
+            }
+
+            IStructure blocker = _structures.FindBlocker(transform.position, BlockadeStopDistance);
+            if (blocker == null)
+            {
+                return false;
+            }
+
+            _attackCooldown -= Time.deltaTime;
+            if (_attackCooldown <= 0f)
+            {
+                blocker.TakeDamage(_definition.BlockadeDamage);
+                _attackCooldown = _definition.AttackInterval;
+            }
+
+            return true;
         }
 
         private void TryAttackStructure()

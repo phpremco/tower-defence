@@ -45,9 +45,13 @@ namespace Game.Editor
             TowerDefinition rocket = CreateTower("Rocket", "Rocket", TargetLayers.Air, 8f, 1.5f, new Color(0.9f, 0.9f, 1f),
                 new[] { Lvl(120, 30f, 5f, 1.6f), Lvl(140, 45f, 5.4f, 1.4f), Lvl(200, 70f, 5.8f, 1.2f) }, 70f);
 
-            EnemyDefinition scout = CreateEnemy("Scout", TargetLayers.Ground, 20f, 3f, 5, 1, new Color(0.9f, 0.6f, 0.15f), 0.45f);
-            EnemyDefinition grunt = CreateEnemy("Grunt", TargetLayers.Ground, 50f, 2f, 8, 2, new Color(0.85f, 0.25f, 0.15f), 0.6f);
-            EnemyDefinition brute = CreateEnemy("Brute", TargetLayers.Ground, 250f, 1.2f, 25, 5, new Color(0.55f, 0.1f, 0.15f), 0.95f);
+            // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.
+            TowerDefinition blockade = CreateTower("Blockade", "Blockade", TargetLayers.Ground, 12f, 0f, new Color(0.55f, 0.65f, 0.8f),
+                new[] { Lvl(60, 0f, 3.2f, 0.5f), Lvl(90, 5f, 3.4f, 0.45f, 300f), Lvl(150, 9f, 3.7f, 0.35f, 500f) }, 500f, blocksGround: true);
+
+            EnemyDefinition scout = CreateEnemy("Scout", TargetLayers.Ground, 20f, 3f, 5, 1, new Color(0.9f, 0.6f, 0.15f), 0.45f, blockadeDamage: 3f);
+            EnemyDefinition grunt = CreateEnemy("Grunt", TargetLayers.Ground, 50f, 2f, 8, 2, new Color(0.85f, 0.25f, 0.15f), 0.6f, blockadeDamage: 5f);
+            EnemyDefinition brute = CreateEnemy("Brute", TargetLayers.Ground, 250f, 1.2f, 25, 5, new Color(0.55f, 0.1f, 0.15f), 0.95f, blockadeDamage: 20f);
             EnemyDefinition flyer = CreateEnemy("Flyer", TargetLayers.Air, 30f, 2.5f, 10, 2, new Color(0.5f, 0.9f, 0.3f), 0.5f, 6f);
 
             var difficulties = new[]
@@ -71,7 +75,7 @@ namespace Game.Editor
             VisualTheme theme = LoadOrCreate<VisualTheme>(ThemeAssetPath);
             ConfigureTheme(theme);
             LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
-            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon);
+            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade);
 
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
@@ -121,13 +125,14 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerLevel Lvl(int cost, float damage, float range, float interval) =>
-            new TowerLevel { Cost = cost, Damage = damage, Range = range, FireInterval = interval };
+        private static TowerLevel Lvl(int cost, float damage, float range, float interval, float healthBonus = 0f) =>
+            new TowerLevel { Cost = cost, Damage = damage, Range = range, FireInterval = interval, HealthBonus = healthBonus };
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
+            so.FindProperty("_blocksGroundEnemies").boolValue = blocksGround;
             so.FindProperty("_displayName").stringValue = displayName;
             so.FindProperty("_targets").intValue = (int)targets;
             so.FindProperty("_projectileSpeed").floatValue = projectileSpeed;
@@ -143,13 +148,14 @@ namespace Game.Editor
                 element.FindPropertyRelative("Damage").floatValue = levels[i].Damage;
                 element.FindPropertyRelative("Range").floatValue = levels[i].Range;
                 element.FindPropertyRelative("FireInterval").floatValue = levels[i].FireInterval;
+                element.FindPropertyRelative("HealthBonus").floatValue = levels[i].HealthBonus;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return tower;
         }
 
-        private static EnemyDefinition CreateEnemy(string id, TargetLayers layer, float health, float speed, int reward, int baseDamage, Color color, float scale, float attackDamage = 0f)
+        private static EnemyDefinition CreateEnemy(string id, TargetLayers layer, float health, float speed, int reward, int baseDamage, Color color, float scale, float attackDamage = 0f, float blockadeDamage = 4f)
         {
             var enemy = LoadOrCreate<EnemyDefinition>($"{DataRoot}/Enemies/{id}.asset");
             var so = new SerializedObject(enemy);
@@ -162,6 +168,7 @@ namespace Game.Editor
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_scale").floatValue = scale;
             so.FindProperty("_attackDamage").floatValue = attackDamage;
+            so.FindProperty("_blockadeDamage").floatValue = blockadeDamage;
             so.ApplyModifiedPropertiesWithoutUndo();
             return enemy;
         }
@@ -226,7 +233,7 @@ namespace Game.Editor
         private static SpawnGroup Group(EnemyDefinition enemy, int count, float interval, float delay, int path = Road) =>
             new SpawnGroup { Enemy = enemy, Count = count, Interval = interval, Delay = delay, PathIndex = path };
 
-        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower)
+        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower, TowerDefinition blockade)
         {
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = "Landing Zone";
@@ -271,6 +278,17 @@ namespace Game.Editor
                 new Vector2Int(2, 0), new Vector2Int(8, 0), new Vector2Int(5, 3), new Vector2Int(0, 4),
                 new Vector2Int(1, 3), new Vector2Int(10, 4),
             });
+            // One blockade across the middle leg of the road and one on the last leg before the base.
+            var blockadeCells = new[] { new Vector2Int(7, 5), new Vector2Int(10, 2) };
+            SerializedProperty blockades = so.FindProperty("_blockades");
+            blockades.arraySize = blockadeCells.Length;
+            for (int i = 0; i < blockadeCells.Length; i++)
+            {
+                SerializedProperty element = blockades.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("Cell").vector2IntValue = blockadeCells[i];
+                element.FindPropertyRelative("Blockade").objectReferenceValue = blockade;
+            }
+
             SerializedProperty towerArray = so.FindProperty("_availableTowers");
             towerArray.arraySize = towers.Length;
             for (int i = 0; i < towers.Length; i++)

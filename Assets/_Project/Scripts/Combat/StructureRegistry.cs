@@ -12,6 +12,33 @@ namespace Game.Combat
 
         public void Remove(IStructure structure) => _structures.Remove(structure);
 
+        /// <summary>Returns the nearest living blockade within the stopping distance, or null.</summary>
+        public IStructure FindBlocker(Vector3 origin, float distance)
+        {
+            IStructure best = null;
+            float bestSqr = distance * distance;
+
+            for (int i = 0; i < _structures.Count; i++)
+            {
+                IStructure candidate = _structures[i];
+                if (!candidate.BlocksGround)
+                {
+                    continue;
+                }
+
+                float dx = candidate.Position.x - origin.x;
+                float dz = candidate.Position.z - origin.z;
+                float sqr = dx * dx + dz * dz;
+                if (sqr <= bestSqr)
+                {
+                    best = candidate;
+                    bestSqr = sqr;
+                }
+            }
+
+            return best;
+        }
+
         /// <summary>Returns the nearest living structure within range, or null.</summary>
         public IStructure FindNearest(Vector3 origin, float range)
         {

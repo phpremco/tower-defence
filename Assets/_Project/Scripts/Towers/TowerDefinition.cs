@@ -27,6 +27,9 @@ namespace Game.Towers
         /// <summary>Power of a nearly destroyed tower: 1 is no penalty, 0.5 means half damage and half fire rate.</summary>
         [SerializeField] [Range(0f, 1f)] private float _damagedPowerFloor = 0.5f;
 
+        /// <summary>A blockade stops ground enemies until it is destroyed. It is set in the level and cannot be sold.</summary>
+        [SerializeField] private bool _blocksGroundEnemies;
+
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
@@ -41,6 +44,7 @@ namespace Game.Towers
         public float ScrapFraction => _scrapFraction;
         public float RepairCostPerHealth => _repairCostPerHealth;
         public float DamagedPowerFloor => _damagedPowerFloor;
+        public bool BlocksGroundEnemies => _blocksGroundEnemies;
         public Color Color => _color;
 
         /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>

@@ -12,6 +12,9 @@ namespace Game.Towers
         [Min(0.5f)] public float Range;
         [Min(0.05f)] public float FireInterval;
 
+        [Tooltip("Extra maximum health gained by reaching this level, before upgrade multipliers.")]
+        [Min(0f)] public float HealthBonus;
+
         [Tooltip("Optional look for this level. Empty keeps the model of the level before it.")]
         public GameObject Model;
     }

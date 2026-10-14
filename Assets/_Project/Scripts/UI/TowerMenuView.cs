@@ -159,10 +159,11 @@ namespace Game.UI
 
             _upgrade.interactable = canUpgrade;
             _repair.interactable = canRepair;
-            _sell.interactable = true;
+            _sell.interactable = tower.CanBeSold;
             _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "MAX\nlevel";
-            _repairPrice.text = tower.NeedsRepair ? $"Repair\n{tower.RepairCost}" : "Repair\n-";
-            _sellPrice.text = (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
+            string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
+            _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
+            _sellPrice.text = !tower.CanBeSold ? "Fixed\npost" : (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
             _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
             _repairPrice.color = canRepair ? TextColor : Unavailable;
 
@@ -187,7 +188,8 @@ namespace Game.UI
 
             TowerLevel now = tower.Definition.GetLevel(tower.LevelIndex);
             TowerLevel next = tower.Definition.GetLevel(tower.LevelIndex + 1);
-            return $"\nNext: damage {now.Damage:0} > {next.Damage:0}   range {now.Range:0.0} > {next.Range:0.0}   shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}";
+            string health = next.HealthBonus > 0f ? $"   +{next.HealthBonus:0} HP" : string.Empty;
+            return $"\nNext: damage {now.Damage:0} > {next.Damage:0}   range {now.Range:0.0} > {next.Range:0.0}   shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}{health}";
         }
 
         private void FocusFirstAvailable()

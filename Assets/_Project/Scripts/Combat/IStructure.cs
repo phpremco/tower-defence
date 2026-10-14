@@ -9,6 +9,9 @@ namespace Game.Combat
 
         bool IsAlive { get; }
 
+        /// <summary>True while ground enemies cannot walk through this structure.</summary>
+        bool BlocksGround { get; }
+
         void TakeDamage(float amount);
     }
 }

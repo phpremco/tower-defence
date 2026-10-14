@@ -57,9 +57,26 @@ namespace Game.Towers
 
         public int SellValue => Mathf.FloorToInt(TotalSpent * (IsWrecked ? _definition.ScrapFraction : _definition.SellRefundFraction));
 
-        public bool NeedsRepair => !IsWrecked && Health.Current < Health.Max;
+        /// <summary>Blockades are part of the level: they cannot be sold, only repaired or rebuilt.</summary>
+        public bool CanBeSold => !_definition.BlocksGroundEnemies;
 
-        public int RepairCost => NeedsRepair ? Mathf.CeilToInt((Health.Max - Health.Current) * _definition.RepairCostPerHealth) : 0;
+        public bool BlocksGround => _definition.BlocksGroundEnemies && IsAlive;
+
+        /// <summary>A wrecked blockade can be rebuilt; a wrecked tower is scrapped and built again instead.</summary>
+        public bool NeedsRepair => _definition.BlocksGroundEnemies ? IsWrecked || Health.Current < Health.Max : !IsWrecked && Health.Current < Health.Max;
+
+        public int RepairCost
+        {
+            get
+            {
+                if (!NeedsRepair)
+                {
+                    return 0;
+                }
+
+                return IsWrecked ? _definition.BuildCost : Mathf.CeilToInt((Health.Max - Health.Current) * _definition.RepairCostPerHealth);
+            }
+        }
 
         public event Action<Tower> LevelChanged;
 
@@ -76,7 +93,7 @@ namespace Game.Towers
             _projectiles = projectiles;
             _modifiers = modifiers;
             LevelIndex = 0;
-            Health = new Health(definition.MaxHealth * modifiers.TowerHealthMultiplier);
+            Health = new Health((definition.MaxHealth + definition.GetLevel(0).HealthBonus) * HealthMultiplier);
             Health.Changed += OnHealthChanged;
             LevelChanged?.Invoke(this);
         }
@@ -106,8 +123,11 @@ namespace Game.Towers
             }
 
             LevelIndex++;
+            Health.Extend(_definition.GetLevel(LevelIndex).HealthBonus * HealthMultiplier);
             LevelChanged?.Invoke(this);
         }
+
+        private float HealthMultiplier => _definition.BlocksGroundEnemies ? _modifiers.BlockadeHealthMultiplier : _modifiers.TowerHealthMultiplier;
 
         private void Update()
         {
@@ -118,6 +138,12 @@ namespace Game.Towers
             }
 
             TowerLevel level = _definition.GetLevel(LevelIndex);
+            if (level.Damage <= 0f)
+            {
+                // A blockade without a gun yet only holds the line.
+                return;
+            }
+
             ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
             if (target == null)
             {

@@ -12,7 +12,7 @@ namespace Game.Combat
             Current = Max;
         }
 
-        public float Max { get; }
+        public float Max { get; private set; }
 
         public float Current { get; private set; }
 
@@ -23,6 +23,19 @@ namespace Game.Combat
         public event Action<float> Changed;
 
         public event Action Died;
+
+        /// <summary>Raises the maximum and gives the extra hit points to the owner, so an upgrade also heals by its size.</summary>
+        public void Extend(float extraMax)
+        {
+            if (extraMax <= 0f || IsDead)
+            {
+                return;
+            }
+
+            Max += extraMax;
+            Current += extraMax;
+            Changed?.Invoke(Current);
+        }
 
         /// <summary>Restores health, never above the maximum.</summary>
         public void Heal(float amount)

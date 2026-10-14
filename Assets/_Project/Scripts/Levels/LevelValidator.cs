@@ -25,6 +25,7 @@ namespace Game.Levels
             CheckPaths(level, grid, errors);
             CheckBlockedCells(level, grid, errors);
             CheckTowers(level, errors);
+            CheckBlockades(level, errors);
             CheckWaves(level, errors);
             return errors.Count == 0;
         }
@@ -100,6 +101,30 @@ namespace Game.Levels
                 if (tower == null)
                 {
                     errors.Add("Available towers contains an empty entry.");
+                }
+            }
+        }
+
+        private static void CheckBlockades(LevelDefinition level, List<string> errors)
+        {
+            var road = new HashSet<Vector2Int>(RoadCells(level));
+            var seen = new HashSet<Vector2Int>();
+
+            foreach (BlockadeSpot spot in level.Blockades)
+            {
+                if (spot.Blockade == null || !spot.Blockade.BlocksGroundEnemies)
+                {
+                    errors.Add($"Blockade at {spot.Cell} has no blockade definition.");
+                }
+
+                if (!road.Contains(spot.Cell))
+                {
+                    errors.Add($"Blockade at {spot.Cell} is not on the road.");
+                }
+
+                if (!seen.Add(spot.Cell))
+                {
+                    errors.Add($"Blockade at {spot.Cell} is listed twice.");
                 }
             }
         }

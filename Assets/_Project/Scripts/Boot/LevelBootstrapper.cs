@@ -89,6 +89,12 @@ namespace Game.Boot
                 towerModifiers[tower.Id] = UpgradeEffects.ComputeForTower(progress, upgrades, tower.Id);
             }
 
+            // Blockades are not bought, so they only take the global upgrades (blockade strength).
+            foreach (BlockadeSpot spot in level.Blockades)
+            {
+                towerModifiers[spot.Blockade.Id] = global;
+            }
+
             var towers = new List<TowerDefinition>();
             foreach (TowerDefinition tower in level.AvailableTowers)
             {
