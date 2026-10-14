@@ -19,9 +19,11 @@ MonoBehaviour:
   _reward: 10
   _baseDamage: 2
   _attackDamage: 6
+  _blockadeDamage: 4
   _attackRange: 2.5
   _attackInterval: 1.2
   _color: {r: 0.5, g: 0.9, b: 0.3, a: 1}
   _scale: 0.5
+  _shape: 4
   _model: {fileID: 919132149155446097, guid: 5b004c5eb6c7f6644b0248f789ba08e9, type: 3}
   _modelScale: 0.5

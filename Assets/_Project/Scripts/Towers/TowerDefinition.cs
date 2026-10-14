@@ -43,6 +43,7 @@ namespace Game.Towers
         [SerializeField] private bool _blocksGroundEnemies;
 
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
+        [SerializeField] private TowerShape _shape;
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
 
@@ -68,6 +69,9 @@ namespace Game.Towers
         public Color Color => _color;
 
         /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>
+        /// <summary>The procedural model this tower wears, or None to use <see cref="Model"/> or the placeholder.</summary>
+        public TowerShape Shape => _shape;
+
         public GameObject Model => _model;
         public float ModelScale => _modelScale;
         public bool KeepModelColours => _keepModelColours;

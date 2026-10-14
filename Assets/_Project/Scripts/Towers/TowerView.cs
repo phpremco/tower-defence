@@ -25,6 +25,10 @@ namespace Game.Towers
         private const float BarEmission = 1.5f;
         private const float WallWidth = 1.05f;
         private const float WallDepth = 0.34f;
+        private const float ShapeHeadHeight = 0.5f;
+        private const float ShapeScale = 1.3f;
+        private const float RecoilDistance = 0.14f;
+        private const float RecoilRecovery = 6f;
         private static readonly Color BaseColor = new Color(0.1f, 0.12f, 0.18f);
         private static readonly Color RingColor = new Color(0.4f, 0.8f, 1f);
         private static readonly Color StarColor = new Color(1f, 0.9f, 0.3f);
@@ -45,6 +49,12 @@ namespace Game.Towers
         private bool _built;
         private GameObject _currentModel;
         private GameObject _currentModelSource;
+        private Transform _barrel;
+        private MeshFilter _headMesh;
+        private MeshFilter _barrelMesh;
+        private Material[] _shapeMaterials;
+        private int _shapeLevel = -1;
+        private float _recoil;
 
         private void Awake()
         {
@@ -86,6 +96,12 @@ namespace Game.Towers
         // Visual upgrades: the newest level at or below the current one that names a model wins.
         private void SwapModelForLevel(Tower tower)
         {
+            if (_headMesh != null)
+            {
+                RebuildShape(tower.Definition, tower.LevelIndex);
+                return;
+            }
+
             if (_modelRenderers == null)
             {
                 return;
@@ -185,7 +201,13 @@ namespace Game.Towers
             head.localPosition = new Vector3(0f, wall ? 0.95f : 0.8f, 0f);
             _head = head;
 
-            if (definition.Model != null)
+            if (definition.Shape != TowerShape.None)
+            {
+                BuildShape(definition);
+                _glowParts = new[] { ring.GetComponent<Renderer>() };
+                _glowMaterials = new[] { _glowParts[0].sharedMaterial };
+            }
+            else if (definition.Model != null)
             {
                 PlaceModel(definition.Model, definition);
                 _glowParts = new[] { ring.GetComponent<Renderer>() };
@@ -215,8 +237,58 @@ namespace Game.Towers
             _bar.gameObject.SetActive(false);
         }
 
+        // The procedural model: a head that turns and a barrel that kicks back. Rebuilt on every level so upgrades show.
+        private void BuildShape(TowerDefinition definition)
+        {
+            _head.localPosition = new Vector3(0f, ShapeHeadHeight, 0f);
+            _head.localScale = Vector3.one * ShapeScale;
+            _shapeMaterials = TowerModelFactory.CreateMaterials(definition.Color);
+
+            var headObject = new GameObject("ShapeHead");
+            headObject.transform.SetParent(_head, false);
+            _headMesh = headObject.AddComponent<MeshFilter>();
+            var headRenderer = headObject.AddComponent<MeshRenderer>();
+            headRenderer.sharedMaterials = _shapeMaterials;
+
+            var barrelObject = new GameObject("ShapeBarrel");
+            barrelObject.transform.SetParent(_head, false);
+            _barrel = barrelObject.transform;
+            _barrelMesh = barrelObject.AddComponent<MeshFilter>();
+            var barrelRenderer = barrelObject.AddComponent<MeshRenderer>();
+            barrelRenderer.sharedMaterials = _shapeMaterials;
+
+            _modelRenderers = new Renderer[] { headRenderer, barrelRenderer };
+            _modelMaterials = new[] { _shapeMaterials, _shapeMaterials };
+            RebuildShape(definition, 0);
+        }
+
+        private void RebuildShape(TowerDefinition definition, int level)
+        {
+            if (level == _shapeLevel)
+            {
+                return;
+            }
+
+            _shapeLevel = level;
+            TowerModelFactory.Parts parts = TowerModelFactory.Create(definition.Shape, level);
+            _headMesh.sharedMesh = parts.Head;
+            _barrelMesh.sharedMesh = parts.Barrel;
+        }
+
+        private void Update()
+        {
+            if (_barrel == null || _recoil <= 0f)
+            {
+                return;
+            }
+
+            _recoil = Mathf.Max(0f, _recoil - RecoilRecovery * Time.deltaTime);
+            _barrel.localPosition = new Vector3(0f, 0f, -_recoil * RecoilDistance);
+        }
+
         private void OnFired(Vector3 targetPosition)
         {
+            _recoil = 1f;
             Vector3 flat = targetPosition - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude > 0.0001f)

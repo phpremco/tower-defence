@@ -19,6 +19,7 @@ namespace Game.Enemies
         [SerializeField] [Min(0.1f)] private float _attackInterval = 1.2f;
         [SerializeField] private Color _color = new Color(0.9f, 0.3f, 0.15f);
         [SerializeField] [Min(0.1f)] private float _scale = 0.6f;
+        [SerializeField] private EnemyShape _shape;
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1f;
 
@@ -36,6 +37,9 @@ namespace Game.Enemies
         public float AttackInterval => _attackInterval;
         public Color Color => _color;
         public float Scale => _scale;
+
+        /// <summary>The procedural creature this enemy wears, or None to use <see cref="Model"/> or the placeholder.</summary>
+        public EnemyShape Shape => _shape;
 
         /// <summary>The imported model shown for this enemy, or null to use placeholder shapes.</summary>
         public GameObject Model => _model;

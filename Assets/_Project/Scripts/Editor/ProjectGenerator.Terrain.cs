@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Game.Enemies;
 using Game.Levels;
+using Game.Towers;
 using UnityEditor;
 using UnityEngine;
 
@@ -77,6 +79,47 @@ namespace Game.Editor
             importer.maxTextureSize = TerrainTextureMaxSize;
             importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+        }
+
+
+        // Every tower and enemy wears a procedural model chosen by data; the pulse rifle keeps its hand-made gun.
+        private static void SetShapes(
+            Roster roster,
+            TowerDefinition cannon,
+            TowerDefinition rocket,
+            EnemyDefinition scout,
+            EnemyDefinition grunt,
+            EnemyDefinition brute,
+            EnemyDefinition flyer,
+            EnemyDefinition overseer,
+            EnemyDefinition warden,
+            EnemyDefinition queen)
+        {
+            SetShape(cannon, "_shape", (int)TowerShape.Cannon);
+            SetShape(rocket, "_shape", (int)TowerShape.Rocket);
+            SetShape(roster.Laser, "_shape", (int)TowerShape.Laser);
+            SetShape(roster.Cryo, "_shape", (int)TowerShape.Cryo);
+            SetShape(roster.Tesla, "_shape", (int)TowerShape.Tesla);
+            SetShape(roster.Railgun, "_shape", (int)TowerShape.Railgun);
+            SetShape(roster.Support, "_shape", (int)TowerShape.Support);
+            SetShape(roster.Artillery, "_shape", (int)TowerShape.Artillery);
+            SetShape(roster.StormRifle, "_shape", (int)TowerShape.StormRifle);
+            SetShape(roster.CryoBeam, "_shape", (int)TowerShape.CryoBeam);
+
+            SetShape(scout, "_shape", (int)EnemyShape.Scout);
+            SetShape(grunt, "_shape", (int)EnemyShape.Grunt);
+            SetShape(brute, "_shape", (int)EnemyShape.Brute);
+            SetShape(flyer, "_shape", (int)EnemyShape.Flyer);
+            SetShape(overseer, "_shape", (int)EnemyShape.Overseer);
+            SetShape(warden, "_shape", (int)EnemyShape.Warden);
+            SetShape(queen, "_shape", (int)EnemyShape.Queen);
+        }
+
+        private static void SetShape(Object asset, string field, int value)
+        {
+            var so = new SerializedObject(asset);
+            so.FindProperty(field).enumValueIndex = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static bool NearAny(IEnumerable<Vector2Int> cells, Vector2Int cell, int distance) =>

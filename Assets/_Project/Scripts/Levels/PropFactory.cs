@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Random = System.Random;

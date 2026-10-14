@@ -47,6 +47,7 @@ MonoBehaviour:
   _supportRateBonus: 0
   _blocksGroundEnemies: 0
   _color: {r: 1, g: 1, b: 1, a: 1}
+  _shape: 6
   _model: {fileID: 919132149155446097, guid: 1779dc3a90ab9e24495ea13cd483d62d, type: 3}
   _modelScale: 1.6
   _keepModelColours: 0

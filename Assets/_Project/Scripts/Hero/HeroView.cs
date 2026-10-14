@@ -11,6 +11,8 @@ namespace Game.Hero
     public sealed class HeroView : MonoBehaviour
     {
         private const float TurnSpeed = 14f;
+        private const float IdleSpeed = 2.2f;
+        private const float IdleHeight = 0.02f;
         private const float SwingSeconds = 0.26f;
         private const float SwingRaised = -80f;
         private const float SwingLow = 55f;
@@ -20,10 +22,6 @@ namespace Game.Hero
         private const float BarWidth = 1f;
         private const float BarHeight = 0.09f;
         private const float BarY = 1.95f;
-        private static readonly Color ArmourColor = new Color(0.9f, 0.93f, 1f);
-        private static readonly Color DarkColor = new Color(0.12f, 0.14f, 0.2f);
-        private static readonly Color VisorColor = new Color(0.3f, 0.95f, 1f);
-        private static readonly Color BladeColor = new Color(0.6f, 1f, 1f);
         private static readonly Color DownColor = new Color(0.14f, 0.15f, 0.18f);
         private static readonly Color HealthyColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
@@ -32,7 +30,7 @@ namespace Game.Hero
         private Transform _figure;
         private Transform _arm;
         private Renderer[] _figureRenderers;
-        private Material[] _figureMaterials;
+        private Material[][] _figureMaterials;
         private Transform _bar;
         private Renderer _barRenderer;
         private Transform _ring;
@@ -67,27 +65,26 @@ namespace Game.Hero
             figure.SetParent(transform, false);
             _figure = figure;
 
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, DarkColor, figure, new Vector3(0f, 0.28f, 0f), new Vector3(0.34f, 0.28f, 0.34f));
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, ArmourColor, figure, new Vector3(0f, 0.78f, 0f), new Vector3(0.52f, 0.55f, 0.34f), 0.15f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, VisorColor, figure, new Vector3(0f, 0.82f, 0.18f), new Vector3(0.22f, 0.22f, 0.04f), 2f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, _trim, figure, new Vector3(-0.36f, 1.02f, 0f), new Vector3(0.24f, 0.18f, 0.3f), 0.6f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, _trim, figure, new Vector3(0.36f, 1.02f, 0f), new Vector3(0.24f, 0.18f, 0.3f), 0.6f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, ArmourColor, figure, new Vector3(0f, 1.3f, 0f), new Vector3(0.34f, 0.34f, 0.34f), 0.15f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, VisorColor, figure, new Vector3(0f, 1.32f, 0.15f), new Vector3(0.26f, 0.08f, 0.06f), 2.5f);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, _trim, figure, new Vector3(0f, 0.85f, -0.24f), new Vector3(0.4f, 0.7f, 0.1f), 0.4f);
+            HeroModelFactory.Parts parts = HeroModelFactory.Create();
+            Material[] materials = HeroModelFactory.CreateMaterials(_trim);
+
+            var shell = new GameObject("Shell");
+            shell.transform.SetParent(figure, false);
+            shell.AddComponent<MeshFilter>().sharedMesh = parts.Body;
+            shell.AddComponent<MeshRenderer>().sharedMaterials = materials;
 
             var arm = new GameObject("Arm").transform;
             arm.SetParent(figure, false);
-            arm.localPosition = new Vector3(0.36f, 0.95f, 0.05f);
+            arm.localPosition = parts.Shoulder;
+            arm.gameObject.AddComponent<MeshFilter>().sharedMesh = parts.Arm;
+            arm.gameObject.AddComponent<MeshRenderer>().sharedMaterials = materials;
             _arm = arm;
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, DarkColor, arm, new Vector3(0f, 0f, 0.12f), new Vector3(0.12f, 0.12f, 0.3f));
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BladeColor, arm, new Vector3(0f, 0f, 0.7f), new Vector3(0.07f, 0.1f, 0.9f), 3f);
 
             _figureRenderers = figure.GetComponentsInChildren<Renderer>();
-            _figureMaterials = new Material[_figureRenderers.Length];
+            _figureMaterials = new Material[_figureRenderers.Length][];
             for (int i = 0; i < _figureRenderers.Length; i++)
             {
-                _figureMaterials[i] = _figureRenderers[i].sharedMaterial;
+                _figureMaterials[i] = _figureRenderers[i].sharedMaterials;
             }
 
             // A golden ring on the ground keeps the hero easy to find among towers and enemies.
@@ -110,7 +107,7 @@ namespace Game.Hero
             Material wreck = PlaceholderVisuals.MaterialFor(DownColor, 0f);
             for (int i = 0; i < _figureRenderers.Length; i++)
             {
-                _figureRenderers[i].sharedMaterial = down ? wreck : _figureMaterials[i];
+                _figureRenderers[i].sharedMaterials = down ? Wreck(wreck, _figureMaterials[i].Length) : _figureMaterials[i];
             }
 
             _figure.localRotation = down ? Quaternion.Euler(0f, _figure.localEulerAngles.y, 80f) : Quaternion.Euler(0f, _figure.localEulerAngles.y, 0f);
@@ -120,6 +117,17 @@ namespace Game.Hero
             _bar.gameObject.SetActive(!down && fraction < 1f);
             _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
             _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), 1.5f);
+        }
+
+        private static Material[] Wreck(Material wreck, int count)
+        {
+            var result = new Material[count];
+            for (int i = 0; i < count; i++)
+            {
+                result[i] = wreck;
+            }
+
+            return result;
         }
 
         private void OnStruck(Vector3 target) => _swingTime = 0f;
@@ -134,8 +142,20 @@ namespace Game.Hero
         private void Update()
         {
             TurnTowardsFacing();
+            Idle();
             Swing();
             Pulse();
+        }
+
+        // A slow breath keeps the commander alive between strikes.
+        private void Idle()
+        {
+            if (_hero.IsDown)
+            {
+                return;
+            }
+
+            _figure.localPosition = new Vector3(0f, Mathf.Sin(Time.time * IdleSpeed) * IdleHeight, 0f);
         }
 
         private void TurnTowardsFacing()

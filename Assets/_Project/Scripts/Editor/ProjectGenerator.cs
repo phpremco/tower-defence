@@ -140,6 +140,7 @@ namespace Game.Editor
             SetModel(overseer, "alien", 2.6f);
             SetModel(warden, "alien", 3.2f);
             SetModel(queen, "alien", 4.2f);
+            SetShapes(roster, cannon, rocket, scout, grunt, brute, flyer, overseer, warden, queen);
 
             UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard);
             UiSkin skin = CreateSkin();

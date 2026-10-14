@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Levels
+namespace Game.Core
 {
     /// <summary>
     /// Builds small organic shapes from code: tubes that taper along a curve (stalks, tendrils, crystals) and

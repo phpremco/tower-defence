@@ -19,14 +19,20 @@ MonoBehaviour:
     Damage: 30
     Range: 5
     FireInterval: 1.6
+    HealthBonus: 0
+    Model: {fileID: 0}
   - Cost: 140
     Damage: 45
     Range: 5.4
     FireInterval: 1.4
+    HealthBonus: 0
+    Model: {fileID: 0}
   - Cost: 200
     Damage: 70
     Range: 5.8
     FireInterval: 1.2
+    HealthBonus: 0
+    Model: {fileID: 0}
   _projectileSpeed: 8
   _splashRadius: 1.5
   _maxHealth: 70
@@ -34,6 +40,14 @@ MonoBehaviour:
   _scrapFraction: 0.3
   _repairCostPerHealth: 0.4
   _damagedPowerFloor: 0.5
+  _slowFactor: 1
+  _slowSeconds: 0
+  _isSupport: 0
+  _supportRangeBonus: 0
+  _supportRateBonus: 0
+  _blocksGroundEnemies: 0
   _color: {r: 0.9, g: 0.9, b: 1, a: 1}
+  _shape: 4
   _model: {fileID: 919132149155446097, guid: fd4163113b1626e40a1cdff72f6956d5, type: 3}
   _modelScale: 1.5
+  _keepModelColours: 0
