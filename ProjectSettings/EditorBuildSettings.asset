@@ -9,7 +9,16 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Boot.unity
     guid: 5fa77d0dd783b164ca33eefe034bf579
   - enabled: 1
+    path: Assets/_Project/Scenes/MainMenu.unity
+    guid: db5a372d5e8cc8f4aaf4daa3ceaf64b2
+  - enabled: 1
+    path: Assets/_Project/Scenes/WorldMap.unity
+    guid: 09bf822be2a61504986582b15e4bd5c2
+  - enabled: 1
     path: Assets/_Project/Scenes/Level.unity
     guid: 6ed6c30f3df9a144baf7b96ea0fabb2d
+  - enabled: 1
+    path: Assets/_Project/Scenes/Base.unity
+    guid: 8ad87caaf3be6bb46bd628bbd2751180
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
