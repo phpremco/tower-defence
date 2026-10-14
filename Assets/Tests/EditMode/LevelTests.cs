@@ -37,6 +37,27 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Level1_WavesUseSeveralPathsIncludingFlyingRoutes()
+        {
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelPath);
+            var used = new System.Collections.Generic.HashSet<int>();
+            foreach (DifficultyWaves set in level.DifficultyWaves)
+            {
+                foreach (WaveDefinition wave in set.Waves)
+                {
+                    foreach (SpawnGroup group in wave.Groups)
+                    {
+                        used.Add(group.PathIndex);
+                    }
+                }
+            }
+
+            Assert.Greater(used.Count, 1);
+            Assert.IsTrue(level.Paths.Length >= 3);
+            Assert.IsTrue(level.Paths[1].Flying);
+        }
+
+        [Test]
         public void Level1_TowersHaveIncreasingUpgradeValues()
         {
             var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelPath);
@@ -72,13 +93,46 @@ namespace Game.Tests
         }
 
         [Test]
-        public void SlotCursor_MovesToClosestSlotInDirection()
+        public void GridCursor_StepsOneCellAndStaysInsideGrid()
         {
-            var slots = new List<Vector3> { Vector3.zero, new Vector3(2f, 0f, 0f), new Vector3(5f, 0f, 0f), new Vector3(0f, 0f, 3f) };
+            var grid = new GridMap(new Vector2Int(4, 3), 1f);
 
-            Assert.AreEqual(1, SlotCursor.Next(slots, 0, Vector2.right));
-            Assert.AreEqual(3, SlotCursor.Next(slots, 0, Vector2.up));
-            Assert.AreEqual(0, SlotCursor.Next(slots, 0, Vector2.left));
+            Assert.AreEqual(new Vector2Int(2, 1), GridCursor.Step(new Vector2Int(1, 1), Vector2.right, grid));
+            Assert.AreEqual(new Vector2Int(1, 2), GridCursor.Step(new Vector2Int(1, 1), new Vector2(0.2f, 0.9f), grid));
+            Assert.AreEqual(new Vector2Int(0, 1), GridCursor.Step(new Vector2Int(0, 1), Vector2.left, grid));
+        }
+
+        [Test]
+        public void GridMap_WorldToCellRoundTrips()
+        {
+            var grid = new GridMap(new Vector2Int(16, 10), 1f);
+            var cell = new Vector2Int(5, 7);
+
+            Assert.AreEqual(cell, grid.WorldToCell(grid.CellToWorld(cell)));
+        }
+
+        [Test]
+        public void BuildGrid_AllowsAnyCellExceptRoadBlockedAndOccupied()
+        {
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelPath);
+            var grid = new BuildGrid(level);
+            Vector2Int road = level.MainRoad[0];
+            Vector2Int blocked = level.BlockedCells[0];
+            var free = new Vector2Int(0, 0);
+
+            Assert.IsTrue(grid.IsRoad(road));
+            Assert.IsFalse(grid.CanBuild(road));
+            Assert.IsFalse(grid.CanBuild(blocked));
+            Assert.IsTrue(grid.CanBuild(free));
+
+            grid.Occupy(free);
+            Assert.IsFalse(grid.CanBuild(free));
+            grid.Release(free);
+            Assert.IsTrue(grid.CanBuild(free));
         }
     }
 }
+
+
+
+

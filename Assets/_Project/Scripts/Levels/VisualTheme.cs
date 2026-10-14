@@ -15,7 +15,7 @@ namespace Game.Levels
         [SerializeField] [Min(0f)] private float _lightIntensity = 1.1f;
         [SerializeField] private Color _fogColor = new Color(0.06f, 0.08f, 0.12f);
         [SerializeField] [Min(0f)] private float _fogDensity = 0.015f;
-        [SerializeField] [Min(0f)] private float _bloomIntensity = 0.8f;
+        [SerializeField] [Min(0f)] private float _bloomIntensity = 1.2f;
 
         public Color BackgroundColor => _backgroundColor;
         public Color GroundColor => _groundColor;
@@ -29,4 +29,5 @@ namespace Game.Levels
         public float BloomIntensity => _bloomIntensity;
     }
 }
+
 

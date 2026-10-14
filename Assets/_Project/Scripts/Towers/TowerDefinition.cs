@@ -14,6 +14,19 @@ namespace Game.Towers
         [SerializeField] private TowerLevel[] _levels = new TowerLevel[LevelCount];
         [SerializeField] [Min(1f)] private float _projectileSpeed = 10f;
         [SerializeField] [Min(0f)] private float _splashRadius;
+        [SerializeField] [Min(1f)] private float _maxHealth = 100f;
+
+        /// <summary>Share of everything spent on the tower that selling gives back.</summary>
+        [SerializeField] [Range(0f, 1f)] private float _sellRefundFraction = 0.7f;
+
+        /// <summary>Share of everything spent that scrapping a wreck gives back.</summary>
+        [SerializeField] [Range(0f, 1f)] private float _scrapFraction = 0.3f;
+
+        [SerializeField] [Min(0f)] private float _repairCostPerHealth = 0.4f;
+
+        /// <summary>Power of a nearly destroyed tower: 1 is no penalty, 0.5 means half damage and half fire rate.</summary>
+        [SerializeField] [Range(0f, 1f)] private float _damagedPowerFloor = 0.5f;
+
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
 
         public string Id => name;
@@ -21,6 +34,11 @@ namespace Game.Towers
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
+        public float MaxHealth => _maxHealth;
+        public float SellRefundFraction => _sellRefundFraction;
+        public float ScrapFraction => _scrapFraction;
+        public float RepairCostPerHealth => _repairCostPerHealth;
+        public float DamagedPowerFloor => _damagedPowerFloor;
         public Color Color => _color;
         public int MaxLevelIndex => _levels.Length - 1;
 
@@ -38,3 +56,4 @@ namespace Game.Towers
         }
     }
 }
+

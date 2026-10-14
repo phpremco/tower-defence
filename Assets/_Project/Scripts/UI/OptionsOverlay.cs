@@ -14,6 +14,20 @@ namespace Game.UI
         private ProgressService _progress;
         private GameObject _panel;
         private Button _volumeButton;
+        private GameObject _controlsPanel;
+        private RectTransform _column;
+        private Button _controlsButton;
+
+        private const string ControlsText =
+            "Move the cursor      Left stick / D-pad    WASD    Mouse\n" +
+            "Confirm              A    Enter    Left click\n" +
+            "Cancel               B    Esc    Right click\n" +
+            "Switch tower         LB / RB    Q / E\n" +
+            "Tower icons          Stick / D-pad to pick, A to use, B to close\n" +
+            "Upgrade / Repair / Sell   U / R / X\n" +
+            "Game speed           Y    Space\n" +
+            "Pause                Start    P\n" +
+            "Skip wave (test)     Select    N";
 
         public void Open(MainMenuScreen owner)
         {
@@ -32,10 +46,38 @@ namespace Game.UI
             rect.offsetMax = Vector2.zero;
 
             UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(1200f, 120f));
-            RectTransform column = UiKit.CreateColumn(root, 24f);
-            _volumeButton = UiKit.CreateButton(column, VolumeLabel(), CycleVolume);
-            UiKit.CreateButton(column, "Back", Close);
+            _column = UiKit.CreateColumn(root, 24f);
+            _volumeButton = UiKit.CreateButton(_column, VolumeLabel(), CycleVolume);
+            _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
+            UiKit.CreateButton(_column, "Back", Close);
             UiKit.Select(_volumeButton);
+
+            _controlsPanel = new GameObject("Controls", typeof(RectTransform));
+            _controlsPanel.transform.SetParent(root, false);
+            Text text = UiKit.CreateFixedText(_controlsPanel.GetComponent<RectTransform>(), ControlsText, UiKit.BodySize, TextAnchor.UpperLeft, new Vector2(0.5f, 0.5f), new Vector2(-560f, 300f), new Vector2(1200f, 600f));
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            Button back = UiKit.CreateButton(_controlsPanel.GetComponent<RectTransform>(), "Back", HideControls);
+            RectTransform backRect = back.GetComponent<RectTransform>();
+            backRect.anchorMin = new Vector2(0.5f, 0f);
+            backRect.anchorMax = new Vector2(0.5f, 0f);
+            backRect.pivot = new Vector2(0.5f, 0f);
+            backRect.anchoredPosition = new Vector2(0f, 60f);
+            backRect.sizeDelta = new Vector2(UiKit.ButtonWidth, UiKit.ButtonHeight);
+            _controlsPanel.SetActive(false);
+        }
+
+        private void ShowControls()
+        {
+            _column.gameObject.SetActive(false);
+            _controlsPanel.SetActive(true);
+            UiKit.Select(_controlsPanel.GetComponentInChildren<Button>());
+        }
+
+        private void HideControls()
+        {
+            _controlsPanel.SetActive(false);
+            _column.gameObject.SetActive(true);
+            UiKit.Select(_controlsButton);
         }
 
         private void CycleVolume()
@@ -61,4 +103,6 @@ namespace Game.UI
         }
     }
 }
+
+
 

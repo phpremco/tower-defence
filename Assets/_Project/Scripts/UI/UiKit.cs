@@ -11,7 +11,7 @@ namespace Game.UI
         public const int BodySize = 36;
         public const int TitleSize = 72;
         public const float ButtonHeight = 80f;
-        public const float ButtonWidth = 640f;
+        public const float ButtonWidth = 820f;
 
         private const float ReferenceWidth = 1920f;
         private const float ReferenceHeight = 1080f;
@@ -20,6 +20,15 @@ namespace Game.UI
         private static readonly Color ButtonNormal = new Color(0.12f, 0.2f, 0.32f);
         private static readonly Color ButtonSelected = new Color(0.25f, 0.5f, 0.85f);
         private static readonly Color ButtonDisabled = new Color(0.1f, 0.1f, 0.12f);
+        private static readonly Color Accent = new Color(0.3f, 0.75f, 1f, 0.9f);
+        private const int StarTextureWidth = 1024;
+        private const int StarTextureHeight = 576;
+        private const float StarDensity = 0.004f;
+        private const int MinTextSize = 16;
+        private const float TextPadding = 18f;
+        private static readonly Vector2 OutlineDistance = new Vector2(2f, -2f);
+
+        private static Texture2D _starTexture;
 
         private static Font _font;
 
@@ -63,7 +72,7 @@ namespace Game.UI
         }
 
         /// <summary>Creates a scaled canvas and returns a root inside the safe area.</summary>
-        public static RectTransform CreateRoot(Transform parent)
+        public static RectTransform CreateRoot(Transform parent, bool withStarfield = true)
         {
             var canvasGo = new GameObject("Canvas");
             canvasGo.transform.SetParent(parent, false);
@@ -74,6 +83,11 @@ namespace Game.UI
             scaler.referenceResolution = new Vector2(ReferenceWidth, ReferenceHeight);
             scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
+
+            if (withStarfield)
+            {
+                AddStarfield(canvasGo.transform);
+            }
 
             var safe = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
             safe.SetParent(canvasGo.transform, false);
@@ -103,6 +117,9 @@ namespace Game.UI
         public static Text CreateFixedText(RectTransform parent, string text, int size, TextAnchor alignment, Vector2 anchor, Vector2 offset, Vector2 dimensions)
         {
             Text label = CreateText(parent, text, size, alignment);
+            var glow = label.gameObject.AddComponent<Outline>();
+            glow.effectColor = new Color(Accent.r, Accent.g, Accent.b, 0.35f);
+            glow.effectDistance = OutlineDistance;
             RectTransform rect = label.rectTransform;
             rect.anchorMin = anchor;
             rect.anchorMax = anchor;
@@ -142,6 +159,9 @@ namespace Game.UI
             go.transform.SetParent(parent, false);
             var image = go.AddComponent<Image>();
             image.color = Color.white;
+            var outline = go.AddComponent<Outline>();
+            outline.effectColor = Accent;
+            outline.effectDistance = OutlineDistance;
 
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
@@ -156,7 +176,51 @@ namespace Game.UI
             element.preferredWidth = ButtonWidth;
 
             Text text = CreateText(go.GetComponent<RectTransform>(), label, BodySize, TextAnchor.MiddleCenter);
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = MinTextSize;
+            text.resizeTextMaxSize = BodySize;
             Stretch(text.rectTransform);
+            text.rectTransform.offsetMin = new Vector2(TextPadding, 4f);
+            text.rectTransform.offsetMax = new Vector2(-TextPadding, -4f);
+            return button;
+        }
+
+        /// <summary>A square button with a white icon, used on the field so it never covers the screen.</summary>
+        public static Button CreateIconButton(RectTransform parent, Sprite icon, float size, UnityEngine.Events.UnityAction onClick)
+        {
+            var go = new GameObject("IconButton", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var image = go.AddComponent<Image>();
+            image.color = Color.white;
+            var outline = go.AddComponent<Outline>();
+            outline.effectColor = Accent;
+            outline.effectDistance = OutlineDistance;
+
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.colors = ButtonColors();
+            if (onClick != null)
+            {
+                button.onClick.AddListener(onClick);
+            }
+
+            var element = go.AddComponent<LayoutElement>();
+            element.preferredWidth = size;
+            element.preferredHeight = size;
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
+
+            var iconGo = new GameObject("Icon", typeof(RectTransform));
+            iconGo.transform.SetParent(go.transform, false);
+            var iconImage = iconGo.AddComponent<Image>();
+            iconImage.sprite = icon;
+            iconImage.raycastTarget = false;
+            RectTransform iconRect = iconImage.rectTransform;
+            iconRect.anchorMin = Vector2.zero;
+            iconRect.anchorMax = Vector2.one;
+            iconRect.offsetMin = new Vector2(12f, 12f);
+            iconRect.offsetMax = new Vector2(-12f, -12f);
             return button;
         }
 
@@ -171,6 +235,34 @@ namespace Game.UI
             {
                 EventSystem.current.SetSelectedGameObject(button.gameObject);
             }
+        }
+
+        private static void AddStarfield(Transform canvas)
+        {
+            if (_starTexture == null)
+            {
+                _starTexture = new Texture2D(StarTextureWidth, StarTextureHeight, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+                var pixels = new Color32[StarTextureWidth * StarTextureHeight];
+                var random = new System.Random(7);
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    if (random.NextDouble() < StarDensity)
+                    {
+                        byte brightness = (byte)(90 + random.Next(166));
+                        pixels[i] = new Color32(brightness, brightness, 255, brightness);
+                    }
+                }
+
+                _starTexture.SetPixels32(pixels);
+                _starTexture.Apply();
+            }
+
+            var go = new GameObject("Starfield", typeof(RectTransform));
+            go.transform.SetParent(canvas, false);
+            var image = go.AddComponent<RawImage>();
+            image.texture = _starTexture;
+            image.raycastTarget = false;
+            Stretch(image.rectTransform);
         }
 
         private static ColorBlock ButtonColors()
@@ -194,3 +286,6 @@ namespace Game.UI
         }
     }
 }
+
+
+

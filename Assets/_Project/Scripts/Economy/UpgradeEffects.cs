@@ -2,18 +2,38 @@
 
 namespace Game.Economy
 {
-    /// <summary>Turns bought upgrades into the modifiers a level starts with.</summary>
+    /// <summary>Turns bought upgrades into the modifiers a level starts with, per tower and for the base.</summary>
     public static class UpgradeEffects
     {
-        public static PlayerModifiers Compute(ProgressService progress, UpgradeCatalog catalog)
+        /// <summary>Modifiers for one tower type. Base and blockade upgrades are not included.</summary>
+        public static PlayerModifiers ComputeForTower(ProgressService progress, UpgradeCatalog catalog, string towerId)
+        {
+            return Compute(progress, catalog, towerId, includeGlobal: false);
+        }
+
+        /// <summary>Modifiers that do not belong to a tower: base health and blockade strength.</summary>
+        public static PlayerModifiers ComputeGlobal(ProgressService progress, UpgradeCatalog catalog)
+        {
+            return Compute(progress, catalog, string.Empty, includeGlobal: true);
+        }
+
+        private static PlayerModifiers Compute(ProgressService progress, UpgradeCatalog catalog, string towerId, bool includeGlobal)
         {
             float damage = 1f;
             float range = 1f;
+            float fireRate = 1f;
+            float health = 1f;
             float baseHealth = 0f;
             float blockade = 1f;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
+                bool isGlobal = string.IsNullOrEmpty(upgrade.TowerId);
+                if (isGlobal != includeGlobal || (!isGlobal && upgrade.TowerId != towerId))
+                {
+                    continue;
+                }
+
                 float bonus = progress.GetUpgradeLevel(upgrade.Id) * upgrade.BonusPerLevel;
                 switch (upgrade.Target)
                 {
@@ -22,6 +42,12 @@ namespace Game.Economy
                         break;
                     case UpgradeTarget.TowerRange:
                         range += bonus;
+                        break;
+                    case UpgradeTarget.TowerFireRate:
+                        fireRate += bonus;
+                        break;
+                    case UpgradeTarget.TowerHealth:
+                        health += bonus;
                         break;
                     case UpgradeTarget.BaseHealth:
                         baseHealth += bonus;
@@ -32,7 +58,7 @@ namespace Game.Economy
                 }
             }
 
-            return new PlayerModifiers(damage, range, (int)System.Math.Round(baseHealth), blockade);
+            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade);
         }
     }
 }

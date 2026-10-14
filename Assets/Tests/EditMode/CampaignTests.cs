@@ -83,21 +83,47 @@ namespace Game.Tests
         }
 
         [Test]
-        public void UpgradeEffects_AppliesBoughtLevels()
+        public void UpgradeEffects_AreSeparatePerTower()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+            var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
+            progress.AddRewards(100, 0);
+
+            UpgradeDefinition pulseDamage = null;
+            foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
+            {
+                if (upgrade.TowerId == "PulseRifle" && upgrade.Target == UpgradeTarget.TowerDamage)
+                {
+                    pulseDamage = upgrade;
+                }
+            }
+
+            Assert.IsNotNull(pulseDamage);
+            Assert.IsTrue(progress.TryBuyUpgrade(pulseDamage));
+
+            var pulse = UpgradeEffects.ComputeForTower(progress, upgrades, "PulseRifle");
+            var cannon = UpgradeEffects.ComputeForTower(progress, upgrades, "Cannon");
+
+            Assert.Greater(pulse.TowerDamageMultiplier, 1f);
+            Assert.AreEqual(1f, cannon.TowerDamageMultiplier);
+        }
+
+        [Test]
+        public void UpgradeEffects_BaseHealthIsGlobal()
         {
             var progress = new ProgressService(new MemorySave(), new string[0]);
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
             progress.AddRewards(100, 0);
             foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
             {
-                progress.TryBuyUpgrade(upgrade);
+                if (string.IsNullOrEmpty(upgrade.TowerId))
+                {
+                    progress.TryBuyUpgrade(upgrade);
+                }
             }
 
-            var modifiers = UpgradeEffects.Compute(progress, upgrades);
-
-            Assert.Greater(modifiers.TowerDamageMultiplier, 1f);
-            Assert.Greater(modifiers.TowerRangeMultiplier, 1f);
-            Assert.Greater(modifiers.BaseHealthBonus, 0);
+            Assert.Greater(UpgradeEffects.ComputeGlobal(progress, upgrades).BaseHealthBonus, 0);
+            Assert.AreEqual(0, UpgradeEffects.ComputeForTower(progress, upgrades, "Cannon").BaseHealthBonus);
         }
     }
 }

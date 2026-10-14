@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
 using Game.Economy;
-using Game.Enemies;
 using Game.Platform;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +10,7 @@ namespace Game.Levels
     /// <summary>Runs the wave timeline, decides win or loss and hands out the reward. After the level, confirm leads to the upgrade screen (win) or the map (loss).</summary>
     public sealed class LevelController : MonoBehaviour
     {
-        private readonly List<EnemyDefinition> _due = new List<EnemyDefinition>();
+        private readonly List<SpawnRequest> _due = new List<SpawnRequest>();
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -35,6 +34,7 @@ namespace Game.Levels
             _context.BaseHealth.Died += OnBaseDied;
             _input.SkipWave += OnSkipWave;
             _input.Confirmed += OnConfirmed;
+            _context.SkipWaveRequested.Subscribe(OnSkipWave);
         }
 
         private void OnDestroy()
@@ -44,6 +44,8 @@ namespace Game.Levels
                 _input.SkipWave -= OnSkipWave;
                 _input.Confirmed -= OnConfirmed;
             }
+
+            _context?.SkipWaveRequested.Unsubscribe(OnSkipWave);
         }
 
         private void Update()
@@ -78,7 +80,7 @@ namespace Game.Levels
             _scheduler.Advance(deltaTime, _due);
             for (int i = 0; i < _due.Count; i++)
             {
-                _spawner.Spawn(_due[i]);
+                _spawner.Spawn(_due[i].Enemy, _due[i].PathIndex);
             }
 
             if (_scheduler.IsFinished)
@@ -141,4 +143,6 @@ namespace Game.Levels
         }
     }
 }
+
+
 

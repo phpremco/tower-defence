@@ -21,6 +21,9 @@ namespace Game.Combat
         private float _splashRadius;
         private TargetLayers _mask;
 
+        /// <summary>Raised when the projectile lands: world position and splash radius (zero for single target).</summary>
+        public event Action<Vector3, float> Impacted;
+
         public void Launch(
             Vector3 from,
             ITargetable target,
@@ -32,6 +35,12 @@ namespace Game.Combat
             Action<Projectile> release)
         {
             transform.position = from;
+            var trail = GetComponent<TrailRenderer>();
+            if (trail != null)
+            {
+                trail.Clear();
+            }
+
             _target = target;
             _lastTargetPosition = target.Position;
             _damage = damage;
@@ -76,8 +85,11 @@ namespace Game.Combat
                 _target.TakeDamage(_damage);
             }
 
+            Impacted?.Invoke(_lastTargetPosition, _splashRadius);
             _target = null;
             _release(this);
         }
     }
 }
+
+

@@ -28,6 +28,7 @@ namespace Game.Tests
             group.FindPropertyRelative("Count").intValue = 3;
             group.FindPropertyRelative("Interval").floatValue = 1f;
             group.FindPropertyRelative("Delay").floatValue = 2f;
+            group.FindPropertyRelative("PathIndex").intValue = 3;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -43,7 +44,7 @@ namespace Game.Tests
         public void Advance_SpawnsOnSchedule()
         {
             var scheduler = new WaveScheduler(_wave, _difficulty);
-            var output = new List<EnemyDefinition>();
+            var output = new List<SpawnRequest>();
 
             scheduler.Advance(1.9f, output);
             Assert.AreEqual(0, output.Count);
@@ -54,6 +55,7 @@ namespace Game.Tests
             scheduler.Advance(2f, output);
             Assert.AreEqual(3, output.Count);
             Assert.IsTrue(scheduler.IsFinished);
+            Assert.AreEqual(3, output[0].PathIndex);
         }
 
         [Test]
@@ -63,7 +65,7 @@ namespace Game.Tests
             so.FindProperty("_countMultiplier").floatValue = 2f;
             so.ApplyModifiedPropertiesWithoutUndo();
             var scheduler = new WaveScheduler(_wave, _difficulty);
-            var output = new List<EnemyDefinition>();
+            var output = new List<SpawnRequest>();
 
             scheduler.Advance(1000f, output);
 
@@ -71,3 +73,4 @@ namespace Game.Tests
         }
     }
 }
+

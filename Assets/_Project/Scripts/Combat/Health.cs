@@ -24,6 +24,18 @@ namespace Game.Combat
 
         public event Action Died;
 
+        /// <summary>Restores health, never above the maximum.</summary>
+        public void Heal(float amount)
+        {
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            Current = Mathf.Min(Max, Current + amount);
+            Changed?.Invoke(Current);
+        }
+
         public void TakeDamage(float amount)
         {
             if (IsDead || amount <= 0f)
@@ -41,3 +53,4 @@ namespace Game.Combat
         }
     }
 }
+

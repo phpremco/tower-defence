@@ -82,7 +82,7 @@ namespace Game.UI
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = new Vector2(NodeWidth, NodeHeight);
             rect.anchoredPosition = Vector2.zero;
-            button.GetComponentInChildren<Text>().fontSize = NodeFontSize;
+            button.GetComponentInChildren<Text>().resizeTextMaxSize = NodeFontSize;
             return button;
         }
 
@@ -102,3 +102,4 @@ namespace Game.UI
         }
     }
 }
+

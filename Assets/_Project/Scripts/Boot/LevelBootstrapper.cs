@@ -47,6 +47,7 @@ namespace Game.Boot
 
             Services.TryGet(out PlaytestSettings debug);
             _cameraRig.Apply(level);
+            PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
             BuildEnvironment(level);
             BuildGameplay(level, session.Difficulty, waves, debug);
         }
@@ -80,7 +81,14 @@ namespace Game.Boot
             bool skipAllowed = debug != null && debug.AllowSkipWave;
 
             ProgressService progress = Services.Get<ProgressService>();
-            PlayerModifiers modifiers = UpgradeEffects.Compute(progress, Services.Get<UpgradeCatalog>());
+            var upgrades = Services.Get<UpgradeCatalog>();
+            PlayerModifiers global = UpgradeEffects.ComputeGlobal(progress, upgrades);
+            var towerModifiers = new Dictionary<string, PlayerModifiers>();
+            foreach (TowerDefinition tower in level.AvailableTowers)
+            {
+                towerModifiers[tower.Id] = UpgradeEffects.ComputeForTower(progress, upgrades, tower.Id);
+            }
+
             var towers = new List<TowerDefinition>();
             foreach (TowerDefinition tower in level.AvailableTowers)
             {
@@ -92,10 +100,11 @@ namespace Game.Boot
 
             var root = new GameObject("Gameplay").transform;
             var targets = new TargetRegistry();
+            var structures = new StructureRegistry();
             var projectiles = new ProjectilePool(targets, root);
             var wallet = new Wallet(level.StartingMoney, infiniteMoney);
-            var baseHealth = new Health(level.BaseHealth + modifiers.BaseHealthBonus);
-            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, projectiles, towers, modifiers, waves.Length);
+            var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
+            var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
@@ -109,10 +118,12 @@ namespace Game.Boot
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
             var hud = controllers.AddComponent<HudView>();
-            hud.Initialize(context, time);
+            hud.Initialize(context, time, _camera);
         }
     }
 }
+
+
 
 
 

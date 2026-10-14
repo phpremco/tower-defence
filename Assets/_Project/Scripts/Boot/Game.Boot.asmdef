@@ -10,7 +10,9 @@
                        "Game.Towers",
                        "Game.Enemies",
                        "Game.UI",
-                       "Unity.InputSystem"
+                       "Unity.InputSystem",
+                       "Unity.RenderPipelines.Universal.Runtime",
+                       "Unity.RenderPipelines.Core.Runtime"
                    ],
     "includePlatforms":  [
 

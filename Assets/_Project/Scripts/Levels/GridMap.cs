@@ -20,6 +20,14 @@ namespace Game.Levels
 
         public bool Contains(Vector2Int cell) => cell.x >= 0 && cell.y >= 0 && cell.x < _size.x && cell.y < _size.y;
 
+        /// <summary>Cell that contains a world position (the position may be outside the grid).</summary>
+        public Vector2Int WorldToCell(Vector3 position)
+        {
+            int x = Mathf.RoundToInt(position.x / _cellSize + (_size.x - 1) * 0.5f);
+            int y = Mathf.RoundToInt(position.z / _cellSize + (_size.y - 1) * 0.5f);
+            return new Vector2Int(x, y);
+        }
+
         public Vector3 CellToWorld(Vector2Int cell)
         {
             float x = (cell.x - (_size.x - 1) * 0.5f) * _cellSize;
@@ -28,3 +36,4 @@ namespace Game.Levels
         }
     }
 }
+

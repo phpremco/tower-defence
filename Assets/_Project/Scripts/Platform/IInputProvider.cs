@@ -19,6 +19,10 @@ namespace Game.Platform
         event Action NextTower;
         event Action PreviousTower;
         event Action SkipWave;
+        event Action UpgradePressed;
+        event Action RepairPressed;
+        event Action SellPressed;
     }
 }
+
 

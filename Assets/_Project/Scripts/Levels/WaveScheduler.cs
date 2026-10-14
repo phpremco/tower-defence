@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Game.Enemies;
 using UnityEngine;
 
 namespace Game.Levels
@@ -44,7 +43,7 @@ namespace Game.Levels
         }
 
         /// <summary>Advances time and appends every enemy that is due to the output list.</summary>
-        public void Advance(float deltaTime, List<EnemyDefinition> output)
+        public void Advance(float deltaTime, List<SpawnRequest> output)
         {
             _elapsed += deltaTime;
 
@@ -53,7 +52,7 @@ namespace Game.Levels
                 SpawnGroup group = _groups[i];
                 while (_spawned[i] < _totals[i] && SpawnTime(group, _spawned[i]) <= _elapsed)
                 {
-                    output.Add(group.Enemy);
+                    output.Add(new SpawnRequest(group.Enemy, group.PathIndex));
                     _spawned[i]++;
                 }
             }
@@ -62,3 +61,4 @@ namespace Game.Levels
         private float SpawnTime(SpawnGroup group, int index) => group.Delay + index * group.Interval * _intervalMultiplier;
     }
 }
+

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Core;
 using Game.Enemies;
 using UnityEngine;
@@ -7,29 +6,33 @@ using UnityEngine.Pool;
 
 namespace Game.Levels
 {
-    /// <summary>Creates pooled enemies, sends them down the right path and applies kill rewards and base damage.</summary>
+    /// <summary>Creates pooled enemies, sends them down the path their spawn group names and applies kill rewards and base damage.</summary>
     public sealed class EnemySpawner
     {
         private const float AirHeight = 1.6f;
 
         private readonly LevelContext _context;
         private readonly Transform _parent;
-        private readonly Vector3[] _landPath;
-        private readonly Vector3[] _airPath;
+        private readonly Vector3[][] _paths;
         private readonly Dictionary<EnemyDefinition, ObjectPool<Enemy>> _pools = new Dictionary<EnemyDefinition, ObjectPool<Enemy>>();
 
         public EnemySpawner(LevelContext context, Transform parent)
         {
             _context = context;
             _parent = parent;
+
             GridMap grid = context.Level.Grid;
-            _landPath = ToWorld(context.Level.LandPath, grid);
-            _airPath = ToWorld(context.Level.AirPath, grid);
+            EnemyPath[] paths = context.Level.Paths;
+            _paths = new Vector3[paths.Length][];
+            for (int i = 0; i < paths.Length; i++)
+            {
+                _paths[i] = ToWorld(paths[i].Waypoints, grid);
+            }
         }
 
         public int Alive { get; private set; }
 
-        public void Spawn(EnemyDefinition definition)
+        public void Spawn(EnemyDefinition definition, int pathIndex)
         {
             Enemy enemy = PoolFor(definition).Get();
             bool air = definition.Layer == TargetLayers.Air;
@@ -37,11 +40,12 @@ namespace Game.Levels
 
             enemy.Initialize(
                 definition,
-                air ? _airPath : _landPath,
+                _paths[pathIndex],
                 difficulty.HealthMultiplier,
                 difficulty.RewardMultiplier,
                 air ? AirHeight : 0f,
-                _context.Targets);
+                _context.Targets,
+                _context.Structures);
             Alive++;
         }
 

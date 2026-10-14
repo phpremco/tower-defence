@@ -5,25 +5,66 @@ using UnityEngine;
 
 namespace Game.Towers
 {
-    /// <summary>Finds a target in range and fires projectiles. Has no knowledge of how it looks.</summary>
-    public sealed class Tower : MonoBehaviour
+    /// <summary>
+    /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
+    /// Has no knowledge of how it looks.
+    /// </summary>
+    public sealed class Tower : MonoBehaviour, IStructure
     {
         private TowerDefinition _definition;
         private TargetRegistry _registry;
+        private StructureRegistry _structures;
         private ProjectilePool _projectiles;
         private PlayerModifiers _modifiers;
         private float _cooldown;
 
         public TowerDefinition Definition => _definition;
 
+        public Vector3 Position => transform.position;
+
+        public Health Health { get; private set; }
+
         /// <summary>Zero-based upgrade level. Stars shown are LevelIndex + 1.</summary>
         public int LevelIndex { get; private set; }
 
-        public bool CanUpgrade => LevelIndex < _definition.MaxLevelIndex;
+        public bool CanUpgrade => !IsWrecked && LevelIndex < _definition.MaxLevelIndex;
 
         public int NextUpgradeCost => _definition.GetLevel(LevelIndex + 1).Cost;
 
+        public bool IsWrecked => Health.IsDead;
+
+        public bool IsAlive => !IsWrecked;
+
+        /// <summary>The weakest the tower becomes while damaged, as a multiplier on damage and fire rate.</summary>
+        public float Power => IsWrecked ? 0f : _definition.DamagedPowerFloor + (1f - _definition.DamagedPowerFloor) * Health.Fraction;
+
+        /// <summary>Range after upgrades, in world units.</summary>
+        public float Range => _definition.GetLevel(LevelIndex).Range * _modifiers.TowerRangeMultiplier;
+
+        public int TotalSpent
+        {
+            get
+            {
+                int total = 0;
+                for (int i = 0; i <= LevelIndex; i++)
+                {
+                    total += _definition.GetLevel(i).Cost;
+                }
+
+                return total;
+            }
+        }
+
+        public int SellValue => Mathf.FloorToInt(TotalSpent * (IsWrecked ? _definition.ScrapFraction : _definition.SellRefundFraction));
+
+        public bool NeedsRepair => !IsWrecked && Health.Current < Health.Max;
+
+        public int RepairCost => NeedsRepair ? Mathf.CeilToInt((Health.Max - Health.Current) * _definition.RepairCostPerHealth) : 0;
+
         public event Action<Tower> LevelChanged;
+
+        /// <summary>Raised when health changes or the tower becomes a wreck.</summary>
+        public event Action<Tower> StateChanged;
 
         /// <summary>Raised with the world position of the target whenever the tower fires.</summary>
         public event Action<Vector3> Fired;
@@ -35,8 +76,27 @@ namespace Game.Towers
             _projectiles = projectiles;
             _modifiers = modifiers;
             LevelIndex = 0;
+            Health = new Health(definition.MaxHealth * modifiers.TowerHealthMultiplier);
+            Health.Changed += OnHealthChanged;
             LevelChanged?.Invoke(this);
         }
+
+        /// <summary>Makes enemies able to attack this tower. Preview ghosts are never registered.</summary>
+        public void Register(StructureRegistry structures)
+        {
+            _structures = structures;
+            _structures.Add(this);
+        }
+
+        public void Retire()
+        {
+            _structures?.Remove(this);
+            Health.Changed -= OnHealthChanged;
+        }
+
+        public void TakeDamage(float amount) => Health.TakeDamage(amount);
+
+        public void RepairFully() => Health.Heal(Health.Max);
 
         public void Upgrade()
         {
@@ -52,22 +112,24 @@ namespace Game.Towers
         private void Update()
         {
             _cooldown -= Time.deltaTime;
-            if (_cooldown > 0f)
+            if (_cooldown > 0f || IsWrecked)
             {
                 return;
             }
 
             TowerLevel level = _definition.GetLevel(LevelIndex);
-            ITargetable target = _registry.FindBest(transform.position, level.Range * _modifiers.TowerRangeMultiplier, _definition.Targets);
+            ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
             if (target == null)
             {
                 return;
             }
 
-            _projectiles.Fire(transform.position + Vector3.up, target, level.Damage * _modifiers.TowerDamageMultiplier, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets);
+            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
+            _projectiles.Fire(transform.position + Vector3.up, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets);
             Fired?.Invoke(target.Position);
-            _cooldown = level.FireInterval;
+            _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * Mathf.Max(0.05f, Power));
         }
+
+        private void OnHealthChanged(float _) => StateChanged?.Invoke(this);
     }
 }
-

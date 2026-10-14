@@ -1,0 +1,207 @@
+﻿using Game.Levels;
+using Game.Towers;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace Game.UI
+{
+    /// <summary>
+    /// A small strip of icons (upgrade, repair, sell, each with its price) next to the selected tower.
+    /// It sits beside the tower instead of covering the screen, and only reads the level context.
+    /// </summary>
+    public sealed class TowerMenuView : MonoBehaviour
+    {
+        private const float IconSize = 104f;
+        private const float Spacing = 14f;
+        private const float LabelHeight = 64f;
+        private const int LabelSize = 26;
+        private const float WorldHeight = 2.7f;
+        private const float RefreshSeconds = 0.25f;
+        private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
+        private static readonly Color Unavailable = new Color(0.5f, 0.5f, 0.55f);
+        private static readonly Color UpgradeTint = new Color(0.3f, 0.85f, 0.45f);
+        private static readonly Color RepairTint = new Color(0.35f, 0.65f, 1f);
+        private static readonly Color SellTint = new Color(1f, 0.78f, 0.25f);
+
+        private LevelContext _context;
+        private RectTransform _root;
+        private Camera _camera;
+        private Font _font;
+        private RectTransform _panel;
+        private Text _info;
+        private Button _upgrade;
+        private Button _repair;
+        private Button _sell;
+        private Text _upgradePrice;
+        private Text _repairPrice;
+        private Text _sellPrice;
+        private bool _wasOpen;
+        private float _nextRefresh;
+
+        public void Initialize(LevelContext context, RectTransform root, Camera camera, Font font)
+        {
+            _context = context;
+            _root = root;
+            _camera = camera;
+            _font = font;
+            Build();
+            _context.Changed.Subscribe(Refresh);
+            _context.Wallet.Changed += OnMoneyChanged;
+            Refresh();
+        }
+
+        private void OnDestroy()
+        {
+            if (_context == null)
+            {
+                return;
+            }
+
+            _context.Changed.Unsubscribe(Refresh);
+            _context.Wallet.Changed -= OnMoneyChanged;
+        }
+
+        private void Update()
+        {
+            if (_wasOpen && Time.unscaledTime >= _nextRefresh)
+            {
+                _nextRefresh = Time.unscaledTime + RefreshSeconds;
+                Refresh();
+            }
+        }
+
+        private void OnMoneyChanged(int _) => Refresh();
+
+        private void Build()
+        {
+            var go = new GameObject("TowerMenu", typeof(RectTransform));
+            _panel = go.GetComponent<RectTransform>();
+            _panel.SetParent(_root, false);
+            _panel.anchorMin = new Vector2(0.5f, 0.5f);
+            _panel.anchorMax = new Vector2(0.5f, 0.5f);
+            _panel.pivot = new Vector2(0.5f, 0f);
+            _panel.sizeDelta = new Vector2(IconSize * 3f + Spacing * 2f, IconSize + LabelHeight * 2f);
+
+            _info = CreateLabel(new Vector2(0.5f, 1f), new Vector2(0f, 0f), TextAnchor.LowerCenter, new Vector2(900f, LabelHeight * 2f));
+            _info.rectTransform.pivot = new Vector2(0.5f, 0f);
+
+            _upgrade = CreateIcon(IconType.Upgrade, 0, UpgradeTint, () => _context.UpgradeRequested.Raise(), out _upgradePrice);
+            _repair = CreateIcon(IconType.Repair, 1, RepairTint, () => _context.RepairRequested.Raise(), out _repairPrice);
+            _sell = CreateIcon(IconType.Sell, 2, SellTint, () => _context.SellRequested.Raise(), out _sellPrice);
+            _panel.gameObject.SetActive(false);
+        }
+
+        private Button CreateIcon(IconType type, int index, Color tint, UnityEngine.Events.UnityAction action, out Text price)
+        {
+            float x = (index - 1) * (IconSize + Spacing);
+            Button button = UiKit.CreateIconButton(_panel, IconFactory.Get(type), IconSize, action);
+            RectTransform rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 0f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = new Vector2(x, LabelHeight);
+            Destroy(button.GetComponent<LayoutElement>());
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = tint * 0.55f;
+            colors.highlightedColor = tint;
+            colors.selectedColor = tint;
+            colors.pressedColor = tint;
+            colors.disabledColor = new Color(0.12f, 0.12f, 0.14f);
+            button.colors = colors;
+
+            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, 0f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing, LabelHeight));
+            return button;
+        }
+
+        private Text CreateLabel(Vector2 anchor, Vector2 position, TextAnchor alignment, Vector2 size)
+        {
+            var go = new GameObject("Label", typeof(RectTransform));
+            go.transform.SetParent(_panel, false);
+            var text = go.AddComponent<Text>();
+            text.font = _font;
+            text.fontSize = LabelSize;
+            text.alignment = alignment;
+            text.color = TextColor;
+            text.raycastTarget = false;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            RectTransform rect = text.rectTransform;
+            rect.anchorMin = anchor;
+            rect.anchorMax = anchor;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            return text;
+        }
+
+        private void Refresh()
+        {
+            Tower tower = _context.SelectedPlacedTower;
+            bool open = _context.Mode == PlacementMode.TowerMenu && tower != null && _context.Outcome == LevelOutcome.Running;
+            _panel.gameObject.SetActive(open);
+
+            if (!open)
+            {
+                _wasOpen = false;
+                return;
+            }
+
+            PositionAbove(tower);
+            bool canUpgrade = tower.CanUpgrade && _context.Wallet.CanAfford(tower.NextUpgradeCost);
+            bool canRepair = tower.NeedsRepair && _context.Wallet.CanAfford(tower.RepairCost);
+
+            _upgrade.interactable = canUpgrade;
+            _repair.interactable = canRepair;
+            _sell.interactable = true;
+            _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "Upgrade\nmax";
+            _repairPrice.text = tower.NeedsRepair ? $"Repair\n{tower.RepairCost}" : "Repair\nnot needed";
+            _sellPrice.text = (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
+            _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
+            _repairPrice.color = canRepair ? TextColor : Unavailable;
+
+            string state = tower.IsWrecked ? "wrecked" : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
+            _info.text = $"{tower.Definition.DisplayName}  Lv {tower.LevelIndex + 1}  {state}" + UpgradePreview(tower);
+
+            if (!_wasOpen)
+            {
+                _wasOpen = true;
+                _nextRefresh = Time.unscaledTime + RefreshSeconds;
+                FocusFirstAvailable();
+            }
+        }
+
+        // Shows what the next upgrade changes, so the player can judge it before paying.
+        private static string UpgradePreview(Tower tower)
+        {
+            if (!tower.CanUpgrade)
+            {
+                return string.Empty;
+            }
+
+            TowerLevel now = tower.Definition.GetLevel(tower.LevelIndex);
+            TowerLevel next = tower.Definition.GetLevel(tower.LevelIndex + 1);
+            return $"\nNext: damage {now.Damage:0} > {next.Damage:0}   range {now.Range:0.0} > {next.Range:0.0}   shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}";
+        }
+
+        private void FocusFirstAvailable()
+        {
+            Button first = _upgrade.interactable ? _upgrade : _repair.interactable ? _repair : _sell;
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(first.gameObject);
+            }
+        }
+
+        private void PositionAbove(Tower tower)
+        {
+            Vector3 screen = _camera.WorldToScreenPoint(tower.Position + Vector3.up * WorldHeight);
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local))
+            {
+                _panel.anchoredPosition = local;
+            }
+        }
+    }
+}
+

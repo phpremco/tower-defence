@@ -15,9 +15,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _cellSize = 1f;
         [SerializeField] private VisualTheme _theme;
         [SerializeField] private CameraSettings _camera = CameraSettings.Default;
-        [SerializeField] private Vector2Int[] _landPath = new Vector2Int[0];
-        [SerializeField] private Vector2Int[] _airPath = new Vector2Int[0];
-        [SerializeField] private Vector2Int[] _buildSlots = new Vector2Int[0];
+        [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
+        [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
@@ -30,9 +29,26 @@ namespace Game.Levels
         public float CellSize => _cellSize;
         public VisualTheme Theme => _theme;
         public CameraSettings Camera => _camera;
-        public Vector2Int[] LandPath => _landPath;
-        public Vector2Int[] AirPath => _airPath;
-        public Vector2Int[] BuildSlots => _buildSlots;
+        public EnemyPath[] Paths => _paths;
+
+        /// <summary>Waypoints of the first road path: the main road, which also ends at the base.</summary>
+        public Vector2Int[] MainRoad
+        {
+            get
+            {
+                for (int i = 0; i < _paths.Length; i++)
+                {
+                    if (!_paths[i].Flying)
+                    {
+                        return _paths[i].Waypoints;
+                    }
+                }
+
+                return new Vector2Int[0];
+            }
+        }
+        /// <summary>Cells where nothing can be built. Every other cell off the road is buildable.</summary>
+        public Vector2Int[] BlockedCells => _blockedCells;
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;
@@ -92,4 +108,6 @@ namespace Game.Levels
         }
     }
 }
+
+
 

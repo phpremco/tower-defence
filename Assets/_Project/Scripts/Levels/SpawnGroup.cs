@@ -11,6 +11,9 @@ namespace Game.Levels
         public EnemyDefinition Enemy;
         [Min(1)] public int Count;
 
+        /// <summary>Index of the level path this group follows.</summary>
+        [Min(0)] public int PathIndex;
+
         /// <summary>Seconds between two enemies of this group.</summary>
         [Min(0.05f)] public float Interval;
 
@@ -18,3 +21,4 @@ namespace Game.Levels
         [Min(0f)] public float Delay;
     }
 }
+
