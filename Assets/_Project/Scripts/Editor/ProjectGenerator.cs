@@ -423,7 +423,9 @@ namespace Game.Editor
             TerrainPatch[] landingTerrain = Terrain(
                 Area(TerrainKind.Water, 17, 5, 22, 9), Area(TerrainKind.Water, 7, 0, 10, 2), Area(TerrainKind.Water, 8, -4, 9, -1),
                 Area(TerrainKind.Raised, 0, 5, 2, 6), Area(TerrainKind.Raised, 5, 8, 9, 9), Area(TerrainKind.Raised, 16, 3, 19, 3), Area(TerrainKind.Raised, 0, 0, 3, 2));
-            WriteCells(so.FindProperty("_blockedCells"), ScatterBlocked(LandingSize, landingRoad, landingTerrain, blockadeCells, 11, BlockedFraction));
+            Vector2Int[] landingBlocked = ScatterBlocked(LandingSize, landingRoad, landingTerrain, blockadeCells, 11, BlockedFraction);
+            WriteCells(so.FindProperty("_blockedCells"), landingBlocked);
+            WriteCells(so.FindProperty("_mineCells"), PickMineCells(LandingSize, landingRoad, landingTerrain, landingBlocked, blockadeCells, 16));
             WriteTerrain(so.FindProperty("_terrain"), landingTerrain, landingRoad, blockadeCells);
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = blockadeCells.Length;

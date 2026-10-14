@@ -44,6 +44,7 @@ MonoBehaviour:
     - {x: 0, y: 2}
     - {x: 11, y: 2}
     - {x: 11, y: 6}
+    - {x: 23, y: 6}
   _blockedCells:
   - {x: 3, y: 4}
   - {x: 5, y: 5}
@@ -194,10 +195,16 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 9, y: 9}
     Kind: 1
+  _mineCells:
+  - {x: 3, y: 5}
+  - {x: 8, y: 6}
+  - {x: 13, y: 3}
   _terrainAlbedo: {fileID: 2800000, guid: d593cda95a3da4b4ebbd45cdd7065a80, type: 3}
   _terrainEmission: {fileID: 2800000, guid: ba20492f63119694bbb65f489284e7b5, type: 3}
   _enemyHealthMultiplier: 1.4
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _energyMax: 100
+  _energyPerSecond: 1.5
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
   _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
   _recipes:

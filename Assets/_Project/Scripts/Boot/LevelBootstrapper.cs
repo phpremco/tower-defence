@@ -17,7 +17,7 @@ namespace Game.Boot
     /// </summary>
     public sealed class LevelBootstrapper : MonoBehaviour
     {
-        private const float StartEnergy = 30f;
+        private const float StartEnergy = 0f;
         private static readonly Vector3 SunRotation = new Vector3(50f, -30f, 0f);
 
         // Without a fill light the props in shadow go black; a share of the sun colour keeps them readable.

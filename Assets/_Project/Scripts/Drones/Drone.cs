@@ -13,6 +13,7 @@ namespace Game.Drones
         private const float Altitude = 2.2f;
         private const float WorkDistance = 0.5f;
         private const float RetargetSeconds = 0.5f;
+        private const float NodeJitter = 6f;
 
         private DroneDefinition _definition;
         private StructureRegistry _structures;
@@ -24,6 +25,10 @@ namespace Game.Drones
         private IStructure _repairTarget;
         private bool _hasLootTarget;
         private Vector3 _lootTarget;
+        private Vector3[] _mineNodes;
+        private int _mineIndex = -1;
+        private float _mineRemaining;
+        private int _carried;
 
         public DroneDefinition Definition => _definition;
 
@@ -44,13 +49,14 @@ namespace Game.Drones
 
         public event Action<Drone> Lost;
 
-        public void Initialize(DroneDefinition definition, Vector3 home, float speedMultiplier, StructureRegistry structures, PickupField pickups, Action<int> onCollected)
+        public void Initialize(DroneDefinition definition, Vector3 home, float speedMultiplier, StructureRegistry structures, PickupField pickups, Vector3[] mineNodes, Action<int> onCollected)
         {
             _definition = definition;
             _home = new Vector3(home.x, Altitude, home.z);
             _speed = definition.Speed * speedMultiplier;
             _structures = structures;
             _pickups = pickups;
+            _mineNodes = mineNodes;
             _onCollected = onCollected;
             Health = new Health(definition.MaxHealth);
             Health.Died += OnDied;
@@ -117,20 +123,45 @@ namespace Game.Drones
             }
         }
 
+        // Loot dropped by defeated enemies comes first. With none lying around the drone mines: it flies to a
+        // resource node, works there for a few seconds and carries the yield home.
         private void UpdateCollector()
         {
-            if (!_hasLootTarget)
+            if (_carried > 0)
+            {
+                WorkPoint = null;
+                if (FlyTo(_home) <= WorkDistance)
+                {
+                    _onCollected(_carried);
+                    _carried = 0;
+                }
+
+                return;
+            }
+
+            if (_mineIndex < 0 && !_hasLootTarget)
             {
                 _hasLootTarget = _pickups.TryFindNearest(transform.position, out _lootTarget);
             }
 
-            if (!_hasLootTarget)
+            if (_hasLootTarget)
+            {
+                FlyToLoot();
+                return;
+            }
+
+            if (_mineNodes == null || _mineNodes.Length == 0)
             {
                 WorkPoint = null;
                 FlyTo(_home);
                 return;
             }
 
+            Mine();
+        }
+
+        private void FlyToLoot()
+        {
             if (FlyTo(new Vector3(_lootTarget.x, Altitude, _lootTarget.z)) <= WorkDistance)
             {
                 int value = _pickups.Collect(_lootTarget);
@@ -143,6 +174,50 @@ namespace Game.Drones
             }
 
             WorkPoint = _hasLootTarget ? (Vector3?)_lootTarget : null;
+        }
+
+        private void Mine()
+        {
+            if (_mineIndex < 0)
+            {
+                _mineIndex = NearestNode();
+                _mineRemaining = _definition.MineSeconds;
+            }
+
+            Vector3 node = _mineNodes[_mineIndex];
+            if (FlyTo(new Vector3(node.x, Altitude, node.z)) > WorkDistance)
+            {
+                WorkPoint = null;
+                return;
+            }
+
+            WorkPoint = node;
+            _mineRemaining -= Time.deltaTime;
+            if (_mineRemaining <= 0f)
+            {
+                _carried = _definition.MineValue;
+                _mineIndex = -1;
+                WorkPoint = null;
+            }
+        }
+
+        private int NearestNode()
+        {
+            int best = 0;
+            float bestSqr = float.MaxValue;
+            for (int i = 0; i < _mineNodes.Length; i++)
+            {
+                Vector3 d = _mineNodes[i] - _home;
+                d.y = 0f;
+                float sqr = d.sqrMagnitude + UnityEngine.Random.value * NodeJitter;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = i;
+                }
+            }
+
+            return best;
         }
 
         // Moves towards a point and returns the distance that is left on the ground plane.

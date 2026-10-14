@@ -21,6 +21,7 @@ namespace Game.Levels
             _terrain = level.Terrain;
             _road = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
             _blocked = new HashSet<Vector2Int>(level.BlockedCells);
+            _blocked.UnionWith(level.MineCells);
         }
 
         public bool IsRoad(Vector2Int cell) => _road.Contains(cell);

@@ -30,6 +30,10 @@ namespace Game.Drones
         /// <summary>How many of this type may fly at once.</summary>
         [SerializeField] [Min(1)] private int _maxActive = 4;
 
+        /// <summary>Collector drones: seconds spent at a mining node, and the money one trip brings home.</summary>
+        [SerializeField] [Min(0.5f)] private float _mineSeconds = 3.5f;
+        [SerializeField] [Min(0)] private int _mineValue = 15;
+
         [SerializeField] private Color _color = new Color(0.4f, 0.9f, 1f);
 
         public string DisplayName => _displayName;
@@ -40,5 +44,7 @@ namespace Game.Drones
         public Color Color => _color;
         public float EnergyCost => _energyCost;
         public int MaxActive => _maxActive;
+        public float MineSeconds => _mineSeconds;
+        public int MineValue => _mineValue;
     }
 }

@@ -22,6 +22,7 @@ namespace Game.Levels
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
         [SerializeField] private TerrainPatch[] _terrain = new TerrainPatch[0];
+        [SerializeField] private Vector2Int[] _mineCells = new Vector2Int[0];
         [SerializeField] private Texture2D _terrainAlbedo;
         [SerializeField] private Texture2D _terrainEmission;
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
@@ -71,6 +72,9 @@ namespace Game.Levels
         public Vector2Int[] BlockedCells => _blockedCells;
         /// <summary>Fixed blockades on the road. Ground enemies stop at them until they are destroyed.</summary>
         public BlockadeSpot[] Blockades => _blockades;
+
+        /// <summary>Resource nodes that collector drones mine for money. They cannot be built on.</summary>
+        public Vector2Int[] MineCells => _mineCells;
 
         /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
         public TerrainPatch[] TerrainPatches => _terrain;

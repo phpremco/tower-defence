@@ -210,6 +210,23 @@ namespace Game.Core
             return b.ToMesh("AirNet");
         }
 
+        /// <summary>A resource node: a boulder with a cluster of golden crystals that collector drones mine.</summary>
+        public static Mesh MiningNode()
+        {
+            var b = new PropMeshBuilder();
+            b.AddBlob(new Vector3(0f, 0.12f, 0f), new Vector3(0.42f, 0.2f, 0.42f), 5, 9, 0.2f, 21, Dark, true);
+            var tilts = new[] { new Vector3(0f, 1f, 0f), new Vector3(0.45f, 1f, 0.1f), new Vector3(-0.4f, 1f, 0.2f), new Vector3(0.1f, 1f, -0.45f), new Vector3(-0.15f, 1f, -0.35f) };
+            for (int i = 0; i < tilts.Length; i++)
+            {
+                Vector3 axis = tilts[i].normalized;
+                float length = i == 0 ? 0.75f : 0.45f + 0.05f * i;
+                Vector3 root = new Vector3(tilts[i].x * 0.25f, 0.18f, tilts[i].z * 0.25f);
+                b.AddTube(new[] { root, root + axis * length }, new[] { i == 0 ? 0.11f : 0.08f, 0f }, 6, Glow, true);
+            }
+
+            return b.ToMesh("MiningNode");
+        }
+
         /// <summary>A dropped loot crystal.</summary>
         public static Mesh LootCrystal()
         {

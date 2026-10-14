@@ -18,6 +18,7 @@ namespace Game.Levels
         private Vector3 _home;
         private float _speed;
         private int _launched;
+        private Vector3[] _mineNodes;
 
         public void Initialize(LevelContext context, Transform parent)
         {
@@ -33,6 +34,13 @@ namespace Game.Levels
 
             Vector2Int[] road = context.Level.MainRoad;
             _home = context.Level.Grid.CellToWorld(road[road.Length - 1]);
+
+            Vector2Int[] mines = context.Level.MineCells;
+            _mineNodes = new Vector3[mines.Length];
+            for (int i = 0; i < mines.Length; i++)
+            {
+                _mineNodes[i] = context.Level.Grid.CellToWorld(mines[i]);
+            }
 
             for (int i = 0; i < modifiers.RepairDroneCount; i++)
             {
@@ -91,7 +99,7 @@ namespace Game.Levels
             // Newly launched drones start side by side so they do not sit on top of each other.
             float offset = ((_launched % 4) - 1.5f) * SpawnSpread;
             _launched++;
-            drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _speed, _context.Structures, _context.Pickups, OnCollected);
+            drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _speed, _context.Structures, _context.Pickups, _mineNodes, OnCollected);
             go.AddComponent<DroneView>().Initialize(drone);
             drone.Lost += OnLost;
 

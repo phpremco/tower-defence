@@ -27,6 +27,8 @@ namespace Game.Levels
             CheckTowers(level, errors);
             CheckBlockades(level, errors);
             CheckTerrain(level, errors);
+            CheckMines(level, grid, errors);
+            CheckRoadsReachBase(level, errors);
             CheckWaves(level, errors);
             return errors.Count == 0;
         }
@@ -120,6 +122,40 @@ namespace Game.Levels
             if (level.GridSize.x * level.GridSize.y - road.Count - seen.Count <= 0)
             {
                 errors.Add("Level has no buildable cells.");
+            }
+        }
+
+        // A mining node on the road, on liquid or outside the grid could never be reached or built around.
+        private static void CheckMines(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            var road = new HashSet<Vector2Int>(RoadCells(level));
+            foreach (Vector2Int cell in level.MineCells)
+            {
+                if (!grid.Contains(cell) || road.Contains(cell) || level.Terrain.IsLiquid(cell))
+                {
+                    errors.Add($"Mining node at {cell} is outside the grid, on the road or on liquid.");
+                }
+            }
+        }
+
+        // Every road must end where the main road ends, at the base. A side road that stops at a junction would
+        // make its enemies count as having reached the base without walking there.
+        private static void CheckRoadsReachBase(LevelDefinition level, List<string> errors)
+        {
+            Vector2Int[] main = level.MainRoad;
+            if (main.Length == 0)
+            {
+                return;
+            }
+
+            Vector2Int baseCell = main[main.Length - 1];
+            for (int p = 0; p < level.Paths.Length; p++)
+            {
+                EnemyPath path = level.Paths[p];
+                if (!path.Flying && path.Waypoints != null && path.Waypoints.Length > 0 && path.Waypoints[path.Waypoints.Length - 1] != baseCell)
+                {
+                    errors.Add($"Road path {p} '{path.Name}' does not end at the base {baseCell}.");
+                }
             }
         }
 

@@ -145,6 +145,60 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        // A side road must carry on along the main road after the junction, so its enemies walk to the base too.
+        private static Vector2Int[] MergeIntoMain(Vector2Int[] side, Vector2Int[] main)
+        {
+            Vector2Int junction = side[side.Length - 1];
+            int index = System.Array.IndexOf(main, junction);
+            if (index < 0)
+            {
+                return side;
+            }
+
+            var result = new List<Vector2Int>(side);
+            for (int i = index + 1; i < main.Length; i++)
+            {
+                result.Add(main[i]);
+            }
+
+            return result.ToArray();
+        }
+
+        private const int MineCount = 3;
+        private const int MineMinRoadDistance = 2;
+        private const int MineMinSpacing = 5;
+
+        // Resource nodes for the collector drones: a few free cells a little off the road, spread apart. The same seed
+        // always gives the same cells.
+        private static Vector2Int[] PickMineCells(Vector2Int size, HashSet<Vector2Int> road, TerrainPatch[] terrain, Vector2Int[] blocked, Vector2Int[] blockades, int seed)
+        {
+            var taken = new HashSet<Vector2Int>(terrain.Select(p => p.Cell));
+            taken.UnionWith(blocked);
+            var candidates = new List<Vector2Int>();
+            for (int x = 2; x < size.x - 2; x++)
+            {
+                for (int y = 2; y < size.y - 2; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    if (!taken.Contains(cell) && !NearAny(road, cell, MineMinRoadDistance - 1) && NearAny(road, cell, MineMinRoadDistance + 2) && !NearAny(blockades, cell, 2))
+                    {
+                        candidates.Add(cell);
+                    }
+                }
+            }
+
+            var random = new System.Random(seed);
+            var chosen = new List<Vector2Int>();
+            while (candidates.Count > 0 && chosen.Count < MineCount)
+            {
+                Vector2Int pick = candidates[random.Next(candidates.Count)];
+                chosen.Add(pick);
+                candidates.RemoveAll(c => Mathf.Abs(c.x - pick.x) < MineMinSpacing && Mathf.Abs(c.y - pick.y) < MineMinSpacing);
+            }
+
+            return chosen.ToArray();
+        }
+
         private static bool NearAny(IEnumerable<Vector2Int> cells, Vector2Int cell, int distance) =>
             cells.Any(c => Mathf.Abs(c.x - cell.x) <= distance && Mathf.Abs(c.y - cell.y) <= distance);
     }

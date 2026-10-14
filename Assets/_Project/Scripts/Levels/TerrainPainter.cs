@@ -100,6 +100,7 @@ namespace Game.Levels
                 _grid = level.Grid;
                 _terrain = level.Terrain;
                 _blocked = new HashSet<Vector2Int>(level.BlockedCells);
+                _blocked.UnionWith(level.MineCells);
                 _roadCells = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
                 _ground = theme.GroundColor;
                 _groundLight = Color.Lerp(theme.GroundColor, Color.white, 0.18f);

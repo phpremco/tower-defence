@@ -597,7 +597,7 @@ namespace Game.Editor
             };
             if (spec.SecondRoad != null)
             {
-                paths.Add(("Second road", false, spec.SecondRoad));
+                paths.Add(("Second road", false, MergeIntoMain(spec.SecondRoad, spec.Road)));
             }
 
             WritePaths(so.FindProperty("_paths"), paths.ToArray());
@@ -609,7 +609,9 @@ namespace Game.Editor
             }
 
             TerrainPatch[] terrain = spec.Terrain ?? new TerrainPatch[0];
-            WriteCells(so.FindProperty("_blockedCells"), ScatterBlocked(spec.Size, road, terrain, spec.BlockadeCells, spec.BlockedSeed, BlockedFraction));
+            Vector2Int[] blockedCells = ScatterBlocked(spec.Size, road, terrain, spec.BlockadeCells, spec.BlockedSeed, BlockedFraction);
+            WriteCells(so.FindProperty("_blockedCells"), blockedCells);
+            WriteCells(so.FindProperty("_mineCells"), PickMineCells(spec.Size, road, terrain, blockedCells, spec.BlockadeCells, spec.BlockedSeed + 5));
             WriteTerrain(so.FindProperty("_terrain"), terrain, road, spec.BlockadeCells);
 
             SerializedProperty blockades = so.FindProperty("_blockades");

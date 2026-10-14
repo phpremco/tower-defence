@@ -28,6 +28,7 @@ namespace Game.Levels
         private const float StarSize = 0.12f;
         private static readonly Color ArrowColor = new Color(1f, 0.85f, 0.35f);
         private static readonly Color RouteColor = new Color(0.55f, 0.95f, 0.95f);
+        private static readonly Color MineColor = new Color(1f, 0.8f, 0.25f);
         private static readonly Color SpawnColor = new Color(1f, 0.4f, 0.25f);
         private static readonly Color StarColor = new Color(0.8f, 0.9f, 1f);
 
@@ -40,6 +41,7 @@ namespace Game.Levels
             BuildLandscape(level, theme, parent);
             BuildRoadArrows(level, grid, parent);
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
+            BuildMiningNodes(level, grid, parent);
             BuildStarfield(parent, level.WorldSize);
             return routes;
         }
@@ -128,6 +130,26 @@ namespace Game.Levels
             }
 
             return routes;
+        }
+
+        // Golden crystal clusters that collector drones mine; they never move or run out.
+        private static void BuildMiningNodes(LevelDefinition level, GridMap grid, Transform parent)
+        {
+            if (level.MineCells.Length == 0)
+            {
+                return;
+            }
+
+            Mesh mesh = StructureModelFactory.MiningNode();
+            Material[] materials = ModelPalette.Create(MineColor);
+            foreach (Vector2Int cell in level.MineCells)
+            {
+                var go = new GameObject("MiningNode");
+                go.transform.SetParent(parent, false);
+                go.transform.position = grid.CellToWorld(cell) + Vector3.up * level.Terrain.HeightAt(cell);
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                go.AddComponent<MeshRenderer>().sharedMaterials = materials;
+            }
         }
 
         // A structure mesh with a separate ring that turns slowly, in the given glow colour.
