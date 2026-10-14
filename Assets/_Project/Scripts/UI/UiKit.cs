@@ -17,9 +17,9 @@ namespace Game.UI
         private const float ReferenceHeight = 1080f;
         private static readonly Color Background = new Color(0.04f, 0.05f, 0.08f);
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
-        private static readonly Color ButtonNormal = new Color(0.12f, 0.2f, 0.32f);
-        private static readonly Color ButtonSelected = new Color(0.25f, 0.5f, 0.85f);
-        private static readonly Color ButtonDisabled = new Color(0.1f, 0.1f, 0.12f);
+        private static readonly Color ButtonNormal = new Color(0.32f, 0.48f, 0.78f);
+        private static readonly Color ButtonSelected = new Color(0.4f, 0.75f, 1f);
+        private static readonly Color ButtonDisabled = new Color(0.28f, 0.3f, 0.36f);
         private static readonly Color Accent = new Color(0.3f, 0.75f, 1f, 0.9f);
         private const int StarTextureWidth = 1024;
         private const int StarTextureHeight = 576;
@@ -30,18 +30,26 @@ namespace Game.UI
 
         private static Texture2D _starTexture;
 
-        private static Font _font;
+        private static Font _fallbackFont;
 
-        private static Font DefaultFont
+        /// <summary>The sprites and fonts everything is drawn with. Set by the bootstrapper.</summary>
+        public static UiSkin Skin { get; set; }
+
+        public static Font DefaultFont
         {
             get
             {
-                if (_font == null)
+                if (Skin != null && Skin.Font != null)
                 {
-                    _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    return Skin.Font;
                 }
 
-                return _font;
+                if (_fallbackFont == null)
+                {
+                    _fallbackFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                }
+
+                return _fallbackFont;
             }
         }
 
@@ -111,6 +119,9 @@ namespace Game.UI
             label.text = text;
             label.horizontalOverflow = HorizontalWrapMode.Overflow;
             label.verticalOverflow = VerticalWrapMode.Overflow;
+            var shadow = go.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.7f);
+            shadow.effectDistance = new Vector2(2f, -2f);
             return label;
         }
 
@@ -158,10 +169,7 @@ namespace Game.UI
             var go = new GameObject("Button", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var image = go.AddComponent<Image>();
-            image.color = Color.white;
-            var outline = go.AddComponent<Outline>();
-            outline.effectColor = Accent;
-            outline.effectDistance = OutlineDistance;
+            StyleSliced(image, Skin != null ? Skin.Button : null);
 
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
@@ -193,10 +201,7 @@ namespace Game.UI
             var go = new GameObject("IconButton", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var image = go.AddComponent<Image>();
-            image.color = Color.white;
-            var outline = go.AddComponent<Outline>();
-            outline.effectColor = Accent;
-            outline.effectDistance = OutlineDistance;
+            StyleSliced(image, Skin != null ? Skin.ButtonSquare : null);
 
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
@@ -277,6 +282,53 @@ namespace Game.UI
             return colors;
         }
 
+        /// <summary>Gives an image a sliced skin sprite, or a plain colour when no skin is loaded.</summary>
+        public static void StyleSliced(Image image, Sprite sprite)
+        {
+            image.sprite = sprite;
+            image.type = sprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            image.color = Color.white;
+        }
+
+        /// <summary>A tinted panel from the skin, placed with explicit anchors.</summary>
+        public static Image CreatePanel(RectTransform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, Color tint)
+        {
+            var go = new GameObject(name, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var image = go.AddComponent<Image>();
+            StyleSliced(image, Skin != null ? Skin.Panel : null);
+            image.color = tint;
+            image.raycastTarget = false;
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
+            return image;
+        }
+
+        /// <summary>A horizontal stat bar: dark back plate and a coloured fill whose width follows fraction.</summary>
+        public static RectTransform CreateBar(RectTransform parent, Sprite fillSprite, float fraction)
+        {
+            var back = new GameObject("Bar", typeof(RectTransform));
+            back.transform.SetParent(parent, false);
+            var backImage = back.AddComponent<Image>();
+            StyleSliced(backImage, Skin != null ? Skin.BarBack : null);
+            backImage.raycastTarget = false;
+
+            var fill = new GameObject("Fill", typeof(RectTransform));
+            fill.transform.SetParent(back.transform, false);
+            var fillImage = fill.AddComponent<Image>();
+            StyleSliced(fillImage, fillSprite);
+            fillImage.raycastTarget = false;
+            RectTransform fillRect = fillImage.rectTransform;
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = new Vector2(Mathf.Clamp01(fraction), 1f);
+            fillRect.offsetMin = Vector2.zero;
+            fillRect.offsetMax = Vector2.zero;
+            return back.GetComponent<RectTransform>();
+        }
+
         private static void Stretch(RectTransform rect)
         {
             rect.anchorMin = Vector2.zero;
@@ -286,6 +338,8 @@ namespace Game.UI
         }
     }
 }
+
+
 
 
 

@@ -28,6 +28,8 @@ namespace Game.Towers
         [SerializeField] [Range(0f, 1f)] private float _damagedPowerFloor = 0.5f;
 
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
+        [SerializeField] private GameObject _model;
+        [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
 
         public string Id => name;
         public string DisplayName => _displayName;
@@ -40,6 +42,10 @@ namespace Game.Towers
         public float RepairCostPerHealth => _repairCostPerHealth;
         public float DamagedPowerFloor => _damagedPowerFloor;
         public Color Color => _color;
+
+        /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>
+        public GameObject Model => _model;
+        public float ModelScale => _modelScale;
         public int MaxLevelIndex => _levels.Length - 1;
 
         /// <summary>Price to build the tower, which is the cost of its first level.</summary>
@@ -56,4 +62,5 @@ namespace Game.Towers
         }
     }
 }
+
 

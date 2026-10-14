@@ -24,6 +24,8 @@ namespace Game.UI
         private const float BarButtonHeight = 110f;
         private const float BarSpacing = 14f;
         private const float IconSize = 76f;
+        private const float TopBarHeight = 110f;
+        private const float BottomBarHeight = 190f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Dim = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
@@ -54,10 +56,11 @@ namespace Game.UI
         {
             _context = context;
             _time = time;
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _font = UiKit.DefaultFont;
             UiKit.EnsureEventSystem();
 
             RectTransform safe = UiKit.CreateRoot(transform, false);
+            AddBackdrops(safe);
             BuildTexts(safe);
             BuildTowerBar(safe);
             BuildIcons(safe);
@@ -90,6 +93,14 @@ namespace Game.UI
         private void OnMoneyChanged(int _) => Refresh();
 
         private void OnBaseChanged(float _) => Refresh();
+
+        // Dark translucent bars behind the text so it stays readable over any terrain.
+        private static void AddBackdrops(RectTransform safe)
+        {
+            var tint = new Color(0.05f, 0.09f, 0.16f, 0.7f);
+            UiKit.CreatePanel(safe, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopBarHeight), Vector2.zero, tint);
+            UiKit.CreatePanel(safe, "BottomBar", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, BottomBarHeight), tint);
+        }
 
         private void BuildTexts(RectTransform safe)
         {
@@ -284,3 +295,4 @@ namespace Game.UI
         }
     }
 }
+

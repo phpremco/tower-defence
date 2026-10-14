@@ -2,6 +2,7 @@
 using Game.Economy;
 using Game.Levels;
 using Game.Platform;
+using Game.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -22,6 +23,7 @@ namespace Game.Boot
         [SerializeField] private UpgradeCatalog _upgrades;
         [SerializeField] private UnlockTable _unlockTable;
         [SerializeField] private PlaytestSettings _playtestSettings;
+        [SerializeField] private UiSkin _uiSkin;
 
         private static IInputProvider _input;
 
@@ -43,6 +45,8 @@ namespace Game.Boot
             Services.Register(_campaign);
             Services.Register(_upgrades);
             Services.Register(_playtestSettings);
+            Services.Register(_uiSkin);
+            UiKit.Skin = _uiSkin;
 
             AudioListener.volume = progress.Data.MasterVolumePercent / MaxVolumePercent;
         }
@@ -53,3 +57,4 @@ namespace Game.Boot
         }
     }
 }
+

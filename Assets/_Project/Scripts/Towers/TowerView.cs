@@ -11,6 +11,8 @@ namespace Game.Towers
     [RequireComponent(typeof(Tower))]
     public sealed class TowerView : MonoBehaviour
     {
+        private const float ModelTintStrength = 0.55f;
+        private const float ModelEmission = 0.25f;
         private const float StarSize = 0.17f;
         private const float StarSpacing = 0.26f;
         private const float StarHeight = 1.75f;
@@ -35,6 +37,8 @@ namespace Game.Towers
         private Transform _bar;
         private Renderer _barRenderer;
         private Renderer[] _glowParts;
+        private Renderer[] _modelRenderers;
+        private Material[][] _modelMaterials;
         private Material[] _glowMaterials;
         private bool _built;
 
@@ -83,6 +87,28 @@ namespace Game.Towers
                 _glowParts[i].sharedMaterial = tower.IsWrecked ? PlaceholderVisuals.MaterialFor(WreckColor, 0f) : _glowMaterials[i];
             }
 
+            if (_modelRenderers != null)
+            {
+                Material wreck = PlaceholderVisuals.MaterialFor(WreckColor, 0f);
+                for (int i = 0; i < _modelRenderers.Length; i++)
+                {
+                    if (tower.IsWrecked)
+                    {
+                        var wrecked = new Material[_modelMaterials[i].Length];
+                        for (int m = 0; m < wrecked.Length; m++)
+                        {
+                            wrecked[m] = wreck;
+                        }
+
+                        _modelRenderers[i].sharedMaterials = wrecked;
+                    }
+                    else
+                    {
+                        _modelRenderers[i].sharedMaterials = _modelMaterials[i];
+                    }
+                }
+            }
+
             for (int i = 0; i < _stars.Length; i++)
             {
                 _stars[i].SetActive(i <= tower.LevelIndex && !tower.IsWrecked);
@@ -99,17 +125,31 @@ namespace Game.Towers
             head.localPosition = new Vector3(0f, 0.8f, 0f);
             _head = head;
 
-            GameObject block = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, head, Vector3.zero, new Vector3(0.6f, 0.5f, 0.6f), HeadEmission);
-            GameObject barrel = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, definition.Color, head, new Vector3(0f, 0f, 0.45f), new Vector3(0.18f, 0.35f, 0.18f), BarrelEmission);
-            barrel.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-
-            _glowParts = new[] { ring.GetComponent<Renderer>(), block.GetComponent<Renderer>(), barrel.GetComponent<Renderer>() };
-            _glowMaterials = new Material[_glowParts.Length];
-            for (int i = 0; i < _glowParts.Length; i++)
+            if (definition.Model != null)
             {
-                _glowMaterials[i] = _glowParts[i].sharedMaterial;
+                Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
+                GameObject model = ModelFit.Place(definition.Model, head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
+                _glowParts = new[] { ring.GetComponent<Renderer>() };
+                _glowMaterials = new[] { _glowParts[0].sharedMaterial };
+                _modelRenderers = model.GetComponentsInChildren<Renderer>();
+                _modelMaterials = new Material[_modelRenderers.Length][];
+                for (int i = 0; i < _modelRenderers.Length; i++)
+                {
+                    _modelMaterials[i] = _modelRenderers[i].sharedMaterials;
+                }
             }
-
+            else
+            {
+                GameObject block = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, head, Vector3.zero, new Vector3(0.6f, 0.5f, 0.6f), HeadEmission);
+                GameObject barrel = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, definition.Color, head, new Vector3(0f, 0f, 0.45f), new Vector3(0.18f, 0.35f, 0.18f), BarrelEmission);
+                barrel.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                _glowParts = new[] { ring.GetComponent<Renderer>(), block.GetComponent<Renderer>(), barrel.GetComponent<Renderer>() };
+                _glowMaterials = new Material[_glowParts.Length];
+                for (int i = 0; i < _glowParts.Length; i++)
+                {
+                    _glowMaterials[i] = _glowParts[i].sharedMaterial;
+                }
+            }
             float startX = -StarSpacing * (_stars.Length - 1) * 0.5f;
             for (int i = 0; i < _stars.Length; i++)
             {
@@ -133,3 +173,4 @@ namespace Game.Towers
         }
     }
 }
+

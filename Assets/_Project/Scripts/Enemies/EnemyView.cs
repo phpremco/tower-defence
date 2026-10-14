@@ -16,6 +16,8 @@ namespace Game.Enemies
         private const float BarOffsetY = 1.0f;
         private const float BarEmission = 1.5f;
         private const float BodyEmission = 0.9f;
+        private const float ModelTintStrength = 0.65f;
+        private const float ModelEmission = 0.2f;
         private const float EyeEmission = 4f;
         private const float EyeSize = 0.14f;
         private const float ShadowSize = 0.6f;
@@ -89,17 +91,26 @@ namespace Game.Enemies
             body.localPosition = new Vector3(0f, scale * 0.5f, 0f);
             _body = body;
 
-            PrimitiveType shape = air ? PrimitiveType.Sphere : PrimitiveType.Capsule;
-            GameObject main = PlaceholderVisuals.CreatePrimitive(shape, definition.Color, body, Vector3.zero, new Vector3(scale, scale * (air ? 1f : 0.6f), scale * 1.3f), BodyEmission);
-            if (!air)
+            if (definition.Model != null)
             {
-                main.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                // Models sit on y = 0, the body pivot is at half height, so lower the model by that amount.
+                Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
+                ModelFit.Place(definition.Model, body, new Vector3(0f, -scale * 0.5f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
             }
+            else
+            {
+                PrimitiveType shape = air ? PrimitiveType.Sphere : PrimitiveType.Capsule;
+                GameObject main = PlaceholderVisuals.CreatePrimitive(shape, definition.Color, body, Vector3.zero, new Vector3(scale, scale * (air ? 1f : 0.6f), scale * 1.3f), BodyEmission);
+                if (!air)
+                {
+                    main.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                }
 
-            float eyeX = scale * 0.22f;
-            float eyeZ = scale * 0.55f;
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, EyeColor, body, new Vector3(eyeX, scale * 0.1f, eyeZ), Vector3.one * EyeSize, EyeEmission);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, EyeColor, body, new Vector3(-eyeX, scale * 0.1f, eyeZ), Vector3.one * EyeSize, EyeEmission);
+                float eyeX = scale * 0.22f;
+                float eyeZ = scale * 0.55f;
+                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, EyeColor, body, new Vector3(eyeX, scale * 0.1f, eyeZ), Vector3.one * EyeSize, EyeEmission);
+                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, EyeColor, body, new Vector3(-eyeX, scale * 0.1f, eyeZ), Vector3.one * EyeSize, EyeEmission);
+            }
 
             GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BarColor, transform, new Vector3(0f, BarOffsetY, 0f), new Vector3(BarWidth, BarHeight, BarHeight), BarEmission);
             _bar = bar.transform;
@@ -119,3 +130,4 @@ namespace Game.Enemies
         }
     }
 }
+

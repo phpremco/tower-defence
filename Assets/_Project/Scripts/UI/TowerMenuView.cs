@@ -12,12 +12,16 @@ namespace Game.UI
     /// </summary>
     public sealed class TowerMenuView : MonoBehaviour
     {
-        private const float IconSize = 104f;
-        private const float Spacing = 14f;
+        private const float IconSize = 100f;
+        private const float Spacing = 70f;
         private const float LabelHeight = 64f;
-        private const int LabelSize = 26;
+        private const int LabelSize = 24;
         private const float WorldHeight = 2.7f;
         private const float RefreshSeconds = 0.25f;
+        private const float BackdropPadding = 14f;
+        private const float PanelWidth = 900f;
+        private const float TopFraction = 0.1f;
+        private const float BelowOffset = 240f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Unavailable = new Color(0.5f, 0.5f, 0.55f);
         private static readonly Color UpgradeTint = new Color(0.3f, 0.85f, 0.45f);
@@ -81,10 +85,11 @@ namespace Game.UI
             _panel.anchorMin = new Vector2(0.5f, 0.5f);
             _panel.anchorMax = new Vector2(0.5f, 0.5f);
             _panel.pivot = new Vector2(0.5f, 0f);
-            _panel.sizeDelta = new Vector2(IconSize * 3f + Spacing * 2f, IconSize + LabelHeight * 2f);
+            _panel.sizeDelta = new Vector2(PanelWidth, IconSize + LabelHeight * 3f + 10f);
 
-            _info = CreateLabel(new Vector2(0.5f, 1f), new Vector2(0f, 0f), TextAnchor.LowerCenter, new Vector2(900f, LabelHeight * 2f));
-            _info.rectTransform.pivot = new Vector2(0.5f, 0f);
+            UiKit.CreatePanel(
+                _panel, "Backdrop", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-BackdropPadding, -BackdropPadding), new Vector2(BackdropPadding, BackdropPadding), new Color(0.05f, 0.09f, 0.18f, 0.9f));
+            _info = CreateLabel(new Vector2(0.5f, 1f), new Vector2(0f, -LabelHeight), TextAnchor.MiddleCenter, new Vector2(900f, LabelHeight * 2f));
 
             _upgrade = CreateIcon(IconType.Upgrade, 0, UpgradeTint, () => _context.UpgradeRequested.Raise(), out _upgradePrice);
             _repair = CreateIcon(IconType.Repair, 1, RepairTint, () => _context.RepairRequested.Raise(), out _repairPrice);
@@ -111,7 +116,7 @@ namespace Game.UI
             colors.disabledColor = new Color(0.12f, 0.12f, 0.14f);
             button.colors = colors;
 
-            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, 0f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing, LabelHeight));
+            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, 0f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing - 10f, LabelHeight));
             return button;
         }
 
@@ -156,7 +161,7 @@ namespace Game.UI
             _repair.interactable = canRepair;
             _sell.interactable = true;
             _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "Upgrade\nmax";
-            _repairPrice.text = tower.NeedsRepair ? $"Repair\n{tower.RepairCost}" : "Repair\nnot needed";
+            _repairPrice.text = tower.NeedsRepair ? $"Repair\n{tower.RepairCost}" : "Repair\n-";
             _sellPrice.text = (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
             _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
             _repairPrice.color = canRepair ? TextColor : Unavailable;
@@ -194,14 +199,22 @@ namespace Game.UI
             }
         }
 
+        // Above the tower, or hanging below it when the tower is near the top of the screen.
         private void PositionAbove(Tower tower)
         {
             Vector3 screen = _camera.WorldToScreenPoint(tower.Position + Vector3.up * WorldHeight);
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local))
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local))
             {
-                _panel.anchoredPosition = local;
+                return;
             }
+
+            bool nearTop = local.y > _root.rect.height * TopFraction;
+            _panel.pivot = new Vector2(0.5f, nearTop ? 1f : 0f);
+            _panel.anchoredPosition = nearTop ? local - new Vector2(0f, BelowOffset) : local;
         }
     }
 }
+
+
+
 

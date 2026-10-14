@@ -18,6 +18,8 @@ namespace Game.Enemies
         [SerializeField] [Min(0.1f)] private float _attackInterval = 1.2f;
         [SerializeField] private Color _color = new Color(0.9f, 0.3f, 0.15f);
         [SerializeField] [Min(0.1f)] private float _scale = 0.6f;
+        [SerializeField] private GameObject _model;
+        [SerializeField] [Min(0.1f)] private float _modelScale = 1f;
 
         public string DisplayName => _displayName;
         public TargetLayers Layer => _layer;
@@ -32,6 +34,10 @@ namespace Game.Enemies
         public Color Color => _color;
         public float Scale => _scale;
 
+        /// <summary>The imported model shown for this enemy, or null to use placeholder shapes.</summary>
+        public GameObject Model => _model;
+        public float ModelScale => _modelScale;
+
         private void OnValidate()
         {
             if (_layer != TargetLayers.Ground && _layer != TargetLayers.Air)
@@ -41,4 +47,5 @@ namespace Game.Enemies
         }
     }
 }
+
 

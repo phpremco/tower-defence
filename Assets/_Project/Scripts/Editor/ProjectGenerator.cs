@@ -25,6 +25,9 @@ namespace Game.Editor
         private const string DataRoot = "Assets/_Project/Data";
         private const string ScenesFolder = "Assets/_Project/Scenes";
         private const string InputAssetPath = "Assets/_Project/Settings/Input/GameInput.inputactions";
+        private const string ModelFolder = "Assets/_Project/Art/Models/SpaceKit/";
+        private const string UiFolder = "Assets/_Project/Art/UI/";
+        private const string SkinAssetPath = "Assets/_Project/Settings/UiSkin.asset";
         private const string DebugAssetPath = "Assets/_Project/Settings/PlaytestSettings.asset";
         private const string UnlockAssetPath = DataRoot + "/Unlocks/UnlockTable.asset";
         private const string LevelAssetPath = DataRoot + "/Levels/Level_Landing.asset";
@@ -78,10 +81,19 @@ namespace Game.Editor
             unlockProps.ApplyModifiedPropertiesWithoutUndo();
 
             var debug = LoadOrCreate<PlaytestSettings>(DebugAssetPath);
+            SetModel(pulse, "turret_single", 1.5f);
+            SetModel(cannon, "turret_double", 1.4f);
+            SetModel(rocket, "satelliteDish_large", 1.5f);
+            SetModel(scout, "alien", 0.9f);
+            SetModel(grunt, "alien", 1.2f);
+            SetModel(brute, "alien", 1.9f);
+            SetModel(flyer, "craft_speederA", 0.5f);
+
             UpgradeCatalog upgradeCatalog = CreateUpgrades(pulse, cannon, rocket);
+            UiSkin skin = CreateSkin();
             CampaignCatalog campaign = CreateCampaign(level, difficulties);
 
-            CreateBootScene(campaign, upgradeCatalog, unlocks, debug);
+            CreateBootScene(campaign, upgradeCatalog, unlocks, debug, skin);
             CreateLevelScene();
             CreateMenuScene<MainMenuScreen>(SceneNames.MainMenu);
             CreateMenuScene<WorldMapScreen>(SceneNames.WorldMap);
@@ -97,6 +109,16 @@ namespace Game.Editor
 
             AssetDatabase.SaveAssets();
             Debug.Log("Generated level 1 data and the Boot and Level scenes.");
+        }
+
+        private static GameObject Model(string name) => AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelFolder}{name}.fbx");
+
+        private static void SetModel(Object asset, string modelName, float scale)
+        {
+            var so = new SerializedObject(asset);
+            so.FindProperty("_model").objectReferenceValue = Model(modelName);
+            so.FindProperty("_modelScale").floatValue = scale;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static TowerLevel Lvl(int cost, float damage, float range, float interval) =>
@@ -269,13 +291,45 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        private static UiSkin CreateSkin()
+        {
+            var skin = LoadOrCreate<UiSkin>(SkinAssetPath);
+            var so = new SerializedObject(skin);
+            so.FindProperty("_font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFuture.ttf");
+            so.FindProperty("_narrowFont").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFutureNarrow.ttf");
+
+            var sprites = new (string Field, string File)[]
+            {
+                ("_panel", "panel"), ("_panelSquare", "panel_square"), ("_button", "button"), ("_buttonSquare", "button_square"),
+                ("_barBack", "bar_back"), ("_barBlue", "bar_blue"), ("_barGreen", "bar_green"), ("_barYellow", "bar_yellow"), ("_barRed", "bar_red"),
+                ("_cardBlue", "card_blue"), ("_cardGreen", "card_green"), ("_cardYellow", "card_yellow"), ("_cardRed", "card_red"),
+            };
+
+            foreach ((string field, string file) in sprites)
+            {
+                so.FindProperty(field).objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>($"{UiFolder}Sprites/{file}.png");
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return skin;
+        }
+
         // Landing Zone palette: grey and blue on an open plain, glowing cyan accents.
         private static void ConfigureTheme(VisualTheme theme)
         {
             var so = new SerializedObject(theme);
             so.FindProperty("_backgroundColor").colorValue = new Color(0.02f, 0.03f, 0.06f);
-            so.FindProperty("_groundColor").colorValue = new Color(0.1f, 0.12f, 0.17f);
-            so.FindProperty("_pathColor").colorValue = new Color(0.08f, 0.3f, 0.45f);
+            so.FindProperty("_groundColor").colorValue = new Color(0.16f, 0.26f, 0.4f);
+            so.FindProperty("_pathColor").colorValue = new Color(0.55f, 0.8f, 1f);
+            so.FindProperty("_groundTile").objectReferenceValue = Model("terrain");
+            so.FindProperty("_roadStraight").objectReferenceValue = Model("terrain_roadStraight");
+            so.FindProperty("_roadCorner").objectReferenceValue = Model("terrain_roadCorner");
+            so.FindProperty("_roadEnd").objectReferenceValue = Model("terrain_roadEnd");
+            so.FindProperty("_roadCross").objectReferenceValue = Model("terrain_roadCross");
+            so.FindProperty("_baseModel").objectReferenceValue = Model("machine_generatorLarge");
+            so.FindProperty("_spawnModel").objectReferenceValue = Model("gate_simple");
+            SetObjects(so.FindProperty("_blockedProps"), "rock_largeA", "rock_largeB", "rock_crystals", "meteor");
+            SetObjects(so.FindProperty("_scenery"), "rocks_smallA", "rocks_smallB", "crater", "craterLarge", "rock_crystalsLargeA", "rock_largeA", "meteor");
             so.FindProperty("_slotColor").colorValue = new Color(0.2f, 0.55f, 1f);
             so.FindProperty("_baseColor").colorValue = new Color(0.3f, 0.85f, 1f);
             so.FindProperty("_lightColor").colorValue = new Color(0.75f, 0.85f, 1f);
@@ -295,6 +349,15 @@ namespace Game.Editor
                 element.FindPropertyRelative("Name").stringValue = paths[i].Name;
                 element.FindPropertyRelative("Flying").boolValue = paths[i].Flying;
                 WriteCells(element.FindPropertyRelative("Waypoints"), paths[i].Waypoints);
+            }
+        }
+
+        private static void SetObjects(SerializedProperty array, params string[] modelNames)
+        {
+            array.arraySize = modelNames.Length;
+            for (int i = 0; i < modelNames.Length; i++)
+            {
+                array.GetArrayElementAtIndex(i).objectReferenceValue = Model(modelNames[i]);
             }
         }
 
@@ -407,13 +470,14 @@ namespace Game.Editor
             return catalog;
         }
 
-        private static void CreateBootScene(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, PlaytestSettings playtest)
+        private static void CreateBootScene(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, PlaytestSettings playtest, UiSkin skin)
         {
             // NewScene unloads assets nobody references yet, so remember the paths and load them again afterwards.
             string campaignPath = AssetDatabase.GetAssetPath(campaign);
             string upgradesPath = AssetDatabase.GetAssetPath(upgrades);
             string unlocksPath = AssetDatabase.GetAssetPath(unlocks);
             string playtestPath = AssetDatabase.GetAssetPath(playtest);
+            string skinPath = AssetDatabase.GetAssetPath(skin);
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var go = new GameObject("Bootstrapper");
@@ -424,6 +488,7 @@ namespace Game.Editor
             so.FindProperty("_upgrades").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(upgradesPath);
             so.FindProperty("_unlockTable").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UnlockTable>(unlocksPath);
             so.FindProperty("_playtestSettings").objectReferenceValue = AssetDatabase.LoadAssetAtPath<PlaytestSettings>(playtestPath);
+            so.FindProperty("_uiSkin").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UiSkin>(skinPath);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorSceneManager.SaveScene(scene, $"{ScenesFolder}/{SceneNames.Boot}.unity");
         }
@@ -455,6 +520,7 @@ namespace Game.Editor
         }
     }
 }
+
 
 
 
