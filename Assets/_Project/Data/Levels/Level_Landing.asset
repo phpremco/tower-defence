@@ -89,3 +89,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 07ebd83995b18704fb3f0b3d0c9e0a20, type: 2}
     - {fileID: 11400000, guid: adceb5f07e183ce4f86824a3ff7165d3, type: 2}
     - {fileID: 11400000, guid: 3f8fe234cc76b9048b6c5657e5000ad3, type: 2}
+  _reward:
+    ResearchPoints: 10
+    PowerCurrency: 4
+    NewTower: {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+    Source: 2
+    Story: The home planet sent schematics for a heavy cannon.

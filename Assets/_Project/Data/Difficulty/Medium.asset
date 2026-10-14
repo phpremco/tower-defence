@@ -17,3 +17,4 @@ MonoBehaviour:
   _countMultiplier: 1
   _spawnIntervalMultiplier: 1
   _rewardMultiplier: 1.25
+  _powerCurrencyMultiplier: 0.5

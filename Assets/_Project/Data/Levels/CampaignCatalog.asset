@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8a0e7891c523b84e9515f2704d77470, type: 3}
+  m_Name: CampaignCatalog
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.CampaignCatalog
+  _nodes:
+  - DisplayName: Landing Zone
+    MapPosition: {x: 0.1, y: 0.25}
+    Level: {fileID: 11400000, guid: ce4469ed87baed04d9f868403cc4ade3, type: 2}
+  - DisplayName: Glowing Forest
+    MapPosition: {x: 0.3, y: 0.7}
+    Level: {fileID: 0}
+  - DisplayName: Lava Caves
+    MapPosition: {x: 0.5, y: 0.3}
+    Level: {fileID: 0}
+  - DisplayName: Ancient Ruins
+    MapPosition: {x: 0.7, y: 0.75}
+    Level: {fileID: 0}
+  - DisplayName: The Nest
+    MapPosition: {x: 0.9, y: 0.35}
+    Level: {fileID: 0}
+  _difficulties:
+  - {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+  - {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+  - {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+  - {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
