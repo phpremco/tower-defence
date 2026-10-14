@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: BlockadeHealth
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
   _displayName: Blockade strength +20% per level
-  _target: 3
+  _target: 5
+  _towerId: 
+  _groupName: Base
   _costs: 04000000080000000c000000i
   _bonusPerLevel: 0.2

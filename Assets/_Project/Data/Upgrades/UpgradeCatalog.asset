@@ -13,7 +13,14 @@ MonoBehaviour:
   m_Name: UpgradeCatalog
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeCatalog
   _upgrades:
-  - {fileID: 11400000, guid: 2cad9bdb2d361c74db12cfa2526daa74, type: 2}
-  - {fileID: 11400000, guid: e78b070eb875a214792cbf7661cb823e, type: 2}
+  - {fileID: 11400000, guid: 92cfe92ef7de4804fa39e7c0e9753435, type: 2}
+  - {fileID: 11400000, guid: 5242e8f14add5e2438fa91c547d24232, type: 2}
+  - {fileID: 11400000, guid: 711474c95ef6c6d4eb5fbc9a5b181ef7, type: 2}
+  - {fileID: 11400000, guid: cff03fe304d5fb346bbbf28c573fe80e, type: 2}
+  - {fileID: 11400000, guid: a4af99fc28a647543b17e90cd543eacc, type: 2}
+  - {fileID: 11400000, guid: 9dead8fe78fc93b4382d6dab03b4a749, type: 2}
+  - {fileID: 11400000, guid: 000b6ca749e1c0043998088078b073c7, type: 2}
+  - {fileID: 11400000, guid: ac6075a51287bff4e8c67a3d5dd15929, type: 2}
+  - {fileID: 11400000, guid: 3be48ac181eb746499ada9fa39e217aa, type: 2}
   - {fileID: 11400000, guid: 7a3137ea9e5ee0a46a5a87afb8f17ea2, type: 2}
   - {fileID: 11400000, guid: 507f628dcc8eca04986a3fad6342c121, type: 2}

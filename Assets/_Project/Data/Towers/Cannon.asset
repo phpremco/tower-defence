@@ -29,4 +29,9 @@ MonoBehaviour:
     FireInterval: 1
   _projectileSpeed: 9
   _splashRadius: 1.2
+  _maxHealth: 120
+  _sellRefundFraction: 0.7
+  _scrapFraction: 0.3
+  _repairCostPerHealth: 0.4
+  _damagedPowerFloor: 0.5
   _color: {r: 1, g: 0.8, b: 0.3, a: 1}

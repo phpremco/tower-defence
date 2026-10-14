@@ -15,10 +15,17 @@ MonoBehaviour:
   _startDelay: 8
   _groups:
   - Enemy: {fileID: 11400000, guid: 367f64d355ab66646a061aee7815b8d2, type: 2}
-    Count: 8
+    Count: 5
+    PathIndex: 1
     Interval: 1
     Delay: 0
+  - Enemy: {fileID: 11400000, guid: 367f64d355ab66646a061aee7815b8d2, type: 2}
+    Count: 5
+    PathIndex: 2
+    Interval: 1
+    Delay: 0.5
   - Enemy: {fileID: 11400000, guid: d1dcf1cfc59d37c4694d2ed1402cad45, type: 2}
     Count: 10
+    PathIndex: 0
     Interval: 0.6
     Delay: 2

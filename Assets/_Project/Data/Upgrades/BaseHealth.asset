@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: BaseHealth
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
   _displayName: Base armour +5 HP per level
-  _target: 2
+  _target: 4
+  _towerId: 
+  _groupName: Base
   _costs: 04000000080000000c000000i
   _bonusPerLevel: 5

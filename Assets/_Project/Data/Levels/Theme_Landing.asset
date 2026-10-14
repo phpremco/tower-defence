@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7038ebb93364684fb7bd8b00600503b, type: 3}
   m_Name: Theme_Landing
   m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
-  _backgroundColor: {r: 0.04, g: 0.05, b: 0.08, a: 1}
-  _groundColor: {r: 0.25, g: 0.28, b: 0.33, a: 1}
-  _lightColor: {r: 0.8, g: 0.85, b: 1, a: 1}
+  _backgroundColor: {r: 0.02, g: 0.03, b: 0.06, a: 1}
+  _groundColor: {r: 0.1, g: 0.12, b: 0.17, a: 1}
+  _pathColor: {r: 0.08, g: 0.3, b: 0.45, a: 1}
+  _slotColor: {r: 0.2, g: 0.55, b: 1, a: 1}
+  _baseColor: {r: 0.3, g: 0.85, b: 1, a: 1}
+  _lightColor: {r: 0.75, g: 0.85, b: 1, a: 1}
   _lightIntensity: 1.1
-  _fogColor: {r: 0.06, g: 0.08, b: 0.12, a: 1}
-  _fogDensity: 0.015
-  _bloomIntensity: 0.8
+  _fogColor: {r: 0.03, g: 0.04, b: 0.08, a: 1}
+  _fogDensity: 0.01
+  _bloomIntensity: 1.2

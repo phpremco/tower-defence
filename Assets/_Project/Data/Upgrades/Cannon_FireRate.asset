@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
-  m_Name: TowerRange
+  m_Name: Cannon_FireRate
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Tower range +5% per level
-  _target: 1
-  _costs: 050000000a0000000f000000i
-  _bonusPerLevel: 0.05
+  _displayName: Fire rate +10% per level
+  _target: 2
+  _towerId: Cannon
+  _groupName: Cannon
+  _costs: 060000000c00000012000000i
+  _bonusPerLevel: 0.1
