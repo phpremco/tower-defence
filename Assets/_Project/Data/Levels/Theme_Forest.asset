@@ -37,6 +37,15 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
   - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
   - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
+  _rockColor: {r: 0.24, g: 0.3, b: 0.46, a: 1}
+  _accentColor: {r: 0.35, g: 1, b: 0.8, a: 1}
+  _waterColor: {r: 0.06, g: 0.5, b: 0.6, a: 1}
+  _lavaColor: {r: 1, g: 0.4, b: 0.1, a: 1}
+  _sandColor: {r: 0.45, g: 0.5, b: 0.4, a: 1}
+  _propKinds: 0300000003000000040000000400000009000000090000000200000000000000i
+  _veinStrength: 0.85
+  _ambientRate: 30
+  _ambientRise: 0.18
   _lightColor: {r: 0.7, g: 0.85, b: 1, a: 1}
   _lightIntensity: 0.95
   _fogColor: {r: 0.04, g: 0.02, b: 0.09, a: 1}

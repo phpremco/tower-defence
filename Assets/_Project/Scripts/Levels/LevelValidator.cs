@@ -26,8 +26,42 @@ namespace Game.Levels
             CheckBlockedCells(level, grid, errors);
             CheckTowers(level, errors);
             CheckBlockades(level, errors);
+            CheckTerrain(level, errors);
             CheckWaves(level, errors);
             return errors.Count == 0;
+        }
+
+        // Raised ground would lift the road and liquids would drown it; the cells around a blockade hold the hero.
+        private static void CheckTerrain(LevelDefinition level, List<string> errors)
+        {
+            var road = new HashSet<Vector2Int>(RoadCells(level));
+            TerrainMap terrain = level.Terrain;
+
+            foreach (KeyValuePair<Vector2Int, TerrainKind> entry in terrain.Cells)
+            {
+                if (entry.Value == TerrainKind.Ground)
+                {
+                    continue;
+                }
+
+                if (road.Contains(entry.Key))
+                {
+                    errors.Add($"Terrain {entry.Value} at {entry.Key} lies on the road.");
+                }
+
+                if (!TerrainMap.IsLiquid(entry.Value))
+                {
+                    continue;
+                }
+
+                foreach (BlockadeSpot spot in level.Blockades)
+                {
+                    if (Mathf.Abs(spot.Cell.x - entry.Key.x) <= 1 && Mathf.Abs(spot.Cell.y - entry.Key.y) <= 1)
+                    {
+                        errors.Add($"Liquid at {entry.Key} is next to the blockade at {spot.Cell}, where the hero stands.");
+                    }
+                }
+            }
         }
 
         private static void CheckPaths(LevelDefinition level, GridMap grid, List<string> errors)

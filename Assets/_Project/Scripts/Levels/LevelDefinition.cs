@@ -21,6 +21,7 @@ namespace Game.Levels
         [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
+        [SerializeField] private TerrainPatch[] _terrain = new TerrainPatch[0];
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
         [SerializeField] private HeroDefinition _hero;
@@ -65,6 +66,12 @@ namespace Game.Levels
         public Vector2Int[] BlockedCells => _blockedCells;
         /// <summary>Fixed blockades on the road. Ground enemies stop at them until they are destroyed.</summary>
         public BlockadeSpot[] Blockades => _blockades;
+
+        /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
+        public TerrainPatch[] TerrainPatches => _terrain;
+
+        /// <summary>Lookup built from <see cref="TerrainPatches"/>, cached because several systems ask for it.</summary>
+        public TerrainMap Terrain => _terrainMap ??= new TerrainMap(_terrain);
 
         /// <summary>The commander for this level, or null for a level without one.</summary>
         public float EnemyHealthMultiplier => _enemyHealthMultiplier;
@@ -130,8 +137,11 @@ namespace Game.Levels
             return true;
         }
 
+        [System.NonSerialized] private TerrainMap _terrainMap;
+
         private void OnValidate()
         {
+            _terrainMap = null;
             if (!IsValid(out string error))
             {
                 Debug.LogWarning($"LevelDefinition '{name}' is invalid: {error}", this);

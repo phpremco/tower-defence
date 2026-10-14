@@ -275,7 +275,7 @@ namespace Game.Editor
                 var so = new SerializedObject(wave);
                 so.FindProperty("_startDelay").floatValue = i == 0 ? 10f : 8f;
                 SerializedProperty groups = so.FindProperty("_groups");
-                SpawnGroup[] template = ScaleTemplate(templates[i], countScale, secondRoad, i == count - 1 ? boss : null);
+                SpawnGroup[] template = ScaleTemplate(templates[i], countScale, secondRoad, i == count - 1 ? boss : null, i);
                 groups.arraySize = template.Length;
                 for (int g = 0; g < template.Length; g++)
                 {
@@ -284,6 +284,7 @@ namespace Game.Editor
                     element.FindPropertyRelative("Count").intValue = template[g].Count;
                     element.FindPropertyRelative("Interval").floatValue = template[g].Interval;
                     element.FindPropertyRelative("Delay").floatValue = template[g].Delay;
+                    element.FindPropertyRelative("Stagger").floatValue = template[g].Stagger;
                     element.FindPropertyRelative("PathIndex").intValue = template[g].PathIndex;
                 }
 
@@ -294,21 +295,27 @@ namespace Game.Editor
             return waves;
         }
 
-        private static SpawnGroup[] ScaleTemplate(SpawnGroup[] source, float scale, int secondRoad, EnemyDefinition boss)
+        // Cluster sizes a stream is cut into. Mixing singles with groups of three or four breaks up the
+        // one-after-another line; several patterns keep neighbouring streams from marching in step.
+        private static readonly int[][] ClusterPatterns =
+        {
+            new[] { 1, 2, 1, 3 },
+            new[] { 2, 1, 3 },
+            new[] { 1, 1, 2, 4 },
+            new[] { 3, 1, 2 },
+        };
+
+        private const float ClusterInnerIntervalShare = 0.5f;
+        private const float ClusterMinInterval = 0.2f;
+
+        private static SpawnGroup[] ScaleTemplate(SpawnGroup[] source, float scale, int secondRoad, EnemyDefinition boss, int waveIndex)
         {
             var result = new List<SpawnGroup>();
             for (int i = 0; i < source.Length; i++)
             {
                 SpawnGroup group = source[i];
                 group.Count = Mathf.Max(1, Mathf.RoundToInt(group.Count * scale));
-
-                // Every other ground group takes the second entrance, so both roads see traffic in every wave.
-                if (secondRoad >= 0 && group.Enemy.Layer == TargetLayers.Ground && i % 2 == 1)
-                {
-                    group.PathIndex = secondRoad;
-                }
-
-                result.Add(group);
+                Scatter(group, waveIndex * 3 + i, LanesFor(group, secondRoad), result);
             }
 
             if (boss != null)
@@ -317,6 +324,47 @@ namespace Game.Editor
             }
 
             return result.ToArray();
+        }
+
+        // The routes a stream may alternate between: both ground entrances, or both flight routes.
+        private static int[] LanesFor(SpawnGroup group, int secondRoad)
+        {
+            if (group.PathIndex == NorthAirRoute || group.PathIndex == SouthAirRoute)
+            {
+                return new[] { NorthAirRoute, SouthAirRoute };
+            }
+
+            bool ground = group.Enemy.Layer == TargetLayers.Ground;
+            return ground && secondRoad >= 0 ? new[] { Road, secondRoad } : new[] { group.PathIndex };
+        }
+
+        // Cuts one stream into clusters that take turns on the lanes. The average rate stays the same:
+        // a cluster of n enemies claims n times the stream interval before the next one starts.
+        private static void Scatter(SpawnGroup group, int seed, int[] lanes, List<SpawnGroup> output)
+        {
+            int[] pattern = ClusterPatterns[seed % ClusterPatterns.Length];
+            float inner = Mathf.Max(ClusterMinInterval, group.Interval * ClusterInnerIntervalShare);
+            int remaining = group.Count;
+            int step = 0;
+            float offset = 0f;
+
+            while (remaining > 0)
+            {
+                int size = Mathf.Min(pattern[step % pattern.Length], remaining);
+                output.Add(new SpawnGroup
+                {
+                    Enemy = group.Enemy,
+                    Count = size,
+                    Interval = inner,
+                    Delay = group.Delay,
+                    Stagger = offset,
+                    PathIndex = lanes[(seed + step) % lanes.Length],
+                });
+
+                offset += size * group.Interval;
+                remaining -= size;
+                step++;
+            }
         }
 
         private const float BossDelaySeconds = 14f;
@@ -377,6 +425,16 @@ namespace Game.Editor
 
             // One blockade across the middle leg of the road and one on the last leg before the base.
             var blockadeCells = new[] { new Vector2Int(7, 5), new Vector2Int(10, 2) };
+
+            // A lake that drains off the right edge, a pond below the road, and low ridges on the free corners.
+            var landingRoad = new HashSet<Vector2Int>(LevelValidator.LandPathCells(Cells(0, 8, 12, 8, 12, 5, 3, 5, 3, 2, 15, 2)));
+            WriteTerrain(
+                so.FindProperty("_terrain"),
+                Terrain(
+                    Area(TerrainKind.Water, 13, 6, 17, 7), Area(TerrainKind.Water, 11, 0, 14, 1), Area(TerrainKind.Water, 12, -3, 13, -1),
+                    Area(TerrainKind.Raised, 0, 0, 2, 1), Area(TerrainKind.Raised, 5, 9, 7, 9), Area(TerrainKind.Raised, 13, 3, 15, 3), Area(TerrainKind.Raised, 15, 4, 15, 5)),
+                landingRoad,
+                blockadeCells);
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = blockadeCells.Length;
             for (int i = 0; i < blockadeCells.Length; i++)
@@ -439,7 +497,7 @@ namespace Game.Editor
             ConfigureThemePalette(theme, new Palette
             {
                 Background = new Color(0.02f, 0.03f, 0.06f),
-                Ground = new Color(0.16f, 0.26f, 0.4f),
+                Ground = new Color(0.27f, 0.33f, 0.42f),
                 Path = new Color(0.55f, 0.8f, 1f),
                 Slot = new Color(0.2f, 0.55f, 1f),
                 Base = new Color(0.3f, 0.85f, 1f),
@@ -448,6 +506,15 @@ namespace Game.Editor
                 Fog = new Color(0.03f, 0.04f, 0.08f),
                 FogDensity = 0.01f,
                 Bloom = 1.2f,
+                Rock = new Color(0.42f, 0.48f, 0.6f),
+                Accent = new Color(0.35f, 0.85f, 1f),
+                Water = new Color(0.07f, 0.38f, 0.62f),
+                Lava = new Color(1f, 0.4f, 0.1f),
+                Sand = new Color(0.5f, 0.5f, 0.56f),
+                Props = new[] { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond, PropKind.Rock, PropKind.Crystal },
+                Vein = 0.4f,
+                AmbientRate = 9f,
+                AmbientRise = 0.1f,
             });
         }
 
@@ -473,6 +540,21 @@ namespace Game.Editor
             so.FindProperty("_fogColor").colorValue = p.Fog;
             so.FindProperty("_fogDensity").floatValue = p.FogDensity;
             so.FindProperty("_bloomIntensity").floatValue = p.Bloom;
+            so.FindProperty("_rockColor").colorValue = p.Rock;
+            so.FindProperty("_accentColor").colorValue = p.Accent;
+            so.FindProperty("_waterColor").colorValue = p.Water;
+            so.FindProperty("_lavaColor").colorValue = p.Lava;
+            so.FindProperty("_sandColor").colorValue = p.Sand;
+            so.FindProperty("_veinStrength").floatValue = p.Vein;
+            so.FindProperty("_ambientRate").floatValue = p.AmbientRate;
+            so.FindProperty("_ambientRise").floatValue = p.AmbientRise;
+            SerializedProperty props = so.FindProperty("_propKinds");
+            props.arraySize = p.Props.Length;
+            for (int i = 0; i < p.Props.Length; i++)
+            {
+                props.GetArrayElementAtIndex(i).enumValueIndex = (int)p.Props[i];
+            }
+
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

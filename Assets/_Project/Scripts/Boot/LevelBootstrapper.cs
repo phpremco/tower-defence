@@ -19,6 +19,10 @@ namespace Game.Boot
     {
         private static readonly Vector3 SunRotation = new Vector3(50f, -30f, 0f);
 
+        // Without a fill light the props in shadow go black; a share of the sun colour keeps them readable.
+        private const float AmbientShare = 0.4f;
+        private const float AmbientBrightness = 0.75f;
+
         [SerializeField] private FixedCameraRig _cameraRig;
         [SerializeField] private Camera _camera;
 
@@ -68,7 +72,7 @@ namespace Game.Boot
             RenderSettings.fogColor = theme.FogColor;
             RenderSettings.fogDensity = theme.FogDensity;
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = theme.FogColor;
+            RenderSettings.ambientLight = Color.Lerp(theme.FogColor, theme.LightColor, AmbientShare) * AmbientBrightness;
 
             var visuals = new GameObject("LevelVisuals").transform;
             return LevelVisualBuilder.Build(level, visuals);

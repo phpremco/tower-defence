@@ -13,10 +13,12 @@ namespace Game.Levels
         private readonly HashSet<Vector2Int> _road;
         private readonly HashSet<Vector2Int> _blocked;
         private readonly HashSet<Vector2Int> _occupied = new HashSet<Vector2Int>();
+        private readonly TerrainMap _terrain;
 
         public BuildGrid(LevelDefinition level)
         {
             _grid = level.Grid;
+            _terrain = level.Terrain;
             _road = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
             _blocked = new HashSet<Vector2Int>(level.BlockedCells);
         }
@@ -27,8 +29,11 @@ namespace Game.Levels
 
         public bool IsOccupied(Vector2Int cell) => _occupied.Contains(cell);
 
+        public bool IsLiquid(Vector2Int cell) => _terrain.IsLiquid(cell);
+
         /// <summary>True when the cell is a free, buildable tile.</summary>
-        public bool CanBuild(Vector2Int cell) => _grid.Contains(cell) && !IsRoad(cell) && !IsBlocked(cell) && !IsOccupied(cell);
+        public bool CanBuild(Vector2Int cell) =>
+            _grid.Contains(cell) && !IsRoad(cell) && !IsBlocked(cell) && !IsLiquid(cell) && !IsOccupied(cell);
 
         public void Occupy(Vector2Int cell) => _occupied.Add(cell);
 

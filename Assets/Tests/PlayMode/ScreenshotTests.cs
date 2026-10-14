@@ -54,6 +54,34 @@ namespace Game.Tests
             LogAssert.NoUnexpectedReceived();
         }
 
+        [UnityTest]
+        public IEnumerator EveryLevel_WritesLandscapeScreenshot()
+        {
+            for (int index = 0; index < 5; index++)
+            {
+                SceneManager.LoadScene(SceneNames.Boot);
+                yield return null;
+                yield return null;
+
+                var catalog = Services.Get<CampaignCatalog>();
+                Services.Register(new LevelSession(catalog.Nodes[index].Level, catalog.Difficulties[1]));
+                SceneManager.LoadScene(SceneNames.Level);
+                yield return null;
+                yield return null;
+
+                Assert.IsTrue(Services.TryGet(out LevelContext context));
+                PlaceSomeTowers(context);
+                for (int i = 0; i < 30; i++)
+                {
+                    yield return null;
+                }
+
+                Capture(Path.Combine(Application.dataPath, "..", "Logs", $"terrain_level{index + 1}.png"));
+            }
+
+            LogAssert.NoUnexpectedReceived();
+        }
+
         private static void PlaceSomeTowers(LevelContext context)
         {
             int index = 0;

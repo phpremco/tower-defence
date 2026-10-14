@@ -60,6 +60,65 @@ MonoBehaviour:
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   - Cell: {x: 13, y: 5}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _terrain:
+  - Cell: {x: 8, y: 3}
+    Kind: 4
+  - Cell: {x: 8, y: 4}
+    Kind: 4
+  - Cell: {x: 9, y: 3}
+    Kind: 4
+  - Cell: {x: 9, y: 4}
+    Kind: 4
+  - Cell: {x: 14, y: 7}
+    Kind: 4
+  - Cell: {x: 15, y: 6}
+    Kind: 4
+  - Cell: {x: 15, y: 7}
+    Kind: 4
+  - Cell: {x: 10, y: 0}
+    Kind: 2
+  - Cell: {x: 10, y: 1}
+    Kind: 2
+  - Cell: {x: 11, y: 0}
+    Kind: 2
+  - Cell: {x: 11, y: 1}
+    Kind: 2
+  - Cell: {x: 12, y: 0}
+    Kind: 2
+  - Cell: {x: 12, y: 1}
+    Kind: 2
+  - Cell: {x: 3, y: 8}
+    Kind: 1
+  - Cell: {x: 4, y: 8}
+    Kind: 1
+  - Cell: {x: 5, y: 8}
+    Kind: 1
+  - Cell: {x: 6, y: 8}
+    Kind: 1
+  - Cell: {x: 11, y: 6}
+    Kind: 1
+  - Cell: {x: 11, y: 7}
+    Kind: 1
+  - Cell: {x: 12, y: 6}
+    Kind: 1
+  - Cell: {x: 12, y: 7}
+    Kind: 1
+  - Cell: {x: 0, y: 0}
+    Kind: 1
+  - Cell: {x: 0, y: 1}
+    Kind: 1
+  - Cell: {x: 1, y: 0}
+    Kind: 1
+  - Cell: {x: 1, y: 1}
+    Kind: 1
+  - Cell: {x: 2, y: 0}
+    Kind: 1
+  - Cell: {x: 2, y: 1}
+    Kind: 1
+  - Cell: {x: 3, y: 0}
+    Kind: 1
+  - Cell: {x: 3, y: 1}
+    Kind: 1
   _enemyHealthMultiplier: 1.5
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

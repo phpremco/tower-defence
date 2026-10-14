@@ -5,22 +5,12 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// Builds the static look of a level from its definition and visual theme: ground tiles, road pieces with
-    /// direction arrows, rocks on blocked cells, the base, spawn markers, flight routes, scenery around the field and a
-    /// starfield underneath. Pure view code; gameplay never reads these objects.
+    /// Builds the static look of a level from its definition and visual theme: the landscape (ground, road, liquids,
+    /// decoration, drifting motes), direction arrows, the base, spawn markers, flight routes and a starfield
+    /// underneath. Pure view code; gameplay never reads these objects.
     /// </summary>
     public static class LevelVisualBuilder
     {
-        private const float TileScale = 1f;
-        private const float RoadHeight = 0.05f;
-        private const float RoadInlay = 0.62f;
-        private const float RoadInlayEmission = 0.5f;
-        private const float GroundTone = 0.07f;
-        private const int SceneryRing = 3;
-        private const float SceneryChance = 0.14f;
-        private const float OuterDim = 0.55f;
-        private const float EdgeThickness = 0.08f;
-        private const float EdgeEmission = 2f;
         private const float ArrowEmission = 2.2f;
         private const float ArrowHeight = 0.07f;
         private const float RouteDotSpacing = 0.9f;
@@ -44,68 +34,24 @@ namespace Game.Levels
         {
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
-            var road = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
-            var blocked = new HashSet<Vector2Int>(level.BlockedCells);
 
-            BuildGround(level, theme, grid, road, blocked, parent);
+            BuildLandscape(level, theme, parent);
             BuildRoadArrows(level, grid, parent);
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
-            BuildEdges(theme, parent, level.WorldSize);
-            BuildScenery(level, theme, grid, parent);
             BuildStarfield(parent, level.WorldSize);
             return routes;
         }
 
-        private static void BuildGround(LevelDefinition level, VisualTheme theme, GridMap grid, HashSet<Vector2Int> road, HashSet<Vector2Int> blocked, Transform parent)
+        private static void BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent)
         {
-            for (int x = 0; x < level.GridSize.x; x++)
-            {
-                for (int y = 0; y < level.GridSize.y; y++)
-                {
-                    var cell = new Vector2Int(x, y);
-                    Vector3 position = grid.CellToWorld(cell);
-
-                    if (road.Contains(cell))
-                    {
-                        PlaceRoadPiece(theme, position, parent);
-                        continue;
-                    }
-
-                    float tone = 1f + ((x + y) % 2 == 0 ? GroundTone : -GroundTone);
-                    PlaceGround(theme, position, theme.GroundColor * tone, parent);
-
-                    if (blocked.Contains(cell) && theme.BlockedProps.Length > 0)
-                    {
-                        int hash = Hash(cell);
-                        GameObject prop = theme.BlockedProps[hash % theme.BlockedProps.Length];
-                        float yaw = hash % 360;
-                        float scale = 0.85f + (hash % 5) * 0.08f;
-                        ModelFit.Place(prop, parent, position, yaw, scale, Color.Lerp(Color.white, theme.GroundColor * 2.2f, 0.5f));
-                    }
-                }
-            }
+            var road = new RoadShape(level);
+            var field = new TerrainField(level, road);
+            TerrainSurfaceBuilder.Build(level, theme, field, road, parent);
+            TerrainLiquidBuilder.Build(level, theme, parent);
+            PropScatterBuilder.Build(level, theme, field, parent);
+            AmbientParticlesBuilder.Build(level, theme, parent);
         }
 
-        private static void PlaceGround(VisualTheme theme, Vector3 position, Color tint, Transform parent)
-        {
-            if (theme.GroundTile != null)
-            {
-                ModelFit.Place(theme.GroundTile, parent, position, 0f, TileScale, tint);
-            }
-            else
-            {
-                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, tint, parent, position + Vector3.down * 0.05f, new Vector3(TileScale, 0.1f, TileScale));
-            }
-        }
-
-        // A raised slab with a lighter inlay: clear against the ground and the same for every orientation.
-        private static void PlaceRoadPiece(VisualTheme theme, Vector3 position, Transform parent)
-        {
-            PlaceholderVisuals.CreatePrimitive(
-                PrimitiveType.Cube, theme.PathColor * 0.55f, parent, position + Vector3.up * RoadHeight * 0.5f, new Vector3(TileScale, RoadHeight, TileScale));
-            PlaceholderVisuals.CreatePrimitive(
-                PrimitiveType.Cube, theme.PathColor, parent, position + Vector3.up * (RoadHeight + 0.005f), new Vector3(RoadInlay, 0.012f, RoadInlay), RoadInlayEmission);
-        }
         // Yellow chevrons on every other road cell show which way enemies walk.
         private static void BuildRoadArrows(LevelDefinition level, GridMap grid, Transform parent)
         {
@@ -218,45 +164,6 @@ namespace Game.Levels
             }
         }
 
-        private static void BuildEdges(VisualTheme theme, Transform parent, Vector2 size)
-        {
-            Color color = theme.SlotColor;
-            float y = EdgeThickness * 0.5f;
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, parent, new Vector3(0f, y, size.y * 0.5f), new Vector3(size.x, EdgeThickness, EdgeThickness), EdgeEmission);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, parent, new Vector3(0f, y, -size.y * 0.5f), new Vector3(size.x, EdgeThickness, EdgeThickness), EdgeEmission);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, parent, new Vector3(size.x * 0.5f, y, 0f), new Vector3(EdgeThickness, EdgeThickness, size.y), EdgeEmission);
-            PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, parent, new Vector3(-size.x * 0.5f, y, 0f), new Vector3(EdgeThickness, EdgeThickness, size.y), EdgeEmission);
-        }
-
-        // Dim tiles and scattered rocks around the field so it sits in a landscape instead of floating.
-        private static void BuildScenery(LevelDefinition level, VisualTheme theme, GridMap grid, Transform parent)
-        {
-            int width = level.GridSize.x;
-            int height = level.GridSize.y;
-            for (int x = -SceneryRing; x < width + SceneryRing; x++)
-            {
-                for (int y = -SceneryRing; y < height + SceneryRing; y++)
-                {
-                    bool inside = x >= 0 && y >= 0 && x < width && y < height;
-                    if (inside)
-                    {
-                        continue;
-                    }
-
-                    var cell = new Vector2Int(x, y);
-                    Vector3 position = grid.CellToWorld(cell);
-                    PlaceGround(theme, position, theme.GroundColor * OuterDim, parent);
-
-                    int hash = Hash(cell);
-                    if (theme.Scenery.Length > 0 && (hash % 100) / 100f < SceneryChance)
-                    {
-                        GameObject prop = theme.Scenery[hash % theme.Scenery.Length];
-                        ModelFit.Place(prop, parent, position, hash % 360, 0.9f + (hash % 4) * 0.12f, Color.Lerp(Color.white, theme.GroundColor * 2f, 0.6f));
-                    }
-                }
-            }
-        }
-
         // A static particle field far below gives the "floating in space" backdrop.
         private static void BuildStarfield(Transform parent, Vector2 size)
         {
@@ -289,17 +196,5 @@ namespace Game.Levels
             system.Emit(StarCount);
             system.Play();
         }
-
-        // A stable pseudo-random number per cell so the scenery looks the same every time.
-        private static int Hash(Vector2Int cell)
-        {
-            unchecked
-            {
-                int h = cell.x * 73856093 ^ cell.y * 19349663;
-                return h & 0x7fffffff;
-            }
-        }
     }
 }
-
-

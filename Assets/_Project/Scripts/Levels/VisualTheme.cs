@@ -22,6 +22,17 @@ namespace Game.Levels
         [SerializeField] private GameObject[] _blockedProps = new GameObject[0];
         [SerializeField] private GameObject[] _scenery = new GameObject[0];
 
+        [Header("Landscape")]
+        [SerializeField] private Color _rockColor = new Color(0.3f, 0.3f, 0.34f);
+        [SerializeField] private Color _accentColor = new Color(0.3f, 0.9f, 1f);
+        [SerializeField] private Color _waterColor = new Color(0.1f, 0.4f, 0.55f);
+        [SerializeField] private Color _lavaColor = new Color(1f, 0.45f, 0.1f);
+        [SerializeField] private Color _sandColor = new Color(0.62f, 0.5f, 0.3f);
+        [SerializeField] private PropKind[] _propKinds = { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond };
+        [SerializeField] [Range(0f, 1f)] private float _veinStrength = 0.5f;
+        [SerializeField] [Min(0f)] private float _ambientRate = 10f;
+        [SerializeField] private float _ambientRise = 0.15f;
+
         [Header("Light and atmosphere")]
         [SerializeField] private Color _lightColor = new Color(0.8f, 0.85f, 1f);
         [SerializeField] [Min(0f)] private float _lightIntensity = 1.1f;
@@ -47,6 +58,25 @@ namespace Game.Levels
 
         /// <summary>Props scattered on the ground around the playing field.</summary>
         public GameObject[] Scenery => _scenery;
+
+        public Color RockColor => _rockColor;
+
+        /// <summary>The glow colour of the level's plants, crystals and veins in the ground.</summary>
+        public Color AccentColor => _accentColor;
+
+        public Color WaterColor => _waterColor;
+        public Color LavaColor => _lavaColor;
+        public Color SandColor => _sandColor;
+
+        /// <summary>The decorations this level grows. A kind listed twice is scattered twice as often.</summary>
+        public PropKind[] PropKinds => _propKinds;
+
+        /// <summary>How strongly glowing veins show in the ground, from none to a full network.</summary>
+        public float VeinStrength => _veinStrength;
+
+        /// <summary>Floating motes per second (spores, embers, dust) and their vertical speed; negative falls.</summary>
+        public float AmbientRate => _ambientRate;
+        public float AmbientRise => _ambientRise;
 
         public Color LightColor => _lightColor;
         public float LightIntensity => _lightIntensity;

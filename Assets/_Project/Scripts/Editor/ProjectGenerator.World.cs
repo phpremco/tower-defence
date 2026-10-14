@@ -30,6 +30,15 @@ namespace Game.Editor
             public Color Fog;
             public float FogDensity;
             public float Bloom;
+            public Color Rock;
+            public Color Accent;
+            public Color Water;
+            public Color Lava;
+            public Color Sand;
+            public PropKind[] Props;
+            public float Vein;
+            public float AmbientRate;
+            public float AmbientRise;
         }
 
         private sealed class LevelSpec
@@ -43,6 +52,7 @@ namespace Game.Editor
             public Vector2Int[] SouthAir;
             public Vector2Int[] BlockedCandidates;
             public Vector2Int[] BlockadeCells;
+            public TerrainPatch[] Terrain;
             public int Money;
             public int BaseHealth;
             public float CountScale;
@@ -266,6 +276,15 @@ namespace Game.Editor
                         Fog = new Color(0.04f, 0.02f, 0.09f),
                         FogDensity = 0.018f,
                         Bloom = 1.5f,
+                        Rock = new Color(0.24f, 0.3f, 0.46f),
+                        Accent = new Color(0.35f, 1f, 0.8f),
+                        Water = new Color(0.06f, 0.5f, 0.6f),
+                        Lava = new Color(1f, 0.4f, 0.1f),
+                        Sand = new Color(0.45f, 0.5f, 0.4f),
+                        Props = new[] { PropKind.Mushroom, PropKind.Mushroom, PropKind.GlowTree, PropKind.GlowTree, PropKind.Frond, PropKind.Frond, PropKind.Crystal, PropKind.Rock },
+                        Vein = 0.85f,
+                        AmbientRate = 30f,
+                        AmbientRise = 0.18f,
                     },
                     Road = Cells(0, 8, 6, 8, 6, 5, 10, 5, 10, 2, 15, 2),
                     SecondRoad = Cells(0, 1, 6, 1, 6, 5),
@@ -273,6 +292,10 @@ namespace Game.Editor
                     SouthAir = Cells(0, 0, 9, 5, 15, 2),
                     BlockedCandidates = Cells(3, 6, 4, 6, 8, 7, 9, 7, 2, 3, 3, 3, 12, 4, 13, 4, 12, 0, 13, 0, 8, 0, 14, 5),
                     BlockadeCells = Cells(8, 5, 10, 3),
+                    Terrain = Terrain(
+                        Area(TerrainKind.Water, 14, 8, 14, 12), Area(TerrainKind.Water, 13, 7, 13, 8), Area(TerrainKind.Water, 12, 6, 12, 7),
+                        Area(TerrainKind.Water, 11, 4, 11, 6), Area(TerrainKind.Water, 7, 3, 8, 4),
+                        Area(TerrainKind.Raised, 0, 5, 2, 7), Area(TerrainKind.Raised, 7, 8, 9, 9), Area(TerrainKind.Raised, 14, 0, 15, 1)),
                     Money = 180,
                     BaseHealth = 20,
                     CountScale = 1.1f,
@@ -302,6 +325,15 @@ namespace Game.Editor
                         Fog = new Color(0.1f, 0.03f, 0.01f),
                         FogDensity = 0.022f,
                         Bloom = 1.8f,
+                        Rock = new Color(0.34f, 0.2f, 0.16f),
+                        Accent = new Color(1f, 0.5f, 0.15f),
+                        Water = new Color(0.1f, 0.2f, 0.3f),
+                        Lava = new Color(1f, 0.4f, 0.08f),
+                        Sand = new Color(0.4f, 0.25f, 0.15f),
+                        Props = new[] { PropKind.Spike, PropKind.Spike, PropKind.Spike, PropKind.Rock, PropKind.Boulder, PropKind.Crystal },
+                        Vein = 0.9f,
+                        AmbientRate = 26f,
+                        AmbientRise = 0.5f,
                     },
                     Road = Cells(0, 8, 13, 8, 13, 6, 2, 6, 2, 4, 13, 4, 13, 2, 15, 2),
                     SecondRoad = null,
@@ -309,6 +341,10 @@ namespace Game.Editor
                     SouthAir = Cells(0, 0, 8, 5, 15, 2),
                     BlockedCandidates = Cells(1, 9, 5, 9, 10, 9, 1, 0, 5, 0, 9, 0, 14, 5, 14, 7, 0, 5, 0, 3, 6, 3, 7, 7),
                     BlockadeCells = Cells(7, 6, 7, 4),
+                    Terrain = Terrain(
+                        Area(TerrainKind.Lava, 4, 5, 5, 5), Area(TerrainKind.Lava, 10, 5, 12, 5), Area(TerrainKind.Lava, 6, 0, 12, 1),
+                        Area(TerrainKind.Lava, 15, 8, 17, 12),
+                        Area(TerrainKind.Raised, 6, 9, 9, 9), Area(TerrainKind.Raised, 0, 7, 1, 7), Area(TerrainKind.Raised, 3, 3, 5, 3)),
                     Money = 210,
                     BaseHealth = 20,
                     CountScale = 1.3f,
@@ -338,6 +374,15 @@ namespace Game.Editor
                         Fog = new Color(0.07f, 0.07f, 0.03f),
                         FogDensity = 0.014f,
                         Bloom = 1.3f,
+                        Rock = new Color(0.5f, 0.46f, 0.28f),
+                        Accent = new Color(1f, 0.85f, 0.4f),
+                        Water = new Color(0.1f, 0.4f, 0.3f),
+                        Lava = new Color(1f, 0.4f, 0.1f),
+                        Sand = new Color(0.72f, 0.6f, 0.32f),
+                        Props = new[] { PropKind.Column, PropKind.Column, PropKind.Column, PropKind.Rock, PropKind.Boulder, PropKind.Frond, PropKind.Crystal },
+                        Vein = 0.3f,
+                        AmbientRate = 14f,
+                        AmbientRise = 0.05f,
                     },
                     Road = Cells(0, 5, 10, 5, 10, 8, 13, 8, 13, 2, 7, 2, 7, 7, 2, 7),
                     SecondRoad = null,
@@ -345,6 +390,9 @@ namespace Game.Editor
                     SouthAir = Cells(15, 0, 2, 7),
                     BlockedCandidates = Cells(4, 3, 5, 3, 4, 9, 5, 9, 11, 5, 11, 4, 14, 4, 14, 3, 1, 2, 2, 2, 9, 0, 0, 8),
                     BlockadeCells = Cells(5, 5, 13, 5),
+                    Terrain = Terrain(
+                        Area(TerrainKind.Quicksand, 8, 3, 9, 4), Area(TerrainKind.Quicksand, 14, 6, 15, 7), Area(TerrainKind.Water, 10, 0, 12, 1),
+                        Area(TerrainKind.Raised, 3, 8, 6, 8), Area(TerrainKind.Raised, 11, 6, 12, 7), Area(TerrainKind.Raised, 0, 0, 3, 1)),
                     Money = 240,
                     BaseHealth = 20,
                     CountScale = 1.45f,
@@ -374,6 +422,15 @@ namespace Game.Editor
                         Fog = new Color(0.1f, 0.01f, 0.03f),
                         FogDensity = 0.016f,
                         Bloom = 1.7f,
+                        Rock = new Color(0.46f, 0.16f, 0.2f),
+                        Accent = new Color(1f, 0.3f, 0.4f),
+                        Water = new Color(0.3f, 0.65f, 0.1f),
+                        Lava = new Color(1f, 0.35f, 0.1f),
+                        Sand = new Color(0.14f, 0.05f, 0.08f),
+                        Props = new[] { PropKind.Tendril, PropKind.Tendril, PropKind.Tendril, PropKind.Egg, PropKind.Egg, PropKind.Spike, PropKind.Rock },
+                        Vein = 0.9f,
+                        AmbientRate = 22f,
+                        AmbientRise = -0.12f,
                     },
                     Road = Cells(0, 8, 9, 8, 9, 5, 15, 5),
                     SecondRoad = Cells(0, 2, 9, 2, 9, 5),
@@ -381,6 +438,10 @@ namespace Game.Editor
                     SouthAir = Cells(0, 0, 15, 5),
                     BlockedCandidates = Cells(3, 6, 4, 6, 3, 4, 4, 4, 12, 7, 12, 3, 13, 7, 13, 3, 6, 6, 6, 4, 14, 9, 14, 1),
                     BlockadeCells = Cells(5, 8, 5, 2, 12, 5),
+                    Terrain = Terrain(
+                        Area(TerrainKind.Water, 14, 7, 17, 8), Area(TerrainKind.Water, 13, 0, 16, 1), Area(TerrainKind.Water, 10, 9, 12, 12),
+                        Area(TerrainKind.Quicksand, 1, 3, 2, 3), Area(TerrainKind.Quicksand, 7, 6, 8, 7),
+                        Area(TerrainKind.Raised, 7, 3, 8, 4), Area(TerrainKind.Raised, 0, 4, 1, 6)),
                     Money = 270,
                     BaseHealth = 20,
                     CountScale = 1.35f,
@@ -403,6 +464,39 @@ namespace Game.Editor
             }
 
             return levels;
+        }
+
+        // A filled rectangle of one terrain kind. Coordinates may reach past the grid so a river can flow out of view.
+        private static IEnumerable<TerrainPatch> Area(TerrainKind kind, int x0, int y0, int x1, int y1)
+        {
+            for (int x = x0; x <= x1; x++)
+            {
+                for (int y = y0; y <= y1; y++)
+                {
+                    yield return new TerrainPatch { Cell = new Vector2Int(x, y), Kind = kind };
+                }
+            }
+        }
+
+        private static TerrainPatch[] Terrain(params IEnumerable<TerrainPatch>[] areas) => areas.SelectMany(a => a).ToArray();
+
+        // Terrain never covers the road, and liquid keeps clear of the blockades where the hero stands.
+        private static void WriteTerrain(SerializedProperty array, TerrainPatch[] patches, HashSet<Vector2Int> road, Vector2Int[] blockades)
+        {
+            TerrainPatch[] kept = patches
+                .Where(p => !road.Contains(p.Cell))
+                .Where(p => !TerrainMap.IsLiquid(p.Kind) || !blockades.Any(b => Mathf.Abs(b.x - p.Cell.x) <= 1 && Mathf.Abs(b.y - p.Cell.y) <= 1))
+                .GroupBy(p => p.Cell)
+                .Select(g => g.Last())
+                .ToArray();
+
+            array.arraySize = kept.Length;
+            for (int i = 0; i < kept.Length; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("Cell").vector2IntValue = kept[i].Cell;
+                element.FindPropertyRelative("Kind").enumValueIndex = (int)kept[i].Kind;
+            }
         }
 
         private static Vector2Int[] Cells(params int[] xy)
@@ -481,6 +575,7 @@ namespace Game.Editor
 
             Vector2Int[] blocked = spec.BlockedCandidates.Where(cell => !road.Contains(cell) && !spec.BlockadeCells.Contains(cell)).Distinct().ToArray();
             WriteCells(so.FindProperty("_blockedCells"), blocked);
+            WriteTerrain(so.FindProperty("_terrain"), spec.Terrain ?? new TerrainPatch[0], road, spec.BlockadeCells);
 
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = spec.BlockadeCells.Length;

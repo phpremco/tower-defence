@@ -38,6 +38,7 @@ namespace Game.Levels
         private Transform _parent;
         private BuildGrid _buildGrid;
         private GridMap _map;
+        private TerrainMap _terrain;
         private Vector2Int _cursor;
         private Transform _marker;
         private Renderer _markerRenderer;
@@ -59,6 +60,7 @@ namespace Game.Levels
             _camera = camera;
             _parent = parent;
             _map = context.Level.Grid;
+            _terrain = context.Level.Terrain;
             _buildGrid = new BuildGrid(context.Level);
             _context.SelectedTower = context.AvailableTowers.Count > 0 ? context.AvailableTowers[0] : null;
             SpawnBlockades();
@@ -337,11 +339,19 @@ namespace Game.Levels
             }
         }
 
+        // Raised ground lifts what stands on it; the grid itself stays flat.
+        private Vector3 CellWorld(Vector2Int cell)
+        {
+            Vector3 world = _map.CellToWorld(cell);
+            world.y = _terrain.HeightAt(cell);
+            return world;
+        }
+
         private Tower CreateTower(TowerDefinition definition, Vector2Int cell, bool preview)
         {
             var go = new GameObject(preview ? "TowerPreview" : $"Tower_{definition.DisplayName}");
             go.transform.SetParent(_parent, false);
-            go.transform.position = _map.CellToWorld(cell);
+            go.transform.position = CellWorld(cell);
             var tower = go.AddComponent<Tower>();
             go.AddComponent<TowerView>();
             tower.Initialize(definition, _context.Targets, _context.Projectiles, _context.ModifiersFor(definition));
@@ -439,7 +449,7 @@ namespace Game.Levels
         /// <summary>Updates the cursor marker, the placement preview, the range ring and the status text.</summary>
         private void Refresh()
         {
-            Vector3 world = _map.CellToWorld(_cursor);
+            Vector3 world = CellWorld(_cursor);
             _marker.position = world + Vector3.up * MarkerHeight;
 
             bool hasTower = _towers.TryGetValue(_cursor, out Tower hovered);
@@ -540,7 +550,7 @@ namespace Game.Levels
 
             var go = new GameObject($"PathObject_{definition.DisplayName}");
             go.transform.SetParent(_parent, false);
-            go.transform.position = _map.CellToWorld(_cursor);
+            go.transform.position = CellWorld(_cursor);
 
             Vector3[] road = new Vector3[0];
             int next = 0;
