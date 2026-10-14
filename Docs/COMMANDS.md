@@ -111,3 +111,17 @@ Pitfalls:
 
 - `capture_game_view` returns a stale image after a scene switch while the Editor is unfocused, even with `RepaintAllViews`. For menu screens, verify structure with an `eval_file` script that lists the `Button` components and their labels instead.
 - Saved progress lives in `Application.persistentDataPath/Saves/progress.json` (Windows: `%USERPROFILE%\AppData\LocalLow\<company>\<product>\Saves`). Delete it to reset to a new game.
+
+## Batchmode recipes (Editor closed) - verified 2026-10-14
+
+When the Editor stops answering CLI commands, close it and run (from the project root, PowerShell):
+
+```powershell
+$unity = "C:\Program Files\Unity\Hub\Editor\6000.6.5f1\Editor\Unity.exe"
+# Generate data and scenes
+Start-Process $unity -ArgumentList '-batchmode','-nographics','-projectPath','.','-executeMethod','Game.Editor.ProjectGenerator.GenerateAll','-quit','-logFile','Temp\gen.log' -Wait
+# EditMode tests (use PlayMode without -nographics for the other suite)
+Start-Process $unity -ArgumentList '-batchmode','-nographics','-projectPath','.','-runTests','-testPlatform','EditMode','-testResults','Temp\results.xml','-logFile','Temp\tests.log' -Wait
+```
+
+Do not start tests through the CLI while the Editor is in Play Mode: the run fails and leaves red errors in the console.
