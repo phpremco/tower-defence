@@ -24,3 +24,4 @@ MonoBehaviour:
   _speed: 0
   _lifetime: 0
   _color: {r: 0.9, g: 0.5, b: 0.1, a: 1}
+  _look: 5

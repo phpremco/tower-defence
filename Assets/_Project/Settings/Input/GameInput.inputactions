@@ -15,6 +15,24 @@
                                          "initialStateCheck":  true
                                      },
                                      {
+                                         "name":  "Pan",
+                                         "type":  "Value",
+                                         "id":  "5b1f7c0a-3d4e-4a8e-9a7b-0c1d2e3f4a51",
+                                         "expectedControlType":  "Vector2",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  true
+                                     },
+                                     {
+                                         "name":  "Zoom",
+                                         "type":  "Value",
+                                         "id":  "5b1f7c0a-3d4e-4a8e-9a7b-0c1d2e3f4a52",
+                                         "expectedControlType":  "Axis",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  true
+                                     },
+                                     {
                                          "name":  "Point",
                                          "type":  "Value",
                                          "id":  "93c1317a-3f9a-42f5-90db-97c8e74b9be4",
@@ -171,7 +189,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Move",
+                                          "action":  "Pan",
                                           "isComposite":  true,
                                           "isPartOfComposite":  false
                                       },
@@ -182,7 +200,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Move",
+                                          "action":  "Pan",
                                           "isComposite":  false,
                                           "isPartOfComposite":  true
                                       },
@@ -193,7 +211,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Move",
+                                          "action":  "Pan",
                                           "isComposite":  false,
                                           "isPartOfComposite":  true
                                       },
@@ -204,7 +222,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Move",
+                                          "action":  "Pan",
                                           "isComposite":  false,
                                           "isPartOfComposite":  true
                                       },
@@ -215,7 +233,150 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Move",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "Arrows",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b61",
+                                          "path":  "2DVector",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  true,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "up",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b62",
+                                          "path":  "\u003cKeyboard\u003e/upArrow",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "down",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b63",
+                                          "path":  "\u003cKeyboard\u003e/downArrow",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "left",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b64",
+                                          "path":  "\u003cKeyboard\u003e/leftArrow",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "right",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b65",
+                                          "path":  "\u003cKeyboard\u003e/rightArrow",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b66",
+                                          "path":  "\u003cGamepad\u003e/rightStick",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Pan",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b67",
+                                          "path":  "\u003cMouse\u003e/scroll/y",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "QE",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b68",
+                                          "path":  "1DAxis",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  true,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "negative",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b69",
+                                          "path":  "\u003cKeyboard\u003e/minus",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "positive",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b6a",
+                                          "path":  "\u003cKeyboard\u003e/equals",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "Sticks",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b6b",
+                                          "path":  "1DAxis",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  true,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "negative",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b6c",
+                                          "path":  "\u003cGamepad\u003e/leftStickPress",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  true
+                                      },
+                                      {
+                                          "name":  "positive",
+                                          "id":  "6c2a8d1b-4e5f-4b9f-8b8c-1d2e3f4a5b6d",
+                                          "path":  "\u003cGamepad\u003e/rightStickPress",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Zoom",
                                           "isComposite":  false,
                                           "isPartOfComposite":  true
                                       },

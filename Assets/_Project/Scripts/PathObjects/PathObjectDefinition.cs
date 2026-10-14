@@ -31,6 +31,7 @@ namespace Game.PathObjects
         [SerializeField] [Min(0f)] private float _lifetime;
 
         [SerializeField] private Color _color = new Color(1f, 0.6f, 0.2f);
+        [SerializeField] private PathObjectLook _look;
 
         public string DisplayName => _displayName;
         public PathObjectKind Kind => _kind;
@@ -44,5 +45,6 @@ namespace Game.PathObjects
         public float Speed => _speed;
         public float Lifetime => _lifetime;
         public Color Color => _color;
+        public PathObjectLook Look => _look;
     }
 }

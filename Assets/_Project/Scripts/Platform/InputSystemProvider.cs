@@ -10,6 +10,8 @@ namespace Game.Platform
         private const string MapName = "Gameplay";
         private const string MoveAction = "Move";
         private const string PointAction = "Point";
+        private const string PanAction = "Pan";
+        private const string ZoomAction = "Zoom";
         private const string ConfirmAction = "Confirm";
         private const string CancelAction = "Cancel";
         private const string PauseAction = "Pause";
@@ -29,6 +31,8 @@ namespace Game.Platform
         private readonly InputAction _shockwave;
         private readonly InputAction _emergencyRepair;
         private readonly InputAction _move;
+        private readonly InputAction _pan;
+        private readonly InputAction _zoom;
         private readonly InputAction _point;
         private readonly InputAction _confirm;
         private readonly InputAction _cancel;
@@ -46,6 +50,8 @@ namespace Game.Platform
             _map = asset.FindActionMap(MapName, true);
             _move = _map.FindAction(MoveAction, true);
             _point = _map.FindAction(PointAction, true);
+            _pan = _map.FindAction(PanAction, true);
+            _zoom = _map.FindAction(ZoomAction, true);
             _confirm = _map.FindAction(ConfirmAction, true);
             _cancel = _map.FindAction(CancelAction, true);
             _pause = _map.FindAction(PauseAction, true);
@@ -77,6 +83,10 @@ namespace Game.Platform
         }
 
         public Vector2 CursorMove => _move.ReadValue<Vector2>();
+
+        public Vector2 CameraPan => _pan.ReadValue<Vector2>();
+
+        public float CameraZoom => _zoom.ReadValue<float>();
 
         public Vector2 PointerPosition => _point.ReadValue<Vector2>();
 

@@ -119,6 +119,7 @@ namespace Game.Boot
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
+            _cameraRig.gameObject.AddComponent<CameraPanZoom>().Initialize(_cameraRig, level, input);
             var drones = new GameObject("Drones").AddComponent<DroneController>();
             drones.Initialize(context, root);
             var spawner = new EnemySpawner(context, root);

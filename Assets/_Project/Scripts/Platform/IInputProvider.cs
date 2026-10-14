@@ -9,6 +9,12 @@ namespace Game.Platform
         /// <summary>Stick or d-pad direction, used to move the cursor on a gamepad.</summary>
         Vector2 CursorMove { get; }
 
+        /// <summary>Camera movement: WASD or the arrow keys, or the right stick.</summary>
+        Vector2 CameraPan { get; }
+
+        /// <summary>Camera zoom: scroll wheel (large steps), Q and E or the stick clicks (continuous).</summary>
+        float CameraZoom { get; }
+
         /// <summary>Pointer position in screen pixels, for mouse users.</summary>
         Vector2 PointerPosition { get; }
 

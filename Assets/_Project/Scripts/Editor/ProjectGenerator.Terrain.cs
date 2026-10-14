@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Game.Enemies;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Towers;
 using UnityEditor;
 using UnityEngine;
@@ -95,6 +96,7 @@ namespace Game.Editor
             EnemyDefinition warden,
             EnemyDefinition queen)
         {
+            SetShape(roster.Pulse, "_shape", (int)TowerShape.PulseRifle);
             SetShape(cannon, "_shape", (int)TowerShape.Cannon);
             SetShape(rocket, "_shape", (int)TowerShape.Rocket);
             SetShape(roster.Laser, "_shape", (int)TowerShape.Laser);
@@ -106,6 +108,8 @@ namespace Game.Editor
             SetShape(roster.StormRifle, "_shape", (int)TowerShape.StormRifle);
             SetShape(roster.CryoBeam, "_shape", (int)TowerShape.CryoBeam);
 
+            SetLooks();
+
             SetShape(scout, "_shape", (int)EnemyShape.Scout);
             SetShape(grunt, "_shape", (int)EnemyShape.Grunt);
             SetShape(brute, "_shape", (int)EnemyShape.Brute);
@@ -113,6 +117,25 @@ namespace Game.Editor
             SetShape(overseer, "_shape", (int)EnemyShape.Overseer);
             SetShape(warden, "_shape", (int)EnemyShape.Warden);
             SetShape(queen, "_shape", (int)EnemyShape.Queen);
+        }
+
+        // Look of each path object, by asset name.
+        private static void SetLooks()
+        {
+            var looks = new (string Id, PathObjectLook Look)[]
+            {
+                ("SlowField", PathObjectLook.FieldEmitter), ("Mine", PathObjectLook.Mine), ("LavaBall", PathObjectLook.LavaBall),
+                ("ExplosiveBarrel", PathObjectLook.Barrel), ("GroundDrone", PathObjectLook.GroundDrone), ("AntiAirNet", PathObjectLook.AirNet),
+            };
+
+            foreach ((string id, PathObjectLook look) in looks)
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<PathObjectDefinition>($"{DataRoot}/PathObjects/{id}.asset");
+                if (asset != null)
+                {
+                    SetShape(asset, "_look", (int)look);
+                }
+            }
         }
 
         private static void SetShape(Object asset, string field, int value)

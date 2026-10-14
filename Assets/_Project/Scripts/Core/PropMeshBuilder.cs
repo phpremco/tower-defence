@@ -118,6 +118,35 @@ namespace Game.Core
             }
         }
 
+        /// <summary>A flat-shaded box, optionally turned around the vertical axis. Hard edges suit machines and walls.</summary>
+        public void AddBox(Vector3 center, Vector3 size, int submesh, float yawDegrees = 0f)
+        {
+            Quaternion yaw = Quaternion.Euler(0f, yawDegrees, 0f);
+            Vector3 h = size * 0.5f;
+            var corners = new Vector3[8];
+            for (int i = 0; i < 8; i++)
+            {
+                var c = new Vector3((i & 1) == 0 ? -h.x : h.x, (i & 2) == 0 ? -h.y : h.y, (i & 4) == 0 ? -h.z : h.z);
+                corners[i] = center + yaw * c;
+            }
+
+            // Each face lists its four corners; the outward normal comes from the box centre.
+            int[][] faces =
+            {
+                new[] { 0, 1, 3, 2 }, new[] { 4, 6, 7, 5 }, new[] { 0, 4, 5, 1 },
+                new[] { 2, 3, 7, 6 }, new[] { 0, 2, 6, 4 }, new[] { 1, 5, 7, 3 },
+            };
+            foreach (int[] face in faces)
+            {
+                Vector3 mid = (corners[face[0]] + corners[face[2]]) * 0.5f;
+                Vector3 normal = (mid - center).normalized;
+                var positions = new[] { corners[face[0]], corners[face[1]], corners[face[2]], corners[face[3]] };
+                var normals = new[] { normal, normal, normal, normal };
+                Emit(positions, normals, new[] { 0, 1, 2 }, submesh, true);
+                Emit(positions, normals, new[] { 0, 2, 3 }, submesh, true);
+            }
+        }
+
         public Mesh ToMesh(string name)
         {
             var mesh = new Mesh { name = name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };

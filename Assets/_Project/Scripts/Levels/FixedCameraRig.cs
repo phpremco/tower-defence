@@ -20,6 +20,23 @@ namespace Game.Levels
         private Camera _camera;
         private LevelDefinition _level;
         private float _fittedAspect;
+        private float _fitSize;
+        private float _zoom = 1f;
+        private Vector3 _focus;
+
+        /// <summary>Zoom factor: one shows the whole field, larger values come closer.</summary>
+        public float Zoom => _zoom;
+
+        /// <summary>The point on the ground the camera looks at.</summary>
+        public Vector3 Focus => _focus;
+
+        /// <summary>Moves and zooms the view. The angle stays fixed.</summary>
+        public void SetView(Vector3 focus, float zoom)
+        {
+            _focus = new Vector3(focus.x, 0f, focus.z);
+            _zoom = zoom;
+            ApplyView();
+        }
 
         public void Apply(LevelDefinition level)
         {
@@ -30,8 +47,6 @@ namespace Game.Levels
             _camera.backgroundColor = level.Theme.BackgroundColor;
 
             CameraSettings settings = level.Camera;
-            Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
-            transform.SetPositionAndRotation(rotation * (Vector3.back * DistanceFromCenter), rotation);
             Fit();
         }
 
@@ -51,8 +66,17 @@ namespace Game.Levels
 
             float halfHeight = (world.y * Mathf.Sin(pitch) + ObjectHeight * Mathf.Cos(pitch)) * 0.5f / (1f - HudReserve);
             float halfWidth = world.x * 0.5f / _camera.aspect;
-            _camera.orthographicSize = Mathf.Max(halfHeight, halfWidth) * (1f + settings.FitMargin);
+            _fitSize = Mathf.Max(halfHeight, halfWidth) * (1f + settings.FitMargin);
             _fittedAspect = _camera.aspect;
+            ApplyView();
+        }
+
+        private void ApplyView()
+        {
+            CameraSettings settings = _level.Camera;
+            Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
+            transform.SetPositionAndRotation(rotation * (Vector3.back * DistanceFromCenter) + _focus, rotation);
+            _camera.orthographicSize = _fitSize / _zoom;
         }
     }
 }

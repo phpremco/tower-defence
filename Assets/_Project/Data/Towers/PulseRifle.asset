@@ -40,8 +40,14 @@ MonoBehaviour:
   _scrapFraction: 0.3
   _repairCostPerHealth: 0.4
   _damagedPowerFloor: 0.5
+  _slowFactor: 1
+  _slowSeconds: 0
+  _isSupport: 0
+  _supportRangeBonus: 0
+  _supportRateBonus: 0
   _blocksGroundEnemies: 0
   _color: {r: 0.3, g: 0.7, b: 1, a: 1}
+  _shape: 11
   _model: {fileID: 7498429723198463838, guid: ac76f3db63172f14ebf2c9e8e60d46af, type: 3}
   _modelScale: 1.15
   _keepModelColours: 1

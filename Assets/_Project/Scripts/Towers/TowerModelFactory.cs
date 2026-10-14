@@ -15,9 +15,6 @@ namespace Game.Towers
         public const int Accent = 2;
         public const int Dark = 3;
 
-        private const float GlowEmission = 2.2f;
-        private const float MetalSmoothness = 0.55f;
-        private const float MetalMetallic = 0.6f;
 
         public readonly struct Parts
         {
@@ -32,16 +29,7 @@ namespace Game.Towers
         }
 
         /// <summary>The four materials in slot order for a tower of the given colour.</summary>
-        public static Material[] CreateMaterials(Color tower)
-        {
-            return new[]
-            {
-                SurfaceMaterials.Create(Color.Lerp(new Color(0.16f, 0.18f, 0.24f), tower, 0.35f), 0f, 0.4f, 0.3f),
-                SurfaceMaterials.Create(tower, GlowEmission, 0.6f),
-                SurfaceMaterials.Create(new Color(0.78f, 0.82f, 0.9f), 0f, MetalSmoothness, MetalMetallic),
-                SurfaceMaterials.Create(new Color(0.07f, 0.08f, 0.11f), 0f, 0.3f),
-            };
-        }
+        public static Material[] CreateMaterials(Color tower) => ModelPalette.Create(tower);
 
         public static Parts Create(TowerShape shape, int level)
         {
@@ -59,6 +47,7 @@ namespace Game.Towers
                 case TowerShape.Artillery: Artillery(head, barrel, level); break;
                 case TowerShape.StormRifle: StormRifle(head, barrel, level); break;
                 case TowerShape.CryoBeam: CryoBeam(head, barrel, level); break;
+                case TowerShape.PulseRifle: PulseKit(head, barrel, level); break;
             }
 
             // A mesh without triangles would upset some renderers, so every barrel gets at least a stub.
@@ -75,6 +64,39 @@ namespace Game.Towers
 
         private static void Dome(PropMeshBuilder b, Vector3 centre, Vector3 radii, int slot, float bump = 0.04f, bool flat = false) =>
             b.AddBlob(centre, radii, 5, 10, bump, 3, slot, flat);
+
+        // Add-ons for the imported machine gun: nothing at first, then ammo drums and a glowing ring, then a
+        // scope, armour and antennas, so an upgrade is visible on a model that is otherwise a single mesh.
+        private static void PulseKit(PropMeshBuilder head, PropMeshBuilder barrel, int level)
+        {
+            if (level < 1)
+            {
+                return;
+            }
+
+            for (int side = -1; side <= 1; side += 2)
+            {
+                float x = 0.3f * side;
+                Dome(head, new Vector3(x, 0.02f, -0.05f), new Vector3(0.12f, 0.14f, 0.18f), Body, 0.04f);
+                Tube(head, new Vector3(x, 0.14f, -0.12f), new Vector3(x, 0.14f, 0.1f), 0.025f, 0.025f, 6, Glow);
+            }
+
+            Tube(head, new Vector3(0f, 0.02f, 0.2f), new Vector3(0f, 0.02f, 0.24f), 0.26f, 0.26f, 14, Glow);
+
+            if (level < 2)
+            {
+                return;
+            }
+
+            Tube(head, new Vector3(0f, 0.34f, -0.1f), new Vector3(0f, 0.34f, 0.5f), 0.06f, 0.05f, 8, Accent);
+            head.AddBlob(new Vector3(0f, 0.34f, 0.52f), new Vector3(0.07f, 0.07f, 0.04f), 3, 8, 0f, 0, Glow, false);
+            Dome(head, new Vector3(0f, 0.2f, -0.2f), new Vector3(0.18f, 0.1f, 0.2f), Accent, 0.1f, true);
+            for (int i = 0; i < 3; i++)
+            {
+                float x = (i - 1) * 0.16f;
+                head.AddTube(new[] { new Vector3(x, 0.3f, -0.3f), new Vector3(x, 0.62f, -0.34f) }, new[] { 0.02f, 0f }, 5, Glow, true);
+            }
+        }
 
         // Heavy gun: squat armoured turret, thick barrel with a muzzle brake. Level 3 has twin barrels.
         private static void Cannon(PropMeshBuilder head, PropMeshBuilder barrel, int level)

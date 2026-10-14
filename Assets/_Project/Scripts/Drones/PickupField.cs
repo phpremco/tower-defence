@@ -14,9 +14,16 @@ namespace Game.Drones
         private const float BobHeight = 0.12f;
         private const float BobSpeed = 4f;
         private const float RestHeight = 0.35f;
-        private const float Size = 0.3f;
-        private const float Emission = 2.5f;
+        private const float Size = 1.4f;
+        private const float SpinDegrees = 120f;
         private static readonly Color PickupColor = new Color(1f, 0.85f, 0.2f);
+
+        private static Mesh Crystal => _crystal != null ? _crystal : (_crystal = StructureModelFactory.LootCrystal());
+
+        private static Material[] Materials => _materials != null && _materials[0] != null ? _materials : (_materials = ModelPalette.Create(PickupColor));
+
+        private static Mesh _crystal;
+        private static Material[] _materials;
 
         private readonly List<Pickup> _pickups = new List<Pickup>();
 
@@ -37,8 +44,11 @@ namespace Game.Drones
                 return;
             }
 
-            GameObject body = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, PickupColor, transform, Vector3.zero, Vector3.one * Size, Emission);
-            body.name = "Pickup";
+            var body = new GameObject("Pickup");
+            body.transform.SetParent(transform, false);
+            body.transform.localScale = Vector3.one * Size;
+            body.AddComponent<MeshFilter>().sharedMesh = Crystal;
+            body.AddComponent<MeshRenderer>().sharedMaterials = Materials;
             var flat = new Vector3(position.x, 0f, position.z);
             body.transform.position = flat + Vector3.up * RestHeight;
             _pickups.Add(new Pickup { Body = body.transform, Position = flat, Value = value, Remaining = LifetimeSeconds });
@@ -96,6 +106,7 @@ namespace Game.Drones
 
                 float bob = Mathf.Sin(Time.time * BobSpeed + i) * BobHeight;
                 pickup.Body.position = pickup.Position + Vector3.up * (RestHeight + bob);
+                pickup.Body.Rotate(0f, SpinDegrees * Time.deltaTime, 0f, Space.World);
             }
         }
 

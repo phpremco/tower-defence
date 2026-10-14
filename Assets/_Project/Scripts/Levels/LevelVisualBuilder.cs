@@ -18,8 +18,10 @@ namespace Game.Levels
         private const float RouteHeight = 0.12f;
         private const float RouteEmission = 1.4f;
         private const float RouteAlpha = 0.45f;
-        private const float MarkerEmission = 1.1f;
-        private const float BaseScale = 1.25f;
+        private const float BaseScale = 1.35f;
+        private const float GateScale = 1.2f;
+        private const float BaseRingSpin = 45f;
+        private const float GateRingSpin = -30f;
         private const int StarCount = 700;
         private const float StarDepth = -7f;
         private const float StarFieldMargin = 40f;
@@ -106,11 +108,7 @@ namespace Game.Levels
                 }
 
                 Vector3 start = grid.CellToWorld(path.Waypoints[0]);
-                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, SpawnColor, parent, start + Vector3.up * 0.06f, new Vector3(0.75f, 0.02f, 0.75f), MarkerEmission);
-                if (theme.SpawnModel != null)
-                {
-                    ModelFit.Place(theme.SpawnModel, parent, start, 0f, 1.1f, SpawnColor, 0.5f);
-                }
+                PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, SpawnColor, start, GateScale, GateRingSpin, parent);
 
                 if (path.Flying)
                 {
@@ -126,18 +124,31 @@ namespace Game.Levels
             if (road.Length > 0)
             {
                 Vector3 baseCenter = grid.CellToWorld(road[road.Length - 1]);
-                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, theme.BaseColor, parent, baseCenter + Vector3.up * 0.06f, new Vector3(1.5f, 0.02f, 1.5f), MarkerEmission);
-                if (theme.BaseModel != null)
-                {
-                    ModelFit.Place(theme.BaseModel, parent, baseCenter, 0f, BaseScale, Color.Lerp(Color.white, theme.BaseColor, 0.4f), 0.3f);
-                }
-                else
-                {
-                    PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, theme.BaseColor, parent, baseCenter + Vector3.up * 0.6f, new Vector3(1.2f, 0.6f, 1.2f), 2.5f);
-                }
+                PlaceStructure(StructureModelFactory.BaseReactor(out Mesh reactorRing), reactorRing, theme.BaseColor, baseCenter, BaseScale, BaseRingSpin, parent);
             }
 
             return routes;
+        }
+
+        // A structure mesh with a separate ring that turns slowly, in the given glow colour.
+        private static void PlaceStructure(Mesh mesh, Mesh ring, Color glow, Vector3 position, float scale, float ringSpin, Transform parent)
+        {
+            Material[] materials = ModelPalette.Create(glow);
+            var root = new GameObject("Structure").transform;
+            root.SetParent(parent, false);
+            root.position = position;
+            root.localScale = Vector3.one * scale;
+
+            var body = new GameObject("Body");
+            body.transform.SetParent(root, false);
+            body.AddComponent<MeshFilter>().sharedMesh = mesh;
+            body.AddComponent<MeshRenderer>().sharedMaterials = materials;
+
+            var spinning = new GameObject("Ring");
+            spinning.transform.SetParent(root, false);
+            spinning.AddComponent<MeshFilter>().sharedMesh = ring;
+            spinning.AddComponent<MeshRenderer>().sharedMaterials = materials;
+            spinning.AddComponent<Spinner>().Initialize(ringSpin);
         }
 
         // A dashed line with a small arrow head at the end of each segment shows where flyers travel.

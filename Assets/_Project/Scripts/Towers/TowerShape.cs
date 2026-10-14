@@ -1,6 +1,6 @@
 namespace Game.Towers
 {
-    /// <summary>Which procedural model a tower wears. None keeps whatever imported model or placeholder it has.</summary>
+    /// <summary>Which procedural model a tower wears. None keeps whatever imported model or placeholder it has. PulseRifle keeps the imported gun and adds upgrade parts to it.</summary>
     public enum TowerShape
     {
         None = 0,
@@ -14,5 +14,6 @@ namespace Game.Towers
         Artillery = 8,
         StormRifle = 9,
         CryoBeam = 10,
+        PulseRifle = 11,
     }
 }

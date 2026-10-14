@@ -27,6 +27,7 @@ namespace Game.Towers
         private const float WallDepth = 0.34f;
         private const float ShapeHeadHeight = 0.5f;
         private const float ShapeScale = 1.3f;
+        private const float LevelGrowth = 0.12f;
         private const float RecoilDistance = 0.14f;
         private const float RecoilRecovery = 6f;
         private static readonly Color BaseColor = new Color(0.1f, 0.12f, 0.18f);
@@ -55,6 +56,7 @@ namespace Game.Towers
         private Material[] _shapeMaterials;
         private int _shapeLevel = -1;
         private float _recoil;
+        private bool _replacesModel;
 
         private void Awake()
         {
@@ -186,9 +188,16 @@ namespace Game.Towers
             GameObject ring;
             if (wall)
             {
-                // A low wall across the road with a glowing top edge. Its gun sits on top and appears with the first gun upgrade.
-                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BaseColor, transform, new Vector3(0f, 0.3f, 0f), new Vector3(WallWidth, 0.6f, WallDepth));
-                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, transform, new Vector3(0f, 0.63f, 0f), new Vector3(WallWidth + 0.04f, 0.06f, WallDepth + 0.04f), BarrelEmission);
+                // An armoured barricade across the road. Its gun sits on top and appears with the first gun upgrade.
+                Material[] wallMaterials = ModelPalette.Create(definition.Color);
+                var wallObject = new GameObject("Barricade");
+                wallObject.transform.SetParent(transform, false);
+                wallObject.AddComponent<MeshFilter>().sharedMesh = StructureModelFactory.Blockade(WallWidth, WallDepth * 1.3f);
+                var wallRenderer = wallObject.AddComponent<MeshRenderer>();
+                wallRenderer.sharedMaterials = wallMaterials;
+                _modelRenderers = new Renderer[] { wallRenderer };
+                _modelMaterials = new[] { wallMaterials };
+                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, transform, new Vector3(0f, 0.02f, 0f), new Vector3(0.01f, 0.01f, 0.01f));
             }
             else
             {
@@ -201,15 +210,19 @@ namespace Game.Towers
             head.localPosition = new Vector3(0f, wall ? 0.95f : 0.8f, 0f);
             _head = head;
 
-            if (definition.Shape != TowerShape.None)
+            if (definition.Shape != TowerShape.None && definition.Shape != TowerShape.PulseRifle)
             {
-                BuildShape(definition);
+                BuildShape(definition, true);
                 _glowParts = new[] { ring.GetComponent<Renderer>() };
                 _glowMaterials = new[] { _glowParts[0].sharedMaterial };
             }
             else if (definition.Model != null)
             {
                 PlaceModel(definition.Model, definition);
+                if (definition.Shape == TowerShape.PulseRifle)
+                {
+                    BuildShape(definition, false);
+                }
                 _glowParts = new[] { ring.GetComponent<Renderer>() };
                 _glowMaterials = new[] { _glowParts[0].sharedMaterial };
             }
@@ -238,10 +251,14 @@ namespace Game.Towers
         }
 
         // The procedural model: a head that turns and a barrel that kicks back. Rebuilt on every level so upgrades show.
-        private void BuildShape(TowerDefinition definition)
+        private void BuildShape(TowerDefinition definition, bool replacesModel)
         {
-            _head.localPosition = new Vector3(0f, ShapeHeadHeight, 0f);
-            _head.localScale = Vector3.one * ShapeScale;
+            _replacesModel = replacesModel;
+            if (replacesModel)
+            {
+                _head.localPosition = new Vector3(0f, ShapeHeadHeight, 0f);
+            }
+
             _shapeMaterials = TowerModelFactory.CreateMaterials(definition.Color);
 
             var headObject = new GameObject("ShapeHead");
@@ -257,8 +274,12 @@ namespace Game.Towers
             var barrelRenderer = barrelObject.AddComponent<MeshRenderer>();
             barrelRenderer.sharedMaterials = _shapeMaterials;
 
-            _modelRenderers = new Renderer[] { headRenderer, barrelRenderer };
-            _modelMaterials = new[] { _shapeMaterials, _shapeMaterials };
+            if (replacesModel)
+            {
+                _modelRenderers = new Renderer[] { headRenderer, barrelRenderer };
+                _modelMaterials = new[] { _shapeMaterials, _shapeMaterials };
+            }
+
             RebuildShape(definition, 0);
         }
 
@@ -270,6 +291,8 @@ namespace Game.Towers
             }
 
             _shapeLevel = level;
+            float size = (_replacesModel ? ShapeScale : 1f) * (1f + level * LevelGrowth);
+            _head.localScale = Vector3.one * size;
             TowerModelFactory.Parts parts = TowerModelFactory.Create(definition.Shape, level);
             _headMesh.sharedMesh = parts.Head;
             _barrelMesh.sharedMesh = parts.Barrel;

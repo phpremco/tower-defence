@@ -19,7 +19,9 @@ namespace Game.UI
         private Button _controlsButton;
 
         private const string ControlsText =
-            "Move the cursor      Left stick / D-pad    WASD    Mouse\n" +
+            "Move the cursor      Left stick / D-pad    Mouse\n" +
+            "Move the camera      Right stick    WASD / arrow keys\n" +
+            "Zoom                 L3 / R3    - / +    Mouse wheel\n" +
             "Confirm              A    Enter    Left click\n" +
             "Cancel               B    Esc    Right click\n" +
             "Switch tower         LB / RB    Q / E\n" +
