@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1181347444
+--- !u!1 &126836330
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,10 +127,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1181347448}
-  - component: {fileID: 1181347447}
-  - component: {fileID: 1181347446}
-  - component: {fileID: 1181347445}
+  - component: {fileID: 126836334}
+  - component: {fileID: 126836331}
+  - component: {fileID: 126836333}
+  - component: {fileID: 126836332}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -138,33 +138,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1181347445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181347444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f644ad17565f5e440988d19da59a192a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.Levels::Game.Levels.FixedCameraRig
---- !u!81 &1181347446
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181347444}
-  m_Enabled: 1
---- !u!20 &1181347447
+--- !u!20 &126836331
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181347444}
+  m_GameObject: {fileID: 126836330}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -209,13 +189,33 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1181347448
+--- !u!114 &126836332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126836330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f644ad17565f5e440988d19da59a192a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.FixedCameraRig
+--- !u!81 &126836333
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126836330}
+  m_Enabled: 1
+--- !u!4 &126836334
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181347444}
+  m_GameObject: {fileID: 126836330}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -224,7 +224,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1458559739
+--- !u!1 &516004180
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,8 +232,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1458559741}
-  - component: {fileID: 1458559740}
+  - component: {fileID: 516004182}
+  - component: {fileID: 516004181}
   m_Layer: 0
   m_Name: LevelBootstrapper
   m_TagString: Untagged
@@ -241,26 +241,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1458559740
+--- !u!114 &516004181
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1458559739}
+  m_GameObject: {fileID: 516004180}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fe60e57e668bbf4c901058a282f6167, type: 3}
+  m_Script: {fileID: 11500000, guid: 964fee718403f104ba060c8a6a04a531, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelBootstrapper
-  _cameraRig: {fileID: 1181347445}
---- !u!4 &1458559741
+  m_EditorClassIdentifier: Game.Boot::Game.Boot.LevelBootstrapper
+  _cameraRig: {fileID: 126836332}
+  _camera: {fileID: 126836331}
+--- !u!4 &516004182
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1458559739}
+  m_GameObject: {fileID: 516004180}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -273,5 +274,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1181347448}
-  - {fileID: 1458559741}
+  - {fileID: 126836334}
+  - {fileID: 516004182}

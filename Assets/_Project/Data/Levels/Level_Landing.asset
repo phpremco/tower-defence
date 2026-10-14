@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
   m_Name: Level_Landing
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
-  _displayName: New Level
+  _displayName: Landing Zone
   _gridSize: {x: 16, y: 10}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: aff118a86b1eec348881c3aa22519802, type: 2}
@@ -20,3 +20,72 @@ MonoBehaviour:
     PitchDegrees: 55
     YawDegrees: 0
     OrthographicSize: 7
+  _landPath:
+  - {x: 0, y: 8}
+  - {x: 12, y: 8}
+  - {x: 12, y: 5}
+  - {x: 3, y: 5}
+  - {x: 3, y: 2}
+  - {x: 15, y: 2}
+  _airPath:
+  - {x: 0, y: 9}
+  - {x: 15, y: 2}
+  _buildSlots:
+  - {x: 2, y: 7}
+  - {x: 5, y: 7}
+  - {x: 8, y: 7}
+  - {x: 11, y: 7}
+  - {x: 11, y: 6}
+  - {x: 13, y: 6}
+  - {x: 14, y: 7}
+  - {x: 5, y: 4}
+  - {x: 8, y: 4}
+  - {x: 11, y: 4}
+  - {x: 2, y: 3}
+  - {x: 4, y: 3}
+  - {x: 6, y: 3}
+  - {x: 9, y: 3}
+  - {x: 12, y: 3}
+  - {x: 5, y: 1}
+  - {x: 8, y: 1}
+  - {x: 11, y: 1}
+  - {x: 14, y: 1}
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  _startingMoney: 150
+  _baseHealth: 20
+  _difficultyWaves:
+  - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: ae6d6b6129164df449c88e8cff45b62f, type: 2}
+    - {fileID: 11400000, guid: 190f5fdcd67807d4f8c47321f2f4bf53, type: 2}
+    - {fileID: 11400000, guid: c60b17396400f6540b37b9d519e119cb, type: 2}
+    - {fileID: 11400000, guid: ebf7c4c27b6fdaa478d4a6c8df19fc4f, type: 2}
+    - {fileID: 11400000, guid: 5687f07ce14029044a6a078371e52a60, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 46d097eb2d0ead24781c823528e6b42a, type: 2}
+    - {fileID: 11400000, guid: 57f4152634ea53944b64217d1eeda6d9, type: 2}
+    - {fileID: 11400000, guid: 8564020931bb3094097a8a05a2308f4f, type: 2}
+    - {fileID: 11400000, guid: 8bb1a9dc2997a1c498d58631ecbfe90a, type: 2}
+    - {fileID: 11400000, guid: 564f8c38cf68f994bb1c82c81541e54c, type: 2}
+    - {fileID: 11400000, guid: 9ac1b48b59801344ba9c0b1fbe5fd08d, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 598d701d7ab51ac49a1bf0a01ebf3510, type: 2}
+    - {fileID: 11400000, guid: b848fec2198ae3e4595cceca483898e3, type: 2}
+    - {fileID: 11400000, guid: 8fbcfa337d20810469995e02df317dff, type: 2}
+    - {fileID: 11400000, guid: cd5bfbc4c755bf4418c62bd72121fd1c, type: 2}
+    - {fileID: 11400000, guid: 535fd580b6f8b164180ee006462239de, type: 2}
+    - {fileID: 11400000, guid: 4f7e18e83f365f2408ce679631e0b0a7, type: 2}
+  - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
+    Waves:
+    - {fileID: 11400000, guid: 8435dce0bb3d94444b43c521f7b832b2, type: 2}
+    - {fileID: 11400000, guid: 06383a812251fdd4b92251c50feb3940, type: 2}
+    - {fileID: 11400000, guid: 5e02e8991ee3e544da166d5375ec1cf5, type: 2}
+    - {fileID: 11400000, guid: 001f30cc074527c42a4e058863e94f79, type: 2}
+    - {fileID: 11400000, guid: 07ebd83995b18704fb3f0b3d0c9e0a20, type: 2}
+    - {fileID: 11400000, guid: adceb5f07e183ce4f86824a3ff7165d3, type: 2}
+    - {fileID: 11400000, guid: 3f8fe234cc76b9048b6c5657e5000ad3, type: 2}
