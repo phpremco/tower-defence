@@ -41,6 +41,8 @@ namespace Game.Towers
         private Material[][] _modelMaterials;
         private Material[] _glowMaterials;
         private bool _built;
+        private GameObject _currentModel;
+        private GameObject _currentModelSource;
 
         private void Awake()
         {
@@ -65,9 +67,47 @@ namespace Game.Towers
                 _built = true;
             }
 
+            SwapModelForLevel(tower);
+
             for (int i = 0; i < _stars.Length; i++)
             {
                 _stars[i].SetActive(i <= tower.LevelIndex && !tower.IsWrecked);
+            }
+        }
+
+        // Visual upgrades: the newest level at or below the current one that names a model wins.
+        private void SwapModelForLevel(Tower tower)
+        {
+            if (_modelRenderers == null)
+            {
+                return;
+            }
+
+            GameObject wanted = null;
+            for (int i = tower.LevelIndex; i >= 0 && wanted == null; i--)
+            {
+                wanted = tower.Definition.GetLevel(i).Model;
+            }
+
+            if (wanted == null || wanted == _currentModelSource)
+            {
+                return;
+            }
+
+            Destroy(_currentModel);
+            PlaceModel(wanted, tower.Definition);
+        }
+
+        private void PlaceModel(GameObject source, TowerDefinition definition)
+        {
+            Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
+            _currentModel = ModelFit.Place(source, _head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
+            _currentModelSource = source;
+            _modelRenderers = _currentModel.GetComponentsInChildren<Renderer>();
+            _modelMaterials = new Material[_modelRenderers.Length][];
+            for (int i = 0; i < _modelRenderers.Length; i++)
+            {
+                _modelMaterials[i] = _modelRenderers[i].sharedMaterials;
             }
         }
 
@@ -127,16 +167,9 @@ namespace Game.Towers
 
             if (definition.Model != null)
             {
-                Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
-                GameObject model = ModelFit.Place(definition.Model, head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
+                PlaceModel(definition.Model, definition);
                 _glowParts = new[] { ring.GetComponent<Renderer>() };
                 _glowMaterials = new[] { _glowParts[0].sharedMaterial };
-                _modelRenderers = model.GetComponentsInChildren<Renderer>();
-                _modelMaterials = new Material[_modelRenderers.Length][];
-                for (int i = 0; i < _modelRenderers.Length; i++)
-                {
-                    _modelMaterials[i] = _modelRenderers[i].sharedMaterials;
-                }
             }
             else
             {

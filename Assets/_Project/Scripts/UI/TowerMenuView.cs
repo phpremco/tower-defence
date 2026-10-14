@@ -160,14 +160,14 @@ namespace Game.UI
             _upgrade.interactable = canUpgrade;
             _repair.interactable = canRepair;
             _sell.interactable = true;
-            _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "Upgrade\nmax";
+            _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "MAX\nlevel";
             _repairPrice.text = tower.NeedsRepair ? $"Repair\n{tower.RepairCost}" : "Repair\n-";
             _sellPrice.text = (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue;
             _upgradePrice.color = canUpgrade ? TextColor : Unavailable;
             _repairPrice.color = canRepair ? TextColor : Unavailable;
 
             string state = tower.IsWrecked ? "wrecked" : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
-            _info.text = $"{tower.Definition.DisplayName}  Lv {tower.LevelIndex + 1}  {state}" + UpgradePreview(tower);
+            _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}" + UpgradePreview(tower);
 
             if (!_wasOpen)
             {

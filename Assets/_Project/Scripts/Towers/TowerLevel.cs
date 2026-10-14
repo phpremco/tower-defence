@@ -11,5 +11,8 @@ namespace Game.Towers
         [Min(0f)] public float Damage;
         [Min(0.5f)] public float Range;
         [Min(0.05f)] public float FireInterval;
+
+        [Tooltip("Optional look for this level. Empty keeps the model of the level before it.")]
+        public GameObject Model;
     }
 }
