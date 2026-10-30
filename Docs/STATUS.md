@@ -626,3 +626,15 @@ species (Scout, Grunt, Brute, Flyer, Drowner, Burrower, Cinder, Overseer, Warden
   with a new sand patch at 16-18/13-14 and no tide bats, Nest level water nests in the north pond), and the share of
   an ambush wave that surfaces from pools and nests now scales with difficulty (30/45/55/65%). `nest_report.cs`
   prints the share per nest. Maps are not enlarged yet; that is an open option if the roads still feel short.
+
+## Bigger maps, longer roads, longer levels (2026-10-30, later)
+Remco wants long games, not short rushes. Every map grew and every road winds: Landing 32x18 (one serpentine, 74
+cells, three gates), Forest 38x20 (switchbacks plus a second road from the south-west meeting on a clearing, four
+gates), Lava 34x24 (five-leg serpentine of 141 cells, four gates), Ruins 40x22 (north wall, old streets, round the
+cistern, long avenue; second road into the market square; five gates), Nest 36x22 (winding north road, straight
+south road, forecourt; four gates). A side road must end on a *waypoint* of the main road (`MergeIntoMain` uses
+`IndexOf`), so the main roads carry an extra waypoint at each junction. Terrain, nests (all within 60% of their
+road), boss entrances and flight routes were laid out afresh; `dump_map.cs` shows the result. Waves grew with the
+roads: 24 / 30 / 36 / 40 / 48, bosses at 12+24, 15+30, 12+24+36, 14+27+40, 12+24+36+48; starting money 200 / 240 /
+280 / 320 / 360. Known: the whole map fits the screen at start, so creatures are small until the player zooms
+(`CameraPanZoom.MaxZoom` 3); balance on the longer roads is unjudged.

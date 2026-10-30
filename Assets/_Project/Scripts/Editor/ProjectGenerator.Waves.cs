@@ -132,25 +132,25 @@ namespace Game.Editor
         // at all on easy; from medium on tide bats rise out of the lake halfway through.
         private static WaveScript LandingScript(Bestiary b) => new WaveScript
         {
-            Waves = 20,
+            Waves = 24,
             Budget = 5f,
-            FinalBudget = 65f,
+            FinalBudget = 70f,
             Troops = new[] { Join(b.Skitter, 1, 3f, 0.7f), Join(b.Prowler, 3, 2.5f, 1.2f), Join(b.Stinger, 6, 1.2f, 3f), Join(b.Tidebat, 8, 1.4f, 1.6f, SpawnSource.Nest, 6f, 1) },
             Flyer = b.Skyray,
-            AirWaves = new[] { 8, 13, 17, 19 },
+            AirWaves = new[] { 9, 15, 20, 23 },
             AirWavesPerDifficulty = new[] { 0, 1, 2, 3 },
             AirSprinkleFrom = 3,
-            Rhythm = "PPPRPPHPMPPRHPMPHPRP",
-            Bosses = new[] { Boss(10, b.BroodMother), Boss(20, b.PackAlpha) },
+            Rhythm = "PPPRPPHPMPPRHPMPHPRPMRHP",
+            Bosses = new[] { Boss(12, b.BroodMother), Boss(24, b.PackAlpha) },
         };
 
         // The woods are about speed and the sky: rollers rush the roads, packs hunt, moss and tide bats pour out of
         // the trees and ponds, and the slugs grease the way for everyone else.
         private static WaveScript ForestScript(Bestiary b) => new WaveScript
         {
-            Waves = 25,
+            Waves = 30,
             Budget = 6f,
-            FinalBudget = 100f,
+            FinalBudget = 110f,
             Troops = new[]
             {
                 Join(b.Skitter, 1, 2f, 0.7f), Join(b.Prowler, 1, 2.5f, 1.1f), Join(b.Roller, 2, 2.5f, 1.6f),
@@ -158,60 +158,60 @@ namespace Game.Editor
                 Join(b.Oozer, 7, 1.5f, 2.4f), Join(b.Stinger, 10, 1.2f, 3f),
             },
             Flyer = b.Skyray,
-            AirWaves = new[] { 6, 11, 15, 19 },
-            AirWavesPerDifficulty = new[] { 1, 2, 3, 4 },
+            AirWaves = new[] { 7, 13, 18, 23, 27 },
+            AirWavesPerDifficulty = new[] { 1, 2, 3, 5 },
             AirSprinkleFrom = 2,
-            Rhythm = "PRPMRPMRPPRMRPMRHRMPRMHRP",
-            Bosses = new[] { Boss(12, b.RollerKing), Boss(25, b.StormMatriarch) },
+            Rhythm = "PRPMRPMRPPRMRPMRHRMPRMHRPMRHPR",
+            Bosses = new[] { Boss(15, b.RollerKing), Boss(30, b.StormMatriarch) },
         };
 
         // The lava fields erupt: ember bats burst from the vents from the first wave, wisps drift down the roads,
         // scorpions and shield bearers walk the heat.
         private static WaveScript LavaScript(Bestiary b) => new WaveScript
         {
-            Waves = 30,
+            Waves = 36,
             Budget = 7f,
-            FinalBudget = 130f,
+            FinalBudget = 145f,
             Troops = new[]
             {
                 Join(b.Prowler, 1, 3f, 1.1f), Join(b.Emberbat, 1, 2.5f, 1.5f, SpawnSource.Nest, 6f), Join(b.Stinger, 2, 1.5f, 2.8f),
                 Join(b.Skitter, 3, 1.5f, 0.7f), Join(b.Wisp, 4, 2f, 1.3f), Join(b.Roller, 5, 2f, 1.6f), Join(b.Bulwark, 8, 1.2f, 3.2f),
             },
             Flyer = b.Skyray,
-            AirWaves = new[] { 4, 7, 12, 16, 22, 27 },
+            AirWaves = new[] { 5, 9, 14, 19, 26, 32 },
             AirWavesPerDifficulty = new[] { 2, 3, 5, 6 },
             AirSprinkleFrom = 1,
-            Rhythm = "PMPHMPMHPPMHMPMHMPHPMHPMHMPHMP",
-            Bosses = new[] { Boss(10, b.CoreWisp), Boss(20, b.AcidEmpress), Boss(30, b.CrystalWarlord) },
+            Rhythm = "PMPHMPMHPPMHMPMHMPHPMHPMHMPHMPMHPMHP",
+            Bosses = new[] { Boss(12, b.CoreWisp), Boss(24, b.AcidEmpress), Boss(36, b.CrystalWarlord) },
         };
 
         // The ruins are a siege: shield bearers in convoys, slugs that grease the roads, dust bats out of the sand
         // and tide bats from the cistern, and rays over the walls.
         private static WaveScript RuinsScript(Bestiary b) => new WaveScript
         {
-            Waves = 35,
+            Waves = 40,
             Budget = 8f,
-            FinalBudget = 160f,
+            FinalBudget = 175f,
             Troops = new[]
             {
                 Join(b.Bulwark, 1, 2f, 2.8f), Join(b.Dustbat, 1, 2.5f, 1.4f, SpawnSource.Nest, 6f), Join(b.Oozer, 2, 1.5f, 2.2f),
                 Join(b.Stinger, 3, 1.5f, 2.6f), Join(b.Skitter, 4, 1.5f, 0.7f), Join(b.Prowler, 5, 2f, 1.1f),
-                Join(b.Wisp, 9, 1.5f, 1.3f),
+                Join(b.Tidebat, 8, 1.2f, 1.4f, SpawnSource.Nest, 9f), Join(b.Wisp, 9, 1.5f, 1.3f),
             },
             Flyer = b.Skyray,
-            AirWaves = new[] { 5, 9, 14, 18, 23, 28, 33 },
+            AirWaves = new[] { 6, 10, 16, 21, 26, 31, 37 },
             AirWavesPerDifficulty = new[] { 2, 3, 5, 7 },
             AirSprinkleFrom = 2,
-            Rhythm = "MHPHMHPHMPHMHPHMHPHPMHPHMHPHMPHMHPP",
-            Bosses = new[] { Boss(12, b.SlimeMonarch), Boss(24, b.SkySovereign), Boss(35, b.CrystalWarlord) },
+            Rhythm = "MHPHMHPHMPHMHPHMHPHPMHPHMHPHMPHMHPPMHPHM",
+            Bosses = new[] { Boss(14, b.SlimeMonarch), Boss(27, b.SkySovereign), Boss(40, b.CrystalWarlord) },
         };
 
         // The nest throws everything, in a steady rotation of rush, ambush and heavy, and ends with the queen.
         private static WaveScript NestScript(Bestiary b) => new WaveScript
         {
-            Waves = 40,
+            Waves = 48,
             Budget = 8f,
-            FinalBudget = 220f,
+            FinalBudget = 240f,
             Troops = new[]
             {
                 Join(b.Skitter, 1, 2f, 0.6f), Join(b.Prowler, 1, 3f, 1f), Join(b.Roller, 1, 2.5f, 1.5f), Join(b.Oozer, 2, 1.5f, 2f),
@@ -219,11 +219,11 @@ namespace Game.Editor
                 Join(b.Stinger, 3, 1.5f, 2.4f), Join(b.Wisp, 4, 2f, 1.2f), Join(b.Bulwark, 5, 1.5f, 2.6f),
             },
             Flyer = b.Skyray,
-            AirWaves = new[] { 3, 6, 9, 12, 15, 18, 22, 26, 31, 36 },
+            AirWaves = new[] { 4, 7, 10, 14, 17, 21, 26, 31, 37, 43 },
             AirWavesPerDifficulty = new[] { 3, 5, 7, 10 },
             AirSprinkleFrom = 0,
             Rhythm = "RMHRMHRMHP",
-            Bosses = new[] { Boss(10, b.PackAlpha), Boss(20, b.AcidEmpress), Boss(30, b.CoreWisp), Boss(40, b.Queen) },
+            Bosses = new[] { Boss(12, b.PackAlpha), Boss(24, b.AcidEmpress), Boss(36, b.CoreWisp), Boss(48, b.Queen) },
         };
 
         /// <summary>Writes the waves of a level for every difficulty and returns them in order.</summary>

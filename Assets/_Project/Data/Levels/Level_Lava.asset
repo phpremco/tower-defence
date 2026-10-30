@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Lava Caves
   _regionName: Lava Fields
   _briefing: The energy we came for lies in these lava fields. The heat does not stop the swarm, and halfway through something climbs out of the lava itself.
-  _gridSize: {x: 22, y: 17}
+  _gridSize: {x: 34, y: 24}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: d7483e12a2f7abd409d568eceb885ed3, type: 2}
   _camera:
@@ -26,194 +26,288 @@ MonoBehaviour:
   - Name: Road
     Flying: 0
     Waypoints:
-    - {x: 0, y: 15}
-    - {x: 18, y: 15}
-    - {x: 18, y: 10}
-    - {x: 3, y: 10}
-    - {x: 3, y: 7}
-    - {x: 18, y: 7}
-    - {x: 18, y: 2}
-    - {x: 21, y: 2}
+    - {x: 0, y: 22}
+    - {x: 26, y: 22}
+    - {x: 26, y: 17}
+    - {x: 4, y: 17}
+    - {x: 4, y: 14}
+    - {x: 28, y: 14}
+    - {x: 28, y: 9}
+    - {x: 6, y: 9}
+    - {x: 6, y: 6}
+    - {x: 24, y: 6}
+    - {x: 24, y: 2}
+    - {x: 33, y: 2}
   - Name: North air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 16}
-    - {x: 21, y: 2}
+    - {x: 0, y: 23}
+    - {x: 17, y: 20}
+    - {x: 33, y: 2}
   - Name: South air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 0}
-    - {x: 11, y: 8}
-    - {x: 21, y: 2}
+    - {x: 14, y: 4}
+    - {x: 33, y: 2}
   _roadWidth: 2
   _plazaCells: []
   _blockedCells:
+  - {x: 1, y: 5}
+  - {x: 1, y: 9}
+  - {x: 1, y: 15}
   - {x: 5, y: 1}
-  - {x: 7, y: 2}
-  - {x: 10, y: 1}
-  - {x: 13, y: 1}
-  - {x: 13, y: 2}
-  - {x: 15, y: 4}
+  - {x: 6, y: 1}
+  - {x: 6, y: 3}
+  - {x: 12, y: 3}
+  - {x: 18, y: 1}
+  - {x: 29, y: 16}
   _blockades:
-  - Cell: {x: 8, y: 10}
+  - Cell: {x: 12, y: 22}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 12, y: 7}
+  - Cell: {x: 14, y: 14}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 16, y: 9}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 30, y: 2}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 5, y: 13}
+  - Cell: {x: 8, y: 20}
     Kind: 3
-  - Cell: {x: 6, y: 12}
+  - Cell: {x: 9, y: 19}
     Kind: 3
-  - Cell: {x: 7, y: 13}
+  - Cell: {x: 10, y: 20}
     Kind: 3
-  - Cell: {x: 8, y: 13}
+  - Cell: {x: 11, y: 20}
     Kind: 3
-  - Cell: {x: 13, y: 12}
+  - Cell: {x: 12, y: 19}
     Kind: 3
-  - Cell: {x: 13, y: 13}
+  - Cell: {x: 12, y: 20}
     Kind: 3
-  - Cell: {x: 14, y: 12}
+  - Cell: {x: 18, y: 11}
     Kind: 3
-  - Cell: {x: 14, y: 13}
+  - Cell: {x: 18, y: 12}
     Kind: 3
-  - Cell: {x: 15, y: 12}
+  - Cell: {x: 19, y: 11}
     Kind: 3
-  - Cell: {x: 16, y: 12}
-    Kind: 3
-  - Cell: {x: 16, y: 13}
-    Kind: 3
-  - Cell: {x: 4, y: 8}
-    Kind: 3
-  - Cell: {x: 5, y: 8}
-    Kind: 3
-  - Cell: {x: 6, y: 8}
-    Kind: 3
-  - Cell: {x: 6, y: 9}
-    Kind: 3
-  - Cell: {x: 5, y: 0}
-    Kind: 3
-  - Cell: {x: 8, y: 0}
-    Kind: 3
-  - Cell: {x: 10, y: 0}
-    Kind: 3
-  - Cell: {x: 11, y: 0}
-    Kind: 3
-  - Cell: {x: 12, y: 0}
+  - Cell: {x: 20, y: 11}
     Kind: 3
   - Cell: {x: 20, y: 12}
     Kind: 3
-  - Cell: {x: 21, y: 7}
-    Kind: 3
-  - Cell: {x: 21, y: 8}
-    Kind: 3
-  - Cell: {x: 21, y: 9}
-    Kind: 3
-  - Cell: {x: 21, y: 10}
-    Kind: 3
   - Cell: {x: 21, y: 11}
     Kind: 3
-  - Cell: {x: 21, y: 12}
+  - Cell: {x: 0, y: 0}
     Kind: 3
-  - Cell: {x: 21, y: 13}
+  - Cell: {x: 0, y: 2}
     Kind: 3
-  - Cell: {x: 22, y: 7}
+  - Cell: {x: 0, y: 3}
     Kind: 3
-  - Cell: {x: 22, y: 8}
+  - Cell: {x: 1, y: 1}
     Kind: 3
-  - Cell: {x: 22, y: 9}
+  - Cell: {x: 1, y: 2}
     Kind: 3
-  - Cell: {x: 22, y: 10}
+  - Cell: {x: 1, y: 3}
     Kind: 3
-  - Cell: {x: 22, y: 11}
+  - Cell: {x: 2, y: 1}
     Kind: 3
-  - Cell: {x: 22, y: 12}
+  - Cell: {x: 2, y: 2}
     Kind: 3
-  - Cell: {x: 22, y: 13}
+  - Cell: {x: 3, y: 0}
     Kind: 3
-  - Cell: {x: 23, y: 8}
+  - Cell: {x: 3, y: 2}
     Kind: 3
-  - Cell: {x: 23, y: 9}
+  - Cell: {x: 3, y: 3}
     Kind: 3
-  - Cell: {x: 23, y: 10}
+  - Cell: {x: 29, y: 6}
     Kind: 3
-  - Cell: {x: 23, y: 11}
+  - Cell: {x: 29, y: 12}
     Kind: 3
-  - Cell: {x: 23, y: 12}
+  - Cell: {x: 30, y: 7}
     Kind: 3
-  - Cell: {x: 24, y: 7}
+  - Cell: {x: 30, y: 8}
     Kind: 3
-  - Cell: {x: 24, y: 8}
+  - Cell: {x: 30, y: 9}
     Kind: 3
-  - Cell: {x: 24, y: 9}
+  - Cell: {x: 30, y: 10}
     Kind: 3
-  - Cell: {x: 24, y: 10}
+  - Cell: {x: 30, y: 11}
     Kind: 3
-  - Cell: {x: 24, y: 11}
+  - Cell: {x: 30, y: 12}
     Kind: 3
-  - Cell: {x: 24, y: 12}
+  - Cell: {x: 31, y: 6}
     Kind: 3
-  - Cell: {x: 24, y: 13}
+  - Cell: {x: 31, y: 7}
     Kind: 3
-  - Cell: {x: 25, y: 7}
+  - Cell: {x: 31, y: 8}
     Kind: 3
-  - Cell: {x: 25, y: 8}
+  - Cell: {x: 31, y: 9}
     Kind: 3
-  - Cell: {x: 25, y: 9}
+  - Cell: {x: 31, y: 10}
     Kind: 3
-  - Cell: {x: 25, y: 10}
+  - Cell: {x: 31, y: 11}
     Kind: 3
-  - Cell: {x: 25, y: 11}
+  - Cell: {x: 31, y: 12}
     Kind: 3
-  - Cell: {x: 25, y: 12}
+  - Cell: {x: 32, y: 6}
     Kind: 3
-  - Cell: {x: 25, y: 13}
+  - Cell: {x: 32, y: 7}
     Kind: 3
-  - Cell: {x: 26, y: 7}
+  - Cell: {x: 32, y: 8}
     Kind: 3
-  - Cell: {x: 26, y: 10}
+  - Cell: {x: 32, y: 9}
     Kind: 3
-  - Cell: {x: 26, y: 11}
+  - Cell: {x: 32, y: 10}
     Kind: 3
-  - Cell: {x: 26, y: 12}
+  - Cell: {x: 32, y: 11}
     Kind: 3
-  - Cell: {x: 26, y: 13}
+  - Cell: {x: 33, y: 7}
     Kind: 3
-  - Cell: {x: 0, y: 12}
+  - Cell: {x: 33, y: 8}
+    Kind: 3
+  - Cell: {x: 33, y: 9}
+    Kind: 3
+  - Cell: {x: 33, y: 10}
+    Kind: 3
+  - Cell: {x: 33, y: 11}
+    Kind: 3
+  - Cell: {x: 33, y: 12}
+    Kind: 3
+  - Cell: {x: 34, y: 4}
+    Kind: 3
+  - Cell: {x: 34, y: 5}
+    Kind: 3
+  - Cell: {x: 34, y: 6}
+    Kind: 3
+  - Cell: {x: 34, y: 7}
+    Kind: 3
+  - Cell: {x: 34, y: 8}
+    Kind: 3
+  - Cell: {x: 34, y: 9}
+    Kind: 3
+  - Cell: {x: 34, y: 10}
+    Kind: 3
+  - Cell: {x: 34, y: 11}
+    Kind: 3
+  - Cell: {x: 34, y: 12}
+    Kind: 3
+  - Cell: {x: 34, y: 13}
+    Kind: 3
+  - Cell: {x: 34, y: 14}
+    Kind: 3
+  - Cell: {x: 35, y: 5}
+    Kind: 3
+  - Cell: {x: 35, y: 6}
+    Kind: 3
+  - Cell: {x: 35, y: 7}
+    Kind: 3
+  - Cell: {x: 35, y: 8}
+    Kind: 3
+  - Cell: {x: 35, y: 9}
+    Kind: 3
+  - Cell: {x: 35, y: 10}
+    Kind: 3
+  - Cell: {x: 35, y: 11}
+    Kind: 3
+  - Cell: {x: 35, y: 12}
+    Kind: 3
+  - Cell: {x: 35, y: 13}
+    Kind: 3
+  - Cell: {x: 36, y: 4}
+    Kind: 3
+  - Cell: {x: 36, y: 5}
+    Kind: 3
+  - Cell: {x: 36, y: 6}
+    Kind: 3
+  - Cell: {x: 36, y: 7}
+    Kind: 3
+  - Cell: {x: 36, y: 8}
+    Kind: 3
+  - Cell: {x: 36, y: 9}
+    Kind: 3
+  - Cell: {x: 36, y: 11}
+    Kind: 3
+  - Cell: {x: 36, y: 13}
+    Kind: 3
+  - Cell: {x: 10, y: 0}
+    Kind: 3
+  - Cell: {x: 12, y: 0}
+    Kind: 3
+  - Cell: {x: 13, y: 1}
+    Kind: 3
+  - Cell: {x: 14, y: 0}
+    Kind: 3
+  - Cell: {x: 14, y: 1}
+    Kind: 3
+  - Cell: {x: 15, y: 0}
+    Kind: 3
+  - Cell: {x: 15, y: 1}
+    Kind: 3
+  - Cell: {x: 0, y: 19}
     Kind: 1
-  - Cell: {x: 0, y: 13}
+  - Cell: {x: 1, y: 19}
     Kind: 1
-  - Cell: {x: 1, y: 13}
+  - Cell: {x: 1, y: 20}
     Kind: 1
-  - Cell: {x: 0, y: 5}
+  - Cell: {x: 30, y: 18}
     Kind: 1
-  - Cell: {x: 1, y: 5}
+  - Cell: {x: 30, y: 19}
     Kind: 1
-  - Cell: {x: 20, y: 5}
+  - Cell: {x: 30, y: 20}
     Kind: 1
-  - Cell: {x: 11, y: 8}
+  - Cell: {x: 31, y: 17}
     Kind: 1
-  - Cell: {x: 11, y: 9}
+  - Cell: {x: 31, y: 18}
     Kind: 1
-  - Cell: {x: 12, y: 8}
+  - Cell: {x: 31, y: 19}
     Kind: 1
-  - Cell: {x: 12, y: 9}
+  - Cell: {x: 31, y: 20}
     Kind: 1
-  - Cell: {x: 13, y: 8}
+  - Cell: {x: 32, y: 17}
+    Kind: 1
+  - Cell: {x: 32, y: 18}
+    Kind: 1
+  - Cell: {x: 32, y: 19}
+    Kind: 1
+  - Cell: {x: 33, y: 16}
+    Kind: 1
+  - Cell: {x: 33, y: 17}
+    Kind: 1
+  - Cell: {x: 33, y: 20}
+    Kind: 1
+  - Cell: {x: 8, y: 12}
+    Kind: 1
+  - Cell: {x: 9, y: 11}
+    Kind: 1
+  - Cell: {x: 9, y: 12}
+    Kind: 1
+  - Cell: {x: 10, y: 12}
+    Kind: 1
+  - Cell: {x: 11, y: 11}
+    Kind: 1
+  - Cell: {x: 14, y: 3}
+    Kind: 1
+  - Cell: {x: 14, y: 4}
+    Kind: 1
+  - Cell: {x: 15, y: 4}
+    Kind: 1
+  - Cell: {x: 16, y: 3}
+    Kind: 1
+  - Cell: {x: 16, y: 4}
+    Kind: 1
+  - Cell: {x: 17, y: 4}
     Kind: 1
   _mineCells:
-  - {x: 9, y: 4}
-  - {x: 15, y: 3}
-  - {x: 2, y: 4}
+  - {x: 21, y: 3}
+  - {x: 31, y: 13}
+  - {x: 5, y: 3}
   _mineStock: 140
   _bossEntrance:
     Kind: 1
-    Cell: {x: 6, y: 12}
+    Cell: {x: 9, y: 19}
   _nests:
-  - Cell: {x: 6, y: 12}
+  - Cell: {x: 9, y: 19}
     Element: 1
-  - Cell: {x: 15, y: 12}
-    Element: 1
-  - Cell: {x: 21, y: 10}
+  - Cell: {x: 18, y: 12}
     Element: 1
   _terrainAlbedo: {fileID: 2800000, guid: 805e7771d44a98b4cab78523155776ad, type: 3}
   _terrainEmission: {fileID: 2800000, guid: ac2e59f1aff128c4ea8c222c53a9dfa4, type: 3}
@@ -235,7 +329,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
   - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
   - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
-  _startingMoney: 210
+  _startingMoney: 280
   _baseHealth: 20
   _difficultyWaves:
   - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
@@ -270,6 +364,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c2c36c18bed3f5b47bbd50ea8391b915, type: 2}
     - {fileID: 11400000, guid: 8bc64786b1c322749bf433b0e6a2954c, type: 2}
     - {fileID: 11400000, guid: 14f34db77bdbf4e4e949eda248ba2d92, type: 2}
+    - {fileID: 11400000, guid: fb1c3d2678861b5408fe52a22d10b9ab, type: 2}
+    - {fileID: 11400000, guid: 782211e26dfd79f4bacc3673397789cc, type: 2}
+    - {fileID: 11400000, guid: 7cd7564ae684da24684f30b0bdeb0ba6, type: 2}
+    - {fileID: 11400000, guid: 0f68be28d6fdcbc4488e395a130c2e3a, type: 2}
+    - {fileID: 11400000, guid: 7a2f9516ebb336d41b16145d37b32671, type: 2}
+    - {fileID: 11400000, guid: 3ce79b785e1e8e94eb1c1ef47a66b852, type: 2}
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - {fileID: 11400000, guid: 08189d38b58206c4d8aa877ada1b6f42, type: 2}
@@ -302,6 +402,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9dcd5588059104d4ca2c007180bbd5da, type: 2}
     - {fileID: 11400000, guid: 0e0cffbcf05024e49813a9011c3af5b2, type: 2}
     - {fileID: 11400000, guid: feb4c4dfed8997940a2ff505e701ba60, type: 2}
+    - {fileID: 11400000, guid: 0d65a82525a7e2e45a6f55a796275f6c, type: 2}
+    - {fileID: 11400000, guid: a5c5b36fa89b27a44b1c68de77c306c1, type: 2}
+    - {fileID: 11400000, guid: 6f10c29dcd4add144907780e34903775, type: 2}
+    - {fileID: 11400000, guid: 2f728531fe40b5f46a9e885c77f9ae2f, type: 2}
+    - {fileID: 11400000, guid: 1b79b392e6fbda74e9fe30b0d33ff60d, type: 2}
+    - {fileID: 11400000, guid: d2eac7f59edb45d4baae460e21a51d85, type: 2}
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - {fileID: 11400000, guid: 535228e0f941e5b41aefd88554e5f557, type: 2}
@@ -334,6 +440,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: b5f9df67945c63e48b4107f1a37292cd, type: 2}
     - {fileID: 11400000, guid: 3e4edae9d25771742898ca3f6923cb9e, type: 2}
     - {fileID: 11400000, guid: 3cae11ee0f8f5c747932cfe7f025b535, type: 2}
+    - {fileID: 11400000, guid: 23fcb62296c8b454081a438942d6f0f8, type: 2}
+    - {fileID: 11400000, guid: c22dc1039ef75db4a83b94b8084c6135, type: 2}
+    - {fileID: 11400000, guid: 40ef963376f122f469c03fb9a073c536, type: 2}
+    - {fileID: 11400000, guid: c943238d2dfee854db7bf25fcff96a02, type: 2}
+    - {fileID: 11400000, guid: 4c77a23a4b65b2f4ab2c9b00a7298624, type: 2}
+    - {fileID: 11400000, guid: db9d4e5f7943d464ab3bb8233daf129e, type: 2}
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - {fileID: 11400000, guid: bb0be1fd25b0a624e8d56673697895d8, type: 2}
@@ -366,6 +478,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8b2c04b2add3a6544ab6863da76d5da2, type: 2}
     - {fileID: 11400000, guid: 77a0ca8834ff3944c97b3ff7d9798982, type: 2}
     - {fileID: 11400000, guid: 1262e56f32b38324590692a72d42cb23, type: 2}
+    - {fileID: 11400000, guid: f3104645c07ad5244a33be8255176897, type: 2}
+    - {fileID: 11400000, guid: e11e239df25033043b7710753a1402d4, type: 2}
+    - {fileID: 11400000, guid: ee1224ad0c94ed742815b54df04892f0, type: 2}
+    - {fileID: 11400000, guid: e386b0207176ba54a8936518dea71d43, type: 2}
+    - {fileID: 11400000, guid: 590f19cf352fbb447aecb7baaea8da97, type: 2}
+    - {fileID: 11400000, guid: 9e2b451ece23cb142ac670c144173076, type: 2}
   _reward:
     ResearchPoints: 18
     PowerCurrency: 9

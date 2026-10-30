@@ -255,7 +255,7 @@ namespace Game.Editor
             camera.FindPropertyRelative("PitchDegrees").floatValue = 55f;
             camera.FindPropertyRelative("YawDegrees").floatValue = 0f;
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
-            so.FindProperty("_startingMoney").intValue = 150;
+            so.FindProperty("_startingMoney").intValue = 200;
             so.FindProperty("_baseHealth").intValue = 20;
             so.FindProperty("_mineStock").intValue = MineStock;
             SerializedProperty stars = so.FindProperty("_starBaseHealthFractions");
@@ -273,8 +273,8 @@ namespace Game.Editor
             var landingPaths = new List<(string Name, bool Flying, Vector2Int[] Waypoints)>
             {
                 ("Road", false, LandingRoad),
-                ("North air route", true, Cells(0, 14, 21, 3)),
-                ("South air route", true, Cells(0, 0, 10, 5, 21, 3)),
+                ("North air route", true, Cells(0, 17, 16, 14, 31, 3)),
+                ("South air route", true, Cells(0, 0, 14, 4, 31, 3)),
             };
             WritePaths(so.FindProperty("_paths"), landingPaths.ToArray());
             so.FindProperty("_roadWidth").intValue = LandingRoadWidth;
@@ -282,15 +282,15 @@ namespace Game.Editor
             so.FindProperty("_hero").objectReferenceValue = hero;
 
             // One blockade on the first leg of the road and one across the last leg.
-            var blockadeCells = Cells(9, 12, 11, 3);
+            var blockadeCells = Cells(7, 16, 11, 8, 24, 13);
 
-            // A lake that drains off the right edge, a pond below the road, and low ridges on the free corners.
+            // Two lakes caught inside the switchbacks, a pond in the north-west corner and ridges on the free corners.
             HashSet<Vector2Int> landingRoad = RoadCells(LandingSize, landingPaths, LandingRoadWidth, new Vector2Int[0]);
             TerrainPatch[] landingTerrain = Terrain(
-                Area(TerrainKind.Water, 18, 5, 23, 9), Area(TerrainKind.Water, 7, 0, 10, 1), Area(TerrainKind.Water, 8, -4, 9, -1),
-                Area(TerrainKind.Raised, 0, 4, 2, 6), Area(TerrainKind.Raised, 6, 9, 9, 10), Area(TerrainKind.Raised, 18, 13, 21, 14), Area(TerrainKind.Raised, 0, 0, 3, 1));
+                Area(TerrainKind.Water, 15, 10, 18, 13), Area(TerrainKind.Water, 5, 13, 8, 14), Area(TerrainKind.Water, 22, 3, 25, 6), Area(TerrainKind.Water, 23, -3, 24, 2),
+                Area(TerrainKind.Raised, 0, 0, 2, 2), Area(TerrainKind.Raised, 22, 16, 27, 17), Area(TerrainKind.Raised, 0, 13, 1, 14), Area(TerrainKind.Raised, 30, 8, 31, 11));
             // Tide bats rise out of the lake and the pond; the nests keep rocks and mines off their cells.
-            ElementNest[] landingNests = { Nest(Element.Water, 20, 7), Nest(Element.Water, 18, 8) };
+            ElementNest[] landingNests = { Nest(Element.Water, 15, 12), Nest(Element.Water, 6, 13) };
             Vector2Int[] landingReserved = blockadeCells.Concat(NestCells(landingNests)).ToArray();
             Vector2Int[] landingBlocked = ScatterBlocked(LandingSize, landingRoad, landingTerrain, landingReserved, 11, BlockedFraction);
             WriteCells(so.FindProperty("_blockedCells"), landingBlocked);

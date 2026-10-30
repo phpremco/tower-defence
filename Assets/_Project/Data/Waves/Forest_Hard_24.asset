@@ -106,41 +106,6 @@ MonoBehaviour:
     Interval: 0.21000001
     Delay: 0
     Stagger: 10.080001
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 1
-    PathIndex: 0
-    Source: 0
-    Interval: 0.21000001
-    Delay: 0
-    Stagger: 10.920001
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 3
-    PathIndex: 3
-    Source: 0
-    Interval: 0.21000001
-    Delay: 0
-    Stagger: 11.340001
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 2
-    PathIndex: 0
-    Source: 0
-    Interval: 0.21000001
-    Delay: 0
-    Stagger: 12.600001
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 1
-    PathIndex: 3
-    Source: 0
-    Interval: 0.21000001
-    Delay: 0
-    Stagger: 13.4400015
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 3
-    PathIndex: 0
-    Source: 0
-    Interval: 0.21000001
-    Delay: 0
-    Stagger: 13.860002
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 2
     PathIndex: 3
@@ -198,37 +163,9 @@ MonoBehaviour:
     Delay: 2.5
     Stagger: 9.24
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 3
+    Count: 2
     PathIndex: 3
     Source: 0
     Interval: 0.33
     Delay: 2.5
     Stagger: 9.9
-  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 2
-    PathIndex: 0
-    Source: 0
-    Interval: 0.33
-    Delay: 2.5
-    Stagger: 11.88
-  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 1
-    PathIndex: 3
-    Source: 0
-    Interval: 0.33
-    Delay: 2.5
-    Stagger: 13.2
-  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 3
-    PathIndex: 0
-    Source: 0
-    Interval: 0.33
-    Delay: 2.5
-    Stagger: 13.86
-  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 2
-    PathIndex: 3
-    Source: 0
-    Interval: 0.33
-    Delay: 2.5
-    Stagger: 15.84

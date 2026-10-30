@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Landing Zone
   _regionName: Northern Plain
   _briefing: 'Our first foothold: the lander sits on open grey plain and the scouts are already testing the fence. Hold the base. Everything else comes later.'
-  _gridSize: {x: 22, y: 15}
+  _gridSize: {x: 32, y: 18}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: aff118a86b1eec348881c3aa22519802, type: 2}
   _camera:
@@ -26,154 +26,187 @@ MonoBehaviour:
   - Name: Road
     Flying: 0
     Waypoints:
-    - {x: 0, y: 12}
-    - {x: 16, y: 12}
-    - {x: 16, y: 7}
-    - {x: 4, y: 7}
-    - {x: 4, y: 3}
-    - {x: 21, y: 3}
+    - {x: 0, y: 16}
+    - {x: 13, y: 16}
+    - {x: 13, y: 11}
+    - {x: 3, y: 11}
+    - {x: 3, y: 8}
+    - {x: 20, y: 8}
+    - {x: 20, y: 13}
+    - {x: 28, y: 13}
+    - {x: 28, y: 3}
+    - {x: 31, y: 3}
   - Name: North air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 14}
-    - {x: 21, y: 3}
+    - {x: 0, y: 17}
+    - {x: 16, y: 14}
+    - {x: 31, y: 3}
   - Name: South air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 0}
-    - {x: 10, y: 5}
-    - {x: 21, y: 3}
+    - {x: 14, y: 4}
+    - {x: 31, y: 3}
   _roadWidth: 2
   _plazaCells: []
   _blockedCells:
-  - {x: 1, y: 2}
-  - {x: 16, y: 5}
+  - {x: 5, y: 1}
+  - {x: 5, y: 2}
+  - {x: 7, y: 2}
+  - {x: 8, y: 3}
+  - {x: 8, y: 4}
+  - {x: 8, y: 5}
+  - {x: 9, y: 2}
+  - {x: 9, y: 3}
+  - {x: 9, y: 4}
+  - {x: 11, y: 4}
+  - {x: 12, y: 2}
+  - {x: 12, y: 5}
+  - {x: 13, y: 1}
+  - {x: 15, y: 2}
+  - {x: 15, y: 5}
+  - {x: 16, y: 3}
+  - {x: 17, y: 4}
+  - {x: 18, y: 4}
+  - {x: 20, y: 1}
+  - {x: 20, y: 2}
+  - {x: 20, y: 3}
+  - {x: 20, y: 15}
+  - {x: 30, y: 6}
+  - {x: 30, y: 7}
   _blockades:
-  - Cell: {x: 9, y: 12}
+  - Cell: {x: 7, y: 16}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 11, y: 3}
+  - Cell: {x: 11, y: 8}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 24, y: 13}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 18, y: 6}
+  - Cell: {x: 15, y: 11}
     Kind: 2
-  - Cell: {x: 18, y: 7}
+  - Cell: {x: 15, y: 12}
     Kind: 2
-  - Cell: {x: 19, y: 5}
+  - Cell: {x: 16, y: 11}
     Kind: 2
-  - Cell: {x: 19, y: 6}
+  - Cell: {x: 16, y: 12}
     Kind: 2
-  - Cell: {x: 19, y: 7}
+  - Cell: {x: 16, y: 13}
     Kind: 2
-  - Cell: {x: 19, y: 8}
+  - Cell: {x: 17, y: 11}
     Kind: 2
-  - Cell: {x: 20, y: 5}
+  - Cell: {x: 17, y: 12}
     Kind: 2
-  - Cell: {x: 20, y: 6}
+  - Cell: {x: 17, y: 13}
     Kind: 2
-  - Cell: {x: 20, y: 7}
+  - Cell: {x: 18, y: 10}
     Kind: 2
-  - Cell: {x: 20, y: 8}
+  - Cell: {x: 18, y: 11}
     Kind: 2
-  - Cell: {x: 20, y: 9}
+  - Cell: {x: 18, y: 12}
     Kind: 2
-  - Cell: {x: 21, y: 5}
+  - Cell: {x: 18, y: 13}
     Kind: 2
-  - Cell: {x: 21, y: 6}
+  - Cell: {x: 5, y: 13}
     Kind: 2
-  - Cell: {x: 21, y: 7}
+  - Cell: {x: 6, y: 13}
     Kind: 2
-  - Cell: {x: 21, y: 8}
+  - Cell: {x: 6, y: 14}
     Kind: 2
-  - Cell: {x: 21, y: 9}
+  - Cell: {x: 7, y: 13}
     Kind: 2
-  - Cell: {x: 22, y: 5}
+  - Cell: {x: 8, y: 13}
+    Kind: 2
+  - Cell: {x: 22, y: 3}
+    Kind: 2
+  - Cell: {x: 22, y: 4}
     Kind: 2
   - Cell: {x: 22, y: 6}
     Kind: 2
-  - Cell: {x: 22, y: 7}
+  - Cell: {x: 23, y: 3}
     Kind: 2
-  - Cell: {x: 22, y: 8}
+  - Cell: {x: 23, y: 4}
     Kind: 2
-  - Cell: {x: 22, y: 9}
+  - Cell: {x: 23, y: 5}
     Kind: 2
-  - Cell: {x: 23, y: 6}
+  - Cell: {x: 24, y: 3}
     Kind: 2
-  - Cell: {x: 23, y: 7}
+  - Cell: {x: 24, y: 4}
     Kind: 2
-  - Cell: {x: 23, y: 8}
+  - Cell: {x: 24, y: 5}
     Kind: 2
-  - Cell: {x: 7, y: 0}
+  - Cell: {x: 25, y: 3}
     Kind: 2
-  - Cell: {x: 8, y: 0}
+  - Cell: {x: 25, y: 5}
     Kind: 2
-  - Cell: {x: 8, y: 1}
+  - Cell: {x: 25, y: 6}
     Kind: 2
-  - Cell: {x: 9, y: 0}
+  - Cell: {x: 23, y: -3}
     Kind: 2
-  - Cell: {x: 9, y: 1}
+  - Cell: {x: 24, y: -3}
     Kind: 2
-  - Cell: {x: 10, y: 1}
+  - Cell: {x: 24, y: -1}
     Kind: 2
-  - Cell: {x: 8, y: -2}
+  - Cell: {x: 24, y: 0}
     Kind: 2
-  - Cell: {x: 9, y: -4}
+  - Cell: {x: 24, y: 1}
     Kind: 2
-  - Cell: {x: 9, y: -3}
+  - Cell: {x: 24, y: 2}
     Kind: 2
-  - Cell: {x: 9, y: -2}
-    Kind: 2
-  - Cell: {x: 1, y: 5}
-    Kind: 1
-  - Cell: {x: 1, y: 6}
-    Kind: 1
-  - Cell: {x: 2, y: 5}
-    Kind: 1
-  - Cell: {x: 2, y: 6}
-    Kind: 1
-  - Cell: {x: 6, y: 9}
-    Kind: 1
-  - Cell: {x: 6, y: 10}
-    Kind: 1
-  - Cell: {x: 8, y: 9}
-    Kind: 1
-  - Cell: {x: 8, y: 10}
-    Kind: 1
-  - Cell: {x: 9, y: 9}
-    Kind: 1
-  - Cell: {x: 9, y: 10}
-    Kind: 1
-  - Cell: {x: 18, y: 13}
-    Kind: 1
-  - Cell: {x: 19, y: 14}
-    Kind: 1
-  - Cell: {x: 20, y: 13}
-    Kind: 1
-  - Cell: {x: 20, y: 14}
-    Kind: 1
-  - Cell: {x: 21, y: 13}
-    Kind: 1
-  - Cell: {x: 21, y: 14}
-    Kind: 1
-  - Cell: {x: 0, y: 0}
+  - Cell: {x: 0, y: 2}
     Kind: 1
   - Cell: {x: 1, y: 0}
     Kind: 1
+  - Cell: {x: 1, y: 1}
+    Kind: 1
+  - Cell: {x: 1, y: 2}
+    Kind: 1
   - Cell: {x: 2, y: 0}
     Kind: 1
-  - Cell: {x: 3, y: 0}
+  - Cell: {x: 2, y: 1}
+    Kind: 1
+  - Cell: {x: 22, y: 17}
+    Kind: 1
+  - Cell: {x: 23, y: 16}
+    Kind: 1
+  - Cell: {x: 23, y: 17}
+    Kind: 1
+  - Cell: {x: 24, y: 16}
+    Kind: 1
+  - Cell: {x: 24, y: 17}
+    Kind: 1
+  - Cell: {x: 25, y: 16}
+    Kind: 1
+  - Cell: {x: 26, y: 16}
+    Kind: 1
+  - Cell: {x: 27, y: 16}
+    Kind: 1
+  - Cell: {x: 0, y: 13}
+    Kind: 1
+  - Cell: {x: 30, y: 8}
+    Kind: 1
+  - Cell: {x: 30, y: 11}
+    Kind: 1
+  - Cell: {x: 31, y: 8}
+    Kind: 1
+  - Cell: {x: 31, y: 9}
+    Kind: 1
+  - Cell: {x: 31, y: 10}
+    Kind: 1
+  - Cell: {x: 31, y: 11}
     Kind: 1
   _mineCells:
-  - {x: 6, y: 5}
-  - {x: 18, y: 11}
-  - {x: 17, y: 5}
+  - {x: 4, y: 3}
+  - {x: 19, y: 3}
+  - {x: 28, y: 15}
   _mineStock: 140
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
   _nests:
-  - Cell: {x: 20, y: 7}
+  - Cell: {x: 15, y: 12}
     Element: 2
-  - Cell: {x: 18, y: 7}
+  - Cell: {x: 6, y: 13}
     Element: 2
   _terrainAlbedo: {fileID: 2800000, guid: 03ecff6002a3a0445a034addfe63c6a0, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 4186c2e67c2a58249b7e856a4a2ceef8, type: 3}
@@ -189,7 +222,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
   - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
   - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
-  _startingMoney: 150
+  _startingMoney: 200
   _baseHealth: 20
   _difficultyWaves:
   - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
@@ -214,6 +247,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 830892b983bfef54499de5f9712119dd, type: 2}
     - {fileID: 11400000, guid: 79712901b3191634088bea23c9f93642, type: 2}
     - {fileID: 11400000, guid: a1f562a795abf7d47ab9f96009844617, type: 2}
+    - {fileID: 11400000, guid: 8ca6ea9b2894840428ba6deee1ab7804, type: 2}
+    - {fileID: 11400000, guid: b6f5a4b7c723d1f44b14f430feb5cb1c, type: 2}
+    - {fileID: 11400000, guid: a0f8d227ec4a0294fb1c9ddf8ac5ac5b, type: 2}
+    - {fileID: 11400000, guid: f62041c3b45f38242870395b27e24443, type: 2}
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - {fileID: 11400000, guid: 46d097eb2d0ead24781c823528e6b42a, type: 2}
@@ -236,6 +273,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3ba004b1770347f4dae7d7a04472fd63, type: 2}
     - {fileID: 11400000, guid: 0b8e57aace84cfd4e896ae5080bb540c, type: 2}
     - {fileID: 11400000, guid: ca19336cada757246b54b2cff8c634a0, type: 2}
+    - {fileID: 11400000, guid: 3253771dcc3b77f4ba4b6680ba120514, type: 2}
+    - {fileID: 11400000, guid: cc2cd5163451813418adb6a9dba20515, type: 2}
+    - {fileID: 11400000, guid: 9e348eee69176bf4fb5b041181e9fbe2, type: 2}
+    - {fileID: 11400000, guid: 825891c0d3139014d81fb7ec95eecf4c, type: 2}
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - {fileID: 11400000, guid: 598d701d7ab51ac49a1bf0a01ebf3510, type: 2}
@@ -258,6 +299,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: f0e13c1b987fe4e49aeb4f353034b727, type: 2}
     - {fileID: 11400000, guid: d1f3a1f4b159094478dd9e8bc51f6a14, type: 2}
     - {fileID: 11400000, guid: 67deaccc29a008042a042913cb5e24f5, type: 2}
+    - {fileID: 11400000, guid: 5a374f8fd9269cf4f9c38bb2e7a07069, type: 2}
+    - {fileID: 11400000, guid: 3c07f8d30643480488b647244f002441, type: 2}
+    - {fileID: 11400000, guid: 98f78b0c972793e4fb66e9b6f53f2937, type: 2}
+    - {fileID: 11400000, guid: e327e09feede63541938dd91942970d5, type: 2}
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - {fileID: 11400000, guid: 8435dce0bb3d94444b43c521f7b832b2, type: 2}
@@ -280,6 +325,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a50889f6e6659084a85e4043ca78e880, type: 2}
     - {fileID: 11400000, guid: 2021e51539e223b419f3761731a7496e, type: 2}
     - {fileID: 11400000, guid: 50edc8b3a278a31448937d8eb9c2629a, type: 2}
+    - {fileID: 11400000, guid: 91b3649ba84bb2b4481bf0c356276983, type: 2}
+    - {fileID: 11400000, guid: 0e6357d43f29aec449d969bd9c51d451, type: 2}
+    - {fileID: 11400000, guid: a8ff81f1dff35554c985458ddf85d895, type: 2}
+    - {fileID: 11400000, guid: 8dbac7eb22935e94fbca0e7e32dc3ae2, type: 2}
   _reward:
     ResearchPoints: 10
     PowerCurrency: 4

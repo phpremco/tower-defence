@@ -305,22 +305,23 @@ namespace Game.Editor
                         Ambience = AmbienceKind.Forest,
                         Plant = new Color(0.14f, 0.52f, 0.42f),
                     },
-                    // Two roads meet on a square in the woods, then share the way east to the base.
-                    Size = new Vector2Int(26, 14),
+                    // The main road winds through the woods in three switchbacks; a second road comes in from the
+                    // south-west and meets it on a clearing before the last stretch east to the base.
+                    Size = new Vector2Int(38, 20),
                     RoadWidth = 2,
-                    Road = Cells(0, 12, 8, 12, 8, 8, 16, 8, 16, 3, 25, 3),
-                    SecondRoad = Cells(0, 1, 8, 1, 8, 8),
-                    Plazas = Rect(7, 7, 10, 10),
-                    NorthAir = Cells(0, 13, 25, 3),
-                    SouthAir = Cells(0, 0, 13, 7, 25, 3),
-                    BlockadeCells = Cells(12, 8, 16, 5),
+                    Road = Cells(0, 18, 10, 18, 10, 13, 2, 13, 2, 10, 16, 10, 16, 15, 26, 15, 26, 8, 26, 5, 37, 5),
+                    SecondRoad = Cells(0, 2, 21, 2, 21, 8, 26, 8),
+                    Plazas = Rect(23, 7, 27, 9),
+                    NorthAir = Cells(0, 19, 20, 17, 37, 5),
+                    SouthAir = Cells(0, 0, 18, 4, 37, 5),
+                    BlockadeCells = Cells(6, 18, 8, 10, 30, 5, 10, 2),
                     BlockedSeed = 21,
                     Terrain = Terrain(
-                        Area(TerrainKind.Water, 21, 13, 22, 17), Area(TerrainKind.Water, 20, 10, 21, 12), Area(TerrainKind.Water, 19, 8, 20, 9),
-                        Area(TerrainKind.Water, 18, 5, 19, 7), Area(TerrainKind.Water, 3, 5, 5, 6),
-                        Area(TerrainKind.Raised, 0, 8, 3, 10), Area(TerrainKind.Raised, 11, 10, 14, 12), Area(TerrainKind.Raised, 21, 5, 25, 7),
-                        Area(TerrainKind.Raised, 12, 0, 18, 1)),
-                    Money = 180,
+                        Area(TerrainKind.Water, 4, 15, 7, 16), Area(TerrainKind.Water, 12, 14, 14, 17), Area(TerrainKind.Water, 13, 18, 14, 22),
+                        Area(TerrainKind.Water, 29, 9, 33, 12), Area(TerrainKind.Water, 34, 11, 38, 13),
+                        Area(TerrainKind.Raised, 0, 15, 2, 16), Area(TerrainKind.Raised, 18, 11, 24, 13), Area(TerrainKind.Raised, 30, 0, 36, 1),
+                        Area(TerrainKind.Raised, 5, 5, 9, 7)),
+                    Money = 240,
                     BaseHealth = 20,
                     HealthScale = 1.05f,
                     RewardTower = roster.Cryo,
@@ -332,9 +333,9 @@ namespace Game.Editor
                     Recipes = new CombineRecipe[0],
                     // Rollers from the third wave, pool creatures out of the forest ponds from the fourth; the boss surfaces from a pond.
                     Entrance = EntranceKind.Pool,
-                    EntranceCell = new Vector2Int(19, 8),
+                    EntranceCell = new Vector2Int(13, 15),
                     // Moss bats roost in hollow trees on both sides of the woods; tide bats rise from the ponds.
-                    Nests = new[] { Nest(Element.Wood, 5, 10), Nest(Element.Wood, 12, 10), Nest(Element.Water, 20, 11), Nest(Element.Water, 18, 6) },
+                    Nests = new[] { Nest(Element.Wood, 4, 6), Nest(Element.Wood, 18, 12), Nest(Element.Water, 5, 15), Nest(Element.Water, 13, 15) },
                 },
                 new LevelSpec
                 {
@@ -369,20 +370,20 @@ namespace Game.Editor
                     },
                     // A serpentine through the caves. The second row of a road lies to the right of travel, so the
                     // legs that turn clockwise sit five rows apart and the others three, leaving two build rows each.
-                    Size = new Vector2Int(22, 17),
+                    Size = new Vector2Int(34, 24),
                     RoadWidth = 2,
-                    Road = Cells(0, 15, 18, 15, 18, 10, 3, 10, 3, 7, 18, 7, 18, 2, 21, 2),
+                    Road = Cells(0, 22, 26, 22, 26, 17, 4, 17, 4, 14, 28, 14, 28, 9, 6, 9, 6, 6, 24, 6, 24, 2, 33, 2),
                     SecondRoad = null,
-                    NorthAir = Cells(0, 16, 21, 2),
-                    SouthAir = Cells(0, 0, 11, 8, 21, 2),
-                    BlockadeCells = Cells(8, 10, 12, 7),
+                    NorthAir = Cells(0, 23, 17, 20, 33, 2),
+                    SouthAir = Cells(0, 0, 14, 4, 33, 2),
+                    BlockadeCells = Cells(12, 22, 14, 14, 16, 9, 30, 2),
                     BlockedSeed = 33,
                     Terrain = Terrain(
-                        Area(TerrainKind.Lava, 5, 12, 8, 13), Area(TerrainKind.Lava, 13, 12, 16, 13), Area(TerrainKind.Lava, 4, 8, 6, 9),
-                        Area(TerrainKind.Lava, 4, 0, 12, 0), Area(TerrainKind.Lava, 20, 7, 26, 13),
-                        Area(TerrainKind.Raised, 0, 12, 1, 13), Area(TerrainKind.Raised, 0, 4, 1, 5), Area(TerrainKind.Raised, 19, 4, 20, 5),
-                        Area(TerrainKind.Raised, 10, 8, 13, 9)),
-                    Money = 210,
+                        Area(TerrainKind.Lava, 8, 19, 12, 20), Area(TerrainKind.Lava, 18, 11, 21, 12), Area(TerrainKind.Lava, 0, 0, 3, 3),
+                        Area(TerrainKind.Lava, 29, 6, 33, 12), Area(TerrainKind.Lava, 34, 4, 36, 14), Area(TerrainKind.Lava, 10, 0, 16, 1),
+                        Area(TerrainKind.Raised, 0, 19, 2, 20), Area(TerrainKind.Raised, 30, 16, 33, 20), Area(TerrainKind.Raised, 8, 11, 11, 12),
+                        Area(TerrainKind.Raised, 14, 3, 17, 4)),
+                    Money = 280,
                     BaseHealth = 20,
                     HealthScale = 1.3f,
                     RewardTower = roster.Laser,
@@ -394,9 +395,9 @@ namespace Game.Editor
                     Recipes = new CombineRecipe[0],
                     // No final boss here, but a mind-boss climbs out of the lava halfway through the level.
                     Entrance = EntranceKind.Pool,
-                    EntranceCell = new Vector2Int(6, 12),
+                    EntranceCell = new Vector2Int(10, 19),
                     // Ember bats pour out of the lava vents.
-                    Nests = new[] { Nest(Element.Fire, 6, 12), Nest(Element.Fire, 15, 12), Nest(Element.Fire, 21, 10) },
+                    Nests = new[] { Nest(Element.Fire, 9, 19), Nest(Element.Fire, 19, 12) },
                 },
                 new LevelSpec
                 {
@@ -429,22 +430,24 @@ namespace Game.Editor
                         Ambience = AmbienceKind.Ruins,
                         Plant = new Color(0.48f, 0.5f, 0.2f),
                     },
-                    // Two roads from the west meet on the old market square, then leave together towards the base.
-                    Size = new Vector2Int(28, 16),
+                    // The main road snakes through the whole ruin: north wall, the old streets, round the cistern and
+                    // back west before the long avenue to the base; a second road from the south-west meets it on
+                    // the market square.
+                    Size = new Vector2Int(40, 22),
                     RoadWidth = 2,
-                    Road = Cells(0, 13, 9, 13, 9, 7, 13, 7, 13, 3, 27, 3),
-                    SecondRoad = Cells(0, 1, 9, 1, 9, 7),
-                    Plazas = Rect(8, 6, 11, 9),
-                    NorthAir = Cells(0, 15, 20, 10, 27, 3),
-                    SouthAir = Cells(14, 0, 27, 3),
-                    BlockadeCells = Cells(5, 13, 19, 3, 5, 1),
+                    Road = Cells(0, 20, 14, 20, 14, 15, 3, 15, 3, 12, 20, 12, 20, 17, 30, 17, 30, 8, 12, 8, 12, 6, 12, 4, 39, 4),
+                    SecondRoad = Cells(0, 2, 5, 2, 5, 6, 12, 6),
+                    Plazas = Rect(9, 5, 13, 8),
+                    NorthAir = Cells(0, 21, 22, 19, 39, 4),
+                    SouthAir = Cells(16, 0, 28, 2, 39, 4),
+                    BlockadeCells = Cells(7, 20, 10, 12, 25, 17, 33, 4, 3, 2),
                     BlockedSeed = 45,
                     Terrain = Terrain(
-                        Area(TerrainKind.Quicksand, 20, 6, 23, 9), Area(TerrainKind.Quicksand, 2, 4, 4, 6), Area(TerrainKind.Quicksand, 24, 13, 26, 14), Area(TerrainKind.Quicksand, 16, 13, 18, 14),
-                        Area(TerrainKind.Water, 22, 15, 26, 17),
-                        Area(TerrainKind.Raised, 15, 9, 17, 11), Area(TerrainKind.Raised, 0, 14, 5, 15), Area(TerrainKind.Raised, 24, 7, 27, 12),
-                        Area(TerrainKind.Raised, 1, 3, 6, 4)),
-                    Money = 240,
+                        Area(TerrainKind.Quicksand, 6, 17, 9, 18), Area(TerrainKind.Quicksand, 16, 13, 18, 14), Area(TerrainKind.Quicksand, 34, 6, 37, 7),
+                        Area(TerrainKind.Water, 22, 10, 27, 14), Area(TerrainKind.Water, 36, 10, 40, 14),
+                        Area(TerrainKind.Raised, 0, 17, 2, 18), Area(TerrainKind.Raised, 33, 9, 35, 14), Area(TerrainKind.Raised, 16, 0, 20, 1),
+                        Area(TerrainKind.Raised, 24, 0, 28, 1), Area(TerrainKind.Raised, 0, 8, 1, 10)),
+                    Money = 320,
                     BaseHealth = 20,
                     HealthScale = 1.5f,
                     RewardTower = roster.Rocket,
@@ -456,10 +459,10 @@ namespace Game.Editor
                     Recipes = new CombineRecipe[0],
                     // Diggers out of the quicksand, rollers, and eels from the cistern; the fortress breaks out of the ground between the roads.
                     Entrance = EntranceKind.Ground,
-                    EntranceCell = new Vector2Int(6, 10),
+                    EntranceCell = new Vector2Int(8, 10),
                     // Dust bats burrow out of the sand drifts and tide bats out of the old cistern.
                     // Only the drifts in the first half of the siege hold nests; the sand by the base stays quiet.
-                    Nests = new[] { Nest(Element.Sand, 3, 5), Nest(Element.Sand, 17, 13) },
+                    Nests = new[] { Nest(Element.Sand, 8, 17), Nest(Element.Sand, 17, 13), Nest(Element.Water, 22, 14) },
                 },
                 new LevelSpec
                 {
@@ -492,21 +495,23 @@ namespace Game.Editor
                         Ambience = AmbienceKind.Hive,
                         Plant = new Color(0.52f, 0.14f, 0.32f),
                     },
-                    // Two roads pour onto the hive forecourt, a wide open square, before the last stretch to the base.
-                    Size = new Vector2Int(24, 16),
+                    // The north road winds down through the hive in switchbacks, the south road comes straight at the
+                    // forecourt; both pour onto the square before the last stretch to the base.
+                    Size = new Vector2Int(36, 22),
                     RoadWidth = 2,
-                    Road = Cells(0, 13, 11, 13, 11, 7, 23, 7),
-                    SecondRoad = Cells(0, 2, 11, 2, 11, 7),
-                    Plazas = Rect(9, 5, 13, 9),
-                    NorthAir = Cells(0, 15, 23, 7),
-                    SouthAir = Cells(0, 0, 23, 7),
-                    BlockadeCells = Cells(6, 13, 6, 2, 18, 7),
+                    Road = Cells(0, 20, 14, 20, 14, 15, 4, 15, 4, 12, 20, 12, 20, 7, 35, 7),
+                    SecondRoad = Cells(0, 2, 10, 2, 10, 7, 20, 7),
+                    Plazas = Rect(17, 5, 22, 9),
+                    NorthAir = Cells(0, 21, 18, 18, 35, 7),
+                    SouthAir = Cells(0, 0, 16, 3, 35, 7),
+                    BlockadeCells = Cells(7, 20, 9, 12, 27, 7, 5, 2),
                     BlockedSeed = 57,
                     Terrain = Terrain(
-                        Area(TerrainKind.Water, 18, 11, 23, 14), Area(TerrainKind.Water, 15, 0, 21, 3), Area(TerrainKind.Water, 21, 15, 23, 18),
-                        Area(TerrainKind.Quicksand, 2, 6, 3, 7), Area(TerrainKind.Quicksand, 6, 4, 7, 5),
-                        Area(TerrainKind.Raised, 0, 8, 1, 9), Area(TerrainKind.Raised, 14, 10, 16, 11), Area(TerrainKind.Raised, 5, 10, 8, 11)),
-                    Money = 270,
+                        Area(TerrainKind.Water, 16, 17, 19, 20), Area(TerrainKind.Water, 0, 8, 2, 10), Area(TerrainKind.Water, 24, 10, 30, 14), Area(TerrainKind.Water, 31, 14, 36, 16),
+                        Area(TerrainKind.Quicksand, 6, 8, 8, 9), Area(TerrainKind.Quicksand, 14, 2, 16, 4), Area(TerrainKind.Quicksand, 30, 0, 33, 2),
+                        Area(TerrainKind.Raised, 0, 17, 2, 18), Area(TerrainKind.Raised, 23, 15, 28, 17), Area(TerrainKind.Raised, 24, 1, 28, 3),
+                        Area(TerrainKind.Raised, 32, 10, 35, 12)),
+                    Money = 360,
                     BaseHealth = 20,
                     HealthScale = 1.4f,
                     RewardTower = roster.Tesla,
@@ -519,7 +524,7 @@ namespace Game.Editor
                     // Everything at once, a fortress halfway, and the queen herself through the hive mouth.
                     Entrance = EntranceKind.Gate,
                     // The hive keeps its own bats: in the drowned corner and in the sand pits.
-                    Nests = new[] { Nest(Element.Water, 15, 1), Nest(Element.Water, 14, 2), Nest(Element.Sand, 2, 6), Nest(Element.Sand, 6, 4) },
+                    Nests = new[] { Nest(Element.Water, 17, 18), Nest(Element.Water, 1, 9), Nest(Element.Sand, 7, 8), Nest(Element.Sand, 15, 3) },
                 },
             };
 

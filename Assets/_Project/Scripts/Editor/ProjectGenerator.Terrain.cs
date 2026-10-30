@@ -16,9 +16,10 @@ namespace Game.Editor
     {
         private const float BlockedFraction = 0.13f;
         // A three-leg serpentine on the plain. Roads are two cells wide, with the second row to the right of travel.
-        private static readonly Vector2Int LandingSize = new Vector2Int(22, 15);
+        private static readonly Vector2Int LandingSize = new Vector2Int(32, 18);
         private const int LandingRoadWidth = 2;
-        private static readonly Vector2Int[] LandingRoad = Cells(0, 12, 16, 12, 16, 7, 4, 7, 4, 3, 21, 3);
+        // A long serpentine across the plain: three switchbacks before the road climbs north and drops to the lander.
+        private static readonly Vector2Int[] LandingRoad = Cells(0, 16, 13, 16, 13, 11, 3, 11, 3, 8, 20, 8, 20, 13, 28, 13, 28, 3, 31, 3);
 
         // Rock formations that keep out of the way: never on or next to the road (so towers stay possible there),
         // never on terrain patches or blockades. The same seed always gives the same cells.

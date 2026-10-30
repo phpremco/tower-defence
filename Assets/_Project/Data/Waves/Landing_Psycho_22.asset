@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8951df719d65fa4eaa1352b56ce5f1e, type: 3}
+  m_Name: Landing_Psycho_22
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
+  _startDelay: 8
+  _spawnJitter: 0.45
+  _groups:
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 0.42000002
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 0.84000003
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 4
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 1.6800001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 3.3600001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 3.7800002
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 4.2000003
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 4
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 5.0400004
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 6.7200003
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 7.1400003
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 7.5600004
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 4
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 8.400001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 10.080001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 10.500001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 10.920001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.21000001
+    Delay: 0
+    Stagger: 11.760001
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 3
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 2.16
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 2.88
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 3
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 4.32
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 6.4800005
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 7.200001
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 0.36
+    Delay: 2.5
+    Stagger: 8.640001
