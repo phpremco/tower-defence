@@ -21,7 +21,6 @@ namespace Game.UI
         private const float ReferenceWidth = 1920f;
         private const int FontSize = 30;
         private const int SmallFontSize = 24;
-        private const int SpeedLabelSize = 22;
         private const float Margin = 20f;
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
@@ -67,7 +66,6 @@ namespace Game.UI
         private int _heroSecondsShown = -1;
         private Text _moneyText;
         private Text _statusText;
-        private Text _speedLabel;
         private Image _speedIcon;
         private Font _font;
         private TowerButton[] _towerButtons;
@@ -225,8 +223,6 @@ namespace Game.UI
 
             Button speed = AddIcon(row, IconType.Speed, _time.CycleSpeed);
             _speedIcon = speed.transform.Find("Icon").GetComponent<Image>();
-            _speedLabel = CreateText(speed.GetComponent<RectTransform>(), "SpeedLabel", TextAnchor.LowerRight, new Vector2(1f, 0f), new Vector2(2f, -4f), SpeedLabelSize);
-            _speedLabel.rectTransform.sizeDelta = new Vector2(IconSize, SpeedLabelSize + 4f);
             AddIcon(row, IconType.Pause, _time.TogglePause);
             if (_context.SkipWaveAllowed)
             {
@@ -289,6 +285,9 @@ namespace Game.UI
                 PathObjectDefinition definition = objects[i];
                 Button button = Card(bar, buttonWidth, definition.DisplayName, () => OnPathObjectClicked(definition), out Image picture, out Text label);
                 _pathObjectButtons[i] = new PathObjectButton { Definition = definition, Fill = button.GetComponent<Image>(), Picture = picture, Label = label };
+                // The badge says what the street weapon does: snowflake, trap, blast, wheel, buggy or net.
+                PathObjectBadge.For(definition.Effect, out IconType effectIcon, out Color effectColour);
+                Badge(button.transform, effectIcon, effectColour, 0);
                 if (definition.Look != PathObjectLook.None)
                 {
                     ModelIconRenderer.Request(definition, stage => PathObjectModels.Build(stage, definition), sprite => ShowPicture(picture, sprite));
@@ -434,12 +433,12 @@ namespace Game.UI
             RefreshPathObjects();
         }
 
-        // The speed icon carries the current factor, and lights up whenever the game runs faster than normal.
+        // The speed icon shows one, two or three chevrons for the current factor, and lights up when the game runs fast.
         private void RefreshSpeed()
         {
-            bool fast = _time != null && _time.CurrentSpeed > 1f;
-            _speedLabel.text = _time == null || _context.Paused ? string.Empty : $"x{_time.CurrentSpeed:0}";
-            _speedLabel.color = fast ? SpeedActive : TextColor;
+            float factor = _time == null ? 1f : Mathf.Max(1f, _time.CurrentSpeed);
+            bool fast = factor > 1f;
+            _speedIcon.sprite = IconFactory.Get(factor >= 3f ? IconType.SpeedTriple : fast ? IconType.SpeedDouble : IconType.Speed);
             _speedIcon.color = fast ? SpeedActive : Color.white;
         }
 

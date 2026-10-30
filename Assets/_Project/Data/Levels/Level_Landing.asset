@@ -223,7 +223,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
   - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
   _startingMoney: 200
-  _baseHealth: 20
+  _baseHealth: 600
   _difficultyWaves:
   - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
     Waves:

@@ -775,3 +775,64 @@ wrecked, there is no money, and scrapping takes two clicks.
   - Checked with 12x close-ups (`zoom_size.txt` is a zoom factor, 10 to 12 frames the hero): head in the collar ring,
     textures visible on helmet, suit and gear, legs staggered at rest, mid-run frames with a lean and pumping arms.
     110 EditMode tests pass; nothing committed. New helper `Tools/PlayTest/hero_to_first.cs`.
+
+## Base under siege, enemy clean-up, bars (2026-10-30, late)
+- **Boss ring bug and its root cause**: a boss's pulse ring lives beside the pooled boss and fades in its
+  LateUpdate; when the boss died mid-fade the ring stayed on the ground. Remco: this is a recurring class of bug
+  (sounds did the same), so every view now registers what it hangs beside an enemy in an `EnemyAttachments` list
+  (particles, beams, rings, bolts) and clears it on the new `Enemy.Deactivated` event, raised from `Deactivate()`
+  whenever an enemy leaves the field, killed or not. `EnemyView` and `BossAbilityView` use it; `EnemyBoltView`
+  gained `Cancel()`. Rule for new work: anything created for an enemy outside its own hierarchy goes through
+  `EnemyAttachments`, and any per-enemy sound loop must stop on `Deactivated`.
+- **The base has hit points and is attacked** (Remco wants the Sentinel-style last stand instead of a leak
+  counter): `BaseStructure` (replaces `BasePost`) is an `IStructure` and `IGuardable` at the end of the main road,
+  registered in the structure registry, so walkers stop in front of it and hit it like a gate; a flyer that
+  reaches the end of its route besieges it too (`Enemy.IsBesiegingEnd`) instead of slipping through. Only with
+  the base down does `ReachedEnd` fire. The hero at the base post absorbs its guard share, drones repair it like
+  any structure. Base health is 600 in data (`ProjectGenerator.BaseHealth`), the permanent "Base armour" upgrade
+  adds 100 per level (was 20 lives and +5). The base-hit alarm and camera kick are throttled to one per 1.5 s.
+  Tests: `BaseStructureTests`, two new `EnemyBehaviourTests`. Checked in play: a pack dropped past the last gate
+  stands at the base and takes it from 800 to 680 in a few seconds while the HUD counts down.
+- **Health bars**: enemy bars are thinner (0.02) and scale with the creature's size up to 1.6 wide, so the boss
+  shows one too (it had a grunt-sized line lost above a huge body); the hero bar is 0.8 by 0.04.
+- **HUD speed**: one, two or three chevrons instead of the "x1/x2/x3" text the font rendered like an H.
+- Helpers: `Tools/PlayTest/teleport_to_base.cs`, `damage_enemies.cs` (`damage_arg.txt`), `base_probe.cs`,
+  `base_layout.cs`, `speed_cycle.cs`, `hero_to_first.cs`. 114 EditMode tests pass.
+
+## Landscape to the screen edge, play zoom and recon (2026-10-30, night)
+- **No more void**: `TerrainField` sizes its margins per axis from `FixedCameraRig.GroundFootprint` (the ground the
+  fully zoomed-out view covers on a 2.4:1 screen, at least 9 cells), the painter only dims the far land (40%)
+  instead of fading to black, and the prop scatter runs to the landscape edge with a thinner deep ring
+  (`OuterChanceDeep`). Landing: margins 23 by 19 cells, about 880 props.
+- **Play zoom**: `CameraPanZoom` starts at the zoom where half the screen height is 7 world units (a hero of about
+  fifty pixels on 720p), focused on the hero; zoom out still reaches the whole field (0.9), zoom in to 4.5.
+  Mouse at the screen edge pans (only while the mouse moved in the last 3 s, so a parked mouse never drags the
+  view; the HUD suppresses it). `LevelContext.CameraFocusRequested` makes the camera glide to the hero's post
+  whenever the hero is sent there (`HeroController.SendHero`).
+- **Recon fly-over** (`ReconView`, only when the session carries the briefing, like `BriefingView`): after Deploy
+  the whole field is shown with time held for 4.5 s; a flat chevron with a light pillar marks every spawn gate
+  pointing the way the enemies walk, every flight route is lit, and a scout light runs each ground route to the
+  base leaving the road lit. Confirm or cancel skips. Then the camera glides in to the hero (zoom on a log scale)
+  and time runs. Helpers: `start_level_briefing.cs`, `deploy.cs`, `footprint_probe.cs`, `scene_stats.cs`.
+- **Defence-zone rule** (`LevelValidator.CheckDefenceZones`): the game is played one screen at a time, so every
+  gate must have at least 8 build cells within a play-zoomed screen (85% of a 16:9 view at `PlayOrthoSize`,
+  about 21 by 16 cells), every lane (ground and air) must pass through some gate's screen, and any two roads
+  must share a gate's screen so one defence covers both. All five maps pass as they are; the rule now guards
+  every future map. 114 EditMode tests pass.
+- **Base panel** (`BaseMenuView`, kept its name): the drone shop is now a small panel in the bottom-right corner,
+  always in view above the bottom bar: one card per drone with its picture, price and count, greyed when full or
+  unaffordable. The doorstep menu over the base is gone; confirming on the base doorstep now gives the panel the
+  gamepad focus (`LevelContext.BaseMenuOpen`), the stick walks the cards, A buys, B leaves. Help text updated.
+- **Recon markers**: Remco found the big chevrons ugly; the spawn gates now pulse soft sonar rings (three per gate,
+  staggered, fading as they swell) in the route colour; the scout lights and lit flight routes stay.
+- **Loadout of street weapons** (`LoadoutPanelView`, opened by `WorldMapScreen` after the difficulty): every
+  street weapon any level offers (union over the campaign) as a row in a scrolling list: picture, name, effect
+  badge and word (`PathObjectEffect`: Slow, Trap, Blast, Roll, Patrol, AirNet, with `PathObjectBadge` giving icon
+  and colour, also on the HUD cards), price and a description (`PathObjectDefinition.Description`, filled by the
+  generator). At most two are taken (`LoadoutSize`), ticked in the list; they are still bought with money in the
+  level. The choice is saved (`ProgressData.LoadoutIds`, `ProgressService.SetLoadout`) and offered again. The
+  session carries it (`LevelSession.Loadout`); tools and tests without a loadout get the level's own list.
+  Gamepad: the stick walks the rows and the list scrolls along, A toggles, Deploy and Back below. Camera: a
+  pointer reading exactly (0, 0) means no mouse and never edge-pans (it dragged the view into a corner after the
+  recon). Tests: `Loadout_IsSavedAndOfferedAgain`, `EveryStreetWeapon_ExplainsItself`; 116 EditMode tests pass.
+  Open: the loadout offers all six weapons; gating them behind level rewards (UnlockTable) is still to come.

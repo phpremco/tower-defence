@@ -17,6 +17,7 @@ namespace Game.Levels
         private const float BlockedScaleSpread = 0.45f;
         private const float OuterChanceNear = 0.55f;
         private const float OuterChanceFar = 0.4f;
+        private const float OuterChanceDeep = 0.18f;
         private const float OuterScaleGrowth = 0.07f;
         private const float TuftChance = 0.2f;
         private const float TuftScale = 0.4f;
@@ -25,7 +26,6 @@ namespace Game.Levels
         private const int SpireChancePercent = 9;
         private const float LiquidAvoid = 0.12f;
         private const float SinkIntoGround = 0.03f;
-        private const int OuterRingCells = TerrainField.MarginCells - 1;
         private const float RubbleChance = 0.55f;
         private const float RubbleOffsetCells = 0.47f;
         private const float RubbleScaleMin = 0.28f;
@@ -94,9 +94,12 @@ namespace Game.Levels
 
             int width = level.GridSize.x;
             int height = level.GridSize.y;
-            for (int x = -OuterRingCells; x < width + OuterRingCells; x++)
+            // The scatter reaches as far as the landscape does, less the last cell so nothing stands on its edge.
+            int ringX = field.MarginCellsX - 1;
+            int ringZ = field.MarginCellsZ - 1;
+            for (int x = -ringX; x < width + ringX; x++)
             {
-                for (int y = -OuterRingCells; y < height + OuterRingCells; y++)
+                for (int y = -ringZ; y < height + ringZ; y++)
                 {
                     var cell = new Vector2Int(x, y);
                     bool inside = x >= 0 && y >= 0 && x < width && y < height;
@@ -111,7 +114,7 @@ namespace Game.Levels
                     }
 
                     float distance = field.OutsideAt(centre.x, centre.z);
-                    float chance = distance < 3f ? OuterChanceNear : OuterChanceFar;
+                    float chance = distance < 3f ? OuterChanceNear : distance < TerrainField.MinMarginCells ? OuterChanceFar : OuterChanceDeep;
                     if ((hash % 1000) / 1000f > chance || terrain.IsLiquid(cell))
                     {
                         continue;

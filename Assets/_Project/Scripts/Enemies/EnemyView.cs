@@ -16,7 +16,8 @@ namespace Game.Enemies
     public sealed class EnemyView : MonoBehaviour
     {
         private const float BarWidth = 0.6f;
-        private const float BarHeight = 0.035f;
+        private const float BarHeight = 0.02f;
+        private const float MaxBarWidth = 1.6f;
         private const float BarOffsetY = 1.0f;
         private const float BarEmission = 1.5f;
         private const float BodyEmission = 0.9f;
@@ -216,6 +217,8 @@ namespace Game.Enemies
         private ParticleSystem _rush;
         private ParticleSystem _impact;
         private EnemyBoltView[] _bolts;
+        private readonly EnemyAttachments _attachments = new EnemyAttachments();
+        private float _barWidth = BarWidth;
         private int _nextBolt;
         private readonly List<Rig> _legs = new List<Rig>();
         private readonly List<Rig> _mandibles = new List<Rig>();
@@ -251,6 +254,7 @@ namespace Game.Enemies
             _enemy.Initialized += OnInitialized;
             _enemy.Attacked += OnAttacked;
             _enemy.Killed += OnKilled;
+            _enemy.Deactivated += OnDeactivated;
         }
 
         private void OnDestroy()
@@ -258,6 +262,7 @@ namespace Game.Enemies
             _enemy.Initialized -= OnInitialized;
             _enemy.Attacked -= OnAttacked;
             _enemy.Killed -= OnKilled;
+            _enemy.Deactivated -= OnDeactivated;
         }
 
         private void LateUpdate()
@@ -367,7 +372,7 @@ namespace Game.Enemies
         {
             if (_emergence == null)
             {
-                _emergence = ParticleKit.Create(transform.parent, "Emergence", Vector3.zero, Color.white, 0.5f, 1.1f, 0.05f, 0.14f, 1f, 3f, 0.9f, EmergeBurst * BossEmergeMultiplier * 2, 0.35f);
+                _emergence = _attachments.Track(ParticleKit.Create(transform.parent, "Emergence", Vector3.zero, Color.white, 0.5f, 1.1f, 0.05f, 0.14f, 1f, 3f, 0.9f, EmergeBurst * BossEmergeMultiplier * 2, 0.35f));
             }
 
             Color color;
@@ -473,28 +478,28 @@ namespace Game.Enemies
             {
                 Color ember = definition.Color * 1.6f;
                 ember.a = 1f;
-                _embers = ParticleKit.Create(transform, "Embers", Vector3.up * 0.2f, ember, 0.4f, 0.9f, 0.03f, 0.07f, 0.2f, 0.8f, -0.05f, 60, 0.25f);
+                _embers = _attachments.Track(ParticleKit.Create(transform, "Embers", Vector3.up * 0.2f, ember, 0.4f, 0.9f, 0.03f, 0.07f, 0.2f, 0.8f, -0.05f, 60, 0.25f));
             }
 
             if (_bleeds)
             {
                 Color blood = definition.BloodColor * 1.5f;
                 blood.a = 1f;
-                _drips = ParticleKit.Create(transform.parent, "Drips", Vector3.zero, blood, 0.5f, 0.9f, 0.04f, 0.08f, 0.4f, 1.2f, 1.5f, DripBurst * 6, 0.15f);
+                _drips = _attachments.Track(ParticleKit.Create(transform.parent, "Drips", Vector3.zero, blood, 0.5f, 0.9f, 0.04f, 0.08f, 0.4f, 1.2f, 1.5f, DripBurst * 6, 0.15f));
             }
 
             Color rush = definition.AccentColor * 1.4f;
             rush.a = 1f;
-            _rush = ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f);
+            _rush = _attachments.Track(ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
-            _impact = ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f);
+            _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
 
             if (definition.AttackStyle == AttackStyle.Bolt || definition.AttackStyle == AttackStyle.Sting)
             {
                 _bolts = new EnemyBoltView[BoltCount];
                 for (int i = 0; i < BoltCount; i++)
                 {
-                    _bolts[i] = EnemyBoltView.Create(transform.parent, definition.AccentColor);
+                    _bolts[i] = _attachments.Track(EnemyBoltView.Create(transform.parent, definition.AccentColor));
                 }
             }
 
@@ -1031,10 +1036,12 @@ namespace Game.Enemies
             }
 
             float barY = _procedural ? _barHeight : BarOffsetY;
-            GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BarColor, transform, new Vector3(0f, barY, 0f), new Vector3(BarWidth, BarHeight, BarHeight), BarEmission);
+            // A big creature gets a wider line, so a boss shows its health as plainly as a grunt does.
+            _barWidth = Mathf.Clamp(BarWidth * (_procedural ? _creatureScale : definition.Scale), BarWidth, MaxBarWidth);
+            GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BarColor, transform, new Vector3(0f, barY, 0f), new Vector3(_barWidth, BarHeight, BarHeight), BarEmission);
             _bar = bar.transform;
             bar.SetActive(false);
-            GameObject armorBar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, ArmorBarColor, transform, new Vector3(0f, barY + BarHeight * 1.6f, 0f), new Vector3(BarWidth, BarHeight * 0.7f, BarHeight), BarEmission);
+            GameObject armorBar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, ArmorBarColor, transform, new Vector3(0f, barY + BarHeight * 1.6f, 0f), new Vector3(_barWidth, BarHeight * 0.7f, BarHeight), BarEmission);
             _armorBar = armorBar.transform;
             armorBar.SetActive(false);
 
@@ -1181,6 +1188,10 @@ namespace Game.Enemies
         }
 
         // The body is handed to the death pool as it stands right now; the pooled enemy itself is recycled at once.
+        // Everything that lives beside the creature (sparks, drips, bolts, dust) goes with it when it is taken off
+        // the field, so nothing of a dead enemy lingers.
+        private void OnDeactivated(Enemy enemy) => _attachments.Clear();
+
         private void OnKilled(Enemy enemy)
         {
             if (_deaths == null || !_built || _partFilters == null)
@@ -1219,10 +1230,10 @@ namespace Game.Enemies
         // the pale one above is the armour, gone when the plates are.
         private void SetBar(float fraction, float armor)
         {
-            _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
+            _bar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
             bool hurt = !_barHidden && fraction < FullHealthFraction;
             _bar.gameObject.SetActive(hurt);
-            _armorBar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, armor), BarHeight * 0.7f, BarHeight);
+            _armorBar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, armor), BarHeight * 0.7f, BarHeight);
             _armorBar.gameObject.SetActive(hurt && armor > 0f);
         }
     }

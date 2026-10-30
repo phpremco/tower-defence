@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 30
   _color: {r: 0.9, g: 0.9, b: 0.4, a: 1}
   _look: 6
+  _effect: 5
+  _description: A net of energy beside the road. Flyers passing over it are caught and slowed while it holds.

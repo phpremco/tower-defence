@@ -45,12 +45,16 @@ namespace Game.Levels
             _towerModifiers = towerModifiers;
             WaveCount = waveCount;
             SkipWaveAllowed = skipWaveAllowed;
+            AvailablePathObjects = level.PathObjects;
         }
 
         public LevelDefinition Level { get; }
         public DifficultyProfile Difficulty { get; }
         public Wallet Wallet { get; }
         public Health BaseHealth { get; }
+
+        /// <summary>The base as a structure on the field: it blocks the end of the road and takes the hits.</summary>
+        public BaseStructure Base { get; set; }
         public TargetRegistry Targets { get; }
         public StructureRegistry Structures { get; }
         public ProjectilePool Projectiles { get; }
@@ -81,6 +85,9 @@ namespace Game.Levels
 
         /// <summary>True while the level waits for the player to read the briefing and deploy.</summary>
         public bool BriefingPending { get; set; }
+
+        /// <summary>True while the recon fly-over before the first wave is still to be shown.</summary>
+        public bool ReconPending { get; set; }
 
         public TowerDefinition SelectedTower { get; set; }
 
@@ -122,6 +129,9 @@ namespace Game.Levels
 
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
+
+        /// <summary>Asks the camera to glide to a point on the ground, as when the hero is sent to a post.</summary>
+        public GameEvent<Vector3> CameraFocusRequested { get; } = new GameEvent<Vector3>();
 
         /// <summary>Raised with the enemy that was just defeated, while its position and definition are still valid.</summary>
         public GameEvent<Enemy> EnemyKilled { get; } = new GameEvent<Enemy>();
@@ -188,7 +198,10 @@ namespace Game.Levels
         public PathObjectDefinition SelectedPathObject { get; set; }
 
         /// <summary>Path objects the level sells, in the order of the bar.</summary>
-        public IReadOnlyList<PathObjectDefinition> AvailablePathObjects => Level.PathObjects;
+        public IReadOnlyList<PathObjectDefinition> AvailablePathObjects { get; private set; }
+
+        /// <summary>Narrows the street weapons on offer to the loadout the player chose for this level.</summary>
+        public void SetLoadout(IReadOnlyList<PathObjectDefinition> loadout) => AvailablePathObjects = loadout;
 
         /// <summary>The recipe the selected placed tower can use with a neighbour right now, or null.</summary>
         public CombineRecipe CombineOffer { get; set; }
@@ -205,7 +218,7 @@ namespace Game.Levels
         /// <summary>The post whose spot the player clicked, or -1. Opens the hero panel or the "move here" icon.</summary>
         public int HeroMenuPost { get; set; } = -1;
 
-        /// <summary>True while the base menu (energy and drones) is open; the placement controller opens and closes it.</summary>
+        /// <summary>True while the drone panel has the gamepad focus: confirming on the base doorstep gives it, cancel takes it.</summary>
         public bool BaseMenuOpen { get; set; }
 
         public PlayerModifiers ModifiersFor(TowerDefinition tower)

@@ -316,7 +316,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
   - {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
   _startingMoney: 320
-  _baseHealth: 20
+  _baseHealth: 600
   _difficultyWaves:
   - Difficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
     Waves:

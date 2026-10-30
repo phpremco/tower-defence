@@ -10,6 +10,8 @@ namespace Game.UI
         Repair,
         Sell,
         Speed,
+        SpeedDouble,
+        SpeedTriple,
         Pause,
         SkipWave,
         Star,
@@ -24,6 +26,11 @@ namespace Game.UI
         Disc,
         Ring,
         Beacon,
+        Blast,
+        Roll,
+        Net,
+        Trap,
+        Patrol,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -81,6 +88,21 @@ namespace Game.UI
                 case IconType.Air:
                     // A pair of raised wings: what flies.
                     return (u, v) => Stroke(u, v, 0.08f, 0.42f, 0.5f, 0.7f, 0.075f) || Stroke(u, v, 0.5f, 0.7f, 0.92f, 0.42f, 0.075f) || Stroke(u, v, 0.5f, 0.62f, 0.5f, 0.3f, 0.07f);
+                case IconType.Blast:
+                    // A burst: eight spokes from a bright core.
+                    return (u, v) => Radius(u, v) < 0.16f || Spokes(u, v, 8, 0.44f, 0.045f);
+                case IconType.Roll:
+                    // A wheel on the right with motion lines trailing it.
+                    return (u, v) => Ring(u, v, 0.64f, 0.5f, 0.17f, 0.3f) || Stroke(u, v, 0.06f, 0.36f, 0.3f, 0.36f, 0.04f) || Stroke(u, v, 0.02f, 0.5f, 0.26f, 0.5f, 0.04f) || Stroke(u, v, 0.06f, 0.64f, 0.3f, 0.64f, 0.04f);
+                case IconType.Net:
+                    // A round net: a ring with a mesh inside.
+                    return (u, v) => (Radius(u, v) > 0.37f && Radius(u, v) < 0.46f) || (Radius(u, v) < 0.4f && (Mathf.Abs(u - 0.35f) < 0.03f || Mathf.Abs(u - 0.5f) < 0.03f || Mathf.Abs(u - 0.65f) < 0.03f || Mathf.Abs(v - 0.35f) < 0.03f || Mathf.Abs(v - 0.5f) < 0.03f || Mathf.Abs(v - 0.65f) < 0.03f));
+                case IconType.Trap:
+                    // A base with three spikes: what waits in the road.
+                    return (u, v) => (v > 0.14f && v < 0.3f && u > 0.1f && u < 0.9f) || Triangle(u, v, 0.14f, 0.3f, 0.38f, 0.3f, 0.26f, 0.8f) || Triangle(u, v, 0.38f, 0.3f, 0.62f, 0.3f, 0.5f, 0.9f) || Triangle(u, v, 0.62f, 0.3f, 0.86f, 0.3f, 0.74f, 0.8f);
+                case IconType.Patrol:
+                    // A buggy: body, cabin and two wheels.
+                    return (u, v) => (u > 0.18f && u < 0.82f && v > 0.4f && v < 0.64f) || (u > 0.34f && u < 0.66f && v >= 0.64f && v < 0.82f) || Ring(u, v, 0.32f, 0.32f, 0f, 0.13f) || Ring(u, v, 0.68f, 0.32f, 0f, 0.13f);
                 case IconType.Disc:
                     return (u, v) => Radius(u, v) < 0.48f;
                 case IconType.Ring:
@@ -104,7 +126,11 @@ namespace Game.UI
                         return d < 0.1f || (d > 0.22f && d < 0.3f) || (d > 0.4f && d < 0.47f);
                     };
                 case IconType.Speed:
+                    return (u, v) => Triangle(u, v, 0.3f, 0.2f, 0.3f, 0.8f, 0.7f, 0.5f);
+                case IconType.SpeedDouble:
                     return (u, v) => Triangle(u, v, 0.15f, 0.2f, 0.15f, 0.8f, 0.5f, 0.5f) || Triangle(u, v, 0.5f, 0.2f, 0.5f, 0.8f, 0.85f, 0.5f);
+                case IconType.SpeedTriple:
+                    return (u, v) => Triangle(u, v, 0.08f, 0.2f, 0.08f, 0.8f, 0.36f, 0.5f) || Triangle(u, v, 0.36f, 0.2f, 0.36f, 0.8f, 0.64f, 0.5f) || Triangle(u, v, 0.64f, 0.2f, 0.64f, 0.8f, 0.92f, 0.5f);
                 case IconType.Pause:
                     return (u, v) => v > 0.2f && v < 0.8f && ((u > 0.25f && u < 0.4f) || (u > 0.6f && u < 0.75f));
                 default:
@@ -113,6 +139,28 @@ namespace Game.UI
         }
 
         // A wrench: diagonal handle plus an open ring at the top right.
+        // True between two radii around a centre; an inner radius of zero makes a disc.
+        private static bool Ring(float u, float v, float cx, float cy, float inner, float outer)
+        {
+            float d = Mathf.Sqrt((u - cx) * (u - cx) + (v - cy) * (v - cy));
+            return d >= inner && d < outer;
+        }
+
+        // Evenly spaced strokes out of the centre, like the rays of a burst.
+        private static bool Spokes(float u, float v, int count, float length, float halfWidth)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                float angle = i * Mathf.PI * 2f / count;
+                if (Stroke(u, v, 0.5f, 0.5f, 0.5f + Mathf.Cos(angle) * length, 0.5f + Mathf.Sin(angle) * length, halfWidth))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static bool Wrench(float u, float v)
         {
             float t = Mathf.Clamp01(((u - 0.22f) + (v - 0.22f)) / (2f * 0.46f));

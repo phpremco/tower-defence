@@ -18,6 +18,9 @@ namespace Game.Economy
         public List<string> CompletedLevels = new List<string>();
         public List<UpgradeLevel> Upgrades = new List<UpgradeLevel>();
         public List<StarRecord> Stars = new List<StarRecord>();
+
+        /// <summary>The street weapons last taken into a level, by asset name, so the choice is offered again.</summary>
+        public List<string> LoadoutIds = new List<string>();
     }
 
     /// <summary>Best star rating (1 to 3) for one level on one difficulty. Key is "levelId/difficultyId".</summary>

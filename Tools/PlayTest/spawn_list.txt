@@ -1,11 +1,8 @@
-Oozer
-Skitter
-Skitter
-Skitter
-Skitter
 Prowler
 Prowler
-Tidebat Nest
-Tidebat Nest
-Stinger
-BroodMother
+Prowler
+Bulwark
+Skitter
+Skitter
+Skitter
+SlimeMonarch

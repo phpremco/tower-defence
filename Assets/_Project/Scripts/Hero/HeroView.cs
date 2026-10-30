@@ -92,8 +92,8 @@ namespace Game.Hero
         private const float RingEmission = 2.5f;
         private const float ReviveRingSeconds = 0.6f;
         private const float ReviveRingRadius = 1.6f;
-        private const float BarWidth = 1f;
-        private const float BarHeight = 0.09f;
+        private const float BarWidth = 0.8f;
+        private const float BarHeight = 0.04f;
         private const float BarY = 1.8f;
         private const float BeaconBottom = 1.7f;
         private const float BeaconTop = 3f;

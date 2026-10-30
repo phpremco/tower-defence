@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 0
   _color: {r: 1, g: 0.3, b: 0.2, a: 1}
   _look: 1
+  _effect: 1
+  _description: Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.

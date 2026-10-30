@@ -79,6 +79,9 @@ namespace Game.Enemies
 
         public event Action<Enemy> ReachedEnd;
 
+        /// <summary>Raised when the enemy is taken off the field, killed or not; every view clears what it hung beside it.</summary>
+        public event Action<Enemy> Deactivated;
+
         /// <summary>Raised each time this enemy hits a structure, with the place it hit, so a view can play the attack.</summary>
         public event Action<Vector3> Attacked;
 
@@ -175,6 +178,7 @@ namespace Game.Enemies
             _active = false;
             _registry.Remove(this);
             Health.Died -= OnDied;
+            Deactivated?.Invoke(this);
         }
 
         /// <summary>The way still ahead: from where the enemy stands now to the end of its route.</summary>
@@ -253,7 +257,7 @@ namespace Game.Enemies
 
             DropTrail(stepped);
 
-            if (_nextWaypoint >= _waypoints.Length)
+            if (_nextWaypoint >= _waypoints.Length && !IsBesiegingEnd(deltaTime))
             {
                 ReachedEnd?.Invoke(this);
             }
@@ -364,6 +368,28 @@ namespace Game.Enemies
                 Attacked?.Invoke(gate.Position);
                 _attackCooldown = _definition.AttackInterval;
                 _gateStrikesLeft--;
+            }
+
+            return true;
+        }
+
+        // At the end of the road a living base (or a gate standing there) is besieged: the creature stays and hits it
+        // until one of them falls. Only with nothing left to attack does it slip through.
+        private bool IsBesiegingEnd(float deltaTime)
+        {
+            IStructure target = _structures.FindBlocker(transform.position, _definition.AttackRange);
+            if (target == null)
+            {
+                return false;
+            }
+
+            Heading = Flat(target.Position - transform.position);
+            _attackCooldown -= deltaTime;
+            if (_attackCooldown <= 0f)
+            {
+                target.TakeDamage(_definition.BlockadeDamage * _structureDamageMultiplier);
+                Attacked?.Invoke(target.Position);
+                _attackCooldown = _definition.AttackInterval;
             }
 
             return true;

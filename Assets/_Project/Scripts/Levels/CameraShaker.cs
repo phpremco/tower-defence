@@ -9,6 +9,7 @@ namespace Game.Levels
         private const float ExplosionBase = 0.12f;
         private const float ExplosionPerRadius = 0.14f;
         private const float BaseHit = 0.7f;
+        private const float BaseHitMinInterval = 1.5f;
         private const float BossDeath = 0.8f;
         private const float Shockwave = 0.45f;
         private const float StructureWreck = 0.65f;
@@ -22,6 +23,7 @@ namespace Game.Levels
         private FixedCameraRig _rig;
         private LevelContext _context;
         private float _lastBaseHealth;
+        private float _nextBaseShake;
 
         public void Initialize(FixedCameraRig rig, LevelContext context)
         {
@@ -88,9 +90,11 @@ namespace Game.Levels
 
         private void OnBaseChanged(float current)
         {
-            if (current < _lastBaseHealth)
+            // A besieged base is hit every second by every attacker; a kick every so often is enough.
+            if (current < _lastBaseHealth && Time.unscaledTime >= _nextBaseShake)
             {
                 _rig.Shake(BaseHit);
+                _nextBaseShake = Time.unscaledTime + BaseHitMinInterval;
             }
 
             _lastBaseHealth = current;

@@ -57,6 +57,14 @@ namespace Game.Enemies
             gameObject.SetActive(true);
         }
 
+        /// <summary>Takes the bolt out of the air, with its sparks, when its owner leaves the field.</summary>
+        public void Cancel()
+        {
+            _age = float.PositiveInfinity;
+            _sparks.Clear(true);
+            gameObject.SetActive(false);
+        }
+
         private void Update()
         {
             _age += Time.deltaTime;

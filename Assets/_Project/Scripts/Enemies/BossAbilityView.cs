@@ -34,6 +34,8 @@ namespace Game.Enemies
         private const int RegrowSparks = 40;
 
         private BossAbilities _abilities;
+        private Enemy _enemy;
+        private readonly EnemyAttachments _attachments = new EnemyAttachments();
         private LineRenderer _beam;
         private LineRenderer _beamGlow;
         private Transform _beamTip;
@@ -53,18 +55,24 @@ namespace Game.Enemies
         private void Awake()
         {
             _abilities = GetComponent<BossAbilities>();
+            _enemy = GetComponent<Enemy>();
+            if (_enemy != null)
+            {
+                _enemy.Deactivated += OnDeactivated;
+            }
+
             _abilities.Pulsed += OnPulsed;
             _abilities.MinionsReleased += OnMinionsReleased;
             _abilities.Volleyed += OnVolleyed;
             _abilities.Rallied += OnRallied;
             _abilities.Regrown += OnRegrown;
-            _beam = Line("BossBeam", BeamWidth);
-            _beamGlow = Line("BossBeamGlow", BeamGlowWidth);
+            _beam = _attachments.Track(Line("BossBeam", BeamWidth));
+            _beamGlow = _attachments.Track(Line("BossBeamGlow", BeamGlowWidth));
             _beamTip = BuildTip();
             _ring = BuildRing();
-            _sparks = ParticleKit.Create(transform.parent, "PulseSparks", Vector3.zero, Color.white, 0.4f, 0.8f, 0.05f, 0.12f, 2f, 5f, 0.6f, PulseSparks * 2, 0.3f);
-            _beamSparks = ParticleKit.Create(transform.parent, "BeamSparks", Vector3.zero, Color.white, 0.25f, 0.5f, 0.04f, 0.09f, 0.8f, 2.5f, 1f, 80, 0.2f);
-            _spores = ParticleKit.Create(transform.parent, "Spores", Vector3.zero, Color.white, 0.6f, 1.2f, 0.06f, 0.14f, 0.5f, 1.8f, -0.1f, SporeBurst * 2, 0.4f);
+            _sparks = _attachments.Track(ParticleKit.Create(transform.parent, "PulseSparks", Vector3.zero, Color.white, 0.4f, 0.8f, 0.05f, 0.12f, 2f, 5f, 0.6f, PulseSparks * 2, 0.3f));
+            _beamSparks = _attachments.Track(ParticleKit.Create(transform.parent, "BeamSparks", Vector3.zero, Color.white, 0.25f, 0.5f, 0.04f, 0.09f, 0.8f, 2.5f, 1f, 80, 0.2f));
+            _spores = _attachments.Track(ParticleKit.Create(transform.parent, "Spores", Vector3.zero, Color.white, 0.6f, 1.2f, 0.06f, 0.14f, 0.5f, 1.8f, -0.1f, SporeBurst * 2, 0.4f));
         }
 
         private void OnDestroy()
@@ -77,17 +85,26 @@ namespace Game.Enemies
                 _abilities.Rallied -= OnRallied;
                 _abilities.Regrown -= OnRegrown;
             }
+
+            if (_enemy != null)
+            {
+                _enemy.Deactivated -= OnDeactivated;
+            }
         }
 
-        // The beam lives beside the boss, so when the pooled boss is switched off LateUpdate cannot hide it: do it here.
-        private void OnDisable()
+        // Everything that lives beside the boss goes out with it the moment it leaves the field: a pulse ring
+        // mid-fade, the beam and its tip, sparks, spores and bolts. OnDisable covers a boss that is destroyed.
+        private void OnDeactivated(Enemy enemy) => Clear();
+
+        private void OnDisable() => Clear();
+
+        private void Clear()
         {
-            if (_beam != null && _beam.enabled)
+            _ringAge = float.PositiveInfinity;
+            _attachments.Clear();
+            if (_emitter != null)
             {
-                _beam.enabled = false;
-                _beamGlow.enabled = false;
-                _beamTip.gameObject.SetActive(false);
-                ParticleKit.SetRate(_beamSparks, 0f);
+                _emitter.localScale = Vector3.one;
             }
         }
 
@@ -182,7 +199,7 @@ namespace Game.Enemies
                 _bolts = new EnemyBoltView[VolleyBolts];
                 for (int i = 0; i < VolleyBolts; i++)
                 {
-                    _bolts[i] = EnemyBoltView.Create(transform.parent, color);
+                    _bolts[i] = _attachments.Track(EnemyBoltView.Create(transform.parent, color));
                 }
             }
 
@@ -252,6 +269,7 @@ namespace Game.Enemies
             tip.name = "BeamTip";
             _beamTipRenderer = tip.GetComponent<Renderer>();
             _beamTipRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            _attachments.Track(tip);
             tip.SetActive(false);
             return tip.transform;
         }
@@ -268,6 +286,7 @@ namespace Game.Enemies
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             _ringMaterial = new Material(PlaceholderVisuals.TransparentMaterialFor(Color.white, RingAlpha, RingEmission));
             renderer.sharedMaterial = _ringMaterial;
+            _attachments.Track(ring);
             ring.SetActive(false);
             return ring.transform;
         }

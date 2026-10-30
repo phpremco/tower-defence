@@ -51,6 +51,7 @@ namespace Game.Boot
         private const float LaserFadeSeconds = 0.15f;
         private const float BossLaserVolume = 0.6f;
         private const float ApproachVolume = 0.8f;
+        private const float BaseHitMinInterval = 1.5f;
         private const float ApproachFirstDelay = 2.5f;
         private const float ApproachInterval = 2.2f;
         private const float ApproachMaxSeconds = 40f;
@@ -112,6 +113,7 @@ namespace Game.Boot
         private AudioMix _mix;
         private FixedCameraRig _rig;
         private float _lastBaseHealth;
+        private float _nextBaseHitSound;
 
         public void Initialize(LevelContext context, AudioMix mix, FixedCameraRig rig)
         {
@@ -475,9 +477,11 @@ namespace Game.Boot
 
         private void OnBaseChanged(float current)
         {
-            if (current < _lastBaseHealth)
+            // A besieged base is hit every second by every attacker; one alarm every so often says enough.
+            if (current < _lastBaseHealth && Time.unscaledTime >= _nextBaseHitSound)
             {
                 Play(_baseHit.Next(), 1f, Kind.Priority);
+                _nextBaseHitSound = Time.unscaledTime + BaseHitMinInterval;
             }
 
             _lastBaseHealth = current;

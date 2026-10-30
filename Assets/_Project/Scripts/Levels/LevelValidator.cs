@@ -13,6 +13,13 @@ namespace Game.Levels
     {
         private static readonly Vector2Int[] Steps = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
+        /// <summary>The screen shape the defence-zone rule assumes; wider screens only see more.</summary>
+        private const float PlayAspect = 16f / 9f;
+
+        /// <summary>Share of the play-zoomed screen counted as "in view": the HUD bars and a little slack are left out.</summary>
+        private const float DefenceWindowShare = 0.85f;
+        private const int MinPlotsPerGate = 8;
+
         public static bool Validate(LevelDefinition level, List<string> errors)
         {
             errors.Clear();
@@ -35,7 +42,138 @@ namespace Game.Levels
             CheckWaves(level, errors);
             CheckBossEntrance(level, grid, errors);
             CheckNests(level, grid, errors);
+            CheckDefenceZones(level, grid, errors);
             return errors.Count == 0;
+        }
+
+        // The game is played one screen at a time, so every gate must be a place the player can defend without
+        // panning: enough build cells within one play-zoomed screen around it, every lane (ground and air) passing
+        // through some gate's screen, and any two roads sharing a gate's screen so one defence covers both.
+        private static void CheckDefenceZones(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            if (level.Blockades.Length == 0 || level.Paths.Length == 0)
+            {
+                return;
+            }
+
+            Vector2 half = FixedCameraRig.GroundFootprintFor(level, CameraPanZoom.PlayOrthoSize, PlayAspect) * DefenceWindowShare;
+            var buildGrid = new BuildGrid(level);
+            var lanes = new List<Vector3>[level.Paths.Length];
+            for (int p = 0; p < lanes.Length; p++)
+            {
+                lanes[p] = LanePoints(level.Paths[p], grid);
+            }
+
+            var coveredBy = new List<int>[level.Blockades.Length];
+            for (int g = 0; g < level.Blockades.Length; g++)
+            {
+                Vector3 centre = grid.CellToWorld(level.Blockades[g].Cell);
+                int plots = 0;
+                for (int x = 0; x < grid.Size.x; x++)
+                {
+                    for (int y = 0; y < grid.Size.y; y++)
+                    {
+                        var cell = new Vector2Int(x, y);
+                        if (Inside(grid.CellToWorld(cell), centre, half) && buildGrid.CanBuild(cell))
+                        {
+                            plots++;
+                        }
+                    }
+                }
+
+                if (plots < MinPlotsPerGate)
+                {
+                    errors.Add($"Blockade at {level.Blockades[g].Cell} has only {plots} build cells within one screen; a gate needs at least {MinPlotsPerGate}.");
+                }
+
+                coveredBy[g] = new List<int>();
+                for (int p = 0; p < lanes.Length; p++)
+                {
+                    if (PassesThrough(lanes[p], centre, half))
+                    {
+                        coveredBy[g].Add(p);
+                    }
+                }
+            }
+
+            for (int p = 0; p < lanes.Length; p++)
+            {
+                bool covered = false;
+                for (int g = 0; g < coveredBy.Length && !covered; g++)
+                {
+                    covered = coveredBy[g].Contains(p);
+                }
+
+                if (!covered)
+                {
+                    errors.Add($"Path {p} '{level.Paths[p].Name}' never comes within one screen of a blockade, so no gate defence can cover it.");
+                }
+            }
+
+            for (int p = 0; p < lanes.Length; p++)
+            {
+                for (int q = p + 1; q < lanes.Length; q++)
+                {
+                    if (level.Paths[p].Flying || level.Paths[q].Flying)
+                    {
+                        continue;
+                    }
+
+                    bool shared = false;
+                    for (int g = 0; g < coveredBy.Length && !shared; g++)
+                    {
+                        shared = coveredBy[g].Contains(p) && coveredBy[g].Contains(q);
+                    }
+
+                    if (!shared)
+                    {
+                        errors.Add($"Roads {p} and {q} never come within one screen of the same blockade, so one defence cannot cover both lanes.");
+                    }
+                }
+            }
+        }
+
+        private static bool Inside(Vector3 point, Vector3 centre, Vector2 half) =>
+            Mathf.Abs(point.x - centre.x) <= half.x && Mathf.Abs(point.z - centre.z) <= half.y;
+
+        private static bool PassesThrough(List<Vector3> lane, Vector3 centre, Vector2 half)
+        {
+            for (int i = 0; i < lane.Count; i++)
+            {
+                if (Inside(lane[i], centre, half))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Points every half cell along a path, so a lane that only clips a screen still counts as passing through it.
+        private static List<Vector3> LanePoints(EnemyPath path, GridMap grid)
+        {
+            var points = new List<Vector3>();
+            if (path.Waypoints == null)
+            {
+                return points;
+            }
+
+            for (int i = 0; i < path.Waypoints.Length; i++)
+            {
+                Vector3 a = grid.CellToWorld(path.Waypoints[i]);
+                points.Add(a);
+                if (i + 1 < path.Waypoints.Length)
+                {
+                    Vector3 b = grid.CellToWorld(path.Waypoints[i + 1]);
+                    int steps = Mathf.CeilToInt(Vector3.Distance(a, b) / (grid.CellSize * 0.5f));
+                    for (int s = 1; s < steps; s++)
+                    {
+                        points.Add(Vector3.Lerp(a, b, s / (float)steps));
+                    }
+                }
+            }
+
+            return points;
         }
 
         // Raised ground would lift the road and liquids would drown it; the cells around a blockade hold the hero.

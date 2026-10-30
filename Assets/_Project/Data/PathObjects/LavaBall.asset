@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 0
   _color: {r: 1, g: 0.45, b: 0.1, a: 1}
   _look: 3
+  _effect: 3
+  _description: Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.

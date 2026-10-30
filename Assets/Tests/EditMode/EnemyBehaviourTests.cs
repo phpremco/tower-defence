@@ -22,7 +22,7 @@ namespace Game.Tests
 
             public Vector3 Position { get; }
             public bool IsAlive => Damage < 1000f;
-            public bool BlocksGround { get; }
+            public bool BlocksGround { get; set; }
             public float Damage { get; private set; }
             public float HealthFraction => 1f;
 
@@ -341,6 +341,42 @@ namespace Game.Tests
             Assert.Greater(EnemyModelFactory.Create(EnemyShape.Wisp).HoverHeight, 0f, "the wisp floats");
             Assert.IsTrue(EnemyModelFactory.Create(EnemyShape.Bulwark).Moving.Exists(p => p.Role == CreatureRole.Plate), "the bulwark wears plates");
             Assert.IsTrue(EnemyModelFactory.Create(EnemyShape.Stinger).Moving.Exists(p => p.Role == CreatureRole.Stinger), "the scorpion has a tail");
+        }
+
+        [Test]
+        public void Flyer_BesiegesTheBaseAtTheEndOfItsRoute_UntilItFalls()
+        {
+            Configure(speed: 50f, flies: true, attackRange: 2f, attackInterval: 0.5f);
+            var structures = new StructureRegistry();
+            var outpost = new FakeStructure(new Vector3(0f, 0f, 101f), true);
+            structures.Add(outpost);
+            Launch(new TargetRegistry(), structures);
+            bool reached = false;
+            _enemy.ReachedEnd += _ => reached = true;
+
+            _enemy.Step(3f);
+            Assert.IsFalse(reached, "a living base holds the flyer at the end of its route");
+            Assert.AreEqual(4f, outpost.Damage, 0.001f, "and takes the first blow");
+
+            _enemy.Step(0.6f);
+            Assert.AreEqual(8f, outpost.Damage, 0.001f, "another after the interval");
+
+            outpost.BlocksGround = false;
+            _enemy.Step(0.1f);
+            Assert.IsTrue(reached, "with the base down it slips through");
+        }
+
+        [Test]
+        public void Deactivate_TellsTheViewsOnce()
+        {
+            Configure(speed: 1f);
+            Launch(new TargetRegistry(), new StructureRegistry());
+            int calls = 0;
+            _enemy.Deactivated += _ => calls++;
+
+            _enemy.Deactivate();
+            _enemy.Deactivate();
+            Assert.AreEqual(1, calls, "a second call does nothing");
         }
 
         private void Launch(TargetRegistry targets, StructureRegistry structures, float structureDamage = 1f)

@@ -33,6 +33,12 @@ namespace Game.PathObjects
         [SerializeField] private Color _color = new Color(1f, 0.6f, 0.2f);
         [SerializeField] private PathObjectLook _look;
 
+        /// <summary>What it does, as the player reads it: the badge on its card and the words in the loadout.</summary>
+        [SerializeField] private PathObjectEffect _effect;
+
+        /// <summary>One or two lines for the loadout screen on what this weapon does and where it goes.</summary>
+        [SerializeField] [TextArea] private string _description = string.Empty;
+
         public string DisplayName => _displayName;
         public PathObjectKind Kind => _kind;
         public PathObjectPlacement Placement => _placement;
@@ -46,5 +52,7 @@ namespace Game.PathObjects
         public float Lifetime => _lifetime;
         public Color Color => _color;
         public PathObjectLook Look => _look;
+        public PathObjectEffect Effect => _effect;
+        public string Description => _description;
     }
 }

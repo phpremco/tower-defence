@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 25
   _color: {r: 0.4, g: 0.8, b: 1, a: 1}
   _look: 2
+  _effect: 0
+  _description: A field of cold laid on the road. Everything that walks through it moves at half speed, for as long as the field lasts.

@@ -96,12 +96,41 @@ namespace Game.Levels
             transform.position = _basePosition + (transform.right * x + transform.up * y) * (ShakeAmplitude * _shake);
         }
 
-        // The whole field must fit the view whatever the camera's pitch and yaw: the ground rectangle (with room for
-        // what stands on it) is projected onto the camera's screen axes and the larger half extent sets the size.
         private void Fit()
         {
-            CameraSettings settings = _level.Camera;
-            Vector2 world = _level.WorldSize;
+            _fitSize = FitSize(_level, _camera.aspect);
+            _fittedAspect = _camera.aspect;
+            ApplyView();
+        }
+
+        /// <summary>
+        /// Half the ground area the fully zoomed-out view shows, as half extents along x and z around the field's
+        /// centre, so the landscape can be built out far enough that no screen corner shows the void behind it.
+        /// </summary>
+        public static Vector2 GroundFootprint(LevelDefinition level, float aspect) => GroundFootprintFor(level, FitSize(level, aspect), aspect);
+
+        /// <summary>Half extents along x and z of the ground a view with this orthographic size covers, around its focus.</summary>
+        public static Vector2 GroundFootprintFor(LevelDefinition level, float size, float aspect)
+        {
+            CameraSettings settings = level.Camera;
+            Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
+            Vector3 right = rotation * Vector3.right;
+            Vector3 up = rotation * Vector3.up;
+            Vector3 forward = rotation * Vector3.forward;
+            // A screen step up lands on the ground further along the view direction than its own length.
+            Vector3 upOnGround = up - forward * (up.y / forward.y);
+            float halfWidth = size * aspect;
+            return new Vector2(
+                Mathf.Abs(right.x) * halfWidth + Mathf.Abs(upOnGround.x) * size,
+                Mathf.Abs(right.z) * halfWidth + Mathf.Abs(upOnGround.z) * size);
+        }
+
+        // The whole field must fit the view whatever the camera's pitch and yaw: the ground rectangle (with room for
+        // what stands on it) is projected onto the camera's screen axes and the larger half extent sets the size.
+        public static float FitSize(LevelDefinition level, float aspect)
+        {
+            CameraSettings settings = level.Camera;
+            Vector2 world = level.WorldSize;
             Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
             Vector3 right = rotation * Vector3.right;
             Vector3 up = rotation * Vector3.up;
@@ -120,9 +149,7 @@ namespace Game.Levels
             }
 
             halfHeight /= 1f - HudReserve;
-            _fitSize = Mathf.Max(halfHeight, halfWidth / _camera.aspect) * (1f + settings.FitMargin);
-            _fittedAspect = _camera.aspect;
-            ApplyView();
+            return Mathf.Max(halfHeight, halfWidth / aspect) * (1f + settings.FitMargin);
         }
 
         private void ApplyView()

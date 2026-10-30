@@ -45,6 +45,10 @@ namespace Game.Editor
         // A downed hero is gone long enough to hurt: two minutes, shown as a countdown in the HUD.
         private const float HeroReviveSeconds = 120f;
 
+        // The base is besieged like a gate, so it needs gate-sized health: a few gates' worth, grown by the armour upgrade.
+        private const int BaseHealth = 600;
+        private const float BaseHealthUpgradeStep = 100f;
+
         // The camera looks down a little less steeply and from a slight angle, so gates, towers and creatures show a
         // side as well as a top and read as things with height instead of symbols on a map.
         private const float CameraPitchDegrees = 50f;
@@ -100,12 +104,12 @@ namespace Game.Editor
             ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
 
             Roster roster = CreateRoster(pulse, cannon, rocket);
-            PathObjectDefinition slowField = CreatePathObject("SlowField", "Slow field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 40, 1.3f, 0.5f, 0f, 0.5f, 0f, 25f, new Color(0.4f, 0.8f, 1f));
-            PathObjectDefinition mine = CreatePathObject("Mine", "Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 90f, 1f, 0f, 0f, new Color(1f, 0.3f, 0.2f));
-            PathObjectDefinition lavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f));
-            PathObjectDefinition barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 140f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f));
-            PathObjectDefinition groundDrone = CreatePathObject("GroundDrone", "Drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f));
-            PathObjectDefinition antiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f));
+            PathObjectDefinition slowField = CreatePathObject("SlowField", "Slow field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 40, 1.3f, 0.5f, 0f, 0.5f, 0f, 25f, new Color(0.4f, 0.8f, 1f), PathObjectEffect.Slow, "A field of cold laid on the road. Everything that walks through it moves at half speed, for as long as the field lasts.");
+            PathObjectDefinition mine = CreatePathObject("Mine", "Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 90f, 1f, 0f, 0f, new Color(1f, 0.3f, 0.2f), PathObjectEffect.Trap, "Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.");
+            PathObjectDefinition lavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f), PathObjectEffect.Roll, "Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.");
+            PathObjectDefinition barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 140f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f), PathObjectEffect.Blast, "Stands beside the road. When the enemy passes close it bursts, and the blast reaches far across the road.");
+            PathObjectDefinition groundDrone = CreatePathObject("GroundDrone", "Ground drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f), PathObjectEffect.Patrol, "Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.");
+            PathObjectDefinition antiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f), PathObjectEffect.AirNet, "A net of energy beside the road. Flyers passing over it are caught and slowed while it holds.");
             // Three drones, one per job, bought with money in the level, so a drone competes with a tower for the same
             // purse: a harvester earns its price back in a few minutes of trips.
             DroneDefinition repairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 120, 3, new Color(0.4f, 0.9f, 1f), repair: 8f);
@@ -273,7 +277,7 @@ namespace Game.Editor
             camera.FindPropertyRelative("YawDegrees").floatValue = CameraYawDegrees;
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = 200;
-            so.FindProperty("_baseHealth").intValue = 20;
+            so.FindProperty("_baseHealth").intValue = BaseHealth;
             so.FindProperty("_mineStock").intValue = MineStock;
             SerializedProperty stars = so.FindProperty("_starBaseHealthFractions");
             stars.arraySize = 2;
@@ -495,7 +499,7 @@ namespace Game.Editor
                 all.Add(CreateUpgrade($"{tower.Id}_FireRate", "Fire rate +10% per level", UpgradeTarget.TowerFireRate, new[] { 6, 12, 18 }, 0.1f, tower.Id, tower.DisplayName));
             }
 
-            all.Add(CreateUpgrade("BaseHealth", "Base armour +5 HP per level", UpgradeTarget.BaseHealth, new[] { 4, 8, 12 }, 5f, string.Empty, "Base"));
+            all.Add(CreateUpgrade("BaseHealth", "Base armour +100 HP per level", UpgradeTarget.BaseHealth, new[] { 4, 8, 12 }, BaseHealthUpgradeStep, string.Empty, "Base"));
             all.Add(CreateUpgrade("BlockadeHealth", "Blockade strength +20% per level", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f, string.Empty, "Base"));
 
             const string HeroText = "Improvements for your commander";

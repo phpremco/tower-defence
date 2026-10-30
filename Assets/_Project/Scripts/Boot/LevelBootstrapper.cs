@@ -53,7 +53,7 @@ namespace Game.Boot
             _cameraRig.Apply(level);
             PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
             Dictionary<int, GameObject> routes = BuildEnvironment(level);
-            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing);
+            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing, session.Loadout);
         }
 
         private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
@@ -78,7 +78,7 @@ namespace Game.Boot
             return LevelVisualBuilder.Build(level, visuals, Services.Get<IPlatformSettings>().ParticleScale);
         }
 
-        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing)
+        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing, IReadOnlyList<Game.PathObjects.PathObjectDefinition> loadout)
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
@@ -117,10 +117,22 @@ namespace Game.Boot
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
             context.GlobalModifiers = global;
+            // The base stands on the field as a blocking structure, so the enemies that reach it besiege it.
+            Vector2Int[] mainRoad = level.MainRoad;
+            var baseStructure = new BaseStructure(level.Road.CentreOf(mainRoad[mainRoad.Length - 1]), baseHealth);
+            structures.Add(baseStructure);
+            context.Base = baseStructure;
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
-            _cameraRig.gameObject.AddComponent<CameraPanZoom>().Initialize(_cameraRig, level, input);
+            var panZoom = _cameraRig.gameObject.AddComponent<CameraPanZoom>();
+            panZoom.Initialize(context, _cameraRig, level, input);
+            context.ReconPending = briefing;
+            if (loadout != null)
+            {
+                context.SetLoadout(loadout);
+            }
+
             var drones = new GameObject("Drones").AddComponent<DroneController>();
             drones.Initialize(context, root);
             var spawner = new EnemySpawner(context, root);
@@ -135,6 +147,11 @@ namespace Game.Boot
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
             controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);
+            if (context.Hero != null)
+            {
+                panZoom.SetView(context.Hero.transform.position, panZoom.PlayZoom);
+            }
+
             _cameraRig.gameObject.AddComponent<CameraShaker>().Initialize(_cameraRig, context);
             // Ripples read the opaque texture, which only the high profile renders.
             if (Services.Get<IPlatformSettings>().BloomEnabled)
@@ -144,6 +161,7 @@ namespace Game.Boot
 
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
+            controllers.AddComponent<ReconView>().Initialize(context, panZoom, time, input, routes);
             var mix = Services.Get<AudioMix>();
             controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);

@@ -21,6 +21,7 @@ namespace Game.Levels
         private const float VeinInside = 0.12f;
         private const float FadeStartCells = 5.5f;
         private const float FadeEndCells = 8.8f;
+        private const float FarDarkening = 0.4f;
         private const float CliffStrataDarkening = 0.3f;
         private const float CliffLipPlateau = 0.78f;
         private const float CliffLipWidth = 0.08f;
@@ -163,9 +164,10 @@ namespace Game.Levels
                 ShadeBlocked(x, z, medium, ref color);
                 ShadeRoad(x, z, medium, ref color, ref glow);
 
-                float fade = 1f - TerrainNoise.SmoothStep(FadeStartCells, FadeEndCells, outside);
-                color *= fade;
-                glow *= fade;
+                // Past the rim the land only dims, so the field reads as the lit place in a dark landscape; its lights go out.
+                float far = TerrainNoise.SmoothStep(FadeStartCells, FadeEndCells, outside);
+                color *= 1f - FarDarkening * far;
+                glow *= 1f - far;
                 color.a = 1f;
                 glow.a = 1f;
             }

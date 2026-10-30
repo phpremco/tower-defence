@@ -3,14 +3,20 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// The landscape as numbers on a fine grid of points that reaches well past the playing field: height, how much of
+    /// The landscape as numbers on a fine grid of points that reaches past the playing field as far as the widest
+    /// screen can see when zoomed all the way out, so no corner of the view is ever black: height, how much of
     /// each terrain kind is under every point, and how steep the ground is there. The ground mesh, its painted
     /// texture, the liquids and the decoration all read from the same field, so they always agree.
     /// </summary>
     public sealed class TerrainField
     {
         public const int SubdivisionsPerCell = 4;
-        public const int MarginCells = 9;
+        /// <summary>The least the landscape reaches past the field on any side, in cells; the camera may ask for more.</summary>
+        public const int MinMarginCells = 9;
+
+        /// <summary>The widest screen the landscape is built for; anything wider shows a sliver of void in the corners.</summary>
+        private const float WidestAspect = 2.4f;
+        private const int FootprintSlackCells = 1;
 
         private const float EdgeWander = 0.7f;
         private const float BasinDepth = 0.6f;
@@ -48,12 +54,14 @@ namespace Game.Levels
             CellSize = level.CellSize;
             Vector2 size = level.WorldSize;
             HalfSize = size * 0.5f;
-            float margin = MarginCells * CellSize;
-            MinX = -HalfSize.x - margin;
-            MinZ = -HalfSize.y - margin;
+            Vector2 footprint = FixedCameraRig.GroundFootprint(level, WidestAspect);
+            MarginCellsX = Mathf.Max(MinMarginCells, Mathf.CeilToInt((footprint.x - HalfSize.x) / CellSize) + FootprintSlackCells);
+            MarginCellsZ = Mathf.Max(MinMarginCells, Mathf.CeilToInt((footprint.y - HalfSize.y) / CellSize) + FootprintSlackCells);
+            MinX = -HalfSize.x - MarginCellsX * CellSize;
+            MinZ = -HalfSize.y - MarginCellsZ * CellSize;
             Step = CellSize / SubdivisionsPerCell;
-            Nx = Mathf.RoundToInt((size.x + 2f * margin) / Step) + 1;
-            Nz = Mathf.RoundToInt((size.y + 2f * margin) / Step) + 1;
+            Nx = Mathf.RoundToInt((size.x + 2f * MarginCellsX * CellSize) / Step) + 1;
+            Nz = Mathf.RoundToInt((size.y + 2f * MarginCellsZ * CellSize) / Step) + 1;
 
             int count = Nx * Nz;
             _plateau = new float[count];
@@ -70,6 +78,10 @@ namespace Game.Levels
         }
 
         public float CellSize { get; }
+
+        /// <summary>How many cells the landscape reaches past the field along x and along z.</summary>
+        public int MarginCellsX { get; }
+        public int MarginCellsZ { get; }
         public Vector2 HalfSize { get; }
         public int Nx { get; }
         public int Nz { get; }

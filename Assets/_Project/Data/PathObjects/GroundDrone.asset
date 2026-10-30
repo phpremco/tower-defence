@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2863d1c450a864c43ab21ab187d5bc12, type: 3}
   m_Name: GroundDrone
   m_EditorClassIdentifier: Game.PathObjects::Game.PathObjects.PathObjectDefinition
-  _displayName: Drone
+  _displayName: Ground drone
   _kind: 2
   _placement: 0
   _targets: 1
@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 0
   _color: {r: 0.4, g: 0.9, b: 1, a: 1}
   _look: 4
+  _effect: 4
+  _description: Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.

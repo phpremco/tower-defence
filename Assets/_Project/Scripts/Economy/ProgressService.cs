@@ -180,6 +180,15 @@ namespace Game.Economy
             Save();
         }
 
+        /// <summary>The street weapons chosen last time, by asset name.</summary>
+        public IReadOnlyList<string> Loadout => Data.LoadoutIds;
+
+        public void SetLoadout(IEnumerable<string> ids)
+        {
+            Data.LoadoutIds = new List<string>(ids);
+            Save();
+        }
+
         public void Save()
         {
             _save.Save(SaveKey, Data);

@@ -171,11 +171,15 @@ namespace Game.Editor
             float slowFactor,
             float speed,
             float lifetime,
-            Color color)
+            Color color,
+            PathObjectEffect effect,
+            string description)
         {
             var asset = LoadOrCreate<PathObjectDefinition>($"{DataRoot}/PathObjects/{id}.asset");
             var so = new SerializedObject(asset);
             so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("_effect").enumValueIndex = (int)effect;
+            so.FindProperty("_description").stringValue = description;
             so.FindProperty("_kind").enumValueIndex = (int)kind;
             so.FindProperty("_placement").enumValueIndex = (int)placement;
             so.FindProperty("_targets").intValue = (int)targets;
@@ -322,7 +326,7 @@ namespace Game.Editor
                         Area(TerrainKind.Raised, 0, 15, 2, 16), Area(TerrainKind.Raised, 18, 11, 24, 13), Area(TerrainKind.Raised, 30, 0, 36, 1),
                         Area(TerrainKind.Raised, 5, 5, 9, 7)),
                     Money = 240,
-                    BaseHealth = 20,
+                    BaseHealth = BaseHealth,
                     HealthScale = 1.05f,
                     RewardTower = roster.Cryo,
                     Source = UnlockSource.StolenAlienTech,
@@ -384,7 +388,7 @@ namespace Game.Editor
                         Area(TerrainKind.Raised, 0, 19, 2, 20), Area(TerrainKind.Raised, 30, 16, 33, 20), Area(TerrainKind.Raised, 8, 11, 11, 12),
                         Area(TerrainKind.Raised, 14, 3, 17, 4)),
                     Money = 280,
-                    BaseHealth = 20,
+                    BaseHealth = BaseHealth,
                     HealthScale = 1.3f,
                     RewardTower = roster.Laser,
                     Source = UnlockSource.HomePlanetIntel,
@@ -448,7 +452,7 @@ namespace Game.Editor
                         Area(TerrainKind.Raised, 0, 17, 2, 18), Area(TerrainKind.Raised, 33, 9, 35, 14), Area(TerrainKind.Raised, 16, 0, 20, 1),
                         Area(TerrainKind.Raised, 24, 0, 28, 1), Area(TerrainKind.Raised, 0, 8, 1, 10)),
                     Money = 320,
-                    BaseHealth = 20,
+                    BaseHealth = BaseHealth,
                     HealthScale = 1.5f,
                     RewardTower = roster.Rocket,
                     Source = UnlockSource.StolenAlienTech,
@@ -512,7 +516,7 @@ namespace Game.Editor
                         Area(TerrainKind.Raised, 0, 17, 2, 18), Area(TerrainKind.Raised, 23, 15, 28, 17), Area(TerrainKind.Raised, 24, 1, 28, 3),
                         Area(TerrainKind.Raised, 32, 10, 35, 12)),
                     Money = 360,
-                    BaseHealth = 20,
+                    BaseHealth = BaseHealth,
                     HealthScale = 1.4f,
                     RewardTower = roster.Tesla,
                     Source = UnlockSource.StolenAlienTech,

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Platform;
 using UnityEngine;
 using UnityEngine.UI;
@@ -75,6 +76,7 @@ namespace Game.UI
         private readonly List<CanvasGroup> _beaconGroups = new List<CanvasGroup>();
         private readonly List<RectTransform> _rings = new List<RectTransform>();
         private int _selected = -1;
+        private LoadoutPanelView _loadout;
         private float _zoom;
         private float _zoomTarget;
         private Vector2 _zoomOffset;
@@ -371,7 +373,7 @@ namespace Game.UI
             bool done = Progress.IsCompleted(level.Id, difficulty.name);
             int stars = Progress.GetStars(level.Id, difficulty.name);
 
-            Button button = UiKit.CreateButton(panel, difficulty.DisplayName, () => StartLevel(level, difficulty));
+            Button button = UiKit.CreateButton(panel, difficulty.DisplayName, () => OpenLoadout(level, difficulty));
             Destroy(button.GetComponent<LayoutElement>());
             RectTransform rect = button.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.5f, 1f);
@@ -420,7 +422,11 @@ namespace Game.UI
         // B closes the region panel, and from the overview it goes back to the main menu like the Back button.
         private void OnCancel()
         {
-            if (_regionPanel != null)
+            if (_loadout != null)
+            {
+                _loadout.Back();
+            }
+            else if (_regionPanel != null)
             {
                 CloseRegion();
             }
@@ -430,9 +436,28 @@ namespace Game.UI
             }
         }
 
-        private static void StartLevel(LevelDefinition level, DifficultyProfile difficulty)
+        // The difficulty chosen, the player picks the street weapons to take along; only then does the level start.
+        private void OpenLoadout(LevelDefinition level, DifficultyProfile difficulty)
         {
-            Services.Register(new LevelSession(level, difficulty, true));
+            if (_regionPanel != null)
+            {
+                Destroy(_regionPanel);
+                _regionPanel = null;
+            }
+
+            _loadout = gameObject.AddComponent<LoadoutPanelView>();
+            _loadout.Open(_root, _catalog, level, difficulty, Progress, OnLoadoutBack, StartLevel);
+        }
+
+        private void OnLoadoutBack()
+        {
+            _loadout = null;
+            OpenRegionPanel();
+        }
+
+        private static void StartLevel(LevelDefinition level, DifficultyProfile difficulty, IReadOnlyList<PathObjectDefinition> loadout)
+        {
+            Services.Register(new LevelSession(level, difficulty, true, loadout));
             Go(SceneNames.Level);
         }
 

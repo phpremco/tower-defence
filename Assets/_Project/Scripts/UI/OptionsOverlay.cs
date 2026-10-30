@@ -28,6 +28,7 @@ namespace Game.UI
             "Tower icons          Stick / D-pad to pick, A to use, B to close\n" +
             "Upgrade / Repair / Sell   U / R / X   (X on a blockade sends the hero)\n" +
             "Hero: next post / shockwave / repair post   X button / LT / RT    H / F / G\n" +
+            "Drones               Panel bottom right: click a card, or A on the base doorstep, then the stick\n" +
             "Game speed           Y    Space\n" +
             "Pause                Start    P\n" +
             "Skip wave (test)     Select    N";

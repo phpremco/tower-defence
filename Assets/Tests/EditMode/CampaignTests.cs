@@ -1,4 +1,5 @@
 ﻿using Game.Economy;
+using System.Collections.Generic;
 using Game.Levels;
 using Game.Platform;
 using NUnit.Framework;
@@ -16,6 +17,26 @@ namespace Game.Tests
 
             public bool TryLoad<T>(string key, out T data)
             {
+                data = default;
+                return false;
+            }
+        }
+
+        // Keeps what is saved, as JSON like the real file save, so a reload sees it.
+        private sealed class JsonMemorySave : ISaveService
+        {
+            private readonly Dictionary<string, string> _store = new Dictionary<string, string>();
+
+            public void Save<T>(string key, T data) => _store[key] = JsonUtility.ToJson(data);
+
+            public bool TryLoad<T>(string key, out T data)
+            {
+                if (_store.TryGetValue(key, out string json))
+                {
+                    data = JsonUtility.FromJson<T>(json);
+                    return true;
+                }
+
                 data = default;
                 return false;
             }
@@ -167,6 +188,17 @@ namespace Game.Tests
 
             Assert.AreEqual(1, droneUpgrades);
             Assert.Greater(UpgradeEffects.ComputeGlobal(progress, upgrades).DroneSpeedMultiplier, 1f);
+        }
+
+        [Test]
+        public void Loadout_IsSavedAndOfferedAgain()
+        {
+            var save = new JsonMemorySave();
+            var progress = new ProgressService(save, new string[0]);
+            progress.SetLoadout(new[] { "Mine", "LavaBall" });
+
+            var reloaded = new ProgressService(save, new string[0]);
+            CollectionAssert.AreEqual(new[] { "Mine", "LavaBall" }, reloaded.Loadout);
         }
 
         [Test]

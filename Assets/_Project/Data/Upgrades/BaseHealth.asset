@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: BaseHealth
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Base armour +5 HP per level
+  _displayName: Base armour +100 HP per level
   _target: 4
   _towerId: 
   _groupName: Base
   _costs: 04000000080000000c000000i
-  _bonusPerLevel: 5
+  _currency: 0
+  _groupDescription: 
+  _bonusPerLevel: 100

@@ -100,6 +100,23 @@ namespace Game.Tests
         }
 
         [Test]
+        public void EveryStreetWeapon_ExplainsItself()
+        {
+            CampaignCatalog catalog = LoadCampaign();
+            int seen = 0;
+            foreach (MapNode node in catalog.Nodes)
+            {
+                foreach (PathObjectDefinition definition in node.Level.PathObjects)
+                {
+                    seen++;
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(definition.Description), $"{definition.name} has no description for the loadout screen.");
+                }
+            }
+
+            Assert.Greater(seen, 0, "no level offers a street weapon");
+        }
+
+        [Test]
         public void EveryLevel_GivesANewWeaponAndHasWavesForAllDifficulties()
         {
             CampaignCatalog catalog = LoadCampaign();

@@ -25,3 +25,5 @@ MonoBehaviour:
   _lifetime: 0
   _color: {r: 0.9, g: 0.5, b: 0.1, a: 1}
   _look: 5
+  _effect: 2
+  _description: Stands beside the road. When the enemy passes close it bursts, and the blast reaches far across the road.

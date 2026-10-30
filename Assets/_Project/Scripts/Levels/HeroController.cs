@@ -59,11 +59,10 @@ namespace Game.Levels
 
             Vector2Int[] main = context.Level.MainRoad;
             Vector2Int baseCell = main[main.Length - 1];
-            Vector3 basePosition = road.CentreOf(baseCell);
+            Vector3 basePosition = context.Base.Position;
             Vector3 baseAlong = road.DirectionAt(baseCell);
             Vector3 baseStand = basePosition - baseAlong * grid.CellSize;
-            var basePost = new BasePost(basePosition, context.BaseHealth);
-            posts.Add(new HeroPost(basePost, baseStand, -baseAlong));
+            posts.Add(new HeroPost(context.Base, baseStand, -baseAlong));
             cells[blockades.Count] = StandCell(baseCell, baseAlong);
             names[blockades.Count] = BaseName;
             CreateSpotMarker(baseStand, baseAlong, road.Width, grid.CellSize, parent);
@@ -99,6 +98,13 @@ namespace Game.Levels
             _context.HeroRepairRequested.Unsubscribe(OnRepair);
         }
 
+        // The camera follows the hero to its post, so the player watches the fight they just ordered.
+        private void SendHero(int postIndex)
+        {
+            _hero.MoveTo(postIndex);
+            _context.CameraFocusRequested.Raise(_hero.StandAt(_hero.PostIndex));
+        }
+
         private static Vector2Int StandCell(Vector2Int cell, Vector3 along) =>
             cell - new Vector2Int(Mathf.RoundToInt(along.x), Mathf.RoundToInt(along.z));
 
@@ -118,7 +124,7 @@ namespace Game.Levels
         {
             if (CanAct)
             {
-                _hero.MoveTo((_hero.PostIndex + 1) % _hero.PostCount);
+                SendHero((_hero.PostIndex + 1) % _hero.PostCount);
             }
         }
 
@@ -147,7 +153,7 @@ namespace Game.Levels
             {
                 if (_blockades[i] == selected)
                 {
-                    _hero.MoveTo(i);
+                    SendHero(i);
                     _context.Changed.Raise();
                     return;
                 }
