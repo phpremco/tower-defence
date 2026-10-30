@@ -35,6 +35,11 @@ namespace Game.Enemies
         private const float KneeFoldDegrees = 38f;
         private const float RunnerSwingDegrees = 34f;
         private const float RunnerKneeDegrees = 42f;
+        private const float RunnerRestHipDegrees = -9f;
+        private const float RunnerRestKneeDegrees = 24f;
+        private const float RunnerSplayDegrees = 7f;
+        private const float IdleShiftDegrees = 2.5f;
+        private const float IdleShiftSpeed = 0.9f;
         private const float DangleDegrees = 62f;
         private const float DangleSwayDegrees = 9f;
         private const float MandibleDegrees = 26f;
@@ -52,6 +57,8 @@ namespace Game.Enemies
         private const float BreathScale = 0.05f;
         private const float BreathSpeed = 2.2f;
         private const float TailSwayDegrees = 16f;
+        private const float TailFlickDegrees = 7f;
+        private const float TailLiftDegrees = 6f;
         private const float OrbBob = 0.12f;
         private const float OrbSpinDegrees = 70f;
         private const float BobHeight = 0.05f;
@@ -398,7 +405,7 @@ namespace Game.Enemies
             body.localPosition = Vector3.zero;
             body.localScale = Vector3.one * _creatureScale;
 
-            Material[] materials = EnemyModelFactory.CreateMaterials(definition.Color, definition.EyeColor, definition.AccentColor, definition.IsBoss ? BossGlow : 1f);
+            Material[] materials = EnemyModelFactory.CreateMaterials(definition.Color, definition.EyeColor, definition.AccentColor, definition.IsBoss ? BossGlow : 1f, parts.Skin);
             _shellMaterials = materials;
             if (definition.IsBoss)
             {
@@ -575,8 +582,11 @@ namespace Game.Enemies
                     : walking ? Mathf.Abs(Mathf.Sin(_gait)) * BobHeight : breathe * HoverHeight;
             float swayWave = flyer ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : Mathf.Sin(_gait * SwayPerGait + _swayPhase) * (walking ? 1f : 0f);
             float sway = swayWave * (flyer ? FlyerSwayDistance : SwayDistance) * _creatureScale * (1f - _curl);
-            float yaw = flyer ? 0f : swayWave * SwayDegrees * (1f - _curl);
-            float roll = flyer ? -swayWave * FlyerRollDegrees : 0f;
+            // Standing still the weight shifts slowly from foot to foot, so nothing stands like a statue.
+            float idle = walking || flyer ? 0f : 1f - _curl;
+            float shift = Mathf.Sin(_clock * IdleShiftSpeed + _swayPhase) * IdleShiftDegrees * idle;
+            float yaw = flyer ? 0f : swayWave * SwayDegrees * (1f - _curl) + shift * 1.2f;
+            float roll = flyer ? -swayWave * FlyerRollDegrees : shift;
             if (style == AttackStyle.Whip)
             {
                 roll += strike * FlyerRollDegrees * 2f * _whipSide;
@@ -628,10 +638,13 @@ namespace Game.Enemies
                 float lift = Mathf.Max(0f, Mathf.Cos(_gait + leg.Spec.Phase)) * stride;
                 if (_straightLegs)
                 {
-                    leg.Root.localRotation = Quaternion.Euler(swing * RunnerSwingDegrees - strike * ClawDegrees * 0.3f, 0f, 0f);
+                    // A runner never locks its legs: the thigh sits a little back, the knee stays bent and the feet
+                    // splay outward, and the gait swings around that stance.
+                    float restHip = RunnerRestHipDegrees * (leg.Spec.Index == 0 ? -0.5f : 1f);
+                    leg.Root.localRotation = Quaternion.Euler(restHip + swing * RunnerSwingDegrees - strike * ClawDegrees * 0.3f, 0f, -RunnerSplayDegrees * side);
                     if (leg.Knee != null)
                     {
-                        leg.Knee.localRotation = Quaternion.Euler(lift * RunnerKneeDegrees, 0f, 0f);
+                        leg.Knee.localRotation = Quaternion.Euler(RunnerRestKneeDegrees + lift * RunnerKneeDegrees, 0f, 0f);
                     }
 
                     continue;
@@ -745,7 +758,10 @@ namespace Game.Enemies
             for (int i = 0; i < _tails.Count; i++)
             {
                 Rig part = _tails[i];
-                part.Root.localRotation = Quaternion.Euler(0f, Mathf.Sin(_gait * 0.5f + _clock * 1.5f + _swayPhase) * TailSwayDegrees, 0f);
+                // A tail is a whip, not a rudder: a slow sway with a quicker flick on top, and it lifts with the stride.
+                float wave = Mathf.Sin(_gait * 0.5f + _clock * 1.5f + _swayPhase) * TailSwayDegrees + Mathf.Sin(_clock * 3.7f + _swayPhase * 2f) * TailFlickDegrees;
+                float lift = (walking ? Mathf.Sin(_gait + 1f) : breathe * 0.5f) * TailLiftDegrees;
+                part.Root.localRotation = Quaternion.Euler(lift, wave, wave * 0.3f);
             }
 
             for (int i = 0; i < _orbs.Count; i++)

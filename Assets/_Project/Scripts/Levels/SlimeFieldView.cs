@@ -11,7 +11,8 @@ namespace Game.Levels
     public sealed class SlimeFieldView : MonoBehaviour
     {
         private const float Height = 0.04f;
-        private const float Brightness = 0.55f;
+        private const float Brightness = 1.6f;
+        private const float Spread = 2.6f;
         private const float Wobble = 0.08f;
         private const float WobbleSpeed = 2.5f;
         private const float BubbleRate = 1.5f;
@@ -56,7 +57,7 @@ namespace Game.Levels
 
                 SlimeField.Patch patch = patches[i];
                 float fade = 1f - patch.Fade;
-                float size = patch.Radius * 2f * (1f + Mathf.Sin(time * WobbleSpeed + _phases[i]) * Wobble);
+                float size = patch.Radius * Spread * (1f + Mathf.Sin(time * WobbleSpeed + _phases[i]) * Wobble);
                 _quads[i].position = new Vector3(patch.Position.x, Height, patch.Position.z);
                 _quads[i].localScale = new Vector3(size, size * 0.8f, 1f);
                 _quads[i].localRotation = Quaternion.Euler(90f, _phases[i] * 57f, 0f);

@@ -586,3 +586,37 @@ and water, and light rock music.
 - Script: `ripple_probe.cs` plays a ripple at the hero and holds the frame. `pulse_probe.cs` and `lens_hold.cs` are gone.
 - Boss alarm: Remco's `warning.mp3` (source still to be noted in `Docs/CREDITS.md`) plays as the siren through
   `SfxLibrary.BossAlarms` (first clip), used by `MusicPlayer`; the generated siren stays as fallback.
+
+## Bestiary v2: nine species with skills, skins, nests, species bosses (2026-10-30)
+Remco found the enemies "all the same"; the roster was rebuilt around one skill per species, as in nature. Old
+species (Scout, Grunt, Brute, Flyer, Drowner, Burrower, Cinder, Overseer, Warden) are gone; Roller and Hive Queen stay.
+- **Species** (`ProjectGenerator.Bestiary.cs`, data in `Data/Enemies/`): Skitter (ant swarm, bleeds venom), Stinger
+  (scorpion, armour plates, acid sting on towers in passing), Ember/Tide/Moss/Dustbat (element flyers, bolts, rise
+  from nests, crash and dissolve), Bulwark (shield bearer, armour, crystal sword, collapses), Prowler (pack, rage
+  haste when a mate dies), Wisp (walks the road, hit by ground and air guns, bursts), Skyray (flying whip), Oozer
+  (slime trail). Each species has a boss: BroodMother, AcidEmpress, StormMatriarch, CrystalWarlord, PackAlpha,
+  CoreWisp, SkySovereign, SlimeMonarch, RollerKing.
+- **Mechanics**: `Health` armour layer (soaks a share until chipped, `RestoreArmor`); `EnemyDefinition.Flies` apart
+  from the `Layer` mask (Wisp = Ground|Air, walks); `Enemy.ApplyHaste`; `TrailDropped` -> `SlimeField` (Levels,
+  hurries other species, burns hero and gates, never towers) drawn by `SlimeFieldView`; pack rage in `EnemySpawner`;
+  `DifficultyProfile.StructureDamageMultiplier` (0.7/1/1.35/1.8) scales attacks on structures and boss powers;
+  element nests (`ElementNest`, `LevelDefinition.Nests`, `SpawnSource.Nest`, validator checks, nest props in
+  `LevelVisualBuilder`, generator reserves their cells). New boss kinds: Volley, Rally, Regrow, Split.
+- **Bug fixed**: `LevelController` dropped the spawn source, so pool spawns never happened in real play.
+- **Look**: `EnemyModelFactory` rebuilt (five slots: body, eyes, glow, dark, accent; `AccentColor` and `BloodColor`
+  on the definition). `CreatureSkin` (Core) paints tiling chitin/hide/slime/scales/energy/membrane textures with
+  normal maps and glowing seams, tinted per species. New roles: Plate (sheds as armour drops), Fin, Blade, Stinger.
+  `EnemyDeathEffect` styles: Shatter, Crash, Collapse, Burst. `EnemyBoltView` draws enemy shots. Runners keep
+  bent knees and splayed feet, bodies shift weight when idle, tails flick (Remco: nothing should stand like a statue).
+- **Waves**: per-level scripts with the new species, `Troop.MinDifficulty` (tide bats skip easy on Landing), threat
+  prices armour and damage. Bosses per level: Landing BroodMother/PackAlpha; Forest RollerKing/StormMatriarch; Lava
+  CoreWisp/AcidEmpress/CrystalWarlord; Ruins SlimeMonarch/SkySovereign/CrystalWarlord; Nest PackAlpha/AcidEmpress/
+  CoreWisp/HiveQueen.
+- **Tests**: 107 EditMode tests pass (armour, haste, trail, slime, boss powers, nests, every shape builds); the
+  five PlayMode tests pass too, including the greedy-bot balance probe over every level and difficulty
+  (`run_tests --mode PlayMode --async_tests true`, then poll `test_status`; the first reply says 0 tests, the
+  run is still going).
+- **Play-test scripts**: `spawn_many.cs` (list in `spawn_list.txt`, "Name [Source]"), `kill_all.cs`, `step100.cs`
+  (100 frames at 3x), `waves_on.cs`.
+- **Open**: balance probe on the new roster, the sting tail reads weakly from the 55-degree camera, bats could use a
+  second look at close range, more posture work on the Stinger and Oozer idle.

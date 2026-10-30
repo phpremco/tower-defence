@@ -30,6 +30,10 @@ namespace Game.Enemies
         private const float EyeEmission = 3.2f;
         private const float GlowEmission = 2.2f;
         private const float AccentEmission = 2.8f;
+        private const float SkinnedBodyShade = 0.9f;
+        private const float SkinnedDarkShade = 0.4f;
+        private const float SeamGlow = 0.9f;
+        private const float DarkSeamGlow = 0.5f;
         private static readonly Color DefaultEyeColor = new Color(1f, 0.9f, 0.35f);
 
         public sealed class Parts
@@ -62,6 +66,9 @@ namespace Game.Enemies
 
             /// <summary>How high above the ground a floating creature hangs, at scale one. Zero for walkers.</summary>
             public float HoverHeight;
+
+            /// <summary>The surface the body and dark parts wear: chitin, hide, slime, scales or plasma.</summary>
+            public CreatureSkin.Kind Skin = CreatureSkin.Kind.Chitin;
         }
 
         // The two segments of a leg and where the lower one hinges on the upper one.
@@ -90,14 +97,21 @@ namespace Game.Enemies
 
         // Dark glossy chitin with the creature's colour in its seams: menace comes from the dark base and the glow,
         // which a boss asks for more of. The accent is a second light, for the parts that mark the species' skill.
-        public static Material[] CreateMaterials(Color color, Color eyes, Color accent, float glow)
+        public static Material[] CreateMaterials(Color color, Color eyes, Color accent, float glow) => CreateMaterials(color, eyes, accent, glow, CreatureSkin.Kind.None);
+
+        // With a skin the body is painted: the species colour tints the plates or fur, the grooves carry its glow.
+        public static Material[] CreateMaterials(Color color, Color eyes, Color accent, float glow, CreatureSkin.Kind skin)
         {
+            bool skinned = skin != CreatureSkin.Kind.None;
+            float bodyShade = skinned ? SkinnedBodyShade : BodyShade;
+            float darkShade = skinned ? SkinnedDarkShade : DarkShade;
+            Color seam = Color.Lerp(color, Color.white, 0.2f) * glow;
             return new[]
             {
-                SurfaceMaterials.Create(color * BodyShade, 0f, ChitinGloss, 0.1f),
+                CreatureSkin.Dress(SurfaceMaterials.Create(color * bodyShade, 0f, ChitinGloss, 0.1f), skin, seam * SeamGlow),
                 SurfaceMaterials.Create(eyes, EyeEmission * glow, 0.7f),
                 SurfaceMaterials.Create(Color.Lerp(color, Color.white, 0.15f), GlowEmission * glow, 0.5f),
-                SurfaceMaterials.Create(color * DarkShade, 0f, ChitinGloss, 0.15f),
+                CreatureSkin.Dress(SurfaceMaterials.Create(color * darkShade, 0f, ChitinGloss, 0.15f), skin, seam * DarkSeamGlow),
                 SurfaceMaterials.Create(Color.Lerp(accent, Color.white, 0.1f), AccentEmission * glow, 0.8f),
             };
         }
@@ -184,10 +198,10 @@ namespace Game.Enemies
         private static void Skitter(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.6f : 1f;
-            b.AddBlob(new Vector3(0f, 0.2f * k, 0.02f * k), new Vector3(0.09f, 0.08f, 0.13f) * k, 4, 8, 0.03f, 1, Body, true);
+            b.AddBlob(new Vector3(0f, 0.2f * k, 0.02f * k), new Vector3(0.09f, 0.08f, 0.13f) * k, 4, 8, 0.03f, 1, Body, false);
             b.AddBlob(new Vector3(0f, 0.25f * k, 0.02f * k), new Vector3(0.08f, 0.04f, 0.1f) * k, 3, 8, 0.02f, 2, Dark, true, Mathf.PI * 0.5f);
             b.AddTube(new[] { new Vector3(0f, 0.2f * k, -0.1f * k), new Vector3(0f, 0.21f * k, -0.2f * k) }, new[] { 0.03f * k, 0.03f * k }, 5, Dark, false);
-            b.AddBlob(new Vector3(0f, 0.22f * k, 0.22f * k), new Vector3(0.1f, 0.09f, 0.1f) * k, 4, 8, 0.02f, 3, Body, true);
+            b.AddBlob(new Vector3(0f, 0.22f * k, 0.22f * k), new Vector3(0.1f, 0.09f, 0.1f) * k, 4, 8, 0.02f, 3, Body, false);
             b.AddBlob(new Vector3(0f, 0.27f * k, 0.22f * k), new Vector3(0.09f, 0.04f, 0.08f) * k, 3, 8, 0.02f, 4, Dark, true, Mathf.PI * 0.5f);
             EyeCluster(b, new Vector3(0f, 0.24f * k, 0.3f * k), 0.028f * k);
             b.AddBlob(new Vector3(0f, 0.18f * k, 0.3f * k), new Vector3(0.05f, 0.025f, 0.03f) * k, 3, 6, 0f, 0, Accent, false);
@@ -205,7 +219,7 @@ namespace Game.Enemies
 
             var abdomen = new PropMeshBuilder(SlotCount);
             float ab = boss ? 1.5f : 1f;
-            abdomen.AddBlob(new Vector3(0f, 0f, -0.16f * k * ab), new Vector3(0.13f * ab, 0.11f * ab, 0.21f * ab) * k, 5, 9, 0.03f, 5, Body, true);
+            abdomen.AddBlob(new Vector3(0f, 0f, -0.16f * k * ab), new Vector3(0.13f * ab, 0.11f * ab, 0.21f * ab) * k, 5, 9, 0.03f, 5, Body, false);
             for (int i = 0; i < 3; i++)
             {
                 abdomen.AddTorus(new Vector3(0f, 0f, (-0.08f - i * 0.08f) * k * ab), Vector3.forward, (0.12f - i * 0.02f) * k * ab, 0.009f * k, 12, 4, Glow);
@@ -236,8 +250,8 @@ namespace Game.Enemies
         private static void Stinger(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.4f : 1f;
-            b.AddBlob(new Vector3(0f, 0.2f * k, 0.02f * k), new Vector3(0.26f, 0.11f, 0.3f) * k, 5, 10, 0.04f, 6, Body, true);
-            b.AddBlob(new Vector3(0f, 0.2f * k, 0.3f * k), new Vector3(0.17f, 0.09f, 0.12f) * k, 4, 8, 0.03f, 7, Body, true);
+            b.AddBlob(new Vector3(0f, 0.2f * k, 0.02f * k), new Vector3(0.26f, 0.11f, 0.3f) * k, 5, 10, 0.04f, 6, Body, false);
+            b.AddBlob(new Vector3(0f, 0.2f * k, 0.3f * k), new Vector3(0.17f, 0.09f, 0.12f) * k, 4, 8, 0.03f, 7, Body, false);
             EyeCluster(b, new Vector3(0f, 0.25f * k, 0.38f * k), 0.03f * k);
             b.AddTube(new[] { new Vector3(-0.24f * k, 0.2f * k, 0.1f * k), new Vector3(-0.27f * k, 0.21f * k, -0.2f * k) }, new[] { 0.008f * k, 0.008f * k }, 4, Glow, false);
             b.AddTube(new[] { new Vector3(0.24f * k, 0.2f * k, 0.1f * k), new Vector3(0.27f * k, 0.21f * k, -0.2f * k) }, new[] { 0.008f * k, 0.008f * k }, 4, Glow, false);
@@ -261,7 +275,7 @@ namespace Game.Enemies
             }
 
             Pincers(parts, new Vector3(0.17f * k, 0.17f * k, 0.3f * k), 0.3f * k, 0.035f * k);
-            StingTail(parts, new Vector3(0f, 0.22f * k, -0.28f * k), 0.7f * k, 0.045f * k, 0, 0f);
+            StingTail(parts, new Vector3(0f, 0.24f * k, -0.3f * k), 0.85f * k, 0.05f * k, 0, 0f);
             if (boss)
             {
                 StingTail(parts, new Vector3(0.12f * k, 0.22f * k, -0.26f * k), 0.6f * k, 0.035f * k, 1, 0.35f);
@@ -278,8 +292,8 @@ namespace Game.Enemies
         private static void Bat(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.8f : 1f;
-            b.AddBlob(Vector3.zero, new Vector3(0.1f, 0.1f, 0.15f) * k, 5, 8, 0.05f, 8, Body, true);
-            b.AddBlob(new Vector3(0f, 0.03f * k, 0.16f * k), new Vector3(0.075f, 0.07f, 0.08f) * k, 4, 8, 0.03f, 9, Body, true);
+            b.AddBlob(Vector3.zero, new Vector3(0.1f, 0.1f, 0.15f) * k, 5, 8, 0.05f, 8, Body, false);
+            b.AddBlob(new Vector3(0f, 0.03f * k, 0.16f * k), new Vector3(0.075f, 0.07f, 0.08f) * k, 4, 8, 0.03f, 9, Body, false);
             b.AddTube(new[] { new Vector3(0f, 0.02f * k, 0.2f * k), new Vector3(0f, -0.01f * k, 0.27f * k) }, new[] { 0.04f * k, 0.01f * k }, 5, Dark, false);
             b.AddBlob(new Vector3(0.045f * k, 0.06f * k, 0.21f * k), Vector3.one * 0.022f * k, 3, 6, 0f, 0, Eyes, false);
             b.AddBlob(new Vector3(-0.045f * k, 0.06f * k, 0.21f * k), Vector3.one * 0.022f * k, 3, 6, 0f, 0, Eyes, false);
@@ -309,6 +323,7 @@ namespace Game.Enemies
 
             Legs(parts, 0f, 0.05f * k, 0.1f * k, 0.01f * k, -0.04f * k);
             parts.LegsDangle = true;
+            parts.Skin = CreatureSkin.Kind.Membrane;
             parts.Height = 0.3f * k;
         }
 
@@ -318,17 +333,18 @@ namespace Game.Enemies
         private static void Bulwark(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.2f : 1f;
-            b.AddBlob(new Vector3(0f, 0.62f * k, 0f), new Vector3(0.2f, 0.26f, 0.16f) * k, 5, 9, 0.04f, 10, Body, true);
-            b.AddBlob(new Vector3(0f, 0.4f * k, 0f), new Vector3(0.15f, 0.1f, 0.13f) * k, 4, 8, 0.03f, 11, Dark, true);
-            b.AddTube(new[] { new Vector3(0f, 0.85f * k, 0.02f * k), new Vector3(0f, 0.95f * k, 0.06f * k) }, new[] { 0.07f * k, 0.06f * k }, 6, Dark, false);
-            b.AddBlob(new Vector3(0f, 1.02f * k, 0.1f * k), new Vector3(0.11f, 0.1f, 0.16f) * k, 4, 8, 0.03f, 12, Body, true);
-            b.AddTube(new[] { new Vector3(0f, 0.99f * k, 0.2f * k), new Vector3(0f, 0.95f * k, 0.32f * k) }, new[] { 0.07f * k, 0.03f * k }, 5, Dark, false);
-            b.AddBlob(new Vector3(0.06f * k, 1.06f * k, 0.2f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
-            b.AddBlob(new Vector3(-0.06f * k, 1.06f * k, 0.2f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
+            // The body leans into its walk: hips back, chest forward, the head out in front of the shoulders.
+            b.AddBlob(new Vector3(0f, 0.62f * k, 0.06f * k), new Vector3(0.21f, 0.26f, 0.17f) * k, 5, 9, 0.04f, 10, Body, false);
+            b.AddBlob(new Vector3(0f, 0.4f * k, -0.03f * k), new Vector3(0.16f, 0.1f, 0.14f) * k, 4, 8, 0.03f, 11, Dark, true);
+            b.AddTube(new[] { new Vector3(0f, 0.84f * k, 0.12f * k), new Vector3(0f, 0.93f * k, 0.2f * k) }, new[] { 0.07f * k, 0.06f * k }, 6, Dark, false);
+            b.AddBlob(new Vector3(0f, 0.98f * k, 0.26f * k), new Vector3(0.11f, 0.1f, 0.16f) * k, 4, 8, 0.03f, 12, Body, false);
+            b.AddTube(new[] { new Vector3(0f, 0.95f * k, 0.36f * k), new Vector3(0f, 0.9f * k, 0.48f * k) }, new[] { 0.07f * k, 0.03f * k }, 5, Dark, false);
+            b.AddBlob(new Vector3(0.06f * k, 1.02f * k, 0.36f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
+            b.AddBlob(new Vector3(-0.06f * k, 1.02f * k, 0.36f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
             for (int i = 0; i < (boss ? 5 : 3); i++)
             {
                 float z = (0.1f - i * 0.08f) * k;
-                Spike(b, new Vector3(0f, 1.08f * k, z), new Vector3(0f, (boss ? 1.4f : 1.28f) * k, z - 0.08f * k), 0.03f * k, boss ? Accent : Dark);
+                Spike(b, new Vector3(0f, 1.04f * k, z + 0.26f * k), new Vector3(0f, (boss ? 1.36f : 1.24f) * k, z + 0.16f * k), 0.03f * k, boss ? Accent : Dark);
             }
 
             // The shield: a broad plate on the left forearm with a lit rim.
@@ -358,9 +374,10 @@ namespace Game.Enemies
                 SwordArm(parts, new Vector3(-0.2f * k, 0.78f * k, 0.02f * k), 0.65f * k, 0.04f * k, true);
             }
 
-            StraightLegs(parts, 0.42f * k, 0.12f * k, 0.42f * k, 0.05f * k, 0f);
+            StraightLegs(parts, 0.42f * k, 0.16f * k, 0.44f * k, 0.055f * k, -0.02f * k);
             parts.StraightLegs = true;
             parts.Bleeds = true;
+            parts.Skin = CreatureSkin.Kind.Scales;
             parts.Height = (boss ? 1.45f : 1.3f) * k;
         }
 
@@ -369,9 +386,9 @@ namespace Game.Enemies
         private static void Prowler(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.3f : 1f;
-            b.AddBlob(new Vector3(0f, 0.36f * k, 0.05f * k), new Vector3(0.14f, 0.15f, 0.34f) * k, 5, 9, 0.04f, 14, Body, true);
-            b.AddBlob(new Vector3(0f, 0.34f * k, -0.25f * k), new Vector3(0.13f, 0.14f, 0.16f) * k, 4, 8, 0.03f, 15, Body, true);
-            b.AddBlob(new Vector3(0f, 0.42f * k, 0.3f * k), new Vector3(0.12f, 0.12f, 0.12f) * k, 4, 8, 0.03f, 16, Body, true);
+            b.AddBlob(new Vector3(0f, 0.36f * k, 0.05f * k), new Vector3(0.14f, 0.15f, 0.34f) * k, 5, 9, 0.04f, 14, Body, false);
+            b.AddBlob(new Vector3(0f, 0.34f * k, -0.25f * k), new Vector3(0.13f, 0.14f, 0.16f) * k, 4, 8, 0.03f, 15, Body, false);
+            b.AddBlob(new Vector3(0f, 0.42f * k, 0.3f * k), new Vector3(0.12f, 0.12f, 0.12f) * k, 4, 8, 0.03f, 16, Body, false);
             b.AddBlob(new Vector3(0f, 0.4f * k, 0.44f * k), new Vector3(0.08f, 0.07f, 0.14f) * k, 4, 8, 0.02f, 17, Dark, true);
             b.AddBlob(new Vector3(0.05f * k, 0.46f * k, 0.38f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
             b.AddBlob(new Vector3(-0.05f * k, 0.46f * k, 0.38f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
@@ -404,6 +421,7 @@ namespace Game.Enemies
             Mandibles(parts, new Vector3(0.05f * k, 0.36f * k, 0.5f * k), 0.12f * k, 0.022f * k, Dark);
             StraightLegs(parts, 0.3f * k, 0.1f * k, 0.3f * k, 0.03f * k, 0.22f * k, -0.22f * k);
             parts.StraightLegs = true;
+            parts.Skin = CreatureSkin.Kind.Hide;
             parts.Height = (boss ? 0.85f : 0.62f) * k;
         }
 
@@ -412,8 +430,15 @@ namespace Game.Enemies
         private static void Wisp(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.6f : 1f;
-            b.AddBlob(Vector3.zero, Vector3.one * 0.13f * k, 6, 12, 0f, 0, Accent, false);
-            b.AddBlob(Vector3.zero, Vector3.one * 0.17f * k, 6, 12, 0.08f, 18, Glow, true);
+            // A plasma shell over a white-hot core, so the skin's threads show through the glow.
+            b.AddBlob(Vector3.zero, Vector3.one * 0.1f * k, 6, 12, 0f, 0, Accent, false);
+            b.AddBlob(Vector3.zero, Vector3.one * 0.19f * k, 6, 14, 0.1f, 18, Body, false);
+            for (int i = 0; i < 5; i++)
+            {
+                float angle = i * Mathf.PI * 0.4f;
+                var dir = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle * 2.3f) * 0.6f, Mathf.Sin(angle)).normalized;
+                b.AddBlob(dir * 0.17f * k, Vector3.one * 0.05f * k, 3, 6, 0f, 0, Glow, false);
+            }
             if (boss)
             {
                 for (int i = 0; i < 8; i++)
@@ -429,7 +454,7 @@ namespace Game.Enemies
             {
                 var ring = new PropMeshBuilder(SlotCount);
                 float radius = (0.24f + i * 0.07f) * k;
-                ring.AddTorus(Vector3.zero, Vector3.up, radius, 0.014f * k, 24, 5, i % 2 == 0 ? Dark : Glow);
+                ring.AddTorus(Vector3.zero, Vector3.up, radius, 0.024f * k, 24, 6, i % 2 == 0 ? Dark : Glow);
                 for (int m = 0; m < 3; m++)
                 {
                     float angle = m * Mathf.PI * 2f / 3f + i;
@@ -440,6 +465,8 @@ namespace Game.Enemies
             }
 
             parts.HoverHeight = 0.45f;
+            parts.Embers = true;
+            parts.Skin = CreatureSkin.Kind.Energy;
             parts.Height = 0.5f * k;
         }
 
@@ -448,7 +475,7 @@ namespace Game.Enemies
         private static void Skyray(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.6f : 1f;
-            b.AddBlob(Vector3.zero, new Vector3(0.14f, 0.06f, 0.28f) * k, 5, 10, 0.02f, 19, Body, true);
+            b.AddBlob(Vector3.zero, new Vector3(0.14f, 0.06f, 0.28f) * k, 5, 10, 0.02f, 19, Body, false);
             b.AddBlob(new Vector3(0f, 0.03f * k, 0.05f * k), new Vector3(0.1f, 0.04f, 0.18f) * k, 3, 9, 0.02f, 20, Dark, true, Mathf.PI * 0.5f);
             b.AddBlob(new Vector3(0.05f * k, 0.05f * k, 0.16f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
             b.AddBlob(new Vector3(-0.05f * k, 0.05f * k, 0.16f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
@@ -473,6 +500,7 @@ namespace Game.Enemies
 
             WhipTail(parts, new Vector3(0f, 0f, -0.26f * k), (boss ? 0.95f : 0.7f) * k, 0.03f * k, boss);
             parts.LegsDangle = true;
+            parts.Skin = CreatureSkin.Kind.Scales;
             parts.Height = 0.25f * k;
         }
 
@@ -483,8 +511,8 @@ namespace Game.Enemies
             float k = boss ? 2.5f : 1f;
             b.AddBlob(new Vector3(0f, 0.09f * k, 0f), new Vector3(0.2f, 0.07f, 0.4f) * k, 4, 10, 0.03f, 21, Dark, true);
             b.AddBlob(new Vector3(0f, 0.06f * k, 0f), new Vector3(0.22f, 0.025f, 0.42f) * k, 2, 10, 0.02f, 22, Accent, true);
-            b.AddBlob(new Vector3(0f, 0.16f * k, 0.12f * k), new Vector3(0.17f, 0.13f, 0.28f) * k, 5, 10, 0.05f, 23, Body, true);
-            b.AddBlob(new Vector3(0f, 0.14f * k, 0.36f * k), new Vector3(0.11f, 0.09f, 0.12f) * k, 4, 8, 0.03f, 24, Body, true);
+            b.AddBlob(new Vector3(0f, 0.16f * k, 0.12f * k), new Vector3(0.17f, 0.13f, 0.28f) * k, 5, 10, 0.05f, 23, Body, false);
+            b.AddBlob(new Vector3(0f, 0.14f * k, 0.36f * k), new Vector3(0.11f, 0.09f, 0.12f) * k, 4, 8, 0.03f, 24, Body, false);
             b.AddBlob(new Vector3(0f, 0.08f * k, 0.44f * k), new Vector3(0.07f, 0.03f, 0.05f) * k, 3, 6, 0f, 0, Glow, false);
             if (boss)
             {
@@ -497,7 +525,7 @@ namespace Game.Enemies
             }
 
             var mantle = new PropMeshBuilder(SlotCount);
-            mantle.AddBlob(new Vector3(0f, 0f, -0.12f * k), new Vector3(0.2f, 0.16f, 0.3f) * k, 5, 10, 0.06f, 25, Body, true);
+            mantle.AddBlob(new Vector3(0f, 0f, -0.12f * k), new Vector3(0.2f, 0.16f, 0.3f) * k, 5, 10, 0.06f, 25, Body, false);
             mantle.AddBlob(new Vector3(0f, 0.06f * k, -0.1f * k), new Vector3(0.16f, 0.09f, 0.24f) * k, 3, 10, 0.04f, 26, Dark, true, Mathf.PI * 0.5f);
             for (int i = 0; i < (boss ? 9 : 5); i++)
             {
@@ -509,6 +537,7 @@ namespace Game.Enemies
 
             EyeStalks(parts, new Vector3(0.05f * k, 0.2f * k, 0.4f * k), 0.2f * k);
             parts.Bleeds = true;
+            parts.Skin = CreatureSkin.Kind.Slime;
             parts.Height = (boss ? 0.6f : 0.4f) * k;
         }
 
@@ -517,12 +546,12 @@ namespace Game.Enemies
         private static void Roller(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.3f : 1f;
-            b.AddBlob(new Vector3(0f, 0.22f * k, 0f), new Vector3(0.2f, 0.14f, 0.42f) * k, 5, 9, 0.04f, 12, Body, true);
+            b.AddBlob(new Vector3(0f, 0.22f * k, 0f), new Vector3(0.2f, 0.14f, 0.42f) * k, 5, 9, 0.04f, 12, Body, false);
 
             Mesh band = ShellBand(0.3f * k, 0.2f * k, 0.075f * k, 13, boss);
             var head = new PropMeshBuilder(SlotCount);
             ShellBand(head, 0.28f * k, 0.2f * k, 0.07f * k, 14, false);
-            head.AddBlob(new Vector3(0f, 0.18f * k, 0.12f * k), new Vector3(0.14f, 0.1f, 0.16f) * k, 4, 8, 0.04f, 15, Body, true);
+            head.AddBlob(new Vector3(0f, 0.18f * k, 0.12f * k), new Vector3(0.14f, 0.1f, 0.16f) * k, 4, 8, 0.04f, 15, Body, false);
             head.AddBlob(new Vector3(0f, 0.15f * k, 0.26f * k), new Vector3(0.08f, 0.05f, 0.08f) * k, 3, 7, 0.02f, 16, Dark, true);
             EyeCluster(head, new Vector3(0f, 0.22f * k, 0.24f * k), 0.025f * k);
             if (boss)
@@ -553,9 +582,9 @@ namespace Game.Enemies
         // Boss: a swollen abdomen full of glowing eggs on long legs, a crowned head, jaws and grasping arms.
         private static void Queen(PropMeshBuilder b, Parts parts)
         {
-            b.AddBlob(new Vector3(0f, 1.0f, 0.05f), new Vector3(0.45f, 0.4f, 0.45f), 5, 10, 0.06f, 18, Body, true);
+            b.AddBlob(new Vector3(0f, 1.0f, 0.05f), new Vector3(0.45f, 0.4f, 0.45f), 5, 10, 0.06f, 18, Body, false);
             b.AddBlob(new Vector3(0f, 1.25f, 0.05f), new Vector3(0.4f, 0.15f, 0.4f), 3, 10, 0.05f, 19, Dark, true, Mathf.PI * 0.5f);
-            b.AddBlob(new Vector3(0f, 1.1f, 0.65f), new Vector3(0.28f, 0.24f, 0.28f), 5, 10, 0.04f, 20, Body, true);
+            b.AddBlob(new Vector3(0f, 1.1f, 0.65f), new Vector3(0.28f, 0.24f, 0.28f), 5, 10, 0.04f, 20, Body, false);
             EyeCluster(b, new Vector3(0f, 1.16f, 0.9f), 0.055f);
             for (int i = 0; i < 5; i++)
             {
@@ -565,7 +594,7 @@ namespace Game.Enemies
             }
 
             var abdomen = new PropMeshBuilder(SlotCount);
-            abdomen.AddBlob(new Vector3(0f, 0f, -0.5f), new Vector3(0.7f, 0.6f, 0.9f), 6, 12, 0.07f, 17, Body, true);
+            abdomen.AddBlob(new Vector3(0f, 0f, -0.5f), new Vector3(0.7f, 0.6f, 0.9f), 6, 12, 0.07f, 17, Body, false);
             for (int i = 0; i < 3; i++)
             {
                 abdomen.AddTorus(new Vector3(0f, 0f, -0.3f - i * 0.3f), Vector3.forward, 0.66f - i * 0.1f, 0.025f, 18, 4, Dark);
@@ -677,7 +706,7 @@ namespace Game.Enemies
 
             var upper = new PropMeshBuilder(SlotCount);
             upper.AddTube(new[] { Vector3.zero, knee * 0.5f, knee }, new[] { radius, radius * 0.95f, radius * 0.8f }, 6, Dark, false);
-            upper.AddBlob(knee, Vector3.one * radius * 1.1f, 3, 6, 0f, 0, Body, true);
+            upper.AddBlob(knee, Vector3.one * radius * 1.1f, 3, 6, 0f, 0, Body, false);
 
             var lower = new PropMeshBuilder(SlotCount);
             var foot = new Vector3(reach * 0.35f, -drop * 1.45f, 0f);
@@ -728,7 +757,7 @@ namespace Game.Enemies
             var b = new PropMeshBuilder(SlotCount);
             var wrist = new Vector3(length * 0.2f, 0f, length * 0.45f);
             b.AddTube(new[] { Vector3.zero, wrist }, new[] { radius, radius * 0.9f }, 5, Dark, false);
-            b.AddBlob(wrist + new Vector3(0f, 0f, length * 0.12f), new Vector3(radius * 1.8f, radius * 1.3f, length * 0.2f), 4, 7, 0.03f, 27, Body, true);
+            b.AddBlob(wrist + new Vector3(0f, 0f, length * 0.12f), new Vector3(radius * 1.8f, radius * 1.3f, length * 0.2f), 4, 7, 0.03f, 27, Body, false);
             b.AddTube(new[] { wrist + new Vector3(radius * 0.8f, 0f, length * 0.25f), wrist + new Vector3(radius * 0.3f, 0f, length * 0.6f) }, new[] { radius * 0.7f, 0f }, 4, Dark, false);
             b.AddTube(new[] { wrist + new Vector3(-radius * 0.8f, 0f, length * 0.25f), wrist + new Vector3(-radius * 0.3f, 0f, length * 0.6f) }, new[] { radius * 0.7f, 0f }, 4, Accent, false);
             Mesh mesh = b.ToMesh("Pincer");
@@ -747,18 +776,18 @@ namespace Game.Enemies
             for (int i = 0; i <= Segments; i++)
             {
                 float t = i / (float)Segments;
-                float angle = Mathf.Lerp(-0.3f, 2.2f, t);
-                path[i] = new Vector3(lean * t * length * 0.6f, Mathf.Sin(angle) * length * 0.55f, (-0.1f + (1f - Mathf.Cos(angle)) * 0.4f) * length);
+                float angle = Mathf.Lerp(-0.2f, 2.4f, t);
+                path[i] = new Vector3(lean * t * length * 0.6f, Mathf.Sin(angle) * length * 0.65f, (-0.12f + (1f - Mathf.Cos(angle)) * 0.42f) * length);
                 radii[i] = radius * (1f - t * 0.45f);
                 if (i > 0 && i < Segments)
                 {
-                    b.AddBlob(path[i], Vector3.one * radius * (1.25f - t * 0.4f), 3, 7, 0.02f, 30 + i, Body, true);
+                    b.AddBlob(path[i], Vector3.one * radius * (1.25f - t * 0.4f), 3, 7, 0.02f, 30 + i, Body, false);
                 }
             }
 
             b.AddTube(path, radii, 6, Dark, false);
             Vector3 tip = path[Segments];
-            b.AddBlob(tip, Vector3.one * radius * 1.5f, 4, 7, 0f, 0, Body, true);
+            b.AddBlob(tip, Vector3.one * radius * 1.5f, 4, 7, 0f, 0, Body, false);
             b.AddTube(new[] { tip, tip + new Vector3(0f, -radius * 2f, radius * 3.5f) }, new[] { radius * 0.9f, 0f }, 5, Accent, false);
             parts.Moving.Add(new CreaturePart(CreatureRole.Stinger, b.ToMesh("StingTail"), pivot, false, 0f, index));
         }

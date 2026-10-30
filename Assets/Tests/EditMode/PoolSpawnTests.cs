@@ -61,6 +61,38 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Forest_NestsLieOffTheRoadInTheRightTerrain_AndFeedTheWaves()
+        {
+            LevelDefinition level = LoadForest();
+
+            Assert.Greater(level.Nests.Length, 0, "the forest has nests");
+            bool wood = false;
+            foreach (ElementNest nest in level.Nests)
+            {
+                Assert.IsFalse(level.Road.IsRoad(nest.Cell), $"nest at {nest.Cell} lies on the road");
+                TerrainKind wanted = LevelValidator.NestTerrain(nest.Element);
+                Assert.AreEqual(wanted == TerrainKind.Ground ? TerrainKind.Ground : wanted, TerrainMap.IsLiquid(wanted) ? level.Terrain.KindAt(nest.Cell) : TerrainKind.Ground, $"nest at {nest.Cell} sits in the wrong terrain");
+                wood |= nest.Element == Game.Core.Element.Wood;
+            }
+
+            Assert.IsTrue(wood, "moss bats roost in the woods");
+
+            bool nestSpawn = false;
+            foreach (DifficultyWaves set in level.DifficultyWaves)
+            {
+                foreach (WaveDefinition wave in set.Waves)
+                {
+                    foreach (SpawnGroup group in wave.Groups)
+                    {
+                        nestSpawn |= group.Source == SpawnSource.Nest && group.Enemy.Element != Game.Core.Element.None;
+                    }
+                }
+            }
+
+            Assert.IsTrue(nestSpawn, "some wave sends element creatures out of a nest");
+        }
+
+        [Test]
         public void Validator_RejectsPoolSpawnsWithoutPoolsAndDryPoolEntrances()
         {
             var theme = ScriptableObject.CreateInstance<VisualTheme>();

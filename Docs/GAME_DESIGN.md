@@ -144,26 +144,25 @@ Er zijn land- en luchtvijanden. Landvijanden volgen het pad, luchtvijanden vlieg
 
 | Vijand | Type | Eigenschap |
 | --- | --- | --- |
-| Scout | Land | Snel, weinig HP |
-| Grunt | Land | Gemiddeld in alles |
-| Brute | Land | Traag, veel HP |
-| Zwerm | Land | Veel kleine vijanden tegelijk |
-| Healer | Land | Herstelt vijanden in de buurt |
-| Pantser | Land | Immuun of bestand tegen bepaalde schade |
-| Sapper | Land | Valt torens, blokkades en padobjecten aan in plaats van door te lopen |
-| Vlieger | Lucht | Snel, weinig HP, valt torens en drones aan en duikt onderweg op een poort |
+| Skitter | Land | Mierachtige zwerm: zwak, in grote aantallen, druipt gif bij schade; vraagt om gebiedsschade |
+| Stinger | Land | Schorpioen: gloeiende pantserplaten die afvallen, spuit zuur op torens die hij passeert (schaalt met moeilijkheid) |
+| Emberbat, Tidebat, Mossbat, Dustbat | Lucht | Elementvleermuizen uit nesten bij lava, water, bos en zand; schieten elementbolts, storten neer en lossen op in hun element |
+| Bulwark | Land | Dino-mens met natuurlijke schilden (pantser), kristalzwaard, bloedt groen, valt dood neer |
+| Prowler | Land | Wolfachtige roedeljager: middelsnel, roedelgenoten rennen als er een sneuvelt |
+| Wisp | Land en lucht | Oeroude energiebol: loopt over de weg en wordt door poorten gestopt, maar luchtafweer raakt hem ook; veel schade, weinig HP |
+| Skyray | Lucht | Pijlstaartrog: zweeft over poorten en torens en zwiept met een gestekelde staart |
+| Oozer | Land | Slak met giftig slijmspoor: versnelt andere soorten, beschadigt hero en poorten (niet torens) |
 | Roller | Land | Gordeldierachtige die lopen en rollen afwisselt; rollend is hij een stuk sneller (vanaf level 2) |
-| Drowner | Land | Klimt uit water en loopt naar de dichtstbijzijnde weg |
-| Burrower | Land | Graaft zich uit drijfzand omhoog en loopt naar de dichtstbijzijnde weg |
-| Cinder | Land | Magmakever uit de lava, laat vonken achter en bijt torens |
-| Luchtzwerm | Lucht | Veel kleine vliegers tegelijk |
-| Bommenwerper | Lucht | Traag, veel HP, bombardeert torens en blokkades |
 
 **Wavestructuur.** Elk level heeft een eigen aantal waves (nu 20 tot 40, per level in te stellen) uit een eigen script in de generator: welke soorten meedoen en vanaf welke wave, een ritme van wavetypes (gewoon, stormloop, zwaar, hinderlaag uit de poelen), welke waves luchtaanvallen zijn, en per level een eigen reeks baaswaves (bijvoorbeeld 10 en 20, of 10, 20, 30 en 40). Een dreigingsbudget groeit per wave, en later in het level krijgen zwaardere soorten meer gewicht. De moeilijkheid schaalt aantallen, HP en tempo, en voegt luchtwaves en escortes toe: de landingszone heeft op easy geen luchteenheden, op psycho drie luchtwaves. Vijanden lopen traag, zodat je tussen waves kunt bouwen en upgraden.
 
 **Baswaves.** Sommige waves eindigen met een baas: een grote vijand met veel HP, een eigen vaardigheid en een uniek uiterlijk. Elke baas dwingt een andere aanpak af (bijvoorbeeld een pantserbaas die railguns vraagt, of een zwermbaas die splashschade vraagt). Bazen geven extra geld en power currency. Het laatste level heeft de eindbaas van de eerste wereld.
 
-**Baaskrachten en opkomst.** Elke baas draagt een of meer krachten uit data (`BossAbilityDefinition`): een **puls** die alle torens, poorten en drones in een straal beschadigt, een langzaam zwaaiende **laser** die de torens raakt die hij kruist, of het **broeden** van kleine wezens die de weg van de baas vervolgen. Bazen komen aan het eind van een level of halverwege een wave. Per level staat in data waar ze opkomen: door de poort, uit een poel (water, zand of lava) of door de grond heen, zodat elk level anders aanvoelt. Een baaswave begint met een alarm, een aardbevingsgerommel en zwaardere muziek.
+**Bazen per soort.** Elke soort heeft een koningin of koning: Brood Mother (Skitter), Acid Empress (Stinger), Storm Matriarch (vleermuis), Crystal Warlord (Bulwark), Pack Alpha (Prowler), Core Wisp, Sky Sovereign (Skyray), Slime Monarch (Oozer) en Roller King, plus de Hive Queen als eindbaas. Elk heeft een eigen tempo (de Alpha is snel en luid, de Monarch traag en taai) en eigen krachten.
+
+**Baaskrachten en opkomst.** Elke baas draagt een of meer krachten uit data (`BossAbilityDefinition`): een **puls** die alle torens, poorten en drones in een straal beschadigt, een **laser** die het dichtstbijzijnde doel vastpakt en brandt, het **broeden** van kleine wezens die de weg van de baas vervolgen, een **salvo** van bolts op meerdere torens, een **rally** die het hele veld versnelt, het **aangroeien** van eigen pantser, en **splitsen** in kleinere wezens bij elk verloren deel van de HP. Bazen komen aan het eind van een level of halverwege een wave. Per level staat in data waar ze opkomen: door de poort, uit een poel (water, zand of lava) of door de grond heen, zodat elk level anders aanvoelt. Een baaswave begint met een alarm, een aardbevingsgerommel en zwaardere muziek.
+
+**Elementnesten.** Elementvleermuizen komen niet door de poort maar uit nesten in data (`LevelDefinition.Nests`): een vent in de lava, een kolk in het water, een holle boom, een hol in het zand. Ze vliegen naar de dichtstbijzijnde weg en volgen die, of nemen in luchtwaves de vliegroute.
 
 **Poelen als spawnpunt.** Water, drijfzand en lava zijn niet alleen decor: een wavegroep kan er wezens uit laten opkomen. Die lopen naar de dichtstbijzijnde weg en volgen die naar de basis, dus ze kunnen bij poort twee of drie uitkomen in plaats van bij de eerste.
 

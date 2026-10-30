@@ -43,7 +43,7 @@ MonoBehaviour:
   _eyeColor: {r: 1, g: 0.95, b: 0.5, a: 1}
   _accentColor: {r: 0.75, g: 1, b: 0.25, a: 1}
   _bloodColor: {r: 0.62, g: 1, b: 0.2, a: 1}
-  _scale: 0.4
+  _scale: 0.45
   _shape: 20
   _deathStyle: 0
   _model: {fileID: 0}

@@ -98,7 +98,7 @@ namespace Game.Editor
                 Id = "Skitter", Layer = TargetLayers.Ground, Health = 16f, Speed = 1.6f, Reward = 2, BaseDamage = 1,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
                 Color = new Color(1f, 0.62f, 0.12f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
-                Scale = 0.4f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
+                Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
             });
             b.Stinger = CreateEnemy(new Creature
             {
@@ -169,7 +169,7 @@ namespace Game.Editor
                 Id = id, Layer = TargetLayers.Air, Flies = true, Health = 28f, Speed = 1.5f, Reward = 5, BaseDamage = 2, Element = element,
                 Attack = AttackStyle.Bolt, AttackDamage = 4f, BlockadeDamage = 4f, AttackRange = 2.8f, AttackInterval = 1.3f, GateStrikes = 2,
                 Color = color, Eyes = eyes, Accent = accent, Blood = accent,
-                Scale = 0.5f, Shape = EnemyShape.Bat, Death = DeathStyle.Crash,
+                Scale = 0.65f, Shape = EnemyShape.Bat, Death = DeathStyle.Crash,
             });
         }
 
