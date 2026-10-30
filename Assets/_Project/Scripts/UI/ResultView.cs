@@ -21,6 +21,7 @@ namespace Game.UI
         private const float PopSeconds = 0.3f;
         private const float PreviewSize = 230f;
         private const float ButtonWidth = 340f;
+        private const float DefeatDelaySeconds = 3.2f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.7f);
         private static readonly Color VictoryTint = new Color(0.12f, 0.26f, 0.5f, 0.98f);
         private static readonly Color DefeatTint = new Color(0.4f, 0.12f, 0.14f, 0.98f);
@@ -33,6 +34,7 @@ namespace Game.UI
         private RectTransform _safeRoot;
         private GameObject _root;
         private bool _shown;
+        private bool _waiting;
 
         public void Initialize(LevelContext context, RectTransform safeRoot)
         {
@@ -48,11 +50,31 @@ namespace Game.UI
 
         private void Refresh()
         {
-            if (_shown || _context.Outcome == LevelOutcome.Running || _context.Result == null)
+            if (_shown || _waiting || _context.Outcome == LevelOutcome.Running || _context.Result == null)
             {
                 return;
             }
 
+            // A defeat first shows the base going up before the panel covers it.
+            if (!_context.Result.Won)
+            {
+                _waiting = true;
+                Time.timeScale = 1f;
+                StartCoroutine(ShowAfter(DefeatDelaySeconds));
+                return;
+            }
+
+            Show();
+        }
+
+        private IEnumerator ShowAfter(float seconds)
+        {
+            yield return new WaitForSecondsRealtime(seconds);
+            Show();
+        }
+
+        private void Show()
+        {
             _shown = true;
             Time.timeScale = 1f;
             _root = Build(_context.Result);
@@ -143,7 +165,7 @@ namespace Game.UI
             frameRect.sizeDelta = new Vector2(PreviewSize, PreviewSize * 0.78f);
 
             ModelPreview preview = ModelPreview.Create(frameRect, new Vector2(PreviewSize, PreviewSize * 0.78f));
-            preview.Show(result.NewTower.Model, result.NewTower.ModelScale * 0.8f, Color.Lerp(Color.white, result.NewTower.Color, 0.55f));
+            preview.ShowTower(result.NewTower, 1.1f);
 
             string source = result.Source == UnlockSource.StolenAlienTech ? "Stolen alien technology" : "Intel from the home planet";
             Text heading = UiKit.CreateFixedText(rect, $"New weapon: {result.NewTower.DisplayName}", 44, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -470f), new Vector2(PanelWidth - PreviewSize - 140f, 60f));

@@ -11,6 +11,7 @@ namespace Game.Levels
     public sealed class LevelController : MonoBehaviour
     {
         private readonly List<SpawnRequest> _due = new List<SpawnRequest>();
+        private readonly System.Random _random = new System.Random();
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -54,6 +55,7 @@ namespace Game.Levels
                 return;
             }
 
+            _spawner.Step(Time.deltaTime);
             if (_scheduler != null)
             {
                 SpawnDueEnemies(Time.deltaTime);
@@ -79,7 +81,7 @@ namespace Game.Levels
             _scheduler.Advance(deltaTime, _due);
             for (int i = 0; i < _due.Count; i++)
             {
-                _spawner.Spawn(_due[i].Enemy, _due[i].PathIndex);
+                _spawner.Spawn(_due[i].Enemy, _due[i].PathIndex, _due[i].Source);
             }
 
             if (_scheduler.IsFinished)
@@ -93,12 +95,31 @@ namespace Game.Levels
 
         private void StartNextWave()
         {
-            _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty);
+            _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty, _random);
             PublishRoutes(_nextWaveIndex);
             _nextWaveIndex++;
             _context.WaveNumber = _nextWaveIndex;
             _context.NextWaveCountdown = 0f;
+            _context.BossWave = CarriesBoss(_waves[_nextWaveIndex - 1]);
             _context.Changed.Raise();
+            _context.WaveStarted.Raise();
+            if (_context.BossWave)
+            {
+                _context.BossWaveStarted.Raise();
+            }
+        }
+
+        private static bool CarriesBoss(WaveDefinition wave)
+        {
+            foreach (SpawnGroup group in wave.Groups)
+            {
+                if (group.Enemy != null && group.Enemy.IsBoss)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // Tells the view which flying routes the given wave uses. Beyond the last wave nothing is shown.

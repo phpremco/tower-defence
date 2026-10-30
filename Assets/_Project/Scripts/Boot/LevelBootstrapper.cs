@@ -17,7 +17,6 @@ namespace Game.Boot
     /// </summary>
     public sealed class LevelBootstrapper : MonoBehaviour
     {
-        private const float StartEnergy = 0f;
         private static readonly Vector3 SunRotation = new Vector3(50f, -30f, 0f);
 
         // Without a fill light the props in shadow go black; a share of the sun colour keeps them readable.
@@ -54,7 +53,7 @@ namespace Game.Boot
             _cameraRig.Apply(level);
             PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
             Dictionary<int, GameObject> routes = BuildEnvironment(level);
-            BuildGameplay(level, session.Difficulty, waves, debug, routes);
+            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing);
         }
 
         private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
@@ -76,10 +75,10 @@ namespace Game.Boot
             RenderSettings.ambientLight = Color.Lerp(theme.FogColor, theme.LightColor, AmbientShare) * AmbientBrightness;
 
             var visuals = new GameObject("LevelVisuals").transform;
-            return LevelVisualBuilder.Build(level, visuals);
+            return LevelVisualBuilder.Build(level, visuals, Services.Get<IPlatformSettings>().ParticleScale);
         }
 
-        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes)
+        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing)
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
@@ -116,15 +115,18 @@ namespace Game.Boot
             var wallet = new Wallet(level.StartingMoney, infiniteMoney);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
+            context.BriefingPending = briefing && level.Briefing.Length > 0;
             context.GlobalModifiers = global;
             Services.Register(context);
 
             IInputProvider input = Services.Get<IInputProvider>();
             _cameraRig.gameObject.AddComponent<CameraPanZoom>().Initialize(_cameraRig, level, input);
-            context.Energy = new EnergyPool(level.EnergyMax, level.EnergyPerSecond, StartEnergy);
             var drones = new GameObject("Drones").AddComponent<DroneController>();
             drones.Initialize(context, root);
             var spawner = new EnemySpawner(context, root);
+            var slime = new GameObject("Slime");
+            slime.transform.SetParent(root, false);
+            slime.AddComponent<SlimeFieldView>().Initialize(spawner.Slime);
 
             var controllers = new GameObject("Controllers");
             controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
@@ -133,9 +135,19 @@ namespace Game.Boot
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
             controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);
+            _cameraRig.gameObject.AddComponent<CameraShaker>().Initialize(_cameraRig, context);
+            // Ripples read the opaque texture, which only the high profile renders.
+            if (Services.Get<IPlatformSettings>().BloomEnabled)
+            {
+                controllers.AddComponent<RippleEffects>().Initialize(context);
+            }
+
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
-            controllers.AddComponent<SfxPlayer>().Initialize(context);
+            var mix = Services.Get<AudioMix>();
+            controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig);
+            controllers.AddComponent<MusicPlayer>().Initialize(context, mix);
+            FindAnyObjectByType<BaseView>()?.Bind(context);
             var hud = controllers.AddComponent<HudView>();
             hud.Initialize(context, time, _camera);
         }

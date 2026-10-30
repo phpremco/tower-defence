@@ -1,4 +1,5 @@
-﻿using Game.Core;
+﻿using System.Collections.Generic;
+using Game.Core;
 using Game.Economy;
 using Game.Levels;
 using Game.Platform;
@@ -24,8 +25,16 @@ namespace Game.Boot
         [SerializeField] private UnlockTable _unlockTable;
         [SerializeField] private PlaytestSettings _playtestSettings;
         [SerializeField] private UiSkin _uiSkin;
+        [SerializeField] private SfxLibrary _sfxLibrary;
+
+        // Everything in a level is built from runtime materials, which a player build cannot see when it strips
+        // shader variants. These saved materials carry the keyword combinations the game needs, so they survive.
+        [SerializeField] private Material[] _shaderKeepers = new Material[0];
 
         private static IInputProvider _input;
+
+        /// <summary>The materials that keep the runtime shader variants alive in a build.</summary>
+        public IReadOnlyList<Material> ShaderKeepers => _shaderKeepers;
 
         private void Awake()
         {
@@ -46,14 +55,26 @@ namespace Game.Boot
             Services.Register(_upgrades);
             Services.Register(_playtestSettings);
             Services.Register(_uiSkin);
+            if (_sfxLibrary != null)
+            {
+                Services.Register(_sfxLibrary);
+            }
+
             UiKit.Skin = _uiSkin;
 
-            AudioListener.volume = progress.Data.MasterVolumePercent / MaxVolumePercent;
+            // The listener carries the master level; the players multiply their own group in from the mix.
+            var mix = new AudioMix();
+            ProgressData data = progress.Data;
+            mix.Set(data.MasterVolumePercent / MaxVolumePercent, data.MusicVolumePercent / MaxVolumePercent, data.EffectsVolumePercent / MaxVolumePercent, data.AmbienceVolumePercent / MaxVolumePercent);
+            Services.Register(mix);
+            AudioListener.volume = mix.Master;
         }
 
+        // The first launch opens with the story; every later one goes straight to the menu.
         private void Start()
         {
-            SceneManager.LoadScene(SceneNames.MainMenu);
+            bool introSeen = Services.Get<ProgressService>().Data.IntroSeen;
+            SceneManager.LoadScene(introSeen ? SceneNames.MainMenu : SceneNames.Intro);
         }
     }
 }

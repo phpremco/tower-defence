@@ -1,22 +1,22 @@
-﻿using Game.Economy;
+﻿using Game.Core;
+using Game.Economy;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game.UI
 {
-    /// <summary>Options panel over the main menu: master volume in steps, stored in the saved progress.</summary>
+    /// <summary>Options panel over the main menu: the four volume sliders, stored in the saved progress, and the controls.</summary>
     public sealed class OptionsOverlay : MonoBehaviour
     {
-        private const int VolumeStep = 25;
-        private const int MaxVolume = 100;
-
         private MainMenuScreen _owner;
-        private ProgressService _progress;
         private GameObject _panel;
-        private Button _volumeButton;
         private GameObject _controlsPanel;
         private RectTransform _column;
         private Button _controlsButton;
+
+        // Six buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
+        private const float TitleTop = -36f;
+        private const float ColumnDrop = -40f;
 
         private const string ControlsText =
             "Move the cursor      Left stick / D-pad    Mouse\n" +
@@ -35,25 +35,28 @@ namespace Game.UI
         public void Open(MainMenuScreen owner)
         {
             _owner = owner;
-            Game.Core.Services.TryGet(out _progress);
+            Services.TryGet(out ProgressService progress);
+            Services.TryGet(out AudioMix mix);
 
             RectTransform root = UiKit.CreateRoot(transform);
             _panel = root.parent.gameObject;
             var background = new GameObject("Dim", typeof(RectTransform)).AddComponent<Image>();
             background.transform.SetParent(root, false);
-            background.color = new Color(0.04f, 0.05f, 0.08f, 0.96f);
+            background.color = new Color(0.04f, 0.05f, 0.08f, 0.9f);
             RectTransform rect = background.rectTransform;
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(1200f, 120f));
+            UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, 120f));
             _column = UiKit.CreateColumn(root, 24f);
-            _volumeButton = UiKit.CreateButton(_column, VolumeLabel(), CycleVolume);
+            _column.anchoredPosition = new Vector2(0f, ColumnDrop);
+            var volumes = new VolumeControls(progress, mix);
+            volumes.Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
             UiKit.CreateButton(_column, "Back", Close);
-            UiKit.Select(_volumeButton);
+            UiKit.Select(volumes.First);
 
             _controlsPanel = new GameObject("Controls", typeof(RectTransform));
             _controlsPanel.transform.SetParent(root, false);
@@ -83,21 +86,6 @@ namespace Game.UI
             UiKit.Select(_controlsButton);
         }
 
-        private void CycleVolume()
-        {
-            int next = _progress.Data.MasterVolumePercent + VolumeStep;
-            if (next > MaxVolume)
-            {
-                next = 0;
-            }
-
-            _progress.SetVolume(next);
-            AudioListener.volume = next / (float)MaxVolume;
-            UiKit.SetLabel(_volumeButton, VolumeLabel());
-        }
-
-        private string VolumeLabel() => $"Volume: {_progress.Data.MasterVolumePercent}%";
-
         private void Close()
         {
             Destroy(_panel);
@@ -106,6 +94,3 @@ namespace Game.UI
         }
     }
 }
-
-
-

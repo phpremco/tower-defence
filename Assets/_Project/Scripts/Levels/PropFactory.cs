@@ -8,39 +8,90 @@ namespace Game.Levels
     /// <summary>
     /// The alien decoration of a landscape, made from code: rocks, glowing crystals, fungus, trees, tendrils, broken
     /// columns, spikes, egg sacs and fronds. A few variants of every kind are built once per level and shared by
-    /// all the places that use them.
+    /// all the places that use them. Submesh slots: rock body, first glow, second glow, dark, leaf, bright core.
     /// </summary>
     public static class PropFactory
     {
         public const int Variants = 4;
+        public const int SlotCount = 6;
 
         private const int Body = 0;
         private const int GlowA = 1;
         private const int GlowB = 2;
         private const int Dark = 3;
-        private const float GlowEmission = 1.05f;
-        private const float RockSmoothness = 0.12f;
-        private const float GlowSmoothness = 0.55f;
+        private const int Leaf = 4;
+        private const int Core = 5;
+        private const float GlowEmission = 2f;
+        private const float LeafEmission = 0.5f;
+        private const float CoreEmission = 3.4f;
+        private const float RockSmoothness = 0.18f;
+        private const float GlowSmoothness = 0.85f;
+        private const float LeafSmoothness = 0.35f;
         private const float SecondGlowHueShift = 0.33f;
+        private const float VariantHueShift = 0.06f;
+        private const float VariantValueShift = 0.18f;
+        private const float CoreWhiteness = 0.65f;
 
-        /// <summary>The four materials every prop mesh uses, in submesh order: body, glow, second glow, dark.</summary>
-        public static Material[] CreateMaterials(VisualTheme theme)
+        /// <summary>Submesh slots of the glow materials, for whoever animates them.</summary>
+        public const int FirstGlowSlot = GlowA;
+        public const int SecondGlowSlot = GlowB;
+        public const int CoreSlot = Core;
+
+        /// <summary>How many colour variants a level mixes, so neighbouring plants are not all the same shade.</summary>
+        public const int ColourVariants = 3;
+
+        /// <summary>
+        /// The materials every prop mesh uses, in submesh order. Each colour variant shifts the plant and glow hues
+        /// a little, and the rock, bark and leaf surfaces get texture and relief.
+        /// </summary>
+        public static Material[] CreateMaterials(VisualTheme theme, int variant = 0)
         {
-            Color.RGBToHSV(theme.AccentColor, out float h, out float s, out float v);
-            Color second = Color.HSVToRGB(Mathf.Repeat(h + SecondGlowHueShift, 1f), s, v);
+            float shift = (variant - (ColourVariants - 1) * 0.5f) * VariantHueShift;
+            Color accent = Shift(theme.AccentColor, shift, 1f);
+            Color second = Shift(theme.AccentColor, SecondGlowHueShift + shift, 1f);
+            Color leaf = Shift(theme.PlantColor, shift * 1.5f, 1f + (variant % 2 == 0 ? VariantValueShift : -VariantValueShift));
+            Color core = Color.Lerp(accent, Color.white, CoreWhiteness);
+            PropTextures.Surface rock = PropTextures.Rock();
+            PropTextures.Surface bark = PropTextures.Bark();
+            PropTextures.Surface leafSurface = PropTextures.Leaf();
             return new[]
             {
-                Lit(theme.RockColor, 0f, RockSmoothness),
-                Lit(theme.AccentColor, GlowEmission, GlowSmoothness),
+                Dress(Lit(theme.RockColor, 0f, RockSmoothness), rock),
+                Lit(accent, GlowEmission, GlowSmoothness),
                 Lit(second, GlowEmission, GlowSmoothness),
-                Lit(theme.RockColor * 0.45f, 0f, RockSmoothness),
+                Dress(Lit(theme.RockColor * 0.45f, 0f, RockSmoothness), bark),
+                Dress(Lit(leaf, LeafEmission, LeafSmoothness), leafSurface),
+                Lit(core, CoreEmission, GlowSmoothness),
             };
         }
+
+        private static Color Shift(Color colour, float hue, float value)
+        {
+            Color.RGBToHSV(colour, out float h, out float s, out float v);
+            return Color.HSVToRGB(Mathf.Repeat(h + hue, 1f), s, Mathf.Clamp01(v * value));
+        }
+
+        private static Material Dress(Material material, PropTextures.Surface surface)
+        {
+            material.SetTexture("_BaseMap", surface.Albedo);
+            material.SetTexture("_BumpMap", surface.Normal);
+            material.SetFloat("_BumpScale", 1f);
+            material.EnableKeyword("_NORMALMAP");
+            return material;
+        }
+
+        /// <summary>Growth that bends in the wind, as opposed to stone.</summary>
+        public static bool IsPlant(PropKind kind) =>
+            kind == PropKind.Frond || kind == PropKind.Mushroom || kind == PropKind.GlowTree || kind == PropKind.Tendril;
+
+        /// <summary>Kinds whose light is strong enough to throw onto the ground around them.</summary>
+        public static bool IsGlowing(PropKind kind) =>
+            kind == PropKind.Crystal || kind == PropKind.GlowTree || kind == PropKind.Mushroom || kind == PropKind.Egg || kind == PropKind.Spike;
 
         public static Mesh Create(PropKind kind, int variant)
         {
             var rng = new Random((int)kind * 7919 + variant * 104729 + 17);
-            var builder = new PropMeshBuilder();
+            var builder = new PropMeshBuilder(SlotCount);
             switch (kind)
             {
                 case PropKind.Rock: BuildRock(builder, rng, 1f); break;
@@ -91,71 +142,107 @@ namespace Game.Levels
             return new Vector3(Mathf.Cos(angle) * distance, 0f, Mathf.Sin(angle) * distance);
         }
 
-        // Half buried, lumpy and faceted; a few smaller stones lean against the big one.
+        private static Vector3 Around(float angle) => new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+
+        // Half buried, lumpy and faceted, sitting in a dark skirt of rubble so it reads as planted in the ground;
+        // a few smaller stones lean against the big one, and glowing moss creeps along its foot on some.
         private static void BuildRock(PropMeshBuilder b, Random rng, float size)
         {
             var radii = new Vector3(Range(rng, 0.3f, 0.45f), Range(rng, 0.22f, 0.36f), Range(rng, 0.3f, 0.45f)) * size;
-            b.AddBlob(new Vector3(0f, radii.y * 0.45f, 0f), radii, 5, 8, 0.28f, rng.Next(100), Body, true);
+            b.AddBlob(new Vector3(0f, radii.y * 0.1f, 0f), new Vector3(radii.x * 1.2f, radii.y * 0.35f, radii.z * 1.2f), 3, 9, 0.25f, rng.Next(100), Dark, true);
+            b.AddBlob(new Vector3(0f, radii.y * 0.5f, 0f), radii, 6, 9, 0.26f, rng.Next(100), Body, true);
 
             int extra = rng.Next(1, 3);
             for (int i = 0; i < extra; i++)
             {
                 Vector3 offset = Ring(rng, radii.x * 1.1f);
                 var small = radii * Range(rng, 0.35f, 0.55f);
-                b.AddBlob(offset + Vector3.up * small.y * 0.4f, small, 4, 6, 0.3f, rng.Next(100), size > 1f ? Dark : Body, true);
+                b.AddBlob(offset + Vector3.up * small.y * 0.4f, small, 4, 7, 0.3f, rng.Next(100), size > 1f ? Dark : Body, true);
+            }
+
+            if (rng.Next(2) == 0)
+            {
+                int moss = rng.Next(2, 5);
+                for (int i = 0; i < moss; i++)
+                {
+                    float angle = Range(rng, 0f, Mathf.PI * 2f);
+                    var spot = new Vector3(Mathf.Cos(angle) * radii.x * 0.95f, radii.y * 0.18f, Mathf.Sin(angle) * radii.z * 0.95f);
+                    b.AddBlob(spot, new Vector3(0.06f, 0.025f, 0.06f) * size, 3, 6, 0.3f, rng.Next(100), i % 2 == 0 ? GlowA : Leaf, false);
+                }
             }
         }
 
-        // A cluster of faceted prisms that glow, rising out of a little pile of rock.
+        // One sharp hexagonal prism: a glowing shaft that ends in a bright pointed tip.
+        private static void Prism(PropMeshBuilder b, Vector3 root, Vector3 axis, float length, float radius, int glow)
+        {
+            Vector3 shoulder = root + axis * (length * 0.72f);
+            b.AddTube(new[] { root, root + axis * (length * 0.3f), shoulder }, new[] { radius * 0.8f, radius, radius }, 6, glow, true);
+            b.AddTube(new[] { shoulder, root + axis * length }, new[] { radius, 0f }, 6, Core, true);
+        }
+
+        // A cluster of faceted prisms, the tallest in the middle, with shards around the foot and a pool of light
+        // on the ground beneath them.
         private static void BuildCrystals(PropMeshBuilder b, Random rng)
         {
-            b.AddBlob(new Vector3(0f, 0.03f, 0f), new Vector3(0.3f, 0.12f, 0.3f), 4, 7, 0.2f, rng.Next(100), Dark, true);
-            int count = rng.Next(3, 7);
+            b.AddBlob(new Vector3(0f, 0.045f, 0f), new Vector3(0.36f, 0.035f, 0.36f), 3, 9, 0.25f, rng.Next(100), GlowA, false);
+            b.AddBlob(new Vector3(0f, 0.04f, 0f), new Vector3(0.3f, 0.13f, 0.3f), 4, 8, 0.2f, rng.Next(100), Dark, true);
+            b.AddBlob(new Vector3(0.1f, 0.06f, -0.08f), new Vector3(0.2f, 0.1f, 0.2f), 4, 7, 0.25f, rng.Next(100), Body, true);
+
+            Prism(b, Ring(rng, 0.05f), Tilted(rng, 10f), Range(rng, 0.9f, 1.3f), Range(rng, 0.11f, 0.15f), GlowA);
+            int count = rng.Next(2, 5);
             for (int i = 0; i < count; i++)
             {
-                Vector3 baseCenter = Ring(rng, 0.2f);
-                Vector3 axis = Tilted(rng, 28f);
-                float length = Range(rng, 0.35f, 1f);
-                float radius = Range(rng, 0.05f, 0.11f);
-                var path = new[] { baseCenter, baseCenter + axis * length * 0.7f, baseCenter + axis * length };
-                var radii = new[] { radius, radius * 0.8f, 0f };
-                b.AddTube(path, radii, 6, i % 2 == 0 ? GlowA : GlowB, true);
+                float angle = i / (float)count * Mathf.PI * 2f + Range(rng, -0.4f, 0.4f);
+                Vector3 root = Around(angle) * Range(rng, 0.12f, 0.22f);
+                Vector3 axis = (Around(angle) * Range(rng, 0.15f, 0.5f) + Vector3.up).normalized;
+                Prism(b, root, axis, Range(rng, 0.45f, 0.85f), Range(rng, 0.06f, 0.1f), i % 2 == 0 ? GlowB : GlowA);
+            }
+
+            int shards = rng.Next(4, 8);
+            for (int i = 0; i < shards; i++)
+            {
+                Vector3 root = Ring(rng, 0.36f);
+                Vector3 axis = Tilted(rng, 60f);
+                float length = Range(rng, 0.1f, 0.26f);
+                b.AddTube(new[] { root, root + axis * length }, new[] { Range(rng, 0.02f, 0.04f), 0f }, 5, i % 2 == 0 ? GlowB : Core, true);
             }
         }
 
-        // Fungus: a bent stalk, a glowing cap with a dark underside and bright spots.
+        // Fungus: a ribbed stalk, a domed cap with a rim of light, a dark gilled underside and bright spots.
         private static void BuildMushrooms(PropMeshBuilder b, Random rng)
         {
             int count = rng.Next(1, 4);
             for (int i = 0; i < count; i++)
             {
                 Vector3 root = i == 0 ? Vector3.zero : Ring(rng, 0.3f);
-                float height = Range(rng, 0.45f, 1f) * (i == 0 ? 1f : 0.6f);
-                Vector3 lean = new Vector3(Range(rng, -0.12f, 0.12f), 0f, Range(rng, -0.12f, 0.12f));
+                float height = Range(rng, 0.5f, 1.05f) * (i == 0 ? 1f : 0.6f);
+                var lean = new Vector3(Range(rng, -0.12f, 0.12f), 0f, Range(rng, -0.12f, 0.12f));
                 var path = new[] { root, root + lean * 0.4f + Vector3.up * height * 0.5f, root + lean + Vector3.up * height };
-                b.AddTube(path, new[] { 0.075f, 0.05f, 0.045f }, 7, Body, false);
+                b.AddTube(path, new[] { 0.085f, 0.055f, 0.05f }, 8, Leaf, false);
+                b.AddBlob(root + Vector3.up * 0.03f, new Vector3(0.12f, 0.04f, 0.12f), 3, 8, 0.2f, rng.Next(100), Dark, false);
 
-                float capRadius = Range(rng, 0.2f, 0.42f) * (i == 0 ? 1f : 0.7f);
+                float capRadius = Range(rng, 0.22f, 0.44f) * (i == 0 ? 1f : 0.7f);
                 Vector3 top = path[2];
                 int material = rng.Next(2) == 0 ? GlowA : GlowB;
-                b.AddBlob(top + Vector3.up * capRadius * 0.05f, new Vector3(capRadius, capRadius * 0.55f, capRadius), 5, 10, 0.06f, rng.Next(100), material, false, Mathf.PI * 0.52f);
-                b.AddBlob(top, new Vector3(capRadius * 0.92f, capRadius * 0.2f, capRadius * 0.92f), 3, 10, 0f, 0, Dark, false);
+                b.AddBlob(top + Vector3.up * capRadius * 0.05f, new Vector3(capRadius, capRadius * 0.6f, capRadius), 6, 14, 0.07f, rng.Next(100), material, false, Mathf.PI * 0.52f);
+                b.AddBlob(top, new Vector3(capRadius * 0.92f, capRadius * 0.2f, capRadius * 0.92f), 3, 12, 0f, 0, Dark, false);
+                b.AddTube(new[] { top + Vector3.up * 0.01f, top + Vector3.up * 0.04f }, new[] { capRadius * 0.98f, capRadius * 0.94f }, 14, Core, false);
 
-                int spots = rng.Next(2, 5);
+                int spots = rng.Next(3, 6);
                 for (int s = 0; s < spots; s++)
                 {
                     float angle = Range(rng, 0f, Mathf.PI * 2f);
-                    float ring = capRadius * Range(rng, 0.2f, 0.65f);
-                    var spot = top + new Vector3(Mathf.Cos(angle) * ring, capRadius * 0.5f * (1f - ring / capRadius * 0.6f), Mathf.Sin(angle) * ring);
-                    b.AddBlob(spot, Vector3.one * capRadius * 0.12f, 3, 6, 0f, 0, material == GlowA ? GlowB : GlowA, false);
+                    float ring = capRadius * Range(rng, 0.15f, 0.65f);
+                    var spot = top + new Vector3(Mathf.Cos(angle) * ring, capRadius * 0.58f * (1f - ring / capRadius * 0.6f), Mathf.Sin(angle) * ring);
+                    b.AddBlob(spot, Vector3.one * capRadius * 0.11f, 3, 6, 0f, 0, Core, false);
                 }
             }
         }
 
-        // A twisted trunk with branches that end in broad glowing leaves and hanging orbs.
+        // A twisted trunk on spreading roots, a canopy of layered leaf clumps, and glowing fruit hanging beneath.
         private static void BuildTree(PropMeshBuilder b, Random rng)
         {
-            float height = Range(rng, 1f, 1.5f);
+            float height = Range(rng, 1.1f, 1.6f);
             float sway = Range(rng, -0.2f, 0.2f);
             var trunk = new[]
             {
@@ -164,34 +251,41 @@ namespace Game.Levels
                 new Vector3(-sway * 0.2f, height * 0.7f, sway * 0.2f),
                 new Vector3(sway * 0.5f, height, 0f),
             };
-            b.AddTube(trunk, new[] { 0.12f, 0.09f, 0.065f, 0.04f }, 7, Dark, false);
-
-            int branches = rng.Next(3, 5);
-            for (int i = 0; i < branches; i++)
+            b.AddTube(trunk, new[] { 0.14f, 0.1f, 0.07f, 0.045f }, 8, Dark, false);
+            int roots = rng.Next(3, 5);
+            for (int i = 0; i < roots; i++)
             {
-                float angle = i / (float)branches * Mathf.PI * 2f + Range(rng, -0.4f, 0.4f);
-                Vector3 start = Vector3.Lerp(trunk[2], trunk[3], Range(rng, 0f, 1f));
-                Vector3 direction = new Vector3(Mathf.Cos(angle), Range(rng, 0.2f, 0.7f), Mathf.Sin(angle)).normalized;
-                float length = Range(rng, 0.35f, 0.6f);
-                Vector3 end = start + direction * length;
-                b.AddTube(new[] { start, Vector3.Lerp(start, end, 0.5f) + Vector3.up * 0.06f, end }, new[] { 0.04f, 0.028f, 0.012f }, 5, Dark, false);
-
-                int leaf = i % 2 == 0 ? GlowA : GlowB;
-                float leafRadius = Range(rng, 0.2f, 0.32f);
-                b.AddBlob(end, new Vector3(leafRadius, leafRadius * 0.28f, leafRadius), 4, 9, 0.12f, rng.Next(100), leaf, false);
-                b.AddBlob(end + new Vector3(0f, -0.15f, 0f), Vector3.one * 0.045f, 3, 6, 0f, 0, leaf == GlowA ? GlowB : GlowA, false);
+                Vector3 outward = Around(i / (float)roots * Mathf.PI * 2f + Range(rng, -0.3f, 0.3f));
+                b.AddTube(new[] { Vector3.up * 0.18f, outward * 0.12f + Vector3.up * 0.08f, outward * Range(rng, 0.25f, 0.4f) }, new[] { 0.07f, 0.05f, 0f }, 5, Dark, false);
             }
+
+            int clumps = rng.Next(4, 7);
+            for (int i = 0; i < clumps; i++)
+            {
+                float angle = i / (float)clumps * Mathf.PI * 2f + Range(rng, -0.4f, 0.4f);
+                float reach = Range(rng, 0.25f, 0.5f);
+                Vector3 centre = trunk[3] + Around(angle) * reach + Vector3.up * Range(rng, -0.1f, 0.2f);
+                b.AddTube(new[] { Vector3.Lerp(trunk[2], trunk[3], 0.6f), centre }, new[] { 0.04f, 0.015f }, 5, Dark, false);
+                float radius = Range(rng, 0.26f, 0.4f);
+                b.AddBlob(centre, new Vector3(radius, radius * 0.5f, radius), 4, 9, 0.18f, rng.Next(100), Leaf, false);
+                b.AddBlob(centre + Vector3.up * radius * 0.25f, new Vector3(radius * 0.55f, radius * 0.3f, radius * 0.55f), 3, 7, 0.15f, rng.Next(100), i % 2 == 0 ? GlowA : GlowB, false);
+
+                Vector3 fruit = centre + Vector3.up * (-radius * 0.45f) + Ring(rng, radius * 0.4f);
+                b.AddTube(new[] { centre, fruit }, new[] { 0.012f, 0.012f }, 3, Dark, false);
+                b.AddBlob(fruit, Vector3.one * Range(rng, 0.045f, 0.07f), 4, 7, 0f, 0, Core, false);
+            }
+
+            b.AddBlob(trunk[3] + Vector3.up * 0.15f, new Vector3(0.42f, 0.22f, 0.42f), 4, 9, 0.2f, rng.Next(100), Leaf, false);
         }
 
-        // Fleshy stalks curling out of the ground, each ending in a small glowing bulb.
+        // Fleshy stalks curling out of the ground, each ending in a bright bulb.
         private static void BuildTendrils(PropMeshBuilder b, Random rng)
         {
             int count = rng.Next(3, 6);
             for (int i = 0; i < count; i++)
             {
                 Vector3 root = Ring(rng, 0.18f);
-                float angle = Range(rng, 0f, Mathf.PI * 2f);
-                var outward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+                Vector3 outward = Around(Range(rng, 0f, Mathf.PI * 2f));
                 float height = Range(rng, 0.5f, 1.1f);
                 var path = new Vector3[5];
                 var radii = new float[5];
@@ -202,8 +296,8 @@ namespace Game.Levels
                     radii[p] = Mathf.Lerp(0.085f, 0.015f, t);
                 }
 
-                b.AddTube(path, radii, 6, Body, false);
-                b.AddBlob(path[4] + Vector3.up * 0.03f, Vector3.one * Range(rng, 0.05f, 0.09f), 4, 7, 0f, 0, i % 2 == 0 ? GlowA : GlowB, false);
+                b.AddTube(path, radii, 6, Leaf, false);
+                b.AddBlob(path[4] + Vector3.up * 0.03f, Vector3.one * Range(rng, 0.05f, 0.09f), 4, 7, 0f, 0, i % 2 == 0 ? Core : GlowB, false);
             }
         }
 
@@ -244,6 +338,7 @@ namespace Game.Levels
             }
 
             b.AddBlob(new Vector3(0f, 0.02f, 0f), new Vector3(0.28f, 0.05f, 0.28f), 3, 8, 0.2f, rng.Next(100), GlowA, false);
+            b.AddBlob(new Vector3(0f, 0.03f, 0f), new Vector3(0.12f, 0.03f, 0.12f), 3, 8, 0.2f, rng.Next(100), Core, false);
         }
 
         // Pale egg sacs in a nest of dark goo, with glowing veins showing through.
@@ -262,7 +357,7 @@ namespace Game.Levels
                 {
                     float angle = Range(rng, 0f, Mathf.PI * 2f);
                     var spot = centre + new Vector3(Mathf.Cos(angle) * size * 0.85f, radii.y * Range(rng, 0.8f, 1.6f), Mathf.Sin(angle) * size * 0.85f);
-                    b.AddBlob(spot, Vector3.one * size * 0.18f, 3, 6, 0f, 0, GlowA, false);
+                    b.AddBlob(spot, Vector3.one * size * 0.18f, 3, 6, 0f, 0, s == 0 ? Core : GlowA, false);
                 }
             }
         }
@@ -272,7 +367,7 @@ namespace Game.Levels
         {
             float height = Range(rng, 2.2f, 3.4f);
             float radius = Range(rng, 0.45f, 0.7f);
-            Vector3 lean = new Vector3(Range(rng, -0.3f, 0.3f), 0f, Range(rng, -0.3f, 0.3f));
+            var lean = new Vector3(Range(rng, -0.3f, 0.3f), 0f, Range(rng, -0.3f, 0.3f));
             var path = new[]
             {
                 Vector3.zero,
@@ -286,33 +381,42 @@ namespace Game.Levels
             for (int i = 0; i < crystals; i++)
             {
                 Vector3 baseCenter = lean * Range(rng, 0.5f, 0.9f) + Vector3.up * height * Range(rng, 0.45f, 0.8f) + Ring(rng, radius * 0.5f);
-                Vector3 axis = Tilted(rng, 50f);
-                float length = Range(rng, 0.5f, 1f);
-                float size = Range(rng, 0.07f, 0.12f);
-                b.AddTube(new[] { baseCenter, baseCenter + axis * length }, new[] { size, 0f }, 5, i % 2 == 0 ? GlowA : GlowB, true);
+                Prism(b, baseCenter, Tilted(rng, 50f), Range(rng, 0.5f, 1f), Range(rng, 0.07f, 0.12f), i % 2 == 0 ? GlowA : GlowB);
             }
 
             b.AddBlob(new Vector3(0f, 0.15f, 0f), new Vector3(radius * 1.5f, 0.3f, radius * 1.5f), 4, 8, 0.25f, rng.Next(100), Dark, true);
         }
 
-        // A tuft of thin curved blades, tipped with light.
+        // A tuft of broad curling leaves around a glowing bud, every other leaf tipped with light.
         private static void BuildFronds(PropMeshBuilder b, Random rng)
         {
-            int count = rng.Next(5, 9);
+            int count = rng.Next(5, 8);
             for (int i = 0; i < count; i++)
             {
                 float angle = i / (float)count * Mathf.PI * 2f + Range(rng, -0.3f, 0.3f);
-                var outward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-                float length = Range(rng, 0.3f, 0.6f);
-                Vector3 root = outward * 0.04f;
-                var path = new[]
+                Vector3 outward = Around(angle);
+                Vector3 side = Vector3.Cross(Vector3.up, outward);
+                float length = Range(rng, 0.35f, 0.65f);
+                float droop = Range(rng, 0.1f, 0.4f);
+                Vector3 root = outward * 0.03f;
+                var spine = new[]
                 {
                     root,
-                    root + outward * length * 0.25f + Vector3.up * length * 0.55f,
-                    root + outward * length * 0.6f + Vector3.up * length * 0.85f,
+                    root + outward * length * 0.2f + Vector3.up * length * 0.5f,
+                    root + outward * length * 0.5f + Vector3.up * length * 0.8f,
+                    root + outward * length * 0.85f + Vector3.up * length * (0.85f - droop),
+                    root + outward * length * 1.05f + Vector3.up * length * (0.7f - droop),
                 };
-                b.AddTube(path, new[] { 0.028f, 0.02f, 0f }, 3, i % 2 == 0 ? GlowA : GlowB, false);
+                float width = Range(rng, 0.14f, 0.24f);
+                b.AddBlade(spine, new[] { width * 0.35f, width * 0.9f, width, width * 0.6f, 0f }, side, Leaf);
+                if (i % 2 == 0)
+                {
+                    b.AddBlob(spine[4], Vector3.one * 0.03f, 3, 6, 0f, 0, Core, false);
+                }
             }
+
+            b.AddBlob(new Vector3(0f, 0.12f, 0f), new Vector3(0.07f, 0.1f, 0.07f), 4, 7, 0f, 0, GlowA, false);
+            b.AddBlob(new Vector3(0f, 0.2f, 0f), Vector3.one * 0.035f, 3, 6, 0f, 0, Core, false);
         }
     }
 }

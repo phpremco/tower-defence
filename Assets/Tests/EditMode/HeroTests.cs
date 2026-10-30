@@ -21,6 +21,7 @@ namespace Game.Tests
         }
 
         private HeroDefinition _definition;
+        private HeroWeaponDefinition _weapon;
         private GameObject _go;
         private Commander _hero;
         private FakeGuarded _first;
@@ -29,6 +30,10 @@ namespace Game.Tests
         public void SetUp()
         {
             _definition = ScriptableObject.CreateInstance<HeroDefinition>();
+            _weapon = ScriptableObject.CreateInstance<HeroWeaponDefinition>();
+            var definitionProps = new UnityEditor.SerializedObject(_definition);
+            definitionProps.FindProperty("_weapon").objectReferenceValue = _weapon;
+            definitionProps.ApplyModifiedPropertiesWithoutUndo();
             _go = new GameObject("Hero");
             _hero = _go.AddComponent<Commander>();
             _first = new FakeGuarded { Position = Vector3.zero };
@@ -46,6 +51,7 @@ namespace Game.Tests
         {
             Object.DestroyImmediate(_go);
             Object.DestroyImmediate(_definition);
+            Object.DestroyImmediate(_weapon);
         }
 
         [Test]

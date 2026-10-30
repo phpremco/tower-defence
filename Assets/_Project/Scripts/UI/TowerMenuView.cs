@@ -15,11 +15,12 @@ namespace Game.UI
         private const float IconSize = 100f;
         private const float Spacing = 70f;
         private const float LabelHeight = 64f;
+        private const float LabelGap = 8f;
         private const int LabelSize = 24;
         private const float WorldHeight = 2.7f;
         private const float RefreshSeconds = 0.25f;
         private const float BackdropPadding = 14f;
-        private const float PanelWidth = 900f;
+        private const float PanelWidth = 1000f;
         private const float TopFraction = 0.1f;
         private const float BelowOffset = 240f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
@@ -90,7 +91,7 @@ namespace Game.UI
             _panel.anchorMin = new Vector2(0.5f, 0.5f);
             _panel.anchorMax = new Vector2(0.5f, 0.5f);
             _panel.pivot = new Vector2(0.5f, 0f);
-            _panel.sizeDelta = new Vector2(PanelWidth, IconSize + LabelHeight * 3f + 10f);
+            _panel.sizeDelta = new Vector2(PanelWidth, IconSize + LabelHeight * 3f + LabelGap * 2f);
 
             UiKit.CreatePanel(
                 _panel, "Backdrop", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-BackdropPadding, -BackdropPadding), new Vector2(BackdropPadding, BackdropPadding), new Color(0.05f, 0.09f, 0.18f, 0.9f));
@@ -130,7 +131,7 @@ namespace Game.UI
             rect.anchorMin = new Vector2(0.5f, 0f);
             rect.anchorMax = new Vector2(0.5f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = new Vector2(x, LabelHeight);
+            rect.anchoredPosition = new Vector2(x, LabelHeight + LabelGap);
             Destroy(button.GetComponent<LayoutElement>());
 
             ColorBlock colors = button.colors;
@@ -141,7 +142,7 @@ namespace Game.UI
             colors.disabledColor = new Color(0.12f, 0.12f, 0.14f);
             button.colors = colors;
 
-            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, 0f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing - 10f, LabelHeight));
+            price = CreateLabel(new Vector2(0.5f, 0f), new Vector2(x, LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(IconSize + Spacing - 10f, LabelHeight));
             return button;
         }
 
@@ -251,6 +252,9 @@ namespace Game.UI
                 return;
             }
 
+            // Kept inside the screen sideways, so a base or tower at the edge still shows its whole menu.
+            float halfRoom = _root.rect.width * 0.5f - PanelWidth * 0.5f - BackdropPadding;
+            local.x = Mathf.Clamp(local.x, -halfRoom, halfRoom);
             bool nearTop = local.y > _root.rect.height * TopFraction;
             _panel.pivot = new Vector2(0.5f, nearTop ? 1f : 0f);
             _panel.anchoredPosition = nearTop ? local - new Vector2(0f, BelowOffset) : local;

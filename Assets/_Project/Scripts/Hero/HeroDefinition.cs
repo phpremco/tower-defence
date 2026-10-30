@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Hero
 {
-    /// <summary>Stats and abilities of the commander. Everything about how it plays is data.</summary>
+    /// <summary>Stats and abilities of the commander. Everything about how it plays is data; the weapon it carries is its own asset.</summary>
     [CreateAssetMenu(menuName = "Game/Hero Definition", fileName = "HeroDefinition")]
     public sealed class HeroDefinition : ScriptableObject
     {
@@ -11,13 +11,8 @@ namespace Game.Hero
         [SerializeField] [Min(1f)] private float _maxHealth = 200f;
         [SerializeField] [Min(0.5f)] private float _walkSpeed = 5f;
 
-        /// <summary>Damage of one melee hit.</summary>
-        [SerializeField] [Min(1f)] private float _damage = 18f;
-
-        /// <summary>How far from the hero an enemy can be and still be hit.</summary>
-        [SerializeField] [Min(0.5f)] private float _reach = 1.5f;
-
-        [SerializeField] [Min(0.05f)] private float _strikeInterval = 0.7f;
+        /// <summary>The weapon the hero fights with: damage, reach, pace, look and animation.</summary>
+        [SerializeField] private HeroWeaponDefinition _weapon;
 
         /// <summary>Share of the hits on the guarded blockade that the hero takes instead.</summary>
         [SerializeField] [Range(0f, 1f)] private float _guardShare = 0.4f;
@@ -40,9 +35,10 @@ namespace Game.Hero
         public string DisplayName => _displayName;
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
-        public float Damage => _damage;
-        public float Reach => _reach;
-        public float StrikeInterval => _strikeInterval;
+        public HeroWeaponDefinition Weapon => _weapon;
+        public float Damage => _weapon.Damage;
+        public float Reach => _weapon.Reach;
+        public float StrikeInterval => _weapon.AttackInterval;
         public float GuardShare => _guardShare;
         public float ReviveSeconds => _reviveSeconds;
         public float ShockwaveDamage => _shockwaveDamage;
@@ -53,9 +49,17 @@ namespace Game.Hero
         public int RepairCost => _repairCost;
         public Color Color => _color;
 
-        /// <summary>The hero fights on the ground, in melee.</summary>
-        public TargetLayers Targets => TargetLayers.Ground;
+        /// <summary>What the hero's weapon can hit.</summary>
+        public TargetLayers Targets => _weapon.Targets;
 
         public TargetLayers ShockwaveTargets => TargetLayers.Ground | TargetLayers.Air;
+
+        private void OnValidate()
+        {
+            if (_weapon == null)
+            {
+                Debug.LogWarning($"HeroDefinition '{name}' has no weapon.", this);
+            }
+        }
     }
 }

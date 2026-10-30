@@ -10,6 +10,10 @@ namespace Game.Economy
         public int ResearchPoints;
         public int PowerCurrency;
         public int MasterVolumePercent = 100;
+        public int MusicVolumePercent = 70;
+        public int EffectsVolumePercent = 100;
+        public int AmbienceVolumePercent = 80;
+        public bool IntroSeen;
         public List<string> UnlockedTowerIds = new List<string>();
         public List<string> CompletedLevels = new List<string>();
         public List<UpgradeLevel> Upgrades = new List<UpgradeLevel>();

@@ -20,6 +20,7 @@ namespace Game.Tests
         private const float TimeoutSeconds = 90f;
         private const float BuyIntervalSeconds = 1f;
         private const int LevelCount = 5;
+        private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
 
         [UnityTest]
         [NUnit.Framework.Timeout(1800000)]
@@ -30,6 +31,11 @@ namespace Game.Tests
             {
                 for (int difficulty = 0; difficulty < 4; difficulty++)
                 {
+                    if (!Wanted("levels", level) || !Wanted("difficulties", difficulty))
+                    {
+                        continue;
+                    }
+
                     SceneManager.LoadScene(SceneNames.Boot);
                     yield return null;
                     yield return null;
@@ -77,7 +83,7 @@ namespace Game.Tests
                     Time.timeScale = 1f;
                     Assert.IsNotNull(context);
                     LogAssert.NoUnexpectedReceived();
-                    report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {placed}");
+                    report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {placed}, money {context.Wallet.Money}");
                 }
             }
 
@@ -85,12 +91,40 @@ namespace Game.Tests
             Debug.Log(string.Join(" | ", report));
         }
 
+        // An optional filter file narrows a run, one "levels=0,1" or "difficulties=1,2" line each; no file means everything.
+        private static bool Wanted(string key, int value)
+        {
+            if (!System.IO.File.Exists(FilterPath))
+            {
+                return true;
+            }
+
+            foreach (string line in System.IO.File.ReadAllLines(FilterPath))
+            {
+                string[] parts = line.Split('=');
+                if (parts.Length == 2 && parts[0].Trim() == key)
+                {
+                    foreach (string item in parts[1].Split(','))
+                    {
+                        if (int.TryParse(item.Trim(), out int wanted) && wanted == value)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         // Cells beside the road, nearest first, so the bot always builds where towers can reach the path.
         private static List<Vector2Int> RankBuildSpots(LevelDefinition level)
         {
             var grid = level.Grid;
             var buildGrid = new BuildGrid(level);
-            var road = new List<Vector2Int>(LevelValidator.RoadCells(level));
+            var road = new List<Vector2Int>(level.Road.Cells);
             var spots = new List<(Vector2Int Cell, float Score)>();
 
             for (int x = 0; x < grid.Size.x; x++)

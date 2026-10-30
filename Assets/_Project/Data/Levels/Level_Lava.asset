@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Level_Lava
   m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
   _displayName: Lava Caves
-  _gridSize: {x: 22, y: 16}
+  _regionName: Lava Fields
+  _briefing: The energy we came for lies in these lava fields. The heat does not stop the swarm, and halfway through something climbs out of the lava itself.
+  _gridSize: {x: 22, y: 17}
   _cellSize: 1
   _theme: {fileID: 11400000, guid: d7483e12a2f7abd409d568eceb885ed3, type: 2}
   _camera:
@@ -24,35 +26,38 @@ MonoBehaviour:
   - Name: Road
     Flying: 0
     Waypoints:
-    - {x: 0, y: 14}
-    - {x: 18, y: 14}
-    - {x: 18, y: 11}
-    - {x: 3, y: 11}
-    - {x: 3, y: 8}
-    - {x: 18, y: 8}
-    - {x: 18, y: 5}
-    - {x: 3, y: 5}
-    - {x: 3, y: 2}
+    - {x: 0, y: 15}
+    - {x: 18, y: 15}
+    - {x: 18, y: 10}
+    - {x: 3, y: 10}
+    - {x: 3, y: 7}
+    - {x: 18, y: 7}
+    - {x: 18, y: 2}
     - {x: 21, y: 2}
   - Name: North air route
     Flying: 1
     Waypoints:
-    - {x: 0, y: 15}
+    - {x: 0, y: 16}
     - {x: 21, y: 2}
   - Name: South air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 0}
-    - {x: 11, y: 7}
+    - {x: 11, y: 8}
     - {x: 21, y: 2}
+  _roadWidth: 2
+  _plazaCells: []
   _blockedCells:
-  - {x: 1, y: 5}
-  - {x: 1, y: 9}
-  - {x: 20, y: 6}
+  - {x: 5, y: 1}
+  - {x: 7, y: 2}
+  - {x: 10, y: 1}
+  - {x: 13, y: 1}
+  - {x: 13, y: 2}
+  - {x: 15, y: 4}
   _blockades:
-  - Cell: {x: 10, y: 11}
+  - Cell: {x: 8, y: 10}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 10, y: 5}
+  - Cell: {x: 12, y: 7}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
   - Cell: {x: 5, y: 13}
@@ -77,53 +82,27 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 16, y: 13}
     Kind: 3
+  - Cell: {x: 4, y: 8}
+    Kind: 3
+  - Cell: {x: 5, y: 8}
+    Kind: 3
+  - Cell: {x: 6, y: 8}
+    Kind: 3
   - Cell: {x: 6, y: 9}
     Kind: 3
-  - Cell: {x: 7, y: 9}
-    Kind: 3
-  - Cell: {x: 8, y: 9}
-    Kind: 3
-  - Cell: {x: 8, y: 10}
-    Kind: 3
-  - Cell: {x: 13, y: 6}
-    Kind: 3
-  - Cell: {x: 14, y: 6}
-    Kind: 3
-  - Cell: {x: 14, y: 7}
-    Kind: 3
-  - Cell: {x: 15, y: 6}
-    Kind: 3
-  - Cell: {x: 6, y: 0}
-    Kind: 3
-  - Cell: {x: 7, y: 0}
-    Kind: 3
-  - Cell: {x: 7, y: 1}
+  - Cell: {x: 5, y: 0}
     Kind: 3
   - Cell: {x: 8, y: 0}
     Kind: 3
-  - Cell: {x: 8, y: 1}
-    Kind: 3
   - Cell: {x: 10, y: 0}
-    Kind: 3
-  - Cell: {x: 10, y: 1}
     Kind: 3
   - Cell: {x: 11, y: 0}
     Kind: 3
-  - Cell: {x: 11, y: 1}
-    Kind: 3
   - Cell: {x: 12, y: 0}
-    Kind: 3
-  - Cell: {x: 20, y: 8}
-    Kind: 3
-  - Cell: {x: 20, y: 9}
-    Kind: 3
-  - Cell: {x: 20, y: 10}
-    Kind: 3
-  - Cell: {x: 20, y: 11}
     Kind: 3
   - Cell: {x: 20, y: 12}
     Kind: 3
-  - Cell: {x: 20, y: 13}
+  - Cell: {x: 21, y: 7}
     Kind: 3
   - Cell: {x: 21, y: 8}
     Kind: 3
@@ -136,6 +115,8 @@ MonoBehaviour:
   - Cell: {x: 21, y: 12}
     Kind: 3
   - Cell: {x: 21, y: 13}
+    Kind: 3
+  - Cell: {x: 22, y: 7}
     Kind: 3
   - Cell: {x: 22, y: 8}
     Kind: 3
@@ -159,7 +140,7 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 23, y: 12}
     Kind: 3
-  - Cell: {x: 23, y: 13}
+  - Cell: {x: 24, y: 7}
     Kind: 3
   - Cell: {x: 24, y: 8}
     Kind: 3
@@ -170,6 +151,10 @@ MonoBehaviour:
   - Cell: {x: 24, y: 11}
     Kind: 3
   - Cell: {x: 24, y: 12}
+    Kind: 3
+  - Cell: {x: 24, y: 13}
+    Kind: 3
+  - Cell: {x: 25, y: 7}
     Kind: 3
   - Cell: {x: 25, y: 8}
     Kind: 3
@@ -183,7 +168,7 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 25, y: 13}
     Kind: 3
-  - Cell: {x: 26, y: 9}
+  - Cell: {x: 26, y: 7}
     Kind: 3
   - Cell: {x: 26, y: 10}
     Kind: 3
@@ -193,34 +178,50 @@ MonoBehaviour:
     Kind: 3
   - Cell: {x: 26, y: 13}
     Kind: 3
-  - Cell: {x: 1, y: 12}
+  - Cell: {x: 0, y: 12}
     Kind: 1
-  - Cell: {x: 2, y: 12}
+  - Cell: {x: 0, y: 13}
     Kind: 1
-  - Cell: {x: 2, y: 13}
+  - Cell: {x: 1, y: 13}
     Kind: 1
-  - Cell: {x: 19, y: 3}
+  - Cell: {x: 0, y: 5}
     Kind: 1
-  - Cell: {x: 19, y: 4}
+  - Cell: {x: 1, y: 5}
     Kind: 1
-  - Cell: {x: 20, y: 3}
+  - Cell: {x: 20, y: 5}
     Kind: 1
-  - Cell: {x: 10, y: 9}
+  - Cell: {x: 11, y: 8}
     Kind: 1
-  - Cell: {x: 11, y: 10}
+  - Cell: {x: 11, y: 9}
+    Kind: 1
+  - Cell: {x: 12, y: 8}
     Kind: 1
   - Cell: {x: 12, y: 9}
     Kind: 1
-  - Cell: {x: 13, y: 10}
+  - Cell: {x: 13, y: 8}
     Kind: 1
-  - Cell: {x: 14, y: 10}
+  _mineCells:
+  - {x: 9, y: 4}
+  - {x: 15, y: 3}
+  - {x: 2, y: 4}
+  _mineStock: 140
+  _bossEntrance:
     Kind: 1
+    Cell: {x: 6, y: 12}
+  _nests:
+  - Cell: {x: 6, y: 12}
+    Element: 1
+  - Cell: {x: 15, y: 12}
+    Element: 1
+  - Cell: {x: 21, y: 10}
+    Element: 1
   _terrainAlbedo: {fileID: 2800000, guid: 805e7771d44a98b4cab78523155776ad, type: 3}
   _terrainEmission: {fileID: 2800000, guid: ac2e59f1aff128c4ea8c222c53a9dfa4, type: 3}
   _enemyHealthMultiplier: 1.3
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
-  _collectorDrone: {fileID: 11400000, guid: 2d3e87de784fd224d8d8b56eccb245c8, type: 2}
+  _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
+  _attackDrone: {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
   _recipes: []
   _pathObjects:
   - {fileID: 11400000, guid: 0a2ff893e70c1a249b2f79da2deca428, type: 2}
@@ -244,6 +245,31 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 67adba2fec347e44096968d5e2729417, type: 2}
     - {fileID: 11400000, guid: 2a727f735a926ec40bf1c64760a01bf3, type: 2}
     - {fileID: 11400000, guid: 3804010c47c0d3a46b431c8fff884950, type: 2}
+    - {fileID: 11400000, guid: 3c4571f84df355246b94553ddc541bce, type: 2}
+    - {fileID: 11400000, guid: 496a152f4c20e694094d8307a4e79a44, type: 2}
+    - {fileID: 11400000, guid: b34af5c41bb7a164db82b49035e011ea, type: 2}
+    - {fileID: 11400000, guid: e26e8d2076e4e764781ebc208dd103c0, type: 2}
+    - {fileID: 11400000, guid: b9b0a48dfcc368a4d98ac2e79b04cda4, type: 2}
+    - {fileID: 11400000, guid: bd6008e485ca7d9458d0d4a2dc9af86a, type: 2}
+    - {fileID: 11400000, guid: 7b0f603a008d97e4c853a2168bf0554e, type: 2}
+    - {fileID: 11400000, guid: e11e44393c3b4ec47b890d8ad32fd638, type: 2}
+    - {fileID: 11400000, guid: cc2130454f1777445a793e22a22348d5, type: 2}
+    - {fileID: 11400000, guid: 6278ca2b18ad1244aa1b54cb849ccf6d, type: 2}
+    - {fileID: 11400000, guid: 93bd75e3b713353469533fc738ecd1ca, type: 2}
+    - {fileID: 11400000, guid: fff2160d86cac684cb552b7b2e3ab83b, type: 2}
+    - {fileID: 11400000, guid: a530265f4c78dce4bafad4f06c834ece, type: 2}
+    - {fileID: 11400000, guid: 9cc1222578c52874cb33cf39232384a6, type: 2}
+    - {fileID: 11400000, guid: 27fd67130b9ede04d92f3410e0c3fea3, type: 2}
+    - {fileID: 11400000, guid: 4c78fed480a4d894dbf1c81c0524ee11, type: 2}
+    - {fileID: 11400000, guid: d8741a86c20ce094e85be68c0726730b, type: 2}
+    - {fileID: 11400000, guid: bf78b301cd48c5a489229719943bfd87, type: 2}
+    - {fileID: 11400000, guid: dfc27523f9dd2db489eff7ec46f14c5f, type: 2}
+    - {fileID: 11400000, guid: febdde68c6d5e2d409e7d5530c9e4e0e, type: 2}
+    - {fileID: 11400000, guid: 8b20fbb31bd9f9740803711cc62a1273, type: 2}
+    - {fileID: 11400000, guid: d0b3a4b0affce3f428acd47867679bc8, type: 2}
+    - {fileID: 11400000, guid: c2c36c18bed3f5b47bbd50ea8391b915, type: 2}
+    - {fileID: 11400000, guid: 8bc64786b1c322749bf433b0e6a2954c, type: 2}
+    - {fileID: 11400000, guid: 14f34db77bdbf4e4e949eda248ba2d92, type: 2}
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - {fileID: 11400000, guid: 08189d38b58206c4d8aa877ada1b6f42, type: 2}
@@ -252,6 +278,30 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 694edc60f1fa81b49910cde6cbdfbd10, type: 2}
     - {fileID: 11400000, guid: 45fb5560acb7ba74e9b44e7cca5803cc, type: 2}
     - {fileID: 11400000, guid: de4c7fdb495967849bd49a2d38144963, type: 2}
+    - {fileID: 11400000, guid: ffac4dc7451ce4d448183098c44ab9b3, type: 2}
+    - {fileID: 11400000, guid: 8f6c83b345e51ba48b4530bcaf29e07d, type: 2}
+    - {fileID: 11400000, guid: 4aa697c399140fc4aa428153585e212b, type: 2}
+    - {fileID: 11400000, guid: 1db49365367e18d49a710fc22e9ba3c0, type: 2}
+    - {fileID: 11400000, guid: 301a8e0d3e0faa145b630bfdadb62736, type: 2}
+    - {fileID: 11400000, guid: 8700039e2c7a88f4195fed273a85cd9c, type: 2}
+    - {fileID: 11400000, guid: fcd2abc849b74664592054cd62b846e3, type: 2}
+    - {fileID: 11400000, guid: c85f1dcfb46665446b0aef0e10ecb395, type: 2}
+    - {fileID: 11400000, guid: 533777e8fa18ed444a2870b36fdb2446, type: 2}
+    - {fileID: 11400000, guid: f1d81dba6b585b347be674fb23d5b872, type: 2}
+    - {fileID: 11400000, guid: ea413c8c86c8c9f468f0cb892d1c66d7, type: 2}
+    - {fileID: 11400000, guid: 15a0a809e71091444a4d8071ed6a44a8, type: 2}
+    - {fileID: 11400000, guid: 5d53ca16c58c4664cb90988c044bc8df, type: 2}
+    - {fileID: 11400000, guid: 492ac0f12c379704494719869f7dca53, type: 2}
+    - {fileID: 11400000, guid: c28c5645f3631984c9e5555a64fbcf6b, type: 2}
+    - {fileID: 11400000, guid: 8e8132bbaab15154f8df7a7ef2c8af9c, type: 2}
+    - {fileID: 11400000, guid: 9ca8d26d93ce60c4988788c46bb9bb27, type: 2}
+    - {fileID: 11400000, guid: fc4d2cb57ccb9e64cace34b35ba6399e, type: 2}
+    - {fileID: 11400000, guid: bbd5cdb92fc6af6498b09dd24cd264ce, type: 2}
+    - {fileID: 11400000, guid: 57d689dc2dcdfb946808a44ada447645, type: 2}
+    - {fileID: 11400000, guid: c43fb9d8fb56b964ea70ef8c8987629f, type: 2}
+    - {fileID: 11400000, guid: 9dcd5588059104d4ca2c007180bbd5da, type: 2}
+    - {fileID: 11400000, guid: 0e0cffbcf05024e49813a9011c3af5b2, type: 2}
+    - {fileID: 11400000, guid: feb4c4dfed8997940a2ff505e701ba60, type: 2}
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - {fileID: 11400000, guid: 535228e0f941e5b41aefd88554e5f557, type: 2}
@@ -260,6 +310,30 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c85c80b405708d647b1911c0dc892cfa, type: 2}
     - {fileID: 11400000, guid: 5d8de7545758c264792c986e181c3975, type: 2}
     - {fileID: 11400000, guid: 128adce8f6766594da9df649084c541d, type: 2}
+    - {fileID: 11400000, guid: 5b00264df5af4d943997f8da1054657e, type: 2}
+    - {fileID: 11400000, guid: 7aecb110f731c474a84e0742817658e3, type: 2}
+    - {fileID: 11400000, guid: afbdf47e77ba25d48999fed40d0da157, type: 2}
+    - {fileID: 11400000, guid: 94f062def47bc4d4a90d5862d61fa377, type: 2}
+    - {fileID: 11400000, guid: 3ec90fa268690a54c9080a1be08980db, type: 2}
+    - {fileID: 11400000, guid: 82453d0f0e422cd479cecb21a7a98a1f, type: 2}
+    - {fileID: 11400000, guid: 817ec2ae867922b4e85ce157a72f760a, type: 2}
+    - {fileID: 11400000, guid: 33e178c9592e2784db7edd60e937fe2d, type: 2}
+    - {fileID: 11400000, guid: 8f38bda1a0239804ebb460b4f65a6269, type: 2}
+    - {fileID: 11400000, guid: e80dec5038c082a40a213978546691e6, type: 2}
+    - {fileID: 11400000, guid: db3ba9a59572ef44a8494416ea440b52, type: 2}
+    - {fileID: 11400000, guid: 74991cec3fa090c41b3b1088ec59d3ff, type: 2}
+    - {fileID: 11400000, guid: c603d096f71c512479f8374031af230b, type: 2}
+    - {fileID: 11400000, guid: 12830936021cd334ca71ffd1debcee5d, type: 2}
+    - {fileID: 11400000, guid: 396dcb4fcb57d494fb4db0708716501c, type: 2}
+    - {fileID: 11400000, guid: 90eea67dac055504fa42b6a1a31b3627, type: 2}
+    - {fileID: 11400000, guid: 7707e05863d94a84e896d7fe4bab1b3c, type: 2}
+    - {fileID: 11400000, guid: 7a52df0384175304ca488ee8791e397e, type: 2}
+    - {fileID: 11400000, guid: d05b0103360c8854683461294973623d, type: 2}
+    - {fileID: 11400000, guid: 9a9d47c8c9c862b4fa0838199528318f, type: 2}
+    - {fileID: 11400000, guid: f2779d925e67223459adce61f11ebc82, type: 2}
+    - {fileID: 11400000, guid: b5f9df67945c63e48b4107f1a37292cd, type: 2}
+    - {fileID: 11400000, guid: 3e4edae9d25771742898ca3f6923cb9e, type: 2}
+    - {fileID: 11400000, guid: 3cae11ee0f8f5c747932cfe7f025b535, type: 2}
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - {fileID: 11400000, guid: bb0be1fd25b0a624e8d56673697895d8, type: 2}
@@ -269,6 +343,29 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c02ba439504135244ba458b0072379be, type: 2}
     - {fileID: 11400000, guid: a24482d81c28aec47a99a14441e005d3, type: 2}
     - {fileID: 11400000, guid: 72ad9441c817a794cb54953baa57f9e3, type: 2}
+    - {fileID: 11400000, guid: 5e2888df6707fa549986e76706c41635, type: 2}
+    - {fileID: 11400000, guid: c2a79c43c6a47834089a998a2c5bd537, type: 2}
+    - {fileID: 11400000, guid: dc51490eea4f6ed41b08215711cda39c, type: 2}
+    - {fileID: 11400000, guid: 2690250dc9350fc46b7c4212c8aa57fe, type: 2}
+    - {fileID: 11400000, guid: 04a92cf3d3f0ed84faebd25a5267b10c, type: 2}
+    - {fileID: 11400000, guid: e371a7aa1da1f894f90a6b09801aa9d5, type: 2}
+    - {fileID: 11400000, guid: b58c41815e3cdc04eb37a6266b42055f, type: 2}
+    - {fileID: 11400000, guid: 8ce3a46f73b374e45a544d596fcba37a, type: 2}
+    - {fileID: 11400000, guid: 528c4603131556940aaff2c2ebc290b5, type: 2}
+    - {fileID: 11400000, guid: 78a89a7d7874e6248a12e37a84918e48, type: 2}
+    - {fileID: 11400000, guid: 5f58688ca4e7e794d8e3b76b34369a9d, type: 2}
+    - {fileID: 11400000, guid: c47f0278c09ac2246a2377aa33aaab7a, type: 2}
+    - {fileID: 11400000, guid: c343c76f4aae94545ad02ead0e50ec25, type: 2}
+    - {fileID: 11400000, guid: d36190e12832a724885160c5142a92bb, type: 2}
+    - {fileID: 11400000, guid: e26a9fdf128cb6b44978102333d50fea, type: 2}
+    - {fileID: 11400000, guid: 65470d19fc9b83a4aa2069a97a7f98bc, type: 2}
+    - {fileID: 11400000, guid: 2b8546e7774ab4c42b5d98e1585cb9a4, type: 2}
+    - {fileID: 11400000, guid: 3fccb65d5209150479a57fe6f8f6d069, type: 2}
+    - {fileID: 11400000, guid: 9b1217e78a3529042a7f9eedeb776b1c, type: 2}
+    - {fileID: 11400000, guid: 8f88ee2f8c0b7eb4193bd53de69528c3, type: 2}
+    - {fileID: 11400000, guid: 8b2c04b2add3a6544ab6863da76d5da2, type: 2}
+    - {fileID: 11400000, guid: 77a0ca8834ff3944c97b3ff7d9798982, type: 2}
+    - {fileID: 11400000, guid: 1262e56f32b38324590692a72d42cb23, type: 2}
   _reward:
     ResearchPoints: 18
     PowerCurrency: 9

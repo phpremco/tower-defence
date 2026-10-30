@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Game.Core;
+using UnityEngine;
 
 namespace Game.Levels
 {
-    /// <summary>Look of one level as data: palette, light, fog and bloom. Changing it needs no code.</summary>
+    /// <summary>Look and sound of one level as data: palette, light, fog, bloom and ambience. Changing it needs no code.</summary>
     [CreateAssetMenu(menuName = "Game/Visual Theme", fileName = "VisualTheme")]
     public sealed class VisualTheme : ScriptableObject
     {
@@ -28,10 +29,14 @@ namespace Game.Levels
         [SerializeField] private Color _waterColor = new Color(0.1f, 0.4f, 0.55f);
         [SerializeField] private Color _lavaColor = new Color(1f, 0.45f, 0.1f);
         [SerializeField] private Color _sandColor = new Color(0.62f, 0.5f, 0.3f);
+        [SerializeField] private Color _plantColor = new Color(0.2f, 0.5f, 0.35f);
         [SerializeField] private PropKind[] _propKinds = { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond };
         [SerializeField] [Range(0f, 1f)] private float _veinStrength = 0.5f;
         [SerializeField] [Min(0f)] private float _ambientRate = 10f;
         [SerializeField] private float _ambientRise = 0.15f;
+
+        [Header("Sound")]
+        [SerializeField] private AmbienceKind _ambience = AmbienceKind.Wind;
 
         [Header("Light and atmosphere")]
         [SerializeField] private Color _lightColor = new Color(0.8f, 0.85f, 1f);
@@ -68,6 +73,9 @@ namespace Game.Levels
         public Color LavaColor => _lavaColor;
         public Color SandColor => _sandColor;
 
+        /// <summary>The colour of leaves, stalks and caps; the glow on them comes from the accent.</summary>
+        public Color PlantColor => _plantColor;
+
         /// <summary>The decorations this level grows. A kind listed twice is scattered twice as often.</summary>
         public PropKind[] PropKinds => _propKinds;
 
@@ -77,6 +85,9 @@ namespace Game.Levels
         /// <summary>Floating motes per second (spores, embers, dust) and their vertical speed; negative falls.</summary>
         public float AmbientRate => _ambientRate;
         public float AmbientRise => _ambientRise;
+
+        /// <summary>The looping background sound of the level.</summary>
+        public AmbienceKind Ambience => _ambience;
 
         public Color LightColor => _lightColor;
         public float LightIntensity => _lightIntensity;

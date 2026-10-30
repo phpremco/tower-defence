@@ -13,46 +13,26 @@ MonoBehaviour:
   m_Name: Forest_Medium_4
   m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
   _startDelay: 8
+  _spawnJitter: 0.45
   _groups:
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 2
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
     PathIndex: 3
-    Interval: 0.5
+    Source: 0
+    Interval: 0.35
     Delay: 0
     Stagger: 0
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 1
-    PathIndex: 0
-    Interval: 0.5
-    Delay: 0
-    Stagger: 2
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 3
-    PathIndex: 3
-    Interval: 0.5
-    Delay: 0
-    Stagger: 3
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 2
-    PathIndex: 0
-    Interval: 0.5
-    Delay: 0
-    Stagger: 6
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 1
     PathIndex: 3
-    Interval: 0.5
-    Delay: 0
-    Stagger: 8
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Source: 0
+    Interval: 0.55
+    Delay: 2.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}
     Count: 2
     PathIndex: 0
-    Interval: 0.5
-    Delay: 0
-    Stagger: 9
-  - Enemy: {fileID: 11400000, guid: 759f074a27b64f64e8fd89847e806123, type: 2}
-    Count: 1
-    PathIndex: 0
+    Source: 4
     Interval: 1.5
-    Delay: 6
+    Delay: 20
     Stagger: 0

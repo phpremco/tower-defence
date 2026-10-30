@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8951df719d65fa4eaa1352b56ce5f1e, type: 3}
+  m_Name: Forest_Hard_22
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
+  _startDelay: 8
+  _spawnJitter: 0.45
+  _groups:
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 2
+    PathIndex: 3
+    Source: 0
+    Interval: 0.35
+    Delay: 0
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.35
+    Delay: 0
+    Stagger: 1.4
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.55
+    Delay: 2.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 3
+    Source: 0
+    Interval: 0.55
+    Delay: 2.5
+    Stagger: 1.1
+  - Enemy: {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.8
+    Delay: 5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+    Count: 1
+    PathIndex: 3
+    Source: 0
+    Interval: 0.8
+    Delay: 5
+    Stagger: 1.6
+  - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 1.2
+    Delay: 7.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 8f3c0afb49037a14ea2496d54baaffde, type: 2}
+    Count: 1
+    PathIndex: 3
+    Source: 0
+    Interval: 1.5
+    Delay: 10
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}
+    Count: 12
+    PathIndex: 0
+    Source: 4
+    Interval: 1.5
+    Delay: 20
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 82561541f80c79c45876c662358d966f, type: 2}
+    Count: 7
+    PathIndex: 0
+    Source: 4
+    Interval: 1.5
+    Delay: 24.5
+    Stagger: 0

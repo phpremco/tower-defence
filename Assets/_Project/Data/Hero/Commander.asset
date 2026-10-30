@@ -15,10 +15,7 @@ MonoBehaviour:
   _displayName: Commander
   _maxHealth: 200
   _walkSpeed: 5
-  _damage: 18
-  _reach: 1.5
-  _strikeInterval: 0.7
-  _standDistance: 0.65
+  _weapon: {fileID: 11400000, guid: c827c2bc28773474a9c5051f025690b7, type: 2}
   _guardShare: 0.4
   _reviveSeconds: 15
   _shockwaveDamage: 40

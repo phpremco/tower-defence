@@ -1,4 +1,5 @@
 ﻿using Game.Core;
+using Game.Towers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,16 +38,34 @@ namespace Game.UI
 
         public void Show(GameObject model, float scale, Color tint)
         {
+            Clear();
+            if (model != null)
+            {
+                ModelFit.Place(model, _turntable, Vector3.zero, 0f, scale, tint, 0.15f);
+            }
+        }
+
+        /// <summary>Shows a tower's procedural model at its top level, or its imported model when it has no shape.</summary>
+        public void ShowTower(TowerDefinition tower, float scale)
+        {
+            if (!TowerModelBuilder.HasModel(tower))
+            {
+                Show(tower.Model, tower.ModelScale * scale, tower.KeepModelColours ? Color.white : Color.Lerp(Color.white, tower.Color, 0.55f));
+                return;
+            }
+
+            Clear();
+            TowerModelBuilder.Build(_turntable, tower, tower.MaxLevelIndex).transform.localScale = Vector3.one * scale;
+        }
+
+        private void Clear()
+        {
             for (int i = _turntable.childCount - 1; i >= 0; i--)
             {
                 Destroy(_turntable.GetChild(i).gameObject);
             }
 
             _turntable.localRotation = Quaternion.identity;
-            if (model != null)
-            {
-                ModelFit.Place(model, _turntable, Vector3.zero, 0f, scale, tint, 0.15f);
-            }
         }
 
         private void Build(RawImage image)

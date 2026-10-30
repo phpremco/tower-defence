@@ -9,10 +9,10 @@ namespace Game.Levels
     /// </summary>
     public sealed class CameraPanZoom : MonoBehaviour
     {
-        private const float StartZoom = 1.25f;
+        private const float StartZoom = 1f;
         private const float MinZoom = 0.9f;
         private const float MaxZoom = 3f;
-        private const float PanSpeedAtFullZoom = 9f;
+        private const float PanSpeedAtFullZoom = 17f;
         private const float ContinuousZoomRate = 1.2f;
         private const float ScrollStep = 0.12f;
         private const float ScrollThreshold = 1.5f;

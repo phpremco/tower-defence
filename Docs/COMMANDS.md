@@ -137,3 +137,46 @@ The same build is in the editor menu `Tools/Build/Windows Player`. The build sta
 resolution (Alt+Enter toggles windowed). Quit from the main menu.
 
 PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTests -testPlatform PlayMode` as above.
+
+## Play-testing through the CLI (added 2026-10-28)
+
+- `eval_file` takes a method body: no `using` lines (they parse as using-statements), so write fully qualified names
+  (`Game.Core.Services.Get<Game.Levels.CampaignCatalog>()`). The play-test scripts live in `Tools/PlayTest/` (Unity's
+  `Temp/` gets wiped by the generator and test runs): `start_level.cs` (level index from `Tools/PlayTest/level_arg.txt`),
+  `towers.cs` (probe towers plus skip wave), `step10.cs`, `inspect.cs` (enemies, effects, audio), `wreck.cs` (wrecks
+  every gate), `hero_to_base.cs` and `zoom.cs` (close-up on "hero", "gate" or "base" from `zoom_arg.txt`).
+- After `editor_stop`, wait a few seconds and `open_scene` Boot again before `editor_play`, or the first `eval_file`
+  calls land in a half-loaded scene and report "no context".
+- Stepping many frames inside one `eval_file` call logs `Internal: deleting an allocation that is older than its
+  permitted lifetime` warnings (about eight per stepped frame in a level). They come from the Editor stepping without
+  its own update in between, not from the game: single steps with real Editor updates between them log nothing.
+  Step in batches of ten and judge the console by its error count, or the warning flood pushes errors out of the
+  2000-entry buffer (`clear_console` first).
+- The GPU Resident Drawer is off on `PC_RPAsset` on purpose: with it on, every level switch logs "A BatchDrawCommand
+  was submitted with an invalid Batch, Mesh, or Material ID" for every renderer of the old scene, because the whole
+  level is built from runtime meshes and materials that the scene switch unloads.
+- `capture_game_view --save_path Temp/x.png` writes `Assets/Temp/x.png`; delete it with `delete_asset` afterwards.
+- Never edit a C# file while Play Mode runs: the Editor recompiles and reloads the domain, every runtime object
+  loses its state and the console fills with null references. Stop, edit, recompile, play again.
+- `Tools/PlayTest/buy_drones.cs` fills the energy pool and launches one drone of each kind; `zoom_drone.cs` zooms on a drone by kind (`zoom_arg.txt`: Repair, Harvest or Attack) and reports what it is doing.
+- `Tools/PlayTest/zoom_spawn.cs` zooms onto the start of path `zoom_arg.txt` (a path index) at `zoom_size.txt` (0 restores the full view).
+- `Tools/PlayTest/click_button.cs` clicks a UI button whose label contains `button_arg.txt` (empty text lists every label): walk the menus without a mouse. `open_menu.cs` opens pause / tower / gate / hero / win (`menu_arg.txt`), `select_card.cs` picks a tower card (`card_arg.txt`), `tower_at.cs` builds on a cell (`cell_arg.txt`, "x y").
+- `Tools/PlayTest/base_menu.cs` opens the base menu; `base_die.cs` destroys the base (explosion, then the defeat panel).
+- `Tools/PlayTest/spawn_enemy.cs` spawns an enemy by asset name from `enemy_arg.txt` ("Roller", "Drowner Water", bosses use the level entrance); `zoom_enemy.cs` zooms on it and freezes time for a screenshot, `resume.cs` thaws; `no_waves.cs` switches the wave timeline off; `inspect_enemy.cs` lists its renderers; `shadows_off.cs` drops its shadows; `goto_menu.cs` returns to the main menu; `sfx_probe.cs` builds the loop sounds in the editor.
+- `Tools/PlayTest/menu_probe.cs` lists the main menu stage (asset, cameras, diorama); `menu_creatures.cs` lists every diorama creature with its state; `music_probe.cs` reports the menu music and whether a level score is running.
+- `Tools/PlayTest/boss_alarm.cs` raises the boss alarm by hand; `boss_probe.cs` reports the boss marker, approach sounds and the boss (light, pulse, scale); `sfx_voices.cs` lists the sound voices and approach timers; `sliders.cs` lists the volume sliders; `map_pick.cs` presses the first open beacon on the planet map; `time_probe.cs` reports time scale, briefing and countdown; `intro_probe.cs` and `intro_skip.cs` watch and skip the intro; `screen_probe.cs` prints the game view size (captures are resized to 1280x720, so circles look squashed when the view is wider than 16:9).
+- `Tools/PlayTest/dump_waves.cs` writes every generated wave per level and difficulty to `Tools/PlayTest/waves_dump.txt`; `wave_probe.cs` reports the wave number, countdown and living enemies by kind.
+- `Tools/PlayTest/laser_probe.cs` reports the boss laser, beam renderers and hum count (write "kill" in `enemy_arg.txt` to kill every boss first); `drone_probe.cs` reports money and active drones. `laser_now.cs` makes every living boss fire its laser on the next frame.
+- The balance bot takes an optional `probe_arg.txt` (`levels=0,1` and `difficulties=1,2` lines) and must run async in PlayMode (see STATUS).
+- `Tools/PlayTest/sfx_library_probe.cs` reports the recorded sound library and how many clips each list holds.
+- `Tools/PlayTest/hum_probe.cs` reports which clip the boss laser loop plays.
+- `Tools/PlayTest/alarm_probe.cs` reports which clip the boss alarm plays; `ripple_probe.cs` plays an impact ripple at the hero and holds the frame for a screenshot.
+- `Tools/PlayTest/hover_probe.cs` builds a tower beside the road and puts the placing cursor on the next cell (zoom with `towers`).
+- `Tools/PlayTest/dump_map.cs` prints every level as a text map with its validation errors (run after the generator).
+- The generator menu item can take longer than the CLI's 30 s main-thread timeout (five terrain bakes); the error
+  "Main thread operation timed out" is harmless, the generator keeps running. Wait for it by running the EditMode
+  tests next (they queue behind it), then `clear_console`.
+- More scripts in `Tools/PlayTest/`: `hero_down.cs` (drains the hero), `hero_revive.cs` (cuts the revive timer),
+  `upgrade_gate.cs` (one level on every gate), `upgrade_towers.cs`, `skip_wave.cs`, `towers_all.cs` (one probe of
+  every tower asset near the spawn, Editor only), `shots_probe.cs` (lists shots in flight and centres the camera on
+  one); `zoom.cs` also takes "towers", "roster", "spawn" and "enemy" and a size from `zoom_size.txt`.

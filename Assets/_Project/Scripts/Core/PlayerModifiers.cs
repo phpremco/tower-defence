@@ -12,8 +12,6 @@
             float blockadeHealthMultiplier,
             float heroDamageMultiplier = 1f,
             float heroHealthMultiplier = 1f,
-            int repairDroneCount = 0,
-            int collectorDroneCount = 0,
             float droneSpeedMultiplier = 1f)
         {
             TowerDamageMultiplier = towerDamageMultiplier;
@@ -24,8 +22,6 @@
             BlockadeHealthMultiplier = blockadeHealthMultiplier;
             HeroDamageMultiplier = heroDamageMultiplier;
             HeroHealthMultiplier = heroHealthMultiplier;
-            RepairDroneCount = repairDroneCount;
-            CollectorDroneCount = collectorDroneCount;
             DroneSpeedMultiplier = droneSpeedMultiplier;
         }
 
@@ -39,8 +35,7 @@
         public float BlockadeHealthMultiplier { get; }
         public float HeroDamageMultiplier { get; }
         public float HeroHealthMultiplier { get; }
-        public int RepairDroneCount { get; }
-        public int CollectorDroneCount { get; }
+
         public float DroneSpeedMultiplier { get; }
     }
 }

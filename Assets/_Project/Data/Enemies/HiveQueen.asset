@@ -14,16 +14,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
   _displayName: HiveQueen
   _layer: 1
-  _maxHealth: 2500
-  _speed: 0.8
+  _flies: 0
+  _maxHealth: 3200
+  _armor: 0
+  _armorReduction: 0.6
+  _speed: 0.55
   _reward: 500
   _baseDamage: 20
+  _element: 0
+  _attackStyle: 0
   _attackDamage: 0
   _blockadeDamage: 120
   _attackRange: 2.5
   _attackInterval: 1.2
+  _gateStrikes: 0
+  _walkSeconds: 0
+  _rollSeconds: 0
+  _rollSpeedMultiplier: 2.5
+  _trailSeconds: 0
+  _trailHaste: 1.4
+  _trailDamagePerSecond: 0
+  _rageSeconds: 0
+  _rageSpeedMultiplier: 1.5
+  _rageRadius: 3
+  _isBoss: 1
+  _abilities:
+  - {fileID: 11400000, guid: f220de0158b4184489e8fa827b768e72, type: 2}
+  - {fileID: 11400000, guid: d41a184cef2ed1a48b8091ca445ae172, type: 2}
   _color: {r: 0.6, g: 0.05, b: 0.1, a: 1}
-  _scale: 2
+  _eyeColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  _accentColor: {r: 1, g: 0.3, b: 0.4, a: 1}
+  _bloodColor: {r: 0.7, g: 0.1, b: 0.2, a: 1}
+  _scale: 2.7
   _shape: 7
-  _model: {fileID: 919132149155446097, guid: c88b0de83da671347962ac995f3eded7, type: 3}
-  _modelScale: 4.2
+  _deathStyle: 0
+  _model: {fileID: 0}
+  _modelScale: 1

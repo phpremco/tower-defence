@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Medium
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Medium
-  _healthMultiplier: 1
-  _countMultiplier: 1
+  _healthMultiplier: 1.1
+  _countMultiplier: 1.05
   _spawnIntervalMultiplier: 1
   _rewardMultiplier: 1.25
   _powerCurrencyMultiplier: 0.5

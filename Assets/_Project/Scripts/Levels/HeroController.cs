@@ -16,9 +16,10 @@ namespace Game.Levels
     {
         private const string BaseName = "Base";
         private const float SpotHeight = 0.07f;
-        private const float SpotAlpha = 0.28f;
-        private const float SpotEmission = 1.2f;
-        private static readonly Color SpotColor = new Color(1f, 0.85f, 0.3f);
+        private const float SpotAlpha = 0.16f;
+        private const float SpotMargin = 0.1f;
+        private const float SpotEmission = 0.35f;
+        private static readonly Color SpotColor = new Color(0.78f, 0.8f, 0.86f);
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -38,30 +39,34 @@ namespace Game.Levels
             _blockades = blockades;
 
             GridMap grid = context.Level.Grid;
+            RoadCorridor road = context.Level.Road;
             var posts = new List<HeroPost>(blockades.Count + 1);
             var names = new string[blockades.Count + 1];
             var cells = new Vector2Int[blockades.Count + 1];
+
+            // The blockade towers were spawned in the order of the level data, so the spot at the same index is the
+            // cell the gate stands on; the hero holds the rung of the corridor one cell before it.
+            BlockadeSpot[] spots = context.Level.Blockades;
             for (int i = 0; i < blockades.Count; i++)
             {
-                Vector3 position = blockades[i].Position;
-                Vector3 along = RoadDirection.At(context.Level, grid.WorldToCell(position));
-                posts.Add(new HeroPost(blockades[i], position - along * grid.CellSize, -along));
+                Vector3 along = road.DirectionAt(spots[i].Cell);
+                Vector3 stand = blockades[i].Position - along * grid.CellSize;
+                posts.Add(new HeroPost(blockades[i], stand, -along));
+                cells[i] = StandCell(spots[i].Cell, along);
                 names[i] = $"Blockade {i + 1}";
+                CreateSpotMarker(stand, along, road.Width, grid.CellSize, parent);
             }
 
-            Vector2Int[] road = context.Level.MainRoad;
-            Vector2Int baseCell = road[road.Length - 1];
-            Vector3 basePosition = grid.CellToWorld(baseCell);
-            Vector3 baseAlong = RoadDirection.At(context.Level, baseCell);
+            Vector2Int[] main = context.Level.MainRoad;
+            Vector2Int baseCell = main[main.Length - 1];
+            Vector3 basePosition = road.CentreOf(baseCell);
+            Vector3 baseAlong = road.DirectionAt(baseCell);
+            Vector3 baseStand = basePosition - baseAlong * grid.CellSize;
             var basePost = new BasePost(basePosition, context.BaseHealth);
-            posts.Add(new HeroPost(basePost, basePosition - baseAlong * grid.CellSize, -baseAlong));
+            posts.Add(new HeroPost(basePost, baseStand, -baseAlong));
+            cells[blockades.Count] = StandCell(baseCell, baseAlong);
             names[blockades.Count] = BaseName;
-
-            for (int i = 0; i < posts.Count; i++)
-            {
-                cells[i] = grid.WorldToCell(posts[i].Stand);
-                CreateSpotMarker(posts[i].Stand, grid.CellSize, parent);
-            }
+            CreateSpotMarker(baseStand, baseAlong, road.Width, grid.CellSize, parent);
 
             var go = new GameObject("Hero");
             go.transform.SetParent(parent, false);
@@ -94,11 +99,15 @@ namespace Game.Levels
             _context.HeroRepairRequested.Unsubscribe(OnRepair);
         }
 
-        // A glowing tile shows the cell that is kept free for the hero, and where to click to move it there.
-        private static void CreateSpotMarker(Vector3 position, float cellSize, Transform parent)
+        private static Vector2Int StandCell(Vector2Int cell, Vector3 along) =>
+            cell - new Vector2Int(Mathf.RoundToInt(along.x), Mathf.RoundToInt(along.z));
+
+        // A glowing strip across the road shows the rung that is kept free for the hero, and where to click to move it there.
+        private static void CreateSpotMarker(Vector3 position, Vector3 along, int widthCells, float cellSize, Transform parent)
         {
-            GameObject marker = PlaceholderVisuals.CreatePrimitive(
-                PrimitiveType.Cube, SpotColor, parent, position + Vector3.up * SpotHeight, new Vector3(cellSize * 0.9f, 0.02f, cellSize * 0.9f));
+            var size = new Vector3(cellSize * (widthCells - SpotMargin), 0.02f, cellSize * (1f - SpotMargin));
+            GameObject marker = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, SpotColor, parent, position + Vector3.up * SpotHeight, size);
+            marker.transform.rotation = Quaternion.LookRotation(along);
             marker.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(SpotColor, SpotAlpha, SpotEmission);
             marker.name = "HeroSpot";
         }

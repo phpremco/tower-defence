@@ -16,5 +16,15 @@ MonoBehaviour:
   _kind: 0
   _speed: 3.5
   _maxHealth: 40
+  _cost: 120
+  _maxActive: 3
   _repairPerSecond: 8
+  _harvestSeconds: 4
+  _harvestValue: 0
+  _damage: 0
+  _fireInterval: 0.5
+  _range: 3
+  _projectileSpeed: 14
+  _targets: 3
+  _projectileStyle: 0
   _color: {r: 0.4, g: 0.9, b: 1, a: 1}

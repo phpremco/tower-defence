@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Game.Combat;
 using Game.Enemies;
 using Game.Levels;
 using Game.PathObjects;
@@ -14,8 +15,10 @@ namespace Game.Editor
     public static partial class ProjectGenerator
     {
         private const float BlockedFraction = 0.13f;
-        private static readonly Vector2Int LandingSize = new Vector2Int(20, 12);
-        private static readonly Vector2Int[] LandingRoad = Cells(0, 10, 15, 10, 15, 7, 4, 7, 4, 4, 14, 4, 14, 1, 19, 1);
+        // A three-leg serpentine on the plain. Roads are two cells wide, with the second row to the right of travel.
+        private static readonly Vector2Int LandingSize = new Vector2Int(22, 15);
+        private const int LandingRoadWidth = 2;
+        private static readonly Vector2Int[] LandingRoad = Cells(0, 12, 16, 12, 16, 7, 4, 7, 4, 3, 21, 3);
 
         // Rock formations that keep out of the way: never on or next to the road (so towers stay possible there),
         // never on terrain patches or blockades. The same seed always gives the same cells.
@@ -84,17 +87,7 @@ namespace Game.Editor
 
 
         // Every tower and enemy wears a procedural model chosen by data; the pulse rifle keeps its hand-made gun.
-        private static void SetShapes(
-            Roster roster,
-            TowerDefinition cannon,
-            TowerDefinition rocket,
-            EnemyDefinition scout,
-            EnemyDefinition grunt,
-            EnemyDefinition brute,
-            EnemyDefinition flyer,
-            EnemyDefinition overseer,
-            EnemyDefinition warden,
-            EnemyDefinition queen)
+        private static void SetShapes(Roster roster, TowerDefinition cannon, TowerDefinition rocket, TowerDefinition blockade)
         {
             SetShape(roster.Pulse, "_shape", (int)TowerShape.PulseRifle);
             SetShape(cannon, "_shape", (int)TowerShape.Cannon);
@@ -107,16 +100,22 @@ namespace Game.Editor
             SetShape(roster.Artillery, "_shape", (int)TowerShape.Artillery);
             SetShape(roster.StormRifle, "_shape", (int)TowerShape.StormRifle);
             SetShape(roster.CryoBeam, "_shape", (int)TowerShape.CryoBeam);
+            SetShape(blockade, "_shape", (int)TowerShape.GateGun);
+
+            SetShape(roster.Pulse, "_projectileStyle", (int)ProjectileStyle.Bolt);
+            SetShape(cannon, "_projectileStyle", (int)ProjectileStyle.Shell);
+            SetShape(rocket, "_projectileStyle", (int)ProjectileStyle.Rocket);
+            SetShape(roster.Laser, "_projectileStyle", (int)ProjectileStyle.Laser);
+            SetShape(roster.Cryo, "_projectileStyle", (int)ProjectileStyle.Frost);
+            SetShape(roster.Tesla, "_projectileStyle", (int)ProjectileStyle.Lightning);
+            SetShape(roster.Railgun, "_projectileStyle", (int)ProjectileStyle.Rail);
+            SetShape(roster.Support, "_projectileStyle", (int)ProjectileStyle.Bolt);
+            SetShape(roster.Artillery, "_projectileStyle", (int)ProjectileStyle.Mortar);
+            SetShape(roster.StormRifle, "_projectileStyle", (int)ProjectileStyle.Lightning);
+            SetShape(roster.CryoBeam, "_projectileStyle", (int)ProjectileStyle.Laser);
+            SetShape(blockade, "_projectileStyle", (int)ProjectileStyle.Bolt);
 
             SetLooks();
-
-            SetShape(scout, "_shape", (int)EnemyShape.Scout);
-            SetShape(grunt, "_shape", (int)EnemyShape.Grunt);
-            SetShape(brute, "_shape", (int)EnemyShape.Brute);
-            SetShape(flyer, "_shape", (int)EnemyShape.Flyer);
-            SetShape(overseer, "_shape", (int)EnemyShape.Overseer);
-            SetShape(warden, "_shape", (int)EnemyShape.Warden);
-            SetShape(queen, "_shape", (int)EnemyShape.Queen);
         }
 
         // Look of each path object, by asset name.
@@ -146,6 +145,18 @@ namespace Game.Editor
         }
 
         // A side road must carry on along the main road after the junction, so its enemies walk to the base too.
+        // Every road cell of a level in the making: all rows of every road, plus the plazas.
+        private static HashSet<Vector2Int> RoadCells(Vector2Int size, List<(string Name, bool Flying, Vector2Int[] Waypoints)> paths, int width, Vector2Int[] plazas)
+        {
+            var enemyPaths = new EnemyPath[paths.Count];
+            for (int i = 0; i < enemyPaths.Length; i++)
+            {
+                enemyPaths[i] = new EnemyPath { Name = paths[i].Name, Flying = paths[i].Flying, Waypoints = paths[i].Waypoints };
+            }
+
+            return new HashSet<Vector2Int>(new RoadCorridor(new GridMap(size, 1f), enemyPaths, width, plazas).Cells);
+        }
+
         private static Vector2Int[] MergeIntoMain(Vector2Int[] side, Vector2Int[] main)
         {
             Vector2Int junction = side[side.Length - 1];

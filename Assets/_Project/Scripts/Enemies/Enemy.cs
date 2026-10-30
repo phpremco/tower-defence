@@ -5,14 +5,22 @@ using UnityEngine;
 
 namespace Game.Enemies
 {
-    /// <summary>Walks along a list of waypoints and can be targeted. Has no knowledge of how it looks.</summary>
+    /// <summary>
+    /// Walks or flies along a list of waypoints and can be targeted. Rollers alternate walking with faster rolling,
+    /// flyers may stop to strike the gates they pass, trail layers drop a patch every so often, and anything can be
+    /// slowed or hurried for a while. Has no knowledge of how it looks.
+    /// </summary>
     public sealed class Enemy : MonoBehaviour, ITargetable
     {
         private const float ArrivalDistance = 0.02f;
         private const float MinSpeedFactor = 0.1f;
+        private const float MaxSpeedFactor = 3f;
 
         // One cell is kept free in front of a blockade for the hero, so enemies halt just before that cell.
         private const float BlockadeStopDistance = 1.4f;
+
+        // Distance between two patches of a trail, so a slow crawler still leaves an unbroken smear.
+        private const float TrailSpacing = 0.55f;
 
         private EnemyDefinition _definition;
         private Vector3[] _waypoints;
@@ -25,8 +33,19 @@ namespace Game.Enemies
         private bool _active;
         private float _slowFactor = 1f;
         private float _slowRemaining;
+        private float _hasteFactor = 1f;
+        private float _hasteRemaining;
+        private float _speedMultiplier = 1f;
+        private float _structureDamageMultiplier = 1f;
+        private bool _rolling;
+        private float _rollTimer;
+        private int _gateStrikesLeft;
+        private float _sinceTrailDrop;
 
         public EnemyDefinition Definition => _definition;
+
+        /// <summary>How fast this individual walks compared to its kind, so a group does not march in step.</summary>
+        public float SpeedMultiplier => _speedMultiplier;
 
         public Health Health { get; private set; }
 
@@ -39,9 +58,19 @@ namespace Game.Enemies
 
         public TargetLayers Layer => _definition.Layer;
 
+        /// <summary>Distance covered along the road, counted from the road's start even for enemies that joined it halfway.</summary>
         public float PathProgress => _travelled;
 
         public bool IsAlive => _active && Health != null && !Health.IsDead;
+
+        /// <summary>Where this enemy came up, so the view can play the right entrance.</summary>
+        public EnemyOrigin Origin { get; private set; }
+
+        /// <summary>True while a roller is curled up and rolling.</summary>
+        public bool IsRolling => _rolling;
+
+        /// <summary>True while a haste (a trail or a pack's rage) is pushing this creature on.</summary>
+        public bool IsHasted => _hasteRemaining > 0f;
 
         /// <summary>Raised after Initialize, so a view can rebind to the new Health.</summary>
         public event Action<Enemy> Initialized;
@@ -53,6 +82,12 @@ namespace Game.Enemies
         /// <summary>Raised each time this enemy hits a structure, with the place it hit, so a view can play the attack.</summary>
         public event Action<Vector3> Attacked;
 
+        /// <summary>Raised when a roller curls up (true) or unrolls (false).</summary>
+        public event Action<bool> RollChanged;
+
+        /// <summary>Raised with the ground position where a trail layer left a fresh patch.</summary>
+        public event Action<Enemy, Vector3> TrailDropped;
+
         public void Initialize(
             EnemyDefinition definition,
             Vector3[] waypoints,
@@ -60,22 +95,36 @@ namespace Game.Enemies
             float rewardMultiplier,
             float heightOffset,
             TargetRegistry registry,
-            StructureRegistry structures)
+            StructureRegistry structures,
+            float speedMultiplier = 1f,
+            EnemyOrigin origin = EnemyOrigin.Gate,
+            float progressOffset = 0f,
+            float structureDamageMultiplier = 1f)
         {
             _definition = definition;
+            _speedMultiplier = speedMultiplier;
+            _structureDamageMultiplier = structureDamageMultiplier;
             _waypoints = waypoints;
             _nextWaypoint = 1;
-            _travelled = 0f;
+            _travelled = progressOffset;
             _heightOffset = heightOffset;
             _registry = registry;
             _structures = structures;
             _attackCooldown = 0f;
             _slowFactor = 1f;
             _slowRemaining = 0f;
+            _hasteFactor = 1f;
+            _hasteRemaining = 0f;
+            _rolling = false;
+            _rollTimer = definition.WalkSeconds;
+            _gateStrikesLeft = definition.Flies ? definition.GateStrikes : 0;
+            _sinceTrailDrop = 0f;
+            Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
-            Health = new Health(definition.MaxHealth * healthMultiplier);
+            Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);
             Health.Died += OnDied;
             transform.position = waypoints[0] + Vector3.up * heightOffset;
+            Heading = waypoints.Length > 1 ? Flat(waypoints[1] - waypoints[0]) : Vector3.forward;
             _active = true;
             _registry.Add(this);
             Initialized?.Invoke(this);
@@ -99,6 +148,22 @@ namespace Game.Enemies
             _slowRemaining = Mathf.Max(_slowRemaining, seconds);
         }
 
+        /// <summary>Speeds the creature up for a while; the strongest haste wins, like slows. Slows still apply on top.</summary>
+        public void ApplyHaste(float speedFactor, float seconds)
+        {
+            if (!_active || seconds <= 0f)
+            {
+                return;
+            }
+
+            if (_hasteRemaining <= 0f || speedFactor >= _hasteFactor)
+            {
+                _hasteFactor = Mathf.Clamp(speedFactor, 1f, MaxSpeedFactor);
+            }
+
+            _hasteRemaining = Mathf.Max(_hasteRemaining, seconds);
+        }
+
         /// <summary>Called by whoever pools this enemy when it is released.</summary>
         public void Deactivate()
         {
@@ -112,21 +177,51 @@ namespace Game.Enemies
             Health.Died -= OnDied;
         }
 
-        private void Update()
+        /// <summary>The way still ahead: from where the enemy stands now to the end of its route.</summary>
+        public Vector3[] RemainingRoute()
+        {
+            int left = Mathf.Max(0, _waypoints.Length - _nextWaypoint);
+            var route = new Vector3[left + 1];
+            route[0] = new Vector3(transform.position.x, 0f, transform.position.z);
+            for (int i = 0; i < left; i++)
+            {
+                route[i + 1] = _waypoints[_nextWaypoint + i];
+            }
+
+            return route;
+        }
+
+        private void Update() => Step(Time.deltaTime);
+
+        /// <summary>Advances the enemy by a time step. Update calls it with the frame time; tests call it directly.</summary>
+        public void Step(float deltaTime)
         {
             if (!_active)
             {
                 return;
             }
 
-            if (IsHeldByBlockade())
+            if (IsHeldByBlockade(deltaTime))
+            {
+                // Nothing rolls through a gate: a roller unrolls to bite and starts a fresh walk afterwards.
+                if (_rolling)
+                {
+                    SetRolling(false);
+                }
+
+                return;
+            }
+
+            if (IsStrikingGate(deltaTime))
             {
                 return;
             }
 
-            TryAttackStructure();
+            TryAttackStructure(deltaTime);
+            UpdateRoll(deltaTime);
 
-            float remaining = _definition.Speed * CurrentSpeedFactor() * Time.deltaTime;
+            float remaining = _definition.Speed * _speedMultiplier * CurrentSpeedFactor(deltaTime) * deltaTime;
+            float stepped = 0f;
 
             while (remaining > 0f && _nextWaypoint < _waypoints.Length)
             {
@@ -139,20 +234,24 @@ namespace Game.Enemies
                     transform.position = target;
                     if (distance > ArrivalDistance)
                     {
-                        Heading = new Vector3(toTarget.x, 0f, toTarget.z).normalized;
+                        Heading = Flat(toTarget);
                     }
 
                     remaining -= distance;
+                    stepped += distance;
                     _travelled += distance;
                     _nextWaypoint++;
                     continue;
                 }
 
-                Heading = new Vector3(toTarget.x, 0f, toTarget.z).normalized;
+                Heading = Flat(toTarget);
                 transform.position += toTarget / distance * remaining;
                 _travelled += remaining;
+                stepped += remaining;
                 remaining = 0f;
             }
+
+            DropTrail(stepped);
 
             if (_nextWaypoint >= _waypoints.Length)
             {
@@ -160,21 +259,67 @@ namespace Game.Enemies
             }
         }
 
-        // Ground enemies cannot pass a living blockade: they stop in front of it and hit it until it falls.
-        private float CurrentSpeedFactor()
+        private float CurrentSpeedFactor(float deltaTime)
         {
-            if (_slowRemaining <= 0f)
+            float roll = _rolling ? _definition.RollSpeedMultiplier : 1f;
+            float slow = 1f;
+            if (_slowRemaining > 0f)
             {
-                return 1f;
+                _slowRemaining -= deltaTime;
+                slow = _slowFactor;
             }
 
-            _slowRemaining -= Time.deltaTime;
-            return _slowFactor;
+            float haste = 1f;
+            if (_hasteRemaining > 0f)
+            {
+                _hasteRemaining -= deltaTime;
+                haste = _hasteFactor;
+            }
+
+            return roll * slow * haste;
         }
 
-        private bool IsHeldByBlockade()
+        // A trail layer leaves a patch every so many units of road behind it.
+        private void DropTrail(float stepped)
         {
-            if (_definition.Layer != TargetLayers.Ground)
+            if (!_definition.LeavesTrail || stepped <= 0f)
+            {
+                return;
+            }
+
+            _sinceTrailDrop += stepped;
+            if (_sinceTrailDrop >= TrailSpacing)
+            {
+                _sinceTrailDrop = 0f;
+                TrailDropped?.Invoke(this, new Vector3(transform.position.x, 0f, transform.position.z));
+            }
+        }
+
+        private void UpdateRoll(float deltaTime)
+        {
+            if (!_definition.Rolls)
+            {
+                return;
+            }
+
+            _rollTimer -= deltaTime;
+            if (_rollTimer <= 0f)
+            {
+                SetRolling(!_rolling);
+            }
+        }
+
+        private void SetRolling(bool rolling)
+        {
+            _rolling = rolling;
+            _rollTimer = rolling ? _definition.RollSeconds : _definition.WalkSeconds;
+            RollChanged?.Invoke(rolling);
+        }
+
+        // Walkers cannot pass a living blockade: they stop in front of it and hit it until it falls.
+        private bool IsHeldByBlockade(float deltaTime)
+        {
+            if (_definition.Flies)
             {
                 return false;
             }
@@ -185,10 +330,10 @@ namespace Game.Enemies
                 return false;
             }
 
-            _attackCooldown -= Time.deltaTime;
+            _attackCooldown -= deltaTime;
             if (_attackCooldown <= 0f)
             {
-                blocker.TakeDamage(_definition.BlockadeDamage);
+                blocker.TakeDamage(_definition.BlockadeDamage * _structureDamageMultiplier);
                 Attacked?.Invoke(blocker.Position);
                 _attackCooldown = _definition.AttackInterval;
             }
@@ -196,14 +341,42 @@ namespace Game.Enemies
             return true;
         }
 
-        private void TryAttackStructure()
+        // A flyer with strikes left hovers over a gate it reaches and hits it a few times before flying on.
+        private bool IsStrikingGate(float deltaTime)
+        {
+            if (_gateStrikesLeft <= 0)
+            {
+                return false;
+            }
+
+            IStructure gate = _structures.FindBlocker(transform.position, _definition.AttackRange);
+            if (gate == null)
+            {
+                return false;
+            }
+
+            Heading = Flat(gate.Position - transform.position);
+            _attackCooldown -= deltaTime;
+            if (_attackCooldown <= 0f)
+            {
+                float damage = _definition.AttackDamage > 0f ? _definition.AttackDamage : _definition.BlockadeDamage;
+                gate.TakeDamage(damage * _structureDamageMultiplier);
+                Attacked?.Invoke(gate.Position);
+                _attackCooldown = _definition.AttackInterval;
+                _gateStrikesLeft--;
+            }
+
+            return true;
+        }
+
+        private void TryAttackStructure(float deltaTime)
         {
             if (_definition.AttackDamage <= 0f)
             {
                 return;
             }
 
-            _attackCooldown -= Time.deltaTime;
+            _attackCooldown -= deltaTime;
             if (_attackCooldown > 0f)
             {
                 return;
@@ -212,14 +385,18 @@ namespace Game.Enemies
             IStructure target = _structures.FindNearest(transform.position, _definition.AttackRange);
             if (target != null)
             {
-                target.TakeDamage(_definition.AttackDamage);
+                target.TakeDamage(_definition.AttackDamage * _structureDamageMultiplier);
                 Attacked?.Invoke(target.Position);
                 _attackCooldown = _definition.AttackInterval;
             }
         }
 
+        private Vector3 Flat(Vector3 direction)
+        {
+            direction.y = 0f;
+            return direction.sqrMagnitude > 0.0001f ? direction.normalized : Heading;
+        }
+
         private void OnDied() => Killed?.Invoke(this);
     }
 }
-
-

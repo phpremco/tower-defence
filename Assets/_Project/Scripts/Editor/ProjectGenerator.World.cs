@@ -39,15 +39,44 @@ namespace Game.Editor
             public float Vein;
             public float AmbientRate;
             public float AmbientRise;
+            public AmbienceKind Ambience;
+            public Color Plant;
+        }
+
+        // The liquid cell closest to a wanted entrance, because erosion may have dropped the exact one.
+        private static Vector2Int NearestLiquid(TerrainPatch[] patches, Vector2Int wanted)
+        {
+            Vector2Int best = wanted;
+            float bestSqr = float.MaxValue;
+            foreach (TerrainPatch patch in patches)
+            {
+                if (!TerrainMap.IsLiquid(patch.Kind))
+                {
+                    continue;
+                }
+
+                float sqr = (patch.Cell - wanted).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = patch.Cell;
+                }
+            }
+
+            return best;
         }
 
         private sealed class LevelSpec
         {
             public string Key;
+            public string Region;
+            public string Briefing;
             public string Name;
             public Palette Palette;
+            public int RoadWidth;
             public Vector2Int[] Road;
             public Vector2Int[] SecondRoad;
+            public Vector2Int[] Plazas;
             public Vector2Int[] NorthAir;
             public Vector2Int[] SouthAir;
                         public Vector2Int[] BlockadeCells;
@@ -56,9 +85,7 @@ namespace Game.Editor
             public int BlockedSeed;
             public int Money;
             public int BaseHealth;
-            public float CountScale;
             public float HealthScale;
-            public EnemyDefinition Boss;
             public TowerDefinition RewardTower;
             public UnlockSource Source;
             public string Story;
@@ -66,6 +93,10 @@ namespace Game.Editor
             public int Power;
             public PathObjectDefinition[] PathObjects;
             public CombineRecipe[] Recipes;
+            public WaveScript Script;
+            public EntranceKind Entrance;
+            public Vector2Int EntranceCell;
+            public ElementNest[] Nests = new ElementNest[0];
         }
 
         private sealed class Roster
@@ -91,30 +122,30 @@ namespace Game.Editor
 
             // Fast single-target damage on the ground; a stand-in for a continuous beam until it has its own effect.
             roster.Laser = CreateTower("Laser", "Laser", TargetLayers.Ground, 40f, 0f, new Color(1f, 0.35f, 0.45f),
-                new[] { Lvl(110, 6f, 3.4f, 0.2f), Lvl(130, 9f, 3.6f, 0.18f), Lvl(190, 13f, 3.9f, 0.15f) }, 90f);
+                new[] { Lvl(110, 6f, 3.9f, 0.2f), Lvl(130, 9f, 4.1f, 0.18f), Lvl(190, 13f, 4.4f, 0.15f) }, 90f);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
-                new[] { Lvl(90, 2f, 3.2f, 0.5f), Lvl(110, 3f, 3.5f, 0.45f), Lvl(160, 4f, 3.8f, 0.4f) }, 80f, slowFactor: 0.5f, slowSeconds: 2f);
+                new[] { Lvl(90, 2f, 3.7f, 0.5f), Lvl(110, 3f, 4f, 0.45f), Lvl(160, 4f, 4.3f, 0.4f) }, 80f, slowFactor: 0.5f, slowSeconds: 2f);
 
             // Lightning is approximated by a small splash, so it works well on groups.
             roster.Tesla = CreateTower("Tesla", "Tesla", TargetLayers.Ground, 40f, 1.3f, new Color(0.7f, 0.5f, 1f),
-                new[] { Lvl(140, 10f, 3f, 0.5f), Lvl(160, 15f, 3.2f, 0.45f), Lvl(230, 22f, 3.5f, 0.4f) }, 90f);
+                new[] { Lvl(140, 10f, 3.5f, 0.5f), Lvl(160, 15f, 3.7f, 0.45f), Lvl(230, 22f, 4f, 0.4f) }, 90f);
 
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
-                new[] { Lvl(220, 80f, 5.5f, 2.2f), Lvl(260, 120f, 6f, 2f), Lvl(360, 180f, 6.5f, 1.8f) }, 100f);
+                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 100f);
 
             roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(0.4f, 1f, 0.6f),
-                new[] { Lvl(120, 0f, 2.5f, 1f), Lvl(140, 0f, 3f, 1f), Lvl(200, 0f, 3.5f, 1f) }, 80f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
+                new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 80f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
 
             // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price.
             roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.6f, 0.2f),
-                new[] { Lvl(0, 60f, 4.6f, 1.6f), Lvl(120, 90f, 5f, 1.4f), Lvl(180, 130f, 5.4f, 1.2f) }, 140f);
+                new[] { Lvl(0, 60f, 5.1f, 1.6f), Lvl(120, 90f, 5.5f, 1.4f), Lvl(180, 130f, 5.9f, 1.2f) }, 140f);
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
-                new[] { Lvl(0, 14f, 3.6f, 0.2f), Lvl(110, 20f, 3.9f, 0.18f), Lvl(170, 28f, 4.2f, 0.15f) }, 110f);
+                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(110, 20f, 4.4f, 0.18f), Lvl(170, 28f, 4.7f, 0.15f) }, 110f);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 3.8f, 0.15f), Lvl(110, 12f, 4.1f, 0.13f), Lvl(170, 17f, 4.4f, 0.11f) }, 100f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                new[] { Lvl(0, 8f, 4.3f, 0.15f), Lvl(110, 12f, 4.6f, 0.13f), Lvl(170, 17f, 4.9f, 0.11f) }, 100f, slowFactor: 0.4f, slowSeconds: 2.5f);
 
             SetModel(roster.Laser, "turret_single", 1.35f);
             SetModel(roster.Cryo, "satelliteDish", 1.4f);
@@ -160,7 +191,7 @@ namespace Game.Editor
             return asset;
         }
 
-        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, float repair, float energyCost, Color color)
+        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, int cost, int maxActive, Color color, float repair = 0f, float harvestSeconds = 4f, int harvestValue = 0, float damage = 0f, float fireInterval = 0.5f, float range = 3f)
         {
             var asset = LoadOrCreate<DroneDefinition>($"{DataRoot}/Drones/{id}.asset");
             var so = new SerializedObject(asset);
@@ -168,10 +199,19 @@ namespace Game.Editor
             so.FindProperty("_kind").enumValueIndex = (int)kind;
             so.FindProperty("_speed").floatValue = speed;
             so.FindProperty("_maxHealth").floatValue = health;
+            so.FindProperty("_cost").intValue = cost;
+            so.FindProperty("_maxActive").intValue = maxActive;
             so.FindProperty("_repairPerSecond").floatValue = repair;
-            so.FindProperty("_energyCost").floatValue = energyCost;
+            so.FindProperty("_harvestSeconds").floatValue = harvestSeconds;
+            so.FindProperty("_harvestValue").intValue = harvestValue;
+            so.FindProperty("_damage").floatValue = damage;
+            so.FindProperty("_fireInterval").floatValue = fireInterval;
+            so.FindProperty("_range").floatValue = range;
+            so.FindProperty("_targets").intValue = (int)(TargetLayers.Ground | TargetLayers.Air);
             so.FindProperty("_color").colorValue = color;
             so.ApplyModifiedPropertiesWithoutUndo();
+            // A value equal to the field default leaves the asset clean, so force the save or a stale field lingers on disk.
+            EditorUtility.SetDirty(asset);
             return asset;
         }
 
@@ -193,13 +233,15 @@ namespace Game.Editor
             PathObjectDefinition[] pathObjects,
             CombineRecipe[] recipes,
             DroneDefinition repairDrone,
-            DroneDefinition collectorDrone)
+            DroneDefinition harvestDrone,
+            DroneDefinition attackDrone)
         {
             var so = new SerializedObject(level);
             SetReferences(so.FindProperty("_pathObjects"), pathObjects);
             SetReferences(so.FindProperty("_recipes"), recipes);
             so.FindProperty("_repairDrone").objectReferenceValue = repairDrone;
-            so.FindProperty("_collectorDrone").objectReferenceValue = collectorDrone;
+            so.FindProperty("_harvestDrone").objectReferenceValue = harvestDrone;
+            so.FindProperty("_attackDrone").objectReferenceValue = attackDrone;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -212,42 +254,11 @@ namespace Game.Editor
             }
         }
 
-        private static List<DifficultyWaves> BuildWaveSets(
-            string levelKey,
-            DifficultyProfile[] difficulties,
-            float countScale,
-            EnemyDefinition scout,
-            EnemyDefinition grunt,
-            EnemyDefinition brute,
-            EnemyDefinition flyer,
-            EnemyDefinition boss,
-            int secondRoad)
-        {
-            var sets = new List<DifficultyWaves>();
-            for (int d = 0; d < difficulties.Length; d++)
-            {
-                int count = d == 0 ? 5 : d == 3 ? 7 : 6;
-                sets.Add(new DifficultyWaves
-                {
-                    Difficulty = difficulties[d],
-                    Waves = CreateWaves(levelKey, DifficultyNames[d], count, scout, grunt, brute, flyer, countScale, boss, secondRoad),
-                });
-            }
-
-            return sets;
-        }
-
         private static LevelDefinition[] CreateWorldLevels(
             LevelDefinition landing,
             Roster roster,
             DifficultyProfile[] difficulties,
-            EnemyDefinition scout,
-            EnemyDefinition grunt,
-            EnemyDefinition brute,
-            EnemyDefinition flyer,
-            EnemyDefinition overseer,
-            EnemyDefinition warden,
-            EnemyDefinition queen,
+            Bestiary enemies,
             TowerDefinition blockade,
             HeroDefinition hero,
             PathObjectDefinition slowField,
@@ -258,14 +269,18 @@ namespace Game.Editor
             PathObjectDefinition antiAir,
             CombineRecipe[] recipes,
             DroneDefinition repairDrone,
-            DroneDefinition collectorDrone)
+            DroneDefinition harvestDrone,
+            DroneDefinition attackDrone)
         {
             var specs = new[]
             {
                 new LevelSpec
                 {
                     Key = "Forest",
+                    Script = ForestScript(enemies),
                     Name = "Glowing Forest",
+                    Region = "Bioluminescent Woods",
+                    Briefing = "The woods glow at night, and so does what lives in them. Two roads meet under the canopy. Rollers come down them fast, and the ponds hide worse.",
                     Palette = new Palette
                     {
                         Background = new Color(0.03f, 0.02f, 0.07f),
@@ -287,10 +302,15 @@ namespace Game.Editor
                         Vein = 0.85f,
                         AmbientRate = 30f,
                         AmbientRise = 0.18f,
+                        Ambience = AmbienceKind.Forest,
+                        Plant = new Color(0.14f, 0.52f, 0.42f),
                     },
+                    // Two roads meet on a square in the woods, then share the way east to the base.
                     Size = new Vector2Int(26, 14),
+                    RoadWidth = 2,
                     Road = Cells(0, 12, 8, 12, 8, 8, 16, 8, 16, 3, 25, 3),
                     SecondRoad = Cells(0, 1, 8, 1, 8, 8),
+                    Plazas = Rect(7, 7, 10, 10),
                     NorthAir = Cells(0, 13, 25, 3),
                     SouthAir = Cells(0, 0, 13, 7, 25, 3),
                     BlockadeCells = Cells(12, 8, 16, 5),
@@ -298,13 +318,11 @@ namespace Game.Editor
                     Terrain = Terrain(
                         Area(TerrainKind.Water, 21, 13, 22, 17), Area(TerrainKind.Water, 20, 10, 21, 12), Area(TerrainKind.Water, 19, 8, 20, 9),
                         Area(TerrainKind.Water, 18, 5, 19, 7), Area(TerrainKind.Water, 3, 5, 5, 6),
-                        Area(TerrainKind.Raised, 0, 8, 3, 10), Area(TerrainKind.Raised, 10, 10, 14, 12), Area(TerrainKind.Raised, 21, 5, 25, 7),
+                        Area(TerrainKind.Raised, 0, 8, 3, 10), Area(TerrainKind.Raised, 11, 10, 14, 12), Area(TerrainKind.Raised, 21, 5, 25, 7),
                         Area(TerrainKind.Raised, 12, 0, 18, 1)),
                     Money = 180,
                     BaseHealth = 20,
-                    CountScale = 1.1f,
                     HealthScale = 1.05f,
-                    Boss = overseer,
                     RewardTower = roster.Cryo,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "Alien crystals in the forest turned out to hold a cold-field emitter. Our engineers adapted it.",
@@ -312,11 +330,19 @@ namespace Game.Editor
                     Power = 6,
                     PathObjects = new[] { slowField, mine },
                     Recipes = new CombineRecipe[0],
+                    // Rollers from the third wave, pool creatures out of the forest ponds from the fourth; the boss surfaces from a pond.
+                    Entrance = EntranceKind.Pool,
+                    EntranceCell = new Vector2Int(19, 8),
+                    // Moss bats roost in hollow trees on both sides of the woods; tide bats rise from the ponds.
+                    Nests = new[] { Nest(Element.Wood, 5, 10), Nest(Element.Wood, 22, 9), Nest(Element.Water, 20, 11), Nest(Element.Water, 18, 6) },
                 },
                 new LevelSpec
                 {
                     Key = "Lava",
+                    Script = LavaScript(enemies),
                     Name = "Lava Caves",
+                    Region = "Lava Fields",
+                    Briefing = "The energy we came for lies in these lava fields. The heat does not stop the swarm, and halfway through something climbs out of the lava itself.",
                     Palette = new Palette
                     {
                         Background = new Color(0.07f, 0.02f, 0.01f),
@@ -338,24 +364,27 @@ namespace Game.Editor
                         Vein = 0.9f,
                         AmbientRate = 26f,
                         AmbientRise = 0.5f,
+                        Ambience = AmbienceKind.Lava,
+                        Plant = new Color(0.5f, 0.2f, 0.12f),
                     },
-                    Size = new Vector2Int(22, 16),
-                    Road = Cells(0, 14, 18, 14, 18, 11, 3, 11, 3, 8, 18, 8, 18, 5, 3, 5, 3, 2, 21, 2),
+                    // A serpentine through the caves. The second row of a road lies to the right of travel, so the
+                    // legs that turn clockwise sit five rows apart and the others three, leaving two build rows each.
+                    Size = new Vector2Int(22, 17),
+                    RoadWidth = 2,
+                    Road = Cells(0, 15, 18, 15, 18, 10, 3, 10, 3, 7, 18, 7, 18, 2, 21, 2),
                     SecondRoad = null,
-                    NorthAir = Cells(0, 15, 21, 2),
-                    SouthAir = Cells(0, 0, 11, 7, 21, 2),
-                    BlockadeCells = Cells(10, 11, 10, 5),
+                    NorthAir = Cells(0, 16, 21, 2),
+                    SouthAir = Cells(0, 0, 11, 8, 21, 2),
+                    BlockadeCells = Cells(8, 10, 12, 7),
                     BlockedSeed = 33,
                     Terrain = Terrain(
-                        Area(TerrainKind.Lava, 5, 12, 8, 13), Area(TerrainKind.Lava, 13, 12, 16, 13), Area(TerrainKind.Lava, 6, 9, 9, 10),
-                        Area(TerrainKind.Lava, 12, 6, 15, 7), Area(TerrainKind.Lava, 4, 0, 12, 1), Area(TerrainKind.Lava, 20, 7, 26, 13),
-                        Area(TerrainKind.Raised, 0, 12, 2, 13), Area(TerrainKind.Raised, 0, 6, 1, 7), Area(TerrainKind.Raised, 19, 3, 20, 4),
-                        Area(TerrainKind.Raised, 10, 9, 14, 10)),
+                        Area(TerrainKind.Lava, 5, 12, 8, 13), Area(TerrainKind.Lava, 13, 12, 16, 13), Area(TerrainKind.Lava, 4, 8, 6, 9),
+                        Area(TerrainKind.Lava, 4, 0, 12, 0), Area(TerrainKind.Lava, 20, 7, 26, 13),
+                        Area(TerrainKind.Raised, 0, 12, 1, 13), Area(TerrainKind.Raised, 0, 4, 1, 5), Area(TerrainKind.Raised, 19, 4, 20, 5),
+                        Area(TerrainKind.Raised, 10, 8, 13, 9)),
                     Money = 210,
                     BaseHealth = 20,
-                    CountScale = 1.3f,
                     HealthScale = 1.3f,
-                    Boss = null,
                     RewardTower = roster.Laser,
                     Source = UnlockSource.HomePlanetIntel,
                     Story = "Home sent the focusing crystals they refined from our first samples: a laser design.",
@@ -363,11 +392,19 @@ namespace Game.Editor
                     Power = 9,
                     PathObjects = new[] { lavaBall, barrel },
                     Recipes = new CombineRecipe[0],
+                    // No final boss here, but a mind-boss climbs out of the lava halfway through the level.
+                    Entrance = EntranceKind.Pool,
+                    EntranceCell = new Vector2Int(6, 12),
+                    // Ember bats pour out of the lava vents.
+                    Nests = new[] { Nest(Element.Fire, 6, 12), Nest(Element.Fire, 15, 12), Nest(Element.Fire, 21, 10) },
                 },
                 new LevelSpec
                 {
                     Key = "Ruins",
+                    Script = RuinsScript(enemies),
                     Name = "Ancient Ruins",
+                    Region = "Old Ruins",
+                    Briefing = "Someone built here long before us, and lost. Old metal, gold and green, and a walking fortress that still guards it.",
                     Palette = new Palette
                     {
                         Background = new Color(0.05f, 0.05f, 0.02f),
@@ -389,24 +426,27 @@ namespace Game.Editor
                         Vein = 0.3f,
                         AmbientRate = 14f,
                         AmbientRise = 0.05f,
+                        Ambience = AmbienceKind.Ruins,
+                        Plant = new Color(0.48f, 0.5f, 0.2f),
                     },
+                    // Two roads from the west meet on the old market square, then leave together towards the base.
                     Size = new Vector2Int(28, 16),
-                    Road = Cells(0, 6, 12, 6, 12, 12, 18, 12, 18, 3, 8, 3, 8, 9, 3, 9),
-                    SecondRoad = null,
-                    NorthAir = Cells(27, 15, 3, 9),
-                    SouthAir = Cells(27, 0, 3, 9),
-                    BlockadeCells = Cells(5, 6, 18, 8),
+                    RoadWidth = 2,
+                    Road = Cells(0, 13, 9, 13, 9, 7, 13, 7, 13, 3, 27, 3),
+                    SecondRoad = Cells(0, 1, 9, 1, 9, 7),
+                    Plazas = Rect(8, 6, 11, 9),
+                    NorthAir = Cells(0, 15, 20, 10, 27, 3),
+                    SouthAir = Cells(14, 0, 27, 3),
+                    BlockadeCells = Cells(5, 13, 19, 3, 5, 1),
                     BlockedSeed = 45,
                     Terrain = Terrain(
-                        Area(TerrainKind.Quicksand, 20, 5, 23, 8), Area(TerrainKind.Quicksand, 9, 4, 11, 5), Area(TerrainKind.Quicksand, 2, 11, 4, 13),
-                        Area(TerrainKind.Water, 22, 0, 26, 2),
-                        Area(TerrainKind.Raised, 14, 7, 16, 9), Area(TerrainKind.Raised, 0, 12, 6, 14), Area(TerrainKind.Raised, 24, 6, 27, 12),
-                        Area(TerrainKind.Raised, 1, 0, 6, 2)),
+                        Area(TerrainKind.Quicksand, 20, 6, 23, 9), Area(TerrainKind.Quicksand, 2, 4, 4, 6), Area(TerrainKind.Quicksand, 24, 13, 26, 14),
+                        Area(TerrainKind.Water, 22, 15, 26, 17),
+                        Area(TerrainKind.Raised, 15, 9, 17, 11), Area(TerrainKind.Raised, 0, 14, 5, 15), Area(TerrainKind.Raised, 24, 7, 27, 12),
+                        Area(TerrainKind.Raised, 1, 3, 6, 4)),
                     Money = 240,
                     BaseHealth = 20,
-                    CountScale = 1.45f,
                     HealthScale = 1.5f,
-                    Boss = warden,
                     RewardTower = roster.Rocket,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The ruin vaults held guidance gear. With it our rocket launchers can finally lock on to flyers.",
@@ -414,11 +454,19 @@ namespace Game.Editor
                     Power = 12,
                     PathObjects = new[] { groundDrone, antiAir },
                     Recipes = new CombineRecipe[0],
+                    // Diggers out of the quicksand, rollers, and eels from the cistern; the fortress breaks out of the ground between the roads.
+                    Entrance = EntranceKind.Ground,
+                    EntranceCell = new Vector2Int(6, 10),
+                    // Dust bats burrow out of the sand drifts and tide bats out of the old cistern.
+                    Nests = new[] { Nest(Element.Sand, 21, 7), Nest(Element.Sand, 3, 5), Nest(Element.Sand, 25, 13), Nest(Element.Water, 24, 15) },
                 },
                 new LevelSpec
                 {
                     Key = "Nest",
+                    Script = NestScript(enemies),
                     Name = "The Nest",
+                    Region = "The Hive",
+                    Briefing = "The source. The queen waits under the hive and the whole planet seems to hold its breath. End this, and learn what is under the surface.",
                     Palette = new Palette
                     {
                         Background = new Color(0.05f, 0.0f, 0.01f),
@@ -440,23 +488,26 @@ namespace Game.Editor
                         Vein = 0.9f,
                         AmbientRate = 22f,
                         AmbientRise = -0.12f,
+                        Ambience = AmbienceKind.Hive,
+                        Plant = new Color(0.52f, 0.14f, 0.32f),
                     },
-                    Size = new Vector2Int(24, 14),
-                    Road = Cells(0, 11, 11, 11, 11, 6, 23, 6),
-                    SecondRoad = Cells(0, 2, 11, 2, 11, 6),
-                    NorthAir = Cells(0, 13, 23, 6),
-                    SouthAir = Cells(0, 0, 23, 6),
-                    BlockadeCells = Cells(6, 11, 6, 2, 17, 6),
+                    // Two roads pour onto the hive forecourt, a wide open square, before the last stretch to the base.
+                    Size = new Vector2Int(24, 16),
+                    RoadWidth = 2,
+                    Road = Cells(0, 13, 11, 13, 11, 7, 23, 7),
+                    SecondRoad = Cells(0, 2, 11, 2, 11, 7),
+                    Plazas = Rect(9, 5, 13, 9),
+                    NorthAir = Cells(0, 15, 23, 7),
+                    SouthAir = Cells(0, 0, 23, 7),
+                    BlockadeCells = Cells(6, 13, 6, 2, 18, 7),
                     BlockedSeed = 57,
                     Terrain = Terrain(
-                        Area(TerrainKind.Water, 18, 9, 23, 12), Area(TerrainKind.Water, 15, 0, 20, 3), Area(TerrainKind.Water, 21, 13, 23, 16),
-                        Area(TerrainKind.Quicksand, 2, 6, 3, 7), Area(TerrainKind.Quicksand, 7, 4, 8, 5),
-                        Area(TerrainKind.Raised, 0, 8, 1, 9), Area(TerrainKind.Raised, 13, 8, 16, 9), Area(TerrainKind.Raised, 5, 7, 9, 9)),
+                        Area(TerrainKind.Water, 18, 11, 23, 14), Area(TerrainKind.Water, 15, 0, 21, 3), Area(TerrainKind.Water, 21, 15, 23, 18),
+                        Area(TerrainKind.Quicksand, 2, 6, 3, 7), Area(TerrainKind.Quicksand, 6, 4, 7, 5),
+                        Area(TerrainKind.Raised, 0, 8, 1, 9), Area(TerrainKind.Raised, 14, 10, 16, 11), Area(TerrainKind.Raised, 5, 10, 8, 11)),
                     Money = 270,
                     BaseHealth = 20,
-                    CountScale = 1.35f,
                     HealthScale = 1.4f,
-                    Boss = queen,
                     RewardTower = roster.Tesla,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The queen's nest was powered by living coils. We took one, and with it the first hybrid designs.",
@@ -464,13 +515,17 @@ namespace Game.Editor
                     Power = 18,
                     PathObjects = new[] { slowField, mine, lavaBall, barrel, groundDrone, antiAir },
                     Recipes = recipes,
+                    // Everything at once, a fortress halfway, and the queen herself through the hive mouth.
+                    Entrance = EntranceKind.Gate,
+                    // The hive keeps its own bats: in the drowned corner and in the sand pits.
+                    Nests = new[] { Nest(Element.Water, 20, 12), Nest(Element.Water, 18, 1), Nest(Element.Sand, 2, 6), Nest(Element.Sand, 6, 4) },
                 },
             };
 
             var levels = new LevelDefinition[specs.Length];
             for (int i = 0; i < specs.Length; i++)
             {
-                levels[i] = ConfigureWorldLevel(specs[i], roster, difficulties, scout, grunt, brute, flyer, blockade, hero, repairDrone, collectorDrone);
+                levels[i] = ConfigureWorldLevel(specs[i], roster, difficulties, enemies, blockade, hero, repairDrone, harvestDrone, attackDrone);
             }
 
             return levels;
@@ -516,7 +571,7 @@ namespace Game.Editor
         private const double ErodeChance = 0.4;
 
         // Terrain never covers the road, and liquid keeps clear of the blockades where the hero stands.
-        private static void WriteTerrain(SerializedProperty array, TerrainPatch[] patches, HashSet<Vector2Int> road, Vector2Int[] blockades)
+        private static TerrainPatch[] WriteTerrain(SerializedProperty array, TerrainPatch[] patches, HashSet<Vector2Int> road, Vector2Int[] blockades)
         {
             patches = Erode(patches);
             TerrainPatch[] kept = patches
@@ -533,6 +588,23 @@ namespace Game.Editor
                 element.FindPropertyRelative("Cell").vector2IntValue = kept[i].Cell;
                 element.FindPropertyRelative("Kind").enumValueIndex = (int)kept[i].Kind;
             }
+
+            return kept;
+        }
+
+        /// <summary>Every cell of a rectangle, both corners included: the shape of a plaza.</summary>
+        private static Vector2Int[] Rect(int x0, int y0, int x1, int y1)
+        {
+            var cells = new List<Vector2Int>();
+            for (int x = x0; x <= x1; x++)
+            {
+                for (int y = y0; y <= y1; y++)
+                {
+                    cells.Add(new Vector2Int(x, y));
+                }
+            }
+
+            return cells.ToArray();
         }
 
         private static Vector2Int[] Cells(params int[] xy)
@@ -550,14 +622,12 @@ namespace Game.Editor
             LevelSpec spec,
             Roster roster,
             DifficultyProfile[] difficulties,
-            EnemyDefinition scout,
-            EnemyDefinition grunt,
-            EnemyDefinition brute,
-            EnemyDefinition flyer,
+            Bestiary enemies,
             TowerDefinition blockade,
             HeroDefinition hero,
             DroneDefinition repairDrone,
-            DroneDefinition collectorDrone)
+            DroneDefinition harvestDrone,
+            DroneDefinition attackDrone)
         {
             var theme = LoadOrCreate<VisualTheme>($"{DataRoot}/Levels/Theme_{spec.Key}.asset");
             ConfigureThemePalette(theme, spec.Palette);
@@ -565,6 +635,8 @@ namespace Game.Editor
             var level = LoadOrCreate<LevelDefinition>($"{DataRoot}/Levels/Level_{spec.Key}.asset");
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = spec.Name;
+            so.FindProperty("_regionName").stringValue = spec.Region;
+            so.FindProperty("_briefing").stringValue = spec.Briefing;
             so.FindProperty("_gridSize").vector2IntValue = spec.Size;
             so.FindProperty("_cellSize").floatValue = 1f;
             so.FindProperty("_theme").objectReferenceValue = theme;
@@ -575,6 +647,7 @@ namespace Game.Editor
             so.FindProperty("_startingMoney").intValue = spec.Money;
             so.FindProperty("_enemyHealthMultiplier").floatValue = spec.HealthScale;
             so.FindProperty("_baseHealth").intValue = spec.BaseHealth;
+            so.FindProperty("_mineStock").intValue = MineStock;
             so.FindProperty("_hero").objectReferenceValue = hero;
             SerializedProperty stars = so.FindProperty("_starBaseHealthFractions");
             stars.arraySize = 2;
@@ -601,18 +674,24 @@ namespace Game.Editor
             }
 
             WritePaths(so.FindProperty("_paths"), paths.ToArray());
-
-            var road = new HashSet<Vector2Int>(LevelValidator.LandPathCells(spec.Road));
-            if (spec.SecondRoad != null)
-            {
-                road.UnionWith(LevelValidator.LandPathCells(spec.SecondRoad));
-            }
+            so.FindProperty("_roadWidth").intValue = spec.RoadWidth;
+            Vector2Int[] plazas = spec.Plazas ?? new Vector2Int[0];
+            WriteCells(so.FindProperty("_plazaCells"), plazas);
+            HashSet<Vector2Int> road = RoadCells(spec.Size, paths, spec.RoadWidth, plazas);
 
             TerrainPatch[] terrain = spec.Terrain ?? new TerrainPatch[0];
-            Vector2Int[] blockedCells = ScatterBlocked(spec.Size, road, terrain, spec.BlockadeCells, spec.BlockedSeed, BlockedFraction);
+            // Nests reserve their cells like blockades do, so no rock or mine lands on one.
+            Vector2Int[] reserved = spec.BlockadeCells.Concat(NestCells(spec.Nests)).ToArray();
+            Vector2Int[] blockedCells = ScatterBlocked(spec.Size, road, terrain, reserved, spec.BlockedSeed, BlockedFraction);
             WriteCells(so.FindProperty("_blockedCells"), blockedCells);
-            WriteCells(so.FindProperty("_mineCells"), PickMineCells(spec.Size, road, terrain, blockedCells, spec.BlockadeCells, spec.BlockedSeed + 5));
-            WriteTerrain(so.FindProperty("_terrain"), terrain, road, spec.BlockadeCells);
+            WriteCells(so.FindProperty("_mineCells"), PickMineCells(spec.Size, road, terrain, blockedCells, reserved, spec.BlockedSeed + 5));
+            TerrainPatch[] kept = WriteTerrain(so.FindProperty("_terrain"), terrain, road, spec.BlockadeCells);
+            WriteNests(so.FindProperty("_nests"), spec.Nests, kept);
+
+            // Bosses come up where the level says; a pool entrance snaps to the nearest liquid cell that survived erosion.
+            SerializedProperty entrance = so.FindProperty("_bossEntrance");
+            entrance.FindPropertyRelative("Kind").enumValueIndex = (int)spec.Entrance;
+            entrance.FindPropertyRelative("Cell").vector2IntValue = spec.Entrance == EntranceKind.Pool ? NearestLiquid(kept, spec.EntranceCell) : spec.EntranceCell;
 
             SerializedProperty blockades = so.FindProperty("_blockades");
             blockades.arraySize = spec.BlockadeCells.Length;
@@ -626,7 +705,7 @@ namespace Game.Editor
             SetReferences(so.FindProperty("_availableTowers"), roster.Standard);
 
             int secondRoadIndex = spec.SecondRoad != null ? 3 : -1;
-            List<DifficultyWaves> waveSets = BuildWaveSets(spec.Key, difficulties, spec.CountScale, scout, grunt, brute, flyer, spec.Boss, secondRoadIndex);
+            List<DifficultyWaves> waveSets = BuildWaves(spec.Key, difficulties, spec.Script, secondRoadIndex);
             SerializedProperty waveArray = so.FindProperty("_difficultyWaves");
             waveArray.arraySize = waveSets.Count;
             for (int i = 0; i < waveSets.Count; i++)
@@ -642,7 +721,7 @@ namespace Game.Editor
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();
-            ConfigureLevelExtras(level, spec.PathObjects, spec.Recipes, repairDrone, collectorDrone);
+            ConfigureLevelExtras(level, spec.PathObjects, spec.Recipes, repairDrone, harvestDrone, attackDrone);
             return level;
         }
     }

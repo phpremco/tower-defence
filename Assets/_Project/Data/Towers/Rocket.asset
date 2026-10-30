@@ -17,19 +17,19 @@ MonoBehaviour:
   _levels:
   - Cost: 120
     Damage: 30
-    Range: 5
+    Range: 5.5
     FireInterval: 1.6
     HealthBonus: 0
     Model: {fileID: 0}
   - Cost: 140
     Damage: 45
-    Range: 5.4
+    Range: 5.9
     FireInterval: 1.4
     HealthBonus: 0
     Model: {fileID: 0}
   - Cost: 200
     Damage: 70
-    Range: 5.8
+    Range: 6.3
     FireInterval: 1.2
     HealthBonus: 0
     Model: {fileID: 0}
@@ -48,6 +48,7 @@ MonoBehaviour:
   _blocksGroundEnemies: 0
   _color: {r: 0.9, g: 0.9, b: 1, a: 1}
   _shape: 4
+  _projectileStyle: 2
   _model: {fileID: 919132149155446097, guid: fd4163113b1626e40a1cdff72f6956d5, type: 3}
   _modelScale: 1.5
   _keepModelColours: 0

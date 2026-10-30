@@ -12,6 +12,7 @@
                        "Game.Economy",
                        "Game.Levels",
                        "Game.Platform",
+                       "Game.UI",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
                    ],

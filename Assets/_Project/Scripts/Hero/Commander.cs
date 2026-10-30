@@ -67,8 +67,14 @@ namespace Game.Hero
         /// <summary>Raised when anything the HUD shows changes: post, down state, health or cooldowns.</summary>
         public event Action Changed;
 
-        /// <summary>Raised with the enemy's position whenever the hero swings.</summary>
+        /// <summary>Raised with the enemy's position whenever the hero attacks.</summary>
         public event Action<Vector3> Struck;
+
+        /// <summary>Raised when the hero's health runs out and it goes down.</summary>
+        public event Action Downed;
+
+        /// <summary>Raised when a downed hero stands up again.</summary>
+        public event Action Revived;
 
         /// <summary>Raised with the centre and radius when the shockwave goes off.</summary>
         public event Action<Vector3, float> ShockwaveReleased;
@@ -152,6 +158,17 @@ namespace Game.Hero
             return true;
         }
 
+        /// <summary>Hurts the hero directly, as slime or acid on the ground does. A downed hero is past hurting.</summary>
+        public void TakeHazardDamage(float damage)
+        {
+            if (IsDown || damage <= 0f)
+            {
+                return;
+            }
+
+            Health.TakeDamage(damage);
+        }
+
         /// <summary>Takes the hero's share of a hit on the guarded structure and returns what goes through.</summary>
         public float Absorb(float damage)
         {
@@ -177,6 +194,7 @@ namespace Game.Hero
                     Health.Heal(Health.Max);
                     IsDown = false;
                     Arrive();
+                    Revived?.Invoke();
                     Changed?.Invoke();
                 }
 
@@ -237,7 +255,8 @@ namespace Game.Hero
             }
         }
 
-        // A melee hit: the enemy takes the damage straight away and the view plays the swing.
+        // An attack: the enemy takes the damage straight away (a bolt is too fast to dodge) and the view plays
+        // the swing or the shot.
         private void Strike()
         {
             _strikeCooldown -= Time.deltaTime;
@@ -270,6 +289,7 @@ namespace Game.Hero
             IsWalking = false;
             _reviveRemaining = _definition.ReviveSeconds;
             ReleaseGuard();
+            Downed?.Invoke();
             Changed?.Invoke();
         }
 

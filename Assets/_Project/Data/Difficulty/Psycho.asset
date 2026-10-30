@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Psycho
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Psycho
-  _healthMultiplier: 2
-  _countMultiplier: 1.7
+  _healthMultiplier: 2.4
+  _countMultiplier: 1.9
   _spawnIntervalMultiplier: 0.7
   _rewardMultiplier: 2.5
   _powerCurrencyMultiplier: 2
+  _structureDamageMultiplier: 1.8

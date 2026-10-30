@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1fe0d7c1606005409e845a9d4b258ab, type: 3}
+  m_Name: SfxLibrary
+  m_EditorClassIdentifier: Game.Core::Game.Core.SfxLibrary
+  _pulseShots:
+  - {fileID: 8300000, guid: c3f3794f9ddd2244597aaf10f2d8c176, type: 3}
+  - {fileID: 8300000, guid: 72d05777b1bf86d4ba679f8f2574e30a, type: 3}
+  - {fileID: 8300000, guid: b808b91abd9248a418afb131cc01388d, type: 3}
+  - {fileID: 8300000, guid: 6bb19d07d6dcb2249bf53084c62c535f, type: 3}
+  - {fileID: 8300000, guid: 0682b4782ef29c746949931c38e85058, type: 3}
+  _heavyShots:
+  - {fileID: 8300000, guid: c5f0ad0744efcbc40899d8dd9feb6958, type: 3}
+  - {fileID: 8300000, guid: 5aeefac08f5d78c4190aa85a4030a4d6, type: 3}
+  - {fileID: 8300000, guid: 69f180175082a9044a5a6439b9ae97f4, type: 3}
+  - {fileID: 8300000, guid: dbf358483e61b5246ad38a0b1a6871c9, type: 3}
+  - {fileID: 8300000, guid: abfb0abc233d5cb4c85e57208369dfb4, type: 3}
+  _rocketLaunches:
+  - {fileID: 8300000, guid: bdf338eec81f10648833d4add275f548, type: 3}
+  - {fileID: 8300000, guid: 3176b313f5e71184ba0cc43b9df79000, type: 3}
+  - {fileID: 8300000, guid: a30c1e43c2b73ad4e89bf9cab720fbe8, type: 3}
+  - {fileID: 8300000, guid: 90c596281e432004cb86733782330a5f, type: 3}
+  - {fileID: 8300000, guid: e0488a27688d0444a8b6728c0ccc0ab0, type: 3}
+  _cryoShots:
+  - {fileID: 8300000, guid: 770e688c6462eeb458e381222601ecd0, type: 3}
+  - {fileID: 8300000, guid: 1a641631e5bc5b94fa2efbfe0a082687, type: 3}
+  - {fileID: 8300000, guid: bfff40c0248474a44b2b233d1601fbea, type: 3}
+  - {fileID: 8300000, guid: 88602c65ce7eec549b3c90b0e8f4b21c, type: 3}
+  - {fileID: 8300000, guid: 6735d14c27b9583428c37cf0e96d1b45, type: 3}
+  _teslaShots:
+  - {fileID: 8300000, guid: 36dcebbeea739014390327e2fac26e53, type: 3}
+  - {fileID: 8300000, guid: 94384768b9d075d488885ad6ce4f3454, type: 3}
+  - {fileID: 8300000, guid: 0bc5cfb3fb3469a42964c0efbf6eb1a0, type: 3}
+  - {fileID: 8300000, guid: 0686582b2e3bcbc43bfaff330e9b8801, type: 3}
+  - {fileID: 8300000, guid: fb545b8ff92c9ba479e9d6baaf6fb361, type: 3}
+  _railShots:
+  - {fileID: 8300000, guid: 97d6a5d5a4191534389386bba191970b, type: 3}
+  - {fileID: 8300000, guid: 017d73f1f9d15294b933c00c0afc5d14, type: 3}
+  - {fileID: 8300000, guid: ad835d8ed29da8b459771ee89489780d, type: 3}
+  - {fileID: 8300000, guid: 8aacf525be896634298facc87ff1294c, type: 3}
+  - {fileID: 8300000, guid: bc2507c58e8945e43804813aa7997674, type: 3}
+  _explosions:
+  - {fileID: 8300000, guid: 1896718b9c8f4c2419c2847ab991a094, type: 3}
+  - {fileID: 8300000, guid: 5679e1a51c3d3b24f9cd0c2f3e9edce3, type: 3}
+  - {fileID: 8300000, guid: d072cca7dc3492a4681658382c1dceb5, type: 3}
+  - {fileID: 8300000, guid: e4996a8db50912e439fe2dd6ed5dc642, type: 3}
+  - {fileID: 8300000, guid: e785a10e4c8e7294fac2ee23b8b0a847, type: 3}
+  _bigExplosions:
+  - {fileID: 8300000, guid: 5b67a5f4e4bdbb54da4c205a8cdb5921, type: 3}
+  - {fileID: 8300000, guid: 06560f4500ac5ca4eb2828ac6b6f3e1f, type: 3}
+  _structureHits:
+  - {fileID: 8300000, guid: 737814f594734514d9ec7ec8a5a13900, type: 3}
+  - {fileID: 8300000, guid: b990e898a2c07854e9278c1c827ba92f, type: 3}
+  - {fileID: 8300000, guid: 7cc97091b37d997488b946daf227201e, type: 3}
+  - {fileID: 8300000, guid: ddc2bb6d86ff4de4dab3dabd1fd43a4e, type: 3}
+  - {fileID: 8300000, guid: 0d93176c1d2fade488b3dccc66c1e718, type: 3}
+  _enemyDeaths:
+  - {fileID: 8300000, guid: 296c232ddf6dddf44925d3f819294cc3, type: 3}
+  - {fileID: 8300000, guid: cf4878acb9983bf44aab7f17422eb6aa, type: 3}
+  _baseHits:
+  - {fileID: 8300000, guid: 1896718b9c8f4c2419c2847ab991a094, type: 3}
+  - {fileID: 8300000, guid: 5679e1a51c3d3b24f9cd0c2f3e9edce3, type: 3}
+  - {fileID: 8300000, guid: d072cca7dc3492a4681658382c1dceb5, type: 3}
+  - {fileID: 8300000, guid: e4996a8db50912e439fe2dd6ed5dc642, type: 3}
+  - {fileID: 8300000, guid: e785a10e4c8e7294fac2ee23b8b0a847, type: 3}
+  _heroBlasters:
+  - {fileID: 8300000, guid: 5c07fe32c3720224b847d49a21e8ef4f, type: 3}
+  - {fileID: 8300000, guid: 98268f40700cd7947a0d11ed33a80888, type: 3}
+  - {fileID: 8300000, guid: 35381c63cf5f5d24daa406caef15a1fa, type: 3}
+  - {fileID: 8300000, guid: 1f9ae795ab91f92409a9bc07c5428ef9, type: 3}
+  - {fileID: 8300000, guid: e1cb5820a2ccc514297014f15e990ea4, type: 3}
+  _bossLaserLoops:
+  - {fileID: 8300000, guid: 619161933c409084aa1e561caab597ee, type: 3}
+  _bossAlarms:
+  - {fileID: 8300000, guid: d01e3822a02f8e84882d65ca5a8f1f22, type: 3}

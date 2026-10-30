@@ -1,4 +1,5 @@
 ﻿using Game.Core;
+using Game.Economy;
 using Game.Levels;
 using Game.Platform;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Game.UI
     public sealed class PauseMenuView : MonoBehaviour
     {
         private const float PanelWidth = 760f;
-        private const float PanelHeight = 640f;
+        private const float PanelHeight = 720f;
         private const float ButtonGap = 20f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.65f);
         private static readonly Color PanelTint = new Color(0.14f, 0.22f, 0.4f, 0.97f);
@@ -26,6 +27,8 @@ namespace Game.UI
         private GameObject _root;
         private GameObject _mainPage;
         private GameObject _confirmPage;
+        private GameObject _soundPage;
+        private Button _soundBack;
         private Button _resume;
         private Button _keepPlaying;
         private bool _wasOpen;
@@ -63,6 +66,7 @@ namespace Game.UI
             _mainPage = CreatePage(panel.rectTransform, "Paused");
             RectTransform main = _mainPage.GetComponent<RectTransform>();
             _resume = AddButton(main, "Resume", () => _time.TogglePause());
+            AddButton(main, "Sound", ShowSound);
             AddButton(main, "Restart level", Restart);
             AddButton(main, "Quit to map", ShowConfirm);
 
@@ -73,6 +77,24 @@ namespace Game.UI
             AddButton(confirm, "Yes, quit", QuitToMap);
             _keepPlaying = AddButton(confirm, "No, keep playing", ShowMain);
             _confirmPage.SetActive(false);
+
+            // The volume groups, so the mix can be fixed without leaving the level.
+            _soundPage = CreatePage(panel.rectTransform, "Sound");
+            RectTransform sound = _soundPage.GetComponent<RectTransform>();
+            Services.TryGet(out ProgressService progress);
+            Services.TryGet(out AudioMix mix);
+            var volumes = new VolumeControls(progress, mix);
+            volumes.Build(sound);
+            foreach (LayoutElement element in sound.GetComponentsInChildren<LayoutElement>())
+            {
+                if (element.GetComponent<Button>() != null)
+                {
+                    element.preferredHeight = UiKit.ButtonHeight;
+                }
+            }
+
+            _soundBack = AddButton(sound, "Back", ShowMain);
+            _soundPage.SetActive(false);
 
             _root.SetActive(false);
         }
@@ -119,9 +141,17 @@ namespace Game.UI
             _wasOpen = open;
         }
 
+        private void ShowSound()
+        {
+            _mainPage.SetActive(false);
+            _soundPage.SetActive(true);
+            UiKit.Select(_soundBack);
+        }
+
         private void ShowMain()
         {
             _confirmPage.SetActive(false);
+            _soundPage.SetActive(false);
             _mainPage.SetActive(true);
             UiKit.Select(_resume);
         }
@@ -141,7 +171,7 @@ namespace Game.UI
                 return;
             }
 
-            if (_confirmPage.activeSelf)
+            if (_confirmPage.activeSelf || _soundPage.activeSelf)
             {
                 ShowMain();
             }

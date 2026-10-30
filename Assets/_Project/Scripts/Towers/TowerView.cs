@@ -4,8 +4,9 @@ using UnityEngine;
 namespace Game.Towers
 {
     /// <summary>
-    /// Placeholder look of a tower: dark base, light glowing head with a barrel, one star per level,
-    /// a health bar once damaged and a dark husk when destroyed.
+    /// The look of a tower: an armoured pedestal with a procedural weapon head that turns towards its target and
+    /// kicks back (or spins) when it fires, one star per level, a health bar once damaged and a dark husk when
+    /// destroyed. A gate has no pedestal: its gun sits on the crossbeam that <see cref="GateView"/> builds.
     /// Light top and dark bottom make the tower stand out from the plane.
     /// </summary>
     [RequireComponent(typeof(Tower))]
@@ -15,23 +16,26 @@ namespace Game.Towers
         private const float ModelEmission = 0.25f;
         private const float StarSize = 0.17f;
         private const float StarSpacing = 0.26f;
-        private const float StarHeight = 1.75f;
+        private const float StarHeight = 1.4f;
         private const float StarEmission = 3f;
         private const float HeadEmission = 0.8f;
         private const float BarrelEmission = 1.5f;
         private const float BarWidth = 1f;
         private const float BarHeight = 0.1f;
-        private const float BarY = 2.1f;
+        private const float BarY = 1.7f;
         private const float BarEmission = 1.5f;
-        private const float WallWidth = 1.05f;
-        private const float WallDepth = 0.34f;
-        private const float ShapeHeadHeight = 0.5f;
-        private const float ShapeScale = 1.3f;
-        private const float LevelGrowth = 0.12f;
+        private const float WallOverhang = 0.05f;
+        private const float GateHeadHeight = 1.17f;
+        private const float LevelGrowth = 0.07f;
         private const float RecoilDistance = 0.14f;
         private const float RecoilRecovery = 6f;
-        private static readonly Color BaseColor = new Color(0.1f, 0.12f, 0.18f);
-        private static readonly Color RingColor = new Color(0.4f, 0.8f, 1f);
+        private const float SpinKick = 1080f;
+        private const float SpinDecay = 2.2f;
+        private const float MuzzleSeconds = 0.07f;
+        private const float MuzzleSize = 0.3f;
+        private const float MuzzleForward = 0.6f;
+        private const float MuzzleEmission = 6f;
+        private const float MuzzleWhiteness = 0.6f;
         private static readonly Color StarColor = new Color(1f, 0.9f, 0.3f);
         private static readonly Color HealthyColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
@@ -43,10 +47,8 @@ namespace Game.Towers
         private Transform _head;
         private Transform _bar;
         private Renderer _barRenderer;
-        private Renderer[] _glowParts;
         private Renderer[] _modelRenderers;
         private Material[][] _modelMaterials;
-        private Material[] _glowMaterials;
         private bool _built;
         private GameObject _currentModel;
         private GameObject _currentModelSource;
@@ -54,9 +56,14 @@ namespace Game.Towers
         private MeshFilter _headMesh;
         private MeshFilter _barrelMesh;
         private Material[] _shapeMaterials;
+        private Renderer _pedestal;
         private int _shapeLevel = -1;
+        private TowerModelFactory.Parts _parts;
         private float _recoil;
-        private bool _replacesModel;
+        private float _spin;
+        private float _spinAngle;
+        private Transform _muzzle;
+        private float _muzzleTime = float.PositiveInfinity;
 
         private void Awake()
         {
@@ -65,6 +72,8 @@ namespace Game.Towers
             _tower.StateChanged += OnStateChanged;
             _tower.Fired += OnFired;
         }
+
+        private Vector3 MuzzlePosition() => _muzzle.position;
 
         private void OnDestroy()
         {
@@ -130,17 +139,24 @@ namespace Game.Towers
             Color tint = keep ? Color.white : Color.Lerp(Color.white, definition.Color, ModelTintStrength);
             _currentModel = ModelFit.Place(source, _head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, keep ? 0f : ModelEmission);
             _currentModelSource = source;
-            _modelRenderers = _currentModel.GetComponentsInChildren<Renderer>();
-            _modelMaterials = new Material[_modelRenderers.Length][];
-            for (int i = 0; i < _modelRenderers.Length; i++)
+            RememberMaterials(_currentModel.GetComponentsInChildren<Renderer>());
+        }
+
+        private void RememberMaterials(Renderer[] renderers)
+        {
+            _modelRenderers = renderers;
+            _modelMaterials = new Material[renderers.Length][];
+            for (int i = 0; i < renderers.Length; i++)
             {
-                _modelMaterials[i] = _modelRenderers[i].sharedMaterials;
+                _modelMaterials[i] = renderers[i].sharedMaterials;
             }
         }
 
         private void OnStateChanged(Tower tower)
         {
-            bool damaged = tower.Health.Fraction < 1f && !tower.IsWrecked;
+            // A gate always shows its bar: it is the line that holds the road. Towers only show it once hurt.
+            bool gate = tower.Definition.BlocksGroundEnemies;
+            bool damaged = gate ? !tower.IsWrecked : tower.Health.Fraction < 1f && !tower.IsWrecked;
             _bar.gameObject.SetActive(damaged);
             if (damaged)
             {
@@ -149,32 +165,7 @@ namespace Game.Towers
                 _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), BarEmission);
             }
 
-            for (int i = 0; i < _glowParts.Length; i++)
-            {
-                _glowParts[i].sharedMaterial = tower.IsWrecked ? PlaceholderVisuals.MaterialFor(WreckColor, 0f) : _glowMaterials[i];
-            }
-
-            if (_modelRenderers != null)
-            {
-                Material wreck = PlaceholderVisuals.MaterialFor(WreckColor, 0f);
-                for (int i = 0; i < _modelRenderers.Length; i++)
-                {
-                    if (tower.IsWrecked)
-                    {
-                        var wrecked = new Material[_modelMaterials[i].Length];
-                        for (int m = 0; m < wrecked.Length; m++)
-                        {
-                            wrecked[m] = wreck;
-                        }
-
-                        _modelRenderers[i].sharedMaterials = wrecked;
-                    }
-                    else
-                    {
-                        _modelRenderers[i].sharedMaterials = _modelMaterials[i];
-                    }
-                }
-            }
+            ApplyMaterials();
 
             for (int i = 0; i < _stars.Length; i++)
             {
@@ -182,62 +173,82 @@ namespace Game.Towers
             }
         }
 
+        // The current look of the model: wrecked or whole.
+        private void ApplyMaterials()
+        {
+            if (_modelRenderers == null)
+            {
+                return;
+            }
+
+            Material wreck = PlaceholderVisuals.MaterialFor(WreckColor, 0f);
+            for (int i = 0; i < _modelRenderers.Length; i++)
+            {
+                _modelRenderers[i].sharedMaterials = _tower.IsWrecked ? Wrecked(wreck, _modelMaterials[i].Length) : _modelMaterials[i];
+            }
+        }
+
+        private static Material[] Wrecked(Material wreck, int count)
+        {
+            var result = new Material[count];
+            for (int m = 0; m < count; m++)
+            {
+                result[m] = wreck;
+            }
+
+            return result;
+        }
+
         private void Build(TowerDefinition definition)
         {
             bool wall = definition.BlocksGroundEnemies;
-            GameObject ring;
+            bool shaped = definition.Shape != TowerShape.None;
+            Renderer pedestal = null;
             if (wall)
             {
-                // An armoured barricade across the road. Its gun sits on top and appears with the first gun upgrade.
-                Material[] wallMaterials = ModelPalette.Create(definition.Color);
-                var wallObject = new GameObject("Barricade");
-                wallObject.transform.SetParent(transform, false);
-                wallObject.AddComponent<MeshFilter>().sharedMesh = StructureModelFactory.Blockade(WallWidth, WallDepth * 1.3f);
-                var wallRenderer = wallObject.AddComponent<MeshRenderer>();
-                wallRenderer.sharedMaterials = wallMaterials;
-                _modelRenderers = new Renderer[] { wallRenderer };
-                _modelMaterials = new[] { wallMaterials };
-                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, transform, new Vector3(0f, 0.02f, 0f), new Vector3(0.01f, 0.01f, 0.01f));
+                // A gate across the road, with its own look and wreck animation. Its gun sits on the crossbeam and
+                // appears with the first gun upgrade.
+                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color);
+            }
+            else if (shaped)
+            {
+                pedestal = Part("Pedestal", transform, TowerModelFactory.Pedestal(), TowerModelFactory.CreateMaterials(definition.Color));
+                pedestal.transform.localScale = Vector3.one * TowerModelFactory.PedestalScale;
             }
             else
             {
-                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, BaseColor, transform, new Vector3(0f, 0.2f, 0f), new Vector3(0.85f, 0.2f, 0.85f));
-                ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, RingColor, transform, new Vector3(0f, 0.42f, 0f), new Vector3(0.9f, 0.03f, 0.9f), BarrelEmission);
+                PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, WreckColor, transform, new Vector3(0f, 0.2f, 0f), new Vector3(0.85f, 0.2f, 0.85f));
             }
 
             var head = new GameObject("Head").transform;
             head.SetParent(transform, false);
-            head.localPosition = new Vector3(0f, wall ? 0.95f : 0.8f, 0f);
+            head.localPosition = new Vector3(0f, wall ? GateHeadHeight : shaped ? TowerModelFactory.PedestalHeight : 0.8f, 0f);
             _head = head;
 
-            if (definition.Shape != TowerShape.None && definition.Shape != TowerShape.PulseRifle)
+            if (shaped)
             {
-                BuildShape(definition, true);
-                _glowParts = new[] { ring.GetComponent<Renderer>() };
-                _glowMaterials = new[] { _glowParts[0].sharedMaterial };
+                BuildShape(definition, pedestal);
             }
             else if (definition.Model != null)
             {
                 PlaceModel(definition.Model, definition);
-                if (definition.Shape == TowerShape.PulseRifle)
-                {
-                    BuildShape(definition, false);
-                }
-                _glowParts = new[] { ring.GetComponent<Renderer>() };
-                _glowMaterials = new[] { _glowParts[0].sharedMaterial };
             }
             else
             {
                 GameObject block = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, definition.Color, head, Vector3.zero, new Vector3(0.6f, 0.5f, 0.6f), HeadEmission);
                 GameObject barrel = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, definition.Color, head, new Vector3(0f, 0f, 0.45f), new Vector3(0.18f, 0.35f, 0.18f), BarrelEmission);
                 barrel.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-                _glowParts = new[] { ring.GetComponent<Renderer>(), block.GetComponent<Renderer>(), barrel.GetComponent<Renderer>() };
-                _glowMaterials = new Material[_glowParts.Length];
-                for (int i = 0; i < _glowParts.Length; i++)
-                {
-                    _glowMaterials[i] = _glowParts[i].sharedMaterial;
-                }
+                RememberMaterials(new[] { block.GetComponent<Renderer>(), barrel.GetComponent<Renderer>() });
             }
+
+            // A flash at the mouth of the barrel on every shot; it rides the barrel so recoil carries it along.
+            Transform muzzleParent = _barrel != null ? _barrel : head;
+            Vector3 muzzleAt = _barrel != null ? _parts.Muzzle : new Vector3(0f, 0f, MuzzleForward);
+            Color flashColor = Color.Lerp(definition.Color, Color.white, MuzzleWhiteness);
+            _muzzle = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, flashColor, muzzleParent, muzzleAt, Vector3.one * MuzzleSize, MuzzleEmission).transform;
+            _muzzle.gameObject.SetActive(false);
+            _tower.MuzzleProvider = MuzzlePosition;
+
             float startX = -StarSpacing * (_stars.Length - 1) * 0.5f;
             for (int i = 0; i < _stars.Length; i++)
             {
@@ -250,36 +261,31 @@ namespace Game.Towers
             _bar.gameObject.SetActive(false);
         }
 
-        // The procedural model: a head that turns and a barrel that kicks back. Rebuilt on every level so upgrades show.
-        private void BuildShape(TowerDefinition definition, bool replacesModel)
+        private static Renderer Part(string name, Transform parent, Mesh mesh, Material[] materials)
         {
-            _replacesModel = replacesModel;
-            if (replacesModel)
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = go.AddComponent<MeshRenderer>();
+            if (materials != null)
             {
-                _head.localPosition = new Vector3(0f, ShapeHeadHeight, 0f);
+                renderer.sharedMaterials = materials;
             }
 
-            _shapeMaterials = TowerModelFactory.CreateMaterials(definition.Color);
+            return renderer;
+        }
 
-            var headObject = new GameObject("ShapeHead");
-            headObject.transform.SetParent(_head, false);
-            _headMesh = headObject.AddComponent<MeshFilter>();
-            var headRenderer = headObject.AddComponent<MeshRenderer>();
-            headRenderer.sharedMaterials = _shapeMaterials;
-
-            var barrelObject = new GameObject("ShapeBarrel");
-            barrelObject.transform.SetParent(_head, false);
-            _barrel = barrelObject.transform;
-            _barrelMesh = barrelObject.AddComponent<MeshFilter>();
-            var barrelRenderer = barrelObject.AddComponent<MeshRenderer>();
-            barrelRenderer.sharedMaterials = _shapeMaterials;
-
-            if (replacesModel)
-            {
-                _modelRenderers = new Renderer[] { headRenderer, barrelRenderer };
-                _modelMaterials = new[] { _shapeMaterials, _shapeMaterials };
-            }
-
+        // The procedural model: a head that turns and a barrel group that kicks back. Rebuilt on every level so
+        // upgrades show. The pedestal shares the materials so a wreck darkens as one.
+        private void BuildShape(TowerDefinition definition, Renderer pedestal)
+        {
+            _pedestal = pedestal;
+            Renderer headRenderer = Part("ShapeHead", _head, null, null);
+            _headMesh = headRenderer.GetComponent<MeshFilter>();
+            Renderer barrelRenderer = Part("ShapeBarrel", _head, null, null);
+            _barrel = barrelRenderer.transform;
+            _barrelMesh = barrelRenderer.GetComponent<MeshFilter>();
+            _modelRenderers = pedestal != null ? new[] { pedestal, headRenderer, barrelRenderer } : new[] { headRenderer, barrelRenderer };
             RebuildShape(definition, 0);
         }
 
@@ -291,27 +297,58 @@ namespace Game.Towers
             }
 
             _shapeLevel = level;
-            float size = (_replacesModel ? ShapeScale : 1f) * (1f + level * LevelGrowth);
-            _head.localScale = Vector3.one * size;
-            TowerModelFactory.Parts parts = TowerModelFactory.Create(definition.Shape, level);
-            _headMesh.sharedMesh = parts.Head;
-            _barrelMesh.sharedMesh = parts.Barrel;
+            _parts = TowerModelFactory.Create(definition.Shape, level);
+
+            // Each level has its own hotter palette and a pedestal with one more rank ring.
+            _shapeMaterials = TowerModelFactory.CreateMaterials(definition.Color, level);
+            _modelMaterials = new Material[_modelRenderers.Length][];
+            for (int i = 0; i < _modelRenderers.Length; i++)
+            {
+                _modelMaterials[i] = _shapeMaterials;
+            }
+
+            ApplyMaterials();
+
+            if (_pedestal != null)
+            {
+                _pedestal.GetComponent<MeshFilter>().sharedMesh = TowerModelFactory.Pedestal(level);
+            }
+
+            _head.localScale = Vector3.one * (_parts.Scale * (1f + level * LevelGrowth));
+            _headMesh.sharedMesh = _parts.Head;
+            _barrelMesh.sharedMesh = _parts.Barrel;
+            _barrel.localPosition = _parts.BarrelPivot;
+            if (_muzzle != null)
+            {
+                _muzzle.localPosition = _parts.Muzzle;
+            }
         }
 
         private void Update()
         {
-            if (_barrel == null || _recoil <= 0f)
+            if (_barrel != null && (_recoil > 0f || _spin > 0f))
             {
-                return;
+                _recoil = Mathf.Max(0f, _recoil - RecoilRecovery * Time.deltaTime);
+                _spin = Mathf.Max(0f, _spin - SpinDecay * Time.deltaTime);
+                _spinAngle += _spin * SpinKick * Time.deltaTime;
+                _barrel.localPosition = _parts.BarrelPivot - _parts.RecoilAxis * (_recoil * RecoilDistance);
+                _barrel.localRotation = _parts.Rotary ? Quaternion.AngleAxis(_spinAngle, Vector3.forward) : Quaternion.identity;
             }
 
-            _recoil = Mathf.Max(0f, _recoil - RecoilRecovery * Time.deltaTime);
-            _barrel.localPosition = new Vector3(0f, 0f, -_recoil * RecoilDistance);
+            if (_muzzle != null && _muzzleTime <= MuzzleSeconds)
+            {
+                _muzzleTime += Time.deltaTime;
+                bool lit = _muzzleTime <= MuzzleSeconds;
+                _muzzle.gameObject.SetActive(lit);
+                _muzzle.localScale = Vector3.one * (MuzzleSize * (1.4f - _muzzleTime / MuzzleSeconds));
+            }
         }
 
         private void OnFired(Vector3 targetPosition)
         {
             _recoil = 1f;
+            _spin = 1f;
+            _muzzleTime = 0f;
             Vector3 flat = targetPosition - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude > 0.0001f)
@@ -321,4 +358,3 @@ namespace Game.Towers
         }
     }
 }
-

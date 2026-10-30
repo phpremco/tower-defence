@@ -21,7 +21,8 @@ namespace Game.Core
             {
                 SurfaceMaterials.Create(Color.Lerp(new Color(0.16f, 0.18f, 0.24f), glow, 0.35f), 0f, 0.4f, 0.3f),
                 SurfaceMaterials.Create(glow, GlowEmission, 0.6f),
-                SurfaceMaterials.Create(new Color(0.78f, 0.82f, 0.9f), 0f, 0.55f, 0.6f),
+                // Low metallic on purpose: there is no reflection environment, so a true metal would only go dark.
+                SurfaceMaterials.Create(new Color(0.78f, 0.82f, 0.9f), 0f, 0.5f, 0.2f),
                 SurfaceMaterials.Create(new Color(0.07f, 0.08f, 0.11f), 0f, 0.3f),
             };
         }

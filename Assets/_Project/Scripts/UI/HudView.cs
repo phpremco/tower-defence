@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Game.Core;
 using Game.Levels;
 using Game.PathObjects;
 using Game.Towers;
@@ -10,33 +11,50 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// Placeholder HUD built in code: wave and base at the top, money bottom left, speed and pause icons top right
-    /// and the tower bar at the bottom (locked and unaffordable towers are greyed out). Key and gamepad help is not
-    /// shown here; it lives in the options menu. It only reads LevelContext, except for passing on clicks.
+    /// HUD built in code. A slim strip at the top holds the stats (base, wave) and the speed, pause and
+    /// skip icons; the card bar sits at the very bottom with the money and the status line just above it. The
+    /// drones are bought from the base's own menu. Key and gamepad help lives in the options menu. It only reads
+    /// LevelContext, except for passing on clicks.
     /// </summary>
     public sealed class HudView : MonoBehaviour
     {
         private const float ReferenceWidth = 1920f;
-        private const int FontSize = 34;
-        private const int SmallFontSize = 26;
-        private const float Margin = 24f;
-        private const float LineHeight = 52f;
-        private const float BarButtonWidth = 250f;
-        private const float BarButtonHeight = 110f;
-        private const float BarSpacing = 14f;
-        private const float MinBarButtonWidth = 96f;
-        private const float IconSize = 76f;
-        private const float TopBarHeight = 110f;
-        private const float BottomBarHeight = 190f;
+        private const int FontSize = 30;
+        private const int SmallFontSize = 24;
+        private const int SpeedLabelSize = 22;
+        private const float Margin = 20f;
+        private const float LineHeight = 44f;
+        private const float TopBarHeight = 72f;
+        private const float TopTextY = -16f;
+        private const float BottomBarHeight = 156f;
+        private const float BarBottom = 8f;
+        private const float AboveBarY = BottomBarHeight + 6f;
+        private const float BarButtonWidth = 136f;
+        private const float BarButtonHeight = 140f;
+        private const float BarSpacing = 10f;
+        private const float MinBarButtonWidth = 100f;
+        private const float IconSize = 56f;
+        private const float CardInset = 5f;
+        private const float CardPriceHeight = 28f;
+        private const float BadgeRow = 26f;
+        private const float BadgeSize = 24f;
+        private const float BadgeGap = 4f;
+        private static readonly Color GroundBadge = new Color(1f, 0.78f, 0.35f);
+        private static readonly Color AirBadge = new Color(0.55f, 0.85f, 1f);
+        private static readonly Color SlowBadge = new Color(0.75f, 1f, 1f);
+        private static readonly Color LockedPicture = new Color(0.35f, 0.35f, 0.4f, 0.8f);
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Dim = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
+        private static readonly Color BossWarning = new Color(1f, 0.45f, 0.4f);
+        private static readonly Color SpeedActive = new Color(1f, 0.85f, 0.35f);
         private static readonly Color NormalFill = new Color(0.1f, 0.18f, 0.3f, 0.92f);
         private static readonly Color SelectedFill = new Color(0.22f, 0.5f, 0.9f, 0.96f);
         private static readonly Color LockedFill = new Color(0.07f, 0.07f, 0.09f, 0.9f);
+        private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.16f, 0.7f);
 
         private readonly StringBuilder _builder = new StringBuilder(128);
-        private readonly System.Collections.Generic.List<RaycastResult> _hits = new System.Collections.Generic.List<RaycastResult>();
+        private readonly List<RaycastResult> _hits = new List<RaycastResult>();
         private PointerEventData _pointerData;
         private Game.Platform.IInputProvider _input;
 
@@ -46,21 +64,27 @@ namespace Game.UI
         private Text _baseText;
         private Text _moneyText;
         private Text _statusText;
+        private Text _speedLabel;
+        private Image _speedIcon;
         private Font _font;
         private TowerButton[] _towerButtons;
+        private bool _picturesChanged;
         private PathObjectButton[] _pathObjectButtons;
 
         private struct TowerButton
         {
             public TowerDefinition Tower;
             public Image Fill;
+            public Image Picture;
             public Text Label;
+            public Image[] Badges;
         }
 
         private struct PathObjectButton
         {
             public PathObjectDefinition Definition;
             public Image Fill;
+            public Image Picture;
             public Text Label;
         }
 
@@ -68,7 +92,7 @@ namespace Game.UI
         {
             _context = context;
             _time = time;
-            _input = Game.Core.Services.Get<Game.Platform.IInputProvider>();
+            _input = Services.Get<Game.Platform.IInputProvider>();
             _font = UiKit.DefaultFont;
             UiKit.EnsureEventSystem();
 
@@ -77,11 +101,13 @@ namespace Game.UI
             BuildTexts(safe);
             BuildTowerBar(safe);
             BuildIcons(safe);
-            gameObject.AddComponent<DronePanelView>().Initialize(context, safe);
+            gameObject.AddComponent<BossMarkerView>().Initialize(context, safe, camera);
+            gameObject.AddComponent<BaseMenuView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
-            gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, Game.Core.Services.Get<Game.Platform.IInputProvider>());
+            gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
+            gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
 
             _context.Changed.Subscribe(Refresh);
             _context.Wallet.Changed += OnMoneyChanged;
@@ -104,6 +130,13 @@ namespace Game.UI
         // Only an interactive element (a button) under the pointer blocks the field. Plain text or backdrops never do.
         private void Update()
         {
+            if (_picturesChanged)
+            {
+                _picturesChanged = false;
+                RefreshTowerBar();
+                RefreshPathObjects();
+            }
+
             EventSystem current = EventSystem.current;
             if (current == null || _input == null)
             {
@@ -133,20 +166,19 @@ namespace Game.UI
 
         private void OnBaseChanged(float _) => Refresh();
 
-        // Dark translucent bars behind the text so it stays readable over any terrain.
+        // Dark translucent strips behind the text so it stays readable over any terrain.
         private static void AddBackdrops(RectTransform safe)
         {
-            var tint = new Color(0.05f, 0.09f, 0.16f, 0.7f);
-            UiKit.CreatePanel(safe, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopBarHeight), Vector2.zero, tint);
-            UiKit.CreatePanel(safe, "BottomBar", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, BottomBarHeight), tint);
+            UiKit.CreatePanel(safe, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopBarHeight), Vector2.zero, Backdrop);
+            UiKit.CreatePanel(safe, "BottomBar", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, BottomBarHeight), Backdrop);
         }
 
         private void BuildTexts(RectTransform safe)
         {
-            _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -Margin), FontSize);
-            _baseText = CreateText(safe, "Base", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, -Margin), FontSize);
-            _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, Margin), FontSize);
-            _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, Margin), FontSize);
+            _baseText = CreateText(safe, "Base", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TopTextY), FontSize);
+            _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY), FontSize);
+            _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, AboveBarY), FontSize);
+            _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), SmallFontSize);
         }
 
         // Speed, pause and (in the test mode) skip wave. The keys remain as shortcuts.
@@ -158,7 +190,7 @@ namespace Game.UI
             row.anchorMin = new Vector2(1f, 1f);
             row.anchorMax = new Vector2(1f, 1f);
             row.pivot = new Vector2(1f, 1f);
-            row.anchoredPosition = new Vector2(-Margin, -Margin);
+            row.anchoredPosition = new Vector2(-Margin, -(TopBarHeight - IconSize) * 0.5f);
 
             var layout = go.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = BarSpacing;
@@ -168,7 +200,10 @@ namespace Game.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            AddIcon(row, IconType.Speed, _time.CycleSpeed);
+            Button speed = AddIcon(row, IconType.Speed, _time.CycleSpeed);
+            _speedIcon = speed.transform.Find("Icon").GetComponent<Image>();
+            _speedLabel = CreateText(speed.GetComponent<RectTransform>(), "SpeedLabel", TextAnchor.LowerRight, new Vector2(1f, 0f), new Vector2(2f, -4f), SpeedLabelSize);
+            _speedLabel.rectTransform.sizeDelta = new Vector2(IconSize, SpeedLabelSize + 4f);
             AddIcon(row, IconType.Pause, _time.TogglePause);
             if (_context.SkipWaveAllowed)
             {
@@ -176,7 +211,7 @@ namespace Game.UI
             }
         }
 
-        private void AddIcon(RectTransform row, IconType type, UnityEngine.Events.UnityAction action)
+        private Button AddIcon(RectTransform row, IconType type, UnityEngine.Events.UnityAction action)
         {
             Button button = UiKit.CreateIconButton(row, IconFactory.Get(type), IconSize, () =>
             {
@@ -184,6 +219,7 @@ namespace Game.UI
                 EventSystem.current.SetSelectedGameObject(null);
             });
             button.navigation = new Navigation { mode = Navigation.Mode.None };
+            return button;
         }
 
         private void BuildTowerBar(RectTransform safe)
@@ -194,7 +230,7 @@ namespace Game.UI
             bar.anchorMin = new Vector2(0.5f, 0f);
             bar.anchorMax = new Vector2(0.5f, 0f);
             bar.pivot = new Vector2(0.5f, 0f);
-            bar.anchoredPosition = new Vector2(0f, Margin + LineHeight);
+            bar.anchoredPosition = new Vector2(0f, BarBottom);
 
             var layout = barGo.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = BarSpacing;
@@ -207,7 +243,7 @@ namespace Game.UI
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             int count = _context.AllTowers.Count;
-            // Eight towers and several path objects must fit one row, so the buttons shrink as the bar fills.
+            // Eight towers and several path objects must fit one row, so the cards shrink as the bar fills.
             int total = count + _context.AvailablePathObjects.Count;
             float fitted = (ReferenceWidth - Margin * 2f - BarSpacing * Mathf.Max(0, total - 1)) / Mathf.Max(1, total);
             float buttonWidth = Mathf.Clamp(fitted, MinBarButtonWidth, BarButtonWidth);
@@ -215,16 +251,12 @@ namespace Game.UI
             for (int i = 0; i < count; i++)
             {
                 TowerDefinition tower = _context.AllTowers[i];
-                Button button = UiKit.CreateButton(bar, tower.DisplayName, () => OnTowerClicked(tower));
-                button.navigation = new Navigation { mode = Navigation.Mode.None };
-                var element = button.GetComponent<LayoutElement>();
-                element.preferredWidth = buttonWidth;
-                element.preferredHeight = BarButtonHeight;
-                button.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonWidth, BarButtonHeight);
-
-                Text label = button.GetComponentInChildren<Text>();
-                label.resizeTextMaxSize = SmallFontSize;
-                _towerButtons[i] = new TowerButton { Tower = tower, Fill = button.GetComponent<Image>(), Label = label };
+                Button button = Card(bar, buttonWidth, tower.DisplayName, () => OnTowerClicked(tower), out Image picture, out Text label);
+                _towerButtons[i] = new TowerButton { Tower = tower, Fill = button.GetComponent<Image>(), Picture = picture, Label = label, Badges = Badges(button.transform, tower) };
+                if (TowerModelBuilder.HasModel(tower))
+                {
+                    ModelIconRenderer.Request(tower, stage => TowerModelBuilder.Build(stage, tower, 0), sprite => ShowPicture(picture, sprite));
+                }
             }
 
             IReadOnlyList<PathObjectDefinition> objects = _context.AvailablePathObjects;
@@ -232,17 +264,105 @@ namespace Game.UI
             for (int i = 0; i < objects.Count; i++)
             {
                 PathObjectDefinition definition = objects[i];
-                Button button = UiKit.CreateButton(bar, definition.DisplayName, () => OnPathObjectClicked(definition));
-                button.navigation = new Navigation { mode = Navigation.Mode.None };
-                var element = button.GetComponent<LayoutElement>();
-                element.preferredWidth = buttonWidth;
-                element.preferredHeight = BarButtonHeight;
-                button.GetComponent<RectTransform>().sizeDelta = new Vector2(buttonWidth, BarButtonHeight);
-
-                Text label = button.GetComponentInChildren<Text>();
-                label.resizeTextMaxSize = SmallFontSize;
-                _pathObjectButtons[i] = new PathObjectButton { Definition = definition, Fill = button.GetComponent<Image>(), Label = label };
+                Button button = Card(bar, buttonWidth, definition.DisplayName, () => OnPathObjectClicked(definition), out Image picture, out Text label);
+                _pathObjectButtons[i] = new PathObjectButton { Definition = definition, Fill = button.GetComponent<Image>(), Picture = picture, Label = label };
+                if (definition.Look != PathObjectLook.None)
+                {
+                    ModelIconRenderer.Request(definition, stage => PathObjectModels.Build(stage, definition), sprite => ShowPicture(picture, sprite));
+                }
             }
+        }
+
+        // A card in three bands: a row of badges at the top, the picture in the middle and the price along the
+        // bottom. The name only shows until the picture arrives (a frame or two after the HUD is built).
+        private Button Card(RectTransform bar, float width, string fallback, UnityEngine.Events.UnityAction onClick, out Image picture, out Text label)
+        {
+            Button button = UiKit.CreateButton(bar, fallback, onClick);
+            button.navigation = new Navigation { mode = Navigation.Mode.None };
+            var element = button.GetComponent<LayoutElement>();
+            element.preferredWidth = width;
+            element.preferredHeight = BarButtonHeight;
+            button.GetComponent<RectTransform>().sizeDelta = new Vector2(width, BarButtonHeight);
+
+            var pictureGo = new GameObject("Picture", typeof(RectTransform));
+            pictureGo.transform.SetParent(button.transform, false);
+            picture = pictureGo.AddComponent<Image>();
+            picture.raycastTarget = false;
+            picture.preserveAspect = true;
+            picture.enabled = false;
+            RectTransform pictureRect = picture.rectTransform;
+            pictureRect.anchorMin = Vector2.zero;
+            pictureRect.anchorMax = Vector2.one;
+            pictureRect.offsetMin = new Vector2(CardInset, CardPriceHeight);
+            pictureRect.offsetMax = new Vector2(-CardInset, -(CardInset + BadgeRow));
+
+            label = button.GetComponentInChildren<Text>();
+            label.resizeTextMaxSize = SmallFontSize;
+            label.transform.SetAsLastSibling();
+            return button;
+        }
+
+        // Small icons in the top band of a card tell what the tower hits: ground, air, and whether it slows.
+        private static Image[] Badges(Transform card, TowerDefinition tower)
+        {
+            var badges = new List<Image>(3);
+            if (!tower.IsSupport && (tower.Targets & TargetLayers.Ground) != 0)
+            {
+                badges.Add(Badge(card, IconType.Ground, GroundBadge, badges.Count));
+            }
+
+            if (!tower.IsSupport && (tower.Targets & TargetLayers.Air) != 0)
+            {
+                badges.Add(Badge(card, IconType.Air, AirBadge, badges.Count));
+            }
+
+            if (tower.SlowFactor < 1f)
+            {
+                badges.Add(Badge(card, IconType.Slow, SlowBadge, badges.Count));
+            }
+
+            return badges.ToArray();
+        }
+
+        private static Image Badge(Transform card, IconType type, Color colour, int index)
+        {
+            var go = new GameObject(type.ToString(), typeof(RectTransform));
+            go.transform.SetParent(card, false);
+            var image = go.AddComponent<Image>();
+            image.sprite = IconFactory.Get(type);
+            image.color = colour;
+            image.raycastTarget = false;
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.sizeDelta = new Vector2(BadgeSize, BadgeSize);
+            rect.anchoredPosition = new Vector2(CardInset + index * (BadgeSize + BadgeGap), -CardInset);
+            return image;
+        }
+
+        private void ShowPicture(Image picture, Sprite sprite)
+        {
+            if (picture == null)
+            {
+                return;
+            }
+
+            picture.sprite = sprite;
+            picture.enabled = true;
+            // A cached picture arrives while the bar is still being built, so the refresh waits for the next frame.
+            _picturesChanged = true;
+        }
+
+        // Once the picture is there the label shrinks to a price strip along the bottom of the card.
+        private static void PriceStrip(Text label, bool hasPicture)
+        {
+            RectTransform rect = label.rectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = hasPicture ? new Vector2(1f, 0f) : Vector2.one;
+            rect.offsetMin = new Vector2(4f, 2f);
+            rect.offsetMax = hasPicture ? new Vector2(-4f, CardPriceHeight) : new Vector2(-4f, -(CardInset + BadgeRow));
+            label.alignment = hasPicture ? TextAnchor.LowerCenter : TextAnchor.MiddleCenter;
         }
 
         private void OnPathObjectClicked(PathObjectDefinition definition)
@@ -266,7 +386,7 @@ namespace Game.UI
             rect.anchorMax = anchor;
             rect.pivot = anchor;
             rect.anchoredPosition = offset;
-            rect.sizeDelta = new Vector2(ReferenceWidth * 0.5f, LineHeight * 2f);
+            rect.sizeDelta = new Vector2(ReferenceWidth * 0.5f, LineHeight);
 
             var text = go.AddComponent<Text>();
             text.font = _font;
@@ -282,11 +402,22 @@ namespace Game.UI
         private void Refresh()
         {
             _waveText.text = WaveLine();
+            _waveText.color = _context.BossWave && _context.NextWaveCountdown <= 0f ? BossWarning : TextColor;
             _baseText.text = $"Base {Mathf.CeilToInt(_context.BaseHealth.Current)}/{Mathf.CeilToInt(_context.BaseHealth.Max)}";
             _moneyText.text = $"Money {_context.Wallet.Money}";
             _statusText.text = _context.Status;
+            RefreshSpeed();
             RefreshTowerBar();
             RefreshPathObjects();
+        }
+
+        // The speed icon carries the current factor, and lights up whenever the game runs faster than normal.
+        private void RefreshSpeed()
+        {
+            bool fast = _time != null && _time.CurrentSpeed > 1f;
+            _speedLabel.text = _time == null || _context.Paused ? string.Empty : $"x{_time.CurrentSpeed:0}";
+            _speedLabel.color = fast ? SpeedActive : TextColor;
+            _speedIcon.color = fast ? SpeedActive : Color.white;
         }
 
         private void RefreshTowerBar()
@@ -298,9 +429,18 @@ namespace Game.UI
                 bool affordable = _context.Wallet.CanAfford(entry.Tower.BuildCost);
                 bool selected = entry.Tower == _context.SelectedTower && _context.SelectedPathObject == null;
 
+                bool pictured = entry.Picture.enabled;
                 entry.Fill.color = !unlocked ? LockedFill : selected ? SelectedFill : NormalFill;
+                entry.Picture.color = !unlocked ? LockedPicture : Color.white;
+                foreach (Image badge in entry.Badges)
+                {
+                    badge.enabled = unlocked;
+                }
+
                 entry.Label.color = !unlocked ? Dim : affordable ? TextColor : Unaffordable;
-                entry.Label.text = unlocked ? $"{entry.Tower.DisplayName}\n{entry.Tower.BuildCost}" : $"{entry.Tower.DisplayName}\nLocked";
+                string price = unlocked ? entry.Tower.BuildCost.ToString() : "Locked";
+                entry.Label.text = pictured ? price : $"{entry.Tower.DisplayName}\n{price}";
+                PriceStrip(entry.Label, pictured);
             }
         }
 
@@ -312,9 +452,11 @@ namespace Game.UI
                 bool affordable = _context.Wallet.CanAfford(entry.Definition.Cost);
                 bool selected = entry.Definition == _context.SelectedPathObject;
 
+                bool pictured = entry.Picture.enabled;
                 entry.Fill.color = selected ? SelectedFill : NormalFill;
                 entry.Label.color = affordable ? TextColor : Unaffordable;
-                entry.Label.text = $"{entry.Definition.DisplayName}\n{entry.Definition.Cost}";
+                entry.Label.text = pictured ? entry.Definition.Cost.ToString() : $"{entry.Definition.DisplayName}\n{entry.Definition.Cost}";
+                PriceStrip(entry.Label, pictured);
             }
         }
 
@@ -322,20 +464,17 @@ namespace Game.UI
         {
             _builder.Clear();
             _builder.Append("Wave ").Append(_context.WaveNumber).Append('/').Append(_context.WaveCount);
+            if (_context.BossWave && _context.NextWaveCountdown <= 0f)
+            {
+                _builder.Append("  BOSS");
+            }
+
             if (_context.NextWaveCountdown > 0f)
             {
                 _builder.Append("  next in ").Append(Mathf.CeilToInt(_context.NextWaveCountdown)).Append('s');
-            }
-
-            if (_time != null && !Mathf.Approximately(_time.CurrentSpeed, 1f) && !_context.Paused)
-            {
-                _builder.Append("  speed x").Append(_time.CurrentSpeed);
             }
 
             return _builder.ToString();
         }
     }
 }
-
-
-

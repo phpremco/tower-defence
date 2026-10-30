@@ -23,8 +23,8 @@ namespace Game.UI
         private const float Padding = 16f;
         private const float AboveHero = 70f;
         private const float BelowHero = 40f;
-        private const float TopReserve = 130f;
-        private const float BottomReserve = 200f;
+        private const float TopReserve = 90f;
+        private const float BottomReserve = 165f;
         private const int InfoSize = 26;
         private const int LabelSize = 22;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);

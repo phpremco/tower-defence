@@ -103,7 +103,7 @@ namespace Game.Tests
         private static void Capture(string path)
         {
             Camera camera = Camera.main;
-            foreach (Canvas canvas in Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+            foreach (Canvas canvas in Object.FindObjectsByType<Canvas>())
             {
                 if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
                 {

@@ -1,0 +1,620 @@
+Level_Landing Easy
+  w1 threat 5 span 4s: 5xScout
+  w2 threat 6 span 3s: 1xGrunt 3xScout
+  w3 threat 6 span 3s: 1xGrunt 3xScout
+  w4 threat 9 span 3s: 2xGrunt 4xScout
+  w5 threat 6 span 3s: 1xGrunt 3xScout
+  w6 threat 9 span 4s: 2xGrunt 4xScout
+  w7 threat 17 span 3s: 1xBrute 1xGrunt 2xScout
+  w8 threat 9 span 3s: 2xGrunt 4xScout
+  w9 threat 18 span 5s: 4xGrunt 8xScout
+  w10 threat 41 span 14s: 2xGrunt 1xOverseer 3xScout
+  w11 threat 26 span 5s: 1xBrute 3xGrunt 6xScout
+  w12 threat 26 span 6s: 6xGrunt 11xScout
+  w13 threat 22 span 3s: 1xBrute 2xGrunt 4xScout
+  w14 threat 33 span 8s: 1xBrute 5xGrunt 8xScout
+  w15 threat 41 span 10s: 10xGrunt 16xScout
+  w16 threat 38 span 10s: 1xBrute 6xGrunt 10xScout
+  w17 threat 42 span 6s: 2xBrute 4xGrunt 7xScout
+  w18 threat 45 span 11s: 1xBrute 8xGrunt 12xScout
+  w19 threat 68 span 16s: 17xGrunt 25xScout
+  w20 threat 69 span 14s: 1xBrute 6xGrunt 1xOverseer 9xScout
+Level_Landing Medium
+  w1 threat 5 span 4s: 5xScout
+  w2 threat 6 span 3s: 1xGrunt 3xScout
+  w3 threat 6 span 3s: 1xGrunt 3xScout
+  w4 threat 9 span 3s: 2xGrunt 4xScout
+  w5 threat 6 span 3s: 1xGrunt 3xScout
+  w6 threat 9 span 4s: 2xGrunt 4xScout
+  w7 threat 17 span 3s: 1xBrute 1xGrunt 2xScout
+  w8 threat 11 span 4s: 4xFlyer* 1xGrunt 2xScout
+  w9 threat 18 span 4s: 4xGrunt 8xScout
+  w10 threat 41 span 14s: 2xGrunt 1xOverseer 3xScout
+  w11 threat 26 span 5s: 1xBrute 3xGrunt 6xScout
+  w12 threat 26 span 5s: 6xGrunt 11xScout
+  w13 threat 22 span 3s: 1xBrute 2xGrunt 4xScout
+  w14 threat 33 span 7s: 1xBrute 5xGrunt 8xScout
+  w15 threat 41 span 8s: 10xGrunt 16xScout
+  w16 threat 38 span 8s: 1xBrute 6xGrunt 10xScout
+  w17 threat 42 span 5s: 2xBrute 4xGrunt 7xScout
+  w18 threat 45 span 10s: 1xBrute 8xGrunt 12xScout
+  w19 threat 68 span 13s: 17xGrunt 25xScout
+  w20 threat 71 span 19s: 1xBrute 1xFlyer* 6xGrunt 1xOverseer 9xScout
+Level_Landing Hard
+  w1 threat 8 span 3s: 8xScout
+  w2 threat 10 span 3s: 2xGrunt 5xScout
+  w3 threat 11 span 3s: 2xGrunt 6xScout
+  w4 threat 15 span 3s: 3xGrunt 7xScout
+  w5 threat 9 span 3s: 2xGrunt 4xScout
+  w6 threat 17 span 4s: 4xGrunt 7xScout
+  w7 threat 33 span 3s: 2xBrute 2xGrunt 3xScout
+  w8 threat 18 span 5s: 6xFlyer* 2xGrunt 4xScout
+  w9 threat 30 span 4s: 7xGrunt 12xScout
+  w10 threat 47 span 14s: 4xGrunt 1xOverseer 4xScout
+  w11 threat 47 span 6s: 2xBrute 5xGrunt 9xScout
+  w12 threat 43 span 5s: 10xGrunt 18xScout
+  w13 threat 31 span 7s: 10xFlyer* 4xGrunt 6xScout
+  w14 threat 57 span 6s: 2xBrute 8xGrunt 12xScout
+  w15 threat 62 span 8s: 15xGrunt 24xScout
+  w16 threat 67 span 7s: 2xBrute 10xGrunt 17xScout
+  w17 threat 79 span 5s: 4xBrute 7xGrunt 11xScout
+  w18 threat 75 span 9s: 2xBrute 12xGrunt 20xScout
+  w19 threat 106 span 11s: 27xGrunt 38xScout
+  w20 threat 100 span 22s: 2xBrute 3xFlyer* 10xGrunt 1xOverseer 13xScout
+Level_Landing Psycho
+  w1 threat 10 span 3s: 10xScout
+  w2 threat 11 span 3s: 2xGrunt 6xScout
+  w3 threat 11 span 3s: 2xGrunt 6xScout
+  w4 threat 18 span 3s: 4xGrunt 8xScout
+  w5 threat 11 span 3s: 2xGrunt 6xScout
+  w6 threat 18 span 4s: 4xGrunt 8xScout
+  w7 threat 34 span 3s: 2xBrute 2xGrunt 4xScout
+  w8 threat 21 span 6s: 8xFlyer* 2xGrunt 4xScout
+  w9 threat 35 span 4s: 8xGrunt 15xScout
+  w10 threat 52 span 14s: 2xFlyer* 4xGrunt 1xOverseer 6xScout
+  w11 threat 58 span 9s: 2xBrute 4xFlyer* 6xGrunt 12xScout
+  w12 threat 51 span 5s: 12xGrunt 21xScout
+  w13 threat 36 span 8s: 13xFlyer* 4xGrunt 6xScout
+  w14 threat 71 span 9s: 2xBrute 4xFlyer* 10xGrunt 15xScout
+  w15 threat 82 span 7s: 20xGrunt 32xScout
+  w16 threat 84 span 9s: 2xBrute 6xFlyer* 12xGrunt 20xScout
+  w17 threat 83 span 14s: 2xBrute 22xFlyer* 6xGrunt 10xScout
+  w18 threat 101 span 11s: 2xBrute 8xFlyer* 16xGrunt 24xScout
+  w19 threat 127 span 10s: 32xGrunt 47xScout
+  w20 threat 125 span 25s: 2xBrute 13xFlyer* 12xGrunt 1xOverseer 18xScout
+Level_Forest Easy
+  w1 threat 5 span 3s: 1xGrunt* 1xScout 1xScout*
+  w2 threat 8 span 3s: 1xGrunt 1xGrunt* 1xScout 2xScout*
+  w3 threat 10 span 5s: 1xGrunt 1xRoller 2xScout*
+  w4 threat 7 span 20s: 1xDrowner~ 1xGrunt* 1xScout*
+  w5 threat 12 span 3s: 3xGrunt* 3xScout 1xScout*
+  w6 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
+  w7 threat 11 span 22s: 2xDrowner~ 1xGrunt* 1xScout*
+  w8 threat 16 span 5s: 1xGrunt 3xGrunt* 1xScout 5xScout*
+  w9 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller 1xScout 2xScout*
+  w10 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
+  w11 threat 23 span 6s: 1xGrunt 5xGrunt* 3xScout 5xScout*
+  w12 threat 43 span 22s: 2xDrowner~ 1xGrunt 1xOverseer 1xScout*
+  w13 threat 30 span 8s: 3xGrunt 5xGrunt* 4xScout 6xScout*
+  w14 threat 35 span 8s: 1xBrute 3xGrunt* 2xRoller* 2xScout 2xScout*
+  w15 threat 27 span 25s: 4xDrowner~ 2xGrunt* 1xRoller 1xScout 1xScout*
+  w16 threat 41 span 10s: 4xGrunt 7xGrunt* 6xScout 7xScout*
+  w17 threat 39 span 5s: 2xBrute* 1xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
+  w18 threat 54 span 13s: 7xGrunt 8xGrunt* 7xScout 9xScout*
+  w19 threat 53 span 30s: 1xBrute 7xDrowner~ 1xGrunt 2xGrunt* 1xRoller 1xScout 2xScout*
+  w20 threat 57 span 11s: 1xBrute* 3xGrunt 3xGrunt* 1xRoller 3xRoller* 3xScout 4xScout*
+  w21 threat 75 span 17s: 9xGrunt 12xGrunt* 10xScout 12xScout*
+  w22 threat 69 span 33s: 1xBrute 9xDrowner~ 1xGrunt 3xGrunt* 2xRoller* 1xScout 3xScout*
+  w23 threat 84 span 13s: 3xBrute 1xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller* 3xScout 2xScout*
+  w24 threat 108 span 24s: 14xGrunt 17xGrunt* 9xScout 21xScout*
+  w25 threat 156 span 14s: 1xBrute 1xGrunt 5xGrunt* 2xRoller 2xRoller* 3xScout 3xScout* 1xWarden
+Level_Forest Medium
+  w1 threat 5 span 3s: 1xGrunt* 1xScout 1xScout*
+  w2 threat 8 span 3s: 1xGrunt 1xGrunt* 1xScout 2xScout*
+  w3 threat 10 span 5s: 1xGrunt 1xRoller 2xScout*
+  w4 threat 7 span 20s: 1xDrowner~ 1xGrunt* 1xScout*
+  w5 threat 12 span 4s: 2xGrunt 1xGrunt* 2xScout 2xScout*
+  w6 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
+  w7 threat 11 span 21s: 2xDrowner~ 1xGrunt* 1xScout
+  w8 threat 16 span 4s: 1xGrunt 3xGrunt* 1xScout 5xScout*
+  w9 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller 3xScout*
+  w10 threat 14 span 5s: 2xGrunt* 1xRoller 1xScout 2xScout*
+  w11 threat 17 span 5s: 5xFlyer* 1xGrunt* 1xRoller* 1xScout
+  w12 threat 43 span 21s: 2xDrowner~ 1xGrunt 1xOverseer 1xScout*
+  w13 threat 30 span 6s: 3xGrunt 5xGrunt* 4xScout 6xScout*
+  w14 threat 35 span 8s: 1xBrute 1xGrunt 2xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
+  w15 threat 30 span 26s: 5xDrowner~ 2xGrunt* 1xRoller* 1xScout 1xScout*
+  w16 threat 41 span 9s: 5xGrunt 6xGrunt* 6xScout 7xScout*
+  w17 threat 39 span 5s: 2xBrute* 2xGrunt* 1xRoller 1xScout 2xScout*
+  w18 threat 54 span 10s: 6xGrunt 9xGrunt* 7xScout 9xScout*
+  w19 threat 57 span 30s: 1xBrute* 8xDrowner~ 2xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
+  w20 threat 57 span 10s: 1xBrute 2xGrunt 4xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
+  w21 threat 75 span 14s: 10xGrunt 11xGrunt* 9xScout 13xScout*
+  w22 threat 76 span 34s: 1xBrute* 11xDrowner~ 3xGrunt 1xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
+  w23 threat 84 span 13s: 1xBrute 3xBrute* 1xGrunt 4xGrunt* 1xRoller 2xRoller* 2xScout 3xScout*
+  w24 threat 108 span 21s: 14xGrunt 17xGrunt* 12xScout 18xScout*
+  w25 threat 157 span 19s: 1xBrute* 1xFlyer* 1xGrunt 5xGrunt* 1xRoller 3xRoller* 2xScout 4xScout* 1xWarden
+Level_Forest Hard
+  w1 threat 9 span 3s: 2xGrunt* 2xScout 2xScout*
+  w2 threat 16 span 3s: 2xGrunt 2xGrunt* 4xScout 2xScout*
+  w3 threat 20 span 6s: 2xGrunt* 2xRoller* 2xScout 2xScout*
+  w4 threat 14 span 21s: 2xDrowner~ 2xGrunt* 2xScout*
+  w5 threat 19 span 4s: 2xGrunt 3xGrunt* 2xScout 4xScout*
+  w6 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
+  w7 threat 18 span 22s: 3xDrowner~ 2xGrunt* 2xScout
+  w8 threat 27 span 4s: 4xGrunt 3xGrunt* 2xScout 7xScout*
+  w9 threat 29 span 6s: 2xFlyer* 2xGrunt 2xGrunt* 2xRoller* 2xScout 3xScout*
+  w10 threat 26 span 6s: 2xFlyer* 3xGrunt* 2xRoller 4xScout*
+  w11 threat 29 span 6s: 7xFlyer* 2xGrunt* 2xRoller* 2xScout
+  w12 threat 50 span 22s: 3xDrowner~ 2xGrunt 1xOverseer 2xScout
+  w13 threat 48 span 6s: 6xGrunt 7xGrunt* 6xScout 9xScout*
+  w14 threat 70 span 9s: 2xBrute* 4xFlyer* 4xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
+  w15 threat 45 span 9s: 13xFlyer* 2xGrunt 2xGrunt* 2xRoller* 2xScout 2xScout*
+  w16 threat 66 span 8s: 8xGrunt 10xGrunt* 8xScout 13xScout*
+  w17 threat 73 span 6s: 2xBrute 2xBrute* 3xGrunt* 2xRoller* 4xScout*
+  w18 threat 82 span 10s: 11xGrunt 12xGrunt* 11xScout 13xScout*
+  w19 threat 92 span 32s: 2xBrute 11xDrowner~ 2xGrunt 3xGrunt* 2xRoller* 2xScout 3xScout*
+  w20 threat 108 span 10s: 2xBrute* 7xFlyer* 2xGrunt 7xGrunt* 4xRoller 3xRoller* 5xScout 6xScout*
+  w21 threat 115 span 13s: 14xGrunt 18xGrunt* 14xScout 21xScout*
+  w22 threat 124 span 37s: 2xBrute 15xDrowner~ 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
+  w23 threat 137 span 12s: 2xBrute 4xBrute* 2xGrunt 6xGrunt* 4xRoller 2xRoller* 5xScout 4xScout*
+  w24 threat 163 span 18s: 22xGrunt 25xGrunt* 20xScout 25xScout*
+  w25 threat 211 span 22s: 2xBrute 10xFlyer* 2xGrunt 7xGrunt* 2xRoller 5xRoller* 5xScout 5xScout* 1xWarden
+Level_Forest Psycho
+  w1 threat 9 span 3s: 2xGrunt 4xScout*
+  w2 threat 16 span 3s: 2xGrunt 2xGrunt* 2xScout 4xScout*
+  w3 threat 20 span 6s: 2xGrunt* 2xRoller 2xScout 2xScout*
+  w4 threat 14 span 21s: 2xDrowner~ 2xGrunt* 2xScout*
+  w5 threat 23 span 4s: 4xGrunt 2xGrunt* 2xScout 6xScout*
+  w6 threat 16 span 4s: 6xFlyer* 2xGrunt* 2xScout*
+  w7 threat 21 span 23s: 4xDrowner~ 2xGrunt* 2xScout
+  w8 threat 32 span 4s: 6xGrunt 2xGrunt* 6xScout 6xScout*
+  w9 threat 30 span 6s: 2xFlyer* 2xGrunt 2xGrunt* 2xRoller 6xScout*
+  w10 threat 30 span 6s: 2xFlyer* 4xGrunt* 2xRoller* 2xScout 4xScout*
+  w11 threat 33 span 6s: 10xFlyer* 2xGrunt* 2xRoller 2xScout
+  w12 threat 54 span 23s: 4xDrowner~ 2xGrunt 1xOverseer 2xScout
+  w13 threat 59 span 6s: 6xGrunt 10xGrunt* 8xScout 11xScout*
+  w14 threat 76 span 9s: 2xBrute 4xFlyer* 2xGrunt 4xGrunt* 4xRoller* 2xScout 6xScout*
+  w15 threat 49 span 9s: 16xFlyer* 2xGrunt 2xGrunt* 2xRoller 4xScout*
+  w16 threat 78 span 7s: 10xGrunt 11xGrunt* 12xScout 13xScout*
+  w17 threat 77 span 6s: 2xBrute 2xBrute* 2xGrunt 2xGrunt* 2xRoller 2xScout 4xScout*
+  w18 threat 107 span 9s: 10xGrunt 20xGrunt* 14xScout 18xScout*
+  w19 threat 93 span 15s: 2xBrute* 24xFlyer* 4xGrunt 2xGrunt* 2xRoller 6xScout*
+  w20 threat 128 span 11s: 2xBrute 10xFlyer* 2xGrunt 10xGrunt* 2xRoller 6xRoller* 4xScout 10xScout*
+  w21 threat 147 span 11s: 20xGrunt 22xGrunt* 18xScout 24xScout*
+  w22 threat 142 span 38s: 2xBrute* 19xDrowner~ 6xGrunt 2xGrunt* 4xRoller* 4xScout 4xScout*
+  w23 threat 168 span 10s: 2xBrute 6xBrute* 4xGrunt 6xGrunt* 2xRoller 4xRoller* 4xScout 6xScout*
+  w24 threat 215 span 15s: 28xGrunt 34xGrunt* 26xScout 34xScout*
+  w25 threat 237 span 25s: 2xBrute* 17xFlyer* 6xGrunt 6xGrunt* 6xRoller 2xRoller* 4xScout 8xScout* 1xWarden
+Level_Lava Easy
+  w1 threat 8 span 1s: 3xGrunt
+  w2 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
+  w3 threat 8 span 4s: 2xGrunt 3xScout
+  w4 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
+  w5 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
+  w6 threat 13 span 5s: 2xGrunt 1xRoller 2xScout
+  w7 threat 10 span 4s: 4xFlyer* 1xGrunt 1xScout
+  w8 threat 22 span 5s: 1xBrute 1xGrunt 1xRoller 1xScout
+  w9 threat 13 span 5s: 2xGrunt 1xRoller 2xScout
+  w10 threat 43 span 14s: 1xGrunt 1xOverseer 1xRoller 2xScout
+  w11 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
+  w12 threat 25 span 5s: 1xBrute 2xGrunt 1xRoller 2xScout
+  w13 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
+  w14 threat 29 span 8s: 1xBrute 3xGrunt 1xRoller 3xScout
+  w15 threat 27 span 20s: 2xCinder~ 2xGrunt 1xRoller 2xScout
+  w16 threat 38 span 5s: 2xBrute 2xGrunt 1xRoller 2xScout
+  w17 threat 34 span 22s: 3xCinder~ 2xGrunt 1xRoller 2xScout
+  w18 threat 41 span 8s: 1xBrute 5xGrunt 2xRoller 5xScout
+  w19 threat 41 span 5s: 2xBrute 3xGrunt 1xRoller 3xScout
+  w20 threat 64 span 14s: 1xBrute 4xGrunt 1xOverseer 1xRoller 3xScout
+  w21 threat 56 span 24s: 1xBrute 4xCinder~ 3xGrunt 1xRoller 2xScout
+  w22 threat 62 span 9s: 3xBrute 4xGrunt 2xRoller 3xScout
+  w23 threat 68 span 11s: 2xBrute 8xGrunt 3xRoller 6xScout
+  w24 threat 72 span 26s: 1xBrute 5xCinder~ 4xGrunt 2xRoller 3xScout
+  w25 threat 78 span 12s: 4xBrute 5xGrunt 2xRoller 4xScout
+  w26 threat 82 span 28s: 1xBrute 6xCinder~ 5xGrunt 2xRoller 4xScout
+  w27 threat 101 span 15s: 3xBrute 11xGrunt 5xRoller 8xScout
+  w28 threat 102 span 16s: 5xBrute 7xGrunt 3xRoller 5xScout
+  w29 threat 104 span 31s: 1xBrute 8xCinder~ 6xGrunt 3xRoller 4xScout
+  w30 threat 173 span 14s: 2xBrute 8xGrunt 4xRoller 6xScout 1xWarden
+Level_Lava Medium
+  w1 threat 8 span 2s: 3xGrunt
+  w2 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
+  w3 threat 8 span 3s: 2xGrunt 3xScout
+  w4 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
+  w5 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
+  w6 threat 14 span 5s: 1xFlyer* 2xGrunt 1xRoller 2xScout
+  w7 threat 10 span 4s: 4xFlyer* 1xGrunt 1xScout
+  w8 threat 22 span 5s: 1xBrute 1xGrunt 1xRoller 1xScout
+  w9 threat 14 span 5s: 1xFlyer* 2xGrunt 1xRoller 2xScout
+  w10 threat 44 span 14s: 1xFlyer* 1xGrunt 1xOverseer 1xRoller 2xScout
+  w11 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
+  w12 threat 18 span 6s: 6xFlyer* 1xGrunt 1xRoller 1xScout
+  w13 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
+  w14 threat 32 span 8s: 1xBrute 2xFlyer* 3xGrunt 1xRoller 3xScout
+  w15 threat 27 span 20s: 2xCinder~ 2xGrunt 1xRoller 2xScout
+  w16 threat 38 span 5s: 2xBrute 2xGrunt 1xRoller 2xScout
+  w17 threat 34 span 21s: 3xCinder~ 2xGrunt 1xRoller 2xScout
+  w18 threat 46 span 9s: 1xBrute 3xFlyer* 5xGrunt 2xRoller 5xScout
+  w19 threat 41 span 5s: 2xBrute 3xGrunt 1xRoller 3xScout
+  w20 threat 67 span 14s: 1xBrute 2xFlyer* 4xGrunt 1xOverseer 1xRoller 3xScout
+  w21 threat 56 span 23s: 1xBrute 4xCinder~ 3xGrunt 1xRoller 2xScout
+  w22 threat 62 span 7s: 3xBrute 4xGrunt 2xRoller 3xScout
+  w23 threat 75 span 9s: 2xBrute 5xFlyer* 8xGrunt 3xRoller 6xScout
+  w24 threat 79 span 26s: 1xBrute 6xCinder~ 4xGrunt 2xRoller 3xScout
+  w25 threat 78 span 12s: 4xBrute 5xGrunt 2xRoller 4xScout
+  w26 threat 89 span 28s: 1xBrute 7xCinder~ 5xGrunt 2xRoller 4xScout
+  w27 threat 113 span 13s: 3xBrute 8xFlyer* 11xGrunt 5xRoller 8xScout
+  w28 threat 102 span 16s: 5xBrute 7xGrunt 3xRoller 5xScout
+  w29 threat 111 span 31s: 1xBrute 9xCinder~ 6xGrunt 3xRoller 4xScout
+  w30 threat 184 span 19s: 2xBrute 7xFlyer* 8xGrunt 4xRoller 6xScout 1xWarden
+Level_Lava Hard
+  w1 threat 10 span 1s: 4xGrunt
+  w2 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
+  w3 threat 15 span 4s: 4xGrunt 5xScout
+  w4 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
+  w5 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
+  w6 threat 25 span 6s: 2xFlyer* 3xGrunt 2xRoller 3xScout
+  w7 threat 16 span 5s: 6xFlyer* 2xGrunt 2xScout
+  w8 threat 43 span 6s: 2xBrute 2xGrunt 2xRoller 2xScout
+  w9 threat 27 span 6s: 2xFlyer* 4xGrunt 2xRoller 3xScout
+  w10 threat 56 span 14s: 2xFlyer* 2xGrunt 1xOverseer 2xRoller 4xScout
+  w11 threat 39 span 21s: 3xCinder~ 2xGrunt 2xRoller 2xScout
+  w12 threat 30 span 7s: 8xFlyer* 2xGrunt 2xRoller 2xScout
+  w13 threat 39 span 21s: 3xCinder~ 2xGrunt 2xRoller 2xScout
+  w14 threat 62 span 9s: 2xBrute 4xFlyer* 6xGrunt 2xRoller 5xScout
+  w15 threat 43 span 21s: 3xCinder~ 3xGrunt 2xRoller 3xScout
+  w16 threat 41 span 9s: 13xFlyer* 3xGrunt 2xRoller 3xScout
+  w17 threat 53 span 22s: 4xCinder~ 4xGrunt 2xRoller 4xScout
+  w18 threat 81 span 9s: 2xBrute 5xFlyer* 9xGrunt 3xRoller 9xScout
+  w19 threat 76 span 6s: 4xBrute 4xGrunt 2xRoller 5xScout
+  w20 threat 97 span 14s: 2xBrute 4xFlyer* 7xGrunt 1xOverseer 2xRoller 5xScout
+  w21 threat 92 span 25s: 2xBrute 6xCinder~ 4xGrunt 2xRoller 4xScout
+  w22 threat 88 span 16s: 2xBrute 22xFlyer* 6xGrunt 2xRoller 4xScout
+  w23 threat 117 span 10s: 3xBrute 7xFlyer* 13xGrunt 5xRoller 9xScout
+  w24 threat 124 span 28s: 2xBrute 8xCinder~ 6xGrunt 4xRoller 6xScout
+  w25 threat 133 span 12s: 7xBrute 9xGrunt 3xRoller 6xScout
+  w26 threat 139 span 30s: 2xBrute 10xCinder~ 8xGrunt 3xRoller 7xScout
+  w27 threat 191 span 14s: 5xBrute 12xFlyer* 19xGrunt 9xRoller 13xScout
+  w28 threat 177 span 15s: 9xBrute 11xGrunt 5xRoller 9xScout
+  w29 threat 166 span 33s: 2xBrute 12xCinder~ 9xGrunt 5xRoller 7xScout
+  w30 threat 239 span 22s: 4xBrute 11xFlyer* 12xGrunt 6xRoller 9xScout 1xWarden
+Level_Lava Psycho
+  w1 threat 15 span 2s: 6xGrunt
+  w2 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
+  w3 threat 16 span 4s: 4xGrunt 6xScout
+  w4 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout
+  w5 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
+  w6 threat 28 span 6s: 2xFlyer* 4xGrunt 2xRoller 4xScout
+  w7 threat 19 span 6s: 8xFlyer* 2xGrunt 2xScout
+  w8 threat 43 span 6s: 2xBrute 2xGrunt 2xRoller 2xScout
+  w9 threat 28 span 6s: 2xFlyer* 4xGrunt 2xRoller 4xScout
+  w10 threat 56 span 14s: 2xFlyer* 2xGrunt 1xOverseer 2xRoller 4xScout
+  w11 threat 46 span 21s: 4xCinder~ 2xGrunt 2xRoller 2xScout
+  w12 threat 36 span 8s: 12xFlyer* 2xGrunt 2xRoller 2xScout
+  w13 threat 46 span 21s: 4xCinder~ 2xGrunt 2xRoller 2xScout
+  w14 threat 63 span 9s: 2xBrute 4xFlyer* 6xGrunt 2xRoller 6xScout
+  w15 threat 53 span 21s: 4xCinder~ 4xGrunt 2xRoller 4xScout
+  w16 threat 49 span 9s: 16xFlyer* 4xGrunt 2xRoller 4xScout
+  w17 threat 67 span 24s: 6xCinder~ 4xGrunt 2xRoller 4xScout
+  w18 threat 91 span 9s: 2xBrute 6xFlyer* 10xGrunt 4xRoller 10xScout
+  w19 threat 82 span 6s: 4xBrute 6xGrunt 2xRoller 6xScout
+  w20 threat 101 span 14s: 2xBrute 4xFlyer* 8xGrunt 1xOverseer 2xRoller 6xScout
+  w21 threat 104 span 25s: 2xBrute 7xCinder~ 6xGrunt 2xRoller 4xScout
+  w22 threat 99 span 17s: 2xBrute 28xFlyer* 6xGrunt 2xRoller 6xScout
+  w23 threat 148 span 11s: 4xBrute 10xFlyer* 15xGrunt 6xRoller 12xScout
+  w24 threat 150 span 29s: 2xBrute 11xCinder~ 8xGrunt 4xRoller 6xScout
+  w25 threat 155 span 10s: 8xBrute 10xGrunt 4xRoller 8xScout
+  w26 threat 164 span 30s: 2xBrute 12xCinder~ 10xGrunt 4xRoller 8xScout
+  w27 threat 151 span 27s: 2xBrute 47xFlyer* 10xGrunt 4xRoller 8xScout
+  w28 threat 203 span 12s: 10xBrute 14xGrunt 6xRoller 10xScout
+  w29 threat 208 span 35s: 2xBrute 16xCinder~ 12xGrunt 6xRoller 8xScout
+  w30 threat 275 span 25s: 4xBrute 19xFlyer* 16xGrunt 8xRoller 12xScout 1xWarden
+Level_Ruins Easy
+  w1 threat 7 span 18s: 1xBurrower~ 1xGrunt*
+  w2 threat 15 span 0s: 1xBrute 1xGrunt
+  w3 threat 5 span 1s: 1xGrunt 1xGrunt*
+  w4 threat 15 span 0s: 1xBrute* 1xGrunt*
+  w5 threat 7 span 3s: 3xFlyer* 1xGrunt*
+  w6 threat 21 span 3s: 1xBrute* 1xGrunt* 1xRoller
+  w7 threat 23 span 5s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
+  w8 threat 21 span 3s: 1xBrute 1xGrunt 1xRoller
+  w9 threat 14 span 4s: 4xFlyer* 1xGrunt* 1xRoller
+  w10 threat 23 span 5s: 1xBrute* 2xGrunt* 1xRoller
+  w11 threat 23 span 3s: 1xBrute 1xGrunt 1xGrunt* 1xRoller*
+  w12 threat 111 span 24s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xWarden
+  w13 threat 23 span 3s: 1xBrute 2xGrunt* 1xRoller*
+  w14 threat 26 span 5s: 1xBrute* 3xGrunt* 1xRoller
+  w15 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
+  w16 threat 39 span 25s: 1xBrute 2xBurrower~ 2xDrowner~ 1xGrunt 1xGrunt* 1xRoller
+  w17 threat 38 span 4s: 1xBrute 1xBrute* 1xGrunt 2xGrunt* 1xRoller*
+  w18 threat 34 span 7s: 1xBrute 1xGrunt 3xGrunt* 1xRoller 1xRoller*
+  w19 threat 38 span 3s: 2xBrute* 2xGrunt 1xGrunt* 1xRoller*
+  w20 threat 36 span 7s: 1xBrute* 1xGrunt 4xGrunt* 1xRoller 1xRoller*
+  w21 threat 52 span 27s: 1xBrute* 4xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller*
+  w22 threat 46 span 4s: 1xBrute 1xBrute* 3xGrunt 1xGrunt* 1xRoller 1xRoller*
+  w23 threat 57 span 9s: 2xBrute* 1xGrunt 5xGrunt* 1xRoller 2xRoller*
+  w24 threat 138 span 14s: 2xBrute* 3xGrunt* 1xRoller 1xWarden
+  w25 threat 63 span 29s: 1xBrute 4xBurrower~ 4xDrowner~ 1xGrunt 2xGrunt* 2xRoller*
+  w26 threat 67 span 9s: 2xBrute 1xBrute* 2xGrunt 3xGrunt* 1xRoller 2xRoller*
+  w27 threat 80 span 11s: 3xBrute* 3xGrunt 5xGrunt* 1xRoller 3xRoller*
+  w28 threat 82 span 13s: 1xBrute 3xBrute* 1xGrunt 5xGrunt* 2xRoller 1xRoller*
+  w29 threat 92 span 29s: 1xBrute 1xBrute* 7xBurrower~ 4xDrowner~ 1xGrunt 3xGrunt* 2xRoller*
+  w30 threat 108 span 14s: 1xBrute 3xBrute* 3xGrunt 7xGrunt* 2xRoller 4xRoller*
+  w31 threat 105 span 17s: 3xBrute 2xBrute* 3xGrunt 5xGrunt* 1xRoller 3xRoller*
+  w32 threat 111 span 32s: 1xBrute 1xBrute* 8xBurrower~ 6xDrowner~ 1xGrunt 4xGrunt* 2xRoller 1xRoller*
+  w33 threat 128 span 17s: 1xBrute 5xBrute* 4xGrunt 6xGrunt* 1xRoller 4xRoller*
+  w34 threat 154 span 18s: 1xBrute 5xBrute* 6xGrunt 8xGrunt* 3xRoller 5xRoller*
+  w35 threat 200 span 14s: 1xBrute 3xBrute* 3xGrunt 6xGrunt* 1xRoller 4xRoller* 1xWarden
+Level_Ruins Medium
+  w1 threat 7 span 18s: 1xBurrower~ 1xGrunt*
+  w2 threat 15 span 0s: 1xBrute* 1xGrunt
+  w3 threat 5 span 1s: 1xGrunt 1xGrunt*
+  w4 threat 15 span 0s: 1xBrute 1xGrunt
+  w5 threat 7 span 3s: 3xFlyer* 1xGrunt*
+  w6 threat 21 span 3s: 1xBrute* 1xGrunt* 1xRoller
+  w7 threat 23 span 5s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
+  w8 threat 21 span 3s: 1xBrute 1xGrunt 1xRoller
+  w9 threat 14 span 4s: 4xFlyer* 1xGrunt 1xRoller*
+  w10 threat 23 span 5s: 1xBrute* 2xGrunt* 1xRoller
+  w11 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
+  w12 threat 111 span 24s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xWarden
+  w13 threat 23 span 3s: 1xBrute 2xGrunt* 1xRoller*
+  w14 threat 19 span 6s: 7xFlyer* 1xGrunt* 1xRoller*
+  w15 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
+  w16 threat 39 span 25s: 1xBrute* 2xBurrower~ 2xDrowner~ 2xGrunt* 1xRoller
+  w17 threat 38 span 4s: 1xBrute 1xBrute* 3xGrunt* 1xRoller*
+  w18 threat 34 span 7s: 1xBrute 2xGrunt 2xGrunt* 1xRoller 1xRoller*
+  w19 threat 38 span 3s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller*
+  w20 threat 36 span 6s: 1xBrute* 1xGrunt 4xGrunt* 2xRoller*
+  w21 threat 52 span 26s: 1xBrute 4xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller
+  w22 threat 46 span 4s: 1xBrute 1xBrute* 2xGrunt 2xGrunt* 2xRoller*
+  w23 threat 57 span 8s: 2xBrute* 2xGrunt 4xGrunt* 2xRoller 1xRoller*
+  w24 threat 138 span 14s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller* 1xWarden
+  w25 threat 68 span 28s: 1xBrute 5xBurrower~ 4xDrowner~ 3xGrunt* 1xRoller 1xRoller*
+  w26 threat 67 span 6s: 1xBrute 2xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller*
+  w27 threat 80 span 9s: 1xBrute 2xBrute* 3xGrunt 5xGrunt* 3xRoller 1xRoller*
+  w28 threat 82 span 11s: 1xBrute 3xBrute* 2xGrunt 4xGrunt* 3xRoller*
+  w29 threat 100 span 29s: 1xBrute 1xBrute* 8xBurrower~ 5xDrowner~ 1xGrunt 3xGrunt* 1xRoller 1xRoller*
+  w30 threat 108 span 11s: 1xBrute 3xBrute* 4xGrunt 6xGrunt* 1xRoller 5xRoller*
+  w31 threat 105 span 15s: 2xBrute 3xBrute* 3xGrunt 5xGrunt* 3xRoller 1xRoller*
+  w32 threat 124 span 32s: 1xBrute 1xBrute* 10xBurrower~ 7xDrowner~ 3xGrunt 2xGrunt* 3xRoller*
+  w33 threat 128 span 16s: 1xBrute 5xBrute* 3xGrunt 7xGrunt* 2xRoller 3xRoller*
+  w34 threat 154 span 15s: 1xBrute 5xBrute* 6xGrunt 8xGrunt* 3xRoller 5xRoller*
+  w35 threat 202 span 19s: 3xBrute 1xBrute* 1xFlyer* 4xGrunt 5xGrunt* 3xRoller 2xRoller* 1xWarden
+Level_Ruins Hard
+  w1 threat 14 span 19s: 2xBurrower~ 2xGrunt*
+  w2 threat 30 span 2s: 2xBrute* 2xGrunt*
+  w3 threat 10 span 1s: 2xGrunt 2xGrunt*
+  w4 threat 30 span 2s: 2xBrute 2xGrunt
+  w5 threat 13 span 4s: 5xFlyer* 2xGrunt
+  w6 threat 41 span 3s: 2xBrute* 2xGrunt* 2xRoller*
+  w7 threat 47 span 6s: 2xBrute 2xFlyer* 3xGrunt* 2xRoller
+  w8 threat 41 span 3s: 2xBrute 2xGrunt 2xRoller*
+  w9 threat 25 span 5s: 6xFlyer* 2xGrunt 2xRoller*
+  w10 threat 47 span 6s: 2xBrute* 2xFlyer* 3xGrunt* 2xRoller*
+  w11 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller
+  w12 threat 121 span 25s: 2xBurrower~ 2xDrowner~ 2xGrunt* 1xWarden
+  w13 threat 44 span 3s: 2xBrute 3xGrunt* 2xRoller
+  w14 threat 31 span 7s: 10xFlyer* 2xGrunt 2xRoller
+  w15 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller
+  w16 threat 68 span 26s: 2xBrute* 3xBurrower~ 3xDrowner~ 3xGrunt* 2xRoller*
+  w17 threat 74 span 5s: 2xBrute 2xBrute* 2xGrunt 3xGrunt* 2xRoller
+  w18 threat 67 span 11s: 2xBrute 14xFlyer* 2xGrunt 2xGrunt* 2xRoller*
+  w19 threat 71 span 5s: 2xBrute 2xBrute* 4xGrunt* 2xRoller
+  w20 threat 71 span 10s: 2xBrute* 6xFlyer* 2xGrunt 6xGrunt* 3xRoller*
+  w21 threat 85 span 27s: 2xBrute 6xBurrower~ 4xDrowner~ 3xGrunt* 2xRoller
+  w22 threat 84 span 5s: 2xBrute 2xBrute* 5xGrunt 2xGrunt* 3xRoller*
+  w23 threat 83 span 15s: 2xBrute* 21xFlyer* 4xGrunt 2xGrunt* 2xRoller
+  w24 threat 159 span 14s: 3xBrute* 4xGrunt* 2xRoller* 1xWarden
+  w25 threat 112 span 29s: 2xBrute 7xBurrower~ 6xDrowner~ 2xGrunt 3xGrunt* 2xRoller 2xRoller*
+  w26 threat 98 span 6s: 4xBrute* 2xGrunt 6xGrunt* 2xRoller 3xRoller*
+  w27 threat 136 span 12s: 4xBrute* 10xFlyer* 6xGrunt 7xGrunt* 5xRoller 2xRoller*
+  w28 threat 135 span 9s: 5xBrute 2xBrute* 5xGrunt 5xGrunt* 4xRoller*
+  w29 threat 161 span 31s: 2xBrute 2xBrute* 11xBurrower~ 7xDrowner~ 2xGrunt 4xGrunt* 2xRoller 2xRoller*
+  w30 threat 184 span 14s: 2xBrute 4xBrute* 13xFlyer* 7xGrunt 9xGrunt* 2xRoller 7xRoller*
+  w31 threat 181 span 14s: 5xBrute 4xBrute* 5xGrunt 7xGrunt* 5xRoller 2xRoller*
+  w32 threat 188 span 34s: 2xBrute 2xBrute* 13xBurrower~ 10xDrowner~ 4xGrunt 5xGrunt* 4xRoller*
+  w33 threat 212 span 15s: 5xBrute 5xBrute* 6xGrunt 9xGrunt* 4xRoller 5xRoller*
+  w34 threat 255 span 17s: 2xBrute 7xBrute* 16xFlyer* 9xGrunt 12xGrunt* 5xRoller 7xRoller*
+  w35 threat 295 span 22s: 4xBrute 3xBrute* 15xFlyer* 5xGrunt 9xGrunt* 5xRoller 4xRoller* 1xWarden
+Level_Ruins Psycho
+  w1 threat 14 span 19s: 2xBurrower~ 2xGrunt
+  w2 threat 30 span 1s: 2xBrute* 2xGrunt*
+  w3 threat 10 span 1s: 4xGrunt*
+  w4 threat 30 span 1s: 2xBrute 2xGrunt
+  w5 threat 14 span 4s: 6xFlyer* 2xGrunt
+  w6 threat 41 span 3s: 2xBrute* 2xGrunt* 2xRoller*
+  w7 threat 49 span 6s: 2xBrute 2xFlyer* 4xGrunt* 2xRoller
+  w8 threat 41 span 3s: 2xBrute* 2xGrunt 2xRoller
+  w9 threat 28 span 6s: 8xFlyer* 2xGrunt 2xRoller*
+  w10 threat 49 span 6s: 2xBrute* 2xFlyer* 2xGrunt 2xGrunt* 2xRoller
+  w11 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller*
+  w12 threat 121 span 24s: 2xBurrower~ 2xDrowner~ 2xGrunt* 1xWarden
+  w13 threat 46 span 3s: 2xBrute 4xGrunt* 2xRoller*
+  w14 threat 36 span 8s: 13xFlyer* 2xGrunt 2xRoller
+  w15 threat 46 span 3s: 2xBrute 2xGrunt 2xGrunt* 2xRoller*
+  w16 threat 78 span 26s: 2xBrute* 4xBurrower~ 4xDrowner~ 4xGrunt* 2xRoller
+  w17 threat 76 span 4s: 4xBrute* 2xGrunt 4xGrunt* 2xRoller*
+  w18 threat 73 span 11s: 2xBrute 18xFlyer* 2xGrunt 2xGrunt* 2xRoller
+  w19 threat 76 span 4s: 2xBrute 2xBrute* 2xGrunt 4xGrunt* 2xRoller*
+  w20 threat 84 span 11s: 2xBrute* 8xFlyer* 2xGrunt 8xGrunt* 2xRoller 2xRoller*
+  w21 threat 99 span 28s: 2xBrute 7xBurrower~ 6xDrowner~ 4xGrunt* 2xRoller*
+  w22 threat 92 span 4s: 4xBrute* 4xGrunt 4xGrunt* 2xRoller 2xRoller*
+  w23 threat 90 span 15s: 2xBrute* 26xFlyer* 2xGrunt 4xGrunt* 2xRoller*
+  w24 threat 176 span 14s: 2xBrute 2xBrute* 4xGrunt 2xGrunt* 2xRoller 1xWarden
+  w25 threat 127 span 29s: 2xBrute 9xBurrower~ 7xDrowner~ 6xGrunt* 4xRoller*
+  w26 threat 133 span 6s: 2xBrute 4xBrute* 2xGrunt 8xGrunt* 4xRoller 2xRoller*
+  w27 threat 176 span 13s: 2xBrute 4xBrute* 13xFlyer* 6xGrunt 9xGrunt* 2xRoller 6xRoller*
+  w28 threat 130 span 25s: 2xBrute 42xFlyer* 4xGrunt 4xGrunt* 2xRoller 2xRoller*
+  w29 threat 187 span 31s: 2xBrute 2xBrute* 14xBurrower~ 9xDrowner~ 6xGrunt 2xGrunt* 4xRoller*
+  w30 threat 240 span 14s: 2xBrute 6xBrute* 16xFlyer* 8xGrunt 12xGrunt* 6xRoller 6xRoller*
+  w31 threat 209 span 11s: 2xBrute 8xBrute* 6xGrunt 10xGrunt* 2xRoller 6xRoller*
+  w32 threat 227 span 34s: 2xBrute 2xBrute* 17xBurrower~ 12xDrowner~ 6xGrunt 4xGrunt* 2xRoller 4xRoller*
+  w33 threat 209 span 36s: 4xBrute* 64xFlyer* 4xGrunt 8xGrunt* 2xRoller 4xRoller*
+  w34 threat 336 span 19s: 2xBrute 10xBrute* 22xFlyer* 12xGrunt 16xGrunt* 6xRoller 9xRoller*
+  w35 threat 332 span 25s: 6xBrute 2xBrute* 21xFlyer* 8xGrunt 10xGrunt* 2xRoller 8xRoller* 1xWarden
+Level_Nest Easy
+  w1 threat 9 span 3s: 1xGrunt 1xGrunt* 2xScout 2xScout*
+  w2 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
+  w3 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout*
+  w4 threat 13 span 4s: 2xGrunt 1xGrunt* 1xScout 4xScout*
+  w5 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
+  w6 threat 8 span 3s: 3xFlyer* 1xGrunt* 1xScout
+  w7 threat 16 span 4s: 3xGrunt 1xGrunt* 3xScout 3xScout*
+  w8 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xScout*
+  w9 threat 15 span 5s: 4xFlyer* 1xGrunt* 1xRoller 1xScout*
+  w10 threat 112 span 14s: 1xFlyer* 1xGrunt 1xRoller* 1xScout 1xScout* 1xWarden
+  w11 threat 23 span 5s: 2xGrunt 4xGrunt* 3xScout 5xScout*
+  w12 threat 22 span 25s: 1xBurrower~ 2xDrowner~ 1xGrunt* 1xRoller* 2xScout*
+  w13 threat 23 span 5s: 1xBrute* 1xGrunt 1xRoller 2xScout*
+  w14 threat 28 span 6s: 2xGrunt 5xGrunt* 4xScout 6xScout*
+  w15 threat 22 span 25s: 1xBurrower~ 2xDrowner~ 1xGrunt* 1xRoller 1xScout 1xScout*
+  w16 threat 25 span 5s: 1xBrute 2xGrunt* 1xRoller 2xScout*
+  w17 threat 38 span 8s: 3xGrunt 7xGrunt* 6xScout 7xScout*
+  w18 threat 32 span 26s: 2xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller* 2xScout*
+  w19 threat 39 span 5s: 2xBrute* 1xGrunt 1xGrunt* 1xRoller 1xScout 2xScout*
+  w20 threat 132 span 14s: 1xBrute 2xFlyer* 3xGrunt* 1xRoller* 2xScout 1xScout* 1xWarden
+  w21 threat 53 span 11s: 6xGrunt 8xGrunt* 6xScout 12xScout*
+  w22 threat 54 span 28s: 1xBrute* 3xBurrower~ 4xDrowner~ 2xGrunt* 1xRoller* 1xScout 2xScout*
+  w23 threat 48 span 7s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
+  w24 threat 67 span 14s: 7xGrunt 11xGrunt* 7xScout 15xScout*
+  w25 threat 56 span 28s: 1xBrute* 3xBurrower~ 4xDrowner~ 1xGrunt 2xGrunt* 1xRoller 2xScout 1xScout*
+  w26 threat 64 span 7s: 1xBrute 2xBrute* 1xGrunt 3xGrunt* 1xRoller 1xRoller* 1xScout 4xScout*
+  w27 threat 88 span 16s: 9xGrunt 15xGrunt* 13xScout 15xScout*
+  w28 threat 77 span 30s: 1xBrute* 4xBurrower~ 6xDrowner~ 2xGrunt 2xGrunt* 2xRoller* 1xScout 3xScout*
+  w29 threat 85 span 12s: 2xBrute 2xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller* 1xScout 5xScout*
+  w30 threat 170 span 14s: 1xBrute 1xBrute* 5xFlyer* 1xGrunt 5xGrunt* 3xRoller* 3xScout 3xScout* 1xWarden
+  w31 threat 121 span 24s: 10xGrunt 24xGrunt* 18xScout 18xScout*
+  w32 threat 97 span 32s: 1xBrute* 5xBurrower~ 8xDrowner~ 3xGrunt 2xGrunt* 1xRoller 2xRoller* 1xScout 4xScout*
+  w33 threat 123 span 18s: 1xBrute 5xBrute* 3xGrunt 4xGrunt* 2xRoller 2xRoller* 3xScout 5xScout*
+  w34 threat 126 span 25s: 11xGrunt 25xGrunt* 11xScout 25xScout*
+  w35 threat 135 span 36s: 2xBrute* 7xBurrower~ 10xDrowner~ 3xGrunt 3xGrunt* 2xRoller 2xRoller* 3xScout 3xScout*
+  w36 threat 160 span 26s: 3xBrute 5xBrute* 3xGrunt 6xGrunt* 1xRoller 4xRoller* 4xScout 6xScout*
+  w37 threat 126 span 25s: 18xGrunt 18xGrunt* 18xScout 18xScout*
+  w38 threat 179 span 40s: 1xBrute 2xBrute* 9xBurrower~ 13xDrowner~ 3xGrunt 5xGrunt* 1xRoller 4xRoller* 3xScout 5xScout*
+  w39 threat 206 span 34s: 3xBrute 7xBrute* 4xGrunt 8xGrunt* 2xRoller 5xRoller* 6xScout 6xScout*
+  w40 threat 303 span 16s: 1xBrute 3xBrute* 9xFlyer* 6xGrunt 6xGrunt* 1xHiveQueen 2xRoller 5xRoller* 5xScout 6xScout*
+Level_Nest Medium
+  w1 threat 9 span 3s: 2xGrunt* 3xScout 1xScout*
+  w2 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
+  w3 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
+  w4 threat 13 span 3s: 1xGrunt 2xGrunt* 1xScout 4xScout*
+  w5 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout*
+  w6 threat 8 span 3s: 3xFlyer* 1xGrunt* 1xScout
+  w7 threat 16 span 4s: 2xGrunt 2xGrunt* 2xScout 4xScout*
+  w8 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout*
+  w9 threat 15 span 5s: 4xFlyer* 1xGrunt* 1xRoller* 1xScout*
+  w10 threat 112 span 14s: 1xFlyer* 1xGrunt 1xRoller 2xScout* 1xWarden
+  w11 threat 23 span 5s: 3xGrunt 3xGrunt* 3xScout 5xScout*
+  w12 threat 19 span 6s: 6xFlyer* 1xGrunt* 1xRoller 1xScout 1xScout*
+  w13 threat 23 span 5s: 1xBrute* 1xGrunt* 1xRoller* 1xScout 1xScout*
+  w14 threat 28 span 5s: 3xGrunt 4xGrunt* 4xScout 6xScout*
+  w15 threat 21 span 6s: 7xFlyer* 1xGrunt* 1xRoller* 2xScout*
+  w16 threat 25 span 5s: 1xBrute 1xGrunt 1xGrunt* 1xRoller* 2xScout*
+  w17 threat 38 span 7s: 4xGrunt 6xGrunt* 4xScout 9xScout*
+  w18 threat 32 span 26s: 2xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller 2xScout*
+  w19 threat 39 span 5s: 2xBrute* 2xGrunt* 1xRoller* 3xScout*
+  w20 threat 132 span 14s: 1xBrute* 2xFlyer* 2xGrunt 1xGrunt* 1xRoller 1xScout 2xScout* 1xWarden
+  w21 threat 53 span 9s: 4xGrunt 10xGrunt* 7xScout 11xScout*
+  w22 threat 54 span 28s: 1xBrute 3xBurrower~ 4xDrowner~ 2xGrunt* 1xRoller 1xScout 2xScout*
+  w23 threat 48 span 6s: 2xBrute* 1xGrunt 2xGrunt* 2xRoller* 1xScout 3xScout*
+  w24 threat 67 span 12s: 6xGrunt 12xGrunt* 10xScout 12xScout*
+  w25 threat 60 span 28s: 1xBrute 3xBurrower~ 5xDrowner~ 3xGrunt* 1xRoller* 1xScout 2xScout*
+  w26 threat 64 span 7s: 2xBrute 1xBrute* 2xGrunt 2xGrunt* 2xRoller* 1xScout 4xScout*
+  w27 threat 88 span 15s: 7xGrunt 17xGrunt* 13xScout 15xScout*
+  w28 threat 80 span 29s: 1xBrute 4xBurrower~ 7xDrowner~ 3xGrunt 1xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
+  w29 threat 85 span 10s: 1xBrute 3xBrute* 1xGrunt 4xGrunt* 1xRoller 2xRoller* 1xScout 5xScout*
+  w30 threat 170 span 14s: 2xBrute* 5xFlyer* 1xGrunt 5xGrunt* 1xRoller 2xRoller* 2xScout 4xScout* 1xWarden
+  w31 threat 121 span 20s: 13xGrunt 21xGrunt* 15xScout 21xScout*
+  w32 threat 105 span 33s: 1xBrute 6xBurrower~ 9xDrowner~ 1xGrunt 4xGrunt* 2xRoller 1xRoller* 1xScout 4xScout*
+  w33 threat 123 span 13s: 1xBrute 5xBrute* 2xGrunt 5xGrunt* 3xRoller 1xRoller* 3xScout 5xScout*
+  w34 threat 126 span 21s: 15xGrunt 21xGrunt* 15xScout 21xScout*
+  w35 threat 146 span 36s: 1xBrute 1xBrute* 8xBurrower~ 12xDrowner~ 2xGrunt 4xGrunt* 1xRoller 3xRoller* 2xScout 4xScout*
+  w36 threat 160 span 18s: 3xBrute 5xBrute* 4xGrunt 5xGrunt* 3xRoller 2xRoller* 4xScout 6xScout*
+  w37 threat 126 span 21s: 15xGrunt 21xGrunt* 18xScout 18xScout*
+  w38 threat 199 span 41s: 3xBrute* 11xBurrower~ 16xDrowner~ 3xGrunt 5xGrunt* 2xRoller 3xRoller* 3xScout 5xScout*
+  w39 threat 206 span 30s: 4xBrute 6xBrute* 6xGrunt 6xGrunt* 3xRoller 4xRoller* 6xScout 6xScout*
+  w40 threat 308 span 19s: 2xBrute 2xBrute* 12xFlyer* 6xGrunt 6xGrunt* 1xHiveQueen 3xRoller 4xRoller* 4xScout 7xScout*
+Level_Nest Hard
+  w1 threat 15 span 3s: 3xGrunt* 2xScout 5xScout*
+  w2 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
+  w3 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
+  w4 threat 23 span 4s: 4xGrunt 2xGrunt* 2xScout 6xScout*
+  w5 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
+  w6 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout*
+  w7 threat 28 span 4s: 5xGrunt 2xGrunt* 5xScout 5xScout*
+  w8 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
+  w9 threat 27 span 6s: 6xFlyer* 2xGrunt* 2xRoller* 2xScout*
+  w10 threat 122 span 14s: 2xFlyer* 2xGrunt 2xRoller 3xScout* 1xWarden
+  w11 threat 36 span 5s: 2xGrunt 7xGrunt* 6xScout 7xScout*
+  w12 threat 32 span 7s: 8xFlyer* 2xGrunt* 2xRoller 2xScout 2xScout*
+  w13 threat 45 span 6s: 2xBrute 2xGrunt* 2xRoller 2xScout 2xScout*
+  w14 threat 44 span 5s: 4xGrunt 7xGrunt* 7xScout 9xScout*
+  w15 threat 34 span 7s: 10xFlyer* 2xGrunt* 2xRoller* 3xScout*
+  w16 threat 49 span 6s: 2xBrute 2xGrunt 2xGrunt* 2xRoller 3xScout*
+  w17 threat 62 span 7s: 6xGrunt 10xGrunt* 10xScout 12xScout*
+  w18 threat 42 span 9s: 13xFlyer* 3xGrunt* 2xRoller 2xScout 2xScout*
+  w19 threat 61 span 6s: 3xBrute* 3xGrunt* 2xRoller 2xScout 3xScout*
+  w20 threat 159 span 14s: 2xBrute 4xFlyer* 2xGrunt 3xGrunt* 2xRoller 4xScout* 1xWarden
+  w21 threat 87 span 8s: 10xGrunt 13xGrunt* 12xScout 17xScout*
+  w22 threat 77 span 12s: 2xBrute* 18xFlyer* 3xGrunt* 2xRoller 4xScout 2xScout*
+  w23 threat 79 span 7s: 3xBrute* 2xGrunt 3xGrunt* 2xRoller 2xRoller* 4xScout 3xScout*
+  w24 threat 109 span 11s: 12xGrunt 18xGrunt* 16xScout 18xScout*
+  w25 threat 95 span 29s: 2xBrute* 4xBurrower~ 7xDrowner~ 2xGrunt 3xGrunt* 2xRoller* 4xScout*
+  w26 threat 110 span 7s: 2xBrute 3xBrute* 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 6xScout*
+  w27 threat 144 span 13s: 15xGrunt 24xGrunt* 20xScout 26xScout*
+  w28 threat 133 span 31s: 2xBrute* 6xBurrower~ 10xDrowner~ 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 4xScout*
+  w29 threat 141 span 10s: 2xBrute 5xBrute* 4xGrunt 5xGrunt* 4xRoller* 2xScout 7xScout*
+  w30 threat 223 span 14s: 2xBrute 2xBrute* 7xFlyer* 5xGrunt 5xGrunt* 2xRoller 3xRoller* 5xScout 5xScout* 1xWarden
+  w31 threat 192 span 18s: 20xGrunt 34xGrunt* 22xScout 35xScout*
+  w32 threat 154 span 34s: 2xBrute* 8xBurrower~ 12xDrowner~ 2xGrunt 6xGrunt* 4xRoller* 5xScout 4xScout*
+  w33 threat 191 span 14s: 2xBrute 7xBrute* 4xGrunt 7xGrunt* 2xRoller 5xRoller* 5xScout 7xScout*
+  w34 threat 197 span 19s: 22xGrunt 35xGrunt* 27xScout 27xScout*
+  w35 threat 214 span 38s: 3xBrute* 11xBurrower~ 16xDrowner~ 2xGrunt 7xGrunt* 5xRoller 2xRoller* 5xScout 5xScout*
+  w36 threat 255 span 21s: 6xBrute 7xBrute* 6xGrunt 7xGrunt* 2xRoller 6xRoller* 7xScout 9xScout*
+  w37 threat 197 span 19s: 22xGrunt 35xGrunt* 27xScout 27xScout*
+  w38 threat 305 span 44s: 4xBrute 2xBrute* 15xBurrower~ 21xDrowner~ 5xGrunt 8xGrunt* 2xRoller 6xRoller* 5xScout 7xScout*
+  w39 threat 329 span 27s: 7xBrute 9xBrute* 10xGrunt 10xGrunt* 4xRoller 7xRoller* 9xScout 9xScout*
+  w40 threat 387 span 22s: 2xBrute 4xBrute* 18xFlyer* 9xGrunt 9xGrunt* 1xHiveQueen 4xRoller 7xRoller* 9xScout 10xScout*
+Level_Nest Psycho
+  w1 threat 18 span 3s: 4xGrunt* 2xScout 6xScout*
+  w2 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
+  w3 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout
+  w4 threat 25 span 3s: 2xGrunt 4xGrunt* 4xScout 6xScout*
+  w5 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
+  w6 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout*
+  w7 threat 32 span 4s: 4xGrunt 4xGrunt* 4xScout 8xScout*
+  w8 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
+  w9 threat 30 span 6s: 8xFlyer* 2xGrunt 2xRoller 2xScout
+  w10 threat 123 span 14s: 2xFlyer* 2xGrunt 2xRoller* 4xScout* 1xWarden
+  w11 threat 46 span 5s: 2xGrunt 10xGrunt* 6xScout 10xScout*
+  w12 threat 38 span 8s: 12xFlyer* 2xGrunt* 2xRoller* 2xScout 2xScout*
+  w13 threat 45 span 6s: 2xBrute 2xGrunt 2xRoller* 2xScout 2xScout*
+  w14 threat 55 span 5s: 6xGrunt 8xGrunt* 8xScout 12xScout*
+  w15 threat 40 span 8s: 13xFlyer* 2xGrunt* 2xRoller 4xScout*
+  w16 threat 50 span 6s: 2xBrute* 4xGrunt* 2xRoller* 2xScout 2xScout*
+  w17 threat 74 span 6s: 8xGrunt 11xGrunt* 8xScout 18xScout*
+  w18 threat 49 span 9s: 16xFlyer* 4xGrunt* 2xRoller* 2xScout 2xScout*
+  w19 threat 77 span 6s: 4xBrute* 2xGrunt 2xGrunt* 2xRoller* 6xScout*
+  w20 threat 163 span 14s: 2xBrute* 4xFlyer* 4xGrunt 2xGrunt* 2xRoller* 2xScout 4xScout* 1xWarden
+  w21 threat 106 span 8s: 12xGrunt 16xGrunt* 14xScout 22xScout*
+  w22 threat 87 span 14s: 2xBrute 23xFlyer* 4xGrunt* 2xRoller* 2xScout 4xScout*
+  w23 threat 95 span 7s: 2xBrute 2xBrute* 4xGrunt 2xGrunt* 4xRoller* 6xScout 2xScout*
+  w24 threat 134 span 9s: 12xGrunt 24xGrunt* 20xScout 24xScout*
+  w25 threat 116 span 30s: 2xBrute 6xBurrower~ 9xDrowner~ 6xGrunt* 2xRoller 2xScout 4xScout*
+  w26 threat 120 span 19s: 2xBrute* 33xFlyer* 2xGrunt 4xGrunt* 4xRoller* 6xScout 2xScout*
+  w27 threat 176 span 11s: 14xGrunt 34xGrunt* 16xScout 40xScout*
+  w28 threat 149 span 31s: 2xBrute 7xBurrower~ 12xDrowner~ 2xGrunt 6xGrunt* 4xRoller* 6xScout 2xScout*
+  w29 threat 170 span 8s: 2xBrute 6xBrute* 4xGrunt 6xGrunt* 4xRoller 2xRoller* 2xScout 10xScout*
+  w30 threat 240 span 14s: 4xBrute* 10xFlyer* 4xGrunt 8xGrunt* 2xRoller 4xRoller* 2xScout 10xScout* 1xWarden
+  w31 threat 154 span 28s: 2xBrute* 48xFlyer* 6xGrunt 4xGrunt* 2xRoller 2xRoller* 6xScout 4xScout*
+  w32 threat 199 span 36s: 2xBrute 11xBurrower~ 16xDrowner~ 2xGrunt 8xGrunt* 6xRoller* 4xScout 6xScout*
+  w33 threat 245 span 13s: 2xBrute 10xBrute* 4xGrunt 10xGrunt* 4xRoller 4xRoller* 6xScout 10xScout*
+  w34 threat 242 span 16s: 30xGrunt 38xGrunt* 36xScout 36xScout*
+  w35 threat 273 span 39s: 2xBrute 2xBrute* 14xBurrower~ 21xDrowner~ 2xGrunt 10xGrunt* 6xRoller 2xRoller* 2xScout 10xScout*
+  w36 threat 257 span 44s: 2xBrute 2xBrute* 76xFlyer* 4xGrunt 10xGrunt* 2xRoller 6xRoller* 6xScout 8xScout*
+  w37 threat 242 span 16s: 30xGrunt 38xGrunt* 22xScout 50xScout*
+  w38 threat 370 span 45s: 2xBrute 4xBrute* 19xBurrower~ 28xDrowner~ 6xGrunt 10xGrunt* 2xRoller 8xRoller* 6xScout 10xScout*
+  w39 threat 409 span 22s: 8xBrute 12xBrute* 12xGrunt 11xGrunt* 4xRoller 10xRoller* 12xScout 12xScout*
+  w40 threat 457 span 25s: 6xBrute 2xBrute* 27xFlyer* 12xGrunt 11xGrunt* 1xHiveQueen 4xRoller 10xRoller* 8xScout 14xScout*

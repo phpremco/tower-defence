@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
+  m_Name: ElementStorm
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
+  _displayName: ElementStorm
+  _kind: 3
+  _interval: 7
+  _firstDelay: 4
+  _damage: 12
+  _radius: 1
+  _sweepSeconds: 1
+  _range: 7
+  _minion: {fileID: 0}
+  _minionCount: 1
+  _targetCount: 5
+  _speedFactor: 1.5
+  _triggerFraction: 0.25
+  _color: {r: 0.6, g: 1, b: 0.4, a: 1}

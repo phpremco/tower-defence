@@ -13,40 +13,33 @@ MonoBehaviour:
   m_Name: Landing_Psycho_3
   m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
   _startDelay: 8
+  _spawnJitter: 0.45
   _groups:
-  - Enemy: {fileID: 11400000, guid: d1dcf1cfc59d37c4694d2ed1402cad45, type: 2}
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 1
     PathIndex: 0
-    Interval: 0.4
+    Source: 0
+    Interval: 0.35
     Delay: 0
     Stagger: 0
-  - Enemy: {fileID: 11400000, guid: d1dcf1cfc59d37c4694d2ed1402cad45, type: 2}
-    Count: 1
-    PathIndex: 0
-    Interval: 0.4
-    Delay: 0
-    Stagger: 0.8
-  - Enemy: {fileID: 11400000, guid: d1dcf1cfc59d37c4694d2ed1402cad45, type: 2}
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 2
     PathIndex: 0
-    Interval: 0.4
+    Source: 0
+    Interval: 0.35
     Delay: 0
-    Stagger: 1.6
-  - Enemy: {fileID: 11400000, guid: d1dcf1cfc59d37c4694d2ed1402cad45, type: 2}
-    Count: 4
-    PathIndex: 0
-    Interval: 0.4
-    Delay: 0
-    Stagger: 3.2
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 3
-    PathIndex: 0
-    Interval: 0.6
-    Delay: 4
-    Stagger: 0
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    Stagger: 0.7
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 1
     PathIndex: 0
+    Source: 0
+    Interval: 0.35
+    Delay: 0
+    Stagger: 2.1
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
     Interval: 0.6
-    Delay: 4
-    Stagger: 3.6000001
+    Delay: 2.5
+    Stagger: 0

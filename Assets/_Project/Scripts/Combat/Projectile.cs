@@ -5,7 +5,10 @@ using UnityEngine;
 
 namespace Game.Combat
 {
-    /// <summary>Homing projectile. Deals direct damage, or splash damage when the radius is above zero.</summary>
+    /// <summary>
+    /// Homing projectile. Deals direct damage, or splash damage when the radius is above zero. It knows its style
+    /// and colour only to pass them on to its view and the impact effect; it never looks at them itself.
+    /// </summary>
     public sealed class Projectile : MonoBehaviour
     {
         private const float HitDistance = 0.15f;
@@ -22,9 +25,33 @@ namespace Game.Combat
         private TargetLayers _mask;
         private float _slowFactor = 1f;
         private float _slowSeconds;
+        private float _startDistance;
 
-        /// <summary>Raised when the projectile lands: world position and splash radius (zero for single target).</summary>
-        public event Action<Vector3, float> Impacted;
+        /// <summary>Raised when the projectile leaves the barrel, so the view can dress it.</summary>
+        public event Action<Projectile> Launched;
+
+        /// <summary>Raised when the projectile lands: world position, splash radius (zero for single target) and colour.</summary>
+        public event Action<Vector3, float, Color> Impacted;
+
+        public ProjectileStyle Style { get; private set; }
+
+        public Color Color { get; private set; }
+
+        /// <summary>Where the shot left from.</summary>
+        public Vector3 Origin { get; private set; }
+
+        /// <summary>Where the shot is heading right now.</summary>
+        public Vector3 Destination => _lastTargetPosition;
+
+        /// <summary>How far along the flight the shot is, from zero at the muzzle to one at the target.</summary>
+        public float Progress
+        {
+            get
+            {
+                float remaining = (_lastTargetPosition - transform.position).magnitude;
+                return _startDistance > 0.0001f ? Mathf.Clamp01(1f - remaining / _startDistance) : 1f;
+            }
+        }
 
         public void Launch(
             Vector3 from,
@@ -35,18 +62,16 @@ namespace Game.Combat
             TargetLayers mask,
             TargetRegistry registry,
             Action<Projectile> release,
-            float slowFactor = 1f,
-            float slowSeconds = 0f)
+            float slowFactor,
+            float slowSeconds,
+            ProjectileStyle style,
+            Color color)
         {
             transform.position = from;
-            var trail = GetComponent<TrailRenderer>();
-            if (trail != null)
-            {
-                trail.Clear();
-            }
-
+            Origin = from;
             _target = target;
             _lastTargetPosition = target.Position;
+            _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
             _splashRadius = splashRadius;
@@ -55,6 +80,9 @@ namespace Game.Combat
             _release = release;
             _slowFactor = slowFactor;
             _slowSeconds = slowSeconds;
+            Style = style;
+            Color = color;
+            Launched?.Invoke(this);
         }
 
         private void Update()
@@ -93,11 +121,9 @@ namespace Game.Combat
                 _target.ApplySlow(_slowFactor, _slowSeconds);
             }
 
-            Impacted?.Invoke(_lastTargetPosition, _splashRadius);
+            Impacted?.Invoke(_lastTargetPosition, _splashRadius, Color);
             _target = null;
             _release(this);
         }
     }
 }
-
-

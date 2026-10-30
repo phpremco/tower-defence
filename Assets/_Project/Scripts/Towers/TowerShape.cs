@@ -1,6 +1,6 @@
 namespace Game.Towers
 {
-    /// <summary>Which procedural model a tower wears. None keeps whatever imported model or placeholder it has. PulseRifle keeps the imported gun and adds upgrade parts to it.</summary>
+    /// <summary>Which procedural model a tower wears. None keeps whatever imported model or placeholder it has. GateGun is the small turret a gate grows with its gun upgrades.</summary>
     public enum TowerShape
     {
         None = 0,
@@ -15,5 +15,6 @@ namespace Game.Towers
         StormRifle = 9,
         CryoBeam = 10,
         PulseRifle = 11,
+        GateGun = 12,
     }
 }

@@ -26,6 +26,9 @@ namespace Game.UI
         private const float StarDensity = 0.004f;
         private const int MinTextSize = 16;
         private const float TextPadding = 18f;
+        private const float SliderTrackHeight = 22f;
+        private const float SliderTrackGap = 8f;
+        private const float SliderHandleSize = 40f;
         private static readonly Vector2 OutlineDistance = new Vector2(2f, -2f);
 
         private static Texture2D _starTexture;
@@ -69,7 +72,7 @@ namespace Game.UI
 
         public static void EnsureEventSystem()
         {
-            if (Object.FindFirstObjectByType<EventSystem>() != null)
+            if (Object.FindAnyObjectByType<EventSystem>() != null)
             {
                 return;
             }
@@ -234,11 +237,11 @@ namespace Game.UI
             button.GetComponentInChildren<Text>().text = label;
         }
 
-        public static void Select(Button button)
+        public static void Select(Selectable selectable)
         {
-            if (EventSystem.current != null && button != null)
+            if (EventSystem.current != null && selectable != null)
             {
-                EventSystem.current.SetSelectedGameObject(button.gameObject);
+                EventSystem.current.SetSelectedGameObject(selectable.gameObject);
             }
         }
 
@@ -268,6 +271,65 @@ namespace Game.UI
             image.texture = _starTexture;
             image.raycastTarget = false;
             Stretch(image.rectTransform);
+        }
+
+        /// <summary>
+        /// A labelled slider from 0 to 1 that the gamepad steers with left and right while it is selected: the label
+        /// above a dark track with a coloured fill and a square handle that lights up like a button.
+        /// </summary>
+        public static Slider CreateSlider(RectTransform parent, string label, float value, UnityEngine.Events.UnityAction<float> onChanged)
+        {
+            var go = new GameObject("Slider", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var element = go.AddComponent<LayoutElement>();
+            element.preferredHeight = ButtonHeight;
+            element.preferredWidth = ButtonWidth;
+            var rect = go.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(ButtonWidth, ButtonHeight);
+
+            Text text = CreateText(rect, label, BodySize, TextAnchor.UpperLeft);
+            Stretch(text.rectTransform);
+            text.rectTransform.offsetMin = new Vector2(TextPadding, SliderTrackHeight + SliderTrackGap);
+            text.rectTransform.offsetMax = new Vector2(-TextPadding, 0f);
+
+            var track = new GameObject("Track", typeof(RectTransform)).AddComponent<Image>();
+            track.transform.SetParent(rect, false);
+            StyleSliced(track, Skin != null ? Skin.BarBack : null);
+            RectTransform trackRect = track.rectTransform;
+            trackRect.anchorMin = Vector2.zero;
+            trackRect.anchorMax = new Vector2(1f, 0f);
+            trackRect.pivot = new Vector2(0.5f, 0f);
+            trackRect.offsetMin = new Vector2(TextPadding, 0f);
+            trackRect.offsetMax = new Vector2(-TextPadding, SliderTrackHeight);
+
+            var fill = new GameObject("Fill", typeof(RectTransform)).AddComponent<Image>();
+            fill.transform.SetParent(trackRect, false);
+            StyleSliced(fill, Skin != null ? Skin.BarBlue : null);
+            fill.raycastTarget = false;
+            Stretch(fill.rectTransform);
+
+            // The handle slides inside a strip inset by half its width, so it never hangs over the track's ends.
+            var handleArea = new GameObject("HandleArea", typeof(RectTransform)).GetComponent<RectTransform>();
+            handleArea.SetParent(trackRect, false);
+            Stretch(handleArea);
+            handleArea.offsetMin = new Vector2(SliderHandleSize * 0.5f, 0f);
+            handleArea.offsetMax = new Vector2(-SliderHandleSize * 0.5f, 0f);
+            var handle = new GameObject("Handle", typeof(RectTransform)).AddComponent<Image>();
+            handle.transform.SetParent(handleArea, false);
+            StyleSliced(handle, Skin != null ? Skin.ButtonSquare : null);
+            handle.rectTransform.sizeDelta = new Vector2(SliderHandleSize, SliderHandleSize);
+
+            var slider = go.AddComponent<Slider>();
+            slider.fillRect = fill.rectTransform;
+            slider.handleRect = handle.rectTransform;
+            slider.targetGraphic = handle;
+            slider.colors = ButtonColors();
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = 0f;
+            slider.maxValue = 1f;
+            slider.value = value;
+            slider.onValueChanged.AddListener(onChanged);
+            return slider;
         }
 
         private static ColorBlock ButtonColors()

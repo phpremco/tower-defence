@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ea7f8addd7dc8148b377dbf2e600ac6, type: 3}
+  m_Name: Story
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.StoryDefinition
+  _introBeats:
+  - Text: Earth is running dry. Eleven light-years out, the survey ships found a world with everything we need.
+    Scene: 0
+    Seconds: 6
+  - Text: Metal in the crust, water in the valleys, energy in the lava fields. Nobody asked what else was down there.
+    Scene: 1
+    Seconds: 7
+  - Text: The planet is alive. Every valley, every cave, every nest holds something, and all of it has noticed us.
+    Scene: 2
+    Seconds: 7
+  - Text: We have landed. Hold the ground, take it one region at a time, and find out what this world is hiding.
+    Scene: 3
+    Seconds: 7

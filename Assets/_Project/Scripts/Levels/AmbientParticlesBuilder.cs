@@ -17,9 +17,9 @@ namespace Game.Levels
         private const float Alpha = 0.8f;
         private const int MaxParticles = 400;
 
-        public static void Build(LevelDefinition level, VisualTheme theme, Transform parent)
+        public static void Build(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale = 1f)
         {
-            if (theme.AmbientRate <= 0f)
+            if (theme.AmbientRate <= 0f || particleScale <= 0f)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace Game.Levels
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
             var emission = system.emission;
-            emission.rateOverTime = theme.AmbientRate;
+            emission.rateOverTime = theme.AmbientRate * particleScale;
 
             Vector2 size = level.WorldSize;
             float margin = MarginCells * level.CellSize;

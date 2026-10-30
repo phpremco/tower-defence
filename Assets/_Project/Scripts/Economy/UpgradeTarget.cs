@@ -11,8 +11,6 @@
         BlockadeHealth,
         HeroDamage,
         HeroHealth,
-        RepairDrones,
-        CollectorDrones,
         DroneSpeed,
     }
 }

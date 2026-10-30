@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
-using Game.Drones;
 using Game.Economy;
 using Game.Levels;
 using Game.PathObjects;
@@ -212,20 +211,6 @@ namespace Game.Tests
 
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(definition);
-        }
-
-        [Test]
-        public void Pickups_AreCollectedOnceAndByPosition()
-        {
-            var go = new GameObject("Pickups");
-            var field = go.AddComponent<PickupField>();
-            field.Drop(new Vector3(3f, 0f, 2f), 7);
-
-            Assert.IsTrue(field.TryFindNearest(Vector3.zero, out Vector3 position));
-            Assert.AreEqual(7, field.Collect(position));
-            Assert.AreEqual(0, field.Collect(position));
-
-            Object.DestroyImmediate(go);
         }
 
         [Test]

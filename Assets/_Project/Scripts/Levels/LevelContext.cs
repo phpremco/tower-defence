@@ -3,6 +3,7 @@ using Game.Combat;
 using Game.Core;
 using Game.Drones;
 using Game.Economy;
+using Game.Enemies;
 using Game.PathObjects;
 using Game.Hero;
 using Game.Towers;
@@ -78,6 +79,9 @@ namespace Game.Levels
 
         public bool Paused { get; set; }
 
+        /// <summary>True while the level waits for the player to read the briefing and deploy.</summary>
+        public bool BriefingPending { get; set; }
+
         public TowerDefinition SelectedTower { get; set; }
 
         public PlacementMode Mode { get; set; }
@@ -119,8 +123,54 @@ namespace Game.Levels
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
 
-        /// <summary>Energy that gathers over time and pays for drones.</summary>
-        public EnergyPool Energy { get; set; }
+        /// <summary>Raised with the enemy that was just defeated, while its position and definition are still valid.</summary>
+        public GameEvent<Enemy> EnemyKilled { get; } = new GameEvent<Enemy>();
+
+        /// <summary>Raised with every enemy as it enters the field.</summary>
+        public GameEvent<Enemy> EnemySpawned { get; } = new GameEvent<Enemy>();
+
+        /// <summary>Raised with the place an enemy hit a tower, blockade or the base.</summary>
+        public GameEvent<Vector3> StructureHit { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised with the index of a mining node once the drones have emptied it.</summary>
+        public GameEvent<int> MineDepleted { get; } = new GameEvent<int>();
+
+        /// <summary>Raised with the position of a tower or gate that has just been destroyed.</summary>
+        public GameEvent<Vector3> StructureWrecked { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised when a wave begins spawning.</summary>
+        public GameEvent WaveStarted { get; } = new GameEvent();
+
+        /// <summary>True while the wave that started last carries a boss.</summary>
+        public bool BossWave { get; set; }
+
+        /// <summary>Raised when a wave with a boss in it begins, before the boss itself appears.</summary>
+        public GameEvent BossWaveStarted { get; } = new GameEvent();
+
+        /// <summary>How many bosses are on the field right now.</summary>
+        public int BossesAlive { get; set; }
+
+        /// <summary>Raised with the centre of a boss shockwave, for the camera and audio.</summary>
+        public GameEvent<Vector3> BossPulsed { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised when a boss laser switches on (true) or off (false).</summary>
+        public GameEvent<bool> BossLaserChanged { get; } = new GameEvent<bool>();
+
+        /// <summary>Raised with the boss position when it releases minions.</summary>
+        public GameEvent<Vector3> BossMinionsReleased { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised with the launch point whenever a boss hurls a volley of bolts.</summary>
+        public GameEvent<Vector3> BossVolleyed { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised with the boss position whenever it rallies the field.</summary>
+        public GameEvent<Vector3> BossRallied { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Confirmations of the player's actions on the field, for audio and effects.</summary>
+        public GameEvent TowerBuilt { get; } = new GameEvent();
+        public GameEvent TowerUpgraded { get; } = new GameEvent();
+        public GameEvent TowerRepaired { get; } = new GameEvent();
+        public GameEvent TowerSold { get; } = new GameEvent();
+        public GameEvent PathObjectPlaced { get; } = new GameEvent();
 
         /// <summary>The HUD asks for a drone of the given type; the drone controller buys it if energy and room allow.</summary>
         public GameEvent<DroneDefinition> DroneRequested { get; } = new GameEvent<DroneDefinition>();
@@ -146,9 +196,6 @@ namespace Game.Levels
         /// <summary>Asks to combine the selected placed tower with its neighbour.</summary>
         public GameEvent CombineRequested { get; } = new GameEvent();
 
-        /// <summary>Loot left by defeated enemies, for collector drones. Set once the level is built.</summary>
-        public PickupField Pickups { get; set; }
-
         /// <summary>Asks for the hero's emergency repair, which costs money.</summary>
         public GameEvent HeroRepairRequested { get; } = new GameEvent();
 
@@ -157,6 +204,9 @@ namespace Game.Levels
 
         /// <summary>The post whose spot the player clicked, or -1. Opens the hero panel or the "move here" icon.</summary>
         public int HeroMenuPost { get; set; } = -1;
+
+        /// <summary>True while the base menu (energy and drones) is open; the placement controller opens and closes it.</summary>
+        public bool BaseMenuOpen { get; set; }
 
         public PlayerModifiers ModifiersFor(TowerDefinition tower)
         {
@@ -177,24 +227,43 @@ namespace Game.Levels
         }
 
         /// <summary>Selects a tower to build. Ignored for towers that are not unlocked.</summary>
+        /// <summary>Raised when the player picks something to build, so the preview appears at once.</summary>
+        public GameEvent SelectionChanged { get; } = new GameEvent();
+
+        // Picking a card starts placing right away: the preview follows the cursor until it is confirmed or cancelled.
         public void SelectTower(TowerDefinition tower)
         {
-            if (tower != null && IsUnlocked(tower) && (tower != SelectedTower || SelectedPathObject != null))
+            if (tower == null || !IsUnlocked(tower))
             {
-                SelectedTower = tower;
-                SelectedPathObject = null;
-                Changed.Raise();
+                return;
             }
+
+            SelectedTower = tower;
+            SelectedPathObject = null;
+            StartPlacing();
         }
 
         /// <summary>Selects a path object to place instead of a tower.</summary>
         public void SelectPathObject(PathObjectDefinition definition)
         {
-            if (definition != null && definition != SelectedPathObject)
+            if (definition == null)
             {
-                SelectedPathObject = definition;
-                Changed.Raise();
+                return;
             }
+
+            SelectedPathObject = definition;
+            StartPlacing();
+        }
+
+        private void StartPlacing()
+        {
+            if (Mode == PlacementMode.Browsing)
+            {
+                Mode = PlacementMode.Placing;
+            }
+
+            SelectionChanged.Raise();
+            Changed.Raise();
         }
     }
 }

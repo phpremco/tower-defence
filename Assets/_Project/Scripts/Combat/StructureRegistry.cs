@@ -81,6 +81,74 @@ namespace Game.Combat
             return best;
         }
 
+        /// <summary>Damages every living structure within a radius and returns how many were hit.</summary>
+        public int DamageInRadius(Vector3 origin, float radius, float damage)
+        {
+            int hits = 0;
+            float radiusSqr = radius * radius;
+            for (int i = _structures.Count - 1; i >= 0; i--)
+            {
+                IStructure candidate = _structures[i];
+                if (!candidate.IsAlive)
+                {
+                    continue;
+                }
+
+                float dx = candidate.Position.x - origin.x;
+                float dz = candidate.Position.z - origin.z;
+                if (dx * dx + dz * dz <= radiusSqr)
+                {
+                    candidate.TakeDamage(damage);
+                    hits++;
+                }
+            }
+
+            return hits;
+        }
+
+        /// <summary>Fills results with the nearest living structures within range, closest first, at most count of them.</summary>
+        public void FindNearest(Vector3 origin, float range, int count, List<IStructure> results)
+        {
+            results.Clear();
+            float rangeSqr = range * range;
+            for (int i = 0; i < _structures.Count; i++)
+            {
+                IStructure candidate = _structures[i];
+                if (!candidate.IsAlive)
+                {
+                    continue;
+                }
+
+                float dx = candidate.Position.x - origin.x;
+                float dz = candidate.Position.z - origin.z;
+                float sqr = dx * dx + dz * dz;
+                if (sqr > rangeSqr)
+                {
+                    continue;
+                }
+
+                // Insertion keeps the short list sorted; a volley never asks for more than a handful.
+                int at = results.Count;
+                while (at > 0 && DistanceSqr(results[at - 1], origin) > sqr)
+                {
+                    at--;
+                }
+
+                results.Insert(at, candidate);
+                if (results.Count > count)
+                {
+                    results.RemoveAt(results.Count - 1);
+                }
+            }
+        }
+
+        private static float DistanceSqr(IStructure structure, Vector3 origin)
+        {
+            float dx = structure.Position.x - origin.x;
+            float dz = structure.Position.z - origin.z;
+            return dx * dx + dz * dz;
+        }
+
         /// <summary>Returns the nearest living structure within range, or null.</summary>
         public IStructure FindNearest(Vector3 origin, float range)
         {

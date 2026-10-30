@@ -22,8 +22,12 @@ namespace Game.Levels
     {
         [SerializeField] private List<MapNode> _nodes = new List<MapNode>();
         [SerializeField] private List<DifficultyProfile> _difficulties = new List<DifficultyProfile>();
+        [SerializeField] private StoryDefinition _story;
 
         public IReadOnlyList<MapNode> Nodes => _nodes;
         public IReadOnlyList<DifficultyProfile> Difficulties => _difficulties;
+
+        /// <summary>The intro and the rest of the story told around the campaign; may be null while there is none.</summary>
+        public StoryDefinition Story => _story;
     }
 }

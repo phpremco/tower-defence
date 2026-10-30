@@ -20,7 +20,7 @@ namespace Game.UI
         private const float Margin = 60f;
         private const float TopOffset = 170f;
         private const float ReferenceHeight = 1080f;
-        private const float BackButtonClearance = 140f;
+        private const float BackButtonClearance = 210f;
         private const float ScrollSensitivity = 40f;
         private const float ListWidth = 420f;
         private const float ListRowHeight = 100f;
@@ -399,11 +399,14 @@ namespace Game.UI
             if (_preview != null)
             {
                 // The hero has no imported model yet, so its group shows an empty frame instead of the base.
-                GameObject model = selected.Tower != null ? selected.Tower.Model : DescriptionOf(selected.Name) != null ? null : BaseModel();
-                bool tinted = selected.Tower != null && !selected.Tower.KeepModelColours;
-                Color tint = tinted ? Color.Lerp(Color.white, selected.Tower.Color, 0.55f) : Color.white;
-                float scale = selected.Tower != null ? selected.Tower.ModelScale : 1f;
-                _preview.Show(model, scale, tint);
+                if (selected.Tower != null)
+                {
+                    _preview.ShowTower(selected.Tower, 1.3f);
+                }
+                else
+                {
+                    _preview.Show(DescriptionOf(selected.Name) != null ? null : BaseModel(), 1f, Color.white);
+                }
             }
         }
 

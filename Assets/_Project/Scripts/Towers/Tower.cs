@@ -12,6 +12,8 @@ namespace Game.Towers
     public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource
     {
         private const float SupportLevelGrowth = 0.5f;
+        private const float MuzzleHeight = 1f;
+        private const float MuzzleForward = 0.55f;
         private const float SupportRefreshSeconds = 0.25f;
 
         private TowerDefinition _definition;
@@ -74,6 +76,12 @@ namespace Game.Towers
 
         public int SellValue => Mathf.FloorToInt(TotalSpent * (IsWrecked ? _definition.ScrapFraction : _definition.SellRefundFraction));
 
+        /// <summary>
+        /// How wide the structure is across the road, in world units. A gate spans the whole corridor; the level
+        /// sets this before the tower is initialised, so the view can build the right width.
+        /// </summary>
+        public float Span { get; set; } = 1f;
+
         /// <summary>Blockades are part of the level: they cannot be sold, only repaired or rebuilt.</summary>
         public bool CanBeSold => !_definition.BlocksGroundEnemies;
 
@@ -102,6 +110,14 @@ namespace Game.Towers
 
         /// <summary>Raised with the world position of the target whenever the tower fires.</summary>
         public event Action<Vector3> Fired;
+
+        /// <summary>Where shots leave, set by the view to the mouth of its barrel; without it the tower guesses.</summary>
+        public Func<Vector3> MuzzleProvider { get; set; }
+
+        /// <summary>Raised once when the tower goes from standing to wrecked.</summary>
+        public event Action<Tower> Wrecked;
+
+        private bool _wasWrecked;
 
         public void Initialize(TowerDefinition definition, TargetRegistry registry, ProjectilePool projectiles, PlayerModifiers modifiers)
         {
@@ -191,7 +207,13 @@ namespace Game.Towers
             }
 
             float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
-            _projectiles.Fire(transform.position + Vector3.up, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, _definition.SlowFactor, _definition.SlowSeconds);
+            // The shot leaves from the mouth of the barrel: a little above the base and towards the target.
+            Vector3 towards = target.Position - transform.position;
+            towards.y = 0f;
+            Vector3 muzzle = MuzzleProvider != null
+                ? MuzzleProvider()
+                : transform.position + Vector3.up * MuzzleHeight + (towards.sqrMagnitude > 0.0001f ? towards.normalized * MuzzleForward : Vector3.zero);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, _definition.SlowFactor, _definition.SlowSeconds, _definition.ProjectileStyle, _definition.Color);
             Fired?.Invoke(target.Position);
             _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power));
         }
@@ -209,6 +231,19 @@ namespace Game.Towers
             _structures.SupportAt(transform.position, out _supportRange, out _supportRate);
         }
 
-        private void OnHealthChanged(float _) => StateChanged?.Invoke(this);
+        private void OnHealthChanged(float _)
+        {
+            if (IsWrecked && !_wasWrecked)
+            {
+                _wasWrecked = true;
+                Wrecked?.Invoke(this);
+            }
+            else if (!IsWrecked)
+            {
+                _wasWrecked = false;
+            }
+
+            StateChanged?.Invoke(this);
+        }
     }
 }

@@ -42,10 +42,12 @@ MonoBehaviour:
   _waterColor: {r: 0.07, g: 0.38, b: 0.62, a: 1}
   _lavaColor: {r: 1, g: 0.4, b: 0.1, a: 1}
   _sandColor: {r: 0.5, g: 0.5, b: 0.56, a: 1}
+  _plantColor: {r: 0.36, g: 0.55, b: 0.62, a: 1}
   _propKinds: 000000000100000002000000090000000000000002000000i
   _veinStrength: 0.4
   _ambientRate: 9
   _ambientRise: 0.1
+  _ambience: 1
   _lightColor: {r: 0.75, g: 0.85, b: 1, a: 1}
   _lightIntensity: 1.1
   _fogColor: {r: 0.03, g: 0.04, b: 0.08, a: 1}

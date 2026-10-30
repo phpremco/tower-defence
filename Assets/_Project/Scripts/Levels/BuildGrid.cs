@@ -10,21 +10,25 @@ namespace Game.Levels
     public sealed class BuildGrid
     {
         private readonly GridMap _grid;
-        private readonly HashSet<Vector2Int> _road;
-        private readonly HashSet<Vector2Int> _blocked;
+                private readonly HashSet<Vector2Int> _blocked;
         private readonly HashSet<Vector2Int> _occupied = new HashSet<Vector2Int>();
         private readonly TerrainMap _terrain;
+        private readonly RoadCorridor _road;
 
         public BuildGrid(LevelDefinition level)
         {
             _grid = level.Grid;
             _terrain = level.Terrain;
-            _road = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
+            _road = level.Road;
             _blocked = new HashSet<Vector2Int>(level.BlockedCells);
             _blocked.UnionWith(level.MineCells);
+            foreach (ElementNest nest in level.Nests)
+            {
+                _blocked.Add(nest.Cell);
+            }
         }
 
-        public bool IsRoad(Vector2Int cell) => _road.Contains(cell);
+        public bool IsRoad(Vector2Int cell) => _road.IsRoad(cell);
 
         public bool IsBlocked(Vector2Int cell) => _blocked.Contains(cell);
 

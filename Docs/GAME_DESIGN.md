@@ -17,14 +17,18 @@ Het genre en het gevoel van Sentinel 4 zijn de inspiratie. Namen, kunst, levels 
 
 ## Verhaal
 
-De mensheid koloniseert een bewoonbare maan, en de bewoners laten dat niet toe. Jij bent commandant van de eerste landingsbasis (werktitel: het jaar 2310, de aarde is uitgeput).
+De aarde raakt uitgeput en de mensheid komt naar deze planeet voor haar grondstoffen: metaal, water en energie. Wat niemand wist: de wereld zit vol leven, en dat leven vecht terug om zijn planeet te behouden. Jij bent commandant van de eerste landingsbasis.
 
 - **Aanleiding:** het kolonieschip landt. De bewoners, een insectachtig ras dat de planeet als één levend netwerk beschouwt, zien de kolonisten als een besmetting en vallen de basis aan.
 - **Verloop:** in elk level breid je uit naar een nieuw gebied, bouw je een buitenpost en vind je technologie, vaak in de resten van een oudere beschaving. Na het level ontvang je die technologie, of intel van de thuisplaneet waar nieuwe wapens zijn ontwikkeld, als nieuw wapen.
 - **Escalatie:** de golven worden zwaarder naarmate je dieper in hun gebied doordringt, met een baswave in sommige levels.
 - **Einde van de eerste wereld:** in het laatste level blijkt dat de aliens iets beschermen dat onder de planeet ligt. Dat is de eindbaas en de opening voor een volgende wereld.
 
-De verhaaltekst blijft kort: een intro en een korte scène per level, met een hero die de commandant vertegenwoordigt.
+De verhaaltekst blijft kort en staat in data:
+
+- **Intro (eerste keer starten):** een korte cutscene over sterren, de naderende planeet, de oplichtende gebieden en de landing (`StoryDefinition`, te bewerken in `Data/Story/Story.asset`). Elke knop slaat over.
+- **Briefing bij levelstart:** een paar regels per level (`LevelDefinition.Briefing`) op een paneel, het level wacht tot je op Deploy drukt.
+- **De kaart** blijft rustig: een gebied kiezen zoomt in op de planeet en toont pas dan de opties, zodat daar later extra's bij kunnen.
 
 ## Stijl en sfeer
 
@@ -37,6 +41,7 @@ De gameplay is 2D (een vlak, vaste paden), maar het beeld oogt 3D: simpele 3D-vo
 - **Per level een eigen palet en gevaar:** bijvoorbeeld landingszone, bioluminescent bos, grotten met lava, ruïne en het nest.
 - **Interface:** wave en score bovenin, snelheid en pauze rechtsboven, torenbalk onderin met prijzen, vaardigheden links en rechts, geld linksonder. Sterren op torens tonen het upgradeniveau.
 - **Per platform instelbaar:** bloom, mist en deeltjes hebben een zware en een lichte stand (pc en Switch).
+- **Geluid:** vier volumegroepen (master, muziek, effecten, omgeving) in de opties en het pauzemenu. De muziek is een lichte rockloop die bij een baaswave overgaat in een zwaardere, snellere loop. Geluidsspam wordt beperkt met een stemmenbudget per soort geluid, bundelen van salvo's, ducking onder belangrijke geluiden, een loop voor continu-wapens en demping bij uitgezoomde camera.
 
 ## Gameplay-loop en moeilijkheden
 
@@ -98,7 +103,7 @@ Drones haal je uit de basis met een aparte, speciale valuta (power currency). Je
 | --- | --- |
 | Reparatiedrone | Repareert beschadigde torens, blokkades en de basis |
 | Verzameldrone | Verzamelt geld en scrap in het level |
-| Gevechtsdrone | Valt vijanden aan of leidt ze af (later) |
+| Aanvalsdrone | Jaagt op de vijand die het verst is en beschiet hem vanuit de lucht |
 
 - **Zichtbaar:** drones vliegen over het veld, met een lichtbundel zodat je ziet waar ze werken.
 - **Aansturen:** je kiest een drone en geeft hem een taak of een doel. Daarna werkt hij zelf.
@@ -146,11 +151,21 @@ Er zijn land- en luchtvijanden. Landvijanden volgen het pad, luchtvijanden vlieg
 | Healer | Land | Herstelt vijanden in de buurt |
 | Pantser | Land | Immuun of bestand tegen bepaalde schade |
 | Sapper | Land | Valt torens, blokkades en padobjecten aan in plaats van door te lopen |
-| Vlieger | Lucht | Snel, weinig HP, valt torens en drones aan |
+| Vlieger | Lucht | Snel, weinig HP, valt torens en drones aan en duikt onderweg op een poort |
+| Roller | Land | Gordeldierachtige die lopen en rollen afwisselt; rollend is hij een stuk sneller (vanaf level 2) |
+| Drowner | Land | Klimt uit water en loopt naar de dichtstbijzijnde weg |
+| Burrower | Land | Graaft zich uit drijfzand omhoog en loopt naar de dichtstbijzijnde weg |
+| Cinder | Land | Magmakever uit de lava, laat vonken achter en bijt torens |
 | Luchtzwerm | Lucht | Veel kleine vliegers tegelijk |
 | Bommenwerper | Lucht | Traag, veel HP, bombardeert torens en blokkades |
 
+**Wavestructuur.** Elk level heeft een eigen aantal waves (nu 20 tot 40, per level in te stellen) uit een eigen script in de generator: welke soorten meedoen en vanaf welke wave, een ritme van wavetypes (gewoon, stormloop, zwaar, hinderlaag uit de poelen), welke waves luchtaanvallen zijn, en per level een eigen reeks baaswaves (bijvoorbeeld 10 en 20, of 10, 20, 30 en 40). Een dreigingsbudget groeit per wave, en later in het level krijgen zwaardere soorten meer gewicht. De moeilijkheid schaalt aantallen, HP en tempo, en voegt luchtwaves en escortes toe: de landingszone heeft op easy geen luchteenheden, op psycho drie luchtwaves. Vijanden lopen traag, zodat je tussen waves kunt bouwen en upgraden.
+
 **Baswaves.** Sommige waves eindigen met een baas: een grote vijand met veel HP, een eigen vaardigheid en een uniek uiterlijk. Elke baas dwingt een andere aanpak af (bijvoorbeeld een pantserbaas die railguns vraagt, of een zwermbaas die splashschade vraagt). Bazen geven extra geld en power currency. Het laatste level heeft de eindbaas van de eerste wereld.
+
+**Baaskrachten en opkomst.** Elke baas draagt een of meer krachten uit data (`BossAbilityDefinition`): een **puls** die alle torens, poorten en drones in een straal beschadigt, een langzaam zwaaiende **laser** die de torens raakt die hij kruist, of het **broeden** van kleine wezens die de weg van de baas vervolgen. Bazen komen aan het eind van een level of halverwege een wave. Per level staat in data waar ze opkomen: door de poort, uit een poel (water, zand of lava) of door de grond heen, zodat elk level anders aanvoelt. Een baaswave begint met een alarm, een aardbevingsgerommel en zwaardere muziek.
+
+**Poelen als spawnpunt.** Water, drijfzand en lava zijn niet alleen decor: een wavegroep kan er wezens uit laten opkomen. Die lopen naar de dichtstbijzijnde weg en volgen die naar de basis, dus ze kunnen bij poort twee of drie uitkomen in plaats van bij de eerste.
 
 ## De vijf levels van de eerste wereld
 
@@ -200,8 +215,9 @@ Geen menu mag alleen met hover of klikken te bedienen zijn, en op consoles is er
 
 Eén complete ronde loopt van het hoofdmenu tot het upgradescherm en terug naar de kaart, en elk scherm is met een controller te bedienen.
 
+0. Intro (alleen de eerste keer)
 1. Hoofdmenu
-2. Levelkiezer (kaart van de planeet)
+2. Gebiedskiezer (de planeet)
 3. Level
 4. Resultaatscherm
 5. Upgradescherm
@@ -209,8 +225,9 @@ Eén complete ronde loopt van het hoofdmenu tot het upgradescherm en terug naar 
 
 | Scherm | Toont | Acties |
 | --- | --- | --- |
-| Hoofdmenu | Titel, Start en Opties (Afsluiten alleen op pc) | Start, opties |
-| Levelkiezer | Kaart met de vijf levels (vergrendeld, open, voltooid), moeilijkheidskeuze en per level de behaalde moeilijkheden | Level en moeilijkheid kiezen, naar het upgradescherm |
+| Hoofdmenu | Titel, Start en Opties (Afsluiten alleen op pc) voor een levend diorama: het nest met zijn bewoners, lava, zand en water, met eigen muziek | Start, opties |
+| Gebiedskiezer | Een planeet met per level een gekleurd gebied en een baken (vergrendeld, open, voltooid). Een baken kiezen zoomt in en toont het regiopaneel: briefing, de vier moeilijkheden met vinkjes en sterren | Gebied en moeilijkheid kiezen, naar het upgradescherm, B zoomt uit |
+| Briefing | Voor de eerste wave: regio, levelnaam en het stukje verhaal; de tijd staat stil | Deploy |
 | Level (HUD) | Wave en score, snelheid en pauze, torenbalk met prijzen en padobjecten, hero-vaardigheden, geld | Bouwen, upgraden, repareren, scrap ophalen, pauzeren |
 | Pauzemenu | Hervatten, opnieuw beginnen, terug naar de kaart | Kiezen |
 | Resultaatscherm | Beloning: geld, onderzoekspunten, power currency en het nieuwe wapen met zijn bron (gestolen tech of intel van de thuisplaneet) | Doorgaan, opnieuw spelen, naar het upgradescherm |
@@ -250,7 +267,7 @@ Volgende stap: de mappenstructuur van het Unity-project en een `CLAUDE.md` met d
 
 - [ ] Naam van het spel (werktitel nu: Tower Defence)
 - [ ] Hero: loopt hij zelf rond en vecht hij mee, of plaats je hem bij een blokkade en gebruik je vaardigheden?
-- [ ] Drones: alleen taken geven, of ook handmatig besturen?
+- [x] Drones: één vaste drone per taak (reparatie, oogst, aanval), ze werken zelfstandig en worden in het level met geld gekocht; geen gratis drones bij de start, alleen hun snelheid is een permanente upgrade. Mijnknopen raken op (vaste voorraad per knoop), zodat oogstdrones een begrensd bedrag opleveren (besloten 2026-10-29/30).
 - [ ] Kapotte torens: werken ze met minder kracht tot ze gerepareerd zijn, of helemaal niet meer?
 - [ ] Padobjecten: hebben ze beperkt gebruik of een cooldown, en zijn ze upgradebaar?
 - [ ] Welk wapen komt uit welk level, en is de bron gestolen tech of intel van de thuisplaneet?

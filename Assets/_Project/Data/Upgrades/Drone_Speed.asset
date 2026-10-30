@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Drone_Speed
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
   _displayName: Drone speed +25% per level
-  _target: 10
+  _target: 8
   _towerId: 
   _groupName: Drones
   _costs: 04000000080000000c000000i
   _currency: 1
-  _groupDescription: 'Drones work on their own: repair damaged defences and collect loot. Paid in power currency.'
+  _groupDescription: 'Drones are bought from the base with money and work on their own: repair, harvest and attack. Their speed costs power.'
   _bonusPerLevel: 0.25

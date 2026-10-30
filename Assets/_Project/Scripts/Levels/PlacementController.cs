@@ -19,7 +19,22 @@ namespace Game.Levels
         private const float PointerMovedPixels = 1f;
         private const float PointerActiveSeconds = 2f;
         private const float MarkerHeight = 0.06f;
-        private const float MarkerEmission = 2f;
+        private const float MarkerCellFraction = 0.96f;
+
+        // The marker on a build cell is the footprint of a pedestal, standing where the tower would stand.
+        private const float MarkerFootprintCells = 0.7f;
+        // Kept under 0.3, otherwise a shifted pedestal (0.7 cells wide) runs into a tower on the next cell.
+        private const float RoadClearanceCells = 0.15f;
+
+        // A pedestal shifted the full clearance hangs a little into the next cell, so when that cell is water,
+        // a cliff edge, a rock or the edge of the map the tower only moves as far as its own cell allows.
+        private const float FittedClearanceCells = 0.05f;
+        private static readonly Vector2Int[] Neighbours = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        private const float MarkerEmission = 1.6f;
+
+        // The cursor is a soft tint while browsing (a gamepad needs to see where it is) and firmer while placing.
+        private const float BrowsingAlpha = 0.28f;
+        private const float PlacingAlpha = 0.55f;
         private static readonly Color ValidColor = new Color(0.3f, 1f, 0.8f);
         private static readonly Color InvalidColor = new Color(1f, 0.3f, 0.25f);
         private static readonly Color TowerColor = new Color(1f, 0.9f, 0.35f);
@@ -67,7 +82,7 @@ namespace Game.Levels
 
             float size = _map.CellSize;
             GameObject marker = PlaceholderVisuals.CreatePrimitive(
-                PrimitiveType.Cube, ValidColor, parent, Vector3.zero, new Vector3(size * 0.96f, 0.03f, size * 0.96f), MarkerEmission);
+                PrimitiveType.Cube, ValidColor, parent, Vector3.zero, new Vector3(size * MarkerCellFraction, 0.03f, size * MarkerCellFraction), MarkerEmission);
             _marker = marker.transform;
             _markerRenderer = marker.GetComponent<Renderer>();
             _range = RangeIndicator.Create(parent);
@@ -86,6 +101,7 @@ namespace Game.Levels
             _context.RepairRequested.Subscribe(OnRepair);
             _context.SellRequested.Subscribe(OnSell);
             _context.CombineRequested.Subscribe(OnCombine);
+            _context.SelectionChanged.Subscribe(Refresh);
             Refresh();
         }
 
@@ -108,6 +124,7 @@ namespace Game.Levels
                 _context.RepairRequested.Unsubscribe(OnRepair);
                 _context.SellRequested.Unsubscribe(OnSell);
                 _context.CombineRequested.Unsubscribe(OnCombine);
+            _context.SelectionChanged.Unsubscribe(Refresh);
             }
         }
 
@@ -202,6 +219,11 @@ namespace Game.Levels
                 _context.HeroMenuPost = -1;
             }
 
+            if (_context.BaseMenuOpen && !IsBaseCell(_cursor))
+            {
+                _context.BaseMenuOpen = false;
+            }
+
             switch (_context.Mode)
             {
                 case PlacementMode.Browsing:
@@ -234,6 +256,11 @@ namespace Game.Levels
                 _context.HeroMenuPost = HeroPostAt(_cursor);
                 _cellMessage = string.Empty;
             }
+            else if (IsBaseCell(_cursor))
+            {
+                _context.BaseMenuOpen = true;
+                _cellMessage = string.Empty;
+            }
             else if (_context.SelectedPathObject != null && CanPlacePathObject(_context.SelectedPathObject, _cursor))
             {
                 _cellMessage = string.Empty;
@@ -252,13 +279,20 @@ namespace Game.Levels
             Refresh();
         }
 
+        // The base stands at the end of the main road; the last rung of the road is its doorstep and opens its menu.
+        private bool IsBaseCell(Vector2Int cell)
+        {
+            Vector2Int[] main = _context.Level.MainRoad;
+            return main.Length > 0 && _context.Level.Road.RungContains(main[main.Length - 1], cell);
+        }
+
         // The index of the hero post whose standing spot is this cell, or -1.
         private int HeroPostAt(Vector2Int cell)
         {
             Vector2Int[] cells = _context.HeroPostCells;
             for (int i = 0; i < cells.Length; i++)
             {
-                if (cells[i] == cell)
+                if (_context.Level.Road.RungContains(cells[i], cell))
                 {
                     return i;
                 }
@@ -274,9 +308,10 @@ namespace Game.Levels
                 return;
             }
 
-            if (_context.HeroMenuPost >= 0)
+            if (_context.HeroMenuPost >= 0 || _context.BaseMenuOpen)
             {
                 _context.HeroMenuPost = -1;
+                _context.BaseMenuOpen = false;
                 Refresh();
                 return;
             }
@@ -319,23 +354,34 @@ namespace Game.Levels
             _towers[_cursor] = tower;
             _buildGrid.Occupy(_cursor);
             _context.Mode = PlacementMode.Browsing;
+            _context.TowerBuilt.Raise();
             Refresh();
         }
 
         // Blockades are part of the level, so they stand from the start and use the same menu as towers.
         private void SpawnBlockades()
         {
+            RoadCorridor road = _context.Level.Road;
             foreach (BlockadeSpot spot in _context.Level.Blockades)
             {
                 Tower blockade = CreateTower(spot.Blockade, spot.Cell, preview: false);
-                blockade.transform.rotation = Quaternion.LookRotation(RoadDirection.At(_context.Level, spot.Cell));
+                Vector3 along = road.DirectionAt(spot.Cell);
+                blockade.transform.rotation = Quaternion.LookRotation(along);
                 _blockades.Add(blockade);
-                _towers[spot.Cell] = blockade;
-                _buildGrid.Occupy(spot.Cell);
 
-                // The cell in front of the blockade is the hero's place and stays free of anything else.
-                Vector3 along = RoadDirection.At(_context.Level, spot.Cell);
-                _buildGrid.Occupy(spot.Cell - new Vector2Int(Mathf.RoundToInt(along.x), Mathf.RoundToInt(along.z)));
+                // The gate spans the corridor, and the rung in front of it is the hero's place: both stay free of
+                // anything else. Every cell of the gate's rung opens the gate's menu.
+                var stand = spot.Cell - new Vector2Int(Mathf.RoundToInt(along.x), Mathf.RoundToInt(along.z));
+                foreach (Vector2Int cell in road.Rung(spot.Cell))
+                {
+                    _towers[cell] = blockade;
+                    _buildGrid.Occupy(cell);
+                }
+
+                foreach (Vector2Int cell in road.Rung(stand))
+                {
+                    _buildGrid.Occupy(cell);
+                }
             }
         }
 
@@ -347,12 +393,64 @@ namespace Game.Levels
             return world;
         }
 
+        // A tower on a cell beside the road stands back from it, so a shoulder stays open between the walking
+        // lane and the gun; the tower keeps its cell, only its spot inside the cell moves. Gates stay on the road.
+        private Vector3 RoadClearance(Vector2Int cell)
+        {
+            Vector2Int away = Vector2Int.zero;
+            for (int i = 0; i < Neighbours.Length; i++)
+            {
+                if (_buildGrid.IsRoad(cell + Neighbours[i]))
+                {
+                    away -= Neighbours[i];
+                }
+            }
+
+            if (away == Vector2Int.zero)
+            {
+                return Vector3.zero;
+            }
+
+            float clearance = PlainGroundAround(cell, away) ? RoadClearanceCells : FittedClearanceCells;
+            return new Vector3(away.x, 0f, away.y).normalized * (clearance * _map.CellSize);
+        }
+
+        // True when every cell the shifted pedestal could overhang is level ground like the tower's own cell.
+        private bool PlainGroundAround(Vector2Int cell, Vector2Int away)
+        {
+            float height = _terrain.HeightAt(cell);
+            for (int x = Mathf.Min(0, away.x); x <= Mathf.Max(0, away.x); x++)
+            {
+                for (int y = Mathf.Min(0, away.y); y <= Mathf.Max(0, away.y); y++)
+                {
+                    Vector2Int other = cell + new Vector2Int(x, y);
+                    if (!_map.Contains(other) || _terrain.IsLiquid(other) || _buildGrid.IsBlocked(other) || !Mathf.Approximately(_terrain.HeightAt(other), height))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         private Tower CreateTower(TowerDefinition definition, Vector2Int cell, bool preview)
         {
             var go = new GameObject(preview ? "TowerPreview" : $"Tower_{definition.DisplayName}");
             go.transform.SetParent(_parent, false);
-            go.transform.position = CellWorld(cell);
             var tower = go.AddComponent<Tower>();
+            if (definition.BlocksGroundEnemies)
+            {
+                // A gate stands on the centre line and spans the whole corridor.
+                Vector3 centre = _context.Level.Road.CentreOf(cell);
+                go.transform.position = new Vector3(centre.x, CellWorld(cell).y, centre.z);
+                tower.Span = _context.Level.Road.Width * _map.CellSize;
+            }
+            else
+            {
+                go.transform.position = CellWorld(cell) + RoadClearance(cell);
+            }
+
             go.AddComponent<TowerView>();
             tower.Initialize(definition, _context.Targets, _context.Projectiles, _context.ModifiersFor(definition));
             if (preview)
@@ -362,10 +460,13 @@ namespace Game.Levels
             else
             {
                 tower.Register(_context.Structures);
+                tower.Wrecked += OnWrecked;
             }
 
             return tower;
         }
+
+        private void OnWrecked(Tower tower) => _context.StructureWrecked.Raise(tower.Position);
 
         private void OnUpgrade()
         {
@@ -378,6 +479,7 @@ namespace Game.Levels
             if (_context.Wallet.TrySpend(tower.NextUpgradeCost))
             {
                 tower.Upgrade();
+                _context.TowerUpgraded.Raise();
                 Refresh();
             }
         }
@@ -393,6 +495,7 @@ namespace Game.Levels
             if (_context.Wallet.TrySpend(tower.RepairCost))
             {
                 tower.RepairFully();
+                _context.TowerRepaired.Raise();
                 Refresh();
             }
         }
@@ -413,6 +516,7 @@ namespace Game.Levels
             }
 
             _context.Wallet.Add(tower.SellValue);
+            _context.TowerSold.Raise();
             Vector2Int cell = _map.WorldToCell(tower.Position);
             _towers.Remove(cell);
             _buildGrid.Release(cell);
@@ -450,9 +554,8 @@ namespace Game.Levels
         private void Refresh()
         {
             Vector3 world = CellWorld(_cursor);
-            _marker.position = world + Vector3.up * MarkerHeight;
-
             bool hasTower = _towers.TryGetValue(_cursor, out Tower hovered);
+            PlaceMarker(world, hasTower, hovered);
             bool placing = _context.Mode == PlacementMode.Placing;
             TowerDefinition selected = _context.SelectedTower;
             PathObjectDefinition pathObject = _context.SelectedPathObject;
@@ -461,11 +564,14 @@ namespace Game.Levels
             bool valid = !hasTower && cellFree && (pathObject != null || selected != null) && _context.Wallet.CanAfford(price);
 
             _marker.gameObject.SetActive(_context.Mode != PlacementMode.TowerMenu);
-            _markerRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor, MarkerEmission);
+            Color markerColor = hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor;
+            _markerRenderer.sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(markerColor, placing ? PlacingAlpha : BrowsingAlpha, MarkerEmission);
 
             UpdateOffer();
-            UpdateGhost(placing && pathObject == null, selected, world);
-            UpdateRange(placing, pathObject != null ? null : selected, valid, hasTower, hovered, world);
+            // The preview and its range ring stand where the tower itself would stand: shifted away from the road.
+            Vector3 stand = _buildGrid.IsRoad(_cursor) ? world : world + RoadClearance(_cursor);
+            UpdateGhost(placing && pathObject == null, selected, stand);
+            UpdateRange(placing, pathObject != null ? null : selected, valid, hasTower, hovered, stand);
             if (placing && pathObject != null)
             {
                 _range.Show(world, pathObject.Radius, valid ? ValidColor : InvalidColor);
@@ -473,6 +579,17 @@ namespace Game.Levels
 
             _context.Status = placing ? (pathObject != null ? PathObjectStatus(pathObject, valid) : PlacingStatus(selected, valid)) : _cellMessage;
             _context.Changed.Raise();
+        }
+
+        // On a build cell the marker shows exactly where the tower will stand (shifted away from the road, like the
+        // tower itself); on the road it covers the whole cell, which is what a path object takes.
+        private void PlaceMarker(Vector3 world, bool hasTower, Tower hovered)
+        {
+            bool wholeCell = _buildGrid.IsRoad(_cursor);
+            Vector3 at = wholeCell ? world : hasTower ? hovered.Position : world + RoadClearance(_cursor);
+            float size = _map.CellSize * (wholeCell ? MarkerCellFraction : MarkerFootprintCells);
+            _marker.position = new Vector3(at.x, world.y + MarkerHeight, at.z);
+            _marker.localScale = new Vector3(size, _marker.localScale.y, size);
         }
 
         private void UpdateGhost(bool placing, TowerDefinition selected, Vector3 world)
@@ -554,14 +671,9 @@ namespace Game.Levels
 
             Vector3[] road = new Vector3[0];
             int next = 0;
-            if (definition.Kind == PathObjectKind.Roller && RoadLocator.TryLocate(_context.Level, _cursor, out Vector2Int[] waypoints, out int nextIndex))
+            if (definition.Kind == PathObjectKind.Roller && _context.Level.Road.TryLocate(_cursor, out Vector3[] route, out int nextIndex))
             {
-                road = new Vector3[waypoints.Length];
-                for (int i = 0; i < waypoints.Length; i++)
-                {
-                    road[i] = _map.CellToWorld(waypoints[i]);
-                }
-
+                road = route;
                 next = nextIndex;
             }
 
@@ -579,6 +691,7 @@ namespace Game.Levels
             };
 
             _context.Mode = PlacementMode.Browsing;
+            _context.PathObjectPlaced.Raise();
             Refresh();
         }
 
@@ -644,6 +757,7 @@ namespace Game.Levels
             Tower hybrid = CreateTower(recipe.Result, cell, preview: false);
             hybrid.InheritedValue = inherited;
             _towers[cell] = hybrid;
+            _context.TowerUpgraded.Raise();
             CloseMenu();
         }
 

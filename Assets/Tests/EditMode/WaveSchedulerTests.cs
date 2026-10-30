@@ -59,6 +59,24 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Advance_WithJitter_SpawnsEveryoneNearItsSchedule()
+        {
+            var so = new SerializedObject(_wave);
+            so.FindProperty("_spawnJitter").floatValue = 0.5f;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var scheduler = new WaveScheduler(_wave, _difficulty, new System.Random(7));
+            var output = new List<SpawnRequest>();
+
+            // Nobody appears earlier than half an interval before the delay, and everyone within half an interval after the last slot.
+            scheduler.Advance(1.4f, output);
+            Assert.AreEqual(0, output.Count);
+
+            scheduler.Advance(3.2f, output);
+            Assert.AreEqual(3, output.Count);
+            Assert.IsTrue(scheduler.IsFinished);
+        }
+
+        [Test]
         public void Advance_AppliesCountMultiplier()
         {
             var so = new SerializedObject(_difficulty);

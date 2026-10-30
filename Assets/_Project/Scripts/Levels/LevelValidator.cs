@@ -11,6 +11,8 @@ namespace Game.Levels
     /// </summary>
     public static class LevelValidator
     {
+        private static readonly Vector2Int[] Steps = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+
         public static bool Validate(LevelDefinition level, List<string> errors)
         {
             errors.Clear();
@@ -28,15 +30,18 @@ namespace Game.Levels
             CheckBlockades(level, errors);
             CheckTerrain(level, errors);
             CheckMines(level, grid, errors);
+            CheckRoad(level, grid, errors);
             CheckRoadsReachBase(level, errors);
             CheckWaves(level, errors);
+            CheckBossEntrance(level, grid, errors);
+            CheckNests(level, grid, errors);
             return errors.Count == 0;
         }
 
         // Raised ground would lift the road and liquids would drown it; the cells around a blockade hold the hero.
         private static void CheckTerrain(LevelDefinition level, List<string> errors)
         {
-            var road = new HashSet<Vector2Int>(RoadCells(level));
+            RoadCorridor road = level.Road;
             TerrainMap terrain = level.Terrain;
 
             foreach (KeyValuePair<Vector2Int, TerrainKind> entry in terrain.Cells)
@@ -46,7 +51,7 @@ namespace Game.Levels
                     continue;
                 }
 
-                if (road.Contains(entry.Key))
+                if (road.IsRoad(entry.Key))
                 {
                     errors.Add($"Terrain {entry.Value} at {entry.Key} lies on the road.");
                 }
@@ -103,7 +108,6 @@ namespace Game.Levels
 
         private static void CheckBlockedCells(LevelDefinition level, GridMap grid, List<string> errors)
         {
-            var road = new HashSet<Vector2Int>(RoadCells(level));
             var seen = new HashSet<Vector2Int>();
 
             foreach (Vector2Int cell in level.BlockedCells)
@@ -119,7 +123,7 @@ namespace Game.Levels
                 }
             }
 
-            if (level.GridSize.x * level.GridSize.y - road.Count - seen.Count <= 0)
+            if (level.GridSize.x * level.GridSize.y - level.Road.Cells.Count - seen.Count <= 0)
             {
                 errors.Add("Level has no buildable cells.");
             }
@@ -128,10 +132,9 @@ namespace Game.Levels
         // A mining node on the road, on liquid or outside the grid could never be reached or built around.
         private static void CheckMines(LevelDefinition level, GridMap grid, List<string> errors)
         {
-            var road = new HashSet<Vector2Int>(RoadCells(level));
             foreach (Vector2Int cell in level.MineCells)
             {
-                if (!grid.Contains(cell) || road.Contains(cell) || level.Terrain.IsLiquid(cell))
+                if (!grid.Contains(cell) || level.Road.IsRoad(cell) || level.Terrain.IsLiquid(cell))
                 {
                     errors.Add($"Mining node at {cell} is outside the grid, on the road or on liquid.");
                 }
@@ -177,7 +180,7 @@ namespace Game.Levels
 
         private static void CheckBlockades(LevelDefinition level, List<string> errors)
         {
-            var road = new HashSet<Vector2Int>(RoadCells(level));
+            RoadCorridor road = level.Road;
             var seen = new HashSet<Vector2Int>();
 
             foreach (BlockadeSpot spot in level.Blockades)
@@ -187,9 +190,10 @@ namespace Game.Levels
                     errors.Add($"Blockade at {spot.Cell} has no blockade definition.");
                 }
 
-                if (!road.Contains(spot.Cell))
+                // The gate is centred and turned from its cell, which only works on the row the route runs along.
+                if (road.RowOf(spot.Cell) != 0 || road.IsPlaza(spot.Cell))
                 {
-                    errors.Add($"Blockade at {spot.Cell} is not on the road.");
+                    errors.Add($"Blockade at {spot.Cell} is not on the first row of a road, or lies on a plaza.");
                 }
 
                 if (!seen.Add(spot.Cell))
@@ -244,28 +248,173 @@ namespace Game.Levels
                 return;
             }
 
-            bool airEnemy = group.Enemy.Layer == TargetLayers.Air;
+            bool airEnemy = group.Enemy.Flies;
             if (!airEnemy && level.Paths[group.PathIndex].Flying)
             {
                 errors.Add($"Wave '{wave.name}' sends ground enemy {group.Enemy.name} along flying path {group.PathIndex}.");
             }
+
+            if (group.Source == SpawnSource.Gate)
+            {
+                return;
+            }
+
+            if (group.Source == SpawnSource.Nest)
+            {
+                CheckNestGroup(level, wave, group, errors);
+                return;
+            }
+
+            // A pool spawn needs a pool of that kind to come out of, and only walkers climb out of pools.
+            if (airEnemy)
+            {
+                errors.Add($"Wave '{wave.name}' sends flyer {group.Enemy.name} out of a {group.Source} pool.");
+            }
+
+            if (new LiquidPools(level).Count(LiquidPools.KindOf(group.Source)) == 0)
+            {
+                errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a {group.Source} pool, but the level has none.");
+            }
         }
 
-        /// <summary>Every cell any road path crosses, including the cells between waypoints.</summary>
-        public static IEnumerable<Vector2Int> RoadCells(LevelDefinition level)
+        // A nest spawn needs a creature with an element and a nest of that element to come out of.
+        private static void CheckNestGroup(LevelDefinition level, WaveDefinition wave, SpawnGroup group, List<string> errors)
         {
-            foreach (EnemyPath path in level.Paths)
+            if (group.Enemy.Element == Element.None)
             {
-                if (path.Flying || path.Waypoints == null)
+                errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a nest, but it has no element.");
+                return;
+            }
+
+            foreach (ElementNest nest in level.Nests)
+            {
+                if (nest.Element == group.Enemy.Element)
                 {
+                    return;
+                }
+            }
+
+            errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
+        }
+
+        // A nest lies on the grid, off the road, in terrain that suits its element: water, lava and sand nests in
+        // that liquid, the rest on dry ground.
+        private static void CheckNests(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            foreach (ElementNest nest in level.Nests)
+            {
+                if (!grid.Contains(nest.Cell) || level.Road.IsRoad(nest.Cell))
+                {
+                    errors.Add($"{nest.Element} nest at {nest.Cell} is off the grid or on the road.");
                     continue;
                 }
 
-                foreach (Vector2Int cell in LandPathCells(path.Waypoints))
+                TerrainKind kind = level.Terrain.KindAt(nest.Cell);
+                TerrainKind wanted = NestTerrain(nest.Element);
+                bool liquidNest = TerrainMap.IsLiquid(wanted);
+                if (liquidNest ? kind != wanted : TerrainMap.IsLiquid(kind))
                 {
-                    yield return cell;
+                    errors.Add($"{nest.Element} nest at {nest.Cell} sits in {kind}, not in {wanted}.");
                 }
             }
+        }
+
+        /// <summary>The terrain a nest of an element belongs in; plain ground for elements without a liquid.</summary>
+        public static TerrainKind NestTerrain(Element element)
+        {
+            switch (element)
+            {
+                case Element.Water:
+                    return TerrainKind.Water;
+                case Element.Fire:
+                    return TerrainKind.Lava;
+                case Element.Sand:
+                    return TerrainKind.Quicksand;
+                default:
+                    return TerrainKind.Ground;
+            }
+        }
+
+        // A pool entrance must name a liquid cell; a ground entrance a plain cell off the road, inside the grid.
+        private static void CheckBossEntrance(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            BossEntrance entrance = level.BossEntrance;
+            switch (entrance.Kind)
+            {
+                case EntranceKind.Pool:
+                    if (!level.Terrain.IsLiquid(entrance.Cell))
+                    {
+                        errors.Add($"Boss entrance names pool cell {entrance.Cell}, which holds no liquid.");
+                    }
+
+                    break;
+                case EntranceKind.Ground:
+                    if (!grid.Contains(entrance.Cell) || level.Road.IsRoad(entrance.Cell) || level.Terrain.IsLiquid(entrance.Cell))
+                    {
+                        errors.Add($"Boss entrance names ground cell {entrance.Cell}, which is off the grid, on the road or liquid.");
+                    }
+
+                    break;
+            }
+        }
+
+        // Every road cell, second rows included, must be on the grid, and a plaza must touch a road through its own
+        // cells, or enemies could never walk onto it.
+        private static void CheckRoad(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            RoadCorridor road = level.Road;
+            foreach (Vector2Int cell in road.Cells)
+            {
+                if (!grid.Contains(cell))
+                {
+                    errors.Add($"Road cell {cell} is outside the grid.");
+                }
+            }
+
+            var reached = new HashSet<Vector2Int>();
+            var open = new Queue<Vector2Int>();
+            foreach (Vector2Int cell in road.PlazaCells)
+            {
+                if (road.RowOf(cell) >= 0 || TouchesRoad(road, cell))
+                {
+                    reached.Add(cell);
+                    open.Enqueue(cell);
+                }
+            }
+
+            while (open.Count > 0)
+            {
+                Vector2Int cell = open.Dequeue();
+                foreach (Vector2Int step in Steps)
+                {
+                    Vector2Int next = cell + step;
+                    if (road.IsPlaza(next) && reached.Add(next))
+                    {
+                        open.Enqueue(next);
+                    }
+                }
+            }
+
+            foreach (Vector2Int cell in road.PlazaCells)
+            {
+                if (!reached.Contains(cell))
+                {
+                    errors.Add($"Plaza cell {cell} is not connected to a road.");
+                }
+            }
+        }
+
+        private static bool TouchesRoad(RoadCorridor road, Vector2Int cell)
+        {
+            foreach (Vector2Int step in Steps)
+            {
+                if (road.RowOf(cell + step) >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>Every cell one road path crosses, including the cells between waypoints.</summary>

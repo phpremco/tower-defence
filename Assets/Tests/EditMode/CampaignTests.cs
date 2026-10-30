@@ -147,6 +147,29 @@ namespace Game.Tests
         }
 
         [Test]
+        public void UpgradeEffects_DroneSpeedIsTheOnlyDroneUpgradeAndCostsPower()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+            var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
+            progress.AddRewards(0, 100);
+
+            Assert.AreEqual(1f, UpgradeEffects.ComputeGlobal(progress, upgrades).DroneSpeedMultiplier);
+            int droneUpgrades = 0;
+            foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
+            {
+                if (upgrade.GroupName == "Drones")
+                {
+                    droneUpgrades++;
+                    Assert.AreEqual(UpgradeTarget.DroneSpeed, upgrade.Target, "no drone comes free at the start of a level");
+                    Assert.IsTrue(progress.TryBuyUpgrade(upgrade), "drone speed is buyable with power currency");
+                }
+            }
+
+            Assert.AreEqual(1, droneUpgrades);
+            Assert.Greater(UpgradeEffects.ComputeGlobal(progress, upgrades).DroneSpeedMultiplier, 1f);
+        }
+
+        [Test]
         public void UpgradeEffects_BaseHealthIsGlobal()
         {
             var progress = new ProgressService(new MemorySave(), new string[0]);

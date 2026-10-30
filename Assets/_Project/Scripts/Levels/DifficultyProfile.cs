@@ -12,6 +12,7 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _spawnIntervalMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _rewardMultiplier = 1f;
         [SerializeField] [Min(0f)] private float _powerCurrencyMultiplier = 1f;
+        [SerializeField] [Min(0.1f)] private float _structureDamageMultiplier = 1f;
 
         public string DisplayName => _displayName;
         public float HealthMultiplier => _healthMultiplier;
@@ -23,6 +24,8 @@ namespace Game.Levels
 
         /// <summary>Scales the power currency reward. Zero on easy, so drones need harder difficulties.</summary>
         public float PowerCurrencyMultiplier => _powerCurrencyMultiplier;
+
+        /// <summary>Scales what enemies do to towers, gates and the hero, so a tail sting bites harder on psycho.</summary>
+        public float StructureDamageMultiplier => _structureDamageMultiplier;
     }
 }
-

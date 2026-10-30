@@ -15,14 +15,25 @@ namespace Game.Levels
         private const float EdgeWander = 0.7f;
         private const float BasinDepth = 0.6f;
         private const float SandDepth = 0.16f;
+        private const float ShoreWidthCells = 0.55f;
+        private const float ShoreWobbleCells = 0.25f;
+        private const float CornerRadiusCells = 0.46f;
+        private const float BasinStart = 0.1f;
+        private const float BasinFull = 0.6f;
+        private const float CraterStart = 0.2f;
+        private const float CraterFull = 0.65f;
+        private const float CraterRimCentre = 0.13f;
+        private const float CraterRimWidth = 0.12f;
+        private const float CraterRimHeight = 0.45f;
         private const float RimStartCells = 1.5f;
         private const float RimEndCells = 7f;
         private const float RimHeight = 3.6f;
-        public const float RoadHalfWidthCells = 0.4f;
         private const float RoadShoulderCells = 0.3f;
         private const float OuterBumpHeight = 0.1f;
         private const float OuterBumpStartCells = 0.5f;
         private const float OuterBumpEndCells = 2.5f;
+
+        private static readonly Vector2Int[] Sides = { Vector2Int.right, Vector2Int.up, Vector2Int.left, Vector2Int.down };
 
         private readonly float[] _plateau;
         private readonly float[] _water;
@@ -121,20 +132,9 @@ namespace Game.Levels
                     float warpZ = (TerrainNoise.Fbm(x * 0.8f + 40f, z * 0.8f, 2, 33f) - 0.5f) * EdgeWander * CellSize;
                     Vector2Int cell = grid.WorldToCell(new Vector3(x + warpX, 0f, z + warpZ));
                     int i = Index(ix, iz);
-                    switch (map.KindAt(cell))
+                    if (map.KindAt(cell) == TerrainKind.Raised)
                     {
-                        case TerrainKind.Raised:
-                            _plateau[i] = 1f;
-                            break;
-                        case TerrainKind.Water:
-                            _water[i] = 1f;
-                            break;
-                        case TerrainKind.Lava:
-                            _lava[i] = 1f;
-                            break;
-                        case TerrainKind.Quicksand:
-                            _sand[i] = 1f;
-                            break;
+                        _plateau[i] = 1f;
                     }
 
                     // The middle of a raised cell must be exactly at plateau height: that is where the tower stands.
@@ -145,23 +145,116 @@ namespace Game.Levels
                 }
             }
 
-            // Liquids get a wider blur than raised ground: rounder shores, and the plateau keeps crisp cliffs.
             Blur(_plateau);
-            for (int pass = 0; pass < 2; pass++)
-            {
-                Blur(_water);
-                Blur(_lava);
-                Blur(_sand);
-            }
             for (int i = 0; i < core.Length; i++)
             {
                 _plateau[i] = Mathf.Max(_plateau[i], core[i]);
+            }
+
+            ConfineToCells(grid, map);
+            FillLiquids(grid, map);
+        }
+
+        // A liquid keeps its shore inside its own cells: the mask rises from the cell outline inwards, with a little
+        // wobble, so the ground beside a lake is level right up to the cell edge and a tower there never touches water.
+        private void FillLiquids(GridMap grid, TerrainMap map)
+        {
+            float shore = ShoreWidthCells * CellSize;
+            for (int iz = 0; iz < Nz; iz++)
+            {
+                for (int ix = 0; ix < Nx; ix++)
+                {
+                    float x = WorldX(ix);
+                    float z = WorldZ(iz);
+                    int i = Index(ix, iz);
+                    _water[i] = 0f;
+                    _lava[i] = 0f;
+                    _sand[i] = 0f;
+
+                    Vector2Int cell = grid.WorldToCell(new Vector3(x, 0f, z));
+                    TerrainKind kind = map.KindAt(cell);
+                    if (!TerrainMap.IsLiquid(kind))
+                    {
+                        continue;
+                    }
+
+                    float wobble = (TerrainNoise.Fbm(x * 1.7f, z * 1.7f, 2, 21f) - 0.5f) * ShoreWobbleCells * CellSize;
+                    float mask = TerrainNoise.SmoothStep(0f, shore, InsideDistance(grid, map, cell, kind, x, z) + wobble);
+                    switch (kind)
+                    {
+                        case TerrainKind.Water:
+                            _water[i] = mask;
+                            break;
+                        case TerrainKind.Lava:
+                            _lava[i] = mask;
+                            break;
+                        default:
+                            _sand[i] = mask;
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Distance from a point inside a cell to the nearest outline of its kind: the sides and the corner points
+        // that border a cell of another kind. Deep inside a large patch it is simply the half cell.
+        private float InsideDistance(GridMap grid, TerrainMap map, Vector2Int cell, TerrainKind kind, float x, float z)
+        {
+            Vector3 centre = grid.CellToWorld(cell);
+            float half = CellSize * 0.5f;
+            float localX = x - centre.x;
+            float localZ = z - centre.z;
+            float depth = half;
+            for (int s = 0; s < Sides.Length; s++)
+            {
+                Vector2Int side = Sides[s];
+                Vector2Int next = Sides[(s + 1) % Sides.Length];
+                bool sideSame = map.KindAt(cell + side) == kind;
+                bool nextSame = map.KindAt(cell + next) == kind;
+                float u = side.x != 0 ? localX * side.x : localZ * side.y;
+                float v = next.x != 0 ? localX * next.x : localZ * next.y;
+                if (!sideSame)
+                {
+                    depth = Mathf.Min(depth, half - u);
+                }
+
+                // An outside corner is rounded off: inside the corner square the outline is a quarter circle.
+                float inset = half - CornerRadiusCells * CellSize;
+                if (!sideSame && !nextSame && u > inset && v > inset)
+                {
+                    depth = Mathf.Min(depth, CornerRadiusCells * CellSize - Mathf.Sqrt((u - inset) * (u - inset) + (v - inset) * (v - inset)));
+                }
+
+                if (sideSame && nextSame && map.KindAt(cell + side + next) != kind)
+                {
+                    float cx = (side.x + next.x) * half;
+                    float cz = (side.y + next.y) * half;
+                    depth = Mathf.Min(depth, Mathf.Sqrt((localX - cx) * (localX - cx) + (localZ - cz) * (localZ - cz)));
+                }
+            }
+
+            return depth;
+        }
+
+        // Raised ground stays inside its own cells: a hill never spills onto the flat cell beside it, so a tower on
+        // the cell next to it (even shifted away from the road inside its cell) stands on level ground.
+        private void ConfineToCells(GridMap grid, TerrainMap map)
+        {
+            for (int iz = 0; iz < Nz; iz++)
+            {
+                for (int ix = 0; ix < Nx; ix++)
+                {
+                    if (map.KindAt(grid.WorldToCell(new Vector3(WorldX(ix), 0f, WorldZ(iz)))) != TerrainKind.Raised)
+                    {
+                        _plateau[Index(ix, iz)] = 0f;
+                    }
+                }
             }
         }
 
         private void FillHeights(RoadShape road)
         {
-            float halfWidth = RoadHalfWidthCells * CellSize;
+            float halfWidth = road.HalfWidth;
             float shoulder = RoadShoulderCells * CellSize;
 
             for (int iz = 0; iz < Nz; iz++)
@@ -174,7 +267,14 @@ namespace Game.Levels
                     float outside = OutsideAt(x, z);
 
                     float h = _plateau[i] * TerrainMap.PlateauHeight;
-                    h -= Mathf.Clamp01(_water[i] + _lava[i]) * BasinDepth + _sand[i] * SandDepth;
+
+                    // Water and sand slope down gently like a beach; lava sits in a crater with a thrown-up rim
+                    // that drops away steeply on the inside.
+                    h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _water[i]) * BasinDepth;
+                    h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _sand[i]) * SandDepth;
+                    float crater = 1f - Mathf.Clamp01(Mathf.Abs(_lava[i] - CraterRimCentre) / CraterRimWidth);
+                    h += crater * crater * CraterRimHeight * (0.7f + 0.6f * TerrainNoise.Fbm(x * 1.3f, z * 1.3f, 2, 7f));
+                    h -= TerrainNoise.SmoothStep(CraterStart, CraterFull, _lava[i]) * BasinDepth;
 
                     // Low hills rise towards the edge of the map and hide where the world stops.
                     float rim = TerrainNoise.SmoothStep(RimStartCells, RimEndCells, outside);

@@ -1,9 +1,13 @@
 using Game.Core;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Game.PathObjects
 {
-    /// <summary>Placeholder look of a path object, chosen by kind: a dark disc with a red light, a see-through field or a glowing ball.</summary>
+    /// <summary>
+    /// Placeholder look of a path object, chosen by kind: a dark disc with a red light, a see-through field or a
+    /// glowing ball. A lava ball also throws embers behind it and lights the road it rolls over.
+    /// </summary>
     [RequireComponent(typeof(PathObject))]
     public sealed class PathObjectView : MonoBehaviour
     {
@@ -14,6 +18,20 @@ namespace Game.PathObjects
         private const float PulseSpeed = 3f;
         private const float LavaBallSpin = 120f;
         private const float MineLightSize = 0.16f;
+        private const float EmberRatePerUnit = 28f;
+        private const float EmberBrightness = 2.2f;
+        private const float EmberLifeMin = 0.4f;
+        private const float EmberLifeMax = 0.9f;
+        private const float EmberSizeMin = 0.03f;
+        private const float EmberSizeMax = 0.08f;
+        private const float EmberGravity = 0.6f;
+        private const float EmberSpread = 0.3f;
+        private const int EmberMax = 80;
+        private const float BallLightHeight = 0.5f;
+        private const float BallLightRange = 2.6f;
+        private const float BallLightIntensity = 1.8f;
+        private const float BallLightFlicker = 0.3f;
+        private const float BallLightFlickerSpeed = 4f;
         private static readonly Color MineBase = new Color(0.12f, 0.13f, 0.16f);
 
         private Transform _light;
@@ -50,15 +68,7 @@ namespace Game.PathObjects
         // The procedural model; a slow field also gets its translucent disc so its reach stays readable.
         private void BuildLook(PathObjectDefinition definition)
         {
-            Mesh mesh = definition.Look switch
-            {
-                PathObjectLook.Mine => StructureModelFactory.Mine(),
-                PathObjectLook.FieldEmitter => StructureModelFactory.FieldEmitter(),
-                PathObjectLook.LavaBall => StructureModelFactory.LavaBall(),
-                PathObjectLook.GroundDrone => StructureModelFactory.GroundDrone(),
-                PathObjectLook.Barrel => StructureModelFactory.Barrel(),
-                _ => StructureModelFactory.AirNet(),
-            };
+            Mesh mesh = PathObjectModels.MeshFor(definition.Look);
 
             var model = new GameObject("Model");
             model.transform.SetParent(transform, false);
@@ -77,7 +87,68 @@ namespace Game.PathObjects
             if (definition.Look == PathObjectLook.LavaBall)
             {
                 model.AddComponent<Spinner>().Initialize(LavaBallSpin);
+                BuildEmbers(definition.Color);
+                BuildGlowLight(definition.Color);
             }
+        }
+
+        // Embers spill from the ball as it moves: emission per distance, so a parked ball only smoulders.
+        private void BuildEmbers(Color color)
+        {
+            var go = new GameObject("Embers");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(0f, 0.35f, 0f);
+
+            var system = go.AddComponent<ParticleSystem>();
+            ParticleSystem.MainModule main = system.main;
+            main.loop = true;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(EmberLifeMin, EmberLifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.3f, 1.2f);
+            main.startSize = new ParticleSystem.MinMaxCurve(EmberSizeMin, EmberSizeMax);
+            Color glow = color * EmberBrightness;
+            glow.a = 1f;
+            main.startColor = glow;
+            main.gravityModifier = EmberGravity;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = EmberMax;
+
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.rateOverTime = 4f;
+            emission.rateOverDistance = EmberRatePerUnit;
+
+            ParticleSystem.ShapeModule shape = system.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = EmberSpread;
+
+            ParticleSystem.SizeOverLifetimeModule size = system.sizeOverLifetime;
+            size.enabled = true;
+            size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.1f));
+
+            ParticleSystem.ColorOverLifetimeModule fade = system.colorOverLifetime;
+            fade.enabled = true;
+            var gradient = new Gradient();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.9f, 0.5f), new GradientAlphaKey(0f, 1f) });
+            fade.color = gradient;
+
+            var renderer = go.GetComponent<ParticleSystemRenderer>();
+            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
+            renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            system.Play();
+        }
+
+        private void BuildGlowLight(Color color)
+        {
+            var go = new GameObject("Glow");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(0f, BallLightHeight, 0f);
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = color;
+            light.range = BallLightRange;
+            light.shadows = LightShadows.None;
+            go.AddComponent<LightFlicker>().Initialize(BallLightIntensity, BallLightFlicker, BallLightFlickerSpeed);
         }
 
         // The light of a mine and the surface of a field breathe slowly, so placed objects read as active.

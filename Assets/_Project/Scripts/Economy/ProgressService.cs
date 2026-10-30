@@ -157,9 +157,26 @@ namespace Game.Economy
             return true;
         }
 
+        /// <summary>Remembers that the intro has played, so it does not play again on the next launch.</summary>
+        public void MarkIntroSeen()
+        {
+            Data.IntroSeen = true;
+            Save();
+        }
+
         public void SetVolume(int percent)
         {
             Data.MasterVolumePercent = percent;
+            Save();
+        }
+
+        /// <summary>Stores all four volume groups at once, in percent.</summary>
+        public void SetVolumes(int master, int music, int effects, int ambience)
+        {
+            Data.MasterVolumePercent = master;
+            Data.MusicVolumePercent = music;
+            Data.EffectsVolumePercent = effects;
+            Data.AmbienceVolumePercent = ambience;
             Save();
         }
 

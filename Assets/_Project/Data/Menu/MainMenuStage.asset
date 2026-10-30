@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea5af6850163684f92e382e529378f4, type: 3}
+  m_Name: MainMenuStage
+  m_EditorClassIdentifier: Game.UI::Game.UI.MenuStageDefinition
+  _forestTheme: {fileID: 11400000, guid: 975ee77db68f1e440a2d64388699b814, type: 2}
+  _lavaTheme: {fileID: 11400000, guid: d7483e12a2f7abd409d568eceb885ed3, type: 2}
+  _ruinsTheme: {fileID: 11400000, guid: 8ef114d5f69c56d4aa64817dc054ea78, type: 2}
+  _nestTheme: {fileID: 11400000, guid: 31488d1edfad792479ffd1d508223dd7, type: 2}
+  _nestCreatures:
+  - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+  - {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+  - {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+  - {fileID: 11400000, guid: 8f3c0afb49037a14ea2496d54baaffde, type: 2}
+  _nestGuardian: {fileID: 11400000, guid: d830dda47c6b4aa45981a5405dc4300a, type: 2}
+  _flyer: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
+  _waterCreature: {fileID: 11400000, guid: 82561541f80c79c45876c662358d966f, type: 2}
+  _lavaCreature: {fileID: 11400000, guid: c0893d5c3825799408d8a7010224f285, type: 2}
+  _sandCreature: {fileID: 11400000, guid: ed78d440f1881144aa1c35803fed47d1, type: 2}

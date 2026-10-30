@@ -17,6 +17,13 @@ namespace Game.UI
         Hero,
         Shockwave,
         Combine,
+        Ground,
+        Air,
+        Slow,
+        Arrow,
+        Disc,
+        Ring,
+        Beacon,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -68,6 +75,25 @@ namespace Game.UI
                 case IconType.Hero:
                     // A shield: a flat top that narrows to a point.
                     return (u, v) => (v > 0.5f && v < 0.86f && Mathf.Abs(u - 0.5f) < 0.3f) || Triangle(u, v, 0.2f, 0.5f, 0.8f, 0.5f, 0.5f, 0.1f);
+                case IconType.Ground:
+                    // Two mountain peaks on a baseline: what walks.
+                    return (u, v) => Triangle(u, v, 0.08f, 0.28f, 0.62f, 0.28f, 0.36f, 0.82f) || Triangle(u, v, 0.45f, 0.28f, 0.92f, 0.28f, 0.7f, 0.64f) || (v > 0.16f && v < 0.28f && u > 0.08f && u < 0.92f);
+                case IconType.Air:
+                    // A pair of raised wings: what flies.
+                    return (u, v) => Stroke(u, v, 0.08f, 0.42f, 0.5f, 0.7f, 0.075f) || Stroke(u, v, 0.5f, 0.7f, 0.92f, 0.42f, 0.075f) || Stroke(u, v, 0.5f, 0.62f, 0.5f, 0.3f, 0.07f);
+                case IconType.Disc:
+                    return (u, v) => Radius(u, v) < 0.48f;
+                case IconType.Ring:
+                    return (u, v) => Radius(u, v) > 0.38f && Radius(u, v) < 0.48f;
+                case IconType.Beacon:
+                    // A dot inside a ring: a place marked on the map.
+                    return (u, v) => Radius(u, v) < 0.2f || (Radius(u, v) > 0.34f && Radius(u, v) < 0.45f);
+                case IconType.Arrow:
+                    // A wedge pointing right; the HUD turns it towards whatever it marks.
+                    return (u, v) => Triangle(u, v, 0.12f, 0.18f, 0.12f, 0.82f, 0.92f, 0.5f);
+                case IconType.Slow:
+                    // A six-armed snowflake: slows what it hits.
+                    return (u, v) => Stroke(u, v, 0.5f, 0.08f, 0.5f, 0.92f, 0.06f) || Stroke(u, v, 0.14f, 0.29f, 0.86f, 0.71f, 0.06f) || Stroke(u, v, 0.14f, 0.71f, 0.86f, 0.29f, 0.06f) || Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f)) < 0.13f;
                 case IconType.Combine:
                     // Two circles that overlap, joined in the middle.
                     return (u, v) => Mathf.Sqrt((u - 0.33f) * (u - 0.33f) + (v - 0.5f) * (v - 0.5f)) < 0.24f || Mathf.Sqrt((u - 0.67f) * (u - 0.67f) + (v - 0.5f) * (v - 0.5f)) < 0.24f;
@@ -120,6 +146,8 @@ namespace Game.UI
             return distance < Mathf.Lerp(OuterRadius, InnerRadius, fromTip);
         }
         // A tick mark made of two thick strokes.
+        private static float Radius(float u, float v) => Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f));
+
         private static bool Check(float u, float v)
         {
             return Stroke(u, v, 0.18f, 0.5f, 0.4f, 0.28f, 0.085f) || Stroke(u, v, 0.4f, 0.28f, 0.82f, 0.74f, 0.085f);

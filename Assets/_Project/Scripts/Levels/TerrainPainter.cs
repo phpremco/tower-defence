@@ -21,6 +21,12 @@ namespace Game.Levels
         private const float VeinInside = 0.12f;
         private const float FadeStartCells = 5.5f;
         private const float FadeEndCells = 8.8f;
+        private const float CliffStrataDarkening = 0.3f;
+        private const float CliffLipPlateau = 0.78f;
+        private const float CliffLipWidth = 0.08f;
+        private const float CliffSeamPlateau = 0.45f;
+        private const float CliffSeamWidth = 0.07f;
+        private const float CliffSeamGlow = 0.9f;
 
         public readonly struct Result
         {
@@ -79,7 +85,7 @@ namespace Game.Levels
             private readonly GridMap _grid;
             private readonly TerrainMap _terrain;
             private readonly HashSet<Vector2Int> _blocked;
-            private readonly HashSet<Vector2Int> _roadCells;
+            private readonly RoadCorridor _roadCells;
             private readonly Color _ground;
             private readonly Color _groundLight;
             private readonly Color _rock;
@@ -101,7 +107,7 @@ namespace Game.Levels
                 _terrain = level.Terrain;
                 _blocked = new HashSet<Vector2Int>(level.BlockedCells);
                 _blocked.UnionWith(level.MineCells);
-                _roadCells = new HashSet<Vector2Int>(LevelValidator.RoadCells(level));
+                _roadCells = level.Road;
                 _ground = theme.GroundColor;
                 _groundLight = Color.Lerp(theme.GroundColor, Color.white, 0.18f);
                 _rock = theme.RockColor;
@@ -112,7 +118,7 @@ namespace Game.Levels
                 _sand = theme.SandColor;
                 _water = theme.WaterColor;
                 _vein = theme.VeinStrength;
-                _halfWidth = TerrainField.RoadHalfWidthCells * field.CellSize;
+                _halfWidth = road.HalfWidth;
                 _seed = Mathf.Abs(level.name.GetHashCode() % 997);
             }
 
@@ -139,6 +145,7 @@ namespace Game.Levels
                 float cliff = plateau * (1f - plateau) * 4f;
                 color *= 1f - cliff * 0.5f;
                 color = Color.Lerp(color, _rock * 1.3f, TerrainNoise.SmoothStep(0.7f, 0.97f, plateau) * 0.45f);
+                ShadeCliff(plateau, medium, ref color, ref glow);
 
                 ShadeLiquids(x, z, medium, ref color, ref glow);
                 ShadeVeins(x, z, outside, ref color, ref glow);
@@ -153,28 +160,53 @@ namespace Game.Levels
                 glow.a = 1f;
             }
 
+            // Layered strata on the cliff face, a pale worn lip along the top edge and a thin seam of the level's
+            // glow where the rock was split, so raised ground reads as a solid block with height.
+            private void ShadeCliff(float plateau, float noise, ref Color color, ref Color glow)
+            {
+                float face = TerrainNoise.SmoothStep(0.12f, 0.5f, plateau) * (1f - TerrainNoise.SmoothStep(0.72f, 0.9f, plateau));
+                if (face <= 0f)
+                {
+                    return;
+                }
+
+                float strata = 0.5f + 0.5f * Mathf.Sin(plateau * Mathf.PI * 9f + noise * 3f);
+                color *= 1f - face * strata * CliffStrataDarkening;
+                float lip = 1f - Mathf.Clamp01(Mathf.Abs(plateau - CliffLipPlateau) / CliffLipWidth);
+                color = Color.Lerp(color, _rock * 1.5f, lip * face * 0.6f);
+                float seam = 1f - Mathf.Clamp01(Mathf.Abs(plateau - CliffSeamPlateau) / CliffSeamWidth);
+                glow += _accent * (seam * seam * face * CliffSeamGlow * (0.4f + 0.6f * _vein) * (0.6f + 0.4f * noise));
+            }
+
             private void ShadeLiquids(float x, float z, float noise, ref Color color, ref Color glow)
             {
                 float water = _field.WaterAt(x, z);
                 float lava = _field.LavaAt(x, z);
                 float sand = _field.SandAt(x, z);
 
-                // Shores: wet and dark around water, scorched and glowing around lava, pale and dry around sand.
-                float waterEdge = TerrainNoise.SmoothStep(0.02f, 0.3f, water);
-                color = Color.Lerp(color, color * 0.5f + _water * 0.2f, waterEdge);
+                // A pale beach runs down to the water, turns wet and dark at the waterline and darkens with depth.
+                float beach = TerrainNoise.SmoothStep(0.02f, 0.1f, water) * (1f - TerrainNoise.SmoothStep(0.14f, 0.22f, water));
+                Color sandy = Color.Lerp(_groundLight, _sand, 0.5f) * (0.95f + 0.25f * noise);
+                color = Color.Lerp(color, sandy, beach * 0.85f);
+                float wet = TerrainNoise.SmoothStep(0.13f, 0.24f, water);
+                color = Color.Lerp(color, color * 0.45f + _water * 0.25f, wet);
+                color = Color.Lerp(color, _water * 0.55f, TerrainNoise.SmoothStep(0.3f, 0.95f, water));
+                float foam = 1f - Mathf.Clamp01(Mathf.Abs(water - 0.19f) / 0.04f);
+                color = Color.Lerp(color, Color.Lerp(_water, Color.white, 0.7f), foam * (0.4f + 0.4f * noise));
 
-                // Deeper water is darker; a pale band of foam marks where the ground meets the surface.
-                color = Color.Lerp(color, _water * 0.6f, TerrainNoise.SmoothStep(0.35f, 0.95f, water));
-                float foam = 1f - Mathf.Clamp01(Mathf.Abs(water - 0.2f) / 0.07f);
-                color = Color.Lerp(color, Color.Lerp(_water, Color.white, 0.7f), foam * (0.5f + 0.4f * noise));
-
-                float lavaEdge = TerrainNoise.SmoothStep(0.02f, 0.5f, lava);
-                color = Color.Lerp(color, _rock * 0.35f, lavaEdge);
+                // Lava: a crater rim of ash-grey broken rock with hot cracks, then scorched black down to the melt.
+                float crater = TerrainNoise.SmoothStep(0.02f, 0.1f, lava) * (1f - TerrainNoise.SmoothStep(0.18f, 0.3f, lava));
+                color = Color.Lerp(color, _rock * (1.1f + 0.6f * noise), crater * 0.85f);
+                float cracks = TerrainNoise.SmoothStep(0.93f, 0.99f, TerrainNoise.Ridge(x * 2.2f, z * 2.2f, _seed + 9f));
+                glow += _lava * (crater * cracks * 1.2f);
+                float lavaEdge = TerrainNoise.SmoothStep(0.2f, 0.5f, lava);
+                color = Color.Lerp(color, _rock * 0.3f, lavaEdge);
                 float heat = lavaEdge * (1f - TerrainNoise.SmoothStep(0.55f, 0.95f, lava));
-                glow += _lava * heat * (0.35f + 0.5f * noise);
+                glow += _lava * heat * (0.4f + 0.5f * noise);
 
-                float sandEdge = TerrainNoise.SmoothStep(0.02f, 0.5f, sand);
-                color = Color.Lerp(color, _sand * (0.75f + 0.4f * noise), sandEdge);
+                // Sand: a wide dry fringe that fades into the churning middle.
+                float sandEdge = TerrainNoise.SmoothStep(0.02f, 0.45f, sand);
+                color = Color.Lerp(color, _sand * (0.8f + 0.4f * noise), sandEdge);
             }
 
             // Thin glowing cracks and roots in the ground: strong far from the field, a hint inside it.
@@ -197,7 +229,7 @@ namespace Game.Levels
             private void ShadeBuildPads(float x, float z, ref Color color)
             {
                 Vector2Int cell = _grid.WorldToCell(new Vector3(x, 0f, z));
-                if (!_grid.Contains(cell) || _roadCells.Contains(cell) || _blocked.Contains(cell) || _terrain.IsLiquid(cell))
+                if (!_grid.Contains(cell) || _roadCells.IsRoad(cell) || _blocked.Contains(cell) || _terrain.IsLiquid(cell))
                 {
                     return;
                 }

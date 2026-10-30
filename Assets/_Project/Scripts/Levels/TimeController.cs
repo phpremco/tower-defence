@@ -12,8 +12,9 @@ namespace Game.Levels
         private LevelContext _context;
         private int _speedIndex;
         private bool _paused;
+        private bool _held;
 
-        public float CurrentSpeed => _paused ? 0f : _speedSteps[_speedIndex];
+        public float CurrentSpeed => _paused || _held ? 0f : _speedSteps[_speedIndex];
 
         public void Initialize(LevelContext context, IInputProvider input)
         {
@@ -36,6 +37,13 @@ namespace Game.Levels
             Apply();
         }
 
+        /// <summary>Freezes time without opening the pause menu, while a panel such as the briefing is up.</summary>
+        public void Hold(bool held)
+        {
+            _held = held;
+            Apply();
+        }
+
         private void OnDestroy()
         {
             if (_input != null)
@@ -49,7 +57,7 @@ namespace Game.Levels
 
         private void Apply()
         {
-            Time.timeScale = _paused ? 0f : _speedSteps[_speedIndex];
+            Time.timeScale = _paused || _held ? 0f : _speedSteps[_speedIndex];
             _context.Paused = _paused;
             _context.Changed.Raise();
         }

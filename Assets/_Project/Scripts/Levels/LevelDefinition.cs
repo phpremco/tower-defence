@@ -14,25 +14,37 @@ namespace Game.Levels
     public sealed class LevelDefinition : ScriptableObject
     {
         [SerializeField] private string _displayName = "New Level";
+        /// <summary>The part of the planet this level takes, as the map names it.</summary>
+        [SerializeField] private string _regionName = "";
+        /// <summary>The piece of story read before the first wave. Empty means no briefing.</summary>
+        [SerializeField] [TextArea(3, 6)] private string _briefing = "";
         [SerializeField] private Vector2Int _gridSize = new Vector2Int(16, 10);
         [SerializeField] [Min(0.1f)] private float _cellSize = 1f;
         [SerializeField] private VisualTheme _theme;
         [SerializeField] private CameraSettings _camera = CameraSettings.Default;
         [SerializeField] private EnemyPath[] _paths = new EnemyPath[0];
+        /// <summary>How many cells wide every road is. The waypoints are the first row; extra rows lie to the right of travel.</summary>
+        [SerializeField] [Min(1)] private int _roadWidth = 1;
+        /// <summary>Open road areas where roads may meet: road cells that belong to no single path.</summary>
+        [SerializeField] private Vector2Int[] _plazaCells = new Vector2Int[0];
         [SerializeField] private Vector2Int[] _blockedCells = new Vector2Int[0];
         [SerializeField] private BlockadeSpot[] _blockades = new BlockadeSpot[0];
         [SerializeField] private TerrainPatch[] _terrain = new TerrainPatch[0];
         [SerializeField] private Vector2Int[] _mineCells = new Vector2Int[0];
+        /// <summary>Money each mining node holds before it is spent; harvest drones empty it trip by trip.</summary>
+        [SerializeField] [Min(0)] private int _mineStock = 140;
+        /// <summary>Where bosses come up: the gate, a pool or the ground. Pool and ground entrances name a cell.</summary>
+        [SerializeField] private BossEntrance _bossEntrance;
+        /// <summary>Where element creatures come up. Each nest names a cell off the road and the element it belongs to.</summary>
+        [SerializeField] private ElementNest[] _nests = new ElementNest[0];
         [SerializeField] private Texture2D _terrainAlbedo;
         [SerializeField] private Texture2D _terrainEmission;
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
         [SerializeField] private HeroDefinition _hero;
-        /// <summary>How much energy the level can store, and how much it gathers per second. Drones are paid with it.</summary>
-        [SerializeField] [Min(1f)] private float _energyMax = 100f;
-        [SerializeField] [Min(0f)] private float _energyPerSecond = 1.5f;
         [SerializeField] private DroneDefinition _repairDrone;
-        [SerializeField] private DroneDefinition _collectorDrone;
+        [SerializeField] private DroneDefinition _harvestDrone;
+        [SerializeField] private DroneDefinition _attackDrone;
         [SerializeField] private CombineRecipe[] _recipes = new CombineRecipe[0];
         [SerializeField] private PathObjectDefinition[] _pathObjects = new PathObjectDefinition[0];
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
@@ -46,11 +58,18 @@ namespace Game.Levels
 
         public string Id => name;
         public string DisplayName => _displayName;
+        public string RegionName => _regionName;
+        public string Briefing => _briefing;
         public Vector2Int GridSize => _gridSize;
         public float CellSize => _cellSize;
         public VisualTheme Theme => _theme;
         public CameraSettings Camera => _camera;
         public EnemyPath[] Paths => _paths;
+        public int RoadWidth => _roadWidth;
+        public Vector2Int[] PlazaCells => _plazaCells;
+
+        /// <summary>Road cells, rows, directions and centre lines, cached because every system that touches the road asks for it.</summary>
+        public RoadCorridor Road => _road ??= new RoadCorridor(this);
 
         /// <summary>Waypoints of the first road path: the main road, which also ends at the base.</summary>
         public Vector2Int[] MainRoad
@@ -75,6 +94,13 @@ namespace Game.Levels
 
         /// <summary>Resource nodes that collector drones mine for money. They cannot be built on.</summary>
         public Vector2Int[] MineCells => _mineCells;
+        public int MineStock => _mineStock;
+
+        /// <summary>How and where the bosses of this level arrive.</summary>
+        public BossEntrance BossEntrance => _bossEntrance;
+
+        /// <summary>The element nests of this level; a spawn group with source Nest picks one that matches its creature.</summary>
+        public ElementNest[] Nests => _nests;
 
         /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
         public TerrainPatch[] TerrainPatches => _terrain;
@@ -92,10 +118,27 @@ namespace Game.Levels
         public HeroDefinition Hero => _hero;
 
         /// <summary>The kinds of drone this level uses. How many fly comes from permanent upgrades.</summary>
-        public float EnergyMax => _energyMax;
-        public float EnergyPerSecond => _energyPerSecond;
         public DroneDefinition RepairDrone => _repairDrone;
-        public DroneDefinition CollectorDrone => _collectorDrone;
+        public DroneDefinition HarvestDrone => _harvestDrone;
+        public DroneDefinition AttackDrone => _attackDrone;
+
+        /// <summary>The drone kinds this level offers, in the order the base menu shows them; missing kinds are left out.</summary>
+        public DroneDefinition[] Drones
+        {
+            get
+            {
+                var list = new System.Collections.Generic.List<DroneDefinition>(3);
+                foreach (DroneDefinition drone in new[] { _repairDrone, _harvestDrone, _attackDrone })
+                {
+                    if (drone != null)
+                    {
+                        list.Add(drone);
+                    }
+                }
+
+                return list.ToArray();
+            }
+        }
 
         /// <summary>Recipes the player can use in this level to combine neighbouring towers.</summary>
         public CombineRecipe[] Recipes => _recipes;
@@ -154,10 +197,12 @@ namespace Game.Levels
         }
 
         [System.NonSerialized] private TerrainMap _terrainMap;
+        [System.NonSerialized] private RoadCorridor _road;
 
         private void OnValidate()
         {
             _terrainMap = null;
+            _road = null;
             if (!IsValid(out string error))
             {
                 Debug.LogWarning($"LevelDefinition '{name}' is invalid: {error}", this);

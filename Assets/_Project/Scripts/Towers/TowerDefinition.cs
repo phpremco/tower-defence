@@ -1,4 +1,5 @@
-﻿using Game.Core;
+﻿using Game.Combat;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Towers
@@ -44,6 +45,7 @@ namespace Game.Towers
 
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
         [SerializeField] private TowerShape _shape;
+        [SerializeField] private ProjectileStyle _projectileStyle;
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
 
@@ -71,6 +73,9 @@ namespace Game.Towers
         /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>
         /// <summary>The procedural model this tower wears, or None to use <see cref="Model"/> or the placeholder.</summary>
         public TowerShape Shape => _shape;
+
+        /// <summary>How this tower's shots look and sound.</summary>
+        public ProjectileStyle ProjectileStyle => _projectileStyle;
 
         public GameObject Model => _model;
         public float ModelScale => _modelScale;

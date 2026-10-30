@@ -13,40 +13,26 @@ MonoBehaviour:
   m_Name: Nest_Hard_2
   m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
   _startDelay: 8
+  _spawnJitter: 0.45
   _groups:
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 3
-    PathIndex: 3
-    Interval: 0.6
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 1
+    PathIndex: 0
+    Source: 0
+    Interval: 0.3
     Delay: 0
     Stagger: 0
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 1
-    PathIndex: 0
-    Interval: 0.6
-    Delay: 0
-    Stagger: 3.6000001
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
+    PathIndex: 3
+    Source: 0
+    Interval: 0.5
+    Delay: 2.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 82561541f80c79c45876c662358d966f, type: 2}
     Count: 2
-    PathIndex: 3
-    Interval: 0.6
-    Delay: 0
-    Stagger: 4.8
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 3
     PathIndex: 0
-    Interval: 0.6
-    Delay: 0
-    Stagger: 7.2000003
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 1
-    PathIndex: 3
-    Interval: 0.6
-    Delay: 0
-    Stagger: 10.8
-  - Enemy: {fileID: 11400000, guid: 6a0c3f2b1f5cca84f890bbf9a1d02c03, type: 2}
-    Count: 1
-    PathIndex: 0
-    Interval: 0.6
-    Delay: 0
-    Stagger: 12
+    Source: 4
+    Interval: 1.3
+    Delay: 19
+    Stagger: 0

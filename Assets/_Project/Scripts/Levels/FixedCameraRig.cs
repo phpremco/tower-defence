@@ -4,7 +4,8 @@ namespace Game.Levels
 {
     /// <summary>
     /// Places the orthographic camera at a fixed angle above the middle of the field and zooms so the whole field
-    /// fills the screen, whatever the window shape. Re-fits when the aspect ratio changes.
+    /// fills the screen, whatever the window shape. Re-fits when the aspect ratio changes. Heavy hits can shake it:
+    /// the shake is an offset on top of the fixed view that dies out on its own.
     /// </summary>
     [RequireComponent(typeof(Camera))]
     public sealed class FixedCameraRig : MonoBehaviour
@@ -17,12 +18,20 @@ namespace Game.Levels
         /// <summary>Share of the screen height taken by the top and bottom HUD bars.</summary>
         private const float HudReserve = 0.2f;
 
+        private const float ShakeAmplitude = 0.18f;
+        private const float ShakeDecay = 5.5f;
+        private const float ShakeFrequency = 26f;
+        private const float ShakeFloor = 0.01f;
+
         private Camera _camera;
         private LevelDefinition _level;
         private float _fittedAspect;
         private float _fitSize;
         private float _zoom = 1f;
         private Vector3 _focus;
+        private Vector3 _basePosition;
+        private float _shake;
+        private float _shakeSeed;
 
         /// <summary>Zoom factor: one shows the whole field, larger values come closer.</summary>
         public float Zoom => _zoom;
@@ -38,6 +47,16 @@ namespace Game.Levels
             ApplyView();
         }
 
+        /// <summary>Kicks the camera; strength one is the hardest hit. A stronger kick replaces a weaker one still running.</summary>
+        public void Shake(float strength)
+        {
+            if (strength > _shake)
+            {
+                _shake = Mathf.Min(1f, strength);
+                _shakeSeed = Random.Range(0f, 100f);
+            }
+        }
+
         public void Apply(LevelDefinition level)
         {
             _level = level;
@@ -45,8 +64,6 @@ namespace Game.Levels
             _camera.orthographic = true;
             _camera.clearFlags = CameraClearFlags.SolidColor;
             _camera.backgroundColor = level.Theme.BackgroundColor;
-
-            CameraSettings settings = level.Camera;
             Fit();
         }
 
@@ -56,6 +73,27 @@ namespace Game.Levels
             {
                 Fit();
             }
+        }
+
+        private void LateUpdate()
+        {
+            if (_shake <= 0f)
+            {
+                return;
+            }
+
+            _shake *= Mathf.Exp(-ShakeDecay * Time.deltaTime);
+            if (_shake < ShakeFloor)
+            {
+                _shake = 0f;
+                transform.position = _basePosition;
+                return;
+            }
+
+            float t = Time.time * ShakeFrequency;
+            float x = Mathf.PerlinNoise(t, _shakeSeed) * 2f - 1f;
+            float y = Mathf.PerlinNoise(_shakeSeed, t) * 2f - 1f;
+            transform.position = _basePosition + (transform.right * x + transform.up * y) * (ShakeAmplitude * _shake);
         }
 
         private void Fit()
@@ -75,7 +113,8 @@ namespace Game.Levels
         {
             CameraSettings settings = _level.Camera;
             Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
-            transform.SetPositionAndRotation(rotation * (Vector3.back * DistanceFromCenter) + _focus, rotation);
+            _basePosition = rotation * (Vector3.back * DistanceFromCenter) + _focus;
+            transform.SetPositionAndRotation(_basePosition, rotation);
             _camera.orthographicSize = _fitSize / _zoom;
         }
     }

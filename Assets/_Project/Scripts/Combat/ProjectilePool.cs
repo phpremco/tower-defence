@@ -7,6 +7,8 @@ namespace Game.Combat
     /// <summary>Pooled projectiles and their impact flashes for one level.</summary>
     public sealed class ProjectilePool
     {
+        private static readonly Color BurstColor = new Color(1f, 0.7f, 0.3f);
+
         private readonly TargetRegistry _registry;
         private readonly Transform _parent;
         private readonly ObjectPool<Projectile> _pool;
@@ -20,25 +22,26 @@ namespace Game.Combat
             _flashes = new ObjectPool<ImpactFlash>(CreateFlash, f => f.gameObject.SetActive(true), f => f.gameObject.SetActive(false));
         }
 
-        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f)
+        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default)
         {
             Projectile projectile = _pool.Get();
-            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds);
-            Shot?.Invoke(from);
+            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds, style, color == default ? BurstColor : color);
+            Shot?.Invoke(new ShotInfo(from, splashRadius, mask, slowFactor < 1f, style));
         }
 
-        /// <summary>Raised with the muzzle position whenever something fires, so audio can react.</summary>
-        public event System.Action<Vector3> Shot;
+        /// <summary>Raised whenever something fires, with where and what kind of shot, so audio can react.</summary>
+        public event System.Action<ShotInfo> Shot;
 
         /// <summary>Plays the impact flash alone, for explosions that are not projectiles, such as a dying enemy.</summary>
-        public void Burst(Vector3 position, float radius) => _flashes.Get().Show(position, radius, _flashes.Release);
+        public void Burst(Vector3 position, float radius) => _flashes.Get().Show(position, radius, BurstColor, _flashes.Release);
 
         private Projectile Create()
         {
             var go = new GameObject("Projectile");
             go.transform.SetParent(_parent, false);
-            go.AddComponent<ProjectileView>();
+            // Logic first: the view requires it and binds to it in its Awake.
             var projectile = go.AddComponent<Projectile>();
+            go.AddComponent<ProjectileView>();
             projectile.Impacted += OnImpact;
             return projectile;
         }
@@ -46,14 +49,14 @@ namespace Game.Combat
         /// <summary>Raised with position and radius when a splash projectile lands, so audio can react.</summary>
         public event System.Action<Vector3, float> Exploded;
 
-        private void OnImpact(Vector3 position, float radius)
+        private void OnImpact(Vector3 position, float radius, Color color)
         {
             if (radius > 0f)
             {
                 Exploded?.Invoke(position, radius);
             }
 
-            _flashes.Get().Show(position, radius, _flashes.Release);
+            _flashes.Get().Show(position, radius, color, _flashes.Release);
         }
 
         private ImpactFlash CreateFlash()
