@@ -290,7 +290,7 @@ namespace Game.Editor
                 Area(TerrainKind.Water, 18, 5, 23, 9), Area(TerrainKind.Water, 7, 0, 10, 1), Area(TerrainKind.Water, 8, -4, 9, -1),
                 Area(TerrainKind.Raised, 0, 4, 2, 6), Area(TerrainKind.Raised, 6, 9, 9, 10), Area(TerrainKind.Raised, 18, 13, 21, 14), Area(TerrainKind.Raised, 0, 0, 3, 1));
             // Tide bats rise out of the lake and the pond; the nests keep rocks and mines off their cells.
-            ElementNest[] landingNests = { Nest(Element.Water, 20, 7), Nest(Element.Water, 8, 0) };
+            ElementNest[] landingNests = { Nest(Element.Water, 20, 7), Nest(Element.Water, 18, 8) };
             Vector2Int[] landingReserved = blockadeCells.Concat(NestCells(landingNests)).ToArray();
             Vector2Int[] landingBlocked = ScatterBlocked(LandingSize, landingRoad, landingTerrain, landingReserved, 11, BlockedFraction);
             WriteCells(so.FindProperty("_blockedCells"), landingBlocked);

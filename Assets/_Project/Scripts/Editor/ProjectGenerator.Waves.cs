@@ -39,7 +39,8 @@ namespace Game.Editor
         private const float HeavyTempo = 1.4f;
         private const float AirShare = 0.5f;
         private const float AirGroundShare = 0.45f;
-        private const float AmbushShare = 0.55f;
+        // Share of an ambush wave that surfaces from pools and nests, per difficulty: easy keeps most of it at the gate.
+        private static readonly float[] AmbushSharePerDifficulty = { 0.3f, 0.45f, 0.55f, 0.65f };
         private const float BossWaveShare = 0.6f;
         private const float SprinkleShare = 0.15f;
         private const float FlyerInterval = 1.6f;
@@ -195,7 +196,7 @@ namespace Game.Editor
             {
                 Join(b.Bulwark, 1, 2f, 2.8f), Join(b.Dustbat, 1, 2.5f, 1.4f, SpawnSource.Nest, 6f), Join(b.Oozer, 2, 1.5f, 2.2f),
                 Join(b.Stinger, 3, 1.5f, 2.6f), Join(b.Skitter, 4, 1.5f, 0.7f), Join(b.Prowler, 5, 2f, 1.1f),
-                Join(b.Tidebat, 6, 1.2f, 1.4f, SpawnSource.Nest, 9f), Join(b.Wisp, 9, 1.5f, 1.3f),
+                Join(b.Wisp, 9, 1.5f, 1.3f),
             },
             Flyer = b.Skyray,
             AirWaves = new[] { 5, 9, 14, 18, 23, 28, 33 },
@@ -298,8 +299,9 @@ namespace Game.Editor
                     Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, script, number);
                     break;
                 case WaveKind.Ambush when pools.Count > 0:
-                    Fill(result, budget * (1f - AmbushShare), open, 1f, secondRoad, random, script, number);
-                    Fill(result, budget * AmbushShare, pools, 1f, secondRoad, random, script, number, AmbushDelaySeconds);
+                    float ambush = AmbushSharePerDifficulty[Mathf.Min(difficulty, AmbushSharePerDifficulty.Length - 1)];
+                    Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, script, number);
+                    Fill(result, budget * ambush, pools, 1f, secondRoad, random, script, number, AmbushDelaySeconds);
                     break;
                 default:
                     Fill(result, budget, open, 1f, secondRoad, random, script, number);

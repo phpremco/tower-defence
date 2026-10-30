@@ -334,7 +334,7 @@ namespace Game.Editor
                     Entrance = EntranceKind.Pool,
                     EntranceCell = new Vector2Int(19, 8),
                     // Moss bats roost in hollow trees on both sides of the woods; tide bats rise from the ponds.
-                    Nests = new[] { Nest(Element.Wood, 5, 10), Nest(Element.Wood, 22, 9), Nest(Element.Water, 20, 11), Nest(Element.Water, 18, 6) },
+                    Nests = new[] { Nest(Element.Wood, 5, 10), Nest(Element.Wood, 12, 10), Nest(Element.Water, 20, 11), Nest(Element.Water, 18, 6) },
                 },
                 new LevelSpec
                 {
@@ -440,7 +440,7 @@ namespace Game.Editor
                     BlockadeCells = Cells(5, 13, 19, 3, 5, 1),
                     BlockedSeed = 45,
                     Terrain = Terrain(
-                        Area(TerrainKind.Quicksand, 20, 6, 23, 9), Area(TerrainKind.Quicksand, 2, 4, 4, 6), Area(TerrainKind.Quicksand, 24, 13, 26, 14),
+                        Area(TerrainKind.Quicksand, 20, 6, 23, 9), Area(TerrainKind.Quicksand, 2, 4, 4, 6), Area(TerrainKind.Quicksand, 24, 13, 26, 14), Area(TerrainKind.Quicksand, 16, 13, 18, 14),
                         Area(TerrainKind.Water, 22, 15, 26, 17),
                         Area(TerrainKind.Raised, 15, 9, 17, 11), Area(TerrainKind.Raised, 0, 14, 5, 15), Area(TerrainKind.Raised, 24, 7, 27, 12),
                         Area(TerrainKind.Raised, 1, 3, 6, 4)),
@@ -458,7 +458,8 @@ namespace Game.Editor
                     Entrance = EntranceKind.Ground,
                     EntranceCell = new Vector2Int(6, 10),
                     // Dust bats burrow out of the sand drifts and tide bats out of the old cistern.
-                    Nests = new[] { Nest(Element.Sand, 21, 7), Nest(Element.Sand, 3, 5), Nest(Element.Sand, 25, 13), Nest(Element.Water, 24, 15) },
+                    // Only the drifts in the first half of the siege hold nests; the sand by the base stays quiet.
+                    Nests = new[] { Nest(Element.Sand, 3, 5), Nest(Element.Sand, 17, 13) },
                 },
                 new LevelSpec
                 {
@@ -518,7 +519,7 @@ namespace Game.Editor
                     // Everything at once, a fortress halfway, and the queen herself through the hive mouth.
                     Entrance = EntranceKind.Gate,
                     // The hive keeps its own bats: in the drowned corner and in the sand pits.
-                    Nests = new[] { Nest(Element.Water, 20, 12), Nest(Element.Water, 18, 1), Nest(Element.Sand, 2, 6), Nest(Element.Sand, 6, 4) },
+                    Nests = new[] { Nest(Element.Water, 15, 1), Nest(Element.Water, 14, 2), Nest(Element.Sand, 2, 6), Nest(Element.Sand, 6, 4) },
                 },
             };
 

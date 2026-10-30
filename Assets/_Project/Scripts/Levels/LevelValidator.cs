@@ -297,6 +297,27 @@ namespace Game.Levels
             errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
         }
 
+        /// <summary>Largest share of its road a creature from a nest or pool may skip; the rest it must walk under the guns.</summary>
+        public const float MaxNestRoadShare = 0.6f;
+
+        // A nest must leave the creatures a real walk: the point where they join the road may not lie past most of it.
+        private static void CheckNestDistance(LevelDefinition level, ElementNest nest, List<string> errors)
+        {
+            Vector3 start = level.Grid.CellToWorld(nest.Cell);
+            Vector3[] route = OffRoadRoute.Build(level, start, out float progress);
+            float remaining = 0f;
+            for (int i = 1; i < route.Length; i++)
+            {
+                remaining += Vector3.Distance(route[i - 1], route[i]);
+            }
+
+            float share = progress / Mathf.Max(0.01f, progress + remaining);
+            if (share > MaxNestRoadShare)
+            {
+                errors.Add($"{nest.Element} nest at {nest.Cell} joins the road {share:P0} of the way to the base; at most {MaxNestRoadShare:P0} is allowed.");
+            }
+        }
+
         // A nest lies on the grid, off the road, in terrain that suits its element: water, lava and sand nests in
         // that liquid, the rest on dry ground.
         private static void CheckNests(LevelDefinition level, GridMap grid, List<string> errors)
@@ -316,6 +337,8 @@ namespace Game.Levels
                 {
                     errors.Add($"{nest.Element} nest at {nest.Cell} sits in {kind}, not in {wanted}.");
                 }
+
+                CheckNestDistance(level, nest, errors);
             }
         }
 

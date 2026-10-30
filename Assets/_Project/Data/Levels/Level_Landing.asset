@@ -48,7 +48,6 @@ MonoBehaviour:
   _blockedCells:
   - {x: 1, y: 2}
   - {x: 16, y: 5}
-  - {x: 18, y: 10}
   _blockades:
   - Cell: {x: 9, y: 12}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -165,7 +164,7 @@ MonoBehaviour:
     Kind: 1
   _mineCells:
   - {x: 6, y: 5}
-  - {x: 18, y: 12}
+  - {x: 18, y: 11}
   - {x: 17, y: 5}
   _mineStock: 140
   _bossEntrance:
@@ -174,7 +173,7 @@ MonoBehaviour:
   _nests:
   - Cell: {x: 20, y: 7}
     Element: 2
-  - Cell: {x: 8, y: 0}
+  - Cell: {x: 18, y: 7}
     Element: 2
   _terrainAlbedo: {fileID: 2800000, guid: 03ecff6002a3a0445a034addfe63c6a0, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 4186c2e67c2a58249b7e856a4a2ceef8, type: 3}

@@ -620,3 +620,9 @@ species (Scout, Grunt, Brute, Flyer, Drowner, Burrower, Cinder, Overseer, Warden
   (100 frames at 3x), `waves_on.cs`.
 - **Open**: balance probe on the new roster, the sting tail reads weakly from the 55-degree camera, bats could use a
   second look at close range, more posture work on the Stinger and Oozer idle.
+- **Nests stay away from the base** (2026-10-30, later): Remco saw creatures come up almost beside the base. The
+  validator now rejects a nest whose creatures join the road past 60% of its length (`LevelValidator.MaxNestRoadShare`),
+  the nests were moved (Landing both in the lake, Forest wood nest on the plateau, Ruins only the first-half drifts
+  with a new sand patch at 16-18/13-14 and no tide bats, Nest level water nests in the north pond), and the share of
+  an ambush wave that surfaces from pools and nests now scales with difficulty (30/45/55/65%). `nest_report.cs`
+  prints the share per nest. Maps are not enlarged yet; that is an open option if the roads still feel short.

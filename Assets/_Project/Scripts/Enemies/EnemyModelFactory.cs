@@ -275,7 +275,7 @@ namespace Game.Enemies
             }
 
             Pincers(parts, new Vector3(0.17f * k, 0.17f * k, 0.3f * k), 0.3f * k, 0.035f * k);
-            StingTail(parts, new Vector3(0f, 0.24f * k, -0.3f * k), 0.85f * k, 0.05f * k, 0, 0f);
+            StingTail(parts, new Vector3(0f, 0.24f * k, -0.3f * k), 0.95f * k, 0.055f * k, 0, 0f);
             if (boss)
             {
                 StingTail(parts, new Vector3(0.12f * k, 0.22f * k, -0.26f * k), 0.6f * k, 0.035f * k, 1, 0.35f);
@@ -776,8 +776,8 @@ namespace Game.Enemies
             for (int i = 0; i <= Segments; i++)
             {
                 float t = i / (float)Segments;
-                float angle = Mathf.Lerp(-0.2f, 2.4f, t);
-                path[i] = new Vector3(lean * t * length * 0.6f, Mathf.Sin(angle) * length * 0.65f, (-0.12f + (1f - Mathf.Cos(angle)) * 0.42f) * length);
+                float angle = Mathf.Lerp(-0.15f, 2.55f, t);
+                path[i] = new Vector3(lean * t * length * 0.6f, Mathf.Sin(angle) * length * 0.8f, (-0.12f + (1f - Mathf.Cos(angle)) * 0.4f) * length);
                 radii[i] = radius * (1f - t * 0.45f);
                 if (i > 0 && i < Segments)
                 {

@@ -82,6 +82,8 @@ MonoBehaviour:
   - {x: 13, y: 12}
   - {x: 15, y: 9}
   - {x: 15, y: 12}
+  - {x: 19, y: 10}
+  - {x: 22, y: 10}
   _blockades:
   - Cell: {x: 6, y: 13}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -219,15 +221,15 @@ MonoBehaviour:
   _mineCells:
   - {x: 3, y: 10}
   - {x: 13, y: 11}
-  - {x: 14, y: 3}
+  - {x: 17, y: 4}
   _mineStock: 140
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
   _nests:
-  - Cell: {x: 20, y: 12}
+  - Cell: {x: 15, y: 1}
     Element: 2
-  - Cell: {x: 18, y: 1}
+  - Cell: {x: 15, y: 2}
     Element: 2
   - Cell: {x: 2, y: 6}
     Element: 4
