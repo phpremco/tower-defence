@@ -128,6 +128,13 @@ namespace Game.Levels
 
         private void OnWrecked(Vector3 position) => Play(position, WreckRadius);
 
-        private void OnStruck(Vector3 position) => Play(position, StrikeRadius);
+        // A blade landing bends the air; a bolt from the gun is too small a thing for a ripple.
+        private void OnStruck(Vector3 position, Game.Hero.HeroWeaponDefinition weapon)
+        {
+            if (weapon.Kind == Game.Hero.HeroWeaponKind.Melee)
+            {
+                Play(position, StrikeRadius);
+            }
+        }
     }
 }

@@ -27,6 +27,13 @@ namespace Game.Levels
         private const float CliffSeamPlateau = 0.45f;
         private const float CliffSeamWidth = 0.07f;
         private const float CliffSeamGlow = 0.9f;
+        private const float PebbleScale = 4.1f;
+        private const float PebbleEdge = 0.63f;
+        private const float PebbleStrength = 0.5f;
+        private const float LichenScale = 0.9f;
+        private const float LichenStrength = 0.45f;
+        private const float FissureScale = 1.6f;
+        private const float FissureDarkening = 0.35f;
 
         public readonly struct Result
         {
@@ -92,6 +99,7 @@ namespace Game.Levels
             private readonly Color _accent;
             private readonly Color _stone;
             private readonly Color _edgeGlow;
+            private readonly Color _lichen;
             private readonly Color _lava;
             private readonly Color _sand;
             private readonly Color _water;
@@ -114,6 +122,7 @@ namespace Game.Levels
                 _accent = theme.AccentColor;
                 _stone = Color.Lerp(theme.GroundColor, theme.PathColor, 0.4f);
                 _edgeGlow = theme.PathColor;
+                _lichen = Color.Lerp(theme.PlantColor, theme.GroundColor, 0.45f);
                 _lava = theme.LavaColor;
                 _sand = theme.SandColor;
                 _water = theme.WaterColor;
@@ -131,6 +140,7 @@ namespace Game.Levels
                 color = _ground * (0.95f + 0.6f * large);
                 color = Color.Lerp(color, _groundLight, TerrainNoise.SmoothStep(0.55f, 0.78f, medium) * 0.55f);
                 color *= 0.9f + 0.2f * grain;
+                ShadeSurface(x, z, grain, ref color);
                 glow = Color.black;
 
                 float outside = _field.OutsideAt(x, z);
@@ -158,6 +168,18 @@ namespace Game.Levels
                 glow *= fade;
                 color.a = 1f;
                 glow.a = 1f;
+            }
+
+            // The skin of the ground itself: scattered small stones in the rock colour, patches of lichen in a
+            // muted plant tint, and fine dark fissures, so bare ground is never one flat wash of colour.
+            private void ShadeSurface(float x, float z, float grain, ref Color color)
+            {
+                float pebble = TerrainNoise.SmoothStep(PebbleEdge, PebbleEdge + 0.08f, Mathf.PerlinNoise(x * PebbleScale + _seed * 1.7f, z * PebbleScale + 3f));
+                color = Color.Lerp(color, _rock * (0.9f + 0.3f * grain), pebble * PebbleStrength);
+                float lichen = TerrainNoise.SmoothStep(0.58f, 0.7f, TerrainNoise.Fbm(x * LichenScale + 41f, z * LichenScale, 2, _seed)) * TerrainNoise.SmoothStep(0.4f, 0.6f, grain);
+                color = Color.Lerp(color, _lichen, lichen * LichenStrength);
+                float fissure = TerrainNoise.SmoothStep(0.94f, 0.985f, TerrainNoise.Ridge(x * FissureScale, z * FissureScale, _seed + 23f));
+                color *= 1f - fissure * FissureDarkening;
             }
 
             // Layered strata on the cliff face, a pale worn lip along the top edge and a thin seam of the level's

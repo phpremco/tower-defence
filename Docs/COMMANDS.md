@@ -144,7 +144,7 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
   (`Game.Core.Services.Get<Game.Levels.CampaignCatalog>()`). The play-test scripts live in `Tools/PlayTest/` (Unity's
   `Temp/` gets wiped by the generator and test runs): `start_level.cs` (level index from `Tools/PlayTest/level_arg.txt`),
   `towers.cs` (probe towers plus skip wave), `step10.cs`, `inspect.cs` (enemies, effects, audio), `wreck.cs` (wrecks
-  every gate), `hero_to_base.cs` and `zoom.cs` (close-up on "hero", "gate" or "base" from `zoom_arg.txt`).
+  every gate), `hero_to_base.cs` / `hero_to_first.cs` (send the hero to its last or first post) and `zoom.cs` (close-up on "hero", "gate" or "base" from `zoom_arg.txt`; `zoom_size.txt` is a zoom factor, 10 to 12 frames the hero).
 - After `editor_stop`, wait a few seconds and `open_scene` Boot again before `editor_play`, or the first `eval_file`
   calls land in a half-loaded scene and report "no context".
 - Stepping many frames inside one `eval_file` call logs `Internal: deleting an allocation that is older than its
@@ -175,8 +175,24 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - `Tools/PlayTest/dump_map.cs` prints every level as a text map with its validation errors (run after the generator).
 - The generator menu item can take longer than the CLI's 30 s main-thread timeout (five terrain bakes); the error
   "Main thread operation timed out" is harmless, the generator keeps running. Wait for it by running the EditMode
-  tests next (they queue behind it), then `clear_console`.
+  tests next (they queue behind it), then `clear_console`. Since the terrain skin pass (2026-10-30) a full run takes
+  about a minute; pass `--timeout 300` to `unity command menu` and the call waits for it instead of erroring.
 - More scripts in `Tools/PlayTest/`: `hero_down.cs` (drains the hero), `hero_revive.cs` (cuts the revive timer),
   `upgrade_gate.cs` (one level on every gate), `upgrade_towers.cs`, `skip_wave.cs`, `towers_all.cs` (one probe of
   every tower asset near the spawn, Editor only), `shots_probe.cs` (lists shots in flight and centres the camera on
   one); `zoom.cs` also takes "towers", "roster", "spawn" and "enemy" and a size from `zoom_size.txt`.
+- `Tools/PlayTest/step_n.cs` steps `step_arg.txt` ("frames timescale", e.g. "4 1") for catching a short animation in
+  a row of screenshots; `teleport_to_gate.cs` drops every living walker on its route just before the first gate, so
+  attacks can be watched without waiting for the walk; `clip_lengths.cs` lists the length of the recorded death,
+  explosion and hit clips (how the 4.7 s slime clip was found). `dump_waves.cs` now also prints the kill money per
+  wave and the total per difficulty.
+- Balance probe: `run_tests --mode PlayMode --filter BalanceProbeTests --async_tests true`, then poll `test_status`
+  and read the `[Probe]` line from `console`. The bot builds four towers, then upgrades the cheapest upgrade it can
+  afford, then builds more. It still has no drones and does not move the hero.
+- `unity recompile` takes no `--result-only`; if a flag is rejected nothing recompiled, and a generator run right after
+  uses the old code. Always check `console_status` for `compilationFailed: false` before `menu` or `run_tests`.
+- If `test_status` says "running" for minutes while `editor_status` says play mode is stopped, the runner is stuck (it
+  happens when a run starts on a compile error or with a modified scene open): `open_scene` Boot, then start again.
+- Balance model: `run_tests --mode EditMode --filter BalanceLedgerTests --timeout 300` writes
+  `Tools/PlayTest/balance_ledger.txt` (one line per wave: money, bought DPS ground/air, wave HP ground/air, window,
+  pressure ground/air; B marks a boss wave). Failures name level, difficulty and wave.

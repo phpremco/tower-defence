@@ -89,6 +89,9 @@ namespace Game.Levels
         /// <summary>The slime the trail layers leave; the level view draws it.</summary>
         public SlimeField Slime { get; }
 
+        /// <summary>Health scale of the wave under way, set by the controller; minions a boss releases inherit it.</summary>
+        public float WaveHealthScale { get; set; } = 1f;
+
         /// <summary>Advances what the spawner runs between spawns: the slime on the road. Called once per frame.</summary>
         public void Step(float deltaTime)
         {
@@ -250,7 +253,7 @@ namespace Game.Levels
             enemy.Initialize(
                 definition,
                 route,
-                difficulty.HealthMultiplier * _context.Level.EnemyHealthMultiplier,
+                difficulty.HealthMultiplier * _context.Level.EnemyHealthMultiplier * WaveHealthScale,
                 1f,
                 height,
                 _context.Targets,

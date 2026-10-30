@@ -35,11 +35,11 @@ MonoBehaviour:
     Model: {fileID: 0}
   _projectileSpeed: 12
   _splashRadius: 0
-  _maxHealth: 80
+  _maxHealth: 140
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
-  _repairCostPerHealth: 0.4
-  _damagedPowerFloor: 0.5
+  _repairCostPerHealth: 0.3
+  _damagedPowerFloor: 0.75
   _slowFactor: 0.5
   _slowSeconds: 2
   _isSupport: 0

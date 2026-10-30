@@ -638,3 +638,140 @@ road), boss entrances and flight routes were laid out afresh; `dump_map.cs` show
 roads: 24 / 30 / 36 / 40 / 48, bosses at 12+24, 15+30, 12+24+36, 14+27+40, 12+24+36+48; starting money 200 / 240 /
 280 / 320 / 360. Known: the whole map fits the screen at start, so creatures are small until the player zooms
 (`CameraPanZoom.MaxZoom` 3); balance on the longer roads is unjudged.
+
+## Look, attacks, sound and balance pass (2026-10-30, evening)
+Remco's feedback: bubbling sounds that linger after ants die, the wolves look "very very basic", spawns, rocks and
+fauna need skins like the monsters (and the terrain too), attacks need animation, balance is off (two towers, no
+upgrades, over a thousand money by wave 20 on Easy), the hero timer should be two minutes with a countdown, ants
+should come in big weak swarms, and enemies should grow a little stronger every wave.
+- **Sound**: the enemy death list used two Kenney slime clips; `slime_001` is 4.7 s long, so every second kill
+  left a bubbling tail. Only the 0.5 s clip remains, and `SfxPlayer` cuts any death sound at 0.7 s
+  (`KillMaxSeconds`, fade-out of voices past their end). `clip_lengths.cs` lists clip lengths.
+- **Prowler** (`EnemyModelFactory.Prowler`): a real wolf build. Chest, waist and haunches, a dark saddle, two
+  glowing flank stripes, a neck that drops to a long muzzle with a brow ridge, slanted eyes, lit fangs, a crest of
+  fur tufts (`FurTuft`, blades) down neck and shoulders and a ruff out to the sides, ears as twitching feelers, a
+  lower jaw (new `CreatureRole.Jaw`, drops in the wind-up and slams shut), a bushy tail with fur clumps, and
+  `WolfLegs` (muscled thigh, slim shin, three clawed toes; heavier haunch on the hind pair). The alpha adds a bone
+  brow ridge, shoulder spines and glowing cracks. The Hide skin has finer streaks and raised tufts.
+- **Environment skins**: `CreatureSkin` gained Flesh (bulges with glowing veins), Stone (grain with lit cracks)
+  and Bark (ridges with lit grooves). Hive mouths wear Flesh; nests wear Slime (water), Bark (wood) or Stone
+  (fire, sand, ice) via `LevelVisualBuilder.NestSkin`; mining nodes wear the level's rock with ore glowing in the
+  cracks and streaked crystals. `PropTextures` is 256 px with richer rock (cracks, pits, lichen tint), a `Crystal`
+  surface (streaks, inclusions, emission map) on the glow slots of all props, and a `Ground` detail surface.
+- **Terrain**: `TerrainSurfaceBuilder` adds a tiling detail layer (`_DETAIL_MULX2`, grit, pebbles and fissures
+  as albedo and normal, 1.6 units per tile, tangents on the mesh; keeper material `Lit_EmissionNormalDetail`).
+  `TerrainPainter.ShadeSurface` paints small stones in the rock colour, lichen patches in a muted plant tint and
+  dark fissures into the baked albedo.
+- **Attacks** (`EnemyView`): the attack takes 45% of the creature's attack interval (0.35 to 0.9 s). Per style
+  (`AttackPose`): Bite crouches nose-down, snaps up and forward and shakes its head; Slam springs up in the wind-up
+  and crashes down; Slash rears and twists into the swing; Sting dips the front; Bolt throws the head back and
+  spits forward; Whip rolls into the lash. Bolts and stings now fire at the top of the strike instead of at the
+  start (`PlayStrikeMoments`), melee blows throw sparks in the accent colour at the target and a slam raises dust.
+- **Hero**: revive 120 s (`HeroReviveSeconds` in the generator); the HUD top strip shows "Hero down m:ss" next
+  to the base health while it lasts (`HudView.RefreshHero`, rebuilt only when the second changes).
+- **Balance** (data only): Skitter 10 HP, reward 1, interval 0.45 (swarms of 13 at wave 1, 60+ late); other
+  rewards trimmed (Prowler 4, Stinger 9, Bulwark 14, Oozer 6, Roller 5, Skyray 6, Wisp 4, bats 3). Wave budgets
+  start higher and end far higher (Landing 7 to 170, Forest 9 to 230, Lava 10 to 300, Ruins 12 to 350, Nest 12 to
+  450; group cap 64). New `WaveDefinition.HealthMultiplier`, written as `1 + HealthGrowth * (wave - 1)` per level
+  (3%, 2.5%, 2%, 1.8%, 1.5% a wave) and applied by `EnemySpawner.WaveHealthScale` (set per wave by the
+  controller, inherited by boss minions). Upgrades were worth less per coin than new towers; raised: Pulse 4/7/12,
+  Cannon 25/48/85, Rocket 30/55/90. Difficulty steps are gentler now that the waves themselves are heavier:
+  health/count Easy 0.8/0.8, Medium 1/1, Hard 1.3/1.2, Psycho 1.8/1.5. Landing Easy kill money over the level is
+  about 1880 (was 2300 after the first pass; `dump_waves.cs` prints it).
+- **Probe bot** now builds four towers, then upgrades the cheapest affordable upgrade, then builds more; it ignores
+  engine warnings and fails only on errors (the graphics ring buffer warning at 20x speed aborted a run).
+- **Scripts**: `step_n.cs`, `teleport_to_gate.cs`, `clip_lengths.cs`; `dump_waves.cs` prints money.
+- **Per-wave growth and the paper balance model** (same evening, on Remco's two additions): every wave carries a
+  `HealthMultiplier` (see above), and `BalanceLedger` (Levels) is a static model that, per level, difficulty and
+  wave, works out the money the player can have had (start, kills, mines minus one harvester), the strongest
+  defence that buys from the level's towers (damage x fire rate per coin, splash as a bonus against streams, the
+  purse split so ground and air pressure match, at least one air gun when anything flies), the wave's effective
+  health (health plus armour, times difficulty, level and wave growth), the window the towers get (spawn span plus
+  twice the mean range over the mean speed) and the hero at half the window. Pressure = health / capacity, with a
+  tower utilisation of 0.35 calibrated so that one is roughly where the greedy probe bot stops holding.
+  `BalanceLedgerTests` (EditMode) writes `Tools/PlayTest/balance_ledger.txt` and fails outside the bands: plain
+  waves Easy 0.7, Medium 1.0, Hard 1.6, Psycho 3.2 (bosses x1.8), a ground wave more than 2.7x the heaviest of the
+  three plain waves before it, or late Easy averaging under 0.15. It is a model, not the game: no placement, no
+  gate blocking, no drones beyond the harvesters, no boss powers; read it as a curve, not as truth.
+- **What the ledger changed**: air raids took half the budget and air defence buys fewer points per coin, so air
+  waves were spikes (`AirShare` 0.5 -> 0.35, `AirGroundShare` 0.4); heavy waves put 55% (was 60%) of the budget
+  into the toughest creature; Lava opens lower (budget 8, Stinger from wave 4, Bulwark from 10), Ruins opens with
+  two plain waves and the Oozer (Bulwark from 9, Stinger from 6, budget 10), Nest budget 11 and Bulwark from 7;
+  the Slime Monarch has 1100 health (was 1500; it walks in at wave 14 of 40). Remaining over-band spots are
+  listed in the test output when it fails; the bands were loosened once (Hard 1.5 -> 1.6, Psycho 2.2 -> 3.2,
+  cliff 2.2 -> 2.7) and should be tightened again as the data settles.
+- **Probe results on this data** (Landing): spammer bot (every coin into new towers) wins Easy with a full base;
+  the upgrading bot loses Easy around wave 14 and Medium around wave 13 because four towers cover too little road.
+  Real play with the hero at a gate, gates that hold swarms and drones sits well above either bot. Early Hard and
+  Psycho waves are the relatively hardest moments (money is scarce before kills come in); if that feels wrong the
+  fix is a per-difficulty starting-money multiplier, not a flatter curve.
+
+## After Remco's first play of the new balance (2026-10-30, late)
+"Much better to play, but not in balance": the first waves ask nothing, then before the second boss every tower is
+wrecked, there is no money, and scrapping takes two clicks.
+- **Towers are sturdier**: Pulse 150 (was 80), Cannon 220 (120), Rocket 130 (70); the later towers grew in the same
+  proportion (`ProjectGenerator.World.cs`). A damaged tower keeps 75% of its fire power at worst (`_damagedPowerFloor`,
+  was 50%) and a point of repair costs 0.3 (was 0.4); both are now written by the generator (`CreateTower`).
+- **The acid sting is milder**: Stinger 3 damage every 2 s (was 5 every 1.5 s), Easy structure damage 0.6 (was 0.7).
+  On Landing the Stinger is the only thing that hurts towers, so late waves with eight to eleven of them wrecked a
+  tower per wave.
+- **One-click scrap**: clicking (or confirming on) a wrecked tower scraps it at once and says so in the cell message;
+  the menu only opens for standing towers (`PlacementController.ConfirmWhileBrowsing`, `RemoveForMoney`). Wrecked
+  towers could never be rebuilt, only blockades can, so nothing is lost.
+- **Kill money up ~16%** (Landing Easy 1893 -> 2189 over the level): Prowler 5, Stinger 12, Bulwark 18, Oozer 8,
+  Roller 6, Wisp 5, Skyray 8, bats 4; Skitter stays 1 (a swarm is its own purse).
+- **Checks**: 109 EditMode tests pass (ledger bands hold; Landing Easy pressure now 0.2 early, 0.68 at the first
+  boss, 0.27 to 0.35 late). Upgrading probe bot on Landing: Easy lost at wave 18 (was 13), Medium at 14 (was 13); it
+  still only builds four towers, so it stays a pessimistic proxy.
+
+## Packs, swarms and the hero rebuilt (2026-10-30, night)
+- **Packs and swarms**: `Troop.Pack` in the wave generator (`Join(..., pack: n)`). Prowlers come in threes to fives,
+  Skitters in sixes to eights, close on each other's heels (`PackInnerIntervalShare` 0.35). A pack species is held
+  back until the wave's budget buys at least half a pack and then always sends a whole one, so a lone wolf never
+  appears. The first wolf pack on Landing walks in at wave 4; the ledger's cliff check starts at wave 5 for that
+  reason (`OpeningWaves`).
+- **Hero, two weapons**: `HeroDefinition.RangedWeapon` (the Blaster: a level-one pulse rifle's numbers, 4 damage
+  every 0.35 s, reach 3.5, ground and air). `Commander.Strike` swings the blade at anything within its reach and
+  otherwise fires the gun at anything within the gun's; `Struck` now carries the weapon used, so the sound, the
+  ripple (blade only) and the view know which rig to play. `HeroView` holds a rig per weapon and holsters the
+  other when one is drawn. `HeroTests` covers the gun.
+- **Hero, new body** (`HeroModelFactory`, first version kept the old silhouette and Remco rightly asked whether
+  anything had changed): heroic proportions (long legs, narrow waist, wide shoulders, small head), bone-white
+  plates over a deep navy quilted suit (`CreatureSkin.Kind.Weave`: padded cells, stitched seams that carry the
+  suit's lights), a heavy angular pauldron on the sword shoulder, bracers, thigh and shin plates, a tactical helmet
+  with a visor slit, jaw guard and crest, a slim pack, and a short ragged cloak. Joints: shoulders, elbows, hips,
+  knees, neck, cloak. Stance: knees bent 28 degrees, hips back, feet splayed, shoulders hunched, head forward; the
+  weight rocks from foot to foot, knees bend with the stride, the free arm guards or braces the gun, the cloak trails.
+- **Hero, third pass** (Remco: "the head floats, everything is square, very ugly"): the boxy chest, pauldrons,
+  bracers and plates were replaced by rounded forms; the head sits on a pale neck tube with a trim ring that rises
+  out of the collar, so it reads as joined from above; the figure is drawn at 0.95 (was 0.85).
+- **Camera angle** (Remco's idea): every level now looks down at 50 degrees (was 55) from a 12-degree yaw, so gates,
+  towers and creatures show a side as well as a top (a gate reads as `\` rather than `|`). `FixedCameraRig.Fit`
+  projects the field's corners onto the camera's screen axes, so a yawed view still fits the whole map; the cost is
+  a slightly tilted map with dark corners, which is why the yaw stays small. Constants `CameraPitchDegrees` and
+  `CameraYawDegrees` in the generator; per level the values live in `LevelDefinition.Camera`.
+- **Hero, fourth pass** (Remco: "the head is still not attached, the running animation looks ridiculous, he stands
+  like a plank, and the colours make suit and weapons hard to tell apart"; later: "more skin on the suit, only the
+  shoulder pads show one"):
+  - *Root cause of the floating head*: the torso (hunch, lean, twist) rotated around the figure's feet while the
+    head, arms and cloak hung from the figure itself, so a 17-degree lean slid the chest almost 0.4 units forward
+    from under the head. `HeroView` now has a `Torso` pivot at the pelvis (`Parts.Pelvis`) that carries the body
+    mesh, head, arms, cloak, thrusters and holstered weapons; the legs hang from the figure.
+  - *Gait*: the leg cycle ran at 7.5 radians per unit walked (about twelve steps a second) and the knee folded
+    while the leg went backwards. Now 2.1 per unit (a run of about three steps a second), the knee folds as the
+    leg comes forward (`KneeFoldLead`), arms pump against the legs (swing share 0.8, forearms bent to 85 degrees),
+    the shoulders turn against the hips and the torso leans 10 degrees into the run.
+  - *Stance*: one foot back and one forward (`StanceStaggerDegrees` 11), knees bent 18 and 32 degrees, torso turned
+    12 degrees side-on and hunched 16 at the pelvis, head 12 forward, and the figure sinks by the hip drop the bent
+    knees cause (`HipDrop`) so the feet stay on the ground.
+  - *Colours*: five material slots (`HeroModelFactory.SlotCount`): white plates, trim glow, visor glow, a steel-blue
+    suit (was near-black navy) and gunmetal for joints, gloves, boots, belt, pack and weapon bodies. Pauldrons are
+    blue with a lit rim so the white helmet is the only white dome on the shoulder line. The sword has a gunmetal
+    hilt with a white guard; the blaster a white receiver on gunmetal.
+  - *Skins*: `CreatureSkin.Kind.Plate` (bevelled armour panels in offset rows, scuffed, seams lit in the commander's
+    colour, with a glow floor so the plates stay self-lit) on the white parts, `Kind.Alloy` (brushed metal with a
+    rivet lattice) on the gunmetal parts, and the `Weave` quilt was coarsened (five cells per tile, tiling 1) so it
+    shows on a limb instead of only on the big pauldron blobs.
+  - Checked with 12x close-ups (`zoom_size.txt` is a zoom factor, 10 to 12 frames the hero): head in the collar ring,
+    textures visible on helmet, suit and gear, legs staggered at rest, mid-run frames with a lean and pumping arms.
+    110 EditMode tests pass; nothing committed. New helper `Tools/PlayTest/hero_to_first.cs`.

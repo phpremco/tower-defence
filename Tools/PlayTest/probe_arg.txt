@@ -1,0 +1,2 @@
+levels=0
+difficulties=0,1

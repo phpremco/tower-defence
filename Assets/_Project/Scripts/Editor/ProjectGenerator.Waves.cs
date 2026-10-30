@@ -32,13 +32,13 @@ namespace Game.Editor
         private const float HeavyBias = 0.6f;
         // A troop with a share worth at least this much of one creature still sends one, so a new kind shows up on time.
         private const float MinShare = 0.35f;
-        private const int MaxGroupCount = 36;
+        private const int MaxGroupCount = 64;
         private const float RushTempo = 0.6f;
         private const float HeavyBudget = 1.1f;
-        private const float HeavyShare = 0.6f;
+        private const float HeavyShare = 0.55f;
         private const float HeavyTempo = 1.4f;
-        private const float AirShare = 0.5f;
-        private const float AirGroundShare = 0.45f;
+        private const float AirShare = 0.35f;
+        private const float AirGroundShare = 0.4f;
         // Share of an ambush wave that surfaces from pools and nests, per difficulty: easy keeps most of it at the gate.
         private static readonly float[] AmbushSharePerDifficulty = { 0.3f, 0.45f, 0.55f, 0.65f };
         private const float BossWaveShare = 0.6f;
@@ -82,6 +82,12 @@ namespace Game.Editor
 
             /// <summary>Index of the easiest difficulty this troop joins on; easy may be spared a species.</summary>
             public int MinDifficulty;
+
+            /// <summary>
+            /// Creatures that never come alone: the stream is cut into groups of about this many, and a wave that
+            /// sends the species at all sends at least a whole group. Zero keeps the mixed singles-and-threes rhythm.
+            /// </summary>
+            public int Pack;
         }
 
         /// <summary>A boss and the wave it walks in on.</summary>
@@ -99,6 +105,12 @@ namespace Game.Editor
             /// <summary>Threat budget of the first and of the last wave; one point is twenty health. The curve between is geometric.</summary>
             public float Budget;
             public float FinalBudget;
+
+            /// <summary>
+            /// Extra health per wave, as a share of the base (0.03 means wave 11 has 1.3 times the health of wave 1).
+            /// The budget buys the numbers, this keeps every creature growing while the player's towers do.
+            /// </summary>
+            public float HealthGrowth;
 
             public Troop[] Troops;
 
@@ -125,17 +137,18 @@ namespace Game.Editor
 
         private static BossWave Boss(int wave, EnemyDefinition enemy) => new BossWave { Wave = wave, Enemy = enemy };
 
-        private static Troop Join(EnemyDefinition enemy, int firstWave, float weight, float interval, SpawnSource source = SpawnSource.Gate, float delay = 0f, int minDifficulty = 0) =>
-            new Troop { Enemy = enemy, FirstWave = firstWave, Weight = weight, Interval = interval, Source = source, Delay = delay, MinDifficulty = minDifficulty };
+        private static Troop Join(EnemyDefinition enemy, int firstWave, float weight, float interval, SpawnSource source = SpawnSource.Gate, float delay = 0f, int minDifficulty = 0, int pack = 0) =>
+            new Troop { Enemy = enemy, FirstWave = firstWave, Weight = weight, Interval = interval, Source = source, Delay = delay, MinDifficulty = minDifficulty, Pack = pack };
 
         // The landing zone teaches the game: ant crowds first, then the pack hunters, scorpions from wave 6, and no sky
         // at all on easy; from medium on tide bats rise out of the lake halfway through.
         private static WaveScript LandingScript(Bestiary b) => new WaveScript
         {
             Waves = 24,
-            Budget = 5f,
-            FinalBudget = 70f,
-            Troops = new[] { Join(b.Skitter, 1, 3f, 0.7f), Join(b.Prowler, 3, 2.5f, 1.2f), Join(b.Stinger, 6, 1.2f, 3f), Join(b.Tidebat, 8, 1.4f, 1.6f, SpawnSource.Nest, 6f, 1) },
+            Budget = 7f,
+            FinalBudget = 170f,
+            HealthGrowth = 0.03f,
+            Troops = new[] { Join(b.Skitter, 1, 3f, 0.45f, pack: 6), Join(b.Prowler, 3, 2.2f, 1.2f, pack: 3), Join(b.Stinger, 6, 1.2f, 3f), Join(b.Tidebat, 8, 1.4f, 1.6f, SpawnSource.Nest, 6f, 1) },
             Flyer = b.Skyray,
             AirWaves = new[] { 9, 15, 20, 23 },
             AirWavesPerDifficulty = new[] { 0, 1, 2, 3 },
@@ -149,11 +162,12 @@ namespace Game.Editor
         private static WaveScript ForestScript(Bestiary b) => new WaveScript
         {
             Waves = 30,
-            Budget = 6f,
-            FinalBudget = 110f,
+            Budget = 9f,
+            FinalBudget = 230f,
+            HealthGrowth = 0.025f,
             Troops = new[]
             {
-                Join(b.Skitter, 1, 2f, 0.7f), Join(b.Prowler, 1, 2.5f, 1.1f), Join(b.Roller, 2, 2.5f, 1.6f),
+                Join(b.Skitter, 1, 2f, 0.45f, pack: 6), Join(b.Prowler, 1, 2.5f, 1.1f, pack: 3), Join(b.Roller, 2, 2.5f, 1.6f),
                 Join(b.Mossbat, 3, 2f, 1.5f, SpawnSource.Nest, 8f), Join(b.Tidebat, 5, 1.2f, 1.5f, SpawnSource.Nest, 10f),
                 Join(b.Oozer, 7, 1.5f, 2.4f), Join(b.Stinger, 10, 1.2f, 3f),
             },
@@ -171,11 +185,12 @@ namespace Game.Editor
         {
             Waves = 36,
             Budget = 7f,
-            FinalBudget = 145f,
+            FinalBudget = 300f,
+            HealthGrowth = 0.02f,
             Troops = new[]
             {
-                Join(b.Prowler, 1, 3f, 1.1f), Join(b.Emberbat, 1, 2.5f, 1.5f, SpawnSource.Nest, 6f), Join(b.Stinger, 2, 1.5f, 2.8f),
-                Join(b.Skitter, 3, 1.5f, 0.7f), Join(b.Wisp, 4, 2f, 1.3f), Join(b.Roller, 5, 2f, 1.6f), Join(b.Bulwark, 8, 1.2f, 3.2f),
+                Join(b.Prowler, 1, 3f, 1.1f, pack: 3), Join(b.Emberbat, 1, 2.5f, 1.5f, SpawnSource.Nest, 6f), Join(b.Stinger, 4, 1.5f, 2.8f),
+                Join(b.Skitter, 3, 1.5f, 0.45f, pack: 6), Join(b.Wisp, 4, 2f, 1.3f), Join(b.Roller, 5, 2f, 1.6f), Join(b.Bulwark, 10, 1.2f, 3.2f),
             },
             Flyer = b.Skyray,
             AirWaves = new[] { 5, 9, 14, 19, 26, 32 },
@@ -190,19 +205,20 @@ namespace Game.Editor
         private static WaveScript RuinsScript(Bestiary b) => new WaveScript
         {
             Waves = 40,
-            Budget = 8f,
-            FinalBudget = 175f,
+            Budget = 10f,
+            FinalBudget = 350f,
+            HealthGrowth = 0.018f,
             Troops = new[]
             {
-                Join(b.Bulwark, 1, 2f, 2.8f), Join(b.Dustbat, 1, 2.5f, 1.4f, SpawnSource.Nest, 6f), Join(b.Oozer, 2, 1.5f, 2.2f),
-                Join(b.Stinger, 3, 1.5f, 2.6f), Join(b.Skitter, 4, 1.5f, 0.7f), Join(b.Prowler, 5, 2f, 1.1f),
+                Join(b.Bulwark, 9, 2f, 2.8f), Join(b.Dustbat, 1, 2.5f, 1.4f, SpawnSource.Nest, 6f), Join(b.Oozer, 1, 1.5f, 2.2f),
+                Join(b.Stinger, 6, 1.5f, 2.6f), Join(b.Skitter, 4, 1.5f, 0.45f, pack: 6), Join(b.Prowler, 5, 2f, 1.1f, pack: 3),
                 Join(b.Tidebat, 8, 1.2f, 1.4f, SpawnSource.Nest, 9f), Join(b.Wisp, 9, 1.5f, 1.3f),
             },
             Flyer = b.Skyray,
             AirWaves = new[] { 6, 10, 16, 21, 26, 31, 37 },
             AirWavesPerDifficulty = new[] { 2, 3, 5, 7 },
             AirSprinkleFrom = 2,
-            Rhythm = "MHPHMHPHMPHMHPHMHPHPMHPHMHPHMPHMHPPMHPHM",
+            Rhythm = "PPMHPHMHPHMPHMHPHMHPHPMHPHMHPHMPHMHPPMHP",
             Bosses = new[] { Boss(14, b.SlimeMonarch), Boss(27, b.SkySovereign), Boss(40, b.CrystalWarlord) },
         };
 
@@ -210,13 +226,14 @@ namespace Game.Editor
         private static WaveScript NestScript(Bestiary b) => new WaveScript
         {
             Waves = 48,
-            Budget = 8f,
-            FinalBudget = 240f,
+            Budget = 10f,
+            FinalBudget = 450f,
+            HealthGrowth = 0.015f,
             Troops = new[]
             {
-                Join(b.Skitter, 1, 2f, 0.6f), Join(b.Prowler, 1, 3f, 1f), Join(b.Roller, 1, 2.5f, 1.5f), Join(b.Oozer, 2, 1.5f, 2f),
+                Join(b.Skitter, 1, 2f, 0.4f, pack: 6), Join(b.Prowler, 1, 3f, 1f, pack: 3), Join(b.Roller, 1, 2.5f, 1.5f), Join(b.Oozer, 2, 1.5f, 2f),
                 Join(b.Tidebat, 2, 2f, 1.3f, SpawnSource.Nest, 7f), Join(b.Dustbat, 3, 1.5f, 1.4f, SpawnSource.Nest, 10f),
-                Join(b.Stinger, 3, 1.5f, 2.4f), Join(b.Wisp, 4, 2f, 1.2f), Join(b.Bulwark, 5, 1.5f, 2.6f),
+                Join(b.Stinger, 3, 1.5f, 2.4f), Join(b.Wisp, 4, 2f, 1.2f), Join(b.Bulwark, 7, 1.5f, 2.6f),
             },
             Flyer = b.Skyray,
             AirWaves = new[] { 4, 7, 10, 14, 17, 21, 26, 31, 37, 43 },
@@ -242,6 +259,7 @@ namespace Game.Editor
                     var wave = LoadOrCreate<WaveDefinition>($"{DataRoot}/Waves/{levelKey}_{DifficultyNames[d]}_{number}.asset");
                     var so = new SerializedObject(wave);
                     so.FindProperty("_startDelay").floatValue = i == 0 ? FirstWaveDelay : WaveDelay;
+                    so.FindProperty("_healthMultiplier").floatValue = 1f + script.HealthGrowth * i;
                     WriteGroups(so.FindProperty("_groups"), groups);
                     so.ApplyModifiedPropertiesWithoutUndo();
                     waves[i] = wave;
@@ -443,6 +461,12 @@ namespace Game.Editor
                 float threat = Threat(troop.Enemy);
                 float share = budget * Weight(troop, bias) / totalWeight;
                 int count = Mathf.Min(MaxGroupCount, Mathf.Max(share >= threat * MinShare ? 1 : 0, Mathf.RoundToInt(share / threat)));
+                // A pack species waits until the budget buys at least half a pack, then always sends a whole one.
+                if (count > 0 && troop.Pack > 0 && count < troop.Pack)
+                {
+                    count = count * 2 >= troop.Pack ? troop.Pack : 0;
+                }
+
                 if (count <= 0)
                 {
                     continue;
@@ -459,7 +483,7 @@ namespace Game.Editor
                 };
                 if (troop.Source == SpawnSource.Gate)
                 {
-                    Scatter(group, random.Next(0, 1000), LanesFor(group, secondRoad), output);
+                    Scatter(group, random.Next(0, 1000), LanesFor(group, secondRoad), output, troop.Pack);
                 }
                 else
                 {
@@ -496,6 +520,7 @@ namespace Game.Editor
 
         private const float ClusterInnerIntervalShare = 0.5f;
         private const float ClusterMinInterval = 0.2f;
+        private const float PackInnerIntervalShare = 0.35f;
 
         // The routes a stream may alternate between: both ground entrances, or both flight routes.
         private static int[] LanesFor(SpawnGroup group, int secondRoad)
@@ -511,10 +536,11 @@ namespace Game.Editor
 
         // Cuts one stream into clusters that take turns on the lanes. The average rate stays the same:
         // a cluster of n enemies claims n times the stream interval before the next one starts.
-        private static void Scatter(SpawnGroup group, int seed, int[] lanes, List<SpawnGroup> output)
+        private static void Scatter(SpawnGroup group, int seed, int[] lanes, List<SpawnGroup> output, int pack = 0)
         {
-            int[] pattern = ClusterPatterns[seed % ClusterPatterns.Length];
-            float inner = Mathf.Max(ClusterMinInterval, group.Interval * ClusterInnerIntervalShare);
+            // A pack species comes in groups of its pack size (give or take), close on each other's heels.
+            int[] pattern = pack > 0 ? new[] { pack, pack + 1, pack, pack + 2 } : ClusterPatterns[seed % ClusterPatterns.Length];
+            float inner = Mathf.Max(ClusterMinInterval, group.Interval * (pack > 0 ? PackInnerIntervalShare : ClusterInnerIntervalShare));
             int remaining = group.Count;
             int step = 0;
             float offset = 0f;

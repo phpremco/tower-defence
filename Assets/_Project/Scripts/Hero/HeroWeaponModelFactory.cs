@@ -6,14 +6,15 @@ namespace Game.Hero
     /// <summary>
     /// Builds the commander's weapons from code. A weapon is two meshes with the grip at the origin and the
     /// business end along +z: the solid part and the energy part (a blade, a muzzle glow) that lights up when it
-    /// is drawn. Submesh slots match <see cref="HeroModelFactory"/>: armour, trim glow, energy glow, dark.
+    /// is drawn. Submesh slots match <see cref="HeroModelFactory"/>: armour, trim glow, energy glow, dark, metal.
+    /// Weapons are mostly gunmetal and white with a lit edge, so they read apart from the blue suit.
     /// </summary>
     public static class HeroWeaponModelFactory
     {
         private const int Armour = HeroModelFactory.Armour;
         private const int Trim = HeroModelFactory.Trim;
         private const int Energy = HeroModelFactory.Visor;
-        private const int Dark = HeroModelFactory.Dark;
+        private const int Metal = HeroModelFactory.Metal;
 
         private const float EnergyEmission = 3f;
 
@@ -62,39 +63,43 @@ namespace Game.Hero
             }
         }
 
-        // A hilt with a pommel and an emitter collar; the blade is a long tapered rod of light.
+        private static PropMeshBuilder Builder() => new PropMeshBuilder(HeroModelFactory.SlotCount);
+
+        // A gunmetal hilt with a lit pommel, a white cross guard and a lit emitter collar; the blade is a long
+        // tapered rod of light.
         private static Model EnergySword()
         {
-            var hilt = new PropMeshBuilder();
-            hilt.AddTube(new[] { new Vector3(0f, 0f, -0.1f), new Vector3(0f, 0f, 0.16f) }, new[] { 0.032f, 0.032f }, 8, Dark, false);
-            hilt.AddBlob(new Vector3(0f, 0f, -0.11f), Vector3.one * 0.04f, 3, 6, 0f, 0, Trim, false);
-            hilt.AddTube(new[] { new Vector3(0f, 0f, 0.16f), new Vector3(0f, 0f, 0.23f) }, new[] { 0.048f, 0.045f }, 8, Trim, false);
-            hilt.AddBox(new Vector3(0f, 0.05f, 0.17f), new Vector3(0.02f, 0.04f, 0.05f), Armour);
+            PropMeshBuilder hilt = Builder();
+            hilt.AddTube(new[] { new Vector3(0f, 0f, -0.1f), new Vector3(0f, 0f, 0.16f) }, new[] { 0.034f, 0.034f }, 8, Metal, false);
+            hilt.AddBlob(new Vector3(0f, 0f, -0.11f), Vector3.one * 0.045f, 3, 6, 0f, 0, Trim, false);
+            hilt.AddBlob(new Vector3(0f, 0f, 0.17f), new Vector3(0.11f, 0.035f, 0.035f), 3, 8, 0f, 0, Armour, false);
+            hilt.AddTube(new[] { new Vector3(0f, 0f, 0.19f), new Vector3(0f, 0f, 0.25f) }, new[] { 0.05f, 0.046f }, 8, Trim, false);
 
-            var blade = new PropMeshBuilder();
-            blade.AddTube(new[] { new Vector3(0f, 0f, 0.23f), new Vector3(0f, 0f, 1.05f), new Vector3(0f, 0f, 1.3f) }, new[] { 0.04f, 0.04f, 0f }, 8, Energy, false);
+            PropMeshBuilder blade = Builder();
+            blade.AddTube(new[] { new Vector3(0f, 0f, 0.25f), new Vector3(0f, 0f, 1.05f), new Vector3(0f, 0f, 1.3f) }, new[] { 0.045f, 0.045f, 0f }, 8, Energy, false);
 
             return new Model(hilt.ToMesh("Sword_hilt"), blade.ToMesh("Sword_blade"), new Vector3(0f, 0f, 1.2f), true, Quaternion.Euler(-118f, 0f, 22f), Quaternion.identity);
         }
 
-        // A compact carbine: pistol grip, receiver with a top rail, a short barrel with a muzzle ring and a glowing
-        // power cell. When drawn it lies along the forearm, barrel forward.
+        // A compact carbine: gunmetal grip, stock and barrel, a white receiver with a lit side stripe, a muzzle
+        // ring in the commander's colour and a glowing power cell. When drawn it lies along the forearm, barrel
+        // forward.
         private static Model Blaster()
         {
-            var body = new PropMeshBuilder();
-            body.AddBox(new Vector3(0f, -0.07f, -0.01f), new Vector3(0.03f, 0.1f, 0.05f), Dark, Quaternion.Euler(-15f, 0f, 0f));
-            body.AddBox(new Vector3(0f, 0.01f, 0.08f), new Vector3(0.055f, 0.07f, 0.32f), Armour);
-            body.AddBox(new Vector3(0f, 0.055f, 0.1f), new Vector3(0.025f, 0.02f, 0.2f), Dark);
-            body.AddBox(new Vector3(0f, 0.0f, -0.09f), new Vector3(0.05f, 0.06f, 0.04f), Dark);
-            body.AddTube(new[] { new Vector3(0f, 0.01f, 0.22f), new Vector3(0f, 0.01f, 0.5f) }, new[] { 0.022f, 0.02f }, 8, Dark, false);
-            body.AddTube(new[] { new Vector3(0f, 0.01f, 0.44f), new Vector3(0f, 0.01f, 0.52f) }, new[] { 0.03f, 0.03f }, 8, Trim, false);
-            body.AddBox(new Vector3(0.03f, 0.0f, 0.02f), new Vector3(0.012f, 0.03f, 0.1f), Trim);
+            PropMeshBuilder body = Builder();
+            body.AddBox(new Vector3(0f, -0.08f, -0.01f), new Vector3(0.034f, 0.11f, 0.055f), Metal, Quaternion.Euler(-15f, 0f, 0f));
+            body.AddBox(new Vector3(0f, 0.01f, 0.08f), new Vector3(0.06f, 0.08f, 0.34f), Armour);
+            body.AddBox(new Vector3(0f, 0.06f, 0.1f), new Vector3(0.028f, 0.022f, 0.22f), Metal);
+            body.AddBox(new Vector3(0f, 0f, -0.1f), new Vector3(0.055f, 0.065f, 0.05f), Metal);
+            body.AddTube(new[] { new Vector3(0f, 0.01f, 0.22f), new Vector3(0f, 0.01f, 0.52f) }, new[] { 0.026f, 0.022f }, 8, Metal, false);
+            body.AddTube(new[] { new Vector3(0f, 0.01f, 0.46f), new Vector3(0f, 0.01f, 0.54f) }, new[] { 0.034f, 0.034f }, 8, Trim, false);
+            body.AddBox(new Vector3(0.032f, 0f, 0.02f), new Vector3(0.012f, 0.03f, 0.1f), Trim);
 
-            var energy = new PropMeshBuilder();
-            energy.AddBox(new Vector3(-0.03f, 0.0f, 0.02f), new Vector3(0.012f, 0.03f, 0.1f), Energy);
-            energy.AddBlob(new Vector3(0f, 0.01f, 0.52f), Vector3.one * 0.018f, 3, 6, 0f, 0, Energy, false);
+            PropMeshBuilder energy = Builder();
+            energy.AddBox(new Vector3(-0.032f, 0f, 0.02f), new Vector3(0.012f, 0.03f, 0.1f), Energy);
+            energy.AddBlob(new Vector3(0f, 0.01f, 0.54f), Vector3.one * 0.02f, 3, 6, 0f, 0, Energy, false);
 
-            return new Model(body.ToMesh("Blaster_body"), energy.ToMesh("Blaster_energy"), new Vector3(0f, 0.01f, 0.54f), false, Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(90f, 0f, 0f));
+            return new Model(body.ToMesh("Blaster_body"), energy.ToMesh("Blaster_energy"), new Vector3(0f, 0.01f, 0.56f), false, Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(90f, 0f, 0f));
         }
     }
 }

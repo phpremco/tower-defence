@@ -63,6 +63,7 @@ namespace Game.Levels
         private static readonly Color ArrowColor = new Color(1f, 0.85f, 0.35f);
         private static readonly Color RouteColor = new Color(0.55f, 0.95f, 0.95f);
         private static readonly Color MineColor = new Color(1f, 0.8f, 0.25f);
+        private const float MineCrackGlow = 0.6f;
         private static readonly Color SpawnColor = new Color(1f, 0.4f, 0.25f);
         private static readonly Color StarColor = new Color(0.8f, 0.9f, 1f);
 
@@ -148,7 +149,7 @@ namespace Game.Levels
                 // On a road the gate stands on the centre line of the corridor, not on its first row.
                 Vector3 start = level.Road.Route(index)[0] + (path.Flying ? Vector3.up * AirGateHeight : Vector3.zero);
                 float gateScale = path.Flying ? GateScale * AirGateScale : GateScale;
-                Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(SpawnColor), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
+                Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(SpawnColor, CreatureSkin.Kind.Flesh), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
                 AddLight(gate, SpawnColor, GateLightIntensity, GateLightRange, GateLightHeight);
                 AddSpores(gate, SpawnColor);
 
@@ -269,7 +270,11 @@ namespace Game.Levels
             }
 
             Mesh mesh = StructureModelFactory.MiningNode();
+            // The boulder wears the level's rock with ore glowing in its cracks; the crystals carry streaks of light.
             Material[] materials = ModelPalette.Create(MineColor);
+            materials[ModelPalette.Dark].SetColor("_BaseColor", level.Theme.RockColor * 0.8f);
+            CreatureSkin.Dress(materials[ModelPalette.Dark], CreatureSkin.Kind.Stone, MineColor * MineCrackGlow);
+            PropFactory.Dress(materials[ModelPalette.Glow], PropTextures.Crystal());
             for (int i = 0; i < level.MineCells.Length; i++)
             {
                 Vector2Int cell = level.MineCells[i];
@@ -292,12 +297,30 @@ namespace Game.Levels
                 TerrainKind kind = level.Terrain.KindAt(nest.Cell);
                 float height = TerrainMap.IsLiquid(kind) ? TerrainLiquidBuilder.SurfaceLevel(kind) : level.Terrain.HeightAt(nest.Cell);
                 Vector3 position = grid.CellToWorld(nest.Cell) + Vector3.up * height;
-                Material[] materials = EnemyModelFactory.CreateMaterials(colour, colour);
+                Material[] materials = EnemyModelFactory.CreateMaterials(colour, colour, 1f, NestSkin(nest.Element));
                 Transform root = PlaceStructure(StructureModelFactory.ElementNest(nest.Element, out Mesh ring), ring, Vector3.up * NestRingHeight, materials, EnemyModelFactory.Glow, position, Quaternion.identity, NestScale, NestRingSpin, parent);
                 root.name = $"Nest_{nest.Element}";
                 AddLight(root, colour, NestLightIntensity, NestLightRange, NestLightHeight);
                 AddSpores(root, colour);
                 GlowDecal.PlacePool(root, colour * NestPoolBrightness, NestPoolRadius, NestPoolHeight);
+            }
+        }
+
+        // The surface a nest is made of: a vent or burrow is cracked stone, a whirl in the water is slick, a stump is bark.
+        private static CreatureSkin.Kind NestSkin(Element element)
+        {
+            switch (element)
+            {
+                case Element.Water:
+                    return CreatureSkin.Kind.Slime;
+                case Element.Wood:
+                    return CreatureSkin.Kind.Bark;
+                case Element.Fire:
+                case Element.Sand:
+                case Element.Ice:
+                    return CreatureSkin.Kind.Stone;
+                default:
+                    return CreatureSkin.Kind.Chitin;
             }
         }
 

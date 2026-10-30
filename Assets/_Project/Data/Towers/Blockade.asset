@@ -38,8 +38,8 @@ MonoBehaviour:
   _maxHealth: 500
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
-  _repairCostPerHealth: 0.4
-  _damagedPowerFloor: 0.5
+  _repairCostPerHealth: 0.3
+  _damagedPowerFloor: 0.75
   _slowFactor: 1
   _slowSeconds: 0
   _isSupport: 0

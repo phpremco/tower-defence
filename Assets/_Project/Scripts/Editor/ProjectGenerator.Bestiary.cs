@@ -95,7 +95,7 @@ namespace Game.Editor
 
             b.Skitter = CreateEnemy(new Creature
             {
-                Id = "Skitter", Layer = TargetLayers.Ground, Health = 16f, Speed = 1.6f, Reward = 2, BaseDamage = 1,
+                Id = "Skitter", Layer = TargetLayers.Ground, Health = 10f, Speed = 1.6f, Reward = 1, BaseDamage = 1,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
                 Color = new Color(1f, 0.62f, 0.12f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
                 Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
@@ -103,7 +103,7 @@ namespace Game.Editor
             b.Stinger = CreateEnemy(new Creature
             {
                 Id = "Stinger", Layer = TargetLayers.Ground, Health = 120f, Armor = 80f, ArmorReduction = 0.65f, Speed = 0.9f, Reward = 12, BaseDamage = 3,
-                Attack = AttackStyle.Sting, AttackDamage = 5f, BlockadeDamage = 10f, AttackRange = 2.6f, AttackInterval = 1.5f,
+                Attack = AttackStyle.Sting, AttackDamage = 3f, BlockadeDamage = 10f, AttackRange = 2.6f, AttackInterval = 2f,
                 Color = new Color(0.6f, 0.2f, 0.85f), Eyes = new Color(1f, 0.5f, 1f), Accent = new Color(1f, 0.35f, 0.9f), Blood = new Color(0.55f, 1f, 0.35f),
                 Scale = 0.8f, Shape = EnemyShape.Stinger, Death = DeathStyle.Shatter,
             });
@@ -120,7 +120,7 @@ namespace Game.Editor
             });
             b.Prowler = CreateEnemy(new Creature
             {
-                Id = "Prowler", Layer = TargetLayers.Ground, Health = 55f, Speed = 1.5f, Reward = 6, BaseDamage = 2,
+                Id = "Prowler", Layer = TargetLayers.Ground, Health = 55f, Speed = 1.5f, Reward = 5, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 7f, AttackRange = 2.5f, AttackInterval = 1f,
                 RageSeconds = 3f, RageSpeed = 1.6f, RageRadius = 3f,
                 Color = new Color(0.8f, 0.28f, 0.15f), Eyes = new Color(1f, 0.35f, 0.2f), Accent = new Color(1f, 0.6f, 0.2f), Blood = RedBlood,
@@ -128,14 +128,14 @@ namespace Game.Editor
             });
             b.Wisp = CreateEnemy(new Creature
             {
-                Id = "Wisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 30f, Speed = 1.2f, Reward = 6, BaseDamage = 4,
+                Id = "Wisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 30f, Speed = 1.2f, Reward = 5, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 14f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.7f, 0.85f, 1f), Eyes = Color.white, Accent = new Color(0.75f, 0.9f, 1f), Blood = WispLight,
                 Scale = 0.5f, Shape = EnemyShape.Wisp, Death = DeathStyle.Burst,
             });
             b.Skyray = CreateEnemy(new Creature
             {
-                Id = "Skyray", Layer = TargetLayers.Air, Flies = true, Health = 70f, Speed = 1.3f, Reward = 9, BaseDamage = 3,
+                Id = "Skyray", Layer = TargetLayers.Air, Flies = true, Health = 70f, Speed = 1.3f, Reward = 8, BaseDamage = 3,
                 Attack = AttackStyle.Whip, AttackDamage = 8f, BlockadeDamage = 8f, AttackRange = 2.2f, AttackInterval = 1.4f, GateStrikes = 3,
                 Color = new Color(0.25f, 0.35f, 0.65f), Eyes = new Color(0.5f, 1f, 1f), Accent = new Color(0.4f, 0.95f, 1f), Blood = RayBlue,
                 Scale = 0.7f, Shape = EnemyShape.Skyray, Death = DeathStyle.Crash,
@@ -150,7 +150,7 @@ namespace Game.Editor
             });
             b.Roller = CreateEnemy(new Creature
             {
-                Id = "Roller", Layer = TargetLayers.Ground, Health = 110f, Speed = 1f, Reward = 7, BaseDamage = 2,
+                Id = "Roller", Layer = TargetLayers.Ground, Health = 110f, Speed = 1f, Reward = 6, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 8f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 WalkSeconds = 3f, RollSeconds = 2.2f, RollSpeed = 2.6f,
                 Color = new Color(0.8f, 0.5f, 0.2f), Eyes = new Color(1f, 0.8f, 0.3f), Accent = new Color(1f, 0.7f, 0.3f), Blood = RollerOchre,
@@ -166,7 +166,7 @@ namespace Game.Editor
         {
             return CreateEnemy(new Creature
             {
-                Id = id, Layer = TargetLayers.Air, Flies = true, Health = 28f, Speed = 1.5f, Reward = 5, BaseDamage = 2, Element = element,
+                Id = id, Layer = TargetLayers.Air, Flies = true, Health = 28f, Speed = 1.5f, Reward = 4, BaseDamage = 2, Element = element,
                 Attack = AttackStyle.Bolt, AttackDamage = 4f, BlockadeDamage = 4f, AttackRange = 2.8f, AttackInterval = 1.3f, GateStrikes = 2,
                 Color = color, Eyes = eyes, Accent = accent, Blood = accent,
                 Scale = 0.65f, Shape = EnemyShape.Bat, Death = DeathStyle.Crash,
@@ -248,7 +248,7 @@ namespace Game.Editor
             });
             b.SlimeMonarch = CreateEnemy(new Creature
             {
-                Id = "SlimeMonarch", Layer = TargetLayers.Ground, Health = 1500f, Speed = 0.45f, Reward = 220, BaseDamage = 12, Boss = true,
+                Id = "SlimeMonarch", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, Reward = 220, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Slam, AttackDamage = 20f, BlockadeDamage = 70f, AttackRange = 2f, AttackInterval = 1.6f,
                 TrailSeconds = 14f, TrailHaste = 1.6f, TrailDamage = 5f,
                 Color = new Color(0.45f, 0.7f, 0.1f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.6f, 1f, 0.2f), Blood = SlimeGreen,

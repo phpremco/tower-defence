@@ -21,7 +21,7 @@ namespace Game.Hero
         private TargetRegistry _targets;
         private IReadOnlyList<HeroPost> _posts;
         private int _postIndex;
-        private float _damage;
+        private float _damageMultiplier = 1f;
         private float _strikeCooldown;
         private float _reviveRemaining;
         private float _shockwaveRemaining;
@@ -67,8 +67,8 @@ namespace Game.Hero
         /// <summary>Raised when anything the HUD shows changes: post, down state, health or cooldowns.</summary>
         public event Action Changed;
 
-        /// <summary>Raised with the enemy's position whenever the hero attacks.</summary>
-        public event Action<Vector3> Struck;
+        /// <summary>Raised with the enemy's position and the weapon used whenever the hero attacks.</summary>
+        public event Action<Vector3, HeroWeaponDefinition> Struck;
 
         /// <summary>Raised when the hero's health runs out and it goes down.</summary>
         public event Action Downed;
@@ -84,7 +84,7 @@ namespace Game.Hero
             _definition = definition;
             _targets = targets;
             _posts = posts;
-            _damage = definition.Damage * modifiers.HeroDamageMultiplier;
+            _damageMultiplier = modifiers.HeroDamageMultiplier;
             Health = new Health(definition.MaxHealth * modifiers.HeroHealthMultiplier);
             Health.Died += OnDied;
             Health.Changed += OnHealthChanged;
@@ -255,8 +255,9 @@ namespace Game.Hero
             }
         }
 
-        // An attack: the enemy takes the damage straight away (a bolt is too fast to dodge) and the view plays
-        // the swing or the shot.
+        // An attack: whatever stands within reach of the melee weapon gets the blade; otherwise the gun takes
+        // anything within its own reach. The target takes the damage straight away (a bolt is too fast to dodge)
+        // and the view plays the swing or the shot of the weapon used.
         private void Strike()
         {
             _strikeCooldown -= Time.deltaTime;
@@ -265,7 +266,14 @@ namespace Game.Hero
                 return;
             }
 
-            ITargetable target = _targets.FindBest(transform.position, _definition.Reach, _definition.Targets);
+            HeroWeaponDefinition weapon = _definition.Weapon;
+            ITargetable target = _targets.FindBest(transform.position, weapon.Reach, weapon.Targets);
+            if (target == null && _definition.RangedWeapon != null)
+            {
+                weapon = _definition.RangedWeapon;
+                target = _targets.FindBest(transform.position, weapon.Reach, weapon.Targets);
+            }
+
             if (target == null)
             {
                 return;
@@ -278,9 +286,9 @@ namespace Game.Hero
                 Facing = toTarget.normalized;
             }
 
-            target.TakeDamage(_damage);
-            Struck?.Invoke(target.Position);
-            _strikeCooldown = _definition.StrikeInterval;
+            target.TakeDamage(weapon.Damage * _damageMultiplier);
+            Struck?.Invoke(target.Position, weapon);
+            _strikeCooldown = weapon.AttackInterval;
         }
 
         private void OnDied()

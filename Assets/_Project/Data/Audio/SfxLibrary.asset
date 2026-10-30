@@ -65,7 +65,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0d93176c1d2fade488b3dccc66c1e718, type: 3}
   _enemyDeaths:
   - {fileID: 8300000, guid: 296c232ddf6dddf44925d3f819294cc3, type: 3}
-  - {fileID: 8300000, guid: cf4878acb9983bf44aab7f17422eb6aa, type: 3}
   _baseHits:
   - {fileID: 8300000, guid: 1896718b9c8f4c2419c2847ab991a094, type: 3}
   - {fileID: 8300000, guid: 5679e1a51c3d3b24f9cd0c2f3e9edce3, type: 3}

@@ -19,8 +19,8 @@ MonoBehaviour:
   _cellSize: 1
   _theme: {fileID: 11400000, guid: aff118a86b1eec348881c3aa22519802, type: 2}
   _camera:
-    PitchDegrees: 55
-    YawDegrees: 0
+    PitchDegrees: 50
+    YawDegrees: 12
     FitMargin: 0.04
   _paths:
   - Name: Road

@@ -122,30 +122,30 @@ namespace Game.Editor
 
             // Fast single-target damage on the ground; a stand-in for a continuous beam until it has its own effect.
             roster.Laser = CreateTower("Laser", "Laser", TargetLayers.Ground, 40f, 0f, new Color(1f, 0.35f, 0.45f),
-                new[] { Lvl(110, 6f, 3.9f, 0.2f), Lvl(130, 9f, 4.1f, 0.18f), Lvl(190, 13f, 4.4f, 0.15f) }, 90f);
+                new[] { Lvl(110, 6f, 3.9f, 0.2f), Lvl(130, 9f, 4.1f, 0.18f), Lvl(190, 13f, 4.4f, 0.15f) }, 160f);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
-                new[] { Lvl(90, 2f, 3.7f, 0.5f), Lvl(110, 3f, 4f, 0.45f), Lvl(160, 4f, 4.3f, 0.4f) }, 80f, slowFactor: 0.5f, slowSeconds: 2f);
+                new[] { Lvl(90, 2f, 3.7f, 0.5f), Lvl(110, 3f, 4f, 0.45f), Lvl(160, 4f, 4.3f, 0.4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
 
             // Lightning is approximated by a small splash, so it works well on groups.
             roster.Tesla = CreateTower("Tesla", "Tesla", TargetLayers.Ground, 40f, 1.3f, new Color(0.7f, 0.5f, 1f),
-                new[] { Lvl(140, 10f, 3.5f, 0.5f), Lvl(160, 15f, 3.7f, 0.45f), Lvl(230, 22f, 4f, 0.4f) }, 90f);
+                new[] { Lvl(140, 10f, 3.5f, 0.5f), Lvl(160, 15f, 3.7f, 0.45f), Lvl(230, 22f, 4f, 0.4f) }, 160f);
 
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
-                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 100f);
+                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f);
 
             roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(0.4f, 1f, 0.6f),
-                new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 80f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
+                new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 140f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
 
             // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price.
             roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.6f, 0.2f),
-                new[] { Lvl(0, 60f, 5.1f, 1.6f), Lvl(120, 90f, 5.5f, 1.4f), Lvl(180, 130f, 5.9f, 1.2f) }, 140f);
+                new[] { Lvl(0, 60f, 5.1f, 1.6f), Lvl(120, 90f, 5.5f, 1.4f), Lvl(180, 130f, 5.9f, 1.2f) }, 240f);
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
-                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(110, 20f, 4.4f, 0.18f), Lvl(170, 28f, 4.7f, 0.15f) }, 110f);
+                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(110, 20f, 4.4f, 0.18f), Lvl(170, 28f, 4.7f, 0.15f) }, 190f);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 4.3f, 0.15f), Lvl(110, 12f, 4.6f, 0.13f), Lvl(170, 17f, 4.9f, 0.11f) }, 100f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                new[] { Lvl(0, 8f, 4.3f, 0.15f), Lvl(110, 12f, 4.6f, 0.13f), Lvl(170, 17f, 4.9f, 0.11f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
 
             SetModel(roster.Laser, "turret_single", 1.35f);
             SetModel(roster.Cryo, "satelliteDish", 1.4f);
@@ -647,8 +647,8 @@ namespace Game.Editor
             so.FindProperty("_cellSize").floatValue = 1f;
             so.FindProperty("_theme").objectReferenceValue = theme;
             SerializedProperty camera = so.FindProperty("_camera");
-            camera.FindPropertyRelative("PitchDegrees").floatValue = 55f;
-            camera.FindPropertyRelative("YawDegrees").floatValue = 0f;
+            camera.FindPropertyRelative("PitchDegrees").floatValue = CameraPitchDegrees;
+            camera.FindPropertyRelative("YawDegrees").floatValue = CameraYawDegrees;
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = spec.Money;
             so.FindProperty("_enemyHealthMultiplier").floatValue = spec.HealthScale;

@@ -54,11 +54,12 @@ namespace Game.Levels
             PropTextures.Surface rock = PropTextures.Rock();
             PropTextures.Surface bark = PropTextures.Bark();
             PropTextures.Surface leafSurface = PropTextures.Leaf();
+            PropTextures.Surface crystal = PropTextures.Crystal();
             return new[]
             {
                 Dress(Lit(theme.RockColor, 0f, RockSmoothness), rock),
-                Lit(accent, GlowEmission, GlowSmoothness),
-                Lit(second, GlowEmission, GlowSmoothness),
+                Dress(Lit(accent, GlowEmission, GlowSmoothness), crystal),
+                Dress(Lit(second, GlowEmission, GlowSmoothness), crystal),
                 Dress(Lit(theme.RockColor * 0.45f, 0f, RockSmoothness), bark),
                 Dress(Lit(leaf, LeafEmission, LeafSmoothness), leafSurface),
                 Lit(core, CoreEmission, GlowSmoothness),
@@ -71,12 +72,18 @@ namespace Game.Levels
             return Color.HSVToRGB(Mathf.Repeat(h + hue, 1f), s, Mathf.Clamp01(v * value));
         }
 
-        private static Material Dress(Material material, PropTextures.Surface surface)
+        /// <summary>Puts a surface on a lit material: its colour map tinted by the material's colour, relief, and a glow map when it has one.</summary>
+        public static Material Dress(Material material, PropTextures.Surface surface)
         {
             material.SetTexture("_BaseMap", surface.Albedo);
             material.SetTexture("_BumpMap", surface.Normal);
             material.SetFloat("_BumpScale", 1f);
             material.EnableKeyword("_NORMALMAP");
+            if (surface.Emission != null && material.IsKeywordEnabled("_EMISSION"))
+            {
+                material.SetTexture("_EmissionMap", surface.Emission);
+            }
+
             return material;
         }
 

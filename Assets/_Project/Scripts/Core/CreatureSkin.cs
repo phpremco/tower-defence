@@ -20,6 +20,24 @@ namespace Game.Core
             Scales = 4,
             Energy = 5,
             Membrane = 6,
+
+            /// <summary>Wet bulging tissue with glowing veins: hive mouths and nests of the brood.</summary>
+            Flesh = 7,
+
+            /// <summary>Weathered rock with grain and glowing cracks: vents, burrows, crystal beds and ore.</summary>
+            Stone = 8,
+
+            /// <summary>Ridged bark with lit grooves: hollow stumps and wooden nests.</summary>
+            Bark = 9,
+
+            /// <summary>A quilted pressure suit: padded cells between stitched seams that carry the suit's lights.</summary>
+            Weave = 10,
+
+            /// <summary>Ceramic armour: bevelled panels in offset rows with scuffs, the seams faintly lit.</summary>
+            Plate = 11,
+
+            /// <summary>Brushed gunmetal with a lattice of rivets: joints, boots, gear and weapon bodies.</summary>
+            Alloy = 12,
         }
 
         public sealed class Surface
@@ -51,7 +69,25 @@ namespace Game.Core
             switch (kind)
             {
                 case Kind.Hide:
-                    surface = Build("Hide", HideHeight, HideGlow, 2.2f, 0.72f, 0.5f, 2f, 0.35f, 0.25f);
+                    surface = Build("Hide", HideHeight, HideGlow, 2.6f, 0.7f, 0.7f, 2.5f, 0.3f, 0f);
+                    break;
+                case Kind.Flesh:
+                    surface = Build("Flesh", FleshHeight, FleshGlow, 2.6f, 0.78f, 0.5f, 1.5f, 0.75f, 0.9f);
+                    break;
+                case Kind.Stone:
+                    surface = Build("Stone", StoneHeight, StoneGlow, 3f, 0.7f, 0.6f, 2f, 0.25f, 0.8f);
+                    break;
+                case Kind.Bark:
+                    surface = Build("Bark", BarkHeight, BarkGlow, 2.8f, 0.68f, 0.55f, 2f, 0.3f, 0.6f);
+                    break;
+                case Kind.Weave:
+                    surface = Build("Weave", WeaveHeight, WeaveGlow, 2.4f, 0.8f, 0.5f, 1f, 0.45f, 0.45f);
+                    break;
+                case Kind.Plate:
+                    surface = Build("Plate", PlateHeight, PlateGlow, 2.2f, 0.88f, 0.3f, 1f, 0.55f, 0.6f);
+                    break;
+                case Kind.Alloy:
+                    surface = Build("Alloy", AlloyHeight, AlloyGlow, 2.5f, 0.7f, 0.35f, 3f, 0.65f, 0f);
                     break;
                 case Kind.Slime:
                     surface = Build("Slime", SlimeHeight, SlimeGlow, 3f, 0.8f, 0.45f, 1.5f, 0.92f, 0.5f);
@@ -114,16 +150,50 @@ namespace Game.Core
             return Mathf.Pow(groove, 1.5f) * 0.9f;
         }
 
-        // Fur: streaks that run down the body and wander, over darker patches.
+        // Fur: fine streaks that wander with the lie of the coat, clumped into raised tufts with a darker
+        // undercoat showing between them.
         private static float HideHeight(float u, float v)
         {
-            float wander = (Tileable(u, v, 3f, 21f) - 0.5f) * 0.25f;
-            float streak = 0.5f + 0.5f * Mathf.Sin((u + wander) * Mathf.PI * 2f * 18f + Tileable(u, v, 7f, 9f) * 3f);
-            float patch = Tileable(u, v, 2.5f, 33f);
-            return streak * 0.45f + patch * 0.55f;
+            float wander = (Tileable(u, v, 3f, 21f) - 0.5f) * 0.3f;
+            float streak = 0.5f + 0.5f * Mathf.Sin((u + wander) * Mathf.PI * 2f * 26f + Tileable(u, v, 7f, 9f) * 4f);
+            float clump = Mathf.Pow(Tileable(u, v, 6f, 33f), 1.5f);
+            return streak * 0.5f * (0.6f + 0.4f * clump) + clump * 0.5f;
         }
 
         private static float HideGlow(float u, float v) => 0f;
+
+        // Flesh: large soft bulges with a web of veins between them that carry the glow.
+        private static float FleshHeight(float u, float v)
+        {
+            float bulge = Plates(u, v, 3f, 0.8f, out _);
+            return bulge * 0.7f + FleshVeins(u, v) * 0.35f + Tileable(u, v, 9f, 63f) * 0.15f;
+        }
+
+        private static float FleshVeins(float u, float v) => Mathf.Pow(1f - Mathf.Abs(Tileable(u, v, 4f, 61f) * 2f - 1f), 5f);
+
+        private static float FleshGlow(float u, float v) => Mathf.Pow(FleshVeins(u, v), 1.4f) * 0.9f;
+
+        // Stone: layered grain with deep cracks; the cracks are where the light comes through.
+        private static float StoneHeight(float u, float v)
+        {
+            float grain = Tileable(u, v, 3f, 71f) * 0.55f + Tileable(u, v, 9f, 73f) * 0.3f + Tileable(u, v, 20f, 75f) * 0.15f;
+            return grain - StoneCracks(u, v) * 0.7f;
+        }
+
+        private static float StoneCracks(float u, float v) => Mathf.Pow(1f - Mathf.Abs(Tileable(u, v, 4f, 77f) * 2f - 1f), 8f);
+
+        private static float StoneGlow(float u, float v) => Mathf.Clamp01(StoneCracks(u, v) * 1.5f) * 0.8f;
+
+        // Bark: wandering vertical ridges with knots; the grooves between the ridges glow faintly.
+        private static float BarkRidges(float u, float v)
+        {
+            float wander = (Tileable(u, v, 2f, 81f) - 0.5f) * 0.4f;
+            return 0.5f + 0.5f * Mathf.Sin((u + wander) * Mathf.PI * 2f * 9f);
+        }
+
+        private static float BarkHeight(float u, float v) => Mathf.Pow(BarkRidges(u, v), 1.4f) * 0.7f + Tileable(u, v, 5f, 83f) * 0.3f;
+
+        private static float BarkGlow(float u, float v) => Mathf.Pow(1f - BarkRidges(u, v), 6f) * 0.6f;
 
         // Wet, bulging cells, each catching the light on top.
         private static float SlimeHeight(float u, float v)
@@ -196,6 +266,63 @@ namespace Game.Core
         }
 
         private static float MembraneGlow(float u, float v) => Mathf.Pow(1f - Mathf.Abs(Tileable(u, v, 4f, 51f) * 2f - 1f), 6f) * 0.7f;
+
+        // A padded suit: quilted cells that bulge between stitched seams, with a fine fabric weave on top; every
+        // fourth seam is a panel line that carries light.
+        // Quilting: a few big padded cells per tile (small cells vanish on a limb), fine thread, and one lit seam
+        // in each direction.
+        private static float WeaveHeight(float u, float v)
+        {
+            float cell = Mathf.Sin(u * Mathf.PI * 5f) * Mathf.Sin(v * Mathf.PI * 5f);
+            float quilt = Mathf.Pow(Mathf.Abs(cell), 0.6f);
+            float thread = (Mathf.Sin(u * Mathf.PI * 2f * 60f) + Mathf.Sin(v * Mathf.PI * 2f * 60f)) * 0.03f;
+            return quilt * 0.75f + thread + Tileable(u, v, 5f, 111f) * 0.15f;
+        }
+
+        private static float WeaveGlow(float u, float v)
+        {
+            float seamU = Mathf.Pow(1f - Mathf.Abs(Mathf.Sin(u * Mathf.PI * 2f)), 12f);
+            float seamV = Mathf.Pow(1f - Mathf.Abs(Mathf.Sin(v * Mathf.PI * 2f)), 12f);
+            return Mathf.Clamp01(seamU + seamV) * 0.8f;
+        }
+
+        // Armour: panels in offset rows, each with a bevelled edge, scuffed across the face. The glow mask keeps a
+        // floor everywhere so the plates stay self-lit in the dark, and rises in the seams.
+        private static float PlateHeight(float u, float v)
+        {
+            float panel = Panels(u, v, 3f, 4f, out _);
+            return panel * 0.8f + Tileable(u, v, 12f, 131f) * 0.12f + Tileable(u, v, 40f, 133f) * 0.06f;
+        }
+
+        private static float PlateGlow(float u, float v)
+        {
+            Panels(u, v, 3f, 4f, out float seam);
+            return 0.25f + seam * 0.6f;
+        }
+
+        // Brushed metal: fine streaks along one axis, a wandering patina, and a hex lattice of small rivets.
+        private static float AlloyHeight(float u, float v)
+        {
+            float streak = Mathf.Sin(v * Mathf.PI * 2f * 90f + Tileable(u, v, 8f, 141f) * 6f) * 0.04f;
+            float patina = Tileable(u, v, 6f, 143f) * 0.25f + Tileable(u, v, 24f, 145f) * 0.1f;
+            float rivet = Plates(u, v, 5f, 0.16f, out _);
+            return 0.4f + streak + patina + rivet * 0.35f;
+        }
+
+        private static float AlloyGlow(float u, float v) => 0f;
+
+        // Rectangular panels in rows that alternate by half a panel; the bevel runs up from the seam over the
+        // outer part of each panel, and the seam is the narrow groove between them.
+        private static float Panels(float u, float v, float columns, float rows, out float seam)
+        {
+            float row = Mathf.Floor(v * rows);
+            float offset = Mathf.Repeat(row, 2f) < 0.5f ? 0f : 0.5f;
+            float fu = Mathf.Repeat(u * columns + offset, 1f);
+            float fv = Mathf.Repeat(v * rows, 1f);
+            float edge = Mathf.Min(Mathf.Min(fu, 1f - fu), Mathf.Min(fv, 1f - fv));
+            seam = 1f - Mathf.Clamp01(edge / 0.03f);
+            return Mathf.Clamp01(edge / 0.1f);
+        }
 
         // Rows of domes on a hexagonal lattice; the groove is how far a point lies from the nearest dome.
         private static float Plates(float u, float v, float count, float radius, out float groove)

@@ -15,8 +15,8 @@ MonoBehaviour:
   _displayName: Blaster
   _kind: 1
   _style: 1
-  _damage: 9
-  _reach: 3.2
+  _damage: 4
+  _reach: 3.5
   _attackInterval: 0.35
   _targets: 3
   _color: {r: 1, g: 0.6, b: 0.25, a: 1}

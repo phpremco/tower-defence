@@ -96,15 +96,31 @@ namespace Game.Levels
             transform.position = _basePosition + (transform.right * x + transform.up * y) * (ShakeAmplitude * _shake);
         }
 
+        // The whole field must fit the view whatever the camera's pitch and yaw: the ground rectangle (with room for
+        // what stands on it) is projected onto the camera's screen axes and the larger half extent sets the size.
         private void Fit()
         {
             CameraSettings settings = _level.Camera;
             Vector2 world = _level.WorldSize;
-            float pitch = settings.PitchDegrees * Mathf.Deg2Rad;
+            Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
+            Vector3 right = rotation * Vector3.right;
+            Vector3 up = rotation * Vector3.up;
 
-            float halfHeight = (world.y * Mathf.Sin(pitch) + ObjectHeight * Mathf.Cos(pitch)) * 0.5f / (1f - HudReserve);
-            float halfWidth = world.x * 0.5f / _camera.aspect;
-            _fitSize = Mathf.Max(halfHeight, halfWidth) * (1f + settings.FitMargin);
+            float halfWidth = 0f;
+            float halfHeight = 0f;
+            for (int corner = 0; corner < 4; corner++)
+            {
+                var point = new Vector3((corner % 2 == 0 ? -0.5f : 0.5f) * world.x, 0f, (corner < 2 ? -0.5f : 0.5f) * world.y);
+                for (int lift = 0; lift < 2; lift++)
+                {
+                    Vector3 p = point + Vector3.up * (lift * ObjectHeight);
+                    halfWidth = Mathf.Max(halfWidth, Mathf.Abs(Vector3.Dot(p, right)));
+                    halfHeight = Mathf.Max(halfHeight, Mathf.Abs(Vector3.Dot(p, up)));
+                }
+            }
+
+            halfHeight /= 1f - HudReserve;
+            _fitSize = Mathf.Max(halfHeight, halfWidth / _camera.aspect) * (1f + settings.FitMargin);
             _fittedAspect = _camera.aspect;
             ApplyView();
         }

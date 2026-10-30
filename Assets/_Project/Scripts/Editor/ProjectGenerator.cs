@@ -42,17 +42,30 @@ namespace Game.Editor
         // Money a mining node holds; with three nodes a level, the harvest drones earn a bounded sum, not a stream.
         private const int MineStock = 140;
 
+        // A downed hero is gone long enough to hurt: two minutes, shown as a countdown in the HUD.
+        private const float HeroReviveSeconds = 120f;
+
+        // The camera looks down a little less steeply and from a slight angle, so gates, towers and creatures show a
+        // side as well as a top and read as things with height instead of symbols on a map.
+        private const float CameraPitchDegrees = 50f;
+        private const float CameraYawDegrees = 12f;
+
+        // A battered tower still fires at three quarters, and mending a point of health costs less than a third of a coin,
+        // so damage is a dent in the defence rather than its collapse.
+        private const float DamagedPowerFloor = 0.75f;
+        private const float RepairCostPerHealth = 0.3f;
+
         [MenuItem("Tools/Generate/Scenes and Starter Data")]
         public static void GenerateAll()
         {
             CustomModelBuilder.BuildAll();
 
             TowerDefinition pulse = CreateTower("PulseRifle", "Pulse Rifle", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 4f, 3.5f, 0.35f), Lvl(60, 6f, 3.8f, 0.3f), Lvl(90, 9f, 4.1f, 0.25f) }, 80f);
+                new[] { Lvl(50, 4f, 3.5f, 0.35f), Lvl(60, 7f, 3.8f, 0.3f), Lvl(90, 12f, 4.1f, 0.25f) }, 150f);
             TowerDefinition cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, 1.2f, new Color(1f, 0.8f, 0.3f),
-                new[] { Lvl(100, 25f, 4f, 1.4f), Lvl(120, 40f, 4.3f, 1.2f), Lvl(180, 60f, 4.6f, 1f) }, 120f);
+                new[] { Lvl(100, 25f, 4f, 1.4f), Lvl(120, 48f, 4.3f, 1.2f), Lvl(180, 85f, 4.6f, 1f) }, 220f);
             TowerDefinition rocket = CreateTower("Rocket", "Rocket", TargetLayers.Air, 8f, 1.5f, new Color(0.9f, 0.9f, 1f),
-                new[] { Lvl(120, 30f, 5.5f, 1.6f), Lvl(140, 45f, 5.9f, 1.4f), Lvl(200, 70f, 6.3f, 1.2f) }, 70f);
+                new[] { Lvl(120, 30f, 5.5f, 1.6f), Lvl(140, 55f, 5.9f, 1.4f), Lvl(200, 90f, 6.3f, 1.2f) }, 130f);
 
             // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.
             TowerDefinition blockade = CreateTower("Blockade", "Blockade", TargetLayers.Ground, 12f, 0f, new Color(0.55f, 0.65f, 0.8f),
@@ -62,10 +75,10 @@ namespace Game.Editor
 
             var difficulties = new[]
             {
-                CreateDifficulty("Easy", 0.8f, 0.8f, 1.2f, 1f, 0f, 0.7f),
-                CreateDifficulty("Medium", 1.1f, 1.05f, 1f, 1.25f, 0.5f, 1f),
-                CreateDifficulty("Hard", 1.6f, 1.4f, 0.85f, 1.6f, 1f, 1.35f),
-                CreateDifficulty("Psycho", 2.4f, 1.9f, 0.7f, 2.5f, 2f, 1.8f),
+                CreateDifficulty("Easy", 0.8f, 0.8f, 1.2f, 1f, 0f, 0.6f),
+                CreateDifficulty("Medium", 1f, 1f, 1f, 1.25f, 0.5f, 1f),
+                CreateDifficulty("Hard", 1.3f, 1.2f, 0.85f, 1.6f, 1f, 1.35f),
+                CreateDifficulty("Psycho", 1.8f, 1.5f, 0.7f, 2.5f, 2f, 1.8f),
             };
 
             List<DifficultyWaves> waveSets = BuildWaves("Landing", difficulties, LandingScript(bestiary), -1);
@@ -74,12 +87,14 @@ namespace Game.Editor
             ConfigureTheme(theme);
             LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
             HeroWeaponDefinition sword = CreateHeroWeapon("EnergySword", "Energy sword", HeroWeaponKind.Melee, HeroWeaponStyle.EnergySword, 18f, 1.5f, 0.7f, TargetLayers.Ground, new Color(0.3f, 0.95f, 1f));
-            // Not carried yet: the ranged rig is ready for when guns become a reward. Point the hero at it to try it.
-            CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 9f, 3.2f, 0.35f, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f));
+            // The sidearm: the stats of a level-one pulse rifle, so the hero is worth one simple turret at range.
+            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, 0.35f, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f));
             HeroDefinition hero = LoadOrCreate<HeroDefinition>($"{DataRoot}/Hero/Commander.asset");
             var heroProps = new SerializedObject(hero);
             heroProps.FindProperty("_weapon").objectReferenceValue = sword;
+            heroProps.FindProperty("_rangedWeapon").objectReferenceValue = blaster;
             heroProps.FindProperty("_repairCost").intValue = 30;
+            heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;
             heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
             heroProps.ApplyModifiedPropertiesWithoutUndo();
             ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
@@ -211,6 +226,8 @@ namespace Game.Editor
             so.FindProperty("_splashRadius").floatValue = splash;
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_maxHealth").floatValue = health;
+            so.FindProperty("_damagedPowerFloor").floatValue = DamagedPowerFloor;
+            so.FindProperty("_repairCostPerHealth").floatValue = RepairCostPerHealth;
             SerializedProperty array = so.FindProperty("_levels");
             array.arraySize = levels.Length;
             for (int i = 0; i < levels.Length; i++)
@@ -252,8 +269,8 @@ namespace Game.Editor
             so.FindProperty("_cellSize").floatValue = 1f;
             so.FindProperty("_theme").objectReferenceValue = theme;
             SerializedProperty camera = so.FindProperty("_camera");
-            camera.FindPropertyRelative("PitchDegrees").floatValue = 55f;
-            camera.FindPropertyRelative("YawDegrees").floatValue = 0f;
+            camera.FindPropertyRelative("PitchDegrees").floatValue = CameraPitchDegrees;
+            camera.FindPropertyRelative("YawDegrees").floatValue = CameraYawDegrees;
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = 200;
             so.FindProperty("_baseHealth").intValue = 20;
@@ -540,7 +557,7 @@ namespace Game.Editor
             ("_explosions", KenneyAudio, "explosionCrunch_00{0}.ogg", 5),
             ("_bigExplosions", KenneyAudio, "lowFrequency_explosion_00{0}.ogg", 2),
             ("_structureHits", KenneyAudio, "impactMetal_00{0}.ogg", 5),
-            ("_enemyDeaths", KenneyAudio, "slime_00{0}.ogg", 2),
+            ("_enemyDeaths", KenneyAudio, "slime_00{0}.ogg", 1),
             ("_baseHits", KenneyAudio, "explosionCrunch_00{0}.ogg", 5),
             ("_heroBlasters", LentikulaAudio, "Laser Pistol {0}.wav", 5),
             ("_bossLaserLoops", FreesoundAudio, "freesound_community-laser-weld-103309.mp3", 1),
@@ -649,6 +666,7 @@ namespace Game.Editor
             return new[]
             {
                 KeeperMaterial("Lit_EmissionNormal", false, "_EMISSION", "_NORMALMAP"),
+                KeeperMaterial("Lit_EmissionNormalDetail", false, "_EMISSION", "_NORMALMAP", "_DETAIL_MULX2"),
                 KeeperMaterial("Lit_Transparent", true, "_EMISSION", "_SURFACE_TYPE_TRANSPARENT"),
                 KeeperMaterial("Lit_TransparentFlat", true, "_EMISSION", "_SURFACE_TYPE_TRANSPARENT", "_SPECULARHIGHLIGHTS_OFF"),
                 KeeperShader("ImpactRipple", "Game/ImpactRipple"),

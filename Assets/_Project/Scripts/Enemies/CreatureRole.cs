@@ -38,5 +38,8 @@ namespace Game.Enemies
 
         /// <summary>A tail held over the back that snaps forward on a strike, or lashes sideways for a whip.</summary>
         Stinger = 11,
+
+        /// <summary>A single lower jaw hinged under the head that drops open in the wind-up and slams shut on the bite.</summary>
+        Jaw = 12,
     }
 }

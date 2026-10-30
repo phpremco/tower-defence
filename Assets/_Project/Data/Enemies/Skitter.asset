@@ -15,11 +15,11 @@ MonoBehaviour:
   _displayName: Skitter
   _layer: 1
   _flies: 0
-  _maxHealth: 16
+  _maxHealth: 10
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.6
-  _reward: 2
+  _reward: 1
   _baseDamage: 1
   _element: 0
   _attackStyle: 0

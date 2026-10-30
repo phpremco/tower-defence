@@ -117,6 +117,22 @@ namespace Game.Tests
         }
 
         [Test]
+        public void EveryLevel_GrowsEnemyHealthWaveByWave()
+        {
+            CampaignCatalog catalog = LoadCampaign();
+            foreach (MapNode node in catalog.Nodes)
+            {
+                WaveDefinition[] waves = node.Level.GetWaves(catalog.Difficulties[0]);
+                for (int i = 1; i < waves.Length; i++)
+                {
+                    Assert.GreaterOrEqual(waves[i].HealthMultiplier, waves[i - 1].HealthMultiplier, $"{node.Level.name} wave {i + 1} is weaker than the wave before it.");
+                }
+
+                Assert.Greater(waves[waves.Length - 1].HealthMultiplier, 1f, $"{node.Level.name} never grows its creatures.");
+            }
+        }
+
+        [Test]
         public void OnlyTheLastLevel_OffersCombineRecipes()
         {
             CampaignCatalog catalog = LoadCampaign();

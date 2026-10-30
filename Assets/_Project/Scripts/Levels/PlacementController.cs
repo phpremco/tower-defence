@@ -248,6 +248,15 @@ namespace Game.Levels
         {
             if (_towers.TryGetValue(_cursor, out Tower tower))
             {
+                // A wrecked tower has nothing left but its scrap value, so one click takes it: no menu in between.
+                if (tower.IsWrecked && tower.CanBeSold)
+                {
+                    _cellMessage = $"Scrapped for {tower.SellValue}";
+                    RemoveForMoney(tower);
+                    Refresh();
+                    return;
+                }
+
                 _context.SelectedPlacedTower = tower;
                 _context.Mode = PlacementMode.TowerMenu;
             }
@@ -515,6 +524,13 @@ namespace Game.Levels
                 return;
             }
 
+            RemoveForMoney(tower);
+            CloseMenu();
+        }
+
+        // Sells or scraps a tower: its value goes to the wallet and its cell is free again.
+        private void RemoveForMoney(Tower tower)
+        {
             _context.Wallet.Add(tower.SellValue);
             _context.TowerSold.Raise();
             Vector2Int cell = _map.WorldToCell(tower.Position);
@@ -522,7 +538,6 @@ namespace Game.Levels
             _buildGrid.Release(cell);
             tower.Retire();
             Destroy(tower.gameObject);
-            CloseMenu();
         }
 
         private void OnNextTower() => CycleSelection(1);

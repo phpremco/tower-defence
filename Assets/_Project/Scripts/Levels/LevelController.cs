@@ -96,6 +96,7 @@ namespace Game.Levels
         private void StartNextWave()
         {
             _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty, _random);
+            _spawner.WaveHealthScale = _waves[_nextWaveIndex].HealthMultiplier;
             PublishRoutes(_nextWaveIndex);
             _nextWaveIndex++;
             _context.WaveNumber = _nextWaveIndex;

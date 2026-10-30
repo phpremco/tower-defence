@@ -54,6 +54,8 @@ namespace Game.Boot
         private const float ApproachFirstDelay = 2.5f;
         private const float ApproachInterval = 2.2f;
         private const float ApproachMaxSeconds = 40f;
+        private const float KillMaxSeconds = 0.7f;
+        private const float CutFadeSeconds = 0.12f;
         private static readonly int[] Budgets = { 3, 2, 2, 2, VoiceCount };
 
         private AudioSource[] _voices;
@@ -271,6 +273,16 @@ namespace Game.Boot
             {
                 if (now >= _voiceEnds[i])
                 {
+                    // A voice past its end that is still sounding was cut short on purpose: fade it out and stop it.
+                    if (_voices[i].isPlaying)
+                    {
+                        _voices[i].volume = Mathf.MoveTowards(_voices[i].volume, 0f, Time.unscaledDeltaTime / CutFadeSeconds);
+                        if (_voices[i].volume <= 0f)
+                        {
+                            _voices[i].Stop();
+                        }
+                    }
+
                     continue;
                 }
 
@@ -483,8 +495,8 @@ namespace Game.Boot
 
         private void OnSold() => Play(_sell, 0.6f, Kind.Priority);
 
-        private void OnStruck(Vector3 target) =>
-            Play(_context.Hero.Definition.Weapon.Kind == Game.Hero.HeroWeaponKind.Ranged ? _blaster.Next() : _strike, 0.55f, Kind.Hit);
+        private void OnStruck(Vector3 target, Game.Hero.HeroWeaponDefinition weapon) =>
+            Play(weapon.Kind == Game.Hero.HeroWeaponKind.Ranged ? _blaster.Next() : _strike, 0.55f, Kind.Hit);
 
         private void OnHeroDown() => Play(_heroDown, 1f, Kind.Priority);
 
@@ -555,7 +567,9 @@ namespace Game.Boot
             _voiceKinds[index] = kind;
             _voiceVolumes[index] = volume;
             _voiceStarts[index] = now;
-            _voiceEnds[index] = now + clip.length / voice.pitch;
+            // A death is a moment, not a mood: a long recorded clip is cut so a swarm dying never leaves a sound behind.
+            float length = kind == Kind.Kill ? Mathf.Min(clip.length, KillMaxSeconds) : clip.length;
+            _voiceEnds[index] = now + length / voice.pitch;
             if (kind == Kind.Priority)
             {
                 _duckUntil = now + DuckSeconds;

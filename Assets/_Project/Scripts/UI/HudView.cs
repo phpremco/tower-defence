@@ -26,6 +26,7 @@ namespace Game.UI
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
         private const float TopTextY = -16f;
+        private const float HeroTextX = 240f;
         private const float BottomBarHeight = 156f;
         private const float BarBottom = 8f;
         private const float AboveBarY = BottomBarHeight + 6f;
@@ -62,6 +63,8 @@ namespace Game.UI
         private TimeController _time;
         private Text _waveText;
         private Text _baseText;
+        private Text _heroText;
+        private int _heroSecondsShown = -1;
         private Text _moneyText;
         private Text _statusText;
         private Text _speedLabel;
@@ -137,6 +140,8 @@ namespace Game.UI
                 RefreshPathObjects();
             }
 
+            RefreshHero();
+
             EventSystem current = EventSystem.current;
             if (current == null || _input == null)
             {
@@ -162,6 +167,21 @@ namespace Game.UI
             _context.PointerOverUi = blocked;
         }
 
+        // A downed hero counts down in the stats strip, minute and seconds, so the player knows how long the post is bare.
+        // The text is only rebuilt when the shown second changes.
+        private void RefreshHero()
+        {
+            Game.Hero.Commander hero = _context.Hero;
+            int seconds = hero != null && hero.IsDown ? Mathf.CeilToInt(hero.ReviveRemaining) : -1;
+            if (seconds == _heroSecondsShown)
+            {
+                return;
+            }
+
+            _heroSecondsShown = seconds;
+            _heroText.text = seconds < 0 ? string.Empty : $"Hero down {seconds / 60}:{seconds % 60:00}";
+        }
+
         private void OnMoneyChanged(int _) => Refresh();
 
         private void OnBaseChanged(float _) => Refresh();
@@ -176,6 +196,9 @@ namespace Game.UI
         private void BuildTexts(RectTransform safe)
         {
             _baseText = CreateText(safe, "Base", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TopTextY), FontSize);
+            _heroText = CreateText(safe, "Hero", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin + HeroTextX, TopTextY), FontSize);
+            _heroText.color = BossWarning;
+            _heroText.text = string.Empty;
             _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY), FontSize);
             _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, AboveBarY), FontSize);
             _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), SmallFontSize);

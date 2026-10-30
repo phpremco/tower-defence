@@ -5,31 +5,70 @@ using UnityEngine.Rendering;
 namespace Game.Hero
 {
     /// <summary>
-    /// The look of the commander: an armoured astronaut that walks on its own legs with swinging arms, looks around
-    /// while it waits, breathes, fires its thrusters when it moves and fights with whatever weapon rig its
-    /// definition names. When its health runs out it staggers, drops the weapon and crashes to the ground with a
-    /// shower of sparks, lies smoking with its lights out, and powers back up with a flash when it revives. A tall
-    /// beacon floats above it so it can always be found, even behind a tower on raised ground; it turns red while
-    /// the hero is down. Reacts to Commander events only.
+    /// The look of the commander: a human warrior in a pressure suit who stands with weight in the stance (one
+    /// foot back, knees bent, torso turned a little side-on and hunched at the pelvis, head forward), shifts from
+    /// foot to foot while waiting, breathes, runs with a real gait (knees folding as the leg comes forward, arms
+    /// pumping against the legs, shoulders turning against the hips, a lean into the run), looks around at a
+    /// post and fights with two weapon rigs: the blade up close and the gun at range, drawing whichever the
+    /// commander uses and clipping the other away. The torso pivots at the pelvis and carries head, arms and
+    /// cloak with it, so the figure bends as one body. When its health runs out it staggers, drops the weapon and
+    /// crashes to the ground with a shower of sparks, lies smoking with its lights out, and powers back up with a
+    /// flash when it revives. A tall beacon floats above it so it can always be found; it turns red while the
+    /// hero is down. Reacts to Commander events only.
     /// </summary>
     [RequireComponent(typeof(Commander))]
     public sealed class HeroView : MonoBehaviour
     {
         private const float TurnSpeed = 14f;
-        private const float FigureScale = 0.85f;
+        private const float FigureScale = 0.95f;
         private const float IdleSpeed = 2.2f;
-        private const float IdleHeight = 0.02f;
+        private const float IdleHeight = 0.015f;
         private const float BreathSpeed = 2.2f;
         private const float BreathDepth = 0.015f;
-        private const float WalkBobHeight = 0.06f;
-        private const float GaitPerUnit = 7.5f;
-        private const float LegSwingDegrees = 38f;
+        private const float WalkBobHeight = 0.05f;
+        private const float GaitPerUnit = 2.1f;
+        private const float LegSwingDegrees = 36f;
+        private const float KneeFoldDegrees = 62f;
+        private const float KneeFoldLead = 0.6f;
+        private const float RunKneeDegrees = 14f;
+        private const float RunCrouch = 0.04f;
+        private const float RestHipDegrees = -6f;
+        private const float RestKneeDegrees = 24f;
+        private const float StanceStaggerDegrees = 11f;
+        private const float FrontKneeExtraDegrees = 8f;
+        private const float BackKneeExtraDegrees = -6f;
+        private const float FootSplayDegrees = 10f;
         private const float LegSettleSpeed = 8f;
+        private const float WeightShiftSpeed = 0.9f;
+        private const float WeightShiftKnee = 6f;
+        private const float WeightShiftSlide = 0.02f;
+        private const float WeightShiftRoll = 2f;
+        private const float HunchDegrees = 16f;
+        private const float RestTwistDegrees = 12f;
+        private const float HipCounterTwistShare = 0.35f;
+        private const float HeadForwardDegrees = 12f;
         private const float HeadScanDegrees = 28f;
         private const float HeadScanSpeed = 0.55f;
         private const float HeadNodDegrees = 6f;
         private const float HeadFollowSpeed = 6f;
-        private const float WalkLeanDegrees = 8f;
+        private const float WalkLeanDegrees = 10f;
+        private const float RelaxedForearmDegrees = 62f;
+        private const float RunForearmDegrees = 85f;
+        private const float DrawnForearmDegrees = 12f;
+        private const float ForearmSwingShare = 0.25f;
+        private const float FreeArmRestPitch = 8f;
+        private const float FreeArmRestYaw = -12f;
+        private const float FreeArmSwingShare = 0.8f;
+        private const float FreeArmAimPitch = -55f;
+        private const float FreeArmAimYaw = 32f;
+        private const float FreeArmAimForearm = 20f;
+        private const float FreeArmGuardPitch = -35f;
+        private const float FreeArmGuardYaw = -12f;
+        private const float DrawFollowSpeed = 6f;
+        private const float CloakTrailDegrees = 26f;
+        private const float CloakSwayDegrees = 4f;
+        private const float CloakSwaySpeed = 1.3f;
+        private const float CloakLungeDegrees = 30f;
         private const float StaggerSeconds = 0.3f;
         private const float FallSeconds = 0.6f;
         private const float StaggerPitch = -16f;
@@ -78,13 +117,22 @@ namespace Game.Hero
 
         private Commander _hero;
         private HeroModelFactory.Parts _parts;
-        private HeroWeaponRig _weapon;
+        private HeroWeaponRig _melee;
+        private HeroWeaponRig _ranged;
+        private HeroWeaponRig _active;
         private Transform _figure;
-        private Transform _arm;
+        private Transform _torso;
         private Transform _shell;
-        private Transform _legLeft;
-        private Transform _legRight;
+        private Transform _armUpperRight;
+        private Transform _armLowerRight;
+        private Transform _armUpperLeft;
+        private Transform _armLowerLeft;
+        private Transform _thighRight;
+        private Transform _shinRight;
+        private Transform _thighLeft;
+        private Transform _shinLeft;
         private Transform _head;
+        private Transform _cloak;
         private Transform _emblem;
         private ParticleSystem _thrusters;
         private ParticleSystem _sparks;
@@ -107,9 +155,14 @@ namespace Game.Hero
         private float _ringSeconds;
         private float _gait;
         private float _legSwing;
+        private float _stride;
+        private float _standCrouch;
+        private float _crouch;
+        private float _drawn;
         private float _headYaw;
         private float _headPitch;
         private float _scanPhase;
+        private float _shiftPhase;
         private Vector3 _lastPosition;
         private Color _trim;
         private bool _down;
@@ -123,6 +176,7 @@ namespace Game.Hero
             _hero = hero;
             _trim = hero.Definition.Color;
             _scanPhase = Random.Range(0f, 10f);
+            _shiftPhase = Random.Range(0f, 10f);
             Build();
             _lastPosition = transform.position;
             _hero.Changed += Refresh;
@@ -145,6 +199,8 @@ namespace Game.Hero
             }
         }
 
+        // The figure turns as a whole; the torso pivots at the pelvis and carries the body mesh, the head, the arms
+        // and the cloak, so a hunch or a lean bends the figure instead of sliding the chest out from under the head.
         private void Build()
         {
             var figure = new GameObject("Figure").transform;
@@ -157,17 +213,39 @@ namespace Game.Hero
             _poweredMaterials = HeroModelFactory.CreateMaterials(_trim);
             _deadMaterials = HeroModelFactory.CreateMaterials(_trim, false);
 
-            _shell = Part("Shell", figure, _parts.Body, _poweredMaterials, Vector3.zero, false);
-            _arm = Part("Arm", figure, _parts.Arm, _poweredMaterials, _parts.Shoulder, false);
-            _legRight = Part("LegR", figure, _parts.Leg, _poweredMaterials, _parts.Hip, false);
-            _legLeft = Part("LegL", figure, _parts.Leg, _poweredMaterials, new Vector3(-_parts.Hip.x, _parts.Hip.y, _parts.Hip.z), true);
-            _head = Part("Head", figure, _parts.Head, _poweredMaterials, _parts.Neck, false);
-            _figureRenderers = new[] { _shell.GetComponent<Renderer>(), _arm.GetComponent<Renderer>(), _legRight.GetComponent<Renderer>(), _legLeft.GetComponent<Renderer>(), _head.GetComponent<Renderer>() };
+            _torso = new GameObject("Torso").transform;
+            _torso.SetParent(figure, false);
+            _torso.localPosition = _parts.Pelvis;
+            _shell = Part("Shell", _torso, _parts.Body, _poweredMaterials, -_parts.Pelvis, false);
+            _head = Part("Head", _torso, _parts.Head, _poweredMaterials, _parts.Neck - _parts.Pelvis, false);
+            _cloak = Part("Cloak", _torso, _parts.Cloak, _poweredMaterials, _parts.Nape - _parts.Pelvis, false);
+            _armUpperRight = Part("ArmR", _torso, _parts.ArmUpper, _poweredMaterials, _parts.Shoulder - _parts.Pelvis, false);
+            _armLowerRight = Part("ForearmR", _armUpperRight, _parts.ArmLower, _poweredMaterials, _parts.Elbow, false);
+            _armUpperLeft = Part("ArmL", _torso, _parts.ArmUpper, _poweredMaterials, Mirror(_parts.Shoulder) - _parts.Pelvis, true);
+            _armLowerLeft = Part("ForearmL", _armUpperLeft, _parts.ArmLower, _poweredMaterials, _parts.Elbow, false);
+            _thighRight = Part("ThighR", figure, _parts.LegUpper, _poweredMaterials, _parts.Hip, false);
+            _shinRight = Part("ShinR", _thighRight, _parts.LegLower, _poweredMaterials, _parts.Knee, false);
+            _thighLeft = Part("ThighL", figure, _parts.LegUpper, _poweredMaterials, Mirror(_parts.Hip), true);
+            _shinLeft = Part("ShinL", _thighLeft, _parts.LegLower, _poweredMaterials, _parts.Knee, false);
+            _figureRenderers = figure.GetComponentsInChildren<Renderer>();
 
-            _weapon = HeroWeaponRig.For(_hero.Definition.Weapon);
-            _weapon.Build(_hero.Definition.Weapon, _parts, figure, _shell, _arm, _trim);
+            // Bent knees bring the hips down; the figure sinks by the same amount so the feet stay on the ground.
+            _standCrouch = 0.5f * (HipDrop(RestHipDegrees + StanceStaggerDegrees, RestKneeDegrees + BackKneeExtraDegrees)
+                                   + HipDrop(RestHipDegrees - StanceStaggerDegrees, RestKneeDegrees + FrontKneeExtraDegrees));
+            _crouch = _standCrouch;
 
-            _thrusters = CreateThrusters(figure, _parts.Thruster);
+            HeroDefinition definition = _hero.Definition;
+            _melee = HeroWeaponRig.For(definition.Weapon);
+            _melee.Build(definition.Weapon, _parts, figure, _shell, _armLowerRight, _trim);
+            if (definition.RangedWeapon != null)
+            {
+                _ranged = HeroWeaponRig.For(definition.RangedWeapon);
+                _ranged.Build(definition.RangedWeapon, _parts, figure, _shell, _armLowerRight, _trim);
+            }
+
+            _active = _melee;
+
+            _thrusters = CreateThrusters(_shell, _parts.Thruster);
             _sparks = ParticleKit.Create(_shell, "Sparks", new Vector3(0f, 1f, -0.3f), SparkColor * 2f, 0.3f, 0.7f, 0.025f, 0.06f, 1.5f, 4f, 1.2f, 100, 0.15f);
             _smoke = ParticleKit.Create(_shell, "Smoke", new Vector3(0f, 1f, -0.3f), SmokeColor, 1.2f, 2.2f, 0.2f, 0.4f, 0.3f, 0.6f, -0.12f, 30, 0.15f);
             _dust = ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f);
@@ -187,6 +265,16 @@ namespace Game.Hero
 
             BuildBeacon();
         }
+
+        // How far the hip comes down when the thigh and the knee bend by these angles, with the leg lengths of the model.
+        private float HipDrop(float hipDegrees, float kneeDegrees)
+        {
+            float thigh = -_parts.Knee.y;
+            float shin = -_parts.Ankle.y;
+            return thigh * (1f - Mathf.Cos(hipDegrees * Mathf.Deg2Rad)) + shin * (1f - Mathf.Cos((hipDegrees + kneeDegrees) * Mathf.Deg2Rad));
+        }
+
+        private static Vector3 Mirror(Vector3 point) => new Vector3(-point.x, point.y, point.z);
 
         private static Transform Part(string name, Transform parent, Mesh mesh, Material[] materials, Vector3 localPosition, bool mirrored)
         {
@@ -236,12 +324,22 @@ namespace Game.Hero
             }
         }
 
-        private void OnStruck(Vector3 target)
+        // The weapon the commander used comes to the hand; whatever else was drawn goes back to its holster.
+        private void OnStruck(Vector3 target, HeroWeaponDefinition weapon)
         {
-            if (!_down)
+            if (_down)
             {
-                _weapon.Attack(target);
+                return;
             }
+
+            HeroWeaponRig rig = weapon.Kind == HeroWeaponKind.Ranged && _ranged != null ? _ranged : _melee;
+            if (rig != _active && _active.Drawn)
+            {
+                _active.Holster();
+            }
+
+            _active = rig;
+            _active.Attack(target);
         }
 
         private void OnShockwave(Vector3 centre, float radius) => Pulse(_hero.Definition.ShockwaveRadius, _trim, RingSeconds);
@@ -265,7 +363,8 @@ namespace Game.Hero
         {
             _down = false;
             _rise = 0f;
-            _weapon.Holster();
+            _melee.Holster();
+            _ranged?.Holster();
             SetMaterials(_poweredMaterials);
             ParticleKit.SetRate(_smoke, 0f);
             ParticleKit.SetRate(_sparks, 0f);
@@ -295,7 +394,7 @@ namespace Game.Hero
             TurnTowardsFacing();
             Walk();
             Scan();
-            HeroWeaponRig.Pose pose = _weapon.Tick(_hero.IsWalking, _legSwing);
+            HeroWeaponRig.Pose pose = _active.Tick(_hero.IsWalking, _legSwing);
             Hold(pose);
             Rise();
             Beacon();
@@ -320,10 +419,14 @@ namespace Game.Hero
             _figure.localRotation = Quaternion.Euler(pitch, _fallYaw, roll + Mathf.Sin(settle * Mathf.PI) * FallBounce);
             _figure.localPosition = new Vector3(0f, StaggerLift * Mathf.Sin(stagger * Mathf.PI) * (1f - fall) + LyingHeight * fall, 0f);
             _head.localRotation = Quaternion.Euler(HeadDroop * settle, 0f, 0f);
-            _legRight.localRotation = Quaternion.Euler(LegSprawl * settle, 0f, 0f);
-            _legLeft.localRotation = Quaternion.Euler(-LegSprawl * 0.5f * settle, 0f, 0f);
-            _arm.localRotation = Quaternion.Euler(ArmSprawlPitch * settle, ArmSprawlYaw * settle, 0f);
-            _shell.localRotation = Quaternion.identity;
+            _thighRight.localRotation = Quaternion.Euler(LegSprawl * settle, 0f, 0f);
+            _thighLeft.localRotation = Quaternion.Euler(-LegSprawl * 0.5f * settle, 0f, 0f);
+            _shinRight.localRotation = Quaternion.Euler(RestKneeDegrees * (1f - settle * 0.5f), 0f, 0f);
+            _shinLeft.localRotation = Quaternion.Euler(RestKneeDegrees + LegSprawl * settle, 0f, 0f);
+            _armUpperRight.localRotation = Quaternion.Euler(ArmSprawlPitch * settle, ArmSprawlYaw * settle, 0f);
+            _armUpperLeft.localRotation = Quaternion.Euler(-ArmSprawlPitch * 0.5f * settle, -ArmSprawlYaw * 0.6f * settle, 0f);
+            _cloak.localRotation = Quaternion.Euler(-60f * settle, 0f, 0f);
+            _torso.localRotation = Quaternion.identity;
 
             // The visor stutters out during the fall and the suit goes dark on impact.
             if (!_impacted)
@@ -336,7 +439,7 @@ namespace Game.Hero
         private void Impact()
         {
             _impacted = true;
-            _weapon.Drop(transform.position.y);
+            _active.Drop(transform.position.y);
             _sparks.Emit(ImpactSparks);
             _dust.Emit(ImpactDust);
             SetMaterials(_deadMaterials);
@@ -357,25 +460,52 @@ namespace Game.Hero
             t = t * t;
             _figure.localRotation = Quaternion.Euler(0f, _figure.localEulerAngles.y, FallRoll * t);
             _figure.localPosition = new Vector3(0f, LyingHeight * t, 0f);
-            _head.localRotation = Quaternion.Euler(HeadDroop * t, 0f, 0f);
+            _head.localRotation = Quaternion.Euler(HeadDroop * t + HeadForwardDegrees * (1f - t), 0f, 0f);
         }
 
-        // Breath, bob, lunge and lean, and the arm as the weapon rig wants it.
+        // Breath, bob, lunge and crouch; the torso hunched at the pelvis, turned side-on while relaxed, leaning
+        // into a run and turning against the hips with every stride; the weapon arm as the rig wants it with the
+        // elbow opening as the weapon is drawn; the free arm pumping against the legs, bracing the gun or
+        // balancing the blade.
         private void Hold(HeroWeaponRig.Pose pose)
         {
             Vector3 forward = _hero.Facing.sqrMagnitude > 0.0001f ? _hero.Facing.normalized : Vector3.forward;
-            float bob = _hero.IsWalking ? Mathf.Abs(Mathf.Sin(_gait)) * WalkBobHeight : Mathf.Sin(Time.time * IdleSpeed) * IdleHeight;
+            bool walking = _hero.IsWalking;
+            float shift = walking ? 0f : Mathf.Sin(Time.time * WeightShiftSpeed + _shiftPhase);
+            float bob = walking ? Mathf.Abs(Mathf.Sin(_gait)) * WalkBobHeight : Mathf.Sin(Time.time * IdleSpeed) * IdleHeight;
             if (_rise >= RiseSeconds)
             {
-                _figure.localPosition = forward * pose.Lunge + Vector3.up * bob;
+                _figure.localPosition = forward * pose.Lunge + Vector3.up * (bob - _crouch) + _figure.right * (shift * WeightShiftSlide);
             }
 
-            _shell.localScale = new Vector3(1f, 1f + BreathDepth * Mathf.Sin(Time.time * BreathSpeed), 1f);
-            _shell.localRotation = Quaternion.Euler(pose.Lean + (_hero.IsWalking ? WalkLeanDegrees : 0f), pose.Twist, 0f);
-            _arm.localRotation = Quaternion.Euler(pose.ArmPitch, pose.ArmYaw, 0f);
+            _drawn = Mathf.MoveTowards(_drawn, _active.Drawn ? 1f : 0f, DrawFollowSpeed * Time.deltaTime);
+            _torso.localScale = new Vector3(1f, 1f + BreathDepth * Mathf.Sin(Time.time * BreathSpeed), 1f);
+            float restTwist = RestTwistDegrees * (1f - Mathf.Max(_drawn, _stride));
+            float twist = pose.Twist + restTwist - _legSwing * HipCounterTwistShare;
+            _torso.localRotation = Quaternion.Euler(HunchDegrees + pose.Lean + WalkLeanDegrees * _stride, twist, shift * WeightShiftRoll);
+
+            _armUpperRight.localRotation = Quaternion.Euler(pose.ArmPitch, pose.ArmYaw, 0f);
+            float relaxedForearm = Mathf.Lerp(RelaxedForearmDegrees, RunForearmDegrees, _stride);
+            float forearm = Mathf.Lerp(relaxedForearm - _legSwing * ForearmSwingShare, DrawnForearmDegrees, _drawn);
+            _armLowerRight.localRotation = Quaternion.Euler(forearm, 0f, 0f);
+
+            bool aiming = _active == _ranged && _ranged != null;
+            float freePitch = aiming ? FreeArmAimPitch : FreeArmGuardPitch;
+            float freeYaw = aiming ? FreeArmAimYaw : FreeArmGuardYaw;
+            float freeForearm = aiming ? FreeArmAimForearm : RelaxedForearmDegrees * 0.6f;
+            float restPitch = FreeArmRestPitch + _legSwing * FreeArmSwingShare;
+            _armUpperLeft.localRotation = Quaternion.Euler(Mathf.Lerp(restPitch, freePitch, _drawn), Mathf.Lerp(FreeArmRestYaw, freeYaw, _drawn), 0f);
+            _armLowerLeft.localRotation = Quaternion.Euler(Mathf.Lerp(relaxedForearm + _legSwing * ForearmSwingShare, freeForearm, _drawn), 0f, 0f);
+
+            // The cloak trails when the figure moves or lunges and stirs a little in the wind while it stands.
+            float cloakSway = Mathf.Sin(Time.time * CloakSwaySpeed + _shiftPhase) * CloakSwayDegrees + Mathf.Sin(Time.time * CloakSwaySpeed * 2.3f) * CloakSwayDegrees * 0.4f;
+            _cloak.localRotation = Quaternion.Euler(CloakTrailDegrees * _stride + pose.Lunge * CloakLungeDegrees + cloakSway, 0f, shift * WeightShiftRoll * 0.5f);
         }
 
-        // Legs swing with the distance walked and settle when the commander stops; thrusters burn while moving.
+        // Standing: one foot back and one forward, both knees bent, the weight rocking slowly from leg to leg.
+        // Running: legs swing from the hip with the distance covered, the knee folds while the leg comes forward
+        // (most just after it leaves the ground behind), and the stance knee stays a little soft. Thrusters burn
+        // while moving.
         private void Walk()
         {
             Vector3 position = transform.position;
@@ -384,14 +514,25 @@ namespace Game.Hero
             bool walking = _hero.IsWalking;
             _gait += moved * GaitPerUnit;
 
-            float wanted = walking ? Mathf.Sin(_gait) * LegSwingDegrees : 0f;
-            _legSwing = Mathf.Lerp(_legSwing, wanted, 1f - Mathf.Exp(-LegSettleSpeed * Time.deltaTime));
-            _legRight.localRotation = Quaternion.Euler(_legSwing, 0f, 0f);
-            _legLeft.localRotation = Quaternion.Euler(-_legSwing, 0f, 0f);
+            _stride = Mathf.Lerp(_stride, walking ? 1f : 0f, 1f - Mathf.Exp(-LegSettleSpeed * Time.deltaTime));
+            float standing = 1f - _stride;
+            float swing = Mathf.Sin(_gait) * LegSwingDegrees * _stride;
+            _legSwing = swing;
+            float foldRight = Mathf.Max(0f, -Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * _stride;
+            float foldLeft = Mathf.Max(0f, Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * _stride;
+            float stagger = StanceStaggerDegrees * standing;
+            float knee = Mathf.Lerp(RestKneeDegrees, RunKneeDegrees, _stride);
+            float shift = Mathf.Sin(Time.time * WeightShiftSpeed + _shiftPhase) * standing;
+
+            _thighRight.localRotation = Quaternion.Euler(RestHipDegrees + stagger + swing, FootSplayDegrees, 0f);
+            _thighLeft.localRotation = Quaternion.Euler(RestHipDegrees - stagger - swing, -FootSplayDegrees, 0f);
+            _shinRight.localRotation = Quaternion.Euler(knee + BackKneeExtraDegrees * standing + foldRight + shift * WeightShiftKnee, 0f, 0f);
+            _shinLeft.localRotation = Quaternion.Euler(knee + FrontKneeExtraDegrees * standing + foldLeft - shift * WeightShiftKnee, 0f, 0f);
+            _crouch = Mathf.Lerp(_standCrouch, RunCrouch, _stride);
             ParticleKit.SetRate(_thrusters, walking ? ThrusterRate : 0f);
         }
 
-        // Waiting at a post, the head scans the road; walking or fighting it looks straight ahead.
+        // Waiting at a post, the head scans the road; walking or fighting it looks straight ahead, always a little down.
         private void Scan()
         {
             if (_rise < RiseSeconds)
@@ -399,9 +540,9 @@ namespace Game.Hero
                 return;
             }
 
-            bool busy = _hero.IsWalking || _weapon.Drawn;
+            bool busy = _hero.IsWalking || _active.Drawn;
             float yaw = busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed + _scanPhase) * HeadScanDegrees;
-            float pitch = busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed * 1.7f + _scanPhase) * HeadNodDegrees;
+            float pitch = HeadForwardDegrees + (busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed * 1.7f + _scanPhase) * HeadNodDegrees);
             float k = 1f - Mathf.Exp(-HeadFollowSpeed * Time.deltaTime);
             _headYaw = Mathf.Lerp(_headYaw, yaw, k);
             _headPitch = Mathf.Lerp(_headPitch, pitch, k);
@@ -421,9 +562,9 @@ namespace Game.Hero
         }
 
         // Short bright puffs out of the pack nozzles, pushed down and back, only while walking.
-        private ParticleSystem CreateThrusters(Transform figure, Vector3 nozzle)
+        private ParticleSystem CreateThrusters(Transform body, Vector3 nozzle)
         {
-            ParticleSystem system = ParticleKit.Create(figure, "Thrusters", nozzle, ThrusterColor * 2f, 0.15f, 0.3f, 0.05f, 0.1f, 1.5f, 2.5f, 0f, 40, 0.08f);
+            ParticleSystem system = ParticleKit.Create(body, "Thrusters", nozzle, ThrusterColor * 2f, 0.15f, 0.3f, 0.05f, 0.1f, 1.5f, 2.5f, 0f, 40, 0.08f);
             system.transform.localRotation = Quaternion.Euler(60f, 180f, 0f);
             ParticleSystem.ShapeModule shape = system.shape;
             shape.shapeType = ParticleSystemShapeType.Cone;

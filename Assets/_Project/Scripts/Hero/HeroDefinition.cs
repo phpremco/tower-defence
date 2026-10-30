@@ -11,8 +11,14 @@ namespace Game.Hero
         [SerializeField] [Min(1f)] private float _maxHealth = 200f;
         [SerializeField] [Min(0.5f)] private float _walkSpeed = 5f;
 
-        /// <summary>The weapon the hero fights with: damage, reach, pace, look and animation.</summary>
+        /// <summary>The weapon the hero fights with up close: damage, reach, pace, look and animation.</summary>
         [SerializeField] private HeroWeaponDefinition _weapon;
+
+        /// <summary>
+        /// The gun the hero fires at anything beyond the reach of the melee weapon, paced like a simple turret.
+        /// Optional: without one the hero only fights up close.
+        /// </summary>
+        [SerializeField] private HeroWeaponDefinition _rangedWeapon;
 
         /// <summary>Share of the hits on the guarded blockade that the hero takes instead.</summary>
         [SerializeField] [Range(0f, 1f)] private float _guardShare = 0.4f;
@@ -36,6 +42,7 @@ namespace Game.Hero
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
         public HeroWeaponDefinition Weapon => _weapon;
+        public HeroWeaponDefinition RangedWeapon => _rangedWeapon;
         public float Damage => _weapon.Damage;
         public float Reach => _weapon.Reach;
         public float StrikeInterval => _weapon.AttackInterval;

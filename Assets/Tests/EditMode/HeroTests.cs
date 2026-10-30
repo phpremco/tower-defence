@@ -101,5 +101,57 @@ namespace Game.Tests
             Assert.IsFalse(_hero.CanEmergencyRepair);
             Assert.IsFalse(_hero.TryEmergencyRepair());
         }
+        private sealed class FakeTarget : ITargetable
+        {
+            public Vector3 Position { get; set; }
+
+            public TargetLayers Layer => TargetLayers.Ground;
+
+            public float PathProgress => 0f;
+
+            public bool IsAlive => true;
+
+            public float Taken { get; private set; }
+
+            public void TakeDamage(float amount) => Taken += amount;
+
+            public void ApplySlow(float speedFactor, float seconds)
+            {
+            }
+        }
+
+        [Test]
+        public void Hero_ShootsWhatTheBladeCannotReach_AndUsesTheGunsPace()
+        {
+            var gun = ScriptableObject.CreateInstance<HeroWeaponDefinition>();
+            var gunProps = new UnityEditor.SerializedObject(gun);
+            gunProps.FindProperty("_kind").intValue = (int)HeroWeaponKind.Ranged;
+            gunProps.FindProperty("_damage").floatValue = 4f;
+            gunProps.FindProperty("_reach").floatValue = 3.5f;
+            gunProps.FindProperty("_attackInterval").floatValue = 0.35f;
+            gunProps.ApplyModifiedPropertiesWithoutUndo();
+            var definitionProps = new UnityEditor.SerializedObject(_definition);
+            definitionProps.FindProperty("_rangedWeapon").objectReferenceValue = gun;
+            definitionProps.ApplyModifiedPropertiesWithoutUndo();
+
+            var targets = new TargetRegistry();
+            var far = new FakeTarget { Position = new Vector3(-0.65f + 3f, 0f, 0f) };
+            targets.Add(far);
+            var go = new GameObject("Hero2");
+            var hero = go.AddComponent<Commander>();
+            HeroWeaponDefinition used = null;
+            hero.Struck += (position, weapon) => used = weapon;
+            hero.Initialize(_definition, targets, new List<HeroPost> { new HeroPost(_first, new Vector3(-0.65f, 0f, 0f), Vector3.right) }, 0, PlayerModifiers.None);
+
+            // Beyond the blade (reach 1.5) but inside the gun's reach: the gun fires, for its own damage. Update is
+            // driven by hand, because SendMessage asserts outside Play Mode.
+            typeof(Commander).GetMethod("Update", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(hero, null);
+
+            Assert.AreSame(gun, used);
+            Assert.AreEqual(4f, far.Taken, 0.001f);
+
+            Object.DestroyImmediate(go);
+            Object.DestroyImmediate(gun);
+        }
     }
 }

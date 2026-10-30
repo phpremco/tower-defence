@@ -1,620 +1,752 @@
 Level_Landing Easy
-  w1 threat 5 span 4s: 5xScout
-  w2 threat 6 span 3s: 1xGrunt 3xScout
-  w3 threat 6 span 3s: 1xGrunt 3xScout
-  w4 threat 9 span 3s: 2xGrunt 4xScout
-  w5 threat 6 span 3s: 1xGrunt 3xScout
-  w6 threat 9 span 4s: 2xGrunt 4xScout
-  w7 threat 17 span 3s: 1xBrute 1xGrunt 2xScout
-  w8 threat 9 span 3s: 2xGrunt 4xScout
-  w9 threat 18 span 5s: 4xGrunt 8xScout
-  w10 threat 41 span 14s: 2xGrunt 1xOverseer 3xScout
-  w11 threat 26 span 5s: 1xBrute 3xGrunt 6xScout
-  w12 threat 26 span 6s: 6xGrunt 11xScout
-  w13 threat 22 span 3s: 1xBrute 2xGrunt 4xScout
-  w14 threat 33 span 8s: 1xBrute 5xGrunt 8xScout
-  w15 threat 41 span 10s: 10xGrunt 16xScout
-  w16 threat 38 span 10s: 1xBrute 6xGrunt 10xScout
-  w17 threat 42 span 6s: 2xBrute 4xGrunt 7xScout
-  w18 threat 45 span 11s: 1xBrute 8xGrunt 12xScout
-  w19 threat 68 span 16s: 17xGrunt 25xScout
-  w20 threat 69 span 14s: 1xBrute 6xGrunt 1xOverseer 9xScout
+  w1 threat 6 money 11 span 4s: 11xSkitter
+  w2 threat 7 money 13 span 7s: 13xSkitter
+  w3 threat 5 money 9 span 4s: 9xSkitter
+  w4 threat 14 money 26 span 3s: 3xProwler 11xSkitter
+  w5 threat 13 money 25 span 4s: 3xProwler 10xSkitter
+  w6 threat 13 money 24 span 4s: 3xProwler 9xSkitter
+  w7 threat 9 money 18 span 3s: 6xSkitter 1xStinger
+  w8 threat 20 money 38 span 5s: 3xProwler 11xSkitter 1xStinger
+  w9 threat 21 money 40 span 7s: 3xProwler 13xSkitter 1xStinger
+  w10 threat 21 money 41 span 8s: 3xProwler 14xSkitter 1xStinger
+  w11 threat 25 money 47 span 8s: 4xProwler 15xSkitter 1xStinger
+  w12 threat 65 money 187 span 14s: 1xBroodMother 4xProwler 17xSkitter
+  w13 threat 26 money 51 span 7s: 3xProwler 12xSkitter 2xStinger
+  w14 threat 30 money 57 span 11s: 5xProwler 20xSkitter 1xStinger
+  w15 threat 34 money 64 span 11s: 6xProwler 22xSkitter 1xStinger
+  w16 threat 44 money 84 span 15s: 7xProwler 25xSkitter 2xStinger
+  w17 threat 44 money 85 span 11s: 6xProwler 19xSkitter 3xStinger
+  w18 threat 54 money 103 span 18s: 10xProwler 29xSkitter 2xStinger
+  w19 threat 83 money 155 span 20s: 20xProwler 55xSkitter
+  w20 threat 77 money 148 span 22s: 13xProwler 35xSkitter 4xStinger
+  w21 threat 82 money 156 span 22s: 14xProwler 38xSkitter 4xStinger
+  w22 threat 116 money 215 span 31s: 32xProwler 55xSkitter
+  w23 threat 99 money 191 span 30s: 14xProwler 37xSkitter 7xStinger
+  w24 threat 115 money 303 span 18s: 1xPackAlpha 13xProwler 30xSkitter 4xStinger
+  total kill money 2091
 Level_Landing Medium
-  w1 threat 5 span 4s: 5xScout
-  w2 threat 6 span 3s: 1xGrunt 3xScout
-  w3 threat 6 span 3s: 1xGrunt 3xScout
-  w4 threat 9 span 3s: 2xGrunt 4xScout
-  w5 threat 6 span 3s: 1xGrunt 3xScout
-  w6 threat 9 span 4s: 2xGrunt 4xScout
-  w7 threat 17 span 3s: 1xBrute 1xGrunt 2xScout
-  w8 threat 11 span 4s: 4xFlyer* 1xGrunt 2xScout
-  w9 threat 18 span 4s: 4xGrunt 8xScout
-  w10 threat 41 span 14s: 2xGrunt 1xOverseer 3xScout
-  w11 threat 26 span 5s: 1xBrute 3xGrunt 6xScout
-  w12 threat 26 span 5s: 6xGrunt 11xScout
-  w13 threat 22 span 3s: 1xBrute 2xGrunt 4xScout
-  w14 threat 33 span 7s: 1xBrute 5xGrunt 8xScout
-  w15 threat 41 span 8s: 10xGrunt 16xScout
-  w16 threat 38 span 8s: 1xBrute 6xGrunt 10xScout
-  w17 threat 42 span 5s: 2xBrute 4xGrunt 7xScout
-  w18 threat 45 span 10s: 1xBrute 8xGrunt 12xScout
-  w19 threat 68 span 13s: 17xGrunt 25xScout
-  w20 threat 71 span 19s: 1xBrute 1xFlyer* 6xGrunt 1xOverseer 9xScout
+  w1 threat 7 money 13 span 4s: 13xSkitter
+  w2 threat 8 money 15 span 6s: 15xSkitter
+  w3 threat 5 money 10 span 3s: 10xSkitter
+  w4 threat 15 money 31 span 3s: 3xProwler 13xSkitter
+  w5 threat 14 money 30 span 4s: 3xProwler 12xSkitter
+  w6 threat 14 money 29 span 4s: 3xProwler 11xSkitter
+  w7 threat 10 money 22 span 3s: 7xSkitter 1xStinger
+  w8 threat 21 money 46 span 5s: 3xProwler 13xSkitter 1xStinger
+  w9 threat 7 money 16 span 1s: 6xSkitter 1xSkyray*
+  w10 threat 22 money 49 span 6s: 3xProwler 16xSkitter 1xStinger
+  w11 threat 26 money 57 span 7s: 4xProwler 18xSkitter 1xStinger
+  w12 threat 66 money 232 span 14s: 1xBroodMother 4xProwler 20xSkitter
+  w13 threat 27 money 62 span 6s: 3xProwler 14xSkitter 2xStinger
+  w14 threat 32 money 69 span 9s: 5xProwler 24xSkitter 1xStinger
+  w15 threat 37 money 102 span 34s: 3xProwler 14xSkitter 1xStinger 11xTidebat~
+  w16 threat 46 money 101 span 12s: 7xProwler 29xSkitter 2xStinger
+  w17 threat 46 money 103 span 9s: 6xProwler 22xSkitter 3xStinger
+  w18 threat 57 money 124 span 15s: 10xProwler 34xSkitter 2xStinger
+  w19 threat 90 money 190 span 17s: 21xProwler 64xSkitter
+  w20 threat 80 money 179 span 18s: 13xProwler 41xSkitter 4xStinger
+  w21 threat 82 money 228 span 56s: 8xProwler 25xSkitter 2xStinger 25xTidebat~
+  w22 threat 126 money 268 span 26s: 34xProwler 64xSkitter
+  w23 threat 105 money 238 span 25s: 15xProwler 43xSkitter 7xStinger
+  w24 threat 121 money 383 span 19s: 1xPackAlpha 13xProwler 35xSkitter 1xSkyray* 4xStinger
+  total kill money 2597
 Level_Landing Hard
-  w1 threat 8 span 3s: 8xScout
-  w2 threat 10 span 3s: 2xGrunt 5xScout
-  w3 threat 11 span 3s: 2xGrunt 6xScout
-  w4 threat 15 span 3s: 3xGrunt 7xScout
-  w5 threat 9 span 3s: 2xGrunt 4xScout
-  w6 threat 17 span 4s: 4xGrunt 7xScout
-  w7 threat 33 span 3s: 2xBrute 2xGrunt 3xScout
-  w8 threat 18 span 5s: 6xFlyer* 2xGrunt 4xScout
-  w9 threat 30 span 4s: 7xGrunt 12xScout
-  w10 threat 47 span 14s: 4xGrunt 1xOverseer 4xScout
-  w11 threat 47 span 6s: 2xBrute 5xGrunt 9xScout
-  w12 threat 43 span 5s: 10xGrunt 18xScout
-  w13 threat 31 span 7s: 10xFlyer* 4xGrunt 6xScout
-  w14 threat 57 span 6s: 2xBrute 8xGrunt 12xScout
-  w15 threat 62 span 8s: 15xGrunt 24xScout
-  w16 threat 67 span 7s: 2xBrute 10xGrunt 17xScout
-  w17 threat 79 span 5s: 4xBrute 7xGrunt 11xScout
-  w18 threat 75 span 9s: 2xBrute 12xGrunt 20xScout
-  w19 threat 106 span 11s: 27xGrunt 38xScout
-  w20 threat 100 span 22s: 2xBrute 3xFlyer* 10xGrunt 1xOverseer 13xScout
+  w1 threat 9 money 34 span 4s: 17xSkitter
+  w2 threat 10 money 40 span 5s: 20xSkitter
+  w3 threat 7 money 26 span 3s: 13xSkitter
+  w4 threat 20 money 66 span 3s: 4xProwler 17xSkitter
+  w5 threat 19 money 64 span 4s: 4xProwler 16xSkitter
+  w6 threat 18 money 60 span 4s: 4xProwler 14xSkitter
+  w7 threat 17 money 58 span 2s: 10xSkitter 2xStinger
+  w8 threat 32 money 104 span 6s: 4xProwler 17xSkitter 2xStinger
+  w9 threat 11 money 42 span 1s: 8xSkitter 2xSkyray*
+  w10 threat 34 money 112 span 6s: 4xProwler 21xSkitter 2xStinger
+  w11 threat 40 money 132 span 6s: 6xProwler 23xSkitter 2xStinger
+  w12 threat 75 money 342 span 14s: 1xBroodMother 6xProwler 27xSkitter
+  w13 threat 45 money 146 span 5s: 4xProwler 19xSkitter 4xStinger
+  w14 threat 47 money 156 span 8s: 7xProwler 31xSkitter 2xStinger
+  w15 threat 47 money 161 span 6s: 4xProwler 13xSkitter 5xSkyray* 2xStinger
+  w16 threat 62 money 205 span 11s: 9xProwler 38xSkitter 3xStinger
+  w17 threat 67 money 217 span 8s: 8xProwler 29xSkitter 5xStinger
+  w18 threat 76 money 251 span 13s: 13xProwler 45xSkitter 3xStinger
+  w19 threat 116 money 382 span 14s: 27xProwler 83xSkitter
+  w20 threat 110 money 358 span 15s: 17xProwler 54xSkitter 6xStinger
+  w21 threat 113 money 422 span 68s: 8xProwler 27xSkitter 4xStinger 38xTidebat~
+  w22 threat 163 money 518 span 23s: 44xProwler 83xSkitter
+  w23 threat 146 money 473 span 20s: 19xProwler 56xSkitter 11xStinger
+  w24 threat 156 money 637 span 22s: 1xPackAlpha 17xProwler 46xSkitter 3xSkyray* 6xStinger
+  total kill money 5006
 Level_Landing Psycho
-  w1 threat 10 span 3s: 10xScout
-  w2 threat 11 span 3s: 2xGrunt 6xScout
-  w3 threat 11 span 3s: 2xGrunt 6xScout
-  w4 threat 18 span 3s: 4xGrunt 8xScout
-  w5 threat 11 span 3s: 2xGrunt 6xScout
-  w6 threat 18 span 4s: 4xGrunt 8xScout
-  w7 threat 34 span 3s: 2xBrute 2xGrunt 4xScout
-  w8 threat 21 span 6s: 8xFlyer* 2xGrunt 4xScout
-  w9 threat 35 span 4s: 8xGrunt 15xScout
-  w10 threat 52 span 14s: 2xFlyer* 4xGrunt 1xOverseer 6xScout
-  w11 threat 58 span 9s: 2xBrute 4xFlyer* 6xGrunt 12xScout
-  w12 threat 51 span 5s: 12xGrunt 21xScout
-  w13 threat 36 span 8s: 13xFlyer* 4xGrunt 6xScout
-  w14 threat 71 span 9s: 2xBrute 4xFlyer* 10xGrunt 15xScout
-  w15 threat 82 span 7s: 20xGrunt 32xScout
-  w16 threat 84 span 9s: 2xBrute 6xFlyer* 12xGrunt 20xScout
-  w17 threat 83 span 14s: 2xBrute 22xFlyer* 6xGrunt 10xScout
-  w18 threat 101 span 11s: 2xBrute 8xFlyer* 16xGrunt 24xScout
-  w19 threat 127 span 10s: 32xGrunt 47xScout
-  w20 threat 125 span 25s: 2xBrute 13xFlyer* 12xGrunt 1xOverseer 18xScout
+  w1 threat 10 money 40 span 3s: 20xSkitter
+  w2 threat 12 money 46 span 4s: 23xSkitter
+  w3 threat 8 money 30 span 3s: 15xSkitter
+  w4 threat 24 money 100 span 3s: 5xProwler 20xSkitter
+  w5 threat 23 money 96 span 4s: 5xProwler 18xSkitter
+  w6 threat 22 money 94 span 4s: 5xProwler 17xSkitter
+  w7 threat 18 money 82 span 2s: 11xSkitter 2xStinger
+  w8 threat 36 money 160 span 6s: 5xProwler 20xSkitter 2xStinger
+  w9 threat 12 money 58 span 1s: 9xSkitter 2xSkyray*
+  w10 threat 45 money 210 span 6s: 5xProwler 25xSkitter 2xSkyray* 2xStinger
+  w11 threat 52 money 240 span 6s: 7xProwler 28xSkitter 2xSkyray* 2xStinger
+  w12 threat 80 money 521 span 14s: 1xBroodMother 7xProwler 31xSkitter
+  w13 threat 49 money 224 span 4s: 5xProwler 22xSkitter 4xStinger
+  w14 threat 60 money 270 span 7s: 8xProwler 37xSkitter 2xSkyray* 2xStinger
+  w15 threat 51 money 250 span 6s: 5xProwler 15xSkitter 5xSkyray* 2xStinger
+  w16 threat 83 money 380 span 9s: 11xProwler 44xSkitter 2xSkyray* 4xStinger
+  w17 threat 81 money 368 span 7s: 10xProwler 34xSkitter 6xStinger
+  w18 threat 108 money 496 span 11s: 16xProwler 52xSkitter 4xSkyray* 4xStinger
+  w19 threat 142 money 602 span 12s: 34xProwler 97xSkitter
+  w20 threat 82 money 406 span 7s: 8xProwler 25xSkitter 10xSkyray* 2xStinger
+  w21 threat 122 money 746 span 77s: 8xProwler 25xSkitter 2xStinger 54xTidebat~
+  w22 threat 200 money 854 span 19s: 55xProwler 97xSkitter
+  w23 threat 171 money 780 span 18s: 24xProwler 66xSkitter 12xStinger
+  w24 threat 205 money 1188 span 24s: 1xPackAlpha 21xProwler 53xSkitter 11xSkyray* 7xStinger
+  total kill money 8241
 Level_Forest Easy
-  w1 threat 5 span 3s: 1xGrunt* 1xScout 1xScout*
-  w2 threat 8 span 3s: 1xGrunt 1xGrunt* 1xScout 2xScout*
-  w3 threat 10 span 5s: 1xGrunt 1xRoller 2xScout*
-  w4 threat 7 span 20s: 1xDrowner~ 1xGrunt* 1xScout*
-  w5 threat 12 span 3s: 3xGrunt* 3xScout 1xScout*
-  w6 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
-  w7 threat 11 span 22s: 2xDrowner~ 1xGrunt* 1xScout*
-  w8 threat 16 span 5s: 1xGrunt 3xGrunt* 1xScout 5xScout*
-  w9 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller 1xScout 2xScout*
-  w10 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
-  w11 threat 23 span 6s: 1xGrunt 5xGrunt* 3xScout 5xScout*
-  w12 threat 43 span 22s: 2xDrowner~ 1xGrunt 1xOverseer 1xScout*
-  w13 threat 30 span 8s: 3xGrunt 5xGrunt* 4xScout 6xScout*
-  w14 threat 35 span 8s: 1xBrute 3xGrunt* 2xRoller* 2xScout 2xScout*
-  w15 threat 27 span 25s: 4xDrowner~ 2xGrunt* 1xRoller 1xScout 1xScout*
-  w16 threat 41 span 10s: 4xGrunt 7xGrunt* 6xScout 7xScout*
-  w17 threat 39 span 5s: 2xBrute* 1xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
-  w18 threat 54 span 13s: 7xGrunt 8xGrunt* 7xScout 9xScout*
-  w19 threat 53 span 30s: 1xBrute 7xDrowner~ 1xGrunt 2xGrunt* 1xRoller 1xScout 2xScout*
-  w20 threat 57 span 11s: 1xBrute* 3xGrunt 3xGrunt* 1xRoller 3xRoller* 3xScout 4xScout*
-  w21 threat 75 span 17s: 9xGrunt 12xGrunt* 10xScout 12xScout*
-  w22 threat 69 span 33s: 1xBrute 9xDrowner~ 1xGrunt 3xGrunt* 2xRoller* 1xScout 3xScout*
-  w23 threat 84 span 13s: 3xBrute 1xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller* 3xScout 2xScout*
-  w24 threat 108 span 24s: 14xGrunt 17xGrunt* 9xScout 21xScout*
-  w25 threat 156 span 14s: 1xBrute 1xGrunt 5xGrunt* 2xRoller 2xRoller* 3xScout 3xScout* 1xWarden
+  w1 threat 12 money 22 span 3s: 3xProwler* 5xSkitter 2xSkitter*
+  w2 threat 13 money 24 span 3s: 3xProwler 4xSkitter 5xSkitter*
+  w3 threat 8 money 11 span 3s: 1xRoller 5xSkitter*
+  w4 threat 11 money 19 span 22s: 2xMossbat~ 1xRoller* 5xSkitter*
+  w5 threat 14 money 26 span 3s: 3xProwler* 5xSkitter 6xSkitter*
+  w6 threat 17 money 27 span 5s: 3xProwler 1xRoller* 5xSkitter 1xSkitter*
+  w7 threat 12 money 19 span 3s: 1xRoller* 5xSkitter* 1xSkyray*
+  w8 threat 21 money 40 span 5s: 2xProwler 3xProwler* 6xSkitter 9xSkitter*
+  w9 threat 22 money 36 span 8s: 1xOozer* 3xProwler 1xRoller 5xSkitter 2xSkitter*
+  w10 threat 21 money 35 span 8s: 1xOozer* 3xProwler 1xRoller* 5xSkitter 1xSkitter*
+  w11 threat 29 money 55 span 7s: 4xProwler 3xProwler* 10xSkitter 10xSkitter*
+  w12 threat 28 money 54 span 26s: 3xMossbat~ 1xOozer 3xProwler 1xRoller* 5xSkitter* 2xTidebat~
+  w13 threat 36 money 68 span 8s: 5xProwler 4xProwler* 13xSkitter 10xSkitter*
+  w14 threat 34 money 55 span 10s: 1xOozer 3xProwler* 2xRoller* 5xSkitter 3xSkitter* 1xStinger
+  w15 threat 72 money 221 span 25s: 2xMossbat~ 1xOozer 1xRoller* 1xRollerKing 5xSkitter 1xTidebat~
+  w16 threat 51 money 95 span 11s: 6xProwler 7xProwler* 15xSkitter 15xSkitter*
+  w17 threat 44 money 76 span 10s: 1xOozer 3xProwler 2xRoller* 5xSkitter 1xStinger 2xStinger*
+  w18 threat 62 money 116 span 15s: 8xProwler 8xProwler* 19xSkitter 17xSkitter*
+  w19 threat 54 money 104 span 30s: 5xMossbat~ 1xOozer 1xOozer* 3xProwler 1xProwler* 1xRoller 1xRoller* 5xSkitter 3xSkitter* 1xStinger* 4xTidebat~
+  w20 threat 64 money 102 span 13s: 1xOozer 2xOozer* 3xProwler 3xProwler* 1xRoller 3xRoller* 6xSkitter 6xSkitter* 1xStinger*
+  w21 threat 86 money 161 span 20s: 12xProwler 11xProwler* 26xSkitter 20xSkitter*
+  w22 threat 67 money 128 span 33s: 8xMossbat~ 1xOozer 1xOozer* 2xProwler 3xProwler* 1xRoller 2xRoller* 4xSkitter 5xSkitter* 1xStinger 4xTidebat~
+  w23 threat 73 money 127 span 20s: 2xOozer* 3xProwler 2xProwler* 1xRoller 2xRoller* 5xSkitter 3xSkitter* 3xStinger 2xStinger*
+  w24 threat 118 money 220 span 29s: 18xProwler 15xProwler* 25xSkitter 30xSkitter*
+  w25 threat 109 money 172 span 19s: 3xOozer 2xOozer* 4xProwler 6xProwler* 2xRoller 5xRoller* 10xSkitter 6xSkitter* 1xStinger 1xStinger*
+  w26 threat 118 money 220 span 40s: 12xMossbat~ 2xOozer 2xOozer* 4xProwler 4xProwler* 1xRoller 5xRoller* 6xSkitter 6xSkitter* 1xStinger 1xStinger* 7xTidebat~
+  w27 threat 160 money 295 span 41s: 21xProwler 27xProwler* 30xSkitter 25xSkitter*
+  w28 threat 133 money 227 span 40s: 1xOozer 3xOozer* 4xProwler 4xProwler* 1xRoller 5xRoller* 6xSkitter 5xSkitter* 4xStinger 5xStinger*
+  w29 threat 165 money 261 span 24s: 2xOozer 5xOozer* 8xProwler 6xProwler* 4xRoller 7xRoller* 10xSkitter 11xSkitter* 2xStinger 2xStinger*
+  w30 threat 178 money 445 span 35s: 18xProwler 24xProwler* 30xSkitter 25xSkitter* 1xStormMatriarch
+  total kill money 3461
 Level_Forest Medium
-  w1 threat 5 span 3s: 1xGrunt* 1xScout 1xScout*
-  w2 threat 8 span 3s: 1xGrunt 1xGrunt* 1xScout 2xScout*
-  w3 threat 10 span 5s: 1xGrunt 1xRoller 2xScout*
-  w4 threat 7 span 20s: 1xDrowner~ 1xGrunt* 1xScout*
-  w5 threat 12 span 4s: 2xGrunt 1xGrunt* 2xScout 2xScout*
-  w6 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
-  w7 threat 11 span 21s: 2xDrowner~ 1xGrunt* 1xScout
-  w8 threat 16 span 4s: 1xGrunt 3xGrunt* 1xScout 5xScout*
-  w9 threat 14 span 5s: 1xGrunt 1xGrunt* 1xRoller 3xScout*
-  w10 threat 14 span 5s: 2xGrunt* 1xRoller 1xScout 2xScout*
-  w11 threat 17 span 5s: 5xFlyer* 1xGrunt* 1xRoller* 1xScout
-  w12 threat 43 span 21s: 2xDrowner~ 1xGrunt 1xOverseer 1xScout*
-  w13 threat 30 span 6s: 3xGrunt 5xGrunt* 4xScout 6xScout*
-  w14 threat 35 span 8s: 1xBrute 1xGrunt 2xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
-  w15 threat 30 span 26s: 5xDrowner~ 2xGrunt* 1xRoller* 1xScout 1xScout*
-  w16 threat 41 span 9s: 5xGrunt 6xGrunt* 6xScout 7xScout*
-  w17 threat 39 span 5s: 2xBrute* 2xGrunt* 1xRoller 1xScout 2xScout*
-  w18 threat 54 span 10s: 6xGrunt 9xGrunt* 7xScout 9xScout*
-  w19 threat 57 span 30s: 1xBrute* 8xDrowner~ 2xGrunt 1xGrunt* 1xRoller* 2xScout 1xScout*
-  w20 threat 57 span 10s: 1xBrute 2xGrunt 4xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
-  w21 threat 75 span 14s: 10xGrunt 11xGrunt* 9xScout 13xScout*
-  w22 threat 76 span 34s: 1xBrute* 11xDrowner~ 3xGrunt 1xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
-  w23 threat 84 span 13s: 1xBrute 3xBrute* 1xGrunt 4xGrunt* 1xRoller 2xRoller* 2xScout 3xScout*
-  w24 threat 108 span 21s: 14xGrunt 17xGrunt* 12xScout 18xScout*
-  w25 threat 157 span 19s: 1xBrute* 1xFlyer* 1xGrunt 5xGrunt* 1xRoller 3xRoller* 2xScout 4xScout* 1xWarden
+  w1 threat 12 money 26 span 3s: 3xProwler* 6xSkitter 2xSkitter*
+  w2 threat 13 money 28 span 3s: 3xProwler 6xSkitter 4xSkitter*
+  w3 threat 9 money 14 span 3s: 1xRoller 6xSkitter*
+  w4 threat 13 money 29 span 23s: 3xMossbat~ 1xRoller* 6xSkitter*
+  w5 threat 15 money 31 span 3s: 3xProwler 6xSkitter 7xSkitter*
+  w6 threat 17 money 33 span 5s: 3xProwler 1xRoller* 6xSkitter 1xSkitter*
+  w7 threat 12 money 24 span 3s: 1xRoller* 6xSkitter 1xSkyray*
+  w8 threat 22 money 47 span 5s: 2xProwler 3xProwler* 7xSkitter 10xSkitter*
+  w9 threat 22 money 44 span 8s: 1xOozer 3xProwler 1xRoller 2xSkitter 6xSkitter*
+  w10 threat 22 money 43 span 8s: 1xOozer 3xProwler* 1xRoller 6xSkitter 1xSkitter*
+  w11 threat 31 money 65 span 6s: 4xProwler 3xProwler* 12xSkitter 11xSkitter*
+  w12 threat 23 money 59 span 28s: 4xMossbat~ 1xOozer 1xRoller 6xSkitter* 3xTidebat~
+  w13 threat 20 money 44 span 5s: 1xOozer* 1xRoller 6xSkitter* 2xSkyray*
+  w14 threat 34 money 68 span 10s: 1xOozer 3xProwler* 1xRoller 1xRoller* 3xSkitter 6xSkitter* 1xStinger*
+  w15 threat 76 money 292 span 26s: 4xMossbat~ 1xOozer* 1xRoller* 1xRollerKing 6xSkitter 2xTidebat~
+  w16 threat 53 money 113 span 10s: 6xProwler 7xProwler* 18xSkitter 17xSkitter*
+  w17 threat 45 money 95 span 8s: 1xOozer* 3xProwler* 1xRoller 1xRoller* 6xSkitter* 3xStinger*
+  w18 threat 68 money 144 span 13s: 9xProwler 8xProwler* 22xSkitter 20xSkitter*
+  w19 threat 54 money 141 span 32s: 9xMossbat~ 1xOozer* 3xProwler 2xRoller* 6xSkitter 1xSkitter* 1xStinger 6xTidebat~
+  w20 threat 65 money 127 span 11s: 1xOozer 2xOozer* 3xProwler 3xProwler* 2xRoller 2xRoller* 7xSkitter 7xSkitter* 1xStinger*
+  w21 threat 93 money 198 span 17s: 13xProwler 11xProwler* 24xSkitter 30xSkitter*
+  w22 threat 76 money 197 span 38s: 13xMossbat~ 2xOozer* 3xProwler 1xProwler* 2xRoller 1xRoller* 3xSkitter 6xSkitter* 1xStinger 8xTidebat~
+  w23 threat 74 money 158 span 15s: 1xOozer 1xOozer* 2xProwler 3xProwler* 1xRoller 2xRoller* 6xSkitter 3xSkitter* 1xStinger 4xStinger*
+  w24 threat 128 money 274 span 25s: 20xProwler 15xProwler* 30xSkitter 34xSkitter*
+  w25 threat 110 money 215 span 16s: 1xOozer 4xOozer* 4xProwler 6xProwler* 2xRoller 5xRoller* 12xSkitter 7xSkitter* 2xStinger*
+  w26 threat 116 money 304 span 50s: 21xMossbat~ 3xOozer* 3xProwler 3xProwler* 3xRoller 1xRoller* 5xSkitter 6xSkitter* 1xStinger 1xStinger* 12xTidebat~
+  w27 threat 172 money 370 span 35s: 21xProwler 30xProwler* 34xSkitter 30xSkitter*
+  w28 threat 134 money 284 span 34s: 1xOozer 3xOozer* 4xProwler 4xProwler* 2xRoller 4xRoller* 7xSkitter 6xSkitter* 3xStinger 6xStinger*
+  w29 threat 170 money 333 span 22s: 2xOozer 5xOozer* 6xProwler 9xProwler* 5xRoller 6xRoller* 12xSkitter 13xSkitter* 1xStinger 3xStinger*
+  w30 threat 192 money 563 span 30s: 18xProwler 26xProwler* 30xSkitter 34xSkitter* 1xSkyray* 1xStormMatriarch
+  total kill money 4363
 Level_Forest Hard
-  w1 threat 9 span 3s: 2xGrunt* 2xScout 2xScout*
-  w2 threat 16 span 3s: 2xGrunt 2xGrunt* 4xScout 2xScout*
-  w3 threat 20 span 6s: 2xGrunt* 2xRoller* 2xScout 2xScout*
-  w4 threat 14 span 21s: 2xDrowner~ 2xGrunt* 2xScout*
-  w5 threat 19 span 4s: 2xGrunt 3xGrunt* 2xScout 4xScout*
-  w6 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
-  w7 threat 18 span 22s: 3xDrowner~ 2xGrunt* 2xScout
-  w8 threat 27 span 4s: 4xGrunt 3xGrunt* 2xScout 7xScout*
-  w9 threat 29 span 6s: 2xFlyer* 2xGrunt 2xGrunt* 2xRoller* 2xScout 3xScout*
-  w10 threat 26 span 6s: 2xFlyer* 3xGrunt* 2xRoller 4xScout*
-  w11 threat 29 span 6s: 7xFlyer* 2xGrunt* 2xRoller* 2xScout
-  w12 threat 50 span 22s: 3xDrowner~ 2xGrunt 1xOverseer 2xScout
-  w13 threat 48 span 6s: 6xGrunt 7xGrunt* 6xScout 9xScout*
-  w14 threat 70 span 9s: 2xBrute* 4xFlyer* 4xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
-  w15 threat 45 span 9s: 13xFlyer* 2xGrunt 2xGrunt* 2xRoller* 2xScout 2xScout*
-  w16 threat 66 span 8s: 8xGrunt 10xGrunt* 8xScout 13xScout*
-  w17 threat 73 span 6s: 2xBrute 2xBrute* 3xGrunt* 2xRoller* 4xScout*
-  w18 threat 82 span 10s: 11xGrunt 12xGrunt* 11xScout 13xScout*
-  w19 threat 92 span 32s: 2xBrute 11xDrowner~ 2xGrunt 3xGrunt* 2xRoller* 2xScout 3xScout*
-  w20 threat 108 span 10s: 2xBrute* 7xFlyer* 2xGrunt 7xGrunt* 4xRoller 3xRoller* 5xScout 6xScout*
-  w21 threat 115 span 13s: 14xGrunt 18xGrunt* 14xScout 21xScout*
-  w22 threat 124 span 37s: 2xBrute 15xDrowner~ 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 5xScout*
-  w23 threat 137 span 12s: 2xBrute 4xBrute* 2xGrunt 6xGrunt* 4xRoller 2xRoller* 5xScout 4xScout*
-  w24 threat 163 span 18s: 22xGrunt 25xGrunt* 20xScout 25xScout*
-  w25 threat 211 span 22s: 2xBrute 10xFlyer* 2xGrunt 7xGrunt* 2xRoller 5xRoller* 5xScout 5xScout* 1xWarden
+  w1 threat 17 money 54 span 3s: 4xProwler* 8xSkitter 3xSkitter*
+  w2 threat 18 money 58 span 3s: 4xProwler 8xSkitter 5xSkitter*
+  w3 threat 15 money 36 span 3s: 2xRoller* 8xSkitter
+  w4 threat 21 money 60 span 24s: 4xMossbat~ 2xRoller* 8xSkitter*
+  w5 threat 20 money 66 span 3s: 4xProwler 9xSkitter 8xSkitter*
+  w6 threat 27 money 72 span 6s: 4xProwler 2xRoller 8xSkitter 2xSkitter*
+  w7 threat 22 money 62 span 3s: 2xRoller* 8xSkitter 2xSkyray*
+  w8 threat 30 money 100 span 5s: 4xProwler 3xProwler* 9xSkitter 13xSkitter*
+  w9 threat 44 money 126 span 9s: 2xOozer* 4xProwler 2xRoller* 3xSkitter 8xSkitter* 2xSkyray*
+  w10 threat 43 money 124 span 9s: 2xOozer* 4xProwler* 2xRoller 2xSkitter 8xSkitter* 2xSkyray*
+  w11 threat 40 money 132 span 5s: 5xProwler 4xProwler* 16xSkitter 14xSkitter*
+  w12 threat 38 money 122 span 28s: 6xMossbat~ 2xOozer 2xRoller 8xSkitter 4xTidebat~
+  w13 threat 38 money 114 span 6s: 2xOozer* 2xRoller 8xSkitter* 4xSkyray*
+  w14 threat 67 money 186 span 11s: 2xOozer* 4xProwler* 2xRoller 2xRoller* 4xSkitter 8xSkitter* 2xSkyray* 2xStinger*
+  w15 threat 92 money 420 span 28s: 5xMossbat~ 2xOozer* 2xRoller 1xRollerKing 8xSkitter 4xTidebat~
+  w16 threat 70 money 228 span 9s: 8xProwler 9xProwler* 24xSkitter 22xSkitter*
+  w17 threat 77 money 218 span 9s: 2xOozer 4xProwler* 3xRoller* 8xSkitter* 4xStinger 2xStinger*
+  w18 threat 68 money 210 span 11s: 2xOozer 4xProwler* 2xRoller 8xSkitter* 6xSkyray* 2xStinger*
+  w19 threat 85 money 280 span 37s: 14xMossbat~ 2xOozer 4xProwler 3xRoller* 8xSkitter* 2xStinger* 9xTidebat~
+  w20 threat 114 money 314 span 11s: 4xOozer* 4xProwler 4xProwler* 4xRoller 3xRoller* 10xSkitter 9xSkitter* 4xSkyray* 2xStinger
+  w21 threat 120 money 388 span 15s: 16xProwler 15xProwler* 32xSkitter 38xSkitter*
+  w22 threat 104 money 348 span 44s: 20xMossbat~ 2xOozer 4xProwler 2xRoller 2xRoller* 2xSkitter 8xSkitter* 2xStinger* 12xTidebat~
+  w23 threat 120 money 331 span 16s: 3xOozer* 3xProwler 4xProwler* 4xRoller 2xRoller* 8xSkitter 4xSkitter* 2xStinger 6xStinger*
+  w24 threat 165 money 526 span 21s: 25xProwler 20xProwler* 43xSkitter 40xSkitter*
+  w25 threat 191 money 522 span 17s: 4xOozer 5xOozer* 5xProwler 8xProwler* 4xRoller 7xRoller* 16xSkitter 9xSkitter* 5xSkyray* 2xStinger 2xStinger*
+  w26 threat 162 money 534 span 58s: 31xMossbat~ 2xOozer 2xOozer* 4xProwler 3xProwler* 5xRoller 2xRoller* 8xSkitter 4xSkitter* 2xStinger* 18xTidebat~
+  w27 threat 220 money 686 span 30s: 37xProwler 28xProwler* 43xSkitter 40xSkitter*
+  w28 threat 198 money 550 span 27s: 5xOozer 2xOozer* 6xProwler 5xProwler* 2xRoller 7xRoller* 9xSkitter 8xSkitter* 6xStinger 7xStinger*
+  w29 threat 272 money 736 span 19s: 5xOozer 6xOozer* 8xProwler 11xProwler* 8xRoller 9xRoller* 16xSkitter 17xSkitter* 7xSkyray* 2xStinger 4xStinger*
+  w30 threat 241 money 941 span 26s: 24xProwler 32xProwler* 40xSkitter 43xSkitter* 3xSkyray* 1xStormMatriarch
+  total kill money 8544
 Level_Forest Psycho
-  w1 threat 9 span 3s: 2xGrunt 4xScout*
-  w2 threat 16 span 3s: 2xGrunt 2xGrunt* 2xScout 4xScout*
-  w3 threat 20 span 6s: 2xGrunt* 2xRoller 2xScout 2xScout*
-  w4 threat 14 span 21s: 2xDrowner~ 2xGrunt* 2xScout*
-  w5 threat 23 span 4s: 4xGrunt 2xGrunt* 2xScout 6xScout*
-  w6 threat 16 span 4s: 6xFlyer* 2xGrunt* 2xScout*
-  w7 threat 21 span 23s: 4xDrowner~ 2xGrunt* 2xScout
-  w8 threat 32 span 4s: 6xGrunt 2xGrunt* 6xScout 6xScout*
-  w9 threat 30 span 6s: 2xFlyer* 2xGrunt 2xGrunt* 2xRoller 6xScout*
-  w10 threat 30 span 6s: 2xFlyer* 4xGrunt* 2xRoller* 2xScout 4xScout*
-  w11 threat 33 span 6s: 10xFlyer* 2xGrunt* 2xRoller 2xScout
-  w12 threat 54 span 23s: 4xDrowner~ 2xGrunt 1xOverseer 2xScout
-  w13 threat 59 span 6s: 6xGrunt 10xGrunt* 8xScout 11xScout*
-  w14 threat 76 span 9s: 2xBrute 4xFlyer* 2xGrunt 4xGrunt* 4xRoller* 2xScout 6xScout*
-  w15 threat 49 span 9s: 16xFlyer* 2xGrunt 2xGrunt* 2xRoller 4xScout*
-  w16 threat 78 span 7s: 10xGrunt 11xGrunt* 12xScout 13xScout*
-  w17 threat 77 span 6s: 2xBrute 2xBrute* 2xGrunt 2xGrunt* 2xRoller 2xScout 4xScout*
-  w18 threat 107 span 9s: 10xGrunt 20xGrunt* 14xScout 18xScout*
-  w19 threat 93 span 15s: 2xBrute* 24xFlyer* 4xGrunt 2xGrunt* 2xRoller 6xScout*
-  w20 threat 128 span 11s: 2xBrute 10xFlyer* 2xGrunt 10xGrunt* 2xRoller 6xRoller* 4xScout 10xScout*
-  w21 threat 147 span 11s: 20xGrunt 22xGrunt* 18xScout 24xScout*
-  w22 threat 142 span 38s: 2xBrute* 19xDrowner~ 6xGrunt 2xGrunt* 4xRoller* 4xScout 4xScout*
-  w23 threat 168 span 10s: 2xBrute 6xBrute* 4xGrunt 6xGrunt* 2xRoller 4xRoller* 4xScout 6xScout*
-  w24 threat 215 span 15s: 28xGrunt 34xGrunt* 26xScout 34xScout*
-  w25 threat 237 span 25s: 2xBrute* 17xFlyer* 6xGrunt 6xGrunt* 6xRoller 2xRoller* 4xScout 8xScout* 1xWarden
+  w1 threat 20 money 84 span 4s: 5xProwler 3xSkitter 9xSkitter*
+  w2 threat 21 money 90 span 3s: 5xProwler 9xSkitter 6xSkitter*
+  w3 threat 16 money 48 span 3s: 2xRoller* 9xSkitter
+  w4 threat 8 money 60 span 25s: 6xMossbat~
+  w5 threat 24 money 100 span 3s: 5xProwler 11xSkitter 9xSkitter*
+  w6 threat 30 money 112 span 6s: 5xProwler* 2xRoller* 2xSkitter 9xSkitter*
+  w7 threat 23 money 88 span 3s: 2xRoller* 9xSkitter 2xSkyray*
+  w8 threat 35 money 148 span 4s: 5xProwler 3xProwler* 15xSkitter 11xSkitter*
+  w9 threat 47 money 194 span 8s: 2xOozer 5xProwler 2xRoller 3xSkitter 9xSkitter* 2xSkyray*
+  w10 threat 46 money 192 span 8s: 2xOozer 5xProwler* 2xRoller* 2xSkitter 9xSkitter* 2xSkyray*
+  w11 threat 48 money 202 span 5s: 6xProwler 5xProwler* 18xSkitter 17xSkitter*
+  w12 threat 46 money 238 span 30s: 9xMossbat~ 2xOozer* 2xRoller 9xSkitter 6xTidebat~
+  w13 threat 39 money 168 span 6s: 2xOozer 2xRoller* 9xSkitter 4xSkyray*
+  w14 threat 65 money 273 span 11s: 2xOozer 5xProwler* 3xRoller* 5xSkitter 9xSkitter* 2xSkyray* 2xStinger
+  w15 threat 84 money 635 span 29s: 8xMossbat~ 2xRoller* 1xRollerKing 5xTidebat~
+  w16 threat 84 money 358 span 8s: 10xProwler 11xProwler* 27xSkitter 26xSkitter*
+  w17 threat 79 money 328 span 8s: 2xOozer 5xProwler 2xRoller 2xRoller* 9xSkitter* 2xStinger 3xStinger*
+  w18 threat 71 money 328 span 11s: 2xOozer* 5xProwler 2xRoller* 9xSkitter* 6xSkyray* 2xStinger
+  w19 threat 96 money 538 span 41s: 21xMossbat~ 2xOozer* 5xProwler 2xRoller 9xSkitter* 2xStinger* 12xTidebat~
+  w20 threat 130 money 529 span 12s: 4xOozer 2xOozer* 5xProwler 5xProwler* 2xRoller 5xRoller* 11xSkitter 11xSkitter* 4xSkyray* 2xStinger*
+  w21 threat 146 money 620 span 13s: 20xProwler 18xProwler* 36xSkitter 46xSkitter*
+  w22 threat 120 money 683 span 49s: 29xMossbat~ 2xOozer* 5xProwler 3xRoller* 9xSkitter 2xStinger 17xTidebat~
+  w23 threat 97 money 442 span 11s: 2xOozer* 5xProwler 2xRoller 2xRoller* 2xSkitter 9xSkitter* 10xSkyray* 2xStinger*
+  w24 threat 203 money 866 span 18s: 31xProwler 25xProwler* 52xSkitter 45xSkitter*
+  w25 threat 207 money 830 span 15s: 2xOozer 7xOozer* 10xProwler 6xProwler* 5xRoller 7xRoller* 18xSkitter 11xSkitter* 5xSkyray* 2xStinger 2xStinger*
+  w26 threat 179 money 1021 span 66s: 45xMossbat~ 3xOozer* 5xProwler 2xProwler* 5xRoller* 9xSkitter 2xSkitter* 2xStinger 27xTidebat~
+  w27 threat 154 money 689 span 11s: 2xOozer 2xOozer* 3xProwler 5xProwler* 4xRoller 3xRoller* 9xSkitter 5xSkitter* 16xSkyray* 2xStinger*
+  w28 threat 222 money 936 span 25s: 2xOozer 5xOozer* 6xProwler 7xProwler* 5xRoller 5xRoller* 11xSkitter 9xSkitter* 5xStinger 10xStinger*
+  w29 threat 314 money 1259 span 18s: 4xOozer 8xOozer* 10xProwler 14xProwler* 9xRoller 10xRoller* 20xSkitter 18xSkitter* 8xSkyray* 5xStinger 2xStinger*
+  w30 threat 297 money 1604 span 24s: 30xProwler 40xProwler* 45xSkitter 52xSkitter* 6xSkyray* 1xStormMatriarch
+  total kill money 13663
 Level_Lava Easy
-  w1 threat 8 span 1s: 3xGrunt
-  w2 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
-  w3 threat 8 span 4s: 2xGrunt 3xScout
-  w4 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
-  w5 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
-  w6 threat 13 span 5s: 2xGrunt 1xRoller 2xScout
-  w7 threat 10 span 4s: 4xFlyer* 1xGrunt 1xScout
-  w8 threat 22 span 5s: 1xBrute 1xGrunt 1xRoller 1xScout
-  w9 threat 13 span 5s: 2xGrunt 1xRoller 2xScout
-  w10 threat 43 span 14s: 1xGrunt 1xOverseer 1xRoller 2xScout
-  w11 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
-  w12 threat 25 span 5s: 1xBrute 2xGrunt 1xRoller 2xScout
-  w13 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
-  w14 threat 29 span 8s: 1xBrute 3xGrunt 1xRoller 3xScout
-  w15 threat 27 span 20s: 2xCinder~ 2xGrunt 1xRoller 2xScout
-  w16 threat 38 span 5s: 2xBrute 2xGrunt 1xRoller 2xScout
-  w17 threat 34 span 22s: 3xCinder~ 2xGrunt 1xRoller 2xScout
-  w18 threat 41 span 8s: 1xBrute 5xGrunt 2xRoller 5xScout
-  w19 threat 41 span 5s: 2xBrute 3xGrunt 1xRoller 3xScout
-  w20 threat 64 span 14s: 1xBrute 4xGrunt 1xOverseer 1xRoller 3xScout
-  w21 threat 56 span 24s: 1xBrute 4xCinder~ 3xGrunt 1xRoller 2xScout
-  w22 threat 62 span 9s: 3xBrute 4xGrunt 2xRoller 3xScout
-  w23 threat 68 span 11s: 2xBrute 8xGrunt 3xRoller 6xScout
-  w24 threat 72 span 26s: 1xBrute 5xCinder~ 4xGrunt 2xRoller 3xScout
-  w25 threat 78 span 12s: 4xBrute 5xGrunt 2xRoller 4xScout
-  w26 threat 82 span 28s: 1xBrute 6xCinder~ 5xGrunt 2xRoller 4xScout
-  w27 threat 101 span 15s: 3xBrute 11xGrunt 5xRoller 8xScout
-  w28 threat 102 span 16s: 5xBrute 7xGrunt 3xRoller 5xScout
-  w29 threat 104 span 31s: 1xBrute 8xCinder~ 6xGrunt 3xRoller 4xScout
-  w30 threat 173 span 14s: 2xBrute 8xGrunt 4xRoller 6xScout 1xWarden
+  w1 threat 8 money 15 span 1s: 3xProwler
+  w2 threat 10 money 19 span 18s: 1xEmberbat~ 3xProwler
+  w3 threat 11 money 20 span 3s: 3xProwler 5xSkitter
+  w4 threat 8 money 17 span 0s: 1xStinger 1xWisp
+  w5 threat 5 money 13 span 0s: 1xSkyray* 1xWisp
+  w6 threat 10 money 16 span 5s: 1xRoller 5xSkitter 1xWisp
+  w7 threat 4 money 13 span 20s: 2xEmberbat~ 1xWisp
+  w8 threat 8 money 17 span 0s: 1xStinger 1xWisp
+  w9 threat 5 money 13 span 0s: 1xSkyray* 1xWisp
+  w10 threat 19 money 36 span 8s: 3xProwler 1xRoller 5xSkitter 2xWisp
+  w11 threat 14 money 28 span 22s: 3xEmberbat~ 1xRoller 5xSkitter 1xWisp
+  w12 threat 32 money 175 span 14s: 1xCoreWisp 1xWisp
+  w13 threat 17 money 37 span 23s: 4xEmberbat~ 1xRoller 5xSkitter 2xWisp
+  w14 threat 25 money 48 span 10s: 3xProwler 1xRoller 5xSkitter 1xStinger 2xWisp
+  w15 threat 25 money 52 span 23s: 4xEmberbat~ 3xProwler 1xRoller 5xSkitter 2xWisp
+  w16 threat 30 money 54 span 8s: 1xBulwark 3xProwler 1xRoller 5xSkitter 2xWisp
+  w17 threat 32 money 68 span 25s: 5xEmberbat~ 3xProwler 1xRoller 5xSkitter 1xStinger 2xWisp
+  w18 threat 30 money 58 span 10s: 4xProwler 1xRoller 5xSkitter 1xStinger 3xWisp
+  w19 threat 36 money 66 span 10s: 1xBulwark 3xProwler 1xRoller 5xSkitter 1xStinger 2xWisp
+  w20 threat 48 money 88 span 13s: 1xBulwark 4xProwler 2xRoller 6xSkitter 1xStinger 4xWisp
+  w21 threat 38 money 85 span 31s: 8xEmberbat~ 3xProwler 1xRoller 5xSkitter 1xStinger 3xWisp
+  w22 threat 38 money 71 span 10s: 1xBulwark 3xProwler 1xRoller 5xSkitter 1xStinger 3xWisp
+  w23 threat 56 money 104 span 14s: 1xBulwark 6xProwler 2xRoller 7xSkitter 1xStinger 5xWisp
+  w24 threat 99 money 292 span 27s: 1xAcidEmpress 6xEmberbat~ 3xProwler 1xRoller 5xSkitter 1xStinger 2xWisp
+  w25 threat 59 money 105 span 12s: 2xBulwark 4xProwler 2xRoller 5xSkitter 1xStinger 4xWisp
+  w26 threat 69 money 146 span 38s: 1xBulwark 12xEmberbat~ 5xProwler 2xRoller 6xSkitter 1xStinger 5xWisp
+  w27 threat 82 money 150 span 15s: 1xBulwark 8xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w28 threat 74 money 134 span 13s: 3xBulwark 5xProwler 2xRoller 6xSkitter 1xStinger 5xWisp
+  w29 threat 96 money 201 span 47s: 1xBulwark 17xEmberbat~ 7xProwler 3xRoller 8xSkitter 2xStinger 6xWisp
+  w30 threat 107 money 200 span 22s: 1xBulwark 11xProwler 5xRoller 11xSkitter 3xStinger 10xWisp
+  w31 threat 114 money 239 span 54s: 1xBulwark 21xEmberbat~ 9xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w32 threat 115 money 203 span 17s: 4xBulwark 8xProwler 4xRoller 8xSkitter 2xStinger 7xWisp
+  w33 threat 148 money 270 span 23s: 2xBulwark 14xProwler 7xRoller 14xSkitter 4xStinger 12xWisp
+  w34 threat 162 money 334 span 68s: 2xBulwark 29xEmberbat~ 11xProwler 6xRoller 10xSkitter 3xStinger 9xWisp
+  w35 threat 160 money 283 span 24s: 6xBulwark 11xProwler 5xRoller 9xSkitter 3xStinger 9xWisp
+  w36 threat 216 money 488 span 22s: 2xBulwark 1xCrystalWarlord 12xProwler 6xRoller 10xSkitter 3xStinger 10xWisp
+  total kill money 4158
 Level_Lava Medium
-  w1 threat 8 span 2s: 3xGrunt
-  w2 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
-  w3 threat 8 span 3s: 2xGrunt 3xScout
-  w4 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
-  w5 threat 11 span 18s: 1xCinder~ 1xGrunt 1xScout
-  w6 threat 14 span 5s: 1xFlyer* 2xGrunt 1xRoller 2xScout
-  w7 threat 10 span 4s: 4xFlyer* 1xGrunt 1xScout
-  w8 threat 22 span 5s: 1xBrute 1xGrunt 1xRoller 1xScout
-  w9 threat 14 span 5s: 1xFlyer* 2xGrunt 1xRoller 2xScout
-  w10 threat 44 span 14s: 1xFlyer* 1xGrunt 1xOverseer 1xRoller 2xScout
-  w11 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
-  w12 threat 18 span 6s: 6xFlyer* 1xGrunt 1xRoller 1xScout
-  w13 threat 23 span 20s: 2xCinder~ 1xGrunt 1xRoller 1xScout
-  w14 threat 32 span 8s: 1xBrute 2xFlyer* 3xGrunt 1xRoller 3xScout
-  w15 threat 27 span 20s: 2xCinder~ 2xGrunt 1xRoller 2xScout
-  w16 threat 38 span 5s: 2xBrute 2xGrunt 1xRoller 2xScout
-  w17 threat 34 span 21s: 3xCinder~ 2xGrunt 1xRoller 2xScout
-  w18 threat 46 span 9s: 1xBrute 3xFlyer* 5xGrunt 2xRoller 5xScout
-  w19 threat 41 span 5s: 2xBrute 3xGrunt 1xRoller 3xScout
-  w20 threat 67 span 14s: 1xBrute 2xFlyer* 4xGrunt 1xOverseer 1xRoller 3xScout
-  w21 threat 56 span 23s: 1xBrute 4xCinder~ 3xGrunt 1xRoller 2xScout
-  w22 threat 62 span 7s: 3xBrute 4xGrunt 2xRoller 3xScout
-  w23 threat 75 span 9s: 2xBrute 5xFlyer* 8xGrunt 3xRoller 6xScout
-  w24 threat 79 span 26s: 1xBrute 6xCinder~ 4xGrunt 2xRoller 3xScout
-  w25 threat 78 span 12s: 4xBrute 5xGrunt 2xRoller 4xScout
-  w26 threat 89 span 28s: 1xBrute 7xCinder~ 5xGrunt 2xRoller 4xScout
-  w27 threat 113 span 13s: 3xBrute 8xFlyer* 11xGrunt 5xRoller 8xScout
-  w28 threat 102 span 16s: 5xBrute 7xGrunt 3xRoller 5xScout
-  w29 threat 111 span 31s: 1xBrute 9xCinder~ 6xGrunt 3xRoller 4xScout
-  w30 threat 184 span 19s: 2xBrute 7xFlyer* 8xGrunt 4xRoller 6xScout 1xWarden
+  w1 threat 8 money 18 span 1s: 3xProwler
+  w2 threat 3 money 10 span 20s: 2xEmberbat~
+  w3 threat 11 money 24 span 4s: 3xProwler 6xSkitter
+  w4 threat 8 money 21 span 0s: 1xStinger 1xWisp
+  w5 threat 5 money 16 span 0s: 1xSkyray* 1xWisp
+  w6 threat 14 money 30 span 5s: 1xRoller 6xSkitter 1xSkyray* 1xWisp
+  w7 threat 6 money 21 span 21s: 3xEmberbat~ 1xWisp
+  w8 threat 8 money 21 span 0s: 1xStinger 1xWisp
+  w9 threat 5 money 16 span 0s: 1xSkyray* 1xWisp
+  w10 threat 23 money 54 span 8s: 3xProwler 1xRoller 6xSkitter 1xSkyray* 2xWisp
+  w11 threat 14 money 39 span 24s: 5xEmberbat~ 1xRoller 1xWisp
+  w12 threat 32 money 218 span 14s: 1xCoreWisp 1xWisp
+  w13 threat 15 money 44 span 26s: 6xEmberbat~ 1xRoller 1xWisp
+  w14 threat 14 money 34 span 3s: 1xRoller 2xSkyray* 1xWisp
+  w15 threat 20 money 55 span 27s: 7xEmberbat~ 1xRoller 6xSkitter 1xWisp
+  w16 threat 31 money 66 span 8s: 1xBulwark 3xProwler 1xRoller 6xSkitter 2xWisp
+  w17 threat 32 money 89 span 30s: 9xEmberbat~ 3xProwler 1xRoller 6xSkitter 2xWisp
+  w18 threat 34 money 81 span 10s: 4xProwler 1xRoller 6xSkitter 1xSkyray* 1xStinger 3xWisp
+  w19 threat 37 money 81 span 10s: 1xBulwark 3xProwler 1xRoller 6xSkitter 1xStinger 2xWisp
+  w20 threat 52 money 118 span 13s: 1xBulwark 4xProwler 2xRoller 7xSkitter 1xSkyray* 1xStinger 4xWisp
+  w21 threat 44 money 124 span 36s: 13xEmberbat~ 3xProwler 1xRoller 6xSkitter 1xStinger 2xWisp
+  w22 threat 38 money 87 span 10s: 1xBulwark 3xProwler 1xRoller 6xSkitter 1xStinger 3xWisp
+  w23 threat 63 money 147 span 13s: 1xBulwark 6xProwler 2xRoller 8xSkitter 2xSkyray* 1xStinger 5xWisp
+  w24 threat 106 money 389 span 33s: 1xAcidEmpress 11xEmberbat~ 3xProwler 1xRoller 6xSkitter 1xStinger 2xWisp
+  w25 threat 59 money 129 span 12s: 2xBulwark 4xProwler 2xRoller 6xSkitter 1xStinger 4xWisp
+  w26 threat 80 money 222 span 51s: 1xBulwark 23xEmberbat~ 4xProwler 2xRoller 6xSkitter 1xStinger 4xWisp
+  w27 threat 94 money 215 span 15s: 1xBulwark 8xProwler 4xRoller 11xSkitter 3xSkyray* 2xStinger 7xWisp
+  w28 threat 75 money 164 span 13s: 3xBulwark 5xProwler 2xRoller 7xSkitter 1xStinger 5xWisp
+  w29 threat 106 money 294 span 65s: 1xBulwark 32xEmberbat~ 6xProwler 3xRoller 7xSkitter 1xStinger 5xWisp
+  w30 threat 122 money 286 span 19s: 1xBulwark 11xProwler 5xRoller 13xSkitter 4xSkyray* 3xStinger 10xWisp
+  w31 threat 126 money 357 span 75s: 1xBulwark 39xEmberbat~ 7xProwler 3xRoller 8xSkitter 2xStinger 6xWisp
+  w32 threat 115 money 249 span 14s: 4xBulwark 8xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w33 threat 173 money 398 span 21s: 2xBulwark 15xProwler 7xRoller 16xSkitter 6xSkyray* 4xStinger 12xWisp
+  w34 threat 160 money 459 span 98s: 1xBulwark 54xEmberbat~ 9xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w35 threat 161 money 348 span 20s: 6xBulwark 11xProwler 5xRoller 11xSkitter 3xStinger 9xWisp
+  w36 threat 238 money 666 span 19s: 2xBulwark 1xCrystalWarlord 12xProwler 6xRoller 12xSkitter 6xSkyray* 3xStinger 10xWisp
+  total kill money 5590
 Level_Lava Hard
-  w1 threat 10 span 1s: 4xGrunt
-  w2 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
-  w3 threat 15 span 4s: 4xGrunt 5xScout
-  w4 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
-  w5 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
-  w6 threat 25 span 6s: 2xFlyer* 3xGrunt 2xRoller 3xScout
-  w7 threat 16 span 5s: 6xFlyer* 2xGrunt 2xScout
-  w8 threat 43 span 6s: 2xBrute 2xGrunt 2xRoller 2xScout
-  w9 threat 27 span 6s: 2xFlyer* 4xGrunt 2xRoller 3xScout
-  w10 threat 56 span 14s: 2xFlyer* 2xGrunt 1xOverseer 2xRoller 4xScout
-  w11 threat 39 span 21s: 3xCinder~ 2xGrunt 2xRoller 2xScout
-  w12 threat 30 span 7s: 8xFlyer* 2xGrunt 2xRoller 2xScout
-  w13 threat 39 span 21s: 3xCinder~ 2xGrunt 2xRoller 2xScout
-  w14 threat 62 span 9s: 2xBrute 4xFlyer* 6xGrunt 2xRoller 5xScout
-  w15 threat 43 span 21s: 3xCinder~ 3xGrunt 2xRoller 3xScout
-  w16 threat 41 span 9s: 13xFlyer* 3xGrunt 2xRoller 3xScout
-  w17 threat 53 span 22s: 4xCinder~ 4xGrunt 2xRoller 4xScout
-  w18 threat 81 span 9s: 2xBrute 5xFlyer* 9xGrunt 3xRoller 9xScout
-  w19 threat 76 span 6s: 4xBrute 4xGrunt 2xRoller 5xScout
-  w20 threat 97 span 14s: 2xBrute 4xFlyer* 7xGrunt 1xOverseer 2xRoller 5xScout
-  w21 threat 92 span 25s: 2xBrute 6xCinder~ 4xGrunt 2xRoller 4xScout
-  w22 threat 88 span 16s: 2xBrute 22xFlyer* 6xGrunt 2xRoller 4xScout
-  w23 threat 117 span 10s: 3xBrute 7xFlyer* 13xGrunt 5xRoller 9xScout
-  w24 threat 124 span 28s: 2xBrute 8xCinder~ 6xGrunt 4xRoller 6xScout
-  w25 threat 133 span 12s: 7xBrute 9xGrunt 3xRoller 6xScout
-  w26 threat 139 span 30s: 2xBrute 10xCinder~ 8xGrunt 3xRoller 7xScout
-  w27 threat 191 span 14s: 5xBrute 12xFlyer* 19xGrunt 9xRoller 13xScout
-  w28 threat 177 span 15s: 9xBrute 11xGrunt 5xRoller 9xScout
-  w29 threat 166 span 33s: 2xBrute 12xCinder~ 9xGrunt 5xRoller 7xScout
-  w30 threat 239 span 22s: 4xBrute 11xFlyer* 12xGrunt 6xRoller 9xScout 1xWarden
+  w1 threat 11 money 32 span 1s: 4xProwler
+  w2 threat 4 money 18 span 21s: 3xEmberbat~
+  w3 threat 15 money 48 span 4s: 4xProwler 8xSkitter
+  w4 threat 15 money 54 span 2s: 2xStinger 2xWisp
+  w5 threat 10 money 42 span 1s: 2xSkyray* 2xWisp
+  w6 threat 25 money 78 span 6s: 2xRoller 8xSkitter 2xSkyray* 2xWisp
+  w7 threat 10 money 46 span 23s: 5xEmberbat~ 2xWisp
+  w8 threat 15 money 54 span 2s: 2xStinger 2xWisp
+  w9 threat 10 money 42 span 1s: 2xSkyray* 2xWisp
+  w10 threat 39 money 126 span 8s: 4xProwler 2xRoller 8xSkitter 2xSkyray* 4xWisp
+  w11 threat 14 money 64 span 27s: 8xEmberbat~ 2xWisp
+  w12 threat 33 money 288 span 14s: 1xCoreWisp 2xWisp
+  w13 threat 27 money 90 span 28s: 9xEmberbat~ 2xRoller 2xWisp
+  w14 threat 28 money 88 span 4s: 2xRoller 4xSkyray* 2xWisp
+  w15 threat 29 money 102 span 31s: 11xEmberbat~ 2xRoller 2xWisp
+  w16 threat 54 money 158 span 8s: 2xBulwark 4xProwler 2xRoller 8xSkitter 4xWisp
+  w17 threat 38 money 136 span 35s: 14xEmberbat~ 2xRoller 8xSkitter 2xWisp
+  w18 threat 58 money 188 span 11s: 6xProwler 2xRoller 8xSkitter 2xSkyray* 2xStinger 5xWisp
+  w19 threat 47 money 149 span 8s: 4xProwler 2xRoller 8xSkitter 5xSkyray* 2xWisp
+  w20 threat 90 money 276 span 14s: 2xBulwark 6xProwler 3xRoller 10xSkitter 2xSkyray* 2xStinger 7xWisp
+  w21 threat 72 money 258 span 42s: 20xEmberbat~ 4xProwler 2xRoller 8xSkitter 2xStinger 4xWisp
+  w22 threat 69 money 212 span 11s: 2xBulwark 4xProwler 2xRoller 8xSkitter 2xStinger 6xWisp
+  w23 threat 106 money 336 span 14s: 2xBulwark 8xProwler 3xRoller 11xSkitter 4xSkyray* 2xStinger 9xWisp
+  w24 threat 129 money 576 span 38s: 1xAcidEmpress 17xEmberbat~ 4xProwler 2xRoller 2xStinger 4xWisp
+  w25 threat 93 money 275 span 11s: 3xBulwark 6xProwler 3xRoller 8xSkitter 2xStinger 7xWisp
+  w26 threat 96 money 308 span 14s: 2xBulwark 4xProwler 2xRoller 8xSkitter 8xSkyray* 2xStinger 5xWisp
+  w27 threat 150 money 463 span 15s: 2xBulwark 11xProwler 6xRoller 14xSkitter 5xSkyray* 4xStinger 11xWisp
+  w28 threat 120 money 353 span 12s: 5xBulwark 7xProwler 3xRoller 10xSkitter 2xStinger 8xWisp
+  w29 threat 156 money 546 span 77s: 2xBulwark 47xEmberbat~ 7xProwler 4xRoller 8xSkitter 2xStinger 7xWisp
+  w30 threat 189 money 576 span 18s: 2xBulwark 15xProwler 9xRoller 17xSkitter 6xSkyray* 4xStinger 15xWisp
+  w31 threat 179 money 638 span 91s: 2xBulwark 58xEmberbat~ 7xProwler 5xRoller 8xSkitter 2xStinger 9xWisp
+  w32 threat 192 money 549 span 15s: 7xBulwark 11xProwler 7xRoller 12xSkitter 4xStinger 11xWisp
+  w33 threat 258 money 782 span 20s: 4xBulwark 19xProwler 11xRoller 21xSkitter 8xSkyray* 6xStinger 18xWisp
+  w34 threat 238 money 840 span 115s: 2xBulwark 77xEmberbat~ 9xProwler 7xRoller 11xSkitter 4xStinger 10xWisp
+  w35 threat 246 money 698 span 17s: 9xBulwark 15xProwler 9xRoller 14xSkitter 5xStinger 13xWisp
+  w36 threat 317 money 1108 span 22s: 4xBulwark 1xCrystalWarlord 16xProwler 9xRoller 16xSkitter 10xSkyray* 4xStinger 15xWisp
+  total kill money 10597
 Level_Lava Psycho
-  w1 threat 15 span 2s: 6xGrunt
-  w2 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
-  w3 threat 16 span 4s: 4xGrunt 6xScout
-  w4 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout
-  w5 threat 21 span 19s: 2xCinder~ 2xGrunt 2xScout
-  w6 threat 28 span 6s: 2xFlyer* 4xGrunt 2xRoller 4xScout
-  w7 threat 19 span 6s: 8xFlyer* 2xGrunt 2xScout
-  w8 threat 43 span 6s: 2xBrute 2xGrunt 2xRoller 2xScout
-  w9 threat 28 span 6s: 2xFlyer* 4xGrunt 2xRoller 4xScout
-  w10 threat 56 span 14s: 2xFlyer* 2xGrunt 1xOverseer 2xRoller 4xScout
-  w11 threat 46 span 21s: 4xCinder~ 2xGrunt 2xRoller 2xScout
-  w12 threat 36 span 8s: 12xFlyer* 2xGrunt 2xRoller 2xScout
-  w13 threat 46 span 21s: 4xCinder~ 2xGrunt 2xRoller 2xScout
-  w14 threat 63 span 9s: 2xBrute 4xFlyer* 6xGrunt 2xRoller 6xScout
-  w15 threat 53 span 21s: 4xCinder~ 4xGrunt 2xRoller 4xScout
-  w16 threat 49 span 9s: 16xFlyer* 4xGrunt 2xRoller 4xScout
-  w17 threat 67 span 24s: 6xCinder~ 4xGrunt 2xRoller 4xScout
-  w18 threat 91 span 9s: 2xBrute 6xFlyer* 10xGrunt 4xRoller 10xScout
-  w19 threat 82 span 6s: 4xBrute 6xGrunt 2xRoller 6xScout
-  w20 threat 101 span 14s: 2xBrute 4xFlyer* 8xGrunt 1xOverseer 2xRoller 6xScout
-  w21 threat 104 span 25s: 2xBrute 7xCinder~ 6xGrunt 2xRoller 4xScout
-  w22 threat 99 span 17s: 2xBrute 28xFlyer* 6xGrunt 2xRoller 6xScout
-  w23 threat 148 span 11s: 4xBrute 10xFlyer* 15xGrunt 6xRoller 12xScout
-  w24 threat 150 span 29s: 2xBrute 11xCinder~ 8xGrunt 4xRoller 6xScout
-  w25 threat 155 span 10s: 8xBrute 10xGrunt 4xRoller 8xScout
-  w26 threat 164 span 30s: 2xBrute 12xCinder~ 10xGrunt 4xRoller 8xScout
-  w27 threat 151 span 27s: 2xBrute 47xFlyer* 10xGrunt 4xRoller 8xScout
-  w28 threat 203 span 12s: 10xBrute 14xGrunt 6xRoller 10xScout
-  w29 threat 208 span 35s: 2xBrute 16xCinder~ 12xGrunt 6xRoller 8xScout
-  w30 threat 275 span 25s: 4xBrute 19xFlyer* 16xGrunt 8xRoller 12xScout 1xWarden
+  w1 threat 14 money 60 span 1s: 5xProwler
+  w2 threat 7 money 50 span 22s: 5xEmberbat~
+  w3 threat 18 money 78 span 4s: 5xProwler 9xSkitter
+  w4 threat 15 money 84 span 1s: 2xStinger 2xWisp
+  w5 threat 10 money 64 span 1s: 2xSkyray* 2xWisp
+  w6 threat 26 money 112 span 6s: 2xRoller 9xSkitter 2xSkyray* 2xWisp
+  w7 threat 11 money 84 span 23s: 6xEmberbat~ 2xWisp
+  w8 threat 15 money 84 span 1s: 2xStinger 2xWisp
+  w9 threat 10 money 64 span 1s: 2xSkyray* 2xWisp
+  w10 threat 42 money 196 span 8s: 5xProwler 2xRoller 9xSkitter 2xSkyray* 4xWisp
+  w11 threat 18 money 134 span 29s: 11xEmberbat~ 2xWisp
+  w12 threat 33 money 449 span 14s: 1xCoreWisp 2xWisp
+  w13 threat 20 money 144 span 30s: 12xEmberbat~ 2xWisp
+  w14 threat 28 money 134 span 4s: 2xRoller 4xSkyray* 2xWisp
+  w15 threat 35 money 204 span 33s: 15xEmberbat~ 2xRoller 2xWisp
+  w16 threat 56 money 234 span 8s: 2xBulwark 5xProwler 2xRoller 9xSkitter 3xWisp
+  w17 threat 42 money 254 span 38s: 20xEmberbat~ 2xRoller 2xWisp
+  w18 threat 63 money 304 span 11s: 7xProwler 2xRoller 9xSkitter 2xSkyray* 2xStinger 6xWisp
+  w19 threat 50 money 232 span 8s: 5xProwler 2xRoller 9xSkitter 5xSkyray* 2xWisp
+  w20 threat 93 money 425 span 14s: 2xBulwark 7xProwler 3xRoller 11xSkitter 2xSkyray* 2xStinger 7xWisp
+  w21 threat 76 money 446 span 47s: 29xEmberbat~ 5xProwler 2xRoller 9xSkitter 4xWisp
+  w22 threat 72 money 330 span 11s: 2xBulwark 5xProwler 2xRoller 9xSkitter 2xStinger 6xWisp
+  w23 threat 116 money 530 span 14s: 2xBulwark 10xProwler 4xRoller 12xSkitter 4xSkyray* 2xStinger 8xWisp
+  w24 threat 113 money 844 span 42s: 1xAcidEmpress 24xEmberbat~ 2xRoller 2xWisp
+  w25 threat 101 money 441 span 12s: 3xBulwark 7xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w26 threat 107 money 530 span 14s: 2xBulwark 5xProwler 2xRoller 9xSkitter 10xSkyray* 2xStinger 6xWisp
+  w27 threat 164 money 749 span 14s: 2xBulwark 13xProwler 7xRoller 17xSkitter 5xSkyray* 4xStinger 12xWisp
+  w28 threat 136 money 601 span 12s: 6xBulwark 8xProwler 3xRoller 11xSkitter 2xStinger 9xWisp
+  w29 threat 180 money 1059 span 89s: 2xBulwark 69xEmberbat~ 7xProwler 3xRoller 9xSkitter 2xStinger 6xWisp
+  w30 threat 208 money 955 span 16s: 2xBulwark 18xProwler 9xRoller 20xSkitter 6xSkyray* 5xStinger 17xWisp
+  w31 threat 211 money 1256 span 107s: 2xBulwark 86xEmberbat~ 7xProwler 4xRoller 9xSkitter 2xStinger 7xWisp
+  w32 threat 165 money 807 span 14s: 2xBulwark 8xProwler 5xRoller 9xSkitter 18xSkyray* 2xStinger 9xWisp
+  w33 threat 286 money 1315 span 18s: 3xBulwark 24xProwler 12xRoller 25xSkitter 10xSkyray* 7xStinger 21xWisp
+  w34 threat 252 money 1479 span 118s: 2xBulwark 96xEmberbat~ 10xProwler 5xRoller 9xSkitter 4xStinger 8xWisp
+  w35 threat 266 money 1162 span 16s: 10xBulwark 18xProwler 8xRoller 17xSkitter 5xStinger 16xWisp
+  w36 threat 355 money 1878 span 24s: 4xBulwark 1xCrystalWarlord 19xProwler 10xRoller 18xSkitter 14xSkyray* 5xStinger 17xWisp
+  total kill money 17772
 Level_Ruins Easy
-  w1 threat 7 span 18s: 1xBurrower~ 1xGrunt*
-  w2 threat 15 span 0s: 1xBrute 1xGrunt
-  w3 threat 5 span 1s: 1xGrunt 1xGrunt*
-  w4 threat 15 span 0s: 1xBrute* 1xGrunt*
-  w5 threat 7 span 3s: 3xFlyer* 1xGrunt*
-  w6 threat 21 span 3s: 1xBrute* 1xGrunt* 1xRoller
-  w7 threat 23 span 5s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
-  w8 threat 21 span 3s: 1xBrute 1xGrunt 1xRoller
-  w9 threat 14 span 4s: 4xFlyer* 1xGrunt* 1xRoller
-  w10 threat 23 span 5s: 1xBrute* 2xGrunt* 1xRoller
-  w11 threat 23 span 3s: 1xBrute 1xGrunt 1xGrunt* 1xRoller*
-  w12 threat 111 span 24s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xWarden
-  w13 threat 23 span 3s: 1xBrute 2xGrunt* 1xRoller*
-  w14 threat 26 span 5s: 1xBrute* 3xGrunt* 1xRoller
-  w15 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
-  w16 threat 39 span 25s: 1xBrute 2xBurrower~ 2xDrowner~ 1xGrunt 1xGrunt* 1xRoller
-  w17 threat 38 span 4s: 1xBrute 1xBrute* 1xGrunt 2xGrunt* 1xRoller*
-  w18 threat 34 span 7s: 1xBrute 1xGrunt 3xGrunt* 1xRoller 1xRoller*
-  w19 threat 38 span 3s: 2xBrute* 2xGrunt 1xGrunt* 1xRoller*
-  w20 threat 36 span 7s: 1xBrute* 1xGrunt 4xGrunt* 1xRoller 1xRoller*
-  w21 threat 52 span 27s: 1xBrute* 4xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller*
-  w22 threat 46 span 4s: 1xBrute 1xBrute* 3xGrunt 1xGrunt* 1xRoller 1xRoller*
-  w23 threat 57 span 9s: 2xBrute* 1xGrunt 5xGrunt* 1xRoller 2xRoller*
-  w24 threat 138 span 14s: 2xBrute* 3xGrunt* 1xRoller 1xWarden
-  w25 threat 63 span 29s: 1xBrute 4xBurrower~ 4xDrowner~ 1xGrunt 2xGrunt* 2xRoller*
-  w26 threat 67 span 9s: 2xBrute 1xBrute* 2xGrunt 3xGrunt* 1xRoller 2xRoller*
-  w27 threat 80 span 11s: 3xBrute* 3xGrunt 5xGrunt* 1xRoller 3xRoller*
-  w28 threat 82 span 13s: 1xBrute 3xBrute* 1xGrunt 5xGrunt* 2xRoller 1xRoller*
-  w29 threat 92 span 29s: 1xBrute 1xBrute* 7xBurrower~ 4xDrowner~ 1xGrunt 3xGrunt* 2xRoller*
-  w30 threat 108 span 14s: 1xBrute 3xBrute* 3xGrunt 7xGrunt* 2xRoller 4xRoller*
-  w31 threat 105 span 17s: 3xBrute 2xBrute* 3xGrunt 5xGrunt* 1xRoller 3xRoller*
-  w32 threat 111 span 32s: 1xBrute 1xBrute* 8xBurrower~ 6xDrowner~ 1xGrunt 4xGrunt* 2xRoller 1xRoller*
-  w33 threat 128 span 17s: 1xBrute 5xBrute* 4xGrunt 6xGrunt* 1xRoller 4xRoller*
-  w34 threat 154 span 18s: 1xBrute 5xBrute* 6xGrunt 8xGrunt* 3xRoller 5xRoller*
-  w35 threat 200 span 14s: 1xBrute 3xBrute* 3xGrunt 6xGrunt* 1xRoller 4xRoller* 1xWarden
+  w1 threat 9 money 16 span 1s: 2xOozer*
+  w2 threat 9 money 16 span 3s: 1xOozer 1xOozer*
+  w3 threat 12 money 24 span 20s: 2xDustbat~ 1xOozer 1xOozer*
+  w4 threat 9 money 17 span 4s: 1xOozer* 4xSkitter 5xSkitter*
+  w5 threat 16 money 30 span 6s: 1xOozer* 3xProwler* 5xSkitter 2xSkitter*
+  w6 threat 4 money 8 span 0s: 1xSkyray*
+  w7 threat 11 money 25 span 21s: 3xDustbat~ 1xOozer 5xSkitter*
+  w8 threat 13 money 25 span 3s: 1xOozer 5xSkitter 1xStinger
+  w9 threat 10 money 23 span 6s: 1xOozer* 5xSkitter 2xWisp*
+  w10 threat 5 money 13 span 0s: 1xSkyray* 1xWisp*
+  w11 threat 14 money 34 span 24s: 3xDustbat~ 1xOozer 5xSkitter 1xTidebat~ 1xWisp*
+  w12 threat 24 money 50 span 11s: 1xOozer 3xProwler 5xSkitter 1xStinger 2xWisp*
+  w13 threat 20 money 36 span 5s: 1xBulwark 1xOozer* 5xSkitter* 1xWisp
+  w14 threat 68 money 250 span 24s: 2xDustbat~ 1xOozer* 5xSkitter* 1xSlimeMonarch 1xTidebat~ 1xWisp
+  w15 threat 27 money 53 span 9s: 1xBulwark* 1xOozer 5xSkitter 1xStinger* 1xWisp 1xWisp*
+  w16 threat 37 money 74 span 15s: 1xBulwark 1xOozer 3xProwler* 5xSkitter 1xSkitter* 1xStinger 1xWisp 2xWisp*
+  w17 threat 35 money 68 span 12s: 1xBulwark 1xOozer* 3xProwler* 5xSkitter* 1xStinger* 1xWisp 1xWisp*
+  w18 threat 44 money 92 span 25s: 1xBulwark* 4xDustbat~ 1xOozer 3xProwler 5xSkitter* 1xStinger 2xTidebat~ 1xWisp 1xWisp*
+  w19 threat 35 money 68 span 12s: 1xBulwark* 1xOozer 3xProwler 5xSkitter 1xStinger* 1xWisp 1xWisp*
+  w20 threat 44 money 88 span 17s: 1xBulwark* 2xOozer* 3xProwler* 5xSkitter 2xSkitter* 1xStinger 2xWisp 2xWisp*
+  w21 threat 37 money 73 span 13s: 1xBulwark 1xOozer* 3xProwler* 5xSkitter* 1xStinger* 2xWisp 1xWisp*
+  w22 threat 47 money 94 span 17s: 1xBulwark 1xOozer 1xOozer* 3xProwler 1xProwler* 3xSkitter 5xSkitter* 1xStinger 2xWisp 2xWisp*
+  w23 threat 56 money 122 span 29s: 1xBulwark* 6xDustbat~ 2xOozer* 3xProwler 5xSkitter 1xSkitter* 1xStinger* 4xTidebat~ 2xWisp 1xWisp*
+  w24 threat 53 money 100 span 13s: 2xBulwark* 2xOozer* 3xProwler* 1xSkitter 5xSkitter* 1xStinger 1xWisp 2xWisp*
+  w25 threat 62 money 125 span 19s: 1xBulwark 2xOozer 1xOozer* 2xProwler 3xProwler* 4xSkitter 5xSkitter* 2xStinger* 1xWisp 4xWisp*
+  w26 threat 58 money 111 span 15s: 1xBulwark 1xBulwark* 1xOozer 1xOozer* 3xProwler 1xProwler* 5xSkitter 2xSkitter* 1xStinger 1xWisp 3xWisp*
+  w27 threat 96 money 300 span 27s: 1xBulwark 5xDustbat~ 1xOozer* 3xProwler 5xSkitter 1xSkySovereign 1xStinger* 3xTidebat~ 2xWisp*
+  w28 threat 69 money 130 span 15s: 1xBulwark 2xBulwark* 2xOozer* 1xProwler 3xProwler* 3xSkitter 5xSkitter* 1xStinger 1xWisp 3xWisp*
+  w29 threat 85 money 168 span 22s: 2xBulwark* 2xOozer 2xOozer* 3xProwler 3xProwler* 6xSkitter 5xSkitter* 2xStinger* 2xWisp 5xWisp*
+  w30 threat 84 money 161 span 15s: 1xBulwark 2xBulwark* 3xOozer* 3xProwler 2xProwler* 5xSkitter 4xSkitter* 1xStinger 1xStinger* 1xWisp 4xWisp*
+  w31 threat 98 money 215 span 36s: 1xBulwark 1xBulwark* 12xDustbat~ 1xOozer 2xOozer* 3xProwler 2xProwler* 5xSkitter 4xSkitter* 2xStinger* 6xTidebat~ 1xWisp 4xWisp*
+  w32 threat 114 money 223 span 23s: 3xBulwark* 2xOozer 3xOozer* 4xProwler 4xProwler* 6xSkitter 7xSkitter* 2xStinger 1xStinger* 3xWisp 5xWisp*
+  w33 threat 113 money 215 span 17s: 1xBulwark 3xBulwark* 3xOozer 1xOozer* 4xProwler 3xProwler* 5xSkitter 5xSkitter* 3xStinger* 1xWisp 5xWisp*
+  w34 threat 125 money 275 span 43s: 2xBulwark* 16xDustbat~ 1xOozer 3xOozer* 3xProwler 4xProwler* 5xSkitter 5xSkitter* 1xStinger 2xStinger* 8xTidebat~ 3xWisp 3xWisp*
+  w35 threat 135 money 257 span 21s: 2xBulwark 3xBulwark* 1xOozer 4xOozer* 4xProwler 4xProwler* 6xSkitter 5xSkitter* 1xStinger 2xStinger* 3xWisp 5xWisp*
+  w36 threat 148 money 288 span 27s: 3xBulwark 1xBulwark* 3xOozer 3xOozer* 5xProwler 6xProwler* 6xSkitter 9xSkitter* 3xStinger 1xStinger* 4xWisp 6xWisp*
+  w37 threat 163 money 319 span 28s: 1xBulwark 3xBulwark* 2xOozer 5xOozer* 6xProwler 6xProwler* 10xSkitter 6xSkitter* 1xStinger 4xStinger* 4xWisp 7xWisp*
+  w38 threat 173 money 383 span 57s: 1xBulwark 2xBulwark* 24xDustbat~ 1xOozer 4xOozer* 5xProwler 4xProwler* 6xSkitter 6xSkitter* 2xStinger 2xStinger* 12xTidebat~ 3xWisp 5xWisp*
+  w39 threat 191 money 362 span 28s: 2xBulwark 5xBulwark* 3xOozer 4xOozer* 5xProwler 6xProwler* 6xSkitter 9xSkitter* 1xStinger 4xStinger* 3xWisp 7xWisp*
+  w40 threat 223 money 516 span 21s: 2xBulwark 2xBulwark* 1xCrystalWarlord 2xOozer 3xOozer* 4xProwler 5xProwler* 6xSkitter 5xSkitter* 3xStinger 1xStinger* 3xWisp 5xWisp*
+  total kill money 5447
 Level_Ruins Medium
-  w1 threat 7 span 18s: 1xBurrower~ 1xGrunt*
-  w2 threat 15 span 0s: 1xBrute* 1xGrunt
-  w3 threat 5 span 1s: 1xGrunt 1xGrunt*
-  w4 threat 15 span 0s: 1xBrute 1xGrunt
-  w5 threat 7 span 3s: 3xFlyer* 1xGrunt*
-  w6 threat 21 span 3s: 1xBrute* 1xGrunt* 1xRoller
-  w7 threat 23 span 5s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
-  w8 threat 21 span 3s: 1xBrute 1xGrunt 1xRoller
-  w9 threat 14 span 4s: 4xFlyer* 1xGrunt 1xRoller*
-  w10 threat 23 span 5s: 1xBrute* 2xGrunt* 1xRoller
-  w11 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
-  w12 threat 111 span 24s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xWarden
-  w13 threat 23 span 3s: 1xBrute 2xGrunt* 1xRoller*
-  w14 threat 19 span 6s: 7xFlyer* 1xGrunt* 1xRoller*
-  w15 threat 23 span 3s: 1xBrute* 1xGrunt 1xGrunt* 1xRoller*
-  w16 threat 39 span 25s: 1xBrute* 2xBurrower~ 2xDrowner~ 2xGrunt* 1xRoller
-  w17 threat 38 span 4s: 1xBrute 1xBrute* 3xGrunt* 1xRoller*
-  w18 threat 34 span 7s: 1xBrute 2xGrunt 2xGrunt* 1xRoller 1xRoller*
-  w19 threat 38 span 3s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller*
-  w20 threat 36 span 6s: 1xBrute* 1xGrunt 4xGrunt* 2xRoller*
-  w21 threat 52 span 26s: 1xBrute 4xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller
-  w22 threat 46 span 4s: 1xBrute 1xBrute* 2xGrunt 2xGrunt* 2xRoller*
-  w23 threat 57 span 8s: 2xBrute* 2xGrunt 4xGrunt* 2xRoller 1xRoller*
-  w24 threat 138 span 14s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller* 1xWarden
-  w25 threat 68 span 28s: 1xBrute 5xBurrower~ 4xDrowner~ 3xGrunt* 1xRoller 1xRoller*
-  w26 threat 67 span 6s: 1xBrute 2xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller*
-  w27 threat 80 span 9s: 1xBrute 2xBrute* 3xGrunt 5xGrunt* 3xRoller 1xRoller*
-  w28 threat 82 span 11s: 1xBrute 3xBrute* 2xGrunt 4xGrunt* 3xRoller*
-  w29 threat 100 span 29s: 1xBrute 1xBrute* 8xBurrower~ 5xDrowner~ 1xGrunt 3xGrunt* 1xRoller 1xRoller*
-  w30 threat 108 span 11s: 1xBrute 3xBrute* 4xGrunt 6xGrunt* 1xRoller 5xRoller*
-  w31 threat 105 span 15s: 2xBrute 3xBrute* 3xGrunt 5xGrunt* 3xRoller 1xRoller*
-  w32 threat 124 span 32s: 1xBrute 1xBrute* 10xBurrower~ 7xDrowner~ 3xGrunt 2xGrunt* 3xRoller*
-  w33 threat 128 span 16s: 1xBrute 5xBrute* 3xGrunt 7xGrunt* 2xRoller 3xRoller*
-  w34 threat 154 span 15s: 1xBrute 5xBrute* 6xGrunt 8xGrunt* 3xRoller 5xRoller*
-  w35 threat 202 span 19s: 3xBrute 1xBrute* 1xFlyer* 4xGrunt 5xGrunt* 3xRoller 2xRoller* 1xWarden
+  w1 threat 9 money 20 span 1s: 2xOozer*
+  w2 threat 9 money 20 span 1s: 2xOozer*
+  w3 threat 9 money 25 span 21s: 3xDustbat~ 1xOozer
+  w4 threat 10 money 21 span 4s: 1xOozer 6xSkitter 5xSkitter*
+  w5 threat 17 money 36 span 6s: 1xOozer* 3xProwler* 6xSkitter 2xSkitter*
+  w6 threat 4 money 10 span 0s: 1xSkyray*
+  w7 threat 13 money 36 span 22s: 4xDustbat~ 1xOozer 6xSkitter*
+  w8 threat 14 money 31 span 4s: 1xOozer 6xSkitter 1xStinger
+  w9 threat 11 money 28 span 6s: 1xOozer 6xSkitter* 2xWisp*
+  w10 threat 5 money 16 span 0s: 1xSkyray* 1xWisp*
+  w11 threat 17 money 52 span 25s: 4xDustbat~ 1xOozer* 6xSkitter 2xTidebat~ 1xWisp*
+  w12 threat 25 money 61 span 11s: 1xOozer 3xProwler* 6xSkitter 1xStinger 1xWisp 1xWisp*
+  w13 threat 20 money 44 span 5s: 1xBulwark 1xOozer* 6xSkitter* 1xWisp*
+  w14 threat 62 money 301 span 24s: 3xDustbat~ 1xSlimeMonarch 1xTidebat~ 1xWisp*
+  w15 threat 28 money 65 span 9s: 1xBulwark* 1xOozer 6xSkitter 1xStinger* 1xWisp 1xWisp*
+  w16 threat 16 money 42 span 5s: 1xOozer* 6xSkitter* 2xSkyray* 1xWisp
+  w17 threat 36 money 83 span 11s: 1xBulwark 1xOozer* 3xProwler* 6xSkitter 1xStinger* 2xWisp*
+  w18 threat 39 money 111 span 26s: 7xDustbat~ 1xOozer 3xProwler 6xSkitter 1xStinger 3xTidebat~ 2xWisp*
+  w19 threat 36 money 83 span 11s: 1xBulwark* 1xOozer 3xProwler 6xSkitter* 1xStinger* 2xWisp*
+  w20 threat 44 money 107 span 16s: 1xBulwark* 2xOozer* 3xProwler 2xSkitter 6xSkitter* 1xStinger* 2xWisp 2xWisp*
+  w21 threat 37 money 89 span 13s: 1xBulwark 1xOozer 3xProwler* 6xSkitter 1xStinger 2xWisp 1xWisp*
+  w22 threat 48 money 114 span 16s: 1xBulwark 1xOozer 1xOozer* 1xProwler 3xProwler* 6xSkitter 3xSkitter* 1xStinger* 2xWisp 2xWisp*
+  w23 threat 58 money 163 span 32s: 1xBulwark 11xDustbat~ 1xOozer* 3xProwler 6xSkitter* 1xStinger 5xTidebat~ 1xWisp 1xWisp*
+  w24 threat 53 money 122 span 12s: 2xBulwark* 2xOozer* 3xProwler 6xSkitter 1xSkitter* 1xStinger* 1xWisp 2xWisp*
+  w25 threat 63 money 153 span 18s: 1xBulwark* 1xOozer 2xOozer* 2xProwler 3xProwler* 6xSkitter 5xSkitter* 1xStinger 1xStinger* 3xWisp 2xWisp*
+  w26 threat 58 money 135 span 14s: 1xBulwark 1xBulwark* 1xOozer 1xOozer* 1xProwler 3xProwler* 2xSkitter 6xSkitter* 1xStinger* 2xWisp 2xWisp*
+  w27 threat 107 money 408 span 31s: 1xBulwark 10xDustbat~ 1xOozer* 3xProwler 6xSkitter* 1xSkySovereign 1xStinger 5xTidebat~ 1xWisp 1xWisp*
+  w28 threat 70 money 158 span 14s: 3xBulwark* 1xOozer 1xOozer* 3xProwler 1xProwler* 6xSkitter 3xSkitter* 1xStinger* 2xWisp 2xWisp*
+  w29 threat 86 money 205 span 19s: 2xBulwark* 3xOozer 1xOozer* 3xProwler 3xProwler* 6xSkitter 7xSkitter* 1xStinger 1xStinger* 3xWisp 4xWisp*
+  w30 threat 85 money 196 span 15s: 3xBulwark* 1xOozer 2xOozer* 2xProwler 3xProwler* 4xSkitter 6xSkitter* 2xStinger* 1xWisp 4xWisp*
+  w31 threat 101 money 298 span 49s: 1xBulwark 23xDustbat~ 2xOozer* 3xProwler 1xProwler* 2xSkitter 6xSkitter* 1xStinger 1xStinger* 11xTidebat~ 1xWisp 3xWisp*
+  w32 threat 115 money 272 span 21s: 2xBulwark 1xBulwark* 3xOozer 2xOozer* 4xProwler 4xProwler* 8xSkitter 7xSkitter* 3xStinger* 3xWisp 5xWisp*
+  w33 threat 114 money 263 span 16s: 1xBulwark 3xBulwark* 2xOozer 2xOozer* 4xProwler 3xProwler* 6xSkitter 6xSkitter* 1xStinger 2xStinger* 1xWisp 5xWisp*
+  w34 threat 138 money 403 span 60s: 2xBulwark* 31xDustbat~ 3xOozer* 2xProwler 3xProwler* 3xSkitter 6xSkitter* 2xStinger* 15xTidebat~ 1xWisp 4xWisp*
+  w35 threat 136 money 314 span 18s: 3xBulwark 2xBulwark* 3xOozer 2xOozer* 4xProwler 4xProwler* 6xSkitter 7xSkitter* 2xStinger 1xStinger* 3xWisp 5xWisp*
+  w36 threat 149 money 352 span 24s: 2xBulwark 2xBulwark* 2xOozer 4xOozer* 6xProwler 5xProwler* 11xSkitter 7xSkitter* 1xStinger 3xStinger* 4xWisp 6xWisp*
+  w37 threat 165 money 390 span 26s: 3xBulwark 1xBulwark* 2xOozer 5xOozer* 6xProwler 6xProwler* 7xSkitter 12xSkitter* 2xStinger 3xStinger* 5xWisp 6xWisp*
+  w38 threat 195 money 571 span 78s: 3xBulwark* 44xDustbat~ 1xOozer 3xOozer* 4xProwler 3xProwler* 5xSkitter 6xSkitter* 1xStinger 2xStinger* 21xTidebat~ 2xWisp 5xWisp*
+  w39 threat 192 money 442 span 24s: 2xBulwark 5xBulwark* 2xOozer 5xOozer* 6xProwler 5xProwler* 10xSkitter 7xSkitter* 3xStinger 2xStinger* 4xWisp 6xWisp*
+  w40 threat 227 money 648 span 20s: 3xBulwark 1xBulwark* 1xCrystalWarlord 1xOozer 4xOozer* 5xProwler 4xProwler* 6xSkitter 7xSkitter* 1xSkyray* 1xStinger 3xStinger* 3xWisp 5xWisp*
+  total kill money 6888
 Level_Ruins Hard
-  w1 threat 14 span 19s: 2xBurrower~ 2xGrunt*
-  w2 threat 30 span 2s: 2xBrute* 2xGrunt*
-  w3 threat 10 span 1s: 2xGrunt 2xGrunt*
-  w4 threat 30 span 2s: 2xBrute 2xGrunt
-  w5 threat 13 span 4s: 5xFlyer* 2xGrunt
-  w6 threat 41 span 3s: 2xBrute* 2xGrunt* 2xRoller*
-  w7 threat 47 span 6s: 2xBrute 2xFlyer* 3xGrunt* 2xRoller
-  w8 threat 41 span 3s: 2xBrute 2xGrunt 2xRoller*
-  w9 threat 25 span 5s: 6xFlyer* 2xGrunt 2xRoller*
-  w10 threat 47 span 6s: 2xBrute* 2xFlyer* 3xGrunt* 2xRoller*
-  w11 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller
-  w12 threat 121 span 25s: 2xBurrower~ 2xDrowner~ 2xGrunt* 1xWarden
-  w13 threat 44 span 3s: 2xBrute 3xGrunt* 2xRoller
-  w14 threat 31 span 7s: 10xFlyer* 2xGrunt 2xRoller
-  w15 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller
-  w16 threat 68 span 26s: 2xBrute* 3xBurrower~ 3xDrowner~ 3xGrunt* 2xRoller*
-  w17 threat 74 span 5s: 2xBrute 2xBrute* 2xGrunt 3xGrunt* 2xRoller
-  w18 threat 67 span 11s: 2xBrute 14xFlyer* 2xGrunt 2xGrunt* 2xRoller*
-  w19 threat 71 span 5s: 2xBrute 2xBrute* 4xGrunt* 2xRoller
-  w20 threat 71 span 10s: 2xBrute* 6xFlyer* 2xGrunt 6xGrunt* 3xRoller*
-  w21 threat 85 span 27s: 2xBrute 6xBurrower~ 4xDrowner~ 3xGrunt* 2xRoller
-  w22 threat 84 span 5s: 2xBrute 2xBrute* 5xGrunt 2xGrunt* 3xRoller*
-  w23 threat 83 span 15s: 2xBrute* 21xFlyer* 4xGrunt 2xGrunt* 2xRoller
-  w24 threat 159 span 14s: 3xBrute* 4xGrunt* 2xRoller* 1xWarden
-  w25 threat 112 span 29s: 2xBrute 7xBurrower~ 6xDrowner~ 2xGrunt 3xGrunt* 2xRoller 2xRoller*
-  w26 threat 98 span 6s: 4xBrute* 2xGrunt 6xGrunt* 2xRoller 3xRoller*
-  w27 threat 136 span 12s: 4xBrute* 10xFlyer* 6xGrunt 7xGrunt* 5xRoller 2xRoller*
-  w28 threat 135 span 9s: 5xBrute 2xBrute* 5xGrunt 5xGrunt* 4xRoller*
-  w29 threat 161 span 31s: 2xBrute 2xBrute* 11xBurrower~ 7xDrowner~ 2xGrunt 4xGrunt* 2xRoller 2xRoller*
-  w30 threat 184 span 14s: 2xBrute 4xBrute* 13xFlyer* 7xGrunt 9xGrunt* 2xRoller 7xRoller*
-  w31 threat 181 span 14s: 5xBrute 4xBrute* 5xGrunt 7xGrunt* 5xRoller 2xRoller*
-  w32 threat 188 span 34s: 2xBrute 2xBrute* 13xBurrower~ 10xDrowner~ 4xGrunt 5xGrunt* 4xRoller*
-  w33 threat 212 span 15s: 5xBrute 5xBrute* 6xGrunt 9xGrunt* 4xRoller 5xRoller*
-  w34 threat 255 span 17s: 2xBrute 7xBrute* 16xFlyer* 9xGrunt 12xGrunt* 5xRoller 7xRoller*
-  w35 threat 295 span 22s: 4xBrute 3xBrute* 15xFlyer* 5xGrunt 9xGrunt* 5xRoller 4xRoller* 1xWarden
+  w1 threat 14 money 39 span 2s: 3xOozer*
+  w2 threat 14 money 39 span 2s: 3xOozer*
+  w3 threat 15 money 50 span 22s: 4xDustbat~ 2xOozer
+  w4 threat 16 money 54 span 3s: 2xOozer 8xSkitter 6xSkitter*
+  w5 threat 26 money 80 span 6s: 2xOozer 4xProwler 8xSkitter 3xSkitter*
+  w6 threat 7 money 26 span 1s: 2xSkyray*
+  w7 threat 21 money 78 span 24s: 6xDustbat~ 2xOozer* 8xSkitter
+  w8 threat 25 money 80 span 4s: 2xOozer 8xSkitter* 2xStinger
+  w9 threat 26 money 100 span 7s: 2xOozer 8xSkitter* 2xSkyray* 2xWisp 2xWisp*
+  w10 threat 10 money 42 span 1s: 2xSkyray* 2xWisp*
+  w11 threat 16 money 70 span 26s: 6xDustbat~ 3xTidebat~ 2xWisp*
+  w12 threat 48 money 162 span 11s: 2xOozer* 4xProwler 8xSkitter* 2xSkyray* 2xStinger 3xWisp*
+  w13 threat 38 money 116 span 6s: 2xBulwark 2xOozer* 8xSkitter 2xWisp
+  w14 threat 69 money 416 span 26s: 5xDustbat~ 1xSlimeMonarch 3xTidebat~ 2xWisp
+  w15 threat 52 money 162 span 9s: 2xBulwark* 2xOozer 8xSkitter* 2xStinger 3xWisp*
+  w16 threat 30 money 110 span 6s: 2xOozer* 8xSkitter* 4xSkyray* 2xWisp*
+  w17 threat 63 money 194 span 11s: 2xBulwark 2xOozer* 4xProwler 8xSkitter* 2xStinger 3xWisp*
+  w18 threat 38 money 154 span 30s: 11xDustbat~ 2xOozer 8xSkitter 5xTidebat~ 2xWisp*
+  w19 threat 63 money 194 span 11s: 2xBulwark 2xOozer* 4xProwler* 8xSkitter 2xStinger 3xWisp*
+  w20 threat 80 money 263 span 16s: 2xBulwark* 3xOozer* 4xProwler* 8xSkitter 3xSkitter* 2xSkyray* 2xStinger* 2xWisp 4xWisp*
+  w21 threat 51 money 182 span 9s: 2xOozer* 8xSkitter 6xSkyray* 2xStinger 3xWisp*
+  w22 threat 98 money 320 span 16s: 2xBulwark 2xOozer 2xOozer* 2xProwler 4xProwler* 4xSkitter 8xSkitter* 4xSkyray* 2xStinger* 2xWisp 4xWisp*
+  w23 threat 99 money 350 span 37s: 2xBulwark 17xDustbat~ 2xOozer* 4xProwler* 8xSkitter 2xStinger 9xTidebat~ 3xWisp*
+  w24 threat 81 money 248 span 12s: 3xBulwark* 3xOozer* 4xProwler 8xSkitter 2xSkitter* 2xStinger* 4xWisp*
+  w25 threat 125 money 412 span 17s: 2xBulwark* 4xOozer 2xOozer* 4xProwler 3xProwler* 6xSkitter 8xSkitter* 4xSkyray* 2xStinger 2xStinger* 2xWisp 6xWisp*
+  w26 threat 92 money 306 span 14s: 2xBulwark* 2xOozer* 4xProwler* 8xSkitter 8xSkyray* 2xStinger* 2xWisp 2xWisp*
+  w27 threat 134 money 620 span 35s: 2xBulwark 15xDustbat~ 2xOozer* 8xSkitter 1xSkySovereign 2xStinger 8xTidebat~ 3xWisp*
+  w28 threat 129 money 392 span 14s: 4xBulwark 2xBulwark* 2xOozer 2xOozer* 4xProwler 2xProwler* 4xSkitter 8xSkitter* 2xStinger* 4xWisp 3xWisp*
+  w29 threat 153 money 505 span 19s: 3xBulwark* 4xOozer 3xOozer* 4xProwler 4xProwler* 9xSkitter 8xSkitter* 5xSkyray* 2xStinger 2xStinger* 5xWisp 6xWisp*
+  w30 threat 130 money 408 span 15s: 2xBulwark 3xBulwark* 4xOozer* 3xProwler 4xProwler* 8xSkitter 5xSkitter* 3xStinger* 4xWisp 5xWisp*
+  w31 threat 143 money 537 span 57s: 2xBulwark 34xDustbat~ 3xOozer* 4xProwler* 8xSkitter 2xStinger 17xTidebat~ 4xWisp 2xWisp*
+  w32 threat 200 money 648 span 21s: 2xBulwark 3xBulwark* 4xOozer 5xOozer* 6xProwler 5xProwler* 9xSkitter 11xSkitter* 6xSkyray* 4xStinger* 6xWisp 7xWisp*
+  w33 threat 182 money 560 span 16s: 5xBulwark 2xBulwark* 2xOozer 4xOozer* 4xProwler 5xProwler* 8xSkitter 8xSkitter* 2xStinger 3xStinger* 5xWisp 5xWisp*
+  w34 threat 179 money 680 span 70s: 2xBulwark* 45xDustbat~ 3xOozer* 2xProwler 4xProwler* 8xSkitter 2xSkitter* 3xStinger* 22xTidebat~ 4xWisp 3xWisp*
+  w35 threat 221 money 681 span 17s: 2xBulwark 6xBulwark* 4xOozer 5xOozer* 5xProwler 6xProwler* 9xSkitter 8xSkitter* 4xStinger 2xStinger* 5xWisp 7xWisp*
+  w36 threat 263 money 845 span 23s: 5xBulwark 2xBulwark* 5xOozer 5xOozer* 8xProwler 7xProwler* 9xSkitter 14xSkitter* 8xSkyray* 2xStinger 4xStinger* 7xWisp 9xWisp*
+  w37 threat 294 money 948 span 24s: 4xBulwark 3xBulwark* 4xOozer 7xOozer* 8xProwler 8xProwler* 16xSkitter 9xSkitter* 9xSkyray* 4xStinger 5xStinger* 8xWisp 9xWisp*
+  w38 threat 260 money 972 span 94s: 2xBulwark 2xBulwark* 65xDustbat~ 2xOozer 3xOozer* 4xProwler 4xProwler* 8xSkitter 4xSkitter* 3xStinger* 32xTidebat~ 2xWisp 6xWisp*
+  w39 threat 299 money 917 span 22s: 4xBulwark 7xBulwark* 5xOozer 6xOozer* 7xProwler 8xProwler* 9xSkitter 13xSkitter* 5xStinger 4xStinger* 6xWisp 9xWisp*
+  w40 threat 337 money 1206 span 22s: 2xBulwark 5xBulwark* 1xCrystalWarlord 2xOozer 6xOozer* 7xProwler 5xProwler* 9xSkitter 8xSkitter* 11xSkyray* 2xStinger 4xStinger* 5xWisp 7xWisp*
+  total kill money 14166
 Level_Ruins Psycho
-  w1 threat 14 span 19s: 2xBurrower~ 2xGrunt
-  w2 threat 30 span 1s: 2xBrute* 2xGrunt*
-  w3 threat 10 span 1s: 4xGrunt*
-  w4 threat 30 span 1s: 2xBrute 2xGrunt
-  w5 threat 14 span 4s: 6xFlyer* 2xGrunt
-  w6 threat 41 span 3s: 2xBrute* 2xGrunt* 2xRoller*
-  w7 threat 49 span 6s: 2xBrute 2xFlyer* 4xGrunt* 2xRoller
-  w8 threat 41 span 3s: 2xBrute* 2xGrunt 2xRoller
-  w9 threat 28 span 6s: 8xFlyer* 2xGrunt 2xRoller*
-  w10 threat 49 span 6s: 2xBrute* 2xFlyer* 2xGrunt 2xGrunt* 2xRoller
-  w11 threat 46 span 3s: 2xBrute* 2xGrunt 2xGrunt* 2xRoller*
-  w12 threat 121 span 24s: 2xBurrower~ 2xDrowner~ 2xGrunt* 1xWarden
-  w13 threat 46 span 3s: 2xBrute 4xGrunt* 2xRoller*
-  w14 threat 36 span 8s: 13xFlyer* 2xGrunt 2xRoller
-  w15 threat 46 span 3s: 2xBrute 2xGrunt 2xGrunt* 2xRoller*
-  w16 threat 78 span 26s: 2xBrute* 4xBurrower~ 4xDrowner~ 4xGrunt* 2xRoller
-  w17 threat 76 span 4s: 4xBrute* 2xGrunt 4xGrunt* 2xRoller*
-  w18 threat 73 span 11s: 2xBrute 18xFlyer* 2xGrunt 2xGrunt* 2xRoller
-  w19 threat 76 span 4s: 2xBrute 2xBrute* 2xGrunt 4xGrunt* 2xRoller*
-  w20 threat 84 span 11s: 2xBrute* 8xFlyer* 2xGrunt 8xGrunt* 2xRoller 2xRoller*
-  w21 threat 99 span 28s: 2xBrute 7xBurrower~ 6xDrowner~ 4xGrunt* 2xRoller*
-  w22 threat 92 span 4s: 4xBrute* 4xGrunt 4xGrunt* 2xRoller 2xRoller*
-  w23 threat 90 span 15s: 2xBrute* 26xFlyer* 2xGrunt 4xGrunt* 2xRoller*
-  w24 threat 176 span 14s: 2xBrute 2xBrute* 4xGrunt 2xGrunt* 2xRoller 1xWarden
-  w25 threat 127 span 29s: 2xBrute 9xBurrower~ 7xDrowner~ 6xGrunt* 4xRoller*
-  w26 threat 133 span 6s: 2xBrute 4xBrute* 2xGrunt 8xGrunt* 4xRoller 2xRoller*
-  w27 threat 176 span 13s: 2xBrute 4xBrute* 13xFlyer* 6xGrunt 9xGrunt* 2xRoller 6xRoller*
-  w28 threat 130 span 25s: 2xBrute 42xFlyer* 4xGrunt 4xGrunt* 2xRoller 2xRoller*
-  w29 threat 187 span 31s: 2xBrute 2xBrute* 14xBurrower~ 9xDrowner~ 6xGrunt 2xGrunt* 4xRoller*
-  w30 threat 240 span 14s: 2xBrute 6xBrute* 16xFlyer* 8xGrunt 12xGrunt* 6xRoller 6xRoller*
-  w31 threat 209 span 11s: 2xBrute 8xBrute* 6xGrunt 10xGrunt* 2xRoller 6xRoller*
-  w32 threat 227 span 34s: 2xBrute 2xBrute* 17xBurrower~ 12xDrowner~ 6xGrunt 4xGrunt* 2xRoller 4xRoller*
-  w33 threat 209 span 36s: 4xBrute* 64xFlyer* 4xGrunt 8xGrunt* 2xRoller 4xRoller*
-  w34 threat 336 span 19s: 2xBrute 10xBrute* 22xFlyer* 12xGrunt 16xGrunt* 6xRoller 9xRoller*
-  w35 threat 332 span 25s: 6xBrute 2xBrute* 21xFlyer* 8xGrunt 10xGrunt* 2xRoller 8xRoller* 1xWarden
+  w1 threat 18 money 80 span 2s: 2xOozer 2xOozer*
+  w2 threat 14 money 60 span 2s: 3xOozer*
+  w3 threat 17 money 100 span 23s: 6xDustbat~ 2xOozer*
+  w4 threat 18 money 74 span 3s: 2xOozer 9xSkitter 8xSkitter*
+  w5 threat 29 money 124 span 6s: 2xOozer 5xProwler 3xSkitter 9xSkitter*
+  w6 threat 7 money 40 span 1s: 2xSkyray*
+  w7 threat 13 money 90 span 26s: 9xDustbat~
+  w8 threat 26 money 118 span 4s: 2xOozer 9xSkitter 2xStinger*
+  w9 threat 25 money 134 span 6s: 2xOozer 9xSkitter* 2xSkyray* 3xWisp*
+  w10 threat 10 money 64 span 1s: 2xSkyray* 2xWisp
+  w11 threat 21 money 154 span 27s: 8xDustbat~ 5xTidebat~ 2xWisp*
+  w12 threat 51 money 254 span 11s: 2xOozer* 5xProwler* 9xSkitter 2xSkyray* 2xStinger* 3xWisp*
+  w13 threat 39 money 172 span 5s: 2xBulwark 2xOozer* 9xSkitter* 2xWisp*
+  w14 threat 71 money 664 span 25s: 6xDustbat~ 1xSlimeMonarch 3xTidebat~ 2xWisp
+  w15 threat 54 money 256 span 9s: 2xBulwark 2xOozer 9xSkitter 2xStinger* 2xWisp 2xWisp*
+  w16 threat 31 money 162 span 5s: 2xOozer* 9xSkitter* 4xSkyray* 2xWisp
+  w17 threat 67 money 316 span 11s: 2xBulwark* 2xOozer 5xProwler* 9xSkitter 2xStinger* 2xWisp 2xWisp*
+  w18 threat 49 money 312 span 32s: 15xDustbat~ 2xOozer 9xSkitter 8xTidebat~ 2xWisp
+  w19 threat 67 money 316 span 11s: 2xBulwark 2xOozer* 5xProwler 9xSkitter* 2xStinger* 2xWisp 2xWisp*
+  w20 threat 85 money 418 span 15s: 2xBulwark* 3xOozer* 5xProwler* 3xSkitter 9xSkitter* 2xSkyray* 2xStinger 5xWisp 2xWisp*
+  w21 threat 53 money 286 span 9s: 2xOozer* 9xSkitter* 6xSkyray* 2xStinger 2xWisp 2xWisp*
+  w22 threat 103 money 506 span 16s: 2xBulwark* 2xOozer 2xOozer* 5xProwler 2xProwler* 9xSkitter 5xSkitter* 4xSkyray* 2xStinger 2xWisp 5xWisp*
+  w23 threat 80 money 514 span 41s: 24xDustbat~ 2xOozer 9xSkitter* 2xStinger* 12xTidebat~ 3xWisp*
+  w24 threat 101 money 462 span 12s: 2xBulwark 2xBulwark* 2xOozer 2xOozer* 5xProwler* 2xSkitter 9xSkitter* 2xStinger 5xWisp*
+  w25 threat 119 money 586 span 16s: 2xBulwark* 2xOozer 3xOozer* 3xProwler 5xProwler* 9xSkitter 8xSkitter* 4xSkyray* 3xStinger* 2xWisp 6xWisp*
+  w26 threat 101 money 504 span 13s: 2xBulwark* 2xOozer* 5xProwler 9xSkitter* 10xSkyray* 2xStinger 3xWisp*
+  w27 threat 119 money 944 span 38s: 21xDustbat~ 2xOozer 1xSkySovereign 2xStinger* 11xTidebat~ 2xWisp*
+  w28 threat 122 money 561 span 13s: 2xBulwark 3xBulwark* 2xOozer 2xOozer* 2xProwler 5xProwler* 9xSkitter 5xSkitter* 2xStinger 2xWisp 5xWisp*
+  w29 threat 167 money 814 span 18s: 2xBulwark 2xBulwark* 5xOozer 2xOozer* 5xProwler 5xProwler* 9xSkitter 11xSkitter* 5xSkyray* 3xStinger* 4xWisp 8xWisp*
+  w30 threat 145 money 679 span 14s: 5xBulwark* 2xOozer 3xOozer* 5xProwler 3xProwler* 6xSkitter 9xSkitter* 2xStinger 2xStinger* 2xWisp 7xWisp*
+  w31 threat 127 money 648 span 15s: 2xBulwark* 2xOozer 2xOozer* 5xProwler* 9xSkitter* 14xSkyray* 2xStinger* 2xWisp 3xWisp*
+  w32 threat 226 money 1090 span 19s: 4xBulwark 2xBulwark* 5xOozer 4xOozer* 6xProwler 7xProwler* 12xSkitter 11xSkitter* 6xSkyray* 2xStinger 3xStinger* 6xWisp 8xWisp*
+  w33 threat 193 money 893 span 15s: 4xBulwark 3xBulwark* 2xOozer 5xOozer* 5xProwler 6xProwler* 9xSkitter 9xSkitter* 2xStinger 3xStinger* 5xWisp 5xWisp*
+  w34 threat 210 money 1328 span 82s: 2xBulwark* 66xDustbat~ 3xOozer* 5xProwler 9xSkitter* 2xStinger 32xTidebat~ 2xWisp 3xWisp*
+  w35 threat 235 money 1087 span 16s: 2xBulwark 7xBulwark* 5xOozer 4xOozer* 6xProwler 7xProwler* 9xSkitter 11xSkitter* 5xStinger* 5xWisp 8xWisp*
+  w36 threat 288 money 1401 span 21s: 2xBulwark 5xBulwark* 2xOozer 8xOozer* 8xProwler 10xProwler* 17xSkitter 11xSkitter* 10xSkyray* 4xStinger 3xStinger* 6xWisp 11xWisp*
+  w37 threat 207 money 1054 span 15s: 2xBulwark 2xBulwark* 5xOozer* 5xProwler 3xProwler* 3xSkitter 9xSkitter* 24xSkyray* 3xStinger* 5xWisp 2xWisp*
+  w38 threat 328 money 2020 span 111s: 2xBulwark 2xBulwark* 96xDustbat~ 4xOozer 2xOozer* 5xProwler 2xProwler* 2xSkitter 9xSkitter* 2xStinger 2xStinger* 45xTidebat~ 4xWisp 3xWisp*
+  w39 threat 328 money 1522 span 19s: 4xBulwark 8xBulwark* 4xOozer 8xOozer* 8xProwler 10xProwler* 15xSkitter 11xSkitter* 2xStinger 7xStinger* 7xWisp 10xWisp*
+  w40 threat 375 money 2051 span 24s: 2xBulwark 5xBulwark* 1xCrystalWarlord 2xOozer 7xOozer* 6xProwler 8xProwler* 9xSkitter 11xSkitter* 16xSkyray* 4xStinger 3xStinger* 6xWisp 8xWisp*
+  total kill money 22858
 Level_Nest Easy
-  w1 threat 9 span 3s: 1xGrunt 1xGrunt* 2xScout 2xScout*
-  w2 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
-  w3 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout*
-  w4 threat 13 span 4s: 2xGrunt 1xGrunt* 1xScout 4xScout*
-  w5 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
-  w6 threat 8 span 3s: 3xFlyer* 1xGrunt* 1xScout
-  w7 threat 16 span 4s: 3xGrunt 1xGrunt* 3xScout 3xScout*
-  w8 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt 1xScout*
-  w9 threat 15 span 5s: 4xFlyer* 1xGrunt* 1xRoller 1xScout*
-  w10 threat 112 span 14s: 1xFlyer* 1xGrunt 1xRoller* 1xScout 1xScout* 1xWarden
-  w11 threat 23 span 5s: 2xGrunt 4xGrunt* 3xScout 5xScout*
-  w12 threat 22 span 25s: 1xBurrower~ 2xDrowner~ 1xGrunt* 1xRoller* 2xScout*
-  w13 threat 23 span 5s: 1xBrute* 1xGrunt 1xRoller 2xScout*
-  w14 threat 28 span 6s: 2xGrunt 5xGrunt* 4xScout 6xScout*
-  w15 threat 22 span 25s: 1xBurrower~ 2xDrowner~ 1xGrunt* 1xRoller 1xScout 1xScout*
-  w16 threat 25 span 5s: 1xBrute 2xGrunt* 1xRoller 2xScout*
-  w17 threat 38 span 8s: 3xGrunt 7xGrunt* 6xScout 7xScout*
-  w18 threat 32 span 26s: 2xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller* 2xScout*
-  w19 threat 39 span 5s: 2xBrute* 1xGrunt 1xGrunt* 1xRoller 1xScout 2xScout*
-  w20 threat 132 span 14s: 1xBrute 2xFlyer* 3xGrunt* 1xRoller* 2xScout 1xScout* 1xWarden
-  w21 threat 53 span 11s: 6xGrunt 8xGrunt* 6xScout 12xScout*
-  w22 threat 54 span 28s: 1xBrute* 3xBurrower~ 4xDrowner~ 2xGrunt* 1xRoller* 1xScout 2xScout*
-  w23 threat 48 span 7s: 2xBrute* 1xGrunt 2xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
-  w24 threat 67 span 14s: 7xGrunt 11xGrunt* 7xScout 15xScout*
-  w25 threat 56 span 28s: 1xBrute* 3xBurrower~ 4xDrowner~ 1xGrunt 2xGrunt* 1xRoller 2xScout 1xScout*
-  w26 threat 64 span 7s: 1xBrute 2xBrute* 1xGrunt 3xGrunt* 1xRoller 1xRoller* 1xScout 4xScout*
-  w27 threat 88 span 16s: 9xGrunt 15xGrunt* 13xScout 15xScout*
-  w28 threat 77 span 30s: 1xBrute* 4xBurrower~ 6xDrowner~ 2xGrunt 2xGrunt* 2xRoller* 1xScout 3xScout*
-  w29 threat 85 span 12s: 2xBrute 2xBrute* 3xGrunt 2xGrunt* 1xRoller 2xRoller* 1xScout 5xScout*
-  w30 threat 170 span 14s: 1xBrute 1xBrute* 5xFlyer* 1xGrunt 5xGrunt* 3xRoller* 3xScout 3xScout* 1xWarden
-  w31 threat 121 span 24s: 10xGrunt 24xGrunt* 18xScout 18xScout*
-  w32 threat 97 span 32s: 1xBrute* 5xBurrower~ 8xDrowner~ 3xGrunt 2xGrunt* 1xRoller 2xRoller* 1xScout 4xScout*
-  w33 threat 123 span 18s: 1xBrute 5xBrute* 3xGrunt 4xGrunt* 2xRoller 2xRoller* 3xScout 5xScout*
-  w34 threat 126 span 25s: 11xGrunt 25xGrunt* 11xScout 25xScout*
-  w35 threat 135 span 36s: 2xBrute* 7xBurrower~ 10xDrowner~ 3xGrunt 3xGrunt* 2xRoller 2xRoller* 3xScout 3xScout*
-  w36 threat 160 span 26s: 3xBrute 5xBrute* 3xGrunt 6xGrunt* 1xRoller 4xRoller* 4xScout 6xScout*
-  w37 threat 126 span 25s: 18xGrunt 18xGrunt* 18xScout 18xScout*
-  w38 threat 179 span 40s: 1xBrute 2xBrute* 9xBurrower~ 13xDrowner~ 3xGrunt 5xGrunt* 1xRoller 4xRoller* 3xScout 5xScout*
-  w39 threat 206 span 34s: 3xBrute 7xBrute* 4xGrunt 8xGrunt* 2xRoller 5xRoller* 6xScout 6xScout*
-  w40 threat 303 span 16s: 1xBrute 3xBrute* 9xFlyer* 6xGrunt 6xGrunt* 1xHiveQueen 2xRoller 5xRoller* 5xScout 6xScout*
+  w1 threat 12 money 23 span 3s: 3xProwler 5xSkitter 3xSkitter*
+  w2 threat 11 money 19 span 21s: 1xRoller* 5xSkitter 2xTidebat~
+  w3 threat 6 money 12 span 0s: 1xStinger*
+  w4 threat 5 money 13 span 0s: 1xSkyray* 1xWisp*
+  w5 threat 7 money 18 span 25s: 1xDustbat~ 5xSkitter 1xTidebat~ 1xWisp*
+  w6 threat 8 money 17 span 0s: 1xStinger 1xWisp*
+  w7 threat 5 money 13 span 0s: 1xSkyray* 1xWisp
+  w8 threat 12 money 24 span 25s: 1xDustbat~ 1xRoller 5xSkitter* 1xTidebat~ 1xWisp*
+  w9 threat 13 money 23 span 0s: 1xBulwark* 1xWisp*
+  w10 threat 5 money 13 span 0s: 1xSkyray* 1xWisp
+  w11 threat 22 money 60 span 9s: 10xSkitter 10xSkitter* 3xWisp 5xWisp*
+  w12 threat 44 money 173 span 25s: 1xDustbat~ 1xPackAlpha 1xTidebat~ 1xWisp*
+  w13 threat 21 money 34 span 5s: 1xBulwark* 1xRoller 5xSkitter* 1xWisp
+  w14 threat 30 money 81 span 11s: 13xSkitter 13xSkitter* 4xWisp 7xWisp*
+  w15 threat 23 money 49 span 26s: 2xDustbat~ 1xOozer 1xRoller* 5xSkitter 3xTidebat~ 2xWisp*
+  w16 threat 25 money 42 span 8s: 1xBulwark 1xOozer 1xRoller* 5xSkitter* 1xWisp
+  w17 threat 37 money 102 span 13s: 17xSkitter 15xSkitter* 4xWisp 10xWisp*
+  w18 threat 32 money 68 span 28s: 3xDustbat~ 1xOozer* 3xProwler 1xRoller* 5xSkitter* 3xTidebat~ 2xWisp*
+  w19 threat 35 money 62 span 11s: 1xBulwark* 1xOozer 3xProwler 1xRoller 5xSkitter* 2xWisp*
+  w20 threat 41 money 77 span 14s: 1xOozer 3xProwler* 2xRoller* 5xSkitter 2xSkitter* 1xSkyray* 1xStinger 3xWisp*
+  w21 threat 51 money 142 span 18s: 20xSkitter 22xSkitter* 9xWisp 11xWisp*
+  w22 threat 40 money 84 span 28s: 3xDustbat~ 1xOozer* 3xProwler* 1xRoller* 5xSkitter* 1xStinger* 4xTidebat~ 2xWisp*
+  w23 threat 41 money 74 span 14s: 1xBulwark* 1xOozer 3xProwler 1xRoller 5xSkitter* 1xStinger* 1xWisp 1xWisp*
+  w24 threat 105 money 332 span 14s: 1xAcidEmpress 15xSkitter 17xSkitter* 6xWisp 10xWisp*
+  w25 threat 50 money 104 span 30s: 4xDustbat~ 1xOozer* 3xProwler 1xRoller 1xRoller* 5xSkitter 1xSkitter* 1xStinger* 5xTidebat~ 2xWisp 1xWisp*
+  w26 threat 53 money 97 span 15s: 1xBulwark 1xBulwark* 1xOozer* 3xProwler* 1xRoller 5xSkitter* 1xStinger 1xWisp 2xWisp*
+  w27 threat 79 money 225 span 31s: 30xSkitter 25xSkitter* 13xWisp 21xWisp*
+  w28 threat 70 money 145 span 31s: 1xBulwark* 5xDustbat~ 1xOozer* 3xProwler 1xProwler* 2xRoller* 2xSkitter 5xSkitter* 1xStinger 7xTidebat~ 2xWisp 2xWisp*
+  w29 threat 59 money 104 span 14s: 1xBulwark 1xBulwark* 1xOozer* 3xProwler 2xRoller* 1xSkitter 5xSkitter* 1xStinger 3xWisp*
+  w30 threat 84 money 159 span 19s: 1xBulwark* 1xOozer 1xOozer* 3xProwler 3xProwler* 3xRoller* 5xSkitter 6xSkitter* 3xSkyray* 1xStinger* 2xWisp 4xWisp*
+  w31 threat 100 money 295 span 43s: 30xSkitter 25xSkitter* 14xWisp 34xWisp*
+  w32 threat 89 money 183 span 35s: 1xBulwark* 7xDustbat~ 2xOozer* 3xProwler 2xProwler* 1xRoller 2xRoller* 4xSkitter 5xSkitter* 1xStinger 8xTidebat~ 2xWisp 3xWisp*
+  w33 threat 88 money 153 span 17s: 3xBulwark* 2xOozer* 3xProwler 2xProwler* 1xRoller 2xRoller* 3xSkitter 5xSkitter* 1xStinger* 1xWisp 3xWisp*
+  w34 threat 121 money 365 span 55s: 25xSkitter 30xSkitter* 18xWisp 44xWisp*
+  w35 threat 111 money 228 span 36s: 1xBulwark* 8xDustbat~ 2xOozer* 3xProwler 3xProwler* 2xRoller 2xRoller* 5xSkitter 5xSkitter* 1xStinger 1xStinger* 11xTidebat~ 1xWisp 5xWisp*
+  w36 threat 89 money 273 span 14s: 2xBulwark* 1xCoreWisp 1xOozer 3xProwler* 2xRoller* 5xSkitter* 1xStinger* 3xWisp*
+  w37 threat 124 money 375 span 57s: 30xSkitter 25xSkitter* 31xWisp 33xWisp*
+  w38 threat 137 money 282 span 41s: 1xBulwark* 11xDustbat~ 1xOozer 2xOozer* 4xProwler 4xProwler* 1xRoller 4xRoller* 5xSkitter 6xSkitter* 2xStinger* 14xTidebat~ 2xWisp 5xWisp*
+  w39 threat 136 money 237 span 19s: 2xBulwark 3xBulwark* 2xOozer 1xOozer* 3xProwler 4xProwler* 1xRoller 3xRoller* 5xSkitter 5xSkitter* 2xStinger* 1xWisp 5xWisp*
+  w40 threat 189 money 346 span 26s: 2xBulwark* 1xOozer 4xOozer* 7xProwler 6xProwler* 3xRoller 5xRoller* 10xSkitter 8xSkitter* 6xSkyray* 2xStinger 1xStinger* 5xWisp 6xWisp*
+  w41 threat 124 money 375 span 56s: 30xSkitter 25xSkitter* 24xWisp 40xWisp*
+  w42 threat 191 money 394 span 49s: 2xBulwark* 15xDustbat~ 1xOozer 3xOozer* 6xProwler 5xProwler* 2xRoller 4xRoller* 6xSkitter 8xSkitter* 3xStinger* 20xTidebat~ 3xWisp 6xWisp*
+  w43 threat 181 money 315 span 22s: 3xBulwark 3xBulwark* 2xOozer 2xOozer* 4xProwler 6xProwler* 1xRoller 5xRoller* 6xSkitter 7xSkitter* 1xStinger 2xStinger* 3xWisp 5xWisp*
+  w44 threat 124 money 375 span 57s: 25xSkitter 30xSkitter* 31xWisp 33xWisp*
+  w45 threat 244 money 498 span 55s: 2xBulwark 1xBulwark* 19xDustbat~ 3xOozer 2xOozer* 6xProwler 7xProwler* 3xRoller 5xRoller* 6xSkitter 10xSkitter* 1xStinger 3xStinger* 24xTidebat~ 4xWisp 7xWisp*
+  w46 threat 234 money 405 span 28s: 3xBulwark 5xBulwark* 1xOozer 4xOozer* 6xProwler 6xProwler* 3xRoller 5xRoller* 6xSkitter 9xSkitter* 3xStinger 1xStinger* 4xWisp 6xWisp*
+  w47 threat 124 money 375 span 57s: 30xSkitter 25xSkitter* 31xWisp 33xWisp*
+  w48 threat 342 money 873 span 47s: 1xBulwark 1xBulwark* 14xDustbat~ 1xHiveQueen 3xOozer 1xOozer* 6xProwler 4xProwler* 3xRoller 3xRoller* 5xSkitter 6xSkitter* 2xStinger 1xStinger* 19xTidebat~ 3xWisp 5xWisp*
+  total kill money 8736
 Level_Nest Medium
-  w1 threat 9 span 3s: 2xGrunt* 3xScout 1xScout*
-  w2 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout
-  w3 threat 8 span 3s: 3xFlyer* 1xGrunt 1xScout
-  w4 threat 13 span 3s: 1xGrunt 2xGrunt* 1xScout 4xScout*
-  w5 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout*
-  w6 threat 8 span 3s: 3xFlyer* 1xGrunt* 1xScout
-  w7 threat 16 span 4s: 2xGrunt 2xGrunt* 2xScout 4xScout*
-  w8 threat 12 span 25s: 1xBurrower~ 1xDrowner~ 1xGrunt* 1xScout*
-  w9 threat 15 span 5s: 4xFlyer* 1xGrunt* 1xRoller* 1xScout*
-  w10 threat 112 span 14s: 1xFlyer* 1xGrunt 1xRoller 2xScout* 1xWarden
-  w11 threat 23 span 5s: 3xGrunt 3xGrunt* 3xScout 5xScout*
-  w12 threat 19 span 6s: 6xFlyer* 1xGrunt* 1xRoller 1xScout 1xScout*
-  w13 threat 23 span 5s: 1xBrute* 1xGrunt* 1xRoller* 1xScout 1xScout*
-  w14 threat 28 span 5s: 3xGrunt 4xGrunt* 4xScout 6xScout*
-  w15 threat 21 span 6s: 7xFlyer* 1xGrunt* 1xRoller* 2xScout*
-  w16 threat 25 span 5s: 1xBrute 1xGrunt 1xGrunt* 1xRoller* 2xScout*
-  w17 threat 38 span 7s: 4xGrunt 6xGrunt* 4xScout 9xScout*
-  w18 threat 32 span 26s: 2xBurrower~ 3xDrowner~ 1xGrunt 1xGrunt* 1xRoller 2xScout*
-  w19 threat 39 span 5s: 2xBrute* 2xGrunt* 1xRoller* 3xScout*
-  w20 threat 132 span 14s: 1xBrute* 2xFlyer* 2xGrunt 1xGrunt* 1xRoller 1xScout 2xScout* 1xWarden
-  w21 threat 53 span 9s: 4xGrunt 10xGrunt* 7xScout 11xScout*
-  w22 threat 54 span 28s: 1xBrute 3xBurrower~ 4xDrowner~ 2xGrunt* 1xRoller 1xScout 2xScout*
-  w23 threat 48 span 6s: 2xBrute* 1xGrunt 2xGrunt* 2xRoller* 1xScout 3xScout*
-  w24 threat 67 span 12s: 6xGrunt 12xGrunt* 10xScout 12xScout*
-  w25 threat 60 span 28s: 1xBrute 3xBurrower~ 5xDrowner~ 3xGrunt* 1xRoller* 1xScout 2xScout*
-  w26 threat 64 span 7s: 2xBrute 1xBrute* 2xGrunt 2xGrunt* 2xRoller* 1xScout 4xScout*
-  w27 threat 88 span 15s: 7xGrunt 17xGrunt* 13xScout 15xScout*
-  w28 threat 80 span 29s: 1xBrute 4xBurrower~ 7xDrowner~ 3xGrunt 1xGrunt* 1xRoller 1xRoller* 1xScout 3xScout*
-  w29 threat 85 span 10s: 1xBrute 3xBrute* 1xGrunt 4xGrunt* 1xRoller 2xRoller* 1xScout 5xScout*
-  w30 threat 170 span 14s: 2xBrute* 5xFlyer* 1xGrunt 5xGrunt* 1xRoller 2xRoller* 2xScout 4xScout* 1xWarden
-  w31 threat 121 span 20s: 13xGrunt 21xGrunt* 15xScout 21xScout*
-  w32 threat 105 span 33s: 1xBrute 6xBurrower~ 9xDrowner~ 1xGrunt 4xGrunt* 2xRoller 1xRoller* 1xScout 4xScout*
-  w33 threat 123 span 13s: 1xBrute 5xBrute* 2xGrunt 5xGrunt* 3xRoller 1xRoller* 3xScout 5xScout*
-  w34 threat 126 span 21s: 15xGrunt 21xGrunt* 15xScout 21xScout*
-  w35 threat 146 span 36s: 1xBrute 1xBrute* 8xBurrower~ 12xDrowner~ 2xGrunt 4xGrunt* 1xRoller 3xRoller* 2xScout 4xScout*
-  w36 threat 160 span 18s: 3xBrute 5xBrute* 4xGrunt 5xGrunt* 3xRoller 2xRoller* 4xScout 6xScout*
-  w37 threat 126 span 21s: 15xGrunt 21xGrunt* 18xScout 18xScout*
-  w38 threat 199 span 41s: 3xBrute* 11xBurrower~ 16xDrowner~ 3xGrunt 5xGrunt* 2xRoller 3xRoller* 3xScout 5xScout*
-  w39 threat 206 span 30s: 4xBrute 6xBrute* 6xGrunt 6xGrunt* 3xRoller 4xRoller* 6xScout 6xScout*
-  w40 threat 308 span 19s: 2xBrute 2xBrute* 12xFlyer* 6xGrunt 6xGrunt* 1xHiveQueen 3xRoller 4xRoller* 4xScout 7xScout*
+  w1 threat 13 money 27 span 3s: 3xProwler* 6xSkitter 3xSkitter*
+  w2 threat 3 money 10 span 20s: 2xTidebat~
+  w3 threat 6 money 15 span 0s: 1xStinger
+  w4 threat 5 money 16 span 0s: 1xSkyray* 1xWisp*
+  w5 threat 6 money 21 span 25s: 1xDustbat~ 2xTidebat~ 1xWisp*
+  w6 threat 8 money 21 span 0s: 1xStinger 1xWisp*
+  w7 threat 5 money 16 span 0s: 1xSkyray* 1xWisp
+  w8 threat 7 money 26 span 26s: 2xDustbat~ 2xTidebat~ 1xWisp*
+  w9 threat 13 money 28 span 0s: 1xBulwark* 1xWisp*
+  w10 threat 5 money 16 span 0s: 1xSkyray* 1xWisp*
+  w11 threat 24 money 72 span 6s: 12xSkitter 12xSkitter* 3xWisp 5xWisp*
+  w12 threat 46 money 221 span 25s: 1xDustbat~ 1xPackAlpha 2xTidebat~ 1xWisp
+  w13 threat 21 money 42 span 5s: 1xBulwark* 1xRoller* 6xSkitter 1xWisp*
+  w14 threat 14 money 34 span 3s: 1xRoller* 2xSkyray* 1xWisp
+  w15 threat 24 money 65 span 27s: 3xDustbat~ 1xOozer* 1xRoller* 6xSkitter* 4xTidebat~ 1xWisp
+  w16 threat 26 money 52 span 8s: 1xBulwark 1xOozer* 1xRoller 6xSkitter* 1xWisp*
+  w17 threat 17 money 40 span 5s: 1xRoller 6xSkitter 2xSkyray* 1xWisp*
+  w18 threat 27 money 75 span 29s: 4xDustbat~ 1xOozer 1xRoller 6xSkitter* 5xTidebat~ 1xWisp
+  w19 threat 35 money 76 span 11s: 1xBulwark* 1xOozer* 3xProwler* 1xRoller* 6xSkitter* 1xWisp 1xWisp*
+  w20 threat 42 money 95 span 14s: 1xOozer* 3xProwler 1xRoller 1xRoller* 6xSkitter 2xSkitter* 1xSkyray* 1xStinger* 3xWisp*
+  w21 threat 55 money 169 span 16s: 24xSkitter 25xSkitter* 6xWisp 14xWisp*
+  w22 threat 47 money 129 span 30s: 5xDustbat~ 1xOozer 3xProwler* 1xRoller 6xSkitter 1xStinger 7xTidebat~ 2xWisp*
+  w23 threat 41 money 91 span 14s: 1xBulwark* 1xOozer* 3xProwler* 1xRoller* 6xSkitter* 1xStinger* 1xWisp 1xWisp*
+  w24 threat 108 money 408 span 14s: 1xAcidEmpress 19xSkitter 18xSkitter* 5xWisp 11xWisp*
+  w25 threat 53 money 149 span 33s: 7xDustbat~ 1xOozer 3xProwler* 1xRoller* 6xSkitter 1xStinger 9xTidebat~ 2xWisp*
+  w26 threat 54 money 119 span 14s: 1xBulwark 1xBulwark* 1xOozer* 3xProwler 1xRoller* 6xSkitter* 1xStinger* 1xWisp 2xWisp*
+  w27 threat 83 money 268 span 26s: 34xSkitter 30xSkitter* 10xWisp 24xWisp*
+  w28 threat 76 money 205 span 36s: 1xBulwark 9xDustbat~ 1xOozer 3xProwler 1xRoller 1xRoller* 6xSkitter* 1xStinger 11xTidebat~ 3xWisp*
+  w29 threat 60 money 128 span 14s: 2xBulwark* 1xOozer 3xProwler* 1xRoller 1xRoller* 1xSkitter 6xSkitter* 1xStinger* 1xWisp 2xWisp*
+  w30 threat 85 money 196 span 18s: 1xBulwark 2xOozer* 3xProwler 3xProwler* 1xRoller 2xRoller* 6xSkitter 7xSkitter* 3xSkyray* 1xStinger* 2xWisp 4xWisp*
+  w31 threat 104 money 352 span 35s: 30xSkitter 34xSkitter* 18xWisp 30xWisp*
+  w32 threat 97 money 269 span 40s: 1xBulwark 12xDustbat~ 1xOozer 1xOozer* 1xProwler 3xProwler* 1xRoller 1xRoller* 2xSkitter 6xSkitter* 1xStinger 16xTidebat~ 2xWisp 2xWisp*
+  w33 threat 89 money 188 span 16s: 1xBulwark 2xBulwark* 1xOozer 1xOozer* 2xProwler 3xProwler* 2xRoller 1xRoller* 3xSkitter 6xSkitter* 1xStinger 2xWisp 2xWisp*
+  w34 threat 125 money 436 span 46s: 30xSkitter 34xSkitter* 24xWisp 38xWisp*
+  w35 threat 117 money 325 span 44s: 1xBulwark 15xDustbat~ 1xOozer 1xOozer* 3xProwler 2xProwler* 1xRoller 2xRoller* 6xSkitter 3xSkitter* 1xStinger* 20xTidebat~ 3xWisp 2xWisp*
+  w36 threat 89 money 339 span 14s: 1xBulwark 1xBulwark* 1xCoreWisp 1xOozer 3xProwler 1xRoller 1xRoller* 6xSkitter* 1xStinger 1xWisp 2xWisp*
+  w37 threat 128 money 448 span 47s: 34xSkitter 30xSkitter* 24xWisp 40xWisp*
+  w38 threat 148 money 411 span 52s: 1xBulwark* 19xDustbat~ 2xOozer* 3xProwler 3xProwler* 2xRoller 2xRoller* 4xSkitter 6xSkitter* 2xStinger* 26xTidebat~ 2xWisp 4xWisp*
+  w39 threat 137 money 292 span 18s: 3xBulwark 2xBulwark* 1xOozer 2xOozer* 4xProwler 3xProwler* 3xRoller 1xRoller* 6xSkitter 6xSkitter* 2xStinger* 1xWisp 5xWisp*
+  w40 threat 190 money 428 span 24s: 2xBulwark* 2xOozer 3xOozer* 7xProwler 6xProwler* 3xRoller 5xRoller* 12xSkitter 9xSkitter* 6xSkyray* 2xStinger 1xStinger* 5xWisp 6xWisp*
+  w41 threat 128 money 448 span 48s: 34xSkitter 30xSkitter* 19xWisp 45xWisp*
+  w42 threat 188 money 530 span 63s: 1xBulwark* 26xDustbat~ 1xOozer 2xOozer* 4xProwler 4xProwler* 2xRoller 3xRoller* 7xSkitter 6xSkitter* 2xStinger* 35xTidebat~ 2xWisp 5xWisp*
+  w43 threat 182 money 388 span 20s: 1xBulwark 5xBulwark* 1xOozer 3xOozer* 4xProwler 6xProwler* 2xRoller 4xRoller* 7xSkitter 8xSkitter* 3xStinger* 3xWisp 5xWisp*
+  w44 threat 128 money 448 span 48s: 30xSkitter 34xSkitter* 19xWisp 45xWisp*
+  w45 threat 250 money 701 span 76s: 2xBulwark* 34xDustbat~ 1xOozer 3xOozer* 6xProwler 4xProwler* 1xRoller 5xRoller* 8xSkitter 7xSkitter* 1xStinger 2xStinger* 45xTidebat~ 4xWisp 5xWisp*
+  w46 threat 235 money 499 span 24s: 3xBulwark 5xBulwark* 1xOozer 4xOozer* 6xProwler 6xProwler* 3xRoller 5xRoller* 7xSkitter 10xSkitter* 1xStinger 3xStinger* 4xWisp 6xWisp*
+  w47 threat 128 money 448 span 48s: 34xSkitter 30xSkitter* 31xWisp 33xWisp*
+  w48 threat 359 money 1173 span 62s: 2xBulwark* 26xDustbat~ 1xHiveQueen 1xOozer 2xOozer* 4xProwler 4xProwler* 3xRoller 2xRoller* 6xSkitter 4xSkitter* 1xSkyray* 1xStinger 1xStinger* 34xTidebat~ 1xWisp 5xWisp*
+  total kill money 10953
 Level_Nest Hard
-  w1 threat 15 span 3s: 3xGrunt* 2xScout 5xScout*
-  w2 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
-  w3 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout
-  w4 threat 23 span 4s: 4xGrunt 2xGrunt* 2xScout 6xScout*
-  w5 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
-  w6 threat 15 span 4s: 5xFlyer* 2xGrunt 2xScout*
-  w7 threat 28 span 4s: 5xGrunt 2xGrunt* 5xScout 5xScout*
-  w8 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
-  w9 threat 27 span 6s: 6xFlyer* 2xGrunt* 2xRoller* 2xScout*
-  w10 threat 122 span 14s: 2xFlyer* 2xGrunt 2xRoller 3xScout* 1xWarden
-  w11 threat 36 span 5s: 2xGrunt 7xGrunt* 6xScout 7xScout*
-  w12 threat 32 span 7s: 8xFlyer* 2xGrunt* 2xRoller 2xScout 2xScout*
-  w13 threat 45 span 6s: 2xBrute 2xGrunt* 2xRoller 2xScout 2xScout*
-  w14 threat 44 span 5s: 4xGrunt 7xGrunt* 7xScout 9xScout*
-  w15 threat 34 span 7s: 10xFlyer* 2xGrunt* 2xRoller* 3xScout*
-  w16 threat 49 span 6s: 2xBrute 2xGrunt 2xGrunt* 2xRoller 3xScout*
-  w17 threat 62 span 7s: 6xGrunt 10xGrunt* 10xScout 12xScout*
-  w18 threat 42 span 9s: 13xFlyer* 3xGrunt* 2xRoller 2xScout 2xScout*
-  w19 threat 61 span 6s: 3xBrute* 3xGrunt* 2xRoller 2xScout 3xScout*
-  w20 threat 159 span 14s: 2xBrute 4xFlyer* 2xGrunt 3xGrunt* 2xRoller 4xScout* 1xWarden
-  w21 threat 87 span 8s: 10xGrunt 13xGrunt* 12xScout 17xScout*
-  w22 threat 77 span 12s: 2xBrute* 18xFlyer* 3xGrunt* 2xRoller 4xScout 2xScout*
-  w23 threat 79 span 7s: 3xBrute* 2xGrunt 3xGrunt* 2xRoller 2xRoller* 4xScout 3xScout*
-  w24 threat 109 span 11s: 12xGrunt 18xGrunt* 16xScout 18xScout*
-  w25 threat 95 span 29s: 2xBrute* 4xBurrower~ 7xDrowner~ 2xGrunt 3xGrunt* 2xRoller* 4xScout*
-  w26 threat 110 span 7s: 2xBrute 3xBrute* 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 6xScout*
-  w27 threat 144 span 13s: 15xGrunt 24xGrunt* 20xScout 26xScout*
-  w28 threat 133 span 31s: 2xBrute* 6xBurrower~ 10xDrowner~ 4xGrunt 3xGrunt* 2xRoller 2xRoller* 2xScout 4xScout*
-  w29 threat 141 span 10s: 2xBrute 5xBrute* 4xGrunt 5xGrunt* 4xRoller* 2xScout 7xScout*
-  w30 threat 223 span 14s: 2xBrute 2xBrute* 7xFlyer* 5xGrunt 5xGrunt* 2xRoller 3xRoller* 5xScout 5xScout* 1xWarden
-  w31 threat 192 span 18s: 20xGrunt 34xGrunt* 22xScout 35xScout*
-  w32 threat 154 span 34s: 2xBrute* 8xBurrower~ 12xDrowner~ 2xGrunt 6xGrunt* 4xRoller* 5xScout 4xScout*
-  w33 threat 191 span 14s: 2xBrute 7xBrute* 4xGrunt 7xGrunt* 2xRoller 5xRoller* 5xScout 7xScout*
-  w34 threat 197 span 19s: 22xGrunt 35xGrunt* 27xScout 27xScout*
-  w35 threat 214 span 38s: 3xBrute* 11xBurrower~ 16xDrowner~ 2xGrunt 7xGrunt* 5xRoller 2xRoller* 5xScout 5xScout*
-  w36 threat 255 span 21s: 6xBrute 7xBrute* 6xGrunt 7xGrunt* 2xRoller 6xRoller* 7xScout 9xScout*
-  w37 threat 197 span 19s: 22xGrunt 35xGrunt* 27xScout 27xScout*
-  w38 threat 305 span 44s: 4xBrute 2xBrute* 15xBurrower~ 21xDrowner~ 5xGrunt 8xGrunt* 2xRoller 6xRoller* 5xScout 7xScout*
-  w39 threat 329 span 27s: 7xBrute 9xBrute* 10xGrunt 10xGrunt* 4xRoller 7xRoller* 9xScout 9xScout*
-  w40 threat 387 span 22s: 2xBrute 4xBrute* 18xFlyer* 9xGrunt 9xGrunt* 1xHiveQueen 4xRoller 7xRoller* 9xScout 10xScout*
+  w1 threat 17 money 56 span 3s: 4xProwler* 4xSkitter 8xSkitter*
+  w2 threat 6 money 24 span 22s: 4xTidebat~
+  w3 threat 12 money 38 span 1s: 2xStinger
+  w4 threat 10 money 42 span 1s: 2xSkyray* 2xWisp*
+  w5 threat 11 money 52 span 27s: 3xDustbat~ 3xTidebat~ 2xWisp*
+  w6 threat 15 money 54 span 1s: 2xStinger* 2xWisp
+  w7 threat 10 money 42 span 1s: 2xSkyray* 2xWisp
+  w8 threat 13 money 58 span 27s: 3xDustbat~ 4xTidebat~ 2xWisp
+  w9 threat 25 money 74 span 2s: 2xBulwark* 2xWisp*
+  w10 threat 10 money 42 span 1s: 2xSkyray* 2xWisp*
+  w11 threat 34 money 158 span 7s: 16xSkitter 15xSkitter* 5xWisp 7xWisp*
+  w12 threat 51 money 308 span 27s: 3xDustbat~ 1xPackAlpha 3xTidebat~ 2xWisp
+  w13 threat 40 money 110 span 6s: 2xBulwark 2xRoller* 8xSkitter 2xWisp
+  w14 threat 28 money 88 span 4s: 2xRoller* 4xSkyray* 2xWisp
+  w15 threat 33 money 118 span 29s: 5xDustbat~ 2xRoller* 8xSkitter* 6xTidebat~ 2xWisp*
+  w16 threat 49 money 136 span 8s: 2xBulwark 2xOozer 2xRoller 8xSkitter* 2xWisp*
+  w17 threat 32 money 104 span 6s: 2xRoller 8xSkitter 4xSkyray* 2xWisp*
+  w18 threat 47 money 162 span 30s: 6xDustbat~ 2xOozer 2xRoller* 8xSkitter 8xTidebat~ 2xWisp*
+  w19 threat 63 money 184 span 12s: 2xBulwark* 2xOozer 4xProwler* 2xRoller 8xSkitter* 2xWisp 2xWisp*
+  w20 threat 76 money 232 span 15s: 2xOozer 4xProwler 2xRoller 2xRoller* 3xSkitter 8xSkitter* 2xSkyray* 2xStinger* 4xWisp 2xWisp*
+  w21 threat 45 money 143 span 8s: 2xOozer* 2xRoller 8xSkitter 5xSkyray* 2xWisp*
+  w22 threat 68 money 240 span 33s: 8xDustbat~ 2xOozer* 4xProwler* 2xRoller 8xSkitter 11xTidebat~ 2xWisp 2xWisp*
+  w23 threat 74 money 214 span 14s: 2xBulwark* 2xOozer 4xProwler* 2xRoller 8xSkitter 2xStinger 3xWisp*
+  w24 threat 125 money 640 span 14s: 1xAcidEmpress 24xSkitter 24xSkitter* 10xWisp 14xWisp*
+  w25 threat 87 money 308 span 35s: 10xDustbat~ 2xOozer* 4xProwler* 2xRoller* 8xSkitter* 2xStinger* 14xTidebat~ 2xWisp 2xWisp*
+  w26 threat 76 money 247 span 14s: 2xOozer 4xProwler* 2xRoller 8xSkitter 7xSkyray* 2xStinger 3xWisp*
+  w27 threat 120 money 582 span 23s: 40xSkitter 43xSkitter* 22xWisp 30xWisp*
+  w28 threat 92 money 330 span 38s: 12xDustbat~ 2xOozer* 4xProwler 2xRoller 8xSkitter* 2xStinger* 17xTidebat~ 3xWisp*
+  w29 threat 94 money 273 span 15s: 3xBulwark* 2xOozer* 4xProwler 3xRoller* 2xSkitter 8xSkitter* 2xStinger* 2xWisp 3xWisp*
+  w30 threat 141 money 433 span 18s: 2xBulwark 2xOozer 2xOozer* 4xProwler 4xProwler* 2xRoller 3xRoller* 8xSkitter 9xSkitter* 5xSkyray* 2xStinger 2xWisp 7xWisp*
+  w31 threat 156 money 774 span 31s: 40xSkitter 43xSkitter* 28xWisp 48xWisp*
+  w32 threat 137 money 472 span 44s: 2xBulwark 17xDustbat~ 2xOozer* 4xProwler* 3xRoller* 8xSkitter 2xStinger* 23xTidebat~ 4xWisp*
+  w33 threat 133 money 379 span 16s: 4xBulwark* 3xOozer* 4xProwler 3xProwler* 2xRoller 3xRoller* 4xSkitter 8xSkitter* 2xStinger* 4xWisp 3xWisp*
+  w34 threat 189 money 950 span 40s: 43xSkitter 40xSkitter* 36xWisp 62xWisp*
+  w35 threat 173 money 605 span 50s: 2xBulwark 22xDustbat~ 3xOozer* 2xProwler 4xProwler* 2xRoller 2xRoller* 8xSkitter 2xSkitter* 2xStinger* 29xTidebat~ 2xWisp 5xWisp*
+  w36 threat 134 money 570 span 15s: 2xBulwark 2xBulwark* 1xCoreWisp 2xOozer* 4xProwler* 3xRoller* 8xSkitter* 2xStinger 2xWisp 3xWisp*
+  w37 threat 193 money 974 span 41s: 43xSkitter 40xSkitter* 38xWisp 63xWisp*
+  w38 threat 211 money 746 span 60s: 2xBulwark 28xDustbat~ 2xOozer 2xOozer* 4xProwler 3xProwler* 2xRoller 3xRoller* 4xSkitter 8xSkitter* 2xStinger 38xTidebat~ 4xWisp 5xWisp*
+  w39 threat 221 money 627 span 18s: 2xBulwark 6xBulwark* 2xOozer 3xOozer* 4xProwler 5xProwler* 2xRoller 5xRoller* 8xSkitter 8xSkitter* 2xStinger 2xStinger* 4xWisp 6xWisp*
+  w40 threat 292 money 875 span 23s: 2xBulwark 2xBulwark* 2xOozer 6xOozer* 9xProwler 8xProwler* 5xRoller 7xRoller* 16xSkitter 12xSkitter* 8xSkyray* 2xStinger 3xStinger* 8xWisp 10xWisp*
+  w41 threat 186 money 934 span 40s: 40xSkitter 43xSkitter* 40xWisp 56xWisp*
+  w42 threat 281 money 993 span 75s: 2xBulwark 39xDustbat~ 2xOozer 3xOozer* 5xProwler 4xProwler* 2xRoller 5xRoller* 5xSkitter 8xSkitter* 2xStinger 2xStinger* 52xTidebat~ 4xWisp 6xWisp*
+  w43 threat 277 money 791 span 20s: 2xBulwark 7xBulwark* 2xOozer 4xOozer* 8xProwler 5xProwler* 2xRoller 7xRoller* 9xSkitter 11xSkitter* 4xStinger 2xStinger* 6xWisp 7xWisp*
+  w44 threat 186 money 934 span 40s: 40xSkitter 43xSkitter* 40xWisp 56xWisp*
+  w45 threat 357 money 1251 span 91s: 2xBulwark 2xBulwark* 50xDustbat~ 2xOozer 3xOozer* 6xProwler 5xProwler* 4xRoller 5xRoller* 8xSkitter 8xSkitter* 2xStinger 2xStinger* 66xTidebat~ 4xWisp 7xWisp*
+  w46 threat 371 money 1047 span 23s: 6xBulwark 7xBulwark* 4xOozer 5xOozer* 8xProwler 8xProwler* 5xRoller 7xRoller* 9xSkitter 13xSkitter* 2xStinger 5xStinger* 6xWisp 10xWisp*
+  w47 threat 187 money 942 span 41s: 43xSkitter 40xSkitter* 47xWisp 50xWisp*
+  w48 threat 432 money 1769 span 74s: 2xBulwark* 39xDustbat~ 1xHiveQueen 2xOozer 3xOozer* 4xProwler 4xProwler* 2xRoller 4xRoller* 3xSkitter 8xSkitter* 3xSkyray* 3xStinger* 51xTidebat~ 2xWisp 6xWisp*
+  total kill money 21125
 Level_Nest Psycho
-  w1 threat 18 span 3s: 4xGrunt* 2xScout 6xScout*
-  w2 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
-  w3 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout
-  w4 threat 25 span 3s: 2xGrunt 4xGrunt* 4xScout 6xScout*
-  w5 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout*
-  w6 threat 16 span 4s: 6xFlyer* 2xGrunt 2xScout*
-  w7 threat 32 span 4s: 4xGrunt 4xGrunt* 4xScout 8xScout*
-  w8 threat 23 span 26s: 2xBurrower~ 2xDrowner~ 2xGrunt* 2xScout
-  w9 threat 30 span 6s: 8xFlyer* 2xGrunt 2xRoller 2xScout
-  w10 threat 123 span 14s: 2xFlyer* 2xGrunt 2xRoller* 4xScout* 1xWarden
-  w11 threat 46 span 5s: 2xGrunt 10xGrunt* 6xScout 10xScout*
-  w12 threat 38 span 8s: 12xFlyer* 2xGrunt* 2xRoller* 2xScout 2xScout*
-  w13 threat 45 span 6s: 2xBrute 2xGrunt 2xRoller* 2xScout 2xScout*
-  w14 threat 55 span 5s: 6xGrunt 8xGrunt* 8xScout 12xScout*
-  w15 threat 40 span 8s: 13xFlyer* 2xGrunt* 2xRoller 4xScout*
-  w16 threat 50 span 6s: 2xBrute* 4xGrunt* 2xRoller* 2xScout 2xScout*
-  w17 threat 74 span 6s: 8xGrunt 11xGrunt* 8xScout 18xScout*
-  w18 threat 49 span 9s: 16xFlyer* 4xGrunt* 2xRoller* 2xScout 2xScout*
-  w19 threat 77 span 6s: 4xBrute* 2xGrunt 2xGrunt* 2xRoller* 6xScout*
-  w20 threat 163 span 14s: 2xBrute* 4xFlyer* 4xGrunt 2xGrunt* 2xRoller* 2xScout 4xScout* 1xWarden
-  w21 threat 106 span 8s: 12xGrunt 16xGrunt* 14xScout 22xScout*
-  w22 threat 87 span 14s: 2xBrute 23xFlyer* 4xGrunt* 2xRoller* 2xScout 4xScout*
-  w23 threat 95 span 7s: 2xBrute 2xBrute* 4xGrunt 2xGrunt* 4xRoller* 6xScout 2xScout*
-  w24 threat 134 span 9s: 12xGrunt 24xGrunt* 20xScout 24xScout*
-  w25 threat 116 span 30s: 2xBrute 6xBurrower~ 9xDrowner~ 6xGrunt* 2xRoller 2xScout 4xScout*
-  w26 threat 120 span 19s: 2xBrute* 33xFlyer* 2xGrunt 4xGrunt* 4xRoller* 6xScout 2xScout*
-  w27 threat 176 span 11s: 14xGrunt 34xGrunt* 16xScout 40xScout*
-  w28 threat 149 span 31s: 2xBrute 7xBurrower~ 12xDrowner~ 2xGrunt 6xGrunt* 4xRoller* 6xScout 2xScout*
-  w29 threat 170 span 8s: 2xBrute 6xBrute* 4xGrunt 6xGrunt* 4xRoller 2xRoller* 2xScout 10xScout*
-  w30 threat 240 span 14s: 4xBrute* 10xFlyer* 4xGrunt 8xGrunt* 2xRoller 4xRoller* 2xScout 10xScout* 1xWarden
-  w31 threat 154 span 28s: 2xBrute* 48xFlyer* 6xGrunt 4xGrunt* 2xRoller 2xRoller* 6xScout 4xScout*
-  w32 threat 199 span 36s: 2xBrute 11xBurrower~ 16xDrowner~ 2xGrunt 8xGrunt* 6xRoller* 4xScout 6xScout*
-  w33 threat 245 span 13s: 2xBrute 10xBrute* 4xGrunt 10xGrunt* 4xRoller 4xRoller* 6xScout 10xScout*
-  w34 threat 242 span 16s: 30xGrunt 38xGrunt* 36xScout 36xScout*
-  w35 threat 273 span 39s: 2xBrute 2xBrute* 14xBurrower~ 21xDrowner~ 2xGrunt 10xGrunt* 6xRoller 2xRoller* 2xScout 10xScout*
-  w36 threat 257 span 44s: 2xBrute 2xBrute* 76xFlyer* 4xGrunt 10xGrunt* 2xRoller 6xRoller* 6xScout 8xScout*
-  w37 threat 242 span 16s: 30xGrunt 38xGrunt* 22xScout 50xScout*
-  w38 threat 370 span 45s: 2xBrute 4xBrute* 19xBurrower~ 28xDrowner~ 6xGrunt 10xGrunt* 2xRoller 8xRoller* 6xScout 10xScout*
-  w39 threat 409 span 22s: 8xBrute 12xBrute* 12xGrunt 11xGrunt* 4xRoller 10xRoller* 12xScout 12xScout*
-  w40 threat 457 span 25s: 6xBrute 2xBrute* 27xFlyer* 12xGrunt 11xGrunt* 1xHiveQueen 4xRoller 10xRoller* 8xScout 14xScout*
+  w1 threat 21 money 88 span 3s: 5xProwler* 5xSkitter 9xSkitter*
+  w2 threat 7 money 50 span 23s: 5xTidebat~
+  w3 threat 12 money 60 span 1s: 2xStinger
+  w4 threat 10 money 64 span 1s: 2xSkyray* 2xWisp
+  w5 threat 14 money 104 span 26s: 3xDustbat~ 5xTidebat~ 2xWisp*
+  w6 threat 15 money 84 span 1s: 2xStinger* 2xWisp
+  w7 threat 10 money 64 span 1s: 2xSkyray* 2xWisp
+  w8 threat 14 money 104 span 26s: 3xDustbat~ 5xTidebat~ 2xWisp
+  w9 threat 25 money 114 span 1s: 2xBulwark 2xWisp
+  w10 threat 10 money 64 span 1s: 2xSkyray* 2xWisp*
+  w11 threat 38 money 230 span 6s: 19xSkitter 18xSkitter* 5xWisp 8xWisp*
+  w12 threat 54 money 504 span 26s: 3xDustbat~ 1xPackAlpha 5xTidebat~ 2xWisp
+  w13 threat 41 money 162 span 5s: 2xBulwark 2xRoller 9xSkitter 2xWisp*
+  w14 threat 28 money 134 span 4s: 2xRoller* 4xSkyray* 2xWisp
+  w15 threat 24 money 174 span 29s: 6xDustbat~ 9xTidebat~ 2xWisp*
+  w16 threat 50 money 202 span 8s: 2xBulwark* 2xOozer* 2xRoller* 9xSkitter 2xWisp
+  w17 threat 33 money 152 span 5s: 2xRoller 9xSkitter 4xSkyray* 2xWisp
+  w18 threat 41 money 244 span 31s: 8xDustbat~ 2xRoller 11xTidebat~ 2xWisp*
+  w19 threat 65 money 274 span 11s: 2xBulwark* 2xOozer 5xProwler 2xRoller* 9xSkitter* 3xWisp*
+  w20 threat 72 money 329 span 15s: 2xOozer* 5xProwler 3xRoller* 3xSkitter 9xSkitter* 2xSkyray* 2xStinger 2xWisp 3xWisp*
+  w21 threat 45 money 212 span 8s: 2xOozer 2xRoller* 9xSkitter* 5xSkyray* 2xWisp
+  w22 threat 65 money 382 span 35s: 12xDustbat~ 2xOozer* 2xRoller* 9xSkitter 15xTidebat~ 2xWisp
+  w23 threat 77 money 334 span 13s: 2xBulwark 2xOozer 5xProwler 2xRoller* 9xSkitter 2xStinger 3xWisp*
+  w24 threat 135 money 998 span 14s: 1xAcidEmpress 29xSkitter 27xSkitter* 10xWisp 18xWisp*
+  w25 threat 92 money 534 span 38s: 15xDustbat~ 2xOozer 5xProwler* 2xRoller 9xSkitter* 20xTidebat~ 3xWisp*
+  w26 threat 84 money 416 span 14s: 2xOozer* 5xProwler* 2xRoller* 9xSkitter 8xSkyray* 2xStinger* 2xWisp 2xWisp*
+  w27 threat 136 money 890 span 19s: 45xSkitter 52xSkitter* 20xWisp 38xWisp*
+  w28 threat 115 money 676 span 41s: 18xDustbat~ 2xOozer 5xProwler* 2xRoller* 9xSkitter 2xStinger 24xTidebat~ 2xWisp 2xWisp*
+  w29 threat 103 money 437 span 15s: 3xBulwark* 2xOozer* 5xProwler 2xRoller 2xRoller* 2xSkitter 9xSkitter* 2xStinger 2xWisp 3xWisp*
+  w30 threat 145 money 665 span 17s: 2xBulwark* 3xOozer* 5xProwler 5xProwler* 2xRoller 3xRoller* 11xSkitter 9xSkitter* 5xSkyray* 2xStinger* 5xWisp 5xWisp*
+  w31 threat 118 money 578 span 16s: 2xBulwark* 2xOozer* 5xProwler 2xRoller 9xSkitter 11xSkyray* 2xStinger 2xWisp 3xWisp*
+  w32 threat 162 money 944 span 50s: 2xBulwark* 26xDustbat~ 2xOozer 5xProwler* 2xRoller* 9xSkitter 2xStinger 35xTidebat~ 3xWisp*
+  w33 threat 148 money 628 span 15s: 2xBulwark 3xBulwark* 3xOozer* 5xProwler 3xProwler* 2xRoller 3xRoller* 9xSkitter 5xSkitter* 2xStinger* 2xWisp 5xWisp*
+  w34 threat 200 money 1406 span 33s: 52xSkitter 45xSkitter* 40xWisp 61xWisp*
+  w35 threat 199 money 1158 span 58s: 2xBulwark* 33xDustbat~ 2xOozer 5xProwler* 2xRoller 2xRoller* 9xSkitter* 2xStinger 44xTidebat~ 2xWisp 3xWisp*
+  w36 threat 143 money 903 span 15s: 2xBulwark 2xBulwark* 1xCoreWisp 2xOozer 5xProwler* 2xRoller 2xRoller* 9xSkitter* 2xStinger* 2xWisp 3xWisp*
+  w37 threat 164 money 800 span 16s: 2xBulwark* 3xOozer* 5xProwler 2xProwler* 2xRoller 2xRoller* 9xSkitter 2xSkitter* 17xSkyray* 2xStinger* 2xWisp 5xWisp*
+  w38 threat 236 money 1425 span 69s: 2xBulwark* 42xDustbat~ 3xOozer* 5xProwler 2xProwler* 3xRoller* 2xSkitter 9xSkitter* 2xStinger* 56xTidebat~ 2xWisp 5xWisp*
+  w39 threat 232 money 988 span 17s: 2xBulwark 7xBulwark* 2xOozer 3xOozer* 5xProwler 6xProwler* 4xRoller 3xRoller* 9xSkitter 9xSkitter* 3xStinger* 2xWisp 8xWisp*
+  w40 threat 323 money 1449 span 21s: 2xBulwark 2xBulwark* 5xOozer 4xOozer* 10xProwler 11xProwler* 5xRoller 8xRoller* 18xSkitter 14xSkitter* 10xSkyray* 2xStinger 3xStinger* 9xWisp 10xWisp*
+  w41 threat 214 money 1514 span 35s: 45xSkitter 52xSkitter* 38xWisp 72xWisp*
+  w42 threat 304 money 1853 span 88s: 2xBulwark 57xDustbat~ 3xOozer* 3xProwler 5xProwler* 2xRoller 3xRoller* 9xSkitter 3xSkitter* 2xStinger* 77xTidebat~ 4xWisp 5xWisp*
+  w43 threat 260 money 1265 span 17s: 2xBulwark 4xOozer 2xOozer* 5xProwler 5xProwler* 5xRoller 2xRoller* 6xSkitter 9xSkitter* 28xSkyray* 2xStinger 2xStinger* 5xWisp 5xWisp*
+  w44 threat 214 money 1514 span 35s: 52xSkitter 45xSkitter* 38xWisp 72xWisp*
+  w45 threat 391 money 2365 span 105s: 2xBulwark 74xDustbat~ 5xOozer* 5xProwler 6xProwler* 4xRoller 3xRoller* 9xSkitter 5xSkitter* 3xStinger* 96xTidebat~ 5xWisp 5xWisp*
+  w46 threat 388 money 1654 span 20s: 5xBulwark 8xBulwark* 4xOozer 5xOozer* 9xProwler 10xProwler* 5xRoller 8xRoller* 11xSkitter 15xSkitter* 4xStinger 3xStinger* 6xWisp 11xWisp*
+  w47 threat 214 money 1514 span 35s: 52xSkitter 45xSkitter* 38xWisp 72xWisp*
+  w48 threat 476 money 3163 span 86s: 2xBulwark 56xDustbat~ 1xHiveQueen 3xOozer* 5xProwler 3xProwler* 5xRoller* 9xSkitter* 6xSkyray* 2xStinger* 75xTidebat~ 4xWisp 3xWisp*
+  total kill money 33866

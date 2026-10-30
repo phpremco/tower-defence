@@ -23,10 +23,10 @@ MonoBehaviour:
   _baseDamage: 3
   _element: 0
   _attackStyle: 1
-  _attackDamage: 5
+  _attackDamage: 3
   _blockadeDamage: 10
   _attackRange: 2.6
-  _attackInterval: 1.5
+  _attackInterval: 2
   _gateStrikes: 0
   _walkSeconds: 0
   _rollSeconds: 0

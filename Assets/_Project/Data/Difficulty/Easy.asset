@@ -18,4 +18,4 @@ MonoBehaviour:
   _spawnIntervalMultiplier: 1.2
   _rewardMultiplier: 1
   _powerCurrencyMultiplier: 0
-  _structureDamageMultiplier: 0.7
+  _structureDamageMultiplier: 0.6

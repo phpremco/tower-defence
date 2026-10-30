@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 namespace Game.Tests
 {
     /// <summary>
-    /// A simple bot plays every level on Easy and Medium and logs how it fares. Not a pass/fail balance check:
+    /// A simple bot (a few towers, then upgrades, then more towers) plays the chosen levels and logs how it fares. Not a pass/fail balance check:
     /// it only fails on errors. The numbers in the log show where a level is far too easy or far too hard.
     /// </summary>
     public sealed class BalanceProbeTests
@@ -19,6 +19,7 @@ namespace Game.Tests
         private const float SimulationSpeed = 20f;
         private const float TimeoutSeconds = 90f;
         private const float BuyIntervalSeconds = 1f;
+        private const int TowersBeforeUpgrading = 4;
         private const int LevelCount = 5;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
 
@@ -27,6 +28,19 @@ namespace Game.Tests
         public IEnumerator GreedyBot_PlaysEveryLevel_WithoutErrors()
         {
             var report = new List<string>();
+            // Engine warnings (the graphics ring buffer fills at twenty times speed with a swarm on screen) are not
+            // balance findings; only errors and exceptions from the game fail the run.
+            LogAssert.ignoreFailingMessages = true;
+            int errors = 0;
+            Application.LogCallback onLog = (condition, trace, type) =>
+            {
+                if (type == LogType.Error || type == LogType.Exception || type == LogType.Assert)
+                {
+                    errors++;
+                    Debug.Log("[Probe] error: " + condition);
+                }
+            };
+            Application.logMessageReceived += onLog;
             for (int level = 0; level < LevelCount; level++)
             {
                 for (int difficulty = 0; difficulty < 4; difficulty++)
@@ -52,7 +66,8 @@ namespace Game.Tests
                     float nextBuy = 0f;
                     LevelContext context = null;
                     List<Vector2Int> spots = null;
-                    int placed = 0;
+                    var towers = new List<Tower>();
+                    int upgrades = 0;
 
                     while (Time.realtimeSinceStartup - started < TimeoutSeconds)
                     {
@@ -73,7 +88,7 @@ namespace Game.Tests
                             if (nextBuy <= 0f)
                             {
                                 nextBuy = BuyIntervalSeconds;
-                                placed += TryBuy(context, spots, placed) ? 1 : 0;
+                                Act(context, spots, towers, ref upgrades);
                             }
                         }
 
@@ -82,12 +97,13 @@ namespace Game.Tests
 
                     Time.timeScale = 1f;
                     Assert.IsNotNull(context);
-                    LogAssert.NoUnexpectedReceived();
-                    report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {placed}, money {context.Wallet.Money}");
+                    Assert.AreEqual(0, errors, "the level logged errors");
+                    report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}");
                 }
             }
 
-            // Logged last: an earlier plain log would count as unexpected for the checks above.
+            Application.logMessageReceived -= onLog;
+            LogAssert.ignoreFailingMessages = false;
             Debug.Log(string.Join(" | ", report));
         }
 
@@ -167,8 +183,41 @@ namespace Game.Tests
             return result;
         }
 
-        private static bool TryBuy(LevelContext context, List<Vector2Int> spots, int placed)
+        // A plain player's habit: a few towers first, then upgrade what stands before buying more, so the bot's
+        // strength tracks the upgrade prices and not only the build prices.
+        private static void Act(LevelContext context, List<Vector2Int> spots, List<Tower> towers, ref int upgrades)
         {
+            if (towers.Count < TowersBeforeUpgrading)
+            {
+                TryBuy(context, spots, towers);
+                return;
+            }
+
+            Tower cheapest = null;
+            foreach (Tower tower in towers)
+            {
+                if (tower.CanUpgrade && (cheapest == null || tower.NextUpgradeCost < cheapest.NextUpgradeCost))
+                {
+                    cheapest = tower;
+                }
+            }
+
+            if (cheapest != null && context.Wallet.TrySpend(cheapest.NextUpgradeCost))
+            {
+                cheapest.Upgrade();
+                upgrades++;
+                return;
+            }
+
+            if (cheapest == null)
+            {
+                TryBuy(context, spots, towers);
+            }
+        }
+
+        private static bool TryBuy(LevelContext context, List<Vector2Int> spots, List<Tower> towers)
+        {
+            int placed = towers.Count;
             if (placed >= spots.Count)
             {
                 return false;
@@ -202,6 +251,7 @@ namespace Game.Tests
             go.AddComponent<TowerView>();
             tower.Initialize(best, context.Targets, context.Projectiles, context.ModifiersFor(best));
             tower.Register(context.Structures);
+            towers.Add(tower);
             return true;
         }
     }

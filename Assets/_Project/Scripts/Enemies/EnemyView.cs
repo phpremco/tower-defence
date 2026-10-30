@@ -66,13 +66,32 @@ namespace Game.Enemies
         private const float HoverBob = 0.09f;
         private const float HoverSpeed = 3f;
         private const float StandStillDistance = 0.05f;
-        private const float AttackSeconds = 0.5f;
+        // An attack takes this share of the creature's own attack interval, within bounds: a slow heavy hitter
+        // winds up longer than a snapping ant.
+        private const float AttackIntervalShare = 0.45f;
+        private const float AttackMinSeconds = 0.35f;
+        private const float AttackMaxSeconds = 0.9f;
         private const float RearShare = 0.4f;
         private const float AttackLunge = 0.35f;
         private const float SlamLunge = 0.6f;
         private const float AttackRearBack = 0.12f;
         private const float AttackRearDegrees = 28f;
         private const float AttackStrikeDegrees = 32f;
+        private const float BiteCrouch = 0.08f;
+        private const float BiteCrouchDegrees = 14f;
+        private const float BiteSnapDegrees = -12f;
+        private const float BiteShakeDegrees = 9f;
+        private const float SlamJump = 0.35f;
+        private const float SlamRiseDegrees = -22f;
+        private const float SlamLandDegrees = 30f;
+        private const float SlashTwistDegrees = 18f;
+        private const float StingDipDegrees = 10f;
+        private const float BoltRearDegrees = -20f;
+        private const float BoltSpitDegrees = 18f;
+        private const float JawDegrees = 38f;
+        private const int ImpactBurst = 10;
+        private const int SlamDustBurst = 18;
+        private const float ImpactHeight = 0.35f;
         private const float ClawDegrees = 50f;
         private const float BladeRestDegrees = -35f;
         private const float BladeRaiseDegrees = -40f;
@@ -169,6 +188,10 @@ namespace Game.Enemies
         private float _clock;
         private float _barHeight;
         private float _attackTime = float.PositiveInfinity;
+        private float _attackSeconds = AttackMinSeconds;
+        private bool _boltPending;
+        private bool _impactPending;
+        private float _lastStrike;
         private float _hitTime = float.PositiveInfinity;
         private float _spawnTime = float.PositiveInfinity;
         private float _spawnSeconds = 0.45f;
@@ -191,6 +214,7 @@ namespace Game.Enemies
         private ParticleSystem _emergence;
         private ParticleSystem _drips;
         private ParticleSystem _rush;
+        private ParticleSystem _impact;
         private EnemyBoltView[] _bolts;
         private int _nextBolt;
         private readonly List<Rig> _legs = new List<Rig>();
@@ -205,6 +229,7 @@ namespace Game.Enemies
         private readonly List<Rig> _fins = new List<Rig>();
         private readonly List<Rig> _blades = new List<Rig>();
         private readonly List<Rig> _stingers = new List<Rig>();
+        private readonly List<Rig> _jaws = new List<Rig>();
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -284,6 +309,10 @@ namespace Game.Enemies
             _lastArmor = 1f;
             _hitTime = float.PositiveInfinity;
             _attackTime = float.PositiveInfinity;
+            _attackSeconds = Mathf.Clamp(enemy.Definition.AttackInterval * AttackIntervalShare, AttackMinSeconds, AttackMaxSeconds);
+            _boltPending = false;
+            _impactPending = false;
+            _lastStrike = 0f;
             _curl = 0f;
             _rollSpin = 0f;
             _gaitRate = GaitPerUnit * Random.Range(1f - GaitVariation, 1f + GaitVariation);
@@ -457,6 +486,8 @@ namespace Game.Enemies
             Color rush = definition.AccentColor * 1.4f;
             rush.a = 1f;
             _rush = ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f);
+            // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
+            _impact = ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f);
 
             if (definition.AttackStyle == AttackStyle.Bolt || definition.AttackStyle == AttackStyle.Sting)
             {
@@ -518,6 +549,8 @@ namespace Game.Enemies
                     return _blades;
                 case CreatureRole.Stinger:
                     return _stingers;
+                case CreatureRole.Jaw:
+                    return _jaws;
                 default:
                     return _orbs;
             }
@@ -560,6 +593,7 @@ namespace Game.Enemies
             float grow = SpawnCurve(out float emerge);
             float breathe = Mathf.Sin(_clock * BreathSpeed + _swayPhase);
             AttackStyle style = _enemy.Definition.AttackStyle;
+            PlayStrikeMoments(strike, style);
 
             AnimateLegs(walking, strike);
             AnimateMandibles(rear, strike);
@@ -592,14 +626,17 @@ namespace Game.Enemies
                 roll += strike * FlyerRollDegrees * 2f * _whipSide;
             }
 
-            float lunge = style == AttackStyle.Slam ? SlamLunge : style == AttackStyle.Bolt ? -AttackLunge * 0.3f : AttackLunge;
+            // Every attack style moves the body its own way: a bite crouches and snaps with a shake of the head, a
+            // slam leaps and comes down hard, a slash twists into the swing, a sting dips the front as the tail
+            // comes over, a spitter throws its head back and forward, a whip rolls into the lash.
+            AttackPose(style, rear, strike, out float attackPitch, out float attackYaw, out float attackLift, out float lunge);
             Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float along = (strike * lunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale;
             float hoverScale = _hover > 0f ? 1f : _creatureScale;
-            _body.position = position + Vector3.up * (bob * hoverScale - emerge) + forward * along + right * sway;
+            _body.position = position + Vector3.up * (bob * hoverScale - emerge + attackLift * _creatureScale) + forward * along + right * sway;
             float lean = hasted && walking && !flyer ? HasteLeanDegrees : 0f;
-            Quaternion pitch = Quaternion.Euler(rear * -AttackRearDegrees + strike * AttackStrikeDegrees + knock * HitFlinchDegrees + lean, yaw, roll);
+            Quaternion pitch = Quaternion.Euler(attackPitch + knock * HitFlinchDegrees + lean, yaw + attackYaw, roll);
             _body.rotation = Quaternion.LookRotation(forward) * pitch;
             float squash = style == AttackStyle.Slam ? strike * HitSquash : 0f;
             _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash) * grow);
@@ -679,8 +716,96 @@ namespace Game.Enemies
             }
         }
 
+        // The pose an attack puts the body in: pitch and yaw in degrees, a lift off the ground and how far the
+        // body throws itself forward at the strike.
+        private void AttackPose(AttackStyle style, float rear, float strike, out float pitch, out float yaw, out float lift, out float lunge)
+        {
+            yaw = 0f;
+            lift = 0f;
+            switch (style)
+            {
+                case AttackStyle.Bite:
+                    // Crouch low with the nose down, then snap up and forward, shaking the head as the jaws close.
+                    pitch = rear * BiteCrouchDegrees + strike * BiteSnapDegrees;
+                    yaw = strike * Mathf.Sin(strike * Mathf.PI * 3f) * BiteShakeDegrees * _whipSide;
+                    lift = -rear * BiteCrouch;
+                    lunge = AttackLunge * 1.2f;
+                    break;
+                case AttackStyle.Slam:
+                    // Spring up during the wind-up and crash down at the strike.
+                    pitch = rear * SlamRiseDegrees + strike * SlamLandDegrees;
+                    lift = rear * SlamJump;
+                    lunge = SlamLunge;
+                    break;
+                case AttackStyle.Slash:
+                    // Rear back and twist away from the blade, then swing through.
+                    pitch = rear * -AttackRearDegrees + strike * AttackStrikeDegrees;
+                    yaw = (rear - strike) * SlashTwistDegrees * _whipSide;
+                    lunge = AttackLunge * 0.8f;
+                    break;
+                case AttackStyle.Sting:
+                    // The front dips while the tail comes over the back.
+                    pitch = rear * StingDipDegrees + strike * StingDipDegrees * 0.5f;
+                    lunge = AttackLunge * 0.3f;
+                    break;
+                case AttackStyle.Bolt:
+                    // The head goes back to gather the bolt and spits it forward.
+                    pitch = rear * BoltRearDegrees + strike * BoltSpitDegrees;
+                    lunge = -AttackLunge * 0.3f;
+                    break;
+                default:
+                    pitch = rear * -AttackRearDegrees + strike * AttackStrikeDegrees;
+                    lunge = AttackLunge;
+                    break;
+            }
+        }
+
+        // The moments inside an attack: a bolt leaves at the top of the strike, not when the wind-up starts, and
+        // the blow landing throws sparks at the target, or dust when the whole body slams down.
+        private void PlayStrikeMoments(float strike, AttackStyle style)
+        {
+            bool peaking = strike >= 0.5f && _lastStrike < 0.5f;
+            _lastStrike = strike;
+            if (!peaking)
+            {
+                return;
+            }
+
+            if (_boltPending)
+            {
+                _boltPending = false;
+                FireBolt();
+            }
+
+            if (_impactPending && _impact != null)
+            {
+                _impactPending = false;
+                ParticleSystem.MainModule main = _impact.main;
+                bool slam = style == AttackStyle.Slam;
+                main.startColor = slam ? GroundDust : _rush.main.startColor;
+                main.gravityModifier = slam ? 0.3f : 0.6f;
+                _impact.transform.position = slam
+                    ? new Vector3(_body.position.x, DeathGroundY, _body.position.z)
+                    : _attackTarget + Vector3.up * (ImpactHeight * Mathf.Max(0.6f, _creatureScale));
+                _impact.Emit(Mathf.RoundToInt((slam ? SlamDustBurst : ImpactBurst) * Mathf.Clamp(_creatureScale, 0.6f, 2f)));
+            }
+        }
+
+        private void FireBolt()
+        {
+            Vector3 from = _body.position + Vector3.up * (0.2f * _creatureScale);
+            if (_enemy.Definition.AttackStyle == AttackStyle.Sting && _stingers.Count > 0)
+            {
+                from = _stingers[0].Root.position + Vector3.up * (0.5f * _creatureScale);
+            }
+
+            EnemyBoltView bolt = _bolts[_nextBolt];
+            _nextBolt = (_nextBolt + 1) % _bolts.Length;
+            bolt.Fire(from, _attackTarget + Vector3.up * 0.4f, BoltSize * Mathf.Max(0.6f, _creatureScale));
+        }
+
         // Jaws hang a little open and work slowly; a strike opens them wide and snaps them shut. Arms (index one)
-        // also swing down.
+        // also swing down. A single lower jaw drops the same way and slams shut.
         private void AnimateMandibles(float rear, float strike)
         {
             float open = MandibleIdle + Mathf.Sin(_clock * 3f + _swayPhase) * MandibleBreathe + rear - strike * 0.8f;
@@ -691,6 +816,11 @@ namespace Game.Enemies
                 float yaw = -open * MandibleDegrees * (arm ? 1.6f : 1f) * part.Side;
                 float pitchDown = arm ? strike * ArmPitchDegrees - rear * ArmPitchDegrees * 0.5f : 0f;
                 part.Root.localRotation = Quaternion.Euler(pitchDown, yaw, 0f);
+            }
+
+            for (int i = 0; i < _jaws.Count; i++)
+            {
+                _jaws[i].Root.localRotation = Quaternion.Euler(Mathf.Max(0f, open) * JawDegrees, 0f, 0f);
             }
         }
 
@@ -802,13 +932,13 @@ namespace Game.Enemies
         private float AttackCurve(out float rear)
         {
             rear = 0f;
-            if (_attackTime > AttackSeconds)
+            if (_attackTime > _attackSeconds)
             {
                 return 0f;
             }
 
             _attackTime += Time.deltaTime;
-            float t = Mathf.Clamp01(_attackTime / AttackSeconds);
+            float t = Mathf.Clamp01(_attackTime / _attackSeconds);
             if (t < RearShare)
             {
                 rear = Mathf.SmoothStep(0f, 1f, t / RearShare);
@@ -1034,26 +1164,20 @@ namespace Game.Enemies
             _drips.Emit(DripBurst);
         }
 
-        // A bite lunges; a spitter or a sting also sends a bolt from the mouth or the tail tip to what it hit.
+        // An attack starts its wind-up; the bolt and the sparks wait for the strike itself (see PlayStrikeMoments).
         private void OnAttacked(Vector3 target)
         {
             _attackTime = 0f;
+            _lastStrike = 0f;
             _attackTarget = target;
             _whipSide = -_whipSide;
-            if (_bolts == null || !_built)
+            if (!_built)
             {
                 return;
             }
 
-            Vector3 from = _body.position + Vector3.up * (0.2f * _creatureScale);
-            if (_enemy.Definition.AttackStyle == AttackStyle.Sting && _stingers.Count > 0)
-            {
-                from = _stingers[0].Root.position + Vector3.up * (0.5f * _creatureScale);
-            }
-
-            EnemyBoltView bolt = _bolts[_nextBolt];
-            _nextBolt = (_nextBolt + 1) % _bolts.Length;
-            bolt.Fire(from, target + Vector3.up * 0.4f, BoltSize * Mathf.Max(0.6f, _creatureScale));
+            _boltPending = _bolts != null;
+            _impactPending = _bolts == null;
         }
 
         // The body is handed to the death pool as it stands right now; the pooled enemy itself is recycled at once.

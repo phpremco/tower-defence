@@ -33,7 +33,7 @@ namespace Game.Hero
         private const float CombatHoldSeconds = 4f;
         private const float RelaxedPitch = 6f;
         private const float RelaxedYaw = -10f;
-        private const float ArmSwingShare = 0.55f;
+        private const float ArmSwingShare = 0.8f;
         private const float PoseFollowSpeed = 7f;
         private const float IgniteSeconds = 0.18f;
         private const float DropSpin = 420f;

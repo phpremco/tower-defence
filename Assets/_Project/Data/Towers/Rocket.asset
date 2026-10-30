@@ -22,24 +22,24 @@ MonoBehaviour:
     HealthBonus: 0
     Model: {fileID: 0}
   - Cost: 140
-    Damage: 45
+    Damage: 55
     Range: 5.9
     FireInterval: 1.4
     HealthBonus: 0
     Model: {fileID: 0}
   - Cost: 200
-    Damage: 70
+    Damage: 90
     Range: 6.3
     FireInterval: 1.2
     HealthBonus: 0
     Model: {fileID: 0}
   _projectileSpeed: 8
   _splashRadius: 1.5
-  _maxHealth: 70
+  _maxHealth: 130
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
-  _repairCostPerHealth: 0.4
-  _damagedPowerFloor: 0.5
+  _repairCostPerHealth: 0.3
+  _damagedPowerFloor: 0.75
   _slowFactor: 1
   _slowSeconds: 0
   _isSupport: 0

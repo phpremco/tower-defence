@@ -8,6 +8,9 @@ namespace Game.Levels
     {
         private const float TextureSmoothness = 0.08f;
         private const float EmissionStrength = 1.5f;
+        private const float DetailTileSize = 1.6f;
+        private const float DetailAlbedoStrength = 0.7f;
+        private const float DetailNormalStrength = 1f;
 
         public static GameObject Build(LevelDefinition level, VisualTheme theme, TerrainField field, RoadShape road, Transform parent)
         {
@@ -29,6 +32,16 @@ namespace Game.Levels
             material.SetTexture("_EmissionMap", textures.Emission);
             material.SetColor("_EmissionColor", Color.white * EmissionStrength);
             material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+
+            // The painted texture is coarse (a few texels per cell); a tiling detail layer of grit, pebbles and
+            // cracks gives the ground relief the light can catch when the camera is zoomed in.
+            PropTextures.Surface detail = PropTextures.Ground();
+            material.EnableKeyword("_DETAIL_MULX2");
+            material.SetTexture("_DetailAlbedoMap", detail.Albedo);
+            material.SetTexture("_DetailNormalMap", detail.Normal);
+            material.SetFloat("_DetailAlbedoMapScale", DetailAlbedoStrength);
+            material.SetFloat("_DetailNormalMapScale", DetailNormalStrength);
+            material.SetTextureScale("_DetailAlbedoMap", new Vector2(field.Width, field.Depth) / DetailTileSize);
 
             var renderer = go.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = material;
@@ -77,6 +90,8 @@ namespace Game.Levels
             mesh.uv = uvs;
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
+            // The detail normal map needs tangents.
+            mesh.RecalculateTangents();
             mesh.RecalculateBounds();
             return mesh;
         }

@@ -89,11 +89,14 @@ namespace Game.Enemies
         /// <summary>The four-slot palette shared with gates and other structures that borrow the creature look.</summary>
         public static Material[] CreateMaterials(Color color) => CreateMaterials(color, DefaultEyeColor);
 
-        public static Material[] CreateMaterials(Color color, Color eyes, float glow = 1f)
+        public static Material[] CreateMaterials(Color color, Color eyes, float glow = 1f, CreatureSkin.Kind skin = CreatureSkin.Kind.None)
         {
-            Material[] all = CreateMaterials(color, eyes, Color.Lerp(color, Color.white, 0.4f), glow);
+            Material[] all = CreateMaterials(color, eyes, Color.Lerp(color, Color.white, 0.4f), glow, skin);
             return new[] { all[Body], all[Eyes], all[Glow], all[Dark] };
         }
+
+        /// <summary>The four-slot palette in one colour, wearing a skin: hive mouths and nests.</summary>
+        public static Material[] CreateMaterials(Color color, CreatureSkin.Kind skin) => CreateMaterials(color, DefaultEyeColor, 1f, skin);
 
         // Dark glossy chitin with the creature's colour in its seams: menace comes from the dark base and the glow,
         // which a boss asks for more of. The accent is a second light, for the parts that mark the species' skill.
@@ -381,48 +384,180 @@ namespace Game.Enemies
             parts.Height = (boss ? 1.45f : 1.3f) * k;
         }
 
-        // The pack hunter: a lean body low to the ground on four straight legs, a long head of jaws, ears laid
-        // back and a row of lit spines down the back. The alpha carries a mane of spines and a heavier head.
+        // The pack hunter, built like a wolf: a deep chest and heavy shoulders over a narrow waist, a neck that
+        // drops to a long-muzzled head held low, a shaggy mane of fur tufts over neck and shoulders, a dark saddle
+        // down the back with the pack's glow in two flank stripes, pricked ears that twitch, a lower jaw that drops
+        // open for the bite, muscled haunches on jointed legs with clawed paws, and a bushy tail that swings. The
+        // alpha is the same animal grown huge, with a heavier mane, a ridge of bone over the brow and spines on
+        // the shoulders.
         private static void Prowler(PropMeshBuilder b, Parts parts, bool boss)
         {
             float k = boss ? 2.3f : 1f;
-            b.AddBlob(new Vector3(0f, 0.36f * k, 0.05f * k), new Vector3(0.14f, 0.15f, 0.34f) * k, 5, 9, 0.04f, 14, Body, false);
-            b.AddBlob(new Vector3(0f, 0.34f * k, -0.25f * k), new Vector3(0.13f, 0.14f, 0.16f) * k, 4, 8, 0.03f, 15, Body, false);
-            b.AddBlob(new Vector3(0f, 0.42f * k, 0.3f * k), new Vector3(0.12f, 0.12f, 0.12f) * k, 4, 8, 0.03f, 16, Body, false);
-            b.AddBlob(new Vector3(0f, 0.4f * k, 0.44f * k), new Vector3(0.08f, 0.07f, 0.14f) * k, 4, 8, 0.02f, 17, Dark, true);
-            b.AddBlob(new Vector3(0.05f * k, 0.46f * k, 0.38f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
-            b.AddBlob(new Vector3(-0.05f * k, 0.46f * k, 0.38f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
-            Spike(b, new Vector3(0.06f * k, 0.5f * k, 0.3f * k), new Vector3(0.09f * k, 0.62f * k, 0.22f * k), 0.025f * k, Dark);
-            Spike(b, new Vector3(-0.06f * k, 0.5f * k, 0.3f * k), new Vector3(-0.09f * k, 0.62f * k, 0.22f * k), 0.025f * k, Dark);
-            int spines = boss ? 7 : 5;
-            for (int i = 0; i < spines; i++)
+
+            // Torso: chest, waist and haunches as three blobs, so the silhouette narrows in the middle.
+            b.AddBlob(new Vector3(0f, 0.4f * k, 0.12f * k), new Vector3(0.165f, 0.17f, 0.21f) * k, 6, 10, 0.03f, 14, Body, false);
+            b.AddBlob(new Vector3(0f, 0.37f * k, -0.1f * k), new Vector3(0.12f, 0.13f, 0.2f) * k, 5, 9, 0.03f, 15, Body, false);
+            b.AddBlob(new Vector3(0f, 0.39f * k, -0.28f * k), new Vector3(0.15f, 0.15f, 0.15f) * k, 5, 9, 0.03f, 16, Body, false);
+            // Dark saddle over the shoulders and spine, and a pale throat and chest underneath.
+            b.AddBlob(new Vector3(0f, 0.47f * k, 0.08f * k), new Vector3(0.15f, 0.1f, 0.3f) * k, 4, 10, 0.04f, 17, Dark, false, Mathf.PI * 0.5f);
+            b.AddBlob(new Vector3(0f, 0.3f * k, 0.18f * k), new Vector3(0.12f, 0.08f, 0.17f) * k, 4, 8, 0.02f, 18, Glow, false);
+
+            // Two glowing flank stripes from shoulder to hip, the pack's colour code.
+            for (int side = -1; side <= 1; side += 2)
             {
-                float z = (0.22f - i * 0.1f) * k;
-                float height = (boss ? 0.2f : 0.12f) * k * (1f - Mathf.Abs(i - spines * 0.5f + 0.5f) / spines);
-                Spike(b, new Vector3(0f, 0.49f * k, z), new Vector3(0f, 0.49f * k + height, z - 0.04f * k), 0.022f * k, Accent);
+                b.AddTube(new[] { new Vector3(side * 0.15f, 0.42f, 0.2f) * k, new Vector3(side * 0.125f, 0.4f, -0.05f) * k, new Vector3(side * 0.14f, 0.41f, -0.28f) * k }, new[] { 0.012f * k, 0.014f * k, 0.008f * k }, 4, Glow, false);
             }
 
-            b.AddTube(new[] { new Vector3(0f, 0.3f * k, 0.3f * k), new Vector3(0f, 0.29f * k, -0.25f * k) }, new[] { 0.012f * k, 0.012f * k }, 4, Glow, false);
-            if (boss)
+            // Neck and head: the neck reaches forward and a little down, the head carries a brow ridge and the muzzle.
+            b.AddTube(new[] { new Vector3(0f, 0.47f * k, 0.24f * k), new Vector3(0f, 0.5f * k, 0.36f * k), new Vector3(0f, 0.49f * k, 0.44f * k) }, new[] { 0.11f * k, 0.095f * k, 0.085f * k }, 7, Body, false);
+            b.AddBlob(new Vector3(0f, 0.49f * k, 0.47f * k), new Vector3(0.1f, 0.095f, 0.12f) * k, 5, 9, 0.02f, 19, Body, false);
+            b.AddBlob(new Vector3(0f, 0.55f * k, 0.47f * k), new Vector3(0.1f, 0.04f, 0.1f) * k, 3, 8, 0.02f, 20, Dark, true, Mathf.PI * 0.5f);
+            b.AddTube(new[] { new Vector3(0f, 0.485f * k, 0.52f * k), new Vector3(0f, 0.475f * k, 0.63f * k), new Vector3(0f, 0.465f * k, 0.72f * k) }, new[] { 0.072f * k, 0.058f * k, 0.042f * k }, 6, Body, false);
+            b.AddBlob(new Vector3(0f, 0.49f * k, 0.72f * k), new Vector3(0.032f, 0.026f, 0.03f) * k, 3, 6, 0f, 0, Dark, false);
+            // Slanted eyes under the brow, pointing forward.
+            for (int side = -1; side <= 1; side += 2)
             {
-                for (int i = 0; i < 6; i++)
+                b.AddBlob(new Vector3(side * 0.055f, 0.515f, 0.54f) * k, new Vector3(0.03f, 0.016f, 0.022f) * k, 3, 6, 0f, 0, Eyes, false);
+            }
+
+            // Upper fangs along the muzzle, lit.
+            for (int i = 0; i < 3; i++)
+            {
+                float z = (0.58f + i * 0.05f) * k;
+                float fang = (i == 2 ? 0.045f : 0.028f) * k;
+                for (int side = -1; side <= 1; side += 2)
                 {
-                    float angle = (i - 2.5f) * 0.5f;
-                    var root = new Vector3(Mathf.Sin(angle) * 0.14f, 0.45f + Mathf.Cos(angle) * 0.06f, 0.2f) * k;
-                    Spike(b, root, root + new Vector3(Mathf.Sin(angle) * 0.18f, 0.2f, -0.1f) * k, 0.03f * k, Dark);
+                    Spike(b, new Vector3(side * 0.045f * k, 0.445f * k, z), new Vector3(side * 0.04f * k, 0.445f * k - fang, z + 0.005f * k), 0.009f * k, Accent);
                 }
             }
 
-            var tail = new PropMeshBuilder(SlotCount);
-            tail.AddTube(new[] { Vector3.zero, new Vector3(0f, 0.08f * k, -0.2f * k), new Vector3(0f, 0.2f * k, -0.38f * k) }, new[] { 0.05f * k, 0.035f * k, 0.01f * k }, 5, Body, false);
-            tail.AddBlob(new Vector3(0f, 0.2f * k, -0.38f * k), new Vector3(0.02f, 0.02f, 0.04f) * k, 3, 6, 0f, 0, Accent, false);
-            parts.Moving.Add(new CreaturePart(CreatureRole.Tail, tail.ToMesh("Tail"), new Vector3(0f, 0.36f * k, -0.38f * k)));
+            // The mane: a crest of raised fur down the neck and shoulders and a ruff out to both sides.
+            int crest = boss ? 9 : 6;
+            for (int i = 0; i < crest; i++)
+            {
+                float t = i / (float)(crest - 1);
+                var root = new Vector3(0f, Mathf.Lerp(0.56f, 0.55f, t), Mathf.Lerp(0.4f, 0.0f, t)) * k;
+                float length = (boss ? 0.2f : 0.13f) * k * (0.7f + 0.3f * Mathf.Sin(t * Mathf.PI));
+                FurTuft(b, root, new Vector3(0.1f * ((i % 2) * 2 - 1), 0.75f, -0.65f), length, 0.05f * k, i % 3 == 0 ? Body : Dark, 40 + i);
+            }
 
-            Mandibles(parts, new Vector3(0.05f * k, 0.36f * k, 0.5f * k), 0.12f * k, 0.022f * k, Dark);
-            StraightLegs(parts, 0.3f * k, 0.1f * k, 0.3f * k, 0.03f * k, 0.22f * k, -0.22f * k);
+            int ruff = boss ? 6 : 4;
+            for (int i = 0; i < ruff; i++)
+            {
+                float t = i / (float)(ruff - 1);
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    var root = new Vector3(side * Mathf.Lerp(0.09f, 0.16f, t), Mathf.Lerp(0.5f, 0.42f, t), Mathf.Lerp(0.36f, 0.14f, t)) * k;
+                    FurTuft(b, root, new Vector3(side * 0.9f, 0.1f - t * 0.5f, -0.6f), (boss ? 0.17f : 0.11f) * k, 0.045f * k, i % 2 == 0 ? Dark : Body, 60 + i * 2 + (side + 1) / 2);
+                }
+            }
+
+            if (boss)
+            {
+                // A ridge of bone over the brow and a crown of spines on the shoulders.
+                for (int i = 0; i < 3; i++)
+                {
+                    var root = new Vector3((i - 1) * 0.07f, 0.57f, 0.45f - Mathf.Abs(i - 1) * 0.02f) * k;
+                    Spike(b, root, root + new Vector3((i - 1) * 0.05f, 0.1f, -0.06f) * k, 0.025f * k, Dark);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    float angle = (i - 2.5f) * 0.5f;
+                    var root = new Vector3(Mathf.Sin(angle) * 0.14f, 0.5f + Mathf.Cos(angle) * 0.05f, 0.1f) * k;
+                    Spike(b, root, root + new Vector3(Mathf.Sin(angle) * 0.18f, 0.22f, -0.12f) * k, 0.03f * k, Accent);
+                }
+
+                Cracks(b, new Vector3(0f, 0.4f * k, 0.12f * k), new Vector3(0.165f, 0.17f, 0.21f) * k, 5, 21, Glow);
+            }
+
+            // Ears: dark triangles with a lit lining, hung as feelers so they twitch.
+            var ear = new PropMeshBuilder(SlotCount);
+            ear.AddBlade(new[] { Vector3.zero, new Vector3(0.02f, 0.08f, -0.03f) * k, new Vector3(0.03f, 0.14f, -0.05f) * k }, new[] { 0.07f * k, 0.05f * k, 0f }, Vector3.right, Dark);
+            ear.AddBlade(new[] { new Vector3(0f, 0.01f, 0.004f) * k, new Vector3(0.02f, 0.07f, -0.026f) * k, new Vector3(0.028f, 0.11f, -0.04f) * k }, new[] { 0.04f * k, 0.03f * k, 0f }, Vector3.right, Glow);
+            Mesh earMesh = ear.ToMesh("Ear");
+            parts.Moving.Add(new CreaturePart(CreatureRole.Antenna, earMesh, new Vector3(0.06f, 0.56f, 0.44f) * k, false, 0f, 0));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Antenna, earMesh, new Vector3(-0.06f, 0.56f, 0.44f) * k, true, Mathf.PI * 0.5f, 0));
+
+            // Lower jaw with its own fangs, hinged under the head.
+            var jaw = new PropMeshBuilder(SlotCount);
+            jaw.AddTube(new[] { Vector3.zero, new Vector3(0f, -0.012f, 0.1f) * k, new Vector3(0f, -0.02f, 0.2f) * k }, new[] { 0.058f * k, 0.048f * k, 0.03f * k }, 6, Dark, false);
+            jaw.AddBlob(new Vector3(0f, 0.0f, 0.06f) * k, new Vector3(0.05f, 0.03f, 0.08f) * k, 3, 7, 0f, 0, Glow, false);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Spike(jaw, new Vector3(side * 0.035f, 0.01f, 0.17f) * k, new Vector3(side * 0.03f, 0.05f, 0.175f) * k, 0.008f * k, Accent);
+                Spike(jaw, new Vector3(side * 0.04f, 0.01f, 0.1f) * k, new Vector3(side * 0.036f, 0.035f, 0.105f) * k, 0.006f * k, Accent);
+            }
+
+            parts.Moving.Add(new CreaturePart(CreatureRole.Jaw, jaw.ToMesh("Jaw"), new Vector3(0f, 0.45f, 0.5f) * k));
+
+            // A bushy tail: a tapering core with fur clumps along it, carried low with a lift at the tip.
+            var tail = new PropMeshBuilder(SlotCount);
+            var tailPath = new[] { Vector3.zero, new Vector3(0f, -0.06f, -0.14f) * k, new Vector3(0f, -0.09f, -0.28f) * k, new Vector3(0f, -0.04f, -0.4f) * k };
+            tail.AddTube(tailPath, new[] { 0.045f * k, 0.04f * k, 0.03f * k, 0.008f * k }, 5, Body, false);
+            for (int i = 0; i < 4; i++)
+            {
+                float t = 0.2f + i * 0.22f;
+                Vector3 at = Vector3.Lerp(tailPath[Mathf.FloorToInt(t * 3f)], tailPath[Mathf.Min(3, Mathf.FloorToInt(t * 3f) + 1)], t * 3f - Mathf.Floor(t * 3f));
+                float size = (0.055f - i * 0.008f) * k;
+                tail.AddBlob(at, new Vector3(size, size * 0.9f, size * 1.4f), 4, 7, 0.08f, 70 + i, i % 2 == 0 ? Dark : Body, false);
+                FurTuft(tail, at + Vector3.up * size * 0.5f, new Vector3((i % 2) * 2f - 1f, 0.8f, -1f), size * 1.6f, size * 0.7f, Dark, 80 + i);
+            }
+
+            tail.AddBlob(tailPath[3], new Vector3(0.02f, 0.02f, 0.035f) * k, 3, 6, 0f, 0, Accent, false);
+            parts.Moving.Add(new CreaturePart(CreatureRole.Tail, tail.ToMesh("Tail"), new Vector3(0f, 0.42f * k, -0.4f * k)));
+
+            WolfLegs(parts, 0.34f * k, 0.105f * k, 0.34f * k, 0.03f * k, 0.18f * k, -0.26f * k);
             parts.StraightLegs = true;
             parts.Skin = CreatureSkin.Kind.Hide;
-            parts.Height = (boss ? 0.85f : 0.62f) * k;
+            parts.Height = (boss ? 0.9f : 0.66f) * k;
+        }
+
+        // One clump of fur: a short curling blade that leans the way the coat lies. Enough of them make a shaggy outline.
+        private static void FurTuft(PropMeshBuilder b, Vector3 root, Vector3 lean, float length, float width, int slot, int seed)
+        {
+            var random = new System.Random(seed);
+            Vector3 direction = lean.normalized;
+            Vector3 side = Vector3.Cross(direction, Vector3.up).sqrMagnitude > 0.01f ? Vector3.Cross(direction, Vector3.up).normalized : Vector3.right;
+            float twist = ((float)random.NextDouble() - 0.5f) * 0.6f;
+            Vector3 mid = root + direction * length * 0.55f + side * twist * length * 0.2f;
+            Vector3 tip = root + direction * length + side * twist * length * 0.4f - Vector3.up * length * 0.15f;
+            b.AddBlade(new[] { root, mid, tip }, new[] { width, width * 0.7f, 0f }, side, slot);
+        }
+
+        // A wolf's legs: a muscled thigh that drops from the hip, a slimmer shin from the knee and a paw with
+        // three clawed toes turned forward. The hind pair carries a heavier haunch than the front pair.
+        private static void WolfLegs(Parts parts, float hipY, float width, float length, float radius, float frontZ, float hindZ)
+        {
+            radius *= LegThickness;
+            var knee = new Vector3(0f, -length * 0.5f, length * 0.08f);
+            LegSet front = WolfLeg(length, radius, knee, 1f);
+            LegSet hind = WolfLeg(length, radius, knee, 1.35f);
+            parts.Moving.Add(new CreaturePart(CreatureRole.Leg, front.Upper, new Vector3(width, hipY, frontZ), false, 0f, 0, front.Lower, knee));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Leg, front.Upper, new Vector3(-width, hipY, frontZ), true, Mathf.PI, 0, front.Lower, knee));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Leg, hind.Upper, new Vector3(width, hipY, hindZ), false, Mathf.PI, 1, hind.Lower, knee));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Leg, hind.Upper, new Vector3(-width, hipY, hindZ), true, 0f, 1, hind.Lower, knee));
+        }
+
+        private static LegSet WolfLeg(float length, float radius, Vector3 knee, float haunch)
+        {
+            var upper = new PropMeshBuilder(SlotCount);
+            upper.AddBlob(new Vector3(0f, -length * 0.16f, -length * 0.02f), new Vector3(radius * 1.3f * haunch, length * 0.3f, radius * 1.9f * haunch), 4, 8, 0.03f, 90, Body, false);
+            upper.AddTube(new[] { new Vector3(0f, -length * 0.25f, 0f), knee }, new[] { radius * 1.1f, radius * 0.8f }, 6, Body, false);
+            upper.AddBlob(knee, Vector3.one * radius * 0.95f, 3, 6, 0f, 0, Dark, true);
+
+            var lower = new PropMeshBuilder(SlotCount);
+            var ankle = new Vector3(0f, -length * 0.48f, -length * 0.06f);
+            lower.AddTube(new[] { Vector3.zero, ankle }, new[] { radius * 0.75f, radius * 0.5f }, 6, Dark, false);
+            lower.AddBlob(ankle + new Vector3(0f, -length * 0.01f, length * 0.08f), new Vector3(radius * 1.1f, radius * 0.6f, length * 0.12f), 3, 7, 0.02f, 91, Dark, false);
+            for (int toe = -1; toe <= 1; toe++)
+            {
+                var toeRoot = ankle + new Vector3(toe * radius * 0.7f, -length * 0.03f, length * 0.16f);
+                lower.AddTube(new[] { toeRoot, toeRoot + new Vector3(toe * radius * 0.2f, 0f, length * 0.07f) }, new[] { radius * 0.4f, radius * 0.25f }, 4, Dark, false);
+                Spike(lower, toeRoot + new Vector3(toe * radius * 0.2f, 0f, length * 0.07f), toeRoot + new Vector3(toe * radius * 0.25f, -length * 0.02f, length * 0.12f), radius * 0.22f, Accent);
+            }
+
+            return new LegSet(upper.ToMesh("LegUpper"), lower.ToMesh("LegLower"), knee);
         }
 
         // The energy ball: a bright core with two rings turning around it and a few motes in orbit, hanging
