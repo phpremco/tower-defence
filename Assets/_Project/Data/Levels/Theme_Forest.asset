@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Theme_Forest
   m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
   _backgroundColor: {r: 0.03, g: 0.02, b: 0.07, a: 1}
-  _groundColor: {r: 0.1, g: 0.3, b: 0.32, a: 1}
-  _pathColor: {r: 0.65, g: 0.45, b: 0.95, a: 1}
+  _groundColor: {r: 0.07, g: 0.16, b: 0.17, a: 1}
+  _pathColor: {r: 0.78, g: 0.62, b: 1, a: 1}
   _slotColor: {r: 0.2, g: 0.9, b: 0.8, a: 1}
   _baseColor: {r: 0.4, g: 1, b: 0.8, a: 1}
   _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}
@@ -37,7 +37,7 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
   - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
   - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
-  _rockColor: {r: 0.24, g: 0.3, b: 0.46, a: 1}
+  _rockColor: {r: 0.22, g: 0.26, b: 0.36, a: 1}
   _accentColor: {r: 0.35, g: 1, b: 0.8, a: 1}
   _waterColor: {r: 0.06, g: 0.5, b: 0.6, a: 1}
   _lavaColor: {r: 1, g: 0.4, b: 0.1, a: 1}
@@ -51,8 +51,8 @@ MonoBehaviour:
   _ambientRate: 30
   _ambientRise: 0.18
   _ambience: 2
-  _lightColor: {r: 0.7, g: 0.85, b: 1, a: 1}
-  _lightIntensity: 0.95
+  _lightColor: {r: 0.86, g: 0.92, b: 1, a: 1}
+  _lightIntensity: 1.15
   _fogColor: {r: 0.04, g: 0.02, b: 0.09, a: 1}
   _fogDensity: 0.018
   _bloomIntensity: 1.5
@@ -60,8 +60,8 @@ MonoBehaviour:
   _sunYaw: -35
   _rimColor: {r: 0.35, g: 1, b: 0.8, a: 1}
   _rimIntensity: 0.5
-  _skyColor: {r: 0.43600002, g: 0.518, b: 0.63600004, a: 1}
+  _skyColor: {r: 0.2, g: 0.3, b: 0.36, a: 1}
   _contrast: 12
   _saturation: 8
   _shadowTint: {r: 0.9541284, g: 0.93577975, b: 1, a: 1}
-  _highlightTint: {r: 0.88, g: 0.94, b: 1, a: 1}
+  _highlightTint: {r: 0.944, g: 0.968, b: 1, a: 1}

@@ -37,6 +37,13 @@ namespace Game.Levels
         [SerializeField] private List<MapNode> _nodes = new List<MapNode>();
         [SerializeField] private List<DifficultyProfile> _difficulties = new List<DifficultyProfile>();
         [SerializeField] private StoryDefinition _story;
+        [Header("Planet")]
+        [Tooltip("The maps of the planet, baked by the generator; without them the map screen paints them on the spot.")]
+        [SerializeField] private Texture2D _globeAlbedo;
+        [SerializeField] private Texture2D _globeNormal;
+        [SerializeField] private Texture2D _globeGloss;
+        [SerializeField] private Texture2D _globeLights;
+        [SerializeField] private Texture2D[] _globeClouds = new Texture2D[0];
 
         public IReadOnlyList<MapRegion> Regions => _regions;
         public IReadOnlyList<MapNode> Nodes => _nodes;
@@ -44,6 +51,15 @@ namespace Game.Levels
 
         /// <summary>The intro and the rest of the story told around the campaign; may be null while there is none.</summary>
         public StoryDefinition Story => _story;
+
+        public Texture2D GlobeAlbedo => _globeAlbedo;
+        public Texture2D GlobeNormal => _globeNormal;
+        public Texture2D GlobeGloss => _globeGloss;
+        public Texture2D GlobeLights => _globeLights;
+        public Texture2D[] GlobeClouds => _globeClouds;
+
+        /// <summary>True when the generator baked every map of the planet.</summary>
+        public bool HasGlobeMaps => _globeAlbedo != null && _globeNormal != null && _globeGloss != null && _globeLights != null && _globeClouds.Length > 0;
 
         /// <summary>How many levels a region holds.</summary>
         public int NodeCount(int region)

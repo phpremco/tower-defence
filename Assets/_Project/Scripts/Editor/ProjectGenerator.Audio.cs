@@ -37,6 +37,7 @@ namespace Game.Editor
             ("_rocketLaunches", ApprovedFolder, "raket_lancering"),
             ("_cryoShots", Kenney, "laserRetro"),
             ("_teslaShots", Kenney, "forceField"),
+            ("_laserShots", ApprovedFolder, "laser"),
             ("_railShots", Lentikula, "Laser Beam"),
             ("_cannonExplosions", ApprovedFolder + "/Explosions", "explosion_cannon_shell"),
             ("_rocketExplosions", ApprovedFolder + "/Explosions", "explosion_air_rocket"),

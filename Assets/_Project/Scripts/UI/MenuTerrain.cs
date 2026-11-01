@@ -19,6 +19,9 @@ namespace Game.UI
         private const float RimDrop = 4.5f;
         private const float PoolDepth = 0.8f;
         private const float PoolShore = 0.5f;
+        // The bank wanders in and out by this share of the radius, so no pool is a perfect circle.
+        private const float PoolWobble = 0.9f;
+        private const float PoolWobbleScale = 0.7f;
         private const float MouthPorchRadius = 1.9f;
         private const float MouthPorchBlend = 1.1f;
         private const int TextureSize = 512;
@@ -96,7 +99,11 @@ namespace Game.UI
 
         /// <summary>How deep inside a pool a point lies, 0 on the bank and 1 at the middle.</summary>
         public float Basin(float x, float z, Pool pool) =>
-            1f - TerrainNoise.SmoothStep(pool.Radius * PoolShore, pool.Radius, Flat(x, z, pool.Centre));
+            1f - TerrainNoise.SmoothStep(pool.Radius * PoolShore, pool.Radius, PoolDistance(x, z, pool));
+
+        // Distance to the middle of a pool with its ragged bank folded in; the liquid sheet and the basin share it.
+        private float PoolDistance(float x, float z, Pool pool) =>
+            Flat(x, z, pool.Centre) + (TerrainNoise.Fbm(x * PoolWobbleScale + pool.Centre.x * 3f, z * PoolWobbleScale + pool.Centre.z * 3f, 2, _seed + 9f) - 0.5f) * pool.Radius * PoolWobble;
 
         /// <summary>The surface normal, for things that lean against the slope such as the hive mouth.</summary>
         public Vector3 Normal(float x, float z)
@@ -133,7 +140,7 @@ namespace Game.UI
                 {
                     float x = pool.Centre.x + ix * cellSize;
                     float z = pool.Centre.z + iz * cellSize;
-                    if (Flat(x, z, pool.Centre) <= pool.Radius)
+                    if (PoolDistance(x, z, pool) <= pool.Radius)
                     {
                         cells.Add(new Vector3(x, 0f, z));
                     }

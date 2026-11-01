@@ -99,7 +99,7 @@ namespace Game.Hero
             energy.AddBox(new Vector3(-0.032f, 0f, 0.02f), new Vector3(0.012f, 0.03f, 0.1f), Energy);
             energy.AddBlob(new Vector3(0f, 0.01f, 0.54f), Vector3.one * 0.02f, 3, 6, 0f, 0, Energy, false);
 
-            return new Model(body.ToMesh("Blaster_body"), energy.ToMesh("Blaster_energy"), new Vector3(0f, 0.01f, 0.56f), false, Quaternion.Euler(90f, 0f, 0f), Quaternion.Euler(90f, 0f, 0f));
+            return new Model(body.ToMesh("Blaster_body"), energy.ToMesh("Blaster_energy"), new Vector3(0f, 0.01f, 0.56f), false, Quaternion.Euler(90f, 0f, 0f), Quaternion.identity);
         }
     }
 }

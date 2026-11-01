@@ -24,8 +24,13 @@ namespace Game.Boot
         [SerializeField] private UpgradeCatalog _upgrades;
         [SerializeField] private UnlockTable _unlockTable;
         [SerializeField] private PlaytestSettings _playtestSettings;
+        [Tooltip("Use the Low (Switch) quality profile: softer bloom, no mist or depth of field, half the particles.")]
+        [SerializeField] private bool _lowQuality;
+        [Tooltip("The tilt-shift full-screen pass on the PC renderer; switched off by profiles without depth of field.")]
+        [SerializeField] private UnityEngine.Rendering.Universal.FullScreenPassRendererFeature _tiltShift;
         [SerializeField] private UiSkin _uiSkin;
         [SerializeField] private SfxLibrary _sfxLibrary;
+        [SerializeField] private Game.Combat.VfxLibrary _vfxLibrary;
 
         // Everything in a level is built from runtime materials, which a player build cannot see when it strips
         // shader variants. These saved materials carry the keyword combinations the game needs, so they survive.
@@ -49,7 +54,12 @@ namespace Game.Boot
             Services.Register(_input);
             Services.Register<ISaveService>(save);
             Services.Register<IAchievementService>(new NullAchievementService());
-            Services.Register<IPlatformSettings>(new PcPlatformSettings());
+            Services.Register<IPlatformSettings>(_lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings());
+            if (_tiltShift != null)
+            {
+                _tiltShift.SetActive(Services.Get<IPlatformSettings>().DepthOfFieldEnabled);
+            }
+
             Services.Register(progress);
             Services.Register(_campaign);
             Services.Register(_upgrades);
@@ -58,6 +68,11 @@ namespace Game.Boot
             if (_sfxLibrary != null)
             {
                 Services.Register(_sfxLibrary);
+            }
+
+            if (_vfxLibrary != null)
+            {
+                Services.Register(_vfxLibrary);
             }
 
             UiKit.Skin = _uiSkin;

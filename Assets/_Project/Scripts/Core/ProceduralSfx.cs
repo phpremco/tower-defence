@@ -309,16 +309,6 @@ namespace Game.Core
             s.Normalize(0.6f);
         }, 1.6f);
 
-        /// <summary>The hum of a laser tower firing, looped as long as the shots keep coming.</summary>
-        public static AudioClip LaserHum() => Cached("LaserHum", s =>
-        {
-            s.Drone(1200f, 0.3f, 6f);
-            s.Drone(2400f, 0.12f, 7f);
-            s.Wind(0.15f, 6000f, 0.4f, 5f);
-            s.Loopable(0.2f);
-            s.Normalize(0.5f);
-        }, 0.9f);
-
         /// <summary>A boss pushing fresh creatures out of its body.</summary>
         public static AudioClip MinionBurst() => Cached("MinionBurst", s =>
         {

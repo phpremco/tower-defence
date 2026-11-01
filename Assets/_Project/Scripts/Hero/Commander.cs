@@ -38,6 +38,9 @@ namespace Game.Hero
         /// <summary>Direction on the ground plane the hero currently looks in.</summary>
         public Vector3 Facing { get; private set; } = Vector3.forward;
 
+        /// <summary>What the last strike went for, or null; the view keeps the weapon on it between strikes.</summary>
+        public ITargetable Target { get; private set; }
+
         /// <summary>Index of the post the hero stands at, or is walking to.</summary>
         public int PostIndex => _postIndex;
 
@@ -274,6 +277,7 @@ namespace Game.Hero
                 target = _targets.FindBest(transform.position, weapon.Reach, weapon.Targets);
             }
 
+            Target = target;
             if (target == null)
             {
                 return;

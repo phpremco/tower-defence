@@ -17,6 +17,8 @@ namespace Game.UI
         [SerializeField] private VisualTheme _lavaTheme;
         [SerializeField] private VisualTheme _ruinsTheme;
         [SerializeField] private VisualTheme _nestTheme;
+        [SerializeField] private VisualTheme _iceTheme;
+        [SerializeField] private VisualTheme _swampTheme;
 
         [Header("Creatures")]
         [Tooltip("Crawls out of the hive mouth, roams around the mound and goes back in.")]
@@ -27,17 +29,25 @@ namespace Game.UI
         [SerializeField] private EnemyDefinition _waterCreature;
         [SerializeField] private EnemyDefinition _lavaCreature;
         [SerializeField] private EnemyDefinition _sandCreature;
+        [SerializeField] private EnemyDefinition _iceCreature;
+        [SerializeField] private EnemyDefinition _bogCreature;
 
         public VisualTheme ForestTheme => _forestTheme;
         public VisualTheme LavaTheme => _lavaTheme;
         public VisualTheme RuinsTheme => _ruinsTheme;
         public VisualTheme NestTheme => _nestTheme;
+
+        /// <summary>The frozen lake and the bog pool; either may be null while that world is not generated yet.</summary>
+        public VisualTheme IceTheme => _iceTheme;
+        public VisualTheme SwampTheme => _swampTheme;
         public EnemyDefinition[] NestCreatures => _nestCreatures;
         public EnemyDefinition NestGuardian => _nestGuardian;
         public EnemyDefinition Flyer => _flyer;
         public EnemyDefinition WaterCreature => _waterCreature;
         public EnemyDefinition LavaCreature => _lavaCreature;
         public EnemyDefinition SandCreature => _sandCreature;
+        public EnemyDefinition IceCreature => _iceCreature;
+        public EnemyDefinition BogCreature => _bogCreature;
 
         /// <summary>True when every theme is set; the creatures may be left out and are then simply not shown.</summary>
         public bool IsComplete => _forestTheme != null && _lavaTheme != null && _ruinsTheme != null && _nestTheme != null;

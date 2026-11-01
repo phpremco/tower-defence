@@ -14,8 +14,8 @@ namespace Game.Levels
         private const float MarginCells = 4f;
         private const float LowHeight = 0.22f;
         private const float HighHeight = 0.5f;
-        private const float LowAlpha = 0.44f;
-        private const float HighAlpha = 0.26f;
+        private const float LowAlpha = 0.16f;
+        private const float HighAlpha = 0.08f;
         private const float LowTiling = 1.6f;
         private const float HighTiling = 2.6f;
         private const float LowSpeed = 0.012f;

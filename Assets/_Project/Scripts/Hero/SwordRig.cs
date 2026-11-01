@@ -43,6 +43,7 @@ namespace Game.Hero
         private const float TwirlSeconds = 0.28f;
         private const float TrailSeconds = 0.22f;
         private const float TrailWidth = 0.35f;
+        private const float HipTwistShare = 0.45f;
 
         private static readonly Cut[] Cuts =
         {
@@ -146,7 +147,7 @@ namespace Game.Hero
                 ArmYaw = yaw,
                 Lunge = cut.Lunge * strike,
                 Lean = cut.Lean * strike,
-                Twist = yaw * 0.25f,
+                Twist = yaw * HipTwistShare,
                 Busy = true,
             };
         }

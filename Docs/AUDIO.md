@@ -23,7 +23,7 @@ alive without turning into noise: a crowd of thirty ants is one skittering bed, 
 - **Voice budgets.** Shots 3, kills 2, hits 2, spawns 2, creature filler 4, crew (hero, drones) 3. When a budget is
   full the oldest voice of that kind is replaced. The ear cannot separate more anyway.
 - **Bundle, do not stack.** The same shot within 60 ms (heavy) or 220 ms (rapid) nudges the playing voice louder
-  instead of starting another. Lasers hum as a loop instead of clicking per tick.
+  instead of starting another. The laser tower zaps once per shot (the approved `laser.wav`), bundled the same way.
 - **Crowds share a bed.** One movement loop per species. One creature plays it at half level; four fill it; more
   never get louder (square-root curve). Footsteps are rationed: at most one step of a species every 110 ms.
 - **Distance.** Zoomed out, filler drops to 60 percent and loses everything above 2.6 kHz; priority sounds do not.

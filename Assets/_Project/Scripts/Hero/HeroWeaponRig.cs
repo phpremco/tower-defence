@@ -26,6 +26,12 @@ namespace Game.Hero
             /// <summary>Turn of the torso around its own axis, in degrees.</summary>
             public float Twist;
 
+            /// <summary>How much the arm should point straight at the target (one for a gun at aim), overriding the arm angles.</summary>
+            public float Aim;
+
+            /// <summary>The kick of a shot: how far the muzzle rises, in degrees.</summary>
+            public float Recoil;
+
             /// <summary>True while an attack animation plays.</summary>
             public bool Busy;
         }

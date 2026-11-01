@@ -96,7 +96,7 @@ namespace Game.Core
                     surface = Build("Scales", ScaleHeight, ScaleGlow, 3.5f, 0.74f, 0.55f, 2f, 0.7f, 0.6f);
                     break;
                 case Kind.Energy:
-                    surface = Build("Energy", EnergyHeight, EnergyGlow, 1.2f, 0.9f, 0.3f, 1f, 0.9f, 1.6f);
+                    surface = Build("Energy", EnergyHeight, EnergyGlow, 1.2f, 0.9f, 0.3f, 1f, 0.9f, 0.9f);
                     break;
                 case Kind.Membrane:
                     surface = Build("Membrane", MembraneHeight, MembraneGlow, 1.6f, 0.7f, 0.4f, 1.5f, 0.55f, 0.5f);

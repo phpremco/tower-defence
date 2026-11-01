@@ -25,14 +25,17 @@ namespace Game.Levels
         private const float TextureWorldSize = 3f;
         private const float OverlayWorldSize = 4.5f;
         private const float WaterAlpha = 0.68f;
-        private const float LavaEmission = 1.6f;
-        private const float LavaPulseDepth = 0.3f;
+        private const float LavaEmission = 1.8f;
+        private const float LavaPulseDepth = 0.4f;
+        private const float LavaCrustDarkening = 0.55f;
         private const float LavaPulseSpeed = 1.1f;
         private const float WaterGlow = 0.35f;
         private const float PaddingCells = 1.5f;
         private const float VertexSpacing = 0.5f;
         private const float OverlayLift = 0.012f;
         private const float ParticleLift = 0.05f;
+        // Bubbles and rings spawn on this inner part of a cell, so nothing that grows on the surface crosses the bank.
+        private const float InnerCellShare = 0.35f;
         private const int LightClusterCells = 3;
         private const int MaxLavaLights = 10;
         private const float LavaLightHeight = 0.7f;
@@ -229,7 +232,7 @@ namespace Game.Levels
         {
             switch (kind)
             {
-                case TerrainKind.Water: return 0.025f;
+                case TerrainKind.Water: return 0.04f;
                 case TerrainKind.Lava: return 0.035f;
                 case TerrainKind.Ice: return 0f;
                 case TerrainKind.Bog: return 0.008f;
@@ -268,7 +271,7 @@ namespace Game.Levels
             {
                 material.SetTexture("_BaseMap", LiquidTextures.Water());
                 material.SetColor("_BaseColor", new Color(theme.WaterColor.r, theme.WaterColor.g, theme.WaterColor.b, WaterAlpha));
-                material.SetFloat("_Smoothness", 0.6f);
+                material.SetFloat("_Smoothness", 0.85f);
                 material.EnableKeyword("_EMISSION");
                 material.SetColor("_EmissionColor", theme.WaterColor * WaterGlow);
                 MakeTransparent(material, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
@@ -277,7 +280,7 @@ namespace Game.Levels
             {
                 Texture2D texture = LiquidTextures.Lava();
                 material.SetTexture("_BaseMap", texture);
-                material.SetColor("_BaseColor", Color.Lerp(Color.white, theme.LavaColor, 0.35f));
+                material.SetColor("_BaseColor", Color.Lerp(Color.white, theme.LavaColor, 0.35f) * LavaCrustDarkening);
                 material.SetFloat("_Smoothness", 0.25f);
                 material.EnableKeyword("_EMISSION");
                 material.SetTexture("_EmissionMap", texture);
@@ -329,7 +332,7 @@ namespace Game.Levels
             if (kind == TerrainKind.Water)
             {
                 texture = LiquidTextures.WaterSparkle();
-                glow = Color.Lerp(theme.WaterColor, Color.white, 0.7f) * 0.9f;
+                glow = Color.Lerp(theme.WaterColor, Color.white, 0.7f) * 0.4f;
             }
             else if (kind == TerrainKind.Lava)
             {
@@ -423,23 +426,19 @@ namespace Game.Levels
                     Motes(parent, "LavaSparks", emitter, surface, Color.Lerp(theme.LavaColor, Color.white, 0.4f) * 2.5f, 1f, area * 0.5f * particleScale, 0.5f, 0.9f, 0.03f, 0.05f, 1.6f, 3f, 1f, 0f, 0.1f);
                     break;
                 case TerrainKind.Quicksand:
-                    Motes(parent, "SandDust", emitter, surface, theme.SandColor * 1.15f, 0.3f, area * 1.2f * particleScale, 2f, 3.5f, 0.08f, 0.2f, 0.05f, 0.15f, 0f, 0.15f, 1.8f);
                     break;
                 case TerrainKind.Ice:
-                    // Cold mist hugging the sheet and a few glints of frost drifting over it.
-                    Motes(parent, "IceMist", emitter, surface, Color.Lerp(theme.IceColor, Color.white, 0.4f), 0.1f, area * 0.35f * particleScale, 3f, 5f, 0.5f, 0.9f, 0.02f, 0.05f, 0f, 0.12f, 1.7f);
-                    Motes(parent, "FrostGlints", emitter, surface, Color.Lerp(theme.IceColor, Color.white, 0.8f) * 1.8f, 1f, area * 0.4f * particleScale, 0.6f, 1.2f, 0.02f, 0.04f, 0.02f, 0.06f, 0f, 0.05f, 0.1f);
                     break;
                 case TerrainKind.Bog:
                     // Marsh gas: dim green bubbles rising slowly and wisps of vapour hanging over the mire.
                     Motes(parent, "BogBubbles", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.6f) * 1.4f, 0.8f, area * 0.6f * particleScale, 1.2f, 2.2f, 0.03f, 0.07f, 0.1f, 0.25f, 0f, 0.05f, 0.3f);
-                    Motes(parent, "BogVapour", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.4f), 0.12f, area * 0.3f * particleScale, 3f, 5f, 0.5f, 0.9f, 0.04f, 0.08f, 0f, 0.1f, 1.6f);
                     break;
                 default:
-                    Motes(parent, "WaterSparkles", emitter, surface, Color.Lerp(theme.WaterColor, Color.white, 0.8f) * 1.6f, 1f, area * 0.8f * particleScale, 0.4f, 0.8f, 0.03f, 0.06f, 0f, 0f, 0f, 0f, 0.1f);
                     Motes(parent, "WaterMist", emitter, surface, Color.Lerp(theme.WaterColor, Color.white, 0.5f), 0.12f, area * 0.3f * particleScale, 3f, 5f, 0.4f, 0.8f, 0.04f, 0.08f, 0f, 0.1f, 1.6f);
                     break;
             }
+
+            LiquidLifeBuilder.Build(kind, emitter, CellsMesh(cells, cellSize * InnerCellShare), theme, cellSize, surface, area, particleScale, parent);
         }
 
         private static Mesh CellsMesh(List<Vector3> cells, float cellSize)

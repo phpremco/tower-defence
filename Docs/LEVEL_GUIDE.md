@@ -39,6 +39,11 @@ Rules for building a level that plays fairly. A level is data (`LevelDefinition`
 
 ## Look
 
+- Impact effects are data: one `ImpactVfxDefinition` per kind of blast in `Data/Vfx` (flash, shock ring, sparks,
+  smoke, shards, light, camera shake) and the `VfxLibrary` that maps projectile styles, the mine, the death burst
+  and the boss pulse to them; a path object may carry its own definition (`_impactVfx`).
+- Quality profiles: `PcPlatformSettings` (High) and `SwitchPlatformSettings` (Low: softer bloom, no mist, no
+  tilt-shift, half the particles), chosen by the `_lowQuality` flag on the Boot scene.
 - One `VisualTheme` per level: palette, light, fog, bloom, ambience kind. Water, bog and lava cells in the terrain
   drive their own loops and particles; the theme's ambience kind adds wind or a lava bed.
 - Terrain textures per level live in `Art/Terrain/Level_<Name>_albedo.png` and `_emission.png`.

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Theme_Lava
   m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
   _backgroundColor: {r: 0.07, g: 0.02, b: 0.01, a: 1}
-  _groundColor: {r: 0.42, g: 0.17, b: 0.09, a: 1}
-  _pathColor: {r: 1, g: 0.55, b: 0.2, a: 1}
+  _groundColor: {r: 0.17, g: 0.09, b: 0.07, a: 1}
+  _pathColor: {r: 0.95, g: 0.72, b: 0.45, a: 1}
   _slotColor: {r: 1, g: 0.4, b: 0.15, a: 1}
   _baseColor: {r: 1, g: 0.7, b: 0.3, a: 1}
   _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}
@@ -37,7 +37,7 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
   - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
   - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
-  _rockColor: {r: 0.34, g: 0.2, b: 0.16, a: 1}
+  _rockColor: {r: 0.28, g: 0.22, b: 0.2, a: 1}
   _accentColor: {r: 1, g: 0.5, b: 0.15, a: 1}
   _waterColor: {r: 0.1, g: 0.2, b: 0.3, a: 1}
   _lavaColor: {r: 1, g: 0.4, b: 0.08, a: 1}
@@ -51,17 +51,17 @@ MonoBehaviour:
   _ambientRate: 26
   _ambientRise: 0.5
   _ambience: 3
-  _lightColor: {r: 1, g: 0.7, b: 0.5, a: 1}
-  _lightIntensity: 1
-  _fogColor: {r: 0.1, g: 0.03, b: 0.01, a: 1}
-  _fogDensity: 0.022
+  _lightColor: {r: 1, g: 0.88, b: 0.76, a: 1}
+  _lightIntensity: 1.2
+  _fogColor: {r: 0.08, g: 0.02, b: 0.01, a: 1}
+  _fogDensity: 0.016
   _bloomIntensity: 1.8
   _sunPitch: 42
   _sunYaw: -35
   _rimColor: {r: 1, g: 0.5, b: 0.15, a: 1}
   _rimIntensity: 0.5
-  _skyColor: {r: 0.64000005, g: 0.432, b: 0.30400002, a: 1}
+  _skyColor: {r: 0.34, g: 0.2, b: 0.16, a: 1}
   _contrast: 12
   _saturation: 8
-  _shadowTint: {r: 1, g: 0.9363636, b: 0.9181818, a: 1}
-  _highlightTint: {r: 1, g: 0.88, b: 0.8, a: 1}
+  _shadowTint: {r: 1, g: 0.9444444, b: 0.93518513, a: 1}
+  _highlightTint: {r: 1, g: 0.952, b: 0.904, a: 1}

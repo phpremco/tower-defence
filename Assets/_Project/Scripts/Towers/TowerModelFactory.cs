@@ -29,11 +29,20 @@ namespace Game.Towers
         private const float ElevationDegrees = 24f;
         private const float ArtilleryElevationDegrees = 38f;
         private const float GlowWhitening = 0.22f;
-        private const float GlowEmissionBase = 2.2f;
-        private const float GlowEmissionPerLevel = 0.25f;
+        private const float GlowEmissionBase = 1.7f;
+        private const float GlowEmissionPerLevel = 0.2f;
         private const float BodyTintPerLevel = 0.18f;
         private const float BrassPerLevel = 0.3f;
+        // Ceramic plates on the body, brushed alloy on the metal and the dark hull; the plate seams carry a little of
+        // the tower colour, more with every level, so a close look shows panels and rivets instead of flat paint.
+        private const float PlateTiling = 2.4f;
+        private const float AlloyTiling = 4f;
+        private const float SeamGlowBase = 0.3f;
+        private const float SeamGlowPerLevel = 0.25f;
         private static readonly Color BrassColor = new Color(1f, 0.85f, 0.55f);
+        private static readonly Color BodyColor = new Color(0.3f, 0.34f, 0.43f);
+        private static readonly Color MetalColor = new Color(0.8f, 0.84f, 0.92f);
+        private static readonly Color DarkColor = new Color(0.1f, 0.11f, 0.14f);
 
         public readonly struct Parts
         {
@@ -75,16 +84,14 @@ namespace Game.Towers
         public static Material[] CreateMaterials(Color tower, int level = 0)
         {
             Material[] materials = ModelPalette.Create(tower);
-            if (level <= 0)
-            {
-                return materials;
-            }
-
             float t = level / (float)(TowerDefinition.LevelCount - 1);
             Color glow = Color.Lerp(tower, Color.white, GlowWhitening * t);
+            Color body = Color.Lerp(Color.Lerp(BodyColor, tower, 0.3f), tower, BodyTintPerLevel * level);
+            Color metal = Color.Lerp(MetalColor, BrassColor, BrassPerLevel * level);
             materials[Glow] = SurfaceMaterials.Create(glow, GlowEmissionBase + GlowEmissionPerLevel * level, 0.6f);
-            materials[Body] = SurfaceMaterials.Create(Color.Lerp(materials[Body].GetColor("_BaseColor"), tower, BodyTintPerLevel * level), 0f, 0.4f + 0.1f * level, 0.3f);
-            materials[Metal] = SurfaceMaterials.Create(Color.Lerp(materials[Metal].GetColor("_BaseColor"), BrassColor, BrassPerLevel * level), 0f, 0.55f, 0.2f);
+            materials[Body] = ModelPalette.Skin(SurfaceMaterials.Create(body, 0f, 0.5f, 0.35f), CreatureSkin.Kind.Plate, tower * (SeamGlowBase + SeamGlowPerLevel * level), PlateTiling);
+            materials[Metal] = ModelPalette.Skin(SurfaceMaterials.Create(metal, 0f, 0.65f, 0.7f), CreatureSkin.Kind.Alloy, Color.black, AlloyTiling);
+            materials[Dark] = ModelPalette.Skin(SurfaceMaterials.Create(DarkColor, 0f, 0.4f, 0.5f), CreatureSkin.Kind.Alloy, Color.black, AlloyTiling);
             return materials;
         }
 
@@ -108,6 +115,16 @@ namespace Game.Towers
             for (int i = 0; i < level; i++)
             {
                 b.AddTorus(new Vector3(0f, 0.15f + i * 0.09f, 0f), Vector3.up, 0.46f, 0.02f, 24, 6, Glow);
+            }
+
+            // Bolts on every corner of the plinth and vent slots between them, so the foot reads as built, not cast.
+            for (int i = 0; i < 6; i++)
+            {
+                float angle = i * 60f;
+                Vector3 corner = Quaternion.Euler(0f, angle, 0f) * new Vector3(0f, 0.41f, 0.33f);
+                Cylinder(b, corner, Vector3.up, 0.03f, 0.03f, 6, Metal);
+                Vector3 vent = Quaternion.Euler(0f, angle + 30f, 0f) * new Vector3(0f, 0.34f, 0.405f);
+                b.AddBox(vent, new Vector3(0.14f, 0.03f, 0.015f), Dark, angle + 30f);
             }
 
             Cylinder(b, new Vector3(0f, 0.44f, 0f), Vector3.up, 0.08f, 0.36f, 12, Metal);

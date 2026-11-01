@@ -73,6 +73,24 @@ namespace Game.Enemies
         private const float HoverBob = 0.09f;
         private const float HoverSpeed = 3f;
         private const float StandStillDistance = 0.05f;
+        private const float BipedBounce = 1.8f;
+        private const float BipedSwayDistance = 0.07f;
+        private const float BipedRollDegrees = 5f;
+        private const float BipedSwaggerDegrees = 8f;
+        private const float BipedLeanDegrees = 5f;
+        private const float BossIdleShiftScale = 2.5f;
+        private const float BossBreathBob = 0.02f;
+        private const float BossBreathPitch = 1.5f;
+        private const float BossBreathSpeed = 1.4f;
+        private const float BossLookDegrees = 11f;
+        private const float BossLookSpeed = 0.45f;
+        private const float DisplayIntervalMin = 5f;
+        private const float DisplayIntervalMax = 9f;
+        private const float DisplaySeconds = 1.4f;
+        private const float DisplayRearDegrees = 14f;
+        private const float DisplayLift = 0.08f;
+        private const float HeavyWalkerScale = 1.2f;
+        private const int FootfallDust = 6;
         // An attack takes this share of the creature's own attack interval, within bounds: a slow heavy hitter
         // winds up longer than a snapping ant.
         private const float AttackIntervalShare = 0.45f;
@@ -141,7 +159,7 @@ namespace Game.Enemies
         private const int DripBurst = 5;
         private const int BoltCount = 2;
         private const float BoltSize = 0.8f;
-        private const float BossGlow = 1.9f;
+        private const float BossGlow = 1.4f;
         private const float BossPulseDepth = 0.35f;
         private const float BossPulseSpeed = 2.4f;
         private const float BossLightHeight = 0.9f;
@@ -199,6 +217,9 @@ namespace Game.Enemies
         private float _curl;
         private float _rollSpin;
         private float _clock;
+        private float _nextDisplay;
+        private float _displayTime = float.PositiveInfinity;
+        private int _footSign;
         private float _barHeight;
         private float _attackTime = float.PositiveInfinity;
         private float _attackSeconds = AttackMinSeconds;
@@ -338,6 +359,9 @@ namespace Game.Enemies
             _gaitRate = GaitPerUnit * Random.Range(1f - GaitVariation, 1f + GaitVariation);
             _swayPhase = Random.Range(0f, Mathf.PI * 2f);
             _clock = Random.Range(0f, 10f);
+            _nextDisplay = _clock + Random.Range(DisplayIntervalMin, DisplayIntervalMax);
+            _displayTime = float.PositiveInfinity;
+            _footSign = 0;
             _health.Changed += OnHealthChanged;
             _health.ArmorChanged += OnArmorChanged;
             ShowPlates(_plates.Count);
@@ -634,10 +658,14 @@ namespace Game.Enemies
             AttackStyle style = _enemy.Definition.AttackStyle;
             PlayStrikeMoments(strike, style);
 
+            // A boss shows itself off between attacks: it rears up, raises its weapons and opens its jaws, the
+            // way the wind-up of an attack does, without striking.
+            float display = _boss ? DisplayCurve(strike, rear) : 0f;
+            float raise = Mathf.Max(rear, display);
             AnimateLegs(walking, strike);
-            AnimateMandibles(rear, strike);
+            AnimateMandibles(raise, strike);
             AnimateSmallParts(walking, breathe);
-            AnimateWeapons(rear, strike, style);
+            AnimateWeapons(raise, strike, style);
             if (_bands.Count > 0)
             {
                 AnimateBands();
@@ -645,21 +673,41 @@ namespace Game.Enemies
 
             // Walking bounces the body; standing still it breathes; rolling it bumps along; floating it drifts up and
             // down. An attack rears back, strikes and settles, a slam throws the whole body. Walkers weave a little
-            // with their stride, flyers drift and roll, and anything hurried leans into its run.
+            // with their stride, flyers drift and roll, and anything hurried leans into its run. A biped stomps:
+            // the body drops onto each foot, rolls over the standing leg and swaggers with the shoulders.
             bool flyer = _dangle;
             bool hasted = _enemy.IsHasted;
-            float bob = _hover > 0f
-                ? _hover + Mathf.Sin(_clock * HoverSpeed + _swayPhase) * HoverBob * _creatureScale
-                : _curl > 0.5f
-                    ? Mathf.Abs(Mathf.Sin(_rollSpin * 2f)) * RollBounce
-                    : walking ? Mathf.Abs(Mathf.Sin(_gait)) * BobHeight : breathe * HoverHeight;
+            bool biped = _straightLegs && _legs.Count == 2;
+            float bob;
+            if (_hover > 0f)
+            {
+                bob = _hover + Mathf.Sin(_clock * HoverSpeed + _swayPhase) * HoverBob * _creatureScale;
+            }
+            else if (_curl > 0.5f)
+            {
+                bob = Mathf.Abs(Mathf.Sin(_rollSpin * 2f)) * RollBounce;
+            }
+            else if (walking)
+            {
+                bob = biped ? Mathf.Abs(Mathf.Cos(_gait)) * BobHeight * BipedBounce : Mathf.Abs(Mathf.Sin(_gait)) * BobHeight;
+            }
+            else
+            {
+                bob = breathe * HoverHeight;
+            }
+
             float swayWave = flyer ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : Mathf.Sin(_gait * SwayPerGait + _swayPhase) * (walking ? 1f : 0f);
-            float sway = swayWave * (flyer ? FlyerSwayDistance : SwayDistance) * _creatureScale * (1f - _curl);
-            // Standing still the weight shifts slowly from foot to foot, so nothing stands like a statue.
+            float sway = swayWave * (flyer ? FlyerSwayDistance : biped ? BipedSwayDistance : SwayDistance) * _creatureScale * (1f - _curl);
+            // Standing still the weight shifts slowly from foot to foot, so nothing stands like a statue; a boss
+            // shifts more, breathes visibly and looks slowly about.
             float idle = walking || flyer ? 0f : 1f - _curl;
-            float shift = Mathf.Sin(_clock * IdleShiftSpeed + _swayPhase) * IdleShiftDegrees * idle;
-            float yaw = flyer ? 0f : swayWave * SwayDegrees * (1f - _curl) + shift * 1.2f;
-            float roll = flyer ? -swayWave * FlyerRollDegrees : shift;
+            float bossIdle = _boss ? 1f : 0f;
+            float shift = Mathf.Sin(_clock * IdleShiftSpeed + _swayPhase) * IdleShiftDegrees * idle * (1f + bossIdle * (BossIdleShiftScale - 1f));
+            float gaze = bossIdle * Mathf.Sin(_clock * BossLookSpeed + _swayPhase) * BossLookDegrees * (walking ? 0.4f : 1f) * (1f - _curl);
+            float heave = bossIdle * Mathf.Sin(_clock * BossBreathSpeed + _swayPhase) * (1f - _curl);
+            bob += heave * BossBreathBob;
+            float yaw = flyer ? 0f : swayWave * (SwayDegrees + (biped ? BipedSwaggerDegrees : 0f)) * (1f - _curl) + shift * 1.2f + gaze;
+            float roll = flyer ? -swayWave * FlyerRollDegrees : shift + (biped ? swayWave * BipedRollDegrees : 0f);
             if (style == AttackStyle.Whip)
             {
                 roll += strike * FlyerRollDegrees * 2f * _whipSide;
@@ -669,13 +717,16 @@ namespace Game.Enemies
             // slam leaps and comes down hard, a slash twists into the swing, a sting dips the front as the tail
             // comes over, a spitter throws its head back and forward, a whip rolls into the lash.
             AttackPose(style, rear, strike, out float attackPitch, out float attackYaw, out float attackLift, out float lunge);
+            attackPitch -= display * DisplayRearDegrees;
+            attackLift += display * DisplayLift;
             Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             float along = (strike * lunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale;
             float hoverScale = _hover > 0f ? 1f : _creatureScale;
             _body.position = position + Vector3.up * (bob * hoverScale - emerge + attackLift * _creatureScale) + forward * along + right * sway;
-            float lean = hasted && walking && !flyer ? HasteLeanDegrees : 0f;
-            Quaternion pitch = Quaternion.Euler(attackPitch + knock * HitFlinchDegrees + lean, yaw + attackYaw, roll);
+            float lean = (hasted && walking && !flyer ? HasteLeanDegrees : 0f) + (biped && walking ? BipedLeanDegrees : 0f);
+            Quaternion pitch = Quaternion.Euler(attackPitch + knock * HitFlinchDegrees + lean + heave * BossBreathPitch, yaw + attackYaw, roll);
+            PlayFootfalls(walking && !flyer && _hover <= 0f && _curl <= 0f && (_boss || _creatureScale >= HeavyWalkerScale));
             _body.rotation = Quaternion.LookRotation(forward) * pitch;
             float squash = style == AttackStyle.Slam ? strike * HitSquash : 0f;
             _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash) * grow);
@@ -994,6 +1045,55 @@ namespace Game.Enemies
             rear = 1f - Mathf.SmoothStep(0f, 1f, k * 3f);
             rear = Mathf.Max(rear, 0f);
             return Mathf.Sin(Mathf.Clamp01(k) * Mathf.PI);
+        }
+
+        // A hump from zero to one and back, every few seconds while nothing else is going on.
+        private float DisplayCurve(float strike, float rear)
+        {
+            if (_displayTime < DisplaySeconds)
+            {
+                _displayTime += Time.deltaTime;
+                return Mathf.Sin(Mathf.Clamp01(_displayTime / DisplaySeconds) * Mathf.PI);
+            }
+
+            if (_clock >= _nextDisplay && strike <= 0f && rear <= 0f && _curl <= 0f && _hitTime > HitSeconds)
+            {
+                _displayTime = 0f;
+                _nextDisplay = _clock + Random.Range(DisplayIntervalMin, DisplayIntervalMax);
+            }
+
+            return 0f;
+        }
+
+        // A heavy walker throws up dust every time a front foot comes down: the foot lands when the gait passes
+        // a quarter turn, the right one first, so the puff goes under whichever leg just planted.
+        private void PlayFootfalls(bool stomping)
+        {
+            if (!stomping || _impact == null || _legs.Count < 2)
+            {
+                _footSign = 0;
+                return;
+            }
+
+            int sign = Mathf.Cos(_gait) >= 0f ? 1 : -1;
+            if (_footSign == 0)
+            {
+                _footSign = sign;
+                return;
+            }
+
+            if (sign == _footSign)
+            {
+                return;
+            }
+
+            _footSign = sign;
+            Vector3 foot = _legs[sign < 0 ? 0 : 1].Root.position;
+            ParticleSystem.MainModule main = _impact.main;
+            main.startColor = GroundDust;
+            main.gravityModifier = 0.3f;
+            _impact.transform.position = new Vector3(foot.x, DeathGroundY, foot.z);
+            _impact.Emit(Mathf.RoundToInt(FootfallDust * Mathf.Clamp(_creatureScale, 0.8f, 2f)));
         }
 
         private float HitCurve()

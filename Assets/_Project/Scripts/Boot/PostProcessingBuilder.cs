@@ -9,14 +9,15 @@ namespace Game.Boot
     /// <summary>
     /// Creates the global post-processing volume for a level from its theme and the platform quality profile:
     /// bloom (the glow), the theme's colour grading (contrast, saturation, tinted shadows and highlights), a
-    /// vignette and tonemapping. The Low (Switch) profile turns bloom off and keeps the grading.
+    /// vignette and tonemapping. The tilt-shift depth of field is a full-screen pass on the renderer (the pipeline
+    /// cannot read depth from an orthographic camera); Boot switches it by profile. Low (Switch) scales the bloom down.
     /// </summary>
     public static class PostProcessingBuilder
     {
-        private const float BloomThreshold = 0.9f;
-        private const float BloomScatter = 0.7f;
-        private const float VignetteIntensity = 0.28f;
-        private const float VignetteSmoothness = 0.4f;
+        private const float BloomThreshold = 1f;
+        private const float BloomScatter = 0.65f;
+        private const float VignetteIntensity = 0.3f;
+        private const float VignetteSmoothness = 0.45f;
 
         public static void Build(Camera camera, VisualTheme theme, IPlatformSettings platform)
         {
@@ -32,7 +33,7 @@ namespace Game.Boot
             if (platform.BloomEnabled)
             {
                 var bloom = profile.Add<Bloom>(true);
-                bloom.intensity.Override(theme.BloomIntensity);
+                bloom.intensity.Override(theme.BloomIntensity * platform.BloomScale);
                 bloom.threshold.Override(BloomThreshold);
                 bloom.scatter.Override(BloomScatter);
                 bloom.highQualityFiltering.Override(true);

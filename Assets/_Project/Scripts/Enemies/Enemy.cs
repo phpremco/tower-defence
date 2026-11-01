@@ -114,6 +114,18 @@ namespace Game.Enemies
             _speedMultiplier = speedMultiplier;
             _structureDamageMultiplier = structureDamageMultiplier;
             _waypoints = waypoints;
+            // Faces along its road from the first frame, so a creature that stands still (the menu guardian) does not
+            // keep the default heading and show the player its back.
+            if (waypoints.Length > 1)
+            {
+                Vector3 first = waypoints[1] - waypoints[0];
+                first.y = 0f;
+                if (first.sqrMagnitude > 0.000001f)
+                {
+                    Heading = first.normalized;
+                }
+            }
+
             _nextWaypoint = 1;
             _travelled = progressOffset;
             _heightOffset = heightOffset;

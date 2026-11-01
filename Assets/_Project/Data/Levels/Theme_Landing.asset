@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Theme_Landing
   m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
   _backgroundColor: {r: 0.02, g: 0.03, b: 0.06, a: 1}
-  _groundColor: {r: 0.27, g: 0.33, b: 0.42, a: 1}
-  _pathColor: {r: 0.55, g: 0.8, b: 1, a: 1}
+  _groundColor: {r: 0.14, g: 0.16, b: 0.2, a: 1}
+  _pathColor: {r: 0.78, g: 0.86, b: 0.95, a: 1}
   _slotColor: {r: 0.2, g: 0.55, b: 1, a: 1}
   _baseColor: {r: 0.3, g: 0.85, b: 1, a: 1}
   _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}
@@ -37,7 +37,7 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
   - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
   - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
-  _rockColor: {r: 0.42, g: 0.48, b: 0.6, a: 1}
+  _rockColor: {r: 0.34, g: 0.36, b: 0.4, a: 1}
   _accentColor: {r: 0.35, g: 0.85, b: 1, a: 1}
   _waterColor: {r: 0.07, g: 0.38, b: 0.62, a: 1}
   _lavaColor: {r: 1, g: 0.4, b: 0.1, a: 1}
@@ -45,23 +45,23 @@ MonoBehaviour:
   _iceColor: {r: 0.75, g: 0.9, b: 1, a: 1}
   _bogColor: {r: 0.18, g: 0.24, b: 0.12, a: 1}
   _spawnColor: {r: 1, g: 0.4, b: 0.25, a: 1}
-  _plantColor: {r: 0.36, g: 0.55, b: 0.62, a: 1}
-  _propKinds: 000000000100000002000000090000000000000002000000i
+  _plantColor: {r: 0.3, g: 0.46, b: 0.5, a: 1}
+  _propKinds: 000000000100000002000000090000000000000001000000i
   _veinStrength: 0.4
   _ambientRate: 9
   _ambientRise: 0.1
   _ambience: 1
-  _lightColor: {r: 0.75, g: 0.85, b: 1, a: 1}
-  _lightIntensity: 1.1
+  _lightColor: {r: 0.92, g: 0.94, b: 1, a: 1}
+  _lightIntensity: 1.25
   _fogColor: {r: 0.03, g: 0.04, b: 0.08, a: 1}
-  _fogDensity: 0.01
+  _fogDensity: 0.008
   _bloomIntensity: 1.2
   _sunPitch: 42
   _sunYaw: -35
   _rimColor: {r: 0.35, g: 0.85, b: 1, a: 1}
   _rimIntensity: 0.5
-  _skyColor: {r: 0.462, g: 0.526, b: 0.632, a: 1}
+  _skyColor: {r: 0.3, g: 0.34, b: 0.42, a: 1}
   _contrast: 12
   _saturation: 8
   _shadowTint: {r: 0.95370364, g: 0.96296287, b: 1, a: 1}
-  _highlightTint: {r: 0.9, g: 0.94, b: 1, a: 1}
+  _highlightTint: {r: 0.968, g: 0.976, b: 1, a: 1}

@@ -10,7 +10,7 @@ namespace Game.Levels
     [RequireComponent(typeof(Camera))]
     public sealed class FixedCameraRig : MonoBehaviour
     {
-        private const float DistanceFromCenter = 50f;
+        public const float DistanceFromCenter = 50f;
 
         /// <summary>Height of towers and enemies above the ground that must stay inside the view.</summary>
         private const float ObjectHeight = 2.4f;

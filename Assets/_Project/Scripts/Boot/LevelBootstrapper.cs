@@ -127,7 +127,8 @@ namespace Game.Boot
             var root = new GameObject("Gameplay").transform;
             var targets = new TargetRegistry();
             var structures = new StructureRegistry();
-            var projectiles = new ProjectilePool(targets, root);
+            Services.TryGet(out VfxLibrary vfx);
+            var projectiles = new ProjectilePool(targets, root, vfx, Services.Get<IPlatformSettings>().ParticleScale);
             var wallet = new Wallet(level.StartingMoney, infiniteMoney);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);

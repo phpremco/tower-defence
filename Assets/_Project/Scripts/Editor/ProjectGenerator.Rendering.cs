@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Game.Editor
@@ -19,6 +20,15 @@ namespace Game.Editor
         private const float OcclusionIntensity = 0.6f;
         private const float OcclusionRadius = 0.45f;
         private const float OcclusionDirectStrength = 0.15f;
+        private const string TiltShiftMaterialPath = "Assets/_Project/Art/Materials/TiltShift.mat";
+        private const string TiltShiftFeatureName = "TiltShift";
+        private const string TiltShiftShaderName = "Game/TiltShift";
+        private const float TiltShiftBand = 0.22f;
+        private const float TiltShiftFeather = 0.3f;
+        private const float TiltShiftRadius = 3f;
+
+        /// <summary>The tilt-shift pass on the PC renderer, for the Boot scene to switch by quality profile.</summary>
+        private static FullScreenPassRendererFeature _tiltShift;
 
         private static void ConfigureRenderPipeline()
         {
@@ -56,7 +66,64 @@ namespace Game.Editor
                 EditorUtility.SetDirty(asset);
             }
 
+            _tiltShift = CreateTiltShift();
             AssetDatabase.SaveAssets();
+        }
+
+        // The depth of field is a screen-space blur in a full-screen pass, because the pipeline cannot read depth
+        // from an orthographic camera. The feature lives as a sub-asset of the renderer, as the editor would add it.
+        private static FullScreenPassRendererFeature CreateTiltShift()
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(TiltShiftMaterialPath);
+            if (material == null)
+            {
+                material = new Material(Shader.Find(TiltShiftShaderName));
+                AssetDatabase.CreateAsset(material, TiltShiftMaterialPath);
+            }
+
+            material.SetFloat("_Band", TiltShiftBand);
+            material.SetFloat("_Feather", TiltShiftFeather);
+            material.SetFloat("_Radius", TiltShiftRadius);
+            EditorUtility.SetDirty(material);
+
+            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(PcRendererPath);
+            if (renderer == null)
+            {
+                return null;
+            }
+
+            FullScreenPassRendererFeature feature = null;
+            foreach (ScriptableRendererFeature existing in renderer.rendererFeatures)
+            {
+                if (existing is FullScreenPassRendererFeature pass && pass.name == TiltShiftFeatureName)
+                {
+                    feature = pass;
+                }
+            }
+
+            if (feature == null)
+            {
+                feature = ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();
+                feature.name = TiltShiftFeatureName;
+                AssetDatabase.AddObjectToAsset(feature, renderer);
+                renderer.rendererFeatures.Add(feature);
+                AssetDatabase.SaveAssets();
+                // The renderer keeps a parallel list of local ids; without the entry the editor drops the feature.
+                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature, out string _, out long localId);
+                var so = new SerializedObject(renderer);
+                SerializedProperty map = so.FindProperty("m_RendererFeatureMap");
+                map.arraySize++;
+                map.GetArrayElementAtIndex(map.arraySize - 1).longValue = localId;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            feature.passMaterial = material;
+            feature.injectionPoint = FullScreenPassRendererFeature.InjectionPoint.BeforeRenderingPostProcessing;
+            feature.requirements = ScriptableRenderPassInput.None;
+            feature.fetchColorBuffer = true;
+            EditorUtility.SetDirty(feature);
+            EditorUtility.SetDirty(renderer);
+            return feature;
         }
     }
 }

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Theme_Ice
   m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
   _backgroundColor: {r: 0.05, g: 0.07, b: 0.11, a: 1}
-  _groundColor: {r: 0.74, g: 0.8, b: 0.88, a: 1}
-  _pathColor: {r: 0.35, g: 0.55, b: 0.8, a: 1}
+  _groundColor: {r: 0.6, g: 0.66, b: 0.74, a: 1}
+  _pathColor: {r: 0.3, g: 0.46, b: 0.68, a: 1}
   _slotColor: {r: 0.4, g: 0.75, b: 1, a: 1}
   _baseColor: {r: 0.5, g: 0.85, b: 1, a: 1}
   _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}

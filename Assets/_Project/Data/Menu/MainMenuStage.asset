@@ -16,6 +16,8 @@ MonoBehaviour:
   _lavaTheme: {fileID: 11400000, guid: d7483e12a2f7abd409d568eceb885ed3, type: 2}
   _ruinsTheme: {fileID: 11400000, guid: 8ef114d5f69c56d4aa64817dc054ea78, type: 2}
   _nestTheme: {fileID: 11400000, guid: 31488d1edfad792479ffd1d508223dd7, type: 2}
+  _iceTheme: {fileID: 11400000, guid: f96646431682db84181459d97fd46c76, type: 2}
+  _swampTheme: {fileID: 11400000, guid: 03157d46542c20b418c4eedefab2b49e, type: 2}
   _nestCreatures:
   - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
   - {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
@@ -26,3 +28,5 @@ MonoBehaviour:
   _waterCreature: {fileID: 11400000, guid: 82561541f80c79c45876c662358d966f, type: 2}
   _lavaCreature: {fileID: 11400000, guid: c0893d5c3825799408d8a7010224f285, type: 2}
   _sandCreature: {fileID: 11400000, guid: ed78d440f1881144aa1c35803fed47d1, type: 2}
+  _iceCreature: {fileID: 11400000, guid: d016b85df1257e24da94a7be007f9705, type: 2}
+  _bogCreature: {fileID: 11400000, guid: 01ec75bdb064a0a408e6262867c50365, type: 2}

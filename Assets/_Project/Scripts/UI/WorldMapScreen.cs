@@ -21,8 +21,10 @@ namespace Game.UI
     {
         private const string Title = "Choose a region";
         private const float GlobeSize = 1100f;
-        private const int GlobeTexture = 1024;
-        private const int CloudTexture = 512;
+        private const int GlobeTexture = 2048;
+        private const int CloudTexture = 1024;
+        private static GlobePainter.Maps _globeMaps;
+        private static Texture2D[] _globeClouds;
         private const int HaloTexture = 256;
         private const float HaloScale = 1.28f;
         private const float SpinDegreesPerSecond = 70f;
@@ -58,7 +60,6 @@ namespace Game.UI
         private const float FocusMinFacing = 0.35f;
         private const float LayerFadeStart = 0.35f;
         private const float LayerFadeEnd = 0.75f;
-        private const float LevelLandDegrees = 7f;
         private const float SideButtonSize = 96f;
         private const float SideButtonOffset = 640f;
         private const float HoldSnapSeconds = 0.22f;
@@ -231,21 +232,33 @@ namespace Game.UI
             _halo = halo.rectTransform;
             _haloImage = halo;
 
-            var regions = new List<PlanetPainter.GlobeRegion>();
-            foreach (MapRegion region in _catalog.Regions)
+            // The generator bakes the maps; painting them here is the fallback for a catalog without them, and the
+            // result lives on between visits to the screen because it takes a moment.
+            if (_globeMaps == null && _catalog.HasGlobeMaps)
             {
-                regions.Add(new PlanetPainter.GlobeRegion { Direction = region.Direction, Colour = region.Colour, RadiusDegrees = region.RadiusDegrees });
+                _globeMaps = new GlobePainter.Maps { Albedo = _catalog.GlobeAlbedo, Normal = _catalog.GlobeNormal, Gloss = _catalog.GlobeGloss, Emission = _catalog.GlobeLights };
+                _globeClouds = _catalog.GlobeClouds;
             }
 
-            // Every level also raises a patch of land, so no level ends up in a bay the coast noise carved.
-            foreach (MapNode node in _catalog.Nodes)
+            if (_globeMaps == null)
             {
-                regions.Add(new PlanetPainter.GlobeRegion { Direction = node.Direction, Colour = _catalog.Regions[node.Region].Colour, RadiusDegrees = LevelLandDegrees });
+                var regions = new List<GlobePainter.Region>();
+                foreach (MapRegion region in _catalog.Regions)
+                {
+                    regions.Add(new GlobePainter.Region { Direction = region.Direction, Colour = region.Colour, RadiusDegrees = region.RadiusDegrees });
+                }
+
+                // Every level also raises a patch of land, so no level ends up in a bay the coast noise carved, and lights it.
+                foreach (MapNode node in _catalog.Nodes)
+                {
+                    regions.Add(new GlobePainter.Region { Direction = node.Direction, Colour = _catalog.Regions[node.Region].Colour, RadiusDegrees = GlobePainter.LevelLandDegrees, Lights = true });
+                }
+
+                _globeMaps = GlobePainter.Paint(GlobeTexture, GlobeTexture / 2, regions);
+                _globeClouds = new[] { GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 0f), GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 200f) };
             }
 
-            Texture2D surface = PlanetPainter.PaintGlobe(GlobeTexture, GlobeTexture / 2, regions);
-            Texture2D clouds = PlanetPainter.PaintGlobeClouds(CloudTexture, CloudTexture / 2);
-            _globe = PlanetGlobe.Create(view, GlobeSize, surface, clouds);
+            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds);
         }
 
         // A level wears its palette, so the lava caves glow orange on the map and the woods turquoise.

@@ -32,6 +32,12 @@ namespace Game.UI
         private const float PondRadius = 2f;
         private static readonly Vector3 SandCentre = new Vector3(-1.8f, 0f, 6f);
         private const float SandRadius = 1.7f;
+        private static readonly Vector3 IceCentre = new Vector3(-3.4f, 0f, 0.6f);
+        private const float IceRadius = 1.7f;
+        private static readonly Vector3 BogCentre = new Vector3(10.2f, 0f, 5.8f);
+        private const float BogRadius = 1.8f;
+        // The queen is modelled as a boss; on the porch she stands at this share of her field size.
+        private const float GuardianScale = 0.55f;
         private const float PoolCellSize = 0.5f;
         private const float Seed = 3.7f;
 
@@ -125,12 +131,24 @@ namespace Game.UI
         private void BuildAll(MenuStageDefinition stage, Camera camera, float particleScale)
         {
             Vector3 mouth = NestCentre + Vector3.back * (NestRadius - MouthInset);
-            var pools = new[]
+            var poolList = new List<MenuTerrain.Pool>
             {
                 new MenuTerrain.Pool(LavaCentre, LavaRadius, TerrainKind.Lava, stage.LavaTheme),
                 new MenuTerrain.Pool(PondCentre, PondRadius, TerrainKind.Water, stage.ForestTheme),
                 new MenuTerrain.Pool(SandCentre, SandRadius, TerrainKind.Quicksand, stage.RuinsTheme),
             };
+            // The frozen lake and the bog only exist once their worlds do.
+            if (stage.IceTheme != null)
+            {
+                poolList.Add(new MenuTerrain.Pool(IceCentre, IceRadius, TerrainKind.Ice, stage.IceTheme));
+            }
+
+            if (stage.SwampTheme != null)
+            {
+                poolList.Add(new MenuTerrain.Pool(BogCentre, BogRadius, TerrainKind.Bog, stage.SwampTheme));
+            }
+
+            MenuTerrain.Pool[] pools = poolList.ToArray();
             _terrain = new MenuTerrain(IslandCentre, IslandRadius, NestCentre, NestRadius, NestHeight, mouth, PorchHeight, pools, stage.NestTheme, Seed);
 
             BuildLighting();
@@ -324,7 +342,9 @@ namespace Game.UI
             if (stage.NestGuardian != null)
             {
                 Vector3 seat = new Vector3(mouth.x, PorchHeight, mouth.z + 0.1f);
-                Creature(stage.NestGuardian, new[] { seat, seat + Vector3.back * 0.01f }, 0f, 0f, EnemyOrigin.Gate, 0f, 0f).Emerge(0.6f);
+                MenuCreature guardian = Creature(stage.NestGuardian, new[] { seat, seat + Vector3.back * 0.01f }, 0f, 0f, EnemyOrigin.Gate, 0f, 0f);
+                guardian.transform.localScale = Vector3.one * GuardianScale;
+                guardian.Emerge(0.6f);
             }
 
             EnemyDefinition[] walkers = stage.NestCreatures;
@@ -356,6 +376,15 @@ namespace Game.UI
             PoolDweller(stage.WaterCreature, PondCentre, PondRadius, TerrainKind.Water, EnemyOrigin.Water, 20f);
             PoolDweller(stage.LavaCreature, LavaCentre, LavaRadius, TerrainKind.Lava, EnemyOrigin.Lava, 260f);
             PoolDweller(stage.SandCreature, SandCentre, SandRadius, TerrainKind.Quicksand, EnemyOrigin.Quicksand, 300f);
+            if (stage.IceTheme != null)
+            {
+                PoolDweller(stage.IceCreature, IceCentre, IceRadius, TerrainKind.Ice, EnemyOrigin.Ice, 200f);
+            }
+
+            if (stage.SwampTheme != null)
+            {
+                PoolDweller(stage.BogCreature, BogCentre, BogRadius, TerrainKind.Bog, EnemyOrigin.Bog, 120f);
+            }
         }
 
         // Out of the middle of the pool, up the bank, a stroll along it and back into the deep.

@@ -27,9 +27,9 @@ namespace Game.Enemies
         private const float BodyShade = 0.6f;
         private const float DarkShade = 0.22f;
         private const float ChitinGloss = 0.68f;
-        private const float EyeEmission = 3.2f;
-        private const float GlowEmission = 2.2f;
-        private const float AccentEmission = 2.8f;
+        private const float EyeEmission = 2.6f;
+        private const float GlowEmission = 1.8f;
+        private const float AccentEmission = 2.2f;
         private const float SkinnedBodyShade = 0.9f;
         private const float SkinnedDarkShade = 0.4f;
         private const float SeamGlow = 0.9f;
@@ -284,11 +284,12 @@ namespace Game.Enemies
             }
 
             Pincers(parts, new Vector3(0.17f * k, 0.17f * k, 0.3f * k), 0.3f * k, 0.035f * k);
-            StingTail(parts, new Vector3(0f, 0.24f * k, -0.3f * k), 0.95f * k, 0.055f * k, 0, 0f);
+            // The tail pivots inside the rear of the body, so its root stays buried however far it snaps over.
+            StingTail(parts, new Vector3(0f, 0.21f * k, -0.17f * k), 0.95f * k, 0.055f * k, 0, 0f);
             if (boss)
             {
-                StingTail(parts, new Vector3(0.12f * k, 0.22f * k, -0.26f * k), 0.6f * k, 0.035f * k, 1, 0.35f);
-                StingTail(parts, new Vector3(-0.12f * k, 0.22f * k, -0.26f * k), 0.6f * k, 0.035f * k, 1, -0.35f);
+                StingTail(parts, new Vector3(0.12f * k, 0.2f * k, -0.15f * k), 0.6f * k, 0.035f * k, 1, 0.35f);
+                StingTail(parts, new Vector3(-0.12f * k, 0.2f * k, -0.15f * k), 0.6f * k, 0.035f * k, 1, -0.35f);
             }
 
             Legs(parts, 0.17f * k, 0.22f * k, 0.3f * k, 0.022f * k, 0.22f * k, 0.08f * k, -0.06f * k, -0.2f * k);
@@ -310,6 +311,28 @@ namespace Game.Enemies
             Spike(b, new Vector3(-0.05f * k, 0.09f * k, 0.16f * k), new Vector3(-0.09f * k, 0.22f * k, 0.13f * k), 0.025f * k, Dark);
             Cracks(b, Vector3.zero, new Vector3(0.1f, 0.1f, 0.15f) * k, boss ? 8 : 4, 31, Accent);
             b.AddBlob(new Vector3(0f, -0.08f * k, 0.02f * k), new Vector3(0.05f, 0.03f, 0.08f) * k, 3, 7, 0f, 0, Accent, false);
+            // Lit linings inside the ears, a furred back and a ruff of fur around the neck.
+            for (int side = -1; side <= 1; side += 2)
+            {
+                b.AddBlade(new[] { new Vector3(side * 0.055f, 0.1f, 0.165f) * k, new Vector3(side * 0.08f, 0.18f, 0.14f) * k }, new[] { 0.028f * k, 0.008f * k }, Vector3.forward, Accent);
+                for (int i = 0; i < 3; i++)
+                {
+                    var root = new Vector3(side * (0.04f + i * 0.025f), 0.085f - i * 0.03f, 0.04f - i * 0.05f) * k;
+                    FurTuft(b, root, new Vector3(side * 0.6f, 0.4f, -1f), 0.07f * k, 0.03f * k, i % 2 == 0 ? Dark : Body, 200 + i * 2 + (side + 1) / 2);
+                }
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                FurTuft(b, new Vector3(0f, 0.1f - i * 0.012f, 0.06f - i * 0.05f) * k, new Vector3(0.2f * ((i % 2) * 2 - 1), 0.6f, -1f), 0.07f * k, 0.032f * k, i % 2 == 0 ? Body : Dark, 210 + i);
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                float angle = (i - 2.5f) * 0.55f;
+                var root = new Vector3(Mathf.Sin(angle) * 0.08f, 0.06f + Mathf.Cos(angle) * 0.03f, 0.12f) * k;
+                FurTuft(b, root, new Vector3(Mathf.Sin(angle), 0.4f + Mathf.Cos(angle) * 0.5f, -0.6f), 0.06f * k, 0.03f * k, i % 2 == 0 ? Dark : Body, 220 + i);
+            }
             if (boss)
             {
                 for (int i = 0; i < 3; i++)
@@ -438,25 +461,27 @@ namespace Game.Enemies
             }
 
             // The mane: a crest of raised fur down the neck and shoulders and a ruff out to both sides.
-            int crest = boss ? 9 : 6;
+            int crest = boss ? 11 : 8;
             for (int i = 0; i < crest; i++)
             {
                 float t = i / (float)(crest - 1);
-                var root = new Vector3(0f, Mathf.Lerp(0.56f, 0.55f, t), Mathf.Lerp(0.4f, 0.0f, t)) * k;
-                float length = (boss ? 0.2f : 0.13f) * k * (0.7f + 0.3f * Mathf.Sin(t * Mathf.PI));
-                FurTuft(b, root, new Vector3(0.1f * ((i % 2) * 2 - 1), 0.75f, -0.65f), length, 0.05f * k, i % 3 == 0 ? Body : Dark, 40 + i);
+                var root = new Vector3(0f, Mathf.Lerp(0.56f, 0.55f, t), Mathf.Lerp(0.42f, 0.0f, t)) * k;
+                float length = (boss ? 0.24f : 0.17f) * k * (0.7f + 0.3f * Mathf.Sin(t * Mathf.PI));
+                FurTuft(b, root, new Vector3(0.1f * ((i % 2) * 2 - 1), 0.75f, -0.65f), length, 0.065f * k, i % 3 == 0 ? Body : Dark, 40 + i);
             }
 
-            int ruff = boss ? 6 : 4;
+            int ruff = boss ? 7 : 5;
             for (int i = 0; i < ruff; i++)
             {
                 float t = i / (float)(ruff - 1);
                 for (int side = -1; side <= 1; side += 2)
                 {
                     var root = new Vector3(side * Mathf.Lerp(0.09f, 0.16f, t), Mathf.Lerp(0.5f, 0.42f, t), Mathf.Lerp(0.36f, 0.14f, t)) * k;
-                    FurTuft(b, root, new Vector3(side * 0.9f, 0.1f - t * 0.5f, -0.6f), (boss ? 0.17f : 0.11f) * k, 0.045f * k, i % 2 == 0 ? Dark : Body, 60 + i * 2 + (side + 1) / 2);
+                    FurTuft(b, root, new Vector3(side * 0.9f, 0.1f - t * 0.5f, -0.6f), (boss ? 0.2f : 0.14f) * k, 0.06f * k, i % 2 == 0 ? Dark : Body, 60 + i * 2 + (side + 1) / 2);
                 }
             }
+
+            Coat(b, k, boss);
 
             if (boss)
             {
@@ -519,6 +544,47 @@ namespace Game.Enemies
             parts.Height = (boss ? 0.9f : 0.66f) * k;
         }
 
+        // The coat over the rest of the body: tufts along the spine and down both flanks that lie back towards the
+        // tail, a shaggy fringe under the chest and belly, and thick fur over the haunches, so the wolf reads as
+        // furred from every side and its outline is ragged, not smooth.
+        private static void Coat(PropMeshBuilder b, float k, bool boss)
+        {
+            int rows = boss ? 10 : 7;
+            for (int i = 0; i < rows; i++)
+            {
+                float t = i / (float)(rows - 1);
+                float z = Mathf.Lerp(0.02f, -0.36f, t);
+                float length = (boss ? 0.16f : 0.11f) * k;
+                // Spine, upper flank and lower flank on each side; the tufts lean back and a little down.
+                FurTuft(b, new Vector3(0f, Mathf.Lerp(0.56f, 0.53f, t), z) * k, new Vector3(0.15f * ((i % 2) * 2 - 1), 0.5f, -1f), length, 0.06f * k, i % 2 == 0 ? Dark : Body, 100 + i);
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    FurTuft(b, new Vector3(side * Mathf.Lerp(0.13f, 0.12f, t), Mathf.Lerp(0.5f, 0.47f, t), z) * k, new Vector3(side * 0.7f, 0.25f, -1f), length * 0.9f, 0.055f * k, i % 2 == 0 ? Body : Dark, 110 + i * 2 + (side + 1) / 2);
+                    FurTuft(b, new Vector3(side * Mathf.Lerp(0.16f, 0.14f, t), Mathf.Lerp(0.38f, 0.34f, t), z) * k, new Vector3(side * 0.8f, -0.35f, -0.9f), length * 0.8f, 0.05f * k, i % 2 == 0 ? Dark : Body, 130 + i * 2 + (side + 1) / 2);
+                }
+            }
+
+            // The fringe hanging under chest and belly, pale like the throat.
+            int fringe = boss ? 7 : 5;
+            for (int i = 0; i < fringe; i++)
+            {
+                float t = i / (float)(fringe - 1);
+                var root = new Vector3(0f, Mathf.Lerp(0.25f, 0.27f, t), Mathf.Lerp(0.2f, -0.2f, t)) * k;
+                FurTuft(b, root, new Vector3(0.3f * ((i % 2) * 2 - 1), -1f, -0.5f), (boss ? 0.12f : 0.08f) * k, 0.05f * k, i % 3 == 0 ? Glow : Body, 150 + i);
+            }
+
+            // Thick fur over the haunches, fanning back and out.
+            for (int side = -1; side <= 1; side += 2)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    float angle = (i - 1.5f) * 0.5f;
+                    var root = new Vector3(side * 0.13f, 0.44f + Mathf.Cos(angle) * 0.06f, -0.3f + Mathf.Sin(angle) * 0.06f) * k;
+                    FurTuft(b, root, new Vector3(side * 0.6f, Mathf.Sin(angle) * 0.6f + 0.1f, -0.9f), (boss ? 0.17f : 0.12f) * k, 0.055f * k, i % 2 == 0 ? Body : Dark, 170 + i * 2 + (side + 1) / 2);
+                }
+            }
+        }
+
         // One clump of fur: a short curling blade that leans the way the coat lies. Enough of them make a shaggy outline.
         private static void FurTuft(PropMeshBuilder b, Vector3 root, Vector3 lean, float length, float width, int slot, int seed)
         {
@@ -574,12 +640,24 @@ namespace Game.Enemies
             // A plasma shell over a white-hot core, so the skin's threads show through the glow.
             b.AddBlob(Vector3.zero, Vector3.one * 0.1f * k, 6, 12, 0f, 0, Accent, false);
             b.AddBlob(Vector3.zero, Vector3.one * 0.19f * k, 6, 14, 0.1f, 18, Body, false);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 8; i++)
             {
-                float angle = i * Mathf.PI * 0.4f;
+                float angle = i * Mathf.PI * 0.25f;
                 var dir = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle * 2.3f) * 0.6f, Mathf.Sin(angle)).normalized;
-                b.AddBlob(dir * 0.17f * k, Vector3.one * 0.05f * k, 3, 6, 0f, 0, Glow, false);
+                b.AddBlob(dir * 0.17f * k, Vector3.one * (i % 2 == 0 ? 0.05f : 0.03f) * k, 3, 6, 0f, 0, Glow, false);
             }
+
+            // Lit fissures over the shell and wavering tendrils of plasma hanging from under the core.
+            Cracks(b, Vector3.zero, Vector3.one * 0.19f * k, boss ? 8 : 5, 33, Accent);
+            int tendrils = boss ? 7 : 4;
+            for (int i = 0; i < tendrils; i++)
+            {
+                float angle = i * Mathf.PI * 2f / tendrils + 0.4f;
+                var root = new Vector3(Mathf.Cos(angle) * 0.12f, -0.12f, Mathf.Sin(angle) * 0.12f) * k;
+                var swing = new Vector3(Mathf.Cos(angle + 1.2f), 0f, Mathf.Sin(angle + 1.2f));
+                b.AddBlade(new[] { root, root + new Vector3(Mathf.Cos(angle) * 0.05f, -0.12f, Mathf.Sin(angle) * 0.05f) * k + swing * 0.03f * k, root + new Vector3(Mathf.Cos(angle) * 0.03f, -0.26f, Mathf.Sin(angle) * 0.03f) * k - swing * 0.04f * k }, new[] { 0.035f * k, 0.022f * k, 0f }, swing, Glow);
+            }
+
             if (boss)
             {
                 for (int i = 0; i < 8; i++)
@@ -618,14 +696,30 @@ namespace Game.Enemies
             float k = boss ? 2.6f : 1f;
             b.AddBlob(Vector3.zero, new Vector3(0.14f, 0.06f, 0.28f) * k, 5, 10, 0.02f, 19, Body, false);
             b.AddBlob(new Vector3(0f, 0.03f * k, 0.05f * k), new Vector3(0.1f, 0.04f, 0.18f) * k, 3, 9, 0.02f, 20, Dark, true, Mathf.PI * 0.5f);
-            b.AddBlob(new Vector3(0.05f * k, 0.05f * k, 0.16f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
-            b.AddBlob(new Vector3(-0.05f * k, 0.05f * k, 0.16f * k), Vector3.one * 0.025f * k, 3, 6, 0f, 0, Eyes, false);
+            b.AddBlob(new Vector3(0.05f * k, 0.05f * k, 0.16f * k), new Vector3(0.034f, 0.028f, 0.03f) * k, 3, 7, 0f, 0, Eyes, false);
+            b.AddBlob(new Vector3(-0.05f * k, 0.05f * k, 0.16f * k), new Vector3(0.034f, 0.028f, 0.03f) * k, 3, 7, 0f, 0, Eyes, false);
             for (int i = 0; i < 3; i++)
             {
                 float z = (0.06f - i * 0.06f) * k;
                 b.AddBlob(new Vector3(0.09f * k, -0.02f * k, z), new Vector3(0.03f, 0.012f, 0.012f) * k, 2, 5, 0f, 0, Accent, false);
                 b.AddBlob(new Vector3(-0.09f * k, -0.02f * k, z), new Vector3(0.03f, 0.012f, 0.012f) * k, 2, 5, 0f, 0, Accent, false);
             }
+
+            // Cephalic horns curling forward from the snout, a ridge of plates down the back, lit spots on the
+            // saddle and a pale mouth slit underneath.
+            for (int side = -1; side <= 1; side += 2)
+            {
+                b.AddTube(new[] { new Vector3(side * 0.07f, 0.01f, 0.22f) * k, new Vector3(side * 0.09f, 0.03f, 0.32f) * k, new Vector3(side * 0.07f, 0.06f, 0.38f) * k }, new[] { 0.022f * k, 0.016f * k, 0f }, 5, Dark, false);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                float z = (0.1f - i * 0.08f) * k;
+                b.AddBlob(new Vector3(0f, 0.065f * k, z), new Vector3(0.03f, 0.022f, 0.035f) * k, 3, 6, 0.02f, 50 + i, Dark, false, Mathf.PI * 0.5f);
+                b.AddBlob(new Vector3(0.05f * k * ((i % 2) * 2 - 1), 0.055f * k, z - 0.02f * k), new Vector3(0.018f, 0.008f, 0.024f) * k, 2, 6, 0f, 0, Glow, false);
+            }
+
+            b.AddBlob(new Vector3(0f, -0.055f * k, 0.18f * k), new Vector3(0.07f, 0.008f, 0.02f) * k, 2, 8, 0f, 0, Glow, false);
 
             b.AddTube(new[] { new Vector3(0f, 0.06f * k, 0.2f * k), new Vector3(0f, 0.07f * k, -0.2f * k) }, new[] { 0.012f * k, 0.008f * k }, 4, Glow, false);
             if (boss)
@@ -1005,6 +1099,9 @@ namespace Game.Enemies
             }
 
             b.AddTube(path, radii, 6, Dark, false);
+            // A fleshy root around the pivot and a first segment that overlaps the body's rear.
+            b.AddBlob(Vector3.zero, new Vector3(radius * 2.2f, radius * 1.9f, radius * 3f), 4, 8, 0.03f, 29, Body, false);
+            b.AddBlob(path[0], Vector3.one * radius * 1.5f, 3, 7, 0.02f, 28, Body, false);
             Vector3 tip = path[Segments];
             b.AddBlob(tip, Vector3.one * radius * 1.5f, 4, 7, 0f, 0, Body, false);
             b.AddTube(new[] { tip, tip + new Vector3(0f, -radius * 2f, radius * 3.5f) }, new[] { radius * 0.9f, 0f }, 5, Accent, false);
@@ -1124,14 +1221,22 @@ namespace Game.Enemies
         private static void MembraneWings(Parts parts, Vector3 hinge, float length, float width, int index)
         {
             var b = new PropMeshBuilder(SlotCount);
-            var spine = new[] { Vector3.zero, new Vector3(length * 0.4f, 0.02f * length, 0.03f * length), new Vector3(length, 0.01f * length, -0.02f * length) };
-            b.AddBlade(spine, new[] { width * 0.5f, width, width * 0.15f }, Vector3.forward, Dark);
-            b.AddTube(spine, new[] { length * 0.03f, length * 0.022f, length * 0.006f }, 4, Body, false);
+            // The membrane is scalloped between the fingers, as a bat's is; the arm bone runs along the leading
+            // edge to a wrist knuckle, from which the lit finger bones fan out to clawed tips, and a thumb claw
+            // hooks up from the wrist.
+            var wrist = new Vector3(length * 0.4f, 0.02f * length, 0.03f * length);
+            var spine = new[] { Vector3.zero, new Vector3(length * 0.2f, 0.01f * length, 0.02f * length), wrist, new Vector3(length * 0.6f, 0.018f * length, 0f), new Vector3(length * 0.8f, 0.014f * length, -0.01f * length), new Vector3(length, 0.01f * length, -0.02f * length) };
+            b.AddBlade(spine, new[] { width * 0.5f, width * 0.8f, width, width * 0.8f, width * 0.7f, width * 0.12f }, Vector3.forward, Dark);
+            b.AddTube(new[] { Vector3.zero, wrist }, new[] { length * 0.032f, length * 0.024f }, 5, Body, false);
+            b.AddBlob(wrist, Vector3.one * length * 0.034f, 3, 6, 0f, 0, Dark, false);
+            b.AddTube(new[] { wrist, spine[5] }, new[] { length * 0.02f, length * 0.005f }, 4, Body, false);
+            Spike(b, wrist + new Vector3(0f, 0.01f * length, 0.02f * length), wrist + new Vector3(length * 0.02f, 0.08f * length, 0.07f * length), length * 0.012f, Accent);
             for (int i = 1; i <= 3; i++)
             {
-                var root = new Vector3(length * 0.4f, 0.02f * length, 0.03f * length);
                 var tip = new Vector3(length * (0.55f + i * 0.14f), 0.015f * length, -width * (0.5f - i * 0.12f));
-                b.AddTube(new[] { root, tip }, new[] { length * 0.014f, length * 0.004f }, 4, Accent, false);
+                b.AddTube(new[] { wrist, Vector3.Lerp(wrist, tip, 0.5f), tip }, new[] { length * 0.018f, length * 0.012f, length * 0.005f }, 4, Accent, false);
+                b.AddBlob(Vector3.Lerp(wrist, tip, 0.5f), Vector3.one * length * 0.016f, 3, 5, 0f, 0, Dark, false);
+                Spike(b, tip, tip + (tip - wrist).normalized * length * 0.05f - new Vector3(0f, 0f, length * 0.02f), length * 0.008f, Accent);
             }
 
             Mesh mesh = b.ToMesh("Wing");
@@ -1147,6 +1252,14 @@ namespace Game.Enemies
             var spine = new[] { Vector3.zero, new Vector3(length * 0.45f, 0f, -width * 0.05f), new Vector3(length, 0f, -width * 0.25f) };
             b.AddBlade(spine, new[] { width, width * 0.75f, width * 0.08f }, Vector3.forward, Body);
             b.AddTube(new[] { new Vector3(0f, 0.005f * length, width * 0.5f), new Vector3(length * 0.5f, 0.005f * length, width * 0.32f), new Vector3(length, 0.005f * length, -width * 0.21f) }, new[] { length * 0.015f, length * 0.012f, length * 0.004f }, 4, Accent, false);
+            // Fin rays fanning from the root to the edge, raised a little so they catch the light.
+            for (int i = 0; i < 5; i++)
+            {
+                float t = i / 4f;
+                var edge = new Vector3(Mathf.Lerp(length * 0.35f, length, t), 0.008f * length, Mathf.Lerp(-width * 0.45f, -width * 0.24f, t));
+                b.AddTube(new[] { new Vector3(0f, 0.008f * length, Mathf.Lerp(-width * 0.3f, width * 0.1f, t)), edge }, new[] { length * 0.014f, length * 0.003f }, 4, Dark, false);
+            }
+
             Mesh mesh = b.ToMesh("Fin");
             parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, hinge, false, index * 0.5f, index));
             parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, new Vector3(-hinge.x, hinge.y, hinge.z), true, index * 0.5f, index));

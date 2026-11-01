@@ -7,8 +7,6 @@ namespace Game.Levels
     /// <summary>Turns heavy moments (explosions, the base taking a hit, a boss falling) into a kick of the camera. View only.</summary>
     public sealed class CameraShaker : MonoBehaviour
     {
-        private const float ExplosionBase = 0.12f;
-        private const float ExplosionPerRadius = 0.14f;
         private const float BaseHit = 0.7f;
         private const float BaseHitMinInterval = 1.5f;
         private const float BossDeath = 0.8f;
@@ -17,7 +15,6 @@ namespace Game.Levels
         private const float HeroDown = 0.4f;
         private const float BaseDestroyed = 1f;
         private const float BossWaveQuake = 0.5f;
-        private const float BossPulse = 0.6f;
         private const float BossGroundEntrance = 0.9f;
         private const float BossEntrance = 0.4f;
 
@@ -32,12 +29,12 @@ namespace Game.Levels
             _context = context;
             _lastBaseHealth = context.BaseHealth.Current;
             context.Projectiles.Exploded += OnExploded;
+            context.Projectiles.Burst += OnBurst;
             context.BaseHealth.Changed += OnBaseChanged;
             context.BaseHealth.Died += OnBaseDied;
             context.EnemyKilled.Subscribe(OnEnemyKilled);
             context.StructureWrecked.Subscribe(OnStructureWrecked);
             context.BossWaveStarted.Subscribe(OnBossWave);
-            context.BossPulsed.Subscribe(OnBossPulsed);
             context.EnemySpawned.Subscribe(OnEnemySpawned);
             if (context.Hero != null)
             {
@@ -47,8 +44,6 @@ namespace Game.Levels
         }
 
         private void OnBossWave() => _rig.Shake(BossWaveQuake);
-
-        private void OnBossPulsed(Vector3 centre) => _rig.Shake(BossPulse);
 
         // A boss breaking out of the ground shakes harder than one stepping through the gate.
         private void OnEnemySpawned(Enemy enemy)
@@ -73,12 +68,12 @@ namespace Game.Levels
             }
 
             _context.Projectiles.Exploded -= OnExploded;
+            _context.Projectiles.Burst -= OnBurst;
             _context.BaseHealth.Changed -= OnBaseChanged;
             _context.BaseHealth.Died -= OnBaseDied;
             _context.EnemyKilled.Unsubscribe(OnEnemyKilled);
             _context.StructureWrecked.Unsubscribe(OnStructureWrecked);
             _context.BossWaveStarted.Unsubscribe(OnBossWave);
-            _context.BossPulsed.Unsubscribe(OnBossPulsed);
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
             if (_context.Hero != null)
             {
@@ -87,7 +82,10 @@ namespace Game.Levels
             }
         }
 
-        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => _rig.Shake(ExplosionBase + ExplosionPerRadius * radius);
+        // How hard a blast kicks is part of its look, so it comes from the impact definition.
+        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => _rig.Shake(_context.Projectiles.Vfx.For(style).ShakeFor(radius));
+
+        private void OnBurst(Vector3 position, float radius, ImpactVfxDefinition vfx) => _rig.Shake(vfx.ShakeFor(radius));
 
         private void OnBaseChanged(float current)
         {

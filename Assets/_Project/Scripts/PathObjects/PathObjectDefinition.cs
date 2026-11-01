@@ -35,6 +35,8 @@ namespace Game.PathObjects
 
         /// <summary>What it does, as the player reads it: the badge on its card and the words in the loadout.</summary>
         [SerializeField] private PathObjectEffect _effect;
+        [Tooltip("What its blast looks like; empty uses the mine entry of the VfxLibrary.")]
+        [SerializeField] private Game.Combat.ImpactVfxDefinition _impactVfx;
 
         /// <summary>One or two lines for the loadout screen on what this weapon does and where it goes.</summary>
         [SerializeField] [TextArea] private string _description = string.Empty;
@@ -53,6 +55,7 @@ namespace Game.PathObjects
         public Color Color => _color;
         public PathObjectLook Look => _look;
         public PathObjectEffect Effect => _effect;
+        public Game.Combat.ImpactVfxDefinition ImpactVfx => _impactVfx;
         public string Description => _description;
     }
 }

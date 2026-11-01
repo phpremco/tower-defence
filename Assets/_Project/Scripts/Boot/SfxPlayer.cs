@@ -17,7 +17,7 @@ namespace Game.Boot
     /// work, path objects on the road, hits on the base and the player's own actions.
     /// Keeps the field from turning into noise: each kind of filler sound has a budget of voices, shots that land
     /// within a few milliseconds of each other bundle into one, big moments duck the filler, and the further the
-    /// camera is zoomed out the quieter and duller the filler gets. Lasers hum as a loop instead of stuttering.
+    /// camera is zoomed out the quieter and duller the filler gets.
     /// Listens to events only; gameplay does not know it exists.
     /// </summary>
     public sealed class SfxPlayer : MonoBehaviour
@@ -40,8 +40,6 @@ namespace Game.Boot
         private const float FarCutoffHz = 7000f;
         private const float NearCutoffHz = 22000f;
         private const float MaxZoom = 3f;
-        private const float LaserHoldSeconds = 0.25f;
-        private const float LaserVolume = 0.15f;
         private const float LaserFadeSeconds = 0.15f;
         private const float BossLaserVolume = 0.6f;
         private const float ApproachVolume = 0.5f;
@@ -99,9 +97,7 @@ namespace Game.Boot
         private float[] _voiceEnds;
         private float[] _voiceVolumes;
         private float[] _voiceStarts;
-        private AudioSource _laserLoop;
         private AudioSource _bossLaserLoop;
-        private float _laserUntil = float.NegativeInfinity;
         private float _duckUntil = float.NegativeInfinity;
         private float _approachUntil = float.NegativeInfinity;
         private float _nextApproach = float.NegativeInfinity;
@@ -118,6 +114,7 @@ namespace Game.Boot
         private SoundFamily _rocket;
         private SoundFamily _cryo;
         private SoundFamily _tesla;
+        private SoundFamily _laser;
         private SoundFamily _rail;
         private SoundFamily _cannonExplosion;
         private SoundFamily _rocketExplosion;
@@ -199,7 +196,6 @@ namespace Game.Boot
                 _voiceEnds[i] = float.NegativeInfinity;
             }
 
-            _laserLoop = Loop(ProceduralSfx.LaserHum());
             // Recorded clips when the library has them, the generated sound otherwise.
             Services.TryGet(out SfxLibrary library);
             _bossLaserLoop = Loop(library != null && !library.BossLaserLoops.IsEmpty ? library.BossLaserLoops[0] : ProceduralSfx.BossLaserHum());
@@ -245,6 +241,7 @@ namespace Game.Boot
             _rocket = new SoundFamily(library?.RocketLaunches, ProceduralSfx.RocketLaunch());
             _cryo = new SoundFamily(library?.CryoShots, ProceduralSfx.CryoShot());
             _tesla = new SoundFamily(library?.TeslaShots, ProceduralSfx.TeslaShot());
+            _laser = new SoundFamily(library?.LaserShots, ProceduralSfx.PulseShot());
             _rail = new SoundFamily(library?.RailShots, ProceduralSfx.RailShot());
             _cannonExplosion = new SoundFamily(library?.CannonExplosions, ProceduralSfx.Explosion());
             _rocketExplosion = new SoundFamily(library?.RocketExplosions, ProceduralSfx.Explosion());
@@ -375,7 +372,6 @@ namespace Game.Boot
             }
 
             float fade = dt / LaserFadeSeconds;
-            _laserLoop.volume = Mathf.MoveTowards(_laserLoop.volume, now < _laserUntil ? LaserVolume * filler : 0f, fade);
             _bossLaserLoop.volume = Mathf.MoveTowards(_bossLaserLoop.volume, _bossLasers > 0 ? BossLaserVolume * effects * running : 0f, fade);
             _chorus.Update(dt, filler);
             UpdateHero(dt, filler);
@@ -410,16 +406,14 @@ namespace Game.Boot
         }
 
         // The weapon speaks through its shot: chilling shots ring, splash shots thump, flak at the sky whooshes.
-        // Lasers keep a hum going instead of a click per tick.
+        // A laser zaps once per shot, bundled like the tesla so a fast tower does not stutter.
         private void OnShot(ShotInfo shot)
         {
             if (shot.Style == ProjectileStyle.Laser)
             {
-                _laserUntil = Time.unscaledTime + LaserHoldSeconds;
-                return;
+                Shot(_laser, ShotVolume, RapidCooldownSeconds);
             }
-
-            if (shot.Style == ProjectileStyle.Lightning)
+            else if (shot.Style == ProjectileStyle.Lightning)
             {
                 Shot(_tesla, ShotVolume, RapidCooldownSeconds);
             }

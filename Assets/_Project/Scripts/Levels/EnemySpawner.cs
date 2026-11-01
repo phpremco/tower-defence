@@ -367,14 +367,18 @@ namespace Game.Levels
             return enemy;
         }
 
-        private void OnBossPulsed(Vector3 centre, float radius, Color color) => _context.BossPulsed.Raise(centre);
+        private void OnBossPulsed(Vector3 centre, float radius, Color color)
+        {
+            _context.Projectiles.PlayBurst(centre, radius, _context.Projectiles.Vfx.BossPulse, color);
+            _context.BossPulsed.Raise(centre);
+        }
 
         private void OnAttacked(Vector3 position) => _context.StructureHit.Raise(position);
 
         private void OnKilled(Enemy enemy)
         {
             _context.Wallet.Add(enemy.Reward);
-            _context.Projectiles.Burst(enemy.Position, DeathBurstRadius);
+            _context.Projectiles.PlayBurst(enemy.Position, DeathBurstRadius);
             _context.EnemyKilled.Raise(enemy);
             _context.EnemyDefeated.Raise();
             Enrage(enemy);

@@ -7,7 +7,11 @@
 
         public bool BloomEnabled => true;
 
+        public float BloomScale => 1f;
+
         public bool FogEnabled => true;
+
+        public bool DepthOfFieldEnabled => true;
 
         public float ParticleScale => 1f;
 

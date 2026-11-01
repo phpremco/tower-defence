@@ -19,6 +19,7 @@ namespace Game.Hero
         private const float KickSeconds = 0.14f;
         private const float KickPitch = 14f;
         private const float KickLean = -4f;
+        private const float AimLean = 3f;
         private const float BoltSeconds = 0.09f;
         private const float BoltWidth = 0.08f;
         private const float FlashSize = 0.16f;
@@ -71,8 +72,9 @@ namespace Game.Hero
             }
         }
 
-        // Aiming turns the torso a little, like a shooter squaring up.
-        protected override Pose IdlePose(bool walking) => new Pose { Twist = Drawn && !walking ? AimTwist : 0f };
+        // Aiming turns the torso a little and leans into the gun, like a shooter squaring up; the arm itself is
+        // pointed at the target by the view.
+        protected override Pose IdlePose(bool walking) => new Pose { Twist = Drawn && !walking ? AimTwist : 0f, Lean = Drawn ? AimLean : 0f, Aim = Drawn ? 1f : 0f };
 
         protected override Pose Animate()
         {
@@ -98,8 +100,10 @@ namespace Game.Hero
             {
                 ArmPitch = AimPitch + KickPitch * kick,
                 ArmYaw = AimYaw,
-                Lean = KickLean * kick,
+                Lean = AimLean + KickLean * kick,
                 Twist = AimTwist,
+                Aim = 1f,
+                Recoil = KickPitch * kick,
                 Busy = true,
             };
         }

@@ -90,3 +90,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
   - {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
   _story: {fileID: 11400000, guid: 5b0885be512d33c4db11f5c65e96a4a5, type: 2}
+  _globeAlbedo: {fileID: 2800000, guid: 1ee2ee7d02a550f43a7874619d8bc673, type: 3}
+  _globeNormal: {fileID: 2800000, guid: eba4c4a8618115b44ab0a11b6473f65d, type: 3}
+  _globeGloss: {fileID: 2800000, guid: d819b64066aec984a8b8f7261f6d1452, type: 3}
+  _globeLights: {fileID: 2800000, guid: 435dcce61392f214a8e855d837ec50c0, type: 3}
+  _globeClouds:
+  - {fileID: 2800000, guid: 7b9eab50c3510f546936cc5a2c27d6c0, type: 3}
+  - {fileID: 2800000, guid: a6ad2f84c68010b46931cb6951017837, type: 3}

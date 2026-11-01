@@ -165,11 +165,13 @@ namespace Game.Editor
             UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard, new[] { repairDrone, harvestDrone, attackDrone });
             UiSkin skin = CreateSkin();
             CampaignCatalog campaign = CreateCampaign(allLevels, difficulties);
+            BakeGlobe(campaign);
             CreateMenuStage(worldLevels, bestiary);
 
             CreateStory(campaign);
             ConfigureRenderPipeline();
             CreateSfxLibrary();
+            CreateVfxLibrary();
             CreateBootScene(campaign, upgradeCatalog, unlocks, debug, skin, CreateShaderKeepers());
             CreateLevelScene();
             CreateMainMenuScene();
@@ -403,26 +405,27 @@ namespace Game.Editor
             ConfigureThemePalette(theme, new Palette
             {
                 Background = new Color(0.02f, 0.03f, 0.06f),
-                Ground = new Color(0.27f, 0.33f, 0.42f),
-                Path = new Color(0.55f, 0.8f, 1f),
+                Ground = new Color(0.14f, 0.16f, 0.2f),
+                Path = new Color(0.78f, 0.86f, 0.95f),
                 Slot = new Color(0.2f, 0.55f, 1f),
                 Base = new Color(0.3f, 0.85f, 1f),
-                Light = new Color(0.75f, 0.85f, 1f),
-                LightIntensity = 1.1f,
+                Light = new Color(0.92f, 0.94f, 1f),
+                LightIntensity = 1.25f,
                 Fog = new Color(0.03f, 0.04f, 0.08f),
-                FogDensity = 0.01f,
+                FogDensity = 0.008f,
                 Bloom = 1.2f,
-                Rock = new Color(0.42f, 0.48f, 0.6f),
+                Rock = new Color(0.34f, 0.36f, 0.4f),
                 Accent = new Color(0.35f, 0.85f, 1f),
                 Water = new Color(0.07f, 0.38f, 0.62f),
                 Lava = new Color(1f, 0.4f, 0.1f),
                 Sand = new Color(0.5f, 0.5f, 0.56f),
-                Props = new[] { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond, PropKind.Rock, PropKind.Crystal },
+                Sky = new Color(0.3f, 0.34f, 0.42f),
+                Props = new[] { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond, PropKind.Rock, PropKind.Boulder },
                 Vein = 0.4f,
                 AmbientRate = 9f,
                 AmbientRise = 0.1f,
                 Ambience = AmbienceKind.Wind,
-                Plant = new Color(0.36f, 0.55f, 0.62f),
+                Plant = new Color(0.3f, 0.46f, 0.5f),
             });
         }
 
@@ -733,7 +736,10 @@ namespace Game.Editor
                 KeeperMaterial("Lit_EmissionNormalDetail", false, "_EMISSION", "_NORMALMAP", "_DETAIL_MULX2"),
                 KeeperMaterial("Lit_Transparent", true, "_EMISSION", "_SURFACE_TYPE_TRANSPARENT"),
                 KeeperMaterial("Lit_TransparentFlat", true, "_EMISSION", "_SURFACE_TYPE_TRANSPARENT", "_SPECULARHIGHLIGHTS_OFF"),
+                KeeperMaterial("Lit_Planet", false, "_EMISSION", "_NORMALMAP", "_METALLICSPECGLOSSMAP", "_DETAIL_MULX2"),
                 KeeperShader("ImpactRipple", "Game/ImpactRipple"),
+                KeeperShader("Fireball", "Game/Fireball"),
+                KeeperShader("TiltShift", TiltShiftShaderName),
                 KeeperShader("UnitLit", Game.Core.SurfaceMaterials.UnitShaderName),
                 KeeperShader("UnitLit_Emission", Game.Core.SurfaceMaterials.UnitShaderName, "_EMISSION"),
                 KeeperShader("UnitLit_Normal", Game.Core.SurfaceMaterials.UnitShaderName, "_NORMALMAP"),
@@ -818,6 +824,8 @@ namespace Game.Editor
             so.FindProperty("_unlockTable").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UnlockTable>(unlocksPath);
             so.FindProperty("_playtestSettings").objectReferenceValue = AssetDatabase.LoadAssetAtPath<PlaytestSettings>(playtestPath);
             so.FindProperty("_sfxLibrary").objectReferenceValue = AssetDatabase.LoadAssetAtPath<SfxLibrary>(SfxLibraryPath);
+            so.FindProperty("_vfxLibrary").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Game.Combat.VfxLibrary>(VfxLibraryPath);
+            so.FindProperty("_tiltShift").objectReferenceValue = _tiltShift;
             so.FindProperty("_uiSkin").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UiSkin>(skinPath);
             SerializedProperty keepers = so.FindProperty("_shaderKeepers");
             keepers.arraySize = keeperPaths.Length;
@@ -849,6 +857,8 @@ namespace Game.Editor
             so.FindProperty("_lavaTheme").objectReferenceValue = ThemeWith(worldLevels, AmbienceKind.Lava);
             so.FindProperty("_ruinsTheme").objectReferenceValue = ThemeWith(worldLevels, AmbienceKind.Ruins);
             so.FindProperty("_nestTheme").objectReferenceValue = ThemeWith(worldLevels, AmbienceKind.Hive);
+            so.FindProperty("_iceTheme").objectReferenceValue = ThemeWith(worldLevels, AmbienceKind.Blizzard);
+            so.FindProperty("_swampTheme").objectReferenceValue = ThemeWith(worldLevels, AmbienceKind.Marsh);
             SerializedProperty walkers = so.FindProperty("_nestCreatures");
             EnemyDefinition[] crawlers = { bestiary.Skitter, bestiary.Prowler, bestiary.Roller, bestiary.Stinger };
             walkers.arraySize = crawlers.Length;
@@ -862,6 +872,8 @@ namespace Game.Editor
             so.FindProperty("_waterCreature").objectReferenceValue = bestiary.Tidebat;
             so.FindProperty("_lavaCreature").objectReferenceValue = bestiary.Emberbat;
             so.FindProperty("_sandCreature").objectReferenceValue = bestiary.Dustbat;
+            so.FindProperty("_iceCreature").objectReferenceValue = bestiary.Frostbat;
+            so.FindProperty("_bogCreature").objectReferenceValue = bestiary.Mirebat;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

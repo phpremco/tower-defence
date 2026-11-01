@@ -17,6 +17,7 @@ namespace Game.Core
         [SerializeField] private SoundSet _rocketLaunches = new SoundSet();
         [SerializeField] private SoundSet _cryoShots = new SoundSet();
         [SerializeField] private SoundSet _teslaShots = new SoundSet();
+        [SerializeField] private SoundSet _laserShots = new SoundSet();
         [SerializeField] private SoundSet _railShots = new SoundSet();
 
         [Header("Explosions")]
@@ -91,6 +92,7 @@ namespace Game.Core
         public SoundSet RocketLaunches => _rocketLaunches;
         public SoundSet CryoShots => _cryoShots;
         public SoundSet TeslaShots => _teslaShots;
+        public SoundSet LaserShots => _laserShots;
         public SoundSet RailShots => _railShots;
         public SoundSet CannonExplosions => _cannonExplosions;
         public SoundSet RocketExplosions => _rocketExplosions;
@@ -143,7 +145,7 @@ namespace Game.Core
         public (string Label, SoundSet Set)[] Sets() => new[]
         {
             ("Pulse shot", _pulseShots), ("Heavy shot", _heavyShots), ("Rocket launch", _rocketLaunches), ("Cryo shot", _cryoShots),
-            ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Cannon explosion", _cannonExplosions),
+            ("Tesla shot", _teslaShots), ("Laser shot", _laserShots), ("Rail shot", _railShots), ("Cannon explosion", _cannonExplosions),
             ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
             ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),

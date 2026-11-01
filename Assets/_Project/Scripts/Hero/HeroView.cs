@@ -1,3 +1,4 @@
+using Game.Combat;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -33,18 +34,20 @@ namespace Game.Hero
         private const float RunKneeDegrees = 14f;
         private const float RunCrouch = 0.04f;
         private const float RestHipDegrees = -6f;
-        private const float RestKneeDegrees = 24f;
-        private const float StanceStaggerDegrees = 11f;
+        private const float RestKneeDegrees = 30f;
+        private const float StanceStaggerDegrees = 17f;
         private const float FrontKneeExtraDegrees = 8f;
         private const float BackKneeExtraDegrees = -6f;
-        private const float FootSplayDegrees = 10f;
+        private const float FootSplayDegrees = 14f;
         private const float LegSettleSpeed = 8f;
         private const float WeightShiftSpeed = 0.9f;
-        private const float WeightShiftKnee = 6f;
-        private const float WeightShiftSlide = 0.02f;
-        private const float WeightShiftRoll = 2f;
-        private const float HunchDegrees = 16f;
-        private const float RestTwistDegrees = 12f;
+        private const float WeightShiftKnee = 9f;
+        private const float WeightShiftSlide = 0.04f;
+        private const float WeightShiftRoll = 3f;
+        private const float HunchDegrees = 12f;
+        private const float RestTwistDegrees = 20f;
+        private const float TorsoSwayDegrees = 3f;
+        private const float TorsoSwaySpeed = 0.5f;
         private const float HipCounterTwistShare = 0.35f;
         private const float HeadForwardDegrees = 12f;
         private const float HeadScanDegrees = 28f;
@@ -56,7 +59,7 @@ namespace Game.Hero
         private const float RunForearmDegrees = 85f;
         private const float DrawnForearmDegrees = 12f;
         private const float ForearmSwingShare = 0.25f;
-        private const float FreeArmRestPitch = 8f;
+        private const float FreeArmRestPitch = 14f;
         private const float FreeArmRestYaw = -12f;
         private const float FreeArmSwingShare = 0.8f;
         private const float FreeArmAimPitch = -55f;
@@ -64,9 +67,26 @@ namespace Game.Hero
         private const float FreeArmAimForearm = 20f;
         private const float FreeArmGuardPitch = -35f;
         private const float FreeArmGuardYaw = -12f;
+        private const float FlowSpeed = 1.1f;
+        private const float FlowDegrees = 12f;
+        private const float FreeArmCounterShare = 0.35f;
+        private const float FormIntervalMin = 5f;
+        private const float FormIntervalMax = 9f;
+        private const float FormSeconds = 1.8f;
+        private const float FormArmPitch = -75f;
+        private const float FormArmYaw = 55f;
+        private const float FormForearmDegrees = 30f;
+        private const float FormTwistDegrees = -10f;
+        private const float AimFollowSpeed = 9f;
+        private const float AimHeight = 0.4f;
+        private const float AimMaxDegrees = 80f;
+        private const float AimWobbleDegrees = 1.2f;
+        private const float AimWobbleSpeed = 2.1f;
+        private const float StraightForearmDegrees = 90f;
+        private const float HeadAimMaxDegrees = 65f;
         private const float DrawFollowSpeed = 6f;
         private const float CloakTrailDegrees = 26f;
-        private const float CloakSwayDegrees = 4f;
+        private const float CloakSwayDegrees = 6f;
         private const float CloakSwaySpeed = 1.3f;
         private const float CloakLungeDegrees = 30f;
         private const float StaggerSeconds = 0.3f;
@@ -170,6 +190,9 @@ namespace Game.Hero
         private bool _impacted;
         private float _rise = float.PositiveInfinity;
         private float _fallYaw;
+        private float _aim;
+        private float _nextForm;
+        private float _formTime = float.PositiveInfinity;
 
         public void Initialize(Commander hero)
         {
@@ -536,19 +559,28 @@ namespace Game.Hero
 
             _drawn = Mathf.MoveTowards(_drawn, _active.Drawn ? 1f : 0f, DrawFollowSpeed * Time.deltaTime);
             _torso.localScale = new Vector3(1f, 1f + BreathDepth * Mathf.Sin(Time.time * BreathSpeed), 1f);
+            bool aiming = _active == _ranged && _ranged != null;
+            float form = FormCurve(_active.Drawn && !aiming && !walking && !pose.Busy);
             float restTwist = RestTwistDegrees * (1f - Mathf.Max(_drawn, _stride));
-            float twist = pose.Twist + restTwist - _legSwing * HipCounterTwistShare;
+            // The torso turns slowly on its hips while the hero waits, so the stance never freezes.
+            float torsoSway = Mathf.Sin(Time.time * TorsoSwaySpeed + _shiftPhase) * TorsoSwayDegrees * (1f - _stride);
+            float twist = pose.Twist + restTwist + torsoSway + form * FormTwistDegrees - _legSwing * HipCounterTwistShare;
             _torso.localRotation = Quaternion.Euler(HunchDegrees + pose.Lean + WalkLeanDegrees * _stride, twist, shift * WeightShiftRoll);
 
             _armUpperRight.localRotation = Quaternion.Euler(pose.ArmPitch, pose.ArmYaw, 0f);
             float relaxedForearm = Mathf.Lerp(RelaxedForearmDegrees, RunForearmDegrees, _stride);
             float forearm = Mathf.Lerp(relaxedForearm - _legSwing * ForearmSwingShare, DrawnForearmDegrees, _drawn);
             _armLowerRight.localRotation = Quaternion.Euler(forearm, 0f, 0f);
+            Aim(pose);
 
-            bool aiming = _active == _ranged && _ranged != null;
-            float freePitch = aiming ? FreeArmAimPitch : FreeArmGuardPitch;
-            float freeYaw = aiming ? FreeArmAimYaw : FreeArmGuardYaw;
-            float freeForearm = aiming ? FreeArmAimForearm : RelaxedForearmDegrees * 0.6f;
+            // The free hand: under the gun at aim; in the sword guard it circles slowly in front of the chest, now
+            // and then sweeps out in a slow form, and counters the blade during a cut.
+            float flowPitch = Mathf.Sin(Time.time * FlowSpeed + _shiftPhase) * FlowDegrees;
+            float flowYaw = Mathf.Cos(Time.time * FlowSpeed + _shiftPhase) * FlowDegrees * 0.6f;
+            float counter = pose.Busy && !aiming ? -pose.ArmYaw * FreeArmCounterShare : 0f;
+            float freePitch = aiming ? FreeArmAimPitch : Mathf.Lerp(FreeArmGuardPitch + flowPitch, FormArmPitch, form);
+            float freeYaw = aiming ? FreeArmAimYaw : Mathf.Lerp(FreeArmGuardYaw + flowYaw + counter, FormArmYaw, form);
+            float freeForearm = aiming ? FreeArmAimForearm : Mathf.Lerp(RelaxedForearmDegrees * 0.6f, FormForearmDegrees, form);
             float restPitch = FreeArmRestPitch + _legSwing * FreeArmSwingShare;
             _armUpperLeft.localRotation = Quaternion.Euler(Mathf.Lerp(restPitch, freePitch, _drawn), Mathf.Lerp(FreeArmRestYaw, freeYaw, _drawn), 0f);
             _armLowerLeft.localRotation = Quaternion.Euler(Mathf.Lerp(relaxedForearm + _legSwing * ForearmSwingShare, freeForearm, _drawn), 0f, 0f);
@@ -556,6 +588,65 @@ namespace Game.Hero
             // The cloak trails when the figure moves or lunges and stirs a little in the wind while it stands.
             float cloakSway = Mathf.Sin(Time.time * CloakSwaySpeed + _shiftPhase) * CloakSwayDegrees + Mathf.Sin(Time.time * CloakSwaySpeed * 2.3f) * CloakSwayDegrees * 0.4f;
             _cloak.localRotation = Quaternion.Euler(CloakTrailDegrees * _stride + pose.Lunge * CloakLungeDegrees + cloakSway, 0f, shift * WeightShiftRoll * 0.5f);
+        }
+
+        // A gun at aim points straight at what the hero shoots: the upper arm is turned in world space so the arm
+        // lines up from the shoulder to the target (the forearm straightens into that line) and the muzzle rises
+        // with the kick. The aim is held between shots and follows the target, within a cone around the facing
+        // so the arm never wraps behind the back; the body turns on the next shot.
+        private void Aim(HeroWeaponRig.Pose pose)
+        {
+            Vector3 point = default;
+            bool hasAim = pose.Aim > 0f && TryAimPoint(out point);
+            _aim = Mathf.MoveTowards(_aim, hasAim ? pose.Aim : 0f, AimFollowSpeed * Time.deltaTime);
+            if (_aim <= 0f || !hasAim)
+            {
+                return;
+            }
+
+            Vector3 to = point - _armUpperRight.position;
+            Vector3 limit = _figure.forward * to.magnitude;
+            to = Vector3.RotateTowards(limit, to, AimMaxDegrees * Mathf.Deg2Rad, 0f);
+            float wobble = Mathf.Sin(Time.time * AimWobbleSpeed + _shiftPhase) * AimWobbleDegrees;
+            // The arm hangs along its own -y; a quarter turn brings that onto the look direction.
+            Quaternion solved = Quaternion.LookRotation(to, Vector3.up) * Quaternion.Euler(-90f - pose.Recoil + wobble, 0f, 0f);
+            _armUpperRight.rotation = Quaternion.Slerp(_armUpperRight.rotation, solved, _aim);
+            _armLowerRight.localRotation = Quaternion.Slerp(_armLowerRight.localRotation, Quaternion.Euler(StraightForearmDegrees, 0f, 0f), _aim);
+        }
+
+        private bool TryAimPoint(out Vector3 point)
+        {
+            ITargetable target = _hero.Target;
+            if (target != null && target.IsAlive)
+            {
+                point = target.Position + Vector3.up * AimHeight;
+                return true;
+            }
+
+            point = default;
+            return false;
+        }
+
+        // Every so often the waiting swordsman runs a slow form with the free hand: out, around and back.
+        private float FormCurve(bool guardIdle)
+        {
+            if (_formTime < FormSeconds)
+            {
+                _formTime += Time.deltaTime;
+                return Mathf.Sin(Mathf.Clamp01(_formTime / FormSeconds) * Mathf.PI);
+            }
+
+            if (guardIdle && Time.time >= _nextForm)
+            {
+                _formTime = 0f;
+                _nextForm = Time.time + Random.Range(FormIntervalMin, FormIntervalMax);
+            }
+            else if (!guardIdle)
+            {
+                _nextForm = Time.time + Random.Range(FormIntervalMin, FormIntervalMax) * 0.5f;
+            }
+
+            return 0f;
         }
 
         // Standing: one foot back and one forward, both knees bent, the weight rocking slowly from leg to leg.
@@ -599,6 +690,13 @@ namespace Game.Hero
             bool busy = _hero.IsWalking || _active.Drawn;
             float yaw = busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed + _scanPhase) * HeadScanDegrees;
             float pitch = HeadForwardDegrees + (busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed * 1.7f + _scanPhase) * HeadNodDegrees);
+            if (_active.Drawn && TryAimPoint(out Vector3 point))
+            {
+                // With a weapon out the eyes stay on the enemy, as far as the neck turns.
+                Vector3 local = _torso.InverseTransformDirection(point - _head.position);
+                yaw = Mathf.Clamp(Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg, -HeadAimMaxDegrees, HeadAimMaxDegrees);
+            }
+
             float k = 1f - Mathf.Exp(-HeadFollowSpeed * Time.deltaTime);
             _headYaw = Mathf.Lerp(_headYaw, yaw, k);
             _headPitch = Mathf.Lerp(_headPitch, pitch, k);

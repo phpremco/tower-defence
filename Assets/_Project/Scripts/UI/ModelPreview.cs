@@ -27,6 +27,18 @@ namespace Game.UI
         private const float KeyIntensity = 1.6f;
         private const float FillIntensity = 0.5f;
         private const float RimIntensity = 1.1f;
+        // The stage: a disc the model stands on with a lit ring round it and a gradient backdrop, so the preview
+        // reads as a product shot rather than a model floating in the dark.
+        private const float FloorRadiusShare = 1.25f;
+        private const float FloorThickness = 0.02f;
+        private const float RingThicknessShare = 0.02f;
+        private const float RingEmission = 1.1f;
+        private const float BackdropDistance = 30f;
+        private const float BackdropSize = 40f;
+        private const int GradientSteps = 64;
+        private static readonly Color BackdropTop = new Color(0.12f, 0.2f, 0.36f);
+        private static readonly Color BackdropBottom = new Color(0.03f, 0.04f, 0.08f);
+        private static readonly Color FloorColor = new Color(0.05f, 0.07f, 0.11f);
         private static readonly Color Background = new Color(0.05f, 0.08f, 0.13f, 1f);
         private static readonly Color KeyColor = new Color(1f, 0.96f, 0.9f);
         private static readonly Color FillColor = new Color(0.55f, 0.7f, 1f);
@@ -38,6 +50,8 @@ namespace Game.UI
         private Transform _cameraPivot;
         private Camera _camera;
         private RenderTexture _texture;
+        private Transform _floor;
+        private Transform _ring;
         private float _burst;
 
         public static ModelPreview Create(RectTransform parent, Vector2 size)
@@ -161,7 +175,65 @@ namespace Game.UI
             float distance = (Mathf.Max(wide, tall) / halfTan + wide) / FrameFill;
             _camera.transform.localPosition = new Vector3(0f, 0f, -distance);
             _camera.nearClipPlane = Mathf.Max(0.05f, distance - radius * 2f);
-            _camera.farClipPlane = distance + radius * 2f;
+            _camera.farClipPlane = distance + BackdropDistance + radius;
+            PlaceStage(bounds, wide);
+        }
+
+        // The floor sits just under the lowest point of the model and grows with its footprint; the backdrop hangs far behind.
+        private void PlaceStage(Bounds bounds, float wide)
+        {
+            float radius = Mathf.Max(wide, 0.25f) * FloorRadiusShare;
+            // Frame() has just shifted the turntable to centre the model, so the measured bounds move with it.
+            float y = bounds.min.y + _turntable.localPosition.y - _rig.position.y;
+            _floor.localPosition = new Vector3(0f, y - FloorThickness, 0f);
+            _floor.localScale = new Vector3(radius, 1f, radius);
+            _ring.localPosition = new Vector3(0f, y, 0f);
+            _ring.localScale = new Vector3(radius, 1f, radius);
+        }
+
+        private void BuildStage()
+        {
+            var floor = new PropMeshBuilder();
+            floor.AddTube(new[] { Vector3.zero, Vector3.up * FloorThickness }, new[] { 1f, 1f }, 40, ModelPalette.Dark, true);
+            var floorObject = new GameObject("Floor");
+            floorObject.transform.SetParent(_rig, false);
+            floorObject.AddComponent<MeshFilter>().sharedMesh = floor.ToMesh("PreviewFloor");
+            var floorRenderer = floorObject.AddComponent<MeshRenderer>();
+            floorRenderer.sharedMaterials = new[] { SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f) };
+            floorRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _floor = floorObject.transform;
+
+            var ring = new PropMeshBuilder();
+            ring.AddTorus(Vector3.zero, Vector3.up, 1f, RingThicknessShare, 48, 8, ModelPalette.Glow);
+            var ringObject = new GameObject("Ring");
+            ringObject.transform.SetParent(_rig, false);
+            ringObject.AddComponent<MeshFilter>().sharedMesh = ring.ToMesh("PreviewRing");
+            Material glow = SurfaceMaterials.Create(SurfaceMaterials.ColonyRim, RingEmission, 0.6f);
+            ringObject.AddComponent<MeshRenderer>().sharedMaterials = new[] { glow, glow, glow, glow };
+            _ring = ringObject.transform;
+
+            var backdrop = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            Destroy(backdrop.GetComponent<Collider>());
+            backdrop.name = "Backdrop";
+            backdrop.transform.SetParent(_cameraPivot, false);
+            backdrop.transform.localPosition = new Vector3(0f, 0f, BackdropDistance);
+            backdrop.transform.localScale = new Vector3(BackdropSize, BackdropSize, 1f);
+            var backdropMaterial = new Material(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
+            backdropMaterial.SetTexture("_BaseMap", Gradient());
+            backdrop.GetComponent<MeshRenderer>().sharedMaterial = backdropMaterial;
+        }
+
+        private static Texture2D Gradient()
+        {
+            var texture = new Texture2D(1, GradientSteps, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "PreviewBackdrop" };
+            for (int y = 0; y < GradientSteps; y++)
+            {
+                float t = y / (float)(GradientSteps - 1);
+                texture.SetPixel(0, y, Color.Lerp(BackdropBottom, BackdropTop, t * t));
+            }
+
+            texture.Apply();
+            return texture;
         }
 
         private void Build(RawImage image)
@@ -197,12 +269,13 @@ namespace Game.UI
 
             // Three lights like a product shot: a warm key from the front right, a cool fill from the left and a
             // rim from behind, so the dark undersides and the glowing parts both read.
-            AddLight("Key", new Vector3(40f, -35f, 0f), KeyColor, KeyIntensity);
+            AddLight("Key", new Vector3(40f, -35f, 0f), KeyColor, KeyIntensity).shadows = LightShadows.Soft;
             AddLight("Fill", new Vector3(20f, 60f, 0f), FillColor, FillIntensity);
             AddLight("Rim", new Vector3(-20f, 160f, 0f), RimColor, RimIntensity);
+            BuildStage();
         }
 
-        private void AddLight(string name, Vector3 euler, Color color, float intensity)
+        private Light AddLight(string name, Vector3 euler, Color color, float intensity)
         {
             var go = new GameObject(name);
             go.transform.SetParent(_rig, false);
@@ -212,6 +285,7 @@ namespace Game.UI
             light.color = color;
             light.intensity = intensity;
             light.shadows = LightShadows.None;
+            return light;
         }
 
         private void Update()

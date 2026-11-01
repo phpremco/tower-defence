@@ -766,7 +766,7 @@ namespace Game.Levels
             _pathObjectCells.Add(cell);
             pathObject.Triggered += (position, radius) =>
             {
-                _context.Projectiles.Burst(position, radius);
+                _context.Projectiles.PlayBurst(position, radius, definition.ImpactVfx != null ? definition.ImpactVfx : _context.Projectiles.Vfx.Mine, definition.Color);
                 _context.PathObjectTriggered.Raise(definition);
             };
             pathObject.Finished += finished =>

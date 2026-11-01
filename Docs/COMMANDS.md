@@ -201,3 +201,46 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - Balance model: `run_tests --mode EditMode --filter BalanceLedgerTests --timeout 300` writes
   `Tools/PlayTest/balance_ledger.txt` (one line per wave: money, bought DPS ground/air, wave HP ground/air, window,
   pressure ground/air; B marks a boss wave). Failures name level, difficulty and wave.
+
+## Graphics pass (added 2026-11-01, evening)
+
+- `Tools/PlayTest/look_layers.sh <prefix> [level]` measures the rendered colour of road, ground and hero
+  (`pixel_probe.cs`) and switches mist, the ground detail layer and post-processing off one by one
+  (`look_toggle.cs`, `look_arg.txt`: mist, detail, fog, post, rim) with a screenshot after each.
+- `Tools/PlayTest/liquid_shots.sh <prefix> <level> <Water|Lava|Bog> [zoom] [ortho half height]` zooms on the
+  largest pool of a kind (`zoom_liquid.cs`) and captures three frames; `particle_probe.cs` lists the particle
+  systems whose name contains `zoom_arg.txt`; `zoom_close.cs` sets the orthographic size directly (the gameplay
+  zoom clamps at 4.5), `particle_material_probe.cs` reports how the default particle material blends.
+- `Tools/PlayTest/burst_shots.sh <prefix> <level> "<Shell|Rocket|Mortar|Mine|Barrel|BossPulse|Death> <radius>" ...`
+  plays one impact effect after another at the hero (`burst_probe.cs`) in slow motion and captures three frames
+  of each, both as `--source camera` (no post-processing, for structure) and as the screen (`_screen.png`, with
+  bloom). `burst_inspect.cs` lists the active ImpactFlash objects. `time_free.cs` restores the time scale.
+- `Tools/PlayTest/showcase_shots.sh <prefix> [level] [probe] [ortho half height] [focus]` runs
+  `tower_showcase.cs` (every tower at level 0 and 2 in a row along the main route) and captures it;
+  `roster_shots.sh` does the same with `towers_all.cs`. `enemy_shots.sh <prefix> <level> <zoom> <Name> ...`
+  spawns creatures at the gate (the hero is sent to the base first) and captures frozen close-ups;
+  `STEPS=4` in the environment shortens the walk for creatures that die fast near the gate.
+- `Tools/PlayTest/profile_shots.sh <prefix> <level> <high|low>` captures a level under a quality profile;
+  `low_profile.cs` registers the Low (Switch) settings and switches the tilt-shift pass off; `renderer_probe.cs`
+  lists the renderer features and the tilt-shift material.
+- Pitfalls: the unfocused editor runs one long frame (up to a third of a second) between two CLI calls, so a
+  short effect is gone before the next capture; `burst_probe.cs` therefore slows time to 0.05 and
+  `time_free.cs` restores it (`Time.captureDeltaTime` does not help with `EditorApplication.Step`).
+  `capture_game_view --source camera` renders the camera fresh without post-processing and overlay UI.
+  Never edit a C# file between a recompile and `editor_play`: Unity recompiles when play starts and reloads
+  the domain mid-play (hundreds of NullReferenceExceptions, "no context" from every probe).
+- The URP depth of field (Gaussian and Bokeh) does not work with the orthographic camera; the tilt-shift is the
+  `Game/TiltShift` full-screen pass on `PC_Renderer` (material `Art/Materials/TiltShift.mat`: band, feather,
+  radius), created by the generator and switched by `Bootstrapper` from `IPlatformSettings.DepthOfFieldEnabled`.
+- Planet and screens (2026-11-01 late): `Tools/PlayTest/map_shot.sh <prefix>` captures the region view, backs out
+  to the planet (`map_step.cs` cancel) and captures that; `base_shot.sh <prefix> [Repair|Harvest|Attack ...]`
+  opens the upgrade screen and selects drone tiles. The planet maps are baked by the generator into
+  `Art/Planet/*.png` (`ProjectGenerator.Planet.cs`, `GlobePainter`) and referenced by the `CampaignCatalog`;
+  painting them live takes over five seconds and trips the CLI main-thread timeout.
+- Motion and aim (2026-11-01 night): `Tools/PlayTest/motion_shots.sh <prefix> <level> <zoom> <Name> [gap]` spawns a
+  creature at the hero's gate and captures a run of close-ups of the hero and of the creature a few frames apart
+  (the unfocused editor steps about half a second per frame, so a run shows poses, not smooth motion);
+  `aim_shots.sh <prefix> <level> <zoom> <Name>` does the same in slow motion (`set_timescale --scale 0.1`) and
+  prints `aim_probe.cs`: the angle between the drawn weapon's barrel and the line to the commander's target
+  (a few degrees, the kick of a shot and the aim wobble, is right). A bat forces the blaster, as the sword
+  cannot reach the air; a boss kills the hero within seconds, so use a Skitter or a bat for hero shots.
