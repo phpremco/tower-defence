@@ -51,11 +51,13 @@ namespace Game.Boot
         private const float ApproachMaxSeconds = 40f;
         private const float KillMaxSeconds = 0.7f;
         private const float CutFadeSeconds = 0.12f;
-        private const float CannonExplosionVolume = 0.45f;
-        private const float RocketExplosionVolume = 0.5f;
-        private const float MineExplosionVolume = 0.7f;
-        private const float GateExplosionVolume = 1f;
-        private const float TowerBreakVolume = 0.8f;
+        private const float CannonExplosionVolume = 0.6f;
+        private const float RocketExplosionVolume = 0.7f;
+        private const float MineExplosionVolume = 1f;
+        private const float GateExplosionVolume = 1.6f;
+        private const float BaseExplosionVolume = 2f;
+        private const float WaveDrumsVolume = 1.5f;
+        private const float TowerBreakVolume = 1.2f;
         private const float BaseAlertVolume = 0.7f;
         private const float UpgradeVolume = 0.6f;
         private const float CashVolume = 0.4f;
@@ -69,7 +71,7 @@ namespace Game.Boot
         private const float HeroPulseVolume = 2.5f;
         private const float HeroStepVolume = 0.12f;
         private const float HeroStepSpacing = 0.55f;
-        private const float HeroDeathVolume = 0.8f;
+        private const float HeroDeathVolume = 1.4f;
         private const float HeroFallVolume = 0.6f;
         private const float HeroFallDelay = 0.5f;
         private const float DroneFanVolume = 0.05f;
@@ -125,7 +127,7 @@ namespace Game.Boot
         private SoundFamily _towerBreak;
         private AudioClip _bossDeath;
         private SoundFamily _baseAlert;
-        private AudioClip _horn;
+        private SoundFamily _horn;
         private AudioClip _build;
         private SoundFamily _upgrade;
         private SoundFamily _cash;
@@ -252,7 +254,7 @@ namespace Game.Boot
             _towerBreak = new SoundFamily(library?.TowerBreaks, ProceduralSfx.BigExplosion());
             _bossDeath = ProceduralSfx.BossDeath();
             _baseAlert = new SoundFamily(library?.BaseAlerts, ProceduralSfx.BaseHit());
-            _horn = ProceduralSfx.WaveHorn();
+            _horn = new SoundFamily(library?.WaveDrums, ProceduralSfx.WaveHorn());
             _build = ProceduralSfx.Build();
             _upgrade = new SoundFamily(library?.Upgrades, ProceduralSfx.Upgrade());
             _cash = new SoundFamily(library?.Cash, ProceduralSfx.Sell());
@@ -346,7 +348,9 @@ namespace Game.Boot
             float cutoff = Mathf.Lerp(FarCutoffHz, NearCutoffHz, zoom);
             float duck = now < _duckUntil ? DuckDepth : 1f;
             float effects = _mix.EffectsGain;
-            float filler = effects * distance * duck;
+            // When the level is decided every running sound stops; only one-shots of the ending itself still play.
+            float running = _context.Outcome == LevelOutcome.Running ? 1f : 0f;
+            float filler = effects * distance * duck * running;
 
             for (int i = 0; i < VoiceCount; i++)
             {
@@ -372,7 +376,7 @@ namespace Game.Boot
 
             float fade = dt / LaserFadeSeconds;
             _laserLoop.volume = Mathf.MoveTowards(_laserLoop.volume, now < _laserUntil ? LaserVolume * filler : 0f, fade);
-            _bossLaserLoop.volume = Mathf.MoveTowards(_bossLaserLoop.volume, _bossLasers > 0 ? BossLaserVolume * effects : 0f, fade);
+            _bossLaserLoop.volume = Mathf.MoveTowards(_bossLaserLoop.volume, _bossLasers > 0 ? BossLaserVolume * effects * running : 0f, fade);
             _chorus.Update(dt, filler);
             UpdateHero(dt, filler);
             UpdateDrones(dt, filler);
@@ -612,9 +616,9 @@ namespace Game.Boot
             _lastBaseHealth = current;
         }
 
-        private void OnBaseDied() => Play(_baseExplosion, 1f, SfxKind.Priority);
+        private void OnBaseDied() => Play(_baseExplosion, BaseExplosionVolume, SfxKind.Priority);
 
-        private void OnWaveStarted() => Play(_horn, 0.8f, SfxKind.Priority);
+        private void OnWaveStarted() => Play(_horn, WaveDrumsVolume, SfxKind.Priority);
 
         private void OnBuilt() => Play(_build, 0.7f, SfxKind.Priority);
 

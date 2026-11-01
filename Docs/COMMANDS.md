@@ -197,6 +197,7 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
   uses the old code. Always check `console_status` for `compilationFailed: false` before `menu` or `run_tests`.
 - If `test_status` says "running" for minutes while `editor_status` says play mode is stopped, the runner is stuck (it
   happens when a run starts on a compile error or with a modified scene open): `open_scene` Boot, then start again.
+- Music loops: drop a generated track in `Assets/_Project/Audio/` as `menu-music.mp3`, `game-music.mp3` or `boss-music.mp3`, run `unity command menu --path "Tools/Audio/Make Music Loops" --timeout 300` (cuts the fades, blends the tail over the head, writes `Approved/Music/*_loop.wav`), then the generator; check with `eval_file --file Tools/PlayTest/loop_probe.cs` (first and last half second against the median, both should be near 1).
 - Balance model: `run_tests --mode EditMode --filter BalanceLedgerTests --timeout 300` writes
   `Tools/PlayTest/balance_ledger.txt` (one line per wave: money, bought DPS ground/air, wave HP ground/air, window,
   pressure ground/air; B marks a boss wave). Failures name level, difficulty and wave.

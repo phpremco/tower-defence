@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: AcidRain
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: AcidRain
+  _displayName: Acid Rain
   _kind: 3
   _interval: 9
   _firstDelay: 5

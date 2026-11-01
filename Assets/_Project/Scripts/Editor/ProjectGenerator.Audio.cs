@@ -79,6 +79,10 @@ namespace Game.Editor
             ("_icyWindLoops", ApprovedFolder + "/Environment", "icy_wind_loop"),
             ("_bossLaserLoops", Freesound, "freesound_community-laser-weld-103309"),
             ("_bossAlarms", Freesound, "warning"),
+            ("_waveDrums", ApprovedFolder + "/Environment", "wave_start_drums"),
+            ("_menuMusic", ApprovedFolder + "/Music", "menu_loop"),
+            ("_gameMusic", ApprovedFolder + "/Music", "game_calm_loop"),
+            ("_bossMusic", ApprovedFolder + "/Music", "game_boss_loop"),
         };
 
         // One voice per species. Paths are folders under Approved plus the file name without its variant number.

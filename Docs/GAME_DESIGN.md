@@ -268,6 +268,7 @@ Een level is data, geen handwerk: Claude Code en jij kunnen een nieuw level toev
 - **Golven in data:** per moeilijkheid een lijst golven met vijandtype, aantal, tempo en baswave.
 - **Hulpmiddel in de editor:** een eenvoudige tool die het pad en de bouwplekken toont en op fouten controleert (bijvoorbeeld een pad dat nergens heen leidt).
 - **Testen:** een snelle testmodus met oneindig geld om een level of een wave te proberen.
+- **Regels:** de regels voor spawns, bazen, waves en de checklist staan in `Docs/LEVEL_GUIDE.md`. Bazen komen standaard door de hoofdpoort; een eigen ingang is een extra front en mag alleen in late, rijke of simpele levels.
 
 ## Open punten en volgende stap
 

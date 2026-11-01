@@ -20,6 +20,9 @@ namespace Game.Drones
         /// <summary>Drilling ore out of a resource node.</summary>
         Mining,
 
+        /// <summary>Knocked out: limping home to charge before it goes back to work.</summary>
+        Recharging,
+
         /// <summary>Carrying a load back to the base.</summary>
         Hauling,
 
@@ -56,6 +59,8 @@ namespace Game.Drones
         private ITargetable _prey;
         private float _cooldown;
         private Vector3 _lastPosition;
+        private bool _recharging;
+        private float _rechargeUntil;
 
         public DroneDefinition Definition => _definition;
 
@@ -67,6 +72,7 @@ namespace Game.Drones
 
         /// <summary>Drones never block the road.</summary>
         public bool BlocksGround => false;
+        public bool IsBase => false;
 
         /// <summary>Drones are not repaired; the full bar keeps repair drones from trying to heal each other.</summary>
         public float HealthFraction => 1f;
@@ -86,7 +92,8 @@ namespace Game.Drones
         /// <summary>How fast the drone moved last frame, as a share of its top speed, so the view can tilt it.</summary>
         public float Pace { get; private set; }
 
-        public event Action<Drone> Lost;
+        /// <summary>Raised when the drone is shot down; it goes home to charge rather than being lost.</summary>
+        public event Action<Drone> Downed;
 
         /// <summary>Raised with the target position whenever the attack drone fires.</summary>
         public event Action<Vector3> Fired;
@@ -124,11 +131,27 @@ namespace Game.Drones
 
         private void Update()
         {
-            if (!IsAlive)
+            if (!IsAlive && !_recharging)
             {
                 return;
             }
 
+            if (_recharging)
+            {
+                UpdateRecharge();
+            }
+            else
+            {
+                UpdateWork();
+            }
+
+            float step = _speed * Time.deltaTime;
+            Pace = step > 0f ? Mathf.Clamp01(Vector3.Distance(transform.position, _lastPosition) / step) : 0f;
+            _lastPosition = transform.position;
+        }
+
+        private void UpdateWork()
+        {
             switch (_definition.Kind)
             {
                 case DroneKind.Repair:
@@ -141,10 +164,22 @@ namespace Game.Drones
                     UpdateAttack();
                     break;
             }
+        }
 
-            float step = _speed * Time.deltaTime;
-            Pace = step > 0f ? Mathf.Clamp01(Vector3.Distance(transform.position, _lastPosition) / step) : 0f;
-            _lastPosition = transform.position;
+        // Home first, then the charge runs; whole again, it is a structure the aliens can hit once more.
+        private void UpdateRecharge()
+        {
+            Activity = DroneActivity.Recharging;
+            WorkPoint = null;
+            if (FlyTo(_home) > WorkDistance || Time.time < _rechargeUntil)
+            {
+                return;
+            }
+
+            _recharging = false;
+            Health.Heal(Health.Max);
+            _world.Structures.Add(this);
+            Activity = DroneActivity.Idle;
         }
 
         // The dispatcher hands out the work; the drone only asks again now and then, or at once when its job is done.
@@ -346,7 +381,12 @@ namespace Game.Drones
 
             _world.Structures.Remove(this);
             WorkPoint = null;
-            Lost?.Invoke(this);
+            _repairTarget = null;
+            _prey = null;
+            _recharging = true;
+            _rechargeUntil = Time.time + _definition.RechargeSeconds;
+            Activity = DroneActivity.Recharging;
+            Downed?.Invoke(this);
         }
     }
 }

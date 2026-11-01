@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1217707604
+--- !u!1 &1166501066
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1217707606}
-  - component: {fileID: 1217707605}
+  - component: {fileID: 1166501068}
+  - component: {fileID: 1166501067}
   m_Layer: 0
   m_Name: MainMenuScreen
   m_TagString: Untagged
@@ -136,25 +136,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1217707605
+--- !u!114 &1166501067
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217707604}
+  m_GameObject: {fileID: 1166501066}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9399049833245f4b991dfe24ecd44d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.UI::Game.UI.MainMenuScreen
---- !u!4 &1217707606
+--- !u!4 &1166501068
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217707604}
+  m_GameObject: {fileID: 1166501066}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -163,7 +163,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1533074093
+--- !u!1 &1483303072
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,8 +171,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1533074095}
-  - component: {fileID: 1533074094}
+  - component: {fileID: 1483303074}
+  - component: {fileID: 1483303073}
   m_Layer: 0
   m_Name: MenuStage
   m_TagString: Untagged
@@ -180,26 +180,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1533074094
+--- !u!114 &1483303073
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1533074093}
+  m_GameObject: {fileID: 1483303072}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8511e4d4792e4b842b1789dc5826c0c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.Boot::Game.Boot.MenuStage
   _stage: {fileID: 11400000, guid: 91ffcaf08bf8fd24c91c8562e2b58288, type: 2}
---- !u!4 &1533074095
+--- !u!4 &1483303074
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1533074093}
+  m_GameObject: {fileID: 1483303072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -212,5 +212,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1217707606}
-  - {fileID: 1533074095}
+  - {fileID: 1166501068}
+  - {fileID: 1483303074}

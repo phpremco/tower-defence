@@ -58,6 +58,7 @@ namespace Game.Levels
         private TerrainMap _terrain;
         private Vector2Int _cursor;
         private Transform _marker;
+        private bool _markerShown;
         private Renderer _markerRenderer;
         private RangeIndicator _range;
         private Tower _ghost;
@@ -140,6 +141,11 @@ namespace Game.Levels
 
             // The mouse is tracked in every mode so a click away from an open menu lands on the cell under it.
             UpdatePointer();
+            // The pointer going quiet (or waking) changes whether the marker belongs on screen.
+            if (_context.Mode == PlacementMode.Browsing && _markerShown == PointerActive && !_towers.ContainsKey(_cursor))
+            {
+                Refresh();
+            }
             if (_context.Mode != PlacementMode.TowerMenu)
             {
                 UpdateStick();
@@ -634,7 +640,11 @@ namespace Game.Levels
             int price = pathObject != null ? pathObject.Cost : selected != null ? selected.BuildCost : 0;
             bool valid = !hasTower && cellFree && (pathObject != null || selected != null) && _context.Wallet.CanAfford(price);
 
-            _marker.gameObject.SetActive(_context.Mode != PlacementMode.TowerMenu);
+            // No square under a mouse that is only looking around: the marker shows while placing, over a tower
+            // that can be opened, or when a stick or the keys drive the cursor and it is the only thing to see.
+            bool browsing = _context.Mode == PlacementMode.Browsing;
+            _markerShown = placing || (browsing && (hasTower || !PointerActive));
+            _marker.gameObject.SetActive(_markerShown);
             Color markerColor = hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor;
             _markerRenderer.sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(markerColor, placing ? PlacingAlpha : BrowsingAlpha, MarkerEmission);
 

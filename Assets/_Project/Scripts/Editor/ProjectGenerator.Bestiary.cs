@@ -185,6 +185,23 @@ namespace Game.Editor
         }
 
         // One bat per element: the same creature in a different light, born in a different nest.
+        // "CrystalWarlord" reads as "Crystal Warlord" wherever the player sees the name.
+        private static string Spaced(string id)
+        {
+            var text = new System.Text.StringBuilder(id.Length + 4);
+            for (int i = 0; i < id.Length; i++)
+            {
+                if (i > 0 && char.IsUpper(id[i]) && !char.IsUpper(id[i - 1]))
+                {
+                    text.Append(' ');
+                }
+
+                text.Append(id[i]);
+            }
+
+            return text.ToString();
+        }
+
         private static EnemyDefinition CreateBat(Bestiary b, string id, Element element, Color color, Color eyes, Color accent)
         {
             return CreateEnemy(new Creature
@@ -204,11 +221,11 @@ namespace Game.Editor
             BossAbilityDefinition brood = CreateAbility("Brood", BossAbilityKind.Spawn, 10f, 6f, 0f, 1f, 1f, 1f, b.Skitter, 5, new Color(1f, 0.7f, 0.2f));
             BossAbilityDefinition venomBurst = CreateAbility("VenomBurst", BossAbilityKind.Pulse, 7f, 4f, 12f, 2.4f, 1f, 1f, null, 1, new Color(0.75f, 1f, 0.25f));
             BossAbilityDefinition acidRain = CreateAbility("AcidRain", BossAbilityKind.Volley, 9f, 5f, 12f, 1f, 1f, 6f, null, 1, new Color(1f, 0.35f, 0.9f), targets: 4);
-            BossAbilityDefinition plateRegrowth = CreateAbility("PlateRegrowth", BossAbilityKind.Regrow, 16f, 10f, 80f, 1f, 1f, 1f, null, 1, new Color(1f, 0.5f, 1f));
+            BossAbilityDefinition plateRegrowth = CreateAbility("PlateRegrowth", BossAbilityKind.Regrow, 16f, 10f, 50f, 1f, 1f, 1f, null, 1, new Color(1f, 0.5f, 1f));
             BossAbilityDefinition elementStorm = CreateAbility("ElementStorm", BossAbilityKind.Volley, 7f, 4f, 12f, 1f, 1f, 7f, null, 1, new Color(0.6f, 1f, 0.4f), targets: 5);
             BossAbilityDefinition batSwarm = CreateAbility("BatSwarm", BossAbilityKind.Spawn, 14f, 8f, 0f, 1f, 1f, 1f, b.Mossbat, 3, new Color(0.6f, 1f, 0.4f));
             BossAbilityDefinition swordSweep = CreateAbility("SwordSweep", BossAbilityKind.Pulse, 8f, 5f, 40f, 2.8f, 1f, 1f, null, 1, new Color(0.5f, 1f, 1f));
-            BossAbilityDefinition crystalRegrowth = CreateAbility("CrystalRegrowth", BossAbilityKind.Regrow, 10f, 8f, 200f, 1f, 1f, 1f, null, 1, new Color(0.5f, 1f, 1f));
+            BossAbilityDefinition crystalRegrowth = CreateAbility("CrystalRegrowth", BossAbilityKind.Regrow, 14f, 8f, 60f, 1f, 1f, 1f, null, 1, new Color(0.5f, 1f, 1f));
             BossAbilityDefinition howl = CreateAbility("Howl", BossAbilityKind.Rally, 12f, 5f, 0f, 1f, 5f, 1f, null, 1, new Color(1f, 0.5f, 0.15f), speedFactor: 1.6f);
             BossAbilityDefinition corePulse = CreateAbility("CorePulse", BossAbilityKind.Pulse, 7f, 4f, 30f, 3f, 1f, 1f, null, 1, new Color(0.85f, 0.9f, 1f));
             BossAbilityDefinition fission = CreateAbility("Fission", BossAbilityKind.Split, 1f, 0f, 0f, 1f, 1f, 1f, b.Wisp, 3, new Color(0.85f, 0.9f, 1f), trigger: 0.25f);
@@ -242,7 +259,7 @@ namespace Game.Editor
             });
             b.CrystalWarlord = CreateEnemy(new Creature
             {
-                Id = "CrystalWarlord", Layer = TargetLayers.Ground, Health = 1800f, Armor = 1200f, ArmorReduction = 0.75f, Speed = 0.5f, Reward = 390, BaseDamage = 15, Boss = true,
+                Id = "CrystalWarlord", Layer = TargetLayers.Ground, Health = 1800f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.5f, Reward = 390, BaseDamage = 15, Boss = true,
                 Attack = AttackStyle.Slash, AttackDamage = 30f, BlockadeDamage = 90f, AttackRange = 2f, AttackInterval = 1.4f,
                 Color = new Color(0.2f, 0.45f, 0.3f), Eyes = new Color(1f, 0.85f, 0.3f), Accent = new Color(0.5f, 1f, 1f), Blood = GooGreen,
                 Scale = 1.6f, Shape = EnemyShape.CrystalWarlord, Death = DeathStyle.Collapse, Abilities = new[] { swordSweep, crystalRegrowth },
@@ -298,7 +315,7 @@ namespace Game.Editor
         {
             var enemy = LoadOrCreate<EnemyDefinition>($"{DataRoot}/Enemies/{c.Id}.asset");
             var so = new SerializedObject(enemy);
-            so.FindProperty("_displayName").stringValue = c.Id;
+            so.FindProperty("_displayName").stringValue = Spaced(c.Id);
             so.FindProperty("_layer").intValue = (int)c.Layer;
             so.FindProperty("_flies").boolValue = c.Flies;
             so.FindProperty("_maxHealth").floatValue = c.Health;
@@ -357,7 +374,7 @@ namespace Game.Editor
         {
             var ability = LoadOrCreate<BossAbilityDefinition>($"{DataRoot}/Enemies/Abilities/{id}.asset");
             var so = new SerializedObject(ability);
-            so.FindProperty("_displayName").stringValue = id;
+            so.FindProperty("_displayName").stringValue = Spaced(id);
             so.FindProperty("_kind").enumValueIndex = (int)kind;
             so.FindProperty("_interval").floatValue = interval;
             so.FindProperty("_firstDelay").floatValue = firstDelay;

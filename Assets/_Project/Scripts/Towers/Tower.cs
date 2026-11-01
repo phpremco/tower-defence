@@ -86,6 +86,7 @@ namespace Game.Towers
         public bool CanBeSold => !_definition.BlocksGroundEnemies && !_definition.IsBaseDefence;
 
         public bool BlocksGround => _definition.BlocksGroundEnemies && IsAlive;
+        public bool IsBase => false;
 
         /// <summary>A wrecked blockade can be rebuilt; a wrecked tower is scrapped and built again instead.</summary>
         public bool NeedsRepair => _definition.BlocksGroundEnemies ? IsWrecked || Health.Current < Health.Max : !IsWrecked && Health.Current < Health.Max;

@@ -42,13 +42,21 @@ namespace Game.Drones
                 current = null;
             }
 
+            // Towers and gates first: the base is only patched when no other structure needs a hand.
+            bool othersNeed = AnyTowerNeedsWork();
+            if (current != null && current.IsBase && othersNeed)
+            {
+                Release(worker, current);
+                current = null;
+            }
+
             float currentScore = current != null ? Score(current, position, speed) : 0f;
             IStructure best = null;
             float bestScore = 0f;
             for (int i = 0; i < _structures.Count; i++)
             {
                 IStructure candidate = _structures[i];
-                if (candidate == current || !NeedsWork(candidate) || IsClaimedByOther(candidate, worker))
+                if (candidate == current || !NeedsWork(candidate) || IsClaimedByOther(candidate, worker) || (candidate.IsBase && othersNeed))
                 {
                     continue;
                 }
@@ -98,6 +106,19 @@ namespace Game.Drones
         }
 
         private static bool NeedsWork(IStructure structure) => structure.IsAlive && structure.HealthFraction < 1f;
+
+        private bool AnyTowerNeedsWork()
+        {
+            for (int i = 0; i < _structures.Count; i++)
+            {
+                if (!_structures[i].IsBase && NeedsWork(_structures[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         // Need grows with the missing share of health, jumps for critical structures and for gates and the base,
         // and is divided by the seconds of flight so nearby work wins over a far one that is only slightly worse.

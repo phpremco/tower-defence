@@ -11,6 +11,9 @@ namespace Game.Hero
         [SerializeField] [Min(1f)] private float _maxHealth = 200f;
         [SerializeField] [Min(0.5f)] private float _walkSpeed = 5f;
 
+        [Tooltip("A hero that flies does not stand in the road: ground creatures walk on under it.")]
+        [SerializeField] private bool _flies;
+
         /// <summary>The weapon the hero fights with up close: damage, reach, pace, look and animation.</summary>
         [SerializeField] private HeroWeaponDefinition _weapon;
 
@@ -41,6 +44,7 @@ namespace Game.Hero
         public string DisplayName => _displayName;
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
+        public bool Flies => _flies;
         public HeroWeaponDefinition Weapon => _weapon;
         public HeroWeaponDefinition RangedWeapon => _rangedWeapon;
         public float Damage => _weapon.Damage;

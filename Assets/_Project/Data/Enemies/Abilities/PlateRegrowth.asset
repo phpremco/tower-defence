@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: PlateRegrowth
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: PlateRegrowth
+  _displayName: Plate Regrowth
   _kind: 5
   _interval: 16
   _firstDelay: 10
-  _damage: 80
+  _damage: 50
   _radius: 1
   _sweepSeconds: 1
   _range: 1

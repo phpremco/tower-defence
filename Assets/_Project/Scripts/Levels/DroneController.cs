@@ -86,7 +86,7 @@ namespace Game.Levels
             var world = new DroneWorld(_home, _context.Structures, _repairs, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
             drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _context.ModifiersFor(definition), world);
             go.AddComponent<DroneView>().Initialize(drone);
-            drone.Lost += OnLost;
+            drone.Downed += OnDowned;
             drone.Delivered += OnCollected;
             _drones.Add(drone);
 
@@ -108,15 +108,7 @@ namespace Game.Levels
             }
         }
 
-        private void OnLost(Drone drone)
-        {
-            drone.Lost -= OnLost;
-            drone.Delivered -= OnCollected;
-            _drones.Remove(drone);
-            DroneDefinition definition = drone.Definition;
-            _context.SetActiveDrones(definition, Mathf.Max(0, _context.ActiveDrones(definition) - 1));
-            Destroy(drone.gameObject);
-            _context.DronesChanged.Raise();
-        }
+        // A drone that is shot down is not gone: it charges at home and comes back, so the HUD only hears about it.
+        private void OnDowned(Drone drone) => _context.DronesChanged.Raise();
     }
 }

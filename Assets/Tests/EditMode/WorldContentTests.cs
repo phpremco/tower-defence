@@ -56,6 +56,7 @@ namespace Game.Tests
             public bool IsAlive => true;
 
             public bool BlocksGround => false;
+            public bool IsBase => false;
 
             public float HealthFraction => 1f;
 
@@ -82,6 +83,20 @@ namespace Game.Tests
         }
 
         private const int FirstRecipeLevel = 4;
+        private const int FirstWorldLevels = 5;
+
+        // Docs/LEVEL_GUIDE.md: a boss that comes up away from the other spawns is a front of its own, which the first
+        // world never asks for.
+        [Test]
+        public void FirstWorld_BossesComeThroughTheMainGate()
+        {
+            CampaignCatalog catalog = LoadCampaign();
+            for (int i = 0; i < FirstWorldLevels && i < catalog.Nodes.Count; i++)
+            {
+                LevelDefinition level = catalog.Nodes[i].Level;
+                Assert.AreEqual(EntranceKind.Gate, level.BossEntrance.Kind, $"{level.name}: bosses must use the main gate in the first world.");
+            }
+        }
 
         [Test]
         public void AllLevels_ExistAndPassTheValidator()

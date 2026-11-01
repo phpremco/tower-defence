@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: PackAlpha
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: PackAlpha
+  _displayName: Pack Alpha
   _layer: 1
   _flies: 0
   _maxHealth: 800

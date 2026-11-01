@@ -13,6 +13,7 @@ namespace Game.Tests
             public bool IsAlive { get; set; } = true;
 
             public bool BlocksGround { get; set; }
+            public bool IsBase => false;
 
             public float HealthFraction => 1f;
 

@@ -74,6 +74,8 @@ namespace Game.Levels
             go.AddComponent<HeroView>().Initialize(_hero);
 
             context.Hero = _hero;
+            // In the structure registry the hero is a blocker and a target, like a gate that walks.
+            context.Structures.Add(new HeroTarget(_hero));
             context.HeroPostNames = names;
             context.HeroPostCells = cells;
 

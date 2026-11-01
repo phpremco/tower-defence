@@ -246,6 +246,22 @@ MonoBehaviour:
     _clips:
     - {fileID: 8300000, guid: d01e3822a02f8e84882d65ca5a8f1f22, type: 3}
     _gain: 0.20608473
+  _waveDrums:
+    _clips:
+    - {fileID: 8300000, guid: ab71d8c23918829408fe7d0a7d9dd9ca, type: 3}
+    _gain: 0.32121238
+  _menuMusic:
+    _clips:
+    - {fileID: 8300000, guid: 872738c3fbb798740a24c0cfa099677b, type: 3}
+    _gain: 0.40680507
+  _gameMusic:
+    _clips:
+    - {fileID: 8300000, guid: cdf4368aad097f54796c47ab7ba6966d, type: 3}
+    _gain: 0.313017
+  _bossMusic:
+    _clips:
+    - {fileID: 8300000, guid: d61389122af642a478c6a8cc736f153a, type: 3}
+    _gain: 0.40484646
   _voices:
   - {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
   - {fileID: 11400000, guid: 754f95f33aa3b104fbf29d77b68a2e21, type: 2}

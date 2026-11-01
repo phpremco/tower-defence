@@ -16,6 +16,7 @@ MonoBehaviour:
   _kind: 0
   _speed: 3.5
   _maxHealth: 40
+  _rechargeSeconds: 12
   _cost: 120
   _maxActive: 3
   _repairPerSecond: 8

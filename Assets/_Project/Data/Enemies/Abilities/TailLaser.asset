@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: TailLaser
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: TailLaser
+  _displayName: Tail Laser
   _kind: 1
   _interval: 10
   _firstDelay: 5

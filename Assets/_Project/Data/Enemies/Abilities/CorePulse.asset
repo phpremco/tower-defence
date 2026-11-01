@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: CorePulse
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: CorePulse
+  _displayName: Core Pulse
   _kind: 0
   _interval: 7
   _firstDelay: 4

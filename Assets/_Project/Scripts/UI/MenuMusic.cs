@@ -17,6 +17,7 @@ namespace Game.UI
 
         private AudioMix _mix;
         private AudioSource _source;
+        private float _gain = 1f;
         private float _level;
         private bool _leaving;
 
@@ -37,7 +38,11 @@ namespace Game.UI
         {
             _mix = mix;
             _source = gameObject.AddComponent<AudioSource>();
-            _source.clip = ProceduralMusic.Menu();
+            // The recorded menu loop when the library has one, at its measured gain; the generated theme otherwise.
+            Services.TryGet(out SfxLibrary library);
+            bool recorded = library != null && !library.MenuMusic.IsEmpty;
+            _source.clip = recorded ? library.MenuMusic[0] : ProceduralMusic.Menu();
+            _gain = 1f;
             _source.loop = true;
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;
@@ -79,7 +84,7 @@ namespace Game.UI
 
         private void Apply()
         {
-            _source.volume = Volume * _level * _mix.MusicGain;
+            _source.volume = Volume * _gain * _level * _mix.MusicGain;
         }
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: QueenBrood
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: QueenBrood
+  _displayName: Queen Brood
   _kind: 2
   _interval: 12
   _firstDelay: 6

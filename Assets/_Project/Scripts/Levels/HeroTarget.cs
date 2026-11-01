@@ -21,7 +21,9 @@ namespace Game.Levels
 
         public bool IsAlive => _hero != null && !_hero.IsDown;
 
-        public bool BlocksGround => false;
+        // A hero on its feet holds the road like a gate: ground creatures must get past it, flyers pass over.
+        public bool BlocksGround => IsAlive && !_hero.Definition.Flies;
+        public bool IsBase => false;
 
         public float HealthFraction => _hero.Health.Fraction;
 

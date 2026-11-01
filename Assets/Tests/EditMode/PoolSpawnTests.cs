@@ -10,10 +10,18 @@ namespace Game.Tests
     public sealed class PoolSpawnTests
     {
         private const string ForestPath = "Assets/_Project/Data/Levels/Level_Forest.asset";
+        private const string IcePath = "Assets/_Project/Data/Levels/Level_Ice.asset";
 
         private static LevelDefinition LoadForest()
         {
             var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(ForestPath);
+            Assert.IsNotNull(level, "Run Tools/Generate/Scenes and Starter Data first.");
+            return level;
+        }
+
+        private static LevelDefinition LoadIce()
+        {
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(IcePath);
             Assert.IsNotNull(level, "Run Tools/Generate/Scenes and Starter Data first.");
             return level;
         }
@@ -51,10 +59,11 @@ namespace Game.Tests
             Assert.Greater(progress, 0f, "joining halfway counts as progress along the road");
         }
 
+        // The first world sends bosses through the gate (Docs/LEVEL_GUIDE.md); the Frozen Shelf, a later level, keeps its pool.
         [Test]
-        public void Forest_BossComesUpOutOfAPond()
+        public void FrozenShelf_BossComesUpOutOfAPond()
         {
-            LevelDefinition level = LoadForest();
+            LevelDefinition level = LoadIce();
 
             Assert.AreEqual(EntranceKind.Pool, level.BossEntrance.Kind);
             Assert.IsTrue(level.Terrain.IsLiquid(level.BossEntrance.Cell));

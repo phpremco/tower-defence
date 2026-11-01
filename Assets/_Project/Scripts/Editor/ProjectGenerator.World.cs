@@ -109,6 +109,7 @@ namespace Game.Editor
             public PathObjectDefinition[] PathObjects;
             public CombineRecipe[] Recipes;
             public WaveScript Script;
+            // Bosses use the main gate unless the level is late, rich or simple; see Docs/LEVEL_GUIDE.md before changing this.
             public EntranceKind Entrance;
             public Vector2Int EntranceCell;
             public ElementNest[] Nests = new ElementNest[0];
@@ -354,7 +355,7 @@ namespace Game.Editor
                     PathObjects = new[] { slowField, mine },
                     Recipes = new CombineRecipe[0],
                     // Rollers from the third wave, pool creatures out of the forest ponds from the fourth; the boss surfaces from a pond.
-                    Entrance = EntranceKind.Pool,
+                    Entrance = EntranceKind.Gate,
                     EntranceCell = new Vector2Int(13, 15),
                     // Moss bats roost in hollow trees on both sides of the woods; tide bats rise from the ponds.
                     Nests = new[] { Nest(Element.Wood, 4, 6), Nest(Element.Wood, 18, 12), Nest(Element.Water, 5, 15), Nest(Element.Water, 13, 15) },
@@ -417,7 +418,7 @@ namespace Game.Editor
                     PathObjects = new[] { lavaBall, barrel },
                     Recipes = new CombineRecipe[0],
                     // No final boss here, but a mind-boss climbs out of the lava halfway through the level.
-                    Entrance = EntranceKind.Pool,
+                    Entrance = EntranceKind.Gate,
                     EntranceCell = new Vector2Int(10, 19),
                     // Ember bats pour out of the lava vents.
                     Nests = new[] { Nest(Element.Fire, 9, 19), Nest(Element.Fire, 19, 12) },
@@ -482,7 +483,7 @@ namespace Game.Editor
                     PathObjects = new[] { groundDrone, antiAir },
                     Recipes = new CombineRecipe[0],
                     // Diggers out of the quicksand, rollers, and eels from the cistern; the fortress breaks out of the ground between the roads.
-                    Entrance = EntranceKind.Ground,
+                    Entrance = EntranceKind.Gate,
                     EntranceCell = new Vector2Int(8, 10),
                     // Dust bats burrow out of the sand drifts and tide bats out of the old cistern.
                     // Only the drifts in the first half of the siege hold nests; the sand by the base stays quiet.

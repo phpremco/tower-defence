@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: SkySovereign
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: SkySovereign
+  _displayName: Sky Sovereign
   _layer: 2
   _flies: 1
   _maxHealth: 1000

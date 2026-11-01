@@ -12,8 +12,8 @@ namespace Game.Boot
     /// </summary>
     public sealed class MusicPlayer : MonoBehaviour
     {
-        private const float CalmVolume = 0.32f;
-        private const float IntenseVolume = 0.42f;
+        private const float CalmVolume = 0.4f;
+        private const float IntenseVolume = 0.5f;
         private const float AmbienceVolume = 0.3f;
         private const float AlarmVolume = 0.8f;
         private const float RumbleVolume = 1f;
@@ -23,13 +23,13 @@ namespace Game.Boot
         private const float DuckDepth = 0.3f;
         private const float EndFadeSeconds = 2.5f;
         private const float PauseDepth = 0.5f;
-        private const float LayerVolume = 0.06f;
+        private const float LayerVolume = 0.035f;
         private const float CellsForFullPool = 24f;
         private const float PanWidth = 0.7f;
         // The lava recording churns too fast for a slow pool; played at this speed it heaves.
         private const float LavaPitch = 0.6f;
         // As the bed of a whole level the bubbling sits level with the generated wind, not under it like one pool.
-        private const float LavaBedScale = 4.2f;
+        private const float LavaBedScale = 7f;
 
         private LevelContext _context;
         private AudioMix _mix;
@@ -40,6 +40,8 @@ namespace Game.Boot
         private AudioClip _alarm;
         private AudioClip _rumble;
         private readonly List<AmbienceLayer> _layers = new List<AmbienceLayer>();
+        private float _calmGain = 1f;
+        private float _intenseGain = 1f;
         private bool _panned;
         private float _intensity;
         private float _intenseUntil = float.NegativeInfinity;
@@ -50,10 +52,11 @@ namespace Game.Boot
         {
             _context = context;
             _mix = mix;
-            _calm = Loop(ProceduralMusic.Calm());
-            _intense = Loop(ProceduralMusic.Intense());
-            // The recorded siren when the library has one, the generated one otherwise.
+            // Recorded loops when the library has them, the generated score otherwise. A recorded loop carries its
+            // measured gain, so the mix levels below mean the same for both.
             Services.TryGet(out SfxLibrary library);
+            _calm = Loop(Recorded(library?.GameMusic, ProceduralMusic.Calm(), out _calmGain));
+            _intense = Loop(Recorded(library?.BossMusic, ProceduralMusic.Intense(), out _intenseGain));
             _alarm = library != null && !library.BossAlarms.IsEmpty ? library.BossAlarms[0] : ProceduralSfx.BossAlarm();
             _rumble = library != null && !library.Earthquakes.IsEmpty ? library.Earthquakes[0] : ProceduralSfx.QuakeRumble();
             CreateLayers(library, context.Level);
@@ -74,6 +77,19 @@ namespace Game.Boot
         private void OnDestroy()
         {
             _context?.BossWaveStarted.Unsubscribe(OnBossWave);
+        }
+
+        private static AudioClip Recorded(SoundSet set, AudioClip fallback, out float gain)
+        {
+            if (set == null || set.IsEmpty)
+            {
+                gain = 1f;
+                return fallback;
+            }
+
+            // Mastered music is not normalised like an effect: the mix levels apply to it as recorded.
+            gain = 1f;
+            return set[0];
         }
 
         private AudioSource Loop(AudioClip clip)
@@ -209,9 +225,10 @@ namespace Game.Boot
         private void Apply()
         {
             float paused = _context.Paused ? PauseDepth : 1f;
-            float music = _mix.MusicGain * _ending * paused;
-            _calm.volume = CalmVolume * (1f - _intensity) * music;
-            _intense.volume = IntenseVolume * _intensity * music;
+            // The score keeps playing over the result screen; only the field's ambience fades with the level.
+            float music = _mix.MusicGain * paused;
+            _calm.volume = CalmVolume * _calmGain * (1f - _intensity) * music;
+            _intense.volume = IntenseVolume * _intenseGain * _intensity * music;
             float ambienceDuck = Time.unscaledTime < _duckUntil ? DuckDepth : 1f;
             if (_ambience != null)
             {

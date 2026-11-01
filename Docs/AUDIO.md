@@ -77,6 +77,7 @@ visible pool. They are background, never the loudest thing in a level.
 | Structure hit, base alert | `StructureHit`, `BaseHealth.Changed` |
 | Upgrade, scrap, cash | `TowerUpgraded`, `TowerScrapped`, `TowerSold` |
 | Ambience layers | wind by theme (forest, blizzard); one loop per pool of water, bog or lava cells, sized and panned by the pool |
+| Music | `SfxLibrary` menu/game/boss sets from `Approved/Music/*_loop.wav`; `MusicPlayer` crossfades game and boss, `MenuMusic` plays the menu loop; music keeps its mastered level (no measured gain) |
 | Boss approach | `LevelContext.ComingBoss` voice growls from the gate every 3 s until the boss shows; pools keep their generated churn; no growl means no heartbeat |
 | Boss pulse, fission, brood | `_pulse` and `_spawn` of the boss voice (`enemy_power_pulse`, species screech for brood); generated bursts are fallbacks only |
 

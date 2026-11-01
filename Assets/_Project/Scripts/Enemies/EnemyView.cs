@@ -15,11 +15,14 @@ namespace Game.Enemies
     [RequireComponent(typeof(Enemy))]
     public sealed class EnemyView : MonoBehaviour
     {
-        private const float BarWidth = 0.6f;
-        private const float BarHeight = 0.02f;
-        private const float MaxBarWidth = 1.6f;
+        private const float BarWidth = 0.85f;
+        private const float BarHeight = 0.085f;
+        private const float PlateWidthScale = 1.1f;
+        private const float PlateHeightScale = 3.2f;
+        private static readonly Color PlateColor = new Color(0.02f, 0.02f, 0.04f, 0.5f);
+        private const float MaxBarWidth = 2f;
         private const float BarOffsetY = 1.0f;
-        private const float BarEmission = 1.5f;
+        private const float BarEmission = 0.7f;
         private const float BodyEmission = 0.9f;
         private const float ModelTintStrength = 0.65f;
         private const float FrostEmission = 0.6f;
@@ -178,6 +181,8 @@ namespace Game.Enemies
         private Vector3 _bodyRestPosition;
         private Transform _bar;
         private Transform _armorBar;
+        private Transform _barPlate;
+        private float _barY;
         private Transform _shadow;
         private bool _built;
         private Vector3 _lastPosition;
@@ -254,6 +259,7 @@ namespace Game.Enemies
             {
                 _bar.gameObject.SetActive(false);
                 _armorBar.gameObject.SetActive(false);
+                _barPlate.gameObject.SetActive(false);
             }
         }
 
@@ -1072,6 +1078,12 @@ namespace Game.Enemies
             float barY = _procedural ? _barHeight : BarOffsetY;
             // A big creature gets a wider line, so a boss shows its health as plainly as a grunt does.
             _barWidth = Mathf.Clamp(BarWidth * (_procedural ? _creatureScale : definition.Scale), BarWidth, MaxBarWidth);
+            _barY = barY;
+            // A dark plate behind both lines, so the bars read against a bright floor as well as a dark one.
+            GameObject plate = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, PlateColor, transform, new Vector3(0f, barY + BarHeight * 0.8f, BarHeight * 0.6f), new Vector3(_barWidth * PlateWidthScale, BarHeight * PlateHeightScale, BarHeight * 0.5f));
+            _barPlate = plate.transform;
+            MakeTranslucent(plate.GetComponent<Renderer>().sharedMaterial, PlateColor);
+            plate.SetActive(false);
             GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, BarColor, transform, new Vector3(0f, barY, 0f), new Vector3(_barWidth, BarHeight, BarHeight), BarEmission);
             _bar = bar.transform;
             bar.SetActive(false);
@@ -1262,12 +1274,32 @@ namespace Game.Enemies
 
         // Thin lines that only appear once the creature has taken damage, so a fresh wave is not a row of bars;
         // the pale one above is the armour, gone when the plates are.
+        // The plate is a shade over the field, not a block: alpha blended, unlit by speculars, drawn with the
+        // transparent queue so the bars on top of it still read.
+        private static void MakeTranslucent(Material material, Color tint)
+        {
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_Smoothness", 0f);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            material.SetColor("_BaseColor", tint);
+        }
+
         private void SetBar(float fraction, float armor)
         {
+            // Both lines shrink from the right, like a gauge, instead of from both ends.
             _bar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
+            _bar.localPosition = new Vector3(-_barWidth * (1f - fraction) * 0.5f, _barY, 0f);
             bool hurt = !_barHidden && fraction < FullHealthFraction;
             _bar.gameObject.SetActive(hurt);
+            _barPlate.gameObject.SetActive(hurt);
             _armorBar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, armor), BarHeight * 0.7f, BarHeight);
+            _armorBar.localPosition = new Vector3(-_barWidth * (1f - armor) * 0.5f, _barY + BarHeight * 1.6f, 0f);
             _armorBar.gameObject.SetActive(hurt && armor > 0f);
         }
     }

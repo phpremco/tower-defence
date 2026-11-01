@@ -24,6 +24,7 @@ namespace Game.Levels
         public bool IsAlive => !_health.IsDead;
 
         public bool BlocksGround => IsAlive;
+        public bool IsBase => true;
 
         public float HealthFraction => _health.Fraction;
 

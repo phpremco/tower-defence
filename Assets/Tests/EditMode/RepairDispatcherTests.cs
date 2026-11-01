@@ -13,17 +13,19 @@ namespace Game.Tests
             private readonly float _max;
             private float _current;
 
-            public FakeStructure(Vector3 position, float fraction, bool blocks = false)
+            public FakeStructure(Vector3 position, float fraction, bool blocks = false, bool isBase = false)
             {
                 Position = position;
                 _max = 100f;
                 _current = fraction * _max;
                 BlocksGround = blocks;
+                IsBase = isBase;
             }
 
             public Vector3 Position { get; }
             public bool IsAlive => _current > 0f;
             public bool BlocksGround { get; }
+            public bool IsBase { get; }
             public float HealthFraction => _current / _max;
             public void TakeDamage(float amount) => _current = Mathf.Max(0f, _current - amount);
             public void Repair(float amount) => _current = Mathf.Min(_max, _current + amount);
@@ -32,6 +34,24 @@ namespace Game.Tests
         private const float Speed = 4f;
         private readonly object _droneA = new object();
         private readonly object _droneB = new object();
+
+        [Test]
+        public void BaseIsRepairedOnlyWhenNoTowerNeedsWork()
+        {
+            var registry = new StructureRegistry();
+            var baseStructure = new FakeStructure(Vector3.zero, 0.1f, true, true);
+            var tower = new FakeStructure(new Vector3(20f, 0f, 0f), 0.9f);
+            registry.Add(baseStructure);
+            registry.Add(tower);
+            var dispatcher = new RepairDispatcher(registry);
+
+            IStructure first = dispatcher.Assign(_droneA, Vector3.zero, Speed, null);
+            Assert.AreSame(tower, first, "a battered base still waits while any tower is damaged");
+
+            tower.Repair(100f);
+            IStructure next = dispatcher.Assign(_droneA, Vector3.zero, Speed, first);
+            Assert.AreSame(baseStructure, next, "with every tower whole the base gets its turn");
+        }
 
         [Test]
         public void TwoDronesNeverTakeTheSameJob()

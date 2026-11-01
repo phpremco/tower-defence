@@ -29,6 +29,9 @@ namespace Game.Drones
         [SerializeField] [Min(0.5f)] private float _speed = 3.5f;
         [SerializeField] [Min(1f)] private float _maxHealth = 40f;
 
+        [Tooltip("Seconds a knocked-out drone charges at home before it flies out again.")]
+        [SerializeField] [Min(1f)] private float _rechargeSeconds = 12f;
+
         /// <summary>Money a drone of this type costs to launch, and how many may fly at once.</summary>
         [SerializeField] [Min(0)] private int _cost = 120;
         [SerializeField] [Min(1)] private int _maxActive = 3;
@@ -60,6 +63,7 @@ namespace Game.Drones
         public DroneKind Kind => _kind;
         public float Speed => _speed;
         public float MaxHealth => _maxHealth;
+        public float RechargeSeconds => _rechargeSeconds;
         public int Cost => _cost;
         public int MaxActive => _maxActive;
         public float RepairPerSecond => _repairPerSecond;

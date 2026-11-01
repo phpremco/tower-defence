@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f080a65ffb7423e41bb2e97dd8bf4df7, type: 3}
   m_Name: SpawnOozers
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
-  _displayName: SpawnOozers
+  _displayName: Spawn Oozers
   _kind: 2
   _interval: 15
   _firstDelay: 9

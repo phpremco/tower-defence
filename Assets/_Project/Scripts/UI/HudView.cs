@@ -103,8 +103,10 @@ namespace Game.UI
             BuildTowerBar(safe);
             BuildIcons(safe);
             gameObject.AddComponent<BossMarkerView>().Initialize(context, safe, camera);
+            gameObject.AddComponent<BossHealthView>().Initialize(context, safe);
             gameObject.AddComponent<BaseMenuView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, camera, _font);
+            gameObject.AddComponent<HeroQuickBar>().Initialize(context, safe);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
             // After the panels, so the first-hit warning draws over them wherever the base lies on screen.
             gameObject.AddComponent<BaseAlertView>().Initialize(context, safe, camera);

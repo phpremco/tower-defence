@@ -286,7 +286,7 @@ MonoBehaviour:
   - {x: 29, y: 6}
   _mineStock: 140
   _bossEntrance:
-    Kind: 2
+    Kind: 0
     Cell: {x: 8, y: 10}
   _nests:
   - Cell: {x: 7, y: 17}

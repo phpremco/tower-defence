@@ -23,6 +23,7 @@ namespace Game.Tests
             public Vector3 Position { get; }
             public bool IsAlive => Damage < 1000f;
             public bool BlocksGround { get; set; }
+            public bool IsBase => false;
             public float Damage { get; private set; }
             public float HealthFraction => 1f;
 

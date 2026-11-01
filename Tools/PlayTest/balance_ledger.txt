@@ -258,7 +258,7 @@ Level_Lava Easy
   w33  money  3392 dps  1653/   0 hp   6661/    0 window   29s pressure 0.35/0.00
   w34  money  3656 dps  1323/ 356 hp   5327/ 1510 window   71s pressure 0.14/0.16
   w35  money  3970 dps  1940/   0 hp   8101/    0 window   31s pressure 0.34/0.00
-  w36B money  4243 dps  2064/   0 hp  11316/    0 window   27s pressure 0.52/0.00
+  w36B money  4243 dps  2064/   0 hp  10393/    0 window   27s pressure 0.48/0.00
 Level_Lava Medium
   w1  money   280 dps   123/   0 hp    266/    0 window    7s pressure 0.65/0.00
   w2  money   295 dps    30/ 109 hp      0/   90 window   25s pressure 0.00/0.09
@@ -295,7 +295,7 @@ Level_Lava Medium
   w33  money  3589 dps  1539/ 157 hp   8816/  938 window   27s pressure 0.54/0.57
   w34  money  3895 dps   999/ 736 hp   4907/ 3606 window   96s pressure 0.13/0.13
   w35  money  4241 dps  2064/   0 hp  10686/    0 window   27s pressure 0.49/0.00
-  w36B money  4515 dps  2043/ 134 hp  14943/  972 window   26s pressure 0.73/0.73
+  w36B money  4515 dps  2043/ 134 hp  13728/  972 window   26s pressure 0.67/0.73
 Level_Lava Hard
   w1  money   280 dps   123/   0 hp    461/    0 window    7s pressure 1.09/0.00
   w2  money   300 dps    30/ 109 hp      0/  176 window   26s pressure 0.00/0.16
@@ -332,7 +332,7 @@ Level_Lava Hard
   w33  money  4852 dps  2147/ 187 hp  17921/ 1707 window   26s pressure 0.83/0.92
   w34  money  5313 dps  1393/ 973 hp   9573/ 6888 window  115s pressure 0.15/0.16
   w35  money  5815 dps  2837/  14 hp  21209/    0 window   24s pressure 0.79/0.00
-  w36B money  6229 dps  2734/ 236 hp  24846/ 2275 window   28s pressure 0.82/0.89
+  w36B money  6229 dps  2726/ 250 hp  23266/ 2275 window   28s pressure 0.77/0.84
 Level_Lava Psycho
   w1  money   280 dps   123/   0 hp    798/    0 window    7s pressure 1.86/0.00
   w2  money   305 dps    30/ 109 hp      0/  244 window   26s pressure 0.00/0.23
@@ -369,7 +369,7 @@ Level_Lava Psycho
   w33  money  5164 dps  2249/ 243 hp  26008/ 2702 window   24s pressure 1.24/1.21
   w34  money  5666 dps  1235/1220 hp  12635/12716 window  124s pressure 0.21/0.22
   w35  money  6248 dps  3039/   0 hp  31745/    0 window   23s pressure 1.18/0.00
-  w36B money  6701 dps  2888/ 314 hp  37190/ 4201 window   31s pressure 1.07/1.12
+  w36B money  6701 dps  2867/ 359 hp  35002/ 4201 window   31s pressure 1.01/0.98
 Level_Ruins Easy
   w1  money   320 dps   153/   0 hp    274/    0 window   13s pressure 0.27/0.00
   w2  money   336 dps   153/   0 hp    279/    0 window   14s pressure 0.25/0.00
@@ -410,7 +410,7 @@ Level_Ruins Easy
   w37  money  4432 dps  2157/   0 hp   9981/    0 window   33s pressure 0.33/0.00
   w38  money  4740 dps  1706/ 501 hp   7542/ 2261 window   58s pressure 0.18/0.19
   w39  money  5096 dps  2484/  14 hp  12318/    0 window   35s pressure 0.33/0.00
-  w40B money  5438 dps  2646/   0 hp  15549/    0 window   27s pressure 0.50/0.00
+  w40B money  5438 dps  2646/   0 hp  14384/    0 window   27s pressure 0.47/0.00
 Level_Ruins Medium
   w1  money   320 dps   153/   0 hp    360/    0 window   13s pressure 0.36/0.00
   w2  money   336 dps   153/   0 hp    366/    0 window   13s pressure 0.36/0.00
@@ -451,7 +451,7 @@ Level_Ruins Medium
   w37  money  4489 dps  2182/   0 hp  13230/    0 window   31s pressure 0.46/0.00
   w38  money  4800 dps  1300/ 827 hp   8511/ 5485 window   79s pressure 0.19/0.20
   w39  money  5228 dps  2558/   0 hp  16275/    0 window   31s pressure 0.49/0.00
-  w40B money  5572 dps  2623/  79 hp  20526/  245 window   26s pressure 0.71/0.29
+  w40B money  5572 dps  2623/  79 hp  18994/  245 window   26s pressure 0.65/0.29
 Level_Ruins Hard
   w1  money   320 dps   153/   0 hp    702/    0 window   13s pressure 0.66/0.00
   w2  money   344 dps   153/   0 hp    715/    0 window   13s pressure 0.67/0.00
@@ -492,7 +492,7 @@ Level_Ruins Hard
   w37  money  6689 dps  2955/ 280 hp  28086/ 2468 window   30s pressure 0.75/0.70
   w38  money  7248 dps  1793/1406 hp  13500/10514 window   93s pressure 0.19/0.19
   w39  money  7830 dps  3823/  30 hp  33392/    0 window   29s pressure 0.71/0.00
-  w40B money  8366 dps  3704/ 314 hp  35502/ 3186 window   29s pressure 0.79/0.84
+  w40B money  8366 dps  3670/ 329 hp  33510/ 3186 window   29s pressure 0.75/0.81
 Level_Ruins Psycho
   w1  money   320 dps   153/   0 hp   1296/    0 window   14s pressure 1.17/0.00
   w2  money   352 dps   153/   0 hp    989/    0 window   13s pressure 0.95/0.00
@@ -533,7 +533,7 @@ Level_Ruins Psycho
   w37  money  6978 dps  2069/1063 hp  18299/ 9398 window   22s pressure 0.94/0.95
   w38  money  7383 dps  1529/1680 hp  19038/21419 window  107s pressure 0.27/0.28
   w39  money  8128 dps  3969/   0 hp  49897/    0 window   25s pressure 1.19/0.00
-  w40B money  8710 dps  3704/ 434 hp  51814/ 6176 window   31s pressure 1.05/1.08
+  w40B money  8710 dps  3696/ 448 hp  49057/ 6176 window   31s pressure 1.00/1.05
 Level_Nest Easy
   w1  money   360 dps   176/   0 hp    364/    0 window    8s pressure 0.45/0.00
   w2  money   382 dps    88/  79 hp    232/   44 window   25s pressure 0.17/0.05
@@ -747,7 +747,7 @@ Level_Ice Easy
   w14  money   787 dps   367/  14 hp    920/    0 window   11s pressure 0.43/0.00
   w15  money   841 dps   300/  79 hp    678/  200 window   29s pressure 0.15/0.18
   w16  money   907 dps   441/   0 hp   1438/    0 window   20s pressure 0.32/0.00
-  w17B money  1032 dps   481/   0 hp   5695/    0 window   21s pressure 1.13/0.00
+  w17B money  1032 dps   481/   0 hp   4862/    0 window   21s pressure 0.96/0.00
   w18  money  1471 dps   594/ 109 hp   1426/  315 window   33s pressure 0.15/0.19
   w19  money  1577 dps   746/   0 hp   1989/    0 window   25s pressure 0.21/0.00
   w20  money  1735 dps   834/   0 hp   2135/    0 window   19s pressure 0.27/0.00
@@ -782,7 +782,7 @@ Level_Ice Medium
   w14  money   769 dps   353/   0 hp   1233/    0 window   11s pressure 0.60/0.00
   w15  money   824 dps   191/ 171 hp    449/  526 window   34s pressure 0.13/0.19
   w16  money   894 dps   418/   0 hp   2034/    0 window   18s pressure 0.53/0.00
-  w17B money  1025 dps   481/   0 hp   7517/    0 window   21s pressure 1.50/0.00
+  w17B money  1025 dps   481/   0 hp   6422/    0 window   21s pressure 1.28/0.00
   w18  money  1465 dps   353/ 277 hp    962/  759 window   38s pressure 0.14/0.15
   w19  money  1560 dps   746/   0 hp   2816/    0 window   22s pressure 0.34/0.00
   w20  money  1726 dps   829/   0 hp   2835/    0 window   19s pressure 0.37/0.00
@@ -817,7 +817,7 @@ Level_Ice Hard
   w14  money   993 dps   471/  30 hp   3087/    0 window   12s pressure 1.08/0.00
   w15  money  1079 dps   256/ 213 hp   1047/ 1025 window   37s pressure 0.21/0.28
   w16  money  1178 dps   265/ 236 hp   1064/  896 window   12s pressure 0.65/0.69
-  w17B money  1261 dps   506/  79 hp  10877/  456 window   21s pressure 2.06/0.59
+  w17B money  1261 dps   506/  79 hp   9453/  456 window   21s pressure 1.79/0.59
   w18  money  1743 dps   344/ 407 hp   1100/ 1435 window   42s pressure 0.15/0.18
   w19  money  1858 dps   896/  14 hp   5204/    0 window   21s pressure 0.58/0.00
   w20  money  2089 dps  1005/   0 hp   6761/    0 window   21s pressure 0.67/0.00
@@ -852,7 +852,7 @@ Level_Ice Psycho
   w14  money  1064 dps   506/   0 hp   4316/    0 window   12s pressure 1.43/0.00
   w15  money  1151 dps   191/ 291 hp   1114/ 2010 window   40s pressure 0.26/0.37
   w16  money  1262 dps   305/ 236 hp   1516/ 1241 window   12s pressure 0.82/0.97
-  w17B money  1346 dps   543/  93 hp  15103/  631 window   21s pressure 2.69/0.70
+  w17B money  1346 dps   543/  93 hp  13132/  631 window   21s pressure 2.34/0.70
   w18  money  1829 dps   279/ 486 hp   1567/ 2857 window   45s pressure 0.23/0.27
   w19  money  1973 dps   947/   0 hp   8182/    0 window   18s pressure 0.96/0.00
   w20  money  2231 dps  1073/  14 hp   9812/    0 window   20s pressure 0.93/0.00

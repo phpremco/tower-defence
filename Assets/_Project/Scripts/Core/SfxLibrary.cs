@@ -75,6 +75,14 @@ namespace Game.Core
         [Header("Boss wave")]
         [SerializeField] private SoundSet _bossLaserLoops = new SoundSet();
         [SerializeField] private SoundSet _bossAlarms = new SoundSet();
+        [Tooltip("The drums that open every wave.")]
+        [SerializeField] private SoundSet _waveDrums = new SoundSet();
+
+        [Header("Music")]
+        [Tooltip("Seamless loops: the menu and planet map, the level while ordinary waves run, and the level while a boss is on the field.")]
+        [SerializeField] private SoundSet _menuMusic = new SoundSet();
+        [SerializeField] private SoundSet _gameMusic = new SoundSet();
+        [SerializeField] private SoundSet _bossMusic = new SoundSet();
 
         [SerializeField] private CreatureVoice[] _voices = new CreatureVoice[0];
 
@@ -125,6 +133,10 @@ namespace Game.Core
         public SoundSet IcyWindLoops => _icyWindLoops;
         public SoundSet BossLaserLoops => _bossLaserLoops;
         public SoundSet BossAlarms => _bossAlarms;
+        public SoundSet WaveDrums => _waveDrums;
+        public SoundSet MenuMusic => _menuMusic;
+        public SoundSet GameMusic => _gameMusic;
+        public SoundSet BossMusic => _bossMusic;
         public CreatureVoice[] Voices => _voices;
 
         /// <summary>Every set with its label, for the sound board and the content tests.</summary>
@@ -142,7 +154,8 @@ namespace Game.Core
             ("Drone fan", _droneFanLoops), ("Drone repair", _droneRepairLoops), ("Drone harvest", _droneHarvestLoops),
             ("Drone laser", _droneLasers), ("Enemy death", _enemyDeaths), ("Heavy steps", _heavySteps), ("Wings", _wingLoops),
             ("Large wings", _largeWingLoops), ("Water", _waterLoops), ("Lava", _lavaLoops), ("Steam", _steamLoops),
-            ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Boss alarm", _bossAlarms),
+            ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Boss alarm", _bossAlarms), ("Wave drums", _waveDrums),
+            ("Menu music", _menuMusic), ("Game music", _gameMusic), ("Boss music", _bossMusic),
         };
     }
 }

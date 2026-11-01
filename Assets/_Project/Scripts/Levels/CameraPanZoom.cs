@@ -16,14 +16,14 @@ namespace Game.Levels
         public const float PlayOrthoSize = 7f;
         private const float MinZoom = 0.9f;
         private const float MaxZoom = 4.5f;
-        private const float PanSpeedAtFullZoom = 17f;
+        private const float PanSpeedAtFullZoom = 30f;
         private const float ContinuousZoomRate = 1.2f;
         private const float ScrollStep = 0.12f;
         private const float ScrollThreshold = 1.5f;
         private const float DeadZone = 0.1f;
         private const float EdgeMargin = 1.5f;
-        private const float EdgePanPixels = 14f;
-        private const float EdgePanRecentSeconds = 3f;
+        private const float EdgePanPixels = 36f;
+        private const float EdgePanRecentSeconds = 10f;
         private const float GlideSeconds = 0.9f;
 
         private FixedCameraRig _rig;

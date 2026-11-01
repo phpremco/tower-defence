@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
   m_Name: CrystalWarlord
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
-  _displayName: CrystalWarlord
+  _displayName: Crystal Warlord
   _layer: 1
   _flies: 0
   _maxHealth: 1800
-  _armor: 1200
-  _armorReduction: 0.75
+  _armor: 700
+  _armorReduction: 0.6
   _speed: 0.5
   _reward: 390
   _baseDamage: 15
