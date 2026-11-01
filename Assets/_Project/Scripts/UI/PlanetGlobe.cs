@@ -1,0 +1,313 @@
+using Game.Core;
+using Game.Levels;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
+
+namespace Game.UI
+{
+    /// <summary>
+    /// The planet as a real sphere inside the interface: a small rig far from the scene (globe, clouds, lights and a
+    /// camera) renders into a texture a RawImage shows. The screen turns and zooms it and asks where a place on the
+    /// surface lands on the image, so markers drawn in the canvas stay glued to the surface.
+    /// </summary>
+    public sealed class PlanetGlobe : MonoBehaviour
+    {
+        private const int TextureSize = 2048;
+        private const float RigDistance = 5000f;
+        private const float Radius = 1f;
+        private const float CloudRadius = 1.018f;
+        private const float FieldOfView = 30f;
+        private const float FarDistance = 9.4f;
+        private const float RegionDistance = 7.2f;
+        private const float NearDistance = 5f;
+        private const float ZoomShift = 0.6f;
+
+        /// <summary>Zoom value at which one region fills the view, with its levels readable.</summary>
+        public const float RegionZoom = 1f;
+
+        /// <summary>Zoom value of the close-up on one level, slid aside to leave room for the panel.</summary>
+        public const float LevelZoom = 2f;
+        private const float ZoomSeconds = 0.55f;
+        private const float TurnFollow = 7f;
+        private const float MaxPitch = 72f;
+        private const float CloudDegreesPerSecond = 0.9f;
+        private const int Rings = 48;
+        private const int Segments = 96;
+        // The image is drawn larger than the globe looks from afar, so the sphere stays inside it when the view flies in.
+        private const float ImageScale = 2f;
+        private static readonly Color KeyColor = new Color(1f, 0.97f, 0.92f);
+        private static readonly Color FillColor = new Color(0.45f, 0.6f, 0.95f);
+
+        private Transform _rig;
+        private Transform _globe;
+        private Transform _clouds;
+        private Material _cloudMaterial;
+        private Camera _camera;
+        private RenderTexture _texture;
+        private RectTransform _rect;
+        private float _yaw;
+        private float _pitch;
+        private float _targetYaw;
+        private float _targetPitch;
+        private float _zoom;
+        private bool _snapping;
+
+        /// <summary>How far the view has zoomed in: 0 for the whole planet, RegionZoom for one region, LevelZoom for the close-up on a level.</summary>
+        public float Zoom => _zoom;
+
+        public float ZoomTarget { get; set; }
+
+        /// <summary>True while a snap turn towards a chosen place is still under way.</summary>
+        public bool Turning => _snapping && (Mathf.Abs(Mathf.DeltaAngle(_yaw, _targetYaw)) > 0.5f || Mathf.Abs(_pitch - _targetPitch) > 0.5f);
+
+        public static PlanetGlobe Create(RectTransform parent, float size, Texture2D surface, Texture2D clouds)
+        {
+            var go = new GameObject("PlanetGlobe", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var image = go.AddComponent<RawImage>();
+            image.raycastTarget = false;
+            RectTransform rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(size * ImageScale, size * ImageScale);
+
+            var globe = go.AddComponent<PlanetGlobe>();
+            globe._rect = rect;
+            globe.Build(image, surface, clouds);
+            return globe;
+        }
+
+        /// <summary>Turns the globe by hand: x spins it, y tilts it. Cancels any snap turn under way.</summary>
+        public void Spin(Vector2 degrees)
+        {
+            _snapping = false;
+            _targetYaw = _yaw + degrees.x;
+            _targetPitch = Mathf.Clamp(_pitch + degrees.y, -MaxPitch, MaxPitch);
+            _yaw = _targetYaw;
+            _pitch = _targetPitch;
+        }
+
+        /// <summary>Glides the globe until the place faces the camera.</summary>
+        public void TurnTo(Vector3 direction)
+        {
+            Vector2 turn = PlanetCoordinates.TurnToFront(direction);
+            _targetYaw = _yaw + Mathf.DeltaAngle(_yaw, turn.x);
+            _targetPitch = Mathf.Clamp(turn.y, -MaxPitch, MaxPitch);
+            _snapping = true;
+        }
+
+        /// <summary>Puts the globe at once in the turn that shows the place, for the first frame.</summary>
+        public void SnapTo(Vector3 direction)
+        {
+            TurnTo(direction);
+            _yaw = _targetYaw;
+            _pitch = _targetPitch;
+            Apply();
+        }
+
+        /// <summary>
+        /// Where a place on the surface lands on the image, relative to its centre, and how squarely it faces the
+        /// camera (1 in the middle, 0 on the rim, negative on the far side).
+        /// </summary>
+        public Vector2 Project(Vector3 direction, out float facing)
+        {
+            Vector3 surface = _globe.rotation * direction;
+            Vector3 world = _globe.position + surface * Radius;
+            facing = Vector3.Dot(surface, (_camera.transform.position - world).normalized);
+            return ToImage(world);
+        }
+
+        /// <summary>The centre of the globe on the image, and its apparent radius in image pixels.</summary>
+        public Vector2 Centre(out float radiusPixels)
+        {
+            Vector2 centre = ToImage(_globe.position);
+            Vector2 rim = ToImage(_globe.position + _camera.transform.right * Radius);
+            radiusPixels = Vector2.Distance(centre, rim);
+            return centre;
+        }
+
+        // Projected by hand with the square aspect the texture has, so markers land where the camera drew the surface
+        // whatever aspect the editor or the screen reports for the camera.
+        private Vector2 ToImage(Vector3 world)
+        {
+            Vector3 local = _camera.transform.InverseTransformPoint(world);
+            float halfExtent = Mathf.Max(0.001f, local.z) * Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
+            return new Vector2(local.x / halfExtent * 0.5f * _rect.rect.width, local.y / halfExtent * 0.5f * _rect.rect.height);
+        }
+
+        private void Build(RawImage image, Texture2D surface, Texture2D clouds)
+        {
+            _texture = new RenderTexture(TextureSize, TextureSize, 16);
+            image.texture = _texture;
+
+            var rig = new GameObject("GlobeRig");
+            rig.transform.position = new Vector3(0f, 0f, -RigDistance);
+            _rig = rig.transform;
+
+            _globe = Sphere("Globe", Radius, Surface(surface)).transform;
+            _cloudMaterial = CloudMaterial(clouds);
+            _clouds = Sphere("Clouds", CloudRadius, _cloudMaterial).transform;
+
+            var cameraGo = new GameObject("GlobeCamera");
+            cameraGo.transform.SetParent(_rig, false);
+            _camera = cameraGo.AddComponent<Camera>();
+            _camera.clearFlags = CameraClearFlags.SolidColor;
+            _camera.backgroundColor = Color.clear;
+            _camera.fieldOfView = FieldOfView;
+            _camera.targetTexture = _texture;
+            _camera.aspect = 1f;
+            _camera.nearClipPlane = 0.1f;
+            _camera.farClipPlane = 20f;
+
+            AddLight("Key", new Vector3(28f, -40f, 0f), KeyColor, 1.8f);
+            AddLight("Fill", new Vector3(-10f, 150f, 0f), FillColor, 0.25f);
+            Apply();
+        }
+
+        private GameObject Sphere(string name, float radius, Material material)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(_rig, false);
+            go.transform.localScale = Vector3.one * radius;
+            go.AddComponent<MeshFilter>().sharedMesh = SphereMesh();
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+            return go;
+        }
+
+        private static Material Surface(Texture2D texture)
+        {
+            Material material = SurfaceMaterials.Create(Color.white, 0f, 0.25f);
+            material.SetTexture("_BaseMap", texture);
+            return material;
+        }
+
+        private static Material CloudMaterial(Texture2D texture)
+        {
+            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_SrcBlendAlpha", (float)BlendMode.One);
+            material.SetFloat("_DstBlendAlpha", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.renderQueue = (int)RenderQueue.Transparent;
+            material.SetColor("_BaseColor", Color.white);
+            material.SetFloat("_Smoothness", 0f);
+            material.SetTexture("_BaseMap", texture);
+            return material;
+        }
+
+        private void AddLight(string name, Vector3 euler, Color color, float intensity)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(_rig, false);
+            go.transform.localRotation = Quaternion.Euler(euler);
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.color = color;
+            light.intensity = intensity;
+            light.shadows = LightShadows.None;
+        }
+
+        // A latitude-longitude sphere whose texture coordinates follow PlanetCoordinates.ToUv exactly, so the map
+        // painted for it and the markers projected on it agree on where every place is.
+        private static Mesh SphereMesh()
+        {
+            var vertices = new Vector3[(Rings + 1) * (Segments + 1)];
+            var normals = new Vector3[vertices.Length];
+            var uv = new Vector2[vertices.Length];
+            for (int r = 0; r <= Rings; r++)
+            {
+                float latitude = r / (float)Rings * 180f - 90f;
+                for (int s = 0; s <= Segments; s++)
+                {
+                    float longitude = s / (float)Segments * 360f - 180f;
+                    int index = r * (Segments + 1) + s;
+                    Vector3 direction = PlanetCoordinates.ToDirection(longitude, latitude);
+                    vertices[index] = direction;
+                    normals[index] = direction;
+                    uv[index] = PlanetCoordinates.ToUv(longitude, latitude);
+                }
+            }
+
+            var triangles = new int[Rings * Segments * 6];
+            int t = 0;
+            for (int r = 0; r < Rings; r++)
+            {
+                for (int s = 0; s < Segments; s++)
+                {
+                    int a = r * (Segments + 1) + s;
+                    int b = a + Segments + 1;
+                    // Wound so the outside faces the camera; the other way round the far side shows through, mirrored.
+                    triangles[t++] = a;
+                    triangles[t++] = a + 1;
+                    triangles[t++] = b;
+                    triangles[t++] = a + 1;
+                    triangles[t++] = b + 1;
+                    triangles[t++] = b;
+                }
+            }
+
+            var mesh = new Mesh { name = "Globe" };
+            mesh.vertices = vertices;
+            mesh.normals = normals;
+            mesh.uv = uv;
+            mesh.triangles = triangles;
+            mesh.RecalculateBounds();
+            return mesh;
+        }
+
+        private void Update()
+        {
+            float dt = Time.unscaledDeltaTime;
+            if (_snapping)
+            {
+                float k = 1f - Mathf.Exp(-TurnFollow * dt);
+                _yaw += Mathf.DeltaAngle(_yaw, _targetYaw) * k;
+                _pitch += (_targetPitch - _pitch) * k;
+            }
+
+            _zoom = Mathf.MoveTowards(_zoom, ZoomTarget, dt / ZoomSeconds);
+            _clouds.localRotation = _clouds.localRotation * Quaternion.AngleAxis(CloudDegreesPerSecond * dt, Vector3.up);
+            Apply();
+        }
+
+        private void Apply()
+        {
+            Quaternion rotation = PlanetCoordinates.Rotation(_yaw, _pitch);
+            _globe.localRotation = rotation;
+            _clouds.localRotation = rotation * Quaternion.AngleAxis(Time.unscaledTime * CloudDegreesPerSecond, Vector3.up);
+
+            // The first stage of the zoom flies onto a region; the second comes closer still and moves the camera
+            // sideways, so the chosen level slides left and leaves room for the panel.
+            float region = Ease(Mathf.Clamp01(_zoom / RegionZoom));
+            float level = Ease(Mathf.Clamp01((_zoom - RegionZoom) / (LevelZoom - RegionZoom)));
+            float distance = Mathf.Lerp(Mathf.Lerp(FarDistance, RegionDistance, region), NearDistance, level);
+            // Clouds thin out on the way in, so the levels sit on clear land.
+            _cloudMaterial.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f - region));
+            _camera.transform.localPosition = new Vector3(ZoomShift * level, 0f, -distance);
+        }
+
+        private static float Ease(float t) => t * t * (3f - 2f * t);
+
+        private void OnDestroy()
+        {
+            if (_rig != null)
+            {
+                Destroy(_rig.gameObject);
+            }
+
+            if (_texture != null)
+            {
+                _texture.Release();
+            }
+        }
+    }
+}

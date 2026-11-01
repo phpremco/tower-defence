@@ -1,3 +1,4 @@
+using Game.Combat;
 using UnityEngine;
 
 namespace Game.Levels
@@ -122,7 +123,7 @@ namespace Game.Levels
             }
         }
 
-        private void OnExploded(Vector3 position, float radius) => Play(position, radius * ExplosionRadiusScale);
+        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => Play(position, radius * ExplosionRadiusScale);
 
         private void OnBossPulsed(Vector3 centre) => Play(centre, BossPulseScale * 3f);
 

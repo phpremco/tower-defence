@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8951df719d65fa4eaa1352b56ce5f1e, type: 3}
+  m_Name: Swamp_Medium_21
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.WaveDefinition
+  _startDelay: 8
+  _spawnJitter: 0.45
+  _groups:
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 6
+    PathIndex: 0
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 7
+    PathIndex: 3
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 1.44
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 6
+    PathIndex: 0
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 3.1200001
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 8
+    PathIndex: 3
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 4.5600004
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 6
+    PathIndex: 0
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 6.4800005
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 7
+    PathIndex: 3
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 7.9200006
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 6
+    PathIndex: 0
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 9.6
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Count: 6
+    PathIndex: 3
+    Source: 0
+    Interval: 0.2
+    Delay: 0
+    Stagger: 11.040001
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 3
+    PathIndex: 3
+    Source: 0
+    Interval: 0.231
+    Delay: 2.5
+    Stagger: 0
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 4
+    PathIndex: 0
+    Source: 0
+    Interval: 0.231
+    Delay: 2.5
+    Stagger: 1.98
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 3
+    PathIndex: 3
+    Source: 0
+    Interval: 0.231
+    Delay: 2.5
+    Stagger: 4.62
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 5
+    PathIndex: 0
+    Source: 0
+    Interval: 0.231
+    Delay: 2.5
+    Stagger: 6.6
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Count: 1
+    PathIndex: 3
+    Source: 0
+    Interval: 0.231
+    Delay: 2.5
+    Stagger: 9.9
+  _healthMultiplier: 1.4

@@ -35,6 +35,12 @@ namespace Game.Enemies
         /// <summary>The slug: a soft body on a slime foot with eyes on stalks.</summary>
         Oozer = 27,
 
+        /// <summary>The ice beetle: a hunched six-legged crawler with a back of ice prisms that shatter off.</summary>
+        Shardback = 28,
+
+        /// <summary>The marsh leech: a long low segmented body with a sucker mouth, leaving a mud trail.</summary>
+        Mireleech = 29,
+
         BroodMother = 30,
         AcidEmpress = 31,
         StormMatriarch = 32,

@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Wisp
   _layer: 3
   _flies: 0
-  _maxHealth: 30
+  _maxHealth: 36
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.2
@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 3
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: 07af71919e53a5c448e0931b08479a06, type: 2}

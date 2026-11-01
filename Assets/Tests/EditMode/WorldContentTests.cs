@@ -81,12 +81,14 @@ namespace Game.Tests
             return catalog;
         }
 
+        private const int FirstRecipeLevel = 4;
+
         [Test]
-        public void AllFiveLevels_ExistAndPassTheValidator()
+        public void AllLevels_ExistAndPassTheValidator()
         {
             CampaignCatalog catalog = LoadCampaign();
 
-            Assert.AreEqual(5, catalog.Nodes.Count);
+            Assert.AreEqual(7, catalog.Nodes.Count);
             for (int i = 0; i < catalog.Nodes.Count; i++)
             {
                 LevelDefinition level = catalog.Nodes[i].Level;
@@ -150,14 +152,14 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OnlyTheLastLevel_OffersCombineRecipes()
+        public void CombineRecipes_StartAtTheNest()
         {
             CampaignCatalog catalog = LoadCampaign();
 
             for (int i = 0; i < catalog.Nodes.Count; i++)
             {
                 int recipes = catalog.Nodes[i].Level.Recipes.Length;
-                if (i == catalog.Nodes.Count - 1)
+                if (i >= FirstRecipeLevel)
                 {
                     Assert.Greater(recipes, 0);
                 }

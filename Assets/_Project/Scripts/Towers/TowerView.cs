@@ -31,6 +31,11 @@ namespace Game.Towers
         private const float RecoilRecovery = 6f;
         private const float SpinKick = 1080f;
         private const float SpinDecay = 2.2f;
+        // A tower with nothing to shoot keeps watch: after a pause the head sweeps slowly around where it last aimed.
+        private const float IdleAfterSeconds = 2.5f;
+        private const float IdleSweepDegrees = 22f;
+        private const float IdleSweepSpeed = 0.45f;
+        private const float IdleEaseSeconds = 1.5f;
         private const float MuzzleSeconds = 0.07f;
         private const float MuzzleSize = 0.3f;
         private const float MuzzleForward = 0.6f;
@@ -40,6 +45,14 @@ namespace Game.Towers
         private static readonly Color HealthyColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
         private static readonly Color WreckColor = new Color(0.12f, 0.12f, 0.13f);
+        // A hurt tower smokes and throws sparks in proportion to the damage; a wreck only smoulders.
+        private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
+        private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f) * 2f;
+        private const float SmokeBelow = 0.75f;
+        private const float SmokeRate = 5f;
+        private const float SparkRate = 2.5f;
+        private const float WreckSmokeRate = 2.5f;
+        private const float ParticleHeight = 0.55f;
 
         private readonly GameObject[] _stars = new GameObject[TowerDefinition.LevelCount];
 
@@ -60,17 +73,34 @@ namespace Game.Towers
         private int _shapeLevel = -1;
         private TowerModelFactory.Parts _parts;
         private float _recoil;
+        private float _sinceFire = float.MaxValue / 2f;
+        private float _restYaw;
+        private float _idlePhase;
         private float _spin;
         private float _spinAngle;
         private Transform _muzzle;
         private float _muzzleTime = float.PositiveInfinity;
+        private ParticleSystem _smoke;
+        private ParticleSystem _sparks;
 
         private void Awake()
         {
             _tower = GetComponent<Tower>();
+            _idlePhase = Random.Range(0f, Mathf.PI * 2f);
             _tower.LevelChanged += OnLevelChanged;
             _tower.StateChanged += OnStateChanged;
             _tower.Fired += OnFired;
+            _smoke = ParticleKit.Create(transform, "Smoke", Vector3.up * ParticleHeight, SmokeColor, 1.2f, 2.2f, 0.2f, 0.45f, 0.3f, 0.7f, -0.12f, 30, 0.25f);
+            _sparks = ParticleKit.Create(transform, "Sparks", Vector3.up * ParticleHeight, SparkColor, 0.3f, 0.7f, 0.03f, 0.06f, 2f, 5f, 1.5f, 60, 0.2f);
+            SetRate(_smoke, 0f);
+            SetRate(_sparks, 0f);
+        }
+
+        private static void SetRate(ParticleSystem system, float rate)
+        {
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.enabled = rate > 0f;
+            emission.rateOverTime = rate;
         }
 
         private Vector3 MuzzlePosition() => _muzzle.position;
@@ -164,6 +194,10 @@ namespace Game.Towers
                 _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
                 _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), BarEmission);
             }
+
+            float hurt = Mathf.Clamp01(1f - tower.Health.Fraction / SmokeBelow);
+            SetRate(_smoke, tower.IsWrecked ? WreckSmokeRate : hurt * SmokeRate);
+            SetRate(_sparks, tower.IsWrecked ? 0f : hurt * SparkRate);
 
             ApplyMaterials();
 
@@ -326,6 +360,7 @@ namespace Game.Towers
 
         private void Update()
         {
+            UpdateIdleSweep();
             if (_barrel != null && (_recoil > 0f || _spin > 0f))
             {
                 _recoil = Mathf.Max(0f, _recoil - RecoilRecovery * Time.deltaTime);
@@ -344,8 +379,28 @@ namespace Game.Towers
             }
         }
 
+        private void UpdateIdleSweep()
+        {
+            if (_head == null || _tower.IsWrecked)
+            {
+                // A wreck has no crew left to look around.
+                return;
+            }
+
+            _sinceFire += Time.deltaTime;
+            if (_sinceFire < IdleAfterSeconds)
+            {
+                return;
+            }
+
+            float ease = Mathf.Clamp01((_sinceFire - IdleAfterSeconds) / IdleEaseSeconds);
+            float sweep = Mathf.Sin((_sinceFire - IdleAfterSeconds) * IdleSweepSpeed + _idlePhase) * IdleSweepDegrees * ease;
+            _head.rotation = Quaternion.Euler(0f, _restYaw + sweep, 0f);
+        }
+
         private void OnFired(Vector3 targetPosition)
         {
+            _sinceFire = 0f;
             _recoil = 1f;
             _spin = 1f;
             _muzzleTime = 0f;
@@ -354,6 +409,7 @@ namespace Game.Towers
             if (flat.sqrMagnitude > 0.0001f)
             {
                 _head.rotation = Quaternion.LookRotation(flat);
+                _restYaw = _head.eulerAngles.y;
             }
         }
     }

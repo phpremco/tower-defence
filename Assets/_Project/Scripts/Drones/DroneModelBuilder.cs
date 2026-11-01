@@ -4,11 +4,28 @@ using UnityEngine;
 namespace Game.Drones
 {
     /// <summary>
-    /// Puts a drone model together under a parent: hull, one rotor object per pivot, the cargo pod and the muzzle
-    /// points. The in-level view animates it; the HUD renders the same thing into a card picture.
+    /// Puts a drone model together under a parent: skinned hull, one rotor object per pivot with a blur disc under
+    /// it, the cargo pod, the drill, navigation lights, thruster glow and the muzzle points. The in-level view
+    /// animates it; the HUD and the upgrade screen render the same thing into a picture.
     /// </summary>
     public static class DroneModelBuilder
     {
+        private const float RotorBlurAlpha = 0.09f;
+        private const float RotorBlurHeight = 0.004f;
+        private const float NavLightSize = 0.028f;
+        private const float NavLightEmission = 5f;
+        private const float ThrusterSize = 0.05f;
+        private const float ThrusterEmission = 3f;
+        private const float SeamGlow = 0.35f;
+        private const float AlloyTiling = 2f;
+        private static readonly Color HullBase = new Color(0.72f, 0.76f, 0.84f);
+        private static readonly Color MetalColor = new Color(0.78f, 0.82f, 0.9f);
+        private static readonly Color DarkColor = new Color(0.1f, 0.11f, 0.15f);
+        private static readonly Color PortColor = new Color(1f, 0.2f, 0.15f);
+        private static readonly Color StarboardColor = new Color(0.2f, 1f, 0.35f);
+        private static readonly Color StrobeColor = new Color(1f, 1f, 1f);
+        private static readonly Color BeaconColor = new Color(1f, 0.7f, 0.15f);
+
         public sealed class Rig
         {
             public GameObject Root;
@@ -16,45 +33,132 @@ namespace Game.Drones
             public Transform[] Rotors;
             public Vector3 RotorAxis;
             public Renderer Cargo;
+            public Transform Drill;
             public Vector3[] Muzzles;
+
+            /// <summary>Navigation light objects, in the same order as the factory's lights.</summary>
+            public GameObject[] Lights;
+            public DroneModelFactory.LightKind[] LightKinds;
+
+            /// <summary>One material per thruster, whose emission the view scales with speed.</summary>
+            public Material[] ThrusterMaterials;
+            public Transform[] Thrusters;
+
+            /// <summary>Where sparks fly from while the medic welds, in model space.</summary>
+            public Vector3 Tool;
         }
 
         public static Rig Build(Transform parent, DroneDefinition definition)
         {
             DroneModelFactory.Parts parts = DroneModelFactory.For((int)definition.Kind);
-            Material[] materials = Materials(definition.Color);
+            Material[] materials = Materials(definition);
 
             var root = new GameObject("DroneModel");
             root.transform.SetParent(parent, false);
             Part("Hull", root.transform, parts.Hull, materials, Vector3.zero);
 
             var rotors = new Transform[parts.RotorPivots.Length];
+            Quaternion spinFrame = Quaternion.FromToRotation(Vector3.up, parts.RotorAxis);
             for (int i = 0; i < rotors.Length; i++)
             {
                 Transform rotor = Part("Rotor", root.transform, parts.Rotor, materials, parts.RotorPivots[i]).transform;
                 // The blade mesh lies flat (spinning around +Y); a tail fan spins around its own axis instead.
-                rotor.localRotation = Quaternion.FromToRotation(Vector3.up, parts.RotorAxis);
+                rotor.localRotation = spinFrame;
                 rotors[i] = rotor;
+
+                // A faint disc under the blades stands in for the motion blur of a rotor at speed.
+                GameObject blur = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, definition.Color, root.transform, parts.RotorPivots[i], new Vector3(parts.RotorRadius * 2f, RotorBlurHeight, parts.RotorRadius * 2f));
+                blur.name = "RotorBlur";
+                blur.transform.localRotation = spinFrame;
+                blur.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(Color.Lerp(definition.Color, new Color(0.3f, 0.32f, 0.38f), 0.6f), RotorBlurAlpha, 0f);
             }
 
             Renderer cargo = null;
             if (parts.Cargo != null)
             {
-                cargo = Part("Cargo", root.transform, parts.Cargo, new[] { materials[ModelPalette.Dark] }, parts.CargoPivot);
+                cargo = Part("Cargo", root.transform, parts.Cargo, materials, parts.CargoPivot);
             }
 
-            return new Rig { Root = root, Materials = materials, Rotors = rotors, RotorAxis = parts.RotorAxis, Cargo = cargo, Muzzles = parts.Muzzles };
+            Transform drill = null;
+            if (parts.Drill != null)
+            {
+                drill = Part("Drill", root.transform, parts.Drill, materials, parts.DrillPivot).transform;
+            }
+
+            var lights = new GameObject[parts.Lights.Length];
+            var kinds = new DroneModelFactory.LightKind[parts.Lights.Length];
+            for (int i = 0; i < lights.Length; i++)
+            {
+                DroneModelFactory.NavLight light = parts.Lights[i];
+                lights[i] = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, LightColor(light.Kind), root.transform, light.Position, Vector3.one * NavLightSize, NavLightEmission);
+                lights[i].name = "NavLight";
+                kinds[i] = light.Kind;
+            }
+
+            var thrusters = new Transform[parts.Thrusters.Length];
+            var thrusterMaterials = new Material[parts.Thrusters.Length];
+            for (int i = 0; i < thrusters.Length; i++)
+            {
+                GameObject flame = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, definition.Color, root.transform, parts.Thrusters[i], new Vector3(ThrusterSize, ThrusterSize, ThrusterSize * 1.6f), ThrusterEmission);
+                flame.name = "Thruster";
+                var renderer = flame.GetComponent<Renderer>();
+                // Its own material, so the view can turn the glow up with speed without touching other drones.
+                renderer.material = SurfaceMaterials.Create(definition.Color, ThrusterEmission, 0.6f);
+                thrusterMaterials[i] = renderer.material;
+                thrusters[i] = flame.transform;
+            }
+
+            return new Rig
+            {
+                Root = root,
+                Materials = materials,
+                Rotors = rotors,
+                RotorAxis = parts.RotorAxis,
+                Cargo = cargo,
+                Drill = drill,
+                Muzzles = parts.Muzzles,
+                Lights = lights,
+                LightKinds = kinds,
+                ThrusterMaterials = thrusterMaterials,
+                Thrusters = thrusters,
+                Tool = parts.Tool,
+            };
         }
 
-        // Drones wear their own colour on the hull, not just on the lights, so the three kinds read apart at a glance.
-        private static Material[] Materials(Color color)
+        public static Color LightColor(DroneModelFactory.LightKind kind)
         {
+            switch (kind)
+            {
+                case DroneModelFactory.LightKind.Port:
+                    return PortColor;
+                case DroneModelFactory.LightKind.Starboard:
+                    return StarboardColor;
+                case DroneModelFactory.LightKind.Beacon:
+                    return BeaconColor;
+                default:
+                    return StrobeColor;
+            }
+        }
+
+        // Drones wear their own colour on the hull, dressed in a skin from the data, and their markings in the
+        // accent colour, so the three kinds read apart at a glance and up close look built, not cast.
+        private static Material[] Materials(DroneDefinition definition)
+        {
+            Color color = definition.Color;
+            Material hull = CreatureSkin.Dress(SurfaceMaterials.Create(Color.Lerp(HullBase, color, 0.55f), 0f, 0.5f, 0.2f), definition.Skin, color * SeamGlow);
+            Material metal = CreatureSkin.Dress(SurfaceMaterials.Create(MetalColor, 0f, 0.55f, 0.3f), CreatureSkin.Kind.Alloy, Color.black);
+            Material dark = CreatureSkin.Dress(SurfaceMaterials.Create(DarkColor, 0f, 0.35f, 0.2f), CreatureSkin.Kind.Alloy, Color.black);
+            Material accent = CreatureSkin.Dress(SurfaceMaterials.Create(definition.AccentColor, 0f, 0.5f, 0.1f), CreatureSkin.Kind.Plate, Color.black);
+            // The alloy lattice is drawn for hero-sized gear; on a drone it goes finer.
+            metal.SetTextureScale("_BaseMap", Vector2.one * AlloyTiling);
+            dark.SetTextureScale("_BaseMap", Vector2.one * AlloyTiling);
             return new[]
             {
-                SurfaceMaterials.Create(Color.Lerp(new Color(0.7f, 0.74f, 0.82f), color, 0.6f), 0.12f, 0.5f, 0.2f),
+                hull,
                 SurfaceMaterials.Create(color, 2.2f, 0.6f),
-                SurfaceMaterials.Create(new Color(0.8f, 0.84f, 0.92f), 0f, 0.5f, 0.2f),
-                SurfaceMaterials.Create(new Color(0.08f, 0.09f, 0.12f), 0f, 0.3f),
+                metal,
+                dark,
+                accent,
             };
         }
 

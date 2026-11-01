@@ -31,7 +31,7 @@ namespace Game.Combat
         public event Action<Projectile> Launched;
 
         /// <summary>Raised when the projectile lands: world position, splash radius (zero for single target) and colour.</summary>
-        public event Action<Vector3, float, Color> Impacted;
+        public event Action<Vector3, float, Color, ProjectileStyle> Impacted;
 
         public ProjectileStyle Style { get; private set; }
 
@@ -121,7 +121,7 @@ namespace Game.Combat
                 _target.ApplySlow(_slowFactor, _slowSeconds);
             }
 
-            Impacted?.Invoke(_lastTargetPosition, _splashRadius, Color);
+            Impacted?.Invoke(_lastTargetPosition, _splashRadius, Color, Style);
             _target = null;
             _release(this);
         }

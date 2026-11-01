@@ -41,6 +41,15 @@ namespace Game.Levels
         [SerializeField] private Texture2D _terrainEmission;
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
+
+        /// <summary>
+        /// How much stronger the enemies are because the player is expected to arrive with permanent upgrades by
+        /// now (0.2 means a fifth tougher). Early levels keep it at zero; later ones count on a few bought levels.
+        /// </summary>
+        [SerializeField] [Range(0f, 1f)] private float _expectedUpgradeBonus;
+
+        /// <summary>The base's own gun, built out by the permanent base weapon upgrade. May be null.</summary>
+        [SerializeField] private TowerDefinition _baseTurret;
         [SerializeField] private HeroDefinition _hero;
         [SerializeField] private DroneDefinition _repairDrone;
         [SerializeField] private DroneDefinition _harvestDrone;
@@ -115,6 +124,11 @@ namespace Game.Levels
 
         /// <summary>The commander for this level, or null for a level without one.</summary>
         public float EnemyHealthMultiplier => _enemyHealthMultiplier;
+        public float ExpectedUpgradeBonus => _expectedUpgradeBonus;
+
+        /// <summary>Everything that scales enemy health for this level: its own multiplier and the expected upgrades.</summary>
+        public float EnemyHealthScale => _enemyHealthMultiplier * (1f + _expectedUpgradeBonus);
+        public TowerDefinition BaseTurret => _baseTurret;
         public HeroDefinition Hero => _hero;
 
         /// <summary>The kinds of drone this level uses. How many fly comes from permanent upgrades.</summary>

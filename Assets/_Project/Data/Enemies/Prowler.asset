@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Prowler
   _layer: 1
   _flies: 0
-  _maxHealth: 55
+  _maxHealth: 62
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.5
@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: 9e978155aac60cd4a92c11084220a6cc, type: 2}

@@ -12,6 +12,10 @@ namespace Game.Combat
 
         public void Remove(IStructure structure) => _structures.Remove(structure);
 
+        public int Count => _structures.Count;
+
+        public IStructure this[int index] => _structures[index];
+
         /// <summary>Returns the living structure with the lowest health share below full, or null when all are healthy.</summary>
         public IStructure FindMostDamaged()
         {

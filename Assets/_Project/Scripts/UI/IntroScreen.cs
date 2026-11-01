@@ -99,8 +99,8 @@ namespace Game.UI
             {
                 Color colour = node.Level != null && node.Level.Theme != null ? Color.Lerp(node.Level.Theme.GroundColor, node.Level.Theme.AccentColor, 0.5f) * 1.15f : Color.grey;
                 colour.a = 1f;
-                regions.Add(new PlanetPainter.Region { Position = node.MapPosition, Colour = colour, Radius = RegionRadius });
-                lit.Add(new PlanetPainter.Region { Position = node.MapPosition, Colour = Color.Lerp(colour, Color.white, 0.5f), Radius = RegionRadius });
+                regions.Add(new PlanetPainter.Region { Position = node.FlatPosition, Colour = colour, Radius = RegionRadius });
+                lit.Add(new PlanetPainter.Region { Position = node.FlatPosition, Colour = Color.Lerp(colour, Color.white, 0.5f), Radius = RegionRadius });
             }
 
             var frame = new Vector2(FrameScale, MapHeight / PlanetSize);
@@ -109,7 +109,7 @@ namespace Game.UI
             _regions = CreateRawImage("Lit", _planet, PlanetPainter.PaintSurface(PlanetTexture, lit, frame), new Color(1f, 1f, 1f, 0f));
             _planet.localScale = Vector3.zero;
 
-            Vector2 first = _catalog.Nodes.Count > 0 ? _catalog.Nodes[0].MapPosition : new Vector2(0.5f, 0.5f);
+            Vector2 first = _catalog.Nodes.Count > 0 ? _catalog.Nodes[0].FlatPosition : new Vector2(0.5f, 0.5f);
             _landingPoint = Vector2.Scale(first - new Vector2(0.5f, 0.5f), new Vector2(MapWidth, MapHeight)) * (PlanetSize / MapWidth);
         }
 

@@ -17,9 +17,9 @@ MonoBehaviour:
   _flies: 0
   _maxHealth: 1300
   _armor: 700
-  _armorReduction: 0.7
+  _armorReduction: 0.6
   _speed: 0.6
-  _reward: 220
+  _reward: 330
   _baseDamage: 12
   _element: 0
   _attackStyle: 1
@@ -50,3 +50,4 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: 8990574a296fd4d47a6c5708c79ad73b, type: 2}

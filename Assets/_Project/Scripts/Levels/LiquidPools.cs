@@ -123,6 +123,10 @@ namespace Game.Levels
                     return TerrainKind.Water;
                 case SpawnSource.Lava:
                     return TerrainKind.Lava;
+                case SpawnSource.Ice:
+                    return TerrainKind.Ice;
+                case SpawnSource.Bog:
+                    return TerrainKind.Bog;
                 default:
                     return TerrainKind.Quicksand;
             }

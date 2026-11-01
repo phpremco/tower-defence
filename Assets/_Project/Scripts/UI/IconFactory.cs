@@ -31,6 +31,12 @@ namespace Game.UI
         Net,
         Trap,
         Patrol,
+
+        /// <summary>A flat-topped hexagon plate: a region on the planet map.</summary>
+        Hex,
+
+        /// <summary>A padlock: a region that is not open yet.</summary>
+        Lock,
     }
 
     /// <summary>Draws the simple white HUD icons into small textures at runtime, so no image files are needed.</summary>
@@ -103,6 +109,11 @@ namespace Game.UI
                 case IconType.Patrol:
                     // A buggy: body, cabin and two wheels.
                     return (u, v) => (u > 0.18f && u < 0.82f && v > 0.4f && v < 0.64f) || (u > 0.34f && u < 0.66f && v >= 0.64f && v < 0.82f) || Ring(u, v, 0.32f, 0.32f, 0f, 0.13f) || Ring(u, v, 0.68f, 0.32f, 0f, 0.13f);
+                case IconType.Hex:
+                    return Hexagon;
+                case IconType.Lock:
+                    // A padlock: the body below, the shackle as a ring open at the bottom.
+                    return (u, v) => (u > 0.22f && u < 0.78f && v > 0.1f && v < 0.5f) || (Ring(u, v, 0.5f, 0.56f, 0.14f, 0.26f) && v > 0.56f);
                 case IconType.Disc:
                     return (u, v) => Radius(u, v) < 0.48f;
                 case IconType.Ring:
@@ -140,6 +151,15 @@ namespace Game.UI
 
         // A wrench: diagonal handle plus an open ring at the top right.
         // True between two radii around a centre; an inner radius of zero makes a disc.
+        // A regular hexagon with flat top and bottom, filling most of the square.
+        private static bool Hexagon(float u, float v)
+        {
+            float x = Mathf.Abs(u - 0.5f);
+            float y = Mathf.Abs(v - 0.5f);
+            const float Radius = 0.46f;
+            return y <= Radius * 0.866f && x <= Radius - y * 0.577f;
+        }
+
         private static bool Ring(float u, float v, float cx, float cy, float inner, float outer)
         {
             float d = Mathf.Sqrt((u - cx) * (u - cx) + (v - cy) * (v - cy));

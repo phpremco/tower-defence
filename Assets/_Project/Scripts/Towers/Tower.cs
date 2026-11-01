@@ -83,7 +83,7 @@ namespace Game.Towers
         public float Span { get; set; } = 1f;
 
         /// <summary>Blockades are part of the level: they cannot be sold, only repaired or rebuilt.</summary>
-        public bool CanBeSold => !_definition.BlocksGroundEnemies;
+        public bool CanBeSold => !_definition.BlocksGroundEnemies && !_definition.IsBaseDefence;
 
         public bool BlocksGround => _definition.BlocksGroundEnemies && IsAlive;
 
@@ -179,6 +179,8 @@ namespace Game.Towers
 
             LevelIndex++;
             Health.Extend(_definition.GetLevel(LevelIndex).HealthBonus * HealthMultiplier);
+            // A refit is a rebuild: the crew patches every dent while the new parts go in.
+            Health.Heal(Health.Max);
             LevelChanged?.Invoke(this);
         }
 
@@ -213,7 +215,10 @@ namespace Game.Towers
             Vector3 muzzle = MuzzleProvider != null
                 ? MuzzleProvider()
                 : transform.position + Vector3.up * MuzzleHeight + (towards.sqrMagnitude > 0.0001f ? towards.normalized * MuzzleForward : Vector3.zero);
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, _definition.SlowFactor, _definition.SlowSeconds, _definition.ProjectileStyle, _definition.Color);
+            // A chilling tower grows its slow with its stars instead of its damage.
+            float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
+            float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color);
             Fired?.Invoke(target.Position);
             _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power));
         }

@@ -218,11 +218,12 @@ namespace Game.UI
         private void Refresh(DroneButton entry)
         {
             int active = _context.ActiveDrones(entry.Drone);
-            bool full = active >= entry.Drone.MaxActive;
+            int max = _context.MaxDrones(entry.Drone);
+            bool full = active >= max;
             bool affordable = _context.Wallet.Money >= entry.Drone.Cost;
             entry.Button.interactable = affordable && !full;
             // The picture names the drone; the label only carries what changes: the price and how many are out.
-            entry.Label.text = full ? $"max {active}/{entry.Drone.MaxActive}" : $"{entry.Drone.Cost}   {active}/{entry.Drone.MaxActive}";
+            entry.Label.text = full ? $"max {active}/{max}" : $"{entry.Drone.Cost}   {active}/{max}";
             // Grey when the limit is reached, red when there is room but not enough money.
             entry.Label.color = full ? Unavailable : affordable ? TextColor : TooExpensive;
         }

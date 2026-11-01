@@ -31,6 +31,6 @@ namespace Game.Levels
         /// <summary>Height of the ground a tower on this cell stands on.</summary>
         public float HeightAt(Vector2Int cell) => KindAt(cell) == TerrainKind.Raised ? PlateauHeight : 0f;
 
-        public static bool IsLiquid(TerrainKind kind) => kind == TerrainKind.Water || kind == TerrainKind.Lava || kind == TerrainKind.Quicksand;
+        public static bool IsLiquid(TerrainKind kind) => kind == TerrainKind.Water || kind == TerrainKind.Lava || kind == TerrainKind.Quicksand || kind == TerrainKind.Ice || kind == TerrainKind.Bog;
     }
 }

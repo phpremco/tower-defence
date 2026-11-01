@@ -2,7 +2,7 @@
 
 namespace Game.Economy
 {
-    /// <summary>Turns bought upgrades into the modifiers a level starts with, per tower and for the base.</summary>
+    /// <summary>Turns bought upgrades into the modifiers a level starts with, per tower, per drone and for the base.</summary>
     public static class UpgradeEffects
     {
         /// <summary>Modifiers for one tower type. Base and blockade upgrades are not included.</summary>
@@ -11,10 +11,50 @@ namespace Game.Economy
             return Compute(progress, catalog, towerId, includeGlobal: false);
         }
 
-        /// <summary>Modifiers that do not belong to a tower: base health, blockade strength and the hero.</summary>
+        /// <summary>Modifiers that do not belong to a tower or drone: base health, blockade strength and the hero.</summary>
         public static PlayerModifiers ComputeGlobal(ProgressService progress, UpgradeCatalog catalog)
         {
             return Compute(progress, catalog, string.Empty, includeGlobal: true);
+        }
+
+        /// <summary>Modifiers for one drone type, by the drone's asset name.</summary>
+        public static DroneModifiers ComputeForDrone(ProgressService progress, UpgradeCatalog catalog, string droneId)
+        {
+            float speed = 1f;
+            float health = 1f;
+            float output = 1f;
+            float tempo = 1f;
+            float count = 0f;
+
+            foreach (UpgradeDefinition upgrade in catalog.Upgrades)
+            {
+                if (upgrade.DroneId != droneId || string.IsNullOrEmpty(droneId))
+                {
+                    continue;
+                }
+
+                float bonus = progress.GetUpgradeLevel(upgrade.Id) * upgrade.BonusPerLevel;
+                switch (upgrade.Target)
+                {
+                    case UpgradeTarget.DroneSpeed:
+                        speed += bonus;
+                        break;
+                    case UpgradeTarget.DroneArmour:
+                        health += bonus;
+                        break;
+                    case UpgradeTarget.DroneOutput:
+                        output += bonus;
+                        break;
+                    case UpgradeTarget.DroneTempo:
+                        tempo += bonus;
+                        break;
+                    case UpgradeTarget.DroneCount:
+                        count += bonus;
+                        break;
+                }
+            }
+
+            return new DroneModifiers(speed, health, output, tempo, (int)System.Math.Round(count));
         }
 
         private static PlayerModifiers Compute(ProgressService progress, UpgradeCatalog catalog, string towerId, bool includeGlobal)
@@ -27,12 +67,12 @@ namespace Game.Economy
             float blockade = 1f;
             float heroDamage = 1f;
             float heroHealth = 1f;
-            float droneSpeed = 1f;
+            float baseWeapon = 0f;
 
             foreach (UpgradeDefinition upgrade in catalog.Upgrades)
             {
-                bool isGlobal = string.IsNullOrEmpty(upgrade.TowerId);
-                if (isGlobal != includeGlobal || (!isGlobal && upgrade.TowerId != towerId))
+                bool wanted = includeGlobal ? upgrade.IsGlobal : upgrade.TowerId == towerId && !string.IsNullOrEmpty(towerId);
+                if (!wanted)
                 {
                     continue;
                 }
@@ -55,6 +95,9 @@ namespace Game.Economy
                     case UpgradeTarget.BaseHealth:
                         baseHealth += bonus;
                         break;
+                    case UpgradeTarget.BaseWeapon:
+                        baseWeapon += bonus;
+                        break;
                     case UpgradeTarget.BlockadeHealth:
                         blockade += bonus;
                         break;
@@ -64,13 +107,10 @@ namespace Game.Economy
                     case UpgradeTarget.HeroHealth:
                         heroHealth += bonus;
                         break;
-                    case UpgradeTarget.DroneSpeed:
-                        droneSpeed += bonus;
-                        break;
                 }
             }
 
-            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, droneSpeed);
+            return new PlayerModifiers(damage, range, fireRate, health, (int)System.Math.Round(baseHealth), blockade, heroDamage, heroHealth, (int)System.Math.Round(baseWeapon));
         }
     }
 }

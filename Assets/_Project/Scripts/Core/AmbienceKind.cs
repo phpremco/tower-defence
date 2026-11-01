@@ -9,5 +9,11 @@ namespace Game.Core
         Lava = 3,
         Ruins = 4,
         Hive = 5,
+
+        /// <summary>A snowstorm: gusting wind and a thin high whistle.</summary>
+        Blizzard = 6,
+
+        /// <summary>A marsh at night: frogs, insects and bubbles breaking the surface.</summary>
+        Marsh = 7,
     }
 }

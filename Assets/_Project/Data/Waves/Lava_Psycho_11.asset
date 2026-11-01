@@ -23,7 +23,7 @@ MonoBehaviour:
     Delay: 0
     Stagger: 0
   - Enemy: {fileID: 11400000, guid: c0893d5c3825799408d8a7010224f285, type: 2}
-    Count: 7
+    Count: 6
     PathIndex: 0
     Source: 4
     Interval: 1.5

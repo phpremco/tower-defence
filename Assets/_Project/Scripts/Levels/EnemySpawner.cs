@@ -163,7 +163,7 @@ namespace Game.Levels
             Vector2Int cell = _liquids.SurfaceCell(pool, _random.Next());
             Vector3 start = _context.Level.Grid.CellToWorld(cell);
             Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
-            EnemyOrigin origin = kind == TerrainKind.Water ? EnemyOrigin.Water : kind == TerrainKind.Lava ? EnemyOrigin.Lava : EnemyOrigin.Quicksand;
+            EnemyOrigin origin = kind == TerrainKind.Water ? EnemyOrigin.Water : kind == TerrainKind.Lava ? EnemyOrigin.Lava : kind == TerrainKind.Ice ? EnemyOrigin.Ice : kind == TerrainKind.Bog ? EnemyOrigin.Bog : EnemyOrigin.Quicksand;
             Launch(definition, route, FlightHeight(definition), origin, progress);
         }
 
@@ -253,7 +253,7 @@ namespace Game.Levels
             enemy.Initialize(
                 definition,
                 route,
-                difficulty.HealthMultiplier * _context.Level.EnemyHealthMultiplier * WaveHealthScale,
+                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale,
                 1f,
                 height,
                 _context.Targets,

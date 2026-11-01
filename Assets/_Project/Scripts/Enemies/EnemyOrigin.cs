@@ -11,5 +11,7 @@ namespace Game.Enemies
 
         /// <summary>An element nest: the creature bursts out in the colour of its element.</summary>
         Nest = 5,
+        Ice = 6,
+        Bog = 7,
     }
 }

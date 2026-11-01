@@ -26,7 +26,7 @@ namespace Game.UI
         private const float DarkSide = 0.35f;
         private const float RegionCore = 0.3f;
         private const float RegionNoiseFloor = 0.55f;
-        private const float CloudCover = 0.42f;
+        private const float CloudCover = 0.3f;
         private const float CloudEdge = 0.97f;
         private const float HaloFalloff = 1.6f;
         private static readonly Color Sea = new Color(0.08f, 0.22f, 0.3f);
@@ -67,6 +67,119 @@ namespace Game.UI
                 final.a = Mathf.Clamp01((1f - d) * 40f);
                 return final;
             });
+        }
+
+        /// <summary>A continent on the globe: where it lies, how far it reaches and the colour its land is tinted.</summary>
+        public struct GlobeRegion
+        {
+            public Vector3 Direction;
+            public Color Colour;
+
+            /// <summary>Reach of the land from the middle, in degrees of arc.</summary>
+            public float RadiusDegrees;
+        }
+
+        private const float IceStart = 68f;
+        private const float IceFull = 84f;
+        private const float GlobeNoiseScale = 2.6f;
+        private const float ContinentCore = 0.6f;
+        private const float ContinentEdge = 1.1f;
+        private const float ContinentWeight = 1f;
+        private const float CoastNoiseWeight = 2.1f;
+        private const float CoastStart = 0.5f;
+        private const float CoastEnd = 0.57f;
+        private const float IslandStart = 0.84f;
+        private const float IslandEnd = 0.9f;
+        private const float RegionTintStrength = 0.85f;
+        private const float IslandShare = 0.55f;
+        private static readonly Color Ice = new Color(0.82f, 0.9f, 0.95f);
+        private static readonly Color GlobeSea = new Color(0.04f, 0.17f, 0.34f);
+        private static readonly Color GlobeShallows = new Color(0.07f, 0.26f, 0.42f);
+        private static readonly Color GlobeLand = new Color(0.36f, 0.5f, 0.3f);
+
+        /// <summary>
+        /// The whole planet as an equirectangular map for a sphere: one continent per region, shaped by noise so
+        /// the coasts wander, a scatter of islands in the open sea, ice at the poles and each continent tinted in
+        /// its region's colour. No lighting is painted in; the globe is lit in 3D.
+        /// </summary>
+        public static Texture2D PaintGlobe(int width, int height, IReadOnlyList<GlobeRegion> regions)
+        {
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Repeat };
+            var pixels = new Color32[width * height];
+            for (int y = 0; y < height; y++)
+            {
+                float latitude = (y + 0.5f) / height * 180f - 90f;
+                for (int x = 0; x < width; x++)
+                {
+                    float longitude = (x + 0.5f) / width * 360f - 180f;
+                    Vector3 p = Game.Levels.PlanetCoordinates.ToDirection(longitude, latitude);
+                    float n = SphereNoise(p, GlobeNoiseScale, 0f) * 0.6f + SphereNoise(p, GlobeNoiseScale * 3.1f, 10f) * 0.28f + SphereNoise(p, GlobeNoiseScale * 8.7f, 20f) * 0.12f;
+
+                    // The body of the nearest continent, 1 at its heart and 0 beyond its reach, with its tint.
+                    float body = 0f;
+                    Color tint = GlobeLand;
+                    for (int i = 0; i < regions.Count; i++)
+                    {
+                        GlobeRegion region = regions[i];
+                        float angle = Vector3.Angle(p, region.Direction);
+                        float reach = 1f - Smooth(region.RadiusDegrees * ContinentCore, region.RadiusDegrees * ContinentEdge, angle);
+                        if (reach > body)
+                        {
+                            body = reach;
+                            tint = Color.Lerp(GlobeLand, region.Colour, RegionTintStrength);
+                        }
+                    }
+
+                    // Noise sits close to 0.5, so it is centred and amplified before it pushes the coast in and out.
+                    float shape = body * ContinentWeight + (n - 0.5f) * CoastNoiseWeight;
+                    float coast = Smooth(CoastStart, CoastEnd, shape);
+                    float islands = Smooth(IslandStart, IslandEnd, (SphereNoise(p, GlobeNoiseScale * 5.3f, 60f) - 0.5f) * 3f + 0.5f) * (1f - body) * IslandShare;
+                    float land = Mathf.Max(coast, islands);
+                    Color sea = Color.Lerp(GlobeSea, GlobeShallows, Smooth(CoastStart - 0.12f, CoastStart, shape));
+                    Color colour = Color.Lerp(sea, tint, land);
+                    colour = Color.Lerp(colour, Highland, Smooth(0.6f, 0.78f, n) * 0.5f * land);
+                    colour = Color.Lerp(colour, Ice, Smooth(IceStart, IceFull, Mathf.Abs(latitude)) * (0.6f + 0.4f * n));
+                    colour.a = 1f;
+                    pixels[y * width + x] = colour;
+                }
+            }
+
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            return texture;
+        }
+
+        /// <summary>Cloud cover for a sphere: white where the noise is dense, transparent elsewhere, seamless around the globe.</summary>
+        public static Texture2D PaintGlobeClouds(int width, int height)
+        {
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Repeat };
+            var pixels = new Color32[width * height];
+            for (int y = 0; y < height; y++)
+            {
+                float latitude = (y + 0.5f) / height * 180f - 90f;
+                for (int x = 0; x < width; x++)
+                {
+                    float longitude = (x + 0.5f) / width * 360f - 180f;
+                    Vector3 p = Game.Levels.PlanetCoordinates.ToDirection(longitude, latitude);
+                    float n = SphereNoise(p, GlobeNoiseScale * 1.4f, 40f) * 0.6f + SphereNoise(p, GlobeNoiseScale * 4.2f, 50f) * 0.4f;
+                    float alpha = Smooth(0.56f, 0.78f, n) * CloudCover;
+                    pixels[y * width + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            return texture;
+        }
+
+        // Perlin noise read three ways across the unit sphere and averaged: continuous everywhere, so the map has
+        // no seam at the date line and no pinch at the poles.
+        private static float SphereNoise(Vector3 p, float scale, float offset)
+        {
+            float a = Mathf.PerlinNoise(p.x * scale + offset + 3f, p.y * scale + offset + 7f);
+            float b = Mathf.PerlinNoise(p.y * scale + offset + 11f, p.z * scale + offset + 5f);
+            float c = Mathf.PerlinNoise(p.z * scale + offset + 2f, p.x * scale + offset + 13f);
+            return (a + b + c) / 3f;
         }
 
         /// <summary>Wisps of white inside the disc, thinning towards the rim, transparent outside. Turn it slowly for weather.</summary>

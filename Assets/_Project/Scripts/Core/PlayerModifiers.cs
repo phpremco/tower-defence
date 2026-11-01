@@ -12,8 +12,9 @@
             float blockadeHealthMultiplier,
             float heroDamageMultiplier = 1f,
             float heroHealthMultiplier = 1f,
-            float droneSpeedMultiplier = 1f)
+            int baseWeaponLevel = 0)
         {
+            BaseWeaponLevel = baseWeaponLevel;
             TowerDamageMultiplier = towerDamageMultiplier;
             TowerRangeMultiplier = towerRangeMultiplier;
             TowerFireRateMultiplier = towerFireRateMultiplier;
@@ -22,7 +23,6 @@
             BlockadeHealthMultiplier = blockadeHealthMultiplier;
             HeroDamageMultiplier = heroDamageMultiplier;
             HeroHealthMultiplier = heroHealthMultiplier;
-            DroneSpeedMultiplier = droneSpeedMultiplier;
         }
 
         public static PlayerModifiers None => new PlayerModifiers(1f, 1f, 1f, 1f, 0, 1f);
@@ -36,6 +36,7 @@
         public float HeroDamageMultiplier { get; }
         public float HeroHealthMultiplier { get; }
 
-        public float DroneSpeedMultiplier { get; }
+        /// <summary>How far the base's own guns are built out: 0 is an unarmed base.</summary>
+        public int BaseWeaponLevel { get; }
     }
 }

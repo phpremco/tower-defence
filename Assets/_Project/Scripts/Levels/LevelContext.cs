@@ -148,11 +148,17 @@ namespace Game.Levels
         /// <summary>Raised with the position of a tower or gate that has just been destroyed.</summary>
         public GameEvent<Vector3> StructureWrecked { get; } = new GameEvent<Vector3>();
 
+        /// <summary>Raised with the tower or gate that has just been destroyed, for sounds that differ between the two.</summary>
+        public GameEvent<Tower> TowerWrecked { get; } = new GameEvent<Tower>();
+
         /// <summary>Raised when a wave begins spawning.</summary>
         public GameEvent WaveStarted { get; } = new GameEvent();
 
         /// <summary>True while the wave that started last carries a boss.</summary>
         public bool BossWave { get; set; }
+
+        /// <summary>The boss the running wave brings, from the wave start until it dies; null in an ordinary wave.</summary>
+        public EnemyDefinition ComingBoss { get; set; }
 
         /// <summary>Raised when a wave with a boss in it begins, before the boss itself appears.</summary>
         public GameEvent BossWaveStarted { get; } = new GameEvent();
@@ -182,10 +188,32 @@ namespace Game.Levels
         public GameEvent TowerSold { get; } = new GameEvent();
         public GameEvent PathObjectPlaced { get; } = new GameEvent();
 
+        /// <summary>Raised instead of a sale when a wreck is cleared for scrap.</summary>
+        public GameEvent TowerScrapped { get; } = new GameEvent();
+
+        /// <summary>Raised with every path object as it lands on the field, so audio can follow it until it is used up.</summary>
+        public GameEvent<PathObject> PathObjectSpawned { get; } = new GameEvent<PathObject>();
+
+        /// <summary>Raised with the definition of a mine or barrel that has just gone off.</summary>
+        public GameEvent<PathObjectDefinition> PathObjectTriggered { get; } = new GameEvent<PathObjectDefinition>();
+
         /// <summary>The HUD asks for a drone of the given type; the drone controller buys it if energy and room allow.</summary>
         public GameEvent<DroneDefinition> DroneRequested { get; } = new GameEvent<DroneDefinition>();
 
         private readonly Dictionary<DroneDefinition, int> _activeDrones = new Dictionary<DroneDefinition, int>();
+
+        private readonly Dictionary<string, DroneModifiers> _droneModifiers = new Dictionary<string, DroneModifiers>();
+
+        /// <summary>Stores the permanent upgrades of one drone type, by the drone asset name.</summary>
+        public void SetDroneModifiers(string droneId, DroneModifiers modifiers) => _droneModifiers[droneId] = modifiers;
+
+        public DroneModifiers ModifiersFor(DroneDefinition drone)
+        {
+            return drone != null && _droneModifiers.TryGetValue(drone.name, out DroneModifiers modifiers) ? modifiers : DroneModifiers.None;
+        }
+
+        /// <summary>How many drones of this type may fly at once, upgrades included.</summary>
+        public int MaxDrones(DroneDefinition drone) => drone == null ? 0 : drone.MaxActive + ModifiersFor(drone).ExtraCount;
 
         public int ActiveDrones(DroneDefinition definition) => definition != null && _activeDrones.TryGetValue(definition, out int count) ? count : 0;
 

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5bbf51dfe602a4080cdcb2ab5e55bf, type: 3}
+  m_Name: Voice_SlimeMonarch
+  m_EditorClassIdentifier: Game.Core::Game.Core.CreatureVoice
+  _moveLoop:
+    _clips:
+    - {fileID: 8300000, guid: 2414456dbc804a846b69d0d072c34b8e, type: 3}
+    _gain: 0.66384673
+  _steps:
+    _clips: []
+    _gain: 1
+  _stepSpacing: 0.5
+  _presence: 1
+  _rollLoop:
+    _clips: []
+    _gain: 1
+  _screeches:
+    _clips:
+    - {fileID: 8300000, guid: ca5fad52663e42c4d87451371ac22056, type: 3}
+    _gain: 0.86345005
+  _growls:
+    _clips:
+    - {fileID: 8300000, guid: 1566ed105ad8ee94286bf26f16ef37f2, type: 3}
+    - {fileID: 8300000, guid: 29df1f331801e794195b12897ca75a20, type: 3}
+    _gain: 0.28934133
+  _attacks:
+    _clips:
+    - {fileID: 8300000, guid: 19deeda244a47354db0f8307534a93b0, type: 3}
+    _gain: 1.2429334
+  _impacts:
+    _clips: []
+    _gain: 1
+  _pulse:
+    _clips:
+    - {fileID: 8300000, guid: 18f9ea3ff4a0cf2408a552963855281b, type: 3}
+    - {fileID: 8300000, guid: 67ecd171edde07e4c8a8e2524fc88254, type: 3}
+    _gain: 0.22824728
+  _volleyLaunch:
+    _clips: []
+    _gain: 1
+  _volleyImpact:
+    _clips: []
+    _gain: 1
+  _rally:
+    _clips: []
+    _gain: 1
+  _regrow:
+    _clips: []
+    _gain: 1
+  _spawn:
+    _clips:
+    - {fileID: 8300000, guid: 18f9ea3ff4a0cf2408a552963855281b, type: 3}
+    - {fileID: 8300000, guid: 67ecd171edde07e4c8a8e2524fc88254, type: 3}
+    _gain: 0.22824728
+  _laserStart:
+    _clips: []
+    _gain: 1

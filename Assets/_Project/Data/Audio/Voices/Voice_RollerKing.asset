@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5bbf51dfe602a4080cdcb2ab5e55bf, type: 3}
+  m_Name: Voice_RollerKing
+  m_EditorClassIdentifier: Game.Core::Game.Core.CreatureVoice
+  _moveLoop:
+    _clips: []
+    _gain: 1
+  _steps:
+    _clips:
+    - {fileID: 8300000, guid: 4fe71b1806064874887836f8feae5743, type: 3}
+    - {fileID: 8300000, guid: 5affcb37393b972479196ae7aacd86cc, type: 3}
+    - {fileID: 8300000, guid: f8ada97697ac88744bb8b96798829bbc, type: 3}
+    - {fileID: 8300000, guid: 9c5e456617a5c6748aaba06f8d070971, type: 3}
+    _gain: 0.22955625
+  _stepSpacing: 0.8
+  _presence: 4
+  _rollLoop:
+    _clips:
+    - {fileID: 8300000, guid: 6ff3594467815ae41ad41a6f1fa3e55b, type: 3}
+    _gain: 0.28059962
+  _screeches:
+    _clips:
+    - {fileID: 8300000, guid: b2b5d2aff9fbd6a4c972ca3ac7a9ae9a, type: 3}
+    - {fileID: 8300000, guid: a02274e37fe98ac49a06b19af025cd8c, type: 3}
+    _gain: 0.22878033
+  _growls:
+    _clips: []
+    _gain: 1
+  _attacks:
+    _clips: []
+    _gain: 1
+  _impacts:
+    _clips: []
+    _gain: 1
+  _pulse:
+    _clips:
+    - {fileID: 8300000, guid: a856d20eed61b7d4d8f5ab2b8e8af6e9, type: 3}
+    _gain: 0.29146495
+  _volleyLaunch:
+    _clips: []
+    _gain: 1
+  _volleyImpact:
+    _clips: []
+    _gain: 1
+  _rally:
+    _clips: []
+    _gain: 1
+  _regrow:
+    _clips: []
+    _gain: 1
+  _spawn:
+    _clips: []
+    _gain: 1
+  _laserStart:
+    _clips: []
+    _gain: 1

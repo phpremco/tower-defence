@@ -1,3 +1,4 @@
+using Game.Combat;
 using Game.Enemies;
 using UnityEngine;
 
@@ -86,7 +87,7 @@ namespace Game.Levels
             }
         }
 
-        private void OnExploded(Vector3 position, float radius) => _rig.Shake(ExplosionBase + ExplosionPerRadius * radius);
+        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => _rig.Shake(ExplosionBase + ExplosionPerRadius * radius);
 
         private void OnBaseChanged(float current)
         {

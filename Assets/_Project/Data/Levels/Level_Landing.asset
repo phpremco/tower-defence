@@ -19,8 +19,8 @@ MonoBehaviour:
   _cellSize: 1
   _theme: {fileID: 11400000, guid: aff118a86b1eec348881c3aa22519802, type: 2}
   _camera:
-    PitchDegrees: 50
-    YawDegrees: 12
+    PitchDegrees: 44
+    YawDegrees: 16
     FitMargin: 0.04
   _paths:
   - Name: Road
@@ -211,6 +211,8 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: 03ecff6002a3a0445a034addfe63c6a0, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 4186c2e67c2a58249b7e856a4a2ceef8, type: 3}
   _enemyHealthMultiplier: 1
+  _expectedUpgradeBonus: 0
+  _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
   _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
@@ -330,8 +332,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a8ff81f1dff35554c985458ddf85d895, type: 2}
     - {fileID: 11400000, guid: 8dbac7eb22935e94fbca0e7e32dc3ae2, type: 2}
   _reward:
-    ResearchPoints: 10
-    PowerCurrency: 4
+    ResearchPoints: 20
+    PowerCurrency: 6
     NewTower: {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
     Source: 2
     Story: The home planet sent schematics for a heavy cannon.

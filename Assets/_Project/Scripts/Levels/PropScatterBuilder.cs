@@ -35,6 +35,8 @@ namespace Game.Levels
         private const float LavaRimScaleMin = 0.5f;
         private const float LavaRimScaleSpread = 0.4f;
         private const int LavaSpikePercent = 30;
+        private const int IceShardPercent = 45;
+        private const int ReedPercent = 75;
         private const float SwayDegrees = 2.5f;
         private const float SwaySpeedMin = 0.7f;
         private const float SwaySpeedSpread = 0.6f;
@@ -86,9 +88,17 @@ namespace Game.Levels
 
             foreach (KeyValuePair<Vector2Int, TerrainKind> patch in terrain.Cells)
             {
-                if (patch.Value == TerrainKind.Lava)
+                switch (patch.Value)
                 {
-                    PlaceLavaRim(placer, patch.Key, grid, road, terrain);
+                    case TerrainKind.Lava:
+                        PlaceRim(placer, patch.Key, grid, road, terrain, TerrainKind.Lava, PropKind.Spike, PropKind.Rock, LavaSpikePercent);
+                        break;
+                    case TerrainKind.Ice:
+                        PlaceRim(placer, patch.Key, grid, road, terrain, TerrainKind.Ice, PropKind.IceShard, PropKind.Snowdrift, IceShardPercent);
+                        break;
+                    case TerrainKind.Bog:
+                        PlaceRim(placer, patch.Key, grid, road, terrain, TerrainKind.Bog, PropKind.Reed, PropKind.DeadTree, ReedPercent);
+                        break;
                 }
             }
 
@@ -177,7 +187,9 @@ namespace Game.Levels
         }
 
         // Broken rock and basalt teeth on the crater rim around a lava pool, wherever the rim is not the road.
-        private static void PlaceLavaRim(Placer placer, Vector2Int cell, GridMap grid, HashSet<Vector2Int> road, TerrainMap terrain)
+        // Decoration along the shore of a pool: spikes and rock around lava, shards and drifts around ice, reeds
+        // and dead trees around a bog. The first kind wins the given percentage of the spots.
+        private static void PlaceRim(Placer placer, Vector2Int cell, GridMap grid, HashSet<Vector2Int> road, TerrainMap terrain, TerrainKind pool, PropKind first, PropKind second, int firstPercent)
         {
             int hash = Hash(cell);
             Vector3 centre = grid.CellToWorld(cell);
@@ -185,7 +197,7 @@ namespace Game.Levels
             {
                 Vector2Int neighbour = cell + Steps[i];
                 int roll = (hash >> (i * 5)) % 100;
-                if (terrain.KindAt(neighbour) == TerrainKind.Lava || road.Contains(neighbour) || !grid.Contains(neighbour) || roll / 100f > LavaRimChance)
+                if (terrain.KindAt(neighbour) == pool || road.Contains(neighbour) || !grid.Contains(neighbour) || roll / 100f > LavaRimChance)
                 {
                     continue;
                 }
@@ -195,7 +207,7 @@ namespace Game.Levels
                 Vector3 sideways = new Vector3(Steps[i].y, 0f, Steps[i].x) * (along * 0.7f * grid.CellSize);
                 Vector3 spot = centre + outward + sideways;
                 float scale = LavaRimScaleMin + (roll / 100f) * LavaRimScaleSpread;
-                PropKind kind = (hash >> (i * 2 + 7)) % 100 < LavaSpikePercent ? PropKind.Spike : PropKind.Rock;
+                PropKind kind = (hash >> (i * 2 + 7)) % 100 < firstPercent ? first : second;
                 placer.Place(kind, hash + i * 1453, spot.x, spot.z, scale, formation: false, onRim: true);
             }
         }

@@ -491,6 +491,10 @@ namespace Game.Levels
                     return TerrainKind.Lava;
                 case Element.Sand:
                     return TerrainKind.Quicksand;
+                case Element.Ice:
+                    return TerrainKind.Ice;
+                case Element.Bog:
+                    return TerrainKind.Bog;
                 default:
                     return TerrainKind.Ground;
             }

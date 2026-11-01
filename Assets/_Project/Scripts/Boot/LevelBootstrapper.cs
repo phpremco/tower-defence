@@ -17,11 +17,14 @@ namespace Game.Boot
     /// </summary>
     public sealed class LevelBootstrapper : MonoBehaviour
     {
-        private static readonly Vector3 SunRotation = new Vector3(50f, -30f, 0f);
-
-        // Without a fill light the props in shadow go black; a share of the sun colour keeps them readable.
-        private const float AmbientShare = 0.4f;
-        private const float AmbientBrightness = 0.75f;
+        // The back light comes in low from the far side of the field, so it only touches the edges of shapes.
+        private const float RimPitchDegrees = 28f;
+        private const float RimYawOffsetDegrees = 180f;
+        // Ambient comes from three directions: the sky colour from above, fog at the horizon and near black below,
+        // so the underside of every shape stays darker than its top even in shadow.
+        private const float AmbientSkyBrightness = 1f;
+        private const float AmbientEquatorShare = 0.5f;
+        private const float AmbientGroundBrightness = 0.5f;
 
         [SerializeField] private FixedCameraRig _cameraRig;
         [SerializeField] private Camera _camera;
@@ -65,17 +68,30 @@ namespace Game.Boot
             light.color = theme.LightColor;
             light.intensity = theme.LightIntensity;
             light.shadows = LightShadows.Soft;
-            sun.transform.rotation = Quaternion.Euler(SunRotation);
+            light.shadowStrength = 1f;
+            sun.transform.rotation = Quaternion.Euler(theme.SunPitch, theme.SunYaw, 0f);
+
+            var rimObject = new GameObject("RimLight");
+            var rim = rimObject.AddComponent<Light>();
+            rim.type = LightType.Directional;
+            rim.color = theme.RimColor;
+            rim.intensity = theme.RimIntensity;
+            rim.shadows = LightShadows.None;
+            rimObject.transform.rotation = Quaternion.Euler(RimPitchDegrees, theme.SunYaw + RimYawOffsetDegrees, 0f);
 
             RenderSettings.fog = theme.FogDensity > 0f;
             RenderSettings.fogMode = FogMode.ExponentialSquared;
             RenderSettings.fogColor = theme.FogColor;
             RenderSettings.fogDensity = theme.FogDensity;
-            RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = Color.Lerp(theme.FogColor, theme.LightColor, AmbientShare) * AmbientBrightness;
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = theme.SkyColor * AmbientSkyBrightness;
+            RenderSettings.ambientEquatorColor = Color.Lerp(theme.FogColor, theme.LightColor, AmbientEquatorShare) * AmbientSkyBrightness;
+            RenderSettings.ambientGroundColor = theme.FogColor * AmbientGroundBrightness;
+            SkyProbe.Apply(theme);
 
             var visuals = new GameObject("LevelVisuals").transform;
-            return LevelVisualBuilder.Build(level, visuals, Services.Get<IPlatformSettings>().ParticleScale);
+            IPlatformSettings platform = Services.Get<IPlatformSettings>();
+            return LevelVisualBuilder.Build(level, visuals, platform.ParticleScale, platform.FogEnabled);
         }
 
         private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing, IReadOnlyList<Game.PathObjects.PathObjectDefinition> loadout)
@@ -117,6 +133,14 @@ namespace Game.Boot
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
             context.GlobalModifiers = global;
+            foreach (Game.Drones.DroneDefinition drone in new[] { level.RepairDrone, level.HarvestDrone, level.AttackDrone })
+            {
+                if (drone != null)
+                {
+                    context.SetDroneModifiers(drone.name, UpgradeEffects.ComputeForDrone(progress, upgrades, drone.name));
+                }
+            }
+
             // The base stands on the field as a blocking structure, so the enemies that reach it besiege it.
             Vector2Int[] mainRoad = level.MainRoad;
             var baseStructure = new BaseStructure(level.Road.CentreOf(mainRoad[mainRoad.Length - 1]), baseHealth);
@@ -163,7 +187,7 @@ namespace Game.Boot
             time.Initialize(context, input);
             controllers.AddComponent<ReconView>().Initialize(context, panZoom, time, input, routes);
             var mix = Services.Get<AudioMix>();
-            controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig);
+            controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig, spawner.Living, drones.Drones);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);
             FindAnyObjectByType<BaseView>()?.Bind(context);
             var hud = controllers.AddComponent<HudView>();

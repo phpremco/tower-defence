@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: 9fc1cee2ddd03f44f9869b4a44a979bd, type: 2}

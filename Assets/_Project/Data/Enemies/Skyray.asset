@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Skyray
   _layer: 2
   _flies: 1
-  _maxHealth: 70
+  _maxHealth: 80
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.3
@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 1
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: ba193554eb5b67d4086928e29663c888, type: 2}

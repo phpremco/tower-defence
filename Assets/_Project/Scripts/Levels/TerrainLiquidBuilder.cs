@@ -16,6 +16,12 @@ namespace Game.Levels
         private const float WaterLevel = -0.2f;
         private const float LavaLevel = -0.22f;
         private const float SandLevel = -0.12f;
+        private const float IceLevel = -0.06f;
+        private const float BogLevel = -0.14f;
+        private const float IceAlpha = 0.9f;
+        private const float IceGlow = 0.12f;
+        private const float BogAlpha = 0.92f;
+        private const float BogGlow = 0.2f;
         private const float TextureWorldSize = 3f;
         private const float OverlayWorldSize = 4.5f;
         private const float WaterAlpha = 0.68f;
@@ -35,7 +41,7 @@ namespace Game.Levels
         private const float LavaLightFlicker = 0.3f;
         private const float LavaLightFlickerSpeed = 3f;
 
-        private static readonly TerrainKind[] Kinds = { TerrainKind.Water, TerrainKind.Lava, TerrainKind.Quicksand };
+        private static readonly TerrainKind[] Kinds = { TerrainKind.Water, TerrainKind.Lava, TerrainKind.Quicksand, TerrainKind.Ice, TerrainKind.Bog };
 
         public static void Build(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale = 1f)
         {
@@ -182,23 +188,76 @@ namespace Game.Levels
             return mesh;
         }
 
-        private static float LevelOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? WaterLevel : kind == TerrainKind.Lava ? LavaLevel : SandLevel;
+        // Water ripples, lava heaves slowly, sand creeps, the bog barely stirs and ice lies flat and still.
+        private static float LevelOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return WaterLevel;
+                case TerrainKind.Lava: return LavaLevel;
+                case TerrainKind.Ice: return IceLevel;
+                case TerrainKind.Bog: return BogLevel;
+                default: return SandLevel;
+            }
+        }
 
-        private static Vector2 FlowOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? new Vector2(0.025f, 0.015f) : kind == TerrainKind.Lava ? new Vector2(0.008f, -0.006f) : new Vector2(-0.004f, 0.003f);
+        private static Vector2 FlowOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return new Vector2(0.025f, 0.015f);
+                case TerrainKind.Lava: return new Vector2(0.008f, -0.006f);
+                case TerrainKind.Ice: return Vector2.zero;
+                case TerrainKind.Bog: return new Vector2(0.003f, -0.002f);
+                default: return new Vector2(-0.004f, 0.003f);
+            }
+        }
 
-        private static Vector2 OverlayFlowOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? new Vector2(-0.02f, 0.03f) : kind == TerrainKind.Lava ? new Vector2(-0.012f, 0.009f) : new Vector2(0.006f, -0.005f);
+        private static Vector2 OverlayFlowOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return new Vector2(-0.02f, 0.03f);
+                case TerrainKind.Lava: return new Vector2(-0.012f, 0.009f);
+                case TerrainKind.Ice: return new Vector2(0.004f, 0.002f);
+                case TerrainKind.Bog: return new Vector2(-0.005f, 0.004f);
+                default: return new Vector2(0.006f, -0.005f);
+            }
+        }
 
-        private static float WaveHeightOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? 0.025f : kind == TerrainKind.Lava ? 0.035f : 0.012f;
+        private static float WaveHeightOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return 0.025f;
+                case TerrainKind.Lava: return 0.035f;
+                case TerrainKind.Ice: return 0f;
+                case TerrainKind.Bog: return 0.008f;
+                default: return 0.012f;
+            }
+        }
 
-        private static float WaveLengthOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? 1.4f : kind == TerrainKind.Lava ? 2.6f : 2f;
+        private static float WaveLengthOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return 1.4f;
+                case TerrainKind.Lava: return 2.6f;
+                case TerrainKind.Bog: return 2.4f;
+                default: return 2f;
+            }
+        }
 
-        private static float WaveSpeedOf(TerrainKind kind) =>
-            kind == TerrainKind.Water ? 1.6f : kind == TerrainKind.Lava ? 0.45f : 0.3f;
+        private static float WaveSpeedOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return 1.6f;
+                case TerrainKind.Lava: return 0.45f;
+                case TerrainKind.Bog: return 0.2f;
+                default: return 0.3f;
+            }
+        }
 
         private static Material MaterialFor(TerrainKind kind, VisualTheme theme)
         {
@@ -224,6 +283,26 @@ namespace Game.Levels
                 material.SetTexture("_EmissionMap", texture);
                 material.SetColor("_EmissionColor", Color.white * LavaEmission);
                 material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            }
+            else if (kind == TerrainKind.Ice)
+            {
+                // A hard glossy sheet, nearly opaque, with a faint cold light of its own.
+                material.SetTexture("_BaseMap", LiquidTextures.Ice());
+                material.SetColor("_BaseColor", new Color(theme.IceColor.r, theme.IceColor.g, theme.IceColor.b, IceAlpha));
+                material.SetFloat("_Smoothness", 0.9f);
+                material.EnableKeyword("_EMISSION");
+                material.SetColor("_EmissionColor", theme.IceColor * IceGlow);
+                MakeTransparent(material, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
+            }
+            else if (kind == TerrainKind.Bog)
+            {
+                // Dark still water under a skin of scum: dull, almost opaque, a little green light in the murk.
+                material.SetTexture("_BaseMap", LiquidTextures.Bog());
+                material.SetColor("_BaseColor", new Color(theme.BogColor.r, theme.BogColor.g, theme.BogColor.b, BogAlpha));
+                material.SetFloat("_Smoothness", 0.35f);
+                material.EnableKeyword("_EMISSION");
+                material.SetColor("_EmissionColor", theme.BogColor * BogGlow);
+                MakeTransparent(material, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
             }
             else
             {
@@ -256,6 +335,16 @@ namespace Game.Levels
             {
                 texture = LiquidTextures.LavaHeat();
                 glow = theme.LavaColor * 1.3f;
+            }
+            else if (kind == TerrainKind.Ice)
+            {
+                texture = LiquidTextures.IceCracks();
+                glow = Color.Lerp(theme.IceColor, Color.white, 0.5f) * 0.7f;
+            }
+            else if (kind == TerrainKind.Bog)
+            {
+                texture = LiquidTextures.BogScum();
+                glow = Color.Lerp(theme.BogColor, theme.AccentColor, 0.5f) * 0.5f;
             }
             else
             {
@@ -335,6 +424,16 @@ namespace Game.Levels
                     break;
                 case TerrainKind.Quicksand:
                     Motes(parent, "SandDust", emitter, surface, theme.SandColor * 1.15f, 0.3f, area * 1.2f * particleScale, 2f, 3.5f, 0.08f, 0.2f, 0.05f, 0.15f, 0f, 0.15f, 1.8f);
+                    break;
+                case TerrainKind.Ice:
+                    // Cold mist hugging the sheet and a few glints of frost drifting over it.
+                    Motes(parent, "IceMist", emitter, surface, Color.Lerp(theme.IceColor, Color.white, 0.4f), 0.1f, area * 0.35f * particleScale, 3f, 5f, 0.5f, 0.9f, 0.02f, 0.05f, 0f, 0.12f, 1.7f);
+                    Motes(parent, "FrostGlints", emitter, surface, Color.Lerp(theme.IceColor, Color.white, 0.8f) * 1.8f, 1f, area * 0.4f * particleScale, 0.6f, 1.2f, 0.02f, 0.04f, 0.02f, 0.06f, 0f, 0.05f, 0.1f);
+                    break;
+                case TerrainKind.Bog:
+                    // Marsh gas: dim green bubbles rising slowly and wisps of vapour hanging over the mire.
+                    Motes(parent, "BogBubbles", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.6f) * 1.4f, 0.8f, area * 0.6f * particleScale, 1.2f, 2.2f, 0.03f, 0.07f, 0.1f, 0.25f, 0f, 0.05f, 0.3f);
+                    Motes(parent, "BogVapour", emitter, surface, Color.Lerp(theme.BogColor, theme.AccentColor, 0.4f), 0.12f, area * 0.3f * particleScale, 3f, 5f, 0.5f, 0.9f, 0.04f, 0.08f, 0f, 0.1f, 1.6f);
                     break;
                 default:
                     Motes(parent, "WaterSparkles", emitter, surface, Color.Lerp(theme.WaterColor, Color.white, 0.8f) * 1.6f, 1f, area * 0.8f * particleScale, 0.4f, 0.8f, 0.03f, 0.06f, 0f, 0f, 0f, 0f, 0.1f);

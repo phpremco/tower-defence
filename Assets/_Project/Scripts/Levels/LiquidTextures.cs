@@ -134,6 +134,90 @@ namespace Game.Levels
             return Finish(pixels, "SandStreaks");
         }
 
+        /// <summary>A frozen sheet: pale with faint milky swirls and a web of darker fractures frozen into it.</summary>
+        public static Texture2D Ice()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    float swirl = 0.5f + 0.5f * Mathf.Sin((2f * u + 1f * v) * Tau + Mathf.Sin((1f * u - 3f * v) * Tau) * 0.6f);
+                    EdgeDistance(u, v, out float edge, out float tone);
+                    float fracture = Mathf.Pow(1f - Mathf.Clamp01(edge * 9f), 3f);
+                    float value = 0.86f + 0.1f * swirl + 0.06f * tone - 0.25f * fracture;
+                    pixels[y * Size + x] = new Color(value, value, Mathf.Min(1f, value + 0.04f), 1f);
+                }
+            }
+
+            return Finish(pixels, "Ice");
+        }
+
+        /// <summary>Bright hairline cracks and frost blooms, for the layer that creeps over the ice.</summary>
+        public static Texture2D IceCracks()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    EdgeDistance(u, v, out float edge, out float _);
+                    float crack = Mathf.Pow(1f - Mathf.Clamp01(edge * 22f), 4f);
+                    float bloom = Mathf.Pow(0.5f + 0.5f * Mathf.Sin((5f * u - 2f * v) * Tau + Mathf.Sin((3f * u + 4f * v) * Tau)), 9f) * 0.5f;
+                    float value = Mathf.Max(crack, bloom);
+                    pixels[y * Size + x] = new Color(value, value, value, 1f);
+                }
+            }
+
+            return Finish(pixels, "IceCracks");
+        }
+
+        /// <summary>Murky bog water: dark, with slow oily swirls and patches of lighter scum.</summary>
+        public static Texture2D Bog()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    float warp = Mathf.Sin((1f * u + 2f * v) * Tau) * 0.2f;
+                    float swirl = 0.5f + 0.5f * Mathf.Sin((3f * u + warp - 2f * v) * Tau);
+                    float scum = Mathf.Pow(0.5f + 0.5f * Mathf.Sin((4f * u + 5f * v) * Tau + swirl * 2f), 5f);
+                    float grain = TerrainNoise.Hash(x, y, 13) * 0.08f;
+                    float value = 0.55f + 0.2f * swirl + 0.3f * scum + grain;
+                    pixels[y * Size + x] = new Color(value * 0.95f, value, value * 0.8f, 1f);
+                }
+            }
+
+            return Finish(pixels, "Bog");
+        }
+
+        /// <summary>Rings and specks of scum that drift over the bog, so the surface seems to breathe.</summary>
+        public static Texture2D BogScum()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    float rings = Mathf.Pow(1f - Mathf.Abs(Mathf.Sin((Mathf.Sin(u * Tau * 2f) + Mathf.Sin(v * Tau * 3f)) * 3f)), 8f);
+                    float specks = TerrainNoise.Hash(x / 3, y / 3, 17) > 0.93f ? 0.6f : 0f;
+                    float value = Mathf.Max(rings * 0.6f, specks);
+                    pixels[y * Size + x] = new Color(value * 0.8f, value, value * 0.5f, 1f);
+                }
+            }
+
+            return Finish(pixels, "BogScum");
+        }
+
         private static void EdgeDistance(float u, float v, out float edge, out float tone)
         {
             float px = u * LavaCells;

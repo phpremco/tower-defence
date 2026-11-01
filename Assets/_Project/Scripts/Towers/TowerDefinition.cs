@@ -43,6 +43,9 @@ namespace Game.Towers
         /// <summary>A blockade stops ground enemies until it is destroyed. It is set in the level and cannot be sold.</summary>
         [SerializeField] private bool _blocksGroundEnemies;
 
+        /// <summary>A gun that belongs to the base: built from the permanent base upgrades, never sold.</summary>
+        [SerializeField] private bool _isBaseDefence;
+
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
         [SerializeField] private TowerShape _shape;
         [SerializeField] private ProjectileStyle _projectileStyle;
@@ -68,6 +71,7 @@ namespace Game.Towers
         public float SupportRangeBonus => _supportRangeBonus;
         public float SupportRateBonus => _supportRateBonus;
         public bool BlocksGroundEnemies => _blocksGroundEnemies;
+        public bool IsBaseDefence => _isBaseDefence;
         public Color Color => _color;
 
         /// <summary>The imported model shown for this tower, or null to use placeholder shapes.</summary>

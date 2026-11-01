@@ -21,7 +21,7 @@ namespace Game.Levels
         private const int Dark = 3;
         private const int Leaf = 4;
         private const int Core = 5;
-        private const float GlowEmission = 2f;
+        private const float GlowEmission = 1.5f;
         private const float LeafEmission = 0.5f;
         private const float CoreEmission = 3.4f;
         private const float RockSmoothness = 0.18f;
@@ -89,11 +89,11 @@ namespace Game.Levels
 
         /// <summary>Growth that bends in the wind, as opposed to stone.</summary>
         public static bool IsPlant(PropKind kind) =>
-            kind == PropKind.Frond || kind == PropKind.Mushroom || kind == PropKind.GlowTree || kind == PropKind.Tendril;
+            kind == PropKind.Frond || kind == PropKind.Mushroom || kind == PropKind.GlowTree || kind == PropKind.Tendril || kind == PropKind.Reed;
 
         /// <summary>Kinds whose light is strong enough to throw onto the ground around them.</summary>
         public static bool IsGlowing(PropKind kind) =>
-            kind == PropKind.Crystal || kind == PropKind.GlowTree || kind == PropKind.Mushroom || kind == PropKind.Egg || kind == PropKind.Spike;
+            kind == PropKind.Crystal || kind == PropKind.GlowTree || kind == PropKind.Mushroom || kind == PropKind.Egg || kind == PropKind.Spike || kind == PropKind.IceShard;
 
         public static Mesh Create(PropKind kind, int variant)
         {
@@ -112,6 +112,10 @@ namespace Game.Levels
                 case PropKind.Egg: BuildEggs(builder, rng); break;
                 case PropKind.Frond: BuildFronds(builder, rng); break;
                 case PropKind.Spire: BuildSpire(builder, rng); break;
+                case PropKind.IceShard: BuildIceShards(builder, rng); break;
+                case PropKind.Snowdrift: BuildSnowdrift(builder, rng); break;
+                case PropKind.DeadTree: BuildDeadTree(builder, rng); break;
+                case PropKind.Reed: BuildReeds(builder, rng); break;
             }
 
             return builder.ToMesh($"{kind}_{variant}");
@@ -395,6 +399,106 @@ namespace Game.Levels
         }
 
         // A tuft of broad curling leaves around a glowing bud, every other leaf tipped with light.
+        // Ice: tall slim prisms leaning out of a crust of rime, a couple snapped short, lit from inside.
+        private static void BuildIceShards(PropMeshBuilder b, Random rng)
+        {
+            b.AddBlob(new Vector3(0f, 0.03f, 0f), new Vector3(0.34f, 0.05f, 0.34f), 3, 9, 0.2f, rng.Next(100), Body, false);
+            Prism(b, Ring(rng, 0.04f), Tilted(rng, 8f), Range(rng, 1.1f, 1.6f), Range(rng, 0.07f, 0.1f), GlowA);
+            int count = rng.Next(3, 6);
+            for (int i = 0; i < count; i++)
+            {
+                float angle = i / (float)count * Mathf.PI * 2f + Range(rng, -0.4f, 0.4f);
+                Vector3 root = Around(angle) * Range(rng, 0.1f, 0.24f);
+                Vector3 axis = (Around(angle) * Range(rng, 0.2f, 0.6f) + Vector3.up).normalized;
+                bool snapped = rng.Next(3) == 0;
+                Prism(b, root, axis, snapped ? Range(rng, 0.15f, 0.3f) : Range(rng, 0.5f, 1f), Range(rng, 0.04f, 0.07f), i % 2 == 0 ? GlowB : GlowA);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 root = Ring(rng, 0.3f);
+                b.AddTube(new[] { root, root + Tilted(rng, 70f) * Range(rng, 0.06f, 0.14f) }, new[] { 0.02f, 0f }, 4, Core, true);
+            }
+        }
+
+        // Snow: two or three soft overlapping mounds, their lee side in shadow, with a hard crust of frost on top.
+        private static void BuildSnowdrift(PropMeshBuilder b, Random rng)
+        {
+            int count = rng.Next(2, 4);
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 centre = i == 0 ? Vector3.zero : Ring(rng, 0.28f);
+                float radius = Range(rng, 0.28f, 0.46f) * (i == 0 ? 1f : 0.7f);
+                float height = radius * Range(rng, 0.35f, 0.5f);
+                b.AddBlob(centre + Vector3.up * height * 0.3f, new Vector3(radius, height, radius * Range(rng, 0.8f, 1.2f)), 5, 11, 0.05f, rng.Next(100), Body, false);
+                b.AddBlob(centre + new Vector3(0f, height * 0.75f, 0f), new Vector3(radius * 0.6f, height * 0.25f, radius * 0.6f), 3, 8, 0.1f, rng.Next(100), GlowA, false, Mathf.PI * 0.5f);
+            }
+
+            b.AddBlob(new Vector3(0f, 0.015f, 0f), new Vector3(0.5f, 0.02f, 0.5f), 2, 10, 0.15f, rng.Next(100), Dark, false);
+        }
+
+        // A dead marsh tree: a bare twisted trunk that forks into crooked branches, moss hanging from a few of them.
+        private static void BuildDeadTree(PropMeshBuilder b, Random rng)
+        {
+            float height = Range(rng, 1.2f, 1.8f);
+            float lean = Range(rng, -0.25f, 0.25f);
+            var trunk = new[]
+            {
+                Vector3.zero,
+                new Vector3(lean * 0.4f, height * 0.4f, 0f),
+                new Vector3(lean, height * 0.75f, lean * 0.3f),
+                new Vector3(lean * 1.2f, height, lean * 0.1f),
+            };
+            b.AddTube(trunk, new[] { 0.13f, 0.09f, 0.06f, 0.025f }, 7, Dark, false);
+            int roots = rng.Next(3, 5);
+            for (int i = 0; i < roots; i++)
+            {
+                Vector3 outward = Around(i / (float)roots * Mathf.PI * 2f + Range(rng, -0.3f, 0.3f));
+                b.AddTube(new[] { Vector3.up * 0.12f, outward * 0.14f + Vector3.up * 0.05f, outward * Range(rng, 0.25f, 0.4f) }, new[] { 0.06f, 0.04f, 0f }, 5, Dark, false);
+            }
+
+            int branches = rng.Next(3, 6);
+            for (int i = 0; i < branches; i++)
+            {
+                float t = Range(rng, 0.45f, 0.95f);
+                Vector3 from = Vector3.Lerp(trunk[1], trunk[3], t);
+                Vector3 outward = Around(i / (float)branches * Mathf.PI * 2f + Range(rng, -0.5f, 0.5f));
+                float length = Range(rng, 0.35f, 0.7f);
+                Vector3 elbow = from + outward * length * 0.5f + Vector3.up * length * Range(rng, 0.2f, 0.5f);
+                Vector3 tip = elbow + outward * length * 0.5f + Vector3.up * length * Range(rng, -0.2f, 0.3f);
+                b.AddTube(new[] { from, elbow, tip }, new[] { 0.045f, 0.028f, 0f }, 5, Dark, false);
+                b.AddTube(new[] { elbow, elbow + Vector3.up * length * 0.3f + outward * length * 0.1f }, new[] { 0.02f, 0f }, 4, Dark, false);
+                if (i % 2 == 0)
+                {
+                    // Hanging moss, a little lit, so the tree reads as marsh and not as desert.
+                    b.AddBlob(elbow + Vector3.down * 0.1f, new Vector3(0.05f, 0.14f, 0.05f), 3, 6, 0.1f, rng.Next(100), Leaf, false);
+                }
+            }
+        }
+
+        // Reeds: a tight clump of tall thin stalks leaning every which way, cattail heads on the longest.
+        private static void BuildReeds(PropMeshBuilder b, Random rng)
+        {
+            b.AddBlob(new Vector3(0f, 0.02f, 0f), new Vector3(0.22f, 0.04f, 0.22f), 3, 8, 0.15f, rng.Next(100), Dark, false);
+            int count = rng.Next(9, 15);
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 root = Ring(rng, 0.14f);
+                float height = Range(rng, 0.6f, 1.15f);
+                Vector3 lean = new Vector3(Range(rng, -0.2f, 0.2f), 0f, Range(rng, -0.2f, 0.2f));
+                Vector3 top = root + lean * height + Vector3.up * height;
+                b.AddTube(new[] { root, root + lean * height * 0.4f + Vector3.up * height * 0.5f, top }, new[] { 0.018f, 0.014f, 0.006f }, 4, Leaf, false);
+                if (height > 0.95f && i % 3 == 0)
+                {
+                    b.AddBlob(top - Vector3.up * 0.06f, new Vector3(0.028f, 0.09f, 0.028f), 4, 6, 0.02f, rng.Next(100), Dark, false);
+                }
+                else if (i % 4 == 1)
+                {
+                    b.AddBlob(top, Vector3.one * 0.016f, 3, 5, 0f, 0, Core, false);
+                }
+            }
+        }
+
         private static void BuildFronds(PropMeshBuilder b, Random rng)
         {
             int count = rng.Next(5, 8);

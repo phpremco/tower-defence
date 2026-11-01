@@ -122,9 +122,21 @@ namespace Game.Platform
             _map.Disable();
         }
 
-        private void OnConfirm(InputAction.CallbackContext _) => Confirmed?.Invoke();
+        public bool FromPointer { get; private set; }
 
-        private void OnCancel(InputAction.CallbackContext _) => Cancelled?.Invoke();
+        private void OnConfirm(InputAction.CallbackContext context)
+        {
+            FromPointer = context.control.device is Pointer;
+            Confirmed?.Invoke();
+            FromPointer = false;
+        }
+
+        private void OnCancel(InputAction.CallbackContext context)
+        {
+            FromPointer = context.control.device is Pointer;
+            Cancelled?.Invoke();
+            FromPointer = false;
+        }
 
         private void OnPause(InputAction.CallbackContext _) => PauseToggled?.Invoke();
 

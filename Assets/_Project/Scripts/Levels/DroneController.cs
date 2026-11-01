@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 using Game.Drones;
 using UnityEngine;
@@ -15,19 +16,20 @@ namespace Game.Levels
         private LevelContext _context;
         private Transform _parent;
         private Vector3 _home;
-        private float _speed;
         private int _launched;
         private Vector3[] _mineNodes;
         private float[] _mineStocks;
         private bool[] _mineEmpty;
+        private RepairDispatcher _repairs;
+        private readonly List<Drone> _drones = new List<Drone>();
+
+        /// <summary>Every drone in the air right now, for audio and effects that follow them.</summary>
+        public IReadOnlyList<Drone> Drones => _drones;
 
         public void Initialize(LevelContext context, Transform parent)
         {
             _context = context;
             _parent = parent;
-
-            PlayerModifiers modifiers = context.GlobalModifiers;
-            _speed = modifiers.DroneSpeedMultiplier;
 
             Vector2Int[] road = context.Level.MainRoad;
             _home = context.Level.Road.CentreOf(road[road.Length - 1]);
@@ -42,6 +44,7 @@ namespace Game.Levels
                 _mineStocks[i] = context.Level.MineStock;
             }
 
+            _repairs = new RepairDispatcher(context.Structures);
             context.DroneRequested.Subscribe(OnRequested);
         }
 
@@ -55,7 +58,7 @@ namespace Game.Levels
 
         private void OnRequested(DroneDefinition definition)
         {
-            if (definition == null || _context.ActiveDrones(definition) >= definition.MaxActive)
+            if (definition == null || _context.ActiveDrones(definition) >= _context.MaxDrones(definition))
             {
                 return;
             }
@@ -80,11 +83,12 @@ namespace Game.Levels
             // Newly launched drones start side by side so they do not sit on top of each other.
             float offset = ((_launched % 4) - 1.5f) * SpawnSpread;
             _launched++;
-            var world = new DroneWorld(_home, _context.Structures, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
-            drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _speed, world);
+            var world = new DroneWorld(_home, _context.Structures, _repairs, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
+            drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _context.ModifiersFor(definition), world);
             go.AddComponent<DroneView>().Initialize(drone);
             drone.Lost += OnLost;
             drone.Delivered += OnCollected;
+            _drones.Add(drone);
 
             _context.SetActiveDrones(definition, _context.ActiveDrones(definition) + 1);
             _context.DronesChanged.Raise();
@@ -108,6 +112,7 @@ namespace Game.Levels
         {
             drone.Lost -= OnLost;
             drone.Delivered -= OnCollected;
+            _drones.Remove(drone);
             DroneDefinition definition = drone.Definition;
             _context.SetActiveDrones(definition, Mathf.Max(0, _context.ActiveDrones(definition) - 1));
             Destroy(drone.gameObject);

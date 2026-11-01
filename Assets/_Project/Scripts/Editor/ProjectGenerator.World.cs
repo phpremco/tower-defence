@@ -35,12 +35,24 @@ namespace Game.Editor
             public Color Water;
             public Color Lava;
             public Color Sand;
+            public Color Ice;
+            public Color Bog;
+            public Color Spawn;
             public PropKind[] Props;
             public float Vein;
             public float AmbientRate;
             public float AmbientRise;
             public AmbienceKind Ambience;
             public Color Plant;
+            // Light rig and grading; left at default they are derived from the light, fog and accent colours.
+            public Color Sky;
+            public Color Rim;
+            public float SunPitch;
+            public float SunYaw;
+            public float Contrast;
+            public float Saturation;
+            public Color ShadowTint;
+            public Color HighlightTint;
         }
 
         // The liquid cell closest to a wanted entrance, because erosion may have dropped the exact one.
@@ -91,6 +103,9 @@ namespace Game.Editor
             public string Story;
             public int Research;
             public int Power;
+
+            /// <summary>How much permanent upgrade the player is expected to bring; enemies are scaled up by it.</summary>
+            public float UpgradeBonus;
             public PathObjectDefinition[] PathObjects;
             public CombineRecipe[] Recipes;
             public WaveScript Script;
@@ -122,14 +137,14 @@ namespace Game.Editor
 
             // Fast single-target damage on the ground; a stand-in for a continuous beam until it has its own effect.
             roster.Laser = CreateTower("Laser", "Laser", TargetLayers.Ground, 40f, 0f, new Color(1f, 0.35f, 0.45f),
-                new[] { Lvl(110, 6f, 3.9f, 0.2f), Lvl(130, 9f, 4.1f, 0.18f), Lvl(190, 13f, 4.4f, 0.15f) }, 160f);
+                new[] { Lvl(110, 8f, 3.9f, 0.2f), Lvl(130, 12f, 4.1f, 0.18f), Lvl(190, 18f, 4.4f, 0.15f) }, 160f);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
-                new[] { Lvl(90, 2f, 3.7f, 0.5f), Lvl(110, 3f, 4f, 0.45f), Lvl(160, 4f, 4.3f, 0.4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
+                new[] { Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Lvl(110, 2f, 4f, 0.45f, 0f, 0.42f, 3f), Lvl(160, 2f, 4.3f, 0.4f, 0f, 0.35f, 4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
 
             // Lightning is approximated by a small splash, so it works well on groups.
             roster.Tesla = CreateTower("Tesla", "Tesla", TargetLayers.Ground, 40f, 1.3f, new Color(0.7f, 0.5f, 1f),
-                new[] { Lvl(140, 10f, 3.5f, 0.5f), Lvl(160, 15f, 3.7f, 0.45f), Lvl(230, 22f, 4f, 0.4f) }, 160f);
+                new[] { Lvl(140, 16f, 3.5f, 0.5f), Lvl(160, 26f, 3.7f, 0.45f), Lvl(230, 40f, 4f, 0.4f) }, 160f);
 
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
                 new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f);
@@ -145,7 +160,7 @@ namespace Game.Editor
                 new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(110, 20f, 4.4f, 0.18f), Lvl(170, 28f, 4.7f, 0.15f) }, 190f);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 4.3f, 0.15f), Lvl(110, 12f, 4.6f, 0.13f), Lvl(170, 17f, 4.9f, 0.11f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(110, 8f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(170, 8f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
 
             SetModel(roster.Laser, "turret_single", 1.35f);
             SetModel(roster.Cryo, "satelliteDish", 1.4f);
@@ -195,7 +210,7 @@ namespace Game.Editor
             return asset;
         }
 
-        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, int cost, int maxActive, Color color, float repair = 0f, float harvestSeconds = 4f, int harvestValue = 0, float damage = 0f, float fireInterval = 0.5f, float range = 3f)
+        private static DroneDefinition CreateDrone(string id, string displayName, DroneKind kind, float speed, float health, int cost, int maxActive, Color color, float repair = 0f, float harvestSeconds = 4f, int harvestValue = 0, float damage = 0f, float fireInterval = 0.5f, float range = 3f, CreatureSkin.Kind skin = CreatureSkin.Kind.Plate, Color accent = default)
         {
             var asset = LoadOrCreate<DroneDefinition>($"{DataRoot}/Drones/{id}.asset");
             var so = new SerializedObject(asset);
@@ -213,6 +228,8 @@ namespace Game.Editor
             so.FindProperty("_range").floatValue = range;
             so.FindProperty("_targets").intValue = (int)(TargetLayers.Ground | TargetLayers.Air);
             so.FindProperty("_color").colorValue = color;
+            so.FindProperty("_skin").enumValueIndex = (int)skin;
+            so.FindProperty("_accentColor").colorValue = accent == default ? Color.white : accent;
             so.ApplyModifiedPropertiesWithoutUndo();
             // A value equal to the field default leaves the asset clean, so force the save or a stale field lingers on disk.
             EditorUtility.SetDirty(asset);
@@ -328,11 +345,12 @@ namespace Game.Editor
                     Money = 240,
                     BaseHealth = BaseHealth,
                     HealthScale = 1.05f,
+                    UpgradeBonus = 0f,
                     RewardTower = roster.Cryo,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "Alien crystals in the forest turned out to hold a cold-field emitter. Our engineers adapted it.",
-                    Research = 14,
-                    Power = 6,
+                    Research = 26,
+                    Power = 8,
                     PathObjects = new[] { slowField, mine },
                     Recipes = new CombineRecipe[0],
                     // Rollers from the third wave, pool creatures out of the forest ponds from the fourth; the boss surfaces from a pond.
@@ -390,11 +408,12 @@ namespace Game.Editor
                     Money = 280,
                     BaseHealth = BaseHealth,
                     HealthScale = 1.3f,
+                    UpgradeBonus = 0.1f,
                     RewardTower = roster.Laser,
                     Source = UnlockSource.HomePlanetIntel,
                     Story = "Home sent the focusing crystals they refined from our first samples: a laser design.",
-                    Research = 18,
-                    Power = 9,
+                    Research = 32,
+                    Power = 11,
                     PathObjects = new[] { lavaBall, barrel },
                     Recipes = new CombineRecipe[0],
                     // No final boss here, but a mind-boss climbs out of the lava halfway through the level.
@@ -454,11 +473,12 @@ namespace Game.Editor
                     Money = 320,
                     BaseHealth = BaseHealth,
                     HealthScale = 1.5f,
+                    UpgradeBonus = 0.2f,
                     RewardTower = roster.Rocket,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The ruin vaults held guidance gear. With it our rocket launchers can finally lock on to flyers.",
-                    Research = 22,
-                    Power = 12,
+                    Research = 40,
+                    Power = 14,
                     PathObjects = new[] { groundDrone, antiAir },
                     Recipes = new CombineRecipe[0],
                     // Diggers out of the quicksand, rollers, and eels from the cistern; the fortress breaks out of the ground between the roads.
@@ -518,17 +538,147 @@ namespace Game.Editor
                     Money = 360,
                     BaseHealth = BaseHealth,
                     HealthScale = 1.4f,
+                    UpgradeBonus = 0.3f,
                     RewardTower = roster.Tesla,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The queen's nest was powered by living coils. We took one, and with it the first hybrid designs.",
-                    Research = 30,
-                    Power = 18,
+                    Research = 50,
+                    Power = 20,
                     PathObjects = new[] { slowField, mine, lavaBall, barrel, groundDrone, antiAir },
                     Recipes = recipes,
                     // Everything at once, a fortress halfway, and the queen herself through the hive mouth.
                     Entrance = EntranceKind.Gate,
                     // The hive keeps its own bats: in the drowned corner and in the sand pits.
                     Nests = new[] { Nest(Element.Water, 17, 18), Nest(Element.Water, 1, 9), Nest(Element.Sand, 7, 8), Nest(Element.Sand, 15, 3) },
+                },
+                new LevelSpec
+                {
+                    Key = "Ice",
+                    Script = IceScript(enemies),
+                    Name = "Frozen Shelf",
+                    Region = "Polar Shelf",
+                    Briefing = "Beyond the hive the planet turns to ice. The lakes are frozen over, and something lives under the ice: the shelf cracks where the frost bats come up, and the road is never far from a lake.",
+                    Palette = new Palette
+                    {
+                        Background = new Color(0.05f, 0.07f, 0.11f),
+                        Ground = new Color(0.74f, 0.8f, 0.88f),
+                        Path = new Color(0.35f, 0.55f, 0.8f),
+                        Slot = new Color(0.4f, 0.75f, 1f),
+                        Base = new Color(0.5f, 0.85f, 1f),
+                        Light = new Color(0.8f, 0.9f, 1f),
+                        LightIntensity = 1.3f,
+                        Fog = new Color(0.3f, 0.36f, 0.46f),
+                        FogDensity = 0.02f,
+                        Bloom = 1.1f,
+                        Rock = new Color(0.8f, 0.85f, 0.92f),
+                        Accent = new Color(0.6f, 0.9f, 1f),
+                        Water = new Color(0.1f, 0.35f, 0.55f),
+                        Lava = new Color(1f, 0.4f, 0.1f),
+                        Sand = new Color(0.6f, 0.62f, 0.66f),
+                        Ice = new Color(0.72f, 0.88f, 1f),
+                        Bog = new Color(0.18f, 0.24f, 0.12f),
+                        Spawn = new Color(0.55f, 0.85f, 1f),
+                        Props = new[] { PropKind.Snowdrift, PropKind.Snowdrift, PropKind.Snowdrift, PropKind.Snowdrift, PropKind.IceShard, PropKind.Boulder, PropKind.Rock, PropKind.Snowdrift },
+                        Vein = 0.25f,
+                        AmbientRate = 60f,
+                        AmbientRise = -0.7f,
+                        Ambience = AmbienceKind.Blizzard,
+                        Plant = new Color(0.62f, 0.7f, 0.72f),
+                    },
+                    // The road zigzags between four frozen lakes; a second road comes in along the southern edge.
+                    Size = new Vector2Int(38, 20),
+                    RoadWidth = 2,
+                    Road = Cells(0, 3, 12, 3, 12, 10, 4, 10, 4, 16, 22, 16, 22, 9, 30, 9, 30, 14, 37, 14),
+                    SecondRoad = Cells(0, 19, 4, 19, 4, 16),
+                    Plazas = Rect(20, 14, 24, 17),
+                    NorthAir = Cells(0, 19, 18, 18, 37, 14),
+                    SouthAir = Cells(0, 0, 20, 2, 37, 14),
+                    BlockadeCells = Cells(6, 3, 4, 13, 15, 16, 30, 11),
+                    BlockedSeed = 33,
+                    Terrain = Terrain(
+                        Area(TerrainKind.Ice, 14, 5, 19, 8), Area(TerrainKind.Ice, 26, 16, 30, 19), Area(TerrainKind.Ice, 0, 6, 2, 8), Area(TerrainKind.Ice, 32, 2, 36, 6),
+                        Area(TerrainKind.Raised, 24, 1, 28, 3), Area(TerrainKind.Raised, 8, 13, 10, 14), Area(TerrainKind.Raised, 34, 17, 37, 19)),
+                    Money = 320,
+                    BaseHealth = BaseHealth,
+                    HealthScale = 1.2f,
+                    UpgradeBonus = 0.35f,
+                    RewardTower = roster.Railgun,
+                    Source = UnlockSource.HomePlanetIntel,
+                    Story = "The home planet finished the railgun designs. Nothing the ice can grow stops a slug at that speed.",
+                    Research = 55,
+                    Power = 22,
+                    PathObjects = new[] { slowField, mine, barrel, groundDrone, antiAir },
+                    Recipes = recipes,
+                    // The warlord breaks up through the middle lake.
+                    Entrance = EntranceKind.Pool,
+                    EntranceCell = new Vector2Int(17, 7),
+                    // Frost bats come up through cracks in the first two lakes, near the gates.
+                    Nests = new[] { Nest(Element.Ice, 1, 7), Nest(Element.Ice, 16, 6), Nest(Element.Ice, 14, 5) },
+                },
+                new LevelSpec
+                {
+                    Key = "Swamp",
+                    Script = SwampScript(enemies),
+                    Name = "Black Marsh",
+                    Region = "Drowned Lowlands",
+                    Briefing = "South of the shelf the ice melts into a marsh that never dries. The roads are causeways between the pools, the trees are dead, and the mire itself breathes: leeches, slugs and bats come up out of it.",
+                    Palette = new Palette
+                    {
+                        Background = new Color(0.02f, 0.04f, 0.03f),
+                        Ground = new Color(0.16f, 0.2f, 0.12f),
+                        Path = new Color(0.55f, 0.5f, 0.3f),
+                        Slot = new Color(0.45f, 0.8f, 0.35f),
+                        Base = new Color(0.6f, 1f, 0.5f),
+                        Light = new Color(0.75f, 0.85f, 0.7f),
+                        LightIntensity = 1f,
+                        Fog = new Color(0.05f, 0.08f, 0.05f),
+                        FogDensity = 0.024f,
+                        Bloom = 1.4f,
+                        Rock = new Color(0.22f, 0.24f, 0.18f),
+                        Accent = new Color(0.65f, 1f, 0.45f),
+                        Water = new Color(0.08f, 0.3f, 0.28f),
+                        Lava = new Color(1f, 0.4f, 0.1f),
+                        Sand = new Color(0.35f, 0.32f, 0.22f),
+                        Ice = new Color(0.72f, 0.88f, 1f),
+                        Bog = new Color(0.14f, 0.2f, 0.1f),
+                        Spawn = new Color(0.6f, 0.95f, 0.35f),
+                        Props = new[] { PropKind.Reed, PropKind.Reed, PropKind.DeadTree, PropKind.DeadTree, PropKind.Mushroom, PropKind.Tendril, PropKind.Rock, PropKind.Frond },
+                        Vein = 0.6f,
+                        AmbientRate = 24f,
+                        AmbientRise = 0.12f,
+                        Ambience = AmbienceKind.Marsh,
+                        Plant = new Color(0.2f, 0.42f, 0.2f),
+                    },
+                    // Causeways wind between four bogs; a second road comes in from the north-west.
+                    Size = new Vector2Int(38, 21),
+                    RoadWidth = 2,
+                    Road = Cells(0, 17, 9, 17, 9, 6, 17, 6, 17, 13, 27, 13, 27, 4, 33, 4, 33, 10, 37, 10),
+                    SecondRoad = Cells(0, 2, 5, 2, 5, 6, 9, 6),
+                    Plazas = Rect(26, 11, 29, 14),
+                    NorthAir = Cells(0, 20, 20, 19, 37, 10),
+                    SouthAir = Cells(0, 0, 22, 1, 37, 10),
+                    BlockadeCells = Cells(4, 17, 9, 10, 22, 13, 33, 7),
+                    BlockedSeed = 34,
+                    Terrain = Terrain(
+                        Area(TerrainKind.Bog, 11, 9, 15, 12), Area(TerrainKind.Bog, 20, 8, 25, 11), Area(TerrainKind.Bog, 29, 15, 34, 19), Area(TerrainKind.Bog, 1, 8, 4, 12),
+                        Area(TerrainKind.Water, 12, 18, 16, 20),
+                        Area(TerrainKind.Raised, 29, 0, 34, 1), Area(TerrainKind.Raised, 0, 14, 3, 15)),
+                    Money = 340,
+                    BaseHealth = BaseHealth,
+                    HealthScale = 1.25f,
+                    UpgradeBonus = 0.4f,
+                    RewardTower = roster.Support,
+                    Source = UnlockSource.StolenAlienTech,
+                    Story = "The marsh slugs secrete a resin that carries energy without loss. Wrapped around a mast, it feeds the guns beside it.",
+                    Research = 60,
+                    Power = 24,
+                    PathObjects = new[] { slowField, mine, lavaBall, barrel, groundDrone, antiAir },
+                    Recipes = recipes,
+                    // The slime monarch heaves itself out of the middle bog.
+                    Entrance = EntranceKind.Pool,
+                    EntranceCell = new Vector2Int(23, 10),
+                    // Mire bats rise from three bogs and tide bats from the drowned corner.
+                    Nests = new[] { Nest(Element.Bog, 13, 10), Nest(Element.Bog, 22, 9), Nest(Element.Bog, 31, 17), Nest(Element.Water, 14, 19) },
                 },
             };
 
@@ -656,6 +806,7 @@ namespace Game.Editor
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = spec.Money;
             so.FindProperty("_enemyHealthMultiplier").floatValue = spec.HealthScale;
+            so.FindProperty("_expectedUpgradeBonus").floatValue = spec.UpgradeBonus;
             so.FindProperty("_baseHealth").intValue = spec.BaseHealth;
             so.FindProperty("_mineStock").intValue = MineStock;
             so.FindProperty("_hero").objectReferenceValue = hero;

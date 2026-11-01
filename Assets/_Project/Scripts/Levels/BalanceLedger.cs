@@ -77,6 +77,8 @@ namespace Game.Levels
             var lines = new List<WaveLine>(waves.Length);
             int kills = 0;
             float heroDps = HeroDps(level);
+            // The level counts on the player holding this much permanent upgrade by now; the enemies are scaled the same way.
+            float upgrades = 1f + level.ExpectedUpgradeBonus;
 
             for (int i = 0; i < waves.Length; i++)
             {
@@ -95,8 +97,8 @@ namespace Game.Levels
                     GroundHealth = groundHealth,
                     AirHealth = airHealth,
                     Window = window,
-                    GroundPressure = Pressure(groundHealth, groundDps * window * Utilisation + heroDamage),
-                    AirPressure = Pressure(airHealth, airDps * window * Utilisation),
+                    GroundPressure = Pressure(groundHealth, groundDps * upgrades * window * Utilisation + heroDamage),
+                    AirPressure = Pressure(airHealth, airDps * upgrades * window * Utilisation),
                 };
                 lines.Add(line);
                 kills += KillMoney(waves[i], difficulty);
@@ -161,7 +163,7 @@ namespace Game.Levels
             boss = false;
             float speedSum = 0f;
             int total = 0;
-            float scale = difficulty.HealthMultiplier * level.EnemyHealthMultiplier * wave.HealthMultiplier;
+            float scale = difficulty.HealthMultiplier * level.EnemyHealthScale * wave.HealthMultiplier;
             foreach (SpawnGroup group in wave.Groups)
             {
                 EnemyDefinition enemy = group.Enemy;

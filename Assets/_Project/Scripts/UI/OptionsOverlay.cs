@@ -13,8 +13,9 @@ namespace Game.UI
         private GameObject _controlsPanel;
         private RectTransform _column;
         private Button _controlsButton;
+        private Button _soundButton;
 
-        // Six buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
+        // Seven buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
         private const float TitleTop = -36f;
         private const float ColumnDrop = -40f;
 
@@ -56,6 +57,7 @@ namespace Game.UI
             var volumes = new VolumeControls(progress, mix);
             volumes.Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
+            _soundButton = UiKit.CreateButton(_column, "Sound test", ShowSoundBoard);
             UiKit.CreateButton(_column, "Back", Close);
             UiKit.Select(volumes.First);
 
@@ -85,6 +87,19 @@ namespace Game.UI
             _controlsPanel.SetActive(false);
             _column.gameObject.SetActive(true);
             UiKit.Select(_controlsButton);
+        }
+
+        private void ShowSoundBoard()
+        {
+            _column.gameObject.SetActive(false);
+            gameObject.AddComponent<SoundBoardOverlay>().Open(this);
+        }
+
+        /// <summary>The sound board closes itself and hands the options column back.</summary>
+        public void ReturnFromSoundBoard()
+        {
+            _column.gameObject.SetActive(true);
+            UiKit.Select(_soundButton);
         }
 
         private void Close()

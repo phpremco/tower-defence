@@ -1,13 +1,36 @@
 using System;
 using Game.Combat;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Drones
 {
+    /// <summary>What a drone is busy with, for the view to show.</summary>
+    public enum DroneActivity
+    {
+        /// <summary>Hovering at the base with nothing to do.</summary>
+        Idle,
+
+        /// <summary>On its way somewhere.</summary>
+        Flying,
+
+        /// <summary>Hanging over a structure and welding it back together.</summary>
+        Repairing,
+
+        /// <summary>Drilling ore out of a resource node.</summary>
+        Mining,
+
+        /// <summary>Carrying a load back to the base.</summary>
+        Hauling,
+
+        /// <summary>Holding position over prey and shooting.</summary>
+        Fighting,
+    }
+
     /// <summary>
-    /// A drone that works on its own: the repair drone heals the most damaged structure, the harvest drone mines a
-    /// resource node and carries the yield home, the attack drone hunts the enemy furthest along the road.
-    /// Flying enemies can shoot it down, so it is also a structure. Has no knowledge of how it looks.
+    /// A drone that works on its own: the repair drone takes repair jobs from the shared dispatcher, the harvest
+    /// drone mines a resource node and carries the yield home, the attack drone hunts the enemy furthest along
+    /// the road. Flying enemies can shoot it down, so it is also a structure. Has no knowledge of how it looks.
     /// </summary>
     public sealed class Drone : MonoBehaviour, IStructure
     {
@@ -24,6 +47,7 @@ namespace Game.Drones
         private DroneWorld _world;
         private Vector3 _home;
         private float _speed;
+        private DroneModifiers _modifiers;
         private float _retarget;
         private IStructure _repairTarget;
         private int _nodeIndex = -1;
@@ -31,6 +55,7 @@ namespace Game.Drones
         private int _carried;
         private ITargetable _prey;
         private float _cooldown;
+        private Vector3 _lastPosition;
 
         public DroneDefinition Definition => _definition;
 
@@ -55,6 +80,12 @@ namespace Game.Drones
         /// <summary>Where the drone is heading, so the view can turn it that way.</summary>
         public Vector3 Heading { get; private set; } = Vector3.forward;
 
+        /// <summary>What the drone is doing this frame.</summary>
+        public DroneActivity Activity { get; private set; }
+
+        /// <summary>How fast the drone moved last frame, as a share of its top speed, so the view can tilt it.</summary>
+        public float Pace { get; private set; }
+
         public event Action<Drone> Lost;
 
         /// <summary>Raised with the target position whenever the attack drone fires.</summary>
@@ -63,15 +94,17 @@ namespace Game.Drones
         /// <summary>Raised with the money when a harvest drone hands its load in at the base.</summary>
         public event Action<int> Delivered;
 
-        public void Initialize(DroneDefinition definition, Vector3 start, float speedMultiplier, DroneWorld world)
+        public void Initialize(DroneDefinition definition, Vector3 start, DroneModifiers modifiers, DroneWorld world)
         {
             _definition = definition;
             _world = world;
             _home = new Vector3(world.Home.x, Altitude, world.Home.z);
-            _speed = definition.Speed * speedMultiplier;
-            Health = new Health(definition.MaxHealth);
+            _modifiers = modifiers;
+            _speed = definition.Speed * modifiers.SpeedMultiplier;
+            Health = new Health(definition.MaxHealth * modifiers.HealthMultiplier);
             Health.Died += OnDied;
             transform.position = new Vector3(start.x, Altitude, start.z);
+            _lastPosition = transform.position;
             _world.Structures.Add(this);
         }
 
@@ -108,32 +141,40 @@ namespace Game.Drones
                     UpdateAttack();
                     break;
             }
+
+            float step = _speed * Time.deltaTime;
+            Pace = step > 0f ? Mathf.Clamp01(Vector3.Distance(transform.position, _lastPosition) / step) : 0f;
+            _lastPosition = transform.position;
         }
 
+        // The dispatcher hands out the work; the drone only asks again now and then, or at once when its job is done.
         private void UpdateRepair()
         {
             _retarget -= Time.deltaTime;
-            if (_repairTarget == null || !_repairTarget.IsAlive || _repairTarget.HealthFraction >= 1f || _retarget <= 0f)
+            bool done = _repairTarget != null && (!_repairTarget.IsAlive || _repairTarget.HealthFraction >= 1f);
+            if (_repairTarget == null || done || _retarget <= 0f)
             {
                 _retarget = RetargetSeconds;
-                _repairTarget = _world.Structures.FindMostDamaged();
+                _repairTarget = _world.Repairs.Assign(this, transform.position, _speed, _repairTarget);
             }
 
             if (_repairTarget == null)
             {
                 WorkPoint = null;
-                FlyTo(_home);
+                Activity = FlyTo(_home) <= WorkDistance ? DroneActivity.Idle : DroneActivity.Flying;
                 return;
             }
 
             if (FlyTo(Above(_repairTarget.Position)) <= WorkDistance)
             {
-                _repairTarget.Repair(_definition.RepairPerSecond * Time.deltaTime);
+                _repairTarget.Repair(_definition.RepairPerSecond * _modifiers.OutputMultiplier * Time.deltaTime);
                 WorkPoint = _repairTarget.Position;
+                Activity = DroneActivity.Repairing;
             }
             else
             {
                 WorkPoint = null;
+                Activity = DroneActivity.Flying;
             }
         }
 
@@ -144,6 +185,7 @@ namespace Game.Drones
             if (_carried > 0)
             {
                 WorkPoint = null;
+                Activity = DroneActivity.Hauling;
                 if (FlyTo(_home) <= WorkDistance)
                 {
                     Delivered?.Invoke(_carried);
@@ -156,7 +198,7 @@ namespace Game.Drones
             if (_world.ResourceNodes == null || _world.ResourceNodes.Length == 0)
             {
                 WorkPoint = null;
-                FlyTo(_home);
+                Activity = FlyTo(_home) <= WorkDistance ? DroneActivity.Idle : DroneActivity.Flying;
                 return;
             }
 
@@ -168,12 +210,12 @@ namespace Game.Drones
             if (_nodeIndex < 0)
             {
                 _nodeIndex = NearestNode();
-                _harvestRemaining = _definition.HarvestSeconds;
+                _harvestRemaining = _definition.HarvestSeconds / _modifiers.TempoMultiplier;
                 if (_nodeIndex < 0)
                 {
                     // Every node is spent: the drone waits at home.
                     WorkPoint = null;
-                    FlyTo(_home);
+                    Activity = FlyTo(_home) <= WorkDistance ? DroneActivity.Idle : DroneActivity.Flying;
                     return;
                 }
             }
@@ -182,14 +224,16 @@ namespace Game.Drones
             if (FlyTo(Above(node)) > WorkDistance)
             {
                 WorkPoint = null;
+                Activity = DroneActivity.Flying;
                 return;
             }
 
             WorkPoint = node;
+            Activity = DroneActivity.Mining;
             _harvestRemaining -= Time.deltaTime;
             if (_harvestRemaining <= 0f)
             {
-                int take = Mathf.Min(_definition.HarvestValue, Mathf.FloorToInt(_world.MineStocks[_nodeIndex]));
+                int take = Mathf.Min(Mathf.RoundToInt(_definition.HarvestValue * _modifiers.OutputMultiplier), Mathf.FloorToInt(_world.MineStocks[_nodeIndex]));
                 _world.MineStocks[_nodeIndex] -= take;
                 _carried = take;
                 _nodeIndex = -1;
@@ -212,7 +256,7 @@ namespace Game.Drones
 
             if (_prey == null)
             {
-                FlyTo(_home);
+                Activity = FlyTo(_home) <= WorkDistance ? DroneActivity.Idle : DroneActivity.Flying;
                 return;
             }
 
@@ -221,16 +265,18 @@ namespace Game.Drones
             if (distance > _definition.Range * StandoffFraction)
             {
                 FlyTo(Above(preyPosition));
+                Activity = DroneActivity.Flying;
             }
             else
             {
                 Heading = Flat(preyPosition - transform.position);
+                Activity = DroneActivity.Fighting;
             }
 
             if (distance <= _definition.Range && _cooldown <= 0f)
             {
-                _cooldown = _definition.FireInterval;
-                _world.Projectiles.Fire(transform.position, _prey, _definition.Damage, _definition.ProjectileSpeed, 0f, _definition.Targets, 1f, 0f, _definition.ProjectileStyle, _definition.Color);
+                _cooldown = _definition.FireInterval / _modifiers.TempoMultiplier;
+                _world.Projectiles.Fire(transform.position, _prey, _definition.Damage * _modifiers.OutputMultiplier, _definition.ProjectileSpeed, 0f, _definition.Targets, 1f, 0f, _definition.ProjectileStyle, _definition.Color);
                 Fired?.Invoke(preyPosition);
             }
         }
@@ -293,6 +339,11 @@ namespace Game.Drones
 
         private void OnDied()
         {
+            if (_definition.Kind == DroneKind.Repair)
+            {
+                _world.Repairs.Release(this, _repairTarget);
+            }
+
             _world.Structures.Remove(this);
             WorkPoint = null;
             Lost?.Invoke(this);

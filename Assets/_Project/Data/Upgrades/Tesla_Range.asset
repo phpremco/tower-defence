@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Tesla_Range
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Range +5% per level
+  _displayName: Range
   _target: 1
   _towerId: Tesla
+  _droneId: 
   _groupName: Tesla
   _costs: 050000000a0000000f000000i
   _currency: 0

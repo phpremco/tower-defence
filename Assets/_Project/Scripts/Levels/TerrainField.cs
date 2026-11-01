@@ -21,6 +21,8 @@ namespace Game.Levels
         private const float EdgeWander = 0.7f;
         private const float BasinDepth = 0.6f;
         private const float SandDepth = 0.16f;
+        private const float IceDepth = 0.1f;
+        private const float BogDepth = 0.22f;
         private const float ShoreWidthCells = 0.55f;
         private const float ShoreWobbleCells = 0.25f;
         private const float CornerRadiusCells = 0.46f;
@@ -45,6 +47,8 @@ namespace Game.Levels
         private readonly float[] _water;
         private readonly float[] _lava;
         private readonly float[] _sand;
+        private readonly float[] _ice;
+        private readonly float[] _bog;
         private readonly float[] _height;
         private readonly float[] _slope;
         private readonly float[] _roadMask;
@@ -68,6 +72,8 @@ namespace Game.Levels
             _water = new float[count];
             _lava = new float[count];
             _sand = new float[count];
+            _ice = new float[count];
+            _bog = new float[count];
             _height = new float[count];
             _slope = new float[count];
             _roadMask = new float[count];
@@ -100,6 +106,8 @@ namespace Game.Levels
         public float WaterAt(float x, float z) => Sample(_water, x, z);
         public float LavaAt(float x, float z) => Sample(_lava, x, z);
         public float SandAt(float x, float z) => Sample(_sand, x, z);
+        public float IceAt(float x, float z) => Sample(_ice, x, z);
+        public float BogAt(float x, float z) => Sample(_bog, x, z);
         public float SlopeAt(float x, float z) => Sample(_slope, x, z);
         public float RoadAt(float x, float z) => Sample(_roadMask, x, z);
 
@@ -182,6 +190,8 @@ namespace Game.Levels
                     _water[i] = 0f;
                     _lava[i] = 0f;
                     _sand[i] = 0f;
+                    _ice[i] = 0f;
+                    _bog[i] = 0f;
 
                     Vector2Int cell = grid.WorldToCell(new Vector3(x, 0f, z));
                     TerrainKind kind = map.KindAt(cell);
@@ -199,6 +209,12 @@ namespace Game.Levels
                             break;
                         case TerrainKind.Lava:
                             _lava[i] = mask;
+                            break;
+                        case TerrainKind.Ice:
+                            _ice[i] = mask;
+                            break;
+                        case TerrainKind.Bog:
+                            _bog[i] = mask;
                             break;
                         default:
                             _sand[i] = mask;
@@ -284,6 +300,9 @@ namespace Game.Levels
                     // that drops away steeply on the inside.
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _water[i]) * BasinDepth;
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _sand[i]) * SandDepth;
+                    // A frozen lake sits in a shallow dish; a bog sinks a little deeper than sand into soft ground.
+                    h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _ice[i]) * IceDepth;
+                    h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _bog[i]) * BogDepth;
                     float crater = 1f - Mathf.Clamp01(Mathf.Abs(_lava[i] - CraterRimCentre) / CraterRimWidth);
                     h += crater * crater * CraterRimHeight * (0.7f + 0.6f * TerrainNoise.Fbm(x * 1.3f, z * 1.3f, 2, 7f));
                     h -= TerrainNoise.SmoothStep(CraterStart, CraterFull, _lava[i]) * BasinDepth;

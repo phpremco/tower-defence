@@ -42,6 +42,9 @@ MonoBehaviour:
   _waterColor: {r: 0.1, g: 0.2, b: 0.3, a: 1}
   _lavaColor: {r: 1, g: 0.4, b: 0.08, a: 1}
   _sandColor: {r: 0.4, g: 0.25, b: 0.15, a: 1}
+  _iceColor: {r: 0.75, g: 0.9, b: 1, a: 1}
+  _bogColor: {r: 0.18, g: 0.24, b: 0.12, a: 1}
+  _spawnColor: {r: 1, g: 0.4, b: 0.25, a: 1}
   _plantColor: {r: 0.5, g: 0.2, b: 0.12, a: 1}
   _propKinds: 070000000700000007000000000000000100000002000000i
   _veinStrength: 0.9
@@ -53,3 +56,12 @@ MonoBehaviour:
   _fogColor: {r: 0.1, g: 0.03, b: 0.01, a: 1}
   _fogDensity: 0.022
   _bloomIntensity: 1.8
+  _sunPitch: 42
+  _sunYaw: -35
+  _rimColor: {r: 1, g: 0.5, b: 0.15, a: 1}
+  _rimIntensity: 0.5
+  _skyColor: {r: 0.64000005, g: 0.432, b: 0.30400002, a: 1}
+  _contrast: 12
+  _saturation: 8
+  _shadowTint: {r: 1, g: 0.9363636, b: 0.9181818, a: 1}
+  _highlightTint: {r: 1, g: 0.88, b: 0.8, a: 1}

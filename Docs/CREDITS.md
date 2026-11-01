@@ -11,5 +11,6 @@ Third-party assets in this project. All are CC0 (public domain); crediting is no
 | Sci-Fi Weapon Shots SFX (laser rifle, pistol and beam shots) | Lentikula, lentikula.itch.io | CC0 | `Assets/_Project/Audio/Lentikula/` |
 | Laser weld (looping boss laser hum, `freesound_community-laser-weld-103309.mp3`) | freesound_community via Pixabay | Pixabay Content License (free use, no attribution required) | `Assets/_Project/Audio/Freesound/` |
 | Warning siren (boss alarm, `warning.mp3`) | downloaded by Remco, source and licence to be noted | free use assumed, check before release | `Assets/_Project/Audio/Freesound/` |
+| Game sound effects in `Approved/` (explosions, drones, hero, environment, monsters, bosses) | made by Remco with Claude chat, plus the slime recordings listed in `Tools/Audio/CREDITS.md` | project-owned | `Assets/_Project/Audio/Approved/` |
 
 Only the pieces the game uses are imported. The license texts sit next to each asset folder.

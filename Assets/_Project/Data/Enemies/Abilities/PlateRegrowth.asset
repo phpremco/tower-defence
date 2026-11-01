@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
   _displayName: PlateRegrowth
   _kind: 5
-  _interval: 12
+  _interval: 16
   _firstDelay: 10
-  _damage: 150
+  _damage: 80
   _radius: 1
   _sweepSeconds: 1
   _range: 1

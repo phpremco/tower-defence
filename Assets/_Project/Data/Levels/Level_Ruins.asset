@@ -19,8 +19,8 @@ MonoBehaviour:
   _cellSize: 1
   _theme: {fileID: 11400000, guid: 8ef114d5f69c56d4aa64817dc054ea78, type: 2}
   _camera:
-    PitchDegrees: 50
-    YawDegrees: 12
+    PitchDegrees: 44
+    YawDegrees: 16
     FitMargin: 0.04
   _paths:
   - Name: Road
@@ -298,6 +298,8 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: 55f9c2710e43ed642a0269c392230e50, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 5c75b4a63f538214aadfc5d0810e0a90, type: 3}
   _enemyHealthMultiplier: 1.5
+  _expectedUpgradeBonus: 0.2
+  _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
   _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
@@ -487,8 +489,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 65d930a1341e22749a6b412e75860043, type: 2}
     - {fileID: 11400000, guid: 860324f8cab8826449e428ee72282c80, type: 2}
   _reward:
-    ResearchPoints: 22
-    PowerCurrency: 12
+    ResearchPoints: 40
+    PowerCurrency: 14
     NewTower: {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
     Source: 1
     Story: The ruin vaults held guidance gear. With it our rocket launchers can finally lock on to flyers.

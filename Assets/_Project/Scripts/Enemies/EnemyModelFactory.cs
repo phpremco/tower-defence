@@ -111,10 +111,10 @@ namespace Game.Enemies
             Color seam = Color.Lerp(color, Color.white, 0.2f) * glow;
             return new[]
             {
-                CreatureSkin.Dress(SurfaceMaterials.Create(color * bodyShade, 0f, ChitinGloss, 0.1f), skin, seam * SeamGlow),
+                SurfaceMaterials.SetRim(CreatureSkin.Dress(SurfaceMaterials.Create(color * bodyShade, 0f, ChitinGloss, 0.1f), skin, seam * SeamGlow), SurfaceMaterials.AlienRim),
                 SurfaceMaterials.Create(eyes, EyeEmission * glow, 0.7f),
                 SurfaceMaterials.Create(Color.Lerp(color, Color.white, 0.15f), GlowEmission * glow, 0.5f),
-                CreatureSkin.Dress(SurfaceMaterials.Create(color * darkShade, 0f, ChitinGloss, 0.15f), skin, seam * DarkSeamGlow),
+                SurfaceMaterials.SetRim(CreatureSkin.Dress(SurfaceMaterials.Create(color * darkShade, 0f, ChitinGloss, 0.15f), skin, seam * DarkSeamGlow), SurfaceMaterials.AlienRim),
                 SurfaceMaterials.Create(Color.Lerp(accent, Color.white, 0.1f), AccentEmission * glow, 0.8f),
             };
         }
@@ -175,6 +175,12 @@ namespace Game.Enemies
                     break;
                 case EnemyShape.Roller:
                     Roller(body, parts, false);
+                    break;
+                case EnemyShape.Shardback:
+                    Shardback(body, parts);
+                    break;
+                case EnemyShape.Mireleech:
+                    Mireleech(body, parts);
                     break;
                 case EnemyShape.RollerKing:
                     Roller(body, parts, true);
@@ -674,6 +680,84 @@ namespace Game.Enemies
             parts.Bleeds = true;
             parts.Skin = CreatureSkin.Kind.Slime;
             parts.Height = (boss ? 0.6f : 0.4f) * k;
+        }
+
+        // The ice beetle: a hunched, broad crawler on six stocky legs, its back grown over with ice prisms that
+        // shatter off one by one as its armour is chipped. A low blunt head with a frosted horn and pale eyes.
+        private static void Shardback(PropMeshBuilder b, Parts parts)
+        {
+            b.AddBlob(new Vector3(0f, 0.28f, -0.02f), new Vector3(0.27f, 0.2f, 0.36f), 6, 11, 0.04f, 44, Body, false);
+            b.AddBlob(new Vector3(0f, 0.16f, 0f), new Vector3(0.24f, 0.08f, 0.33f), 4, 10, 0.03f, 45, Dark, true);
+            b.AddBlob(new Vector3(0f, 0.22f, 0.34f), new Vector3(0.14f, 0.11f, 0.14f), 5, 9, 0.03f, 46, Body, false);
+            b.AddBlob(new Vector3(0f, 0.27f, 0.38f), new Vector3(0.1f, 0.04f, 0.1f), 3, 8, 0.02f, 47, Dark, true, Mathf.PI * 0.5f);
+            Spike(b, new Vector3(0f, 0.3f, 0.42f), new Vector3(0f, 0.42f, 0.58f), 0.035f, Accent);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                b.AddBlob(new Vector3(side * 0.08f, 0.26f, 0.44f), new Vector3(0.03f, 0.022f, 0.025f), 3, 6, 0f, 0, Eyes, false);
+                Spike(b, new Vector3(side * 0.07f, 0.17f, 0.44f), new Vector3(side * 0.1f, 0.12f, 0.54f), 0.02f, Dark);
+            }
+
+            // A frozen crust of small prisms along the flanks, and the big shards on top that come off as plates.
+            for (int i = 0; i < 8; i++)
+            {
+                float t = i / 7f;
+                float z = Mathf.Lerp(0.26f, -0.3f, t);
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    var root = new Vector3(side * 0.24f, 0.26f, z);
+                    Spike(b, root, root + new Vector3(side * 0.12f, 0.14f + (i % 2) * 0.05f, 0f), 0.028f, i % 3 == 0 ? Accent : Glow);
+                }
+            }
+
+            Cracks(b, new Vector3(0f, 0.28f, -0.02f), new Vector3(0.27f, 0.2f, 0.36f), 5, 48, Accent);
+            for (int i = 0; i < 4; i++)
+            {
+                float z = 0.22f - i * 0.15f;
+                var plate = new PropMeshBuilder(SlotCount);
+                plate.AddBlob(Vector3.zero, new Vector3(0.11f, 0.05f, 0.09f), 3, 7, 0.03f, 50 + i, Dark, true);
+                Spike(plate, new Vector3(0f, 0.02f, 0f), new Vector3((i % 2 == 0 ? 0.06f : -0.06f), 0.3f + (i % 2) * 0.08f, -0.04f), 0.05f, Glow);
+                Spike(plate, new Vector3(0.05f, 0.02f, -0.03f), new Vector3(0.12f, 0.18f, -0.06f), 0.03f, Accent);
+                Spike(plate, new Vector3(-0.05f, 0.02f, 0.03f), new Vector3(-0.1f, 0.2f, 0.05f), 0.03f, Accent);
+                parts.Moving.Add(new CreaturePart(CreatureRole.Plate, plate.ToMesh("Shard"), new Vector3(0f, 0.46f, z), false, 0f, i));
+            }
+
+            Legs(parts, 0.17f, 0.2f, 0.24f, 0.035f, 0.26f, 0.02f, -0.24f);
+            parts.Skin = CreatureSkin.Kind.Stone;
+            parts.Height = 0.75f;
+        }
+
+        // The marsh leech: a long low body of swollen rings tapering to a tail, a round sucker mouth ringed with
+        // teeth at the front and eye stalks behind it. It has no legs; the rings heave as it drags itself along.
+        private static void Mireleech(PropMeshBuilder b, Parts parts)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                float t = i / 5f;
+                float z = Mathf.Lerp(0.3f, -0.32f, t);
+                float radius = Mathf.Lerp(0.13f, 0.08f, t);
+                b.AddBlob(new Vector3(0f, radius * 0.9f, z), new Vector3(radius, radius * 0.85f, 0.11f), 5, 9, 0.03f, 56 + i, i % 2 == 0 ? Body : Dark, false);
+            }
+
+            b.AddBlob(new Vector3(0f, 0.05f, 0f), new Vector3(0.12f, 0.025f, 0.4f), 2, 10, 0.03f, 62, Accent, true);
+            // The mouth: a wet ring of teeth around a bright gullet.
+            b.AddTorus(new Vector3(0f, 0.12f, 0.4f), Vector3.forward, 0.09f, 0.035f, 14, 6, Dark);
+            b.AddBlob(new Vector3(0f, 0.12f, 0.41f), new Vector3(0.06f, 0.06f, 0.03f), 3, 8, 0f, 0, Glow, false);
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = i / 8f * Mathf.PI * 2f;
+                var root = new Vector3(Mathf.Cos(angle) * 0.085f, 0.12f + Mathf.Sin(angle) * 0.085f, 0.43f);
+                Spike(b, root, root + new Vector3(-Mathf.Cos(angle) * 0.03f, -Mathf.Sin(angle) * 0.03f, 0.04f), 0.012f, Accent);
+            }
+
+            var tail = new PropMeshBuilder(SlotCount);
+            tail.AddTube(new[] { Vector3.zero, new Vector3(0f, -0.02f, -0.16f), new Vector3(0f, -0.04f, -0.32f) }, new[] { 0.07f, 0.045f, 0.01f }, 7, Body, false);
+            tail.AddBlob(new Vector3(0f, 0.01f, -0.14f), new Vector3(0.05f, 0.03f, 0.08f), 3, 7, 0.02f, 63, Dark, true);
+            parts.Moving.Add(new CreaturePart(CreatureRole.Tail, tail.ToMesh("Tail"), new Vector3(0f, 0.07f, -0.34f)));
+
+            EyeStalks(parts, new Vector3(0.05f, 0.22f, 0.3f), 0.14f);
+            parts.Bleeds = true;
+            parts.Skin = CreatureSkin.Kind.Slime;
+            parts.Height = 0.32f;
         }
 
         // The roller: an armadillo-like digger whose shell is a row of domed bands that close into a ball. The king

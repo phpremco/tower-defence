@@ -35,8 +35,26 @@ namespace Game.UI
 
         private static Font _fallbackFont;
 
+        /// <summary>Display text (titles, buttons, big numbers) keeps the sci-fi font; anything smaller than this reads better in a plain face.</summary>
+        private const int DisplayFontMinSize = 28;
+        private const int FitMinFontSize = 14;
+
         /// <summary>The sprites and fonts everything is drawn with. Set by the bootstrapper.</summary>
         public static UiSkin Skin { get; set; }
+
+        /// <summary>A plain, open face for small text: hints, captions, descriptions and stats.</summary>
+        public static Font BodyFont
+        {
+            get
+            {
+                if (_fallbackFont == null)
+                {
+                    _fallbackFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                }
+
+                return _fallbackFont;
+            }
+        }
 
         public static Font DefaultFont
         {
@@ -115,7 +133,7 @@ namespace Game.UI
             var go = new GameObject("Text", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var label = go.AddComponent<Text>();
-            label.font = DefaultFont;
+            label.font = size >= DisplayFontMinSize ? DefaultFont : BodyFont;
             label.fontSize = size;
             label.alignment = alignment;
             label.color = TextColor;
@@ -131,9 +149,21 @@ namespace Game.UI
         public static Text CreateFixedText(RectTransform parent, string text, int size, TextAnchor alignment, Vector2 anchor, Vector2 offset, Vector2 dimensions)
         {
             Text label = CreateText(parent, text, size, alignment);
-            var glow = label.gameObject.AddComponent<Outline>();
-            glow.effectColor = new Color(Accent.r, Accent.g, Accent.b, 0.35f);
-            glow.effectDistance = OutlineDistance;
+            if (size >= DisplayFontMinSize)
+            {
+                var glow = label.gameObject.AddComponent<Outline>();
+                glow.effectColor = new Color(Accent.r, Accent.g, Accent.b, 0.35f);
+                glow.effectDistance = OutlineDistance;
+            }
+
+            // A fixed box is a promise: the text wraps inside it and shrinks when it still would not fit, so no
+            // line ever runs past a panel edge, whatever the copy says.
+            label.horizontalOverflow = HorizontalWrapMode.Wrap;
+            label.verticalOverflow = VerticalWrapMode.Truncate;
+            label.resizeTextForBestFit = true;
+            label.resizeTextMaxSize = size;
+            label.resizeTextMinSize = Mathf.Max(FitMinFontSize, size / 2);
+
             RectTransform rect = label.rectTransform;
             rect.anchorMin = anchor;
             rect.anchorMax = anchor;

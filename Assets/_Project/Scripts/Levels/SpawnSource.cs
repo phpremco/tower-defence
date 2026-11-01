@@ -11,5 +11,7 @@ namespace Game.Levels
         Lava = 2,
         Quicksand = 3,
         Nest = 4,
+        Ice = 5,
+        Bog = 6,
     }
 }

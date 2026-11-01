@@ -16,22 +16,28 @@ MonoBehaviour:
   _targets: 1
   _levels:
   - Cost: 110
-    Damage: 6
+    Damage: 8
     Range: 3.9
     FireInterval: 0.2
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
   - Cost: 130
-    Damage: 9
+    Damage: 12
     Range: 4.1
     FireInterval: 0.18
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
   - Cost: 190
-    Damage: 13
+    Damage: 18
     Range: 4.4
     FireInterval: 0.15
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
   _projectileSpeed: 40
   _splashRadius: 0
@@ -46,6 +52,7 @@ MonoBehaviour:
   _supportRangeBonus: 0
   _supportRateBonus: 0
   _blocksGroundEnemies: 0
+  _isBaseDefence: 0
   _color: {r: 1, g: 0.35, b: 0.45, a: 1}
   _shape: 2
   _projectileStyle: 3

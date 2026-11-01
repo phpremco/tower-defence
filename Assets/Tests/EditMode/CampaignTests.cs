@@ -1,4 +1,5 @@
-﻿using Game.Economy;
+﻿using Game.Core;
+using Game.Economy;
 using System.Collections.Generic;
 using Game.Levels;
 using Game.Platform;
@@ -68,6 +69,45 @@ namespace Game.Tests
         }
 
         [Test]
+        public void EveryNodeLiesInsideItsRegion_AndRegionsFillInOrder()
+        {
+            Assert.Greater(_catalog.Regions.Count, 1, "the planet needs more than one region");
+            for (int i = 0; i < _catalog.Nodes.Count; i++)
+            {
+                MapNode node = _catalog.Nodes[i];
+                Assert.That(node.Region, Is.InRange(0, _catalog.Regions.Count - 1), $"node {i} region");
+                MapRegion region = _catalog.Regions[node.Region];
+                Assert.LessOrEqual(PlanetCoordinates.AngleBetween(node.Direction, region.Direction), region.RadiusDegrees, $"node {i} outside {region.DisplayName}");
+                if (i > 0)
+                {
+                    Assert.GreaterOrEqual(node.Region, _catalog.Nodes[i - 1].Region, $"node {i} jumps back to an earlier region");
+                }
+
+                for (int k = 0; k < i; k++)
+                {
+                    Assert.GreaterOrEqual(PlanetCoordinates.AngleBetween(node.Direction, _catalog.Nodes[k].Direction), PlanetCoordinates.MinimumSpacingDegrees, $"nodes {k} and {i} too close");
+                }
+            }
+        }
+
+        [Test]
+        public void OnlyTheLandingRegionIsOpenAtStart_AndItCountsItsLevels()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+
+            Assert.IsTrue(CampaignRules.IsRegionOpen(_catalog, 0, progress));
+            for (int r = 1; r < _catalog.Regions.Count; r++)
+            {
+                Assert.IsFalse(CampaignRules.IsRegionOpen(_catalog, r, progress), $"region {r}");
+            }
+
+            Assert.AreEqual(_catalog.Nodes.Count, _catalog.NodeCount(0), "all levels live in the landing region for now");
+            Assert.AreEqual(0, CampaignRules.CompletedInRegion(_catalog, 0, progress));
+            progress.MarkCompleted(_level.Id, _medium.name);
+            Assert.AreEqual(1, CampaignRules.CompletedInRegion(_catalog, 0, progress));
+        }
+
+        [Test]
         public void SecondLevelOpensAfterTheFirstIsCompleted()
         {
             var progress = new ProgressService(new MemorySave(), new string[0]);
@@ -107,7 +147,71 @@ namespace Game.Tests
             Assert.IsNotNull(first.NewTower);
             Assert.IsTrue(progress.IsTowerUnlocked(first.NewTower.Id));
             Assert.IsNull(second.NewTower);
-            Assert.Greater(second.ResearchPoints, 0);
+            Assert.AreEqual(0, second.ResearchPoints, "points come once per difficulty");
+        }
+
+        [Test]
+        public void Rewards_ArePaidOncePerLevelPerDifficulty()
+        {
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+
+            LevelResult first = RewardCalculator.Compute(_level, _medium, progress, true, 1f);
+            Assert.IsFalse(first.RewardsAlreadyEarned);
+            Assert.Greater(first.ResearchPoints, 0);
+            RewardCalculator.Apply(first, _level, _medium, progress);
+            int held = progress.Data.ResearchPoints;
+
+            LevelResult again = RewardCalculator.Compute(_level, _medium, progress, true, 1f);
+            Assert.IsTrue(again.RewardsAlreadyEarned);
+            Assert.AreEqual(0, again.ResearchPoints);
+            Assert.AreEqual(0, again.PowerCurrency);
+            Assert.AreEqual(3, again.Stars, "stars are still rated on a replay");
+            RewardCalculator.Apply(again, _level, _medium, progress);
+            Assert.AreEqual(held, progress.Data.ResearchPoints);
+
+            var hard = AssetDatabase.LoadAssetAtPath<DifficultyProfile>("Assets/_Project/Data/Difficulty/Hard.asset");
+            LevelResult harder = RewardCalculator.Compute(_level, hard, progress, true, 1f);
+            Assert.IsFalse(harder.RewardsAlreadyEarned, "another difficulty pays again");
+            Assert.Greater(harder.ResearchPoints, first.ResearchPoints);
+        }
+
+        [Test]
+        public void EveryLevel_HasABaseTurretThatIsNeverSold()
+        {
+            foreach (MapNode node in _catalog.Nodes)
+            {
+                Assert.IsNotNull(node.Level.BaseTurret, $"{node.Level.name} has a base turret");
+                Assert.IsTrue(node.Level.BaseTurret.IsBaseDefence);
+                Assert.AreEqual(0, node.Level.BaseTurret.BuildCost, "the base gun is bought at the base, not in the level");
+            }
+
+            var progress = new ProgressService(new MemorySave(), new string[0]);
+            var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
+            Assert.AreEqual(0, UpgradeEffects.ComputeGlobal(progress, upgrades).BaseWeaponLevel, "an unarmed base to begin with");
+            progress.AddRewards(1000, 0);
+            foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
+            {
+                if (upgrade.Target == UpgradeTarget.BaseWeapon)
+                {
+                    Assert.IsTrue(progress.TryBuyUpgrade(upgrade));
+                }
+            }
+
+            Assert.AreEqual(1, UpgradeEffects.ComputeGlobal(progress, upgrades).BaseWeaponLevel);
+        }
+
+        [Test]
+        public void LaterLevels_CountOnUpgrades()
+        {
+            float previous = -1f;
+            foreach (MapNode node in _catalog.Nodes)
+            {
+                Assert.GreaterOrEqual(node.Level.ExpectedUpgradeBonus, previous, $"{node.Level.name} expects at least as much upgrade as the level before");
+                Assert.AreEqual(node.Level.EnemyHealthMultiplier * (1f + node.Level.ExpectedUpgradeBonus), node.Level.EnemyHealthScale, 0.0001f);
+                previous = node.Level.ExpectedUpgradeBonus;
+            }
+
+            Assert.Greater(previous, 0f, "the last level counts on some upgrades");
         }
 
         [Test]
@@ -168,26 +272,48 @@ namespace Game.Tests
         }
 
         [Test]
-        public void UpgradeEffects_DroneSpeedIsTheOnlyDroneUpgradeAndCostsPower()
+        public void UpgradeEffects_EveryDroneHasItsOwnPathPaidInPower()
         {
             var progress = new ProgressService(new MemorySave(), new string[0]);
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>("Assets/_Project/Data/Upgrades/UpgradeCatalog.asset");
-            progress.AddRewards(0, 100);
+            progress.AddRewards(0, 1000);
 
-            Assert.AreEqual(1f, UpgradeEffects.ComputeGlobal(progress, upgrades).DroneSpeedMultiplier);
-            int droneUpgrades = 0;
+            var perDrone = new Dictionary<string, int>();
             foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
             {
-                if (upgrade.GroupName == "Drones")
+                if (string.IsNullOrEmpty(upgrade.DroneId))
                 {
-                    droneUpgrades++;
-                    Assert.AreEqual(UpgradeTarget.DroneSpeed, upgrade.Target, "no drone comes free at the start of a level");
-                    Assert.IsTrue(progress.TryBuyUpgrade(upgrade), "drone speed is buyable with power currency");
+                    continue;
+                }
+
+                Assert.AreEqual(UpgradeCurrency.PowerCurrency, upgrade.Currency, $"{upgrade.Id} should cost power");
+                Assert.IsTrue(string.IsNullOrEmpty(upgrade.TowerId), $"{upgrade.Id} belongs to a drone, not a tower");
+                perDrone.TryGetValue(upgrade.DroneId, out int count);
+                perDrone[upgrade.DroneId] = count + 1;
+            }
+
+            Assert.AreEqual(3, perDrone.Count, "repair, harvest and attack each have a path");
+            foreach (KeyValuePair<string, int> pair in perDrone)
+            {
+                Assert.GreaterOrEqual(pair.Value, 3, $"{pair.Key} has at least three upgrades");
+                Assert.AreEqual(1f, UpgradeEffects.ComputeForDrone(progress, upgrades, pair.Key).SpeedMultiplier);
+            }
+
+            foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
+            {
+                if (upgrade.DroneId == "HarvestDrone")
+                {
+                    Assert.IsTrue(progress.TryBuyUpgrade(upgrade), $"{upgrade.Id} is buyable with power");
                 }
             }
 
-            Assert.AreEqual(1, droneUpgrades);
-            Assert.Greater(UpgradeEffects.ComputeGlobal(progress, upgrades).DroneSpeedMultiplier, 1f);
+            DroneModifiers harvest = UpgradeEffects.ComputeForDrone(progress, upgrades, "HarvestDrone");
+            DroneModifiers repair = UpgradeEffects.ComputeForDrone(progress, upgrades, "RepairDrone");
+            Assert.Greater(harvest.SpeedMultiplier, 1f);
+            Assert.Greater(harvest.OutputMultiplier, 1f);
+            Assert.AreEqual(1, harvest.ExtraCount, "one extra harvester per bought count level");
+            Assert.AreEqual(1f, repair.SpeedMultiplier, "buying for one drone leaves the others alone");
+            Assert.AreEqual(1f, UpgradeEffects.ComputeGlobal(progress, upgrades).HeroDamageMultiplier, "drone upgrades are not global");
         }
 
         [Test]

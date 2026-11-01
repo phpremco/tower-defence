@@ -267,14 +267,70 @@ namespace Game.Hero
         }
 
         // How far the hip comes down when the thigh and the knee bend by these angles, with the leg lengths of the model.
-        private float HipDrop(float hipDegrees, float kneeDegrees)
-        {
-            float thigh = -_parts.Knee.y;
-            float shin = -_parts.Ankle.y;
-            return thigh * (1f - Mathf.Cos(hipDegrees * Mathf.Deg2Rad)) + shin * (1f - Mathf.Cos((hipDegrees + kneeDegrees) * Mathf.Deg2Rad));
-        }
+        private float HipDrop(float hipDegrees, float kneeDegrees) => HipDrop(-_parts.Knee.y, -_parts.Ankle.y, hipDegrees, kneeDegrees);
 
         private static Vector3 Mirror(Vector3 point) => new Vector3(-point.x, point.y, point.z);
+
+        /// <summary>
+        /// The commander standing at rest, without a Commander behind it: the same parts, materials and stance
+        /// as in the level, for menus that show the figure. Feet on y = 0, facing +z, in level scale.
+        /// </summary>
+        public static GameObject BuildDisplayFigure(Transform parent, HeroDefinition definition)
+        {
+            const float DisplayArmPitch = 6f;
+            const float DisplayArmYaw = -10f;
+
+            HeroModelFactory.Parts parts = HeroModelFactory.Create();
+            Color trim = definition.Color;
+            Material[] materials = HeroModelFactory.CreateMaterials(trim);
+
+            var figure = new GameObject("Figure").transform;
+            figure.SetParent(parent, false);
+            figure.localScale = Vector3.one * FigureScale;
+
+            var torso = new GameObject("Torso").transform;
+            torso.SetParent(figure, false);
+            torso.localPosition = parts.Pelvis;
+            Transform shell = Part("Shell", torso, parts.Body, materials, -parts.Pelvis, false);
+            Part("Head", torso, parts.Head, materials, parts.Neck - parts.Pelvis, false).localRotation = Quaternion.Euler(HeadForwardDegrees * 0.5f, 0f, 0f);
+            Part("Cloak", torso, parts.Cloak, materials, parts.Nape - parts.Pelvis, false);
+            Transform armRight = Part("ArmR", torso, parts.ArmUpper, materials, parts.Shoulder - parts.Pelvis, false);
+            Transform forearmRight = Part("ForearmR", armRight, parts.ArmLower, materials, parts.Elbow, false);
+            Transform armLeft = Part("ArmL", torso, parts.ArmUpper, materials, Mirror(parts.Shoulder) - parts.Pelvis, true);
+            Transform forearmLeft = Part("ForearmL", armLeft, parts.ArmLower, materials, parts.Elbow, false);
+            Transform thighRight = Part("ThighR", figure, parts.LegUpper, materials, parts.Hip, false);
+            Transform shinRight = Part("ShinR", thighRight, parts.LegLower, materials, parts.Knee, false);
+            Transform thighLeft = Part("ThighL", figure, parts.LegUpper, materials, Mirror(parts.Hip), true);
+            Transform shinLeft = Part("ShinL", thighLeft, parts.LegLower, materials, parts.Knee, false);
+
+            torso.localRotation = Quaternion.Euler(HunchDegrees, RestTwistDegrees, 0f);
+            armRight.localRotation = Quaternion.Euler(DisplayArmPitch, DisplayArmYaw, 0f);
+            forearmRight.localRotation = Quaternion.Euler(RelaxedForearmDegrees, 0f, 0f);
+            armLeft.localRotation = Quaternion.Euler(FreeArmRestPitch, FreeArmRestYaw, 0f);
+            forearmLeft.localRotation = Quaternion.Euler(RelaxedForearmDegrees, 0f, 0f);
+            thighRight.localRotation = Quaternion.Euler(RestHipDegrees + StanceStaggerDegrees, FootSplayDegrees, 0f);
+            thighLeft.localRotation = Quaternion.Euler(RestHipDegrees - StanceStaggerDegrees, -FootSplayDegrees, 0f);
+            shinRight.localRotation = Quaternion.Euler(RestKneeDegrees + BackKneeExtraDegrees, 0f, 0f);
+            shinLeft.localRotation = Quaternion.Euler(RestKneeDegrees + FrontKneeExtraDegrees, 0f, 0f);
+
+            float thigh = -parts.Knee.y;
+            float shin = -parts.Ankle.y;
+            float crouch = 0.5f * (HipDrop(thigh, shin, RestHipDegrees + StanceStaggerDegrees, RestKneeDegrees + BackKneeExtraDegrees)
+                                   + HipDrop(thigh, shin, RestHipDegrees - StanceStaggerDegrees, RestKneeDegrees + FrontKneeExtraDegrees));
+            figure.localPosition = Vector3.down * (crouch * FigureScale);
+
+            if (definition.Weapon != null)
+            {
+                HeroWeaponRig.For(definition.Weapon).Build(definition.Weapon, parts, figure, shell, forearmRight, trim);
+            }
+
+            return figure.gameObject;
+        }
+
+        private static float HipDrop(float thigh, float shin, float hipDegrees, float kneeDegrees)
+        {
+            return thigh * (1f - Mathf.Cos(hipDegrees * Mathf.Deg2Rad)) + shin * (1f - Mathf.Cos((hipDegrees + kneeDegrees) * Mathf.Deg2Rad));
+        }
 
         private static Transform Part(string name, Transform parent, Mesh mesh, Material[] materials, Vector3 localPosition, bool mirrored)
         {

@@ -19,7 +19,7 @@ MonoBehaviour:
   _armor: 500
   _armorReduction: 0.6
   _speed: 0.9
-  _reward: 190
+  _reward: 285
   _baseDamage: 10
   _element: 0
   _attackStyle: 0
@@ -49,3 +49,4 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: 7a2601f2a9a57244b8f7a019e6f50dc7, type: 2}

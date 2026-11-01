@@ -28,3 +28,5 @@ MonoBehaviour:
   _targets: 3
   _projectileStyle: 0
   _color: {r: 0.4, g: 0.9, b: 1, a: 1}
+  _skin: 11
+  _accentColor: {r: 1, g: 0.22, b: 0.28, a: 1}

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f387d1c485e6f1840ae929304219d834, type: 3}
   m_Name: Hero_Health
   m_EditorClassIdentifier: Game.Economy::Game.Economy.UpgradeDefinition
-  _displayName: Armour +20% per level
-  _target: 7
+  _displayName: Armour
+  _target: 8
   _towerId: 
-  _groupName: Hero
+  _droneId: 
+  _groupName: Commander
   _costs: 050000000a0000000f000000i
   _currency: 0
-  _groupDescription: Improvements for your commander
+  _groupDescription: The commander who holds the gates
   _bonusPerLevel: 0.2

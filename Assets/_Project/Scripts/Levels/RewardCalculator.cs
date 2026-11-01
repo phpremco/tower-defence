@@ -17,12 +17,16 @@ namespace Game.Levels
             bool firstClear = !progress.IsLevelCompleted(level.Id);
             bool giveWeapon = firstClear && reward.NewTower != null && !progress.IsTowerUnlocked(reward.NewTower.Id);
 
+            // Points come once per level per difficulty, so replaying cannot farm them; stars can still improve.
+            bool earnedBefore = progress.IsCompleted(level.Id, difficulty.name);
+
             return new LevelResult
             {
                 Won = true,
                 Stars = StarsFor(level, baseHealthFraction),
-                ResearchPoints = Mathf.RoundToInt(reward.ResearchPoints * difficulty.RewardMultiplier),
-                PowerCurrency = Mathf.RoundToInt(reward.PowerCurrency * difficulty.PowerCurrencyMultiplier),
+                RewardsAlreadyEarned = earnedBefore,
+                ResearchPoints = earnedBefore ? 0 : Mathf.RoundToInt(reward.ResearchPoints * difficulty.RewardMultiplier),
+                PowerCurrency = earnedBefore ? 0 : Mathf.RoundToInt(reward.PowerCurrency * difficulty.PowerCurrencyMultiplier),
                 NewTower = giveWeapon ? reward.NewTower : null,
                 Source = giveWeapon ? reward.Source : UnlockSource.None,
                 Story = giveWeapon ? reward.Story : null,

@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Dustbat
   _layer: 2
   _flies: 1
-  _maxHealth: 28
+  _maxHealth: 31
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.5
@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 1
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: d63727bd78e06714cabe2ec3ba128608, type: 2}

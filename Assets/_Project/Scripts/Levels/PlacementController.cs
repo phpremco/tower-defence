@@ -15,6 +15,8 @@ namespace Game.Levels
     public sealed class PlacementController : MonoBehaviour
     {
         private const float StickThreshold = 0.5f;
+        private const int BaseTurretSides = 2;
+        private const int BaseTurretSearchCells = 4;
         private const float StickRepeatSeconds = 0.16f;
         private const float PointerMovedPixels = 1f;
         private const float PointerActiveSeconds = 2f;
@@ -79,6 +81,7 @@ namespace Game.Levels
             _buildGrid = new BuildGrid(context.Level);
             _context.SelectedTower = context.AvailableTowers.Count > 0 ? context.AvailableTowers[0] : null;
             SpawnBlockades();
+            SpawnBaseTurrets();
 
             float size = _map.CellSize;
             GameObject marker = PlaceholderVisuals.CreatePrimitive(
@@ -394,6 +397,48 @@ namespace Game.Levels
             }
         }
 
+        // The base's own guns come from the permanent base weapon upgrade: one turret beside the road at level one,
+        // one on each side at level two, and both already upgraded at level three. They can be upgraded further
+        // with money like any tower, but never sold.
+        private void SpawnBaseTurrets()
+        {
+            TowerDefinition turret = _context.Level.BaseTurret;
+            int weaponLevel = _context.GlobalModifiers.BaseWeaponLevel;
+            if (turret == null || weaponLevel <= 0)
+            {
+                return;
+            }
+
+            Vector2Int[] road = _context.Level.MainRoad;
+            Vector2Int baseCell = road[road.Length - 1];
+            Vector3 along = _context.Level.Road.DirectionAt(baseCell);
+            var side = new Vector2Int(-Mathf.RoundToInt(along.z), Mathf.RoundToInt(along.x));
+            int count = Mathf.Min(BaseTurretSides, weaponLevel);
+            int startLevel = Mathf.Clamp(weaponLevel - BaseTurretSides, 0, turret.MaxLevelIndex);
+            for (int i = 0; i < count; i++)
+            {
+                Vector2Int step = i == 0 ? side : -side;
+                for (int k = 1; k <= BaseTurretSearchCells; k++)
+                {
+                    Vector2Int cell = baseCell + step * k;
+                    if (!_map.Contains(cell) || !_buildGrid.CanBuild(cell) || _towers.ContainsKey(cell))
+                    {
+                        continue;
+                    }
+
+                    Tower tower = CreateTower(turret, cell, preview: false);
+                    for (int level = 0; level < startLevel; level++)
+                    {
+                        tower.Upgrade();
+                    }
+
+                    _towers[cell] = tower;
+                    _buildGrid.Occupy(cell);
+                    break;
+                }
+            }
+        }
+
         // Raised ground lifts what stands on it; the grid itself stays flat.
         private Vector3 CellWorld(Vector2Int cell)
         {
@@ -475,7 +520,11 @@ namespace Game.Levels
             return tower;
         }
 
-        private void OnWrecked(Tower tower) => _context.StructureWrecked.Raise(tower.Position);
+        private void OnWrecked(Tower tower)
+        {
+            _context.StructureWrecked.Raise(tower.Position);
+            _context.TowerWrecked.Raise(tower);
+        }
 
         private void OnUpgrade()
         {
@@ -532,7 +581,14 @@ namespace Game.Levels
         private void RemoveForMoney(Tower tower)
         {
             _context.Wallet.Add(tower.SellValue);
-            _context.TowerSold.Raise();
+            if (tower.IsWrecked)
+            {
+                _context.TowerScrapped.Raise();
+            }
+            else
+            {
+                _context.TowerSold.Raise();
+            }
             Vector2Int cell = _map.WorldToCell(tower.Position);
             _towers.Remove(cell);
             _buildGrid.Release(cell);
@@ -698,7 +754,11 @@ namespace Game.Levels
 
             Vector2Int cell = _cursor;
             _pathObjectCells.Add(cell);
-            pathObject.Triggered += (position, radius) => _context.Projectiles.Burst(position, radius);
+            pathObject.Triggered += (position, radius) =>
+            {
+                _context.Projectiles.Burst(position, radius);
+                _context.PathObjectTriggered.Raise(definition);
+            };
             pathObject.Finished += finished =>
             {
                 _pathObjectCells.Remove(cell);
@@ -706,6 +766,7 @@ namespace Game.Levels
             };
 
             _context.Mode = PlacementMode.Browsing;
+            _context.PathObjectSpawned.Raise(pathObject);
             _context.PathObjectPlaced.Raise();
             Refresh();
         }

@@ -29,6 +29,11 @@ namespace Game.Levels
         [SerializeField] private Color _waterColor = new Color(0.1f, 0.4f, 0.55f);
         [SerializeField] private Color _lavaColor = new Color(1f, 0.45f, 0.1f);
         [SerializeField] private Color _sandColor = new Color(0.62f, 0.5f, 0.3f);
+        [SerializeField] private Color _iceColor = new Color(0.75f, 0.9f, 1f);
+        [SerializeField] private Color _bogColor = new Color(0.18f, 0.24f, 0.12f);
+
+        /// <summary>The glow of the gates the enemies come through: hot red on most worlds, cold on the ice.</summary>
+        [SerializeField] private Color _spawnColor = new Color(1f, 0.4f, 0.25f);
         [SerializeField] private Color _plantColor = new Color(0.2f, 0.5f, 0.35f);
         [SerializeField] private PropKind[] _propKinds = { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond };
         [SerializeField] [Range(0f, 1f)] private float _veinStrength = 0.5f;
@@ -44,6 +49,22 @@ namespace Game.Levels
         [SerializeField] private Color _fogColor = new Color(0.06f, 0.08f, 0.12f);
         [SerializeField] [Min(0f)] private float _fogDensity = 0.015f;
         [SerializeField] [Min(0f)] private float _bloomIntensity = 1.2f;
+
+        [Header("Light rig")]
+        [Tooltip("Height of the sun above the horizon. Lower suns throw longer shadows and model shapes better.")]
+        [SerializeField] [Range(15f, 80f)] private float _sunPitch = 42f;
+        [SerializeField] [Range(-180f, 180f)] private float _sunYaw = -35f;
+        [Tooltip("A second, shadowless light from behind the field that lines the edges of every shape.")]
+        [SerializeField] private Color _rimColor = new Color(0.35f, 0.85f, 1f);
+        [SerializeField] [Min(0f)] private float _rimIntensity = 0.5f;
+        [Tooltip("Colour of the light coming from above: ambient on upward faces and the reflection on shiny metal.")]
+        [SerializeField] private Color _skyColor = new Color(0.35f, 0.45f, 0.65f);
+
+        [Header("Colour grading")]
+        [SerializeField] [Range(-50f, 80f)] private float _contrast = 12f;
+        [SerializeField] [Range(-50f, 80f)] private float _saturation = 8f;
+        [SerializeField] private Color _shadowTint = new Color(0.9f, 0.95f, 1.1f);
+        [SerializeField] private Color _highlightTint = new Color(1.05f, 1f, 0.95f);
 
         public Color BackgroundColor => _backgroundColor;
         public Color GroundColor => _groundColor;
@@ -72,6 +93,9 @@ namespace Game.Levels
         public Color WaterColor => _waterColor;
         public Color LavaColor => _lavaColor;
         public Color SandColor => _sandColor;
+        public Color IceColor => _iceColor;
+        public Color BogColor => _bogColor;
+        public Color SpawnColor => _spawnColor;
 
         /// <summary>The colour of leaves, stalks and caps; the glow on them comes from the accent.</summary>
         public Color PlantColor => _plantColor;
@@ -94,6 +118,15 @@ namespace Game.Levels
         public Color FogColor => _fogColor;
         public float FogDensity => _fogDensity;
         public float BloomIntensity => _bloomIntensity;
+        public float SunPitch => _sunPitch;
+        public float SunYaw => _sunYaw;
+        public Color RimColor => _rimColor;
+        public float RimIntensity => _rimIntensity;
+        public Color SkyColor => _skyColor;
+        public float Contrast => _contrast;
+        public float Saturation => _saturation;
+        public Color ShadowTint => _shadowTint;
+        public Color HighlightTint => _highlightTint;
     }
 }
 

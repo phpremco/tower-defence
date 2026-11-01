@@ -112,7 +112,13 @@ namespace Game.UI
                 rewards += $"      Power  +{result.PowerCurrency}";
             }
 
-            UiKit.CreateFixedText(rect, rewards, 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -400f), new Vector2(PanelWidth, 60f));
+            if (result.RewardsAlreadyEarned)
+            {
+                rewards = "Points for this difficulty were earned before.\nBeat it on a harder setting for more.";
+            }
+
+            Text rewardText = UiKit.CreateFixedText(rect, rewards, result.RewardsAlreadyEarned ? 30 : 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -400f), new Vector2(PanelWidth - 120f, 100f));
+            rewardText.color = result.RewardsAlreadyEarned ? Muted : Color.white;
 
             if (result.NewTower != null)
             {
@@ -165,7 +171,7 @@ namespace Game.UI
             frameRect.sizeDelta = new Vector2(PreviewSize, PreviewSize * 0.78f);
 
             ModelPreview preview = ModelPreview.Create(frameRect, new Vector2(PreviewSize, PreviewSize * 0.78f));
-            preview.ShowTower(result.NewTower, 1.1f);
+            preview.ShowTower(result.NewTower);
 
             string source = result.Source == UnlockSource.StolenAlienTech ? "Stolen alien technology" : "Intel from the home planet";
             Text heading = UiKit.CreateFixedText(rect, $"New weapon: {result.NewTower.DisplayName}", 44, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -470f), new Vector2(PanelWidth - PreviewSize - 140f, 60f));

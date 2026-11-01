@@ -64,17 +64,22 @@ namespace Game.Levels
         private static readonly Color RouteColor = new Color(0.55f, 0.95f, 0.95f);
         private static readonly Color MineColor = new Color(1f, 0.8f, 0.25f);
         private const float MineCrackGlow = 0.6f;
-        private static readonly Color SpawnColor = new Color(1f, 0.4f, 0.25f);
         private static readonly Color StarColor = new Color(0.8f, 0.9f, 1f);
 
         /// <summary>Builds the level and returns the flight route objects by path index, hidden until a wave uses them.</summary>
         /// <param name="particleScale">The quality profile's share of particles, one for the full amount.</param>
-        public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f)
+        /// <param name="groundMist">Whether the drifting mist sheets are built; the low profile leaves them out.</param>
+        public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f, bool groundMist = true)
         {
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
 
             BuildLandscape(level, theme, parent, particleScale);
+            if (groundMist)
+            {
+                GroundMistBuilder.Build(level, theme, parent);
+            }
+
             BuildRoadArrows(level, grid, parent);
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildMiningNodes(level, grid, parent);
@@ -149,9 +154,9 @@ namespace Game.Levels
                 // On a road the gate stands on the centre line of the corridor, not on its first row.
                 Vector3 start = level.Road.Route(index)[0] + (path.Flying ? Vector3.up * AirGateHeight : Vector3.zero);
                 float gateScale = path.Flying ? GateScale * AirGateScale : GateScale;
-                Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(SpawnColor, CreatureSkin.Kind.Flesh), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
-                AddLight(gate, SpawnColor, GateLightIntensity, GateLightRange, GateLightHeight);
-                AddSpores(gate, SpawnColor);
+                Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(theme.SpawnColor, CreatureSkin.Kind.Flesh), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
+                AddLight(gate, theme.SpawnColor, GateLightIntensity, GateLightRange, GateLightHeight);
+                AddSpores(gate, theme.SpawnColor);
 
                 if (path.Flying)
                 {
@@ -193,6 +198,20 @@ namespace Game.Levels
         }
 
         // A second turning part on a structure, around its own pivot.
+        /// <summary>
+        /// The outpost as it stands in a level, without lights or the ground pool, for menus that show the base.
+        /// Standing on y = 0, facing +z, in level scale; the ring and the dish turn like on the field.
+        /// </summary>
+        public static GameObject BuildBaseDisplay(Transform parent, Color glow)
+        {
+            StructureModelFactory.BaseParts parts = StructureModelFactory.BaseOutpost();
+            Material[] materials = ModelPalette.Create(glow);
+            Transform root = PlaceStructure(parts.Body, parts.Ring, parts.RingPivot, materials, ModelPalette.Glow, Vector3.zero, Quaternion.identity, BaseScale, BaseRingSpin, parent);
+            root.localPosition = Vector3.zero;
+            AddSpinner(root, "Dish", parts.Dish, parts.DishPivot, materials, BaseDishSpin);
+            return root.gameObject;
+        }
+
         private static void AddSpinner(Transform root, string name, Mesh mesh, Vector3 pivot, Material[] materials, float degreesPerSecond)
         {
             var go = new GameObject(name);
@@ -312,6 +331,7 @@ namespace Game.Levels
             switch (element)
             {
                 case Element.Water:
+                case Element.Bog:
                     return CreatureSkin.Kind.Slime;
                 case Element.Wood:
                     return CreatureSkin.Kind.Bark;
@@ -339,6 +359,8 @@ namespace Game.Levels
                     return new Color(0.95f, 0.8f, 0.4f);
                 case Element.Ice:
                     return new Color(0.8f, 0.95f, 1f);
+                case Element.Bog:
+                    return new Color(0.55f, 0.8f, 0.3f);
                 default:
                     return Color.white;
             }

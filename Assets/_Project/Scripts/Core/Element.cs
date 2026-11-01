@@ -12,5 +12,8 @@ namespace Game.Core
         Wood = 3,
         Sand = 4,
         Ice = 5,
+
+        /// <summary>Marsh gas and rot: the element of the bog.</summary>
+        Bog = 6,
     }
 }

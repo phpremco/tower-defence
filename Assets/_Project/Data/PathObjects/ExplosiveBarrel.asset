@@ -19,7 +19,7 @@ MonoBehaviour:
   _cost: 50
   _radius: 2
   _triggerRadius: 1.1
-  _damage: 140
+  _damage: 200
   _slowFactor: 1
   _speed: 0
   _lifetime: 0

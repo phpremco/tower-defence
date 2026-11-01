@@ -51,6 +51,10 @@ namespace Game.Enemies
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1f;
 
+        [Header("Sound")]
+        [Tooltip("Every sound this species makes. Empty: the generic generated sounds.")]
+        [SerializeField] private CreatureVoice _voice;
+
         public string DisplayName => _displayName;
 
         /// <summary>Which towers may shoot this creature: ground guns, air guns or both.</summary>
@@ -146,6 +150,9 @@ namespace Game.Enemies
         /// <summary>The imported model shown for this enemy, or null to use placeholder shapes.</summary>
         public GameObject Model => _model;
         public float ModelScale => _modelScale;
+
+        /// <summary>The sounds of this species, or null for the generic ones.</summary>
+        public CreatureVoice Voice => _voice;
 
         private void OnValidate()
         {

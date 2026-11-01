@@ -195,7 +195,7 @@ namespace Game.Combat
         }
 
         // The beam stays where it struck and thins out, so a hit reads as a flash rather than a blink.
-        private void OnImpacted(Vector3 position, float radius, Color color)
+        private void OnImpacted(Vector3 position, float radius, Color color, ProjectileStyle style)
         {
             if (_projectile.Style == ProjectileStyle.Laser || _projectile.Style == ProjectileStyle.Lightning)
             {

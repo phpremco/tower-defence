@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Skitter
   _layer: 1
   _flies: 0
-  _maxHealth: 10
+  _maxHealth: 11
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.6
@@ -48,3 +48,4 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _voice: {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}

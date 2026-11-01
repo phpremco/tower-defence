@@ -12,22 +12,78 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a0e7891c523b84e9515f2704d77470, type: 3}
   m_Name: CampaignCatalog
   m_EditorClassIdentifier: Game.Levels::Game.Levels.CampaignCatalog
+  _regions:
+  - DisplayName: Landfall
+    Longitude: -45
+    Latitude: 30
+    RadiusDegrees: 27
+    Colour: {r: 0.38, g: 0.52, b: 0.34, a: 1}
+  - DisplayName: Ember Reach
+    Longitude: 12
+    Latitude: -8
+    RadiusDegrees: 24
+    Colour: {r: 0.58, g: 0.34, b: 0.22, a: 1}
+  - DisplayName: Verdant Belt
+    Longitude: 64
+    Latitude: 16
+    RadiusDegrees: 26
+    Colour: {r: 0.26, g: 0.5, b: 0.3, a: 1}
+  - DisplayName: Southern Wastes
+    Longitude: -28
+    Latitude: -46
+    RadiusDegrees: 24
+    Colour: {r: 0.6, g: 0.54, b: 0.36, a: 1}
+  - DisplayName: Polar Crown
+    Longitude: 122
+    Latitude: 62
+    RadiusDegrees: 22
+    Colour: {r: 0.7, g: 0.8, b: 0.88, a: 1}
+  - DisplayName: Deep Mire
+    Longitude: 152
+    Latitude: -20
+    RadiusDegrees: 24
+    Colour: {r: 0.24, g: 0.38, b: 0.26, a: 1}
+  - DisplayName: Shattered Isles
+    Longitude: -135
+    Latitude: -6
+    RadiusDegrees: 22
+    Colour: {r: 0.42, g: 0.36, b: 0.52, a: 1}
   _nodes:
   - DisplayName: Landing Zone
-    MapPosition: {x: 0.1, y: 0.25}
+    Longitude: -64
+    Latitude: 14
+    Region: 0
     Level: {fileID: 11400000, guid: ce4469ed87baed04d9f868403cc4ade3, type: 2}
   - DisplayName: Glowing Forest
-    MapPosition: {x: 0.3, y: 0.7}
+    Longitude: -54
+    Latitude: 24
+    Region: 0
     Level: {fileID: 11400000, guid: 99cf5d84e855d624fbbe8142d2f3f8fd, type: 2}
   - DisplayName: Lava Caves
-    MapPosition: {x: 0.5, y: 0.3}
+    Longitude: -42
+    Latitude: 16
+    Region: 0
     Level: {fileID: 11400000, guid: f1bffcf8b970ae0479a732f1f81ca6cc, type: 2}
   - DisplayName: Ancient Ruins
-    MapPosition: {x: 0.7, y: 0.75}
+    Longitude: -32
+    Latitude: 26
+    Region: 0
     Level: {fileID: 11400000, guid: d010e547e04d74b4785d86b25a4be20f, type: 2}
   - DisplayName: The Nest
-    MapPosition: {x: 0.9, y: 0.35}
+    Longitude: -30
+    Latitude: 38
+    Region: 0
     Level: {fileID: 11400000, guid: 39aa07e4da6b62341a7f9d2e67c6d9b3, type: 2}
+  - DisplayName: Frozen Shelf
+    Longitude: -42
+    Latitude: 50
+    Region: 0
+    Level: {fileID: 11400000, guid: 55ee7213f8b886c4ba9d7403a5b322ba, type: 2}
+  - DisplayName: Black Marsh
+    Longitude: -56
+    Latitude: 38
+    Region: 0
+    Level: {fileID: 11400000, guid: fba35921a6051744d9c42bc1e4da8470, type: 2}
   _difficulties:
   - {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
   - {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}

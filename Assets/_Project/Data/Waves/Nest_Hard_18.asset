@@ -51,7 +51,7 @@ MonoBehaviour:
     Delay: 19
     Stagger: 0
   - Enemy: {fileID: 11400000, guid: ed78d440f1881144aa1c35803fed47d1, type: 2}
-    Count: 5
+    Count: 4
     PathIndex: 0
     Source: 4
     Interval: 1.4

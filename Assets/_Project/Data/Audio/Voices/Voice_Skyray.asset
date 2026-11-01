@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5bbf51dfe602a4080cdcb2ab5e55bf, type: 3}
+  m_Name: Voice_Skyray
+  m_EditorClassIdentifier: Game.Core::Game.Core.CreatureVoice
+  _moveLoop:
+    _clips:
+    - {fileID: 8300000, guid: bf62412fe0ff0f64c85dc6a4fe88e224, type: 3}
+    _gain: 0.72666687
+  _steps:
+    _clips: []
+    _gain: 1
+  _stepSpacing: 0.5
+  _presence: 1
+  _rollLoop:
+    _clips: []
+    _gain: 1
+  _screeches:
+    _clips:
+    - {fileID: 8300000, guid: 221736a780381ed49a5ae95e9d720af2, type: 3}
+    - {fileID: 8300000, guid: d38ed38920577764092a50e5b9b86f56, type: 3}
+    _gain: 0.34608904
+  _growls:
+    _clips: []
+    _gain: 1
+  _attacks:
+    _clips:
+    - {fileID: 8300000, guid: b9ba442186ed60c46b96ec589da44250, type: 3}
+    - {fileID: 8300000, guid: d4cf50aaa21211f478c4cac036979ad9, type: 3}
+    _gain: 0.24624445
+  _impacts:
+    _clips: []
+    _gain: 1
+  _pulse:
+    _clips: []
+    _gain: 1
+  _volleyLaunch:
+    _clips: []
+    _gain: 1
+  _volleyImpact:
+    _clips: []
+    _gain: 1
+  _rally:
+    _clips: []
+    _gain: 1
+  _regrow:
+    _clips: []
+    _gain: 1
+  _spawn:
+    _clips: []
+    _gain: 1
+  _laserStart:
+    _clips: []
+    _gain: 1

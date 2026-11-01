@@ -25,7 +25,7 @@ namespace Game.UI
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
         private const float TopTextY = -16f;
-        private const float HeroTextX = 240f;
+        private const float HeroTextGap = 40f;
         private const float BottomBarHeight = 156f;
         private const float BarBottom = 8f;
         private const float AboveBarY = BottomBarHeight + 6f;
@@ -106,6 +106,8 @@ namespace Game.UI
             gameObject.AddComponent<BaseMenuView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, camera, _font);
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
+            // After the panels, so the first-hit warning draws over them wherever the base lies on screen.
+            gameObject.AddComponent<BaseAlertView>().Initialize(context, safe, camera);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
             gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
@@ -194,7 +196,7 @@ namespace Game.UI
         private void BuildTexts(RectTransform safe)
         {
             _baseText = CreateText(safe, "Base", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TopTextY), FontSize);
-            _heroText = CreateText(safe, "Hero", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin + HeroTextX, TopTextY), FontSize);
+            _heroText = CreateText(safe, "Hero", TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(Margin, TopTextY), FontSize);
             _heroText.color = BossWarning;
             _heroText.text = string.Empty;
             _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY), FontSize);
@@ -288,6 +290,10 @@ namespace Game.UI
                 // The badge says what the street weapon does: snowflake, trap, blast, wheel, buggy or net.
                 PathObjectBadge.For(definition.Effect, out IconType effectIcon, out Color effectColour);
                 Badge(button.transform, effectIcon, effectColour, 0);
+                if (definition.Damage > 0f)
+                {
+                    DamageTag((RectTransform)button.transform, definition.Damage);
+                }
                 if (definition.Look != PathObjectLook.None)
                 {
                     ModelIconRenderer.Request(definition, stage => PathObjectModels.Build(stage, definition), sprite => ShowPicture(picture, sprite));
@@ -344,6 +350,14 @@ namespace Game.UI
             }
 
             return badges.ToArray();
+        }
+
+        // A one-shot trap is bought for one number, so the card says how hard it hits, next to the effect badge.
+        private static void DamageTag(RectTransform card, float damage)
+        {
+            Text tag = UiKit.CreateFixedText(card, $"{damage:0} DMG", SmallFontSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-CardInset, -CardInset), new Vector2(90f, BadgeRow));
+            tag.color = new Color(1f, 0.75f, 0.35f);
+            tag.raycastTarget = false;
         }
 
         private static Image Badge(Transform card, IconType type, Color colour, int index)
@@ -426,6 +440,8 @@ namespace Game.UI
             _waveText.text = WaveLine();
             _waveText.color = _context.BossWave && _context.NextWaveCountdown <= 0f ? BossWarning : TextColor;
             _baseText.text = $"Base {Mathf.CeilToInt(_context.BaseHealth.Current)}/{Mathf.CeilToInt(_context.BaseHealth.Max)}";
+            // The hero timer follows the base text on the same line, however wide the numbers get.
+            _heroText.rectTransform.anchoredPosition = new Vector2(Margin + _baseText.preferredWidth + HeroTextGap, TopTextY);
             _moneyText.text = $"Money {_context.Wallet.Money}";
             _statusText.text = _context.Status;
             RefreshSpeed();

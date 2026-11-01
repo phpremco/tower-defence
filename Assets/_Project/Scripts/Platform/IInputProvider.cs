@@ -20,6 +20,12 @@ namespace Game.Platform
 
         event Action Confirmed;
         event Action Cancelled;
+
+        /// <summary>
+        /// True while the Confirmed or Cancelled event being raised came from a mouse button. Menus that let the
+        /// mouse click their own buttons ignore those, so one click does not also act on the keyboard focus.
+        /// </summary>
+        bool FromPointer { get; }
         event Action PauseToggled;
         event Action SpeedToggled;
         event Action NextTower;

@@ -16,7 +16,7 @@ MonoBehaviour:
   _kind: 3
   _interval: 9
   _firstDelay: 5
-  _damage: 18
+  _damage: 12
   _radius: 1
   _sweepSeconds: 1
   _range: 6

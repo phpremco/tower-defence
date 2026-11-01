@@ -72,6 +72,9 @@ namespace Game.Enemies
         /// <summary>True while a haste (a trail or a pack's rage) is pushing this creature on.</summary>
         public bool IsHasted => _hasteRemaining > 0f;
 
+        /// <summary>True while a chilling hit still holds the creature back.</summary>
+        public bool IsSlowed => _slowRemaining > 0f;
+
         /// <summary>Raised after Initialize, so a view can rebind to the new Health.</summary>
         public event Action<Enemy> Initialized;
 
@@ -87,6 +90,9 @@ namespace Game.Enemies
 
         /// <summary>Raised when a roller curls up (true) or unrolls (false).</summary>
         public event Action<bool> RollChanged;
+
+        /// <summary>Raised when a slow takes hold on a creature that was moving freely, so audio can play the chill once.</summary>
+        public event Action Slowed;
 
         /// <summary>Raised with the ground position where a trail layer left a fresh patch.</summary>
         public event Action<Enemy, Vector3> TrailDropped;
@@ -142,6 +148,7 @@ namespace Game.Enemies
                 return;
             }
 
+            bool fresh = _slowRemaining <= 0f;
             // The strongest slow wins, and a weaker one never shortens a stronger one that is still running.
             if (_slowRemaining <= 0f || speedFactor <= _slowFactor)
             {
@@ -149,6 +156,10 @@ namespace Game.Enemies
             }
 
             _slowRemaining = Mathf.Max(_slowRemaining, seconds);
+            if (fresh)
+            {
+                Slowed?.Invoke();
+            }
         }
 
         /// <summary>Speeds the creature up for a while; the strongest haste wins, like slows. Slows still apply on top.</summary>

@@ -49,7 +49,12 @@ namespace Game.Drones
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground | TargetLayers.Air;
         [SerializeField] private ProjectileStyle _projectileStyle = ProjectileStyle.Bolt;
 
+        [Header("Look")]
         [SerializeField] private Color _color = new Color(0.4f, 0.9f, 1f);
+
+        /// <summary>The skin on the hull and the colour of its markings (cross, stripes, chevrons).</summary>
+        [SerializeField] private CreatureSkin.Kind _skin = CreatureSkin.Kind.Plate;
+        [SerializeField] private Color _accentColor = Color.white;
 
         public string DisplayName => _displayName;
         public DroneKind Kind => _kind;
@@ -67,6 +72,8 @@ namespace Game.Drones
         public TargetLayers Targets => _targets;
         public ProjectileStyle ProjectileStyle => _projectileStyle;
         public Color Color => _color;
+        public CreatureSkin.Kind Skin => _skin;
+        public Color AccentColor => _accentColor;
 
         private void OnValidate()
         {

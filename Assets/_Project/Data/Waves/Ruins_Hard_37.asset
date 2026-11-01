@@ -107,7 +107,7 @@ MonoBehaviour:
     Delay: 7.5
     Stagger: 2.6999998
   - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 6
+    Count: 5
     PathIndex: 0
     Source: 0
     Interval: 0.2
@@ -135,7 +135,7 @@ MonoBehaviour:
     Delay: 10
     Stagger: 7.7000003
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-    Count: 2
+    Count: 1
     PathIndex: 3
     Source: 0
     Interval: 0.385
@@ -176,15 +176,8 @@ MonoBehaviour:
     Interval: 0.65
     Delay: 12.5
     Stagger: 11.7
-  - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 1
-    PathIndex: 0
-    Source: 0
-    Interval: 0.65
-    Delay: 12.5
-    Stagger: 13
   - Enemy: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
-    Count: 4
+    Count: 3
     PathIndex: 1
     Source: 0
     Interval: 1.6

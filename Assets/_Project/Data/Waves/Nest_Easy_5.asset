@@ -15,19 +15,12 @@ MonoBehaviour:
   _startDelay: 8
   _spawnJitter: 0.45
   _groups:
-  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-    Count: 6
-    PathIndex: 0
-    Source: 0
-    Interval: 0.2
-    Delay: 0
-    Stagger: 0
   - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
     Count: 1
-    PathIndex: 3
+    PathIndex: 0
     Source: 0
     Interval: 0.6
-    Delay: 2.5
+    Delay: 0
     Stagger: 0
   - Enemy: {fileID: 11400000, guid: 82561541f80c79c45876c662358d966f, type: 2}
     Count: 1

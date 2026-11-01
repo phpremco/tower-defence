@@ -223,6 +223,50 @@ namespace Game.Editor
         };
 
         // The nest throws everything, in a steady rotation of rush, ambush and heavy, and ends with the queen.
+        // The frozen shelf is about armour and the cold: shardbacks crawl the roads under their ice, frost bats
+        // climb out of the cracked lakes, wisps drift in over the snow and the warlord comes through the ice.
+        private static WaveScript IceScript(Bestiary b) => new WaveScript
+        {
+            Waves = 34,
+            Budget = 10f,
+            FinalBudget = 250f,
+            HealthGrowth = 0.022f,
+            Troops = new[]
+            {
+                Join(b.Skitter, 1, 2f, 0.45f, pack: 6), Join(b.Prowler, 1, 2.4f, 1.1f, pack: 3), Join(b.Shardback, 5, 1.8f, 2.6f),
+                Join(b.Frostbat, 2, 2f, 1.4f, SpawnSource.Nest, 6f), Join(b.Roller, 4, 2f, 1.6f), Join(b.Wisp, 6, 1.8f, 1.3f),
+                Join(b.Bulwark, 9, 1.4f, 2.8f), Join(b.Stinger, 12, 1.2f, 3f),
+            },
+            Flyer = b.Skyray,
+            AirWaves = new[] { 6, 11, 16, 21, 26, 31 },
+            AirWavesPerDifficulty = new[] { 1, 2, 4, 6 },
+            AirSprinkleFrom = 2,
+            Rhythm = "PRPHMRPMRH",
+            Bosses = new[] { Boss(17, b.CrystalWarlord), Boss(34, b.CoreWisp) },
+        };
+
+        // The black marsh is about speed and slime: leeches grease the roads from the first wave, slugs follow,
+        // mire bats and tide bats rise from the pools, and the monarch of the slime surfaces from the bog.
+        private static WaveScript SwampScript(Bestiary b) => new WaveScript
+        {
+            Waves = 36,
+            Budget = 10f,
+            FinalBudget = 300f,
+            HealthGrowth = 0.02f,
+            Troops = new[]
+            {
+                Join(b.Skitter, 1, 2f, 0.4f, pack: 6), Join(b.Mireleech, 1, 2.5f, 1.6f), Join(b.Oozer, 1, 1.8f, 2.2f),
+                Join(b.Mirebat, 2, 2f, 1.4f, SpawnSource.Nest, 7f), Join(b.Prowler, 3, 2f, 1.1f, pack: 3), Join(b.Tidebat, 4, 1.2f, 1.5f, SpawnSource.Nest, 9f),
+                Join(b.Roller, 5, 1.8f, 1.6f), Join(b.Stinger, 8, 1.3f, 2.8f), Join(b.Bulwark, 11, 1.4f, 2.8f),
+            },
+            Flyer = b.Skyray,
+            AirWaves = new[] { 5, 10, 15, 20, 25, 30, 35 },
+            AirWavesPerDifficulty = new[] { 1, 3, 5, 7 },
+            AirSprinkleFrom = 1,
+            Rhythm = "RMPRHMPRMP",
+            Bosses = new[] { Boss(12, b.SlimeMonarch), Boss(24, b.StormMatriarch), Boss(36, b.AcidEmpress) },
+        };
+
         private static WaveScript NestScript(Bestiary b) => new WaveScript
         {
             Waves = 48,

@@ -104,6 +104,8 @@ namespace Game.Levels
             private readonly Color _lava;
             private readonly Color _sand;
             private readonly Color _water;
+            private readonly Color _ice;
+            private readonly Color _bog;
             private readonly float _vein;
             private readonly float _halfWidth;
             private readonly float _seed;
@@ -121,12 +123,14 @@ namespace Game.Levels
                 _groundLight = Color.Lerp(theme.GroundColor, Color.white, 0.18f);
                 _rock = theme.RockColor;
                 _accent = theme.AccentColor;
-                _stone = Color.Lerp(theme.GroundColor, theme.PathColor, 0.4f);
+                _stone = Color.Lerp(theme.GroundColor, theme.PathColor, 0.55f);
                 _edgeGlow = theme.PathColor;
                 _lichen = Color.Lerp(theme.PlantColor, theme.GroundColor, 0.45f);
                 _lava = theme.LavaColor;
                 _sand = theme.SandColor;
                 _water = theme.WaterColor;
+                _ice = theme.IceColor;
+                _bog = theme.BogColor;
                 _vein = theme.VeinStrength;
                 _halfWidth = road.HalfWidth;
                 _seed = Mathf.Abs(level.name.GetHashCode() % 997);
@@ -231,6 +235,18 @@ namespace Game.Levels
                 // Sand: a wide dry fringe that fades into the churning middle.
                 float sandEdge = TerrainNoise.SmoothStep(0.02f, 0.45f, sand);
                 color = Color.Lerp(color, _sand * (0.8f + 0.4f * noise), sandEdge);
+
+                // Ice: a snowy shore that whitens towards the sheet, with frost cracks glinting along the edge.
+                float ice = _field.IceAt(x, z);
+                float snow = TerrainNoise.SmoothStep(0.02f, 0.3f, ice);
+                color = Color.Lerp(color, Color.Lerp(_ice, Color.white, 0.6f) * (0.9f + 0.2f * noise), snow * 0.9f);
+                float frost = TerrainNoise.SmoothStep(0.93f, 0.99f, TerrainNoise.Ridge(x * 2.6f, z * 2.6f, _seed + 17f));
+                glow += _ice * (TerrainNoise.SmoothStep(0.05f, 0.25f, ice) * frost * 0.5f);
+
+                // Bog: a wide fringe of dark wet mud and rotting growth sinking into the mire.
+                float bog = _field.BogAt(x, z);
+                float mud = TerrainNoise.SmoothStep(0.02f, 0.4f, bog);
+                color = Color.Lerp(color, Color.Lerp(_bog, _lichen, 0.3f) * (0.7f + 0.4f * noise), mud * 0.9f);
             }
 
             // Thin glowing cracks and roots in the ground: strong far from the field, a hint inside it.

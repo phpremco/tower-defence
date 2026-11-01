@@ -161,6 +161,27 @@ namespace Game.Core
             s.Normalize(0.6f);
         }, 0.55f);
 
+        /// <summary>A rising four-note fanfare with a shimmer on top, for a permanent upgrade bought at the base.</summary>
+        public static AudioClip Mastery() => Cached("Mastery", s =>
+        {
+            Chime(s, 0f, 523f);
+            Chime(s, 0.09f, 659f);
+            Chime(s, 0.18f, 784f);
+            Chime(s, 0.3f, 1047f);
+            s.Tone(0.3f, 0.5f, 1568f, 1568f, 0.12f, 0.02f, SynthWave.Sine);
+            s.Tone(0.3f, 0.6f, 2093f, 2093f, 0.08f, 0.03f, SynthWave.Sine);
+            s.Noise(0.3f, 0.25f, 0.08f, 0.01f, 6000f, 9000f);
+            s.Echo(0.12f, 0.3f, 2);
+            s.Normalize(0.65f);
+        }, 1.1f);
+
+        /// <summary>The short high tick the counter makes while the points tally down after a purchase.</summary>
+        public static AudioClip Tick() => Cached("Tick", s =>
+        {
+            s.Tone(0f, 0.04f, 1800f, 1500f, 0.3f, 0.002f, SynthWave.Square);
+            s.Normalize(0.3f);
+        }, 0.06f);
+
         public static AudioClip Sell() => Cached("Sell", s =>
         {
             s.Tone(0f, 0.1f, 1760f, 1760f, 0.5f, 0.003f, SynthWave.Sine);
@@ -334,6 +355,47 @@ namespace Game.Core
             s.Normalize(0.65f);
         }, 0.7f);
 
+        /// <summary>A creature breaking up through a frozen lake: a sharp crack, splintering and a cold hiss.</summary>
+        public static AudioClip EmergeIce() => Cached("EmergeIce", s =>
+        {
+            s.Noise(0f, 0.08f, 0.9f, 0.002f, 5000f, 2500f);
+            s.Crackle(0.02f, 0.5f, 0.6f, 0.02f);
+            s.Tone(0.03f, 0.3f, 2400f, 1600f, 0.25f, 0.004f, SynthWave.Sine);
+            s.Hiss(0.1f, 0.5f, 0.3f, 2f);
+            s.Echo(0.07f, 0.3f, 2);
+            s.Normalize(0.7f);
+        }, 0.8f);
+
+        /// <summary>A creature heaving out of a bog: a deep sucking glug and bubbles popping.</summary>
+        public static AudioClip EmergeBog() => Cached("EmergeBog", s =>
+        {
+            s.Tone(0f, 0.35f, 120f, 60f, 0.6f, 0.02f, SynthWave.Sine);
+            s.Noise(0.05f, 0.4f, 0.4f, 0.05f, 400f, 1200f, 1.5f);
+            for (int i = 0; i < 4; i++)
+            {
+                float at = 0.15f + i * 0.09f;
+                s.Tone(at, 0.07f, 220f + i * 40f, 400f + i * 60f, 0.3f, 0.004f, SynthWave.Sine);
+            }
+
+            s.Normalize(0.7f);
+        }, 0.7f);
+
+        /// <summary>A frozen lake groaning and splitting before something large comes up through it.</summary>
+        public static AudioClip BossIceCrack() => Cached("BossIceCrack", s =>
+        {
+            s.Tone(0f, 1.2f, 70f, 45f, 0.5f, 0.3f, SynthWave.Saw, 0.4f);
+            s.Crackle(0.2f, 1.2f, 0.6f, 0.012f);
+            float[] times = { 0.3f, 0.55f, 0.9f, 1.2f };
+            for (int i = 0; i < times.Length; i++)
+            {
+                s.Noise(times[i], 0.06f, 0.8f, 0.002f, 6000f, 2000f);
+            }
+
+            s.Echo(0.12f, 0.4f, 3);
+            s.LowPass(5000f);
+            s.Normalize(0.8f);
+        }, 1.7f);
+
         /// <summary>Ground cracking open as something large climbs out.</summary>
         public static AudioClip EmergeGround() => Cached("EmergeGround", s =>
         {
@@ -438,12 +500,8 @@ namespace Game.Core
                     return Cached("AmbienceLava", s =>
                     {
                         s.Wind(0.9f, 120f, 0.4f, 0.05f);
+                        // Heat, wind and crackle only: the bubbling of lava is a recording, layered by the music player.
                         s.Crackle(0f, AmbienceSeconds + AmbienceCrossfade, 0.25f, 0.0008f);
-                        for (int i = 0; i < 12; i++)
-                        {
-                            float at = s.Chance() * AmbienceSeconds;
-                            s.Tone(at, 0.09f, 300f, 90f, 0.3f, 0.004f, SynthWave.Sine);
-                        }
 
                         s.Loopable(AmbienceCrossfade);
                         s.Normalize(0.55f);
@@ -458,6 +516,44 @@ namespace Game.Core
                         {
                             float at = s.Chance() * AmbienceSeconds;
                             s.Tone(at, 0.15f, 2400f, 2300f, 0.08f, 0.002f, SynthWave.Sine);
+                        }
+
+                        s.Loopable(AmbienceCrossfade);
+                        s.Normalize(0.5f);
+                    }, AmbienceSeconds + AmbienceCrossfade);
+                case AmbienceKind.Blizzard:
+                    return Cached("AmbienceBlizzard", s =>
+                    {
+                        s.Wind(0.9f, 700f, 0.9f, 0.16f);
+                        s.Wind(0.5f, 1800f, 0.8f, 0.23f);
+                        s.Tone(0f, AmbienceSeconds + AmbienceCrossfade, 1900f, 2100f, 0.04f, 1.5f, SynthWave.Sine, 1f);
+                        for (int i = 0; i < 5; i++)
+                        {
+                            float at = s.Chance() * AmbienceSeconds;
+                            s.Crackle(at, 0.3f, 0.15f, 0.01f);
+                        }
+
+                        s.Loopable(AmbienceCrossfade);
+                        s.Normalize(0.55f);
+                    }, AmbienceSeconds + AmbienceCrossfade);
+                case AmbienceKind.Marsh:
+                    return Cached("AmbienceMarsh", s =>
+                    {
+                        s.Wind(0.25f, 250f, 0.4f, 0.07f);
+                        s.Drone(48f, 0.1f, 0.06f);
+                        for (int i = 0; i < 7; i++)
+                        {
+                            // Frogs: a short croak that drops in pitch.
+                            float at = s.Chance() * AmbienceSeconds;
+                            s.Tone(at, 0.12f, 260f + s.Chance() * 90f, 170f, 0.2f, 0.01f, SynthWave.Square);
+                        }
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            // Bubbles rising and popping, and the thin whine of insects.
+                            float at = s.Chance() * AmbienceSeconds;
+                            s.Tone(at, 0.05f, 300f, 600f, 0.15f, 0.003f, SynthWave.Sine);
+                            s.Tone(s.Chance() * AmbienceSeconds, 0.4f, 3200f + s.Chance() * 800f, 3400f, 0.03f, 0.05f, SynthWave.Sine);
                         }
 
                         s.Loopable(AmbienceCrossfade);

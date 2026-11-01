@@ -46,14 +46,14 @@ namespace Game.Combat
             return projectile;
         }
 
-        /// <summary>Raised with position and radius when a splash projectile lands, so audio can react.</summary>
-        public event System.Action<Vector3, float> Exploded;
+        /// <summary>Raised with position, radius and style when a splash projectile lands, so audio can react.</summary>
+        public event System.Action<Vector3, float, ProjectileStyle> Exploded;
 
-        private void OnImpact(Vector3 position, float radius, Color color)
+        private void OnImpact(Vector3 position, float radius, Color color, ProjectileStyle style)
         {
             if (radius > 0f)
             {
-                Exploded?.Invoke(position, radius);
+                Exploded?.Invoke(position, radius, style);
             }
 
             _flashes.Get().Show(position, radius, color, _flashes.Release);

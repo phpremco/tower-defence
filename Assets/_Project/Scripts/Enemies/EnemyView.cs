@@ -22,6 +22,9 @@ namespace Game.Enemies
         private const float BarEmission = 1.5f;
         private const float BodyEmission = 0.9f;
         private const float ModelTintStrength = 0.65f;
+        private const float FrostEmission = 0.6f;
+        private const float FrostRate = 25f;
+        private static readonly Color FrostColor = new Color(0.7f, 0.9f, 1f);
         private const float ModelEmission = 0.2f;
         private const float EyeEmission = 4f;
         private const float EyeSize = 0.14f;
@@ -94,9 +97,12 @@ namespace Game.Enemies
         private const int SlamDustBurst = 18;
         private const float ImpactHeight = 0.35f;
         private const float ClawDegrees = 50f;
-        private const float BladeRestDegrees = -35f;
-        private const float BladeRaiseDegrees = -40f;
-        private const float BladeSwingDegrees = 120f;
+        // A sword rests low in a guard, swings with the stride, rears high in the wind-up and comes down hard.
+        private const float BladeRestDegrees = 15f;
+        private const float BladeRaiseDegrees = -95f;
+        private const float BladeSwingDegrees = 150f;
+        private const float BladeIdleDegrees = 7f;
+        private const float BladeWalkDegrees = 22f;
         private const float StingSnapDegrees = 85f;
         private const float StingSwayDegrees = 6f;
         private const float WhipDegrees = 70f;
@@ -150,6 +156,7 @@ namespace Game.Enemies
         private static readonly Color SandSplash = new Color(0.8f, 0.7f, 0.45f);
         private static readonly Color WoodSplash = new Color(0.45f, 0.95f, 0.4f);
         private static readonly Color IceSplash = new Color(0.8f, 0.95f, 1f);
+        private static readonly Color BogSplash = new Color(0.45f, 0.6f, 0.25f);
         private static readonly Color GroundDust = new Color(0.4f, 0.34f, 0.3f);
         private static readonly List<EnemyDeathEffect.Part> PartBuffer = new List<EnemyDeathEffect.Part>(32);
 
@@ -203,11 +210,13 @@ namespace Game.Enemies
         private float _lastArmor = 1f;
         private bool _barHidden;
         private bool _boss;
-        private bool _flashing;
+        private Material[] _currentLook;
+        private ParticleSystem _frost;
         private float _whipSide = 1f;
         private Vector3 _attackTarget;
         private Material[] _shellMaterials;
         private Material[] _flashMaterials;
+        private Material[] _frostMaterials;
         private MeshFilter[] _partFilters;
         private MeshRenderer[] _partRenderers;
         private Quaternion[] _partCurls;
@@ -341,6 +350,8 @@ namespace Game.Enemies
                 case EnemyOrigin.Water:
                 case EnemyOrigin.Lava:
                 case EnemyOrigin.Quicksand:
+                case EnemyOrigin.Ice:
+                case EnemyOrigin.Bog:
                     _spawnSeconds = 0.9f;
                     _spawnDepth = 0.95f;
                     _spawnStartScale = 0.6f;
@@ -387,6 +398,12 @@ namespace Game.Enemies
                 case EnemyOrigin.Quicksand:
                     color = SandSplash;
                     break;
+                case EnemyOrigin.Ice:
+                    color = IceSplash * 1.3f;
+                    break;
+                case EnemyOrigin.Bog:
+                    color = BogSplash;
+                    break;
                 case EnemyOrigin.Nest:
                     color = ElementColor(enemy.Definition.Element) * 1.4f;
                     break;
@@ -419,6 +436,8 @@ namespace Game.Enemies
                     return SandSplash;
                 case Element.Ice:
                     return IceSplash;
+                case Element.Bog:
+                    return BogSplash;
                 default:
                     return GroundDust;
             }
@@ -451,6 +470,14 @@ namespace Game.Enemies
             for (int i = 0; i < _flashMaterials.Length; i++)
             {
                 _flashMaterials[i] = flash;
+            }
+
+            // Chilled: the whole creature goes pale blue, so a slow reads at a glance even on a crowd.
+            _frostMaterials = new Material[materials.Length];
+            Material frost = SurfaceMaterials.Create(FrostColor, FrostEmission, 0.6f);
+            for (int i = 0; i < _frostMaterials.Length; i++)
+            {
+                _frostMaterials[i] = frost;
             }
 
             _shell = SpawnPart("Shell", body, parts.Body, materials, Vector3.zero, false);
@@ -491,6 +518,7 @@ namespace Game.Enemies
             Color rush = definition.AccentColor * 1.4f;
             rush.a = 1f;
             _rush = _attachments.Track(ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f));
+            _frost = _attachments.Track(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
             _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
 
@@ -656,12 +684,16 @@ namespace Game.Enemies
 
             // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.
             bool flash = _hitTime < FlashSeconds && !_boss;
-            if (flash != _flashing)
+            bool slowed = _enemy.IsSlowed;
+            _frost.transform.position = position + Vector3.up * (0.15f * _creatureScale + bob * hoverScale);
+            ParticleKit.SetRate(_frost, slowed ? FrostRate : 0f);
+            Material[] look = flash ? _flashMaterials : slowed ? _frostMaterials : _shellMaterials;
+            if (look != _currentLook)
             {
-                _flashing = flash;
+                _currentLook = look;
                 for (int i = 0; i < _partRenderers.Length; i++)
                 {
-                    _partRenderers[i].sharedMaterials = flash ? _flashMaterials : _shellMaterials;
+                    _partRenderers[i].sharedMaterials = look;
                 }
             }
         }
@@ -836,8 +868,10 @@ namespace Game.Enemies
             for (int i = 0; i < _blades.Count; i++)
             {
                 Rig blade = _blades[i];
-                float idle = Mathf.Sin(_clock * 1.6f + _swayPhase + blade.Spec.Index) * 4f;
-                blade.Root.localRotation = Quaternion.Euler(BladeRestDegrees + idle + rear * BladeRaiseDegrees + strike * BladeSwingDegrees, 0f, 0f);
+                float idle = Mathf.Sin(_clock * 1.6f + _swayPhase + blade.Spec.Index) * BladeIdleDegrees;
+                // The arm swings against the legs, as an arm does, the second arm half a stride behind the first.
+                float swing = Mathf.Sin(_gait + blade.Spec.Index * Mathf.PI) * BladeWalkDegrees * (1f - rear - strike);
+                blade.Root.localRotation = Quaternion.Euler(BladeRestDegrees + idle + swing + rear * BladeRaiseDegrees + strike * BladeSwingDegrees, 0f, 0f);
             }
 
             for (int i = 0; i < _stingers.Count; i++)

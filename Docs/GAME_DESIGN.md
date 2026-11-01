@@ -36,12 +36,12 @@ De gameplay is 2D (een vlak, vaste paden), maar het beeld oogt 3D: simpele 3D-vo
 
 - **Camera:** orthografisch, vast, schuin van boven. Geen vrije camera.
 - **Vormen:** torens, vijanden en omgeving beginnen als blokken, cilinders en bollen. Later vervangen we ze door low-poly modellen zonder de spellogica aan te passen.
-- **Licht en gloed:** emissive materialen (lava, lasers, energie), bloom, zachte schaduwen en rook of mist over het veld geven diepte.
+- **Licht en gloed:** emissive materialen (lava, lasers, energie), bloom, zachte schaduwen en rook of mist over het veld geven diepte. Sinds 2026-11-01: per thema een lichtrig (zonhoogte en -richting, tegenlicht in een eigen kleur, hemelkleur voor ambient en reflecties) en kleurcorrectie (contrast, verzadiging, schaduw- en hooglichttint) in `VisualTheme`; MSAA 4x, één scherpe schaduwcascade en SSAO via de generator; eenheden (torens, poorten, hero, drones, wezens) dragen de eigen shader `Game/UnitLit` met een randlicht langs het silhouet (koel voor de kolonie, warm voor de aliens) zodat ze van de donkere grond loskomen; twee drijvende mistlagen over het veld (uit in het lage profiel); torens kijken langzaam rond als ze niets te schieten hebben en roken en vonken naarmate ze beschadigd zijn. Camera staat op 44 graden.
 - **Kleurcodes:** jouw torens en drones in koele, technische kleuren (blauw, wit, geel). De aliens in warme, organische kleuren (rood, groen, oranje).
 - **Per level een eigen palet en gevaar:** bijvoorbeeld landingszone, bioluminescent bos, grotten met lava, ruïne en het nest.
 - **Interface:** wave en score bovenin, snelheid en pauze rechtsboven, torenbalk onderin met prijzen, vaardigheden links en rechts, geld linksonder. Sterren op torens tonen het upgradeniveau.
 - **Per platform instelbaar:** bloom, mist en deeltjes hebben een zware en een lichte stand (pc en Switch).
-- **Geluid:** vier volumegroepen (master, muziek, effecten, omgeving) in de opties en het pauzemenu. De muziek is een lichte rockloop die bij een baaswave overgaat in een zwaardere, snellere loop. Geluidsspam wordt beperkt met een stemmenbudget per soort geluid, bundelen van salvo's, ducking onder belangrijke geluiden, een loop voor continu-wapens en demping bij uitgezoomde camera.
+- **Geluid:** vier volumegroepen (master, muziek, effecten, omgeving) in de opties en het pauzemenu. De muziek is een lichte rockloop die bij een baaswave overgaat in een zwaardere, snellere loop. Geluidsspam wordt beperkt met een stemmenbudget per soort geluid, bundelen van salvo's, ducking onder belangrijke geluiden, een loop voor continu-wapens en demping bij uitgezoomde camera. Alle opgenomen geluiden (explosies, drones, hero, omgeving, per diersoort een eigen stem met loop, stappen, schreeuw, aanval en baaskrachten) zitten in `SfxLibrary` en `CreatureVoice`-assets, met een gemeten gain per set zodat alles op één niveau staat; de mixregels en niveaus staan in `Docs/AUDIO.md`. Onder Opties zit een geluidstest die elk geluid los afspeelt.
 
 ## Gameplay-loop en moeilijkheden
 
@@ -105,9 +105,10 @@ Drones haal je uit de basis met een aparte, speciale valuta (power currency). Je
 | Verzameldrone | Verzamelt geld en scrap in het level |
 | Aanvalsdrone | Jaagt op de vijand die het verst is en beschiet hem vanuit de lucht |
 
-- **Zichtbaar:** drones vliegen over het veld, met een lichtbundel zodat je ziet waar ze werken.
+- **Zichtbaar:** drones vliegen over het veld, met een lichtbundel en een lichtplek op wat ze bewerken. Elk soort heeft een eigen gebouwd model met een skin uit data (`DroneDefinition.Skin` en `AccentColor`): de medic is een witte quadcopter met keramische platen, rotorkooien, een rood kruis en een lasarm die vonkt tijdens het repareren; de hauler is een geklonken vrachtdrone met waarschuwingsstrepen, twee grote ducted rotors, een draaiende boor die stof opwerpt en een laadpod die oplicht als hij vol is; de gunship is een pijlvormige jager met chevrons, kanonpods, een sensoroog en een motorring. Alle drie hebben rotorblur, knipperende navigatielichten (rood links, groen rechts, witte strobe), een neus die naar voren kantelt op snelheid en een uitlaatspoor als ze echt vliegen.
+- **Reparatieploeg:** reparatiedrones delen één werklijst (`RepairDispatcher`). Elke beschadigde structuur krijgt een score: ontbrekende HP, verdrievoudigd onder 30% en zwaarder voor poorten en de basis, gedeeld door de vliegtijd ernaartoe. Elke structuur wordt door één drone geclaimd, zodat drie drones aan drie dingen werken. Een drone maakt zijn klus af voordat hij verder gaat; alleen een kritieke structuur met een ruim hogere score trekt hem weg. Daarna pakt hij het dichtstbijzijnde werk, niet het laagste percentage ergens aan de andere kant van de kaart.
 - **Aansturen:** je kiest een drone en geeft hem een taak of een doel. Daarna werkt hij zelf.
-- **Upgrades:** snelheid, capaciteit en uithoudingsvermogen zijn upgradebaar.
+- **Upgrades:** elke drone heeft een eigen permanent pad (betaald met power): vliegsnelheid voor alle drie, en daarnaast reparatiesnelheid en pantser (reparatiedrone), opbrengst per rit en een extra drone tegelijk (verzameldrone), schade en vuursnelheid (aanvalsdrone).
 - **Kwetsbaar:** drones zijn kwetsbaar voor vliegende vijanden en kunnen neergehaald worden.
 - **Valuta:** power currency krijg je vooral op hogere moeilijkheden en via baswaves, zodat die levels aantrekkelijk blijven.
 
@@ -116,7 +117,7 @@ Drones haal je uit de basis met een aparte, speciale valuta (power currency). Je
 Blokkades houden vijanden tegen op het pad, de basis is wat je uiteindelijk verdedigt. Beide zijn upgradebaar met punten en kunnen beschadigd raken.
 
 - **Blokkade:** houdt vijanden op en geeft torens tijd om te schieten. De hero verdedigt haar. Upgrades: meer HP, pantser en een reparatiesnelheid.
-- **Basis:** heeft HP en gaat het spel verloren als die op is. Upgrades: HP, een eigen verdediging en een noodvaardigheid.
+- **Basis:** heeft HP en gaat het spel verloren als die op is. Permanente upgrades: HP (pantser) en **basiswapens**: op niveau 0 is de basis ongewapend, niveau 1 zet één torentje naast de basis, niveau 2 aan beide kanten, niveau 3 begint met beide op toren-niveau 2. Basistorentjes zijn gewone torens (in het level verder te upgraden met geld) maar kunnen nooit verkocht worden. Een noodvaardigheid voor de basis staat nog open.
 - **Reparatie:** door jou (geld), drones of de hero.
 - **Volledig vernield:** een blokkade is dan weg tot je een nieuwe plaatst.
 
@@ -146,7 +147,9 @@ Er zijn land- en luchtvijanden. Landvijanden volgen het pad, luchtvijanden vlieg
 | --- | --- | --- |
 | Skitter | Land | Mierachtige zwerm: zwak, in grote aantallen, druipt gif bij schade; vraagt om gebiedsschade |
 | Stinger | Land | Schorpioen: gloeiende pantserplaten die afvallen, spuit zuur op torens die hij passeert (schaalt met moeilijkheid) |
-| Emberbat, Tidebat, Mossbat, Dustbat | Lucht | Elementvleermuizen uit nesten bij lava, water, bos en zand; schieten elementbolts, storten neer en lossen op in hun element |
+| Emberbat, Tidebat, Mossbat, Dustbat, Frostbat, Mirebat | Lucht | Elementvleermuizen uit nesten bij lava, water, bos, zand, ijs en moeras; schieten elementbolts, storten neer en lossen op in hun element |
+| Shardback | Land | IJskever: gebogen rug vol ijsprisma's die als pantserplaten afbreken, traag en zwaar gepantserd, spuwt ijs naar torens die hij passeert (ijslevels) |
+| Mireleech | Land | Moerasbloedzuiger: lang en laag met een zuigmond, vrij snel, trekt een modderspoor dat alles achter hem versnelt en poorten en hero beschadigt (moeraslevels) |
 | Bulwark | Land | Dino-mens met natuurlijke schilden (pantser), kristalzwaard, bloedt groen, valt dood neer |
 | Prowler | Land | Wolfachtige roedeljager: middelsnel, roedelgenoten rennen als er een sneuvelt |
 | Wisp | Land en lucht | Oeroude energiebol: loopt over de weg en wordt door poorten gestopt, maar luchtafweer raakt hem ook; veel schade, weinig HP |
@@ -162,9 +165,11 @@ Er zijn land- en luchtvijanden. Landvijanden volgen het pad, luchtvijanden vlieg
 
 **Baaskrachten en opkomst.** Elke baas draagt een of meer krachten uit data (`BossAbilityDefinition`): een **puls** die alle torens, poorten en drones in een straal beschadigt, een **laser** die het dichtstbijzijnde doel vastpakt en brandt, het **broeden** van kleine wezens die de weg van de baas vervolgen, een **salvo** van bolts op meerdere torens, een **rally** die het hele veld versnelt, het **aangroeien** van eigen pantser, en **splitsen** in kleinere wezens bij elk verloren deel van de HP. Bazen komen aan het eind van een level of halverwege een wave. Per level staat in data waar ze opkomen: door de poort, uit een poel (water, zand of lava) of door de grond heen, zodat elk level anders aanvoelt. Een baaswave begint met een alarm, een aardbevingsgerommel en zwaardere muziek.
 
-**Elementnesten.** Elementvleermuizen komen niet door de poort maar uit nesten in data (`LevelDefinition.Nests`): een vent in de lava, een kolk in het water, een holle boom, een hol in het zand. Ze vliegen naar de dichtstbijzijnde weg en volgen die, of nemen in luchtwaves de vliegroute.
+**Elementnesten.** Elementvleermuizen komen niet door de poort maar uit nesten in data (`LevelDefinition.Nests`): een vent in de lava, een kolk in het water, een holle boom, een hol in het zand, een scheur in het ijs, een kuil in het moeras. Ze vliegen naar de dichtstbijzijnde weg en volgen die, of nemen in luchtwaves de vliegroute.
 
-**Poelen als spawnpunt.** Water, drijfzand en lava zijn niet alleen decor: een wavegroep kan er wezens uit laten opkomen. Die lopen naar de dichtstbijzijnde weg en volgen die naar de basis, dus ze kunnen bij poort twee of drie uitkomen in plaats van bij de eerste.
+**Terreinsoorten.** Naast water, lava en drijfzand zijn er **ijs** (een bevroren meer: gladde lichte plaat met barsten, koude mist, sneeuwduinen en ijsscherven op de oever) en **moeras** (donker stilstaand water onder een laag kroos, opborrelend moerasgas, riet en dode bomen op de oever). Alle vijf zijn vloeistof: er kan niet op gebouwd worden, wezens kunnen eruit opkomen. Per level staat het palet in het `VisualTheme`, inclusief de kleur van de ijsplaat, het moeras en de spawnpoorten (rood gloeiend op de meeste werelden, ijsblauw op de ijsvlakte, groenig in het moeras). Ambiances: sneeuwstorm (wind en een hoge fluit) en moeras (kikkers, insecten, bellen).
+
+**Poelen als spawnpunt.** Water, drijfzand, lava, ijs en moeras zijn niet alleen decor: een wavegroep kan er wezens uit laten opkomen. Die lopen naar de dichtstbijzijnde weg en volgen die naar de basis, dus ze kunnen bij poort twee of drie uitkomen in plaats van bij de eerste.
 
 ## De vijf levels van de eerste wereld
 
@@ -177,6 +182,10 @@ Vijf levels, elk met een eigen pad, uiterlijk en padobjecten. Nieuwe wapens krij
 | 3 | Lavagrotten | Oranje en rood, donker | Zigzag door smalle gangen | Lavabal, explosieve ton | Laser (intel van de thuisplaneet) | Nee |
 | 4 | Oude ruïne | Goud en groen, oud metaal | Lus met een kruising | Grounddrone, luchtafweernet | Raket (gestolen ruïnetech) | Baas |
 | 5 | Het nest | Donkerrood en zwart, organisch | Twee ingangen naar één basis | Alle padobjecten | Tesla (gestolen alientech) en de eerste combinatierecepten | Eindbaas |
+| 6 | Frozen Shelf (ijsvlakte) | Wit en ijsblauw, bevroren meren, sneeuwstorm | Zigzag tussen vier meren, tweede weg langs de zuidrand | Vertragingsveld, mijn, ton, grounddrone, luchtnet | Railgun (intel van de thuisplaneet) | Crystal Warlord door het ijs, Core Wisp |
+| 7 | Black Marsh (moeras) | Zwartgroen, dode bomen, riet, moerasgas | Dijken tussen vier moerassen, tweede weg uit het noordwesten | Alle padobjecten | Support (gestolen alientech) | Slime Monarch uit het moeras, Storm Matriarch, Acid Empress |
+
+Level 6 en 7 zijn de eerste levels na de eerste wereld, gebouwd als proef van de ijs- en moerasondersteuning; het verhaal eromheen komt later.
 
 Elk level krijgt vier moeilijkheden (easy, medium, hard, psycho). Hogere moeilijkheid verandert het aantal en de sterkte van golven, niet het pad. Elk level heeft zowel land- als luchtgolven, met meer luchtvijanden vanaf level 2.
 
@@ -187,10 +196,12 @@ Drie valuta's houden de loop in beweging; de bedragen zijn nog niet vastgelegd.
 | Valuta | Verdien je met | Besteed je aan | Geldt |
 | --- | --- | --- | --- |
 | Geld | Vijanden verslaan, scrap, verzameldrones | Torens bouwen en upgraden, reparaties | Alleen in het level |
-| Onderzoekspunten | Levels afronden, hogere moeilijkheid | Permanente upgrades voor torens, hero, blokkades en basis | Tussen levels |
-| Power currency | Baswaves, hoge moeilijkheden | Drones kopen en upgraden | Tussen levels |
+| Onderzoekspunten | Levels afronden, hogere moeilijkheid | Permanente upgrades voor torens, hero, blokkades en basis (HP en basistorentjes) | Tussen levels |
+| Power currency | Levels afronden op medium of hoger | Permanente upgrades per drone (reparatie, verzamel, aanval) | Tussen levels |
 
 - **Hogere moeilijkheid betaalt meer:** dat dwingt je levels opnieuw te spelen om verder te komen.
+- **Eén keer per level per moeilijkheid:** onderzoekspunten en power krijg je alleen de eerste keer dat je een level op een moeilijkheid haalt. Opnieuw spelen levert alleen een betere sterrenscore op. Zo valt er niets te farmen en is het totaal begrensd: alles op easy betaalt ongeveer een vijfde van alle upgrades, alles op psycho betaalt alles.
+- **Latere levels rekenen op upgrades:** elke `LevelDefinition` heeft een `ExpectedUpgradeBonus` (0 tot 1). De vijanden krijgen zoveel extra HP, omdat de speler daar met gekochte upgrades aankomt (level 1 en 2: 0, level 3: 0,1, level 4: 0,2, level 5: 0,3, ijs 0,35, moeras 0,4). De balansberekening rekent dezelfde bonus mee aan de kant van de torens.
 - **Scrap:** een kapotte toren geeft geld als je op het wrak klikt.
 - **Balans:** alle getallen staan in data, zodat we ze zonder code kunnen aanpassen.
 
@@ -225,14 +236,12 @@ Eén complete ronde loopt van het hoofdmenu tot het upgradescherm en terug naar 
 | Scherm | Toont | Acties |
 | --- | --- | --- |
 | Hoofdmenu | Titel, Start en Opties (Afsluiten alleen op pc) voor een levend diorama: het nest met zijn bewoners, lava, zand en water, met eigen muziek | Start, opties |
-| Gebiedskiezer | Een planeet met per level een gekleurd gebied en een baken (vergrendeld, open, voltooid). Een baken kiezen zoomt in en toont het regiopaneel: briefing, de vier moeilijkheden met vinkjes en sterren | Gebied en moeilijkheid kiezen, naar het upgradescherm, B zoomt uit |
+| Gebiedskiezer | Een draaibare 3D-planeet in twee lagen. **De planeet:** één continent per regio (werelddeel), elk met een rond kenteken: gekleurd en open, vinkje als alle levels gehaald zijn, slotje zolang de regio nog dicht is; het onderschrift noemt de regio en telt de gehaalde levels, of zegt "coming soon" voor een lege regio. Alleen de landingsregio (Landfall, werktitel) heeft nu levels; de andere zes continenten liggen klaar om later gevuld te worden (ijs bij de polen, moeras en jungle bij de evenaar). **De regio:** A vliegt op het continent en toont zijn levels als kleine zeshoekjes met hun nummer, zonder naam op het oppervlak; vier streepjes eronder tonen welke moeilijkheden gehaald zijn, een vinkje voltooid, een slotje vergrendeld. Een gloeiende route loopt van level naar level (gespeeld helder, open pulserend, vergrendeld dof); de levels van de eerste regio lopen van de zuidwestkust via het noorden (ijs) terug naar het moeras. Op de planeet draaien de stick of de pijltjestoetsen de bol en springen LB/RB (Q/E) naar vorige en volgende regio; A gaat de regio in. In een regio draait er niets meer: links/rechts (stick, pijltjes, LB/RB, Q/E, de pijlknoppen) stappen door de levels, een strip van genummerde zeshoekjes onder de bol toont de volgorde en is direct klikbaar, één klik op een level selecteert het (ring, strip en onderschrift volgen), een tweede klik of A/Enter/"Play level" speelt het. De knoppenrij past zich aan: op de planeet "Upgrades" en "Main menu", in een regio "Planet", "Play level" en "Upgrades"; B/Esc gaat een laag terug. Een level spelen zoomt erop in en toont het levelpaneel: regio, briefing, de vier moeilijkheden met vinkjes en sterren | Regio en level kiezen, moeilijkheid kiezen, naar het upgradescherm, B zoomt uit |
 | Briefing | Voor de eerste wave: regio, levelnaam en het stukje verhaal; de tijd staat stil | Deploy |
 | Level (HUD) | Wave en score, snelheid en pauze, torenbalk met prijzen en padobjecten, hero-vaardigheden, geld | Bouwen, upgraden, repareren, scrap ophalen, pauzeren |
 | Pauzemenu | Hervatten, opnieuw beginnen, terug naar de kaart | Kiezen |
 | Resultaatscherm | Beloning: geld, onderzoekspunten, power currency en het nieuwe wapen met zijn bron (gestolen tech of intel van de thuisplaneet) | Doorgaan, opnieuw spelen, naar het upgradescherm |
-| Upgradescherm (basis) | Permanente upgrades met hun kosten in onderzoekspunten of power currency | Kopen, terug naar de kaart |
-
-In de eerste versie bevat het upgradescherm alleen torens, blokkades en basis. Hero en drones volgen met hun eigen mijlpaal.
+| Upgradescherm (basis) | Alle upgradebare dingen als tegels in één raster zonder scrollen: de torens, daaronder de commandant, de basis en de drie drones, elk met een plaatje van zijn model, een voortgangsbalkje en een gouden ster als alles gekocht is. Het gekozen tegeltje opent het paneel met een draaiend 3D-model (dezelfde opbouw als in het level), de stats met balken en per upgrade de waarde nu en na de volgende stap. Kopen is een kleine viering: flits en snelle draai van het model, de nieuwe pip springt op met vonken, de balk groeit, de punten tellen af met tikjes, een banner UPGRADED of MASTERED en een fanfare | Kopen, terug naar de kaart |
 
 ## Technische richtlijnen
 

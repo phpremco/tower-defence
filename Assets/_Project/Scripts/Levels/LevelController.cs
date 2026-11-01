@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
+using Game.Enemies;
 using Game.Economy;
 using Game.Platform;
 using UnityEngine;
@@ -101,7 +102,8 @@ namespace Game.Levels
             _nextWaveIndex++;
             _context.WaveNumber = _nextWaveIndex;
             _context.NextWaveCountdown = 0f;
-            _context.BossWave = CarriesBoss(_waves[_nextWaveIndex - 1]);
+            _context.ComingBoss = BossOf(_waves[_nextWaveIndex - 1]);
+            _context.BossWave = _context.ComingBoss != null;
             _context.Changed.Raise();
             _context.WaveStarted.Raise();
             if (_context.BossWave)
@@ -110,17 +112,17 @@ namespace Game.Levels
             }
         }
 
-        private static bool CarriesBoss(WaveDefinition wave)
+        private static EnemyDefinition BossOf(WaveDefinition wave)
         {
             foreach (SpawnGroup group in wave.Groups)
             {
                 if (group.Enemy != null && group.Enemy.IsBoss)
                 {
-                    return true;
+                    return group.Enemy;
                 }
             }
 
-            return false;
+            return null;
         }
 
         // Tells the view which flying routes the given wave uses. Beyond the last wave nothing is shown.

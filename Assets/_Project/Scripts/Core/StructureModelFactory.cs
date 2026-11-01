@@ -331,6 +331,19 @@ namespace Game.Core
 
                     b.AddBlob(new Vector3(0f, 0.04f, 0f), new Vector3(0.55f, 0.1f, 0.55f), 4, 12, 0.06f, 9, HiveBody, true);
                     break;
+                case Element.Bog:
+                    // A sunken hollow in the mire ringed by rotten stumps and bubbles of marsh gas.
+                    b.AddBlob(new Vector3(0f, 0.02f, 0f), new Vector3(0.55f, 0.08f, 0.55f), 4, 12, 0.08f, 11, HiveDark, true);
+                    b.AddTorus(new Vector3(0f, 0.05f, 0f), Vector3.up, 0.26f, 0.035f, 16, 5, HiveGlow);
+                    for (int i = 0; i < 6; i++)
+                    {
+                        Vector3 dir = Around(i / 6f * Mathf.PI * 2f + 0.3f);
+                        float height = 0.18f + (i % 3) * 0.14f;
+                        b.AddTube(new[] { dir * 0.48f, dir * 0.5f + Vector3.up * height }, new[] { 0.07f, 0.04f }, 5, HiveDark, true);
+                        b.AddBlob(dir * (0.2f + (i % 2) * 0.12f) + Vector3.up * 0.06f, Vector3.one * (0.035f + (i % 3) * 0.012f), 3, 6, 0f, 0, HiveGlow, false);
+                    }
+
+                    break;
                 default:
                     b.AddBlob(new Vector3(0f, 0.02f, 0f), new Vector3(0.6f, 0.22f, 0.6f), 5, 12, 0.05f, 8, HiveBody, true);
                     b.AddBlob(new Vector3(0f, 0.2f, 0f), new Vector3(0.22f, 0.05f, 0.22f), 3, 10, 0f, 0, HiveDark, false);
