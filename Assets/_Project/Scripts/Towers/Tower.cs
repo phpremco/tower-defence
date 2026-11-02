@@ -14,6 +14,7 @@ namespace Game.Towers
         private const float SupportLevelGrowth = 0.5f;
         private const float MuzzleHeight = 1f;
         private const float MuzzleForward = 0.55f;
+        private const float BeamRetargetSeconds = 0.35f;
         private const float SupportRefreshSeconds = 0.25f;
 
         private TowerDefinition _definition;
@@ -22,6 +23,7 @@ namespace Game.Towers
         private ProjectilePool _projectiles;
         private PlayerModifiers _modifiers;
         private float _cooldown;
+        private ITargetable _beamTarget;
         private float _supportRange;
         private float _supportRate;
         private float _supportTimer;
@@ -185,6 +187,15 @@ namespace Game.Towers
             LevelChanged?.Invoke(this);
         }
 
+        /// <summary>Starts a freshly built tower at an inherited level, with every level's health bonus applied.</summary>
+        public void SetLevel(int levelIndex)
+        {
+            while (LevelIndex < levelIndex && CanUpgrade)
+            {
+                Upgrade();
+            }
+        }
+
         private float HealthMultiplier => _definition.BlocksGroundEnemies ? _modifiers.BlockadeHealthMultiplier : _modifiers.TowerHealthMultiplier;
 
         private void Update()
@@ -206,6 +217,16 @@ namespace Game.Towers
             ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
             if (target == null)
             {
+                _beamTarget = null;
+                return;
+            }
+
+            // A beam is continuous: it only breaks to swing onto a new target, so the player sees and hears it stop
+            // and start as the enemies change.
+            if (_definition.ProjectileStyle == ProjectileStyle.Laser && !ReferenceEquals(target, _beamTarget))
+            {
+                _beamTarget = target;
+                _cooldown = BeamRetargetSeconds;
                 return;
             }
 

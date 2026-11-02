@@ -105,7 +105,7 @@ namespace Game.Editor
             Debug.Log($"LoopMaker: {name} cut {cutStart:0.0}s in, {cutEnd:0.0}s out, loop {(length - fade) / (float)frequency:0.0}s with a {CrossfadeSeconds:0}s blend.");
         }
 
-        private static bool Load(AudioClip clip)
+        internal static bool Load(AudioClip clip)
         {
             if (clip.loadState != AudioDataLoadState.Loaded)
             {
@@ -123,7 +123,7 @@ namespace Game.Editor
         }
 
         // RMS of every window across all channels, the shape of the track's loudness over time.
-        private static float[] Envelope(float[] samples, int channels, int window)
+        internal static float[] Envelope(float[] samples, int channels, int window)
         {
             int frames = samples.Length / channels;
             int count = frames / window;
@@ -194,7 +194,7 @@ namespace Game.Editor
         // The tail is laid over the head with an equal-power crossfade and that blend becomes the END of the file,
         // after the untouched body: the file starts clean in full music, and the only blended bars sit right
         // before the wrap, where the head's full level continues straight into the first frame again.
-        private static float[] Blend(float[] samples, int channels, int startFrame, int length, int fade)
+        internal static float[] Blend(float[] samples, int channels, int startFrame, int length, int fade)
         {
             int outFrames = length - fade;
             int bodyFrames = outFrames - fade;
@@ -224,7 +224,7 @@ namespace Game.Editor
             return result;
         }
 
-        private static void Normalise(float[] samples)
+        internal static void Normalise(float[] samples)
         {
             float peak = 0f;
             foreach (float s in samples)
@@ -242,7 +242,7 @@ namespace Game.Editor
             }
         }
 
-        private static void WriteWav(string path, float[] samples, int channels, int frequency)
+        internal static void WriteWav(string path, float[] samples, int channels, int frequency)
         {
             using var stream = new FileStream(path, FileMode.Create);
             using var writer = new BinaryWriter(stream);

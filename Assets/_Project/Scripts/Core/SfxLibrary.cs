@@ -17,7 +17,6 @@ namespace Game.Core
         [SerializeField] private SoundSet _rocketLaunches = new SoundSet();
         [SerializeField] private SoundSet _cryoShots = new SoundSet();
         [SerializeField] private SoundSet _teslaShots = new SoundSet();
-        [SerializeField] private SoundSet _laserShots = new SoundSet();
         [SerializeField] private SoundSet _railShots = new SoundSet();
 
         [Header("Explosions")]
@@ -75,6 +74,7 @@ namespace Game.Core
 
         [Header("Boss wave")]
         [SerializeField] private SoundSet _bossLaserLoops = new SoundSet();
+        [SerializeField] private SoundSet _beamLoops = new SoundSet();
         [SerializeField] private SoundSet _bossAlarms = new SoundSet();
         [Tooltip("The drums that open every wave.")]
         [SerializeField] private SoundSet _waveDrums = new SoundSet();
@@ -92,7 +92,6 @@ namespace Game.Core
         public SoundSet RocketLaunches => _rocketLaunches;
         public SoundSet CryoShots => _cryoShots;
         public SoundSet TeslaShots => _teslaShots;
-        public SoundSet LaserShots => _laserShots;
         public SoundSet RailShots => _railShots;
         public SoundSet CannonExplosions => _cannonExplosions;
         public SoundSet RocketExplosions => _rocketExplosions;
@@ -134,6 +133,9 @@ namespace Game.Core
         public SoundSet LeavesLoops => _leavesLoops;
         public SoundSet IcyWindLoops => _icyWindLoops;
         public SoundSet BossLaserLoops => _bossLaserLoops;
+
+        /// <summary>The hum a beam tower holds for as long as it fires.</summary>
+        public SoundSet BeamLoops => _beamLoops;
         public SoundSet BossAlarms => _bossAlarms;
         public SoundSet WaveDrums => _waveDrums;
         public SoundSet MenuMusic => _menuMusic;
@@ -145,7 +147,7 @@ namespace Game.Core
         public (string Label, SoundSet Set)[] Sets() => new[]
         {
             ("Pulse shot", _pulseShots), ("Heavy shot", _heavyShots), ("Rocket launch", _rocketLaunches), ("Cryo shot", _cryoShots),
-            ("Tesla shot", _teslaShots), ("Laser shot", _laserShots), ("Rail shot", _railShots), ("Cannon explosion", _cannonExplosions),
+            ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Cannon explosion", _cannonExplosions),
             ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
             ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
@@ -156,7 +158,7 @@ namespace Game.Core
             ("Drone fan", _droneFanLoops), ("Drone repair", _droneRepairLoops), ("Drone harvest", _droneHarvestLoops),
             ("Drone laser", _droneLasers), ("Enemy death", _enemyDeaths), ("Heavy steps", _heavySteps), ("Wings", _wingLoops),
             ("Large wings", _largeWingLoops), ("Water", _waterLoops), ("Lava", _lavaLoops), ("Steam", _steamLoops),
-            ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Boss alarm", _bossAlarms), ("Wave drums", _waveDrums),
+            ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Beam loop", _beamLoops), ("Boss alarm", _bossAlarms), ("Wave drums", _waveDrums),
             ("Menu music", _menuMusic), ("Game music", _gameMusic), ("Boss music", _bossMusic),
         };
     }

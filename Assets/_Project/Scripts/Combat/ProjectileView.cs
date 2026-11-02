@@ -21,7 +21,7 @@ namespace Game.Combat
         private static readonly Vector3 SlugScale = new Vector3(0.1f, 0.3f, 0.1f);
         private static readonly Vector3 BoltScale = new Vector3(0.07f, 0.16f, 0.07f);
         private const float BoltTrailWidth = 0.07f;
-        private const float BeamLingerSeconds = 0.16f;
+        private const float BeamLingerSeconds = 0.3f;
         private const float ArcLingerSeconds = 0.1f;
         private const int ArcPoints = 9;
         private const float ArcJitter = 0.22f;

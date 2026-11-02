@@ -25,6 +25,13 @@ namespace Game.Boot
         private const int VoiceCount = 24;
         private const float PitchJitter = 0.08f;
         private const float ShotVolume = 0.4f;
+        // A beam tower holds a hum instead of zapping per tick: one voice per firing tower, released a moment after
+        // its last tick, so the sound stops and starts with the beam itself.
+        private const int BeamVoiceCount = 4;
+        private const float BeamVolume = 0.55f;
+        private const float BeamHoldSeconds = 0.3f;
+        private const float BeamSameTowerDistance = 1.5f;
+        private const float BeamFallbackGain = 0.5f;
         private const float HeavyShotVolume = 0.6f;
         private const float HitVolume = 0.4f;
         private const float SpawnVolume = 0.6f;
@@ -114,7 +121,6 @@ namespace Game.Boot
         private SoundFamily _rocket;
         private SoundFamily _cryo;
         private SoundFamily _tesla;
-        private SoundFamily _laser;
         private SoundFamily _rail;
         private SoundFamily _cannonExplosion;
         private SoundFamily _rocketExplosion;
@@ -145,6 +151,9 @@ namespace Game.Boot
         private SoundFamily _net;
         private SoundFamily _acid;
         private LoopVoice _saberHum;
+        private readonly LoopVoice[] _beamVoices = new LoopVoice[BeamVoiceCount];
+        private readonly Vector3[] _beamOrigins = new Vector3[BeamVoiceCount];
+        private readonly float[] _beamLastTick = new float[BeamVoiceCount];
         private LoopVoice _droneFan;
         private LoopVoice _droneRepair;
         private LoopVoice _droneHarvest;
@@ -241,7 +250,10 @@ namespace Game.Boot
             _rocket = new SoundFamily(library?.RocketLaunches, ProceduralSfx.RocketLaunch());
             _cryo = new SoundFamily(library?.CryoShots, ProceduralSfx.CryoShot());
             _tesla = new SoundFamily(library?.TeslaShots, ProceduralSfx.TeslaShot());
-            _laser = new SoundFamily(library?.LaserShots, ProceduralSfx.PulseShot());
+            for (int i = 0; i < BeamVoiceCount; i++)
+            {
+                _beamVoices[i] = library != null && !library.BeamLoops.IsEmpty ? LoopVoice.Create(gameObject, library.BeamLoops) : LoopVoice.Create(gameObject, ProceduralSfx.BossLaserHum(), BeamFallbackGain);
+            }
             _rail = new SoundFamily(library?.RailShots, ProceduralSfx.RailShot());
             _cannonExplosion = new SoundFamily(library?.CannonExplosions, ProceduralSfx.Explosion());
             _rocketExplosion = new SoundFamily(library?.RocketExplosions, ProceduralSfx.Explosion());
@@ -375,6 +387,7 @@ namespace Game.Boot
             _bossLaserLoop.volume = Mathf.MoveTowards(_bossLaserLoop.volume, _bossLasers > 0 ? BossLaserVolume * effects * running : 0f, fade);
             _chorus.Update(dt, filler);
             UpdateHero(dt, filler);
+            UpdateBeams(dt, filler);
             UpdateDrones(dt, filler);
             UpdateRollers(dt, filler);
         }
@@ -411,7 +424,7 @@ namespace Game.Boot
         {
             if (shot.Style == ProjectileStyle.Laser)
             {
-                Shot(_laser, ShotVolume, RapidCooldownSeconds);
+                TouchBeam(shot.Position);
             }
             else if (shot.Style == ProjectileStyle.Lightning)
             {
@@ -704,6 +717,50 @@ namespace Game.Boot
         private void OnHeroRevive() => Play(_heroRevive, 0.8f, SfxKind.Priority);
 
         private void OnShockwave(Vector3 centre, float radius) => Play(_heroPulse, HeroPulseVolume, SfxKind.Priority);
+
+        // A beam tick keeps the voice of the tower it came from alive, or claims a free voice for a tower that just
+        // opened fire. With every voice busy the tick goes unheard; four beams already sound like a wall of them.
+        private void TouchBeam(Vector3 origin)
+        {
+            float now = Time.unscaledTime;
+            int free = -1;
+            for (int i = 0; i < BeamVoiceCount; i++)
+            {
+                bool live = now - _beamLastTick[i] < BeamHoldSeconds;
+                if (live && (origin - _beamOrigins[i]).sqrMagnitude < BeamSameTowerDistance * BeamSameTowerDistance)
+                {
+                    _beamLastTick[i] = now;
+                    return;
+                }
+
+                if (!live && free < 0)
+                {
+                    free = i;
+                }
+            }
+
+            if (free >= 0)
+            {
+                _beamOrigins[free] = origin;
+                _beamLastTick[free] = now;
+            }
+        }
+
+        private void UpdateBeams(float dt, float filler)
+        {
+            float now = Time.unscaledTime;
+            for (int i = 0; i < BeamVoiceCount; i++)
+            {
+                LoopVoice voice = _beamVoices[i];
+                if (voice == null)
+                {
+                    continue;
+                }
+
+                voice.Target = now - _beamLastTick[i] < BeamHoldSeconds ? BeamVolume : 0f;
+                voice.Tick(dt, filler);
+            }
+        }
 
         // Footsteps by distance walked, and the blade's hum while the hero is on their feet.
         private void UpdateHero(float dt, float filler)
