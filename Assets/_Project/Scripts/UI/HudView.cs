@@ -47,6 +47,11 @@ namespace Game.UI
         private static readonly Color Dim = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color BossWarning = new Color(1f, 0.45f, 0.4f);
+        // The wave countdown ticks every second under the wave line, so a quiet start never looks like a stall,
+        // and turns warm for the last seconds.
+        private static readonly Color CountdownColor = new Color(0.75f, 0.85f, 1f);
+        private static readonly Color CountdownUrgent = new Color(1f, 0.85f, 0.4f);
+        private const int CountdownUrgentSeconds = 3;
         private static readonly Color SpeedActive = new Color(1f, 0.85f, 0.35f);
         private static readonly Color NormalFill = new Color(0.1f, 0.18f, 0.3f, 0.92f);
         private static readonly Color SelectedFill = new Color(0.22f, 0.5f, 0.9f, 0.96f);
@@ -63,6 +68,9 @@ namespace Game.UI
         private Text _waveText;
         private Text _baseText;
         private Text _heroText;
+        private Text _countdownText;
+        private CodexView _codex;
+        private int _shownCountdown = int.MinValue;
         private int _heroSecondsShown = -1;
         private Text _moneyText;
         private Text _statusText;
@@ -101,6 +109,9 @@ namespace Game.UI
             AddBackdrops(safe);
             BuildTexts(safe);
             BuildTowerBar(safe);
+            // Made before the icons so the book button can open it; it builds its page the first time it opens.
+            _codex = gameObject.AddComponent<CodexView>();
+            _codex.Initialize(context, safe, time, _input);
             BuildIcons(safe);
             gameObject.AddComponent<BossMarkerView>().Initialize(context, safe, camera);
             gameObject.AddComponent<BossHealthView>().Initialize(context, safe);
@@ -143,6 +154,7 @@ namespace Game.UI
             }
 
             RefreshHero();
+            RefreshCountdown();
 
             EventSystem current = EventSystem.current;
             if (current == null || _input == null)
@@ -202,6 +214,8 @@ namespace Game.UI
             _heroText.color = BossWarning;
             _heroText.text = string.Empty;
             _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY), FontSize);
+            _countdownText = CreateText(safe, "Countdown", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY - LineHeight), SmallFontSize);
+            _countdownText.text = string.Empty;
             _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, AboveBarY), FontSize);
             _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), SmallFontSize);
         }
@@ -231,6 +245,11 @@ namespace Game.UI
             if (_context.SkipWaveAllowed)
             {
                 AddIcon(row, IconType.SkipWave, () => _context.SkipWaveRequested.Raise());
+            }
+
+            if (_codex.Available)
+            {
+                AddIcon(row, IconType.Book, _codex.Open);
             }
         }
 
@@ -509,12 +528,29 @@ namespace Game.UI
                 _builder.Append("  BOSS");
             }
 
-            if (_context.NextWaveCountdown > 0f)
+            return _builder.ToString();
+        }
+
+        // Rebuilt only when the shown second changes; blank while a wave is on its way.
+        private void RefreshCountdown()
+        {
+            int seconds = _context.NextWaveCountdown > 0f && _context.Outcome == LevelOutcome.Running ? Mathf.CeilToInt(_context.NextWaveCountdown) : 0;
+            if (seconds == _shownCountdown)
             {
-                _builder.Append("  next in ").Append(Mathf.CeilToInt(_context.NextWaveCountdown)).Append('s');
+                return;
             }
 
-            return _builder.ToString();
+            _shownCountdown = seconds;
+            if (seconds <= 0)
+            {
+                _countdownText.text = string.Empty;
+                return;
+            }
+
+            _builder.Clear();
+            _builder.Append(_context.WaveNumber == 0 ? "First wave in " : "Next wave in ").Append(seconds).Append('s');
+            _countdownText.text = _builder.ToString();
+            _countdownText.color = seconds <= CountdownUrgentSeconds ? CountdownUrgent : CountdownColor;
         }
     }
 }

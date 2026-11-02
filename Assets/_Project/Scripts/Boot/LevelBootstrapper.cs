@@ -98,7 +98,8 @@ namespace Game.Boot
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
-            bool skipAllowed = debug != null && debug.AllowSkipWave;
+            // Calling the next wave early is part of the game, not a test switch.
+            const bool skipAllowed = true;
 
             ProgressService progress = Services.Get<ProgressService>();
             var upgrades = Services.Get<UpgradeCatalog>();

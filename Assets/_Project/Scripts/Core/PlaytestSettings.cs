@@ -8,11 +8,9 @@ namespace Game.Core
     {
         [SerializeField] private bool _unlockAllWeapons;
         [SerializeField] private bool _infiniteMoney;
-        [SerializeField] private bool _allowSkipWave = true;
 
         public bool UnlockAllWeapons => _unlockAllWeapons;
         public bool InfiniteMoney => _infiniteMoney;
-        public bool AllowSkipWave => _allowSkipWave;
     }
 }
 

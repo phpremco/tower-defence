@@ -14,7 +14,7 @@ namespace Game.UI
     public sealed class ResultView : MonoBehaviour
     {
         private const float PanelWidth = 1180f;
-        private const float PanelHeight = 760f;
+        private const float PanelHeight = 860f;
         private const float StarSize = 130f;
         private const float StarGap = 20f;
         private const float StarRevealSeconds = 0.45f;
@@ -179,7 +179,8 @@ namespace Game.UI
             UiKit.CreateFixedText(rect, source, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -535f), new Vector2(PanelWidth - PreviewSize - 140f, 40f)).color = Muted;
             if (!string.IsNullOrEmpty(result.Story))
             {
-                Text story = UiKit.CreateFixedText(rect, result.Story, 28, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -580f), new Vector2(PanelWidth - PreviewSize - 140f, 100f));
+                // Room for three lines above the buttons, whatever the story says; the box shrinks the text if it must.
+                Text story = UiKit.CreateFixedText(rect, result.Story, 26, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -580f), new Vector2(PanelWidth - PreviewSize - 140f, 130f));
                 story.horizontalOverflow = HorizontalWrapMode.Wrap;
             }
         }

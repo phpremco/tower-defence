@@ -7,26 +7,44 @@ using UnityEngine.UI;
 namespace Game.UI
 {
     /// <summary>
-    /// The hero's powers within reach at all times: a small column on the left of the screen with the shockwave and
-    /// the "next post" order, each with its cooldown and its key. The player no longer has to find the hero in a
-    /// fight and click it first; the full panel over the hero stays for the rest.
+    /// The hero's own panel on the left of the screen, styled like the drones panel so it reads as one thing: a
+    /// "Hero" header with the commander's name and health, and under it the shockwave and the "next post" order,
+    /// each with its cooldown and its key. The player never has to find the hero in a fight and click it first;
+    /// the full panel over the hero stays for the rest.
     /// </summary>
     public sealed class HeroQuickBar : MonoBehaviour
     {
         private const float Left = 18f;
-        private const float IconSize = 72f;
-        private const float Gap = 14f;
-        private const float LabelHeight = 22f;
+        private const float Width = 176f;
+        private const float Padding = 10f;
+        private const float HeaderHeight = 30f;
+        private const float NameHeight = 24f;
+        private const float BarHeight = 10f;
+        private const float BarGap = 6f;
+        private const float IconSize = 68f;
+        private const float LabelHeight = 24f;
+        private const float RowGap = 10f;
+        private const int HeaderSize = 22;
+        private const int NameSize = 18;
         private const int LabelSize = 18;
         private const float RefreshSeconds = 0.1f;
+        private const float LowHealthFraction = 0.35f;
+        private const float MidHealthFraction = 0.65f;
         private const string ShockwaveKey = "F";
         private const string PostKey = "H";
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color DimColor = new Color(0.55f, 0.6f, 0.7f);
+        private static readonly Color HeaderColor = new Color(0.7f, 0.8f, 0.95f);
+        private static readonly Color DownColor = new Color(1f, 0.5f, 0.45f);
+        private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
+        private static readonly Color ShockwaveTint = new Color(0.4f, 0.8f, 1f);
+        private static readonly Color PostTint = new Color(0.5f, 0.6f, 1f);
 
         private LevelContext _context;
         private Commander _hero;
         private RectTransform _root;
+        private Text _name;
+        private Image _healthFill;
         private Button _shockwave;
         private Text _shockwaveLabel;
         private Text _postLabel;
@@ -36,23 +54,41 @@ namespace Game.UI
         {
             _context = context;
             _hero = context.Hero;
+            if (_hero == null)
+            {
+                return;
+            }
+
             _root = new GameObject("HeroQuickBar", typeof(RectTransform)).GetComponent<RectTransform>();
             _root.SetParent(parent, false);
             _root.anchorMin = new Vector2(0f, 0.5f);
             _root.anchorMax = new Vector2(0f, 0.5f);
             _root.pivot = new Vector2(0f, 0.5f);
             _root.anchoredPosition = new Vector2(Left, 0f);
-            float column = IconSize + LabelHeight;
-            _root.sizeDelta = new Vector2(IconSize + 60f, column * 2f + Gap);
+            float rows = (IconSize + LabelHeight) * 2f + RowGap;
+            float height = Padding + HeaderHeight + NameHeight + BarGap + BarHeight + RowGap + rows + Padding;
+            _root.sizeDelta = new Vector2(Width, height);
+            UiKit.CreatePanel(_root, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
 
-            _shockwave = Action(0, IconType.Shockwave, () => _hero.TryShockwave(), out _shockwaveLabel);
-            Action(1, IconType.Hero, () => _hero.MoveTo((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
+            float y = -Padding;
+            Text header = UiKit.CreateFixedText(_root, "Hero", HeaderSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, y), new Vector2(Width - Padding * 2f, HeaderHeight));
+            // The same display face as the drones panel header, so the two panels read as a pair.
+            header.font = UiKit.DefaultFont;
+            header.color = HeaderColor;
+            y -= HeaderHeight;
+            _name = UiKit.CreateFixedText(_root, _hero.Definition.DisplayName, NameSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, y), new Vector2(Width - Padding * 2f, NameHeight));
+            y -= NameHeight + BarGap;
+            _healthFill = HeroPanelStyle.CreateHealthBar(_root, new Vector2(Padding, y), new Vector2(Width - Padding * 2f, BarHeight));
+            y -= BarHeight + RowGap;
+
+            _shockwave = Action(y, IconType.Shockwave, ShockwaveTint, () => _hero.TryShockwave(), out _shockwaveLabel);
+            y -= IconSize + LabelHeight + RowGap;
+            Action(y, IconType.Hero, PostTint, () => _hero.MoveTo((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
             Refresh();
         }
 
-        private Button Action(int index, IconType type, UnityEngine.Events.UnityAction action, out Text label)
+        private Button Action(float top, IconType type, Color tint, UnityEngine.Events.UnityAction action, out Text label)
         {
-            float top = -index * (IconSize + LabelHeight + Gap);
             Button button = UiKit.CreateIconButton(_root, IconFactory.Get(type), IconSize, () =>
             {
                 action();
@@ -60,21 +96,27 @@ namespace Game.UI
             });
             button.navigation = new Navigation { mode = Navigation.Mode.None };
             Destroy(button.GetComponent<LayoutElement>());
+            HeroPanelStyle.Tint(button, tint);
             RectTransform rect = button.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0f, 1f);
             rect.anchorMax = new Vector2(0f, 1f);
             rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(0f, top);
+            rect.anchoredPosition = new Vector2(Padding, top);
             rect.sizeDelta = new Vector2(IconSize, IconSize);
 
-            label = UiKit.CreateFixedText(_root, string.Empty, LabelSize, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(0f, top - IconSize), new Vector2(IconSize + 60f, LabelHeight));
+            label = UiKit.CreateFixedText(_root, string.Empty, LabelSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, top - IconSize), new Vector2(Width - Padding * 2f, LabelHeight));
             label.color = TextColor;
             return button;
         }
 
         private void LateUpdate()
         {
-            bool show = _hero != null && _context.Outcome == LevelOutcome.Running;
+            if (_root == null)
+            {
+                return;
+            }
+
+            bool show = _context.Outcome == LevelOutcome.Running;
             if (_root.gameObject.activeSelf != show)
             {
                 _root.gameObject.SetActive(show);
@@ -89,14 +131,26 @@ namespace Game.UI
 
         private void Refresh()
         {
+            if (_hero.IsDown)
+            {
+                int seconds = Mathf.CeilToInt(_hero.ReviveRemaining);
+                _name.text = $"Down  {seconds / 60}:{seconds % 60:00}";
+                _name.color = DownColor;
+            }
+            else
+            {
+                _name.text = _hero.Definition.DisplayName;
+                _name.color = TextColor;
+            }
+
+            HeroPanelStyle.FillHealth(_healthFill, _hero.IsDown ? 0f : _hero.Health.Current / _hero.Health.Max, LowHealthFraction, MidHealthFraction);
+
             bool ready = !_hero.IsDown && _hero.ShockwaveReady >= 1f;
             _shockwave.interactable = ready;
-            _shockwaveLabel.text = ready ? $"Pulse  {ShockwaveKey}" : $"Pulse  {Cooldown(_hero.ShockwaveReady, _hero.Definition.ShockwaveCooldown)}s";
+            _shockwaveLabel.text = ready ? $"Pulse  {ShockwaveKey}" : $"Pulse  {HeroPanelStyle.Cooldown(_hero.ShockwaveReady, _hero.Definition.ShockwaveCooldown)}s";
             _shockwaveLabel.color = ready ? TextColor : DimColor;
             _postLabel.text = $"Next post  {PostKey}";
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
         }
-
-        private static int Cooldown(float ready, float total) => Mathf.CeilToInt((1f - ready) * total);
     }
 }
