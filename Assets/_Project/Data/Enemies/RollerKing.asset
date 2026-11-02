@@ -50,3 +50,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: 7a2601f2a9a57244b8f7a019e6f50dc7, type: 2}
+  _description: 'The roller king: a quake with every landing.'

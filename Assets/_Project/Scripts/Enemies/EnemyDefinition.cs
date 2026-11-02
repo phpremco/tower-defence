@@ -54,6 +54,7 @@ namespace Game.Enemies
         [Header("Sound")]
         [Tooltip("Every sound this species makes. Empty: the generic generated sounds.")]
         [SerializeField] private CreatureVoice _voice;
+        [SerializeField] [TextArea] private string _description = string.Empty;
 
         public string DisplayName => _displayName;
 
@@ -153,6 +154,9 @@ namespace Game.Enemies
 
         /// <summary>The sounds of this species, or null for the generic ones.</summary>
         public CreatureVoice Voice => _voice;
+
+        /// <summary>What the codex says about this creature: its habit and how to answer it.</summary>
+        public string Description => _description;
 
         private void OnValidate()
         {

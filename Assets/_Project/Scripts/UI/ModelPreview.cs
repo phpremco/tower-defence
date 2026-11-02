@@ -17,6 +17,8 @@ namespace Game.UI
     {
         private const int TextureSize = 512;
         private const float RigDistance = 5000f;
+        private const float RigSpacing = 100f;
+        private static int _rigCount;
         private const float TurnDegreesPerSecond = 28f;
         private const float BurstDegreesPerSecond = 720f;
         private const float BurstDecay = 2.6f;
@@ -92,6 +94,17 @@ namespace Game.UI
                 ModelFit.Place(tower.Model, _turntable, Vector3.zero, 0f, tower.ModelScale, tower.KeepModelColours ? Color.white : Color.Lerp(Color.white, tower.Color, 0.55f), 0.15f);
             }
 
+            Frame();
+        }
+
+        /// <summary>Empties the turntable, for a window that is hidden while others stay in use.</summary>
+        public void ShowNothing() => Clear();
+
+        /// <summary>A creature at rest, built like the one on the field.</summary>
+        public void ShowEnemy(Game.Enemies.EnemyDefinition enemy)
+        {
+            Clear();
+            Game.Enemies.EnemyDisplayBuilder.Build(_turntable, enemy);
             Frame();
         }
 
@@ -242,7 +255,8 @@ namespace Game.UI
             image.texture = _texture;
 
             var rig = new GameObject("PreviewRig");
-            rig.transform.position = new Vector3(RigDistance, 0f, 0f);
+            // Every window gets its own spot far off the field, so one camera never sees another window's model.
+            rig.transform.position = new Vector3(RigDistance, 0f, _rigCount++ * RigSpacing);
             _rig = rig.transform;
 
             var turntable = new GameObject("Turntable");

@@ -173,9 +173,8 @@ MonoBehaviour:
     _gain: 0.31474748
   _heroDeaths:
     _clips:
-    - {fileID: 8300000, guid: c7aff243cdad5944b8d13c12b99eec4c, type: 3}
-    - {fileID: 8300000, guid: 5197f98421177c940bbbe3b287791beb, type: 3}
-    _gain: 0.27943292
+    - {fileID: 8300000, guid: 474c443fb65ec92428fad12d6f2c38e9, type: 3}
+    _gain: 1.2111436
   _heroFalls:
     _clips:
     - {fileID: 8300000, guid: ca6ef355eb65bb942a30fe46e83c852b, type: 3}
@@ -242,6 +241,10 @@ MonoBehaviour:
     _clips:
     - {fileID: 8300000, guid: 619161933c409084aa1e561caab597ee, type: 3}
     _gain: 1.6164354
+  _beamLoops:
+    _clips:
+    - {fileID: 8300000, guid: 08c1475a282e87c42b835ae295a7ebdd, type: 3}
+    _gain: 0.23459953
   _bossAlarms:
     _clips:
     - {fileID: 8300000, guid: d01e3822a02f8e84882d65ca5a8f1f22, type: 3}

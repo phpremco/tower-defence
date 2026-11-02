@@ -841,6 +841,8 @@ namespace Game.Levels
             RemoveTower(partner, partnerCell, release: true);
 
             Tower hybrid = CreateTower(recipe.Result, cell, preview: false);
+            // The hybrid keeps the lower of the two levels: the stronger partner lifts the result no further.
+            hybrid.SetLevel(Mathf.Min(selected.LevelIndex, partner.LevelIndex));
             hybrid.InheritedValue = inherited;
             _towers[cell] = hybrid;
             _context.TowerUpgraded.Raise();

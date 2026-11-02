@@ -202,7 +202,8 @@ namespace Game.UI
             {
                 bool canCombine = _context.Wallet.CanAfford(offer.Cost);
                 _combine.interactable = canCombine;
-                _combinePrice.text = $"Combine\n{offer.Cost}";
+                // The result's name on the button, so the player knows what the two towers turn into.
+                _combinePrice.text = $"{offer.Result.DisplayName}\n{offer.Cost}";
                 _combinePrice.color = canCombine ? TextColor : TooExpensive;
             }
             // Grey when there is nothing to buy, red when there is but the player cannot pay yet.

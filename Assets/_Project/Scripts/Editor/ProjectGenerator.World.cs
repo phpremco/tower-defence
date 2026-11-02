@@ -130,6 +130,7 @@ namespace Game.Editor
             public TowerDefinition CryoBeam;
 
             public TowerDefinition[] Standard => new[] { Pulse, Cannon, Laser, Cryo, Rocket, Tesla, Railgun, Support };
+            public TowerDefinition[] Hybrids => new[] { Artillery, StormRifle, CryoBeam };
         }
 
         private static Roster CreateRoster(TowerDefinition pulse, TowerDefinition cannon, TowerDefinition rocket)
@@ -153,15 +154,17 @@ namespace Game.Editor
             roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(0.4f, 1f, 0.6f),
                 new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 140f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
 
-            // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price.
+            // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price. Every
+            // level beats the two parents at that level put together (by 15 to 50 percent), in one cell, and the
+            // upgrades cost close to what upgrading both parents would.
             roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.6f, 0.2f),
-                new[] { Lvl(0, 60f, 5.1f, 1.6f), Lvl(120, 90f, 5.5f, 1.4f), Lvl(180, 130f, 5.9f, 1.2f) }, 240f);
+                new[] { Lvl(0, 70f, 5.1f, 1.6f), Lvl(220, 130f, 5.5f, 1.4f), Lvl(320, 220f, 5.9f, 1.2f) }, 240f);
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
-                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(110, 20f, 4.4f, 0.18f), Lvl(170, 28f, 4.7f, 0.15f) }, 190f);
+                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(200, 20f, 4.4f, 0.18f), Lvl(300, 28f, 4.7f, 0.15f) }, 190f);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(110, 8f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(170, 8f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(210, 13f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(310, 20f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
 
             SetModel(roster.Laser, "turret_single", 1.35f);
             SetModel(roster.Cryo, "satelliteDish", 1.4f);
@@ -351,7 +354,7 @@ namespace Game.Editor
                     RewardTower = roster.Cryo,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "Alien crystals in the forest turned out to hold a cold-field emitter. Our engineers adapted it.",
-                    Research = 26,
+                    Research = 36,
                     Power = 8,
                     PathObjects = new[] { slowField, mine },
                     Recipes = new CombineRecipe[0],

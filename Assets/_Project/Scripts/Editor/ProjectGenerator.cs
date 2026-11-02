@@ -162,7 +162,8 @@ namespace Game.Editor
             SetModel(rocket, "satelliteDish_large", 1.5f);
             SetShapes(roster, cannon, rocket, blockade);
 
-            UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard, new[] { repairDrone, harvestDrone, attackDrone });
+            UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard, roster.Hybrids, new[] { repairDrone, harvestDrone, attackDrone });
+            CodexCatalog codex = CreateCodex(recipes, bestiary);
             UiSkin skin = CreateSkin();
             CampaignCatalog campaign = CreateCampaign(allLevels, difficulties);
             BakeGlobe(campaign);
@@ -172,7 +173,7 @@ namespace Game.Editor
             ConfigureRenderPipeline();
             CreateSfxLibrary();
             CreateVfxLibrary();
-            CreateBootScene(campaign, upgradeCatalog, unlocks, debug, skin, CreateShaderKeepers());
+            CreateBootScene(campaign, upgradeCatalog, codex, unlocks, debug, skin, CreateShaderKeepers());
             CreateLevelScene();
             CreateMainMenuScene();
             CreateMenuScene<IntroScreen>(SceneNames.Intro);
@@ -310,7 +311,7 @@ namespace Game.Editor
             stars.GetArrayElementAtIndex(1).floatValue = 0.9f;
 
             SerializedProperty reward = so.FindProperty("_reward");
-            reward.FindPropertyRelative("ResearchPoints").intValue = 20;
+            reward.FindPropertyRelative("ResearchPoints").intValue = 30;
             reward.FindPropertyRelative("PowerCurrency").intValue = 6;
             reward.FindPropertyRelative("NewTower").objectReferenceValue = rewardTower;
             reward.FindPropertyRelative("Source").intValue = (int)UnlockSource.HomePlanetIntel;
@@ -534,15 +535,60 @@ namespace Game.Editor
             return asset;
         }
 
-        private static UpgradeCatalog CreateUpgrades(TowerDefinition[] towers, DroneDefinition[] drones)
+        private const float HybridUpgradeCostScale = 1.6f;
+
+        private static void AddTowerUpgrades(List<UpgradeDefinition> all, TowerDefinition tower, float costScale)
+        {
+            all.Add(CreateUpgrade($"{tower.Id}_Damage", "Damage", UpgradeTarget.TowerDamage, Scaled(new[] { 5, 10, 15 }, costScale), 0.1f, tower.Id, tower.DisplayName));
+            all.Add(CreateUpgrade($"{tower.Id}_Range", "Range", UpgradeTarget.TowerRange, Scaled(new[] { 5, 10, 15 }, costScale), 0.05f, tower.Id, tower.DisplayName));
+            all.Add(CreateUpgrade($"{tower.Id}_FireRate", "Fire rate", UpgradeTarget.TowerFireRate, Scaled(new[] { 6, 12, 18 }, costScale), 0.1f, tower.Id, tower.DisplayName));
+        }
+
+        private static int[] Scaled(int[] costs, float scale)
+        {
+            var result = new int[costs.Length];
+            for (int i = 0; i < costs.Length; i++)
+            {
+                result[i] = Mathf.RoundToInt(costs[i] * scale);
+            }
+
+            return result;
+        }
+
+        // The codex lists every recipe and every creature the generator knows, in the order the bestiary names them.
+        private static CodexCatalog CreateCodex(CombineRecipe[] recipes, Bestiary bestiary)
+        {
+            var codex = LoadOrCreate<CodexCatalog>($"{DataRoot}/Levels/CodexCatalog.asset");
+            var so = new SerializedObject(codex);
+            SetReferences(so.FindProperty("_recipes"), recipes);
+            var enemies = new List<EnemyDefinition>();
+            foreach (System.Reflection.FieldInfo field in typeof(Bestiary).GetFields())
+            {
+                if (field.FieldType == typeof(EnemyDefinition) && field.GetValue(bestiary) is EnemyDefinition enemy)
+                {
+                    enemies.Add(enemy);
+                }
+            }
+
+            SetReferences(so.FindProperty("_enemies"), enemies.ToArray());
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(codex);
+            return codex;
+        }
+
+        private static UpgradeCatalog CreateUpgrades(TowerDefinition[] towers, TowerDefinition[] hybrids, DroneDefinition[] drones)
         {
             // Display names stay short: the upgrade screen shows the value before and after next to them.
             var all = new List<UpgradeDefinition>();
             foreach (TowerDefinition tower in towers)
             {
-                all.Add(CreateUpgrade($"{tower.Id}_Damage", "Damage", UpgradeTarget.TowerDamage, new[] { 5, 10, 15 }, 0.1f, tower.Id, tower.DisplayName));
-                all.Add(CreateUpgrade($"{tower.Id}_Range", "Range", UpgradeTarget.TowerRange, new[] { 5, 10, 15 }, 0.05f, tower.Id, tower.DisplayName));
-                all.Add(CreateUpgrade($"{tower.Id}_FireRate", "Fire rate", UpgradeTarget.TowerFireRate, new[] { 6, 12, 18 }, 0.1f, tower.Id, tower.DisplayName));
+                AddTowerUpgrades(all, tower, 1f);
+            }
+
+            // A hybrid is worth two towers, so its permanent upgrades cost more research.
+            foreach (TowerDefinition hybrid in hybrids)
+            {
+                AddTowerUpgrades(all, hybrid, HybridUpgradeCostScale);
             }
 
             const string BaseText = "The base and the gates that hold the roads";
@@ -805,11 +851,12 @@ namespace Game.Editor
             AssetDatabase.CreateFolder(parent, System.IO.Path.GetFileName(folder));
         }
 
-        private static void CreateBootScene(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, PlaytestSettings playtest, UiSkin skin, string[] keeperPaths)
+        private static void CreateBootScene(CampaignCatalog campaign, UpgradeCatalog upgrades, CodexCatalog codex, UnlockTable unlocks, PlaytestSettings playtest, UiSkin skin, string[] keeperPaths)
         {
             // NewScene unloads assets nobody references yet, so remember the paths and load them again afterwards.
             string campaignPath = AssetDatabase.GetAssetPath(campaign);
             string upgradesPath = AssetDatabase.GetAssetPath(upgrades);
+            string codexPath = AssetDatabase.GetAssetPath(codex);
             string unlocksPath = AssetDatabase.GetAssetPath(unlocks);
             string playtestPath = AssetDatabase.GetAssetPath(playtest);
             string skinPath = AssetDatabase.GetAssetPath(skin);
@@ -821,6 +868,7 @@ namespace Game.Editor
             so.FindProperty("_inputActions").objectReferenceValue = AssetDatabase.LoadAssetAtPath<InputActionAsset>(InputAssetPath);
             so.FindProperty("_campaign").objectReferenceValue = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(campaignPath);
             so.FindProperty("_upgrades").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(upgradesPath);
+            so.FindProperty("_codex").objectReferenceValue = AssetDatabase.LoadAssetAtPath<CodexCatalog>(codexPath);
             so.FindProperty("_unlockTable").objectReferenceValue = AssetDatabase.LoadAssetAtPath<UnlockTable>(unlocksPath);
             so.FindProperty("_playtestSettings").objectReferenceValue = AssetDatabase.LoadAssetAtPath<PlaytestSettings>(playtestPath);
             so.FindProperty("_sfxLibrary").objectReferenceValue = AssetDatabase.LoadAssetAtPath<SfxLibrary>(SfxLibraryPath);

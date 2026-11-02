@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: 11962b7c75056aa459e5e17bd93ab5cd, type: 2}
+  _description: Marsh leech. Quick and low, it leaves a slick of mud that hurries everything that follows it.

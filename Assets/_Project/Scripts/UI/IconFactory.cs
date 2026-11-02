@@ -32,6 +32,9 @@ namespace Game.UI
         Trap,
         Patrol,
 
+        /// <summary>An open book: the codex.</summary>
+        Book,
+
         /// <summary>A flat-topped hexagon plate: a region on the planet map.</summary>
         Hex,
 
@@ -85,6 +88,11 @@ namespace Game.UI
                     return Star;
                 case IconType.Check:
                     return Check;
+                case IconType.Book:
+                    // An open book: two pages either side of a spine, with a line of text on each.
+                    return (u, v) => (Mathf.Abs(u - 0.5f) < 0.035f && v > 0.14f && v < 0.86f)
+                        || (u > 0.1f && u < 0.44f && v > 0.2f && v < 0.8f && !(u > 0.16f && u < 0.38f && Mathf.Abs(v - 0.5f) < 0.04f))
+                        || (u > 0.56f && u < 0.9f && v > 0.2f && v < 0.8f && !(u > 0.62f && u < 0.84f && Mathf.Abs(v - 0.5f) < 0.04f));
                 case IconType.Hero:
                     // A shield: a flat top that narrows to a point.
                     return (u, v) => (v > 0.5f && v < 0.86f && Mathf.Abs(u - 0.5f) < 0.3f) || Triangle(u, v, 0.2f, 0.5f, 0.8f, 0.5f, 0.5f, 0.1f);

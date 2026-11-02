@@ -23,16 +23,16 @@ MonoBehaviour:
     SlowFactor: 0.4
     SlowSeconds: 2.5
     Model: {fileID: 0}
-  - Cost: 110
-    Damage: 8
+  - Cost: 210
+    Damage: 13
     Range: 4.6
     FireInterval: 0.13
     HealthBonus: 0
     SlowFactor: 0.33
     SlowSeconds: 3.5
     Model: {fileID: 0}
-  - Cost: 170
-    Damage: 8
+  - Cost: 310
+    Damage: 20
     Range: 4.9
     FireInterval: 0.11
     HealthBonus: 0

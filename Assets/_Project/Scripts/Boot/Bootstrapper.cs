@@ -22,6 +22,7 @@ namespace Game.Boot
         [SerializeField] private InputActionAsset _inputActions;
         [SerializeField] private CampaignCatalog _campaign;
         [SerializeField] private UpgradeCatalog _upgrades;
+        [SerializeField] private CodexCatalog _codex;
         [SerializeField] private UnlockTable _unlockTable;
         [SerializeField] private PlaytestSettings _playtestSettings;
         [Tooltip("Use the Low (Switch) quality profile: softer bloom, no mist or depth of field, half the particles.")]
@@ -63,6 +64,10 @@ namespace Game.Boot
             Services.Register(progress);
             Services.Register(_campaign);
             Services.Register(_upgrades);
+            if (_codex != null)
+            {
+                Services.Register(_codex);
+            }
             Services.Register(_playtestSettings);
             Services.Register(_uiSkin);
             if (_sfxLibrary != null)

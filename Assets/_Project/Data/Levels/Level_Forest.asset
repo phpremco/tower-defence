@@ -443,7 +443,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a2986e58951bcb44ba56c1287b6e431a, type: 2}
     - {fileID: 11400000, guid: 77b3ff8694aef3d468cf7a8dc596136e, type: 2}
   _reward:
-    ResearchPoints: 26
+    ResearchPoints: 36
     PowerCurrency: 8
     NewTower: {fileID: 11400000, guid: c2ebacdbbbddfee4588a8abdae16dfd3, type: 2}
     Source: 1

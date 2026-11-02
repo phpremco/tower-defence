@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: ba193554eb5b67d4086928e29663c888, type: 2}
+  _description: Flying ray with a spiked tail. Lashes gates from the air; only anti-air weapons reach it.

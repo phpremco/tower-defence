@@ -891,6 +891,15 @@ namespace Game.UI
                         return tower;
                     }
                 }
+
+                // Hybrids are never on a level's build bar; they come out of its recipes.
+                foreach (CombineRecipe recipe in node.Level.Recipes)
+                {
+                    if (recipe != null && recipe.Result != null && recipe.Result.Id == id)
+                    {
+                        return recipe.Result;
+                    }
+                }
             }
 
             return null;

@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
+  _description: Ant swarm. Weak alone and dangerous in crowds; splash damage thins them fast. Bites gates and the hero.

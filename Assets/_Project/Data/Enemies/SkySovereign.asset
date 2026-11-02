@@ -50,3 +50,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: b02e62e959e506a40bfe8e7e9734d240, type: 2}
+  _description: 'The ray sovereign: a tail laser swept across the field from the air.'

@@ -50,3 +50,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: b27127c04e6955b46a6318550d68fff9, type: 2}
+  _description: 'The alpha: a howl that sends the whole pack running.'

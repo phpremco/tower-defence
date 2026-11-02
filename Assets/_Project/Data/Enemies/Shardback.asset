@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: b1a9930c59796f346a65afc0cecb727b, type: 2}
+  _description: Ice beetle under a crust of shards. Slow and heavily plated; spits frost at the towers it passes.

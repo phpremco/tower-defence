@@ -51,3 +51,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: 8990574a296fd4d47a6c5708c79ad73b, type: 2}
+  _description: 'The scorpion queen: acid rain on the towers and plates that grow back.'

@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: d2b4e4a566b6f084fb04516930db4acf, type: 2}
+  _description: Element bat. Rises from fire nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.

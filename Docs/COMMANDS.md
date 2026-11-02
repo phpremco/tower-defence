@@ -174,6 +174,10 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - `Tools/PlayTest/sfx_library_probe.cs` reports the recorded sound library and how many clips each list holds. Since 2026-11-01 the library holds `SoundSet`s with a measured gain and lists the `CreatureVoice` assets; see `Docs/AUDIO.md` for the rules and levels, and the Options screen "Sound test" to audition every set.
 - `Tools/PlayTest/look_shots.sh <prefix> [level]` plays a level from Boot, launches drones and a wave, and captures overview, wave, hero and base close-ups into `Assets/Temp/<prefix>_*.png` (delete the folder afterwards); it stops Play Mode at the end. `shader_probe.cs` reports whether `Game/UnitLit` compiled.
 - `Tools/PlayTest/hum_probe.cs` reports which clip the boss laser loop plays.
+- `Tools/PlayTest/turn_probe.cs` (after `hero_to_base.cs`) steps until the hero arrives and then samples its yaw, leg swing and turn-step blend every three frames, to read the arrival turn as numbers.
+- `Tools/PlayTest/countdown_probe.cs` reports the HUD wave line, the countdown line with its colour and the context countdown.
+- `Tools/PlayTest/codex_open.cs` opens the codex on the page in `menu_arg.txt` ("recipes" or "enemies") at the row in `card_arg.txt`; `codex_close.cs` closes it. `beam_probe.cs` lists the beam loop voices of the sound player (clip, volume, seconds since the last laser tick).
+- `Tools/Audio/Import Approved Clips` (editor menu) cuts the laser charge recording into `Approved/laser_beam_loop.wav` and writes `hero-death.mp3` as `Approved/Hero/hero_death.wav`; run it before the generator when either recording changes.
 - `Tools/PlayTest/alarm_probe.cs` reports which clip the boss alarm plays; `ripple_probe.cs` plays an impact ripple at the hero and holds the frame for a screenshot.
 - `Tools/PlayTest/hover_probe.cs` builds a tower beside the road and puts the placing cursor on the next cell (zoom with `towers`).
 - `Tools/PlayTest/dump_map.cs` prints every level as a text map with its validation errors (run after the generator).

@@ -49,3 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: 5156e7fa6ed1d2248a625a346379a9cd, type: 2}
+  _description: Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.
