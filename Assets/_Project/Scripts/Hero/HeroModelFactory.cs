@@ -33,6 +33,9 @@ namespace Game.Hero
         private static readonly Color DeadSuitColor = new Color(0.18f, 0.2f, 0.26f);
         private static readonly Color DeadVisorColor = new Color(0.08f, 0.1f, 0.12f);
         private const float ArmourGlow = 0.6f;
+        private const float ShoulderBallRadius = 0.085f;
+        // The boot hangs this far below the ankle (its blob sits 0.03 under the ankle with a half height of 0.065).
+        private const float BootDepth = 0.095f;
         private const float SuitSeamGlow = 0.45f;
 
         /// <summary>The meshes of the figure and where its joints sit. Right-hand parts are mirrored for the left.</summary>
@@ -72,6 +75,9 @@ namespace Game.Hero
             /// <summary>Where the cloak hangs from, in figure space.</summary>
             public Vector3 Nape;
 
+            /// <summary>How far the figure stands above its origin so the boot soles rest on the ground instead of in it.</summary>
+            public float SoleLift;
+
             /// <summary>Where a weapon grip sits in the hand, in the space of the forearm.</summary>
             public Vector3 Hand;
 
@@ -104,7 +110,7 @@ namespace Game.Hero
             var parts = new Parts
             {
                 Pelvis = new Vector3(0f, 0.74f, 0f),
-                Shoulder = new Vector3(0.33f, 1.22f, 0.03f),
+                Shoulder = new Vector3(0.31f, 1.24f, 0.03f),
                 Elbow = new Vector3(0.03f, -0.26f, 0.02f),
                 Hip = new Vector3(0.14f, 0.72f, 0f),
                 Knee = new Vector3(0f, -0.36f, 0.02f),
@@ -117,6 +123,7 @@ namespace Game.Hero
                 HipHolster = new Vector3(0.29f, 0.74f, 0.1f),
             };
 
+            parts.SoleLift = BootDepth - (parts.Hip.y + parts.Knee.y + parts.Ankle.y);
             parts.Body = Body();
             parts.Head = Head();
             parts.ArmUpper = ArmUpper(parts.Elbow);
@@ -153,13 +160,18 @@ namespace Game.Hero
             b.AddTube(new[] { new Vector3(0f, 1.2f, 0.04f), new Vector3(0f, 1.3f, 0.04f) }, new[] { 0.13f, 0.12f }, 10, Metal, false);
             b.AddTorus(new Vector3(0f, 1.3f, 0.04f), Vector3.up, 0.115f, 0.022f, 12, 5, Trim);
 
+            // The shoulders: a suited yoke either side of the chest that the pauldrons sit on and the arm balls seat
+            // in, so the arms grow out of the body instead of hanging beside it.
+            b.AddBlob(new Vector3(0.26f, 1.2f, 0.03f), new Vector3(0.11f, 0.09f, 0.11f), 4, 9, 0.02f, 18, Dark, false);
+            b.AddBlob(new Vector3(-0.26f, 1.2f, 0.03f), new Vector3(0.11f, 0.09f, 0.11f), 4, 9, 0.02f, 19, Dark, false);
+
             // Pauldrons in the suit's blue with a lit rim: a heavy one over the sword shoulder, a smaller one opposite.
             b.AddBlob(new Vector3(0.39f, 1.27f, 0.03f), new Vector3(0.14f, 0.1f, 0.15f), 5, 10, 0.02f, 7, Dark, false, Mathf.PI * 0.62f);
-            b.AddBlob(new Vector3(0.39f, 1.27f, 0.03f), new Vector3(0.11f, 0.09f, 0.12f), 4, 9, 0.02f, 8, Metal, false);
+            b.AddBlob(new Vector3(0.38f, 1.27f, 0.03f), new Vector3(0.12f, 0.1f, 0.13f), 4, 9, 0.02f, 8, Metal, false);
             b.AddTorus(new Vector3(0.39f, 1.3f, 0.03f), Vector3.up, 0.12f, 0.012f, 12, 4, Trim);
             b.AddBlob(new Vector3(0.39f, 1.355f, 0.03f), new Vector3(0.07f, 0.03f, 0.09f), 3, 6, 0f, 0, Armour, false);
             b.AddBlob(new Vector3(-0.37f, 1.25f, 0.03f), new Vector3(0.11f, 0.08f, 0.13f), 4, 9, 0.02f, 9, Dark, false, Mathf.PI * 0.6f);
-            b.AddBlob(new Vector3(-0.37f, 1.25f, 0.03f), new Vector3(0.09f, 0.08f, 0.11f), 4, 8, 0.02f, 10, Metal, false);
+            b.AddBlob(new Vector3(-0.36f, 1.25f, 0.03f), new Vector3(0.11f, 0.1f, 0.12f), 4, 8, 0.02f, 10, Metal, false);
             b.AddTorus(new Vector3(-0.37f, 1.27f, 0.03f), Vector3.up, 0.1f, 0.012f, 12, 4, Trim);
 
             // The pack: a gunmetal case, two nozzles that glow, and an antenna.
@@ -199,10 +211,12 @@ namespace Game.Hero
             return b.ToMesh("Hero_head");
         }
 
-        // The upper arm in the suit, from the shoulder to a gunmetal elbow joint.
+        // The upper arm in the suit, from a gunmetal shoulder ball to a gunmetal elbow joint. The ball sits on the
+        // pivot, so however far the arm swings or aims it stays seated in the pauldron with no cut end showing.
         private static Mesh ArmUpper(Vector3 elbow)
         {
             PropMeshBuilder b = Builder();
+            b.AddBlob(Vector3.zero, Vector3.one * ShoulderBallRadius, 4, 8, 0f, 0, Metal, false);
             b.AddTube(new[] { Vector3.zero, elbow }, new[] { 0.075f, 0.065f }, 8, Dark, false);
             b.AddBlob(elbow, Vector3.one * 0.07f, 4, 8, 0f, 0, Metal, false);
             return b.ToMesh("Hero_arm_upper");

@@ -59,8 +59,24 @@ namespace Game.Enemies
         private const float BatBeatSpeed = 15f;
         private const float BatBeatDegrees = 40f;
         private const float FinBeatSpeed = 4.5f;
-        private const float FinBeatDegrees = 22f;
-        private const float FinRippleDegrees = 8f;
+        private const float FinBeatDegrees = 14f;
+        private const float FinRippleDegrees = 4f;
+        private const float FinLagRadians = 0.7f;
+        private const float FlapHeave = 0.05f;
+        private const float FlapPitchDegrees = 4f;
+        private const float BatFlapHeave = 0.012f;
+        private const float BatFlapPitchDegrees = 1.5f;
+        private const float WingSweepDegrees = 14f;
+        private const float WingFeatherDegrees = 10f;
+        // A pack hunter runs low and flat: little bounce, a long fore-and-aft stride and the body thrown forward.
+        private const float RunnerPitchDegrees = 1.5f;
+        private const float RunnerBounce = 0.5f;
+        private const float RunnerLeanDegrees = 7f;
+        private const float RunnerStretch = 1.35f;
+        private const float HoverPulse = 0.04f;
+        private const float HoverPulseSpeed = 2.6f;
+        private const float GlideSway = 0.5f;
+        private const float WavePhaseStep = 0.9f;
         private const float BreathScale = 0.05f;
         private const float BreathSpeed = 2.2f;
         private const float TailSwayDegrees = 16f;
@@ -180,6 +196,8 @@ namespace Game.Enemies
         private static readonly Color BogSplash = new Color(0.45f, 0.6f, 0.25f);
         private static readonly Color GroundDust = new Color(0.4f, 0.34f, 0.3f);
         private static readonly List<EnemyDeathEffect.Part> PartBuffer = new List<EnemyDeathEffect.Part>(32);
+        // Made on first use: Unity forbids creating one in a field initializer of a MonoBehaviour.
+        private static MaterialPropertyBlock _waveBlock;
 
         // One animated piece: its root on the body, the knee for legs, which side it is on and its spec.
         private sealed class Rig
@@ -211,6 +229,7 @@ namespace Game.Enemies
         private bool _procedural;
         private bool _dangle;
         private bool _straightLegs;
+        private bool _glides;
         private bool _bleeds;
         private float _hover;
         private float _ballRadius;
@@ -268,6 +287,8 @@ namespace Game.Enemies
         private readonly List<Rig> _blades = new List<Rig>();
         private readonly List<Rig> _stingers = new List<Rig>();
         private readonly List<Rig> _jaws = new List<Rig>();
+        private readonly List<Renderer> _wavedRenderers = new List<Renderer>();
+        private readonly List<SurfaceWave> _waves = new List<SurfaceWave>();
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -358,6 +379,7 @@ namespace Game.Enemies
             _rollSpin = 0f;
             _gaitRate = GaitPerUnit * Random.Range(1f - GaitVariation, 1f + GaitVariation);
             _swayPhase = Random.Range(0f, Mathf.PI * 2f);
+            ApplyWaves();
             _clock = Random.Range(0f, 10f);
             _nextDisplay = _clock + Random.Range(DisplayIntervalMin, DisplayIntervalMax);
             _displayTime = float.PositiveInfinity;
@@ -482,6 +504,7 @@ namespace Game.Enemies
             _creatureScale = definition.Scale * parts.ScaleFactor;
             _dangle = parts.LegsDangle;
             _straightLegs = parts.StraightLegs;
+            _glides = parts.Glides;
             _bleeds = parts.Bleeds;
             _hover = parts.HoverHeight * _creatureScale;
             _ballRadius = parts.BallRadius;
@@ -511,6 +534,7 @@ namespace Game.Enemies
             }
 
             _shell = SpawnPart("Shell", body, parts.Body, materials, Vector3.zero, false);
+            TrackWave(_shell, parts.BodyWave);
             foreach (CreaturePart spec in parts.Moving)
             {
                 var rig = new Rig
@@ -519,6 +543,7 @@ namespace Game.Enemies
                     Side = spec.Mirrored ? -1f : 1f,
                     Root = SpawnPart(spec.Role.ToString(), body, spec.Mesh, materials, spec.Pivot, spec.Mirrored),
                 };
+                TrackWave(rig.Root, spec.Wave);
                 if (spec.Lower != null)
                 {
                     // The knee hangs inside the hip's frame, so the hip's mirror flips it along.
@@ -584,6 +609,33 @@ namespace Game.Enemies
             light.intensity = BossLightIntensity;
             light.range = BossLightRange;
             light.shadows = LightShadows.None;
+        }
+
+        private void TrackWave(Transform part, SurfaceWave wave)
+        {
+            if (wave.IsActive)
+            {
+                _wavedRenderers.Add(part.GetComponent<Renderer>());
+                _waves.Add(wave);
+            }
+        }
+
+        // The shader waves ride a property block, so they survive the flash and frost material swaps. Each individual
+        // and each part starts at its own moment of the wave, so a school of rays does not ripple in unison.
+        private void ApplyWaves()
+        {
+            if (_waves.Count == 0)
+            {
+                return;
+            }
+
+            _waveBlock ??= new MaterialPropertyBlock();
+            for (int i = 0; i < _waves.Count; i++)
+            {
+                _waveBlock.Clear();
+                _waves[i].Apply(_waveBlock, _swayPhase + i * WavePhaseStep);
+                _wavedRenderers[i].SetPropertyBlock(_waveBlock);
+            }
         }
 
         private List<Rig> ListFor(CreatureRole role)
@@ -678,18 +730,31 @@ namespace Game.Enemies
             bool flyer = _dangle;
             bool hasted = _enemy.IsHasted;
             bool biped = _straightLegs && _legs.Count == 2;
+            bool runner = _straightLegs && _legs.Count > 2;
+            // A flyer rides its own wing beat: the body sinks as the wings rise and lifts on the downstroke, the
+            // nose dipping into it. A ray's slow beat heaves it; a bat's quick one only trembles it.
+            float flap = flyer ? Flap() : 0f;
+            bool bat = _wings.Count > 0;
+            float flapHeave = bat ? BatFlapHeave : FlapHeave;
+            float flapPitch = bat ? BatFlapPitchDegrees : FlapPitchDegrees;
             float bob;
             if (_hover > 0f)
             {
                 bob = _hover + Mathf.Sin(_clock * HoverSpeed + _swayPhase) * HoverBob * _creatureScale;
             }
+            else if (flyer)
+            {
+                bob = -flap * flapHeave;
+            }
             else if (_curl > 0.5f)
             {
                 bob = Mathf.Abs(Mathf.Sin(_rollSpin * 2f)) * RollBounce;
             }
-            else if (walking)
+            else if (walking && !_glides)
             {
-                bob = biped ? Mathf.Abs(Mathf.Cos(_gait)) * BobHeight * BipedBounce : Mathf.Abs(Mathf.Sin(_gait)) * BobHeight;
+                // A runner bounds, higher than an insect scuttles; a crawler on its belly does not bounce at all.
+                float bounce = biped ? BipedBounce : runner ? RunnerBounce : 1f;
+                bob = (biped ? Mathf.Abs(Mathf.Cos(_gait)) : Mathf.Abs(Mathf.Sin(_gait))) * BobHeight * bounce;
             }
             else
             {
@@ -697,7 +762,7 @@ namespace Game.Enemies
             }
 
             float swayWave = flyer ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : Mathf.Sin(_gait * SwayPerGait + _swayPhase) * (walking ? 1f : 0f);
-            float sway = swayWave * (flyer ? FlyerSwayDistance : biped ? BipedSwayDistance : SwayDistance) * _creatureScale * (1f - _curl);
+            float sway = swayWave * (flyer ? FlyerSwayDistance : biped ? BipedSwayDistance : SwayDistance) * _creatureScale * (1f - _curl) * (_glides ? GlideSway : 1f);
             // Standing still the weight shifts slowly from foot to foot, so nothing stands like a statue; a boss
             // shifts more, breathes visibly and looks slowly about.
             float idle = walking || flyer ? 0f : 1f - _curl;
@@ -724,12 +789,16 @@ namespace Game.Enemies
             float along = (strike * lunge - rear * AttackRearBack - knock * HitKnockBack) * _creatureScale;
             float hoverScale = _hover > 0f ? 1f : _creatureScale;
             _body.position = position + Vector3.up * (bob * hoverScale - emerge + attackLift * _creatureScale) + forward * along + right * sway;
-            float lean = (hasted && walking && !flyer ? HasteLeanDegrees : 0f) + (biped && walking ? BipedLeanDegrees : 0f);
-            Quaternion pitch = Quaternion.Euler(attackPitch + knock * HitFlinchDegrees + lean + heave * BossBreathPitch, yaw + attackYaw, roll);
+            float lean = (hasted && walking && !flyer ? HasteLeanDegrees : 0f) + (biped && walking ? BipedLeanDegrees : 0f) + (runner && walking ? RunnerLeanDegrees : 0f);
+            // A four-legged runner rocks fore and aft with its bounds, the way a galloping dog does.
+            float gallop = runner && walking ? Mathf.Sin(_gait) * RunnerPitchDegrees : 0f;
+            Quaternion pitch = Quaternion.Euler(attackPitch + knock * HitFlinchDegrees + lean + heave * BossBreathPitch - flap * flapPitch + gallop, yaw + attackYaw, roll);
             PlayFootfalls(walking && !flyer && _hover <= 0f && _curl <= 0f && (_boss || _creatureScale >= HeavyWalkerScale));
             _body.rotation = Quaternion.LookRotation(forward) * pitch;
             float squash = style == AttackStyle.Slam ? strike * HitSquash : 0f;
-            _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash) * grow);
+            // A floating core throbs, so it never hangs in the air like a fixed lamp.
+            float pulse = _hover > 0f ? Mathf.Sin(_clock * HoverPulseSpeed + _swayPhase) * HoverPulse : 0f;
+            _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash + pulse) * grow);
 
             if (_embers != null)
             {
@@ -772,7 +841,8 @@ namespace Game.Enemies
                     // A runner never locks its legs: the thigh sits a little back, the knee stays bent and the feet
                     // splay outward, and the gait swings around that stance.
                     float restHip = RunnerRestHipDegrees * (leg.Spec.Index == 0 ? -0.5f : 1f);
-                    leg.Root.localRotation = Quaternion.Euler(restHip + swing * RunnerSwingDegrees - strike * ClawDegrees * 0.3f, 0f, -RunnerSplayDegrees * side);
+                    float stretch = _legs.Count > 2 ? RunnerStretch : 1f;
+                    leg.Root.localRotation = Quaternion.Euler(restHip + swing * RunnerSwingDegrees * stretch - strike * ClawDegrees * 0.3f, 0f, -RunnerSplayDegrees * side);
                     if (leg.Knee != null)
                     {
                         leg.Knee.localRotation = Quaternion.Euler(RunnerRestKneeDegrees + lift * RunnerKneeDegrees, 0f, 0f);
@@ -956,22 +1026,26 @@ namespace Game.Enemies
                 part.Root.localRotation = Quaternion.Euler(Mathf.Sin(_clock * 7f + phase) * AntennaTwitchDegrees, Mathf.Cos(_clock * 5f + phase) * AntennaTwitchDegrees * part.Side, 0f);
             }
 
-            bool bat = _dangle && _legs.Count > 0 && _wings.Count > 0 && _fins.Count == 0 && _tails.Count > 0;
-            float beatSpeed = bat ? BatBeatSpeed : WingBeatSpeed;
-            float beatDegrees = bat ? BatBeatDegrees : WingBeatDegrees;
+            float beatSpeed = BeatSpeed();
+            float beatDegrees = IsBat() ? BatBeatDegrees : WingBeatDegrees;
             for (int i = 0; i < _wings.Count; i++)
             {
                 Rig part = _wings[i];
-                float beat = Mathf.Sin(_clock * beatSpeed + part.Spec.Phase) * beatDegrees;
-                part.Root.localRotation = Quaternion.Euler(0f, 0f, beat * part.Side);
+                float angle = _clock * beatSpeed + part.Spec.Phase;
+                float beat = Mathf.Sin(angle) * beatDegrees;
+                // The tip draws a figure of eight: the wing sweeps forward and twists its leading edge down on the
+                // downstroke, back and up on the upstroke, instead of hinging up and down like a shutter.
+                float lead = Mathf.Cos(angle);
+                part.Root.localRotation = Quaternion.Euler(lead * WingFeatherDegrees, lead * WingSweepDegrees * part.Side, beat * part.Side);
             }
 
             for (int i = 0; i < _fins.Count; i++)
             {
                 Rig part = _fins[i];
-                float beat = Mathf.Sin(_clock * FinBeatSpeed + part.Spec.Phase + _swayPhase);
-                float ripple = Mathf.Sin(_clock * FinBeatSpeed * 1.5f + part.Spec.Phase) * FinRippleDegrees;
-                part.Root.localRotation = Quaternion.Euler(ripple, 0f, beat * FinBeatDegrees * part.Side);
+                // The slow beat hinges the whole fin a little; the wave the shader runs through the sheet does the
+                // undulating. A second pair lags behind the first.
+                float angle = FinAngle(part.Spec.Index);
+                part.Root.localRotation = Quaternion.Euler(Mathf.Cos(angle) * FinRippleDegrees, 0f, Mathf.Sin(angle) * FinBeatDegrees * part.Side);
             }
 
             for (int i = 0; i < _abdomens.Count; i++)
@@ -997,6 +1071,23 @@ namespace Game.Enemies
                 part.Root.localPosition = part.Spec.Pivot + Vector3.up * (Mathf.Sin(_clock * 2f + _swayPhase + part.Spec.Phase) * OrbBob);
                 part.Root.localRotation = Quaternion.Euler(tilt, _clock * OrbSpinDegrees * (part.Spec.Index % 2 == 0 ? 1f : -1.4f) + part.Spec.Phase * 57f, tilt * 0.5f);
             }
+        }
+
+        private bool IsBat() => _dangle && _legs.Count > 0 && _wings.Count > 0 && _fins.Count == 0 && _tails.Count > 0;
+
+        private float BeatSpeed() => IsBat() ? BatBeatSpeed : WingBeatSpeed;
+
+        private float FinAngle(int index) => _clock * FinBeatSpeed + _swayPhase - index * FinLagRadians;
+
+        // Where the wings are in their beat, from minus one (down) to one (up), in step with the fins or wings themselves.
+        private float Flap()
+        {
+            if (_fins.Count > 0)
+            {
+                return Mathf.Sin(FinAngle(0));
+            }
+
+            return _wings.Count > 0 ? Mathf.Sin(_clock * BeatSpeed() + _wings[0].Spec.Phase) : 0f;
         }
 
         // The shell bands lie in a row along the back; curled up they sit on a ring around the ball's centre, head

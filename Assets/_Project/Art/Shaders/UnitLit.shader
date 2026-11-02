@@ -17,6 +17,10 @@ Shader "Game/UnitLit"
         _RimColor ("Rim colour", Color) = (0.55, 0.8, 1, 1)
         _RimPower ("Rim power", Range(0.5, 8)) = 2.4
         _RimStrength ("Rim strength", Range(0, 3)) = 0.55
+        _WaveAmplitude ("Wave amplitude", Float) = 0
+        _WaveVector ("Wave vector (xyz) and speed (w)", Vector) = (0, 0, 0, 0)
+        _WaveRamp ("Wave envelope ramp", Vector) = (0, 0, 0, 1)
+        _WaveDirection ("Wave direction (xyz) and phase (w)", Vector) = (0, 1, 0, 0)
     }
 
     SubShader
@@ -38,7 +42,33 @@ Shader "Game/UnitLit"
         half _BumpScale;
         half _RimPower;
         half _RimStrength;
+        float _WaveAmplitude;
+        float4 _WaveVector;
+        float4 _WaveRamp;
+        float4 _WaveDirection;
         CBUFFER_END
+
+        // The surface wave (see SurfaceWave.cs): a sine travelling along the wave vector, scaled by a squared ramp
+        // over the part, moving vertices along the wave direction. The normal tilts with the slope so the ripple
+        // catches light. Off (amplitude zero) for every material that does not ask for it.
+        void ApplyWave(inout float3 positionOS, inout float3 normalOS)
+        {
+            if (_WaveAmplitude <= 0.0)
+            {
+                return;
+            }
+
+            float ramp = saturate(dot(positionOS, _WaveRamp.xyz) + _WaveRamp.w);
+            float envelope = ramp * ramp;
+            float angle = dot(positionOS, _WaveVector.xyz) - _Time.y * _WaveVector.w + _WaveDirection.w;
+            float s;
+            float c;
+            sincos(angle, s, c);
+            float3 direction = _WaveDirection.xyz;
+            positionOS += direction * (_WaveAmplitude * envelope * s);
+            float3 gradient = _WaveVector.xyz * (_WaveAmplitude * envelope * c);
+            normalOS = normalize(normalOS - gradient * dot(normalOS, direction));
+        }
         ENDHLSL
 
         Pass
@@ -97,6 +127,7 @@ Shader "Game/UnitLit"
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
+                ApplyWave(input.positionOS.xyz, input.normalOS);
                 VertexPositionInputs positions = GetVertexPositionInputs(input.positionOS.xyz);
                 VertexNormalInputs normals = GetVertexNormalInputs(input.normalOS, input.tangentOS);
                 output.positionCS = positions.positionCS;
@@ -173,12 +204,18 @@ Shader "Game/UnitLit"
 
             HLSLPROGRAM
             #pragma target 3.0
-            #pragma vertex ShadowPassVertex
+            #pragma vertex ShadowPassVertexWave
             #pragma fragment ShadowPassFragment
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+
+            Varyings ShadowPassVertexWave(Attributes input)
+            {
+                ApplyWave(input.positionOS.xyz, input.normalOS);
+                return ShadowPassVertex(input);
+            }
             ENDHLSL
         }
 
@@ -192,11 +229,18 @@ Shader "Game/UnitLit"
 
             HLSLPROGRAM
             #pragma target 3.0
-            #pragma vertex DepthOnlyVertex
+            #pragma vertex DepthOnlyVertexWave
             #pragma fragment DepthOnlyFragment
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+
+            Varyings DepthOnlyVertexWave(Attributes input)
+            {
+                float3 normalOS = float3(0.0, 1.0, 0.0);
+                ApplyWave(input.position.xyz, normalOS);
+                return DepthOnlyVertex(input);
+            }
             ENDHLSL
         }
 
@@ -209,12 +253,18 @@ Shader "Game/UnitLit"
 
             HLSLPROGRAM
             #pragma target 3.0
-            #pragma vertex DepthNormalsVertex
+            #pragma vertex DepthNormalsVertexWave
             #pragma fragment DepthNormalsFragment
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+
+            Varyings DepthNormalsVertexWave(Attributes input)
+            {
+                ApplyWave(input.positionOS.xyz, input.normal);
+                return DepthNormalsVertex(input);
+            }
             ENDHLSL
         }
     }

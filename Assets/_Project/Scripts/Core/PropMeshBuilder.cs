@@ -199,12 +199,19 @@ namespace Game.Core
         /// A flat ribbon along a curve, like a leaf or a blade of grass: it widens and narrows per point and is
         /// visible from both sides. <paramref name="side"/> is the direction across the blade.
         /// </summary>
-        public void AddBlade(Vector3[] spine, float[] widths, Vector3 side, int submesh)
+        public void AddBlade(Vector3[] spine, float[] widths, Vector3 side, int submesh) => AddBlade(spine, widths, side, submesh, 1);
+
+        /// <summary>
+        /// A blade split into <paramref name="across"/> strips between its edges, so a wave can run across the sheet
+        /// as well as along it: a fin or a membrane that the shader ripples.
+        /// </summary>
+        public void AddBlade(Vector3[] spine, float[] widths, Vector3 side, int submesh, int across)
         {
             int count = spine.Length;
-            var positions = new Vector3[count * 2];
-            var normals = new Vector3[count * 2];
-            var uvs = new Vector2[count * 2];
+            int columns = across + 1;
+            var positions = new Vector3[count * columns];
+            var normals = new Vector3[count * columns];
+            var uvs = new Vector2[count * columns];
             float along = 0f;
             for (int i = 0; i < count; i++)
             {
@@ -214,25 +221,19 @@ namespace Game.Core
                     along += Vector3.Distance(spine[i], spine[i - 1]);
                 }
 
-                Vector3 across = Vector3.ProjectOnPlane(side, tangent).normalized * (widths[i] * 0.5f);
-                Vector3 normal = Vector3.Cross(tangent, across).normalized;
-                positions[i * 2] = spine[i] - across;
-                positions[i * 2 + 1] = spine[i] + across;
-                normals[i * 2] = normal;
-                normals[i * 2 + 1] = normal;
-                uvs[i * 2] = new Vector2(0f, along * BladeTexturePerUnit);
-                uvs[i * 2 + 1] = new Vector2(1f, along * BladeTexturePerUnit);
+                Vector3 half = Vector3.ProjectOnPlane(side, tangent).normalized * (widths[i] * 0.5f);
+                Vector3 normal = Vector3.Cross(tangent, half).normalized;
+                for (int j = 0; j < columns; j++)
+                {
+                    float t = (float)j / across;
+                    int index = i * columns + j;
+                    positions[index] = spine[i] + half * (t * 2f - 1f);
+                    normals[index] = normal;
+                    uvs[index] = new Vector2(t, along * BladeTexturePerUnit);
+                }
             }
 
-            for (int i = 0; i < count - 1; i++)
-            {
-                int a = i * 2;
-                int b = a + 1;
-                int c = a + 2;
-                int d = a + 3;
-                Emit(positions, normals, uvs, new[] { a, c, b }, submesh, false);
-                Emit(positions, normals, uvs, new[] { b, c, d }, submesh, false);
-            }
+            EmitSheet(positions, normals, uvs, count, columns, submesh, false);
 
             // The underside, so the blade does not vanish when it curls over.
             for (int i = 0; i < normals.Length; i++)
@@ -240,14 +241,22 @@ namespace Game.Core
                 normals[i] = -normals[i];
             }
 
-            for (int i = 0; i < count - 1; i++)
+            EmitSheet(positions, normals, uvs, count, columns, submesh, true);
+        }
+
+        private void EmitSheet(Vector3[] positions, Vector3[] normals, Vector2[] uvs, int rows, int columns, int submesh, bool flipped)
+        {
+            for (int i = 0; i < rows - 1; i++)
             {
-                int a = i * 2;
-                int b = a + 1;
-                int c = a + 2;
-                int d = a + 3;
-                Emit(positions, normals, uvs, new[] { a, b, c }, submesh, false);
-                Emit(positions, normals, uvs, new[] { b, d, c }, submesh, false);
+                for (int j = 0; j < columns - 1; j++)
+                {
+                    int a = i * columns + j;
+                    int b = a + 1;
+                    int c = a + columns;
+                    int d = c + 1;
+                    Emit(positions, normals, uvs, flipped ? new[] { a, b, c } : new[] { a, c, b }, submesh, false);
+                    Emit(positions, normals, uvs, flipped ? new[] { b, d, c } : new[] { b, c, d }, submesh, false);
+                }
             }
         }
 

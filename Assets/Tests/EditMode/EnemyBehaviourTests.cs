@@ -345,6 +345,40 @@ namespace Game.Tests
         }
 
         [Test]
+        public void CreatureModels_SoftAndFinnedBodiesCarryAWave()
+        {
+            EnemyModelFactory.Parts ray = EnemyModelFactory.Create(EnemyShape.Skyray);
+            List<CreaturePart> fins = ray.Moving.FindAll(p => p.Role == CreatureRole.Fin);
+            Assert.AreEqual(2, fins.Count, "a ray has a pair of fins");
+            Assert.IsTrue(fins.TrueForAll(p => p.Wave.IsActive), "and both undulate");
+            Assert.Less(fins[0].Wave.Vector.z, 0f, "the ripple travels front to back");
+            Assert.Greater(fins[0].Mesh.vertexCount, 300, "a fin is a sheet fine enough to show the ripple");
+            Assert.IsFalse(ray.BodyWave.IsActive, "the body itself stays firm");
+
+            EnemyModelFactory.Parts slug = EnemyModelFactory.Create(EnemyShape.Oozer);
+            Assert.IsTrue(slug.BodyWave.IsActive && slug.Glides, "a slug creeps by a wave through its foot");
+            EnemyModelFactory.Parts leech = EnemyModelFactory.Create(EnemyShape.Mireleech);
+            Assert.IsTrue(leech.BodyWave.IsActive && leech.Glides, "a leech ripples as it crawls");
+            Assert.IsTrue(EnemyModelFactory.Create(EnemyShape.Bat).Moving.Exists(p => p.Role == CreatureRole.Wing && p.Wave.IsActive), "a bat's membrane flutters");
+            Assert.IsFalse(EnemyModelFactory.Create(EnemyShape.Prowler).Glides, "a runner still bounds");
+        }
+
+        [Test]
+        public void SurfaceWave_RampRunsFromZeroToOneBetweenItsEnds()
+        {
+            Vector4 ramp = SurfaceWave.RampBetween(new Vector3(0f, 0.2f, 0f), Vector3.zero);
+            Assert.AreEqual(0f, Vector3.Dot(new Vector3(0f, 0.2f, 0f), ramp) + ramp.w, 0.0001f, "zero at the start");
+            Assert.AreEqual(1f, Vector3.Dot(Vector3.zero, ramp) + ramp.w, 0.0001f, "one at the end");
+            Assert.AreEqual(0.5f, Vector3.Dot(new Vector3(0f, 0.1f, 0f), ramp) + ramp.w, 0.0001f, "half way between");
+
+            var block = new MaterialPropertyBlock();
+            new SurfaceWave(0.1f, Vector3.back * 12f, 5f, ramp, Vector3.up).Apply(block, 1.5f);
+            Assert.AreEqual(0.1f, block.GetFloat(SurfaceWave.AmplitudeId), 0.0001f);
+            Assert.AreEqual(5f, block.GetVector(SurfaceWave.VectorId).w, 0.0001f, "speed rides in the vector's fourth component");
+            Assert.AreEqual(1.5f, block.GetVector(SurfaceWave.DirectionId).w, 0.0001f, "phase rides in the direction's fourth component");
+        }
+
+        [Test]
         public void Flyer_BesiegesTheBaseAtTheEndOfItsRoute_UntilItFalls()
         {
             Configure(speed: 50f, flies: true, attackRange: 2f, attackInterval: 0.5f);

@@ -63,8 +63,15 @@ namespace Game.Enemies
         private const float CrashSpin = 240f;
         private const float CrashDissolveSeconds = 0.55f;
         private const float CrashRestSeconds = 0.15f;
-        private const float ToppleSeconds = 0.5f;
+        // A collapse: the knees give way first (a short sink and lean), then the body falls faster and faster,
+        // bounces once off the ground and lies still.
+        private const float BuckleSeconds = 0.28f;
+        private const float BuckleSink = 0.12f;
+        private const float BuckleLeanDegrees = 14f;
+        private const float ToppleSeconds = 0.42f;
         private const float ToppleDegrees = 88f;
+        private const float BounceDegrees = 8f;
+        private const float BounceSeconds = 0.24f;
         private const float RestSeconds = 0.9f;
         private const float FadeSeconds = 0.7f;
         private const float BurstShrinkSeconds = 0.18f;
@@ -261,23 +268,32 @@ namespace Game.Enemies
             }
         }
 
-        // The body tips over about its own foot, lies in a spreading pool, then sinks and fades.
+        // The body buckles at the knees, topples over about its own foot with the weight of a fall, bounces once,
+        // lies in a spreading pool, then sinks and fades.
         private void UpdateCollapse()
         {
-            float topple = Mathf.Clamp01(_age / ToppleSeconds);
-            float eased = Mathf.Sin(topple * Mathf.PI * 0.5f);
+            float buckle = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_age / BuckleSeconds));
+            float topple = Mathf.Clamp01((_age - BuckleSeconds) / ToppleSeconds);
+            float angle = BuckleLeanDegrees * buckle + (ToppleDegrees - BuckleLeanDegrees) * topple * topple;
+            float since = _age - BuckleSeconds - ToppleSeconds;
+            if (since > 0f && since < BounceSeconds)
+            {
+                angle -= Mathf.Sin(since / BounceSeconds * Mathf.PI) * BounceDegrees;
+            }
+
             Vector3 foot = new Vector3(_request.Centre.x, _request.GroundY, _request.Centre.z);
-            transform.position = _request.Centre;
+            transform.position = _request.Centre + Vector3.down * (BuckleSink * _request.Size * buckle);
             transform.rotation = Quaternion.identity;
-            transform.RotateAround(foot, _toppleAxis, ToppleDegrees * eased);
+            transform.RotateAround(foot, _toppleAxis, angle);
             if (!_landed && topple >= 1f)
             {
                 _landed = true;
                 ShowPool(foot, _request.Blood, _request.Size);
-                Splash(_request.Centre + _toppleAxis * 0f, _request.Blood, _request.Size * 0.4f);
+                Splash(_request.Centre, _request.Blood, _request.Size * 0.4f);
+                Puff(foot, _request.Blood, _request.Size);
             }
 
-            float rest = _age - ToppleSeconds - RestSeconds;
+            float rest = _age - BuckleSeconds - ToppleSeconds - RestSeconds;
             if (rest <= 0f)
             {
                 return;

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Enemies
@@ -22,8 +23,12 @@ namespace Game.Enemies
         /// <summary>Order among parts of the same role: bands from head to tail, wing pairs from front to back.</summary>
         public readonly int Index;
 
-        public CreaturePart(CreatureRole role, Mesh mesh, Vector3 pivot, bool mirrored = false, float phase = 0f, int index = 0, Mesh lower = null, Vector3 knee = default)
+        /// <summary>A wave the shader runs through the mesh, for fins and membranes; inactive for rigid parts.</summary>
+        public readonly SurfaceWave Wave;
+
+        public CreaturePart(CreatureRole role, Mesh mesh, Vector3 pivot, bool mirrored = false, float phase = 0f, int index = 0, Mesh lower = null, Vector3 knee = default, SurfaceWave wave = default)
         {
+            Wave = wave;
             Role = role;
             Mesh = mesh;
             Lower = lower;

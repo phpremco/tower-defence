@@ -35,6 +35,29 @@ namespace Game.Enemies
         private const float SeamGlow = 0.9f;
         private const float DarkSeamGlow = 0.5f;
         private static readonly Color DefaultEyeColor = new Color(1f, 0.9f, 0.35f);
+        // A ray fin is a fine sheet so the shader wave shows: a ripple of about one wavelength across the chord that
+        // travels front to back and grows towards the tip, where it lifts the edge by a share of the span.
+        private const int FinSpineSteps = 9;
+        private const int FinChordStrips = 6;
+        private const float FinWaveAmplitude = 0.14f;
+        private const float FinWaveSpeed = 5f;
+        private const float FinWaveLength = 1.1f;
+        private const float FinWaveSkew = 1.5f;
+        // A bat membrane flutters from the wrist to the tip, a little out of step with the beat.
+        private const int WingChordStrips = 3;
+        private const float WingFlutterAmplitude = 0.05f;
+        private const float WingFlutterSpeed = 11f;
+        private const float WingFlutterLength = 0.8f;
+        // Soft crawlers creep by a wave through the body: a slug pushes pedal waves from tail to head along its
+        // foot, a leech ripples side to side from head to tail.
+        private const float SlugWaveAmplitude = 0.025f;
+        private const float SlugWaveLength = 0.55f;
+        private const float SlugWaveSpeed = 3.5f;
+        private const float SlugWaveLift = 0.35f;
+        private const float SlugFootHeight = 0.22f;
+        private const float LeechWaveAmplitude = 0.035f;
+        private const float LeechWaveLength = 0.5f;
+        private const float LeechWaveSpeed = 4.5f;
 
         public sealed class Parts
         {
@@ -66,6 +89,12 @@ namespace Game.Enemies
 
             /// <summary>How high above the ground a floating creature hangs, at scale one. Zero for walkers.</summary>
             public float HoverHeight;
+
+            /// <summary>True for a creature that creeps on its belly: no bounce in its step, the body wave carries the motion.</summary>
+            public bool Glides;
+
+            /// <summary>A wave the shader runs through the body itself, for soft crawlers; inactive for the rest.</summary>
+            public SurfaceWave BodyWave;
 
             /// <summary>The surface the body and dark parts wear: chitin, hide, slime, scales or plasma.</summary>
             public CreatureSkin.Kind Skin = CreatureSkin.Kind.Chitin;
@@ -771,6 +800,9 @@ namespace Game.Enemies
             parts.Moving.Add(new CreaturePart(CreatureRole.Abdomen, mantle.ToMesh("Mantle"), new Vector3(0f, 0.2f * k, -0.08f * k)));
 
             EyeStalks(parts, new Vector3(0.05f * k, 0.2f * k, 0.4f * k), 0.2f * k);
+            // The foot creeps: pedal waves run from tail to head along the underside while the mantle rides still.
+            parts.BodyWave = new SurfaceWave(SlugWaveAmplitude * k, Vector3.forward * (Mathf.PI * 2f / (SlugWaveLength * k)), SlugWaveSpeed, SurfaceWave.RampBetween(Vector3.up * (SlugFootHeight * k), Vector3.zero), new Vector3(0f, SlugWaveLift, 1f).normalized);
+            parts.Glides = true;
             parts.Bleeds = true;
             parts.Skin = CreatureSkin.Kind.Slime;
             parts.Height = (boss ? 0.6f : 0.4f) * k;
@@ -843,12 +875,14 @@ namespace Game.Enemies
                 Spike(b, root, root + new Vector3(-Mathf.Cos(angle) * 0.03f, -Mathf.Sin(angle) * 0.03f, 0.04f), 0.012f, Accent);
             }
 
-            var tail = new PropMeshBuilder(SlotCount);
-            tail.AddTube(new[] { Vector3.zero, new Vector3(0f, -0.02f, -0.16f), new Vector3(0f, -0.04f, -0.32f) }, new[] { 0.07f, 0.045f, 0.01f }, 7, Body, false);
-            tail.AddBlob(new Vector3(0f, 0.01f, -0.14f), new Vector3(0.05f, 0.03f, 0.08f), 3, 7, 0.02f, 63, Dark, true);
-            parts.Moving.Add(new CreaturePart(CreatureRole.Tail, tail.ToMesh("Tail"), new Vector3(0f, 0.07f, -0.34f)));
+            // The tail is part of the body, so the wave that ripples the body runs out through it without a seam.
+            b.AddTube(new[] { new Vector3(0f, 0.07f, -0.34f), new Vector3(0f, 0.05f, -0.5f), new Vector3(0f, 0.03f, -0.66f) }, new[] { 0.07f, 0.045f, 0.01f }, 7, Body, false);
+            b.AddBlob(new Vector3(0f, 0.08f, -0.48f), new Vector3(0.05f, 0.03f, 0.08f), 3, 7, 0.02f, 63, Dark, true);
 
             EyeStalks(parts, new Vector3(0.05f, 0.22f, 0.3f), 0.14f);
+            // A leech swims as it crawls: a side-to-side wave runs from behind the head out through the tail.
+            parts.BodyWave = new SurfaceWave(LeechWaveAmplitude, Vector3.back * (Mathf.PI * 2f / LeechWaveLength), LeechWaveSpeed, SurfaceWave.RampBetween(Vector3.forward * 0.3f, Vector3.back * 0.3f), Vector3.right);
+            parts.Glides = true;
             parts.Bleeds = true;
             parts.Skin = CreatureSkin.Kind.Slime;
             parts.Height = 0.32f;
@@ -1226,7 +1260,7 @@ namespace Game.Enemies
             // hooks up from the wrist.
             var wrist = new Vector3(length * 0.4f, 0.02f * length, 0.03f * length);
             var spine = new[] { Vector3.zero, new Vector3(length * 0.2f, 0.01f * length, 0.02f * length), wrist, new Vector3(length * 0.6f, 0.018f * length, 0f), new Vector3(length * 0.8f, 0.014f * length, -0.01f * length), new Vector3(length, 0.01f * length, -0.02f * length) };
-            b.AddBlade(spine, new[] { width * 0.5f, width * 0.8f, width, width * 0.8f, width * 0.7f, width * 0.12f }, Vector3.forward, Dark);
+            b.AddBlade(spine, new[] { width * 0.5f, width * 0.8f, width, width * 0.8f, width * 0.7f, width * 0.12f }, Vector3.forward, Dark, WingChordStrips);
             b.AddTube(new[] { Vector3.zero, wrist }, new[] { length * 0.032f, length * 0.024f }, 5, Body, false);
             b.AddBlob(wrist, Vector3.one * length * 0.034f, 3, 6, 0f, 0, Dark, false);
             b.AddTube(new[] { wrist, spine[5] }, new[] { length * 0.02f, length * 0.005f }, 4, Body, false);
@@ -1241,28 +1275,48 @@ namespace Game.Enemies
 
             Mesh mesh = b.ToMesh("Wing");
             float phase = index * 0.6f;
-            parts.Moving.Add(new CreaturePart(CreatureRole.Wing, mesh, hinge, false, phase, index));
-            parts.Moving.Add(new CreaturePart(CreatureRole.Wing, mesh, new Vector3(-hinge.x, hinge.y, hinge.z), true, phase, index));
+            var flutter = new SurfaceWave(length * WingFlutterAmplitude, Vector3.right * (Mathf.PI * 2f / (WingFlutterLength * length)), WingFlutterSpeed, SurfaceWave.RampBetween(wrist, spine[5]), Vector3.up);
+            parts.Moving.Add(new CreaturePart(CreatureRole.Wing, mesh, hinge, false, phase, index, wave: flutter));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Wing, mesh, new Vector3(-hinge.x, hinge.y, hinge.z), true, phase, index, wave: flutter));
         }
 
-        // A ray's fin: a wide triangle of body that beats slowly, with a lit edge.
+        // A ray's fin: a wide sheet of body with a lit leading edge and rays fanning to the trailing edge, swept back
+        // towards a rounded tip. The sheet is finely divided so the wave the shader runs through it reads as the
+        // undulation of a ray's wing in water, not as a flapping board.
         private static void Fins(Parts parts, Vector3 hinge, float length, float width, int index)
         {
             var b = new PropMeshBuilder(SlotCount);
-            var spine = new[] { Vector3.zero, new Vector3(length * 0.45f, 0f, -width * 0.05f), new Vector3(length, 0f, -width * 0.25f) };
-            b.AddBlade(spine, new[] { width, width * 0.75f, width * 0.08f }, Vector3.forward, Body);
-            b.AddTube(new[] { new Vector3(0f, 0.005f * length, width * 0.5f), new Vector3(length * 0.5f, 0.005f * length, width * 0.32f), new Vector3(length, 0.005f * length, -width * 0.21f) }, new[] { length * 0.015f, length * 0.012f, length * 0.004f }, 4, Accent, false);
-            // Fin rays fanning from the root to the edge, raised a little so they catch the light.
+            var spine = new Vector3[FinSpineSteps];
+            var widths = new float[FinSpineSteps];
+            for (int i = 0; i < FinSpineSteps; i++)
+            {
+                float t = i / (float)(FinSpineSteps - 1);
+                spine[i] = new Vector3(length * t, 0f, -width * 0.25f * t * t);
+                widths[i] = width * Mathf.Lerp(1f, 0.08f, t * t);
+            }
+
+            b.AddBlade(spine, widths, Vector3.forward, Body, FinChordStrips);
+            var edge = new Vector3[3];
+            var edgeRadii = new[] { length * 0.015f, length * 0.012f, length * 0.004f };
+            for (int i = 0; i < 3; i++)
+            {
+                Vector3 at = spine[i * (FinSpineSteps - 1) / 2];
+                edge[i] = at + new Vector3(0f, 0.005f * length, widths[i * (FinSpineSteps - 1) / 2] * 0.5f);
+            }
+
+            b.AddTube(edge, edgeRadii, 4, Accent, false);
+            // Fin rays fanning from the root to the trailing edge, raised a little so they catch the light.
             for (int i = 0; i < 5; i++)
             {
                 float t = i / 4f;
-                var edge = new Vector3(Mathf.Lerp(length * 0.35f, length, t), 0.008f * length, Mathf.Lerp(-width * 0.45f, -width * 0.24f, t));
-                b.AddTube(new[] { new Vector3(0f, 0.008f * length, Mathf.Lerp(-width * 0.3f, width * 0.1f, t)), edge }, new[] { length * 0.014f, length * 0.003f }, 4, Dark, false);
+                var tip = new Vector3(Mathf.Lerp(length * 0.35f, length, t), 0.008f * length, Mathf.Lerp(-width * 0.45f, -width * 0.24f, t));
+                b.AddTube(new[] { new Vector3(0f, 0.008f * length, Mathf.Lerp(-width * 0.3f, width * 0.1f, t)), tip }, new[] { length * 0.014f, length * 0.003f }, 4, Dark, false);
             }
 
             Mesh mesh = b.ToMesh("Fin");
-            parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, hinge, false, index * 0.5f, index));
-            parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, new Vector3(-hinge.x, hinge.y, hinge.z), true, index * 0.5f, index));
+            var wave = new SurfaceWave(length * FinWaveAmplitude, new Vector3(FinWaveSkew / length, 0f, -Mathf.PI * 2f / (FinWaveLength * width)), FinWaveSpeed, SurfaceWave.RampBetween(Vector3.zero, Vector3.right * length), Vector3.up);
+            parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, hinge, false, index * 0.5f, index, wave: wave));
+            parts.Moving.Add(new CreaturePart(CreatureRole.Fin, mesh, new Vector3(-hinge.x, hinge.y, hinge.z), true, index * 0.5f, index, wave: wave));
         }
     }
 }

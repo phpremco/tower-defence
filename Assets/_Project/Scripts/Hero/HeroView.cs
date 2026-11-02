@@ -20,15 +20,28 @@ namespace Game.Hero
     [RequireComponent(typeof(Commander))]
     public sealed class HeroView : MonoBehaviour
     {
-        private const float TurnSpeed = 14f;
+        // The figure turns at a fixed rate, and when it turns on the spot the legs shuffle round with it: a step
+        // for every so many degrees, at a share of the running stride, with the torso leaning and the head
+        // leading into the turn. Nothing pivots on a pin.
+        private const float TurnDegreesPerSecond = 260f;
+        private const float TurnWalkingDegreesPerSecond = 540f;
+        private const float TurnGaitPerDegree = 0.07f;
+        private const float TurnStepShare = 0.55f;
+        private const float TurnStepThreshold = 30f;
+        private const float TurnRateSettleSpeed = 10f;
+        private const float TurnLeanShare = 0.025f;
+        private const float TurnLeanMaxDegrees = 8f;
+        private const float HeadLeadShare = 0.08f;
         private const float FigureScale = 0.95f;
         private const float IdleSpeed = 2.2f;
         private const float IdleHeight = 0.015f;
         private const float BreathSpeed = 2.2f;
         private const float BreathDepth = 0.015f;
-        private const float WalkBobHeight = 0.05f;
-        private const float GaitPerUnit = 2.1f;
-        private const float LegSwingDegrees = 36f;
+        private const float WalkBobHeight = 0.065f;
+        // About four steps a second at the walk speed, with a stride long enough that the feet keep up with the
+        // ground instead of skating over it.
+        private const float GaitPerUnit = 2.6f;
+        private const float LegSwingDegrees = 46f;
         private const float KneeFoldDegrees = 62f;
         private const float KneeFoldLead = 0.6f;
         private const float RunKneeDegrees = 14f;
@@ -54,7 +67,7 @@ namespace Game.Hero
         private const float HeadScanSpeed = 0.55f;
         private const float HeadNodDegrees = 6f;
         private const float HeadFollowSpeed = 6f;
-        private const float WalkLeanDegrees = 10f;
+        private const float WalkLeanDegrees = 15f;
         private const float RelaxedForearmDegrees = 62f;
         private const float RunForearmDegrees = 85f;
         private const float DrawnForearmDegrees = 12f;
@@ -107,6 +120,9 @@ namespace Game.Hero
         private const float LyingSmokeRate = 4f;
         private const float LyingSparkRate = 1.5f;
         private const float VisorFlickerSpeed = 30f;
+        private const float StandRingRadius = 0.5f;
+        private const float StandRingThickness = 0.02f;
+        private const float StandRingEmission = 1.5f;
         private const float RingSeconds = 0.45f;
         private const float RingAlpha = 0.35f;
         private const float RingEmission = 2.5f;
@@ -174,6 +190,8 @@ namespace Game.Hero
         private float _ringRadius;
         private float _ringSeconds;
         private float _gait;
+        private float _turnRate;
+        private float _turning;
         private float _legSwing;
         private float _stride;
         private float _standCrouch;
@@ -273,9 +291,17 @@ namespace Game.Hero
             _smoke = ParticleKit.Create(_shell, "Smoke", new Vector3(0f, 1f, -0.3f), SmokeColor, 1.2f, 2.2f, 0.2f, 0.4f, 0.3f, 0.6f, -0.12f, 30, 0.15f);
             _dust = ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f);
 
-            // A golden ring on the ground keeps the hero easy to find among towers and enemies.
-            GameObject standRing = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, _trim, transform, new Vector3(0f, 0.04f, 0f), new Vector3(0.95f, 0.01f, 0.95f), 1.5f);
-            standRing.name = "StandRing";
+            // A thin golden ring on the ground keeps the hero easy to find among towers and enemies, open in the
+            // middle so the boots stand on bare ground instead of sinking into a disc.
+            var ringBuilder = new PropMeshBuilder();
+            ringBuilder.AddTorus(Vector3.zero, Vector3.up, StandRingRadius, StandRingThickness, 32, 6, 0);
+            var standRing = new GameObject("StandRing");
+            standRing.transform.SetParent(transform, false);
+            standRing.transform.localPosition = new Vector3(0f, StandRingThickness, 0f);
+            standRing.AddComponent<MeshFilter>().sharedMesh = ringBuilder.ToMesh("StandRing");
+            var standRenderer = standRing.AddComponent<MeshRenderer>();
+            standRenderer.sharedMaterial = SurfaceMaterials.Create(_trim, StandRingEmission, 0.5f);
+            standRenderer.shadowCastingMode = ShadowCastingMode.Off;
 
             GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, HealthyColor, transform, new Vector3(0f, BarY, 0f), new Vector3(BarWidth, BarHeight, BarHeight), 1.5f);
             _bar = bar.transform;
@@ -340,7 +366,7 @@ namespace Game.Hero
             float shin = -parts.Ankle.y;
             float crouch = 0.5f * (HipDrop(thigh, shin, RestHipDegrees + StanceStaggerDegrees, RestKneeDegrees + BackKneeExtraDegrees)
                                    + HipDrop(thigh, shin, RestHipDegrees - StanceStaggerDegrees, RestKneeDegrees + FrontKneeExtraDegrees));
-            figure.localPosition = Vector3.down * (crouch * FigureScale);
+            figure.localPosition = Vector3.up * ((parts.SoleLift - crouch) * FigureScale);
 
             if (definition.Weapon != null)
             {
@@ -551,10 +577,11 @@ namespace Game.Hero
             Vector3 forward = _hero.Facing.sqrMagnitude > 0.0001f ? _hero.Facing.normalized : Vector3.forward;
             bool walking = _hero.IsWalking;
             float shift = walking ? 0f : Mathf.Sin(Time.time * WeightShiftSpeed + _shiftPhase);
-            float bob = walking ? Mathf.Abs(Mathf.Sin(_gait)) * WalkBobHeight : Mathf.Sin(Time.time * IdleSpeed) * IdleHeight;
+            float stepping = Mathf.Max(walking ? 1f : 0f, _turning);
+            float bob = Mathf.Lerp(Mathf.Sin(Time.time * IdleSpeed) * IdleHeight, Mathf.Abs(Mathf.Sin(_gait)) * WalkBobHeight, stepping);
             if (_rise >= RiseSeconds)
             {
-                _figure.localPosition = forward * pose.Lunge + Vector3.up * (bob - _crouch) + _figure.right * (shift * WeightShiftSlide);
+                _figure.localPosition = forward * pose.Lunge + Vector3.up * (bob - _crouch + _parts.SoleLift) + _figure.right * (shift * WeightShiftSlide);
             }
 
             _drawn = Mathf.MoveTowards(_drawn, _active.Drawn ? 1f : 0f, DrawFollowSpeed * Time.deltaTime);
@@ -565,7 +592,8 @@ namespace Game.Hero
             // The torso turns slowly on its hips while the hero waits, so the stance never freezes.
             float torsoSway = Mathf.Sin(Time.time * TorsoSwaySpeed + _shiftPhase) * TorsoSwayDegrees * (1f - _stride);
             float twist = pose.Twist + restTwist + torsoSway + form * FormTwistDegrees - _legSwing * HipCounterTwistShare;
-            _torso.localRotation = Quaternion.Euler(HunchDegrees + pose.Lean + WalkLeanDegrees * _stride, twist, shift * WeightShiftRoll);
+            float turnLean = -Mathf.Clamp(_turnRate * TurnLeanShare, -TurnLeanMaxDegrees, TurnLeanMaxDegrees);
+            _torso.localRotation = Quaternion.Euler(HunchDegrees + pose.Lean + WalkLeanDegrees * _stride, twist, shift * WeightShiftRoll + turnLean);
 
             _armUpperRight.localRotation = Quaternion.Euler(pose.ArmPitch, pose.ArmYaw, 0f);
             float relaxedForearm = Mathf.Lerp(RelaxedForearmDegrees, RunForearmDegrees, _stride);
@@ -661,12 +689,16 @@ namespace Game.Hero
             bool walking = _hero.IsWalking;
             _gait += moved * GaitPerUnit;
 
-            _stride = Mathf.Lerp(_stride, walking ? 1f : 0f, 1f - Mathf.Exp(-LegSettleSpeed * Time.deltaTime));
-            float standing = 1f - _stride;
-            float swing = Mathf.Sin(_gait) * LegSwingDegrees * _stride;
+            float settle = 1f - Mathf.Exp(-LegSettleSpeed * Time.deltaTime);
+            _stride = Mathf.Lerp(_stride, walking ? 1f : 0f, settle);
+            _turning = Mathf.Lerp(_turning, !walking && Mathf.Abs(_turnRate) > TurnStepThreshold ? 1f : 0f, settle);
+            // Shuffling round on the spot is a short-stepped version of the run.
+            float step = Mathf.Max(_stride, _turning * TurnStepShare);
+            float standing = 1f - step;
+            float swing = Mathf.Sin(_gait) * LegSwingDegrees * step;
             _legSwing = swing;
-            float foldRight = Mathf.Max(0f, -Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * _stride;
-            float foldLeft = Mathf.Max(0f, Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * _stride;
+            float foldRight = Mathf.Max(0f, -Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * step;
+            float foldLeft = Mathf.Max(0f, Mathf.Cos(_gait - KneeFoldLead)) * KneeFoldDegrees * step;
             float stagger = StanceStaggerDegrees * standing;
             float knee = Mathf.Lerp(RestKneeDegrees, RunKneeDegrees, _stride);
             float shift = Mathf.Sin(Time.time * WeightShiftSpeed + _shiftPhase) * standing;
@@ -688,7 +720,8 @@ namespace Game.Hero
             }
 
             bool busy = _hero.IsWalking || _active.Drawn;
-            float yaw = busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed + _scanPhase) * HeadScanDegrees;
+            // The eyes lead the body into a turn.
+            float yaw = (busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed + _scanPhase) * HeadScanDegrees) + Mathf.Clamp(_turnRate * HeadLeadShare, -HeadScanDegrees, HeadScanDegrees);
             float pitch = HeadForwardDegrees + (busy ? 0f : Mathf.Sin(Time.time * HeadScanSpeed * 1.7f + _scanPhase) * HeadNodDegrees);
             if (_active.Drawn && TryAimPoint(out Vector3 point))
             {
@@ -712,7 +745,17 @@ namespace Game.Hero
             }
 
             Quaternion wanted = Quaternion.LookRotation(facing);
-            _figure.rotation = Quaternion.Slerp(_figure.rotation, wanted, 1f - Mathf.Exp(-TurnSpeed * Time.deltaTime));
+            float before = _figure.eulerAngles.y;
+            float rate = _hero.IsWalking ? TurnWalkingDegreesPerSecond : TurnDegreesPerSecond;
+            _figure.rotation = Quaternion.RotateTowards(_figure.rotation, wanted, rate * Time.deltaTime);
+            float delta = Mathf.DeltaAngle(before, _figure.eulerAngles.y);
+            float k = 1f - Mathf.Exp(-TurnRateSettleSpeed * Time.deltaTime);
+            _turnRate = Mathf.Lerp(_turnRate, Time.deltaTime > 0f ? delta / Time.deltaTime : 0f, k);
+            if (!_hero.IsWalking)
+            {
+                // Turning on the spot is done with the feet: the gait advances with the angle turned.
+                _gait += Mathf.Abs(delta) * TurnGaitPerDegree;
+            }
         }
 
         // Short bright puffs out of the pack nozzles, pushed down and back, only while walking.
