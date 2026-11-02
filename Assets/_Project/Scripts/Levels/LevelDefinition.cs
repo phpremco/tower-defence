@@ -43,8 +43,9 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
 
         /// <summary>
-        /// How much stronger the enemies are because the player is expected to arrive with permanent upgrades by
-        /// now (0.2 means a fifth tougher). Early levels keep it at zero; later ones count on a few bought levels.
+        /// The permanent tower upgrade (damage times fire rate, minus one) the balance model expects a Medium player to
+        /// bring by now, written by the generator for reference. It does not scale enemies: the wave solver already
+        /// sized the waves against it.
         /// </summary>
         [SerializeField] [Range(0f, 1f)] private float _expectedUpgradeBonus;
 
@@ -126,8 +127,12 @@ namespace Game.Levels
         public float EnemyHealthMultiplier => _enemyHealthMultiplier;
         public float ExpectedUpgradeBonus => _expectedUpgradeBonus;
 
-        /// <summary>Everything that scales enemy health for this level: its own multiplier and the expected upgrades.</summary>
-        public float EnemyHealthScale => _enemyHealthMultiplier * (1f + _expectedUpgradeBonus);
+        /// <summary>
+        /// Everything the level itself adds to enemy health. The permanent upgrades the player brings are no longer a flat
+        /// factor here: the wave solver sizes every wave against the upgrades the progression model expects (see
+        /// Docs/BALANCE.md), and <see cref="ExpectedUpgradeBonus"/> only reports that expectation.
+        /// </summary>
+        public float EnemyHealthScale => _enemyHealthMultiplier;
         public TowerDefinition BaseTurret => _baseTurret;
         public HeroDefinition Hero => _hero;
 

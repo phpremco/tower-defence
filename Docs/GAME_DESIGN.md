@@ -191,7 +191,7 @@ Elk level krijgt vier moeilijkheden (easy, medium, hard, psycho). Hogere moeilij
 
 ## Economie en progressie
 
-Drie valuta's houden de loop in beweging; de bedragen zijn nog niet vastgelegd.
+Drie valuta's houden de loop in beweging. De bedragen staan sinds 2026-11-02 vast in het balansmodel (`Docs/BALANCE.md`): killgeld volgt uit de dreiging van een wezen, onderzoek en power per level volgen uit de regels hieronder.
 
 | Valuta | Verdien je met | Besteed je aan | Geldt |
 | --- | --- | --- | --- |
@@ -201,7 +201,10 @@ Drie valuta's houden de loop in beweging; de bedragen zijn nog niet vastgelegd.
 
 - **Hogere moeilijkheid betaalt meer:** dat dwingt je levels opnieuw te spelen om verder te komen.
 - **Eén keer per level per moeilijkheid:** onderzoekspunten en power krijg je alleen de eerste keer dat je een level op een moeilijkheid haalt. Opnieuw spelen levert alleen een betere sterrenscore op. Zo valt er niets te farmen en is het totaal begrensd: alles op easy betaalt ongeveer een vijfde van alle upgrades, alles op psycho betaalt alles.
-- **Latere levels rekenen op upgrades:** elke `LevelDefinition` heeft een `ExpectedUpgradeBonus` (0 tot 1). De vijanden krijgen zoveel extra HP, omdat de speler daar met gekochte upgrades aankomt (level 1 en 2: 0, level 3: 0,1, level 4: 0,2, level 5: 0,3, ijs 0,35, moeras 0,4). De balansberekening rekent dezelfde bonus mee aan de kant van de torens.
+- **Onderzoek per moeilijkheid:** easy x1, medium x2, hard x3, psycho x5 van het basisbedrag van het level. Alles op easy is zo een vijfde van alle onderzoeksupgrades, alles op psycho alles. Het basisbedrag groeit 18% per level (15 tot 42).
+- **Power:** niet op easy; medium x1, hard x1,5, psycho x2,2. Per level 4 plus 3 per baas, zodat bazen power opleveren; alles op psycho betaalt alle drone-upgrades.
+- **Latere levels rekenen op upgrades:** het balansmodel weet per level en moeilijkheid welke wapens de speler heeft en welke upgrades hij met het verdiende onderzoek kon kopen, en de wave-solver maakt de wezens precies zo taai dat de druk klopt. `ExpectedUpgradeBonus` toont die verwachting alleen nog; hij schaalt de vijanden niet meer.
+- **Moeilijkheid en bazen:** hard krijgt een extra baaswave, psycho nog een. Psycho gaat uit van een speler met de hele campagne op easy tot hard achter zich.
 - **Scrap:** een kapotte toren geeft geld als je op het wrak klikt.
 - **Balans:** alle getallen staan in data, zodat we ze zonder code kunnen aanpassen.
 
@@ -281,7 +284,7 @@ Volgende stap: de mappenstructuur van het Unity-project en een `CLAUDE.md` met d
 - [ ] Padobjecten: hebben ze beperkt gebruik of een cooldown, en zijn ze upgradebaar?
 - [ ] Welk wapen komt uit welk level, en is de bron gestolen tech of intel van de thuisplaneet?
 - [ ] Welke wapens volgen in de tweede wereld (nu: railgun en support)?
-- [ ] Bedragen en balans van de drie valuta's
+- [x] Bedragen en balans van de drie valuta's: vastgelegd in het balansmodel (`Docs/BALANCE.md`, 2026-11-02); de kalibratie tegen echt spelen volgt
 - [ ] Namen en uiterlijk van torens, vijanden en bazen
 - [ ] Verhaaltekst per level, inclusief de berichten van de thuisplaneet
 - [ ] Of we eerst een snel browser-prototype maken om de gameplay te testen

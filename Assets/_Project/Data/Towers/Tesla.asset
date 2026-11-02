@@ -23,7 +23,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     Model: {fileID: 0}
-  - Cost: 160
+  - Cost: 115
     Damage: 26
     Range: 3.7
     FireInterval: 0.45
@@ -31,7 +31,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     Model: {fileID: 0}
-  - Cost: 230
+  - Cost: 190
     Damage: 40
     Range: 4
     FireInterval: 0.4

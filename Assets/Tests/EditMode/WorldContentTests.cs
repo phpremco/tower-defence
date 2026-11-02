@@ -95,6 +95,45 @@ namespace Game.Tests
             {
                 LevelDefinition level = catalog.Nodes[i].Level;
                 Assert.AreEqual(EntranceKind.Gate, level.BossEntrance.Kind, $"{level.name}: bosses must use the main gate in the first world.");
+                foreach (DifficultyWaves set in level.DifficultyWaves)
+                {
+                    foreach (WaveDefinition wave in set.Waves)
+                    {
+                        foreach (SpawnGroup group in wave.Groups)
+                        {
+                            if (group.Enemy != null && group.Enemy.IsBoss)
+                            {
+                                Assert.AreEqual(SpawnSource.Gate, group.Source, $"{wave.name}: a first-world boss must come through the gate.");
+                                Assert.AreEqual(0, group.PathIndex, $"{wave.name}: a first-world boss must take the main road.");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // GAME_DESIGN: harder difficulties bring extra boss waves, never fewer.
+        [Test]
+        public void HarderDifficulties_BringAtLeastAsManyBosses()
+        {
+            CampaignCatalog catalog = LoadCampaign();
+            foreach (MapNode node in catalog.Nodes)
+            {
+                int previous = 0;
+                foreach (DifficultyWaves set in node.Level.DifficultyWaves)
+                {
+                    int bosses = 0;
+                    foreach (WaveDefinition wave in set.Waves)
+                    {
+                        foreach (SpawnGroup group in wave.Groups)
+                        {
+                            bosses += group.Enemy != null && group.Enemy.IsBoss ? 1 : 0;
+                        }
+                    }
+
+                    Assert.GreaterOrEqual(bosses, previous, $"{node.Level.name} {set.Difficulty.name} has fewer bosses than the easier difficulty.");
+                    previous = bosses;
+                }
             }
         }
 

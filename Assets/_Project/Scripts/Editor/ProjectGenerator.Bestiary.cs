@@ -1,3 +1,4 @@
+using Game.Balance;
 using Game.Core;
 using Game.Enemies;
 using Game.Levels;
@@ -41,6 +42,26 @@ namespace Game.Editor
             public EnemyDefinition SlimeMonarch;
             public EnemyDefinition RollerKing;
             public EnemyDefinition Queen;
+
+            public EnemyDefinition[] All => new[]
+            {
+                Skitter, Stinger, Emberbat, Tidebat, Mossbat, Dustbat, Bulwark, Prowler, Wisp, Skyray, Oozer, Roller, Frostbat, Mirebat,
+                Shardback, Mireleech, BroodMother, AcidEmpress, StormMatriarch, CrystalWarlord, PackAlpha, CoreWisp, SkySovereign,
+                SlimeMonarch, RollerKing, Queen,
+            };
+
+            public EnemyDefinition ById(string id)
+            {
+                foreach (EnemyDefinition enemy in All)
+                {
+                    if (enemy != null && enemy.name == id)
+                    {
+                        return enemy;
+                    }
+                }
+
+                return null;
+            }
         }
 
         /// <summary>The stats of one species or boss, so the creation reads as a table.</summary>
@@ -53,7 +74,6 @@ namespace Game.Editor
             public float Armor;
             public float ArmorReduction;
             public float Speed;
-            public int Reward;
             public int BaseDamage;
             public Element Element;
             public AttackStyle Attack;
@@ -99,14 +119,14 @@ namespace Game.Editor
 
             b.Skitter = CreateEnemy(new Creature
             {
-                Id = "Skitter", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, Reward = 1, BaseDamage = 1,
+                Id = "Skitter", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
                 Color = new Color(1f, 0.62f, 0.12f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
                 Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
             });
             b.Stinger = CreateEnemy(new Creature
             {
-                Id = "Stinger", Layer = TargetLayers.Ground, Health = 120f, Armor = 80f, ArmorReduction = 0.65f, Speed = 0.9f, Reward = 12, BaseDamage = 3,
+                Id = "Stinger", Layer = TargetLayers.Ground, Health = 120f, Armor = 80f, ArmorReduction = 0.65f, Speed = 0.9f, BaseDamage = 3,
                 Attack = AttackStyle.Sting, AttackDamage = 3f, BlockadeDamage = 10f, AttackRange = 2.6f, AttackInterval = 2f,
                 Color = new Color(0.6f, 0.2f, 0.85f), Eyes = new Color(1f, 0.5f, 1f), Accent = new Color(1f, 0.35f, 0.9f), Blood = new Color(0.55f, 1f, 0.35f),
                 Scale = 0.8f, Shape = EnemyShape.Stinger, Death = DeathStyle.Shatter,
@@ -120,7 +140,7 @@ namespace Game.Editor
             // The ice beetle: slow and heavily plated under its ice, spitting frost at the towers it passes.
             b.Shardback = CreateEnemy(new Creature
             {
-                Id = "Shardback", Layer = TargetLayers.Ground, Health = 130f, Armor = 90f, ArmorReduction = 0.65f, Speed = 0.75f, Reward = 13, BaseDamage = 4,
+                Id = "Shardback", Layer = TargetLayers.Ground, Health = 130f, Armor = 90f, ArmorReduction = 0.65f, Speed = 0.75f, BaseDamage = 4,
                 Attack = AttackStyle.Sting, AttackDamage = 4f, BlockadeDamage = 14f, AttackRange = 2.6f, AttackInterval = 1.9f, Element = Element.Ice,
                 Color = new Color(0.55f, 0.75f, 0.9f), Eyes = new Color(0.85f, 1f, 1f), Accent = new Color(0.8f, 0.95f, 1f), Blood = new Color(0.75f, 0.9f, 1f),
                 Scale = 0.8f, Shape = EnemyShape.Shardback, Death = DeathStyle.Shatter,
@@ -128,7 +148,7 @@ namespace Game.Editor
             // The marsh leech: quick and low, it leaves a slick of mud that hurries everything behind it.
             b.Mireleech = CreateEnemy(new Creature
             {
-                Id = "Mireleech", Layer = TargetLayers.Ground, Health = 80f, Speed = 1.15f, Reward = 7, BaseDamage = 2,
+                Id = "Mireleech", Layer = TargetLayers.Ground, Health = 80f, Speed = 1.15f, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 8f, AttackRange = 2.4f, AttackInterval = 1.1f, Element = Element.Bog,
                 TrailSeconds = 7f, TrailHaste = 1.35f, TrailDamage = 2f,
                 Color = new Color(0.32f, 0.3f, 0.2f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.6f, 0.9f, 0.3f), Blood = new Color(0.45f, 0.35f, 0.2f),
@@ -136,14 +156,14 @@ namespace Game.Editor
             });
             b.Bulwark = CreateEnemy(new Creature
             {
-                Id = "Bulwark", Layer = TargetLayers.Ground, Health = 220f, Armor = 160f, ArmorReduction = 0.7f, Speed = 0.7f, Reward = 18, BaseDamage = 5,
+                Id = "Bulwark", Layer = TargetLayers.Ground, Health = 220f, Armor = 160f, ArmorReduction = 0.7f, Speed = 0.7f, BaseDamage = 5,
                 Attack = AttackStyle.Slash, AttackDamage = 9f, BlockadeDamage = 24f, AttackRange = 1.6f, AttackInterval = 1.6f,
                 Color = new Color(0.3f, 0.6f, 0.35f), Eyes = new Color(1f, 0.9f, 0.4f), Accent = new Color(0.4f, 1f, 0.95f), Blood = GooGreen,
                 Scale = 0.9f, Shape = EnemyShape.Bulwark, Death = DeathStyle.Collapse,
             });
             b.Prowler = CreateEnemy(new Creature
             {
-                Id = "Prowler", Layer = TargetLayers.Ground, Health = 62f, Speed = 1.5f, Reward = 5, BaseDamage = 2,
+                Id = "Prowler", Layer = TargetLayers.Ground, Health = 62f, Speed = 1.5f, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 7f, AttackRange = 2.5f, AttackInterval = 1f,
                 RageSeconds = 3f, RageSpeed = 1.6f, RageRadius = 3f,
                 Color = new Color(0.8f, 0.28f, 0.15f), Eyes = new Color(1f, 0.35f, 0.2f), Accent = new Color(1f, 0.6f, 0.2f), Blood = RedBlood,
@@ -151,21 +171,21 @@ namespace Game.Editor
             });
             b.Wisp = CreateEnemy(new Creature
             {
-                Id = "Wisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 36f, Speed = 1.2f, Reward = 5, BaseDamage = 4,
+                Id = "Wisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 36f, Speed = 1.2f, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 14f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.7f, 0.85f, 1f), Eyes = Color.white, Accent = new Color(0.75f, 0.9f, 1f), Blood = WispLight,
                 Scale = 0.5f, Shape = EnemyShape.Wisp, Death = DeathStyle.Burst,
             });
             b.Skyray = CreateEnemy(new Creature
             {
-                Id = "Skyray", Layer = TargetLayers.Air, Flies = true, Health = 80f, Speed = 1.3f, Reward = 8, BaseDamage = 3,
+                Id = "Skyray", Layer = TargetLayers.Air, Flies = true, Health = 80f, Speed = 1.3f, BaseDamage = 3,
                 Attack = AttackStyle.Whip, AttackDamage = 8f, BlockadeDamage = 8f, AttackRange = 2.2f, AttackInterval = 1.4f, GateStrikes = 3,
                 Color = new Color(0.25f, 0.35f, 0.65f), Eyes = new Color(0.5f, 1f, 1f), Accent = new Color(0.4f, 0.95f, 1f), Blood = RayBlue,
                 Scale = 0.7f, Shape = EnemyShape.Skyray, Death = DeathStyle.Crash,
             });
             b.Oozer = CreateEnemy(new Creature
             {
-                Id = "Oozer", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, Reward = 8, BaseDamage = 2,
+                Id = "Oozer", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
                 Attack = AttackStyle.Slam, BlockadeDamage = 9f, AttackRange = 2.5f, AttackInterval = 1.5f,
                 TrailSeconds = 9f, TrailHaste = 1.45f, TrailDamage = 2.5f,
                 Color = new Color(0.55f, 0.8f, 0.15f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.5f, 1f, 0.2f), Blood = SlimeGreen,
@@ -173,7 +193,7 @@ namespace Game.Editor
             });
             b.Roller = CreateEnemy(new Creature
             {
-                Id = "Roller", Layer = TargetLayers.Ground, Health = 110f, Speed = 1f, Reward = 6, BaseDamage = 2,
+                Id = "Roller", Layer = TargetLayers.Ground, Health = 110f, Speed = 1f, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 8f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 WalkSeconds = 3f, RollSeconds = 2.2f, RollSpeed = 2.6f,
                 Color = new Color(0.8f, 0.5f, 0.2f), Eyes = new Color(1f, 0.8f, 0.3f), Accent = new Color(1f, 0.7f, 0.3f), Blood = RollerOchre,
@@ -206,7 +226,7 @@ namespace Game.Editor
         {
             return CreateEnemy(new Creature
             {
-                Id = id, Layer = TargetLayers.Air, Flies = true, Health = 31f, Speed = 1.5f, Reward = 4, BaseDamage = 2, Element = element,
+                Id = id, Layer = TargetLayers.Air, Flies = true, Health = 31f, Speed = 1.5f, BaseDamage = 2, Element = element,
                 Attack = AttackStyle.Bolt, AttackDamage = 4f, BlockadeDamage = 4f, AttackRange = 2.8f, AttackInterval = 1.3f, GateStrikes = 2,
                 Color = color, Eyes = eyes, Accent = accent, Blood = accent,
                 Scale = 0.65f, Shape = EnemyShape.Bat, Death = DeathStyle.Crash,
@@ -238,35 +258,35 @@ namespace Game.Editor
 
             b.BroodMother = CreateEnemy(new Creature
             {
-                Id = "BroodMother", Layer = TargetLayers.Ground, Health = 900f, Speed = 0.55f, Reward = 225, BaseDamage = 10, Boss = true,
+                Id = "BroodMother", Layer = TargetLayers.Ground, Health = 900f, Speed = 0.55f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 45f, AttackRange = 2.5f, AttackInterval = 1.3f,
                 Color = new Color(0.95f, 0.45f, 0.08f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.9f, 1f, 0.3f), Blood = VenomGreen,
                 Scale = 1.3f, Shape = EnemyShape.BroodMother, Death = DeathStyle.Shatter, Abilities = new[] { brood, venomBurst },
             });
             b.AcidEmpress = CreateEnemy(new Creature
             {
-                Id = "AcidEmpress", Layer = TargetLayers.Ground, Health = 1300f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.6f, Reward = 330, BaseDamage = 12, Boss = true,
+                Id = "AcidEmpress", Layer = TargetLayers.Ground, Health = 1300f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.6f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Sting, AttackDamage = 14f, BlockadeDamage = 60f, AttackRange = 3.5f, AttackInterval = 1f,
                 Color = new Color(0.45f, 0.1f, 0.7f), Eyes = new Color(1f, 0.4f, 1f), Accent = new Color(1f, 0.3f, 0.8f), Blood = new Color(0.6f, 1f, 0.3f),
                 Scale = 1.5f, Shape = EnemyShape.AcidEmpress, Death = DeathStyle.Shatter, Abilities = new[] { acidRain, plateRegrowth },
             });
             b.StormMatriarch = CreateEnemy(new Creature
             {
-                Id = "StormMatriarch", Layer = TargetLayers.Air, Flies = true, Health = 700f, Speed = 1.1f, Reward = 270, BaseDamage = 10, Element = Element.Wood, Boss = true,
+                Id = "StormMatriarch", Layer = TargetLayers.Air, Flies = true, Health = 700f, Speed = 1.1f, BaseDamage = 10, Element = Element.Wood, Boss = true,
                 Attack = AttackStyle.Bolt, AttackDamage = 10f, BlockadeDamage = 10f, AttackRange = 3f, AttackInterval = 0.8f, GateStrikes = 6,
                 Color = new Color(0.3f, 0.75f, 0.35f), Eyes = new Color(0.95f, 1f, 0.6f), Accent = new Color(0.6f, 1f, 0.4f), Blood = new Color(0.6f, 1f, 0.4f),
                 Scale = 1.2f, Shape = EnemyShape.StormMatriarch, Death = DeathStyle.Crash, Abilities = new[] { elementStorm, batSwarm },
             });
             b.CrystalWarlord = CreateEnemy(new Creature
             {
-                Id = "CrystalWarlord", Layer = TargetLayers.Ground, Health = 1800f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.5f, Reward = 390, BaseDamage = 15, Boss = true,
+                Id = "CrystalWarlord", Layer = TargetLayers.Ground, Health = 1800f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.5f, BaseDamage = 15, Boss = true,
                 Attack = AttackStyle.Slash, AttackDamage = 30f, BlockadeDamage = 90f, AttackRange = 2f, AttackInterval = 1.4f,
                 Color = new Color(0.2f, 0.45f, 0.3f), Eyes = new Color(1f, 0.85f, 0.3f), Accent = new Color(0.5f, 1f, 1f), Blood = GooGreen,
                 Scale = 1.6f, Shape = EnemyShape.CrystalWarlord, Death = DeathStyle.Collapse, Abilities = new[] { swordSweep, crystalRegrowth },
             });
             b.PackAlpha = CreateEnemy(new Creature
             {
-                Id = "PackAlpha", Layer = TargetLayers.Ground, Health = 800f, Speed = 1.3f, Reward = 240, BaseDamage = 8, Boss = true,
+                Id = "PackAlpha", Layer = TargetLayers.Ground, Health = 800f, Speed = 1.3f, BaseDamage = 8, Boss = true,
                 Attack = AttackStyle.Bite, AttackDamage = 12f, BlockadeDamage = 40f, AttackRange = 2f, AttackInterval = 0.9f,
                 WalkSeconds = 4f, RollSeconds = 1.5f, RollSpeed = 2.2f, RageSeconds = 4f, RageSpeed = 1.7f, RageRadius = 5f,
                 Color = new Color(0.6f, 0.15f, 0.1f), Eyes = new Color(1f, 0.3f, 0.15f), Accent = new Color(1f, 0.5f, 0.15f), Blood = RedBlood,
@@ -274,21 +294,21 @@ namespace Game.Editor
             });
             b.CoreWisp = CreateEnemy(new Creature
             {
-                Id = "CoreWisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 600f, Speed = 0.9f, Reward = 255, BaseDamage = 10, Boss = true,
+                Id = "CoreWisp", Layer = TargetLayers.Ground | TargetLayers.Air, Health = 600f, Speed = 0.9f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Slam, BlockadeDamage = 40f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.8f, 0.75f, 1f), Eyes = Color.white, Accent = new Color(0.85f, 0.8f, 1f), Blood = new Color(0.85f, 0.8f, 1f),
                 Scale = 1.3f, Shape = EnemyShape.CoreWisp, Death = DeathStyle.Burst, Abilities = new[] { corePulse, fission },
             });
             b.SkySovereign = CreateEnemy(new Creature
             {
-                Id = "SkySovereign", Layer = TargetLayers.Air, Flies = true, Health = 1000f, Speed = 1f, Reward = 300, BaseDamage = 12, Boss = true,
+                Id = "SkySovereign", Layer = TargetLayers.Air, Flies = true, Health = 1000f, Speed = 1f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Whip, AttackDamage = 22f, BlockadeDamage = 22f, AttackRange = 2.5f, AttackInterval = 1.1f, GateStrikes = 8,
                 Color = new Color(0.15f, 0.25f, 0.55f), Eyes = new Color(0.6f, 1f, 1f), Accent = new Color(0.5f, 1f, 1f), Blood = RayBlue,
                 Scale = 1.4f, Shape = EnemyShape.SkySovereign, Death = DeathStyle.Crash, Abilities = new[] { tailLaser },
             });
             b.SlimeMonarch = CreateEnemy(new Creature
             {
-                Id = "SlimeMonarch", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, Reward = 330, BaseDamage = 12, Boss = true,
+                Id = "SlimeMonarch", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Slam, AttackDamage = 20f, BlockadeDamage = 70f, AttackRange = 2f, AttackInterval = 1.6f,
                 TrailSeconds = 14f, TrailHaste = 1.6f, TrailDamage = 5f,
                 Color = new Color(0.45f, 0.7f, 0.1f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.6f, 1f, 0.2f), Blood = SlimeGreen,
@@ -296,7 +316,7 @@ namespace Game.Editor
             });
             b.RollerKing = CreateEnemy(new Creature
             {
-                Id = "RollerKing", Layer = TargetLayers.Ground, Health = 1100f, Armor = 500f, ArmorReduction = 0.6f, Speed = 0.9f, Reward = 285, BaseDamage = 10, Boss = true,
+                Id = "RollerKing", Layer = TargetLayers.Ground, Health = 1100f, Armor = 500f, ArmorReduction = 0.6f, Speed = 0.9f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 60f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 WalkSeconds = 3f, RollSeconds = 3f, RollSpeed = 2.8f,
                 Color = new Color(0.7f, 0.4f, 0.15f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(1f, 0.6f, 0.2f), Blood = RollerOchre,
@@ -304,12 +324,27 @@ namespace Game.Editor
             });
             b.Queen = CreateEnemy(new Creature
             {
-                Id = "HiveQueen", Layer = TargetLayers.Ground, Health = 3200f, Speed = 0.55f, Reward = 750, BaseDamage = 20, Boss = true,
+                Id = "HiveQueen", Layer = TargetLayers.Ground, Health = 3200f, Speed = 0.55f, BaseDamage = 20, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 120f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.6f, 0.05f, 0.1f), Eyes = new Color(1f, 0.4f, 0.4f), Accent = new Color(1f, 0.3f, 0.4f), Blood = new Color(0.7f, 0.1f, 0.2f),
                 Scale = 2.7f, Shape = EnemyShape.Queen, Death = DeathStyle.Shatter, Abilities = new[] { queenBrood, queenPulse },
             });
         }
+
+        private static EnemyStats StatsOf(Creature c) => new EnemyStats
+        {
+            Id = c.Id,
+            Layer = (int)c.Layer,
+            Flies = c.Flies,
+            Health = c.Health,
+            Armor = c.Armor,
+            Speed = c.Speed,
+            BaseDamage = c.BaseDamage,
+            AttackDamage = c.AttackDamage,
+            AttackInterval = c.AttackInterval,
+            BlockadeDamage = c.BlockadeDamage,
+            IsBoss = c.Boss,
+        };
 
         private static EnemyDefinition CreateEnemy(Creature c)
         {
@@ -322,7 +357,8 @@ namespace Game.Editor
             so.FindProperty("_armor").floatValue = c.Armor;
             so.FindProperty("_armorReduction").floatValue = c.Armor > 0f ? c.ArmorReduction : 0.6f;
             so.FindProperty("_speed").floatValue = c.Speed;
-            so.FindProperty("_reward").intValue = c.Reward;
+            // Kill money follows threat, so a new or retuned creature never needs a hand-set reward.
+            so.FindProperty("_reward").intValue = Threat.Reward(StatsOf(c), BalanceSheet.Rules);
             so.FindProperty("_baseDamage").intValue = c.BaseDamage;
             so.FindProperty("_element").enumValueIndex = (int)c.Element;
             so.FindProperty("_attackStyle").enumValueIndex = (int)c.Attack;

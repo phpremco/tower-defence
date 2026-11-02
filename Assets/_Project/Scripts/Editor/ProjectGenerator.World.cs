@@ -101,14 +101,11 @@ namespace Game.Editor
             public TowerDefinition RewardTower;
             public UnlockSource Source;
             public string Story;
-            public int Research;
-            public int Power;
 
             /// <summary>How much permanent upgrade the player is expected to bring; enemies are scaled up by it.</summary>
             public float UpgradeBonus;
             public PathObjectDefinition[] PathObjects;
             public CombineRecipe[] Recipes;
-            public WaveScript Script;
             // Bosses use the main gate unless the level is late, rich or simple; see Docs/LEVEL_GUIDE.md before changing this.
             public EntranceKind Entrance;
             public Vector2Int EntranceCell;
@@ -299,7 +296,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Forest",
-                    Script = ForestScript(enemies),
                     Name = "Glowing Forest",
                     Region = "Bioluminescent Woods",
                     Briefing = "The woods glow at night, and so does what lives in them. Two roads meet under the canopy. Rollers come down them fast, and the ponds hide worse.",
@@ -351,8 +347,6 @@ namespace Game.Editor
                     RewardTower = roster.Cryo,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "Alien crystals in the forest turned out to hold a cold-field emitter. Our engineers adapted it.",
-                    Research = 26,
-                    Power = 8,
                     PathObjects = new[] { slowField, mine },
                     Recipes = new CombineRecipe[0],
                     // Rollers from the third wave, pool creatures out of the forest ponds from the fourth; the boss surfaces from a pond.
@@ -364,7 +358,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Lava",
-                    Script = LavaScript(enemies),
                     Name = "Lava Caves",
                     Region = "Lava Fields",
                     Briefing = "The energy we came for lies in these lava fields. The heat does not stop the swarm, and halfway through something climbs out of the lava itself.",
@@ -415,8 +408,6 @@ namespace Game.Editor
                     RewardTower = roster.Laser,
                     Source = UnlockSource.HomePlanetIntel,
                     Story = "Home sent the focusing crystals they refined from our first samples: a laser design.",
-                    Research = 32,
-                    Power = 11,
                     PathObjects = new[] { lavaBall, barrel },
                     Recipes = new CombineRecipe[0],
                     // No final boss here, but a mind-boss climbs out of the lava halfway through the level.
@@ -428,7 +419,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Ruins",
-                    Script = RuinsScript(enemies),
                     Name = "Ancient Ruins",
                     Region = "Old Ruins",
                     Briefing = "Someone built here long before us, and lost. Old metal, gold and green, and a walking fortress that still guards it.",
@@ -481,8 +471,6 @@ namespace Game.Editor
                     RewardTower = roster.Rocket,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The ruin vaults held guidance gear. With it our rocket launchers can finally lock on to flyers.",
-                    Research = 40,
-                    Power = 14,
                     PathObjects = new[] { groundDrone, antiAir },
                     Recipes = new CombineRecipe[0],
                     // Diggers out of the quicksand, rollers, and eels from the cistern; the fortress breaks out of the ground between the roads.
@@ -495,7 +483,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Nest",
-                    Script = NestScript(enemies),
                     Name = "The Nest",
                     Region = "The Hive",
                     Briefing = "The source. The queen waits under the hive and the whole planet seems to hold its breath. End this, and learn what is under the surface.",
@@ -547,8 +534,6 @@ namespace Game.Editor
                     RewardTower = roster.Tesla,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The queen's nest was powered by living coils. We took one, and with it the first hybrid designs.",
-                    Research = 50,
-                    Power = 20,
                     PathObjects = new[] { slowField, mine, lavaBall, barrel, groundDrone, antiAir },
                     Recipes = recipes,
                     // Everything at once, a fortress halfway, and the queen herself through the hive mouth.
@@ -559,7 +544,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Ice",
-                    Script = IceScript(enemies),
                     Name = "Frozen Shelf",
                     Region = "Polar Shelf",
                     Briefing = "Beyond the hive the planet turns to ice. The lakes are frozen over, and something lives under the ice: the shelf cracks where the frost bats come up, and the road is never far from a lake.",
@@ -610,8 +594,6 @@ namespace Game.Editor
                     RewardTower = roster.Railgun,
                     Source = UnlockSource.HomePlanetIntel,
                     Story = "The home planet finished the railgun designs. Nothing the ice can grow stops a slug at that speed.",
-                    Research = 55,
-                    Power = 22,
                     PathObjects = new[] { slowField, mine, barrel, groundDrone, antiAir },
                     Recipes = recipes,
                     // The warlord breaks up through the middle lake.
@@ -623,7 +605,6 @@ namespace Game.Editor
                 new LevelSpec
                 {
                     Key = "Swamp",
-                    Script = SwampScript(enemies),
                     Name = "Black Marsh",
                     Region = "Drowned Lowlands",
                     Briefing = "South of the shelf the ice melts into a marsh that never dries. The roads are causeways between the pools, the trees are dead, and the mire itself breathes: leeches, slugs and bats come up out of it.",
@@ -676,8 +657,6 @@ namespace Game.Editor
                     RewardTower = roster.Support,
                     Source = UnlockSource.StolenAlienTech,
                     Story = "The marsh slugs secrete a resin that carries energy without loss. Wrapped around a mast, it feeds the guns beside it.",
-                    Research = 60,
-                    Power = 24,
                     PathObjects = new[] { slowField, mine, lavaBall, barrel, groundDrone, antiAir },
                     Recipes = recipes,
                     // The slime monarch heaves itself out of the middle bog.
@@ -822,8 +801,6 @@ namespace Game.Editor
             stars.GetArrayElementAtIndex(1).floatValue = 0.9f;
 
             SerializedProperty reward = so.FindProperty("_reward");
-            reward.FindPropertyRelative("ResearchPoints").intValue = spec.Research;
-            reward.FindPropertyRelative("PowerCurrency").intValue = spec.Power;
             reward.FindPropertyRelative("NewTower").objectReferenceValue = spec.RewardTower;
             reward.FindPropertyRelative("Source").intValue = (int)spec.Source;
             reward.FindPropertyRelative("Story").stringValue = spec.Story;
@@ -870,22 +847,6 @@ namespace Game.Editor
             }
 
             SetReferences(so.FindProperty("_availableTowers"), roster.Standard);
-
-            int secondRoadIndex = spec.SecondRoad != null ? 3 : -1;
-            List<DifficultyWaves> waveSets = BuildWaves(spec.Key, difficulties, spec.Script, secondRoadIndex);
-            SerializedProperty waveArray = so.FindProperty("_difficultyWaves");
-            waveArray.arraySize = waveSets.Count;
-            for (int i = 0; i < waveSets.Count; i++)
-            {
-                SerializedProperty element = waveArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("Difficulty").objectReferenceValue = waveSets[i].Difficulty;
-                SerializedProperty waves = element.FindPropertyRelative("Waves");
-                waves.arraySize = waveSets[i].Waves.Length;
-                for (int w = 0; w < waveSets[i].Waves.Length; w++)
-                {
-                    waves.GetArrayElementAtIndex(w).objectReferenceValue = waveSets[i].Waves[w];
-                }
-            }
 
             so.ApplyModifiedPropertiesWithoutUndo();
             ConfigureLevelExtras(level, spec.PathObjects, spec.Recipes, repairDrone, harvestDrone, attackDrone);

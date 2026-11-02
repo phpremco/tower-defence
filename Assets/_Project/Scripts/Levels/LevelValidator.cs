@@ -397,6 +397,16 @@ namespace Game.Levels
                 return;
             }
 
+            if (group.Source == SpawnSource.Entrance)
+            {
+                if (level.BossEntrance.Kind == EntranceKind.Gate)
+                {
+                    errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} through the boss entrance, but the level has none.");
+                }
+
+                return;
+            }
+
             if (group.Source == SpawnSource.Nest)
             {
                 CheckNestGroup(level, wave, group, errors);

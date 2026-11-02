@@ -323,7 +323,7 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: 541676c0a02983e4c8783dd2a020ac21, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 292f3db758090fc41b777144c0add98d, type: 3}
   _enemyHealthMultiplier: 1.25
-  _expectedUpgradeBonus: 0.4
+  _expectedUpgradeBonus: 0.32
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
@@ -505,8 +505,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: f5db9c5b0833ba449baef201f4a1cd45, type: 2}
     - {fileID: 11400000, guid: aea38a99a530a0c499b5522c6669e648, type: 2}
   _reward:
-    ResearchPoints: 60
-    PowerCurrency: 24
+    ResearchPoints: 42
+    PowerCurrency: 13
     NewTower: {fileID: 11400000, guid: b4b6deb0d9ba25944b4383d105c6e06b, type: 2}
     Source: 1
     Story: The marsh slugs secrete a resin that carries energy without loss. Wrapped around a mast, it feeds the guns beside it.

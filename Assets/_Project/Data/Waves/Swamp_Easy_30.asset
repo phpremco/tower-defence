@@ -35,56 +35,56 @@ MonoBehaviour:
     Source: 0
     Interval: 0.2
     Delay: 0
-    Stagger: 5.2000003
-  - Enemy: {fileID: 11400000, guid: 3ac93d78318e6154d91053285ba6452e, type: 2}
-    Count: 1
-    PathIndex: 0
-    Source: 0
-    Interval: 0.8
-    Delay: 2.5
-    Stagger: 0
+    Stagger: 5.2
   - Enemy: {fileID: 11400000, guid: 3ac93d78318e6154d91053285ba6452e, type: 2}
     Count: 2
     PathIndex: 3
     Source: 0
     Interval: 0.8
     Delay: 2.5
-    Stagger: 1.6
+    Stagger: 0
   - Enemy: {fileID: 11400000, guid: 3ac93d78318e6154d91053285ba6452e, type: 2}
     Count: 1
     PathIndex: 0
     Source: 0
     Interval: 0.8
     Delay: 2.5
-    Stagger: 4.8
+    Stagger: 3.2
   - Enemy: {fileID: 11400000, guid: 3ac93d78318e6154d91053285ba6452e, type: 2}
     Count: 3
     PathIndex: 3
     Source: 0
     Interval: 0.8
     Delay: 2.5
-    Stagger: 6.4
-  - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
-    Count: 2
-    PathIndex: 3
+    Stagger: 4.8
+  - Enemy: {fileID: 11400000, guid: 3ac93d78318e6154d91053285ba6452e, type: 2}
+    Count: 1
+    PathIndex: 0
     Source: 0
-    Interval: 1.1
-    Delay: 5
-    Stagger: 0
+    Interval: 0.8
+    Delay: 2.5
+    Stagger: 9.6
   - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
     Count: 1
     PathIndex: 0
     Source: 0
     Interval: 1.1
     Delay: 5
-    Stagger: 4.4
+    Stagger: 0
   - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
     Count: 1
     PathIndex: 3
     Source: 0
     Interval: 1.1
     Delay: 5
-    Stagger: 6.6000004
+    Stagger: 2.2
+  - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
+    Count: 2
+    PathIndex: 0
+    Source: 0
+    Interval: 1.1
+    Delay: 5
+    Stagger: 4.4
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 3
     PathIndex: 3
@@ -127,4 +127,4 @@ MonoBehaviour:
     Interval: 1.4
     Delay: 15
     Stagger: 0
-  _healthMultiplier: 1.58
+  _healthMultiplier: 3.987

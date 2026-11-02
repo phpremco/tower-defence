@@ -19,7 +19,7 @@ MonoBehaviour:
   _armor: 0
   _armorReduction: 0.6
   _speed: 1.1
-  _reward: 270
+  _reward: 182
   _baseDamage: 10
   _element: 3
   _attackStyle: 2

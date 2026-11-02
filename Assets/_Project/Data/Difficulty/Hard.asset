@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Hard
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Hard
-  _healthMultiplier: 1.3
+  _healthMultiplier: 1.15
   _countMultiplier: 1.2
   _spawnIntervalMultiplier: 0.85
-  _rewardMultiplier: 2
-  _powerCurrencyMultiplier: 1
+  _rewardMultiplier: 3
+  _powerCurrencyMultiplier: 1.5
   _structureDamageMultiplier: 1

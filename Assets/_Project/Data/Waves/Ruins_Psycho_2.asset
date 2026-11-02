@@ -16,10 +16,17 @@ MonoBehaviour:
   _spawnJitter: 0.45
   _groups:
   - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
-    Count: 2
-    PathIndex: 3
+    Count: 1
+    PathIndex: 0
     Source: 0
     Interval: 1.1
     Delay: 0
     Stagger: 0
-  _healthMultiplier: 1.018
+  - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
+    Count: 1
+    PathIndex: 3
+    Source: 0
+    Interval: 1.1
+    Delay: 0
+    Stagger: 2.2
+  _healthMultiplier: 1.674

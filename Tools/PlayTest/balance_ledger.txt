@@ -1,1020 +1,1044 @@
-Level_Landing Easy
-  w1  money   200 dps    88/   0 hp     84/    0 window   10s pressure 0.19/0.00
-  w2  money   210 dps    88/   0 hp    103/    0 window   12s pressure 0.18/0.00
-  w3  money   222 dps    88/   0 hp     71/    0 window    9s pressure 0.17/0.00
-  w4  money   230 dps   102/  14 hp    245/    0 window    9s pressure 0.55/0.00
-  w5  money   255 dps   102/  14 hp    243/    0 window    9s pressure 0.50/0.00
-  w6  money   279 dps   118/  30 hp    249/    0 window    9s pressure 0.46/0.00
-  w7  money   303 dps   132/   0 hp    229/    0 window    7s pressure 0.54/0.00
-  w8  money   320 dps   132/   0 hp    456/    0 window   11s pressure 0.69/0.00
-  w9  money   357 dps   146/  14 hp    478/    0 window   11s pressure 0.67/0.00
-  w10  money   420 dps   191/  14 hp    511/    0 window   13s pressure 0.48/0.00
-  w11  money   489 dps   220/   0 hp    534/    0 window   13s pressure 0.44/0.00
-  w12B money   559 dps   265/   0 hp   1327/    0 window   20s pressure 0.62/0.00
-  w13  money   848 dps   396/   0 hp    731/    0 window   10s pressure 0.46/0.00
-  w14  money   928 dps   441/   0 hp    760/    0 window   16s pressure 0.27/0.00
-  w15  money  1013 dps   476/   0 hp    855/    0 window   17s pressure 0.28/0.00
-  w16  money  1104 dps   529/   0 hp   1186/    0 window   17s pressure 0.34/0.00
-  w17  money  1214 dps   573/   0 hp   1234/    0 window   16s pressure 0.36/0.00
-  w18  money  1321 dps   632/  14 hp   1440/    0 window   21s pressure 0.29/0.00
-  w19  money  1429 dps   661/   0 hp   2014/    0 window   26s pressure 0.32/0.00
-  w20  money  1574 dps   749/   0 hp   1950/    0 window   24s pressure 0.29/0.00
-  w21  money  1697 dps   808/  14 hp   2421/    0 window   27s pressure 0.30/0.00
-  w22  money  1845 dps   882/   0 hp   2900/    0 window   31s pressure 0.29/0.00
-  w23  money  2040 dps   984/  14 hp   3241/    0 window   36s pressure 0.25/0.00
-  w24B money  2222 dps  1073/  14 hp   3392/    0 window   23s pressure 0.37/0.00
-Level_Landing Medium
-  w1  money   200 dps    88/   0 hp    132/    0 window    9s pressure 0.31/0.00
-  w2  money   212 dps    88/   0 hp    159/    0 window   11s pressure 0.30/0.00
-  w3  money   226 dps    88/   0 hp    105/    0 window    9s pressure 0.26/0.00
-  w4  money   235 dps   102/  14 hp    347/    0 window    8s pressure 0.79/0.00
-  w5  money   262 dps   102/  14 hp    344/    0 window    9s pressure 0.74/0.00
-  w6  money   288 dps   123/   0 hp    340/    0 window    9s pressure 0.65/0.00
-  w7  money   313 dps   132/   0 hp    314/    0 window    7s pressure 0.75/0.00
-  w8  money   331 dps   132/   0 hp    627/    0 window   11s pressure 0.95/0.00
-  w9  money   370 dps    58/  93 hp     82/   99 window    7s pressure 0.35/0.46
-  w10  money   409 dps   176/   0 hp    700/    0 window   12s pressure 0.78/0.00
-  w11  money   480 dps   220/   0 hp    731/    0 window   12s pressure 0.67/0.00
-  w12B money   552 dps   265/   0 hp   1790/    0 window   20s pressure 0.84/0.00
-  w13  money   844 dps   396/   0 hp    991/    0 window   10s pressure 0.67/0.00
-  w14  money   926 dps   441/   0 hp   1045/    0 window   15s pressure 0.42/0.00
-  w15  money  1014 dps   279/ 171 hp    751/  440 window   38s pressure 0.17/0.19
-  w16  money  1123 dps   529/   0 hp   1624/    0 window   15s pressure 0.53/0.00
-  w17  money  1237 dps   573/   0 hp   1672/    0 window   14s pressure 0.54/0.00
-  w18  money  1347 dps   632/  14 hp   1978/    0 window   19s pressure 0.45/0.00
-  w19  money  1460 dps   706/   0 hp   2898/    0 window   22s pressure 0.49/0.00
-  w20  money  1619 dps   763/  14 hp   2669/    0 window   21s pressure 0.44/0.00
-  w21  money  1748 dps   470/ 306 hp   1739/ 1141 window   59s pressure 0.16/0.18
-  w22  money  1922 dps   925/   0 hp   4179/    0 window   27s pressure 0.46/0.00
-  w23  money  2136 dps  1014/   0 hp   4374/    0 window   31s pressure 0.38/0.00
-  w24B money  2324 dps  1014/  79 hp   4556/  135 window   25s pressure 0.50/0.20
-Level_Landing Hard
-  w1  money   200 dps    88/   0 hp    229/    0 window    9s pressure 0.55/0.00
-  w2  money   216 dps    88/   0 hp    280/    0 window   11s pressure 0.57/0.00
-  w3  money   235 dps   102/  14 hp    182/    0 window    8s pressure 0.43/0.00
-  w4  money   247 dps   102/  14 hp    601/    0 window    9s pressure 1.35/0.00
-  w5  money   283 dps   123/   0 hp    585/    0 window    9s pressure 1.10/0.00
-  w6  money   317 dps   132/   0 hp    585/    0 window    9s pressure 1.04/0.00
-  w7  money   350 dps   146/  14 hp    749/    0 window    8s pressure 1.45/0.00
-  w8  money   382 dps   176/   0 hp   1296/    0 window   12s pressure 1.40/0.00
-  w9  money   442 dps    73/ 109 hp    142/  258 window    7s pressure 0.49/0.97
-  w10  money   491 dps   220/   0 hp   1433/    0 window   12s pressure 1.30/0.00
-  w11  money   584 dps   265/   0 hp   1486/    0 window   12s pressure 1.15/0.00
-  w12B money   678 dps   308/   0 hp   2637/    0 window   20s pressure 1.09/0.00
-  w13  money   985 dps   455/  14 hp   2183/    0 window   11s pressure 1.11/0.00
-  w14  money  1100 dps   529/   0 hp   2083/    0 window   13s pressure 0.77/0.00
-  w15  money  1217 dps   367/ 171 hp   1460/  738 window   12s pressure 0.83/1.01
-  w16  money  1343 dps   632/  14 hp   2888/    0 window   14s pressure 0.85/0.00
-  w17  money  1487 dps   706/   0 hp   3330/    0 window   13s pressure 0.96/0.00
-  w18  money  1638 dps   794/   0 hp   3524/    0 window   17s pressure 0.71/0.00
-  w19  money  1787 dps   837/   0 hp   4931/    0 window   20s pressure 0.80/0.00
-  w20  money  1995 dps   970/   0 hp   4631/    0 window   19s pressure 0.68/0.00
-  w21  money  2167 dps   578/ 370 hp   3268/ 2192 window   69s pressure 0.22/0.25
-  w22  money  2416 dps  1161/  14 hp   6927/    0 window   24s pressure 0.67/0.00
-  w23  money  2689 dps  1278/   0 hp   8233/    0 window   25s pressure 0.70/0.00
-  w24B money  2957 dps  1337/  93 hp   7564/  527 window   27s pressure 0.57/0.59
-Level_Landing Psycho
-  w1  money   200 dps    88/   0 hp    356/    0 window    8s pressure 0.91/0.00
-  w2  money   218 dps    88/   0 hp    449/    0 window   10s pressure 1.00/0.00
-  w3  money   240 dps   102/  14 hp    294/    0 window    8s pressure 0.72/0.00
-  w4  money   254 dps   102/  14 hp    997/    0 window    9s pressure 2.22/0.00
-  w5  money   297 dps   123/   0 hp   1002/    0 window    9s pressure 1.86/0.00
-  w6  money   339 dps   132/   0 hp    983/    0 window    9s pressure 1.73/0.00
-  w7  money   379 dps   176/   0 hp   1060/    0 window    7s pressure 1.86/0.00
-  w8  money   412 dps   191/  14 hp   1978/    0 window   12s pressure 2.04/0.00
-  w9  money   479 dps    43/ 120 hp    221/  357 window    7s pressure 1.06/1.27
-  w10  money   529 dps   132/  79 hp   2201/  366 window   12s pressure 3.02/1.13
-  w11  money   646 dps   191/  93 hp   2305/  374 window   12s pressure 2.37/0.98
-  w12B money   765 dps   353/   0 hp   3931/    0 window   20s pressure 1.44/0.00
-  w13  money  1082 dps   529/   0 hp   3256/    0 window   10s pressure 1.58/0.00
-  w14  money  1205 dps   476/  79 hp   3178/  400 window   12s pressure 1.43/1.20
-  w15  money  1348 dps   426/ 187 hp   2237/ 1022 window   12s pressure 1.14/1.31
-  w16  money  1481 dps   617/  79 hp   5016/  418 window   14s pressure 1.56/1.10
-  w17  money  1669 dps   794/   0 hp   5427/    0 window   13s pressure 1.40/0.00
-  w18  money  1841 dps   763/  93 hp   5999/  870 window   15s pressure 1.40/1.76
-  w19  money  2052 dps   984/  14 hp   8286/    0 window   18s pressure 1.31/0.00
-  w20  money  2304 dps   661/ 356 hp   3247/ 1809 window   12s pressure 1.11/1.22
-  w21  money  2455 dps   441/ 591 hp   3309/ 4464 window   79s pressure 0.25/0.27
-  w22  money  2742 dps  1323/   0 hp  11862/    0 window   22s pressure 1.13/0.00
-  w23  money  3079 dps  1499/   0 hp  13001/    0 window   23s pressure 1.02/0.00
-  w24B money  3387 dps  1337/ 250 hp  11916/ 2434 window   30s pressure 0.82/0.92
-Level_Forest Easy
-  w1  money   240 dps   102/  14 hp     53/    0 window    9s pressure 0.12/0.00
-  w2  money   246 dps   102/  14 hp    224/    0 window    9s pressure 0.51/0.00
-  w3  money   269 dps   102/  14 hp    138/    0 window    8s pressure 0.33/0.00
-  w4  money   280 dps    14/  93 hp    142/   53 window   28s pressure 0.25/0.06
-  w5  money   299 dps   128/   0 hp    260/    0 window    9s pressure 0.50/0.00
-  w6  money   324 dps   153/   0 hp    325/    0 window   11s pressure 0.44/0.00
-  w7  money   351 dps    65/  79 hp    101/   73 window    7s pressure 0.35/0.36
-  w8  money   365 dps   176/   0 hp    377/    0 window   10s pressure 0.47/0.00
-  w9  money   399 dps   176/   0 hp    442/    0 window   13s pressure 0.42/0.00
-  w10  money   434 dps   191/  14 hp    441/    0 window   14s pressure 0.40/0.00
-  w11  money   481 dps   216/   0 hp    569/    0 window   12s pressure 0.52/0.00
-  w12  money   553 dps   153/  79 hp    459/  158 window   32s pressure 0.21/0.18
-  w13  money   630 dps   295/  30 hp    754/    0 window   14s pressure 0.47/0.00
-  w14  money   714 dps   330/   0 hp    828/    0 window   16s pressure 0.39/0.00
-  w15B money   792 dps   279/  93 hp   2009/  100 window   31s pressure 0.58/0.10
-  w16  money  1131 dps   543/  14 hp   1142/    0 window   16s pressure 0.34/0.00
-  w17  money  1241 dps   594/   0 hp   1174/    0 window   17s pressure 0.31/0.00
-  w18  money  1335 dps   632/  14 hp   1387/    0 window   17s pressure 0.35/0.00
-  w19  money  1460 dps   543/ 134 hp   1022/  287 window   34s pressure 0.14/0.18
-  w20  money  1577 dps   746/   0 hp   1496/    0 window   17s pressure 0.32/0.00
-  w21  money  1689 dps   808/  14 hp   2112/    0 window   23s pressure 0.31/0.00
-  w22  money  1859 dps   682/ 187 hp   1386/  415 window   37s pressure 0.15/0.17
-  w23  money  1983 dps   970/   0 hp   2308/    0 window   27s pressure 0.24/0.00
-  w24  money  2105 dps  1010/   0 hp   3006/    0 window   32s pressure 0.26/0.00
-  w25  money  2304 dps  1124/   0 hp   2928/    0 window   21s pressure 0.34/0.00
-  w26  money  2462 dps   896/ 250 hp   2341/  643 window   42s pressure 0.17/0.17
-  w27  money  2650 dps  1275/   0 hp   4225/    0 window   41s pressure 0.23/0.00
-  w28  money  2915 dps  1411/   0 hp   4416/    0 window   47s pressure 0.18/0.00
-  w29  money  3128 dps  1514/  14 hp   5152/    0 window   31s pressure 0.31/0.00
-  w30B money  3388 dps  1279/ 321 hp   3975/  964 window   38s pressure 0.23/0.23
-Level_Forest Medium
-  w1  money   240 dps   102/  14 hp     81/    0 window    8s pressure 0.19/0.00
-  w2  money   247 dps   102/  14 hp    307/    0 window    8s pressure 0.71/0.00
-  w3  money   271 dps   118/  30 hp    194/    0 window    8s pressure 0.42/0.00
-  w4  money   283 dps    14/  93 hp    199/  105 window   29s pressure 0.33/0.11
-  w5  money   307 dps   128/   0 hp    367/    0 window    8s pressure 0.72/0.00
-  w6  money   334 dps   153/   0 hp    441/    0 window   11s pressure 0.60/0.00
-  w7  money   362 dps    65/  79 hp    133/   97 window    7s pressure 0.46/0.47
-  w8  money   376 dps   176/   0 hp    523/    0 window   10s pressure 0.68/0.00
-  w9  money   412 dps   191/  14 hp    596/    0 window   13s pressure 0.54/0.00
-  w10  money   448 dps   191/  14 hp    594/    0 window   13s pressure 0.54/0.00
-  w11  money   496 dps   216/   0 hp    791/    0 window   11s pressure 0.80/0.00
-  w12  money   571 dps   168/  93 hp    369/  249 window   32s pressure 0.16/0.24
-  w13  money   638 dps   191/  93 hp    377/  218 window   11s pressure 0.41/0.60
-  w14  money   697 dps   330/   0 hp   1105/    0 window   16s pressure 0.52/0.00
-  w15B money   776 dps   265/  79 hp   2659/  220 window   32s pressure 0.76/0.25
-  w16  money  1124 dps   529/   0 hp   1582/    0 window   15s pressure 0.53/0.00
-  w17  money  1239 dps   594/   0 hp   1561/    0 window   14s pressure 0.50/0.00
-  w18  money  1334 dps   632/  14 hp   2017/    0 window   15s pressure 0.55/0.00
-  w19  money  1470 dps   455/ 213 hp   1192/  614 window   36s pressure 0.19/0.23
-  w20  money  1599 dps   771/   0 hp   2003/    0 window   16s pressure 0.43/0.00
-  w21  money  1713 dps   824/  30 hp   2997/    0 window   21s pressure 0.48/0.00
-  w22  money  1895 dps   543/ 291 hp   1707/  943 window   43s pressure 0.19/0.22
-  w23  money  2045 dps   984/  14 hp   3055/    0 window   21s pressure 0.40/0.00
-  w24  money  2168 dps  1058/   0 hp   4325/    0 window   28s pressure 0.40/0.00
-  w25  money  2386 dps  1147/   0 hp   3908/    0 window   21s pressure 0.44/0.00
-  w26  money  2547 dps   734/ 421 hp   2768/ 1587 window   53s pressure 0.19/0.20
-  w27  money  2779 dps  1337/  14 hp   6053/    0 window   35s pressure 0.35/0.00
-  w28  money  3068 dps  1499/   0 hp   5850/    0 window   41s pressure 0.27/0.00
-  w29  money  3283 dps  1588/   0 hp   6838/    0 window   28s pressure 0.42/0.00
-  w30B money  3546 dps  1323/ 314 hp   5635/ 1413 window   33s pressure 0.36/0.39
-Level_Forest Hard
-  w1  money   240 dps   102/  14 hp    150/    0 window    8s pressure 0.37/0.00
-  w2  money   250 dps   102/  14 hp    532/    0 window    9s pressure 1.21/0.00
-  w3  money   282 dps   123/   0 hp    441/    0 window    9s pressure 0.83/0.00
-  w4  money   302 dps    35/  79 hp    452/  182 window   30s pressure 0.55/0.22
-  w5  money   338 dps   153/   0 hp    637/    0 window    9s pressure 1.07/0.00
-  w6  money   374 dps   176/   0 hp    888/    0 window   11s pressure 1.00/0.00
-  w7  money   416 dps    88/  79 hp    345/  251 window    9s pressure 0.84/1.03
-  w8  money   444 dps   191/  14 hp    967/    0 window   10s pressure 1.19/0.00
-  w9  money   495 dps   128/  79 hp   1274/  262 window   15s pressure 1.44/0.65
-  w10  money   569 dps   176/  79 hp   1264/  268 window   15s pressure 1.11/0.66
-  w11  money   654 dps   305/   0 hp   1372/    0 window   10s pressure 1.10/0.00
-  w12  money   746 dps   191/ 134 hp    884/  540 window   34s pressure 0.31/0.33
-  w13  money   845 dps   231/ 134 hp    901/  568 window   12s pressure 0.75/0.97
-  w14  money   936 dps   353/  79 hp   2548/  289 window   18s pressure 1.03/0.59
-  w15B money  1071 dps   418/  79 hp   3722/  457 window   34s pressure 0.68/0.49
-  w16  money  1439 dps   683/   0 hp   2708/    0 window   14s pressure 0.76/0.00
-  w17  money  1583 dps   771/   0 hp   3738/    0 window   16s pressure 0.83/0.00
-  w18  money  1735 dps   569/ 198 hp   2249/  778 window   18s pressure 0.59/0.63
-  w19  money  1878 dps   594/ 266 hp   2506/ 1227 window   40s pressure 0.28/0.33
-  w20  money  2067 dps   834/ 120 hp   4210/  644 window   18s pressure 0.78/0.87
-  w21  money  2265 dps  1093/   0 hp   4996/    0 window   19s pressure 0.66/0.00
-  w22  money  2492 dps   720/ 407 hp   2910/ 1807 window   46s pressure 0.23/0.27
-  w23  money  2698 dps  1300/   0 hp   6483/    0 window   23s pressure 0.60/0.00
-  w24  money  2896 dps  1411/   0 hp   7271/    0 window   25s pressure 0.57/0.00
-  w25  money  3178 dps  1372/ 134 hp   8096/  874 window   21s pressure 0.77/0.88
-  w26  money  3471 dps   896/ 643 hp   4494/ 3094 window   60s pressure 0.23/0.23
-  w27  money  3790 dps  1852/   0 hp  10016/    0 window   31s pressure 0.48/0.00
-  w28  money  4158 dps  2029/   0 hp  11258/    0 window   34s pressure 0.46/0.00
-  w29  money  4477 dps  1970/ 187 hp  13032/ 1299 window   26s pressure 0.72/0.78
-  w30B money  4915 dps  1882/ 423 hp   9423/ 2213 window   29s pressure 0.48/0.51
-Level_Forest Psycho
-  w1  money   240 dps   102/  14 hp    229/    0 window    7s pressure 0.60/0.00
-  w2  money   251 dps   102/  14 hp    899/    0 window    9s pressure 2.02/0.00
-  w3  money   290 dps   128/   0 hp    633/    0 window    9s pressure 1.18/0.00
-  w4  money   311 dps    30/ 109 hp      0/  378 window   31s pressure 0.00/0.32
-  w5  money   335 dps   153/   0 hp   1056/    0 window    9s pressure 1.77/0.00
-  w6  money   378 dps   176/   0 hp   1384/    0 window   11s pressure 1.59/0.00
-  w7  money   426 dps    88/  79 hp    478/  348 window    9s pressure 1.19/1.47
-  w8  money   454 dps   206/  30 hp   1575/    0 window    9s pressure 1.88/0.00
-  w9  money   514 dps   128/  79 hp   1930/  363 window   14s pressure 2.21/0.92
-  w10  money   594 dps   176/  79 hp   1919/  370 window   14s pressure 1.71/0.93
-  w11  money   685 dps   330/   0 hp   2296/    0 window   10s pressure 1.75/0.00
-  w12  money   791 dps   158/ 187 hp    769/ 1046 window   34s pressure 0.31/0.46
-  w13  money   891 dps   256/ 134 hp   1275/  786 window   12s pressure 1.00/1.38
-  w14  money   983 dps   367/  93 hp   3436/  401 window   17s pressure 1.37/0.71
-  w15B money  1118 dps   441/  79 hp   4644/ 1028 window   35s pressure 0.78/1.07
-  w16  money  1490 dps   720/  14 hp   4462/    0 window   13s pressure 1.29/0.00
-  w17  money  1657 dps   794/   0 hp   4840/    0 window   15s pressure 1.10/0.00
-  w18  money  1803 dps   617/ 198 hp   3310/ 1077 window   17s pressure 0.82/0.89
-  w19  money  1952 dps   481/ 356 hp   3368/ 2464 window   44s pressure 0.42/0.45
-  w20  money  2177 dps   896/ 134 hp   6373/  892 window   17s pressure 1.11/1.09
-  w21  money  2391 dps  1161/  14 hp   8491/    0 window   17s pressure 1.18/0.00
-  w22  money  2664 dps   617/ 550 hp   3859/ 3663 window   52s pressure 0.32/0.36
-  w23  money  2920 dps   848/ 448 hp   4245/ 2344 window   18s pressure 0.77/0.85
-  w24  money  3098 dps  1499/   0 hp  12371/    0 window   22s pressure 1.04/0.00
-  w25  money  3444 dps  1514/ 134 hp  12084/ 1210 window   20s pressure 1.12/1.30
-  w26  money  3758 dps   785/ 841 hp   5544/ 6189 window   68s pressure 0.28/0.31
-  w27  money  4142 dps  1217/ 659 hp   6168/ 3493 window   18s pressure 0.79/0.86
-  w28  money  4392 dps  2131/  14 hp  17348/    0 window   32s pressure 0.71/0.00
-  w29  money  4745 dps  2043/ 213 hp  20689/ 2056 window   25s pressure 1.13/1.10
-  w30B money  5248 dps  1955/ 486 hp  15975/ 3847 window   30s pressure 0.77/0.76
-Level_Lava Easy
-  w1  money   280 dps   123/   0 hp    202/    0 window    7s pressure 0.48/0.00
-  w2  money   295 dps    30/ 109 hp    206/   34 window   24s pressure 0.32/0.03
-  w3  money   314 dps   128/   0 hp    272/    0 window    9s pressure 0.47/0.00
-  w4  money   334 dps   153/   0 hp    272/    0 window    8s pressure 0.44/0.00
-  w5  money   351 dps    49/  93 hp     42/   94 window    7s pressure 0.18/0.38
-  w6  money   364 dps   176/   0 hp    240/    0 window   11s pressure 0.26/0.00
-  w7  money   380 dps    54/  93 hp     44/   75 window   26s pressure 0.05/0.08
-  w8  money   393 dps   176/   0 hp    292/    0 window    8s pressure 0.43/0.00
-  w9  money   410 dps    70/ 109 hp     45/  101 window    7s pressure 0.15/0.35
-  w10  money   423 dps   191/  14 hp    258/    0 window   11s pressure 0.27/0.00
-  w11  money   439 dps   102/  93 hp    190/  121 window   28s pressure 0.12/0.12
-  w12B money   468 dps   211/   0 hp    843/    0 window   22s pressure 0.39/0.00
-  w13  money   747 dps   231/  93 hp    271/  125 window   27s pressure 0.09/0.13
-  w14  money   794 dps   367/  14 hp    853/    0 window   16s pressure 0.34/0.00
-  w15  money   862 dps   305/  79 hp    588/  172 window   29s pressure 0.15/0.19
-  w16  money   933 dps   441/   0 hp    821/    0 window   11s pressure 0.39/0.00
-  w17  money   987 dps   367/  93 hp    894/  178 window   29s pressure 0.19/0.17
-  w18  money  1070 dps   506/   0 hp    960/    0 window   16s pressure 0.28/0.00
-  w19  money  1143 dps   543/  14 hp   1482/    0 window   16s pressure 0.40/0.00
-  w20  money  1228 dps   594/   0 hp   1870/    0 window   19s pressure 0.40/0.00
-  w21  money  1335 dps   470/ 148 hp   1003/  330 window   35s pressure 0.15/0.17
-  w22  money  1435 dps   683/   0 hp   1548/    0 window   16s pressure 0.34/0.00
-  w23  money  1520 dps   720/  14 hp   2139/    0 window   20s pressure 0.36/0.00
-  w24B money  1639 dps   683/  79 hp   4162/  295 window   33s pressure 0.45/0.29
-  w25  money  2060 dps   984/  14 hp   2559/    0 window   19s pressure 0.35/0.00
-  w26  money  2172 dps   794/ 198 hp   2152/  606 window   44s pressure 0.15/0.18
-  w27  money  2313 dps  1124/   0 hp   3415/    0 window   22s pressure 0.35/0.00
-  w28  money  2463 dps  1187/   0 hp   3463/    0 window   19s pressure 0.39/0.00
-  w29  money  2591 dps   962/ 250 hp   3009/  841 window   51s pressure 0.15/0.17
-  w30  money  2782 dps  1337/  14 hp   4437/    0 window   26s pressure 0.32/0.00
-  w31  money  2971 dps  1058/ 314 hp   3575/ 1078 window   58s pressure 0.14/0.15
-  w32  money  3200 dps  1565/   0 hp   5435/    0 window   23s pressure 0.38/0.00
-  w33  money  3392 dps  1653/   0 hp   6661/    0 window   29s pressure 0.35/0.00
-  w34  money  3656 dps  1323/ 356 hp   5327/ 1510 window   71s pressure 0.14/0.16
-  w35  money  3970 dps  1940/   0 hp   8101/    0 window   31s pressure 0.34/0.00
-  w36B money  4243 dps  2064/   0 hp  10393/    0 window   27s pressure 0.48/0.00
-Level_Lava Medium
-  w1  money   280 dps   123/   0 hp    266/    0 window    7s pressure 0.65/0.00
-  w2  money   295 dps    30/ 109 hp      0/   90 window   25s pressure 0.00/0.09
-  w3  money   303 dps   128/   0 hp    375/    0 window    9s pressure 0.64/0.00
-  w4  money   324 dps   153/   0 hp    358/    0 window    8s pressure 0.58/0.00
-  w5  money   341 dps    44/ 123 hp     56/  124 window    7s pressure 0.25/0.38
-  w6  money   354 dps    65/  79 hp    333/  126 window   11s pressure 0.75/0.38
-  w7  money   379 dps    54/  93 hp     58/  149 window   27s pressure 0.06/0.15
-  w8  money   396 dps   176/   0 hp    385/    0 window    8s pressure 0.56/0.00
-  w9  money   413 dps    70/ 109 hp     60/  133 window    7s pressure 0.20/0.46
-  w10  money   426 dps    88/  79 hp    358/  135 window   11s pressure 0.66/0.41
-  w11  money   451 dps   102/  93 hp    251/  213 window   29s pressure 0.16/0.21
-  w12B money   484 dps   216/   0 hp   1110/    0 window   22s pressure 0.50/0.00
-  w13  money   763 dps   176/ 157 hp    259/  275 window   30s pressure 0.10/0.15
-  w14  money   813 dps   191/ 171 hp    263/  288 window   10s pressure 0.31/0.45
-  w15  money   860 dps   153/ 198 hp    267/  340 window   32s pressure 0.11/0.14
-  w16  money   914 dps   441/   0 hp   1101/    0 window   11s pressure 0.53/0.00
-  w17  money   969 dps   265/ 157 hp    751/  468 window   34s pressure 0.19/0.23
-  w18  money  1052 dps   393/  79 hp   1284/  153 window   16s pressure 0.48/0.31
-  w19  money  1134 dps   543/  14 hp   1972/    0 window   16s pressure 0.54/0.00
-  w20  money  1220 dps   481/  79 hp   2483/  158 window   19s pressure 0.65/0.28
-  w21  money  1336 dps   383/ 228 hp   1269/  745 window   40s pressure 0.19/0.21
-  w22  money  1452 dps   706/   0 hp   2059/    0 window   16s pressure 0.44/0.00
-  w23  money  1538 dps   632/  93 hp   2838/  329 window   19s pressure 0.58/0.48
-  w24B money  1674 dps   706/  79 hp   5499/  647 window   38s pressure 0.51/0.57
-  w25  money  2112 dps  1010/   0 hp   3390/    0 window   18s pressure 0.46/0.00
-  w26  money  2225 dps   672/ 329 hp   2621/ 1396 window   54s pressure 0.18/0.20
-  w27  money  2392 dps  1040/ 109 hp   4517/  522 window   22s pressure 0.50/0.57
-  w28  money  2567 dps  1235/   0 hp   4581/    0 window   18s pressure 0.51/0.00
-  w29  money  2696 dps   734/ 463 hp   3190/ 2005 window   66s pressure 0.16/0.17
-  w30  money  2911 dps  1249/ 134 hp   5888/  723 window   24s pressure 0.49/0.57
-  w31  money  3134 dps   873/ 527 hp   3979/ 2482 window   75s pressure 0.15/0.16
-  w32  money  3396 dps  1653/   0 hp   7177/    0 window   21s pressure 0.53/0.00
-  w33  money  3589 dps  1539/ 157 hp   8816/  938 window   27s pressure 0.54/0.57
-  w34  money  3895 dps   999/ 736 hp   4907/ 3606 window   96s pressure 0.13/0.13
-  w35  money  4241 dps  2064/   0 hp  10686/    0 window   27s pressure 0.49/0.00
-  w36B money  4515 dps  2043/ 134 hp  13728/  972 window   26s pressure 0.67/0.73
-Level_Lava Hard
-  w1  money   280 dps   123/   0 hp    461/    0 window    7s pressure 1.09/0.00
-  w2  money   300 dps    30/ 109 hp      0/  176 window   26s pressure 0.00/0.16
-  w3  money   312 dps   128/   0 hp    650/    0 window    9s pressure 1.09/0.00
-  w4  money   340 dps   153/   0 hp    930/    0 window   10s pressure 1.26/0.00
-  w5  money   374 dps    54/  93 hp    145/  321 window    8s pressure 0.48/1.09
-  w6  money   400 dps    88/  79 hp    777/  327 window   12s pressure 1.26/0.87
-  w7  money   446 dps    95/ 109 hp    150/  258 window   28s pressure 0.10/0.22
-  w8  money   472 dps   216/   0 hp   1000/    0 window   10s pressure 1.02/0.00
-  w9  money   506 dps    54/ 134 hp    155/  345 window    8s pressure 0.51/0.81
-  w10  money   532 dps   153/  79 hp    834/  351 window   12s pressure 0.90/0.93
-  w11  money   578 dps    65/ 157 hp    161/  415 window   30s pressure 0.13/0.23
-  w12B money   618 dps   279/  14 hp   1524/    0 window   22s pressure 0.57/0.00
-  w13  money   902 dps   221/ 201 hp    673/  572 window   33s pressure 0.20/0.22
-  w14  money   975 dps   206/ 228 hp    684/  750 window   11s pressure 0.65/0.77
-  w15  money  1049 dps   231/ 213 hp    695/  738 window   36s pressure 0.19/0.25
-  w16  money  1130 dps   543/  14 hp   2755/    0 window   12s pressure 1.01/0.00
-  w17  money  1216 dps   216/ 277 hp    717/  913 window   38s pressure 0.19/0.22
-  w18  money  1305 dps   529/  79 hp   2830/  399 window   17s pressure 0.76/0.77
-  w19  money  1430 dps   295/ 344 hp    738/ 1011 window   11s pressure 0.52/0.70
-  w20  money  1511 dps   632/  93 hp   5649/  410 window   20s pressure 1.07/0.56
-  w21  money  1698 dps   521/ 250 hp   2863/ 1452 window   46s pressure 0.29/0.33
-  w22  money  1873 dps   896/  14 hp   4910/    0 window   17s pressure 0.79/0.00
-  w23  money  2012 dps   859/ 109 hp   6342/  857 window   20s pressure 0.90/1.01
-  w24B money  2233 dps   922/ 120 hp   7980/ 1262 window   42s pressure 0.51/0.65
-  w25  money  2708 dps  1323/   0 hp   6906/    0 window   18s pressure 0.73/0.00
-  w26  money  2879 dps   834/ 434 hp   2967/ 1562 window   17s pressure 0.52/0.55
-  w27  money  3014 dps  1289/ 134 hp   9723/ 1130 window   21s pressure 0.89/1.03
-  w28  money  3297 dps  1602/  14 hp   9642/    0 window   18s pressure 0.84/0.00
-  w29  money  3502 dps  1010/ 550 hp   6705/ 3776 window   76s pressure 0.22/0.23
-  w30  money  3827 dps  1648/ 217 hp  11749/ 1410 window   23s pressure 0.80/0.74
-  w31  money  4159 dps  1138/ 721 hp   7388/ 4795 window   89s pressure 0.18/0.19
-  w32  money  4535 dps  2205/   0 hp  15760/    0 window   21s pressure 0.86/0.00
-  w33  money  4852 dps  2147/ 187 hp  17921/ 1707 window   26s pressure 0.83/0.92
-  w34  money  5313 dps  1393/ 973 hp   9573/ 6888 window  115s pressure 0.15/0.16
-  w35  money  5815 dps  2837/  14 hp  21209/    0 window   24s pressure 0.79/0.00
-  w36B money  6229 dps  2726/ 250 hp  23266/ 2275 window   28s pressure 0.77/0.84
-Level_Lava Psycho
-  w1  money   280 dps   123/   0 hp    798/    0 window    7s pressure 1.86/0.00
-  w2  money   305 dps    30/ 109 hp      0/  244 window   26s pressure 0.00/0.23
-  w3  money   317 dps   128/   0 hp   1095/    0 window    9s pressure 1.85/0.00
-  w4  money   351 dps   153/   0 hp   1288/    0 window   10s pressure 1.80/0.00
-  w5  money   385 dps    54/  93 hp    200/  445 window    8s pressure 0.68/1.56
-  w6  money   411 dps    88/  79 hp   1107/  453 window   12s pressure 1.83/1.23
-  w7  money   458 dps    40/ 120 hp    208/  536 window   29s pressure 0.23/0.40
-  w8  money   492 dps   216/   0 hp   1385/    0 window   10s pressure 1.46/0.00
-  w9  money   526 dps    80/ 134 hp    215/  478 window    8s pressure 0.58/1.16
-  w10  money   552 dps   153/  79 hp   1188/  486 window   12s pressure 1.31/1.32
-  w11  money   599 dps    65/ 187 hp    222/  862 window   32s pressure 0.17/0.37
-  w12B money   651 dps   305/   0 hp   2110/    0 window   22s pressure 0.73/0.00
-  w13  money   935 dps    40/ 314 hp    230/ 1088 window   34s pressure 0.21/0.26
-  w14  money  1008 dps   205/ 227 hp    947/ 1038 window   11s pressure 0.93/1.10
-  w15  money  1082 dps   206/ 266 hp    962/ 1430 window   38s pressure 0.27/0.37
-  w16  money  1179 dps   559/  30 hp   3851/    0 window   12s pressure 1.40/0.00
-  w17  money  1266 dps   205/ 343 hp    992/ 1791 window   41s pressure 0.26/0.33
-  w18  money  1375 dps   559/ 109 hp   4294/  552 window   17s pressure 1.10/0.78
-  w19  money  1511 dps   279/ 370 hp   1022/ 1400 window   11s pressure 0.77/0.92
-  w20  money  1592 dps   657/  79 hp   8081/  568 window   20s pressure 1.49/0.93
-  w21  money  1785 dps   205/ 541 hp   1052/ 2905 window   50s pressure 0.22/0.28
-  w22  money  1930 dps   922/   0 hp   7065/    0 window   17s pressure 1.12/0.00
-  w23  money  2075 dps   896/  93 hp   9326/ 1186 window   20s pressure 1.29/1.65
-  w24B money  2303 dps   808/ 250 hp   8613/ 2446 window   45s pressure 0.58/0.56
-  w25  money  2758 dps  1337/  14 hp  10259/    0 window   18s pressure 1.05/0.00
-  w26  money  2941 dps   873/ 448 hp   4529/ 2471 window   17s pressure 0.76/0.85
-  w27  money  3095 dps  1337/ 134 hp  14605/ 1565 window   20s pressure 1.35/1.48
-  w28  money  3401 dps  1653/   0 hp  15289/    0 window   18s pressure 1.30/0.00
-  w29  money  3635 dps   824/ 778 hp   8493/ 7718 window   88s pressure 0.29/0.29
-  w30  money  4025 dps  1755/ 171 hp  18366/ 1952 window   22s pressure 1.22/1.36
-  w31  money  4401 dps   962/ 957 hp   9526/ 9831 window  104s pressure 0.24/0.26
-  w32  money  4862 dps  1465/ 721 hp  10662/ 5337 window   20s pressure 0.91/0.95
-  w33  money  5164 dps  2249/ 243 hp  26008/ 2702 window   24s pressure 1.24/1.21
-  w34  money  5666 dps  1235/1220 hp  12635/12716 window  124s pressure 0.21/0.22
-  w35  money  6248 dps  3039/   0 hp  31745/    0 window   23s pressure 1.18/0.00
-  w36B money  6701 dps  2867/ 359 hp  35002/ 4201 window   31s pressure 1.01/0.98
-Level_Ruins Easy
-  w1  money   320 dps   153/   0 hp    274/    0 window   13s pressure 0.27/0.00
-  w2  money   336 dps   153/   0 hp    279/    0 window   14s pressure 0.25/0.00
-  w3  money   352 dps    65/  79 hp    283/   88 window   27s pressure 0.24/0.10
-  w4  money   376 dps   176/   0 hp    287/    0 window   10s pressure 0.33/0.00
-  w5  money   393 dps   176/   0 hp    516/    0 window   12s pressure 0.49/0.00
-  w6  money   422 dps     0/ 157 hp      0/  119 window    7s pressure 0.00/0.27
-  w7  money   430 dps   102/  93 hp    235/   94 window   26s pressure 0.16/0.09
-  w8  money   451 dps   206/  30 hp    547/    0 window   10s pressure 0.55/0.00
-  w9  money   476 dps   216/   0 hp    299/    0 window   11s pressure 0.25/0.00
-  w10  money   494 dps    65/ 120 hp     57/  127 window    7s pressure 0.19/0.37
-  w11  money   507 dps   128/  79 hp    308/  150 window   29s pressure 0.15/0.15
-  w12  money   537 dps   242/   0 hp   1005/    0 window   17s pressure 0.50/0.00
-  w13  money   595 dps   279/  14 hp    950/    0 window   11s pressure 0.62/0.00
-  w14B money   648 dps   191/  93 hp   2087/  157 window   31s pressure 0.70/0.13
-  w15  money  1020 dps   481/   0 hp   1321/    0 window   14s pressure 0.43/0.00
-  w16  money  1086 dps   529/   0 hp   1725/    0 window   21s pressure 0.35/0.00
-  w17  money  1172 dps   559/  30 hp   1422/    0 window   15s pressure 0.38/0.00
-  w18  money  1242 dps   506/  79 hp   1774/  332 window   31s pressure 0.25/0.32
-  w19  money  1351 dps   647/  30 hp   1799/    0 window   18s pressure 0.35/0.00
-  w20  money  1437 dps   683/   0 hp   2113/    0 window   21s pressure 0.33/0.00
-  w21  money  1538 dps   736/  30 hp   1847/    0 window   18s pressure 0.32/0.00
-  w22  money  1623 dps   794/   0 hp   2170/    0 window   21s pressure 0.29/0.00
-  w23  money  1723 dps   632/ 171 hp   1965/  533 window   33s pressure 0.21/0.22
-  w24  money  1850 dps   896/  14 hp   2726/    0 window   20s pressure 0.35/0.00
-  w25  money  1959 dps   947/   0 hp   2882/    0 window   24s pressure 0.29/0.00
-  w26  money  2083 dps  1005/   0 hp   3015/    0 window   20s pressure 0.35/0.00
-  w27B money  2200 dps   418/ 513 hp   1994/ 2506 window   33s pressure 0.31/0.35
-  w28  money  2618 dps  1265/  30 hp   4084/    0 window   21s pressure 0.35/0.00
-  w29  money  2747 dps  1323/   0 hp   4440/    0 window   26s pressure 0.30/0.00
-  w30  money  2901 dps  1411/   0 hp   4960/    0 window   22s pressure 0.38/0.00
-  w31  money  3056 dps  1113/ 291 hp   4293/ 1176 window   43s pressure 0.21/0.22
-  w32  money  3270 dps  1588/   0 hp   6305/    0 window   29s pressure 0.32/0.00
-  w33  money  3474 dps  1690/  14 hp   6267/    0 window   24s pressure 0.36/0.00
-  w34  money  3663 dps  1300/ 393 hp   4900/ 1555 window   48s pressure 0.18/0.20
-  w35  money  3916 dps  1892/   0 hp   8150/    0 window   26s pressure 0.39/0.00
-  w36  money  4154 dps  2029/   0 hp   8984/    0 window   32s pressure 0.33/0.00
-  w37  money  4432 dps  2157/   0 hp   9981/    0 window   33s pressure 0.33/0.00
-  w38  money  4740 dps  1706/ 501 hp   7542/ 2261 window   58s pressure 0.18/0.19
-  w39  money  5096 dps  2484/  14 hp  12318/    0 window   35s pressure 0.33/0.00
-  w40B money  5438 dps  2646/   0 hp  14384/    0 window   27s pressure 0.47/0.00
-Level_Ruins Medium
-  w1  money   320 dps   153/   0 hp    360/    0 window   13s pressure 0.36/0.00
-  w2  money   336 dps   153/   0 hp    366/    0 window   13s pressure 0.36/0.00
-  w3  money   352 dps    65/  79 hp    186/  116 window   26s pressure 0.16/0.13
-  w4  money   368 dps   176/   0 hp    398/    0 window    9s pressure 0.50/0.00
-  w5  money   386 dps   176/   0 hp    700/    0 window   12s pressure 0.68/0.00
-  w6  money   416 dps     0/ 157 hp      0/  157 window    7s pressure 0.00/0.36
-  w7  money   424 dps    88/  79 hp    331/  185 window   27s pressure 0.24/0.21
-  w8  money   450 dps   206/  30 hp    742/    0 window   10s pressure 0.75/0.00
-  w9  money   476 dps   216/   0 hp    416/    0 window   11s pressure 0.36/0.00
-  w10  money   495 dps    65/ 120 hp     75/  167 window    7s pressure 0.25/0.48
-  w11  money   508 dps   128/  79 hp    429/  329 window   31s pressure 0.20/0.32
-  w12  money   547 dps   265/   0 hp   1346/    0 window   17s pressure 0.61/0.00
-  w13  money   606 dps   279/  14 hp   1274/    0 window   11s pressure 0.85/0.00
-  w14B money   660 dps   211/  79 hp   2523/  275 window   30s pressure 0.80/0.28
-  w15  money  1028 dps   481/   0 hp   1762/    0 window   14s pressure 0.58/0.00
-  w16  money  1095 dps   205/ 264 hp    311/  366 window   10s pressure 0.30/0.33
-  w17  money  1142 dps   543/  14 hp   1896/    0 window   15s pressure 0.53/0.00
-  w18  money  1213 dps   330/ 198 hp    945/  656 window   32s pressure 0.19/0.24
-  w19  money  1297 dps   617/   0 hp   2393/    0 window   17s pressure 0.51/0.00
-  w20  money  1384 dps   657/   0 hp   2807/    0 window   21s pressure 0.46/0.00
-  w21  money  1486 dps   706/   0 hp   2458/    0 window   18s pressure 0.45/0.00
-  w22  money  1572 dps   746/   0 hp   2882/    0 window   21s pressure 0.42/0.00
-  w23  money  1673 dps   506/ 236 hp   2523/ 1168 window   37s pressure 0.30/0.32
-  w24  money  1820 dps   882/   0 hp   3614/    0 window   19s pressure 0.50/0.00
-  w25  money  1930 dps   922/   0 hp   3820/    0 window   22s pressure 0.43/0.00
-  w26  money  2055 dps   984/  14 hp   3996/    0 window   19s pressure 0.50/0.00
-  w27B money  2173 dps   381/ 541 hp   2653/ 3707 window   35s pressure 0.43/0.46
-  w28  money  2612 dps  1265/  30 hp   5403/    0 window   21s pressure 0.48/0.00
-  w29  money  2742 dps  1323/   0 hp   5902/    0 window   25s pressure 0.42/0.00
-  w30  money  2898 dps  1411/   0 hp   6556/    0 window   21s pressure 0.52/0.00
-  w31  money  3054 dps   776/ 580 hp   3462/ 2664 window   52s pressure 0.19/0.21
-  w32  money  3271 dps  1588/   0 hp   8357/    0 window   27s pressure 0.45/0.00
-  w33  money  3477 dps  1690/  14 hp   8309/    0 window   23s pressure 0.51/0.00
-  w34  money  3668 dps   984/ 643 hp   5744/ 3647 window   62s pressure 0.22/0.22
-  w35  money  3969 dps  1940/   0 hp  10788/    0 window   25s pressure 0.53/0.00
-  w36  money  4209 dps  2043/  14 hp  11886/    0 window   30s pressure 0.46/0.00
-  w37  money  4489 dps  2182/   0 hp  13230/    0 window   31s pressure 0.46/0.00
-  w38  money  4800 dps  1300/ 827 hp   8511/ 5485 window   79s pressure 0.19/0.20
-  w39  money  5228 dps  2558/   0 hp  16275/    0 window   31s pressure 0.49/0.00
-  w40B money  5572 dps  2623/  79 hp  18994/  245 window   26s pressure 0.65/0.29
-Level_Ruins Hard
-  w1  money   320 dps   153/   0 hp    702/    0 window   13s pressure 0.66/0.00
-  w2  money   344 dps   153/   0 hp    715/    0 window   13s pressure 0.67/0.00
-  w3  money   368 dps    65/  79 hp    485/  301 window   28s pressure 0.40/0.32
-  w4  money   400 dps   176/   0 hp    846/    0 window    9s pressure 1.08/0.00
-  w5  money   429 dps   191/  14 hp   1400/    0 window   12s pressure 1.23/0.00
-  w6  money   475 dps    14/ 171 hp      0/  408 window    8s pressure 0.00/0.71
-  w7  money   491 dps    65/ 120 hp    228/  402 window   28s pressure 0.19/0.28
-  w8  money   519 dps   242/   0 hp   1813/    0 window   10s pressure 1.53/0.00
-  w9  money   567 dps   176/  79 hp    964/  428 window   13s pressure 0.85/1.03
-  w10  money   617 dps    80/ 171 hp    196/  435 window    8s pressure 0.48/0.73
-  w11  money   643 dps    40/ 198 hp    199/  685 window   32s pressure 0.19/0.26
-  w12  money   685 dps   216/  79 hp   2927/  449 window   17s pressure 1.57/0.78
-  w13  money   792 dps   367/  14 hp   3187/    0 window   12s pressure 1.54/0.00
-  w14B money   879 dps   305/  79 hp   3384/  627 window   32s pressure 0.73/0.59
-  w15  money  1264 dps   617/   0 hp   4453/    0 window   15s pressure 1.08/0.00
-  w16  money  1376 dps   265/ 314 hp    808/  951 window   11s pressure 0.56/0.63
-  w17  money  1452 dps   706/   0 hp   4798/    0 window   16s pressure 0.96/0.00
-  w18  money  1573 dps   293/ 384 hp   1100/ 1421 window   35s pressure 0.23/0.25
-  w19  money  1684 dps   808/  14 hp   5589/    0 window   18s pressure 0.89/0.00
-  w20  money  1821 dps   794/  79 hp   6196/  502 window   21s pressure 0.85/0.73
-  w21  money  1990 dps   609/ 291 hp   2419/ 1273 window   15s pressure 0.61/0.71
-  w22  money  2105 dps   859/ 120 hp   6684/ 1032 window   21s pressure 0.85/0.98
-  w23  money  2297 dps   746/ 277 hp   5893/ 2329 window   41s pressure 0.44/0.49
-  w24  money  2526 dps  1235/   0 hp   7345/    0 window   18s pressure 0.74/0.00
-  w25  money  2686 dps  1147/ 120 hp   9138/ 1072 window   23s pressure 0.80/0.92
-  w26  money  2929 dps  1035/ 314 hp   6243/ 1900 window   21s pressure 0.67/0.69
-  w27B money  3126 dps   662/ 714 hp   5221/ 5565 window   40s pressure 0.45/0.47
-  w28  money  3618 dps  1764/   0 hp  13300/    0 window   21s pressure 0.84/0.00
-  w29  money  3858 dps  1667/ 171 hp  12219/ 1408 window   25s pressure 0.69/0.79
-  w30  money  4146 dps  2029/   0 hp  13242/    0 window   21s pressure 0.73/0.00
-  w31  money  4386 dps  1138/ 800 hp   7250/ 5250 window   61s pressure 0.24/0.26
-  w32  money  4716 dps  2043/ 213 hp  16635/ 1750 window   25s pressure 0.75/0.77
-  w33  money  5077 dps  2470/   0 hp  17960/    0 window   23s pressure 0.76/0.00
-  w34  money  5387 dps  1337/1036 hp   8930/ 7053 window   72s pressure 0.22/0.23
-  w35  money  5802 dps  2822/   0 hp  22897/    0 window   23s pressure 0.82/0.00
-  w36  money  6190 dps  2726/ 250 hp  24457/ 2441 window   29s pressure 0.73/0.81
-  w37  money  6689 dps  2955/ 280 hp  28086/ 2468 window   30s pressure 0.75/0.70
-  w38  money  7248 dps  1793/1406 hp  13500/10514 window   93s pressure 0.19/0.19
-  w39  money  7830 dps  3823/  30 hp  33392/    0 window   29s pressure 0.71/0.00
-  w40B money  8366 dps  3670/ 329 hp  33510/ 3186 window   29s pressure 0.75/0.81
-Level_Ruins Psycho
-  w1  money   320 dps   153/   0 hp   1296/    0 window   14s pressure 1.17/0.00
-  w2  money   352 dps   153/   0 hp    989/    0 window   13s pressure 0.95/0.00
-  w3  money   376 dps    65/  79 hp    671/  520 window   29s pressure 0.54/0.55
-  w4  money   412 dps   191/  14 hp   1246/    0 window    8s pressure 1.56/0.00
-  w5  money   443 dps   191/  14 hp   2192/    0 window   12s pressure 1.92/0.00
-  w6  money   495 dps    30/ 187 hp      0/  565 window    8s pressure 0.00/0.93
-  w7  money   511 dps    30/ 187 hp      0/  890 window   31s pressure 0.00/0.37
-  w8  money   543 dps   265/   0 hp   2550/    0 window   10s pressure 2.02/0.00
-  w9  money   592 dps   176/  79 hp   1375/  593 window   12s pressure 1.25/1.46
-  w10  money   643 dps   102/ 171 hp    271/  602 window    8s pressure 0.58/1.05
-  w11  money   669 dps    44/ 243 hp    275/ 1304 window   31s pressure 0.26/0.41
-  w12  money   723 dps   242/  79 hp   4336/  621 window   17s pressure 2.15/1.09
-  w13  money   836 dps   393/   0 hp   4456/    0 window   12s pressure 2.05/0.00
-  w14B money   924 dps   353/  79 hp   4686/ 1115 window   32s pressure 0.90/1.06
-  w15  money  1317 dps   632/  14 hp   6210/    0 window   15s pressure 1.50/0.00
-  w16  money  1430 dps   279/ 329 hp   1119/ 1317 window   11s pressure 0.75/0.85
-  w17  money  1506 dps   720/  14 hp   6539/    0 window   15s pressure 1.35/0.00
-  w18  money  1623 dps   191/ 486 hp   1151/ 2623 window   37s pressure 0.33/0.35
-  w19  money  1746 dps   834/   0 hp   8206/    0 window   18s pressure 1.25/0.00
-  w20  money  1894 dps   808/  93 hp   9209/  696 window   21s pressure 1.22/0.84
-  w21  money  2079 dps   617/ 314 hp   3397/ 1763 window   14s pressure 0.86/0.93
-  w22  money  2195 dps   896/ 134 hp   9742/ 1429 window   21s pressure 1.19/1.21
-  w23  money  2398 dps   471/ 580 hp   3487/ 4767 window   45s pressure 0.36/0.43
-  w24  money  2611 dps  1265/  30 hp  12411/    0 window   19s pressure 1.22/0.00
-  w25  money  2800 dps  1191/ 164 hp  12114/ 1485 window   22s pressure 1.06/0.97
-  w26  money  3038 dps  1065/ 344 hp   8818/ 3007 window   20s pressure 0.95/1.04
-  w27B money  3244 dps   353/ 984 hp   3196/ 9032 window   43s pressure 0.46/0.51
-  w28  money  3728 dps  1804/   0 hp  16938/    0 window   20s pressure 1.09/0.00
-  w29  money  3956 dps  1716/ 157 hp  18995/ 1949 window   24s pressure 1.09/1.25
-  w30  money  4270 dps  2069/   0 hp  20228/    0 window   20s pressure 1.14/0.00
-  w31  money  4537 dps  1425/ 643 hp  10723/ 4790 window   22s pressure 0.81/0.82
-  w32  money  4784 dps  2131/ 171 hp  26936/ 2423 window   25s pressure 1.20/1.36
-  w33  money  5193 dps  2535/   0 hp  25158/    0 window   21s pressure 1.09/0.00
-  w34  money  5512 dps   999/1364 hp  10582/14249 window   82s pressure 0.30/0.30
-  w35  money  6011 dps  2925/  14 hp  33594/    0 window   22s pressure 1.20/0.00
-  w36  money  6422 dps  2734/ 314 hp  36514/ 4225 window   27s pressure 1.16/1.18
-  w37  money  6978 dps  2069/1063 hp  18299/ 9398 window   22s pressure 0.94/0.95
-  w38  money  7383 dps  1529/1680 hp  19038/21419 window  107s pressure 0.27/0.28
-  w39  money  8128 dps  3969/   0 hp  49897/    0 window   25s pressure 1.19/0.00
-  w40B money  8710 dps  3696/ 448 hp  49057/ 6176 window   31s pressure 1.00/1.05
-Level_Nest Easy
-  w1  money   360 dps   176/   0 hp    364/    0 window    8s pressure 0.45/0.00
-  w2  money   382 dps    88/  79 hp    232/   44 window   25s pressure 0.17/0.05
-  w3  money   397 dps   176/   0 hp    285/    0 window   10s pressure 0.31/0.00
-  w4  money   409 dps    70/ 109 hp     52/  116 window    7s pressure 0.16/0.34
-  w5  money   422 dps    80/  93 hp     53/   91 window   31s pressure 0.03/0.07
-  w6  money   435 dps   191/  14 hp    351/    0 window    8s pressure 0.42/0.00
-  w7  money   452 dps    40/ 120 hp     54/  121 window    7s pressure 0.23/0.32
-  w8  money   465 dps   102/  93 hp    307/   95 window   30s pressure 0.16/0.07
-  w9  money   489 dps   216/   0 hp    644/    0 window    9s pressure 0.62/0.00
-  w10  money   512 dps    80/ 134 hp     57/  126 window    7s pressure 0.16/0.30
-  w11  money   525 dps   242/   0 hp    733/    0 window   13s pressure 0.46/0.00
-  w12B money   579 dps   176/  79 hp   1347/  100 window   31s pressure 0.46/0.09
-  w13  money   832 dps   393/   0 hp    948/    0 window   11s pressure 0.43/0.00
-  w14  money   866 dps   418/   0 hp    954/    0 window   15s pressure 0.30/0.00
-  w15  money   944 dps   279/ 134 hp    504/  208 window   32s pressure 0.11/0.11
-  w16  money   999 dps   471/  30 hp   1154/    0 window   14s pressure 0.35/0.00
-  w17  money  1056 dps   506/   0 hp   1269/    0 window   18s pressure 0.29/0.00
-  w18  money  1158 dps   448/ 109 hp    908/  269 window   32s pressure 0.13/0.17
-  w19  money  1237 dps   594/   0 hp   1196/    0 window   14s pressure 0.30/0.00
-  w20  money  1293 dps   529/  79 hp   1369/  142 window   20s pressure 0.26/0.20
-  w21  money  1378 dps   657/   0 hp   1852/    0 window   22s pressure 0.27/0.00
-  w22  money  1515 dps   529/ 157 hp   1315/  395 window   34s pressure 0.15/0.16
-  w23  money  1614 dps   771/   0 hp   2029/    0 window   21s pressure 0.27/0.00
-  w24B money  1703 dps   808/  14 hp   5164/    0 window   20s pressure 0.68/0.00
-  w25  money  2140 dps   794/ 198 hp   1635/  467 window   36s pressure 0.12/0.14
-  w26  money  2254 dps  1088/  30 hp   2821/    0 window   21s pressure 0.27/0.00
-  w27  money  2360 dps  1147/   0 hp   3170/    0 window   33s pressure 0.18/0.00
-  w28  money  2575 dps   984/ 213 hp   2569/  602 window   36s pressure 0.15/0.17
-  w29  money  2721 dps  1323/   0 hp   3200/    0 window   21s pressure 0.25/0.00
-  w30  money  2838 dps  1263/ 107 hp   3517/  318 window   25s pressure 0.24/0.26
-  w31  money  2998 dps  1451/   0 hp   4174/    0 window   43s pressure 0.14/0.00
-  w32  money  3272 dps  1187/ 314 hp   3348/  879 window   39s pressure 0.15/0.16
-  w33  money  3457 dps  1676/   0 hp   4563/    0 window   24s pressure 0.25/0.00
-  w34  money  3598 dps  1741/   0 hp   5197/    0 window   54s pressure 0.12/0.00
-  w35  money  3918 dps  1403/ 407 hp   3908/ 1165 window   42s pressure 0.14/0.15
-  w36B money  4124 dps  2006/   0 hp   4702/    0 window   21s pressure 0.24/0.00
-  w37  money  4482 dps  2182/   0 hp   6197/    0 window   63s pressure 0.10/0.00
-  w38  money  4857 dps  1716/ 513 hp   4904/ 1467 window   46s pressure 0.13/0.14
-  w39  money  5110 dps  2484/  14 hp   8228/    0 window   26s pressure 0.28/0.00
-  w40  money  5346 dps  2337/ 243 hp   8837/  877 window   32s pressure 0.25/0.25
-  w41  money  5673 dps  2764/  30 hp   6438/    0 window   62s pressure 0.08/0.00
-  w42  money  6048 dps  2249/ 594 hp   7754/ 2077 window   51s pressure 0.15/0.15
-  w43  money  6411 dps  3127/   0 hp  11007/    0 window   28s pressure 0.27/0.00
-  w44  money  6715 dps  3278/  14 hp   6619/    0 window   63s pressure 0.07/0.00
-  w45  money  7090 dps  2572/ 721 hp   9664/ 2705 window   58s pressure 0.14/0.14
-  w46  money  7539 dps  3681/   0 hp  14063/    0 window   36s pressure 0.23/0.00
-  w47  money  7915 dps  3858/   0 hp   6800/    0 window   63s pressure 0.06/0.00
-  w48B money  8290 dps  3454/ 486 hp  15424/ 2193 window   51s pressure 0.19/0.19
-Level_Nest Medium
-  w1  money   360 dps   176/   0 hp    499/    0 window    8s pressure 0.62/0.00
-  w2  money   383 dps    14/ 134 hp      0/  115 window   26s pressure 0.00/0.07
-  w3  money   391 dps   176/   0 hp    375/    0 window   10s pressure 0.41/0.00
-  w4  money   403 dps    70/ 109 hp     68/  152 window    7s pressure 0.21/0.45
-  w5  money   416 dps    70/ 109 hp     69/  179 window   31s pressure 0.05/0.12
-  w6  money   433 dps   191/  14 hp    462/    0 window    8s pressure 0.55/0.00
-  w7  money   450 dps    40/ 120 hp     71/  159 window    7s pressure 0.31/0.42
-  w8  money   463 dps    44/ 164 hp     72/  249 window   32s pressure 0.06/0.10
-  w9  money   484 dps   216/   0 hp    848/    0 window    9s pressure 0.82/0.00
-  w10  money   507 dps    54/ 134 hp     74/  165 window    7s pressure 0.27/0.39
-  w11  money   520 dps   242/   0 hp   1034/    0 window   12s pressure 0.70/0.00
-  w12B money   577 dps   176/  79 hp   1773/  197 window   31s pressure 0.60/0.18
-  w13  money   834 dps   393/   0 hp   1271/    0 window   11s pressure 0.58/0.00
-  w14  money   869 dps   206/ 187 hp    318/  348 window   10s pressure 0.30/0.42
-  w15  money   906 dps   242/ 157 hp    687/  478 window   33s pressure 0.16/0.20
-  w16  money   974 dps   455/  14 hp   1543/    0 window   14s pressure 0.49/0.00
-  w17  money  1032 dps   226/ 213 hp    329/  361 window   10s pressure 0.29/0.39
-  w18  money  1073 dps   265/ 198 hp    713/  566 window   33s pressure 0.16/0.19
-  w19  money  1145 dps   543/  14 hp   1599/    0 window   14s pressure 0.43/0.00
-  w20  money  1202 dps   476/  79 hp   1827/  187 window   20s pressure 0.39/0.26
-  w21  money  1288 dps   617/   0 hp   2593/    0 window   19s pressure 0.45/0.00
-  w22  money  1431 dps   441/ 198 hp   1757/  816 window   36s pressure 0.22/0.25
-  w23  money  1547 dps   741/   0 hp   2697/    0 window   20s pressure 0.38/0.00
-  w24B money  1637 dps   794/   0 hp   6930/    0 window   20s pressure 0.93/0.00
-  w25  money  2079 dps   609/ 329 hp   1817/ 1074 window   37s pressure 0.17/0.19
-  w26  money  2207 dps  1058/   0 hp   3739/    0 window   20s pressure 0.37/0.00
-  w27  money  2314 dps  1124/   0 hp   4422/    0 window   28s pressure 0.29/0.00
-  w28  money  2538 dps   824/ 344 hp   3222/ 1427 window   40s pressure 0.20/0.23
-  w29  money  2711 dps  1323/   0 hp   4238/    0 window   21s pressure 0.33/0.00
-  w30  money  2829 dps  1263/ 107 hp   4685/  418 window   24s pressure 0.33/0.36
-  w31  money  2991 dps  1451/   0 hp   5753/    0 window   37s pressure 0.23/0.00
-  w32  money  3274 dps   931/ 527 hp   3554/ 2066 window   45s pressure 0.18/0.19
-  w33  money  3478 dps  1690/  14 hp   6034/    0 window   23s pressure 0.33/0.00
-  w34  money  3620 dps  1764/   0 hp   7107/    0 window   46s pressure 0.19/0.00
-  w35  money  3949 dps  1118/ 689 hp   4540/ 2726 window   49s pressure 0.18/0.18
-  w36B money  4194 dps  2043/  14 hp   6217/    0 window   21s pressure 0.31/0.00
-  w37  money  4553 dps  2219/  14 hp   8431/    0 window   53s pressure 0.16/0.00
-  w38  money  4937 dps  1418/ 816 hp   5892/ 3509 window   54s pressure 0.17/0.18
-  w39  money  5244 dps  2558/   0 hp  10890/    0 window   25s pressure 0.37/0.00
-  w40  money  5482 dps  2410/ 227 hp  11723/ 1154 window   30s pressure 0.35/0.37
-  w41  money  5812 dps  2837/  14 hp   8759/    0 window   54s pressure 0.12/0.00
-  w42  money  6196 dps  1632/1144 hp   7272/ 5103 window   65s pressure 0.15/0.15
-  w43  money  6598 dps  3215/   0 hp  14548/    0 window   27s pressure 0.37/0.00
-  w44  money  6904 dps  3366/  14 hp   9006/    0 window   54s pressure 0.11/0.00
-  w45  money  7288 dps  1980/1257 hp  10333/ 6650 window   77s pressure 0.15/0.15
-  w46  money  7811 dps  3807/  14 hp  18571/    0 window   31s pressure 0.35/0.00
-  w47  money  8189 dps  3983/  14 hp   9252/    0 window   54s pressure 0.09/0.00
-  w48B money  8573 dps  3094/ 894 hp  18526/ 5443 window   64s pressure 0.20/0.21
-Level_Nest Hard
-  w1  money   360 dps   176/   0 hp    873/    0 window    9s pressure 1.07/0.00
-  w2  money   391 dps    14/ 134 hp      0/  298 window   28s pressure 0.00/0.17
-  w3  money   407 dps   176/   0 hp    975/    0 window   11s pressure 0.92/0.00
-  w4  money   431 dps    95/ 109 hp    178/  396 window    8s pressure 0.37/0.97
-  w5  money   457 dps    40/ 120 hp    181/  389 window   32s pressure 0.17/0.22
-  w6  money   487 dps   216/   0 hp   1201/    0 window   10s pressure 1.09/0.00
-  w7  money   521 dps    80/ 134 hp    186/  413 window    8s pressure 0.43/0.82
-  w8  money   547 dps    65/ 157 hp    188/  486 window   33s pressure 0.13/0.21
-  w9  money   581 dps   265/   0 hp   2205/    0 window   11s pressure 1.53/0.00
-  w10  money   627 dps    80/ 171 hp    193/  430 window    8s pressure 0.45/0.67
-  w11  money   653 dps   305/   0 hp   1945/    0 window   12s pressure 1.03/0.00
-  w12B money   737 dps   242/  79 hp   2404/  513 window   33s pressure 0.58/0.43
-  w13  money  1011 dps   481/   0 hp   3183/    0 window   12s pressure 1.13/0.00
-  w14  money  1077 dps   216/ 236 hp    826/  905 window   11s pressure 0.66/0.77
-  w15  money  1141 dps   265/ 236 hp    836/  799 window   34s pressure 0.18/0.22
-  w16  money  1214 dps   569/   0 hp   3884/    0 window   15s pressure 0.95/0.00
-  w17  money  1311 dps   279/ 291 hp    857/  939 window   11s pressure 0.54/0.64
-  w18  money  1379 dps   367/ 250 hp   1722/ 1197 window   35s pressure 0.27/0.30
-  w19  money  1492 dps   720/  14 hp   4026/    0 window   15s pressure 0.79/0.00
-  w20  money  1588 dps   657/  79 hp   4238/  486 window   22s pressure 0.62/0.63
-  w21  money  1731 dps   441/ 314 hp   1784/ 1230 window   14s pressure 0.57/0.59
-  w22  money  1831 dps   432/ 370 hp   1805/ 1736 window   39s pressure 0.22/0.27
-  w23  money  1964 dps   947/   0 hp   6369/    0 window   20s pressure 0.70/0.00
-  w24B money  2110 dps  1010/   0 hp  10276/    0 window   20s pressure 1.09/0.00
-  w25  money  2602 dps   771/ 393 hp   4183/ 2095 window   40s pressure 0.28/0.29
-  w26  money  2801 dps   952/ 344 hp   4112/ 1562 window   20s pressure 0.46/0.50
-  w27  money  2958 dps  1425/  14 hp   8330/    0 window   26s pressure 0.49/0.00
-  w28  money  3281 dps   896/ 564 hp   4202/ 2782 window   42s pressure 0.23/0.26
-  w29  money  3499 dps  1690/  14 hp   8688/    0 window   22s pressure 0.50/0.00
-  w30  money  3678 dps  1588/ 157 hp  10423/ 1086 window   24s pressure 0.60/0.64
-  w31  money  3943 dps  1917/   0 hp  11160/    0 window   33s pressure 0.38/0.00
-  w32  money  4365 dps  1275/ 670 hp   7522/ 3976 window   48s pressure 0.26/0.27
-  w33  money  4667 dps  2270/   0 hp  11538/    0 window   23s pressure 0.48/0.00
-  w34  money  4881 dps  2381/   0 hp  13926/    0 window   41s pressure 0.31/0.00
-  w35  money  5384 dps  1529/ 894 hp   8796/ 5316 window   54s pressure 0.23/0.24
-  w36B money  5741 dps  2799/   0 hp  12867/    0 window   22s pressure 0.46/0.00
-  w37  money  6179 dps  3013/  14 hp  16575/    0 window   48s pressure 0.25/0.00
-  w38  money  6767 dps  1866/1156 hp  10732/ 6843 window   62s pressure 0.20/0.21
-  w39  money  7210 dps  3528/   0 hp  22964/    0 window   25s pressure 0.57/0.00
-  w40  money  7593 dps  3352/ 277 hp  24394/ 2100 window   28s pressure 0.56/0.59
-  w41  money  8104 dps  3969/   0 hp  16539/    0 window   47s pressure 0.19/0.00
-  w42  money  8667 dps  2270/1571 hp  14111/ 9713 window   76s pressure 0.18/0.18
-  w43  money  9251 dps  4512/  14 hp  29152/    0 window   25s pressure 0.56/0.00
-  w44  money  9721 dps  4763/   0 hp  17004/    0 window   47s pressure 0.17/0.00
-  w45  money 10284 dps  2769/1807 hp  19520/12906 window   91s pressure 0.17/0.17
-  w46  money 11036 dps  5394/  14 hp  38644/    0 window   30s pressure 0.51/0.00
-  w47  money 11639 dps  5685/   0 hp  17614/    0 window   48s pressure 0.14/0.00
-  w48B money 12207 dps  3895/1664 hp  26322/11098 window   75s pressure 0.20/0.20
-Level_Nest Psycho
-  w1  money   360 dps   176/   0 hp   1448/    0 window    9s pressure 1.76/0.00
-  w2  money   397 dps    14/ 134 hp      0/  515 window   28s pressure 0.00/0.30
-  w3  money   417 dps   191/  14 hp   1350/    0 window   11s pressure 1.23/0.00
-  w4  money   441 dps    40/ 120 hp    246/  548 window    8s pressure 0.91/1.26
-  w5  money   467 dps    65/ 120 hp    250/  646 window   32s pressure 0.17/0.36
-  w6  money   501 dps   242/   0 hp   1662/    0 window    9s pressure 1.41/0.00
-  w7  money   535 dps    80/ 134 hp    257/  571 window    8s pressure 0.62/1.17
-  w8  money   561 dps    54/ 171 hp    261/  898 window   32s pressure 0.20/0.35
-  w9  money   603 dps   279/  14 hp   3053/    0 window   10s pressure 2.07/0.00
-  w10  money   649 dps   102/ 171 hp    268/  595 window    8s pressure 0.54/0.95
-  w11  money   675 dps   305/   0 hp   3037/    0 window   12s pressure 1.71/0.00
-  w12B money   769 dps   265/  79 hp   3053/  710 window   32s pressure 0.69/0.61
-  w13  money  1033 dps   481/   0 hp   4449/    0 window   12s pressure 1.61/0.00
-  w14  money  1100 dps   242/ 236 hp   1143/ 1253 window   11s pressure 0.84/1.08
-  w15  money  1164 dps    65/ 393 hp    285/ 1720 window   35s pressure 0.18/0.27
-  w16  money  1245 dps   594/   0 hp   5422/    0 window   15s pressure 1.29/0.00
-  w17  money  1343 dps   279/ 291 hp   1186/ 1300 window   11s pressure 0.77/0.91
-  w18  money  1411 dps   191/ 407 hp   1201/ 2422 window   37s pressure 0.31/0.35
-  w19  money  1524 dps   720/  14 hp   5621/    0 window   15s pressure 1.12/0.00
-  w20  money  1621 dps   683/  79 hp   6024/  674 window   21s pressure 0.88/0.90
-  w21  money  1765 dps   455/ 329 hp   2517/ 1704 window   14s pressure 0.79/0.79
-  w22  money  1866 dps   353/ 434 hp   2546/ 3339 window   40s pressure 0.36/0.42
-  w23  money  2028 dps   970/   0 hp   9137/    0 window   20s pressure 1.00/0.00
-  w24B money  2180 dps  1058/   0 hp  14726/    0 window   20s pressure 1.49/0.00
-  w25  money  2684 dps   418/ 707 hp   2633/ 4420 window   43s pressure 0.30/0.32
-  w26  money  2874 dps   984/ 329 hp   6185/ 2162 window   20s pressure 0.66/0.71
-  w27  money  3042 dps  1476/   0 hp  13055/    0 window   23s pressure 0.84/0.00
-  w28  money  3404 dps   771/ 707 hp   6320/ 5707 window   46s pressure 0.37/0.38
-  w29  money  3685 dps  1778/  14 hp  12881/    0 window   22s pressure 0.73/0.00
-  w30  money  3876 dps  1690/ 171 hp  14818/ 1504 window   23s pressure 0.83/0.85
-  w31  money  4150 dps  1363/ 513 hp  10132/ 3800 window   23s pressure 0.71/0.72
-  w32  money  4386 dps   848/1036 hp   6417/ 7885 window   52s pressure 0.31/0.32
-  w33  money  4711 dps  2293/   0 hp  18705/    0 window   22s pressure 0.79/0.00
-  w34  money  4955 dps  2411/  30 hp  20565/    0 window   35s pressure 0.53/0.00
-  w35  money  5487 dps  1279/1144 hp  11818/10581 window   60s pressure 0.33/0.34
-  w36B money  5922 dps  2888/   0 hp  18730/    0 window   22s pressure 0.65/0.00
-  w37  money  6372 dps  1932/ 957 hp  12789/ 6458 window   23s pressure 0.63/0.66
-  w38  money  6671 dps  1367/1537 hp  12241/13897 window   70s pressure 0.28/0.29
-  w39  money  7186 dps  3505/   0 hp  33529/    0 window   24s pressure 0.88/0.00
-  w40  money  7588 dps  3343/ 291 hp  36249/ 3323 window   27s pressure 0.87/0.92
-  w41  money  8145 dps  3969/   0 hp  26350/    0 window   41s pressure 0.36/0.00
-  w42  money  8792 dps  1637/2136 hp  15290/20010 window   87s pressure 0.23/0.24
-  w43  money  9481 dps  2862/1414 hp  20441/10253 window   23s pressure 0.67/0.69
-  w44  money  9940 dps  4851/   0 hp  27091/    0 window   41s pressure 0.30/0.00
-  w45  money 10587 dps  1932/2607 hp  19186/26130 window  105s pressure 0.20/0.21
-  w46  money 11454 dps  5597/   0 hp  55570/    0 window   27s pressure 0.81/0.00
-  w47  money 12087 dps  5909/   0 hp  27832/    0 window   41s pressure 0.25/0.00
-  w48B money 12734 dps  3382/2309 hp  33486/23286 window   86s pressure 0.25/0.26
-Level_Ice Easy
-  w1  money   320 dps   153/   0 hp    324/    0 window    9s pressure 0.41/0.00
-  w2  money   342 dps   153/   0 hp    359/    0 window    9s pressure 0.48/0.00
-  w3  money   366 dps   176/   0 hp    352/    0 window    9s pressure 0.39/0.00
-  w4  money   389 dps   176/   0 hp    217/    0 window    7s pressure 0.33/0.00
-  w5  money   400 dps    88/  79 hp    221/   83 window   25s pressure 0.15/0.09
-  w6  money   419 dps    70/ 109 hp     49/  109 window    7s pressure 0.15/0.31
-  w7  money   432 dps   191/  14 hp    280/    0 window   11s pressure 0.24/0.00
-  w8  money   448 dps   102/  93 hp    286/  132 window   27s pressure 0.16/0.11
-  w9  money   476 dps   216/   0 hp    667/    0 window   14s pressure 0.41/0.00
-  w10  money   530 dps   242/   0 hp    857/    0 window   11s pressure 0.58/0.00
-  w11  money   564 dps   265/   0 hp    966/    0 window   17s pressure 0.40/0.00
-  w12  money   628 dps   279/  14 hp    899/    0 window   15s pressure 0.41/0.00
-  w13  money   717 dps   330/   0 hp   1001/    0 window   18s pressure 0.33/0.00
-  w14  money   787 dps   367/  14 hp    920/    0 window   11s pressure 0.43/0.00
-  w15  money   841 dps   300/  79 hp    678/  200 window   29s pressure 0.15/0.18
-  w16  money   907 dps   441/   0 hp   1438/    0 window   20s pressure 0.32/0.00
-  w17B money  1032 dps   481/   0 hp   4862/    0 window   21s pressure 0.96/0.00
-  w18  money  1471 dps   594/ 109 hp   1426/  315 window   33s pressure 0.15/0.19
-  w19  money  1577 dps   746/   0 hp   1989/    0 window   25s pressure 0.21/0.00
-  w20  money  1735 dps   834/   0 hp   2135/    0 window   19s pressure 0.27/0.00
-  w21  money  1835 dps   882/   0 hp   2486/    0 window   21s pressure 0.27/0.00
-  w22  money  1949 dps   947/   0 hp   2839/    0 window   33s pressure 0.19/0.00
-  w23  money  2159 dps  1035/   0 hp   2741/    0 window   21s pressure 0.25/0.00
-  w24  money  2283 dps  1098/   0 hp   2972/    0 window   19s pressure 0.29/0.00
-  w25  money  2388 dps   859/ 236 hp   2596/  700 window   43s pressure 0.14/0.15
-  w26  money  2527 dps  1235/   0 hp   3971/    0 window   46s pressure 0.14/0.00
-  w27  money  2787 dps  1337/  14 hp   3774/    0 window   23s pressure 0.26/0.00
-  w28  money  2921 dps  1058/ 277 hp   3591/  973 window   49s pressure 0.14/0.15
-  w29  money  3107 dps  1499/   0 hp   5215/    0 window   60s pressure 0.12/0.00
-  w30  money  3442 dps  1676/   0 hp   5967/    0 window   22s pressure 0.34/0.00
-  w31  money  3617 dps  1764/   0 hp   6642/    0 window   25s pressure 0.32/0.00
-  w32  money  3833 dps  1866/  14 hp   6024/    0 window   66s pressure 0.10/0.00
-  w33  money  4208 dps  2043/  14 hp   8182/    0 window   27s pressure 0.31/0.00
-  w34B money  4467 dps  2182/   0 hp   6399/    0 window   21s pressure 0.29/0.00
-Level_Ice Medium
-  w1  money   320 dps   153/   0 hp    444/    0 window    9s pressure 0.58/0.00
-  w2  money   343 dps   153/   0 hp    490/    0 window    8s pressure 0.66/0.00
-  w3  money   368 dps   176/   0 hp    482/    0 window    9s pressure 0.56/0.00
-  w4  money   392 dps   176/   0 hp    304/    0 window    7s pressure 0.46/0.00
-  w5  money   404 dps    80/  93 hp    116/  164 window   26s pressure 0.08/0.14
-  w6  money   422 dps    70/ 109 hp     65/  144 window    7s pressure 0.19/0.41
-  w7  money   435 dps   191/  14 hp    389/    0 window   11s pressure 0.34/0.00
-  w8  money   452 dps   102/  93 hp    396/  232 window   28s pressure 0.22/0.19
-  w9  money   485 dps   216/   0 hp    941/    0 window   13s pressure 0.62/0.00
-  w10  money   542 dps   265/   0 hp   1149/    0 window   11s pressure 0.73/0.00
-  w11  money   577 dps    65/ 157 hp     71/  158 window    7s pressure 0.22/0.31
-  w12  money   605 dps   279/  14 hp   1272/    0 window   14s pressure 0.60/0.00
-  w13  money   698 dps   330/   0 hp   1339/    0 window   17s pressure 0.45/0.00
-  w14  money   769 dps   353/   0 hp   1233/    0 window   11s pressure 0.60/0.00
-  w15  money   824 dps   191/ 171 hp    449/  526 window   34s pressure 0.13/0.19
-  w16  money   894 dps   418/   0 hp   2034/    0 window   18s pressure 0.53/0.00
-  w17B money  1025 dps   481/   0 hp   6422/    0 window   21s pressure 1.28/0.00
-  w18  money  1465 dps   353/ 277 hp    962/  759 window   38s pressure 0.14/0.15
-  w19  money  1560 dps   746/   0 hp   2816/    0 window   22s pressure 0.34/0.00
-  w20  money  1726 dps   829/   0 hp   2835/    0 window   19s pressure 0.37/0.00
-  w21  money  1827 dps   882/   0 hp   3296/    0 window   21s pressure 0.36/0.00
-  w22  money  1942 dps   947/   0 hp   3970/    0 window   28s pressure 0.31/0.00
-  w23  money  2161 dps  1058/   0 hp   3633/    0 window   21s pressure 0.33/0.00
-  w24  money  2286 dps  1098/   0 hp   3938/    0 window   19s pressure 0.38/0.00
-  w25  money  2392 dps   755/ 329 hp   3416/ 1611 window   52s pressure 0.18/0.20
-  w26  money  2567 dps  1235/   0 hp   5474/    0 window   39s pressure 0.23/0.00
-  w27  money  2836 dps  1363/   0 hp   5022/    0 window   22s pressure 0.35/0.00
-  w28  money  2972 dps   838/ 516 hp   3592/ 2241 window   62s pressure 0.14/0.15
-  w29  money  3176 dps  1539/   0 hp   7121/    0 window   51s pressure 0.19/0.00
-  w30  money  3520 dps  1711/   0 hp   7881/    0 window   21s pressure 0.46/0.00
-  w31  money  3696 dps  1794/  30 hp   8799/    0 window   24s pressure 0.42/0.00
-  w32  money  3914 dps  1892/   0 hp   8196/    0 window   58s pressure 0.16/0.00
-  w33  money  4298 dps  2094/   0 hp  10827/    0 window   28s pressure 0.39/0.00
-  w34B money  4559 dps  2117/  79 hp   8450/  224 window   26s pressure 0.32/0.23
-Level_Ice Hard
-  w1  money   320 dps   153/   0 hp    777/    0 window    9s pressure 0.98/0.00
-  w2  money   351 dps   153/   0 hp    842/    0 window    9s pressure 1.12/0.00
-  w3  money   384 dps   176/   0 hp    835/    0 window    9s pressure 0.94/0.00
-  w4  money   416 dps   191/  14 hp    691/    0 window    7s pressure 0.93/0.00
-  w5  money   436 dps     0/ 157 hp      0/  355 window   28s pressure 0.00/0.17
-  w6  money   456 dps    40/ 120 hp    168/  374 window    8s pressure 0.59/0.80
-  w7  money   482 dps   123/  79 hp    906/  381 window   12s pressure 0.99/0.83
-  w8  money   528 dps    40/ 157 hp    175/  452 window   30s pressure 0.17/0.20
-  w9  money   562 dps   265/   0 hp   1771/    0 window   13s pressure 1.00/0.00
-  w10  money   646 dps   300/   0 hp   2876/    0 window   12s pressure 1.52/0.00
-  w11  money   712 dps    88/ 198 hp    185/  411 window    8s pressure 0.39/0.53
-  w12  money   753 dps   353/   0 hp   2289/    0 window   13s pressure 0.95/0.00
-  w13  money   875 dps   305/  79 hp   2939/  426 window   17s pressure 1.06/0.66
-  w14  money   993 dps   471/  30 hp   3087/    0 window   12s pressure 1.08/0.00
-  w15  money  1079 dps   256/ 213 hp   1047/ 1025 window   37s pressure 0.21/0.28
-  w16  money  1178 dps   265/ 236 hp   1064/  896 window   12s pressure 0.65/0.69
-  w17B money  1261 dps   506/  79 hp   9453/  456 window   21s pressure 1.79/0.59
-  w18  money  1743 dps   344/ 407 hp   1100/ 1435 window   42s pressure 0.15/0.18
-  w19  money  1858 dps   896/  14 hp   5204/    0 window   21s pressure 0.58/0.00
-  w20  money  2089 dps  1005/   0 hp   6761/    0 window   21s pressure 0.67/0.00
-  w21  money  2251 dps   632/ 370 hp   2487/ 1456 window   15s pressure 0.54/0.57
-  w22  money  2376 dps  1147/   0 hp   7356/    0 window   26s pressure 0.51/0.00
-  w23  money  2684 dps  1147/ 120 hp   8738/ 1000 window   23s pressure 0.68/0.77
-  w24  money  2924 dps  1411/   0 hp   9591/    0 window   21s pressure 0.67/0.00
-  w25  money  3109 dps  1000/ 423 hp   7285/ 3192 window   61s pressure 0.24/0.26
-  w26  money  3378 dps  1628/   0 hp  10266/    0 window   35s pressure 0.37/0.00
-  w27  money  3771 dps  1618/ 187 hp  10938/ 1324 window   23s pressure 0.61/0.65
-  w28  money  4036 dps  1177/ 659 hp   8090/ 4267 window   72s pressure 0.20/0.19
-  w29  money  4352 dps  2117/   0 hp  13399/    0 window   45s pressure 0.29/0.00
-  w30  money  4855 dps  2358/   0 hp  16748/    0 window   21s pressure 0.70/0.00
-  w31  money  5145 dps  2300/ 187 hp  18763/ 1678 window   26s pressure 0.67/0.74
-  w32  money  5542 dps  2711/   0 hp  15476/    0 window   51s pressure 0.23/0.00
-  w33  money  6105 dps  2700/ 213 hp  24284/ 2010 window   28s pressure 0.67/0.71
-  w34B money  6597 dps  3048/ 134 hp  17666/  872 window   29s pressure 0.42/0.48
-Level_Ice Psycho
-  w1  money   320 dps   153/   0 hp   1289/    0 window    9s pressure 1.61/0.00
-  w2  money   357 dps   153/   0 hp   1416/    0 window    9s pressure 1.86/0.00
-  w3  money   397 dps   176/   0 hp   1413/    0 window    9s pressure 1.58/0.00
-  w4  money   436 dps   191/  14 hp    992/    0 window    7s pressure 1.36/0.00
-  w5  money   457 dps    14/ 171 hp      0/  590 window   29s pressure 0.00/0.25
-  w6  money   481 dps    65/ 120 hp    233/  518 window    8s pressure 0.63/1.14
-  w7  money   507 dps   128/  79 hp   1291/  528 window   12s pressure 1.39/1.17
-  w8  money   554 dps    49/ 171 hp    242/  939 window   32s pressure 0.20/0.36
-  w9  money   600 dps   279/  14 hp   2764/    0 window   12s pressure 1.59/0.00
-  w10  money   694 dps   330/   0 hp   4021/    0 window   12s pressure 1.98/0.00
-  w11  money   761 dps   102/ 213 hp    256/  569 window    8s pressure 0.50/0.71
-  w12  money   802 dps   367/  14 hp   3669/    0 window   13s pressure 1.50/0.00
-  w13  money   940 dps   353/  79 hp   4338/  590 window   17s pressure 1.39/0.93
-  w14  money  1064 dps   506/   0 hp   4316/    0 window   12s pressure 1.43/0.00
-  w15  money  1151 dps   191/ 291 hp   1114/ 2010 window   40s pressure 0.26/0.37
-  w16  money  1262 dps   305/ 236 hp   1516/ 1241 window   12s pressure 0.82/0.97
-  w17B money  1346 dps   543/  93 hp  13132/  631 window   21s pressure 2.34/0.70
-  w18  money  1829 dps   279/ 486 hp   1567/ 2857 window   45s pressure 0.23/0.27
-  w19  money  1973 dps   947/   0 hp   8182/    0 window   18s pressure 0.96/0.00
-  w20  money  2231 dps  1073/  14 hp   9812/    0 window   20s pressure 0.93/0.00
-  w21  money  2404 dps   683/ 393 hp   3489/ 2016 window   14s pressure 0.72/0.75
-  w22  money  2530 dps  1235/   0 hp  11455/    0 window   23s pressure 0.85/0.00
-  w23  money  2872 dps  1235/ 120 hp  11987/ 1385 window   23s pressure 0.89/1.08
-  w24  money  3113 dps  1514/  14 hp  13600/    0 window   20s pressure 0.91/0.00
-  w25  money  3304 dps   771/ 670 hp   7027/ 6216 window   67s pressure 0.28/0.29
-  w26  money  3595 dps  1249/ 407 hp  10563/ 3616 window   23s pressure 0.77/0.83
-  w27  money  3822 dps  1642/ 171 hp  16539/ 1834 window   23s pressure 0.92/1.00
-  w28  money  4107 dps   999/ 814 hp  11030/ 8934 window   84s pressure 0.27/0.28
-  w29  money  4507 dps  2205/   0 hp  20805/    0 window   39s pressure 0.51/0.00
-  w30  money  5069 dps  2470/   0 hp  24302/    0 window   21s pressure 0.99/0.00
-  w31  money  5370 dps  1628/ 786 hp  12726/ 6196 window   23s pressure 0.71/0.73
-  w32  money  5667 dps  2748/  14 hp  24126/    0 window   43s pressure 0.42/0.00
-  w33  money  6299 dps  2763/ 264 hp  32750/ 3180 window   27s pressure 0.92/0.94
-  w34B money  6800 dps  2955/ 321 hp  23167/ 2416 window   31s pressure 0.52/0.51
-Level_Swamp Easy
-  w1  money   340 dps   153/   0 hp    330/    0 window    9s pressure 0.41/0.00
-  w2  money   362 dps    65/  79 hp    319/   42 window   25s pressure 0.27/0.04
-  w3  money   386 dps   176/   0 hp    325/    0 window   11s pressure 0.29/0.00
-  w4  money   406 dps   176/   0 hp    433/    0 window    9s pressure 0.50/0.00
-  w5  money   432 dps     0/ 157 hp      0/  115 window    7s pressure 0.00/0.23
-  w6  money   440 dps   102/  93 hp    505/   91 window   30s pressure 0.26/0.07
-  w7  money   474 dps   216/   0 hp    514/    0 window   14s pressure 0.31/0.00
-  w8  money   500 dps   242/   0 hp    643/    0 window   10s pressure 0.46/0.00
-  w9  money   536 dps   153/  79 hp    532/  143 window   30s pressure 0.20/0.13
-  w10  money   574 dps   265/   0 hp    541/    0 window   14s pressure 0.27/0.00
-  w11  money   600 dps   279/  14 hp    846/    0 window   12s pressure 0.48/0.00
-  w12B money   651 dps   206/ 109 hp   1915/  101 window   31s pressure 0.53/0.06
-  w13  money  1015 dps   481/   0 hp    569/    0 window   14s pressure 0.16/0.00
-  w14  money  1060 dps   506/   0 hp   1310/    0 window   14s pressure 0.36/0.00
-  w15  money  1146 dps   543/  14 hp   1234/    0 window   14s pressure 0.31/0.00
-  w16  money  1209 dps   367/ 171 hp    597/  322 window   31s pressure 0.10/0.12
-  w17  money  1279 dps   617/   0 hp   1443/    0 window   19s pressure 0.24/0.00
-  w18  money  1359 dps   647/  30 hp   2012/    0 window   17s pressure 0.36/0.00
-  w19  money  1474 dps   543/ 134 hp   1467/  393 window   33s pressure 0.16/0.18
-  w20  money  1581 dps   771/   0 hp   2759/    0 window   22s pressure 0.32/0.00
-  w21  money  1702 dps   808/  14 hp   2633/    0 window   20s pressure 0.32/0.00
-  w22  money  1840 dps   706/ 157 hp   2270/  527 window   35s pressure 0.18/0.19
-  w23  money  1974 dps   947/   0 hp   3074/    0 window   22s pressure 0.30/0.00
-  w24B money  2104 dps   599/ 344 hp   2270/ 1359 window   20s pressure 0.38/0.41
-  w25  money  2491 dps  1212/   0 hp   3289/    0 window   20s pressure 0.28/0.00
-  w26  money  2607 dps   962/ 250 hp   2998/  804 window   37s pressure 0.17/0.18
-  w27  money  2760 dps  1337/  14 hp   4508/    0 window   22s pressure 0.31/0.00
-  w28  money  2914 dps  1411/   0 hp   5303/    0 window   34s pressure 0.22/0.00
-  w29  money  3129 dps  1124/ 314 hp   3894/ 1158 window   42s pressure 0.16/0.18
-  w30  money  3330 dps  1618/  30 hp   6462/    0 window   23s pressure 0.34/0.00
-  w31  money  3538 dps  1716/   0 hp   7093/    0 window   44s pressure 0.19/0.00
-  w32  money  3813 dps  1403/ 370 hp   5169/ 1469 window   47s pressure 0.16/0.17
-  w33  money  4069 dps  1975/   0 hp   8487/    0 window   25s pressure 0.35/0.00
-  w34  money  4337 dps  2117/   0 hp   9549/    0 window   58s pressure 0.16/0.00
-  w35  money  4692 dps  2293/   0 hp  10015/    0 window   28s pressure 0.31/0.00
-  w36B money  4962 dps  2057/ 306 hp   9349/ 1402 window   44s pressure 0.21/0.21
-Level_Swamp Medium
-  w1  money   340 dps   153/   0 hp    453/    0 window    9s pressure 0.58/0.00
-  w2  money   363 dps    65/  79 hp    261/  111 window   26s pressure 0.21/0.11
-  w3  money   384 dps   176/   0 hp    448/    0 window   11s pressure 0.40/0.00
-  w4  money   405 dps   176/   0 hp    610/    0 window    8s pressure 0.71/0.00
-  w5  money   433 dps     0/ 157 hp      0/  151 window    7s pressure 0.00/0.30
-  w6  money   441 dps   102/  93 hp    281/  179 window   29s pressure 0.15/0.14
-  w7  money   466 dps   102/  93 hp    698/  157 window   14s pressure 0.77/0.25
-  w8  money   501 dps   242/   0 hp    912/    0 window   10s pressure 0.69/0.00
-  w9  money   540 dps   153/  79 hp    499/  315 window   31s pressure 0.18/0.26
-  w10  money   581 dps   102/ 134 hp    165/  165 window    7s pressure 0.36/0.36
-  w11  money   596 dps   279/  14 hp   1205/    0 window   11s pressure 0.73/0.00
-  w12B money   651 dps   206/ 109 hp   2519/  199 window   31s pressure 0.71/0.12
-  w13  money  1019 dps   383/ 109 hp    773/  174 window   14s pressure 0.28/0.24
-  w14  money  1073 dps   506/   0 hp   1821/    0 window   13s pressure 0.55/0.00
-  w15  money  1163 dps   353/ 157 hp    797/  358 window   14s pressure 0.31/0.34
-  w16  money  1225 dps   319/ 213 hp    810/  564 window   32s pressure 0.15/0.17
-  w17  money  1304 dps   529/  79 hp   1924/  185 window   19s pressure 0.37/0.26
-  w18  money  1393 dps   657/   0 hp   2802/    0 window   15s pressure 0.55/0.00
-  w19  money  1514 dps   432/ 250 hp   1323/  812 window   34s pressure 0.17/0.19
-  w20  money  1616 dps   683/  79 hp   3656/  193 window   22s pressure 0.48/0.23
-  w21  money  1746 dps   834/   0 hp   3832/    0 window   18s pressure 0.51/0.00
-  w22  money  1897 dps   529/ 314 hp   2043/ 1233 window   38s pressure 0.20/0.21
-  w23  money  2041 dps   882/  79 hp   4072/  403 window   22s pressure 0.42/0.49
-  w24B money  2188 dps   647/ 344 hp   3155/ 1789 window   19s pressure 0.49/0.54
-  w25  money  2581 dps  1249/  14 hp   4356/    0 window   19s pressure 0.36/0.00
-  w26  money  2698 dps   808/ 407 hp   3917/ 1872 window   43s pressure 0.22/0.22
-  w27  money  2890 dps  1249/ 134 hp   5990/  638 window   22s pressure 0.44/0.44
-  w28  money  3070 dps  1499/   0 hp   7578/    0 window   30s pressure 0.34/0.00
-  w29  money  3304 dps   917/ 550 hp   4133/ 2539 window   50s pressure 0.18/0.19
-  w30  money  3526 dps  1514/ 171 hp   8563/  885 window   25s pressure 0.46/0.43
-  w31  money  3768 dps  1829/   0 hp  10130/    0 window   38s pressure 0.29/0.00
-  w32  money  4067 dps  1087/ 736 hp   5321/ 3603 window   60s pressure 0.16/0.17
-  w33  money  4360 dps  1912/ 217 hp  11230/ 1148 window   25s pressure 0.47/0.43
-  w34  money  4670 dps  2270/   0 hp  13572/    0 window   50s pressure 0.24/0.00
-  w35  money  5054 dps  2470/   0 hp  13242/    0 window   25s pressure 0.44/0.00
-  w36B money  5326 dps  1844/ 606 hp  10659/ 3650 window   56s pressure 0.21/0.22
-Level_Swamp Hard
-  w1  money   340 dps   153/   0 hp    846/    0 window    9s pressure 1.03/0.00
-  w2  money   373 dps    65/  79 hp    575/  288 window   28s pressure 0.43/0.26
-  w3  money   411 dps   191/  14 hp   1060/    0 window   12s pressure 0.80/0.00
-  w4  money   449 dps   191/  14 hp   1049/    0 window    9s pressure 1.13/0.00
-  w5  money   486 dps    14/ 171 hp      0/  393 window    8s pressure 0.00/0.59
-  w6  money   502 dps   118/ 109 hp    400/  543 window   32s pressure 0.17/0.32
-  w7  money   544 dps   153/  79 hp   1702/  408 window   15s pressure 1.28/0.72
-  w8  money   610 dps   279/  14 hp   1678/    0 window   10s pressure 1.12/0.00
-  w9  money   665 dps   102/ 171 hp    422/  573 window   32s pressure 0.20/0.21
-  w10  money   707 dps   168/ 134 hp    430/  430 window    8s pressure 0.52/0.78
-  w11  money   737 dps   353/   0 hp   2116/    0 window   10s pressure 1.10/0.00
-  w12B money   809 dps   279/  93 hp   3053/  602 window   32s pressure 0.62/0.41
-  w13  money  1186 dps   455/  93 hp   1884/  451 window   15s pressure 0.54/0.68
-  w14  money  1271 dps   617/   0 hp   3185/    0 window   12s pressure 0.83/0.00
-  w15  money  1385 dps   448/ 187 hp   1945/  932 window   15s pressure 0.56/0.69
-  w16  money  1486 dps   407/ 250 hp   1976/ 1284 window   35s pressure 0.26/0.30
-  w17  money  1612 dps   683/  79 hp   4498/  480 window   20s pressure 0.64/0.62
-  w18  money  1757 dps   834/   0 hp   4835/    0 window   14s pressure 0.82/0.00
-  w19  money  1911 dps   471/ 386 hp   2067/ 1631 window   37s pressure 0.23/0.23
-  w20  money  2048 dps   583/ 329 hp   2097/ 1256 window   15s pressure 0.47/0.53
-  w21  money  2158 dps  1035/   0 hp   6529/    0 window   17s pressure 0.75/0.00
-  w22  money  2350 dps   647/ 423 hp   3450/ 2403 window   42s pressure 0.25/0.28
-  w23  money  2539 dps  1103/ 123 hp   9340/ 1048 window   23s pressure 0.73/0.76
-  w24B money  2781 dps   896/ 370 hp   5364/ 2325 window   19s pressure 0.61/0.66
-  w25  money  3206 dps  1005/ 434 hp   4700/ 2155 window   20s pressure 0.46/0.50
-  w26  money  3383 dps  1058/ 471 hp   7630/ 3491 window   49s pressure 0.29/0.31
-  w27  money  3659 dps  1588/ 157 hp  13659/ 1383 window   23s pressure 0.75/0.78
-  w28  money  3965 dps  1940/   0 hp  12756/    0 window   27s pressure 0.49/0.00
-  w29  money  4268 dps  1226/ 684 hp   8681/ 4951 window   57s pressure 0.25/0.26
-  w30  money  4606 dps  2043/ 171 hp  19360/ 1725 window   26s pressure 0.75/0.81
-  w31  money  5009 dps  2447/   0 hp  16864/    0 window   34s pressure 0.41/0.00
-  w32  money  5392 dps  1441/ 973 hp  10054/ 6969 window   69s pressure 0.20/0.21
-  w33  money  5818 dps  2572/ 213 hp  24714/ 2089 window   26s pressure 0.76/0.78
-  w34  money  6320 dps  3087/   0 hp  22648/    0 window   44s pressure 0.34/0.00
-  w35  money  6813 dps  3329/   0 hp  28520/    0 window   24s pressure 0.72/0.00
-  w36B money  7258 dps  2337/ 987 hp  17891/ 7522 window   64s pressure 0.24/0.24
-Level_Swamp Psycho
-  w1  money   340 dps   153/   0 hp   1241/    0 window    9s pressure 1.55/0.00
-  w2  money   375 dps    65/  79 hp    514/  498 window   29s pressure 0.37/0.45
-  w3  money   409 dps   176/   0 hp   1504/    0 window   12s pressure 1.24/0.00
-  w4  money   448 dps   191/  14 hp   1770/    0 window    9s pressure 1.89/0.00
-  w5  money   493 dps    30/ 187 hp      0/  544 window    8s pressure 0.00/0.77
-  w6  money   509 dps    30/ 187 hp      0/  859 window   31s pressure 0.00/0.30
-  w7  money   541 dps   153/  79 hp   2396/  564 window   14s pressure 1.82/1.01
-  w8  money   608 dps   279/  14 hp   2704/    0 window    9s pressure 1.87/0.00
-  w9  money   672 dps   102/ 171 hp    585/ 1019 window   32s pressure 0.28/0.38
-  w10  money   722 dps   153/ 157 hp    595/  595 window    8s pressure 0.80/0.95
-  w11  money   752 dps   353/   0 hp   3413/    0 window   10s pressure 1.88/0.00
-  w12B money   835 dps   295/ 109 hp   4227/  953 window   32s pressure 0.83/0.56
-  w13  money  1216 dps   470/ 107 hp   2652/  625 window   14s pressure 0.75/0.82
-  w14  money  1302 dps   617/   0 hp   5207/    0 window   11s pressure 1.44/0.00
-  w15  money  1433 dps   441/ 198 hp   2738/ 1290 window   14s pressure 0.81/0.92
-  w16  money  1535 dps   344/ 329 hp   2375/ 2539 window   37s pressure 0.35/0.43
-  w17  money  1677 dps   706/  79 hp   6200/  665 window   20s pressure 0.86/0.87
-  w18  money  1821 dps   882/   0 hp   7897/    0 window   13s pressure 1.37/0.00
-  w19  money  1999 dps   418/ 434 hp   2909/ 3187 window   39s pressure 0.34/0.39
-  w20  money  2165 dps   647/ 344 hp   2952/ 1739 window   15s pressure 0.61/0.71
-  w21  money  2276 dps  1098/   0 hp  10941/    0 window   15s pressure 1.31/0.00
-  w22  money  2504 dps   441/ 629 hp   3037/ 4576 window   45s pressure 0.29/0.33
-  w23  money  2706 dps  1147/ 120 hp  12814/ 1452 window   23s pressure 0.98/1.09
-  w24B money  2949 dps  1014/ 359 hp   8973/ 3219 window   19s pressure 0.90/0.94
-  w25  money  3402 dps   999/ 541 hp   6848/ 3730 window   20s pressure 0.68/0.70
-  w26  money  3601 dps   808/ 763 hp   7319/ 7324 window   55s pressure 0.32/0.35
-  w27  money  3915 dps  1690/ 171 hp  18309/ 1915 window   23s pressure 0.96/1.00
-  w28  money  4218 dps  2043/  14 hp  21718/    0 window   23s pressure 0.91/0.00
-  w29  money  4590 dps  1050/ 957 hp  10953/10359 window   65s pressure 0.32/0.34
-  w30  money  5005 dps  1632/ 673 hp  13333/ 5574 window   23s pressure 0.72/0.74
-  w31  money  5295 dps  2572/  14 hp  28814/    0 window   29s pressure 0.77/0.00
-  w32  money  5767 dps  1235/1257 hp  13824/14079 window   79s pressure 0.28/0.29
-  w33  money  6300 dps  2763/ 264 hp  34209/ 3306 window   24s pressure 1.03/1.05
-  w34  money  6820 dps  3329/   0 hp  38972/    0 window   37s pressure 0.63/0.00
-  w35  money  7432 dps  2196/1156 hp  18183/ 9737 window   23s pressure 0.73/0.75
-  w36B money  7850 dps  2108/1391 hp  23610/15851 window   73s pressure 0.31/0.32
+Research upgrades cost 940; paid per difficulty: 187 / 374 / 561 / 935 (Easy 20%, Psycho 99%)
+Power upgrades cost 186; paid per difficulty: 0 / 85 / 129 / 188
+  Landing  road   74 fronts 1 gates 3 trunk 1.00 | Easy 0rp x1.00 | Medium 0rp x1.00 | Hard 0rp x1.00 | Psycho 1122rp x1.69
+  Forest   road   76 fronts 2 gates 4 trunk 0.18/0.30 | Easy 15rp x1.05 | Medium 30rp x1.10 | Hard 75rp x1.21 | Psycho 1122rp x1.69
+  Lava     road  141 fronts 1 gates 4 trunk 1.00 | Easy 33rp x1.10 | Medium 66rp x1.21 | Hard 165rp x1.32 | Psycho 1122rp x1.69
+  Ruins    road  123 fronts 2 gates 5 trunk 0.24/0.64 | Easy 55rp x1.10 | Medium 110rp x1.24 | Hard 275rp x1.44 | Psycho 1122rp x1.69
+  Nest     road   68 fronts 2 gates 4 trunk 0.22/0.38 | Easy 80rp x1.14 | Medium 160rp x1.25 | Hard 400rp x1.49 | Psycho 1122rp x1.69
+  Ice      road   78 fronts 1 gates 4 trunk 0.58/0.87 | Easy 110rp x1.19 | Medium 220rp x1.30 | Hard 550rp x1.56 | Psycho 1122rp x1.69
+  Swamp    road   70 fronts 1 gates 4 trunk 0.71/0.79 | Easy 145rp x1.21 | Medium 290rp x1.32 | Hard 725rp x1.62 | Psycho 1122rp x1.69
+
+Tower value (dps x range per coin, cumulative; speed 1, no splash):
+  Artillery   splash 1.8 targets 3  L1 19125.0  L2 294.6  L3 213.1
+  Cannon      splash 1.2 targets 1  L1 71.4  L2 78.2  L3 97.8
+  Cryo        splash 0.0 targets 3  L1 16.4  L2 8.9  L3 6.0
+  CryoBeam    splash 0.0 targets 3  L1 22933.3  L2 257.3  L3 127.3
+  Laser       splash 0.0 targets 1  L1 120.0  L2 124.2  L3 135.4
+  PulseRifle  splash 0.0 targets 3  L1 100.0  L2 103.6  L3 123.0
+  Railgun     splash 0.0 targets 3  L1 99.2  L2 105.4  L3 112.0
+  Rocket      splash 1.5 targets 2  L1 85.9  L2 89.1  L3 102.7
+  StormRifle  splash 0.8 targets 3  L1 28700.0  L2 444.4  L3 313.3
+  Tesla       splash 1.3 targets 1  L1 80.0  L2 83.8  L3 89.9
+
+Landing Easy  towers [PulseRifle] upgrade x1.00
+  w1   money   200 towers  4 hp     84/    0 window   16s pressure 0.13/0.00
+  w2   money   210 towers  4 hp    129/    0 window   19s pressure 0.17/0.00
+  w3   money   222 towers  4 hp    112/    0 window   16s pressure 0.17/0.00
+  w4   money   230 towers  4 hp    263/    0 window   15s pressure 0.42/0.00
+  w5   money   252 towers  5 hp    256/    0 window   16s pressure 0.34/0.00
+  w6   money   273 towers  5 hp    268/    0 window   16s pressure 0.35/0.00
+  w7   money   294 towers  5 hp    311/    0 window   13s pressure 0.48/0.00
+  w8   money   310 towers  6 hp    423/    0 window   17s pressure 0.46/0.00
+  w9   money   343 towers  6 hp    373/    0 window   17s pressure 0.41/0.00
+  w10  money   402 towers  8 hp    451/    0 window   19s pressure 0.36/0.00
+  w11  money   467 towers  9 hp    515/    0 window   20s pressure 0.37/0.00
+  w12B money   533 towers 10 hp    787/    0 window   17s pressure 0.56/0.00
+  w13  money   755 towers 15 hp    684/    0 window   16s pressure 0.37/0.00
+  w14  money   830 towers 16 hp    904/    0 window   23s pressure 0.36/0.00
+  w15  money   909 towers 16 hp   1212/    0 window   23s pressure 0.45/0.00
+  w16  money   993 towers 16 hp   1231/    0 window   22s pressure 0.42/0.00
+  w17  money  1094 towers 16 hp   1499/    0 window   22s pressure 0.46/0.00
+  w18  money  1193 towers 16 hp   1436/    0 window   24s pressure 0.38/0.00
+  w19  money  1290 towers 16 hp   1712/    0 window   25s pressure 0.41/0.00
+  w20  money  1417 towers 16 hp   1849/    0 window   26s pressure 0.38/0.00
+  w21  money  1526 towers 16 hp   2698/    0 window   28s pressure 0.48/0.00
+  w22  money  1657 towers 16 hp   2785/    0 window   29s pressure 0.46/0.00
+  w23  money  1824 towers 16 hp   3931/    0 window   36s pressure 0.47/0.00
+  w24B money  1986 towers 16 hp   3482/    0 window   25s pressure 0.65/0.00
+Landing Medium  towers [PulseRifle] upgrade x1.00
+  w1   money   200 towers  4 hp    149/    0 window   16s pressure 0.23/0.00
+  w2   money   212 towers  4 hp    221/    0 window   18s pressure 0.31/0.00
+  w3   money   226 towers  4 hp    185/    0 window   15s pressure 0.29/0.00
+  w4   money   235 towers  4 hp    416/    0 window   15s pressure 0.67/0.00
+  w5   money   259 towers  5 hp    406/    0 window   16s pressure 0.55/0.00
+  w6   money   282 towers  5 hp    409/    0 window   15s pressure 0.56/0.00
+  w7   money   304 towers  6 hp    477/    0 window   13s pressure 0.65/0.00
+  w8   money   321 towers  6 hp    650/    0 window   17s pressure 0.71/0.00
+  w9   money   356 towers  4 hp     92/  112 window   13s pressure 0.11/0.52
+  w10  money   394 towers  7 hp    692/    0 window   18s pressure 0.64/0.00
+  w11  money   461 towers  9 hp    788/    0 window   18s pressure 0.60/0.00
+  w12B money   529 towers 10 hp   1186/    0 window   17s pressure 0.86/0.00
+  w13  money   754 towers 15 hp   1037/    0 window   16s pressure 0.57/0.00
+  w14  money   831 towers 16 hp   1390/    0 window   20s pressure 0.61/0.00
+  w15  money   913 towers 16 hp   1272/  745 window   17s pressure 0.60/0.23
+  w16  money  1008 towers 16 hp   1885/    0 window   19s pressure 0.75/0.00
+  w17  money  1113 towers 16 hp   2270/    0 window   19s pressure 0.75/0.00
+  w18  money  1215 towers 16 hp   2205/    0 window   20s pressure 0.68/0.00
+  w19  money  1317 towers 16 hp   2753/    0 window   21s pressure 0.74/0.00
+  w20  money  1457 towers 16 hp   2829/    0 window   21s pressure 0.68/0.00
+  w21  money  1572 towers 16 hp   2378/ 1560 window   18s pressure 0.59/0.17
+  w22  money  1714 towers 16 hp   4486/    0 window   24s pressure 0.81/0.00
+  w23  money  1898 towers 16 hp   5929/    0 window   30s pressure 0.82/0.00
+  w24B money  2066 towers 16 hp   5228/  155 window   21s pressure 1.01/0.03
+Landing Hard  towers [PulseRifle] upgrade x1.00
+  w1   money   200 towers  4 hp    228/    0 window   15s pressure 0.36/0.00
+  w2   money   216 towers  4 hp    345/    0 window   17s pressure 0.49/0.00
+  w3   money   235 towers  4 hp    283/    0 window   15s pressure 0.46/0.00
+  w4   money   247 towers  4 hp    637/    0 window   15s pressure 1.01/0.00
+  w5   money   278 towers  5 hp    611/    0 window   16s pressure 0.82/0.00
+  w6   money   308 towers  6 hp    621/    0 window   16s pressure 0.73/0.00
+  w7   money   337 towers  6 hp   1006/    0 window   14s pressure 1.30/0.00
+  w8   money   360 towers  7 hp   1189/    0 window   18s pressure 1.12/0.00
+  w9   money   408 towers  6 hp    142/  257 window   13s pressure 0.17/1.05
+  w10  money   454 towers  9 hp   1253/    0 window   16s pressure 1.04/0.00
+  w11  money   539 towers 10 hp   1418/    0 window   16s pressure 1.10/0.00
+  w12B money   622 towers 12 hp   1545/    0 window   14s pressure 1.03/0.00
+  w13  money   853 towers 16 hp   2020/    0 window   15s pressure 1.09/0.00
+  w14  money   953 towers 16 hp   2452/    0 window   15s pressure 1.18/0.00
+  w15  money  1049 towers 16 hp   1639/  829 window   18s pressure 0.64/0.86
+  w16  money  1164 towers 16 hp   3352/    0 window   14s pressure 1.35/0.00
+  w17  money  1277 towers 16 hp   4461/    0 window   15s pressure 1.59/0.00
+  w18B money  1382 towers 16 hp   4450/    0 window   14s pressure 1.40/0.00
+  w19  money  1564 towers 16 hp   4143/    0 window   17s pressure 1.10/0.00
+  w20  money  1730 towers 16 hp   4725/    0 window   17s pressure 1.13/0.00
+  w21  money  1875 towers 16 hp   4115/ 3164 window   14s pressure 1.04/0.24
+  w22  money  2060 towers 16 hp   6577/    0 window   21s pressure 1.12/0.00
+  w23  money  2269 towers 16 hp   9871/    0 window   23s pressure 1.46/0.00
+  w24B money  2434 towers 16 hp   8123/  535 window   17s pressure 1.43/0.08
+Landing Psycho  towers [PulseRifle,Cannon,Rocket] upgrade x1.69
+  w1   money   200 towers  4 hp    368/    0 window   15s pressure 0.37/0.00
+  w2   money   218 towers  3 hp    573/    0 window   16s pressure 0.50/0.00
+  w3   money   240 towers  2 hp    474/    0 window   14s pressure 0.36/0.00
+  w4   money   254 towers  3 hp   1096/    0 window   15s pressure 0.70/0.00
+  w5   money   292 towers  3 hp   1083/    0 window   16s pressure 0.68/0.00
+  w6 B money   329 towers  6 hp   1933/    0 window   13s pressure 1.63/0.00
+  w7   money   439 towers  3 hp   1476/    0 window   13s pressure 0.61/0.00
+  w8   money   470 towers  5 hp   1880/    0 window   18s pressure 0.62/0.00
+  w9   money   530 towers  6 hp    229/  369 window   13s pressure 0.21/0.41
+  w10  money   578 towers  8 hp   3745/  622 window   17s pressure 1.24/1.20
+  w11  money   671 towers  8 hp   4044/  657 window   16s pressure 1.11/1.26
+  w12B money   764 towers 14 hp   2387/    0 window   14s pressure 0.76/0.00
+  w13  money  1011 towers  4 hp   3121/    0 window   15s pressure 0.48/0.00
+  w14  money  1125 towers 11 hp   7022/  885 window   14s pressure 1.32/1.21
+  w15  money  1231 towers 16 hp   5596/ 2558 window   18s pressure 1.11/1.21
+  w16  money  1337 towers  9 hp  10186/  848 window   14s pressure 1.35/1.36
+  w17  money  1470 towers  5 hp   6089/    0 window   13s pressure 0.70/0.00
+  w18B money  1617 towers 16 hp  14811/ 1120 window   14s pressure 1.96/0.76
+  w19  money  1761 towers 16 hp   7214/    0 window   15s pressure 0.78/0.00
+  w20  money  1982 towers 16 hp   9354/ 5210 window   14s pressure 1.28/1.29
+  w21  money  2085 towers 16 hp  13794/18608 window   14s pressure 1.45/1.42
+  w22  money  2242 towers 10 hp  11671/    0 window   18s pressure 0.81/0.00
+  w23  money  2531 towers  7 hp  16153/    0 window   21s pressure 0.76/0.00
+  w24B money  2806 towers 16 hp  28993/ 5922 window   16s pressure 2.12/1.49
+Forest Easy  towers [PulseRifle,Cannon] upgrade x1.05
+  w1   money   240 towers  4 hp     77/    0 window   15s pressure 0.13/0.00
+  w2   money   246 towers  3 hp    222/    0 window   15s pressure 0.36/0.00
+  w3   money   266 towers  3 hp    216/    0 window   15s pressure 0.26/0.00
+  w4   money   277 towers  5 hp    225/   84 window   15s pressure 0.32/0.12
+  w5   money   294 towers  3 hp    437/    0 window   15s pressure 0.49/0.00
+  w6   money   316 towers  4 hp    429/    0 window   17s pressure 0.42/0.00
+  w7   money   340 towers  4 hp    115/   83 window   12s pressure 0.14/0.43
+  w8   money   353 towers  4 hp    536/    0 window   17s pressure 0.42/0.00
+  w9   money   383 towers  4 hp    579/    0 window   20s pressure 0.42/0.00
+  w10  money   413 towers  5 hp    648/    0 window   20s pressure 0.43/0.00
+  w11  money   455 towers  5 hp    705/    0 window   18s pressure 0.42/0.00
+  w12  money   521 towers  6 hp    783/  269 window   20s pressure 0.41/0.40
+  w13  money   588 towers  6 hp    976/    0 window   20s pressure 0.46/0.00
+  w14  money   664 towers  6 hp   1265/    0 window   22s pressure 0.49/0.00
+  w15B money   736 towers 14 hp    905/   45 window   17s pressure 0.60/0.02
+  w16  money  1042 towers 11 hp   1361/    0 window   21s pressure 0.37/0.00
+  w17  money  1140 towers  5 hp   2552/    0 window   20s pressure 0.51/0.00
+  w18  money  1226 towers 13 hp   2074/    0 window   20s pressure 0.49/0.00
+  w19  money  1337 towers 14 hp   2312/  649 window   22s pressure 0.45/0.40
+  w20  money  1438 towers  6 hp   3239/    0 window   23s pressure 0.48/0.00
+  w21  money  1540 towers  9 hp   3146/    0 window   24s pressure 0.50/0.00
+  w22  money  1689 towers 17 hp   2911/  872 window   22s pressure 0.46/0.45
+  w23  money  1792 towers  6 hp   6255/    0 window   32s pressure 0.55/0.00
+  w24  money  1901 towers 10 hp   5612/    0 window   31s pressure 0.58/0.00
+  w25  money  2071 towers  6 hp   5380/    0 window   25s pressure 0.49/0.00
+  w26  money  2210 towers 19 hp   4748/ 1305 window   25s pressure 0.48/0.48
+  w27  money  2367 towers  8 hp   8335/    0 window   39s pressure 0.49/0.00
+  w28  money  2590 towers  8 hp  11151/    0 window   49s pressure 0.46/0.00
+  w29  money  2781 towers  9 hp   8973/    0 window   30s pressure 0.54/0.00
+  w30B money  3009 towers 32 hp   9718/ 2356 window   36s pressure 0.65/0.63
+Forest Medium  towers [PulseRifle,Cannon] upgrade x1.10
+  w1   money   240 towers  4 hp    131/    0 window   15s pressure 0.23/0.00
+  w2   money   247 towers  2 hp    340/    0 window   15s pressure 0.43/0.00
+  w3   money   268 towers  3 hp    339/    0 window   15s pressure 0.38/0.00
+  w4   money   280 towers  4 hp    387/  204 window   15s pressure 0.46/0.44
+  w5   money   301 towers  3 hp    690/    0 window   15s pressure 0.59/0.00
+  w6   money   325 towers  3 hp    650/    0 window   17s pressure 0.55/0.00
+  w7   money   350 towers  4 hp    169/  123 window   12s pressure 0.18/0.50
+  w8   money   363 towers  4 hp    832/    0 window   16s pressure 0.62/0.00
+  w9   money   395 towers  4 hp    871/    0 window   20s pressure 0.57/0.00
+  w10  money   426 towers  4 hp    976/    0 window   20s pressure 0.58/0.00
+  w11  money   469 towers  5 hp   1097/    0 window   17s pressure 0.64/0.00
+  w12  money   538 towers  8 hp    758/  511 window   17s pressure 0.49/0.50
+  w13  money   597 towers 10 hp    374/  217 window   17s pressure 0.23/0.54
+  w14  money   652 towers  4 hp   1886/    0 window   22s pressure 0.60/0.00
+  w15B money   725 towers 14 hp   1316/  109 window   17s pressure 0.86/0.05
+  w16  money  1038 towers 10 hp   2107/    0 window   17s pressure 0.58/0.00
+  w17  money  1141 towers  4 hp   3792/    0 window   20s pressure 0.67/0.00
+  w18  money  1228 towers  6 hp   3370/    0 window   16s pressure 0.79/0.00
+  w19  money  1349 towers 19 hp   2907/ 1496 window   22s pressure 0.61/0.64
+  w20  money  1459 towers  4 hp   4845/    0 window   21s pressure 0.65/0.00
+  w21  money  1563 towers  7 hp   4991/    0 window   20s pressure 0.80/0.00
+  w22  money  1723 towers 22 hp   4092/ 2261 window   22s pressure 0.63/0.66
+  w23  money  1845 towers  5 hp   9253/    0 window   28s pressure 0.77/0.00
+  w24  money  1955 towers  6 hp   9023/    0 window   26s pressure 0.82/0.00
+  w25  money  2142 towers  6 hp   8025/    0 window   20s pressure 0.77/0.00
+  w26  money  2284 towers 27 hp   6192/ 3551 window   23s pressure 0.67/0.69
+  w27  money  2472 towers  7 hp  13346/    0 window   32s pressure 0.77/0.00
+  w28  money  2716 towers  8 hp  16508/    0 window   40s pressure 0.71/0.00
+  w29  money  2909 towers  8 hp  13311/    0 window   25s pressure 0.77/0.00
+  w30B money  3140 towers 32 hp  15395/ 3860 window   30s pressure 1.01/1.01
+Forest Hard  towers [PulseRifle,Cannon] upgrade x1.21
+  w1   money   240 towers  3 hp    216/    0 window   14s pressure 0.32/0.00
+  w2   money   250 towers  3 hp    522/    0 window   15s pressure 0.53/0.00
+  w3   money   278 towers  3 hp    683/    0 window   15s pressure 0.67/0.00
+  w4   money   298 towers  4 hp    669/  269 window   15s pressure 0.69/0.52
+  w5   money   330 towers  3 hp   1058/    0 window   15s pressure 0.87/0.00
+  w6   money   362 towers  4 hp   1159/    0 window   18s pressure 0.75/0.00
+  w7   money   400 towers  7 hp    388/  282 window   13s pressure 0.34/1.11
+  w8   money   423 towers  4 hp   1360/    0 window   16s pressure 0.79/0.00
+  w9   money   468 towers  7 hp   1505/  310 window   21s pressure 0.82/0.85
+  w10  money   532 towers  8 hp   1777/  376 window   21s pressure 0.83/0.86
+  w11  money   607 towers  6 hp   1681/    0 window   15s pressure 0.76/0.00
+  w12  money   691 towers 10 hp   2040/ 1245 window   18s pressure 0.85/0.88
+  w13  money   776 towers 14 hp    792/  499 window   18s pressure 0.35/0.67
+  w14  money   859 towers 12 hp   3659/  451 window   23s pressure 0.91/0.89
+  w15B money   976 towers 19 hp   2912/  358 window   16s pressure 1.28/0.10
+  w16  money  1237 towers  6 hp   3190/    0 window   14s pressure 0.75/0.00
+  w17  money  1365 towers  5 hp   6390/    0 window   21s pressure 0.83/0.00
+  w18  money  1481 towers 28 hp   3839/ 1328 window   23s pressure 0.71/0.85
+  w19  money  1609 towers 20 hp   6526/ 2941 window   23s pressure 0.93/0.96
+  w20  money  1774 towers 18 hp   6101/  938 window   18s pressure 0.93/0.97
+  w21  money  1953 towers  6 hp   7360/    0 window   17s pressure 0.96/0.00
+  w22B money  2152 towers 32 hp   7737/ 1480 window   23s pressure 1.39/0.15
+  w23  money  2423 towers  6 hp  16747/    0 window   21s pressure 1.19/0.00
+  w24  money  2568 towers  8 hp  13419/    0 window   22s pressure 0.94/0.00
+  w25  money  2810 towers 24 hp  12210/ 1434 window   19s pressure 1.03/1.02
+  w26  money  3045 towers 32 hp  11885/ 8653 window   19s pressure 1.01/1.04
+  w27  money  3287 towers  9 hp  19534/    0 window   28s pressure 0.88/0.00
+  w28  money  3598 towers 11 hp  28676/    0 window   35s pressure 0.95/0.00
+  w29  money  3888 towers 30 hp  22022/ 2154 window   23s pressure 1.07/1.07
+  w30B money  4254 towers 32 hp  22775/ 5349 window   26s pressure 1.07/1.06
+Forest Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   240 towers  2 hp    340/    0 window   14s pressure 0.24/0.00
+  w2   money   251 towers  2 hp    914/    0 window   15s pressure 0.59/0.00
+  w3   money   285 towers  1 hp   1015/    0 window   15s pressure 0.54/0.00
+  w4   money   306 towers  6 hp      0/ 1495 window    0s pressure 0.00/0.96
+  w5   money   324 towers  2 hp   1819/    0 window   15s pressure 0.95/0.00
+  w6   money   362 towers  2 hp   1872/    0 window   18s pressure 0.73/0.00
+  w7   money   405 towers  3 hp    556/  405 window   13s pressure 0.54/0.70
+  w8 B money   431 towers  6 hp   2328/    0 window   15s pressure 1.65/0.00
+  w9   money   607 towers  5 hp   2621/  493 window   19s pressure 0.81/0.95
+  w10  money   676 towers  8 hp   4171/  805 window   20s pressure 1.21/1.11
+  w11  money   744 towers  4 hp   2917/    0 window   12s pressure 0.81/0.00
+  w12  money   840 towers 15 hp   3487/ 4744 window   15s pressure 1.24/1.18
+  w13  money   914 towers 13 hp   1161/  716 window   18s pressure 0.37/0.46
+  w14  money   998 towers  8 hp   7292/  787 window   19s pressure 1.24/1.27
+  w15B money  1104 towers 17 hp   6650/ 1472 window   13s pressure 1.80/0.34
+  w16  money  1299 towers  5 hp   5447/    0 window   12s pressure 0.82/0.00
+  w17  money  1447 towers  6 hp  10777/    0 window   17s pressure 1.06/0.00
+  w18  money  1572 towers 26 hp   8012/ 2608 window   21s pressure 1.10/1.20
+  w19  money  1687 towers 26 hp  12311/ 9006 window   21s pressure 1.34/1.30
+  w20  money  1830 towers 15 hp  13217/ 1935 window   16s pressure 1.34/1.36
+  w21  money  1974 towers  7 hp  12962/    0 window   14s pressure 1.13/0.00
+  w22B money  2187 towers 19 hp  14978/ 5259 window   18s pressure 1.95/1.04
+  w23  money  2373 towers 32 hp   9198/ 5495 window   21s pressure 0.92/1.01
+  w24  money  2522 towers  9 hp  23660/    0 window   19s pressure 1.33/0.00
+  w25  money  2745 towers 22 hp  22756/ 2278 window   17s pressure 1.44/1.42
+  w26  money  2938 towers 32 hp  20805/23226 window   18s pressure 1.45/1.38
+  w27  money  3147 towers 32 hp  16893/10075 window   17s pressure 1.30/1.32
+  w28  money  3308 towers 11 hp  44879/    0 window   27s pressure 1.36/0.00
+  w29  money  3540 towers 26 hp  35198/ 3559 window   20s pressure 1.50/1.48
+  w30B money  3832 towers 32 hp  40010/ 9635 window   22s pressure 1.65/1.53
+Lava Easy  towers [PulseRifle,Cannon,Cryo] upgrade x1.10
+  w1   money   280 towers  3 hp    193/    0 window   17s pressure 0.17/0.00
+  w2   money   292 towers  4 hp    212/   35 window   17s pressure 0.21/0.09
+  w3   money   307 towers  3 hp    343/    0 window   19s pressure 0.22/0.00
+  w4   money   324 towers  3 hp    436/    0 window   16s pressure 0.30/0.00
+  w5   money   338 towers  4 hp     33/   73 window   16s pressure 0.03/0.36
+  w6   money   348 towers  3 hp    625/    0 window   21s pressure 0.38/0.00
+  w7   money   362 towers  7 hp    211/  363 window   16s pressure 0.19/0.38
+  w8   money   371 towers  4 hp    738/    0 window   16s pressure 0.47/0.00
+  w9   money   385 towers  4 hp     42/   93 window   16s pressure 0.04/0.38
+  w10  money   395 towers  4 hp    710/    0 window   21s pressure 0.39/0.00
+  w11  money   409 towers  7 hp    548/  349 window   19s pressure 0.35/0.40
+  w12B money   433 towers  8 hp    793/    0 window   16s pressure 0.61/0.00
+  w13  money   568 towers  9 hp    719/  333 window   21s pressure 0.32/0.33
+  w14  money   610 towers  5 hp   1385/    0 window   26s pressure 0.41/0.00
+  w15  money   670 towers  9 hp   1104/  324 window   24s pressure 0.36/0.42
+  w16  money   730 towers  4 hp   2112/    0 window   21s pressure 0.54/0.00
+  w17  money   788 towers  9 hp   1659/  330 window   26s pressure 0.41/0.42
+  w18  money   859 towers  4 hp   2296/    0 window   27s pressure 0.43/0.00
+  w19  money   922 towers  5 hp   2868/    0 window   26s pressure 0.49/0.00
+  w20  money  1005 towers  4 hp   3157/    0 window   29s pressure 0.44/0.00
+  w21  money  1105 towers 14 hp   2234/  736 window   27s pressure 0.42/0.44
+  w22  money  1188 towers  5 hp   4071/    0 window   26s pressure 0.54/0.00
+  w23  money  1271 towers  4 hp   3687/    0 window   27s pressure 0.45/0.00
+  w24B money  1380 towers 16 hp   3082/  219 window   26s pressure 0.63/0.04
+  w25  money  1868 towers  5 hp   5232/    0 window   27s pressure 0.42/0.00
+  w26  money  1981 towers 16 hp   5029/ 1417 window   28s pressure 0.46/0.42
+  w27  money  2102 towers  6 hp   6569/    0 window   26s pressure 0.47/0.00
+  w28  money  2234 towers  6 hp   7625/    0 window   25s pressure 0.53/0.00
+  w29  money  2366 towers 16 hp   6061/ 1694 window   26s pressure 0.47/0.47
+  w30  money  2527 towers  7 hp   7956/    0 window   26s pressure 0.48/0.00
+  w31  money  2691 towers 16 hp   7390/ 2228 window   26s pressure 0.48/0.40
+  w32  money  2882 towers  8 hp  10444/    0 window   25s pressure 0.57/0.00
+  w33  money  3077 towers  9 hp  10707/    0 window   29s pressure 0.49/0.00
+  w34  money  3313 towers 16 hp   9424/ 2671 window   27s pressure 0.50/0.26
+  w35  money  3581 towers 11 hp  14873/    0 window   28s pressure 0.60/0.00
+  w36B money  3861 towers 16 hp   9781/    0 window   27s pressure 0.71/0.00
+Lava Medium  towers [PulseRifle,Cannon,Cryo] upgrade x1.21
+  w1   money   280 towers  3 hp    284/    0 window   17s pressure 0.23/0.00
+  w2   money   292 towers  5 hp      0/  123 window    0s pressure 0.00/0.17
+  w3   money   298 towers  3 hp    527/    0 window   20s pressure 0.38/0.00
+  w4   money   316 towers  3 hp    642/    0 window   16s pressure 0.40/0.00
+  w5   money   330 towers  4 hp     49/  108 window   16s pressure 0.04/0.48
+  w6   money   340 towers  5 hp    403/  152 window   21s pressure 0.27/0.59
+  w7   money   362 towers  7 hp    127/  329 window   16s pressure 0.10/0.30
+  w8   money   374 towers  4 hp   1085/    0 window   16s pressure 0.63/0.00
+  w9   money   388 towers  4 hp     61/  136 window   16s pressure 0.05/0.50
+  w10  money   398 towers  6 hp    682/  257 window   21s pressure 0.42/0.80
+  w11  money   420 towers  8 hp    873/  741 window   19s pressure 0.56/0.56
+  w12B money   447 towers  8 hp   1166/    0 window   16s pressure 0.81/0.00
+  w13  money   582 towers 11 hp    843/  895 window   19s pressure 0.42/0.47
+  w14  money   625 towers 11 hp    238/  261 window   19s pressure 0.10/0.53
+  w15  money   668 towers 13 hp   1115/ 1420 window   19s pressure 0.48/0.59
+  w16  money   714 towers  4 hp   3165/    0 window   21s pressure 0.74/0.00
+  w17  money   773 towers 13 hp   2128/ 1326 window   24s pressure 0.63/0.60
+  w18  money   843 towers 12 hp   3582/  428 window   26s pressure 0.83/0.83
+  w19  money   914 towers  5 hp   4264/    0 window   26s pressure 0.71/0.00
+  w20  money   998 towers  9 hp   4707/  299 window   26s pressure 0.85/0.77
+  w21  money  1106 towers 16 hp   3311/ 1943 window   26s pressure 0.63/0.62
+  w22  money  1202 towers  5 hp   6052/    0 window   26s pressure 0.73/0.00
+  w23  money  1286 towers 15 hp   5758/  669 window   24s pressure 0.92/0.84
+  w24B money  1410 towers 16 hp   5030/  592 window   26s pressure 0.91/0.09
+  w25  money  1911 towers  6 hp   7747/    0 window   24s pressure 0.60/0.00
+  w26  money  2025 towers 16 hp   7285/ 3881 window   27s pressure 0.66/0.65
+  w27  money  2166 towers 16 hp   8671/ 1002 window   21s pressure 0.84/0.79
+  w28  money  2320 towers  7 hp  11273/    0 window   21s pressure 0.77/0.00
+  w29  money  2453 towers 16 hp   8369/ 5261 window   25s pressure 0.62/0.68
+  w30  money  2631 towers 16 hp  10675/ 1311 window   24s pressure 0.76/0.71
+  w31  money  2825 towers 16 hp  10166/ 6343 window   23s pressure 0.69/0.65
+  w32  money  3040 towers  8 hp  15413/    0 window   22s pressure 0.80/0.00
+  w33  money  3236 towers 16 hp  15383/ 1637 window   25s pressure 0.81/0.70
+  w34  money  3509 towers 16 hp  12758/ 9376 window   22s pressure 0.71/0.65
+  w35  money  3788 towers 11 hp  21927/    0 window   25s pressure 0.82/0.00
+  w36B money  4069 towers 16 hp  14469/ 1025 window   23s pressure 1.01/0.10
+Lava Hard  towers [PulseRifle,Cannon,Cryo] upgrade x1.32
+  w1   money   280 towers  3 hp    436/    0 window   17s pressure 0.32/0.00
+  w2   money   296 towers  5 hp      0/  385 window    0s pressure 0.00/0.45
+  w3   money   305 towers  3 hp    808/    0 window   20s pressure 0.43/0.00
+  w4   money   329 towers  3 hp   1476/    0 window   18s pressure 0.78/0.00
+  w5   money   357 towers  6 hp    112/  248 window   17s pressure 0.07/1.03
+  w6   money   376 towers  6 hp    832/  350 window   22s pressure 0.45/0.86
+  w7   money   416 towers  8 hp    677/ 1166 window   17s pressure 0.44/0.82
+  w8   money   434 towers  3 hp   2495/    0 window   18s pressure 0.97/0.00
+  w9   money   462 towers  7 hp    141/  313 window   17s pressure 0.07/0.90
+  w10  money   482 towers  8 hp   1406/  592 window   22s pressure 0.63/1.04
+  w11  money   520 towers 10 hp    645/ 1665 window   17s pressure 0.35/0.85
+  w12B money   550 towers 10 hp   1417/    0 window   17s pressure 0.71/0.00
+  w13  money   688 towers 12 hp   1914/ 1625 window   19s pressure 0.68/0.70
+  w14  money   749 towers 13 hp    548/  600 window   19s pressure 0.18/0.77
+  w15  money   815 towers 15 hp   2684/ 2849 window   19s pressure 0.81/0.89
+  w16  money   882 towers  5 hp   7008/    0 window   22s pressure 1.22/0.00
+  w17  money   963 towers 16 hp   3377/ 4302 window   19s pressure 0.91/0.91
+  w18  money  1036 towers 15 hp   6983/  984 window   22s pressure 1.37/1.21
+  w19  money  1119 towers 16 hp    781/ 1069 window   19s pressure 0.18/0.83
+  w20  money  1191 towers 11 hp   9793/  688 window   21s pressure 1.45/1.21
+  w21  money  1321 towers 16 hp   6060/ 3074 window   23s pressure 0.87/0.94
+  w22  money  1464 towers  4 hp  12519/    0 window   21s pressure 1.26/0.00
+  w23  money  1574 towers 16 hp  11210/ 1538 window   20s pressure 1.51/1.24
+  w24B money  1713 towers 16 hp  10193/ 1612 window   24s pressure 1.36/0.17
+  w25  money  2108 towers  6 hp  16684/    0 window   19s pressure 1.24/0.00
+  w26  money  2272 towers 16 hp   6030/ 3174 window   25s pressure 0.58/0.89
+  w27  money  2388 towers 16 hp  17041/ 1920 window   19s pressure 1.47/1.08
+  w28  money  2565 towers  8 hp  19533/    0 window   18s pressure 1.25/0.00
+  w29  money  2725 towers 16 hp  15074/ 8913 window   21s pressure 0.97/1.02
+  w30B money  2987 towers 16 hp  18366/ 1174 window   19s pressure 1.44/0.25
+  w31  money  3424 towers 16 hp  16063/10577 window   21s pressure 0.83/0.75
+  w32  money  3734 towers 10 hp  29002/    0 window   18s pressure 1.26/0.00
+  w33  money  3987 towers 16 hp  26816/ 2636 window   22s pressure 1.22/0.57
+  w34  money  4320 towers 16 hp  24098/18196 window   19s pressure 1.06/0.60
+  w35  money  4699 towers 13 hp  41163/    0 window   22s pressure 1.24/0.00
+  w36B money  5067 towers 16 hp  21593/ 2122 window   20s pressure 1.06/0.24
+Lava Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   280 towers  1 hp    782/    0 window   17s pressure 0.35/0.00
+  w2   money   300 towers  6 hp      0/  822 window    0s pressure 0.00/0.64
+  w3   money   309 towers  2 hp   1412/    0 window   20s pressure 0.53/0.00
+  w4   money   338 towers  2 hp   2118/    0 window   17s pressure 0.79/0.00
+  w5   money   366 towers  4 hp    160/  356 window   16s pressure 0.09/0.86
+  w6   money   386 towers  4 hp   1228/  502 window   22s pressure 0.57/0.97
+  w7   money   427 towers  8 hp    859/ 2218 window   16s pressure 0.45/1.15
+  w8   money   447 towers  3 hp   3580/    0 window   17s pressure 0.94/0.00
+  w9   money   475 towers  4 hp    202/  449 window   16s pressure 0.13/0.70
+  w10  money   495 towers  6 hp   2076/  849 window   22s pressure 0.79/1.17
+  w11  money   530 towers 10 hp    829/ 3213 window   16s pressure 0.36/1.20
+  w12B money   564 towers  9 hp   2032/    0 window   16s pressure 0.80/0.00
+  w13  money   702 towers 14 hp    827/ 3918 window   16s pressure 0.27/0.98
+  w14  money   760 towers  6 hp    786/  861 window   19s pressure 0.38/0.54
+  w15  money   826 towers 16 hp   4200/ 6243 window   19s pressure 1.06/1.25
+  w16  money   893 towers  4 hp  10152/    0 window   20s pressure 1.35/0.00
+  w17  money   969 towers 16 hp   4527/ 8171 window   19s pressure 1.13/1.27
+  w18B money  1042 towers  9 hp   9713/  895 window   21s pressure 1.80/1.08
+  w19  money  1172 towers  9 hp   1843/ 2524 window   19s pressure 0.60/0.93
+  w20  money  1244 towers  9 hp  14044/  988 window   19s pressure 1.61/1.59
+  w21  money  1364 towers 16 hp   5799/16006 window   19s pressure 1.04/1.32
+  w22  money  1455 towers  6 hp  19036/    0 window   18s pressure 1.64/0.00
+  w23  money  1549 towers 13 hp  16835/ 2206 window   18s pressure 1.78/1.70
+  w24B money  1674 towers 16 hp  17556/ 4987 window   19s pressure 1.91/0.77
+  w25  money  1951 towers  6 hp  20611/    0 window   17s pressure 1.38/0.00
+  w26  money  2082 towers 16 hp  10132/ 5528 window   20s pressure 1.14/1.25
+  w27  money  2187 towers 16 hp  25703/ 2754 window   17s pressure 1.82/1.86
+  w28  money  2333 towers  6 hp  31093/    0 window   16s pressure 1.82/0.00
+  w29  money  2455 towers 16 hp  22881/20090 window   20s pressure 1.42/1.37
+  w30B money  2683 towers 11 hp  30631/ 1855 window   18s pressure 2.01/2.01
+  w31  money  3003 towers 16 hp  23036/24961 window   20s pressure 1.16/1.14
+  w32  money  3323 towers 16 hp  21890/10958 window   19s pressure 1.27/1.32
+  w33  money  3532 towers 16 hp  44168/ 4322 window   19s pressure 1.71/1.71
+  w34  money  3806 towers 16 hp  38621/38869 window   18s pressure 1.49/1.42
+  w35  money  4124 towers 10 hp  60312/    0 window   18s pressure 1.81/0.00
+  w36B money  4382 towers 16 hp  33666/ 4059 window   18s pressure 1.23/0.59
+Ruins Easy  towers [PulseRifle,Cannon,Laser,Cryo] upgrade x1.10
+  w1   money   320 towers  3 hp    263/    0 window   17s pressure 0.15/0.00
+  w2   money   332 towers  3 hp    341/    0 window   17s pressure 0.20/0.00
+  w3   money   344 towers  5 hp    364/  113 window   19s pressure 0.26/0.21
+  w4   money   362 towers  4 hp    574/    0 window   20s pressure 0.36/0.00
+  w5   money   377 towers  4 hp    711/    0 window   22s pressure 0.38/0.00
+  w6   money   401 towers  5 hp      0/   97 window    0s pressure 0.00/0.35
+  w7   money   408 towers  6 hp    513/  205 window   19s pressure 0.30/0.38
+  w8   money   425 towers  4 hp    932/    0 window   19s pressure 0.51/0.00
+  w9   money   447 towers  4 hp    736/    0 window   21s pressure 0.36/0.00
+  w10  money   461 towers  5 hp     59/  130 window   16s pressure 0.04/0.41
+  w11  money   471 towers  7 hp    633/  308 window   21s pressure 0.33/0.39
+  w12  money   494 towers  5 hp   1654/    0 window   27s pressure 0.64/0.00
+  w13  money   542 towers  4 hp   1541/    0 window   21s pressure 0.60/0.00
+  w14B money   597 towers 11 hp   1130/   85 window   19s pressure 0.57/0.05
+  w15  money   910 towers  5 hp   1984/    0 window   24s pressure 0.39/0.00
+  w16  money   977 towers  4 hp   2678/    0 window   29s pressure 0.41/0.00
+  w17  money  1059 towers  5 hp   2830/    0 window   25s pressure 0.44/0.00
+  w18  money  1128 towers 12 hp   2465/  462 window   30s pressure 0.42/0.40
+  w19  money  1227 towers  5 hp   3689/    0 window   28s pressure 0.45/0.00
+  w20  money  1309 towers  4 hp   3844/    0 window   31s pressure 0.39/0.00
+  w21  money  1402 towers  5 hp   4442/    0 window   28s pressure 0.47/0.00
+  w22  money  1483 towers  5 hp   4367/    0 window   31s pressure 0.43/0.00
+  w23  money  1575 towers 20 hp   3674/  996 window   32s pressure 0.44/0.41
+  w24  money  1687 towers  5 hp   5697/    0 window   28s pressure 0.48/0.00
+  w25  money  1796 towers  6 hp   5936/    0 window   31s pressure 0.46/0.00
+  w26  money  1908 towers  6 hp   6933/    0 window   28s pressure 0.56/0.00
+  w27B money  2023 towers 32 hp   3641/ 4576 window   30s pressure 0.45/0.64
+  w28  money  2437 towers  6 hp   6525/    0 window   28s pressure 0.40/0.00
+  w29  money  2567 towers  8 hp   8340/    0 window   30s pressure 0.45/0.00
+  w30  money  2707 towers  8 hp   9286/    0 window   26s pressure 0.53/0.00
+  w31  money  2859 towers 32 hp   7355/ 2014 window   30s pressure 0.47/0.47
+  w32  money  3044 towers  8 hp  10494/    0 window   30s pressure 0.49/0.00
+  w33  money  3234 towers  8 hp  10790/    0 window   26s pressure 0.52/0.00
+  w34  money  3421 towers 32 hp   8629/ 2738 window   29s pressure 0.46/0.48
+  w35  money  3635 towers  9 hp  13138/    0 window   27s pressure 0.54/0.00
+  w36  money  3871 towers 11 hp  13833/    0 window   31s pressure 0.49/0.00
+  w37  money  4129 towers 11 hp  14924/    0 window   31s pressure 0.49/0.00
+  w38  money  4411 towers 32 hp  12461/ 3736 window   28s pressure 0.50/0.46
+  w39  money  4717 towers 13 hp  20092/    0 window   34s pressure 0.54/0.00
+  w40B money  5056 towers 22 hp  15659/    0 window   28s pressure 0.77/0.00
+Ruins Medium  towers [PulseRifle,Cannon,Laser,Cryo] upgrade x1.24
+  w1   money   320 towers  4 hp    386/    0 window   17s pressure 0.23/0.00
+  w2   money   332 towers  4 hp    502/    0 window   17s pressure 0.30/0.00
+  w3   money   344 towers  6 hp    326/  202 window   16s pressure 0.25/0.21
+  w4   money   356 towers  4 hp    891/    0 window   19s pressure 0.52/0.00
+  w5   money   372 towers  4 hp   1078/    0 window   22s pressure 0.55/0.00
+  w6   money   397 towers  4 hp      0/  143 window    0s pressure 0.00/0.48
+  w7   money   404 towers  7 hp    916/  513 window   20s pressure 0.54/0.50
+  w8   money   425 towers  5 hp   1414/    0 window   20s pressure 0.76/0.00
+  w9   money   448 towers  5 hp   1145/    0 window   21s pressure 0.55/0.00
+  w10  money   463 towers  5 hp     86/  191 window   16s pressure 0.06/0.50
+  w11  money   473 towers  8 hp   1012/  776 window   21s pressure 0.51/0.56
+  w12  money   503 towers  6 hp   2476/    0 window   27s pressure 0.79/0.00
+  w13  money   552 towers  5 hp   2309/    0 window   21s pressure 0.88/0.00
+  w14B money   608 towers 12 hp   2057/  225 window   16s pressure 0.81/0.10
+  w15  money   918 towers  5 hp   2959/    0 window   24s pressure 0.54/0.00
+  w16  money   986 towers 11 hp    453/  533 window   19s pressure 0.12/0.53
+  w17  money  1027 towers  5 hp   4218/    0 window   24s pressure 0.66/0.00
+  w18  money  1097 towers 18 hp   2647/ 1837 window   24s pressure 0.60/0.59
+  w19  money  1167 towers  6 hp   5485/    0 window   27s pressure 0.70/0.00
+  w20  money  1250 towers  6 hp   5707/    0 window   30s pressure 0.61/0.00
+  w21  money  1344 towers  6 hp   6605/    0 window   27s pressure 0.71/0.00
+  w22  money  1426 towers  6 hp   6484/    0 window   30s pressure 0.62/0.00
+  w23  money  1519 towers 23 hp   5087/ 2356 window   29s pressure 0.62/0.63
+  w24  money  1647 towers  7 hp   8443/    0 window   28s pressure 0.73/0.00
+  w25  money  1757 towers  6 hp   8794/    0 window   29s pressure 0.64/0.00
+  w26  money  1870 towers  6 hp  10270/    0 window   28s pressure 0.74/0.00
+  w27B money  1986 towers 32 hp   5845/ 8168 window   30s pressure 0.64/0.91
+  w28  money  2416 towers  8 hp   9648/    0 window   26s pressure 0.60/0.00
+  w29  money  2547 towers  8 hp  12390/    0 window   28s pressure 0.66/0.00
+  w30  money  2689 towers  8 hp  13719/    0 window   24s pressure 0.77/0.00
+  w31  money  2842 towers 32 hp   9309/ 7163 window   31s pressure 0.58/0.59
+  w32  money  3017 towers 10 hp  15547/    0 window   27s pressure 0.73/0.00
+  w33  money  3209 towers 10 hp  15988/    0 window   24s pressure 0.78/0.00
+  w34  money  3398 towers 32 hp  13240/ 8406 window   28s pressure 0.69/0.66
+  w35  money  3649 towers 12 hp  19436/    0 window   25s pressure 0.80/0.00
+  w36  money  3887 towers 11 hp  20453/    0 window   29s pressure 0.70/0.00
+  w37  money  4147 towers 12 hp  22110/    0 window   29s pressure 0.70/0.00
+  w38  money  4432 towers 32 hp  18067/11643 window   26s pressure 0.71/0.69
+  w39  money  4790 towers 14 hp  29669/    0 window   29s pressure 0.82/0.00
+  w40B money  5131 towers 32 hp  23111/  298 window   27s pressure 1.01/0.02
+Ruins Hard  towers [PulseRifle,Cannon,Laser,Cryo] upgrade x1.44
+  w1   money   320 towers  3 hp    889/    0 window   19s pressure 0.40/0.00
+  w2   money   344 towers  3 hp    866/    0 window   18s pressure 0.38/0.00
+  w3   money   362 towers  6 hp    878/  544 window   17s pressure 0.45/0.57
+  w4   money   386 towers  4 hp   1674/    0 window   19s pressure 0.84/0.00
+  w5   money   411 towers  4 hp   1906/    0 window   22s pressure 0.73/0.00
+  w6   money   449 towers  6 hp      0/  328 window    0s pressure 0.00/0.74
+  w7   money   463 towers  9 hp    835/ 1470 window   17s pressure 0.47/0.81
+  w8   money   486 towers  5 hp   3056/    0 window   20s pressure 1.11/0.00
+  w9   money   523 towers  9 hp   1321/  587 window   22s pressure 0.55/0.83
+  w10  money   563 towers  7 hp    198/  440 window   17s pressure 0.09/0.86
+  w11  money   583 towers 11 hp    603/ 2077 window   17s pressure 0.28/0.85
+  w12  money   613 towers  9 hp   3059/  453 window   24s pressure 0.83/0.85
+  w13  money   705 towers  4 hp   5110/    0 window   22s pressure 0.98/0.00
+  w14B money   796 towers 15 hp   4175/  773 window   17s pressure 1.22/0.23
+  w15  money  1064 towers  5 hp   6615/    0 window   24s pressure 0.85/0.00
+  w16  money  1178 towers 22 hp   1042/ 1225 window   19s pressure 0.21/0.83
+  w17  money  1242 towers  4 hp   9228/    0 window   23s pressure 0.98/0.00
+  w18  money  1358 towers 27 hp   4596/ 5937 window   22s pressure 0.88/0.90
+  w19  money  1446 towers  4 hp  11560/    0 window   22s pressure 1.15/0.00
+  w20  money  1566 towers 14 hp   8464/  686 window   23s pressure 0.92/0.86
+  w21  money  1725 towers 28 hp   3689/ 1942 window   24s pressure 0.48/0.83
+  w22  money  1825 towers 22 hp   9666/ 1492 window   23s pressure 0.93/0.93
+  w23  money  2003 towers 25 hp  10251/ 4051 window   24s pressure 0.91/0.94
+  w24  money  2205 towers  7 hp  17779/    0 window   20s pressure 1.17/0.00
+  w25  money  2365 towers 23 hp  12908/ 1515 window   23s pressure 0.96/0.89
+  w26  money  2584 towers 32 hp  10777/ 3345 window   24s pressure 0.84/0.87
+  w27B money  2765 towers 32 hp  18517/19735 window   26s pressure 1.34/1.36
+  w28  money  3123 towers  9 hp  18724/    0 window   20s pressure 0.87/0.00
+  w29  money  3342 towers 28 hp  19718/ 2014 window   22s pressure 0.99/0.95
+  w30  money  3628 towers  9 hp  22667/    0 window   19s pressure 0.90/0.00
+  w31  money  3848 towers 32 hp  22063/15221 window   23s pressure 1.01/1.00
+  w32  money  4123 towers 32 hp  24890/ 2726 window   23s pressure 1.02/0.88
+  w33  money  4441 towers 11 hp  31198/    0 window   19s pressure 1.04/0.00
+  w34B money  4748 towers 32 hp  35688/13547 window   24s pressure 1.44/1.42
+  w35  money  5097 towers 14 hp  35288/    0 window   20s pressure 1.01/0.00
+  w36  money  5468 towers 32 hp  39748/ 3885 window   25s pressure 1.05/0.81
+  w37  money  5921 towers 32 hp  44226/ 3867 window   26s pressure 1.06/0.76
+  w38  money  6413 towers 32 hp  42868/32124 window   22s pressure 1.06/0.99
+  w39  money  6876 towers 18 hp  54080/    0 window   22s pressure 1.05/0.00
+  w40B money  7385 towers 32 hp  59911/ 5821 window   23s pressure 1.51/1.00
+Ruins Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   320 towers  2 hp   1275/    0 window   18s pressure 0.44/0.00
+  w2   money   344 towers  2 hp   1657/    0 window   18s pressure 0.57/0.00
+  w3   money   368 towers  7 hp   1576/ 1221 window   17s pressure 0.79/0.76
+  w4   money   395 towers  2 hp   2556/    0 window   19s pressure 0.75/0.00
+  w5   money   422 towers  2 hp   3092/    0 window   22s pressure 0.84/0.00
+  w6   money   465 towers  5 hp      0/  471 window    0s pressure 0.00/0.48
+  w7   money   479 towers  9 hp      0/ 2618 window    0s pressure 0.00/1.14
+  w8   money   500 towers  3 hp   4455/    0 window   20s pressure 1.05/0.00
+  w9   money   541 towers  7 hp   2231/  962 window   21s pressure 0.80/1.16
+  w10  money   576 towers  5 hp    284/  631 window   16s pressure 0.20/0.68
+  w11  money   596 towers 11 hp    716/ 3393 window   16s pressure 0.32/1.18
+  w12  money   629 towers  7 hp   4617/  661 window   22s pressure 1.20/1.07
+  w13  money   709 towers  4 hp   7404/    0 window   20s pressure 1.22/0.00
+  w14B money   787 towers 15 hp   6962/ 1657 window   16s pressure 1.71/0.42
+  w15  money   987 towers  5 hp   9560/    0 window   21s pressure 1.21/0.00
+  w16  money  1085 towers  8 hp   1495/ 1758 window   19s pressure 0.51/0.75
+  w17  money  1149 towers  5 hp  13640/    0 window   19s pressure 1.50/0.00
+  w18  money  1235 towers 20 hp   4537/10341 window   19s pressure 1.08/1.26
+  w19  money  1314 towers  5 hp  17244/    0 window   19s pressure 1.69/0.00
+  w20B money  1405 towers  9 hp  14944/  794 window   22s pressure 1.80/1.10
+  w21  money  1653 towers 19 hp   5740/ 2978 window   24s pressure 0.86/0.93
+  w22  money  1754 towers 18 hp  14091/ 2129 window   21s pressure 1.31/1.27
+  w23  money  1898 towers 32 hp  12976/17739 window   24s pressure 1.26/1.32
+  w24  money  2030 towers  7 hp  26931/    0 window   18s pressure 1.77/0.00
+  w25  money  2148 towers 18 hp  18327/ 2246 window   21s pressure 1.30/1.34
+  w26  money  2312 towers 32 hp  13728/ 4681 window   22s pressure 1.15/1.22
+  w27B money  2474 towers 32 hp  13670/38630 window   21s pressure 1.72/1.91
+  w28  money  2719 towers  6 hp  30718/    0 window   17s pressure 1.53/0.00
+  w29  money  2883 towers 23 hp  27711/ 2919 window   21s pressure 1.35/1.39
+  w30  money  3086 towers  8 hp  42397/    0 window   17s pressure 1.85/0.00
+  w31  money  3241 towers 32 hp  21116/ 9433 window   21s pressure 1.27/1.26
+  w32  money  3416 towers 26 hp  36076/ 3358 window   21s pressure 1.42/1.32
+  w33  money  3677 towers  9 hp  44375/    0 window   18s pressure 1.58/0.00
+  w34B money  3878 towers 32 hp  46249/25525 window   22s pressure 2.02/1.77
+  w35  money  4153 towers 10 hp  55478/    0 window   19s pressure 1.68/0.00
+  w36  money  4398 towers 32 hp  48787/ 5645 window   22s pressure 1.47/1.24
+  w37  money  4748 towers 32 hp  32217/18609 window   20s pressure 1.32/1.33
+  w38  money  5010 towers 32 hp  48518/54584 window   20s pressure 1.49/1.49
+  w39  money  5419 towers 13 hp  81560/    0 window   20s pressure 1.79/0.00
+  w40B money  5735 towers 31 hp  76914/ 9793 window   21s pressure 2.12/2.12
+Nest Easy  towers [PulseRifle,Cannon,Laser,Cryo,Rocket] upgrade x1.14
+  w1   money   360 towers  4 hp    259/    0 window   15s pressure 0.19/0.00
+  w2   money   379 towers  5 hp    262/   49 window   15s pressure 0.21/0.11
+  w3   money   393 towers  6 hp    332/    0 window   12s pressure 0.29/0.00
+  w4   money   404 towers  5 hp     38/   86 window   12s pressure 0.04/0.28
+  w5   money   414 towers  8 hp    305/  526 window   12s pressure 0.32/0.37
+  w6   money   423 towers  3 hp    663/    0 window   12s pressure 0.38/0.00
+  w7   money   437 towers  4 hp     53/  118 window   12s pressure 0.05/0.38
+  w8   money   447 towers  6 hp    616/  190 window   17s pressure 0.38/0.27
+  w9   money   467 towers  3 hp   1063/    0 window   12s pressure 0.65/0.00
+  w10  money   494 towers  4 hp     62/  138 window   12s pressure 0.05/0.38
+  w11  money   504 towers  5 hp   1178/    0 window   19s pressure 0.48/0.00
+  w12B money   544 towers 10 hp    627/   47 window   12s pressure 0.55/0.03
+  w13  money   725 towers  4 hp   1485/    0 window   17s pressure 0.44/0.00
+  w14  money   763 towers  8 hp   1437/    0 window   18s pressure 0.44/0.00
+  w15  money   823 towers 11 hp   1390/  573 window   20s pressure 0.40/0.38
+  w16  money   870 towers  5 hp   2199/    0 window   20s pressure 0.47/0.00
+  w17  money   929 towers  9 hp   1887/    0 window   19s pressure 0.45/0.00
+  w18  money  1007 towers 12 hp   1822/  540 window   23s pressure 0.39/0.41
+  w19  money  1072 towers  5 hp   2624/    0 window   20s pressure 0.47/0.00
+  w20  money  1130 towers 15 hp   2328/  242 window   27s pressure 0.40/0.38
+  w21  money  1202 towers  6 hp   3114/    0 window   21s pressure 0.51/0.00
+  w22  money  1305 towers 16 hp   2512/  754 window   26s pressure 0.39/0.42
+  w23  money  1387 towers  5 hp   4612/    0 window   26s pressure 0.51/0.00
+  w24B money  1472 towers 26 hp   2479/    0 window   20s pressure 0.60/0.00
+  w25  money  1964 towers 24 hp   3533/ 1008 window   27s pressure 0.33/0.35
+  w26  money  2058 towers  6 hp   7615/    0 window   26s pressure 0.52/0.00
+  w27  money  2166 towers  7 hp   6920/    0 window   30s pressure 0.48/0.00
+  w28  money  2323 towers 23 hp   5491/ 1288 window   27s pressure 0.42/0.44
+  w29  money  2452 towers  7 hp   9271/    0 window   26s pressure 0.53/0.00
+  w30  money  2569 towers 22 hp   7060/  637 window   27s pressure 0.53/0.52
+  w31  money  2712 towers  8 hp  11033/    0 window   40s pressure 0.43/0.00
+  w32  money  2904 towers 30 hp   7082/ 1860 window   26s pressure 0.45/0.43
+  w33  money  3063 towers  8 hp  10984/    0 window   26s pressure 0.52/0.00
+  w34  money  3205 towers  8 hp  16751/    0 window   49s pressure 0.44/0.00
+  w35  money  3419 towers 32 hp   8443/ 2518 window   26s pressure 0.46/0.46
+  w36B money  3592 towers 32 hp   9536/    0 window   26s pressure 0.71/0.00
+  w37  money  3808 towers 11 hp  18826/    0 window   59s pressure 0.36/0.00
+  w38  money  4055 towers 32 hp  10566/ 3161 window   26s pressure 0.47/0.46
+  w39  money  4265 towers 11 hp  16221/    0 window   24s pressure 0.56/0.00
+  w40  money  4504 towers 32 hp  14003/ 1390 window   29s pressure 0.52/0.50
+  w41  money  4793 towers 14 hp  31110/    0 window   57s pressure 0.49/0.00
+  w42  money  5040 towers 32 hp  14705/ 3940 window   25s pressure 0.49/0.46
+  w43  money  5348 towers 14 hp  21328/    0 window   26s pressure 0.58/0.00
+  w44  money  5654 towers 15 hp  38074/    0 window   57s pressure 0.50/0.00
+  w45  money  5901 towers 32 hp  18516/ 5182 window   29s pressure 0.49/0.32
+  w46  money  6278 towers 17 hp  28402/    0 window   34s pressure 0.52/0.00
+  w47  money  6660 towers 17 hp  51200/    0 window   57s pressure 0.58/0.00
+  w48B money  6907 towers 32 hp  16891/ 2402 window   26s pressure 0.71/0.06
+Nest Medium  towers [PulseRifle,Cannon,Laser,Cryo,Rocket] upgrade x1.25
+  w1   money   360 towers  4 hp    396/    0 window   15s pressure 0.25/0.00
+  w2   money   380 towers  7 hp      0/  117 window    0s pressure 0.00/0.10
+  w3   money   386 towers  6 hp    489/    0 window   12s pressure 0.39/0.00
+  w4   money   397 towers  4 hp     57/  126 window   12s pressure 0.05/0.41
+  w5   money   407 towers  8 hp    114/  296 window   12s pressure 0.11/0.19
+  w6   money   419 towers  4 hp    975/    0 window   12s pressure 0.60/0.00
+  w7   money   433 towers  4 hp     78/  174 window   12s pressure 0.06/0.48
+  w8   money   443 towers  8 hp    193/  666 window   12s pressure 0.16/0.41
+  w9   money   458 towers  3 hp   1564/    0 window   12s pressure 0.87/0.00
+  w10  money   485 towers  4 hp     91/  203 window   12s pressure 0.07/0.50
+  w11  money   495 towers  5 hp   1857/    0 window   18s pressure 0.84/0.00
+  w12B money   538 towers 10 hp    976/  109 window   12s pressure 0.78/0.06
+  w13  money   722 towers  4 hp   2225/    0 window   17s pressure 0.58/0.00
+  w14  money   761 towers  7 hp    478/  523 window   15s pressure 0.32/0.51
+  w15  money   794 towers 12 hp   1524/ 1060 window   20s pressure 0.49/0.55
+  w16  money   851 towers  4 hp   3286/    0 window   20s pressure 0.66/0.00
+  w17  money   911 towers  6 hp    621/  680 window   15s pressure 0.38/0.52
+  w18  money   948 towers 16 hp   1982/ 1575 window   20s pressure 0.54/0.53
+  w19  money  1008 towers  4 hp   3921/    0 window   20s pressure 0.68/0.00
+  w20  money  1067 towers 15 hp   3473/  356 window   27s pressure 0.60/0.55
+  w21  money  1140 towers  5 hp   4873/    0 window   19s pressure 0.87/0.00
+  w22  money  1249 towers 18 hp   3626/ 1685 window   26s pressure 0.56/0.60
+  w23  money  1344 towers  4 hp   6850/    0 window   26s pressure 0.70/0.00
+  w24B money  1430 towers 25 hp   3718/    0 window   18s pressure 0.86/0.00
+  w25  money  1927 towers 31 hp   4718/ 2789 window   26s pressure 0.49/0.48
+  w26  money  2031 towers  5 hp  11282/    0 window   26s pressure 0.71/0.00
+  w27  money  2140 towers  6 hp  10787/    0 window   26s pressure 0.69/0.00
+  w28  money  2306 towers 31 hp   7783/ 3447 window   27s pressure 0.62/0.63
+  w29  money  2455 towers  7 hp  13725/    0 window   26s pressure 0.73/0.00
+  w30  money  2573 towers 23 hp  10511/  937 window   25s pressure 0.71/0.71
+  w31  money  2718 towers  8 hp  16998/    0 window   33s pressure 0.71/0.00
+  w32  money  2919 towers 32 hp  10124/ 5886 window   27s pressure 0.65/0.64
+  w33  money  3091 towers  9 hp  16232/    0 window   24s pressure 0.75/0.00
+  w34  money  3234 towers  8 hp  25605/    0 window   41s pressure 0.72/0.00
+  w35  money  3457 towers 32 hp  11969/ 7187 window   25s pressure 0.66/0.63
+  w36B money  3658 towers 32 hp  14093/    0 window   26s pressure 0.93/0.00
+  w37  money  3875 towers 11 hp  28628/    0 window   48s pressure 0.59/0.00
+  w38  money  4131 towers 32 hp  15195/ 9050 window   25s pressure 0.68/0.64
+  w39  money  4382 towers 13 hp  23993/    0 window   23s pressure 0.78/0.00
+  w40  money  4623 towers 32 hp  20761/ 2043 window   27s pressure 0.72/0.68
+  w41  money  4915 towers 13 hp  47308/    0 window   49s pressure 0.76/0.00
+  w42  money  5171 towers 32 hp  19289/13535 window   24s pressure 0.67/0.69
+  w43  money  5495 towers 15 hp  31506/    0 window   24s pressure 0.80/0.00
+  w44  money  5803 towers 16 hp  57896/    0 window   49s pressure 0.77/0.00
+  w45  money  6059 towers 32 hp  26344/16954 window   26s pressure 0.71/0.68
+  w46  money  6487 towers 17 hp  41919/    0 window   27s pressure 0.82/0.00
+  w47  money  6871 towers 18 hp  77856/    0 window   49s pressure 0.88/0.00
+  w48B money  7127 towers 32 hp  24681/ 7251 window   24s pressure 1.01/0.13
+Nest Hard  towers [PulseRifle,Cannon,Laser,Cryo,Rocket] upgrade x1.49
+  w1   money   360 towers  4 hp    614/    0 window   15s pressure 0.33/0.00
+  w2   money   387 towers  7 hp      0/  685 window    0s pressure 0.00/0.45
+  w3   money   399 towers  4 hp   1124/    0 window   13s pressure 0.54/0.00
+  w4   money   421 towers  4 hp    130/  289 window   13s pressure 0.15/0.53
+  w5   money   441 towers  8 hp    713/ 1534 window   13s pressure 0.56/0.79
+  w6   money   462 towers  3 hp   2243/    0 window   13s pressure 1.01/0.00
+  w7   money   489 towers  4 hp    180/  400 window   13s pressure 0.28/0.55
+  w8   money   509 towers 10 hp    790/ 2042 window   13s pressure 0.45/0.81
+  w9   money   533 towers  4 hp   3597/    0 window   14s pressure 1.15/0.00
+  w10  money   580 towers  5 hp    210/  467 window   13s pressure 0.33/0.48
+  w11  money   600 towers  4 hp   3091/    0 window   13s pressure 1.11/0.00
+  w12B money   656 towers 13 hp   2200/  469 window   13s pressure 1.17/0.14
+  w13  money   823 towers  4 hp   4928/    0 window   18s pressure 0.90/0.00
+  w14  money   897 towers 11 hp   1099/ 1204 window   15s pressure 0.58/0.72
+  w15  money   953 towers 16 hp   3047/ 2912 window   15s pressure 0.82/0.86
+  w16  money  1013 towers  4 hp   7318/    0 window   20s pressure 0.98/0.00
+  w17  money  1114 towers 14 hp   1428/ 1565 window   15s pressure 0.64/0.74
+  w18  money  1174 towers 19 hp   5125/ 3561 window   20s pressure 0.87/0.88
+  w19  money  1266 towers  4 hp   8731/    0 window   20s pressure 0.93/0.00
+  w20  money  1366 towers 16 hp   6944/  818 window   24s pressure 0.89/0.79
+  w21  money  1482 towers 17 hp   3176/ 2190 window   20s pressure 0.68/0.81
+  w22  money  1569 towers 27 hp   6220/ 5984 window   20s pressure 0.91/0.87
+  w23  money  1676 towers  5 hp  14312/    0 window   22s pressure 1.02/0.00
+  w24B money  1816 towers 29 hp   4822/    0 window   14s pressure 0.78/0.00
+  w25  money  2344 towers 32 hp   9774/ 5034 window   24s pressure 0.71/0.74
+  w26  money  2501 towers 32 hp   9691/ 3680 window   24s pressure 0.80/0.84
+  w27  money  2636 towers  7 hp  17720/    0 window   21s pressure 0.89/0.00
+  w28  money  2866 towers 32 hp  15201/ 9787 window   24s pressure 0.95/0.91
+  w29  money  3044 towers  8 hp  29605/    0 window   21s pressure 1.26/0.00
+  w30B money  3211 towers 32 hp  18808/  694 window   23s pressure 1.34/0.12
+  w31  money  3652 towers 10 hp  28200/    0 window   29s pressure 0.81/0.00
+  w32  money  3935 towers 32 hp  23432/11604 window   23s pressure 0.97/0.97
+  w33  money  4203 towers 12 hp  28292/    0 window   20s pressure 0.87/0.00
+  w34  money  4419 towers 11 hp  42759/    0 window   36s pressure 0.84/0.00
+  w35  money  4742 towers 32 hp  27770/17304 window   22s pressure 0.96/0.99
+  w36B money  5038 towers 16 hp  24108/    0 window   21s pressure 0.85/0.00
+  w37  money  5323 towers 14 hp  49788/    0 window   42s pressure 0.70/0.00
+  w38  money  5709 towers 32 hp  35354/23645 window   21s pressure 1.01/1.01
+  w39  money  6059 towers 16 hp  45338/    0 window   20s pressure 0.97/0.00
+  w40  money  6454 towers 32 hp  39767/ 3290 window   24s pressure 0.88/0.42
+  w41  money  6927 towers 18 hp  79670/    0 window   42s pressure 0.87/0.00
+  w42  money  7301 towers 32 hp  48289/35508 window   21s pressure 1.04/1.02
+  w43  money  7745 towers 20 hp  58730/    0 window   20s pressure 0.98/0.00
+  w44  money  8242 towers 21 hp  96705/    0 window   41s pressure 0.90/0.00
+  w45  money  8613 towers 32 hp  58220/40192 window   22s pressure 1.06/0.64
+  w46  money  9194 towers 25 hp  74661/    0 window   24s pressure 0.95/0.00
+  w47  money  9785 towers 26 hp 130045/    0 window   41s pressure 1.02/0.00
+  w48B money 10147 towers 32 hp  44739/18177 window   21s pressure 1.51/0.24
+Nest Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   360 towers  2 hp   1055/    0 window   15s pressure 0.46/0.00
+  w2   money   392 towers  7 hp      0/ 1052 window    0s pressure 0.00/0.63
+  w3   money   407 towers  2 hp   1613/    0 window   13s pressure 0.58/0.00
+  w4   money   429 towers  3 hp    187/  415 window   12s pressure 0.16/0.72
+  w5   money   449 towers  8 hp    923/ 2385 window   12s pressure 0.59/1.11
+  w6   money   470 towers  3 hp   3218/    0 window   13s pressure 1.13/0.00
+  w7   money   495 towers  4 hp    258/  573 window   12s pressure 0.20/0.80
+  w8   money   515 towers 10 hp    887/ 3057 window   12s pressure 0.47/1.14
+  w9   money   541 towers  2 hp   5160/    0 window   13s pressure 1.32/0.00
+  w10  money   582 towers  5 hp    301/  669 window   12s pressure 0.23/0.72
+  w11  money   602 towers  3 hp   4999/    0 window   10s pressure 1.78/0.00
+  w12B money   642 towers 12 hp   3073/  715 window    0s pressure 1.64/0.22
+  w13  money   757 towers  4 hp   7139/    0 window   16s pressure 1.28/0.00
+  w14  money   816 towers  8 hp   1576/ 1728 window   15s pressure 0.83/1.03
+  w15  money   870 towers 14 hp   1030/ 6209 window   12s pressure 0.53/1.20
+  w16  money   925 towers  4 hp  10586/    0 window   17s pressure 1.62/0.00
+  w17  money   994 towers  9 hp   2049/ 2245 window   15s pressure 0.82/1.09
+  w18  money  1050 towers 19 hp   4003/ 8075 window   15s pressure 1.11/1.23
+  w19  money  1126 towers  5 hp  12630/    0 window   17s pressure 1.48/0.00
+  w20  money  1199 towers 10 hp  10763/ 1174 window   20s pressure 1.52/1.42
+  w21  money  1286 towers 11 hp   4395/ 2974 window   20s pressure 0.97/1.13
+  w22  money  1365 towers 25 hp   7454/ 9775 window   20s pressure 1.21/1.27
+  w23  money  1470 towers  7 hp  21275/    0 window   19s pressure 1.78/0.00
+  w24B money  1559 towers 14 hp   7241/    0 window   11s pressure 1.19/0.00
+  w25  money  2015 towers 32 hp   8832/14824 window   20s pressure 1.03/1.04
+  w26  money  2161 towers 32 hp  10816/ 3883 window   21s pressure 1.09/1.17
+  w27  money  2282 towers  8 hp  28825/    0 window   18s pressure 1.72/0.00
+  w28  money  2439 towers 32 hp  17648/16367 window   21s pressure 1.32/1.30
+  w29  money  2608 towers  7 hp  36719/    0 window   19s pressure 1.70/0.00
+  w30B money  2721 towers 15 hp  24353/  883 window   20s pressure 1.88/0.71
+  w31  money  3042 towers 32 hp  15123/ 5769 window   22s pressure 0.93/0.97
+  w32  money  3258 towers 32 hp  22466/27607 window   21s pressure 1.30/1.36
+  w33  money  3449 towers  9 hp  46009/    0 window   18s pressure 1.70/0.00
+  w34  money  3593 towers 14 hp  68500/    0 window   29s pressure 1.75/0.00
+  w35  money  3800 towers 32 hp  31123/28757 window   20s pressure 1.39/1.35
+  w36B money  4054 towers 11 hp  37777/    0 window   19s pressure 1.58/0.00
+  w37  money  4247 towers 32 hp  21279/11067 window   20s pressure 1.01/1.01
+  w38  money  4513 towers 32 hp  36578/39707 window   20s pressure 1.40/1.42
+  w39  money  4810 towers 12 hp  69797/    0 window   19s pressure 1.81/0.00
+  w40  money  5044 towers 32 hp  58001/ 5395 window   22s pressure 1.54/1.44
+  w41  money  5362 towers 21 hp 127648/    0 window   35s pressure 1.88/0.00
+  w42B money  5584 towers 32 hp  59883/47093 window   21s pressure 2.04/1.96
+  w43  money  5819 towers 32 hp  30693/16876 window   19s pressure 1.01/1.05
+  w44  money  6186 towers 25 hp 156218/    0 window   35s pressure 2.01/0.00
+  w45  money  6395 towers 32 hp  57795/73235 window   19s pressure 1.48/1.46
+  w46  money  6867 towers 17 hp 114570/    0 window   21s pressure 1.91/0.00
+  w47  money  7200 towers 26 hp 214687/    0 window   35s pressure 2.34/0.00
+  w48B money  7382 towers 32 hp  70507/47372 window   19s pressure 2.12/1.10
+Ice Easy  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla] upgrade x1.19
+  w1   money   320 towers  2 hp    288/    0 window   19s pressure 0.16/0.00
+  w2   money   339 towers  2 hp    405/    0 window   19s pressure 0.23/0.00
+  w3   money   360 towers  2 hp    507/    0 window   20s pressure 0.24/0.00
+  w4   money   380 towers  2 hp    397/    0 window   17s pressure 0.21/0.00
+  w5   money   391 towers  6 hp    552/  207 window   19s pressure 0.37/0.28
+  w6   money   408 towers  5 hp     54/  119 window   16s pressure 0.04/0.39
+  w7   money   418 towers  3 hp    817/    0 window   21s pressure 0.34/0.00
+  w8   money   432 towers  7 hp    699/  324 window   21s pressure 0.39/0.34
+  w9   money   455 towers  3 hp   1311/    0 window   22s pressure 0.45/0.00
+  w10  money   495 towers  3 hp   1652/    0 window   21s pressure 0.54/0.00
+  w11  money   533 towers  3 hp   1504/    0 window   27s pressure 0.40/0.00
+  w12  money   590 towers  4 hp   1355/    0 window   21s pressure 0.42/0.00
+  w13  money   661 towers  4 hp   1922/    0 window   28s pressure 0.40/0.00
+  w14  money   724 towers  4 hp   1915/    0 window   21s pressure 0.46/0.00
+  w15  money   782 towers 11 hp   1589/  468 window   24s pressure 0.42/0.40
+  w16  money   842 towers  5 hp   2634/    0 window   22s pressure 0.55/0.00
+  w17B money   939 towers 15 hp   2355/    0 window   24s pressure 0.64/0.00
+  w18  money  1637 towers 16 hp   3211/  708 window   29s pressure 0.35/0.28
+  w19  money  1729 towers  8 hp   4680/    0 window   25s pressure 0.42/0.00
+  w20  money  1849 towers  9 hp   7160/    0 window   29s pressure 0.53/0.00
+  w21  money  1947 towers  9 hp   7112/    0 window   31s pressure 0.47/0.00
+  w22  money  2057 towers  9 hp   6803/    0 window   31s pressure 0.43/0.00
+  w23  money  2213 towers 10 hp   7716/    0 window   30s pressure 0.47/0.00
+  w24  money  2330 towers 11 hp   9571/    0 window   29s pressure 0.56/0.00
+  w25  money  2439 towers 16 hp   7554/ 2036 window   31s pressure 0.46/0.46
+  w26  money  2562 towers 11 hp  12137/    0 window   43s pressure 0.46/0.00
+  w27  money  2740 towers 12 hp   9313/    0 window   28s pressure 0.48/0.00
+  w28  money  2864 towers 16 hp   8934/ 2422 window   28s pressure 0.48/0.44
+  w29  money  3027 towers 12 hp  18734/    0 window   56s pressure 0.47/0.00
+  w30  money  3250 towers 11 hp  13319/    0 window   25s pressure 0.62/0.00
+  w31  money  3436 towers 14 hp  14628/    0 window   27s pressure 0.62/0.00
+  w32  money  3640 towers 16 hp  26225/    0 window   64s pressure 0.50/0.00
+  w33  money  3887 towers 14 hp  15409/    0 window   27s pressure 0.57/0.00
+  w34B money  4130 towers 15 hp  14924/    0 window   25s pressure 0.75/0.00
+Ice Medium  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla] upgrade x1.30
+  w1   money   320 towers  2 hp    441/    0 window   19s pressure 0.23/0.00
+  w2   money   340 towers  2 hp    619/    0 window   19s pressure 0.33/0.00
+  w3   money   362 towers  2 hp    775/    0 window   19s pressure 0.34/0.00
+  w4   money   383 towers  2 hp    622/    0 window   17s pressure 0.30/0.00
+  w5   money   395 towers  7 hp    303/  427 window   17s pressure 0.23/0.36
+  w6   money   410 towers  4 hp     79/  175 window   16s pressure 0.05/0.49
+  w7   money   420 towers  3 hp   1267/    0 window   21s pressure 0.48/0.00
+  w8   money   435 towers  7 hp   1026/  600 window   21s pressure 0.53/0.55
+  w9   money   462 towers  3 hp   2066/    0 window   21s pressure 0.70/0.00
+  w10  money   505 towers  3 hp   2476/    0 window   21s pressure 0.74/0.00
+  w11  money   544 towers  4 hp    108/  239 window   16s pressure 0.06/0.52
+  w12  money   569 towers  4 hp   2142/    0 window   20s pressure 0.64/0.00
+  w13  money   644 towers  3 hp   2875/    0 window   27s pressure 0.59/0.00
+  w14  money   708 towers  4 hp   2870/    0 window   21s pressure 0.68/0.00
+  w15  money   767 towers 15 hp   1336/ 1563 window   21s pressure 0.45/0.48
+  w16  money   827 towers  5 hp   4164/    0 window   19s pressure 0.89/0.00
+  w17B money   930 towers 15 hp   3476/    0 window   24s pressure 0.86/0.00
+  w18  money  1629 towers 16 hp   3540/ 2794 window   24s pressure 0.46/0.48
+  w19  money  1711 towers  8 hp   7406/    0 window   22s pressure 0.69/0.00
+  w20  money  1839 towers  9 hp  10625/    0 window   29s pressure 0.73/0.00
+  w21  money  1938 towers  9 hp  10542/    0 window   31s pressure 0.64/0.00
+  w22  money  2049 towers  9 hp  10633/    0 window   26s pressure 0.71/0.00
+  w23  money  2214 towers 10 hp  11430/    0 window   29s pressure 0.65/0.00
+  w24  money  2332 towers 11 hp  14172/    0 window   29s pressure 0.75/0.00
+  w25  money  2442 towers 16 hp  11208/ 5287 window   31s pressure 0.66/0.65
+  w26  money  2592 towers 12 hp  18697/    0 window   37s pressure 0.74/0.00
+  w27  money  2779 towers 11 hp  13851/    0 window   26s pressure 0.68/0.00
+  w28  money  2905 towers 16 hp  13153/ 8208 window   31s pressure 0.68/0.60
+  w29  money  3077 towers 13 hp  28591/    0 window   47s pressure 0.76/0.00
+  w30  money  3309 towers 11 hp  19659/    0 window   24s pressure 0.85/0.00
+  w31  money  3496 towers 12 hp  21658/    0 window   24s pressure 0.91/0.00
+  w32  money  3702 towers 16 hp  39878/    0 window   54s pressure 0.78/0.00
+  w33  money  3958 towers 13 hp  22788/    0 window   27s pressure 0.75/0.00
+  w34B money  4203 towers 16 hp  22027/  583 window   25s pressure 1.01/0.59
+Ice Hard  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla] upgrade x1.56
+  w1   money   320 towers  2 hp    683/    0 window   19s pressure 0.28/0.00
+  w2   money   347 towers  2 hp    940/    0 window   19s pressure 0.39/0.00
+  w3   money   376 towers  2 hp   1188/    0 window   19s pressure 0.42/0.00
+  w4   money   404 towers  2 hp   1252/    0 window   17s pressure 0.42/0.00
+  w5   money   424 towers  8 hp      0/ 1410 window    0s pressure 0.00/0.80
+  w6   money   439 towers  4 hp    182/  403 window   17s pressure 0.12/0.67
+  w7   money   459 towers  5 hp   1129/  475 window   22s pressure 0.52/0.82
+  w8   money   499 towers  9 hp    663/ 1712 window   17s pressure 0.34/0.83
+  w9   money   523 towers  2 hp   3439/    0 window   15s pressure 1.01/0.00
+  w10  money   584 towers  3 hp   5483/    0 window   22s pressure 1.14/0.00
+  w11  money   649 towers  5 hp    247/  550 window   17s pressure 0.19/0.50
+  w12  money   684 towers  3 hp   3691/    0 window   15s pressure 0.87/0.00
+  w13  money   786 towers  9 hp   4621/  670 window   26s pressure 0.88/0.77
+  w14  money   892 towers  4 hp   6356/    0 window   22s pressure 0.86/0.00
+  w15  money   986 towers 16 hp   3916/ 3833 window   22s pressure 0.77/0.90
+  w16  money  1069 towers 12 hp   2077/ 1749 window   22s pressure 0.74/0.82
+  w17B money  1144 towers 16 hp   7074/  341 window   24s pressure 1.29/0.22
+  w18  money  1722 towers 16 hp   6146/ 8023 window   22s pressure 0.74/0.74
+  w19  money  1817 towers  7 hp  12354/    0 window   18s pressure 0.95/0.00
+  w20  money  1993 towers  9 hp  22773/    0 window   24s pressure 1.26/0.00
+  w21  money  2128 towers 16 hp   6672/ 3906 window   24s pressure 0.81/0.86
+  w22  money  2243 towers 10 hp  17430/    0 window   23s pressure 0.92/0.00
+  w23  money  2469 towers 16 hp  16424/ 1957 window   23s pressure 0.98/0.91
+  w24  money  2689 towers  9 hp  27061/    0 window   23s pressure 1.14/0.00
+  w25  money  2845 towers 16 hp  22454/ 9839 window   27s pressure 0.97/0.99
+  w26B money  3082 towers 16 hp  23794/    0 window   21s pressure 1.41/0.00
+  w27  money  3678 towers 16 hp  21213/ 2408 window   22s pressure 0.81/0.80
+  w28  money  3936 towers 16 hp  31331/15363 window   25s pressure 1.02/0.91
+  w29  money  4214 towers 16 hp  47591/    0 window   40s pressure 0.84/0.00
+  w30  money  4549 towers 11 hp  37063/    0 window   19s pressure 1.05/0.00
+  w31  money  4842 towers 16 hp  36621/ 3306 window   23s pressure 1.05/0.65
+  w32  money  5197 towers 16 hp  66609/    0 window   46s pressure 0.85/0.00
+  w33  money  5568 towers 16 hp  40543/ 3876 window   25s pressure 1.07/0.58
+  w34B money  5953 towers 16 hp  36328/ 2012 window   21s pressure 1.05/0.30
+Ice Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   320 towers  2 hp   1174/    0 window   20s pressure 0.44/0.00
+  w2   money   352 towers  2 hp   1639/    0 window   19s pressure 0.62/0.00
+  w3   money   387 towers  2 hp   2082/    0 window   20s pressure 0.67/0.00
+  w4   money   421 towers  2 hp   1861/    0 window   17s pressure 0.57/0.00
+  w5   money   442 towers  8 hp      0/ 2149 window    0s pressure 0.00/1.12
+  w6   money   458 towers  4 hp    260/  579 window   16s pressure 0.16/0.91
+  w7   money   478 towers  6 hp   2038/  834 window   21s pressure 0.78/1.15
+  w8   money   513 towers 10 hp    792/ 3071 window   16s pressure 0.34/1.16
+  w9 B money   541 towers  9 hp   4179/    0 window   15s pressure 1.65/0.00
+  w10  money   635 towers  3 hp   7942/    0 window   20s pressure 1.48/0.00
+  w11  money   685 towers  6 hp    355/  789 window   16s pressure 0.22/0.65
+  w12  money   720 towers  4 hp   5664/    0 window   12s pressure 1.36/0.00
+  w13  money   805 towers  8 hp   6064/  800 window   21s pressure 1.23/1.10
+  w14  money   902 towers  4 hp   9207/    0 window   20s pressure 1.23/0.00
+  w15  money   983 towers 16 hp   4363/ 7874 window   19s pressure 1.09/1.26
+  w16  money  1058 towers 10 hp   2991/ 2448 window   21s pressure 0.83/1.14
+  w17B money  1128 towers 15 hp  10269/  493 window   24s pressure 1.80/0.32
+  w18  money  1547 towers 16 hp   6786/12375 window   21s pressure 0.88/1.04
+  w19  money  1660 towers  7 hp  20081/    0 window   15s pressure 1.82/0.00
+  w20  money  1777 towers  8 hp  33201/    0 window   21s pressure 2.07/0.00
+  w21  money  1869 towers 16 hp   8730/ 5043 window   24s pressure 1.17/1.20
+  w22  money  1969 towers  8 hp  28505/    0 window   18s pressure 1.86/0.00
+  w23  money  2115 towers 16 hp  20380/ 2264 window   21s pressure 1.37/1.34
+  w24  money  2291 towers  8 hp  39363/    0 window   20s pressure 1.96/0.00
+  w25  money  2386 towers 16 hp  21171/18310 window   22s pressure 1.39/1.24
+  w26B money  2555 towers 16 hp  29316/ 4225 window   24s pressure 1.97/1.49
+  w27  money  2935 towers 16 hp  22858/ 2728 window   20s pressure 1.13/1.03
+  w28  money  3153 towers 16 hp  33961/27507 window   23s pressure 1.41/1.43
+  w29  money  3387 towers 14 hp  75325/    0 window   33s pressure 1.75/0.00
+  w30  money  3598 towers  8 hp  57972/    0 window   17s pressure 2.04/0.00
+  w31  money  3761 towers 16 hp  25786/13103 window   22s pressure 1.32/1.19
+  w32  money  3965 towers 16 hp 107601/    0 window   38s pressure 1.88/0.00
+  w33  money  4187 towers 16 hp  51777/ 4729 window   23s pressure 1.50/1.43
+  w34B money  4515 towers 16 hp  55358/ 5773 window   18s pressure 1.92/0.74
+Swamp Easy  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.21
+  w1   money   340 towers  2 hp    344/    0 window   20s pressure 0.18/0.00
+  w2   money   358 towers  5 hp    387/   51 window   21s pressure 0.21/0.12
+  w3   money   377 towers  2 hp    552/    0 window   21s pressure 0.23/0.00
+  w4   money   393 towers  2 hp    752/    0 window   19s pressure 0.34/0.00
+  w5   money   416 towers  4 hp      0/  118 window    0s pressure 0.00/0.37
+  w6   money   423 towers  6 hp    828/  149 window   24s pressure 0.38/0.22
+  w7   money   451 towers  3 hp   1240/    0 window   24s pressure 0.38/0.00
+  w8   money   473 towers  3 hp   1176/    0 window   21s pressure 0.41/0.00
+  w9   money   505 towers  7 hp    996/  268 window   24s pressure 0.36/0.39
+  w10  money   536 towers  2 hp   1518/    0 window   24s pressure 0.39/0.00
+  w11  money   558 towers  2 hp   1485/    0 window   22s pressure 0.42/0.00
+  w12B money   604 towers 12 hp   1447/   76 window   16s pressure 0.56/0.04
+  w13  money   912 towers  4 hp   2118/    0 window   24s pressure 0.33/0.00
+  w14  money   953 towers  4 hp   2894/    0 window   24s pressure 0.44/0.00
+  w15  money  1031 towers  4 hp   3515/    0 window   24s pressure 0.48/0.00
+  w16  money  1096 towers 16 hp   1850/  998 window   24s pressure 0.37/0.42
+  w17  money  1156 towers  5 hp   3889/    0 window   29s pressure 0.42/0.00
+  w18  money  1226 towers  6 hp   3811/    0 window   23s pressure 0.47/0.00
+  w19  money  1329 towers 16 hp   3191/  854 window   29s pressure 0.43/0.40
+  w20  money  1419 towers  6 hp   5518/    0 window   31s pressure 0.44/0.00
+  w21  money  1532 towers  6 hp   5049/    0 window   24s pressure 0.48/0.00
+  w22  money  1655 towers 16 hp   4652/ 1080 window   31s pressure 0.45/0.42
+  w23  money  1776 towers  8 hp   6943/    0 window   31s pressure 0.45/0.00
+  w24B money  1896 towers 16 hp   4598/ 2753 window   23s pressure 0.61/0.64
+  w25  money  2182 towers  9 hp   8095/    0 window   29s pressure 0.45/0.00
+  w26  money  2298 towers 16 hp   6588/ 1767 window   31s pressure 0.45/0.46
+  w27  money  2430 towers 10 hp   8985/    0 window   28s pressure 0.47/0.00
+  w28  money  2567 towers 10 hp  10789/    0 window   34s pressure 0.46/0.00
+  w29  money  2750 towers 16 hp   8183/ 2433 window   29s pressure 0.47/0.42
+  w30  money  2920 towers 12 hp  10421/    0 window   26s pressure 0.48/0.00
+  w31  money  3110 towers 13 hp  16375/    0 window   43s pressure 0.47/0.00
+  w32  money  3341 towers 16 hp  10353/ 2943 window   27s pressure 0.49/0.42
+  w33  money  3554 towers 11 hp  12803/    0 window   25s pressure 0.49/0.00
+  w34  money  3793 towers 16 hp  26071/    0 window   56s pressure 0.49/0.00
+  w35  money  4088 towers 13 hp  19483/    0 window   29s pressure 0.58/0.00
+  w36B money  4366 towers 16 hp  13911/ 2086 window   29s pressure 0.71/0.21
+Swamp Medium  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.32
+  w1   money   340 towers  2 hp    529/    0 window   19s pressure 0.25/0.00
+  w2   money   359 towers  6 hp    388/  165 window   19s pressure 0.25/0.20
+  w3   money   376 towers  2 hp    849/    0 window   21s pressure 0.32/0.00
+  w4   money   393 towers  2 hp   1184/    0 window   19s pressure 0.50/0.00
+  w5   money   418 towers  4 hp      0/  173 window    0s pressure 0.00/0.48
+  w6   money   425 towers  7 hp    683/  435 window   19s pressure 0.39/0.38
+  w7   money   445 towers  7 hp   1166/  262 window   24s pressure 0.45/0.61
+  w8   money   475 towers  3 hp   1864/    0 window   20s pressure 0.61/0.00
+  w9   money   510 towers  9 hp   1283/  808 window   21s pressure 0.56/0.51
+  w10  money   542 towers  4 hp    235/  235 window   16s pressure 0.12/0.51
+  w11  money   554 towers  2 hp   2366/    0 window   21s pressure 0.63/0.00
+  w12B money   604 towers 12 hp   2280/  180 window   16s pressure 0.81/0.08
+  w13  money   915 towers 15 hp   1942/  436 window   24s pressure 0.43/0.47
+  w14  money   964 towers  5 hp   4496/    0 window   23s pressure 0.65/0.00
+  w15  money  1046 towers  8 hp   1630/  733 window   24s pressure 0.47/0.53
+  w16  money  1102 towers 16 hp   2524/ 1759 window   24s pressure 0.51/0.49
+  w17  money  1169 towers 15 hp   4549/  437 window   29s pressure 0.59/0.61
+  w18  money  1247 towers  6 hp   5932/    0 window   21s pressure 0.74/0.00
+  w19  money  1356 towers 16 hp   4171/ 2558 window   26s pressure 0.62/0.56
+  w20  money  1442 towers 13 hp   7950/  420 window   31s pressure 0.68/0.65
+  w21  money  1563 towers  6 hp   8213/    0 window   21s pressure 0.79/0.00
+  w22  money  1698 towers 16 hp   5871/ 3543 window   29s pressure 0.62/0.64
+  w23  money  1816 towers 16 hp   8080/  800 window   31s pressure 0.68/0.64
+  w24B money  1951 towers 16 hp   7143/ 4049 window   20s pressure 0.84/0.91
+  w25  money  2243 towers 10 hp  11982/    0 window   29s pressure 0.60/0.00
+  w26  money  2360 towers 16 hp   9752/ 4660 window   31s pressure 0.64/0.66
+  w27  money  2521 towers 16 hp  11229/ 1197 window   27s pressure 0.68/0.70
+  w28  money  2681 towers 11 hp  17232/    0 window   29s pressure 0.74/0.00
+  w29  money  2881 towers 16 hp  12680/ 7789 window   31s pressure 0.68/0.63
+  w30  money  3065 towers 16 hp  18156/ 1876 window   25s pressure 0.89/0.93
+  w31  money  3285 towers 14 hp  26140/    0 window   36s pressure 0.76/0.00
+  w32  money  3537 towers 16 hp  15779/10684 window   29s pressure 0.68/0.70
+  w33  money  3776 towers 16 hp  23023/ 2354 window   25s pressure 0.91/0.86
+  w34  money  4052 towers 16 hp  41416/    0 window   47s pressure 0.78/0.00
+  w35  money  4372 towers 11 hp  28792/    0 window   25s pressure 0.82/0.00
+  w36B money  4652 towers 16 hp  18896/ 6471 window   31s pressure 1.01/0.32
+Swamp Hard  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.62
+  w1   money   340 towers  2 hp    874/    0 window   19s pressure 0.35/0.00
+  w2   money   367 towers  6 hp    950/  475 window   19s pressure 0.45/0.40
+  w3   money   397 towers  2 hp   1778/    0 window   22s pressure 0.54/0.00
+  w4   money   427 towers  3 hp   1801/    0 window   19s pressure 0.58/0.00
+  w5   money   460 towers  5 hp      0/  397 window    0s pressure 0.00/0.42
+  w6   money   474 towers  9 hp   1427/ 1935 window   17s pressure 0.66/0.81
+  w7   money   505 towers  6 hp   2517/  603 window   24s pressure 0.90/0.85
+  w8   money   561 towers  4 hp   3035/    0 window   20s pressure 0.70/0.00
+  w9   money   610 towers 12 hp   1966/ 2666 window   17s pressure 0.71/0.84
+  w10  money   641 towers  5 hp    540/  540 window   17s pressure 0.40/0.50
+  w11  money   665 towers  4 hp   3673/    0 window   20s pressure 0.71/0.00
+  w12B money   730 towers 14 hp   5266/ 1039 window    0s pressure 1.21/0.28
+  w13  money   996 towers 14 hp   4191/ 1004 window   24s pressure 0.71/0.75
+  w14  money  1071 towers  6 hp   6954/    0 window   18s pressure 0.94/0.00
+  w15  money  1174 towers 15 hp   3518/ 1685 window   24s pressure 0.68/0.79
+  w16  money  1263 towers 16 hp   6486/ 4214 window   24s pressure 0.80/0.90
+  w17  money  1367 towers 14 hp   9408/ 1005 window   28s pressure 0.88/0.81
+  w18  money  1492 towers  7 hp   9053/    0 window   17s pressure 0.92/0.00
+  w19  money  1630 towers 16 hp   9362/ 7386 window   24s pressure 0.93/0.89
+  w20  money  1742 towers 16 hp   4850/ 2904 window   24s pressure 0.70/0.84
+  w21  money  1839 towers  9 hp  12380/    0 window   18s pressure 0.99/0.00
+  w22  money  2010 towers 16 hp  12961/ 9029 window   27s pressure 0.91/0.95
+  w23  money  2165 towers 16 hp  16508/ 1840 window   25s pressure 1.04/0.99
+  w24B money  2382 towers 16 hp  10742/ 4656 window   17s pressure 0.88/0.92
+  w25  money  2702 towers 16 hp  10172/ 4663 window   30s pressure 0.67/0.71
+  w26  money  2855 towers 16 hp  23371/11090 window   29s pressure 0.99/0.99
+  w27  money  3087 towers 16 hp  21446/ 2294 window   23s pressure 0.89/0.92
+  w28  money  3352 towers 15 hp  25659/    0 window   25s pressure 0.84/0.00
+  w29  money  3611 towers 16 hp  30077/16480 window   27s pressure 1.02/0.95
+  w30B money  3898 towers 16 hp  38297/ 2943 window   24s pressure 1.44/0.59
+  w31  money  4242 towers 16 hp  38495/    0 window   31s pressure 0.86/0.00
+  w32  money  4565 towers 16 hp  35692/25683 window   26s pressure 0.96/1.04
+  w33  money  4896 towers 16 hp  44955/ 3789 window   22s pressure 1.13/1.17
+  w34  money  5286 towers 16 hp  61136/    0 window   40s pressure 0.85/0.00
+  w35  money  5697 towers 14 hp  52651/    0 window   21s pressure 1.09/0.00
+  w36B money  6101 towers 16 hp  38354/16482 window   26s pressure 1.51/0.60
+Swamp Psycho  towers [PulseRifle,Cannon,Laser,Cryo,Rocket,Tesla,Railgun] upgrade x1.69
+  w1   money   340 towers  2 hp   1328/    0 window   19s pressure 0.50/0.00
+  w2   money   369 towers  7 hp   1100/ 1065 window   17s pressure 0.63/0.64
+  w3   money   394 towers  2 hp   2614/    0 window   22s pressure 0.75/0.00
+  w4   money   425 towers  2 hp   3148/    0 window   19s pressure 0.89/0.00
+  w5   money   465 towers  5 hp      0/  570 window    0s pressure 0.00/0.58
+  w6   money   479 towers  9 hp      0/ 2671 window    0s pressure 0.00/1.13
+  w7   money   500 towers  6 hp   3671/  865 window   24s pressure 1.27/1.19
+  w8   money   545 towers  2 hp   5068/    0 window   17s pressure 1.27/0.00
+  w9   money   590 towers 11 hp   1934/ 3373 window   17s pressure 0.76/1.17
+  w10  money   621 towers  5 hp    775/  775 window   17s pressure 0.54/0.67
+  w11  money   645 towers  3 hp   6140/    0 window   15s pressure 1.50/0.00
+  w12B money   697 towers 13 hp   6886/ 1552 window    0s pressure 1.69/0.46
+  w13  money   895 towers 12 hp   6112/ 1440 window   24s pressure 1.12/1.26
+  w14  money   959 towers  5 hp  11782/    0 window   13s pressure 1.99/0.00
+  w15  money  1028 towers 14 hp   5131/ 2418 window   24s pressure 1.16/1.28
+  w16  money  1103 towers 16 hp   7840/ 8381 window   22s pressure 1.26/1.21
+  w17  money  1197 towers 13 hp  14156/ 1442 window   23s pressure 1.73/1.55
+  w18B money  1280 towers 16 hp   8968/ 5707 window   14s pressure 1.71/1.80
+  w19  money  1447 towers 16 hp   8281/ 9073 window   24s pressure 1.01/1.04
+  w20  money  1577 towers 15 hp   6466/ 3809 window   24s pressure 1.05/1.18
+  w21  money  1663 towers  7 hp  21497/    0 window   14s pressure 2.08/0.00
+  w22  money  1770 towers 16 hp  12136/18285 window   24s pressure 1.22/1.34
+  w23  money  1895 towers 15 hp  25039/ 2640 window   22s pressure 1.79/1.86
+  w24B money  2031 towers 16 hp  18619/ 6680 window   13s pressure 2.16/1.95
+  w25  money  2201 towers 16 hp   9968/ 5429 window   24s pressure 0.91/0.99
+  w26  money  2373 towers 16 hp  21139/22305 window   24s pressure 1.39/1.34
+  w27  money  2546 towers 16 hp  33107/ 3291 window   20s pressure 1.77/1.72
+  w28  money  2705 towers  9 hp  45268/    0 window   20s pressure 1.99/0.00
+  w29  money  2864 towers 16 hp  28457/26913 window   24s pressure 1.42/1.30
+  w30B money  3105 towers 16 hp  40511/ 8366 window   24s pressure 2.01/1.96
+  w31  money  3332 towers 13 hp  68154/    0 window   26s pressure 2.02/0.00
+  w32  money  3528 towers 16 hp  36854/37534 window   23s pressure 1.46/1.45
+  w33  money  3824 towers 16 hp  66035/ 6213 window   21s pressure 2.20/2.17
+  w34  money  4039 towers 16 hp 109014/    0 window   33s pressure 2.17/0.00
+  w35  money  4274 towers 16 hp  28712/15837 window   21s pressure 1.35/1.29
+  w36B money  4545 towers 16 hp  52357/35800 window   24s pressure 2.12/1.15
+
+Checks: all inside their bands

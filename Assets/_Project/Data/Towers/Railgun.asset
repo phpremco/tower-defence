@@ -21,13 +21,13 @@ MonoBehaviour:
     FireInterval: 2.2
     HealthBonus: 0
     Model: {fileID: 0}
-  - Cost: 260
+  - Cost: 150
     Damage: 120
     Range: 6.5
     FireInterval: 2
     HealthBonus: 0
     Model: {fileID: 0}
-  - Cost: 360
+  - Cost: 255
     Damage: 180
     Range: 7
     FireInterval: 1.8
