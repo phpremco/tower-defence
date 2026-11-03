@@ -250,3 +250,25 @@ Choices made while building, at curator level, for Remco or the curator to overr
 15. **Dialogues.** As in section 6; L6 "Fast contacts" fires on the first Roller or Prowler (decision 9). Line ids
     follow the S1 convention `Dlg_X.NN`.
 16. **Test fixture.** `RegionUnlockTests` and `CampaignTests` spread their fake sites (the ~1,770 spacing warnings).
+
+---
+
+## Curator decisions after balance (2026-11-04)
+
+1. **The gun-only struggle check applies on Medium and up, not Easy** (narrows decision 8). Easy stays forgiving and has
+   no struggle requirement. "Struggles" means the gun-only build takes more base damage, or more flyers reach the base,
+   than the same bot with a Flak; it does not have to lose. The Flak bot must win. Test:
+   `BalanceProbeTests.Medium_GunOnlyBot_StrugglesInThePackedAirRaids` (Shard Ridge C1_03 and Fault Line C1_04).
+2. **Builder outcome.** A new wave-script field `WaveScriptSpec.AirRaidScale` (per difficulty, default 1) makes an air
+   raid bigger: the flyer budget and the solver's target for that raid grow together, so there are more flyers of about
+   the same toughness; a difficulty whose scale differs from Medium's has its raids solved on its own. Shard Ridge uses
+   `{ 1, 1.6 }` (Easy keeps its raid size, now solved on its own Easy target; Medium and up 1.6x). Fault Line keeps its raids: its road joins the trunk late,
+   so every gun stands near the base where the flight routes meet, and a gun-only bot downs every flyer with the base
+   untouched at 1x, 1.6x and 1.8x the raid. The test asserts the struggle on Shard Ridge only and the Flak bot's win on
+   both. For the curator: making Fault Line's air matter needs a layout or flight-route change (flyers that reach the
+   base away from the trunk), not bigger raids.
+3. **Open (balance):** the Flak-building probe bot loses Fault Line on Medium in 3 of 4 runs (wave 8 to 10, 2 to 5
+   towers, overrun by Skitters on the ground), also with the raids unchanged; it had never been run there before (the
+   old Easy check stopped at Shard Ridge). The gun-only bot wins the same level untouched with cheap Gun Turrets, so
+   the bot's early Flak-plus-Laser opening is the weak point, not the air raids. Until that is settled the Medium air
+   check fails on its Fault Line "Flak bot must hold" assert.

@@ -20,7 +20,7 @@ namespace Game.Editor
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
         // (curator decision after balance, 2026-11-04). Level 4 keeps its raids: its road joins late, the guns stand where
-        // the flight routes meet, and bigger raids there broke the Flak player on the ground before a gun-only one leaked.
+        // the flight routes meet, and a gun-only bot downed every flyer even at 1.6 and 1.8 times the raid.
         private static readonly float[] BigRaidsFromMedium = { 1f, 1.6f };
 
         /// <summary>Gun (PulseRifle), Cannon, Laser, Flak (Rocket), Tesla and Railgun; the Acid Sprayer joins in S5.</summary>

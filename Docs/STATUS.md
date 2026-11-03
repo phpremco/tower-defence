@@ -1161,3 +1161,49 @@ and the fixes (details and numbers in BALANCE.md, "Balance after S4").
   flyer shot down (11/11, 0 base hits), as does the Flak bot. Gun turrets aim at the air too, so a gun-only player has
   the whole ground defence against the raids; making them struggle needs bigger packed raids in C1_03/04 (curator
   decision 8 is a design call, not tuned here). Fault Line was not reached by that test.
+
+## Fixes after S4 review (2026-11-04)
+Review findings 3 to 8 (1 and 2 were fixed by the balance pass) and the curator decision on the air-raid check.
+- **Review fixes:**
+  3. Gate Repair no longer takes 30 money and the cooldown on a wreck or an unhurt gate: `IGuardable.CanRestore`
+     (`Tower`: not wrecked and below max; `BaseStructure`: standing and below max) is part of
+     `HeroAbilityEffects.CanApply`, so `Commander.CanUse` is false and both HUD buttons show not ready. The hero panel
+     now also refreshes every 0.1 s (unscaled) while open, so the button follows the gate's health.
+  4. The hero post buttons (quick bar "next post", panel "next post" and "move hero here") raise
+     `LevelContext.HeroPostRequested(int)`; `HeroController.TrySend` gates it with `CanAct` (outcome running, no pause
+     or dialogue hold), like the H key and the abilities. The camera follows the hero for every accepted order.
+  5. `MusicPlayer.AddLayer`: `layer.Pitch = set.Pitch * pitch`; the rift pool no longer passes its set's pitch again
+     (same 0.8 as before, now from the set only).
+  6. `EnemySpawner.NestOrigin`: creatures from a stone nest (rift terrain) come out as `EnemyOrigin.Rift` (the rift
+     look and sound); every other nest stays `Nest`.
+  7. `SfxPlayer` keeps one `SoundFamily` per ability (`_abilitySounds`), so an ability recording rotates its variants
+     and a use allocates nothing.
+  8. `HeroAbilityState.Tick` reports a change only when the shown whole seconds change (`SecondsLeft`), so
+     `Commander.Changed` fires once a second while cooling instead of every frame; the label uses `SecondsLeft`
+     (`HeroPanelStyle.Cooldown` removed).
+- **Air raids (curator decision, S4 spec "Curator decisions after balance"):** the gun-only struggle check is Medium and
+  up; Easy has no struggle requirement. New wave-script field `WaveScriptSpec.AirRaidScale` (per difficulty): the
+  raid's flyer budget and its solver target grow together; a difficulty whose scale differs from Medium's is solved on
+  its own. Shard Ridge `{ 1, 1.6 }`: Medium raids w12/w15 air health 305/580 -> 631/1096, air pressure 0.60/0.64 ->
+  0.96/0.93 (band 1.16); 12 -> 18 flyers over the level. Fault Line keeps its raids (see below). All bands hold
+  (Unity `BalanceLedgerTests` and BalanceLab `report`: "all inside their bands").
+- **Probe (Medium):** Shard Ridge gun-only lost at wave 14 to 16 in all four runs (4 to 16 of 17/18 flyers down, base
+  800 lost), the Flak bot won every run (18/18 down, base 0 to 126 damage). Fault Line gun-only won untouched every
+  run (36 to 46 flyers, all down; its road joins the trunk late, so the guns stand where the flight routes meet) at
+  1x, 1.6x and 1.8x the raid. The Flak bot lost Fault Line in 3 of 4 runs (waves 8 to 10, 2 to 5 towers, Skitters
+  on the ground), also with the raids unchanged: a probe-bot opening issue (Flak plus Laser first), not the air.
+  The test `Medium_GunOnlyBot_StrugglesInThePackedAirRaids` asserts the struggle on Shard Ridge and the Flak bot's
+  win on both, so it currently fails on Fault Line. A bot change that saved for the Flak only one wave ahead made it
+  worse (it also lost Crysium Vein) and was reverted.
+- **Checks:** `WorldContentTests.EveryLevel_GrowsEnemyHealthWaveByWave` kept (the toughest non-boss wave of the last
+  third must beat the first wave and exceed 1); the check moved into `GrowthProblem`, and the new
+  `GrowthCheck_CatchesFlatAndShrinkingHealth` proves it fails on flat, shrinking and never-above-one waves.
+- **Tests:** EditMode 283/283 (new: `HeroAbilityTests` GateRepair on an unhurt or wrecked gate, BaseStructure
+  restore, post order gate, cooldown change once a second; `ElementCoverageTests.StoneNest_SendsItsCreaturesOutOfTheRift`;
+  the growth check test). PlayMode: `BalanceProbeTests` smoke 1/1 (Shard Ridge won, base 686/800; Crysium Vein won,
+  base 800/800), `Medium_GunOnlyBot_StrugglesInThePackedAirRaids` FAILS on the Fault Line Flak-bot assert (above);
+  `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2, `StoryGuardTests` 3/3, `StorySmokeTests` 2/2. Console 0
+  errors; warnings only the known ones (generator machinegun.mesh, a test fixture's "Grid size must be positive",
+  the probe's graphics ring buffer at 20x). Save restored to its MD5.
+- **Note:** a checkpoint commit (e49ab18, not by this pass) captured these changes mid-way; the working tree holds the
+  final state.

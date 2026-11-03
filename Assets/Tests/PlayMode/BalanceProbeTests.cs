@@ -50,8 +50,7 @@ namespace Game.Tests
 
         // Where the gun-only build must struggle. Fault Line is checked for the Flak bot's win only: its road joins the
         // trunk late, so every gun stands near the base where the flight routes meet, and a gun-only defence downs every
-        // flyer; raids 1.6 and 1.8 times as big made the Flak bot lose on the ground first (2026-11-04), so they stay as
-        // they were (LevelSpecs.Crystal).
+        // flyer, at the raids' own size and at 1.6 or 1.8 times it (2026-11-04), so its raids stay as they were.
         private static readonly int[] StruggleLevels = { 2 };
 
         // Every run appends its trace, so one test's file holds all of its runs.
