@@ -17,7 +17,7 @@ MonoBehaviour:
   _groups:
   - Enemy: {fileID: 11400000, guid: a48a097c41aa3d94ba4a612780f10aa4, type: 2}
     Count: 1
-    PathIndex: 3
+    PathIndex: 0
     Source: 0
     Interval: 1.1
     Delay: 0
@@ -50,4 +50,4 @@ MonoBehaviour:
     Interval: 1
     Delay: 14
     Stagger: 0
-  _healthMultiplier: 1.234
+  _healthMultiplier: 0.974

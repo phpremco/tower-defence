@@ -17,46 +17,39 @@ MonoBehaviour:
   _groups:
   - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 6
-    PathIndex: 3
+    PathIndex: 0
     Source: 0
     Interval: 0.2
     Delay: 0
     Stagger: 0
   - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 7
-    PathIndex: 0
+    PathIndex: 3
     Source: 0
     Interval: 0.2
     Delay: 0
     Stagger: 1.44
   - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 6
-    PathIndex: 3
+    PathIndex: 0
     Source: 0
     Interval: 0.2
     Delay: 0
     Stagger: 3.1200001
   - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
     Count: 8
-    PathIndex: 0
+    PathIndex: 3
     Source: 0
     Interval: 0.2
     Delay: 0
     Stagger: 4.5600004
   - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 1
-    PathIndex: 0
-    Source: 0
-    Interval: 0.36
-    Delay: 2.5
-    Stagger: 0
-  - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 2
+    Count: 3
     PathIndex: 3
     Source: 0
     Interval: 0.36
     Delay: 2.5
-    Stagger: 0.72
+    Stagger: 0
   - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
     Count: 1
     PathIndex: 0
@@ -65,24 +58,17 @@ MonoBehaviour:
     Delay: 2.5
     Stagger: 2.16
   - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 3
+    Count: 2
     PathIndex: 3
     Source: 0
     Interval: 0.36
     Delay: 2.5
     Stagger: 2.88
   - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 1
+    Count: 3
     PathIndex: 0
     Source: 0
     Interval: 0.36
     Delay: 2.5
-    Stagger: 5.04
-  - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-    Count: 1
-    PathIndex: 3
-    Source: 0
-    Interval: 0.36
-    Delay: 2.5
-    Stagger: 5.76
-  _healthMultiplier: 1.195
+    Stagger: 4.32
+  _healthMultiplier: 2.794

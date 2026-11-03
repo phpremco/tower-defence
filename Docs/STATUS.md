@@ -1,6 +1,6 @@
 ﻿# STATUS.md
 
-Working notes for continuing the project (updated 2026-10-14). Read CLAUDE.md and GAME_DESIGN.md first.
+Working notes for continuing the project (updated 2026-11-02). Read CLAUDE.md and GAME_DESIGN.md first.
 
 ## Where we are
 Milestones 1 to 3 are done and playable (menu, planet map with difficulties and completion marks, level 1, result screen with stars,
@@ -836,3 +836,32 @@ wrecked, there is no money, and scrapping takes two clicks.
   pointer reading exactly (0, 0) means no mouse and never edge-pans (it dragged the view into a corner after the
   recon). Tests: `Loadout_IsSavedAndOfferedAgain`, `EveryStreetWeapon_ExplainsItself`; 116 EditMode tests pass.
   Open: the loadout offers all six weapons; gating them behind level rewards (UnlockTable) is still to come.
+
+## Balance overhaul: model, solver, economy (2026-11-02, cloud session without Unity)
+Remco asked for balancing "from A to Z" as the base for a level generator. Done in a cloud container without the
+Editor: gameplay code was compile-checked against Unity 2021.3 reference assemblies (0 errors, 0 warnings), the
+generator and the changed tests against UnityEditor stubs, the pure model ran and was tested on .NET 8. Full design in
+`Docs/BALANCE.md`.
+- **New pure assembly `Game.Balance`** (`Scripts/Balance`, no engine references): `Threat` (threat and kill money),
+  `Ledger`/`WaveLoad` (pressure per wave against the player's real towers), `LevelShape` (fronts, trunk, gates, late
+  joiners from the map), `Progression` (owned towers and bought upgrades per level and difficulty), `WaveComposer`
+  (the old composition, pure, FNV-seeded), `WaveSolver` (health multiplier per wave to hit the target curve),
+  `BalanceChecks`, `CampaignModel`. `Levels/BalanceLedger.cs` is now the adapter from assets to the model.
+- **Generator**: wave scripts in `Editor/WaveScripts.cs`, hand-set numbers in `Editor/BalanceSheet.cs` (both pure, also
+  read by the tool); waves are written in one pass after the whole campaign exists (`GenerateCampaignWaves`). Kill
+  rewards come from threat; research and power per level from the sheet; Laser, Tesla and Railgun repriced.
+- **Runtime**: `SpawnSource.Entrance` (7) sends a boss through the level's own entrance per spawn group; any other
+  boss uses its gate and path. `LevelDefinition.EnemyHealthScale` no longer adds `ExpectedUpgradeBonus` (the solver
+  sizes waves for the upgrades; the field only reports the Medium expectation). Validator knows the new source.
+- **Data** (written by `Tools/BalanceLab -- write`, identical to what the generator writes; a roundtrip of the old
+  waves gave a zero diff): all 992 waves, 26 creature rewards, 3 tower price lists, 4 difficulty profiles, 7 level
+  rewards. Hard and Psycho now have extra boss waves; first-world bosses stay on the main gate.
+- **Tests**: new `BalanceModelTests` (9, pure); `BalanceLedgerTests` rewritten on the new model plus
+  `MetaEconomy_FollowsTheDesign`; `WorldContentTests` checks every first-world boss group uses the main gate and that
+  harder difficulties never have fewer bosses; `CampaignTests.LaterLevels_CountOnUpgrades` follows the new meaning.
+- **To do in Unity (local session)**: open the project so Unity imports the new files and creates their `.meta`
+  files (commit those), run all EditMode tests, run the PlayMode probe, play a level on Medium. A full
+  `Tools/Generate/Scenes and Starter Data` run should give the same balance data (it also rebakes terrain).
+- **Open questions for Remco**: is the Psycho reading right ("everything on Psycho pays everything", so Psycho alone
+  x5); should the Rocket (only air tower) come earlier than after the Ruins; what is Psycho's "unique reward";
+  calibration after a play session (one knob: `TargetPressure`).

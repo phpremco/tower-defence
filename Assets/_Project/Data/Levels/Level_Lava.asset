@@ -312,7 +312,7 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: 805e7771d44a98b4cab78523155776ad, type: 3}
   _terrainEmission: {fileID: 2800000, guid: ac2e59f1aff128c4ea8c222c53a9dfa4, type: 3}
   _enemyHealthMultiplier: 1.3
-  _expectedUpgradeBonus: 0.1
+  _expectedUpgradeBonus: 0.25
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
@@ -488,7 +488,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9e2b451ece23cb142ac670c144173076, type: 2}
   _reward:
     ResearchPoints: 32
-    PowerCurrency: 11
+    PowerCurrency: 13
     NewTower: {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
     Source: 2
     Story: 'Home sent the focusing crystals they refined from our first samples: a laser design.'

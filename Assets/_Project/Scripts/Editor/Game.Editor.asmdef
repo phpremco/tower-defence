@@ -3,6 +3,7 @@
     "rootNamespace":  "Game.Editor",
     "references":  [
                        "Game.Core",
+                       "Game.Balance",
                        "Game.Combat",
                        "Game.Enemies",
                        "Game.Towers",

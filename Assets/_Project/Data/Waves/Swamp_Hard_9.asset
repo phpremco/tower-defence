@@ -36,4 +36,4 @@ MonoBehaviour:
     Interval: 1.5
     Delay: 23.5
     Stagger: 0
-  _healthMultiplier: 1.16
+  _healthMultiplier: 8.548

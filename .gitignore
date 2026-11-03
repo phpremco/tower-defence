@@ -46,3 +46,7 @@ TestResults*.xml
 # Screenshots from play-test probes
 /Assets/Temp/
 /Assets/Temp.meta
+
+# BalanceLab build output
+Tools/BalanceLab/bin/
+Tools/BalanceLab/obj/

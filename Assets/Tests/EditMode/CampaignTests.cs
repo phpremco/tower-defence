@@ -200,6 +200,8 @@ namespace Game.Tests
             Assert.AreEqual(1, UpgradeEffects.ComputeGlobal(progress, upgrades).BaseWeaponLevel);
         }
 
+        // The expected upgrade is reported per level and only grows; it no longer scales enemy health, because the wave
+        // solver already sized the waves against the upgrades the player can have bought by then.
         [Test]
         public void LaterLevels_CountOnUpgrades()
         {
@@ -207,7 +209,7 @@ namespace Game.Tests
             foreach (MapNode node in _catalog.Nodes)
             {
                 Assert.GreaterOrEqual(node.Level.ExpectedUpgradeBonus, previous, $"{node.Level.name} expects at least as much upgrade as the level before");
-                Assert.AreEqual(node.Level.EnemyHealthMultiplier * (1f + node.Level.ExpectedUpgradeBonus), node.Level.EnemyHealthScale, 0.0001f);
+                Assert.AreEqual(node.Level.EnemyHealthMultiplier, node.Level.EnemyHealthScale, 0.0001f);
                 previous = node.Level.ExpectedUpgradeBonus;
             }
 

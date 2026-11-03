@@ -88,8 +88,8 @@ MonoBehaviour:
   - Enemy: {fileID: 11400000, guid: b45db3e3f620dde419c95d8f782bef7e, type: 2}
     Count: 1
     PathIndex: 0
-    Source: 0
+    Source: 7
     Interval: 1
     Delay: 14
     Stagger: 0
-  _healthMultiplier: 1.46
+  _healthMultiplier: 5.331

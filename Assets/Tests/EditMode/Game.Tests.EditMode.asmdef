@@ -3,6 +3,7 @@
     "rootNamespace":  "Game.Tests",
     "references":  [
                        "Game.Core",
+                       "Game.Balance",
                        "Game.Combat",
                        "Game.Enemies",
                        "Game.Towers",

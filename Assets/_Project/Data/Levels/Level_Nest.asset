@@ -344,7 +344,7 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: d593cda95a3da4b4ebbd45cdd7065a80, type: 3}
   _terrainEmission: {fileID: 2800000, guid: ba20492f63119694bbb65f489284e7b5, type: 3}
   _enemyHealthMultiplier: 1.4
-  _expectedUpgradeBonus: 0.3
+  _expectedUpgradeBonus: 0.32
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
@@ -574,8 +574,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 817514ba823f5bb4aaed0a209610372f, type: 2}
     - {fileID: 11400000, guid: a54cbd5fd2595e544ae17170d01bdd4f, type: 2}
   _reward:
-    ResearchPoints: 50
-    PowerCurrency: 20
+    ResearchPoints: 45
+    PowerCurrency: 16
     NewTower: {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
     Source: 1
     Story: The queen's nest was powered by living coils. We took one, and with it the first hybrid designs.

@@ -82,15 +82,13 @@ namespace Game.Editor
 
             Bestiary bestiary = CreateBestiary();
 
-            var difficulties = new[]
+            // Difficulty profiles come from the balance sheet; the waves are written once the whole campaign exists.
+            var sheet = BalanceSheet.Difficulties;
+            var difficulties = new DifficultyProfile[sheet.Length];
+            for (int d = 0; d < sheet.Length; d++)
             {
-                CreateDifficulty("Easy", 0.76f, 0.8f, 1.2f, 1f, 0f, 0.6f),
-                CreateDifficulty("Medium", 1f, 1f, 1f, 1.45f, 0.5f, 0.75f),
-                CreateDifficulty("Hard", 1.3f, 1.2f, 0.85f, 2f, 1f, 1f),
-                CreateDifficulty("Psycho", 1.8f, 1.5f, 0.7f, 3.2f, 2f, 1.4f),
-            };
-
-            List<DifficultyWaves> waveSets = BuildWaves("Landing", difficulties, LandingScript(bestiary), -1);
+                difficulties[d] = CreateDifficulty(sheet[d].Id, sheet[d].Health, sheet[d].Count, sheet[d].Interval, sheet[d].Research, sheet[d].Power, sheet[d].StructureDamage);
+            }
 
             VisualTheme theme = LoadOrCreate<VisualTheme>(ThemeAssetPath);
             ConfigureTheme(theme);
@@ -106,7 +104,7 @@ namespace Game.Editor
             heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;
             heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
             heroProps.ApplyModifiedPropertiesWithoutUndo();
-            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, waveSets, cannon, blockade, hero);
+            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, cannon, blockade, hero);
 
             Roster roster = CreateRoster(pulse, cannon, rocket);
             PathObjectDefinition slowField = CreatePathObject("SlowField", "Slow field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 40, 1.3f, 0.5f, 0f, 0.5f, 0f, 25f, new Color(0.4f, 0.8f, 1f), PathObjectEffect.Slow, "A field of cold laid on the road. Everything that walks through it moves at half speed, for as long as the field lasts.");
@@ -166,6 +164,7 @@ namespace Game.Editor
             CodexCatalog codex = CreateCodex(recipes, bestiary);
             UiSkin skin = CreateSkin();
             CampaignCatalog campaign = CreateCampaign(allLevels, difficulties);
+            GenerateCampaignWaves(campaign, upgradeCatalog, unlocks, bestiary);
             BakeGlobe(campaign);
             CreateMenuStage(worldLevels, bestiary);
 
@@ -258,10 +257,12 @@ namespace Game.Editor
             so.FindProperty("_repairCostPerHealth").floatValue = RepairCostPerHealth;
             SerializedProperty array = so.FindProperty("_levels");
             array.arraySize = levels.Length;
+            // The balance sheet prices the guns it lists; the others keep the price given here.
+            int[] prices = BalanceSheet.Prices(id);
             for (int i = 0; i < levels.Length; i++)
             {
                 SerializedProperty element = array.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("Cost").intValue = levels[i].Cost;
+                element.FindPropertyRelative("Cost").intValue = prices != null && i < prices.Length ? prices[i] : levels[i].Cost;
                 element.FindPropertyRelative("Damage").floatValue = levels[i].Damage;
                 element.FindPropertyRelative("Range").floatValue = levels[i].Range;
                 element.FindPropertyRelative("FireInterval").floatValue = levels[i].FireInterval;
@@ -289,7 +290,7 @@ namespace Game.Editor
             return profile;
         }
 
-        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, List<DifficultyWaves> waveSets, TowerDefinition rewardTower, TowerDefinition blockade, HeroDefinition hero)
+        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, TowerDefinition rewardTower, TowerDefinition blockade, HeroDefinition hero)
         {
             var so = new SerializedObject(level);
             so.FindProperty("_displayName").stringValue = "Landing Zone";
@@ -311,8 +312,6 @@ namespace Game.Editor
             stars.GetArrayElementAtIndex(1).floatValue = 0.9f;
 
             SerializedProperty reward = so.FindProperty("_reward");
-            reward.FindPropertyRelative("ResearchPoints").intValue = 30;
-            reward.FindPropertyRelative("PowerCurrency").intValue = 6;
             reward.FindPropertyRelative("NewTower").objectReferenceValue = rewardTower;
             reward.FindPropertyRelative("Source").intValue = (int)UnlockSource.HomePlanetIntel;
             reward.FindPropertyRelative("Story").stringValue = "The home planet sent schematics for a heavy cannon.";
@@ -358,20 +357,6 @@ namespace Game.Editor
             for (int i = 0; i < towers.Length; i++)
             {
                 towerArray.GetArrayElementAtIndex(i).objectReferenceValue = towers[i];
-            }
-
-            SerializedProperty waveArray = so.FindProperty("_difficultyWaves");
-            waveArray.arraySize = waveSets.Count;
-            for (int i = 0; i < waveSets.Count; i++)
-            {
-                SerializedProperty element = waveArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("Difficulty").objectReferenceValue = waveSets[i].Difficulty;
-                SerializedProperty waves = element.FindPropertyRelative("Waves");
-                waves.arraySize = waveSets[i].Waves.Length;
-                for (int w = 0; w < waveSets[i].Waves.Length; w++)
-                {
-                    waves.GetArrayElementAtIndex(w).objectReferenceValue = waveSets[i].Waves[w];
-                }
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

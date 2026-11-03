@@ -25,17 +25,26 @@ Rules for building a level that plays fairly. A level is data (`LevelDefinition`
   - the road is simple (one road, at most two fronts), so the boss lane is the only extra.
 - A boss that regrows armour must stay beatable with the level's own roster: the ledger counts health plus armour
   once, so regrowth is tuned by hand and kept small (see the Crystal Warlord and Acid Empress history in STATUS).
-- Boss waves pay for the losses they cause: the boss reward is high, and the difficulty's reward multiplier
-  covers the rebuild. Check the ledger line marked `B` for the wave.
+- Boss waves pay for the losses they cause: a boss pays three times the kill money of its threat (`BossRewardFactor`).
+  Kill money is the same on every difficulty; the difficulty's reward multiplier pays research, not money.
+- Bosses are per difficulty (`BossSpec.MinDifficulty` in `WaveScripts`): every difficulty keeps the level's bosses,
+  Hard adds one boss wave and Psycho another, by turning an ordinary wave into a boss wave. The way in is per boss
+  and per difficulty too (`BossSpec.Routes`: main gate, second road, or the level's own entrance, written as
+  `SpawnSource.Entrance`). The first world stays on the main gate everywhere (`WorldContentTests`).
 
 ## Waves
 
-- Wave count and bosses differ per level; never one fixed number. Bosses are species bosses of the creatures that
+- Wave count and bosses differ per level; never one fixed number. The script sets the crowd (`Budget` to
+  `FinalBudget`); the wave solver sets how tough each wave's creatures are (Docs/BALANCE.md). Never hand-tune a wave's
+  health multiplier: change the script or the rules and regenerate. Bosses are species bosses of the creatures that
   appear in that level, the Hive Queen only at the end of the world.
 - Difficulty adds air; the easy script of a level must be holdable with the starting roster.
-- After any change to a weapon, a creature or a wave, run the balance model:
-  `unity command run_tests --mode EditMode --filter BalanceLedgerTests --timeout 300` and read
-  `Tools/PlayTest/balance_ledger.txt`. Every wave must stay inside its difficulty band.
+- After any change to a weapon, a creature or a wave, run the balance model: `dotnet run --project Tools/BalanceLab --
+  solve` (or in Unity: regenerate, then `unity command run_tests --mode EditMode --filter BalanceLedgerTests --timeout
+  300`) and read `Tools/PlayTest/balance_ledger.txt`. Every wave must stay inside its difficulty band.
+- Fronts: the model counts a second road that meets the main road late (less than 35% shared trunk) as a separate
+  front whose towers work at 70%. A nest or pool whose creatures join with little road left meets less defence. Gates
+  on the trunk hold the queue and give the towers extra time. All of it comes from the map (`LevelShape`).
 
 ## Look
 

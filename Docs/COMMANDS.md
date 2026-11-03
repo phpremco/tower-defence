@@ -248,3 +248,18 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
   prints `aim_probe.cs`: the angle between the drawn weapon's barrel and the line to the commander's target
   (a few degrees, the kick of a shot and the aim wobble, is right). A bat forces the blaster, as the sword
   cannot reach the air; a boss kills the hero within seconds, so use a Skitter or a bat for hero shots.
+
+## Balance model outside Unity (BalanceLab)
+
+The pure balance model (`Assets/_Project/Scripts/Balance`) also runs as a .NET 8 console tool, with or without the
+Editor open. It reads the generated assets and the wave scripts. Docs/BALANCE.md explains the model.
+
+| Goal | Command |
+| --- | --- |
+| Judge the assets as they are | `dotnet run --project Tools/BalanceLab -- report` (writes `Tools/PlayTest/balance_ledger.txt`) |
+| Solve the waves from the scripts and the balance sheet | `dotnet run --project Tools/BalanceLab -- solve` |
+| Solve and write the result into the existing assets | `dotnet run --project Tools/BalanceLab -- write` |
+| Show one solved wave | `dotnet run --project Tools/BalanceLab -- dump Landing 1 12` (level key, difficulty 0-3, wave) |
+| Prove the writer (must leave `git diff` empty) | `dotnet run --project Tools/BalanceLab -- roundtrip` |
+
+`write` only rewrites existing files (same GUIDs); a change in the number of waves needs the Unity generator.

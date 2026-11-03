@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Laser
   _targets: 1
   _levels:
-  - Cost: 110
+  - Cost: 130
     Damage: 8
     Range: 3.9
     FireInterval: 0.2
@@ -23,7 +23,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     Model: {fileID: 0}
-  - Cost: 130
+  - Cost: 90
     Damage: 12
     Range: 4.1
     FireInterval: 0.18
@@ -31,7 +31,7 @@ MonoBehaviour:
     SlowFactor: 0
     SlowSeconds: 0
     Model: {fileID: 0}
-  - Cost: 190
+  - Cost: 170
     Damage: 18
     Range: 4.4
     FireInterval: 0.15

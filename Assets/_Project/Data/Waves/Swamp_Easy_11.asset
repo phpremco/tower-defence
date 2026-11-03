@@ -45,16 +45,16 @@ MonoBehaviour:
     Stagger: 4.5600004
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 3
-    PathIndex: 3
+    PathIndex: 0
     Source: 0
     Interval: 0.231
     Delay: 2.5
     Stagger: 0
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Count: 2
-    PathIndex: 0
+    PathIndex: 3
     Source: 0
     Interval: 0.231
     Delay: 2.5
     Stagger: 1.98
-  _healthMultiplier: 1.2
+  _healthMultiplier: 3.603

@@ -102,10 +102,16 @@ namespace Game.Levels
         public void Spawn(EnemyDefinition definition, int pathIndex, SpawnSource source = SpawnSource.Gate)
         {
             LevelDefinition level = _context.Level;
-            if (definition.IsBoss && level.BossEntrance.Kind != EntranceKind.Gate)
+            // The wave says per group where a boss comes in; an entrance the level does not have falls back to the gate.
+            if (source == SpawnSource.Entrance)
             {
-                SpawnThroughEntrance(definition, level.BossEntrance);
-                return;
+                if (level.BossEntrance.Kind != EntranceKind.Gate)
+                {
+                    SpawnThroughEntrance(definition, level.BossEntrance);
+                    return;
+                }
+
+                source = SpawnSource.Gate;
             }
 
             if (source == SpawnSource.Nest)

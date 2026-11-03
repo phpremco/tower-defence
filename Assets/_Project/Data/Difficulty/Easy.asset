@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Easy
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Easy
-  _healthMultiplier: 0.76
+  _healthMultiplier: 0.68
   _countMultiplier: 0.8
   _spawnIntervalMultiplier: 1.2
   _rewardMultiplier: 1

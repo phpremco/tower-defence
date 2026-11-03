@@ -1,0 +1,194 @@
+using System;
+
+namespace Game.Balance
+{
+    /// <summary>
+    /// What one wave brings, as the ledger needs it: effective health split into the ground stream, the bosses and the
+    /// air, the time the towers get, how dense the streams are (for splash), the mean size of a creature (for overkill),
+    /// the share of the defence each creature really meets (fronts and late joiners), and the kill money.
+    /// </summary>
+    public sealed class WaveLoad
+    {
+        /// <summary>Spawn source value of a boss that comes up through the level's own boss entrance.</summary>
+        public const int EntranceSource = 7;
+
+        public float StreamHealth;
+        public float BossHealth;
+        public float AirHealth;
+
+        /// <summary>Share of the ground defence the stream and the bosses meet (1 = all of it).</summary>
+        public float StreamReach = 1f;
+        public float BossReach = 1f;
+
+        public float Window;
+        public float BossWindow;
+        public float AirWindow;
+        public float GroundSpeed = 1f;
+        public float BossSpeed = 1f;
+        public float AirSpeed = 1f;
+        public float GroundDensity;
+        public float AirDensity;
+        public float MeanHealth;
+        public float MeanAirHealth;
+        public int KillMoney;
+        public bool HasBoss;
+
+        public float GroundPressure(float stream, float single)
+        {
+            float pressure = 0f;
+            if (StreamHealth > 0f)
+            {
+                pressure += Ratio(StreamHealth, stream * StreamReach);
+            }
+
+            if (BossHealth > 0f)
+            {
+                pressure += Ratio(BossHealth, single * BossReach);
+            }
+
+            return pressure;
+        }
+
+        public float AirPressure(float air) => AirHealth > 0f ? Ratio(AirHealth, air) : 0f;
+
+        private static float Ratio(float health, float capacity) => capacity <= 0f ? float.PositiveInfinity : health / capacity;
+
+        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules)
+        {
+            var load = new WaveLoad();
+            float span = 0f;
+            float airSpan = 0f;
+            float speed = 0f;
+            float airSpeed = 0f;
+            float bossSpeed = 0f;
+            int ground = 0;
+            int air = 0;
+            int bosses = 0;
+            float reachWeighted = 0f;
+            float bossReachWeighted = 0f;
+            float gateDps = 0f;
+            float bossGateDps = 0f;
+            float scale = difficulty.Health * level.HealthScale * wave.HealthMultiplier;
+
+            foreach (GroupSpec group in wave.Groups)
+            {
+                EnemyStats enemy = group.Enemy;
+                if (enemy == null)
+                {
+                    continue;
+                }
+
+                int count = enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * difficulty.Count));
+                float each = enemy.EffectiveHealth * scale;
+                float health = each * count;
+                float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
+                load.KillMoney += enemy.Reward * count;
+                load.HasBoss |= enemy.IsBoss;
+                float strike = enemy.AttackInterval > 0f ? enemy.BlockadeDamage / enemy.AttackInterval * difficulty.StructureDamage : 0f;
+
+                if (!Layer.Has(enemy.Layer, Layer.Ground))
+                {
+                    load.AirHealth += health;
+                    airSpan = Math.Max(airSpan, end);
+                    airSpeed += enemy.Speed * count;
+                    air += count;
+                    continue;
+                }
+
+                float reach = Reach(level.Shape, group, rules);
+                if (enemy.IsBoss)
+                {
+                    load.BossHealth += health;
+                    bossReachWeighted += reach * health;
+                    bossSpeed += enemy.Speed * count;
+                    bosses += count;
+                    bossGateDps += strike;
+                    continue;
+                }
+
+                load.StreamHealth += health;
+                reachWeighted += reach * health;
+                span = Math.Max(span, end);
+                speed += enemy.Speed * count;
+                ground += count;
+                gateDps += strike * Math.Min(count, rules.AttackersPerGate);
+            }
+
+            load.GroundSpeed = ground > 0 ? speed / ground : 1f;
+            load.AirSpeed = air > 0 ? airSpeed / air : 1f;
+            load.BossSpeed = bosses > 0 ? bossSpeed / bosses : 1f;
+            load.MeanHealth = ground > 0 ? load.StreamHealth / ground : 0f;
+            load.MeanAirHealth = air > 0 ? load.AirHealth / air : 0f;
+            load.StreamReach = load.StreamHealth > 0f ? reachWeighted / load.StreamHealth : 1f;
+            load.BossReach = load.BossHealth > 0f ? bossReachWeighted / load.BossHealth : 1f;
+            // Creatures per cell of road: the spawn rate over the walking speed.
+            load.GroundDensity = ground > 1 ? ground / Math.Max(1f, span) / load.GroundSpeed : 0f;
+            load.AirDensity = air > 1 ? air / Math.Max(1f, airSpan) / load.AirSpeed : 0f;
+
+            float hold = GateHold(level, gateDps, rules);
+            load.Window = span + hold * rules.GateWindowShare;
+            load.BossWindow = GateHold(level, bossGateDps, rules) * rules.GateWindowShare;
+            load.AirWindow = airSpan;
+            return load;
+        }
+
+        // The defence a group meets: all of it on the trunk, the separate front's own share off it; creatures from a nest,
+        // pool or entrance only meet what lies on the road ahead of where they join.
+        private static float Reach(LevelShape shape, GroupSpec group, BalanceRules rules)
+        {
+            float trunk;
+            if (group.Source == 0)
+            {
+                LevelShape.Lane lane = shape.LaneFor(group.Path);
+                trunk = lane != null ? lane.TrunkShare : 1f;
+            }
+            else if (group.Source == EntranceSource)
+            {
+                trunk = shape.EntranceRemaining;
+            }
+            else
+            {
+                trunk = Mean(shape) ;
+            }
+
+            float share = Math.Min(1f, trunk / Math.Max(0.01f, rules.TrunkReference));
+            return share + (1f - share) * rules.FrontEfficiency;
+        }
+
+        private static float Mean(LevelShape shape)
+        {
+            if (shape.NestRemaining.Count == 0)
+            {
+                return 1f;
+            }
+
+            float sum = 0f;
+            foreach (float remaining in shape.NestRemaining)
+            {
+                sum += remaining;
+            }
+
+            return sum / shape.NestRemaining.Count;
+        }
+
+        // Seconds the gates on the main road hold the queue: each one until it breaks, at most the cap.
+        private static float GateHold(LevelInput level, float attackDps, BalanceRules rules)
+        {
+            if (attackDps <= 0f || level.GateHealth <= 0f)
+            {
+                return 0f;
+            }
+
+            float total = 0f;
+            foreach (LevelShape.Gate gate in level.Shape.Gates)
+            {
+                if (gate.OnTrunk || gate.PathIndex == (level.Shape.Lanes.Count > 0 ? level.Shape.Lanes[0].PathIndex : 0))
+                {
+                    total += Math.Min(rules.MaxGateHoldSeconds, level.GateHealth / attackDps);
+                }
+            }
+
+            return total;
+        }
+    }
+}

@@ -16,6 +16,6 @@ MonoBehaviour:
   _healthMultiplier: 1
   _countMultiplier: 1
   _spawnIntervalMultiplier: 1
-  _rewardMultiplier: 1.45
-  _powerCurrencyMultiplier: 0.5
+  _rewardMultiplier: 2
+  _powerCurrencyMultiplier: 1
   _structureDamageMultiplier: 0.75
