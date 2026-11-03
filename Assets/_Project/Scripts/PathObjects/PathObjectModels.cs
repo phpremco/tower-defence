@@ -12,6 +12,7 @@ namespace Game.PathObjects
             {
                 case PathObjectLook.Mine: return StructureModelFactory.Mine();
                 case PathObjectLook.FieldEmitter: return StructureModelFactory.FieldEmitter();
+                case PathObjectLook.Chrono: return StructureModelFactory.FieldEmitter();
                 case PathObjectLook.LavaBall: return StructureModelFactory.LavaBall();
                 case PathObjectLook.GroundDrone: return StructureModelFactory.GroundDrone();
                 case PathObjectLook.Barrel: return StructureModelFactory.Barrel();

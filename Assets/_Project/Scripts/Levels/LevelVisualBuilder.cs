@@ -69,7 +69,8 @@ namespace Game.Levels
         /// <summary>Builds the level and returns the flight route objects by path index, hidden until a wave uses them.</summary>
         /// <param name="particleScale">The quality profile's share of particles, one for the full amount.</param>
         /// <param name="groundMist">Whether the drifting mist sheets are built; the low profile leaves them out.</param>
-        public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f, bool groundMist = true)
+        /// <param name="dressingOnly">Only the landscape, mist and stars: no road arrows, gates, base, flight routes, mining nodes or nests. For cutscenes that stage the field themselves.</param>
+        public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f, bool groundMist = true, bool dressingOnly = false)
         {
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
@@ -78,6 +79,12 @@ namespace Game.Levels
             if (groundMist)
             {
                 GroundMistBuilder.Build(level, theme, parent);
+            }
+
+            if (dressingOnly)
+            {
+                BuildStarfield(parent, level.WorldSize);
+                return new Dictionary<int, GameObject>();
             }
 
             BuildRoadArrows(level, grid, parent);
@@ -337,6 +344,7 @@ namespace Game.Levels
                     return CreatureSkin.Kind.Bark;
                 case Element.Fire:
                 case Element.Sand:
+                case Element.Stone:
                 case Element.Ice:
                     return CreatureSkin.Kind.Stone;
                 default:
@@ -361,6 +369,9 @@ namespace Game.Levels
                     return new Color(0.8f, 0.95f, 1f);
                 case Element.Bog:
                     return new Color(0.55f, 0.8f, 0.3f);
+                case Element.Stone:
+                    // The amber seam of the rifts: warmer and paler than fire, so a stone nest never reads as a lava vent.
+                    return new Color(1f, 0.62f, 0.28f);
                 default:
                     return Color.white;
             }

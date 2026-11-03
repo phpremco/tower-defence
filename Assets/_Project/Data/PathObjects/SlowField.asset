@@ -12,18 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2863d1c450a864c43ab21ab187d5bc12, type: 3}
   m_Name: SlowField
   m_EditorClassIdentifier: Game.PathObjects::Game.PathObjects.PathObjectDefinition
-  _displayName: Slow field
+  _displayName: Chrono Field
   _kind: 1
   _placement: 0
   _targets: 1
-  _cost: 40
-  _radius: 1.3
+  _cost: 45
+  _radius: 1.6
   _triggerRadius: 0.5
   _damage: 0
-  _slowFactor: 0.5
+  _slowFactor: 0.45
   _speed: 0
-  _lifetime: 25
-  _color: {r: 0.4, g: 0.8, b: 1, a: 1}
-  _look: 2
+  _lifetime: 20
+  _color: {r: 0.45, g: 0.75, b: 1, a: 1}
+  _look: 7
   _effect: 0
-  _description: A field of cold laid on the road. Everything that walks through it moves at half speed, for as long as the field lasts.
+  _impactVfx: {fileID: 0}
+  _description: 'A Crysium field laid across the road. Time runs slow inside it: everything that walks through moves at less than half speed, for as long as the field lasts. The answer to fast runners.'

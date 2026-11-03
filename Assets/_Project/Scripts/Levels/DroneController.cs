@@ -58,7 +58,8 @@ namespace Game.Levels
 
         private void OnRequested(DroneDefinition definition)
         {
-            if (definition == null || _context.ActiveDrones(definition) >= _context.MaxDrones(definition))
+            // A dialogue or the pause menu owns confirm, so a focused drone card must not buy behind it.
+            if (definition == null || _context.InputBlocked || _context.ActiveDrones(definition) >= _context.MaxDrones(definition))
             {
                 return;
             }

@@ -41,13 +41,15 @@ namespace Game.Editor
             public EnemyDefinition SkySovereign;
             public EnemyDefinition SlimeMonarch;
             public EnemyDefinition RollerKing;
+            public EnemyDefinition Cragback;
+            public EnemyDefinition Shalebat;
             public EnemyDefinition Queen;
 
             public EnemyDefinition[] All => new[]
             {
                 Skitter, Stinger, Emberbat, Tidebat, Mossbat, Dustbat, Bulwark, Prowler, Wisp, Skyray, Oozer, Roller, Frostbat, Mirebat,
                 Shardback, Mireleech, BroodMother, AcidEmpress, StormMatriarch, CrystalWarlord, PackAlpha, CoreWisp, SkySovereign,
-                SlimeMonarch, RollerKing, Queen,
+                SlimeMonarch, RollerKing, Queen, Cragback, Shalebat,
             };
 
             public EnemyDefinition ById(string id)
@@ -122,7 +124,7 @@ namespace Game.Editor
             {
                 Id = "Skitter", Description = "Ant swarm. Weak alone and dangerous in crowds; splash damage thins them fast. Bites gates and the hero.", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
-                Color = new Color(1f, 0.62f, 0.12f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
+                Color = new Color(1f, 0.5f, 0.14f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
                 Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
             });
             b.Stinger = CreateEnemy(new Creature
@@ -194,12 +196,22 @@ namespace Game.Editor
             });
             b.Roller = CreateEnemy(new Creature
             {
-                Id = "Roller", Description = "Armoured walker that curls into a ball and rolls, faster and tougher than it walks; slow it before it rolls.", Layer = TargetLayers.Ground, Health = 110f, Speed = 1f, BaseDamage = 2,
+                Id = "Roller", Description = "Sand-coloured digger that curls into a ball and shoots down the road, about three times as fast as anything else; slow it before it rolls.", Layer = TargetLayers.Ground, Health = 110f, Speed = 1.4f, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 8f, AttackRange = 2.5f, AttackInterval = 1.2f,
-                WalkSeconds = 3f, RollSeconds = 2.2f, RollSpeed = 2.6f,
-                Color = new Color(0.8f, 0.5f, 0.2f), Eyes = new Color(1f, 0.8f, 0.3f), Accent = new Color(1f, 0.7f, 0.3f), Blood = RollerOchre,
+                WalkSeconds = 1f, RollSeconds = 3f, RollSpeed = 3.6f,
+                Color = new Color(0.95f, 0.8f, 0.48f), Eyes = new Color(1f, 0.8f, 0.3f), Accent = new Color(1f, 0.7f, 0.3f), Blood = RollerOchre,
                 Scale = 0.7f, Shape = EnemyShape.Roller, Death = DeathStyle.Shatter,
             });
+
+            // Stone (S4): heavy and slow, no armour yet; the script gives the stone species their plates in level 11.
+            b.Cragback = CreateEnemy(new Creature
+            {
+                Id = "Cragback", Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Speed = 0.6f, BaseDamage = 4,
+                Attack = AttackStyle.Slam, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
+                Color = new Color(0.4f, 0.36f, 0.32f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(0.85f, 0.42f, 0.14f), Blood = new Color(0.9f, 0.55f, 0.25f),
+                Scale = 0.85f, Shape = EnemyShape.Cragback, Death = DeathStyle.Shatter,
+            });
+            b.Shalebat = CreateBat(b, "Shalebat", Element.Stone, new Color(0.38f, 0.4f, 0.46f), new Color(1f, 0.8f, 0.4f), new Color(0.95f, 0.6f, 0.25f), health: 40f, speed: 1.3f);
 
             CreateBosses(b);
             return b;
@@ -223,11 +235,11 @@ namespace Game.Editor
             return text.ToString();
         }
 
-        private static EnemyDefinition CreateBat(Bestiary b, string id, Element element, Color color, Color eyes, Color accent)
+        private static EnemyDefinition CreateBat(Bestiary b, string id, Element element, Color color, Color eyes, Color accent, float health = 31f, float speed = 1.5f)
         {
             return CreateEnemy(new Creature
             {
-                Id = id, Description = $"Element bat. Rises from {element.ToString().ToLowerInvariant()} nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.", Layer = TargetLayers.Air, Flies = true, Health = 31f, Speed = 1.5f, BaseDamage = 2, Element = element,
+                Id = id, Description = $"Element bat. Rises from {element.ToString().ToLowerInvariant()} nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.", Layer = TargetLayers.Air, Flies = true, Health = health, Speed = speed, BaseDamage = 2, Element = element,
                 Attack = AttackStyle.Bolt, AttackDamage = 4f, BlockadeDamage = 4f, AttackRange = 2.8f, AttackInterval = 1.3f, GateStrikes = 2,
                 Color = color, Eyes = eyes, Accent = accent, Blood = accent,
                 Scale = 0.65f, Shape = EnemyShape.Bat, Death = DeathStyle.Crash,
@@ -430,8 +442,6 @@ namespace Game.Editor
             EditorUtility.SetDirty(ability);
             return ability;
         }
-
-        private static ElementNest Nest(Element element, int x, int y) => new ElementNest { Element = element, Cell = new Vector2Int(x, y) };
 
         // Nests of a liquid element snap to the nearest cell of that liquid that survived erosion; the others stay put.
         private static void WriteNests(SerializedProperty array, ElementNest[] nests, TerrainPatch[] kept)

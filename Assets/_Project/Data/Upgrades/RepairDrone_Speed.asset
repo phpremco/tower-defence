@@ -21,3 +21,4 @@ MonoBehaviour:
   _currency: 1
   _groupDescription: Bought with money in the level. Flies to the most damaged tower, gate or base and repairs it.
   _bonusPerLevel: 0.2
+  _continent: 0

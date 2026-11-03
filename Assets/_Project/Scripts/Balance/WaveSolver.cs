@@ -57,7 +57,7 @@ namespace Game.Balance
                 case WaveComposer.Kind.Ambush:
                     return target * rules.AmbushFactor;
                 case WaveComposer.Kind.Air:
-                    return target * rules.AirFactor;
+                    return target * rules.AirFactor * script.AirRaidScaleFor(difficulty);
                 default:
                     return target;
             }
@@ -68,11 +68,16 @@ namespace Game.Balance
         {
             var healths = new float[script.Waves];
             var recent = new List<float>();
-            float kills = 0f;
+            var purse = new KillPurse(level, medium, rules);
+            var held = new Ledger.AirHoldings();
             for (int i = 0; i < script.Waves; i++)
             {
                 int number = i + 1;
-                int money = Ledger.MoneyAt(level, i, script.Waves, kills, rules);
+                // The crowd and its timing do not depend on the health multiplier, so any multiplier sets the clock.
+                WaveSpec timing = WaveComposer.Compose(script, enemies, SolveDifficulty, number, 1f, secondRoad, rules);
+                purse.Begin(timing);
+                float carried = purse.Carried(timing);
+                int money = purse.Money(i, script.Waves);
                 float target = Target(script, number, rules);
                 bool boss = WaveComposer.BossOn(script, SolveDifficulty, number) != null;
                 // The same creature should not change much from one wave to the next: the multiplier follows the recent
@@ -90,10 +95,23 @@ namespace Game.Balance
                 float low = recent.Count == 0 || free ? MinHealth : Math.Max(MinHealth, trend * MaxDrop);
                 float high = recent.Count == 0 ? MaxHealth : Math.Min(MaxHealth, trend * MaxRise);
                 // Rounded so the editor and the BalanceLab tool land on the same numbers.
-                float health = (float)Math.Round(BisectOn(script, enemies, level, medium, secondRoad, rules, number, money, target, low, high), 3);
+                float health = (float)Math.Round(BisectOn(script, enemies, level, medium, secondRoad, rules, number, money, held, carried, target, low, high), 3);
+                WaveSpec solved = WaveComposer.Compose(script, enemies, SolveDifficulty, number, health, secondRoad, rules);
+                var next = new Ledger.AirHoldings();
+                WaveLine line = Ledger.EvaluateWave(level, solved, medium, money, rules, held, next, carried);
+                // The trend floor must not push a wave out of its band (a thin purse after the air guns of a raid): such a wave
+                // may drop below the trend as far as it needs.
+                if (!boss && low > MinHealth && line.Pressure > rules.MaxPressure(SolveDifficulty))
+                {
+                    health = (float)Math.Round(BisectOn(script, enemies, level, medium, secondRoad, rules, number, money, held, carried, target, MinHealth, health), 3);
+                    solved = WaveComposer.Compose(script, enemies, SolveDifficulty, number, health, secondRoad, rules);
+                    next = new Ledger.AirHoldings();
+                    line = Ledger.EvaluateWave(level, solved, medium, money, rules, held, next, carried);
+                }
+
                 healths[i] = health;
-                WaveLine line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, SolveDifficulty, number, health, secondRoad, rules), medium, money, rules);
-                kills += line.KillMoney * Math.Min(1f, line.Pressure > 0f ? 1f / line.Pressure : 1f);
+                held = next;
+                purse.Add(solved, line);
                 if (!free)
                 {
                     recent.Add(health);
@@ -117,44 +135,52 @@ namespace Game.Balance
             var healths = (float[])medium.Clone();
             int d = difficulty.Index;
             float share = rules.DifficultyPressure[Math.Min(d, rules.DifficultyPressure.Length - 1)];
-            float kills = 0f;
+            var purse = new KillPurse(level, difficulty, rules);
+            var held = new Ledger.AirHoldings();
             for (int i = 0; i < script.Waves; i++)
             {
                 int number = i + 1;
-                int money = Ledger.MoneyAt(level, i, script.Waves, kills, rules);
+                WaveSpec timing = WaveComposer.Compose(script, enemies, d, number, 1f, secondRoad, rules);
+                purse.Begin(timing);
+                float carried = purse.Carried(timing);
+                int money = purse.Money(i, script.Waves);
                 bool changed = WaveComposer.KindOf(script, d, number) != WaveComposer.KindOf(script, SolveDifficulty, number)
                     || WaveComposer.BossOn(script, d, number) != WaveComposer.BossOn(script, SolveDifficulty, number)
                     || WaveComposer.HasSprinkle(script, d, number) != WaveComposer.HasSprinkle(script, SolveDifficulty, number)
+                    || (WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Air && script.AirRaidScaleFor(d) != script.AirRaidScaleFor(SolveDifficulty))
                     || WaveComposer.KindOf(script, d, number) == WaveComposer.Kind.Ambush;
                 if (changed)
                 {
                     float target = TargetOn(script, d, number, rules) * share;
-                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, target, MinHealth, MaxHealth), 3);
+                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, MaxHealth), 3);
                 }
 
-                WaveLine line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules);
+                WaveLine line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, null, carried);
                 // A copied Medium multiplier can still break this difficulty's band when its purse is thinner than Medium's
                 // at that point (an extra boss wave earns less); such a wave is solved on its own like a changed one.
                 if (!changed && WaveComposer.BossOn(script, d, number) == null && line.Pressure > rules.MaxPressure(d))
                 {
                     float target = TargetOn(script, d, number, rules) * share;
-                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, target, MinHealth, healths[i]), 3);
-                    line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules);
+                    healths[i] = (float)Math.Round(BisectOn(script, enemies, level, difficulty, secondRoad, rules, number, money, held, carried, target, MinHealth, healths[i]), 3);
+                    line = Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, null, carried);
                 }
 
-                kills += line.KillMoney * Math.Min(1f, line.Pressure > 0f ? 1f / line.Pressure : 1f);
+                var next = new Ledger.AirHoldings();
+                Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), difficulty, money, rules, held, next, carried);
+                held = next;
+                purse.Add(WaveComposer.Compose(script, enemies, d, number, healths[i], secondRoad, rules), line);
             }
 
             return healths;
         }
 
         // Pressure grows with health, so a bisection on its logarithm finds the multiplier that meets the target.
-        private static float BisectOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, int secondRoad, BalanceRules rules, int number, int money, float target, float low, float high)
+        private static float BisectOn(WaveScriptSpec script, IReadOnlyDictionary<string, EnemyStats> enemies, LevelInput level, DifficultyStats difficulty, int secondRoad, BalanceRules rules, int number, int money, Ledger.AirHoldings held, float carried, float target, float low, float high)
         {
             double lo = Math.Log(low);
             double hi = Math.Log(Math.Max(low, high));
             float Pressure(double logHealth) =>
-                Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, difficulty.Index, number, (float)Math.Exp(logHealth), secondRoad, rules), difficulty, money, rules).Pressure;
+                Ledger.EvaluateWave(level, WaveComposer.Compose(script, enemies, difficulty.Index, number, (float)Math.Exp(logHealth), secondRoad, rules), difficulty, money, rules, held, null, carried).Pressure;
 
             if (Pressure(lo) >= target)
             {

@@ -1,0 +1,306 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_C1_02
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: Glass Meadows
+  _regionName: Glass meadows
+  _briefing: 'Crystal grass to the horizon. The swarms come in numbers now, many and weak: fast guns will count more than heavy ones.'
+  _gridSize: {x: 38, y: 22}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: 40ae810acaddbc642b44b578228afc46, type: 2}
+  _camera:
+    PitchDegrees: 44
+    YawDegrees: 16
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 18}
+    - {x: 3, y: 18}
+    - {x: 3, y: 4}
+    - {x: 10, y: 4}
+    - {x: 10, y: 19}
+    - {x: 19, y: 19}
+    - {x: 19, y: 4}
+    - {x: 28, y: 4}
+    - {x: 28, y: 18}
+    - {x: 37, y: 18}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 21}
+    - {x: 17, y: 20}
+    - {x: 37, y: 18}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 0}
+    - {x: 21, y: 1}
+    - {x: 37, y: 18}
+  _roadWidth: 2
+  _plazaCells: []
+  _blockedCells:
+  - {x: 6, y: 1}
+  - {x: 6, y: 6}
+  - {x: 6, y: 18}
+  - {x: 15, y: 16}
+  - {x: 16, y: 15}
+  - {x: 19, y: 1}
+  - {x: 20, y: 1}
+  - {x: 21, y: 7}
+  - {x: 21, y: 11}
+  - {x: 22, y: 1}
+  - {x: 22, y: 8}
+  - {x: 22, y: 15}
+  - {x: 23, y: 1}
+  - {x: 23, y: 11}
+  - {x: 23, y: 15}
+  - {x: 24, y: 11}
+  - {x: 24, y: 14}
+  - {x: 24, y: 17}
+  - {x: 24, y: 18}
+  - {x: 24, y: 19}
+  - {x: 25, y: 14}
+  - {x: 25, y: 15}
+  - {x: 31, y: 3}
+  - {x: 31, y: 5}
+  - {x: 32, y: 1}
+  - {x: 32, y: 5}
+  - {x: 34, y: 3}
+  - {x: 36, y: 2}
+  - {x: 36, y: 10}
+  - {x: 36, y: 11}
+  _blockades:
+  - Cell: {x: 3, y: 10}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 16, y: 19}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 28, y: 13}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 31, y: 18}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _terrain:
+  - Cell: {x: 4, y: 21}
+    Kind: 2
+  - Cell: {x: 5, y: 15}
+    Kind: 7
+  - Cell: {x: 6, y: 14}
+    Kind: 7
+  - Cell: {x: 6, y: 15}
+    Kind: 7
+  - Cell: {x: 6, y: 20}
+    Kind: 2
+  - Cell: {x: 6, y: 21}
+    Kind: 2
+  - Cell: {x: 7, y: 14}
+    Kind: 7
+  - Cell: {x: 7, y: 15}
+    Kind: 7
+  - Cell: {x: 7, y: 16}
+    Kind: 7
+  - Cell: {x: 7, y: 20}
+    Kind: 2
+  - Cell: {x: 7, y: 21}
+    Kind: 2
+  - Cell: {x: 8, y: 14}
+    Kind: 7
+  - Cell: {x: 8, y: 15}
+    Kind: 7
+  - Cell: {x: 8, y: 16}
+    Kind: 7
+  - Cell: {x: 8, y: 21}
+    Kind: 2
+  - Cell: {x: 9, y: 1}
+    Kind: 2
+  - Cell: {x: 9, y: 21}
+    Kind: 2
+  - Cell: {x: 10, y: 1}
+    Kind: 2
+  - Cell: {x: 13, y: 9}
+    Kind: 1
+  - Cell: {x: 13, y: 10}
+    Kind: 1
+  - Cell: {x: 13, y: 12}
+    Kind: 1
+  - Cell: {x: 14, y: 7}
+    Kind: 2
+  - Cell: {x: 14, y: 8}
+    Kind: 2
+  - Cell: {x: 14, y: 11}
+    Kind: 1
+  - Cell: {x: 15, y: 8}
+    Kind: 2
+  - Cell: {x: 15, y: 10}
+    Kind: 1
+  - Cell: {x: 15, y: 11}
+    Kind: 1
+  - Cell: {x: 16, y: 7}
+    Kind: 2
+  - Cell: {x: 16, y: 8}
+    Kind: 2
+  - Cell: {x: 16, y: 9}
+    Kind: 2
+  - Cell: {x: 16, y: 10}
+    Kind: 1
+  - Cell: {x: 16, y: 11}
+    Kind: 1
+  - Cell: {x: 17, y: 9}
+    Kind: 1
+  - Cell: {x: 17, y: 10}
+    Kind: 1
+  - Cell: {x: 17, y: 11}
+    Kind: 1
+  - Cell: {x: 17, y: 12}
+    Kind: 1
+  - Cell: {x: 24, y: 7}
+    Kind: 2
+  - Cell: {x: 25, y: 8}
+    Kind: 2
+  - Cell: {x: 25, y: 9}
+    Kind: 2
+  - Cell: {x: 26, y: 8}
+    Kind: 2
+  - Cell: {x: 26, y: 9}
+    Kind: 2
+  - Cell: {x: 30, y: 10}
+    Kind: 1
+  - Cell: {x: 30, y: 11}
+    Kind: 1
+  - Cell: {x: 30, y: 12}
+    Kind: 1
+  - Cell: {x: 30, y: 14}
+    Kind: 1
+  - Cell: {x: 31, y: 9}
+    Kind: 7
+  - Cell: {x: 31, y: 11}
+    Kind: 1
+  - Cell: {x: 31, y: 12}
+    Kind: 1
+  - Cell: {x: 31, y: 13}
+    Kind: 1
+  - Cell: {x: 31, y: 14}
+    Kind: 1
+  - Cell: {x: 32, y: 9}
+    Kind: 7
+  - Cell: {x: 32, y: 11}
+    Kind: 1
+  - Cell: {x: 32, y: 12}
+    Kind: 1
+  - Cell: {x: 32, y: 13}
+    Kind: 1
+  - Cell: {x: 32, y: 14}
+    Kind: 1
+  - Cell: {x: 33, y: 8}
+    Kind: 7
+  - Cell: {x: 33, y: 9}
+    Kind: 7
+  - Cell: {x: 33, y: 10}
+    Kind: 7
+  - Cell: {x: 33, y: 11}
+    Kind: 1
+  - Cell: {x: 33, y: 12}
+    Kind: 1
+  - Cell: {x: 34, y: 4}
+    Kind: 2
+  - Cell: {x: 34, y: 6}
+    Kind: 2
+  - Cell: {x: 34, y: 7}
+    Kind: 2
+  - Cell: {x: 34, y: 8}
+    Kind: 2
+  - Cell: {x: 35, y: 4}
+    Kind: 2
+  - Cell: {x: 35, y: 5}
+    Kind: 2
+  - Cell: {x: 35, y: 6}
+    Kind: 2
+  - Cell: {x: 35, y: 7}
+    Kind: 2
+  - Cell: {x: 35, y: 8}
+    Kind: 2
+  - Cell: {x: 35, y: 11}
+    Kind: 7
+  - Cell: {x: 35, y: 12}
+    Kind: 7
+  - Cell: {x: 35, y: 13}
+    Kind: 7
+  - Cell: {x: 36, y: 4}
+    Kind: 2
+  - Cell: {x: 36, y: 5}
+    Kind: 2
+  - Cell: {x: 36, y: 8}
+    Kind: 2
+  - Cell: {x: 36, y: 12}
+    Kind: 7
+  - Cell: {x: 36, y: 13}
+    Kind: 7
+  - Cell: {x: 37, y: 13}
+    Kind: 7
+  _mineCells:
+  - {x: 13, y: 7}
+  - {x: 6, y: 12}
+  - {x: 22, y: 13}
+  _mineStock: 140
+  _bossEntrance:
+    Kind: 0
+    Cell: {x: 0, y: 0}
+  _nests:
+  - Cell: {x: 7, y: 15}
+    Element: 7
+  _terrainAlbedo: {fileID: 2800000, guid: a8edd682d8dc884499442630e9909219, type: 3}
+  _terrainEmission: {fileID: 2800000, guid: c94d93afcd88e64479bc64a3c995ffe1, type: 3}
+  _enemyHealthMultiplier: 1
+  _expectedUpgradeBonus: 0
+  _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
+  _attackDrone: {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
+  _recipes: []
+  _pathObjects: []
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  _startingMoney: 220
+  _baseHealth: 600
+  _waves: {fileID: 11400000, guid: e36afeab22faf1c48ae231fbd0fadfb7, type: 2}
+  _reward:
+    ResearchPoints: 6
+    PowerCurrency: 3
+    NewTower: {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+    Source: 2
+    Story: Dr. Voss had anti-air guns built. Just in case, she says.
+    Credit: Built on Dr. Voss's orders
+    NewPathObjects: []
+    HeroPerk: {fileID: 0}
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9
+  _story:
+  - Kind: 0
+    Wave: 0
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 24b055189e1d5d8458835bb6adb20936, type: 2}
+    Repeat: 0
+  - Kind: 1
+    Wave: 6
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 6a84c209e89008d49b1f0132e4a5a88f, type: 2}
+    Repeat: 0

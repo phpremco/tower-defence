@@ -16,8 +16,9 @@ MonoBehaviour:
   _target: 2
   _towerId: Rocket
   _droneId: 
-  _groupName: Rocket
+  _groupName: Flak Turret
   _costs: 060000000c00000012000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.1
+  _continent: 0

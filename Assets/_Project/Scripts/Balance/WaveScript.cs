@@ -72,9 +72,22 @@ namespace Game.Balance
         /// <summary>The creature of the air raids and of the escorts behind the last boss.</summary>
         public string Flyer = string.Empty;
 
+        /// <summary>Seconds between two flyers of an air raid: a small value packs the raid so splash flak is the answer.</summary>
+        public float FlyerInterval = 1.6f;
+
         /// <summary>Wave numbers (from 1) that become air raids; a difficulty takes the first few of them.</summary>
         public int[] AirWaves = new int[0];
         public int[] AirWavesPerDifficulty = { 0, 0, 0, 0 };
+
+        /// <summary>
+        /// How much bigger an air raid is per difficulty (Easy to Psycho): the flyer crowd and the pressure the solver aims
+        /// the raid at grow together, so there are more flyers of about the same toughness and splash matters more. A
+        /// shorter array repeats its last entry.
+        /// </summary>
+        public float[] AirRaidScale = { 1f };
+
+        public float AirRaidScaleFor(int difficulty) =>
+            AirRaidScale.Length == 0 ? 1f : AirRaidScale[difficulty < AirRaidScale.Length ? difficulty : AirRaidScale.Length - 1];
 
         /// <summary>From this difficulty index on, plain waves after the first air raid also carry a few flyers.</summary>
         public int AirSprinkleFrom = 4;
@@ -82,5 +95,8 @@ namespace Game.Balance
         /// <summary>One letter per wave: P plain, R rush, H heavy, M ambush. A shorter string repeats.</summary>
         public string Rhythm = "P";
         public BossSpec[] Bosses = new BossSpec[0];
+
+        /// <summary>Small fixed groups that preview a coming creature late in the level.</summary>
+        public TeaserSpec[] Teasers = new TeaserSpec[0];
     }
 }

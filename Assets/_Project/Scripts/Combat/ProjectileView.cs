@@ -1,4 +1,4 @@
-﻿using Game.Core;
+using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -20,6 +20,9 @@ namespace Game.Combat
         private const float BeamGlowAlpha = 0.3f;
         private static readonly Vector3 SlugScale = new Vector3(0.1f, 0.3f, 0.1f);
         private static readonly Vector3 BoltScale = new Vector3(0.07f, 0.16f, 0.07f);
+        private static readonly Vector3 FlakScale = new Vector3(0.06f, 0.14f, 0.06f);
+        private static readonly Color FlakHot = new Color(1f, 0.97f, 0.88f);
+        private static readonly Color FlakEdge = new Color(1f, 0.68f, 0.28f);
         private const float BoltTrailWidth = 0.07f;
         private const float BeamLingerSeconds = 0.3f;
         private const float ArcLingerSeconds = 0.1f;
@@ -146,10 +149,11 @@ namespace Game.Combat
             _core.localScale = Vector3.one * (style == ProjectileStyle.Mortar ? 0.3f : style == ProjectileStyle.Shell ? 0.16f : 0.2f);
             _core.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(style == ProjectileStyle.Shell ? new Color(0.2f, 0.2f, 0.22f) : bright, style == ProjectileStyle.Shell ? 0f : CoreEmission);
 
-            // Bolts and rail slugs are glowing rounded bars, the rail's longer and brighter.
-            _slug.gameObject.SetActive(style == ProjectileStyle.Rail || style == ProjectileStyle.Bolt);
-            _slug.localScale = style == ProjectileStyle.Rail ? SlugScale : BoltScale;
-            _slug.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(bright, style == ProjectileStyle.Rail ? CoreEmission * 1.5f : CoreEmission);
+            // Bolts, rail slugs and flak tracers are glowing rounded bars: the rail's longer and brighter, the flak's white-hot.
+            bool flak = style == ProjectileStyle.Flak;
+            _slug.gameObject.SetActive(style == ProjectileStyle.Rail || style == ProjectileStyle.Bolt || flak);
+            _slug.localScale = style == ProjectileStyle.Rail ? SlugScale : flak ? FlakScale : BoltScale;
+            _slug.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(flak ? FlakHot : bright, style == ProjectileStyle.Rail || flak ? CoreEmission * 1.5f : CoreEmission);
 
             _missile.gameObject.SetActive(style == ProjectileStyle.Rocket);
 
@@ -157,9 +161,9 @@ namespace Game.Combat
             _trail.emitting = trail;
             _trail.enabled = trail;
             _trail.Clear();
-            _trail.time = style == ProjectileStyle.Rail ? 0.35f : style == ProjectileStyle.Shell ? 0.1f : 0.18f;
-            _trail.widthMultiplier = style == ProjectileStyle.Rail ? 0.22f : style == ProjectileStyle.Rocket ? 0.12f : style == ProjectileStyle.Bolt ? BoltTrailWidth : 0.14f;
-            SetGradient(_trail, style == ProjectileStyle.Shell ? new Color(1f, 0.75f, 0.4f) : bright, style == ProjectileStyle.Rail ? 1f : 0.8f);
+            _trail.time = style == ProjectileStyle.Rail ? 0.35f : style == ProjectileStyle.Shell || flak ? 0.1f : 0.18f;
+            _trail.widthMultiplier = style == ProjectileStyle.Rail ? 0.22f : style == ProjectileStyle.Rocket ? 0.12f : style == ProjectileStyle.Bolt || flak ? BoltTrailWidth : 0.14f;
+            SetGradient(_trail, style == ProjectileStyle.Shell ? new Color(1f, 0.75f, 0.4f) : flak ? FlakEdge : bright, style == ProjectileStyle.Rail ? 1f : 0.8f);
 
             bool beam = style == ProjectileStyle.Laser || style == ProjectileStyle.Lightning;
             if (beam)

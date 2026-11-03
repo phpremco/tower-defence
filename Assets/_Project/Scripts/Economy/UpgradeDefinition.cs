@@ -28,7 +28,17 @@ namespace Game.Economy
         /// <summary>Added per level. A fraction (0.1 is +10%) for multipliers, a flat amount for base health and drone count.</summary>
         [SerializeField] private float _bonusPerLevel = 0.1f;
 
+        /// <summary>
+        /// Index of the continent whose research or power budget pays for this upgrade; -1 for a dormant upgrade of a tower
+        /// that is out of the campaign for now, which stays saved but is not offered.
+        /// </summary>
+        [SerializeField] private int _continent = -1;
+
         public string Id => name;
+        public int Continent => _continent;
+
+        /// <summary>True when the upgrade belongs to a continent's budget and is offered on the upgrade screen.</summary>
+        public bool IsInCampaign => _continent >= 0;
         public string DisplayName => _displayName;
         public UpgradeTarget Target => _target;
         public string TowerId => _towerId;

@@ -1,0 +1,329 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8958006deeb6df4da81c42bf88e3809, type: 3}
+  m_Name: Level_C1_03
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.LevelDefinition
+  _displayName: Shard Ridge
+  _regionName: Shard ridge
+  _briefing: A ridge of crystal shards, and a second track comes up out of the south. Keep an eye on the sky.
+  _gridSize: {x: 40, y: 22}
+  _cellSize: 1
+  _theme: {fileID: 11400000, guid: 2b3698d73d1aed84c9f6833070abf482, type: 2}
+  _camera:
+    PitchDegrees: 44
+    YawDegrees: 16
+    FitMargin: 0.04
+  _paths:
+  - Name: Road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 19}
+    - {x: 35, y: 19}
+    - {x: 35, y: 13}
+    - {x: 5, y: 13}
+    - {x: 5, y: 9}
+    - {x: 10, y: 9}
+    - {x: 39, y: 9}
+  - Name: North air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 21}
+    - {x: 17, y: 20}
+    - {x: 39, y: 9}
+  - Name: South air route
+    Flying: 1
+    Waypoints:
+    - {x: 0, y: 0}
+    - {x: 21, y: 1}
+    - {x: 39, y: 9}
+  - Name: Second road
+    Flying: 0
+    Waypoints:
+    - {x: 0, y: 2}
+    - {x: 10, y: 2}
+    - {x: 10, y: 9}
+    - {x: 39, y: 9}
+  _roadWidth: 2
+  _plazaCells:
+  - {x: 8, y: 6}
+  - {x: 8, y: 7}
+  - {x: 9, y: 6}
+  - {x: 9, y: 7}
+  - {x: 10, y: 6}
+  - {x: 10, y: 7}
+  - {x: 11, y: 6}
+  - {x: 11, y: 7}
+  - {x: 12, y: 6}
+  - {x: 12, y: 7}
+  - {x: 13, y: 6}
+  - {x: 13, y: 7}
+  _blockedCells:
+  - {x: 4, y: 4}
+  - {x: 4, y: 6}
+  - {x: 5, y: 6}
+  - {x: 6, y: 4}
+  - {x: 13, y: 1}
+  - {x: 15, y: 1}
+  - {x: 15, y: 4}
+  - {x: 16, y: 2}
+  - {x: 17, y: 3}
+  - {x: 19, y: 11}
+  - {x: 20, y: 3}
+  - {x: 23, y: 4}
+  - {x: 23, y: 6}
+  - {x: 25, y: 6}
+  - {x: 25, y: 11}
+  - {x: 27, y: 5}
+  - {x: 28, y: 4}
+  - {x: 29, y: 4}
+  - {x: 29, y: 11}
+  - {x: 30, y: 11}
+  - {x: 30, y: 16}
+  - {x: 35, y: 5}
+  - {x: 38, y: 13}
+  _blockades:
+  - Cell: {x: 15, y: 19}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 8, y: 9}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 16, y: 9}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  - Cell: {x: 34, y: 9}
+    Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
+  _terrain:
+  - Cell: {x: 0, y: 9}
+    Kind: 4
+  - Cell: {x: 0, y: 10}
+    Kind: 4
+  - Cell: {x: 0, y: 13}
+    Kind: 4
+  - Cell: {x: 1, y: 9}
+    Kind: 4
+  - Cell: {x: 1, y: 10}
+    Kind: 4
+  - Cell: {x: 1, y: 11}
+    Kind: 4
+  - Cell: {x: 1, y: 12}
+    Kind: 4
+  - Cell: {x: 1, y: 13}
+    Kind: 4
+  - Cell: {x: 1, y: 14}
+    Kind: 4
+  - Cell: {x: 2, y: 9}
+    Kind: 4
+  - Cell: {x: 2, y: 10}
+    Kind: 4
+  - Cell: {x: 2, y: 11}
+    Kind: 4
+  - Cell: {x: 2, y: 12}
+    Kind: 4
+  - Cell: {x: 2, y: 13}
+    Kind: 4
+  - Cell: {x: 5, y: 15}
+    Kind: 1
+  - Cell: {x: 5, y: 16}
+    Kind: 1
+  - Cell: {x: 6, y: 15}
+    Kind: 1
+  - Cell: {x: 6, y: 16}
+    Kind: 1
+  - Cell: {x: 7, y: 15}
+    Kind: 1
+  - Cell: {x: 7, y: 16}
+    Kind: 1
+  - Cell: {x: 8, y: 15}
+    Kind: 1
+  - Cell: {x: 8, y: 16}
+    Kind: 1
+  - Cell: {x: 8, y: 17}
+    Kind: 1
+  - Cell: {x: 9, y: 16}
+    Kind: 1
+  - Cell: {x: 9, y: 17}
+    Kind: 1
+  - Cell: {x: 10, y: 17}
+    Kind: 1
+  - Cell: {x: 20, y: 1}
+    Kind: 4
+  - Cell: {x: 20, y: 2}
+    Kind: 4
+  - Cell: {x: 21, y: 0}
+    Kind: 4
+  - Cell: {x: 21, y: 1}
+    Kind: 4
+  - Cell: {x: 21, y: 2}
+    Kind: 4
+  - Cell: {x: 22, y: 1}
+    Kind: 4
+  - Cell: {x: 22, y: 2}
+    Kind: 4
+  - Cell: {x: 23, y: 1}
+    Kind: 4
+  - Cell: {x: 23, y: 2}
+    Kind: 4
+  - Cell: {x: 24, y: 0}
+    Kind: 4
+  - Cell: {x: 24, y: 2}
+    Kind: 4
+  - Cell: {x: 24, y: 3}
+    Kind: 4
+  - Cell: {x: 24, y: 20}
+    Kind: 1
+  - Cell: {x: 24, y: 21}
+    Kind: 1
+  - Cell: {x: 26, y: 15}
+    Kind: 1
+  - Cell: {x: 26, y: 16}
+    Kind: 1
+  - Cell: {x: 26, y: 17}
+    Kind: 1
+  - Cell: {x: 26, y: 20}
+    Kind: 1
+  - Cell: {x: 26, y: 21}
+    Kind: 1
+  - Cell: {x: 27, y: 16}
+    Kind: 1
+  - Cell: {x: 28, y: 15}
+    Kind: 1
+  - Cell: {x: 28, y: 16}
+    Kind: 1
+  - Cell: {x: 28, y: 17}
+    Kind: 1
+  - Cell: {x: 29, y: 16}
+    Kind: 1
+  - Cell: {x: 30, y: 0}
+    Kind: 4
+  - Cell: {x: 30, y: 1}
+    Kind: 4
+  - Cell: {x: 30, y: 2}
+    Kind: 4
+  - Cell: {x: 31, y: 0}
+    Kind: 4
+  - Cell: {x: 31, y: 1}
+    Kind: 4
+  - Cell: {x: 31, y: 2}
+    Kind: 4
+  - Cell: {x: 32, y: 0}
+    Kind: 4
+  - Cell: {x: 32, y: 1}
+    Kind: 4
+  - Cell: {x: 32, y: 2}
+    Kind: 4
+  - Cell: {x: 33, y: 0}
+    Kind: 4
+  - Cell: {x: 35, y: 2}
+    Kind: 7
+  - Cell: {x: 36, y: 1}
+    Kind: 7
+  - Cell: {x: 36, y: 2}
+    Kind: 7
+  - Cell: {x: 36, y: 3}
+    Kind: 7
+  - Cell: {x: 36, y: 4}
+    Kind: 7
+  - Cell: {x: 36, y: 5}
+    Kind: 7
+  - Cell: {x: 37, y: 1}
+    Kind: 7
+  - Cell: {x: 37, y: 2}
+    Kind: 7
+  - Cell: {x: 37, y: 3}
+    Kind: 7
+  - Cell: {x: 37, y: 4}
+    Kind: 7
+  - Cell: {x: 37, y: 5}
+    Kind: 7
+  - Cell: {x: 37, y: 18}
+    Kind: 7
+  - Cell: {x: 38, y: 1}
+    Kind: 7
+  - Cell: {x: 38, y: 2}
+    Kind: 7
+  - Cell: {x: 38, y: 3}
+    Kind: 7
+  - Cell: {x: 38, y: 4}
+    Kind: 7
+  - Cell: {x: 38, y: 18}
+    Kind: 7
+  - Cell: {x: 38, y: 19}
+    Kind: 7
+  - Cell: {x: 38, y: 20}
+    Kind: 7
+  - Cell: {x: 38, y: 21}
+    Kind: 7
+  - Cell: {x: 39, y: 19}
+    Kind: 7
+  - Cell: {x: 39, y: 20}
+    Kind: 7
+  _mineCells:
+  - {x: 20, y: 11}
+  - {x: 29, y: 6}
+  - {x: 18, y: 5}
+  _mineStock: 140
+  _bossEntrance:
+    Kind: 0
+    Cell: {x: 0, y: 0}
+  _nests:
+  - Cell: {x: 38, y: 19}
+    Element: 7
+  _terrainAlbedo: {fileID: 2800000, guid: 7533705828769bc4e85aa19614518108, type: 3}
+  _terrainEmission: {fileID: 2800000, guid: a77d4c8c28b692d45ab324de2427005b, type: 3}
+  _enemyHealthMultiplier: 1
+  _expectedUpgradeBonus: 0.05
+  _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
+  _attackDrone: {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
+  _recipes: []
+  _pathObjects: []
+  _availableTowers:
+  - {fileID: 11400000, guid: 589375802fefa14488ea57e1bc93bc10, type: 2}
+  - {fileID: 11400000, guid: f755ec9b0222db747aef50ec72d16ee6, type: 2}
+  - {fileID: 11400000, guid: f69753d29cadbce43960e80e6a300c68, type: 2}
+  - {fileID: 11400000, guid: 5f0a1ed8305cb7345b7d18570f93c7c9, type: 2}
+  - {fileID: 11400000, guid: cbdd54e31020e61479d683dd6a20d387, type: 2}
+  - {fileID: 11400000, guid: 82a00c164693f9942b9a5e3166c50eef, type: 2}
+  _startingMoney: 240
+  _baseHealth: 600
+  _waves: {fileID: 11400000, guid: fe64dda98f2fbcd4a8af34ae00c25263, type: 2}
+  _reward:
+    ResearchPoints: 6
+    PowerCurrency: 3
+    NewTower: {fileID: 0}
+    Source: 0
+    Story: 
+    Credit: 
+    NewPathObjects: []
+    HeroPerk: {fileID: 0}
+  _starBaseHealthFractions:
+  - 0.5
+  - 0.9
+  _story:
+  - Kind: 0
+    Wave: 0
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 069a66ec5dcd57b46aa7daeacfd4099c, type: 2}
+    Repeat: 0
+  - Kind: 2
+    Wave: 0
+    Enemy: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 0a08a19dd8413044e8a9e63f754ae459, type: 2}
+    Repeat: 0
+  - Kind: 5
+    Wave: 0
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 22ea9b2f51f367e48a137e3bb1eb9276, type: 2}
+    Repeat: 0

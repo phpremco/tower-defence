@@ -20,13 +20,14 @@ namespace BalanceLab
         public int SecondRoad = -1;
         public List<string> TowerIds = new List<string>();
         public string RewardTowerId = string.Empty;
+        public string RewardHeroPerkId = string.Empty;
         public int Research;
         public int Power;
         public string HeroGuid;
         public string GateTowerId = string.Empty;
 
-        /// <summary>Wave asset paths per difficulty index.</summary>
-        public List<List<string>> WavePaths = new List<List<string>>();
+        /// <summary>The level's LevelWaves asset, which holds the waves of every difficulty; null when it has none.</summary>
+        public string WavesPath;
         public List<List<WaveSpec>> Waves = new List<List<WaveSpec>>();
     }
 
@@ -78,7 +79,8 @@ namespace BalanceLab
                     Flies = n["_flies"].Bool,
                     Health = n["_maxHealth"].Float,
                     Armor = n["_armor"].Float,
-                    Speed = n["_speed"].Float,
+                    Speed = AverageSpeed(n),
+                    FightSpeed = n["_rageSeconds"].Float > 0f ? AverageSpeed(n) * n["_rageSpeedMultiplier"].Float : 0f,
                     Reward = n["_reward"].Int,
                     BaseDamage = n["_baseDamage"].Int,
                     AttackDamage = n["_attackDamage"].Float,
@@ -133,6 +135,8 @@ namespace BalanceLab
                     PaidInPower = n["_currency"].Int == 1,
                     BonusPerLevel = n["_bonusPerLevel"].Float,
                     Costs = HexInts(n["_costs"].Text),
+                    // S3: only upgrades tagged to a continent count towards its budget; untagged ones are dormant (-1).
+                    Continent = n["_continent"].Exists ? n["_continent"].Int : -1,
                 });
                 UpgradePaths[id] = path;
             }
@@ -278,6 +282,8 @@ namespace BalanceLab
             level.Key = level.Name.StartsWith("Level_", StringComparison.Ordinal) ? level.Name.Substring(6) : level.Name;
             string reward = n["_reward"]["NewTower"].Guid;
             level.RewardTowerId = reward != null && Index.PathOf(reward) != null ? AssetIndex.NameOf(Index.PathOf(reward)) : string.Empty;
+            string perk = n["_reward"]["HeroPerk"].Guid;
+            level.RewardHeroPerkId = perk != null && Index.PathOf(perk) != null ? AssetIndex.NameOf(Index.PathOf(perk)) : string.Empty;
             foreach (YamlNode tower in n["_availableTowers"].Items)
             {
                 level.TowerIds.Add(AssetIndex.NameOf(Index.PathOf(tower.Guid)));
@@ -326,22 +332,31 @@ namespace BalanceLab
                 LoadHero(level.HeroGuid);
             }
 
-            foreach (YamlNode set in n["_difficultyWaves"].Items)
+            level.WavesPath = Index.PathOf(n["_waves"].Guid);
+            if (level.WavesPath != null)
             {
-                var wavePaths = new List<string>();
-                var waves = new List<WaveSpec>();
-                foreach (YamlNode wave in set["Waves"].Items)
+                foreach (YamlNode set in Index.Read(level.WavesPath)["_difficultyWaves"].Items)
                 {
-                    string wavePath = Index.PathOf(wave.Guid);
-                    wavePaths.Add(wavePath);
-                    waves.Add(LoadWave(wavePath));
-                }
+                    var waves = new List<WaveSpec>();
+                    foreach (YamlNode wave in set["Waves"].Items)
+                    {
+                        waves.Add(LoadWave(wave));
+                    }
 
-                level.WavePaths.Add(wavePaths);
-                level.Waves.Add(waves);
+                    level.Waves.Add(waves);
+                }
             }
 
             return level;
+        }
+
+        // The same as EnemyDefinition.AverageSpeed: a roller counts at its speed over a whole walk-and-roll cycle.
+        private static float AverageSpeed(YamlNode n)
+        {
+            float speed = n["_speed"].Float;
+            float walk = n["_walkSeconds"].Float;
+            float roll = n["_rollSeconds"].Float;
+            return roll > 0f ? speed * (walk + roll * n["_rollSpeedMultiplier"].Float) / (walk + roll) : speed;
         }
 
         private void LoadHero(string guid)
@@ -355,12 +370,28 @@ namespace BalanceLab
                 BladeInterval = blade?["_attackInterval"].Float ?? 1f,
                 GunDamage = gun?["_damage"].Float ?? 0f,
                 GunInterval = gun?["_attackInterval"].Float ?? 1f,
+                Magazine = gun?["_magazine"].Int ?? 0,
+                ReloadSeconds = gun?["_reloadSeconds"].Float ?? 0f,
             };
+            // The perks the hero can earn; a perk's id is its asset name, as in HeroPerkDefinition.Id.
+            foreach (YamlNode item in hero["_perks"].Items)
+            {
+                string path = item.Guid != null ? Index.PathOf(item.Guid) : null;
+                YamlNode perk = path != null ? Index.ReadByGuid(item.Guid) : null;
+                if (perk != null)
+                {
+                    Hero.Perks.Add(new HeroPerkStats
+                    {
+                        Id = AssetIndex.NameOf(path),
+                        IntervalMultiplier = perk["_rangedIntervalMultiplier"].Float,
+                        ReloadMultiplier = perk["_reloadMultiplier"].Float,
+                    });
+                }
+            }
         }
 
-        public WaveSpec LoadWave(string path)
+        private WaveSpec LoadWave(YamlNode n)
         {
-            YamlNode n = Index.Read(path);
             var wave = new WaveSpec
             {
                 StartDelay = n["_startDelay"].Float,

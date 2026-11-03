@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d739c3f664720374da6d2402ae0ff1fc, type: 3}
+  m_Name: Dlg_Cut_Orbit
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.DialogueDefinition
+  _lines:
+  - Id: Dlg_Cut_Orbit.01
+    Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
+    Segments:
+    - Text: 'Nova Terra Industries sends the first expedition: Operation New Dawn. After three years in cryosleep, the mothership reaches orbit.'
+      Style: 0
+    GlitchIntensity: 0
+  - Id: Dlg_Cut_Orbit.02
+    Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
+    Segments:
+    - Text: 'The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Mercer, call sign Pathfinder, goes down first.'
+      Style: 0
+    GlitchIntensity: 0
+  - Id: Dlg_Cut_Orbit.03
+    Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
+    Segments:
+    - Text: 'All systems nominal. No life forms detected. Expected complications: none. Welcome to S-69-CRYS, Commander.'
+      Style: 0
+    GlitchIntensity: 0

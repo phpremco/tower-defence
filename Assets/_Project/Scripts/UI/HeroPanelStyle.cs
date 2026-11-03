@@ -55,7 +55,5 @@ namespace Game.UI
                 fill.color = fraction <= lowFraction ? PlainRed : fraction <= midFraction ? PlainYellow : PlainGreen;
             }
         }
-
-        public static int Cooldown(float ready, float total) => Mathf.CeilToInt((1f - ready) * total);
     }
 }

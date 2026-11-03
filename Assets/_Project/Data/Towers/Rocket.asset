@@ -12,29 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: Rocket
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Rocket
+  _displayName: Flak Turret
   _targets: 2
   _levels:
   - Cost: 120
-    Damage: 30
+    Damage: 14
     Range: 5.5
-    FireInterval: 1.6
+    FireInterval: 0.55
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
   - Cost: 140
-    Damage: 55
+    Damage: 22
     Range: 5.9
-    FireInterval: 1.4
+    FireInterval: 0.5
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
   - Cost: 200
-    Damage: 90
+    Damage: 34
     Range: 6.3
-    FireInterval: 1.2
+    FireInterval: 0.45
     HealthBonus: 0
+    SlowFactor: 0
+    SlowSeconds: 0
     Model: {fileID: 0}
-  _projectileSpeed: 8
-  _splashRadius: 1.5
+  _projectileSpeed: 14
+  _splashRadius: 1.1
+  _fuseRadius: 0.6
   _maxHealth: 130
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
@@ -46,9 +53,10 @@ MonoBehaviour:
   _supportRangeBonus: 0
   _supportRateBonus: 0
   _blocksGroundEnemies: 0
+  _isBaseDefence: 0
   _color: {r: 0.9, g: 0.9, b: 1, a: 1}
-  _shape: 4
-  _projectileStyle: 2
-  _model: {fileID: 919132149155446097, guid: fd4163113b1626e40a1cdff72f6956d5, type: 3}
+  _shape: 13
+  _projectileStyle: 8
+  _model: {fileID: 0}
   _modelScale: 1.5
   _keepModelColours: 0

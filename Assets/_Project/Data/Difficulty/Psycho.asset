@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19a4e9763e5c17b419f71f74ea442792, type: 3}
   m_Name: Psycho
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
-  _displayName: Psycho
+  _displayName: Crazy
   _healthMultiplier: 1.65
   _countMultiplier: 1.5
   _spawnIntervalMultiplier: 0.7

@@ -22,6 +22,12 @@ namespace Game.Levels
         /// <summary>The tint of the continent on the globe.</summary>
         public Color Colour;
 
+        /// <summary>Stable id of the continent (C1 to C6), for data and saves; the display name may change.</summary>
+        public string Key;
+
+        /// <summary>The surface, or the Core under it. Spacing between levels is only compared within one layer.</summary>
+        public MapLayer Layer;
+
         /// <summary>The point on a unit sphere the middle sits on.</summary>
         public Vector3 Direction => PlanetCoordinates.ToDirection(Longitude, Latitude);
     }

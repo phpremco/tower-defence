@@ -7,6 +7,8 @@ namespace Game.Economy
     [Serializable]
     public sealed class ProgressData
     {
+        /// <summary>Save format version. Saves written before versioning load as 0; see <see cref="ProgressMigrator"/>.</summary>
+        public int Version;
         public int ResearchPoints;
         public int PowerCurrency;
         public int MasterVolumePercent = 100;
@@ -14,6 +16,10 @@ namespace Game.Economy
         public int EffectsVolumePercent = 100;
         public int AmbienceVolumePercent = 80;
         public bool IntroSeen;
+
+        /// <summary>Ids of story moments already shown, so a story trigger plays once per save.</summary>
+        public List<string> SeenStoryIds = new List<string>();
+
         public List<string> UnlockedTowerIds = new List<string>();
         public List<string> CompletedLevels = new List<string>();
         public List<UpgradeLevel> Upgrades = new List<UpgradeLevel>();
@@ -21,6 +27,12 @@ namespace Game.Economy
 
         /// <summary>The street weapons last taken into a level, by asset name, so the choice is offered again.</summary>
         public List<string> LoadoutIds = new List<string>();
+
+        /// <summary>Hero perks a first clear has granted, by asset name (version 2).</summary>
+        public List<string> UnlockedHeroPerkIds = new List<string>();
+
+        /// <summary>Gadgets (path objects) a first clear has granted for the loadout, by asset name (version 2).</summary>
+        public List<string> UnlockedPathObjectIds = new List<string>();
     }
 
     /// <summary>Best star rating (1 to 3) for one level on one difficulty. Key is "levelId/difficultyId".</summary>

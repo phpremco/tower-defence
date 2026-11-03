@@ -50,5 +50,8 @@ namespace Game.Enemies
         SkySovereign = 36,
         SlimeMonarch = 37,
         RollerKing = 38,
+
+        /// <summary>The stone crawler: a hunched boulder of a body on six stubby legs, basalt plates split by glowing veins.</summary>
+        Cragback = 39,
     }
 }

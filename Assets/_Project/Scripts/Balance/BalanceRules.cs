@@ -31,9 +31,12 @@ namespace Game.Balance
 
         /// <summary>
         /// Share of the window a tower really spends hurting something (target switching, misses, imperfect placement).
-        /// Calibrated against the PlayMode greedy bot: pressure 1 is where it stops holding. Retune after a probe run.
+        /// Calibrated against the PlayMode bot: pressure 1 is where it stops holding. Retune after a probe run. 0.35 until
+        /// 2026-11-03; the S4 probe (bot at the trunk gate, frame-rate-proof guns, the kill money of <see cref="KillPurse"/>)
+        /// lost with the ledger at 0.7 to 0.85. After the model and bot fixes of that day it held Crysium Vein untouched at
+        /// 0.27 and lost it at wave 10 (the prowler and roller rush) at 0.3 and 0.35: the bot holds or breaks there.
         /// </summary>
-        public float Utilisation = 0.35f;
+        public float Utilisation = 0.27f;
 
         /// <summary>Most creatures one splash hit can catch, however dense the stream.</summary>
         public float MaxSplashTargets = 2.4f;
@@ -41,8 +44,17 @@ namespace Game.Balance
         /// <summary>Gun towers the player can place usefully per ground front (build spots in reach of the road).</summary>
         public int TowersPerFront = 16;
 
-        /// <summary>The hero holds and hits what stops at a gate; counted at this share of the wave window.</summary>
-        public float HeroShare = 0.5f;
+        /// <summary>
+        /// The hero holds and hits what stops at a gate; counted at this share of the wave window. 0.5 until 2026-11-03: at
+        /// the busiest gate the hero falls and is out for two minutes (four or five waves), so it fights less than half the time.
+        /// </summary>
+        public float HeroShare = 0.35f;
+
+        /// <summary>
+        /// Share of the ground health of earlier waves that reaches the defence together with a wave (<see cref="KillPurse.Carried"/>)
+        /// that counts against it. Those creatures were also counted in their own wave, so half goes to each.
+        /// </summary>
+        public float CarriedShare = 0.5f;
 
         /// <summary>A gate holds walkers this long at most per wave, however strong it is.</summary>
         public float MaxGateHoldSeconds = 8f;
@@ -132,15 +144,29 @@ namespace Game.Balance
         /// <summary>Power per difficulty; none on Easy, Psycho alone pays every drone upgrade.</summary>
         public float[] PowerMultipliers = { 0f, 1f, 1.5f, 2.2f };
 
-        /// <summary>Share of all research upgrades one clear of every level on Easy pays.</summary>
+        /// <summary>Share of a continent's research budget one clear of every level of it on Easy pays.</summary>
         public float EasyResearchShare = 0.2f;
 
-        /// <summary>Base power of a level: a fixed part plus a part per boss wave (bosses pay power, GAME_DESIGN).</summary>
-        public int PowerPerLevel = 4;
-        public int PowerPerBoss = 3;
+        /// <summary>
+        /// Levels per continent (STORY: six continents of twenty). Payouts are weighted by a level's index in its continent,
+        /// against the full twenty, so a level pays the same however many of its continent's levels exist yet.
+        /// </summary>
+        public int LevelsPerContinent = 20;
 
-        /// <summary>Later levels pay more research than earlier ones: base research grows by this share per level.</summary>
-        public float ResearchGrowthPerLevel = 0.18f;
+        /// <summary>Research weight rises from 1 at a continent's first level by this much up to its nineteenth.</summary>
+        public float ResearchCurveRise = 0.5f;
+
+        /// <summary>Research weight of a continent's last level, the continent boss.</summary>
+        public float ContinentFinaleWeight = 2f;
+
+        /// <summary>No level pays less base research than this, so a small continent budget never pays a point or two.</summary>
+        public int MinResearchPerLevel = 4;
+
+        /// <summary>Power weight of a level: one, plus this much per boss wave on Medium (bosses pay power, GAME_DESIGN).</summary>
+        public float PowerPerBossWeight = 0.75f;
+
+        /// <summary>Boss waves the power curve expects per level on Medium, so a continent's power sums to its budget.</summary>
+        public float ExpectedBossesPerLevel = 2f;
 
         /// <summary>The default instance the generator and the tools use.</summary>
         public static BalanceRules Default => new BalanceRules();

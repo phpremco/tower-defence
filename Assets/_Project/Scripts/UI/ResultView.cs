@@ -20,6 +20,7 @@ namespace Game.UI
         private const float StarRevealSeconds = 0.45f;
         private const float PopSeconds = 0.3f;
         private const float PreviewSize = 230f;
+        private const int UnlockLineSize = 30;
         private const float ButtonWidth = 340f;
         private const float DefeatDelaySeconds = 3.2f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.7f);
@@ -50,7 +51,8 @@ namespace Game.UI
 
         private void Refresh()
         {
-            if (_shown || _waiting || _context.Outcome == LevelOutcome.Running || _context.Result == null)
+            // A victory dialogue plays first; the story raises Changed again once it is done.
+            if (_shown || _waiting || _context.Outcome == LevelOutcome.Running || _context.Result == null || _context.StoryBusy)
             {
                 return;
             }
@@ -117,7 +119,14 @@ namespace Game.UI
                 rewards = "Points for this difficulty were earned before.\nBeat it on a harder setting for more.";
             }
 
-            Text rewardText = UiKit.CreateFixedText(rect, rewards, result.RewardsAlreadyEarned ? 30 : 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -400f), new Vector2(PanelWidth - 120f, 100f));
+            string unlocks = UnlockLine(result);
+            bool twoLines = result.RewardsAlreadyEarned || unlocks != null;
+            if (unlocks != null)
+            {
+                rewards += "\n" + unlocks;
+            }
+
+            Text rewardText = UiKit.CreateFixedText(rect, rewards, twoLines ? UnlockLineSize : 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -400f), new Vector2(PanelWidth - 120f, 100f));
             rewardText.color = result.RewardsAlreadyEarned ? Muted : Color.white;
 
             if (result.NewTower != null)
@@ -126,6 +135,35 @@ namespace Game.UI
             }
 
             return null;
+        }
+
+        // One line for the unlocks that have no picture of their own: new gadgets for the loadout and a commander perk.
+        private static string UnlockLine(LevelResult result)
+        {
+            var parts = new System.Collections.Generic.List<string>();
+            if (result.NewPathObjects.Length > 0)
+            {
+                var names = new string[result.NewPathObjects.Length];
+                for (int i = 0; i < names.Length; i++)
+                {
+                    names[i] = result.NewPathObjects[i].DisplayName;
+                }
+
+                parts.Add($"New gadgets: {string.Join(", ", names)}");
+            }
+
+            if (result.HeroPerk != null)
+            {
+                parts.Add($"Mercer learns {result.HeroPerk.DisplayName}");
+            }
+
+            // The weapon panel shows the credit under its heading; without a weapon it closes this line.
+            if (parts.Count > 0 && result.NewTower == null && !string.IsNullOrEmpty(result.Credit))
+            {
+                parts.Add($"({result.Credit})");
+            }
+
+            return parts.Count > 0 ? string.Join("      ", parts) : null;
         }
 
         private static Button BuildLoss(RectTransform rect)
@@ -173,7 +211,8 @@ namespace Game.UI
             ModelPreview preview = ModelPreview.Create(frameRect, new Vector2(PreviewSize, PreviewSize * 0.78f));
             preview.ShowTower(result.NewTower);
 
-            string source = result.Source == UnlockSource.StolenAlienTech ? "Stolen alien technology" : "Intel from the home planet";
+            string source = !string.IsNullOrEmpty(result.Credit) ? result.Credit
+                : result.Source == UnlockSource.StolenAlienTech ? "Stolen alien technology" : "Intel from the home planet";
             Text heading = UiKit.CreateFixedText(rect, $"New weapon: {result.NewTower.DisplayName}", 44, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -470f), new Vector2(PanelWidth - PreviewSize - 140f, 60f));
             heading.color = Gold;
             UiKit.CreateFixedText(rect, source, 30, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(60f + PreviewSize + 40f, -535f), new Vector2(PanelWidth - PreviewSize - 140f, 40f)).color = Muted;

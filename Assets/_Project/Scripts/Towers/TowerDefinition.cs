@@ -15,6 +15,9 @@ namespace Game.Towers
         [SerializeField] private TowerLevel[] _levels = new TowerLevel[LevelCount];
         [SerializeField] [Min(1f)] private float _projectileSpeed = 10f;
         [SerializeField] [Min(0f)] private float _splashRadius;
+
+        /// <summary>A proximity fuse: the shell bursts this close to its target. Zero bursts on impact.</summary>
+        [SerializeField] [Min(0f)] private float _fuseRadius;
         [SerializeField] [Min(1f)] private float _maxHealth = 100f;
 
         /// <summary>Share of everything spent on the tower that selling gives back.</summary>
@@ -60,6 +63,7 @@ namespace Game.Towers
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
+        public float FuseRadius => _fuseRadius;
         public float MaxHealth => _maxHealth;
         public float SellRefundFraction => _sellRefundFraction;
         public float ScrapFraction => _scrapFraction;

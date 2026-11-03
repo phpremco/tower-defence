@@ -13,77 +13,149 @@ MonoBehaviour:
   m_Name: CampaignCatalog
   m_EditorClassIdentifier: Game.Levels::Game.Levels.CampaignCatalog
   _regions:
-  - DisplayName: Landfall
-    Longitude: -45
-    Latitude: 30
-    RadiusDegrees: 27
-    Colour: {r: 0.38, g: 0.52, b: 0.34, a: 1}
-  - DisplayName: Ember Reach
-    Longitude: 12
-    Latitude: -8
-    RadiusDegrees: 24
-    Colour: {r: 0.58, g: 0.34, b: 0.22, a: 1}
-  - DisplayName: Verdant Belt
-    Longitude: 64
-    Latitude: 16
-    RadiusDegrees: 26
-    Colour: {r: 0.26, g: 0.5, b: 0.3, a: 1}
-  - DisplayName: Southern Wastes
-    Longitude: -28
-    Latitude: -46
-    RadiusDegrees: 24
-    Colour: {r: 0.6, g: 0.54, b: 0.36, a: 1}
-  - DisplayName: Polar Crown
-    Longitude: 122
+  - DisplayName: Crystal Plains
+    Longitude: -40
+    Latitude: 6
+    RadiusDegrees: 30
+    Colour: {r: 0.48, g: 0.5, b: 0.72, a: 1}
+    Key: C1
+    Layer: 0
+  - DisplayName: Ashen Reach
+    Longitude: 60
+    Latitude: -15
+    RadiusDegrees: 30
+    Colour: {r: 0.58, g: 0.36, b: 0.26, a: 1}
+    Key: C2
+    Layer: 0
+  - DisplayName: Northern Crown
+    Longitude: 60
     Latitude: 62
-    RadiusDegrees: 22
-    Colour: {r: 0.7, g: 0.8, b: 0.88, a: 1}
-  - DisplayName: Deep Mire
-    Longitude: 152
-    Latitude: -20
-    RadiusDegrees: 24
-    Colour: {r: 0.24, g: 0.38, b: 0.26, a: 1}
-  - DisplayName: Shattered Isles
-    Longitude: -135
-    Latitude: -6
-    RadiusDegrees: 22
-    Colour: {r: 0.42, g: 0.36, b: 0.52, a: 1}
+    RadiusDegrees: 30
+    Colour: {r: 0.78, g: 0.84, b: 0.9, a: 1}
+    Key: C3
+    Layer: 0
+  - DisplayName: Mirewood
+    Longitude: -140
+    Latitude: 15
+    RadiusDegrees: 30
+    Colour: {r: 0.26, g: 0.42, b: 0.3, a: 1}
+    Key: C4
+    Layer: 0
+  - DisplayName: Southern Crown
+    Longitude: 150
+    Latitude: -60
+    RadiusDegrees: 30
+    Colour: {r: 0.74, g: 0.8, b: 0.88, a: 1}
+    Key: C5
+    Layer: 0
+  - DisplayName: The Core
+    Longitude: 150
+    Latitude: -32
+    RadiusDegrees: 12
+    Colour: {r: 0.35, g: 0.1, b: 0.06, a: 1}
+    Key: C6
+    Layer: 1
   _nodes:
-  - DisplayName: Landing Zone
-    Longitude: -64
-    Latitude: 14
+  - DisplayName: Landing Site
+    Longitude: -55.53
+    Latitude: -8.22
     Region: 0
-    Level: {fileID: 11400000, guid: ce4469ed87baed04d9f868403cc4ade3, type: 2}
-  - DisplayName: Glowing Forest
-    Longitude: -54
-    Latitude: 24
+    Level: {fileID: 11400000, guid: 2e61070e667e17e4c9384578fa53f532, type: 2}
+  - DisplayName: Glass Meadows
+    Longitude: -45.98
+    Latitude: -6.9
     Region: 0
-    Level: {fileID: 11400000, guid: 99cf5d84e855d624fbbe8142d2f3f8fd, type: 2}
-  - DisplayName: Lava Caves
-    Longitude: -42
-    Latitude: 16
+    Level: {fileID: 11400000, guid: efc2c6adb1633ba4486d20733c0ecba9, type: 2}
+  - DisplayName: Shard Ridge
+    Longitude: -36.4
+    Latitude: -8.56
     Region: 0
-    Level: {fileID: 11400000, guid: f1bffcf8b970ae0479a732f1f81ca6cc, type: 2}
-  - DisplayName: Ancient Ruins
-    Longitude: -32
-    Latitude: 26
+    Level: {fileID: 11400000, guid: 00e794e2509e1404888283a26e238dca, type: 2}
+  - DisplayName: Fault Line
+    Longitude: -26.76
+    Latitude: -9.28
     Region: 0
-    Level: {fileID: 11400000, guid: d010e547e04d74b4785d86b25a4be20f, type: 2}
-  - DisplayName: The Nest
-    Longitude: -30
-    Latitude: 38
+    Level: {fileID: 11400000, guid: 2dfc5973f82d4284cb9f2b0aeb80d18c, type: 2}
+  - DisplayName: Quartz Flats
+    Longitude: -17.41
+    Latitude: -6.96
     Region: 0
-    Level: {fileID: 11400000, guid: 39aa07e4da6b62341a7f9d2e67c6d9b3, type: 2}
-  - DisplayName: Frozen Shelf
-    Longitude: -42
-    Latitude: 50
+    Level: {fileID: 11400000, guid: eeddf9fe7ea565c45ab759809c92396a, type: 2}
+  - DisplayName: Crysium Vein
+    Longitude: -17.71
+    Latitude: 2.43
     Region: 0
-    Level: {fileID: 11400000, guid: 55ee7213f8b886c4ba9d7403a5b322ba, type: 2}
-  - DisplayName: Black Marsh
-    Longitude: -56
-    Latitude: 38
+    Level: {fileID: 11400000, guid: 3c23b6abd7b108f4d89316acc20b14ba, type: 2}
+  - DisplayName: Crystal Plains 7
+    Longitude: -27.12
+    Latitude: 0.14
     Region: 0
-    Level: {fileID: 11400000, guid: fba35921a6051744d9c42bc1e4da8470, type: 2}
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 8
+    Longitude: -36.82
+    Latitude: 0.73
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 9
+    Longitude: -46.28
+    Latitude: 2.44
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 10
+    Longitude: -55.95
+    Latitude: 1.24
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 11
+    Longitude: -65.38
+    Latitude: 3.21
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 12
+    Longitude: -58.55
+    Latitude: 9.98
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 13
+    Longitude: -48.96
+    Latitude: 11.87
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 14
+    Longitude: -39.2
+    Latitude: 10.43
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 15
+    Longitude: -29.44
+    Latitude: 9.36
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 16
+    Longitude: -19.79
+    Latitude: 11.57
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 17
+    Longitude: -25.34
+    Latitude: 19.36
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 18
+    Longitude: -35.45
+    Latitude: 19.01
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 19
+    Longitude: -45.44
+    Latitude: 20.8
+    Region: 0
+    Level: {fileID: 0}
+  - DisplayName: Crystal Plains 20
+    Longitude: -55.68
+    Latitude: 20.63
+    Region: 0
+    Level: {fileID: 0}
   _difficulties:
   - {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
   - {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}

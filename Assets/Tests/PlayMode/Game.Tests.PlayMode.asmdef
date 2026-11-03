@@ -1,15 +1,18 @@
-﻿{
+{
     "name":  "Game.Tests.PlayMode",
     "rootNamespace":  "Game.Tests",
     "references":  [
                        "Game.Core",
                        "Game.Levels",
+                       "Game.Enemies",
                        "Game.Hero",
                        "Game.Towers",
                        "Game.Combat",
                        "Game.PathObjects",
                        "Game.Drones",
                        "Game.Economy",
+                       "Game.Balance",
+                       "Game.UI",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
                    ],

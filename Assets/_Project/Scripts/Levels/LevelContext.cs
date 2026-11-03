@@ -83,6 +83,24 @@ namespace Game.Levels
 
         public bool Paused { get; set; }
 
+        /// <summary>True while an overlay (briefing, codex, recon, dialogue) holds the game clock. Mirrored by the time controller.</summary>
+        public bool Held { get; set; }
+
+        /// <summary>
+        /// Gameplay input (placing, hero actions, skipping a wave, game speed) is ignored while this is true, so a key
+        /// press meant for an overlay never also acts on the field underneath.
+        /// </summary>
+        public bool InputBlocked => Paused || Held;
+
+        /// <summary>Whether this run plays story dialogues. The campaign flow allows it; tests and tools do not.</summary>
+        public bool StoryEnabled { get; set; }
+
+        /// <summary>True while a dialogue plays or waits to play. The result screen waits for it to clear.</summary>
+        public bool StoryBusy { get; set; }
+
+        /// <summary>The level's dialogue player. The HUD sets its presenter; until then the level queues no story.</summary>
+        public DialoguePlayer Dialogue { get; set; }
+
         /// <summary>True while the level waits for the player to read the briefing and deploy.</summary>
         public bool BriefingPending { get; set; }
 
@@ -126,6 +144,9 @@ namespace Game.Levels
 
         /// <summary>Display names of the hero's posts, in the order the hero indexes them.</summary>
         public string[] HeroPostNames { get; set; } = new string[0];
+
+        /// <summary>The hero perks the player has unlocked, applied when the hero is created.</summary>
+        public IReadOnlyCollection<HeroPerkDefinition> HeroPerks { get; set; } = new HeroPerkDefinition[0];
 
         /// <summary>Asks the hero to take up the post of the placed tower that is currently selected.</summary>
         public GameEvent HeroSendRequested { get; } = new GameEvent();
@@ -237,8 +258,11 @@ namespace Game.Levels
         /// <summary>Asks to combine the selected placed tower with its neighbour.</summary>
         public GameEvent CombineRequested { get; } = new GameEvent();
 
-        /// <summary>Asks for the hero's emergency repair, which costs money.</summary>
-        public GameEvent HeroRepairRequested { get; } = new GameEvent();
+        /// <summary>Asks to use the hero ability in a slot; the hero controller checks the gates and takes the price.</summary>
+        public GameEvent<int> HeroAbilityRequested { get; } = new GameEvent<int>();
+
+        /// <summary>Asks to send the hero to a post by index; the hero controller checks the gates, as for the abilities.</summary>
+        public GameEvent<int> HeroPostRequested { get; } = new GameEvent<int>();
 
         /// <summary>The grid cell where the hero stands for each post, in the same order as the post names.</summary>
         public Vector2Int[] HeroPostCells { get; set; } = new Vector2Int[0];

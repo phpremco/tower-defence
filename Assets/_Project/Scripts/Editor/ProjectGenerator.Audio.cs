@@ -39,6 +39,9 @@ namespace Game.Editor
             ("_teslaShots", Kenney, "forceField"),
             ("_beamLoops", ApprovedFolder, "laser_beam_loop"),
             ("_railShots", Lentikula, "Laser Beam"),
+            // Flak: a sharp metallic crack for the shot and a crunching burst, unlike the cannon and the rocket (pitched below).
+            ("_flakShots", Kenney, "impactMetal"),
+            ("_flakBursts", Kenney, "explosionCrunch"),
             ("_cannonExplosions", ApprovedFolder + "/Explosions", "explosion_cannon_shell"),
             ("_rocketExplosions", ApprovedFolder + "/Explosions", "explosion_air_rocket"),
             ("_mineExplosions", ApprovedFolder + "/Explosions", "explosion_mine"),
@@ -75,6 +78,8 @@ namespace Game.Editor
             ("_largeWingLoops", ApprovedFolder + "/Bosses/Flying", "large_wings_flapping_loop_boss"),
             ("_waterLoops", ApprovedFolder + "/Environment", "water_bubbling_loop"),
             ("_lavaLoops", "", "lavabubble"),
+            // Stand-in for the rift until Remco records its own: the lava bed, slower (pitched below).
+            ("_riftLoops", "", "lavabubble"),
             ("_steamLoops", ApprovedFolder + "/Environment", "steam_loop"),
             ("_leavesLoops", ApprovedFolder + "/Environment", "leaves_wind_loop"),
             ("_icyWindLoops", ApprovedFolder + "/Environment", "icy_wind_loop"),
@@ -84,6 +89,14 @@ namespace Game.Editor
             ("_menuMusic", ApprovedFolder + "/Music", "menu_loop"),
             ("_gameMusic", ApprovedFolder + "/Music", "game_calm_loop"),
             ("_bossMusic", ApprovedFolder + "/Music", "game_boss_loop"),
+        };
+
+        // Playback speed of the library sets that borrow another sound; one for every set not listed.
+        private static readonly Dictionary<string, float> LibraryPitches = new Dictionary<string, float>
+        {
+            ["_flakShots"] = 1.3f,
+            ["_flakBursts"] = 1.25f,
+            ["_riftLoops"] = 0.8f,
         };
 
         // One voice per species. Paths are folders under Approved plus the file name without its variant number.
@@ -106,9 +119,13 @@ namespace Game.Editor
             public string Regrow;
             public string Spawn;
             public string Laser;
+
+            /// <summary>Playback speed of every set of the voice; a stand-in borrowed from another species is pitched to sound its own.</summary>
+            public float Pitch = 1f;
         }
 
         private const string Special = "Bosses/Special/";
+        private const float StoneVoicePitch = 0.85f;
         private const string EnvironmentFolder = "Environment/";
 
         private static readonly VoiceSpec[] Voices =
@@ -117,6 +134,9 @@ namespace Game.Editor
             new VoiceSpec { Enemy = "Stinger", Move = "Monsters/Scorpion/scorpion_walk_loop", Screech = "Monsters/Scorpion/scorpion_screech", Attack = "Monsters/Scorpion/scorpion_acid_shot", Impact = EnvironmentFolder + "acid_sizzle" },
             Bat("Emberbat", "fire"), Bat("Tidebat", "water"), Bat("Mossbat", "moss"), Bat("Dustbat", "sand"), Bat("Frostbat", "frost"), Bat("Mirebat", "forest"),
             new VoiceSpec { Enemy = "Shardback", Move = "Monsters/IceBeetle/ice_beetle_walk_loop", Screech = "Monsters/IceBeetle/ice_beetle_screech", Attack = "Monsters/IceBeetle/ice_beetle_icicle_shot", Impact = "Monsters/IceBeetle/icicle_impact" },
+            // Stone (S4): stand-ins until Remco records his own; the ice beetle and the dust bat, pitched lower and heavier.
+            new VoiceSpec { Enemy = "Cragback", Pitch = StoneVoicePitch, Move = "Monsters/IceBeetle/ice_beetle_walk_loop", Screech = "Monsters/IceBeetle/ice_beetle_screech", Steps = "Environment/monster_heavy_step", StepSpacing = 0.9f },
+            Bat("Shalebat", "sand", StoneVoicePitch),
             new VoiceSpec { Enemy = "Mireleech", Move = "Monsters/Leech/leech_slime_loop", Screech = "Monsters/Leech/leech_screech" },
             new VoiceSpec { Enemy = "Bulwark", Steps = "Monsters/DinoSoldier/dino_soldier_step", StepSpacing = 0.7f, Screech = "Monsters/DinoSoldier/dino_soldier_death" },
             new VoiceSpec { Enemy = "Prowler", Steps = "Monsters/Wolf/wolf_step", StepSpacing = 0.55f, Screech = "Monsters/Wolf/wolf_death" },
@@ -137,9 +157,10 @@ namespace Game.Editor
         };
 
         // The element bats share wings and screech; only the attack carries the element.
-        private static VoiceSpec Bat(string enemy, string element) => new VoiceSpec
+        private static VoiceSpec Bat(string enemy, string element, float pitch = 1f) => new VoiceSpec
         {
             Enemy = enemy,
+            Pitch = pitch,
             Move = "Monsters/Bat/bat_wings_loop",
             Screech = "Monsters/Bat/bat_screech",
             Attack = "Monsters/Bat/bat_attack_" + element,
@@ -152,7 +173,7 @@ namespace Game.Editor
             var so = new SerializedObject(library);
             foreach (var entry in LibraryClips)
             {
-                FillSet(so.FindProperty(entry.Field), FindClips(string.IsNullOrEmpty(entry.Folder) ? AudioRoot : $"{AudioRoot}/{entry.Folder}", entry.Name));
+                FillSet(so.FindProperty(entry.Field), FindClips(string.IsNullOrEmpty(entry.Folder) ? AudioRoot : $"{AudioRoot}/{entry.Folder}", entry.Name), LibraryPitches.TryGetValue(entry.Field, out float pitch) ? pitch : 1f);
             }
 
             var voices = new List<Object>();
@@ -171,21 +192,21 @@ namespace Game.Editor
             var voice = LoadOrCreate<CreatureVoice>($"{VoicesFolder}/Voice_{spec.Enemy}.asset");
             var so = new SerializedObject(voice);
             so.FindProperty("_presence").floatValue = spec.Presence;
-            FillSet(so.FindProperty("_moveLoop"), ApprovedClips(spec.Move));
-            FillSet(so.FindProperty("_steps"), ApprovedClips(spec.Steps));
+            FillSet(so.FindProperty("_moveLoop"), ApprovedClips(spec.Move), spec.Pitch);
+            FillSet(so.FindProperty("_steps"), ApprovedClips(spec.Steps), spec.Pitch);
             so.FindProperty("_stepSpacing").floatValue = spec.StepSpacing;
-            FillSet(so.FindProperty("_rollLoop"), ApprovedClips(spec.Roll));
-            FillSet(so.FindProperty("_screeches"), ApprovedClips(spec.Screech));
-            FillSet(so.FindProperty("_growls"), ApprovedClips(spec.Growl));
-            FillSet(so.FindProperty("_attacks"), ApprovedClips(spec.Attack));
-            FillSet(so.FindProperty("_impacts"), ApprovedClips(spec.Impact));
-            FillSet(so.FindProperty("_pulse"), ApprovedClips(spec.Pulse));
-            FillSet(so.FindProperty("_volleyLaunch"), ApprovedClips(spec.VolleyLaunch));
-            FillSet(so.FindProperty("_volleyImpact"), ApprovedClips(spec.VolleyImpact));
-            FillSet(so.FindProperty("_rally"), ApprovedClips(spec.Rally));
-            FillSet(so.FindProperty("_regrow"), ApprovedClips(spec.Regrow));
-            FillSet(so.FindProperty("_spawn"), ApprovedClips(spec.Spawn));
-            FillSet(so.FindProperty("_laserStart"), ApprovedClips(spec.Laser));
+            FillSet(so.FindProperty("_rollLoop"), ApprovedClips(spec.Roll), spec.Pitch);
+            FillSet(so.FindProperty("_screeches"), ApprovedClips(spec.Screech), spec.Pitch);
+            FillSet(so.FindProperty("_growls"), ApprovedClips(spec.Growl), spec.Pitch);
+            FillSet(so.FindProperty("_attacks"), ApprovedClips(spec.Attack), spec.Pitch);
+            FillSet(so.FindProperty("_impacts"), ApprovedClips(spec.Impact), spec.Pitch);
+            FillSet(so.FindProperty("_pulse"), ApprovedClips(spec.Pulse), spec.Pitch);
+            FillSet(so.FindProperty("_volleyLaunch"), ApprovedClips(spec.VolleyLaunch), spec.Pitch);
+            FillSet(so.FindProperty("_volleyImpact"), ApprovedClips(spec.VolleyImpact), spec.Pitch);
+            FillSet(so.FindProperty("_rally"), ApprovedClips(spec.Rally), spec.Pitch);
+            FillSet(so.FindProperty("_regrow"), ApprovedClips(spec.Regrow), spec.Pitch);
+            FillSet(so.FindProperty("_spawn"), ApprovedClips(spec.Spawn), spec.Pitch);
+            FillSet(so.FindProperty("_laserStart"), ApprovedClips(spec.Laser), spec.Pitch);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(voice);
 
@@ -277,9 +298,10 @@ namespace Game.Editor
             return true;
         }
 
-        private static void FillSet(SerializedProperty set, List<AudioClip> clips)
+        private static void FillSet(SerializedProperty set, List<AudioClip> clips, float pitch = 1f)
         {
             SetReferences(set.FindPropertyRelative("_clips"), clips.ToArray());
+            set.FindPropertyRelative("_pitch").floatValue = pitch;
             set.FindPropertyRelative("_gain").floatValue = MeasureGain(clips);
         }
 

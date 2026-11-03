@@ -54,6 +54,7 @@ namespace Game.Balance
                 HarvesterCost = HarvesterCost,
                 Hero = Hero,
                 HeroDamage = player.HeroDamage,
+                HeroPerks = player.HeroPerks,
                 GateHealth = facts.GateHealth * player.GateHealth,
             };
 
@@ -91,13 +92,21 @@ namespace Game.Balance
             return sets;
         }
 
-        /// <summary>Total research and power the campaign pays per difficulty, against what the upgrades cost.</summary>
-        public void MetaTotals(out int researchCost, out int powerCost, out int[] researchPerDifficulty, out int[] powerPerDifficulty)
+        /// <summary>
+        /// Research and power the existing levels of one continent pay per difficulty, against what the upgrades tagged to
+        /// that continent cost. Dormant upgrades (no continent) count nowhere.
+        /// </summary>
+        public void MetaTotals(int continent, out int researchCost, out int powerCost, out int[] researchPerDifficulty, out int[] powerPerDifficulty)
         {
             researchCost = 0;
             powerCost = 0;
             foreach (UpgradeStats upgrade in Upgrades)
             {
+                if (upgrade.Continent != continent)
+                {
+                    continue;
+                }
+
                 if (upgrade.PaidInPower)
                 {
                     powerCost += upgrade.TotalCost;
@@ -114,6 +123,11 @@ namespace Game.Balance
             {
                 foreach (CampaignLevel level in Levels)
                 {
+                    if (level.Continent != continent)
+                    {
+                        continue;
+                    }
+
                     researchPerDifficulty[d] += (int)Math.Round(level.Research * Difficulties[d].Research, MidpointRounding.AwayFromZero);
                     powerPerDifficulty[d] += (int)Math.Round(level.Power * Difficulties[d].Power, MidpointRounding.AwayFromZero);
                 }

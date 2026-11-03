@@ -20,6 +20,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 6bb19d07d6dcb2249bf53084c62c535f, type: 3}
     - {fileID: 8300000, guid: 0682b4782ef29c746949931c38e85058, type: 3}
     _gain: 0.41233155
+    _pitch: 1
   _heavyShots:
     _clips:
     - {fileID: 8300000, guid: c5f0ad0744efcbc40899d8dd9feb6958, type: 3}
@@ -28,10 +29,12 @@ MonoBehaviour:
     - {fileID: 8300000, guid: dbf358483e61b5246ad38a0b1a6871c9, type: 3}
     - {fileID: 8300000, guid: abfb0abc233d5cb4c85e57208369dfb4, type: 3}
     _gain: 0.3762
+    _pitch: 1
   _rocketLaunches:
     _clips:
     - {fileID: 8300000, guid: c6c20e6a520e4d547967d9f1495f5dac, type: 3}
     _gain: 0.40009123
+    _pitch: 1
   _cryoShots:
     _clips:
     - {fileID: 8300000, guid: 770e688c6462eeb458e381222601ecd0, type: 3}
@@ -40,6 +43,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 88602c65ce7eec549b3c90b0e8f4b21c, type: 3}
     - {fileID: 8300000, guid: 6735d14c27b9583428c37cf0e96d1b45, type: 3}
     _gain: 0.17519225
+    _pitch: 1
   _teslaShots:
     _clips:
     - {fileID: 8300000, guid: 36dcebbeea739014390327e2fac26e53, type: 3}
@@ -48,6 +52,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 0686582b2e3bcbc43bfaff330e9b8801, type: 3}
     - {fileID: 8300000, guid: fb545b8ff92c9ba479e9d6baaf6fb361, type: 3}
     _gain: 0.16810896
+    _pitch: 1
   _railShots:
     _clips:
     - {fileID: 8300000, guid: 97d6a5d5a4191534389386bba191970b, type: 3}
@@ -56,114 +61,156 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 8aacf525be896634298facc87ff1294c, type: 3}
     - {fileID: 8300000, guid: bc2507c58e8945e43804813aa7997674, type: 3}
     _gain: 0.41701183
+    _pitch: 1
+  _flakShots:
+    _clips:
+    - {fileID: 8300000, guid: 737814f594734514d9ec7ec8a5a13900, type: 3}
+    - {fileID: 8300000, guid: b990e898a2c07854e9278c1c827ba92f, type: 3}
+    - {fileID: 8300000, guid: 7cc97091b37d997488b946daf227201e, type: 3}
+    - {fileID: 8300000, guid: ddc2bb6d86ff4de4dab3dabd1fd43a4e, type: 3}
+    - {fileID: 8300000, guid: 0d93176c1d2fade488b3dccc66c1e718, type: 3}
+    _gain: 0.6007221
+    _pitch: 1.3
   _cannonExplosions:
     _clips:
     - {fileID: 8300000, guid: 47da7b7df91e9e74f865d0948dbd635d, type: 3}
     - {fileID: 8300000, guid: 05e5edd9d06e35a45bf83f7616f1b08d, type: 3}
     - {fileID: 8300000, guid: 5dd4e3bd7a09f4546ac1f2a464190c11, type: 3}
     _gain: 0.23526587
+    _pitch: 1
   _rocketExplosions:
     _clips:
     - {fileID: 8300000, guid: f7da48201f1f8464f96f3265619a5d99, type: 3}
     - {fileID: 8300000, guid: 8d6e2a30f5524ad4eae810d0da6b2c0e, type: 3}
     - {fileID: 8300000, guid: af416bb9c2910874ca972af1a19e3a2e, type: 3}
     _gain: 0.29960698
+    _pitch: 1
+  _flakBursts:
+    _clips:
+    - {fileID: 8300000, guid: 1896718b9c8f4c2419c2847ab991a094, type: 3}
+    - {fileID: 8300000, guid: 5679e1a51c3d3b24f9cd0c2f3e9edce3, type: 3}
+    - {fileID: 8300000, guid: d072cca7dc3492a4681658382c1dceb5, type: 3}
+    - {fileID: 8300000, guid: e4996a8db50912e439fe2dd6ed5dc642, type: 3}
+    - {fileID: 8300000, guid: e785a10e4c8e7294fac2ee23b8b0a847, type: 3}
+    _gain: 0.37062263
+    _pitch: 1.25
   _mineExplosions:
     _clips:
     - {fileID: 8300000, guid: fa8c940abee1d424b8db12fe981d097f, type: 3}
     - {fileID: 8300000, guid: a30cfbd2bebbcd0408c3ec74620ded52, type: 3}
     _gain: 0.25925633
+    _pitch: 1
   _gateExplosions:
     _clips:
     - {fileID: 8300000, guid: 8d0187a0e89f4534eaea84a96cb0e6b5, type: 3}
     _gain: 0.28263822
+    _pitch: 1
   _baseExplosions:
     _clips:
     - {fileID: 8300000, guid: 004a82ff30cf3b6488e029c29221d28b, type: 3}
     _gain: 0.29163906
+    _pitch: 1
   _towerBreaks:
     _clips:
     - {fileID: 8300000, guid: 39df2e3b28a8fbe47a8ea8fda4a2a751, type: 3}
     _gain: 0.3244474
+    _pitch: 1
   _structureHits:
     _clips:
     - {fileID: 8300000, guid: 375fa06683186344f9492e376db1343d, type: 3}
     - {fileID: 8300000, guid: 8e9ad17686879214b8b3501fe990b319, type: 3}
     - {fileID: 8300000, guid: 713369c452922264b9ccc00885932f3c, type: 3}
     _gain: 0.16921285
+    _pitch: 1
   _baseAlerts:
     _clips:
     - {fileID: 8300000, guid: 5ecc1f44144b0ee4da8d83c71ec4e3c2, type: 3}
     _gain: 0.5110027
+    _pitch: 1
   _upgrades:
     _clips:
     - {fileID: 8300000, guid: ccce9ce83c509444898d97582e14ea9f, type: 3}
     - {fileID: 8300000, guid: 2e7b0f3eadcd3d04d832d665fdf26b53, type: 3}
     _gain: 0.39850226
+    _pitch: 1
   _scrapPickups:
     _clips:
     - {fileID: 8300000, guid: 227b22ac50c79d14c86e5ec25fe5d0ed, type: 3}
     - {fileID: 8300000, guid: 177590a42ab5db74298ec9ee05aa1042, type: 3}
     _gain: 0.34216627
+    _pitch: 1
   _cash:
     _clips:
     - {fileID: 8300000, guid: d29447e738fe75840a49e31f1d4a1881, type: 3}
     - {fileID: 8300000, guid: 98b4ad8f1fca097469c0891ab459e2dc, type: 3}
     _gain: 0.72810876
+    _pitch: 1
   _freezes:
     _clips:
     - {fileID: 8300000, guid: 86e5fd01a17442649b05d2ce1b221c52, type: 3}
     _gain: 0.5491087
+    _pitch: 1
   _acidSizzles:
     _clips:
     - {fileID: 8300000, guid: cc45dbd7167a9924090fcd53a385a814, type: 3}
     _gain: 0.739046
+    _pitch: 1
   _steamBursts:
     _clips:
     - {fileID: 8300000, guid: d6a4800a68e351f44be511a66b51465a, type: 3}
     _gain: 0.60667396
+    _pitch: 1
   _netShots:
     _clips:
     - {fileID: 8300000, guid: 483fff17f8aeae442a02586b4085d370, type: 3}
     - {fileID: 8300000, guid: 9106451b08bafbf4ebbb4b52eb2b1947, type: 3}
     _gain: 0.4456733
+    _pitch: 1
   _earthquakes:
     _clips:
     - {fileID: 8300000, guid: a856d20eed61b7d4d8f5ab2b8e8af6e9, type: 3}
     _gain: 0.29146495
+    _pitch: 1
   _cartLoops:
     _clips:
     - {fileID: 8300000, guid: 8baa4020286de0e4c898c30c34c150f0, type: 3}
     _gain: 0.5970348
+    _pitch: 1
   _fireballLoops:
     _clips:
     - {fileID: 8300000, guid: 580276625cdc2e34c80e68d826fa5041, type: 3}
     _gain: 0.4008936
+    _pitch: 1
   _heroBlasters:
     _clips:
     - {fileID: 8300000, guid: 2402791f9a3135a42a4fd741e4520c4b, type: 3}
     - {fileID: 8300000, guid: a982418ec4b23754aaae3562e4dc25b3, type: 3}
     - {fileID: 8300000, guid: d6d40c1d31c0dc24cbc5489fc2fdde56, type: 3}
     _gain: 0.17929147
+    _pitch: 1
   _saberSwings:
     _clips:
     - {fileID: 8300000, guid: f7566be40112ca04082d154796501fe8, type: 3}
     - {fileID: 8300000, guid: 15e44ff27e7aed942a4852799dfb5f6e, type: 3}
     - {fileID: 8300000, guid: c3dc33f8512b88b488491ae157e6b006, type: 3}
     _gain: 0.3301677
+    _pitch: 1
   _saberHits:
     _clips:
     - {fileID: 8300000, guid: 97945a0c8851e2c4fbbc630313372a48, type: 3}
     - {fileID: 8300000, guid: 2afef9a01a02a254f96b2181820fee58, type: 3}
     _gain: 0.26642936
+    _pitch: 1
   _saberHums:
     _clips:
     - {fileID: 8300000, guid: eb25fb37201357840b3dc9bdc208b5c3, type: 3}
     _gain: 0.96138626
+    _pitch: 1
   _heroPulses:
     _clips:
     - {fileID: 8300000, guid: cb4d8f0364a203c4dbd6e9067925d234, type: 3}
     _gain: 0.24021569
+    _pitch: 1
   _heroSteps:
     _clips:
     - {fileID: 8300000, guid: 7b692d89094867b41a207e771f69f60f, type: 3}
@@ -171,37 +218,45 @@ MonoBehaviour:
     - {fileID: 8300000, guid: af86197e5638bee4683fceab06690a50, type: 3}
     - {fileID: 8300000, guid: 510d427e7bb664f4b83713dcfb65a11e, type: 3}
     _gain: 0.31474748
+    _pitch: 1
   _heroDeaths:
     _clips:
     - {fileID: 8300000, guid: 474c443fb65ec92428fad12d6f2c38e9, type: 3}
     _gain: 1.2111436
+    _pitch: 1
   _heroFalls:
     _clips:
     - {fileID: 8300000, guid: ca6ef355eb65bb942a30fe46e83c852b, type: 3}
     _gain: 0.18612432
+    _pitch: 1
   _droneFanLoops:
     _clips:
     - {fileID: 8300000, guid: 68c6d8be40004764a9a3d51c18c0df4a, type: 3}
     _gain: 2.888676
+    _pitch: 1
   _droneRepairLoops:
     _clips:
     - {fileID: 8300000, guid: 5c74719927d96ff4b988a9fdc5990a8a, type: 3}
     _gain: 2.127954
+    _pitch: 1
   _droneHarvestLoops:
     _clips:
     - {fileID: 8300000, guid: a81a7f8764953be48b97286ee2d50191, type: 3}
     _gain: 1.7700474
+    _pitch: 1
   _droneLasers:
     _clips:
     - {fileID: 8300000, guid: 4c4a036ef3aa2a346a0d5b032b10acab, type: 3}
     - {fileID: 8300000, guid: e96cb94bd4cc6a84a9364c0c17c8b79f, type: 3}
     - {fileID: 8300000, guid: bffda6d9312e50343bcc979035e0cc77, type: 3}
     _gain: 0.5549508
+    _pitch: 1
   _enemyDeaths:
     _clips:
     - {fileID: 8300000, guid: 296c232ddf6dddf44925d3f819294cc3, type: 3}
     - {fileID: 8300000, guid: cf4878acb9983bf44aab7f17422eb6aa, type: 3}
     _gain: 1.0863674
+    _pitch: 1
   _heavySteps:
     _clips:
     - {fileID: 8300000, guid: cbb2b0078712d6f46b5cfb1eb7becbb3, type: 3}
@@ -209,62 +264,82 @@ MonoBehaviour:
     - {fileID: 8300000, guid: e51f98321edf8e543b3b1f72be2179a2, type: 3}
     - {fileID: 8300000, guid: ed5c158721fda3d4ba04b0c3b2921706, type: 3}
     _gain: 0.22120395
+    _pitch: 1
   _wingLoops:
     _clips:
     - {fileID: 8300000, guid: 6ef0f1a981c8c2d45a82344233c0a56a, type: 3}
     _gain: 0.49134117
+    _pitch: 1
   _largeWingLoops:
     _clips:
     - {fileID: 8300000, guid: 0215b336d0d9c444e9a8d5be0a3524e8, type: 3}
     _gain: 0.32892928
+    _pitch: 1
   _waterLoops:
     _clips:
     - {fileID: 8300000, guid: 6595de8e00017cd4fae4fcd8177a8fb1, type: 3}
     _gain: 0.9133076
+    _pitch: 1
   _lavaLoops:
     _clips:
     - {fileID: 8300000, guid: 2136ffc3f565ced45bea56ebf3381842, type: 3}
     _gain: 0.82815677
+    _pitch: 1
+  _riftLoops:
+    _clips:
+    - {fileID: 8300000, guid: 2136ffc3f565ced45bea56ebf3381842, type: 3}
+    _gain: 0.82815677
+    _pitch: 0.8
   _steamLoops:
     _clips:
     - {fileID: 8300000, guid: f5204ec5b345d2c4d8b61fb4dcd25af5, type: 3}
     _gain: 1.3506668
+    _pitch: 1
   _leavesLoops:
     _clips:
     - {fileID: 8300000, guid: 521628a49ccf77649be7e39710b409cd, type: 3}
     _gain: 1.5774878
+    _pitch: 1
   _icyWindLoops:
     _clips:
     - {fileID: 8300000, guid: 8f14b0b51a46cc54c9398b96ae1ef2c4, type: 3}
     _gain: 1.6889086
+    _pitch: 1
   _bossLaserLoops:
     _clips:
     - {fileID: 8300000, guid: 619161933c409084aa1e561caab597ee, type: 3}
     _gain: 1.6164354
+    _pitch: 1
   _beamLoops:
     _clips:
     - {fileID: 8300000, guid: 08c1475a282e87c42b835ae295a7ebdd, type: 3}
     _gain: 0.23459953
+    _pitch: 1
   _bossAlarms:
     _clips:
     - {fileID: 8300000, guid: d01e3822a02f8e84882d65ca5a8f1f22, type: 3}
     _gain: 0.20608473
+    _pitch: 1
   _waveDrums:
     _clips:
     - {fileID: 8300000, guid: ab71d8c23918829408fe7d0a7d9dd9ca, type: 3}
     _gain: 0.32121238
+    _pitch: 1
   _menuMusic:
     _clips:
     - {fileID: 8300000, guid: 872738c3fbb798740a24c0cfa099677b, type: 3}
     _gain: 0.40680507
+    _pitch: 1
   _gameMusic:
     _clips:
     - {fileID: 8300000, guid: cdf4368aad097f54796c47ab7ba6966d, type: 3}
     _gain: 0.313017
+    _pitch: 1
   _bossMusic:
     _clips:
     - {fileID: 8300000, guid: d61389122af642a478c6a8cc736f153a, type: 3}
     _gain: 0.40484646
+    _pitch: 1
   _voices:
   - {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
   - {fileID: 11400000, guid: 754f95f33aa3b104fbf29d77b68a2e21, type: 2}
@@ -275,6 +350,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b7db4a03f3e0b51489c2fb8c68244940, type: 2}
   - {fileID: 11400000, guid: 3417d2fe63d010746848028c62f2ab6b, type: 2}
   - {fileID: 11400000, guid: b1a9930c59796f346a65afc0cecb727b, type: 2}
+  - {fileID: 11400000, guid: a0e8557ddb7091247b8ac78c3f5e36ad, type: 2}
+  - {fileID: 11400000, guid: ea87553bd0c0d564dbab6c1155d6e555, type: 2}
   - {fileID: 11400000, guid: 11962b7c75056aa459e5e17bd93ab5cd, type: 2}
   - {fileID: 11400000, guid: 5156e7fa6ed1d2248a625a346379a9cd, type: 2}
   - {fileID: 11400000, guid: 9e978155aac60cd4a92c11084220a6cc, type: 2}

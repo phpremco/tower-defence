@@ -20,6 +20,14 @@ namespace Game.Balance
         public float Health = 1f;
         public float Armor;
         public float Speed = 1f;
+
+        /// <summary>
+        /// Speed while the defence hits it, when that differs from the walk (0 = <see cref="Speed"/>): a pack that rages at
+        /// every death around it crosses the towers' reach that much faster.
+        /// </summary>
+        public float FightSpeed;
+
+        public float InRangeSpeed => FightSpeed > 0f ? FightSpeed : Speed;
         public int Reward;
         public int BaseDamage = 1;
         public float AttackDamage;
@@ -74,7 +82,33 @@ namespace Game.Balance
         public float BladeDamage;
         public float BladeInterval = 1f;
         public float GunDamage;
+
+        /// <summary>Seconds between two shots of the blaster, without its reload.</summary>
         public float GunInterval = 1f;
+
+        /// <summary>Shots before the blaster reloads; zero means it never does.</summary>
+        public int Magazine;
+        public float ReloadSeconds;
+
+        /// <summary>The perks the hero can earn that change the blaster.</summary>
+        public List<HeroPerkStats> Perks = new List<HeroPerkStats>();
+
+        /// <summary>Seconds per shot over a whole magazine and its reload, with the owned perks applied.</summary>
+        public float EffectiveGunInterval(ICollection<string> ownedPerks)
+        {
+            float interval = GunInterval;
+            float reload = ReloadSeconds;
+            foreach (HeroPerkStats perk in Perks)
+            {
+                if (ownedPerks != null && ownedPerks.Contains(perk.Id))
+                {
+                    interval *= perk.IntervalMultiplier;
+                    reload *= perk.ReloadMultiplier;
+                }
+            }
+
+            return Magazine > 0 ? (Magazine * interval + reload) / Magazine : interval;
+        }
     }
 
     /// <summary>A difficulty profile: how it scales the waves and how it pays.</summary>
@@ -99,6 +133,9 @@ namespace Game.Balance
         public bool PaidInPower;
         public float BonusPerLevel;
         public int[] Costs = new int[0];
+
+        /// <summary>The continent whose research or power pays for this upgrade; -1 for a dormant upgrade outside every budget.</summary>
+        public int Continent = -1;
 
         public int TotalCost
         {

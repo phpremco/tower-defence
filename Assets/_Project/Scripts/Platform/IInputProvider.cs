@@ -35,8 +35,8 @@ namespace Game.Platform
         event Action RepairPressed;
         event Action SellPressed;
         event Action HeroPostPressed;
-        event Action ShockwavePressed;
-        event Action EmergencyRepairPressed;
+        /// <summary>A hero ability button with its slot: 0 is the first (F, left trigger), 1 the second (G, right trigger).</summary>
+        event Action<int> HeroAbilityPressed;
     }
 }
 

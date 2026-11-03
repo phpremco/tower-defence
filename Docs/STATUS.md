@@ -865,3 +865,299 @@ generator and the changed tests against UnityEditor stubs, the pure model ran an
 - **Open questions for Remco**: is the Psycho reading right ("everything on Psycho pays everything", so Psycho alone
   x5); should the Rocket (only air tower) come earlier than after the Ruins; what is Psycho's "unique reward";
   calibration after a play session (one knob: `TargetPressure`).
+
+## F0 part 1 (2026-11-03)
+Technical groundwork for the story phases (roadmap F0 items 2, 3 and 4). No gameplay or data changes.
+- **Time holds with owners**: `TimeController.Hold(object owner)` / `Release(object owner)` replace `Hold(bool)`.
+  The owners live in the pure `Levels/TimeHolds` set, so briefing, codex, recon (and later dialogue) can hold at the
+  same time; time runs again only after the last release, and holding twice under one owner counts once. Pause stays
+  separate. Callers: `BriefingView`, `CodexView`, `ReconView` (each holds under `this`).
+- **Save version and story flags**: `ProgressData.Version` (old saves load as 0) and `ProgressData.SeenStoryIds`.
+  `Economy/ProgressMigrator` holds an ordered array of migration steps (entry i upgrades version i to i+1;
+  `CurrentVersion` = number of steps, now 1). `ProgressService` migrates on load (in memory, written on the next
+  save) and stamps new saves with the current version. New: `ProgressService.HasSeenStory(id)` and
+  `MarkStorySeen(id)` (saves). A later "level ids changed" migration is one method plus one array entry.
+- **Generator in steps**: `GenerateAll` (same menu path and `-executeMethod` name) now runs the ordered
+  `Steps` list in `ProjectGenerator.Steps.cs`; results pass through `GeneratorContext`
+  (`ProjectGenerator.Context.cs`) instead of positional parameters. New partials: `.Towers`, `.Hero`, `.Difficulty`,
+  `.Story` (the intro story moved here), `.Scenes`; World, path object, drone, recipe steps in `.World`, the terrain
+  bake in `.Terrain`. A failing step is reported by name. A new feature adds one partial and one line in `Steps`.
+  Verified as a pure refactor: after a generator run, `Assets/_Project/Data` and every other generated asset are
+  byte-identical to HEAD; the scenes differ only by their random fileIDs, as on any run.
+- **Tests**: EditMode 163/163 (new `TimeHoldsTests` 3, `ProgressMigrationTests` 4); PlayMode
+  `LevelSimulationTests` 2/2; console 0 errors, 0 warnings.
+
+## F0 part 2 (2026-11-03)
+Wave storage format for a large campaign (roadmap F0). No gameplay or data changes.
+- **Format**: one `LevelWaves` ScriptableObject per level, `Assets/_Project/Data/Waves/Waves_<Key>.asset`, holding
+  `DifficultyWaves[]` (difficulty plus its waves, easiest first). `WaveDefinition` is now a `[Serializable]` class
+  stored inline (same fields: `_startDelay`, `_spawnJitter`, `_groups`, `_healthMultiplier`); no `SerializeReference`.
+  `LevelDefinition._waves` points at the asset; `DifficultyWaves` and `GetWaves(difficulty)` keep their old API.
+  Kept apart from the level file because the generator and BalanceLab rewrite the waves wholesale while the layout is
+  hand-readable data. `LevelWaves.OnValidate` warns about missing difficulties, empty or duplicate sets, groups
+  without an enemy; `LevelValidator` still checks every group (messages name "<Difficulty> <wave number>").
+- **Size**: 992 wave assets (2.17 MB plus 992 `.meta`) became 7 assets (2.02 MB). Files now grow with levels, not waves.
+- **Adding waves for a level**: give the level a `WaveScriptSpec` in `Editor/WaveScripts.cs` and run
+  `Tools/Generate/Scenes and Starter Data`. The "Waves" step writes `Waves_<Key>.asset`, links it from the level and
+  deletes everything else in `Data/Waves` (the old per-wave files went this way). Wave counts change only in Unity;
+  `BalanceLab -- write` rewrites groups and health of the stored waves in place.
+- **Proof**: a canonical dump of every level/difficulty/wave/group (delays, jitter, health, counts, paths, sources,
+  intervals, staggers) is byte-identical before and after; `Tools/PlayTest/balance_ledger.txt` is byte-identical.
+  New `WaveStorageTests` (one asset per campaign level, all difficulties in order, no orphans in `Data/Waves`).
+- **BalanceLab**: reader and writer follow the new file (`LevelData.WavesPath`). Its `.csproj` is git-ignored and not on
+  this machine; built with a scratch csproj and Unity's bundled SDK (`Editor/Data/DotNetSdk/dotnet.exe`): `roundtrip`
+  writes 0 files, `report` passes all bands. `write` touches only value lines, but the solver under .NET gives a few
+  float differences against Unity (e.g. `5.8499994` vs `5.85`, some health multipliers off by ~1-5%); regenerate in
+  Unity after a `write`, or investigate before relying on the tool to write data.
+- **Tests**: EditMode 164/164; PlayMode `LevelSimulationTests` started (async) but not yet finished when this was written; console 0 errors, 0 warnings after recompile.
+
+## S1 steps 1–2 (2026-11-03)
+Story engine, data and runtime without the real dialogue box (spec `Docs/specs/S1_STORY_ENGINE.md`, critic decisions win).
+- **Input gates**: `LevelContext.Held` (mirrored from the time holds by `TimeController.Apply`) and
+  `LevelContext.InputBlocked` (Paused || Held). Used by `PlacementController` confirm and cancel, `HeroController.CanAct`,
+  `LevelController.OnSkipWave` (key and HUD button) and `TimeController.CycleSpeed`. This also stops keyboard confirm or
+  cancel acting on the field behind the briefing, codex and recon. Pause still toggles while held.
+- **Data** (`Scripts/Levels/Story/`, `Game.Levels`): `SpeakerDefinition` (name, role colour, `SpeakerFrame`
+  Portrait/Hologram/Transmission/Log, `PortraitModel`, optional sprite override), `DialogueDefinition` of
+  `DialogueLine` (stable `Id`, speaker, `DialogueSegment[]` with `SegmentStyle` Normal/Redacted/Struck, `GlitchIntensity`
+  0..1), `StoryTrigger[]` on `LevelDefinition._story` (`StoryTriggers`): LevelStart, WaveStart n (1-based),
+  FirstSighting, BossSpawn, BossDefeated (optional boss filter), LevelWon; `StoryRepeat` OncePerSave/Always. FirstUse,
+  BetweenLevels and the Easy replay rule are left out (owner decision 13: once per save on every difficulty).
+- **Pure logic**: `StoryTriggerSelector` (allocation-free, per-run fired flags), `RevealClock` (typewriter),
+  `DialogueGlitch` (seeded scramble, glyph and jitter).
+- **Runtime**: `DialoguePlayer` (queue, unscaled clock, Advance / SkipConversation / Clear, marks seen through
+  `ProgressService.MarkStorySeen`, which saves at once; `AutoAdvance` test hook) talks to an `IDialoguePresenter`;
+  `DialogueInput` binds confirm (advance) and cancel (skip conversation), ignoring mouse clicks. `LevelStoryListener`
+  (one line in `LevelBootstrapper`, before the HUD) maps `LevelContext` events to dialogues, holds time while a
+  conversation shows (never takes or releases after the outcome), applies the boss rule (a boss dialogue in the same
+  frame drops that wave's WaveStart dialogue), clears on a loss and queues LevelWon inside the ending event so
+  `ResultView` waits for `!StoryBusy`. It only runs when `StoryEnabled` (= session briefing) **and** a presenter is set
+  on `LevelContext.Dialogue`; no presenter exists yet, so real play is unchanged until step 3.
+- **Generator**: step "Level story" in `ProjectGenerator.Story.cs` writes `Data/Story/Speakers/Speaker_{Ora,Voss,Mercer,
+  Nti,Pioneer1}` and `Data/Story/Dialogues/Dlg_L01_{Start,Wave2,Boss,Won}`, plus the four triggers on `Level_Landing`.
+  Start is from the script; Wave2, Boss and Won are proposals awaiting Remco.
+- **Intro**: `StoryDefinition._introBeats` left as is; the intro keeps working until S2 moves it onto dialogues.
+- **Tests**: EditMode 188/188 (new: `StoryTriggerSelectorTests` 9, `DialoguePlayerTests` 6, `DialogueRevealTests` 5,
+  `StoryDataTests` 3, `InputGateTests` 1). PlayMode `StoryListenerTests` 1/1 (recording presenter: hold, blocked skip,
+  release, auto-advance to the end; restores the real save) and `LevelSimulationTests` 2/2. Console 0 errors, 0
+  warnings after recompile; the save file is unchanged. A `run_tests --filter "A|B"` matches nothing: run classes
+  one by one. Pressing keys or clicking in the Editor during a PlayMode run can fail `NoUnexpectedReceived` on the
+  `[Placement] confirm` debug log.
+
+## S1 steps 3–5 (2026-11-03)
+The real dialogue box, 3D bust portraits and the PlayMode smoke test. Story now plays in a campaign run (session with briefing).
+- **TextMeshPro**: Essential Resources imported by code from the installed `com.unity.ugui` (`UnityEditor.AssetPackage.Package.Import(..., false)`, no dialog) into `Assets/TextMesh Pro/`; the generator's first step `EnsureTextMeshProEssentials` (`ProjectGenerator.TextMeshPro.cs`) repeats it on a fresh clone. `Game.UI` references `Unity.TextMeshPro`. All dialogue text uses the default TMP face (Liberation Sans + its dynamic fallback); the Kenney display font was dropped for labels because its R/K/X blur at small sizes.
+- **`DialogueView`** (`IDialoguePresenter`, built in `HudView.BuildDialogue`, registered as `context.Dialogue.Presenter`, between ResultView and PauseMenu so pause draws over it): bottom-up shade over the field (blocks clicks), dark glass box 1400×292 (header frames +50) above the tower bar, nine-sliced edge glowing in the role colour (`DialogueArt`, procedural textures), name tag tab, portrait window with radial glow, breathing/sway and a pop on speaker change, typewriter via `maxVisibleCharacters` (full layout once), blinking ▼ when the line is complete, NEXT/SKIP buttons (no EventSystem selection; the box itself advances on click). Fade/slide on unscaled time. Frames: Portrait; Hologram (scanlines + flicker, tinted bust); Transmission (no portrait, header bar "INCOMING TRANSMISSION // name" with emblem icon); Log (probe portrait with scanlines, header "name // LOG ENTRY", blinking ● PLAYBACK). Machine frames use a role-tinted, slightly spaced type. Segments: Struck = `<s>` dimmed; Redacted = invisible letters with noise bars laid over TMP character rects (crawling). `GlitchIntensity`: box shake bursts, scrambled characters jump and take a cyan/magenta split, a ghost copy slides out of register, portrait flicker — all seeded via `DialogueGlitch`.
+- **Portraits**: `IconFraming` (Default = old card framing, `Bust(rim)` = 256 px, eye level, coloured back light); `ModelIconRenderer.Request(..., IconFraming)` overload with render textures per size (old callers unchanged). `PortraitProvider` (only portrait caller, cache key speaker+size+hero; sprite override wins) and `PortraitModels`: Mercer = hero display figure framed on the helmet; Dr. Voss = new procedural bust (bob haircut, lit visor, earpiece + mic, high-collared tech suit with lit seam under an open lab coat with lapels and badge); ORA = core + shell + orbit rings; NTI = hex badge with chevrons; Pioneer-1 = dish probe with mast and solar wings. Rim in the role colour. `DialogueView.Prewarm` renders the level's speakers at HUD build.
+- **Remaining step-3 items**: BriefingView drops the body (and shrinks) when the level has a LevelStart dialogue and story is on; `CodexView.IsOpen`; `CodexView.Open` refuses while `StoryBusy` and the HUD book button is non-interactable then. HUD/TowerMenu have no Cancel handlers of their own (only PlacementController, already gated by `InputBlocked`), so no extra guard was needed.
+- **Tests**: new PlayMode `StorySmokeTests` (2): the real box shows `Dlg_L01_Start`, holds, fades out, then auto-advance runs the level to its end (WaveStart/Won seen); effects fixture (test-only dialogue: redacted, struck, `<` in text, glitch 1.0) renders with bars and no errors. Results: EditMode 188/188, PlayMode StorySmokeTests 2/2, StoryListenerTests 1/1, LevelSimulationTests 2/2. Console 0 errors / 0 warnings after clean recompile (generator still logs the pre-existing `machinegun.mesh` Main Object Name warning during its run). Save MD5 unchanged.
+- **Tools**: `Tools/PlayTest/dialogue_shots.sh [samples]` (mercer ora voss nti pioneer fx; `PORTRAITS=<dir>` also dumps the bust PNG via `portrait_dump.cs`), `dialogue_show.cs`, `dialogue_finish.cs`, `dialogue_probe.cs`, `tmp_import.cs`. Screenshots queue probe dialogues that get marked seen: restore the save afterwards.
+- **Open**: Level 1 story was checked through the smoke test and the probe samples, not by playing the briefing → Deploy → recon path by hand; Voss is a stylised bust (Remco to judge); Wave2/Boss/Won lines are still proposals.
+
+## S2 steps 1–3 (2026-11-03)
+Opening cutscene: data, pure logic, player and flow, all field shots (spec `Docs/specs/S2_CUTSCENES.md`, critic decisions win). Shots P, 1 and 6 run on fallback sets until step 4.
+- **Data** (`Scripts/Levels/Story/Cutscene/`, `Game.Levels`): `CutsceneDefinition` (`Cutscene_Opening`: shots, cast, handoff, handoff difficulty validated against the campaign), `CutsceneShot` (set, action, camera keys, timing Fixed/AfterDialogue, `Seconds`, `CameraSeconds`, dialogue + delay, cues, music mood, fades, letterbox, `Overlay` (Radar), title card), `CameraKey` (At, **`Anchor`** (World/Landing/Base/Drill/DigSite/Gate/Entrance, resolved from level data so shots survive a new field level), position, look-at, FOV, ease, Free/MatchLevelRig), `CutsceneCue` (Sound/Shake/SetEvent), `CutsceneCast` (hero, hauler, builder, swarm, screamer, field level, Earth/Underground themes, counts incl. `SwarmCount`, optional prefab overrides), `CutsceneRequest` (service: cutscene, handoff, return scene, `AutoAdvance`, `Speed`), `StoryDefinition._openingCutscene`. Pure: `CutsceneSequencer` (unscaled time × Speed, cues once in order on big steps, dialogue gating, Skip, Seek that skips cues and holds), `CameraPath` (Catmull-Rom position, eased look-at/FOV), `Easing`, `CutsceneActions`, `SkipConfirm` (press twice within 2 s), `ShakeCurve` (extracted from `FixedCameraRig`, same feel), `LevelPlayPose` (commander's first post + long-lens pose of the level's opening view), `ThemeLighting` (pure move out of `LevelBootstrapper.BuildEnvironment`; level verified identical: before/after screenshot mean pixel difference 0.003, only animated mist and particles differ).
+- **Small API changes**: `PostProcessingBuilder.Build` returns the `Volume` (weight, parent); `LevelVisualBuilder.Build(..., dressingOnly)`; `CameraPanZoom.PlayZoomFor`; `Game.UI` references `Unity.RenderPipelines.Core.Runtime` (for `Volume` only, no URP).
+- **Runtime** (`UI/Cutscene/`): `CutscenePlayer` (builds a set the first time a shot needs it, behind black; per-set volumes cross-fade; camera, fades, title, radar, dialogue via S1 `DialoguePlayer` + `DialogueView`), `CutsceneOverlay` (bars, fade, title card, skip button + "Press again to skip"), `CutsceneInput` (Confirm reads; Cancel skips the open conversation, otherwise arms the cutscene skip; Start always arms), `CutsceneCamera` (breathing + shake), `CutsceneAudio` (music moods Wonder/Tension/Attack, library cues with procedural fallbacks, loops), `RadarOverlay`, `CutsceneSets` (switch, no reflection), `ICutsceneSet`. Sets: `FieldSet` (+ `FieldLayout`, `FieldBase`, `FieldDrill`, `FieldDrones`, `FieldSwarm`, `CutsceneHeroRig`, `BeaconModel`), fallback `SpaceSet` (Earth/Survey/Orbit on the baked globe in a backdrop canvas) and `UndergroundSet` (cave + `EyeField`, one dynamic mesh). Core factories: `CapsuleModelFactory`, `DrillModelFactory`, `BaseModuleFactory`. Every set's `Tick` depends on shot time only (swarm creatures re-walk to the moment on a jump).
+- **Flow**: `Boot/CutsceneStage` (Intro scene: camera + listener in Awake, volume factory, tilt-shift off during the cutscene and back to the profile after); `Bootstrapper` registers the request while `IntroSeen` is false; end and confirmed skip both `MarkIntroSeen` (saved), fade, then register `LevelSession(first campaign level from catalog data, Easy, briefing)` and load Level (loadout panel skipped); `ReturnScene` handoff loads that scene. `MenuMusic` fades on Intro too. Generator step "Cutscene" (after "Level story") writes `Data/Story/Cutscene/{Cutscene_Opening,CutsceneCast}` and 8 dialogues `Dlg_Cut_*` (English from STORY.md, ids `Dlg_Cut_X.NN`); the Intro scene holds `CutsceneStage` (`IntroScreen` unused, deleted in step 5). Auto-advance runtime 122.7 s.
+- **Tests**: EditMode 206/206 (new `CutsceneSequencerTests` 8, `CameraPathTests` 4, `CutsceneDataTests` 6); PlayMode `CutsceneSmokeTests` 3/3 (auto run to Level on Easy with IntroSeen, two-press skip in shot 3, replay back to MainMenu), `LevelSimulationTests` 2/2, `StorySmokeTests` 2/2, `StoryListenerTests` 1/1. Console 0/0 after recompile. Save restored (MD5 unchanged).
+- **Tools**: `Tools/PlayTest/cut_shots.sh <prefix> "<shot> <progress>" ...` (seeks and captures; `cut_speed.txt` 0.02 freezes time for stills), `cutscene_start.cs`, `cutscene_seek.cs`, `cutscene_probe.cs`, `cutscene_advance.cs`, `near_probe.cs`, `streak_probe.cs`, `env_shot.sh` + `image_diff.cs` (level before/after comparison), `field_probe.cs`.
+- **Open**: drone-flock shot frames the drill well but the haulers read small; the dialogue box sits at its HUD height (mid-screen over the planet); Earth/orbit/underground are fallbacks for step 4; Queen as screamer is very large next to the gate; lines are proposals for Remco.
+
+## S2 steps 4–5 (2026-11-03)
+Real space and underground sets, replay from the options, cleanup of the old intro, Low-profile scaling and the step 1–3 polish. Choices are logged in `Docs/specs/S2_CUTSCENES.md` "Builder notes steps 4–5".
+- **Space sets** (`UI/Cutscene/`): `EarthSet` (grey-brown Earth from the new `UI/EarthPainter`: murky seas, open-pit scars, dying amber city lights, brown smog deck, dirty rim; `EarthSurface` override), `SurveySet` (S-69-CRYS from the baked globe maps; sweeping scan ring with echo, turning meridian cage, crystal glints behind the ring), `OrbitSet` (low orbit over the landing region, `Core/MothershipModelFactory` ship with turning habitat ring, engine glows and light; `Mothership` override), `CapsuleDrop` (capsules from the bay: heating shield, head flare, burning trail sampled from the path, so seek-safe; `Capsule` override). Shared: `PlanetBody` (lit 3D planet reusing the map globe's sphere and materials, now `internal` in `PlanetGlobe`), `CrysPlanet`, `SpaceKit` (stars, shadowless 3× sun, dark ambient, 12 % reflections, additive soft glows and HDR beam lines). `SpaceSet` and the backdrop canvas are gone.
+- **Underground**: shut eyes are invisible until they open (one pair, a second, then the wave), lead pairs larger, atmosphere from `Theme_Underground`; still one combined eye mesh.
+- **Themes as data**: `Data/Story/Cutscene/Theme_Earth`, `Theme_Underground`, set on `CutsceneCast` by the "Cutscene" generator step; camera keys of the three space shots rewritten.
+- **Polish**: haulers at 2.2× in the drones shot; Queen at 0.7× in swarm/gate; cutscene dialogue box at the bottom just above the letterbox bar, 86 % size (`DialogueView.SetPlacement`, in-level default unchanged).
+- **Step 5**: "Replay intro" in `OptionsOverlay` (gamepad and mouse like every column button; returns to the main menu). Deleted `IntroScreen`, `StoryBeat`, `StoryScene`, `_introBeats`, their generator code, `PlanetPainter.PaintSurface/PaintClouds`, `intro_probe.cs`, `intro_skip.cs`. `Beacon` override wired. Low profile: half the stars, capsules, eyes, drones, swarm and dust/spark caps, half-size Earth map, cheaper bloom filter (new `IPlatformSettings.HighQualityBloom`, also in levels on Low).
+- **Tests**: EditMode 207/207 (new `EarthPainterTests`; `StoryTests` now checks the opening cutscene and the halo). PlayMode `CutsceneSmokeTests` 3/3, `LevelSimulationTests` 2/2, `StorySmokeTests` 2/2, `StoryListenerTests` 1/1, new `ScreenshotTests.Cutscene_WritesShots` 1/1 (writes `Logs/cutscene_shot00..14.png`, fails on a black shot). Console 0 errors, 0 warnings after recompile (generator: the known machinegun.mesh warning). Save MD5 unchanged.
+- **Tools**: `cut_stills.sh <prefix> "<shot> <progress> [dlg]"` (true 16:9 stills with bloom via `render_still.cs`, `LOW=1` for the Low profile, `CUT_OUT` for the folder), `menu_stills.sh` (options panel + Replay intro), `cut_dialogue.cs`, `cut_probe.sh`, `glow_probe.cs`, `light_probe.cs`.
+- **Open**: lines are still proposals for Remco; no spark particles on the falling capsules; the Earth reads dark and moody (brightness is one theme value); in the cave the walls are nearly black on purpose; the options column now has eight entries and the Back button sits close to the bottom edge.
+
+## S3 (2026-11-03)
+Campaign structure (spec `Docs/specs/S3_CAMPAIGN.md`, critic decisions win; builder choices in its "Builder notes").
+- **Pure layout layer** (`Scripts/Balance/Layout`, `Game.Balance`, dotnet-safe): `LayoutRandom` (SplitMix64 over FNV-1a of
+  key, seed, attempt), `RoadTemplate` (Serpentine, Hook, Fork, LateJoin), `LayoutSpec`, `RoadGenerator` (leg skeleton,
+  U-turn gaps 5 clockwise / 3 otherwise at width 2, junction waypoint for a second road, plaza, 3-5 gates, flight routes,
+  nests in the first half of the walk, terrain blobs per element share), `LayoutChecks` (size, 74-141 road, build rows
+  between corridors, gates: straight, spaced, plots and screen cover, fronts, junction, nests, terrain shares),
+  `NodePlacer` (4 x 5 serpentine of sites 9 degrees apart in a tangent frame), `GlobePoint`, `LayoutGeometry`, `LayoutTerrain`.
+- **Economy per continent:** `ContinentEconomy` + `BalanceSheet.Continents` (C1 research 748, power 186; others 0 until
+  their content). Research `w_n = 1 + 0.5 (n-1)/18`, finale 2, floor 4: C1 L1 6, L6 7, L20 12 on Easy (Crazy L1 30).
+  `ResearchGrowthPerLevel`, `PowerPerLevel/PerBoss` and `BalanceSheet.CampaignOrder` are gone. `Progression`: Psycho = end
+  of the level's own continent. `MetaTotals(continent, ...)`, `UpgradeDefinition._continent` (-1 dormant: hybrids, Cryo,
+  Support; hidden on the upgrade screen). `TeaserSpec` on wave scripts.
+- **Data hooks:** `MapRegion.Key/Layer` (`MapLayer` Surface/Core), `LevelReward.NewPathObjects/HeroPerk`,
+  `HeroPerkDefinition` + `HeroPerkSlot` (`Data/Hero/Perks/Perk_{QuickReload,WideSlash,FieldRepair}`),
+  `ProgressData.UnlockedHeroPerkIds/UnlockedPathObjectIds`, migrator step 2 `RestartCampaign` (clears completions,
+  stars, weapons, gadgets, perks, story flags, IntroSeen; keeps RP, power, upgrades, loadout, volumes),
+  `ProgressService.Unlock/IsHeroPerkUnlocked`, `Unlock/IsPathObjectUnlocked`, `RewardCalculator` grants them on the first
+  clear, `ResultView` shows one unlock line, the loadout lists only unlocked gadgets and is skipped while there are none.
+  `LevelValidator.ValidateLayout` (all but the waves). Display names: Psycho "Crazy", Rocket "Flak", Mine "Land Mine",
+  SlowField "Chrono Field" (asset ids unchanged).
+- **Generator:** steps "Hero perks", "Retire old levels" (deletes `Level_/Theme_/Waves_` of Landing, Forest, Lava, Ruins,
+  Nest, Ice, Swamp and their terrain pictures), "Campaign levels" (`ProjectGenerator.Templates.cs`: 24 attempts, pure
+  checks choose, `LevelValidator` asserts on a copy), "Campaign" (`ProjectGenerator.Campaign.cs`: five continents + The
+  Core, 20 sites for Crystal Plains, 1-6 with levels). Level specs in `Editor/LevelSpecs/LevelSpecs.Crystal.cs`; wave
+  scripts live in the specs. Story triggers come from the specs (level 1's S1 dialogues now on `Level_C1_01`); the S2
+  cutscene hands off to the first campaign level, now C1_01. Starting set PulseRifle + Cannon. Terrain bake cache in
+  `Library/TerrainBakeCache.txt` (unchanged run about 17 s instead of 2 min 20 s). Globe: `GlobePainter.RegionsOf` skips
+  the Core; the map draws the Core as a small ember crack. Old `LevelSpec`/world-level code removed.
+- **Levels:** C1_01 Landing Site, C1_02 Glass Meadows, C1_03 Shard Ridge, C1_04 Twin Rivers, C1_05 Quartz Flats,
+  C1_06 Crysium Vein (22-30 waves, 3-5 gates, all valid). Text maps: `Tools/PlayTest/dump_map.cs`.
+- **Tests:** EditMode 233/233 (new `LayoutTests` 10, `NodePlacementTests` 3, `ContinentEconomyTests` 6, `TeaserTests` 2,
+  `RegionUnlockTests` 1, `HeroPerkTests` 3, migration tests for v1 to v2; changed `Rewards_FollowTheContinentScript`,
+  `Continent1_HasNoRecipes`, `Continent1_BossesComeThroughTheMainGate`, per-continent `MetaEconomy_FollowsTheDesign` and
+  `LaterLevels_CountOnUpgrades`; the Frozen Shelf pool test is gone with its level). PlayMode: `ContinentSimulationTests`
+  2/2 (smoke; full run `[Explicit]`, category Full), `StorySmokeTests` 2/2, `StoryListenerTests` 1/1,
+  `CutsceneSmokeTests` 3/3. `BalanceProbeTests` split into smoke and full but not run. Ledger inside all bands (after
+  C1_04's Medium air sprinkle moved to Hard). Console 0/0 (generator: the known machinegun.mesh warning). Save MD5 unchanged.
+- **Tools:** `Tools/PlayTest/s3_shots.sh <prefix>` (planet, region and every level in play).
+- **Open:** level names, briefings and the second-road layouts are proposals; the build bar shows the not-yet-unlocked
+  roster towers as LOCKED cards (four in level 1); on the globe the first site appears at the right-hand (east-looking)
+  bottom corner of Crystal Plains although its longitude is west of the centre (the globe view's handedness, not
+  checked further); BalanceLab's scratch csproj must add `Editor/LevelSpecs/*.cs` and was not rebuilt.
+
+## Fixes after S3 (2026-11-03)
+The ten findings of the S1/S2 code review and the S3 follow-ups. No wave counts or level content changed.
+- **Review fixes:**
+  1. Gamepad A in a dialogue no longer submits the focused tower/drone button: `DialogueView` parks the EventSystem
+     selection when the box opens and hands it back after the fade-out (or `HideNow`); `PlacementController`
+     `OnUpgrade/OnRepair/OnSell/OnCombine`, `DroneController.OnRequested` and `HeroController.OnSendHere` ignore requests
+     while `InputBlocked`.
+  2. `LevelStoryListener`: on a win, dialogues raised in the last frame (boss defeated, first sighting) are queued before
+     the LevelWon line instead of dropped; a hold taken before the outcome is released afterwards (no new hold after it).
+  3. `TimeController`: pause and speed are ignored once `Outcome != Running`; holds still update `Held`, but the time
+     scale is no longer written (the result screen owns it).
+  4. `CutscenePlayer.Seek` is deterministic: volume weights snap, the dialogue box hides at once (`DialogueView.HideNow`),
+     the camera clock resets to the shot time (`CutsceneCamera.ResetClock`), and playing particle systems restart with a
+     fixed seed and are simulated forward to the shot time (at most 8 s).
+  5. `Services.Unregister<T>()`; `CutsceneStage` consumes the `CutsceneRequest`.
+  6. `CutsceneInput`: Start does nothing while a box is open (S2 decision 10).
+  7. `CutsceneRequest.FirstLaunch(cutscene)` builds the first-launch request from `CutsceneDefinition.Handoff`
+     (Bootstrapper and CutsceneStage).
+  8. `CueKind.SetEvent`, `CutsceneCue.EventId` and `ICutsceneSet.OnEvent` removed (all were empty); the generator no
+     longer writes `EventId`.
+  9. `ProgressMigrator` treats a negative version as 0.
+  10. No `??` on Unity objects: the three `AudioClip` cases in `CutsceneAudio` use explicit null checks (no other
+      `??`/`??=` on a `UnityEngine.Object` in `Scripts/`).
+- **Build bar:** the in-level bar shows only the towers available in this level (curator decision); no LOCKED cards.
+- **Planet handedness:** `PlanetCoordinates.ToDirection` (and `GlobePoint.Direction`) now put east on -x: Unity is
+  left-handed, so with east on +x the globe was seen mirrored (west on the right). Sphere winding flipped to match; the
+  stick turns the other way round so pushing right still brings the east into view. Site 1 now shows south-west.
+  The painted noise sits at the same 3D points, so coasts keep their detail, but continents (placed by longitude) now
+  appear on the correct side.
+- **Region route:** `NodePlacer` (pure, `Game.Balance`) lays the 20 sites as one winding route: four rows that follow the
+  round continent, gently waving, joined by rounded turns, sites one straight step apart along it (at least 8 degrees),
+  tried as rows or columns, nine turns and four wave phases; an optional ruggedness sampler picks the flattest. The
+  generator passes `GlobePainter.Ruggedness`, and the painter flattens mountains within 4 degrees of a site, so no
+  settlement sits on a peak (the chain runs between them). Route dots are larger and the locked ones brighter. The
+  bottom strip of 20 small hexes is removed: it was mouse-only (navigation None) and repeated the markers; gamepad and
+  keys step 1 to 20 with left/right and the shoulders as before.
+- **ScreenshotTests:** `EveryLevel_WritesLandscapeScreenshot` iterates the catalog (`Logs/terrain_<level>.png`),
+  `LastLevel_WritesScreenshot` uses the last site with a level (`Logs/screenshot_last_level*.png`).
+- **BalanceLab:** `Tools/BalanceLab/BalanceLab.csproj` (git-ignored) now exists on this machine and compiles the tool,
+  `Scripts/Balance/**`, `Editor/BalanceSheet.cs`, `Editor/WaveScripts.cs` and `Editor/LevelSpecs/*.cs`. Its reader
+  missed `UpgradeDefinition._continent` (all upgrades read as dormant, "research upgrades cost 0"): fixed in
+  `GameData.LoadUpgrades`. `report` and `solve`: all checks inside their bands. **Float mismatch:** confirmed that the
+  Editor's Mono keeps float intermediates in double precision (`big + 1 - big` gives 1, `0.65f * 9f` gives 5.85) while
+  .NET 8 is strict 32-bit (0 and 5.8499994); a few threshold decisions in the model flip, so the ledger from the same
+  assets differs on some waves (C1_01 Easy wave 12: HP 876 against 889). Not fixed: making both agree means computing
+  the balance model in double (or rounding at every decision point), which changes generated numbers; for S4. Write
+  data with the Unity generator, use the lab for checks. Note: the lab prints numbers with the system culture (commas
+  here) and overwrites `Tools/PlayTest/balance_ledger.txt`.
+- **Tests:** EditMode 247/247 (new: `CutsceneInputTests` 3, `TimeControllerTests` 3, `ServicesTests.Unregister`,
+  `ProgressMigrationTests.NegativeVersion`, `CutsceneDataTests.FirstLaunchRequest`, `PlanetCoordinatesTests.TurnedGlobe`
+  x3, `NodePlacementTests` +2 and the south-west check on the generated catalog). PlayMode: new `StoryGuardTests` 3/3
+  (focus parked and menu actions gated during a dialogue; last-frame boss line before the victory; hold from before the
+  end released), `StoryListenerTests` 1/1, `StorySmokeTests` 2/2, `CutsceneSmokeTests` 3/3 (now also asserts the
+  request is consumed), `ScreenshotTests` 3/3, `ContinentSimulationTests` 2/2, `BalanceProbeTests` smoke 1/1 (Medium:
+  Landing Site lost at wave 21/22, Crysium Vein lost at wave 7/30; the bot has no hero or drones). Console 0 errors,
+  0 warnings (generator: the known machinegun.mesh warning). Save MD5 unchanged.
+- **Tools:** `Tools/PlayTest/rugged_probe.cs` (ruggedness at every Crystal Plains site plus a coarse ridge map),
+  `float_probe.cs` (shows the runtime's float precision).
+- **Open:** `Tools/PlayTest/probe_arg.txt` (tracked) narrows the balance bot to level 0; the smoke run above moved it
+  aside for the run. Mountains still cross the middle of Crystal Plains between sites; with 20 sites 8 degrees apart in a
+  26-degree cap the route cannot go around a central chain.
+
+## S4 (2026-11-03)
+Crystal Plains levels 1 to 6 as a playable story slice (spec `Docs/specs/S4_CRYSTAL_PLAINS_1_6.md`, critic decisions win;
+builder choices in its "Builder notes").
+- **Hero framework:** `HeroAbilityKind`, `HeroAbilityDefinition` (`Data/Hero/Abilities/Ability_Shockwave`,
+  `Ability_GateRepair`, the old numbers), `HeroAbilityState`, `HeroAbilityEffects` (one switch), `HeroPerkModifiers`.
+  `HeroDefinition` lost its shockwave/repair fields and gained `_abilities` and `_perks`; `Commander` exposes
+  `Abilities`, `CanUse`, `TryUse`, `AbilityUsed`, `Reloading`. Input actions `HeroAbility1`/`HeroAbility2` (same GUIDs and
+  bindings), `IInputProvider.HeroAbilityPressed(slot)`, `LevelContext.HeroAbilityRequested` replaces
+  `HeroRepairRequested`; every button raises the event (the old direct `TryShockwave` past the pause gate is gone).
+  Quick bar and hero panel build their buttons from data (name, key, cooldown, price). DisplayName "Mercer" (asset id
+  `Commander`). Blaster magazine 8, interval 0.2, reload 1.2 (same 0.35 s average); Quick Reload halves the reload
+  (+27%). `HeroAbilityView`: dust ring, welding beam with sparks, reload glint.
+- **Flak** (`Rocket`): air only, `ProjectileStyle.Flak`, `TowerShape.Flak` (procedural ring, shield, twin barrels at 35
+  degrees), `TowerDefinition._fuseRadius` with the pure `ProximityFuse`, burst at the shell, `Vfx_FlakBurst`, own shot and
+  burst sounds. `TargetLayersExtensions.CanHit`: air-only weapons skip ground-walking Wisps. Display names Gun Turret,
+  Laser Turret, Flak Turret.
+- **Gadgets:** Chrono Field 0.45 slow, radius 1.6, 20 s, 45 money, `PathObjectLook.Chrono` (counter-rotating rings,
+  slow motes). `StoryTriggerKind.FirstUse` with `StoryTrigger.PathObject`, fired from `PathObjectSpawned`.
+- **Credits:** `LevelReward.Credit` / `CampaignLevelSpec.Credit`, shown on the result screen.
+- **Stone:** `Element.Stone`, `TerrainKind.Rift`, `EnemyOrigin.Rift`, `PropKind.Scree`, `EnemyShape.Cragback` appended and
+  handled in every Bog switch (layout, validator, spawner, terrain map and field, painter strata, liquid surface with
+  breathing veins, props, nest model, nest colour, spawn look and sound, rift ambience). Creatures `Cragback` (160 HP,
+  0.6, no armour, slam 16) and `Shalebat` (40 HP, 1.3, from rifts); voices borrowed via `SoundSet._pitch` (new, applied in
+  `SfxPlayer`, `LoopVoice` and so `CreatureChorus`). CragElder not built.
+- **Content:** C1_01 to C1_06 rewritten: 12, 12, 16, 16, 17, 18 waves; no armour; no flyers before C1_03; packed raids
+  in C1_03/04 (`WaveScriptSpec.FlyerInterval`); Roller teaser (x2) in C1_05, Roller retuned to 2.58x the Skitter's
+  speed; BroodMother is the C1_01 boss; L4 renamed Fault Line (stone level); new tints Stone and Vein. 17 dialogues
+  (`ProjectGenerator.Story.Crystal.cs`, proposals marked).
+- **Balance:** ledger knows magazines and perks; all bands hold (see BALANCE.md). (Correction, see "Balance after S4": the
+  ledger did not yet read the roller's average speed; `BalanceLedger.Stats` used `Speed`.)
+- **Tests:** EditMode 274/274 (new `HeroAbilityTests` 6, `ProximityFuseTests` 3, `ElementCoverageTests` 3,
+  `Continent1ContentTests` 11, Quick Reload tests, FirstUse selector, teaser rule; `PoolSpawnTests` moved to C1_05/C1_04;
+  `RegionUnlockTests`/`CampaignTests` fixtures spread their sites, so the ~1,770 spacing warnings are gone). PlayMode:
+  `ContinentSimulationTests` 2/2, `StoryGuardTests` 3/3, `StorySmokeTests` 2/2, `StoryListenerTests` 1/1,
+  `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, new `StoryCrystalTests` 2/2, `BalanceProbeTests` smoke 1/1 (now
+  Shard Ridge and Crysium Vein with owned towers only and a Flak buy before air waves). Save MD5 unchanged.
+- **Tools:** `Tools/PlayTest/s4_scene.cs` (dialogue, spawn, tower, gadget, ability, focus, rift, freeze) and
+  `s4_shots.sh`.
+- **Open:** the probe bot loses both smoke levels on Medium at wave 6 (3 towers, no hero, no drones; S3's bot lost
+  Crysium Vein at wave 7 too); the Easy gun-only probe for L3/L4 is not built; BalanceLab's reader does not know
+  magazines, perks or `FlyerInterval` yet (Unity's ledger is authoritative); Cragback gait dip, foot dust and vein fade,
+  hex panels and the cell-eject animation are not built; dialogue lines are proposals.
+
+## Balance after S4 (2026-11-03)
+Why the bot lost Shard Ridge and Crysium Vein on Medium at wave 6 while the ledger said every wave was inside its band,
+and the fixes (details and numbers in BALANCE.md, "Balance after S4").
+- **Root cause, measured** (new `Tests/PlayMode/ProbeTrace.cs`, per-wave trace in `Logs/probe_trace.txt` beside the
+  ledger line): (1) the ledger paid each wave's kills before the next wave, the game pays them when the creatures die at
+  the defence after their walk: Shard Ridge Medium money at wave 6 was 269 in the game, 354 in the ledger; (2) the
+  simulation lost damage to the frame rate: at 20x speed a frame was 0.3 to 3 game seconds, guns fired once a frame and
+  Flak shells burst a step short (0 of 11 flyers shot down); (3) the old bot built wherever the road was densest, never
+  where the gates hold the walkers, spent Flak money on ground waves and never saved for air; (4) the ledger re-spent the
+  Flak money on the ground after a raid, ignored stacking of slow and fast waves, raging Prowlers and the roller's
+  average speed (the Unity bridge passed `Speed`, as the code review found), and counted the hero for half of every
+  window although it falls at the busiest gate for two minutes.
+- **Game fixes:** `Core/Cadence.cs` (overshoot kept, up to four actions a frame) in `Tower`, `Commander` and `Enemy`;
+  `ProximityFuse.BurstPoint` used by `Projectile` (code review finding, test with a step longer than the splash).
+- **Model:** `Balance/KillPurse.cs` (kill money on arrival at the first gate every road passes, `Carried` health of earlier
+  waves arriving at the same time), `Ledger.AirHoldings`, `EnemyStats.FightSpeed`, `BalanceLedger.Stats` uses
+  `AverageSpeed` and rage speed, `BalanceRules.Utilisation` 0.35 -> 0.27, `HeroShare` 0.5 -> 0.35, `CarriedShare` 0.5,
+  solver may drop a wave below its trend when the band would break. Waves re-solved by the generator; C1_04 `FinalBudget`
+  165 -> 100. BalanceLab reads hero perks and level perk rewards (`GameData`, `Program`) and rage speed.
+- **Bot:** holds the first gate every road passes, one tower in four at the last gate before the base, hero on the
+  front post, spends on the affordable step with the most damage per coin, keeps a Flak's price while flyers are still to
+  come, places the Flak under the flight routes; time scale follows the frame rate (max 0.2 game s a frame). The smoke
+  test now asserts a win. New `Easy_GunOnlyBot_StrugglesInThePackedAirRaids`.
+- **Numbers (Medium, ledger money / wave health):** Shard Ridge w5 324/1012 -> 276/534, w9 540/1898 -> 458/1218, w16
+  1413/4677 -> 1224/2909; Crysium Vein w5 386/1286 -> 341/746, w9 579/2249 -> 511/1061, w18 1785/7672 -> 1513/4167.
+  Highest pressure per level: Easy 0.57 to 0.87, Medium 1.01, Hard 1.35 to 1.67, Psycho 1.89 to 2.56; all bands hold
+  (Unity and BalanceLab `report`/`solve`).
+- **Probe (Medium, no hero control, drones or gadgets):** Shard Ridge won 16/16, base 800/800; Crysium Vein won 18/18,
+  base 800/800 (before: both lost at wave 6). Calibration: at `Utilisation` 0.3 and 0.35 Crysium Vein is lost at wave 10.
+- **Tests:** EditMode 277/277 (new `CadenceTests` 2, `ProximityFuseTests.LongStep_BurstsWithinTheSplashOfTheTarget`;
+  `WorldContentTests.EveryLevel_GrowsEnemyHealthWaveByWave` compares the toughest plain wave of the last third).
+  PlayMode: `BalanceProbeTests` smoke 1/1, `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2. Console 0 errors; the
+  probe logs the engine's "Ran out of Graphics Ring Buffer space" warning at 20x speed. Save restored to its MD5.
+- **Open:** `Easy_GunOnlyBot_StrugglesInThePackedAirRaids` FAILS: on Easy a gun-only bot clears Shard Ridge with every
+  flyer shot down (11/11, 0 base hits), as does the Flak bot. Gun turrets aim at the air too, so a gun-only player has
+  the whole ground defence against the raids; making them struggle needs bigger packed raids in C1_03/04 (curator
+  decision 8 is a design call, not tuned here). Fault Line was not reached by that test.

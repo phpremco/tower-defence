@@ -26,6 +26,8 @@ namespace Game.Combat
         private float _slowFactor = 1f;
         private float _slowSeconds;
         private float _startDistance;
+        private float _fuseRadius;
+        private Vector3 _impactPoint;
 
         /// <summary>Raised when the projectile leaves the barrel, so the view can dress it.</summary>
         public event Action<Projectile> Launched;
@@ -65,7 +67,8 @@ namespace Game.Combat
             float slowFactor,
             float slowSeconds,
             ProjectileStyle style,
-            Color color)
+            Color color,
+            float fuseRadius = 0f)
         {
             transform.position = from;
             Origin = from;
@@ -79,6 +82,7 @@ namespace Game.Combat
             _registry = registry;
             _release = release;
             _slowFactor = slowFactor;
+            _fuseRadius = fuseRadius;
             _slowSeconds = slowSeconds;
             Style = style;
             Color = color;
@@ -95,8 +99,19 @@ namespace Game.Combat
             Vector3 toTarget = _lastTargetPosition - transform.position;
             float step = _speed * Time.deltaTime;
 
-            if (toTarget.magnitude <= Mathf.Max(step, HitDistance))
+            // A fused shell bursts where it is, near the flyer; any other shot lands on its target.
+            if (_fuseRadius > 0f)
             {
+                if (ProximityFuse.ShouldBurst(transform.position, _lastTargetPosition, _fuseRadius, Mathf.Max(step, HitDistance)))
+                {
+                    _impactPoint = ProximityFuse.BurstPoint(transform.position, _lastTargetPosition, _fuseRadius);
+                    Impact();
+                    return;
+                }
+            }
+            else if (toTarget.magnitude <= Mathf.Max(step, HitDistance))
+            {
+                _impactPoint = _lastTargetPosition;
                 Impact();
                 return;
             }
@@ -108,7 +123,7 @@ namespace Game.Combat
         {
             if (_splashRadius > 0f)
             {
-                _registry.FindInRadius(_lastTargetPosition, _splashRadius, _mask, _splashTargets);
+                _registry.FindInRadius(_impactPoint, _splashRadius, _mask, _splashTargets);
                 for (int i = 0; i < _splashTargets.Count; i++)
                 {
                     _splashTargets[i].TakeDamage(_damage);
@@ -121,7 +136,7 @@ namespace Game.Combat
                 _target.ApplySlow(_slowFactor, _slowSeconds);
             }
 
-            Impacted?.Invoke(_lastTargetPosition, _splashRadius, Color, Style);
+            Impacted?.Invoke(_impactPoint, _splashRadius, Color, Style);
             _target = null;
             _release(this);
         }

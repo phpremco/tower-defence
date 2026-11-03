@@ -141,7 +141,7 @@
                                          "initialStateCheck":  false
                                      },
                                      {
-                                         "name":  "Shockwave",
+                                         "name":  "HeroAbility1",
                                          "type":  "Button",
                                          "id":  "5a0f6c1e-3b7d-4e21-8c52-0d9a41b7e302",
                                          "expectedControlType":  "Button",
@@ -150,7 +150,7 @@
                                          "initialStateCheck":  false
                                      },
                                      {
-                                         "name":  "EmergencyRepair",
+                                         "name":  "HeroAbility2",
                                          "type":  "Button",
                                          "id":  "5a0f6c1e-3b7d-4e21-8c52-0d9a41b7e303",
                                          "expectedControlType":  "Button",
@@ -629,7 +629,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Shockwave",
+                                          "action":  "HeroAbility1",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       },
@@ -640,7 +640,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "Shockwave",
+                                          "action":  "HeroAbility1",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       },
@@ -651,7 +651,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "EmergencyRepair",
+                                          "action":  "HeroAbility2",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       },
@@ -662,7 +662,7 @@
                                           "interactions":  "",
                                           "processors":  "",
                                           "groups":  "",
-                                          "action":  "EmergencyRepair",
+                                          "action":  "HeroAbility2",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       }

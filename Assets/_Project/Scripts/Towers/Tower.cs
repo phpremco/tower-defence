@@ -155,6 +155,9 @@ namespace Game.Towers
             Health.TakeDamage(Guard != null ? Guard.Absorb(amount) : amount);
         }
 
+        // A wreck is rebuilt, not patched up, so the hero's repair has nothing to do on one.
+        public bool CanRestore => !IsWrecked && Health.Current < Health.Max;
+
         public void Restore(float fraction)
         {
             if (!IsWrecked)
@@ -214,22 +217,34 @@ namespace Game.Towers
                 return;
             }
 
-            ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
-            if (target == null)
+            // A long frame (high game speed, low frame rate) may owe more than one shot; see Cadence.
+            for (int shots = 0; Cadence.Due(_cooldown, shots); shots++)
             {
-                _beamTarget = null;
-                return;
+                ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
+                if (target == null)
+                {
+                    _beamTarget = null;
+                    break;
+                }
+
+                // A beam is continuous: it only breaks to swing onto a new target, so the player sees and hears it stop
+                // and start as the enemies change.
+                if (_definition.ProjectileStyle == ProjectileStyle.Laser && !ReferenceEquals(target, _beamTarget))
+                {
+                    _beamTarget = target;
+                    _cooldown = BeamRetargetSeconds;
+                    return;
+                }
+
+                Shoot(level, target);
+                _cooldown = Cadence.Rearm(_cooldown, level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power)));
             }
 
-            // A beam is continuous: it only breaks to swing onto a new target, so the player sees and hears it stop
-            // and start as the enemies change.
-            if (_definition.ProjectileStyle == ProjectileStyle.Laser && !ReferenceEquals(target, _beamTarget))
-            {
-                _beamTarget = target;
-                _cooldown = BeamRetargetSeconds;
-                return;
-            }
+            _cooldown = Cadence.Idle(_cooldown);
+        }
 
+        private void Shoot(TowerLevel level, ITargetable target)
+        {
             float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
             // The shot leaves from the mouth of the barrel: a little above the base and towards the target.
             Vector3 towards = target.Position - transform.position;
@@ -240,9 +255,8 @@ namespace Game.Towers
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
             float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius);
             Fired?.Invoke(target.Position);
-            _cooldown = level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power));
         }
 
         // Support towers nearby boost range and fire rate. Checked a few times per second, not every frame.

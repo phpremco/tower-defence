@@ -7,9 +7,10 @@ using UnityEngine;
 namespace Game.Hero
 {
     /// <summary>
-    /// The commander. Stands at one post in front of a blockade (or at the base), hits the enemies that come within
-    /// reach and takes a share of the hits on a guarded blockade. When its health runs out it is down for a while
-    /// and then stands up again. Has no knowledge of how it looks.
+    /// The hero. Stands at one post in front of a blockade (or at the base), hits the enemies that come within reach
+    /// and takes a share of the hits on a guarded blockade. When its health runs out it is down for a while and then
+    /// stands up again. Its ability buttons come from data (<see cref="HeroAbilityDefinition"/>), its gun reloads after a
+    /// magazine, and unlocked perks shorten that. Has no knowledge of how it looks.
     /// </summary>
     public sealed class Commander : MonoBehaviour, IDamageGuard
     {
@@ -24,8 +25,10 @@ namespace Game.Hero
         private float _damageMultiplier = 1f;
         private float _strikeCooldown;
         private float _reviveRemaining;
-        private float _shockwaveRemaining;
-        private float _repairRemaining;
+        private HeroPerkModifiers _perks = HeroPerkModifiers.None;
+        private HeroAbilityState[] _abilities = new HeroAbilityState[0];
+        private int _shotsFired;
+        private float _reloadRemaining;
 
         public HeroDefinition Definition => _definition;
 
@@ -48,13 +51,23 @@ namespace Game.Hero
 
         public float ReviveRemaining => _reviveRemaining;
 
-        /// <summary>One when the ability can be used, growing from zero while it cools down.</summary>
-        public float ShockwaveReady => 1f - Mathf.Clamp01(_shockwaveRemaining / _definition.ShockwaveCooldown);
+        /// <summary>The ability slots, by button; a slot is null while the perk it needs is not unlocked.</summary>
+        public IReadOnlyList<HeroAbilityState> Abilities => _abilities;
 
-        public float RepairReady => 1f - Mathf.Clamp01(_repairRemaining / _definition.RepairCooldown);
+        /// <summary>The perks in force for this level.</summary>
+        public HeroPerkModifiers Perks => _perks;
 
-        /// <summary>True when the emergency repair could be used right now, apart from what it costs.</summary>
-        public bool CanEmergencyRepair => !IsDown && !IsWalking && _repairRemaining <= 0f;
+        /// <summary>Seconds left on the ranged weapon's reload; zero while it has shots.</summary>
+        public float ReloadRemaining => _reloadRemaining;
+
+        /// <summary>Seconds between two shots of the ranged weapon with the perks applied.</summary>
+        public float RangedInterval => _definition.RangedWeapon != null ? _definition.RangedWeapon.AttackInterval * _perks.RangedIntervalMultiplier : 0f;
+
+        /// <summary>Seconds a full reload of the ranged weapon takes with the perks applied.</summary>
+        public float ReloadSeconds => _definition.RangedWeapon != null ? _definition.RangedWeapon.ReloadSeconds * _perks.ReloadMultiplier : 0f;
+
+        /// <summary>Where the structure the hero guards right now stands.</summary>
+        public Vector3 GuardedPosition => _posts[_postIndex].Guarded.Position;
 
         /// <summary>Where the hero stands for a post, so the HUD can find the spot to click.</summary>
         public Vector3 StandAt(int postIndex) => _posts[postIndex].Stand;
@@ -79,15 +92,26 @@ namespace Game.Hero
         /// <summary>Raised when a downed hero stands up again.</summary>
         public event Action Revived;
 
-        /// <summary>Raised with the centre and radius when the shockwave goes off.</summary>
-        public event Action<Vector3, float> ShockwaveReleased;
+        /// <summary>Raised with the slot, the ability and the hero's position whenever an ability is used.</summary>
+        public event Action<int, HeroAbilityDefinition, Vector3> AbilityUsed;
+
+        /// <summary>Raised with the reload time when the ranged weapon runs dry and starts to reload.</summary>
+        public event Action<float> Reloading;
 
         public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost, PlayerModifiers modifiers)
+        {
+            Initialize(definition, targets, posts, startPost, modifiers, null);
+        }
+
+        /// <param name="unlockedPerks">The perks the player has earned; they set the modifiers and open the abilities that need them.</param>
+        public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost, PlayerModifiers modifiers, IReadOnlyCollection<HeroPerkDefinition> unlockedPerks)
         {
             _definition = definition;
             _targets = targets;
             _posts = posts;
             _damageMultiplier = modifiers.HeroDamageMultiplier;
+            _perks = HeroPerkModifiers.From(unlockedPerks);
+            _abilities = BuildAbilities(definition.Abilities, unlockedPerks);
             Health = new Health(definition.MaxHealth * modifiers.HeroHealthMultiplier);
             Health.Died += OnDied;
             Health.Changed += OnHealthChanged;
@@ -95,6 +119,37 @@ namespace Game.Hero
             transform.position = _posts[_postIndex].Stand;
             Facing = _posts[_postIndex].Facing;
             Arrive();
+        }
+
+        private static HeroAbilityState[] BuildAbilities(HeroAbilityDefinition[] definitions, IReadOnlyCollection<HeroPerkDefinition> perks)
+        {
+            var states = new HeroAbilityState[definitions.Length];
+            for (int i = 0; i < definitions.Length; i++)
+            {
+                HeroAbilityDefinition ability = definitions[i];
+                bool open = ability != null && (ability.RequiresPerk == null || Contains(perks, ability.RequiresPerk));
+                states[i] = open ? new HeroAbilityState(ability) : null;
+            }
+
+            return states;
+        }
+
+        private static bool Contains(IReadOnlyCollection<HeroPerkDefinition> perks, HeroPerkDefinition perk)
+        {
+            if (perks == null)
+            {
+                return false;
+            }
+
+            foreach (HeroPerkDefinition owned in perks)
+            {
+                if (owned == perk)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OnDestroy()
@@ -129,34 +184,28 @@ namespace Game.Hero
             Changed?.Invoke();
         }
 
-        public bool TryShockwave()
+        /// <summary>The ability in a slot, or null for an empty or locked slot.</summary>
+        public HeroAbilityState AbilityAt(int slot) => slot >= 0 && slot < _abilities.Length ? _abilities[slot] : null;
+
+        /// <summary>True when the ability in the slot could be used right now, apart from what it costs.</summary>
+        public bool CanUse(int slot)
         {
-            if (IsDown || _shockwaveRemaining > 0f)
-            {
-                return false;
-            }
-
-            _targets.FindInRadius(transform.position, _definition.ShockwaveRadius, _definition.ShockwaveTargets, _buffer);
-            for (int i = 0; i < _buffer.Count; i++)
-            {
-                _buffer[i].TakeDamage(_definition.ShockwaveDamage);
-            }
-
-            _shockwaveRemaining = _definition.ShockwaveCooldown;
-            ShockwaveReleased?.Invoke(transform.position, _definition.ShockwaveRadius);
-            Changed?.Invoke();
-            return true;
+            HeroAbilityState state = AbilityAt(slot);
+            return state != null && !IsDown && state.Ready && HeroAbilityEffects.CanApply(state.Definition, _posts[_postIndex].Guarded, !IsWalking);
         }
 
-        public bool TryEmergencyRepair()
+        /// <summary>Uses the ability in a slot when it can; the caller has paid its price already.</summary>
+        public bool TryUse(int slot)
         {
-            if (!CanEmergencyRepair)
+            if (!CanUse(slot))
             {
                 return false;
             }
 
-            _posts[_postIndex].Guarded.Restore(_definition.RepairFraction);
-            _repairRemaining = _definition.RepairCooldown;
+            HeroAbilityState state = _abilities[slot];
+            HeroAbilityEffects.Apply(state.Definition, transform.position, _targets, _buffer, _posts[_postIndex].Guarded);
+            state.Begin();
+            AbilityUsed?.Invoke(slot, state.Definition, transform.position);
             Changed?.Invoke();
             return true;
         }
@@ -187,7 +236,7 @@ namespace Game.Hero
 
         private void Update()
         {
-            TickCooldowns();
+            TickCooldowns(Time.deltaTime);
 
             if (IsDown)
             {
@@ -214,12 +263,23 @@ namespace Game.Hero
             }
         }
 
-        private void TickCooldowns()
+        private void TickCooldowns(float seconds)
         {
-            bool cooling = _shockwaveRemaining > 0f || _repairRemaining > 0f;
-            _shockwaveRemaining = Mathf.Max(0f, _shockwaveRemaining - Time.deltaTime);
-            _repairRemaining = Mathf.Max(0f, _repairRemaining - Time.deltaTime);
-            if (cooling)
+            bool shownChanged = false;
+            for (int i = 0; i < _abilities.Length; i++)
+            {
+                if (_abilities[i] != null && _abilities[i].Tick(seconds))
+                {
+                    shownChanged = true;
+                }
+            }
+
+            if (_reloadRemaining > 0f)
+            {
+                _reloadRemaining = Mathf.Max(0f, _reloadRemaining - seconds);
+            }
+
+            if (shownChanged)
             {
                 Changed?.Invoke();
             }
@@ -259,28 +319,37 @@ namespace Game.Hero
         }
 
         // An attack: whatever stands within reach of the melee weapon gets the blade; otherwise the gun takes
-        // anything within its own reach. The target takes the damage straight away (a bolt is too fast to dodge)
-        // and the view plays the swing or the shot of the weapon used.
+        // anything within its own reach, unless it is reloading. The target takes the damage straight away (a bolt is
+        // too fast to dodge) and the view plays the swing or the shot of the weapon used.
         private void Strike()
         {
             _strikeCooldown -= Time.deltaTime;
-            if (_strikeCooldown > 0f)
+            // A long frame may owe more than one attack; see Cadence.
+            int strikes = 0;
+            while (Cadence.Due(_strikeCooldown, strikes) && StrikeOnce())
             {
-                return;
+                strikes++;
             }
 
+            _strikeCooldown = Cadence.Idle(_strikeCooldown);
+        }
+
+        private bool StrikeOnce()
+        {
             HeroWeaponDefinition weapon = _definition.Weapon;
             ITargetable target = _targets.FindBest(transform.position, weapon.Reach, weapon.Targets);
+            bool ranged = false;
             if (target == null && _definition.RangedWeapon != null)
             {
                 weapon = _definition.RangedWeapon;
                 target = _targets.FindBest(transform.position, weapon.Reach, weapon.Targets);
+                ranged = true;
             }
 
             Target = target;
-            if (target == null)
+            if (target == null || (ranged && _reloadRemaining > 0f))
             {
-                return;
+                return false;
             }
 
             Vector3 toTarget = target.Position - transform.position;
@@ -292,7 +361,29 @@ namespace Game.Hero
 
             target.TakeDamage(weapon.Damage * _damageMultiplier);
             Struck?.Invoke(target.Position, weapon);
-            _strikeCooldown = weapon.AttackInterval;
+            _strikeCooldown = Cadence.Rearm(_strikeCooldown, ranged ? RangedInterval : weapon.AttackInterval);
+            if (ranged)
+            {
+                CountShot(weapon);
+            }
+
+            return true;
+        }
+
+        private void CountShot(HeroWeaponDefinition weapon)
+        {
+            if (weapon.Magazine <= 0)
+            {
+                return;
+            }
+
+            _shotsFired++;
+            if (_shotsFired >= weapon.Magazine)
+            {
+                _shotsFired = 0;
+                _reloadRemaining = ReloadSeconds;
+                Reloading?.Invoke(_reloadRemaining);
+            }
         }
 
         private void OnDied()

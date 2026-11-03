@@ -11,13 +11,17 @@ namespace Game.Levels
         /// <summary>Two levels closer than this, in degrees of arc, overlap on the map once the view zooms onto their region.</summary>
         public const float MinimumSpacingDegrees = 8f;
 
-        /// <summary>Longitude 0 faces +z, east is +x, north is +y.</summary>
+        /// <summary>
+        /// Longitude 0 faces +z, north is +y and east is -x. Unity's frame is left-handed, so this is the handedness
+        /// in which a camera looking at the globe from outside sees north up and east to the right (with east on +x
+        /// the map came out mirrored).
+        /// </summary>
         public static Vector3 ToDirection(float longitudeDegrees, float latitudeDegrees)
         {
             float lon = longitudeDegrees * Mathf.Deg2Rad;
             float lat = latitudeDegrees * Mathf.Deg2Rad;
             float flat = Mathf.Cos(lat);
-            return new Vector3(flat * Mathf.Sin(lon), Mathf.Sin(lat), flat * Mathf.Cos(lon));
+            return new Vector3(-flat * Mathf.Sin(lon), Mathf.Sin(lat), flat * Mathf.Cos(lon));
         }
 
         /// <summary>Texture coordinates of a place on an equirectangular map, both 0..1.</summary>

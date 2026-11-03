@@ -22,7 +22,16 @@ namespace Game.Boot
         }
 
         /// <summary>The loop for the first clip of the set, or null when the set is empty.</summary>
-        public static LoopVoice Create(GameObject host, SoundSet set) => set == null || set.IsEmpty ? null : Create(host, set[0], set.Gain);
+        public static LoopVoice Create(GameObject host, SoundSet set)
+        {
+            LoopVoice voice = set == null || set.IsEmpty ? null : Create(host, set[0], set.Gain);
+            if (voice != null)
+            {
+                voice.Pitch = set.Pitch;
+            }
+
+            return voice;
+        }
 
         public static LoopVoice Create(GameObject host, AudioClip clip, float gain = 1f)
         {

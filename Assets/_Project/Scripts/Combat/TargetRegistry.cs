@@ -25,7 +25,7 @@ namespace Game.Combat
             for (int i = 0; i < _targets.Count; i++)
             {
                 ITargetable candidate = _targets[i];
-                if (!candidate.IsAlive || (candidate.Layer & mask) == 0)
+                if (!candidate.IsAlive || !mask.CanHit(candidate.Layer))
                 {
                     continue;
                 }
@@ -51,7 +51,7 @@ namespace Game.Combat
             for (int i = 0; i < _targets.Count; i++)
             {
                 ITargetable candidate = _targets[i];
-                if (candidate.IsAlive && (candidate.Layer & mask) != 0 && FlatDistanceSqr(origin, candidate.Position) <= radiusSqr)
+                if (candidate.IsAlive && mask.CanHit(candidate.Layer) && FlatDistanceSqr(origin, candidate.Position) <= radiusSqr)
                 {
                     results.Add(candidate);
                 }

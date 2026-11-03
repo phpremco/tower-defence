@@ -16,8 +16,9 @@ MonoBehaviour:
   _target: 0
   _towerId: PulseRifle
   _droneId: 
-  _groupName: Pulse Rifle
+  _groupName: Gun Turret
   _costs: 050000000a0000000f000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.1
+  _continent: 0

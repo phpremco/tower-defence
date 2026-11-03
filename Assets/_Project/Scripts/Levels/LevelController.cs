@@ -145,7 +145,7 @@ namespace Game.Levels
 
         private void OnSkipWave()
         {
-            if (!_skipAllowed || _context.Outcome != LevelOutcome.Running)
+            if (!_skipAllowed || _context.Outcome != LevelOutcome.Running || _context.InputBlocked)
             {
                 return;
             }

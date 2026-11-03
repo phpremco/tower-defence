@@ -13,7 +13,7 @@ namespace Game.Tests
         public void Direction_PointsEastNorthAndForward()
         {
             AssertClose(Vector3.forward, PlanetCoordinates.ToDirection(0f, 0f));
-            AssertClose(Vector3.right, PlanetCoordinates.ToDirection(90f, 0f));
+            AssertClose(Vector3.left, PlanetCoordinates.ToDirection(90f, 0f));
             AssertClose(Vector3.up, PlanetCoordinates.ToDirection(0f, 90f));
             AssertClose(Vector3.back, PlanetCoordinates.ToDirection(180f, 0f));
         }
@@ -40,6 +40,24 @@ namespace Game.Tests
             Vector3 turned = PlanetCoordinates.Rotation(turn.x, turn.y) * place;
 
             AssertClose(Vector3.back, turned);
+        }
+
+        // The camera of the planet map looks along +z at the turned globe; its right is +x and its up is +y.
+        [TestCase(-40f, 6f)]
+        [TestCase(60f, -15f)]
+        [TestCase(150f, -60f)]
+        public void TurnedGlobe_ShowsEastOnTheRightAndNorthUp(float longitude, float latitude)
+        {
+            Vector2 turn = PlanetCoordinates.TurnToFront(PlanetCoordinates.ToDirection(longitude, latitude));
+            Quaternion rotation = PlanetCoordinates.Rotation(turn.x, turn.y);
+
+            Vector3 east = rotation * PlanetCoordinates.ToDirection(longitude + 5f, latitude);
+            Vector3 west = rotation * PlanetCoordinates.ToDirection(longitude - 5f, latitude);
+            Vector3 north = rotation * PlanetCoordinates.ToDirection(longitude, latitude + 5f);
+            Vector3 south = rotation * PlanetCoordinates.ToDirection(longitude, latitude - 5f);
+
+            Assert.Greater(east.x, west.x, "east lies to the right of west, as on any map seen from outside");
+            Assert.Greater(north.y, south.y, "north lies above south");
         }
 
         [Test]

@@ -88,7 +88,7 @@ namespace Game.UI
             _onBack = onBack;
             _onDeploy = onDeploy;
 
-            List<PathObjectDefinition> catalogue = StreetWeapons(catalog);
+            List<PathObjectDefinition> catalogue = StreetWeapons(catalog, progress);
             foreach (string id in progress.Loadout)
             {
                 PathObjectDefinition saved = catalogue.Find(d => d.name == id);
@@ -203,8 +203,11 @@ namespace Game.UI
             Destroy(this);
         }
 
-        // Every street weapon any level offers, in the order the campaign introduces them, each once.
-        private static List<PathObjectDefinition> StreetWeapons(CampaignCatalog catalog)
+        /// <summary>True when the player has unlocked any street weapon to choose from; without one the panel is skipped.</summary>
+        public static bool HasChoice(CampaignCatalog catalog, ProgressService progress) => StreetWeapons(catalog, progress).Count > 0;
+
+        // Every street weapon any level offers and a first clear has unlocked, in the order the campaign introduces them, each once.
+        private static List<PathObjectDefinition> StreetWeapons(CampaignCatalog catalog, ProgressService progress)
         {
             var all = new List<PathObjectDefinition>();
             foreach (MapNode node in catalog.Nodes)
@@ -216,7 +219,7 @@ namespace Game.UI
 
                 foreach (PathObjectDefinition definition in node.Level.PathObjects)
                 {
-                    if (definition != null && !all.Contains(definition))
+                    if (definition != null && !all.Contains(definition) && progress.IsPathObjectUnlocked(definition.name))
                     {
                         all.Add(definition);
                     }

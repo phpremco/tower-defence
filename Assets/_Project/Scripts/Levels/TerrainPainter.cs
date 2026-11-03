@@ -30,6 +30,7 @@ namespace Game.Levels
         private const float CliffSeamGlow = 0.9f;
         private const float PebbleScale = 4.1f;
         private const float PebbleEdge = 0.63f;
+        private const float RiftStrataBands = 40f;
         private const float PebbleStrength = 0.5f;
         private const float LichenScale = 0.9f;
         private const float LichenStrength = 0.45f;
@@ -106,6 +107,7 @@ namespace Game.Levels
             private readonly Color _water;
             private readonly Color _ice;
             private readonly Color _bog;
+            private readonly Color _riftGlow;
             private readonly float _vein;
             private readonly float _halfWidth;
             private readonly float _seed;
@@ -131,6 +133,7 @@ namespace Game.Levels
                 _water = theme.WaterColor;
                 _ice = theme.IceColor;
                 _bog = theme.BogColor;
+                _riftGlow = theme.RiftColor;
                 _vein = theme.VeinStrength;
                 _halfWidth = road.HalfWidth;
                 _seed = Mathf.Abs(level.name.GetHashCode() % 997);
@@ -247,6 +250,16 @@ namespace Game.Levels
                 float bog = _field.BogAt(x, z);
                 float mud = TerrainNoise.SmoothStep(0.02f, 0.4f, bog);
                 color = Color.Lerp(color, Color.Lerp(_bog, _lichen, 0.3f) * (0.7f + 0.4f * noise), mud * 0.9f);
+
+                // Rift: broken grey rock on the rim, then layered strata down the walls, darker towards the floor, with
+                // a little of the vein light catching the lowest layers.
+                float rift = _field.RiftAt(x, z);
+                float rubble = TerrainNoise.SmoothStep(0.01f, 0.12f, rift) * (1f - TerrainNoise.SmoothStep(0.12f, 0.3f, rift));
+                color = Color.Lerp(color, _rock * (0.95f + 0.5f * noise), rubble * 0.8f);
+                float wall = TerrainNoise.SmoothStep(0.08f, 0.35f, rift);
+                float strata = 0.5f + 0.5f * Mathf.Sin(rift * RiftStrataBands + noise * 1.5f);
+                color = Color.Lerp(color, _rock * Mathf.Lerp(0.85f, 0.35f, rift) * (0.75f + 0.45f * strata), wall);
+                glow += _riftGlow * (TerrainNoise.SmoothStep(0.3f, 0.6f, rift) * strata * 0.25f);
             }
 
             // Thin glowing cracks and roots in the ground: strong far from the field, a hint inside it.

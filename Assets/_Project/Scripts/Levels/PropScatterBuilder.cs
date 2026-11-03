@@ -37,6 +37,8 @@ namespace Game.Levels
         private const int LavaSpikePercent = 30;
         private const int IceShardPercent = 45;
         private const int ReedPercent = 75;
+        private const int ScreePercent = 60;
+        private const int RiftCrystalOneIn = 4;
         private const float SwayDegrees = 2.5f;
         private const float SwaySpeedMin = 0.7f;
         private const float SwaySpeedSpread = 0.6f;
@@ -98,6 +100,11 @@ namespace Game.Levels
                         break;
                     case TerrainKind.Bog:
                         PlaceRim(placer, patch.Key, grid, road, terrain, TerrainKind.Bog, PropKind.Reed, PropKind.DeadTree, ReedPercent);
+                        break;
+                    case TerrainKind.Rift:
+                        // Spilled scree and boulders on the rim, and now and then a crystal pushed up by the crack.
+                        PropKind rare = Hash(patch.Key) % RiftCrystalOneIn == 0 ? PropKind.Crystal : PropKind.Boulder;
+                        PlaceRim(placer, patch.Key, grid, road, terrain, TerrainKind.Rift, PropKind.Scree, rare, ScreePercent);
                         break;
                 }
             }

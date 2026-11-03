@@ -21,3 +21,4 @@ MonoBehaviour:
   _currency: 0
   _groupDescription: The base and the gates that hold the roads
   _bonusPerLevel: 0.2
+  _continent: 0

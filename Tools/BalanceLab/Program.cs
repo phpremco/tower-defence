@@ -146,7 +146,7 @@ namespace BalanceLab
             model.Rules.ResearchMultipliers = data.Difficulties.Select(d => d.Research).ToArray();
             foreach (LevelData level in data.Levels)
             {
-                model.Levels.Add(new CampaignLevel { Key = level.Key, TowerIds = level.TowerIds, RewardTowerId = level.RewardTowerId, Research = level.Research, Power = level.Power });
+                model.Levels.Add(new CampaignLevel { Key = level.Key, TowerIds = level.TowerIds, RewardTowerId = level.RewardTowerId, RewardHeroPerkId = level.RewardHeroPerkId, Research = level.Research, Power = level.Power });
                 model.Facts.Add(new LevelFacts
                 {
                     Key = level.Key,
@@ -193,17 +193,19 @@ namespace BalanceLab
                 }
             }
 
-            model.MetaTotals(out int researchCost, out _, out _, out _);
             foreach (CampaignLevel level in model.Levels)
             {
-                level.Research = BalanceSheet.Research(level.Key, researchCost);
-                level.Power = BalanceSheet.Power(WaveScripts.ByKey(level.Key));
+                // Payouts follow the continent curve by the level's index in its continent (Docs/BALANCE.md).
+                LevelSpecs.TryLocate(level.Key, out int continent, out int index);
+                level.Continent = Math.Max(0, continent);
+                level.Research = BalanceSheet.Research(continent, index);
+                level.Power = BalanceSheet.Power(continent, WaveScripts.ByKey(level.Key));
             }
         }
 
         private static void Meta(CampaignModel model, StringBuilder report)
         {
-            model.MetaTotals(out int researchCost, out int powerCost, out int[] research, out int[] power);
+            model.MetaTotals(0, out int researchCost, out int powerCost, out int[] research, out int[] power);
             report.Append($"Research upgrades cost {researchCost}; paid per difficulty: {string.Join(" / ", research)}");
             report.Append($" (Easy {100f * research[0] / Math.Max(1, researchCost):0}%, Psycho {100f * research[research.Length - 1] / Math.Max(1, researchCost):0}%)\n");
             report.Append($"Power upgrades cost {powerCost}; paid per difficulty: {string.Join(" / ", power)}\n");

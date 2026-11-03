@@ -106,6 +106,9 @@ namespace Game.Enemies
 
         public bool Rolls => _rollSeconds > 0f;
 
+        /// <summary>Speed over a whole walk-and-roll cycle: the walking speed for a creature that never rolls.</summary>
+        public float AverageSpeed => Rolls ? _speed * (_walkSeconds + _rollSeconds * _rollSpeedMultiplier) / (_walkSeconds + _rollSeconds) : _speed;
+
         /// <summary>How long each patch of the trail this creature leaves stays on the road; zero for no trail.</summary>
         public float TrailSeconds => _trailSeconds;
 

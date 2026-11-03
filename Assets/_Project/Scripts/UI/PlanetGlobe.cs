@@ -197,7 +197,7 @@ namespace Game.UI
 
         // The stock lit shader, because it reads relief, gloss and lights from maps; the ground detail of the levels
         // tiles over it so the land still has grain when the view flies onto a region.
-        private static Material Surface(GlobePainter.Maps maps)
+        internal static Material Surface(GlobePainter.Maps maps)
         {
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
             material.SetTexture("_BaseMap", maps.Albedo);
@@ -223,18 +223,21 @@ namespace Game.UI
         }
 
         // A thin shell of air: brightest along the rim, nothing over the face, so the planet gets its blue edge.
-        private static Material AtmosphereMaterial()
+        private static Material AtmosphereMaterial() => AtmosphereMaterial(AtmosphereColor * AtmosphereStrength, AtmosphereRimPower);
+
+        /// <summary>An atmosphere shell in any colour (already multiplied by its strength); a higher rim power keeps it thinner.</summary>
+        internal static Material AtmosphereMaterial(Color colour, float rimPower)
         {
             Shader shader = Shader.Find("Game/Fireball");
             if (shader == null)
             {
-                return PlaceholderVisuals.TransparentMaterialFor(AtmosphereColor, 0.15f, 1f);
+                return PlaceholderVisuals.TransparentMaterialFor(colour, 0.15f, 1f);
             }
 
             var material = new Material(shader);
-            material.SetColor("_Color", AtmosphereColor * AtmosphereStrength);
+            material.SetColor("_Color", colour);
             material.SetTexture("_NoiseTex", Texture2D.whiteTexture);
-            material.SetFloat("_RimPower", AtmosphereRimPower);
+            material.SetFloat("_RimPower", rimPower);
             material.SetFloat("_RimStrength", 1f);
             material.SetFloat("_Fill", 0f);
             material.SetFloat("_Alpha", 1f);
@@ -242,7 +245,7 @@ namespace Game.UI
             return material;
         }
 
-        private static Material CloudMaterial(Texture2D texture, float alpha)
+        internal static Material CloudMaterial(Texture2D texture, float alpha)
         {
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
             material.SetFloat("_Surface", 1f);
@@ -275,7 +278,7 @@ namespace Game.UI
 
         // A latitude-longitude sphere whose texture coordinates follow PlanetCoordinates.ToUv exactly, so the map
         // painted for it and the markers projected on it agree on where every place is.
-        private static Mesh SphereMesh()
+        internal static Mesh SphereMesh()
         {
             var vertices = new Vector3[(Rings + 1) * (Segments + 1)];
             var normals = new Vector3[vertices.Length];
@@ -304,11 +307,11 @@ namespace Game.UI
                     int b = a + Segments + 1;
                     // Wound so the outside faces the camera; the other way round the far side shows through, mirrored.
                     triangles[t++] = a;
-                    triangles[t++] = a + 1;
                     triangles[t++] = b;
                     triangles[t++] = a + 1;
+                    triangles[t++] = a + 1;
+                    triangles[t++] = b;
                     triangles[t++] = b + 1;
-                    triangles[t++] = b;
                 }
             }
 

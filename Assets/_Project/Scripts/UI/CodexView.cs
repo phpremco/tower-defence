@@ -84,6 +84,9 @@ namespace Game.UI
 
         public bool Available => _catalog != null && (_catalog.Recipes.Count > 0 || _catalog.Enemies.Count > 0);
 
+        /// <summary>True while the book is open and holds the game.</summary>
+        public bool IsOpen => _open;
+
         public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input)
         {
             _context = context;
@@ -107,7 +110,8 @@ namespace Game.UI
 
         public void Open()
         {
-            if (!Available || _open || _context.Outcome != LevelOutcome.Running)
+            // A conversation owns the screen until it ends; the book waits.
+            if (!Available || _open || _context.StoryBusy || _context.Outcome != LevelOutcome.Running)
             {
                 return;
             }
@@ -121,7 +125,7 @@ namespace Game.UI
             _root.transform.SetAsLastSibling();
             _root.SetActive(true);
             _open = true;
-            _time.Hold(true);
+            _time.Hold(this);
             ShowPage(_page);
         }
 
@@ -134,7 +138,7 @@ namespace Game.UI
 
             _open = false;
             _root.SetActive(false);
-            _time.Hold(false);
+            _time.Release(this);
             EventSystem.current.SetSelectedGameObject(null);
         }
 

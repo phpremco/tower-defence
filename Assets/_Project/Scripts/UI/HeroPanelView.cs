@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Hero;
 using Game.Levels;
 using UnityEngine;
@@ -36,6 +37,8 @@ namespace Game.UI
         private const int LabelSize = 22;
         private const float LowHealthFraction = 0.35f;
         private const float MidHealthFraction = 0.65f;
+        // The panel also follows what raises no event of its own, such as the guarded gate's health for the repair.
+        private const float RefreshSeconds = 0.1f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color DimColor = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color HeaderColor = new Color(0.7f, 0.8f, 0.95f);
@@ -43,8 +46,6 @@ namespace Game.UI
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
         private static readonly Color PostTint = new Color(0.5f, 0.6f, 1f);
-        private static readonly Color ShockwaveTint = new Color(0.4f, 0.8f, 1f);
-        private static readonly Color RepairTint = new Color(0.35f, 0.9f, 0.5f);
 
         private LevelContext _context;
         private Commander _hero;
@@ -56,12 +57,10 @@ namespace Game.UI
         private RectTransform _healthBar;
         private Image _healthFill;
         private Button _postButton;
-        private Button _shockwave;
-        private Button _repair;
         private Text _postLabel;
-        private Text _shockwaveLabel;
-        private Text _repairLabel;
+        private readonly List<HeroAbilityButton> _abilities = new List<HeroAbilityButton>();
         private Font _font;
+        private float _nextRefresh;
 
         public void Initialize(LevelContext context, RectTransform root, Camera camera, Font font)
         {
@@ -88,9 +87,20 @@ namespace Game.UI
             _healthFill = HeroPanelStyle.CreateHealthBar(_panel, new Vector2(Padding, -Padding - HeaderHeight - StateHeight - BarGap), new Vector2(FullWidth - Padding * 2f, BarHeight));
             _healthBar = _healthFill.transform.parent.GetComponent<RectTransform>();
 
-            _postButton = CreateAction(0, IconType.Hero, PostTint, OnPostPressed, out _postLabel);
-            _shockwave = CreateAction(1, IconType.Shockwave, ShockwaveTint, () => _hero.TryShockwave(), out _shockwaveLabel);
-            _repair = CreateAction(2, IconType.Repair, RepairTint, () => _context.HeroRepairRequested.Raise(), out _repairLabel);
+            _postButton = CreateAction(0, IconFactory.Get(IconType.Hero), PostTint, OnPostPressed, out _postLabel);
+            int column = 1;
+            for (int slot = 0; slot < _hero.Abilities.Count; slot++)
+            {
+                HeroAbilityState state = _hero.Abilities[slot];
+                if (state == null)
+                {
+                    continue;
+                }
+
+                int pressed = slot;
+                Button button = CreateAction(column++, HeroAbilityHud.IconFor(state.Definition), state.Definition.Tint, () => _context.HeroAbilityRequested.Raise(pressed), out Text label);
+                _abilities.Add(new HeroAbilityButton(slot, state, button, label));
+            }
 
             _hero.Changed += Refresh;
             _context.Changed.Subscribe(Refresh);
@@ -115,24 +125,25 @@ namespace Game.UI
         private bool IsFull => _context.HeroMenuPost == _hero.PostIndex;
 
         // In prompt mode the one icon sends the hero to the clicked post. In full mode it cycles to the next post.
+        // Both go through the hero controller, which ignores them while the level is paused or a dialogue holds it.
         private void OnPostPressed()
         {
             if (IsFull)
             {
-                _hero.MoveTo((_hero.PostIndex + 1) % _hero.PostCount);
+                _context.HeroPostRequested.Raise((_hero.PostIndex + 1) % _hero.PostCount);
             }
             else
             {
-                _hero.MoveTo(_context.HeroMenuPost);
+                _context.HeroPostRequested.Raise(_context.HeroMenuPost);
                 _context.HeroMenuPost = -1;
                 _context.Changed.Raise();
             }
         }
 
-        private Button CreateAction(int index, IconType type, Color tint, UnityEngine.Events.UnityAction action, out Text label)
+        private Button CreateAction(int index, Sprite icon, Color tint, UnityEngine.Events.UnityAction action, out Text label)
         {
             float x = Padding + index * ColumnWidth;
-            Button button = UiKit.CreateIconButton(_panel, IconFactory.Get(type), IconSize, () =>
+            Button button = UiKit.CreateIconButton(_panel, icon, IconSize, () =>
             {
                 action();
                 EventSystem.current.SetSelectedGameObject(null);
@@ -203,6 +214,12 @@ namespace Game.UI
             float y = above ? local.y + AboveHero : local.y - BelowHero;
             y = Mathf.Max(y, -half.y + BottomReserve + (above ? 0f : height));
             _panel.anchoredPosition = new Vector2(x, y);
+
+            if (Time.unscaledTime >= _nextRefresh)
+            {
+                _nextRefresh = Time.unscaledTime + RefreshSeconds;
+                Refresh();
+            }
         }
 
         private void Refresh()
@@ -225,6 +242,15 @@ namespace Game.UI
             }
         }
 
+        private void ShowAbilities(bool show)
+        {
+            foreach (HeroAbilityButton ability in _abilities)
+            {
+                ability.Button.gameObject.SetActive(show);
+                ability.Label.gameObject.SetActive(show);
+            }
+        }
+
         private void RefreshPrompt(int post)
         {
             _panel.sizeDelta = new Vector2(PromptWidth, PromptHeight);
@@ -234,10 +260,7 @@ namespace Game.UI
             _healthBar.gameObject.SetActive(false);
 
             _postButton.gameObject.SetActive(true);
-            _shockwave.gameObject.SetActive(false);
-            _repair.gameObject.SetActive(false);
-            _shockwaveLabel.gameObject.SetActive(false);
-            _repairLabel.gameObject.SetActive(false);
+            ShowAbilities(false);
             _postLabel.text = "Move hero here";
             _postLabel.color = TextColor;
         }
@@ -251,10 +274,7 @@ namespace Game.UI
             _healthBar.gameObject.SetActive(true);
 
             _postButton.gameObject.SetActive(true);
-            _shockwave.gameObject.SetActive(true);
-            _repair.gameObject.SetActive(true);
-            _shockwaveLabel.gameObject.SetActive(true);
-            _repairLabel.gameObject.SetActive(true);
+            ShowAbilities(true);
 
             string postName = _context.HeroPostNames[_hero.PostIndex];
             if (_hero.IsDown)
@@ -275,17 +295,14 @@ namespace Game.UI
             _postLabel.text = "Next post";
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
 
-            bool shockwaveReady = !_hero.IsDown && _hero.ShockwaveReady >= 1f;
-            _shockwave.interactable = shockwaveReady;
-            _shockwaveLabel.text = shockwaveReady ? "Shockwave" : $"Shockwave {HeroPanelStyle.Cooldown(_hero.ShockwaveReady, _hero.Definition.ShockwaveCooldown)}s";
-            _shockwaveLabel.color = shockwaveReady ? TextColor : DimColor;
-
-            int cost = _hero.Definition.RepairCost;
-            bool affordable = _context.Wallet.CanAfford(cost);
-            bool repairReady = _hero.CanEmergencyRepair;
-            _repair.interactable = repairReady && affordable;
-            _repairLabel.text = repairReady ? $"Repair {cost}" : $"Repair {HeroPanelStyle.Cooldown(_hero.RepairReady, _hero.Definition.RepairCooldown)}s";
-            _repairLabel.color = !repairReady ? DimColor : affordable ? TextColor : Unaffordable;
+            foreach (HeroAbilityButton ability in _abilities)
+            {
+                bool ready = _hero.CanUse(ability.Slot);
+                bool affordable = HeroAbilityHud.Affordable(ability.State, _context.Wallet);
+                ability.Button.interactable = ready && affordable;
+                ability.Label.text = HeroAbilityHud.Label(ability.State, ability.Slot, false);
+                ability.Label.color = !ready ? DimColor : affordable ? TextColor : Unaffordable;
+            }
         }
     }
 }

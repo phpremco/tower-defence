@@ -16,8 +16,9 @@ MonoBehaviour:
   _target: 0
   _towerId: Laser
   _droneId: 
-  _groupName: Laser
+  _groupName: Laser Turret
   _costs: 050000000a0000000f000000i
   _currency: 0
   _groupDescription: 
   _bonusPerLevel: 0.1
+  _continent: 0

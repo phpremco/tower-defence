@@ -22,6 +22,21 @@ namespace Game.Levels
 
         public static bool Validate(LevelDefinition level, List<string> errors)
         {
+            if (!ValidateLayout(level, errors) && !level.IsValid(out _))
+            {
+                return false;
+            }
+
+            CheckWaves(level, errors);
+            return errors.Count == 0;
+        }
+
+        /// <summary>
+        /// Every check except the waves, for a level whose map is being generated: the waves are solved after the layout,
+        /// once the whole campaign exists.
+        /// </summary>
+        public static bool ValidateLayout(LevelDefinition level, List<string> errors)
+        {
             errors.Clear();
 
             if (!level.IsValid(out string basicError))
@@ -39,7 +54,6 @@ namespace Game.Levels
             CheckMines(level, grid, errors);
             CheckRoad(level, grid, errors);
             CheckRoadsReachBase(level, errors);
-            CheckWaves(level, errors);
             CheckBossEntrance(level, grid, errors);
             CheckNests(level, grid, errors);
             CheckDefenceZones(level, grid, errors);
@@ -356,15 +370,10 @@ namespace Game.Levels
                     continue;
                 }
 
-                foreach (WaveDefinition wave in set.Waves)
+                for (int i = 0; i < set.Waves.Length; i++)
                 {
-                    if (wave == null)
-                    {
-                        errors.Add($"Difficulty '{set.Difficulty.name}' has an empty wave entry.");
-                        continue;
-                    }
-
-                    foreach (SpawnGroup group in wave.Groups)
+                    string wave = $"{set.Difficulty.name} {i + 1}";
+                    foreach (SpawnGroup group in set.Waves[i].Groups)
                     {
                         CheckGroup(level, wave, group, errors);
                     }
@@ -372,24 +381,24 @@ namespace Game.Levels
             }
         }
 
-        private static void CheckGroup(LevelDefinition level, WaveDefinition wave, SpawnGroup group, List<string> errors)
+        private static void CheckGroup(LevelDefinition level, string wave, SpawnGroup group, List<string> errors)
         {
             if (group.Enemy == null)
             {
-                errors.Add($"Wave '{wave.name}' has a group without an enemy.");
+                errors.Add($"Wave '{wave}' has a group without an enemy.");
                 return;
             }
 
             if (group.PathIndex < 0 || group.PathIndex >= level.Paths.Length)
             {
-                errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} along path {group.PathIndex}, which does not exist.");
+                errors.Add($"Wave '{wave}' sends {group.Enemy.name} along path {group.PathIndex}, which does not exist.");
                 return;
             }
 
             bool airEnemy = group.Enemy.Flies;
             if (!airEnemy && level.Paths[group.PathIndex].Flying)
             {
-                errors.Add($"Wave '{wave.name}' sends ground enemy {group.Enemy.name} along flying path {group.PathIndex}.");
+                errors.Add($"Wave '{wave}' sends ground enemy {group.Enemy.name} along flying path {group.PathIndex}.");
             }
 
             if (group.Source == SpawnSource.Gate)
@@ -401,7 +410,7 @@ namespace Game.Levels
             {
                 if (level.BossEntrance.Kind == EntranceKind.Gate)
                 {
-                    errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} through the boss entrance, but the level has none.");
+                    errors.Add($"Wave '{wave}' sends {group.Enemy.name} through the boss entrance, but the level has none.");
                 }
 
                 return;
@@ -416,21 +425,21 @@ namespace Game.Levels
             // A pool spawn needs a pool of that kind to come out of, and only walkers climb out of pools.
             if (airEnemy)
             {
-                errors.Add($"Wave '{wave.name}' sends flyer {group.Enemy.name} out of a {group.Source} pool.");
+                errors.Add($"Wave '{wave}' sends flyer {group.Enemy.name} out of a {group.Source} pool.");
             }
 
             if (new LiquidPools(level).Count(LiquidPools.KindOf(group.Source)) == 0)
             {
-                errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a {group.Source} pool, but the level has none.");
+                errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of a {group.Source} pool, but the level has none.");
             }
         }
 
         // A nest spawn needs a creature with an element and a nest of that element to come out of.
-        private static void CheckNestGroup(LevelDefinition level, WaveDefinition wave, SpawnGroup group, List<string> errors)
+        private static void CheckNestGroup(LevelDefinition level, string wave, SpawnGroup group, List<string> errors)
         {
             if (group.Enemy.Element == Element.None)
             {
-                errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a nest, but it has no element.");
+                errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of a nest, but it has no element.");
                 return;
             }
 
@@ -442,7 +451,7 @@ namespace Game.Levels
                 }
             }
 
-            errors.Add($"Wave '{wave.name}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
+            errors.Add($"Wave '{wave}' sends {group.Enemy.name} out of a {group.Enemy.Element} nest, but the level has none.");
         }
 
         /// <summary>Largest share of its road a creature from a nest or pool may skip; the rest it must walk under the guns.</summary>
@@ -505,6 +514,8 @@ namespace Game.Levels
                     return TerrainKind.Ice;
                 case Element.Bog:
                     return TerrainKind.Bog;
+                case Element.Stone:
+                    return TerrainKind.Rift;
                 default:
                     return TerrainKind.Ground;
             }

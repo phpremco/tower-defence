@@ -15,6 +15,12 @@ namespace BalanceLab
     /// </summary>
     public sealed class AssetWriter
     {
+        private const string DifficultyLine = "  - Difficulty:";
+        private const string WaveLine = "    - _startDelay:";
+        private const string GroupIndent = "      ";
+        private const string GroupsLine = GroupIndent + "_groups:";
+        private const string HealthLine = GroupIndent + "_healthMultiplier:";
+
         private readonly GameData _data;
         private readonly CampaignModel _model;
         private int _files;
@@ -84,66 +90,76 @@ namespace BalanceLab
         /// <summary>Unity writes floats in their shortest round-trip form.</summary>
         public static string F(float value) => value.ToString("R", CultureInfo.InvariantCulture);
 
+        // Rewrites the groups and health multiplier of every wave in the level's one LevelWaves file, in place. Unity writes
+        // each difficulty as "  - Difficulty:" and each wave as a list item that starts with its first field, _startDelay.
         private void WriteWaves(LevelData level, List<List<WaveSpec>> sets)
         {
-            for (int d = 0; d < sets.Count && d < level.WavePaths.Count; d++)
+            if (level.WavesPath == null || sets.Count != level.Waves.Count)
             {
-                if (sets[d].Count != level.WavePaths[d].Count)
-                {
-                    throw new InvalidOperationException($"{level.Key}: the script has {sets[d].Count} waves but the level has {level.WavePaths[d].Count} assets; change wave counts in Unity.");
-                }
+                throw new InvalidOperationException($"{level.Key}: the script has {sets.Count} difficulties but the level has {level.Waves.Count}; generate the waves in Unity.");
+            }
 
-                for (int i = 0; i < sets[d].Count; i++)
+            for (int d = 0; d < sets.Count; d++)
+            {
+                if (sets[d].Count != level.Waves[d].Count)
                 {
-                    WriteWave(level.WavePaths[d][i], sets[d][i]);
+                    throw new InvalidOperationException($"{level.Key}: the script has {sets[d].Count} waves but the level has {level.Waves[d].Count}; change wave counts in Unity.");
                 }
             }
-        }
 
-        private void WriteWave(string path, WaveSpec wave)
-        {
-            string[] lines = File.ReadAllLines(path);
             var output = new List<string>();
+            int difficulty = -1;
+            int wave = -1;
             bool skipping = false;
-            foreach (string line in lines)
+            foreach (string line in File.ReadAllLines(level.WavesPath))
             {
-                if (line.StartsWith("  _groups:", StringComparison.Ordinal))
+                if (line.StartsWith(DifficultyLine, StringComparison.Ordinal))
                 {
-                    output.AddRange(Groups(wave));
+                    difficulty++;
+                    wave = -1;
+                }
+                else if (line.StartsWith(WaveLine, StringComparison.Ordinal))
+                {
+                    wave++;
+                }
+
+                if (line.StartsWith(GroupsLine, StringComparison.Ordinal))
+                {
+                    output.AddRange(Groups(sets[difficulty][wave]));
                     skipping = true;
                     continue;
                 }
 
-                if (skipping && (line.StartsWith("  - ", StringComparison.Ordinal) || line.StartsWith("    ", StringComparison.Ordinal)))
+                if (skipping && (line.StartsWith(GroupIndent + "- ", StringComparison.Ordinal) || line.StartsWith(GroupIndent + "  ", StringComparison.Ordinal)))
                 {
                     continue;
                 }
 
                 skipping = false;
-                output.Add(line.StartsWith("  _healthMultiplier:", StringComparison.Ordinal) ? "  _healthMultiplier: " + F(wave.HealthMultiplier) : line);
+                output.Add(line.StartsWith(HealthLine, StringComparison.Ordinal) ? HealthLine + " " + F(sets[difficulty][wave].HealthMultiplier) : line);
             }
 
-            Save(path, output);
+            Save(level.WavesPath, output);
         }
 
         private IEnumerable<string> Groups(WaveSpec wave)
         {
             if (wave.Groups.Count == 0)
             {
-                yield return "  _groups: []";
+                yield return GroupsLine + " []";
                 yield break;
             }
 
-            yield return "  _groups:";
+            yield return GroupsLine;
             foreach (GroupSpec g in wave.Groups)
             {
-                yield return $"  - Enemy: {{fileID: 11400000, guid: {_data.EnemyGuids[g.Enemy.Id]}, type: 2}}";
-                yield return $"    Count: {g.Count}";
-                yield return $"    PathIndex: {g.Path}";
-                yield return $"    Source: {g.Source}";
-                yield return $"    Interval: {F(g.Interval)}";
-                yield return $"    Delay: {F(g.Delay)}";
-                yield return $"    Stagger: {F(g.Stagger)}";
+                yield return $"{GroupIndent}- Enemy: {{fileID: 11400000, guid: {_data.EnemyGuids[g.Enemy.Id]}, type: 2}}";
+                yield return $"{GroupIndent}  Count: {g.Count}";
+                yield return $"{GroupIndent}  PathIndex: {g.Path}";
+                yield return $"{GroupIndent}  Source: {g.Source}";
+                yield return $"{GroupIndent}  Interval: {F(g.Interval)}";
+                yield return $"{GroupIndent}  Delay: {F(g.Delay)}";
+                yield return $"{GroupIndent}  Stagger: {F(g.Stagger)}";
             }
         }
 

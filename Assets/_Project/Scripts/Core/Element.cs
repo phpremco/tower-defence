@@ -15,5 +15,8 @@ namespace Game.Core
 
         /// <summary>Marsh gas and rot: the element of the bog.</summary>
         Bog = 6,
+
+        /// <summary>Rock and crystal: the element of the rifts. Stone creatures are heavy and slow.</summary>
+        Stone = 7,
     }
 }

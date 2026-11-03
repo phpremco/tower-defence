@@ -30,6 +30,7 @@ namespace Game.Boot
         private const float LavaPitch = 0.6f;
         // As the bed of a whole level the bubbling sits level with the generated wind, not under it like one pool.
         private const float LavaBedScale = 7f;
+        private const float RiftLoudness = 2.3f;
 
         private LevelContext _context;
         private AudioMix _mix;
@@ -129,13 +130,15 @@ namespace Game.Boot
             }
 
             AddPool(library.WaterLoops, level, TerrainKind.Water, TerrainKind.Bog);
+            // The rifts rumble low under the field, a borrowed lava bed slowed down (the set carries its pitch).
+            AddPool(library.RiftLoops, level, TerrainKind.Rift, TerrainKind.Rift, loudness: RiftLoudness);
             if (level.Theme.Ambience != AmbienceKind.Lava)
             {
                 AddPool(library.LavaLoops, level, TerrainKind.Lava, TerrainKind.Lava, LavaPitch);
             }
         }
 
-        private void AddPool(SoundSet set, LevelDefinition level, TerrainKind first, TerrainKind second, float pitch = 1f)
+        private void AddPool(SoundSet set, LevelDefinition level, TerrainKind first, TerrainKind second, float pitch = 1f, float loudness = 1f)
         {
             Vector3 sum = Vector3.zero;
             int count = 0;
@@ -150,7 +153,7 @@ namespace Game.Boot
 
             if (count > 0)
             {
-                AddLayer(set, Mathf.Min(1f, count / CellsForFullPool), sum / count, pitch);
+                AddLayer(set, Mathf.Min(1f, count / CellsForFullPool) * loudness, sum / count, pitch);
             }
         }
 
@@ -159,7 +162,8 @@ namespace Game.Boot
             LoopVoice layer = LoopVoice.Create(gameObject, set);
             if (layer != null)
             {
-                layer.Pitch = pitch;
+                // The set carries its own pitch (a borrowed recording slowed down); a layer only bends it further.
+                layer.Pitch = set.Pitch * pitch;
                 _layers.Add(new AmbienceLayer(layer, scale, centre));
             }
         }

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7038ebb93364684fb7bd8b00600503b, type: 3}
+  m_Name: Theme_Underground
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.VisualTheme
+  _backgroundColor: {r: 0.005, g: 0.004, b: 0.006, a: 1}
+  _groundColor: {r: 0.1, g: 0.1, b: 0.12, a: 1}
+  _pathColor: {r: 0.3, g: 0.3, b: 0.35, a: 1}
+  _slotColor: {r: 0.2, g: 0.55, b: 1, a: 1}
+  _baseColor: {r: 0.3, g: 0.85, b: 1, a: 1}
+  _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}
+  _roadStraight: {fileID: 919132149155446097, guid: 9e22f6d839ffb9c449c0b3546a265bfc, type: 3}
+  _roadCorner: {fileID: 919132149155446097, guid: 82d6372ab7a358f4e940fe555aa4ecf4, type: 3}
+  _roadEnd: {fileID: 919132149155446097, guid: 55392b9e6e7d1ee4596ba2bc65cc90f8, type: 3}
+  _roadCross: {fileID: 919132149155446097, guid: ee2c7c00c93a938408d836a68ea18157, type: 3}
+  _baseModel: {fileID: 919132149155446097, guid: fce17d700aa938c46a7b466f308efe64, type: 3}
+  _spawnModel: {fileID: 919132149155446097, guid: 1774108f8119e7d4ab8ce3006dcd464b, type: 3}
+  _blockedProps:
+  - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
+  - {fileID: 919132149155446097, guid: 3a43b61ecb2500f4e8d4fb1ffd50ab0b, type: 3}
+  - {fileID: 919132149155446097, guid: 751f1f49b991360439c8d4038e85614a, type: 3}
+  - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
+  _scenery:
+  - {fileID: 919132149155446097, guid: 913e6bcd553dff84a91c802132a82d59, type: 3}
+  - {fileID: 919132149155446097, guid: 0c0e3a570df765546874537213c96969, type: 3}
+  - {fileID: 919132149155446097, guid: 13f659c813f22864bbbfd371b634ae7b, type: 3}
+  - {fileID: 919132149155446097, guid: 34baeeb0a89a49b4390e49f411add64f, type: 3}
+  - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
+  - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
+  - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
+  _rockColor: {r: 0.26, g: 0.27, b: 0.31, a: 1}
+  _accentColor: {r: 0.35, g: 0.85, b: 1, a: 1}
+  _waterColor: {r: 0.05, g: 0.2, b: 0.3, a: 1}
+  _lavaColor: {r: 1, g: 0.4, b: 0.1, a: 1}
+  _sandColor: {r: 0.3, g: 0.28, b: 0.3, a: 1}
+  _iceColor: {r: 0.75, g: 0.9, b: 1, a: 1}
+  _bogColor: {r: 0.18, g: 0.24, b: 0.12, a: 1}
+  _spawnColor: {r: 1, g: 0.4, b: 0.25, a: 1}
+  _plantColor: {r: 0.2, g: 0.4, b: 0.4, a: 1}
+  _propKinds: 000000000100000002000000i
+  _veinStrength: 0.3
+  _ambientRate: 0
+  _ambientRise: 0
+  _ambience: 1
+  _lightColor: {r: 0.12, g: 0.1, b: 0.15, a: 1}
+  _lightIntensity: 0.4
+  _fogColor: {r: 0.02, g: 0.015, b: 0.02, a: 1}
+  _fogDensity: 0.05
+  _bloomIntensity: 1.6
+  _sunPitch: 42
+  _sunYaw: -35
+  _rimColor: {r: 1, g: 0.55, b: 0.3, a: 1}
+  _rimIntensity: 0.5
+  _skyColor: {r: 0.04, g: 0.042, b: 0.055, a: 1}
+  _contrast: 18
+  _saturation: 10
+  _shadowTint: {r: 0.9, g: 0.85, b: 1, a: 1}
+  _highlightTint: {r: 1, g: 0.9, b: 0.8, a: 1}

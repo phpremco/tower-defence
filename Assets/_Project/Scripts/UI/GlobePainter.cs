@@ -23,6 +23,9 @@ namespace Game.UI
 
             /// <summary>True for a level site: a settlement whose lights show on the surface.</summary>
             public bool Lights;
+
+            /// <summary>True for any level site, built or not: the mountains give way around it.</summary>
+            public bool Site;
         }
 
         /// <summary>The maps one lit material needs; all the same size.</summary>
@@ -55,6 +58,9 @@ namespace Game.UI
         /// <summary>Reach of the patch of land every level site raises, in degrees of arc.</summary>
         public const float LevelLandDegrees = 7f;
         private const float LightReachShare = 0.55f;
+        // Mountains flatten out within this reach of a level site (degrees of arc), so no settlement sits on a peak.
+        private const float SiteFlatInner = 1.5f;
+        private const float SiteFlatOuter = 4f;
         private const float LightDensity = 0.62f;
         private const float CloudCover = 0.7f;
         private static readonly Color DeepSea = new Color(0.02f, 0.1f, 0.26f);
@@ -68,6 +74,34 @@ namespace Game.UI
         private static readonly Color Ice = new Color(0.8f, 0.9f, 0.97f);
         private static readonly Color Desert = new Color(0.66f, 0.56f, 0.36f);
         private static readonly Color LightColour = new Color(1f, 0.78f, 0.45f);
+
+        /// <summary>
+        /// The painted regions of a campaign: every surface continent, and a small patch of land under every level site so
+        /// no level ends up in a bay the coast noise carved; sites with a level carry lights. The Core lies under the
+        /// surface and is never painted as land.
+        /// </summary>
+        public static List<Region> RegionsOf(Game.Levels.CampaignCatalog catalog)
+        {
+            var regions = new List<Region>();
+            foreach (Game.Levels.MapRegion region in catalog.Regions)
+            {
+                if (region.Layer == Game.Levels.MapLayer.Surface)
+                {
+                    regions.Add(new Region { Direction = region.Direction, Colour = region.Colour, RadiusDegrees = region.RadiusDegrees });
+                }
+            }
+
+            for (int i = 0; i < catalog.Nodes.Count; i++)
+            {
+                Game.Levels.MapNode node = catalog.Nodes[i];
+                if (catalog.LayerOf(i) == Game.Levels.MapLayer.Surface)
+                {
+                    regions.Add(new Region { Direction = node.Direction, Colour = catalog.Regions[node.Region].Colour, RadiusDegrees = LevelLandDegrees, Lights = node.Level != null, Site = true });
+                }
+            }
+
+            return regions;
+        }
 
         public static Maps Paint(int width, int height, IReadOnlyList<Region> regions)
         {
@@ -132,10 +166,16 @@ namespace Game.UI
             Color tint = Lowland;
             float settlement = 0f;
             Color settlementColour = LightColour;
+            float nearestSite = float.MaxValue;
             for (int i = 0; i < regions.Count; i++)
             {
                 Region region = regions[i];
                 float angle = Vector3.Angle(p, region.Direction);
+                if (region.Site)
+                {
+                    nearestSite = Mathf.Min(nearestSite, angle);
+                }
+
                 float reach = 1f - Smooth(region.RadiusDegrees * ContinentCore, region.RadiusDegrees * ContinentEdge, angle);
                 if (reach > body)
                 {
@@ -161,11 +201,8 @@ namespace Game.UI
 
             // Relief: rolling hills everywhere on land, ridged mountain chains where the mountain mask is high.
             float hills = SphereNoise(p, NoiseScale * 6f, 70f);
-            float ridge = 1f - Mathf.Abs(SphereNoise(p, NoiseScale * 4.5f, 80f) * 2f - 1f);
-            ridge *= ridge;
-            float mountainMask = Smooth(0.46f, 0.64f, SphereNoise(p, NoiseScale * 1.7f, 90f));
             float inland = Smooth(CoastEnd, CoastEnd + 0.25f, shape);
-            float elevation = land * (0.15f + HillHeight * hills + MountainHeight * ridge * mountainMask * inland);
+            float elevation = land * (0.15f + HillHeight * hills + MountainHeight * Ruggedness(p) * inland * Smooth(SiteFlatInner, SiteFlatOuter, nearestSite));
             heightOut = elevation;
 
             // Sea: deep far out, lighter over the shelf, flat.
@@ -202,8 +239,19 @@ namespace Game.UI
             lights.a = 1f;
         }
 
+        /// <summary>
+        /// How mountainous the planet is at a point, 0 (flat) to 1 (a ridge crest), whatever the land around it: the
+        /// level sites are laid out where this is low, so no settlement sits on a snowy chain.
+        /// </summary>
+        public static float Ruggedness(Vector3 p)
+        {
+            float ridge = 1f - Mathf.Abs(SphereNoise(p, NoiseScale * 4.5f, 80f) * 2f - 1f);
+            float mountainMask = Smooth(0.46f, 0.64f, SphereNoise(p, NoiseScale * 1.7f, 90f));
+            return ridge * ridge * mountainMask;
+        }
+
         // Tangent-space normals from the height field: x along longitude (east), y along latitude (north).
-        private static Color32[] Normals(float[] heights, int width, int height)
+        internal static Color32[] Normals(float[] heights, int width, int height)
         {
             var pixels = new Color32[width * height];
             for (int y = 0; y < height; y++)
@@ -224,7 +272,7 @@ namespace Game.UI
             return pixels;
         }
 
-        private static Texture2D ToTexture(Color32[] pixels, int width, int height, string name, bool linear)
+        internal static Texture2D ToTexture(Color32[] pixels, int width, int height, string name, bool linear)
         {
             var texture = new Texture2D(width, height, TextureFormat.RGBA32, true, linear) { name = name, wrapMode = TextureWrapMode.Repeat, anisoLevel = 8 };
             texture.SetPixels32(pixels);
@@ -234,7 +282,7 @@ namespace Game.UI
 
         // Perlin noise read three ways across the unit sphere and averaged: continuous everywhere, so the map has
         // no seam at the date line and no pinch at the poles.
-        private static float SphereNoise(Vector3 p, float scale, float offset)
+        internal static float SphereNoise(Vector3 p, float scale, float offset)
         {
             float a = Mathf.PerlinNoise(p.x * scale + offset + 3f, p.y * scale + offset + 7f);
             float b = Mathf.PerlinNoise(p.y * scale + offset + 11f, p.z * scale + offset + 5f);
@@ -242,7 +290,7 @@ namespace Game.UI
             return (a + b + c) / 3f;
         }
 
-        private static float Smooth(float from, float to, float value)
+        internal static float Smooth(float from, float to, float value)
         {
             float t = Mathf.Clamp01((value - from) / (to - from));
             return t * t * (3f - 2f * t);

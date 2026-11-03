@@ -32,6 +32,9 @@ namespace Game.Levels
         [SerializeField] private Color _iceColor = new Color(0.75f, 0.9f, 1f);
         [SerializeField] private Color _bogColor = new Color(0.18f, 0.24f, 0.12f);
 
+        /// <summary>The glow of the veins at the bottom of a rift.</summary>
+        [SerializeField] private Color _riftColor = new Color(1f, 0.58f, 0.25f);
+
         /// <summary>The glow of the gates the enemies come through: hot red on most worlds, cold on the ice.</summary>
         [SerializeField] private Color _spawnColor = new Color(1f, 0.4f, 0.25f);
         [SerializeField] private Color _plantColor = new Color(0.2f, 0.5f, 0.35f);
@@ -95,6 +98,7 @@ namespace Game.Levels
         public Color SandColor => _sandColor;
         public Color IceColor => _iceColor;
         public Color BogColor => _bogColor;
+        public Color RiftColor => _riftColor;
         public Color SpawnColor => _spawnColor;
 
         /// <summary>The colour of leaves, stalks and caps; the glow on them comes from the accent.</summary>

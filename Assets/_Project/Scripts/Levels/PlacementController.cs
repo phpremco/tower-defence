@@ -214,9 +214,9 @@ namespace Game.Levels
 
         private void OnConfirmed()
         {
-            if (_context.Outcome != LevelOutcome.Running || _context.Paused || _context.PointerOverUi)
+            if (_context.Outcome != LevelOutcome.Running || _context.InputBlocked || _context.PointerOverUi)
             {
-                Debug.Log($"[Placement] confirm ignored: outcome={_context.Outcome} paused={_context.Paused} pointerOverUi={_context.PointerOverUi}");
+                Debug.Log($"[Placement] confirm ignored: outcome={_context.Outcome} paused={_context.Paused} held={_context.Held} pointerOverUi={_context.PointerOverUi}");
                 return;
             }
 
@@ -321,7 +321,7 @@ namespace Game.Levels
 
         private void OnCancelled()
         {
-            if (_context.Paused)
+            if (_context.InputBlocked)
             {
                 return;
             }
@@ -535,7 +535,7 @@ namespace Game.Levels
         private void OnUpgrade()
         {
             Tower tower = _context.SelectedPlacedTower;
-            if (_context.Mode != PlacementMode.TowerMenu || tower == null || !tower.CanUpgrade)
+            if (_context.InputBlocked || _context.Mode != PlacementMode.TowerMenu || tower == null || !tower.CanUpgrade)
             {
                 return;
             }
@@ -551,7 +551,7 @@ namespace Game.Levels
         private void OnRepair()
         {
             Tower tower = _context.SelectedPlacedTower;
-            if (_context.Mode != PlacementMode.TowerMenu || tower == null || !tower.NeedsRepair)
+            if (_context.InputBlocked || _context.Mode != PlacementMode.TowerMenu || tower == null || !tower.NeedsRepair)
             {
                 return;
             }
@@ -567,7 +567,7 @@ namespace Game.Levels
         private void OnSell()
         {
             Tower tower = _context.SelectedPlacedTower;
-            if (_context.Mode != PlacementMode.TowerMenu || tower == null)
+            if (_context.InputBlocked || _context.Mode != PlacementMode.TowerMenu || tower == null)
             {
                 return;
             }
@@ -828,7 +828,7 @@ namespace Game.Levels
             Tower selected = _context.SelectedPlacedTower;
             CombineRecipe recipe = _context.CombineOffer;
             Tower partner = _combinePartner;
-            if (_context.Mode != PlacementMode.TowerMenu || selected == null || partner == null || recipe == null || !_context.Wallet.TrySpend(recipe.Cost))
+            if (_context.InputBlocked || _context.Mode != PlacementMode.TowerMenu || selected == null || partner == null || recipe == null || !_context.Wallet.TrySpend(recipe.Cost))
             {
                 return;
             }

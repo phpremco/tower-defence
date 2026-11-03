@@ -50,5 +50,15 @@ namespace Game.Tests
 
             Assert.AreSame(second, Services.Get<ITestService>());
         }
+
+        [Test]
+        public void Unregister_RemovesTheEntryOnce()
+        {
+            Services.Register<ITestService>(new TestService());
+
+            Assert.IsTrue(Services.Unregister<ITestService>());
+            Assert.IsFalse(Services.TryGet(out ITestService _), "a consumed request is gone");
+            Assert.IsFalse(Services.Unregister<ITestService>(), "a second unregister finds nothing");
+        }
     }
 }

@@ -26,5 +26,8 @@ namespace Game.Levels
 
         /// <summary>A clump of tall reeds with dark cattail heads.</summary>
         Reed = 14,
+
+        /// <summary>A spill of loose broken stone on a rift rim.</summary>
+        Scree = 15,
     }
 }

@@ -194,6 +194,7 @@ namespace Game.Enemies
         private static readonly Color WoodSplash = new Color(0.45f, 0.95f, 0.4f);
         private static readonly Color IceSplash = new Color(0.8f, 0.95f, 1f);
         private static readonly Color BogSplash = new Color(0.45f, 0.6f, 0.25f);
+        private static readonly Color RiftGravel = new Color(0.62f, 0.5f, 0.38f);
         private static readonly Color GroundDust = new Color(0.4f, 0.34f, 0.3f);
         private static readonly List<EnemyDeathEffect.Part> PartBuffer = new List<EnemyDeathEffect.Part>(32);
         // Made on first use: Unity forbids creating one in a field initializer of a MonoBehaviour.
@@ -413,6 +414,12 @@ namespace Game.Enemies
                     _spawnDepth = enemy.Definition.Flies ? 1.4f / Mathf.Max(0.3f, _creatureScale) : 0.9f;
                     _spawnStartScale = 0.5f;
                     break;
+                case EnemyOrigin.Rift:
+                    // Claws its way up out of the crack, a little slower than a creature bursting from loose ground.
+                    _spawnSeconds = 1.3f;
+                    _spawnDepth = 1.1f;
+                    _spawnStartScale = 0.75f;
+                    break;
                 case EnemyOrigin.Ground:
                     _spawnSeconds = 1.1f;
                     _spawnDepth = 1.15f;
@@ -456,6 +463,9 @@ namespace Game.Enemies
                 case EnemyOrigin.Bog:
                     color = BogSplash;
                     break;
+                case EnemyOrigin.Rift:
+                    color = RiftGravel;
+                    break;
                 case EnemyOrigin.Nest:
                     color = ElementColor(enemy.Definition.Element) * 1.4f;
                     break;
@@ -490,6 +500,8 @@ namespace Game.Enemies
                     return IceSplash;
                 case Element.Bog:
                     return BogSplash;
+                case Element.Stone:
+                    return RiftGravel;
                 default:
                     return GroundDust;
             }

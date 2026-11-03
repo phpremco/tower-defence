@@ -13,15 +13,22 @@ namespace Game.Core
     {
         public const float MinGain = 0.1f;
         public const float MaxGain = 8f;
+        public const float MinPitch = 0.25f;
+        public const float MaxPitch = 3f;
 
         [SerializeField] private AudioClip[] _clips = new AudioClip[0];
         [SerializeField] [Range(MinGain, MaxGain)] private float _gain = 1f;
+
+        /// <summary>Playback speed of every variant: one plays the file as recorded; a stand-in borrowed from another creature or gun is pitched to sound its own.</summary>
+        [SerializeField] [Range(MinPitch, MaxPitch)] private float _pitch = 1f;
 
         public int Count => _clips.Length;
 
         public bool IsEmpty => _clips.Length == 0;
 
         public float Gain => _gain;
+
+        public float Pitch => _pitch;
 
         public AudioClip this[int index] => _clips[index];
 

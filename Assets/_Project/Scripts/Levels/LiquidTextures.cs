@@ -254,6 +254,52 @@ namespace Game.Levels
             tone = TerrainNoise.Hash(bestId, bestId / 7, 6);
         }
 
+        /// <summary>The floor of a rift: dark broken basalt in layers, with grain; the veins are their own map.</summary>
+        public static Texture2D RiftRock()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    float layers = 0.5f + 0.5f * Mathf.Sin((2f * u + 6f * v) * Tau + Mathf.Sin((3f * u - 1f * v) * Tau) * 0.8f);
+                    float grain = TerrainNoise.Hash(x, y, 23) * 0.12f;
+                    float value = 0.42f + 0.18f * layers + grain;
+                    pixels[y * Size + x] = new Color(value, value * 0.95f, value * 0.9f, 1f);
+                }
+            }
+
+            return Finish(pixels, "RiftRock");
+        }
+
+        /// <summary>The glowing veins at the bottom of a rift: thin branching threads, bright where two cross.</summary>
+        public static Texture2D RiftVeins()
+        {
+            var pixels = new Color32[Size * Size];
+            for (int y = 0; y < Size; y++)
+            {
+                for (int x = 0; x < Size; x++)
+                {
+                    float u = x / (float)Size;
+                    float v = y / (float)Size;
+                    // Two families of warped crack lines, each broken into segments by its own slow mask, so the veins
+                    // wander and stop instead of forming a net; a soft halo lets the bloom catch them.
+                    float a = Mathf.Sin((2f * u + 1f * v + 0.35f * Mathf.Sin((3f * u - 2f * v) * Tau) + 0.2f * Mathf.Sin((5f * u + 4f * v) * Tau)) * Tau);
+                    float b = Mathf.Sin((1f * u - 2f * v + 0.3f * Mathf.Sin((4f * u + 1f * v) * Tau) + 0.25f * Mathf.Sin((2f * u - 5f * v) * Tau)) * Tau);
+                    float maskA = TerrainNoise.SmoothStep(0.35f, 0.65f, 0.5f + 0.5f * Mathf.Sin((3f * u + 5f * v) * Tau + 1.5f * Mathf.Sin((2f * u - 1f * v) * Tau)));
+                    float maskB = TerrainNoise.SmoothStep(0.4f, 0.7f, 0.5f + 0.5f * Mathf.Sin((4f * u - 3f * v) * Tau + 1.2f * Mathf.Sin((1f * u + 3f * v) * Tau)));
+                    float lineA = Mathf.Pow(1f - Mathf.Abs(a), 60f) + Mathf.Pow(1f - Mathf.Abs(a), 12f) * 0.2f;
+                    float lineB = Mathf.Pow(1f - Mathf.Abs(b), 70f) + Mathf.Pow(1f - Mathf.Abs(b), 14f) * 0.15f;
+                    float value = Mathf.Clamp01(lineA * maskA + lineB * maskB * 0.8f);
+                    pixels[y * Size + x] = new Color(value, value, value, 1f);
+                }
+            }
+
+            return Finish(pixels, "RiftVeins");
+        }
+
         private static Texture2D Finish(Color32[] pixels, string name)
         {
             var texture = new Texture2D(Size, Size, TextureFormat.RGBA32, true, false)

@@ -1,4 +1,4 @@
-﻿{
+{
     "name":  "Game.UI",
     "rootNamespace":  "Game.UI",
     "references":  [
@@ -13,7 +13,9 @@
                        "Game.Enemies",
                        "Game.Platform",
                        "UnityEngine.UI",
-                       "Unity.InputSystem"
+                       "Unity.InputSystem",
+                       "Unity.TextMeshPro",
+                       "Unity.RenderPipelines.Core.Runtime"
                    ],
     "includePlatforms":  [
 

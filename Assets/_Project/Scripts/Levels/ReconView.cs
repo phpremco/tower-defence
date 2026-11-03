@@ -140,7 +140,7 @@ namespace Game.Levels
         {
             _phase = Phase.Holding;
             _elapsed = 0f;
-            _time.Hold(true);
+            _time.Hold(this);
             _pan.Locked = true;
             _pan.SetView(Vector3.zero, 1f);
             _root = new GameObject("Recon").transform;
@@ -229,7 +229,7 @@ namespace Game.Levels
 
             _context.RoutesChanged.Raise();
             _pan.Locked = false;
-            _time.Hold(false);
+            _time.Release(this);
             _context.ReconPending = false;
             Destroy(this);
         }

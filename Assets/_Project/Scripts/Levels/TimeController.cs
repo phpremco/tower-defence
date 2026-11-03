@@ -11,10 +11,10 @@ namespace Game.Levels
         private IInputProvider _input;
         private LevelContext _context;
         private int _speedIndex;
+        private readonly TimeHolds _holds = new TimeHolds();
         private bool _paused;
-        private bool _held;
 
-        public float CurrentSpeed => _paused || _held ? 0f : _speedSteps[_speedIndex];
+        public float CurrentSpeed => _paused || _holds.IsHeld ? 0f : _speedSteps[_speedIndex];
 
         public void Initialize(LevelContext context, IInputProvider input)
         {
@@ -27,21 +27,45 @@ namespace Game.Levels
 
         public void CycleSpeed()
         {
+            if (_context.InputBlocked || Ended)
+            {
+                return;
+            }
+
             _speedIndex = (_speedIndex + 1) % _speedSteps.Length;
             Apply();
         }
 
         public void TogglePause()
         {
+            // After the outcome there is no pause menu to resume from, so a pause would freeze the ending for good.
+            if (Ended)
+            {
+                return;
+            }
+
             _paused = !_paused;
             Apply();
         }
 
-        /// <summary>Freezes time without opening the pause menu, while a panel such as the briefing is up.</summary>
-        public void Hold(bool held)
+        /// <summary>
+        /// Freezes time without opening the pause menu while a panel such as the briefing is up. Each panel holds
+        /// under its own owner, so several can be open at once and time resumes only after the last one releases.
+        /// </summary>
+        public void Hold(object owner)
         {
-            _held = held;
-            Apply();
+            if (_holds.Acquire(owner))
+            {
+                Apply();
+            }
+        }
+
+        public void Release(object owner)
+        {
+            if (_holds.Release(owner))
+            {
+                Apply();
+            }
         }
 
         private void OnDestroy()
@@ -55,10 +79,19 @@ namespace Game.Levels
             Time.timeScale = 1f;
         }
 
+        // Once the level has ended the result screen owns the clock: holds still come and go (so the input gate
+        // opens again after a victory dialogue), but the time scale is no longer written.
+        private bool Ended => _context.Outcome != LevelOutcome.Running;
+
         private void Apply()
         {
-            Time.timeScale = _paused || _held ? 0f : _speedSteps[_speedIndex];
+            if (!Ended)
+            {
+                Time.timeScale = CurrentSpeed;
+            }
+
             _context.Paused = _paused;
+            _context.Held = _holds.IsHeld;
             _context.Changed.Raise();
         }
     }

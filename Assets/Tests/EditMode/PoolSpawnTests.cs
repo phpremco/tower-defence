@@ -6,33 +6,30 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>Pools as spawn points and boss entrances, checked against the generated forest level.</summary>
+    /// <summary>Pools and nests as spawn points, checked against generated levels: the ponds of Crystal Plains level 5 and the rifts of level 4.</summary>
     public sealed class PoolSpawnTests
     {
-        private const string ForestPath = "Assets/_Project/Data/Levels/Level_Forest.asset";
-        private const string IcePath = "Assets/_Project/Data/Levels/Level_Ice.asset";
+        private const string PondsPath = "Assets/_Project/Data/Levels/Level_C1_05.asset";
+        private const string RiftsPath = "Assets/_Project/Data/Levels/Level_C1_04.asset";
 
-        private static LevelDefinition LoadForest()
-        {
-            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(ForestPath);
-            Assert.IsNotNull(level, "Run Tools/Generate/Scenes and Starter Data first.");
-            return level;
-        }
+        private static LevelDefinition LoadPonds() => Load(PondsPath);
 
-        private static LevelDefinition LoadIce()
+        private static LevelDefinition LoadRifts() => Load(RiftsPath);
+
+        private static LevelDefinition Load(string path)
         {
-            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(IcePath);
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(path);
             Assert.IsNotNull(level, "Run Tools/Generate/Scenes and Starter Data first.");
             return level;
         }
 
         [Test]
-        public void LiquidPools_GroupTheForestPondsAndPickCellsInsideTheGrid()
+        public void LiquidPools_GroupTheRiverPondsAndPickCellsInsideTheGrid()
         {
-            LevelDefinition level = LoadForest();
+            LevelDefinition level = LoadPonds();
             var pools = new LiquidPools(level);
 
-            Assert.Greater(pools.Count(TerrainKind.Water), 0, "the forest has ponds");
+            Assert.Greater(pools.Count(TerrainKind.Water), 0, "the flats have ponds");
             Assert.AreEqual(0, pools.Count(TerrainKind.Lava), "but no lava");
 
             for (int i = 0; i < pools.Count(TerrainKind.Water); i++)
@@ -46,8 +43,8 @@ namespace Game.Tests
         [Test]
         public void OffRoadRoute_JoinsTheNearestRoadAndEndsAtTheBase()
         {
-            LevelDefinition level = LoadForest();
-            Vector3 start = level.Grid.CellToWorld(level.BossEntrance.Cell);
+            LevelDefinition level = LoadRifts();
+            Vector3 start = level.Grid.CellToWorld(level.Nests[0].Cell);
 
             Vector3[] route = OffRoadRoute.Build(level, start, out float progress);
 
@@ -59,32 +56,22 @@ namespace Game.Tests
             Assert.Greater(progress, 0f, "joining halfway counts as progress along the road");
         }
 
-        // The first world sends bosses through the gate (Docs/LEVEL_GUIDE.md); the Frozen Shelf, a later level, keeps its pool.
         [Test]
-        public void FrozenShelf_BossComesUpOutOfAPond()
+        public void Rifts_NestsLieOffTheRoadInTheRightTerrain_AndFeedTheWaves()
         {
-            LevelDefinition level = LoadIce();
+            LevelDefinition level = LoadRifts();
 
-            Assert.AreEqual(EntranceKind.Pool, level.BossEntrance.Kind);
-            Assert.IsTrue(level.Terrain.IsLiquid(level.BossEntrance.Cell));
-        }
-
-        [Test]
-        public void Forest_NestsLieOffTheRoadInTheRightTerrain_AndFeedTheWaves()
-        {
-            LevelDefinition level = LoadForest();
-
-            Assert.Greater(level.Nests.Length, 0, "the forest has nests");
-            bool wood = false;
+            Assert.Greater(level.Nests.Length, 0, "the fault line has nests");
+            bool stone = false;
             foreach (ElementNest nest in level.Nests)
             {
                 Assert.IsFalse(level.Road.IsRoad(nest.Cell), $"nest at {nest.Cell} lies on the road");
                 TerrainKind wanted = LevelValidator.NestTerrain(nest.Element);
                 Assert.AreEqual(wanted == TerrainKind.Ground ? TerrainKind.Ground : wanted, TerrainMap.IsLiquid(wanted) ? level.Terrain.KindAt(nest.Cell) : TerrainKind.Ground, $"nest at {nest.Cell} sits in the wrong terrain");
-                wood |= nest.Element == Game.Core.Element.Wood;
+                stone |= nest.Element == Game.Core.Element.Stone && level.Terrain.KindAt(nest.Cell) == TerrainKind.Rift;
             }
 
-            Assert.IsTrue(wood, "moss bats roost in the woods");
+            Assert.IsTrue(stone, "stone bats rise from a rift on the fault line");
 
             bool nestSpawn = false;
             foreach (DifficultyWaves set in level.DifficultyWaves)
@@ -107,12 +94,18 @@ namespace Game.Tests
             var theme = ScriptableObject.CreateInstance<VisualTheme>();
             var level = ScriptableObject.CreateInstance<LevelDefinition>();
             var enemy = ScriptableObject.CreateInstance<Game.Enemies.EnemyDefinition>();
-            var wave = ScriptableObject.CreateInstance<WaveDefinition>();
+            var waves = ScriptableObject.CreateInstance<LevelWaves>();
             var difficulty = ScriptableObject.CreateInstance<DifficultyProfile>();
             try
             {
-                var waveProps = new SerializedObject(wave);
-                SerializedProperty groups = waveProps.FindProperty("_groups");
+                var waveProps = new SerializedObject(waves);
+                SerializedProperty sets = waveProps.FindProperty("_difficultyWaves");
+                sets.arraySize = 1;
+                SerializedProperty set = sets.GetArrayElementAtIndex(0);
+                set.FindPropertyRelative("Difficulty").objectReferenceValue = difficulty;
+                SerializedProperty list = set.FindPropertyRelative("Waves");
+                list.arraySize = 1;
+                SerializedProperty groups = list.GetArrayElementAtIndex(0).FindPropertyRelative("_groups");
                 groups.arraySize = 1;
                 SerializedProperty group = groups.GetArrayElementAtIndex(0);
                 group.FindPropertyRelative("Enemy").objectReferenceValue = enemy;
@@ -136,13 +129,7 @@ namespace Game.Tests
                 SerializedProperty entrance = so.FindProperty("_bossEntrance");
                 entrance.FindPropertyRelative("Kind").enumValueIndex = (int)EntranceKind.Pool;
                 entrance.FindPropertyRelative("Cell").vector2IntValue = new Vector2Int(2, 2);
-                SerializedProperty sets = so.FindProperty("_difficultyWaves");
-                sets.arraySize = 1;
-                SerializedProperty set = sets.GetArrayElementAtIndex(0);
-                set.FindPropertyRelative("Difficulty").objectReferenceValue = difficulty;
-                SerializedProperty waves = set.FindPropertyRelative("Waves");
-                waves.arraySize = 1;
-                waves.GetArrayElementAtIndex(0).objectReferenceValue = wave;
+                so.FindProperty("_waves").objectReferenceValue = waves;
                 so.ApplyModifiedPropertiesWithoutUndo();
 
                 var errors = new List<string>();
@@ -154,7 +141,7 @@ namespace Game.Tests
             finally
             {
                 Object.DestroyImmediate(difficulty);
-                Object.DestroyImmediate(wave);
+                Object.DestroyImmediate(waves);
                 Object.DestroyImmediate(enemy);
                 Object.DestroyImmediate(level);
                 Object.DestroyImmediate(theme);

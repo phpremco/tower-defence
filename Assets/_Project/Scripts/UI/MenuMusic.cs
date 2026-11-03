@@ -6,8 +6,8 @@ namespace Game.UI
 {
     /// <summary>
     /// The light rock loop under the menus. Created by the first menu screen, it survives the switches between
-    /// main menu, map and base, follows the music volume in the mix, and fades itself out when a level or the Boot
-    /// scene loads so the level's own score takes over without a gap or an overlap.
+    /// main menu, map and base, follows the music volume in the mix, and fades itself out when a level, the Boot
+    /// scene or a replayed intro loads so the level's own score takes over without a gap or an overlap.
     /// </summary>
     public sealed class MenuMusic : MonoBehaviour
     {
@@ -64,7 +64,7 @@ namespace Game.UI
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (scene.name == SceneNames.Level || scene.name == SceneNames.Boot)
+            if (scene.name == SceneNames.Level || scene.name == SceneNames.Boot || scene.name == SceneNames.Intro)
             {
                 _leaving = true;
             }

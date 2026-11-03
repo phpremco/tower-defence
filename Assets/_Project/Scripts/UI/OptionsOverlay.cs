@@ -1,11 +1,14 @@
 ﻿using Game.Core;
 using Game.Economy;
+using Game.Levels;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Game.UI
 {
-    /// <summary>Options panel over the main menu: the four volume sliders, stored in the saved progress, and the controls.</summary>
+    /// <summary>Options panel over the main menu: the four volume sliders (stored in the saved progress), the controls, the
+    /// sound test and a replay of the opening cutscene.</summary>
     public sealed class OptionsOverlay : MonoBehaviour
     {
         private MainMenuScreen _owner;
@@ -15,7 +18,7 @@ namespace Game.UI
         private Button _controlsButton;
         private Button _soundButton;
 
-        // Seven buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
+        // Eight buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
         private const float TitleTop = -36f;
         private const float ColumnDrop = -40f;
 
@@ -58,6 +61,11 @@ namespace Game.UI
             volumes.Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
             _soundButton = UiKit.CreateButton(_column, "Sound test", ShowSoundBoard);
+            if (OpeningCutscene() != null)
+            {
+                UiKit.CreateButton(_column, "Replay intro", ReplayIntro);
+            }
+
             UiKit.CreateButton(_column, "Back", Close);
             UiKit.Select(volumes.First);
 
@@ -100,6 +108,24 @@ namespace Game.UI
         {
             _column.gameObject.SetActive(true);
             UiKit.Select(_soundButton);
+        }
+
+        // The opening cutscene plays again from the start and returns to the main menu; it never touches the save.
+        private static void ReplayIntro()
+        {
+            CutsceneDefinition cutscene = OpeningCutscene();
+            if (cutscene == null)
+            {
+                return;
+            }
+
+            Services.Register(new CutsceneRequest(cutscene, CutsceneHandoff.ReturnScene, SceneNames.MainMenu));
+            SceneManager.LoadScene(SceneNames.Intro);
+        }
+
+        private static CutsceneDefinition OpeningCutscene()
+        {
+            return Services.TryGet(out CampaignCatalog catalog) && catalog.Story != null ? catalog.Story.OpeningCutscene : null;
         }
 
         private void Close()

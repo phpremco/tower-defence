@@ -18,7 +18,7 @@ MonoBehaviour:
   _maxHealth: 110
   _armor: 0
   _armorReduction: 0.6
-  _speed: 1
+  _speed: 1.4
   _reward: 6
   _baseDamage: 2
   _element: 0
@@ -28,9 +28,9 @@ MonoBehaviour:
   _attackRange: 2.5
   _attackInterval: 1.2
   _gateStrikes: 0
-  _walkSeconds: 3
-  _rollSeconds: 2.2
-  _rollSpeedMultiplier: 2.6
+  _walkSeconds: 1
+  _rollSeconds: 3
+  _rollSpeedMultiplier: 3.6
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
   _rageRadius: 3
   _isBoss: 0
   _abilities: []
-  _color: {r: 0.8, g: 0.5, b: 0.2, a: 1}
+  _color: {r: 0.95, g: 0.8, b: 0.48, a: 1}
   _eyeColor: {r: 1, g: 0.8, b: 0.3, a: 1}
   _accentColor: {r: 1, g: 0.7, b: 0.3, a: 1}
   _bloodColor: {r: 0.8, g: 0.6, b: 0.2, a: 1}
@@ -49,4 +49,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1
   _voice: {fileID: 11400000, guid: 9fc1cee2ddd03f44f9869b4a44a979bd, type: 2}
-  _description: Armoured walker that curls into a ball and rolls, faster and tougher than it walks; slow it before it rolls.
+  _description: Sand-coloured digger that curls into a ball and shoots down the road, about three times as fast as anything else; slow it before it rolls.

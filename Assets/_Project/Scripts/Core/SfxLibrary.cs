@@ -18,10 +18,12 @@ namespace Game.Core
         [SerializeField] private SoundSet _cryoShots = new SoundSet();
         [SerializeField] private SoundSet _teslaShots = new SoundSet();
         [SerializeField] private SoundSet _railShots = new SoundSet();
+        [SerializeField] private SoundSet _flakShots = new SoundSet();
 
         [Header("Explosions")]
         [SerializeField] private SoundSet _cannonExplosions = new SoundSet();
         [SerializeField] private SoundSet _rocketExplosions = new SoundSet();
+        [SerializeField] private SoundSet _flakBursts = new SoundSet();
         [SerializeField] private SoundSet _mineExplosions = new SoundSet();
         [SerializeField] private SoundSet _gateExplosions = new SoundSet();
         [SerializeField] private SoundSet _baseExplosions = new SoundSet();
@@ -68,6 +70,7 @@ namespace Game.Core
         [Header("Ambience layers")]
         [SerializeField] private SoundSet _waterLoops = new SoundSet();
         [SerializeField] private SoundSet _lavaLoops = new SoundSet();
+        [SerializeField] private SoundSet _riftLoops = new SoundSet();
         [SerializeField] private SoundSet _steamLoops = new SoundSet();
         [SerializeField] private SoundSet _leavesLoops = new SoundSet();
         [SerializeField] private SoundSet _icyWindLoops = new SoundSet();
@@ -93,6 +96,8 @@ namespace Game.Core
         public SoundSet CryoShots => _cryoShots;
         public SoundSet TeslaShots => _teslaShots;
         public SoundSet RailShots => _railShots;
+        public SoundSet FlakShots => _flakShots;
+        public SoundSet FlakBursts => _flakBursts;
         public SoundSet CannonExplosions => _cannonExplosions;
         public SoundSet RocketExplosions => _rocketExplosions;
         public SoundSet MineExplosions => _mineExplosions;
@@ -129,6 +134,7 @@ namespace Game.Core
         public SoundSet LargeWingLoops => _largeWingLoops;
         public SoundSet WaterLoops => _waterLoops;
         public SoundSet LavaLoops => _lavaLoops;
+        public SoundSet RiftLoops => _riftLoops;
         public SoundSet SteamLoops => _steamLoops;
         public SoundSet LeavesLoops => _leavesLoops;
         public SoundSet IcyWindLoops => _icyWindLoops;
@@ -147,7 +153,7 @@ namespace Game.Core
         public (string Label, SoundSet Set)[] Sets() => new[]
         {
             ("Pulse shot", _pulseShots), ("Heavy shot", _heavyShots), ("Rocket launch", _rocketLaunches), ("Cryo shot", _cryoShots),
-            ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Cannon explosion", _cannonExplosions),
+            ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Flak shot", _flakShots), ("Flak burst", _flakBursts), ("Cannon explosion", _cannonExplosions),
             ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
             ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
@@ -157,7 +163,7 @@ namespace Game.Core
             ("Hero pulse", _heroPulses), ("Hero step", _heroSteps), ("Hero death", _heroDeaths), ("Hero fall", _heroFalls),
             ("Drone fan", _droneFanLoops), ("Drone repair", _droneRepairLoops), ("Drone harvest", _droneHarvestLoops),
             ("Drone laser", _droneLasers), ("Enemy death", _enemyDeaths), ("Heavy steps", _heavySteps), ("Wings", _wingLoops),
-            ("Large wings", _largeWingLoops), ("Water", _waterLoops), ("Lava", _lavaLoops), ("Steam", _steamLoops),
+            ("Large wings", _largeWingLoops), ("Water", _waterLoops), ("Lava", _lavaLoops), ("Rift", _riftLoops), ("Steam", _steamLoops),
             ("Leaves", _leavesLoops), ("Icy wind", _icyWindLoops), ("Boss laser", _bossLaserLoops), ("Beam loop", _beamLoops), ("Boss alarm", _bossAlarms), ("Wave drums", _waveDrums),
             ("Menu music", _menuMusic), ("Game music", _gameMusic), ("Boss music", _bossMusic),
         };

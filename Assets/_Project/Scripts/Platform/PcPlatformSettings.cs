@@ -9,6 +9,8 @@
 
         public float BloomScale => 1f;
 
+        public bool HighQualityBloom => true;
+
         public bool FogEnabled => true;
 
         public bool DepthOfFieldEnabled => true;

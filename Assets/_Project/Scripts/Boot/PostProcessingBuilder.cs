@@ -10,7 +10,7 @@ namespace Game.Boot
     /// Creates the global post-processing volume for a level from its theme and the platform quality profile:
     /// bloom (the glow), the theme's colour grading (contrast, saturation, tinted shadows and highlights), a
     /// vignette and tonemapping. The tilt-shift depth of field is a full-screen pass on the renderer (the pipeline
-    /// cannot read depth from an orthographic camera); Boot switches it by profile. Low (Switch) scales the bloom down.
+    /// cannot read depth from an orthographic camera); Boot switches it by profile. Low (Switch) scales the bloom down and uses the cheaper bloom filter.
     /// </summary>
     public static class PostProcessingBuilder
     {
@@ -19,7 +19,8 @@ namespace Game.Boot
         private const float VignetteIntensity = 0.3f;
         private const float VignetteSmoothness = 0.45f;
 
-        public static void Build(Camera camera, VisualTheme theme, IPlatformSettings platform)
+        /// <summary>Prepares the camera and returns the new volume, at full weight unless told otherwise, under <paramref name="parent"/> when given.</summary>
+        public static Volume Build(Camera camera, VisualTheme theme, IPlatformSettings platform, float weight = 1f, Transform parent = null)
         {
             UniversalAdditionalCameraData data = camera.GetUniversalAdditionalCameraData();
             data.renderPostProcessing = true;
@@ -36,7 +37,7 @@ namespace Game.Boot
                 bloom.intensity.Override(theme.BloomIntensity * platform.BloomScale);
                 bloom.threshold.Override(BloomThreshold);
                 bloom.scatter.Override(BloomScatter);
-                bloom.highQualityFiltering.Override(true);
+                bloom.highQualityFiltering.Override(platform.HighQualityBloom);
             }
 
             var grading = profile.Add<ColorAdjustments>(true);
@@ -55,9 +56,12 @@ namespace Game.Boot
             tonemapping.mode.Override(TonemappingMode.ACES);
 
             var go = new GameObject("PostProcessing");
+            go.transform.SetParent(parent, false);
             var volume = go.AddComponent<Volume>();
             volume.isGlobal = true;
+            volume.weight = weight;
             volume.sharedProfile = profile;
+            return volume;
         }
     }
 }

@@ -1,0 +1,417 @@
+Research upgrades cost 748; paid per difficulty: 37 / 74 / 111 / 185 (Easy 5%, Psycho 25%)
+Power upgrades cost 186; paid per difficulty: 0 / 18 / 30 / 42
+  C1_01    road  107 fronts 1 gates 3 trunk 1,00 | Easy 0rp x1,00 | Medium 0rp x1,00 | Hard 0rp x1,00 | Psycho 222rp x1,38
+  C1_02    road   95 fronts 1 gates 4 trunk 1,00 | Easy 6rp x1,00 | Medium 12rp x1,00 | Hard 30rp x1,07 | Psycho 222rp x1,38
+  C1_03    road  109 fronts 2 gates 4 trunk 0,27/0,63 | Easy 12rp x1,00 | Medium 24rp x1,05 | Hard 60rp x1,10 | Psycho 222rp x1,38
+  C1_04    road  106 fronts 2 gates 4 trunk 0,08/0,20 | Easy 18rp x1,03 | Medium 36rp x1,08 | Hard 90rp x1,21 | Psycho 222rp x1,38
+  C1_05    road  120 fronts 1 gates 4 trunk 1,00 | Easy 24rp x1,05 | Medium 48rp x1,10 | Hard 120rp x1,24 | Psycho 222rp x1,38
+  C1_06    road  116 fronts 2 gates 5 trunk 0,27/0,65 | Easy 30rp x1,05 | Medium 60rp x1,10 | Hard 150rp x1,29 | Psycho 222rp x1,38
+
+Tower value (dps x range per coin, cumulative; speed 1, no splash):
+  Artillery   splash 1,8 targets 3  L1 22312,5  L2 232,1  L3 200,3
+  Cannon      splash 1,2 targets 1  L1 71,4  L2 78,2  L3 97,8
+  Cryo        splash 0,0 targets 3  L1 16,4  L2 8,9  L3 6,0
+  CryoBeam    splash 0,0 targets 3  L1 22933,3  L2 219,0  L3 171,3
+  Laser       splash 0,0 targets 1  L1 120,0  L2 124,2  L3 135,4
+  PulseRifle  splash 0,0 targets 3  L1 100,0  L2 103,6  L3 123,0
+  Railgun     splash 0,0 targets 3  L1 99,2  L2 105,4  L3 112,0
+  Rocket      splash 1,1 targets 2  L1 116,7  L2 99,8  L3 103,5
+  StormRifle  splash 0,8 targets 3  L1 28700,0  L2 244,4  L3 175,5
+  Tesla       splash 1,3 targets 1  L1 80,0  L2 83,8  L3 89,9
+
+C1_01 health: 0,8 1 1,1 1 1,4 1,4 1,4 1,9 1,3 2,2 2,7 1
+C1_01 Easy  towers [PulseRifle,Cannon] upgrade x1,00
+  w1   money   200 towers  4 hp     63/    0 window   16s pressure 0,13/0,00
+  w2   money   206 towers  4 hp    102/    0 window   20s pressure 0,17/0,00
+  w3   money   221 towers  4 hp    140/    0 window   22s pressure 0,21/0,00
+  w4   money   240 towers  4 hp    187/    0 window   21s pressure 0,30/0,00
+  w5   money   264 towers  5 hp    283/    0 window   27s pressure 0,31/0,00
+  w6   money   290 towers  5 hp    364/    0 window   27s pressure 0,40/0,00
+  w7   money   350 towers  7 hp    460/    0 window   37s pressure 0,30/0,00
+  w8   money   450 towers  5 hp   1059/    0 window   34s pressure 0,45/0,00
+  w9   money   557 towers 11 hp    919/    0 window   30s pressure 0,52/0,00
+  w10  money   670 towers  7 hp   1447/    0 window   42s pressure 0,37/0,00
+  w11  money   783 towers  9 hp   2269/    0 window   51s pressure 0,50/0,00
+  w12B money   901 towers 16 hp   1557/    0 window   42s pressure 0,70/0,00
+C1_01 Medium  towers [PulseRifle,Cannon] upgrade x1,00
+  w1   money   200 towers  4 hp    111/    0 window   16s pressure 0,23/0,00
+  w2   money   208 towers  4 hp    171/    0 window   18s pressure 0,31/0,00
+  w3   money   225 towers  4 hp    243/    0 window   21s pressure 0,40/0,00
+  w4   money   247 towers  4 hp    316/    0 window   20s pressure 0,54/0,00
+  w5   money   275 towers  5 hp    492/    0 window   25s pressure 0,59/0,00
+  w6   money   306 towers  6 hp    630/    0 window   24s pressure 0,70/0,00
+  w7   money   372 towers  7 hp    802/    0 window   31s pressure 0,62/0,00
+  w8   money   480 towers  5 hp   1311/    0 window   33s pressure 0,58/0,00
+  w9   money   598 towers  6 hp   1572/    0 window   24s pressure 0,77/0,00
+  w10  money   716 towers  7 hp   2477/    0 window   35s pressure 0,68/0,00
+  w11  money   838 towers  8 hp   3909/    0 window   42s pressure 0,81/0,00
+  w12B money   973 towers 16 hp   2441/    0 window   35s pressure 1,01/0,00
+C1_01 Hard  towers [PulseRifle,Cannon] upgrade x1,00
+  w1   money   200 towers  4 hp    170/    0 window   15s pressure 0,36/0,00
+  w2   money   211 towers  4 hp    258/    0 window   17s pressure 0,49/0,00
+  w3   money   233 towers  4 hp    377/    0 window   19s pressure 0,65/0,00
+  w4   money   262 towers  5 hp    473/    0 window   18s pressure 0,75/0,00
+  w5   money   299 towers  4 hp    726/    0 window   22s pressure 0,94/0,00
+  w6   money   339 towers  5 hp    941/    0 window   19s pressure 1,23/0,00
+  w7   money   407 towers  7 hp   1193/    0 window   25s pressure 0,98/0,00
+  w8 B money   530 towers  9 hp   1698/    0 window   33s pressure 1,35/0,00
+  w9   money   625 towers  6 hp   2344/    0 window   20s pressure 1,20/0,00
+  w10  money   868 towers  9 hp   3694/    0 window   29s pressure 1,02/0,00
+  w11  money  1006 towers 10 hp   5812/    0 window   36s pressure 1,14/0,00
+  w12B money  1158 towers 16 hp   3173/    0 window   29s pressure 1,17/0,00
+C1_01 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   200 towers  2 hp    274/    0 window   15s pressure 0,45/0,00
+  w2   money   212 towers  2 hp    441/    0 window   17s pressure 0,66/0,00
+  w3   money   238 towers  3 hp    621/    0 window   18s pressure 0,73/0,00
+  w4   money   272 towers  3 hp    801/    0 window   17s pressure 1,01/0,00
+  w5 B money   312 towers  4 hp   1690/    0 window   17s pressure 1,72/0,00
+  w6   money   336 towers  4 hp   1610/    0 window   17s pressure 1,43/0,00
+  w7   money   401 towers  5 hp   2023/    0 window   22s pressure 1,11/0,00
+  w8 B money   621 towers 11 hp   4317/    0 window   35s pressure 1,89/0,00
+  w9   money   713 towers  7 hp   3931/    0 window   18s pressure 1,34/0,00
+  w10  money   924 towers  4 hp   6194/    0 window   25s pressure 1,24/0,00
+  w11  money  1060 towers 11 hp   9807/    0 window   30s pressure 1,50/0,00
+  w12B money  1199 towers 16 hp   4939/    0 window   25s pressure 1,24/0,00
+C1_02 health: 0,9 1 1,2 1,3 1,3 1,6 1,1 1,4 1,3 1 1,8 1,2
+C1_02 Easy  towers [PulseRifle,Cannon,Laser] upgrade x1,00
+  w1   money   220 towers  4 hp     78/    0 window   21s pressure 0,13/0,00
+  w2   money   232 towers  3 hp    128/    0 window   20s pressure 0,19/0,00
+  w3   money   249 towers  3 hp    175/    0 window   25s pressure 0,21/0,00
+  w4   money   268 towers  3 hp    225/    0 window   26s pressure 0,26/0,00
+  w5   money   292 towers  4 hp    337/    0 window   27s pressure 0,34/0,00
+  w6   money   328 towers  5 hp    486/    0 window   28s pressure 0,43/0,00
+  w7   money   388 towers  6 hp    519/    0 window   23s pressure 0,48/0,00
+  w8   money   508 towers  6 hp    759/    0 window   25s pressure 0,42/0,00
+  w9   money   607 towers  6 hp   1099/    0 window   25s pressure 0,46/0,00
+  w10  money   735 towers 11 hp    997/    0 window   23s pressure 0,54/0,00
+  w11  money   913 towers  9 hp   1742/    0 window   26s pressure 0,48/0,00
+  w12B money  1015 towers 11 hp   1727/    0 window   23s pressure 0,69/0,00
+C1_02 Medium  towers [PulseRifle,Cannon,Laser] upgrade x1,00
+  w1   money   220 towers  2 hp    134/    0 window   20s pressure 0,23/0,00
+  w2   money   234 towers  3 hp    232/    0 window   20s pressure 0,34/0,00
+  w3   money   255 towers  3 hp    311/    0 window   24s pressure 0,40/0,00
+  w4   money   278 towers  3 hp    400/    0 window   25s pressure 0,49/0,00
+  w5   money   307 towers  4 hp    605/    0 window   25s pressure 0,65/0,00
+  w6   money   351 towers  4 hp    787/    0 window   24s pressure 0,57/0,00
+  w7   money   412 towers  6 hp    864/    0 window   21s pressure 0,88/0,00
+  w8   money   543 towers  5 hp   1211/    0 window   23s pressure 0,64/0,00
+  w9   money   648 towers  6 hp   1421/    0 window   22s pressure 0,66/0,00
+  w10  money   783 towers  9 hp   1629/    0 window   20s pressure 0,84/0,00
+  w11  money   970 towers  5 hp   2698/    0 window   23s pressure 0,81/0,00
+  w12B money  1072 towers 10 hp   2619/    0 window   21s pressure 1,01/0,00
+C1_02 Hard  towers [PulseRifle,Cannon,Laser] upgrade x1,07
+  w1   money   220 towers  2 hp    188/    0 window   20s pressure 0,32/0,00
+  w2   money   237 towers  3 hp    331/    0 window   20s pressure 0,47/0,00
+  w3   money   263 towers  5 hp    450/    0 window   23s pressure 0,55/0,00
+  w4   money   292 towers  5 hp    571/    0 window   24s pressure 0,66/0,00
+  w5   money   328 towers  6 hp    870/    0 window   24s pressure 0,88/0,00
+  w6   money   383 towers  4 hp   1278/    0 window   16s pressure 1,16/0,00
+  w7   money   453 towers  7 hp   1341/    0 window   14s pressure 1,57/0,00
+  w8   money   574 towers  6 hp   1964/    0 window   16s pressure 1,22/0,00
+  w9 B money   684 towers 10 hp   2030/    0 window   15s pressure 1,39/0,00
+  w10  money   802 towers  9 hp   2570/    0 window   17s pressure 1,21/0,00
+  w11  money  1080 towers  6 hp   4970/    0 window   18s pressure 1,37/0,00
+  w12B money  1183 towers 14 hp   4153/    0 window   16s pressure 1,49/0,00
+C1_02 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   220 towers  2 hp    332/    0 window   19s pressure 0,44/0,00
+  w2   money   241 towers  3 hp    584/    0 window   20s pressure 0,64/0,00
+  w3   money   273 towers  4 hp    780/    0 window   21s pressure 0,73/0,00
+  w4   money   308 towers  5 hp   1001/    0 window   23s pressure 0,78/0,00
+  w5 B money   352 towers  5 hp   2234/    0 window   20s pressure 1,72/0,00
+  w6   money   375 towers  4 hp   2107/    0 window   14s pressure 1,65/0,00
+  w7   money   532 towers  6 hp   2261/    0 window   12s pressure 1,59/0,00
+  w8   money   656 towers  4 hp   3519/    0 window   13s pressure 1,53/0,00
+  w9 B money   765 towers 10 hp   4150/    0 window   13s pressure 1,95/0,00
+  w10  money   880 towers  9 hp   4238/    0 window   14s pressure 1,46/0,00
+  w11  money  1120 towers  4 hp   7515/    0 window   15s pressure 1,68/0,00
+  w12B money  1207 towers  9 hp   6264/    0 window   14s pressure 1,72/0,00
+C1_03 health: 0,9 0,7 0,8 1,2 0,9 0,9 1 1,2 1,4 0,4 1 1 1,2 0,8 1 0,9
+C1_03 Easy  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,00
+  w1   money   240 towers  3 hp     99/    0 window   23s pressure 0,14/0,00
+  w2   money   240 towers  4 hp    131/    0 window   22s pressure 0,21/0,00
+  w3   money   246 towers  4 hp    170/    0 window   26s pressure 0,23/0,00
+  w4   money   261 towers  4 hp    280/    0 window   20s pressure 0,38/0,00
+  w5   money   271 towers  3 hp    321/    0 window   26s pressure 0,39/0,00
+  w6   money   290 towers  4 hp    346/    0 window   23s pressure 0,41/0,00
+  w7   money   312 towers  4 hp    394/    0 window   27s pressure 0,42/0,00
+  w8   money   374 towers  5 hp    510/    0 window   26s pressure 0,47/0,00
+  w9   money   438 towers  4 hp    766/    0 window   24s pressure 0,49/0,00
+  w10  money   510 towers 10 hp    600/    0 window   25s pressure 0,50/0,00
+  w11  money   632 towers 11 hp    907/    0 window   26s pressure 0,52/0,00
+  w12  money   719 towers 14 hp    595/  208 window   23s pressure 0,35/0,46
+  w13  money   809 towers  8 hp   1436/    0 window   26s pressure 0,46/0,00
+  w14  money   929 towers 15 hp   1659/    0 window   32s pressure 0,58/0,00
+  w15  money  1112 towers 18 hp   1015/  394 window   26s pressure 0,43/0,43
+  w16B money  1154 towers 12 hp   2048/    0 window   25s pressure 0,87/0,00
+C1_03 Medium  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,05
+  w1   money   240 towers  3 hp    166/    0 window   22s pressure 0,23/0,00
+  w2   money   240 towers  4 hp    220/    0 window   21s pressure 0,34/0,00
+  w3   money   247 towers  4 hp    288/    0 window   25s pressure 0,39/0,00
+  w4   money   264 towers  3 hp    466/    0 window   20s pressure 0,50/0,00
+  w5   money   276 towers  5 hp    534/    0 window   24s pressure 0,62/0,00
+  w6   money   300 towers  4 hp    556/    0 window   22s pressure 0,66/0,00
+  w7   money   326 towers  6 hp    587/    0 window   25s pressure 0,59/0,00
+  w8   money   388 towers  4 hp    799/    0 window   24s pressure 0,59/0,00
+  w9   money   458 towers  5 hp   1218/    0 window   22s pressure 0,72/0,00
+  w10  money   522 towers 10 hp    901/    0 window   20s pressure 0,72/0,00
+  w11  money   619 towers  7 hp   1475/    0 window   22s pressure 0,75/0,00
+  w12  money   739 towers 14 hp   1022/  305 window   24s pressure 0,54/0,60
+  w13  money   833 towers  8 hp   2271/    0 window   21s pressure 0,78/0,00
+  w14  money   947 towers 12 hp   2708/    0 window   26s pressure 0,94/0,00
+  w15  money  1146 towers 17 hp   1509/  580 window   22s pressure 0,58/0,64
+  w16B money  1224 towers 16 hp   2909/   74 window   21s pressure 1,01/0,07
+C1_03 Hard  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,10
+  w1   money   240 towers  3 hp    251/    0 window   21s pressure 0,33/0,00
+  w2   money   240 towers  3 hp    314/    0 window   21s pressure 0,42/0,00
+  w3   money   252 towers  3 hp    418/    0 window   23s pressure 0,50/0,00
+  w4   money   266 towers  3 hp    901/    0 window   19s pressure 0,93/0,00
+  w5   money   280 towers  4 hp   1040/    0 window   23s pressure 1,08/0,00
+  w6   money   305 towers  4 hp   1014/    0 window   22s pressure 1,16/0,00
+  w7   money   355 towers  4 hp   1356/    0 window   24s pressure 0,89/0,00
+  w8   money   424 towers  4 hp   1772/    0 window   16s pressure 1,38/0,00
+  w9   money   503 towers  5 hp   2214/    0 window   14s pressure 1,54/0,00
+  w10B money   594 towers 10 hp   1517/    0 window   13s pressure 1,44/0,00
+  w11  money   700 towers  7 hp   2409/    0 window   17s pressure 1,10/0,00
+  w12  money   804 towers 11 hp   1584/  527 window   18s pressure 0,91/1,09
+  w13  money   899 towers 13 hp   2037/    0 window   17s pressure 1,22/0,00
+  w14  money  1003 towers 16 hp   1677/  692 window   17s pressure 0,85/0,93
+  w15  money  1100 towers 17 hp   2275/  857 window   17s pressure 1,01/1,16
+  w16B money  1308 towers 13 hp   4669/  257 window   17s pressure 1,54/0,64
+C1_03 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   240 towers  3 hp    428/    0 window   20s pressure 0,47/0,00
+  w2   money   240 towers  3 hp    531/    0 window   20s pressure 0,60/0,00
+  w3   money   254 towers  3 hp    699/    0 window   22s pressure 0,72/0,00
+  w4   money   271 towers  3 hp   1381/    0 window   19s pressure 1,19/0,00
+  w5   money   288 towers  3 hp   1599/    0 window   21s pressure 1,29/0,00
+  w6 B money   306 towers  4 hp   1865/    0 window   19s pressure 1,85/0,00
+  w7   money   363 towers  4 hp   1726/    0 window   21s pressure 1,00/0,00
+  w8   money   396 towers  4 hp   2509/    0 window   15s pressure 1,90/0,00
+  w9   money   473 towers  4 hp   3506/    0 window   12s pressure 2,25/0,00
+  w10B money   557 towers  9 hp   2820/    0 window   11s pressure 2,56/0,00
+  w11  money   649 towers  6 hp   4086/    0 window   14s pressure 1,85/0,00
+  w12  money   732 towers 10 hp   2768/  756 window   16s pressure 1,42/1,32
+  w13  money   825 towers  8 hp   4020/    0 window   14s pressure 1,64/0,00
+  w14  money   929 towers 15 hp   2691/ 1216 window   15s pressure 1,21/1,31
+  w15  money   992 towers 15 hp   4216/ 1503 window   14s pressure 1,80/1,72
+  w16B money  1168 towers 12 hp   7171/  737 window   14s pressure 2,28/0,96
+C1_04 health: 0,8 0,7 0,5 0,9 1,1 0,9 1,3 1,2 0,9 0,9 0,9 1 0,4 0,6 0,8 1,1
+C1_04 Easy  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,03
+  w1   money   260 towers  5 hp     86/    0 window   23s pressure 0,13/0,00
+  w2   money   260 towers  5 hp    125/    0 window   22s pressure 0,19/0,00
+  w3   money   266 towers  5 hp     80/   29 window   19s pressure 0,17/0,24
+  w4   money   270 towers  5 hp    178/    0 window   26s pressure 0,23/0,00
+  w5   money   281 towers  5 hp    254/    0 window   25s pressure 0,34/0,00
+  w6   money   300 towers  4 hp    170/   51 window   22s pressure 0,27/0,40
+  w7   money   321 towers  6 hp    338/   76 window   23s pressure 0,42/0,12
+  w8   money   377 towers  7 hp    391/    0 window   29s pressure 0,36/0,00
+  w9   money   452 towers  9 hp    280/   94 window   21s pressure 0,27/0,30
+  w10  money   506 towers  8 hp    549/    0 window   23s pressure 0,48/0,00
+  w11  money   573 towers 11 hp    654/    0 window   25s pressure 0,45/0,00
+  w12  money   635 towers 12 hp    543/  158 window   21s pressure 0,43/0,38
+  w13  money   702 towers 14 hp    559/    0 window   24s pressure 0,38/0,00
+  w14  money   813 towers 16 hp    729/    0 window   26s pressure 0,38/0,00
+  w15  money   903 towers 10 hp   1613/    0 window   26s pressure 0,57/0,00
+  w16B money   985 towers 15 hp   1460/  536 window   23s pressure 0,62/0,55
+C1_04 Medium  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,08
+  w1   money   260 towers  3 hp    145/    0 window   22s pressure 0,23/0,00
+  w2   money   260 towers  3 hp    211/    0 window   21s pressure 0,36/0,00
+  w3   money   260 towers  5 hp    139/   42 window   19s pressure 0,24/0,35
+  w4   money   267 towers  3 hp    339/    0 window   25s pressure 0,48/0,00
+  w5   money   283 towers  4 hp    438/    0 window   24s pressure 0,56/0,00
+  w6   money   304 towers  6 hp    303/   75 window   21s pressure 0,41/0,52
+  w7   money   329 towers  6 hp    445/  201 window   21s pressure 0,59/0,28
+  w8   money   392 towers  6 hp    623/    0 window   25s pressure 0,61/0,00
+  w9   money   459 towers  5 hp    413/  138 window   21s pressure 0,48/0,56
+  w10  money   519 towers  5 hp    804/    0 window   22s pressure 0,73/0,00
+  w11  money   594 towers  7 hp   1009/    0 window   21s pressure 0,99/0,00
+  w12  money   651 towers  9 hp    693/  232 window   21s pressure 0,54/0,60
+  w13  money   738 towers 13 hp    953/    0 window   20s pressure 0,78/0,00
+  w14  money   814 towers 11 hp   1315/    0 window   21s pressure 0,89/0,00
+  w15  money   900 towers 13 hp   1143/  328 window   24s pressure 0,59/0,64
+  w16B money   957 towers 12 hp   1870/  878 window   20s pressure 0,89/1,01
+C1_04 Hard  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,21
+  w1   money   260 towers  3 hp    219/    0 window   21s pressure 0,32/0,00
+  w2   money   260 towers  3 hp    321/    0 window   20s pressure 0,48/0,00
+  w3   money   260 towers  4 hp    214/   97 window   19s pressure 0,36/0,65
+  w4   money   269 towers  5 hp    558/  181 window   24s pressure 0,71/0,65
+  w5   money   290 towers  4 hp    729/    0 window   23s pressure 0,86/0,00
+  w6   money   314 towers  5 hp    455/  173 window   21s pressure 0,57/0,98
+  w7   money   345 towers  5 hp    754/  495 window   20s pressure 0,86/0,89
+  w8   money   430 towers  4 hp    514/  211 window   20s pressure 0,50/0,82
+  w9   money   514 towers  7 hp    674/  318 window   22s pressure 0,64/0,73
+  w10B money   575 towers  8 hp   1382/    0 window   19s pressure 1,34/0,00
+  w11  money   661 towers  8 hp    974/   74 window   14s pressure 1,02/0,14
+  w12  money   723 towers 12 hp    899/  445 window   18s pressure 0,66/0,70
+  w13  money   816 towers 13 hp   1314/    0 window   16s pressure 1,03/0,00
+  w14  money   905 towers 13 hp   1747/  147 window   17s pressure 1,14/0,15
+  w15  money  1005 towers 13 hp   1917/  529 window   16s pressure 0,96/0,99
+  w16B money  1107 towers 13 hp   3338/ 1537 window   16s pressure 1,44/1,51
+C1_04 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   260 towers  3 hp    374/    0 window   20s pressure 0,49/0,00
+  w2   money   260 towers  3 hp    540/    0 window   20s pressure 0,72/0,00
+  w3   money   260 towers  4 hp    354/  139 window   18s pressure 0,49/0,76
+  w4   money   271 towers  5 hp    882/  237 window   22s pressure 1,00/0,71
+  w5 B money   287 towers  4 hp   1332/    0 window   19s pressure 1,66/0,00
+  w6   money   324 towers  4 hp    631/  248 window   20s pressure 0,67/1,09
+  w7   money   349 towers  5 hp    982/  854 window   17s pressure 1,06/1,25
+  w8   money   440 towers  6 hp   1069/  394 window   17s pressure 1,15/1,13
+  w9   money   503 towers  7 hp   1060/  456 window   19s pressure 0,88/0,90
+  w10B money   556 towers  7 hp   2150/    0 window   15s pressure 1,87/0,00
+  w11  money   648 towers  9 hp   1385/  106 window   12s pressure 1,49/0,15
+  w12  money   775 towers 11 hp   1606/  638 window   16s pressure 0,93/1,06
+  w13  money   857 towers 14 hp   1824/    0 window   13s pressure 1,31/0,00
+  w14  money   986 towers 14 hp   2792/  946 window   16s pressure 1,22/1,31
+  w15  money  1040 towers 14 hp   2211/  867 window   14s pressure 1,01/1,11
+  w16B money  1121 towers 12 hp   5457/ 2757 window   13s pressure 2,15/2,05
+C1_05 health: 1,1 1,3 1 0,8 1,7 1,8 1,3 1,1 1,6 1,3 1,1 1,4 1,4 1,4 1,1 1,6 1,3
+C1_05 Easy  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,05
+  w1   money   280 towers  5 hp    126/    0 window   23s pressure 0,15/0,00
+  w2   money   291 towers  5 hp    203/    0 window   26s pressure 0,22/0,00
+  w3   money   309 towers  4 hp    227/    0 window   21s pressure 0,27/0,00
+  w4   money   320 towers  4 hp     38/   46 window   19s pressure 0,05/0,29
+  w5   money   331 towers  4 hp    367/    0 window   23s pressure 0,32/0,00
+  w6   money   363 towers  6 hp    558/    0 window   26s pressure 0,43/0,00
+  w7   money   392 towers  7 hp    626/    0 window   25s pressure 0,54/0,00
+  w8   money   440 towers  8 hp    330/  115 window   20s pressure 0,31/0,41
+  w9   money   494 towers  5 hp    905/    0 window   24s pressure 0,48/0,00
+  w10  money   585 towers  8 hp   1004/    0 window   26s pressure 0,52/0,00
+  w11  money   712 towers 14 hp   1017/    0 window   25s pressure 0,49/0,00
+  w12  money   872 towers  9 hp   1473/    0 window   26s pressure 0,41/0,00
+  w13  money   993 towers 14 hp    683/  386 window   26s pressure 0,34/0,39
+  w14  money  1139 towers 11 hp   1822/    0 window   28s pressure 0,53/0,00
+  w15  money  1247 towers 12 hp   2610/    0 window   40s pressure 0,54/0,00
+  w16  money  1475 towers 14 hp   3125/    0 window   36s pressure 0,49/0,00
+  w17B money  1632 towers 16 hp   2392/    0 window   32s pressure 0,57/0,00
+C1_05 Medium  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,10
+  w1   money   280 towers  4 hp    210/    0 window   22s pressure 0,23/0,00
+  w2   money   291 towers  4 hp    305/    0 window   24s pressure 0,31/0,00
+  w3   money   311 towers  4 hp    366/    0 window   20s pressure 0,43/0,00
+  w4   money   325 towers  4 hp     65/   67 window   19s pressure 0,08/0,43
+  w5   money   337 towers  3 hp    578/    0 window   22s pressure 0,45/0,00
+  w6   money   371 towers  4 hp    900/    0 window   25s pressure 0,58/0,00
+  w7   money   404 towers  5 hp    990/    0 window   24s pressure 0,65/0,00
+  w8   money   456 towers  9 hp    509/  169 window   20s pressure 0,44/0,54
+  w9   money   514 towers  5 hp   1383/    0 window   21s pressure 0,71/0,00
+  w10  money   609 towers  6 hp   1534/    0 window   23s pressure 0,63/0,00
+  w11  money   744 towers 11 hp   1609/    0 window   21s pressure 0,88/0,00
+  w12  money   903 towers  9 hp   2243/    0 window   22s pressure 0,65/0,00
+  w13  money  1033 towers 15 hp   1149/  567 window   24s pressure 0,51/0,60
+  w14  money  1175 towers 11 hp   2771/    0 window   23s pressure 0,78/0,00
+  w15  money  1282 towers 12 hp   4099/    0 window   34s pressure 0,76/0,00
+  w16  money  1535 towers 16 hp   1794/  993 window   22s pressure 0,57/0,64
+  w17B money  1645 towers 16 hp   3839/  106 window   26s pressure 1,01/0,09
+C1_05 Hard  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,24
+  w1   money   280 towers  4 hp    313/    0 window   21s pressure 0,31/0,00
+  w2   money   292 towers  4 hp    504/    0 window   23s pressure 0,46/0,00
+  w3   money   319 towers  5 hp    679/    0 window   20s pressure 0,62/0,00
+  w4   money   339 towers  4 hp    106/  154 window   18s pressure 0,15/0,46
+  w5   money   355 towers  4 hp   1089/    0 window   21s pressure 1,19/0,00
+  w6   money   408 towers  4 hp    809/  174 window   20s pressure 0,74/0,78
+  w7   money   422 towers  5 hp   1522/    0 window   21s pressure 1,17/0,00
+  w8   money   495 towers  7 hp    949/  388 window   20s pressure 0,77/0,82
+  w9   money   576 towers  6 hp   2573/    0 window   16s pressure 1,67/0,00
+  w10  money   692 towers 10 hp   1442/   90 window   19s pressure 0,94/0,13
+  w11B money   848 towers 12 hp   2393/ 1339 window   14s pressure 1,35/1,26
+  w12  money  1025 towers 11 hp   2503/  323 window   19s pressure 0,79/0,79
+  w13  money  1312 towers 16 hp   1911/  913 window   18s pressure 0,61/0,66
+  w14  money  1519 towers  9 hp   4640/    0 window   18s pressure 0,96/0,00
+  w15  money  1657 towers 16 hp   6912/    0 window   29s pressure 0,93/0,00
+  w16  money  2023 towers 16 hp   3314/ 1428 window   18s pressure 0,62/0,64
+  w17B money  2178 towers 14 hp   6594/  364 window   23s pressure 0,94/0,36
+C1_05 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   280 towers  4 hp    531/    0 window   21s pressure 0,49/0,00
+  w2   money   290 towers  4 hp    704/    0 window   22s pressure 0,65/0,00
+  w3   money   326 towers  3 hp   1046/    0 window   19s pressure 0,68/0,00
+  w4   money   344 towers  4 hp    168/  221 window   18s pressure 0,22/0,60
+  w5 B money   367 towers  4 hp   1399/    0 window   18s pressure 1,69/0,00
+  w6   money   420 towers  6 hp    925/  312 window   19s pressure 0,74/0,87
+  w7   money   438 towers  4 hp   2429/    0 window   16s pressure 1,82/0,00
+  w8   money   585 towers  9 hp   1399/  557 window   19s pressure 0,85/0,90
+  w9   money   665 towers  4 hp   3805/    0 window   12s pressure 2,07/0,00
+  w10  money   771 towers 11 hp   2311/  735 window   16s pressure 1,04/1,19
+  w11B money   885 towers 12 hp   3560/ 1737 window   11s pressure 1,89/1,67
+  w12  money  1047 towers 11 hp   3655/  449 window   16s pressure 1,10/0,99
+  w13  money  1281 towers 16 hp   3055/ 1497 window   15s pressure 1,01/1,02
+  w14  money  1498 towers  8 hp   7489/    0 window   15s pressure 1,42/0,00
+  w15  money  1621 towers  9 hp  10943/    0 window   24s pressure 1,42/0,00
+  w16  money  1904 towers 16 hp   5017/ 2458 window   14s pressure 1,05/1,06
+  w17B money  2058 towers 12 hp  10102/ 1045 window   17s pressure 1,47/1,12
+C1_06 health: 1,1 1 1,4 1,5 1,1 1,7 1,2 0,9 1,2 1,2 1 1,2 1,2 1,1 0,9 0,9 0,9 1,1
+C1_06 Easy  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,05
+  w1   money   300 towers  6 hp    149/    0 window   26s pressure 0,14/0,00
+  w2   money   300 towers  6 hp    230/    0 window   27s pressure 0,21/0,00
+  w3   money   316 towers  6 hp    308/    0 window   29s pressure 0,26/0,00
+  w4   money   327 towers  3 hp    448/    0 window   24s pressure 0,34/0,00
+  w5   money   340 towers  6 hp    467/    0 window   26s pressure 0,45/0,00
+  w6   money   366 towers  4 hp    647/    0 window   29s pressure 0,37/0,00
+  w7   money   394 towers  5 hp    573/  140 window   26s pressure 0,41/0,38
+  w8   money   450 towers  9 hp    358/   99 window   26s pressure 0,26/0,32
+  w9   money   488 towers  5 hp    750/    0 window   28s pressure 0,38/0,00
+  w10  money   569 towers  6 hp   1111/    0 window   30s pressure 0,43/0,00
+  w11  money   644 towers  8 hp    605/  161 window   28s pressure 0,32/0,41
+  w12  money   728 towers  8 hp   1228/  256 window   29s pressure 0,45/0,40
+  w13  money   847 towers  8 hp   1527/    0 window   31s pressure 0,46/0,00
+  w14  money   953 towers 16 hp    967/  352 window   29s pressure 0,37/0,43
+  w15  money  1044 towers 19 hp   1761/    0 window   31s pressure 0,61/0,00
+  w16  money  1168 towers 21 hp   1472/    0 window   29s pressure 0,49/0,00
+  w17  money  1328 towers 14 hp   2401/  487 window   30s pressure 0,46/0,50
+  w18B money  1565 towers 22 hp   2761/    0 window   35s pressure 0,62/0,00
+C1_06 Medium  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,10
+  w1   money   300 towers  4 hp    256/    0 window   25s pressure 0,25/0,00
+  w2   money   300 towers  4 hp    327/    0 window   26s pressure 0,31/0,00
+  w3   money   315 towers  4 hp    506/    0 window   28s pressure 0,37/0,00
+  w4   money   327 towers  3 hp    722/    0 window   24s pressure 0,54/0,00
+  w5   money   341 towers  5 hp    746/    0 window   26s pressure 0,65/0,00
+  w6   money   372 towers  4 hp    934/    0 window   28s pressure 0,57/0,00
+  w7   money   397 towers  5 hp    933/  235 window   26s pressure 0,64/0,59
+  w8   money   462 towers  5 hp    600/  146 window   26s pressure 0,47/0,54
+  w9   money   511 towers  5 hp   1061/    0 window   26s pressure 0,70/0,00
+  w10  money   576 towers  6 hp   1387/   94 window   29s pressure 0,65/0,63
+  w11  money   658 towers  9 hp   1043/  236 window   28s pressure 0,55/0,57
+  w12  money   733 towers  8 hp   1486/  541 window   28s pressure 0,57/0,65
+  w13  money   885 towers 10 hp   1918/  186 window   26s pressure 0,66/0,53
+  w14  money   983 towers 17 hp   1249/  517 window   28s pressure 0,46/0,60
+  w15  money  1065 towers 11 hp   2919/    0 window   26s pressure 0,87/0,00
+  w16  money  1205 towers 12 hp   3417/  207 window   25s pressure 0,85/0,78
+  w17  money  1363 towers 21 hp   2329/  616 window   27s pressure 0,60/0,64
+  w18B money  1513 towers 14 hp   4167/   87 window   29s pressure 1,01/0,08
+C1_06 Hard  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,29
+  w1   money   300 towers  4 hp    392/    0 window   24s pressure 0,35/0,00
+  w2   money   300 towers  3 hp    758/    0 window   26s pressure 0,46/0,00
+  w3   money   312 towers  3 hp   1094/    0 window   27s pressure 0,61/0,00
+  w4   money   344 towers  3 hp   1211/    0 window   24s pressure 0,77/0,00
+  w5   money   373 towers  5 hp    707/  220 window   25s pressure 0,62/0,75
+  w6   money   398 towers  4 hp   1492/    0 window   27s pressure 1,07/0,00
+  w7   money   427 towers  4 hp   1476/  401 window   26s pressure 0,87/0,88
+  w8   money   503 towers  7 hp    997/  336 window   26s pressure 0,67/0,71
+  w9   money   576 towers  6 hp   1723/    0 window   25s pressure 0,79/0,00
+  w10  money   664 towers  6 hp   2336/  217 window   22s pressure 1,08/1,11
+  w11  money   749 towers 12 hp   1490/  453 window   29s pressure 0,60/0,64
+  w12B money   847 towers 12 hp   3544/  791 window   29s pressure 1,36/0,33
+  w13  money  1034 towers  8 hp   4030/  427 window   20s pressure 1,18/0,88
+  w14  money  1175 towers 18 hp   2881/  793 window   24s pressure 0,78/0,83
+  w15  money  1268 towers 13 hp   4257/    0 window   22s pressure 0,97/0,00
+  w16  money  1406 towers 14 hp   6199/  396 window   22s pressure 1,22/1,09
+  w17  money  1691 towers 24 hp   4082/  865 window   22s pressure 0,76/0,76
+  w18B money  1888 towers  8 hp   7123/  301 window   26s pressure 1,04/0,41
+C1_06 Psycho  towers [PulseRifle,Cannon,Laser,Rocket] upgrade x1,38
+  w1   money   300 towers  4 hp    644/    0 window   24s pressure 0,55/0,00
+  w2   money   300 towers  3 hp   1150/    0 window   26s pressure 0,64/0,00
+  w3   money   314 towers  3 hp   1680/    0 window   27s pressure 0,88/0,00
+  w4   money   347 towers  3 hp   1888/    0 window   23s pressure 1,11/0,00
+  w5   money   374 towers  4 hp   1305/  265 window   25s pressure 0,89/1,06
+  w6   money   413 towers  4 hp   2452/    0 window   22s pressure 1,89/0,00
+  w7 B money   432 towers  5 hp    177/ 1683 window   21s pressure 0,17/1,72
+  w8   money   481 towers  7 hp   1236/  482 window   25s pressure 0,77/0,93
+  w9   money   547 towers  5 hp   2870/    0 window   17s pressure 1,83/0,00
+  w10  money   643 towers  5 hp   3645/  311 window   17s pressure 1,74/1,43
+  w11  money   700 towers  9 hp   2666/  649 window   23s pressure 1,18/1,25
+  w12B money   769 towers 12 hp   4233/ 1700 window   26s pressure 1,90/0,59
+  w13  money  1016 towers  7 hp   4966/  612 window   17s pressure 1,60/1,36
+  w14  money  1150 towers 18 hp   3603/ 1422 window   19s pressure 1,12/1,25
+  w15  money  1223 towers 19 hp   4238/ 1465 window   18s pressure 1,28/1,29
+  w16  money  1278 towers  7 hp   8791/  568 window   19s pressure 1,90/1,41
+  w17  money  1476 towers 22 hp   4914/ 1580 window   17s pressure 1,24/1,26
+  w18B money  1580 towers  8 hp  11279/  865 window   21s pressure 1,88/0,93
+
+Checks: all inside their bands

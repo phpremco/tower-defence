@@ -16,5 +16,6 @@ namespace Game.Towers
         CryoBeam = 10,
         PulseRifle = 11,
         GateGun = 12,
+        Flak = 13,
     }
 }

@@ -28,6 +28,7 @@ namespace Game.Towers
         private const float GateGunScale = 0.55f;
         private const float ElevationDegrees = 24f;
         private const float ArtilleryElevationDegrees = 38f;
+        private const float FlakElevationDegrees = 35f;
         private const float GlowWhitening = 0.22f;
         private const float GlowEmissionBase = 1.7f;
         private const float GlowEmissionPerLevel = 0.2f;
@@ -147,6 +148,7 @@ namespace Game.Towers
                 case TowerShape.PulseRifle: PulseRifle(head, barrel, level, out pivot, out muzzle); rotary = true; break;
                 case TowerShape.Cannon: Cannon(head, barrel, level, out pivot, out muzzle); break;
                 case TowerShape.Rocket: Rocket(head, barrel, level, out pivot, out muzzle, out recoil); break;
+                case TowerShape.Flak: Flak(head, barrel, level, out pivot, out muzzle, out recoil); break;
                 case TowerShape.Laser: Laser(head, barrel, level, out pivot, out muzzle); break;
                 case TowerShape.Cryo: Cryo(head, barrel, level, out pivot, out muzzle); break;
                 case TowerShape.Tesla: Tesla(head, level, out pivot, out muzzle); break;
@@ -352,6 +354,45 @@ namespace Game.Towers
             }
 
             muzzle = tilt * new Vector3(0f, 0f, 0.45f);
+        }
+
+        // Flak gun: a squat armoured ring with a gun shield and twin short barrels pitched at the sky, a light top and a
+        // dark underside. Upgrades thicken the shield, add a second ammunition drum and a ranging sensor.
+        private static void Flak(PropMeshBuilder head, PropMeshBuilder barrel, int level, out Vector3 pivot, out Vector3 muzzle, out Vector3 recoil)
+        {
+            Hex(head, new Vector3(0f, 0.06f, 0f), 0.36f, 0.12f, Dark);
+            Cylinder(head, new Vector3(0f, 0.16f, 0f), Vector3.up, 0.1f, 0.33f, 16, Body);
+            head.AddTorus(new Vector3(0f, 0.22f, 0f), Vector3.up, 0.33f, 0.035f, 20, 6, Metal);
+            head.AddTorus(new Vector3(0f, 0.12f, 0f), Vector3.up, 0.36f, 0.015f, 20, 4, Glow);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                head.AddBox(new Vector3(0.22f * side, 0.3f, -0.12f), new Vector3(0.1f, 0.14f, 0.2f), Dark);
+                Cylinder(head, new Vector3(0.22f * side, 0.3f, -0.12f), Vector3.right, 0.12f, 0.07f, 10, Metal);
+            }
+
+            if (level >= 2)
+            {
+                Cylinder(head, new Vector3(0f, 0.42f, -0.24f), Vector3.up, 0.08f, 0.05f, 8, Metal);
+                Sphere(head, new Vector3(0f, 0.48f, -0.24f), 0.03f, Glow);
+            }
+
+            Quaternion tilt = Quaternion.Euler(-FlakElevationDegrees, 0f, 0f);
+            recoil = tilt * Vector3.forward;
+            pivot = new Vector3(0f, 0.3f, 0.02f);
+            float shield = 0.05f + 0.015f * level;
+            barrel.AddBox(new Vector3(0f, 0.02f, 0.02f), new Vector3(0.36f, 0.18f, 0.22f), Dark, tilt);
+            barrel.AddBox(tilt * new Vector3(0f, 0.05f, 0.17f), new Vector3(0.48f, 0.26f, shield), Body, tilt);
+            barrel.AddBox(tilt * new Vector3(0f, 0.17f, 0.17f), new Vector3(0.4f, 0.03f, shield * 1.1f), Glow, tilt);
+            float length = 0.46f + 0.05f * level;
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Vector3 from = tilt * new Vector3(0.08f * side, 0f, 0.15f);
+                Vector3 to = tilt * new Vector3(0.08f * side, 0f, 0.15f + length);
+                GunBarrel(barrel, from, to, 0.04f, Metal);
+                barrel.AddTorus(tilt * new Vector3(0.08f * side, 0f, 0.3f), recoil, 0.05f, 0.012f, 10, 4, Glow);
+            }
+
+            muzzle = tilt * new Vector3(0f, 0f, 0.2f + length);
         }
 
         // Precision laser: a sleek emitter with glowing focus rings along the beam tube, twin capacitor cylinders and

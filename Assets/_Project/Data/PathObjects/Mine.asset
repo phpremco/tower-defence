@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2863d1c450a864c43ab21ab187d5bc12, type: 3}
   m_Name: Mine
   m_EditorClassIdentifier: Game.PathObjects::Game.PathObjects.PathObjectDefinition
-  _displayName: Mine
+  _displayName: Land Mine
   _kind: 0
   _placement: 0
   _targets: 1

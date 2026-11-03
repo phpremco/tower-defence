@@ -38,6 +38,12 @@ namespace Game.Core
             return found;
         }
 
+        /// <summary>Removes a one-shot entry, such as a request a scene reads once, so a later scene never sees it stale.</summary>
+        public static bool Unregister<T>() where T : class
+        {
+            return Instances.Remove(typeof(T));
+        }
+
         public static void Clear()
         {
             Instances.Clear();

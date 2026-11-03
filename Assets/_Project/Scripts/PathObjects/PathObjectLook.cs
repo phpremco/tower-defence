@@ -10,5 +10,8 @@ namespace Game.PathObjects
         GroundDrone = 4,
         Barrel = 5,
         AirNet = 6,
+
+        /// <summary>The Chrono Field: an emitter with counter-rotating rings and motes that drift up in slow motion.</summary>
+        Chrono = 7,
     }
 }

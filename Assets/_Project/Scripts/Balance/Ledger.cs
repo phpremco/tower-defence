@@ -30,6 +30,9 @@ namespace Game.Balance
         public HeroStats Hero;
         public float HeroDamage = 1f;
 
+        /// <summary>The hero perks the player has unlocked by this level.</summary>
+        public HashSet<string> HeroPerks = new HashSet<string>();
+
         /// <summary>Health of one gate with the permanent gate upgrades.</summary>
         public float GateHealth;
 
@@ -72,30 +75,42 @@ namespace Game.Balance
         public static List<WaveLine> Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules)
         {
             var lines = new List<WaveLine>(waves.Count);
-            float kills = 0f;
+            var purse = new KillPurse(level, difficulty, rules);
+            var held = new AirHoldings();
             for (int i = 0; i < waves.Count; i++)
             {
-                int money = MoneyAt(level, i, waves.Count, kills, rules);
-                WaveLine line = EvaluateWave(level, waves[i], difficulty, money, rules);
+                purse.Begin(waves[i]);
+                var next = new AirHoldings();
+                WaveLine line = EvaluateWave(level, waves[i], difficulty, purse.Money(i, waves.Count), rules, held, next, purse.Carried(waves[i]));
+                held = next;
                 line.Wave = i + 1;
                 lines.Add(line);
-                // Creatures that get through pay nothing; a wave over pressure one leaks in proportion.
-                kills += line.KillMoney * Math.Min(1f, line.Pressure > 0f ? 1f / line.Pressure : 1f);
+                purse.Add(waves[i], line);
             }
 
             return lines;
         }
 
-        /// <summary>Money available before a wave: start, the kills so far and the mines, less one harvester.</summary>
+        /// <summary>Money available before a wave: start, the kills paid so far (see <see cref="KillPurse"/>) and the mines, less one harvester.</summary>
         public static int MoneyAt(LevelInput level, int waveIndex, int waveCount, float kills, BalanceRules rules) =>
             level.StartingMoney + (int)kills + MineIncome(level, waveIndex, waveCount, rules);
 
         /// <summary>One wave against the defence a purse of money buys.</summary>
-        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules)
+        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules) =>
+            EvaluateWave(level, wave, difficulty, money, rules, null, null);
+
+        /// <summary>
+        /// One wave against the defence a purse buys, on top of the air guns bought for earlier waves (<paramref name="held"/>:
+        /// they stay on the map and their price is gone from the purse). <paramref name="next"/>, when given, receives the air
+        /// guns standing after this wave. <paramref name="carried"/> is the ground health of earlier waves that reaches the
+        /// defence at the same time (<see cref="KillPurse.Carried"/>); the towers share their window with it.
+        /// </summary>
+        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules, AirHoldings held, AirHoldings next, float carried = 0f)
         {
             WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules);
+            load.StreamHealth += carried * rules.CarriedShare;
             List<Option> options = Options(level, load, rules);
-            Defence defence = Buy(options, load, money, Cap(level, rules));
+            Defence defence = Buy(options, load, money - (held?.Cost ?? 0), Cap(level, rules), held, next);
             return new WaveLine
             {
                 Boss = load.HasBoss,
@@ -132,7 +147,8 @@ namespace Game.Balance
             }
 
             float blade = level.Hero.BladeInterval > 0f ? level.Hero.BladeDamage * level.HeroDamage / level.Hero.BladeInterval : 0f;
-            float gun = level.Hero.GunInterval > 0f ? level.Hero.GunDamage / level.Hero.GunInterval * 0.5f : 0f;
+            float interval = level.Hero.EffectiveGunInterval(level.HeroPerks);
+            float gun = interval > 0f ? level.Hero.GunDamage / interval * 0.5f : 0f;
             return blade + gun;
         }
 
@@ -142,12 +158,45 @@ namespace Game.Balance
 
         // ---- Buying ------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// The air guns standing from earlier waves. A gun that only aims at the sky does nothing for a ground wave, and the
+        /// player cannot sell it back at full price, so its cost stays out of the purse for the rest of the level. Without
+        /// this the ledger re-spent the Flak money on the ground every wave after a raid (Crysium Vein: about a quarter of
+        /// the purse at wave 9). Ground guns are still re-chosen every wave: they all serve the ground.
+        /// </summary>
+        public sealed class AirHoldings
+        {
+            internal readonly Dictionary<(int Tower, int Level), int> Steps = new Dictionary<(int, int), int>();
+
+            /// <summary>What the standing air guns cost, every step up to their level.</summary>
+            public int Cost { get; private set; }
+
+            internal void Keep(Dictionary<(int, int), int> built, List<Option> options)
+            {
+                foreach (KeyValuePair<(int Tower, int Level), int> step in built)
+                {
+                    Option option = Find(options, step.Key.Tower, step.Key.Level);
+                    if (option == null || !option.AirOnly || step.Value <= 0)
+                    {
+                        continue;
+                    }
+
+                    Steps[step.Key] = step.Value;
+                    for (int level = 0; level <= step.Key.Level; level++)
+                    {
+                        Cost += (Find(options, step.Key.Tower, level)?.Cost ?? 0) * step.Value;
+                    }
+                }
+            }
+        }
+
         // One tower type at one level: what a single instance contributes against this wave.
-        private sealed class Option
+        internal sealed class Option
         {
             public int Tower;
             public int Level;
             public int Cost;
+            public bool AirOnly;
             public float Stream;
             public float Single;
             public float Air;
@@ -186,6 +235,7 @@ namespace Game.Balance
                         Tower = t,
                         Level = l,
                         Cost = stats.Cost,
+                        AirOnly = air && !ground,
                         Stream = ground ? dps * Overkill(damage, load.MeanHealth) * Splash(tower.Splash, load.GroundDensity, rules) * (load.Window + 2f * range / load.GroundSpeed) * rules.Utilisation : 0f,
                         Single = ground ? dps * (load.BossWindow + 2f * range / load.BossSpeed) * rules.Utilisation : 0f,
                         Air = air ? dps * Overkill(damage, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, rules) * (load.AirWindow + 2f * range / load.AirSpeed) * rules.Utilisation : 0f,
@@ -205,10 +255,28 @@ namespace Game.Balance
 
         // Greedy purchase, step by step: build a new tower or raise one already built by a level, whichever lowers the
         // wave's worse pressure most per coin. Raising needs a tower at the level below, so steps are never bought alone.
-        private static Defence Buy(List<Option> options, WaveLoad load, int money, int cap)
+        private static Defence Buy(List<Option> options, WaveLoad load, int money, int cap, AirHoldings held, AirHoldings after)
         {
             var built = new Dictionary<(int, int), int>();
             var defence = new Defence();
+            if (held != null)
+            {
+                foreach (KeyValuePair<(int Tower, int Level), int> step in held.Steps)
+                {
+                    Option owned = Find(options, step.Key.Tower, step.Key.Level);
+                    if (owned == null)
+                    {
+                        continue;
+                    }
+
+                    built[step.Key] = step.Value;
+                    defence.Stream += owned.Stream * step.Value;
+                    defence.Single += owned.Single * step.Value;
+                    defence.Air += owned.Air * step.Value;
+                    defence.Towers += step.Value;
+                }
+            }
+
             while (true)
             {
                 float current = Worst(load, defence);
@@ -239,6 +307,7 @@ namespace Game.Balance
 
                 if (best == null)
                 {
+                    after?.Keep(built, options);
                     return defence;
                 }
 

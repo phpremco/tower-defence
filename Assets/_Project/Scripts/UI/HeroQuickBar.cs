@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Hero;
 using Game.Levels;
 using UnityEngine;
@@ -8,8 +9,8 @@ namespace Game.UI
 {
     /// <summary>
     /// The hero's own panel on the left of the screen, styled like the drones panel so it reads as one thing: a
-    /// "Hero" header with the commander's name and health, and under it the shockwave and the "next post" order,
-    /// each with its cooldown and its key. The player never has to find the hero in a fight and click it first;
+    /// "Hero" header with the hero's name and health, and under it one button per ability slot (from data) and the
+    /// "next post" order, each with its cooldown, price and key. The player never has to find the hero in a fight and click it first;
     /// the full panel over the hero stays for the rest.
     /// </summary>
     public sealed class HeroQuickBar : MonoBehaviour
@@ -30,14 +31,13 @@ namespace Game.UI
         private const float RefreshSeconds = 0.1f;
         private const float LowHealthFraction = 0.35f;
         private const float MidHealthFraction = 0.65f;
-        private const string ShockwaveKey = "F";
         private const string PostKey = "H";
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color DimColor = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color HeaderColor = new Color(0.7f, 0.8f, 0.95f);
         private static readonly Color DownColor = new Color(1f, 0.5f, 0.45f);
+        private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
-        private static readonly Color ShockwaveTint = new Color(0.4f, 0.8f, 1f);
         private static readonly Color PostTint = new Color(0.5f, 0.6f, 1f);
 
         private LevelContext _context;
@@ -45,8 +45,7 @@ namespace Game.UI
         private RectTransform _root;
         private Text _name;
         private Image _healthFill;
-        private Button _shockwave;
-        private Text _shockwaveLabel;
+        private readonly List<HeroAbilityButton> _abilities = new List<HeroAbilityButton>();
         private Text _postLabel;
         private float _nextRefresh;
 
@@ -65,7 +64,8 @@ namespace Game.UI
             _root.anchorMax = new Vector2(0f, 0.5f);
             _root.pivot = new Vector2(0f, 0.5f);
             _root.anchoredPosition = new Vector2(Left, 0f);
-            float rows = (IconSize + LabelHeight) * 2f + RowGap;
+            int slots = CountSlots();
+            float rows = (IconSize + LabelHeight) * (slots + 1) + RowGap * slots;
             float height = Padding + HeaderHeight + NameHeight + BarGap + BarHeight + RowGap + rows + Padding;
             _root.sizeDelta = new Vector2(Width, height);
             UiKit.CreatePanel(_root, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
@@ -81,15 +81,41 @@ namespace Game.UI
             _healthFill = HeroPanelStyle.CreateHealthBar(_root, new Vector2(Padding, y), new Vector2(Width - Padding * 2f, BarHeight));
             y -= BarHeight + RowGap;
 
-            _shockwave = Action(y, IconType.Shockwave, ShockwaveTint, () => _hero.TryShockwave(), out _shockwaveLabel);
-            y -= IconSize + LabelHeight + RowGap;
-            Action(y, IconType.Hero, PostTint, () => _hero.MoveTo((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
+            for (int slot = 0; slot < _hero.Abilities.Count; slot++)
+            {
+                HeroAbilityState state = _hero.Abilities[slot];
+                if (state == null)
+                {
+                    continue;
+                }
+
+                int pressed = slot;
+                Button button = Action(y, HeroAbilityHud.IconFor(state.Definition), state.Definition.Tint, () => _context.HeroAbilityRequested.Raise(pressed), out Text label);
+                _abilities.Add(new HeroAbilityButton(slot, state, button, label));
+                y -= IconSize + LabelHeight + RowGap;
+            }
+
+            Action(y, IconFactory.Get(IconType.Hero), PostTint, () => _context.HeroPostRequested.Raise((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
             Refresh();
         }
 
-        private Button Action(float top, IconType type, Color tint, UnityEngine.Events.UnityAction action, out Text label)
+        private int CountSlots()
         {
-            Button button = UiKit.CreateIconButton(_root, IconFactory.Get(type), IconSize, () =>
+            int count = 0;
+            for (int i = 0; i < _hero.Abilities.Count; i++)
+            {
+                if (_hero.Abilities[i] != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private Button Action(float top, Sprite icon, Color tint, UnityEngine.Events.UnityAction action, out Text label)
+        {
+            Button button = UiKit.CreateIconButton(_root, icon, IconSize, () =>
             {
                 action();
                 EventSystem.current.SetSelectedGameObject(null);
@@ -145,10 +171,15 @@ namespace Game.UI
 
             HeroPanelStyle.FillHealth(_healthFill, _hero.IsDown ? 0f : _hero.Health.Current / _hero.Health.Max, LowHealthFraction, MidHealthFraction);
 
-            bool ready = !_hero.IsDown && _hero.ShockwaveReady >= 1f;
-            _shockwave.interactable = ready;
-            _shockwaveLabel.text = ready ? $"Pulse  {ShockwaveKey}" : $"Pulse  {HeroPanelStyle.Cooldown(_hero.ShockwaveReady, _hero.Definition.ShockwaveCooldown)}s";
-            _shockwaveLabel.color = ready ? TextColor : DimColor;
+            foreach (HeroAbilityButton ability in _abilities)
+            {
+                bool ready = _hero.CanUse(ability.Slot);
+                bool affordable = HeroAbilityHud.Affordable(ability.State, _context.Wallet);
+                ability.Button.interactable = ready && affordable;
+                ability.Label.text = HeroAbilityHud.Label(ability.State, ability.Slot, true);
+                ability.Label.color = !ready ? DimColor : affordable ? TextColor : Unaffordable;
+            }
+
             _postLabel.text = $"Next post  {PostKey}";
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
         }

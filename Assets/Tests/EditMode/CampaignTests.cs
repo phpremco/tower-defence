@@ -51,7 +51,7 @@ namespace Game.Tests
         public void SetUp()
         {
             _catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>("Assets/_Project/Data/Levels/CampaignCatalog.asset");
-            _level = AssetDatabase.LoadAssetAtPath<LevelDefinition>("Assets/_Project/Data/Levels/Level_Landing.asset");
+            _level = AssetDatabase.LoadAssetAtPath<LevelDefinition>("Assets/_Project/Data/Levels/Level_C1_01.asset");
             _medium = AssetDatabase.LoadAssetAtPath<DifficultyProfile>("Assets/_Project/Data/Difficulty/Medium.asset");
             Assert.IsNotNull(_catalog, "Run Tools/Generate/Scenes and Starter Data first.");
         }
@@ -101,7 +101,7 @@ namespace Game.Tests
                 Assert.IsFalse(CampaignRules.IsRegionOpen(_catalog, r, progress), $"region {r}");
             }
 
-            Assert.AreEqual(_catalog.Nodes.Count, _catalog.NodeCount(0), "all levels live in the landing region for now");
+            Assert.AreEqual(20, _catalog.NodeCount(0), "the first continent holds all twenty of its sites");
             Assert.AreEqual(0, CampaignRules.CompletedInRegion(_catalog, 0, progress));
             progress.MarkCompleted(_level.Id, _medium.name);
             Assert.AreEqual(1, CampaignRules.CompletedInRegion(_catalog, 0, progress));
@@ -123,9 +123,14 @@ namespace Game.Tests
         {
             var catalog = ScriptableObject.CreateInstance<CampaignCatalog>();
             var so = new SerializedObject(catalog);
+            // One region holding both sites, set apart, so the catalogue's own checks stay quiet.
+            SerializedProperty regions = so.FindProperty("_regions");
+            regions.arraySize = 1;
+            regions.GetArrayElementAtIndex(0).FindPropertyRelative("RadiusDegrees").floatValue = 60f;
             SerializedProperty nodes = so.FindProperty("_nodes");
             nodes.arraySize = 2;
             nodes.GetArrayElementAtIndex(0).FindPropertyRelative("Level").objectReferenceValue = _level;
+            nodes.GetArrayElementAtIndex(1).FindPropertyRelative("Longitude").floatValue = 20f;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var progress = new ProgressService(new MemorySave(), new string[0]);
@@ -180,6 +185,11 @@ namespace Game.Tests
         {
             foreach (MapNode node in _catalog.Nodes)
             {
+                if (node.Level == null)
+                {
+                    continue;
+                }
+
                 Assert.IsNotNull(node.Level.BaseTurret, $"{node.Level.name} has a base turret");
                 Assert.IsTrue(node.Level.BaseTurret.IsBaseDefence);
                 Assert.AreEqual(0, node.Level.BaseTurret.BuildCost, "the base gun is bought at the base, not in the level");
@@ -205,15 +215,27 @@ namespace Game.Tests
         [Test]
         public void LaterLevels_CountOnUpgrades()
         {
-            float previous = -1f;
-            foreach (MapNode node in _catalog.Nodes)
+            // Within a continent; a new continent starts its own budget, so its expectation may start lower again.
+            for (int region = 0; region < _catalog.Regions.Count; region++)
             {
-                Assert.GreaterOrEqual(node.Level.ExpectedUpgradeBonus, previous, $"{node.Level.name} expects at least as much upgrade as the level before");
-                Assert.AreEqual(node.Level.EnemyHealthMultiplier, node.Level.EnemyHealthScale, 0.0001f);
-                previous = node.Level.ExpectedUpgradeBonus;
-            }
+                float previous = -1f;
+                foreach (MapNode node in _catalog.Nodes)
+                {
+                    if (node.Region != region || node.Level == null)
+                    {
+                        continue;
+                    }
 
-            Assert.Greater(previous, 0f, "the last level counts on some upgrades");
+                    Assert.GreaterOrEqual(node.Level.ExpectedUpgradeBonus, previous, $"{node.Level.name} expects at least as much upgrade as the level before");
+                    Assert.AreEqual(node.Level.EnemyHealthMultiplier, node.Level.EnemyHealthScale, 0.0001f);
+                    previous = node.Level.ExpectedUpgradeBonus;
+                }
+
+                if (region == 0)
+                {
+                    Assert.Greater(previous, 0f, "the last level of the first continent counts on some upgrades");
+                }
+            }
         }
 
         [Test]

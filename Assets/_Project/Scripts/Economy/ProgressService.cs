@@ -14,9 +14,13 @@ namespace Game.Economy
         public ProgressService(ISaveService save, IEnumerable<string> startingTowerIds)
         {
             _save = save;
-            if (!_save.TryLoad(SaveKey, out ProgressData data) || data == null)
+            if (_save.TryLoad(SaveKey, out ProgressData data) && data != null)
             {
-                data = new ProgressData();
+                ProgressMigrator.Migrate(data);
+            }
+            else
+            {
+                data = new ProgressData { Version = ProgressMigrator.CurrentVersion };
             }
 
             Data = data;
@@ -41,6 +45,27 @@ namespace Game.Economy
             }
 
             Data.UnlockedTowerIds.Add(towerId);
+            return true;
+        }
+
+        public bool IsHeroPerkUnlocked(string perkId) => Data.UnlockedHeroPerkIds.Contains(perkId);
+
+        /// <summary>Returns true when the perk was not unlocked before. Saved with the next <see cref="Save"/>.</summary>
+        public bool UnlockHeroPerk(string perkId) => AddOnce(Data.UnlockedHeroPerkIds, perkId);
+
+        public bool IsPathObjectUnlocked(string pathObjectId) => Data.UnlockedPathObjectIds.Contains(pathObjectId);
+
+        /// <summary>Returns true when the gadget was not unlocked before. Saved with the next <see cref="Save"/>.</summary>
+        public bool UnlockPathObject(string pathObjectId) => AddOnce(Data.UnlockedPathObjectIds, pathObjectId);
+
+        private static bool AddOnce(List<string> list, string id)
+        {
+            if (string.IsNullOrEmpty(id) || list.Contains(id))
+            {
+                return false;
+            }
+
+            list.Add(id);
             return true;
         }
 
@@ -161,6 +186,20 @@ namespace Game.Economy
         public void MarkIntroSeen()
         {
             Data.IntroSeen = true;
+            Save();
+        }
+
+        public bool HasSeenStory(string storyId) => Data.SeenStoryIds.Contains(storyId);
+
+        /// <summary>Remembers that a story moment has played, so a once-per-save trigger stays quiet afterwards.</summary>
+        public void MarkStorySeen(string storyId)
+        {
+            if (HasSeenStory(storyId))
+            {
+                return;
+            }
+
+            Data.SeenStoryIds.Add(storyId);
             Save();
         }
 

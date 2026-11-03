@@ -169,7 +169,7 @@ namespace Game.Levels
             Vector2Int cell = _liquids.SurfaceCell(pool, _random.Next());
             Vector3 start = _context.Level.Grid.CellToWorld(cell);
             Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
-            EnemyOrigin origin = kind == TerrainKind.Water ? EnemyOrigin.Water : kind == TerrainKind.Lava ? EnemyOrigin.Lava : kind == TerrainKind.Ice ? EnemyOrigin.Ice : kind == TerrainKind.Bog ? EnemyOrigin.Bog : EnemyOrigin.Quicksand;
+            EnemyOrigin origin = kind == TerrainKind.Water ? EnemyOrigin.Water : kind == TerrainKind.Lava ? EnemyOrigin.Lava : kind == TerrainKind.Ice ? EnemyOrigin.Ice : kind == TerrainKind.Bog ? EnemyOrigin.Bog : kind == TerrainKind.Rift ? EnemyOrigin.Rift : EnemyOrigin.Quicksand;
             Launch(definition, route, FlightHeight(definition), origin, progress);
         }
 
@@ -200,8 +200,12 @@ namespace Game.Levels
                 route = WithGateDetour(route);
             }
 
-            Launch(definition, route, FlightHeight(definition), EnemyOrigin.Nest, progress);
+            Launch(definition, route, FlightHeight(definition), NestOrigin(chosen.Element), progress);
         }
+
+        /// <summary>How a creature leaves a nest of its element: a stone nest sits in a rift, so it claws out of the crack.</summary>
+        public static EnemyOrigin NestOrigin(Element element) =>
+            LevelValidator.NestTerrain(element) == TerrainKind.Rift ? EnemyOrigin.Rift : EnemyOrigin.Nest;
 
         private float FlightHeight(EnemyDefinition definition) =>
             definition.Flies ? AirHeight + Range(-AirHeightVariation, AirHeightVariation) : 0f;

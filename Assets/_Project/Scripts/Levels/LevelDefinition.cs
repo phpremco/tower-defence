@@ -60,11 +60,14 @@ namespace Game.Levels
         [SerializeField] private TowerDefinition[] _availableTowers = new TowerDefinition[0];
         [SerializeField] [Min(0)] private int _startingMoney = 150;
         [SerializeField] [Min(1)] private int _baseHealth = 20;
-        [SerializeField] private DifficultyWaves[] _difficultyWaves = new DifficultyWaves[0];
+        [SerializeField] private LevelWaves _waves;
         [SerializeField] private LevelReward _reward;
 
         /// <summary>Share of base health that must be left for two and for three stars, in that order.</summary>
         [SerializeField] private float[] _starBaseHealthFractions = { 0.5f, 0.9f };
+
+        /// <summary>Dialogues tied to moments in this level, played in array order when several match one moment.</summary>
+        [SerializeField] private StoryTrigger[] _story = new StoryTrigger[0];
 
         public string Id => name;
         public string DisplayName => _displayName;
@@ -167,9 +170,12 @@ namespace Game.Levels
         public TowerDefinition[] AvailableTowers => _availableTowers;
         public int StartingMoney => _startingMoney;
         public int BaseHealth => _baseHealth;
-        public DifficultyWaves[] DifficultyWaves => _difficultyWaves;
+        /// <summary>The asset that holds every wave of this level, or null for a level without waves.</summary>
+        public LevelWaves Waves => _waves;
+        public DifficultyWaves[] DifficultyWaves => _waves != null ? _waves.Sets : NoWaves;
         public LevelReward Reward => _reward;
         public float[] StarBaseHealthFractions => _starBaseHealthFractions;
+        public StoryTrigger[] StoryTriggers => _story ?? NoStory;
 
         public GridMap Grid => new GridMap(_gridSize, _cellSize);
 
@@ -177,18 +183,7 @@ namespace Game.Levels
         public Vector2 WorldSize => new Vector2(_gridSize.x * _cellSize, _gridSize.y * _cellSize);
 
         /// <summary>Returns the waves for a difficulty, or null when the level has none for it.</summary>
-        public WaveDefinition[] GetWaves(DifficultyProfile difficulty)
-        {
-            for (int i = 0; i < _difficultyWaves.Length; i++)
-            {
-                if (_difficultyWaves[i].Difficulty == difficulty)
-                {
-                    return _difficultyWaves[i].Waves;
-                }
-            }
-
-            return null;
-        }
+        public WaveDefinition[] GetWaves(DifficultyProfile difficulty) => _waves != null ? _waves.For(difficulty) : null;
 
         /// <summary>Basic checks that every level needs. LevelValidator adds the gameplay checks.</summary>
         public bool IsValid(out string error)
@@ -217,6 +212,8 @@ namespace Game.Levels
 
         [System.NonSerialized] private TerrainMap _terrainMap;
         [System.NonSerialized] private RoadCorridor _road;
+        private static readonly DifficultyWaves[] NoWaves = new DifficultyWaves[0];
+        private static readonly StoryTrigger[] NoStory = new StoryTrigger[0];
 
         private void OnValidate()
         {
@@ -225,6 +222,15 @@ namespace Game.Levels
             if (!IsValid(out string error))
             {
                 Debug.LogWarning($"LevelDefinition '{name}' is invalid: {error}", this);
+            }
+
+            for (int i = 0; _story != null && i < _story.Length; i++)
+            {
+                string problem = _story[i].Problem();
+                if (problem != null)
+                {
+                    Debug.LogWarning($"LevelDefinition '{name}': story trigger {i + 1} ({_story[i].Kind}) {problem}", this);
+                }
             }
         }
     }

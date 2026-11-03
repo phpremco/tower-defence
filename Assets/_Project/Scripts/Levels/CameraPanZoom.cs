@@ -43,6 +43,9 @@ namespace Game.Levels
         /// <summary>The zoom the level is played at: close enough to read the hero.</summary>
         public float PlayZoom => _playZoom;
 
+        /// <summary>The zoom a level opens on for a fully zoomed-out view of this orthographic size: close enough to see the commander.</summary>
+        public static float PlayZoomFor(float fitSize) => Mathf.Clamp(fitSize / PlayOrthoSize, MinZoom, MaxZoom);
+
         /// <summary>While locked, player input is ignored; a cutscene such as the recon drives the view instead.</summary>
         public bool Locked { get; set; }
 
@@ -53,7 +56,7 @@ namespace Game.Levels
             _camera = rig.GetComponent<Camera>();
             _input = input;
             _halfField = level.WorldSize * 0.5f;
-            _playZoom = Mathf.Clamp(FixedCameraRig.FitSize(level, _camera.aspect) / PlayOrthoSize, MinZoom, MaxZoom);
+            _playZoom = PlayZoomFor(FixedCameraRig.FitSize(level, _camera.aspect));
             // Where the mouse already is does not count as a move, or a mouse parked at the edge would pan the first seconds.
             _lastPointer = input.PointerPosition;
             _zoom = _playZoom;

@@ -21,3 +21,4 @@ MonoBehaviour:
   _currency: 1
   _groupDescription: Bought with money in the level. Mines the ore nodes and carries the money home.
   _bonusPerLevel: 0.2
+  _continent: 0

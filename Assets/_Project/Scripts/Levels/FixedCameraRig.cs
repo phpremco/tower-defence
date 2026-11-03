@@ -18,11 +18,6 @@ namespace Game.Levels
         /// <summary>Share of the screen height taken by the top and bottom HUD bars.</summary>
         private const float HudReserve = 0.2f;
 
-        private const float ShakeAmplitude = 0.18f;
-        private const float ShakeDecay = 5.5f;
-        private const float ShakeFrequency = 26f;
-        private const float ShakeFloor = 0.01f;
-
         private Camera _camera;
         private LevelDefinition _level;
         private float _fittedAspect;
@@ -82,18 +77,16 @@ namespace Game.Levels
                 return;
             }
 
-            _shake *= Mathf.Exp(-ShakeDecay * Time.deltaTime);
-            if (_shake < ShakeFloor)
+            _shake = ShakeCurve.Fade(_shake, Time.deltaTime);
+            if (_shake < ShakeCurve.Floor)
             {
                 _shake = 0f;
                 transform.position = _basePosition;
                 return;
             }
 
-            float t = Time.time * ShakeFrequency;
-            float x = Mathf.PerlinNoise(t, _shakeSeed) * 2f - 1f;
-            float y = Mathf.PerlinNoise(_shakeSeed, t) * 2f - 1f;
-            transform.position = _basePosition + (transform.right * x + transform.up * y) * (ShakeAmplitude * _shake);
+            Vector2 offset = ShakeCurve.Offset(Time.time, _shakeSeed) * _shake;
+            transform.position = _basePosition + transform.right * offset.x + transform.up * offset.y;
         }
 
         private void Fit()

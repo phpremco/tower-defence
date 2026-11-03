@@ -23,6 +23,10 @@ namespace Game.Levels
         private const float SandDepth = 0.16f;
         private const float IceDepth = 0.1f;
         private const float BogDepth = 0.22f;
+        // A rift is a fissure: steep walls that drop below its floor, so the strata show and nothing reads as a pond.
+        private const float RiftDepth = 0.55f;
+        private const float RiftWallStart = 0.05f;
+        private const float RiftWallFull = 0.3f;
         private const float ShoreWidthCells = 0.55f;
         private const float ShoreWobbleCells = 0.25f;
         private const float CornerRadiusCells = 0.46f;
@@ -49,6 +53,7 @@ namespace Game.Levels
         private readonly float[] _sand;
         private readonly float[] _ice;
         private readonly float[] _bog;
+        private readonly float[] _rift;
         private readonly float[] _height;
         private readonly float[] _slope;
         private readonly float[] _roadMask;
@@ -74,6 +79,7 @@ namespace Game.Levels
             _sand = new float[count];
             _ice = new float[count];
             _bog = new float[count];
+            _rift = new float[count];
             _height = new float[count];
             _slope = new float[count];
             _roadMask = new float[count];
@@ -108,6 +114,7 @@ namespace Game.Levels
         public float SandAt(float x, float z) => Sample(_sand, x, z);
         public float IceAt(float x, float z) => Sample(_ice, x, z);
         public float BogAt(float x, float z) => Sample(_bog, x, z);
+        public float RiftAt(float x, float z) => Sample(_rift, x, z);
         public float SlopeAt(float x, float z) => Sample(_slope, x, z);
         public float RoadAt(float x, float z) => Sample(_roadMask, x, z);
 
@@ -192,6 +199,7 @@ namespace Game.Levels
                     _sand[i] = 0f;
                     _ice[i] = 0f;
                     _bog[i] = 0f;
+                    _rift[i] = 0f;
 
                     Vector2Int cell = grid.WorldToCell(new Vector3(x, 0f, z));
                     TerrainKind kind = map.KindAt(cell);
@@ -215,6 +223,9 @@ namespace Game.Levels
                             break;
                         case TerrainKind.Bog:
                             _bog[i] = mask;
+                            break;
+                        case TerrainKind.Rift:
+                            _rift[i] = mask;
                             break;
                         default:
                             _sand[i] = mask;
@@ -303,6 +314,7 @@ namespace Game.Levels
                     // A frozen lake sits in a shallow dish; a bog sinks a little deeper than sand into soft ground.
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _ice[i]) * IceDepth;
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _bog[i]) * BogDepth;
+                    h -= TerrainNoise.SmoothStep(RiftWallStart, RiftWallFull, _rift[i]) * RiftDepth;
                     float crater = 1f - Mathf.Clamp01(Mathf.Abs(_lava[i] - CraterRimCentre) / CraterRimWidth);
                     h += crater * crater * CraterRimHeight * (0.7f + 0.6f * TerrainNoise.Fbm(x * 1.3f, z * 1.3f, 2, 7f));
                     h -= TerrainNoise.SmoothStep(CraterStart, CraterFull, _lava[i]) * BasinDepth;

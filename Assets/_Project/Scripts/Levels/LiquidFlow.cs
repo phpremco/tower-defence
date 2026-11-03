@@ -33,6 +33,7 @@ namespace Game.Levels
         private Color _emission;
         private float _pulseDepth;
         private float _pulseSpeed;
+        private float _flicker = FlickerShare;
         private float _time;
 
         public void Initialize(Material material, Vector2 speed)
@@ -61,11 +62,13 @@ namespace Game.Levels
         }
 
         /// <summary>Lets the glow swell and sink around its base colour, with a faster flicker on top.</summary>
-        public void SetPulse(Color emission, float depth, float speed)
+        /// <param name="flicker">Share of a quicker second wave on top of the swell: lava flickers, a rift only breathes.</param>
+        public void SetPulse(Color emission, float depth, float speed, float flicker = FlickerShare)
         {
             _emission = emission;
             _pulseDepth = depth;
             _pulseSpeed = speed;
+            _flicker = flicker;
         }
 
         private void Update()
@@ -89,7 +92,7 @@ namespace Game.Levels
 
             if (_pulseDepth > 0f)
             {
-                float swell = Mathf.Sin(_time * _pulseSpeed) + FlickerShare * Mathf.Sin(_time * _pulseSpeed * FlickerRate);
+                float swell = Mathf.Sin(_time * _pulseSpeed) + _flicker * Mathf.Sin(_time * _pulseSpeed * FlickerRate);
                 _material.SetColor(EmissionColor, _emission * (1f + _pulseDepth * swell));
             }
         }

@@ -28,10 +28,10 @@ namespace Game.Combat
 
         public VfxLibrary Vfx => _vfx;
 
-        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default)
+        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default, float fuseRadius = 0f)
         {
             Projectile projectile = _pool.Get();
-            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds, style, color == default ? BurstColor : color);
+            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds, style, color == default ? BurstColor : color, fuseRadius);
             Shot?.Invoke(new ShotInfo(from, splashRadius, mask, slowFactor < 1f, style));
         }
 

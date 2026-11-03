@@ -59,7 +59,7 @@ Je verdient geld en punten in een level, besteedt die aan upgrades, en speelt le
 | Easy | Leren spelen, verhaal volgen | Laag |
 | Medium | Standaard speelervaring | Gemiddeld |
 | Hard | Slim bouwen en combineren nodig | Hoog |
-| Psycho | Volledig uitgeupgrade, geen foutjes | Zeer hoog, plus unieke beloning |
+| Crazy (asset-id Psycho) | Volledig uitgeupgrade, geen foutjes | Zeer hoog, plus unieke beloning |
 
 Hogere moeilijkheid geeft meer vijanden, meer HP, snellere golven en extra baswaves. De exacte getallen leggen we later vast in data (zie Levels makkelijk bouwen), zodat balanceren geen code kost.
 
@@ -69,11 +69,11 @@ Acht standaardtorens. Je begint met het pulsgeweer; de andere wapens krijg je al
 
 | Toren | Rol | Schiet op | Sterk tegen | Zwak tegen |
 | --- | --- | --- | --- | --- |
-| Pulsgeweer | Snel, weinig schade, goedkoop | Land en lucht | Scouts | Pantser |
+| Gun Turret (pulsgeweer) | Snel, weinig schade, goedkoop | Land en lucht | Scouts | Pantser |
 | Kanon | Langzaam, veel schade, splash | Land | Grunts, groepen | Vliegers (kan ze niet raken) |
-| Laser | Continue straal | Land | Rijen vijanden | Pantser |
+| Laser Turret | Continue straal | Land | Rijen vijanden | Pantser |
 | Cryo | Vertraagt vijanden | Land en lucht | Alles, als ondersteuning | Bazen (deels immuun) |
-| Raket | Groot bereik, schade in een gebied | Lucht | Vliegers, luchtzwermen | Grondvijanden (kan ze niet raken) |
+| Flak Turret (was Raket; id `Rocket`) | Snelle granaten met nabijheidsontsteker, splash in de lucht | Alleen lucht (geen Wisps op de weg) | Dichte luchtzwermen | Grondvijanden (kan ze niet raken) |
 | Tesla | Bliksem springt over meerdere vijanden | Land | Zwermen, groepen | Brutes |
 | Railgun | Enorm veel schade op één doel | Land en lucht | Bazen, brutes | Zwermen |
 | Support | Meer bereik of vuursnelheid voor torens in de buurt | Geen | Versterkt anderen | Doet zelf geen schade |
@@ -92,6 +92,8 @@ De hero is de commandant en verdedigt de blokkades: hij staat bij een blokkade, 
 - **Vaardigheden:** een paar actieve vaardigheden met cooldown, bijvoorbeeld een schokgolf, een schild voor de blokkade en een noodreparatie.
 - **Upgrades:** permanent upgradebaar met punten tussen levels (gezondheid, schade, vaardigheden). De hero groeit mee met het verhaal.
 - **Kwetsbaar:** gaat de hero neer, dan is hij tijdelijk uitgeschakeld en de blokkade staat open.
+
+**Mercer (S4).** De hero heet in beeld Cole "Pathfinder" Mercer (asset-id blijft `Commander`). Zijn knoppen komen uit data (`HeroAbilityDefinition`, twee slots: Shockwave op F/LT, Repair op G/RT voor 30 geld). Zijn pistool heeft een magazijn van 8 schoten en herlaadt in 1,2 s; de perk Quick Reload (beloning van level 4 van Crystal Plains) halveert het herladen, +27% schade per seconde.
 
 De exacte besturing van de hero (zelf lopen of aanwijzen) staat onder Open punten.
 
@@ -201,10 +203,10 @@ Drie valuta's houden de loop in beweging. De bedragen staan sinds 2026-11-02 vas
 
 - **Hogere moeilijkheid betaalt meer:** dat dwingt je levels opnieuw te spelen om verder te komen.
 - **Eén keer per level per moeilijkheid:** onderzoekspunten en power krijg je alleen de eerste keer dat je een level op een moeilijkheid haalt. Opnieuw spelen levert alleen een betere sterrenscore op. Zo valt er niets te farmen en is het totaal begrensd: alles op easy betaalt ongeveer een vijfde van alle upgrades, alles op psycho betaalt alles.
-- **Onderzoek per moeilijkheid:** easy x1, medium x2, hard x3, psycho x5 van het basisbedrag van het level. Alles op easy is zo een vijfde van alle onderzoeksupgrades, alles op psycho alles. Het basisbedrag groeit 18% per level (15 tot 42).
-- **Power:** niet op easy; medium x1, hard x1,5, psycho x2,2. Per level 4 plus 3 per baas, zodat bazen power opleveren; alles op psycho betaalt alle drone-upgrades.
+- **Onderzoek per moeilijkheid:** easy x1, medium x2, hard x3, psycho x5 van het basisbedrag van het level. Alles op easy is zo een vijfde van alle onderzoeksupgrades, alles op psycho alles. Dit geldt per continent: elk continent heeft een eigen onderzoeksbudget (Crystal Plains 748). Het basisbedrag stijgt licht over de 20 levels van een continent en het slotlevel betaalt dubbel (Crystal Plains: level 1 6, level 6 7, level 20 12 op easy), met een minimum van 4.
+- **Power:** niet op easy; medium x1, hard x1,5, psycho x2,2. Per continent: gewicht 1 per level plus 0,75 per baaswave op medium (ongeveer 4 per level in Crystal Plains); alles van een continent op psycho betaalt zijn power-budget.
 - **Latere levels rekenen op upgrades:** het balansmodel weet per level en moeilijkheid welke wapens de speler heeft en welke upgrades hij met het verdiende onderzoek kon kopen, en de wave-solver maakt de wezens precies zo taai dat de druk klopt. `ExpectedUpgradeBonus` toont die verwachting alleen nog; hij schaalt de vijanden niet meer.
-- **Moeilijkheid en bazen:** hard krijgt een extra baaswave, psycho nog een. Psycho gaat uit van een speler met de hele campagne op easy tot hard achter zich.
+- **Moeilijkheid en bazen:** hard krijgt een extra baaswave, psycho nog een. Psycho (getoond als Crazy) gaat uit van een speler met het hele eigen continent op easy tot hard achter zich.
 - **Scrap:** een kapotte toren geeft geld als je op het wrak klikt.
 - **Balans:** alle getallen staan in data, zodat we ze zonder code kunnen aanpassen.
 

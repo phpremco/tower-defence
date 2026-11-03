@@ -32,6 +32,14 @@ namespace Game.PathObjects
         private const float BallLightIntensity = 1.8f;
         private const float BallLightFlicker = 0.3f;
         private const float BallLightFlickerSpeed = 4f;
+        private const float ChronoOuterShare = 0.8f;
+        private const float ChronoInnerShare = 0.55f;
+        private const float ChronoRingHeight = 0.22f;
+        private const float ChronoRingThickness = 0.035f;
+        private const float ChronoSpin = 40f;
+        private const float ChronoTilt = 8f;
+        private const int ChronoMotes = 40;
+        private const float ChronoMoteRate = 9f;
         private static readonly Color MineBase = new Color(0.12f, 0.13f, 0.16f);
 
         private Transform _light;
@@ -84,12 +92,44 @@ namespace Game.PathObjects
                 _light = disc.transform;
             }
 
+            if (definition.Look == PathObjectLook.Chrono)
+            {
+                BuildChrono(definition);
+            }
+
             if (definition.Look == PathObjectLook.LavaBall)
             {
                 model.AddComponent<Spinner>().Initialize(LavaBallSpin);
                 BuildEmbers(definition.Color);
                 BuildGlowLight(definition.Color);
             }
+        }
+
+        // Two glowing rings turning against each other over the field, and motes that rise in slow motion: time runs
+        // slow in here. The rings are their own meshes so a later model can replace them without touching the field.
+        private void BuildChrono(PathObjectDefinition definition)
+        {
+            Ring("ChronoRingOuter", definition.Color, definition.Radius * ChronoOuterShare, ChronoRingHeight, ChronoSpin, ChronoTilt);
+            Ring("ChronoRingInner", Color.Lerp(definition.Color, Color.white, 0.5f), definition.Radius * ChronoInnerShare, ChronoRingHeight + 0.12f, -ChronoSpin * 1.6f, -ChronoTilt);
+            ParticleSystem motes = ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare);
+            ParticleKit.SetRate(motes, ChronoMoteRate);
+        }
+
+        private void Ring(string objectName, Color color, float radius, float height, float spin, float tilt)
+        {
+            var builder = new PropMeshBuilder();
+            builder.AddTorus(Vector3.zero, Vector3.up, radius, ChronoRingThickness, 40, 6, ModelPalette.Glow);
+            var pivot = new GameObject(objectName);
+            pivot.transform.SetParent(transform, false);
+            pivot.transform.localPosition = new Vector3(0f, height, 0f);
+            pivot.transform.localRotation = Quaternion.Euler(tilt, 0f, 0f);
+            var ring = new GameObject("Ring");
+            ring.transform.SetParent(pivot.transform, false);
+            ring.AddComponent<MeshFilter>().sharedMesh = builder.ToMesh(objectName);
+            var renderer = ring.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = ModelPalette.Create(color);
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            ring.AddComponent<Spinner>().Initialize(spin);
         }
 
         // Embers spill from the ball as it moves: emission per distance, so a parked ball only smoulders.

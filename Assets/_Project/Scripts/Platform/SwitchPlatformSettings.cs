@@ -1,6 +1,6 @@
 namespace Game.Platform
 {
-    /// <summary>The "Low (Switch)" quality profile: softer bloom, no mist or depth of field, half the particles, no quit.</summary>
+    /// <summary>The "Low (Switch)" quality profile: softer and cheaper bloom, no mist or depth of field, half the particles, no quit.</summary>
     public sealed class SwitchPlatformSettings : IPlatformSettings
     {
         public string ProfileName => "Low (Switch)";
@@ -8,6 +8,8 @@ namespace Game.Platform
         public bool BloomEnabled => true;
 
         public float BloomScale => 0.6f;
+
+        public bool HighQualityBloom => false;
 
         public bool FogEnabled => false;
 

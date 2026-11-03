@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4195afed974a6db4bb0968bc3af5e766, type: 3}
   m_Name: PulseRifle
   m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerDefinition
-  _displayName: Pulse Rifle
+  _displayName: Gun Turret
   _targets: 3
   _levels:
   - Cost: 50
@@ -41,6 +41,7 @@ MonoBehaviour:
     Model: {fileID: 0}
   _projectileSpeed: 14
   _splashRadius: 0
+  _fuseRadius: 0
   _maxHealth: 150
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3

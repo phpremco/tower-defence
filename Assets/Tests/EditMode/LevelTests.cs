@@ -10,7 +10,10 @@ namespace Game.Tests
     /// <summary>Checks the generated level 1 data and the grid helpers.</summary>
     public sealed class LevelTests
     {
-        private const string LevelPath = "Assets/_Project/Data/Levels/Level_Landing.asset";
+        private const string LevelPath = "Assets/_Project/Data/Levels/Level_C1_01.asset";
+
+        // The first level with flyers and a second road (Crystal Plains level 3).
+        private const string ForkPath = "Assets/_Project/Data/Levels/Level_C1_03.asset";
 
         [Test]
         public void Level1_PassesValidator()
@@ -37,9 +40,9 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Level1_WavesUseSeveralPathsIncludingFlyingRoutes()
+        public void Level3_WavesUseSeveralPathsIncludingFlyingRoutes()
         {
-            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelPath);
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(ForkPath);
             var used = new System.Collections.Generic.HashSet<int>();
             foreach (DifficultyWaves set in level.DifficultyWaves)
             {
@@ -118,7 +121,7 @@ namespace Game.Tests
             var grid = new BuildGrid(level);
             Vector2Int road = level.MainRoad[0];
             Vector2Int blocked = level.BlockedCells[0];
-            var free = new Vector2Int(0, 0);
+            Vector2Int free = FirstBuildable(grid, level);
 
             Assert.IsTrue(grid.IsRoad(road));
             Assert.IsFalse(grid.CanBuild(road));
@@ -129,6 +132,27 @@ namespace Game.Tests
             Assert.IsFalse(grid.CanBuild(free));
             grid.Release(free);
             Assert.IsTrue(grid.CanBuild(free));
+        }
+
+        // A cell the level data leaves open: off the road, no rock, no liquid, no mining node.
+        private static Vector2Int FirstBuildable(BuildGrid grid, LevelDefinition level)
+        {
+            var closed = new HashSet<Vector2Int>(level.BlockedCells);
+            closed.UnionWith(level.MineCells);
+            for (int x = 0; x < level.GridSize.x; x++)
+            {
+                for (int y = 0; y < level.GridSize.y; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    if (!grid.IsRoad(cell) && !closed.Contains(cell) && !level.Terrain.IsLiquid(cell))
+                    {
+                        return cell;
+                    }
+                }
+            }
+
+            Assert.Fail("the level has no open cell");
+            return Vector2Int.zero;
         }
     }
 }

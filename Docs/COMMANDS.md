@@ -167,7 +167,7 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - `Tools/PlayTest/base_menu.cs` opens the base menu; `base_die.cs` destroys the base (explosion, then the defeat panel).
 - `Tools/PlayTest/spawn_enemy.cs` spawns an enemy by asset name from `enemy_arg.txt` ("Roller", "Drowner Water", bosses use the level entrance); `zoom_enemy.cs` zooms on it and freezes time for a screenshot, `resume.cs` thaws; `no_waves.cs` switches the wave timeline off; `inspect_enemy.cs` lists its renderers; `shadows_off.cs` drops its shadows; `goto_menu.cs` returns to the main menu; `sfx_probe.cs` builds the loop sounds in the editor.
 - `Tools/PlayTest/menu_probe.cs` lists the main menu stage (asset, cameras, diorama); `menu_creatures.cs` lists every diorama creature with its state; `music_probe.cs` reports the menu music and whether a level score is running.
-- `Tools/PlayTest/boss_alarm.cs` raises the boss alarm by hand; `boss_probe.cs` reports the boss marker, approach sounds and the boss (light, pulse, scale); `sfx_voices.cs` lists the sound voices and approach timers; `sliders.cs` lists the volume sliders; `map_pick.cs` presses the first open beacon on the planet map; `time_probe.cs` reports time scale, briefing and countdown; `intro_probe.cs` and `intro_skip.cs` watch and skip the intro; `screen_probe.cs` prints the game view size (captures are resized to 1280x720, so circles look squashed when the view is wider than 16:9).
+- `Tools/PlayTest/boss_alarm.cs` raises the boss alarm by hand; `boss_probe.cs` reports the boss marker, approach sounds and the boss (light, pulse, scale); `sfx_voices.cs` lists the sound voices and approach timers; `sliders.cs` lists the volume sliders; `map_pick.cs` presses the first open beacon on the planet map; `time_probe.cs` reports time scale, briefing and countdown; `cutscene_probe.cs` and `cutscene_seek.cs` watch and seek the opening cutscene; `screen_probe.cs` prints the game view size (captures are resized to 1280x720, so circles look squashed when the view is wider than 16:9).
 - `Tools/PlayTest/dump_waves.cs` writes every generated wave per level and difficulty to `Tools/PlayTest/waves_dump.txt`; `wave_probe.cs` reports the wave number, countdown and living enemies by kind.
 - `Tools/PlayTest/laser_probe.cs` reports the boss laser, beam renderers and hum count (write "kill" in `enemy_arg.txt` to kill every boss first); `drone_probe.cs` reports money and active drones. `laser_now.cs` makes every living boss fire its laser on the next frame.
 - The balance bot takes an optional `probe_arg.txt` (`levels=0,1` and `difficulties=1,2` lines) and must run async in PlayMode (see STATUS).
@@ -263,3 +263,32 @@ Editor open. It reads the generated assets and the wave scripts. Docs/BALANCE.md
 | Prove the writer (must leave `git diff` empty) | `dotnet run --project Tools/BalanceLab -- roundtrip` |
 
 `write` only rewrites existing files (same GUIDs); a change in the number of waves needs the Unity generator.
+
+## Opening cutscene (added 2026-11-03)
+
+- `Tools/PlayTest/cut_shots.sh <prefix> "<shot> <progress>" ...` plays the cutscene from Boot, seeks each moment (shot index from 0) and captures `Assets/Temp/<prefix>_*.png`; write `0.02` into `Tools/PlayTest/cut_speed.txt` first to freeze time for stills (delete it afterwards). `cutscene_probe.cs` reports shot, time, dialogue, fade; `cutscene_advance.cs` presses confirm.
+- Letting the cutscene run to its end marks the intro seen in the real save: back up and restore `progress.json`.
+
+## Campaign structure (added 2026-11-03, S3)
+
+- PlayMode smoke runs (default): `unity command run_tests --mode PlayMode --filter ContinentSimulationTests --async_tests true`
+  (each level of every filled continent on Easy) and `--filter BalanceProbeTests` (greedy bot, first and last level on
+  Medium). The full runs (every difficulty) are `[Explicit]` with `[Category("Full")]`: run them by name, e.g.
+  `--filter "Game.Tests.ContinentSimulationTests.Full_EveryLevelOnEveryDifficulty_RunsWithoutErrors"`.
+- The generator caches terrain bakes in `Library/TerrainBakeCache.txt` (hash of the level's map, its theme and the
+  painter sources); delete the file to force a full rebake. An unchanged run takes about 20 s instead of 2 to 3 minutes.
+- `Tools/PlayTest/dump_map.cs` prints the campaign levels (`Level_C1_01` ...) with their validator errors.
+- BalanceLab builds from `Tools/BalanceLab/BalanceLab.csproj` (git-ignored, so recreate it on a fresh clone): it
+  compiles the tool, `Scripts/Balance/**`, `Editor/BalanceSheet.cs`, `Editor/WaveScripts.cs` and
+  `Editor/LevelSpecs/*.cs`. No dotnet on PATH here: use Unity's
+  `& "C:\Program Files\Unity\Hub\Editor\6000.6.5f1\Editor\Data\DotNetSdk\dotnet.exe" run --project Tools/BalanceLab -- report`.
+  It overwrites `Tools/PlayTest/balance_ledger.txt` with system-culture numbers and differs slightly from Unity (Mono
+  keeps float intermediates in double precision; see STATUS), so restore the file or rerun `BalanceLedgerTests` after.
+- `Tools/PlayTest/rugged_probe.cs` prints the globe ruggedness under every Crystal Plains site and a coarse ridge map;
+  `float_probe.cs` shows whether the runtime keeps float intermediates in double precision.
+
+## Balance probe trace (added 2026-11-03)
+
+- `BalanceProbeTests` writes `Logs/probe_trace.txt`: per wave the money earned, unspent money, base, hero state, creatures
+  alive and where (origin, distance walked), base hits by species, flyers shot down, towers with their levels and raw
+  damage per second, and the ledger's line for the same wave. Read it after a lost probe run before touching numbers.

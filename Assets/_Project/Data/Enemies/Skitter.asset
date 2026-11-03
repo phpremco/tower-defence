@@ -39,7 +39,7 @@ MonoBehaviour:
   _rageRadius: 3
   _isBoss: 0
   _abilities: []
-  _color: {r: 1, g: 0.62, b: 0.12, a: 1}
+  _color: {r: 1, g: 0.5, b: 0.14, a: 1}
   _eyeColor: {r: 1, g: 0.95, b: 0.5, a: 1}
   _accentColor: {r: 0.75, g: 1, b: 0.25, a: 1}
   _bloodColor: {r: 0.62, g: 1, b: 0.2, a: 1}

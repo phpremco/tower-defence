@@ -19,16 +19,18 @@ namespace Game.Editor
     {
         private const float FirstWaveDelay = 10f;
         private const float WaveDelay = 8f;
+        private const string WavesFolder = DataRoot + "/Waves";
 
         private static void GenerateCampaignWaves(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, Bestiary bestiary)
         {
-            WriteLevelPayouts(campaign, upgrades);
+            WriteLevelPayouts(campaign);
             CampaignModel model = BalanceLedger.Campaign(campaign, upgrades, unlocks.StartingTowerIds, BalanceSheet.Rules);
             foreach (EnemyDefinition enemy in bestiary.All)
             {
                 model.Enemies[enemy.name] = BalanceLedger.Stats(enemy);
             }
 
+            var written = new HashSet<string>();
             for (int l = 0; l < campaign.Nodes.Count; l++)
             {
                 LevelDefinition level = campaign.Nodes[l].Level;
@@ -41,45 +43,73 @@ namespace Game.Editor
 
                 List<List<WaveSpec>> sets = model.BuildWaves(index, script, out _);
                 WriteWaveSets(level, campaign, sets, bestiary, model.PlayerAt(index, WaveSolver.SolveDifficulty).MeanTowerBonus);
+                written.Add(WavesPath(level));
+            }
+
+            DeleteStaleWaveAssets(written);
+        }
+
+        private static string WavesPath(LevelDefinition level) => $"{WavesFolder}/Waves_{Key(level)}.asset";
+
+        // Removes whatever else lies in the waves folder, such as the one-asset-per-wave files of the old format, so no
+        // orphan survives a run; the folder itself goes too once nothing is left in it.
+        private static void DeleteStaleWaveAssets(HashSet<string> keep)
+        {
+            if (!AssetDatabase.IsValidFolder(WavesFolder))
+            {
+                return;
+            }
+
+            var stale = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets(string.Empty, new[] { WavesFolder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!keep.Contains(path) && !AssetDatabase.IsValidFolder(path))
+                {
+                    stale.Add(path);
+                }
+            }
+
+            if (stale.Count > 0 && !AssetDatabase.DeleteAssets(stale.ToArray(), new List<string>()))
+            {
+                throw new System.InvalidOperationException($"Could not delete {stale.Count} stale wave assets.");
+            }
+
+            if (keep.Count == 0 && AssetDatabase.FindAssets(string.Empty, new[] { WavesFolder }).Length == 0)
+            {
+                AssetDatabase.DeleteAsset(WavesFolder);
             }
         }
 
         private static string Key(LevelDefinition level) => level.name.StartsWith("Level_") ? level.name.Substring(6) : level.name;
 
-        // Research grows level by level and sums to the Easy share of all research upgrades; power pays per boss.
-        private static void WriteLevelPayouts(CampaignCatalog campaign, UpgradeCatalog upgrades)
+        // Each continent pays its own budget: research rises gently over its twenty levels and power pays per boss, both
+        // fixed by a level's index in its continent (BalanceSheet, ContinentEconomy).
+        private static void WriteLevelPayouts(CampaignCatalog campaign)
         {
-            int researchCost = 0;
-            foreach (UpgradeDefinition upgrade in upgrades.Upgrades)
+            for (int i = 0; i < campaign.Nodes.Count; i++)
             {
-                if (upgrade.Currency == UpgradeCurrency.ResearchPoints)
-                {
-                    for (int i = 0; i < upgrade.MaxLevel; i++)
-                    {
-                        researchCost += upgrade.CostForNextLevel(i);
-                    }
-                }
-            }
-
-            foreach (MapNode node in campaign.Nodes)
-            {
-                if (node.Level == null || WaveScripts.ByKey(Key(node.Level)) == null)
+                MapNode node = campaign.Nodes[i];
+                WaveScriptSpec script = node.Level != null ? WaveScripts.ByKey(Key(node.Level)) : null;
+                if (script == null)
                 {
                     continue;
                 }
 
+                int index = i - campaign.FirstNode(node.Region);
                 var so = new SerializedObject(node.Level);
                 SerializedProperty reward = so.FindProperty("_reward");
-                reward.FindPropertyRelative("ResearchPoints").intValue = BalanceSheet.Research(Key(node.Level), researchCost);
-                reward.FindPropertyRelative("PowerCurrency").intValue = BalanceSheet.Power(WaveScripts.ByKey(Key(node.Level)));
+                reward.FindPropertyRelative("ResearchPoints").intValue = BalanceSheet.Research(node.Region, index);
+                reward.FindPropertyRelative("PowerCurrency").intValue = BalanceSheet.Power(node.Region, script);
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
         }
 
         private static void WriteWaveSets(LevelDefinition level, CampaignCatalog campaign, List<List<WaveSpec>> sets, Bestiary bestiary, float expectedBonus)
         {
-            var so = new SerializedObject(level);
-            SerializedProperty waveArray = so.FindProperty("_difficultyWaves");
+            LevelWaves asset = LoadOrCreate<LevelWaves>(WavesPath(level));
+            var waveSo = new SerializedObject(asset);
+            SerializedProperty waveArray = waveSo.FindProperty("_difficultyWaves");
             waveArray.arraySize = sets.Count;
             for (int d = 0; d < sets.Count; d++)
             {
@@ -89,23 +119,25 @@ namespace Game.Editor
                 waves.arraySize = sets[d].Count;
                 for (int i = 0; i < sets[d].Count; i++)
                 {
-                    WaveDefinition wave = WriteWave($"{DataRoot}/Waves/{Key(level)}_{DifficultyNames[d]}_{i + 1}.asset", i, sets[d][i], bestiary);
-                    waves.GetArrayElementAtIndex(i).objectReferenceValue = wave;
+                    WriteWave(waves.GetArrayElementAtIndex(i), i, sets[d][i], bestiary);
                 }
             }
+
+            waveSo.ApplyModifiedPropertiesWithoutUndo();
+            var so = new SerializedObject(level);
+            so.FindProperty("_waves").objectReferenceValue = asset;
 
             // For reference only: the upgrade a Medium player is expected to bring; the waves are already sized for it.
             so.FindProperty("_expectedUpgradeBonus").floatValue = Mathf.Round(Mathf.Clamp01(expectedBonus) * 100f) / 100f;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static WaveDefinition WriteWave(string path, int index, WaveSpec spec, Bestiary bestiary)
+        private static void WriteWave(SerializedProperty wave, int index, WaveSpec spec, Bestiary bestiary)
         {
-            var wave = LoadOrCreate<WaveDefinition>(path);
-            var so = new SerializedObject(wave);
-            so.FindProperty("_startDelay").floatValue = index == 0 ? FirstWaveDelay : WaveDelay;
-            so.FindProperty("_healthMultiplier").floatValue = spec.HealthMultiplier;
-            SerializedProperty array = so.FindProperty("_groups");
+            wave.FindPropertyRelative("_startDelay").floatValue = index == 0 ? FirstWaveDelay : WaveDelay;
+            wave.FindPropertyRelative("_spawnJitter").floatValue = WaveDefinition.DefaultSpawnJitter;
+            wave.FindPropertyRelative("_healthMultiplier").floatValue = spec.HealthMultiplier;
+            SerializedProperty array = wave.FindPropertyRelative("_groups");
             array.arraySize = spec.Groups.Count;
             for (int g = 0; g < spec.Groups.Count; g++)
             {
@@ -119,9 +151,6 @@ namespace Game.Editor
                 element.FindPropertyRelative("PathIndex").intValue = group.Path;
                 element.FindPropertyRelative("Source").enumValueIndex = group.Source;
             }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return wave;
         }
     }
 }

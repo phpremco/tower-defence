@@ -90,7 +90,7 @@ namespace Game.Balance
                 {
                     load.AirHealth += health;
                     airSpan = Math.Max(airSpan, end);
-                    airSpeed += enemy.Speed * count;
+                    airSpeed += enemy.InRangeSpeed * count;
                     air += count;
                     continue;
                 }
@@ -100,7 +100,7 @@ namespace Game.Balance
                 {
                     load.BossHealth += health;
                     bossReachWeighted += reach * health;
-                    bossSpeed += enemy.Speed * count;
+                    bossSpeed += enemy.InRangeSpeed * count;
                     bosses += count;
                     bossGateDps += strike;
                     continue;
@@ -109,7 +109,7 @@ namespace Game.Balance
                 load.StreamHealth += health;
                 reachWeighted += reach * health;
                 span = Math.Max(span, end);
-                speed += enemy.Speed * count;
+                speed += enemy.InRangeSpeed * count;
                 ground += count;
                 gateDps += strike * Math.Min(count, rules.AttackersPerGate);
             }

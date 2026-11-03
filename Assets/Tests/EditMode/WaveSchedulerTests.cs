@@ -9,7 +9,10 @@ namespace Game.Tests
 {
     public sealed class WaveSchedulerTests
     {
+        private const float TestJitter = 0.5f;
+
         private EnemyDefinition _enemy;
+        private SpawnGroup _group;
         private WaveDefinition _wave;
         private DifficultyProfile _difficulty;
 
@@ -18,25 +21,14 @@ namespace Game.Tests
         {
             _enemy = ScriptableObject.CreateInstance<EnemyDefinition>();
             _difficulty = ScriptableObject.CreateInstance<DifficultyProfile>();
-            _wave = ScriptableObject.CreateInstance<WaveDefinition>();
-
-            var so = new SerializedObject(_wave);
-            SerializedProperty groups = so.FindProperty("_groups");
-            groups.arraySize = 1;
-            SerializedProperty group = groups.GetArrayElementAtIndex(0);
-            group.FindPropertyRelative("Enemy").objectReferenceValue = _enemy;
-            group.FindPropertyRelative("Count").intValue = 3;
-            group.FindPropertyRelative("Interval").floatValue = 1f;
-            group.FindPropertyRelative("Delay").floatValue = 2f;
-            group.FindPropertyRelative("PathIndex").intValue = 3;
-            so.ApplyModifiedPropertiesWithoutUndo();
+            _group = new SpawnGroup { Enemy = _enemy, Count = 3, Interval = 1f, Delay = 2f, PathIndex = 3 };
+            _wave = new WaveDefinition(new[] { _group });
         }
 
         [TearDown]
         public void TearDown()
         {
             Object.DestroyImmediate(_enemy);
-            Object.DestroyImmediate(_wave);
             Object.DestroyImmediate(_difficulty);
         }
 
@@ -61,10 +53,8 @@ namespace Game.Tests
         [Test]
         public void Advance_WithJitter_SpawnsEveryoneNearItsSchedule()
         {
-            var so = new SerializedObject(_wave);
-            so.FindProperty("_spawnJitter").floatValue = 0.5f;
-            so.ApplyModifiedPropertiesWithoutUndo();
-            var scheduler = new WaveScheduler(_wave, _difficulty, new System.Random(7));
+            var wave = new WaveDefinition(new[] { _group }, TestJitter);
+            var scheduler = new WaveScheduler(wave, _difficulty, new System.Random(7));
             var output = new List<SpawnRequest>();
 
             // Nobody appears earlier than half an interval before the delay, and everyone within half an interval after the last slot.

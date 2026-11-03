@@ -1,5 +1,6 @@
 using Game.Combat;
 using Game.Enemies;
+using Game.Hero;
 using UnityEngine;
 
 namespace Game.Levels
@@ -38,7 +39,7 @@ namespace Game.Levels
             context.EnemySpawned.Subscribe(OnEnemySpawned);
             if (context.Hero != null)
             {
-                context.Hero.ShockwaveReleased += OnShockwave;
+                context.Hero.AbilityUsed += OnAbilityUsed;
                 context.Hero.Downed += OnHeroDown;
             }
         }
@@ -77,7 +78,7 @@ namespace Game.Levels
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
             if (_context.Hero != null)
             {
-                _context.Hero.ShockwaveReleased -= OnShockwave;
+                _context.Hero.AbilityUsed -= OnAbilityUsed;
                 _context.Hero.Downed -= OnHeroDown;
             }
         }
@@ -107,6 +108,12 @@ namespace Game.Levels
             }
         }
 
-        private void OnShockwave(Vector3 centre, float radius) => _rig.Shake(Shockwave);
+        private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)
+        {
+            if (ability.Kind == HeroAbilityKind.Shockwave)
+            {
+                _rig.Shake(Shockwave);
+            }
+        }
     }
 }

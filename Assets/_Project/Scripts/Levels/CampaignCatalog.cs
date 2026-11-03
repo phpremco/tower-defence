@@ -90,6 +90,13 @@ namespace Game.Levels
             return -1;
         }
 
+        /// <summary>The layer (surface or Core) a node's region lies in.</summary>
+        public MapLayer LayerOf(int nodeIndex)
+        {
+            int region = _nodes[nodeIndex].Region;
+            return region >= 0 && region < _regions.Count ? _regions[region].Layer : MapLayer.Surface;
+        }
+
         private void OnValidate()
         {
             for (int i = 0; i < _nodes.Count; i++)
@@ -111,7 +118,7 @@ namespace Game.Levels
 
                 for (int k = 0; k < i; k++)
                 {
-                    if (PlanetCoordinates.AngleBetween(node.Direction, _nodes[k].Direction) < PlanetCoordinates.MinimumSpacingDegrees)
+                    if (LayerOf(k) == LayerOf(i) && PlanetCoordinates.AngleBetween(node.Direction, _nodes[k].Direction) < PlanetCoordinates.MinimumSpacingDegrees)
                     {
                         Debug.LogWarning($"Campaign nodes {k} and {i} sit too close together on the planet.", this);
                     }

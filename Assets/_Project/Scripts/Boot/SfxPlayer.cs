@@ -58,6 +58,8 @@ namespace Game.Boot
         private const float CutFadeSeconds = 0.12f;
         private const float CannonExplosionVolume = 0.6f;
         private const float RocketExplosionVolume = 0.7f;
+        private const float FlakShotVolume = 0.55f;
+        private const float FlakBurstVolume = 0.35f;
         private const float MineExplosionVolume = 1f;
         private const float GateExplosionVolume = 1.6f;
         private const float BaseExplosionVolume = 2f;
@@ -74,6 +76,7 @@ namespace Game.Boot
         private const float SaberHitDelay = 0.12f;
         private const float SaberHumVolume = 0.05f;
         private const float HeroPulseVolume = 2.5f;
+        private const float RepairAbilityVolume = 0.9f;
         private const float HeroStepVolume = 0.12f;
         private const float HeroStepSpacing = 0.55f;
         private const float HeroDeathVolume = 1.4f;
@@ -114,11 +117,15 @@ namespace Game.Boot
         private readonly List<Pending> _pending = new List<Pending>(ScheduleCapacity);
         private readonly List<PathObject> _rollers = new List<PathObject>();
         private readonly HashSet<Drone> _hookedDrones = new HashSet<Drone>();
+        // One family per ability, kept for the level, so its recordings rotate and a use allocates nothing.
+        private readonly Dictionary<HeroAbilityDefinition, SoundFamily> _abilitySounds = new Dictionary<HeroAbilityDefinition, SoundFamily>();
         private int _bossLasers;
         private int _droneCount;
         private SoundFamily _pulse;
         private SoundFamily _heavy;
         private SoundFamily _rocket;
+        private SoundFamily _flak;
+        private SoundFamily _flakBurst;
         private SoundFamily _cryo;
         private SoundFamily _tesla;
         private SoundFamily _rail;
@@ -235,7 +242,7 @@ namespace Game.Boot
             if (context.Hero != null)
             {
                 context.Hero.Struck += OnStruck;
-                context.Hero.ShockwaveReleased += OnShockwave;
+                context.Hero.AbilityUsed += OnAbilityUsed;
                 context.Hero.Downed += OnHeroDown;
                 context.Hero.Revived += OnHeroRevive;
                 _heroLast = context.Hero.transform.position;
@@ -248,6 +255,8 @@ namespace Game.Boot
             _pulse = new SoundFamily(library?.PulseShots, ProceduralSfx.PulseShot());
             _heavy = new SoundFamily(library?.HeavyShots, ProceduralSfx.HeavyShot());
             _rocket = new SoundFamily(library?.RocketLaunches, ProceduralSfx.RocketLaunch());
+            _flak = new SoundFamily(library?.FlakShots, ProceduralSfx.HeavyShot());
+            _flakBurst = new SoundFamily(library?.FlakBursts, ProceduralSfx.Explosion());
             _cryo = new SoundFamily(library?.CryoShots, ProceduralSfx.CryoShot());
             _tesla = new SoundFamily(library?.TeslaShots, ProceduralSfx.TeslaShot());
             for (int i = 0; i < BeamVoiceCount; i++)
@@ -327,7 +336,7 @@ namespace Game.Boot
             if (_context.Hero != null)
             {
                 _context.Hero.Struck -= OnStruck;
-                _context.Hero.ShockwaveReleased -= OnShockwave;
+                _context.Hero.AbilityUsed -= OnAbilityUsed;
                 _context.Hero.Downed -= OnHeroDown;
                 _context.Hero.Revived -= OnHeroRevive;
             }
@@ -430,6 +439,10 @@ namespace Game.Boot
             {
                 Shot(_tesla, ShotVolume, RapidCooldownSeconds);
             }
+            else if (shot.Style == ProjectileStyle.Flak)
+            {
+                Shot(_flak, FlakShotVolume, BundleSeconds);
+            }
             else if (shot.Style == ProjectileStyle.Rail)
             {
                 Shot(_rail, HeavyShotVolume, BundleSeconds);
@@ -473,6 +486,10 @@ namespace Game.Boot
             if (style == ProjectileStyle.Rocket)
             {
                 Play(_rocketExplosion, RocketExplosionVolume, SfxKind.Hit);
+            }
+            else if (style == ProjectileStyle.Flak)
+            {
+                Play(_flakBurst, FlakBurstVolume, SfxKind.Hit);
             }
             else
             {
@@ -571,6 +588,10 @@ namespace Game.Boot
                     break;
                 case EnemyOrigin.Bog:
                     Play(_emergeBog, SpawnVolume, kind);
+                    break;
+                case EnemyOrigin.Rift:
+                    // Gravel and cracking rock, like the ground opening; the stone voice follows from the chorus.
+                    Play(_emergeGround, SpawnVolume, kind);
                     break;
                 case EnemyOrigin.Ground:
                     Play(_emergeGround, 1f, SfxKind.Priority);
@@ -716,7 +737,33 @@ namespace Game.Boot
 
         private void OnHeroRevive() => Play(_heroRevive, 0.8f, SfxKind.Priority);
 
-        private void OnShockwave(Vector3 centre, float radius) => Play(_heroPulse, HeroPulseVolume, SfxKind.Priority);
+        // An ability with its own recording plays that; otherwise the kind picks the stand-in.
+        private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)
+        {
+            if (!ability.Sound.IsEmpty)
+            {
+                Play(AbilitySound(ability), HeroPulseVolume, SfxKind.Priority);
+            }
+            else if (ability.Kind == HeroAbilityKind.Shockwave)
+            {
+                Play(_heroPulse, HeroPulseVolume, SfxKind.Priority);
+            }
+            else
+            {
+                Play(_repair, RepairAbilityVolume, SfxKind.Priority);
+            }
+        }
+
+        private SoundFamily AbilitySound(HeroAbilityDefinition ability)
+        {
+            if (!_abilitySounds.TryGetValue(ability, out SoundFamily family))
+            {
+                family = new SoundFamily(ability.Sound);
+                _abilitySounds.Add(ability, family);
+            }
+
+            return family;
+        }
 
         // A beam tick keeps the voice of the tower it came from alive, or claims a free voice for a tower that just
         // opened fire. With every voice busy the tick goes unheard; four beams already sound like a wall of them.
@@ -856,6 +903,8 @@ namespace Game.Boot
                     return _emergeIce;
                 case Element.Bog:
                     return _emergeBog;
+                case Element.Stone:
+                    return _emergeGround;
                 default:
                     return _emergeGround;
             }
@@ -892,18 +941,18 @@ namespace Game.Boot
         public int Play(SoundFamily family, float volume, SfxKind kind)
         {
             AudioClip clip = family.Next();
-            return clip == null ? -1 : Play(clip, volume * family.Gain, kind);
+            return clip == null ? -1 : Play(clip, volume * family.Gain, kind, family.Pitch);
         }
 
         // Takes a free voice, or the oldest voice of the same kind when that kind has used up its budget, so a
         // crowd of towers can never drown out the base taking a hit. Priority sounds also duck the filler for a moment.
-        private int Play(AudioClip clip, float volume, SfxKind kind)
+        private int Play(AudioClip clip, float volume, SfxKind kind, float pitch = 1f)
         {
             float now = Time.unscaledTime;
             int index = PickVoice(kind, now);
             AudioSource voice = _voices[index];
             voice.Stop();
-            voice.pitch = 1f + Random.Range(-PitchJitter, PitchJitter);
+            voice.pitch = pitch * (1f + Random.Range(-PitchJitter, PitchJitter));
             voice.volume = volume * _mix.EffectsGain;
             // PlayOneShot leaves the clip slot empty; keeping the clip there lets probes read what each voice last played.
             voice.clip = clip;

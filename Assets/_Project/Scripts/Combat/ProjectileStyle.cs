@@ -26,5 +26,8 @@ namespace Game.Combat
 
         /// <summary>A heavy shell lobbed on a high arc.</summary>
         Mortar = 7,
+
+        /// <summary>A white-hot flak tracer with an amber edge and no smoke, bursting near a flyer.</summary>
+        Flak = 8,
     }
 }

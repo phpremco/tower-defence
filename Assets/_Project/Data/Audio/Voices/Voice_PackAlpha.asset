@@ -15,6 +15,7 @@ MonoBehaviour:
   _moveLoop:
     _clips: []
     _gain: 1
+    _pitch: 1
   _steps:
     _clips:
     - {fileID: 8300000, guid: eff5225e054e3c942a76f0ada2fb5c02, type: 3}
@@ -22,47 +23,60 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a0a8922da5f353d448a26435463527e2, type: 3}
     - {fileID: 8300000, guid: de7609dd35af3774fa7d905888534fe1, type: 3}
     _gain: 0.2701577
+    _pitch: 1
   _stepSpacing: 0.8
   _presence: 1
   _rollLoop:
     _clips: []
     _gain: 1
+    _pitch: 1
   _screeches:
     _clips:
     - {fileID: 8300000, guid: 12792ceca3028924aabfdac8ba7fa00b, type: 3}
     - {fileID: 8300000, guid: 2ef42b09239a72e45b15271070019de2, type: 3}
     _gain: 0.22771579
+    _pitch: 1
   _growls:
     _clips:
     - {fileID: 8300000, guid: 17fe6466b4a069f42a1ac1ed278b5871, type: 3}
     - {fileID: 8300000, guid: f9c4a821f86fe94448da393faa272871, type: 3}
     _gain: 0.28893963
+    _pitch: 1
   _attacks:
     _clips: []
     _gain: 1
+    _pitch: 1
   _impacts:
     _clips: []
     _gain: 1
+    _pitch: 1
   _pulse:
     _clips: []
     _gain: 1
+    _pitch: 1
   _volleyLaunch:
     _clips: []
     _gain: 1
+    _pitch: 1
   _volleyImpact:
     _clips: []
     _gain: 1
+    _pitch: 1
   _rally:
     _clips:
     - {fileID: 8300000, guid: 17fe6466b4a069f42a1ac1ed278b5871, type: 3}
     - {fileID: 8300000, guid: f9c4a821f86fe94448da393faa272871, type: 3}
     _gain: 0.28893963
+    _pitch: 1
   _regrow:
     _clips: []
     _gain: 1
+    _pitch: 1
   _spawn:
     _clips: []
     _gain: 1
+    _pitch: 1
   _laserStart:
     _clips: []
     _gain: 1
+    _pitch: 1

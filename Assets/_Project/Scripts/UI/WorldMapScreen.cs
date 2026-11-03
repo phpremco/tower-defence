@@ -31,12 +31,6 @@ namespace Game.UI
         private const float TiltDegreesPerSecond = 45f;
         private const float StepDeadzone = 0.5f;
         private const float StepRepeatSeconds = 0.32f;
-        private const float StripTileSize = 40f;
-        private const float StripGap = 14f;
-        private const float StripWidth = 1200f;
-        private const float StripY = 248f;
-        private const float StripFocusScale = 1.25f;
-        private const int StripNumberSize = 18;
         private const float BadgeSize = 64f;
         private const float BadgeRingSize = 94f;
         private const float MarkerSize = 52f;
@@ -46,7 +40,6 @@ namespace Game.UI
         private const float RingPulseDepth = 0.12f;
         private const float CheckSize = 18f;
         private const float DoneBadgeSize = 28f;
-        private const float StripDoneBadgeSize = 20f;
         private const float LockSize = 22f;
         private const float BadgeIconScale = 1.3f;
         private const float BarWidth = 9f;
@@ -54,7 +47,7 @@ namespace Game.UI
         private const float BarGap = 3f;
         private const float BarDrop = -31f;
         private const float RouteSpacingDegrees = 1.6f;
-        private const float DotSize = 6f;
+        private const float DotSize = 8f;
         private const float RimFadeStart = 0.08f;
         private const float RimFadeEnd = 0.3f;
         private const float FocusMinFacing = 0.35f;
@@ -80,10 +73,19 @@ namespace Game.UI
         private static readonly Vector2 ViewHome = new Vector2(0f, 56f);
         private static readonly Color LockedColor = new Color(0.4f, 0.43f, 0.5f);
         private static readonly Color LockedPlate = new Color(0.22f, 0.24f, 0.3f);
+
+        // The Core's crack: dark lines over a faint ember glow, three strokes that zigzag like a fissure.
+        private static readonly Color CrackColor = new Color(1f, 0.42f, 0.16f, 0.9f);
+        private static readonly Color CrackGlow = new Color(0.9f, 0.25f, 0.08f, 0.22f);
+        private const float CrackScale = 0.8f;
+        private const float CrackWidth = 4f;
+        private static readonly float[] CrackAngles = { 28f, -18f, 34f };
+        private static readonly float[] CrackLengths = { 0.42f, 0.36f, 0.3f };
+        private static readonly Vector2[] CrackOffsets = { new Vector2(-12f, 8f), new Vector2(4f, -2f), new Vector2(17f, -12f) };
         private static readonly Color HaloColor = new Color(0.45f, 0.8f, 1f, 0.55f);
         private static readonly Color RouteDone = new Color(0.7f, 0.95f, 1f, 0.9f);
         private static readonly Color RouteOpen = new Color(0.55f, 0.85f, 1f, 0.8f);
-        private static readonly Color RouteLocked = new Color(0.5f, 0.55f, 0.65f, 0.35f);
+        private static readonly Color RouteLocked = new Color(0.62f, 0.68f, 0.8f, 0.6f);
         private static readonly Color PanelTint = new Color(0.08f, 0.13f, 0.24f, 0.96f);
         private static readonly Color Muted = new Color(0.7f, 0.8f, 0.95f);
         private static readonly Color Completed = new Color(0.4f, 0.95f, 0.5f);
@@ -134,8 +136,6 @@ namespace Game.UI
         private Button _play;
         private Button _upgrades;
         private Button _back;
-        private RectTransform _strip;
-        private readonly List<Marker> _stripTiles = new List<Marker>();
         private float _stepRepeat;
         private GameObject _regionPanel;
         private LoadoutPanelView _loadout;
@@ -190,7 +190,6 @@ namespace Game.UI
             _hint = UiKit.CreateFixedText(chrome, PlanetHint, HintSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 118f), new Vector2(1700f, 34f));
             _hint.color = Muted;
             BuildSideButtons(chrome);
-            BuildStrip(chrome);
             BuildActionRow(chrome);
 
             // Open inside the region the player is working on, flying in from the whole planet.
@@ -242,19 +241,7 @@ namespace Game.UI
 
             if (_globeMaps == null)
             {
-                var regions = new List<GlobePainter.Region>();
-                foreach (MapRegion region in _catalog.Regions)
-                {
-                    regions.Add(new GlobePainter.Region { Direction = region.Direction, Colour = region.Colour, RadiusDegrees = region.RadiusDegrees });
-                }
-
-                // Every level also raises a patch of land, so no level ends up in a bay the coast noise carved, and lights it.
-                foreach (MapNode node in _catalog.Nodes)
-                {
-                    regions.Add(new GlobePainter.Region { Direction = node.Direction, Colour = _catalog.Regions[node.Region].Colour, RadiusDegrees = GlobePainter.LevelLandDegrees, Lights = true });
-                }
-
-                _globeMaps = GlobePainter.Paint(GlobeTexture, GlobeTexture / 2, regions);
+                _globeMaps = GlobePainter.Paint(GlobeTexture, GlobeTexture / 2, GlobePainter.RegionsOf(_catalog));
                 _globeClouds = new[] { GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 0f), GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 200f) };
             }
 
@@ -312,6 +299,11 @@ namespace Game.UI
 
             RectTransform holder = CreateRect("Badge", view, new Vector2(BadgeSize, BadgeSize));
             var badge = new Marker { Index = index, Open = open, Direction = region.Direction, Root = holder, Group = holder.gameObject.AddComponent<CanvasGroup>() };
+            if (region.Layer == MapLayer.Core)
+            {
+                BuildCrack(holder, badge, index);
+                return badge;
+            }
 
             Color ringColour = open ? Color.Lerp(colour, Color.white, 0.4f) : LockedColor;
             ringColour.a = 0.85f;
@@ -331,6 +323,26 @@ namespace Game.UI
             }
 
             return badge;
+        }
+
+        // The Core lies under the surface, so it is no land and no plate: a thin dark crack with a faint ember glow.
+        private void BuildCrack(RectTransform holder, Marker badge, int index)
+        {
+            Color ring = CrackColor;
+            ring.a = 0.85f;
+            badge.Ring = CreateIcon("Ring", holder, IconType.Ring, ring, BadgeRingSize * CrackScale).rectTransform;
+            badge.Ring.gameObject.SetActive(false);
+            Image glow = CreateIcon("Glow", holder, IconType.Disc, CrackGlow, BadgeSize * CrackScale);
+            AddClick(glow, () => OnBadgeClicked(index));
+            for (int i = 0; i < CrackAngles.Length; i++)
+            {
+                Image crack = CreateIcon("Crack", holder, IconType.Disc, CrackColor, BadgeSize);
+                crack.sprite = null;
+                crack.raycastTarget = false;
+                crack.rectTransform.sizeDelta = new Vector2(BadgeSize * CrackLengths[i], CrackWidth);
+                crack.rectTransform.anchoredPosition = CrackOffsets[i];
+                crack.rectTransform.localRotation = Quaternion.Euler(0f, 0f, CrackAngles[i]);
+            }
         }
 
         // A level marker: a hexagon plate in the level's colour with a tick once beaten or a lock while closed, and
@@ -501,60 +513,6 @@ namespace Game.UI
             return selected == _planet.gameObject || selected == _play.gameObject || selected == _upgrades.gameObject || selected == _back.gameObject;
         }
 
-        // A strip of small numbered hexes above the caption, one per level of the region, for jumping straight to a
-        // level with the mouse and for seeing where in the order the chosen one sits.
-        private void BuildStrip(RectTransform root)
-        {
-            _strip = CreateRect("Strip", root, new Vector2(StripWidth, StripTileSize));
-            _strip.anchorMin = new Vector2(0.5f, 0f);
-            _strip.anchorMax = new Vector2(0.5f, 0f);
-            _strip.anchoredPosition = new Vector2(0f, StripY);
-        }
-
-        private void RefreshStrip(int region)
-        {
-            foreach (Marker tile in _stripTiles)
-            {
-                Destroy(tile.Root.gameObject);
-            }
-
-            _stripTiles.Clear();
-            int first = _catalog.FirstNode(region);
-            int count = _catalog.NodeCount(region);
-            float width = count * StripTileSize + (count - 1) * StripGap;
-            for (int k = 0; k < count; k++)
-            {
-                int index = first + k;
-                Marker marker = _markers[index];
-                Color colour = marker.Open ? LevelColour(_catalog.Nodes[index].Level) : LockedPlate;
-                RectTransform holder = CreateRect("StripTile", _strip, new Vector2(StripTileSize, StripTileSize));
-                holder.anchoredPosition = new Vector2(-width * 0.5f + StripTileSize * 0.5f + k * (StripTileSize + StripGap), 0f);
-                var tile = new Marker { Index = index, Open = marker.Open, Root = holder, Group = holder.gameObject.AddComponent<CanvasGroup>() };
-                tile.Ring = CreateIcon("Ring", holder, IconType.Ring, Color.white, StripTileSize * 1.3f).rectTransform;
-                tile.Ring.gameObject.SetActive(index == _focused);
-                Image plate = CreateIcon("Plate", holder, IconType.Hex, colour, StripTileSize);
-                AddClick(plate, () => OnMarkerClicked(index));
-                if (marker.Open)
-                {
-                    Text number = UiKit.CreateFixedText(holder, (index + 1).ToString(), StripNumberSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(StripTileSize, StripTileSize));
-                    number.color = new Color(0.05f, 0.07f, 0.12f);
-                    number.raycastTarget = false;
-                    Destroy(number.GetComponent<Outline>());
-                }
-                else
-                {
-                    CreateIcon("Lock", holder, IconType.Lock, LockedColor, StripTileSize * 0.45f);
-                }
-
-                if (CampaignRules.IsCompleted(_catalog, index, Progress))
-                {
-                    AddDoneBadge(holder, new Vector2(StripTileSize * 0.45f, StripTileSize * 0.45f), StripDoneBadgeSize);
-                }
-
-                _stripTiles.Add(tile);
-            }
-        }
-
         // Left and right step through the levels of a region: once on a push, then repeating while held.
         private void StepInput(float x, float dt)
         {
@@ -645,8 +603,8 @@ namespace Game.UI
             move = Vector2.ClampMagnitude(move, 1f);
             if (move.sqrMagnitude > 0.01f)
             {
-                // Pushing right brings the east into view, so the globe itself turns the other way.
-                _globe.Spin(new Vector2(-move.x * SpinDegreesPerSecond * dt, move.y * TiltDegreesPerSecond * dt));
+                // Pushing right brings the east into view: the surface slides to the left, a positive turn about up.
+                _globe.Spin(new Vector2(move.x * SpinDegreesPerSecond * dt, move.y * TiltDegreesPerSecond * dt));
                 FocusRegion(Nearest(_badges, _region, -1));
             }
         }
@@ -793,8 +751,6 @@ namespace Game.UI
                 }
             }
 
-            RefreshStrip(index);
-            _strip.gameObject.SetActive(true);
             FocusNode(focusNode);
             _globe.TurnTo(_catalog.Regions[index].Direction);
             _globe.ZoomTarget = PlanetGlobe.RegionZoom;
@@ -812,7 +768,6 @@ namespace Game.UI
                 marker.Ring.gameObject.SetActive(false);
             }
 
-            _strip.gameObject.SetActive(false);
             FocusRegion(_region);
             _globe.TurnTo(_catalog.Regions[_region].Direction);
             _globe.ZoomTarget = 0f;
@@ -855,12 +810,6 @@ namespace Game.UI
             string status = node.Level == null ? "   -   coming soon" : marker.Open ? string.Empty : "   -   locked";
             _caption.text = $"{index + 1}. {node.DisplayName}{status}";
             _caption.color = marker.Open ? Color.white : Muted;
-            foreach (Marker tile in _stripTiles)
-            {
-                tile.Ring.gameObject.SetActive(tile.Index == index);
-                tile.Root.localScale = Vector3.one * (tile.Index == index ? StripFocusScale : 1f);
-            }
-
             if (_play != null)
             {
                 _play.interactable = marker.Open;
@@ -1096,6 +1045,13 @@ namespace Game.UI
             {
                 Destroy(_regionPanel);
                 _regionPanel = null;
+            }
+
+            // Before the campaign has granted any gadget there is nothing to choose: straight into the level, empty-handed.
+            if (!LoadoutPanelView.HasChoice(_catalog, Progress))
+            {
+                StartLevel(level, difficulty, new PathObjectDefinition[0]);
+                return;
             }
 
             _loadout = gameObject.AddComponent<LoadoutPanelView>();

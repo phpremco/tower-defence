@@ -124,6 +124,7 @@ namespace Game.Hero
         private const float StandRingThickness = 0.02f;
         private const float StandRingEmission = 1.5f;
         private const float RingSeconds = 0.45f;
+        private const float AbilityRingRadius = 1.1f;
         private const float RingAlpha = 0.35f;
         private const float RingEmission = 2.5f;
         private const float ReviveRingSeconds = 0.6f;
@@ -222,7 +223,7 @@ namespace Game.Hero
             _lastPosition = transform.position;
             _hero.Changed += Refresh;
             _hero.Struck += OnStruck;
-            _hero.ShockwaveReleased += OnShockwave;
+            _hero.AbilityUsed += OnAbilityUsed;
             _hero.Downed += OnDowned;
             _hero.Revived += OnRevived;
             Refresh();
@@ -234,7 +235,7 @@ namespace Game.Hero
             {
                 _hero.Changed -= Refresh;
                 _hero.Struck -= OnStruck;
-                _hero.ShockwaveReleased -= OnShockwave;
+                _hero.AbilityUsed -= OnAbilityUsed;
                 _hero.Downed -= OnDowned;
                 _hero.Revived -= OnRevived;
             }
@@ -447,7 +448,9 @@ namespace Game.Hero
             _active.Attack(target);
         }
 
-        private void OnShockwave(Vector3 centre, float radius) => Pulse(_hero.Definition.ShockwaveRadius, _trim, RingSeconds);
+        // A shockwave rings out to its own radius; any other ability flashes a small ring in its tint at the hero's feet.
+        private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position) =>
+            Pulse(ability.Kind == HeroAbilityKind.Shockwave ? ability.Radius : AbilityRingRadius, ability.Tint, RingSeconds);
 
         // Going down: the stagger starts at once; the fall, the impact and the powered-down look follow in Update.
         private void OnDowned()

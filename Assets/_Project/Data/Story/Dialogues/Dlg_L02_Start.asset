@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d739c3f664720374da6d2402ae0ff1fc, type: 3}
+  m_Name: Dlg_L02_Start
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.DialogueDefinition
+  _lines:
+  - Id: Dlg_L02_Start.01
+    Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
+    Segments:
+    - Text: We rebuilt the laser module. It fires fast, but light. Perfect against swarms.
+      Style: 0
+    GlitchIntensity: 0

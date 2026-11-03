@@ -48,6 +48,8 @@ namespace Game.Levels
             }
         }
 
+        public bool CanRestore => !_health.IsDead && _health.Current < _health.Max;
+
         public void Restore(float fraction) => _health.Heal(_health.Max * fraction);
     }
 }

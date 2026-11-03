@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c942abd524940a84390b11b5e37bff6e, type: 3}
+  m_Name: CutsceneCast
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.CutsceneCast
+  _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
+  _hauler: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
+  _builder: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
+  _swarm:
+  - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+  - {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+  - {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+  _screamer: {fileID: 11400000, guid: d830dda47c6b4aa45981a5405dc4300a, type: 2}
+  _fieldLevel: {fileID: 0}
+  _earthTheme: {fileID: 11400000, guid: 20c7d6fc5e9f2a34883b0bc3cb413318, type: 2}
+  _undergroundTheme: {fileID: 11400000, guid: 2483e8d8ccfd4c2489b69988d3a79233, type: 2}
+  _capsuleCount: 9
+  _eyePairs: 300
+  _droneCount: 8
+  _swarmCount: 36
+  _mothership: {fileID: 0}
+  _capsule: {fileID: 0}
+  _drill: {fileID: 0}
+  _beacon: {fileID: 0}
+  _earthSurface: {fileID: 0}

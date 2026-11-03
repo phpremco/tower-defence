@@ -24,6 +24,11 @@ namespace Game.Hero
 
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground;
 
+        /// <summary>Shots before the weapon must reload; zero means it never reloads.</summary>
+        [SerializeField] [Min(0)] private int _magazine;
+
+        [SerializeField] [Min(0f)] private float _reloadSeconds;
+
         /// <summary>Colour of the blade, the bolt and the muzzle glow.</summary>
         [SerializeField] private Color _color = new Color(0.3f, 0.95f, 1f);
 
@@ -34,6 +39,8 @@ namespace Game.Hero
         public float Reach => _reach;
         public float AttackInterval => _attackInterval;
         public TargetLayers Targets => _targets;
+        public int Magazine => _magazine;
+        public float ReloadSeconds => _reloadSeconds;
         public Color Color => _color;
     }
 }

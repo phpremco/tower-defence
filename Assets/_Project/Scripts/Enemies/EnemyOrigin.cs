@@ -13,5 +13,8 @@ namespace Game.Enemies
         Nest = 5,
         Ice = 6,
         Bog = 7,
+
+        /// <summary>A rift in the ground: the creature claws its way up out of the crack.</summary>
+        Rift = 8,
     }
 }

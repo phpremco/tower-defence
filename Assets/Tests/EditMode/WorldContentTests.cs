@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>Checks the first world as a whole (five levels, rewards, recipes) and the rules of the later systems.</summary>
+    /// <summary>Checks the campaign as a whole (continents, levels, rewards, recipes) and the rules of the later systems.</summary>
     public sealed class WorldContentTests
     {
         private const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
@@ -82,18 +82,29 @@ namespace Game.Tests
             return catalog;
         }
 
-        private const int FirstRecipeLevel = 4;
-        private const int FirstWorldLevels = 5;
+        private const int LevelsPerContinent = 20;
+        private const string RecipePath = "Assets/_Project/Data/Recipes/Artillery.asset";
+        private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
+
+        private static IEnumerable<LevelDefinition> Levels(CampaignCatalog catalog, int region = -1)
+        {
+            foreach (MapNode node in catalog.Nodes)
+            {
+                if (node.Level != null && (region < 0 || node.Region == region))
+                {
+                    yield return node.Level;
+                }
+            }
+        }
 
         // Docs/LEVEL_GUIDE.md: a boss that comes up away from the other spawns is a front of its own, which the first
-        // world never asks for.
+        // continent never asks for.
         [Test]
-        public void FirstWorld_BossesComeThroughTheMainGate()
+        public void Continent1_BossesComeThroughTheMainGate()
         {
             CampaignCatalog catalog = LoadCampaign();
-            for (int i = 0; i < FirstWorldLevels && i < catalog.Nodes.Count; i++)
+            foreach (LevelDefinition level in Levels(catalog, 0))
             {
-                LevelDefinition level = catalog.Nodes[i].Level;
                 Assert.AreEqual(EntranceKind.Gate, level.BossEntrance.Kind, $"{level.name}: bosses must use the main gate in the first world.");
                 foreach (DifficultyWaves set in level.DifficultyWaves)
                 {
@@ -103,8 +114,8 @@ namespace Game.Tests
                         {
                             if (group.Enemy != null && group.Enemy.IsBoss)
                             {
-                                Assert.AreEqual(SpawnSource.Gate, group.Source, $"{wave.name}: a first-world boss must come through the gate.");
-                                Assert.AreEqual(0, group.PathIndex, $"{wave.name}: a first-world boss must take the main road.");
+                                Assert.AreEqual(SpawnSource.Gate, group.Source, $"{level.name} {set.Difficulty.name}: a first-world boss must come through the gate.");
+                                Assert.AreEqual(0, group.PathIndex, $"{level.name} {set.Difficulty.name}: a first-world boss must take the main road.");
                             }
                         }
                     }
@@ -117,10 +128,10 @@ namespace Game.Tests
         public void HarderDifficulties_BringAtLeastAsManyBosses()
         {
             CampaignCatalog catalog = LoadCampaign();
-            foreach (MapNode node in catalog.Nodes)
+            foreach (LevelDefinition level in Levels(catalog))
             {
                 int previous = 0;
-                foreach (DifficultyWaves set in node.Level.DifficultyWaves)
+                foreach (DifficultyWaves set in level.DifficultyWaves)
                 {
                     int bosses = 0;
                     foreach (WaveDefinition wave in set.Waves)
@@ -131,28 +142,34 @@ namespace Game.Tests
                         }
                     }
 
-                    Assert.GreaterOrEqual(bosses, previous, $"{node.Level.name} {set.Difficulty.name} has fewer bosses than the easier difficulty.");
+                    Assert.GreaterOrEqual(bosses, previous, $"{level.name} {set.Difficulty.name} has fewer bosses than the easier difficulty.");
                     previous = bosses;
                 }
             }
         }
 
+        // A continent holds no sites ("coming soon") or all twenty; every level that exists passes the validator.
         [Test]
         public void AllLevels_ExistAndPassTheValidator()
         {
             CampaignCatalog catalog = LoadCampaign();
-
-            Assert.AreEqual(7, catalog.Nodes.Count);
-            for (int i = 0; i < catalog.Nodes.Count; i++)
+            for (int r = 0; r < catalog.Regions.Count; r++)
             {
-                LevelDefinition level = catalog.Nodes[i].Level;
-                Assert.IsNotNull(level, $"Node {i} has no level.");
+                int count = catalog.NodeCount(r);
+                Assert.IsTrue(count == 0 || count == LevelsPerContinent, $"{catalog.Regions[r].DisplayName} holds {count} sites");
+            }
 
+            int levels = 0;
+            foreach (LevelDefinition level in Levels(catalog))
+            {
+                levels++;
                 var errors = new List<string>();
                 Assert.IsTrue(LevelValidator.Validate(level, errors), $"{level.name}: {string.Join("\n", errors)}");
                 Assert.IsNotNull(level.Hero, $"{level.name} has no hero.");
-                Assert.Greater(level.Blockades.Length, 0, $"{level.name} has no blockades.");
+                Assert.That(level.Blockades.Length, Is.InRange(3, 5), $"{level.name} has 3 to 5 gates.");
             }
+
+            Assert.GreaterOrEqual(levels, 6, "Crystal Plains levels 1 to 6 exist");
         }
 
         [Test]
@@ -160,9 +177,9 @@ namespace Game.Tests
         {
             CampaignCatalog catalog = LoadCampaign();
             int seen = 0;
-            foreach (MapNode node in catalog.Nodes)
+            foreach (LevelDefinition level in Levels(catalog))
             {
-                foreach (PathObjectDefinition definition in node.Level.PathObjects)
+                foreach (PathObjectDefinition definition in level.PathObjects)
                 {
                     seen++;
                     Assert.IsFalse(string.IsNullOrWhiteSpace(definition.Description), $"{definition.name} has no description for the loadout screen.");
@@ -172,61 +189,133 @@ namespace Game.Tests
             Assert.Greater(seen, 0, "no level offers a street weapon");
         }
 
+        // STORY.md: a weapon or gadget is granted by the level before its debut, once; a level sells its continent's
+        // roster and every gadget granted before it; every difficulty has waves.
         [Test]
-        public void EveryLevel_GivesANewWeaponAndHasWavesForAllDifficulties()
+        public void Rewards_FollowTheContinentScript()
         {
             CampaignCatalog catalog = LoadCampaign();
-            var rewards = new HashSet<TowerDefinition>();
-
-            foreach (MapNode node in catalog.Nodes)
+            var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
+            var granted = new HashSet<string>(unlocks.StartingTowerIds);
+            var gadgets = new HashSet<PathObjectDefinition>();
+            foreach (LevelDefinition level in Levels(catalog))
             {
-                Assert.IsNotNull(node.Level.Reward.NewTower, $"{node.Level.name} gives no weapon.");
-                Assert.IsTrue(rewards.Add(node.Level.Reward.NewTower), $"{node.Level.name} repeats a weapon reward.");
+                foreach (PathObjectDefinition sold in level.PathObjects)
+                {
+                    Assert.IsTrue(gadgets.Contains(sold), $"{level.name} sells {sold.name} before a level granted it");
+                }
+
+                TowerDefinition tower = level.Reward.NewTower;
+                if (tower != null)
+                {
+                    Assert.IsTrue(granted.Add(tower.Id), $"{level.name} grants {tower.Id} again, or a starting weapon");
+                    Assert.IsTrue(System.Array.Exists(level.AvailableTowers, t => t == tower), $"{level.name} grants {tower.Id}, which its continent does not sell");
+                }
+
+                foreach (PathObjectDefinition gadget in level.Reward.NewPathObjects ?? new PathObjectDefinition[0])
+                {
+                    Assert.IsTrue(gadgets.Add(gadget), $"{level.name} grants {gadget.name} again");
+                }
+
                 foreach (DifficultyProfile difficulty in catalog.Difficulties)
                 {
-                    Assert.IsNotNull(node.Level.GetWaves(difficulty), $"{node.Level.name} lacks waves for {difficulty.name}.");
+                    Assert.IsNotNull(level.GetWaves(difficulty), $"{level.name} lacks waves for {difficulty.name}.");
                 }
             }
+
+            CollectionAssert.AreEquivalent(new[] { "PulseRifle", "Cannon" }, unlocks.StartingTowerIds, "level 1 brings the Gun and the Cannon");
+            Assert.AreEqual("Laser", catalog.Nodes[0].Level.Reward.NewTower.Id, "level 1 grants the Laser for level 2");
+            Assert.AreEqual("Rocket", catalog.Nodes[1].Level.Reward.NewTower.Id, "level 2 grants the Flak for level 3");
         }
 
         [Test]
         public void EveryLevel_GrowsEnemyHealthWaveByWave()
         {
             CampaignCatalog catalog = LoadCampaign();
-            foreach (MapNode node in catalog.Nodes)
+            foreach (LevelDefinition level in Levels(catalog))
             {
                 // The wave solver may soften a wave that brings a new creature or an air raid (pressure, not health, rises
-                // wave by wave; BalanceLedgerTests checks that), so only the overall growth is asserted here.
-                WaveDefinition[] waves = node.Level.GetWaves(catalog.Difficulties[0]);
-                Assert.Greater(waves[waves.Length - 1].HealthMultiplier, waves[0].HealthMultiplier, $"{node.Level.name} ends no tougher than it starts.");
-                Assert.Greater(waves[waves.Length - 1].HealthMultiplier, 1f, $"{node.Level.name} never grows its creatures.");
+                // wave by wave; BalanceLedgerTests checks that), so only the overall growth is asserted here. A boss wave spends
+                // most of its budget on the boss, and a late wave that arrives together with the slow creatures of earlier waves
+                // is softened for them (KillPurse.Carried), so the toughest plain wave of the last third is compared.
+                string problem = GrowthProblem(level.GetWaves(catalog.Difficulties[0]));
+                Assert.IsNull(problem, $"{level.name} {problem}");
             }
         }
 
+        // The loosened growth check must still catch a level whose creatures do not grow, or shrink.
         [Test]
-        public void CombineRecipes_StartAtTheNest()
+        public void GrowthCheck_CatchesFlatAndShrinkingHealth()
+        {
+            Assert.IsNotNull(GrowthProblem(SyntheticWaves(12, i => 1f)), "flat at one");
+            Assert.IsNotNull(GrowthProblem(SyntheticWaves(12, i => 1.4f)), "flat above one");
+            Assert.IsNotNull(GrowthProblem(SyntheticWaves(12, i => 1.5f - i * 0.05f)), "shrinking");
+            Assert.IsNotNull(GrowthProblem(SyntheticWaves(12, i => 0.6f + i * 0.02f)), "growing but never above one");
+            Assert.IsNull(GrowthProblem(SyntheticWaves(12, i => 0.8f + i * 0.05f)), "growing");
+        }
+
+        private static WaveDefinition[] SyntheticWaves(int count, System.Func<int, float> health)
+        {
+            var waves = new WaveDefinition[count];
+            for (int i = 0; i < count; i++)
+            {
+                waves[i] = new WaveDefinition();
+                JsonUtility.FromJsonOverwrite($"{{\"_healthMultiplier\":{health(i).ToString(System.Globalization.CultureInfo.InvariantCulture)}}}", waves[i]);
+            }
+
+            return waves;
+        }
+
+        // Null when the toughest plain wave of the last third is tougher than the first wave and above one.
+        private static string GrowthProblem(WaveDefinition[] waves)
+        {
+            float last = ToughestLatePlainWave(waves);
+            if (last <= waves[0].HealthMultiplier)
+            {
+                return "ends no tougher than it starts.";
+            }
+
+            return last <= 1f ? "never grows its creatures." : null;
+        }
+
+        private const int LateShare = 3;
+
+        private static float ToughestLatePlainWave(WaveDefinition[] waves)
+        {
+            float toughest = 0f;
+            for (int i = waves.Length - waves.Length / LateShare; i < waves.Length; i++)
+            {
+                bool boss = false;
+                foreach (SpawnGroup group in waves[i].Groups)
+                {
+                    boss |= group.Enemy != null && group.Enemy.IsBoss;
+                }
+
+                if (!boss)
+                {
+                    toughest = Mathf.Max(toughest, waves[i].HealthMultiplier);
+                }
+            }
+
+            return toughest;
+        }
+
+        // The hybrids leave the first continent; the script's combos come as recipes in continent 3.
+        [Test]
+        public void Continent1_HasNoRecipes()
         {
             CampaignCatalog catalog = LoadCampaign();
-
-            for (int i = 0; i < catalog.Nodes.Count; i++)
+            foreach (LevelDefinition level in Levels(catalog, 0))
             {
-                int recipes = catalog.Nodes[i].Level.Recipes.Length;
-                if (i >= FirstRecipeLevel)
-                {
-                    Assert.Greater(recipes, 0);
-                }
-                else
-                {
-                    Assert.AreEqual(0, recipes);
-                }
+                Assert.AreEqual(0, level.Recipes.Length, $"{level.name} offers recipes");
             }
         }
 
         [Test]
         public void Recipes_MatchTheirIngredientsInEitherOrder()
         {
-            CampaignCatalog catalog = LoadCampaign();
-            CombineRecipe recipe = catalog.Nodes[catalog.Nodes.Count - 1].Level.Recipes[0];
+            var recipe = AssetDatabase.LoadAssetAtPath<CombineRecipe>(RecipePath);
+            Assert.IsNotNull(recipe, "the hybrid recipes stay as data");
 
             Assert.IsTrue(recipe.Matches(recipe.First, recipe.Second));
             Assert.IsTrue(recipe.Matches(recipe.Second, recipe.First));

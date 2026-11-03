@@ -23,13 +23,13 @@ namespace Game.Platform
         private const string RepairAction = "Repair";
         private const string SellAction = "Sell";
         private const string HeroPostAction = "HeroPost";
-        private const string ShockwaveAction = "Shockwave";
-        private const string EmergencyRepairAction = "EmergencyRepair";
+        private const string HeroAbility1Action = "HeroAbility1";
+        private const string HeroAbility2Action = "HeroAbility2";
 
         private readonly InputActionMap _map;
         private readonly InputAction _heroPost;
-        private readonly InputAction _shockwave;
-        private readonly InputAction _emergencyRepair;
+        private readonly InputAction _heroAbility1;
+        private readonly InputAction _heroAbility2;
         private readonly InputAction _move;
         private readonly InputAction _pan;
         private readonly InputAction _zoom;
@@ -63,12 +63,12 @@ namespace Game.Platform
             _repair = _map.FindAction(RepairAction, true);
             _sell = _map.FindAction(SellAction, true);
             _heroPost = _map.FindAction(HeroPostAction, true);
-            _shockwave = _map.FindAction(ShockwaveAction, true);
-            _emergencyRepair = _map.FindAction(EmergencyRepairAction, true);
+            _heroAbility1 = _map.FindAction(HeroAbility1Action, true);
+            _heroAbility2 = _map.FindAction(HeroAbility2Action, true);
 
             _heroPost.performed += OnHeroPost;
-            _shockwave.performed += OnShockwave;
-            _emergencyRepair.performed += OnEmergencyRepair;
+            _heroAbility1.performed += OnHeroAbility1;
+            _heroAbility2.performed += OnHeroAbility2;
             _confirm.performed += OnConfirm;
             _cancel.performed += OnCancel;
             _pause.performed += OnPause;
@@ -101,14 +101,13 @@ namespace Game.Platform
         public event Action RepairPressed;
         public event Action SellPressed;
         public event Action HeroPostPressed;
-        public event Action ShockwavePressed;
-        public event Action EmergencyRepairPressed;
+        public event Action<int> HeroAbilityPressed;
 
         public void Dispose()
         {
             _heroPost.performed -= OnHeroPost;
-            _shockwave.performed -= OnShockwave;
-            _emergencyRepair.performed -= OnEmergencyRepair;
+            _heroAbility1.performed -= OnHeroAbility1;
+            _heroAbility2.performed -= OnHeroAbility2;
             _confirm.performed -= OnConfirm;
             _cancel.performed -= OnCancel;
             _pause.performed -= OnPause;
@@ -156,9 +155,9 @@ namespace Game.Platform
 
         private void OnHeroPost(InputAction.CallbackContext _) => HeroPostPressed?.Invoke();
 
-        private void OnShockwave(InputAction.CallbackContext _) => ShockwavePressed?.Invoke();
+        private void OnHeroAbility1(InputAction.CallbackContext _) => HeroAbilityPressed?.Invoke(0);
 
-        private void OnEmergencyRepair(InputAction.CallbackContext _) => EmergencyRepairPressed?.Invoke();
+        private void OnHeroAbility2(InputAction.CallbackContext _) => HeroAbilityPressed?.Invoke(1);
     }
 }
 

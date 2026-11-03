@@ -12,17 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25523c49d0fc0b34295f5707f98a0a3d, type: 3}
   m_Name: Commander
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroDefinition
-  _displayName: Commander
+  _displayName: Mercer
   _maxHealth: 200
   _walkSpeed: 5
+  _flies: 0
   _weapon: {fileID: 11400000, guid: c827c2bc28773474a9c5051f025690b7, type: 2}
   _rangedWeapon: {fileID: 11400000, guid: 8a948feff967a3b49b14fb2e86f20d99, type: 2}
   _guardShare: 0.4
   _reviveSeconds: 120
-  _shockwaveDamage: 40
-  _shockwaveRadius: 3.2
-  _shockwaveCooldown: 20
-  _repairFraction: 0.4
-  _repairCooldown: 25
-  _repairCost: 30
+  _abilities:
+  - {fileID: 11400000, guid: 6c86719c76ccc674ea960667d9cd81b0, type: 2}
+  - {fileID: 11400000, guid: 1bf102b7c64980b459f1d265e74692ee, type: 2}
+  _perks:
+  - {fileID: 11400000, guid: 4924755077ca88e4ca26d1f55cbf6df4, type: 2}
+  - {fileID: 11400000, guid: 946d6e5bab2a8f4489a42b2729f18a4a, type: 2}
+  - {fileID: 11400000, guid: 29bdad593107ddb49ae75eb0207b8cab, type: 2}
   _color: {r: 1, g: 0.85, b: 0.3, a: 1}

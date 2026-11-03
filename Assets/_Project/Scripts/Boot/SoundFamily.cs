@@ -24,6 +24,9 @@ namespace Game.Boot
 
         public float Gain => _set != null && !_set.IsEmpty ? _set.Gain : 1f;
 
+        /// <summary>Playback speed of the set; the generated fallback always plays as made.</summary>
+        public float Pitch => _set != null && !_set.IsEmpty ? _set.Pitch : 1f;
+
         public AudioClip Next()
         {
             AudioClip clip = _set?.Pick(ref _cursor);

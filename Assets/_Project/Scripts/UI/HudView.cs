@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using Game.Core;
 using Game.Levels;
@@ -42,9 +42,7 @@ namespace Game.UI
         private static readonly Color GroundBadge = new Color(1f, 0.78f, 0.35f);
         private static readonly Color AirBadge = new Color(0.55f, 0.85f, 1f);
         private static readonly Color SlowBadge = new Color(0.75f, 1f, 1f);
-        private static readonly Color LockedPicture = new Color(0.35f, 0.35f, 0.4f, 0.8f);
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
-        private static readonly Color Dim = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color BossWarning = new Color(1f, 0.45f, 0.4f);
         // The wave countdown ticks every second under the wave line, so a quiet start never looks like a stall,
@@ -55,7 +53,6 @@ namespace Game.UI
         private static readonly Color SpeedActive = new Color(1f, 0.85f, 0.35f);
         private static readonly Color NormalFill = new Color(0.1f, 0.18f, 0.3f, 0.92f);
         private static readonly Color SelectedFill = new Color(0.22f, 0.5f, 0.9f, 0.96f);
-        private static readonly Color LockedFill = new Color(0.07f, 0.07f, 0.09f, 0.9f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.16f, 0.7f);
 
         private readonly StringBuilder _builder = new StringBuilder(128);
@@ -70,6 +67,7 @@ namespace Game.UI
         private Text _heroText;
         private Text _countdownText;
         private CodexView _codex;
+        private Button _codexButton;
         private int _shownCountdown = int.MinValue;
         private int _heroSecondsShown = -1;
         private Text _moneyText;
@@ -86,7 +84,6 @@ namespace Game.UI
             public Image Fill;
             public Image Picture;
             public Text Label;
-            public Image[] Badges;
         }
 
         private struct PathObjectButton
@@ -122,6 +119,8 @@ namespace Game.UI
             // After the panels, so the first-hit warning draws over them wherever the base lies on screen.
             gameObject.AddComponent<BaseAlertView>().Initialize(context, safe, camera);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
+            // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
+            BuildDialogue(safe);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
             gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
 
@@ -196,6 +195,25 @@ namespace Game.UI
             _heroText.text = seconds < 0 ? string.Empty : $"Hero down {seconds / 60}:{seconds % 60:00}";
         }
 
+        // The level's dialogue player draws through this box. Without a player (a tool scene) there is no box.
+        private void BuildDialogue(RectTransform safe)
+        {
+            DialoguePlayer player = _context.Dialogue;
+            if (player == null)
+            {
+                return;
+            }
+
+            var portraits = new PortraitProvider(_context.Hero != null ? _context.Hero.Definition : null);
+            var view = gameObject.AddComponent<DialogueView>();
+            view.Initialize(safe, player, portraits);
+            player.Presenter = view;
+            if (_context.StoryEnabled)
+            {
+                view.Prewarm(_context.Level.StoryTriggers);
+            }
+        }
+
         private void OnMoneyChanged(int _) => Refresh();
 
         private void OnBaseChanged(float _) => Refresh();
@@ -249,7 +267,7 @@ namespace Game.UI
 
             if (_codex.Available)
             {
-                AddIcon(row, IconType.Book, _codex.Open);
+                _codexButton = AddIcon(row, IconType.Book, _codex.Open);
             }
         }
 
@@ -284,7 +302,8 @@ namespace Game.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            int count = _context.AllTowers.Count;
+            // Only what the player can build here: towers still to be earned belong on the upgrade and loadout screens.
+            int count = _context.AvailableTowers.Count;
             // Eight towers and several path objects must fit one row, so the cards shrink as the bar fills.
             int total = count + _context.AvailablePathObjects.Count;
             float fitted = (ReferenceWidth - Margin * 2f - BarSpacing * Mathf.Max(0, total - 1)) / Mathf.Max(1, total);
@@ -292,9 +311,10 @@ namespace Game.UI
             _towerButtons = new TowerButton[count];
             for (int i = 0; i < count; i++)
             {
-                TowerDefinition tower = _context.AllTowers[i];
+                TowerDefinition tower = _context.AvailableTowers[i];
                 Button button = Card(bar, buttonWidth, tower.DisplayName, () => OnTowerClicked(tower), out Image picture, out Text label);
-                _towerButtons[i] = new TowerButton { Tower = tower, Fill = button.GetComponent<Image>(), Picture = picture, Label = label, Badges = Badges(button.transform, tower) };
+                _towerButtons[i] = new TowerButton { Tower = tower, Fill = button.GetComponent<Image>(), Picture = picture, Label = label };
+                Badges(button.transform, tower);
                 if (TowerModelBuilder.HasModel(tower))
                 {
                     ModelIconRenderer.Request(tower, stage => TowerModelBuilder.Build(stage, tower, 0), sprite => ShowPicture(picture, sprite));
@@ -352,25 +372,23 @@ namespace Game.UI
         }
 
         // Small icons in the top band of a card tell what the tower hits: ground, air, and whether it slows.
-        private static Image[] Badges(Transform card, TowerDefinition tower)
+        private static void Badges(Transform card, TowerDefinition tower)
         {
-            var badges = new List<Image>(3);
+            int count = 0;
             if (!tower.IsSupport && (tower.Targets & TargetLayers.Ground) != 0)
             {
-                badges.Add(Badge(card, IconType.Ground, GroundBadge, badges.Count));
+                Badge(card, IconType.Ground, GroundBadge, count++);
             }
 
             if (!tower.IsSupport && (tower.Targets & TargetLayers.Air) != 0)
             {
-                badges.Add(Badge(card, IconType.Air, AirBadge, badges.Count));
+                Badge(card, IconType.Air, AirBadge, count++);
             }
 
             if (tower.SlowFactor < 1f)
             {
-                badges.Add(Badge(card, IconType.Slow, SlowBadge, badges.Count));
+                Badge(card, IconType.Slow, SlowBadge, count++);
             }
-
-            return badges.ToArray();
         }
 
         // A one-shot trap is bought for one number, so the card says how hard it hits, next to the effect badge.
@@ -466,6 +484,12 @@ namespace Game.UI
             _moneyText.text = $"Money {_context.Wallet.Money}";
             _statusText.text = _context.Status;
             RefreshSpeed();
+            if (_codexButton != null)
+            {
+                // The book cannot open over a conversation, so its button says so.
+                _codexButton.interactable = !_context.StoryBusy;
+            }
+
             RefreshTowerBar();
             RefreshPathObjects();
         }
@@ -484,20 +508,13 @@ namespace Game.UI
             for (int i = 0; i < _towerButtons.Length; i++)
             {
                 TowerButton entry = _towerButtons[i];
-                bool unlocked = _context.IsUnlocked(entry.Tower);
                 bool affordable = _context.Wallet.CanAfford(entry.Tower.BuildCost);
                 bool selected = entry.Tower == _context.SelectedTower && _context.SelectedPathObject == null;
 
                 bool pictured = entry.Picture.enabled;
-                entry.Fill.color = !unlocked ? LockedFill : selected ? SelectedFill : NormalFill;
-                entry.Picture.color = !unlocked ? LockedPicture : Color.white;
-                foreach (Image badge in entry.Badges)
-                {
-                    badge.enabled = unlocked;
-                }
-
-                entry.Label.color = !unlocked ? Dim : affordable ? TextColor : Unaffordable;
-                string price = unlocked ? entry.Tower.BuildCost.ToString() : "Locked";
+                entry.Fill.color = selected ? SelectedFill : NormalFill;
+                entry.Label.color = affordable ? TextColor : Unaffordable;
+                string price = entry.Tower.BuildCost.ToString();
                 entry.Label.text = pictured ? price : $"{entry.Tower.DisplayName}\n{price}";
                 PriceStrip(entry.Label, pictured);
             }

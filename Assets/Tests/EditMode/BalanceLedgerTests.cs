@@ -61,21 +61,49 @@ namespace Game.Tests
             Assert.IsEmpty(failures, string.Join("\n", failures) + "\nSee " + LedgerPath);
         }
 
-        // GAME_DESIGN, Economy: every level on Easy pays about a fifth of all research upgrades, every level on Psycho
-        // pays them all; power is never paid on Easy and Psycho pays every drone upgrade.
+        // GAME_DESIGN, Economy, per continent: its levels on Easy pay about a fifth of the research upgrades tagged to it,
+        // on Psycho all of them; power is never paid on Easy. Only some of a continent's twenty levels exist yet, so the
+        // stored payouts are checked against the curve, and the curve over all twenty against the upgrades' cost.
         [Test]
         public void MetaEconomy_FollowsTheDesign()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default);
-            model.MetaTotals(out int researchCost, out int powerCost, out int[] research, out int[] power);
+            BalanceRules rules = BalanceRules.Default;
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
 
-            Assert.AreEqual(0.2f, research[0] / (float)researchCost, 0.03f, "all of Easy pays a fifth of the research upgrades");
-            Assert.AreEqual(1f, research[research.Length - 1] / (float)researchCost, 0.05f, "all of Psycho pays every research upgrade");
-            Assert.AreEqual(0, power[0], "Easy pays no power");
-            Assert.AreEqual(1f, power[power.Length - 1] / (float)powerCost, 0.05f, "all of Psycho pays every drone upgrade");
+            for (int region = 0; region < catalog.Regions.Count; region++)
+            {
+                if (catalog.NodeCount(region) == 0)
+                {
+                    continue;
+                }
+
+                model.MetaTotals(region, out int researchCost, out int powerCost, out _, out int[] power);
+                int easy = 0;
+                for (int i = 0; i < rules.LevelsPerContinent; i++)
+                {
+                    easy += Game.Editor.BalanceSheet.Research(region, i);
+                }
+
+                string name = catalog.Regions[region].DisplayName;
+                Assert.Greater(researchCost, 0, $"{name} has research upgrades tagged to it");
+                Assert.AreEqual(0.2f, easy / (float)researchCost, 0.03f, $"{name}: all of Easy pays a fifth of its research upgrades");
+                Assert.AreEqual(1f, easy * rules.ResearchMultipliers[3] / researchCost, 0.05f, $"{name}: all of Psycho pays every research upgrade");
+                Assert.AreEqual(0, power[0], $"{name}: Easy pays no power");
+                Assert.Greater(powerCost, 0, $"{name} has drone upgrades tagged to it");
+
+                int first = catalog.FirstNode(region);
+                for (int i = first; i < first + catalog.NodeCount(region); i++)
+                {
+                    LevelDefinition level = catalog.Nodes[i].Level;
+                    if (level != null)
+                    {
+                        Assert.AreEqual(Game.Editor.BalanceSheet.Research(region, i - first), level.Reward.ResearchPoints, $"{level.name} pays the curve");
+                    }
+                }
+            }
         }
     }
 }

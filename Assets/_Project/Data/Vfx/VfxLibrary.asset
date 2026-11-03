@@ -30,6 +30,8 @@ MonoBehaviour:
     Vfx: {fileID: 11400000, guid: 176477f2fb47a624d9e0148d434efcdb, type: 2}
   - Style: 7
     Vfx: {fileID: 11400000, guid: 6e32afa338c6bd142985aa095cb9047f, type: 2}
+  - Style: 8
+    Vfx: {fileID: 11400000, guid: 96c4bfff01ad82444af3234b4d87945f, type: 2}
   _death: {fileID: 11400000, guid: 7e742567fb8b4ea4e8f181fbfd966016, type: 2}
   _mine: {fileID: 11400000, guid: 02696b09b3bb5a64f83689a805bc25f5, type: 2}
   _bossPulse: {fileID: 11400000, guid: da1e11c94810ffd428807b4f13a389ca, type: 2}

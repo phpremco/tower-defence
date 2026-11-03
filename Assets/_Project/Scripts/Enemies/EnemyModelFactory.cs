@@ -214,6 +214,9 @@ namespace Game.Enemies
                 case EnemyShape.RollerKing:
                     Roller(body, parts, true);
                     break;
+                case EnemyShape.Cragback:
+                    Cragback(body, parts);
+                    break;
                 default:
                     Queen(body, parts);
                     break;
@@ -228,7 +231,8 @@ namespace Game.Enemies
             return parts;
         }
 
-        private static bool IsBoss(EnemyShape shape) => (int)shape >= (int)EnemyShape.BroodMother || shape == EnemyShape.Queen;
+        // The bosses sit between the brood mother and the roller king; species appended after them (the Cragback) are not.
+        private static bool IsBoss(EnemyShape shape) => ((int)shape >= (int)EnemyShape.BroodMother && (int)shape <= (int)EnemyShape.RollerKing) || shape == EnemyShape.Queen;
 
         // The ant: three beads on a thread, a round head with big jaws, elbowed feelers and six quick legs. Small
         // and bright, so a crowd of them reads as a crowd. The brood mother is the same ant swollen to a hill with an
@@ -852,6 +856,59 @@ namespace Game.Enemies
             parts.Height = 0.75f;
         }
 
+        // The stone crawler: a hunched boulder of a body under overlapping basalt plates split by glowing amber veins, a
+        // heavy brow over a low head with a vertical slit of three eyes, jaws that close sideways and warm crystal spires
+        // pushing out of its back. Six stubby legs carry the weight. Built to read as rock that walks, not as a beetle.
+        private static void Cragback(PropMeshBuilder b, Parts parts)
+        {
+            var dome = new Vector3(0f, 0.3f, -0.04f);
+            var domeRadii = new Vector3(0.34f, 0.25f, 0.4f);
+            b.AddBlob(new Vector3(0f, 0.14f, 0f), new Vector3(0.3f, 0.08f, 0.36f), 4, 10, 0.05f, 70, Dark, true);
+            b.AddBlob(dome, domeRadii, 6, 11, 0.08f, 71, Body, true);
+
+            // Plates lie on the dome like slabs of a broken cliff, each tilted its own way.
+            var plates = new[]
+            {
+                new Vector3(0f, 0.53f, -0.06f), new Vector3(0.2f, 0.46f, 0.1f), new Vector3(-0.21f, 0.45f, 0.06f),
+                new Vector3(0.23f, 0.43f, -0.22f), new Vector3(-0.2f, 0.44f, -0.24f), new Vector3(0.02f, 0.48f, 0.22f),
+                new Vector3(-0.03f, 0.46f, -0.33f),
+            };
+            for (int i = 0; i < plates.Length; i++)
+            {
+                b.AddBlob(plates[i], new Vector3(0.13f, 0.05f + (i % 3) * 0.01f, 0.12f), 3, 7, 0.12f, 72 + i, Dark, true);
+            }
+
+            // Thin veins between the plates: the glow must read as cracks in dark rock, not as a molten body.
+            Cracks(b, dome, domeRadii * 1.02f, 6, 80, Accent, 0.4f);
+
+            // The brow juts out over a low head; three eyes in a vertical slit and two pits on the sides.
+            b.AddBlob(new Vector3(0f, 0.31f, 0.36f), new Vector3(0.23f, 0.06f, 0.11f), 3, 9, 0.1f, 81, Dark, true);
+            b.AddBlob(new Vector3(0f, 0.2f, 0.4f), new Vector3(0.14f, 0.09f, 0.1f), 4, 9, 0.05f, 82, Body, false);
+            for (int i = 0; i < 3; i++)
+            {
+                b.AddBlob(new Vector3(0f, 0.25f - i * 0.045f, 0.49f), Vector3.one * (0.022f - i * 0.004f), 3, 6, 0f, 0, Eyes, false);
+            }
+
+            for (int side = -1; side <= 1; side += 2)
+            {
+                b.AddBlob(new Vector3(side * 0.11f, 0.22f, 0.45f), Vector3.one * 0.014f, 3, 5, 0f, 0, Eyes, false);
+                // Jaws that close sideways, serrated on the inside.
+                Spike(b, new Vector3(side * 0.09f, 0.13f, 0.45f), new Vector3(side * 0.02f, 0.1f, 0.62f), 0.032f, Dark);
+                Spike(b, new Vector3(side * 0.06f, 0.12f, 0.52f), new Vector3(side * 0.025f, 0.13f, 0.58f), 0.012f, Accent);
+                // Shoulder spurs over the front legs.
+                Spike(b, new Vector3(side * 0.3f, 0.3f, 0.16f), new Vector3(side * 0.42f, 0.36f, 0.24f), 0.04f, Dark);
+            }
+
+            // Warm crystal pushing out of the cracks on the back.
+            Spike(b, new Vector3(0.06f, 0.55f, -0.12f), new Vector3(0.1f, 0.78f, -0.2f), 0.04f, Accent);
+            Spike(b, new Vector3(-0.08f, 0.52f, -0.02f), new Vector3(-0.15f, 0.7f, 0.02f), 0.03f, Accent);
+            Spike(b, new Vector3(0.14f, 0.5f, 0.1f), new Vector3(0.2f, 0.64f, 0.14f), 0.025f, Glow);
+
+            Legs(parts, 0.16f, 0.28f, 0.22f, 0.05f, 0.22f, 0f, -0.22f);
+            parts.Skin = CreatureSkin.Kind.Stone;
+            parts.Height = 0.75f;
+        }
+
         // The marsh leech: a long low body of swollen rings tapering to a tail, a round sucker mouth ringed with
         // teeth at the front and eye stalks behind it. It has no legs; the rings heave as it drags itself along.
         private static void Mireleech(PropMeshBuilder b, Parts parts)
@@ -976,7 +1033,7 @@ namespace Game.Enemies
             b.AddTube(new[] { from, to }, new[] { radius, 0f }, 5, slot, true);
 
         // Glowing fissures over a rounded surface: short tubes that hug the blob's radii.
-        private static void Cracks(PropMeshBuilder b, Vector3 centre, Vector3 radii, int count, int seed, int slot)
+        private static void Cracks(PropMeshBuilder b, Vector3 centre, Vector3 radii, int count, int seed, int slot, float thickness = 1f)
         {
             var random = new System.Random(seed);
             for (int i = 0; i < count; i++)
@@ -992,7 +1049,7 @@ namespace Game.Enemies
                     path[k] = centre + Vector3.Scale(direction, radii) * 0.97f;
                 }
 
-                b.AddTube(path, new[] { radii.x * 0.08f, radii.x * 0.2f, radii.x * 0.08f }, 4, slot, false);
+                b.AddTube(path, new[] { radii.x * 0.08f * thickness, radii.x * 0.2f * thickness, radii.x * 0.08f * thickness }, 4, slot, false);
             }
         }
 

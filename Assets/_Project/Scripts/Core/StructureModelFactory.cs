@@ -344,6 +344,24 @@ namespace Game.Core
                     }
 
                     break;
+                case Element.Stone:
+                    // A ring of cracked basalt plates pushed up around a seam that glows from below.
+                    b.AddBlob(new Vector3(0f, 0.01f, 0f), new Vector3(0.42f, 0.04f, 0.42f), 4, 12, 0.05f, 13, HiveGlow, true);
+                    for (int i = 0; i < 8; i++)
+                    {
+                        float angle = i / 8f * 360f + (i % 2) * 9f;
+                        Vector3 dir = Around(angle * Mathf.Deg2Rad);
+                        float lift = 0.07f + (i % 3) * 0.035f;
+                        b.AddBox(dir * (0.4f + (i % 2) * 0.05f) + Vector3.up * lift, new Vector3(0.24f - (i % 3) * 0.03f, 0.08f, 0.17f), HiveDark, Quaternion.Euler(-24f - (i % 2) * 10f, angle, (i % 3 - 1) * 9f));
+                    }
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Vector3 dir = Around((i * 120f + 40f) * Mathf.Deg2Rad);
+                        b.AddBox(dir * 0.17f + Vector3.up * 0.03f, new Vector3(0.05f, 0.02f, 0.3f), HiveGlow, Quaternion.Euler(0f, i * 120f + 40f, 0f));
+                    }
+
+                    break;
                 default:
                     b.AddBlob(new Vector3(0f, 0.02f, 0f), new Vector3(0.6f, 0.22f, 0.6f), 5, 12, 0.05f, 8, HiveBody, true);
                     b.AddBlob(new Vector3(0f, 0.2f, 0f), new Vector3(0.22f, 0.05f, 0.22f), 3, 10, 0f, 0, HiveDark, false);

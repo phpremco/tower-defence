@@ -1,4 +1,6 @@
-﻿using Game.Towers;
+﻿using Game.Hero;
+using Game.PathObjects;
+using Game.Towers;
 
 namespace Game.Levels
 {
@@ -16,6 +18,14 @@ namespace Game.Levels
         public TowerDefinition NewTower { get; set; }
         public UnlockSource Source { get; set; }
         public string Story { get; set; }
+
+        /// <summary>Who made the unlocks of this result, or null.</summary>
+        public string Credit { get; set; }
+
+        /// <summary>Gadgets unlocked by this clear; empty when none.</summary>
+        public PathObjectDefinition[] NewPathObjects { get; set; } = new PathObjectDefinition[0];
+
+        /// <summary>The hero perk unlocked by this clear, or null.</summary>
+        public HeroPerkDefinition HeroPerk { get; set; }
     }
 }
-

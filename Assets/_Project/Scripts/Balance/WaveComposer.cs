@@ -30,10 +30,13 @@ namespace Game.Balance
         private const float AirGroundShare = 0.4f;
         private const float BossWaveShare = 0.6f;
         private const float SprinkleShare = 0.15f;
+        // The default spacing of flyers in an air raid and in the sprinkle; a script may pack its raids tighter.
         private const float FlyerInterval = 1.6f;
         private const float ClusterInnerIntervalShare = 0.5f;
         private const float ClusterMinInterval = 0.2f;
         private const float PackInnerIntervalShare = 0.35f;
+        private const float TeaserDelaySeconds = 6f;
+        private const float TeaserInterval = 1.2f;
 
 
         // Share of an ambush wave that surfaces from pools and nests, per difficulty: easy keeps most of it at the gate.
@@ -151,7 +154,7 @@ namespace Game.Balance
 
                     break;
                 case Kind.Air:
-                    AddFlyers(result, flyer, budget * AirShare, 0f, rules);
+                    AddFlyers(result, flyer, budget * AirShare * script.AirRaidScaleFor(difficulty), 0f, script.FlyerInterval, rules);
                     shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, script, number, enemies, rules);
                     break;
                 case Kind.Ambush when pools.Count > 0:
@@ -172,7 +175,7 @@ namespace Game.Balance
             // On the harder difficulties the sky stays contested between the air raids.
             if (HasSprinkle(script, difficulty, number))
             {
-                AddFlyers(result, flyer, budget * SprinkleShare, TroopStagger * 2f, rules);
+                AddFlyers(result, flyer, budget * SprinkleShare, TroopStagger * 2f, FlyerInterval, rules);
             }
 
             if (boss != null)
@@ -180,7 +183,30 @@ namespace Game.Balance
                 AddBoss(result, script, boss, Get(enemies, boss.Enemy), flyer, difficulty, secondRoad);
             }
 
+            AddTeasers(result, script, number, enemies);
             return wave;
+        }
+
+        // A teaser walks in a little after the wave opens, through the main gate or along the north flight route.
+        private static void AddTeasers(List<GroupSpec> result, WaveScriptSpec script, int number, IReadOnlyDictionary<string, EnemyStats> enemies)
+        {
+            foreach (TeaserSpec teaser in script.Teasers)
+            {
+                EnemyStats enemy = Get(enemies, teaser.Enemy);
+                if (teaser.Wave != number || enemy == null || teaser.Count <= 0)
+                {
+                    continue;
+                }
+
+                result.Add(new GroupSpec
+                {
+                    Enemy = enemy,
+                    Count = teaser.Count,
+                    Interval = TeaserInterval,
+                    Delay = TeaserDelaySeconds,
+                    Path = enemy.Flies ? NorthAirRoute : Road,
+                });
+            }
         }
 
         private static void AddBoss(List<GroupSpec> result, WaveScriptSpec script, BossSpec boss, EnemyStats enemy, EnemyStats flyer, int difficulty, int secondRoad)
@@ -355,7 +381,7 @@ namespace Game.Balance
             troop.Weight * (float)Math.Pow(ThreatOf(troop, enemies, rules), bias);
 
         // Flyers split over both flight routes, the second route a little behind the first.
-        private static void AddFlyers(List<GroupSpec> output, EnemyStats flyer, float budget, float delay, BalanceRules rules)
+        private static void AddFlyers(List<GroupSpec> output, EnemyStats flyer, float budget, float delay, float interval, BalanceRules rules)
         {
             if (flyer == null)
             {
@@ -364,10 +390,10 @@ namespace Game.Balance
 
             int count = Math.Max(1, (int)Math.Round(budget / Threat.Of(flyer, rules)));
             int north = (count + 1) / 2;
-            output.Add(new GroupSpec { Enemy = flyer, Count = north, Interval = FlyerInterval, Delay = delay, Path = NorthAirRoute });
+            output.Add(new GroupSpec { Enemy = flyer, Count = north, Interval = interval, Delay = delay, Path = NorthAirRoute });
             if (count - north > 0)
             {
-                output.Add(new GroupSpec { Enemy = flyer, Count = count - north, Interval = FlyerInterval, Delay = delay + TroopStagger, Path = SouthAirRoute });
+                output.Add(new GroupSpec { Enemy = flyer, Count = count - north, Interval = interval, Delay = delay + TroopStagger, Path = SouthAirRoute });
             }
         }
 

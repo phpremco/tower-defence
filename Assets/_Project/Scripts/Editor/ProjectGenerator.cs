@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Game.Boot;
 using Game.Core;
@@ -8,7 +7,6 @@ using Game.Economy;
 using Game.Enemies;
 using Game.Hero;
 using Game.Levels;
-using Game.PathObjects;
 using Game.Towers;
 using Game.UI;
 using UnityEditor;
@@ -34,10 +32,6 @@ namespace Game.Editor
         private const string SkinAssetPath = "Assets/_Project/Settings/UiSkin.asset";
         private const string DebugAssetPath = "Assets/_Project/Settings/PlaytestSettings.asset";
         private const string UnlockAssetPath = DataRoot + "/Unlocks/UnlockTable.asset";
-        private const string LevelAssetPath = DataRoot + "/Levels/Level_Landing.asset";
-        private const string ThemeAssetPath = DataRoot + "/Levels/Theme_Landing.asset";
-
-        private static readonly string[] DifficultyNames = { "Easy", "Medium", "Hard", "Psycho" };
 
         // Money a mining node holds; with three nodes a level, the harvest drones earn a bounded sum, not a stream.
         private const int MineStock = 140;
@@ -59,137 +53,30 @@ namespace Game.Editor
         private const float DamagedPowerFloor = 0.75f;
         private const float RepairCostPerHealth = 0.3f;
 
+        /// <summary>Runs every registered generator step (see <see cref="Steps"/>), then saves the assets.</summary>
         [MenuItem("Tools/Generate/Scenes and Starter Data")]
         public static void GenerateAll()
         {
-            CustomModelBuilder.BuildAll();
+            RunSteps();
+            AssetDatabase.SaveAssets();
+            Debug.Log("Generated the campaign data and the Boot and Level scenes.");
+        }
 
-            TowerDefinition pulse = CreateTower("PulseRifle", "Pulse Rifle", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(60, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f);
-            TowerDefinition cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, 1.2f, new Color(1f, 0.8f, 0.3f),
-                new[] { Lvl(100, 25f, 4f, 1.4f), Lvl(120, 48f, 4.3f, 1.2f), Lvl(180, 85f, 4.6f, 1f) }, 220f);
-            TowerDefinition rocket = CreateTower("Rocket", "Rocket", TargetLayers.Air, 8f, 1.5f, new Color(0.9f, 0.9f, 1f),
-                new[] { Lvl(120, 30f, 5.5f, 1.6f), Lvl(140, 55f, 5.9f, 1.4f), Lvl(200, 90f, 6.3f, 1.2f) }, 130f);
-
-            // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.
-            TowerDefinition blockade = CreateTower("Blockade", "Blockade", TargetLayers.Ground, 12f, 0f, new Color(0.55f, 0.65f, 0.8f),
-                new[] { Lvl(60, 0f, 3.7f, 0.5f), Lvl(90, 6f, 3.9f, 0.45f, 300f), Lvl(150, 11f, 4.2f, 0.35f, 500f) }, 500f, blocksGround: true);
-
-            // The base's own gun: unarmed at base weapon level zero, one or two of these beside the road once bought.
-            TowerDefinition baseTurret = CreateTower("BaseTurret", "Base Turret", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.45f, 0.85f, 1f),
-                new[] { Lvl(0, 7f, 4.2f, 0.4f), Lvl(70, 12f, 4.5f, 0.35f), Lvl(110, 19f, 4.8f, 0.3f) }, 220f, baseDefence: true);
-            SetShape(baseTurret, TowerShape.PulseRifle);
-
-            Bestiary bestiary = CreateBestiary();
-
-            // Difficulty profiles come from the balance sheet; the waves are written once the whole campaign exists.
-            var sheet = BalanceSheet.Difficulties;
-            var difficulties = new DifficultyProfile[sheet.Length];
-            for (int d = 0; d < sheet.Length; d++)
-            {
-                difficulties[d] = CreateDifficulty(sheet[d].Id, sheet[d].Health, sheet[d].Count, sheet[d].Interval, sheet[d].Research, sheet[d].Power, sheet[d].StructureDamage);
-            }
-
-            VisualTheme theme = LoadOrCreate<VisualTheme>(ThemeAssetPath);
-            ConfigureTheme(theme);
-            LevelDefinition level = LoadOrCreate<LevelDefinition>(LevelAssetPath);
-            HeroWeaponDefinition sword = CreateHeroWeapon("EnergySword", "Energy sword", HeroWeaponKind.Melee, HeroWeaponStyle.EnergySword, 18f, 1.5f, 0.7f, TargetLayers.Ground, new Color(0.3f, 0.95f, 1f));
-            // The sidearm: the stats of a level-one pulse rifle, so the hero is worth one simple turret at range.
-            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, 0.35f, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f));
-            HeroDefinition hero = LoadOrCreate<HeroDefinition>($"{DataRoot}/Hero/Commander.asset");
-            var heroProps = new SerializedObject(hero);
-            heroProps.FindProperty("_weapon").objectReferenceValue = sword;
-            heroProps.FindProperty("_rangedWeapon").objectReferenceValue = blaster;
-            heroProps.FindProperty("_repairCost").intValue = 30;
-            heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;
-            heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
-            heroProps.ApplyModifiedPropertiesWithoutUndo();
-            ConfigureLevel(level, theme, new[] { pulse, cannon, rocket }, cannon, blockade, hero);
-
-            Roster roster = CreateRoster(pulse, cannon, rocket);
-            PathObjectDefinition slowField = CreatePathObject("SlowField", "Slow field", PathObjectKind.SlowField, PathObjectPlacement.Road, TargetLayers.Ground, 40, 1.3f, 0.5f, 0f, 0.5f, 0f, 25f, new Color(0.4f, 0.8f, 1f), PathObjectEffect.Slow, "A field of cold laid on the road. Everything that walks through it moves at half speed, for as long as the field lasts.");
-            PathObjectDefinition mine = CreatePathObject("Mine", "Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 140f, 1f, 0f, 0f, new Color(1f, 0.3f, 0.2f), PathObjectEffect.Trap, "Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.");
-            PathObjectDefinition lavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f), PathObjectEffect.Roll, "Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.");
-            PathObjectDefinition barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 200f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f), PathObjectEffect.Blast, "Stands beside the road. When the enemy passes close it bursts, and the blast reaches far across the road.");
-            PathObjectDefinition groundDrone = CreatePathObject("GroundDrone", "Ground drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f), PathObjectEffect.Patrol, "Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.");
-            PathObjectDefinition antiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f), PathObjectEffect.AirNet, "A net of energy beside the road. Flyers passing over it are caught and slowed while it holds.");
-            // Three drones, one per job, bought with money in the level, so a drone competes with a tower for the same
-            // purse: a harvester earns its price back in a few minutes of trips.
-            DroneDefinition repairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 120, 3, new Color(0.4f, 0.9f, 1f), repair: 8f, skin: CreatureSkin.Kind.Plate, accent: new Color(1f, 0.22f, 0.28f));
-            DroneDefinition harvestDrone = CreateDrone("HarvestDrone", "Harvest drone", DroneKind.Harvest, 4f, 30f, 150, 2, new Color(1f, 0.85f, 0.3f), harvestSeconds: 4f, harvestValue: 10, skin: CreatureSkin.Kind.Alloy, accent: new Color(1f, 0.75f, 0.1f));
-            DroneDefinition attackDrone = CreateDrone("AttackDrone", "Attack drone", DroneKind.Attack, 4.5f, 35f, 180, 3, new Color(1f, 0.45f, 0.35f), damage: 6f, fireInterval: 0.5f, range: 3f, skin: CreatureSkin.Kind.Plate, accent: new Color(0.92f, 0.95f, 1f));
-            CombineRecipe[] recipes =
-            {
-                CreateRecipe("Artillery", roster.Cannon, roster.Rocket, roster.Artillery, 150),
-                CreateRecipe("StormRifle", roster.Pulse, roster.Tesla, roster.StormRifle, 120),
-                CreateRecipe("CryoBeam", roster.Laser, roster.Cryo, roster.CryoBeam, 140),
-            };
-            ConfigureLevelExtras(level, new[] { slowField }, new CombineRecipe[0], repairDrone, harvestDrone, attackDrone);
-            LevelDefinition[] worldLevels = CreateWorldLevels(
-                level, roster, difficulties,
-                bestiary,
-                blockade, hero,
-                slowField, mine, lavaBall, barrel, groundDrone, antiAir, recipes, repairDrone, harvestDrone, attackDrone);
-            var allLevels = new LevelDefinition[worldLevels.Length + 1];
-            allLevels[0] = level;
-            worldLevels.CopyTo(allLevels, 1);
-            foreach (LevelDefinition armed in allLevels)
-            {
-                var armedProps = new SerializedObject(armed);
-                armedProps.FindProperty("_baseTurret").objectReferenceValue = baseTurret;
-                armedProps.ApplyModifiedPropertiesWithoutUndo();
-            }
-
-            foreach (LevelDefinition baked in allLevels)
-            {
-                BakeTerrain(baked);
-            }
-
-
+        // The script's level 1 brings the Gun and the Cannon: they are the starting set, every later weapon is a reward.
+        private static void GenerateUnlocks(GeneratorContext context)
+        {
             var unlocks = LoadOrCreate<UnlockTable>(UnlockAssetPath);
             var unlockProps = new SerializedObject(unlocks);
             SerializedProperty ids = unlockProps.FindProperty("_startingTowerIds");
-            ids.arraySize = 1;
-            ids.GetArrayElementAtIndex(0).stringValue = pulse.Id;
-            unlockProps.ApplyModifiedPropertiesWithoutUndo();
-
-            var debug = LoadOrCreate<PlaytestSettings>(DebugAssetPath);
-            // Every tower wears a procedural model; the hand-made gatling stays on disk but is no longer used.
-            ClearModel(pulse);
-            SetModel(cannon, "turret_double", 1.4f);
-            SetModel(rocket, "satelliteDish_large", 1.5f);
-            SetShapes(roster, cannon, rocket, blockade);
-
-            UpgradeCatalog upgradeCatalog = CreateUpgrades(roster.Standard, roster.Hybrids, new[] { repairDrone, harvestDrone, attackDrone });
-            CodexCatalog codex = CreateCodex(recipes, bestiary);
-            UiSkin skin = CreateSkin();
-            CampaignCatalog campaign = CreateCampaign(allLevels, difficulties);
-            GenerateCampaignWaves(campaign, upgradeCatalog, unlocks, bestiary);
-            BakeGlobe(campaign);
-            CreateMenuStage(worldLevels, bestiary);
-
-            CreateStory(campaign);
-            ConfigureRenderPipeline();
-            CreateSfxLibrary();
-            CreateVfxLibrary();
-            CreateBootScene(campaign, upgradeCatalog, codex, unlocks, debug, skin, CreateShaderKeepers());
-            CreateLevelScene();
-            CreateMainMenuScene();
-            CreateMenuScene<IntroScreen>(SceneNames.Intro);
-            CreateMenuScene<WorldMapScreen>(SceneNames.WorldMap);
-            CreateMenuScene<UpgradeScreen>(SceneNames.Base);
-            EditorBuildSettings.scenes = new[]
+            string[] starting = { context.Pulse.Id, context.Cannon.Id };
+            ids.arraySize = starting.Length;
+            for (int i = 0; i < starting.Length; i++)
             {
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Boot}.unity", true),
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Intro}.unity", true),
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.MainMenu}.unity", true),
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.WorldMap}.unity", true),
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Level}.unity", true),
-                new EditorBuildSettingsScene($"{ScenesFolder}/{SceneNames.Base}.unity", true),
-            };
+                ids.GetArrayElementAtIndex(i).stringValue = starting[i];
+            }
 
-            AssetDatabase.SaveAssets();
-            Debug.Log("Generated level 1 data and the Boot and Level scenes.");
+            unlockProps.ApplyModifiedPropertiesWithoutUndo();
+            context.Unlocks = unlocks;
         }
 
         private static GameObject Model(string name) => AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelFolder}{name}.fbx");
@@ -275,11 +162,11 @@ namespace Game.Editor
             return tower;
         }
 
-        private static DifficultyProfile CreateDifficulty(string id, float health, float count, float interval, float reward, float power, float structureDamage)
+        private static DifficultyProfile CreateDifficulty(string id, string displayName, float health, float count, float interval, float reward, float power, float structureDamage)
         {
             var profile = LoadOrCreate<DifficultyProfile>($"{DataRoot}/Difficulty/{id}.asset");
             var so = new SerializedObject(profile);
-            so.FindProperty("_displayName").stringValue = id;
+            so.FindProperty("_displayName").stringValue = displayName;
             so.FindProperty("_healthMultiplier").floatValue = health;
             so.FindProperty("_countMultiplier").floatValue = count;
             so.FindProperty("_spawnIntervalMultiplier").floatValue = interval;
@@ -288,78 +175,6 @@ namespace Game.Editor
             so.FindProperty("_structureDamageMultiplier").floatValue = structureDamage;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
-        }
-
-        private static void ConfigureLevel(LevelDefinition level, VisualTheme theme, TowerDefinition[] towers, TowerDefinition rewardTower, TowerDefinition blockade, HeroDefinition hero)
-        {
-            var so = new SerializedObject(level);
-            so.FindProperty("_displayName").stringValue = "Landing Zone";
-            so.FindProperty("_regionName").stringValue = "Northern Plain";
-            so.FindProperty("_briefing").stringValue = "Our first foothold: the lander sits on open grey plain and the scouts are already testing the fence. Hold the base. Everything else comes later.";
-            so.FindProperty("_gridSize").vector2IntValue = LandingSize;
-            so.FindProperty("_cellSize").floatValue = 1f;
-            so.FindProperty("_theme").objectReferenceValue = theme;
-            SerializedProperty camera = so.FindProperty("_camera");
-            camera.FindPropertyRelative("PitchDegrees").floatValue = CameraPitchDegrees;
-            camera.FindPropertyRelative("YawDegrees").floatValue = CameraYawDegrees;
-            camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
-            so.FindProperty("_startingMoney").intValue = 200;
-            so.FindProperty("_baseHealth").intValue = BaseHealth;
-            so.FindProperty("_mineStock").intValue = MineStock;
-            SerializedProperty stars = so.FindProperty("_starBaseHealthFractions");
-            stars.arraySize = 2;
-            stars.GetArrayElementAtIndex(0).floatValue = 0.5f;
-            stars.GetArrayElementAtIndex(1).floatValue = 0.9f;
-
-            SerializedProperty reward = so.FindProperty("_reward");
-            reward.FindPropertyRelative("NewTower").objectReferenceValue = rewardTower;
-            reward.FindPropertyRelative("Source").intValue = (int)UnlockSource.HomePlanetIntel;
-            reward.FindPropertyRelative("Story").stringValue = "The home planet sent schematics for a heavy cannon.";
-
-            var landingPaths = new List<(string Name, bool Flying, Vector2Int[] Waypoints)>
-            {
-                ("Road", false, LandingRoad),
-                ("North air route", true, Cells(0, 17, 16, 14, 31, 3)),
-                ("South air route", true, Cells(0, 0, 14, 4, 31, 3)),
-            };
-            WritePaths(so.FindProperty("_paths"), landingPaths.ToArray());
-            so.FindProperty("_roadWidth").intValue = LandingRoadWidth;
-            WriteCells(so.FindProperty("_plazaCells"), new Vector2Int[0]);
-            so.FindProperty("_hero").objectReferenceValue = hero;
-
-            // One blockade on the first leg of the road and one across the last leg.
-            var blockadeCells = Cells(7, 16, 11, 8, 24, 13);
-
-            // Two lakes caught inside the switchbacks, a pond in the north-west corner and ridges on the free corners.
-            HashSet<Vector2Int> landingRoad = RoadCells(LandingSize, landingPaths, LandingRoadWidth, new Vector2Int[0]);
-            TerrainPatch[] landingTerrain = Terrain(
-                Area(TerrainKind.Water, 15, 10, 18, 13), Area(TerrainKind.Water, 5, 13, 8, 14), Area(TerrainKind.Water, 22, 3, 25, 6), Area(TerrainKind.Water, 23, -3, 24, 2),
-                Area(TerrainKind.Raised, 0, 0, 2, 2), Area(TerrainKind.Raised, 22, 16, 27, 17), Area(TerrainKind.Raised, 0, 13, 1, 14), Area(TerrainKind.Raised, 30, 8, 31, 11));
-            // Tide bats rise out of the lake and the pond; the nests keep rocks and mines off their cells.
-            ElementNest[] landingNests = { Nest(Element.Water, 15, 12), Nest(Element.Water, 6, 13) };
-            Vector2Int[] landingReserved = blockadeCells.Concat(NestCells(landingNests)).ToArray();
-            Vector2Int[] landingBlocked = ScatterBlocked(LandingSize, landingRoad, landingTerrain, landingReserved, 11, BlockedFraction);
-            WriteCells(so.FindProperty("_blockedCells"), landingBlocked);
-            WriteCells(so.FindProperty("_mineCells"), PickMineCells(LandingSize, landingRoad, landingTerrain, landingBlocked, landingReserved, 16));
-            TerrainPatch[] landingKept = WriteTerrain(so.FindProperty("_terrain"), landingTerrain, landingRoad, blockadeCells);
-            WriteNests(so.FindProperty("_nests"), landingNests, landingKept);
-            SerializedProperty blockades = so.FindProperty("_blockades");
-            blockades.arraySize = blockadeCells.Length;
-            for (int i = 0; i < blockadeCells.Length; i++)
-            {
-                SerializedProperty element = blockades.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("Cell").vector2IntValue = blockadeCells[i];
-                element.FindPropertyRelative("Blockade").objectReferenceValue = blockade;
-            }
-
-            SerializedProperty towerArray = so.FindProperty("_availableTowers");
-            towerArray.arraySize = towers.Length;
-            for (int i = 0; i < towers.Length; i++)
-            {
-                towerArray.GetArrayElementAtIndex(i).objectReferenceValue = towers[i];
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static UiSkin CreateSkin()
@@ -383,36 +198,6 @@ namespace Game.Editor
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return skin;
-        }
-
-        // Landing Zone palette: grey and blue on an open plain, glowing cyan accents.
-        private static void ConfigureTheme(VisualTheme theme)
-        {
-            ConfigureThemePalette(theme, new Palette
-            {
-                Background = new Color(0.02f, 0.03f, 0.06f),
-                Ground = new Color(0.14f, 0.16f, 0.2f),
-                Path = new Color(0.78f, 0.86f, 0.95f),
-                Slot = new Color(0.2f, 0.55f, 1f),
-                Base = new Color(0.3f, 0.85f, 1f),
-                Light = new Color(0.92f, 0.94f, 1f),
-                LightIntensity = 1.25f,
-                Fog = new Color(0.03f, 0.04f, 0.08f),
-                FogDensity = 0.008f,
-                Bloom = 1.2f,
-                Rock = new Color(0.34f, 0.36f, 0.4f),
-                Accent = new Color(0.35f, 0.85f, 1f),
-                Water = new Color(0.07f, 0.38f, 0.62f),
-                Lava = new Color(1f, 0.4f, 0.1f),
-                Sand = new Color(0.5f, 0.5f, 0.56f),
-                Sky = new Color(0.3f, 0.34f, 0.42f),
-                Props = new[] { PropKind.Rock, PropKind.Boulder, PropKind.Crystal, PropKind.Frond, PropKind.Rock, PropKind.Boulder },
-                Vein = 0.4f,
-                AmbientRate = 9f,
-                AmbientRise = 0.1f,
-                Ambience = AmbienceKind.Wind,
-                Plant = new Color(0.3f, 0.46f, 0.5f),
-            });
         }
 
         // A grading tint shifts hue only: scaled so its brightest channel is one, it never darkens the picture.
@@ -458,6 +243,7 @@ namespace Game.Editor
             // Older palettes name no ice or bog: they keep a sensible default so a stray patch still draws.
             so.FindProperty("_iceColor").colorValue = p.Ice == default ? new Color(0.75f, 0.9f, 1f) : p.Ice;
             so.FindProperty("_bogColor").colorValue = p.Bog == default ? new Color(0.18f, 0.24f, 0.12f) : p.Bog;
+            so.FindProperty("_riftColor").colorValue = p.Rift == default ? new Color(1f, 0.58f, 0.25f) : p.Rift;
             so.FindProperty("_spawnColor").colorValue = p.Spawn == default ? new Color(1f, 0.4f, 0.25f) : p.Spawn;
             so.FindProperty("_lavaColor").colorValue = p.Lava;
             so.FindProperty("_sandColor").colorValue = p.Sand;
@@ -581,9 +367,9 @@ namespace Game.Editor
             all.Add(CreateUpgrade("Base_Weapon", "Base turrets", UpgradeTarget.BaseWeapon, new[] { 12, 20, 32 }, 1f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
             all.Add(CreateUpgrade("BlockadeHealth", "Gate strength", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
 
-            const string HeroText = "The commander who holds the gates";
-            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Commander", UpgradeCurrency.ResearchPoints, HeroText));
-            all.Add(CreateUpgrade("Hero_Health", "Armour", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Commander", UpgradeCurrency.ResearchPoints, HeroText));
+            const string HeroText = "Mercer, who holds the gates";
+            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Mercer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Health", "Armour", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Mercer", UpgradeCurrency.ResearchPoints, HeroText));
 
             // Drones are bought with money inside a level; each type has its own permanent path, paid in power currency.
             foreach (DroneDefinition drone in drones)
@@ -608,6 +394,11 @@ namespace Game.Editor
                 }
             }
 
+            foreach (UpgradeDefinition upgrade in all)
+            {
+                TagContinent(upgrade);
+            }
+
             var catalog = LoadOrCreate<UpgradeCatalog>($"{DataRoot}/Upgrades/UpgradeCatalog.asset");
             var so = new SerializedObject(catalog);
             SerializedProperty list = so.FindProperty("_upgrades");
@@ -620,6 +411,17 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             return catalog;
         }
+        // A tower's upgrades belong to the first continent whose roster has the tower; towers out of the campaign (the
+        // hybrids, Cryo, Support) stay dormant (-1). The base, gates, commander and drones are paid by the first continent.
+        private static void TagContinent(UpgradeDefinition upgrade)
+        {
+            int continent = string.IsNullOrEmpty(upgrade.TowerId) ? 0 : LevelSpecs.ContinentOfTower(upgrade.TowerId);
+            var so = new SerializedObject(upgrade);
+            so.FindProperty("_continent").intValue = continent;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(upgrade);
+        }
+
         private static string DroneText(DroneDefinition drone)
         {
             switch (drone.Kind)
@@ -654,104 +456,6 @@ namespace Game.Editor
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return upgrade;
-        }
-
-        private const string StoryAssetPath = DataRoot + "/Story/Story.asset";
-
-        // The intro told on first launch, as beats over the scenes the intro screen draws. Placeholder prose: edit the asset.
-        private static void CreateStory(CampaignCatalog campaign)
-        {
-            var story = LoadOrCreate<StoryDefinition>(StoryAssetPath);
-            var beats = new (string Text, StoryScene Scene, float Seconds)[]
-            {
-                ("Earth is running dry. Eleven light-years out, the survey ships found a world with everything we need.", StoryScene.Space, 6f),
-                ("Metal in the crust, water in the valleys, energy in the lava fields. Nobody asked what else was down there.", StoryScene.Approach, 7f),
-                ("The planet is alive. Every valley, every cave, every nest holds something, and all of it has noticed us.", StoryScene.Surface, 7f),
-                ("We have landed. Hold the ground, take it one region at a time, and find out what this world is hiding.", StoryScene.Landing, 7f),
-            };
-            var so = new SerializedObject(story);
-            SerializedProperty array = so.FindProperty("_introBeats");
-            array.arraySize = beats.Length;
-            for (int i = 0; i < beats.Length; i++)
-            {
-                SerializedProperty element = array.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("Text").stringValue = beats[i].Text;
-                element.FindPropertyRelative("Scene").enumValueIndex = (int)beats[i].Scene;
-                element.FindPropertyRelative("Seconds").floatValue = beats[i].Seconds;
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-
-            var catalog = new SerializedObject(campaign);
-            catalog.FindProperty("_story").objectReferenceValue = story;
-            catalog.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        private static CampaignCatalog CreateCampaign(LevelDefinition[] levels, DifficultyProfile[] difficulties)
-        {
-            var catalog = LoadOrCreate<CampaignCatalog>($"{DataRoot}/Levels/CampaignCatalog.asset");
-            var so = new SerializedObject(catalog);
-
-            // The continents of the planet. Only the first holds levels for now; the others are land still to be
-            // explored, placed so every climate has a home: ice near the poles, swamp and jungle near the equator.
-            var regions = new (string Name, float Longitude, float Latitude, float Radius, Color Colour)[]
-            {
-                ("Landfall", -45f, 30f, 27f, new Color(0.38f, 0.52f, 0.34f)),
-                ("Ember Reach", 12f, -8f, 24f, new Color(0.58f, 0.34f, 0.22f)),
-                ("Verdant Belt", 64f, 16f, 26f, new Color(0.26f, 0.5f, 0.3f)),
-                ("Southern Wastes", -28f, -46f, 24f, new Color(0.6f, 0.54f, 0.36f)),
-                ("Polar Crown", 122f, 62f, 22f, new Color(0.7f, 0.8f, 0.88f)),
-                ("Deep Mire", 152f, -20f, 24f, new Color(0.24f, 0.38f, 0.26f)),
-                ("Shattered Isles", -135f, -6f, 22f, new Color(0.42f, 0.36f, 0.52f)),
-            };
-
-            SerializedProperty regionArray = so.FindProperty("_regions");
-            regionArray.arraySize = regions.Length;
-            for (int i = 0; i < regions.Length; i++)
-            {
-                SerializedProperty element = regionArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("DisplayName").stringValue = regions[i].Name;
-                element.FindPropertyRelative("Longitude").floatValue = regions[i].Longitude;
-                element.FindPropertyRelative("Latitude").floatValue = regions[i].Latitude;
-                element.FindPropertyRelative("RadiusDegrees").floatValue = regions[i].Radius;
-                element.FindPropertyRelative("Colour").colorValue = regions[i].Colour;
-            }
-
-            // Longitude and latitude on the globe, all inside Landfall. The campaign winds from the landing site on
-            // the south-west coast up to the frozen north and back down into the marsh, so the route reads as one
-            // journey across the continent.
-            var nodes = new (string Name, float Longitude, float Latitude, int Region, LevelDefinition Level)[]
-            {
-                ("Landing Zone", -64f, 14f, 0, levels[0]),
-                ("Glowing Forest", -54f, 24f, 0, levels[1]),
-                ("Lava Caves", -42f, 16f, 0, levels[2]),
-                ("Ancient Ruins", -32f, 26f, 0, levels[3]),
-                ("The Nest", -30f, 38f, 0, levels[4]),
-                ("Frozen Shelf", -42f, 50f, 0, levels[5]),
-                ("Black Marsh", -56f, 38f, 0, levels[6]),
-            };
-
-            SerializedProperty nodeArray = so.FindProperty("_nodes");
-            nodeArray.arraySize = nodes.Length;
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                SerializedProperty element = nodeArray.GetArrayElementAtIndex(i);
-                element.FindPropertyRelative("DisplayName").stringValue = nodes[i].Name;
-                element.FindPropertyRelative("Longitude").floatValue = nodes[i].Longitude;
-                element.FindPropertyRelative("Latitude").floatValue = nodes[i].Latitude;
-                element.FindPropertyRelative("Region").intValue = nodes[i].Region;
-                element.FindPropertyRelative("Level").objectReferenceValue = nodes[i].Level;
-            }
-
-            SerializedProperty difficultyArray = so.FindProperty("_difficulties");
-            difficultyArray.arraySize = difficulties.Length;
-            for (int i = 0; i < difficulties.Length; i++)
-            {
-                difficultyArray.GetArrayElementAtIndex(i).objectReferenceValue = difficulties[i];
-            }
-
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return catalog;
         }
 
         private const string KeeperFolder = "Assets/_Project/Art/Materials/ShaderKeepers";

@@ -116,6 +116,7 @@ namespace Game.Levels
                 case PropKind.Snowdrift: BuildSnowdrift(builder, rng); break;
                 case PropKind.DeadTree: BuildDeadTree(builder, rng); break;
                 case PropKind.Reed: BuildReeds(builder, rng); break;
+                case PropKind.Scree: BuildScree(builder, rng); break;
             }
 
             return builder.ToMesh($"{kind}_{variant}");
@@ -157,6 +158,19 @@ namespace Game.Levels
 
         // Half buried, lumpy and faceted, sitting in a dark skirt of rubble so it reads as planted in the ground;
         // a few smaller stones lean against the big one, and glowing moss creeps along its foot on some.
+        // Loose broken stone spilled down a rim: a low fan of flat, angular chips around one bigger slab.
+        private static void BuildScree(PropMeshBuilder b, Random rng)
+        {
+            b.AddBlob(new Vector3(0f, 0.05f, 0f), new Vector3(0.3f, 0.08f, 0.24f), 4, 7, 0.35f, rng.Next(100), Body, true);
+            int chips = rng.Next(7, 11);
+            for (int i = 0; i < chips; i++)
+            {
+                Vector3 offset = Ring(rng, Range(rng, 0.2f, 0.5f));
+                var size = new Vector3(Range(rng, 0.05f, 0.11f), Range(rng, 0.025f, 0.05f), Range(rng, 0.05f, 0.1f));
+                b.AddBlob(offset + Vector3.up * size.y * 0.5f, size, 3, 5, 0.4f, rng.Next(100), i % 3 == 0 ? Body : Dark, true);
+            }
+        }
+
         private static void BuildRock(PropMeshBuilder b, Random rng, float size)
         {
             var radii = new Vector3(Range(rng, 0.3f, 0.45f), Range(rng, 0.22f, 0.36f), Range(rng, 0.3f, 0.45f)) * size;

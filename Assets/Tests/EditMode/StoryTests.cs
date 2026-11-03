@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Game.Levels;
 using Game.UI;
 using NUnit.Framework;
@@ -12,21 +11,19 @@ namespace Game.Tests
         private const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
 
         [Test]
-        public void GeneratedCampaign_HasAnIntroAndABriefingPerLevel()
+        public void GeneratedCampaign_HasAnOpeningCutsceneAndABriefingPerLevel()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             Assert.IsNotNull(catalog, "run Tools/Generate/Scenes and Starter Data");
             Assert.IsNotNull(catalog.Story, "the campaign carries its story");
-            Assert.GreaterOrEqual(catalog.Story.IntroBeats.Count, 3, "enough beats for space, approach and landing");
-            foreach (StoryBeat beat in catalog.Story.IntroBeats)
-            {
-                Assert.IsFalse(string.IsNullOrWhiteSpace(beat.Text));
-                Assert.GreaterOrEqual(beat.Seconds, 1f);
-            }
-
-            Assert.AreEqual(StoryScene.Landing, catalog.Story.IntroBeats[catalog.Story.IntroBeats.Count - 1].Scene, "the intro ends with the landing");
+            Assert.IsNotNull(catalog.Story.OpeningCutscene, "the first launch opens with the cutscene");
             foreach (MapNode node in catalog.Nodes)
             {
+                if (node.Level == null)
+                {
+                    continue;
+                }
+
                 Assert.IsFalse(string.IsNullOrWhiteSpace(node.Level.RegionName), $"{node.DisplayName} names its region");
                 Assert.IsFalse(string.IsNullOrWhiteSpace(node.Level.Briefing), $"{node.DisplayName} has a briefing");
             }
@@ -46,27 +43,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void PlanetPainter_TintsRegionsAndStaysInsideTheDisc()
+        public void PlanetPainter_HaloFadesFromTheCentreAndStaysInsideTheDisc()
         {
-            const int size = 128;
-            var regions = new List<PlanetPainter.Region>
-            {
-                new PlanetPainter.Region { Position = new Vector2(0.5f, 0.5f), Colour = Color.red, Radius = 0.3f },
-            };
-            Texture2D plain = PlanetPainter.PaintSurface(size, new List<PlanetPainter.Region>(), Vector2.one);
-            Texture2D tinted = PlanetPainter.PaintSurface(size, regions, Vector2.one);
-            Texture2D clouds = PlanetPainter.PaintClouds(size);
+            const int size = 64;
+            Texture2D halo = PlanetPainter.PaintHalo(size);
 
-            Color centre = tinted.GetPixel(size / 2, size / 2);
-            Color untinted = plain.GetPixel(size / 2, size / 2);
-            Assert.Greater(centre.r - centre.g, untinted.r - untinted.g, "the region colour shows at its centre");
-            Assert.AreEqual(0f, tinted.GetPixel(2, 2).a, "corners outside the disc are transparent");
-            Assert.AreEqual(0f, clouds.GetPixel(2, 2).a, "clouds stay inside the disc");
-            Assert.Greater(centre.a, 0.99f, "the disc itself is opaque");
+            Assert.Greater(halo.GetPixel(size / 2, size / 2).a, 0.9f, "the halo is strongest in the middle");
+            Assert.Less(halo.GetPixel(size / 2, size - 4).a, halo.GetPixel(size / 2, size / 2 + 8).a, "and fades outwards");
+            Assert.AreEqual(0f, halo.GetPixel(1, 1).a, "corners outside the disc are transparent");
 
-            Object.DestroyImmediate(plain);
-            Object.DestroyImmediate(tinted);
-            Object.DestroyImmediate(clouds);
+            Object.DestroyImmediate(halo);
         }
     }
 }

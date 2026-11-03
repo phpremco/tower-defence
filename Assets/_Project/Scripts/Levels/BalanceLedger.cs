@@ -20,7 +20,8 @@ namespace Game.Levels
             Flies = enemy.Flies,
             Health = enemy.MaxHealth,
             Armor = enemy.Armor,
-            Speed = enemy.Speed,
+            Speed = enemy.AverageSpeed,
+            FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,
             Reward = enemy.Reward,
             BaseDamage = enemy.BaseDamage,
             AttackDamage = enemy.AttackDamage,
@@ -78,6 +79,7 @@ namespace Game.Levels
                 PaidInPower = upgrade.Currency == UpgradeCurrency.PowerCurrency,
                 BonusPerLevel = upgrade.BonusPerLevel,
                 Costs = costs,
+                Continent = upgrade.Continent,
             };
         }
 
@@ -168,19 +170,21 @@ namespace Game.Levels
             {
                 if (node.Level != null)
                 {
-                    Add(model, node.Level);
+                    Add(model, node.Level, node.Region);
                 }
             }
 
             return model;
         }
 
-        private static void Add(CampaignModel model, LevelDefinition level)
+        private static void Add(CampaignModel model, LevelDefinition level, int continent)
         {
             var campaign = new CampaignLevel
             {
+                Continent = continent,
                 Key = level.name.StartsWith("Level_") ? level.name.Substring(6) : level.name,
                 RewardTowerId = level.Reward.NewTower != null ? level.Reward.NewTower.Id : string.Empty,
+                RewardHeroPerkId = level.Reward.HeroPerk != null ? level.Reward.HeroPerk.Id : string.Empty,
                 Research = level.Reward.ResearchPoints,
                 Power = level.Reward.PowerCurrency,
             };
@@ -216,18 +220,22 @@ namespace Game.Levels
                     BladeInterval = level.Hero.StrikeInterval,
                     GunDamage = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.Damage : 0f,
                     GunInterval = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.AttackInterval : 1f,
+                    Magazine = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.Magazine : 0,
+                    ReloadSeconds = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ReloadSeconds : 0f,
                 };
+                foreach (Game.Hero.HeroPerkDefinition perk in level.Hero.Perks)
+                {
+                    if (perk != null)
+                    {
+                        model.Hero.Perks.Add(new HeroPerkStats { Id = perk.Id, IntervalMultiplier = perk.RangedIntervalMultiplier, ReloadMultiplier = perk.ReloadMultiplier });
+                    }
+                }
             }
 
             foreach (DifficultyWaves set in level.DifficultyWaves)
             {
                 foreach (WaveDefinition wave in set.Waves)
                 {
-                    if (wave == null)
-                    {
-                        continue;
-                    }
-
                     foreach (SpawnGroup group in wave.Groups)
                     {
                         if (group.Enemy != null && !model.Enemies.ContainsKey(group.Enemy.name))
@@ -239,7 +247,7 @@ namespace Game.Levels
             }
         }
 
-        /// <summary>A wave asset as the model reads it, with the creatures from the model's own table.</summary>
+        /// <summary>A stored wave as the model reads it, with the creatures from the model's own table.</summary>
         public static WaveSpec Spec(WaveDefinition wave, IDictionary<string, EnemyStats> enemies)
         {
             var spec = new WaveSpec { StartDelay = wave.StartDelay, HealthMultiplier = wave.HealthMultiplier };

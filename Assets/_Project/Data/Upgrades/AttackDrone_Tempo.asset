@@ -21,3 +21,4 @@ MonoBehaviour:
   _currency: 1
   _groupDescription: 
   _bonusPerLevel: 0.15
+  _continent: 0

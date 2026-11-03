@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Core;
+using Game.Economy;
 using Game.Hero;
 using Game.Platform;
 using Game.Towers;
@@ -10,7 +11,7 @@ namespace Game.Levels
     /// <summary>
     /// Creates the commander and connects it to the level: the posts it can hold (in front of every blockade and
     /// at the base), the shortcut keys, the "send hero here" request from a blockade's menu and the money the
-    /// emergency repair costs.
+    /// abilities cost.
     /// </summary>
     public sealed class HeroController : MonoBehaviour
     {
@@ -70,8 +71,10 @@ namespace Game.Levels
             var go = new GameObject("Hero");
             go.transform.SetParent(parent, false);
             _hero = go.AddComponent<Commander>();
-            _hero.Initialize(definition, context.Targets, posts, 0, context.GlobalModifiers);
+            _hero.Initialize(definition, context.Targets, posts, 0, context.GlobalModifiers, context.HeroPerks);
             go.AddComponent<HeroView>().Initialize(_hero);
+            float particles = Services.TryGet(out IPlatformSettings platform) ? platform.ParticleScale : 1f;
+            go.AddComponent<HeroAbilityView>().Initialize(_hero, particles);
 
             context.Hero = _hero;
             // In the structure registry the hero is a blocker and a target, like a gate that walks.
@@ -80,10 +83,10 @@ namespace Game.Levels
             context.HeroPostCells = cells;
 
             _input.HeroPostPressed += OnNextPost;
-            _input.ShockwavePressed += OnShockwave;
-            _input.EmergencyRepairPressed += OnRepair;
+            _input.HeroAbilityPressed += OnAbility;
             _context.HeroSendRequested.Subscribe(OnSendHere);
-            _context.HeroRepairRequested.Subscribe(OnRepair);
+            _context.HeroAbilityRequested.Subscribe(OnAbility);
+            _context.HeroPostRequested.Subscribe(OnPostRequested);
         }
 
         private void OnDestroy()
@@ -94,17 +97,10 @@ namespace Game.Levels
             }
 
             _input.HeroPostPressed -= OnNextPost;
-            _input.ShockwavePressed -= OnShockwave;
-            _input.EmergencyRepairPressed -= OnRepair;
+            _input.HeroAbilityPressed -= OnAbility;
             _context.HeroSendRequested.Unsubscribe(OnSendHere);
-            _context.HeroRepairRequested.Unsubscribe(OnRepair);
-        }
-
-        // The camera follows the hero to its post, so the player watches the fight they just ordered.
-        private void SendHero(int postIndex)
-        {
-            _hero.MoveTo(postIndex);
-            _context.CameraFocusRequested.Raise(_hero.StandAt(_hero.PostIndex));
+            _context.HeroAbilityRequested.Unsubscribe(OnAbility);
+            _context.HeroPostRequested.Unsubscribe(OnPostRequested);
         }
 
         private static Vector2Int StandCell(Vector2Int cell, Vector3 along) =>
@@ -120,42 +116,72 @@ namespace Game.Levels
             marker.name = "HeroSpot";
         }
 
-        private bool CanAct => _context.Outcome == LevelOutcome.Running && !_context.Paused;
+        private bool CanAct => _context.Outcome == LevelOutcome.Running && !_context.InputBlocked;
 
-        private void OnNextPost()
+        private void OnNextPost() => OnPostRequested((_hero.PostIndex + 1) % _hero.PostCount);
+
+        // The HUD buttons and the key come through here, so pause, dialogue and the end of the level gate them alike.
+        // The camera follows the hero to its post, so the player watches the fight they just ordered.
+        private void OnPostRequested(int postIndex)
         {
-            if (CanAct)
+            if (TrySend(_hero, postIndex, CanAct))
             {
-                SendHero((_hero.PostIndex + 1) % _hero.PostCount);
+                _context.CameraFocusRequested.Raise(_hero.StandAt(_hero.PostIndex));
             }
         }
 
-        private void OnShockwave()
+        /// <summary>Sends the hero to a post when the level lets the player act; false when the order was refused.</summary>
+        public static bool TrySend(Commander hero, int postIndex, bool canAct)
         {
-            if (CanAct)
+            if (!canAct || postIndex < 0 || postIndex >= hero.PostCount)
             {
-                _hero.TryShockwave();
+                return false;
             }
+
+            hero.MoveTo(postIndex);
+            return true;
         }
 
-        // Pays only when the repair can actually happen, so a press during the cooldown costs nothing.
-        private void OnRepair()
+        // Every way in (key, gamepad trigger, HUD button) comes through here, so pause, dialogue and the end of the level
+        // gate them all alike, and a press during the cooldown costs nothing: the price is paid only when the ability fires.
+        private void OnAbility(int slot)
         {
-            if (CanAct && _hero.CanEmergencyRepair && _context.Wallet.TrySpend(_hero.Definition.RepairCost))
+            if (TryAbility(_hero, slot, CanAct, _context.Wallet))
             {
-                _hero.TryEmergencyRepair();
                 _context.Changed.Raise();
             }
         }
 
+        /// <summary>Uses a hero ability when the level lets the player act, the ability is ready and its price is paid.</summary>
+        public static bool TryAbility(Commander hero, int slot, bool canAct, Wallet wallet)
+        {
+            if (!canAct || !hero.CanUse(slot))
+            {
+                return false;
+            }
+
+            int cost = hero.AbilityAt(slot).Definition.MoneyCost;
+            if (cost > 0 && !wallet.TrySpend(cost))
+            {
+                return false;
+            }
+
+            return hero.TryUse(slot);
+        }
+
         private void OnSendHere()
         {
+            if (!CanAct)
+            {
+                return;
+            }
+
             Tower selected = _context.SelectedPlacedTower;
             for (int i = 0; selected != null && i < _blockades.Count; i++)
             {
                 if (_blockades[i] == selected)
                 {
-                    SendHero(i);
+                    OnPostRequested(i);
                     _context.Changed.Raise();
                     return;
                 }

@@ -21,3 +21,4 @@ MonoBehaviour:
   _currency: 1
   _groupDescription: Bought with money in the level. Hunts the enemy furthest down the road and shoots it from the air.
   _bonusPerLevel: 0.2
+  _continent: 0

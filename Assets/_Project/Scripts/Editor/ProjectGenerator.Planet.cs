@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using Game.Levels;
 using Game.UI;
@@ -18,18 +17,7 @@ namespace Game.Editor
         // Painting the planet takes seconds, so it happens here and the map screen only loads the pictures.
         private static void BakeGlobe(CampaignCatalog catalog)
         {
-            var regions = new List<GlobePainter.Region>();
-            foreach (MapRegion region in catalog.Regions)
-            {
-                regions.Add(new GlobePainter.Region { Direction = region.Direction, Colour = region.Colour, RadiusDegrees = region.RadiusDegrees });
-            }
-
-            foreach (MapNode node in catalog.Nodes)
-            {
-                regions.Add(new GlobePainter.Region { Direction = node.Direction, Colour = catalog.Regions[node.Region].Colour, RadiusDegrees = GlobePainter.LevelLandDegrees, Lights = true });
-            }
-
-            GlobePainter.Maps maps = GlobePainter.Paint(GlobeMapWidth, GlobeMapWidth / 2, regions);
+            GlobePainter.Maps maps = GlobePainter.Paint(GlobeMapWidth, GlobeMapWidth / 2, GlobePainter.RegionsOf(catalog));
             var so = new SerializedObject(catalog);
             so.FindProperty("_globeAlbedo").objectReferenceValue = SavePlanetTexture(maps.Albedo, "Globe_albedo", TextureImporterType.Default, true);
             so.FindProperty("_globeNormal").objectReferenceValue = SavePlanetTexture(maps.Normal, "Globe_normal", TextureImporterType.NormalMap, false);

@@ -3,6 +3,7 @@ using Game.Combat;
 using Game.Core;
 using Game.Hero;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Tests
@@ -15,6 +16,8 @@ namespace Game.Tests
 
             public IDamageGuard Guard { get; set; }
 
+            public bool CanRestore { get; set; } = true;
+
             public float Restored { get; private set; }
 
             public void Restore(float fraction) => Restored += fraction;
@@ -25,14 +28,22 @@ namespace Game.Tests
         private GameObject _go;
         private Commander _hero;
         private FakeGuarded _first;
+        private HeroAbilityDefinition _repair;
+        private HeroAbilityDefinition _shockwave;
 
         [SetUp]
         public void SetUp()
         {
             _definition = ScriptableObject.CreateInstance<HeroDefinition>();
             _weapon = ScriptableObject.CreateInstance<HeroWeaponDefinition>();
-            var definitionProps = new UnityEditor.SerializedObject(_definition);
+            var definitionProps = new SerializedObject(_definition);
             definitionProps.FindProperty("_weapon").objectReferenceValue = _weapon;
+            _shockwave = HeroAbilityTests.CreateAbility(HeroAbilityKind.Shockwave, 20f, 0, damage: 40f, radius: 3.2f);
+            _repair = HeroAbilityTests.CreateAbility(HeroAbilityKind.GateRepair, 25f, 30, fraction: 0.4f);
+            SerializedProperty abilities = definitionProps.FindProperty("_abilities");
+            abilities.arraySize = 2;
+            abilities.GetArrayElementAtIndex(0).objectReferenceValue = _shockwave;
+            abilities.GetArrayElementAtIndex(1).objectReferenceValue = _repair;
             definitionProps.ApplyModifiedPropertiesWithoutUndo();
             _go = new GameObject("Hero");
             _hero = _go.AddComponent<Commander>();
@@ -52,6 +63,8 @@ namespace Game.Tests
             Object.DestroyImmediate(_go);
             Object.DestroyImmediate(_definition);
             Object.DestroyImmediate(_weapon);
+            Object.DestroyImmediate(_repair);
+            Object.DestroyImmediate(_shockwave);
         }
 
         [Test]
@@ -93,14 +106,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EmergencyRepair_RestoresThePostOnceAndThenCoolsDown()
+        public void GateRepair_RestoresThePostOnceAndThenCoolsDown()
         {
-            Assert.IsTrue(_hero.CanEmergencyRepair);
-            Assert.IsTrue(_hero.TryEmergencyRepair());
-            Assert.AreEqual(_definition.RepairFraction, _first.Restored, 0.001f);
-            Assert.IsFalse(_hero.CanEmergencyRepair);
-            Assert.IsFalse(_hero.TryEmergencyRepair());
+            Assert.IsTrue(_hero.CanUse(1));
+            Assert.IsTrue(_hero.TryUse(1));
+            Assert.AreEqual(_repair.Fraction, _first.Restored, 0.001f);
+            Assert.IsFalse(_hero.CanUse(1));
+            Assert.IsFalse(_hero.TryUse(1));
+            Assert.IsFalse(_hero.CanUse(2), "a slot the hero does not have is never usable");
         }
+
         private sealed class FakeTarget : ITargetable
         {
             public Vector3 Position { get; set; }
@@ -124,13 +139,13 @@ namespace Game.Tests
         public void Hero_ShootsWhatTheBladeCannotReach_AndUsesTheGunsPace()
         {
             var gun = ScriptableObject.CreateInstance<HeroWeaponDefinition>();
-            var gunProps = new UnityEditor.SerializedObject(gun);
+            var gunProps = new SerializedObject(gun);
             gunProps.FindProperty("_kind").intValue = (int)HeroWeaponKind.Ranged;
             gunProps.FindProperty("_damage").floatValue = 4f;
             gunProps.FindProperty("_reach").floatValue = 3.5f;
             gunProps.FindProperty("_attackInterval").floatValue = 0.35f;
             gunProps.ApplyModifiedPropertiesWithoutUndo();
-            var definitionProps = new UnityEditor.SerializedObject(_definition);
+            var definitionProps = new SerializedObject(_definition);
             definitionProps.FindProperty("_rangedWeapon").objectReferenceValue = gun;
             definitionProps.ApplyModifiedPropertiesWithoutUndo();
 

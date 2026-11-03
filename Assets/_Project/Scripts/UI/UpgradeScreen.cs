@@ -217,6 +217,12 @@ namespace Game.UI
             var others = new List<Subject>();
             foreach (UpgradeDefinition upgrade in _catalog.Upgrades)
             {
+                // Upgrades of towers out of the campaign stay saved but are not offered until their continent comes.
+                if (!upgrade.IsInCampaign)
+                {
+                    continue;
+                }
+
                 if (!byGroup.TryGetValue(upgrade.GroupName, out Subject subject))
                 {
                     subject = CreateSubject(upgrade);

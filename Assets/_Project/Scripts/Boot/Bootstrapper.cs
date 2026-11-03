@@ -90,10 +90,17 @@ namespace Game.Boot
             AudioListener.volume = mix.Master;
         }
 
-        // The first launch opens with the story; every later one goes straight to the menu.
+        // The first launch opens with the cutscene and drops into the first level; every later one goes to the menu.
+        // Quitting before the cutscene ends leaves the intro unseen, so it plays again on the next launch.
         private void Start()
         {
             bool introSeen = Services.Get<ProgressService>().Data.IntroSeen;
+            CutsceneDefinition opening = _campaign.Story != null ? _campaign.Story.OpeningCutscene : null;
+            if (!introSeen && opening != null)
+            {
+                Services.Register(CutsceneRequest.FirstLaunch(opening));
+            }
+
             SceneManager.LoadScene(introSeen ? SceneNames.MainMenu : SceneNames.Intro);
         }
     }

@@ -18,6 +18,12 @@ namespace Game.Levels
         private const float SandLevel = -0.12f;
         private const float IceLevel = -0.06f;
         private const float BogLevel = -0.14f;
+        private const float RiftLevel = -0.35f;
+        private const float RiftVeinGlow = 2.2f;
+        private const float RiftTiling = 0.4f;
+        private const float RiftBreathDepth = 0.35f;
+        // One slow breath every seven seconds.
+        private const float RiftBreathSpeed = Mathf.PI * 2f / 7f;
         private const float IceAlpha = 0.9f;
         private const float IceGlow = 0.12f;
         private const float BogAlpha = 0.92f;
@@ -44,7 +50,7 @@ namespace Game.Levels
         private const float LavaLightFlicker = 0.3f;
         private const float LavaLightFlickerSpeed = 3f;
 
-        private static readonly TerrainKind[] Kinds = { TerrainKind.Water, TerrainKind.Lava, TerrainKind.Quicksand, TerrainKind.Ice, TerrainKind.Bog };
+        private static readonly TerrainKind[] Kinds = { TerrainKind.Water, TerrainKind.Lava, TerrainKind.Quicksand, TerrainKind.Ice, TerrainKind.Bog, TerrainKind.Rift };
 
         public static void Build(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale = 1f)
         {
@@ -99,6 +105,11 @@ namespace Game.Levels
             {
                 flow.SetPulse(material.GetColor("_EmissionColor"), LavaPulseDepth, LavaPulseSpeed);
                 PlaceLavaLights(cells, theme, cellSize, parent);
+            }
+            else if (kind == TerrainKind.Rift)
+            {
+                // The veins breathe, they do not flicker: the rock is alive, not burning.
+                flow.SetPulse(material.GetColor("_EmissionColor"), RiftBreathDepth, RiftBreathSpeed, 0f);
             }
 
             BuildMotes(kind, cells, theme, cellSize, surface, particleScale, parent);
@@ -200,6 +211,7 @@ namespace Game.Levels
                 case TerrainKind.Lava: return LavaLevel;
                 case TerrainKind.Ice: return IceLevel;
                 case TerrainKind.Bog: return BogLevel;
+                case TerrainKind.Rift: return RiftLevel;
                 default: return SandLevel;
             }
         }
@@ -211,6 +223,7 @@ namespace Game.Levels
                 case TerrainKind.Water: return new Vector2(0.025f, 0.015f);
                 case TerrainKind.Lava: return new Vector2(0.008f, -0.006f);
                 case TerrainKind.Ice: return Vector2.zero;
+                case TerrainKind.Rift: return Vector2.zero;
                 case TerrainKind.Bog: return new Vector2(0.003f, -0.002f);
                 default: return new Vector2(-0.004f, 0.003f);
             }
@@ -223,6 +236,7 @@ namespace Game.Levels
                 case TerrainKind.Water: return new Vector2(-0.02f, 0.03f);
                 case TerrainKind.Lava: return new Vector2(-0.012f, 0.009f);
                 case TerrainKind.Ice: return new Vector2(0.004f, 0.002f);
+                case TerrainKind.Rift: return new Vector2(0.002f, 0.001f);
                 case TerrainKind.Bog: return new Vector2(-0.005f, 0.004f);
                 default: return new Vector2(0.006f, -0.005f);
             }
@@ -235,6 +249,7 @@ namespace Game.Levels
                 case TerrainKind.Water: return 0.04f;
                 case TerrainKind.Lava: return 0.035f;
                 case TerrainKind.Ice: return 0f;
+                case TerrainKind.Rift: return 0f;
                 case TerrainKind.Bog: return 0.008f;
                 default: return 0.012f;
             }
@@ -297,6 +312,19 @@ namespace Game.Levels
                 material.SetColor("_EmissionColor", theme.IceColor * IceGlow);
                 MakeTransparent(material, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
             }
+            else if (kind == TerrainKind.Rift)
+            {
+                // Rock at the bottom of the fissure, opaque and matte, lit only by its veins.
+                material.SetTexture("_BaseMap", LiquidTextures.RiftRock());
+                material.SetColor("_BaseColor", theme.RockColor * 0.55f);
+                material.SetFloat("_Smoothness", 0.1f);
+                material.EnableKeyword("_EMISSION");
+                material.SetTexture("_EmissionMap", LiquidTextures.RiftVeins());
+                material.SetColor("_EmissionColor", theme.RiftColor * RiftVeinGlow);
+                // The veins run long: one tile spans several cells, so the pattern never reads as a grid.
+                material.SetTextureScale("_BaseMap", Vector2.one * RiftTiling);
+                material.SetTextureScale("_EmissionMap", Vector2.one * RiftTiling);
+            }
             else if (kind == TerrainKind.Bog)
             {
                 // Dark still water under a skin of scum: dull, almost opaque, a little green light in the murk.
@@ -344,6 +372,11 @@ namespace Game.Levels
                 texture = LiquidTextures.IceCracks();
                 glow = Color.Lerp(theme.IceColor, Color.white, 0.5f) * 0.7f;
             }
+            else if (kind == TerrainKind.Rift)
+            {
+                texture = LiquidTextures.RiftVeins();
+                glow = theme.RiftColor * 0.25f;
+            }
             else if (kind == TerrainKind.Bog)
             {
                 texture = LiquidTextures.BogScum();
@@ -358,6 +391,12 @@ namespace Game.Levels
             material.SetTexture("_BaseMap", texture);
             material.SetColor("_BaseColor", Color.black);
             material.SetTexture("_EmissionMap", texture);
+            if (kind == TerrainKind.Rift)
+            {
+                material.SetTextureScale("_BaseMap", Vector2.one * RiftTiling * 0.7f);
+                material.SetTextureScale("_EmissionMap", Vector2.one * RiftTiling * 0.7f);
+            }
+
             material.SetColor("_EmissionColor", glow);
             MakeTransparent(material, BlendMode.One, BlendMode.One);
             return material;
@@ -428,6 +467,14 @@ namespace Game.Levels
                 case TerrainKind.Quicksand:
                     break;
                 case TerrainKind.Ice:
+                    break;
+                case TerrainKind.Rift:
+                    // Sparse dust hanging in the fissure; the Low profile goes without.
+                    if (particleScale >= 1f)
+                    {
+                        Motes(parent, "RiftDust", emitter, surface, new Color(0.75f, 0.68f, 0.58f, 0.6f), 0.35f, area * 0.15f * particleScale, 3f, 5f, 0.03f, 0.06f, 0.03f, 0.08f, -0.01f, 0.2f, 0.4f);
+                    }
+
                     break;
                 case TerrainKind.Bog:
                     // Marsh gas: dim green bubbles rising slowly and wisps of vapour hanging over the mire.

@@ -362,7 +362,7 @@ namespace Game.Enemies
             {
                 blocker.TakeDamage(_definition.BlockadeDamage * _structureDamageMultiplier);
                 Attacked?.Invoke(blocker.Position);
-                _attackCooldown = _definition.AttackInterval;
+                _attackCooldown = Cadence.Idle(Cadence.Rearm(_attackCooldown, _definition.AttackInterval));
             }
 
             return true;
@@ -389,7 +389,7 @@ namespace Game.Enemies
                 float damage = _definition.AttackDamage > 0f ? _definition.AttackDamage : _definition.BlockadeDamage;
                 gate.TakeDamage(damage * _structureDamageMultiplier);
                 Attacked?.Invoke(gate.Position);
-                _attackCooldown = _definition.AttackInterval;
+                _attackCooldown = Cadence.Idle(Cadence.Rearm(_attackCooldown, _definition.AttackInterval));
                 _gateStrikesLeft--;
             }
 
@@ -412,7 +412,7 @@ namespace Game.Enemies
             {
                 target.TakeDamage(_definition.BlockadeDamage * _structureDamageMultiplier);
                 Attacked?.Invoke(target.Position);
-                _attackCooldown = _definition.AttackInterval;
+                _attackCooldown = Cadence.Idle(Cadence.Rearm(_attackCooldown, _definition.AttackInterval));
             }
 
             return true;
@@ -436,7 +436,7 @@ namespace Game.Enemies
             {
                 target.TakeDamage(_definition.AttackDamage * _structureDamageMultiplier);
                 Attacked?.Invoke(target.Position);
-                _attackCooldown = _definition.AttackInterval;
+                _attackCooldown = Cadence.Idle(Cadence.Rearm(_attackCooldown, _definition.AttackInterval));
             }
         }
 

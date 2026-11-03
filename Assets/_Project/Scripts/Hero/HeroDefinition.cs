@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Game.Hero
 {
-    /// <summary>Stats and abilities of the commander. Everything about how it plays is data; the weapon it carries is its own asset.</summary>
+    /// <summary>
+    /// Stats, weapons, abilities and earnable perks of the hero. Everything about how it plays is data: each weapon and
+    /// each ability is its own asset, and the abilities are listed by button slot.
+    /// </summary>
     [CreateAssetMenu(menuName = "Game/Hero Definition", fileName = "HeroDefinition")]
     public sealed class HeroDefinition : ScriptableObject
     {
@@ -29,15 +32,11 @@ namespace Game.Hero
         /// <summary>Seconds a downed hero needs before it stands up again at its post.</summary>
         [SerializeField] [Min(1f)] private float _reviveSeconds = 15f;
 
-        [SerializeField] [Min(1f)] private float _shockwaveDamage = 40f;
-        [SerializeField] [Min(0.5f)] private float _shockwaveRadius = 3.2f;
-        [SerializeField] [Min(1f)] private float _shockwaveCooldown = 20f;
+        /// <summary>The ability buttons, by slot: slot 0 is the first button (F, left trigger), slot 1 the second (G, right trigger).</summary>
+        [SerializeField] private HeroAbilityDefinition[] _abilities = new HeroAbilityDefinition[0];
 
-        [SerializeField] [Range(0.05f, 1f)] private float _repairFraction = 0.4f;
-        [SerializeField] [Min(1f)] private float _repairCooldown = 25f;
-
-        /// <summary>Money the emergency repair costs, shown on its button.</summary>
-        [SerializeField] [Min(0)] private int _repairCost = 30;
+        /// <summary>The perks this hero can earn in the campaign; the unlocked ones apply when a level starts.</summary>
+        [SerializeField] private HeroPerkDefinition[] _perks = new HeroPerkDefinition[0];
 
         [SerializeField] private Color _color = new Color(1f, 0.85f, 0.3f);
 
@@ -52,24 +51,26 @@ namespace Game.Hero
         public float StrikeInterval => _weapon.AttackInterval;
         public float GuardShare => _guardShare;
         public float ReviveSeconds => _reviveSeconds;
-        public float ShockwaveDamage => _shockwaveDamage;
-        public float ShockwaveRadius => _shockwaveRadius;
-        public float ShockwaveCooldown => _shockwaveCooldown;
-        public float RepairFraction => _repairFraction;
-        public float RepairCooldown => _repairCooldown;
-        public int RepairCost => _repairCost;
+        public HeroAbilityDefinition[] Abilities => _abilities;
+        public HeroPerkDefinition[] Perks => _perks;
         public Color Color => _color;
 
         /// <summary>What the hero's weapon can hit.</summary>
         public TargetLayers Targets => _weapon.Targets;
-
-        public TargetLayers ShockwaveTargets => TargetLayers.Ground | TargetLayers.Air;
 
         private void OnValidate()
         {
             if (_weapon == null)
             {
                 Debug.LogWarning($"HeroDefinition '{name}' has no weapon.", this);
+            }
+
+            for (int i = 0; i < _abilities.Length; i++)
+            {
+                if (_abilities[i] == null)
+                {
+                    Debug.LogWarning($"HeroDefinition '{name}' has an empty ability slot {i}.", this);
+                }
             }
         }
     }

@@ -1,13 +1,12 @@
-using System;
 using Game.Balance;
 
 namespace Game.Editor
 {
     /// <summary>
     /// The hand-set balance numbers the generator writes, in one pure file the BalanceLab tool reads as well: the
-    /// difficulty profiles, what each level pays between levels, and the tower prices. Kill money is not here: it follows
-    /// from each creature's threat (<see cref="Threat.Reward"/>). Wave toughness is not here either: the solver sets it.
-    /// Docs/BALANCE.md explains how the numbers were chosen.
+    /// difficulty profiles, what each continent's levels pay between levels, and the tower prices. Kill money is not here:
+    /// it follows from each creature's threat (<see cref="Threat.Reward"/>). Wave toughness is not here either: the solver
+    /// sets it. Docs/BALANCE.md explains how the numbers were chosen.
     /// </summary>
     public static class BalanceSheet
     {
@@ -17,6 +16,7 @@ namespace Game.Editor
         public readonly struct Difficulty
         {
             public readonly string Id;
+            public readonly string DisplayName;
             public readonly float Health;
             public readonly float Count;
             public readonly float Interval;
@@ -24,9 +24,10 @@ namespace Game.Editor
             public readonly float Power;
             public readonly float StructureDamage;
 
-            public Difficulty(string id, float health, float count, float interval, float research, float power, float structureDamage)
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage)
             {
                 Id = id;
+                DisplayName = displayName;
                 Health = health;
                 Count = count;
                 Interval = interval;
@@ -36,41 +37,63 @@ namespace Game.Editor
             }
         }
 
-        // Research and power multipliers come from the rules (Easy pays a fifth of all research upgrades over the campaign,
-        // Psycho all of them; power only from Medium on). Health, numbers and tempo are tuned so each difficulty lands near
-        // its share of the Medium pressure (BalanceRules.DifficultyPressure) in the ledger.
+        /// <summary>What one continent pays out over its twenty levels.</summary>
+        public readonly struct Continent
+        {
+            public readonly string Key;
+
+            /// <summary>Research all of the continent pays on Psycho; Easy pays the Easy share of it.</summary>
+            public readonly int ResearchBudget;
+
+            /// <summary>Power all of the continent pays on Psycho.</summary>
+            public readonly int PowerBudget;
+
+            public Continent(string key, int researchBudget, int powerBudget)
+            {
+                Key = key;
+                ResearchBudget = researchBudget;
+                PowerBudget = powerBudget;
+            }
+        }
+
+        // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
+        // of it; power only from Medium on). Health, numbers and tempo are tuned so each difficulty lands near its share of
+        // the Medium pressure (BalanceRules.DifficultyPressure) in the ledger. The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", 0.68f, 0.8f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f),
-            new Difficulty("Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f),
-            new Difficulty("Hard", 1.15f, 1.2f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f),
-            new Difficulty("Psycho", 1.65f, 1.5f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f),
+            new Difficulty("Easy", "Easy", 0.68f, 0.8f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f),
+            new Difficulty("Hard", "Hard", 1.15f, 1.2f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.5f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f),
         };
 
-        /// <summary>The campaign in play order, by level key.</summary>
-        public static readonly string[] CampaignOrder = { "Landing", "Forest", "Lava", "Ruins", "Nest", "Ice", "Swamp" };
-
         /// <summary>
-        /// Base research of a level: grows by <see cref="BalanceRules.ResearchGrowthPerLevel"/> per level and sums, over the
-        /// campaign, to the Easy share of every research upgrade, so Easy everywhere pays a fifth and Psycho everywhere all.
+        /// The continents' budgets, by region index. Crystal Plains: its six towers' research upgrades (6 x 96) plus base,
+        /// gates and commander (172) make 748 research points, and every drone upgrade makes 186 power. The later
+        /// continents get their budgets with their content (the upgrades tagged to them).
         /// </summary>
-        public static int Research(string levelKey, int researchUpgradeCost)
+        public static readonly Continent[] Continents =
         {
-            int index = Array.IndexOf(CampaignOrder, levelKey);
-            if (index < 0)
+            new Continent("C1", 748, 186),
+            new Continent("C2", 0, 0),
+            new Continent("C3", 0, 0),
+            new Continent("C4", 0, 0),
+            new Continent("C5", 0, 0),
+            new Continent("C6", 0, 0),
+        };
+
+        /// <summary>Base research of the level at an index of a continent (see <see cref="ContinentEconomy.Research"/>).</summary>
+        public static int Research(int continent, int index) =>
+            continent >= 0 && continent < Continents.Length ? ContinentEconomy.Research(Continents[continent].ResearchBudget, index, Rules) : 0;
+
+        /// <summary>Base power of a level: one share per level and more per boss wave on Medium (bosses pay power).</summary>
+        public static int Power(int continent, WaveScriptSpec script)
+        {
+            if (continent < 0 || continent >= Continents.Length)
             {
                 return 0;
             }
 
-            double growth = 1.0 + Rules.ResearchGrowthPerLevel;
-            double weights = (Math.Pow(growth, CampaignOrder.Length) - 1.0) / (growth - 1.0);
-            double total = researchUpgradeCost * Rules.EasyResearchShare;
-            return (int)Math.Round(total * Math.Pow(growth, index) / weights, MidpointRounding.AwayFromZero);
-        }
-
-        /// <summary>Base power of a level: a fixed part plus a part per boss wave on Medium (bosses pay power).</summary>
-        public static int Power(WaveScriptSpec script)
-        {
             int bosses = 0;
             foreach (BossSpec boss in script.Bosses)
             {
@@ -80,7 +103,7 @@ namespace Game.Editor
                 }
             }
 
-            return Rules.PowerPerLevel + Rules.PowerPerBoss * bosses;
+            return ContinentEconomy.Power(Continents[continent].PowerBudget, bosses, Rules);
         }
 
         /// <summary>

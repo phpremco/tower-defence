@@ -11,15 +11,10 @@ using UnityEngine;
 
 namespace Game.Editor
 {
-    /// <summary>Generator part for level layouts: how big the landing zone is and where rock formations stand.</summary>
+    /// <summary>Generator part for level layouts: where rock formations and mining nodes stand, and the terrain bake.</summary>
     public static partial class ProjectGenerator
     {
         private const float BlockedFraction = 0.13f;
-        // A three-leg serpentine on the plain. Roads are two cells wide, with the second row to the right of travel.
-        private static readonly Vector2Int LandingSize = new Vector2Int(32, 18);
-        private const int LandingRoadWidth = 2;
-        // A long serpentine across the plain: three switchbacks before the road climbs north and drops to the lander.
-        private static readonly Vector2Int[] LandingRoad = Cells(0, 16, 13, 16, 13, 11, 3, 11, 3, 8, 20, 8, 20, 13, 28, 13, 28, 3, 31, 3);
 
         // Rock formations that keep out of the way: never on or next to the road (so towers stay possible there),
         // never on terrain patches or blockades. The same seed always gives the same cells.
@@ -49,7 +44,86 @@ namespace Game.Editor
         private const string TerrainArtFolder = "Assets/_Project/Art/Terrain";
         private const int TerrainTextureMaxSize = 2048;
 
-        // Painting the ground takes seconds, so it happens here once and the level only loads the pictures.
+        // Lives in Library so it stays local: a fresh clone bakes once, then only changed levels bake again.
+        private const string BakeCachePath = "Library/TerrainBakeCache.txt";
+        private const string PainterSources = "Assets/_Project/Scripts/Levels";
+        private static readonly string[] PainterPatterns = { "Terrain*.cs", "Road*.cs", "Liquid*.cs", "Prop*.cs" };
+
+        // Painting the ground takes seconds per level, so it happens here and the level only loads the pictures. A level
+        // whose map, theme and painter code are unchanged since its last bake keeps its pictures.
+        private static void BakeAllTerrain(GeneratorContext context)
+        {
+            Dictionary<string, string> cache = ReadBakeCache();
+            string painter = PainterHash();
+            foreach (LevelDefinition baked in context.Levels)
+            {
+                string hash = BakeHash(baked, painter);
+                bool fresh = cache.TryGetValue(baked.name, out string known) && known == hash && baked.TerrainAlbedo != null && baked.TerrainEmission != null;
+                if (!fresh)
+                {
+                    BakeTerrain(baked);
+                    cache[baked.name] = hash;
+                }
+            }
+
+            File.WriteAllLines(BakeCachePath, cache.Select(pair => $"{pair.Key}={pair.Value}"));
+        }
+
+        private static Dictionary<string, string> ReadBakeCache()
+        {
+            var cache = new Dictionary<string, string>();
+            if (!File.Exists(BakeCachePath))
+            {
+                return cache;
+            }
+
+            foreach (string line in File.ReadAllLines(BakeCachePath))
+            {
+                int split = line.IndexOf('=');
+                if (split > 0)
+                {
+                    cache[line.Substring(0, split)] = line.Substring(split + 1);
+                }
+            }
+
+            return cache;
+        }
+
+        // Everything the painter reads from a level (TerrainPainter, TerrainField, RoadShape): the map and the theme.
+        private static string BakeHash(LevelDefinition level, string painter)
+        {
+            var text = new System.Text.StringBuilder(painter);
+            text.Append('|').Append(level.GridSize).Append('|').Append(level.CellSize).Append('|').Append(level.RoadWidth);
+            foreach (EnemyPath path in level.Paths)
+            {
+                text.Append('|').Append(path.Flying).Append(string.Join(",", path.Waypoints));
+            }
+
+            text.Append('|').Append(string.Join(",", level.PlazaCells)).Append('|').Append(string.Join(",", level.BlockedCells)).Append('|').Append(string.Join(",", level.MineCells));
+            foreach (TerrainPatch patch in level.TerrainPatches)
+            {
+                text.Append(patch.Cell).Append((int)patch.Kind);
+            }
+
+            text.Append('|').Append(EditorJsonUtility.ToJson(level.Theme));
+            return Hash(text.ToString());
+        }
+
+        // The painter's own code counts too: a change to how the ground is painted rebakes every level.
+        private static string PainterHash()
+        {
+            var text = new System.Text.StringBuilder();
+            IEnumerable<string> sources = PainterPatterns.SelectMany(pattern => Directory.GetFiles(PainterSources, pattern));
+            foreach (string path in sources.OrderBy(p => p, System.StringComparer.Ordinal))
+            {
+                text.Append(File.ReadAllText(path));
+            }
+
+            return Hash(text.ToString());
+        }
+
+        private static string Hash(string text) => Game.Balance.LayoutRandom.Fnv(text).ToString("x16");
+
         private static void BakeTerrain(LevelDefinition level)
         {
             var road = new RoadShape(level);
@@ -92,7 +166,7 @@ namespace Game.Editor
         {
             SetShape(roster.Pulse, "_shape", (int)TowerShape.PulseRifle);
             SetShape(cannon, "_shape", (int)TowerShape.Cannon);
-            SetShape(rocket, "_shape", (int)TowerShape.Rocket);
+            SetShape(rocket, "_shape", (int)TowerShape.Flak);
             SetShape(roster.Laser, "_shape", (int)TowerShape.Laser);
             SetShape(roster.Cryo, "_shape", (int)TowerShape.Cryo);
             SetShape(roster.Tesla, "_shape", (int)TowerShape.Tesla);
@@ -105,7 +179,7 @@ namespace Game.Editor
 
             SetShape(roster.Pulse, "_projectileStyle", (int)ProjectileStyle.Bolt);
             SetShape(cannon, "_projectileStyle", (int)ProjectileStyle.Shell);
-            SetShape(rocket, "_projectileStyle", (int)ProjectileStyle.Rocket);
+            SetShape(rocket, "_projectileStyle", (int)ProjectileStyle.Flak);
             SetShape(roster.Laser, "_projectileStyle", (int)ProjectileStyle.Laser);
             SetShape(roster.Cryo, "_projectileStyle", (int)ProjectileStyle.Frost);
             SetShape(roster.Tesla, "_projectileStyle", (int)ProjectileStyle.Lightning);
@@ -124,7 +198,7 @@ namespace Game.Editor
         {
             var looks = new (string Id, PathObjectLook Look)[]
             {
-                ("SlowField", PathObjectLook.FieldEmitter), ("Mine", PathObjectLook.Mine), ("LavaBall", PathObjectLook.LavaBall),
+                ("SlowField", PathObjectLook.Chrono), ("Mine", PathObjectLook.Mine), ("LavaBall", PathObjectLook.LavaBall),
                 ("ExplosiveBarrel", PathObjectLook.Barrel), ("GroundDrone", PathObjectLook.GroundDrone), ("AntiAirNet", PathObjectLook.AirNet),
             };
 

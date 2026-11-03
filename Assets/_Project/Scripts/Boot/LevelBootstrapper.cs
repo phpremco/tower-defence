@@ -2,12 +2,12 @@
 using Game.Combat;
 using Game.Core;
 using Game.Economy;
+using Game.Hero;
 using Game.Levels;
 using Game.Platform;
 using Game.Towers;
 using Game.UI;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Boot
 {
@@ -17,15 +17,6 @@ namespace Game.Boot
     /// </summary>
     public sealed class LevelBootstrapper : MonoBehaviour
     {
-        // The back light comes in low from the far side of the field, so it only touches the edges of shapes.
-        private const float RimPitchDegrees = 28f;
-        private const float RimYawOffsetDegrees = 180f;
-        // Ambient comes from three directions: the sky colour from above, fog at the horizon and near black below,
-        // so the underside of every shape stays darker than its top even in shadow.
-        private const float AmbientSkyBrightness = 1f;
-        private const float AmbientEquatorShare = 0.5f;
-        private const float AmbientGroundBrightness = 0.5f;
-
         [SerializeField] private FixedCameraRig _cameraRig;
         [SerializeField] private Camera _camera;
 
@@ -61,37 +52,30 @@ namespace Game.Boot
 
         private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
         {
-            VisualTheme theme = level.Theme;
-            var sun = new GameObject("Sun");
-            var light = sun.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.color = theme.LightColor;
-            light.intensity = theme.LightIntensity;
-            light.shadows = LightShadows.Soft;
-            light.shadowStrength = 1f;
-            sun.transform.rotation = Quaternion.Euler(theme.SunPitch, theme.SunYaw, 0f);
-
-            var rimObject = new GameObject("RimLight");
-            var rim = rimObject.AddComponent<Light>();
-            rim.type = LightType.Directional;
-            rim.color = theme.RimColor;
-            rim.intensity = theme.RimIntensity;
-            rim.shadows = LightShadows.None;
-            rimObject.transform.rotation = Quaternion.Euler(RimPitchDegrees, theme.SunYaw + RimYawOffsetDegrees, 0f);
-
-            RenderSettings.fog = theme.FogDensity > 0f;
-            RenderSettings.fogMode = FogMode.ExponentialSquared;
-            RenderSettings.fogColor = theme.FogColor;
-            RenderSettings.fogDensity = theme.FogDensity;
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = theme.SkyColor * AmbientSkyBrightness;
-            RenderSettings.ambientEquatorColor = Color.Lerp(theme.FogColor, theme.LightColor, AmbientEquatorShare) * AmbientSkyBrightness;
-            RenderSettings.ambientGroundColor = theme.FogColor * AmbientGroundBrightness;
-            SkyProbe.Apply(theme);
-
+            ThemeLighting.Apply(level.Theme);
             var visuals = new GameObject("LevelVisuals").transform;
             IPlatformSettings platform = Services.Get<IPlatformSettings>();
             return LevelVisualBuilder.Build(level, visuals, platform.ParticleScale, platform.FogEnabled);
+        }
+
+        // The perks the hero can earn that the player has unlocked (the debug switch unlocks them all, like the weapons).
+        private static List<HeroPerkDefinition> UnlockedPerks(HeroDefinition hero, ProgressService progress, bool unlockAll)
+        {
+            var perks = new List<HeroPerkDefinition>();
+            if (hero == null)
+            {
+                return perks;
+            }
+
+            foreach (HeroPerkDefinition perk in hero.Perks)
+            {
+                if (perk != null && (unlockAll || progress.IsHeroPerkUnlocked(perk.Id)))
+                {
+                    perks.Add(perk);
+                }
+            }
+
+            return perks;
         }
 
         private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing, IReadOnlyList<Game.PathObjects.PathObjectDefinition> loadout)
@@ -135,6 +119,7 @@ namespace Game.Boot
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
             context.GlobalModifiers = global;
+            context.HeroPerks = UnlockedPerks(level.Hero, progress, unlockAll);
             foreach (Game.Drones.DroneDefinition drone in new[] { level.RepairDrone, level.HarvestDrone, level.AttackDrone })
             {
                 if (drone != null)
@@ -188,6 +173,8 @@ namespace Game.Boot
             var time = controllers.AddComponent<TimeController>();
             time.Initialize(context, input);
             controllers.AddComponent<ReconView>().Initialize(context, panZoom, time, input, routes);
+            // Before the HUD: the story must see the level end before the result screen does.
+            controllers.AddComponent<LevelStoryListener>().Initialize(context, time, input, progress, briefing);
             var mix = Services.Get<AudioMix>();
             controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig, spawner.Living, drones.Drones);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);

@@ -64,10 +64,13 @@ visible pool. They are background, never the loudest thing in a level.
 | --- | --- |
 | Explosions gate, base, tower break | `TowerWrecked` (gate or tower), `BaseHealth.Died` |
 | Rocket vs cannon explosion | `ProjectilePool.Exploded` with the projectile style |
+| Flak shot and burst (S4) | `ProjectilePool.Shot` and `Exploded` with `ProjectileStyle.Flak`: Kenney `impactMetal` at pitch 1.3 and `explosionCrunch` at pitch 1.25 (`FlakShotVolume` 0.55, `FlakBurstVolume` 0.35) |
+| Stone stand-ins (S4) | `Voice_Cragback` (ice beetle walk and screech plus heavy steps, pitch 0.85), `Voice_Shalebat` (bat wings, screech and sand attack, pitch 0.85); `SoundSet._pitch` replays a borrowed clip slower; Remco's own stone sounds replace them in data |
+| Rift ambience (S4) | `SfxLibrary.RiftLoops`: the lava-bed loop at pitch 0.8, one layer per level with rifts, scaled 2.3 like a pool |
 | Mine and barrel | `PathObjectTriggered` |
 | Net, slow field, cart, fireball | `PathObjectSpawned` by effect; loops follow the live path objects |
 | Drone fan, repair, harvest, laser, cash | drone list: alive count, `Activity`, `Fired`, `Delivered` |
-| Hero gun, saber, steps, pulse, death, fall | `Commander.Struck` (weapon kind), walking distance, `ShockwaveReleased`, `Downed` |
+| Hero gun, saber, steps, abilities, death, fall | `Commander.Struck` (weapon kind), walking distance, `AbilityUsed` (the ability's own `SoundSet`, else the pulse for a shockwave and the repair chime), `Downed` |
 | Creature loop, steps, roll | distance travelled per frame (`PathProgress`), `IsRolling` |
 | Species loop presence | `CreatureVoice._presence` multiplies the loop level of one species (Wisp 2, Core Wisp 1.5): a hum needs more than legs |
 | Creature attack and impact | `Enemy.Attacked`; impact scheduled after range / bolt speed |

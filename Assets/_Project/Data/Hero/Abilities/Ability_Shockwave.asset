@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b67168339ad1c47b77ab1544b96093, type: 3}
+  m_Name: Ability_Shockwave
+  m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroAbilityDefinition
+  _displayName: Shockwave
+  _kind: 0
+  _cooldown: 20
+  _moneyCost: 0
+  _damage: 40
+  _radius: 3.2
+  _fraction: 0
+  _targets: 3
+  _requiresPerk: {fileID: 0}
+  _icon: {fileID: 0}
+  _tint: {r: 0.4, g: 0.8, b: 1, a: 1}
+  _sound:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _impactVfx: {fileID: 0}
+  _description: A ring of force around Mercer that hits everything close by, on the ground and in the air.
