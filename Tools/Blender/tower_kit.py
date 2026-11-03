@@ -883,10 +883,16 @@ def skin_to(obj, arm):
 def export_fbx(path, objects, animated):
     """common.export_fbx's settings, but keeping non-deforming bones (the Muzzle and Smoke sockets)."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    for o in bpy.context.view_layer.objects:
-        if o is not None:
-            o.select_set(o in objects)
+    keep = {o.name for o in objects}
+    for o in bpy.context.scene.objects:
+        if o is not None and o.name not in keep:
+            o.select_set(False)
+    for o in objects:
+        o.hide_set(False)
+        o.hide_viewport = False
+        o.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
+    C.log("fbx selection", [(o.name, o.type, o.select_get()) for o in bpy.context.selected_objects])
     bpy.ops.export_scene.fbx(
         filepath=path, use_selection=True, object_types={"ARMATURE", "MESH", "EMPTY"}, apply_unit_scale=True,
         apply_scale_options="FBX_SCALE_ALL", axis_forward="-Z", axis_up="Y", bake_space_transform=False,

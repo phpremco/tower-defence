@@ -339,3 +339,14 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | Gate Gun | Getest op een nepbalk. De klem en de rangplaat moeten in Unity tegen de echte `GateView`-balk worden gecontroleerd |
 | Wrak | Leest als "verbrande toren", nog vrij netjes. Rook en vonken komen uit VFX |
 | Sokkel | Ongeveer 1.400 driehoeken (ventilatieroosters, sterren en de ring). Kan omlaag als het budget knelt |
+
+### Omgeving ronde 8 (Crystal Plains-kit)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Stoeprand | Leest als een rij brokken en tanden (kantelen), niet als één doorlopende rand |
+| Kaartrand | Het ravijn aan de voorkant is een grote mistige muur in beeld. Kliffen wat bobbelig |
+| Rift | Lichte naad waar de bovenkant op het terrein aansluit. Alleen rechte stukken, nog geen bochten of kruisingen |
+| Plein | Het sigil herhaalt per tegel van 3 m en zit niet in het midden van het plein. In Unity de UV-oorsprong per plein centreren |
+| Oevers | Eén oeverstijl voor alle vloeistoffen. De vijver in de diorama is een cyaan placeholder-vlak |
+| Algemeen | De diorama oogt sfeervol en rijk. De weg is duidelijk herkenbaar, de bouwplekken ook |
