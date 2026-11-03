@@ -605,3 +605,54 @@ renders are `env_tiling_<set>.png`.
   amp about 0.04 units, speed 0.7-1.3 (today's SwayDegrees 2.5 equivalent). This replaces the whole-object sway.
 - **Emission:** kit maps are 0..1 masks in the glow colour; use about 2.2 (rift 2.4), theme Bloom as now. The
   rift glow is authored amber (theme Rift colour of the Stone tint).
+
+## Round 9: gate, base, base turret, drones, gadgets (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 9). Same hard-surface pipeline as round 7 (`tower_kit.py` pieces, atlas,
+self-bake, four maps, packed Mask R AO / G smoothness / B metal detail / A ceramic detail, shared
+`Detail_Metal_Normal` and `Detail_Ceramic_Normal`). New helpers in `base_kit.py` (hex panels, shards, clips with
+scale keys, module objects with their own pivot, comparison staging). Builds: `build_gate.py`, `build_base.py`
+(`--only Base|Turret`), `build_drones.py`, `build_gadgets.py`; all take `--preview`, `--norender`, `--nobake`.
+
+**Export note:** `base_kit.export_fbx` updates the view layer before `tower_kit.export_fbx`; without it objects made
+with `bpy.data.objects.new` are not selected and the FBX holds only the armature (the round-7 bug).
+
+| Asset | Files | Triangles LOD0 (LOD1) | Rig and clips |
+| --- | --- | --- | --- |
+| Gate | `Gate/Gate_G1..G3.fbx` (+ `_LOD1`, `_Damage` overlay), `Gate_Wreck.fbx` | 5,224 / 6,304 / 7,552 (1,364 / 1,660 / 1,996); overlay 1,148; wreck 2,068 | `Gate_Rig`, 30 bones: `Pylon_L/R`, `Beam`, `Hex_L1..9`, `Hex_R1..9`; sockets `GunMount`, `Field`, `HeroPost`, `Smoke_L/R`, `Spark_1..3`. Clips Repair 30, Build 45, Hit 8, Collapse 36 |
+| Base | `Base/Base.fbx` (8 modules + LOD1 + socket empties), `Base_Damage.fbx`, `Base_Wreck.fbx` | 7,250 (3,190); overlay 1,188; wreck 3,720 | static; modules Deck, Command, Dish, Pad, Core, Crystal, Habitat, Hardpoints, each pivot on its foot |
+| Tower_BaseTurret | `Tower_BaseTurret_T1..T3.fbx` | 3,204 / 4,256 / 4,440 (1,496 / 2,188 / 2,076) | as Tower_Gun (T3 = the rotary, mesh named `_T3A`) |
+| Drone_Repair | `Drone_Repair/Drone_Repair.fbx` | 3,084 (1,972) | 8 deform bones: Root, Body, Rotor_1..4, ToolArm, Emitter; socket `Beam`. Idle 60, Fly 60, Work 60 |
+| Drone_Harvest | `Drone_Harvest.fbx` (+ `Drone_Harvest_Cargo`) | 2,294 (1,262), cargo 340 | Root, Body, Rotor_1..2, Drill, Claw_1..3; sockets `Mine`, `Cargo`. Idle, Fly, Work |
+| Drone_Attack | `Drone_Attack.fbx` | 2,208 (1,248) | Root, Body, Rotor_1..2, Gun_1..2; sockets `Muzzle_1/2`, `Thruster`. Idle, Fly, Work |
+| Gadget_Mine | `Gadget_Mine.fbx` | 1,212 (632) | Root, Cap, Ring; socket `Blast`. Arm 24, Idle 60, Trigger 8 |
+| Gadget_Chrono | `Gadget_Chrono.fbx` | 2,008 (1,328) | Root, Core, RingA, RingB; socket `Field`. Deploy 30, Idle 90 |
+| Gadget_Barrel | `Gadget_Barrel.fbx` | 1,208 (656) | static; empties `Blast`, `Fuse` |
+| Gadget_AirNet | `Gadget_AirNet.fbx` | 1,460 (1,156) | static; empties `Strand_L1..3`, `Strand_R1..3` |
+| Gadget_GroundDrone | `Gadget_GroundDrone.fbx` | 928 (544) | Root, Body, Wheel_FL/FR/RL/RR; socket `Ram`. Drive 30, Idle 60 |
+
+Maps: gate, base and base turret 1024 (+ `Low/` 512); drones and gadgets 512 (+ `Low/` 256). Reports
+`*_report.json` hold pivots, sockets, UV density and detail tiling.
+
+### Unity notes
+
+- **Import** as round 7 (Scale 1, Bake Axis Conversion, Generic rig, keep non-deforming bones and empties). All
+  models are at final size: do not apply `LevelVisualBuilder.BaseScale` or drone/path-object scales.
+- **Gate (GateView):** replace `GatePylon`/`GateBeam` with the `Gate_Gn` prefab of the gate's level (L0 = G1, L1 = G2,
+  L2 = G3). Mount `Tower_GateGun` on `GunMount` (identity). Keep the field shader; its sheet and floor strip go at
+  `Field`. Damaged (below about 50% HP): show `Gate_Gn_Damage` and scale the bones in
+  `damaged_state_hidden_hexes` (report) to 0, sparks at `Spark_n`. Repair: play `Repair` (pops those panels back),
+  hide the overlay. Destroyed: play `Collapse` (or keep the code collapse), then swap to `Gate_Wreck`; rebuild plays
+  `Build`.
+- **Base (LevelVisualBuilder / BaseView / FieldBase):** instantiate the module objects instead of `BaseOutpost`; the
+  `Spinner` goes on `Base_Dish`; give `Base_Crystal` its own material instance to pulse and ignite. The cutscene
+  timelapse raises the modules in `timelapse_order`. Damaged: enable `Base_Damage`; destroyed: swap to `Base_Wreck`
+  after the explosion. Lights at `Light_Core`, `Light_Command`; smoke and sparks at the sockets.
+- **Base turret:** `BaseTurret` tower prefab uses `Tower_BaseTurret_T1..T3` exactly as Tower_Gun (Yaw, Pitch,
+  Muzzle_n, stars).
+- **Drones (DroneModelBuilder / DroneView):** the view keeps spinning `Rotor_n` in code (the clips spin slowly),
+  bobbing and banking stay in code or use `Idle`/`Fly`; `Work` while repairing, mining or firing. Beam from `Beam`,
+  shots from `Muzzle_n`, thruster trail at `Thruster`, cargo glow on `Drone_Harvest_Cargo` (own material instance).
+- **Path objects (PathObjectView / PathObjectModels):** Mine plays `Arm` on placement, `Idle`, `Trigger` before the
+  blast VFX at `Blast`; Chrono plays `Deploy` then `Idle`, the field shader at `Field` (the code's two VFX rings can go,
+  the model has its own); Air Net strands between `Strand_Ln` and `Strand_Rn`; Ground Drone `Drive`.

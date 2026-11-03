@@ -622,3 +622,110 @@ Open point: the data colour of the attack drone is coral (1, 0.45, 0.35), a warm
 **Budgets:** gate per tier and base (in-level) 8,000 triangles or less, LOD1 about 3,000, 1024 maps (512 Low); drones
 and gadgets 2,500 or less, 8 bones or fewer, 512 maps (256 Low). One material per asset, packed Mask (R AO, G
 smoothness, B metal detail, A ceramic detail), shared `Detail_Metal_Normal` and `Detail_Ceramic_Normal`.
+
+# Round 10: P2 enemies and their level bosses (Stinger, Bat, Bulwark, Oozer and five bosses, 2026-11-04)
+
+Same rules as rounds 2 to 6 (Earth animal only as a start; matte, layered surfaces with baked micro-detail; a strong
+read at ~20 px through value contrast, bold markings and glow accents; warm organic colours, no cool blue or cyan,
+which is our side; each species keeps its role and element from `ProjectGenerator.Bestiary`). New helpers live in
+`Tools/Blender/creature_kit2.py`; the shared modules are only imported.
+
+Two rules added this round, from the "Verbeterpunten" list of `Docs/MODEL_TODO.md`:
+
+- **Asymmetric markings where the mesh is mirrored.** Mirrored UVs copy every marking to the other flank (PackAlpha's
+  scars). Markings that should be read as one sign sit on the midline (the plate chevrons, the dorsal stripe).
+- **No uniform honeycombs.** Egg and gland fields use cells of mixed size with gaps and veins, never one cell size.
+
+## Stinger (armoured scorpion: its acid tail stings towers in passing; heavy shots crack the plates)
+
+**Earth starting point:** a scorpion. Data colours: violet body, magenta eyes and accent, acid green blood.
+
+1. **Six legs, not eight,** on a low wide stance, the front pair longer; feet end in single hooks.
+2. **Trap claws.** Each claw is a swollen hand with a fixed blade-finger and a hinged hook-finger, both serrated, the
+   inside edge glowing magenta; a back-turned barb on each hand. From above the claws make the front of an arrow.
+3. **Glowing armour plates.** Five shingled dorsal plates over the abdomen and a carapace plate over the head, each
+   plate dark plum with a pale worn front lip, a hot magenta rear rim and a forward chevron: at 20 px the back is
+   dark with bright magenta bars pointing the way it walks. The plates are where the armour lives.
+4. **An acid tail, not a sting.** Five ringed segments arc high over the back; acid glows lime-yellow at every joint,
+   and the tail ends in a swollen, veined acid bladder with a long hooked needle that points forward over the head.
+   The hottest acid light is at the tip, high up, so the tail reads from the game camera.
+5. **A face of eyes and palps.** No scorpion eye pair: a raised mound with a crown of six magenta eye beads and two
+   short hooked palps under the carapace lip.
+
+Colour: plum-magenta plates (warmer than the data violet), near-black body and legs, magenta plate glow, acid
+lime-yellow tail. Clips: Walk, Idle, Hit, Death, **Strike** (the tail whips forward over the head and stabs down).
+
+## Bat (element bat: rises from element nests, spits element bolts, air)
+
+**Earth starting point:** a bat. One mesh for every element; the element is a palette (and so a set of maps).
+
+1. **Three-spined wings.** Each wing is a membrane over three long hooked spines fanning from a knobbed wrist, the
+   skin scalloped between them; the leading edge glows in the element colour and the membrane carries pale bands
+   (a wide, flat outline with a moving light line on every beat).
+2. **No ears, no snout.** A short wedge head with a split lower jaw around a glowing bolt throat, four eyes in a row
+   on each side, and two swept-back sensor horns where the ears would be.
+3. **A bolt gland.** A glowing sac on the chest (seen from below and from the front) feeds the throat. A glowing
+   dorsal stripe from the head to the tail points forward from above.
+4. **Whip tail with a forked vane,** and two hooked hind talons tucked under the body.
+
+The element skins differ only in colour (membrane, plates, veins, glow, eyes); the mesh and the rig are one.
+Default export: Ember (fire). Other skins with `--element` (see README round 10). Clips: Fly, Glide, Hit, Death.
+
+## Bulwark (upright shield bearer with a crystal sword, armoured, from level 11 to 12)
+
+**Earth starting point:** a bipedal dinosaur ("dino-man") with a shield and a sword.
+
+1. **The shield is its body.** No held shield: a huge curved bone plate grows from the left forearm, ribbed with
+   growth ridges, a pale worn rim and a glowing boss: a natural shield, the reason it is armoured.
+2. **The sword grows too.** A long Crysium blade grows out of the right forearm (fused, not held): the planet's own
+   crystal, pink-white with a hot core, not cyan (the data accent is cyan, our side's colour; flagged).
+3. **An armoured helm head.** A long low head under a bony visor plate with amber eye slits, tusked mandibles and a
+   crest of backward horns.
+4. **Plated, heavy body.** Shoulder plates, a chest plate and a back ridge of spines over dark olive scaled hide;
+   lime goo glows in the joints and the throat (the species' goo). Thick digitigrade legs with hooked toes and a
+   heavy tail.
+5. **Natural posture** (Remco 2026-11-01): knees bent, a forward lean, the sword low at rest (not straight up).
+
+Colour: deep olive-green scales, pale bone plate rims, lime goo glow, amber eyes, pink Crysium sword.
+Clips: Walk, Idle, Hit, Death, **Block** (raises the shield in front, braces, holds).
+
+## Oozer (slug on a toxic slime foot: its trail hastes other species and burns hero and gates)
+
+**Earth starting point:** a slug.
+
+1. **Four eye stalks** of different lengths (a long front pair, a short rear pair), each with a glowing eye bulb,
+   moving independently.
+2. **A gland back.** The mantle is a ridged leathery hood with glowing toxin glands of mixed size (not a honeycomb)
+   that vent the slime, and a dorsal ridge of soft spines.
+3. **A ring mouth.** The head front is a round lamprey mouth with a ring of hooked teeth around a glowing gullet.
+4. **A glowing foot.** A wide translucent slime skirt, lime at the edge with pedal-wave stripes; the trail itself is
+   VFX in Unity.
+
+Colour: dark olive-brown mottled hide (so the lime glow carries), lime glands and foot, pale yellow eyes.
+Clips: Crawl (pedal wave along the body bones), Idle, Hit, Death.
+
+## The bosses (kin, not scaled copies)
+
+Same boss rules as round 6: the species' signature stays, heavier and older, a crown no common enemy has, the power
+as a visible organ with its own clip, and direction at 20 px (hot front, dark trailing mass, a forward chevron).
+Each boss is built in its species' units and scaled up as a whole at the end (`creature_kit2.scale_rig`), so it can
+share the species' rig code and still get its own proportions and organs.
+
+- **AcidEmpress (Stinger boss: acid rain on towers, plates that regrow).** Wider and lower, more armour plates, a
+  crown of magenta Crysium spikes on the carapace, bigger trap claws, and a tail that ends in a big acid **spray
+  gland** on its own bone (it swells and squeezes, bone scale) with nozzles. Two short side tails flank the main
+  one. Clip **Spray**: the tail rears up and back, the gland squeezes and the acid leaves the nozzles upwards.
+- **CrystalWarlord (Bulwark boss: a sweeping sword, crystal that regrows).** Taller and broader, a bigger bone shield,
+  a Crysium greatsword grown from the right arm, a crown of Crysium shards on the helm and Crysium breaking through
+  the shoulder plates (the crystal regrowth). Clips **Block** and **Sweep** (a wide horizontal swing).
+- **SkySovereign (Bat boss, air: a tail laser swept across the field).** A wider span, a second smaller wing pair, a
+  crown of horns and a long tail ending in a lens organ (the laser emitter) between hooked prongs. Clip **Laser**
+  (it rears, the tail swings forward under the body and sweeps side to side). Data note: in the data the
+  SkySovereign is the ray boss and the StormMatriarch the bat boss; the round-6 StormMatriarch model is a Skyray
+  boss, so this bat boss fits the SkySovereign slot once the data is swapped (curator decision).
+- **SlimeMonarch (Oozer boss: slime floods and more oozers).** A huge slug with a crown of six eye stalks, a broader
+  gland mantle, brood sacs on the back (bone scale) where young oozers come out, and a wide foot. Clips **Flood**
+  (it rears up and slams the front down) and **Spawn** (the sacs squeeze).
+- **RollerKing (Roller boss: a quake with every landing).** The Roller's eight-plate ball, grown and armoured: a crown
+  of hooked keels and heavier plates. Clips Walk, Idle, Hit, Death, Curl, Roll, Uncurl and **Quake** (a hop in the
+  ball, landing with a slam).

@@ -102,7 +102,7 @@ class Repair(Drone):
         on = ["Main"]
         k.lathe("Belly", [(0, -0.075), (0.1, -0.075), (0.135, -0.035), (0.14, -0.01), (0, -0.01)], tk.frame(), tk.GUNMETAL, "Body", on, sides=16)
         k.lathe("Band", [(0, -0.012), (0.145, -0.012), (0.145, 0.022), (0, 0.022)], tk.frame(), tk.BLUE.but(panel=0), "Body", on, sides=16)
-        k.lathe("Shell", [(0, 0.02), (0.14, 0.02), (0.125, 0.055), (0.085, 0.08), (0, 0.088)], tk.frame(), tk.WHITE.but(panel=0.06), "Body", on, sides=16)
+        k.lathe("Shell", [(0, 0.02), (0.14, 0.02), (0.125, 0.055), (0.085, 0.08), (0, 0.088)], tk.frame(), tk.WHITE.but(panel=0, bolts=False), "Body", on, sides=16)
         k.torus("StatusRing", V(0, 0, -0.012), UP, 0.146, 0.008, bk.glow(self.accent, 1.5), "Body", on, seg=20, sides=4)
         k.block("Visor", (0.12, 0.03, 0.04), tk.frame((0, -0.13, 0.03), rot=(-20, 0, 0)), tk.GLASS, "Body", on, bevel=0.006)
         k.block("VisorGlow", (0.08, 0.01, 0.01), tk.frame((0, -0.145, 0.02), rot=(-20, 0, 0)), bk.glow(self.accent, 1.8), "Body", on, bevel=0.0)
@@ -233,7 +233,7 @@ class Attack(Drone):
             if s < 0:
                 pts = list(reversed(pts))
             k.plate("Wing", pts, 0.018, tk.frame((s * 0.05, 0.02, 0.01)), tk.WHITE.but(panel=0.07), "Body", on, bevel=0.004)
-            edge = tk.frame((s * 0.18, 0.0, 0.012), rot=(0, 0, s * 25))
+            edge = tk.frame((s * 0.18, 0.016, 0.014), rot=(0, 0, s * 25))
             k.block("WingEdge", (0.18, 0.012, 0.012), edge, bk.glow(self.accent, 1.6), "Body", on, bevel=0.0)
             k.block("Chevron", (0.06, 0.03, 0.006), tk.frame((s * 0.15, 0.09, 0.021), rot=(0, 0, s * 40)), tk.YELLOW, "Body", on, bevel=0.0)
             c = V(s * 0.33, 0.1, 0.01)
