@@ -1207,3 +1207,51 @@ Review findings 3 to 8 (1 and 2 were fixed by the balance pass) and the curator 
   the probe's graphics ring buffer at 20x). Save restored to its MD5.
 - **Note:** a checkpoint commit (e49ab18, not by this pass) captured these changes mid-way; the working tree holds the
   final state.
+
+## Probe bot opening (2026-11-04)
+Curator decisions after the S4 review: fix the probe bot's opening, not Fault Line; tune Shard Ridge's raid size so a
+gun-only build struggles without a guaranteed loss. Numbers and the decision log are in the S4 spec, "Curator decisions
+after balance", items 4 and 5.
+- **What was wrong:** the old bot kept a Flak's price from wave 1 whenever flyers came anywhere in the level, bought the
+  Flak at once, and then valued every Flak step at twice its damage per coin while a flyer wave was one wave away. On
+  Fault Line (small air waves from wave 3 on, every few waves) that sent the money into the Flak and a Laser; by wave 8
+  to 10 it had 2 to 5 towers and the Skitters walked through.
+- **The bot now judges its own towers with the ledger.** New `Ledger.PressureOf(level, load, rules, standing)`: ground
+  and air pressure of one wave against towers that already stand (id and level), with the hero, on the ledger's scale.
+  `Ledger.Evaluate` / `BalanceLedger.Evaluate` take an optional list that receives every wave's load (carried health
+  folded in). The ledger's own lines and solver are unchanged (same output; BalanceLab report the same).
+- **Bot rules** (`BalanceProbeTests.Act`), all general, no level checks:
+  1. The waves at hand are the one being fought and the next. A step's value is how much it lifts the worse of ground
+     and air cover (one over pressure) per coin; a step that does not move the bottleneck counts 1% for the side it lifts.
+  2. Ground first: while the bot's ground pressure on the waves at hand is above 1.25 it saves nothing.
+  3. Air in time: without a sky gun, the Flak's price is kept from the wave on whose ledger money until the first flyer
+     wave is twice the price (kill money arrives late); the Flak is bought as soon as it is affordable and placed under
+     the flight routes.
+  4. Air cover counts only sky guns. The ledger lets every up-aiming gun count for the air, but the bot's guns stand at
+     the gate while the flyers cross elsewhere: with the ledger's air count the bot never bought a Flak on Shard Ridge
+     (18 guns, the model's air pressure under 0.5, 12 of 18 Skyrays through, lost).
+  5. While the ground holds, a step at most one wave's kills away that is 1.5x better per coin than anything affordable
+     is waited for (without it the bot never saved the Flak's 120 while 50-coin guns were on offer).
+  The trace line now also carries `bot pressure ground/air` (the ledger on the bot's own towers) beside the ledger line.
+- **Shard Ridge `AirRaidScale` `{ 1, 1.6 }` -> `{ 1, 1.3 }`:** at 1.6 the gun-only bot lost every run; 1.3 is the only
+  value in the curator's 1.3 to 1.6 range where it does not. Medium raids w12/w15 air health 631/1096 -> 438/868, air
+  pressure 0.96/0.93 -> 0.70/0.83; 15 flyers over the level.
+- **Probe on Medium (new bot, final data):**
+
+  | Level | Bot | Runs | Won | Base damage per run | Flyers down |
+  | --- | --- | --- | --- | --- | --- |
+  | C1_03 Shard Ridge | Flak | 7 (4 air check + 3 smoke) | 7 | 0 in each | 15/15 |
+  | C1_03 Shard Ridge | gun only | 4 | 2 | 800 (lost w16), 18, 800 (lost w16), 786 | 13-15/15 |
+  | C1_04 Fault Line | Flak | 4 | 4 | 0 in each | 36-39, all |
+  | C1_04 Fault Line | gun only | 4 | 4 | 0 in each | 36-39, all |
+  | C1_06 Crysium Vein | Flak | 4 | 4 | 0 in each | all |
+
+  Before (old bot): Fault Line Flak bot lost 3 or 4 of 4. A Skyray that reaches the base keeps hitting it until the
+  base falls (nothing there aims up), so the gun-only result is near all-or-nothing. The Flak bot builds two Gun Turrets
+  and the Flak on Fault Line at wave 1 (first flyers at wave 3), the Flak at wave 11 on Shard Ridge (raid at wave 12);
+  it mostly builds Gun Turrets (the ledger rates them best per coin) and rarely upgrades.
+- **Tests:** EditMode 283/283 (`BalanceLedgerTests` bands hold; BalanceLab `report`: "all inside their bands").
+  PlayMode `BalanceProbeTests` smoke 1/1 (four runs) and `Medium_GunOnlyBot_StrugglesInThePackedAirRaids` 1/1 (four
+  runs); `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2. Console 0 errors; warnings only the known test fixture "Grid size must be positive".
+  Generator rerun idempotent (only `Waves_C1_03.asset` changed; the scenes get new file ids on every run as before).
+  Save restored to its MD5.

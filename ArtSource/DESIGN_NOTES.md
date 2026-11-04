@@ -865,3 +865,176 @@ are dark, not white (white discs read as a tiered cake and hid the coils). The R
 with the rail tops (it was hidden between them), its collars are gunmetal and the rail tips yellow. The Acid tanks are
 bigger and carry a glowing level band, so the acid reads from every side, not only through the glass. The Cryo Beam's
 coolant tank rides piggyback on top of the emitter.
+
+# Round 13: story characters and cutscene models (Voss, ORA, NTI emblem, Pioneer-1, capsule, drill, mothership, beacon, radar console, 2026-11-04)
+
+Brief (MODEL_TODO sections 2 and 8; `Docs/STORY.md` prologue, opening cutscene and continent 4; `Docs/specs/S2_CUTSCENES.md`):
+the faces and machines of the story. They are seen in dialogue portraits and in cutscene shots, closer and longer
+than anything on the field, so silhouettes stay simple and readable, and the detail sits in the maps. Everything here
+is **our side** (NTI, the colony): the round-7/9 workshop language (white ceramic tops, colony blue, gunmetal undersides,
+yellow hazard trim, one cool glow per machine). The only warm or organic things are the alien growth on the Pioneer-1
+wreck and the re-entry glow of the capsule's heat shield. Nothing copies a real company, film or game design.
+
+Builds: `story_kit.py` (shared helpers, new), `build_voss.py` (creature pipeline: fused parts, bake, skinned bust),
+`build_story_props.py` (hard-surface kit: ORA, NTI emblem, Pioneer-1 and its wreck, radar console) and
+`build_cutscene.py` (capsule, drill, mothership, beacon). Cutscene-only items get no LOD1; the Pioneer-1 wreck is the
+only one that stands in a level (Mirewood, level 8 and the Rotbloom fight), and it is static decor (no LOD needed at
+its size; the in-level decor budget is raised to the prop budget because it is a set piece).
+
+## Dr. Elena Voss (chief scientist; dialogue portraits and cutscene close-ups)
+
+**Character:** a woman in her forties, curious and sharp, sometimes doubting. Stylised in Mercer's family: soft
+rounded volumes, clean value groups, a slightly large head and eyes, no pores and no realistic skin shading, so she
+never tips into the uncanny. Her face must carry the expression (Mercer hides his behind a visor; she is the human
+face of the colony).
+
+1. **Silhouette (portrait size):** a high dark hair mass pinned into a bun at the back with a side-swept fringe, a
+   white stand-up coat collar framing the face, and a headset with a lit cyan earpiece on her right ear. Three value
+   groups: white coat, mid-navy undersuit collar, dark auburn hair; skin in between.
+2. **Face:** an oval head with a slightly pointed chin, defined cheekbones, a straight nose, a small mouth with a dark
+   mouth line (it stretches into an open mouth when the jaw drops), dark brow strokes and lash lines painted in the
+   albedo, steel-blue irises (cool palette accent) with a dark pupil and a glossy eye (low roughness for a real
+   highlight). Upper eyelids are their own shapes so a blink bone can close them.
+3. **Clothes:** a white field/lab coat (cloth, not armour: soft folds, a stitched seam along the collar edge), lapels
+   folded back over a navy high-collared undersuit with a thin cyan lit seam on the collar rim, a colony-blue yoke
+   stripe on the coat shoulders, a yellow ID card clipped to the left lapel (the only yellow), and a small hex NTI
+   patch on the left shoulder.
+4. **Headset:** a slim gunmetal band over the crown under the hair, an earpiece with a cyan ring light on the right
+   ear and a mic boom along the cheek: she is always on the line with Mercer and ORA.
+
+Rig (10 bones): `Root, Spine, Chest, Clavicle_L/R, Neck, Head, Jaw, Lid_L, Lid_R`. Clips: **Idle** (two slow breaths,
+a small head drift, one blink), **Talk** (jaw syllables, two nods, a blink), **Blink** (lids only, for a random-blink
+layer). Budget 6,000 triangles, one material, 1024 maps (+ 512 Low). No LOD1 (portrait and cutscene only).
+
+## ORA (the base AI: a presence, not a person)
+
+ORA has no body and must never look like a human face. **Form:** a floating faceted crystal core (an icosahedron
+with an inner octahedron) inside three gyroscope rings made of arc segments with gaps, a crown of eight triangular
+"thought" shards circling above, and one horizontal **gaze bar** across the core facing the viewer: a scanning slit of
+light that widens when she speaks (her only "expression"). A thin emitter disc below is where the projection comes
+from. All glow in ORA's cyan (0.35, 0.85, 1.0) with white-hot edges.
+
+**Glitch-ready mesh:** UV0 is the atlas for the four maps; **UV1** holds bands for a Unity glitch shader: U = angle
+round the vertical axis (0..1), V = height through the whole hologram (0 at the emitter, 1 at the crown), so a shader
+can offset horizontal slices, scroll scanlines and tear bands without knowing the parts. Bones for the motion:
+`Root, Core, Inner, Ring_1..3, Halo, Gaze`; clips **Idle**, **Talk** (gaze pulses), **Glitch** (snaps and jitters).
+
+## NTI emblem (Nova Terra Industries, the corporate sender)
+
+An original mark: a rounded hexagonal badge (gunmetal rim, deep colony-blue field), a white **horizon arc** (the new
+earth, "Terra") and a four-pointed **rising star** above it (the "Nova", lit pale gold-white) whose long lower ray
+touches the arc; under it the letters **N T I** as raised white plates on a dark bar. Cold and corporate, slightly
+glossy. No globe-with-orbits, no swoosh, no meatball: nothing that reads as an existing agency or company. Static.
+
+## Pioneer-1 (2047 NTI scout probe) and its wreck (Mirewood, level 8 and the Rotbloom fight)
+
+**Intact (log portraits):** an older generation of our machines: the same white and blue, but simpler and more
+"space probe": a hexagonal instrument body on three landing legs with round pads, the lower half wrapped in
+gold-amber insulation foil, a large high-gain dish on a short mast, two solar wings of dark blue cells in thin yellow
+frames, a sensor mast with a camera head and a mint status lens (the Pioneer log colour, 0.55, 1, 0.8), a core-sample
+**drill** under the body (story: Pioneer-1 drilled too, and then the attack began), the NTI emblem plate and a yellow
+"P-1" hull mark.
+
+**Wreck:** the same parts, crashed and six years old: tilted and half sunk in a mire mound, one leg snapped and
+lying, one solar wing torn off and lying flat, the other bent down, the dish cracked with a shard missing, the camera
+mast bent over, scorch and burnt panels. Pink-violet Crysium shards grow out of the hull cracks and the ground, and
+alien flora (plum fronds with pink and lime glowing tips, tendrils over the legs) is taking it back. One mint status
+light still glows (socket `StatusLight`): the probe is still logging. Sockets `Smoke`, `StatusLight`, `Log` (the
+logbook pickup). Static decor, 1024 maps.
+
+## Cutscene machines
+
+- **Landing capsule** (~1.75 tall, as `CapsuleModelFactory`): a faceted hexagonal pod (white ceramic panels over a
+  blue band, gunmetal waist ring), a broad dark **heat shield** underneath with an ember rim (its own mesh, so Unity
+  can fade its glow after re-entry), four **retro-jet** pods on the waist (sockets `Jet_1..4`), three landing legs that
+  swing out (clip **Land**), a front **ramp** hinged at its foot that opens down to the ground and shows a lit interior
+  (clip **Open**; socket `Exit` where Mercer steps out), a parachute cap and an antenna with a beacon light.
+- **Drill derrick** (~4.4 tall, base 2.3 as `DrillModelFactory`): a gunmetal deck with yellow hazard edges, a blue
+  motor house with lit vents and an exhaust stack, a four-legged steel lattice derrick with cross braces, a white
+  crown block with a beacon, and a drill **string** (pipe, lit collar, fluted bit) on its own bones: clip **Spin**
+  (loop) and **Sink** (the string drives 3 units into the ground while it spins).
+- **Mothership** (~14 long, 15,000 triangles at most): a long truss spine, a white command module with a lit bridge
+  band in front, a big rotating habitat **ring** on four spokes (bone `Ring`, clip **Spin**), blue and white cargo pods
+  along the spine, a capsule bay underneath (socket `Bay`), dark radiator fins with cyan lines, and an engine block
+  with three nozzles (sockets `Nozzle_1..3`). Readable from far: needle, ring, engine glow.
+- **Beacon** (as `BeaconModel`): a tripod whose legs fold out, a telescoping mast, a pulsing lamp (socket `Lamp`) and
+  a turning ring; clips **Deploy** and **Idle**.
+- **Radar console** (command post): a sloped operator desk with a round radar screen in a bezel (its own mesh with a
+  0..1 UV disc for a sweep shader), two small side screens (own meshes, 0..1 UVs), keys and handles, colony blue and
+  white with gunmetal. Static.
+
+# Round 14: Gravemaw, spawn origins, resource node, warm Tide and Frost bats (2026-11-04)
+
+Brief (MODEL_TODO: continent bosses, "Overige spawnpunten", "Grondstofpunt", curator decision on the bat skins;
+STORY.md: Gravemaw is "the first giant from the deep", a giant burrower with crystal armour that dives under the
+ground and surfaces further along, skipping towers). Same rules as rounds 2 to 10 (Earth only as a starting point,
+matte layered surfaces, read at the game camera first, warm alien light). Helpers in the new `Tools/Blender/deep_kit.py`.
+
+## Gravemaw (continent-1 boss: the climax of Crystal Plains)
+
+**Earth starting point:** a sandfish or mole cricket crossed with a tunnel-boring machine (a long, low, armoured
+digger with spade forelimbs). Not a worm, not a mole: the departures below change every one of those reads.
+
+1. **A drill-maw.** The whole front is five armoured jaw petals that close into a blunt digging cone (the "drill"
+   it bores with) and open into a five-pointed star around a white-hot gullet ringed with Crysium teeth. Closed, the
+   seams between the petals glow, so even the shut maw is a bright arrowhead. This is the facing cue: hot pointed
+   front, dark tapering rear.
+2. **Crystal armour, not a shell.** Six broad, overlapping body segments (dark violet basalt-chitin, each with the
+   round-10 armour plate: pale worn front lip, glowing rear rim, forward chevron) carry slabs of Crysium armour:
+   a pair of angled crystal plates per segment plus a crest of shards along the spine, tallest at the front and
+   swept back, and two big crystal horns on the head collar. The crystal is the second material.
+3. **Spade forelimbs.** Two massive three-jointed digging arms flank the maw, each ending in three hooked spade
+   claws with crystal tips. They pull the body forward in the crawl and dig in the Dive.
+4. **Short heavy legs.** Three pairs of short, spiked, column legs under the segments (it is a digger, not a
+   runner); the body heaves on a slow lateral wave, so it reads as huge and heavy.
+5. **A tail rudder.** The last segment flattens into a spade tail with two crystal fins (the digging rudder).
+6. **No eyes on the maw.** Six amber sensor pits sit in a crown on the head collar, behind the jaws.
+
+Glow: hot magenta-pink Crysium light (the Crystal Plains colour, warm) in the petal seams, the gullet, the segment
+rims and the crystal armour; amber sensor pits. Front brightest, tail dimmest (rim glow fades along the body).
+Size: about 5.5 units long and 2.5 wide in the game (BroodMother 2.5 long): the largest thing on the field.
+
+Clips: Crawl (loop), Idle (loop), Hit, Death, Roar, **Dive** (rears, slams the drill into the ground at a hole
+ahead of the jaws, the body follows the head down the same path until all of it is under the surface; debris
+bursts at the impact) and **Emerge** (the head bursts vertically out of a hole behind the tail position, debris
+flies, the body arches out like a breaching whale and comes down into the rest pose). Debris chunks are part of
+the model (rock and crystal on their own bones, hidden at rest), so the clip carries its own burst.
+
+**Burrow hole** (`Gravemaw_Hole`, env-kit style): the crater it dives into and bursts out of, about 3.4 wide: a ring
+of slabs heaved up and outwards, a debris ring of broken crust, Crysium shards cracked loose at the rim and a dark
+pit with pink-magenta light rising from it.
+
+## Spawn origins (EnemyOrigin Water, Lava, Quicksand, Ice, Bog)
+
+The openings creatures climb out of in a liquid pool. Each is a single static prop, pivot on the liquid surface,
+about one cell wide, with the opening sunk below the surface (seen through the translucent liquids) and a low rim
+above it. One language for all five: an alien wound in the element, not a man-made pipe: a ring of the element's
+own crust heaved around a dark throat, a few Burrower ribs or hooks curling over it, and light rising from below.
+The **Emission map is a white mask** (0..1): Unity tints it with the element colour (`NestColor`), so one map set
+works for any palette. Ground spawns keep `Burrow_A` (the generic ground nest); rifts keep the round-8 rift.
+
+- **Water:** a sunken funnel with a fleshy, ridged lip just above the surface and five translucent hooked ribs
+  curling in over it like a closing hand; pores on the lip glow.
+- **Lava:** a broken chimney of chilled black crust plates round a molten throat; cracks glow, ember Crysium splinters.
+- **Quicksand:** a sinkhole: slumped concentric sand ridges falling into a dark eye, half-buried shell plates and
+  two bone hooks; a faint glow from the bottom.
+- **Ice:** a breathing hole: fractured ice plates pushed up and tilted in a ring, frosted, the crack lines and the
+  hole lit from below.
+- **Bog:** a rotten gas mound: a puckered, ribbed sphincter on a heap of mire flesh with gas blisters and three
+  limp tendrils; the blisters and the throat glow.
+
+## Resource node (the Crysium vein the harvest drone mines)
+
+**Earth starting point:** an ore outcrop. Departures: the vein is living Crysium in a gold-amber "ore" palette (the
+game's MineColor, so the resource never reads as decor crystal), grown as fat fluted shards that spiral out of a
+split basalt boulder, with gold veins running through the rock. Three stages in one FBX on one map set:
+**Full** (the cluster whole), **Half** (the tallest shards sawn off flat, cut faces glowing: the drones' cuts are the
+only straight lines on it) and **Empty** (only cut stumps and the cracked boulder, cut faces dull, a last weak glow
+deep in the crack).
+
+## Bat skins Tide and Frost (warm glow)
+
+Curator decision (2026-11-04): the element stays in the body colour, the light stays warm. **Tide:** deep sea-teal
+body and membrane with a coral-orange glow and pale amber eyes. **Frost:** pale frost-white body with a bluish cast
+and an ember-orange glow. Baked onto the shipped Bat mesh by a wrapper (`build_bat_skins.py`); `build_bat.py` is
+unchanged.

@@ -280,7 +280,11 @@ namespace Game.Levels
         }
 
         /// <summary>The ledger of a level's waves on one difficulty, as they are stored, against the expected player.</summary>
-        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty)
+        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty) =>
+            Evaluate(model, levelIndex, level, profile, difficulty, null);
+
+        /// <summary>As above; <paramref name="loads"/>, when given, receives every wave's load (see <see cref="Ledger.PressureOf"/>).</summary>
+        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty, List<WaveLoad> loads)
         {
             var waves = new List<WaveSpec>();
             foreach (WaveDefinition wave in level.GetWaves(profile))
@@ -288,7 +292,7 @@ namespace Game.Levels
                 waves.Add(Spec(wave, model.Enemies));
             }
 
-            return Ledger.Evaluate(model.InputFor(levelIndex, difficulty), waves, model.Difficulties[difficulty], model.Rules);
+            return Ledger.Evaluate(model.InputFor(levelIndex, difficulty), waves, model.Difficulties[difficulty], model.Rules, loads);
         }
 
         private static Cell[] Cells(UnityEngine.Vector2Int[] waypoints)

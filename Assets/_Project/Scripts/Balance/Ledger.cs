@@ -72,7 +72,15 @@ namespace Game.Balance
     public static class Ledger
     {
         /// <summary>Every wave of a level on one difficulty, in order, with money carried from wave to wave.</summary>
-        public static List<WaveLine> Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules)
+        public static List<WaveLine> Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules) =>
+            Evaluate(level, waves, difficulty, rules, null);
+
+        /// <summary>
+        /// As <see cref="Evaluate(LevelInput, IReadOnlyList{WaveSpec}, DifficultyStats, BalanceRules)"/>; <paramref name="loads"/>,
+        /// when given, receives each wave's load with the carried health of earlier waves folded in, for
+        /// <see cref="PressureOf"/>.
+        /// </summary>
+        public static List<WaveLine> Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules, List<WaveLoad> loads)
         {
             var lines = new List<WaveLine>(waves.Count);
             var purse = new KillPurse(level, difficulty, rules);
@@ -81,7 +89,9 @@ namespace Game.Balance
             {
                 purse.Begin(waves[i]);
                 var next = new AirHoldings();
-                WaveLine line = EvaluateWave(level, waves[i], difficulty, purse.Money(i, waves.Count), rules, held, next, purse.Carried(waves[i]));
+                WaveLoad load = LoadOf(level, waves[i], difficulty, rules, purse.Carried(waves[i]));
+                loads?.Add(load);
+                WaveLine line = EvaluateLoad(level, load, purse.Money(i, waves.Count), rules, held, next);
                 held = next;
                 line.Wave = i + 1;
                 lines.Add(line);
@@ -105,10 +115,42 @@ namespace Game.Balance
         /// guns standing after this wave. <paramref name="carried"/> is the ground health of earlier waves that reaches the
         /// defence at the same time (<see cref="KillPurse.Carried"/>); the towers share their window with it.
         /// </summary>
-        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules, AirHoldings held, AirHoldings next, float carried = 0f)
+        public static WaveLine EvaluateWave(LevelInput level, WaveSpec wave, DifficultyStats difficulty, int money, BalanceRules rules, AirHoldings held, AirHoldings next, float carried = 0f) =>
+            EvaluateLoad(level, LoadOf(level, wave, difficulty, rules, carried), money, rules, held, next);
+
+        /// <summary>
+        /// Ground and air pressure of one wave against towers that already stand (tower id and level index), with the hero,
+        /// on the same scale as <see cref="WaveLine"/>: below one they hold. The PlayMode probe bot judges its own defence
+        /// with it the way the ledger judges the expected player's. Towers the level input does not sell count for nothing.
+        /// </summary>
+        public static (float Ground, float Air) PressureOf(LevelInput level, WaveLoad load, BalanceRules rules, IEnumerable<(string TowerId, int Level)> standing)
+        {
+            List<Option> options = Options(level, load, rules);
+            var defence = new Defence();
+            foreach ((string towerId, int towerLevel) in standing)
+            {
+                int index = level.Towers.FindIndex(t => t.Id == towerId);
+                Option option = index >= 0 ? Find(options, index, towerLevel) : null;
+                if (option != null)
+                {
+                    defence.Stream += option.Stream;
+                    defence.Single += option.Single;
+                    defence.Air += option.Air;
+                }
+            }
+
+            return (load.GroundPressure(defence.Stream + HeroStream(level, load, rules), defence.Single + HeroSingle(level, load, rules)), load.AirPressure(defence.Air));
+        }
+
+        private static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried)
         {
             WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules);
             load.StreamHealth += carried * rules.CarriedShare;
+            return load;
+        }
+
+        private static WaveLine EvaluateLoad(LevelInput level, WaveLoad load, int money, BalanceRules rules, AirHoldings held, AirHoldings next)
+        {
             List<Option> options = Options(level, load, rules);
             Defence defence = Buy(options, load, money - (held?.Cost ?? 0), Cap(level, rules), held, next);
             return new WaveLine

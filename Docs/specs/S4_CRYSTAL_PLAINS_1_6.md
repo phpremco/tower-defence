@@ -272,3 +272,16 @@ Choices made while building, at curator level, for Remco or the curator to overr
    old Easy check stopped at Shard Ridge). The gun-only bot wins the same level untouched with cheap Gun Turrets, so
    the bot's early Flak-plus-Laser opening is the weak point, not the air raids. Until that is settled the Medium air
    check fails on its Fault Line "Flak bot must hold" assert.
+4. **Settled (2026-11-04, probe bot opening):** the bot was fixed, not the level (see STATUS "Probe bot opening"). It
+   now judges its own towers with the ledger, holds the ground first, and saves for the Flak from the wave whose income
+   still pays for it before the first flyer wave. Fault Line on Medium: Flak bot won 4/4, base untouched (it was lost
+   in 3 or 4 of 4). Fault Line keeps no struggle requirement; the test checks the Flak bot's win there.
+5. **Shard Ridge `AirRaidScale` `{ 1, 1.3 }`** (was `{ 1, 1.6 }`), the low end of the curator's 1.3 to 1.6 range. With
+   the new bot, 1.6 lost the gun-only bot every run (4 of 17 flyers down, base 800 lost) and 1.3 is the only value in
+   the range where it does not: over four Medium runs the gun-only bot lost twice (14 and 13 of 15 Skyrays down,
+   base 800 lost at the boss wave) and won twice (base damage 18 and 786; 15 of 15 down, but the raid reached the
+   base first), while the Flak bot won all four with 15 of 15 down and the base untouched. One Skyray that gets
+   through and parks on the base is enough to destroy it (nothing at the base aims up), so the gun-only outcome is
+   close to all-or-nothing; a softer "struggle" would need an anti-air answer at the base, not a smaller raid.
+   Medium raid air health w12/w15: 631/1096 at 1.6 -> 438/868 at 1.3, air pressure 0.96/0.93 -> 0.70/0.83 (band
+   1.16); 18 -> 15 flyers over the level. Every wave inside its band (Unity `BalanceLedgerTests`, BalanceLab `report`).

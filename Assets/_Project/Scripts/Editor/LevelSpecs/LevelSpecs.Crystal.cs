@@ -19,9 +19,11 @@ namespace Game.Editor
         private const float LooseFlyers = 0.8f;
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
-        // (curator decision after balance, 2026-11-04). Level 4 keeps its raids: its road joins late, the guns stand where
-        // the flight routes meet, and a gun-only bot downed every flyer even at 1.6 and 1.8 times the raid.
-        private static readonly float[] BigRaidsFromMedium = { 1f, 1.6f };
+        // (curator decision after balance, 2026-11-04). 1.3, the low end of the curator's range: at 1.6 the gun-only probe
+        // bot lost every Medium run, at 1.3 it lost two of four (one Skyray through is enough) while the Flak bot held
+        // all four untouched. Level 4 keeps its raids: its road joins late, the guns stand where the flight routes meet,
+        // and a gun-only bot downed every flyer even at 1.6 and 1.8 times the raid.
+        private static readonly float[] BigRaidsFromMedium = { 1f, 1.3f };
 
         /// <summary>Gun (PulseRifle), Cannon, Laser, Flak (Rocket), Tesla and Railgun; the Acid Sprayer joins in S5.</summary>
         public static readonly string[] CrystalRoster = { "PulseRifle", "Cannon", "Laser", "Rocket", "Tesla", "Railgun" };

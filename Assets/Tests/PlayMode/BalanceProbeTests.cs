@@ -12,8 +12,9 @@ namespace Game.Tests
 {
     /// <summary>
     /// A bot that plays like an average player: it holds the line at the first gate every road passes (towers around
-    /// it, the hero on its post), spends its money on the affordable step that adds the most damage per coin (a new tower or
-    /// an upgrade) and saves up for an air gun before flyers come. It builds only the towers a player owns at that point
+    /// it, the hero on its post), judges its own towers with the ledger (<see cref="Game.Balance.Ledger.PressureOf"/>),
+    /// keeps the ground holding first, saves for an air gun in time for the first flyer wave, and spends the rest on the
+    /// affordable step (a new tower or an upgrade) that lowers the worse pressure most per coin. It builds only the towers a player owns at that point
     /// of the campaign (the starting set plus earlier rewards), uses no drones or gadgets, and writes a per-wave trace
     /// beside the ledger's line to Logs/probe_trace.txt. The smoke run must clear Shard Ridge and Crysium Vein on Medium.
     /// </summary>
@@ -27,13 +28,25 @@ namespace Game.Tests
         private const float MaxFrameSeconds = 0.2f;
         private const float MinFrameSeconds = 0.0001f;
         private const float BuyIntervalSeconds = 1f;
-        private const int AirLookahead = 1;
+        // The bot judges its towers against the wave being fought and the next one: on a long road the creatures of a
+        // wave reach the gate while the next one spawns.
+        private const int Horizon = 1;
+        // Above this ledger ground pressure on the waves at hand, the ground comes before any saving. One is calibrated as
+        // "the bot barely holds", but the bot held Shard Ridge on Medium with its own towers at 1.1 to 1.3 right after a
+        // purchase (the model is cautious about gate hold and the hero), and a ceiling of 0.95 kept it from ever saving.
+        private const float GroundCeiling = 1.25f;
+        // Kill money arrives late and not all of it, so the saving starts when the income up to the raid is this much
+        // more than the air gun's price.
+        private const float ReserveMargin = 2f;
+        // A step that does not move the bottleneck still helps a little if it lifts the other side.
+        private const float OtherSideWeight = 0.01f;
+        // How much better per coin a step one wave of kills away must be before the bot waits for it.
+        private const float WaitRatio = 1.5f;
+        private const float NoThreatCover = 1e6f;
         private const float RouteSampleCells = 0.5f;
         // A little inside the Flak's first range (5.5), so the shells reach the route.
         private const float AirReachCells = 5f;
-        private const float SplashValue = 0.5f;
         private const int SecondLineEvery = 4;
-        private const float AirPriority = 2f;
         private const float BesideRoadCells = 2f;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
         private const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
@@ -145,6 +158,20 @@ namespace Game.Tests
             public List<Vector2Int> Air { get; }
         }
 
+        /// <summary>The ledger's view of one run: its lines for the trace, and the wave loads and level input the bot judges its own towers with.</summary>
+        private sealed class LedgerView
+        {
+            public readonly List<Game.Balance.WaveLine> Lines = new List<Game.Balance.WaveLine>();
+            public readonly List<Game.Balance.WaveLoad> Loads = new List<Game.Balance.WaveLoad>();
+            public readonly HashSet<string> SkyGuns = new HashSet<string>();
+            public Game.Balance.LevelInput Input;
+            public Game.Balance.BalanceRules Rules;
+
+            public int Count => Loads.Count;
+
+            public string LineFor(int wave) => wave >= 1 && wave <= Lines.Count ? Lines[wave - 1].ToString() : string.Empty;
+        }
+
         /// <summary>How one bot run ended.</summary>
         private sealed class ProbeResult
         {
@@ -189,13 +216,20 @@ namespace Game.Tests
                     owned.RemoveAll(id => !HitsBoth(definition, id));
                 }
 
-                WaveDefinition[] waves = definition.GetWaves(catalog.Difficulties[difficulty]);
                 Services.Register(new LevelSession(definition, catalog.Difficulties[difficulty]));
                 SceneManager.LoadScene(SceneNames.Level);
                 yield return null;
                 yield return null;
 
-                List<string> ledger = LedgerLines(level, difficulty);
+                LedgerView ledger = LedgerFor(level, difficulty);
+                foreach (TowerDefinition tower in definition.AvailableTowers)
+                {
+                    if (AirOnly(tower))
+                    {
+                        ledger.SkyGuns.Add(tower.Id);
+                    }
+                }
+
                 Time.timeScale = SimulationSpeed;
                 float started = Time.realtimeSinceStartup;
                 float nextBuy = 0f;
@@ -204,6 +238,8 @@ namespace Game.Tests
                 var towers = new List<Tower>();
                 int upgrades = 0;
                 ProbeTrace trace = null;
+                int notedWave = -1;
+                string note = string.Empty;
 
                 while (Time.realtimeSinceStartup - started < TimeoutSeconds)
                 {
@@ -227,12 +263,18 @@ namespace Game.Tests
                             break;
                         }
 
-                        trace.Sample(towers, context.WaveNumber >= 1 && context.WaveNumber <= ledger.Count ? ledger[context.WaveNumber - 1] : string.Empty);
+                        if (context.WaveNumber != notedWave)
+                        {
+                            notedWave = context.WaveNumber;
+                            note = ledger.LineFor(notedWave) + BotNote(ledger, towers, notedWave);
+                        }
+
+                        trace.Sample(towers, note);
                         nextBuy -= Time.deltaTime;
                         if (nextBuy <= 0f)
                         {
                             nextBuy = BuyIntervalSeconds;
-                            Act(context, spots, towers, owned, waves, ref upgrades);
+                            Act(context, spots, towers, owned, ledger, ref upgrades);
                         }
                     }
 
@@ -270,27 +312,26 @@ namespace Game.Tests
             Debug.Log(string.Join(" | ", report));
         }
 
-        // The ledger's view of the same level and difficulty, one line per wave, to print beside what the bot really had.
-        private static List<string> LedgerLines(int node, int difficulty)
+        // The ledger's view of the same level and difficulty: one line per wave to print beside what the bot really had,
+        // and the wave loads the bot measures its own towers against.
+        private static LedgerView LedgerFor(int node, int difficulty)
         {
-            var lines = new List<string>();
+            var view = new LedgerView { Rules = Game.Balance.BalanceRules.Default };
 #if UNITY_EDITOR
             var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             var upgrades = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Economy.UpgradeCatalog>(UpgradesPath);
             var unlocks = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Economy.UnlockTable>(UnlocksPath);
-            Game.Balance.CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, Game.Balance.BalanceRules.Default);
+            Game.Balance.CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, view.Rules);
             int index = 0;
             for (int i = 0; i < node; i++)
             {
                 index += catalog.Nodes[i].Level != null ? 1 : 0;
             }
 
-            foreach (Game.Balance.WaveLine line in BalanceLedger.Evaluate(model, index, catalog.Nodes[node].Level, catalog.Difficulties[difficulty], difficulty))
-            {
-                lines.Add(line.ToString());
-            }
+            view.Input = model.InputFor(index, difficulty);
+            view.Lines.AddRange(BalanceLedger.Evaluate(model, index, catalog.Nodes[node].Level, catalog.Difficulties[difficulty], difficulty, view.Loads));
 #endif
-            return lines;
+            return view;
         }
 
         // Node indices of the levels that exist; the smoke run keeps Shard Ridge and Crysium Vein.
@@ -486,37 +527,55 @@ namespace Game.Tests
             return best >= 0 ? best : level.Blockades.Length > 0 ? 0 : -1;
         }
 
-        // An average player's habit: the level's briefing and wave preview tell flyers are coming, so the price of the first
-        // air gun stays in the purse until it is built; everything above it goes to the affordable step (a new tower or
-        // an upgrade) that adds the most damage per coin: money in the bank kills nothing.
-        private static void Act(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, WaveDefinition[] waves, ref int upgrades)
+        // An average player's habit, judged with the ledger on the bot's own towers: first the ground holds the waves at
+        // hand (the one being fought and the next), then the price of an air gun is put aside in time for the first flyer
+        // wave the standing guns cannot meet, starting from the wave whose kill income still pays for it before the raid;
+        // everything else goes to the affordable step (a new tower or an upgrade) that lowers the worse pressure of the
+        // waves at hand most per coin: money in the bank kills nothing.
+        private static void Act(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, LedgerView ledger, ref int upgrades)
         {
-            bool airSoon = FlyersWithin(context, waves, AirLookahead);
-            int reserve = 0;
-            if (!Has(towers, AirOnly) && FlyersWithin(context, waves, waves.Length))
+            if (ledger.Count == 0)
             {
-                reserve = CheapestBuild(context, owned, AirOnly);
-                if (reserve > 0 && TryBuy(context, spots, towers, owned, AirOnly))
-                {
-                    return;
-                }
+                return;
+            }
+
+            int current = Mathf.Clamp(context.WaveNumber - 1, 0, ledger.Count - 1);
+            List<(string, int)> standing = Standing(towers);
+            bool groundHolds = Cover(ledger, standing, current, true) >= 1f / GroundCeiling;
+            int reserve = groundHolds ? AirReserve(context, towers, owned, ledger, current) : 0;
+            if (reserve > 0 && context.Wallet.CanAfford(reserve) && TryBuy(context, spots, towers, owned, AirOnly))
+            {
+                return;
             }
 
             int purse = context.Wallet.Money - reserve;
-
+            // A step a wave's kills away is worth waiting for while the ground holds, if it is clearly better per coin
+            // (an air gun before a raid enters the waves at hand, a big upgrade) than what the purse buys now.
+            int reach = groundHolds ? purse + ledger.Lines[current].KillMoney : purse;
+            float now = Cover(ledger, standing, current);
+            float nowGround = Cover(ledger, standing, current, true);
+            float nowAir = Cover(ledger, standing, current, false);
             float bestValue = 0f;
+            float waitValue = 0f;
             Tower upgrade = null;
             TowerDefinition build = null;
-            foreach (Tower tower in towers)
+            for (int i = 0; i < towers.Count; i++)
             {
-                if (!tower.CanUpgrade || tower.NextUpgradeCost > purse)
+                Tower tower = towers[i];
+                if (!tower.CanUpgrade || tower.NextUpgradeCost > reach)
                 {
                     continue;
                 }
 
-                float gain = Strength(tower.Definition, tower.LevelIndex + 1, airSoon) - Strength(tower.Definition, tower.LevelIndex, airSoon);
-                float value = gain / Mathf.Max(1, tower.NextUpgradeCost);
-                if (value > bestValue)
+                var next = new List<(string, int)>(standing);
+                next.Remove((tower.Definition.Id, tower.LevelIndex));
+                next.Add((tower.Definition.Id, tower.LevelIndex + 1));
+                float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, tower.NextUpgradeCost);
+                if (tower.NextUpgradeCost > purse)
+                {
+                    waitValue = Mathf.Max(waitValue, value);
+                }
+                else if (value > bestValue)
                 {
                     bestValue = value;
                     upgrade = tower;
@@ -528,19 +587,29 @@ namespace Game.Tests
             {
                 foreach (TowerDefinition candidate in context.AllTowers)
                 {
-                    if (candidate.IsSupport || !owned.Contains(candidate.Id) || candidate.BuildCost > purse)
+                    if (candidate.IsSupport || !owned.Contains(candidate.Id) || candidate.BuildCost > reach)
                     {
                         continue;
                     }
 
-                    float value = Strength(candidate, 0, airSoon) / Mathf.Max(1, candidate.BuildCost);
-                    if (value > bestValue)
+                    var next = new List<(string, int)>(standing) { (candidate.Id, 0) };
+                    float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, candidate.BuildCost);
+                    if (candidate.BuildCost > purse)
+                    {
+                        waitValue = Mathf.Max(waitValue, value);
+                    }
+                    else if (value > bestValue)
                     {
                         bestValue = value;
                         build = candidate;
                         upgrade = null;
                     }
                 }
+            }
+
+            if (waitValue > bestValue * WaitRatio)
+            {
+                return;
             }
 
             if (upgrade != null && context.Wallet.TrySpend(upgrade.NextUpgradeCost))
@@ -554,20 +623,120 @@ namespace Game.Tests
             }
         }
 
-        // Damage per second a tower level adds against the coming waves; splash counts for a little more than one hit,
-        // and a gun that only aims at the sky counts only while flyers are coming.
-        private static float Strength(TowerDefinition tower, int levelIndex, bool airSoon)
+        // The price of the first air gun while it is still to be built and flyers are still to come, from the wave on whose income
+        // (the ledger's money, kills paid as they really arrive) until the first flyer wave covers the price with a margin; 0 otherwise.
+        private static int AirReserve(LevelContext context, List<Tower> towers, List<string> owned, LedgerView ledger, int current)
         {
-            if (AirOnly(tower) && !airSoon)
+            int price = CheapestBuild(context, owned, AirOnly);
+            if (price == 0 || Has(towers, AirOnly))
             {
-                return 0f;
+                return 0;
             }
 
-            TowerLevel level = tower.GetLevel(levelIndex);
-            float dps = level.FireInterval > 0f ? level.Damage / level.FireInterval : 0f;
-            // While a raid is coming the sky gun is the only answer to it, so it weighs double then.
-            float priority = AirOnly(tower) ? AirPriority : 1f;
-            return dps * (1f + tower.SplashRadius * SplashValue) * priority;
+            int raid = -1;
+            for (int i = current; i < ledger.Count && raid < 0; i++)
+            {
+                if (ledger.Loads[i].AirHealth > 0f)
+                {
+                    raid = i;
+                }
+            }
+
+            if (raid < 0)
+            {
+                return 0;
+            }
+
+            int from = 0;
+            for (int i = raid; i >= 0; i--)
+            {
+                if (ledger.Lines[raid].Money - ledger.Lines[i].Money >= price * ReserveMargin)
+                {
+                    from = i;
+                    break;
+                }
+            }
+
+            return current >= from ? price : 0;
+        }
+
+        // What a step adds: the rise of the worse side's cover over the waves at hand; when the bottleneck does not move
+        // (the other side is worse), a little for lifting a side.
+        private static float Gain(LedgerView ledger, List<(string, int)> next, int current, float now, float nowGround, float nowAir)
+        {
+            float gain = Cover(ledger, next, current) - now;
+            if (gain > 0f)
+            {
+                return gain;
+            }
+
+            float side = Mathf.Max(Lift(Cover(ledger, next, current, true), nowGround), Lift(Cover(ledger, next, current, false), nowAir));
+            return side * OtherSideWeight;
+        }
+
+        private static float Lift(float after, float before) => after >= NoThreatCover || before >= NoThreatCover ? 0f : Mathf.Max(0f, after - before);
+
+        // The worse of ground and air cover (one over the ledger pressure) over the wave being fought and the next.
+        private static float Cover(LedgerView ledger, List<(string, int)> standing, int current) =>
+            Mathf.Min(Cover(ledger, standing, current, true), Cover(ledger, standing, current, false));
+
+        private static float Cover(LedgerView ledger, List<(string, int)> standing, int current, bool ground)
+        {
+            float cover = NoThreatCover;
+            for (int i = current; i <= current + Horizon && i < ledger.Count; i++)
+            {
+                (float g, float a) = Pressure(ledger, standing, i);
+                float pressure = ground ? g : a;
+                if (pressure > 0f)
+                {
+                    cover = Mathf.Min(cover, float.IsInfinity(pressure) ? 0f : 1f / pressure);
+                }
+            }
+
+            return cover;
+        }
+
+        // Ground from every standing tower; air only from the sky guns. The ledger lets every gun that aims up count for
+        // the air, but the bot's guns stand around the gate while the flyers cross elsewhere (Shard Ridge on Medium: 18
+        // guns, the ledger's air pressure below 0.5, 12 of 18 Skyrays through to the base), so a raid is the sky guns' job.
+        private static (float Ground, float Air) Pressure(LedgerView ledger, List<(string, int)> standing, int wave)
+        {
+            Game.Balance.WaveLoad load = ledger.Loads[wave];
+            float ground = Game.Balance.Ledger.PressureOf(ledger.Input, load, ledger.Rules, standing).Ground;
+            if (load.AirHealth <= 0f)
+            {
+                return (ground, 0f);
+            }
+
+            List<(string Id, int Level)> sky = standing.FindAll(t => ledger.SkyGuns.Contains(t.Item1));
+            return (ground, Game.Balance.Ledger.PressureOf(ledger.Input, load, ledger.Rules, sky).Air);
+        }
+
+        // The ledger's pressure of the wave against the bot's own towers (air from its sky guns only), beside the line.
+        private static string BotNote(LedgerView ledger, List<Tower> towers, int wave)
+        {
+            if (wave < 1 || wave > ledger.Count)
+            {
+                return string.Empty;
+            }
+
+            (float ground, float air) = Pressure(ledger, Standing(towers), wave - 1);
+            return $" | bot pressure {ground:0.00}/{air:0.00}";
+        }
+
+        // The bot's towers that still fire, as the ledger names them.
+        private static List<(string, int)> Standing(List<Tower> towers)
+        {
+            var standing = new List<(string, int)>(towers.Count);
+            foreach (Tower tower in towers)
+            {
+                if (tower.IsAlive)
+                {
+                    standing.Add((tower.Definition.Id, tower.LevelIndex));
+                }
+            }
+
+            return standing;
         }
 
         // Build price of the cheapest owned tower of a kind, or 0 when the player owns none.
@@ -602,23 +771,6 @@ namespace Game.Tests
         private static bool AirOnly(TowerDefinition tower) => tower.Targets == TargetLayers.Air;
 
         private static bool Has(List<Tower> towers, System.Predicate<TowerDefinition> kind) => towers.Exists(t => kind(t.Definition));
-
-        // True when the wave being fought or one of the next `ahead` waves sends flyers.
-        private static bool FlyersWithin(LevelContext context, WaveDefinition[] waves, int ahead)
-        {
-            for (int index = System.Math.Max(0, context.WaveNumber - 1); waves != null && index <= context.WaveNumber + ahead && index < waves.Length; index++)
-            {
-                foreach (SpawnGroup group in waves[index].Groups)
-                {
-                    if (group.Enemy != null && group.Enemy.Flies)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
 
         // The starting set plus every tower granted by the levels before this one.
         private static List<string> OwnedTowers(CampaignCatalog catalog, int level)
