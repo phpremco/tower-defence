@@ -1376,3 +1376,120 @@ part colours for fit checks. The script enables MPFB itself, so `--factory-start
 - Texture size and blend shapes as in round 19: raise `BlenderModelImporter`'s cap for Voss to 2048 (Low 1024) and
   turn `importBlendShapes` on to use Smile/Frown in portraits. Blink and Talk work through the bones without them.
 - The FBX also lists `Key|Voss_Rig|<clip>` takes (the zero shape-key channels per take, as in round 19).
+
+## Round 20: VFX texture set (`build_vfx.py`, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 20). Texture source for the Unity VFX rebuild (projectiles, muzzle flashes,
+explosions, smoke, sparks, rings, distortion, decals); nothing is imported yet.
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_vfx.py -- [--preview <dir>] [--cache <dir>]
+[--only Name,Name] [--no-volumes] [--norender]`. Modules: `vfx_kit.py` (PNG writer, periodic noise, resampling,
+volume renderer, preview shading), `vfx_2d.py` (procedural sprites and flipbooks), `vfx_sim.py` (Mantaflow sims).
+A full build from scratch takes about 40 minutes, almost all of it the six sims (Explosion_Boss alone ~15 min). The
+sims' rendered maps are cached in `%TEMP%/td_vfx_cache/<Name>.npz`, so a rerun takes a few minutes; delete a `.npz`
+after changing that sim's spec in `build_vfx.volume_specs()`. With the cache in place (or `--no-volumes`) the script
+also runs in Blender's bundled Python without Blender:
+`"C:\Program Files\Blender Foundation\Blender 5.2\5.2\python\bin\python.exe" Tools/Blender/build_vfx.py -- ...`.
+`VFX_report.json` lists every texture with size, layout, frame count, fps, lifetime, pivot, channels, blend mode and
+tint; the tables below summarise it.
+
+### Conventions
+
+- **All textures are linear data**: import with sRGB off (also the colour-looking ones); colour comes from tints and
+  gradients. Do not import the distortion maps as Normal Map (Unity would drop B). Wrap Clamp except the tiling ones.
+- **Flipbook order**: frame 0 top-left, then row by row (Unity Texture Sheet Animation order).
+- **CG pack** (most emissive textures): R = core (white-hot; stays white under any tint), G = glow (multiply by the
+  weapon tint, `TowerDefinition._color`), B = a named secondary layer, A = coverage max(R, G, B). Additive:
+  `col = tint * G * glow + white * R * core`.
+- **Six-way pack** (fireballs, smoke, dust; the Unity VFX Graph "Six-way Smoke Lit" layout): `_SixWayPos` = R light
+  from right, G from top, B from back (behind the smoke), A alpha (straight); `_SixWayNeg` = R from left, G from
+  bottom, B from front (camera side), A fire temperature 0..1. Lighting = sum of the six maps weighted by the squared
+  components of the light direction in billboard space (they sum to 1); ambient = mean of the six x ambient colour.
+- **Low/**: every texture at half size (box filter) for the Low (Switch) profile.
+
+### Textures
+
+| Texture | Size | Layout | Channels | Blend, tint, timing |
+| --- | --- | --- | --- | --- |
+| `Explosion_Small_SixWayPos/Neg` | 1024 | 8 x 8 flipbook, 128 px | six-way | alpha + fire gradient; 60 fps, 1.07 s; cannon shell, mines, small gadgets |
+| `Explosion_Large_SixWayPos/Neg` | 2048 | 8 x 8, 256 px | six-way | 48 fps, 1.33 s; mortar, rocket, barrel, lava ball, tower destroyed |
+| `Explosion_Boss_SixWayPos/Neg` | 2048 | 8 x 8, 256 px | six-way | 40 fps, 1.6 s; three chained sub-bursts; boss death, base, superweapons |
+| `Smoke_Puff_SixWayPos/Neg` | 1024 | 8 x 8, 128 px | six-way (Neg.A = 0) | 30 fps, 2.1 s; dark billow after explosions, wrecks, damaged towers |
+| `Smoke_Linger_SixWayPos/Neg` | 1024 | 8 x 8, 128 px | six-way | 24 fps, 2.7 s; rising column over craters and burning wrecks (chain 2-3 particles) |
+| `Dust_Burst_SixWayPos/Neg` | 1024 | 8 x 8, 128 px | six-way | 40 fps, 1.6 s; low ground-hugging burst; tint tan (0.45, 0.38, 0.3) per level palette |
+| `Bolt_Core` | 256 x 64 | single | CG, B = tail streak | additive; the rounded bar of Bolt/Rail/Flak/BaseTurret rounds; head at +U |
+| `Trail_Ribbon` | 512 x 64 | single (Stretch) | CG | additive; U 0 = head, U 1 = tail, tapers |
+| `Trail_Noise` | 256 x 64 | tiles U and V | R strands, G wisps | multiply into trails/beams, scroll U |
+| `Plasma_Bolt` | 512 | 4 x 4 loop, 128 px | CG, B = swirl bands | additive, 24 fps loop; head at +U |
+| `Rocket_Exhaust` | 1024 x 512 | 4 x 4 loop, 256 x 128 | CG (R core + shock diamonds), B = smoke start | additive, 30 fps loop; nozzle at U 0, flame to +U |
+| `Smoke_Trail` | 512 x 128 | tiles U | R lit from the top edge, G puff noise, A density | alpha blend, grey (0.35); rocket trail ribbon |
+| `Beam_Core` | 128 x 64 | tiles U | CG | additive; Laser, CryoBeam |
+| `Beam_Noise` | 512 x 128 | tiles U and V | R filaments, G crackle, B swirl | multiply into the beam, two scroll speeds |
+| `Tesla_Arcs` | 2048 x 512 | 4 x 4, 512 x 128 | CG, B = branches | additive, 20 fps or a random frame per discharge; U 0.02 to 0.98 at V 0.5 |
+| `Muzzle_Side` | 1024 x 512 | 4 x 4, 256 x 128 | CG, B = smoke (cannon) | rows Gun, Cannon, Flak, Rail/Plasma; columns = variants; barrel at U 0.05 V 0.5; 1-3 frames |
+| `Muzzle_Front` | 1024 | 4 x 4, 256 | CG, B = smoke (cannon) | same rows; random roll |
+| `Spark_Burst` | 1536 | 6 x 6, 256 | CG | additive, 60 fps, 0.6 s; pivot U 0.5 V 0.42 (impact point) |
+| `Spark_Streaks` | 512 x 256 | 4 rows, 512 x 64 | CG | stretched-billboard spark particles, random row; head at +U |
+| `Debris_Shards` | 512 | 4 x 4 sprites, 128 | R hot edge, G body alpha, B facet shading | alpha body (dark tint x B) + additive edge; random frame |
+| `Shockwave_Ring` | 512 | single | CG, B = dust | additive or alpha dust ring; scale 0.2 to 1 with ease-out over 0.25-0.4 s |
+| `Shockwave_Distort` | 512 | single | RG UV offset (0.5 +- 0.5, +Y up), B mask | refraction: screenUV + (RG*2-1) * B * strength (0.02-0.05) |
+| `HeatHaze_Distort` | 256 | tiles U and V | RG offset, B height | refraction, scroll V up, strength 0.004-0.01 |
+| `Scorch_Decal` | 1024 | 2 x 2 variants, 512 | R soot opacity, G ash lightness, B ember mask, A ember fade threshold | decal; emission = B * step(fade, A); embers ~2 s, soot ~8 s |
+| `Energy_Impact` | 1536 | 6 x 6, 256 | CG, B = inner ring | additive, 60 fps, 0.6 s; weapon tint |
+| `Cryo_Burst` | 1536 | 6 x 6, 256 | CG (R glints + ridges, G shards), B = frost mist | additive + alpha mist, 48 fps, 0.75 s; ice cyan |
+| `Acid_Splash` | 1536 | 6 x 6, 256 | R lit (premultiplied), G thickness, B specular, A alpha | premultiplied alpha, 40 fps, 0.9 s; lime; pivot U 0.5 V 0.34 |
+
+Sizes on disk: see `total_bytes` in the report. Previews (`--preview`): `vfx_<Name>.png` (16 frames),
+`vfx_<Name>_relight.png` (one frame lit from left, right, top and front: proves the six-way maps relight) and
+`vfx_<Name>_channels.png` (the eight six-way channels).
+
+### Unity notes (for the VFX rebuild)
+
+- **Shaders needed**:
+  1. `Game/VfxAdditive` (CG pack): flipbook UV with **frame blending** (sample frame n and n+1, lerp by the fraction;
+     Shuriken: Texture Sheet Animation + the UV2 and AnimBlend custom vertex streams), `col = _Tint * G * _Glow +
+     _Core * R`, times the particle colour; **soft particles** (depth fade against `_CameraDepthTexture`, 0.3-0.6 m)
+     so ground hits do not cut a hard line.
+  2. `Game/VfxSixWaySmoke`: alpha blend; light direction in billboard space (main light dotted with the particle's
+     right/up/forward), weights = squared components; lit = sum(maps x weights) x light colour x albedo + ambient
+     (SH or the theme ambient) x mean of the six; emission = gradient(Neg.A) x intensity (fire gradient like
+     `vfx_kit.fire_ramp`: deep red, orange, yellow, white core); frame blending and soft particles as above. Keep
+     boss explosions on their own emission curve so a boss death never flashes the screen white. VFX Graph's
+     built-in Six-way Smoke Lit output takes these two maps directly if VFX Graph is used.
+  3. `Game/VfxDistort`: transparent queue after opaques, samples `_CameraOpaqueTexture` at screenUV +
+     (tex.rg*2-1) * tex.b * _Strength * particle alpha. `Game/ImpactRipple` already does this with a procedural
+     ring; it can switch to `Shockwave_Distort` for a richer edge. Low profile: skip the pass.
+  4. A premultiplied-alpha variant (Blend One OneMinusSrcAlpha) for `Acid_Splash`, `Debris_Shards`, `Smoke_Trail`.
+- **Particle setups**: explosion = Explosion_* (1 particle, small random roll, size from `world_size` in the report)
+  + Spark_Streaks (stretched billboard, gravity, 20-40) + Debris_Shards (8-16, gravity, rotation) + Shockwave_Ring
+  (flat on the ground) + Shockwave_Distort + Scorch_Decal + a Smoke_Linger tail; a point light with a short curve.
+  Energy hits = Energy_Impact + a few Spark_Streaks in the weapon tint. Muzzle = one random cell of Muzzle_Side
+  aligned to the barrel, pivot at the barrel, plus Muzzle_Front when the barrel faces the camera; 50 ms.
+- **Pivots**: explosions, smoke and dust put the sim floor at `pivot` V (from the cell bottom) in the report; set the
+  particle pivot so the blast sits on the impact point. Every flipbook ends empty (the last frames fade), so
+  particles can die on the last frame without a pop.
+- **Budgets**: High uses the full set; Low uses `Low/`, no distortion pass and half the spark/debris counts.
+
+## Round 21: S-69-CRYS planet, balanced layout (`build_planet_s69.py` + `layout.json`, 2026-11-04)
+
+`blender --background --factory-startup --python Tools/Blender/build_planet_s69.py -- [--res 4096] [--renders <dir>]
+[--compare-dir <old export dir>] [--layout <layout.json>] [--layoutonly]` (~3 min at 4096; `--layoutonly` writes a
+flat layout preview in ~5 s). Same files, names, UV convention and region-id values as round 20. Design notes in
+`DESIGN_NOTES.md` (round 21).
+
+### Unity notes
+
+- **Apply `ArtSource/Exports/Planet_S69/layout.json` to the data:** region centres are unchanged; set The Core's
+  `RadiusDegrees` to 14 (crater id radius). Replace the 20 Crystal Plains `MapNode` Longitude/Latitude with
+  `nodes[]` (same order: Landing Site first), e.g. in `ProjectGenerator.Campaign` instead of `NodePlacer.Route` for C1,
+  so a regenerate does not overwrite them. All nodes lie within 26.5 deg of the C1 centre (radius 30 stays valid),
+  min spacing 8.25 deg, >= 4.3 deg from the coast.
+- `GlobePainter.Ruggedness` no longer matches the painted mountains; do not use it to re-place nodes on this texture.
+- `Planet_S69_report.json` now has `surface` (land % and p95 extent per region), `coast_biases`, `nodes_ok`.
+
+## Round 22: S-69-CRYS planet, smaller Crystal Plains (2026-11-04)
+
+Same command, files and region ids as round 21; `layout.json` version 22. Unity notes: apply the new 20 Crystal
+Plains node lon/lat values from `layout.json` (order unchanged, Landing Site first) and lower the node spacing rule
+(`PlanetCoordinates.MinimumSpacingDegrees` / `NodePlacer.MinimumSpacingDegrees`) to 6 deg; nodes are >= 6.23 deg
+apart, >= 3.5 deg from the coast, within the 30 deg C1 radius. The Core `RadiusDegrees` 14 as in round 21.

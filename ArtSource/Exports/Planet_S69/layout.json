@@ -1,0 +1,997 @@
+{
+ "version": 22,
+ "note": "Round 21 world layout of S-69-CRYS. Read by Tools/Blender/build_planet_s69.py (texture) and to be applied by a Unity agent to CampaignCatalog MapRegion centres/radii and the Crystal Plains MapNode lon/lat. Lobes: [lon, lat, half-width east deg, half-height north deg, rotation deg, sign] (sign -1 carves a bay or inland sea). target_land_percent is solved by the build (a per-region coast bias) so the surface share stays balanced.",
+ "regions": [
+  {
+   "key": "C1",
+   "name": "Crystal Plains",
+   "longitude": -40.0,
+   "latitude": 6.0,
+   "radius_degrees": 30.0,
+   "value": 40,
+   "target_land_percent": 4.0,
+   "coast_roughness": 1.3
+  },
+  {
+   "key": "C2",
+   "name": "Ashen Reach",
+   "longitude": 60.0,
+   "latitude": -15.0,
+   "radius_degrees": 30.0,
+   "value": 80,
+   "target_land_percent": 6.5,
+   "coast_roughness": 2.4
+  },
+  {
+   "key": "C3",
+   "name": "Northern Crown",
+   "longitude": 60.0,
+   "latitude": 62.0,
+   "radius_degrees": 30.0,
+   "value": 120,
+   "target_land_percent": 6.6,
+   "coast_roughness": 2.4
+  },
+  {
+   "key": "C4",
+   "name": "Mirewood",
+   "longitude": -140.0,
+   "latitude": 15.0,
+   "radius_degrees": 30.0,
+   "value": 160,
+   "target_land_percent": 6.4,
+   "coast_roughness": 2.4
+  },
+  {
+   "key": "C5",
+   "name": "Southern Crown",
+   "longitude": 150.0,
+   "latitude": -60.0,
+   "radius_degrees": 30.0,
+   "value": 200,
+   "target_land_percent": 6.0,
+   "coast_roughness": 2.4
+  },
+  {
+   "key": "C6",
+   "name": "The Core",
+   "longitude": 150.0,
+   "latitude": -32.0,
+   "radius_degrees": 14.0,
+   "value": 240,
+   "target_land_percent": 1.7
+  }
+ ],
+ "core": {
+  "longitude": 150.0,
+  "latitude": -32.0,
+  "crater_radius_degrees": 13.0,
+  "id_radius_degrees": 14.0
+ },
+ "nodes": [
+  {
+   "name": "Landing Site",
+   "longitude": -57.16,
+   "latitude": -14.3
+  },
+  {
+   "name": "Glass Meadows",
+   "longitude": -51.17,
+   "latitude": -10.28
+  },
+  {
+   "name": "Shard Ridge",
+   "longitude": -45.17,
+   "latitude": -6.59
+  },
+  {
+   "name": "Fault Line",
+   "longitude": -39.09,
+   "latitude": -3.32
+  },
+  {
+   "name": "Quartz Flats",
+   "longitude": -32.76,
+   "latitude": -0.85
+  },
+  {
+   "name": "Crysium Vein",
+   "longitude": -26.03,
+   "latitude": 0.38
+  },
+  {
+   "name": "Crystal Plains 7",
+   "longitude": -18.86,
+   "latitude": 0.16
+  },
+  {
+   "name": "Crystal Plains 8",
+   "longitude": -17.14,
+   "latitude": 6.15
+  },
+  {
+   "name": "Crystal Plains 9",
+   "longitude": -24.59,
+   "latitude": 7.24
+  },
+  {
+   "name": "Crystal Plains 10",
+   "longitude": -31.8,
+   "latitude": 7.42
+  },
+  {
+   "name": "Crystal Plains 11",
+   "longitude": -38.61,
+   "latitude": 6.26
+  },
+  {
+   "name": "Crystal Plains 12",
+   "longitude": -44.93,
+   "latitude": 3.63
+  },
+  {
+   "name": "Crystal Plains 13",
+   "longitude": -50.82,
+   "latitude": -0.22
+  },
+  {
+   "name": "Crystal Plains 14",
+   "longitude": -56.47,
+   "latitude": -4.83
+  },
+  {
+   "name": "Crystal Plains 15",
+   "longitude": -61.92,
+   "latitude": 0.75
+  },
+  {
+   "name": "Crystal Plains 16",
+   "longitude": -56.55,
+   "latitude": 5.92
+  },
+  {
+   "name": "Crystal Plains 17",
+   "longitude": -50.73,
+   "latitude": 9.94
+  },
+  {
+   "name": "Crystal Plains 18",
+   "longitude": -44.34,
+   "latitude": 12.56
+  },
+  {
+   "name": "Crystal Plains 19",
+   "longitude": -37.45,
+   "latitude": 13.86
+  },
+  {
+   "name": "Crystal Plains 20",
+   "longitude": -30.26,
+   "latitude": 14.21
+  }
+ ],
+ "lobes": {
+  "C1": [
+   [
+    -55,
+    -4,
+    8,
+    11,
+    18,
+    1
+   ],
+   [
+    -40,
+    4,
+    9,
+    11,
+    18,
+    1
+   ],
+   [
+    -24,
+    7,
+    8,
+    10,
+    18,
+    1
+   ],
+   [
+    -65,
+    -19,
+    9,
+    3.2,
+    40,
+    1
+   ],
+   [
+    -8,
+    15,
+    12,
+    3.2,
+    40,
+    1
+   ],
+   [
+    -64,
+    14,
+    8,
+    3,
+    -40,
+    1
+   ],
+   [
+    -20,
+    -10,
+    3.2,
+    7,
+    -15,
+    1
+   ],
+   [
+    -48,
+    18,
+    6,
+    2.8,
+    10,
+    1
+   ],
+   [
+    -31,
+    -9,
+    6,
+    4,
+    15,
+    -1
+   ]
+  ],
+  "C2": [
+   [
+    46,
+    -14,
+    12,
+    17,
+    10,
+    1
+   ],
+   [
+    73,
+    -18,
+    11,
+    15,
+    -20,
+    1
+   ],
+   [
+    58,
+    -1,
+    15,
+    6,
+    0,
+    1
+   ],
+   [
+    86,
+    -2,
+    14,
+    4.5,
+    30,
+    1
+   ],
+   [
+    46,
+    -36,
+    5,
+    10,
+    25,
+    1
+   ],
+   [
+    78,
+    -34,
+    4,
+    8,
+    -30,
+    1
+   ],
+   [
+    36,
+    -4,
+    6,
+    6,
+    0,
+    1
+   ],
+   [
+    62,
+    -32,
+    3,
+    12,
+    18,
+    -1
+   ],
+   [
+    62,
+    -13,
+    2.6,
+    6,
+    28,
+    -1
+   ]
+  ],
+  "C3": [
+   [
+    60,
+    67,
+    32,
+    9,
+    0,
+    1
+   ],
+   [
+    60,
+    84,
+    18,
+    7,
+    0,
+    1
+   ],
+   [
+    33,
+    50,
+    4.5,
+    12,
+    18,
+    1
+   ],
+   [
+    97,
+    53,
+    14,
+    4,
+    -30,
+    1
+   ],
+   [
+    12,
+    64,
+    10,
+    4.5,
+    12,
+    1
+   ],
+   [
+    75,
+    49,
+    3.5,
+    8,
+    25,
+    1
+   ],
+   [
+    140,
+    80,
+    11,
+    4,
+    0,
+    1
+   ],
+   [
+    58,
+    70,
+    9,
+    2.6,
+    4,
+    -1
+   ]
+  ],
+  "C4": [
+   [
+    -150,
+    30,
+    13,
+    6,
+    -20,
+    1
+   ],
+   [
+    -127,
+    11,
+    12,
+    15,
+    10,
+    1
+   ],
+   [
+    -150,
+    -3,
+    14,
+    5,
+    28,
+    1
+   ],
+   [
+    -140,
+    14,
+    10,
+    9,
+    0,
+    1
+   ],
+   [
+    -113,
+    4,
+    5,
+    10,
+    0,
+    1
+   ],
+   [
+    -127,
+    -14,
+    5,
+    8,
+    -22,
+    1
+   ],
+   [
+    -124,
+    29,
+    7,
+    4,
+    30,
+    1
+   ],
+   [
+    -160,
+    14,
+    9,
+    7.5,
+    0,
+    -1
+   ]
+  ],
+  "C5": [
+   [
+    150,
+    -67,
+    30.8,
+    8.8,
+    0,
+    1
+   ],
+   [
+    150,
+    -83,
+    24.2,
+    6.6,
+    0,
+    1
+   ],
+   [
+    150,
+    -48,
+    8.8,
+    7.7,
+    0,
+    1
+   ],
+   [
+    121,
+    -57,
+    9.9,
+    5.0,
+    -25,
+    1
+   ],
+   [
+    -172,
+    -59,
+    11.0,
+    5.5,
+    10,
+    1
+   ],
+   [
+    178,
+    -48,
+    4.4,
+    7.7,
+    20,
+    1
+   ]
+  ]
+ },
+ "archipelagos": [
+  {
+   "region": "C1",
+   "radius": 2.2,
+   "count": 7,
+   "poly": [
+    [
+     -2,
+     16
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     12,
+     -4
+    ],
+    [
+     16,
+     -14
+    ]
+   ],
+   "note": "the Shard Isles between Crystal Plains and Ashen Reach"
+  },
+  {
+   "region": "C1",
+   "radius": 1.7,
+   "count": 5,
+   "poly": [
+    [
+     -82,
+     26
+    ],
+    [
+     -87,
+     34
+    ],
+    [
+     -90,
+     42
+    ]
+   ],
+   "note": "western reef"
+  },
+  {
+   "region": "C2",
+   "radius": 1.5,
+   "count": 6,
+   "poly": [
+    [
+     102,
+     -14
+    ],
+    [
+     112,
+     -22
+    ],
+    [
+     124,
+     -27
+    ]
+   ],
+   "note": "volcanic chain east of Ashen Reach"
+  },
+  {
+   "region": "C4",
+   "radius": 1.9,
+   "count": 5,
+   "poly": [
+    [
+     -98,
+     2
+    ],
+    [
+     -92,
+     12
+    ],
+    [
+     -88,
+     22
+    ]
+   ],
+   "note": "Mirewood's outer keys"
+  },
+  {
+   "region": "C4",
+   "radius": 1.7,
+   "count": 5,
+   "poly": [
+    [
+     170,
+     20
+    ],
+    [
+     178,
+     30
+    ],
+    [
+     -174,
+     38
+    ]
+   ],
+   "note": "mid-ocean arc"
+  },
+  {
+   "region": "C5",
+   "radius": 1.6,
+   "count": 4,
+   "poly": [
+    [
+     96,
+     -46
+    ],
+    [
+     104,
+     -42
+    ],
+    [
+     112,
+     -40
+    ]
+   ],
+   "note": "southern stepping stones"
+  }
+ ],
+ "mountains": {
+  "C1": [
+   [
+    [
+     [
+      -67,
+      -14
+     ],
+     [
+      -61,
+      -20
+     ]
+    ],
+    2.0,
+    1.0
+   ],
+   [
+    [
+     [
+      -15,
+      9
+     ],
+     [
+      -6,
+      17
+     ]
+    ],
+    2.0,
+    0.85
+   ],
+   [
+    [
+     [
+      -52,
+      16.5
+     ],
+     [
+      -41,
+      19
+     ],
+     [
+      -31,
+      19.5
+     ]
+    ],
+    1.8,
+    0.7
+   ]
+  ],
+  "C2": [
+   [
+    [
+     [
+      38,
+      -26
+     ],
+     [
+      50,
+      -19
+     ],
+     [
+      62,
+      -6
+     ],
+     [
+      78,
+      0
+     ],
+     [
+      92,
+      -1
+     ]
+    ],
+    3.6,
+    1.0
+   ],
+   [
+    [
+     [
+      34,
+      2
+     ],
+     [
+      40,
+      -10
+     ]
+    ],
+    2.8,
+    0.7
+   ]
+  ],
+  "C3": [
+   [
+    [
+     [
+      18,
+      55
+     ],
+     [
+      42,
+      59
+     ],
+     [
+      70,
+      57
+     ],
+     [
+      100,
+      59
+     ]
+    ],
+    4.0,
+    1.15
+   ],
+   [
+    [
+     [
+      40,
+      74
+     ],
+     [
+      72,
+      78
+     ],
+     [
+      110,
+      74
+     ]
+    ],
+    4.5,
+    1.0
+   ]
+  ],
+  "C4": [
+   [
+    [
+     [
+      -160,
+      30
+     ],
+     [
+      -146,
+      36
+     ],
+     [
+      -130,
+      30
+     ]
+    ],
+    3.2,
+    0.45
+   ],
+   [
+    [
+     [
+      -117,
+      14
+     ],
+     [
+      -113,
+      0
+     ]
+    ],
+    2.4,
+    0.35
+   ]
+  ],
+  "C5": [
+   [
+    [
+     [
+      122,
+      -57
+     ],
+     [
+      140,
+      -62
+     ],
+     [
+      165,
+      -60
+     ],
+     [
+      188,
+      -63
+     ]
+    ],
+    4.0,
+    1.2
+   ],
+   [
+    [
+     [
+      142,
+      -77
+     ],
+     [
+      175,
+      -79
+     ],
+     [
+      210,
+      -75
+     ]
+    ],
+    4.5,
+    0.9
+   ]
+  ]
+ },
+ "rifts": [
+  [
+   [
+    52,
+    2
+   ],
+   [
+    58,
+    -8
+   ],
+   [
+    63,
+    -14
+   ],
+   [
+    70,
+    -27
+   ],
+   [
+    73,
+    -37
+   ]
+  ],
+  [
+   [
+    70,
+    -6
+   ],
+   [
+    82,
+    -9
+   ],
+   [
+    94,
+    -6
+   ]
+  ]
+ ],
+ "trenches": [
+  [
+   [
+    99,
+    4
+   ],
+   [
+    104,
+    -18
+   ],
+   [
+    101,
+    -42
+   ]
+  ],
+  [
+   [
+    -176,
+    32
+   ],
+   [
+    -179,
+    10
+   ],
+   [
+    -171,
+    -12
+   ]
+  ],
+  [
+   [
+    -94,
+    -24
+   ],
+   [
+    -100,
+    6
+   ],
+   [
+    -93,
+    36
+   ]
+  ],
+  [
+   [
+    18,
+    30
+   ],
+   [
+    2,
+    40
+   ],
+   [
+    -20,
+    46
+   ]
+  ]
+ ],
+ "rivers": {
+  "C1": 7,
+  "C2": 3,
+  "C3": 5,
+  "C4": 9,
+  "C5": 3
+ },
+ "crystal_plains_subbiomes": [
+  {
+   "type": "glass_meadow",
+   "longitude": -52,
+   "latitude": -8
+  },
+  {
+   "type": "glass_meadow",
+   "longitude": -30,
+   "latitude": 4
+  },
+  {
+   "type": "shard_field",
+   "longitude": -41,
+   "latitude": 9
+  },
+  {
+   "type": "shard_field",
+   "longitude": -20,
+   "latitude": 3
+  },
+  {
+   "type": "amethyst_upland",
+   "longitude": -62,
+   "latitude": -15
+  },
+  {
+   "type": "amethyst_upland",
+   "longitude": -10,
+   "latitude": 13
+  },
+  {
+   "type": "salt_basin",
+   "longitude": -48,
+   "latitude": 13
+  },
+  {
+   "type": "bluefern",
+   "longitude": -36,
+   "latitude": -5
+  },
+  {
+   "type": "bluefern",
+   "longitude": -58,
+   "latitude": 3
+  }
+ ],
+ "coast_grain": 0.32,
+ "river_lake_regions": [
+  "C3",
+  "C4"
+ ],
+ "node_min_spacing_degrees": 6.0
+}

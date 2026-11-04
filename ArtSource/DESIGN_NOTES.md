@@ -1829,3 +1829,140 @@ the headset moved away, so the boom leaves no stain on the cheek.
 - Stature 1.556 m: she was scaled to keep the eyes on y 1.44 for the existing bust framing, so she is short next to
   Mercer.
 - 25,228 triangles: the MPFB head and ears stay undecimated for the face (hair at 0.68, teeth at 0.12, shoes at 0.4).
+
+# Round 20: VFX texture set (projectiles, muzzle flashes, explosions, smoke, impacts), 2026-11-04
+
+Remco: "Kun je ook de wapen projectiles en explosies mooi maken." This round makes the texture source the Unity VFX
+rebuild will use; nothing in `Assets/` changes. Script: `Tools/Blender/build_vfx.py` (+ `vfx_kit.py`, `vfx_2d.py`,
+`vfx_sim.py`). Output: `ArtSource/Exports/VFX/` (+ `Low/` at half size) and `VFX_report.json`.
+
+## Design rules (from Remco's feedback, memory "user preferences")
+
+- **Projectiles are glowing rounded bars with a light trail, never light balls.** `Bolt_Core` is a capsule with a
+  white core and a halo that leans backwards; the plasma round is the same bar inside a churning mantle; trails are
+  separate ribbons (`Trail_Ribbon` + scrolling `Trail_Noise`) so the bar stays crisp.
+- **Beams and bolts leave the barrel**: the side-view muzzle flashes and the tesla arcs start at a fixed point
+  (U 0.05 / U 0.02, V 0.5) so Unity can pin them to the muzzle socket.
+- **Impact is felt locally**: every big hit has a ring (`Shockwave_Ring`) and a refraction map
+  (`Shockwave_Distort`, `HeatHaze_Distort`) for the existing `Game/ImpactRipple` idea; no full-screen flash anywhere.
+  Flashes in the flipbooks last 2-4 frames and stay small (energy impact, sparks, cryo).
+- **Tintable**: emissive textures are white-hot core (R) + glow mask (G) so one texture serves every weapon colour from
+  `TowerDefinition._color`; smoke is lit greyscale (six-way) so it takes each level's palette; fire is a temperature
+  channel mapped through a gradient.
+- **Cool vs warm colour code**: our weapons stay cyan/blue/white/yellow in the tints (bolts, rails, cryo, tesla violet),
+  fire and acid are warm and organic.
+
+## How it is made
+
+- **Fireballs, smoke and dust** are Mantaflow gas sims (Replay cache, 112-192 voxels on the long axis). Each kept frame
+  is read from the evaluated domain and rendered straight away by a numpy orthographic ray-marcher (camera on -Y):
+  alpha, a fire temperature channel and six single-light maps (single scatter plus a soft multi-scatter lobe), packed
+  as Unity's six-way lightmaps. Only the 2D maps are cached (`%TEMP%/td_vfx_cache/<Name>.npz`), never the 3D grids.
+  Fire is seen through its own thin gas (only the non-burning soot occludes it), so a long path through the centre
+  reads hotter than the rim: white core, orange body, red edge, dark soot as it rises. The emitters are lumpy spheres
+  that grow over 4-8 frames (that, not initial velocity alone, is what makes the fireball bloom), the boss blast
+  chains three sub-burst waves. The last 18 % of every flipbook fades to empty so particles never pop.
+- **Everything else** is procedural numpy: periodic Perlin noise (tiles and time loops are seamless by construction),
+  distance fields for bars, petals, segments and polygons, midpoint-displaced branching bolts, a small 2D particle sim
+  for sparks, metaballs with a derived normal and Blinn highlight for the acid, warped voronoi for scorch cracks.
+- Previews (contact sheets, relight sheets, channel strips) are shaded in numpy the way the intended Unity shaders
+  will be (six-way weights = squared light direction components; CG pack = tint x G + white x R; ACES-ish tonemap).
+
+## Critique passes (what was seen and changed)
+
+1. Explosions, pass 1: the fire burned out in ~10 frames and the ball stayed small -> growing emitters, more fuel,
+   lower burning rate. Pass 2: the fire read as a flat orange shell (smoke in front hid the emission) -> emission is
+   occluded only by non-burning soot, so the core is hot and the rim cools. Pass 3: vertical hair in fire and smoke
+   (single-voxel rising filaments) -> one-voxel 3D smoothing before the render; the fireball whited out for 5 frames
+   -> lower emission gain; smoke clipped flat against the domain ceiling -> taller domains; six-way maps too similar
+   (relight barely visible) -> stronger single-scatter share; preview smoke too pale -> dark albedo 0.17.
+2. Projectiles: bolt halo had a notch at the tail -> halo built from two capsules; plasma round was a blob ->
+   rounded bar + mantle + ridged tendrils streaming back, smaller halo; rocket flame was a uniform sausage -> heat
+   falls off along the plume, stronger scrolling turbulence, diamond-shaped shock cells; tesla arcs were smooth curves
+   flattened against the cell border -> displacement proportional to segment length (jagged at every scale) and
+   paths scaled into the band instead of clamped, thinner glow; trail and beam noise were mostly white -> normalised
+   ridged noise.
+3. Muzzle flashes rendered black (NaN from a zero-width petal) -> epsilon; side petals were too long and white,
+   flak jets left the cell -> shorter, sharper, dimmer cores; front-view halos filled the cell -> smaller.
+4. Impacts: sparks clumped near the centre -> less drag, longer flight and motion blur, shorter flash; scorch cracks
+   read as a tiled polygon pattern -> warped, broken crack network and longer soot rays; energy ring lingered ->
+   thinner, faster fade.
+
+## Honest weak points
+
+- The sims run at 112-192 voxels: billows are soft at 256 px per frame, there is no wavelet-turbulence upres. Close
+  to the camera (boss deaths on a zoomed map) the smoke can look a little smooth; a noise-upres pass would fix it at
+  ~4x the bake time.
+- Six-way maps are from an axis-aligned orthographic view; billboards seen at the game's 50 degree pitch are fine,
+  but there is no "seen from above" variant.
+- The fire temperature is an exposure of integrated flame, not a physical blackbody; the gradient in Unity decides
+  the final colours (`fire_ramp` in `vfx_kit.py` is the suggested one).
+- Muzzle flashes and the rocket flame are stylised 2D shapes, not sims; up close they read as graphic, which suits the
+  look but is less rich than the fireballs.
+- Acid splash droplets fall out of the bottom of the cell in the last frames (intended: they leave the frame) and the
+  drips are simple; there is no puddle decal yet.
+- The boss blast's three sub-burst waves merge into one large fireball instead of reading as separate pops; for a
+  readable chain, spawn 2-3 Explosion_Large particles with delays in Unity on top of it.
+- Dust_Burst is a rounded dome that settles, not a flat radial sheet; it reads as a ground puff more than a shock.
+- Lightning arcs are 16 fixed shapes; at 20 fps the repetition is not visible, but a very long-lived arc should pick
+  random frames.
+
+# Round 21: S-69-CRYS planet, balanced world layout (2026-11-04)
+
+Feedback (Remco): Crystal Plains "neemt bijna een kwart planeet in beslag", the world is out of balance.
+
+## What changed
+
+- **Layout is data:** `ArtSource/Exports/Planet_S69/layout.json` holds the region centres (unchanged from
+  CampaignCatalog), surface targets, lobes, ranges, rifts, trenches, archipelagos, river counts, the Crystal Plains
+  sub-biome seeds and a new proposal for the 20 Crystal Plains level nodes. `build_planet_s69.py` reads it; a per-region
+  coast bias is solved by bisection so every region hits its target share.
+- **Surface share (measured on Regions.png):** Crystal Plains 5.98 %, Ashen Reach 7.0 %, Northern Crown 6.78 %,
+  Mirewood 6.77 %, Southern Crown 6.27 %, The Core 1.48 % (crater, radius 13 deg, id to 14 deg), ocean 65.7 %
+  (round 20: Crystal Plains 8.8 %, Core 0.76 %). Crystal Plains is now the smallest major continent, not the biggest.
+- **Shapes:** coast noise per region (`coast_roughness`) plus a ridged "tectonic grain" term; Ashen Reach is two
+  plates split by a rift gulf from the south ending in a rift lake; Mirewood is a crescent around a western bay;
+  Northern Crown has southward capes and one inland sea; random inland holes were removed.
+- **Crystal Plains:** five sub-biomes (glass meadow, bluefern lowland, amethyst upland, shard field, salt basin) from
+  a warped soft partition; crystals are clustered outcrops (cellular noise inside blob fields) instead of worm-like
+  vein networks; rivers glow faintly cyan at night.
+- **Rivers:** traced by steepest descent from mountain belts to the coast (21 rivers); only Northern Crown and
+  Mirewood may end in basin lakes; widths grow downstream, valleys are cut into the relief.
+- **Southern Crown** is lighter slate by day and its polar land is an ice sheet matching the sea ice beside it.
+- **Polar streaking:** latitude-stretched noise (clouds, currents, glaciers, sheen) fades to isotropic near the poles;
+  the sea-ice edge is lobed.
+- **Nodes:** 4-row serpentine at bearing 14 deg, 9 deg steps; min spacing 8.25 deg (Unity rule 8), every node on C1
+  land, min 4.3 deg from the coast (check in the report, `nodes_ok`).
+
+## Critique passes
+
+1. Smaller Crystal Plains, but the nodes' land guard made it a rounded rectangle; sub-biomes read as hard patches;
+   lake-ending rivers left black holes; mountain belts lay offshore. -> guard radius 5.5, softer partition, lakes only
+   C3/C4, belts moved inland.
+2. Other continents still blobby with holes -> redesigned lobes (rift gulf, crescent bay), roughness up, holes removed;
+   Core floor lifted, dune stripes softened.
+3. South pole: grey land beside a white sea-ice patch -> polar ice sheet on the land; volcanic isles shrunk; crystal
+   fields given a pale sheen so they read from orbit.
+
+## Honest weak points
+
+- Crystal Plains still has a fairly compact core because 20 nodes at >= 8 deg spacing need ~4 % of the planet; a
+  smaller continent needs a smaller node spacing rule in Unity.
+- Rivers are thin at globe distance; Crystal Plains has only a few short ones.
+- The Core crater is large and dark; on the map it reads like an eye.
+- Ocean 65.7 % is a hair over the 55-65 % brief.
+
+# Round 22: S-69-CRYS planet, Crystal Plains as the small starting continent (2026-11-04)
+
+Curator: round 21 still read as a big slab facing the camera. Node spacing rule may drop to 6 deg (Unity side).
+
+- Surface share (Regions.png): Crystal Plains 4.02 %, Ashen Reach 6.49 %, Northern Crown 6.59 %, Mirewood 6.36 %,
+  Southern Crown 6.07 %, The Core 1.48 %, ocean 69.0 %.
+- Nodes: a 3-row serpentine (7 + 7 + 6) along a SW-NE band at bearing 18 deg with a slight arch, Landing Site in the
+  south-west; min spacing 6.23 deg (`node_min_spacing_degrees` 6 in layout.json), min 3.5 deg from the coast, all
+  within ~26 deg of the region centre.
+- Shape: an elongated band of three lobes with a SW peninsula (Landing Site side), a long NE peninsula with a ridge,
+  a NW cape, a southern horn and an inland bay biting into the south coast. Node land guard radius 4.6 deg.
+- Ashen Reach dunes: a global sine pattern (which aliased into stripes) replaced by warped, stretched ridged noise.
+- Weak points: the land is still mostly the area the 20 nodes need (about 3.3 % at 6 deg spacing with a 3 deg coast);
+  crystal outcrops read a little like bubbles up close.

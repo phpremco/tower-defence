@@ -1,4 +1,4 @@
-"""Round 20: the S-69-CRYS world-map planet as an equirectangular texture set (procedural, numpy, no downloads).
+"""Round 20/21: the S-69-CRYS world-map planet as an equirectangular texture set (procedural, numpy, no downloads).
 
 Matches Unity's PlanetCoordinates exactly: u = (longitude + 180) / 360 with east (positive longitude) to the right,
 v = (latitude + 90) / 180, so the top row of every PNG is the north pole (Unity imports PNG with v = 1 at the top).
@@ -16,7 +16,8 @@ Outputs ArtSource/Exports/Planet_S69/ (4096 x 2048) and Low/ (2048 x 1024):
   Planet_S69_report.json
 
 Run:  blender --background --factory-startup --python Tools/Blender/build_planet_s69.py -- [--res 4096]
-        [--out <dir>] [--renders <dir>] [--compare <screenshot.png>] [--norender]
+        [--out <dir>] [--renders <dir>] [--compare-dir <old export dir>] [--layout <layout.json>] [--layoutonly]
+        [--norender]
 bpy is only used to read the comparison screenshot; everything else is numpy.
 """
 
@@ -50,6 +51,7 @@ OUT = _arg("--out", os.path.join(ROOT, "ArtSource", "Exports", "Planet_S69"))
 RENDERS = _arg("--renders", None)
 COMPARE = _arg("--compare", None)
 NORENDER = bool(_arg("--norender", False))
+COMPARE_DIR = _arg("--compare-dir", None)
 
 POOL = ThreadPoolExecutor(max(4, (os.cpu_count() or 8) - 2))
 CHUNK = 1 << 17
@@ -61,62 +63,35 @@ def log(msg):
 
 
 # ----------------------------------------------------------------------------------------------------------------
-# Campaign layout (copied from Assets/_Project/Data/Levels/CampaignCatalog.asset; read-only there)
+# World layout: read from layout.json (round 21) so the texture and the Unity campaign data stay in sync.
+# The region centres match Assets/_Project/Data/Levels/CampaignCatalog.asset; the node positions are a proposal a
+# Unity agent applies to the CampaignCatalog MapNodes.
 # ----------------------------------------------------------------------------------------------------------------
 
-REGIONS = [  # key, name, lon, lat, radius, id value (8-bit)
-    ("C1", "Crystal Plains", -40.0, 6.0, 30.0, 40),
-    ("C2", "Ashen Reach", 60.0, -15.0, 30.0, 80),
-    ("C3", "Northern Crown", 60.0, 62.0, 30.0, 120),
-    ("C4", "Mirewood", -140.0, 15.0, 30.0, 160),
-    ("C5", "Southern Crown", 150.0, -60.0, 30.0, 200),
-    ("C6", "The Core", 150.0, -32.0, 12.0, 240),
-]
-NODES = [(-55.53, -8.22), (-45.98, -6.9), (-36.4, -8.56), (-26.76, -9.28), (-17.41, -6.96), (-17.71, 2.43),
-         (-27.12, 0.14), (-36.82, 0.73), (-46.28, 2.44), (-55.95, 1.24), (-65.38, 3.21), (-58.55, 9.98),
-         (-48.96, 11.87), (-39.2, 10.43), (-29.44, 9.36), (-19.79, 11.57), (-25.34, 19.36), (-35.45, 19.01),
-         (-45.44, 20.8), (-55.68, 20.63)]
-NODE_NAMES = ["Landing Site", "Glass Meadows", "Shard Ridge", "Fault Line", "Quartz Flats", "Crysium Vein"] + \
-             [f"Crystal Plains {i}" for i in range(7, 21)]
+LAYOUT_PATH = _arg("--layout", os.path.join(ROOT, "ArtSource", "Exports", "Planet_S69", "layout.json"))
+with open(LAYOUT_PATH, encoding="utf-8") as _f:
+    LAYOUT = json.load(_f)
 
-# Lobes per surface continent: (lon, lat, half-width east, half-height north, rotation deg, sign). sign -1 carves a bay.
-LOBES = {
-    "C1": [(-41, 6, 31, 18, 6, 1), (-62, 22, 13, 9, -25, 1), (-20, -15, 9, 14, -32, 1), (-64, -13, 10, 6, 28, 1),
-           (-16, 25, 11, 6, 38, 1), (-39, -21, 6, 12, 12, 1), (-76, 8, 6, 9, -10, 1), (-30, 30, 7, 4, 0, 1),
-           (-8, 8, 5, 10, -15, 1), (-50, -19, 5, 4, 0, -1), (-27, 31, 4, 3, 0, -1)],
-    "C2": [(60, -12, 27, 15, -14, 1), (47, -32, 14, 10, 22, 1), (87, -3, 13, 6, 32, 1), (37, -5, 10, 13, 0, 1),
-           (74, -30, 7, 9, -30, 1), (52, 4, 5, 3, 0, -1)],
-    "C3": [(60, 68, 36, 15, 0, 1), (60, 80, 26, 11, 0, 1), (34, 46, 8, 13, 22, 1), (101, 57, 17, 7, -16, 1),
-           (18, 61, 12, 8, 12, 1), (78, 50, 7, 5, 30, 1)],
-    "C4": [(-140, 14, 24, 17, 22, 1), (-151, 34, 12, 9, -12, 1), (-115, 5, 10, 13, 0, 1), (-163, -6, 12, 8, 32, 1),
-           (-127, -13, 7, 9, -22, 1), (-160, 22, 5, 4, 50, -1)],
-    "C5": [(150, -66, 34, 13, 0, 1), (150, -80, 30, 9, 0, 1), (150, -37, 13, 12, 10, 1), (163, -37, 7, 6, 30, 1), (137, -29, 6, 8, -20, 1), (-174, -55, 13, 8, 10, 1),
-           (117, -51, 11, 7, -25, 1), (132, -44, 6, 5, 0, -1)],
-}
-# Deliberate archipelagos: island arcs as (polyline, island radius deg, count).
-ARCHIPELAGOS = [
-    ([(-2, 14), (8, 4), (14, -6), (18, -16)], 2.4, 7, "C1"),          # the Shard Isles between Crystal Plains and Ashen Reach
-    ([(102, -14), (112, -22), (124, -27)], 2.2, 6, "C2"),             # volcanic chain east of Ashen Reach
-    ([(-98, 2), (-92, 12), (-88, 22)], 2.0, 5, "C4"),                 # Mirewood's outer keys
-    ([(170, 20), (178, 30), (-174, 38)], 1.8, 5, "C4"),              # mid-ocean arc
-]
-MOUNTAINS = {
-    "C1": [([(-73, -3), (-67, -17), (-53, -25), (-40, -29)], 4.0, 1.0),
-           ([(-70, 27), (-52, 29), (-32, 27), (-13, 30)], 3.5, 0.9),
-           ([(-9, 0), (-6, -12), (-14, -27)], 3.0, 0.8)],
-    "C2": [([(39, -25), (51, -18), (63, -8), (79, -1), (93, -2)], 4.0, 1.0),
-           ([(34, 4), (40, -10)], 3.0, 0.7)],
-    "C3": [([(18, 52), (44, 57), (70, 55), (102, 59)], 5.0, 1.15),
-           ([(40, 72), (72, 77), (110, 72)], 5.0, 1.0)],
-    "C4": [([(-162, 30), (-146, 37), (-130, 31)], 3.5, 0.45),
-           ([(-118, 14), (-112, 0)], 2.5, 0.35)],
-    "C5": [([(118, -55), (140, -60), (165, -58), (188, -62)], 4.5, 1.2),
-           ([(142, -76), (175, -78), (210, -74)], 5.0, 0.9)],
-}
-RIFTS = [[(48, 0), (58, -10), (64, -18), (71, -28), (74, -38)], [(70, -6), (82, -10), (95, -8)]]
-TRENCHES = [[(99, 4), (104, -18), (101, -42)], [(-176, 32), (-179, 10), (-171, -12)],
-            [(-94, -24), (-100, 6), (-93, 36)], [(18, 30), (0, 42), (-20, 46)]]
-CORE_RADIUS = 9.0
+REGIONS = [(r["key"], r["name"], float(r["longitude"]), float(r["latitude"]), float(r["radius_degrees"]), int(r["value"]))
+           for r in LAYOUT["regions"]]  # key, name, lon, lat, radius, id value (8-bit)
+TARGETS = {r["key"]: float(r["target_land_percent"]) for r in LAYOUT["regions"]}
+ROUGH = {r["key"]: float(r.get("coast_roughness", 1.0)) for r in LAYOUT["regions"]}
+LAKE_REGIONS = set(LAYOUT.get("river_lake_regions", []))
+NODES = [(float(n["longitude"]), float(n["latitude"])) for n in LAYOUT["nodes"]]
+NODE_NAMES = [n["name"] for n in LAYOUT["nodes"]]
+LOBES = {k: [tuple(l) for l in v] for k, v in LAYOUT["lobes"].items()}
+ARCHIPELAGOS = [([tuple(p) for p in a["poly"]], float(a["radius"]), int(a["count"]), a["region"]) for a in LAYOUT["archipelagos"]]
+MOUNTAINS = {k: [([tuple(p) for p in poly], float(w), float(amp)) for poly, w, amp in v] for k, v in LAYOUT["mountains"].items()}
+RIFTS = [[tuple(p) for p in r] for r in LAYOUT["rifts"]]
+TRENCHES = [[tuple(p) for p in t] for t in LAYOUT["trenches"]]
+RIVER_COUNTS = LAYOUT.get("rivers", {})
+SUBBIOMES = LAYOUT.get("crystal_plains_subbiomes", [])
+CORE_LON, CORE_LAT = float(LAYOUT["core"]["longitude"]), float(LAYOUT["core"]["latitude"])
+CORE_RADIUS = float(LAYOUT["core"]["crater_radius_degrees"])
+CORE_ID_RADIUS = float(LAYOUT["core"]["id_radius_degrees"])
+NODE_COAST_MIN = 3.0
+NODE_SPACING_MIN = float(LAYOUT.get("node_min_spacing_degrees", 8.0))
+GRAIN = float(LAYOUT.get("coast_grain", 0.22))
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -318,6 +293,47 @@ def warp(P, amount, freq, octaves, seed):
     return (x * inv).astype(F32), (y * inv).astype(F32), (z * inv).astype(F32)
 
 
+def worley(P, freq, seed):
+    """Cellular noise on the sphere: distances (in cells) to the nearest and second-nearest feature point."""
+    off = _OFFS[seed % 64]
+
+    def fn(x, y, z):
+        X, Y, Z = x * freq + off[0], y * freq + off[1], z * freq + off[2]
+        xi, yi, zi = np.floor(X).astype(np.int32), np.floor(Y).astype(np.int32), np.floor(Z).astype(np.int32)
+        f1 = np.full(len(x), 9.0, F32)
+        f2 = np.full(len(x), 9.0, F32)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for dz in (-1, 0, 1):
+                    cx, cy, cz = xi + dx, yi + dy, zi + dz
+                    hs = _P[(_P[(_P[(cx + seed) & 255] + cy) & 255] + cz) & 255]
+                    jx = _P[(hs + 17) & 255] / 255.0
+                    jy = _P[(hs + 101) & 255] / 255.0
+                    jz = _P[(hs + 199) & 255] / 255.0
+                    d = (cx + jx - X) ** 2 + (cy + jy - Y) ** 2 + (cz + jz - Z) ** 2
+                    f2 = np.where(d < f1, f1, np.minimum(f2, d))
+                    f1 = np.minimum(f1, d)
+        return np.sqrt(f1), np.sqrt(f2)
+    return chunked(fn, len(P[0]), *P, channels=2)
+
+
+SUBBIOME_TYPES = ["glass_meadow", "bluefern", "amethyst_upland", "shard_field", "salt_basin"]
+
+
+def subbiome_weights(Pm, elev):
+    """Crystal Plains sub-biomes: soft, warped nearest-seed partition of the layout's seeds, uplands follow height."""
+    PWm = warp(warp(Pm, 0.10, 2.2, 3, 177), 0.03, 7.0, 3, 179)
+    acc = np.zeros((len(SUBBIOME_TYPES), len(Pm[0])), F32)
+    for sd in SUBBIOMES:
+        c = vec(sd["longitude"], sd["latitude"])
+        d = np.degrees(np.arccos(np.clip(PWm[0] * c[0] + PWm[1] * c[1] + PWm[2] * c[2], -1, 1)))
+        i = SUBBIOME_TYPES.index(sd["type"])
+        acc[i] = np.maximum(acc[i], np.exp(-d / 3.2))
+    acc[2] += 0.6 * smooth(0.16, 0.40, elev) * acc.max(axis=0)
+    acc = np.power(acc + 1e-6, 1.5)
+    return acc / acc.sum(axis=0, keepdims=True)
+
+
 # ----------------------------------------------------------------------------------------------------------------
 # Image helpers
 # ----------------------------------------------------------------------------------------------------------------
@@ -444,39 +460,181 @@ def archipelago_field(P, poly, radius, count, seed):
     return out
 
 
+def area_weights(G):
+    wgt = np.broadcast_to(np.cos(np.radians(G.lat1))[:, None], (G.h, G.w)).ravel().astype(np.float64)
+    return wgt / wgt.sum()
+
+
+def solve_bias(field, target, wgt, extra=None, exclude=None):
+    """Coast bias so the region's land covers target percent of the planet (bisection; fields are monotone in it)."""
+    lo, hi = -0.8, 0.8
+    for _ in range(26):
+        b = 0.5 * (lo + hi)
+        f = field + b
+        if extra is not None:
+            f = np.maximum(f, extra)
+        m = f > 0
+        if exclude is not None:
+            m &= ~exclude
+        if wgt[m].sum() * 100.0 < target:
+            lo = b
+        else:
+            hi = b
+    return 0.5 * (lo + hi)
+
+
+def trace_rivers(G, land_f, owner, beltkey, noise):
+    """Rivers by steepest descent on a height proxy from mountain sources to the sea (or to a lake in a basin)."""
+    h, w = G.h, G.w
+    hgt = (land_f + 0.65 * np.max(np.stack(list(beltkey.values())), axis=0) + 0.06 * noise).reshape(h, w)
+    landm = (land_f > 0).reshape(h, w)
+    own = owner.reshape(h, w)
+    taken = np.zeros((h, w), bool)
+    keys = [r[0] for r in REGIONS[:5]]
+    rivers, lakes = [], []
+    nb = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    lat1 = G.lat1
+    for ki, key in enumerate(keys):
+        count = int(RIVER_COUNTS.get(key, 0))
+        if count <= 0:
+            continue
+        bk = beltkey.get(key, np.zeros(G.n, F32)).reshape(h, w)
+        score = np.where(landm & (own == ki), bk + 0.25 * np.clip(hgt, 0, 2), -9)
+        cand = np.argsort(score.ravel())[::-1][:40000]
+        chosen = []
+        made = 0
+        for idx in cand:
+            if made >= count:
+                break
+            y, x = divmod(int(idx), w)
+            if score[y, x] < 0.15:
+                break
+            lon, lat = G.lon1[x], lat1[y]
+            if abs(lat) > 80:
+                continue
+            p = vec(lon, lat)
+            if any(float(np.dot(p, q)) > math.cos(math.radians(6.5)) for q in chosen):
+                continue
+            chosen.append(p)
+            path = [(y, x)]
+            ended = None
+            for _ in range(900):
+                cy, cx = path[-1]
+                if not landm[cy, cx]:
+                    ended = "sea"
+                    break
+                if taken[cy, cx] and len(path) > 1:
+                    ended = "join"
+                    break
+                best, bv = None, hgt[cy, cx]
+                for dy, dx in nb:
+                    ny, nx = cy + dy, (cx + dx) % w
+                    if 0 <= ny < h and hgt[ny, nx] < bv:
+                        bv, best = hgt[ny, nx], (ny, nx)
+                if best is None:
+                    ended = "lake"
+                    break
+                path.append(best)
+            if ended is None or len(path) < 14 or (ended == "lake" and key not in LAKE_REGIONS):
+                continue
+            for (py, px) in path[:-1]:
+                taken[py, px] = True
+            pts = np.array([vec(G.lon1[px], lat1[py]) for (py, px) in path], F32)
+            k = 4
+            if len(pts) > 2 * k + 2:
+                sm = pts.copy()
+                for i in range(k, len(pts) - k):
+                    sm[i] = pts[i - k:i + k + 1].mean(axis=0)
+                pts = sm / np.linalg.norm(sm, axis=1, keepdims=True)
+            rivers.append((key, pts))
+            made += 1
+            if ended == "lake":
+                lakes.append((key, pts[-1]))
+    log(f"rivers: {len(rivers)} traced, {len(lakes)} end in lakes")
+    return rivers, lakes
+
+
+def river_points(rivers):
+    """All river samples densified to ~0.12 deg, with progress t (0 source .. 1 mouth) and a width scale."""
+    Q, T, S = [], [], []
+    for key, pts in rivers:
+        seg = []
+        for a, b in zip(pts[:-1], pts[1:]):
+            ang = math.degrees(math.acos(float(np.clip(np.dot(a, b), -1, 1))))
+            k = max(1, int(ang / 0.12))
+            for t in np.linspace(0, 1, k, endpoint=False):
+                v = a * (1 - t) + b * t
+                seg.append(v / np.linalg.norm(v))
+        seg.append(pts[-1])
+        seg = np.array(seg, F32)
+        n = len(seg)
+        Q.append(seg)
+        # Long rivers grow to full width; short ones stay narrow.
+        T.append((np.linspace(0, 1, n) * min(1.0, n / 140.0)).astype(F32))
+        S.append(np.full(n, {"C4": 1.35, "C3": 1.1}.get(key, 1.0), F32))
+    if not Q:
+        return np.zeros((0, 3), F32), np.zeros(0, F32), np.zeros(0, F32)
+    return np.concatenate(Q), np.concatenate(T), np.concatenate(S)
+
+
+def nearest_points(P, Q):
+    """Angular distance (deg) to the nearest point of Q and that point's index."""
+    def fn(x, y, z):
+        best = np.full(len(x), -2.0, F32)
+        arg = np.zeros(len(x), np.int64)
+        for i in range(0, len(Q), 96):
+            q = Q[i:i + 96]
+            d = x[:, None] * q[None, :, 0] + y[:, None] * q[None, :, 1] + z[:, None] * q[None, :, 2]
+            j = d.argmax(axis=1)
+            v = d[np.arange(len(x)), j]
+            better = v > best
+            best = np.where(better, v, best)
+            arg = np.where(better, j + i, arg)
+        return np.degrees(np.arccos(np.clip(best, -1, 1))), arg.astype(F32)
+    out = chunked(fn, len(P[0]), *P, channels=2)
+    return out[0], out[1].astype(np.int64)
+
+
 def build_layout(w, h):
     log(f"layout grid {w}x{h}")
     G = Grid(w, h)
     P = G.p()
+    wgt = area_weights(G)
     PW = warp(P, 0.16, 1.3, 4, 11)
     PW = warp(PW, 0.05, 4.0, 3, 21)
     coast_mid = fbm(P, 2.2, 6, 31, gain=0.55)
-    fields = {}
-    for key, *_ in REGIONS[:5]:
-        f = lobe_field(PW, LOBES[key])
-        f = f + 0.36 * coast_mid
-        fields[key] = f
-    for (poly, rad, cnt, key) in ARCHIPELAGOS:
-        a = archipelago_field(PW, poly, rad, cnt, hash(str(poly)) % 1000)
-        fields[key] = np.maximum(fields[key], a + 0.25 * coast_mid)
-    # Crystal Plains guard: every level node at least ~4 degrees inland.
+    # Tectonic grain: ridged noise turns part of the coast into long capes and channels instead of round lobes.
+    grain = ridged(warp(P, 0.08, 2.0, 3, 33), 2.8, 5, 37) - 0.38
+    core_ang = angle_to(P, CORE_LON, CORE_LAT)
+    core_cap = core_ang < CORE_ID_RADIUS
     guard = np.full(G.n, -4.0, F32)
     for lon, lat in NODES:
-        guard = np.maximum(guard, 0.32 * (1.0 - angle_to(P, lon, lat) / 7.5))
-    fields["C1"] = np.maximum(fields["C1"], guard)
-    # The Core crater lies wholly on Southern Crown land.
-    core_ang = angle_to(P, 150.0, -32.0)
-    fields["C5"] = np.maximum(fields["C5"], 0.22 * (1.0 - core_ang / (CORE_RADIUS + 3)))
+        guard = np.maximum(guard, 0.34 * (1.0 - angle_to(P, lon, lat) / 4.6))
+    fields, biases = {}, {}
+    for key, *_ in REGIONS[:5]:
+        f = lobe_field(PW, LOBES[key]) + ROUGH[key] * (0.30 * coast_mid + GRAIN * grain)
+        for (poly, rad, cnt, k2) in ARCHIPELAGOS:
+            if k2 == key:
+                a = archipelago_field(PW, poly, rad, cnt, zlib.crc32(str(poly).encode()) % 1000)
+                f = np.maximum(f, a + 0.25 * coast_mid)
+        extra = guard if key == "C1" else None
+        if key == "C5":
+            extra = 0.22 * (1.0 - core_ang / (CORE_RADIUS + 3))
+        b = solve_bias(f, TARGETS[key], wgt, extra, core_cap if key == "C5" else None)
+        f = f + b
+        if extra is not None:
+            f = np.maximum(f, extra)
+        biases[key] = round(float(b), 4)
+        fields[key] = f.astype(F32)
+    log("coast biases " + json.dumps(biases))
     fields["C6"] = (1.0 - core_ang / CORE_RADIUS).astype(F32)
 
     land_f = np.max(np.stack([fields[k] for k in ("C1", "C2", "C3", "C4", "C5")]), axis=0)
-    # Territory: nearest region by normalised distance (field), the Core wins inside its crater.
     keys = [r[0] for r in REGIONS]
     stack = np.stack([fields[k] for k in keys])
-    stack[5] = np.where(core_ang < CORE_RADIUS + 1.0, 9.0, -9.0)
+    stack[5] = np.where(core_ang < CORE_ID_RADIUS, 9.0, -9.0)
     terr = np.argmax(stack, axis=0)
     terr_valid = np.max(stack, axis=0) > -0.55
-    # Soft region weights (for blending biomes): softmax of fields
     soft = np.exp(np.clip((stack[:5] - stack[:5].max(axis=0, keepdims=True)) * 14.0, -30, 0))
     soft /= soft.sum(axis=0, keepdims=True)
     belts = np.zeros(G.n, F32)
@@ -493,6 +651,8 @@ def build_layout(w, h):
     node_d = np.full(G.n, 180.0, F32)
     for lon, lat in NODES:
         node_d = np.minimum(node_d, angle_to(P, lon, lat))
+    owner = np.argmax(stack[:5], axis=0)
+    rivers, lakes = trace_rivers(G, land_f, owner, beltkey, 2.6 * fbm(P, 5.0, 3, 39) + 1.2 * fbm(P, 13.0, 3, 41))
     land_lo = (land_f > 0).astype(F32).reshape(h, w)
     b1 = blur_sphere(land_lo, 2.0, G.lat1)
     b2 = blur_sphere(land_lo, 4.5, G.lat1)
@@ -502,9 +662,35 @@ def build_layout(w, h):
                terr_valid=terr_valid.reshape(h, w), belts=belts.reshape(h, w),
                beltkey={k: v.reshape(h, w) for k, v in beltkey.items()},
                rift=rift_d.reshape(h, w), trench=trench_d.reshape(h, w), node=node_d.reshape(h, w),
-               core=core_ang.reshape(h, w), b1=b1, b2=b2, b3=b3)
+               core=core_ang.reshape(h, w), b1=b1, b2=b2, b3=b3, rivers=rivers, lakes=lakes, biases=biases)
     log("layout done")
     return out
+
+
+def preview_layout(lay, path):
+    """Flat map of land by region with the level nodes and rivers: a fast check of the layout alone."""
+    h, w = lay["land"].shape
+    palette = np.array([[0.45, 0.85, 0.95], [0.95, 0.45, 0.15], [0.9, 0.95, 1.0], [0.2, 0.7, 0.4], [0.9, 0.2, 0.7],
+                        [0.6, 0.3, 1.0]], F32)
+    owner = np.argmax(lay["soft"], axis=0)
+    owner = np.where(lay["core"] < CORE_ID_RADIUS, 5, owner)
+    img = np.where((lay["land"] > 0)[..., None], palette[owner] * (0.6 + 0.4 * np.clip(lay["land"], 0, 1))[..., None],
+                   np.array([0.03, 0.06, 0.12], F32) + 0.12 * lay["b2"][..., None])
+    img = img + 0.35 * lay["belts"][..., None]
+    for key, pts in lay["rivers"]:
+        for p in pts:
+            lon = math.degrees(math.atan2(p[1], p[0]))
+            lat = math.degrees(math.asin(float(np.clip(p[2], -1, 1))))
+            x, y = int((lon + 180) / 360 * w) % w, min(h - 1, int((lat + 90) / 180 * h))
+            img[y, x] = (0.1, 0.2, 1.0)
+    for lon, lat in NODES:
+        x, y = int((lon + 180) / 360 * w) % w, int((lat + 90) / 180 * h)
+        img[y - 2:y + 3, x - 2:x + 3] = (1.0, 1.0, 0.2)
+    for lon in range(-180, 180, 30):
+        img[:, int((lon + 180) / 360 * w)] *= 0.6
+    for lat in range(-60, 90, 30):
+        img[int((lat + 90) / 180 * h)] *= 0.6
+    write_png(path, np.clip(img, 0, 1))
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -560,17 +746,40 @@ def paint(W, H, lay):
     elev = mix(elev, 0.02 + spire + 0.03 * n_mid, floor_ * 0.9)
     elev = np.clip(elev, 0, 1.2) * landb
 
-    # Mirewood lakes and rivers, Crystal Plains rivers.
+    # Rivers are traced downhill in the layout (mountain source -> coast or basin lake); Mirewood adds a braided
+    # swamp channel network on top.
     log("water")
     PR = warp(P, 0.06, 3.0, 3, 131)
-    rv = 1.0 - np.abs(fbm(PR, 4.5, 4, 141))
     rv2 = 1.0 - np.abs(fbm(PR, 9.5, 3, 151))
     lowland = smooth(0.35, 0.12, elev) * smooth(0.02, 0.10, F)
-    river_w = 0.986 - wMW * 0.012 - wCP * 0.0
-    rivers = np.maximum(smooth(river_w, river_w + 0.008, rv), smooth(0.992 - wMW * 0.012, 0.997 - wMW * 0.008, rv2) * (wMW + 0.4 * wCP))
-    rivers *= lowland * (wCP + wMW + 0.3 * wAR) * (1 - smooth(55, 70, alat))
+    braid = smooth(0.982, 0.990, rv2) * wMW * lowland * 0.75 * (1 - smooth(55, 70, alat))
+    Q, T, S = river_points(lay["rivers"])
+    river = np.zeros(N, F32)
+    valley = np.zeros(N, F32)
+    if len(Q):
+        Gc = Grid(1024, 512)
+        dc, _ = nearest_points(Gc.p(), Q)
+        approx = up(dc.reshape(512, 1024))
+        sel = np.nonzero(approx < 1.6)[0]
+        Ps = (P[0][sel], P[1][sel], P[2][sel])
+        d_s, i_s = nearest_points(Ps, Q)
+        d_s = d_s + 0.05 * fbm(Ps, 70.0, 3, 157)
+        width = (0.06 + 0.20 * np.power(T[i_s], 1.3)) * S[i_s]
+        river[sel] = smooth(width, width * 0.4, d_s)
+        valley[sel] = smooth(width * 9.0 + 0.4, width, d_s)
+    lake_end = np.zeros(N, F32)
+    for key, q in lay["lakes"]:
+        r = 1.2 if key == "C4" else 0.8
+        sel = np.nonzero((P[0] * q[0] + P[1] * q[1] + P[2] * q[2]) > math.cos(math.radians(r + 1.0)))[0]
+        if len(sel):
+            d = np.degrees(np.arccos(np.clip(P[0][sel] * q[0] + P[1][sel] * q[1] + P[2][sel] * q[2], -1, 1)))
+            d = d + 0.45 * fbm((P[0][sel], P[1][sel], P[2][sel]), 20.0, 3, 159)
+            lake_end[sel] = np.maximum(lake_end[sel], smooth(r, r - 0.25, d))
+    river *= smooth(0.0, 0.02, F)
     lakes = smooth(0.30, 0.36, fbm(P, 11.0, 4, 161)) * wMW * smooth(0.04, 0.15, F)
-    water = np.clip(np.maximum(rivers, lakes), 0, 1)
+    water = np.clip(np.maximum(np.maximum(river, braid), np.maximum(lakes, lake_end)), 0, 1)
+    # Valleys: rivers cut a little into the relief so the normal map shows them.
+    elev = elev * (1 - 0.45 * valley * smooth(0.0, 0.05, F)) * (1 - 0.25 * lake_end)
 
     alb = np.zeros((3, N), F32)
     em = np.zeros((3, N), F32)
@@ -590,24 +799,45 @@ def paint(W, H, lay):
     log("biome: Crystal Plains")
     m = wCP > 0.002
     if m.any():
-        nm, nf, e, s = n_mid[m], n_fine[m], elev[m], slope[m]
-        teal, lav, sage = col(0.32, 0.53, 0.55), col(0.53, 0.48, 0.66), col(0.42, 0.58, 0.52)
-        base = mix(teal[:, None], lav[:, None], smooth(-0.35, 0.35, nm)[None])
-        base = mix(base, sage[:, None], smooth(0.2, 0.6, n_low2[m])[None] * 0.5)
-        base *= (0.86 + 0.18 * nf)[None]
-        rock = mix(col(0.36, 0.33, 0.45)[:, None], col(0.50, 0.47, 0.58)[:, None], smooth(-0.3, 0.4, nf)[None])
-        base = mix(base, rock, smooth(0.16, 0.32, e + 0.25 * s)[None])
-        base = mix(base, col(0.66, 0.64, 0.80)[:, None], smooth(0.55, 0.75, e + 0.05 * nf)[None] * 0.8)
-        patch = smooth(0.10, 0.42, fbm((P[0][m], P[1][m], P[2][m]), 5.0, 4, 171))
-        facets = smooth(0.62, 0.9, ridged((P[0][m], P[1][m], P[2][m]), 34.0, 3, 181))
-        cf = patch * (0.3 + 0.7 * facets) * smooth(0.45, 0.2, e)
-        base = mix(base, col(0.70, 0.92, 1.0)[:, None], (cf * 0.45)[None])
-        veins = smooth(0.80, 0.95, rm[m]) * smooth(0.18, 0.35, e) * 0.6
-        put_em = col(0.30, 0.88, 1.0)[:, None] * (cf * (0.35 + 0.65 * facets) + veins)[None]
+        Pm = (P[0][m], P[1][m], P[2][m])
+        nm, nf, e, s_ = n_mid[m], n_fine[m], elev[m], slope[m]
+        sb = subbiome_weights(Pm, e)
+        w_meadow, w_fern, w_upland, w_shard, w_salt = sb
+
+        def tint(a, b, t):
+            return mix(col(*a)[:, None], col(*b)[:, None], t[None])
+        tm = smooth(-0.4, 0.4, nm)
+        base = (tint((0.33, 0.56, 0.52), (0.50, 0.68, 0.60), tm) * w_meadow
+                + tint((0.08, 0.22, 0.30), (0.15, 0.33, 0.40), smooth(-0.5, 0.5, fbm(Pm, 70.0, 3, 241))) * w_fern
+                + tint((0.40, 0.32, 0.54), (0.58, 0.48, 0.70), smooth(-0.3, 0.5, nm + 0.5 * nf)) * w_upland
+                + tint((0.22, 0.22, 0.38), (0.32, 0.30, 0.48), tm) * w_shard
+                + tint((0.56, 0.54, 0.62), (0.70, 0.66, 0.70), smooth(-0.3, 0.4, nf)) * w_salt)
+        sF1, sF2 = worley(Pm, 260.0, 7)
+        base *= (1 - smooth(0.06, 0.0, sF2 - sF1) * w_salt * smooth(-0.1, 0.4, nm) * 0.18)[None]
+        base *= (0.88 + 0.16 * nf)[None]
+        rock = mix(col(0.36, 0.32, 0.46)[:, None], col(0.50, 0.46, 0.60)[:, None], smooth(-0.3, 0.4, nf)[None])
+        base = mix(base, rock, smooth(0.18, 0.34, e + 0.25 * s_)[None])
+        base = mix(base, col(0.70, 0.68, 0.84)[:, None], smooth(0.55, 0.75, e + 0.05 * nf)[None] * 0.8)
+        # Crystal fields: clustered outcrops (blobs of cells), denser in the shard fields, not vein networks.
+        density = 0.28 * w_meadow + 0.08 * w_fern + 0.45 * w_upland + 1.0 * w_shard + 0.18 * w_salt
+        cluster = smooth(0.08, 0.38, fbm(Pm, 6.0, 4, 171) + 0.45 * (density - 0.45)) * np.clip(density * 1.3, 0, 1)
+        cluster *= smooth(0.5, 0.2, e)
+        F1s, _ = worley(Pm, 105.0, 11)
+        F1b, _ = worley(Pm, 36.0, 13)
+        spots = smooth(0.45, 0.15, F1s)
+        mounds = smooth(0.6, 0.2, F1b)
+        crystals = cluster * np.maximum(spots * (0.45 + 0.55 * mounds), 0.7 * smooth(0.3, 0.1, F1b))
+        base *= (1 - 0.30 * cluster * mounds)[None]
+        # The field itself reads from orbit as a pale frosted sheen around its outcrops.
+        base = mix(base, col(0.62, 0.78, 0.88)[:, None], (cluster * 0.22)[None])
+        base = mix(base, col(0.72, 0.94, 1.0)[:, None], (np.clip(crystals, 0, 1) * 0.75)[None])
+        veins = smooth(0.86, 0.96, rm[m]) * smooth(0.18, 0.35, e) * w_upland * 0.3
+        glow_col = mix(col(0.30, 0.88, 1.0)[:, None], col(0.62, 0.52, 1.0)[:, None], w_upland[None])
+        put_em = glow_col * (crystals * 1.0 + cluster * 0.10 + veins)[None]
         wgt = wCP[m]
         alb[:, m] += base * wgt
         em[:, m] += put_em * wgt
-        spec[m] += 0.12 * wgt + cf * 0.4 * wgt
+        spec[m] += (0.12 + 0.2 * w_salt + crystals * 0.5) * wgt
 
     log("biome: Ashen Reach")
     m = wAR > 0.002
@@ -618,10 +848,10 @@ def paint(W, H, lay):
         sand_m = smooth(-0.05, 0.3, n_low2[m]) * smooth(0.3, 0.12, e)
         lonr = np.arctan2(Pm[1], Pm[0])
         dn = fbm(Pm, 7.0, 3, 191)
-        dunes = 0.5 + 0.5 * np.sin(lonr * 520.0 + Pm[2] * 140.0 + dn * 9.0)
-        dunes = np.power(dunes, 3.0)
+        dunes = ridged(warp(Pm, 0.012, 18.0, 2, 192), 55.0, 3, 194, stretch=(1.0, 1.0, 0.45))
+        dunes = smooth(0.35, 0.9, dunes) * smooth(-0.5, 0.3, dn)
         sand = mix(col(0.48, 0.25, 0.13)[:, None], col(0.68, 0.42, 0.23)[:, None], smooth(-0.3, 0.5, nf + 0.4 * dn)[None])
-        sand = sand * (0.78 + 0.32 * dunes)[None]
+        sand = sand * (0.90 + 0.14 * dunes)[None]
         base = mix(base, sand, sand_m[None])
         rd = rift_d[m] + 2.2 * fbm(Pm, 4.0, 5, 195) + 0.6 * dn
         rift_on = smooth(-0.35, 0.1, fbm(Pm, 3.0, 3, 197))
@@ -647,7 +877,7 @@ def paint(W, H, lay):
         slate = mix(col(0.22, 0.24, 0.28)[:, None], col(0.36, 0.38, 0.42)[:, None], smooth(-0.4, 0.4, nf)[None])
         tundra = mix(col(0.36, 0.40, 0.42)[:, None], col(0.48, 0.52, 0.56)[:, None], smooth(-0.3, 0.3, nm)[None])
         base = mix(tundra, slate, smooth(0.2, 0.5, e + 0.3 * s)[None])
-        gl = 1.0 - np.abs(fbm(Pm, 6.0, 4, 211, stretch=(1, 1, 0.6)))
+        gl = 1.0 - np.abs(mix(fbm(Pm, 6.0, 4, 211, stretch=(1, 1, 0.6)), fbm(Pm, 6.0, 4, 213), smooth(68.0, 82.0, la)))
         glacier = smooth(0.9, 0.98, gl) * smooth(0.1, 0.3, e)
         snow_cov = smooth(42.0, 56.0, la + 9.0 * nm - 12.0 * smooth(0.35, 0.7, s)) * (1 - glacier * 0.6)
         snow_cov = np.maximum(snow_cov, smooth(0.45, 0.6, e - 0.3 * s))
@@ -685,11 +915,15 @@ def paint(W, H, lay):
     if m.any():
         Pm = (P[0][m], P[1][m], P[2][m])
         nm, nf, e, s, la = n_mid[m], n_fine[m], elev[m], slope[m], lat[m]
-        base = mix(col(0.07, 0.08, 0.12)[:, None], col(0.16, 0.18, 0.27)[:, None], smooth(-0.4, 0.5, nm + 0.3 * nf)[None])
-        frost = smooth(0.35, 0.6, e + 0.2 * nf) * 0.8 + smooth(-74.0, -86.0, la) * 0.45
+        base = mix(col(0.15, 0.17, 0.24)[:, None], col(0.28, 0.31, 0.41)[:, None], smooth(-0.4, 0.5, nm + 0.3 * nf)[None])
+        frost = smooth(0.35, 0.6, e + 0.2 * nf) * 0.8 + smooth(-70.0, -80.0, la + 5.0 * nm + 2.0 * nf) * 0.85
         base = mix(base, col(0.52, 0.56, 0.68)[:, None], np.clip(frost, 0, 1)[None])
-        sheen = smooth(0.7, 0.95, ridged(Pm, 12.0, 3, 261, stretch=(1, 1, 0.5)))
-        base = mix(base, col(0.26, 0.30, 0.42)[:, None], (sheen * 0.35)[None])
+        # The polar ice sheet: same white as the sea ice next to it, so the pole reads as one frozen cap.
+        sheet = smooth(-72.0, -82.0, la + 5.0 * nm + 2.0 * nf)
+        base = mix(base, col(0.80, 0.85, 0.93)[:, None] * (0.92 + 0.1 * nf)[None], (sheet * 0.85)[None])
+        polar = smooth(-66.0, -80.0, la)
+        sheen = smooth(0.7, 0.95, mix(ridged(Pm, 12.0, 3, 261, stretch=(1, 1, 0.5)), ridged(Pm, 12.0, 3, 263), polar))
+        base = mix(base, col(0.38, 0.42, 0.54)[:, None], (sheen * 0.35)[None])
         vr = ridged(warp(Pm, 0.04, 5.0, 2, 271), 7.0, 4, 281)
         veins = smooth(0.82, 0.94, vr) * (0.4 + 0.6 * smooth(-0.2, 0.4, nm))
         base = mix(base, col(0.62, 0.14, 0.46)[:, None], (veins * 0.75)[None])
@@ -704,8 +938,7 @@ def paint(W, H, lay):
         Pm = (P[0][m], P[1][m], P[2][m])
         cd, cw, fl, nf = core_d[m], core_w[m], floor_[m], n_fine[m]
         lonr = np.arctan2(Pm[1], Pm[0])
-        cc = vec(150.0, -32.0)
-        c0, e0, n0 = frame(150.0, -32.0)
+        c0, e0, n0 = frame(CORE_LON, CORE_LAT)
         az = np.arctan2(Pm[0] * n0[0] + Pm[1] * n0[1] + Pm[2] * n0[2], Pm[0] * e0[0] + Pm[1] * e0[1] + Pm[2] * e0[2])
         radial = np.abs(np.sin(az * 9.0 + 1.5 * fbm(Pm, 6.0, 3, 291)))
         fract = smooth(0.07, 0.0, radial) * smooth(CORE_RADIUS + 3.0, 2.0, cd) * smooth(-0.1, 0.35, fbm(Pm, 5.0, 3, 301))
@@ -713,7 +946,7 @@ def paint(W, H, lay):
         crack = smooth(0.88, 0.97, ridged(Pm, 26.0, 3, 311)) * fl
         glow_v = np.clip(fract * 0.8 + rings * 0.5 + crack * 0.7 + np.exp(-(cd / 2.2) ** 2) * 1.2, 0, 1.5)
         rimrock = mix(col(0.20, 0.16, 0.24)[:, None], col(0.34, 0.29, 0.38)[:, None], smooth(-0.4, 0.4, nf)[None])
-        floorc = mix(col(0.09, 0.05, 0.13)[:, None], col(0.18, 0.11, 0.24)[:, None], smooth(-0.3, 0.5, fbm(Pm, 14.0, 4, 315))[None]) * (0.85 + 0.3 * nf)[None]
+        floorc = mix(col(0.15, 0.10, 0.20)[:, None], col(0.27, 0.19, 0.33)[:, None], smooth(-0.3, 0.5, fbm(Pm, 14.0, 4, 315))[None]) * (0.85 + 0.3 * nf)[None]
         base = mix(rimrock, floorc, fl[None])
         base = mix(base, col(0.62, 0.34, 0.95)[:, None], np.clip(glow_v * 0.6, 0, 1)[None])
         cur = alb[:, m]
@@ -729,6 +962,8 @@ def paint(W, H, lay):
         alb[c] = mix(alb[c], tgt, wmask * 0.9)
     spec = mix(spec, 0.85, wmask)
     em *= (1 - wmask * 0.7)[None]
+    # Bioluminescent plankton: Crystal Plains rivers glow faintly cyan, Mirewood channels green.
+    em += (col(0.25, 0.75, 1.0)[:, None] * (wCP * 0.35)[None] + col(0.25, 1.0, 0.55)[:, None] * (wMW * 0.25)[None]) * (river * landb)[None]
 
     # A light baked relief cue: the map view is lit from the camera, so the normal map alone barely shows the
     # ranges. Highlands brighten, valleys and ridge flanks darken a little.
@@ -754,9 +989,9 @@ def paint(W, H, lay):
              (col(0.02, 0.16, 0.13), wMW), (col(0.05, 0.06, 0.16), wSC)]
     for tc, tw in tints:
         sea = mix(sea, tc[:, None] * (0.6 + 0.8 * (1 - depth))[None], (tw * 0.28 * smooth(0.1, 0.5, depth))[None])
-    curr = fbm(P, 3.0, 4, 341, stretch=(1, 1, 3.0))
+    curr = mix(fbm(P, 3.0, 4, 341, stretch=(1, 1, 3.0)), fbm(P, 3.0, 4, 343), smooth(50.0, 72.0, alat))
     sea *= (0.92 + 0.12 * curr)[None]
-    seaice = smooth(73.0, 79.0, alat + 6.0 * n_mid + 2.0 * n_fine)
+    seaice = smooth(73.0, 79.0, alat + 6.0 * n_mid + 2.0 * n_fine + 7.0 * fbm(P, 1.6, 3, 353))
     floes = smooth(0.0, 0.25, fbm(P, 25.0, 3, 351) + (seaice - 0.5) * 1.6)
     ice_w = np.clip(seaice * 0.35 + floes * smooth(70.0, 76.0, alat), 0, 1)
     sea = mix(sea, col(0.74, 0.83, 0.92)[:, None] * (0.9 + 0.12 * n_fine)[None], ice_w[None])
@@ -778,7 +1013,7 @@ def paint(W, H, lay):
     ids = np.array([r[5] for r in REGIONS], F32) / 255.0
     terr_id = ids[terr_full]
     # Land pixels: nearest continent (by field), the Core inside its crater rim.
-    land_ids = np.where(core_d < CORE_RADIUS + 1.0, ids[5], ids[np.argmax(soft, axis=0)])
+    land_ids = np.where(core_d < CORE_ID_RADIUS, ids[5], ids[np.argmax(soft, axis=0)])
     regions_land = np.where(landb, land_ids, 0.0).astype(F32)
     regions_terr = np.where(valid_full | landb, np.where(landb, land_ids, terr_id), 0.0).astype(F32)
     member = np.clip(soft.max(axis=0), 0, 1) * smooth(-0.5, 0.15, land_coarse)
@@ -833,9 +1068,11 @@ def clouds(W, H):
     Pq = (x.astype(F32), y.astype(F32), z.astype(F32))
     Pq = warp(Pq, 0.18, 1.5, 4, 401)
     Pq = warp(Pq, 0.05, 6.0, 3, 411)
-    base = fbm(Pq, 2.2, 8, 421, gain=0.55, stretch=(1, 1, 2.2))
-    wisp = ridged(Pq, 7.0, 4, 431, stretch=(1, 1, 3.0))
     al = np.abs(lat)
+    # Latitude-stretched noise gives the zonal bands; near the poles it would pinch into streaks, so it fades to isotropic.
+    iso = smooth(58.0, 78.0, al)
+    base = mix(fbm(Pq, 2.2, 8, 421, gain=0.55, stretch=(1, 1, 2.2)), fbm(Pq, 2.2, 8, 423, gain=0.55), iso)
+    wisp = mix(ridged(Pq, 7.0, 4, 431, stretch=(1, 1, 3.0)), ridged(Pq, 7.0, 4, 433), iso)
     belt = (0.20 * np.exp(-(lat / 7.0) ** 2) - 0.22 * np.exp(-((al - 24.0) / 8.0) ** 2)
             + 0.16 * np.exp(-((al - 52.0) / 11.0) ** 2) + 0.04 * smooth(65, 85, al))
     dens = base + belt + 0.08
@@ -984,6 +1221,15 @@ def box_resize(img, factor):
 def main():
     W, H = RES, RES // 2
     lay = build_layout(1024 if RES >= 2048 else 512, 512 if RES >= 2048 else 256)
+    if _arg("--layoutonly", False):
+        preview_layout(lay, os.path.join(RENDERS or OUT, "layout_preview.png"))
+        G0 = Grid(*lay["land"].shape[::-1])
+        wg = area_weights(G0).reshape(G0.h, G0.w)
+        owner = np.where(lay["core"] < CORE_ID_RADIUS, 5, np.argmax(lay["soft"], axis=0))
+        land = lay["land"] > 0
+        log("areas %: " + ", ".join(f"{r[0]} {wg[land & (owner == i)].sum() * 100:.2f}" for i, r in enumerate(REGIONS)) +
+            f", ocean {wg[~land].sum() * 100:.1f}")
+        return
     maps, G = paint(W, H, lay)
     cover = clouds(W, H)
     log("normal map")
@@ -1024,9 +1270,29 @@ def main():
         inland = float(dd[sea].min()) if sea.any() else 15.0
         checks.append(dict(name=name, lon=lon, lat=lat, land=bool(land[y, x] > 0.5), region_value=rid,
                            degrees_to_coast=round(inland, 1)))
-    log("node check: min inland %.1f deg, all on land: %s, all in C1: %s" % (
-        min(c["degrees_to_coast"] for c in checks), all(c["land"] for c in checks),
-        all(c["region_value"] == 40 for c in checks)))
+    spacing = min(math.degrees(math.acos(float(np.clip(np.dot(vec(*NODES[i]), vec(*NODES[k])), -1, 1))))
+                  for i in range(len(NODES)) for k in range(i))
+    node_ok = (all(c["land"] for c in checks) and all(c["region_value"] == REGIONS[0][5] for c in checks)
+               and min(c["degrees_to_coast"] for c in checks) >= NODE_COAST_MIN and spacing >= NODE_SPACING_MIN)
+    log("node check: min inland %.1f deg, min spacing %.2f deg, all on land: %s, all in C1: %s -> %s" % (
+        min(c["degrees_to_coast"] for c in checks), spacing, all(c["land"] for c in checks),
+        all(c["region_value"] == REGIONS[0][5] for c in checks), "OK" if node_ok else "FAILED"))
+    # Surface share and extent per region, measured on the written region map (land only).
+    wg = np.broadcast_to(np.cos(np.radians(G.lat1))[:, None], (H, W)).astype(np.float64)
+    wg = wg / wg.sum()
+    rid_map = np.round(maps["regions"][..., 0] * 255).astype(int)
+    surface = {}
+    for (k, nm, lo, la, rd, v) in REGIONS:
+        msk = rid_map == v
+        c = vec(lo, la)
+        ys, xs = np.nonzero(msk[::4, ::4])
+        latr, lonr = np.radians(G.lat1[ys * 4]), np.radians(G.lon1[xs * 4])
+        ang = np.degrees(np.arccos(np.clip(np.cos(latr) * np.cos(lonr) * c[0] + np.cos(latr) * np.sin(lonr) * c[1]
+                                           + np.sin(latr) * c[2], -1, 1)))
+        surface[k] = dict(name=nm, land_percent=round(float(wg[msk].sum() * 100), 2),
+                          extent_p95_degrees=round(float(np.percentile(ang, 95)), 1) if len(ang) else 0.0)
+    surface["ocean"] = dict(land_percent=round(float(wg[rid_map == 0].sum() * 100), 2))
+    log("surface %: " + ", ".join(f"{k} {v['land_percent']}" for k, v in surface.items()))
     report = dict(
         name="Planet_S69", size=[W, H], low_size=[W // 2, H // 2],
         uv_convention="Equirectangular. u = (longitude + 180) / 360 with east (positive longitude) to the right; "
@@ -1047,7 +1313,12 @@ def main():
         regions=[dict(key=k, name=nm, longitude=lo, latitude=la, radius_degrees=rd, value=v, value01=round(v / 255, 4),
                       id=v // 40) for (k, nm, lo, la, rd, v) in REGIONS] + [dict(key="-", name="ocean / none", value=0)],
         region_note="The Core (C6) is the crater on Southern Crown's northern arm at its MapRegion centre "
-                    "(150, -32); its surface id covers the crater to its rim (radius ~10 deg).",
+                    f"({CORE_LON:g}, {CORE_LAT:g}); its surface id covers the crater to {CORE_ID_RADIUS:g} deg.",
+        layout="layout.json (round 21): region centres, the Crystal Plains node proposal, lobes, ranges, rivers",
+        coast_biases=lay["biases"],
+        surface=surface,
+        node_min_spacing_degrees=round(spacing, 2),
+        nodes_ok=node_ok,
         nodes=checks,
         shader_hints=dict(
             Planet_shader="Feed Albedo -> _AlbedoMap with _TextureTint = 1 (the map already carries the biomes; "
@@ -1072,22 +1343,41 @@ def main():
     maps["albedo_lin"] = srgb_to_lin(maps["albedo"])
     marks = [(lon, lat, (1.0, 0.85, 0.35) if i < 6 else (0.75, 0.85, 1.0)) for i, (lon, lat) in enumerate(NODES)]
     log("renders")
-    views = {
-        "globe_map_crystal": (-40, 6, 1.0, (-0.3, 0.35, 0.89), 0.0, None),
-        "globe_terminator": (-10, 10, 1.0, (0.95, 0.2, 0.25), 1.0, None),
-        "closeup_crystal_plains": (-40, 6, 2.6, (-0.3, 0.35, 0.89), 0.0, marks),
+    LG = (-0.3, 0.35, 0.89)
+    globe_views = {
+        "globe_crystal_plains": (-40, 6), "globe_ashen_reach": (60, -10), "globe_core_side": (150, -25),
+        "globe_mirewood": (-140, 12), "globe_north": (40, 62), "globe_south": (160, -62),
     }
-    for name, (lo, la, zm, Lg, nt, mk) in views.items():
-        img = render(maps, cover, lo, la, 1100, zm, Lg, nt, mk)
+    olds = []
+    for cdir in (COMPARE_DIR.split(";") if COMPARE_DIR else []):
+        if not os.path.isdir(cdir):
+            continue
+
+        def ld(name):
+            return load_png_bpy(os.path.join(cdir, f"Planet_S69_{name}.png"))
+        oa, on, om, oe, oc = ld("Albedo"), ld("Normal"), ld("Mask"), ld("Emission"), ld("Clouds")
+        if oa is not None:
+            olds.append((dict(albedo_lin=srgb_to_lin(oa), normal=on * 2 - 1, mask=om, emission=oe), oc[..., 0]))
+    for name, (lo, la) in globe_views.items():
+        img = render(maps, cover, lo, la, 900, 1.0, LG, 0.0)
         write_png(os.path.join(RENDERS, f"{name}.png"), img)
+        if olds:
+            panels = [render(o[0], o[1], lo, la, 900, 1.0, LG, 0.0) for o in olds] + [img]
+            write_png(os.path.join(RENDERS, f"compare_{name}.png"), np.concatenate(panels, axis=1))
         log(f"render {name}")
+    img = render(maps, cover, -10, 10, 1000, 1.0, (0.95, 0.2, 0.25), 1.0)
+    write_png(os.path.join(RENDERS, "globe_terminator.png"), img)
+    img = render(maps, cover, -39, 3, 1400, 2.3, LG, 0.0, marks, clouds_on=False)
+    write_png(os.path.join(RENDERS, "closeup_crystal_plains_nodes.png"), img)
+    img = render(maps, cover, -39, 3, 1400, 2.3, LG, 0.0, None, cloud_k=0.5)
+    write_png(os.path.join(RENDERS, "closeup_crystal_plains.png"), img)
+    img = render(maps, cover, -39, 3, 1200, 1.7, (0.9, 0.25, 0.35), 1.0, None, clouds_on=False)
+    write_png(os.path.join(RENDERS, "closeup_crystal_plains_night.png"), img)
     tiles = []
     for (k, nm, lo, la, rd, v) in REGIONS:
-        tiles.append(render(maps, cover, lo, la if abs(la) < 50 else la * 0.7, 520, 1.25, (-0.3, 0.35, 0.89), 0.0))
-    # Arrays are bottom-up, so the first row of tiles goes last.
+        tiles.append(render(maps, cover, lo, la if abs(la) < 50 else la * 0.8, 600, 1.6, LG, 0.0, cloud_k=0.45))
     sheet = np.concatenate([np.concatenate(tiles[3:], axis=1), np.concatenate(tiles[:3], axis=1)], axis=0)
     write_png(os.path.join(RENDERS, "regions_sheet.png"), sheet)
-    # flat maps contact sheet
     f = max(1, W // 2048)
     flat = [box_resize(maps["albedo"], f), box_resize(maps["emission"], f),
             box_resize(np.repeat(maps["height"][..., None], 3, 2), f),
@@ -1106,17 +1396,6 @@ def main():
     sm = [resize(x, 512, 1024) for x in flat]
     sheet = np.concatenate([np.concatenate(sm[4:6], 1), np.concatenate(sm[2:4], 1), np.concatenate(sm[0:2], 1)], 0)
     write_png(os.path.join(RENDERS, "flat_sheet.png"), sheet)
-    if COMPARE and os.path.exists(COMPARE):
-        old = load_png_bpy(COMPARE)
-        if old is not None:
-            h, w = old.shape[:2]
-            # bottom-up array; crop the globe (centre ~ (960, 480 from top), radius ~ 450)
-            cy = h - 480
-            crop = old[cy - 470:cy + 470, 960 - 470:960 + 470]
-            crop = resize(crop, 1100, 1100)
-            new = render(maps, cover, -40, 6, 1100, 1.0, (-0.3, 0.35, 0.89), 0.0)
-            write_png(os.path.join(RENDERS, "compare_old_new.png"), np.concatenate([crop, new], axis=1))
-            log("render compare")
     log("done")
 
 
