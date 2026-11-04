@@ -12,7 +12,7 @@ namespace Game.Editor
             var difficulties = new DifficultyProfile[sheet.Length];
             for (int d = 0; d < sheet.Length; d++)
             {
-                difficulties[d] = CreateDifficulty(sheet[d].Id, sheet[d].DisplayName, sheet[d].Health, sheet[d].Count, sheet[d].Interval, sheet[d].Research, sheet[d].Power, sheet[d].StructureDamage);
+                difficulties[d] = CreateDifficulty(sheet[d]);
             }
 
             context.Difficulties = difficulties;

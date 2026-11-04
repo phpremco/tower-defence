@@ -24,7 +24,13 @@ namespace Game.Editor
             public readonly float Power;
             public readonly float StructureDamage;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage)
+            /// <summary>In-level income (bounties, harvested ore) as a share of what creatures and mines pay.</summary>
+            public readonly float Income;
+
+            /// <summary>Starting money as a share of the level's own.</summary>
+            public readonly float StartMoney;
+
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney)
             {
                 Id = id;
                 DisplayName = displayName;
@@ -34,6 +40,8 @@ namespace Game.Editor
                 Research = research;
                 Power = power;
                 StructureDamage = structureDamage;
+                Income = income;
+                StartMoney = startMoney;
             }
         }
 
@@ -56,15 +64,23 @@ namespace Game.Editor
             }
         }
 
+        // Easy's in-level money (2026-11-04, Remco on C1_01 Easy: "je krijgt gewoon te veel geld"): with the full purse a
+        // competent player (BalanceRules.HumanUtilisation) bought 2.3 to 2.6 times the firepower the plain waves need and
+        // never needed the commander. At 85% income and 80% starting money that is 1.75 to 2.0 times, still clearly more
+        // than Medium (1.45 to 1.75): Easy asks about 0.8 of Medium instead of 0.6 to 0.75. The creatures are not touched:
+        // the solver sizes them against the full purse (CampaignModel.ReferenceInputFor).
+        private const float EasyIncome = 0.85f;
+        private const float EasyStartMoney = 0.8f;
+
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo are tuned so each difficulty lands near its share of
         // the Medium pressure (BalanceRules.DifficultyPressure) in the ledger. The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", "Easy", 0.68f, 0.8f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f),
-            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f),
-            new Difficulty("Hard", "Hard", 1.15f, 1.2f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.5f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f),
+            new Difficulty("Easy", "Easy", 0.68f, 0.8f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, 1f, 1f),
+            new Difficulty("Hard", "Hard", 1.15f, 1.2f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, 1f, 1f),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.5f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, 1f, 1f),
         };
 
         /// <summary>

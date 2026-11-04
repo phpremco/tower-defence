@@ -186,3 +186,30 @@ Result: every C1 wave inside its band on all difficulties (Unity and BalanceLab)
 to 0.87, Medium 1.01 (the boss waves), Hard 1.35 to 1.67, Psycho 1.89 to 2.56. Bot on Medium: Shard Ridge and Crysium
 Vein won with the base untouched. Open: on Easy a gun-only bot also clears Shard Ridge's packed raids (11/11 flyers
 down), so curator decision 8 ("must struggle") needs bigger raids, a design call.
+
+## Easy economy and the human lens (2026-11-04)
+
+Remco on C1_01 Easy: "je krijgt gewoon te veel geld": he could place two or three times the firepower the waves needed,
+and the commander never had to act. Easy being hard to lose is fine; the surplus was not.
+
+- **Human lens** (`BalanceRules.HumanUtilisation` 0.34, `HumanTowersOnly()`): the bot calibration (`Utilisation` 0.27,
+  pressure 1 = the bot just holds) stays for the solver and the bands; the lens judges a competent player instead, who
+  places guns in the bends and at the gates where one gun covers two stretches of road (about a quarter more useful fire
+  than the bot), with the towers alone (`HeroShare` 0). At 0.34 a fresh player on C1_01 Easy had 2.4x the firepower the
+  plain waves need, and 3.6x with the permanent Pulse/Cannon upgrades in Remco's save (damage and rate x1.3 each, range
+  x1.15): his "two or three times" sits in between. Medium was 1.5x, Hard 0.9x, Psycho 0.8x.
+- **Easy money, not creatures:** `DifficultyProfile` has two new shares, `IncomeMultiplier` (bounties and harvested ore,
+  through `Wallet.Earn`, which keeps the fractions so a one-coin ant still pays 0.85 on average) and
+  `StartingMoneyMultiplier`. Easy: 0.85 and 0.8 (C1_01 starts with 160 instead of 200); the others 1. The ledger reads them
+  (`LevelInput.Income`, scaled `StartingMoney`), but the solver sizes creatures against the full purse
+  (`CampaignModel.ReferenceInputFor`), otherwise it would weaken Easy's re-solved waves to make up for the thinner purse.
+  Every stored wave is unchanged.
+- **Result (human lens, towers alone, plain waves after the opening):** Easy 1.76x to 2.00x (was 2.25x to 2.57x), Medium
+  1.45x to 1.73x, Hard 0.83x to 1.24x, Psycho 0.65x to 0.96x. Easy asks 0.78 to 0.85 of Medium (C1_05 0.91; it was 0.61 to
+  0.74). C1_01 Easy boss wave: 1.6x -> 1.3x for the towers alone. Bot bands unchanged and all inside.
+- **Checks** (`BalanceChecks.CheckHuman`, run by `BalanceLedgerTests` and BalanceLab): Easy at most `MaxEasySurplus` 2.1x,
+  Easy at most `MaxEasyShareOfMedium` 0.93 of Medium, each difficulty asks more than the one below. The old Easy money fails
+  the first on every C1 level.
+- **Why not 1.2x to 1.4x on Easy:** Medium cannot get harder for the bot (it barely holds the Medium boss waves, and the
+  smoke run asserts a win), so Easy can only come down to about 0.8 of Medium before the two feel alike: 1.8x to 2x. A
+  tighter Easy needs Medium raised first (`TargetPressure`, then the bot recalibrated), a separate decision.

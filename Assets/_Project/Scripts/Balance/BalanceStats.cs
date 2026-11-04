@@ -122,6 +122,12 @@ namespace Game.Balance
         public float Research = 1f;
         public float Power;
         public float StructureDamage = 1f;
+
+        /// <summary>In-level income (kill bounties and harvested ore) as a share of what the creatures and mines pay.</summary>
+        public float Income = 1f;
+
+        /// <summary>Starting money as a share of the level's own.</summary>
+        public float StartMoney = 1f;
     }
 
     /// <summary>A permanent upgrade bought with research or power between levels.</summary>

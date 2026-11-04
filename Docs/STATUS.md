@@ -1711,3 +1711,31 @@ Remco played the opening cutscene and C1_01 (easy). Fixes:
 - **Open:** Earth reads brown and smoggy by design (dying planet); the survey globe still shows the painted map's continent
   shapes (region layout is data); the menu starfield uses the default `SpaceStyle`, not the catalog's (UiKit has no
   catalog); the generator's existing "Main Object Name '' does not match filename 'machinegun.mesh'" warning is unrelated.
+
+## Balance: Easy economy 2026-11-04
+
+Remco after playing C1_01 on Easy: far too much money; he could place two or three times the firepower the waves needed
+and the hero never had to act. Approved plan: cut Easy money (start and income), not the creatures.
+
+- **Data:** `DifficultyProfile` has `IncomeMultiplier` (bounties and harvested ore) and `StartingMoneyMultiplier`, set
+  from `BalanceSheet.Difficulties`: Easy 0.85 and 0.8, Medium/Hard/Psycho 1. C1_01 Easy starts with 160 instead of 200;
+  C1_02 to C1_06 with 176 to 240. `Wallet.Earn` scales income and carries the fractions (one-coin ants pay 0.85 on
+  average); refunds (`Wallet.Add`) stay unscaled. `LevelBootstrapper`, `EnemySpawner` and `DroneController` use them.
+- **Model:** `LevelInput.Income` and the scaled starting money (`CampaignModel.InputFor`); the wave solver sizes creatures
+  against the full purse (`CampaignModel.ReferenceInputFor`), so no stored wave changed (ledger health columns identical).
+  New human lens: `BalanceRules.HumanUtilisation` 0.34 (a competent player, about a quarter more useful fire than the bot
+  at 0.27), towers alone; `BalanceChecks.CheckHuman` in `BalanceLedgerTests` and BalanceLab: Easy at most 2.1x the
+  firepower its plain waves need, Easy at most 0.93 of Medium, each difficulty harder than the one below. Bands unchanged.
+- **Numbers (human lens, towers alone, plain waves):** C1_01 Easy 2.43x -> 1.85x (boss wave 1.6x -> 1.3x), Medium 1.49x,
+  Hard 0.93x, Psycho 0.81x. All C1 Easy 1.76x to 2.00x (was 2.25x to 2.57x), Easy asks 0.78 to 0.85 of Medium (C1_05
+  0.91). Remco's save has Pulse and Cannon damage, rate and range fully upgraded (2719 research from testing): with that,
+  C1_01 Easy was 3.6x and is now 2.7x. A fresh profile shows the intended feel.
+- **Not done (decision for Remco):** Easy at 1.2x to 1.4x would make it as hard as Medium (1.5x); that needs Medium raised
+  first (`TargetPressure` plus a bot recalibration), which changes every creature.
+- **Tools:** `Tools/PlayTest/apply_difficulties.cs` runs only the generator's difficulty step (the full generator was not
+  run: it syncs the Blender exports a Blender agent is editing). BalanceLab writes the new fields too.
+- **Tests:** EditMode 316/316 (new: `Wallet_EarnsItsIncomeShare_EvenOfOneCoinBounties`, `ThinnerIncome_LeavesLessMoney_AndMorePressure`,
+  `HumanLens_FlagsAGenerousEasy_AndAnEasyAsHardAsMedium`); ledger inside all bands and the human lens. PlayMode:
+  `BalanceProbeTests` smoke (Medium Shard Ridge and Crysium Vein won, base 800/800) and new
+  `Easy_GreedyBot_StillClearsLandingSiteAndRollerLevel_OnThinnerMoney` (Landing Site won, base 800/800, 171 unspent,
+  bot pressure 1.13 on the boss wave with the hero down at the end; Quartz Flats won, base 800/800, 46 unspent).

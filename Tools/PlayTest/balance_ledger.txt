@@ -1,16 +1,16 @@
 Level_C1_01 Easy
-  w1   money   200 towers  4 hp     63/    0 window   16s pressure 0.13/0.00
-  w2   money   206 towers  4 hp    102/    0 window   20s pressure 0.17/0.00
-  w3   money   221 towers  4 hp    140/    0 window   22s pressure 0.21/0.00
-  w4   money   240 towers  4 hp    187/    0 window   21s pressure 0.30/0.00
-  w5   money   264 towers  5 hp    293/    0 window   28s pressure 0.32/0.00
-  w6   money   291 towers  5 hp    375/    0 window   27s pressure 0.42/0.00
-  w7   money   352 towers  7 hp    470/    0 window   37s pressure 0.31/0.00
-  w8   money   453 towers  5 hp   1065/    0 window   35s pressure 0.45/0.00
-  w9   money   561 towers 11 hp    919/    0 window   30s pressure 0.52/0.00
-  w10  money   674 towers  7 hp   1447/    0 window   42s pressure 0.37/0.00
-  w11  money   787 towers  9 hp   2291/    0 window   51s pressure 0.50/0.00
-  w12B money   906 towers 16 hp   1557/    0 window   42s pressure 0.70/0.00
+  w1   money   160 towers  3 hp     63/    0 window   16s pressure 0.15/0.00
+  w2   money   165 towers  3 hp    102/    0 window   20s pressure 0.21/0.00
+  w3   money   177 towers  3 hp    140/    0 window   22s pressure 0.25/0.00
+  w4   money   194 towers  3 hp    187/    0 window   21s pressure 0.35/0.00
+  w5   money   214 towers  4 hp    293/    0 window   28s pressure 0.37/0.00
+  w6   money   237 towers  4 hp    375/    0 window   27s pressure 0.48/0.00
+  w7   money   267 towers  5 hp    470/    0 window   37s pressure 0.39/0.00
+  w8   money   352 towers  4 hp   1065/    0 window   35s pressure 0.56/0.00
+  w9   money   444 towers  8 hp    919/    0 window   30s pressure 0.67/0.00
+  w10  money   540 towers  5 hp   1447/    0 window   42s pressure 0.45/0.00
+  w11  money   636 towers  7 hp   2291/    0 window   51s pressure 0.60/0.00
+  w12B money   737 towers 14 hp   1557/    0 window   42s pressure 0.84/0.00
 Level_C1_01 Medium
   w1   money   200 towers  4 hp    111/    0 window   16s pressure 0.23/0.00
   w2   money   208 towers  4 hp    171/    0 window   18s pressure 0.31/0.00
@@ -50,19 +50,20 @@ Level_C1_01 Psycho
   w10  money   924 towers  4 hp   6194/    0 window   25s pressure 1.24/0.00
   w11  money  1060 towers 11 hp   9807/    0 window   30s pressure 1.50/0.00
   w12B money  1199 towers 16 hp   4939/    0 window   25s pressure 1.24/0.00
+Level_C1_01 human lens, towers alone, firepower over need on plain waves: 1.85x 1.49x 0.93x 0.81x (Easy asks 0.80 of Medium)
 Level_C1_02 Easy
-  w1   money   220 towers  4 hp     85/    0 window   21s pressure 0.14/0.00
-  w2   money   233 towers  3 hp    135/    0 window   20s pressure 0.20/0.00
-  w3   money   251 towers  3 hp    184/    0 window   25s pressure 0.22/0.00
-  w4   money   271 towers  3 hp    234/    0 window   26s pressure 0.27/0.00
-  w5   money   296 towers  4 hp    356/    0 window   27s pressure 0.36/0.00
-  w6   money   334 towers  5 hp    498/    0 window   28s pressure 0.44/0.00
-  w7   money   395 towers  6 hp    536/    0 window   23s pressure 0.50/0.00
-  w8   money   517 towers  6 hp    780/    0 window   25s pressure 0.43/0.00
-  w9   money   618 towers 10 hp    753/    0 window   25s pressure 0.46/0.00
-  w10  money   749 towers 11 hp   1024/    0 window   23s pressure 0.55/0.00
-  w11  money   930 towers  9 hp   1769/    0 window   26s pressure 0.49/0.00
-  w12B money  1034 towers 12 hp   1745/    0 window   23s pressure 0.66/0.00
+  w1   money   176 towers  3 hp     85/    0 window   21s pressure 0.16/0.00
+  w2   money   187 towers  2 hp    135/    0 window   20s pressure 0.23/0.00
+  w3   money   202 towers  2 hp    184/    0 window   25s pressure 0.26/0.00
+  w4   money   219 towers  2 hp    234/    0 window   26s pressure 0.32/0.00
+  w5   money   240 towers  3 hp    356/    0 window   27s pressure 0.40/0.00
+  w6   money   272 towers  4 hp    498/    0 window   28s pressure 0.49/0.00
+  w7   money   303 towers  4 hp    536/    0 window   23s pressure 0.62/0.00
+  w8   money   405 towers  5 hp    780/    0 window   25s pressure 0.53/0.00
+  w9   money   491 towers  8 hp    753/    0 window   25s pressure 0.54/0.00
+  w10  money   603 towers 10 hp   1024/    0 window   23s pressure 0.66/0.00
+  w11  money   757 towers  8 hp   1769/    0 window   26s pressure 0.59/0.00
+  w12B money   845 towers 10 hp   1745/    0 window   23s pressure 0.79/0.00
 Level_C1_02 Medium
   w1   money   220 towers  2 hp    134/    0 window   20s pressure 0.23/0.00
   w2   money   234 towers  3 hp    232/    0 window   20s pressure 0.34/0.00
@@ -102,23 +103,24 @@ Level_C1_02 Psycho
   w10  money   880 towers  9 hp   4238/    0 window   14s pressure 1.46/0.00
   w11  money  1120 towers  4 hp   7515/    0 window   15s pressure 1.68/0.00
   w12B money  1207 towers  9 hp   6264/    0 window   14s pressure 1.72/0.00
+Level_C1_02 human lens, towers alone, firepower over need on plain waves: 1.77x 1.45x 0.86x 0.74x (Easy asks 0.82 of Medium)
 Level_C1_03 Easy
-  w1   money   240 towers  3 hp     99/    0 window   23s pressure 0.14/0.00
-  w2   money   240 towers  4 hp    131/    0 window   22s pressure 0.21/0.00
-  w3   money   246 towers  4 hp    170/    0 window   26s pressure 0.23/0.00
-  w4   money   261 towers  4 hp    280/    0 window   20s pressure 0.38/0.00
-  w5   money   271 towers  3 hp    321/    0 window   26s pressure 0.39/0.00
-  w6   money   290 towers  4 hp    346/    0 window   23s pressure 0.41/0.00
-  w7   money   312 towers  4 hp    394/    0 window   27s pressure 0.42/0.00
-  w8   money   374 towers  5 hp    510/    0 window   26s pressure 0.47/0.00
-  w9   money   438 towers  4 hp    766/    0 window   24s pressure 0.49/0.00
-  w10  money   510 towers 10 hp    603/    0 window   25s pressure 0.50/0.00
-  w11  money   633 towers 11 hp    903/    0 window   26s pressure 0.51/0.00
-  w12  money   722 towers 14 hp    573/  190 window   23s pressure 0.33/0.42
-  w13  money   813 towers  9 hp   1244/    0 window   26s pressure 0.45/0.00
-  w14  money   930 towers 15 hp   1410/    0 window   32s pressure 0.49/0.00
-  w15  money  1113 towers 18 hp    982/  406 window   26s pressure 0.42/0.44
-  w16B money  1155 towers 16 hp   1605/    0 window   25s pressure 0.72/0.00
+  w1   money   192 towers  2 hp     99/    0 window   23s pressure 0.16/0.00
+  w2   money   192 towers  3 hp    131/    0 window   22s pressure 0.24/0.00
+  w3   money   197 towers  3 hp    170/    0 window   26s pressure 0.27/0.00
+  w4   money   209 towers  3 hp    280/    0 window   20s pressure 0.44/0.00
+  w5   money   218 towers  2 hp    321/    0 window   26s pressure 0.45/0.00
+  w6   money   234 towers  3 hp    346/    0 window   23s pressure 0.47/0.00
+  w7   money   253 towers  3 hp    394/    0 window   27s pressure 0.47/0.00
+  w8   money   284 towers  4 hp    510/    0 window   26s pressure 0.53/0.00
+  w9   money   337 towers  3 hp    766/    0 window   24s pressure 0.62/0.00
+  w10  money   399 towers  7 hp    603/    0 window   25s pressure 0.65/0.00
+  w11  money   503 towers  8 hp    903/    0 window   26s pressure 0.64/0.00
+  w12  money   579 towers 11 hp    573/  190 window   23s pressure 0.41/0.53
+  w13  money   656 towers  8 hp   1244/    0 window   26s pressure 0.56/0.00
+  w14  money   756 towers 11 hp   1410/    0 window   32s pressure 0.60/0.00
+  w15  money   911 towers 15 hp    982/  406 window   26s pressure 0.46/0.63
+  w16B money   947 towers 14 hp   1605/    0 window   25s pressure 0.76/0.00
 Level_C1_03 Medium
   w1   money   240 towers  3 hp    166/    0 window   22s pressure 0.23/0.00
   w2   money   240 towers  4 hp    220/    0 window   21s pressure 0.34/0.00
@@ -170,23 +172,24 @@ Level_C1_03 Psycho
   w14  money   925 towers 16 hp   3532/ 1764 window   15s pressure 1.67/1.70
   w15  money   979 towers 14 hp   3996/ 1373 window   14s pressure 1.62/1.74
   w16B money  1147 towers 11 hp   5808/  537 window   14s pressure 1.91/0.90
+Level_C1_03 human lens, towers alone, firepower over need on plain waves: 1.76x 1.46x 0.83x 0.65x (Easy asks 0.83 of Medium)
 Level_C1_04 Easy
-  w1   money   260 towers  5 hp     86/    0 window   23s pressure 0.13/0.00
-  w2   money   260 towers  5 hp    125/    0 window   22s pressure 0.19/0.00
-  w3   money   266 towers  5 hp     80/   29 window   19s pressure 0.17/0.24
-  w4   money   270 towers  5 hp    178/    0 window   26s pressure 0.23/0.00
-  w5   money   281 towers  5 hp    254/    0 window   25s pressure 0.34/0.00
-  w6   money   300 towers  4 hp    170/   51 window   22s pressure 0.27/0.40
-  w7   money   321 towers  6 hp    341/   74 window   23s pressure 0.42/0.11
-  w8   money   377 towers  7 hp    390/    0 window   29s pressure 0.36/0.00
-  w9   money   453 towers  9 hp    280/   94 window   21s pressure 0.27/0.30
-  w10  money   507 towers  8 hp    549/    0 window   23s pressure 0.48/0.00
-  w11  money   574 towers 11 hp    654/    0 window   25s pressure 0.45/0.00
-  w12  money   636 towers 12 hp    550/  158 window   21s pressure 0.44/0.38
-  w13  money   703 towers 14 hp    563/    0 window   24s pressure 0.39/0.00
-  w14  money   814 towers 16 hp    733/    0 window   26s pressure 0.38/0.00
-  w15  money   904 towers 10 hp   1613/    0 window   26s pressure 0.57/0.00
-  w16B money   987 towers 14 hp   1468/  536 window   23s pressure 0.62/0.68
+  w1   money   208 towers  4 hp     86/    0 window   23s pressure 0.15/0.00
+  w2   money   208 towers  4 hp    125/    0 window   22s pressure 0.22/0.00
+  w3   money   213 towers  4 hp     80/   29 window   19s pressure 0.19/0.30
+  w4   money   216 towers  4 hp    178/    0 window   26s pressure 0.27/0.00
+  w5   money   225 towers  4 hp    254/    0 window   25s pressure 0.40/0.00
+  w6   money   242 towers  4 hp    170/   51 window   22s pressure 0.30/0.53
+  w7   money   259 towers  5 hp    341/   74 window   23s pressure 0.47/0.13
+  w8   money   286 towers  5 hp    390/    0 window   29s pressure 0.46/0.00
+  w9   money   349 towers  6 hp    280/   94 window   21s pressure 0.37/0.45
+  w10  money   395 towers  6 hp    549/    0 window   23s pressure 0.58/0.00
+  w11  money   452 towers  9 hp    654/    0 window   25s pressure 0.53/0.00
+  w12  money   505 towers 10 hp    550/  158 window   21s pressure 0.51/0.46
+  w13  money   562 towers 11 hp    563/    0 window   24s pressure 0.47/0.00
+  w14  money   656 towers 13 hp    733/    0 window   26s pressure 0.45/0.00
+  w15  money   732 towers  8 hp   1613/    0 window   26s pressure 0.72/0.00
+  w16B money   803 towers 12 hp   1468/  536 window   23s pressure 0.73/0.76
 Level_C1_04 Medium
   w1   money   260 towers  3 hp    145/    0 window   22s pressure 0.23/0.00
   w2   money   260 towers  3 hp    211/    0 window   21s pressure 0.36/0.00
@@ -238,24 +241,25 @@ Level_C1_04 Psycho
   w14  money   986 towers 14 hp   2792/  946 window   16s pressure 1.22/1.31
   w15  money  1040 towers 14 hp   2211/  867 window   14s pressure 1.01/1.11
   w16B money  1121 towers 12 hp   5457/ 2757 window   13s pressure 2.15/2.05
+Level_C1_04 human lens, towers alone, firepower over need on plain waves: 2.00x 1.56x 1.22x 0.96x (Easy asks 0.78 of Medium)
 Level_C1_05 Easy
-  w1   money   280 towers  5 hp    126/    0 window   23s pressure 0.15/0.00
-  w2   money   291 towers  5 hp    203/    0 window   26s pressure 0.22/0.00
-  w3   money   309 towers  4 hp    227/    0 window   21s pressure 0.27/0.00
-  w4   money   320 towers  4 hp     38/   46 window   19s pressure 0.05/0.29
-  w5   money   331 towers  4 hp    367/    0 window   23s pressure 0.32/0.00
-  w6   money   363 towers  6 hp    572/    0 window   27s pressure 0.44/0.00
-  w7   money   392 towers  7 hp    635/    0 window   25s pressure 0.54/0.00
-  w8   money   442 towers  8 hp    330/  115 window   20s pressure 0.31/0.41
-  w9   money   496 towers  5 hp    905/    0 window   24s pressure 0.48/0.00
-  w10  money   587 towers  8 hp   1004/    0 window   26s pressure 0.52/0.00
-  w11  money   714 towers 14 hp   1017/    0 window   25s pressure 0.49/0.00
-  w12  money   874 towers  9 hp   1473/    0 window   26s pressure 0.41/0.00
-  w13  money   995 towers 14 hp    683/  386 window   26s pressure 0.34/0.39
-  w14  money  1141 towers 11 hp   1822/    0 window   28s pressure 0.53/0.00
-  w15  money  1249 towers 12 hp   2610/    0 window   40s pressure 0.54/0.00
-  w16  money  1477 towers 14 hp   3125/    0 window   36s pressure 0.49/0.00
-  w17B money  1634 towers 16 hp   2392/    0 window   32s pressure 0.57/0.00
+  w1   money   224 towers  4 hp    126/    0 window   23s pressure 0.17/0.00
+  w2   money   233 towers  4 hp    203/    0 window   26s pressure 0.25/0.00
+  w3   money   248 towers  3 hp    227/    0 window   21s pressure 0.31/0.00
+  w4   money   258 towers  5 hp     38/   46 window   19s pressure 0.05/0.38
+  w5   money   267 towers  4 hp    367/    0 window   23s pressure 0.39/0.00
+  w6   money   294 towers  4 hp    572/    0 window   27s pressure 0.56/0.00
+  w7   money   319 towers  6 hp    635/    0 window   25s pressure 0.60/0.00
+  w8   money   348 towers  6 hp    330/  115 window   20s pressure 0.38/0.55
+  w9   money   384 towers  4 hp    905/    0 window   24s pressure 0.60/0.00
+  w10  money   462 towers  7 hp   1004/    0 window   26s pressure 0.62/0.00
+  w11  money   570 towers 11 hp   1017/    0 window   25s pressure 0.61/0.00
+  w12  money   706 towers  7 hp   1473/    0 window   26s pressure 0.48/0.00
+  w13  money   808 towers 12 hp    683/  386 window   26s pressure 0.37/0.52
+  w14  money   933 towers  9 hp   1822/    0 window   28s pressure 0.61/0.00
+  w15  money  1025 towers 10 hp   2610/    0 window   40s pressure 0.61/0.00
+  w16  money  1218 towers 12 hp   3125/    0 window   36s pressure 0.58/0.00
+  w17B money  1352 towers 16 hp   2392/    0 window   32s pressure 0.65/0.00
 Level_C1_05 Medium
   w1   money   280 towers  4 hp    210/    0 window   22s pressure 0.23/0.00
   w2   money   291 towers  4 hp    305/    0 window   24s pressure 0.31/0.00
@@ -310,25 +314,26 @@ Level_C1_05 Psycho
   w15  money  1621 towers  9 hp  10943/    0 window   24s pressure 1.42/0.00
   w16  money  1904 towers 16 hp   5017/ 2458 window   14s pressure 1.05/1.06
   w17B money  2058 towers 12 hp  10102/ 1045 window   17s pressure 1.47/1.12
+Level_C1_05 human lens, towers alone, firepower over need on plain waves: 1.89x 1.73x 1.13x 0.89x (Easy asks 0.91 of Medium)
 Level_C1_06 Easy
-  w1   money   300 towers  6 hp    149/    0 window   26s pressure 0.14/0.00
-  w2   money   300 towers  6 hp    230/    0 window   27s pressure 0.21/0.00
-  w3   money   316 towers  6 hp    308/    0 window   29s pressure 0.26/0.00
-  w4   money   327 towers  3 hp    448/    0 window   24s pressure 0.34/0.00
-  w5   money   340 towers  6 hp    475/    0 window   27s pressure 0.45/0.00
-  w6   money   366 towers  4 hp    651/    0 window   29s pressure 0.38/0.00
-  w7   money   395 towers  5 hp    577/  137 window   26s pressure 0.41/0.37
-  w8   money   451 towers  9 hp    362/   99 window   26s pressure 0.26/0.32
-  w9   money   489 towers  5 hp    754/    0 window   28s pressure 0.38/0.00
-  w10  money   570 towers  6 hp   1111/    0 window   30s pressure 0.43/0.00
-  w11  money   646 towers  8 hp    605/  161 window   28s pressure 0.32/0.41
-  w12  money   730 towers  8 hp   1228/  256 window   29s pressure 0.45/0.40
-  w13  money   849 towers  8 hp   1515/    0 window   30s pressure 0.46/0.00
-  w14  money   955 towers 16 hp    974/  352 window   29s pressure 0.38/0.43
-  w15  money  1046 towers 19 hp   1842/    0 window   31s pressure 0.63/0.00
-  w16  money  1177 towers 22 hp   1538/    0 window   29s pressure 0.49/0.00
-  w17  money  1340 towers 14 hp   2410/  487 window   30s pressure 0.46/0.50
-  w18B money  1577 towers 23 hp   2762/    0 window   35s pressure 0.60/0.00
+  w1   money   240 towers  4 hp    149/    0 window   26s pressure 0.19/0.00
+  w2   money   240 towers  4 hp    230/    0 window   27s pressure 0.28/0.00
+  w3   money   253 towers  5 hp    308/    0 window   29s pressure 0.30/0.00
+  w4   money   262 towers  3 hp    448/    0 window   24s pressure 0.42/0.00
+  w5   money   274 towers  5 hp    475/    0 window   27s pressure 0.51/0.00
+  w6   money   296 towers  3 hp    651/    0 window   29s pressure 0.50/0.00
+  w7   money   320 towers  5 hp    577/  137 window   26s pressure 0.50/0.28
+  w8   money   363 towers  7 hp    362/   99 window   26s pressure 0.32/0.41
+  w9   money   378 towers  4 hp    754/    0 window   28s pressure 0.47/0.00
+  w10  money   446 towers  4 hp   1111/    0 window   30s pressure 0.56/0.00
+  w11  money   511 towers  7 hp    605/  161 window   28s pressure 0.45/0.45
+  w12  money   582 towers  6 hp   1228/  256 window   29s pressure 0.57/0.52
+  w13  money   684 towers  7 hp   1515/    0 window   30s pressure 0.59/0.00
+  w14  money   774 towers 13 hp    974/  352 window   29s pressure 0.44/0.51
+  w15  money   851 towers 15 hp   1842/    0 window   31s pressure 0.79/0.00
+  w16  money   962 towers 17 hp   1538/    0 window   29s pressure 0.62/0.00
+  w17  money  1101 towers 11 hp   2410/  487 window   30s pressure 0.56/0.63
+  w18B money  1302 towers 19 hp   2762/    0 window   35s pressure 0.75/0.00
 Level_C1_06 Medium
   w1   money   300 towers  4 hp    256/    0 window   25s pressure 0.25/0.00
   w2   money   300 towers  4 hp    327/    0 window   26s pressure 0.31/0.00
@@ -386,3 +391,4 @@ Level_C1_06 Psycho
   w16  money  1278 towers  7 hp   8791/  568 window   19s pressure 1.90/1.41
   w17  money  1476 towers 22 hp   4914/ 1580 window   17s pressure 1.24/1.26
   w18B money  1580 towers  8 hp  11279/  865 window   21s pressure 1.88/0.93
+Level_C1_06 human lens, towers alone, firepower over need on plain waves: 1.93x 1.65x 1.24x 0.80x (Easy asks 0.85 of Medium)

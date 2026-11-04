@@ -197,5 +197,35 @@ namespace Game.Tests
                 Assert.AreEqual(WaveSolver.Target(script, i + 1, Rules), lines[i].Pressure, 0.15f, $"wave {i + 1}");
             }
         }
+
+        [Test]
+        public void ThinnerIncome_LeavesLessMoney_AndMorePressure()
+        {
+            EnemyStats walker = Walker("Walker", 40f);
+            var waves = new List<WaveSpec>();
+            for (int i = 0; i < 8; i++)
+            {
+                waves.Add(Wave(walker, 6));
+            }
+
+            List<WaveLine> full = Ledger.Evaluate(Level(Rifle()), waves, Medium, Rules);
+            LevelInput thin = Level(Rifle());
+            thin.Income = 0.5f;
+            List<WaveLine> half = Ledger.Evaluate(thin, waves, Medium, Rules);
+
+            int last = waves.Count - 1;
+            Assert.Less(half[last].Money, full[last].Money);
+            Assert.AreEqual(full[last].Money - thin.StartingMoney, 2 * (half[last].Money - thin.StartingMoney), 2, "half the income, half the kill money");
+            Assert.Greater(half[last].Pressure, full[last].Pressure);
+        }
+
+        [Test]
+        public void HumanLens_FlagsAGenerousEasy_AndAnEasyAsHardAsMedium()
+        {
+            Assert.IsEmpty(BalanceChecks.CheckHuman("Fair", new[] { 0.55f, 0.67f, 1.06f, 1.24f }, Rules));
+            Assert.IsNotEmpty(BalanceChecks.CheckHuman("Generous", new[] { 0.41f, 0.67f, 1.06f, 1.24f }, Rules), "2.4x the firepower on Easy");
+            Assert.IsNotEmpty(BalanceChecks.CheckHuman("Flat", new[] { 0.66f, 0.67f, 1.06f, 1.24f }, Rules), "Easy as hard as Medium");
+            Assert.IsNotEmpty(BalanceChecks.CheckHuman("Inverted", new[] { 0.55f, 0.67f, 0.6f, 1.24f }, Rules), "Hard easier than Medium");
+        }
     }
 }

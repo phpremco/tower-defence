@@ -61,6 +61,8 @@ namespace BalanceLab
                 Replace(path, "_rewardMultiplier", F(stats.Research));
                 Replace(path, "_powerCurrencyMultiplier", F(stats.Power));
                 Replace(path, "_structureDamageMultiplier", F(stats.StructureDamage));
+                ReplaceOrAdd(path, "_incomeMultiplier", F(stats.Income), "_structureDamageMultiplier");
+                ReplaceOrAdd(path, "_startingMoneyMultiplier", F(stats.StartMoney), "_incomeMultiplier");
             }
 
             for (int l = 0; l < _model.Levels.Count; l++)
@@ -195,6 +197,26 @@ namespace BalanceLab
                 File.WriteAllText(path, updated);
                 _files++;
             }
+        }
+
+        // A field Unity has not written yet (new on the class, still at its default) goes in right after its neighbour.
+        private void ReplaceOrAdd(string path, string field, string value, string after)
+        {
+            string text = File.ReadAllText(path);
+            if (new Regex("^  " + Regex.Escape(field) + ": ", RegexOptions.Multiline).IsMatch(text))
+            {
+                Replace(path, field, value);
+                return;
+            }
+
+            var anchor = new Regex("^  " + Regex.Escape(after) + ": .*$", RegexOptions.Multiline);
+            if (!anchor.IsMatch(text))
+            {
+                throw new InvalidOperationException($"{path}: no field {after}");
+            }
+
+            File.WriteAllText(path, anchor.Replace(text, m => m.Value + "\n  " + field + ": " + value, 1));
+            _files++;
         }
 
         private void Save(string path, List<string> lines)

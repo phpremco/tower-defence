@@ -27,6 +27,21 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Wallet_EarnsItsIncomeShare_EvenOfOneCoinBounties()
+        {
+            var wallet = new Wallet(0, false, 0.85f);
+
+            for (int i = 0; i < 100; i++)
+            {
+                wallet.Earn(1);
+            }
+
+            Assert.AreEqual(85, wallet.Money, "a hundred one-coin kills pay 85 at an 85% income share");
+            wallet.Add(10);
+            Assert.AreEqual(95, wallet.Money, "a refund is not scaled");
+        }
+
+        [Test]
         public void Health_RaisesDiedOnceAtZero()
         {
             var health = new Health(10f);

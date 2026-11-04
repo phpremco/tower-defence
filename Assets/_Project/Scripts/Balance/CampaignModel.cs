@@ -43,10 +43,13 @@ namespace Game.Balance
         {
             LevelFacts facts = Facts[levelIndex];
             PlayerState player = PlayerAt(levelIndex, difficulty);
+            DifficultyStats stats = difficulty >= 0 && difficulty < Difficulties.Count ? Difficulties[difficulty] : new DifficultyStats();
             var input = new LevelInput
             {
                 Key = facts.Key,
-                StartingMoney = facts.StartingMoney,
+                // Rounded as the game rounds it (Mathf.RoundToInt: to even), so the model's purse is the wallet's.
+                StartingMoney = (int)Math.Round(facts.StartingMoney * stats.StartMoney),
+                Income = stats.Income,
                 HealthScale = facts.HealthScale,
                 Shape = facts.Shape,
                 MineCount = facts.MineCount,
@@ -70,16 +73,29 @@ namespace Game.Balance
             return input;
         }
 
+        /// <summary>
+        /// As <see cref="InputFor"/>, but with the level's own starting money and full income: the economy the wave solver
+        /// sizes creatures against. A difficulty's money shares (<see cref="DifficultyStats.Income"/>, <see cref="DifficultyStats.StartMoney"/>)
+        /// are a lever of their own; solving against them would only make the creatures weaker to make up for the thinner purse.
+        /// </summary>
+        public LevelInput ReferenceInputFor(int levelIndex, int difficulty)
+        {
+            LevelInput input = InputFor(levelIndex, difficulty);
+            input.StartingMoney = Facts[levelIndex].StartingMoney;
+            input.Income = 1f;
+            return input;
+        }
+
         /// <summary>Solves a level's budgets on Medium and composes its waves for every difficulty.</summary>
         public List<List<WaveSpec>> BuildWaves(int levelIndex, WaveScriptSpec script, out float[] healths)
         {
             LevelFacts facts = Facts[levelIndex];
             int medium = Math.Min(WaveSolver.SolveDifficulty, Difficulties.Count - 1);
-            healths = WaveSolver.Solve(script, Enemies, InputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
+            healths = WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
             var sets = new List<List<WaveSpec>>();
             for (int d = 0; d < Difficulties.Count; d++)
             {
-                float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, InputFor(levelIndex, d), Difficulties[d], healths, facts.SecondRoad, Rules);
+                float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, facts.SecondRoad, Rules);
                 var waves = new List<WaveSpec>();
                 for (int i = 0; i < script.Waves; i++)
                 {

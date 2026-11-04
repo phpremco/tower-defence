@@ -61,6 +61,8 @@ namespace Game.Levels
             Research = difficulty.RewardMultiplier,
             Power = difficulty.PowerCurrencyMultiplier,
             StructureDamage = difficulty.StructureDamageMultiplier,
+            Income = difficulty.IncomeMultiplier,
+            StartMoney = difficulty.StartingMoneyMultiplier,
         };
 
         public static UpgradeStats Stats(UpgradeDefinition upgrade)
@@ -284,7 +286,11 @@ namespace Game.Levels
             Evaluate(model, levelIndex, level, profile, difficulty, null);
 
         /// <summary>As above; <paramref name="loads"/>, when given, receives every wave's load (see <see cref="Ledger.PressureOf"/>).</summary>
-        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty, List<WaveLoad> loads)
+        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty, List<WaveLoad> loads) =>
+            Evaluate(model, levelIndex, level, profile, difficulty, loads, model.Rules);
+
+        /// <summary>As above, judged by other rules (the human lens, <see cref="BalanceRules.HumanTowersOnly"/>).</summary>
+        public static List<WaveLine> Evaluate(CampaignModel model, int levelIndex, LevelDefinition level, DifficultyProfile profile, int difficulty, List<WaveLoad> loads, BalanceRules rules)
         {
             var waves = new List<WaveSpec>();
             foreach (WaveDefinition wave in level.GetWaves(profile))
@@ -292,7 +298,7 @@ namespace Game.Levels
                 waves.Add(Spec(wave, model.Enemies));
             }
 
-            return Ledger.Evaluate(model.InputFor(levelIndex, difficulty), waves, model.Difficulties[difficulty], model.Rules, loads);
+            return Ledger.Evaluate(model.InputFor(levelIndex, difficulty), waves, model.Difficulties[difficulty], rules, loads);
         }
 
         private static Cell[] Cells(UnityEngine.Vector2Int[] waypoints)

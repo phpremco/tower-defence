@@ -248,6 +248,8 @@ namespace BalanceLab
                     Research = n["_rewardMultiplier"].Float,
                     Power = n["_powerCurrencyMultiplier"].Float,
                     StructureDamage = n["_structureDamageMultiplier"].Float,
+                    Income = n["_incomeMultiplier"].Exists ? n["_incomeMultiplier"].Float : 1f,
+                    StartMoney = n["_startingMoneyMultiplier"].Exists ? n["_startingMoneyMultiplier"].Float : 1f,
                 });
                 DifficultyPaths.Add(path);
             }

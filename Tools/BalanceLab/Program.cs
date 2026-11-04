@@ -66,6 +66,8 @@ namespace BalanceLab
                     report.Append($"{model.Levels[l].Key} health: {string.Join(" ", budgets.Select(b => b.ToString("0.#")))}\n");
                 }
 
+                var plainMeans = new List<float>();
+                BalanceRules human = model.Rules.HumanTowersOnly();
                 for (int d = 0; d < model.Difficulties.Count && d < sets.Count; d++)
                 {
                     LevelInput input = model.InputFor(l, d);
@@ -77,7 +79,11 @@ namespace BalanceLab
                     }
 
                     failures.AddRange(BalanceChecks.Check(model.Levels[l].Key, model.Difficulties[d].Id, d, lines, model.Rules));
+                    plainMeans.Add(BalanceChecks.PlainMean(Ledger.Evaluate(input, sets[d], model.Difficulties[d], human)));
                 }
+
+                report.Append(BalanceChecks.DescribeHuman(model.Levels[l].Key, plainMeans)).Append('\n');
+                failures.AddRange(BalanceChecks.CheckHuman(model.Levels[l].Key, plainMeans, model.Rules));
             }
 
             report.Append("\nChecks: ").Append(failures.Count == 0 ? "all inside their bands" : failures.Count + " outside").Append('\n');
@@ -177,6 +183,8 @@ namespace BalanceLab
                 stats.Research = sheet[d].Research;
                 stats.Power = sheet[d].Power;
                 stats.StructureDamage = sheet[d].StructureDamage;
+                stats.Income = sheet[d].Income;
+                stats.StartMoney = sheet[d].StartMoney;
             }
 
             foreach (EnemyStats enemy in model.Enemies.Values)

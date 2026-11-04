@@ -80,7 +80,7 @@ namespace Game.Balance
                 {
                     float spawn = group.Delay + (group.Stagger + k * group.Interval) * _difficulty.Interval;
                     span = Math.Max(span, spawn);
-                    _pending.Add((_waveStart + spawn + travel, enemy.Reward * kept, ground ? health : 0f));
+                    _pending.Add((_waveStart + spawn + travel, enemy.Reward * _level.Income * kept, ground ? health : 0f));
                 }
             }
 

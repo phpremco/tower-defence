@@ -133,6 +133,36 @@ namespace Game.Balance
         /// <summary>Late Easy waves must still ask something on average.</summary>
         public float MinLateEasyPressure = 0.15f;
 
+        // ---- The human lens: a competent player instead of the bot ----------------------------------------------------
+
+        /// <summary>
+        /// <see cref="Utilisation"/> of a competent human. The bot rings the first trunk gate; a player puts towers in the
+        /// bends and at the gates where one gun covers two stretches of road, and buys upgrades where they pay, so each gun
+        /// spends about a quarter more of the window on something. Set 2026-11-04 on Remco's C1_01 Easy report ("two or three
+        /// times the firepower the waves needed, the hero never had to act"): at 0.34 the model gives a fresh player 2.4
+        /// times the firepower on the plain waves, and 3.6 times with the permanent upgrades in his save. The solver and the
+        /// bands stay on the bot's <see cref="Utilisation"/>; this lens only judges the human checks (<see cref="BalanceChecks.CheckHuman"/>).
+        /// </summary>
+        public float HumanUtilisation = 0.34f;
+
+        /// <summary>Most firepower over need, towers alone, a competent player may have on the plain Easy waves of a level.</summary>
+        public float MaxEasySurplus = 2.1f;
+
+        /// <summary>
+        /// The plain Easy waves of a level may ask at most this share of what the plain Medium waves ask of the same player,
+        /// so Easy stays clearly the easier choice (about 0.8 on most levels).
+        /// </summary>
+        public float MaxEasyShareOfMedium = 0.93f;
+
+        /// <summary>The rules as the human lens sees a level: a competent player's utilisation, and the towers alone (no hero).</summary>
+        public BalanceRules HumanTowersOnly()
+        {
+            BalanceRules human = Copy();
+            human.Utilisation = HumanUtilisation;
+            human.HeroShare = 0f;
+            return human;
+        }
+
         // ---- Meta economy: research and power between levels -------------------------------------------------------
 
         /// <summary>
@@ -167,6 +197,9 @@ namespace Game.Balance
 
         /// <summary>Boss waves the power curve expects per level on Medium, so a continent's power sums to its budget.</summary>
         public float ExpectedBossesPerLevel = 2f;
+
+        /// <summary>A copy to vary one knob on (the arrays are shared: treat them as read-only).</summary>
+        public BalanceRules Copy() => (BalanceRules)MemberwiseClone();
 
         /// <summary>The default instance the generator and the tools use.</summary>
         public static BalanceRules Default => new BalanceRules();

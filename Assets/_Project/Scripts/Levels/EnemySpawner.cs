@@ -387,7 +387,7 @@ namespace Game.Levels
 
         private void OnKilled(Enemy enemy)
         {
-            _context.Wallet.Add(enemy.Reward);
+            _context.Wallet.Earn(enemy.Reward);
             _context.Projectiles.PlayBurst(enemy.Position, DeathBurstRadius);
             _context.EnemyKilled.Raise(enemy);
             _context.EnemyDefeated.Raise();

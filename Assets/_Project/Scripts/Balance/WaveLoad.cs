@@ -82,7 +82,7 @@ namespace Game.Balance
                 float each = enemy.EffectiveHealth * scale;
                 float health = each * count;
                 float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
-                load.KillMoney += enemy.Reward * count;
+                load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
                 load.HasBoss |= enemy.IsBoss;
                 float strike = enemy.AttackInterval > 0f ? enemy.BlockadeDamage / enemy.AttackInterval * difficulty.StructureDamage : 0f;
 

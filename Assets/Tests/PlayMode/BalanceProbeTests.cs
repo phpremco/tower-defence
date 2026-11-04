@@ -95,6 +95,21 @@ namespace Game.Tests
             }
         }
 
+        // Easy pays 85% income and 80% starting money since 2026-11-04 (a good player had two or three times the defence
+        // needed): the bot must still win the Landing Site and the Roller level, whose Easy is the closest to its Medium.
+        [UnityTest]
+        [NUnit.Framework.Timeout(3600000)]
+        public IEnumerator Easy_GreedyBot_StillClearsLandingSiteAndRollerLevel_OnThinnerMoney()
+        {
+            var results = new List<ProbeResult>();
+            yield return Probe(new List<(int, int)> { (0, 0), (4, 0) }, false, results);
+            Assert.AreEqual(2, results.Count);
+            foreach (ProbeResult result in results)
+            {
+                Assert.AreEqual(LevelOutcome.Won, result.Outcome, $"{result.Name} on Easy: lost at wave {result.Wave}, see {TracePath}");
+            }
+        }
+
         // S4 curator decision 8, narrowed on 2026-11-04: the packed Skyray and bat raids of Shard Ridge and Fault Line are
         // the Flak's job from Medium on. A naive player who builds only the gun that hits both ground and air must struggle
         // there on Medium (more flyers reach the base, or the base takes more damage, than with a Flak; losing is not needed),

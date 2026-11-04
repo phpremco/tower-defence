@@ -12,7 +12,9 @@ namespace Game.Tests
     /// Runs the balance model over every level, difficulty and wave as they are stored, writes the table to
     /// Tools/PlayTest/balance_ledger.txt and fails when a wave leaves its difficulty's band, jumps far above the waves
     /// before it, or late Easy asks nothing (<see cref="BalanceChecks"/>). The player is the one the progression model
-    /// expects there: owned towers only, the research of the levels before spent on upgrades.
+    /// expects there: owned towers only, the research of the levels before spent on upgrades. Per level it also applies the
+    /// human lens (<see cref="BalanceChecks.CheckHuman"/>): Easy may not hand a competent player far more firepower than
+    /// it needs, and each difficulty must ask more than the one below.
     /// </summary>
     public sealed class BalanceLedgerTests
     {
@@ -30,6 +32,7 @@ namespace Game.Tests
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             BalanceRules rules = BalanceRules.Default;
             CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
+            BalanceRules human = rules.HumanTowersOnly();
 
             var report = new StringBuilder();
             var failures = new List<string>();
@@ -41,6 +44,7 @@ namespace Game.Tests
                     continue;
                 }
 
+                var plainMeans = new List<float>();
                 for (int d = 0; d < catalog.Difficulties.Count; d++)
                 {
                     DifficultyProfile difficulty = catalog.Difficulties[d];
@@ -52,7 +56,11 @@ namespace Game.Tests
                     }
 
                     failures.AddRange(BalanceChecks.Check(node.Level.name, difficulty.name, d, lines, rules));
+                    plainMeans.Add(BalanceChecks.PlainMean(BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, human)));
                 }
+
+                report.Append(BalanceChecks.DescribeHuman(node.Level.name, plainMeans)).Append('\n');
+                failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules));
 
                 index++;
             }

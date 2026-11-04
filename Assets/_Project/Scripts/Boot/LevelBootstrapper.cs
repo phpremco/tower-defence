@@ -114,7 +114,7 @@ namespace Game.Boot
             var structures = new StructureRegistry();
             Services.TryGet(out VfxLibrary vfx);
             var projectiles = new ProjectilePool(targets, root, vfx, Services.Get<IPlatformSettings>().ParticleScale);
-            var wallet = new Wallet(level.StartingMoney, infiniteMoney);
+            var wallet = new Wallet(Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier), infiniteMoney, difficulty.IncomeMultiplier);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;

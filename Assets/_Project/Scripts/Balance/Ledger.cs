@@ -17,7 +17,11 @@ namespace Game.Balance
     public sealed class LevelInput
     {
         public string Key = string.Empty;
+        /// <summary>Starting money on this difficulty (the level's own times the difficulty's share).</summary>
         public int StartingMoney;
+
+        /// <summary>What a bounty or a load of ore really pays on this difficulty, as a share (<see cref="DifficultyStats.Income"/>).</summary>
+        public float Income = 1f;
         public float HealthScale = 1f;
         public LevelShape Shape = new LevelShape();
         public int MineCount;
@@ -177,7 +181,7 @@ namespace Game.Balance
             }
 
             float progress = Clamp01((waveIndex - rules.MinesOpenFromWave) / Math.Max(1f, waveCount * rules.MineDepletionShare));
-            return Math.Max(0, (int)Math.Round(level.MineCount * level.MineStock * progress) - level.HarvesterCost);
+            return Math.Max(0, (int)Math.Round(level.MineCount * level.MineStock * progress * level.Income) - level.HarvesterCost);
         }
 
         // The blade at a gate and half the blaster for the lulls, over half the window.

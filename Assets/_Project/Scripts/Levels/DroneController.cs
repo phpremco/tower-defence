@@ -101,7 +101,7 @@ namespace Game.Levels
         // A delivery is when a node may have run dry or half dry, so that is when the field is told about it.
         private void OnCollected(int value)
         {
-            _context.Wallet.Add(value);
+            _context.Wallet.Earn(value);
             float half = _context.Level.MineStock * HalfStockShare;
             for (int i = 0; i < _mineStocks.Length; i++)
             {

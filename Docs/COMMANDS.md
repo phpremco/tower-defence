@@ -204,7 +204,12 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - Music loops: drop a generated track in `Assets/_Project/Audio/` as `menu-music.mp3`, `game-music.mp3` or `boss-music.mp3`, run `unity command menu --path "Tools/Audio/Make Music Loops" --timeout 300` (cuts the fades, blends the tail over the head, writes `Approved/Music/*_loop.wav`), then the generator; check with `eval_file --file Tools/PlayTest/loop_probe.cs` (first and last half second against the median, both should be near 1).
 - Balance model: `run_tests --mode EditMode --filter BalanceLedgerTests --timeout 300` writes
   `Tools/PlayTest/balance_ledger.txt` (one line per wave: money, bought DPS ground/air, wave HP ground/air, window,
-  pressure ground/air; B marks a boss wave). Failures name level, difficulty and wave.
+  pressure ground/air; B marks a boss wave). Failures name level, difficulty and wave. Since 2026-11-04 each level ends with
+  a "human lens" line: a competent player's firepower over need on plain waves (towers alone), Easy to Psycho, and how much
+  of Medium Easy asks (Docs/BALANCE.md, "Easy economy and the human lens").
+- Difficulty profiles only: `unity command eval_file --file Tools/PlayTest/apply_difficulties.cs` runs just the generator's
+  difficulty step (`BalanceSheet.Difficulties` -> `Data/Difficulty/*.asset`) when the full generator must not run (it
+  syncs the Blender exports from ArtSource while a Blender agent works there).
 
 ## Graphics pass (added 2026-11-01, evening)
 
@@ -431,3 +436,29 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
 - Build pads: `EnvironmentSet.ShowBuildPads` is off, so no tile is drawn at rest; while a tower is placed
   `BuildPadHighlight` feeds the ground shader (`PlacingGlow` in `EnvironmentGround.shader`) the free-cell mask and the
   cursor, and the free cells glow round the cursor (`PlacingColour`, `PlacingGlow`, `PlacingRadiusCells` on the set).
+
+## Blender: MPFB 2 (MakeHuman for Blender) for human characters (added 2026-11-04)
+
+Approved by Remco 2026-11-04 as the base for human characters (GPLv3 code, CC0 assets and output). Installed into
+Blender 5.2.3 as an extension from the official extensions.blender.org repository (version 2.0.18 at install time):
+
+```
+# Install and enable from extensions.blender.org (needs --online-mode headless, else "Online access required")
+"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --online-mode --command extension install -s -e mpfb
+```
+
+Asset packs (all CC0, from the official makehumancommunity file server) are loaded with MPFB's own operator
+`bpy.ops.mpfb.load_pack(filepath=<zip>)`, which extracts them into
+`%APPDATA%\Blender Foundation\Blender\5.2\extensions\.user\blender_org\mpfb\data`:
+
+```
+curl -L -f -O https://files.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip
+curl -L -f -O https://files.makehumancommunity.org/asset_packs/hair01/hair01_cc0.zip
+curl -L -f -O https://files.makehumancommunity.org/functional/faceunits01.zip
+# install_packs.py: import addon_utils; addon_utils.enable("bl_ext.blender_org.mpfb"); bpy.ops.mpfb.load_pack(filepath=z) per zip
+blender --background --factory-startup --python install_packs.py -- <zip> <zip> ...
+```
+
+Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender_org.mpfb")`), so they still run with
+`--factory-startup`. Python API: `bl_ext.blender_org.mpfb.services.humanservice.HumanService.create_human()`,
+`add_builtin_rig`, `add_mhclo_asset`, `set_character_skin`; targets via `TargetService`.

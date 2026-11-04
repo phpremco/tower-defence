@@ -162,17 +162,19 @@ namespace Game.Editor
             return tower;
         }
 
-        private static DifficultyProfile CreateDifficulty(string id, string displayName, float health, float count, float interval, float reward, float power, float structureDamage)
+        private static DifficultyProfile CreateDifficulty(BalanceSheet.Difficulty sheet)
         {
-            var profile = LoadOrCreate<DifficultyProfile>($"{DataRoot}/Difficulty/{id}.asset");
+            var profile = LoadOrCreate<DifficultyProfile>($"{DataRoot}/Difficulty/{sheet.Id}.asset");
             var so = new SerializedObject(profile);
-            so.FindProperty("_displayName").stringValue = displayName;
-            so.FindProperty("_healthMultiplier").floatValue = health;
-            so.FindProperty("_countMultiplier").floatValue = count;
-            so.FindProperty("_spawnIntervalMultiplier").floatValue = interval;
-            so.FindProperty("_rewardMultiplier").floatValue = reward;
-            so.FindProperty("_powerCurrencyMultiplier").floatValue = power;
-            so.FindProperty("_structureDamageMultiplier").floatValue = structureDamage;
+            so.FindProperty("_displayName").stringValue = sheet.DisplayName;
+            so.FindProperty("_healthMultiplier").floatValue = sheet.Health;
+            so.FindProperty("_countMultiplier").floatValue = sheet.Count;
+            so.FindProperty("_spawnIntervalMultiplier").floatValue = sheet.Interval;
+            so.FindProperty("_rewardMultiplier").floatValue = sheet.Research;
+            so.FindProperty("_powerCurrencyMultiplier").floatValue = sheet.Power;
+            so.FindProperty("_structureDamageMultiplier").floatValue = sheet.StructureDamage;
+            so.FindProperty("_incomeMultiplier").floatValue = sheet.Income;
+            so.FindProperty("_startingMoneyMultiplier").floatValue = sheet.StartMoney;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }
