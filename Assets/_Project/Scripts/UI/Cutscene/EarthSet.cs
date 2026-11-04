@@ -7,7 +7,7 @@ namespace Game.UI
     /// The prologue's Earth of 2053, seen from orbit: a grey-brown planet with murky seas, open-pit scars and a few
     /// dying amber city lights on its night side, wrapped in brown smog and a dirty haze along the rim, turning
     /// slowly under a pale sun. ORA tells the story over it in her hologram boxes. The surface comes from the cast's
-    /// <c>EarthSurface</c> texture when one is set, painted by <see cref="EarthPainter"/> otherwise.
+    /// Blender maps (README round 26) when they are there, else from the <c>EarthSurface</c> texture or <see cref="EarthPainter"/>.
     /// </summary>
     public sealed class EarthSet : ICutsceneSet
     {
@@ -34,16 +34,28 @@ namespace Game.UI
             SpaceStyle space = CrysPlanet.SpaceOf(context.Catalog);
             _view = context.Camera.transform;
 
-            EarthPainter.Painting painting = EarthPainter.Paint(context.ParticleScale < 1f ? LowMapWidth : MapWidth);
-            GlobePainter.Maps maps = painting.Maps;
-            if (cast != null && cast.EarthSurface != null)
-            {
-                maps = new GlobePainter.Maps { Albedo = cast.EarthSurface, Normal = maps.Normal, Gloss = maps.Gloss, Emission = maps.Emission };
-            }
-
             Quaternion tilt = Quaternion.AngleAxis(AxisTilt, Vector3.forward) * Quaternion.AngleAxis(StartTurn, Vector3.up);
             PlanetStyle style = cast != null ? cast.EarthPlanet : PlanetStyle.Earth();
-            _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, PlanetMaterials.Surface(maps, painting.Smog, style), painting.Smog, SmogAlpha, style, tilt, DegreesPerSecond);
+            EarthMaps painted = cast != null ? cast.EarthMapsFor(context.ParticleScale < 1f) : null;
+            if (painted != null)
+            {
+                // The Blender Earth: its own maps, and the smog deck tinted by its painted colour.
+                var maps = new GlobePainter.Maps { Albedo = painted.Albedo, Normal = painted.Normal, Gloss = painted.Gloss, Emission = painted.Emission };
+                _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, PlanetMaterials.Surface(maps, painted.Smog, style), painted.Smog, SmogAlpha, style, tilt, DegreesPerSecond);
+                _earth.TintCloudsFromMap();
+            }
+            else
+            {
+                EarthPainter.Painting painting = EarthPainter.Paint(context.ParticleScale < 1f ? LowMapWidth : MapWidth);
+                GlobePainter.Maps maps = painting.Maps;
+                if (cast != null && cast.EarthSurface != null)
+                {
+                    maps = new GlobePainter.Maps { Albedo = cast.EarthSurface, Normal = maps.Normal, Gloss = maps.Gloss, Emission = maps.Emission };
+                }
+
+                _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, PlanetMaterials.Surface(maps, painting.Smog, style), painting.Smog, SmogAlpha, style, tilt, DegreesPerSecond);
+            }
+
             _earth.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
             _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
         }

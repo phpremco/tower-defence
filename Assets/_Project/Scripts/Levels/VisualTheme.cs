@@ -52,6 +52,11 @@ namespace Game.Levels
         [SerializeField] [Min(0f)] private float _rimIntensity = 0.5f;
         [Tooltip("Colour of the light coming from above: ambient on upward faces and the reflection on shiny metal.")]
         [SerializeField] private Color _skyColor = new Color(0.35f, 0.45f, 0.65f);
+        [Tooltip("The Blender sky (a lat-long cubemap) mirrored by metal and water; empty paints a small one from the colours above.")]
+        [SerializeField] private Cubemap _skyCubemap;
+        [SerializeField] private Cubemap _skyCubemapLow;
+        [Tooltip("Reflection strength of the Blender sky (its report's exposure): the PNG stores the glow through a soft shoulder.")]
+        [SerializeField] [Min(0f)] private float _skyExposure = 1.3f;
 
         [Header("Colour grading")]
         [SerializeField] [Range(-50f, 80f)] private float _contrast = 12f;
@@ -123,6 +128,10 @@ namespace Game.Levels
         public Color RimColor => _rimColor;
         public float RimIntensity => _rimIntensity;
         public Color SkyColor => _skyColor;
+        public float SkyExposure => _skyExposure;
+
+        /// <summary>The Blender sky for the quality profile, or null when the theme has none.</summary>
+        public Cubemap SkyCubemapFor(bool low) => low && _skyCubemapLow != null ? _skyCubemapLow : _skyCubemap;
         public float Contrast => _contrast;
         public float Saturation => _saturation;
         public Color ShadowTint => _shadowTint;

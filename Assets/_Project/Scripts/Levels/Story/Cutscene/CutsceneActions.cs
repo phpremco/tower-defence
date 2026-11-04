@@ -22,5 +22,20 @@ namespace Game.Levels
         }
 
         public static bool Supports(CutsceneSet set, CutsceneAction action) => SetOf(action) == set;
+
+        /// <summary>Where an action comes in the story, for sets that pose everything before it as done.</summary>
+        public static int Order(CutsceneAction action)
+        {
+            switch (action)
+            {
+                case CutsceneAction.MercerReacts:
+                    return (int)CutsceneAction.SwarmPours + 1;
+                case CutsceneAction.GateStand:
+                case CutsceneAction.Handoff:
+                    return (int)action + 1;
+                default:
+                    return (int)action;
+            }
+        }
     }
 }

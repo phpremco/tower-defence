@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels::Game.Levels.EnvironmentSet
   _prefix: Core_
   _groundShader: {fileID: 4800000, guid: d8b4f6e11fac6864ab13aa91fbffea00, type: 3}
+  _colonyRig: {fileID: 0}
   _ground:
     _albedo: {fileID: 2800000, guid: 8aa04470529829a44986df146a4bc20f, type: 3}
     _normal: {fileID: 2800000, guid: d37150174b56d34468f8592095602775, type: 3}

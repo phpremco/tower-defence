@@ -26,7 +26,7 @@ MonoBehaviour:
   _capsuleCount: 9
   _eyePairs: 300
   _droneCount: 8
-  _swarmCount: 36
+  _swarmCount: 40
   _mothership: {fileID: 0}
   _capsule: {fileID: 0}
   _drill: {fileID: 0}
@@ -77,3 +77,21 @@ MonoBehaviour:
   _builderArt: {fileID: 11400000, guid: 8e1539871616b2b43b7d9cd87bf7e352, type: 2}
   _haulerArt: {fileID: 11400000, guid: af8f5befdfe8648478771406d831e650, type: 2}
   _consoleArt: {fileID: 11400000, guid: 07982c3aff97ac44eab7bf0e4cd2abf3, type: 2}
+  _underground: {fileID: 11400000, guid: 5b4c707dda1461e49a5681483ed7e15d, type: 2}
+  _fx: {fileID: 11400000, guid: ed56255226febae4e9c6c287a3cf5123, type: 2}
+  _earthMaps:
+    Albedo: {fileID: 2800000, guid: dfbe657d1c48e0c44b7afbf93059e333, type: 3}
+    Normal: {fileID: 2800000, guid: 3dc8be7dded0e954f8c30dcb7724ac16, type: 3}
+    Gloss: {fileID: 2800000, guid: d330f5787a273c145b170b819f7ab2d6, type: 3}
+    Emission: {fileID: 2800000, guid: 50e5785f462b6da48be47d50befa5036, type: 3}
+    Smog: {fileID: 2800000, guid: 30cd8adfe2feb3347aa6b6094cefd31b, type: 3}
+  _earthMapsLow:
+    Albedo: {fileID: 2800000, guid: e820f22f8ee9c3c4499f9f8ac6df67c5, type: 3}
+    Normal: {fileID: 2800000, guid: 4e14f30c5ef2375429a1e83493e11440, type: 3}
+    Gloss: {fileID: 2800000, guid: 469635fe79ea0d841866803dd59036f6, type: 3}
+    Emission: {fileID: 2800000, guid: 35ba76c2b34f33148a27a629a1217f97, type: 3}
+    Smog: {fileID: 2800000, guid: 5e8306c89313ae44c88311590ee0b221, type: 3}
+  _flyers:
+  - {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
+  - {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
+  _flyerCount: 8

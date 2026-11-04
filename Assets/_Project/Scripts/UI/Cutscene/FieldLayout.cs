@@ -7,7 +7,8 @@ namespace Game.UI
     /// <summary>
     /// Where the story happens on a field level, worked out from its data so any level can host the field shots:
     /// the landing spot on the main road, the base at the road's end, the drill on the deposit nearest the base,
-    /// the new dig site on the deposit nearest the entrance, the commander's post at the first gate and the road
+    /// the new dig site a few metres past the first gate (on a deposit when one lies there), the commander's post at
+    /// the first gate (and his guard post just behind its field) and the road
     /// entrance the creatures break out at. Each place has a facing for camera anchors.
     /// </summary>
     public sealed class FieldLayout
@@ -16,6 +17,11 @@ namespace Game.UI
         private const float VeinOffset = 3.6f;
         private const float BeaconOffset = 2.7f;
         private const float DepositFallback = 4f;
+        private const float DigBeyondGate = 6f;
+        private const float DigMinBeyondGate = 3.5f;
+        private const float DigSnap = 4f;
+        private const float DigSideOffset = 3f;
+        private const float GuardBehindGate = 1.3f;
 
         public FieldLayout(LevelDefinition level)
         {
@@ -44,8 +50,17 @@ namespace Game.UI
 
             Drill = Ground(NearestDeposit(level, Base, Landing + side * -DepositFallback));
             DrillFacing = Facing(Base - Drill);
-            DigSite = Ground(NearestDeposit(level, Entrance, Gate - (GateFacing * Vector3.forward) * DepositFallback));
-            DigFacing = Facing(Entrance - DigSite);
+            // The new dig site lies past the first gate on the base side, so the swarm pours in between it and the entrance.
+            GateCentre = level.Blockades != null && level.Blockades.Length > 0 ? Ground(LevelPlayPose.GatePosition(level, level.Blockades[0].Cell)) : Gate;
+            GateCentreDistance = DistanceAlong(Road, GateCentre);
+            Vector3 gateCentre = GateCentre;
+            Vector3 roadAhead = (PointAlong(Road, GateCentreDistance + 1f) - PointAlong(Road, GateCentreDistance)).normalized;
+            Vector3 roadSide = Vector3.Cross(Vector3.up, roadAhead);
+            Vector3 digFallback = PointAlong(Road, GateCentreDistance + DigBeyondGate) + roadSide * DigSideOffset;
+            DigSite = Ground(DepositPastGate(level, Road, GateCentreDistance + DigMinBeyondGate, digFallback, Drill));
+            DigFacing = Facing(gateCentre - DigSite);
+            // Mercer holds the gate from behind its field: a step past it on the base side, facing the entrance.
+            GuardPost = Ground(gateCentre + roadAhead * GuardBehindGate);
 
             Pad = Ground(Base + BaseFacing * new Vector3(-2.7f, 0f, -0.6f));
             Core = Ground(Base + BaseFacing * new Vector3(2.5f, 0f, 0.4f));
@@ -72,6 +87,14 @@ namespace Game.UI
         public Quaternion DigFacing { get; }
         public Vector3 Gate { get; }
         public Quaternion GateFacing { get; }
+
+        /// <summary>The first gate itself (its field across the road), and how far along the road it stands.</summary>
+        public Vector3 GateCentre { get; }
+
+        public float GateCentreDistance { get; }
+
+        /// <summary>Where the commander holds the first gate in the cutscene: just behind its field, facing the entrance.</summary>
+        public Vector3 GuardPost { get; }
 
         /// <summary>How far along the road the commander's post lies.</summary>
         public float GateDistance { get; }
@@ -177,6 +200,27 @@ namespace Game.UI
         {
             direction.y = 0f;
             return direction.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(direction.normalized) : Quaternion.identity;
+        }
+
+        // The deposit nearest the fallback spot (a few metres past the gate, beside the road) when one lies close to it
+        // and past the gate (never the drill's); without one the fallback spot itself.
+        private static Vector3 DepositPastGate(LevelDefinition level, Vector3[] road, float minAlong, Vector3 fallback, Vector3 drill)
+        {
+            Vector3 best = fallback;
+            float bestDistance = float.MaxValue;
+            foreach (Vector2Int mine in level.MineCells ?? new Vector2Int[0])
+            {
+                Vector3 candidate = level.Grid.CellToWorld(mine);
+                float along = DistanceAlong(road, candidate);
+                float distance = Vector3.Distance(candidate, fallback);
+                if (along >= minAlong && distance <= DigSnap && Vector3.Distance(candidate, drill) > 1f && distance < bestDistance)
+                {
+                    best = candidate;
+                    bestDistance = distance;
+                }
+            }
+
+            return best;
         }
 
         // The deposits are the level's mining cells; the drill takes the one nearest the base, the dig site the one

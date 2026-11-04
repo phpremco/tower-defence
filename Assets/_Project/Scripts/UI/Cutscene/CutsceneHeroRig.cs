@@ -50,6 +50,16 @@ namespace Game.UI
         private const float DrawHandOver = 0.45f;
         private const float RunAbove = 0.5f;
         private const string HeadBone = "Head";
+        private const string SpineBone = "Spine2";
+        private const string UpperArmBone = "UpperArm_R";
+        private const string ForearmBone = "Forearm_R";
+
+        // The disbelief: the torso leans back, the right hand comes up to the visor, the head tips up to take it in.
+        private const float ReactLeanDegrees = 10f;
+        private const float ReactArmRaiseDegrees = 118f;
+        private const float ReactArmInDegrees = 28f;
+        private const float ReactForearmDegrees = 105f;
+        private const float ReactHeadTiltDegrees = 9f;
 
         private readonly Transform _figure;
         private readonly Transform _torso;
@@ -74,6 +84,11 @@ namespace Game.UI
         private readonly Transform _hand;
         private readonly Transform _holster;
         private readonly Transform _neck;
+        private readonly Transform _spine;
+        private readonly Transform _upperArm;
+        private readonly Transform _forearm;
+        private readonly Transform[] _overridden = new Transform[0];
+        private readonly Quaternion[] _overriddenRest = new Quaternion[0];
         private bool _drawn;
 
         public CutsceneHeroRig(Transform parent, HeroDefinition hero)
@@ -88,6 +103,18 @@ namespace Game.UI
                 _hand = _art.Find(hero.Art.HandSocket);
                 _holster = _art.Find(hero.Art.HolsterSocket);
                 _neck = _art.Find(HeadBone);
+                _spine = _art.Find(SpineBone);
+                _upperArm = _art.Find(UpperArmBone);
+                _forearm = _art.Find(ForearmBone);
+                // The clips leave out bones they never move, so a turned bone keeps its turn into the next pose: the bones the
+                // reaction turns go back to their rest before every pose.
+                _overridden = new[] { _spine, _upperArm, _forearm, _neck };
+                _overriddenRest = new Quaternion[_overridden.Length];
+                for (int i = 0; i < _overridden.Length; i++)
+                {
+                    _overriddenRest[i] = _overridden[i] != null ? _overridden[i].localRotation : Quaternion.identity;
+                }
+
                 if (hero.Art.Pistol != null && _holster != null)
                 {
                     ArtModel pistol = ArtModel.CreateStill(_holster, hero.Art.Pistol);
@@ -190,10 +217,76 @@ namespace Game.UI
             }
         }
 
+        /// <summary>
+        /// The commander's disbelief: stepping back <paramref name="stepBack"/> metres from <paramref name="position"/>
+        /// (the walk played backwards while <paramref name="stepping"/>), the right hand raised towards the visor by
+        /// <paramref name="hand"/> 0..1, the torso leaning back with it, the head turned by <paramref name="headYaw"/>.
+        /// </summary>
+        public void React(Vector3 position, float yawDegrees, float stepBack, bool stepping, float hand, float headYaw, float time)
+        {
+            Quaternion facing = Quaternion.Euler(0f, yawDegrees, 0f);
+            Vector3 at = position - facing * Vector3.forward * stepBack;
+            if (_art == null)
+            {
+                Pose(at, yawDegrees, stepping ? 0.6f : 0f, 0f, -stepBack * GaitPerUnit, headYaw, 0f, time);
+                return;
+            }
+
+            Root.SetPositionAndRotation(at, facing);
+            RestoreOverrides();
+            if (stepping)
+            {
+                ModelClip clip = _artDefinition.Body.Clips[Mathf.Max(0, _artDefinition.Body.IndexOf(ModelClipRole.Walk))];
+                float phase = clip.DistancePerLoop > 0f ? -stepBack / clip.DistancePerLoop * clip.Length : time;
+                _art.Sample(ModelClipRole.Walk, phase, loop: true);
+            }
+            else
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+
+            Vector3 right = facing * Vector3.right;
+            float raise = CutsceneMath.Smooth(Mathf.Clamp01(hand));
+            Turn(_spine, right, -ReactLeanDegrees * raise);
+            Turn(_upperArm, right, -ReactArmRaiseDegrees * raise);
+            Turn(_upperArm, Vector3.up, -ReactArmInDegrees * raise);
+            Turn(_forearm, right, -ReactForearmDegrees * raise);
+            Turn(_neck, right, -ReactHeadTiltDegrees * raise);
+            Turn(_neck, Vector3.up, headYaw);
+            if (_pistol != null && _drawn)
+            {
+                _drawn = false;
+                _pistol.SetParent(_holster, false);
+                _pistol.localPosition = Vector3.zero;
+                _pistol.localRotation = Quaternion.identity;
+            }
+        }
+
+        private void RestoreOverrides()
+        {
+            for (int i = 0; i < _overridden.Length; i++)
+            {
+                if (_overridden[i] != null)
+                {
+                    _overridden[i].localRotation = _overriddenRest[i];
+                }
+            }
+        }
+
+        // A turn about a world axis through the bone, on top of the sampled pose.
+        private static void Turn(Transform bone, Vector3 axis, float degrees)
+        {
+            if (bone != null && Mathf.Abs(degrees) > 0.01f)
+            {
+                bone.rotation = Quaternion.AngleAxis(degrees, axis) * bone.rotation;
+            }
+        }
+
         // Standing: the idle at the shot time; moving: the walk or the run at the phase the distance walked gives, so the
         // feet keep to the ground; drawn: the pistol in the hand at the end of the kick, which is the aim.
         private void PoseArt(float stride, float run, float gait, float headYaw, float draw, float time)
         {
+            RestoreOverrides();
             stride = Mathf.Clamp01(stride);
             bool drawn = Mathf.Clamp01(draw) >= DrawHandOver;
             if (drawn)

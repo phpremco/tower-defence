@@ -24,6 +24,7 @@ namespace Game.UI
         private static readonly int SunColorId = Shader.PropertyToID("_SunColor");
         private static readonly int WorldToCloudId = Shader.PropertyToID("_WorldToCloud");
         private static readonly int AlphaId = Shader.PropertyToID("_Alpha");
+        private static readonly int MapColourId = Shader.PropertyToID("_MapColour");
         private static readonly int CloudShadowId = Shader.PropertyToID("_CloudShadow");
         private static readonly int ClearCentreId = Shader.PropertyToID("_ClearCentre");
         private static readonly int ClearInnerId = Shader.PropertyToID("_ClearInner");
@@ -149,6 +150,9 @@ namespace Game.UI
         public static void SetCloudFrame(Material surface, Transform clouds) => surface.SetMatrix(WorldToCloudId, clouds.worldToLocalMatrix);
 
         public static void SetCloudAlpha(Material clouds, float alpha) => clouds.SetFloat(AlphaId, alpha);
+
+        /// <summary>How much of the deck colour comes from the cloud map's RGB (0 the style colour, 1 the map's tint).</summary>
+        public static void SetCloudMapColour(Material clouds, float share) => clouds.SetFloat(MapColourId, share);
 
         /// <summary>
         /// Thins a cloud deck over a spot: <paramref name="direction"/> in the deck's own frame, fully thinned inside

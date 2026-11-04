@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Wall_B",
+  "round": 26,
+  "game_tris": 1950,
+  "source_tris": 193128,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 270,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.507,
+    "world_per_uv": 12.60344847589239
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 105.0,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 180.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    5.055,
+    2.811,
+    6.163
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "same; the crevice is where eye pairs sit"
+}

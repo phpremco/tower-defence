@@ -2095,3 +2095,70 @@ not run (targeted menu items only: "Blender VFX" and the new "Colony Rig").
 - **Open / for Remco:** the smoke may now read too faint in a big fight (one number per recipe); the rig at scale 0.7 is
   modest next to the base; the skip hint says "Esc / B" although during a conversation those skip the conversation first
   (Start/B then skip the cutscene); the gate badge uses the small body font.
+
+## Opening cutscene rework and round-26 art, night 2 (2026-11-04)
+
+Remco's feedback on the landing part of the opening cutscene, plus the batch-3 imports in the cutscene code. Not committed;
+no balance change; the full generator was not run (the new menu item, `ApplyCutscene.cs` and the environment menu only).
+- **Builders deliver the base:** `FieldBase` plans one continuous flight per builder drone (4, scale 1.8) through the whole
+  timelapse (now 18 s): it waits out of sight above its first module, comes down with the module folded small under it on a
+  cyan tether (`FX_BeamSoft`), sets it down where it belongs, welds beside it while it unfolds to full size, climbs to above
+  its next module and finally lands beside the base, where it stays parked in the later shots. Legs are eased between their
+  stops and never reset, so nothing jumps between modules or shots. The near and far mesh of a base module come down as one
+  (they were scheduled as two before, so half the drops carried an invisible LOD). Every module and gate drops at an even
+  time, the clank plays as each one touches down (FieldBase, not the shot data). The core's crystal is no longer built.
+- **Drill sinks:** the real bug was the Spin clip: after the Sink clip the code sampled Spin, whose pose puts the drill
+  string back at the top. Now the Sink clip's last frame holds the string down and the `String` bone turns on its own.
+  The bit's contact (3.75 s) bursts dust (Blender dust sheet, scheduled in the shot's particle clock so a seek shows it) and
+  kicks the camera once (0.18); the bore-hole cracks (`FX_DrillCracks`, one atlas cell) and six crack strips
+  (`FX_CrackStrip_Drill_A/B`) spread from the deck; the rumble loop follows.
+- **Haulers carry ore:** an ore heap of the level's own Blender rocks and crystals stands beside the drill; the haulers
+  spread evenly round one loop, dip to the heap, come up with a glowing crystal chunk hanging under the grip and set it
+  down on the pad. They sit parked on the pad from the drill shot on and their clock runs on from the first take-off, so the
+  core shot continues where the harvest shot left them. Drone 0 leaves the stream from where it is, picks the base's own
+  crystal off the heap (glowing on its way), lowers it into the core cage and the core lights up.
+- **Underground on the cave kit:** walls both sides (every third a crevice wall), a leaning vault, ceiling slabs,
+  stalactites, rubble floors with glowing fissures (each with a cyan light), veins, boulders and six trembling crystal
+  clusters. Two crevice walls stand out towards the camera's path for the lead pairs. Every eye is seated: rays from the
+  corridor meet the rock (mesh colliders on the kit, removed after the build), each eye of a pair is cast onto the surface
+  and sunk 0.15 of its scale into it, facing between the rock normal and the camera's path. New `Game/BurrowerEye` shader:
+  one combined mesh per eye variant, the EyeRig vertex colours turn the lids and the eyeball on the GPU from a per-pair
+  state array (blink, look, glow) that `EyeField` writes once a frame; a mirrored eye turns the other way, so a pair closes
+  and looks together. The lead pairs open slowly, the wave fast, all blink now and then and follow the camera.
+- **The attack:** four living burrows (the level's Origin2_Burrow art) break open beside the road at the entrance one after
+  another: their own Open clip (tremor, slabs thrown, maw up) sampled from the swarm clock, crack strips
+  (`FX_CrackStrip_Swarm`) spreading, a flash light at the burst, scheduled dust and debris bursts (Blender sheets), the effect
+  library's burst when played (not on a seek) and one camera kick at the first burst (0.3). 40 walkers (Skitter, Prowler,
+  Roller) run out of the maws in their real run cycles at 1.3x speed and stream down the road; 8 flyers (Shalebat, Skyray)
+  lift out and swoop over them; the Queen climbs out at the entrance, rears up and screams (`FX_ScreamRing`). At the first
+  gate the walkers are held by its field and claw at it (the game's own blockade logic against invulnerable stand-in rings
+  that start to hold one after another, so the crowd grows back towards the entrance instead of stacking). Nobody stands
+  idle; no rollers curled up waiting.
+- **Mercer's reaction:** new shot `MercerReacts` (5.5 s, appended action, story order in `CutsceneActions.Order`) after the
+  swarm: close on him at his new dig site (now a few metres past the first gate, so the swarm pours in between him and the
+  entrance): he steps back, the right hand comes up to the visor, the torso leans back, the head follows (bone turns over
+  the sampled pose in `CutsceneHeroRig.React`; the turned bones go back to rest before every pose, which also fixes a head
+  turn that used to add up frame after frame). Then `GateStand`: he runs back and holds the gate from just behind its field
+  (new `FieldLayout.GuardPost`), the blaster up, Voss and ORA speak (STORY.md lines, no new dialogue), and the handoff pulls
+  out to the play view with "Defend the base". A cool key light lifts him in the close shots.
+- **Kicks:** the camera only kicks on an impact, once per shot (landing 0.25, drill bit 0.18, first burst 0.3);
+  `CutsceneDataTests.Camera_KicksOnlyOnImpacts_AndNeverShakes` replaces the old "one kick in the whole cutscene" test.
+- **Batch-3 imports:** `BlenderCutsceneBuilder` (menu `Tools/Generate/Blender Cutscene (cave, eyes, Earth, FX, skies)`,
+  generator step "Cutscene art") writes `Data/Art/Story/UndergroundArt.asset`, `CutsceneFxSet.asset`, the cast's
+  `EarthMaps` (High and Low, gloss baked as `Planet_Earth_Gloss.png`: alpha = 0.05 + 0.22 x Mask.G) and puts the lat-long
+  skies on the themes (C1 themes `Sky_CrystalPlains`, Earth, Underground) with their report's exposure. Runtime: `EarthSet`
+  wears the Blender Earth (the cloud shader takes the smog's colour from its RGB via `_MapColour`), `SkyProbe` uses the
+  theme's cubemap as the reflection source (falls back to the painted one), `SpaceKit.Glow/Line` take a `CutsceneSprite`
+  (sun core/halo/streak, glints, engine glows, running lights, beams, plasma trails), the capsule streak wears the plasma
+  trail, the gate fields `FX_GateField`. Decor fallbacks for Crystal Plains: IceShard, Snowdrift (new export), DeadTree and
+  Reed rows in `BlenderEnvironmentCatalog`. The vein crystals and the shiver pebbles are the level's Blender decor now.
+- **Orientation:** every round-26 FBX arrives turned 180 degrees about Y (cornea at -Z, wall backing at +Z, measured with
+  `n2_cave_probe.cs`); the cave and the eyes add the half turn under the node matrix, so `axis_unity` and "cavern +Z" hold.
+- **Stills:** `n2_still.cs` seeks, steps one frame and seeks again: the old still rendered skinned models one pose late and
+  without the instanced decor (a reaction frame showed the pose of the previous seek).
+- **Tests:** EditMode 376/376 (new `CutsceneArtTests`: cave kit and rigged eyes, every sprite, the Earth in both sizes
+  with its gloss import, a sky on every C1 theme, the story order of the shots). PlayMode one class at a time:
+  CutsceneSmoke 3/3, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, StoryCrystal 2/2, Screenshot 3/3, ContinentSimulation 2/2, ModelPerformance 1/1; BalanceProbe skipped. 0 compile errors/warnings. Remco's save restored byte-identical after every PlayMode
+  run (MD5 ec2a1f6d...).
+- **Frames:** session scratchpad `night2/` (final sequence `final_*.png`).
+- **Weak points / for Remco:** the field is a dark night theme, so the build drops and the ore chunks read small in the wide shots (the tether helps; a closer camera would help more); the reaction shot is dark and framed from his front-right with a big rock in the foreground, so the hand-to-visor reads but his face does not; the carried crystal is the base model's own and only lights fully in the cage; the siege crowd at the gate is dense and fixed in its rings (it claws, but from above it reads as a block); the lead crevice pair shows one eye clearly, the other half in the slot; the Earth smog leans orange; skies raise the C1 reflection strength to 1.3 (was 1.0); the Low profile was not shot this round.

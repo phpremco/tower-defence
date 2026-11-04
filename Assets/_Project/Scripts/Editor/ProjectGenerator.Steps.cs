@@ -70,6 +70,8 @@ namespace Game.Editor
             new GeneratorStep("Cutscene", GenerateCutscene),
             // The story from Blender: Mercer and his weapons, the dialogue busts and the cutscene's machines and drones.
             new GeneratorStep("Story art", _ => BlenderStoryBuilder.Apply(BlenderStoryBuilder.SyncAndBuild())),
+            // README round 26: the cave kit and eyes, the Earth maps, the cutscene sprites and the theme skies.
+            new GeneratorStep("Cutscene art", _ => BlenderCutsceneBuilder.Apply(BlenderCutsceneBuilder.SyncAndBuild())),
             new GeneratorStep("Colony rig", _ => ColonyRigBuilder.Apply()),
             new GeneratorStep("Render pipeline", _ => ConfigureRenderPipeline()),
             new GeneratorStep("Sound library", _ => CreateSfxLibrary()),

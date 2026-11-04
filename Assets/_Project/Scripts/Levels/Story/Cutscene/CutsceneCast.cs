@@ -56,6 +56,20 @@ namespace Game.Levels
         [Tooltip("The command post's radar console the radar shot shows.")]
         [SerializeField] private ModelArtDefinition _consoleArt;
 
+        [Header("Imported (Blender) sets and sprites")]
+        [Tooltip("The cave kit and the Burrower eyes of the underground shots; empty keeps the procedural cave.")]
+        [SerializeField] private UndergroundArt _underground;
+        [Tooltip("The glow, trail and crack sprites; empty keeps the soft textures the code paints.")]
+        [SerializeField] private CutsceneFxSet _fx;
+        [Tooltip("The Earth of the prologue painted in Blender; incomplete maps fall back to the painter.")]
+        [SerializeField] private EarthMaps _earthMaps = new EarthMaps();
+        [SerializeField] private EarthMaps _earthMapsLow = new EarthMaps();
+
+        [Header("Attack")]
+        [Tooltip("Flyers that swoop over the road with the swarm.")]
+        [SerializeField] private EnemyDefinition[] _flyers = new EnemyDefinition[0];
+        [SerializeField] [Min(0)] private int _flyerCount = 8;
+
         public HeroDefinition Hero => _hero;
         public DroneDefinition Hauler => _hauler;
         public DroneDefinition Builder => _builder;
@@ -81,6 +95,21 @@ namespace Game.Levels
         public ModelArtDefinition BuilderArt => _builderArt;
         public ModelArtDefinition HaulerArt => _haulerArt;
         public ModelArtDefinition ConsoleArt => _consoleArt;
+        public UndergroundArt Underground => _underground;
+        public CutsceneFxSet Fx => _fx;
+        public EnemyDefinition[] Flyers => _flyers;
+        public int FlyerCount => _flyerCount;
+
+        /// <summary>The painted Earth for the quality profile, or null when its maps are incomplete.</summary>
+        public EarthMaps EarthMapsFor(bool low)
+        {
+            if (low && _earthMapsLow != null && _earthMapsLow.IsComplete)
+            {
+                return _earthMapsLow;
+            }
+
+            return _earthMaps != null && _earthMaps.IsComplete ? _earthMaps : null;
+        }
 
         private void OnValidate()
         {

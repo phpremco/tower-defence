@@ -178,61 +178,31 @@ MonoBehaviour:
     Camera:
     - At: 0
       Anchor: 2
-      Position: {x: -6, y: 6.5, z: 9}
-      LookAt: {x: 0, y: 0.6, z: 0}
-      FieldOfView: 44
+      Position: {x: -5, y: 4.2, z: 6.5}
+      LookAt: {x: 0, y: 1.2, z: 0}
+      FieldOfView: 46
       Ease: 3
       Mode: 0
     - At: 0.5
       Anchor: 2
-      Position: {x: 0, y: 7.5, z: 10.5}
-      LookAt: {x: 0, y: 0.6, z: -0.3}
-      FieldOfView: 42
+      Position: {x: 0, y: 5, z: 7.5}
+      LookAt: {x: 0, y: 1.2, z: -0.3}
+      FieldOfView: 44
       Ease: 3
       Mode: 0
     - At: 1
       Anchor: 2
-      Position: {x: 6.5, y: 6.5, z: 8}
-      LookAt: {x: 0.5, y: 0.8, z: 0}
-      FieldOfView: 40
+      Position: {x: 5, y: 4.2, z: 6}
+      LookAt: {x: 0.5, y: 1.3, z: 0}
+      FieldOfView: 44
       Ease: 3
       Mode: 0
     Timing: 0
-    Seconds: 14
+    Seconds: 18
     CameraSeconds: 0
     Dialogue: {fileID: 0}
     DialogueDelay: 0
-    Cues:
-    - At: 0.7
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
-    - At: 3.1
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
-    - At: 5
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
-    - At: 7.7
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
-    - At: 9.1
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
-    - At: 10.5
-      Kind: 0
-      Sound: 4
-      Clip: {fileID: 0}
-      Strength: 0.6
+    Cues: []
     Music: 0
     FadeIn: 0.6
     FadeOut: 0.6
@@ -262,11 +232,16 @@ MonoBehaviour:
     Dialogue: {fileID: 11400000, guid: 7138f129f2539f145aa7eb9ebfdc3e84, type: 2}
     DialogueDelay: 4
     Cues:
-    - At: 2
+    - At: 3.75
       Kind: 0
       Sound: 1
       Clip: {fileID: 0}
       Strength: 0.8
+    - At: 3.75
+      Kind: 1
+      Sound: 0
+      Clip: {fileID: 0}
+      Strength: 0.18
     Music: 0
     FadeIn: 0.4
     FadeOut: 0
@@ -278,16 +253,16 @@ MonoBehaviour:
     Camera:
     - At: 0
       Anchor: 3
-      Position: {x: -3, y: 2.2, z: 6.5}
-      LookAt: {x: 0.5, y: 2.8, z: 3}
-      FieldOfView: 44
+      Position: {x: -6.5, y: 2.8, z: 4.5}
+      LookAt: {x: -1.2, y: 1.4, z: 0.8}
+      FieldOfView: 46
       Ease: 3
       Mode: 0
     - At: 1
       Anchor: 3
-      Position: {x: -3.5, y: 2.6, z: 8.5}
-      LookAt: {x: 0, y: 2.6, z: 4}
-      FieldOfView: 42
+      Position: {x: -7.5, y: 3.4, z: 6.5}
+      LookAt: {x: -1, y: 1.6, z: 1.5}
+      FieldOfView: 44
       Ease: 3
       Mode: 0
     Timing: 0
@@ -313,14 +288,14 @@ MonoBehaviour:
     - At: 0
       Anchor: 7
       Position: {x: -4, y: 3, z: 6.1}
-      LookAt: {x: 0, y: 1, z: 0}
+      LookAt: {x: 0, y: 2, z: 0}
       FieldOfView: 42
       Ease: 3
       Mode: 0
     - At: 1
       Anchor: 7
       Position: {x: -2.3, y: 2.3, z: 4.4}
-      LookAt: {x: 0, y: 1, z: 0}
+      LookAt: {x: 0, y: 1.4, z: 0}
       FieldOfView: 36
       Ease: 3
       Mode: 0
@@ -532,21 +507,31 @@ MonoBehaviour:
     Dialogue: {fileID: 0}
     DialogueDelay: 0
     Cues:
-    - At: 0.6
+    - At: 2.2
       Kind: 0
       Sound: 14
       Clip: {fileID: 0}
-      Strength: 0.7
-    - At: 1.4
+      Strength: 0.9
+    - At: 2.2
+      Kind: 1
+      Sound: 0
+      Clip: {fileID: 0}
+      Strength: 0.3
+    - At: 3
       Kind: 0
       Sound: 14
       Clip: {fileID: 0}
-      Strength: 0.7
-    - At: 2.6
+      Strength: 0.75
+    - At: 3.8
       Kind: 0
       Sound: 14
       Clip: {fileID: 0}
       Strength: 0.8
+    - At: 4.6
+      Kind: 0
+      Sound: 14
+      Clip: {fileID: 0}
+      Strength: 0.7
     - At: 6
       Kind: 0
       Sound: 12
@@ -564,26 +549,65 @@ MonoBehaviour:
     Overlay: 0
     TitleCard: 
   - Set: 3
+    Action: 14
+    Camera:
+    - At: 0
+      Anchor: 4
+      Position: {x: 2.2, y: 1.6, z: 1.6}
+      LookAt: {x: 0, y: 1.45, z: -0.4}
+      FieldOfView: 38
+      Ease: 3
+      Mode: 0
+    - At: 1
+      Anchor: 4
+      Position: {x: 1.6, y: 1.5, z: 0.9}
+      LookAt: {x: 0, y: 1.5, z: -0.9}
+      FieldOfView: 32
+      Ease: 3
+      Mode: 0
+    Timing: 0
+    Seconds: 5.5
+    CameraSeconds: 0
+    Dialogue: {fileID: 0}
+    DialogueDelay: 0
+    Cues:
+    - At: 0.6
+      Kind: 0
+      Sound: 13
+      Clip: {fileID: 0}
+      Strength: 0.7
+    - At: 3.2
+      Kind: 0
+      Sound: 12
+      Clip: {fileID: 0}
+      Strength: 0.6
+    Music: 0
+    FadeIn: 0
+    FadeOut: 0
+    Letterbox: 1
+    Overlay: 0
+    TitleCard: 
+  - Set: 3
     Action: 12
     Camera:
     - At: 0
       Anchor: 5
-      Position: {x: 3.8, y: 2.4, z: -1.4}
-      LookAt: {x: -4, y: 0.8, z: 1}
+      Position: {x: 4.2, y: 2.6, z: -5.5}
+      LookAt: {x: 0, y: 0.8, z: -2}
       FieldOfView: 46
       Ease: 3
       Mode: 0
     - At: 0.5
       Anchor: 5
-      Position: {x: 2.4, y: 1.7, z: -0.8}
-      LookAt: {x: 0, y: 1.1, z: 1.5}
-      FieldOfView: 42
+      Position: {x: 1.8, y: 2.1, z: -5.2}
+      LookAt: {x: -0.2, y: 1.1, z: 0.5}
+      FieldOfView: 44
       Ease: 3
       Mode: 0
     - At: 1
       Anchor: 5
-      Position: {x: 2.2, y: 1.6, z: -0.6}
-      LookAt: {x: -0.6, y: 1.1, z: 4}
+      Position: {x: 1.1, y: 1.9, z: -4.8}
+      LookAt: {x: -0.3, y: 1.1, z: 2.5}
       FieldOfView: 42
       Ease: 3
       Mode: 0
@@ -614,8 +638,8 @@ MonoBehaviour:
     Camera:
     - At: 0
       Anchor: 5
-      Position: {x: 2.2, y: 1.6, z: -0.6}
-      LookAt: {x: -0.6, y: 1.1, z: 4}
+      Position: {x: 1.1, y: 1.9, z: -4.8}
+      LookAt: {x: -0.3, y: 1.1, z: 2.5}
       FieldOfView: 42
       Ease: 3
       Mode: 0

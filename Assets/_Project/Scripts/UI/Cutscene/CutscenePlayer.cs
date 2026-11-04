@@ -69,6 +69,8 @@ namespace Game.UI
             _request = request;
             _progress = progress;
             CutsceneDefinition cutscene = request.Cutscene;
+            // The cast's Blender sprites dress every glow, trail and crack the sets build from here on.
+            CutsceneFxSet.Active = cutscene.Cast != null ? cutscene.Cast.Fx : null;
 
             camera.orthographic = false;
             camera.nearClipPlane = NearClip;
@@ -122,6 +124,11 @@ namespace Game.UI
 
         private void OnDestroy()
         {
+            if (_request != null && _request.Cutscene.Cast != null && CutsceneFxSet.Active == _request.Cutscene.Cast.Fx)
+            {
+                CutsceneFxSet.Active = null;
+            }
+
             _input?.Dispose();
             if (_sequencer != null)
             {

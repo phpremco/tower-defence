@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Vein",
+  "round": 26,
+  "game_tris": 300,
+  "source_tris": 27348,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 2,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.279,
+    "world_per_uv": 1.5549848613276802
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 13.0,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 22.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.032,
+    0.483,
+    0.059
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "new: glowing veins laid over walls and floor"
+}

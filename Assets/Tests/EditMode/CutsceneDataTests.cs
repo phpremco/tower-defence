@@ -111,6 +111,12 @@ namespace Game.Tests
                 Assert.IsNotNull(creature);
                 Assert.IsFalse(creature.Flies, $"{creature.name} must walk the road");
             }
+
+            foreach (EnemyDefinition flyer in cast.Flyers)
+            {
+                Assert.IsNotNull(flyer);
+                Assert.IsTrue(flyer.Flies, $"{flyer.name} must fly over the swarm");
+            }
         }
 
         [Test]
@@ -128,25 +134,30 @@ namespace Game.Tests
             Assert.AreEqual(1f, facing.magnitude, 0.001f);
         }
 
-        // Playtest 2026-11-04: the camera shook all through the planet shots. One small kick at touchdown at most, and a drift too slow to read as shake.
+        // Playtest 2026-11-04: the camera shook all through the planet shots. Remco's rule since: a camera shake is only ever
+        // a brief kick on a real impact (the capsule landing, the drill bit biting, the ground bursting open), one per shot
+        // at most, and the drift stays too slow to read as shake.
         [Test]
-        public void Camera_KicksOnceAtMost_AndNeverShakes()
+        public void Camera_KicksOnlyOnImpacts_AndNeverShakes()
         {
-            int kicks = 0;
+            var impacts = new[] { CutsceneAction.PathfinderLands, CutsceneAction.DrillDown, CutsceneAction.SwarmPours };
             foreach (CutsceneShot shot in _cutscene.Shots)
             {
+                int kicks = 0;
                 foreach (CutsceneCue cue in shot.Cues)
                 {
                     if (cue.Kind == CueKind.Shake)
                     {
                         kicks++;
                         Assert.LessOrEqual(cue.Strength, _cutscene.CameraFeel.MaxKick, "a kick stronger than the camera allows");
+                        Assert.Contains(shot.Action, impacts, $"{shot.Action} kicks the camera without an impact");
                     }
                 }
+
+                Assert.LessOrEqual(kicks, 1, $"{shot.Action} kicks the camera more than once");
             }
 
             CutsceneCameraFeel feel = _cutscene.CameraFeel;
-            Assert.LessOrEqual(kicks, 1, "the cutscene kicks the camera more than once");
             Assert.LessOrEqual(feel.MaxKick, 0.35f, "the kick cap is too strong to stay small");
             Assert.LessOrEqual(feel.DriftHertz, 0.2f, "a drift faster than this reads as shake");
             Assert.LessOrEqual(feel.Drift, 0.02f, "the drift is wide enough to see");

@@ -176,7 +176,7 @@ namespace Game.UI
                 AddMesh("Shield", model, parts.Shield, new[] { shield });
             }
 
-            LineRenderer trail = SpaceKit.Line(parent, $"Trail{index}", TrailPoints, false, TrailIntensity);
+            LineRenderer trail = SpaceKit.Line(parent, $"Trail{index}", TrailPoints, false, TrailIntensity, CutsceneSprite.PlasmaTrail);
             trail.colorGradient = gradient;
             trail.widthCurve = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f));
             Transform head = SpaceKit.Glow(parent, $"Head{index}", CoreColour);

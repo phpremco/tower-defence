@@ -42,6 +42,9 @@ MonoBehaviour:
   _rimColor: {r: 0.9, g: 0.78, b: 1, a: 1}
   _rimIntensity: 0.5
   _skyColor: {r: 0.32, g: 0.32, b: 0.46, a: 1}
+  _skyCubemap: {fileID: 8900000, guid: 1f948324b7b560b4890c6c41bfa0a2b9, type: 3}
+  _skyCubemapLow: {fileID: 8900000, guid: 732c8046f64b25e499201b3883307f22, type: 3}
+  _skyExposure: 1.3
   _contrast: 12
   _saturation: 8
   _shadowTint: {r: 0.9541284, g: 0.9541284, b: 1, a: 1}

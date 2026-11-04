@@ -1,0 +1,297 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 095990d70a01dfb4e8c00e4641e7f037, type: 3}
+  m_Name: UndergroundArt
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.UndergroundArt
+  _pieces:
+  - _name: Cave_Wall_A
+    _mesh: {fileID: -6793557075398626538, guid: 9579c0809d32ada4a9edaeec628af44c, type: 3}
+    _material: {fileID: 2100000, guid: c4a241f6725f4aa4aa6a13161fceb97d, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: ca35c957252a8014892b5cb8e0b21cc2, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Wall_B
+    _mesh: {fileID: -3809237056724338657, guid: 91ca7ffa7d784ea429f6c72c636d94cf, type: 3}
+    _material: {fileID: 2100000, guid: 7a94d5292474393449e1a13058d6a5ef, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: cb87781f8acca264dab0bb4a652f5c2c, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Ceiling
+    _mesh: {fileID: -8981921520299312670, guid: c960819e1656c114f8f23497be07145d, type: 3}
+    _material: {fileID: 2100000, guid: cc860510267e8cf4d887d5d3499955a6, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5484284d473546145a41c285c85f6bb0, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Stalactites
+    _mesh: {fileID: -5302366750201995990, guid: 6424357a6d81acc40abae9df85343310, type: 3}
+    _material: {fileID: 2100000, guid: 353242406017a9e47a62cf654511b874, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 6381f88ba858d664d8811339857cf61c, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Floor_A
+    _mesh: {fileID: -9209140205273475023, guid: 85bcbd6d1a1793c4fb742ee629594ab8, type: 3}
+    _material: {fileID: 2100000, guid: 8e59945e038bdde4e84e7a18be23c5d4, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 686c36fe2b862ea4bb39eb10820fd80a, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Floor_B
+    _mesh: {fileID: -4871780199475433999, guid: 24d00f7926f6f00488d7474606857453, type: 3}
+    _material: {fileID: 2100000, guid: 0506d2d6645a7c74f8645e73df71bd7c, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 772abcf8a3c731c4792bb337f6c8793c, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Boulder
+    _mesh: {fileID: 4227256310321832488, guid: 571bd182ca99c9d4aa0a04b1e9505fc8, type: 3}
+    _material: {fileID: 2100000, guid: 3b80284a8fa956c408a91414e24e41a6, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: b0b95c74758e3e84e876f582d3844d2c, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_CrystalCluster
+    _mesh: {fileID: -2350510913011140525, guid: a8a0faba98404d445a7ea8d2ea4f778e, type: 3}
+    _material: {fileID: 2100000, guid: 5910b98cde394de42a165ca221298a00, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 8c96e7fb7dc3994489fc1c92ceec3dfb, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Cave_Vein
+    _mesh: {fileID: 3436816450841310396, guid: debb5b59350947b43a9e1cbc9f96f406, type: 3}
+    _material: {fileID: 2100000, guid: 7bf625154bdbfc94191d08c5a183681b, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 2fb1cc8af4797194ebeec729a3d8475b, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _eyes:
+  - _name: Eye_Burrower_A
+    _mesh: {fileID: -5880671292605307641, guid: 25a4f5169c5799847b43594cb38f53b8, type: 3}
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _eye: {fileID: 2100000, guid: 09b9d55cc40287f4096b938a3d915b50, type: 2}
+    _lowEye: {fileID: 2100000, guid: 67cf4f82fceff1a4b81ff963feac648b, type: 2}
+    _cornea: {fileID: 2100000, guid: 832d8892e7d2c2345b81347e8994d844, type: 2}
+    _upperLidDegrees: 32.1
+    _lowerLidDegrees: 22.3
+    _lookDegrees: 22
+    _lookUpDownDegrees: 15.4
+    _axis: {x: -0.9703, y: 0.2419, z: 0}
+  - _name: Eye_Burrower_B
+    _mesh: {fileID: 4131429047808618479, guid: e2e67236b75c34a47afbe4bae96c146c, type: 3}
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _eye: {fileID: 2100000, guid: 616ebce1a592d9b49add4784940dedda, type: 2}
+    _lowEye: {fileID: 2100000, guid: 00bf61e30ee606f44b6c7d86573a1baa, type: 2}
+    _cornea: {fileID: 2100000, guid: f66eac00c0482c5429189cb194a30e25, type: 2}
+    _upperLidDegrees: 27.5
+    _lowerLidDegrees: 18.9
+    _lookDegrees: 22
+    _lookUpDownDegrees: 15.4
+    _axis: {x: -0.9397, y: 0.342, z: 0}
+  - _name: Eye_Burrower_C
+    _mesh: {fileID: -8308757636852632694, guid: 6a564015ce0657d4f8668379c0f0624f, type: 3}
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _eye: {fileID: 2100000, guid: d82af24974a01fb4c9ef633b42d33700, type: 2}
+    _lowEye: {fileID: 2100000, guid: 8f3879c9fdf9292429e0a48b4f458808, type: 2}
+    _cornea: {fileID: 2100000, guid: fd423bcb16501de438c6387b9a2640f1, type: 2}
+    _upperLidDegrees: 35.5
+    _lowerLidDegrees: 26.9
+    _lookDegrees: 22
+    _lookUpDownDegrees: 15.4
+    _axis: {x: -0.9945, y: 0.1045, z: 0}
+  _irisGlow: 4
+  _seatDepth: 0.15

@@ -1080,6 +1080,110 @@ MonoBehaviour:
         e33: 1
     _scale: 0.7370882
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 11
+    _variants:
+    - _name: North_Decor_IceShard
+      _mesh: {fileID: 4880378230485305523, guid: 9439be601a220e947837b726e122cc86, type: 3}
+      _material: {fileID: 2100000, guid: 90b784e7e28e19d43a699ad3935e74c6, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9e4b877877988e9468f9f7faadacb5f0, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.3558223
+    _glow: {r: 0.55, g: 0.85, b: 1, a: 1}
+  - _kind: 12
+    _variants:
+    - _name: Decor_Snowdrift
+      _mesh: {fileID: 2109353266197078152, guid: 0121ca5dd139e4943aa7c7fb0457cb4b, type: 3}
+      _material: {fileID: 2100000, guid: 0940021dda51d7041b61e5dd57e32ec5, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: e7aa5d15a7417664da8651c08826d8a4, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.6899198
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 13
+    _variants:
+    - _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.5168856
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 14
+    _variants:
+    - _name: Mire_Flora_Reed
+      _mesh: {fileID: -456788785689120139, guid: 6337fe5a4f003114c9bc0a39c0741d2f, type: 3}
+      _material: {fileID: 2100000, guid: 51dfc558ce4b0e9438745b5c6eb1fbc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f77b1892b19725c41b9a7baf30f12eed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0856493
+    _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
   _origins:
   - _terrain: 0
     _model:

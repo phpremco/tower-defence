@@ -186,7 +186,7 @@ namespace Game.UI
             _engineGlows = new Transform[nozzles.Length];
             for (int i = 0; i < nozzles.Length; i++)
             {
-                Transform glow = SpaceKit.Glow(_ship, $"Exhaust{i}", EngineColour * 3f);
+                Transform glow = SpaceKit.Glow(_ship, $"Exhaust{i}", EngineColour * 3f, CutsceneSprite.EngineGlow);
                 glow.localPosition = nozzles[i] + Vector3.back * 0.15f;
                 _engineGlows[i] = glow;
             }
@@ -226,7 +226,7 @@ namespace Game.UI
             _runningLights = new Transform[count];
             for (int i = 0; i < count; i++)
             {
-                Transform glow = SpaceKit.Glow(_ship, $"RunningLight{i + 1}", RunningLights[i].Colour);
+                Transform glow = SpaceKit.Glow(_ship, $"RunningLight{i + 1}", RunningLights[i].Colour, CutsceneSprite.RunningLight);
                 glow.localPosition = Local(sockets[i], Vector3.zero);
                 _runningLights[i] = glow;
             }

@@ -1,6 +1,9 @@
 namespace Game.Levels
 {
-    /// <summary>What a set does during a shot. Each action belongs to one set (see <see cref="CutsceneActions"/>). Values are only appended.</summary>
+    /// <summary>
+    /// What a set does during a shot. Each action belongs to one set (see <see cref="CutsceneActions"/>). Values are only
+    /// appended, so the numbers are not the story order: <see cref="CutsceneActions.Order"/> is.
+    /// </summary>
     public enum CutsceneAction
     {
         EarthDrift = 0,
@@ -17,5 +20,8 @@ namespace Game.Levels
         SwarmPours = 11,
         GateStand = 12,
         Handoff = 13,
+
+        /// <summary>A close shot of the commander as the swarm pours out: disbelief, a step back, a hand to the visor.</summary>
+        MercerReacts = 14,
     }
 }

@@ -58,23 +58,32 @@ namespace Game.UI
 
         /// <summary>
         /// A soft additive glow on a quad, unlit, in an HDR colour so the bloom picks it up; the owner turns it to
-        /// the camera and scales it.
+        /// the camera and scales it. It wears the Blender <paramref name="sprite"/> of the cutscene's FX set, or the
+        /// painted soft dot without one.
         /// </summary>
-        public static Transform Glow(Transform parent, string name, Color colour)
+        public static Transform Glow(Transform parent, string name, Color colour, CutsceneSprite sprite = CutsceneSprite.GlowSoft)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             go.AddComponent<MeshFilter>().sharedMesh = GlowDecal.Quad();
             var renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = GlowMaterial(colour);
+            renderer.sharedMaterial = Additive(Sprite(sprite, SoftDot()), colour);
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = false;
             return go.transform;
         }
 
-        // The unlit particle shader is always in the build (it is the pipeline's default particle material).
-        private static Material GlowMaterial(Color colour) => Additive(SoftDot(), colour);
+        /// <summary>The Blender sprite of the active cutscene FX set, or the painted fallback.</summary>
+        public static Texture2D Sprite(CutsceneSprite sprite, Texture2D fallback)
+        {
+            Texture2D painted = CutsceneFxSet.Get(sprite);
+            return painted != null ? painted : fallback;
+        }
 
+        /// <summary>The painted soft dot, for callers that need the fallback of a round sprite.</summary>
+        public static Texture2D SoftDotTexture => SoftDot();
+
+        // The unlit particle shader is always in the build (it is the pipeline's default particle material).
         private static Material Additive(Texture2D texture, Color colour)
         {
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
@@ -136,7 +145,7 @@ namespace Game.UI
         /// An additive soft beam; <paramref name="intensity"/> lifts its vertex colours above one so the bloom catches
         /// it. Width and colours are set by the caller.
         /// </summary>
-        public static LineRenderer Line(Transform parent, string name, int points, bool loop, float intensity = 1f)
+        public static LineRenderer Line(Transform parent, string name, int points, bool loop, float intensity = 1f, CutsceneSprite sprite = CutsceneSprite.BeamSoft)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
@@ -144,7 +153,9 @@ namespace Game.UI
             line.useWorldSpace = true;
             line.loop = loop;
             line.positionCount = points;
-            line.sharedMaterial = Additive(SoftBand(), Color.white * intensity);
+            line.sharedMaterial = Additive(Sprite(sprite, SoftBand()), Color.white * intensity);
+            // The beam sprite tiles along the line; a trail sprite is stretched once from head to tail.
+            line.textureMode = sprite == CutsceneSprite.BeamSoft ? LineTextureMode.Tile : LineTextureMode.Stretch;
             line.shadowCastingMode = ShadowCastingMode.Off;
             line.receiveShadows = false;
             line.numCapVertices = 2;

@@ -29,6 +29,7 @@ namespace Game.Editor
         private const int PlanetLowMapSize = 2048;
         private const int VfxMapSize = 2048;
         private const int VfxLowMapSize = 1024;
+        private const string GlossSuffix = "_Gloss";
 
         // Hero assets whose maps are painted larger than the usual 1024 (High, Low), by export folder.
         private static readonly Dictionary<string, (int High, int Low)> MapSizeOverrides = new Dictionary<string, (int High, int Low)>
@@ -86,6 +87,19 @@ namespace Game.Editor
             return folder == MenuIslandAsset || folder == MenuMouthAsset || folder == UiDisplayAsset;
         }
 
+        // Round 26: the cave kit and the Burrower eyes (static, read by the cutscene builder), the cutscene sprites and the
+        // theme skies (lat-long cubemaps).
+        public const string UndergroundFolder = "Underground";
+        public const string CutsceneFxFolder = "Cutscene_FX";
+        public const string SkiesFolder = "Skies";
+        private const int SkyMapSize = 2048;
+        private const int SkyLowMapSize = 512;
+        private const int CutsceneFxMapSize = 1024;
+        private const int CutsceneFxLowMapSize = 512;
+        private static bool IsUnderground(string path) => IsOurs(path) && ExportFolder(path) == UndergroundFolder;
+        private static bool IsCutsceneFx(string path) => IsOurs(path) && ExportFolder(path) == CutsceneFxFolder;
+        private static bool IsSky(string path) => IsOurs(path) && ExportFolder(path) == SkiesFolder;
+
         // Round 25b: markers, bars, projectiles, debris, the scout and the particle atlas.
         private static bool IsMarker(string path) => IsOurs(path) && BlenderMarkerCatalog.Contains(ExportFolder(path));
 
@@ -130,6 +144,14 @@ namespace Game.Editor
             {
                 importer.animationType = ModelImporterAnimationType.None;
                 importer.importAnimation = false;
+            }
+
+            if (IsUnderground(assetPath))
+            {
+                // Static kit and eyes: no rig, no takes; the builder and the cave read the meshes (eye rig colours, crevices).
+                importer.animationType = ModelImporterAnimationType.None;
+                importer.importAnimation = false;
+                importer.isReadable = true;
             }
 
             if (IsMarker(assetPath))
@@ -255,6 +277,18 @@ namespace Game.Editor
                 return;
             }
 
+            if (IsCutsceneFx(assetPath))
+            {
+                PreprocessCutsceneFxTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
+            if (IsSky(assetPath))
+            {
+                PreprocessSkyTexture(importer, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             if (IsVfx(assetPath))
             {
                 PreprocessVfxTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
@@ -323,6 +357,48 @@ namespace Game.Editor
             {
                 importer.textureCompression = TextureImporterCompression.Compressed;
             }
+        }
+
+        // Cutscene_FX_report.json: greyscale sprites with RGB = A, tinted additively by the code, so linear data; the beam
+        // tiles along U, the gate field along V, everything else clamps.
+        private static void PreprocessCutsceneFxTexture(TextureImporter importer, string file, bool low)
+        {
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = false;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.alphaIsTransparency = false;
+            importer.mipmapEnabled = true;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.anisoLevel = 1;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            if (file == "FX_BeamSoft")
+            {
+                importer.wrapModeU = TextureWrapMode.Repeat;
+                importer.wrapModeV = TextureWrapMode.Clamp;
+            }
+            else if (file == "FX_GateField")
+            {
+                importer.wrapModeU = TextureWrapMode.Clamp;
+                importer.wrapModeV = TextureWrapMode.Repeat;
+            }
+
+            importer.maxTextureSize = low ? CutsceneFxLowMapSize : CutsceneFxMapSize;
+            importer.textureCompression = TextureImporterCompression.CompressedHQ;
+        }
+
+        // Skies_report.json: equirectangular skies imported as cubemaps (lat-long layout), sRGB, with mips for the
+        // reflection roughness.
+        private static void PreprocessSkyTexture(TextureImporter importer, bool low)
+        {
+            importer.textureType = TextureImporterType.Default;
+            importer.textureShape = TextureImporterShape.TextureCube;
+            importer.generateCubemap = TextureImporterGenerateCubemap.Cylindrical;
+            importer.sRGBTexture = true;
+            importer.alphaSource = TextureImporterAlphaSource.None;
+            importer.mipmapEnabled = true;
+            importer.filterMode = FilterMode.Trilinear;
+            importer.maxTextureSize = low ? SkyLowMapSize : SkyMapSize;
+            importer.textureCompression = TextureImporterCompression.Compressed;
         }
 
         // The menu island's ground height (16-bit grey): read on the CPU by MenuTerrain, so it stays readable, linear,
@@ -448,8 +524,8 @@ namespace Game.Editor
                 return;
             }
 
-            // The cloud shader reads the cover from alpha, the mask carries the land ids there.
-            if (file.EndsWith("_Clouds", StringComparison.Ordinal) || file.EndsWith("_Mask", StringComparison.Ordinal))
+            // The cloud shader reads the cover from alpha, the mask carries the land ids there, a baked gloss map the smoothness.
+            if (file.EndsWith("_Clouds", StringComparison.Ordinal) || file.EndsWith("_Mask", StringComparison.Ordinal) || file.EndsWith(GlossSuffix, StringComparison.Ordinal))
             {
                 importer.alphaSource = TextureImporterAlphaSource.FromInput;
             }

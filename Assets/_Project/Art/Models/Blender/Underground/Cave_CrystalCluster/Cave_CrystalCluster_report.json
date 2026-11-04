@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_CrystalCluster",
+  "round": 26,
+  "game_tris": 1500,
+  "source_tris": 70240,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 70,
+    "folded_fallback_faces": 8,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.602,
+    "world_per_uv": 1.9788824697570184
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 16.5,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 28.3,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.0,
+    0.92,
+    1.203
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "UndergroundSet.BuildCrystals (PropKind.Crystal x5, UndergroundSet.cs:149-175); keeps the lights"
+}

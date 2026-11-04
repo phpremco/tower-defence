@@ -170,6 +170,11 @@ namespace Game.Editor
                     new DecorRow(PropKind.Mushroom, FloraLime, "Env/Flora_Mushroom"),
                     new DecorRow(PropKind.Egg, EggAmber, "Env/Egg_Cluster"),
                     new DecorRow(PropKind.Scree, CrystalPink, "Env/Scree_Patch"),
+                    // README round 26: the fallbacks PropScatterBuilder asked for (three round-17 pieces and a violet frost drift).
+                    new DecorRow(PropKind.IceShard, NorthIce, "Env/NorthernCrown/North_Decor_IceShard"),
+                    new DecorRow(PropKind.Snowdrift, CrystalPink, "Env/Decor_Snowdrift"),
+                    new DecorRow(PropKind.DeadTree, MireTeal, "Env/Mirewood/Mire_Flora_DeadTree"),
+                    new DecorRow(PropKind.Reed, FloraLime, "Env/Mirewood/Mire_Flora_Reed"),
                 },
                 Scatter = new[] { "Env/Scatter_Pebbles", "Env/Scatter_CrystalSplinters", "Env/Scatter_Pebbles" },
                 NestScatter = new[] { "Env/Scatter_ShellFragments" },

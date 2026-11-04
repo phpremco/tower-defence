@@ -73,7 +73,7 @@ namespace Game.UI
                 float longitude = Mathf.Lerp(-55f, 55f, CutsceneMath.Hash(i, 51));
                 float latitude = Mathf.Lerp(-50f, 55f, CutsceneMath.Hash(i, 53));
                 _glintDirections.Add(PlanetCoordinates.ToDirection(longitude, latitude));
-                _glints.Add(SpaceKit.Glow(root, $"Glint{i}", GlintColour));
+                _glints.Add(SpaceKit.Glow(root, $"Glint{i}", GlintColour, CutsceneSprite.Glint));
             }
         }
 

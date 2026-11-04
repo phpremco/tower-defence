@@ -1,0 +1,39 @@
+{
+  "asset": "Decor_Snowdrift",
+  "game_tris": 998,
+  "source_tris": 92408,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 42,
+    "folded_fallback_faces": 4,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.826,
+    "world_per_uv": 1.7168777045941037
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 14.3,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 24.5,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.466,
+    0.933,
+    0.376
+  ],
+  "round": 26,
+  "prop_kind": "Snowdrift",
+  "replaces": "North_Decor_Snowdrift as the Crystal Plains fallback (PropScatterBuilder.cs:283-323)"
+}

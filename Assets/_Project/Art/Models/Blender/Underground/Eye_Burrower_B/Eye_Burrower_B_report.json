@@ -1,0 +1,51 @@
+{
+ "asset": "Eye_Burrower_B",
+ "round": 26,
+ "game_tris": 422,
+ "texture_size": 512,
+ "low_texture_size": 256,
+ "maps": [
+  "Albedo",
+  "Normal",
+  "Emission",
+  "Mask"
+ ],
+ "materials": [
+  "Eye_Burrower_B_Eye",
+  "Eye_Burrower_B_Cornea"
+ ],
+ "size_m": [
+  1.528,
+  0.609,
+  1.544
+ ],
+ "variant": "ember, horizontal bar pupil, brow spines",
+ "unit": "1 m wide slit: scale = 2 * EyeField.EyeWidth * size (0.15 per unit size)",
+ "pivot": "eyeball centre; the eye looks along local +Z in Unity",
+ "shape_keys": [
+  "Blink",
+  "LookLeft",
+  "LookRight",
+  "LookUp",
+  "LookDown"
+ ],
+ "rig": {
+  "Blink": {
+   "upper_lid_deg": 27.5,
+   "lower_lid_deg": 18.9
+  },
+  "Look": {
+   "deg": 22.0,
+   "up_down_deg": 15.4
+  },
+  "axis_unity": [
+   -0.9397,
+   0.342,
+   -0.0
+  ],
+  "unity_rule": "turn the EyeRig.R vertices about axis_unity through the pivot so the upper lid's front edge moves down by upper_lid_deg x blink, the EyeRig.G vertices so the lower lid's edge moves up by lower_lid_deg x blink; EyeRig.B vertices turn by Look.deg for a look"
+ },
+ "vertex_colours": "EyeRig: R upper lid, G lower lid, B eyeball + cornea (rotate about rig.axis_unity through the pivot: lids by Blink deg x weight, eyeball for looks)",
+ "emission": "iris only, meant for EyeField.Emission 5 (HDR) with bloom",
+ "replaces": "UI/Cutscene/EyeField.cs:74,122 (diamond slit quads)"
+}

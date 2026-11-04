@@ -18,8 +18,19 @@ namespace Game.Editor
         private const string CutsceneCastPath = CutsceneFolder + "/CutsceneCast.asset";
         private const string HandoffDifficultyName = "Easy";
         private const float HandoffFieldOfView = 14f;
-        // The one camera kick of the cutscene, when the capsule hits the ground; every rumble is told by sound and dust alone.
+        // The camera only kicks on a real impact, once in a shot and briefly: the capsule hitting the ground, the drill bit
+        // biting into it, the ground bursting open under the swarm. Every other rumble is told by sound and dust alone.
         private const float LandingKick = 0.25f;
+        private const float DrillKick = 0.18f;
+        private const float BurstKick = 0.3f;
+
+        // When the drill bit reaches the ground in its shot (FieldSet: the sink runs 0.2..0.85 of 10 s, contact at 0.27 of it).
+        private const float DrillContactSeconds = 3.75f;
+
+        // When the burrows burst in the swarm shot (FieldSwarm: they start to open at 0.4 s, 0.8 s apart, burst 1.8 s in).
+        private static readonly float[] BurstSeconds = { 2.2f, 3f, 3.8f, 4.6f };
+        private const int SwarmWalkers = 40;
+        private const int SwarmFlyers = 8;
 
         /// <summary>One shot as the generator writes it.</summary>
         private sealed class ShotSpec
@@ -105,6 +116,16 @@ namespace Game.Editor
             }
 
             so.FindProperty("_screamer").objectReferenceValue = context.Bestiary.Queen;
+            SerializedProperty flyers = so.FindProperty("_flyers");
+            var wings = new[] { context.Bestiary.Shalebat, context.Bestiary.Skyray };
+            flyers.arraySize = wings.Length;
+            for (int i = 0; i < wings.Length; i++)
+            {
+                flyers.GetArrayElementAtIndex(i).objectReferenceValue = wings[i];
+            }
+
+            so.FindProperty("_flyerCount").intValue = SwarmFlyers;
+            so.FindProperty("_swarmCount").intValue = SwarmWalkers;
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
             so.FindProperty("_earthPlanet").boxedValue = PlanetStyle.Earth();
@@ -236,16 +257,13 @@ namespace Game.Editor
                 },
                 new ShotSpec
                 {
-                    Set = CutsceneSet.Field, Action = CutsceneAction.BaseUnfolds, Seconds = 14f, FadeIn = 0.6f, FadeOut = 0.6f,
+                    // The builders bring every module down from above; FieldBase sounds the clank as each one touches down.
+                    Set = CutsceneSet.Field, Action = CutsceneAction.BaseUnfolds, Seconds = 18f, FadeIn = 0.6f, FadeOut = 0.6f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Base, new Vector3(-6f, 6.5f, 9f), new Vector3(0f, 0.6f, 0f), 44f),
-                        Key(0.5f, CameraAnchor.Base, new Vector3(0f, 7.5f, 10.5f), new Vector3(0f, 0.6f, -0.3f), 42f),
-                        Key(1f, CameraAnchor.Base, new Vector3(6.5f, 6.5f, 8f), new Vector3(0.5f, 0.8f, 0f), 40f),
-                    },
-                    Cues = new[]
-                    {
-                        Clank(0.7f), Clank(3.1f), Clank(5f), Clank(7.7f), Clank(9.1f), Clank(10.5f),
+                        Key(0f, CameraAnchor.Base, new Vector3(-5f, 4.2f, 6.5f), new Vector3(0f, 1.2f, 0f), 46f),
+                        Key(0.5f, CameraAnchor.Base, new Vector3(0f, 5f, 7.5f), new Vector3(0f, 1.2f, -0.3f), 44f),
+                        Key(1f, CameraAnchor.Base, new Vector3(5f, 4.2f, 6f), new Vector3(0.5f, 1.3f, 0f), 44f),
                     },
                 },
                 new ShotSpec
@@ -257,15 +275,16 @@ namespace Game.Editor
                         Key(0f, CameraAnchor.Drill, new Vector3(-3.5f, 0.8f, -3f), new Vector3(0f, 3.2f, 0f), 52f),
                         Key(1f, CameraAnchor.Drill, new Vector3(-5.5f, 2.6f, -5.5f), new Vector3(0f, 1f, 0f), 45f),
                     },
-                    Cues = new[] { Sound(2f, CutsceneSound.Earthquake, 0.8f) },
+                    Cues = new[] { Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) },
                 },
                 new ShotSpec
                 {
                     Set = CutsceneSet.Field, Action = CutsceneAction.DronesHarvest, Seconds = 10f, FadeIn = 0.4f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Drill, new Vector3(-3f, 2.2f, 6.5f), new Vector3(0.5f, 2.8f, 3f), 44f),
-                        Key(1f, CameraAnchor.Drill, new Vector3(-3.5f, 2.6f, 8.5f), new Vector3(0f, 2.6f, 4f), 42f),
+                        // The heap beside the drill, where the haulers dip down for their ore.
+                        Key(0f, CameraAnchor.Drill, new Vector3(-6.5f, 2.8f, 4.5f), new Vector3(-1.2f, 1.4f, 0.8f), 46f),
+                        Key(1f, CameraAnchor.Drill, new Vector3(-7.5f, 3.4f, 6.5f), new Vector3(-1f, 1.6f, 1.5f), 44f),
                     },
                     Cues = new[] { Sound(0.5f, CutsceneSound.DroneHarvest, 0.4f) },
                 },
@@ -275,8 +294,8 @@ namespace Game.Editor
                     Keys = new[]
                     {
                         // Written from the core, so the shot finds it whether the procedural cage or the imported base carries it.
-                        Key(0f, CameraAnchor.Core, new Vector3(-4f, 3f, 6.1f), new Vector3(0f, 1f, 0f), 42f),
-                        Key(1f, CameraAnchor.Core, new Vector3(-2.3f, 2.3f, 4.4f), new Vector3(0f, 1f, 0f), 36f),
+                        Key(0f, CameraAnchor.Core, new Vector3(-4f, 3f, 6.1f), new Vector3(0f, 2f, 0f), 42f),
+                        Key(1f, CameraAnchor.Core, new Vector3(-2.3f, 2.3f, 4.4f), new Vector3(0f, 1.4f, 0f), 36f),
                     },
                     Cues = new[] { Sound(3.4f, CutsceneSound.CoreIgnite, 1f) },
                 },
@@ -323,21 +342,35 @@ namespace Game.Editor
                         Key(0.55f, CameraAnchor.Entrance, new Vector3(5f, 2.2f, 8.5f), new Vector3(1.4f, 1.6f, 1.2f), 40f),
                         Key(1f, CameraAnchor.Entrance, new Vector3(4f, 3.5f, 10f), new Vector3(0f, 0.5f, 3f), 45f),
                     },
+                    // One burst after another (the first one kicks the camera), the scream, then the drums as they storm the gate.
                     Cues = new[]
                     {
-                        Sound(0.6f, CutsceneSound.Emerge, 0.7f), Sound(1.4f, CutsceneSound.Emerge, 0.7f), Sound(2.6f, CutsceneSound.Emerge, 0.8f),
+                        Sound(BurstSeconds[0], CutsceneSound.Emerge, 0.9f), Shake(BurstSeconds[0], BurstKick), Sound(BurstSeconds[1], CutsceneSound.Emerge, 0.75f),
+                        Sound(BurstSeconds[2], CutsceneSound.Emerge, 0.8f), Sound(BurstSeconds[3], CutsceneSound.Emerge, 0.7f),
                         Sound(6f, CutsceneSound.Scream, 1f), Sound(8.5f, CutsceneSound.Drums, 0.8f),
                     },
                 },
                 new ShotSpec
                 {
+                    // Close on the commander at his dig site past the gate: the swarm storms it behind him; he cannot believe it.
+                    Set = CutsceneSet.Field, Action = CutsceneAction.MercerReacts, Seconds = 5.5f,
+                    Keys = new[]
+                    {
+                        Key(0f, CameraAnchor.DigSite, new Vector3(2.2f, 1.6f, 1.6f), new Vector3(0f, 1.45f, -0.4f), 38f),
+                        Key(1f, CameraAnchor.DigSite, new Vector3(1.6f, 1.5f, 0.9f), new Vector3(0f, 1.5f, -0.9f), 32f),
+                    },
+                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(3.2f, CutsceneSound.Scream, 0.6f) },
+                },
+                new ShotSpec
+                {
+                    // Back to the gate at a run, round behind its field to face the crowd clawing at it, the blaster up.
                     Set = CutsceneSet.Field, Action = CutsceneAction.GateStand, Timing = ShotTiming.AfterDialogue, Seconds = 2.5f, CameraSeconds = 10f,
                     Dialogue = gate, DialogueDelay = 6.5f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Gate, new Vector3(3.8f, 2.4f, -1.4f), new Vector3(-4f, 0.8f, 1f), 46f),
-                        Key(0.5f, CameraAnchor.Gate, new Vector3(2.4f, 1.7f, -0.8f), new Vector3(0f, 1.1f, 1.5f), 42f),
-                        Key(1f, CameraAnchor.Gate, new Vector3(2.2f, 1.6f, -0.6f), new Vector3(-0.6f, 1.1f, 4f), 42f),
+                        Key(0f, CameraAnchor.Gate, new Vector3(4.2f, 2.6f, -5.5f), new Vector3(0f, 0.8f, -2f), 46f),
+                        Key(0.5f, CameraAnchor.Gate, new Vector3(1.8f, 2.1f, -5.2f), new Vector3(-0.2f, 1.1f, 0.5f), 44f),
+                        Key(1f, CameraAnchor.Gate, new Vector3(1.1f, 1.9f, -4.8f), new Vector3(-0.3f, 1.1f, 2.5f), 42f),
                     },
                     Cues = new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) },
                 },
@@ -346,7 +379,7 @@ namespace Game.Editor
                     Set = CutsceneSet.Field, Action = CutsceneAction.Handoff, Seconds = 7f, FadeOut = 1.4f, Letterbox = false, Title = "Defend the base",
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Gate, new Vector3(2.2f, 1.6f, -0.6f), new Vector3(-0.6f, 1.1f, 4f), 42f),
+                        Key(0f, CameraAnchor.Gate, new Vector3(1.1f, 1.9f, -4.8f), new Vector3(-0.3f, 1.1f, 2.5f), 42f),
                         Key(1f, CameraAnchor.Gate, Vector3.zero, Vector3.zero, HandoffFieldOfView, CameraKeyMode.MatchLevelRig),
                     },
                 },
@@ -361,9 +394,6 @@ namespace Game.Editor
         private static CutsceneCue Sound(float at, CutsceneSound sound, float strength) => new CutsceneCue { At = at, Kind = CueKind.Sound, Sound = sound, Strength = strength };
 
         private static CutsceneCue Shake(float at, float strength) => new CutsceneCue { At = at, Kind = CueKind.Shake, Strength = strength };
-
-        // The clank of a base module springing up, timed to the unfold shares in FieldBase.
-        private static CutsceneCue Clank(float at) => Sound(at, CutsceneSound.BuildClank, 0.6f);
 
         private static void WriteShots(SerializedProperty array, ShotSpec[] shots)
         {

@@ -75,6 +75,15 @@ namespace Game.UI
             }
         }
 
+        /// <summary>The cloud deck takes its colour from its map (a painted smog deck); no deck, no change.</summary>
+        public void TintCloudsFromMap()
+        {
+            if (_cloudMaterial != null)
+            {
+                PlanetMaterials.SetCloudMapColour(_cloudMaterial, 1f);
+            }
+        }
+
         public void Pose(float time)
         {
             _surface.localRotation = _tilt * Quaternion.AngleAxis(-time * _degreesPerSecond, Vector3.up);

@@ -31,9 +31,9 @@ namespace Game.UI
             _style = style;
             _towardsSun = -sunTravel.normalized;
             _sky = BuildSky(root, style, low);
-            _halo = SpaceKit.Glow(root, "SunHalo", style.SunHalo);
-            _sun = SpaceKit.Glow(root, "SunCore", style.SunCore);
-            _streak = SpaceKit.Glow(root, "SunStreak", style.SunHalo * 0.6f);
+            _halo = SpaceKit.Glow(root, "SunHalo", style.SunHalo, CutsceneSprite.SunHalo);
+            _sun = SpaceKit.Glow(root, "SunCore", style.SunCore, CutsceneSprite.SunCore);
+            _streak = SpaceKit.Glow(root, "SunStreak", style.SunHalo * 0.6f, CutsceneSprite.SunStreak);
             BuildRimLight(root, sunTravel, style);
         }
 

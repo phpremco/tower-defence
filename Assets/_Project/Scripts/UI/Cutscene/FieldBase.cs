@@ -8,15 +8,17 @@ using UnityEngine.Rendering;
 namespace Game.UI
 {
     /// <summary>
-    /// The base the colony unfolds on the field: the command post, the landing platform, the energy core and the
-    /// road gates. In the timelapse each module springs out of the ground in turn (scale and turn, a puff of dust)
-    /// while builder drones hover and weld; later a crystal goes into the core and it ignites. With the level's
-    /// imported (Blender) base and gate the model's own modules rise in its timelapse order and the gates wear their
-    /// first level's model; otherwise the procedural pieces stand in. Posed from the shot's progress alone.
+    /// The base the colony builds on the field: the command post, the landing platform, the energy core and the road
+    /// gates. In the timelapse the builder drones bring every module down from above, folded small under their bellies,
+    /// set it down where it belongs, and it unfolds to full size there while they weld it; then they climb away for the
+    /// next one and at the end land beside the base. The drones fly one continuous path through the whole shot (eased
+    /// between the stops), so nothing jumps between modules. The core's crystal is not built: a hauler brings it later
+    /// (<see cref="PoseCrystal"/>) and the core lights up. With the level's imported (Blender) base and gate the model's
+    /// own modules come in its timelapse order; otherwise the procedural pieces stand in. Posed from progress alone.
     /// </summary>
     public sealed class FieldBase
     {
-        private const float UnfoldShare = 0.12f;
+        private const float UnfoldShare = 0.1f;
         private const float UnfoldTurnDegrees = 80f;
         private const float GateOverhang = 0.3f;
         private const float GateBeamHeight = 1.08f;
@@ -32,24 +34,47 @@ namespace Game.UI
         private const float CoreLightIntensity = 2.6f;
         private const float CoreLightRange = 7f;
         private const float CorePulseSpeed = 2.2f;
-        private const float BuilderOrbit = 1.6f;
-        private const float BuilderHeight = 1.8f;
-        private const float BuilderClearance = 0.6f;
-        private const float BuilderTransitShare = 0.05f;
-        private const float BuilderTransitOfGap = 0.6f;
-        private const float BuilderHop = 0.6f;
-        private const float BuilderBob = 0.06f;
-        private const float BuilderBobSpeed = 2.2f;
-        private const float BuilderPitch = 3f;
-        private const float BuilderBankShare = 0.1f;
-        private const float BuilderMaxBank = 9f;
-        private const float RotorDegreesPerSecond = 2400f;
         private const int DustBurst = 40;
         private const float SparkRate = 40f;
 
-        // The imported base's modules rise one after another over this share of the timelapse, the gates after them.
-        private const float ArtModulesFrom = 0.03f;
-        private const float ArtModulesTo = 0.48f;
+        // The drops, every module and gate evenly over this share of the timelapse, in build order.
+        private const float DropsFrom = 0.06f;
+        private const float DropsTo = 0.8f;
+
+        // A module rides folded under its drone, no wider than this.
+        private const float CarriedSize = 0.9f;
+        private const float Hang = 0.9f;
+        private const float TetherWidth = 0.09f;
+        private const float TetherIntensity = 2.2f;
+        private static readonly Color TetherColour = new Color(0.45f, 0.85f, 1f);
+
+        // The flight legs, as shares of the timelapse: down from above with a module, weld beside it while it unfolds, up
+        // again for the next; at the end the flock lands beside the base.
+        private const float FlyDown = 0.11f;
+        private const float Weld = 0.07f;
+        private const float FlyUp = 0.07f;
+        private const float ParkShare = 0.08f;
+        private const float SupplyHeight = 8f;
+        private const float DownArc = 0.6f;
+        private const float UpArc = 1.2f;
+        private const float HeadingProbe = 0.004f;
+        private const float BuilderScale = 1.8f;
+        private const float BuilderOrbit = 1.6f;
+        private const float BuilderHeight = 1.4f;
+        private const float BuilderClearance = 0.7f;
+        private const float BuilderBob = 0.06f;
+        private const float BuilderBobSpeed = 2.2f;
+        private const float BuilderMaxBank = 12f;
+        private const float BuilderBankPerDegree = 0.4f;
+        private const float BuilderPitchPerSpeed = 0.06f;
+        private const float BuilderMaxPitch = 10f;
+        private const float RotorDegreesPerSecond = 2400f;
+        private const float ParkRing = 3.2f;
+        private const float ParkHeight = 0.2f;
+        private const int Builders = 4;
+
+        // The crystal rides under the hauler at this share of its size and settles into the core as it is inserted.
+        public const float CrystalCarriedShare = 0.7f;
 
         // The procedural pad's top, where the haulers start.
         private const float PadHeight = 0.4f;
@@ -60,36 +85,75 @@ namespace Game.UI
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color DustColour = new Color(0.55f, 0.58f, 0.62f, 0.4f);
         private static readonly Color SparkColour = new Color(1f, 0.85f, 0.45f);
+        private static readonly CutsceneCue Clank = new CutsceneCue { Kind = CueKind.Sound, Sound = CutsceneSound.BuildClank, Strength = 0.6f };
 
         private readonly List<Module> _modules = new List<Module>();
-        private readonly List<CutsceneDrone> _builders = new List<CutsceneDrone>();
-        private readonly List<ParticleSystem> _builderSparks = new List<ParticleSystem>();
+        private readonly List<Builder> _builders = new List<Builder>();
         private readonly List<Material> _gateFields = new List<Material>();
+        private readonly List<CrystalPart> _crystalParts = new List<CrystalPart>();
+        private readonly CutsceneAudio _audio;
+        private readonly Vector3 _baseCentre;
         private Material _crystal;
         private Color _crystalLit;
         private Color _coreColour;
         private Light _coreLight;
         private GameObject _corePool;
-        private Transform _crystalTransform;
+        private Transform _crystalSpin;
         private Quaternion _crystalRest = Quaternion.identity;
         private Transform _dish;
         private Quaternion _dishRest;
         private float _dishDegreesPerSecond;
         private Vector3 _coreSocket;
+        private float _crystalTop;
         private float _lastUnfold;
 
-        /// <summary>One piece of the base, standing at its place and unfolding from its start share of the timelapse.</summary>
+        /// <summary>One piece of the base: where it stands when built and when in the timelapse it is set down.</summary>
         private sealed class Module
         {
             public Transform Root;
-            public Quaternion Rotation;
-            public Vector3 Scale;
+            public Vector3 RestPosition;
+            public Quaternion RestRotation;
+            public Vector3 RestScale;
             public bool Turns;
             public float Start;
             public Vector3 Centre;
             public float Top;
             public float Reach;
+            public float Carried;
+            public int Drone = -1;
+            public float Pick = 2f;
             public ParticleSystem Dust;
+
+            // The module's far mesh (its LOD twin) and any other mesh of the same piece: posed exactly like Root.
+            public Transform[] Twins = new Transform[0];
+        }
+
+        /// <summary>A transform of the crystal at rest, so it can ride under the hauler and be put back.</summary>
+        private struct CrystalPart
+        {
+            public Transform Transform;
+            public Vector3 Position;
+            public Vector3 Scale;
+        }
+
+        /// <summary>One leg of a builder's flight: from a point to a point over a share of the timelapse.</summary>
+        private struct Leg
+        {
+            public float From;
+            public float To;
+            public Vector3 Start;
+            public Vector3 End;
+            public float Arc;
+            public int Carry;
+            public int Welds;
+        }
+
+        private sealed class Builder
+        {
+            public CutsceneDrone Drone;
+            public ParticleSystem Sparks;
+            public LineRenderer Tether;
+            public readonly List<Leg> Legs = new List<Leg>();
         }
 
         public FieldBase(Transform parent, FieldLayout layout, CutsceneContext context)
@@ -97,6 +161,8 @@ namespace Game.UI
             LevelDefinition level = layout.Level;
             VisualTheme theme = level.Theme;
             Color glow = theme.BaseColor;
+            _audio = context.Audio;
+            _baseCentre = layout.Base;
             _coreColour = Color.Lerp(theme.AccentColor, Color.white, 0.1f);
             PadTop = layout.Pad + Vector3.up * PadHeight;
 
@@ -111,41 +177,32 @@ namespace Game.UI
             }
 
             BuildGates(parent, level, layout);
+            Schedule();
             BuildBuilders(parent, context);
+            PlanFlights(layout);
         }
 
-        /// <summary>The energy core's crystal, where the delivery drone flies.</summary>
+        /// <summary>The energy core's crystal at rest, where the hauler brings it.</summary>
         public Vector3 CoreSocket => _coreSocket;
+
+        /// <summary>How far the crystal reaches above its pivot at full size, so the hauler holds it by the top.</summary>
+        public float CrystalTop => _crystalTop;
 
         /// <summary>The top of the landing pad, where the haulers take off and come home.</summary>
         public Vector3 PadTop { get; private set; }
 
-        /// <summary>Unfold share of the whole base, 0 nothing built, 1 complete; builders weld while it is between.</summary>
-        public void PoseUnfold(float progress, float time)
+        /// <summary>Timelapse share of the whole base, 0 nothing built, 1 complete; the builders fly while it runs.</summary>
+        public void PoseUnfold(float progress, float time, bool visible)
         {
-            int building = -1;
             for (int i = 0; i < _modules.Count; i++)
             {
+                PoseModule(_modules[i], progress);
+                // A clank and a puff of dust as a module touches down; only when played forward, never on a seek.
                 Module module = _modules[i];
-                float u = CutsceneMath.Span(progress, module.Start, module.Start + UnfoldShare);
-                module.Root.gameObject.SetActive(u > 0f);
-                float grow = CutsceneMath.OutBack(u);
-                float spread = Mathf.Lerp(0.55f, 1f, CutsceneMath.Smooth(u));
-                module.Root.localScale = Vector3.Scale(module.Scale, new Vector3(spread, Mathf.Max(0.01f, grow), spread));
-                if (module.Turns)
-                {
-                    module.Root.rotation = module.Rotation * Quaternion.Euler(0f, (1f - CutsceneMath.Smooth(u)) * UnfoldTurnDegrees, 0f);
-                }
-
-                if (u > 0f && u < 1f)
-                {
-                    building = i;
-                }
-
-                // A puff of dust as a module breaks out of the ground; only when played forward, never on a seek.
                 if (_lastUnfold < module.Start && progress >= module.Start && progress - _lastUnfold < UnfoldShare)
                 {
                     module.Dust.Emit(DustBurst);
+                    _audio.Play(Clank);
                 }
             }
 
@@ -155,18 +212,45 @@ namespace Game.UI
                 _dish.localRotation = _dishRest * Quaternion.AngleAxis(time * _dishDegreesPerSecond, Vector3.up);
             }
 
-            PoseBuilders(building, progress, time);
+            for (int i = 0; i < _builders.Count; i++)
+            {
+                PoseBuilder(_builders[i], i, progress, time, visible);
+            }
         }
 
-        /// <summary>The core's glow, 0 dim to 1 fully lit; lit cores pulse gently.</summary>
-        public void PoseCore(float ignite, float time)
+        /// <summary>
+        /// The core's glow, 0 dim to 1 fully lit (lit cores pulse gently); the crystal itself glows at least
+        /// <paramref name="crystalGlow"/>, so the Crysium the hauler brings already shines on its way in.
+        /// </summary>
+        public void PoseCore(float ignite, float crystalGlow, float time)
         {
             float pulse = 1f + 0.12f * Mathf.Sin(time * CorePulseSpeed) * ignite;
-            float emission = Mathf.Lerp(CoreDimEmission, CoreLitEmission, ignite * ignite) * pulse;
+            float glow = Mathf.Max(ignite, crystalGlow);
+            float emission = Mathf.Lerp(CoreDimEmission, CoreLitEmission, glow * glow) * pulse;
             _crystal.SetColor(EmissionColorId, _crystalLit * (emission / CoreLitEmission));
             _coreLight.intensity = CoreLightIntensity * ignite * pulse;
             _corePool.SetActive(ignite > 0.05f);
-            _crystalTransform.localRotation = _crystalRest * Quaternion.Euler(0f, time * 20f * ignite, 0f);
+            if (_crystalSpin != null)
+            {
+                _crystalSpin.localRotation = _crystalRest * Quaternion.Euler(0f, time * 20f * ignite, 0f);
+            }
+        }
+
+        /// <summary>
+        /// The crystal: hidden, riding under the hauler with its top at <paramref name="carriedTop"/> (when
+        /// <paramref name="carried"/>), or sliding into its socket as <paramref name="insert"/> goes from 0 to 1.
+        /// </summary>
+        public void PoseCrystal(bool carried, Vector3 carriedTop, float insert)
+        {
+            bool shown = carried || insert > 0f;
+            float share = carried ? CrystalCarriedShare : Mathf.Lerp(CrystalCarriedShare, 1f, CutsceneMath.Smooth(insert));
+            Vector3 lift = carried ? carriedTop - (_coreSocket + Vector3.up * (_crystalTop * share)) : Vector3.zero;
+            foreach (CrystalPart part in _crystalParts)
+            {
+                part.Transform.gameObject.SetActive(shown);
+                part.Transform.position = _coreSocket + (part.Position - _coreSocket) * share + lift;
+                part.Transform.localScale = part.Scale * share;
+            }
         }
 
         /// <summary>Slides the scanlines of the gate fields.</summary>
@@ -178,12 +262,242 @@ namespace Game.UI
             }
         }
 
-        public void HideBuilders()
+        private void PoseModule(Module module, float progress)
         {
-            for (int i = 0; i < _builders.Count; i++)
+            PoseRoot(module, progress);
+            foreach (Transform twin in module.Twins)
             {
-                _builders[i].Holder.gameObject.SetActive(false);
-                ParticleKit.SetRate(_builderSparks[i], 0f);
+                twin.gameObject.SetActive(module.Root.gameObject.activeSelf);
+                twin.SetPositionAndRotation(module.Root.position, module.Root.rotation);
+                twin.localScale = module.Root.localScale;
+            }
+        }
+
+        private void PoseRoot(Module module, float progress)
+        {
+            if (progress < module.Pick)
+            {
+                module.Root.gameObject.SetActive(false);
+                return;
+            }
+
+            module.Root.gameObject.SetActive(true);
+            if (progress < module.Start && module.Drone >= 0)
+            {
+                // Riding folded under its drone: the module's top hangs just below the drone, its middle under the belly.
+                Vector3 drone = Position(_builders[module.Drone], progress);
+                Vector3 top = drone - Vector3.up * Hang;
+                Vector3 offset = (module.RestPosition - new Vector3(module.Centre.x, module.Top, module.Centre.z)) * module.Carried;
+                module.Root.SetPositionAndRotation(top + offset, module.RestRotation);
+                module.Root.localScale = module.RestScale * module.Carried;
+                return;
+            }
+
+            float u = CutsceneMath.Span(progress, module.Start, module.Start + UnfoldShare);
+            float grow = Mathf.LerpUnclamped(module.Carried, 1f, CutsceneMath.OutBack(u));
+            Quaternion turn = module.Turns ? Quaternion.Euler(0f, (1f - CutsceneMath.Smooth(u)) * UnfoldTurnDegrees, 0f) : Quaternion.identity;
+            module.Root.SetPositionAndRotation(module.RestPosition, module.RestRotation * turn);
+            module.Root.localScale = module.RestScale * Mathf.Max(0.01f, grow);
+        }
+
+        // Each module in build order gets an even drop time and the next drone in turn; how small it folds follows its size.
+        private void Schedule()
+        {
+            for (int i = 0; i < _modules.Count; i++)
+            {
+                Module module = _modules[i];
+                module.Start = Mathf.Lerp(DropsFrom, DropsTo, _modules.Count > 1 ? i / (float)(_modules.Count - 1) : 0f);
+                float width = Mathf.Max(0.1f, module.Reach * 2f);
+                module.Carried = Mathf.Min(1f, CarriedSize / width);
+            }
+        }
+
+        // One continuous path per drone: it waits high above with its first module, comes down to set it, welds beside it,
+        // climbs to above its next module, and so on; after its last it lands at its own spot beside the base.
+        private void PlanFlights(FieldLayout layout)
+        {
+            if (_builders.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _modules.Count; i++)
+            {
+                _modules[i].Drone = i % _builders.Count;
+            }
+
+            for (int d = 0; d < _builders.Count; d++)
+            {
+                Builder builder = _builders[d];
+                float time = 0f;
+                Vector3 at = Vector3.zero;
+                bool first = true;
+                for (int i = 0; i < _modules.Count; i++)
+                {
+                    Module module = _modules[i];
+                    if (module.Drone != d)
+                    {
+                        continue;
+                    }
+
+                    Vector3 drop = Drop(module);
+                    Vector3 supply = drop + Vector3.up * SupplyHeight;
+                    float down = Mathf.Max(time, module.Start - FlyDown);
+                    if (first)
+                    {
+                        // It waits up there with its first module from the start of the timelapse.
+                        at = supply;
+                        first = false;
+                        Add(builder, 0f, down, supply, supply, 0f, i, -1);
+                    }
+                    else
+                    {
+                        // Up and across to above the next module; it is picked up out of sight up there.
+                        float up = Mathf.Max(time, down - FlyUp);
+                        Add(builder, time, up, at, at, 0f, -1, -1);
+                        Add(builder, up, down, at, supply, UpArc, -1, -1);
+                    }
+
+                    module.Pick = down;
+                    Add(builder, down, module.Start, supply, drop, DownArc, i, -1);
+                    Vector3 station = Station(module, d);
+                    float welded = module.Start + Weld;
+                    Add(builder, module.Start, welded, drop, station, 0f, -1, i);
+                    at = station;
+                    time = welded;
+                }
+
+                if (first)
+                {
+                    continue;
+                }
+
+                Vector3 park = Park(layout, d);
+                Add(builder, time, time + ParkShare, at, park, UpArc * 0.5f, -1, -1);
+            }
+        }
+
+        private static void Add(Builder builder, float from, float to, Vector3 start, Vector3 end, float arc, int carry, int welds)
+        {
+            if (to <= from)
+            {
+                return;
+            }
+
+            builder.Legs.Add(new Leg { From = from, To = to, Start = start, End = end, Arc = arc, Carry = carry, Welds = welds });
+        }
+
+        // Where a drone hovers to set a module down: right above its folded top at its rest place.
+        private Vector3 Drop(Module module)
+        {
+            float top = module.RestPosition.y + (module.Top - module.RestPosition.y) * module.Carried;
+            return new Vector3(module.Centre.x, top + Hang, module.Centre.z);
+        }
+
+        // A drone's welding spot at a module: round it at the module's full size, turned per drone so they do not line up.
+        private Vector3 Station(Module module, int drone)
+        {
+            float angle = (drone / (float)Builders + _modules.IndexOf(module) * 0.17f) * Mathf.PI * 2f;
+            float reach = Mathf.Max(BuilderOrbit, module.Reach + BuilderClearance);
+            float height = Mathf.Max(module.Centre.y + BuilderHeight, module.Top + BuilderClearance);
+            return new Vector3(module.Centre.x + Mathf.Cos(angle) * reach, height, module.Centre.z + Mathf.Sin(angle) * reach);
+        }
+
+        // Where a drone lands when the base stands: evenly round the command post, on the ground.
+        private Vector3 Park(FieldLayout layout, int drone)
+        {
+            float angle = (drone + 0.5f) / Builders * Mathf.PI * 2f;
+            Vector3 spot = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * ParkRing);
+            return spot + Vector3.up * ParkHeight;
+        }
+
+        private static Vector3 Position(Builder builder, float progress)
+        {
+            List<Leg> legs = builder.Legs;
+            if (legs.Count == 0)
+            {
+                return Vector3.zero;
+            }
+
+            if (progress <= legs[0].From)
+            {
+                return legs[0].Start;
+            }
+
+            foreach (Leg leg in legs)
+            {
+                if (progress <= leg.To)
+                {
+                    float eased = CutsceneMath.Smooth(CutsceneMath.Span(progress, leg.From, leg.To));
+                    return Vector3.Lerp(leg.Start, leg.End, eased) + Vector3.up * (Mathf.Sin(eased * Mathf.PI) * leg.Arc);
+                }
+            }
+
+            return legs[legs.Count - 1].End;
+        }
+
+        private static Leg LegAt(Builder builder, float progress)
+        {
+            foreach (Leg leg in builder.Legs)
+            {
+                if (progress <= leg.To)
+                {
+                    return leg;
+                }
+            }
+
+            return builder.Legs.Count > 0 ? builder.Legs[builder.Legs.Count - 1] : default;
+        }
+
+        // Nose along the way it flies (banked into turns, dipped with speed), facing the module while it welds, level and
+        // facing the base once landed.
+        private void PoseBuilder(Builder builder, int index, float progress, float time, bool visible)
+        {
+            CutsceneDrone drone = builder.Drone;
+            drone.Holder.gameObject.SetActive(visible && builder.Legs.Count > 0);
+            if (!visible || builder.Legs.Count == 0)
+            {
+                ParticleKit.SetRate(builder.Sparks, 0f);
+                builder.Tether.enabled = false;
+                return;
+            }
+
+            Leg leg = LegAt(builder, progress);
+            bool landed = progress >= builder.Legs[builder.Legs.Count - 1].To;
+            Vector3 position = Position(builder, progress);
+            Vector3 before = Position(builder, Mathf.Max(0f, progress - HeadingProbe));
+            Vector3 after = Position(builder, Mathf.Min(1f, progress + HeadingProbe));
+            Vector3 travel = Flat(after - before);
+            bool welding = leg.Welds >= 0 && !landed;
+            Quaternion facing;
+            if (welding)
+            {
+                facing = Quaternion.LookRotation(Flat(_modules[leg.Welds].Centre - position));
+            }
+            else if (travel.sqrMagnitude > 0.0004f)
+            {
+                facing = Quaternion.LookRotation(travel);
+            }
+            else
+            {
+                facing = Quaternion.LookRotation(Flat(_baseCentre - position));
+            }
+
+            float speed = travel.magnitude / (HeadingProbe * 2f);
+            float turn = Vector3.SignedAngle(Flat(position - before), Flat(after - position), Vector3.up);
+            float bank = landed ? 0f : Mathf.Clamp(turn * BuilderBankPerDegree, -BuilderMaxBank, BuilderMaxBank);
+            float pitch = landed ? 0f : Mathf.Min(BuilderMaxPitch, speed * BuilderPitchPerSpeed);
+            Vector3 bob = landed ? Vector3.zero : Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + index * 2.1f));
+            drone.Holder.SetPositionAndRotation(position + bob, facing * Quaternion.Euler(pitch, 0f, -bank));
+            ModelClipRole role = welding ? ModelClipRole.Work : landed ? ModelClipRole.Idle : ModelClipRole.Move;
+            drone.Pose(role, time + index * 0.37f, landed ? 0f : time * RotorDegreesPerSecond, false);
+            ParticleKit.SetRate(builder.Sparks, welding ? SparkRate : 0f);
+            bool carrying = leg.Carry >= 0 && progress >= _modules[leg.Carry].Pick && progress < _modules[leg.Carry].Start;
+            builder.Tether.enabled = carrying;
+            if (carrying)
+            {
+                builder.Tether.SetPosition(0, position + bob);
+                builder.Tether.SetPosition(1, position + bob - Vector3.up * Hang);
             }
         }
 
@@ -195,25 +509,30 @@ namespace Game.UI
             LevelVisualBuilder.BuildBaseDisplay(command, glow);
             AddLight(command, glow, CommandLightIntensity, CommandLightRange, 1.4f);
             GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
-            AddModule(command, 0.05f, parent, true);
+            AddModule(command, parent, true);
 
             Material[] materials = ModelPalette.Create(glow);
             Transform pad = Part("Pad", parent, BaseModuleFactory.LandingPad(), materials, layout.Pad, layout.BaseFacing);
-            AddModule(pad, 0.22f, parent, true);
+            AddModule(pad, parent, true);
 
             Transform core = Part("Core", parent, BaseModuleFactory.CoreCage(), materials, layout.Core, layout.BaseFacing);
             _crystal = SurfaceMaterials.Create(_coreColour, CoreDimEmission, 0.85f);
             _crystalLit = _coreColour * CoreLitEmission;
-            _crystalTransform = Part("Crystal", core, BaseModuleFactory.CoreCrystal(), new[] { _crystal }, layout.Core, layout.BaseFacing);
-            _crystalTransform.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            _coreSocket = _crystalTransform.position + Vector3.up * 1.2f;
+            Transform crystal = Part("Crystal", parent, BaseModuleFactory.CoreCrystal(), new[] { _crystal }, layout.Core, layout.BaseFacing);
+            crystal.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            _crystalSpin = crystal;
+            _crystalRest = crystal.localRotation;
+            _coreSocket = crystal.position;
+            _crystalTop = 1.2f;
+            _crystalParts.Add(new CrystalPart { Transform = crystal, Position = crystal.position, Scale = crystal.localScale });
             _coreLight = AddLight(core, _coreColour, 0f, CoreLightRange, 1.2f);
             _corePool = GlowDecal.PlacePool(core, _coreColour * 0.3f, 2.2f);
-            AddModule(core, 0.36f, parent, true);
+            AddModule(core, parent, true);
         }
 
-        // The level's base model where the level puts it: each module rises from its own pivot in the report's order, the
-        // dish turns, the crystal wears its own copy of the material for the ignition, the lights hang at their sockets.
+        // The level's base model where the level puts it: each module comes in the report's order (the crystal waits for
+        // the hauler), the dish turns, the crystal wears its own copy of the material for the ignition, the lights hang
+        // at their sockets.
         private void BuildArtBase(Transform parent, FieldLayout layout, BaseArtDefinition art, Color glow)
         {
             Transform command = new GameObject("Command").transform;
@@ -222,14 +541,28 @@ namespace Game.UI
             ArtModel model = ArtModel.CreateStill(command, art.Model);
             GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
 
-            string[] order = art.TimelapseOrder;
-            for (int i = 0; i < order.Length; i++)
+            foreach (string module in art.TimelapseOrder)
             {
-                float start = Mathf.Lerp(ArtModulesFrom, ArtModulesTo, order.Length > 1 ? i / (float)(order.Length - 1) : 0f);
-                foreach (Renderer renderer in model.RenderersEndingWith(order[i]))
+                if (module == art.PulsingModule)
                 {
-                    AddModule(renderer.transform, start, parent, false);
+                    continue;
                 }
+
+                Renderer[] meshes = model.RenderersEndingWith(module);
+                if (meshes.Length == 0)
+                {
+                    continue;
+                }
+
+                // The near and the far mesh of a piece come down as one module.
+                AddModule(meshes[0].transform, parent, false);
+                var twins = new Transform[meshes.Length - 1];
+                for (int i = 1; i < meshes.Length; i++)
+                {
+                    twins[i - 1] = meshes[i].transform;
+                }
+
+                _modules[_modules.Count - 1].Twins = twins;
             }
 
             Renderer[] dish = model.RenderersEndingWith(art.TurningModule);
@@ -241,16 +574,23 @@ namespace Game.UI
             }
 
             Renderer[] crystal = model.RenderersEndingWith(art.PulsingModule);
+            if (crystal.Length > 0)
+            {
+                _crystalSpin = crystal[0].transform;
+                _crystalRest = _crystalSpin.localRotation;
+            }
+
             _crystal = new Material(model.Material) { name = art.PulsingModule };
             _crystalLit = _crystal.GetColor(EmissionColorId);
+            Bounds crystalBounds = crystal.Length > 0 ? crystal[0].bounds : new Bounds(command.position + Vector3.up, Vector3.one * 0.5f);
+            _coreSocket = new Vector3(crystalBounds.center.x, crystalBounds.min.y, crystalBounds.center.z);
+            _crystalTop = crystalBounds.size.y;
             foreach (Renderer renderer in crystal)
             {
                 renderer.sharedMaterial = _crystal;
+                Transform part = renderer.transform;
+                _crystalParts.Add(new CrystalPart { Transform = part, Position = part.position, Scale = part.localScale });
             }
-
-            _crystalTransform = crystal.Length > 0 ? crystal[0].transform : command;
-            _crystalRest = _crystalTransform.localRotation;
-            _coreSocket = crystal.Length > 0 ? crystal[0].bounds.center : command.position + Vector3.up;
 
             Renderer[] pad = model.RenderersEndingWith("Base_Pad");
             if (pad.Length > 0)
@@ -258,7 +598,7 @@ namespace Game.UI
                 PadTop = new Vector3(pad[0].bounds.center.x, pad[0].bounds.max.y, pad[0].bounds.center.z);
             }
 
-            Transform coreAt = Socket(model, CoreLightSocket, _crystalTransform);
+            Transform coreAt = Socket(model, CoreLightSocket, crystal.Length > 0 ? crystal[0].transform : command);
             _coreLight = AddLight(coreAt, _coreColour, 0f, CoreLightRange, 0f);
             _corePool = GlowDecal.PlacePool(command, _coreColour * 0.3f, 2.2f);
             _corePool.transform.position = new Vector3(_coreSocket.x, layout.Base.y + 0.035f, _coreSocket.z);
@@ -269,87 +609,6 @@ namespace Game.UI
         {
             Transform socket = model.Find(name);
             return socket != null ? socket : fallback;
-        }
-
-        // The builders fly together from module to module. At each one every builder takes its own station round
-        // it (spread evenly, the same height), hovers level there facing the module and welds; between modules they
-        // cross in a gentle arc, nose first and banked a little. Posed from progress alone.
-        private void PoseBuilders(int building, float progress, float time)
-        {
-            bool active = progress > 0f && progress < 1f && _modules.Count > 0;
-            int from = 0;
-            int to = 0;
-            float transit = 1f;
-            if (active)
-            {
-                FlightLeg(progress, out from, out to, out transit);
-            }
-
-            for (int i = 0; i < _builders.Count; i++)
-            {
-                CutsceneDrone drone = _builders[i];
-                drone.Holder.gameObject.SetActive(active);
-                if (!active)
-                {
-                    ParticleKit.SetRate(_builderSparks[i], 0f);
-                    continue;
-                }
-
-                Vector3 start = Station(from, i);
-                Vector3 end = Station(to, i);
-                float eased = CutsceneMath.Smooth(transit);
-                float hop = Mathf.Sin(eased * Mathf.PI);
-                Vector3 bob = Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + i * 2.1f));
-                Vector3 position = Vector3.Lerp(start, end, eased) + Vector3.up * (hop * BuilderHop) + bob;
-
-                Quaternion faceStart = Quaternion.LookRotation(Flat(_modules[from].Centre - start));
-                Quaternion faceEnd = Quaternion.LookRotation(Flat(_modules[to].Centre - end));
-                Quaternion working = Quaternion.Slerp(faceStart, faceEnd, eased);
-                Vector3 travel = Flat(end - start);
-                Quaternion flying = travel.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(travel) : working;
-                Quaternion facing = Quaternion.Slerp(working, flying, hop);
-                float bank = Vector3.SignedAngle(working * Vector3.forward, flying * Vector3.forward, Vector3.up);
-                float lean = Mathf.Clamp(bank * BuilderBankShare, -BuilderMaxBank, BuilderMaxBank) * hop;
-                drone.Holder.SetPositionAndRotation(position, facing * Quaternion.Euler(BuilderPitch * hop, 0f, -lean));
-
-                bool welding = building >= 0 && transit >= 1f;
-                drone.Pose(welding ? ModelClipRole.Work : ModelClipRole.Move, time + i * 0.37f, time * RotorDegreesPerSecond, false);
-                ParticleKit.SetRate(_builderSparks[i], welding ? SparkRate : 0f);
-            }
-        }
-
-        // Which module the flock leaves and which it heads for, and how far the crossing is (1 once arrived).
-        private void FlightLeg(float progress, out int from, out int to, out float transit)
-        {
-            to = 0;
-            for (int m = 1; m < _modules.Count; m++)
-            {
-                if (progress >= LeaveFor(m))
-                {
-                    to = m;
-                }
-            }
-
-            from = Mathf.Max(0, to - 1);
-            transit = to == 0 ? 1f : CutsceneMath.Span(progress, LeaveFor(to), _modules[to].Start);
-        }
-
-        // The flock sets off for a module a little before it breaks out of the ground, sooner when the modules are far apart in time.
-        private float LeaveFor(int module)
-        {
-            float gap = _modules[module].Start - _modules[module - 1].Start;
-            return _modules[module].Start - Mathf.Min(BuilderTransitShare, Mathf.Max(0f, gap) * BuilderTransitOfGap);
-        }
-
-        // A builder's hover spot at a module: evenly round it, turned per module so the flock does not line up.
-        private Vector3 Station(int module, int builder)
-        {
-            Module target = _modules[module];
-            float angle = (builder / (float)Mathf.Max(1, _builders.Count) + module * 0.17f) * Mathf.PI * 2f;
-            float reach = Mathf.Max(BuilderOrbit, target.Reach + BuilderClearance);
-            float height = Mathf.Max(target.Centre.y + BuilderHeight, target.Top + BuilderClearance);
-            Vector3 around = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * reach;
-            return new Vector3(target.Centre.x + around.x, height, target.Centre.z + around.z);
         }
 
         private void BuildGates(Transform parent, LevelDefinition level, FieldLayout layout)
@@ -386,12 +645,19 @@ namespace Game.UI
                     Part("Beam", gate, StructureModelFactory.GateBeam(width + GateOverhang), materials, Vector3.up * GateBeamHeight);
                 }
 
-                Material fieldMaterial = GlowDecal.ScanlineMaterial(colour * GateFieldEmission);
+                Material fieldMaterial = GateFieldMaterial(colour * GateFieldEmission);
                 _gateFields.Add(fieldMaterial);
                 Sheet(gate, fieldMaterial, new Vector3(0f, fieldCentre, 0f), Quaternion.identity, new Vector3(fieldWidth, GateFieldHeight, 1f));
                 Sheet(gate, fieldMaterial, new Vector3(0f, 0.06f, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(fieldWidth, 0.6f, 1f));
-                AddModule(gate, 0.55f + 0.1f * i, parent, true);
+                AddModule(gate, parent, true);
             }
+        }
+
+        // The Blender gate-field sheet (U across with its rims, V tiling scanlines) or the marker art's energy field.
+        private static Material GateFieldMaterial(Color colour)
+        {
+            Texture2D sheet = CutsceneFxSet.Get(CutsceneSprite.GateField);
+            return sheet != null ? GlowDecal.Additive(sheet, colour) : GlowDecal.ScanlineMaterial(colour);
         }
 
         private void BuildBuilders(Transform parent, CutsceneContext context)
@@ -402,30 +668,47 @@ namespace Game.UI
                 return;
             }
 
-            int count = Mathf.Min(3, context.Scaled(3));
+            int count = Mathf.Min(Builders, context.Scaled(Builders));
             for (int i = 0; i < count; i++)
             {
                 var holder = new GameObject($"Builder{i}").transform;
                 holder.SetParent(parent, false);
+                holder.localScale = Vector3.one * BuilderScale;
                 var drone = new CutsceneDrone(holder, cast.BuilderArt, cast.Builder);
-                _builders.Add(drone);
                 // The imported builder welds with its two arms; the procedural one from under its body.
                 Transform weld = drone.Socket(WeldSockets[i % WeldSockets.Length]);
                 ParticleSystem sparks = weld != null
                     ? ParticleKit.Create(weld, "Weld", Vector3.zero, SparkColour * 2.5f, 0.2f, 0.5f, 0.03f, 0.06f, 1.5f, 4f, 1.2f, 80, 0.03f)
                     : ParticleKit.Create(holder, "Weld", Vector3.down * 0.4f, SparkColour * 2.5f, 0.2f, 0.5f, 0.03f, 0.06f, 1.5f, 4f, 1.2f, 80, 0.05f);
-                _builderSparks.Add(sparks);
+                // A beam of light from the belly to the module it carries, so the load reads from any distance.
+                LineRenderer tether = SpaceKit.Line(parent, $"Tether{i}", 2, false, TetherIntensity);
+                tether.widthMultiplier = TetherWidth;
+                tether.startColor = TetherColour;
+                tether.endColor = TetherColour * 0.6f;
+                tether.enabled = false;
+                _builders.Add(new Builder { Drone = drone, Sparks = sparks, Tether = tether });
                 holder.gameObject.SetActive(false);
             }
         }
 
-        private void AddModule(Transform root, float start, Transform parent, bool turns)
+        private void AddModule(Transform root, Transform parent, bool turns)
         {
-            ParticleSystem dust = ParticleKit.Create(parent, $"{root.name}Dust", root.position + Vector3.up * 0.2f, DustColour, 0.8f, 1.6f, 0.3f, 0.7f, 0.6f, 2f, -0.05f, 80, 1.1f);
-            // Measured as built, so the builders hover clear of the module whatever its pivot or import scale.
+            ParticleSystem dust = ParticleKit.UseCell(ParticleKit.Create(parent, $"{root.name}Dust", root.position + Vector3.up * 0.2f, DustColour, 0.8f, 1.6f, 0.3f, 0.7f, 0.6f, 2f, -0.05f, 80, 1.1f), MarkerArt.ParticleCell.Mote);
+            // Measured as built, so the drones hold it and hover clear of it whatever its pivot or import scale.
             Bounds bounds = BoundsOf(root);
             float reach = Mathf.Max(bounds.extents.x, bounds.extents.z);
-            _modules.Add(new Module { Root = root, Rotation = root.rotation, Scale = root.localScale, Turns = turns, Start = start, Dust = dust, Centre = bounds.center, Top = bounds.max.y, Reach = reach });
+            _modules.Add(new Module
+            {
+                Root = root,
+                RestPosition = root.position,
+                RestRotation = root.rotation,
+                RestScale = root.localScale,
+                Turns = turns,
+                Dust = dust,
+                Centre = bounds.center,
+                Top = bounds.max.y,
+                Reach = reach,
+            });
         }
 
         private static Bounds BoundsOf(Transform root)
@@ -503,7 +786,7 @@ namespace Game.UI
         private static Vector3 Flat(Vector3 direction)
         {
             direction.y = 0f;
-            return direction.sqrMagnitude > 0.0001f ? direction : Vector3.forward;
+            return direction.sqrMagnitude > 0.000001f ? direction : Vector3.forward;
         }
     }
 }

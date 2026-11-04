@@ -1,10 +1,11 @@
+using Game.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Game.Levels
 {
     /// <summary>
-    /// A tiny cubemap painted from the theme: sky above, a band of light colour at the horizon, dark ground below.
+    /// The theme's Blender sky (README round 26) as the reflection source, or without one a tiny cubemap painted from the theme: sky above, a band of light colour at the horizon, dark ground below.
     /// Set as the level's reflection source it gives shiny metal and water a gradient to mirror, where an empty
     /// scene would only reflect black and make every metal look like soot.
     /// </summary>
@@ -16,6 +17,16 @@ namespace Game.Levels
 
         public static void Apply(VisualTheme theme)
         {
+            Cubemap painted = theme.SkyCubemapFor(ModelQuality.IsLow);
+            if (painted != null)
+            {
+                // The Blender sky stores its glow through a soft shoulder; the exposure from its report restores the range.
+                RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+                RenderSettings.customReflectionTexture = painted;
+                RenderSettings.reflectionIntensity = theme.SkyExposure;
+                return;
+            }
+
             Cubemap cubemap = Build(theme.SkyColor, theme.LightColor * theme.LightIntensity, theme.FogColor * GroundDarkening);
             RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
             RenderSettings.customReflectionTexture = cubemap;

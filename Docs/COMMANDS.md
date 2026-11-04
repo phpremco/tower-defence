@@ -545,3 +545,22 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
 | Developer mode data flag on / off | `eval_file --file Tools/PlayTest/dev_mode_on.cs` (`Tools/PlayTest/dev_arg.txt`: `off` to turn it off); a development build also takes `-devmode` |
 | Level shots with pointer clicks | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/n1_shots.sh <prefix> <level index or none> ...` (adds `arg:<file>=<value>` and `pointer:<move|click>` at `n1_pick_xy.txt` to round_ui_shots' actions) |
 | Origins staying open after their first wave | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/n1_origin.sh <prefix> 0 8 16` |
+
+## Night 2: opening cutscene and round-26 art (added 2026-11-04)
+
+| Goal | Command |
+| --- | --- |
+| Sync the cave kit, the Burrower eyes, the Earth maps (gloss baked from the mask), the cutscene sprites and the theme skies, and hand them to the cutscene cast and the themes | `unity command menu --path "Tools/Generate/Blender Cutscene (cave, eyes, Earth, FX, skies)" --timeout 600` (also generator step "Cutscene art", after "Story art") |
+| Regenerate only the opening cutscene data (shots, cues, cast) and the story/cutscene art hand-outs, without the full generator | `unity command run_script --file Tools/PlayTest/Scripts/ApplyCutscene.cs --entry ApplyCutscene.Run --timeout_ms 600000 --timeout 660` |
+| Cutscene stills, probes and close inspections in one play session | `CUT_OUT=<C:/...> bash Tools/PlayTest/n2_cut.sh <prefix> "<shot> <progress>" "look:<shot> <progress>\|<place> px py pz lx ly lz fov" probe:<file.cs> ...` |
+| Probes (run inside `n2_cut.sh`) | `n2_layout_probe.cs` (field layout: road, gate, dig site, guard post), `n2_eye_probe.cs` (seated eye pairs), `n2_build_probe.cs` (every base module and builder in the timelapse), `n2_hand_probe.cs` (Mercer's hand and head), `n2_cam_probe.cs` (camera and Mercer) |
+| Inspect imported cave pieces and eyes (orientation, rig colours) | `eval_file --file Tools/PlayTest/n2_cave_probe.cs`; the drill's Sink/Spin clips: `n2_drill_probe.cs` |
+| Set float fields on a data asset | first line of `Tools/PlayTest/n2_set.txt` the asset path, then `field value` lines; `eval_file --file Tools/PlayTest/n2_set.cs` |
+
+- **Stills of skinned models are one pose late** when the paused editor renders right after a seek: skinning runs in the
+  player loop. `n2_still.cs` (used by `n2_cut.sh`) seeks, steps one frame, seeks the same moment again and renders, so
+  Mercer, the creatures and the instanced decor show the moment itself (`imp3b_still.cs` shows the previous pose and no
+  instanced decor).
+- The round-26 FBX files arrive turned half a turn about Y like every export of ours (an eye's cornea at -Z, a wall's
+  backing at +Z): `UndergroundSet` and `EyeField` add a 180 degree turn under the node matrix to get the README frame
+  (cavern side and eye forward +Z, `axis_unity` as written).

@@ -1,131 +1,224 @@
 using System.Collections.Generic;
-using Game.Core;
+using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Game.UI
 {
     /// <summary>
-    /// Hundreds of glowing eye pairs in the dark, as one combined mesh (two submeshes for two warm glows) whose
-    /// vertices are rewritten each frame: every pair opens by stretching its slits from a closed line, at its own
-    /// moment, so the opening spreads through the cavern like a wave. Posed from time alone.
+    /// The Burrower eyes in the cave walls (README round 26): every pair seated in rock where the cave put it, built
+    /// once into one combined mesh per eye variant. Nothing moves on the CPU: each vertex carries its eye's pivot,
+    /// hinge and up axis, and the <c>Game/BurrowerEye</c> shader turns the lids and the eyeball from the pair's state
+    /// (blink, look, glow) that <see cref="Pose"/> writes into one global array a frame. A pair is shut until its moment,
+    /// opens (the lead pairs slowly, the wave fast), blinks now and then and follows the camera. Posed from time alone.
     /// </summary>
     public sealed class EyeField
     {
-        private const float EyeWidth = 0.075f;
-        private const float EyeHeight = 0.04f;
-        private const float EyeGap = 0.11f;
-        private const float OpenSeconds = 0.35f;
-        private const float BlinkRate = 0.23f;
-        private const float BlinkSeconds = 0.14f;
-        private const float Emission = 5f;
-        private const float ClosedShare = 0.02f;
-        private const float SlitStart = 0.4f;
-        private static readonly Color Amber = new Color(1f, 0.62f, 0.15f);
-        private static readonly Color Ember = new Color(1f, 0.25f, 0.08f);
-
-        private readonly Mesh _mesh;
-        private readonly Vector3[] _centres;
-        private readonly Vector3[] _rights;
-        private readonly Vector3[] _ups;
-        private readonly float[] _sizes;
-        private readonly float[] _opensAt;
-        private readonly Vector3[] _vertices;
-
-        /// <param name="centres">Where each pair sits; every pair looks at <paramref name="watched"/>.</param>
-        /// <param name="opensAt">When each pair opens, in seconds of the shot.</param>
-        /// <param name="sizes">How big each pair is, one for the usual size.</param>
-        public EyeField(Transform parent, IReadOnlyList<Vector3> centres, IReadOnlyList<float> opensAt, IReadOnlyList<float> sizes, Vector3 watched)
+        /// <summary>Where one pair sits: its two eyes' pivots on the rock, the way it faces, and when it opens.</summary>
+        public struct Pair
         {
-            int pairs = centres.Count;
-            _centres = new Vector3[pairs];
-            _rights = new Vector3[pairs];
-            _ups = new Vector3[pairs];
-            _sizes = new float[pairs];
-            _opensAt = new float[pairs];
-            _vertices = new Vector3[pairs * 8];
-            var uvs = new Vector2[_vertices.Length];
-            var amber = new List<int>();
-            var ember = new List<int>();
-            for (int i = 0; i < pairs; i++)
-            {
-                _centres[i] = centres[i];
-                _opensAt[i] = opensAt[i];
-                Vector3 look = (watched - centres[i]).normalized;
-                Vector3 right = Vector3.Cross(Vector3.up, look);
-                _rights[i] = right.sqrMagnitude > 0.0001f ? right.normalized : Vector3.right;
-                _ups[i] = Vector3.Cross(look, _rights[i]).normalized;
-                _sizes[i] = sizes[i];
-                List<int> triangles = i % 3 == 0 ? ember : amber;
-                for (int eye = 0; eye < 2; eye++)
-                {
-                    int v = i * 8 + eye * 4;
-                    uvs[v] = new Vector2(0f, 0.5f);
-                    uvs[v + 1] = new Vector2(0.5f, 1f);
-                    uvs[v + 2] = new Vector2(1f, 0.5f);
-                    uvs[v + 3] = new Vector2(0.5f, 0f);
-                    // Both windings, so a pair shows whichever side the camera passes on.
-                    triangles.AddRange(new[] { v, v + 1, v + 2, v, v + 2, v + 3, v, v + 2, v + 1, v, v + 3, v + 2 });
-                }
-            }
-
-            _mesh = new Mesh { name = "Eyes", indexFormat = IndexFormat.UInt32 };
-            _mesh.MarkDynamic();
-            _mesh.vertices = _vertices;
-            _mesh.uv = uvs;
-            _mesh.subMeshCount = 2;
-            _mesh.SetTriangles(amber, 0);
-            _mesh.SetTriangles(ember, 1);
-            _mesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1000f);
-
-            var go = new GameObject("Eyes");
-            go.transform.SetParent(parent, false);
-            go.AddComponent<MeshFilter>().sharedMesh = _mesh;
-            var renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterials = new[] { Glow(Amber), Glow(Ember) };
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
+            public Vector3 Left;
+            public Vector3 Right;
+            public Vector3 Facing;
+            public Vector3 Up;
+            public float Scale;
+            public float OpensAt;
+            public float OpenSeconds;
+            public int Variant;
         }
 
-        public int Count => _centres.Length;
+        public const int MaxPairs = 512;
+        private const float BlinkRate = 0.19f;
+        private const float BlinkSeconds = 0.16f;
+        private const float GlowRampSeconds = 0.5f;
+        private const float GlowPulse = 0.12f;
+        private const float LookFollow = 0.8f;
+        private const float BoundsSize = 200f;
+        private static readonly int StateId = Shader.PropertyToID("_BurrowerEyeState");
+        private static readonly int GlowId = Shader.PropertyToID("_EmissionColor");
+        private static readonly int UpperId = Shader.PropertyToID("_UpperLid");
+        private static readonly int LowerId = Shader.PropertyToID("_LowerLid");
+        private static readonly int YawId = Shader.PropertyToID("_LookYaw");
+        private static readonly int PitchId = Shader.PropertyToID("_LookPitch");
 
-        /// <summary>Opens every pair that is due, with a rare blink, at this moment of the shot.</summary>
-        public void Pose(float time)
+        // The imported meshes look along -Z (the 180 degree turn every FBX of ours arrives with); the README frame looks along +Z.
+        private static readonly Matrix4x4 ImportTurn = Matrix4x4.Rotate(Quaternion.Euler(0f, 180f, 0f));
+
+        private readonly Pair[] _pairs;
+        private readonly Vector4[] _state = new Vector4[MaxPairs];
+        private readonly float[] _lookYaw;
+        private readonly float[] _lookPitch;
+
+        public EyeField(Transform parent, UndergroundArt art, IReadOnlyList<Pair> pairs, bool low)
         {
-            for (int i = 0; i < _centres.Length; i++)
+            int count = Mathf.Min(pairs.Count, MaxPairs);
+            _pairs = new Pair[count];
+            for (int i = 0; i < count; i++)
             {
-                float open = CutsceneMath.Smooth(CutsceneMath.Span(time, _opensAt[i], _opensAt[i] + OpenSeconds));
+                _pairs[i] = pairs[i];
+            }
+
+            BurrowerEyeArt[] eyes = art.Eyes;
+            _lookYaw = new float[eyes.Length];
+            _lookPitch = new float[eyes.Length];
+            for (int v = 0; v < eyes.Length; v++)
+            {
+                if (eyes[v] == null || !eyes[v].IsValid)
+                {
+                    continue;
+                }
+
+                _lookYaw[v] = eyes[v].LookDegrees;
+                _lookPitch[v] = eyes[v].LookUpDownDegrees;
+                BuildVariant(parent, eyes[v], v, art.IrisGlow, low);
+            }
+        }
+
+        public int Count => _pairs.Length;
+
+        /// <summary>The pair's pivots, for probes and camera framing.</summary>
+        public Pair this[int index] => _pairs[index];
+
+        /// <summary>
+        /// Opens every pair that is due at <paramref name="time"/> (a negative time keeps all shut), with a rare blink,
+        /// each pair looking towards <paramref name="watched"/>.
+        /// </summary>
+        public void Pose(float time, Vector3 watched)
+        {
+            for (int i = 0; i < _pairs.Length; i++)
+            {
+                Pair pair = _pairs[i];
+                float open = time < 0f ? 0f : CutsceneMath.Smooth(CutsceneMath.Span(time, pair.OpensAt, pair.OpensAt + pair.OpenSeconds));
                 float blinkPhase = Mathf.Repeat(time * BlinkRate + CutsceneMath.Hash(i, 83), 1f);
-                if (blinkPhase < BlinkSeconds * BlinkRate)
+                float blink = blinkPhase < BlinkSeconds * BlinkRate ? Mathf.Sin(blinkPhase / (BlinkSeconds * BlinkRate) * Mathf.PI) : 0f;
+                float shut = Mathf.Max(1f - open, blink * open);
+                float glow = time < 0f ? 0f : CutsceneMath.Span(time, pair.OpensAt, pair.OpensAt + GlowRampSeconds);
+                glow *= 1f + GlowPulse * Mathf.Sin(time * 2.3f + i);
+                Look(pair, watched, out float yaw, out float pitch);
+                _state[i] = new Vector4(shut, yaw * LookFollow, pitch * LookFollow, glow);
+            }
+
+            Shader.SetGlobalVectorArray(StateId, _state);
+        }
+
+        // Towards the watched point in the pair's own frame, as a share of the eye's look range.
+        private void Look(Pair pair, Vector3 watched, out float yaw, out float pitch)
+        {
+            Vector3 centre = (pair.Left + pair.Right) * 0.5f;
+            Quaternion frame = Quaternion.LookRotation(pair.Facing, pair.Up);
+            Vector3 local = Quaternion.Inverse(frame) * (watched - centre);
+            float yawDegrees = Mathf.Atan2(local.x, Mathf.Max(0.01f, local.z)) * Mathf.Rad2Deg;
+            float pitchDegrees = Mathf.Atan2(local.y, Mathf.Max(0.01f, new Vector2(local.x, local.z).magnitude)) * Mathf.Rad2Deg;
+            int variant = Mathf.Clamp(pair.Variant, 0, _lookYaw.Length - 1);
+            yaw = Mathf.Clamp(yawDegrees / Mathf.Max(1f, _lookYaw[variant]), -1f, 1f);
+            // A positive turn about the hinge moves the front of the eye down, so looking up is a negative turn.
+            pitch = -Mathf.Clamp(pitchDegrees / Mathf.Max(1f, _lookPitch[variant]), -1f, 1f);
+        }
+
+        private void BuildVariant(Transform parent, BurrowerEyeArt eye, int variant, float irisGlow, bool low)
+        {
+            Mesh source = eye.Mesh;
+            Vector3[] vertices = source.vertices;
+            Vector3[] normals = source.normals;
+            Vector4[] tangents = source.tangents;
+            Vector2[] uv = source.uv;
+            Color[] colours = source.colors;
+            int[][] subMeshes = { source.GetTriangles(0), source.subMeshCount > 1 ? source.GetTriangles(1) : new int[0] };
+            Matrix4x4 local = ImportTurn * eye.Node;
+
+            var positions = new List<Vector3>();
+            var outNormals = new List<Vector3>();
+            var outTangents = new List<Vector4>();
+            var outUv = new List<Vector2>();
+            var outColours = new List<Color>();
+            var pivots = new List<Vector4>();
+            var hinges = new List<Vector4>();
+            var ups = new List<Vector4>();
+            var triangles = new[] { new List<int>(), new List<int>() };
+            for (int p = 0; p < _pairs.Length; p++)
+            {
+                Pair pair = _pairs[p];
+                if (pair.Variant != variant)
                 {
-                    open *= 0.1f;
+                    continue;
                 }
 
-                // A shut eye is no eye at all: the slit grows out of a point, so nothing glows before it opens.
-                float size = open > ClosedShare ? _sizes[i] : 0f;
-                Vector3 right = _rights[i] * (EyeWidth * size * Mathf.Lerp(SlitStart, 1f, open));
-                Vector3 up = _ups[i] * (EyeHeight * size * Mathf.Max(0.02f, open));
-                Vector3 gap = _rights[i] * (EyeGap * size * 0.5f);
-                for (int eye = 0; eye < 2; eye++)
+                for (int side = 0; side < 2; side++)
                 {
-                    Vector3 centre = _centres[i] + (eye == 0 ? -gap : gap);
-                    // A slit slanted inward on both sides, the way a predator's eyes sit.
-                    Vector3 slant = _ups[i] * (EyeHeight * size * 0.4f * (eye == 0 ? 1f : -1f));
-                    int v = i * 8 + eye * 4;
-                    _vertices[v] = centre - right + slant;
-                    _vertices[v + 1] = centre + up;
-                    _vertices[v + 2] = centre + right - slant;
-                    _vertices[v + 3] = centre - up;
+                    bool mirrored = side == 1;
+                    Vector3 pivot = mirrored ? pair.Right : pair.Left;
+                    Quaternion rotation = Quaternion.LookRotation(pair.Facing, pair.Up);
+                    Matrix4x4 place = Matrix4x4.TRS(pivot, rotation, new Vector3(mirrored ? -pair.Scale : pair.Scale, pair.Scale, pair.Scale));
+                    Matrix4x4 full = place * local;
+                    Vector3 hinge = place.MultiplyVector(eye.Axis).normalized;
+                    Vector3 up = rotation * Vector3.up;
+                    float mirror = mirrored ? -1f : 1f;
+                    int start = positions.Count;
+                    for (int i = 0; i < vertices.Length; i++)
+                    {
+                        positions.Add(full.MultiplyPoint3x4(vertices[i]));
+                        outNormals.Add(full.MultiplyVector(normals[i]).normalized);
+                        Vector3 tangent = full.MultiplyVector(tangents.Length > i ? (Vector3)tangents[i] : Vector3.right).normalized;
+                        outTangents.Add(new Vector4(tangent.x, tangent.y, tangent.z, (tangents.Length > i ? tangents[i].w : 1f) * mirror));
+                        outUv.Add(uv.Length > i ? uv[i] : Vector2.zero);
+                        outColours.Add(colours.Length > i ? colours[i] : Color.black);
+                        pivots.Add(new Vector4(pivot.x, pivot.y, pivot.z, p));
+                        hinges.Add(new Vector4(hinge.x, hinge.y, hinge.z, mirror));
+                        ups.Add(new Vector4(up.x, up.y, up.z, 0f));
+                    }
+
+                    for (int s = 0; s < 2; s++)
+                    {
+                        int[] indices = subMeshes[s];
+                        for (int t = 0; t < indices.Length; t += 3)
+                        {
+                            // A mirrored eye turns its triangles inside out; swapping two corners keeps them facing out.
+                            triangles[s].Add(start + indices[t]);
+                            triangles[s].Add(start + indices[mirrored ? t + 2 : t + 1]);
+                            triangles[s].Add(start + indices[mirrored ? t + 1 : t + 2]);
+                        }
+                    }
                 }
             }
 
-            _mesh.vertices = _vertices;
+            if (positions.Count == 0)
+            {
+                return;
+            }
+
+            var mesh = new Mesh { name = $"Eyes_{eye.Name}", indexFormat = IndexFormat.UInt32 };
+            mesh.SetVertices(positions);
+            mesh.SetNormals(outNormals);
+            mesh.SetTangents(outTangents);
+            mesh.SetUVs(0, outUv);
+            mesh.SetUVs(1, pivots);
+            mesh.SetUVs(2, hinges);
+            mesh.SetUVs(3, ups);
+            mesh.SetColors(outColours);
+            mesh.subMeshCount = 2;
+            mesh.SetTriangles(triangles[0], 0);
+            mesh.SetTriangles(triangles[1], 1);
+            mesh.RecalculateBounds();
+            mesh.bounds = new Bounds(mesh.bounds.center, Vector3.one * BoundsSize);
+
+            var go = new GameObject($"Eyes_{eye.Name}");
+            go.transform.SetParent(parent, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = go.AddComponent<MeshRenderer>();
+            Material material = Configure(new Material(eye.EyeFor(low)), eye, irisGlow);
+            // The Low profile leaves the wet cornea out: one material draws the first sub-mesh only.
+            renderer.sharedMaterials = low || eye.Cornea == null ? new[] { material } : new[] { material, Configure(new Material(eye.Cornea), eye, 0f) };
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = true;
         }
 
-        private static Material Glow(Color colour)
+        private static Material Configure(Material material, BurrowerEyeArt eye, float glow)
         {
-            Material material = SurfaceMaterials.Create(colour, Emission, 0f);
-            material.SetColor("_BaseColor", colour * 0.2f);
+            material.SetColor(GlowId, Color.white * glow);
+            material.SetFloat(UpperId, eye.UpperLidDegrees);
+            material.SetFloat(LowerId, eye.LowerLidDegrees);
+            material.SetFloat(YawId, eye.LookDegrees);
+            material.SetFloat(PitchId, eye.LookUpDownDegrees);
             return material;
         }
     }
