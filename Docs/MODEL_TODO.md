@@ -93,11 +93,11 @@ Dit zijn de grootste modellen, met de meeste aandacht en animaties.
 | --- | --- | --- | --- |
 | ◐ | P1 | **Cole "Pathfinder" Mercer** | Ronde 6 klaar: navy gewatteerd pak, witte keramische platen, helm met rookglas-vizier en gele kruinstreep, gelaagde schouderstukken met gele rand, rugpak met twee cyaan cellen, holsters op beide dijen, Crysium-stof op de laarzen. 9.800 driehoeken, LOD1 4.000 op hetzelfde rig (31 botten, sockets `Weapon_L/R`, `Holster_L/R`, `Back`). Clips Idle/Walk/Run/Shoot/Reload/Slash/Shockwave/Repair/Hit/Down/Revive; Shoot, Reload en Slash met bovenlijf-masker (vanaf `Spine1`). Portretbuste gerenderd. Zie README ronde 6 |
 | ◐ | P1 | Mercers **pistool** en **laserzwaard** | Ronde 6 klaar: pistool 1.250 + los magazijn 120 (Quick Reload-magazijn 200), gevest 760 (Wide Slash-gevest 800), twee kling-meshes met UV-verloop voor een emissieve shader. Eén 512-materiaal. Alles in "grip space" van de socket: identity onder `Weapon_R`. Dual Wield via `Weapon_L`/`Holster_L`; Crysium Blade volgt |
-| ☐ | P2 | **Dr. Elena Voss** (buste) | Nu een simpele buste in het portret. Ook bruikbaar in cutscenes |
-| ☐ | P2 | **ORA** (hologram) | Nu ringen rond een bol. Vooral shader. Glitch-staat |
-| ☐ | P2 | **NTI-embleem** | Logo-object voor de berichten |
-| ☐ | P2 | **Pioneer-1** (sonde, heel) | Voor de logboek-portretten |
-| ☐ | P3 | **Pioneer-1 wrak** | Decor in Mirewood (level 8) en de basis van het Rotbloom-gevecht |
+| ◐ | P2 | **Dr. Elena Voss** (buste) | Ronde 13 klaar: gestileerde buste in Mercers familie: donker kastanjebruin haar in een knot met zijlok, witte veldjas met staande kraag en koloniale schouderstreep, navy onderpak met cyaan naad, gele ID-kaart, NTI-patch, headset met cyaan oorstuk en microfoon. Staalblauwe ogen, oogleden op eigen botten. 6.000 driehoeken, 10 botten. Clips Idle/Talk/Blink. Geen LOD1 (portret en cutscene) |
+| ◐ | P2 | **ORA** (hologram) | Ronde 13 klaar: geen gezicht: facetkern (icosaëder met binnenste octaëder), drie gyroscoopringen van bogen, een kroon van acht scherven, één horizontale "blikbalk" die verbreedt als ze praat, en een emitterschijf. Cyaan. UV1 = banden voor een glitch-shader. 1.622 driehoeken. Clips Idle/Talk/Glitch |
+| ◐ | P2 | **NTI-embleem** | Ronde 13 klaar: eigen ontwerp: afgeschuinde zeshoekige badge (gunmetal rand, koloniaal blauw veld), witte horizonboog, opkomende vierpuntige ster (lichtgevend), letters N T I. 412 driehoeken, statisch |
+| ◐ | P2 | **Pioneer-1** (sonde, heel) | Ronde 13 klaar: zeshoekige lander op drie poten, goudkleurige isolatiefolie onder, wit boven met NTI-embleem en "P-1", grote schotel, camera-mast met mint lens, twee zonnevleugels, kernboor onder de romp. 3.300 driehoeken, statisch |
+| ◐ | P3 | **Pioneer-1 wrak** | Ronde 13 klaar: gekanteld en half weggezakt in een modderheuvel, poot afgebroken, een vleugel afgescheurd en de andere geknikt, schotel gebroken op de grond, schroeiplekken; Crysium groeit uit de romp en de modder, pruimkleurige varens met gloeiende punten en ranken. Statuslampje gloeit nog. 4,980 driehoeken, statisch decor |
 
 ---
 
@@ -230,11 +230,11 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ☐ | P2 | **Landingscapsule** | Hitteschild, retro-jets, loopplank. Clip **Open** |
-| ☐ | P2 | **Boor (derrick)** | Draaiende boorkop |
-| ☐ | P2 | **Moederschip** | Ring en motoren (shot in de baan om de planeet) |
-| ☐ | P2 | **Baken** van Mercer | |
-| ☐ | P2 | **Radarscherm / commandopost-interieur** | |
+| ◐ | P2 | **Landingscapsule** | Ronde 13 klaar: zeshoekige capsule (wit, blauwe band, gevarenstreep), hitteschild als eigen mesh met gloeirand, vier retro-jets, drie landingspoten, loopplank die tot de grond zakt met verlicht interieur. 4.900 driehoeken. Clips **Land** en **Open** |
+| ◐ | P2 | **Boor (derrick)** | Ronde 13 klaar: stalen vakwerktoren op een dek met gevarenranden, blauw motorhuis met lichtroosters, kroonblok met baken, takelblok, kelly en een grote gegroefde boorkop. 3.630 driehoeken. Clips **Spin** en **Sink** (3 eenheden de grond in) |
+| ◐ | P2 | **Moederschip** | Ronde 13 klaar: vakwerkruggengraat, wit commandomodule met lichtband, draaiende woonring met ramen, vrachtcontainers, capsulebaai, radiatoren met cyaan lijnen, motorblok met drie straalpijpen. 9.302 driehoeken. Clip **Spin** (ring) |
+| ◐ | P2 | **Baken** van Mercer | Ronde 13 klaar: driepoot die uitklapt, telescoopmast, pulserende lamp, draaiende ring. 2.162 driehoeken. Clips **Deploy** en **Idle** |
+| ◐ | P2 | **Radarscherm / commandopost-interieur** | Ronde 13 klaar: radarconsole (bureau, rond radarscherm, twee zijschermen, toetsen, NTI-embleem). Schermen als eigen meshes met 0..1 UV voor een shader. 3.026 driehoeken. Geen volledig interieur |
 | ☐ | P2 | **Aarde** en **S-69-CRYS-globe** | Vooral textures en shader. Lage prioriteit voor een mesh |
 | ☐ | P3 | Ogenveld ondergronds | Is al instanced. Eventueel betere oogvorm |
 
@@ -405,3 +405,19 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | Gravemaw | De binnenkant van de bloembladen en de keel is van dichtbij vlak felroze: emissie in Unity lager. Van boven nog wat pissebed-achtig. Poten zijn simpele buizen. Bij Dive rijden de voeten mee, en aan het eind van Emerge glijden ze. UV-dekking van het lijf verschilt per run (fallback niet deterministisch) |
 | Drijfzand-opening | Leest meer als ring dan als zinkgat |
 | IJs-opening | Gloed nauwelijks zichtbaar met de ijswitte tint |
+
+
+### Ronde 13 (Voss, ORA, NTI-embleem, Pioneer-1 en wrak, cutscene-modellen)
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Voss | Gestileerd, maar nog vrij simpel en "poppig": ronde volumes, armen als buizen, de jas leest als een dikke trui. Het gezicht leest op portretgrootte (ogen, wenkbrauwen, mond), maar de knipper laat van dichtbij facetten zien rond het ooglid en een randje oog bij de ooghoek (te weinig driehoeken rond de ogen na het decimeren). De Talk-kaak rekt de onderkant van het gezicht; dat werkt op portretgrootte, niet in een close-up. Beter later: aparte ooglid-meshes en een lokaal dichter gezicht |
+| ORA | De blikbalk is wit-heet en sterk; de ringen lezen als gyroscoop. Het eigen karakter komt pas met de hologram-shader (UV1-banden) |
+| NTI-embleem | De ster brandt bijna wit; in Unity de emissie iets lager voor een gouden toon |
+| Pioneer-1 | Folie leest als goudgele tegels, niet als gekreukte folie |
+| Pioneer-1 wrak | Het afgebroken pootstuk en de modderpoelen zijn klein op spelgrootte. De heuvel is een vrij vlakke schijf; in Unity laten aansluiten op het terrein |
+| Capsule | Het bovenvlak van het hitteschild gloeit oranje mee (één emissie-map voor het schild); in Unity uitfaden. In Land frame 0 steken de opgeklapte poten nog wat uit |
+| Drill | De boorkop staat deels achter het motorhuis vanuit de standaardhoek |
+| Mothership | Straalpijpen branden bijna wit (bloom); de NTI-badges op de neus zijn klein |
+| Radarconsole | Alleen de console, geen commandopost-interieur. Het achterpaneel zweeft een fractie boven het bureau |
+| Kleurvraag | Pioneer-1 gebruikt de mint logkleur (0.55, 1, 0.8) voor lens en status; dicht bij het groen van de Acid Sprayer |

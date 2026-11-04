@@ -846,3 +846,64 @@ Unity notes:
 `build_bat_skins.py` rebuilds the Ember game mesh in a scratch folder, checks it against `Exports/Bat/Bat.fbx`
 (vertices, triangles, UVs; max UV difference 0.0) and bakes `Skins/Tide/` and `Skins/Frost/` with warm glows
 (report: `Skins/Skins_warm_report.json`). `Exports/Bat/Bat.fbx` and its maps are not touched.
+
+
+## Round 13: story characters and cutscene models (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 13). Builds (not yet in `build_all.py`):
+
+- `build_voss.py`: Dr. Elena Voss, creature pipeline (fused parts, styles, bake, skinned bust).
+- `build_story_props.py` (`--only Ora,Emblem,Pioneer,Wreck,Console`): ORA, the NTI emblem, Pioneer-1, its wreck, the
+  radar console. Hard-surface kit.
+- `build_cutscene.py` (`--only Capsule,Drill,Mothership,Beacon`): the opening cutscene's machines. Hard-surface kit.
+- `story_kit.py`: shared helpers (looks, partial tori, icospheres, broken lathes, mounds, Crysium shards, fronds,
+  tendrils, the NTI emblem as pieces, glitch-band and planar screen UVs, portrait camera, strips, space backdrop).
+
+All take `--preview <dir>`, `--norender`; the kit builds also `--nobake`. Cutscene-only and portrait-only assets have
+no LOD1 (the report says so); the Pioneer-1 wreck is static level decor.
+
+| Asset | Files (`Exports/<Asset>/`) | Triangles | Maps | Rig and clips |
+| --- | --- | --- | --- | --- |
+| Voss | `Voss.fbx` | 6,000 (budget 6,000), no LOD1 | 1024 (+ `Low/` 512), Mask B weave, A ceramic | `Voss_Rig`, 10 bones: Root, Spine, Chest, Clavicle_L/R, Neck, Head, Jaw, Lid_L, Lid_R. Idle 120 (loop, blink at 70), Talk 90 (loop, blink at 44), Blink 8 |
+| Ora | `Ora.fbx` | 1,622 | 1024 (+ 512) | `Ora_Rig`, 9 bones: Root, Float, Core, Inner, Gaze, Halo, Ring_1..3. Idle 120, Talk 60 (loops), Glitch 24. **UV1 "Bands"** for the glitch shader |
+| NTI_Emblem | `NTI_Emblem.fbx` | 412 | 512 (+ 256) | static; empty `Centre` |
+| Pioneer1 | `Pioneer1.fbx` | 3,300 | 1024 (+ 512) | static; empties `StatusLight`, `Lens`, `Centre` |
+| Pioneer1_Wreck | `Pioneer1_Wreck.fbx` | 4,980 | 1024 (+ 512) | static decor; empties `StatusLight`, `Smoke`, `Log`, `Centre` |
+| RadarConsole | `RadarConsole.fbx` (+ meshes `_Radar`, `_Screen_L`, `_Screen_R`) | 2,846 + 156 + 12 + 12 | 1024 (+ 512) | static; empties `Radar`, `Operator`; screen meshes have planar 0..1 UVs |
+| Cutscene_Capsule | `Cutscene_Capsule.fbx` (+ mesh `Cutscene_Capsule_Shield`) | 4,262 + 638 | 1024 (+ 512) | 5 bones: Root, Ramp, Leg_1..3. Land 30, Open 48. Empties `Exit`, `Jet_1..4`, `Beacon`, `ShieldCentre` |
+| Cutscene_Drill | `Cutscene_Drill.fbx` | 3,630 | 1024 (+ 512) | 5 bones: Root, Block, String, BitTip (socket), Cable. Spin 30 (loop), Sink 150. Empties `Beacon`, `Exhaust`, `Dust` |
+| Cutscene_Mothership | `Cutscene_Mothership.fbx` | 9,302 (budget 15,000) | 1024 (+ 512) | 2 bones: Root, Ring. Spin 360 (loop). Empties `Bay`, `Nozzle_1..3` |
+| Cutscene_Beacon | `Cutscene_Beacon.fbx` | 2,162 | 512 (+ 256) | 8 bones: Root, Leg_1..3, Mast, Mast2, Ring, Lamp (socket). Deploy 54, Idle 60 (loop). Empty `Ground` |
+
+
+### Unity notes
+
+- **Import** as rounds 7 and 9 (Scale 1, Bake Axis Conversion, Generic rig, keep non-deforming bones and empties,
+  Mikktspace tangents; Voss as Mercer). Albedo/Emission sRGB, Normal as normal map, Mask linear. One `Game/UnitLit`
+  material per asset with its four maps; emission x 2.2.
+- **Portraits (`PortraitModels`, `ModelIconRenderer`):** `Scientist` instantiates `Voss.fbx` sampled at Idle frame 10
+  (or plays Idle; Talk while her line types; layer Blink at random 3-6 s) instead of the code bust. `Hologram`
+  instantiates `Ora.fbx` (Idle; Talk while ORA speaks; Glitch for the corrupted Directive-7 lines) with an additive
+  hologram shader that reads **UV1** (U = angle round the vertical axis, V = height 0 at the emitter, 1 at the crown)
+  for scanlines, slice offsets and tear bands; the emitter disc may stay opaque. `Emblem` instantiates
+  `NTI_Emblem.fbx` (badge centre at the origin, facing +Z). `Probe` instantiates `Pioneer1.fbx` (origin on the
+  ground, the body centre at about y 0.9). Framing: the renders use Mercer's bust camera (70 mm, 28 degrees off
+  the front, 5 degrees up, 1.45 away; Voss aimed at y 1.36, ORA at its core, y 0.34, from 1.25). The speaker's rim
+  light can stay as today.
+- **Cutscene cast (`CutsceneCast` prefab overrides):** `Capsule` = `Cutscene_Capsule.fbx`; its heat shield is the
+  separate mesh `Cutscene_Capsule_Shield` (give it its own material instance and fade `_EmissionColor` after re-entry,
+  as `CapsuleModelFactory`'s shield did). Play `Land` on touchdown, then `Open`; Mercer steps out at the `Exit`
+  empty; retro-jet flames at `Jet_1..4` (empties, +Z = exhaust direction). `Drill` = `Cutscene_Drill.fbx`: the model
+  has its own drill string, so `FieldDrill` should hide its procedural `Bit` when the override has a `String` bone
+  and play `Sink` (150 frames, the string drives 3 units down while it turns; sample it by the shot's progress) and
+  `Spin` (loop) afterwards; dust at `Dust`, the bit tip at the `BitTip` bone. `Mothership` = `Cutscene_Mothership.fbx`
+  (about 15 long, nose +Z): play `Spin` (the habitat ring, one turn per 12 s) or turn the `Ring` bone in code; capsules
+  leave from `Bay`, exhaust glow at `Nozzle_1..3`. `Beacon` = `Cutscene_Beacon.fbx`: `BeaconModel.Pose(deploy)` should
+  sample `Deploy` at `deploy` (0..1 over 54 frames) instead of scaling the hidden procedural parts, then loop `Idle`;
+  the point light goes on the `Lamp` bone.
+- **Radar console:** a command-post prop for shot 7 (today a UI overlay). `RadarConsole_Radar` is a disc with a planar
+  0..1 UV (centre 0.5, 0.5) for a sweep shader (`RadarOverlay`'s look on a material); `RadarConsole_Screen_L/_R` are
+  quads with 0..1 UVs for screen textures. The baked maps give them a dim lit look when no shader is set.
+- **Pioneer-1 wreck (Mirewood, level 8, Rotbloom arena):** static decor on the ground with its own mire mound (about
+  4.8 across); a status light still glows at `StatusLight` (a small blinking point light), smoke at `Smoke`, the
+  logbook pickup at `Log`.
