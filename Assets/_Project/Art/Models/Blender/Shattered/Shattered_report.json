@@ -1,0 +1,194 @@
+{
+  "asset": "Shattered",
+  "game_tris": 24070,
+  "tris_per_material": [
+    17493,
+    6577
+  ],
+  "source_tris": 1508844,
+  "bones": 27,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "Shattered_Mat": "Shattered_*.png",
+    "Shattered_Crystal_Mat": "Shattered_Crystal_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "Shattered": {
+      "islands": 47,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 156,
+      "mirrored_faces": 8663,
+      "uv_coverage": 0.654,
+      "world_per_uv": 6.385107388041355
+    },
+    "Shattered_Crystal": {
+      "islands": 49,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 149,
+      "mirrored_faces": 3203,
+      "uv_coverage": 0.5,
+      "world_per_uv": 3.300612159861735
+    }
+  },
+  "detail": {
+    "Shattered": {
+      "chitin": {
+        "map": "Detail_Chitin_Normal.png",
+        "tiling": 26.6,
+        "mask": "B"
+      },
+      "membrane": {
+        "map": "Detail_Membrane_Normal.png",
+        "tiling": 20.0,
+        "mask": "A"
+      }
+    },
+    "Shattered_Crystal": {
+      "crystal": {
+        "map": "Detail_Crystal_Normal.png",
+        "tiling": 19.6,
+        "mask": "B"
+      },
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 11.5,
+        "mask": "A"
+      }
+    }
+  },
+  "actions": {
+    "Walk": 56,
+    "Idle": 72,
+    "Hit": 14,
+    "PhaseBreak1": 40,
+    "PhaseBreak2": 44,
+    "Death": 80
+  },
+  "size_m": [
+    3.428,
+    4.537,
+    3.557
+  ],
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Shell_4",
+    "Shell_5",
+    "Shell_6",
+    "Shell_7",
+    "Shell_8",
+    "Crys_1",
+    "Crys_2",
+    "Crys_3",
+    "Crys_4",
+    "Crys_5",
+    "Crys_6"
+  ],
+  "lod1": {
+    "fbx": "Shattered_LOD1.fbx",
+    "tris": 9498,
+    "bones": 26
+  },
+  "walk_distance_per_loop": 1.452,
+  "pivot": "ground, under the chest",
+  "phases": {
+    "1": {
+      "shells": {
+        "Shell_1": 1.0,
+        "Shell_2": 1.0,
+        "Shell_3": 1.0,
+        "Shell_4": 1.0,
+        "Shell_5": 1.0,
+        "Shell_6": 1.0,
+        "Shell_7": 1.0,
+        "Shell_8": 1.0
+      },
+      "crystals": {
+        "Crys_1": 0.25,
+        "Crys_2": 0.25,
+        "Crys_3": 0.25,
+        "Crys_4": 0.25,
+        "Crys_5": 0.25,
+        "Crys_6": 0.25
+      }
+    },
+    "2": {
+      "shells": {
+        "Shell_1": 0.0,
+        "Shell_2": 0.0,
+        "Shell_3": 0.0,
+        "Shell_4": 0.0,
+        "Shell_5": 1.0,
+        "Shell_6": 1.0,
+        "Shell_7": 1.0,
+        "Shell_8": 1.0
+      },
+      "crystals": {
+        "Crys_1": 1.0,
+        "Crys_2": 1.0,
+        "Crys_3": 1.0,
+        "Crys_4": 0.55,
+        "Crys_5": 0.55,
+        "Crys_6": 1.0
+      }
+    },
+    "3": {
+      "shells": {
+        "Shell_1": 0.0,
+        "Shell_2": 0.0,
+        "Shell_3": 0.0,
+        "Shell_4": 0.0,
+        "Shell_5": 0.0,
+        "Shell_6": 0.0,
+        "Shell_7": 0.0,
+        "Shell_8": 0.0
+      },
+      "crystals": {
+        "Crys_1": 1.35,
+        "Crys_2": 1.35,
+        "Crys_3": 1.35,
+        "Crys_4": 1.35,
+        "Crys_5": 1.35,
+        "Crys_6": 1.35
+      }
+    }
+  },
+  "phase_break_1": {
+    "burst_frame": 12,
+    "shells_off": [
+      "Shell_1",
+      "Shell_2",
+      "Shell_3",
+      "Shell_4"
+    ],
+    "frames": 40
+  },
+  "phase_break_2": {
+    "burst_frame": 14,
+    "shells_off": [
+      "Shell_5",
+      "Shell_6",
+      "Shell_7",
+      "Shell_8"
+    ],
+    "frames": 44
+  },
+  "death": {
+    "explosion_frame": 46,
+    "crystals_gone_frame": 54
+  },
+  "emission_per_phase": {
+    "1": 2.6,
+    "2": 3.4,
+    "3": 4.5
+  }
+}

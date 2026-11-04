@@ -25,6 +25,12 @@ namespace Game.Levels
             EnvironmentLayout layout = new EnvironmentLayout(level, field).Build(set.CliffInsetCells, set.CliffSideReach);
             foreach (EnvironmentPlacement placement in layout.Placements)
             {
+                // Buildable ground is plain ground at rest; the free cells show on the ground only while placing (BuildPadHighlight).
+                if (placement.Kind == EnvironmentPieceKind.BuildPad && !set.ShowBuildPads)
+                {
+                    continue;
+                }
+
                 EnvironmentMesh piece = set.Piece(placement.Kind);
                 if (piece != null)
                 {

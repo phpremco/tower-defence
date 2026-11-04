@@ -1,0 +1,37 @@
+{
+  "asset": "Ash_Bank_InnerCorner",
+  "continent": "AshenReach",
+  "game_tris": 300,
+  "source_tris": 10392,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 19,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.526,
+    "world_per_uv": 0.658708054143388
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 5.5,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 9.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.334,
+    0.375,
+    0.164
+  ]
+}

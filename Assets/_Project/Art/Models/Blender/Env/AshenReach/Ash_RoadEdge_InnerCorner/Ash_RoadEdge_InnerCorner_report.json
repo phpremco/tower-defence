@@ -1,0 +1,37 @@
+{
+  "asset": "Ash_RoadEdge_InnerCorner",
+  "continent": "AshenReach",
+  "game_tris": 400,
+  "source_tris": 18032,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 11,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.649,
+    "world_per_uv": 0.6847014020379206
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 5.7,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 9.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.294,
+    0.298,
+    0.316
+  ]
+}

@@ -111,6 +111,9 @@ namespace Game.Levels
 
         public PlacementMode Mode { get; set; }
 
+        /// <summary>The grid cell under the placement cursor (mouse or gamepad), for views that follow it.</summary>
+        public Vector2Int CursorCell { get; set; }
+
         /// <summary>The placed tower whose action icons are open, or null.</summary>
         public Tower SelectedPlacedTower { get; set; }
 

@@ -411,3 +411,23 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
   (`EnvironmentSway`); every other env mesh drops its helper colour sets.
 - The set's tunables (paint tint, height blend, sharpness, scatter, far decor dimming, wind) are data: the builder does
   not overwrite them, so tweaks in the asset survive a regeneration.
+
+### Continents 2-6, future creatures, build spots (added 2026-11-04, import stage 4b)
+
+| Goal | Command |
+| --- | --- |
+| Creature art incl. the P3 species, the continent bosses (two materials), Gravemaw and the `<Id>_Corrupted` skins | `unity command menu --path "Tools/Generate/Blender Creatures (sync, materials, enemies)" --timeout 900` |
+| Environment sets for all six continents (only C1 is put on themes; C2-6 have no levels yet) | `bash Tools/PlayTest/imp4_regen.sh` (same menu as stage 4a) |
+| One look per continent set on a continent-1 level (theme swapped in memory by `imp4b_swap.cs`, put back after each set; nothing saved) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp4b_env.sh <prefix> <level index> AshenReach NorthernCrown Mirewood SouthernCrown TheCore` |
+| Build spots at rest, while placing, close up (`imp4_phase.cs place` now also puts the cursor on a free cell by the road focus) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp4b_pads.sh <prefix> <level index>` |
+| A Shardback losing its armour (shed prism clusters) | `eval_file --file Tools/PlayTest/imp4b_creatures.cs` via `bash Tools/PlayTest/imp4b_creature_shots.sh <prefix> <level index>` |
+
+- A two-material model (`<Asset>_<Second>_*.png`, e.g. `Gravemaw_Crystal_*`) gets `ModelArtDefinition.SecondMaterial`
+  (+ Low); `BlenderSync` copies those maps, `CreatureModel` wears both slots on a mesh with two sub-meshes and drives
+  flash, frost and glow on both. The report's detail blocks are split body first, second slot after.
+- Round 17 shares the build pad, gate plinth, nest shells, eggs and spawn openings with Crystal Plains; the kerb ends,
+  plaza joins and plaza edges are the continent's continuous straight kerb, a plaza corner its inner corner stone.
+  Terraces, rifts and silhouettes do not exist for C2-6 and are left out on purpose (`EnvironmentArtTests`).
+- Build pads: `EnvironmentSet.ShowBuildPads` is off, so no tile is drawn at rest; while a tower is placed
+  `BuildPadHighlight` feeds the ground shader (`PlacingGlow` in `EnvironmentGround.shader`) the free-cell mask and the
+  cursor, and the free cells glow round the cursor (`PlacingColour`, `PlacingGlow`, `PlacingRadiusCells` on the set).

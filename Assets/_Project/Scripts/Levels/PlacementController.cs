@@ -92,6 +92,7 @@ namespace Game.Levels
             _range = RangeIndicator.Create(parent);
 
             _cursor = new Vector2Int(_map.Size.x / 2, _map.Size.y / 2);
+            context.CursorCell = _cursor;
             _lastPointer = input.PointerPosition;
 
             _input.Confirmed += OnConfirmed;
@@ -208,6 +209,7 @@ namespace Game.Levels
             }
 
             _cursor = cell;
+            _context.CursorCell = cell;
             _cellMessage = string.Empty;
             Refresh();
         }

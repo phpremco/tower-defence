@@ -1,0 +1,104 @@
+{
+  "asset": "Gravemaw",
+  "game_tris": 24093,
+  "body_tris": 17209,
+  "crystal_tris": 6884,
+  "source_tris": 864444,
+  "bones": 38,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "Gravemaw_Mat": "Gravemaw_*.png",
+    "Gravemaw_Crystal_Mat": "Gravemaw_Crystal_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv_body": {
+    "islands": 167,
+    "closed_islands_cut": 3,
+    "folded_fallback_faces": 297,
+    "mirrored_faces": 7869,
+    "uv_coverage": 0.485,
+    "world_per_uv": 5.366631747997909
+  },
+  "uv_crystal": {
+    "islands": 103,
+    "closed_islands_cut": 6,
+    "folded_fallback_faces": 663,
+    "mirrored_faces": 2865,
+    "uv_coverage": 0.699,
+    "world_per_uv": 2.5219655828966423
+  },
+  "detail_body": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 19.9,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 14.9,
+      "mask": "A"
+    }
+  },
+  "detail_crystal": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 13.3,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 7.8,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Crawl": 64,
+    "Idle": 90,
+    "Hit": 16,
+    "Death": 60,
+    "Roar": 66,
+    "Dive": 120,
+    "Emerge": 112
+  },
+  "size_m": [
+    2.785,
+    5.94,
+    2.503
+  ],
+  "unity_scale": 1.0,
+  "crawl_distance_per_loop": 0.692,
+  "dive": {
+    "hole_forward": 2.95,
+    "wind_up_end": 24,
+    "impact_frame": 31,
+    "debris_frame": 31,
+    "all_under_frame": 94,
+    "frames": 120
+  },
+  "emerge": {
+    "hole_forward": -5.655,
+    "burst_frame": 20,
+    "debris_frame": 20,
+    "rest_pose_frame": 98,
+    "frames": 112
+  },
+  "scale_bones": [
+    "Debris_L1",
+    "Debris_R1",
+    "Debris_L2",
+    "Debris_R2",
+    "Debris_L3",
+    "Debris_R3"
+  ],
+  "lod1": {
+    "fbx": "Gravemaw_LOD1.fbx",
+    "tris": 9999,
+    "bones": 30
+  }
+}

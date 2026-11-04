@@ -24,6 +24,7 @@ namespace Game.Enemies
 
         private CreatureModel _model;
         private CreatureClips _clips;
+        private ModelShedParts _shed;
         private ParticleSystem _splash;
         private Action<ModelCorpse> _release;
         private EnemyDeathEffect.Request _request;
@@ -42,6 +43,7 @@ namespace Game.Enemies
             corpse._scale = scale;
             corpse._model = CreatureModel.Create(go.transform, art, scale, lowDetail);
             corpse._clips = new CreatureClips(corpse._model.Player, art, Array.Empty<string>());
+            corpse._shed = art.ShedBones.Length > 0 ? new ModelShedParts(corpse._model) : null;
             int death = art.IndexOf(ModelClipRole.Death);
             corpse._clipSeconds = death >= 0 ? art.Clips[death].Length : 0f;
             return corpse;
@@ -62,6 +64,7 @@ namespace Game.Enemies
             _model.SetOverlay(Color.white, 0f);
             _clips.Restart();
             _clips.Die();
+            _shed?.SetShed(request.Shed);
             _model.Player.Evaluate();
             Splash(position);
         }
@@ -88,6 +91,9 @@ namespace Game.Enemies
                 _release?.Invoke(this);
             }
         }
+
+        // The death clip keys the shed parts at full size; the ones the creature had lost stay off.
+        private void LateUpdate() => _shed?.Apply();
 
         private void FadeGlow()
         {

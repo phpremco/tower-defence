@@ -1,0 +1,37 @@
+{
+  "asset": "South_Bank_OuterCorner",
+  "continent": "SouthernCrown",
+  "game_tris": 400,
+  "source_tris": 12904,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 15,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.755,
+    "world_per_uv": 0.6222654150895417
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 8.9,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 5.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.374,
+    0.371,
+    0.235
+  ]
+}

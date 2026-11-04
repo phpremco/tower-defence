@@ -100,6 +100,17 @@ namespace Game.Editor
             copied += CopyIfChanged(Path.Combine(from, name + "_report.json"), Path.Combine(to, name + "_report.json"));
             copied += SyncMaps(from, to, name);
 
+            // A second material on the same mesh (a boss's crystals or ice) has its own maps: <Asset>_<Material>_Albedo.png.
+            foreach (string albedo in Directory.GetFiles(from, $"{name}_*{MapSuffixes[0]}"))
+            {
+                string prefix = Path.GetFileName(albedo);
+                prefix = prefix.Substring(0, prefix.Length - MapSuffixes[0].Length);
+                if (prefix != name)
+                {
+                    copied += SyncMaps(from, to, prefix);
+                }
+            }
+
             // Extra skins baked on the same mesh (the element bats): one folder of maps per skin.
             string skins = Path.Combine(from, SkinFolder);
             if (Directory.Exists(skins))

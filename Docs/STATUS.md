@@ -1596,3 +1596,70 @@ the nests. Logic, grid and validator are untouched; a theme without an environme
   values `_PadCalmGlow`/`_PadCalmAlbedo`). Pads under towers stay calm. The kerb's albedo x0.8 and glow 0.9 (was 2.2)
   soften the "row of teeth" a little; the real fix (a continuous kerb as in round 17) stays in MODEL_TODO. Screenshots
   `t1_L0_*` (`t1_L0_placing*` while placing) against `r3_L0_play`. `imp4_phase.cs` gained `place [off]`.
+
+## Import stage 4b (2026-11-04)
+The last import stage: the round-15 species with game data wear their models, the art of every creature and continent
+boss still waiting for game data is ready, the environment sets of continents 2-6 are built (on no theme yet), and,
+on Remco's request, the build spots no longer cover the map with tiles.
+- **In game:** Shardback and Mireleech (`EnemyDefinition.Art`). The Shardback sheds its six prism clusters in the README's
+  order as its armour is chipped (`ModelArtDefinition.ShedBones` from the report, `Enemies/ModelShedParts` scales the bones
+  to zero in LateUpdate on both LOD rigs, a burst of shards in its colour per cluster; the corpse lies without the shed
+  ones via `EnemyDeathEffect.Request.Shed`); glow 2.0 so the ice leads (`cre_*`). The Mireleech's Latch is its own bite
+  (Attack, frame 13).
+- **Art ready, waiting for data** (`Data/Art/<Id>.asset`, an EnemyDefinition pointing at it is pure data): Knitback,
+  Slagstrider (embers, glow 3), Siftjaw, Surgefin, FireLarva (embers); Gravemaw, Cinder Matriarch, Frost Warden, Rotbloom,
+  The Shattered and The Sealed One with **two materials** (body + Crystal/Ice/Bloom/Seal: `ModelArtDefinition.SecondMaterial`
+  + Low, `BlenderSync` copies `<Asset>_<Second>_*` maps, the report's detail blocks split body first; `CreatureModel` wears
+  both slots on a two-sub-mesh renderer and flashes/fades both), at art factor 1 (built at game size). Powers are clips with
+  their moment and a trigger named after an existing `BossAbilityKind` where one fits (Spawn: Cinder frame 30 at `Vent_1`,
+  Sealed One Summon 44 at `Head`; Regrow: Rotbloom 28, Knitback 24; Pulse: Frost Warden FreezePulse 30, Rotbloom Bloom 34).
+  New `ModelClipRole`s recorded for later views: Burrow (Siftjaw, Gravemaw Dive), Emerge (Siftjaw, Surgefin, Gravemaw, Sealed
+  One Rise), Swim, Roar, Enrage, EnragedMove (Frost Warden WalkEnraged with its own gait distance), PhaseBreak (Shattered,
+  triggers "2"/"3"), Shatter (Shardback). **Corrupted skins:** `<Id>_Corrupted` for all 27 one-material exports with a baked
+  skin (same mesh, rig and clips, own maps): a corrupted enemy is data only.
+- **Needs code later (documented, not built):** the Shattered phase table over the Animator and emission per phase; the
+  Sealed One rising from 5.2 m under the seal and the Gravemaw dive/emerge with the hole (terrain must occlude); Siftjaw
+  burrow (hide the renderer from frame 24) and Surgefin swim on wet road; Frost Warden enrage switch; Knitback camouflage;
+  trail VFX (Mireleech mud, Slagstrider/Cinder `Drip`, Rotbloom `Trail`); Cinder larvae leaving the chimneys; a full
+  Shardback Shatter on Thermal Shock.
+- **Environment, continents 2-6:** `BlenderEnvironmentCatalog.Round17` rows (Ash_/North_/Mire_/South_/Core_) build
+  `Data/Art/Environment/{AshenReach,NorthernCrown,Mirewood,SouthernCrown,TheCore}.asset`; not put on any theme (no levels).
+  Own ground, alt, road, cliff and element layers (element terrain: Ash Quicksand/Sand, North Ice/Snow, Mire Bog/Mud, South
+  Ice/CrackedIce, Core Bog/GroundAlt); plaza = own road set (The Core: Plateau). Shared on purpose with Crystal Plains: build
+  pad, gate plinth, nest shells, eggs, spawn openings. Stand-ins: kerb end caps, plaza joins and plaza edges are the
+  continent's continuous straight kerb (ends flush, no mirror), the plaza corner its inner corner stone; The Core's
+  `SealVein_Straight` is the crystal vein. Left out deliberately: terraces, rifts, silhouettes (none exported). Every
+  `PropKind` maps to the continent's own decor (README mapping, the rest by shape), eggs shared. Glow and light-pool colours
+  per continent; ground sparkle colour per set (`EnvironmentSet` sparkle written by the builder). Look and glow lookups strip
+  the continent prefix, so kit tunings (kerb x0.8, glow 0.9, no-shadow lists) hold on every continent.
+- **Landmarks:** new `EnvironmentSet.Landmarks` (+ `Landmark(name)`), data only, nothing places them: The Core holds
+  `Core_Seal_Intact/_Cracked/_Broken` and `Core_SealVein_Branch`, Mirewood the Pioneer-1 wreck.
+- **Look check** (`env_<Set>_*` per continent on level C1_02 with its C1 painting, light and fog, the theme swapped in memory
+  only by `imp4b_swap.cs`; `env2_TheCore_*` after tuning): every set reads as its own place. Tuned: Ash EmberBloom and
+  LavaRock glow 1.6, North FrozenCrystal 1.4, South UnstableCrystal 1.5, Core CorruptedCrystal 1.0 and CrystalPillar 1.6, Core
+  light pools less saturated (The Core was too violet). Blender-side points in MODEL_TODO, "Na import stage 4b".
+- **Build spots (Remco):** no tiles at rest: `EnvironmentSet.ShowBuildPads` (off) keeps the `BuildPadTile` instances out;
+  buildable ground is plain ground. While a tower is placed, `BuildPadHighlight` feeds the ground shader the free-cell mask,
+  the cursor (smoothed) and its colour, and `EnvironmentGround.shader` (`PlacingGlow`) draws a soft rounded spot with a
+  brighter rim on each free cell, fading out ~4.5 cells from the cursor (`PlacingColour`, `PlacingGlow`, `PlacingRadiusCells`
+  on the set); cells with a tower stay dark (mask rebuilt when placing starts and whenever a structure is added); the
+  hovered cell keeps its valid/invalid marker. View hook: `LevelContext.CursorCell` (written by `PlacementController`).
+  The gate plinth stays. Screenshots `pads_L0_rest`, `_rest_close` (no grid reads), `_placing`, `_placing_close`.
+- **Performance** (`ModelPerformanceTests`, 60 towers, 8 drones, 12 path objects, densest Psycho wave): C1_06 High avg
+  10.1 / p95 11.4 ms, Low 7.5 / 8.8 ms, 1,229 / 1,116 draw calls, 3.16M / 2.35M triangles; C1_05 High 7.5 / 10.1, Low 7.1 /
+  10.2, 1,864 / 1,814 draw calls, 2.89M / 2.23M triangles (4a: 8.2 / 10.1 and 7.6 / 10.7 ms; the editor's load varies; the
+  pads no longer drawn take ~70-90k triangles off). Budget p95 <= 33 ms. Report in `Logs/model_perf.txt`.
+- **Tests:** EditMode 310/310 (new: `CreatureArtTests` 3 (Shardback shed bones and Mireleech latch; future species and
+  two-material bosses with LOD, cycles, Low materials; corrupted skins share mesh and clips with their own maps),
+  `EnvironmentArtTests` 3 (each later set resolves every layer, piece, decor kind and opening the layout can ask for, or
+  leaves out the terrace/rift/vein pieces on purpose; no C1 theme wears another set and the landmarks exist; their flora
+  sways)). PlayMode one class at a time: `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2, `StorySmokeTests` 2/2,
+  `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests` 2/2, `ModelPerformanceTests` 1/1. Console 0 errors,
+  0 warnings. Save restored to its MD5.
+- **Tools:** `imp4b_env.sh` + `imp4b_swap.cs` (+ `imp4b_restore.cs` if a run is cut off), `imp4b_pads.sh`,
+  `imp4b_creature_shots.sh` + `imp4b_creatures.cs`; `imp4_phase.cs place` now puts the cursor on a free cell. See COMMANDS.
+- **Open:** the C2-6 screenshots carry the C1 painting, light and fog (their own themes come with their levels); continents
+  2-6 have no plaza set, terraces, rifts or silhouettes; The Core's void plane under its plateau edges is not built; the
+  continent bosses' sizes (art factor 1) and Gravemaw's bar height (1.6 from the rest pose) to check once they get data;
+  the new species' scales follow the factory factor 1.4 on the README's proposed data scales; `Art/Models/Blender` grows by
+  the round-14/15/16 exports (~git LFS question still open).

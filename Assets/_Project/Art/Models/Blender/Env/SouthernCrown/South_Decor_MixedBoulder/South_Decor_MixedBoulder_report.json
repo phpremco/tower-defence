@@ -1,0 +1,37 @@
+{
+  "asset": "South_Decor_MixedBoulder",
+  "continent": "SouthernCrown",
+  "game_tris": 1100,
+  "source_tris": 57648,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 108,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.641,
+    "world_per_uv": 1.54976033641224
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 12.9,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 22.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.844,
+    0.684,
+    0.617
+  ]
+}

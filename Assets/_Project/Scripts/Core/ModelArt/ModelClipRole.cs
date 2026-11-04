@@ -92,5 +92,29 @@ namespace Game.Core
 
         /// <summary>A machine opening up (a capsule lowering its ramp), played once and held.</summary>
         Open = 29,
+
+        /// <summary>Going under the ground (a burrower digging in, a worm diving), played once; the model is hidden after it.</summary>
+        Burrow = 30,
+
+        /// <summary>Breaking out of the ground or a liquid (a burrower surfacing, a sealed titan rising), played once.</summary>
+        Emerge = 31,
+
+        /// <summary>The travel cycle through a liquid (a swimmer on a flooded road). Loops; its speed follows the ground speed.</summary>
+        Swim = 32,
+
+        /// <summary>A boss rearing up and roaring, for its entrance and the alarm, played once.</summary>
+        Roar = 33,
+
+        /// <summary>A boss going into its rage when its health runs low, played once before <see cref="EnragedMove"/>.</summary>
+        Enrage = 34,
+
+        /// <summary>The travel cycle of an enraged boss. Loops; its speed follows the ground speed.</summary>
+        EnragedMove = 35,
+
+        /// <summary>A boss breaking into its next phase (shells blown off), matched to the phase by its trigger, played once.</summary>
+        PhaseBreak = 36,
+
+        /// <summary>A creature bursting all its shed parts at once (a full shatter), played once.</summary>
+        Shatter = 37,
     }
 }

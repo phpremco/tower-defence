@@ -109,7 +109,18 @@ else if (args[0] == "place")
 {
     // Picks the first available tower, as a click on its card does: the build pads light up.
     if (args.Length > 1 && args[1] == "off") { context.SelectedTower = null; context.Mode = Game.Levels.PlacementMode.Browsing; }
-    else context.SelectTower(context.AvailableTowers[0]);
+    else
+    {
+        context.SelectTower(context.AvailableTowers[0]);
+        // The cursor on a free cell beside the road focus, as a player would hover it (the free cells glow round it).
+        var cursor = roadFocus;
+        for (int r = 1; r <= 3 && !buildable(cursor); r++)
+            for (int dx = -r; dx <= r && !buildable(cursor); dx++)
+                for (int dy = -r; dy <= r; dy++) { var c = roadFocus + new UnityEngine.Vector2Int(dx, dy); if (buildable(c)) { cursor = c; break; } }
+        var placer = UnityEngine.Object.FindAnyObjectByType<Game.Levels.PlacementController>();
+        typeof(Game.Levels.PlacementController).GetMethod("MoveCursor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(placer, new object[] { cursor });
+        report.Append("cursor ").Append(cursor).Append("; ");
+    }
     report.Append("mode ").Append(context.Mode).Append("; ");
 }
 

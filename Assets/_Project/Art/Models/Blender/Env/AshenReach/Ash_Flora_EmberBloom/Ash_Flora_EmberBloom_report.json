@@ -1,0 +1,42 @@
+{
+  "asset": "Ash_Flora_EmberBloom",
+  "continent": "AshenReach",
+  "game_tris": 1300,
+  "source_tris": 66032,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 44,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.45,
+    "world_per_uv": 1.3035746024220838
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 16.3,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 21.7,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.577,
+    0.569,
+    0.34
+  ],
+  "sway": {
+    "attribute": "Sway",
+    "height": 0.36,
+    "channels": "R bend weight (root 0, top 1), G phase 0..1, B flutter"
+  }
+}

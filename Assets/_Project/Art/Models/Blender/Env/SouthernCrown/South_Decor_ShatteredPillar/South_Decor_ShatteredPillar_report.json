@@ -1,0 +1,37 @@
+{
+  "asset": "South_Decor_ShatteredPillar",
+  "continent": "SouthernCrown",
+  "game_tris": 1200,
+  "source_tris": 61380,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 91,
+    "folded_fallback_faces": 354,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.72,
+    "world_per_uv": 1.5570414670773531
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 13.0,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 22.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.272,
+    0.794,
+    0.73
+  ]
+}

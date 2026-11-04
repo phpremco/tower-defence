@@ -1,0 +1,113 @@
+{
+  "asset": "Rotbloom",
+  "game_tris": 23968,
+  "tris_per_material": [
+    16989,
+    6979
+  ],
+  "source_tris": 1459456,
+  "bones": 27,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "Rotbloom_Mat": "Rotbloom_*.png",
+    "Rotbloom_Bloom_Mat": "Rotbloom_Bloom_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "Rotbloom": {
+      "islands": 105,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 369,
+      "mirrored_faces": 8216,
+      "uv_coverage": 0.715,
+      "world_per_uv": 5.983882957260269
+    },
+    "Rotbloom_Bloom": {
+      "islands": 31,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 27,
+      "mirrored_faces": 3458,
+      "uv_coverage": 0.642,
+      "world_per_uv": 3.2320008359560717
+    }
+  },
+  "detail": {
+    "Rotbloom": {
+      "chitin": {
+        "map": "Detail_Chitin_Normal.png",
+        "tiling": 24.9,
+        "mask": "B"
+      },
+      "membrane": {
+        "map": "Detail_Membrane_Normal.png",
+        "tiling": 18.7,
+        "mask": "A"
+      }
+    },
+    "Rotbloom_Bloom": {
+      "membrane": {
+        "map": "Detail_Membrane_Normal.png",
+        "tiling": 16.8,
+        "mask": "B"
+      },
+      "chitin": {
+        "map": "Detail_Chitin_Normal.png",
+        "tiling": 22.4,
+        "mask": "A"
+      }
+    }
+  },
+  "actions": {
+    "Crawl": 64,
+    "Idle": 96,
+    "Hit": 16,
+    "Death": 84,
+    "Regrow": 60,
+    "Bloom": 72
+  },
+  "size_m": [
+    3.848,
+    5.0,
+    2.391
+  ],
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Pod_R1",
+    "Pod_L1",
+    "Pod_R2",
+    "Pod_L2",
+    "Bloom"
+  ],
+  "lod1": {
+    "fbx": "Rotbloom_LOD1.fbx",
+    "tris": 9498,
+    "bones": 25
+  },
+  "crawl_distance_per_loop": 0.714,
+  "pivot": "ground, under the mound",
+  "trail_origin": "bone Trail (the rear slime lobe, on the ground)",
+  "regrow": {
+    "pod_peak_frame": 28,
+    "pods": [
+      "Pod_R1",
+      "Pod_L1",
+      "Pod_R2",
+      "Pod_L2"
+    ]
+  },
+  "bloom": {
+    "spore_burst_frame": 34,
+    "socket": "bone Bloom (throat centre)",
+    "petals_open_frames": [
+      6,
+      26
+    ]
+  },
+  "footfalls": "Crawl frames 0 (L1, R2, L3) and 32 (R1, L2, R3)"
+}

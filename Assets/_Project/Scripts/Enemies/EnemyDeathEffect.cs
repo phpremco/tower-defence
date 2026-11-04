@@ -48,6 +48,9 @@ namespace Game.Enemies
             public float Size;
             public float GroundY;
             public DeathStyle Style;
+
+            /// <summary>For a modelled creature: how many of its armour parts had come off, so the corpse lies without them.</summary>
+            public int Shed;
         }
 
         private const float CollapseSeconds = 0.26f;

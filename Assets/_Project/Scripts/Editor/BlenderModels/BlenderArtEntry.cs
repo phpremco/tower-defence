@@ -62,6 +62,12 @@ namespace Game.Editor
 
         public BlenderClipSpec[] Clips { get; set; } = new BlenderClipSpec[0];
 
+        /// <summary>The second material's name in the export (<c>Crystal</c> for <c>&lt;Asset&gt;_Crystal_*.png</c>), or null for one material.</summary>
+        public string SecondMaterial { get; set; }
+
+        /// <summary>The report key of the bones shed with the armour, in order, or null.</summary>
+        public string ShedBonesKey { get; set; }
+
         public float Emission { get; set; } = DefaultEmission;
         public float Smoothness { get; set; } = DefaultSmoothness;
         public float Detail { get; set; } = DefaultDetail;
@@ -73,6 +79,31 @@ namespace Game.Editor
 
         /// <summary>Our side: rimmed in the colony's cool light instead of the aliens' warm one.</summary>
         public bool Colony { get; set; }
+
+        /// <summary>The same row wearing a baked skin of the same mesh (a corrupted variant), under its own id.</summary>
+        public BlenderArtEntry WithSkin(string id, string skin)
+        {
+            return new BlenderArtEntry(id, Asset, skin)
+            {
+                Scale = Scale,
+                BodyCentrePivot = BodyCentrePivot,
+                MoveDistance = MoveDistance,
+                DeathFadeFrom = DeathFadeFrom,
+                DeathFadeTo = DeathFadeTo,
+                Embers = Embers,
+                Bleeds = Bleeds,
+                Clips = Clips,
+                SecondMaterial = SecondMaterial,
+                ShedBonesKey = ShedBonesKey,
+                Emission = Emission,
+                Smoothness = Smoothness,
+                Detail = Detail,
+                Detail2 = Detail2,
+                Rim = Rim,
+                Brightness = Brightness,
+                Colony = Colony,
+            };
+        }
 
         /// <summary>File prefix of the maps: the asset, or asset and skin.</summary>
         public string MapPrefix => Skin == null ? Asset : $"{Asset}_{Skin}";

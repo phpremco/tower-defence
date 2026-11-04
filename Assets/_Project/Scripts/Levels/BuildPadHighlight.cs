@@ -5,19 +5,27 @@ using UnityEngine;
 namespace Game.Levels
 {
     /// <summary>
-    /// The build pads' glow follows what the player is doing: calm while browsing or fighting (dark tiles in the
-    /// ground, so the field never reads as a lit board), lit on every free cell while a tower is being placed. Pure view:
-    /// it reads <see cref="LevelContext.Mode"/> and the selection, and feeds the environment shader a mask of the free
-    /// cells (rebuilt each time placing starts, so cells with towers stay calm) and the highlight level.
+    /// Shows where a tower can go, only while one is being placed: at rest the buildable ground is plain ground (no tiles,
+    /// no grid). While placing, the ground shader lights the free cells softly around the placement cursor, fading out a
+    /// few cells away, so the player sees the spots near where they look without the whole map turning into a board; the
+    /// hovered cell keeps its own valid or invalid marker. Pure view: it reads <see cref="LevelContext.Mode"/>, the
+    /// selection and the cursor cell, and feeds the environment shaders a mask of the free cells (rebuilt when placing
+    /// starts and whenever a structure is added, so cells with towers stay dark), the cursor and the highlight level.
     /// </summary>
     public sealed class BuildPadHighlight : MonoBehaviour
     {
         private const float FadeSpeed = 6f;
         private const float StructureCellTolerance = 0.3f;
 
+        // The glow follows the cursor smoothly instead of jumping a cell at a time (per second, exponential).
+        private const float CursorFollow = 18f;
+
         private static readonly int MaskId = Shader.PropertyToID("_EnvPadMask");
         private static readonly int RectId = Shader.PropertyToID("_EnvPadRect");
+        private static readonly int GridId = Shader.PropertyToID("_EnvPadGrid");
         private static readonly int HighlightId = Shader.PropertyToID("_EnvPadHighlight");
+        private static readonly int CursorId = Shader.PropertyToID("_EnvPadCursor");
+        private static readonly int ColourId = Shader.PropertyToID("_EnvPadColour");
 
         private LevelDefinition _level;
         private LevelContext _context;
@@ -25,6 +33,9 @@ namespace Game.Levels
         private Color32[] _pixels;
         private float _highlight;
         private bool _placing;
+        private int _structures = -1;
+        private Vector3 _cursor;
+        private float _radius;
 
         public void Initialize(LevelDefinition level)
         {
@@ -38,8 +49,13 @@ namespace Game.Levels
             };
             _pixels = new Color32[size.x * size.y];
             Vector2 world = level.WorldSize;
+            EnvironmentSet set = level.Theme.Environment;
+            _radius = set.PlacingRadiusCells * level.CellSize;
+            Color colour = set.PlacingColour * set.PlacingGlow;
             Shader.SetGlobalTexture(MaskId, _mask);
             Shader.SetGlobalVector(RectId, new Vector4(-world.x * 0.5f, -world.y * 0.5f, 1f / world.x, 1f / world.y));
+            Shader.SetGlobalVector(GridId, new Vector4(size.x, size.y, 0f, 0f));
+            Shader.SetGlobalColor(ColourId, new Color(colour.r, colour.g, colour.b, 1f));
             Shader.SetGlobalFloat(HighlightId, 0f);
             RebuildMask();
         }
@@ -51,22 +67,24 @@ namespace Game.Levels
                 return;
             }
 
-            // Only a tower goes on a pad; a path object is placed on the road.
+            // Only a tower goes on a build spot; a path object is placed on the road.
             bool placing = _context.Mode == PlacementMode.Placing && _context.SelectedTower != null && _context.SelectedPathObject == null;
-            if (placing && !_placing)
+            int structures = _context.Structures.Count;
+            if (placing && (!_placing || structures != _structures))
             {
                 RebuildMask();
+                _structures = structures;
             }
 
+            Vector3 target = _level.Grid.CellToWorld(_context.CursorCell);
+            _cursor = placing && !_placing ? target : Vector3.Lerp(_cursor, target, 1f - Mathf.Exp(-CursorFollow * Time.unscaledDeltaTime));
             _placing = placing;
-            float target = placing ? 1f : 0f;
-            if (Mathf.Approximately(_highlight, target))
-            {
-                return;
-            }
-
-            _highlight = Mathf.MoveTowards(_highlight, target, FadeSpeed * Time.unscaledDeltaTime);
+            _highlight = Mathf.MoveTowards(_highlight, placing ? 1f : 0f, FadeSpeed * Time.unscaledDeltaTime);
             Shader.SetGlobalFloat(HighlightId, _highlight);
+            if (_highlight > 0f)
+            {
+                Shader.SetGlobalVector(CursorId, new Vector4(_cursor.x, _cursor.z, _radius, 0f));
+            }
         }
 
         private void OnDestroy()

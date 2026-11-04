@@ -18,6 +18,9 @@ namespace Game.Core
         [SerializeField] private Material _material;
         [Tooltip("The Low (Switch) material: the 512 maps and no second detail normal.")]
         [SerializeField] private Material _lowMaterial;
+        [Tooltip("The material of the second slot (a boss's crystals or ice), or empty for a one-material model.")]
+        [SerializeField] private Material _secondMaterial;
+        [SerializeField] private Material _lowSecondMaterial;
 
         [Header("Placement")]
         [Tooltip("Factor on the owner's own scale (a boss model is built at its species' size times this).")]
@@ -40,6 +43,8 @@ namespace Game.Core
         [SerializeField] private bool _embers;
         [Tooltip("The model drips its blood colour when hurt.")]
         [SerializeField] private bool _bleeds = true;
+        [Tooltip("Bones that are shed in this order as the armour is chipped away (scaled to zero), or none.")]
+        [SerializeField] private string[] _shedBones = new string[0];
 
         [Header("Clips")]
         [SerializeField] private ModelClip[] _clips = new ModelClip[0];
@@ -48,6 +53,9 @@ namespace Game.Core
         public GameObject Lod1 => _lod1;
         public Material Material => _material;
         public Material LowMaterial => _lowMaterial != null ? _lowMaterial : _material;
+        public Material SecondMaterial => _secondMaterial;
+        public Material LowSecondMaterial => _lowSecondMaterial != null ? _lowSecondMaterial : _secondMaterial;
+        public bool HasSecondMaterial => _secondMaterial != null;
         public float Scale => _scale;
         public float Yaw => _yaw;
         public bool BodyCentrePivot => _bodyCentrePivot;
@@ -58,10 +66,14 @@ namespace Game.Core
         public bool FadesOnDeath => _deathFade.y > _deathFade.x;
         public bool Embers => _embers;
         public bool Bleeds => _bleeds;
+        public string[] ShedBones => _shedBones;
         public ModelClip[] Clips => _clips;
 
         /// <summary>The material for the active quality profile.</summary>
         public Material MaterialFor(bool lowDetail) => lowDetail ? LowMaterial : _material;
+
+        /// <summary>The second slot's material for the active quality profile, or null for a one-material model.</summary>
+        public Material SecondMaterialFor(bool lowDetail) => lowDetail ? LowSecondMaterial : _secondMaterial;
 
         /// <summary>Index of the first clip with a role, or -1.</summary>
         public int IndexOf(ModelClipRole role)

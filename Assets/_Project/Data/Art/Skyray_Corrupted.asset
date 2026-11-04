@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Skyray_Corrupted
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+  _material: {fileID: 2100000, guid: 29d5186af3caa2c4fbf013ee8bdcd0c7, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: f56d027e4bb43df46b8590747aa5910c, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _scale: 1.4
+  _yaw: 0
+  _bodyCentrePivot: 1
+  _height: 0.13971572
+  _lodScreenHeight: 0.05
+  _upperBodyBone: 
+  _deathFade: {x: 0.33333334, y: 1.1333334}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _clips:
+  - _role: 1
+    _clip: {fileID: -3779540334189773637, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+    _farClip: {fileID: 7808825465376669195, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 2
+    _clip: {fileID: -2068385418997291549, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+    _farClip: {fileID: -8862256773421148883, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0
+  - _role: 3
+    _clip: {fileID: -1244246178289170415, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+    _farClip: {fileID: 4565821472636045379, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 4
+    _clip: {fileID: 4988146233626697712, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+    _farClip: {fileID: -5074345028860397906, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.33333334
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 0
+    _clip: {fileID: 5822293140337044076, guid: 67fd0056e6b36074d99fdaacf969c8e2, type: 3}
+    _farClip: {fileID: 2505686088167093352, guid: 7e115852ad6eb17409ef5d13597fabe7, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0

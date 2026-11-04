@@ -1,0 +1,37 @@
+{
+  "asset": "Mire_Scatter_Twigs",
+  "continent": "Mirewood",
+  "game_tris": 200,
+  "source_tris": 5348,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 21,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.639,
+    "world_per_uv": 0.24262936974503235
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 3.0,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 4.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.229,
+    0.327,
+    0.057
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "asset": "Knitback",
+  "game_tris": 3952,
+  "source_tris": 612796,
+  "bones": 18,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 36,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 1976,
+    "uv_coverage": 0.552,
+    "world_per_uv": 1.4728179727099793
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 24.5,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 18.4,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 40,
+    "Idle": 72,
+    "Hit": 14,
+    "Death": 44,
+    "Regrow": 48
+  },
+  "unity_scale": 0.85,
+  "scale_keyed_bones": [
+    "Pod_1",
+    "Pod_2",
+    "Pod_3"
+  ],
+  "lod1": {
+    "fbx": "Knitback_LOD1.fbx",
+    "tris": 1698,
+    "bones": 12
+  },
+  "walk_distance_per_loop": 0.194,
+  "pivot": "ground, body centre",
+  "camouflage": "two-value bark/moss albedo; fade albedo towards the ground tint and the emission down",
+  "regrow_pod_bones": [
+    "Pod_1",
+    "Pod_2",
+    "Pod_3"
+  ]
+}

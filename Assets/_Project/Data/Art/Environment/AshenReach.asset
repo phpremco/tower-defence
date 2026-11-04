@@ -1,0 +1,1205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4231e1d5ed79246afe2bc086dab3ef, type: 3}
+  m_Name: AshenReach
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.EnvironmentSet
+  _prefix: Ash_
+  _groundShader: {fileID: 4800000, guid: d8b4f6e11fac6864ab13aa91fbffea00, type: 3}
+  _ground:
+    _albedo: {fileID: 2800000, guid: 533d8310e1aa9054382a5dff16ddd35f, type: 3}
+    _normal: {fileID: 2800000, guid: 667de3eb1a9cb4d4ab0a29cd923d32bb, type: 3}
+    _mask: {fileID: 2800000, guid: 3a74fc84b8eba574193073f2a318891c, type: 3}
+    _emission: {fileID: 2800000, guid: 588eaf856f2620349a6b2e0c43293947, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 8e6c0c48b5548a54c84a4107e28fd2a7, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 2460e85ab4716e445a1e40ec9f473d28, type: 3}
+    _lowMask: {fileID: 2800000, guid: ea245a20a14eb5c4c8873c057c7c1749, type: 3}
+    _lowEmission: {fileID: 2800000, guid: 1f0516ed8558ae04dbfd5ab05ffb1fb6, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _groundAlt:
+    _albedo: {fileID: 2800000, guid: ef5c02b9e508c964a93b122ab4512276, type: 3}
+    _normal: {fileID: 2800000, guid: e2cffaceef5f17242bb972b8faf14cd9, type: 3}
+    _mask: {fileID: 2800000, guid: 9a8da99b58ad8e741af65ef94ff516c8, type: 3}
+    _emission: {fileID: 2800000, guid: 854145c8c6f4c5548a350e9de4f1c766, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 4726b75fd42ab4e408f057b701b1946f, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 9be4ea792e089c9479bc98d28e2e8e03, type: 3}
+    _lowMask: {fileID: 2800000, guid: 365f312a616daf047bcb74f187f8cf9c, type: 3}
+    _lowEmission: {fileID: 2800000, guid: fe90345638b353c4c804c5463d9046d0, type: 3}
+    _tileSize: 2
+    _glow: 1.3
+  _road:
+    _albedo: {fileID: 2800000, guid: 22fa84f0969f71646ace5743562b0493, type: 3}
+    _normal: {fileID: 2800000, guid: f8d7baa6b809fcb4581143bc90165e04, type: 3}
+    _mask: {fileID: 2800000, guid: 38eee7a140c48e4488d03b79aa8ec755, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: 7447f5cf6feba5c428c0a1fd1c048c67, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 5fb95fe22bde1dd478fba1b33ee2d467, type: 3}
+    _lowMask: {fileID: 2800000, guid: 19e15200ed2d434478beb756b54207cf, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 2
+    _glow: 0
+  _plaza:
+    _albedo: {fileID: 2800000, guid: 22fa84f0969f71646ace5743562b0493, type: 3}
+    _normal: {fileID: 2800000, guid: f8d7baa6b809fcb4581143bc90165e04, type: 3}
+    _mask: {fileID: 2800000, guid: 38eee7a140c48e4488d03b79aa8ec755, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: 7447f5cf6feba5c428c0a1fd1c048c67, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 5fb95fe22bde1dd478fba1b33ee2d467, type: 3}
+    _lowMask: {fileID: 2800000, guid: 19e15200ed2d434478beb756b54207cf, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 2
+    _glow: 1.6
+  _cliff:
+    _albedo: {fileID: 2800000, guid: 85c7ee7d6d2e9924fb1b70be65723827, type: 3}
+    _normal: {fileID: 2800000, guid: 90e7a0e192212184790dd3d0ab7f3714, type: 3}
+    _mask: {fileID: 2800000, guid: ff59dc8fbb71c8940bab5398a3d1f134, type: 3}
+    _emission: {fileID: 2800000, guid: 8acf8a0bfa38aa647828054e6040ed43, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: f690bf029dd4877409081916313295fe, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 1636bc78fb39b644794a5ff03c26768a, type: 3}
+    _lowMask: {fileID: 2800000, guid: b220e6cbc03781044b6840239f707554, type: 3}
+    _lowEmission: {fileID: 2800000, guid: cdc039713a264c6418a5275d2eff44f7, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _element:
+    _albedo: {fileID: 2800000, guid: 4051114fd364bcd478ff156a058a69fd, type: 3}
+    _normal: {fileID: 2800000, guid: 52489e4881de3f24abe8a3f5fcc0e3ee, type: 3}
+    _mask: {fileID: 2800000, guid: bd363c3c12bd0fe41b8f30cbf4a5422c, type: 3}
+    _emission: {fileID: 2800000, guid: 9083bc099f82ff34699723eecec01df3, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 458ce6c435fdc394397c35991d76099b, type: 3}
+    _lowNormal: {fileID: 2800000, guid: b96d3d82e69c6134db500c1ca707f10c, type: 3}
+    _lowMask: {fileID: 2800000, guid: a293dd674a422b44ab86613baa749dc5, type: 3}
+    _lowEmission: {fileID: 2800000, guid: e628994e5a8bae843846918c6358221c, type: 3}
+    _tileSize: 3
+    _glow: 2.2
+  _elementTerrain: 4
+  _detailNormal: {fileID: 2800000, guid: a61fa5172ce612b43b99ec798771ce17, type: 3}
+  _detailTileSize: 0.6
+  _detailStrength: 0.5
+  _paintInfluence: 0.6
+  _paintReference: 1.3
+  _paintBlur: 2.5
+  _paintGlow: 0.55
+  _heightBlend: 0.35
+  _roadSharpness: 7
+  _plazaSharpness: 7
+  _altSharpness: 4
+  _elementSharpness: 5
+  _cliffSlope: {x: 0.28, y: 0.5}
+  _altCoverage: 0.55
+  _altNoiseScale: 0.3
+  _altRoadClearance: 0.8
+  _sparkle: 0.6
+  _sparkleColour: {r: 1, g: 0.6, b: 0.3, a: 1}
+  _occlusion: 0.6
+  _smoothness: 1
+  _pieces:
+  - _kind: 0
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 1
+    _model:
+      _name: Ash_RoadEdge_OuterCorner
+      _mesh: {fileID: 5929752311208958228, guid: 92e52d93141296449a877d7dee18be6c, type: 3}
+      _material: {fileID: 2100000, guid: a648635acc7c8b94ab828dbb71edcaf1, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f13ed600b3e6cdf4aa96dfaf9dca1ad2, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 2
+    _model:
+      _name: Ash_RoadEdge_InnerCorner
+      _mesh: {fileID: 5386827536860784569, guid: 9481d33b41ac30546aa8375dd9e19b65, type: 3}
+      _material: {fileID: 2100000, guid: 73a0ad99d78bd6c4fb3227cfb04e4c05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 6137699fd305c464f8c2694430f64895, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 3
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 23
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 4
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 24
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 5
+    _model:
+      _name: Ash_RoadEdge_Straight
+      _mesh: {fileID: 3630744920100858881, guid: 29020c8c5e8a3534697be807cbbb3b9b, type: 3}
+      _material: {fileID: 2100000, guid: afec0c955bcdcc542a64109b14f3acc9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 0992a507c8edb8b4fb8001395d891c5f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 6
+    _model:
+      _name: Ash_RoadEdge_InnerCorner
+      _mesh: {fileID: 5386827536860784569, guid: 9481d33b41ac30546aa8375dd9e19b65, type: 3}
+      _material: {fileID: 2100000, guid: 73a0ad99d78bd6c4fb3227cfb04e4c05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 6137699fd305c464f8c2694430f64895, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 7
+    _model:
+      _name: BuildPadTile
+      _mesh: {fileID: -108980100335790629, guid: 18a2a2967b65f8b4093380837924a420, type: 3}
+      _material: {fileID: 2100000, guid: 326e2b3837b2b564681c73ed9d1b5a05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 04e617d71e25f1948961917b126e9d09, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 8
+    _model:
+      _name: GatePlinth
+      _mesh: {fileID: -1042253140019360578, guid: ab465a50e01a03847bbbbcbf21116bb5, type: 3}
+      _material: {fileID: 2100000, guid: 21e01c291b838994bbabee1057b5a244, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: edb205f5c489ce444bbdfd5731a6f8b7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 9
+    _model:
+      _name: Ash_Cliff_Straight
+      _mesh: {fileID: 4502515206660116336, guid: b4b14bc6f99ec324aa7bd4a1f7b70127, type: 3}
+      _material: {fileID: 2100000, guid: 7d042e8855f46824ea8cd1ab361a74bb, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 3f6da9e2215243944b7976daf140e313, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 10
+    _model:
+      _name: Ash_Cliff_OuterCorner
+      _mesh: {fileID: -920335266196330388, guid: a263fd336a1c8024fa1d752294e80c2f, type: 3}
+      _material: {fileID: 2100000, guid: 894090f9b5105b84999c211dab0c1c2f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: eb2ef5609d14ee24798cab09342df360, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 11
+    _model:
+      _name: Ash_Cliff_InnerCorner
+      _mesh: {fileID: -3111504623446494944, guid: 7fb80a66fa4884d45805036986ccacc2, type: 3}
+      _material: {fileID: 2100000, guid: e0bc187c12ca73c4ea9fe9dce067a5e5, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 3531cfe9f962ff44b9b02d1bb00d20db, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 12
+    _model:
+      _name: Ash_Bank_Straight
+      _mesh: {fileID: 5814953870188831858, guid: ef9568ce4627a71489ded11fe2725975, type: 3}
+      _material: {fileID: 2100000, guid: 985753581a9819f4486d387a2939e1eb, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c8cfb8bc0fc28674c93a05fedf711b97, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 13
+    _model:
+      _name: Ash_Bank_OuterCorner
+      _mesh: {fileID: 8709058262384509063, guid: 291be4b305f10a043ac6eebaeee9e4e4, type: 3}
+      _material: {fileID: 2100000, guid: 57af9e0fec7690f4597150822d9403df, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 085a81663364f5c41b7bbb7650a86e1c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 14
+    _model:
+      _name: Ash_Bank_InnerCorner
+      _mesh: {fileID: 1041436689711119273, guid: 3014d7c82a191d94e8ccc9bd6bb98686, type: 3}
+      _material: {fileID: 2100000, guid: b1e192efc7d13f74cbf3f3738be3a779, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b1fc4209d238caf4fbb1f208b22f40a4, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  _decor:
+  - _kind: 0
+    _variants:
+    - _name: Ash_Decor_LavaRock
+      _mesh: {fileID: 1929219196286791371, guid: 945e7a7a1eaf7e34ea81de07b148f722, type: 3}
+      _material: {fileID: 2100000, guid: d7dd7a497fb4f434f9749c991e0446ab, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9b89bd2512b332a4bbd13ae6d31eb1e1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.1659293
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 1
+    _variants:
+    - _name: Ash_Decor_LavaRock
+      _mesh: {fileID: 1929219196286791371, guid: 945e7a7a1eaf7e34ea81de07b148f722, type: 3}
+      _material: {fileID: 2100000, guid: d7dd7a497fb4f434f9749c991e0446ab, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9b89bd2512b332a4bbd13ae6d31eb1e1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.8764004
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 2
+    _variants:
+    - _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.7568598
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 6
+    _variants:
+    - _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0668662
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 7
+    _variants:
+    - _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.3342279
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 10
+    _variants:
+    - _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 4.509632
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 11
+    _variants:
+    - _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.9813272
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 4
+    _variants:
+    - _name: Ash_Flora_CharredTree
+      _mesh: {fileID: 7527700404631362716, guid: 287dcf1a08794fc4cb2b6af6432549a3, type: 3}
+      _material: {fileID: 2100000, guid: 1c03afc314b1dba4392af69eb171d85b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 2ed630698039dcc4ea9d67184e678360, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.2129028
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 13
+    _variants:
+    - _name: Ash_Flora_CharredTree
+      _mesh: {fileID: 7527700404631362716, guid: 287dcf1a08794fc4cb2b6af6432549a3, type: 3}
+      _material: {fileID: 2100000, guid: 1c03afc314b1dba4392af69eb171d85b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 2ed630698039dcc4ea9d67184e678360, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.3582162
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 5
+    _variants:
+    - _name: Ash_Flora_CharredTree
+      _mesh: {fileID: 7527700404631362716, guid: 287dcf1a08794fc4cb2b6af6432549a3, type: 3}
+      _material: {fileID: 2100000, guid: 1c03afc314b1dba4392af69eb171d85b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 2ed630698039dcc4ea9d67184e678360, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.7184736
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 9
+    _variants:
+    - _name: Ash_Flora_EmberBloom
+      _mesh: {fileID: -2710054563026657304, guid: a7939b242b2da224f9ae5c5fa54d300f, type: 3}
+      _material: {fileID: 2100000, guid: 87076372a384a9a42ae77b06766a291e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b0b4dbe212b154c42b2760a198cd0637, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 2.0165474
+    _glow: {r: 1, g: 0.62, b: 0.25, a: 1}
+  - _kind: 3
+    _variants:
+    - _name: Ash_Flora_EmberBloom
+      _mesh: {fileID: -2710054563026657304, guid: a7939b242b2da224f9ae5c5fa54d300f, type: 3}
+      _material: {fileID: 2100000, guid: 87076372a384a9a42ae77b06766a291e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b0b4dbe212b154c42b2760a198cd0637, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.9456788
+    _glow: {r: 1, g: 0.62, b: 0.25, a: 1}
+  - _kind: 14
+    _variants:
+    - _name: Ash_Flora_EmberBloom
+      _mesh: {fileID: -2710054563026657304, guid: a7939b242b2da224f9ae5c5fa54d300f, type: 3}
+      _material: {fileID: 2100000, guid: 87076372a384a9a42ae77b06766a291e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b0b4dbe212b154c42b2760a198cd0637, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 2.0156229
+    _glow: {r: 1, g: 0.62, b: 0.25, a: 1}
+  - _kind: 15
+    _variants:
+    - _name: Ash_Decor_AshDune
+      _mesh: {fileID: 3932509022404708994, guid: 23e583608cdb0fb48b01dba78830a3e8, type: 3}
+      _material: {fileID: 2100000, guid: 842e8e046d302df4d9e1e397ae610bca, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 46ed289cab5e9d741b9db5a5f47b446e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.5329849
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 12
+    _variants:
+    - _name: Ash_Decor_AshDune
+      _mesh: {fileID: 3932509022404708994, guid: 23e583608cdb0fb48b01dba78830a3e8, type: 3}
+      _material: {fileID: 2100000, guid: 842e8e046d302df4d9e1e397ae610bca, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 46ed289cab5e9d741b9db5a5f47b446e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.7733275
+    _glow: {r: 1, g: 0.45, b: 0.15, a: 1}
+  - _kind: 8
+    _variants:
+    - _name: Egg_Cluster
+      _mesh: {fileID: 3859704423981392224, guid: 7d75a5394ca6e074cb7c583efcf8f725, type: 3}
+      _material: {fileID: 2100000, guid: 281fa50f498215848a33d711c883ba90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1387896f775b81a4180e0808a106588c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.8123449
+    _glow: {r: 1, g: 0.55, b: 0.25, a: 1}
+  _origins:
+  - _terrain: 0
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 1
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 7
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 2
+    _model:
+      _name: Origin_Water
+      _mesh: {fileID: -4944273395457058019, guid: 84c212baa8f67e245abccb8037d042f3, type: 3}
+      _material: {fileID: 2100000, guid: 9cf069fda8f86664987ce99d17de4cd9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: de0ddeeed73ad9b4e9c8a07efab94f67, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 3
+    _model:
+      _name: Origin_Lava
+      _mesh: {fileID: 4837009674793253719, guid: 13b953e949360ab479e1beb45b4e6d2b, type: 3}
+      _material: {fileID: 2100000, guid: ff5a2b107f5b3eb419e4e3f99361f5e7, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1e3b1b553d7e1284082660057bf50bcf, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 4
+    _model:
+      _name: Origin_Quicksand
+      _mesh: {fileID: 5148176926883119700, guid: 6e93f70d36c47f048a771fed00d8a069, type: 3}
+      _material: {fileID: 2100000, guid: f2fb1b7b0e90aed40bea258fb05068bb, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 38ac5687759f12143a1af43671f7ea70, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 5
+    _model:
+      _name: Origin_Ice
+      _mesh: {fileID: 6358821060508479761, guid: b47edf10fdb826145b3cfa5d913a0b04, type: 3}
+      _material: {fileID: 2100000, guid: 710c189306cd01b43ba6cfeb27232ad4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 385148fd738b67649b7ee44b8f2b47d7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 6
+    _model:
+      _name: Origin_Bog
+      _mesh: {fileID: 1561119442894324442, guid: edcc2e5901c842744aec705c685a78da, type: 3}
+      _material: {fileID: 2100000, guid: 7b4f08064afe34d468e41d89b2a4d20f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 785439766913f5a439663cc61ba8feed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  _farDecorStart: 2
+  _farDecorAlbedo: 0.65
+  _farDecorGlow: 0.35
+  _lowFarDecorKeep: 0.5
+  _scatter:
+  - _name: Ash_Scatter_Cinders
+    _mesh: {fileID: -7269927293488296049, guid: 3407675594f9b5c41b7bc863d4dc907f, type: 3}
+    _material: {fileID: 2100000, guid: 84cf79aaed127924d8a046a32678d70e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c8448acff49b1f843bb8e89dd8ad37d7, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _nestScatter:
+  - _name: Scatter_ShellFragments
+    _mesh: {fileID: -4815131634080202507, guid: bd2ece2b45ca0e34e9877a103269c040, type: 3}
+    _material: {fileID: 2100000, guid: 0cf435146461a804dac8c4d4518c6f27, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c9a977fe19a6f4e4e87407a5a3cc048f, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _scatterChance: 0.5
+  _nestScatterRadius: 2.5
+  _veinChance: 0.04
+  _cliffInsetCells: 1.5
+  _cliffSideReach: 0.75
+  _silhouettes: []
+  _silhouetteCount: 7
+  _silhouetteDistance: {x: 6, y: 12}
+  _showBuildPads: 0
+  _placingColour: {r: 0.45, g: 0.8, b: 1, a: 1}
+  _placingGlow: 0.9
+  _placingRadiusCells: 4.5
+  _landmarks: []
+  _windDirection: {x: 1, y: 0, z: 0.4}
+  _swayAmplitude: 0.05
+  _swaySpeed: 1
+  _flutter: 0.012

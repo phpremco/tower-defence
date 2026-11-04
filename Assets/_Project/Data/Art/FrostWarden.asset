@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: FrostWarden
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+  _material: {fileID: 2100000, guid: 12f1ffe505f0fa044a946dd298403d9a, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 93e057e14aa2bb642bcb60e88f84dc24, type: 2}
+  _secondMaterial: {fileID: 2100000, guid: c6b433cfbb3d12848b9968527a406e40, type: 2}
+  _lowSecondMaterial: {fileID: 2100000, guid: 582371283d1b0c249856d61cfded450d, type: 2}
+  _scale: 1
+  _yaw: 0
+  _bodyCentrePivot: 0
+  _height: 4.7679415
+  _lodScreenHeight: 0.09
+  _upperBodyBone: 
+  _deathFade: {x: 0.70000005, y: 2.38}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _clips:
+  - _role: 5
+    _clip: {fileID: 4961660912500997643, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: 3710124484863425322, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 1
+    _trigger: Pulse
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 35
+    _clip: {fileID: -439235100912695975, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: -3722724420971355327, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 1.338
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 3
+    _clip: {fileID: 7808484544301855561, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: 4098796406711141753, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 34
+    _clip: {fileID: -2971820401918303889, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: -3763797354134519866, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 1
+    _clip: {fileID: 8763182178761906159, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: 7543349188887885114, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 0
+    _clip: {fileID: 8775537390293457106, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: -1730726430257384968, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 1.029
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 2
+    _clip: {fileID: -7399125238499090329, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}
+    _farClip: {fileID: 4848951509763466190, guid: 76c49fbb6046e6a4cb9ae1ab8ab0ec93, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0

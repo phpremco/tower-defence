@@ -1,0 +1,37 @@
+{
+  "asset": "North_Cliff_InnerCorner",
+  "continent": "NorthernCrown",
+  "game_tris": 1500,
+  "source_tris": 438660,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 130,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.592,
+    "world_per_uv": 6.8672967079292
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 57.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 98.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.624,
+    2.614,
+    2.073
+  ]
+}

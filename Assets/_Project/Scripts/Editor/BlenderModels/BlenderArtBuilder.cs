@@ -63,7 +63,7 @@ namespace Game.Editor
             { "Fly", ModelClipRole.Move }, { "Float", ModelClipRole.Move }, { "Idle", ModelClipRole.Idle },
             { "Hit", ModelClipRole.Hit }, { "Death", ModelClipRole.Death }, { "Curl", ModelClipRole.Curl },
             { "Roll", ModelClipRole.Roll }, { "Uncurl", ModelClipRole.Uncurl }, { "Land", ModelClipRole.Land },
-            { "Grounded", ModelClipRole.Grounded },
+            { "Grounded", ModelClipRole.Grounded }, { "Swim", ModelClipRole.Swim }, { "WalkEnraged", ModelClipRole.EnragedMove },
         };
 
         // A hit only flinches: most of the stride or wing beat keeps going underneath it.
@@ -132,8 +132,21 @@ namespace Game.Editor
             var lod1 = AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{entry.Asset}_LOD1.fbx");
             BlenderReport report = BlenderReport.Load($"{folder}/{entry.Asset}_report.json");
             string maps = entry.Skin == null ? folder : $"{folder}/{BlenderSync.SkinFolder}/{entry.Skin}";
-            Material high = BuildMaterial(entry, report, maps, entry.Id, false);
-            Material low = BuildMaterial(entry, report, $"{maps}/{BlenderSync.LowFolder}", entry.Id + "_Low", true);
+            List<BlenderReport.Detail> details = report.Details();
+            List<BlenderReport.Detail> bodyDetails = entry.SecondMaterial == null ? details : DetailsOfPart(details, 0);
+            Material high = BuildMaterial(entry, entry.MapPrefix, bodyDetails, maps, entry.Id, false);
+            Material low = BuildMaterial(entry, entry.MapPrefix, bodyDetails, $"{maps}/{BlenderSync.LowFolder}", entry.Id + "_Low", true);
+            Material second = null;
+            Material lowSecond = null;
+            if (entry.SecondMaterial != null)
+            {
+                // The second slot (a boss's crystals or ice) has maps of its own and the report's second detail block.
+                string prefix = $"{entry.MapPrefix}_{entry.SecondMaterial}";
+                List<BlenderReport.Detail> secondDetails = DetailsOfPart(details, 1);
+                second = BuildMaterial(entry, prefix, secondDetails, maps, $"{entry.Id}_{entry.SecondMaterial}", false);
+                lowSecond = BuildMaterial(entry, prefix, secondDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{entry.SecondMaterial}_Low", true);
+            }
+
             List<ClipRow> clips = CollectClips(entry, report, $"{folder}/{entry.Asset}.fbx", lod1 != null ? $"{folder}/{entry.Asset}_LOD1.fbx" : null);
 
             var art = LoadOrCreate<ModelArtDefinition>($"{ArtDataFolder}/{entry.Id}.asset");
@@ -142,6 +155,8 @@ namespace Game.Editor
             so.FindProperty("_lod1").objectReferenceValue = lod1;
             so.FindProperty("_material").objectReferenceValue = high;
             so.FindProperty("_lowMaterial").objectReferenceValue = low;
+            so.FindProperty("_secondMaterial").objectReferenceValue = second;
+            so.FindProperty("_lowSecondMaterial").objectReferenceValue = lowSecond;
             so.FindProperty("_scale").floatValue = entry.Scale;
             so.FindProperty("_bodyCentrePivot").boolValue = entry.BodyCentrePivot;
             so.FindProperty("_height").floatValue = ModelTop(model);
@@ -149,6 +164,7 @@ namespace Game.Editor
             so.FindProperty("_deathFade").vector2Value = DeathFade(entry, clips);
             so.FindProperty("_embers").boolValue = entry.Embers;
             so.FindProperty("_bleeds").boolValue = entry.Bleeds;
+            WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());
             WriteClips(so.FindProperty("_clips"), clips);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
@@ -174,7 +190,7 @@ namespace Game.Editor
                 }
 
                 ModelClipRole role = spec?.Role ?? RolesByName[clip.name];
-                float distance = role == ModelClipRole.Move ? MoveDistance(entry, report) : role == ModelClipRole.Roll ? report.Number("roll_distance_per_loop") : 0f;
+                float distance = DistancePerLoop(role, entry, report);
                 float weight = spec?.Weight ?? (role == ModelClipRole.Hit ? HitWeight : 1f);
                 far.TryGetValue(clip.name, out AnimationClip farClip);
                 clips.Add(new ClipRow(role, clip, farClip, distance, (spec?.EventFrame ?? 0) / FramesPerSecond, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight));
@@ -213,6 +229,19 @@ namespace Game.Editor
             }
 
             return null;
+        }
+
+        // Model units one loop of a travel cycle covers, from the report (or the row for the older exports).
+        private static float DistancePerLoop(ModelClipRole role, BlenderArtEntry entry, BlenderReport report)
+        {
+            switch (role)
+            {
+                case ModelClipRole.Move: return MoveDistance(entry, report);
+                case ModelClipRole.Roll: return report.Number("roll_distance_per_loop");
+                case ModelClipRole.Swim: return report.Number("swim_distance_per_loop");
+                case ModelClipRole.EnragedMove: return report.Number("walk_enraged_distance_per_loop");
+                default: return 0f;
+            }
         }
 
         private static float MoveDistance(BlenderArtEntry entry, BlenderReport report)
@@ -279,6 +308,11 @@ namespace Game.Editor
 
         internal static Material BuildMaterial(BlenderArtEntry entry, BlenderReport report, string maps, string name, bool low)
         {
+            return BuildMaterial(entry, entry.MapPrefix, report.Details(), maps, name, low);
+        }
+
+        private static Material BuildMaterial(BlenderArtEntry entry, string prefix, List<BlenderReport.Detail> details, string maps, string name, bool low)
+        {
             string path = $"{MaterialFolder}/{name}.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (material == null)
@@ -290,7 +324,6 @@ namespace Game.Editor
 
             material.shader = Shader.Find(SurfaceMaterials.UnitShaderName);
             material.shaderKeywords = new string[0];
-            string prefix = entry.MapPrefix;
             material.SetColor("_BaseColor", Color.white * entry.Brightness);
             material.SetTexture("_BaseMap", Texture($"{maps}/{prefix}_Albedo.png"));
             SetMap(material, "_BumpMap", Texture($"{maps}/{prefix}_Normal.png"), "_NORMALMAP");
@@ -302,15 +335,15 @@ namespace Game.Editor
             material.SetFloat("_Metallic", 0f);
             material.SetFloat("_OcclusionStrength", OcclusionStrength);
             SurfaceMaterials.SetRim(material, entry.Colony ? SurfaceMaterials.ColonyRim : SurfaceMaterials.AlienRim, entry.Rim);
-            SetDetails(material, report, entry, low);
+            SetDetails(material, details, entry, low);
             EditorUtility.SetDirty(material);
             return material;
         }
 
         // The mask's B channel says where the first family's detail normal goes, A the second; Low keeps only the first.
-        private static void SetDetails(Material material, BlenderReport report, BlenderArtEntry entry, bool low)
+        private static void SetDetails(Material material, List<BlenderReport.Detail> details, BlenderArtEntry entry, bool low)
         {
-            foreach (BlenderReport.Detail detail in report.Details())
+            foreach (BlenderReport.Detail detail in details)
             {
                 bool second = detail.Channel == 'A';
                 if (second && low)
@@ -328,6 +361,37 @@ namespace Game.Editor
                 SetMap(material, slot, map, second ? "_DETAIL2" : "_DETAIL");
                 material.SetTextureScale(slot, Vector2.one * detail.Tiling);
                 material.SetFloat(second ? "_DetailNormalScale2" : "_DetailNormalScale", second ? entry.Detail2 : entry.Detail);
+            }
+        }
+
+        // A two-material report lists the body's detail families first, then the second slot's; each block starts with
+        // its mask-B family, so a block runs from one B to the next.
+        private static List<BlenderReport.Detail> DetailsOfPart(List<BlenderReport.Detail> details, int part)
+        {
+            var found = new List<BlenderReport.Detail>(2);
+            int block = -1;
+            foreach (BlenderReport.Detail detail in details)
+            {
+                if (detail.Channel == 'B')
+                {
+                    block++;
+                }
+
+                if (block == part)
+                {
+                    found.Add(detail);
+                }
+            }
+
+            return found;
+        }
+
+        private static void WriteStrings(SerializedProperty array, List<string> values)
+        {
+            array.arraySize = values.Count;
+            for (int i = 0; i < values.Count; i++)
+            {
+                array.GetArrayElementAtIndex(i).stringValue = values[i];
             }
         }
 

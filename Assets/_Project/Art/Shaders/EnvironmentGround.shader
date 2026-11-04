@@ -131,6 +131,30 @@ Shader "Game/EnvironmentGround"
             TEXTURE2D(_ElementEmission);
             TEXTURE2D(_DetailNormal);
 
+            // Set by BuildPadHighlight: the free build cells (point-sampled, one texel per cell), the field rect, the grid
+            // size, how far placing has faded in, the cursor (xz, radius in world units) and the glow colour.
+            TEXTURE2D(_EnvPadMask); SAMPLER(sampler_EnvPadMask);
+            float4 _EnvPadRect;
+            float4 _EnvPadGrid;
+            float _EnvPadHighlight;
+            float4 _EnvPadCursor;
+            half4 _EnvPadColour;
+
+            // While a tower is being placed, each free cell near the cursor glows as a soft rounded spot with a brighter
+            // rim, fading out with distance from the cursor; at rest nothing shows, so the field never reads as a grid.
+            half3 PlacingGlow(float2 xz)
+            {
+                float2 padUV = (xz - _EnvPadRect.xy) * _EnvPadRect.zw;
+                half free = SAMPLE_TEXTURE2D_LOD(_EnvPadMask, sampler_EnvPadMask, padUV, 0).r;
+                float2 local = frac(padUV * _EnvPadGrid.xy) - 0.5;
+                float2 corner = max(abs(local) - 0.28, 0.0);
+                float edge = length(corner) + min(max(abs(local.x), abs(local.y)) - 0.28, 0.0);
+                half spot = 1.0h - smoothstep(0.1h, 0.19h, (half)edge);
+                half rim = smoothstep(0.04h, 0.14h, (half)edge) * spot;
+                half reach = 1.0h - smoothstep(0.45h, 1.0h, (half)(distance(xz, _EnvPadCursor.xy) / max(_EnvPadCursor.z, 0.01)));
+                return _EnvPadColour.rgb * (free * reach * saturate(_EnvPadHighlight) * (0.3h * spot + 0.7h * rim));
+            }
+
             // Every tiling map repeats and shares the ground albedo's filtering (trilinear, anisotropic from its importer).
             #define TILE_SAMPLER sampler_GroundAlbedo
 
@@ -317,6 +341,11 @@ Shader "Game/EnvironmentGround"
                 surfaceData.occlusion = lerp(1.0h, result.mask.r, _Paint.z);
                 surfaceData.normalTS = normalize(result.normalTS);
                 surfaceData.emission = result.emission + SAMPLE_TEXTURE2D(_PaintGlow, sampler_PaintMap, fieldUV).rgb * (_GlowB.y * natural);
+                UNITY_BRANCH
+                if (_EnvPadHighlight > 0.001)
+                {
+                    surfaceData.emission += PlacingGlow(xz);
+                }
 
                 #if !defined(_ENV_LOW)
                     // Grit that glints now and then, and a tiling detail normal for close-ups that fades at play zoom.

@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: CinderMatriarch
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+  _material: {fileID: 2100000, guid: 9060509fda358b34696b382592edcd52, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 48ad127c5f6771e4eb6eef94d7248f00, type: 2}
+  _secondMaterial: {fileID: 2100000, guid: a4da318404bb1544d918cd4780dcef05, type: 2}
+  _lowSecondMaterial: {fileID: 2100000, guid: 3c38a9c655f4dd74b9d61dd4b6fe832e, type: 2}
+  _scale: 1
+  _yaw: 0
+  _bodyCentrePivot: 0
+  _height: 3.054222
+  _lodScreenHeight: 0.09
+  _upperBodyBone: 
+  _deathFade: {x: 0.6, y: 2.0400002}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _clips:
+  - _role: 0
+    _clip: {fileID: -704831411696456289, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: -4850325007883852859, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 1.288
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 1
+    _clip: {fileID: 4336013932227953542, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 625385282841491500, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 3
+    _clip: {fileID: -5355110806378532788, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 7504319139329904010, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 33
+    _clip: {fileID: -2243036503271527938, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 7760276999112184040, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.6666667
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 5
+    _clip: {fileID: -8259480850601320843, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: -6237870157900311361, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 1
+    _trigger: Spawn
+    _socket: Vent_1
+    _weight: 1
+    _upperBody: 0
+  - _role: 2
+    _clip: {fileID: 6915122293702346868, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: -1452645137070158648, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0

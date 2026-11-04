@@ -1,0 +1,37 @@
+{
+  "asset": "Ash_Decor_AshDune",
+  "continent": "AshenReach",
+  "game_tris": 1200,
+  "source_tris": 100424,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 12,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.678,
+    "world_per_uv": 2.3683585620970864
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 19.7,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 39.5,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.308,
+    0.903,
+    0.825
+  ]
+}

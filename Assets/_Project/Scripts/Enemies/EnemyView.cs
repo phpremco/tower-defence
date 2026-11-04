@@ -184,6 +184,10 @@ namespace Game.Enemies
         private const float HoverPoolRadius = 0.5f;
         private const float HoverPoolBrightness = 0.7f;
         private const float PlateDebrisSize = 0.3f;
+        // A shed armour part of a modelled creature bursts into shards of its colour that fall back to the ground.
+        private const int ShedShardBurst = 22;
+        private const float ShedShardBrightness = 1.8f;
+        private const float ShedShardGravity = 1.2f;
         // An imported model moves its own body: the procedural attack pose only adds a share of its lunge and pitch,
         // less still when the model has a strike clip of its own.
         private const float ModelPoseShare = 0.6f;
@@ -299,6 +303,7 @@ namespace Game.Enemies
         private readonly List<Renderer> _wavedRenderers = new List<Renderer>();
         private readonly List<SurfaceWave> _waves = new List<SurfaceWave>();
         private CreatureModel _model;
+        private ModelShedParts _shed;
         private CreatureClips _clips;
         private BossAbilities _abilities;
         private BossAbilityKind[] _powerKinds;
@@ -407,6 +412,7 @@ namespace Game.Enemies
             _health.Changed += OnHealthChanged;
             _health.ArmorChanged += OnArmorChanged;
             ShowPlates(_plates.Count);
+            _shed?.SetShed(0);
             SetBar(1f, _health.ArmorMax > 0f ? 1f : 0f);
             _clips?.Restart();
             BeginSpawn(enemy);
@@ -609,7 +615,8 @@ namespace Game.Enemies
             body.localPosition = Vector3.zero;
             body.localScale = Vector3.one;
             _model = CreatureModel.Create(body, art, _creatureScale, ModelQuality.IsLow);
-            _shellMaterials = new[] { _model.Material };
+            _shellMaterials = _model.Materials;
+            _shed = art.ShedBones.Length > 0 ? new ModelShedParts(_model) : null;
             _abilities = GetComponent<BossAbilities>();
             BossAbilityDefinition[] abilities = definition.Abilities;
             _powerKinds = new BossAbilityKind[abilities.Length];
@@ -923,6 +930,7 @@ namespace Game.Enemies
             PlayStrikeMoments(strike, style);
             AnticipatePowers();
             _clips.Tick(dt, dt > 0f ? moved / dt : 0f, walking, _enemy.IsRolling, _creatureScale);
+            _shed?.Apply();
             PlayClipMoment();
 
             Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
@@ -1504,6 +1512,11 @@ namespace Game.Enemies
         private void OnArmorChanged(float _)
         {
             float fraction = _health.ArmorFraction;
+            if (_shed != null)
+            {
+                ShedModelParts(fraction);
+            }
+
             int shown = Mathf.CeilToInt(fraction * _plates.Count - 0.001f);
             int visible = CountVisiblePlates();
             if (shown < visible)
@@ -1520,6 +1533,25 @@ namespace Game.Enemies
 
             _lastArmor = fraction;
             SetBar(_health.Fraction, fraction);
+        }
+
+        // A modelled creature's armour parts come off in their shedding order, each throwing a burst of shards in the
+        // creature's colour from where it sat; a regrown armour puts them back.
+        private void ShedModelParts(float armorFraction)
+        {
+            int shed = _shed.Count - Mathf.CeilToInt(armorFraction * _shed.Count - 0.001f);
+            for (int i = _shed.Shed; i < shed && _impact != null; i++)
+            {
+                ParticleSystem.MainModule main = _impact.main;
+                Color shard = _enemy.Definition.Color * ShedShardBrightness;
+                shard.a = 1f;
+                main.startColor = shard;
+                main.gravityModifier = ShedShardGravity;
+                _impact.transform.position = _shed.Position(i);
+                _impact.Emit(Mathf.RoundToInt(ShedShardBurst * Mathf.Clamp(_creatureScale, 0.6f, 2f)));
+            }
+
+            _shed.SetShed(shed);
         }
 
         private int CountVisiblePlates()
@@ -1628,6 +1660,7 @@ namespace Game.Enemies
                     Size = _creatureScale,
                     GroundY = DeathGroundY + (enemy.Definition.Art.BodyCentrePivot ? FlyerRestHeight * _creatureScale : 0f),
                     Style = enemy.Definition.DeathStyle,
+                    Shed = _shed != null ? _shed.Shed : 0,
                 });
                 return;
             }

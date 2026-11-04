@@ -1,0 +1,50 @@
+{
+  "asset": "Slagstrider",
+  "game_tris": 3957,
+  "source_tris": 422000,
+  "bones": 13,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 32,
+    "folded_fallback_faces": 9,
+    "mirrored_faces": 1974,
+    "uv_coverage": 0.622,
+    "world_per_uv": 1.1434996192522888
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 9.5,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 14.3,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 36,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 42
+  },
+  "unity_scale": 0.8,
+  "scale_keyed_bones": [],
+  "lod1": {
+    "fbx": "Slagstrider_LOD1.fbx",
+    "tris": 1699,
+    "bones": 8
+  },
+  "walk_distance_per_loop": 0.387,
+  "pivot": "ground, body centre",
+  "trail_origin": "bone Drip (under the belly, 0.22 above the ground; LOD1: Body)",
+  "footfalls": "Walk frames 0 (L1, R2) and 18 (R1, L2)"
+}

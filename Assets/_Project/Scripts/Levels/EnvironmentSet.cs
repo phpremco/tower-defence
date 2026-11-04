@@ -92,6 +92,20 @@ namespace Game.Levels
         [Tooltip("Cells outside the field where silhouettes stand, nearest and farthest.")]
         [SerializeField] private Vector2 _silhouetteDistance = new Vector2(6f, 12f);
 
+        [Header("Build spots")]
+        [Tooltip("Draw the build pad tile on every buildable cell. Off: buildable ground is plain ground at rest (Remco 2026-11-04: no grid of squares).")]
+        [SerializeField] private bool _showBuildPads;
+        [Tooltip("While a tower is being placed, the free cells glow softly in this colour on the ground.")]
+        [SerializeField] private Color _placingColour = new Color(0.45f, 0.8f, 1f);
+        [Tooltip("Glow of a free cell next to the cursor while placing.")]
+        [SerializeField] [Min(0f)] private float _placingGlow = 0.9f;
+        [Tooltip("Cells from the cursor where the free cells' glow has faded out completely.")]
+        [SerializeField] [Min(1f)] private float _placingRadiusCells = 4.5f;
+
+        [Header("Landmarks")]
+        [Tooltip("The continent's story set pieces (a seal in its states, a wreck), by mesh name; placed only by the level code that asks for one.")]
+        [SerializeField] private EnvironmentMesh[] _landmarks = new EnvironmentMesh[0];
+
         [Header("Wind")]
         [SerializeField] private Vector3 _windDirection = new Vector3(1f, 0f, 0.4f);
         [Tooltip("Sway of the flora tips in world units (README: about 0.04).")]
@@ -139,6 +153,11 @@ namespace Game.Levels
         public EnvironmentMesh[] Silhouettes => _silhouettes;
         public int SilhouetteCount => _silhouetteCount;
         public Vector2 SilhouetteDistance => _silhouetteDistance;
+        public bool ShowBuildPads => _showBuildPads;
+        public Color PlacingColour => _placingColour;
+        public float PlacingGlow => _placingGlow;
+        public float PlacingRadiusCells => _placingRadiusCells;
+        public EnvironmentMesh[] Landmarks => _landmarks;
         public Vector3 WindDirection => _windDirection.sqrMagnitude > 0f ? _windDirection.normalized : Vector3.right;
         public float SwayAmplitude => _swayAmplitude;
         public float SwaySpeed => _swaySpeed;
@@ -180,6 +199,20 @@ namespace Game.Levels
                 if (origin != null && origin.Terrain == terrain && origin.Model != null && origin.Model.IsValid)
                 {
                     return origin;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>The story set piece of that mesh name (<c>Core_Seal_Cracked</c>), or null when the set has none.</summary>
+        public EnvironmentMesh Landmark(string meshName)
+        {
+            foreach (EnvironmentMesh landmark in _landmarks)
+            {
+                if (landmark != null && landmark.IsValid && landmark.Name == meshName)
+                {
+                    return landmark;
                 }
             }
 

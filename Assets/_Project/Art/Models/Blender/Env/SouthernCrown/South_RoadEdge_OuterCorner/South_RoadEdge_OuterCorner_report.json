@@ -1,0 +1,37 @@
+{
+  "asset": "South_RoadEdge_OuterCorner",
+  "continent": "SouthernCrown",
+  "game_tris": 500,
+  "source_tris": 13596,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 1,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.244,
+    "world_per_uv": 1.0478003355470071
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 8.7,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 15.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.286,
+    0.277,
+    0.227
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "set": "Mire_Ground",
+  "continent": "Mirewood",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.155,
+    0.13,
+    0.102
+  ],
+  "value_mean": 0.133,
+  "smoothness_mean": 0.164,
+  "height_range_m": 0.0365
+}

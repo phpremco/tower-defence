@@ -1,0 +1,21 @@
+{
+  "set": "Core_Cliff",
+  "continent": "TheCore",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.155,
+    0.144,
+    0.236
+  ],
+  "value_mean": 0.153,
+  "smoothness_mean": 0.59,
+  "height_range_m": 0.0643
+}

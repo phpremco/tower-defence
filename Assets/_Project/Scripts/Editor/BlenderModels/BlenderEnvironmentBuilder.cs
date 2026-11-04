@@ -135,7 +135,7 @@ namespace Game.Editor
                 EnvironmentPieceKind? mirrored = MirroredKind(pair.Key);
                 if (mirrored.HasValue)
                 {
-                    pieces.Add(new EnvironmentPiece(mirrored.Value, Mirror(model)));
+                    pieces.Add(new EnvironmentPiece(mirrored.Value, row.MirrorEnds ? Mirror(model) : model));
                 }
             }
 
@@ -145,6 +145,8 @@ namespace Game.Editor
             WriteArray(so.FindProperty("_scatter"), BuildMeshes(row.Scatter));
             WriteArray(so.FindProperty("_nestScatter"), BuildMeshes(row.NestScatter));
             WriteArray(so.FindProperty("_silhouettes"), BuildMeshes(row.Silhouettes));
+            WriteArray(so.FindProperty("_landmarks"), BuildMeshes(row.Landmarks));
+            so.FindProperty("_sparkleColour").colorValue = row.Sparkle;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(set);
             return set;

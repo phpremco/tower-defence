@@ -1,0 +1,20 @@
+{
+  "set": "Ash_Road",
+  "continent": "AshenReach",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 2.0,
+  "maps": [
+    "Albedo",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.495,
+    0.448,
+    0.388
+  ],
+  "value_mean": 0.453,
+  "smoothness_mean": 0.314,
+  "height_range_m": 0.0295
+}

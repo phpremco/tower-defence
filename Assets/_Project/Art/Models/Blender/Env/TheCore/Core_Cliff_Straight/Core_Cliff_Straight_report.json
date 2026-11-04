@@ -1,0 +1,37 @@
+{
+  "asset": "Core_Cliff_Straight",
+  "continent": "TheCore",
+  "game_tris": 1500,
+  "source_tris": 160892,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 8,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.754,
+    "world_per_uv": 4.211776239468208
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 60.2,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 35.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.009,
+    1.053,
+    2.437
+  ]
+}

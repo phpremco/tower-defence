@@ -1,0 +1,37 @@
+{
+  "asset": "Core_Decor_SealShard",
+  "continent": "TheCore",
+  "game_tris": 1200,
+  "source_tris": 101248,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 1,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.139,
+    "world_per_uv": 5.177068540640961
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 43.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 74.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.682,
+    0.829,
+    0.652
+  ]
+}

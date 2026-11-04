@@ -16,6 +16,8 @@ MonoBehaviour:
   _lod1: {fileID: 919132149155446097, guid: 527a0452366bc7349beb71e74b4eaa9a, type: 3}
   _material: {fileID: 2100000, guid: 0a884636881f9494ba23759a60cfcd69, type: 2}
   _lowMaterial: {fileID: 2100000, guid: 512ce39bba80a544296f7228b02de37e, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
   _scale: 1.4
   _yaw: 0
   _bodyCentrePivot: 0
@@ -25,6 +27,7 @@ MonoBehaviour:
   _deathFade: {x: 0.33333334, y: 1.1333334}
   _embers: 0
   _bleeds: 1
+  _shedBones: []
   _clips:
   - _role: 0
     _clip: {fileID: -8991019518285842289, guid: d010ccefc089d104582614f91a3aaaac, type: 3}

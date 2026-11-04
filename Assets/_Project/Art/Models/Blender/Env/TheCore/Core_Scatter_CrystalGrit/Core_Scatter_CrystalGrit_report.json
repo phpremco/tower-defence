@@ -1,0 +1,37 @@
+{
+  "asset": "Core_Scatter_CrystalGrit",
+  "continent": "TheCore",
+  "game_tris": 200,
+  "source_tris": 3068,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 4,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.597,
+    "world_per_uv": 0.19880183857599143
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 2.8,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 1.7,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.191,
+    0.24,
+    0.091
+  ]
+}

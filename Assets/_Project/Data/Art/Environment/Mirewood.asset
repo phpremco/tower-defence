@@ -1,0 +1,1227 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4231e1d5ed79246afe2bc086dab3ef, type: 3}
+  m_Name: Mirewood
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.EnvironmentSet
+  _prefix: Mire_
+  _groundShader: {fileID: 4800000, guid: d8b4f6e11fac6864ab13aa91fbffea00, type: 3}
+  _ground:
+    _albedo: {fileID: 2800000, guid: 928fd9e397c4e4f458323ee919b086a3, type: 3}
+    _normal: {fileID: 2800000, guid: f7f01d4516644ee4b977def616f310f4, type: 3}
+    _mask: {fileID: 2800000, guid: 942336e555a526044b857de2e0eca4c1, type: 3}
+    _emission: {fileID: 2800000, guid: 86f2cfc1ba2c1ca4bbc515600289b6fb, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 22402a4f4be8a8a4584f34a5e7168fb2, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 75cbe1c9f23d92f43a503a16bcf92b83, type: 3}
+    _lowMask: {fileID: 2800000, guid: 8d4a2907f5cb12147b237623a9ae483f, type: 3}
+    _lowEmission: {fileID: 2800000, guid: 58b8f78a9eac4b248a122061bc3b5897, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _groundAlt:
+    _albedo: {fileID: 2800000, guid: e44ba872be55d654b946107cbc824cbd, type: 3}
+    _normal: {fileID: 2800000, guid: 91fcea3b9ab119e4b85524de1a517807, type: 3}
+    _mask: {fileID: 2800000, guid: 9aabc96426a931a4bb4dfeba733b92f2, type: 3}
+    _emission: {fileID: 2800000, guid: 95be5f8da96b3614ea8cf9b786a2eb69, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 5fef8fd92041fa24db0c96e545bafbac, type: 3}
+    _lowNormal: {fileID: 2800000, guid: bf6fcdf99b3b49f45b49d5e354385830, type: 3}
+    _lowMask: {fileID: 2800000, guid: 6244c167127b3784d80a897b182001e3, type: 3}
+    _lowEmission: {fileID: 2800000, guid: babedbf5b691608489ee0da6a9c9520c, type: 3}
+    _tileSize: 2
+    _glow: 1.3
+  _road:
+    _albedo: {fileID: 2800000, guid: 2ee23373bc0953447971e92909306dd9, type: 3}
+    _normal: {fileID: 2800000, guid: 6e692f3ccf685f840822ddd7063ffd72, type: 3}
+    _mask: {fileID: 2800000, guid: 538c921ab35f9c440b776aaf7da39903, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: 61276023bda48134dab806757db59d0d, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 6a8452cf52c82b249bfbb458f4cb3324, type: 3}
+    _lowMask: {fileID: 2800000, guid: 8faebda9b98f9d142982b78677b69345, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 2
+    _glow: 0
+  _plaza:
+    _albedo: {fileID: 2800000, guid: 2ee23373bc0953447971e92909306dd9, type: 3}
+    _normal: {fileID: 2800000, guid: 6e692f3ccf685f840822ddd7063ffd72, type: 3}
+    _mask: {fileID: 2800000, guid: 538c921ab35f9c440b776aaf7da39903, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: 61276023bda48134dab806757db59d0d, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 6a8452cf52c82b249bfbb458f4cb3324, type: 3}
+    _lowMask: {fileID: 2800000, guid: 8faebda9b98f9d142982b78677b69345, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 2
+    _glow: 1.6
+  _cliff:
+    _albedo: {fileID: 2800000, guid: 9f6e992240f3a254cb763ec781ed6e32, type: 3}
+    _normal: {fileID: 2800000, guid: 93c7e8cd5c22b4647b1e651400e49bf4, type: 3}
+    _mask: {fileID: 2800000, guid: 1be0a127587c0cc409766ca7ac17d369, type: 3}
+    _emission: {fileID: 2800000, guid: 69e274a9af9afcf438636292b74cafed, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 88219e23605c07e4d82f479abe8b09fd, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 91ca7a209338bb043a413d0bb3d6a333, type: 3}
+    _lowMask: {fileID: 2800000, guid: 9ae7af86274a4824498f56bbed03519c, type: 3}
+    _lowEmission: {fileID: 2800000, guid: 08d3f8459d556f445b732dbc7302ec46, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _element:
+    _albedo: {fileID: 2800000, guid: 3a4da1faa3eddc9489f705101f0d2d0d, type: 3}
+    _normal: {fileID: 2800000, guid: f491bd54160435e4093d1b8f23b69102, type: 3}
+    _mask: {fileID: 2800000, guid: d064e66e3167fd440bfc842528a2ad9f, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: b8be3bee6c562a34589192794ce888a0, type: 3}
+    _lowNormal: {fileID: 2800000, guid: c934763ebdc6678488d292239ee344d6, type: 3}
+    _lowMask: {fileID: 2800000, guid: 2860b5af8ee14a74abb9c53f390cdb7f, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 3
+    _glow: 2.2
+  _elementTerrain: 6
+  _detailNormal: {fileID: 2800000, guid: a61fa5172ce612b43b99ec798771ce17, type: 3}
+  _detailTileSize: 0.6
+  _detailStrength: 0.5
+  _paintInfluence: 0.6
+  _paintReference: 1.3
+  _paintBlur: 2.5
+  _paintGlow: 0.55
+  _heightBlend: 0.35
+  _roadSharpness: 7
+  _plazaSharpness: 7
+  _altSharpness: 4
+  _elementSharpness: 5
+  _cliffSlope: {x: 0.28, y: 0.5}
+  _altCoverage: 0.55
+  _altNoiseScale: 0.3
+  _altRoadClearance: 0.8
+  _sparkle: 0.6
+  _sparkleColour: {r: 0.5, g: 1, b: 0.85, a: 1}
+  _occlusion: 0.6
+  _smoothness: 1
+  _pieces:
+  - _kind: 0
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 1
+    _model:
+      _name: Mire_RoadEdge_OuterCorner
+      _mesh: {fileID: 2447963743715146931, guid: 6b7dc07f61d2e4d43bc9577a0ab3ac0e, type: 3}
+      _material: {fileID: 2100000, guid: 27024c04732a4244697c03cf364f2ac4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fb40d37179d5a4d4a829370a5d8649cc, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 2
+    _model:
+      _name: Mire_RoadEdge_InnerCorner
+      _mesh: {fileID: 7880221411048403979, guid: 67f22c5405f71674f87ccd47f9cf46e0, type: 3}
+      _material: {fileID: 2100000, guid: 6e7b21b0f9f9540409e98c243cadb77f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 99a0ead45e6f49f43819941d99d0de04, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 3
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 23
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 4
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 24
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 5
+    _model:
+      _name: Mire_RoadEdge_Straight
+      _mesh: {fileID: -4132848523164486348, guid: fda959e283414644db15193225e8db28, type: 3}
+      _material: {fileID: 2100000, guid: 14af9863fffea0043a017451c5483a1b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b49f3606a5b4ade46b30ce490616273b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 6
+    _model:
+      _name: Mire_RoadEdge_InnerCorner
+      _mesh: {fileID: 7880221411048403979, guid: 67f22c5405f71674f87ccd47f9cf46e0, type: 3}
+      _material: {fileID: 2100000, guid: 6e7b21b0f9f9540409e98c243cadb77f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 99a0ead45e6f49f43819941d99d0de04, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 7
+    _model:
+      _name: BuildPadTile
+      _mesh: {fileID: -108980100335790629, guid: 18a2a2967b65f8b4093380837924a420, type: 3}
+      _material: {fileID: 2100000, guid: 326e2b3837b2b564681c73ed9d1b5a05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 04e617d71e25f1948961917b126e9d09, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 8
+    _model:
+      _name: GatePlinth
+      _mesh: {fileID: -1042253140019360578, guid: ab465a50e01a03847bbbbcbf21116bb5, type: 3}
+      _material: {fileID: 2100000, guid: 21e01c291b838994bbabee1057b5a244, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: edb205f5c489ce444bbdfd5731a6f8b7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 9
+    _model:
+      _name: Mire_Cliff_Straight
+      _mesh: {fileID: 7160951510876999654, guid: 7a4b3a6e9237a9a4a9646fad5abbdc9d, type: 3}
+      _material: {fileID: 2100000, guid: 4ad464b063122d54b8d79206843e893b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f34fadf061a7d49408f464794369c945, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 10
+    _model:
+      _name: Mire_Cliff_OuterCorner
+      _mesh: {fileID: 9054874841158000955, guid: 5b79858ed03ef9f418c6ca012b84b3e3, type: 3}
+      _material: {fileID: 2100000, guid: 75bf2ce1e860cca42acc5fffcc1fc552, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 8fbafa6c0fc8a9d4d89c458494b5576c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 11
+    _model:
+      _name: Mire_Cliff_InnerCorner
+      _mesh: {fileID: -1555383951479102497, guid: cb4a7aaee5d4fea4883ad16698a1dd22, type: 3}
+      _material: {fileID: 2100000, guid: c56cd719a2498f345918ecb56baa43f7, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 83e3eea1e6479cf4d99c4062db9e5579, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 12
+    _model:
+      _name: Mire_Bank_Straight
+      _mesh: {fileID: -2082609154945193799, guid: 665b0cc7a14050a49b12d92a25b21511, type: 3}
+      _material: {fileID: 2100000, guid: 6b34c92899c2380458f898eefdf5084d, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c6bfabdad39c62a4ca1b0a54df4f6778, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 13
+    _model:
+      _name: Mire_Bank_OuterCorner
+      _mesh: {fileID: 8743167106110969052, guid: 54df0574e881daa409df62bbcec5b5f6, type: 3}
+      _material: {fileID: 2100000, guid: b4826c4311a055b429628d09bac5d3c3, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c2245b23300659e478e1e9386a5fcceb, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 14
+    _model:
+      _name: Mire_Bank_InnerCorner
+      _mesh: {fileID: 5659751697664682195, guid: 4dde97361b237fb46b35dda14b170816, type: 3}
+      _material: {fileID: 2100000, guid: 2264d3f04b9d9474db6b287390d09ef2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 8f040c6d891f40740879d6cf7a642886, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  _decor:
+  - _kind: 0
+    _variants:
+    - _name: Mire_Decor_MossStone
+      _mesh: {fileID: 467644763931424470, guid: 7681bc689ab6bea40b238c6c8e22bdcd, type: 3}
+      _material: {fileID: 2100000, guid: faa2f359402821e409c6ca04fc51a07e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fbf4e88954055cb4d9c2ee34dbf1ce7f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0713264
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 1
+    _variants:
+    - _name: Mire_Decor_MossStone
+      _mesh: {fileID: 467644763931424470, guid: 7681bc689ab6bea40b238c6c8e22bdcd, type: 3}
+      _material: {fileID: 2100000, guid: faa2f359402821e409c6ca04fc51a07e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fbf4e88954055cb4d9c2ee34dbf1ce7f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.7241501
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 6
+    _variants:
+    - _name: Mire_Decor_MossStone
+      _mesh: {fileID: 467644763931424470, guid: 7681bc689ab6bea40b238c6c8e22bdcd, type: 3}
+      _material: {fileID: 2100000, guid: faa2f359402821e409c6ca04fc51a07e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fbf4e88954055cb4d9c2ee34dbf1ce7f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.8216294
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 11
+    _variants:
+    - _name: Mire_Decor_MossStone
+      _mesh: {fileID: 467644763931424470, guid: 7681bc689ab6bea40b238c6c8e22bdcd, type: 3}
+      _material: {fileID: 2100000, guid: faa2f359402821e409c6ca04fc51a07e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fbf4e88954055cb4d9c2ee34dbf1ce7f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.5258865
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 12
+    _variants:
+    - _name: Mire_Decor_MossStone
+      _mesh: {fileID: 467644763931424470, guid: 7681bc689ab6bea40b238c6c8e22bdcd, type: 3}
+      _material: {fileID: 2100000, guid: faa2f359402821e409c6ca04fc51a07e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fbf4e88954055cb4d9c2ee34dbf1ce7f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.1378036
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 2
+    _variants:
+    - _name: Mire_Decor_Fungus
+      _mesh: {fileID: 6312060577023352074, guid: f08161155da8a3e4d97b6a9733f7c1a6, type: 3}
+      _material: {fileID: 2100000, guid: 8029ae9e915e37943a00e26b36b1272f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 5d2ecf7aa3895094bbf64168e2e56d16, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.6112024
+    _glow: {r: 0.7, g: 1, b: 0.45, a: 1}
+  - _kind: 3
+    _variants:
+    - _name: Mire_Decor_Fungus
+      _mesh: {fileID: 6312060577023352074, guid: f08161155da8a3e4d97b6a9733f7c1a6, type: 3}
+      _material: {fileID: 2100000, guid: 8029ae9e915e37943a00e26b36b1272f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 5d2ecf7aa3895094bbf64168e2e56d16, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.5031639
+    _glow: {r: 0.7, g: 1, b: 0.45, a: 1}
+  - _kind: 4
+    _variants:
+    - _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.3545965
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 13
+    _variants:
+    - _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.5168856
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 10
+    _variants:
+    - _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 2.5281024
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 7
+    _variants:
+    - _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.7479689
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 5
+    _variants:
+    - _name: Mire_Flora_Reed
+      _mesh: {fileID: -456788785689120139, guid: 6337fe5a4f003114c9bc0a39c0741d2f, type: 3}
+      _material: {fileID: 2100000, guid: 51dfc558ce4b0e9438745b5c6eb1fbc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f77b1892b19725c41b9a7baf30f12eed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.9151647
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 9
+    _variants:
+    - _name: Mire_Flora_Reed
+      _mesh: {fileID: -456788785689120139, guid: 6337fe5a4f003114c9bc0a39c0741d2f, type: 3}
+      _material: {fileID: 2100000, guid: 51dfc558ce4b0e9438745b5c6eb1fbc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f77b1892b19725c41b9a7baf30f12eed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0861472
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 14
+    _variants:
+    - _name: Mire_Flora_Reed
+      _mesh: {fileID: -456788785689120139, guid: 6337fe5a4f003114c9bc0a39c0741d2f, type: 3}
+      _material: {fileID: 2100000, guid: 51dfc558ce4b0e9438745b5c6eb1fbc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f77b1892b19725c41b9a7baf30f12eed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0856493
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 15
+    _variants:
+    - _name: Mire_Decor_FogVent
+      _mesh: {fileID: 1660713464060489657, guid: f72832f00762ba348a0d051b0bf434c4, type: 3}
+      _material: {fileID: 2100000, guid: a6549d4e69858cb40b6e0de9cd9ed401, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 4ad0ed4f9ab21d2419a2b434549870e7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.92982733
+    _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
+  - _kind: 8
+    _variants:
+    - _name: Egg_Cluster
+      _mesh: {fileID: 3859704423981392224, guid: 7d75a5394ca6e074cb7c583efcf8f725, type: 3}
+      _material: {fileID: 2100000, guid: 281fa50f498215848a33d711c883ba90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1387896f775b81a4180e0808a106588c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.8123449
+    _glow: {r: 1, g: 0.55, b: 0.25, a: 1}
+  _origins:
+  - _terrain: 0
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 1
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 7
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 2
+    _model:
+      _name: Origin_Water
+      _mesh: {fileID: -4944273395457058019, guid: 84c212baa8f67e245abccb8037d042f3, type: 3}
+      _material: {fileID: 2100000, guid: 9cf069fda8f86664987ce99d17de4cd9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: de0ddeeed73ad9b4e9c8a07efab94f67, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 3
+    _model:
+      _name: Origin_Lava
+      _mesh: {fileID: 4837009674793253719, guid: 13b953e949360ab479e1beb45b4e6d2b, type: 3}
+      _material: {fileID: 2100000, guid: ff5a2b107f5b3eb419e4e3f99361f5e7, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1e3b1b553d7e1284082660057bf50bcf, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 4
+    _model:
+      _name: Origin_Quicksand
+      _mesh: {fileID: 5148176926883119700, guid: 6e93f70d36c47f048a771fed00d8a069, type: 3}
+      _material: {fileID: 2100000, guid: f2fb1b7b0e90aed40bea258fb05068bb, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 38ac5687759f12143a1af43671f7ea70, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 5
+    _model:
+      _name: Origin_Ice
+      _mesh: {fileID: 6358821060508479761, guid: b47edf10fdb826145b3cfa5d913a0b04, type: 3}
+      _material: {fileID: 2100000, guid: 710c189306cd01b43ba6cfeb27232ad4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 385148fd738b67649b7ee44b8f2b47d7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 6
+    _model:
+      _name: Origin_Bog
+      _mesh: {fileID: 1561119442894324442, guid: edcc2e5901c842744aec705c685a78da, type: 3}
+      _material: {fileID: 2100000, guid: 7b4f08064afe34d468e41d89b2a4d20f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 785439766913f5a439663cc61ba8feed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  _farDecorStart: 2
+  _farDecorAlbedo: 0.65
+  _farDecorGlow: 0.35
+  _lowFarDecorKeep: 0.5
+  _scatter:
+  - _name: Mire_Scatter_Twigs
+    _mesh: {fileID: 9112847253560617709, guid: 4bb602fc55ac6514893de8fa7c19d7c4, type: 3}
+    _material: {fileID: 2100000, guid: c5d18f415f8f4924299795b67b6cbfac, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: dfdeabcde44644a4893d9ff510126404, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _nestScatter:
+  - _name: Scatter_ShellFragments
+    _mesh: {fileID: -4815131634080202507, guid: bd2ece2b45ca0e34e9877a103269c040, type: 3}
+    _material: {fileID: 2100000, guid: 0cf435146461a804dac8c4d4518c6f27, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c9a977fe19a6f4e4e87407a5a3cc048f, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _scatterChance: 0.5
+  _nestScatterRadius: 2.5
+  _veinChance: 0.04
+  _cliffInsetCells: 1.5
+  _cliffSideReach: 0.75
+  _silhouettes: []
+  _silhouetteCount: 7
+  _silhouetteDistance: {x: 6, y: 12}
+  _showBuildPads: 0
+  _placingColour: {r: 0.45, g: 0.8, b: 1, a: 1}
+  _placingGlow: 0.9
+  _placingRadiusCells: 4.5
+  _landmarks:
+  - _name: Pioneer1_Wreck
+    _mesh: {fileID: -9079464673809082136, guid: bda3251ed9a69954cb9a13999a1423ff, type: 3}
+    _material: {fileID: 2100000, guid: 395e13f586d298c40aab6495ca0fe732, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 0002fe11acecd4c469f73f6e986d6df7, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _windDirection: {x: 1, y: 0, z: 0.4}
+  _swayAmplitude: 0.05
+  _swaySpeed: 1
+  _flutter: 0.012

@@ -1,0 +1,107 @@
+{
+  "asset": "FrostWarden",
+  "game_tris": 23880,
+  "tris_per_material": [
+    17507,
+    6373
+  ],
+  "source_tris": 1059428,
+  "bones": 23,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "FrostWarden_Mat": "FrostWarden_*.png",
+    "FrostWarden_Ice_Mat": "FrostWarden_Ice_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "FrostWarden": {
+      "islands": 110,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 0,
+      "mirrored_faces": 8506,
+      "uv_coverage": 0.599,
+      "world_per_uv": 5.3333796400012154
+    },
+    "FrostWarden_Ice": {
+      "islands": 127,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 169,
+      "mirrored_faces": 2589,
+      "uv_coverage": 0.681,
+      "world_per_uv": 1.9554631230012638
+    }
+  },
+  "detail": {
+    "FrostWarden": {
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 11.1,
+        "mask": "B"
+      },
+      "chitin": {
+        "map": "Detail_Chitin_Normal.png",
+        "tiling": 22.2,
+        "mask": "A"
+      }
+    },
+    "FrostWarden_Ice": {
+      "crystal": {
+        "map": "Detail_Crystal_Normal.png",
+        "tiling": 11.6,
+        "mask": "B"
+      },
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 6.8,
+        "mask": "A"
+      }
+    }
+  },
+  "actions": {
+    "Walk": 64,
+    "WalkEnraged": 40,
+    "Idle": 120,
+    "Hit": 16,
+    "Death": 84,
+    "FreezePulse": 64,
+    "Enrage": 48
+  },
+  "size_m": [
+    3.118,
+    4.722,
+    4.869
+  ],
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Halo"
+  ],
+  "lod1": {
+    "fbx": "FrostWarden_LOD1.fbx",
+    "tris": 9496,
+    "bones": 22
+  },
+  "walk_distance_per_loop": 1.029,
+  "walk_enraged_distance_per_loop": 1.338,
+  "pivot": "ground, under the hips",
+  "freeze_pulse": {
+    "impact_frame": 30,
+    "frost_ring_origin": "between the glaive tips, ~1.5 ahead",
+    "halo_peak_frame": 32
+  },
+  "enrage": {
+    "frames": 48,
+    "then": "loop WalkEnraged (hunched, 1.3x stride) at a higher speed"
+  },
+  "glyph_colour": [
+    1.0,
+    0.7,
+    0.28
+  ],
+  "footfalls": "Walk frames 0 (L1, R2) and 32 (R1, L2)"
+}

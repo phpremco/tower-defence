@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: CoreWisp_Corrupted
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+  _material: {fileID: 2100000, guid: 4b7751c936a84824ba1a4a06b663418e, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 79e16f3318d85bd4fa4e67ca21339966, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _scale: 0.6
+  _yaw: 0
+  _bodyCentrePivot: 0
+  _height: 1.7161806
+  _lodScreenHeight: 0.09
+  _upperBodyBone: 
+  _deathFade: {x: 0.3, y: 1.0200001}
+  _embers: 0
+  _bleeds: 0
+  _shedBones: []
+  _clips:
+  - _role: 3
+    _clip: {fileID: 781708326882700146, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 4197472982579310534, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 0
+    _clip: {fileID: -8478630277253143945, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 4618388639301247452, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 5
+    _clip: {fileID: 3040659094681575283, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 1253212250406761606, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.46666667
+    _trigger: Pulse
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 10
+    _clip: {fileID: -4534652137675048829, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 1385682848234194200, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 2
+    _clip: {fileID: 8340970849559789471, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 4792827312450853002, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0
+  - _role: 9
+    _clip: {fileID: 7101080571360264118, guid: fc42ea4fa51032946b7c40431d63d88c, type: 3}
+    _farClip: {fileID: 347072756720830365, guid: 3e7476fc2571a1542b79b02caaa8c959, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0

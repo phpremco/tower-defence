@@ -1456,6 +1456,11 @@ MonoBehaviour:
       e33: 1
   _silhouetteCount: 7
   _silhouetteDistance: {x: 6, y: 12}
+  _showBuildPads: 0
+  _placingColour: {r: 0.45, g: 0.8, b: 1, a: 1}
+  _placingGlow: 0.9
+  _placingRadiusCells: 4.5
+  _landmarks: []
   _windDirection: {x: 1, y: 0, z: 0.4}
   _swayAmplitude: 0.05
   _swaySpeed: 1

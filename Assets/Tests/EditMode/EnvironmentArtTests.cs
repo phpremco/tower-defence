@@ -213,6 +213,115 @@ namespace Game.Tests
             }
         }
 
+        // Round 17 (import stage 4b): continents 2-6 have no terrace, rift or silhouette pieces; the layout's asks for
+        // them are left out on purpose (raised ground and rifts keep the painted terrain). The Core alone has a vein.
+        private static readonly EnvironmentPieceKind[] LeftOutOnLaterContinents =
+        {
+            EnvironmentPieceKind.TerraceStep, EnvironmentPieceKind.TerraceStepOuter, EnvironmentPieceKind.RiftShort,
+            EnvironmentPieceKind.RiftMedium, EnvironmentPieceKind.RiftLong, EnvironmentPieceKind.RiftCap, EnvironmentPieceKind.Burrow,
+            EnvironmentPieceKind.CrystalVein,
+        };
+
+        private static readonly (string Set, string Prefix)[] LaterContinents =
+        {
+            ("AshenReach", "Ash_"), ("NorthernCrown", "North_"), ("Mirewood", "Mire_"), ("SouthernCrown", "South_"), ("TheCore", "Core_"),
+        };
+
+        [Test]
+        public void LaterContinentSets_ResolveEveryLayerPieceDecorAndOpening_TheLayoutCanAskFor()
+        {
+            foreach ((string name, string prefix) in LaterContinents)
+            {
+                EnvironmentSet set = Set(name);
+                Assert.AreEqual(prefix, set.Prefix, $"{name}: wrong prefix");
+                Assert.IsTrue(set.HasGround, $"{name}: no ground shader or ground/road layer");
+                foreach (EnvironmentLayer layer in new[] { set.Ground, set.GroundAlt, set.Road, set.Plaza, set.Cliff, set.Element })
+                {
+                    Assert.IsTrue(layer.IsValid, $"{name}: a ground layer lacks its maps");
+                    Assert.IsTrue(layer.Albedo(false).name.StartsWith(prefix), $"{name}: a ground layer is not its own ({layer.Albedo(false).name})");
+                    Assert.AreNotSame(layer.Albedo(false), layer.Albedo(true), $"{name}: a ground layer has no Low maps");
+                }
+
+                foreach (EnvironmentPieceKind kind in (EnvironmentPieceKind[])System.Enum.GetValues(typeof(EnvironmentPieceKind)))
+                {
+                    EnvironmentMesh piece = set.Piece(kind);
+                    bool leftOut = System.Array.IndexOf(LeftOutOnLaterContinents, kind) >= 0 && !(name == "TheCore" && kind == EnvironmentPieceKind.CrystalVein);
+                    if (leftOut)
+                    {
+                        Assert.IsNull(piece, $"{name}: {kind} was meant to be left out");
+                        continue;
+                    }
+
+                    Assert.IsNotNull(piece, $"{name}: no {kind}");
+                    Assert.AreEqual(EnvironmentShaders.Lit, piece.MaterialFor(false).shader.name, $"{name}: {kind} has the wrong shader");
+                    Assert.AreNotSame(piece.MaterialFor(false), piece.MaterialFor(true), $"{name}: {kind} has no Low material");
+                    Assert.IsTrue(piece.MaterialFor(false).enableInstancing, $"{name}: {kind} is not instanced");
+                    bool shared = kind == EnvironmentPieceKind.BuildPad || kind == EnvironmentPieceKind.GatePlinth;
+                    Assert.AreEqual(!shared, piece.Name.StartsWith(prefix), $"{name}: {kind} wears {piece.Name}");
+                }
+
+                foreach (PropKind kind in (PropKind[])System.Enum.GetValues(typeof(PropKind)))
+                {
+                    EnvironmentDecor decor = set.Decor(kind);
+                    Assert.IsNotNull(decor, $"{name}: {kind} would fall back to the procedural shape");
+                    Assert.Greater(decor.Scale, 0.1f, $"{name}: {kind} is scaled away");
+                    Assert.Less(decor.Scale, 8f, $"{name}: {kind} is blown up");
+                }
+
+                foreach (TerrainKind terrain in (TerrainKind[])System.Enum.GetValues(typeof(TerrainKind)))
+                {
+                    Assert.IsNotNull(set.Origin(terrain), $"{name}: no spawn opening on {terrain}");
+                }
+
+                Assert.IsNotEmpty(set.Scatter, $"{name}: no scatter");
+            }
+        }
+
+        [Test]
+        public void LaterContinentSets_ArePutOnNoTheme_AndCarryTheirLandmarks()
+        {
+            foreach (LevelDefinition level in Levels())
+            {
+                Assert.AreEqual("CrystalPlains", level.Theme.Environment.name, $"{level.name}: a continent-1 level wears another continent");
+            }
+
+            foreach (string seal in new[] { "Core_Seal_Intact", "Core_Seal_Cracked", "Core_Seal_Broken", "Core_SealVein_Branch" })
+            {
+                Assert.IsNotNull(Set("TheCore").Landmark(seal), $"The Core has no {seal}");
+            }
+
+            Assert.IsNotNull(Set("Mirewood").Landmark("Pioneer1_Wreck"), "Mirewood has no Pioneer-1 wreck");
+        }
+
+        [Test]
+        public void LaterContinentFlora_SwaysFromItsOwnColours()
+        {
+            foreach ((string name, string _) in LaterContinents)
+            {
+                EnvironmentSet set = Set(name);
+                foreach (PropKind kind in (PropKind[])System.Enum.GetValues(typeof(PropKind)))
+                {
+                    foreach (EnvironmentMesh variant in set.Decor(kind).Variants)
+                    {
+                        if (!variant.Name.Contains("Flora_"))
+                        {
+                            continue;
+                        }
+
+                        Assert.IsTrue(variant.MaterialFor(false).IsKeywordEnabled(EnvironmentShaders.SwayKeyword), $"{variant.Name}: does not sway");
+                        Assert.AreEqual(variant.Mesh.vertexCount, variant.Mesh.colors.Length, $"{variant.Name}: no sway colours");
+                    }
+                }
+            }
+        }
+
+        private static EnvironmentSet Set(string name)
+        {
+            var set = AssetDatabase.LoadAssetAtPath<EnvironmentSet>($"Assets/_Project/Data/Art/Environment/{name}.asset");
+            Assert.IsNotNull(set, $"no environment set {name}");
+            return set;
+        }
+
         private static float Flat(Vector3 offset) => new Vector2(offset.x, offset.z).magnitude;
 
         private static List<LevelDefinition> Levels()

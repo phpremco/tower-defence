@@ -1,0 +1,21 @@
+{
+  "set": "Ash_Sand",
+  "continent": "AshenReach",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.412,
+    0.267,
+    0.166
+  ],
+  "value_mean": 0.29,
+  "smoothness_mean": 0.093,
+  "height_range_m": 0.0642
+}

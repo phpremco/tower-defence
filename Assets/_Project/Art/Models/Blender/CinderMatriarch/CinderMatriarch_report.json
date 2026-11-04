@@ -1,0 +1,108 @@
+{
+  "asset": "CinderMatriarch",
+  "game_tris": 23051,
+  "tris_per_material": [
+    17995,
+    5056
+  ],
+  "source_tris": 854196,
+  "bones": 26,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "CinderMatriarch_Mat": "CinderMatriarch_*.png",
+    "CinderMatriarch_Crystal_Mat": "CinderMatriarch_Crystal_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "CinderMatriarch": {
+      "islands": 97,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 0,
+      "mirrored_faces": 8742,
+      "uv_coverage": 0.683,
+      "world_per_uv": 5.235021975831656
+    },
+    "CinderMatriarch_Crystal": {
+      "islands": 95,
+      "closed_islands_cut": 1,
+      "folded_fallback_faces": 481,
+      "mirrored_faces": 1902,
+      "uv_coverage": 0.701,
+      "world_per_uv": 1.2905660013474254
+    }
+  },
+  "detail": {
+    "CinderMatriarch": {
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 10.9,
+        "mask": "B"
+      },
+      "membrane": {
+        "map": "Detail_Membrane_Normal.png",
+        "tiling": 16.4,
+        "mask": "A"
+      }
+    },
+    "CinderMatriarch_Crystal": {
+      "crystal": {
+        "map": "Detail_Crystal_Normal.png",
+        "tiling": 7.7,
+        "mask": "B"
+      },
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 4.5,
+        "mask": "A"
+      }
+    }
+  },
+  "actions": {
+    "Walk": 56,
+    "Idle": 90,
+    "Hit": 16,
+    "Death": 72,
+    "Spawn": 64,
+    "Roar": 70
+  },
+  "size_m": [
+    4.655,
+    5.782,
+    3.024
+  ],
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Vent_1",
+    "Vent_2",
+    "Vent_3"
+  ],
+  "lod1": {
+    "fbx": "CinderMatriarch_LOD1.fbx",
+    "tris": 8997,
+    "bones": 21
+  },
+  "walk_distance_per_loop": 1.288,
+  "pivot": "ground, under the thorax",
+  "spawn": {
+    "release_frame": 30,
+    "stagger_frames": 3,
+    "sockets": [
+      "Vent_1",
+      "Vent_2",
+      "Vent_3"
+    ],
+    "socket_note": "larvae leave the chimney mouths: bone tail of Vent_n, chimney swells by scale"
+  },
+  "trail_origin": "bone Drip (sac tip, 0.4-0.7 above the ground)",
+  "footfalls": "Walk frames 0 (L1, R2) and 28 (R1, L2)",
+  "minion": {
+    "fbx": "../FireLarva/FireLarva.fbx",
+    "unity_scale": 0.6
+  }
+}

@@ -13,10 +13,24 @@ namespace Game.Editor
         // A boss model is built at its species' size times this (README, "Unity notes for the bosses").
         private const float BossFactor = 0.6f;
 
+        // The continent bosses (README rounds 14 and 16) are built at their game size: no factor on the boss's own scale.
+        private const float TitanFactor = 1f;
+
+        public const string CorruptedSkin = "Corrupted";
+        public const string CorruptedSuffix = "_Corrupted";
+
+        // Exports with a baked corrupted skin under Skins/Corrupted (ArtSource README round 15, Corrupted_skins_report.json).
+        private static readonly HashSet<string> CorruptedSkins = new HashSet<string>
+        {
+            "Skitter", "Roller", "Cragback", "Prowler", "Skyray", "Shalebat", "Wisp", "Stinger", "Bat", "Bulwark", "Oozer",
+            "Shardback", "Mireleech", "Knitback", "Slagstrider", "Siftjaw", "Surgefin", "Queen", "BroodMother", "PackAlpha",
+            "CoreWisp", "AcidEmpress", "CrystalWarlord", "SlimeMonarch", "RollerKing", "SkySovereign", "StormMatriarch",
+        };
+
         // Cycles that loop; every other take plays once.
         private static readonly HashSet<string> LoopClips = new HashSet<string>
         {
-            "Walk", "Run", "Crawl", "Fly", "Glide", "Float", "Grounded", "Roll", "Idle",
+            "Walk", "Run", "Crawl", "Fly", "Glide", "Float", "Grounded", "Roll", "Idle", "Swim", "WalkEnraged",
             // The towers' cycles (README rounds 7 and 11).
             "IdleSweep", "Spin", "Beam", "FireAlternate", "Spray", "Slosh",
         };
@@ -58,6 +72,8 @@ namespace Game.Editor
             // is the bat boss and the Sky Sovereign the ray boss; the exports are named the other way round.
             { "StormMatriarch", "BatBoss" },
             { "SkySovereign", "RayBoss" },
+            { "Shardback", "Shardback" },
+            { "Mireleech", "Mireleech" },
         };
 
         public static bool IsLoop(string clip) => LoopClips.Contains(clip);
@@ -177,8 +193,115 @@ namespace Game.Editor
                     Scale = 0.514f,
                     BodyCentrePivot = true,
                 },
+
+                // Round 15, P3 species (import stage 4b). The Shardback sheds its six prism clusters with its armour; the
+                // Mireleech's latch bites on frame 13.
+                // The amber sockets glowed through the ice at 2.5 (cre_close): lower, so the cold prisms lead.
+                new BlenderArtEntry("Shardback", "Shardback")
+                {
+                    Emission = 2f,
+                    ShedBonesKey = "shard_bones_in_shed_order",
+                    Clips = new[] { new BlenderClipSpec("Shatter", ModelClipRole.Shatter, 3) },
+                },
+                new BlenderArtEntry("Mireleech", "Mireleech") { Clips = new[] { new BlenderClipSpec("Latch", ModelClipRole.Attack, 13) } },
+
+                // Art ready for species without game data yet ("art klaar, wacht op data"): an EnemyDefinition that points
+                // at one of these wears it with no further code. Their special moments are recorded as clips for later views.
+                new BlenderArtEntry("Knitback", "Knitback") { Clips = new[] { new BlenderClipSpec("Regrow", ModelClipRole.Power, 24, "Regrow", "Pod_1") } },
+                // Burning trail and heat vents: it sheds embers, and its vents glow harder (README: emission 3.0).
+                new BlenderArtEntry("Slagstrider", "Slagstrider") { Embers = true, Emission = 3f },
+                new BlenderArtEntry("Siftjaw", "Siftjaw")
+                {
+                    Clips = new[] { new BlenderClipSpec("Burrow", ModelClipRole.Burrow, 24), new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 8) },
+                },
+                new BlenderArtEntry("Surgefin", "Surgefin") { Clips = new[] { new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 10) } },
+                new BlenderArtEntry("FireLarva", "FireLarva") { Embers = true },
+
+                // Round 14 and 16 continent bosses: two materials (body and crystals, ice, bloom or seal), built at their
+                // game size, so the art's factor is 1 on the boss's own scale.
+                new BlenderArtEntry("Gravemaw", "Gravemaw")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Crystal",
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("Roar", ModelClipRole.Roar, 12),
+                        new BlenderClipSpec("Dive", ModelClipRole.Burrow, 31),
+                        new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 20),
+                    },
+                },
+                new BlenderArtEntry("CinderMatriarch", "CinderMatriarch")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Crystal",
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("Spawn", ModelClipRole.Power, 30, "Spawn", "Vent_1"),
+                        new BlenderClipSpec("Roar", ModelClipRole.Roar, 20),
+                    },
+                },
+                new BlenderArtEntry("FrostWarden", "FrostWarden")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Ice",
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("FreezePulse", ModelClipRole.Power, 30, "Pulse"),
+                        new BlenderClipSpec("Enrage", ModelClipRole.Enrage),
+                    },
+                },
+                new BlenderArtEntry("Rotbloom", "Rotbloom")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Bloom",
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("Regrow", ModelClipRole.Power, 28, "Regrow", "Pod_R1"),
+                        new BlenderClipSpec("Bloom", ModelClipRole.Power, 34, "Pulse", "Bloom"),
+                    },
+                },
+                new BlenderArtEntry("Shattered", "Shattered")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Crystal",
+                    // The crystals burst at frame 46 and are gone by 54: the glow dies with them.
+                    DeathFadeFrom = 46,
+                    DeathFadeTo = 54,
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("PhaseBreak1", ModelClipRole.PhaseBreak, 12, "2"),
+                        new BlenderClipSpec("PhaseBreak2", ModelClipRole.PhaseBreak, 14, "3"),
+                    },
+                },
+                new BlenderArtEntry("SealedOne", "SealedOne")
+                {
+                    Scale = TitanFactor,
+                    SecondMaterial = "Seal",
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("Rise", ModelClipRole.Emerge, 22),
+                        new BlenderClipSpec("Summon", ModelClipRole.Power, 44, "Spawn", "Head"),
+                    },
+                },
             };
+
+            AddCorruptedSkins(rows);
             return rows;
+        }
+
+        // Every one-material export with a baked corrupted skin gets a second row wearing it (<Id>_Corrupted): the same
+        // mesh, rig and clips with the violet-veined maps, so a corrupted enemy is data only.
+        private static void AddCorruptedSkins(List<BlenderArtEntry> rows)
+        {
+            int count = rows.Count;
+            for (int i = 0; i < count; i++)
+            {
+                BlenderArtEntry row = rows[i];
+                if (row.Skin == null && row.SecondMaterial == null && CorruptedSkins.Contains(row.Asset))
+                {
+                    rows.Add(row.WithSkin(row.Id + CorruptedSuffix, CorruptedSkin));
+                }
+            }
         }
     }
 }

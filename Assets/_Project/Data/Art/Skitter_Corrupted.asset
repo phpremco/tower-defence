@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Skitter_Corrupted
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 4e2074f373f9cfe46acff51fbdb049d4, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: 0c02233ff9e43994788016d300979700, type: 3}
+  _material: {fileID: 2100000, guid: 7d3bdca15b5ed7546b8e2b66b43e3849, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 1161f644e86983349abcd5bfa55973ae, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _scale: 1.4
+  _yaw: 0
+  _bodyCentrePivot: 0
+  _height: 0.4243347
+  _lodScreenHeight: 0.05
+  _upperBodyBone: 
+  _deathFade: {x: 0.3, y: 1.0200001}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _clips:
+  - _role: 2
+    _clip: {fileID: -6615572585118658304, guid: 4e2074f373f9cfe46acff51fbdb049d4, type: 3}
+    _farClip: {fileID: 8096603415845225734, guid: 0c02233ff9e43994788016d300979700, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0
+  - _role: 3
+    _clip: {fileID: -9141666438410490853, guid: 4e2074f373f9cfe46acff51fbdb049d4, type: 3}
+    _farClip: {fileID: 620757001908394482, guid: 0c02233ff9e43994788016d300979700, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 0
+    _clip: {fileID: 377138062233969309, guid: 4e2074f373f9cfe46acff51fbdb049d4, type: 3}
+    _farClip: {fileID: -2309273833457578014, guid: 0c02233ff9e43994788016d300979700, type: 3}
+    _distancePerLoop: 0.36
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 1
+    _clip: {fileID: 2453348077132561242, guid: 4e2074f373f9cfe46acff51fbdb049d4, type: 3}
+    _farClip: {fileID: -3610520071183026493, guid: 0c02233ff9e43994788016d300979700, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0

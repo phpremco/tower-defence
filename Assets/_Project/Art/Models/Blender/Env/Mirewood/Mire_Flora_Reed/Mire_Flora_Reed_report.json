@@ -1,0 +1,42 @@
+{
+  "asset": "Mire_Flora_Reed",
+  "continent": "Mirewood",
+  "game_tris": 1200,
+  "source_tris": 73056,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 47,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.508,
+    "world_per_uv": 1.2085187059983262
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 15.1,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 20.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.513,
+    0.454,
+    1.071
+  ],
+  "sway": {
+    "attribute": "Sway",
+    "height": 0.95,
+    "channels": "R bend weight (root 0, top 1), G phase 0..1, B flutter"
+  }
+}
