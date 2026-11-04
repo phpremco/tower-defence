@@ -58,6 +58,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_planet_s69.py",
            # Round 20: VFX flipbooks (Mantaflow sims cached in %TEMP%/td_vfx_cache; ~40 min from scratch).
            "build_vfx.py",
+           # Round 24: liquid and mist textures (numpy) + shore previews with the bank pieces built above.
+           "build_liquids.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 
