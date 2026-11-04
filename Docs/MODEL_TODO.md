@@ -79,11 +79,11 @@ Dit zijn de grootste modellen, met de meeste aandacht en animaties.
 | Status | Prio | Model | Gedrag uit het script |
 | --- | --- | --- | --- |
 | ◐ | P2 | **Gravemaw** (continent 1) | Ronde 14 klaar: boormuil van vijf pantserbladen (dicht een gloeiende graafkegel, open een ster rond een witgloeiende keel met Crysium-tanden), zes brede pantsersegmenten met Crysium-platen en een naar achter geveegde kristalkam, twee schopklauwen, drie paar korte stekelpoten, staartschop met kristalvinnen. Twee materialen (lijf + kristal). Clips Crawl/Idle/Hit/Death/Roar/**Dive**/**Emerge** met puinbrokken op eigen botten. Los: `Env/Gravemaw_Hole` (krater). Zie README ronde 14 |
-| ☐ | P3 | **Cinder Matriarch** (2) | Vuurbaas met brandend spoor. Laat vuurlarven los (larve = klein extra model) |
-| ☐ | P3 | **Frost Warden** (3) | Bevriest turrets, wordt sneller. "Bewaker" |
-| ☐ | P3 | **Rotbloom** (4) | Hout- en moerasbaas, herstelt zich en laat slijm achter |
-| ☐ | P3 | **The Shattered** (5) | Burrower vol overladen Crysium. Drie fases, barst open (drie mesh-staten) |
-| ☐ | P3 | **The Sealed One** (6) | Oeroud wezen onder het zegel. Eindbaas |
+| ◐ | P3 | **Cinder Matriarch** (2) | Ronde 16 klaar: moeder van de Slagstrider-lijn: vier steltpoten met knieën boven de rug en hittevaste voetkegels, een slakmantel met chevrons, een lange wigkop met vier gloeiende kaken onder een kroon van ember-Crysium-hoorns, twee ember-zeisen, en een enorme ovenzak van onregelmatige slakschotsen met smalle rode scheuren en wijde gele kloven, drie larveschoorstenen (`Vent_1..3`, bot-schaal) en een druppelpunt (`Drip`, brandend spoor). Twee materialen. Clips Walk/Idle/Hit/Death/**Spawn** (larven op frame 30, +3 per schoorsteen)/**Roar**. 23.051 driehoeken (17.995 + 5.056), 26 botten, LOD1 8.997 / 21. Plus de **vuurlarve** `FireLarva`: korte slakgrub met gloeiende naden, gloeiende kop, stompe pootjes. Crawl/Idle/Hit/Death, 1.458 driehoeken, LOD1 700, Unity-schaal 0,6 |
+| ◐ | P3 | **Frost Warden** (3) | Ronde 16 klaar: de enige rechtopstaande baas, een bidsprinkhaan-kentaur: vier zuilpoten, een gepantserde sleep met chevrons, een hoge romp met een borstplaat waarop het **zegelteken** (amber-goud, versleten) staat, ook op de schouder, een kap met een spleetgezicht en een ring amberkleurige ogen, een gebroken halo van ijsprisma's (`Halo`), onderarmen die ijsglaives worden. Twee materialen (lijf, ijs). Clips Walk/**WalkEnraged** (gebogen, 1,3x pas)/Idle/Hit/Death (knielt)/**FreezePulse** (inslag frame 30)/**Enrage**. 23.880 driehoeken (17.507 + 6.373), 23 botten, LOD1 9.496 / 22 |
+| ◐ | P3 | **Rotbloom** (4) | Ronde 16 klaar: een brede lage heuvel van rottende schorsplaten en mos op zes wortelpoten met een slijmrok (`Trail`), op de rug een reuzenaasbloem: vijf puntige, gekartelde wijnrode bloembladen met haakpunten en doornen (`Petal_F/FL/FR/BL/BR`), koraal tot limoen binnenin, een limoen keelput met klauwvormige meeldraden (`Bloom`). Vier sappeulen (`Pod_*`, bot-schaal), een schorsschedel met schepkaak, amber ogen en dood-hout-gewei. Twee materialen (lijf, bloem). Clips Crawl/Idle/Hit/Death (bloem verwelkt)/**Regrow** (piek frame 28)/**Bloom** (sporen frame 34). 23.968 driehoeken (16.989 + 6.979), 27 botten, LOD1 9.498 / 25 |
+| ◐ | P3 | **The Shattered** (5) | Ronde 16 klaar: een gebochelde knokkelloper (oude Burrower-bronzen platen) met spadevuisten, slagtanden en een gebarsten kaak met kristaltanden. Acht losse pantserplaten (`Shell_1..8`, aparte eilanden boven een gloeiende kern) en zes kristalclusters binnenin (`Crys_1..6`): **drie fases via bot-schaal** (heel, gebarsten: bultplaten weg, opengebarsten: alle platen weg en een witgloeiende kristalster). Clips Walk/Idle/Hit (fase 1)/**PhaseBreak1** (frame 12)/**PhaseBreak2** (frame 14)/Death (eindexplosie frame 46). 24.070 driehoeken (17.493 + 6.577), 27 botten, LOD1 9.498 / 26. Unity: fasewaarden in LateUpdate (zie README ronde 16) |
+| ◐ | P3 | **The Sealed One** (6) | Ronde 16 klaar: alleen het bovenlijf is uit de grond: een ribbenkast van as-ivoren botsteen met violet licht, violette corruptiekristallen, een hoge oogloze kop van twee gezichtsplaten die openen op een violette lichtzuil (`Plate_L/R`), een kroon van drie gebroken ringen met zegeltekens (`Ring_1..3`), twee reusachtige onderarmen geplant op de grond, twee dunne bovenarmen in gebed (zegelteken in de handpalm), puin en wortelranken rond de spleet, en zeven gebroken zegelstenen (`Seal_1..7`) met het zegelteken in goud. Clips Idle/**Rise** (zegel breekt frame 22, handen slaan neer frame 92)/**Summon** (piek frame 44)/Hit/Death (zegel dicht frame 128). 34.478 driehoeken (25.486 + 8.992), 29 botten, LOD1 13.998 / 26. Begint 5,2 m onder de grond: terrein moet afdekken |
 
 ---
 
@@ -218,11 +218,11 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 | Status | Model | Extra |
 | --- | --- | --- |
-| ☐ | **Ashen Reach** (vuur en zand) | Lavarotsen, as, verkoolde bomen |
-| ☐ | **Northern Crown** (ijs, steen en vuur) | IceShard, Snowdrift, bevroren kristal |
-| ☐ | **Mirewood** (hout, water en moeras) | DeadTree, Reed, zwammen, mist-decor, Pioneer-1-wrak |
-| ☐ | **Southern Crown** (ijs en gemengd) | Gescheurde aders, instabiel kristal |
-| ☐ | **The Core** (ondergronds) | Kristalplateau, zegeladers, verdorven kristal, het zegel zelf |
+| ◐ | **Ashen Reach** (vuur en zand) | Ronde 17: `Env/AshenReach/Ash_*`. Sets Road (bleke gesinterde zandsteen), Ground (houtskool-scoria met gloeiende scheuren), GroundAlt (as), Sand (roestig duinzand), Cliff. Kit: doorlopende stoeprand met sintellijn, lava-oevers (touwlava, gloeiende waterlijn), mesa-kliffen in strata. Decor: LavaRock, AshDune (met half begraven ribbenkast), CharredTree, EmberBloom, Fulgurite, Scatter_Cinders |
+| ◐ | **Northern Crown** (ijs, steen en vuur) | Ronde 17: `Env/NorthernCrown/North_*`. Sets Road (verwarmde gelegde platen), Ground (blauwzwarte lei met rijp), GroundAlt (bevroren grind), Snow (sastrugi, waarde onder de weg), Cliff. Kit: granieten stoeprand met sneeuwlijn, ijsmeer-oevers, kliffen van zeshoekige basaltzuilen met sneeuwkapjes en amber hitte. Decor: IceShard, Snowdrift, FrozenCrystal, RimeBoulder, FrostFern, Scatter_IceChips |
+| ◐ | **Mirewood** (hout, water en moeras) | Ronde 17: `Env/Mirewood/Mire_*`. Sets Road (dijk van slib en platte stenen), Ground (veen), GroundAlt (mos met teal sporen), Mud (nat, plassen), Cliff. Kit: bleke slibsteen-stoeprand, veen-oevers met wortels, aarden wal met wortels en stronk. Decor: DeadTree, Reed, Fungus, FogVent (rapport geeft het mistpunt), MossStone, Scatter_Twigs. Pioneer-1-wrak: ronde 13, hergebruikt |
+| ◐ | **Southern Crown** (ijs en gemengd) | Ronde 17: `Env/SouthernCrown/South_*`. Sets Road (koele platen met enkele geladen scheuren), Ground (zwart ijs met magenta aders), GroundAlt (gemengd puin), CrackedIce (gebroken pakijs), Cliff. Kit: graniet met geladen scheuren, oevers van opgestuwde ijsplaten, kruiende ijsrug. Decor: UnstableCrystal (zwevende splinters), CrackedVein, PressureRidge, ShatteredPillar, MixedBoulder, Scatter_Shards |
+| ◐ | **The Core** (ondergronds) | Ronde 17: `Env/TheCore/Core_*`. Sets Road (zeshoekige lila platen), Ground (indigo kristalglas met gouden naden), GroundAlt (kristalgruis), Plateau, Cliff. Kit: glazen stoeprand met goudlijn, rand van corruptiepoelen, plateauranden die in de afgrond vallen. **Het zegel**: Seal_Intact/_Cracked/_Broken (8.000 driehoeken, 1024) en SealVein_Straight/_Branch. Decor: CorruptedCrystal, CrystalPillar, SealShard, HexOutcrop, Scatter_CrystalGrit |
 
 ---
 
@@ -316,6 +316,18 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | StormMatriarch | Luiken lezen nog wat als panelen. Achtervinnen grotendeels verstopt. **Data-mismatch:** in `ProjectGenerator.Bestiary` is ze nog een vleermuisbaas (Wood, roept Mossbats). Het model is een Skyray-baas. Bij de import kiezen |
 | CoreWisp | Zwakste richtingsaanwijzing: van boven nog rond. In Unity een kort bewegingsspoor toevoegen |
 | Kleurvraag | Warme varianten van StormMatriarch en CoreWisp staan klaar (`blender7\*\*_palette_compare.png`). Curator vindt warm beter, vooral voor de CoreWisp (amber hart en limoengroene ringen) |
+
+### Continentbazen ronde 16 (Cinder Matriarch, Frost Warden, Rotbloom, The Shattered, The Sealed One)
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Cinder Matriarch | Van boven en op spelzoom nog wat spinachtig (vier lange steltpoten). De ovenzak is het sterkste deel; eventueel dikkere dijen of een derde gewricht. Kaken lezen als vliegend-hertkaken |
+| Fire larva | Klein op spelzoom (Unity-schaal 0,6); als ze verdwijnen tussen de Skitters, 0,7 |
+| Frost Warden | Romp en armen nog wat robotachtig/humanoïde van voren; de sleep en de halo maken hem wel buitenaards. Het zegelteken op de borst is groot en fel (bewust: de hint), in Unity eventueel emissie iets lager |
+| Rotbloom | Bloem leest nog als lelie van opzij. Slijmrok is een egale limoen schijf; in Unity eventueel als VFX-decal in plaats van de mesh-rand. Bloom-opening is bescheiden (bladen raken anders de heuvel) |
+| The Shattered | Fase 1 gloeit al vrij roze (kern zichtbaar tussen de platen): gebruik de emissie per fase (2,6 / 3,4 / 4,5). Kop van voren wat rond en vriendelijk |
+| The Sealed One | Kop van voren een eivormige helm met een violette spleet; kan griezeliger (meer lagen, scheuren). Rise en Death vragen dat het terrein alles onder z = 0 afdekt |
+| Alle vijf | `titan_kit.previews` liet in eerdere testronden het LOD1-model meerenderen; opgelost vóór de laatste renders. Phase/zegel-standen zijn in de laatste renders correct |
 
 ### build_all.py (gedaan 2026-11-03)
 
@@ -459,3 +471,15 @@ bijgesteld (helderheid, gloed, rim in `BlenderArtCatalog`); dit zijn de punten d
 
 - **Mercer:** duidelijk beter. Harde platen, vingers en betere clips. Goed genoeg voor nu.
 - **Voss:** de jas, het haar en de oogleden zijn een grote stap vooruit. Het gezicht blijft het zwakste punt van het hele project: lange onderkant, platte neus, een te lange hals met pezen en een mannequin-achtige huid. Procedurele gezichten zijn moeilijk. Opties voor later: een gestileerder ontwerp (grotere ogen, kortere neus en kin, minder realisme), of het gezicht in Blender opbouwen uit een basismesh met shape keys. Te bespreken met Remco.
+
+### Omgeving ronde 17 (continenten 2-6)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Algemeen | Elke set heeft een eigen map en prefix (`Env/<Continent>/<Prefix>_*`), dezelfde kitnamen en dezelfde plaatsingsregels als ronde 8. De stoeprand is nu één doorlopende rand (punt uit ronde 8 opgelost). Bouwplek en gate-sokkel blijven die van ronde 8 |
+| Kleurlagen | De FBX'en van ronde 17 hebben alleen nog de `Sway`-kleurlaag (flora) of geen. Ronde 8 (`Flora_*`) heeft er zes, met `Sway` als laatste; Unity leest alleen de eerste kleurset, dus daar komt `Sway` niet aan. Bij de import controleren |
+| Ashen Reach | Mesa-kliffen hebben nog iets van tribunetreden (de richels variëren nu wel). Ground-sintels zijn sfeervol, maar druk op grote vlakken. Fulguriet leest als glazen pijpen |
+| Northern Crown | Zuilenwand is van boven nog vrij druk. IJsoevers zijn bleke klonten. De weg is een bewust regelmatig legpatroon (onze weg), het enige rechte patroon in de set |
+| Mirewood | Aarden wal blijft wat blokvormig (rechte snede), wortels helpen. Modderplassen renderen zwart in Blender; in Unity spiegelen ze de lucht |
+| Southern Crown | Kruiende ijsrug: hoekige platen, van boven nog wat bladvormig. MixedBoulder: de verschroeide helft gloeit nauwelijks |
+| The Core | Het zegel leest goed op spelgrootte. De glyphs zijn procedurele streepjes, geen echt schrift. Het hart (kristal in het midden) is klein. De vertakkende ader heeft een naadje waar de tak begint |

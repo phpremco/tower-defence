@@ -32,6 +32,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_rollerking.py",
            # Round 14: spawn origins, resource node, then Gravemaw (its previews load the hole and BroodMother).
            "build_env_origins.py", "build_gravemaw.py",
+           # Round 16: continent bosses 2-6 (titan_kit.py); previews load Gravemaw and Skitter.
+           "build_cindermatriarch.py", "build_frostwarden.py", "build_rotbloom.py", "build_shattered.py",
+           "build_sealedone.py",
            # Round 7: towers, build pad, stars and wreck (imports tower_kit.py).
            "build_towers.py",
            # Round 9: gate, base and base turret, drones, gadgets (import base_kit.py; need build_towers first).

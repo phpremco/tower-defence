@@ -1336,3 +1336,127 @@ row at the edge, about half the thickness), so the plates have crisp, light-catc
   over the cheeks and towards the ears, so the lips part instead of the lower face stretching.
 - Budget: 10,000 triangles (portrait and cutscene only; head 3,300, eyes 440, lids 760, hair 1,500, gear 750, top
   420, the coat the rest). Smart, layer-weighted UVs: the face and eyes get about twice the texel density of the coat.
+
+# Round 17: environment sets for continents 2-6 (Ashen Reach, Northern Crown, Mirewood, Southern Crown, The Core, 2026-11-04)
+
+Brief: MODEL_TODO section 7, "Latere continenten" (P3). Each continent gets its own ground, road, border, banks and
+decor, but plugs into the round 8 system unchanged: tiling sets with the same Mask (R AO, G smoothness, B height,
+A dust/sparkle), one grid cell = 1 unit, pivots on the ground, the bordered thing on local -Y (Unity +Z), the same
+edge and corner rules. Scripts: `env_kit2.py` (shared continent helpers and the diorama) and
+`build_env_<continent>.py`. Exports: `Exports/Env/<Continent>/<Prefix>_<Asset>/`, tiling sets in
+`Exports/Env/<Continent>/Tiling/<Prefix>_<Set>/`. The Crystal Plains exports are untouched.
+
+**The readability contract stays the same on every continent:** ground is the darkest band (15-22 % value), the
+road the light band (45-58 %) with large calm shapes and a continuous kerb, build pads stay ours (round 8
+`BuildPadTile`, gunmetal with a cool rim, shared by all continents), unbuildable terrain carries decor. The
+element layer (sand, snow, moss, frost, crystal grit) sits between them in value but never reaches the road's
+calm, smooth look: it is busy at a small scale and stays matte.
+
+**Fixes from the round 8 review, applied here:** the kerb is one continuous swept rim with shallow joints (it read as
+a row of teeth), cliffs have planar faces and a clear shape language per element instead of bumpy blobs, and every
+continent has its own bank style for its own liquid.
+
+## Ashen Reach (continent 2: fire and sand, an easier stretch, confidence)
+
+Mood: a scorched desert under a smoke-brown night, embers in every crack, the warmest place yet.
+
+- Ground: charcoal-brown scoria crust (glassy cinder plates) with thin ember-orange cracks that glow. GroundAlt:
+  fine grey ash with charcoal flakes and buried cinders. Element set **Sand**: rust-ochre dune sand with wind
+  ripples and black glass grit (a splat layer between ground and road in value).
+- Road: pale bone-ash sandstone slabs (sintered by the colony's pavers), warm light grey with dark joints.
+- Border: stepped mesa strata (ochre and rust bands), flat terrace ledges, ember fissures in the joints, ash fans
+  at the foot. Banks (lava): black glassy rope-lava crust that rolls into the pool, its waterline glowing orange.
+- Decor (alien, not an Earth desert): **LavaRock** (rope-crust boulder split by glowing seams), **AshDune** (a wind
+  carved drift with a half-buried rib arch of an ancient creature), **CharredTree** (a spiral double trunk that
+  splits into hooked, clawing branches, ember cracks in the bark, sways a little), **EmberBloom** (a rosette of
+  ash-grey fleshy spoons cupping a glowing coal, sways), **Fulgurite** (branching hollow glass tubes fused from
+  sand, their mouths glowing), scatter **Cinders**.
+
+## Northern Crown (continent 3: ice to the north pole, stone and fire; the hard continent)
+
+Mood: a hard, dark, frozen land; the cold is blue-white but the planet's heat glows amber under the ice
+(stone and fire under the ice; the aliens' warm colour stays in the land).
+
+- Ground: blue-black slate with frost crystals in the cracks. GroundAlt: frozen gravel and permafrost polygons.
+  Element set **Snow**: wind-packed snow crust with sastrugi ridges and windows of blue ice (value capped about
+  0.45 and blue-shadowed so the road still wins).
+- Road: pale grey-tan slabs, the colony's heated road kept clear: warmer and calmer than the snow beside it.
+- Border: hexagonal basalt columns of different heights, snow caps on their tops, icicles and frost, amber heat
+  in the deepest joints. Banks (ice lake): a snow-capped shelf of ice blocks that steps down to the lake.
+- Decor: **IceShard** (spiralling, leaning ice prisms with an amber heart: not textbook quartz), **Snowdrift**
+  (sastrugi-carved drift with a crust lip), **FrozenCrystal** (pink Crysium locked in a cracked block of clear
+  ice), **RimeBoulder** (stone furred with frost feathers and icicles), **FrostFern** (stiff frozen fronds with
+  amber-glowing tips, sways a little), scatter **IceChips**.
+
+## Mirewood (continent 4: wood, water and bog; Pioneer-1's wreck)
+
+Mood: dark, wet, foggy; teal bioluminescence and violet fungus light (the old "glowing wood" palette).
+
+- Ground: black-brown peat with root threads and twigs. GroundAlt: moss mat with tiny teal spore lights. Element
+  set **Mud**: glossy wet mud with puddles (smooth in the puddles, so it reads wet).
+- Road: a raised causeway of pale grey-green packed silt and flat stones, the light band.
+- Border: a bank of peat and earth held by a tangle of exposed roots, moss on top. Banks (bog and water): roots
+  that dip into the water, a mossy peat lip.
+- Decor: **DeadTree** (bare twisted tree on arched spider-roots, beard moss, sways), **Reed** (segmented reeds with
+  lantern seed heads, sways), **Fungus** (bracket fungi stacked on a stump, violet gills), **FogVent** (a mud
+  chimney with pores; its report names the fog emitter point for Unity particles), **MossStone**, scatter
+  **Twigs**. The Pioneer-1 wreck (round 13) is the set piece; it is reused, not rebuilt.
+
+## Southern Crown (continent 5: ice to the south pole, everything mixed; the seal cracking)
+
+Mood: unstable. Pale shattered ice over dark rock, and through it overcharged Crysium veins that glow hot magenta
+to white. Where Northern Crown is solid and calm, everything here is cracked, tilted and charged.
+
+- Ground: dark glassy black ice over rock, cut by a network of fine glowing veins. GroundAlt: broken rubble of
+  mixed stone, ash and ice (all elements mixed). Element set **CrackedIce**: pale shattered pack ice with dark
+  fracture lines and magenta light in the widest cracks.
+- Road: pale grey slabs with a cool cast; a few cracks run across it (the ground is breaking).
+- Border: heaved ice and rock plates pushed up at angles (a pressure ridge), glowing cracks between them. Banks:
+  broken ice plates tilted up along the shore.
+- Decor: **UnstableCrystal** (an overcharged Crysium cluster: cracked, glowing white-hot inside, splinters floating
+  free above it), **CrackedVein** (the ground split open along a charged vein, lips heaved up), **PressureRidge**
+  (heaved plates), **ShatteredPillar** (a broken ice-rock pillar with veins), **MixedBoulder** (half frozen, half
+  scorched), scatter **Shards**.
+
+## The Core (continent 6: underground crystal plateau; the seal)
+
+Mood: a vast cavern; the plateau is lit from below by the seal. Indigo-black crystal glass, gold-white seal
+light (ancient, not Burrower pink), and the corruption in sick violet.
+
+- Ground: indigo-black crystal glass in hexagonal facets with fine gold seams. GroundAlt: crystal grit and shards.
+  Element set **Plateau**: pale lilac-grey crystal plateau stone with growth rings (the "crystal plateau" the base
+  stands on, used for open areas and plazas).
+- Road: pale lilac slabs cut from the plateau, the light band.
+- Border: plateau edges that fall into the abyss (the Cliff_* pieces drop instead of rise): faceted crystal-glass
+  lips with gold veins running down. Banks: for the violet corruption pools, a crystal-glass rim with violet
+  crust.
+- **The Seal** (set piece, about 7 x 7 units): a ring of ancient carved stone and gold Crysium set in the plateau,
+  concentric bands, radial veins, a central boss. Three states as separate meshes on one 1024 set each: **Intact**
+  (whole, gold light), **Cracked** (cracks through the bands, violet light leaking), **Broken** (segments heaved,
+  centre collapsed into a violet glowing pit). **SealVein** (flat vein meshes, straight and branching, gold) for
+  the veins leading to it across the map.
+- Decor: **CorruptedCrystal** (dark crystal with violet light, oozing and fractured), **CrystalPillar** (a tall gold
+  vein pillar), **SealShard** (a fallen fragment of seal band), scatter **CrystalGrit**.
+
+## Round 17 review: what changed after looking at the renders
+
+Two or three passes per continent (tiling sheets, kit and decor sheets, the diorama at the game camera and a close
+3/4). The question each time: distinct continent at a glance, alien, road and pads readable, moody not noisy.
+
+- **Value bands enforced by numbers:** every tiling report carries `value_mean`. The first Snow (0.55) and
+  CrackedIce (0.63) were brighter than their roads (0.48 / 0.49); both were darkened (0.42 / 0.38) and made busier
+  and bluer, so they never read as paving. The first Mirewood ground layers were too dark (0.11) and lifted.
+- **Ashen Reach:** the mesa wall first read as stadium steps; ledge depth and riser height now wander along the
+  wall with clefts cut in. Lava rock was a glossy blob (now matte crust with a hot split), the dune's rib cage was
+  buried (now arches out of the sand), the fulgurite read as candles (now knobbly tubes with glowing rims).
+- **Northern Crown:** ice shards first glowed amber like candles, then went dark like obsidian; now pale ice
+  prisms round one amber-hearted core. The frozen crystal was a toy cube; now crystal bursts through broken ice
+  slabs. The column wall lost its round back masses and most snow caps on the back rows (calmer from above).
+- **Mirewood:** moss on the kerb hid the road's light line (moss now only on the ground side); the earth bank was
+  a cake with icing (now a bulging face, an overhanging turf lip, looping roots and a splintered stump); moss
+  cushions read as cobbles (now finer and softer).
+- **Southern Crown:** the ridge plates read as tombstones (now flattened chiselled shards at odd angles with dark
+  broken blocks behind); the shattered pillar read as a candle; the ground's vein network was toned down.
+- **The Core:** the seal's glyphs read as perforated metal (now sparse script on alternate rings), the broken
+  state heaves more; the ground glass was too glossy (reflected the sky and read light); the plateau edges' gold
+  veins were halved.

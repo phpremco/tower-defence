@@ -36,7 +36,7 @@ LOD_NAME = NAME + "_LOD1"
 LARVA = "FireLarva"
 K = 4.0
 UNITY_SCALE = 1.0
-LARVA_SCALE = 0.5
+LARVA_SCALE = 0.6
 
 # Charcoal slag a step lighter than the Slagstrider (she must separate from dark ash ground), orange-yellow molten.
 PAL = H.Palette(top=(0.24, 0.2, 0.18), side=(0.09, 0.075, 0.068), belly=(0.035, 0.028, 0.025), seam=(0.025, 0.014, 0.01),
@@ -93,7 +93,7 @@ def body_parts():
     b = C.PartBuilder()
     k = K
     # Thorax: dark rock with a fissure net, under a mantle of slag shingles.
-    b.ellipsoid("Thorax", G(0, 1.5, 0.15), (0.55, 0.78, 0.45), T.forward_frame(G(0, 1.5, 1), G(0, 1.5, -1)),
+    b.ellipsoid("Thorax", G(0, 1.5, 0.15), (0.64, 0.86, 0.5), T.forward_frame(G(0, 1.5, 1), G(0, 1.5, -1)),
                 bone="Body", segments=(48, 24), style=S.core(PAL, k * 0.7, seed=1, cells=60, width=0.016, glow=0.8))
     for i, (f, h, w, l) in enumerate(((0.55, 1.88, 0.42, 0.36), (0.12, 1.92, 0.5, 0.4), (-0.32, 1.86, 0.5, 0.38))):
         b.ellipsoid("Mantle", G(0, h, f), (w, l, 0.13), T.rot(pitch=-8), bone="Body", segments=(36, 18),
@@ -127,10 +127,10 @@ def body_parts():
         b.tube("Mandible", pts, [0.1, 0.085, 0.05, 0.006], sides=10, chain=[name], flatten=0.55,
                style=H.blade(HOT, k * 0.35, glow=0.9, teeth=4))
     # The kiln-sac: two overlapping molten ellipsoids, a crust of slag floes on top, three chimneys, a dripping tip.
-    b.ellipsoid("SacFront", G(0, 1.18, -0.95), (0.78, 0.7, 0.62), T.rot(pitch=14), bone="Sac_1", segments=(48, 24),
-                style=K3.molten_sac(HOT, k * 0.6, cells=38, seed=50, glow=1.0))
-    b.ellipsoid("SacRear", G(0, 0.95, -1.85), (0.92, 0.85, 0.7), T.rot(pitch=22), bone="Sac_2", segments=(48, 24),
-                style=K3.molten_sac(HOT, k * 0.6, cells=44, seed=51, glow=1.0))
+    b.ellipsoid("SacFront", G(0, 1.2, -1.0), (0.92, 0.82, 0.72), T.rot(pitch=14), bone="Sac_1", segments=(48, 24),
+                style=T.kiln_crust(PAL, k * 0.6, cells=14, seed=50, glow=1.0, under=0.6, rifts=0.5))
+    b.ellipsoid("SacRear", G(0, 0.98, -1.95), (1.1, 1.0, 0.82), T.rot(pitch=22), bone="Sac_2", segments=(56, 28),
+                style=T.kiln_crust(PAL, k * 0.6, cells=16, seed=51, glow=1.0, under=0.6, rifts=0.5))
     for i, (x, u, f, r, bone) in enumerate(((0.0, 1.78, -0.62, (0.4, 0.34, 0.1), "Sac_1"),
                                              (0.42, 1.62, -1.3, (0.36, 0.32, 0.1), "Sac_2"),
                                              (0.0, 1.66, -1.62, (0.34, 0.36, 0.1), "Sac_2"),
@@ -147,8 +147,8 @@ def body_parts():
                style=S.pillar(PAL, k * 0.5, drums=3, seed=70, glow=0.8), cap=0.15)
         b.ellipsoid("ChimneyFire", top + d * 0.01, (0.12, 0.12, 0.05), T.frame_from(d), bone=name, segments=(16, 8),
                     style=T.solid_glow(WHITE_HOT, 1.0))
-    b.ellipsoid("DripTip", G(0, 0.58, -2.5), (0.2, 0.2, 0.28), bone="Drip", segments=(20, 10),
-                style=K3.molten_sac(HOT, k * 0.4, cells=10, seed=80, glow=1.0))
+    b.ellipsoid("DripTip", G(0, 0.55, -2.72), (0.24, 0.24, 0.32), bone="Drip", segments=(20, 10),
+                style=T.kiln_crust(PAL, k * 0.4, cells=6, seed=80, glow=1.0, under=0.8))
     # Stilt legs: basalt drums, glowing knees, heat-proof foot cones.
     for (side, i), lg in legs().items():
         hip, knee, foot = lg.rest_points
@@ -214,7 +214,7 @@ def bones():
         out.append((name, root, root + HEAD_AXIS * 0.5, "Head", True))
     out += [("Sac_1", G(0, 1.4, -0.45), G(0, 1.12, -1.35), "Body", True),
             ("Sac_2", G(0, 1.12, -1.35), G(0, 0.8, -2.45), "Sac_1", True),
-            ("Drip", G(0, 0.7, -2.45), G(0, 0.4, -2.55), "Sac_2", True)]
+            ("Drip", G(0, 0.7, -2.65), G(0, 0.4, -2.75), "Sac_2", True)]
     for name, parent, base, d in VENTS:
         out.append((name, base - d.normalized() * 0.1, base + d.normalized() * 0.35, parent, True))
     for lg in legs().values():
@@ -545,7 +545,7 @@ def main():
     if args.get("blockout"):
         C.reset_scene()
         T.blockout("cinder", [(body_parts(), (0.2, 0.12, 0.08), None), (crystal_parts(), (1.0, 0.55, 0.15), (1.0, 0.5, 0.1))],
-                   bones(), CLIPS, out, (0, 0, 1.2), 9.0,
+                   bones(), CLIPS, out, (0, 0, 1.3), 13.0,
                    [("close", "close", "Idle", 20), ("side", "side", "Walk", 8), ("top", "top", "Walk", 8),
                     ("roar", "close", "Roar", 36), ("spawn", "close", "Spawn", 32), ("dead", "close", "Death", 72)],
                    [("Walk", "side", range(0, WALK_FRAMES, 7)), ("Roar", "side", range(0, ROAR_FRAMES, 9))],
@@ -554,7 +554,7 @@ def main():
     if not args.get("skip-larva"):
         build_larva()
     C.reset_scene()
-    mats = [T.Mat(body_parts(), 18000, ("rock", "membrane", "chitin"), voxel=0.012, ao=0.35, k=K, emission=3.0,
+    mats = [T.Mat(body_parts(), 18000, ("rock", "membrane", "chitin"), voxel=0.012, ao=0.35, k=K, emission=3.4,
                   specular=0.25, extra=H.weathering(K, scratches=0.4, dust=0.3, seed=161), rigid=BODY_RIGID,
                   blend=2, lod_share=0.75),
             T.Mat(crystal_parts(), 5500, ("crystal", "rock"), suffix="Crystal", voxel=0.009, ao=0.2, extrusion=0.04,
@@ -577,14 +577,14 @@ def main():
         la = B.append_base(LARVA)
         for x, y, yaw, fr in ((-0.9, -2.9, 0.4, 3), (0.6, -3.2, -0.3, 9), (-1.8, -3.6, 0.1, 14)):
             minions.append((la[0], la[1], la[2]["Crawl"], fr, (x, y, 0), yaw, LARVA_SCALE))
-    T.previews("cinder", arm, mesh, actions, lod, out, assets, (0, 0, 1.2), 9.0, ("Walk", 8),
+    T.previews("cinder", arm, mesh, actions, lod, out, assets, (0, 0, 1.3), 13.0, ("Walk", 8),
                shots=[("close", "close", "Idle", 20), ("side", "side", "Walk", 8), ("front", "front", "Idle", 20),
                       ("top", "top", "Walk", 12), ("back", "back", "Idle", 40), ("roar", "close", "Roar", 38),
                       ("spawn", "close", "Spawn", SPAWN_RELEASE), ("dead", "close", "Death", DEATH_FRAMES)],
                strips=[("Walk", "side", range(0, WALK_FRAMES, 7)), ("Spawn", "close", range(0, SPAWN_FRAMES + 1, 8)),
                        ("Roar", "close", range(0, ROAR_FRAMES, 9)), ("Death", "close", range(0, DEATH_FRAMES + 1, 9))],
-               macros=[("head", G(0, 1.45, 1.9), 2.2, -35, 14, "Roar", 38), ("sac", G(0.3, 1.3, -1.4), 2.4, -60, 30, "Idle", 20),
-                       ("leg", G(1.1, 1.6, 1.1), 2.0, -50, 20, "Idle", 20)],
+               macros=[("head", G(0, 1.4, 1.8), 5.5, -35, 14, "Idle", 20), ("sac", G(0.4, 1.2, -1.6), 6.0, -70, 25, "Idle", 20),
+                       ("chimneys", G(0, 1.7, -1.4), 6.0, -150, 35, "Spawn", 32)],
                minions=minions)
 
 

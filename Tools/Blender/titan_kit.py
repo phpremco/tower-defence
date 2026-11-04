@@ -91,7 +91,7 @@ def seal_mask(r, th, arms=SEAL_ARMS, line=1.0):
     d = np.minimum(sector, 1 - sector) * 2 * math.pi * r / arms
     spoke = (1 - C.smoothstep(w * 0.45, w * 0.9, d)) * C.smoothstep(0.56, 0.6, r) * (1 - C.smoothstep(0.9, 0.94, r))
     half = np.abs(sector - 0.5) * 2 * math.pi * r / arms
-    tri_w = np.clip(0.5 - r, 0, 1) * 0.36
+    tri_w = np.clip(0.5 - r, 0, 1) * 0.36 + 1e-4
     chevron = (1 - C.smoothstep(tri_w * 0.6, tri_w, half)) * C.smoothstep(0.3, 0.32, r) * (1 - C.smoothstep(0.49, 0.51, r))
     eye = ring(0.18, w) + (1 - C.smoothstep(0.05, 0.07, r))
     mask = np.maximum.reduce([outer, inner, arc, spoke, chevron, np.clip(eye, 0, 1)])
@@ -99,11 +99,11 @@ def seal_mask(r, th, arms=SEAL_ARMS, line=1.0):
 
 
 def seal_rune(centre, normal, up, radius, glow_col, glow=1.0, depth=0.006, line_col=None, facing=0.35,
-              thickness=None, line=1.0, arms=SEAL_ARMS):
+              thickness=None, line=1.0, arms=SEAL_ARMS, wear=0.0, seed=0):
     """An `extra` pass: projects the seal glyph along `normal` onto every vertex within `radius` of `centre`
     whose normal faces the same way (dot > `facing`) and within `thickness` of the plane, engraves it (`depth`),
     darkens or tints the line (`line_col`) and lights it in `glow_col`. `up` sets th = 0 (keep it in the mirror
-    plane for symmetric creatures)."""
+    plane for symmetric creatures). `wear` (0..1) breaks the lines up in patches (old, chipped, frosted over)."""
     c = np.asarray(centre, float)
     n = np.asarray(normal, float)
     n = n / np.linalg.norm(n)
@@ -122,6 +122,9 @@ def seal_rune(centre, normal, up, radius, glow_col, glow=1.0, depth=0.006, line_
         th = np.arctan2(x, y)
         face = C.smoothstep(facing, facing + 0.25, s.n @ n) * (1 - C.smoothstep(thick * 0.8, thick, np.abs(z)))
         m = seal_mask(r, th, arms, line) * face
+        if wear:
+            keep = C.smoothstep(-0.25, 0.15, C.value_noise(s.p, 3.0 / radius, seed + 11) + 0.35 - wear * 0.7)
+            m = m * (0.25 + 0.75 * keep)
         s.disp -= depth * m
         target = np.asarray(line_col, float) if line_col is not None else col * 0.7
         s.albedo = C.lerp3(s.albedo, target, m * 0.85)
@@ -197,6 +200,108 @@ def flesh_glow(pal, k, glow=1.0, folds=7.0, seed=0, axis=1):
     return style
 
 
+def kiln_crust(pal, k, cells=16, seed=0, glow=1.0, warp=0.35, under=0.35, deep=(0.9, 0.22, 0.04), rifts=0.0):
+    """A molten organ under a chilled crust (ellipsoids): large floes of uneven size (warped cells, never a regular
+    honeycomb), cracks of varying width that run red-orange where thin and yellow-white where they gape, a darker
+    crust with slag grain, a dull glow on the underside. `rifts` (0..1) widens more of the cracks into hot rifts."""
+    deep = np.asarray(deep, float)
+
+    def style(s, idx, part):
+        L = C.local_points(part, s.p[idx])
+        u = _unit(L)
+        p = s.p[idx]
+        rng = np.random.default_rng(seed)
+        seeds = C.fibonacci_sphere(cells, seed=seed) * rng.uniform(0.6, 1.4, (cells, 1))
+        wu = _unit(u + warp * np.c_[C.value_noise(p, 2.5 / k, seed + 1), C.value_noise(p, 2.5 / k, seed + 2),
+                                     C.value_noise(p, 2.5 / k, seed + 3)])
+        e = C.voronoi_edge(wu, seeds / np.linalg.norm(seeds, axis=1, keepdims=True))
+        width = 0.012 + 0.05 * C.smoothstep(-0.1 - 0.5 * rifts, 0.6 - 0.4 * rifts, C.value_noise(p, 1.8 / k, seed + 4))
+        crack = 1 - C.smoothstep(width * 0.4, width, e)
+        gape = C.smoothstep(0.035, 0.06, width) * crack
+        fine = (1 - C.smoothstep(0.0, 0.03, np.abs(C.value_noise(p, 9 / k, seed + 5)))) * 0.5
+        bottom = C.smoothstep(0.2, -0.7, u[:, 2]) * under
+        crust = C.chitin_gradient(s.n[idx], pal.top, pal.side, pal.belly) * H.mottle(s, idx, 0.18, 30 / k, seed + 6)
+        hot_col = C.lerp3(deep[None, :].repeat(len(idx), 0), pal.glow[None, :].repeat(len(idx), 0), gape)
+        col = C.lerp3(crust, pal.seam, fine * (1 - crack))
+        col = C.lerp3(col, hot_col * 0.75, np.clip(crack + bottom, 0, 1))
+        amount = np.clip(crack * (0.55 + 0.45 * gape) + fine * 0.12 + bottom, 0, 1) * glow
+        s.albedo[idx] = col
+        s.emit[idx] = np.clip(hot_col * amount[:, None], 0, 1)
+        s.disp[idx] = -0.006 * k * crack - 0.002 * k * fine
+        s.rough[idx] = 0.88 - 0.4 * crack
+        H.family(s, idx, rock=1.0 - crack, membrane=crack * 0.5, flow=u[:, 2] * part.radii[2])
+    return style
+
+
+def patch_frame(centre, radii, rot_m):
+    """World -> unit-sphere space of an ellipsoid (the frame an ellipsoid part gets), for patch plates."""
+    return (Matrix.Translation(Vector(centre)) @ rot_m.to_4x4() @ Matrix.Diagonal((radii[0], radii[1], radii[2], 1.0))).inverted()
+
+
+def ellipsoid_patch(b, name, centre, radii, rot_m, axes, a_rng, b_rng, sign, gap, thick, bone, style, nu=14, nv=14,
+                    bulge=0.0, keel=0.0):
+    """A shell plate conforming to an ellipsoid (centre, radii, rotation): the patch where unit-sphere coordinate
+    `axes[0]` runs over a_rng and `axes[1]` over b_rng on the `sign` side of the third axis, lifted `gap` off the
+    surface along the normal and `thick` deep. With a gap of a few voxels the remesh keeps it a separate island, so a
+    bone can scale it away cleanly. `bulge` thickens the middle (a domed plate), `keel` raises a sharp ridge along the
+    middle of the a range (rising towards the high-b edge)."""
+    ia, ib = axes
+    ic = 3 - ia - ib
+    R = rot_m
+    c = Vector(centre)
+    rad = Vector(radii)
+
+    def point(u, v, off):
+        a = a_rng[0] + (a_rng[1] - a_rng[0]) * u
+        bb = b_rng[0] + (b_rng[1] - b_rng[0]) * v
+        w = [0.0, 0.0, 0.0]
+        w[ia], w[ib] = a, bb
+        w[ic] = sign * math.sqrt(max(1.0 - a * a - bb * bb, 0.01))
+        unit = Vector(w).normalized()
+        p = Vector((unit.x * rad.x, unit.y * rad.y, unit.z * rad.z))
+        n = Vector((unit.x / rad.x, unit.y / rad.y, unit.z / rad.z)).normalized()
+        dome = bulge * math.sin(math.pi * u) * math.sin(math.pi * v)
+        dome += keel * max(0.0, 1 - abs(2 * u - 1) * 2.2) ** 1.4 * math.sin(math.pi * min(v * 0.85 + 0.1, 1.0)) * (0.5 + 0.5 * v)
+        return c + R @ (p + n * (off + dome * (1 if off > gap else 0)))
+    return b.slab(name, lambda u, v: point(u, v, gap + thick), lambda u, v: point(u, v, gap), nu, nv,
+                  frame=patch_frame(centre, radii, R), bone=bone, style=style)
+
+
+def shell_plate(pal, k, axes, a_rng, b_rng, crack=0.7, rim_glow=0.8, seed=0, chevron=0.0):
+    """Armour plate style for ellipsoid_patch plates: dark plate with growth lines, a pale worn rim, hairline cracks
+    leaking hot light, a hot underside (the core shows when it lifts), an optional forward chevron."""
+    ia, ib = axes
+
+    def style(s, idx, part):
+        L = C.local_points(part, s.p[idx])
+        u_ = _unit(L)
+        p = s.p[idx]
+        n = s.n[idx]
+        a = (u_[:, ia] - a_rng[0]) / (a_rng[1] - a_rng[0])
+        bb = (u_[:, ib] - b_rng[0]) / (b_rng[1] - b_rng[0])
+        edge = np.clip(np.minimum.reduce([a, 1 - a, bb, 1 - bb]), 0, 1)
+        rim = 1 - C.smoothstep(0.02, 0.12, edge)
+        outward = C.smoothstep(-0.1, 0.3, np.einsum("ij,ij->i", n, _unit(p - np.array(part.frame.inverted().translation))))
+        growth = 1 - C.smoothstep(0.0, 0.18, np.abs(np.sin(edge * 22 + 0.6 * C.value_noise(p, 8 / k, seed))))
+        cr = (1 - C.smoothstep(0.0, 0.035, np.abs(C.value_noise(p, 7 / k, seed + 1)))) * crack
+        cr *= C.smoothstep(-0.2, 0.3, C.value_noise(p, 2.5 / k, seed + 2)) * C.smoothstep(0.04, 0.12, edge)
+        chev = np.zeros(len(idx))
+        if chevron:
+            v_line = np.abs(np.abs(a - 0.5) * 1.6 - (bb - 0.25))
+            chev = (1 - C.smoothstep(0.04, 0.09, v_line)) * C.smoothstep(0.15, 0.3, bb) * (1 - C.smoothstep(0.7, 0.85, bb))
+        col = C.chitin_gradient(n, pal.top, pal.side, pal.belly) * H.mottle(s, idx, 0.12, 40 / k, seed + 3)
+        col = C.lerp3(col, pal.seam, growth * 0.35)
+        col = C.lerp3(col, pal.bone, rim * 0.6)
+        hot = np.clip(cr + chev * chevron + (1 - outward) * 0.9 + rim * rim_glow * 0.35, 0, 1)
+        col = C.lerp3(col, pal.glow * 0.75, np.clip(cr + chev * chevron + (1 - outward), 0, 1))
+        s.albedo[idx] = col
+        s.emit[idx] = pal.glow[None, :] * hot[:, None]
+        s.disp[idx] = -0.004 * k * cr - 0.002 * k * growth * outward
+        s.rough[idx] = 0.66 - 0.25 * rim - 0.25 * hot
+        H.family(s, idx, chitin=1.0 - 0.6 * hot, flow=edge)
+    return style
+
+
 def leaf_petal(pal, k, glow=1.0, veins=7, seed=0):
     """A bloom petal (a slab, u across 0..1, v along 0..1 from the base): dark veined back, the inner face
     glowing from the base towards a pale frilled rim, dark vein lines fanning out, a hot throat at the base."""
@@ -263,11 +368,56 @@ def solid_glow(color, strength=1.0, albedo_scale=0.6):
 # Pipeline
 # ---------------------------------------------------------------------------------------------------------------
 
+def island_rigid(obj, bones, share=0.35):
+    """Welds every loose island of `obj` whose weight is dominated by one of `bones` fully onto that bone. Plates that
+    must vanish by bone scale (shells, seal stones) are separate islands, but after decimation a few of their vertices
+    land nearer another part and pick up its weight, so at scale 0 they would only shrink, not disappear."""
+    mesh = obj.data
+    n = len(mesh.vertices)
+    edges = np.empty(len(mesh.edges) * 2, dtype=np.int64)
+    mesh.edges.foreach_get("vertices", edges)
+    edges = edges.reshape(-1, 2)
+    parent = np.arange(n)
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    for a, b in edges:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+    roots = np.array([find(i) for i in range(n)])
+    names = {vg.index: vg.name for vg in obj.vertex_groups}
+    wanted = {obj.vertex_groups[b].index for b in bones if b in obj.vertex_groups}
+    totals = {}
+    for v in mesh.vertices:
+        for g in v.groups:
+            if g.group in wanted:
+                key = (roots[v.index], g.group)
+                totals[key] = totals.get(key, 0.0) + g.weight
+    sizes = np.bincount(roots, minlength=n)
+    best = {}
+    for (root, gi), w in totals.items():
+        if w > share * sizes[root] and w > best.get(root, (None, 0.0))[1]:
+            best[root] = (gi, w)
+    welded = 0
+    for root, (gi, _) in best.items():
+        ids = [int(i) for i in np.nonzero(roots == root)[0]]
+        for vg in obj.vertex_groups:
+            vg.remove(ids)
+        obj.vertex_groups[names[gi]].add(ids, 1.0, "REPLACE")
+        welded += 1
+    C.log(obj.name, "island_rigid welded", welded, "islands")
+
+
 class Mat:
-    """One material of a boss: its parts, budget and bake settings."""
+    """One material of a boss: its parts, budget and bake settings. `islands`: bones whose loose islands are welded
+    fully onto them after skinning (island_rigid)."""
 
     def __init__(self, builder, tris, families, suffix="", voxel=0.012, ao=0.3, extrusion=0.05, ray=0.15,
-                 emission=2.5, specular=0.3, k=4.0, extra=None, rigid=(), blend=2, smooth=6, lod_share=1.0):
+                 emission=2.5, specular=0.3, k=4.0, extra=None, rigid=(), blend=2, smooth=6, lod_share=1.0, islands=()):
         self.builder = builder
         self.tris = tris
         self.families = families
@@ -284,6 +434,7 @@ class Mat:
         self.blend = blend
         self.smooth = smooth
         self.lod_share = lod_share
+        self.islands = list(islands)
 
 
 def build_lod_multi(lod_name, parts, bones, clips, full_poser, lod_tris, drop, aims, scale_bones=(), clip_scales=None):
@@ -318,7 +469,9 @@ def build_lod_multi(lod_name, parts, bones, clips, full_poser, lod_tris, drop, a
         for p in m.builder.parts:
             p.chain = list(dict.fromkeys(remap(c) for c in p.chain))
             p.bone = p.chain[0] if p.chain else p.bone
-        C.skin(obj, arm, m.builder, rigid=m.rigid, blend=1)
+        C.skin(obj, arm, m.builder, rigid=m.rigid, blend=min(m.blend, 1))
+        if m.islands:
+            island_rigid(obj, [b for b in m.islands if b not in drop])
         for p, chain, bone in saved:
             p.chain, p.bone = chain, bone
         pieces.append(obj)
@@ -352,6 +505,8 @@ def build_titan(name, mats, bone_list, clips, lod_name=None, lod_tris=None, lod_
     arm = C.build_armature(name + "_Rig", bone_list)
     for a, m in zip(assets, mats):
         C.skin(a.low, arm, m.builder, rigid=m.rigid, blend=m.blend)
+        if m.islands:
+            island_rigid(a.low, m.islands)
     poser = K3.ClipPoser(arm, scale_bones, clip_scales)
     actions = K3.key_clips(poser, clips)
     lod = None
@@ -411,6 +566,9 @@ def previews(prefix, arm, mesh, actions, lod, out, assets, target, distance, mov
     C.ground()
     cams = cameras(target, distance)
     cams.update(extra_cams or {})
+    if lod:
+        # The LOD rig sits on the same spot: keep it out of every render but its own shot.
+        lod[0].hide_render = lod[1].hide_render = True
     paths = []
 
     def shot(name, cam, clip, frame):

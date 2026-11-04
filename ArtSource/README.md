@@ -1005,3 +1005,185 @@ New options: both scripts take `--stage <dir>` (exports and .blend go there, for
   of a pauldron can show from a low camera, which the game camera never has.
 - The Down end pose moved: hips about 0.39 and head 0.84 to the figure's right of the root (was 0.89 and 1.34). If a
   health bar or selection ring follows the hips bone nothing changes; if it uses a fixed offset, use 0.4.
+
+
+## Round 16: continent bosses 2-6 (Cinder Matriarch + fire larva, Frost Warden, Rotbloom, The Shattered, The Sealed One, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 16). New scripts (shared modules and earlier build scripts untouched, only
+imported): `titan_kit.py` (helpers), `build_cindermatriarch.py` (also builds `FireLarva`), `build_frostwarden.py`,
+`build_rotbloom.py`, `build_shattered.py`, `build_sealedone.py`. Not yet in `build_all.py`; proposed lines, after
+`build_gravemaw.py` (the previews load the Gravemaw and Skitter `.blend` files for scale):
+
+```
+# Round 16: continent bosses 2-6 (titan_kit.py); previews load Gravemaw and Skitter.
+"build_cindermatriarch.py", "build_frostwarden.py", "build_rotbloom.py", "build_shattered.py", "build_sealedone.py",
+```
+
+`titan_kit.py`: the seal glyph (`seal_mask`, `seal_rune`, `rune_band`: engraved, lit glyph passes), styles
+(`kiln_crust`: molten organ under uneven chilled floes, never a honeycomb; `flesh_glow`; `leaf_petal`; `scale_band`;
+`solid_glow`; `shell_plate`), `ellipsoid_patch` (a plate conforming to an ellipsoid, lifted off it by a gap so the
+remesh keeps it a separate island: shells that vanish by bone scale), `island_rigid` (welds such islands fully onto
+their bone after skinning), `build_titan` (bake one or two materials, skin, per-clip scale keys, LOD1, join, export,
+report, `.blend`), `previews` (the set below) and `blockout` (`--blockout`: raw parts on the rig in ~15 s).
+
+Previews (all with `--preview <dir>`): `sheet_<prefix>.png` (3/4, side, front, top, back, power poses, death, LOD1,
+macros, the game view at play size 1280x720 next to Gravemaw and six Skitters, and zoomed x2) and
+`strips_<prefix>.png` (clip strips). Prefixes: `cinder`, `firelarva`, `warden`, `rotbloom`, `shattered`, `sealed`.
+
+| Asset | Triangles (body + second) | Bones | LOD1 (tris / bones) | Size (m, w x l x h) | Clips (frames @30 fps) |
+| --- | --- | --- | --- | --- | --- |
+| CinderMatriarch | 23,051 (17,995 + 5,056 Crystal) | 26 | 8,997 / 21 | 4.7 x 5.8 x 3.0 | Walk 56 (loop), Idle 90 (loop), Hit 16, Death 72, Spawn 64, Roar 70 |
+| FireLarva | 1,458 (one material) | 21 | 700 / 13 | 0.35 x 1.0 x 0.23 (Unity scale 0.6) | Crawl 20 (loop), Idle 48 (loop), Hit 10, Death 30 |
+| FrostWarden | 23,880 (17,507 + 6,373 Ice) | 23 | 9,496 / 22 | 3.1 x 4.7 x 4.9 | Walk 64 (loop), WalkEnraged 40 (loop), Idle 120 (loop), Hit 16, Death 84, FreezePulse 64, Enrage 48 |
+| Rotbloom | 23,968 (16,989 + 6,979 Bloom) | 27 | 9,498 / 25 | 3.8 x 5.0 x 2.4 | Crawl 64 (loop), Idle 96 (loop), Hit 16, Death 84, Regrow 60, Bloom 72 |
+| Shattered | 24,070 (17,493 + 6,577 Crystal) | 27 | 9,498 / 26 | 3.4 x 4.5 x 3.6 (crystals at rest scale) | Walk 56 (loop), Idle 72 (loop), Hit 14, PhaseBreak1 40, PhaseBreak2 44, Death 80 |
+| SealedOne | 34,478 (25,486 + 8,992 Seal) | 29 | 13,998 / 26 | 6.9 x 6.9 x 6.7 (seal ring 5.5 across) | Idle 120 (loop), Rise 150, Summon 90, Hit 18, Death 150 |
+
+Gait playback `velocity / (distance_per_loop x scale)`: CinderMatriarch Walk 1.288, FrostWarden Walk 1.029 and
+WalkEnraged 1.338, Rotbloom Crawl 0.714, Shattered Walk 1.452 (model units per loop; reports).
+
+All bosses: two materials (`<Asset>_Mat` + `<Asset>_<Second>_Mat`, keep the slot order), each 1024 Albedo, Normal,
+Emission, Mask plus the 512 `Low/` set, mirrored UVs, `<Asset>_report.json` (tris per material, detail tiling, power
+frames, phase tables). Unity scale 1 (built at game size; Gravemaw is 5.9 long).
+
+### Unity notes for round 16
+
+- **Import** as Gravemaw: Scale 1, Bake Axis Conversion, Generic rig, root `Root`, two material slots in order.
+  Keep "Remove constant scale curves" **off** (the Vent, Halo, Pod, Bloom, Shell, Crys and Ring bones animate scale).
+  Emission strengths: the `emission` value per material in each report is what the previews used.
+- **Cinder Matriarch.** `Spawn`: one larva per chimney at frames **30, 33, 36** (`Vent_1`, `Vent_2`, `Vent_3`; spawn
+  at the bone's tail, the chimney mouth, then let the larva drop and crawl); the chimneys swell by bone scale. Burning
+  trail VFX from bone `Drip` (sac tip). `Roar` rears on the hind stilts (mandibles wide frames ~20-50): boss intro and
+  alarm. Footfalls (heat puffs) at Walk frames 0 and 28. Immune to the Lava Ball is data only; the heat-proof foot
+  cones are the visual cue. Minion `FireLarva` (Unity scale 0.6): one material, Crawl/Idle/Hit/Death, LOD1 700.
+- **Frost Warden.** `FreezePulse`: glaives overhead by frame 20, driven into the ground at frame **30** (start the
+  frost ring and the tower freeze there, centred ~1.5 ahead of the pivot between the glaive tips); the `Halo` flares
+  to 1.4 at frame 32. Low HP: play `Enrage` once (48 frames, it ends in the hunch) and then loop `WalkEnraged` (the
+  same hunch, 1.3x stride; playback `velocity / (1.338 x scale)`) instead of `Walk` (`velocity / (1.029 x scale)`). The seal glyphs are in the Emission map (amber-gold): pulse the emission on FreezePulse.
+- **Rotbloom.** Slime-trail VFX from bone `Trail` (the rear slime lobe, on the ground). `Regrow`: pods peak at frame
+  **28** (pair it with the heal tick and an emission pulse). `Bloom`: petals open frames 6-26, spore burst from bone
+  `Bloom` at frame **34**. Death: the bloom wilts shut.
+- **The Shattered: phases by bone scale.** Walk, Idle and Hit are keyed in phase 1. For phases 2 and 3 a small
+  component writes the phase table (report `phases`) over the Animator in **LateUpdate** (bones `Shell_1..8`,
+  `Crys_1..6`, uniform `localScale`), except while `PhaseBreak1`, `PhaseBreak2` or `Death` play (they key the
+  transition themselves):
+  - phase 1: Shell_1..8 = 1, Crys_1..6 = 0.25
+  - phase 2: Shell_1..4 = 0 (the hump), Shell_5..8 = 1; Crys_1, 2, 3, 6 = 1, Crys_4, 5 = 0.55
+  - phase 3: all Shell = 0, all Crys = 1.35
+  `PhaseBreak1` blows the hump plates off from frame **12** (one every 2 frames: plate debris VFX at the plates),
+  `PhaseBreak2` the rest from frame **14**; the crystals grow with an overshoot. Death: the crystals swell, the final
+  explosion at frame **46** (crystals gone by 54: shard VFX and the big flash there). Raise the emission per phase
+  (report `emission_per_phase`: 2.6, 3.4, 4.5) so the leaking light grows. The plates are rigid to their bones; at
+  scale 0 they collapse to a point inside the core.
+- **The Sealed One.** The pivot is the centre of the seal on the ground. `Rise` starts with the body **5.2 m under
+  the ground** and the seven stones closed; the seal breaks at frame **22** (stones burst outwards: shockwave, dust),
+  the hands slam down at frame **92**, the crown unfolds and it roars at ~124. The terrain must occlude everything
+  under z = 0 (no see-through liquid at the boss spot); the lowest ~0.7 m of the torso is always under the ground.
+  `Summon`: palms up and plates open, the corrupted enemies appear at frame **44** (from the violet column, bone
+  `Head`, or round the seal stones). `Death`: the plates close, the rings shrink away, it sinks, and the seal stones
+  close over the fissure by frame **128** (the "seal restored" beat; the body is fully under the ground from ~124).
+  The seal stones stay on `Root` (they do not move with the body) and are part of the boss mesh.
+
+## Round 17: environment sets for continents 2-6 (2026-11-04)
+
+Design notes: `DESIGN_NOTES.md`, round 17. Scripts (new; the round 8 modules are imported, not changed):
+`env_kit2.py` (continent folders and prefixes, tiling-set writer, the continuous kerb, banks, swept cliffs, the
+diorama) and one build per continent: `build_env_ashenreach.py`, `build_env_northerncrown.py`,
+`build_env_mirewood.py`, `build_env_southerncrown.py`, `build_env_core.py`.
+
+Run one continent (about 25 to 40 min, most of it baking): `blender --background --factory-startup --python
+Tools/Blender/build_env_<continent>.py -- --preview <dir> [--part materials|kit|decor|diorama|all] [--only A,B]`.
+`build_env_core.py` also has `--part seal` (the three seal states and the vein pieces; `all` includes them).
+
+### Folders and names
+
+| Continent | Folder (`Exports/Env/...`) | Prefix | Tiling sets (`Tiling/<Prefix>_<Set>/`) |
+| --- | --- | --- | --- |
+| Ashen Reach | `AshenReach/` | `Ash_` | Road (2), Ground (3), GroundAlt (2), Sand (3), Cliff (3) |
+| Northern Crown | `NorthernCrown/` | `North_` | Road (2), Ground (3), GroundAlt (2), Snow (3), Cliff (3) |
+| Mirewood | `Mirewood/` | `Mire_` | Road (2), Ground (3), GroundAlt (2), Mud (3), Cliff (3) |
+| Southern Crown | `SouthernCrown/` | `South_` | Road (2), Ground (3), GroundAlt (2), CrackedIce (3), Cliff (3) |
+| The Core | `TheCore/` | `Core_` | Road (2), Ground (3), GroundAlt (2), Plateau (3), Cliff (3) |
+
+The number is the world size one tile covers (UV = worldXZ / size). Every set has Albedo, Normal and Mask (R AO,
+G smoothness, B height, A dust/sparkle) at 1024 plus `Low/` at 512, and Emission where something glows; the report
+has `value_mean` (mean sRGB luminance of the albedo), which keeps the bands honest: ground 0.12-0.17, GroundAlt and
+the element set 0.16-0.42, road 0.45-0.49.
+
+Every continent has the same kit names (so one placement code serves all five):
+`RoadEdge_Straight/_OuterCorner/_InnerCorner`, `Bank_Straight/_OuterCorner/_InnerCorner`,
+`Cliff_Straight/_OuterCorner/_InnerCorner`, plus its decor (table below). Kit pieces are 512 maps, one material.
+
+### Placement frames (same rules as round 8, made exact)
+
+- **RoadEdge_Straight / Bank_Straight**: centred on the middle of a cell side, the road or liquid on local -Y (Unity
+  +Z, `LookRotation(towards the road cell)`). One continuous kerb, ends flush at X = +-0.5: neighbours chain
+  without gaps.
+- **RoadEdge_OuterCorner / Bank_OuterCorner**: on the corner point, the road or liquid cell in the (-X, -Y)
+  quadrant (1 road cell of the 4). A short kerb arc closing the two straights; it stands 5 mm higher so the
+  overlap does not z-fight.
+- **RoadEdge_InnerCorner / Bank_InnerCorner**: on the corner point, the ground cell in (+X, +Y) (3 road cells of 4):
+  a corner stone over the joint where the two straights cross.
+- **Cliff_Straight**: 2 cells along X, pivot on the field edge, field on -Y, wall behind on +Y.
+  **Cliff_OuterCorner**: wall in the (+X, +Y) quadrant, arms 1 cell along +X and +Y (straights continue from 1.0).
+  **Cliff_InnerCorner**: field in the (-X, -Y) quadrant, arms 1 cell along -X and -Y.
+  The Core's `Cliff_*` are plateau edges: flush with the field, the faces drop 2.4 into the void on +Y
+  (as round 8 `Chasm_Edge`). Put a dark violet fog or void plane about 3 below.
+- Build pads and the gate plinth stay round 8's `BuildPadTile` and `GatePlinth` on every continent (ours).
+- The diorama in `env_kit2.Diorama` applies exactly these rules (kerbs per cell side, corners per corner point,
+  banks round the pool, the border wall with an inner and an outer corner).
+
+### Set pieces (The Core)
+
+| Asset | Tris | Size | Notes |
+| --- | --- | --- | --- |
+| Core_Seal_Intact / _Cracked / _Broken | 8,000 each | 7.2 across | pivot at the centre on the ground; 1024 maps per state; swap the mesh as the story advances (levels 1-9 intact, 10 cracked, after 10 broken, restored with the ring of crystals in 15-19). Gold glyph inlay and radial veins in the Emission map; violet cracks in Cracked/Broken |
+| Core_SealVein_Straight | 600 | 2 x 0.5 | flat, any yaw, chain along X |
+| Core_SealVein_Branch | 800 | 1.6 x 1.1 | Y junction, branch at 40 degrees towards +Y |
+
+### Unity consumption (proposal, nothing imported)
+
+- **Theme per continent**: add one `EnvironmentSet` reference per continent (or a `Prefix` string on the
+  `VisualTheme`) so `TerrainSurfaceBuilder`, the kerb/bank/cliff placer and `PropFactory` resolve
+  `<Prefix>_<Piece>`. Suggested mapping by the level spec's `Tint`:
+  - Ashen Reach: Ground = `Ash_Ground`, GroundAlt = `Ash_GroundAlt` (ash), element layer = `Ash_Sand` (Sand
+    levels and quicksand rims) or more `Ash_Ground` cracks (Fire levels); liquid banks = lava.
+  - Northern Crown: `North_Snow` as the element layer on Ice levels, `North_GroundAlt` on Stone levels, embers of
+    the Fire levels come from `North_Ground`'s amber cracks; banks = ice lake.
+  - Mirewood: `Mire_GroundAlt` (moss) on Wood levels, `Mire_Mud` on Water/Bog levels; banks = bog and water.
+  - Southern Crown: `South_CrackedIce` on Ice levels, `South_GroundAlt` (mixed rubble) on the mixed levels.
+  - The Core: `Core_Plateau` for the base area and plazas, `Core_GroundAlt` round corrupted nests; banks = the
+    violet corruption pools; the border is `Core_Cliff_*` edges with a void below, not walls.
+- **PropKind mapping** (keep the hashes and scales): IceShard -> `North_Decor_IceShard`, Snowdrift ->
+  `North_Decor_Snowdrift`, DeadTree -> `Mire_Flora_DeadTree`, Reed -> `Mire_Flora_Reed`; per continent the generic
+  kinds map to its own decor (Boulder -> Ash_Decor_LavaRock / North_Decor_RimeBoulder / Mire_Decor_MossStone /
+  South_Decor_MixedBoulder / Core_Decor_HexOutcrop; Crystal -> North_Decor_FrozenCrystal /
+  South_Decor_UnstableCrystal / Core_Decor_CorruptedCrystal; Mushroom -> Mire_Decor_Fungus; GlowTree ->
+  Ash_Flora_CharredTree; Frond -> Ash_Flora_EmberBloom / North_Flora_FrostFern; Spire -> Core_Decor_CrystalPillar;
+  Spike -> Ash_Decor_Fulgurite / South_Decor_ShatteredPillar). New kinds worth adding: AshDune, FogVent,
+  CrackedVein, PressureRidge, SealShard.
+- **Sway**: every `Flora_*` has the `Sway` vertex colour exactly as round 8 (R bend, G phase, B flutter).
+- **Mirewood FogVent**: its report has `fog_emitter` (local position) for a rising fog particle system.
+- **Emission**: as round 8, about 2.2; the seal's gold about 2.4, lower it on Cracked/Broken from data if the
+  story wants the light to fade.
+- **Scatter**: `Scatter_*` (about 200 tris) with GPU instancing, one per two free cells.
+
+### Kit and decor per continent
+
+| Continent | Kit (tris) | Decor (tris) |
+| --- | --- | --- |
+| Ashen Reach | RoadEdge 700 / 498 / 400; Bank (lava) 600 / 398 / 300; Cliff (mesa strata) 1,500 x 3 | Decor_LavaRock 1,200, Decor_AshDune 1,200, Flora_CharredTree 1,500 (sway 1.4), Flora_EmberBloom 1,300 (sway 0.36), Decor_Fulgurite 1,200, Scatter_Cinders 200 |
+| Northern Crown | RoadEdge 700 / 500 / 400; Bank (ice lake) 600 / 400 / 300; Cliff (hex basalt columns) 1,500 x 3 | Decor_IceShard 1,200, Decor_Snowdrift 1,000, Decor_FrozenCrystal 1,300, Decor_RimeBoulder 1,300, Flora_FrostFern 1,300 (sway 0.62), Scatter_IceChips 200 |
+| Mirewood | RoadEdge 700 / 500 / 400; Bank (peat, roots) 600 / 400 / 300; Cliff (earth bank, roots) 1,500 x 3 | Flora_DeadTree 1,500 (sway 1.2), Flora_Reed 1,200 (sway 0.95), Decor_Fungus 1,300, Decor_FogVent 1,000 (`fog_emitter` in the report), Decor_MossStone 1,000, Scatter_Twigs 200 |
+| Southern Crown | RoadEdge 700 / 500 / 400; Bank (tilted ice plates) 600 / 400 / 300; Cliff (pressure ridge) 1,500 x 3 | Decor_UnstableCrystal 1,300, Decor_CrackedVein 600 (2 x 0.9, flat), Decor_PressureRidge 1,200, Decor_ShatteredPillar 1,200, Decor_MixedBoulder 1,100, Scatter_Shards 200 |
+| The Core | RoadEdge 700 / 498 / 400; Bank (corruption pool) 600 / 400 / 300; Cliff (plateau edge, drops 2.4) 1,500 x 3 | Seal_Intact / _Cracked / _Broken 8,000 each (1024), SealVein_Straight 600, SealVein_Branch 800, Decor_CorruptedCrystal 1,300, Decor_CrystalPillar 1,198, Decor_SealShard 1,200, Decor_HexOutcrop 1,200, Scatter_CrystalGrit 200 |
+
+Cliff pieces are wider than their 2-cell footprint (masses and plates reach up to 0.4 past the ends, they overlap
+the neighbours on purpose). Scatter footprints 0.1-0.33.
+
+### FBX colour layers (differs from round 8)
+
+The bake leaves helper colour layers (Albedo, Emit, Rough, Fam, AO) on the game mesh. Round 17 strips them before
+export (`env_kit2.strip_colour_layers`): flora FBX files carry exactly one colour set, `Sway`; the other pieces
+carry none. Unity imports only the first vertex-colour set, so round 8's `Flora_*` (six sets, `Sway` last) would
+lose their sway data on import; check that when importing round 8.

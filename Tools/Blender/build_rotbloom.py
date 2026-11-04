@@ -36,14 +36,14 @@ UNITY_SCALE = 1.0
 PAL = H.Palette(top=(0.33, 0.26, 0.17), side=(0.14, 0.1, 0.07), belly=(0.05, 0.04, 0.03), seam=(0.03, 0.022, 0.015),
                 dark=(0.08, 0.06, 0.04), glow=(0.72, 1.0, 0.18), eye=(1.0, 0.7, 0.2), membrane=(0.24, 0.27, 0.1),
                 bone=(0.6, 0.55, 0.42))
-SLIME = H.Palette(top=PAL.top, side=(0.14, 0.16, 0.06), belly=(0.05, 0.06, 0.02), seam=PAL.seam, dark=PAL.dark,
-                  glow=(0.7, 1.0, 0.2), eye=PAL.eye, membrane=(0.4, 0.55, 0.12), bone=PAL.bone)
+SLIME = H.Palette(top=PAL.top, side=(0.12, 0.14, 0.05), belly=(0.04, 0.05, 0.02), seam=PAL.seam, dark=PAL.dark,
+                  glow=(0.48, 0.72, 0.12), eye=PAL.eye, membrane=(0.26, 0.34, 0.08), bone=PAL.bone)
 POD = H.Palette(top=PAL.top, side=PAL.side, belly=PAL.belly, seam=PAL.seam, dark=(0.1, 0.12, 0.03),
-                glow=(0.85, 1.0, 0.3), eye=PAL.eye, membrane=(0.45, 0.55, 0.15), bone=PAL.bone)
+                glow=(0.95, 0.85, 0.25), eye=PAL.eye, membrane=(0.4, 0.38, 0.1), bone=PAL.bone)
 # The bloom: wine-dark backs, coral inner faces fading to a pale frilled rim, a lime throat.
-PETAL = H.Palette(top=(0.36, 0.07, 0.12), side=(0.2, 0.035, 0.07), belly=(0.08, 0.015, 0.03), seam=(0.12, 0.02, 0.05),
-                  dark=(0.1, 0.02, 0.04), glow=(1.0, 0.42, 0.24), eye=PAL.eye, membrane=(0.5, 0.1, 0.12),
-                  bone=(0.95, 0.75, 0.6))
+PETAL = H.Palette(top=(0.3, 0.05, 0.1), side=(0.17, 0.03, 0.06), belly=(0.07, 0.012, 0.03), seam=(0.1, 0.015, 0.04),
+                  dark=(0.08, 0.015, 0.03), glow=(0.95, 0.24, 0.16), eye=PAL.eye, membrane=(0.45, 0.08, 0.1),
+                  bone=(0.75, 0.42, 0.36))
 STAMEN = H.Palette(top=(0.3, 0.1, 0.12), side=(0.16, 0.05, 0.07), belly=(0.06, 0.02, 0.03), seam=PETAL.seam,
                    dark=PETAL.dark, glow=(0.78, 1.0, 0.25), eye=PAL.eye, membrane=PETAL.membrane, bone=(0.9, 0.95, 0.5))
 THROAT = (0.75, 1.0, 0.25)
@@ -91,10 +91,13 @@ def petal_frame(ang):
 def petal_point(ang, u, v, inner=False):
     d = petal_dir(ang)
     side = Z.cross(d).normalized()
-    w = 0.5 * math.sin(math.pi * (0.12 + 0.8 * v)) + 0.06
+    # Pointed, with a serrated edge (teeth towards the tip) and a tip that hooks down: a jaw, not a lily.
+    teeth = 1 - 0.22 * max(0.0, math.sin(v * 34.0)) ** 2 * min(1.0, v * 2.5)
+    w = (0.14 * (1 - v) + 0.44 * math.sin(math.pi * min(v, 0.999) ** 0.9)) * teeth + 0.02
     x = (2 * u - 1)
-    r = 0.3 + 1.2 * v
-    h = 0.62 * v - 0.42 * v ** 3 + 0.16 * x * x * math.sin(math.pi * v) + 0.03 * math.sin(9 * v + 3 * x) * v
+    r = 0.3 + 1.25 * v
+    hook = max(0.0, (v - 0.78) / 0.22) ** 2
+    h = 0.66 * v - 0.4 * v ** 3 + 0.2 * x * x * math.sin(math.pi * v) + 0.03 * math.sin(9 * v + 3 * x) * v - 0.3 * hook
     p = BLOOM_C + d * r + side * (x * w) + Z * h
     if inner:
         p = p - Z * (0.055 * (1 - 0.7 * v) + 0.012)
@@ -121,14 +124,14 @@ def body_parts():
                         segments=(28, 14), deform=C.chiselled(12, 10 + i, 0.1, squash=(0.8, 1.0)),
                         style=K3.bark(PAL, k * 0.5, grain=44, splits=1.0, moss=0.5, glow=0.4, seed=11 + i))
     # Slime skirt under the whole mound.
-    b.ellipsoid("Skirt", G(0, 0.2, -0.2), (1.6, 1.95, 0.2), bone="Body", segments=(56, 20),
-                style=K2.slime_foot(SLIME, k * 0.5, waves=8.0, edge_glow=1.0))
+    b.ellipsoid("Skirt", G(0, 0.14, -0.2), (1.55, 1.9, 0.14), bone="Body", segments=(56, 20),
+                style=K2.slime_foot(SLIME, k * 0.5, waves=8.0, edge_glow=0.45))
     b.ellipsoid("TrailLobe", G(0, 0.14, -1.95), (0.8, 0.7, 0.12), bone="Trail", segments=(32, 12),
-                style=K2.slime_foot(SLIME, k * 0.5, waves=6.0, edge_glow=1.0))
+                style=K2.slime_foot(SLIME, k * 0.5, waves=6.0, edge_glow=0.6))
     # Sap pods on the flanks.
     for name, p in PODS:
-        b.ellipsoid("Pod", G(*p), (0.3, 0.3, 0.36), bone=name, segments=(28, 14), style=K3.sap_pod(POD, k * 0.5, glow=1.0,
-                                                                                               seed=20))
+        b.ellipsoid("Pod", G(*p), (0.24, 0.26, 0.3), bone=name, segments=(28, 14), style=K3.sap_pod(POD, k * 0.5, glow=0.55,
+                                                                                                 seed=20))
         b.ellipsoid("PodCollar", G(*p) - G(0.1 * (1 if p[0] > 0 else -1), 0.12, 0), (0.24, 0.24, 0.12),
                     T.rot(roll=-50 * (1 if p[0] > 0 else -1)), bone="Body", segments=(20, 10),
                     style=K3.bark(PAL, k * 0.4, seed=21))
@@ -139,7 +142,7 @@ def body_parts():
     b.ellipsoid("Jaw", G(0, 0.5, 1.98), (0.58, 0.42, 0.12), T.rot(pitch=-6), bone="Jaw", segments=(36, 18),
                 deform=C.chiselled(14, 32, 0.06, squash=(0.7, 1.0)),
                 style=K3.bark(PAL, k * 0.5, grain=40, splits=0.6, moss=0.2, glow=0.3, seed=33))
-    b.ellipsoid("Maw", G(0, 0.62, 1.95), (0.42, 0.3, 0.12), bone="Head", segments=(28, 12), style=H.inner_glow(SLIME, 0.9))
+    b.ellipsoid("Maw", G(0, 0.62, 1.9), (0.38, 0.26, 0.1), bone="Head", segments=(28, 12), style=H.inner_glow(SLIME, 0.22))
     for side, sx in SIDES:
         for j, (x, u, f) in enumerate(((0.3, 0.95, 1.92), (0.42, 0.85, 1.86))):
             b.ellipsoid("Eye", G(x * sx, u, f), (0.06 - 0.012 * j,) * 2 + (0.045,), bone="Head", segments=(12, 8),
@@ -175,7 +178,14 @@ def bloom_parts():
     for name, ang in PETALS:
         b.slab("Petal", lambda u, v, a=ang: petal_point(a, u, v), lambda u, v, a=ang: petal_point(a, u, v, True), 14, 18,
                frame=petal_frame(ang), bone=name, style=T.leaf_petal(PETAL, k * 0.5, glow=1.0, veins=7, seed=50))
-    # The pit-maw: a lime throat ringed by a lip, stamens rising round it.
+        # A row of thorns down each petal's midrib, hooked back towards the throat.
+        d = petal_dir(ang)
+        for j, v in enumerate((0.3, 0.5, 0.68)):
+            base = petal_point(ang, 0.5, v) + Z * 0.01
+            tip = base + Z * (0.2 - 0.04 * j) - d * 0.12
+            b.tube("Thorn", [base, base.lerp(tip, 0.6) + d * 0.02, tip], [0.045 - 0.008 * j, 0.025, 0.003], sides=8,
+                   chain=[name], style=H.hook(STAMEN, k * 0.3, glow=0.5, glow_from=0.8))
+    # The pit-maw: a lime throat ringed by a lip, barbed stamen claws round it.
     b.ellipsoid("Throat", BLOOM_C + G(0, 0.02, 0), (0.36, 0.36, 0.14), bone="Bloom", segments=(28, 14),
                 style=T.solid_glow(THROAT, 1.0, 0.55))
     b.ellipsoid("Lip", BLOOM_C + G(0, 0.06, 0), (0.46, 0.46, 0.1), bone="Bloom", segments=(32, 12),
@@ -184,10 +194,10 @@ def bloom_parts():
         a = math.radians(20 + 40 * j)
         d = G(math.sin(a), 0, math.cos(a))
         base = BLOOM_C + d * 0.24 + G(0, 0.08, 0)
-        tip = base + d * 0.22 + G(0, 0.55 + 0.12 * (j % 2), 0)
-        b.tube("Stamen", [base, base.lerp(tip, 0.5) + d * 0.04, tip], [0.035, 0.025, 0.02], sides=8, chain=["Bloom"],
-               style=H.hook(STAMEN, k * 0.3, glow=0.8, glow_from=0.7))
-        b.ellipsoid("Anther", tip, (0.06, 0.06, 0.07), bone="Bloom", segments=(12, 8), style=T.solid_glow(THROAT, 0.9, 0.6))
+        hgt = 0.5 + 0.12 * (j % 2)
+        pts = [base, base + d * 0.16 + G(0, hgt * 0.55, 0), base + d * 0.22 + G(0, hgt, 0), base + d * 0.08 + G(0, hgt * 1.12, 0)]
+        b.tube("Stamen", pts, [0.05, 0.035, 0.022, 0.004], sides=8, chain=["Bloom"],
+               style=H.hook(STAMEN, k * 0.3, glow=1.0, glow_from=0.55))
     return b
 
 
@@ -313,7 +323,7 @@ def bloom_spec(poser):
         burst = T.pulse(f, BLOOM_BURST - 4, BLOOM_BURST, BLOOM_BURST + 12)
         sp = specs(off=Vector((0, 0, -0.06 * open_)), pitch=-math.radians(2) * open_,
                    head=-math.radians(8) * open_, jaw=math.radians(4 + 22 * burst),
-                   petals={n: -math.radians(34) * open_ - math.radians(6) * burst for n, _ in PETALS},
+                   petals={n: -math.radians(20) * open_ - math.radians(4) * burst for n, _ in PETALS},
                    bloom=1.0 + 0.3 * open_ + 0.15 * burst, bloom_lift=0.12 * open_)
         return K3.place_legs(poser, sp, lg, planted(lg))
     return BLOOM_FRAMES, spec, False
@@ -333,7 +343,7 @@ def death_spec(poser):
         jerk = T.pulse(f, 0, 6, 14)
         sp = specs(off=Vector((0, 0.05 * jerk, -0.42 * sink)), roll=math.radians(6) * sink, pitch=-math.radians(4) * sink,
                    head=-math.radians(16) * sink, jaw=math.radians(4 + 20 * T.pulse(f, 2, 10, 30) + 14 * sink),
-                   petals={n: math.radians(40) * wilt - math.radians(70) * droop for n, _ in PETALS},
+                   petals={n: math.radians(42) * wilt - math.radians(30) * droop for n, _ in PETALS},
                    bloom=1.0 - 0.45 * wilt, bloom_lift=-0.12 * wilt, pods=1.0 - 0.35 * sink)
         return K3.splay_feet(poser, sp, lg, sink, twitch=math.sin(f * 1.1) * (1 - sink), out=1.2)
     return DEATH_FRAMES, spec, False
@@ -342,7 +352,7 @@ def death_spec(poser):
 CLIPS = {"Crawl": crawl_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Regrow": regrow_spec,
          "Bloom": bloom_spec}
 BODY_RIGID = {"BarkPlate", "Skull", "Jaw", "Pod", "Antler", "AntlerFork", "Eye", "Maw"}
-BLOOM_RIGID = {"Petal", "Throat", "Lip", "Stamen", "Anther"}
+BLOOM_RIGID = {"Petal", "Thorn", "Throat", "Lip", "Stamen"}
 LOD_DROP = {"Jaw": "Head", "Trail": "Body"}
 
 
@@ -382,8 +392,8 @@ def main():
                       ("regrow", "close", "Regrow", REGROW_PEAK), ("dead", "close", "Death", DEATH_FRAMES)],
                strips=[("Crawl", "side", range(0, CRAWL_FRAMES, 8)), ("Bloom", "close", range(0, BLOOM_FRAMES + 1, 9)),
                        ("Regrow", "close", range(0, REGROW_FRAMES + 1, 8)), ("Death", "close", range(0, DEATH_FRAMES + 1, 12))],
-               macros=[("bloom", G(0, 1.7, -0.2), 2.6, -30, 40, "Bloom", BLOOM_BURST),
-                       ("head", G(0, 0.8, 1.8), 2.2, -30, 12, "Idle", 20), ("pod", G(1.1, 1.0, 0.45), 1.4, -70, 20, "Regrow", 28)])
+               macros=[("bloom", G(0, 1.8, -0.2), 6.0, -30, 45, "Bloom", BLOOM_BURST),
+                       ("head", G(0, 0.8, 1.8), 5.0, -30, 12, "Idle", 20), ("pod", G(1.1, 1.0, 0.45), 4.5, -70, 20, "Regrow", 28)])
 
 
 if __name__ == "__main__":

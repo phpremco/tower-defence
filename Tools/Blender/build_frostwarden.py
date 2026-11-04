@@ -388,11 +388,11 @@ LOD_AIMS = {}
 def seal_extra():
     """The ancient markings: the glyph on the chest plate, the right shoulder plate (the bake mirrors it to the
     left), and a small one on the hood's brow."""
-    ch = T.seal_rune(CHEST_C + G(0, 0, 0.04), G(0, 0, 1) - G(0, 0, 0), Z, 0.4, RUNE, glow=1.0, depth=0.012,
-                     line_col=RUNE_LINE, facing=0.35, thickness=0.25)
+    ch = T.seal_rune(CHEST_C + G(0, 0, 0.04), G(0, 0, 1) - G(0, 0, 0), Z, 0.4, RUNE, glow=0.85, depth=0.012,
+                     line_col=RUNE_LINE, facing=0.35, thickness=0.25, wear=0.6, seed=3)
     sh_n = (G(0.5, 1.0, 0.0)).normalized()
     sh = T.seal_rune(G(0.72, 3.0, 0.04), sh_n, G(0, 0, 1), 0.22, RUNE, glow=0.9, depth=0.008, line_col=RUNE_LINE,
-                     facing=0.3, thickness=0.18, line=1.3)
+                     facing=0.3, thickness=0.18, line=1.3, wear=0.5, seed=5)
     brow = T.seal_rune(G(0, 3.46, 0.3), G(0, 0.4, 1.0).normalized(), Z, 0.13, RUNE, glow=0.9, depth=0.006,
                        line_col=RUNE_LINE, facing=0.3, thickness=0.12, line=1.5)
     return T.B.chain_extras(H.weathering(K, scratches=0.5, dust=0.25, seed=171, markings=PAL.dark, marking_amount=0.2),
@@ -435,8 +435,8 @@ def main():
                       ("dead", "close", "Death", DEATH_FRAMES)],
                strips=[("Walk", "side", range(0, WALK_FRAMES, 8)), ("FreezePulse", "close", range(0, PULSE_FRAMES + 1, 8)),
                        ("Enrage", "close", range(0, ENRAGE_FRAMES + 1, 6)), ("Death", "close", range(0, DEATH_FRAMES + 1, 12))],
-               macros=[("chest", G(0, 2.45, 0.5), 2.0, -20, 8, "Idle", 20), ("face", G(0, 3.25, 0.35), 1.6, -25, 10, "Idle", 20),
-                       ("halo", G(0.5, 3.4, -0.4), 2.2, -150, 20, "Idle", 20)])
+               macros=[("chest", G(0, 2.45, 0.5), 3.4, -20, 8, "Idle", 20), ("face", G(0, 3.3, 0.35), 3.4, -25, 10, "Idle", 20),
+                       ("halo", G(0.5, 3.4, -0.4), 4.5, -150, 20, "Idle", 20)])
 
 
 if __name__ == "__main__":
