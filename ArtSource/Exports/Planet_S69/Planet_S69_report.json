@@ -88,7 +88,7 @@
   "region_note": "The Core (C6) is the crater on Southern Crown's northern arm at its MapRegion centre (150, -32); its surface id covers the crater to 14 deg.",
   "layout": "layout.json (round 21): region centres, the Crystal Plains node proposal, lobes, ranges, rivers",
   "coast_biases": {
-    "C1": -0.1066,
+    "C1": -0.0685,
     "C2": 0.1251,
     "C3": 0.2459,
     "C4": 0.2837,
@@ -98,7 +98,7 @@
     "C1": {
       "name": "Crystal Plains",
       "land_percent": 4.02,
-      "extent_p95_degrees": 45.1
+      "extent_p95_degrees": 46.0
     },
     "C2": {
       "name": "Ashen Reach",
@@ -126,171 +126,171 @@
       "extent_p95_degrees": 13.6
     },
     "ocean": {
-      "land_percent": 68.98
+      "land_percent": 68.99
     }
   },
-  "node_min_spacing_degrees": 6.23,
+  "node_min_spacing_degrees": 6.18,
   "nodes_ok": true,
   "nodes": [
     {
       "name": "Landing Site",
-      "lon": -57.16,
-      "lat": -14.3,
+      "lon": -56.07,
+      "lat": -11.07,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 3.8
+      "degrees_to_coast": 4.3
     },
     {
       "name": "Glass Meadows",
-      "lon": -51.17,
-      "lat": -10.28,
-      "land": true,
-      "region_value": 40,
-      "degrees_to_coast": 3.5
-    },
-    {
-      "name": "Shard Ridge",
-      "lon": -45.17,
-      "lat": -6.59,
-      "land": true,
-      "region_value": 40,
-      "degrees_to_coast": 4.0
-    },
-    {
-      "name": "Fault Line",
-      "lon": -39.09,
-      "lat": -3.32,
+      "lon": -49.75,
+      "lat": -10.37,
       "land": true,
       "region_value": 40,
       "degrees_to_coast": 4.2
     },
     {
+      "name": "Shard Ridge",
+      "lon": -44.82,
+      "lat": -4.04,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 3.8
+    },
+    {
+      "name": "Fault Line",
+      "lon": -37.79,
+      "lat": -4.04,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 4.1
+    },
+    {
       "name": "Quartz Flats",
-      "lon": -32.76,
-      "lat": -0.85,
+      "lon": -28.65,
+      "lat": 0.88,
       "land": true,
       "region_value": 40,
       "degrees_to_coast": 4.1
     },
     {
       "name": "Crysium Vein",
-      "lon": -26.03,
-      "lat": 0.38,
+      "lon": -20.21,
+      "lat": 0.88,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 4.5
+      "degrees_to_coast": 4.2
     },
     {
       "name": "Crystal Plains 7",
-      "lon": -18.86,
-      "lat": 0.16,
+      "lon": -16.0,
+      "lat": 6.5,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 4.1
+      "degrees_to_coast": 4.3
     },
     {
       "name": "Crystal Plains 8",
-      "lon": -17.14,
-      "lat": 6.15,
+      "lon": -12.48,
+      "lat": 12.13,
       "land": true,
       "region_value": 40,
       "degrees_to_coast": 4.2
     },
     {
       "name": "Crystal Plains 9",
-      "lon": -24.59,
-      "lat": 7.24,
+      "lon": -18.81,
+      "lat": 12.13,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 7.7
+      "degrees_to_coast": 4.0
     },
     {
       "name": "Crystal Plains 10",
-      "lon": -31.8,
-      "lat": 7.42,
+      "lon": -24.43,
+      "lat": 8.61,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 9.3
+      "degrees_to_coast": 8.7
     },
     {
       "name": "Crystal Plains 11",
-      "lon": -38.61,
-      "lat": 6.26,
+      "lon": -32.87,
+      "lat": 6.5,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 10.3
+      "degrees_to_coast": 4.8
     },
     {
       "name": "Crystal Plains 12",
-      "lon": -44.93,
-      "lat": 3.63,
+      "lon": -41.31,
+      "lat": 5.1,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 5.2
+      "degrees_to_coast": 7.2
     },
     {
       "name": "Crystal Plains 13",
-      "lon": -50.82,
-      "lat": -0.22,
+      "lon": -49.04,
+      "lat": 2.29,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 4.1
+      "degrees_to_coast": 3.9
     },
     {
       "name": "Crystal Plains 14",
-      "lon": -56.47,
-      "lat": -4.83,
+      "lon": -57.48,
+      "lat": -1.93,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 4.9
+      "degrees_to_coast": 6.1
     },
     {
       "name": "Crystal Plains 15",
-      "lon": -61.92,
-      "lat": 0.75,
-      "land": true,
-      "region_value": 40,
-      "degrees_to_coast": 4.3
-    },
-    {
-      "name": "Crystal Plains 16",
-      "lon": -56.55,
-      "lat": 5.92,
+      "lon": -61.7,
+      "lat": 2.99,
       "land": true,
       "region_value": 40,
       "degrees_to_coast": 4.1
     },
     {
-      "name": "Crystal Plains 17",
-      "lon": -50.73,
-      "lat": 9.94,
-      "land": true,
-      "region_value": 40,
-      "degrees_to_coast": 3.8
-    },
-    {
-      "name": "Crystal Plains 18",
-      "lon": -44.34,
-      "lat": 12.56,
-      "land": true,
-      "region_value": 40,
-      "degrees_to_coast": 4.6
-    },
-    {
-      "name": "Crystal Plains 19",
-      "lon": -37.45,
-      "lat": 13.86,
+      "name": "Crystal Plains 16",
+      "lon": -55.37,
+      "lat": 4.39,
       "land": true,
       "region_value": 40,
       "degrees_to_coast": 3.7
     },
     {
-      "name": "Crystal Plains 20",
-      "lon": -30.26,
-      "lat": 14.21,
+      "name": "Crystal Plains 17",
+      "lon": -48.34,
+      "lat": 8.61,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 4.0
+      "degrees_to_coast": 3.7
+    },
+    {
+      "name": "Crystal Plains 18",
+      "lon": -43.42,
+      "lat": 13.54,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 4.2
+    },
+    {
+      "name": "Crystal Plains 19",
+      "lon": -37.79,
+      "lat": 10.72,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 4.6
+    },
+    {
+      "name": "Crystal Plains 20",
+      "lon": -29.36,
+      "lat": 12.83,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 3.7
     }
   ],
   "shader_hints": {

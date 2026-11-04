@@ -1,5 +1,5 @@
 {
- "version": 22,
+ "version": "22b",
  "note": "Round 21 world layout of S-69-CRYS. Read by Tools/Blender/build_planet_s69.py (texture) and to be applied by a Unity agent to CampaignCatalog MapRegion centres/radii and the Crystal Plains MapNode lon/lat. Lobes: [lon, lat, half-width east deg, half-height north deg, rotation deg, sign] (sign -1 carves a bay or inland sea). target_land_percent is solved by the build (a per-region coast bias) so the surface share stays balanced.",
  "regions": [
   {
@@ -71,103 +71,103 @@
  "nodes": [
   {
    "name": "Landing Site",
-   "longitude": -57.16,
-   "latitude": -14.3
+   "longitude": -56.07,
+   "latitude": -11.07
   },
   {
    "name": "Glass Meadows",
-   "longitude": -51.17,
-   "latitude": -10.28
+   "longitude": -49.75,
+   "latitude": -10.37
   },
   {
    "name": "Shard Ridge",
-   "longitude": -45.17,
-   "latitude": -6.59
+   "longitude": -44.82,
+   "latitude": -4.04
   },
   {
    "name": "Fault Line",
-   "longitude": -39.09,
-   "latitude": -3.32
+   "longitude": -37.79,
+   "latitude": -4.04
   },
   {
    "name": "Quartz Flats",
-   "longitude": -32.76,
-   "latitude": -0.85
+   "longitude": -28.65,
+   "latitude": 0.88
   },
   {
    "name": "Crysium Vein",
-   "longitude": -26.03,
-   "latitude": 0.38
+   "longitude": -20.21,
+   "latitude": 0.88
   },
   {
    "name": "Crystal Plains 7",
-   "longitude": -18.86,
-   "latitude": 0.16
+   "longitude": -16.0,
+   "latitude": 6.5
   },
   {
    "name": "Crystal Plains 8",
-   "longitude": -17.14,
-   "latitude": 6.15
+   "longitude": -12.48,
+   "latitude": 12.13
   },
   {
    "name": "Crystal Plains 9",
-   "longitude": -24.59,
-   "latitude": 7.24
+   "longitude": -18.81,
+   "latitude": 12.13
   },
   {
    "name": "Crystal Plains 10",
-   "longitude": -31.8,
-   "latitude": 7.42
+   "longitude": -24.43,
+   "latitude": 8.61
   },
   {
    "name": "Crystal Plains 11",
-   "longitude": -38.61,
-   "latitude": 6.26
+   "longitude": -32.87,
+   "latitude": 6.5
   },
   {
    "name": "Crystal Plains 12",
-   "longitude": -44.93,
-   "latitude": 3.63
+   "longitude": -41.31,
+   "latitude": 5.1
   },
   {
    "name": "Crystal Plains 13",
-   "longitude": -50.82,
-   "latitude": -0.22
+   "longitude": -49.04,
+   "latitude": 2.29
   },
   {
    "name": "Crystal Plains 14",
-   "longitude": -56.47,
-   "latitude": -4.83
+   "longitude": -57.48,
+   "latitude": -1.93
   },
   {
    "name": "Crystal Plains 15",
-   "longitude": -61.92,
-   "latitude": 0.75
+   "longitude": -61.7,
+   "latitude": 2.99
   },
   {
    "name": "Crystal Plains 16",
-   "longitude": -56.55,
-   "latitude": 5.92
+   "longitude": -55.37,
+   "latitude": 4.39
   },
   {
    "name": "Crystal Plains 17",
-   "longitude": -50.73,
-   "latitude": 9.94
+   "longitude": -48.34,
+   "latitude": 8.61
   },
   {
    "name": "Crystal Plains 18",
-   "longitude": -44.34,
-   "latitude": 12.56
+   "longitude": -43.42,
+   "latitude": 13.54
   },
   {
    "name": "Crystal Plains 19",
-   "longitude": -37.45,
-   "latitude": 13.86
+   "longitude": -37.79,
+   "latitude": 10.72
   },
   {
    "name": "Crystal Plains 20",
-   "longitude": -30.26,
-   "latitude": 14.21
+   "longitude": -29.36,
+   "latitude": 12.83
   }
  ],
  "lobes": {
@@ -237,10 +237,10 @@
     1
    ],
    [
-    -31,
-    -9,
-    6,
-    4,
+    -32,
+    -11.5,
+    5,
+    3.2,
     15,
     -1
    ]
@@ -993,5 +993,105 @@
   "C3",
   "C4"
  ],
- "node_min_spacing_degrees": 6.0
+ "node_min_spacing_degrees": 6.0,
+ "node_placement": {
+  "note": "Organic route: seeded guided random walk (build_planet_s69.py --placenodes). The guide is a loose three-lane sweep with peninsula detours; nodes may wander off it.",
+  "seed": 2211,
+  "attempts": 1500,
+  "min_spacing_degrees": 6.1,
+  "max_spacing_degrees": 11.0,
+  "coast_min_degrees": 2.8,
+  "max_offset_from_guide_degrees": 5.5,
+  "start": [
+   -58,
+   -14
+  ],
+  "guide": [
+   [
+    -59,
+    -16
+   ],
+   [
+    -52,
+    -11
+   ],
+   [
+    -45,
+    -7
+   ],
+   [
+    -38,
+    -4
+   ],
+   [
+    -31,
+    -2
+   ],
+   [
+    -24,
+    -1
+   ],
+   [
+    -18,
+    1
+   ],
+   [
+    -13,
+    6
+   ],
+   [
+    -11,
+    11
+   ],
+   [
+    -18,
+    8.5
+   ],
+   [
+    -26,
+    7.5
+   ],
+   [
+    -33,
+    6.5
+   ],
+   [
+    -40,
+    5.5
+   ],
+   [
+    -47,
+    3
+   ],
+   [
+    -54,
+    -1
+   ],
+   [
+    -61,
+    0
+   ],
+   [
+    -58,
+    5.5
+   ],
+   [
+    -50,
+    12
+   ],
+   [
+    -43,
+    14
+   ],
+   [
+    -36,
+    15
+   ],
+   [
+    -29,
+    15
+   ]
+  ],
+  "land_percent": 4.5
+ }
 }

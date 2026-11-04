@@ -1966,3 +1966,14 @@ Curator: round 21 still read as a big slab facing the camera. Node spacing rule 
 - Ashen Reach dunes: a global sine pattern (which aliased into stripes) replaced by warped, stretched ridged noise.
 - Weak points: the land is still mostly the area the 20 nodes need (about 3.3 % at 6 deg spacing with a 3 deg coast);
   crystal outcrops read a little like bubbles up close.
+
+# Round 22b: organic Crystal Plains level route (2026-11-04)
+
+Remco: "het is mooier om de levels iets willekeurig uit elkaar te hebben". The serpentine rows are replaced by a
+seeded guided random walk (`build_planet_s69.py --placenodes`, settings and seed 2211 in `layout.json`
+`node_placement`): it follows a loose three-lane sweep with a detour onto the north-east peninsula, steps 6.2-10.4 deg
+(mean 7.6), every next node is the previous one's neighbour (no other node closer than 0.75 x the step), no route
+crossings, no segment within 3 deg of an older node, every dotted segment over land, mountain belts avoided. It runs on
+the guard-free layout field (Crystal Plains at 4.5 % for placement), so it depends only on layout.json + seed; the
+texture build then keeps land around the nodes (final 4.0 %). Weak point: re-running the placer after a lobe change
+gives a new route; the positions in layout.json are the source of truth.

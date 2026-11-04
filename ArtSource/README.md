@@ -1493,3 +1493,9 @@ Same command, files and region ids as round 21; `layout.json` version 22. Unity 
 Plains node lon/lat values from `layout.json` (order unchanged, Landing Site first) and lower the node spacing rule
 (`PlanetCoordinates.MinimumSpacingDegrees` / `NodePlacer.MinimumSpacingDegrees`) to 6 deg; nodes are >= 6.23 deg
 apart, >= 3.5 deg from the coast, within the 30 deg C1 radius. The Core `RadiusDegrees` 14 as in round 21.
+
+## Round 22b: organic Crystal Plains node route (2026-11-04)
+
+`--placenodes [--seed N]` re-places the 20 Crystal Plains nodes into `layout.json` (seeded, deterministic for the same
+layout); `--rendernodes` renders the node close-up with the dotted route from the current exports. Unity notes: apply
+the new `nodes[]` lon/lat (order unchanged, Landing Site first); spacing >= 6.18 deg, rule 6 deg as in round 22.

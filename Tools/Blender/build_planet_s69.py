@@ -17,7 +17,7 @@ Outputs ArtSource/Exports/Planet_S69/ (4096 x 2048) and Low/ (2048 x 1024):
 
 Run:  blender --background --factory-startup --python Tools/Blender/build_planet_s69.py -- [--res 4096]
         [--out <dir>] [--renders <dir>] [--compare-dir <old export dir>] [--layout <layout.json>] [--layoutonly]
-        [--norender]
+        [--placenodes [--seed N]] [--rendernodes] [--norender]
 bpy is only used to read the comparison screenshot; everything else is numpy.
 """
 
@@ -1107,7 +1107,7 @@ def sample(img, u, v):
 
 
 def render(maps, cloud, lon0, lat0, size=1100, zoom=1.0, light=(-0.35, 0.45, 0.82), night=0.0, markers=None,
-           clouds_on=True, shift=(0.0, 0.0), cloud_k=0.7):
+           clouds_on=True, shift=(0.0, 0.0), cloud_k=0.7, route=False):
     alb = maps["albedo_lin"]
     nrm = maps["normal"]
     msk = maps["mask"]
@@ -1174,6 +1174,19 @@ def render(maps, cloud, lon0, lat0, size=1100, zoom=1.0, light=(-0.35, 0.45, 0.8
     out = np.where(hit[..., None], col_, bg)
     out = out / (1 + out * 0.35) * 1.18  # gentle shoulder
     img = lin_to_srgb(out)
+    if markers and route:
+        # Dotted route between consecutive markers (the map draws its route as dots too).
+        yy, xx = np.ogrid[:size, :size]
+        for (alon, alat, _), (blon, blat, _) in zip(markers[:-1], markers[1:]):
+            va, vb = vec(alon, alat), vec(blon, blat)
+            for t in np.linspace(0.12, 0.88, 7):
+                q = va * (1 - t) + vb * t
+                q /= np.linalg.norm(q)
+                if np.dot(q, c) <= 0:
+                    continue
+                qx = ((np.dot(q, e) - shift[0]) / span + 1) / 2 * size
+                qy = (1 - ((np.dot(q, n) - shift[1]) / span + 1) / 2) * size
+                img[(xx - qx) ** 2 + (yy - qy) ** 2 < 4.0] = (0.55, 0.75, 1.0)
     if markers:
         for (mlon, mlat, rgb) in markers:
             p = vec(mlon, mlat)
@@ -1218,8 +1231,187 @@ def box_resize(img, factor):
 
 # ----------------------------------------------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------------------------------------------
+# Organic level-node placement for Crystal Plains (round 22b): a seeded, guided random walk over the continent's
+# land as the layout defines it (lobes + coast noise, no node guard), so the result depends only on layout.json and
+# the seed. Writes the positions into layout.json; the texture build then keeps land around them.
+# ----------------------------------------------------------------------------------------------------------------
+
+def _seg_cross(a, b, c, d):
+    def orient(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    o1, o2, o3, o4 = orient(a, b, c), orient(a, b, d), orient(c, d, a), orient(c, d, b)
+    return (o1 * o2 < 0) and (o3 * o4 < 0)
+
+
+def _seg_point_dist(a, b, p):
+    ab = (b[0] - a[0], b[1] - a[1])
+    t = max(0.0, min(1.0, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / (ab[0] ** 2 + ab[1] ** 2 + 1e-9)))
+    q = (a[0] + t * ab[0], a[1] + t * ab[1])
+    return math.hypot(p[0] - q[0], p[1] - q[1])
+
+
+def place_nodes(seed):
+    spec = LAYOUT["node_placement"]
+    w, h = 1024, 512
+    G = Grid(w, h)
+    P = G.p()
+    wgt = area_weights(G)
+    PW = warp(P, 0.16, 1.3, 4, 11)
+    PW = warp(PW, 0.05, 4.0, 3, 21)
+    coast_mid = fbm(P, 2.2, 6, 31, gain=0.55)
+    grain = ridged(warp(P, 0.08, 2.0, 3, 33), 2.8, 5, 37) - 0.38
+    f = lobe_field(PW, LOBES["C1"]) + ROUGH["C1"] * (0.30 * coast_mid + GRAIN * grain)
+    f = f + solve_bias(f, float(spec.get("land_percent", TARGETS["C1"])), wgt)
+    land = (f > 0).reshape(h, w)
+    belts = np.zeros(G.n, F32)
+    for poly, width, amp in MOUNTAINS.get("C1", []):
+        belts = np.maximum(belts, amp * np.exp(-(poly_distance(PW, [poly]) / width) ** 2))
+    belts = belts.reshape(h, w)
+    # Local flat frame (deg) around the region centre; fine near the equator where Crystal Plains lies.
+    lon0, lat0 = REGIONS[0][2], REGIONS[0][3]
+    ys, xs = np.nonzero(land)
+    lons, lats = G.lon1[xs], G.lat1[ys]
+    near = (np.abs(((lons - lon0 + 180) % 360) - 180) < 45) & (np.abs(lats - lat0) < 35)
+    sea = ~land
+    coast = sea & (np.roll(land, 1, 1) | np.roll(land, -1, 1) | np.vstack([land[1:], land[-1:]]) | np.vstack([land[:1], land[:-1]]))
+    cy, cx = np.nonzero(coast)
+    cvec = np.stack([np.cos(np.radians(G.lat1[cy])) * np.cos(np.radians(G.lon1[cx])),
+                     np.cos(np.radians(G.lat1[cy])) * np.sin(np.radians(G.lon1[cx])), np.sin(np.radians(G.lat1[cy]))], 1)
+    step = 2
+    cand = [(G.lon1[x], G.lat1[y], belts[y, x]) for y, x in zip(ys[near][::1], xs[near][::1]) if y % step == 0 and x % step == 0]
+    cl = np.array([c[0] for c in cand], np.float64)
+    ca = np.array([c[1] for c in cand], np.float64)
+    cb = np.array([c[2] for c in cand], np.float64)
+    cv = np.stack([np.cos(np.radians(ca)) * np.cos(np.radians(cl)), np.cos(np.radians(ca)) * np.sin(np.radians(cl)), np.sin(np.radians(ca))], 1)
+    coast_d = np.full(len(cl), 180.0)
+    for i in range(0, len(cvec), 512):
+        d = np.degrees(np.arccos(np.clip(cv @ cvec[i:i + 512].T, -1, 1)))
+        coast_d = np.minimum(coast_d, d.min(axis=1))
+    keep = coast_d >= float(spec["coast_min_degrees"])
+    cl, ca, cb, cv, coast_d = cl[keep], ca[keep], cb[keep], cv[keep], coast_d[keep]
+    k = math.cos(math.radians(lat0))
+    XY = np.stack([(cl - lon0) * k, ca - lat0], 1)
+    guide = np.array([((g[0] - lon0) * k, g[1] - lat0) for g in spec["guide"]], np.float64)
+    gpts = []
+    for a, b in zip(guide[:-1], guide[1:]):
+        n = max(2, int(np.linalg.norm(b - a) / 0.25))
+        for t in np.linspace(0, 1, n, endpoint=False):
+            gpts.append(a + (b - a) * t)
+    gpts.append(guide[-1])
+    gpts = np.array(gpts)
+    glen = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(gpts, axis=0), axis=1))])
+    dg = np.linalg.norm(XY[:, None, :] - gpts[None, :, :], axis=2)
+    gi = dg.argmin(axis=1)
+    prog, lateral = glen[gi], dg[np.arange(len(XY)), gi]
+    total = glen[-1]
+    smin, smax = float(spec["min_spacing_degrees"]), float(spec["max_spacing_degrees"])
+    lat_max = float(spec["max_offset_from_guide_degrees"])
+    count = len(NODES)
+    start = np.array([((spec["start"][0] - lon0) * k, spec["start"][1] - lat0)])
+    i0 = int(np.linalg.norm(XY - start, axis=1).argmin())
+    rng = np.random.default_rng(seed)
+
+    def ang(i, j):
+        return math.degrees(math.acos(float(np.clip(cv[i] @ cv[j], -1, 1))))
+
+    inner = land.copy()
+    for _ in range(2):  # ~0.7 deg inside the shore at this grid
+        inner = inner & np.roll(inner, 1, 1) & np.roll(inner, -1, 1) & np.vstack([inner[1:], inner[-1:]]) & np.vstack([inner[:1], inner[:-1]])
+
+    def on_land(lon, lat):
+        x = int((lon + 180) / 360 * w) % w
+        y = min(h - 1, max(0, int((lat + 90) / 180 * h)))
+        return bool(inner[y, x])
+
+    best, best_score = None, 1e18
+    reach = 0
+    log(f"node placement: {len(cl)} candidate sites, guide {total:.0f} deg")
+    for attempt in range(int(spec.get("attempts", 4000))):
+        path = [i0]
+        ok = True
+        while len(path) < count:
+            cur = path[-1]
+            remaining = count - len(path)
+            want = (total - prog[cur]) / remaining
+            dprev = np.degrees(np.arccos(np.clip(cv @ cv[cur], -1, 1)))
+            m = (dprev >= smin) & (dprev <= smax) & (lateral <= lat_max) & (prog > prog[cur] + 1.5) & \
+                (prog < prog[cur] + 2.2 * want + 2.0)
+            idx = np.nonzero(m)[0]
+            if len(idx) == 0:
+                ok = False
+                break
+            others = np.array([cv[p] for p in path[:-1]]) if len(path) > 1 else None
+            if others is not None:
+                do = np.degrees(np.arccos(np.clip(cv[idx] @ others.T, -1, 1))).min(axis=1)
+                idx = idx[(do >= np.maximum(smin, 0.75 * dprev[idx]))]
+            good = []
+            for j in idx[rng.permutation(len(idx))[:70]]:
+                a, b = XY[cur], XY[j]
+                if any(_seg_cross(a, b, XY[path[q]], XY[path[q + 1]]) for q in range(len(path) - 2)):
+                    continue
+                if any(_seg_point_dist(a, b, XY[path[q]]) < 3.0 for q in range(len(path) - 1)):
+                    continue
+                # The dotted route stays over land, at least a degree or so from the shore.
+                if not all(on_land(cl[cur] + (cl[j] - cl[cur]) * t, ca[cur] + (ca[j] - ca[cur]) * t) for t in (0.2, 0.35, 0.5, 0.65, 0.8)):
+                    continue
+                good.append(j)
+            if not good:
+                ok = False
+                break
+            good = np.array(good)
+            target = want * rng.uniform(0.7, 1.35)
+            sc = np.abs((prog[good] - prog[cur]) - target) + 0.35 * lateral[good] + 1.5 * cb[good] \
+                + 0.6 * rng.random(len(good)) * 3.0
+            path.append(int(good[sc.argmin()]))
+        if len(path) > reach:
+            reach, longest = len(path), list(path)
+        if not ok:
+            continue
+        d = [ang(path[i], path[i + 1]) for i in range(count - 1)]
+        score = abs(prog[path[-1]] - total) + 2.0 * float(np.mean([lateral[p] for p in path])) - 1.5 * float(np.std(d))
+        if score < best_score:
+            best, best_score = list(path), score
+    if best is None:
+        log(f"longest route {reach} nodes: " + str([(round(float(cl[i]), 1), round(float(ca[i]), 1)) for i in longest]))
+        dbg = np.where(inner[..., None], 0.5, np.where(land[..., None], 0.3, 0.05)) * np.ones(3, F32)
+        for gx, gy in spec["guide"]:
+            dbg[int((gy + 90) / 180 * h), int((gx + 180) / 360 * w) % w] = (1, 0, 0)
+        for i in longest:
+            x, y = int((cl[i] + 180) / 360 * w) % w, int((ca[i] + 90) / 180 * h)
+            dbg[y - 1:y + 2, x - 1:x + 2] = (1, 1, 0)
+        write_png(os.path.join(RENDERS or OUT, "placement_debug.png"), dbg[200:330, 300:560])
+        raise RuntimeError("node placement found no route; loosen node_placement in layout.json")
+    pts = [(round(float(cl[i]), 2), round(float(ca[i]), 2)) for i in best]
+    d = [ang(best[i], best[i + 1]) for i in range(count - 1)]
+    allmin = min(ang(best[i], best[j]) for i in range(count) for j in range(i))
+    log("placed nodes: steps %.1f..%.1f deg (mean %.1f), min pair %.2f, min coast %.1f" % (
+        min(d), max(d), float(np.mean(d)), allmin, min(coast_d[i] for i in best)))
+    for node, (lo, la) in zip(LAYOUT["nodes"], pts):
+        node["longitude"], node["latitude"] = lo, la
+    LAYOUT["node_placement"]["seed"] = seed
+    with open(LAYOUT_PATH, "w", encoding="utf-8") as fo:
+        json.dump(LAYOUT, fo, indent=1)
+    log("layout.json updated")
+
+
+
 def main():
     W, H = RES, RES // 2
+    if _arg("--rendernodes", False):
+        def ld(name):
+            return load_png_bpy(os.path.join(OUT, f"Planet_S69_{name}.png"))
+        mp = dict(albedo_lin=srgb_to_lin(ld("Albedo")), normal=ld("Normal") * 2 - 1, mask=ld("Mask"), emission=ld("Emission"))
+        cov = ld("Clouds")[..., 0]
+        marks = [(lon, lat, (1.0, 0.85, 0.35) if i < 6 else (0.75, 0.85, 1.0)) for i, (lon, lat) in enumerate(NODES)]
+        os.makedirs(RENDERS, exist_ok=True)
+        write_png(os.path.join(RENDERS, "closeup_crystal_plains_nodes.png"),
+                  render(mp, cov, -38, 2, 1400, 2.0, (-0.3, 0.35, 0.89), 0.0, marks, clouds_on=False, route=True))
+        log("node close-up rendered")
+        return
+    if _arg("--placenodes", False):
+        place_nodes(int(_arg("--seed", LAYOUT["node_placement"].get("seed", 2211))))
+        return
     lay = build_layout(1024 if RES >= 2048 else 512, 512 if RES >= 2048 else 256)
     if _arg("--layoutonly", False):
         preview_layout(lay, os.path.join(RENDERS or OUT, "layout_preview.png"))
