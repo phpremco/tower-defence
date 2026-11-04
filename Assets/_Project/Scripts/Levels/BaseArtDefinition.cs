@@ -22,6 +22,8 @@ namespace Game.Levels
         [SerializeField] private float _turnDegreesPerSecond = 40f;
         [Tooltip("Name of the module whose glow breathes and dies with the base (the core crystal).")]
         [SerializeField] private string _pulsingModule = "Base_Crystal";
+        [Tooltip("The modules in the order the opening cutscene's timelapse raises them (the report's timelapse_order), by mesh name.")]
+        [SerializeField] private string[] _timelapseOrder = new string[0];
 
         [Header("Damage")]
         [Tooltip("Health share below which the damage overlay shows and the sockets smoke.")]
@@ -35,6 +37,7 @@ namespace Game.Levels
         public string TurningModule => _turningModule;
         public float TurnDegreesPerSecond => _turnDegreesPerSecond;
         public string PulsingModule => _pulsingModule;
+        public string[] TimelapseOrder => _timelapseOrder;
         public float DamagedBelow => _damagedBelow;
         public float WreckDelay => _wreckDelay;
 

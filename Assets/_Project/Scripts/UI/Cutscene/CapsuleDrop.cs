@@ -50,6 +50,7 @@ namespace Game.UI
             _cycle = FirstRelease + count * ReleaseGap + FallSeconds + CycleRest;
 
             GameObject custom = context.Cast != null ? context.Cast.Capsule : null;
+            ModelArtDefinition art = context.Cast != null ? context.Cast.CapsuleArt : null;
             CapsuleModelFactory.Parts parts = CapsuleModelFactory.Create();
             Material[] materials = ModelPalette.Create(glow);
             var gradient = new Gradient();
@@ -58,7 +59,7 @@ namespace Game.UI
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.7f, 0.3f), new GradientAlphaKey(0f, 1f) });
             for (int i = 0; i < count; i++)
             {
-                _capsules.Add(BuildCapsule(parent, i, custom, parts, materials, gradient));
+                _capsules.Add(BuildCapsule(parent, i, art, custom, parts, materials, gradient));
             }
         }
 
@@ -117,7 +118,7 @@ namespace Game.UI
             return CutsceneMath.Smooth(1f - Mathf.Clamp01(altitude / (_planetRadius * AtmosphereDepth)));
         }
 
-        private Capsule BuildCapsule(Transform parent, int index, GameObject custom, CapsuleModelFactory.Parts parts, Material[] materials, Gradient gradient)
+        private Capsule BuildCapsule(Transform parent, int index, ModelArtDefinition art, GameObject custom, CapsuleModelFactory.Parts parts, Material[] materials, Gradient gradient)
         {
             var root = new GameObject($"Capsule{index}").transform;
             root.SetParent(parent, false);
@@ -125,17 +126,28 @@ namespace Game.UI
             model.SetParent(root, false);
             model.localScale = Vector3.one * CapsuleScale;
             model.localPosition = Vector3.down * (CapsuleScale * 0.9f);
-            if (custom != null)
+            Material shield;
+            if (art != null)
             {
-                UnityEngine.Object.Instantiate(custom, model);
+                // The imported capsule with its legs folded (the first frame of its landing); its heat shield wears its own glow.
+                ArtModel capsule = ArtModel.CreateSampled(model, art, ownMaterial: false);
+                capsule.Sample(ModelClipRole.Land, 0f, loop: false);
+                shield = CapsuleArt.OwnShield(capsule);
             }
             else
             {
-                AddMesh("Hull", model, parts.Hull, materials);
-            }
+                if (custom != null)
+                {
+                    UnityEngine.Object.Instantiate(custom, model);
+                }
+                else
+                {
+                    AddMesh("Hull", model, parts.Hull, materials);
+                }
 
-            Material shield = SurfaceMaterials.Create(new Color(0.12f, 0.1f, 0.09f), 1f, 0.3f);
-            AddMesh("Shield", model, parts.Shield, new[] { shield });
+                shield = SurfaceMaterials.Create(new Color(0.12f, 0.1f, 0.09f), 1f, 0.3f);
+                AddMesh("Shield", model, parts.Shield, new[] { shield });
+            }
 
             LineRenderer trail = SpaceKit.Line(parent, $"Trail{index}", TrailPoints, false, TrailIntensity);
             trail.colorGradient = gradient;

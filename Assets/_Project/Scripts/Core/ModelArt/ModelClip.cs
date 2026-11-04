@@ -26,6 +26,9 @@ namespace Game.Core
         [Tooltip("How much of the pose this clip takes over when it plays on top of a cycle.")]
         [SerializeField] [Range(0.1f, 1f)] private float _weight = 1f;
 
+        [Tooltip("Plays on the upper body only (from the art's upper-body bone down), over whatever the legs do.")]
+        [SerializeField] private bool _upperBody;
+
         public ModelClipRole Role => _role;
         public AnimationClip Clip => _clip;
 
@@ -36,6 +39,7 @@ namespace Game.Core
         public string Trigger => _trigger;
         public string Socket => _socket;
         public float Weight => _weight;
+        public bool UpperBody => _upperBody;
         public float Length => _clip != null ? _clip.length : 0f;
     }
 }

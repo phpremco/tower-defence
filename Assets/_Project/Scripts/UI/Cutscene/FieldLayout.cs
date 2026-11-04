@@ -65,7 +65,7 @@ namespace Game.UI
         public Vector3 Base { get; }
         public Quaternion BaseFacing { get; }
         public Vector3 Pad { get; }
-        public Vector3 Core { get; }
+        public Vector3 Core { get; private set; }
         public Vector3 Drill { get; }
         public Quaternion DrillFacing { get; }
         public Vector3 DigSite { get; }
@@ -101,6 +101,9 @@ namespace Game.UI
                 case CameraAnchor.Entrance:
                     (origin, facing) = (Entrance, EntranceFacing);
                     return true;
+                case CameraAnchor.Core:
+                    (origin, facing) = (Core, BaseFacing);
+                    return true;
                 default:
                     (origin, facing) = (Vector3.zero, Quaternion.identity);
                     return false;
@@ -108,6 +111,9 @@ namespace Game.UI
         }
 
         /// <summary>The point on the ground under a position, at the terrain's height.</summary>
+        /// <summary>Moves the core to where the base model really has it (the imported base carries its own core).</summary>
+        public void PlaceCore(Vector3 core) => Core = Ground(core);
+
         public Vector3 Ground(Vector3 position)
         {
             Vector2Int cell = Level.Grid.WorldToCell(position);

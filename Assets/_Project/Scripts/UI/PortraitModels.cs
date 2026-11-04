@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 using Game.Hero;
 using Game.Levels;
@@ -10,7 +11,8 @@ namespace Game.UI
     /// The 3D busts the dialogue box shows, built in code for <see cref="ModelIconRenderer"/> with the middle of the
     /// bust at the origin, facing +z. Mercer is the hero figure itself; Dr. Voss is a scientist in a lab coat over a
     /// tech suit with a lit visor; ORA is a projected core in orbit rings; the company is a lit badge; Pioneer-1 is an
-    /// old probe with a dish. Every surface carries the speaker's colour in its rim light.
+    /// old probe with a dish. Every surface carries the speaker's colour in its rim light. A speaker (or a hero) with an
+    /// imported bust (<see cref="PortraitArtDefinition"/>) shows that model instead, posed in its portrait moment.
     /// </summary>
     public static class PortraitModels
     {
@@ -54,7 +56,25 @@ namespace Game.UI
         private const float HeroBustRise = 0.06f;
         private const float HeroBustTurn = -14f;
 
-        /// <summary>Builds the bust under <paramref name="stage"/>. The hero needs its definition; without one the frame stays empty.</summary>
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
+        private static readonly Dictionary<(PortraitArtDefinition, Color), Material> BustMaterials = new Dictionary<(PortraitArtDefinition, Color), Material>();
+
+        /// <summary>
+        /// Builds the bust under <paramref name="stage"/>: the imported model when the speaker (or, for the hero, his art)
+        /// has one, otherwise the procedural bust. The hero needs its definition; without one the frame stays empty.
+        /// </summary>
+        public static GameObject Build(Transform stage, PortraitModel model, PortraitArtDefinition art, Color role, HeroDefinition hero)
+        {
+            PortraitArtDefinition bust = art != null ? art : model == PortraitModel.Hero && hero != null && hero.Art != null ? hero.Art.Bust : null;
+            if (bust != null && bust.Model != null)
+            {
+                return ArtBust(stage, bust, role);
+            }
+
+            return Build(stage, model, role, hero);
+        }
+
+        /// <summary>Builds the procedural bust under <paramref name="stage"/>. The hero needs its definition; without one the frame stays empty.</summary>
         public static GameObject Build(Transform stage, PortraitModel model, Color role, HeroDefinition hero)
         {
             switch (model)
@@ -72,6 +92,42 @@ namespace Game.UI
                 default:
                     return new GameObject("EmptyBust");
             }
+        }
+
+        // An imported model posed in its portrait moment, turned and zoomed so the picture centres on its face (or core,
+        // or badge), in its own material copy with the speaker's rim and the portrait's glow.
+        private static GameObject ArtBust(Transform stage, PortraitArtDefinition art, Color role)
+        {
+            var root = new GameObject("ArtBust").transform;
+            root.SetParent(stage, false);
+            root.localRotation = Quaternion.Euler(0f, art.Turn, 0f);
+            root.localScale = Vector3.one * art.Zoom;
+            ArtModel model = ArtModel.CreateStill(root, art.Model, BustMaterial(art, role));
+            model.Sample(art.PoseRole, art.PoseSeconds, loop: true);
+            model.Root.localPosition = -art.Centre;
+            foreach (Renderer renderer in model.Renderers)
+            {
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
+            }
+
+            return root.gameObject;
+        }
+
+        // One material per bust and speaker colour, kept for the session: the pictures are cached, but a speaker's bust is
+        // rendered again at another size.
+        private static Material BustMaterial(PortraitArtDefinition art, Color role)
+        {
+            var key = (art, role);
+            if (BustMaterials.TryGetValue(key, out Material cached) && cached != null)
+            {
+                return cached;
+            }
+
+            var material = new Material(art.Model.MaterialFor(ModelQuality.IsLow)) { name = art.name };
+            material.SetColor(EmissionColorId, material.GetColor(EmissionColorId) * art.Glow);
+            SurfaceMaterials.SetRim(material, role, RimStrength);
+            BustMaterials[key] = material;
+            return material;
         }
 
         private static GameObject HeroBust(Transform stage, HeroDefinition hero, Color role)

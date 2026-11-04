@@ -48,19 +48,62 @@ namespace Game.Core
         {
             Material shared = art.MaterialFor(ModelQuality.IsLow);
             Material material = ownMaterial ? new Material(shared) { name = art.name } : shared;
-            return Build(parent, art, material, ownMaterial, animate: true);
+            return Build(parent, art, material, ownMaterial, animate: true, withFar: true);
         }
 
         /// <summary>A live model that wears a material its owner already has (a damage overlay on the owner's copy).</summary>
         public static ArtModel Create(Transform parent, ModelArtDefinition art, Material material)
         {
-            return Build(parent, art, material, ownMaterial: false, animate: true);
+            return Build(parent, art, material, ownMaterial: false, animate: true, withFar: true);
         }
 
         /// <summary>A still for menus and icons: the near meshes only, the shared material, the bind pose.</summary>
         public static ArtModel CreateStill(Transform parent, ModelArtDefinition art)
         {
-            return Build(parent, art, art.MaterialFor(ModelQuality.IsLow), ownMaterial: false, animate: false);
+            return Build(parent, art, art.MaterialFor(ModelQuality.IsLow), ownMaterial: false, animate: false, withFar: false);
+        }
+
+        /// <summary>A still that wears a material the caller owns (a portrait lit in its speaker's colour).</summary>
+        public static ArtModel CreateStill(Transform parent, ModelArtDefinition art, Material material)
+        {
+            return Build(parent, art, material, ownMaterial: false, animate: false, withFar: false);
+        }
+
+        /// <summary>
+        /// A model posed by <see cref="Sample"/> instead of a clip player, near and far meshes under a LOD group: for a
+        /// cutscene, whose every moment must follow from the shot time alone so a sought frame matches a played one.
+        /// </summary>
+        public static ArtModel CreateSampled(Transform parent, ModelArtDefinition art, bool ownMaterial)
+        {
+            Material shared = art.MaterialFor(ModelQuality.IsLow);
+            Material material = ownMaterial ? new Material(shared) { name = art.name } : shared;
+            return Build(parent, art, material, ownMaterial, animate: false, withFar: true);
+        }
+
+        /// <summary>Length of the clip of a role in seconds, or zero when the model has none.</summary>
+        public float LengthOf(ModelClipRole role)
+        {
+            int index = Art.IndexOf(role);
+            return index >= 0 ? Art.Clips[index].Length : 0f;
+        }
+
+        /// <summary>
+        /// Poses the model at a moment of the clip of a role (wrapped for a cycle, clamped for a clip played once). False
+        /// when the model has no such clip, so the caller can keep the bind pose or another look.
+        /// </summary>
+        public bool Sample(ModelClipRole role, float seconds, bool loop)
+        {
+            int index = Art.IndexOf(role);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            ModelClip clip = Art.Clips[index];
+            float length = Mathf.Max(0.0001f, clip.Length);
+            float time = loop ? Mathf.Repeat(seconds, length) : Mathf.Clamp(seconds, 0f, length);
+            clip.Clip.SampleAnimation(Root.gameObject, time);
+            return true;
         }
 
         /// <summary>The node of that name under the model (a bone, a socket or a mesh), or null.</summary>
@@ -110,7 +153,7 @@ namespace Game.Core
             Object.Destroy(Root.gameObject);
         }
 
-        private static ArtModel Build(Transform parent, ModelArtDefinition art, Material material, bool ownMaterial, bool animate)
+        private static ArtModel Build(Transform parent, ModelArtDefinition art, Material material, bool ownMaterial, bool animate, bool withFar)
         {
             GameObject instance = Object.Instantiate(art.Model, parent, false);
             instance.name = art.name;
@@ -119,7 +162,7 @@ namespace Game.Core
             root.localRotation = Quaternion.Euler(0f, art.Yaw, 0f);
             root.localScale = Vector3.one * art.Scale;
             Renderer[] renderers = instance.GetComponentsInChildren<Renderer>(true);
-            Dress(instance, renderers, art, material, animate);
+            Dress(instance, renderers, art, material, withFar);
 
             ModelClipPlayer player = null;
             Animator animator = instance.GetComponent<Animator>();

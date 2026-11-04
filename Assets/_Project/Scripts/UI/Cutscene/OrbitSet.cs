@@ -24,6 +24,8 @@ namespace Game.UI
         private const float EngineRange = 9f;
         private const float EngineGlowSize = 1.5f;
         private const float EnginePulse = 0.08f;
+        private const string ShipBay = "Bay";
+        private const string ShipNozzle = "Nozzle";
         private static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
         private static readonly Vector3 ShipStart = new Vector3(-9f, 1f, 30f);
         private static readonly Vector3 ShipVelocity = new Vector3(0.16f, -0.01f, 0.03f);
@@ -43,6 +45,7 @@ namespace Game.UI
         private Vector3 _ringCentre;
         private Vector3 _bay;
         private CapsuleDrop _capsules;
+        private ArtModel _shipArt;
 
         public VisualTheme Theme => _theme;
 
@@ -63,6 +66,7 @@ namespace Game.UI
         {
             _planet.Pose(time);
             _ship.SetPositionAndRotation(ShipAt(time), Quaternion.LookRotation(ShipFacing));
+            _shipArt?.Sample(ModelClipRole.Idle, time, loop: true);
             if (_ring != null)
             {
                 _ring.localRotation = Quaternion.AngleAxis(time * RingDegreesPerSecond, Vector3.forward);
@@ -102,28 +106,47 @@ namespace Game.UI
             MothershipModelFactory.Parts parts = MothershipModelFactory.Create();
             _bay = parts.Bay;
             GameObject custom = _context.Cast != null ? _context.Cast.Mothership : null;
-            if (custom != null)
+            ModelArtDefinition art = _context.Cast != null ? _context.Cast.MothershipArt : null;
+            Vector3[] nozzles = parts.Nozzles;
+            if (art != null)
+            {
+                // The imported ship turns its own habitat ring (Spin); the capsules leave from its Bay, the glow sits at its nozzles.
+                _shipArt = ArtModel.CreateSampled(_ship, art, ownMaterial: false);
+                _bay = Local(_shipArt.Find(ShipBay), _bay);
+                Transform[] found = _shipArt.Numbered(ShipNozzle);
+                if (found.Length > 0)
+                {
+                    nozzles = new Vector3[found.Length];
+                    for (int i = 0; i < found.Length; i++)
+                    {
+                        nozzles[i] = Local(found[i], parts.Nozzles[0]);
+                    }
+                }
+            }
+            else if (custom != null)
             {
                 Object.Instantiate(custom, _ship);
                 return;
             }
+            else
+            {
+                Material[] materials = ModelPalette.Create(_theme.BaseColor);
+                AddMesh("Hull", _ship, parts.Hull, materials);
+                _ring = AddMesh("Ring", _ship, parts.Ring, materials);
+                _ringCentre = parts.RingCentre;
+            }
 
-            Material[] materials = ModelPalette.Create(_theme.BaseColor);
-            AddMesh("Hull", _ship, parts.Hull, materials);
-            _ring = AddMesh("Ring", _ship, parts.Ring, materials);
-            _ringCentre = parts.RingCentre;
-
-            _engineGlows = new Transform[parts.Nozzles.Length];
-            for (int i = 0; i < parts.Nozzles.Length; i++)
+            _engineGlows = new Transform[nozzles.Length];
+            for (int i = 0; i < nozzles.Length; i++)
             {
                 Transform glow = SpaceKit.Glow(_ship, $"Exhaust{i}", EngineColour * 3f);
-                glow.localPosition = parts.Nozzles[i] + Vector3.back * 0.15f;
+                glow.localPosition = nozzles[i] + Vector3.back * 0.15f;
                 _engineGlows[i] = glow;
             }
 
             var lightGo = new GameObject("EngineLight");
             lightGo.transform.SetParent(_ship, false);
-            lightGo.transform.localPosition = parts.Nozzles[0] + Vector3.back * 1.2f;
+            lightGo.transform.localPosition = nozzles[0] + Vector3.back * 1.2f;
             var light = lightGo.AddComponent<Light>();
             light.type = LightType.Point;
             light.color = EngineColour;
@@ -131,6 +154,9 @@ namespace Game.UI
             light.range = EngineRange;
             light.shadows = LightShadows.None;
         }
+
+        // A socket of the imported ship in the ship's own space (where the procedural parts are given), or the fallback.
+        private Vector3 Local(Transform socket, Vector3 fallback) => socket != null ? _ship.InverseTransformPoint(socket.position) : fallback;
 
         private static Transform AddMesh(string name, Transform parent, Mesh mesh, Material[] materials)
         {

@@ -270,8 +270,9 @@ namespace Game.Editor
                     Set = CutsceneSet.Field, Action = CutsceneAction.CoreIgnites, Seconds = 8f, FadeOut = 1.2f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Base, new Vector3(-1.5f, 3f, 6.5f), new Vector3(2.5f, 1.3f, 0.4f), 42f),
-                        Key(1f, CameraAnchor.Base, new Vector3(0.2f, 2.3f, 4.8f), new Vector3(2.5f, 1.3f, 0.4f), 36f),
+                        // Written from the core, so the shot finds it whether the procedural cage or the imported base carries it.
+                        Key(0f, CameraAnchor.Core, new Vector3(-4f, 3f, 6.1f), new Vector3(0f, 1f, 0f), 42f),
+                        Key(1f, CameraAnchor.Core, new Vector3(-2.3f, 2.3f, 4.4f), new Vector3(0f, 1f, 0f), 36f),
                     },
                     Cues = new[] { Sound(3.4f, CutsceneSound.CoreIgnite, 1f), Shake(3.4f, 0.3f) },
                 },

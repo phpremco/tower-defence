@@ -17,3 +17,4 @@ MonoBehaviour:
   _frame: 1
   _portrait: 2
   _portraitOverride: {fileID: 0}
+  _portraitArt: {fileID: 11400000, guid: f62c0833c21cc7a42a31bac8e9806139, type: 2}

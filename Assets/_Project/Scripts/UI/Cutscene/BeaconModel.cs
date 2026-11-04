@@ -18,6 +18,8 @@ namespace Game.UI
         private const float PulseSpeed = 3.2f;
         private const float RingSpin = 70f;
         private const float PoolRadius = 1.4f;
+        private const string LampSocket = "Lamp";
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private readonly Transform _mast;
         private readonly Transform _ring;
@@ -26,9 +28,13 @@ namespace Game.UI
         private readonly Material _lamp;
         private readonly Color _colour;
         private readonly GameObject _pool;
+        private readonly ArtModel _art;
+        private readonly Color _artGlow;
 
         /// <param name="custom">A finished model that replaces the procedural one; the light, its pulse and the glow pool stay.</param>
-        public BeaconModel(Transform parent, Color colour, GameObject custom = null)
+        /// <param name="art">The imported model, which wins over <paramref name="custom"/>: it unfolds by its Deploy clip and idles, with
+        /// the light on its lamp.</param>
+        public BeaconModel(Transform parent, Color colour, GameObject custom = null, ModelArtDefinition art = null)
         {
             _colour = colour;
             Root = new GameObject("Beacon").transform;
@@ -75,9 +81,23 @@ namespace Game.UI
             _light.range = LightRange;
             _light.shadows = LightShadows.None;
             _pool = GlowDecal.PlacePool(Root, colour * 0.25f, PoolRadius);
-            if (custom != null)
+            if (art != null)
+            {
+                _art = ArtModel.CreateSampled(Root, art, ownMaterial: true);
+                _artGlow = _art.Material.GetColor(EmissionColorId);
+                Transform lampSocket = _art.Find(LampSocket);
+                if (lampSocket != null)
+                {
+                    lightGo.transform.SetParent(lampSocket, false);
+                }
+            }
+            else if (custom != null)
             {
                 Object.Instantiate(custom, Root);
+            }
+
+            if (art != null || custom != null)
+            {
                 foreach (MeshRenderer part in new[] { _legs.GetComponent<MeshRenderer>(), _mast.GetComponent<MeshRenderer>(), lamp.GetComponent<MeshRenderer>(), _ring.GetComponent<MeshRenderer>() })
                 {
                     part.enabled = false;
@@ -101,6 +121,27 @@ namespace Game.UI
             _light.intensity = LightIntensity * lit;
             _lamp.SetColor("_EmissionColor", _colour * (LampEmission * Mathf.Max(0.05f, lit)));
             _pool.SetActive(mast > 0.5f);
+            if (_art != null)
+            {
+                PoseArt(deploy, time, lit);
+            }
+        }
+
+        // Unfolding follows the Deploy clip over the deploy share, then the idle loops; the lamp's glow pulses with the light.
+        private void PoseArt(float deploy, float time, float lit)
+        {
+            // Folded in the commander's hands until he plants it.
+            _art.SetActive(deploy > 0f);
+            if (deploy < 1f)
+            {
+                _art.Sample(ModelClipRole.Deploy, deploy * _art.LengthOf(ModelClipRole.Deploy), loop: false);
+            }
+            else
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+
+            _art.Material.SetColor(EmissionColorId, _artGlow * Mathf.Max(0.15f, lit));
         }
 
         private static Transform Part(string name, Transform parent, Mesh mesh, Material[] materials)

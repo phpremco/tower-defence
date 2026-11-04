@@ -1,0 +1,91 @@
+{
+  "asset": "Cutscene_Capsule",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.619,
+    "world_per_uv": 5.9982
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 120.0,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 100.0,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Capsule.fbx",
+  "meshes": {
+    "Cutscene_Capsule": 4262,
+    "Cutscene_Capsule_Shield": 638
+  },
+  "tris": 4900,
+  "lod1": "none: cutscene only",
+  "bones": [
+    "Root",
+    "Leg_1",
+    "Leg_2",
+    "Leg_3",
+    "Ramp"
+  ],
+  "deform_bones": [
+    "Root",
+    "Leg_1",
+    "Leg_2",
+    "Leg_3",
+    "Ramp"
+  ],
+  "clips": {
+    "Land": 30,
+    "Open": 48
+  },
+  "sockets": {
+    "Beacon": [
+      0.18,
+      0.14,
+      1.9
+    ],
+    "Jet_1": [
+      0.495,
+      0.495,
+      0.237
+    ],
+    "Jet_2": [
+      -0.495,
+      0.495,
+      0.237
+    ],
+    "Jet_3": [
+      -0.495,
+      -0.495,
+      0.237
+    ],
+    "Jet_4": [
+      0.495,
+      -0.495,
+      0.237
+    ],
+    "Exit": [
+      0.0,
+      -1.35,
+      0.0
+    ],
+    "ShieldCentre": [
+      0.0,
+      0.0,
+      0.12
+    ]
+  },
+  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+}

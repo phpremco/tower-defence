@@ -26,5 +26,8 @@ namespace Game.Levels
 
         /// <summary>Where the road enters the field and the creatures break out, facing along the road.</summary>
         Entrance = 6,
+
+        /// <summary>The base's energy core (the procedural cage beside the base, or the imported base's crystal), facing as the base.</summary>
+        Core = 7,
     }
 }

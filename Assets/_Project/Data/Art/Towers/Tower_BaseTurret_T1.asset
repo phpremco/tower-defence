@@ -21,6 +21,7 @@ MonoBehaviour:
   _bodyCentrePivot: 0
   _height: 0.46999985
   _lodScreenHeight: 0.05
+  _upperBodyBone: 
   _deathFade: {x: 0, y: 0}
   _embers: 0
   _bleeds: 0
@@ -33,6 +34,7 @@ MonoBehaviour:
     _trigger: 
     _socket: Muzzle_1
     _weight: 1
+    _upperBody: 0
   - _role: 1
     _clip: {fileID: 5237576974625669280, guid: c603086e2d9274a4c92904c0b56d5c67, type: 3}
     _farClip: {fileID: 0}
@@ -41,3 +43,4 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0

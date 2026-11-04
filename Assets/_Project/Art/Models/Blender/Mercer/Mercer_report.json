@@ -1,0 +1,81 @@
+{
+  "asset": "Mercer",
+  "game_tris": 9754,
+  "lod1_tris": 3998,
+  "source_tris": 1878776,
+  "bones": 31,
+  "sockets": [
+    "Back",
+    "Holster_L",
+    "Holster_R",
+    "Weapon_L",
+    "Weapon_R"
+  ],
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 64,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 4832,
+    "uv_coverage": 0.567,
+    "world_per_uv": 1.8940938287691516
+  },
+  "detail": {
+    "weave": {
+      "map": "Detail_Weave_Normal.png",
+      "tiling": 75.8,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 31.6,
+      "mask": "A"
+    }
+  },
+  "layers": [
+    "suit",
+    "plates",
+    "gear",
+    "hands"
+  ],
+  "actions": {
+    "Idle": 72,
+    "Walk": 32,
+    "Run": 16,
+    "Shoot": 14,
+    "Reload": 36,
+    "Slash": 22,
+    "Shockwave": 30,
+    "Hit": 12,
+    "Down": 40,
+    "Revive": 36,
+    "Repair": 48
+  },
+  "walk_distance_per_loop": 0.968,
+  "run_distance_per_loop": 2.529,
+  "events": {
+    "Shoot": {
+      "muzzle_flash": 0
+    },
+    "Reload": {
+      "mag_out": 4,
+      "mag_in": 23
+    },
+    "Slash": {
+      "hit": 10
+    },
+    "Shockwave": {
+      "impact": 13
+    },
+    "Down": {
+      "ground": 26
+    }
+  },
+  "upper_body_mask": "Spine1 and all its children"
+}

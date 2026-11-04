@@ -21,6 +21,7 @@ MonoBehaviour:
   _bodyCentrePivot: 0
   _height: 1.0426464
   _lodScreenHeight: 0.05
+  _upperBodyBone: 
   _deathFade: {x: 0.36666667, y: 1.2466667}
   _embers: 0
   _bleeds: 1
@@ -33,6 +34,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 3
     _clip: {fileID: -7311402476161086834, guid: 71695f84940ea68439c39ea506d5c0ab, type: 3}
     _farClip: {fileID: 7003433338496276904, guid: 6069417ad37d26541b71ff48318e6efc, type: 3}
@@ -41,6 +43,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 2
     _clip: {fileID: 2665875101657706885, guid: 71695f84940ea68439c39ea506d5c0ab, type: 3}
     _farClip: {fileID: 4459605091082260272, guid: 6069417ad37d26541b71ff48318e6efc, type: 3}
@@ -49,6 +52,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 0.6
+    _upperBody: 0
   - _role: 11
     _clip: {fileID: 514795638974305563, guid: 71695f84940ea68439c39ea506d5c0ab, type: 3}
     _farClip: {fileID: -8070548505821173013, guid: 6069417ad37d26541b71ff48318e6efc, type: 3}
@@ -57,6 +61,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 0
     _clip: {fileID: 8309175855829519113, guid: 71695f84940ea68439c39ea506d5c0ab, type: 3}
     _farClip: {fileID: 8998420071168626805, guid: 6069417ad37d26541b71ff48318e6efc, type: 3}
@@ -65,3 +70,4 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0

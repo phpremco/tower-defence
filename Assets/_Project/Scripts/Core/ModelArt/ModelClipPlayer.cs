@@ -26,6 +26,18 @@ namespace Game.Core
         private readonly float[] _lengths;
         private readonly int _clipCount;
 
+        // The upper-body layer (a hero shooting while he runs): a second mixer of the clips marked upper body, masked to
+        // the art's upper-body bone and laid over the base mixer. Null when the art has no such clips.
+        private readonly AnimationLayerMixerPlayable[] _layers;
+        private readonly AnimationMixerPlayable[] _upperMixers;
+        private readonly AnimationClipPlayable[] _upperPlayables;
+        private int _upper = -1;
+        private float _upperTime;
+        private float _upperSpeed = 1f;
+        private float _upperAge;
+        private bool _upperHolds;
+        private float _upperStopAge = -1f;
+
         private int _cycle = -1;
         private int _fadingCycle = -1;
         private float _cycleSpeed = 1f;
@@ -55,6 +67,14 @@ namespace Game.Core
             _graphs = new PlayableGraph[animators.Length];
             _mixers = new AnimationMixerPlayable[animators.Length];
             _playables = new AnimationClipPlayable[animators.Length * _clipCount];
+            bool layered = HasUpperBody(art);
+            if (layered)
+            {
+                _layers = new AnimationLayerMixerPlayable[animators.Length];
+                _upperMixers = new AnimationMixerPlayable[animators.Length];
+                _upperPlayables = new AnimationClipPlayable[animators.Length * _clipCount];
+            }
+
             for (int g = 0; g < animators.Length; g++)
             {
                 Animator animator = animators[g];
@@ -76,11 +96,96 @@ namespace Game.Core
                     _playables[g * _clipCount + i] = playable;
                 }
 
-                output.SetSourcePlayable(mixer);
                 _graphs[g] = graph;
                 _mixers[g] = mixer;
+                output.SetSourcePlayable(layered ? LayerUpperBody(g, graph, mixer, animator, clips) : (Playable)mixer);
                 graph.Play();
             }
+        }
+
+        private static bool HasUpperBody(ModelArtDefinition art)
+        {
+            if (string.IsNullOrEmpty(art.UpperBodyBone))
+            {
+                return false;
+            }
+
+            foreach (ModelClip clip in art.Clips)
+            {
+                if (clip != null && clip.UpperBody && clip.Clip != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // The base mixer on layer 0, the upper-body clips on layer 1 behind a mask of the upper-body bone's branch.
+        private Playable LayerUpperBody(int g, PlayableGraph graph, AnimationMixerPlayable baseMixer, Animator animator, ModelClip[] clips)
+        {
+            var layers = AnimationLayerMixerPlayable.Create(graph, 2);
+            var upper = AnimationMixerPlayable.Create(graph, _clipCount);
+            for (int i = 0; i < _clipCount; i++)
+            {
+                if (!clips[i].UpperBody || clips[i].Clip == null)
+                {
+                    continue;
+                }
+
+                var playable = AnimationClipPlayable.Create(graph, g == 0 ? clips[i].Clip : clips[i].FarClip);
+                playable.SetApplyFootIK(false);
+                playable.SetSpeed(0d);
+                graph.Connect(playable, 0, upper, i);
+                _upperPlayables[g * _clipCount + i] = playable;
+            }
+
+            graph.Connect(baseMixer, 0, layers, 0);
+            graph.Connect(upper, 0, layers, 1);
+            layers.SetInputWeight(0, 1f);
+            layers.SetInputWeight(1, 0f);
+            layers.SetLayerMaskFromAvatarMask(1, UpperBodyMask(animator.transform, _art.UpperBodyBone));
+            _layers[g] = layers;
+            _upperMixers[g] = upper;
+            return layers;
+        }
+
+        // Every node of the rig by its path from the rig's root; only the upper-body bone and what hangs under it pass.
+        private static AvatarMask UpperBodyMask(Transform root, string upperBone)
+        {
+            Transform[] nodes = root.GetComponentsInChildren<Transform>(true);
+            var mask = new AvatarMask { transformCount = nodes.Length };
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                mask.SetTransformPath(i, PathFrom(root, nodes[i]));
+                mask.SetTransformActive(i, IsUnder(nodes[i], root, upperBone));
+            }
+
+            return mask;
+        }
+
+        private static string PathFrom(Transform root, Transform node)
+        {
+            string path = string.Empty;
+            for (Transform t = node; t != null && t != root; t = t.parent)
+            {
+                path = path.Length == 0 ? t.name : t.name + "/" + path;
+            }
+
+            return path;
+        }
+
+        private static bool IsUnder(Transform node, Transform root, string bone)
+        {
+            for (Transform t = node; t != null && t != root; t = t.parent)
+            {
+                if (t.name == bone)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>The clip on top of the cycle, or -1.</summary>
@@ -104,6 +209,47 @@ namespace Game.Core
             _fadingCycle = -1;
             _cycleBlend = 1f;
             _once = -1;
+            _upper = -1;
+        }
+
+        /// <summary>The upper-body clip playing, or -1.</summary>
+        public int Upper => _upper;
+
+        /// <summary>True while the clip of a role plays on the upper body.</summary>
+        public bool IsPlayingUpper(ModelClipRole role) => _upper >= 0 && _art.Clips[_upper].Role == role;
+
+        /// <summary>
+        /// Plays an upper-body clip once over the legs' cycle; a held one stays on its last frame (a gun kept at aim) until
+        /// another replaces it or <see cref="StopUpper"/> lets it go. Clips not marked upper body are ignored.
+        /// </summary>
+        public void PlayUpper(int index, float startSeconds = 0f, bool hold = false, float rate = 1f)
+        {
+            if (index < 0 || _upperMixers == null || !_art.Clips[index].UpperBody)
+            {
+                return;
+            }
+
+            // Restarting the clip that already shows keeps its weight: a second shot kicks without a fade.
+            if (index != _upper || _upperStopAge >= 0f)
+            {
+                _upperAge = 0f;
+            }
+
+            _upper = index;
+            _upperSpeed = rate;
+            _upperHolds = hold;
+            _upperStopAge = -1f;
+            _upperTime = Mathf.Clamp(startSeconds, 0f, _lengths[index]);
+        }
+
+        /// <summary>Lets the upper-body clip fade out now.</summary>
+        public void StopUpper()
+        {
+            if (_upper >= 0 && _upperStopAge < 0f)
+            {
+                _upperHolds = false;
+                _upperStopAge = 0f;
+            }
         }
 
         /// <summary>
@@ -196,6 +342,61 @@ namespace Game.Core
                     if (weight > 0f)
                     {
                         _playables[g * _clipCount + i].SetTime(_times[i]);
+                    }
+                }
+            }
+
+            if (_layers != null)
+            {
+                WriteUpper(AdvanceUpper(deltaTime));
+            }
+        }
+
+        private float AdvanceUpper(float deltaTime)
+        {
+            if (_upper < 0)
+            {
+                return 0f;
+            }
+
+            _upperAge += deltaTime;
+            float length = _lengths[_upper];
+            _upperTime = Mathf.Clamp(_upperTime + deltaTime * _upperSpeed, 0f, length);
+            float fadeOut = _upperHolds ? 1f : Mathf.Clamp01((length - _upperTime) / OnceFadeOutSeconds);
+            if (_upperStopAge >= 0f)
+            {
+                _upperStopAge += deltaTime;
+                fadeOut = Mathf.Min(fadeOut, 1f - _upperStopAge / OnceFadeOutSeconds);
+            }
+
+            if (fadeOut <= 0f)
+            {
+                _upper = -1;
+                return 0f;
+            }
+
+            return Mathf.Min(Mathf.Clamp01(_upperAge / OnceFadeInSeconds), fadeOut) * _art.Clips[_upper].Weight;
+        }
+
+        private void WriteUpper(float weight)
+        {
+            for (int g = 0; g < _layers.Length; g++)
+            {
+                _layers[g].SetInputWeight(1, weight);
+                AnimationMixerPlayable mixer = _upperMixers[g];
+                for (int i = 0; i < _clipCount; i++)
+                {
+                    AnimationClipPlayable playable = _upperPlayables[g * _clipCount + i];
+                    if (!playable.IsValid())
+                    {
+                        continue;
+                    }
+
+                    bool shown = i == _upper && weight > 0f;
+                    mixer.SetInputWeight(i, shown ? 1f : 0f);
+                    if (shown)
+                    {
+                        playable.SetTime(_upperTime);
                     }
                 }
             }

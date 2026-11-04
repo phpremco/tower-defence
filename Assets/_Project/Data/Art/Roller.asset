@@ -21,6 +21,7 @@ MonoBehaviour:
   _bodyCentrePivot: 0
   _height: 0.6207284
   _lodScreenHeight: 0.05
+  _upperBodyBone: 
   _deathFade: {x: 0.3, y: 1.0200001}
   _embers: 0
   _bleeds: 1
@@ -33,6 +34,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 1
     _clip: {fileID: 4689978721075004595, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: 3097900901679165762, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -41,6 +43,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 2
     _clip: {fileID: 1707072961985279524, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: -4466455560330106785, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -49,6 +52,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 0.6
+    _upperBody: 0
   - _role: 3
     _clip: {fileID: -4198271468196374103, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: -2201118310705631032, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -57,6 +61,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 8
     _clip: {fileID: 6322400228783504593, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: -1354090405039659776, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -65,6 +70,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 7
     _clip: {fileID: 5106161229753290600, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: -525296657659969979, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -73,6 +79,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 0
     _clip: {fileID: -3159372171454947460, guid: 6cc004a428864354cb5a305cf5ce8345, type: 3}
     _farClip: {fileID: 4964773262859054229, guid: 580f4d3af4651844bab0148605378613, type: 3}
@@ -81,3 +88,4 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0

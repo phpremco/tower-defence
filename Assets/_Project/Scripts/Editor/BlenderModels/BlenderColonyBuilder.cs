@@ -218,6 +218,14 @@ namespace Game.Editor
             so.FindProperty("_model").objectReferenceValue = BuildArt(asset, $"{folder}/{asset}.fbx", high, low, StructureLodScreenHeight);
             so.FindProperty("_damage").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseDamage, $"{folder}/{BlenderColonyCatalog.BaseDamage}.fbx", high, low, StructureLodScreenHeight);
             so.FindProperty("_wreck").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseWreck, $"{folder}/{BlenderColonyCatalog.BaseWreck}.fbx", high, low, StructureLodScreenHeight);
+            List<string> order = BlenderReport.Load($"{folder}/{asset}_report.json").Strings("timelapse_order");
+            SerializedProperty modules = so.FindProperty("_timelapseOrder");
+            modules.arraySize = order.Count;
+            for (int i = 0; i < order.Count; i++)
+            {
+                modules.GetArrayElementAtIndex(i).stringValue = $"{asset}_{order[i]}";
+            }
+
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;

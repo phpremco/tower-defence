@@ -16,6 +16,7 @@ namespace Game.Core
 
         private static Texture2D _radial;
         private static Texture2D _scanlines;
+        private static Texture2D _blade;
         private static Mesh _quad;
         private static readonly Dictionary<Color, Material> RadialMaterials = new Dictionary<Color, Material>();
 
@@ -46,6 +47,12 @@ namespace Game.Core
             RadialMaterials[colour] = material;
             return material;
         }
+
+        /// <summary>
+        /// An additive glow for a blade mesh whose UV x runs from the core (0) to the rim (1) and UV y from the base (0) to
+        /// the tip (1): bright along the core, soft at the edge, fading out at both ends.
+        /// </summary>
+        public static Material BladeMaterial(Color colour) => Additive(Blade(), colour);
 
         /// <summary>An additive material with horizontal lines, for energy fields; scroll its texture to animate it.</summary>
         public static Material ScanlineMaterial(Color colour) => Additive(Scanlines(), colour);
@@ -113,6 +120,30 @@ namespace Game.Core
 
             _radial = Finish(pixels, TextureSize, "GlowRadial", TextureWrapMode.Clamp);
             return _radial;
+        }
+
+        private static Texture2D Blade()
+        {
+            if (_blade != null)
+            {
+                return _blade;
+            }
+
+            var pixels = new Color32[TextureSize * TextureSize];
+            for (int y = 0; y < TextureSize; y++)
+            {
+                float along = (y + 0.5f) / TextureSize;
+                float ends = Mathf.Clamp01(along / 0.08f) * Mathf.Clamp01((1f - along) / 0.2f);
+                for (int x = 0; x < TextureSize; x++)
+                {
+                    float across = (x + 0.5f) / TextureSize;
+                    float value = Mathf.Pow(1f - across, 1.6f) * ends;
+                    pixels[y * TextureSize + x] = new Color(value, value, value, 1f);
+                }
+            }
+
+            _blade = Finish(pixels, TextureSize, "GlowBlade", TextureWrapMode.Clamp);
+            return _blade;
         }
 
         private static Texture2D Scanlines()

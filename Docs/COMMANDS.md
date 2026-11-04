@@ -362,3 +362,25 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
 - `BlenderSync` takes an export in a sub folder (`Env/ResourceNode`): files are named after the last part.
 - `imp3_phase.cs` holds the level paused between phases like `imp2_phase.cs`; "base 0" ends the level (defeat), so it
   is the last phase of a run, and the save is restored from `SAVE_BACKUP` afterwards.
+
+### Hero, story busts and cutscene models (added 2026-11-04, import stage 3b)
+
+| Goal | Command |
+| --- | --- |
+| Sync Mercer (and his weapons), the busts and the cutscene machines and drones, rebuild their materials and art, point the hero, the speakers and the cutscene cast at them | `unity command menu --path "Tools/Generate/Blender Story (sync, hero, portraits, cutscene)" --timeout 600` (also the full generator's step "Story art", after "Cutscene") |
+| Screenshots: Mercer idle (play zoom and close), running, shooting, slashing, the shockwave, a fight at play zoom, down and getting up | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp3b_hero.sh <prefix> [level]` (phases in `imp3b_phase.cs`) |
+| Cutscene stills without lag: the editor is paused, the cutscene sought and the camera rendered at 1920x1080 in one call | `CUT_OUT=<windows folder, C:/...> bash Tools/PlayTest/imp3b_cut.sh <prefix> "<shot> <progress>" ...` (`imp3b_still.cs`) |
+| Portraits: the dialogue box per speaker plus the bust PNG | `PORTRAITS=<windows folder> bash Tools/PlayTest/dialogue_shots.sh mercer ora voss nti pioneer`, then restore the save |
+| Sync the stage 3b exports only (before the builder runs) | `eval_file --file Tools/PlayTest/imp3b_sync.cs`; world positions of the named nodes in the bind pose: `imp3b_nodes.cs` (FBX paths in `imp3_inspect.txt`) |
+
+- **What wears what** is `BlenderStoryCatalog` (the take-to-role table, the upper-body clips, the report keys of the
+  moments and gait distances, the bust framing per speaker). Generated: `Data/Art/Story/*.asset` (`ModelArtDefinition`
+  per FBX, `MercerArt.asset` = `HeroArtDefinition`, `Portrait_<Asset>.asset` = `PortraitArtDefinition`) and
+  `Art/Materials/Blender/<Export>.mat` / `_Low.mat`. Owners: `HeroDefinition.Art`, `SpeakerDefinition.PortraitArt` (not
+  the hero: his bust is `HeroArtDefinition.Bust`), `CutsceneCast.*Art`. `BlenderColonyBuilder` now also writes
+  `BaseArtDefinition.TimelapseOrder` from the base report for the cutscene.
+- The cutscene poses its models with `ArtModel.Sample` (`AnimationClip.SampleAnimation`), never a clip player, so a
+  sought moment equals a played one and nothing needs disposing. The level hero uses the `ModelClipPlayer` with its new
+  upper-body layer (`ModelArtDefinition.UpperBodyBone`, `ModelClip.UpperBody`).
+- `cut_shots.sh`/`cut_stills.sh` capture a moment a second or more after the seek (the cutscene keeps playing between CLI
+  calls); use `imp3b_cut.sh` for exact frames. Its output path must be a Windows path (`C:/...`), not `/c/...`.

@@ -40,6 +40,9 @@ namespace Game.Hero
 
         [SerializeField] private Color _color = new Color(1f, 0.85f, 0.3f);
 
+        [Tooltip("The imported (Blender) look; empty keeps the procedural figure.")]
+        [SerializeField] private HeroArtDefinition _art;
+
         public string DisplayName => _displayName;
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
@@ -54,6 +57,7 @@ namespace Game.Hero
         public HeroAbilityDefinition[] Abilities => _abilities;
         public HeroPerkDefinition[] Perks => _perks;
         public Color Color => _color;
+        public HeroArtDefinition Art => _art;
 
         /// <summary>What the hero's weapon can hit.</summary>
         public TargetLayers Targets => _weapon.Targets;

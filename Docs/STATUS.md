@@ -1458,3 +1458,66 @@ one view hook (below); an owner without art keeps its procedural look. The R.A.T
   used (the hero keeps its own post); the theme base art is set on the two cutscene themes too (harmless: a cutscene
   builds no base); `Art/Models/Blender` grows by ~43 MB (git LFS question still open); the full generator re-saves the
   scenes with new file IDs (as every run).
+
+## Import stage 3b (2026-11-04)
+The hero, the dialogue busts and the opening cutscene wear their Blender models: Mercer (round-16 polish) with his pistol
+and sword in the level, the menus, his portrait and the cutscene; Voss, ORA, the NTI emblem and Pioneer-1 as dialogue
+portraits; the landing capsule, drill, mothership, beacon and the round-18 Builder and Hauler drones in the cutscene,
+which also switched its base and gates to the stage 3a art. Logic is untouched (view only, no new hooks); every owner
+without art keeps its procedural look. Imported but not yet used: the radar console and the Pioneer-1 wreck.
+- **Data:** `Hero/HeroArtDefinition` (body, pistol, hilt, blade, hidden perk variants, hand/holster/back sockets, aim
+  bones, pack bone, muzzle, walk-below speed, bust) on `HeroDefinition.Art`; `Core/ModelArt/PortraitArtDefinition` (model,
+  pose clip and moment, centre, turn, zoom, glow) on `SpeakerDefinition.PortraitArt` (the hero's bust is his art's);
+  `CutsceneCast` gains `MothershipArt`, `CapsuleArt`, `DrillArt`, `BeaconArt`, `BuilderArt`, `HaulerArt`, `ConsoleArt`
+  (they win over the old prefab overrides); `BaseArtDefinition.TimelapseOrder` (from the base report). `ModelClipRole`
+  gains Walk, Shoot, Reload, Slash, Ability, Down, Revive, Talk, Blink, Glitch, Open; `ModelClip.UpperBody`;
+  `ModelArtDefinition.UpperBodyBone`. New `CameraAnchor.Core` (the CoreIgnites shot is now written from the core, so it
+  finds the imported base's crystal). Generated: `Data/Art/Story/*.asset` (17 models, `MercerArt`, 5 portraits).
+- **Pipeline:** `BlenderStoryCatalog` + `BlenderStoryBuilder` (menu `Tools/Generate/Blender Story (sync, hero, portraits,
+  cutscene)`, generator step "Story art" after "Cutscene"); Mercer's weapon files sync as extra files of his export;
+  clip moments (muzzle flash, mag in, slash hit, shockwave impact, down ground) and gait distances come from his report;
+  `BlenderReport.Numbers` reads the muzzle array. Yaw 180 as in 3a, weapons 0 (grip space checked on screen).
+- **Hero view:** `Hero/HeroArtView` (HeroView keeps the stand ring, bar, ability ring and beacon). The `ModelClipPlayer`
+  got an **upper-body layer** (an `AnimationLayerMixerPlayable` with an `AvatarMask` built from the rig, everything under
+  `Spine1`), so Shoot (held at aim while fighting), Reload (rate matched to the reload time), Slash (started so the hit
+  frame lands just after the damage) and Hit (weight 0.7, rate-limited, not while aiming) play over Idle, Walk or Run
+  (rate = speed x length / distance per loop). Full body: Shockwave (from just before its impact), Repair (Gate Repair),
+  Down (held; the suit's glow stutters out and dies on the ground frame, sparks, dust, smoke), Revive (with a glow
+  flash). Pistol from `Holster_R` to `Weapon_R`, hilt from `Back` to `Weapon_R`, the blade an additive glow in the weapon
+  colour (`GlowDecal.BladeMaterial`, drawn 2.5x wider than the thin mesh, ignites over 0.18 s); bolt and flash from the
+  muzzle; the last aim degrees turn `Spine1`/`Spine2` in LateUpdate; pack thruster puffs while running.
+  `HeroView.BuildDisplayFigure` returns the posed model (idle frame 10, weapons stowed) for menus and the turntable.
+- **Portraits:** `PortraitModels.Build` uses the art bust when there is one: a still posed by `ArtModel.Sample`, its own
+  material copy per speaker colour (rim, glow factor), centred and turned per bust (catalog values, tuned on renders:
+  Mercer turned 50 degrees because his idle stands side-on; Voss closer and more three-quarter, the kindest light on her
+  face; the emblem's star down to gold; the 3.4-wide probe at 0.24x).
+- **Cutscene:** posed by `ArtModel.CreateSampled` + `Sample` (AnimationClip.SampleAnimation), so every moment still follows
+  from the shot time and nothing needs disposing. Orbit: the mothership spins its ring, capsules leave its `Bay`, engine
+  glow at `Nozzle_n`; falling capsules wear the model (legs folded) with the heat shield on its own material. Landing:
+  Land unfolds the legs over the last of the fall, Open lowers the ramp, Mercer steps out at `Exit`. Beacon: Deploy by
+  the deploy share, then Idle, light on `Lamp`, hidden until planted. Drill: Sink over the drilling, then Spin; the
+  procedural bit hidden. Base (`FieldBase`): the level's base model, its eight modules rising in the report's timelapse
+  order, the dish turning, the crystal igniting on its own material, lights at `Light_Core`/`Light_Command`, the haulers
+  start from `Base_Pad`. Gates: the first gate level's model stretched to the road, field from its `Field` socket.
+  Builders (`UI/Cutscene/CutsceneDrone`): Work while a module rises, weld sparks at `Weld_L/R`; haulers at 1.6x with the
+  cargo pod glowing when loaded. Mercer (`CutsceneHeroRig`): idle, walk or run sampled at the phase the distance gives,
+  head turn on the Head bone, the pistol drawn = the end of the Shoot kick.
+- **Look at play size** (screenshots in the session scratchpad `imp3b_shots/`: `h2_*`/`h3_*` hero, `portrait_*` and
+  `dlg2_*` busts, `c2_*`/`c3_*` cutscene): Mercer reads well at play zoom and close; the shooting stance, the slash with
+  the widened blade, the down pose with dark suit and the run all read. Blender-side points in MODEL_TODO, "Na import
+  stage 3b".
+- **Performance** (`ModelPerformanceTests`, 60 towers, 8 drones, 12 path objects, densest Psycho wave, now with the
+  modelled hero): C1_06 High avg 6.7 / p95 8.3 ms, Low 6.6 / 8.3 ms (187-197 skinned, 65-68 drawn); C1_05 High 6.7 /
+  8.6 ms, Low 6.6 / 8.0 ms (168 skinned, 79 drawn). Budget p95 <= 33 ms. Report in `Logs/model_perf.txt`.
+- **Tests:** EditMode 299/299 (new `StoryArtTests` 4: the hero's clips, upper-body clips, bone and sockets, facing, weapons
+  in grip space; every non-hero speaker has a bust; the cast's machines and drones with their clips, sockets and meshes;
+  the base's timelapse modules). PlayMode `ModelPerformanceTests` 1/1, `ContinentSimulationTests` 2/2,
+  `StoryCrystalTests` 2/2, `StorySmokeTests` 2/2, `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests`
+  smoke 1/1. Console 0 errors, 0 warnings. Save restored to its MD5.
+- **Tools:** `imp3b_hero.sh` + `imp3b_phase.cs`, `imp3b_cut.sh` + `imp3b_still.cs` (exact cutscene frames), `imp3b_sync.cs`,
+  `imp3b_nodes.cs`. See COMMANDS.
+- **Open:** the radar console has art but the radar shot is still a UI overlay over the field (a command-post shot is a
+  design choice); the Pioneer-1 wreck waits for level 8's environment (stage 4); no hologram shader for ORA (UV1 bands);
+  portraits are stills (Talk/Blink/Glitch unused); Quick Reload / Wide Slash meshes hidden until such perks exist; the
+  Repair kneel only plays on Gate Repair (no repair beam from `Weapon_L`); the full generator re-saves the scenes with new
+  file IDs (as every run); `Art/Models/Blender` grows by the story exports (git LFS question still open).

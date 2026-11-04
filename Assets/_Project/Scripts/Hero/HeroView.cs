@@ -15,7 +15,8 @@ namespace Game.Hero
     /// cloak with it, so the figure bends as one body. When its health runs out it staggers, drops the weapon and
     /// crashes to the ground with a shower of sparks, lies smoking with its lights out, and powers back up with a
     /// flash when it revives. A tall beacon floats above it so it can always be found; it turns red while the
-    /// hero is down. Reacts to Commander events only.
+    /// hero is down. Reacts to Commander events only. A hero with imported art hands the figure to
+    /// <see cref="HeroArtView"/> and keeps only the stand ring, the bar, the ability ring and the beacon here.
     /// </summary>
     [RequireComponent(typeof(Commander))]
     public sealed class HeroView : MonoBehaviour
@@ -144,6 +145,8 @@ namespace Game.Hero
         private const float EmblemBobSpeed = 1.6f;
         private const float DownBeaconPulse = 3.5f;
         private const float ThrusterRate = 45f;
+        // The relaxed moment of the imported idle a menu figure stands in (README round 6: frame 10).
+        private const float DisplayIdleSeconds = 10f / 30f;
         private static readonly Color HealthyColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
         private static readonly Color DownColor = new Color(1f, 0.25f, 0.2f);
@@ -153,6 +156,7 @@ namespace Game.Hero
         private static readonly Color DustColor = new Color(0.5f, 0.45f, 0.4f, 0.5f);
 
         private Commander _hero;
+        private HeroArtView _art;
         private HeroModelFactory.Parts _parts;
         private HeroWeaponRig _melee;
         private HeroWeaponRig _ranged;
@@ -241,9 +245,27 @@ namespace Game.Hero
             }
         }
 
+        // The imported model when the hero has one (its own view plays the body), else the procedural figure; the stand
+        // ring, the bar, the ability ring and the beacon are the same for both.
+        private void Build()
+        {
+            HeroArtDefinition art = _hero.Definition.Art;
+            if (art != null && art.Body != null)
+            {
+                _art = gameObject.AddComponent<HeroArtView>();
+                _art.Initialize(_hero, art);
+            }
+            else
+            {
+                BuildFigure();
+            }
+
+            BuildMarkers();
+        }
+
         // The figure turns as a whole; the torso pivots at the pelvis and carries the body mesh, the head, the arms
         // and the cloak, so a hunch or a lean bends the figure instead of sliding the chest out from under the head.
-        private void Build()
+        private void BuildFigure()
         {
             var figure = new GameObject("Figure").transform;
             figure.SetParent(transform, false);
@@ -291,7 +313,10 @@ namespace Game.Hero
             _sparks = ParticleKit.Create(_shell, "Sparks", new Vector3(0f, 1f, -0.3f), SparkColor * 2f, 0.3f, 0.7f, 0.025f, 0.06f, 1.5f, 4f, 1.2f, 100, 0.15f);
             _smoke = ParticleKit.Create(_shell, "Smoke", new Vector3(0f, 1f, -0.3f), SmokeColor, 1.2f, 2.2f, 0.2f, 0.4f, 0.3f, 0.6f, -0.12f, 30, 0.15f);
             _dust = ParticleKit.Create(transform, "Dust", new Vector3(0f, 0.1f, 0f), DustColor, 0.5f, 0.9f, 0.2f, 0.4f, 0.8f, 1.8f, -0.05f, 40, 0.4f);
+        }
 
+        private void BuildMarkers()
+        {
             // A thin golden ring on the ground keeps the hero easy to find among towers and enemies, open in the
             // middle so the boots stand on bare ground instead of sinking into a disc.
             var ringBuilder = new PropMeshBuilder();
@@ -329,6 +354,11 @@ namespace Game.Hero
         {
             const float DisplayArmPitch = 6f;
             const float DisplayArmYaw = -10f;
+
+            if (definition.Art != null && definition.Art.Body != null)
+            {
+                return HeroArtView.BuildDisplay(parent, definition.Art, DisplayIdleSeconds);
+            }
 
             HeroModelFactory.Parts parts = HeroModelFactory.Create();
             Color trim = definition.Color;
@@ -433,7 +463,7 @@ namespace Game.Hero
         // The weapon the commander used comes to the hand; whatever else was drawn goes back to its holster.
         private void OnStruck(Vector3 target, HeroWeaponDefinition weapon)
         {
-            if (_down)
+            if (_down || _art != null)
             {
                 return;
             }
@@ -456,29 +486,39 @@ namespace Game.Hero
         private void OnDowned()
         {
             _down = true;
+            _beaconRenderer.sharedMaterial = _beaconDownMaterial;
+            _emblemRenderer.sharedMaterial = _emblemDownMaterial;
+            if (_art != null)
+            {
+                return;
+            }
+
             _downTime = 0f;
             _impacted = false;
             _rise = float.PositiveInfinity;
             _fallYaw = _figure.localEulerAngles.y;
             _sparks.Emit(StaggerSparks);
             ParticleKit.SetRate(_thrusters, 0f);
-            _beaconRenderer.sharedMaterial = _beaconDownMaterial;
-            _emblemRenderer.sharedMaterial = _emblemDownMaterial;
         }
 
         // Back up: a flash of the suit's colour, the lights come on and the figure rolls back onto its feet.
         private void OnRevived()
         {
             _down = false;
+            _beaconRenderer.sharedMaterial = _beaconMaterial;
+            _emblemRenderer.sharedMaterial = _emblemMaterial;
+            Pulse(ReviveRingRadius, _trim, ReviveRingSeconds);
+            if (_art != null)
+            {
+                return;
+            }
+
             _rise = 0f;
             _melee.Holster();
             _ranged?.Holster();
             SetMaterials(_poweredMaterials);
             ParticleKit.SetRate(_smoke, 0f);
             ParticleKit.SetRate(_sparks, 0f);
-            _beaconRenderer.sharedMaterial = _beaconMaterial;
-            _emblemRenderer.sharedMaterial = _emblemMaterial;
-            Pulse(ReviveRingRadius, _trim, ReviveRingSeconds);
         }
 
         private void SetMaterials(Material[] materials)
@@ -491,6 +531,13 @@ namespace Game.Hero
 
         private void Update()
         {
+            if (_art != null)
+            {
+                Beacon();
+                Ring();
+                return;
+            }
+
             if (_down)
             {
                 Fall();

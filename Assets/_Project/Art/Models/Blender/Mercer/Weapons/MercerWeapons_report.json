@@ -1,0 +1,43 @@
+{
+  "asset": "MercerWeapons",
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "tris": {
+    "Pistol": 1250,
+    "Pistol_Mag": 118,
+    "Pistol_Mag_Quick": 200,
+    "Sword_Hilt": 760,
+    "Sword_Hilt_Wide": 800,
+    "Sword_Blade": 360,
+    "Sword_Blade_Wide": 360
+  },
+  "pistol_total_tris": 1368,
+  "uv": {
+    "islands": 157,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.594,
+    "world_per_uv": 0.5292708438416305
+  },
+  "detail": {
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 8.8,
+      "mask": "A"
+    }
+  },
+  "grip_space": "+Z barrel / sword edge, +Y pistol top / sword blade, origin = centre of the fist",
+  "muzzle": [
+    0.0,
+    0.062,
+    0.192
+  ],
+  "blade_base": 0.118,
+  "blade_tip": 0.978,
+  "blade_uv": "x 0 core .. 1 rim, y 0 base .. 1 tip"
+}

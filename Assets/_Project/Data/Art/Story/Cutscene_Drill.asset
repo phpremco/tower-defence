@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Cutscene_Drill
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 554332b029076794db930d231e766df0, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 7cd340d0190ab4e49b50f7ac67b263a1, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 56d9a0dfce3b4f145a93d019e919529a, type: 2}
+  _scale: 1
+  _yaw: 180
+  _bodyCentrePivot: 0
+  _height: 4.869999
+  _lodScreenHeight: 0.02
+  _upperBodyBone: 
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 18
+    _clip: {fileID: 2931716650772917025, guid: 554332b029076794db930d231e766df0, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 1
+    _clip: {fileID: 6261994086463934638, guid: 554332b029076794db930d231e766df0, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0

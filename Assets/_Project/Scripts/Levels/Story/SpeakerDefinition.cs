@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Levels
@@ -17,12 +18,16 @@ namespace Game.Levels
         [Tooltip("Optional drawn portrait. When set it replaces the 3D bust.")]
         [SerializeField] private Sprite _portraitOverride;
 
+        [Tooltip("The imported (Blender) bust; empty keeps the procedural one. The hero's bust comes from his own art.")]
+        [SerializeField] private PortraitArtDefinition _portraitArt;
+
         public string Id => name;
         public string DisplayName => _displayName;
         public Color RoleColour => _roleColour;
         public SpeakerFrame Frame => _frame;
         public PortraitModel Portrait => _portrait;
         public Sprite PortraitOverride => _portraitOverride;
+        public PortraitArtDefinition PortraitArt => _portraitArt;
 
         public bool IsValid(out string error)
         {

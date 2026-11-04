@@ -1,0 +1,76 @@
+{
+  "asset": "Drone_Hauler",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.563,
+    "world_per_uv": 1.4642
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 29.3,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 24.4,
+      "mask": "A"
+    }
+  },
+  "fbx": "Drone_Hauler.fbx",
+  "tris": 1376,
+  "tris_lod1": 708,
+  "bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Grip",
+    "Cargo"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Grip"
+  ],
+  "clips": {
+    "Idle": 60,
+    "Fly": 60,
+    "Work": 60
+  },
+  "altitude": 2.2,
+  "rotors": {
+    "Rotor_1": [
+      0.0,
+      -0.33,
+      0.035
+    ],
+    "Rotor_2": [
+      0.0,
+      0.33,
+      0.035
+    ]
+  },
+  "pivot": "drone centre (DroneView root); faces -Y in Blender (Unity +Z)",
+  "cargo": {
+    "object": "Drone_Hauler_Cargo",
+    "tris": 136
+  },
+  "sockets": {
+    "Cargo": [
+      0.0,
+      0.0,
+      -0.12
+    ]
+  }
+}

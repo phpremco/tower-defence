@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Game.Core;
-using Game.Drones;
 using Game.Levels;
+using Game.Towers;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,8 +10,9 @@ namespace Game.UI
     /// <summary>
     /// The base the colony unfolds on the field: the command post, the landing platform, the energy core and the
     /// road gates. In the timelapse each module springs out of the ground in turn (scale and turn, a puff of dust)
-    /// while builder drones hover and weld; later a crystal goes into the core and it ignites. Posed from the
-    /// shot's progress alone.
+    /// while builder drones hover and weld; later a crystal goes into the core and it ignites. With the level's
+    /// imported (Blender) base and gate the model's own modules rise in its timelapse order and the gates wear their
+    /// first level's model; otherwise the procedural pieces stand in. Posed from the shot's progress alone.
     /// </summary>
     public sealed class FieldBase
     {
@@ -37,18 +38,36 @@ namespace Game.UI
         private const float RotorDegreesPerSecond = 2400f;
         private const int DustBurst = 40;
         private const float SparkRate = 40f;
+
+        // The imported base's modules rise one after another over this share of the timelapse, the gates after them.
+        private const float ArtModulesFrom = 0.03f;
+        private const float ArtModulesTo = 0.48f;
+
+        // The procedural pad's top, where the haulers start.
+        private const float PadHeight = 0.4f;
+        private const string FieldSocket = "Field";
+        private const string CoreLightSocket = "Light_Core";
+        private const string CommandLightSocket = "Light_Command";
+        private static readonly string[] WeldSockets = { "Weld_L", "Weld_R" };
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color DustColour = new Color(0.55f, 0.58f, 0.62f, 0.4f);
         private static readonly Color SparkColour = new Color(1f, 0.85f, 0.45f);
 
         private readonly List<Module> _modules = new List<Module>();
-        private readonly List<DroneModelBuilder.Rig> _builders = new List<DroneModelBuilder.Rig>();
+        private readonly List<CutsceneDrone> _builders = new List<CutsceneDrone>();
         private readonly List<ParticleSystem> _builderSparks = new List<ParticleSystem>();
         private readonly List<Material> _gateFields = new List<Material>();
         private Material _crystal;
+        private Color _crystalLit;
         private Color _coreColour;
         private Light _coreLight;
         private GameObject _corePool;
         private Transform _crystalTransform;
+        private Quaternion _crystalRest = Quaternion.identity;
+        private Transform _dish;
+        private Quaternion _dishRest;
+        private float _dishDegreesPerSecond;
+        private Vector3 _coreSocket;
         private float _lastUnfold;
 
         /// <summary>One piece of the base, standing at its place and unfolding from its start share of the timelapse.</summary>
@@ -56,6 +75,8 @@ namespace Game.UI
         {
             public Transform Root;
             public Quaternion Rotation;
+            public Vector3 Scale;
+            public bool Turns;
             public float Start;
             public ParticleSystem Dust;
         }
@@ -66,33 +87,27 @@ namespace Game.UI
             VisualTheme theme = level.Theme;
             Color glow = theme.BaseColor;
             _coreColour = Color.Lerp(theme.AccentColor, Color.white, 0.1f);
+            PadTop = layout.Pad + Vector3.up * PadHeight;
 
-            Transform command = new GameObject("Command").transform;
-            command.SetParent(parent, false);
-            command.SetPositionAndRotation(layout.Base, layout.BaseFacing);
-            LevelVisualBuilder.BuildBaseDisplay(command, glow);
-            AddLight(command, glow, CommandLightIntensity, CommandLightRange, 1.4f);
-            GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
-            AddModule(command, 0.05f, parent);
-
-            Material[] materials = ModelPalette.Create(glow);
-            Transform pad = Part("Pad", parent, BaseModuleFactory.LandingPad(), materials, layout.Pad, layout.BaseFacing);
-            AddModule(pad, 0.22f, parent);
-
-            Transform core = Part("Core", parent, BaseModuleFactory.CoreCage(), materials, layout.Core, layout.BaseFacing);
-            _crystal = SurfaceMaterials.Create(_coreColour, CoreDimEmission, 0.85f);
-            _crystalTransform = Part("Crystal", core, BaseModuleFactory.CoreCrystal(), new[] { _crystal }, layout.Core, layout.BaseFacing);
-            _crystalTransform.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            _coreLight = AddLight(core, _coreColour, 0f, CoreLightRange, 1.2f);
-            _corePool = GlowDecal.PlacePool(core, _coreColour * 0.3f, 2.2f);
-            AddModule(core, 0.36f, parent);
+            BaseArtDefinition art = theme.BaseArt;
+            if (art != null && art.Model != null)
+            {
+                BuildArtBase(parent, layout, art, glow);
+            }
+            else
+            {
+                BuildProceduralBase(parent, layout, glow);
+            }
 
             BuildGates(parent, level, layout);
             BuildBuilders(parent, context);
         }
 
         /// <summary>The energy core's crystal, where the delivery drone flies.</summary>
-        public Vector3 CoreSocket => _crystalTransform.position + Vector3.up * 1.2f;
+        public Vector3 CoreSocket => _coreSocket;
+
+        /// <summary>The top of the landing pad, where the haulers take off and come home.</summary>
+        public Vector3 PadTop { get; private set; }
 
         /// <summary>Unfold share of the whole base, 0 nothing built, 1 complete; builders weld while it is between.</summary>
         public void PoseUnfold(float progress, float time)
@@ -104,8 +119,13 @@ namespace Game.UI
                 float u = CutsceneMath.Span(progress, module.Start, module.Start + UnfoldShare);
                 module.Root.gameObject.SetActive(u > 0f);
                 float grow = CutsceneMath.OutBack(u);
-                module.Root.localScale = new Vector3(Mathf.Lerp(0.55f, 1f, CutsceneMath.Smooth(u)), Mathf.Max(0.01f, grow), Mathf.Lerp(0.55f, 1f, CutsceneMath.Smooth(u)));
-                module.Root.rotation = module.Rotation * Quaternion.Euler(0f, (1f - CutsceneMath.Smooth(u)) * UnfoldTurnDegrees, 0f);
+                float spread = Mathf.Lerp(0.55f, 1f, CutsceneMath.Smooth(u));
+                module.Root.localScale = Vector3.Scale(module.Scale, new Vector3(spread, Mathf.Max(0.01f, grow), spread));
+                if (module.Turns)
+                {
+                    module.Root.rotation = module.Rotation * Quaternion.Euler(0f, (1f - CutsceneMath.Smooth(u)) * UnfoldTurnDegrees, 0f);
+                }
+
                 if (u > 0f && u < 1f)
                 {
                     building = i;
@@ -119,6 +139,11 @@ namespace Game.UI
             }
 
             _lastUnfold = progress;
+            if (_dish != null)
+            {
+                _dish.localRotation = _dishRest * Quaternion.AngleAxis(time * _dishDegreesPerSecond, Vector3.up);
+            }
+
             PoseBuilders(building, progress, time);
         }
 
@@ -127,10 +152,10 @@ namespace Game.UI
         {
             float pulse = 1f + 0.12f * Mathf.Sin(time * CorePulseSpeed) * ignite;
             float emission = Mathf.Lerp(CoreDimEmission, CoreLitEmission, ignite * ignite) * pulse;
-            _crystal.SetColor("_EmissionColor", _coreColour * emission);
+            _crystal.SetColor(EmissionColorId, _crystalLit * (emission / CoreLitEmission));
             _coreLight.intensity = CoreLightIntensity * ignite * pulse;
             _corePool.SetActive(ignite > 0.05f);
-            _crystalTransform.localRotation = Quaternion.Euler(0f, time * 20f * ignite, 0f);
+            _crystalTransform.localRotation = _crystalRest * Quaternion.Euler(0f, time * 20f * ignite, 0f);
         }
 
         /// <summary>Slides the scanlines of the gate fields.</summary>
@@ -146,9 +171,93 @@ namespace Game.UI
         {
             for (int i = 0; i < _builders.Count; i++)
             {
-                _builders[i].Root.SetActive(false);
+                _builders[i].Holder.gameObject.SetActive(false);
                 ParticleKit.SetRate(_builderSparks[i], 0f);
             }
+        }
+
+        private void BuildProceduralBase(Transform parent, FieldLayout layout, Color glow)
+        {
+            Transform command = new GameObject("Command").transform;
+            command.SetParent(parent, false);
+            command.SetPositionAndRotation(layout.Base, layout.BaseFacing);
+            LevelVisualBuilder.BuildBaseDisplay(command, glow);
+            AddLight(command, glow, CommandLightIntensity, CommandLightRange, 1.4f);
+            GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
+            AddModule(command, 0.05f, parent, true);
+
+            Material[] materials = ModelPalette.Create(glow);
+            Transform pad = Part("Pad", parent, BaseModuleFactory.LandingPad(), materials, layout.Pad, layout.BaseFacing);
+            AddModule(pad, 0.22f, parent, true);
+
+            Transform core = Part("Core", parent, BaseModuleFactory.CoreCage(), materials, layout.Core, layout.BaseFacing);
+            _crystal = SurfaceMaterials.Create(_coreColour, CoreDimEmission, 0.85f);
+            _crystalLit = _coreColour * CoreLitEmission;
+            _crystalTransform = Part("Crystal", core, BaseModuleFactory.CoreCrystal(), new[] { _crystal }, layout.Core, layout.BaseFacing);
+            _crystalTransform.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            _coreSocket = _crystalTransform.position + Vector3.up * 1.2f;
+            _coreLight = AddLight(core, _coreColour, 0f, CoreLightRange, 1.2f);
+            _corePool = GlowDecal.PlacePool(core, _coreColour * 0.3f, 2.2f);
+            AddModule(core, 0.36f, parent, true);
+        }
+
+        // The level's base model where the level puts it: each module rises from its own pivot in the report's order, the
+        // dish turns, the crystal wears its own copy of the material for the ignition, the lights hang at their sockets.
+        private void BuildArtBase(Transform parent, FieldLayout layout, BaseArtDefinition art, Color glow)
+        {
+            Transform command = new GameObject("Command").transform;
+            command.SetParent(parent, false);
+            command.SetPositionAndRotation(layout.Base, layout.BaseFacing);
+            ArtModel model = ArtModel.CreateStill(command, art.Model);
+            GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
+
+            string[] order = art.TimelapseOrder;
+            for (int i = 0; i < order.Length; i++)
+            {
+                float start = Mathf.Lerp(ArtModulesFrom, ArtModulesTo, order.Length > 1 ? i / (float)(order.Length - 1) : 0f);
+                foreach (Renderer renderer in model.RenderersEndingWith(order[i]))
+                {
+                    AddModule(renderer.transform, start, parent, false);
+                }
+            }
+
+            Renderer[] dish = model.RenderersEndingWith(art.TurningModule);
+            if (dish.Length > 0)
+            {
+                _dish = dish[0].transform;
+                _dishRest = _dish.localRotation;
+                _dishDegreesPerSecond = art.TurnDegreesPerSecond;
+            }
+
+            Renderer[] crystal = model.RenderersEndingWith(art.PulsingModule);
+            _crystal = new Material(model.Material) { name = art.PulsingModule };
+            _crystalLit = _crystal.GetColor(EmissionColorId);
+            foreach (Renderer renderer in crystal)
+            {
+                renderer.sharedMaterial = _crystal;
+            }
+
+            _crystalTransform = crystal.Length > 0 ? crystal[0].transform : command;
+            _crystalRest = _crystalTransform.localRotation;
+            _coreSocket = crystal.Length > 0 ? crystal[0].bounds.center : command.position + Vector3.up;
+
+            Renderer[] pad = model.RenderersEndingWith("Base_Pad");
+            if (pad.Length > 0)
+            {
+                PadTop = new Vector3(pad[0].bounds.center.x, pad[0].bounds.max.y, pad[0].bounds.center.z);
+            }
+
+            Transform coreAt = Socket(model, CoreLightSocket, _crystalTransform);
+            _coreLight = AddLight(coreAt, _coreColour, 0f, CoreLightRange, 0f);
+            _corePool = GlowDecal.PlacePool(command, _coreColour * 0.3f, 2.2f);
+            _corePool.transform.position = new Vector3(_coreSocket.x, layout.Base.y + 0.035f, _coreSocket.z);
+            AddLight(Socket(model, CommandLightSocket, command), glow, CommandLightIntensity, CommandLightRange, 0f);
+        }
+
+        private static Transform Socket(ArtModel model, string name, Transform fallback)
+        {
+            Transform socket = model.Find(name);
+            return socket != null ? socket : fallback;
         }
 
         // The builders circle the module going up and weld at it; when nothing is going up they hover over the base.
@@ -156,9 +265,9 @@ namespace Game.UI
         {
             for (int i = 0; i < _builders.Count; i++)
             {
-                DroneModelBuilder.Rig rig = _builders[i];
+                CutsceneDrone drone = _builders[i];
                 bool active = progress > 0f && progress < 1f;
-                rig.Root.SetActive(active);
+                drone.Holder.gameObject.SetActive(active);
                 if (!active)
                 {
                     ParticleKit.SetRate(_builderSparks[i], 0f);
@@ -169,12 +278,8 @@ namespace Game.UI
                 float angle = time * BuilderSpeed + i * Mathf.PI * 2f / _builders.Count;
                 Vector3 centre = target.position;
                 Vector3 position = centre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * BuilderOrbit + Vector3.up * (BuilderHeight + 0.15f * Mathf.Sin(time * 3f + i));
-                rig.Root.transform.SetPositionAndRotation(position, Quaternion.LookRotation(Flat(centre - position)));
-                foreach (Transform rotor in rig.Rotors)
-                {
-                    rotor.localRotation = Quaternion.AngleAxis(time * RotorDegreesPerSecond, rig.RotorAxis);
-                }
-
+                drone.Holder.SetPositionAndRotation(position, Quaternion.LookRotation(Flat(centre - position)));
+                drone.Pose(building >= 0 ? ModelClipRole.Work : ModelClipRole.Move, time + i * 0.37f, time * RotorDegreesPerSecond, false);
                 ParticleKit.SetRate(_builderSparks[i], building >= 0 ? SparkRate : 0f);
             }
         }
@@ -189,23 +294,42 @@ namespace Game.UI
                 var gate = new GameObject($"Gate{i}").transform;
                 gate.SetParent(parent, false);
                 gate.SetPositionAndRotation(LevelPlayPose.GatePosition(level, spot.Cell), Quaternion.LookRotation(level.Road.DirectionAt(spot.Cell)));
-                Material[] materials = ModelPalette.Create(colour);
-                Mesh pylon = StructureModelFactory.GatePylon();
-                Part("PylonL", gate, pylon, materials, Vector3.left * (width * 0.5f));
-                Part("PylonR", gate, pylon, materials, Vector3.right * (width * 0.5f));
-                Part("Beam", gate, StructureModelFactory.GateBeam(width + GateOverhang), materials, Vector3.up * GateBeamHeight);
-                Material field = GlowDecal.ScanlineMaterial(colour * GateFieldEmission);
-                _gateFields.Add(field);
-                Sheet(gate, field, new Vector3(0f, GateFieldTop - GateFieldHeight * 0.5f, 0f), Quaternion.identity, new Vector3(width - GateFieldInset, GateFieldHeight, 1f));
-                Sheet(gate, field, new Vector3(0f, 0.06f, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(width - GateFieldInset, 0.6f, 1f));
-                AddModule(gate, 0.55f + 0.1f * i, parent);
+                GateArtDefinition art = spot.Blockade != null ? spot.Blockade.GateArt : null;
+                ModelArtDefinition first = art != null ? art.ArtFor(0) : null;
+                float fieldWidth = width - GateFieldInset;
+                float fieldCentre = GateFieldTop - GateFieldHeight * 0.5f;
+                if (first != null)
+                {
+                    // The first gate level's model stretched to the road, as in the level; the field fills its gap.
+                    var holder = new GameObject("Model").transform;
+                    holder.SetParent(gate, false);
+                    holder.localScale = new Vector3(width / art.ModelWidth, 1f, 1f);
+                    ArtModel model = ArtModel.CreateStill(holder, first);
+                    Transform field = model.Find(FieldSocket);
+                    fieldWidth = width * art.FieldShare;
+                    fieldCentre = field != null ? gate.InverseTransformPoint(field.position).y : fieldCentre;
+                }
+                else
+                {
+                    Material[] materials = ModelPalette.Create(colour);
+                    Mesh pylon = StructureModelFactory.GatePylon();
+                    Part("PylonL", gate, pylon, materials, Vector3.left * (width * 0.5f));
+                    Part("PylonR", gate, pylon, materials, Vector3.right * (width * 0.5f));
+                    Part("Beam", gate, StructureModelFactory.GateBeam(width + GateOverhang), materials, Vector3.up * GateBeamHeight);
+                }
+
+                Material fieldMaterial = GlowDecal.ScanlineMaterial(colour * GateFieldEmission);
+                _gateFields.Add(fieldMaterial);
+                Sheet(gate, fieldMaterial, new Vector3(0f, fieldCentre, 0f), Quaternion.identity, new Vector3(fieldWidth, GateFieldHeight, 1f));
+                Sheet(gate, fieldMaterial, new Vector3(0f, 0.06f, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(fieldWidth, 0.6f, 1f));
+                AddModule(gate, 0.55f + 0.1f * i, parent, true);
             }
         }
 
         private void BuildBuilders(Transform parent, CutsceneContext context)
         {
-            DroneDefinition builder = context.Cast != null ? context.Cast.Builder : null;
-            if (builder == null)
+            CutsceneCast cast = context.Cast;
+            if (cast == null || (cast.Builder == null && cast.BuilderArt == null))
             {
                 return;
             }
@@ -215,19 +339,22 @@ namespace Game.UI
             {
                 var holder = new GameObject($"Builder{i}").transform;
                 holder.SetParent(parent, false);
-                DroneModelBuilder.Rig rig = DroneModelBuilder.Build(holder, builder);
-                rig.Root = holder.gameObject;
-                _builders.Add(rig);
-                ParticleSystem sparks = ParticleKit.Create(holder, "Weld", Vector3.down * 0.4f, SparkColour * 2.5f, 0.2f, 0.5f, 0.03f, 0.06f, 1.5f, 4f, 1.2f, 80, 0.05f);
+                var drone = new CutsceneDrone(holder, cast.BuilderArt, cast.Builder);
+                _builders.Add(drone);
+                // The imported builder welds with its two arms; the procedural one from under its body.
+                Transform weld = drone.Socket(WeldSockets[i % WeldSockets.Length]);
+                ParticleSystem sparks = weld != null
+                    ? ParticleKit.Create(weld, "Weld", Vector3.zero, SparkColour * 2.5f, 0.2f, 0.5f, 0.03f, 0.06f, 1.5f, 4f, 1.2f, 80, 0.03f)
+                    : ParticleKit.Create(holder, "Weld", Vector3.down * 0.4f, SparkColour * 2.5f, 0.2f, 0.5f, 0.03f, 0.06f, 1.5f, 4f, 1.2f, 80, 0.05f);
                 _builderSparks.Add(sparks);
                 holder.gameObject.SetActive(false);
             }
         }
 
-        private void AddModule(Transform root, float start, Transform parent)
+        private void AddModule(Transform root, float start, Transform parent, bool turns)
         {
             ParticleSystem dust = ParticleKit.Create(parent, $"{root.name}Dust", root.position + Vector3.up * 0.2f, DustColour, 0.8f, 1.6f, 0.3f, 0.7f, 0.6f, 2f, -0.05f, 80, 1.1f);
-            _modules.Add(new Module { Root = root, Rotation = root.rotation, Start = start, Dust = dust });
+            _modules.Add(new Module { Root = root, Rotation = root.rotation, Scale = root.localScale, Turns = turns, Start = start, Dust = dust });
         }
 
         private static Transform Part(string name, Transform parent, Mesh mesh, Material[] materials, Vector3 position, Quaternion rotation)

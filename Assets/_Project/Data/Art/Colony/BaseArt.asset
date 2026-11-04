@@ -18,5 +18,14 @@ MonoBehaviour:
   _turningModule: Base_Dish
   _turnDegreesPerSecond: 40
   _pulsingModule: Base_Crystal
+  _timelapseOrder:
+  - Base_Deck
+  - Base_Command
+  - Base_Dish
+  - Base_Pad
+  - Base_Core
+  - Base_Crystal
+  - Base_Habitat
+  - Base_Hardpoints
   _damagedBelow: 0.5
   _wreckDelay: 0.25

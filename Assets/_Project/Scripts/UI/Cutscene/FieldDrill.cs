@@ -34,6 +34,7 @@ namespace Game.UI
         private readonly GameObject _deposit;
         private readonly AudioSource _rumble;
         private readonly CutsceneAudio _audio;
+        private readonly ArtModel _art;
 
         public FieldDrill(Transform parent, FieldLayout layout, CutsceneContext context)
         {
@@ -49,7 +50,13 @@ namespace Game.UI
             Material[] materials = ModelPalette.Create(theme.BaseColor);
             _rig = new GameObject("Rig").transform;
             _rig.SetParent(Root, false);
-            if (custom != null)
+            ModelArtDefinition art = context.Cast != null ? context.Cast.DrillArt : null;
+            if (art != null)
+            {
+                // The imported derrick has its own drill string: its Sink clip drives it down, then Spin turns it.
+                _art = ArtModel.CreateSampled(_rig, art, ownMaterial: false);
+            }
+            else if (custom != null)
             {
                 Object.Instantiate(custom, _rig);
             }
@@ -105,7 +112,12 @@ namespace Game.UI
 
             float grow = CutsceneMath.OutBack(build);
             _rig.localScale = new Vector3(1f, Mathf.Max(0.01f, grow), 1f);
-            _bit.gameObject.SetActive(build >= 1f);
+            _bit.gameObject.SetActive(build >= 1f && _art == null);
+            if (_art != null)
+            {
+                PoseArt(depth, time);
+            }
+
             _bit.localPosition = Vector3.up * (_bitLength + BitTop - depth * MaxDepth);
             _bit.localRotation = Quaternion.Euler(0f, time * SpinDegreesPerSecond * Mathf.Min(1f, depth * 4f), 0f);
 
@@ -125,6 +137,17 @@ namespace Game.UI
             bool drilling = depth > 0f;
             ParticleKit.SetRate(_dust, drilling ? DustRate * (loud ? 1f : 0.35f) : 0f);
             _audio.SetLoopVolume(_rumble, drilling ? RumbleShare * (loud ? 1f : 0.3f) : 0f);
+        }
+
+        private void PoseArt(float depth, float time)
+        {
+            if (depth < 1f)
+            {
+                _art.Sample(ModelClipRole.Deploy, depth * _art.LengthOf(ModelClipRole.Deploy), loop: false);
+                return;
+            }
+
+            _art.Sample(ModelClipRole.Idle, time, loop: true);
         }
 
         public void Silence() => _audio.SetLoopVolume(_rumble, 0f);

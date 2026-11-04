@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Drones;
 using Game.Enemies;
 using Game.Hero;
@@ -41,6 +42,18 @@ namespace Game.Levels
         [SerializeField] private GameObject _beacon;
         [SerializeField] private Texture2D _earthSurface;
 
+        [Header("Imported (Blender) models: worn before the prefab overrides above and the procedural models")]
+        [SerializeField] private ModelArtDefinition _mothershipArt;
+        [SerializeField] private ModelArtDefinition _capsuleArt;
+        [SerializeField] private ModelArtDefinition _drillArt;
+        [SerializeField] private ModelArtDefinition _beaconArt;
+        [Tooltip("The welding drones that fly round the base as it goes up.")]
+        [SerializeField] private ModelArtDefinition _builderArt;
+        [Tooltip("The haulers that carry the ore from the drill.")]
+        [SerializeField] private ModelArtDefinition _haulerArt;
+        [Tooltip("The command post's radar console the radar shot shows.")]
+        [SerializeField] private ModelArtDefinition _consoleArt;
+
         public HeroDefinition Hero => _hero;
         public DroneDefinition Hauler => _hauler;
         public DroneDefinition Builder => _builder;
@@ -58,6 +71,13 @@ namespace Game.Levels
         public GameObject Drill => _drill;
         public GameObject Beacon => _beacon;
         public Texture2D EarthSurface => _earthSurface;
+        public ModelArtDefinition MothershipArt => _mothershipArt;
+        public ModelArtDefinition CapsuleArt => _capsuleArt;
+        public ModelArtDefinition DrillArt => _drillArt;
+        public ModelArtDefinition BeaconArt => _beaconArt;
+        public ModelArtDefinition BuilderArt => _builderArt;
+        public ModelArtDefinition HaulerArt => _haulerArt;
+        public ModelArtDefinition ConsoleArt => _consoleArt;
 
         private void OnValidate()
         {

@@ -37,7 +37,7 @@ namespace Game.UI
             // The hero's look follows the definition, so a different commander gets a different picture.
             object key = (speaker, framing.Size, _hero);
             HeroDefinition hero = _hero;
-            ModelIconRenderer.Request(key, stage => PortraitModels.Build(stage, speaker.Portrait, speaker.RoleColour, hero), done, framing);
+            ModelIconRenderer.Request(key, stage => PortraitModels.Build(stage, speaker.Portrait, speaker.PortraitArt, speaker.RoleColour, hero), done, framing);
         }
     }
 }

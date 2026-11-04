@@ -66,6 +66,24 @@ namespace Game.Editor
             return values;
         }
 
+        /// <summary>The numbers of the array under a key (a muzzle position), or none.</summary>
+        public List<float> Numbers(string key)
+        {
+            var values = new List<float>();
+            Match array = Regex.Match(_json, "\"" + Regex.Escape(key) + "\"\\s*:\\s*\\[([^\\]]*)\\]");
+            if (!array.Success)
+            {
+                return values;
+            }
+
+            foreach (Match value in Regex.Matches(array.Groups[1].Value, "-?[0-9.]+"))
+            {
+                values.Add(float.Parse(value.Value, CultureInfo.InvariantCulture));
+            }
+
+            return values;
+        }
+
         /// <summary>The first number under any of the keys, or zero.</summary>
         public float Number(params string[] keys)
         {

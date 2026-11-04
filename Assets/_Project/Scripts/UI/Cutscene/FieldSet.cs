@@ -24,6 +24,8 @@ namespace Game.UI
         private const float HotEmission = 7f;
         private const float CoolShare = 0.6f;
         private const float HatchOpenDegrees = 105f;
+        private const float LegsFrom = 0.12f;
+        private const string CapsuleExit = "Exit";
         private const int LandingDust = 90;
         private const float SparkRate = 160f;
         private const float RetroRate = 120f;
@@ -55,6 +57,7 @@ namespace Game.UI
 
         private Transform _capsule;
         private Transform _hatch;
+        private ArtModel _capsuleArt;
         private Material _shield;
         private LineRenderer _streak;
         private ParticleSystem _sparks;
@@ -89,11 +92,12 @@ namespace Game.UI
 
             BuildCapsule(root);
             BuildVein(root);
-            _beacon = new BeaconModel(root, _theme.BaseColor, context.Cast != null ? context.Cast.Beacon : null);
+            _beacon = new BeaconModel(root, _theme.BaseColor, context.Cast != null ? context.Cast.Beacon : null, context.Cast != null ? context.Cast.BeaconArt : null);
             _beacon.Root.SetPositionAndRotation(_layout.BeaconSpot, _layout.LandingFacing);
             _base = new FieldBase(root, _layout, context);
+            _layout.PlaceCore(_base.CoreSocket);
             _drill = new FieldDrill(root, _layout, context);
-            _drones = new FieldDrones(root, _layout.Pad + Vector3.up * 0.4f, _drill.Pickup, Color.Lerp(_theme.AccentColor, Color.white, 0.25f), context);
+            _drones = new FieldDrones(root, _base.PadTop, _drill.Pickup, Color.Lerp(_theme.AccentColor, Color.white, 0.25f), context);
             _swarm = new FieldSwarm(root, _layout, context);
             if (context.Cast != null && context.Cast.Hero != null)
             {
@@ -163,8 +167,28 @@ namespace Game.UI
             }
 
             float open = landing ? CutsceneMath.Smooth(CutsceneMath.Span(progress, 0.26f, 0.32f)) : 1f;
-            _hatch.localRotation = Quaternion.Euler(open * HatchOpenDegrees, 0f, 0f);
+            if (_capsuleArt != null)
+            {
+                PoseCapsuleArt(landing ? CutsceneMath.Span(progress, LegsFrom, FallShare) : 1f, open);
+            }
+            else
+            {
+                _hatch.localRotation = Quaternion.Euler(open * HatchOpenDegrees, 0f, 0f);
+            }
+
             _beacon.Pose(landing ? CutsceneMath.Span(progress, 0.7f, 0.8f) : 1f, time);
+        }
+
+        // The legs unfold over the last of the fall (Land), then the ramp comes down (Open, which starts where Land ends).
+        private void PoseCapsuleArt(float legs, float open)
+        {
+            if (open > 0f)
+            {
+                _capsuleArt.Sample(ModelClipRole.Open, open * _capsuleArt.LengthOf(ModelClipRole.Open), loop: false);
+                return;
+            }
+
+            _capsuleArt.Sample(ModelClipRole.Land, legs * _capsuleArt.LengthOf(ModelClipRole.Land), loop: false);
         }
 
         private void PoseBase(float time, float progress)
@@ -348,22 +372,38 @@ namespace Game.UI
             Quaternion facing = Quaternion.LookRotation(Flat(_layout.BeaconSpot - _layout.Landing));
             _capsule.SetPositionAndRotation(_layout.Landing, facing);
             GameObject custom = _context.Cast != null ? _context.Cast.Capsule : null;
-            if (custom != null)
+            ModelArtDefinition art = _context.Cast != null ? _context.Cast.CapsuleArt : null;
+            Vector3 door = _layout.Landing + facing * parts.Door;
+            if (art != null)
             {
-                Object.Instantiate(custom, _capsule);
+                // The imported capsule lands on its own legs and lowers its own ramp; Mercer steps out at its Exit point.
+                _capsuleArt = ArtModel.CreateSampled(_capsule, art, ownMaterial: false);
+                _shield = CapsuleArt.OwnShield(_capsuleArt);
+                Transform exit = _capsuleArt.Find(CapsuleExit);
+                if (exit != null)
+                {
+                    door = exit.position;
+                }
             }
             else
             {
-                AddMesh("Hull", _capsule, parts.Hull, materials);
+                if (custom != null)
+                {
+                    Object.Instantiate(custom, _capsule);
+                }
+                else
+                {
+                    AddMesh("Hull", _capsule, parts.Hull, materials);
+                }
+
+                _shield = SurfaceMaterials.Create(new Color(0.12f, 0.1f, 0.09f), 1f, 0.3f);
+                AddMesh("Shield", _capsule, parts.Shield, new[] { _shield });
+                _hatch = AddMesh("Hatch", _capsule, parts.Hatch, materials).transform;
+                _hatch.localPosition = parts.HatchHinge;
             }
 
-            _shield = SurfaceMaterials.Create(new Color(0.12f, 0.1f, 0.09f), 1f, 0.3f);
-            AddMesh("Shield", _capsule, parts.Shield, new[] { _shield });
-            _hatch = AddMesh("Hatch", _capsule, parts.Hatch, materials).transform;
-            _hatch.localPosition = parts.HatchHinge;
-
             Vector3 forward = facing * Vector3.forward;
-            _door = _layout.Ground(_layout.Landing + facing * parts.Door);
+            _door = _layout.Ground(door);
             _lookSpot = _layout.Ground(_door + forward * 0.7f);
             _beaconStand = _layout.Ground(_layout.BeaconSpot - forward * 0.75f);
             Vector3 side = _layout.LandingFacing * Vector3.right;

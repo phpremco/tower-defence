@@ -59,5 +59,38 @@ namespace Game.Core
 
         /// <summary>A placed object setting itself up (a mine arming, an emitter unfolding, a ball dropping), played once.</summary>
         Deploy = 18,
+
+        /// <summary>The slow travel cycle beside the run (a hero walking a few steps). Loops; its speed follows the ground speed.</summary>
+        Walk = 19,
+
+        /// <summary>A hand weapon fired once (the kick), on the upper body over whatever the legs do.</summary>
+        Shoot = 20,
+
+        /// <summary>Changing the magazine, on the upper body.</summary>
+        Reload = 21,
+
+        /// <summary>A cut with a hand weapon, on the upper body.</summary>
+        Slash = 22,
+
+        /// <summary>A hero ability (a shockwave punched into the ground), the whole body.</summary>
+        Ability = 23,
+
+        /// <summary>Going down when the health runs out, held on its last frame.</summary>
+        Down = 24,
+
+        /// <summary>Getting back up from the last frame of <see cref="Down"/>.</summary>
+        Revive = 25,
+
+        /// <summary>A character speaking (jaw, gaze bar). Loops while the line types.</summary>
+        Talk = 26,
+
+        /// <summary>A blink, laid over the idle now and then.</summary>
+        Blink = 27,
+
+        /// <summary>A hologram breaking up for a moment.</summary>
+        Glitch = 28,
+
+        /// <summary>A machine opening up (a capsule lowering its ramp), played once and held.</summary>
+        Open = 29,
     }
 }

@@ -30,6 +30,8 @@ namespace Game.Core
         [SerializeField] [Min(0.05f)] private float _height = 0.6f;
         [Tooltip("Screen height share below which the far LOD takes over.")]
         [SerializeField] [Range(0.001f, 1f)] private float _lodScreenHeight = 0.06f;
+        [Tooltip("The bone whose branch the upper-body clips move (a hero's spine), or empty when every clip moves the whole body.")]
+        [SerializeField] private string _upperBodyBone = string.Empty;
 
         [Header("Moments")]
         [Tooltip("Seconds into the Death clip over which the glow dies away (x start, y end); zero keeps it lit.")]
@@ -51,6 +53,7 @@ namespace Game.Core
         public bool BodyCentrePivot => _bodyCentrePivot;
         public float Height => _height;
         public float LodScreenHeight => _lodScreenHeight;
+        public string UpperBodyBone => _upperBodyBone;
         public Vector2 DeathFade => _deathFade;
         public bool FadesOnDeath => _deathFade.y > _deathFade.x;
         public bool Embers => _embers;
@@ -116,8 +119,10 @@ namespace Game.Core
                 Debug.LogWarning($"ModelArtDefinition '{name}' has no material.", this);
             }
 
-            // A structure rests in its bind pose between its own clips (repair, build); a creature needs a cycle to rest in.
-            bool structure = IndexOf(ModelClipRole.Repair) >= 0 || IndexOf(ModelClipRole.Build) >= 0 || IndexOf(ModelClipRole.Deploy) >= 0;
+            // A structure or a machine rests in its bind pose between its own clips (repair, build, land, open); a creature
+            // needs a cycle to rest in.
+            bool structure = IndexOf(ModelClipRole.Repair) >= 0 || IndexOf(ModelClipRole.Build) >= 0 || IndexOf(ModelClipRole.Deploy) >= 0
+                || IndexOf(ModelClipRole.Land) >= 0 || IndexOf(ModelClipRole.Open) >= 0;
             if (_clips.Length > 0 && !structure && IndexOf(ModelClipRole.Move) < 0 && IndexOf(ModelClipRole.Idle) < 0)
             {
                 Debug.LogWarning($"ModelArtDefinition '{name}' has clips but neither a Move nor an Idle cycle.", this);

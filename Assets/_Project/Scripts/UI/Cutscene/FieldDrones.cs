@@ -25,9 +25,11 @@ namespace Game.UI
         private const float CrystalEmission = 6f;
         // Cinematic scale: at their real size next to the drill the haulers read as specks in a wide shot.
         private const float HaulerScale = 2.2f;
+        // The imported hauler is built longer than the procedural one (README round 18), so it needs less of the boost.
+        private const float ArtHaulerScale = 1.6f;
         private const float CarryDrop = 0.28f;
 
-        private readonly List<DroneModelBuilder.Rig> _drones = new List<DroneModelBuilder.Rig>();
+        private readonly List<CutsceneDrone> _drones = new List<CutsceneDrone>();
         private readonly List<Transform> _holders = new List<Transform>();
         private readonly Vector3 _home;
         private readonly Vector3 _pickup;
@@ -41,15 +43,16 @@ namespace Game.UI
             _pickup = pickup;
             _audio = context.Audio;
             DroneDefinition hauler = context.Cast != null ? context.Cast.Hauler : null;
-            if (hauler != null)
+            ModelArtDefinition art = context.Cast != null ? context.Cast.HaulerArt : null;
+            if (hauler != null || art != null)
             {
                 int count = context.Scaled(context.Cast.DroneCount);
                 for (int i = 0; i < count; i++)
                 {
                     var holder = new GameObject($"Hauler{i}").transform;
                     holder.SetParent(parent, false);
-                    holder.localScale = Vector3.one * HaulerScale;
-                    _drones.Add(DroneModelBuilder.Build(holder, hauler));
+                    holder.localScale = Vector3.one * (art != null ? ArtHaulerScale : HaulerScale);
+                    _drones.Add(new CutsceneDrone(holder, art, hauler));
                     _holders.Add(holder);
                 }
             }
@@ -138,22 +141,14 @@ namespace Game.UI
         private void Place(int index, Vector3 position, float time, float loop)
         {
             Transform holder = _holders[index];
-            DroneModelBuilder.Rig rig = _drones[index];
+            CutsceneDrone drone = _drones[index];
             Vector3 heading = loop < 0.5f ? _pickup - _home : _home - _pickup;
             heading.y = 0f;
             Quaternion facing = heading.sqrMagnitude > 0.001f ? Quaternion.LookRotation(heading) : Quaternion.identity;
             float bank = Mathf.Sin(time * 1.3f + index) * BankDegrees * 0.3f;
             holder.SetPositionAndRotation(position, facing * Quaternion.Euler(6f, 0f, bank));
-            foreach (Transform rotor in rig.Rotors)
-            {
-                rotor.localRotation = Quaternion.AngleAxis(time * RotorDegreesPerSecond + index * 37f, rig.RotorAxis);
-            }
-
-            if (rig.Cargo != null)
-            {
-                // Loaded on the way home: the pod glows with the ore it carries.
-                rig.Cargo.enabled = loop >= 0.5f;
-            }
+            // Loaded on the way home: the pod glows with the ore it carries.
+            drone.Pose(ModelClipRole.Move, time + index * 0.29f, time * RotorDegreesPerSecond + index * 37f, loop >= 0.5f);
         }
     }
 }

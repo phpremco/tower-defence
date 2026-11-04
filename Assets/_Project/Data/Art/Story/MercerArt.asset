@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b156b19a0fa4a4408a6050f69b292ec, type: 3}
+  m_Name: MercerArt
+  m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroArtDefinition
+  _body: {fileID: 11400000, guid: e92b9fda563920742866bdf7c0742d9e, type: 2}
+  _pistol: {fileID: 11400000, guid: 989d096ab09568548a741cacaab85858, type: 2}
+  _swordHilt: {fileID: 11400000, guid: 45f16dff22880894395ab5387e1d41a2, type: 2}
+  _swordBlade: {fileID: 11400000, guid: b01acf69eb07d5a4ba8bb4110a835a37, type: 2}
+  _hiddenParts:
+  - Pistol_Mag_Quick
+  - Sword_Hilt_Wide
+  - Sword_Blade_Wide
+  _handSocket: Weapon_R
+  _holsterSocket: Holster_R
+  _backSocket: Back
+  _aimBones:
+  - Spine1
+  - Spine2
+  _packBone: Spine2
+  _muzzle: {x: 0, y: 0.062, z: 0.192}
+  _walkBelow: 1.5
+  _bust: {fileID: 11400000, guid: e17b6f97f4f6ec144a4bc061530f216b, type: 2}

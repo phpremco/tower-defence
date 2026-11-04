@@ -21,6 +21,7 @@ MonoBehaviour:
   _bodyCentrePivot: 0
   _height: 1.3378675
   _lodScreenHeight: 0.09
+  _upperBodyBone: 
   _deathFade: {x: 0.33333334, y: 1.1333334}
   _embers: 0
   _bleeds: 1
@@ -33,6 +34,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 2
     _clip: {fileID: 5274815659567452501, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: -3250079979077519468, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -41,6 +43,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 0.6
+    _upperBody: 0
   - _role: 3
     _clip: {fileID: -2506640964733693346, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: -2033268628022997829, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -49,6 +52,7 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 5
     _clip: {fileID: -1800909752393752960, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: 3900978093694393396, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -57,6 +61,7 @@ MonoBehaviour:
     _trigger: Rally
     _socket: 
     _weight: 1
+    _upperBody: 0
   - _role: 0
     _clip: {fileID: -156107219395913071, guid: 705cb420d667da748b07ea913bc1e8c9, type: 3}
     _farClip: {fileID: 4758098549382853820, guid: 4f563c6812e043c4f82861f1e9bdb2b0, type: 3}
@@ -65,3 +70,4 @@ MonoBehaviour:
     _trigger: 
     _socket: 
     _weight: 1
+    _upperBody: 0

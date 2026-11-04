@@ -1,0 +1,65 @@
+{
+  "asset": "Cutscene_Beacon",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.589,
+    "world_per_uv": 1.4515
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 29.0,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 24.2,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Beacon.fbx",
+  "meshes": {
+    "Cutscene_Beacon": 2162
+  },
+  "tris": 2162,
+  "lod1": "none: cutscene only",
+  "bones": [
+    "Root",
+    "Leg_1",
+    "Leg_2",
+    "Leg_3",
+    "Mast",
+    "Mast2",
+    "Ring",
+    "Lamp"
+  ],
+  "deform_bones": [
+    "Root",
+    "Leg_1",
+    "Leg_2",
+    "Leg_3",
+    "Mast",
+    "Mast2",
+    "Ring"
+  ],
+  "clips": {
+    "Deploy": 54,
+    "Idle": 60
+  },
+  "sockets": {
+    "Ground": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+}

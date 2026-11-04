@@ -1,0 +1,54 @@
+{
+  "asset": "RadarConsole",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.746,
+    "world_per_uv": 3.9797
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 79.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 66.3,
+      "mask": "A"
+    }
+  },
+  "fbx": "RadarConsole.fbx",
+  "meshes": {
+    "RadarConsole": 2846,
+    "RadarConsole_Radar": 156,
+    "RadarConsole_Screen_L": 12,
+    "RadarConsole_Screen_R": 12
+  },
+  "tris": 3026,
+  "lod1": "none (portrait/cutscene or static decor)",
+  "uv_sets": [
+    "UVMap"
+  ],
+  "clips": {},
+  "sockets": {
+    "Radar": [
+      0.0,
+      0.034,
+      0.761
+    ],
+    "Operator": [
+      0.0,
+      -0.7,
+      0.0
+    ]
+  },
+  "pivot": "on the ground / badge centre; faces -Y in Blender (Unity +Z)"
+}

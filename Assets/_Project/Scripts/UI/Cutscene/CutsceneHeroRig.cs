@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Hero;
 using UnityEngine;
 
@@ -47,6 +48,8 @@ namespace Game.UI
         private const float IdleSpeed = 1.6f;
         private const float RunCrouch = 0.04f;
         private const float DrawHandOver = 0.45f;
+        private const float RunAbove = 0.5f;
+        private const string HeadBone = "Head";
 
         private readonly Transform _figure;
         private readonly Transform _torso;
@@ -65,12 +68,41 @@ namespace Game.UI
         private readonly Transform _shell;
         private readonly HeroModelFactory.Parts _parts;
         private readonly HeroWeaponModelFactory.Model _blasterModel;
+        private readonly HeroArtDefinition _artDefinition;
+        private readonly ArtModel _art;
+        private readonly Transform _pistol;
+        private readonly Transform _hand;
+        private readonly Transform _holster;
+        private readonly Transform _neck;
         private bool _drawn;
 
         public CutsceneHeroRig(Transform parent, HeroDefinition hero)
         {
             Root = new GameObject("Mercer").transform;
             Root.SetParent(parent, false);
+            if (hero.Art != null && hero.Art.Body != null)
+            {
+                // The imported model, posed by sampling its clips: the same moment always gives the same pose.
+                _artDefinition = hero.Art;
+                _art = ArtModel.CreateSampled(Root, hero.Art.Body, ownMaterial: false);
+                _hand = _art.Find(hero.Art.HandSocket);
+                _holster = _art.Find(hero.Art.HolsterSocket);
+                _neck = _art.Find(HeadBone);
+                if (hero.Art.Pistol != null && _holster != null)
+                {
+                    ArtModel pistol = ArtModel.CreateStill(_holster, hero.Art.Pistol);
+                    HideParts(pistol, hero.Art.HiddenParts);
+                    _pistol = pistol.Root;
+                }
+
+                if (hero.Art.SwordHilt != null && _art.Find(hero.Art.BackSocket) != null)
+                {
+                    HideParts(ArtModel.CreateStill(_art.Find(hero.Art.BackSocket), hero.Art.SwordHilt), hero.Art.HiddenParts);
+                }
+
+                return;
+            }
+
             _figure = HeroView.BuildDisplayFigure(Root, hero).transform;
             _figureRest = _figure.localPosition;
             _torso = _figure.Find("Torso");
@@ -98,7 +130,7 @@ namespace Game.UI
         public Transform Root { get; }
 
         /// <summary>The muzzle of the blaster in world space, for a shot or a glint.</summary>
-        public Vector3 Muzzle => _blaster.TransformPoint(_blasterModel.Tip);
+        public Vector3 Muzzle => _art != null ? (_pistol != null ? _pistol.TransformPoint(_artDefinition.Muzzle) : Root.position) : _blaster.TransformPoint(_blasterModel.Tip);
 
         /// <summary>
         /// Poses the commander. <paramref name="stride"/> 0 stands, 1 walks; <paramref name="run"/> adds the run on
@@ -109,6 +141,12 @@ namespace Game.UI
         public void Pose(Vector3 position, float yawDegrees, float stride, float run, float gait, float headYaw, float draw, float time)
         {
             Root.SetPositionAndRotation(position, Quaternion.Euler(0f, yawDegrees, 0f));
+            if (_art != null)
+            {
+                PoseArt(stride, run, gait, headYaw, draw, time);
+                return;
+            }
+
             stride = Mathf.Clamp01(stride);
             run = Mathf.Clamp01(run) * stride;
             draw = Mathf.Clamp01(draw);
@@ -148,6 +186,54 @@ namespace Game.UI
                 else
                 {
                     Holster();
+                }
+            }
+        }
+
+        // Standing: the idle at the shot time; moving: the walk or the run at the phase the distance walked gives, so the
+        // feet keep to the ground; drawn: the pistol in the hand at the end of the kick, which is the aim.
+        private void PoseArt(float stride, float run, float gait, float headYaw, float draw, float time)
+        {
+            stride = Mathf.Clamp01(stride);
+            bool drawn = Mathf.Clamp01(draw) >= DrawHandOver;
+            if (drawn)
+            {
+                _art.Sample(ModelClipRole.Shoot, _art.LengthOf(ModelClipRole.Shoot), loop: false);
+            }
+            else if (stride <= 0f)
+            {
+                _art.Sample(ModelClipRole.Idle, time, loop: true);
+            }
+            else
+            {
+                ModelClipRole cycle = run >= RunAbove ? ModelClipRole.Move : ModelClipRole.Walk;
+                ModelClip clip = _artDefinition.Body.Clips[Mathf.Max(0, _artDefinition.Body.IndexOf(cycle))];
+                float distance = gait / GaitPerUnit;
+                float phase = clip.DistancePerLoop > 0f ? distance / clip.DistancePerLoop * clip.Length : time;
+                _art.Sample(cycle, phase, loop: true);
+            }
+
+            if (_neck != null && Mathf.Abs(headYaw) > 0.01f)
+            {
+                _neck.rotation = Quaternion.AngleAxis(headYaw, Vector3.up) * _neck.rotation;
+            }
+
+            if (_pistol != null && drawn != _drawn)
+            {
+                _drawn = drawn;
+                _pistol.SetParent(drawn ? _hand : _holster, false);
+                _pistol.localPosition = Vector3.zero;
+                _pistol.localRotation = Quaternion.identity;
+            }
+        }
+
+        private static void HideParts(ArtModel model, string[] parts)
+        {
+            foreach (Renderer renderer in model.Renderers)
+            {
+                if (System.Array.IndexOf(parts, renderer.name) >= 0)
+                {
+                    renderer.enabled = false;
                 }
             }
         }
