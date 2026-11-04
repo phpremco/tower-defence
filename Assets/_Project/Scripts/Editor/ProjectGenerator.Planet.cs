@@ -1,64 +1,44 @@
-using System.IO;
 using Game.Levels;
-using Game.UI;
 using UnityEditor;
-using UnityEngine;
 
 namespace Game.Editor
 {
-    /// <summary>Generator part for the planet of the map screen: paints its maps once and saves them as textures.</summary>
+    /// <summary>
+    /// Generator part for the planet's looks from space. The maps themselves come from Blender (step "Planet art");
+    /// the globe used to be baked here in code, and this step removes those old pictures.
+    /// </summary>
     public static partial class ProjectGenerator
     {
         private const string PlanetArtFolder = "Assets/_Project/Art/Planet";
-        private const int GlobeMapWidth = 2048;
-        private const int CloudMapWidth = 1024;
-        private static readonly float[] CloudSeeds = { 0f, 200f };
-
-        // Painting the planet takes seconds, so it happens here and the map screen only loads the pictures.
-        private static void BakeGlobe(CampaignCatalog catalog)
+        private static readonly string[] OldGlobeMaps =
         {
-            GlobePainter.Maps maps = GlobePainter.Paint(GlobeMapWidth, GlobeMapWidth / 2, GlobePainter.RegionsOf(catalog));
+            "Globe_albedo", "Globe_normal", "Globe_gloss", "Globe_lights", "Globe_clouds_0", "Globe_clouds_1",
+        };
+
+        private static void ApplyPlanetStyles(CampaignCatalog catalog)
+        {
             var so = new SerializedObject(catalog);
-            so.FindProperty("_globeAlbedo").objectReferenceValue = SavePlanetTexture(maps.Albedo, "Globe_albedo", TextureImporterType.Default, true);
-            so.FindProperty("_globeNormal").objectReferenceValue = SavePlanetTexture(maps.Normal, "Globe_normal", TextureImporterType.NormalMap, false);
-            so.FindProperty("_globeGloss").objectReferenceValue = SavePlanetTexture(maps.Gloss, "Globe_gloss", TextureImporterType.Default, false);
-            so.FindProperty("_globeLights").objectReferenceValue = SavePlanetTexture(maps.Emission, "Globe_lights", TextureImporterType.Default, true);
             so.FindProperty("_planetStyle").boxedValue = PlanetStyle.Crys();
             so.FindProperty("_spaceStyle").boxedValue = new SpaceStyle();
-            SerializedProperty clouds = so.FindProperty("_globeClouds");
-            clouds.arraySize = CloudSeeds.Length;
-            for (int i = 0; i < CloudSeeds.Length; i++)
-            {
-                Texture2D deck = GlobePainter.PaintClouds(CloudMapWidth, CloudMapWidth / 2, CloudSeeds[i]);
-                clouds.GetArrayElementAtIndex(i).objectReferenceValue = SavePlanetTexture(deck, $"Globe_clouds_{i}", TextureImporterType.Default, true);
-                Object.DestroyImmediate(deck);
-            }
-
             so.ApplyModifiedPropertiesWithoutUndo();
-            Object.DestroyImmediate(maps.Albedo);
-            Object.DestroyImmediate(maps.Normal);
-            Object.DestroyImmediate(maps.Gloss);
-            Object.DestroyImmediate(maps.Emission);
+            DeleteOldGlobeMaps();
         }
 
-        private static Texture2D SavePlanetTexture(Texture2D texture, string name, TextureImporterType type, bool srgb)
+        private static void DeleteOldGlobeMaps()
         {
-            EnsureFolder(PlanetArtFolder);
-            string path = $"{PlanetArtFolder}/{name}.png";
-            File.WriteAllBytes(path, texture.EncodeToPNG());
-            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+            foreach (string name in OldGlobeMaps)
+            {
+                string path = $"{PlanetArtFolder}/{name}.png";
+                if (AssetDatabase.LoadMainAssetAtPath(path) != null)
+                {
+                    AssetDatabase.DeleteAsset(path);
+                }
+            }
 
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-            importer.textureType = type;
-            importer.sRGBTexture = srgb;
-            // Repeat, so the seam at the date line blends away; the sphere wraps the map around.
-            importer.wrapMode = TextureWrapMode.Repeat;
-            importer.filterMode = FilterMode.Trilinear;
-            importer.anisoLevel = 8;
-            importer.mipmapEnabled = true;
-            importer.maxTextureSize = GlobeMapWidth;
-            importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (AssetDatabase.IsValidFolder(PlanetArtFolder) && AssetDatabase.FindAssets(string.Empty, new[] { PlanetArtFolder }).Length == 0)
+            {
+                AssetDatabase.DeleteAsset(PlanetArtFolder);
+            }
         }
     }
 }

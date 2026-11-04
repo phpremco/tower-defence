@@ -29,18 +29,15 @@ namespace Game.UI
         private const float KeyIntensity = 1.6f;
         private const float FillIntensity = 0.5f;
         private const float RimIntensity = 1.1f;
-        // The stage: a disc the model stands on with a lit ring round it and a gradient backdrop, so the preview
-        // reads as a product shot rather than a model floating in the dark.
+        // The stage (Blender round 27): a pedestal the model stands on, a halo round its foot and the research-bay
+        // backdrop, so the preview reads as a product shot rather than a model floating in the dark. The pedestal grows
+        // with the model's footprint, measured across its narrow side so a long barrel does not put a tower on a huge plate.
         private const float FloorRadiusShare = 1.25f;
-        private const float FloorThickness = 0.02f;
-        private const float RingThicknessShare = 0.02f;
-        private const float RingEmission = 1.1f;
+        private const float NarrowRadiusShare = 1.6f;
+        private const float MinFloorRadius = 0.3f;
+        private const float HaloLift = 0.003f;
         private const float BackdropDistance = 30f;
         private const float BackdropSize = 40f;
-        private const int GradientSteps = 64;
-        private static readonly Color BackdropTop = new Color(0.12f, 0.2f, 0.36f);
-        private static readonly Color BackdropBottom = new Color(0.03f, 0.04f, 0.08f);
-        private static readonly Color FloorColor = new Color(0.05f, 0.07f, 0.11f);
         private static readonly Color Background = new Color(0.05f, 0.08f, 0.13f, 1f);
         private static readonly Color KeyColor = new Color(1f, 0.96f, 0.9f);
         private static readonly Color FillColor = new Color(0.55f, 0.7f, 1f);
@@ -52,7 +49,10 @@ namespace Game.UI
         private Transform _cameraPivot;
         private Camera _camera;
         private RenderTexture _texture;
+        private readonly List<Material> _owned = new List<Material>();
+        private DisplayStageArt _stage;
         private Transform _floor;
+        private Transform _floorTop;
         private Transform _ring;
         private float _burst;
 
@@ -177,76 +177,110 @@ namespace Game.UI
                 return;
             }
 
+            // The pedestal lifts the model by its height over the foot; half of that is added to the picture and the
+            // camera aims that much lower, so the foot is never cut off for a flat model.
+            float floorRadius = FloorRadius(bounds);
+            float lift = _stage != null ? floorRadius * _stage.HeightShare * 0.5f : 0f;
             Vector3 centre = bounds.center - _turntable.position;
-            _turntable.localPosition = new Vector3(-centre.x, -centre.y, -centre.z);
+            _turntable.localPosition = new Vector3(-centre.x, -centre.y + lift, -centre.z);
 
             // The model turns, so sideways it may show its longest horizontal side; vertically only its height counts.
             float halfTan = Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
             float wide = Mathf.Max(bounds.extents.x, bounds.extents.z);
-            float tall = Mathf.Max(bounds.extents.y, 0.1f);
+            float tall = Mathf.Max(bounds.extents.y + lift, 0.1f);
             float radius = Mathf.Max(bounds.extents.magnitude, 0.2f);
             float distance = (Mathf.Max(wide, tall) / halfTan + wide) / FrameFill;
             _camera.transform.localPosition = new Vector3(0f, 0f, -distance);
             _camera.nearClipPlane = Mathf.Max(0.05f, distance - radius * 2f);
             _camera.farClipPlane = distance + BackdropDistance + radius;
-            PlaceStage(bounds, wide);
+            PlaceStage(bounds, floorRadius);
         }
 
-        // The floor sits just under the lowest point of the model and grows with its footprint; the backdrop hangs far behind.
-        private void PlaceStage(Bounds bounds, float wide)
+        // Grows with the footprint across the narrow side (Clear() has turned the model to rest), never past the old
+        // share of the widest side: a tower's long barrel no longer decides how big its plate is.
+        private static float FloorRadius(Bounds bounds)
         {
-            float radius = Mathf.Max(wide, 0.25f) * FloorRadiusShare;
+            float narrow = Mathf.Min(bounds.extents.x, bounds.extents.z);
+            float wide = Mathf.Max(bounds.extents.x, bounds.extents.z);
+            return Mathf.Max(MinFloorRadius, Mathf.Min(narrow * NarrowRadiusShare, wide * FloorRadiusShare));
+        }
+
+        // The pedestal's top (its pivot) sits at the model's feet; the halo lies at its foot. The backdrop hangs far behind.
+        private void PlaceStage(Bounds bounds, float radius)
+        {
+            if (_stage == null)
+            {
+                return;
+            }
+
             // Frame() has just shifted the turntable to centre the model, so the measured bounds move with it.
             float y = bounds.min.y + _turntable.localPosition.y - _rig.position.y;
-            _floor.localPosition = new Vector3(0f, y - FloorThickness, 0f);
-            _floor.localScale = new Vector3(radius, 1f, radius);
-            _ring.localPosition = new Vector3(0f, y, 0f);
+            _floor.localPosition = new Vector3(0f, y, 0f);
+            _floor.localScale = Vector3.one * radius;
+            _ring.localPosition = new Vector3(0f, y - _stage.HeightShare * radius + HaloLift, 0f);
             _ring.localScale = new Vector3(radius, 1f, radius);
         }
 
+        // The Blender stage from the UI skin; without it the model turns on the plain background colour.
         private void BuildStage()
         {
-            var floor = new PropMeshBuilder();
-            floor.AddTube(new[] { Vector3.zero, Vector3.up * FloorThickness }, new[] { 1f, 1f }, 40, ModelPalette.Dark, true);
-            var floorObject = new GameObject("Floor");
-            floorObject.transform.SetParent(_rig, false);
-            floorObject.AddComponent<MeshFilter>().sharedMesh = floor.ToMesh("PreviewFloor");
-            var floorRenderer = floorObject.AddComponent<MeshRenderer>();
-            floorRenderer.sharedMaterials = new[] { SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f), SurfaceMaterials.Create(FloorColor, 0f, 0.2f, 0.1f) };
-            floorRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _floor = floorObject.transform;
+            _stage = UiKit.Skin != null ? UiKit.Skin.DisplayStage : null;
+            if (_stage == null || !_stage.IsComplete)
+            {
+                _stage = null;
+                return;
+            }
 
-            var ring = new PropMeshBuilder();
-            ring.AddTorus(Vector3.zero, Vector3.up, 1f, RingThicknessShare, 48, 8, ModelPalette.Glow);
-            var ringObject = new GameObject("Ring");
-            ringObject.transform.SetParent(_rig, false);
-            ringObject.AddComponent<MeshFilter>().sharedMesh = ring.ToMesh("PreviewRing");
-            Material glow = SurfaceMaterials.Create(SurfaceMaterials.ColonyRim, RingEmission, 0.6f);
-            ringObject.AddComponent<MeshRenderer>().sharedMaterials = new[] { glow, glow, glow, glow };
-            _ring = ringObject.transform;
+            bool low = ModelQuality.IsLow;
+            Material pedestal = _stage.PedestalMaterial(low);
+            _floor = Holder("Pedestal", _rig);
+            Part(_floor, _stage.Pedestal, _stage.PedestalNode, pedestal);
+            if (_stage.PedestalRing != null)
+            {
+                _floorTop = Holder("PedestalRing", _floor);
+                Part(_floorTop, _stage.PedestalRing, _stage.PedestalRingNode, pedestal);
+            }
+
+            _ring = Holder("Halo", _rig);
+            Part(_ring, _stage.Halo, _stage.HaloNode, Own(GlowDecal.Additive(_stage.HaloTexture(low), _stage.HaloColour)));
 
             var backdrop = GameObject.CreatePrimitive(PrimitiveType.Quad);
             Destroy(backdrop.GetComponent<Collider>());
             backdrop.name = "Backdrop";
             backdrop.transform.SetParent(_cameraPivot, false);
             backdrop.transform.localPosition = new Vector3(0f, 0f, BackdropDistance);
-            backdrop.transform.localScale = new Vector3(BackdropSize, BackdropSize, 1f);
-            var backdropMaterial = new Material(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
-            backdropMaterial.SetTexture("_BaseMap", Gradient());
+            // The painted wall is 2:1; the square window sees its middle (the lit bay and the floor line).
+            backdrop.transform.localScale = new Vector3(BackdropSize, BackdropSize * 0.5f, 1f);
+            Material backdropMaterial = Own(new Material(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial));
+            backdropMaterial.SetTexture("_BaseMap", _stage.Backdrop(low));
             backdrop.GetComponent<MeshRenderer>().sharedMaterial = backdropMaterial;
         }
 
-        private static Texture2D Gradient()
+        private static Transform Holder(string name, Transform parent)
         {
-            var texture = new Texture2D(1, GradientSteps, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "PreviewBackdrop" };
-            for (int y = 0; y < GradientSteps; y++)
-            {
-                float t = y / (float)(GradientSteps - 1);
-                texture.SetPixel(0, y, Color.Lerp(BackdropBottom, BackdropTop, t * t));
-            }
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            return go.transform;
+        }
 
-            texture.Apply();
-            return texture;
+        // A mesh at its place inside its FBX (the node matrix carries the axis change), so the holder's origin is the pivot.
+        private static void Part(Transform holder, Mesh mesh, Matrix4x4 node, Material material)
+        {
+            var go = new GameObject(mesh.name);
+            go.transform.SetParent(holder, false);
+            go.transform.localPosition = node.GetColumn(3);
+            go.transform.localRotation = node.rotation;
+            go.transform.localScale = node.lossyScale;
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+
+        private Material Own(Material material)
+        {
+            _owned.Add(material);
+            return material;
         }
 
         private void Build(RawImage image)
@@ -320,6 +354,17 @@ namespace Game.UI
                     _spinners[i].Rotate(0f, RotorDegreesPerSecond * dt, 0f, Space.Self);
                 }
             }
+
+            // The pedestal's top ring turns against the model, the halo drifts slowly: the stage reads as machinery.
+            if (_stage != null)
+            {
+                if (_floorTop != null)
+                {
+                    _floorTop.Rotate(0f, _stage.RingDegreesPerSecond * dt, 0f, Space.Self);
+                }
+
+                _ring.Rotate(0f, _stage.HaloDegreesPerSecond * dt, 0f, Space.Self);
+            }
         }
 
         private void OnDestroy()
@@ -332,6 +377,11 @@ namespace Game.UI
             if (_texture != null)
             {
                 _texture.Release();
+            }
+
+            foreach (Material material in _owned)
+            {
+                Destroy(material);
             }
         }
     }

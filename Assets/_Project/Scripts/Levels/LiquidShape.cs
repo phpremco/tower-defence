@@ -19,6 +19,8 @@ namespace Game.Levels
 
         private readonly HashSet<Vector2Int> _cells;
         private readonly GridMap _grid;
+        // True for a pool known by its shore alone (no cells, no grid).
+        private readonly bool _outlined;
         private readonly List<Vector2> _starts = new List<Vector2>();
         private readonly List<Vector2> _ends = new List<Vector2>();
         private readonly List<Vector2> _startNormals = new List<Vector2>();
@@ -31,6 +33,20 @@ namespace Game.Levels
             _grid = grid;
             _cells = new HashSet<Vector2Int>(cells);
             Loops = LiquidContour.Build(_cells, grid, seed);
+            Bounds = LoopBounds(Loops);
+            Index();
+        }
+
+        /// <summary>
+        /// A pool given by its shore alone (the menu island's basins, cut in Blender): it has no cells, so a point beyond
+        /// the measured reach is signed by the outer loop. Loops run counter-clockwise (liquid on the left).
+        /// </summary>
+        public LiquidShape(TerrainKind kind, IReadOnlyList<Vector2[]> loops)
+        {
+            Kind = kind;
+            _cells = new HashSet<Vector2Int>();
+            _outlined = true;
+            Loops = loops;
             Bounds = LoopBounds(Loops);
             Index();
         }
@@ -111,7 +127,24 @@ namespace Game.Levels
             return Mathf.Clamp(sign * Mathf.Sqrt(best), -Reach, Reach);
         }
 
-        private bool InCells(float x, float z) => _cells.Contains(_grid.WorldToCell(new Vector3(x, 0f, z)));
+        private bool InCells(float x, float z) => !_outlined ? _cells.Contains(_grid.WorldToCell(new Vector3(x, 0f, z))) : InsideLoop(Loops[0], new Vector2(x, z));
+
+        // Even-odd crossing test against one loop.
+        private static bool InsideLoop(Vector2[] loop, Vector2 point)
+        {
+            bool inside = false;
+            for (int i = 0, j = loop.Length - 1; i < loop.Length; j = i++)
+            {
+                Vector2 a = loop[i];
+                Vector2 b = loop[j];
+                if ((a.y > point.y) != (b.y > point.y) && point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x)
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
 
         private static int Seed(List<Vector2Int> pool)
         {

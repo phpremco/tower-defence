@@ -524,3 +524,14 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
   `simulate <s>` (runs the wave logic without frames), `stepto <origin|busy> <state> <s>` (steps real frames), `probe`.
 - `LevelController` holds a nest spawn until its origin is open (the maw is up 2.53 s after the opening starts); a wave
   called early opens them at once.
+
+### Menus from Blender (added 2026-11-04, menu round)
+
+| Goal | Command |
+| --- | --- |
+| Sync the menu island + hive mouth, build their materials and `MenuDioramaArt` from `Menu_Island_layout.json`, hand it to the menu stage | `unity command menu --path "Tools/Generate/Blender Menu Diorama (sync, island, props, pools)" --timeout 600` (generator step "Menu art") |
+| Sync the upgrade screen's pedestal, halo and backdrop into `DisplayStageArt` on the UI skin | `unity command menu --path "Tools/Generate/Blender Display Stage (sync, pedestal, halo, backdrop)" --timeout 600` (generator step "Display stage art") |
+| Main menu stills (1920x1080, three moments) | `OUT=<windows folder> bash Tools/PlayTest/menu_shots.sh <prefix>` |
+| Upgrade screen with subjects selected, plus a preview PNG and an imported/built audit of every subject | `OUT=<windows folder> bash Tools/PlayTest/upgrade_shots.sh <prefix> Cannon Mercer Repair Base` (pictures of the previews in `$OUT/previews`) |
+| Menu camera onto a point (`zoom_arg.txt`: x y z distance pitch yaw), lists the pools and banks | `eval_file --file Tools/PlayTest/menu_zoom.cs` |
+| Menu art, height map, ground under each menu creature, display stage nodes | `menu_art_probe.cs`, `menu_ground_probe.cs` (in play), `display_probe.cs` |

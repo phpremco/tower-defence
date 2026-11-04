@@ -93,10 +93,34 @@ namespace Game.Levels
             }
         }
 
-        // One pool's sheet along its smoothed shore; its motes, life and bank light as before.
-        private static void BuildShapedPool(LiquidShape shape, LiquidLook look, VisualTheme theme, GridMap grid, float cellSize, Transform parent, float particleScale, bool low)
+        /// <summary>
+        /// A pool known by its shore alone (the menu island's Blender basins): the sheet cut along the outline in the
+        /// look's material and its motes and life over sample points inside it. Its bank light is left to the caller.
+        /// </summary>
+        public static void BuildOutlinedPool(LiquidShape shape, float surface, LiquidLook look, VisualTheme theme, float cellSize, Transform parent, float particleScale, bool low)
         {
-            float surface = LevelOf(shape.Kind);
+            BuildSheet(shape, surface, look, parent, low);
+            var cells = new List<Vector3>();
+            Rect bounds = shape.Bounds;
+            for (float z = bounds.yMin + cellSize * 0.5f; z < bounds.yMax; z += cellSize)
+            {
+                for (float x = bounds.xMin + cellSize * 0.5f; x < bounds.xMax; x += cellSize)
+                {
+                    if (shape.SignedDistance(x, z) > 0f)
+                    {
+                        cells.Add(new Vector3(x, 0f, z));
+                    }
+                }
+            }
+
+            if (cells.Count > 0)
+            {
+                BuildMotes(shape.Kind, cells, theme, cellSize, surface, particleScale, parent);
+            }
+        }
+
+        private static void BuildSheet(LiquidShape shape, float surface, LiquidLook look, Transform parent, bool low)
+        {
             var go = new GameObject($"Liquid_{shape.Kind}");
             go.transform.SetParent(parent, false);
             go.transform.position = new Vector3(0f, surface, 0f);
@@ -104,6 +128,13 @@ namespace Game.Levels
             var renderer = go.AddComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.sharedMaterial = look.MaterialFor(low);
+        }
+
+        // One pool's sheet along its smoothed shore; its motes, life and bank light as before.
+        private static void BuildShapedPool(LiquidShape shape, LiquidLook look, VisualTheme theme, GridMap grid, float cellSize, Transform parent, float particleScale, bool low)
+        {
+            float surface = LevelOf(shape.Kind);
+            BuildSheet(shape, surface, look, parent, low);
 
             var cells = new List<Vector3>(shape.Cells.Count);
             foreach (Vector2Int c in shape.Cells)

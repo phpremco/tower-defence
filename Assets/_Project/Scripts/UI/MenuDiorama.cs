@@ -9,51 +9,26 @@ using UnityEngine.Rendering;
 namespace Game.UI
 {
     /// <summary>
-    /// The living scene behind the main menu: a floating island with the hive on its mound, a lava pool, a pond and
-    /// a sand pit in the colours of the levels they come from, overgrown and glowing, with the creatures of each
-    /// corner coming and going and flyers circling the hive. Built once from a <see cref="MenuStageDefinition"/>;
-    /// everything that moves is the game's own view code.
+    /// The living scene behind the main menu: the floating island built in Blender (<see cref="MenuDioramaArt"/>) with
+    /// the hive on its mound, five pools in the colours of the worlds they come from, its props, lights and camera as
+    /// laid out there, and the creatures of each corner coming and going and flyers circling the hive. Built once from a
+    /// <see cref="MenuStageDefinition"/>; this class only places, lights and animates.
     /// </summary>
     public sealed class MenuDiorama : MonoBehaviour
     {
-        // Layout in world units. The menu's buttons cover the left of the screen, so the stage leans to the right.
+        // The creature routes (unchanged from the code-built island; the Blender layout keeps them clear).
         private static readonly Vector3 IslandCentre = new Vector3(3.6f, 0f, 2.2f);
         private const float IslandRadius = 11.5f;
         private static readonly Vector3 NestCentre = new Vector3(4.8f, 0f, 5.2f);
         private const float NestRadius = 4.2f;
-        private const float NestHeight = 2.6f;
         private const float PorchHeight = 0.3f;
-        private const float MouthRadius = 1.5f;
-        private const float MouthRimThickness = 0.2f;
         private const float MouthInset = 1.4f;
-        private static readonly Vector3 LavaCentre = new Vector3(8.6f, 0f, -0.9f);
-        private const float LavaRadius = 2.1f;
-        private static readonly Vector3 PondCentre = new Vector3(1.4f, 0f, -2.2f);
-        private const float PondRadius = 2f;
-        private static readonly Vector3 SandCentre = new Vector3(-1.8f, 0f, 6f);
-        private const float SandRadius = 1.7f;
-        private static readonly Vector3 IceCentre = new Vector3(-3.4f, 0f, 0.6f);
-        private const float IceRadius = 1.7f;
-        private static readonly Vector3 BogCentre = new Vector3(10.2f, 0f, 5.8f);
-        private const float BogRadius = 1.8f;
         // The queen is modelled as a boss; on the porch she stands at this share of her field size.
         private const float GuardianScale = 0.55f;
         private const float PoolCellSize = 0.5f;
-        private const float Seed = 3.7f;
+        // The Blender outline is a 72-point polygon; a light Gaussian rounds its corners for the sheet and the banks.
+        private const float ShoreSmoothing = 0.12f;
 
-        private static readonly Vector3 CameraFocus = new Vector3(3.1f, 0.6f, 1.8f);
-        private const float CameraDistance = 15.5f;
-        private const float CameraPitch = 29f;
-        private const float CameraYaw = 6f;
-        private const float CameraFieldOfView = 36f;
-
-        private static readonly Vector3 SunRotation = new Vector3(46f, -38f, 0f);
-        private static readonly Color SunColor = new Color(0.72f, 0.68f, 0.9f);
-        private const float SunIntensity = 0.85f;
-        private static readonly Color FogColor = new Color(0.05f, 0.025f, 0.055f);
-        private const float FogDensity = 0.011f;
-        private const float AmbientShare = 0.4f;
-        private const float AmbientBrightness = 0.7f;
 
         private const float WalkerLapRadius = 3.9f;
         private const int LapPoints = 28;
@@ -73,18 +48,10 @@ namespace Game.UI
         private const float PoolBankArcDegrees = 150f;
         private const int BankPoints = 10;
 
-        private const float PropSink = 0.05f;
-        private const float PropSwayDegrees = 3.5f;
         private const float GlowPulseDepth = 0.3f;
         private const float GlowPulseSpeed = 1.1f;
         private const float GlowPoolRadius = 0.9f;
         private const float GlowPoolBrightness = 0.5f;
-        private const float MouthLightIntensity = 2.6f;
-        private const float MouthLightRange = 6f;
-        private const float PondLightIntensity = 1.3f;
-        private const float PondLightRange = 4.5f;
-        private const float CrystalLightIntensity = 1.1f;
-        private const float CrystalLightRange = 4f;
         private const float LightFlicker = 0.25f;
         private const float LightFlickerSpeed = 1.6f;
 
@@ -100,11 +67,10 @@ namespace Game.UI
         private AudioMix _mix;
         private AudioSource _ambience;
         private readonly List<Material> _pulsing = new List<Material>();
-        private readonly Dictionary<(PropKind, int), Mesh> _propMeshes = new Dictionary<(PropKind, int), Mesh>();
+        private readonly List<Material> _owned = new List<Material>();
         private MenuTerrain _terrain;
         private TargetRegistry _targets;
         private StructureRegistry _structures;
-        private System.Random _random;
         private float _emergeDelay;
 
         /// <summary>Builds the stage under <paramref name="camera"/>, which it also takes charge of.</summary>
@@ -113,7 +79,6 @@ namespace Game.UI
             var root = new GameObject("MenuDiorama");
             var diorama = root.AddComponent<MenuDiorama>();
             diorama._mix = mix;
-            diorama._random = new System.Random(17);
             diorama._targets = new TargetRegistry();
             diorama._structures = new StructureRegistry();
             diorama.BuildAll(stage, camera, particleScale);
@@ -126,216 +91,241 @@ namespace Game.UI
             {
                 _mix.Changed -= ApplyAmbience;
             }
+
+            foreach (Material material in _owned)
+            {
+                Destroy(material);
+            }
         }
 
         private void BuildAll(MenuStageDefinition stage, Camera camera, float particleScale)
         {
-            Vector3 mouth = NestCentre + Vector3.back * (NestRadius - MouthInset);
-            var poolList = new List<MenuTerrain.Pool>
+            MenuDioramaArt art = stage.Art;
+            if (art == null || !art.IsComplete)
             {
-                new MenuTerrain.Pool(LavaCentre, LavaRadius, TerrainKind.Lava, stage.LavaTheme),
-                new MenuTerrain.Pool(PondCentre, PondRadius, TerrainKind.Water, stage.ForestTheme),
-                new MenuTerrain.Pool(SandCentre, SandRadius, TerrainKind.Quicksand, stage.RuinsTheme),
-            };
-            // The frozen lake and the bog only exist once their worlds do.
-            if (stage.IceTheme != null)
-            {
-                poolList.Add(new MenuTerrain.Pool(IceCentre, IceRadius, TerrainKind.Ice, stage.IceTheme));
+                Debug.LogWarning("Menu diorama: the stage has no Blender island; run the generator step \"Menu art\".");
+                art = null;
             }
 
-            if (stage.SwampTheme != null)
+            bool low = ModelQuality.IsLow;
+            _terrain = new MenuTerrain(art);
+            // The hive theme's own light rig (sun, rim, trilight ambient, sky reflection), so the island's Blender props
+            // read as they do in the levels.
+            ThemeLighting.Apply(stage.NestTheme, transform);
+            BuildCamera(camera, art, stage.NestTheme.FogColor);
+            if (art != null)
             {
-                poolList.Add(new MenuTerrain.Pool(BogCentre, BogRadius, TerrainKind.Bog, stage.SwampTheme));
+                BuildIsland(art, low);
+                EnvironmentInstancer instancer = EnvironmentInstancer.Create(transform);
+                BuildProps(art, stage, instancer, low);
+                BuildPools(art, stage, instancer, particleScale, low);
+                instancer.Finish();
+                BuildLights(art, stage);
+                if (stage.NestTheme != null && stage.NestTheme.Environment != null)
+                {
+                    LevelVisualBuilder.SetWind(stage.NestTheme.Environment);
+                }
             }
 
-            MenuTerrain.Pool[] pools = poolList.ToArray();
-            _terrain = new MenuTerrain(IslandCentre, IslandRadius, NestCentre, NestRadius, NestHeight, mouth, PorchHeight, pools, stage.NestTheme, Seed);
-
-            BuildLighting();
-            BuildCamera(camera);
-            _terrain.Build(transform, stage.RuinsTheme);
-            foreach (MenuTerrain.Pool pool in pools)
-            {
-                TerrainLiquidBuilder.BuildPool(pool.Kind, pool.Theme, _terrain.PoolCells(pool, PoolCellSize), PoolCellSize, transform, particleScale);
-            }
-
-            BuildMouth(mouth, stage.NestTheme);
-            BuildGrowth(stage, mouth);
             BuildStarfield();
             if (particleScale > 0f)
             {
                 BuildMotes(stage.NestTheme, particleScale);
             }
 
-            BuildCreatures(stage, mouth);
+            BuildCreatures(stage, art);
             BuildAmbience(stage.NestTheme);
             gameObject.AddComponent<EmissionPulse>().Initialize(_pulsing.ToArray(), GlowPulseDepth, GlowPulseSpeed);
         }
 
-        private static void BuildLighting()
-        {
-            var sun = new GameObject("Sun");
-            var light = sun.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.color = SunColor;
-            light.intensity = SunIntensity;
-            light.shadows = LightShadows.Soft;
-            sun.transform.rotation = Quaternion.Euler(SunRotation);
-
-            RenderSettings.fog = true;
-            RenderSettings.fogMode = FogMode.ExponentialSquared;
-            RenderSettings.fogColor = FogColor;
-            RenderSettings.fogDensity = FogDensity;
-            RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = Color.Lerp(FogColor, SunColor, AmbientShare) * AmbientBrightness;
-        }
-
-        private static void BuildCamera(Camera camera)
+        private static void BuildCamera(Camera camera, MenuDioramaArt art, Color background)
         {
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = FogColor;
-            camera.fieldOfView = CameraFieldOfView;
+            camera.backgroundColor = background;
             camera.nearClipPlane = 0.3f;
             camera.farClipPlane = 80f;
-            camera.gameObject.AddComponent<MenuCameraDrift>().Initialize(CameraFocus, CameraDistance, CameraPitch, CameraYaw);
-        }
-
-        // The hive mouth: a black oval against the slope with a glowing chitin rim, lit red from inside.
-        private void BuildMouth(Vector3 mouth, VisualTheme nest)
-        {
-            Vector3 onSlope = _terrain.OnGround(mouth.x, mouth.z + MouthInset * 0.55f);
-            Vector3 normal = _terrain.Normal(onSlope.x, onSlope.z);
-            Vector3 centre = onSlope + normal * 0.04f;
-
-            var hole = new GameObject("MouthHole");
-            hole.transform.SetParent(transform, false);
-            hole.transform.position = centre;
-            hole.transform.rotation = Quaternion.LookRotation(-normal, Vector3.forward);
-            hole.transform.localScale = new Vector3(MouthRadius * 2f, MouthRadius * 1.5f, 1f);
-            hole.AddComponent<MeshFilter>().sharedMesh = GlowDecal.Quad();
-            var holeRenderer = hole.AddComponent<MeshRenderer>();
-            holeRenderer.sharedMaterial = SurfaceMaterials.Create(Color.black, 0f, 0f);
-            holeRenderer.shadowCastingMode = ShadowCastingMode.Off;
-
-            var builder = new PropMeshBuilder(1);
-            builder.AddTorus(Vector3.zero, Vector3.forward, 1f, MouthRimThickness, 40, 8, 0);
-            var rim = new GameObject("MouthRim");
-            rim.transform.SetParent(transform, false);
-            rim.transform.position = centre;
-            rim.transform.rotation = hole.transform.rotation;
-            rim.transform.localScale = new Vector3(MouthRadius, MouthRadius * 0.75f, 1f);
-            rim.AddComponent<MeshFilter>().sharedMesh = builder.ToMesh("MouthRim");
-            Material rimMaterial = SurfaceMaterials.Create(nest.AccentColor, 1.6f, 0.7f);
-            rim.AddComponent<MeshRenderer>().sharedMaterial = rimMaterial;
-            _pulsing.Add(rimMaterial);
-
-            AddLight(centre + normal * 0.6f, nest.AccentColor, MouthLightIntensity, MouthLightRange);
-            GlowDecal.PlacePool(transform, nest.AccentColor * 0.6f, 2.2f).transform.position = _terrain.OnGround(mouth.x, mouth.z - 0.6f, 0.04f);
-        }
-
-        // Every corner is dressed with the props of its own theme; glow materials join the shared pulse.
-        private void BuildGrowth(MenuStageDefinition stage, Vector3 mouth)
-        {
-            Material[][] forest = Palette(stage.ForestTheme);
-            Material[][] lava = Palette(stage.LavaTheme);
-            Material[][] ruins = Palette(stage.RuinsTheme);
-            Material[][] nest = Palette(stage.NestTheme);
-
-            Ring(PondCentre, PondRadius + 0.9f, PondRadius + 2.2f, 5, PropKind.Frond, forest, 0.8f, 1.2f, 150f, 400f);
-            Ring(PondCentre, PondRadius + 1.1f, PondRadius + 2.4f, 2, PropKind.GlowTree, forest, 0.9f, 1.15f, 180f, 330f);
-            Ring(PondCentre, PondRadius + 0.7f, PondRadius + 1.9f, 4, PropKind.Mushroom, forest, 0.6f, 1f, 100f, 420f);
-            AddLight(_terrain.OnGround(PondCentre.x + 1.6f, PondCentre.z + 1.2f, 0.9f), stage.ForestTheme.AccentColor, PondLightIntensity, PondLightRange);
-
-            Ring(LavaCentre, LavaRadius + 0.8f, LavaRadius + 1.9f, 4, PropKind.Spike, lava, 0.7f, 1.2f, 20f, 200f);
-            Ring(LavaCentre, LavaRadius + 1.4f, LavaRadius + 2.6f, 2, PropKind.Boulder, lava, 0.8f, 1.1f, 40f, 160f);
-            Ring(LavaCentre, LavaRadius + 1.6f, LavaRadius + 2.4f, 1, PropKind.Column, lava, 0.9f, 1f, 220f, 260f);
-            Ring(LavaCentre, LavaRadius + 0.9f, LavaRadius + 2.2f, 3, PropKind.Rock, lava, 0.6f, 1f, 190f, 350f);
-
-            Ring(SandCentre, SandRadius + 0.8f, SandRadius + 1.7f, 2, PropKind.Column, ruins, 0.8f, 1.1f, 200f, 320f);
-            Ring(SandCentre, SandRadius + 0.7f, SandRadius + 1.6f, 1, PropKind.Crystal, ruins, 1.3f, 1.4f, 300f, 340f);
-            Ring(SandCentre, SandRadius + 0.6f, SandRadius + 1.5f, 2, PropKind.Crystal, ruins, 0.6f, 0.9f, 20f, 160f);
-            Ring(SandCentre, SandRadius + 0.9f, SandRadius + 1.8f, 2, PropKind.Rock, ruins, 0.6f, 0.9f, 170f, 250f);
-            AddLight(_terrain.OnGround(SandCentre.x + 2.2f, SandCentre.z - 1.4f, 0.8f), stage.RuinsTheme.AccentColor, CrystalLightIntensity, CrystalLightRange);
-
-            Ring(NestCentre, NestRadius + 0.3f, NestRadius + 1.3f, 5, PropKind.Egg, nest, 0.8f, 1.2f, -40f, 250f);
-            Ring(NestCentre, NestRadius * 0.45f, NestRadius * 0.8f, 6, PropKind.Tendril, nest, 0.9f, 1.3f, -30f, 330f);
-            Ring(mouth, MouthRadius + 0.6f, MouthRadius + 1.1f, 4, PropKind.Spike, nest, 0.6f, 0.9f, 200f, 340f);
-            Ring(NestCentre, NestRadius * 0.2f, NestRadius * 0.5f, 3, PropKind.Spike, nest, 0.8f, 1.1f, 0f, 360f);
-
-            Ring(IslandCentre, 6.5f, IslandRadius - 2.8f, 9, PropKind.Rock, ruins, 0.5f, 1.1f, 0f, 360f);
-            Ring(IslandCentre, 7f, IslandRadius - 3f, 3, PropKind.Boulder, ruins, 0.7f, 1f, 0f, 360f);
-        }
-
-        private Material[][] Palette(VisualTheme theme)
-        {
-            var palette = new Material[PropFactory.ColourVariants][];
-            for (int i = 0; i < palette.Length; i++)
+            if (art == null)
             {
-                palette[i] = PropFactory.CreateMaterials(theme, i);
-                _pulsing.Add(palette[i][PropFactory.FirstGlowSlot]);
-                _pulsing.Add(palette[i][PropFactory.SecondGlowSlot]);
+                return;
             }
 
-            return palette;
+            camera.fieldOfView = art.CameraFieldOfView;
+            camera.gameObject.AddComponent<MenuCameraDrift>().Initialize(art.CameraFocus, art.CameraDistance, art.CameraPitch, art.CameraYaw);
         }
 
-        // Props of one kind spread over an arc around a centre; angles run counter-clockwise from +x.
-        private void Ring(Vector3 centre, float minRadius, float maxRadius, int count, PropKind kind, Material[][] palette, float minScale, float maxScale, float fromDegrees, float toDegrees)
+        // The island mesh at the origin, its painted glow (cracks, veins, Crysium dust) breathing with the shared pulse.
+        private void BuildIsland(MenuDioramaArt art, bool low)
         {
-            for (int i = 0; i < count; i++)
+            var island = new GameObject("Island");
+            island.transform.SetParent(transform, false);
+            island.AddComponent<MeshFilter>().sharedMesh = art.Island;
+            Material[] source = art.IslandMaterials(low);
+            var materials = new Material[source.Length];
+            for (int i = 0; i < source.Length; i++)
             {
-                float angle = Mathf.Lerp(fromDegrees, toDegrees, (i + 0.5f) / count) + Range(-8f, 8f);
-                float radius = Range(minRadius, maxRadius);
-                float x = centre.x + Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
-                float z = centre.z + Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
-                PlaceProp(kind, palette[_random.Next(palette.Length)], x, z, Range(minScale, maxScale));
+                materials[i] = Own(source[i]);
+                _pulsing.Add(materials[i]);
+            }
+
+            var renderer = island.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = materials;
+            renderer.shadowCastingMode = ShadowCastingMode.On;
+        }
+
+        // Every export of the layout where Blender put it; static ones drawn instanced, rigged ones held in a pose.
+        private void BuildProps(MenuDioramaArt art, MenuStageDefinition stage, EnvironmentInstancer instancer, bool low)
+        {
+            MenuDioramaModel[] models = art.Models;
+            var worn = new Material[models.Length];
+            for (int i = 0; i < models.Length; i++)
+            {
+                if (models[i].Pulses && models[i].Mesh != null && models[i].Mesh.IsValid)
+                {
+                    worn[i] = Own(models[i].Mesh.MaterialFor(low));
+                    _pulsing.Add(worn[i]);
+                }
+            }
+
+            foreach (MenuDioramaPlacement placement in art.Placements)
+            {
+                if (placement.Model < 0 || placement.Model >= models.Length)
+                {
+                    continue;
+                }
+
+                MenuDioramaModel model = models[placement.Model];
+                Quaternion turn = Quaternion.Euler(0f, placement.Yaw, 0f);
+                if (model.IsRigged)
+                {
+                    PlaceRigged(model, placement.Position, turn, placement.Scale, low);
+                }
+                else
+                {
+                    instancer.AddDecor(model.Mesh, Matrix4x4.TRS(placement.Position, turn, Vector3.one * placement.Scale), low, worn[placement.Model]);
+                }
+
+                VisualTheme theme = stage.Theme(placement.Theme);
+                if (placement.GlowPool && theme != null)
+                {
+                    GlowDecal.PlacePool(transform, theme.AccentColor * GlowPoolBrightness, GlowPoolRadius).transform.position += placement.Position;
+                }
             }
         }
 
-        private void PlaceProp(PropKind kind, Material[] materials, float x, float z, float scale)
+        // A tower or the beacon: its own rig, held still in the first frame of its idle so the parts sit where they belong.
+        private void PlaceRigged(MenuDioramaModel model, Vector3 position, Quaternion turn, float scale, bool low)
         {
-            int variant = _random.Next(PropFactory.Variants);
-            if (!_propMeshes.TryGetValue((kind, variant), out Mesh mesh))
-            {
-                mesh = PropFactory.Create(kind, variant);
-                _propMeshes[(kind, variant)] = mesh;
-            }
-
-            var go = new GameObject(kind.ToString());
-            go.transform.SetParent(transform, false);
-            go.transform.position = _terrain.OnGround(x, z, -PropSink);
-            go.transform.rotation = Quaternion.Euler(0f, Range(0f, 360f), 0f);
+            GameObject go = Instantiate(model.Rigged, position, turn, transform);
+            go.name = model.Name;
             go.transform.localScale = Vector3.one * scale;
-            go.AddComponent<MeshFilter>().sharedMesh = mesh;
-            go.AddComponent<MeshRenderer>().sharedMaterials = materials;
-
-            if (PropFactory.IsPlant(kind))
+            Material material = model.RiggedMaterial(low);
+            foreach (Renderer renderer in go.GetComponentsInChildren<Renderer>())
             {
-                go.AddComponent<WindSway>().Initialize(PropSwayDegrees, Range(0.5f, 0.9f), Range(0f, 6.28f));
+                // Each tier file holds the near and the far mesh on one rig; the menu shows the near one.
+                renderer.enabled = !renderer.name.EndsWith(MenuDioramaModel.FarSuffix, System.StringComparison.Ordinal);
+                renderer.sharedMaterial = material;
             }
 
-            if (PropFactory.IsGlowing(kind) && kind != PropKind.Spike)
+            if (model.Pose != null)
             {
-                Color colour = materials[PropFactory.FirstGlowSlot].GetColor("_BaseColor");
-                GlowDecal.PlacePool(go.transform, colour * GlowPoolBrightness, GlowPoolRadius);
+                model.Pose.SampleAnimation(go, 0f);
             }
         }
 
-        private void AddLight(Vector3 position, Color colour, float intensity, float range)
+        // Each pool: the round-24 liquid sheet cut along Blender's shore and the continent's swept banks round it.
+        private void BuildPools(MenuDioramaArt art, MenuStageDefinition stage, EnvironmentInstancer instancer, float particleScale, bool low)
         {
-            var go = new GameObject("Light");
-            go.transform.SetParent(transform, false);
-            go.transform.position = position;
-            var light = go.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = colour;
-            light.range = range;
-            light.shadows = LightShadows.None;
-            go.AddComponent<LightFlicker>().Initialize(intensity, LightFlicker, LightFlickerSpeed);
+            var banked = new List<LiquidShape>();
+            EnvironmentSet banks = stage.NestTheme != null ? stage.NestTheme.Environment : null;
+            foreach (MenuDioramaPool pool in art.Pools)
+            {
+                VisualTheme theme = stage.Theme(pool.Theme);
+                if (theme == null || pool.Outline.Length < 3)
+                {
+                    continue;
+                }
+
+                var shape = new LiquidShape(pool.Kind, new[] { Shore(pool.Outline) });
+                LiquidLook look = theme.Liquids != null ? theme.Liquids.For(pool.Kind) : null;
+                if (look != null)
+                {
+                    TerrainLiquidBuilder.BuildOutlinedPool(shape, pool.Surface, look, theme, PoolCellSize, transform, particleScale, low);
+                    banked.Add(shape);
+                }
+                else
+                {
+                    TerrainLiquidBuilder.BuildPool(pool.Kind, theme, Cells(shape), PoolCellSize, transform, particleScale);
+                }
+            }
+
+            if (banks != null && banks.HasBankSweeps)
+            {
+                LiquidBankBuilder.Build(banked, _terrain.Height, banks, instancer, transform, low);
+            }
         }
 
-        private void BuildCreatures(MenuStageDefinition stage, Vector3 mouth)
+        // Counter-clockwise (liquid on the left, as the liquid code expects) and lightly rounded.
+        private static Vector2[] Shore(Vector2[] outline)
         {
+            Vector2[] loop = (Vector2[])outline.Clone();
+            if (LiquidContour.SignedArea(loop) < 0f)
+            {
+                System.Array.Reverse(loop);
+            }
+
+            return LiquidContour.Smooth(loop, 0, ShoreSmoothing, 0f);
+        }
+
+        private static List<Vector3> Cells(LiquidShape shape)
+        {
+            var cells = new List<Vector3>();
+            Rect bounds = shape.Bounds;
+            for (float z = bounds.yMin; z <= bounds.yMax; z += PoolCellSize)
+            {
+                for (float x = bounds.xMin; x <= bounds.xMax; x += PoolCellSize)
+                {
+                    if (shape.SignedDistance(x, z) > 0f)
+                    {
+                        cells.Add(new Vector3(x, 0f, z));
+                    }
+                }
+            }
+
+            return cells;
+        }
+
+        private void BuildLights(MenuDioramaArt art, MenuStageDefinition stage)
+        {
+            foreach (MenuDioramaLight entry in art.Lights)
+            {
+                VisualTheme theme = stage.Theme(entry.Theme);
+                if (entry.Theme != MenuThemeSlot.None && theme == null)
+                {
+                    continue;
+                }
+
+                var go = new GameObject(entry.Name);
+                go.transform.SetParent(transform, false);
+                go.transform.position = entry.Position;
+                var light = go.AddComponent<Light>();
+                light.type = LightType.Point;
+                light.color = theme != null ? theme.AccentColor : entry.Colour;
+                light.range = entry.Range;
+                light.shadows = LightShadows.None;
+                go.AddComponent<LightFlicker>().Initialize(entry.Intensity, LightFlicker, LightFlickerSpeed);
+            }
+        }
+
+        private Material Own(Material source)
+        {
+            var copy = new Material(source) { name = source.name + " (menu)" };
+            _owned.Add(copy);
+            return copy;
+        }
+
+        private void BuildCreatures(MenuStageDefinition stage, MenuDioramaArt art)
+        {
+            Vector3 mouth = NestCentre + Vector3.back * (NestRadius - MouthInset);
             Vector3 inside = new Vector3(mouth.x, PorchHeight, mouth.z + MouthInset * 0.9f);
             Vector3 porch = new Vector3(mouth.x, PorchHeight, mouth.z - 0.7f);
 
@@ -373,43 +363,72 @@ namespace Game.UI
                 }
             }
 
-            PoolDweller(stage.WaterCreature, PondCentre, PondRadius, TerrainKind.Water, EnemyOrigin.Water, 20f);
-            PoolDweller(stage.LavaCreature, LavaCentre, LavaRadius, TerrainKind.Lava, EnemyOrigin.Lava, 260f);
-            PoolDweller(stage.SandCreature, SandCentre, SandRadius, TerrainKind.Quicksand, EnemyOrigin.Quicksand, 300f);
-            if (stage.IceTheme != null)
+            if (art == null)
             {
-                PoolDweller(stage.IceCreature, IceCentre, IceRadius, TerrainKind.Ice, EnemyOrigin.Ice, 200f);
+                return;
             }
 
-            if (stage.SwampTheme != null)
+            foreach (MenuDioramaPool pool in art.Pools)
             {
-                PoolDweller(stage.BogCreature, BogCentre, BogRadius, TerrainKind.Bog, EnemyOrigin.Bog, 120f);
+                if (stage.Theme(pool.Theme) != null)
+                {
+                    PoolDweller(DwellerOf(stage, pool.Kind), pool, OriginOf(pool.Kind));
+                }
+            }
+        }
+
+        private static EnemyDefinition DwellerOf(MenuStageDefinition stage, TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return stage.WaterCreature;
+                case TerrainKind.Lava: return stage.LavaCreature;
+                case TerrainKind.Quicksand: return stage.SandCreature;
+                case TerrainKind.Ice: return stage.IceCreature;
+                case TerrainKind.Bog: return stage.BogCreature;
+                default: return null;
+            }
+        }
+
+        private static EnemyOrigin OriginOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return EnemyOrigin.Water;
+                case TerrainKind.Lava: return EnemyOrigin.Lava;
+                case TerrainKind.Quicksand: return EnemyOrigin.Quicksand;
+                case TerrainKind.Ice: return EnemyOrigin.Ice;
+                case TerrainKind.Bog: return EnemyOrigin.Bog;
+                default: return EnemyOrigin.Ground;
             }
         }
 
         // Out of the middle of the pool, up the bank, a stroll along it and back into the deep.
-        private void PoolDweller(EnemyDefinition definition, Vector3 centre, float radius, TerrainKind kind, EnemyOrigin origin, float bankDegrees)
+        private void PoolDweller(EnemyDefinition definition, MenuDioramaPool pool, EnemyOrigin origin)
         {
             if (definition == null)
             {
                 return;
             }
 
+            Vector3 centre = pool.Centre;
+            float radius = pool.Radius;
+            float bankDegrees = pool.BankDegrees;
+
             // A flyer born in the pool circles above its bank instead of crawling along it.
             if (definition.Flies)
             {
-                var circuit = new List<Vector3> { new Vector3(centre.x, 0f, centre.z) };
+                var circuit = new List<Vector3> { centre };
                 circuit.AddRange(Lap(centre, radius + PoolBankMargin, bankDegrees - PoolBankArcDegrees * 0.5f, PoolBankArcDegrees, BankPoints, false));
-                circuit.Add(new Vector3(centre.x, 0f, centre.z));
+                circuit.Add(centre);
                 Creature(definition, circuit.ToArray(), PoolCreatureSpeed * 1.5f, FlyerHeight, origin, PoolRestMin, PoolRestMax).Emerge(NextDelay());
                 return;
             }
 
-            float surface = TerrainLiquidBuilder.SurfaceLevel(kind);
-            Vector3 deep = new Vector3(centre.x, surface - 0.15f, centre.z);
+            Vector3 deep = new Vector3(centre.x, pool.Surface - 0.15f, centre.z);
             var route = new List<Vector3> { deep };
             route.AddRange(Lap(centre, radius + PoolBankMargin, bankDegrees - PoolBankArcDegrees * 0.5f, PoolBankArcDegrees, BankPoints, true));
-            route.Add(new Vector3(centre.x, surface - 0.2f, centre.z));
+            route.Add(new Vector3(centre.x, pool.Surface - 0.2f, centre.z));
             Creature(definition, route.ToArray(), PoolCreatureSpeed, 0f, origin, PoolRestMin, PoolRestMax).Emerge(NextDelay());
         }
 
@@ -545,7 +564,5 @@ namespace Game.UI
                 _ambience.volume = AmbienceVolume * _mix.AmbienceGain;
             }
         }
-
-        private float Range(float min, float max) => min + (float)_random.NextDouble() * (max - min);
     }
 }

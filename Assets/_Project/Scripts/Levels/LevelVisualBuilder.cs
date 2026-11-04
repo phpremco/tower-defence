@@ -135,7 +135,7 @@ namespace Game.Levels
         }
 
         // The flora sway in the environment shader reads the set's wind from shader globals.
-        private static void SetWind(EnvironmentSet set)
+        public static void SetWind(EnvironmentSet set)
         {
             Vector3 direction = set.WindDirection;
             Shader.SetGlobalVector(WindId, new Vector4(direction.x, direction.y, direction.z, set.SwayAmplitude));

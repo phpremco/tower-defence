@@ -171,8 +171,6 @@ namespace Game.Editor
 
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
-            // The colony lights of the baked globe sit on the level sites, so the globe is painted again.
-            BakeGlobe(catalog);
             AssetDatabase.SaveAssets();
             Debug.Log($"Planet layout {PlanetLayout.Version}: {moved} level site(s) placed.");
         }

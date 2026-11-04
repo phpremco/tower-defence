@@ -27,3 +27,4 @@ MonoBehaviour:
   _cardGreen: {fileID: 21300000, guid: a34cd227a9ff0bc4dbb69439d384a453, type: 3}
   _cardYellow: {fileID: 21300000, guid: c4633c8b456b27a4283acbfb4d23b57c, type: 3}
   _cardRed: {fileID: 21300000, guid: 99d909195ea15434bb280b40068ee368, type: 3}
+  _displayStage: {fileID: 11400000, guid: 182f4d9e06967be45946cbe76f5c7992, type: 2}

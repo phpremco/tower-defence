@@ -74,10 +74,10 @@ namespace Game.UI
 
         /// <summary>
         /// The ground of a planet painted in Blender (<see cref="PlanetTextureSet"/>): its own maps for the quality
-        /// profile, the style's sun, air and clouds, and <paramref name="colonyLights"/> (the baked colony glow of the
-        /// level sites) over the painted glow. <paramref name="forMap"/> uses the map's light and relief.
+        /// profile, the style's sun, air and clouds, and the colony lights of <paramref name="sites"/> as a shader layer
+        /// over the painted glow. <paramref name="forMap"/> uses the map's light and relief.
         /// </summary>
-        public static Material Surface(PlanetTextureSet set, Texture2D colonyLights, PlanetStyle style, bool forMap = false)
+        public static Material Surface(PlanetTextureSet set, ColonySites sites, PlanetStyle style, bool forMap = false)
         {
             PlanetTextureSet.Maps maps = set.For(ModelQuality.IsLow);
             var painted = new GlobePainter.Maps { Albedo = maps.Albedo, Normal = maps.Normal, Gloss = Texture2D.blackTexture, Emission = maps.Emission };
@@ -85,7 +85,7 @@ namespace Game.UI
             material.EnableKeyword(TexturedKeyword);
             material.SetTexture("_MaskMap", maps.Mask);
             material.SetTexture("_RegionMap", maps.Regions);
-            material.SetTexture("_ColonyMap", colonyLights != null ? colonyLights : Texture2D.blackTexture);
+            sites.Apply(material);
             material.SetColor("_ColonyColor", style.City * set.ColonyLights);
             material.SetColor("_CityColor", set.Emission);
             material.SetFloat("_Alien", 0f);

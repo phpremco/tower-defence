@@ -35,18 +35,27 @@ namespace Game.Editor
         {
             { BlenderStoryCatalog.Mothership, (2048, 1024) },
             { VossAsset, (2048, 1024) },
+            // The menu island: Top 2048, Cliff 4096 x 512 (Low half); the display backdrop 2048 x 1024.
+            { MenuIslandAsset, (4096, 2048) },
+            { UiDisplayAsset, (2048, 1024) },
         };
 
         // Exports whose shape keys (Voss's Smile, Frown, Blink, JawOpen) are imported as blend shapes.
         private static readonly HashSet<string> BlendShapeAssets = new HashSet<string> { VossAsset };
 
         private const string VossAsset = "Voss";
+        public const string MenuIslandAsset = "Menu_Island";
+        public const string MenuMouthAsset = "Menu_NestMouth";
+        public const string UiDisplayAsset = "UI_Display";
+        private const string HeightSuffix = "_Height";
+        private const string DisplayRingTexture = "UI_DisplayRing";
+        private const int MenuHeightSize = 512;
 
         // Shape-key channels come as extra takes "Key|Rig|Clip" beside the bone takes "Rig|Clip" of the same clip.
         private const string ShapeKeyTakePrefix = "Key|";
 
         // Bumped whenever these settings change, so Unity reimports the models with them.
-        public override uint GetVersion() => 2;
+        public override uint GetVersion() => 3;
 
         private static bool IsOurs(string path) => path.StartsWith(BlenderSync.TargetRoot + "/", StringComparison.Ordinal);
 
@@ -68,6 +77,14 @@ namespace Game.Editor
 
         // The liquid and mist textures (round 24): tiling surfaces, flipbooks and flow maps for Game/Liquid and Game/Mist.
         private static bool IsLiquid(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderLiquidCatalog.Folder + "/", StringComparison.Ordinal);
+
+        // Static Blender sets that are neither environment kit nor art models: the menu island, its hive mouth and the
+        // upgrade screen's display stage (rounds 26 and 27).
+        private static bool IsStaticSet(string path)
+        {
+            string folder = ExportFolder(path);
+            return folder == MenuIslandAsset || folder == MenuMouthAsset || folder == UiDisplayAsset;
+        }
 
         // The export folder an asset path lies in (the first folder under the target root).
         private static string ExportFolder(string path)
@@ -106,6 +123,12 @@ namespace Game.Editor
             importer.removeConstantScaleCurves = false;
             importer.animationCompression = ModelImporterAnimationCompression.KeyframeReduction;
             importer.resampleCurves = true;
+            if (IsStaticSet(assetPath))
+            {
+                importer.animationType = ModelImporterAnimationType.None;
+                importer.importAnimation = false;
+            }
+
             if (IsEnvironment(assetPath))
             {
                 // Static kit and decor: no rig, no takes, no Animator on the instance.
@@ -233,6 +256,25 @@ namespace Game.Editor
                 return;
             }
 
+            if (IsStaticSet(assetPath) && file.EndsWith(HeightSuffix, StringComparison.Ordinal))
+            {
+                PreprocessHeightMap(importer);
+                return;
+            }
+
+            if (file == DisplayRingTexture)
+            {
+                // A greyscale halo drawn additively: linear, so the grey steps add up as painted (README round 27).
+                importer.textureType = TextureImporterType.Default;
+                importer.sRGBTexture = false;
+                importer.alphaSource = TextureImporterAlphaSource.FromInput;
+                importer.mipmapEnabled = true;
+                importer.wrapMode = TextureWrapMode.Clamp;
+                importer.maxTextureSize = assetPath.Contains("/" + BlenderSync.LowFolder + "/") ? LowMapSize : FullMapSize;
+                importer.textureCompression = TextureImporterCompression.CompressedHQ;
+                return;
+            }
+
             bool detail = assetPath.Contains("/" + BlenderSync.DetailFolder + "/");
             bool tiling = IsTiling(assetPath);
             bool low = assetPath.Contains("/" + BlenderSync.LowFolder + "/");
@@ -258,6 +300,26 @@ namespace Game.Editor
             {
                 importer.textureCompression = TextureImporterCompression.Compressed;
             }
+        }
+
+        // The menu island's ground height (16-bit grey): read on the CPU by MenuTerrain, so it stays readable, linear,
+        // uncompressed at its full 16 bits and unfiltered by mips.
+        private static void PreprocessHeightMap(TextureImporter importer)
+        {
+            importer.textureType = TextureImporterType.SingleChannel;
+            importer.sRGBTexture = false;
+            importer.isReadable = true;
+            importer.mipmapEnabled = false;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.maxTextureSize = MenuHeightSize;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            TextureImporterPlatformSettings settings = importer.GetDefaultPlatformTextureSettings();
+            settings.format = TextureImporterFormat.R16;
+            settings.maxTextureSize = MenuHeightSize;
+            settings.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.SetPlatformTextureSettings(settings);
         }
 
         private static int MapSize(string path, bool low)

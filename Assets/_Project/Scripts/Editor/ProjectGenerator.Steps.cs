@@ -56,12 +56,16 @@ namespace Game.Editor
             new GeneratorStep("Upgrades", c => c.Upgrades = CreateUpgrades(c.Roster.Standard, c.Roster.Hybrids, c.Drones)),
             new GeneratorStep("Codex", c => c.Codex = CreateCodex(c.Recipes, c.Bestiary)),
             new GeneratorStep("UI skin", c => c.Skin = CreateSkin()),
+            // The upgrade screen's display stage from Blender (README round 27), worn through the UI skin.
+            new GeneratorStep("Display stage art", _ => BlenderDisplayStageBuilder.Apply(BlenderDisplayStageBuilder.SyncAndBuild())),
             new GeneratorStep("Campaign", c => c.Campaign = CreateCampaign(c)),
             new GeneratorStep("Waves", c => GenerateCampaignWaves(c.Campaign, c.Upgrades, c.Unlocks, c.Bestiary)),
-            new GeneratorStep("Globe", c => BakeGlobe(c.Campaign)),
-            // S-69-CRYS painted in Blender: worn by the map globe and the cutscene planets instead of the baked maps.
+            new GeneratorStep("Planet style", c => ApplyPlanetStyles(c.Campaign)),
+            // S-69-CRYS painted in Blender: worn by the map globe and the cutscene planets (colony lights drawn over it by the shader).
             new GeneratorStep("Planet art", _ => BlenderPlanetBuilder.Apply(BlenderPlanetBuilder.SyncAndBuild())),
             new GeneratorStep("Menu stage", c => CreateMenuStage(c.Levels, c.Bestiary)),
+            // The menu island from Blender: the island, its props, pools, lights and camera (README round 26).
+            new GeneratorStep("Menu art", _ => BlenderMenuBuilder.Apply(BlenderMenuBuilder.SyncAndBuild())),
             new GeneratorStep("Story", c => CreateStory(c.Campaign)),
             new GeneratorStep("Level story", GenerateLevelStory),
             new GeneratorStep("Cutscene", GenerateCutscene),

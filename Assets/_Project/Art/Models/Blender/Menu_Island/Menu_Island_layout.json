@@ -1,0 +1,3090 @@
+{
+ "round": 26,
+ "generator": "Tools/Blender/build_menu_diorama.py",
+ "frame": "Unity world space (x right, y up, z away from the menu camera); yaw = degrees about +Y; the island mesh is placed at the origin",
+ "island": {
+  "asset": "Menu_Island",
+  "position": [
+   0,
+   0,
+   0
+  ],
+  "materials": [
+   "Menu_Island_Top",
+   "Menu_Island_Cliff"
+  ],
+  "top_uv": "u = (x - 3.6 + 13) / 26, v = (z - 2.2 + 13) / 26",
+  "cliff_uv": "u = (angle + pi) / 2pi round (3.6, 2.2), v = 1 - depth below the rim / 11"
+ },
+ "camera": {
+  "focus": [
+   3.1,
+   0.6,
+   1.8
+  ],
+  "distance": 15.5,
+  "pitch": 29.0,
+  "yaw": 6.0,
+  "fov": 36.0,
+  "note": "unchanged from MenuDiorama.cs"
+ },
+ "height_map": {
+  "file": "Menu_Island_Height.png",
+  "size": 512,
+  "bits": 16,
+  "min_y": -1.4385,
+  "max_y": 2.788,
+  "decode": "y = min_y + texel * (max_y - min_y); texel 0 where no ground (outside the island)",
+  "uv": "u = (x - 3.6 + 13) / 26, v = (z - 2.2 + 13) / 26 (v = 0 is the bottom row of the image)",
+  "source": "ray cast onto the exported game mesh, so feet match what is drawn"
+ },
+ "pools": [
+  {
+   "kind": "Lava",
+   "theme": "LavaTheme",
+   "centre": [
+    8.6,
+    -0.9
+   ],
+   "radius": 2.1,
+   "surface_y": -0.22,
+   "bank_degrees": 260.0,
+   "outline_xz": [
+    [
+     10.631,
+     -0.9
+    ],
+    [
+     10.608,
+     -0.724
+    ],
+    [
+     10.52,
+     -0.561
+    ],
+    [
+     10.423,
+     -0.411
+    ],
+    [
+     10.351,
+     -0.263
+    ],
+    [
+     10.358,
+     -0.08
+    ],
+    [
+     10.466,
+     0.177
+    ],
+    [
+     10.572,
+     0.481
+    ],
+    [
+     10.521,
+     0.712
+    ],
+    [
+     10.195,
+     0.695
+    ],
+    [
+     9.837,
+     0.575
+    ],
+    [
+     9.665,
+     0.621
+    ],
+    [
+     9.528,
+     0.707
+    ],
+    [
+     9.403,
+     0.822
+    ],
+    [
+     9.284,
+     0.979
+    ],
+    [
+     9.171,
+     1.231
+    ],
+    [
+     9.027,
+     1.523
+    ],
+    [
+     8.813,
+     1.535
+    ],
+    [
+     8.6,
+     0.94
+    ],
+    [
+     8.455,
+     0.752
+    ],
+    [
+     8.319,
+     0.691
+    ],
+    [
+     8.178,
+     0.675
+    ],
+    [
+     8.02,
+     0.694
+    ],
+    [
+     7.796,
+     0.825
+    ],
+    [
+     7.514,
+     0.982
+    ],
+    [
+     7.269,
+     1.001
+    ],
+    [
+     7.098,
+     0.89
+    ],
+    [
+     6.974,
+     0.726
+    ],
+    [
+     6.864,
+     0.557
+    ],
+    [
+     6.748,
+     0.396
+    ],
+    [
+     6.629,
+     0.238
+    ],
+    [
+     6.521,
+     0.07
+    ],
+    [
+     6.433,
+     -0.111
+    ],
+    [
+     6.385,
+     -0.307
+    ],
+    [
+     6.397,
+     -0.512
+    ],
+    [
+     6.388,
+     -0.706
+    ],
+    [
+     6.317,
+     -0.9
+    ],
+    [
+     6.276,
+     -1.103
+    ],
+    [
+     6.357,
+     -1.296
+    ],
+    [
+     6.433,
+     -1.481
+    ],
+    [
+     6.489,
+     -1.668
+    ],
+    [
+     6.59,
+     -1.837
+    ],
+    [
+     6.824,
+     -1.926
+    ],
+    [
+     6.984,
+     -2.031
+    ],
+    [
+     6.815,
+     -2.398
+    ],
+    [
+     6.857,
+     -2.643
+    ],
+    [
+     6.949,
+     -2.867
+    ],
+    [
+     7.141,
+     -2.984
+    ],
+    [
+     7.341,
+     -3.08
+    ],
+    [
+     7.501,
+     -3.256
+    ],
+    [
+     7.682,
+     -3.421
+    ],
+    [
+     7.906,
+     -3.491
+    ],
+    [
+     8.142,
+     -3.5
+    ],
+    [
+     8.376,
+     -3.457
+    ],
+    [
+     8.6,
+     -3.01
+    ],
+    [
+     8.763,
+     -2.766
+    ],
+    [
+     8.936,
+     -2.807
+    ],
+    [
+     9.275,
+     -3.42
+    ],
+    [
+     9.512,
+     -3.407
+    ],
+    [
+     9.652,
+     -3.157
+    ],
+    [
+     9.767,
+     -2.921
+    ],
+    [
+     9.839,
+     -2.669
+    ],
+    [
+     9.885,
+     -2.431
+    ],
+    [
+     9.999,
+     -2.299
+    ],
+    [
+     10.1,
+     -2.158
+    ],
+    [
+     10.118,
+     -1.963
+    ],
+    [
+     10.158,
+     -1.8
+    ],
+    [
+     10.21,
+     -1.651
+    ],
+    [
+     10.307,
+     -1.521
+    ],
+    [
+     11.05,
+     -1.557
+    ],
+    [
+     10.912,
+     -1.308
+    ],
+    [
+     10.683,
+     -1.082
+    ]
+   ]
+  },
+  {
+   "kind": "Water",
+   "theme": "ForestTheme",
+   "centre": [
+    1.4,
+    -2.2
+   ],
+   "radius": 2.0,
+   "surface_y": -0.2,
+   "bank_degrees": 20.0,
+   "outline_xz": [
+    [
+     2.919,
+     -2.2
+    ],
+    [
+     2.9,
+     -2.069
+    ],
+    [
+     2.896,
+     -1.936
+    ],
+    [
+     2.872,
+     -1.806
+    ],
+    [
+     2.82,
+     -1.683
+    ],
+    [
+     2.766,
+     -1.563
+    ],
+    [
+     2.723,
+     -1.436
+    ],
+    [
+     2.7,
+     -1.29
+    ],
+    [
+     2.681,
+     -1.125
+    ],
+    [
+     2.639,
+     -0.961
+    ],
+    [
+     2.566,
+     -0.81
+    ],
+    [
+     2.499,
+     -0.631
+    ],
+    [
+     2.452,
+     -0.379
+    ],
+    [
+     2.325,
+     -0.216
+    ],
+    [
+     2.148,
+     -0.146
+    ],
+    [
+     1.959,
+     -0.113
+    ],
+    [
+     1.773,
+     -0.084
+    ],
+    [
+     1.588,
+     -0.057
+    ],
+    [
+     1.4,
+     -0.591
+    ],
+    [
+     1.275,
+     -0.775
+    ],
+    [
+     1.161,
+     -0.843
+    ],
+    [
+     1.045,
+     -0.873
+    ],
+    [
+     0.924,
+     -0.893
+    ],
+    [
+     0.745,
+     -0.794
+    ],
+    [
+     0.526,
+     -0.686
+    ],
+    [
+     0.453,
+     -0.848
+    ],
+    [
+     0.402,
+     -1.011
+    ],
+    [
+     0.293,
+     -1.093
+    ],
+    [
+     0.095,
+     -1.105
+    ],
+    [
+     -0.455,
+     -0.901
+    ],
+    [
+     -0.734,
+     -0.968
+    ],
+    [
+     -0.961,
+     -1.099
+    ],
+    [
+     -0.957,
+     -1.342
+    ],
+    [
+     -0.874,
+     -1.591
+    ],
+    [
+     -0.815,
+     -1.81
+    ],
+    [
+     -0.727,
+     -2.014
+    ],
+    [
+     -0.66,
+     -2.2
+    ],
+    [
+     -0.626,
+     -2.377
+    ],
+    [
+     -0.613,
+     -2.555
+    ],
+    [
+     -0.621,
+     -2.742
+    ],
+    [
+     -0.68,
+     -2.957
+    ],
+    [
+     -0.703,
+     -3.181
+    ],
+    [
+     -0.578,
+     -3.342
+    ],
+    [
+     -0.404,
+     -3.463
+    ],
+    [
+     -0.304,
+     -3.63
+    ],
+    [
+     -0.327,
+     -3.927
+    ],
+    [
+     -0.219,
+     -4.129
+    ],
+    [
+     -0.027,
+     -4.238
+    ],
+    [
+     0.231,
+     -4.224
+    ],
+    [
+     0.433,
+     -4.274
+    ],
+    [
+     0.61,
+     -4.37
+    ],
+    [
+     0.803,
+     -4.427
+    ],
+    [
+     1.003,
+     -4.45
+    ],
+    [
+     1.201,
+     -4.471
+    ],
+    [
+     1.4,
+     -4.522
+    ],
+    [
+     1.612,
+     -4.621
+    ],
+    [
+     1.833,
+     -4.655
+    ],
+    [
+     2.014,
+     -4.492
+    ],
+    [
+     2.201,
+     -4.401
+    ],
+    [
+     2.421,
+     -4.389
+    ],
+    [
+     2.623,
+     -4.319
+    ],
+    [
+     2.752,
+     -4.13
+    ],
+    [
+     2.825,
+     -3.898
+    ],
+    [
+     2.986,
+     -3.786
+    ],
+    [
+     3.204,
+     -3.713
+    ],
+    [
+     3.346,
+     -3.563
+    ],
+    [
+     3.334,
+     -3.317
+    ],
+    [
+     3.196,
+     -3.038
+    ],
+    [
+     3.123,
+     -2.827
+    ],
+    [
+     3.076,
+     -2.649
+    ],
+    [
+     3.021,
+     -2.486
+    ],
+    [
+     2.964,
+     -2.337
+    ]
+   ]
+  },
+  {
+   "kind": "Quicksand",
+   "theme": "RuinsTheme",
+   "centre": [
+    -1.8,
+    6.0
+   ],
+   "radius": 1.7,
+   "surface_y": -0.12,
+   "bank_degrees": 300.0,
+   "outline_xz": [
+    [
+     -0.213,
+     6.0
+    ],
+    [
+     -0.263,
+     6.134
+    ],
+    [
+     -0.309,
+     6.263
+    ],
+    [
+     -0.322,
+     6.396
+    ],
+    [
+     -0.305,
+     6.544
+    ],
+    [
+     -0.249,
+     6.723
+    ],
+    [
+     -0.116,
+     6.972
+    ],
+    [
+     -0.118,
+     7.178
+    ],
+    [
+     -0.185,
+     7.355
+    ],
+    [
+     -0.214,
+     7.586
+    ],
+    [
+     -0.289,
+     7.801
+    ],
+    [
+     -0.508,
+     7.845
+    ],
+    [
+     -0.727,
+     7.858
+    ],
+    [
+     -0.917,
+     7.895
+    ],
+    [
+     -1.087,
+     7.958
+    ],
+    [
+     -1.261,
+     8.013
+    ],
+    [
+     -1.453,
+     7.968
+    ],
+    [
+     -1.622,
+     8.03
+    ],
+    [
+     -1.8,
+     8.109
+    ],
+    [
+     -1.984,
+     8.107
+    ],
+    [
+     -2.159,
+     8.036
+    ],
+    [
+     -2.314,
+     7.919
+    ],
+    [
+     -2.455,
+     7.799
+    ],
+    [
+     -2.61,
+     7.736
+    ],
+    [
+     -2.781,
+     7.699
+    ],
+    [
+     -2.933,
+     7.619
+    ],
+    [
+     -3.043,
+     7.481
+    ],
+    [
+     -3.111,
+     7.311
+    ],
+    [
+     -3.181,
+     7.159
+    ],
+    [
+     -3.234,
+     7.004
+    ],
+    [
+     -3.264,
+     6.846
+    ],
+    [
+     -3.319,
+     6.708
+    ],
+    [
+     -3.439,
+     6.596
+    ],
+    [
+     -3.549,
+     6.469
+    ],
+    [
+     -3.639,
+     6.324
+    ],
+    [
+     -3.71,
+     6.167
+    ],
+    [
+     -3.733,
+     6.0
+    ],
+    [
+     -3.667,
+     5.837
+    ],
+    [
+     -3.581,
+     5.686
+    ],
+    [
+     -3.52,
+     5.539
+    ],
+    [
+     -3.492,
+     5.384
+    ],
+    [
+     -3.456,
+     5.228
+    ],
+    [
+     -3.381,
+     5.087
+    ],
+    [
+     -3.283,
+     4.962
+    ],
+    [
+     -3.125,
+     4.888
+    ],
+    [
+     -2.943,
+     4.857
+    ],
+    [
+     -2.8,
+     4.808
+    ],
+    [
+     -2.665,
+     4.765
+    ],
+    [
+     -2.544,
+     4.712
+    ],
+    [
+     -2.429,
+     4.651
+    ],
+    [
+     -2.313,
+     4.591
+    ],
+    [
+     -2.194,
+     4.529
+    ],
+    [
+     -2.071,
+     4.463
+    ],
+    [
+     -1.941,
+     4.392
+    ],
+    [
+     -1.8,
+     4.303
+    ],
+    [
+     -1.643,
+     4.207
+    ],
+    [
+     -1.48,
+     4.183
+    ],
+    [
+     -1.325,
+     4.228
+    ],
+    [
+     -1.177,
+     4.287
+    ],
+    [
+     -1.045,
+     4.381
+    ],
+    [
+     -0.941,
+     4.512
+    ],
+    [
+     -0.845,
+     4.636
+    ],
+    [
+     -0.733,
+     4.729
+    ],
+    [
+     -0.613,
+     4.813
+    ],
+    [
+     -0.497,
+     4.906
+    ],
+    [
+     -0.389,
+     5.012
+    ],
+    [
+     -0.278,
+     5.121
+    ],
+    [
+     -0.168,
+     5.239
+    ],
+    [
+     -0.145,
+     5.398
+    ],
+    [
+     -0.195,
+     5.57
+    ],
+    [
+     -0.208,
+     5.719
+    ],
+    [
+     -0.2,
+     5.86
+    ]
+   ]
+  },
+  {
+   "kind": "Ice",
+   "theme": "IceTheme",
+   "centre": [
+    -3.4,
+    0.6
+   ],
+   "radius": 1.7,
+   "surface_y": -0.06,
+   "bank_degrees": 200.0,
+   "outline_xz": [
+    [
+     -1.627,
+     0.6
+    ],
+    [
+     -1.484,
+     0.768
+    ],
+    [
+     -1.42,
+     0.949
+    ],
+    [
+     -1.443,
+     1.124
+    ],
+    [
+     -1.582,
+     1.262
+    ],
+    [
+     -1.769,
+     1.36
+    ],
+    [
+     -1.859,
+     1.49
+    ],
+    [
+     -1.925,
+     1.633
+    ],
+    [
+     -1.977,
+     1.794
+    ],
+    [
+     -2.033,
+     1.967
+    ],
+    [
+     -2.132,
+     2.112
+    ],
+    [
+     -2.265,
+     2.221
+    ],
+    [
+     -2.414,
+     2.308
+    ],
+    [
+     -2.574,
+     2.371
+    ],
+    [
+     -2.747,
+     2.394
+    ],
+    [
+     -2.922,
+     2.382
+    ],
+    [
+     -3.091,
+     2.355
+    ],
+    [
+     -3.251,
+     2.301
+    ],
+    [
+     -3.4,
+     2.254
+    ],
+    [
+     -3.545,
+     2.255
+    ],
+    [
+     -3.7,
+     2.3
+    ],
+    [
+     -3.862,
+     2.325
+    ],
+    [
+     -4.0,
+     2.247
+    ],
+    [
+     -4.139,
+     2.185
+    ],
+    [
+     -4.299,
+     2.157
+    ],
+    [
+     -4.491,
+     2.157
+    ],
+    [
+     -4.673,
+     2.117
+    ],
+    [
+     -4.805,
+     2.005
+    ],
+    [
+     -4.916,
+     1.872
+    ],
+    [
+     -5.019,
+     1.734
+    ],
+    [
+     -5.086,
+     1.574
+    ],
+    [
+     -5.128,
+     1.406
+    ],
+    [
+     -5.18,
+     1.248
+    ],
+    [
+     -5.243,
+     1.094
+    ],
+    [
+     -5.3,
+     0.935
+    ],
+    [
+     -5.324,
+     0.768
+    ],
+    [
+     -5.259,
+     0.6
+    ],
+    [
+     -5.159,
+     0.446
+    ],
+    [
+     -5.108,
+     0.299
+    ],
+    [
+     -5.083,
+     0.149
+    ],
+    [
+     -5.054,
+     -0.002
+    ],
+    [
+     -5.026,
+     -0.158
+    ],
+    [
+     -4.99,
+     -0.318
+    ],
+    [
+     -4.947,
+     -0.483
+    ],
+    [
+     -4.897,
+     -0.656
+    ],
+    [
+     -4.809,
+     -0.809
+    ],
+    [
+     -4.693,
+     -0.941
+    ],
+    [
+     -4.564,
+     -1.062
+    ],
+    [
+     -4.401,
+     -1.134
+    ],
+    [
+     -4.215,
+     -1.148
+    ],
+    [
+     -4.029,
+     -1.127
+    ],
+    [
+     -3.864,
+     -1.133
+    ],
+    [
+     -3.71,
+     -1.156
+    ],
+    [
+     -3.555,
+     -1.167
+    ],
+    [
+     -3.4,
+     -1.163
+    ],
+    [
+     -3.248,
+     -1.142
+    ],
+    [
+     -3.098,
+     -1.111
+    ],
+    [
+     -2.953,
+     -1.068
+    ],
+    [
+     -2.822,
+     -0.988
+    ],
+    [
+     -2.724,
+     -0.849
+    ],
+    [
+     -2.646,
+     -0.705
+    ],
+    [
+     -2.559,
+     -0.601
+    ],
+    [
+     -2.472,
+     -0.506
+    ],
+    [
+     -2.391,
+     -0.409
+    ],
+    [
+     -2.323,
+     -0.304
+    ],
+    [
+     -2.271,
+     -0.191
+    ],
+    [
+     -2.231,
+     -0.075
+    ],
+    [
+     -2.194,
+     0.038
+    ],
+    [
+     -2.148,
+     0.144
+    ],
+    [
+     -2.083,
+     0.247
+    ],
+    [
+     -1.973,
+     0.348
+    ],
+    [
+     -1.813,
+     0.461
+    ]
+   ]
+  },
+  {
+   "kind": "Bog",
+   "theme": "SwampTheme",
+   "centre": [
+    10.2,
+    5.8
+   ],
+   "radius": 1.8,
+   "surface_y": -0.14,
+   "bank_degrees": 120.0,
+   "outline_xz": [
+    [
+     12.301,
+     5.8
+    ],
+    [
+     12.316,
+     5.985
+    ],
+    [
+     12.298,
+     6.17
+    ],
+    [
+     12.241,
+     6.347
+    ],
+    [
+     12.161,
+     6.514
+    ],
+    [
+     12.067,
+     6.671
+    ],
+    [
+     11.949,
+     6.81
+    ],
+    [
+     11.842,
+     6.95
+    ],
+    [
+     11.732,
+     7.086
+    ],
+    [
+     11.588,
+     7.188
+    ],
+    [
+     11.415,
+     7.248
+    ],
+    [
+     11.233,
+     7.276
+    ],
+    [
+     11.069,
+     7.306
+    ],
+    [
+     10.923,
+     7.351
+    ],
+    [
+     10.787,
+     7.413
+    ],
+    [
+     10.653,
+     7.49
+    ],
+    [
+     10.51,
+     7.556
+    ],
+    [
+     10.355,
+     7.569
+    ],
+    [
+     10.2,
+     7.553
+    ],
+    [
+     10.036,
+     7.673
+    ],
+    [
+     9.853,
+     7.767
+    ],
+    [
+     9.674,
+     7.763
+    ],
+    [
+     9.56,
+     7.559
+    ],
+    [
+     9.505,
+     7.29
+    ],
+    [
+     9.51,
+     6.994
+    ],
+    [
+     9.45,
+     6.871
+    ],
+    [
+     9.359,
+     6.803
+    ],
+    [
+     9.244,
+     6.756
+    ],
+    [
+     9.093,
+     6.729
+    ],
+    [
+     8.89,
+     6.718
+    ],
+    [
+     8.62,
+     6.712
+    ],
+    [
+     8.351,
+     6.662
+    ],
+    [
+     8.323,
+     6.483
+    ],
+    [
+     8.417,
+     6.278
+    ],
+    [
+     8.366,
+     6.123
+    ],
+    [
+     8.365,
+     5.961
+    ],
+    [
+     8.388,
+     5.8
+    ],
+    [
+     8.424,
+     5.645
+    ],
+    [
+     8.502,
+     5.501
+    ],
+    [
+     8.584,
+     5.367
+    ],
+    [
+     8.605,
+     5.219
+    ],
+    [
+     8.661,
+     5.082
+    ],
+    [
+     8.744,
+     4.959
+    ],
+    [
+     8.829,
+     4.84
+    ],
+    [
+     8.918,
+     4.724
+    ],
+    [
+     9.01,
+     4.61
+    ],
+    [
+     9.107,
+     4.498
+    ],
+    [
+     9.2,
+     4.372
+    ],
+    [
+     9.305,
+     4.25
+    ],
+    [
+     9.451,
+     4.193
+    ],
+    [
+     9.609,
+     4.176
+    ],
+    [
+     9.753,
+     4.132
+    ],
+    [
+     9.889,
+     4.038
+    ],
+    [
+     10.032,
+     3.881
+    ],
+    [
+     10.2,
+     3.713
+    ],
+    [
+     10.389,
+     3.636
+    ],
+    [
+     10.588,
+     3.602
+    ],
+    [
+     10.786,
+     3.612
+    ],
+    [
+     10.965,
+     3.697
+    ],
+    [
+     11.094,
+     3.883
+    ],
+    [
+     11.12,
+     4.207
+    ],
+    [
+     11.193,
+     4.382
+    ],
+    [
+     11.317,
+     4.469
+    ],
+    [
+     11.425,
+     4.575
+    ],
+    [
+     11.495,
+     4.713
+    ],
+    [
+     11.393,
+     4.965
+    ],
+    [
+     11.346,
+     5.138
+    ],
+    [
+     11.493,
+     5.197
+    ],
+    [
+     11.691,
+     5.257
+    ],
+    [
+     11.858,
+     5.356
+    ],
+    [
+     12.058,
+     5.472
+    ],
+    [
+     12.232,
+     5.622
+    ]
+   ]
+  }
+ ],
+ "creature_routes": "MenuDiorama.BuildCreatures unchanged; props keep >= 0.45 m (plus their footprint) off the walker lap (r 3.9), the mouth-porch line and every pool's bank arc",
+ "lights": [
+  {
+   "name": "MouthLight",
+   "position": [
+    4.800000190734863,
+    0.95,
+    3.0
+   ],
+   "colour": "NestTheme.AccentColor",
+   "intensity": 2.6,
+   "range": 6.0,
+   "note": "inside the hood, so the burrow glows; keep the flicker"
+  },
+  {
+   "name": "PondLight",
+   "position": [
+    -0.5,
+    0.9,
+    -0.8000000000000003
+   ],
+   "colour": "ForestTheme.AccentColor",
+   "intensity": 1.3,
+   "range": 4.5
+  },
+  {
+   "name": "LavaGlow",
+   "position": [
+    8.6,
+    0.5,
+    -0.9
+   ],
+   "colour": [
+    1.0,
+    0.42,
+    0.12
+   ],
+   "intensity": 1.6,
+   "range": 5.0,
+   "note": "new: the lava pool lights its rocks"
+  },
+  {
+   "name": "OutpostLamp",
+   "position": [
+    0.65,
+    1.4,
+    10.549999618530274
+   ],
+   "colour": [
+    0.62,
+    0.86,
+    1.0
+   ],
+   "intensity": 0.9,
+   "range": 3.5,
+   "note": "new: colony light on the beacon"
+  }
+ ],
+ "items": [
+  {
+   "asset": "Menu_NestMouth",
+   "folder": "ArtSource/Exports/Menu_NestMouth",
+   "group": "nest",
+   "position": [
+    4.8,
+    0.3,
+    3.55
+   ],
+   "yaw": 180.0,
+   "scale": 1.0,
+   "note": "opening faces -z; the crawlers' 'inside' point (z 3.66) lies under the hood",
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spire",
+   "folder": "ArtSource/Exports/Env/Decor_Spire",
+   "group": "nest",
+   "position": [
+    5.05,
+    2.572,
+    5.75
+   ],
+   "yaw": 20.0,
+   "scale": 0.62,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "nest",
+   "position": [
+    2.851,
+    1.77,
+    4.291
+   ],
+   "yaw": 176.98,
+   "scale": 0.85,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "nest",
+   "position": [
+    6.794,
+    1.762,
+    4.27
+   ],
+   "yaw": 84.38,
+   "scale": 0.8,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "nest",
+   "position": [
+    3.881,
+    2.345,
+    5.971
+   ],
+   "yaw": 24.34,
+   "scale": 1.0,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "nest",
+   "position": [
+    5.55,
+    2.267,
+    6.499
+   ],
+   "yaw": 256.63,
+   "scale": 0.9,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "nest",
+   "position": [
+    7.156,
+    1.416,
+    6.299
+   ],
+   "yaw": 292.72,
+   "scale": 0.75,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    6.781,
+    1.769,
+    5.761
+   ],
+   "yaw": 123.12,
+   "scale": 1.128,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    5.447,
+    1.43,
+    7.757
+   ],
+   "yaw": 92.63,
+   "scale": 0.991,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    3.562,
+    0.809,
+    8.139
+   ],
+   "yaw": 325.59,
+   "scale": 1.052,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    2.701,
+    1.936,
+    5.737
+   ],
+   "yaw": 91.96,
+   "scale": 1.176,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    2.344,
+    1.05,
+    3.659
+   ],
+   "yaw": 256.68,
+   "scale": 1.296,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Tendril",
+   "folder": "ArtSource/Exports/Env/Flora_Tendril",
+   "group": "nest",
+   "position": [
+    7.051,
+    1.06,
+    3.243
+   ],
+   "yaw": 321.94,
+   "scale": 0.906,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Egg_Cluster",
+   "folder": "ArtSource/Exports/Env/Egg_Cluster",
+   "group": "nest",
+   "position": [
+    9.352,
+    0.044,
+    2.714
+   ],
+   "yaw": 221.94,
+   "scale": 1.014,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Egg_Cluster",
+   "folder": "ArtSource/Exports/Env/Egg_Cluster",
+   "group": "nest",
+   "position": [
+    8.494,
+    -0.005,
+    9.006
+   ],
+   "yaw": 145.74,
+   "scale": 0.95,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Egg_Cluster",
+   "folder": "ArtSource/Exports/Env/Egg_Cluster",
+   "group": "nest",
+   "position": [
+    4.531,
+    -0.003,
+    10.158
+   ],
+   "yaw": 312.79,
+   "scale": 0.901,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Egg_Cluster",
+   "folder": "ArtSource/Exports/Env/Egg_Cluster",
+   "group": "nest",
+   "position": [
+    2.095,
+    0.344,
+    9.264
+   ],
+   "yaw": 124.0,
+   "scale": 1.021,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Egg_Cluster",
+   "folder": "ArtSource/Exports/Env/Egg_Cluster",
+   "group": "nest",
+   "position": [
+    1.147,
+    -0.07,
+    1.82
+   ],
+   "yaw": 334.55,
+   "scale": 0.876,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Scatter_ShellFragments",
+   "folder": "ArtSource/Exports/Env/Scatter_ShellFragments",
+   "group": "nest",
+   "position": [
+    0.282,
+    -0.093,
+    2.419
+   ],
+   "yaw": 163.01,
+   "scale": 1.004,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_ShellFragments",
+   "folder": "ArtSource/Exports/Env/Scatter_ShellFragments",
+   "group": "nest",
+   "position": [
+    6.06,
+    0.061,
+    0.441
+   ],
+   "yaw": 50.51,
+   "scale": 1.192,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_ShellFragments",
+   "folder": "ArtSource/Exports/Env/Scatter_ShellFragments",
+   "group": "nest",
+   "position": [
+    9.512,
+    0.085,
+    3.253
+   ],
+   "yaw": 307.04,
+   "scale": 1.014,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_GlowTree",
+   "folder": "ArtSource/Exports/Env/Flora_GlowTree",
+   "group": "pond",
+   "position": [
+    -2.271,
+    0.035,
+    -4.109
+   ],
+   "yaw": 270.62,
+   "scale": 1.068,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Flora_GlowTree",
+   "folder": "ArtSource/Exports/Env/Flora_GlowTree",
+   "group": "pond",
+   "position": [
+    1.953,
+    -0.029,
+    -6.214
+   ],
+   "yaw": 168.0,
+   "scale": 0.993,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Flora_Frond",
+   "folder": "ArtSource/Exports/Env/Flora_Frond",
+   "group": "pond",
+   "position": [
+    -1.404,
+    0.002,
+    -0.353
+   ],
+   "yaw": 48.24,
+   "scale": 0.944,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Frond",
+   "folder": "ArtSource/Exports/Env/Flora_Frond",
+   "group": "pond",
+   "position": [
+    -2.284,
+    0.005,
+    -2.133
+   ],
+   "yaw": 40.72,
+   "scale": 0.949,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Frond",
+   "folder": "ArtSource/Exports/Env/Flora_Frond",
+   "group": "pond",
+   "position": [
+    -1.23,
+    0.007,
+    -5.131
+   ],
+   "yaw": 317.99,
+   "scale": 0.983,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Frond",
+   "folder": "ArtSource/Exports/Env/Flora_Frond",
+   "group": "pond",
+   "position": [
+    1.947,
+    0.025,
+    -5.188
+   ],
+   "yaw": 291.53,
+   "scale": 1.112,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Frond",
+   "folder": "ArtSource/Exports/Env/Flora_Frond",
+   "group": "pond",
+   "position": [
+    4.563,
+    0.024,
+    -4.57
+   ],
+   "yaw": 272.07,
+   "scale": 0.957,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Flora_Mushroom",
+   "folder": "ArtSource/Exports/Env/Flora_Mushroom",
+   "group": "pond",
+   "position": [
+    -0.819,
+    -0.016,
+    0.856
+   ],
+   "yaw": 106.77,
+   "scale": 0.848,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Flora_Mushroom",
+   "folder": "ArtSource/Exports/Env/Flora_Mushroom",
+   "group": "pond",
+   "position": [
+    -1.404,
+    0.021,
+    -2.431
+   ],
+   "yaw": 122.13,
+   "scale": 0.84,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Flora_Mushroom",
+   "folder": "ArtSource/Exports/Env/Flora_Mushroom",
+   "group": "pond",
+   "position": [
+    1.04,
+    0.002,
+    -5.058
+   ],
+   "yaw": 320.34,
+   "scale": 0.931,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Flora_Mushroom",
+   "folder": "ArtSource/Exports/Env/Flora_Mushroom",
+   "group": "pond",
+   "position": [
+    3.934,
+    0.005,
+    -5.136
+   ],
+   "yaw": 212.35,
+   "scale": 0.819,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "pond",
+   "position": [
+    -0.265,
+    -0.081,
+    -0.917
+   ],
+   "yaw": 175.16,
+   "scale": 0.923,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "pond",
+   "position": [
+    -0.702,
+    -0.048,
+    -2.044
+   ],
+   "yaw": 15.26,
+   "scale": 1.11,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "pond",
+   "position": [
+    -0.589,
+    -0.056,
+    -3.429
+   ],
+   "yaw": 70.62,
+   "scale": 1.124,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "pond",
+   "position": [
+    1.096,
+    -0.067,
+    -4.508
+   ],
+   "yaw": 308.06,
+   "scale": 1.097,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Ash_Decor_LavaRock",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Decor_LavaRock",
+   "group": "lava",
+   "position": [
+    11.472,
+    -0.003,
+    0.892
+   ],
+   "yaw": 107.01,
+   "scale": 0.935,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Ash_Decor_LavaRock",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Decor_LavaRock",
+   "group": "lava",
+   "position": [
+    8.545,
+    0.083,
+    2.179
+   ],
+   "yaw": 35.36,
+   "scale": 0.865,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "lava",
+   "position": [
+    10.281,
+    0.035,
+    2.034
+   ],
+   "yaw": 99.35,
+   "scale": 1.032,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "lava",
+   "position": [
+    7.999,
+    0.066,
+    1.87
+   ],
+   "yaw": 174.95,
+   "scale": 0.745,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Spike",
+   "folder": "ArtSource/Exports/Env/Decor_Spike",
+   "group": "lava",
+   "position": [
+    5.638,
+    -0.024,
+    -0.254
+   ],
+   "yaw": 192.94,
+   "scale": 0.876,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Boulder",
+   "folder": "ArtSource/Exports/Env/Decor_Boulder",
+   "group": "lava",
+   "position": [
+    10.89,
+    0.002,
+    2.845
+   ],
+   "yaw": 17.58,
+   "scale": 0.935,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Ash_Decor_Fulgurite",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Decor_Fulgurite",
+   "group": "lava",
+   "position": [
+    11.844,
+    0.04,
+    -1.321
+   ],
+   "yaw": 52.37,
+   "scale": 0.964,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Ash_Decor_Fulgurite",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Decor_Fulgurite",
+   "group": "lava",
+   "position": [
+    10.886,
+    0.05,
+    1.085
+   ],
+   "yaw": 83.63,
+   "scale": 0.81,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Ash_Flora_EmberBloom",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Flora_EmberBloom",
+   "group": "lava",
+   "position": [
+    10.81,
+    0.087,
+    -0.03
+   ],
+   "yaw": 325.96,
+   "scale": 0.862,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Ash_Flora_EmberBloom",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Flora_EmberBloom",
+   "group": "lava",
+   "position": [
+    9.168,
+    0.105,
+    1.634
+   ],
+   "yaw": 274.99,
+   "scale": 1.058,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Ash_Flora_EmberBloom",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Flora_EmberBloom",
+   "group": "lava",
+   "position": [
+    7.012,
+    0.051,
+    0.825
+   ],
+   "yaw": 326.07,
+   "scale": 0.932,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Ash_Flora_EmberBloom",
+   "folder": "ArtSource/Exports/Env/AshenReach/Ash_Flora_EmberBloom",
+   "group": "lava",
+   "position": [
+    6.368,
+    0.023,
+    -0.264
+   ],
+   "yaw": 80.69,
+   "scale": 0.97,
+   "sway": true,
+   "glow_pool": true
+  },
+  {
+   "asset": "Decor_Column",
+   "folder": "ArtSource/Exports/Env/Decor_Column",
+   "group": "sand",
+   "position": [
+    -4.192,
+    -0.003,
+    4.884
+   ],
+   "yaw": 324.76,
+   "scale": 1.065,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "South_Decor_ShatteredPillar",
+   "folder": "ArtSource/Exports/Env/SouthernCrown/South_Decor_ShatteredPillar",
+   "group": "sand",
+   "position": [
+    -4.004,
+    -0.015,
+    8.092
+   ],
+   "yaw": 86.7,
+   "scale": 0.916,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Crystal_B",
+   "folder": "ArtSource/Exports/Crystal_B",
+   "group": "sand",
+   "position": [
+    0.049,
+    0.374,
+    8.096
+   ],
+   "yaw": 24.78,
+   "scale": 0.826,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_B",
+   "folder": "ArtSource/Exports/Crystal_B",
+   "group": "sand",
+   "position": [
+    -2.971,
+    -0.053,
+    8.503
+   ],
+   "yaw": 298.15,
+   "scale": 0.889,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Rock_B",
+   "folder": "ArtSource/Exports/Rock_B",
+   "group": "sand",
+   "position": [
+    -4.889,
+    0.023,
+    5.6
+   ],
+   "yaw": 200.3,
+   "scale": 0.886,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_B",
+   "folder": "ArtSource/Exports/Rock_B",
+   "group": "sand",
+   "position": [
+    -4.317,
+    -0.027,
+    4.078
+   ],
+   "yaw": 247.97,
+   "scale": 0.741,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "North_Decor_IceShard",
+   "folder": "ArtSource/Exports/Env/NorthernCrown/North_Decor_IceShard",
+   "group": "ice",
+   "position": [
+    -1.065,
+    -0.044,
+    2.265
+   ],
+   "yaw": 277.68,
+   "scale": 0.934,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "North_Decor_IceShard",
+   "folder": "ArtSource/Exports/Env/NorthernCrown/North_Decor_IceShard",
+   "group": "ice",
+   "position": [
+    -2.99,
+    0.015,
+    2.829
+   ],
+   "yaw": 231.15,
+   "scale": 0.977,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "North_Decor_FrozenCrystal",
+   "folder": "ArtSource/Exports/Env/NorthernCrown/North_Decor_FrozenCrystal",
+   "group": "ice",
+   "position": [
+    -4.009,
+    0.015,
+    3.191
+   ],
+   "yaw": 136.34,
+   "scale": 0.987,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "North_Flora_FrostFern",
+   "folder": "ArtSource/Exports/Env/NorthernCrown/North_Flora_FrostFern",
+   "group": "ice",
+   "position": [
+    -1.518,
+    0.025,
+    -1.598
+   ],
+   "yaw": 254.17,
+   "scale": 1.091,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "North_Flora_FrostFern",
+   "folder": "ArtSource/Exports/Env/NorthernCrown/North_Flora_FrostFern",
+   "group": "ice",
+   "position": [
+    -0.563,
+    -0.012,
+    -0.144
+   ],
+   "yaw": 271.8,
+   "scale": 0.813,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_DeadTree",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_DeadTree",
+   "group": "bog",
+   "position": [
+    7.393,
+    1.287,
+    3.959
+   ],
+   "yaw": 158.59,
+   "scale": 0.987,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "bog",
+   "position": [
+    9.776,
+    0.017,
+    3.712
+   ],
+   "yaw": 188.08,
+   "scale": 1.076,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "bog",
+   "position": [
+    11.157,
+    -0.092,
+    4.014
+   ],
+   "yaw": 139.05,
+   "scale": 0.943,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "bog",
+   "position": [
+    12.068,
+    -0.096,
+    5.506
+   ],
+   "yaw": 49.53,
+   "scale": 1.186,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Flora_Reed",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Flora_Reed",
+   "group": "bog",
+   "position": [
+    12.263,
+    -0.052,
+    6.799
+   ],
+   "yaw": 308.23,
+   "scale": 0.852,
+   "sway": true,
+   "glow_pool": false
+  },
+  {
+   "asset": "Mire_Decor_Fungus",
+   "folder": "ArtSource/Exports/Env/Mirewood/Mire_Decor_Fungus",
+   "group": "bog",
+   "position": [
+    10.322,
+    0.028,
+    3.222
+   ],
+   "yaw": 314.02,
+   "scale": 0.974,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "BuildPadTile",
+   "folder": "ArtSource/Exports/Env/BuildPadTile",
+   "group": "outpost",
+   "position": [
+    -0.05,
+    0.422,
+    9.25
+   ],
+   "yaw": 8.0,
+   "scale": 1.0,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "BuildPadTile",
+   "folder": "ArtSource/Exports/Env/BuildPadTile",
+   "group": "outpost",
+   "position": [
+    1.05,
+    0.419,
+    9.6
+   ],
+   "yaw": 8.0,
+   "scale": 1.0,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Tower_Gun_T1",
+   "folder": "ArtSource/Exports/Tower_Gun",
+   "group": "outpost",
+   "position": [
+    -0.05,
+    0.542,
+    9.25
+   ],
+   "yaw": 172.0,
+   "scale": 1.0,
+   "note": "stands on the pad (pad top 0.12)",
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Tower_Laser_T1",
+   "folder": "ArtSource/Exports/Tower_Laser",
+   "group": "outpost",
+   "position": [
+    1.05,
+    0.539,
+    9.6
+   ],
+   "yaw": 200.0,
+   "scale": 1.0,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Cutscene_Beacon",
+   "folder": "ArtSource/Exports/Cutscene_Beacon",
+   "group": "outpost",
+   "position": [
+    0.65,
+    0.413,
+    10.55
+   ],
+   "yaw": 190.0,
+   "scale": 0.8,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_C",
+   "folder": "ArtSource/Exports/Crystal_C",
+   "group": "outpost",
+   "position": [
+    -0.8,
+    0.348,
+    10.3
+   ],
+   "yaw": 61.08,
+   "scale": 0.7,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Rock_A",
+   "folder": "ArtSource/Exports/Rock_A",
+   "group": "scatter",
+   "position": [
+    9.139,
+    -0.019,
+    7.414
+   ],
+   "yaw": 49.49,
+   "scale": 0.962,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_A",
+   "folder": "ArtSource/Exports/Rock_A",
+   "group": "scatter",
+   "position": [
+    0.855,
+    0.211,
+    7.535
+   ],
+   "yaw": 295.77,
+   "scale": 0.632,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_A",
+   "folder": "ArtSource/Exports/Rock_A",
+   "group": "scatter",
+   "position": [
+    -5.282,
+    -0.03,
+    3.985
+   ],
+   "yaw": 53.57,
+   "scale": 1.058,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_A",
+   "folder": "ArtSource/Exports/Rock_A",
+   "group": "scatter",
+   "position": [
+    0.276,
+    -0.04,
+    -5.636
+   ],
+   "yaw": 216.59,
+   "scale": 0.632,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_A",
+   "folder": "ArtSource/Exports/Rock_A",
+   "group": "scatter",
+   "position": [
+    10.037,
+    0.034,
+    -4.342
+   ],
+   "yaw": 217.96,
+   "scale": 0.854,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_C",
+   "folder": "ArtSource/Exports/Rock_C",
+   "group": "scatter",
+   "position": [
+    8.736,
+    -0.018,
+    9.638
+   ],
+   "yaw": 330.42,
+   "scale": 0.982,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_C",
+   "folder": "ArtSource/Exports/Rock_C",
+   "group": "scatter",
+   "position": [
+    -1.08,
+    0.333,
+    9.612
+   ],
+   "yaw": 97.1,
+   "scale": 0.603,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_C",
+   "folder": "ArtSource/Exports/Rock_C",
+   "group": "scatter",
+   "position": [
+    -1.486,
+    0.026,
+    -3.367
+   ],
+   "yaw": 98.81,
+   "scale": 0.811,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Rock_C",
+   "folder": "ArtSource/Exports/Rock_C",
+   "group": "scatter",
+   "position": [
+    7.685,
+    -0.038,
+    -4.42
+   ],
+   "yaw": 40.7,
+   "scale": 0.558,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Boulder",
+   "folder": "ArtSource/Exports/Env/Decor_Boulder",
+   "group": "scatter",
+   "position": [
+    7.183,
+    -0.076,
+    10.228
+   ],
+   "yaw": 90.07,
+   "scale": 0.926,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Decor_Boulder",
+   "folder": "ArtSource/Exports/Env/Decor_Boulder",
+   "group": "scatter",
+   "position": [
+    6.452,
+    -0.06,
+    -4.397
+   ],
+   "yaw": 204.02,
+   "scale": 0.992,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    12.608,
+    -0.052,
+    4.303
+   ],
+   "yaw": 61.2,
+   "scale": 0.903,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    5.938,
+    1.194,
+    7.824
+   ],
+   "yaw": 32.34,
+   "scale": 1.112,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    2.209,
+    1.34,
+    5.292
+   ],
+   "yaw": 92.55,
+   "scale": 0.991,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    0.336,
+    -0.03,
+    3.109
+   ],
+   "yaw": 63.98,
+   "scale": 1.256,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    -0.278,
+    0.009,
+    0.264
+   ],
+   "yaw": 20.64,
+   "scale": 1.189,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    -0.315,
+    0.034,
+    -5.776
+   ],
+   "yaw": 350.66,
+   "scale": 1.213,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    7.508,
+    -0.058,
+    -5.441
+   ],
+   "yaw": 274.34,
+   "scale": 1.225,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_Pebbles",
+   "folder": "ArtSource/Exports/Env/Scatter_Pebbles",
+   "group": "scatter",
+   "position": [
+    11.255,
+    0.122,
+    -0.668
+   ],
+   "yaw": 247.48,
+   "scale": 1.112,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    6.534,
+    1.952,
+    4.589
+   ],
+   "yaw": 80.57,
+   "scale": 1.083,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    3.176,
+    0.873,
+    7.979
+   ],
+   "yaw": 84.94,
+   "scale": 1.114,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    -4.403,
+    0.059,
+    6.136
+   ],
+   "yaw": 309.6,
+   "scale": 1.067,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    -0.354,
+    -0.005,
+    0.97
+   ],
+   "yaw": 242.88,
+   "scale": 1.167,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    3.233,
+    -0.007,
+    -6.6
+   ],
+   "yaw": 66.58,
+   "scale": 1.038,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Scatter_CrystalSplinters",
+   "folder": "ArtSource/Exports/Env/Scatter_CrystalSplinters",
+   "group": "scatter",
+   "position": [
+    12.229,
+    0.048,
+    -1.755
+   ],
+   "yaw": 252.87,
+   "scale": 1.01,
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "CrystalVein",
+   "folder": "ArtSource/Exports/Env/CrystalVein",
+   "group": "scatter",
+   "position": [
+    6.421,
+    1.851,
+    6.635
+   ],
+   "yaw": 58.7,
+   "scale": 0.885,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "CrystalVein",
+   "folder": "ArtSource/Exports/Env/CrystalVein",
+   "group": "scatter",
+   "position": [
+    -1.866,
+    0.021,
+    8.605
+   ],
+   "yaw": 354.4,
+   "scale": 0.833,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "CrystalVein",
+   "folder": "ArtSource/Exports/Env/CrystalVein",
+   "group": "scatter",
+   "position": [
+    -0.839,
+    0.035,
+    -4.578
+   ],
+   "yaw": 357.97,
+   "scale": 0.837,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_B",
+   "folder": "ArtSource/Exports/Crystal_B",
+   "group": "scatter",
+   "position": [
+    11.779,
+    0.037,
+    0.375
+   ],
+   "yaw": 269.22,
+   "scale": 0.792,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_C",
+   "folder": "ArtSource/Exports/Crystal_C",
+   "group": "scatter",
+   "position": [
+    -1.384,
+    0.175,
+    8.783
+   ],
+   "yaw": 79.53,
+   "scale": 0.863,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_C",
+   "folder": "ArtSource/Exports/Crystal_C",
+   "group": "scatter",
+   "position": [
+    -2.499,
+    -0.029,
+    2.806
+   ],
+   "yaw": 289.14,
+   "scale": 0.625,
+   "sway": false,
+   "glow_pool": true
+  },
+  {
+   "asset": "Crystal_A",
+   "folder": "ArtSource/Exports/Crystal_A",
+   "group": "underside",
+   "position": [
+    0.8,
+    -6.579,
+    3.0
+   ],
+   "yaw": 173.71,
+   "scale": 1.1,
+   "flip_x_180": true,
+   "note": "hangs point down from the spire tip",
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Crystal_A",
+   "folder": "ArtSource/Exports/Crystal_A",
+   "group": "underside",
+   "position": [
+    7.2,
+    -7.657,
+    1.0
+   ],
+   "yaw": 178.21,
+   "scale": 1.1,
+   "flip_x_180": true,
+   "note": "hangs point down from the spire tip",
+   "sway": false,
+   "glow_pool": false
+  },
+  {
+   "asset": "Crystal_A",
+   "folder": "ArtSource/Exports/Crystal_A",
+   "group": "underside",
+   "position": [
+    4.6,
+    -7.351,
+    6.8
+   ],
+   "yaw": 162.65,
+   "scale": 1.1,
+   "flip_x_180": true,
+   "note": "hangs point down from the spire tip",
+   "sway": false,
+   "glow_pool": false
+  }
+ ],
+ "groups": {
+  "outpost": "new in round 26 (towers on the rise at the back); optional",
+  "underside": "hang under the island, only seen when the camera drifts"
+ }
+}

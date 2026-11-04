@@ -29,24 +29,42 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Terrain_SinksPoolsBelowTheirSurfaceAndFlattensThePorch()
+        public void BlenderIsland_GroundSinksEveryPoolBelowItsSurfaceAndHoldsThePorch()
         {
-            VisualTheme theme = ScriptableObject.CreateInstance<VisualTheme>();
-            var nest = new Vector3(4f, 0f, 5f);
-            var mouth = nest + Vector3.back * 3f;
-            var pond = new MenuTerrain.Pool(new Vector3(0f, 0f, -2f), 2f, TerrainKind.Water, theme);
-            var lava = new MenuTerrain.Pool(new Vector3(8f, 0f, -1f), 2f, TerrainKind.Lava, theme);
-            var terrain = new MenuTerrain(new Vector3(3f, 0f, 2f), 11f, nest, 4f, 2.5f, mouth, 0.3f, new[] { pond, lava }, theme, 1f);
+            var stage = AssetDatabase.LoadAssetAtPath<MenuStageDefinition>(StagePath);
+            MenuDioramaArt art = stage != null ? stage.Art : null;
+            Assert.IsNotNull(art, "run Tools/Generate/Blender Menu Diorama");
+            Assert.IsTrue(art.IsComplete, "island, materials and height map");
+            Assert.IsTrue(art.HeightMap.isReadable, "the height map is read on the CPU");
+            var terrain = new MenuTerrain(art);
 
-            Assert.Less(terrain.Height(pond.Centre.x, pond.Centre.z), TerrainLiquidBuilder.SurfaceLevel(TerrainKind.Water), "the pond bed lies under the water");
-            Assert.Less(terrain.Height(lava.Centre.x, lava.Centre.z), TerrainLiquidBuilder.SurfaceLevel(TerrainKind.Lava), "the lava bed lies under the lava");
-            Assert.Greater(terrain.Height(pond.Centre.x + 4f, pond.Centre.z), TerrainLiquidBuilder.SurfaceLevel(TerrainKind.Water), "the bank stands above the water");
-            Assert.AreEqual(0.3f, terrain.Height(mouth.x, mouth.z), 0.001f, "the porch is flat at its height");
-            Assert.Greater(terrain.Height(nest.x, nest.z), 2f, "the mound rises");
-            Assert.Less(terrain.Height(3f + 11f, 2f), -3f, "the cliff falls away");
-            Assert.Greater(terrain.PoolCells(pond, 0.5f).Count, 30);
+            Assert.AreEqual(5, art.Pools.Length, "five pools in the layout");
+            foreach (MenuDioramaPool pool in art.Pools)
+            {
+                Vector3 centre = pool.Centre;
+                Assert.Less(terrain.Height(centre.x, centre.z), pool.Surface, $"the {pool.Kind} bed lies under its surface");
+                Assert.AreEqual(TerrainLiquidBuilder.SurfaceLevel(pool.Kind), pool.Surface, 0.001f, $"{pool.Kind} sits at the level's liquid height");
+                Assert.GreaterOrEqual(pool.Outline.Length, 3, $"{pool.Kind} has a shore");
+            }
 
-            Object.DestroyImmediate(theme);
+            // The crawlers step out of the hive mouth onto a flat porch at 0.3 (MenuDiorama's route).
+            Assert.AreEqual(0.3f, terrain.Height(4.8f, 1.7f), 0.08f, "the porch in front of the mouth");
+            Assert.Greater(terrain.Height(4.8f, 6.5f), 1.5f, "the hive mound rises behind it");
+        }
+
+        [Test]
+        public void BlenderIsland_EveryPlacementWearsAnImportedModel()
+        {
+            var stage = AssetDatabase.LoadAssetAtPath<MenuStageDefinition>(StagePath);
+            MenuDioramaArt art = stage != null ? stage.Art : null;
+            Assert.IsNotNull(art, "run Tools/Generate/Blender Menu Diorama");
+            Assert.AreEqual(105, art.Placements.Length, "every item of Menu_Island_layout.json");
+            foreach (MenuDioramaModel model in art.Models)
+            {
+                Assert.IsTrue(model.IsRigged || (model.Mesh != null && model.Mesh.IsValid), $"{model.Name} has a mesh and a material");
+            }
+
+            Assert.GreaterOrEqual(art.Lights.Length, 4, "the layout's lights");
         }
     }
 }

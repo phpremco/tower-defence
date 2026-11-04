@@ -73,7 +73,8 @@ namespace Game.Core
             return _quad;
         }
 
-        private static Material Additive(Texture2D texture, Color colour)
+        /// <summary>An unlit additive material wearing <paramref name="texture"/> in <paramref name="colour"/> (black adds nothing).</summary>
+        public static Material Additive(Texture2D texture, Color colour)
         {
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
             material.SetFloat("_Surface", 1f);

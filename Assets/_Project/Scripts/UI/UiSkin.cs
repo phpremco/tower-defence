@@ -21,6 +21,8 @@ namespace Game.UI
         [SerializeField] private Sprite _cardGreen;
         [SerializeField] private Sprite _cardYellow;
         [SerializeField] private Sprite _cardRed;
+        [Tooltip("The pedestal, halo and backdrop the upgrade screen's models turn on (Blender round 27).")]
+        [SerializeField] private DisplayStageArt _displayStage;
 
         public Font Font => _font;
         public Font NarrowFont => _narrowFont != null ? _narrowFont : _font;
@@ -37,5 +39,8 @@ namespace Game.UI
         public Sprite CardGreen => _cardGreen;
         public Sprite CardYellow => _cardYellow;
         public Sprite CardRed => _cardRed;
+
+        /// <summary>The model preview's stage; null on data generated before it existed.</summary>
+        public DisplayStageArt DisplayStage => _displayStage;
     }
 }

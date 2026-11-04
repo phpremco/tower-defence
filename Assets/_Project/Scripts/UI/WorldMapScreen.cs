@@ -231,21 +231,23 @@ namespace Game.UI
             _halo = halo.rectTransform;
             _haloImage = halo;
 
-            // The generator bakes the maps; painting them here is the fallback for a catalog without them, and the
-            // result lives on between visits to the screen because it takes a moment.
-            if (_globeMaps == null && _catalog.HasGlobeMaps)
+            // The planet painted in Blender, with the colony lights of the level sites as a shader layer.
+            PlanetTextureSet painted = _catalog.PlanetTextures;
+            if (painted != null)
             {
-                _globeMaps = new GlobePainter.Maps { Albedo = _catalog.GlobeAlbedo, Normal = _catalog.GlobeNormal, Gloss = _catalog.GlobeGloss, Emission = _catalog.GlobeLights };
-                _globeClouds = _catalog.GlobeClouds;
+                _globe = PlanetGlobe.Create(view, GlobeSize, painted, ColonySites.Of(_catalog), _catalog.PlanetStyle);
+                return;
             }
 
+            // Fallback for a campaign without the painted set: maps painted in code, kept between visits because
+            // painting takes a moment.
             if (_globeMaps == null)
             {
                 _globeMaps = GlobePainter.Paint(GlobeTexture, GlobeTexture / 2, GlobePainter.RegionsOf(_catalog));
                 _globeClouds = new[] { GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 0f), GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 200f) };
             }
 
-            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds, _catalog.PlanetStyle, _catalog.PlanetTextures);
+            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds, _catalog.PlanetStyle);
         }
 
         // A level wears its palette, so the lava caves glow orange on the map and the woods turquoise.

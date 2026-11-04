@@ -1922,3 +1922,59 @@ Blender rounds 23, 24, 24b and 25b (gates only) are in the game; the full genera
   disc (its baked camo) rather than dark ground with glowing cracks; Low uses the full bank meshes (no decimation, ~2.7k
   tris per segment); burrow skins per continent are not wired (the root maps are the Crystal Plains skin); the static
   `Origin_*`/`Burrow_A` stay as the fallback for levels without a definition.
+
+## Menus from Blender: painted planet with shader colony lights, menu island, display stage (2026-11-04)
+
+Blender rounds 21/22b (planet in the menus), 26 (menu diorama, island and hive mouth) and 27 (upgrade-screen display
+stage) are in the game. Not committed; the full generator was not run (targeted menu items below).
+- **Planet (map globe = level picker; the main menu shows no planet):** the globe and the cutscene planet wear only the
+  painted `Planet_S69` set. The colony lights are no longer a baked texture: `ColonySites` hands the shader up to 32
+  level sites (direction, 3.85 deg reach, warm colour with 30 % of the region colour), and `Game/Planet`'s painted path
+  draws a speckled glow round the nearest site (`ColonyGlow`, arrays outside the material buffer). Region highlight and
+  the per-region cloud clearing are unchanged. The procedural globe bake is gone: `Art/Planet/Globe_*.png` deleted,
+  `CampaignCatalog` lost its globe texture fields, generator step "Globe" became "Planet style" (styles only, deletes
+  stale globe maps), the planet layout menu no longer rebakes. `GlobePainter` stays only as the explicit runtime
+  fallback when the painted set is missing (and for site ruggedness).
+- **Menu island:** `BlenderMenuBuilder` (menu `Tools/Generate/Blender Menu Diorama (sync, island, props, pools)`,
+  generator step "Menu art" after "Menu stage") syncs `Menu_Island` + `Menu_NestMouth`, reads `Menu_Island_layout.json`
+  with a small JSON reader (`BlenderJson`) and writes `Data/Art/Menu/MenuDioramaArt.asset` (on `MainMenuStage._art`):
+  island mesh, Top/Cliff `EnvironmentLit` materials (High/Low), the 16-bit height map (imported R16, readable), camera,
+  5 pool outlines, 4 lights and 105 placements of 34 models (static ones drawn through `EnvironmentInstancer`, the two
+  T1 towers and the beacon instantiated and held in frame 0 of Idle/IdleSweep). Two import facts handled in data:
+  (1) every FBX arrives turned 180 deg about Y from the README frame (as noted in stage 3a), so the island is baked into
+  the layout frame and every placement yaw gets +180; (2) the island FBX has one material slot for all faces, so the
+  builder splits it: triangles whose UVs follow the Top mapping are Top (8463), the rest Cliff (5337), matching the
+  report exactly (`Data/Art/Menu/Menu_Island_Split.asset`).
+- **Menu runtime:** `MenuTerrain` is now a bilinear lookup in the height map (walkers measured on it: Roller 0.32 over
+  0.30, Prowler 0.26/0.26, queen on the porch at 0.30). `MenuDiorama` lost the procedural island, mouth (hole quad + rim
+  torus) and the PropFactory rings; pools are `LiquidShape`s from the outlines (new outline constructor; lightly smoothed,
+  turned counter-clockwise) cut with the round-24 `Game/Liquid` look of their theme (`TerrainLiquidBuilder.BuildOutlinedPool`)
+  and banked with the continent's `BankSweep`s (`LiquidBankBuilder.Build` now takes any ground function). The menu is lit
+  by the hive theme's own rig (`ThemeLighting.Apply`) instead of its old dim sun, and sets the flora wind from the
+  theme's environment set (`LevelVisualBuilder.SetWind`, now public). Island albedo x2.2 and glow x1.4 in the builder
+  (painted for Blender's brighter preview light; at x1 it read black under the game rig).
+- **Upgrade screen:** `BlenderDisplayStageBuilder` (menu `Tools/Generate/Blender Display Stage (sync, pedestal, halo,
+  backdrop)`, generator step "Display stage art" after "UI skin") writes `Data/Art/UI/DisplayStageArt.asset` on
+  `UiSkin._displayStage`. `ModelPreview` stands the model on the pedestal (pivot = top face, uniform scale), turns its
+  top ring at -6 deg/s, lays the additive halo (`GlowDecal.Additive`, now public; texture linear) at the foot turning
+  3 deg/s, and hangs the 2:1 bay backdrop (40 x 20). Pedestal radius follows the narrow side of the footprint (x1.6,
+  never above the old 1.25 x widest side, min 0.3), so long barrels no longer set the plate; `Frame()` adds 0.1 x radius
+  to the height and lifts the model by the same. Pedestal material: tower setup, ColonyRim rim 1.0, emission ColonyRim x1.3.
+  The round-27 FBX nodes arrive upside down (270 deg about X), so the builder turns them half a turn.
+- **Subjects audited** (`preview_audit.cs`): every tower (6 in the roster), Mercer, the base and the 3 drones show only
+  imported Blender meshes; nothing falls back to a code-built shape.
+- **Importer:** `BlenderModelImporter` v3: Menu_Island/Menu_NestMouth/UI_Display import as static models; map sizes
+  Menu_Island 4096/2048 (cliff 4096 x 512), UI_Display 2048/1024; `*_Height` as readable uncompressed R16;
+  `UI_DisplayRing.png` linear. The version bump reimported every model once (the third-party SpaceKit FBX log
+  "Identifier uniqueness" warnings on that reimport only).
+- **Tests:** EditMode 349/349 (MenuStageTests: the Blender island sinks every pool under its surface and holds the porch,
+  every placement wears an imported model; new DisplayStageArtTests 2). PlayMode one class at a time: ContinentSimulation
+  2/2, StoryCrystal 2/2, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3,
+  BalanceProbe 3/3, ModelPerformance 1/1. 0 compile errors/warnings. Save restored after the PlayMode runs (MD5 914E8160...).
+- **Tools:** `menu_shots.sh` (main menu stills), `upgrade_shots.sh` + `preview_audit.cs` (upgrade screen per subject and a
+  preview PNG of every subject), `menu_zoom.cs`, `menu_art_probe.cs`, `menu_mesh_probe.cs`, `menu_ground_probe.cs`,
+  `display_probe.cs`, `planet_shader_probe.cs`, `menu_delete_globe.cs` (one-off).
+- **Open / for Remco:** the menu water pool reads near black (it refracts the dark painted basin; the level water look is
+  shared, so not retuned here); the starfield and spores still use the default particle material (README suggests
+  `UI_Starfield.png` and the Particles_Atlas cells, which are not imported yet); glow pools under props are still the
+  code radial decal (README: keep); island brightness x2.2 is a judgement call against the Blender render.

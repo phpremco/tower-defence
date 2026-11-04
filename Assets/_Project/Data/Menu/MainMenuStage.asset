@@ -18,6 +18,7 @@ MonoBehaviour:
   _nestTheme: {fileID: 11400000, guid: 217f8804341b7fa498b71395b91f4a36, type: 2}
   _iceTheme: {fileID: 11400000, guid: 217f8804341b7fa498b71395b91f4a36, type: 2}
   _swampTheme: {fileID: 11400000, guid: 217f8804341b7fa498b71395b91f4a36, type: 2}
+  _art: {fileID: 11400000, guid: 95a4fa2f8252b844da2c8d370c5c4be7, type: 2}
   _nestCreatures:
   - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
   - {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}

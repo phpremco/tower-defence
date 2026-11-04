@@ -20,6 +20,10 @@ namespace Game.UI
         [SerializeField] private VisualTheme _iceTheme;
         [SerializeField] private VisualTheme _swampTheme;
 
+        [Header("Look")]
+        [Tooltip("The island, its props, pools, lights and camera as built in Blender (generator step \"Menu art\").")]
+        [SerializeField] private MenuDioramaArt _art;
+
         [Header("Creatures")]
         [Tooltip("Crawls out of the hive mouth, roams around the mound and goes back in.")]
         [SerializeField] private EnemyDefinition[] _nestCreatures = new EnemyDefinition[0];
@@ -40,6 +44,24 @@ namespace Game.UI
         /// <summary>The frozen lake and the bog pool; either may be null while that world is not generated yet.</summary>
         public VisualTheme IceTheme => _iceTheme;
         public VisualTheme SwampTheme => _swampTheme;
+
+        /// <summary>The Blender island and its dressing; null on data generated before it existed.</summary>
+        public MenuDioramaArt Art => _art;
+
+        /// <summary>The theme a slot names; null for <see cref="MenuThemeSlot.None"/> or a theme not generated yet.</summary>
+        public VisualTheme Theme(MenuThemeSlot slot)
+        {
+            switch (slot)
+            {
+                case MenuThemeSlot.Forest: return _forestTheme;
+                case MenuThemeSlot.Lava: return _lavaTheme;
+                case MenuThemeSlot.Ruins: return _ruinsTheme;
+                case MenuThemeSlot.Nest: return _nestTheme;
+                case MenuThemeSlot.Ice: return _iceTheme;
+                case MenuThemeSlot.Swamp: return _swampTheme;
+                default: return null;
+            }
+        }
         public EnemyDefinition[] NestCreatures => _nestCreatures;
         public EnemyDefinition NestGuardian => _nestGuardian;
         public EnemyDefinition Flyer => _flyer;

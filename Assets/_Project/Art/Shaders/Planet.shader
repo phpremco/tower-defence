@@ -44,7 +44,6 @@ Shader "Game/Planet"
         _Octaves ("Noise octaves", Range(1, 8)) = 6
         _MaskMap ("Painted mask (R land, G gloss)", 2D) = "black" {}
         _RegionMap ("Region ids (point)", 2D) = "black" {}
-        _ColonyMap ("Colony lights", 2D) = "black" {}
         [HDR] _ColonyColor ("Colony light colour", Color) = (1, 1, 1, 1)
         _Grain ("Land grain", Range(0, 0.5)) = 0.12
         _SelectedRegion ("Selected region id (-1 none)", Float) = -1
@@ -81,7 +80,6 @@ Shader "Game/Planet"
             TEXTURE2D(_CloudMap); SAMPLER(sampler_CloudMap);
             TEXTURE2D(_MaskMap); SAMPLER(sampler_MaskMap);
             TEXTURE2D(_RegionMap); SAMPLER(sampler_RegionMap);
-            TEXTURE2D(_ColonyMap); SAMPLER(sampler_ColonyMap);
 
             CBUFFER_START(UnityPerMaterial)
             float4 _SunDirection;
@@ -124,6 +122,13 @@ Shader "Game/Planet"
             half _RegionRim;
             half _SeaLift;
             CBUFFER_END
+
+            // Colony lights of the level sites (ColonySites.cs): xyz the site on the unit sphere in the planet's frame,
+            // w its reach in radians; arrays live outside the material buffer, as material arrays must.
+            #define COLONY_SITES 32
+            float4 _ColonySites[COLONY_SITES];
+            half4 _ColonySiteColors[COLONY_SITES];
+            float _ColonySiteCount;
 
             struct Attributes
             {
@@ -192,6 +197,34 @@ Shader "Game/Planet"
             }
 
         #if defined(_PLANET_TEXTURED)
+            // A scatter of warm points round every level site, brightest at its heart (the nearest site wins, as on
+            // the old baked map), so the settlements read on the painted land by night and on the lit map.
+            half3 ColonyGlow(float3 p)
+            {
+                float settlement = 0.0;
+                half3 colour = 0.0;
+                int count = (int)_ColonySiteCount;
+                for (int i = 0; i < COLONY_SITES; i++)
+                {
+                    if (i >= count)
+                    {
+                        break;
+                    }
+
+                    float4 site = _ColonySites[i];
+                    float angle = acos(clamp(dot(p, site.xyz), -1.0, 1.0));
+                    float glow = 1.0 - smoothstep(0.0, site.w, angle);
+                    if (glow > settlement)
+                    {
+                        settlement = glow;
+                        colour = _ColonySiteColors[i].rgb;
+                    }
+                }
+
+                float speckle = smoothstep(0.58, 0.72, PlanetNoise(p * 104.0));
+                return colour * settlement * settlement * (0.25 + 0.75 * speckle);
+            }
+
             // A planet painted in Blender: its own coasts, biomes, gloss and glow; noise only adds a fine grain for
             // close views. The region map marks the chosen continent: its land lit a little brighter, the others a
             // little darker, and a soft rim of its colour in its sea along the coast.
@@ -206,7 +239,7 @@ Shader "Game/Planet"
                 ground.albedo = SAMPLE_TEXTURE2D(_AlbedoMap, sampler_AlbedoMap, input.uv).rgb * (1.0 + grain * _Grain * 2.0 * mask.r) * lerp(1.0, _SeaLift, ground.sea);
                 ground.normal = MapNormal(input, geometric, _BumpStrength);
                 ground.glow = SAMPLE_TEXTURE2D(_LightsMap, sampler_LightsMap, input.uv).rgb * _CityColor.rgb
-                    + SAMPLE_TEXTURE2D(_ColonyMap, sampler_ColonyMap, input.uv).rgb * _ColonyColor.rgb * mask.r;
+                    + ColonyGlow(p) * _ColonyColor.rgb * mask.r;
 
                 half4 region = SAMPLE_TEXTURE2D_LOD(_RegionMap, sampler_RegionMap, input.uv, 0);
                 float id = round(region.g * 255.0 / _RegionStep);

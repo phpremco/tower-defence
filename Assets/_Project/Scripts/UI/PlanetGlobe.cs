@@ -81,9 +81,15 @@ namespace Game.UI
         /// <summary>True while a snap turn towards a chosen place is still under way.</summary>
         public bool Turning => _snapping && (Mathf.Abs(Mathf.DeltaAngle(_yaw, _targetYaw)) > 0.5f || Mathf.Abs(_pitch - _targetPitch) > 0.5f);
 
-        /// <param name="painted">The planet painted in Blender: when set it replaces <paramref name="surface"/> and the cloud
-        /// maps, and <paramref name="surface"/>'s emission stays as the colony lights over its glow.</param>
-        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds, PlanetStyle style, PlanetTextureSet painted = null)
+        /// <summary>The globe wearing the planet painted in Blender, with the colony lights of <paramref name="sites"/> drawn over it.</summary>
+        public static PlanetGlobe Create(RectTransform parent, float size, PlanetTextureSet painted, ColonySites sites, PlanetStyle style) =>
+            Create(parent, size, style, painted, sites, null, null);
+
+        /// <summary>The fallback globe for a campaign without a painted planet: maps painted in code (<see cref="GlobePainter"/>).</summary>
+        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds, PlanetStyle style) =>
+            Create(parent, size, style, null, null, surface, clouds);
+
+        private static PlanetGlobe Create(RectTransform parent, float size, PlanetStyle style, PlanetTextureSet painted, ColonySites sites, GlobePainter.Maps surface, Texture2D[] clouds)
         {
             var go = new GameObject("PlanetGlobe", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -98,7 +104,7 @@ namespace Game.UI
             globe._rect = rect;
             globe._style = style;
             globe._painted = painted;
-            globe.Build(image, surface, clouds);
+            globe.Build(image, sites, surface, clouds);
             return globe;
         }
 
@@ -174,7 +180,7 @@ namespace Game.UI
             return new Vector2(local.x / halfExtent * 0.5f * _rect.rect.width, local.y / halfExtent * 0.5f * _rect.rect.height);
         }
 
-        private void Build(RawImage image, GlobePainter.Maps surface, Texture2D[] clouds)
+        private void Build(RawImage image, ColonySites sites, GlobePainter.Maps surface, Texture2D[] clouds)
         {
             _texture = new RenderTexture(TextureSize, TextureSize, 16);
             image.texture = _texture;
@@ -185,18 +191,20 @@ namespace Game.UI
 
             // The same planet materials as the cutscene, with the style's map overrides so every region stays readable.
             // A painted planet brings its own cloud map; both decks wear it, turned apart, so they never line up.
-            Texture2D lowDeck = clouds[0];
-            Texture2D highDeck = clouds[clouds.Length - 1];
+            Texture2D lowDeck;
+            Texture2D highDeck;
             float wisps = -1f;
             if (_painted != null)
             {
-                _surfaceMaterial = PlanetMaterials.Surface(_painted, surface.Emission, _style, forMap: true);
+                _surfaceMaterial = PlanetMaterials.Surface(_painted, sites ?? new ColonySites(), _style, forMap: true);
                 lowDeck = _painted.For(ModelQuality.IsLow).Clouds;
                 highDeck = lowDeck;
                 wisps = _painted.CloudWisps;
             }
             else
             {
+                lowDeck = clouds[0];
+                highDeck = clouds[clouds.Length - 1];
                 _surfaceMaterial = PlanetMaterials.Surface(surface, lowDeck, _style, forMap: true);
             }
 

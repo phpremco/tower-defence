@@ -1,0 +1,2070 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c21791fc2f62a6443bf10967afc950b0, type: 3}
+  m_Name: MenuDioramaArt
+  m_EditorClassIdentifier: Game.UI::Game.UI.MenuDioramaArt
+  _island: {fileID: 4300000, guid: 4d57b9efe195eeb4fa5d24dd01b5d5f9, type: 2}
+  _islandMaterials:
+  - {fileID: 2100000, guid: 4f52bba917bf4574c8365fec04f43b06, type: 2}
+  - {fileID: 2100000, guid: a43169bc264eec04cb514f0abea9feb4, type: 2}
+  _islandLowMaterials:
+  - {fileID: 2100000, guid: 0a23a3dd96610194b934232f15f7bb27, type: 2}
+  - {fileID: 2100000, guid: a33f4f08498c9b84585cf1ea9f00b91a, type: 2}
+  _heightMap: {fileID: 2800000, guid: 33b5347fc08f01f4580e3c493ea297f1, type: 3}
+  _minHeight: -1.4385
+  _maxHeight: 2.788
+  _heightOrigin: {x: -9.4, y: -10.8}
+  _heightSize: 26
+  _cameraFocus: {x: 3.1, y: 0.6, z: 1.8}
+  _cameraDistance: 15.5
+  _cameraPitch: 29
+  _cameraYaw: 6
+  _cameraFieldOfView: 36
+  _models:
+  - _name: Menu_NestMouth
+    _mesh:
+      _name: Menu_NestMouth
+      _mesh: {fileID: 6614929442923913227, guid: 0d71a849d83153a43b8f0489afb75af1, type: 3}
+      _material: {fileID: 2100000, guid: bd9268433355fdf49a1bba425889028b, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 67b2fb667ef129744abe2ec2eb1df908, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 1
+  - _name: Decor_Spire
+    _mesh:
+      _name: Decor_Spire
+      _mesh: {fileID: -2539930366100222090, guid: 5f1ebacbe5f145e4ab4660aff430155a, type: 3}
+      _material: {fileID: 2100000, guid: fa789f57ad61e104cb2897f9491185b0, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 4d79f40a15f18904ba34729fd061f326, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Decor_Spike
+    _mesh:
+      _name: Decor_Spike
+      _mesh: {fileID: 3621839714157612790, guid: dd147a056e3b9d142bd5882e070e385f, type: 3}
+      _material: {fileID: 2100000, guid: be05f868b9f21e34984888d799f36164, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c5b8b89970f47ab43b987f893e8cdc8e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Flora_Tendril
+    _mesh:
+      _name: Flora_Tendril
+      _mesh: {fileID: -5672764585805426463, guid: 41340c458daa9024ca325829e66d854d, type: 3}
+      _material: {fileID: 2100000, guid: d25111030bd8cd24f86805e29862b351, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: e6b36db175a02194d8dd7645784d9c50, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Egg_Cluster
+    _mesh:
+      _name: Egg_Cluster
+      _mesh: {fileID: 3859704423981392224, guid: 7d75a5394ca6e074cb7c583efcf8f725, type: 3}
+      _material: {fileID: 2100000, guid: 281fa50f498215848a33d711c883ba90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1387896f775b81a4180e0808a106588c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Scatter_ShellFragments
+    _mesh:
+      _name: Scatter_ShellFragments
+      _mesh: {fileID: -4815131634080202507, guid: bd2ece2b45ca0e34e9877a103269c040, type: 3}
+      _material: {fileID: 2100000, guid: 0cf435146461a804dac8c4d4518c6f27, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c9a977fe19a6f4e4e87407a5a3cc048f, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Flora_GlowTree
+    _mesh:
+      _name: Flora_GlowTree
+      _mesh: {fileID: 6653382824600790669, guid: 2e12af33d934e6647a9c9338f55b3b48, type: 3}
+      _material: {fileID: 2100000, guid: 832d079881dcffd44b3d1024753e3241, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: be8141f40d199ce49bd633a14a5eef91, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Flora_Frond
+    _mesh:
+      _name: Flora_Frond
+      _mesh: {fileID: -6745173335473831213, guid: fecd0c0283bfff9478efba941acf43aa, type: 3}
+      _material: {fileID: 2100000, guid: 4b9b6ccd8aedec94681b36a3d436b09f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: a95d8092e7f243644b87ce03faa3583b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Flora_Mushroom
+    _mesh:
+      _name: Flora_Mushroom
+      _mesh: {fileID: 4261056399712068587, guid: 8dc3e1a9b2220244aa556c086c7a18e1, type: 3}
+      _material: {fileID: 2100000, guid: 3475b57749de99140b3fc22b5b78d564, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 35ab70885f6620b47af70d7ef4c79f9f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Mire_Flora_Reed
+    _mesh:
+      _name: Mire_Flora_Reed
+      _mesh: {fileID: -456788785689120139, guid: 6337fe5a4f003114c9bc0a39c0741d2f, type: 3}
+      _material: {fileID: 2100000, guid: 51dfc558ce4b0e9438745b5c6eb1fbc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f77b1892b19725c41b9a7baf30f12eed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Ash_Decor_LavaRock
+    _mesh:
+      _name: Ash_Decor_LavaRock
+      _mesh: {fileID: 1929219196286791371, guid: 945e7a7a1eaf7e34ea81de07b148f722, type: 3}
+      _material: {fileID: 2100000, guid: d7dd7a497fb4f434f9749c991e0446ab, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9b89bd2512b332a4bbd13ae6d31eb1e1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Decor_Boulder
+    _mesh:
+      _name: Decor_Boulder
+      _mesh: {fileID: 5527434386966846922, guid: ce752fd6fafe6f247871c96a804b7ac2, type: 3}
+      _material: {fileID: 2100000, guid: 80c16de8ffa08dc4ba41a5ea9796fdb9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d89220e3ff2ac9b45b16aebe96c6c5d2, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Ash_Decor_Fulgurite
+    _mesh:
+      _name: Ash_Decor_Fulgurite
+      _mesh: {fileID: 6632604470755282695, guid: 778e1223857ca6e4ab4c97f140c57818, type: 3}
+      _material: {fileID: 2100000, guid: a2696c6af6e49424db3750041796803f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d2c2fcae1d174ff4abdb1b7549d7232a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Ash_Flora_EmberBloom
+    _mesh:
+      _name: Ash_Flora_EmberBloom
+      _mesh: {fileID: -2710054563026657304, guid: a7939b242b2da224f9ae5c5fa54d300f, type: 3}
+      _material: {fileID: 2100000, guid: 87076372a384a9a42ae77b06766a291e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: b0b4dbe212b154c42b2760a198cd0637, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Decor_Column
+    _mesh:
+      _name: Decor_Column
+      _mesh: {fileID: 9063317403895266749, guid: 412ad3a7b3185244aba10e821d34f345, type: 3}
+      _material: {fileID: 2100000, guid: 83edc6e432bd8c8439a4ea7ae80d75af, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 2041aac376a789e49a2db9c391220286, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: South_Decor_ShatteredPillar
+    _mesh:
+      _name: South_Decor_ShatteredPillar
+      _mesh: {fileID: 6706578095101924, guid: 27d30b847a55c054e830a0fc55f41e9c, type: 3}
+      _material: {fileID: 2100000, guid: a3b53b4d3fc4a4047a4675f634aa4dd1, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: f416f7b99756ec54c8597809fc3597c6, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Crystal_B
+    _mesh:
+      _name: Crystal_B
+      _mesh: {fileID: 4603723471363724302, guid: 5b626977a1e3c03488c5026d007db0d8, type: 3}
+      _material: {fileID: 2100000, guid: 948eac08145417c46a929c7d15572871, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 36aae88fa10c150438af17e120a80fd8, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Rock_B
+    _mesh:
+      _name: Rock_B
+      _mesh: {fileID: 1617438343633297580, guid: 2cba140043183274eb3516175c0f3a12, type: 3}
+      _material: {fileID: 2100000, guid: 64d25c3c6c5e6a44196411c9af233d30, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d688734c4b0df324eb25505ff4f82ce6, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: North_Decor_IceShard
+    _mesh:
+      _name: North_Decor_IceShard
+      _mesh: {fileID: 4880378230485305523, guid: 9439be601a220e947837b726e122cc86, type: 3}
+      _material: {fileID: 2100000, guid: 90b784e7e28e19d43a699ad3935e74c6, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9e4b877877988e9468f9f7faadacb5f0, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: North_Decor_FrozenCrystal
+    _mesh:
+      _name: North_Decor_FrozenCrystal
+      _mesh: {fileID: 378048624947182698, guid: be5f635b64e24cc4dbc79eeab2252c2a, type: 3}
+      _material: {fileID: 2100000, guid: 1762e0479b012ad44a8ed154cbeaf0b0, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1972532c7a859eb459562838d10fbdb0, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: North_Flora_FrostFern
+    _mesh:
+      _name: North_Flora_FrostFern
+      _mesh: {fileID: -7108172320375269532, guid: 538e4225cd41d0e41b11de2a4ce0357d, type: 3}
+      _material: {fileID: 2100000, guid: 89a33f9956fb0d14c9e23d16801619c4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: a8e6932e3a6c61941890c89e6114c7a1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Mire_Flora_DeadTree
+    _mesh:
+      _name: Mire_Flora_DeadTree
+      _mesh: {fileID: 5595528437009075793, guid: 567119c48b0108245b6a5b6a2d0848b2, type: 3}
+      _material: {fileID: 2100000, guid: 4694720c3f4c7d54e9c838497f455493, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c481cf7fe13c37942b72af651cfc2c07, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Mire_Decor_Fungus
+    _mesh:
+      _name: Mire_Decor_Fungus
+      _mesh: {fileID: 6312060577023352074, guid: f08161155da8a3e4d97b6a9733f7c1a6, type: 3}
+      _material: {fileID: 2100000, guid: 8029ae9e915e37943a00e26b36b1272f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 5d2ecf7aa3895094bbf64168e2e56d16, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: BuildPadTile
+    _mesh:
+      _name: BuildPadTile
+      _mesh: {fileID: -108980100335790629, guid: 18a2a2967b65f8b4093380837924a420, type: 3}
+      _material: {fileID: 2100000, guid: 326e2b3837b2b564681c73ed9d1b5a05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 04e617d71e25f1948961917b126e9d09, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Tower_Gun_T1
+    _mesh:
+      _name: 
+      _mesh: {fileID: 0}
+      _material: {fileID: 0}
+      _lowMaterial: {fileID: 0}
+      _castShadows: 0
+      _node:
+        e00: 0
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: 0
+        e12: 0
+        e13: 0
+        e20: 0
+        e21: 0
+        e22: 0
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 0
+    _rigged: {fileID: 919132149155446097, guid: 268d7d5ff9a8c184c9f3201ea17327a6, type: 3}
+    _riggedMaterial: {fileID: 2100000, guid: 4c6ee70c08ec3f64ab099cd12cd93fb4, type: 2}
+    _riggedLowMaterial: {fileID: 2100000, guid: ddbf5753e03a69041b880ab8e7392846, type: 2}
+    _pose: {fileID: 4018422761832222076, guid: 268d7d5ff9a8c184c9f3201ea17327a6, type: 3}
+    _pulses: 0
+  - _name: Tower_Laser_T1
+    _mesh:
+      _name: 
+      _mesh: {fileID: 0}
+      _material: {fileID: 0}
+      _lowMaterial: {fileID: 0}
+      _castShadows: 0
+      _node:
+        e00: 0
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: 0
+        e12: 0
+        e13: 0
+        e20: 0
+        e21: 0
+        e22: 0
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 0
+    _rigged: {fileID: 919132149155446097, guid: 5d593ca30276ebc4abeca6e2a5c811ad, type: 3}
+    _riggedMaterial: {fileID: 2100000, guid: 1dab7e94edab367498d3e2eae3fa6b16, type: 2}
+    _riggedLowMaterial: {fileID: 2100000, guid: afcf589c50fb20c4b84cadd53b9323b1, type: 2}
+    _pose: {fileID: 1506865922277025975, guid: 5d593ca30276ebc4abeca6e2a5c811ad, type: 3}
+    _pulses: 0
+  - _name: Cutscene_Beacon
+    _mesh:
+      _name: 
+      _mesh: {fileID: 0}
+      _material: {fileID: 0}
+      _lowMaterial: {fileID: 0}
+      _castShadows: 0
+      _node:
+        e00: 0
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: 0
+        e12: 0
+        e13: 0
+        e20: 0
+        e21: 0
+        e22: 0
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 0
+    _rigged: {fileID: 919132149155446097, guid: 507bf6b7b6fed0049a91eb7fcf3c1de0, type: 3}
+    _riggedMaterial: {fileID: 2100000, guid: 1b3ac0224ea9f51419327d485050d901, type: 2}
+    _riggedLowMaterial: {fileID: 2100000, guid: ab7b5480969477341b9d099b0dd77631, type: 2}
+    _pose: {fileID: -1209846984671021917, guid: 507bf6b7b6fed0049a91eb7fcf3c1de0, type: 3}
+    _pulses: 0
+  - _name: Crystal_C
+    _mesh:
+      _name: Crystal_C
+      _mesh: {fileID: 5162559838310442518, guid: d12698feb7e3aa9448cea4299a5a0b50, type: 3}
+      _material: {fileID: 2100000, guid: bf3813fa559ba114e9abc44245d65dc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 93b3b7cca770f7343ae9384fe41a229c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Rock_A
+    _mesh:
+      _name: Rock_A
+      _mesh: {fileID: 2649995349246831342, guid: d2bfc4693f67a4c4f9da3c5422f97591, type: 3}
+      _material: {fileID: 2100000, guid: 7fa85a18f18c6354690ee91196e927dc, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: bb34a320ee5ce994fab45b4e36b2db4a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Rock_C
+    _mesh:
+      _name: Rock_C
+      _mesh: {fileID: -101496668972229048, guid: c3d50557bb905884b95b17533d380e8c, type: 3}
+      _material: {fileID: 2100000, guid: a5ae3bbaf14d31b4388a8d9745b3d1ab, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9e019bd768ecc8d48bb49b14f9439f6c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Scatter_Pebbles
+    _mesh:
+      _name: Scatter_Pebbles
+      _mesh: {fileID: -3513056290112399987, guid: 788f5b4dbd3d0044f9930544beb5b38f, type: 3}
+      _material: {fileID: 2100000, guid: 108d42ed7f355e74ca481bf5186f471e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 23dbdb599f554484eba3f33fedc1aa0b, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Scatter_CrystalSplinters
+    _mesh:
+      _name: Scatter_CrystalSplinters
+      _mesh: {fileID: 7664679713886782042, guid: 3887ae2a9aab49543b9f29feb7ed62a3, type: 3}
+      _material: {fileID: 2100000, guid: 2f5051fd663f17348852e2410bfdb0b9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 3b3fd7c30f88427449089dbaca2fbe6c, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: CrystalVein
+    _mesh:
+      _name: CrystalVein
+      _mesh: {fileID: -9166227323127691791, guid: a3897ebec29baac48b10368b81925e09, type: 3}
+      _material: {fileID: 2100000, guid: ed708910763e5144c9771ca3f7d0713c, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 675bc47ba0b25b6479bf9016bb3e30d8, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  - _name: Crystal_A
+    _mesh:
+      _name: Crystal_A
+      _mesh: {fileID: -6837344552803155681, guid: cd56ad7a488e9de449cb94bef14604a4, type: 3}
+      _material: {fileID: 2100000, guid: e746455063acefd409ca7a6557f1ac90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 8c767ce34eeb8e04ca3a5f286bc303c8, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _rigged: {fileID: 0}
+    _riggedMaterial: {fileID: 0}
+    _riggedLowMaterial: {fileID: 0}
+    _pose: {fileID: 0}
+    _pulses: 0
+  _placements:
+  - Model: 0
+    Position: {x: 4.8, y: 0.3, z: 3.55}
+    Yaw: 360
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 1
+    Position: {x: 5.05, y: 2.572, z: 5.75}
+    Yaw: 200
+    Scale: 0.62
+    GlowPool: 0
+    Theme: 4
+  - Model: 2
+    Position: {x: 2.851, y: 1.77, z: 4.291}
+    Yaw: 356.97998
+    Scale: 0.85
+    GlowPool: 0
+    Theme: 4
+  - Model: 2
+    Position: {x: 6.794, y: 1.762, z: 4.27}
+    Yaw: 264.38
+    Scale: 0.8
+    GlowPool: 0
+    Theme: 4
+  - Model: 2
+    Position: {x: 3.881, y: 2.345, z: 5.971}
+    Yaw: 204.34
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 2
+    Position: {x: 5.55, y: 2.267, z: 6.499}
+    Yaw: 436.63
+    Scale: 0.9
+    GlowPool: 0
+    Theme: 4
+  - Model: 2
+    Position: {x: 7.156, y: 1.416, z: 6.299}
+    Yaw: 472.72
+    Scale: 0.75
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 6.781, y: 1.769, z: 5.761}
+    Yaw: 303.12
+    Scale: 1.128
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 5.447, y: 1.43, z: 7.757}
+    Yaw: 272.63
+    Scale: 0.991
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 3.562, y: 0.809, z: 8.139}
+    Yaw: 505.59
+    Scale: 1.052
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 2.701, y: 1.936, z: 5.737}
+    Yaw: 271.96
+    Scale: 1.176
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 2.344, y: 1.05, z: 3.659}
+    Yaw: 436.68
+    Scale: 1.296
+    GlowPool: 0
+    Theme: 4
+  - Model: 3
+    Position: {x: 7.051, y: 1.06, z: 3.243}
+    Yaw: 501.94
+    Scale: 0.906
+    GlowPool: 0
+    Theme: 4
+  - Model: 4
+    Position: {x: 9.352, y: 0.044, z: 2.714}
+    Yaw: 401.94
+    Scale: 1.014
+    GlowPool: 1
+    Theme: 4
+  - Model: 4
+    Position: {x: 8.494, y: -0.005, z: 9.006}
+    Yaw: 325.74
+    Scale: 0.95
+    GlowPool: 1
+    Theme: 4
+  - Model: 4
+    Position: {x: 4.531, y: -0.003, z: 10.158}
+    Yaw: 492.79
+    Scale: 0.901
+    GlowPool: 1
+    Theme: 4
+  - Model: 4
+    Position: {x: 2.095, y: 0.344, z: 9.264}
+    Yaw: 304
+    Scale: 1.021
+    GlowPool: 1
+    Theme: 4
+  - Model: 4
+    Position: {x: 1.147, y: -0.07, z: 1.82}
+    Yaw: 514.55
+    Scale: 0.876
+    GlowPool: 1
+    Theme: 4
+  - Model: 5
+    Position: {x: 0.282, y: -0.093, z: 2.419}
+    Yaw: 343.01
+    Scale: 1.004
+    GlowPool: 0
+    Theme: 4
+  - Model: 5
+    Position: {x: 6.06, y: 0.061, z: 0.441}
+    Yaw: 230.51
+    Scale: 1.192
+    GlowPool: 0
+    Theme: 4
+  - Model: 5
+    Position: {x: 9.512, y: 0.085, z: 3.253}
+    Yaw: 487.04
+    Scale: 1.014
+    GlowPool: 0
+    Theme: 4
+  - Model: 6
+    Position: {x: -2.271, y: 0.035, z: -4.109}
+    Yaw: 450.62
+    Scale: 1.068
+    GlowPool: 1
+    Theme: 1
+  - Model: 6
+    Position: {x: 1.953, y: -0.029, z: -6.214}
+    Yaw: 348
+    Scale: 0.993
+    GlowPool: 1
+    Theme: 1
+  - Model: 7
+    Position: {x: -1.404, y: 0.002, z: -0.353}
+    Yaw: 228.24
+    Scale: 0.944
+    GlowPool: 0
+    Theme: 1
+  - Model: 7
+    Position: {x: -2.284, y: 0.005, z: -2.133}
+    Yaw: 220.72
+    Scale: 0.949
+    GlowPool: 0
+    Theme: 1
+  - Model: 7
+    Position: {x: -1.23, y: 0.007, z: -5.131}
+    Yaw: 497.99
+    Scale: 0.983
+    GlowPool: 0
+    Theme: 1
+  - Model: 7
+    Position: {x: 1.947, y: 0.025, z: -5.188}
+    Yaw: 471.53
+    Scale: 1.112
+    GlowPool: 0
+    Theme: 1
+  - Model: 7
+    Position: {x: 4.563, y: 0.024, z: -4.57}
+    Yaw: 452.07
+    Scale: 0.957
+    GlowPool: 0
+    Theme: 1
+  - Model: 8
+    Position: {x: -0.819, y: -0.016, z: 0.856}
+    Yaw: 286.77
+    Scale: 0.848
+    GlowPool: 1
+    Theme: 1
+  - Model: 8
+    Position: {x: -1.404, y: 0.021, z: -2.431}
+    Yaw: 302.13
+    Scale: 0.84
+    GlowPool: 1
+    Theme: 1
+  - Model: 8
+    Position: {x: 1.04, y: 0.002, z: -5.058}
+    Yaw: 500.34
+    Scale: 0.931
+    GlowPool: 1
+    Theme: 1
+  - Model: 8
+    Position: {x: 3.934, y: 0.005, z: -5.136}
+    Yaw: 392.35
+    Scale: 0.819
+    GlowPool: 1
+    Theme: 1
+  - Model: 9
+    Position: {x: -0.265, y: -0.081, z: -0.917}
+    Yaw: 355.16
+    Scale: 0.923
+    GlowPool: 0
+    Theme: 1
+  - Model: 9
+    Position: {x: -0.702, y: -0.048, z: -2.044}
+    Yaw: 195.26
+    Scale: 1.11
+    GlowPool: 0
+    Theme: 1
+  - Model: 9
+    Position: {x: -0.589, y: -0.056, z: -3.429}
+    Yaw: 250.62
+    Scale: 1.124
+    GlowPool: 0
+    Theme: 1
+  - Model: 9
+    Position: {x: 1.096, y: -0.067, z: -4.508}
+    Yaw: 488.06
+    Scale: 1.097
+    GlowPool: 0
+    Theme: 1
+  - Model: 10
+    Position: {x: 11.472, y: -0.003, z: 0.892}
+    Yaw: 287.01
+    Scale: 0.935
+    GlowPool: 0
+    Theme: 2
+  - Model: 10
+    Position: {x: 8.545, y: 0.083, z: 2.179}
+    Yaw: 215.36
+    Scale: 0.865
+    GlowPool: 0
+    Theme: 2
+  - Model: 2
+    Position: {x: 10.281, y: 0.035, z: 2.034}
+    Yaw: 279.35
+    Scale: 1.032
+    GlowPool: 0
+    Theme: 2
+  - Model: 2
+    Position: {x: 7.999, y: 0.066, z: 1.87}
+    Yaw: 354.95
+    Scale: 0.745
+    GlowPool: 0
+    Theme: 2
+  - Model: 2
+    Position: {x: 5.638, y: -0.024, z: -0.254}
+    Yaw: 372.94
+    Scale: 0.876
+    GlowPool: 0
+    Theme: 2
+  - Model: 11
+    Position: {x: 10.89, y: 0.002, z: 2.845}
+    Yaw: 197.58
+    Scale: 0.935
+    GlowPool: 0
+    Theme: 2
+  - Model: 12
+    Position: {x: 11.844, y: 0.04, z: -1.321}
+    Yaw: 232.37
+    Scale: 0.964
+    GlowPool: 0
+    Theme: 2
+  - Model: 12
+    Position: {x: 10.886, y: 0.05, z: 1.085}
+    Yaw: 263.63
+    Scale: 0.81
+    GlowPool: 0
+    Theme: 2
+  - Model: 13
+    Position: {x: 10.81, y: 0.087, z: -0.03}
+    Yaw: 505.96
+    Scale: 0.862
+    GlowPool: 1
+    Theme: 2
+  - Model: 13
+    Position: {x: 9.168, y: 0.105, z: 1.634}
+    Yaw: 454.99
+    Scale: 1.058
+    GlowPool: 1
+    Theme: 2
+  - Model: 13
+    Position: {x: 7.012, y: 0.051, z: 0.825}
+    Yaw: 506.07
+    Scale: 0.932
+    GlowPool: 1
+    Theme: 2
+  - Model: 13
+    Position: {x: 6.368, y: 0.023, z: -0.264}
+    Yaw: 260.69
+    Scale: 0.97
+    GlowPool: 1
+    Theme: 2
+  - Model: 14
+    Position: {x: -4.192, y: -0.003, z: 4.884}
+    Yaw: 504.76
+    Scale: 1.065
+    GlowPool: 0
+    Theme: 3
+  - Model: 15
+    Position: {x: -4.004, y: -0.015, z: 8.092}
+    Yaw: 266.7
+    Scale: 0.916
+    GlowPool: 0
+    Theme: 3
+  - Model: 16
+    Position: {x: 0.049, y: 0.374, z: 8.096}
+    Yaw: 204.78
+    Scale: 0.826
+    GlowPool: 1
+    Theme: 3
+  - Model: 16
+    Position: {x: -2.971, y: -0.053, z: 8.503}
+    Yaw: 478.15
+    Scale: 0.889
+    GlowPool: 1
+    Theme: 3
+  - Model: 17
+    Position: {x: -4.889, y: 0.023, z: 5.6}
+    Yaw: 380.3
+    Scale: 0.886
+    GlowPool: 0
+    Theme: 3
+  - Model: 17
+    Position: {x: -4.317, y: -0.027, z: 4.078}
+    Yaw: 427.97
+    Scale: 0.741
+    GlowPool: 0
+    Theme: 3
+  - Model: 18
+    Position: {x: -1.065, y: -0.044, z: 2.265}
+    Yaw: 457.68
+    Scale: 0.934
+    GlowPool: 0
+    Theme: 5
+  - Model: 18
+    Position: {x: -2.99, y: 0.015, z: 2.829}
+    Yaw: 411.15
+    Scale: 0.977
+    GlowPool: 0
+    Theme: 5
+  - Model: 19
+    Position: {x: -4.009, y: 0.015, z: 3.191}
+    Yaw: 316.34
+    Scale: 0.987
+    GlowPool: 1
+    Theme: 5
+  - Model: 20
+    Position: {x: -1.518, y: 0.025, z: -1.598}
+    Yaw: 434.16998
+    Scale: 1.091
+    GlowPool: 0
+    Theme: 5
+  - Model: 20
+    Position: {x: -0.563, y: -0.012, z: -0.144}
+    Yaw: 451.8
+    Scale: 0.813
+    GlowPool: 0
+    Theme: 5
+  - Model: 21
+    Position: {x: 7.393, y: 1.287, z: 3.959}
+    Yaw: 338.59
+    Scale: 0.987
+    GlowPool: 0
+    Theme: 6
+  - Model: 9
+    Position: {x: 9.776, y: 0.017, z: 3.712}
+    Yaw: 368.08002
+    Scale: 1.076
+    GlowPool: 0
+    Theme: 6
+  - Model: 9
+    Position: {x: 11.157, y: -0.092, z: 4.014}
+    Yaw: 319.05
+    Scale: 0.943
+    GlowPool: 0
+    Theme: 6
+  - Model: 9
+    Position: {x: 12.068, y: -0.096, z: 5.506}
+    Yaw: 229.53
+    Scale: 1.186
+    GlowPool: 0
+    Theme: 6
+  - Model: 9
+    Position: {x: 12.263, y: -0.052, z: 6.799}
+    Yaw: 488.23
+    Scale: 0.852
+    GlowPool: 0
+    Theme: 6
+  - Model: 22
+    Position: {x: 10.322, y: 0.028, z: 3.222}
+    Yaw: 494.02
+    Scale: 0.974
+    GlowPool: 1
+    Theme: 6
+  - Model: 23
+    Position: {x: -0.05, y: 0.422, z: 9.25}
+    Yaw: 188
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 23
+    Position: {x: 1.05, y: 0.419, z: 9.6}
+    Yaw: 188
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 24
+    Position: {x: -0.05, y: 0.542, z: 9.25}
+    Yaw: 352
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 25
+    Position: {x: 1.05, y: 0.539, z: 9.6}
+    Yaw: 380
+    Scale: 1
+    GlowPool: 0
+    Theme: 4
+  - Model: 26
+    Position: {x: 0.65, y: 0.413, z: 10.55}
+    Yaw: 370
+    Scale: 0.8
+    GlowPool: 1
+    Theme: 4
+  - Model: 27
+    Position: {x: -0.8, y: 0.348, z: 10.3}
+    Yaw: 241.08
+    Scale: 0.7
+    GlowPool: 1
+    Theme: 4
+  - Model: 28
+    Position: {x: 9.139, y: -0.019, z: 7.414}
+    Yaw: 229.49
+    Scale: 0.962
+    GlowPool: 0
+    Theme: 4
+  - Model: 28
+    Position: {x: 0.855, y: 0.211, z: 7.535}
+    Yaw: 475.77
+    Scale: 0.632
+    GlowPool: 0
+    Theme: 4
+  - Model: 28
+    Position: {x: -5.282, y: -0.03, z: 3.985}
+    Yaw: 233.57
+    Scale: 1.058
+    GlowPool: 0
+    Theme: 4
+  - Model: 28
+    Position: {x: 0.276, y: -0.04, z: -5.636}
+    Yaw: 396.59
+    Scale: 0.632
+    GlowPool: 0
+    Theme: 4
+  - Model: 28
+    Position: {x: 10.037, y: 0.034, z: -4.342}
+    Yaw: 397.96002
+    Scale: 0.854
+    GlowPool: 0
+    Theme: 4
+  - Model: 29
+    Position: {x: 8.736, y: -0.018, z: 9.638}
+    Yaw: 510.42
+    Scale: 0.982
+    GlowPool: 0
+    Theme: 4
+  - Model: 29
+    Position: {x: -1.08, y: 0.333, z: 9.612}
+    Yaw: 277.1
+    Scale: 0.603
+    GlowPool: 0
+    Theme: 4
+  - Model: 29
+    Position: {x: -1.486, y: 0.026, z: -3.367}
+    Yaw: 278.81
+    Scale: 0.811
+    GlowPool: 0
+    Theme: 4
+  - Model: 29
+    Position: {x: 7.685, y: -0.038, z: -4.42}
+    Yaw: 220.7
+    Scale: 0.558
+    GlowPool: 0
+    Theme: 4
+  - Model: 11
+    Position: {x: 7.183, y: -0.076, z: 10.228}
+    Yaw: 270.07
+    Scale: 0.926
+    GlowPool: 0
+    Theme: 4
+  - Model: 11
+    Position: {x: 6.452, y: -0.06, z: -4.397}
+    Yaw: 384.02002
+    Scale: 0.992
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 12.608, y: -0.052, z: 4.303}
+    Yaw: 241.2
+    Scale: 0.903
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 5.938, y: 1.194, z: 7.824}
+    Yaw: 212.34
+    Scale: 1.112
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 2.209, y: 1.34, z: 5.292}
+    Yaw: 272.55
+    Scale: 0.991
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 0.336, y: -0.03, z: 3.109}
+    Yaw: 243.98
+    Scale: 1.256
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: -0.278, y: 0.009, z: 0.264}
+    Yaw: 200.64
+    Scale: 1.189
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: -0.315, y: 0.034, z: -5.776}
+    Yaw: 530.66003
+    Scale: 1.213
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 7.508, y: -0.058, z: -5.441}
+    Yaw: 454.34
+    Scale: 1.225
+    GlowPool: 0
+    Theme: 4
+  - Model: 30
+    Position: {x: 11.255, y: 0.122, z: -0.668}
+    Yaw: 427.47998
+    Scale: 1.112
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: 6.534, y: 1.952, z: 4.589}
+    Yaw: 260.57
+    Scale: 1.083
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: 3.176, y: 0.873, z: 7.979}
+    Yaw: 264.94
+    Scale: 1.114
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: -4.403, y: 0.059, z: 6.136}
+    Yaw: 489.6
+    Scale: 1.067
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: -0.354, y: -0.005, z: 0.97}
+    Yaw: 422.88
+    Scale: 1.167
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: 3.233, y: -0.007, z: -6.6}
+    Yaw: 246.58
+    Scale: 1.038
+    GlowPool: 0
+    Theme: 4
+  - Model: 31
+    Position: {x: 12.229, y: 0.048, z: -1.755}
+    Yaw: 432.87
+    Scale: 1.01
+    GlowPool: 0
+    Theme: 4
+  - Model: 32
+    Position: {x: 6.421, y: 1.851, z: 6.635}
+    Yaw: 238.7
+    Scale: 0.885
+    GlowPool: 1
+    Theme: 4
+  - Model: 32
+    Position: {x: -1.866, y: 0.021, z: 8.605}
+    Yaw: 534.4
+    Scale: 0.833
+    GlowPool: 1
+    Theme: 4
+  - Model: 32
+    Position: {x: -0.839, y: 0.035, z: -4.578}
+    Yaw: 537.97
+    Scale: 0.837
+    GlowPool: 1
+    Theme: 4
+  - Model: 16
+    Position: {x: 11.779, y: 0.037, z: 0.375}
+    Yaw: 449.22
+    Scale: 0.792
+    GlowPool: 1
+    Theme: 4
+  - Model: 27
+    Position: {x: -1.384, y: 0.175, z: 8.783}
+    Yaw: 259.53
+    Scale: 0.863
+    GlowPool: 1
+    Theme: 4
+  - Model: 27
+    Position: {x: -2.499, y: -0.029, z: 2.806}
+    Yaw: 469.14
+    Scale: 0.625
+    GlowPool: 1
+    Theme: 4
+  - Model: 33
+    Position: {x: 0.8, y: -6.579, z: 3}
+    Yaw: 353.71002
+    Scale: 1.1
+    GlowPool: 0
+    Theme: 4
+  - Model: 33
+    Position: {x: 7.2, y: -7.657, z: 1}
+    Yaw: 358.21002
+    Scale: 1.1
+    GlowPool: 0
+    Theme: 4
+  - Model: 33
+    Position: {x: 4.6, y: -7.351, z: 6.8}
+    Yaw: 342.65
+    Scale: 1.1
+    GlowPool: 0
+    Theme: 4
+  _pools:
+  - _kind: 3
+    _theme: 2
+    _centre: {x: 8.6, y: -0.9}
+    _radius: 2.1
+    _surface: -0.22
+    _bankDegrees: 260
+    _outline:
+    - {x: 10.631, y: -0.9}
+    - {x: 10.608, y: -0.724}
+    - {x: 10.52, y: -0.561}
+    - {x: 10.423, y: -0.411}
+    - {x: 10.351, y: -0.263}
+    - {x: 10.358, y: -0.08}
+    - {x: 10.466, y: 0.177}
+    - {x: 10.572, y: 0.481}
+    - {x: 10.521, y: 0.712}
+    - {x: 10.195, y: 0.695}
+    - {x: 9.837, y: 0.575}
+    - {x: 9.665, y: 0.621}
+    - {x: 9.528, y: 0.707}
+    - {x: 9.403, y: 0.822}
+    - {x: 9.284, y: 0.979}
+    - {x: 9.171, y: 1.231}
+    - {x: 9.027, y: 1.523}
+    - {x: 8.813, y: 1.535}
+    - {x: 8.6, y: 0.94}
+    - {x: 8.455, y: 0.752}
+    - {x: 8.319, y: 0.691}
+    - {x: 8.178, y: 0.675}
+    - {x: 8.02, y: 0.694}
+    - {x: 7.796, y: 0.825}
+    - {x: 7.514, y: 0.982}
+    - {x: 7.269, y: 1.001}
+    - {x: 7.098, y: 0.89}
+    - {x: 6.974, y: 0.726}
+    - {x: 6.864, y: 0.557}
+    - {x: 6.748, y: 0.396}
+    - {x: 6.629, y: 0.238}
+    - {x: 6.521, y: 0.07}
+    - {x: 6.433, y: -0.111}
+    - {x: 6.385, y: -0.307}
+    - {x: 6.397, y: -0.512}
+    - {x: 6.388, y: -0.706}
+    - {x: 6.317, y: -0.9}
+    - {x: 6.276, y: -1.103}
+    - {x: 6.357, y: -1.296}
+    - {x: 6.433, y: -1.481}
+    - {x: 6.489, y: -1.668}
+    - {x: 6.59, y: -1.837}
+    - {x: 6.824, y: -1.926}
+    - {x: 6.984, y: -2.031}
+    - {x: 6.815, y: -2.398}
+    - {x: 6.857, y: -2.643}
+    - {x: 6.949, y: -2.867}
+    - {x: 7.141, y: -2.984}
+    - {x: 7.341, y: -3.08}
+    - {x: 7.501, y: -3.256}
+    - {x: 7.682, y: -3.421}
+    - {x: 7.906, y: -3.491}
+    - {x: 8.142, y: -3.5}
+    - {x: 8.376, y: -3.457}
+    - {x: 8.6, y: -3.01}
+    - {x: 8.763, y: -2.766}
+    - {x: 8.936, y: -2.807}
+    - {x: 9.275, y: -3.42}
+    - {x: 9.512, y: -3.407}
+    - {x: 9.652, y: -3.157}
+    - {x: 9.767, y: -2.921}
+    - {x: 9.839, y: -2.669}
+    - {x: 9.885, y: -2.431}
+    - {x: 9.999, y: -2.299}
+    - {x: 10.1, y: -2.158}
+    - {x: 10.118, y: -1.963}
+    - {x: 10.158, y: -1.8}
+    - {x: 10.21, y: -1.651}
+    - {x: 10.307, y: -1.521}
+    - {x: 11.05, y: -1.557}
+    - {x: 10.912, y: -1.308}
+    - {x: 10.683, y: -1.082}
+  - _kind: 2
+    _theme: 1
+    _centre: {x: 1.4, y: -2.2}
+    _radius: 2
+    _surface: -0.2
+    _bankDegrees: 20
+    _outline:
+    - {x: 2.919, y: -2.2}
+    - {x: 2.9, y: -2.069}
+    - {x: 2.896, y: -1.936}
+    - {x: 2.872, y: -1.806}
+    - {x: 2.82, y: -1.683}
+    - {x: 2.766, y: -1.563}
+    - {x: 2.723, y: -1.436}
+    - {x: 2.7, y: -1.29}
+    - {x: 2.681, y: -1.125}
+    - {x: 2.639, y: -0.961}
+    - {x: 2.566, y: -0.81}
+    - {x: 2.499, y: -0.631}
+    - {x: 2.452, y: -0.379}
+    - {x: 2.325, y: -0.216}
+    - {x: 2.148, y: -0.146}
+    - {x: 1.959, y: -0.113}
+    - {x: 1.773, y: -0.084}
+    - {x: 1.588, y: -0.057}
+    - {x: 1.4, y: -0.591}
+    - {x: 1.275, y: -0.775}
+    - {x: 1.161, y: -0.843}
+    - {x: 1.045, y: -0.873}
+    - {x: 0.924, y: -0.893}
+    - {x: 0.745, y: -0.794}
+    - {x: 0.526, y: -0.686}
+    - {x: 0.453, y: -0.848}
+    - {x: 0.402, y: -1.011}
+    - {x: 0.293, y: -1.093}
+    - {x: 0.095, y: -1.105}
+    - {x: -0.455, y: -0.901}
+    - {x: -0.734, y: -0.968}
+    - {x: -0.961, y: -1.099}
+    - {x: -0.957, y: -1.342}
+    - {x: -0.874, y: -1.591}
+    - {x: -0.815, y: -1.81}
+    - {x: -0.727, y: -2.014}
+    - {x: -0.66, y: -2.2}
+    - {x: -0.626, y: -2.377}
+    - {x: -0.613, y: -2.555}
+    - {x: -0.621, y: -2.742}
+    - {x: -0.68, y: -2.957}
+    - {x: -0.703, y: -3.181}
+    - {x: -0.578, y: -3.342}
+    - {x: -0.404, y: -3.463}
+    - {x: -0.304, y: -3.63}
+    - {x: -0.327, y: -3.927}
+    - {x: -0.219, y: -4.129}
+    - {x: -0.027, y: -4.238}
+    - {x: 0.231, y: -4.224}
+    - {x: 0.433, y: -4.274}
+    - {x: 0.61, y: -4.37}
+    - {x: 0.803, y: -4.427}
+    - {x: 1.003, y: -4.45}
+    - {x: 1.201, y: -4.471}
+    - {x: 1.4, y: -4.522}
+    - {x: 1.612, y: -4.621}
+    - {x: 1.833, y: -4.655}
+    - {x: 2.014, y: -4.492}
+    - {x: 2.201, y: -4.401}
+    - {x: 2.421, y: -4.389}
+    - {x: 2.623, y: -4.319}
+    - {x: 2.752, y: -4.13}
+    - {x: 2.825, y: -3.898}
+    - {x: 2.986, y: -3.786}
+    - {x: 3.204, y: -3.713}
+    - {x: 3.346, y: -3.563}
+    - {x: 3.334, y: -3.317}
+    - {x: 3.196, y: -3.038}
+    - {x: 3.123, y: -2.827}
+    - {x: 3.076, y: -2.649}
+    - {x: 3.021, y: -2.486}
+    - {x: 2.964, y: -2.337}
+  - _kind: 4
+    _theme: 3
+    _centre: {x: -1.8, y: 6}
+    _radius: 1.7
+    _surface: -0.12
+    _bankDegrees: 300
+    _outline:
+    - {x: -0.213, y: 6}
+    - {x: -0.263, y: 6.134}
+    - {x: -0.309, y: 6.263}
+    - {x: -0.322, y: 6.396}
+    - {x: -0.305, y: 6.544}
+    - {x: -0.249, y: 6.723}
+    - {x: -0.116, y: 6.972}
+    - {x: -0.118, y: 7.178}
+    - {x: -0.185, y: 7.355}
+    - {x: -0.214, y: 7.586}
+    - {x: -0.289, y: 7.801}
+    - {x: -0.508, y: 7.845}
+    - {x: -0.727, y: 7.858}
+    - {x: -0.917, y: 7.895}
+    - {x: -1.087, y: 7.958}
+    - {x: -1.261, y: 8.013}
+    - {x: -1.453, y: 7.968}
+    - {x: -1.622, y: 8.03}
+    - {x: -1.8, y: 8.109}
+    - {x: -1.984, y: 8.107}
+    - {x: -2.159, y: 8.036}
+    - {x: -2.314, y: 7.919}
+    - {x: -2.455, y: 7.799}
+    - {x: -2.61, y: 7.736}
+    - {x: -2.781, y: 7.699}
+    - {x: -2.933, y: 7.619}
+    - {x: -3.043, y: 7.481}
+    - {x: -3.111, y: 7.311}
+    - {x: -3.181, y: 7.159}
+    - {x: -3.234, y: 7.004}
+    - {x: -3.264, y: 6.846}
+    - {x: -3.319, y: 6.708}
+    - {x: -3.439, y: 6.596}
+    - {x: -3.549, y: 6.469}
+    - {x: -3.639, y: 6.324}
+    - {x: -3.71, y: 6.167}
+    - {x: -3.733, y: 6}
+    - {x: -3.667, y: 5.837}
+    - {x: -3.581, y: 5.686}
+    - {x: -3.52, y: 5.539}
+    - {x: -3.492, y: 5.384}
+    - {x: -3.456, y: 5.228}
+    - {x: -3.381, y: 5.087}
+    - {x: -3.283, y: 4.962}
+    - {x: -3.125, y: 4.888}
+    - {x: -2.943, y: 4.857}
+    - {x: -2.8, y: 4.808}
+    - {x: -2.665, y: 4.765}
+    - {x: -2.544, y: 4.712}
+    - {x: -2.429, y: 4.651}
+    - {x: -2.313, y: 4.591}
+    - {x: -2.194, y: 4.529}
+    - {x: -2.071, y: 4.463}
+    - {x: -1.941, y: 4.392}
+    - {x: -1.8, y: 4.303}
+    - {x: -1.643, y: 4.207}
+    - {x: -1.48, y: 4.183}
+    - {x: -1.325, y: 4.228}
+    - {x: -1.177, y: 4.287}
+    - {x: -1.045, y: 4.381}
+    - {x: -0.941, y: 4.512}
+    - {x: -0.845, y: 4.636}
+    - {x: -0.733, y: 4.729}
+    - {x: -0.613, y: 4.813}
+    - {x: -0.497, y: 4.906}
+    - {x: -0.389, y: 5.012}
+    - {x: -0.278, y: 5.121}
+    - {x: -0.168, y: 5.239}
+    - {x: -0.145, y: 5.398}
+    - {x: -0.195, y: 5.57}
+    - {x: -0.208, y: 5.719}
+    - {x: -0.2, y: 5.86}
+  - _kind: 5
+    _theme: 5
+    _centre: {x: -3.4, y: 0.6}
+    _radius: 1.7
+    _surface: -0.06
+    _bankDegrees: 200
+    _outline:
+    - {x: -1.627, y: 0.6}
+    - {x: -1.484, y: 0.768}
+    - {x: -1.42, y: 0.949}
+    - {x: -1.443, y: 1.124}
+    - {x: -1.582, y: 1.262}
+    - {x: -1.769, y: 1.36}
+    - {x: -1.859, y: 1.49}
+    - {x: -1.925, y: 1.633}
+    - {x: -1.977, y: 1.794}
+    - {x: -2.033, y: 1.967}
+    - {x: -2.132, y: 2.112}
+    - {x: -2.265, y: 2.221}
+    - {x: -2.414, y: 2.308}
+    - {x: -2.574, y: 2.371}
+    - {x: -2.747, y: 2.394}
+    - {x: -2.922, y: 2.382}
+    - {x: -3.091, y: 2.355}
+    - {x: -3.251, y: 2.301}
+    - {x: -3.4, y: 2.254}
+    - {x: -3.545, y: 2.255}
+    - {x: -3.7, y: 2.3}
+    - {x: -3.862, y: 2.325}
+    - {x: -4, y: 2.247}
+    - {x: -4.139, y: 2.185}
+    - {x: -4.299, y: 2.157}
+    - {x: -4.491, y: 2.157}
+    - {x: -4.673, y: 2.117}
+    - {x: -4.805, y: 2.005}
+    - {x: -4.916, y: 1.872}
+    - {x: -5.019, y: 1.734}
+    - {x: -5.086, y: 1.574}
+    - {x: -5.128, y: 1.406}
+    - {x: -5.18, y: 1.248}
+    - {x: -5.243, y: 1.094}
+    - {x: -5.3, y: 0.935}
+    - {x: -5.324, y: 0.768}
+    - {x: -5.259, y: 0.6}
+    - {x: -5.159, y: 0.446}
+    - {x: -5.108, y: 0.299}
+    - {x: -5.083, y: 0.149}
+    - {x: -5.054, y: -0.002}
+    - {x: -5.026, y: -0.158}
+    - {x: -4.99, y: -0.318}
+    - {x: -4.947, y: -0.483}
+    - {x: -4.897, y: -0.656}
+    - {x: -4.809, y: -0.809}
+    - {x: -4.693, y: -0.941}
+    - {x: -4.564, y: -1.062}
+    - {x: -4.401, y: -1.134}
+    - {x: -4.215, y: -1.148}
+    - {x: -4.029, y: -1.127}
+    - {x: -3.864, y: -1.133}
+    - {x: -3.71, y: -1.156}
+    - {x: -3.555, y: -1.167}
+    - {x: -3.4, y: -1.163}
+    - {x: -3.248, y: -1.142}
+    - {x: -3.098, y: -1.111}
+    - {x: -2.953, y: -1.068}
+    - {x: -2.822, y: -0.988}
+    - {x: -2.724, y: -0.849}
+    - {x: -2.646, y: -0.705}
+    - {x: -2.559, y: -0.601}
+    - {x: -2.472, y: -0.506}
+    - {x: -2.391, y: -0.409}
+    - {x: -2.323, y: -0.304}
+    - {x: -2.271, y: -0.191}
+    - {x: -2.231, y: -0.075}
+    - {x: -2.194, y: 0.038}
+    - {x: -2.148, y: 0.144}
+    - {x: -2.083, y: 0.247}
+    - {x: -1.973, y: 0.348}
+    - {x: -1.813, y: 0.461}
+  - _kind: 6
+    _theme: 6
+    _centre: {x: 10.2, y: 5.8}
+    _radius: 1.8
+    _surface: -0.14
+    _bankDegrees: 120
+    _outline:
+    - {x: 12.301, y: 5.8}
+    - {x: 12.316, y: 5.985}
+    - {x: 12.298, y: 6.17}
+    - {x: 12.241, y: 6.347}
+    - {x: 12.161, y: 6.514}
+    - {x: 12.067, y: 6.671}
+    - {x: 11.949, y: 6.81}
+    - {x: 11.842, y: 6.95}
+    - {x: 11.732, y: 7.086}
+    - {x: 11.588, y: 7.188}
+    - {x: 11.415, y: 7.248}
+    - {x: 11.233, y: 7.276}
+    - {x: 11.069, y: 7.306}
+    - {x: 10.923, y: 7.351}
+    - {x: 10.787, y: 7.413}
+    - {x: 10.653, y: 7.49}
+    - {x: 10.51, y: 7.556}
+    - {x: 10.355, y: 7.569}
+    - {x: 10.2, y: 7.553}
+    - {x: 10.036, y: 7.673}
+    - {x: 9.853, y: 7.767}
+    - {x: 9.674, y: 7.763}
+    - {x: 9.56, y: 7.559}
+    - {x: 9.505, y: 7.29}
+    - {x: 9.51, y: 6.994}
+    - {x: 9.45, y: 6.871}
+    - {x: 9.359, y: 6.803}
+    - {x: 9.244, y: 6.756}
+    - {x: 9.093, y: 6.729}
+    - {x: 8.89, y: 6.718}
+    - {x: 8.62, y: 6.712}
+    - {x: 8.351, y: 6.662}
+    - {x: 8.323, y: 6.483}
+    - {x: 8.417, y: 6.278}
+    - {x: 8.366, y: 6.123}
+    - {x: 8.365, y: 5.961}
+    - {x: 8.388, y: 5.8}
+    - {x: 8.424, y: 5.645}
+    - {x: 8.502, y: 5.501}
+    - {x: 8.584, y: 5.367}
+    - {x: 8.605, y: 5.219}
+    - {x: 8.661, y: 5.082}
+    - {x: 8.744, y: 4.959}
+    - {x: 8.829, y: 4.84}
+    - {x: 8.918, y: 4.724}
+    - {x: 9.01, y: 4.61}
+    - {x: 9.107, y: 4.498}
+    - {x: 9.2, y: 4.372}
+    - {x: 9.305, y: 4.25}
+    - {x: 9.451, y: 4.193}
+    - {x: 9.609, y: 4.176}
+    - {x: 9.753, y: 4.132}
+    - {x: 9.889, y: 4.038}
+    - {x: 10.032, y: 3.881}
+    - {x: 10.2, y: 3.713}
+    - {x: 10.389, y: 3.636}
+    - {x: 10.588, y: 3.602}
+    - {x: 10.786, y: 3.612}
+    - {x: 10.965, y: 3.697}
+    - {x: 11.094, y: 3.883}
+    - {x: 11.12, y: 4.207}
+    - {x: 11.193, y: 4.382}
+    - {x: 11.317, y: 4.469}
+    - {x: 11.425, y: 4.575}
+    - {x: 11.495, y: 4.713}
+    - {x: 11.393, y: 4.965}
+    - {x: 11.346, y: 5.138}
+    - {x: 11.493, y: 5.197}
+    - {x: 11.691, y: 5.257}
+    - {x: 11.858, y: 5.356}
+    - {x: 12.058, y: 5.472}
+    - {x: 12.232, y: 5.622}
+  _lights:
+  - Name: MouthLight
+    Position: {x: 4.8, y: 0.95, z: 3}
+    Theme: 4
+    Colour: {r: 1, g: 1, b: 1, a: 1}
+    Intensity: 2.6
+    Range: 6
+  - Name: PondLight
+    Position: {x: -0.5, y: 0.9, z: -0.8}
+    Theme: 1
+    Colour: {r: 1, g: 1, b: 1, a: 1}
+    Intensity: 1.3
+    Range: 4.5
+  - Name: LavaGlow
+    Position: {x: 8.6, y: 0.5, z: -0.9}
+    Theme: 0
+    Colour: {r: 1, g: 0.42, b: 0.12, a: 1}
+    Intensity: 1.6
+    Range: 5
+  - Name: OutpostLamp
+    Position: {x: 0.65, y: 1.4, z: 10.549999}
+    Theme: 0
+    Colour: {r: 0.62, g: 0.86, b: 1, a: 1}
+    Intensity: 0.9
+    Range: 3.5

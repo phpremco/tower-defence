@@ -38,15 +38,9 @@ namespace Game.Levels
         [SerializeField] private List<DifficultyProfile> _difficulties = new List<DifficultyProfile>();
         [SerializeField] private StoryDefinition _story;
         [Header("Planet")]
-        [Tooltip("The maps of the planet, baked by the generator; without them the map screen paints them on the spot.")]
-        [SerializeField] private Texture2D _globeAlbedo;
-        [SerializeField] private Texture2D _globeNormal;
-        [SerializeField] private Texture2D _globeGloss;
-        [SerializeField] private Texture2D _globeLights;
-        [SerializeField] private Texture2D[] _globeClouds = new Texture2D[0];
         [Tooltip("How S-69-CRYS looks from space: the cutscene planets and the map globe wear the same style.")]
         [SerializeField] private PlanetStyle _planetStyle = PlanetStyle.Crys();
-        [Tooltip("S-69-CRYS painted in Blender; when complete, the map globe and the cutscene wear it instead of the baked maps.")]
+        [Tooltip("S-69-CRYS painted in Blender; when complete, the map globe and the cutscene wear it instead of the planet painted in code.")]
         [SerializeField] private PlanetTextureSet _planetTextures;
         [Tooltip("Deep space behind the planet: galaxy band, nebula, stars, the sun and the rim light for ships.")]
         [SerializeField] private SpaceStyle _spaceStyle = new SpaceStyle();
@@ -58,19 +52,11 @@ namespace Game.Levels
         /// <summary>The intro and the rest of the story told around the campaign; may be null while there is none.</summary>
         public StoryDefinition Story => _story;
 
-        public Texture2D GlobeAlbedo => _globeAlbedo;
-        public Texture2D GlobeNormal => _globeNormal;
-        public Texture2D GlobeGloss => _globeGloss;
-        public Texture2D GlobeLights => _globeLights;
-        public Texture2D[] GlobeClouds => _globeClouds;
         public PlanetStyle PlanetStyle => _planetStyle ?? (_planetStyle = PlanetStyle.Crys());
         public SpaceStyle SpaceStyle => _spaceStyle ?? (_spaceStyle = new SpaceStyle());
 
         /// <summary>The painted planet, or null when there is none or it misses maps.</summary>
         public PlanetTextureSet PlanetTextures => _planetTextures != null && _planetTextures.IsComplete ? _planetTextures : null;
-
-        /// <summary>True when the generator baked every map of the planet.</summary>
-        public bool HasGlobeMaps => _globeAlbedo != null && _globeNormal != null && _globeGloss != null && _globeLights != null && _globeClouds.Length > 0;
 
         /// <summary>How many levels a region holds.</summary>
         public int NodeCount(int region)
