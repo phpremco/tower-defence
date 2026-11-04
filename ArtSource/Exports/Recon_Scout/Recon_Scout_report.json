@@ -1,0 +1,60 @@
+{
+  "textures": {
+    "Trail_Scout": {
+      "file": "Trail_Scout.png",
+      "size": [
+        256,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "TrailRenderer, textureMode Stretch: U head (0) to tail (1), V across. R core, G glow, B sparks. Additive; tint from ReconView (ground warm, air cyan)"
+    }
+  },
+  "meshes": {
+    "Recon_Scout": {
+      "tris": 332,
+      "dims": [
+        0.229,
+        0.188,
+        0.24
+      ],
+      "uv_sets": 1,
+      "pivot": "centre, lens to Unity +Z (the route direction)",
+      "sockets": {
+        "Socket_Trail": "trail origin (behind)",
+        "Socket_Light": "point light / lens"
+      },
+      "note": "replaces the 0.9 glowing sphere; keep a small point light at Socket_Light; ~0.3 across"
+    }
+  },
+  "bake": {
+    "asset": "Recon_Scout",
+    "texture_size": 256,
+    "low_size": 128,
+    "maps": [
+      "Albedo",
+      "Normal",
+      "Emission",
+      "Mask"
+    ],
+    "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+    "uv": {
+      "coverage": 0.72,
+      "world_per_uv": 0.5124
+    },
+    "detail": {
+      "metal": {
+        "map": "Detail_Metal_Normal.png",
+        "tiling": 10.2,
+        "mask": "B"
+      },
+      "ceramic": {
+        "map": "Detail_Ceramic_Normal.png",
+        "tiling": 8.5,
+        "mask": "A"
+      }
+    }
+  },
+  "round": 25
+}

@@ -1,0 +1,39 @@
+{
+  "textures": {
+    "Proj_Glow": {
+      "file": "Proj_Glow.png",
+      "size": [
+        64,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "U around, V tail (0) to nose (1). R white-hot core towards the nose, G body glow fading to the tail, B three rail rings (slug only). Colour = white * R + tint * G (+ tint * B on the slug); HDR x3-4 for bloom"
+    }
+  },
+  "meshes": {
+    "Proj_Bolt": {
+      "tris": 112,
+      "dims": [
+        0.096,
+        0.3,
+        0.096
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "rounded bar 0.3 long, 0.096 thick, nose to Unity +Z; Proj_Glow.png"
+    },
+    "Proj_Bolt_Glow": {
+      "tris": 4,
+      "dims": [
+        0.2,
+        0.62,
+        0.2
+      ],
+      "uv_sets": 1,
+      "pivot": "0.62 along (head over the nose)",
+      "note": "two crossed quads, U along (head at +U) for VFX/Bolt_Core.png, additive; replaces the sphere core"
+    }
+  },
+  "round": 25
+}

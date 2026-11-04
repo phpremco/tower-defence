@@ -1,0 +1,28 @@
+{
+  "textures": {
+    "Beam_Tool": {
+      "file": "Beam_Tool.png",
+      "size": [
+        64,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "U around the cone, V drone (0) to target (1). R soft cone light, G scan rings (6 per beam: scroll V towards the target), B sparkle. Additive, tint = DroneDefinition.Color"
+    }
+  },
+  "meshes": {
+    "Beam_ToolCone": {
+      "tris": 48,
+      "dims": [
+        1.4,
+        1.0,
+        1.4
+      ],
+      "uv_sets": 1,
+      "pivot": "cone tip (at the drone)",
+      "note": "open cone 1 long along Unity +Z, mouth radius 0.7: LookRotation(target - drone), scale Z by the distance and XY by the spot size (replaces the stretched beam cube)"
+    }
+  },
+  "round": 25
+}

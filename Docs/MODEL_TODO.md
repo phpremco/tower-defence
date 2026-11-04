@@ -213,6 +213,7 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 | Status | Prio | Model |
 | --- | --- | --- |
 | ☑ | P2 | Import stage 4a: per terreinsoort in `EnvironmentSet.Origin` (de gloed getint met de elementkleur van het nest); continent 1 heeft nog geen nest in een vloeistof, dus in het spel nog niet gezien. Spawnpunten in water, lava, drijfzand, ijs en moeras (opening waaruit vijanden kruipen). Ronde 14 klaar: `Env/Origin_Water/_Lava/_Quicksand/_Ice/_Bog` (≤ 1.800 driehoeken, 512), pivot op het vloeistofoppervlak, Emission is een wit masker (Unity kleurt met NestColor). Grond blijft `Burrow_A` |
+| ☐ import | P2 | **Ronde 23: levende spawnpunten** (Remco: "onzichtbaar bij het begin, gaten openen uit de grond, daarna een vette spawn"). `Env/Origin2_Burrow` (grond, 3.900 / LOD1 1.750, 62 bones, 6 camo-skins per continent in `Skins/`) en `Env/Origin2_Water/_Lava/_Quicksand/_Ice/_Bog` (2.400 / LOD1 1.080, 34-41 bones, wit gloedmasker). Geskinde FBX met clips `Closed`, `Marked` (lus), `Open` (eenmalig, uitbarsting frame 54), `Idle` (lus), `Spawn`; sockets `Emerge`, `Glow`, `Dust`, `Debris_n`. Vervangt `Burrow_A` en `Origin_*` als nestmodel; vraagt een SkinnedMeshRenderer + Animator per nest (niet via de instancer). Unity-notities in `ArtSource/README.md` ronde 23 |
 
 ### Latere continenten (P3)
 
@@ -254,6 +255,44 @@ textuur in `VFX_report.json` en `ArtSource/README.md`. Nog niet in het spel: de 
 | ◐ | P1 | **Mondingsvuur** | `Muzzle_Side` en `Muzzle_Front`: geweer, kanon, flak, rail/plasma, elk 4 varianten | 1-3 frames per schot |
 | ◐ | P2 | **Inslagen** | `Spark_Burst`, `Spark_Streaks`, `Debris_Shards`, `Energy_Impact`, `Cryo_Burst`, `Acid_Splash` | Vonken en scherven ook als losse particles |
 | ◐ | P2 | **Ringen, vervorming, decals** | `Shockwave_Ring`, `Shockwave_Distort`, `HeatHaze_Distort`, `Scorch_Decal` (4 varianten met dovende sintels) | Lokale rimpel in plaats van schermschok |
+
+## 10. Gameplay-markers en kleine onderdelen
+
+Ronde 25b (2026-11-04, `Tools/Blender/build_spawngate.py`, `build_projectiles.py`, `build_markers.py`): alles wat nog
+uit code-primitieven of runtime-texturen kwam. Exports in `ArtSource/Exports/<Asset>/` (+ `Low/`), Unity-notities per
+asset in `ArtSource/README.md` (ronde 25b). Nog niet in het spel: een Unity-ronde vervangt de code-sites hieronder
+(één `Game/MarkerPack`-shader voor de getinte kanaalpakketten).
+
+| Status | Prio | Onderdeel | Inhoud | Vervangt |
+| --- | --- | --- | --- | --- |
+| ◐ | P1 | **Spawn-gate grond** | `SpawnGate_Ground`: krater van schubben en vlees, gloeiende keel, zes lippen, vijf hoorns, draaiende klauwring; 3.800 driehoeken, 512 (Low 256), clips Idle/Spin/Spawn, sockets Emerge/Spores/Light | `StructureModelFactory.EnemyGate` + ring (`LevelVisualBuilder.cs:194`) |
+| ◐ | P1 | **Spawn-gate lucht** | `SpawnGate_Air`: zwevende zaadpeul met haken, schuine klauwring, vier tentakels; 3.600 driehoeken, zelfde clips en sockets | idem, vliegroutes |
+| ◐ | P1 | **Levensbalken** | `UI_HealthBar`: plaat, vulling (clip op UV2, ronde uiteinden), pantser in acht segmenten; atlas 256x64 | balk-kubussen in `EnemyView`, `TowerView`, `HeroView` |
+| ◐ | P1 | **Plaatsingscursor en vrije vakjes** | `Marker_PlacementCursor` (1,5 vak met zachte halo) + `Marker_FreeCell` (zachte gloed, alleen bij de cursor tijdens plaatsen) | cursor-kubus `PlacementController.cs:88` |
+| ◐ | P1 | **Bereikring** | `Marker_RangeRing`: band met scherpe rand en draaiend streepje + smalle randgloed | LineRenderer `RangeIndicator.cs:21` |
+| ◐ | P1 | **Richting op weg en vliegroute** | `Marker_RoadCue`: zachte lichtstreep die meestroomt (één per drie vakken), lichtkralen voor vliegroutes, pulsring; geen chevrons of pijlpunten | `LevelVisualBuilder.cs:163-176`, `:513-533` |
+| ◐ | P1 | **Projectielen** | `Proj_Bolt` (afgeronde staaf + gloedschil), `Proj_RailSlug`, `Proj_Missile` (gebakken, sockets), `Proj_EnemyBolt` (alien klodder met weerhaken), `Proj_PulseRing` | `ProjectileView.cs:76-110`, `EnemyBoltView.cs:37-43`, `BossAbilityView.cs:278` |
+| ◐ | P2 | **Hero-markers** | `Marker_HeroSpot` (rails + embleem), `Marker_HeroStand` (ring in drie bogen, baken van gekruiste quads, gefacetteerd embleem) | `HeroController.cs:113`, `HeroView.cs:336,430-439` |
+| ◐ | P2 | **Decals** | `Decal_GlowPool` (pool, zwaardgloed, energieveld + gedeelde quads), `Decal_BlobShadow` | `GlowDecal.cs:101-174`, `GateView.cs:144-148`, `EnemyView.cs:1473` |
+| ◐ | P2 | **Brokstukken** | `Debris_Chunks`: tien stukken (platen, hex, balk, pijp, beugel, gevaarstreep, steen) in één atlas 512 | debris-kubussen `GateView.cs:155,196`, `BaseView.cs:102` |
+| ◐ | P2 | **Drone-straal, net, verkenner** | `Beam_Tool` (open kegel), `Net_Strand` (gevlochten draad), `Recon_Scout` (kleine sonde + `Trail_Scout`) | `DroneView.cs:81`, `PathObjectArtRig.cs:118`, `ReconView.cs:261-264` |
+| ◐ | P2 | **Deeltjesatlas** | `Particles_Atlas` 4 x 2: spore, mote, sintel, druppel, ichorspat, slijmplek, vorstkristal, chrono-mote | standaard particle-materiaal in `LevelVisualBuilder`, `AmbientParticlesBuilder`, `PropScatterBuilder`, `EnemyView` |
+| ☐ | P3 | LOD1 voor de spawn-gates, een throat-bulge in `Spawn`, verschroeide brokstuk-varianten | zie DESIGN_NOTES ronde 25b, zwakke punten | |
+
+## 11. UI-art
+
+Ronde 25 (2026-11-04, `Tools/Blender/build_ui.py`): eigen UI-set in `ArtSource/Exports/UI/`, gemaakt in Blender
+(geometrie met afschuining, orthografisch gerenderd); vervangt de in code getekende UI-texturen en het Kenney-pakket.
+Indeling en import-instellingen in `UI_report.json` en `ArtSource/README.md` (ronde 25). Nog niet in het spel: de
+Unity-ronde maakt een icon-set-asset (naam = `IconType`), zet de UiSkin-sprites om en schakelt knoppen naar SpriteSwap.
+
+| Status | Prio | Set | Inhoud | Extra |
+| --- | --- | --- | --- | --- |
+| ◐ | P1 | **Iconen** | `UI_Icons` (1x en 2x): de 28 `IconType`-iconen + 12 extra (StarEmpty, BossMarker, EnemyOrigin, Drone, Base, Gear, Close, Research, Power, Enemy, Credits, Info) | Wit, gekleurd in code; aliens-markers warm voorgekleurd |
+| ◐ | P1 | **UI-kit** | `UI_Kit`: panelen, kaarten (blauw/groen/geel/rood/geselecteerd/uit), knoppen in vier toestanden, balken, slider, tabs, tooltip, scrollbalk, vinkje, focusframe, hoekornament, scheidingslijn | 9-slice randen in de json; focus met lichte rand, gloed en gele hoeken |
+| ◐ | P1 | **Dialoog en radar** | `UI_Dialogue` (paneel + gloedrand, naamplaat, portretlijst, pijl, radarsweep en contact), ruis/scanlines/gloed/schaduw, `UI_Radar` | Wit en kleurbaar, behalve de radar |
+| ◐ | P2 | **Achtergronden** | `UI_Starfield` (menu), `UI_PreviewBackdrop` (modelvoorbeeld), `UI_MapHalo` (planeetkaart) | Volgen de oude regels (alfa = licht, halo wit) |
+| ☐ | P2 | **Lettertype geldpopup** | `MoneyPopup` gebruikt nog het ingebouwde LegacyRuntime-font | Geen art nodig: `UiKit.Font` gebruiken |
 
 ## Budget per soort
 
@@ -604,3 +643,38 @@ gloed 2,0. Punten voor de Blender-kant:
 | Bombard | De buik is in de previews donker; luik en bommen zijn alleen van onder te zien, in het spel waarschijnlijk alleen als de VFX/projectielen vallen |
 | Overcharged Crystal | Het kristal gloeit roze-lila (Crysium zelf, overladen). Dat zit dicht bij de kleur van The Shattered; dat is verhaaltechnisch juist, maar let op leesbaarheid naast aliens |
 | Niet gedaan | **Aarde / S-69-CRYS-globe** en de **oogvorm** van het ogenveld (optioneel) zijn niet gemaakt: de globe wordt in Unity al procedureel geschilderd (`GlobePainter`); een Blender-versie zou dat dupliceren |
+
+### Ronde 24 (vloeistoffen en mist)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Algemeen | Nieuwe set in `ArtSource/Exports/Liquids/` (`build_liquids.py`), nog niet in Unity. Vervangt `LiquidTextures.cs` zodra er één `Game/Liquid`-shader is met diepte (depth texture) of een afstand-tot-de-oever-textuur per poel; recept in `ArtSource/README.md` ronde 24 en `Liquids_report.json` |
+| Water | Diepte, caustics in het ondiepe en schuim langs de oever lezen goed. De deining is op spelzoom subtiel; schuimlijnen volgen nog grotendeels de rechte celrand |
+| Lava | Korstplaten breken en vormen opnieuw (twee lagen). In de open gesmolten plekken zijn soms zwakke ringen van het onderpatroon te zien |
+| Moeras | Kroosachtige film met gloeiende stipjes verzamelt zich aan de oever. Belletjes-flipbook alleen op een sheet gecontroleerd |
+| Drijfzand | Banden en flowmap horen bij elkaar (zand stroomt langs de banden). Van dichtbij lijken de banden wat op houtnerf |
+| IJs | Melkige lagen, bellen, breukvlakken en rijp vanaf de oever. De kleur is vrij licht; per thema terugdraaien op donkere levels |
+| Corruptie | Violet met kloppende aders; er zitten nog kleine gesloten lusjes in de fijne adertjes |
+| Mist | Drie lagen met gaten; in het spel lagere alpha (0,16 / 0,1 / 0,06) dan in de previews. Wisp- en stoomkaarten nog niet in een scène gerenderd |
+
+### Ronde 23 (levende spawnpunten)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Burrow Closed | Bijna onzichtbaar op spelzoom; wie zoekt ziet een vage donkere ster (de afgeronde plaatranden en hun haarlijn). De camo klopt alleen als het gat niet gedraaid wordt (yaw 0) en de grond in Unity dezelfde wereld-xy / 3,0 gebruikt; de grondshader verft er nog een tint en splat overheen, dus in Unity controleren. Veiligst: renderer uit tot Marked |
+| Burrow Open | De opengeklapte platen tonen hun gloeiende zijkanten als vrij grafische roze randen. De flank van de muil is wat glad en glanzend (meer chitineplaten of korst zou beter zijn). De flank ademt mee met de kraag, dus de voet schuift 2-6 cm over de grond |
+| Alle | De muil komt door de grond omhoog zonder gat in het terrein: wat nog onder z = 0 zit, wordt door het terrein bedekt. Bij doorzichtig water is de muil tijdens het stijgen even onder water te zien (bedoeld). Het wervelen van water/moeras, het borrelen van lava en het zandgestuif moeten uit VFX komen (`Dust`, `Glow`) |
+| Quicksand | Zonder kraag leest het nu als heuvel met haken en een gloeiend oog, niet als ring; een echt zinkgat (trechter onder het oppervlak) kan niet zolang drijfzand ondoorzichtig is |
+| IJs | Netjes maar wat kaal en "kroon-achtig"; de gloed is bijna wit (NestColor ijs) en leest alleen dankzij de donkerder, blauwere schotsen |
+| Lava | De gesmolten kern zelf is alleen de gloeiende keel; een opwelling of fontein moet VFX zijn |
+| Marked | Water, moeras en drijfzand: kleine gloeiende bolletjes in een ring; op spelzoom klein (3-4 px). Unity kan het lichtpoeltje van het nest (`GlowDecal.PlacePool`) laten meepulseren |
+
+
+### Ronde 24b (ronde poelen: bank-sweeps)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Algemeen | `<Prefix>_BankSweep_A/B/C` + `<Prefix>_BankAccent` voor alle zes stijlen (`build_bank_sweeps.py`); Unity moet de poelcontour gladmaken en de segmenten buigen (README ronde 24b). Nog niet geïmporteerd |
+| Naden | Elke variant heeft een eigen gebakken atlas: op de gladde stijlen (Mirewood, Core) is de las tussen twee segmenten van dichtbij een zwakke lijn; accenten op de lassen verbergen het meeste |
+| Bochten | Minimale straal 0,5 (preview haalt 0,38 op twee plekken, nog netjes). Smalle armen van één cel worden een ronde lob |
+| Budget | ~2.400 tris per segment na het snijden, ~50k per poel van 20 segmenten: per poel samenvoegen, voor Low decimeren |

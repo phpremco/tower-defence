@@ -1,0 +1,29 @@
+{
+  "textures": {
+    "Proj_PulseRing": {
+      "file": "Proj_PulseRing.png",
+      "size": [
+        256,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "U around (8 tiles), V inner (0) to outer (1). R crest line, G organic body glow, B serrated barbs on the outer edge. Additive or alpha (alpha = max); colour = tint; fade with the ring's age"
+    }
+  },
+  "meshes": {
+    "Proj_PulseRing": {
+      "tris": 384,
+      "dims": [
+        2.14,
+        2.14,
+        0.04
+      ],
+      "uv_sets": 1,
+      "pivot": "centre on the ground",
+      "radius": "0.9..1.07, crest at 1.0",
+      "note": "replaces BossAbilityView.BuildRing (torus r 1, tube 0.06); scale XZ by the pulse radius, keep Y"
+    }
+  },
+  "round": 25
+}

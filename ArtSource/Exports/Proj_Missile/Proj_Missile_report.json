@@ -1,0 +1,49 @@
+{
+  "textures": {},
+  "meshes": {
+    "Proj_Missile": {
+      "tris": 338,
+      "dims": [
+        0.116,
+        0.333,
+        0.116
+      ],
+      "uv_sets": 1,
+      "pivot": "centre of mass, nose to Unity +Z",
+      "sockets": {
+        "Socket_Exhaust": "tail (flame, smoke trail, Rocket_Exhaust.png)",
+        "Socket_Nose": "seeker tip"
+      },
+      "note": "replaces BuildMissile (capsule, sphere, 3 cubes)"
+    }
+  },
+  "bake": {
+    "asset": "Proj_Missile",
+    "texture_size": 256,
+    "low_size": 128,
+    "maps": [
+      "Albedo",
+      "Normal",
+      "Emission",
+      "Mask"
+    ],
+    "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+    "uv": {
+      "coverage": 0.75,
+      "world_per_uv": 0.4481
+    },
+    "detail": {
+      "metal": {
+        "map": "Detail_Metal_Normal.png",
+        "tiling": 9.0,
+        "mask": "B"
+      },
+      "ceramic": {
+        "map": "Detail_Ceramic_Normal.png",
+        "tiling": 7.5,
+        "mask": "A"
+      }
+    }
+  },
+  "round": 25
+}

@@ -1,0 +1,28 @@
+{
+  "textures": {
+    "Marker_HeroSpot": {
+      "file": "Marker_HeroSpot.png",
+      "size": [
+        256,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "U across the road (spot width), V along the road. R two rails, G soft fill towards the rails, B centre crest (small open diamond); pulse B slowly"
+    }
+  },
+  "meshes": {
+    "Marker_HeroSpot": {
+      "tris": 2,
+      "dims": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "unit quad: scale X = cells*(width-SpotMargin), Z = cell*(1-SpotMargin); local X across the road (code: LookRotation(along))"
+    }
+  },
+  "round": 25
+}

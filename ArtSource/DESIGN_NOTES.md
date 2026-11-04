@@ -1977,3 +1977,314 @@ crossings, no segment within 3 deg of an older node, every dotted segment over l
 the guard-free layout field (Crystal Plains at 4.5 % for placement), so it depends only on layout.json + seed; the
 texture build then keeps land around the nodes (final 4.0 %). Weak point: re-running the placer after a lobe change
 gives a new route; the positions in layout.json are the source of truth.
+
+# Round 24: liquids and mist (2026-11-04)
+
+Remco: water, lava and mist look fake. The Unity versions are flat sheets with scrolling line patterns (water: blue with
+white squiggles; quicksand: yellow with wavy stripes) and a uniform glow.
+
+What makes a liquid read as real from the 44 deg ortho camera, and what this set gives the shader for it:
+- **Depth colour**: shallow light, deep dark. Everything is designed around a depth / distance-to-bank value; the
+  textures stay neutral.
+- **Water**: two FFT-ocean normal maps (swell + ripple) for dual scrolling; real caustics (photon splat through an
+  animated, loop-quantised ocean onto a flat floor) as a 16-frame flipbook, only in the shallows; foam as packed bubbles
+  (round holes that close where the foam is dense; the first F2-F1 lace went spiky), moving shore crests from a profile
+  ramp driven by distance to the bank and broken up by a dissolve noise. Critique 1: foam everywhere (the preview's
+  distance image lost its pixels when its colour space changed: set it first). Critique 2: swimming-pool turquoise ->
+  darker shallow, depth range 0.8, alpha 0.72-0.96; crest lines copied the bank outline -> phase noise. Critique 3:
+  reads as a deep pond with shallow edges; the swell is subtle at game zoom.
+- **Lava**: cooled basalt plates (warped periodic Worley, domed, ropes, shrink cracks) in two layers with different
+  plate sizes; a slow noise picks which layer is on top, so plates break up and re-form; heat from seams, a halo and a
+  molten underflow; hotter in the middle. Critique 1: the crust glowed orange everywhere with crackle-glaze cracks ->
+  darker albedo, fine cracks 0.15, halo 0.1, ramp black until 0.3, bigger plates. Critique 2: open molten patches in
+  the hot middle. Remaining: the underflow shows faint rings in the molten patches.
+- **Bog**: murky normals, a duckweed-like alien film with glowing spots that collects at the bank. Critique: too much,
+  too pale scum -> coverage threshold up, darker leaves and water.
+- **Quicksand**: the ripple bands are contour lines of a periodic stream function and the flow map is its curl, so the
+  two-phase flow moves sand along the bands (swirls). Critique: the first version was flat light grey -> bigger bands,
+  stronger relief, sand tint. Remaining: close up the bands look a little like wood grain.
+- **Ice**: milky layers (the first sine layering read as agate rings; now subtle), trapped bubble chains, a partial
+  fracture network with soft fracture planes, frost growing from the bank through a distance threshold (fern-like edge).
+  Critique: the frost fringe glinted like electricity -> steeper threshold, sparkle 0.3. Remaining: light ice; tint it
+  down on dark Northern Crown levels.
+- **Corruption**: viscous violet with vein networks (warped Worley borders; ridged noise gave contour loops) and
+  travelling pulses. Remaining: a few small closed loops in the capillaries; veins fairly dense.
+- **Mist**: three soft layers with real gaps (banks, wind streaks, haze), wisp and steam flipbooks with self-shadowed
+  tops. Critique 1: ink-blot edges and cheese holes -> softer smoothsteps, beta 3; vertical streaks in the card shading
+  -> blur before the shading integral. Critique 2: too dense in the preview -> preview alphas 0.22/0.14/0.09; in game
+  keep 0.16/0.1/0.06.
+
+Weak points: previews are lit brighter than the game; the bubble/ring/wisp flipbooks are checked on texture sheets, not
+in a scene; Low previews not rendered.
+
+# Round 23: living spawn origins (`build_origins2.py`, 2026-11-04)
+
+Remco: "De spawnpoints moeten onzichtbaar zijn bij het begin, en die gaten moeten openen uit de grond, daarna is het
+een vette spawn waar de enemies uit komen. Dit geldt ook voor de kleinere in het water, lava etc." Follow-up answers:
+the openings cannot be destroyed (no Close clip), the player must see at level start where creatures will come from
+while the ground is still closed (a subtle **Marked** look: pulsing rings and glows, no arrows), and an origin opens
+only when something actually comes out of it in that wave (Open is a one-shot, a few seconds before its first
+creature). Same rules as rounds 2-22: Earth only as a start, matte layered surfaces, warm alien light, read at the game
+camera first.
+
+## One rig language for six origins
+
+Every origin is one skinned mesh on one rig. The **bind pose is Closed**: the maw (funnel, ridged collar, teeth,
+claws, tendrils, gullet), the debris chunks and the marker organs wait `D` under the pivot (1.25 for the burrow, 0.9
+for the liquid ones), where the terrain or the pool bed hides them. Only the plates sit at the surface. So a renderer
+that plays no clip shows nothing but flush plates. Open lifts the maw by `D` out of the ground, so it really comes
+out of the earth. The terrain hides the part that is still below z = 0. There is no hole in the terrain: the maw's
+gullet sits a few centimetres above the pivot and the creature pops through it.
+
+- **Origin2_Burrow** (land, about 2 cells of maw, 3.4-3.8 with what it throws). Earth start: an ant-lion pit crossed
+  with a sea anemone. Departures: 13 ground plates (5 centre wedges in a star, 8 ring segments) whose tops are
+  **painted with the continent's ground set** (camo); a fleshy oxblood funnel with raised radial chitin ribs, glowing
+  pores in the grooves and a foot crusted with soil; a segmented collar with glowing joints; nine hooked bone-tipped
+  teeth that close over the gullet like a cage and unfurl; two big asymmetric hooked claws (one much taller); four
+  tendrils with glowing nodes that lash out over the ground; a white-hot amber gullet with concentric throat rings.
+  Six basalt chunks fly at the burst. The 8 ring plates hinge at their outer edge and flip outward (150-170 deg), so
+  their root-veined, warm-lit undersides form a star of petals round the maw. The 5 centre wedges are thrown and land
+  upside down 1.5-1.75 out.
+- **Origin2_Water**: a fleshy wet lip just above the surface, six translucent-tipped ribs curling over the throat
+  like a closing hand, three short tendrils, glowing pores. Marked: seven glowing pore-beads bob at the surface in a
+  ring. Open: the beads start to circle and are drawn in (the whirl begins), the maw rises turning 1.25 turns (the
+  whirlpool), the ribs unfurl.
+- **Origin2_Lava**: a broken obsidian chimney with molten cracks in the flank and ember-crystal teeth. Marked: a ring
+  of chilled crust plates floats on the lava, its seams glowing (a dark patch with a burning outline on the bright
+  pool). Open: the crust cracks, 6 plates fold outward and prop up, 3 centre plates and 5 glowing lava bombs are
+  thrown, the chimney erupts.
+- **Origin2_Quicksand**: a sinkhole. Marked: five bone-hook tips poke through the sand and bob. Open: a ring of six
+  sand slabs rises to the surface, then slumps inward into the funnel (hinged at the outer edge, -30 to -45 deg)
+  while the funnel turns half a turn; five bone hooks unfurl round a dark eye with a faint glow.
+- **Origin2_Ice**: a breathing hole. Marked: a ring of ice floes lies at the surface with glowing seams. Open: the
+  sheet fractures, 7 floes push up and stand at 60-85 deg, 4 centre floes and 4 ice chunks are thrown, a frost-chitin
+  collar with eight icicle teeth rises.
+- **Origin2_Bog**: a gas mound. Marked: five gas blisters bob at the surface. Open: the mound swells out of the mire
+  with a quarter turn, seven fat lip lobes open like a sphincter, three limp tendrils, four mud chunks.
+
+The liquid origins keep round 14's rule: the Emission map is a **white mask** that Unity tints with
+`NestColor(element)`. The burrow's glow is baked warm (amber gullet, red-pink cracks and veins).
+
+## The Closed and Marked looks
+
+- **Burrow Closed**: plate tops lie 8 mm above the pivot (flush; the sides go 7 cm down into the ground). After the
+  bake, a camo pass rasterises the up-facing plate-top triangles in UV space and replaces Albedo, Normal (turned into
+  each texel's tangent frame), AO and smoothness with the ground set sampled at the model's own xy / 3.0 (the sets'
+  tile size). One FBX, one map set per ground set: the default maps are Crystal Plains, `Skins/<Continent>/` holds
+  Albedo/Normal/Mask (+ Low) for the other five continents (the Emission map is shared). The tops get no displacement.
+  The gaps between plates show the real terrain. What still shows: a faint darker star (the rounded plate edges and
+  their 40 % dark hairline) if you look for it.
+- **Burrow Marked** = the same pose with the Emission on: the bevel round every plate top is a hairline crack with a
+  faint glow (mask 0.35), which draws a ring and a five-armed star. The pulse is the material's emission strength
+  (Unity), so Closed is emission 0 and Marked pulses it. The `Marked` clip adds only a 2 mm breath of the centre
+  wedges.
+- **Liquid Closed**: everything is under the surface (plates 0.14-0.2 down, markers 0.25-0.3, the maw 0.9). Lava and
+  quicksand are opaque in Unity; water, ice and bog are translucent, so they show at most a dark shape at depth.
+- **Liquid Marked** comes from geometry: plates (lava, ice) or marker organs (water, quicksand, bog) come up to the
+  surface and bob, so the glow cue works on opaque pools too.
+
+## Open, Idle, Spawn
+
+Open (96 frames): **Stage 1 tremor** 0-30 (plates jitter and lift 1 cm; their sides glow just below the top edge, so
+the cracks glow as they lift; liquid markers start to move); **Stage 2 bulge** 30-54 (centre plates heave up to 11 cm
+and tilt, ring plates heave 4-10 deg, the maw climbs to 0.32 under the surface); **burst at frame 54** (plates slam
+open with a rebound, wedges and chunks fly on ballistic arcs and skid when they land, the maw surges out, overshoots
+7 cm at about 62-70); **Stage 3** 66-96 (teeth and claws unfurl from folded with an overshoot, tendrils uncurl and lash,
+the gullet opens from 0.3 to 1.15 and settles to 1.0). Idle (105, loop) starts on Open's last frame: a wave of
+breathing runs round the collar, the throat pulses, teeth flex, tendrils twitch at 1-3x the loop rate. Spawn (30)
+starts and ends on Idle frame 0: the collar heaves out and up, the throat swells by 30 %, teeth flare 20 deg, tendrils
+lash (peak frame 6).
+
+## Critique passes (renders in the session scratchpad, `origins2/<kind>/`)
+
+1. First burrow: the funnel flank read as a smooth red cloth skirt, the plate cracks were neon outlines once open,
+   the collar had candy stripes, the teeth were straight posts, and the closed plates showed a dark star (40 % too
+   much hairline). Fixes: raised radial chitin ribs in the geometry (same function as the paint), glowing pores in
+   the grooves, a soil-crusted foot, crack glow 0.85 -> 0.5 on a narrower band, collar joints half as wide and
+   0.45, hooked five-point teeth, hairline darkening 0.75 -> 0.4. Water: the ribs were vertical posts (now they
+   curl over the throat), the lip sat high on the water (lowered), and the Marked beads were too small (seven, a
+   little bigger, now circling inward as Stage 1).
+2. Lava: the preview pool was blown out (fixed in staging) and the flank was plain glossy purple (now molten
+   cracks), the ember teeth now have glowing nodes. Quicksand: the collar read as an orange life ring and the Marked
+   hook tips were invisible on sand. Now there is no collar, six bigger bone hooks, and glowing shell beads as
+   markers. Ice: the near-white glow vanished on white floes (round 14's problem). The floes are now bluer and
+   darker, with dark seams, and the ring and star read. A plate-UV problem showed too: the closed slabs were
+   shredded by the smart-project fallback (1,076 faces). The build now uses deep_kit's closed-island cut, so there
+   are 0 fallback faces and each plate top is one island.
+
+## Honest weak points
+
+See MODEL_TODO "Ronde 23". In short: the burrow's closed camo depends on yaw 0 and the Unity ground shader's tint;
+water, bog and quicksand need VFX for the whirl, the bubbling and the sand spray; the quicksand origin is a mound
+with hooks rather than a true funnel; the flanks are still a bit smooth up close.
+
+## Proposed Unity behaviour
+
+- **Level start:** every origin that a wave of this level will use starts **Marked** (burrow: emission pulse 0.35-1.0
+  on a 2.5 s sine plus the Marked clip; liquids: the Marked clip), with the nest's light pool pulsing on the same
+  sine. Origins no wave uses stay **Closed** (burrow emission 0 or the renderer off).
+- **Trigger:** when the wave plan knows the first creature that will leave an origin in the coming wave, start `Open`
+  **2.5 s (76 frames) before that spawn**, so the first creature climbs out of a settled maw. A warning cue at Open
+  frame 0: a rising rumble, a small minimap/edge ping in the nest colour, and the Marked pulse speeding up over the
+  tremor. The burst sound and the camera-shake tick go at frame 54.
+- **After:** switch to `Idle` at frame 96 and play `Spawn` with each creature. The origin stays open for the rest of
+  the level (it cannot be destroyed). A level that ends with origins still Marked may simply leave them.
+
+---
+
+# Round 25: UI art (`build_ui.py`, 2026-11-04)
+
+Remco's rule: every visual part is made in a design program. The audit found the HUD/menu icons, the dialogue and
+cutscene textures, the radar scope, the menu starfield, the model-preview backdrop and the map halo still painted in
+C#, and the frames/buttons/bars coming from the third-party Kenney UI pack. This round replaces all of it with our own
+set, built in Blender.
+
+## Method
+
+- **Geometry, not pixels.** Every icon and frame is flat 2D curve geometry (polygons, capsules, rings, sectors,
+  45-degree chamfers) with a small bevel, laid out in one scene in pixel units (1 BU = 1 px of the 2x master) and
+  rendered top-down with an orthographic camera in Cycles (emission only, 24-32 samples, 1.2 px filter). Glows,
+  backdrops, the sweep, noise and the sky are shader node trees on quads (gradient, noise, white noise, attribute
+  colours on 4000 star quads).
+- **One light for the whole UI.** The shaded material maps the bevel normal against a fixed top-left light
+  (-0.5, 0.5, 0.71): flat tops = 1.0 x colour, lit bevels up to +45 %, far bevels down to 0.42. No lamps, so every
+  piece gets the identical bevel, and the flat top of a white icon stays a clean tint target (0.88 after 12 %
+  headroom for the highlight).
+- **Compositing in numpy** only: glow = the edge layer blurred, a soft dark rim under every white icon (readable on
+  light and dark), premultiplied over, packing and the 9-slice previews. Layers (fill / edge / ornaments) are separate
+  collections rendered one at a time so the glow comes from the edge alone.
+
+## Style decisions
+
+- **Shape language** = our build pads, gates and the NTI emblem: chamfered rectangles with the big cut on the
+  top-left and bottom-right (20 px at 2x on panels, 14 on buttons) and small cuts on the other corners; hex rivets,
+  hex studs, hex slider handles, a hex lattice on the preview backdrop.
+- **Palette**: navy fills (#08121F, #0D1B2E, buttons #10284A), cyan edges (#4FD2FF, dim #2A6E96), ice white
+  (#E8F7FF) and signal yellow (#FFD040) reserved for focus. Card accents blue/green/yellow/red keep UiSkin's four card
+  and bar colours. Alien markers warm: BossMarker orange (#FF8A24) and EnemyOrigin red (#FF4020) with a red glow.
+- **Focus is unmistakable** (gamepad from the sofa): focused = brighter fill, a 4.5 px ice edge, a cyan glow and four
+  signal-yellow corner brackets outside the frame. Pressed sinks darker with a cyan edge; disabled is grey at 80 %.
+  All states of one element share the same glow pad, so a SpriteSwap never shifts the layout.
+- **Icons**: 40 clean silhouettes on one stroke weight (0.075 of the cell main, 0.045 secondary), 6 px bevel at 2x,
+  white so the existing `Image.color` tints keep working; drawn inside the central 112 of 128 px with the dark rim in
+  the margin. The first 28 follow `IconType` one to one (same metaphors as the code shapes: wrench, coin with a hex
+  core, shield with a chevron, snowflake with a hex core, ...); 12 extras for things the HUD now draws with text or
+  borrowed icons (StarEmpty, BossMarker, EnemyOrigin, Drone, Base, Gear, Close, Research, Power, Enemy, Credits, Info).
+- **Dialogue** pieces stay white (DialogueView tints them) but now use the kit's chamfers; Panel and Edge share one
+  outline so the light sits exactly on the border, as before. Name tag and portrait frame are new.
+- **Radar** is one pre-coloured scope (teal on dark, steel bezel with four hex clamps, ticks every 10 degrees) plus a
+  sweep wedge and a contact dot instead of seven rotated lines.
+- **Starfield** follows `SpaceStyle` (band, nebula A/B, dust lane, star colours) at 2048 x 1152 with alpha = 3 x
+  brightness, the painter's rule, so it still only adds a faint glow over a running level.
+
+## Critique passes
+
+1. *First icon sheet and kit sheet*: the wrench head was a muddle (handle running into the jaw, gap too small) -
+   handle shortened, jaw opened to 84 degrees. The flask's liquid line vanished (a hole in a concave outline fills in
+   with the bevel offset) - the flask is now stencil-cut in two pieces. The inner rule on selected panels rendered as
+   a light triangle (same fill problem) - inner rules are now chains of thin capsules. Atlas height trimmed.
+2. *HUD / menu / dialogue mockups*: focus states read instantly at 1080p and the panels sit well over the field. The
+   Base icon read as a bell - redrawn as a domed hall on a platform between two pylons. The BossMarker's three thin
+   rakes blurred into a smudge at 32-48 px - now two bold rakes. Mockup layout fixes (score got its own plate, the
+   tooltip and its pointer no longer cover a slider).
+
+## Honest weak points
+
+- The icons are clean and consistent but plain; they do not carry the small machined details of the 3D models. At
+  24 px the Net, Roll and Patrol icons lose their inner detail (still recognisable by outline).
+- The dark rim under white icons is baked; on a very dark button it reads as a slight shadow halo. A rim-less variant
+  is a one-line change in `build_icons` if Remco prefers.
+- 9-slice borders assume Pixels Per Unit 200 (2x masters). At 720p the 3 px (1.5 px at 1x) edge is crisp only with
+  mip maps off on the kit.
+- The Kenney fonts stay (CC0); they draw K and X like H, which is the font's style, not a bug.
+- Mockups take about 3 minutes (numpy 9-slice and resampling on full 1080p canvases; the bundled numpy is slow at large resamples).
+
+# Round 24b: organic pool outlines with swept banks (2026-11-04)
+
+Remco wants rounded pools, not only square ones. Gameplay stays on cells; the outline is smoothed in Unity and a bank
+is swept along it. Blender side: `<Prefix>_BankSweep_A/B/C` (1 unit, plain-section ends so any variant follows any
+other, cut every 1/16 along X, UV1 along the run) and `<Prefix>_BankAccent` for all six styles; `bank_sweep_preview.py`
+does the contour smoothing (cell outline -> Gaussian sigma 0.55 -> wobble 0.04) and the bending.
+
+Critique 1: the organic pool reads round at once and the stones bend without kinks; but the minimum radius came out
+0.33 (sigma 0.42) and a band of dry basin showed between the lava lip and the lava (the basin sloped from z = -0.08).
+-> sigma 0.55 (radius 0.38 at the two tightest spots), the basin now drops straight to -0.3 inside the shore, shore
+effects start 0.06 inside the curve. Critique 2: on the smooth peat (Mirewood) the joints between variants show as
+faint cuts (each variant has its own baked atlas) -> accents on ~60 % of the joints; still faintly visible close up.
+The smoothing turns the one-cell arm of the h into a rounded lobe and narrows the one-cell dry notch into a peninsula;
+that is the intended look, but very thin features (one cell) lose their shape.
+
+# Round 25b: gameplay markers, bars, projectiles, debris and spawn gates (2026-11-04)
+
+Remco (2026-11-04): "alles moest via Blender, dus niets meer via code zelf". An audit found the small gameplay
+visuals still made of code primitives (cubes, spheres, cylinders, LineRenderer rings) or textures painted at runtime
+(`GlowDecal`). Round 25 makes them in the art pipeline: `build_spawngate.py`, `build_projectiles.py`,
+`build_markers.py` (+ `marker_kit.py`, `marker_scene.py`). Unity notes in `README.md` (round 25b).
+
+## Design rules used
+
+- **Subtle by default** (Remco 2026-10-30/11-01): thin lines, soft edges, low fill; nothing that covers the map in
+  squares. Brightness lives in one thin line per marker (cursor edge, range rim, hero ring); fills stay below ~0.2
+  and fade towards the middle, because on the dark ground even a linear 0.02 additive is visible.
+- **No chevrons or arrows.** Road and flight direction are flowing light: one soft streak with a long tail every three
+  cells (road), light beads with short tails (flight), scrolled by the shader. The old arrowheads are gone; route starts
+  get an expanding pulse ring (`Cue_Pulse`).
+- **Colour codes:** every marker texture is a greyscale channel pack tinted in the shader, so ours stay cool
+  (`ValidColor` teal, hero gold, slow-field blue) and the aliens warm. The spawn gates and the enemy bolt are the only
+  assets with baked or painted warm colour: blood-red hide, ember-orange veins and throat, sickly green eye glints.
+- **Projectiles** follow the 2026-10-30 wish: glowing rounded bars with a light trail, not balls of light. The bolt is
+  a capsule bar with a white-hot nose and a tinted tail plus a crossed glow shell for the existing `Bolt_Core`
+  sprite; the rail slug is a faceted dart with three rail rings; the enemy bolt is a spat ichor glob with three
+  swept barbs (alien, not a sphere).
+- **Health bars** keep the 2026-11-01 night numbers (0.85 x 0.085, translucent dark plate, emission 0.7) and fix the
+  one thing a scaled cube cannot do: the fill is clipped in the shader on UV2, so rounded ends stay round and the
+  bar is cut from the right without scaling.
+
+## Spawn gates (alien design rule)
+
+The old gate was a bumpy mound with ten cone teeth and a flat glowing hoop. Departures from anything Earthly:
+- **Ground:** a crater mound of overlapping chitin scales over flesh (Voronoi plates with dark seams; no concentric
+  rings), glowing veins that leave the throat along some seams and die out, pustules with a green glint, five horns of
+  unequal height (two lean over the throat like claws, on one side only), six fleshy lips that peel open on `Spawn`,
+  roots crawling into the soil, and a vertebra ring with seven glowing nodes and seven down-hooked claws that hovers
+  over the throat and turns (Idle = 30 deg/s, the old `GateRingSpin`).
+- **Air:** a floating seed pod (teardrop, narrowing to a neck round the throat), five curved spurs hooking down past a
+  tilted claw ring, five lips on top and four tendrils of unequal length that sway. It shares the ground gate's
+  palette and ring, so both read as one hive.
+- Pipeline as the creatures: parts fused by voxel remesh, per-vertex styles, Cycles AO, decimated, unwrapped and
+  baked (512, Low 256: about 100 px on screen at the default zoom), part-aware skinning (the ring rigid on its
+  bone), clips keyed from code.
+
+## Critique passes (renders in the session scratchpad, `markers/`)
+
+1. **Textures sheet:** fine as channel packs, but the health-bar card hid the plate (fixed in the scene preview with
+   the real recipe). Contact cells now fit any aspect.
+2. **Spawn gates, first build:** concentric fold grooves made the mound read as a target / a coaster; roots stuck out
+   like orange sun rays; lips invisible; the ring a thin hula hoop; the air pod read as a cauldron with handles ->
+   Voronoi scales instead of rings, darker flattened curving roots (5, unequal), bigger lips with hot tips, chunkier
+   beaded ring with larger claws, the pod redesigned (neck, spurs that hook down, no collar, ring lowered below the
+   spurs so it turns clear of them).
+3. **Review scene, first pass:** the road comets (two per cell, sharp heads) still read as a dotted arrow line; the
+   range-ring fill was a solid teal disc; free cells were hard rounded squares; the slow field's three even ripples
+   read as a target; the bar fill grew from the right (upright quads had U running the wrong way after the axis
+   conversion) -> one long soft streak per three cells, a narrow rim-only fill, soft round free-cell glows, two
+   wobbling ripples, U flipped on upright quads (U now starts at Unity -X, screen left).
+4. **Review scene, second pass:** the ring's fill was still too wide (glow from 0.55 R) and its hard cut aliased ->
+   glow only in the outer fifth, anti-aliased, fill and band meet at the same value; the rim kept below the bloom
+   threshold (an HDR rim made the preview bloom fill the disc).
+
+## Honest weak points
+
+- The spawn gates have no LOD1 (3,800 / 3,600 tris is under budget, but the Low profile has no lighter mesh) and the
+  air pod's close-up render sits on the ground (the scene renders show it floating). The ground gate's horns reach
+  1.29 (1.55 at `GateScale` 1.2): check that they never hide a tower behind the gate.
+- `Spawn` is a short lip peel; it does not yet show a creature-sized bulge in the throat. The emission is baked warm,
+  so a theme tint is a multiply, not a re-colour.
+- Marker looks are judged in EEVEE with a stand-in for the Unity shader; the gains in `marker_scene.py` are a
+  starting point, not final values. The range fill and band meet with a hairline where the 48-segment disc and the
+  96-segment band differ.
+- Debris chunks are clean colony parts (white plate, blue panel, hex, strut, pipe, bracket, hazard, rocks): little
+  scorch or bending; the wreck/scorch looks of the gate and base are not reused.
+- The particle atlas sprites are 128 px and simple; the ichor splat and goo decal are flat masks with no normal.
+- Not made here because round 20 already covers them: hero blaster bolt (`Bolt_Core`), ability beam (`Beam_Core`),
+  rocket exhaust and smoke trail.

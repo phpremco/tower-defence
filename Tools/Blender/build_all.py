@@ -62,6 +62,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_vfx.py",
            # Round 24: liquid and mist textures (numpy) + shore previews with the bank pieces built above.
            "build_liquids.py",
+           # Round 25b: spawn gates, projectiles/debris, then markers (its review scene appends the first two blends).
+           "build_spawngate.py", "build_projectiles.py", "build_markers.py",
            # Round 24b: sweep-ready bank segments per style + organic pool previews (needs the round 8/17 kits).
            "build_bank_sweeps.py",
            # Round 25: UI art set (icons, kit, dialogue, radar, starfield, backdrop, halo + mockups).

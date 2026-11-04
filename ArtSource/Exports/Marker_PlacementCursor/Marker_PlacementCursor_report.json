@@ -1,0 +1,49 @@
+{
+  "textures": {
+    "Marker_PlacementCursor": {
+      "file": "Marker_PlacementCursor.png",
+      "size": [
+        256,
+        256
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "quad = 1.5 cells (cell edge at 0.96 cell, as MarkerCellFraction). R edge line, brightest in the corners; G inner fill (stronger near the edge); B soft halo outside the cell; A max"
+    },
+    "Marker_FreeCell": {
+      "file": "Marker_FreeCell.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "one cell. R soft rounded glow (no hard frame), G a very faint inner rim; fade per cell by distance to the cursor (only while placing)"
+    }
+  },
+  "meshes": {
+    "Marker_PlacementCursor": {
+      "tris": 2,
+      "dims": [
+        1.5,
+        1.5,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "cell centre",
+      "note": "1.5 x 1.5 at cell size 1; scale by CellSize"
+    },
+    "Marker_FreeCell": {
+      "tris": 2,
+      "dims": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "cell centre",
+      "note": "1 x 1 at cell size 1"
+    }
+  },
+  "round": 25
+}

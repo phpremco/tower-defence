@@ -1499,3 +1499,454 @@ apart, >= 3.5 deg from the coast, within the 30 deg C1 radius. The Core `RadiusD
 `--placenodes [--seed N]` re-places the 20 Crystal Plains nodes into `layout.json` (seeded, deterministic for the same
 layout); `--rendernodes` renders the node close-up with the dotted route from the current exports. Unity notes: apply
 the new `nodes[]` lon/lat (order unchanged, Landing Site first); spacing >= 6.18 deg, rule 6 deg as in round 22.
+
+## Round 24: liquid and mist texture set (`build_liquids.py`, 2026-11-04)
+
+Remco: the water (and lava, mist) still looks fake. Procedural replacement for the textures that `LiquidTextures.cs`
+paints in code today, designed for one URP liquid surface shader (to be written in Unity; nothing is imported yet).
+Design notes in `DESIGN_NOTES.md` (round 24); the shader recipe is also in `Liquids_report.json` (`shader`,
+`conventions`, per-kind `palettes`).
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_liquids.py -- [--only Water,Lava]
+[--preview <dir>] [--norender] [--previewonly] [--samples 32] [--compare-dir <dir;dir>]` (~1 min textures, ~4 min
+previews). Textures only, without Blender: `"C:\Program Files\Blender Foundation\Blender 5.2\5.2\python\bin\python.exe"
+Tools/Blender/build_liquids.py -- --norender`. Modules: `liquid_kit.py` (periodic spectral noise, periodic Worley, FFT
+ocean with a loopable time axis, photon-splat caustics, normals, PNG), `liquid_textures.py` (one builder per kind),
+`liquid_preview.py` (shore scenes with the exported bank pieces, ground tiling sets and the game camera; preview shaders
+that follow the recipe), `liquid_shader_notes.py` (the recipe as data). In `build_all.py` before the diorama.
+Output: `ArtSource/Exports/Liquids/<Kind>/*.png`, `<Kind>/Low/` (half size), `Liquids_report.json`; 32 MB full size
+(40 MB with Low). All tiling maps are seamless (seam ratio ~1 in the report); every flipbook loops.
+
+### Conventions
+
+- Only `*_Albedo` are sRGB. Normal maps OpenGL (G up), import as Normal map. All masks, heat, flow, flipbooks and mist
+  are linear (sRGB off). Wrap Repeat, except flipbooks, `Quicksand_Vortex` (Clamp) and `Water_ShoreProfile` (Repeat U,
+  Clamp V).
+- Flipbooks: 4 x 4 frames of 256 px, frame 0 top-left, row by row (Unity Texture Sheet Animation order). The caustic
+  frames also tile: sample frac(uv) inside the frame cell (scale the cell UV by 254/256 or bias the mip against edge
+  bleeding).
+- Flow maps: RG = vector * 0.5 + 0.5 (R = +x, G = +y of the texture = world +z when uv = worldPos.xz), B = speed.
+- Sample everything with **world-space UVs** (`uvW = worldPos.xz / tile`): cell-shaped pools then tile without mesh UVs.
+  Tile sizes below are world units (CellSize 1).
+- Textures are neutral; tints per continent are in the report (`palettes`), meant for theme data, not code.
+- **Shore and depth**: `depth` = scene depth behind the surface minus the surface depth (`_CameraDepthTexture`; with the
+  ortho camera use linear01 * (far - near)); `depth01 = saturate(depth / range)`; `shore_dist` = depth scaled to cells
+  (the basin floor slopes, so depth grows with the distance to the bank). Low profile (no depth texture): bake a
+  distance-to-bank texture per pool from the cell mask (8 px per cell, CPU, once at level build) and sample it with
+  pool-local UVs; the Blender previews do exactly that.
+
+### Textures
+
+| Kind | Texture | Size | Channels | Use |
+| --- | --- | --- | --- | --- |
+| Water | `Water_Normal_Swell` | 1024 | normal | FFT wind sea, a few long crests; tile 4.8, scroll (0.035, 0.012) tiles/s |
+| Water | `Water_Normal_Ripple` | 1024 | normal | capillary chop; tile 1.65, rotated 40 deg, scroll (-0.05, 0.07), strength 0.7 |
+| Water | `Water_Caustics_Flip` | 4 x 4 x 256 | grey | real caustics (photons through an animated ocean onto a flat floor), each frame tiles; 8 fps, loops |
+| Water | `Water_Caustics` | 1024 | grey | static caustic tile for Low: two scrolled samples, `min()` |
+| Water | `Water_Foam` | 1024 | R lace foam, G bubbles, B dissolve noise, A preview | tile 1.8 |
+| Water | `Water_ShoreProfile` | 256 x 16 | grey | breaking crest over one wave period: sharp front, frothy tail |
+| Lava | `Lava_CrustA/B_Albedo` | 1024 | RGB sRGB basalt plates, A crust coverage (0 = seam) | A tile 5.5, B tile 4.4 rotated 63 deg |
+| Lava | `Lava_CrustA/B_Normal` | 1024 | normal | domed plates, pahoehoe ropes, cracks |
+| Lava | `Lava_CrustA/B_Heat` | 1024 | R seam heat, G halo, B molten underflow | emission through the palette ramp |
+| Lava | `Lava_Flow` | 1024 | RG curl-noise distortion, B speed | tile 8.25, offset 0.06 |
+| Lava | `Lava_Bubble_Flip` | 4 x 4 x 256 | R emission, G skin shade, B height, A alpha | swell 0-9, burst 10, crater 11-15; 10 fps |
+| Bog | `Bog_Normal` | 1024 | normal | viscous swell, two samples (4.5 and 2.45 rotated 75 deg), very slow |
+| Bog | `Bog_Scum` | 1024 | R film lightness, G glow spots, B gloss, A coverage | duckweed-like alien film; tile 3.5 |
+| Bog | `Bog_Bubble_Flip` | 4 x 4 x 256 | R highlight, G film shade (0.5 neutral), B height, A alpha | swell 0-8, pop 9, rings 10-15; 10 fps |
+| Quicksand | `Quicksand_Albedo` | 1024 | RGB sRGB near-neutral sand, A trough wetness | tile 4.5 |
+| Quicksand | `Quicksand_Normal` | 1024 | normal | swirled ripple bands (contours of the stream function behind the flow) + grains |
+| Quicksand | `Quicksand_Flow` | 1024 | RG flow along the bands, B speed | two-phase flow map, strength 0.1, 0.35 cycles/s |
+| Quicksand | `Quicksand_Vortex` | 512 | RG inward spiral, B speed, A sink mask | optional single vortex per pool (pool-local UV, Clamp) |
+| Quicksand | `Quicksand_Ring_Flip` | 4 x 4 x 256 | RG normal xy, B height, A alpha | dimple + three rings where something sinks; 8 fps |
+| Quicksand | `Quicksand_Sparkle` | 1024 | grey | rare crystal grains; `* pow(N.H, 200)` |
+| Ice | `Ice_Albedo` | 1024 | RGB sRGB pale ice, A milkiness (0 = clear, show the depth colour) | tile 4.5 |
+| Ice | `Ice_Normal` | 1024 | normal | gentle undulation + crack grooves (static) |
+| Ice | `Ice_Cracks` | 1024 | R crack lines, G fracture planes, B trapped bubbles | R = glint/emission mask |
+| Ice | `Ice_Frost` | 1024 | R frost density, G sparkle points, B frost height | frost = density beating a threshold that rises with `shore_dist` |
+| Corruption | `Corruption_Normal` | 1024 | normal | heavy viscous blobs, raised veins; two slow samples |
+| Corruption | `Corruption_Veins` | 1024 | R vein emission, G pulse phase, B mottle | pulses travel as `sin(2 pi (G * 3 - t * 0.35))` |
+| Mist | `Mist_Layer_A/B/C` | 1024 | grey density | banks with wide gaps / long wind streaks / fine haze |
+| Mist | `Mist_Wisp_Flip` | 4 x 4 x 256 | R top-lit shade, A density | rolling wisp card; 6 fps, loops |
+| Mist | `Steam_Flip` | 4 x 4 x 256 | R shade, A density | rising lava/vent steam column; 10 fps, loops |
+| Mist | `Heat_Distortion` | 1024 | RG screen offset (0.5 = none) | vertical shimmer over lava, scroll up; offset 0.004 |
+
+### Unity shader recipe (one `Game/Liquid` shader with a keyword per kind)
+
+- **Water**: N = whiteout(Swell, Ripple * 0.7); colour = lerp(shallow, deep, depth01), range ~0.8; alpha lerp(0.72,
+  0.96, depth01); refraction offset N.xy * 0.03 * depth01 on `_CameraOpaqueTexture` (High). Caustics flipbook at the
+  reconstructed floor xz / 2.1, * tint * 0.22 * (1 - depth01), added as emission. Foam: F = Foam(uvW / 0.6);
+  phase = frac(shore_dist * 2.2 - t * 0.28 + F.b * 0.45); band = ShoreProfile(phase) * smoothstep(0.75, 0.05,
+  shore_dist); fringe = smoothstep(0.1, 0, shore_dist); cover = max(band * 0.85, fringe);
+  foam = saturate((F.r + cover - 1) * 3) max F.g * cover * 0.9; smoothness 0.95 -> 0.45 under foam. The existing ring
+  and glint particles stay.
+- **Lava**: offset = (Flow.rg - 0.5) * 0.06; crusts A and B scroll (0.018, 0.006) and (-0.012, 0.014);
+  w = smoothstep(0.42, 0.58, slow 3D noise (or a third scrolled Flow.b)) picks the top crust, so plates break up and
+  re-form; heat = (seam * (0.55 + 0.6 * under) + halo * 0.1) * (0.55 + 0.6 * smoothstep(0.1, 1.4, shore_dist));
+  molten = smoothstep(0.7, 0.95, under) * smoothstep(0.6, 1.2, shore_dist), heat = max(heat, molten * 0.75);
+  emission = ramp(heat) * 1.6 (ramp black until 0.3, peak ~4 HDR) with the current +-15 % pulse. Bubble flipbook
+  sprites replace the procedural lava bubbles; Steam_Flip cards + Heat_Distortion above it (High).
+- **Bog**: two normal samples; water = lerp(shallow, deep, depth01), alpha 0.85-0.97; scum a = saturate(S.a + shore *
+  0.35) (it gathers at the bank); albedo lerp(water, scumTint * S.r, a); emission glow * S.g * a * 1.4.
+- **Quicksand**: opaque; two-phase flow map (p0 = frac(t * 0.35), p1 = frac(p0 + 0.5), w = |1 - 2 p0|) over Albedo and
+  Normal; darker and damper towards the middle (45 % * 0.35 * smoothstep(0.2, 1.6, shore_dist)); sparkle glints; ring
+  flipbook where units sink.
+- **Ice**: colour = lerp(deep, Albedo * tint, milky * 0.85 + 0.1); a parallax second sample of Cracks.g and Albedo.a at
+  uvW + viewDir.xz * 0.04 for depth (High); frost from the bank (threshold `shore_dist * 2.6`); emission cracks * 0.35
+  + frost sparkle * 0.3 (* IceGlow); static normal.
+- **Corruption**: two slow normal samples, smoothness 0.82; albedo darkened by mottle; emission = vein tint * R * pulse
+  * smoothstep(0, 0.25, shore_dist) * 1.0-1.3.
+- **Mist**: three world-space layers at 0.12 / 0.32 / 0.6, uvW / 7, 5, 3.5, scroll (0.012, 0.003), (0.025, 0.004),
+  (0.04, -0.01); in-game alpha 0.16 / 0.1 / 0.06 (the previews use 0.22 / 0.14 / 0.09), theme mist colour, soft depth
+  fade 0.3 against geometry; keep total alpha <= 0.3 over road and pads. Wisp cards at the border and nests.
+- **Low (Switch)**: water one normal + static caustics (two samples, min), foam fringe only, no refraction; lava layer
+  A only, no distortion or steam shimmer; bog and corruption one normal; quicksand one sample; ice without parallax and
+  glints; mist layer A only at alpha 0.12. All from `Low/`. Distance texture instead of the depth texture.
+
+### Previews
+
+Into `--preview` (default `ArtSource/Previews/Liquids`): `liq_<Kind>_game.png` (game camera, ortho 7.5),
+`liq_<Kind>_close.png`, `liq_<Kind>_strip.png` (four moments 0.8 s apart), `liq_<Kind>_compare.png` (current Unity
+screenshot | Blender), `liq_Mist_compare.png` (without | with mist), `liq_Mist_vs_unity.png`, `liq_Mist_strip.png`.
+The preview scenes are lit a little brighter than the game (no fog, no grading).
+
+## Round 23: living spawn origins (`build_origins2.py`, 2026-11-04)
+
+`blender --background --factory-startup --python Tools/Blender/build_origins2.py -- [--preview <dir>] [--norender]
+[--only Burrow,Water,Lava,Quicksand,Ice,Bog]` (burrow ~8 min, each liquid one ~4 min with renders). Own helpers only
+(imports common, env_kit, deep_kit, boss_kit, tower_kit; edits none). Design notes in `DESIGN_NOTES.md` (round 23).
+They replace `Burrow_A` and the round-14 `Env/Origin_*` as the nest models. Those stay in place until Unity switches.
+
+### Files (`Exports/Env/Origin2_<Kind>/`)
+
+`Origin2_<Kind>.fbx` (LOD0 + rig + 5 takes), `Origin2_<Kind>_LOD1.fbx` (same rig and takes), Albedo / Normal /
+Emission / Mask 1024 + `Low/` 512 (same packed format: Mask R AO, G smoothness, B/A detail families from the report),
+`_report.json` (tris, bones, clips, key frames, socket positions open and closed, sizes). Burrow only:
+`Skins/<Continent>/` Albedo, Normal, Mask (+ `Low/`) painted from that continent's ground set; Emission is shared.
+`.blend` in `ArtSource/Blend/Origin2_<Kind>.blend`.
+
+| Asset | Tris | LOD1 | Bones (deform) | Emission | Size open (ground footprint incl. debris) |
+| --- | --- | --- | --- | --- | --- |
+| Origin2_Burrow | 3,900 | 1,750 | 62 (53) | baked warm | maw 2.0 across, 3.8 with thrown slabs; 0.72 high (claw) |
+| Origin2_Water | 2,400 | 1,080 | 38 (31) | white mask | 1.2; 0.52 high |
+| Origin2_Lava | 2,400 | 1,080 | 38 (30) | white mask | chimney 1.1, 2.0 with plates and bombs; 0.53 high |
+| Origin2_Quicksand | 2,400 | 1,080 | 34 (27) | white mask | 1.27; 0.5 high (hooks) |
+| Origin2_Ice | 2,400 | 1,080 | 39 (32) | white mask | 1.2, 2.25 with thrown floes and chunks; 0.39 high |
+| Origin2_Bog | 2,400 | 1,080 | 41 (34) | white mask | 1.2; 0.3 high |
+
+### Unity notes
+
+- **Import:** Scale 1, Bake Axis Conversion, Generic rig, root `Root`, one material (Game/EnvironmentLit-style maps
+  but **skinned**: a SkinnedMeshRenderer plus an Animator or `Animation`; the env instancer cannot draw these). Keep
+  "Remove constant scale curves" off (`Throat` keys scale in every clip). Set the renderer bounds by hand or use
+  *Update When Offscreen* (the bind-pose mesh reaches 1.25 below the pivot).
+- **Pivot / placement:** burrow on the ground at the nest cell centre, **scale 1** (not `Burrow_A`'s 0.75); liquid
+  ones on the liquid surface (`TerrainLiquidBuilder.SurfaceLevel(kind)`), scale 1. Any yaw for the liquid ones. For
+  the burrow, keep yaw 0 if you want its camo to line up with the ground texture (the tops are painted at model
+  xy / 3.0; with a yaw the colours still match but the pattern does not continue). Tint the liquid ones' emission
+  with `NestColor(element)` as now.
+- **Clips (30 fps):** `Closed` (1 frame: the bind pose), `Marked` (90, loop), `Open` (96, one-shot), `Idle` (105, loop),
+  `Spawn` (30). Open starts on Marked frame 0. Idle starts on Open's last frame. Spawn starts and ends on Idle frame 0
+  (cross-fade 0.1 s or play it on an additive layer over Idle).
+- **Closed vs Marked (burrow):** same pose. Closed = material emission 0 (or the renderer off; both are invisible),
+  Marked = emission pulsing about 0.35-1.0 x the material's normal strength on a 2-3 s sine (only the hairline cracks
+  on the plate tops carry emission in that pose, so the pulse draws a red ring and a five-armed star). Play the
+  `Marked` clip too (a 2 mm breath). From Open frame 0, ramp emission to 1.0 by frame 30. **Liquids:** Closed and
+  Marked differ in pose (plates or marker organs come up to the surface in Marked); emission stays on.
+- **Open key frames:** tremor 0-30 (start a low rumble and the `Dust` socket's ground-crack dust at 0; the plate
+  cracks glow from ~10), bulge 30-54 (rumble up, small pebbles), **burst = frame 54 (1.8 s)**: the impact sound, a
+  big `Dust` burst, debris trails on `Debris_1..n` (they ride the thrown chunks; for water and quicksand they sit on
+  the collar as spray points) and a flash light on `Glow`. Maw fully up at 66, settled at 96. Thrown plates and chunks
+  land between 70 and 82 (small dust puffs). **First creature from frame 76** (2.5 s after the trigger) at `Emerge`.
+- **Sockets** (non-deforming bones, follow the clips): `Emerge` (open: 0.12 below the pivot at the maw centre, 0.066
+  for the liquid ones; creatures rise from here, so the existing EnemyView spawn depth still works), `Glow` (just
+  above the gullet: light and heat-haze), `Dust` (pivot), `Debris_1..n`.
+- **Burrow skins:** pick `Skins/<Continent>/` (CrystalPlains, AshenReach, NorthernCrown, Mirewood, SouthernCrown,
+  TheCore) for Albedo/Normal/Mask by the level's `EnvironmentSet`; Emission and the FBX are shared. If a continent's
+  ground set changes, rerun `--only Burrow` (the camo is sampled from `Exports/Env/<set>` at build time).
+- **Spawn:** play `Spawn` as each creature leaves the nest (peak frame 6 = 0.2 s: the throat swell; time it with the
+  EnemyView burst).
+
+## Round 25: UI art set (`build_ui.py`, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 25). Replaces the code-painted UI textures (IconFactory, DialogueArt,
+StarfieldPainter, ModelPreview gradient, PlanetPainter halo, RadarOverlay rings) and the Kenney UI sprites in
+`UiSkin.asset`. Nothing is imported yet.
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_ui.py -- [--only icons,kit,dialogue,radar,
+starfield,backdrop,halo,mockups] [--preview <dir>]` (about 2 minutes without mockups). Modules: `ui_art.py`
+(pixel-unit scene, 2D curve shapes, bevel-shaded materials, render to numpy, compositing, packing, 9-slice) and
+`ui_mockups.py` (preview sheets in `ArtSource/Previews/UI/`; labels rendered from the game's Kenney fonts). Uses
+`vfx_kit.py` read-only for PNG writing, blur and resampling. `UI_report.json` lists every file with size and the code
+site it replaces.
+
+### Files (`ArtSource/Exports/UI/`)
+
+| File | Size | Content | Replaces |
+| --- | --- | --- | --- |
+| `UI_Icons.png` / `UI_Icons@2x.png` + `.json` | 1024 x 640 / 2048 x 1280 | 40 icons, 8 x 5 grid, 128 (256) px cells | `IconFactory.cs:58-73` |
+| `UI_Kit.png` + `.json` | 1024 wide, 2x master | panels, cards, buttons in 4 states (+ Neutral), bars, slider handle, tabs, tooltip, scroll bar, toggle, focus frame, corner ornament, divider | Kenney sprites in `UiSkin.asset` |
+| `UI_Dialogue.png` + `.json` | 1024 wide, 2x | Dialogue_Panel, Dialogue_Edge, Dialogue_NameTag, Dialogue_PortraitFrame, Dialogue_Arrow, Radar_Sweep, Radar_Contact | `DialogueArt.cs:55-217`, RadarOverlay arms/dots |
+| `UI_Dialogue_Noise/Scanlines/Radial/Shade.png` | 256x32 / 8x8 / 128 / 4x128 | tiling textures (RawImage uvRect) | `DialogueArt.Noise/Scanlines/Radial/Shade` |
+| `UI_Radar.png` | 1024 | radar scope, pre-coloured teal (scope radius 471 px) | `RadarOverlay.cs:66-75` |
+| `UI_Starfield.png` | 2048 x 1152 | menu sky, alpha = 3 x brightness | `StarfieldPainter` via `UiKit.cs:278-291` |
+| `UI_PreviewBackdrop.png` | 1024 | opaque gradient + hex lattice + vignette | `ModelPreview.Gradient` (`ModelPreview.cs:239-249`) |
+| `UI_MapHalo.png` | 512 | white radial halo with a faint limb shoulder | `PlanetPainter.PaintHalo` (`WorldMapScreen.cs:230`) |
+
+### Unity import notes
+
+- **Sprites** (`UI_Icons`, `UI_Kit`, `UI_Dialogue`): Texture Type *Sprite (2D and UI)*, Sprite Mode *Multiple*, sRGB
+  on, Alpha Is Transparency on, Wrap Clamp, Filter Bilinear, mip maps on for the icons (shown from 24 to 96 px) and
+  off for the kit and dialogue, compression BC7 on PC / ASTC 4x4 on Switch. Slice from the json: an editor importer
+  can read `unity_rect` (bottom-left based), `border_lbrt` and `pivot` per sprite (`x, y` are top-left based).
+- **Scale**: kit and dialogue are 2x masters. Use **Pixels Per Unit 200** (or `Image.pixelsPerUnitMultiplier = 0.5`)
+  so the 9-slice borders read at their 1x size. `glow_pad` is the transparent margin around each frame (2x px):
+  grow the RectTransform by half of it at 1x, or accept the frame sitting slightly inside the rect. `Dialogue_Edge`
+  keeps the old contract: it is drawn `EdgeOverhang` (18 px at 1x) outside the panel, same outline as Dialogue_Panel.
+- **9-slice**: Image Type *Sliced*, Fill Center on (off for `FocusFrame`). For a bar fill keep a Sliced image whose
+  width follows the value (Image Type Filled would cut the chamfer).
+- **Buttons**: switch `Selectable.transition` to *SpriteSwap* with `*_Normal` (target graphic), `*_Focus`
+  (highlighted and selected), `*_Pressed`, `*_Disabled`. `*_Neutral` is a light grey version if the ColorBlock tint
+  path (`UiKit.ButtonColors`) stays. UiSkin mapping: `_panel` = Panel, `_panelSquare` = PanelSquare, `_button` =
+  Button_Normal, `_buttonSquare` = ButtonSquare_Normal, `_barBack` = Bar_Back, `_barBlue/Green/Yellow/Red` = Bar_*,
+  `_cardBlue/Green/Yellow/Red` = Card_*; new: Card_Selected, Card_Disabled, Panel_Selected, Panel_Disabled, Tab,
+  Tab_Selected, Tooltip(+Pointer), Scroll_Track/Thumb(+Focus), Toggle_Off/On, Slider_Handle(+Focus), FocusFrame,
+  CornerOrnament, Divider.
+- **Icons**: sprite name = `IconType` member name, so `IconFactory.Get(type)` can become a lookup by
+  `type.ToString()` in a small icon-set ScriptableObject; `index` in the json equals the enum value for the first 28
+  (`enum: true`). The 12 extras need new enum members with the same names. White icons keep the current tints;
+  `BossMarker` and `EnemyOrigin` are pre-coloured (`precoloured: true`, use white). BossMarker points right like
+  Arrow, so BossMarkerView's rotation keeps working. Disc stays the map route dot.
+- **Tiling textures**: `UI_Dialogue_Noise` and `UI_Dialogue_Scanlines` Wrap Repeat, Filter Point, no mips (scanlines
+  are 8 rows = the old 4 px period at 2x, so set the uvRect height to rect height / 8); `Radial` and `Shade` Clamp,
+  Bilinear. Texture Type Default, sRGB on.
+- **Radar**: one RawImage of `UI_Radar.png` drawn at `Size * 1.087` replaces Back, Ring1-3 and the cross; the sweep is
+  `Radar_Sweep` (pivot centre, leading edge up, trail on the left for the clockwise turn), contacts `Radar_Contact`.
+- **Starfield / backdrop / halo**: Texture Type Default, Clamp, Bilinear, no mips, sRGB on. The halo is white;
+  WorldMapScreen keeps tinting it with `HaloColor`.
+- **Fonts** unchanged (KenneyFuture, CC0). `Drones/MoneyPopup.cs:25-27` still uses the built-in LegacyRuntime font;
+  it should use `UiKit.Font` like the rest of the UI (no art needed).
+
+## Round 24b: sweep-ready banks for organic pool outlines (`build_bank_sweeps.py`, 2026-11-04)
+
+Remco: "ik hoop ook dat de wateren met ronde hoeken gemaakt kan worden, niet alleen vierkant." Gameplay stays on the
+grid; only the visual outline becomes organic. Unity smooths the pool contour and bends bank segments along it.
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_bank_sweeps.py -- [--only
+CrystalPlains,AshenReach] [--preview <dir>] [--norender] [--previewonly]` (~2.5 min per style, previews ~2 min).
+Reads the continent scripts' bank styles and accents (never edits them); the Crystal Plains style is copied from
+`build_env_kit.py`, which runs on import. Preview module: `bank_sweep_preview.py` (contour smoothing, sweep, scenes;
+uses `liquid_preview.py` for the liquids). In `build_all.py` after `build_liquids.py`.
+
+### Pieces (per style)
+
+| Style | Folder | Pieces |
+| --- | --- | --- |
+| Crystal Plains (round 8) | `Env/BankSweep_A/B/C`, `Env/BankAccent` | wet basalt stone row on a crust shelf (4 / 5 / 3 stones, B and C with loose chips) |
+| Ashen Reach | `Env/AshenReach/Ash_BankSweep_*`, `Ash_BankAccent` | rope-lava shelf, A/B with pahoehoe rolls, B/C with chips |
+| Northern Crown | `Env/NorthernCrown/North_BankSweep_*`, `North_BankAccent` | ice shelf, A/B with pushed-up ice blocks |
+| Mirewood | `Env/Mirewood/Mire_BankSweep_*`, `Mire_BankAccent` | peat shelf, A/B with roots over the lip |
+| Southern Crown | `Env/SouthernCrown/South_BankSweep_*`, `South_BankAccent` | packed-ice shelf, A/B with tilted plates |
+| The Core | `Env/TheCore/Core_BankSweep_*`, `Core_BankAccent` | corruption-pool rim, B/C with chips |
+
+Each segment: 1.0 unit along local X (x = -0.5..0.5), liquid on -Y, dry on +Y, same section as `Bank_Straight`:
+the shore line (lip) at y = 0 with its top at z = 0.05; the shelf reaches 0.14-0.21 into the liquid and down to
+z = -0.18 (Crystal Plains -0.26), and ~0.18-0.21 back onto the ground; accents rise to z = 0.06-0.1 (extents per
+variant in the reports, `sweep`). The section's noise fades out over the last 6 % at both ends, so the ends are the plain
+section and **any variant follows any other** without a step. Game mesh 900 tris before slicing; it is then cut at
+every 1/16 unit along X (17-19 vertex rows, 2,300-2,800 tris after; `rows_along_x`, `game_tris_after_bisect`), so
+it bends without kinks. A pool of ~20 segments is ~50k tris: combine per pool, and for Low decimate the combined
+mesh or drop every other cut. UV0 = the
+baked 512 atlas (unique per variant; Albedo/Normal/Emission/Mask like the other kit pieces), UV1 `UVSweep` =
+(x + 0.5, y + 0.5) for a tiling detail map along the run. `BankAccent`: 3 shore rocks/chips, pivot on the ground,
+scatter freely (any yaw, scale 0.8-1.2) on the bank to hide joints and repeats.
+
+### Unity: how to sweep
+
+1. **Contour** (per pool, at level build): take the cell-union outline as a CCW loop of corner points (liquid on the
+   left), resample every 0.02, smooth it with a circular Gaussian (sigma 0.55 world units along the loop; FFT or a
+   repeated [1 2 1] kernel), resample again, then offset along the normal by a small periodic wobble (amplitude
+   0.04, a few low harmonics seeded per pool). The smoothed line stays within ~0.25 of the cell edges: convex corners
+   move into the liquid cells, concave corners ~0.2 into the dry cell (no tower stands on a liquid cell's neighbour
+   edge closer than that, so pads and banks do not collide; check against `BuildPadTile` footprints if needed).
+2. **Segments**: n = round(perimeter / 1.0), each stretched to perimeter / n (0.9-1.1). Pick variants A/B/C at
+   random, never the same twice in a row.
+3. **Bend** (CPU, once): for each vertex (x, y, z) of the segment i, u = (i + x + 0.5) * L along the loop;
+   position = P(u) + outward(u) * y + up * z; rotate normals and tangents by the frame at u. (Or Unity Splines'
+   `SplineExtrude`-style deformer; the math is the same.) The bent mesh of a pool can be one combined mesh.
+4. **Bend limit**: radius >= 0.5 at the shore line (the preview contour reaches 0.38 at the two tightest spots,
+   still clean). Round a liquid bulge and the dry side (+0.2) stretches by up to 40 % while the liquid side
+   compresses ~40 %; round a dry peninsula and it is the other way round. Below ~0.35 the stones of the inner side
+   start to overlap: smooth more (sigma up) rather than allowing it.
+5. **Liquid surface and shore effects**: the liquid sheet follows the same smoothed polygon (triangulated), or stays
+   a cell-rect sheet clipped by the terrain. The round-24 shader's `shore_dist` must be measured from the shelf
+   edge: the distance to the smoothed contour minus ~0.06 (the previews use 0.06). With the depth-texture recipe this is
+   automatic; for the Low distance texture bake the distance to the smoothed polygon (not to the cells), which also
+   makes the foam ring and the frost/scum rings follow the round outline (no extra texture needed).
+6. **Terrain**: dig the basin from the same distance field (as `liquid_preview.terrain`): ground at 0 under the
+   shelf, then at once a wall to -0.3 (below every liquid level, or a dry band of basin shows between lip and
+   liquid), then the floor deepens to -0.75.
+7. **Accents**: on ~60 % of the segment joints (offset 0-0.08 to the dry side) plus 3 loose ones per pool. The
+   baked maps of two variants meet at a joint, which shows as a faint cut on the smooth styles (Mirewood peat, Core);
+   the accents hide most of them.
+
+### Previews
+
+`bank_<Style>_compare.png` (square cell kit | organic sweep), `bank_<Style>_organic.png`, `bank_<Style>_close.png`,
+`bank_all.png`, for Crystal Plains (water), Ashen Reach (lava), Mirewood (bog).
+
+## Round 25b: gameplay markers, bars, projectiles, debris and spawn gates (2026-11-04)
+
+```
+blender --background --factory-startup --python Tools/Blender/build_spawngate.py -- [--preview <dir>] [--norender] [--only Ground|Air]
+blender --background --factory-startup --python Tools/Blender/build_projectiles.py -- [--preview <dir>] [--norender] [--nobake]
+blender --background --factory-startup --python Tools/Blender/build_markers.py -- [--preview <dir>] [--norender] [--noscene]
+```
+
+Spawn gates ~5 min (two Cycles bakes), projectiles ~2.5 min (three small tower-kit bakes; `--nobake` reuses the maps,
+~20 s), markers ~15 s plus ~1 min for the review scene. Run them in this order: the markers' review scene
+(`marker_scene.py`) appends `Blend/SpawnGate.blend` and `Blend/Projectiles.blend`. Own helper module `marker_kit.py`
+(numpy texture painting, tiny meshes with explicit UVs, preview materials); shared kits imported read-only. Design notes
+in `DESIGN_NOTES.md` (round 25b). Every FBX checked with `inspect_fbx.py`.
+
+Everything here replaces a code-made primitive or a texture generated at runtime. Code keeps placing, scaling,
+tinting and animating them.
+
+### Conventions for this round
+
+- **Marker textures are linear data (sRGB off) channel packs**, not colour pictures: R/G/B are masks, A coverage. The
+  Unity shader multiplies them by a tint (the code's existing colours: `ValidColor`, `InvalidColor`, the hero trim,
+  `theme.SpawnColor`, `DroneDefinition.Color`...), so one texture serves every theme and state. Each report lists
+  the channel meaning per texture. Every texture has a half-size copy in `Low/`.
+- **Blend modes:** "add" = additive (`Blend One One`, ZWrite off), "alpha" = straight alpha
+  (`Blend SrcAlpha OneMinusSrcAlpha`). Both Cull Off, no shadows, render queue Transparent. Ground decals sit
+  0.01-0.05 above the surface (as the code does now) or use a small depth offset.
+- **One shader can serve them all:** `Game/MarkerPack` with `_MainTex`, `_Tint` (HDR), `_ChannelGain` (vector: gain per
+  R, G, B), `_Scroll` (UV speed), optional second sample with its own scroll for B (beacon bands, energy-field
+  shimmer), `_Fill` (clip on UV2.x) and a blend-mode keyword. Colour = `_Tint * dot(tex.rgb, _ChannelGain)`.
+- **Axes:** flat decals lie in Unity XZ (normal +Y); upright quads face Unity -Z (towards the camera); projectiles,
+  cues and beams point along Unity +Z (forward). Static meshes have no rig; pivots are listed per mesh.
+- Bars, markers < 200 triangles, projectiles < 400, spawn gates <= 4,000 (budgets held).
+- The spawn gates are the route-start portals (`EnemyGate`), not the element nests / ambush burrows of round 23
+  (`Origin2_*`, `ElementNest`): different job, different silhouette (horns and a turning claw ring vs plated lids).
+
+### Assets
+
+| Asset (folder) | FBX meshes (tris) | Textures (size) | Replaces |
+| --- | --- | --- | --- |
+| `SpawnGate_Ground` | rigged mound (3,800), 17 bones (13 deform, 3 sockets) | baked Albedo/Normal/Emission/Mask 512 (Low 256) | `StructureModelFactory.EnemyGate` + `GateRing` (`LevelVisualBuilder.cs:194`) |
+| `SpawnGate_Air` | rigged floating pod (3,600), 19 bones (15 deform, 3 sockets) | baked 512 (Low 256) | the same, `path.Flying` gates (`AirGateHeight` 1.6, `AirGateScale` 0.8) |
+| `UI_HealthBar` | `HealthBar_Plate`, `_Fill`, `_Armour` (2 each) | `UI_HealthBar.png` atlas 256x64 | bar cubes in `EnemyView.cs:1460-1469`, `TowerView.cs:383`, `HeroView.cs:332` |
+| `Decal_GlowPool` | `Decal_Quad.fbx`: `Quad_Flat`, `Quad_Upright` (2 each) | `Decal_GlowPool` 128, `Glow_Blade` 128, `Field_Energy` 128 | `GlowDecal.Radial/Blade/Scanlines` (`Core/GlowDecal.cs:101-174`), `GateView.cs:144-148` field |
+| `Decal_BlobShadow` | uses `Quad_Flat` | `Decal_BlobShadow` 128 | flyer shadow cylinder `EnemyView.cs:1473` |
+| `Marker_PlacementCursor` | `Marker_PlacementCursor` (2, 1.5 cells), `Marker_FreeCell` (2) | `Marker_PlacementCursor` 256, `Marker_FreeCell` 128 | cursor cube `PlacementController.cs:88` (+ the 2026-11-04 "free cells only near the cursor" wish) |
+| `Marker_RangeRing` | `RangeRing_Band` (192, 2 UV sets), `RangeRing_Fill` (48) | `Marker_RangeRing` 256x64, `Marker_RangeFill` 128 | LineRenderer ring `RangeIndicator.cs:21` |
+| `Marker_HeroSpot` | `Marker_HeroSpot` (2) | `Marker_HeroSpot` 256x128 | spot cube `HeroController.cs:113` |
+| `Marker_HeroStand` | `HeroStand_Ring` (96), `HeroStand_Beacon` (6), `HeroStand_Emblem` (136) | `Marker_HeroRing` 256x32, `Marker_Beacon` 64x256, `Marker_Emblem` 64 | stand torus, beacon cylinder, emblem cube `HeroView.cs:336,430-439` |
+| `Marker_SlowField` | `Marker_SlowField` (40) | `Marker_SlowField` 256 | reach cylinder `PathObjectView.cs:123` |
+| `Marker_RoadCue` | `RoadCue_Strip` (2), `FlightCue_Strip` (2) | `Cue_Trail` 256x64, `Cue_Dash` 256x32, `Cue_Pulse` 128 | cube chevrons `LevelVisualBuilder.cs:163-176`, route dashes + arrowheads `:513-533` |
+| `Proj_Bolt` | `Proj_Bolt` (112), `Proj_Bolt_Glow` (4) | `Proj_Glow` 64x128 (+ `VFX/Bolt_Core`) | core sphere + bolt capsule `ProjectileView.cs:76-79` |
+| `Proj_RailSlug` | `Proj_RailSlug` (48), `Proj_RailSlug_Glow` (4) | `Proj_Bolt/Proj_Glow` (B rings) | rail capsule (`SlugScale`) |
+| `Proj_Missile` | `Proj_Missile` (338) + `Socket_Exhaust`, `Socket_Nose` | baked 256 (Low 128) | `BuildMissile` (`ProjectileView.cs:96-110`) |
+| `Proj_EnemyBolt` | `Proj_EnemyBolt` (89), `Proj_EnemyBolt_Glow` (4) | `Proj_EnemyBolt` 128 | core + halo spheres `EnemyBoltView.cs:37-43` |
+| `Proj_PulseRing` | `Proj_PulseRing` (384) | `Proj_PulseRing` 256x64 | torus `BossAbilityView.BuildRing` (`:278-287`) |
+| `Beam_Tool` | `Beam_ToolCone` (48) | `Beam_Tool` 64x128 | beam cube `DroneView.cs:81` |
+| `Net_Strand` | `Net_Strand` (4) | `Net_Strand` 128x32 | strand cubes `PathObjectArtRig.cs:118` |
+| `Recon_Scout` | `Recon_Scout` (332) + `Socket_Trail`, `Socket_Light` | baked 256 (Low 128), `Trail_Scout` 256x64 | scout sphere + default trail `ReconView.cs:261-264` |
+| `Debris_Chunks` | 10 chunks, 24-236 each (1,032 total) | baked atlas 512 (Low 256) | debris cubes `GateView.cs:155,196`, `BaseView.cs:102` |
+| `Particles_Atlas` | - | `Particles_Atlas` 512x256 (4 x 2) | default particle material in `LevelVisualBuilder.cs:300-340`, `AmbientParticlesBuilder.cs:31`, `PropScatterBuilder.cs:414`, `EnemyView.cs:471,652-667` |
+
+Not re-made (already covered by `Exports/VFX`, see `VFX_report.json`): hero blaster bolt (`Bolt_Core` on a stretched
+billboard), hero ability beam and laser (`Beam_Core` + `Beam_Noise`), rocket exhaust (`Rocket_Exhaust`,
+`Smoke_Trail`), sparks/impacts (`Spark_*`, `Energy_Impact`), flying debris sprites (`Debris_Shards`), recon trail
+alternative (`Trail_Ribbon`).
+
+### Unity notes per asset
+
+- **SpawnGate_Ground / _Air** (skinned, Generic rig, root `Root`, Bake Axis Conversion, one material in the creature
+  format: Albedo sRGB, Normal, Emission sRGB, Mask R AO / G smoothness / B membrane detail / A chitin detail, tiling in
+  the report). Pivot: ground = centre of the mound on the ground; the model is 1.89 across (roots included) and 1.29 high
+  (the tallest horn), so **`GateScale` 1.0** keeps the old 1.9 footprint (1.2 makes it 2.3). Air = centre of the
+  pod (1.34 across, 1.86 high with the tendrils hanging 1.25 below the pivot), placed at `AirGateHeight` 1.6 with
+  `GateScale * AirGateScale` (0.8 at `GateScale` 1.0); renderer bounds: *Update When Offscreen* or set by hand. Bones: `Body`
+  (whole hide, breathes), `Ring` (the claw ring; rigid), `Lip_0..5` (ground) / `Lip_0..4` (air), `Spine_0..4` (ground
+  horns), `Tendril_n_0/1` (air, n 0..3). Sockets (non-deforming bones): `Socket_Emerge` (where a creature appears; +Z
+  up; ground 0.12, air 0.3 above the pivot), `Socket_Spores` (move `AddSpores` here and give it `Particles_Atlas`
+  frame Spore), `Socket_Light` (the gate point light). Clips (30 fps): `Idle` 360 f loop (breathing, lip twitch, horn
+  / tendril sway, one full ring turn = 30 deg/s, the same as `GateRingSpin`), `Spin` 360 f loop (only the ring: for an
+  additive layer or when Idle is not wanted), `Spawn` 40 f (lips peel open 55 deg at frame ~14, throat swells,
+  ring lurches 90 deg and lifts 6 cm; play it per wave or per creature, cross-fade 0.1 s back to Idle). Drop the code
+  `Spinner` on the ring when the clip runs. Emission is baked ember orange with sickly green eye/pustule glints:
+  `_EmissionColor` white x 1.5-2.4 keeps the look; multiplying by `theme.SpawnColor` still works for themed tints.
+  Keep `EmissionPulse` on the material for the breathing glow. Both share the same palette, so ground and air read
+  as one species.
+- **UI_HealthBar** (unlit, alpha, ZTest LEqual or Always on an overlay layer). The three quads are upright, face Unity
+  -Z and share one pivot = the centre of the health line (`EnemyView` `_barY`): place the root where the cube bar was
+  and billboard it to the camera (or keep the camera's fixed rotation). Sizes are the 2026-11-01 night values: fill
+  0.85 x 0.085, armour 0.85 x 0.06 at +0.136, plate 0.935 x 0.272 at +0.068 and 0.004 behind. Scale the root's X for a
+  wider bar (`_barWidth / 0.85`); the tower (1.0 x 0.1) and hero (0.8 x 0.04) bars use the same meshes with their
+  own root scale. **Fill without scaling:** UV2.x runs 0..1 along each quad; the shader discards `UV2.x > _Fill` so the
+  bar is cut from the right and the rounded ends stay round. Colours: plate `PlateColor` (0.02, 0.02, 0.04) at
+  alpha 0.5 x A (+ rim R x 0.25), fill `BarColor` (0.4, 1, 0.4) x G + R x 0.35 sheen, armour `ArmorBarColor`
+  (0.7, 0.85, 1) with eight segments; the fill's B ticks (10 %) darken by 0.25. Emission 0.7 as now. Show only when
+  damaged (unchanged rule).
+- **Decal_GlowPool**: `Quad_Flat` replaces `GlowDecal.Quad()` for `PlacePool` (scale = diameter, additive; R is the old
+  radial curve, G a wider halo, B a thin ring for pulsing pools). `Glow_Blade` keeps the blade UV convention (U core 0
+  to rim 1, V base 0 to tip 1). `Field_Energy` replaces `ScanlineMaterial`: tiles in V (keep scrolling V), R
+  scanlines as before, G hex lattice, B shimmer; `Quad_Upright` for the sheet, `Quad_Flat` for the floor strip.
+- **Decal_BlobShadow**: `Quad_Flat`, alpha blend black, alpha = A x 0.6; shrink with altitude by lerping to R.
+  Replaces the black cylinder (`ShadowSize` 0.6 -> scale 0.6-0.9).
+- **Marker_PlacementCursor**: the quad is 1.5 cells (the halo spills over the neighbours); scale by `CellSize`; tint
+  `ValidColor` / `InvalidColor` / `TowerColor` as now, additive, emission 1.6. For the 2026-11-04 rule "free cells only
+  while placing, soft near the cursor": draw `Marker_FreeCell` on free cells within ~2.5 cells of the cursor with
+  alpha = 1 - distance / 2.5 (one instanced draw).
+- **Marker_RangeRing**: `RangeRing_Band` (radius 0.93-1.0) + `RangeRing_Fill` (disc 0.93), scale XZ by the range.
+  Use the same gain for the fill's R and the band's G (both 0.22 at the shared edge, so they meet without a seam);
+  keep the rim's emission below the bloom threshold (~1): an HDR rim makes bloom fill the whole disc.
+  The band's U tiles 24 times round the ring (B dash per tile: scroll U ~0.02/s for a slowly turning dash). For a
+  constant line width at any range, move vertices in the shader: `pos.xz = normalize(pos.xz) * (_Radius -
+  (1 - uv2.y) * _Width)` with the mesh at scale 1.
+- **Marker_HeroSpot**: unit quad, X across the road, Z along it (`LookRotation(along)` as now); scale X = cells x
+  (width - `SpotMargin`), Z = cell x (1 - `SpotMargin`). Hero trim tint, alpha `SpotAlpha`; pulse B slowly.
+- **Marker_HeroStand**: `HeroStand_Ring` at the feet (radius 0.47-0.53; U = 3 arcs), `HeroStand_Beacon` (three crossed
+  quads, bottom pivot, 1.3 high, place at `BeaconBottom` 1.7; second sample of B scrolled upwards), `HeroStand_Emblem`
+  (faceted crest with a halo, centre pivot, spin about Y and bob as now; R facet ramp, G rim; opaque emissive or
+  alpha with A = 1). `DownColor` swaps the tint as now.
+- **Marker_SlowField**: disc radius 1 (40 tris), scale XZ by `definition.Radius`, 0.05 up, additive in the field
+  colour. Ripples: a second sample of G with `uv' = 0.5 + (uv - 0.5) * frac(-t * 0.3)` runs them outwards.
+- **Marker_RoadCue** (no chevrons, no arrowheads): `RoadCue_Strip` 1 x 0.42 along Unity +Z, pivot centre, U along
+  the travel direction; place one per road cell at `Road.CentreOf(cell)` with `LookRotation(forward)` (the old chevron
+  loop), additive, tint `ArrowColor` or the theme spawn colour at ~0.5, `uv.x -= t * 0.35`. The strip's U spans a
+  third of a tile (one light streak every three cells), so offset U by `cellIndex / 3` (property block) or use a
+  world-space U along the road. Better: one LineRenderer
+  ribbon along `level.Road.Route(i)` with `textureMode = Tile` and the same material (no seams, bends follow the road).
+  `FlightCue_Strip` (0.16 wide) + `Cue_Dash` for flight routes at `RouteHeight`, scale Z by the leg length and tile U
+  by the length. `Cue_Pulse` on `Quad_Flat` = an expanding ring (scale 0.4 to 3, fade out) for route starts and for
+  `ReconView` pulses (instead of its torus).
+- **Proj_Bolt / Proj_RailSlug / Proj_EnemyBolt**: additive emissive meshes pointing along Unity +Z, pivot at the
+  centre; HDR tint x 3-4 for bloom. `Proj_Glow`: colour = white x R + tint x G (+ tint x B rings on the slug). Each
+  has a `_Glow` shell (two crossed quads, U along, head at +U) for `VFX/Bolt_Core.png` (additive, tint on G); its
+  pivot sits so the bright head lies over the nose. Keep the existing TrailRenderer (with `VFX/Trail_Ribbon`). The
+  enemy bolt texture uses spherical UVs: colour = tint x G + hot x R, darkened by B spots.
+- **Proj_Missile**: lit (tower material format, 256 maps); `Socket_Exhaust` for the flame particles / `Rocket_Exhaust`
+  and the smoke trail, `Socket_Nose` for the seeker glint. 0.33 long, nose to +Z.
+- **Proj_PulseRing**: radius 0.9-1.07, crest at 1.0, 4 cm high; scale XZ by the pulse radius only (keep Y 1). U tiles 8
+  per turn. Tint the boss colour, fade with age (alpha or emission).
+- **Beam_Tool**: open cone, tip at the drone (pivot), 1 long along +Z, mouth radius 0.7: rotate with
+  `LookRotation(target - drone)`, scale Z = distance, XY = spot size / 0.7. Additive, tint `DroneDefinition.Color`,
+  scroll V towards the target (G scan rings). Keep the glow pool under it.
+- **Net_Strand**: two crossed strips, 1 long along X, centre pivot (as the cube: `FromToRotation(Vector3.right, b -
+  a)`, scale X = length). U tiles 4 per metre in the mesh; set the material tiling to the strand length (or world-space
+  U) so the braid does not stretch. Additive.
+- **Recon_Scout**: lit probe (256 maps), ~0.3 across, lens to +Z; replace the 0.9 sphere and keep a point light at
+  `Socket_Light`; the TrailRenderer starts at `Socket_Trail` with `Trail_Scout` (Stretch mode, additive, the
+  ground/air colour), width 0.7 as now.
+- **Debris_Chunks**: ten static meshes in one atlas (tower material format): `Debris_PlateWhite`, `_PlateBlue`,
+  `_HexPanel` (glowing inset), `_HexHalf` (burnt, ember edge), `_Strut`, `_Pipe`, `_Bracket`, `_Hazard`, `_RockA`,
+  `_RockB`. Centre pivots, 0.1-0.2 across at scale 1: replace the random cube sizes by a random uniform scale
+  0.6-1.6 and a random chunk. "Hot" chunks = the two hex pieces (they replace `EmberColor` cubes); the rock bits are
+  for ground hits and the base. Pool them as now.
+- **Particles_Atlas**: Texture Sheet Animation 4 x 2, *Random Between Two Constants* or a fixed frame: 0 Spore (gate
+  and nest spores, `AddSpores`), 1 Mote (ambient motes, chrono/light motes), 2 Ember (embers on fire creatures and
+  lava), 3 Drip (blood/acid drips), 4 IchorSplat (impact and death splats), 5 GooDecal (slime trails as flat
+  particles), 6 FrostMote (frost over chilled creatures), 7 ChronoMote (the Chrono field). R core / highlight, G body,
+  B detail, A coverage. Use additive for 1, 2, 6, 7 and alpha for 3, 4, 5 (two materials on the same texture).

@@ -1,0 +1,28 @@
+{
+  "textures": {
+    "Net_Strand": {
+      "file": "Net_Strand.png",
+      "size": [
+        128,
+        32
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "tiles in U (one tile per 0.25 m), V across. R two braided filaments, G soft glow, B beads at the crossings. Additive, tint = the net colour"
+    }
+  },
+  "meshes": {
+    "Net_Strand": {
+      "tris": 4,
+      "dims": [
+        1.0,
+        0.045,
+        0.045
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "1 long along Unity X (FromToRotation(Vector3.right, b - a)), scale X by the strand length; U tiles 4 per metre (set the material tiling to length*4 or use world UVs)"
+    }
+  },
+  "round": 25
+}

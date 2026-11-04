@@ -1,0 +1,16 @@
+{
+  "textures": {
+    "Decal_BlobShadow": {
+      "file": "Decal_BlobShadow.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "alpha",
+      "channels": "alpha blended, black: A density (soft edge), R tighter core (shrink the shadow as the flyer climbs: alpha = lerp(A, R, height01))"
+    }
+  },
+  "meshes": {},
+  "round": 25
+}

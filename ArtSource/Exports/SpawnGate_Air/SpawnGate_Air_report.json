@@ -1,0 +1,100 @@
+{
+  "asset": "SpawnGate_Air",
+  "round": 25,
+  "game_tris": 3600,
+  "source_tris": 157800,
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B membrane detail, A chitin detail",
+  "uv": {
+    "islands": 164,
+    "folded_fallback_faces": 10,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.561,
+    "world_per_uv": 2.73729328266449
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 34.2,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 45.6,
+      "mask": "A"
+    }
+  },
+  "bones": [
+    "Root",
+    "Body",
+    "Lip_0",
+    "Lip_1",
+    "Lip_2",
+    "Lip_3",
+    "Lip_4",
+    "Tendril_0_0",
+    "Tendril_0_1",
+    "Tendril_1_0",
+    "Tendril_1_1",
+    "Tendril_2_0",
+    "Tendril_2_1",
+    "Tendril_3_0",
+    "Tendril_3_1",
+    "Ring",
+    "Socket_Emerge",
+    "Socket_Spores",
+    "Socket_Light"
+  ],
+  "deform_bones": [
+    "Body",
+    "Lip_0",
+    "Lip_1",
+    "Lip_2",
+    "Lip_3",
+    "Lip_4",
+    "Tendril_0_0",
+    "Tendril_0_1",
+    "Tendril_1_0",
+    "Tendril_1_1",
+    "Tendril_2_0",
+    "Tendril_2_1",
+    "Tendril_3_0",
+    "Tendril_3_1",
+    "Ring"
+  ],
+  "sockets": {
+    "Socket_Emerge": [
+      0,
+      0,
+      0.3
+    ],
+    "Socket_Spores": [
+      0,
+      0,
+      0.36
+    ],
+    "Socket_Light": [
+      0,
+      0,
+      0.05
+    ]
+  },
+  "clips": {
+    "Idle": 360,
+    "Spin": 360,
+    "Spawn": 40
+  },
+  "pivot": "ground: centre of the mound on the ground; air: centre of the pod (hangs 1.6 above the road)",
+  "dims": [
+    1.341,
+    1.288,
+    1.858
+  ]
+}

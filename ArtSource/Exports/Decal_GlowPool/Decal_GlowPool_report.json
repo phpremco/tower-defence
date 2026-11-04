@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "Decal_GlowPool": {
+      "file": "Decal_GlowPool.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "R pool (1-r)^2.2 as GlowDecal.Radial, G wider soft falloff, B thin ring at r 0.74 (pulse), A = R"
+    },
+    "Glow_Blade": {
+      "file": "Glow_Blade.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "U core (0) to rim (1), V base (0) to tip (1) as GlowDecal.Blade; R glow, G hot core line, B streaks (scroll V)"
+    },
+    "Field_Energy": {
+      "file": "Field_Energy.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "tiles in V (scroll it); U across the sheet. R scanlines (6 per tile, as GlowDecal.Scanlines), G hex lattice, B shimmer noise; every channel already faded at the U edges; A edge fade"
+    }
+  },
+  "meshes": {
+    "Quad_Flat": {
+      "tris": 2,
+      "dims": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "flat on the ground (Unity XZ, normal +Y); scale = diameter"
+    },
+    "Quad_Upright": {
+      "tris": 2,
+      "dims": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "upright, faces Unity -Z (camera side); for the gate field sheet"
+    }
+  },
+  "round": 25
+}
