@@ -313,7 +313,7 @@ def origin_quicksand():
     b = C.PartBuilder()
 
     def z(r, a):
-        base = funnel_z(throat=0.13, rim=0.42, depth=-0.48, rim_h=0.04, outer=-0.03, radius=0.56)(r, a)
+        base = funnel_z(throat=0.13, rim=0.36, depth=-0.48, rim_h=0.09, outer=-0.03, radius=0.56)(r, a)
         terrace = 0.025 * math.sin(r * 38 + 0.5 * math.sin(3 * a)) * float(C.smoothstep(0.12, 0.3, np.array(r)))
         return base + terrace
     polar_slab(b, "Sink", z, 0.56, -0.6, DK.mask_glow(sand_style(5301), combine(throat_mask(0.06, 0.18, -0.1, -0.4),
@@ -558,8 +558,9 @@ def previews(built, out):
         extras = []
         if name in LIQUID:
             colour, alpha = LIQUID[name]
-            extras.append(DK.liquid_sheet(name + "_Liquid", colour, alpha, size=3.0, z=0.0, hole=(0, 0, 0.17),
-                                          emission=colour if name == "Origin_Lava" else None,
+            dark = tuple(c * 0.35 for c in colour)
+            extras.append(DK.liquid_sheet(name + "_Liquid", dark, alpha * 0.85, size=3.0, z=0.0, hole=(0, 0, 0.2),
+                                          emission=dark if name == "Origin_Lava" else None,
                                           strength=1.5 if name == "Origin_Lava" else 0.0))
             extras.append(C.ground(size=3.0, color=(0.05, 0.05, 0.07), z=-0.65))
         elif name == "Gravemaw_Hole":

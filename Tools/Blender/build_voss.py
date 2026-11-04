@@ -64,7 +64,7 @@ HEAD_C = G(0, 1.47, 0.0)
 EYES = {"L": G(0.031, 1.464, 0.056), "R": G(-0.031, 1.464, 0.056)}
 LID_EDGE = math.radians(24)       # the upper lid's edge sits this far above the eye's centre line
 LOWER_EDGE = math.radians(-30)
-BLINK = math.radians(54)          # lid rotation that closes the eye
+BLINK = math.radians(60)          # lid rotation that closes the eye
 MOUTH_Z = 1.403
 
 
@@ -123,8 +123,8 @@ def skin_color(ctx):
     # Darker in the eye sockets and under the jaw, so the face reads without a strong light.
     col = mix(col, SKIN_SHADE, C.smoothstep(-0.2, -0.8, ctx.n[:, 2]) * 0.35)
     # The mouth line: dark where the lips meet; it stretches into an open mouth when the jaw drops.
-    m = (1 - C.smoothstep(0.0016, 0.0034, np.abs(ctx.p[:, 2] - MOUTH_Z))) * (1 - C.smoothstep(0.015, 0.02, np.abs(ctx.p[:, 0])))
-    m = m * C.smoothstep(0.045, 0.065, -ctx.p[:, 1])
+    m = (1 - C.smoothstep(0.0022, 0.004, np.abs(ctx.p[:, 2] - MOUTH_Z))) * (1 - C.smoothstep(0.015, 0.02, np.abs(ctx.p[:, 0])))
+    m = m * C.smoothstep(0.06, 0.075, -ctx.p[:, 1])
     return mix(col, MOUTH, m)
 
 
@@ -133,7 +133,7 @@ SKIN_STYLE = style(skin_color, rough=0.48)
 
 def lip_color(ctx):
     col = mix(SKIN, LIP, np.ones(len(ctx.p)) * 0.85)
-    m = 1 - C.smoothstep(0.0014, 0.0032, np.abs(ctx.p[:, 2] - MOUTH_Z))
+    m = 1 - C.smoothstep(0.0018, 0.0036, np.abs(ctx.p[:, 2] - MOUTH_Z))
     return mix(col, MOUTH, m)
 
 
@@ -236,11 +236,11 @@ SHOULDER_STYLE = style(shoulder_color, rough=0.78, family=COAT_FAM, disp_fn=coat
 
 
 def collar_seam_emit(ctx):
-    rim = 1 - C.smoothstep(0.0, 0.005, np.abs(ctx.p[:, 2] - 1.306))
+    rim = 1 - C.smoothstep(0.0, 0.005, np.abs(ctx.p[:, 2] - 1.341))
     return CYAN[None, :] * rim[:, None]
 
 
-UNDERSUIT_STYLE = style(lambda ctx: mix(NAVY, CYAN * 0.55, 1 - C.smoothstep(0.0, 0.005, np.abs(ctx.p[:, 2] - 1.306))), rough=0.6,
+UNDERSUIT_STYLE = style(lambda ctx: mix(NAVY, CYAN * 0.55, 1 - C.smoothstep(0.0, 0.005, np.abs(ctx.p[:, 2] - 1.341))), rough=0.6,
                         family=fam(weave=1.0), emit_fn=collar_seam_emit)
 
 
@@ -284,37 +284,35 @@ def build_parts():
     # --- Torso and coat ------------------------------------------------------------------------------
     def flat_bottom(v):
         return Vector((v.x, v.y, max(v.z, -0.55)))
-    b.ellipsoid("Chest", G(0, 1.1, -0.01), R(0.148, 0.15, 0.088), bone="Chest", style=CHEST_STYLE, segments=(40, 20), deform=flat_bottom)
+    b.ellipsoid("Chest", G(0, 1.11, -0.01), R(0.15, 0.16, 0.088), bone="Chest", style=CHEST_STYLE, segments=(40, 20), deform=flat_bottom)
     b.parts[-1].chain = ["Chest", "Spine"]
     # One smooth shoulder line across the back, so the shoulders slope instead of reading as two balls.
-    b.ellipsoid("Shoulders", G(0, 1.2, -0.016), R(0.178, 0.058, 0.078), bone="Chest", style=SHOULDER_STYLE, segments=(36, 14))
+    b.ellipsoid("Shoulders", G(0, 1.2, -0.03), R(0.176, 0.06, 0.06), bone="Chest", style=SHOULDER_STYLE, segments=(36, 14))
     for side, sx in (("L", 1), ("R", -1)):
-        b.tube("Arm", [G(0.158 * sx, 1.2, -0.014), G(0.172 * sx, 1.1, -0.01), G(0.18 * sx, 0.98, -0.004)], [0.05, 0.05, 0.048], sides=16,
+        b.tube("Arm", [G(0.158 * sx, 1.2, -0.014), G(0.172 * sx, 1.1, -0.01), G(0.18 * sx, 0.98, -0.004)], [0.046, 0.045, 0.043], sides=16,
                chain=[f"Clavicle_{side}"], style=SHOULDER_STYLE, cap=0.2)
-        b.tube("Lapel", [G(0.034 * sx, 1.245, 0.05), G(0.054 * sx, 1.17, 0.07), G(0.07 * sx, 1.05, 0.078)], [0.008, 0.009, 0.007],
-               sides=8, chain=["Chest"], style=COAT_STYLE, cap=0.4)
 
     def collar_at(r_add):
         def fn(u, v):
             a = math.radians(58 + (360 - 116) * u)
-            z = 1.228 + 0.075 * v
-            r = 0.06 + 0.014 * v + r_add
+            z = 1.235 + 0.085 * v
+            r = 0.058 + 0.022 * v + r_add
             return G(math.sin(a) * r, z, -math.cos(a) * r - 0.012)
         return fn
     b.slab("Collar", collar_at(0.0), collar_at(-0.008), 20, 3, bone="Chest", style=COAT_STYLE)
     b.parts[-1].chain = ["Chest", "Neck"]
-    b.tube("Undersuit", [G(0, 1.225, -0.01), G(0, 1.27, -0.007), G(0, 1.31, -0.004)], [0.047, 0.043, 0.04], sides=18, chain=["Neck", "Chest"],
+    b.tube("Undersuit", [G(0, 1.225, -0.01), G(0, 1.29, -0.007), G(0, 1.345, -0.004)], [0.047, 0.043, 0.041], sides=18, chain=["Neck", "Chest"],
            style=UNDERSUIT_STYLE, cap=0.2)
     b.ellipsoid("Card", G(0.072, 1.1, 0.078), R(0.019, 0.026, 0.0045), rot=Matrix.Rotation(math.radians(-8), 3, "X"), bone="Chest",
                 style=style(card_color, rough=0.4, family=fam(ceramic=1.0)),
                 deform=lambda v: Vector(tuple(math.copysign(abs(c) ** 0.35, c) for c in v)), segments=(12, 8))
     b.ellipsoid("CardClip", G(0.072, 1.129, 0.08), R(0.007, 0.005, 0.005), bone="Chest", style=metal_style(), segments=(8, 6))
     # --- Neck and head ---------------------------------------------------------------------------------
-    b.tube("Neck", [G(0, 1.26, -0.012), G(0, 1.32, -0.006), G(0, 1.385, 0.0)], [0.035, 0.034, 0.036], sides=14, chain=["Neck"], style=SKIN_STYLE)
+    b.tube("Neck", [G(0, 1.26, -0.012), G(0, 1.32, -0.006), G(0, 1.385, 0.0)], [0.039, 0.038, 0.039], sides=14, chain=["Neck"], style=SKIN_STYLE)
 
     def head_shape(v):
         down = max(0.0, -v.z)
-        x = v.x * (1 - 0.34 * down ** 1.6)
+        x = v.x * (1 - 0.2 * down ** 1.6)
         y = v.y
         if y < -0.55:   # a flatter face plane
             y = -0.55 - (abs(y) - 0.55) * 0.55
@@ -323,19 +321,23 @@ def build_parts():
     b.ellipsoid("Head", HEAD_C, R(0.074, 0.108, 0.092), bone="Head", style=SKIN_STYLE, segments=(48, 28), deform=head_shape)
     for sx in (1, -1):
         b.ellipsoid("Ear", G(0.072 * sx, 1.458, -0.008), R(0.01, 0.024, 0.017), bone="Head", style=SKIN_STYLE, segments=(12, 8))
-        b.ellipsoid("Brow", G(0.031 * sx, 1.49, 0.07), R(0.022, 0.0055, 0.009), rot=Matrix.Rotation(math.radians(-10 * sx), 3, "Y"), bone="Head",
+        b.ellipsoid("Brow", G(0.031 * sx, 1.49, 0.066), R(0.021, 0.0045, 0.009), rot=Matrix.Rotation(math.radians(-10 * sx), 3, "Y"), bone="Head",
                     style=style(lambda ctx: mix(SKIN, HAIR * 0.8, C.smoothstep(-0.2, 0.3, ctx.u[:, 2]) * C.smoothstep(0.0, 0.5, -ctx.u[:, 1])),
                                 rough=0.5), segments=(14, 8))
-    b.ellipsoid("Chin", G(0, 1.38, 0.048), R(0.026, 0.022, 0.026), bone="Jaw", style=SKIN_STYLE, segments=(16, 10))
+    def jaw_shape(v):
+        # The lower face: narrowing to a soft, slightly pointed chin.
+        down = max(0.0, -v.z)
+        return Vector((v.x * (1 - 0.42 * down), v.y * (1 - 0.12 * down), v.z))
+    b.ellipsoid("Jaw", G(0, 1.405, 0.02), R(0.058, 0.05, 0.062), bone="Jaw", style=SKIN_STYLE, segments=(32, 18), deform=jaw_shape)
     b.parts[-1].chain = ["Jaw", "Head"]
-    b.tube("Nose", [G(0, 1.466, 0.068), G(0, 1.448, 0.08), G(0, 1.432, 0.088)], [0.0075, 0.0085, 0.0098], sides=10, chain=["Head"],
+    b.tube("Nose", [G(0, 1.47, 0.066), G(0, 1.45, 0.076), G(0, 1.434, 0.082)], [0.0065, 0.0075, 0.0088], sides=10, chain=["Head"],
            style=SKIN_STYLE, cap=0.6)
-    b.ellipsoid("Nostrils", G(0, 1.429, 0.082), R(0.013, 0.0065, 0.008), bone="Head", style=SKIN_STYLE, segments=(14, 8))
-    b.ellipsoid("LipUpper", G(0, MOUTH_Z + 0.0052, 0.0705), R(0.018, 0.0048, 0.0075), bone="Head", style=LIP_STYLE, segments=(16, 8))
-    b.ellipsoid("LipLower", G(0, MOUTH_Z - 0.0058, 0.0685), R(0.016, 0.0055, 0.0075), bone="Jaw", style=LIP_STYLE, segments=(16, 8))
+    b.ellipsoid("Nostrils", G(0, 1.43, 0.078), R(0.012, 0.006, 0.008), bone="Head", style=SKIN_STYLE, segments=(14, 8))
+    b.ellipsoid("LipUpper", G(0, MOUTH_Z + 0.0052, 0.0795), R(0.017, 0.0046, 0.0072), bone="Head", style=LIP_STYLE, segments=(16, 8))
+    b.ellipsoid("LipLower", G(0, MOUTH_Z - 0.0058, 0.0775), R(0.015, 0.0052, 0.0072), bone="Jaw", style=LIP_STYLE, segments=(16, 8))
     for side, c in EYES.items():
         b.ellipsoid("Eye", c, (EYE_R, EYE_R, EYE_R), bone="Head", style=eye_style(c), segments=(20, 12))
-        cap_slab(b, "Lid", c, EYE_R + 0.0024, EYE_R - 0.004, LID_EDGE, math.radians(80), math.radians(74), f"Lid_{side}",
+        cap_slab(b, "Lid", c, EYE_R + 0.0032, EYE_R - 0.004, LID_EDGE, math.radians(80), math.radians(88), f"Lid_{side}",
                  style(lambda ctx, c=c: lid_color(ctx, c, True), rough=0.45))
         cap_slab(b, "LowerLid", c, EYE_R + 0.0016, EYE_R - 0.004, math.radians(-74), LOWER_EDGE, math.radians(68), "Head",
                  style(lambda ctx, c=c: lid_color(ctx, c, False), rough=0.45))
@@ -348,7 +350,7 @@ def build_parts():
         return v * (1 - 0.3 * k)
     b.ellipsoid("Hair", G(0, 1.49, -0.012), R(0.083, 0.104, 0.1), bone="Head", style=HAIR_STYLE, segments=(40, 22), deform=hair_cap)
     b.tube("Fringe", [G(-0.05, 1.57, 0.045), G(-0.01, 1.568, 0.076), G(0.04, 1.545, 0.078), G(0.074, 1.5, 0.054)],
-           [0.015, 0.017, 0.014, 0.008], sides=12, chain=["Head"], style=STRAND_STYLE, cap=0.5)
+           [0.014, 0.016, 0.013, 0.007], sides=12, chain=["Head"], style=STRAND_STYLE, cap=0.5, flatten=0.55)
     for sx in (1, -1):
         b.tube("Lock", [G(0.068 * sx, 1.53, 0.032), G(0.078 * sx, 1.475, 0.016), G(0.074 * sx, 1.425, -0.004)], [0.013, 0.012, 0.007],
                sides=10, chain=["Head"], style=STRAND_STYLE, cap=0.5)
@@ -428,7 +430,7 @@ def talk(t, f):
     v = SYLL[i] + (SYLL[(i + 1) % len(SYLL)] - SYLL[i]) * (u * u * (3 - 2 * u))
     nod = 0.05 * math.sin(2 * math.pi * 2 * t) * (0.5 + 0.5 * math.sin(2 * math.pi * t))
     spec["Head"] = {"rot": (XAX, nod + 0.02 * v)}
-    spec["Jaw"] = {"rot": (XAX, math.radians(11) * v)}
+    spec["Jaw"] = {"rot": (XAX, math.radians(4.0) * v)}
     spec.update(lids(blink_curve(f, 44)))
     return spec
 
@@ -446,6 +448,35 @@ CLIPS = {"Idle": (120, idle, True), "Talk": (90, talk, True), "Blink": (8, blink
 
 def skin_mesh(obj, arm, builder):
     C.skin(obj, arm, builder, rigid=RIGID, blend=1)
+    lid_weights(obj)
+
+
+def lid_weights(obj):
+    """After decimation the lid's lash edge can end up nearer the eyeball than the lid shape, so part-based
+    weights leave it on the head and a blink shows a sliver of eye. The upper eye region (above the lid edge, within
+    the lid shell, round to the eye corners) follows its lid bone, fading out over the skin around it so the
+    stretch above the closing lid stays soft."""
+    groups = {g.name: g for g in obj.vertex_groups}
+    for side, c in EYES.items():
+        lid = groups[f"Lid_{side}"]
+        for v in obj.data.vertices:
+            d = v.co - c
+            r = d.length
+            if r > EYE_R + 0.009 or r < 1e-6:
+                continue
+            el = math.asin(max(-1.0, min(1.0, d.z / r)))
+            front = -d.y / r
+            w = 1.0 - C.smoothstep(EYE_R + 0.003, EYE_R + 0.009, r)
+            w *= C.smoothstep(LID_EDGE - math.radians(14), LID_EDGE - math.radians(4), el)
+            w *= C.smoothstep(-0.45, -0.15, front)
+            w = float(w)
+            if w <= 0.01:
+                continue
+            old = [(g.group, g.weight) for g in v.groups]
+            total = sum(wt for _, wt in old) or 1.0
+            for gi, wt in old:
+                obj.vertex_groups[gi].add([v.index], wt / total * (1 - w), "REPLACE")
+            lid.add([v.index], w if lid.index not in [gi for gi, _ in old] else w + dict(old)[lid.index] / total * (1 - w), "REPLACE")
 
 
 def main():

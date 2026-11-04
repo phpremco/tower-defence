@@ -263,123 +263,119 @@ def ballistic(origin, velocity, t, gravity=9.0, floor=0.05):
 # UV repair and a mesh-asset build that uses it
 # ---------------------------------------------------------------------------------------------------------------
 
-def _uv_islands(bm, uv, faces):
-    """UV islands (lists of face indices) among `faces`: faces joined by an edge whose two loops agree in UV."""
-    allowed = set(faces)
-    parent = {f: f for f in faces}
-
-    def find(a):
-        while parent[a] != a:
-            parent[a] = parent[parent[a]]
-            a = parent[a]
-        return a
-    for fi in faces:
-        f = bm.faces[fi]
-        for loop in f.loops:
-            other = loop.link_loop_radial_next
-            if other == loop or other.face.index not in allowed:
-                continue
-            nxt, onx = loop.link_loop_next, other.link_loop_next
-            # The radial loop runs the other way round: its next loop sits on this loop's vertex.
-            if (loop[uv].uv - onx[uv].uv).length < 1e-5 and (nxt[uv].uv - other[uv].uv).length < 1e-5:
-                ra, rb = find(fi), find(other.face.index)
-                if ra != rb:
-                    parent[ra] = rb
-    groups = {}
-    for fi in faces:
-        groups.setdefault(find(fi), []).append(fi)
-    return list(groups.values())
-
-
-def fix_uv_slivers(obj, master_faces, margin=0.006, factor=3.0):
-    """After uvlayout.unwrap: islands whose UV extent is far larger than their 3D extent at the median density
-    (a sliver the minimum-stretch unwrap blew up) are shrunk to that density, the master half is re-packed and the
-    mirror twins copy their UVs again. Returns (stats, number of islands shrunk)."""
-    from mathutils import kdtree
+def unwrap_dk(obj, builder, margin=0.004):
+    """uvlayout.unwrap for mirrored creatures (its helpers, the same seams and mirror split), plus one step: a seam
+    island that is closed (a plate, petal, rock or eye that lies wholly on one side, so it has no seam and no mirror
+    cut) is cut in two along the plane across its thinnest axis before the minimum-stretch unwrap. Closed islands fold
+    under that unwrap, and uvlayout's smart-project fallback shreds them into hundreds of tiny islands whose margins
+    eat the atlas (the Gravemaw body packed at 0.0 to 0.3 coverage). Returns (stats, master faces to bake)."""
+    import uvlayout as U
     C.activate(obj)
+    bpy.context.scene.tool_settings.use_uv_select_sync = True
     bpy.ops.object.mode_set(mode="EDIT")
     bm = bmesh.from_edit_mesh(obj.data)
     bm.faces.ensure_lookup_table()
     bm.verts.ensure_lookup_table()
-    uv = bm.loops.layers.uv.active
-    islands = _uv_islands(bm, uv, master_faces)
-    rows = []
-    for island in islands:
-        loops = [l for fi in island for l in bm.faces[fi].loops]
-        us = np.array([tuple(l[uv].uv) for l in loops])
-        ps = np.array([tuple(l.vert.co) for l in loops])
-        ext_uv = float((us.max(0) - us.min(0)).max())
-        ext_3d = float((ps.max(0) - ps.min(0)).max())
-        rows.append((island, ext_uv, max(ext_3d, 1e-6), us.mean(0)))
-    ratios = np.array([r[1] / r[2] for r in rows])
-    weights = np.array([r[2] for r in rows])
-    order = np.argsort(ratios)
-    cum = np.cumsum(weights[order])
-    median = float(ratios[order][np.searchsorted(cum, cum[-1] / 2)])
-    shrunk = 0
-    for (island, ext_uv, ext_3d, centre), ratio in zip(rows, ratios):
-        if ratio > median * factor:
-            s = median / ratio
-            for fi in island:
-                for l in bm.faces[fi].loops:
-                    l[uv].uv = ((l[uv].uv.x - centre[0]) * s + centre[0], (l[uv].uv.y - centre[1]) * s + centre[1])
-            shrunk += 1
+    bm.verts.index_update()
+    bm.faces.index_update()
+    face_pid = U._face_parts(bm, builder)
+    n_faces = len(bm.faces)
+    master = np.ones(n_faces, dtype=bool)
+    twin_of = {}
+    mmap = U._mirror_map(bm, max(obj.dimensions) * 1e-4)
+    by_verts = {}
     for f in bm.faces:
-        f.select_set(False)
-    for fi in master_faces:
-        bm.faces[fi].select_set(True)
+        if f.calc_center_median().x >= -U.MIRROR_EPS:
+            by_verts[frozenset(v.index for v in f.verts)] = f.index
+    for f in bm.faces:
+        if f.calc_center_median().x >= -U.MIRROR_EPS:
+            continue
+        twins = [mmap[v.index] for v in f.verts]
+        key = frozenset(twins)
+        if min(twins) >= 0 and key in by_verts:
+            twin_of[f.index] = by_verts[key]
+            master[f.index] = False
+    U._mark_seams(bm, face_pid, builder, master)
+    cut = 0
+    for island in U._islands(bm, master):
+        members = set(island)
+        closed = True
+        for fi in island:
+            for e in bm.faces[fi].edges:
+                linked = [g.index for g in e.link_faces if master[g.index]]
+                if e.seam or len(linked) != 2 or not all(g in members for g in linked):
+                    closed = False
+                    break
+            if not closed:
+                break
+        if not closed or len(island) < 4:
+            continue
+        centres = np.array([tuple(bm.faces[fi].calc_center_median()) for fi in island])
+        mid = centres.mean(axis=0)
+        _, _, vt = np.linalg.svd(centres - mid, full_matrices=False)
+        normal = vt[-1]
+        for fi in island:
+            for e in bm.faces[fi].edges:
+                a, b = e.link_faces[0], e.link_faces[1]
+                sa = (np.array(tuple(a.calc_center_median())) - mid) @ normal
+                sb = (np.array(tuple(b.calc_center_median())) - mid) @ normal
+                if (sa < 0) != (sb < 0):
+                    e.seam = True
+        cut += 1
+    master_faces = [i for i in range(n_faces) if master[i]]
+    U._select(bm, master_faces)
+    bmesh.update_edit_mesh(obj.data)
+    bpy.ops.uv.unwrap(method="MINIMUM_STRETCH", fill_holes=True, correct_aspect=True, margin=margin)
+    bm = bmesh.from_edit_mesh(obj.data)
+    bm.faces.ensure_lookup_table()
+    uv = bm.loops.layers.uv.active
+    islands = U._islands(bm, master)
+    bad = []
+    for island in islands:
+        areas = np.array([U._uv_signed_area(bm.faces[fi], uv) for fi in island])
+        major = np.sign(areas.sum()) or 1.0
+        if np.mean(np.sign(areas) != major) > 0.01:
+            bad += island
+    if bad:
+        U._select(bm, bad)
+        bmesh.update_edit_mesh(obj.data)
+        bpy.ops.uv.smart_project(angle_limit=math.radians(70), island_margin=margin, scale_to_bounds=False)
+        bm = bmesh.from_edit_mesh(obj.data)
+        bm.faces.ensure_lookup_table()
+    U._select(bm, master_faces)
     bmesh.update_edit_mesh(obj.data)
     bpy.ops.uv.select_all(action="SELECT")
+    bpy.ops.uv.average_islands_scale()
+    bm = bmesh.from_edit_mesh(obj.data)
+    bm.faces.ensure_lookup_table()
+    uv = bm.loops.layers.uv.active
+    U._clamp_density(bm, uv, U._islands(bm, master))
+    bmesh.update_edit_mesh(obj.data)
     bpy.ops.uv.pack_islands(rotate=True, margin=margin)
     bm = bmesh.from_edit_mesh(obj.data)
     bm.faces.ensure_lookup_table()
-    bm.verts.ensure_lookup_table()
     uv = bm.loops.layers.uv.active
-    # Mirror twins copy their UVs again (as uvlayout.unwrap does).
-    size = max(obj.dimensions)
-    tree = kdtree.KDTree(len(bm.verts))
-    for v in bm.verts:
-        tree.insert(v.co, v.index)
-    tree.balance()
-    mmap = {}
-    for v in bm.verts:
-        co, idx, dist = tree.find(Vector((-v.co.x, v.co.y, v.co.z)))
-        if idx is not None and dist < size * 1e-4:
-            mmap[v.index] = idx
-    master = set(master_faces)
-    by_verts = {frozenset(v.index for v in bm.faces[fi].verts): fi for fi in master_faces}
-    for f in bm.faces:
-        if f.index in master:
-            continue
-        twins = [mmap.get(v.index, -1) for v in f.verts]
-        key = frozenset(twins)
-        if min(twins) >= 0 and key in by_verts:
-            t = bm.faces[by_verts[key]]
-            twin_uv = {l.vert.index: l[uv].uv.copy() for l in t.loops}
-            for l in f.loops:
-                l[uv].uv = twin_uv[mmap[l.vert.index]]
+    for fi, ti in twin_of.items():
+        f, t = bm.faces[fi], bm.faces[ti]
+        twin_uv = {l.vert.index: l[uv].uv.copy() for l in t.loops}
+        for l in f.loops:
+            l[uv].uv = twin_uv[mmap[l.vert.index]]
     area3d = sum(bm.faces[i].calc_area() for i in master_faces)
-    area_uv = 0.0
-    for fi in master_faces:
-        loops = bm.faces[fi].loops
-        a = loops[0][uv].uv
-        for i in range(1, len(loops) - 1):
-            b, c = loops[i][uv].uv, loops[i + 1][uv].uv
-            area_uv += abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) * 0.5
+    area_uv = sum(abs(U._uv_signed_area(bm.faces[i], uv)) for i in master_faces)
+    stats = {"islands": len(U._islands(bm, master)), "closed_islands_cut": cut, "folded_fallback_faces": len(bad),
+             "mirrored_faces": len(twin_of), "uv_coverage": round(area_uv, 3),
+             "world_per_uv": math.sqrt(area3d / max(area_uv, 1e-9))}
     bmesh.update_edit_mesh(obj.data)
     bpy.ops.object.mode_set(mode="OBJECT")
-    stats = {"uv_coverage": round(area_uv, 3), "world_per_uv": math.sqrt(area3d / max(area_uv, 1e-9)),
-             "sliver_islands_shrunk": shrunk, "uv_islands": len(islands)}
-    C.log(obj.name, "uv repaired", stats)
-    return stats
+    C.log(obj.name, "uv", stats)
+    return stats, master_faces
 
 
 def build_mesh_asset_dk(name, builder, voxel, target_tris, tex_size, ao_distance, extrusion, ray, emission_strength=2.5,
                         extra=None, specular=0.3, k=1.0, families=C.FAMILY_ORDER, low_size=None, out_dir=None,
                         smooth_iterations=6, edge_gain=0.35):
-    """creature_kit2.build_mesh_asset_ex (mirrored creature) with fix_uv_slivers between the unwrap and the bake."""
+    """creature_kit2.build_mesh_asset_ex (mirrored creature) with unwrap_dk instead of uvlayout.unwrap."""
     import detailmaps
-    import uvlayout
     parts_obj = builder.to_object(name + "_Parts")
     high_mesh = C.fuse(parts_obj, voxel, smooth_iterations)
     bpy.data.objects.remove(parts_obj)
@@ -400,8 +396,7 @@ def build_mesh_asset_dk(name, builder, voxel, target_tris, tex_size, ao_distance
     bpy.data.meshes.remove(smooth_copy)
     C.shade_smooth(low_mesh)
     low = C.link(bpy.data.objects.new(name, low_mesh))
-    uv_stats, bake_faces = uvlayout.unwrap(low, builder, mirror=True)
-    uv_stats.update(fix_uv_slivers(low, bake_faces))
+    uv_stats, bake_faces = unwrap_dk(low, builder)
     out_dir = out_dir or os.path.join(C.EXPORTS, name)
     textures = C.bake_maps(high, low, out_dir, name, tex_size, extrusion, ray, bake_faces=bake_faces, low_size=low_size)
     tiles = detailmaps.ensure()
@@ -510,7 +505,7 @@ def liquid_sheet(name, color, alpha=0.7, size=4.0, z=0.0, emission=None, strengt
     """A translucent liquid surface (preview stand-in for TerrainLiquidBuilder's sheets); `hole` (x, y, r) cuts a
     round opening where the prop's throat is."""
     bm = bmesh.new()
-    bmesh.ops.create_grid(bm, x_segments=80, y_segments=80, size=size / 2)
+    bmesh.ops.create_grid(bm, x_segments=240, y_segments=240, size=size / 2)
     if hole:
         x, y, r = hole
         kill = [f for f in bm.faces if (f.calc_center_median().x - x) ** 2 + (f.calc_center_median().y - y) ** 2 < r * r]

@@ -786,3 +786,63 @@ Mirebat). Baked now: Ember, Moss, Dust. Rebake a skin whenever the bat mesh chan
 - **SkySovereign data:** in the data the SkySovereign is the ray boss and the StormMatriarch the bat boss; the models
   are the other way round (round 6 StormMatriarch is a Skyray boss, this SkySovereign is a bat boss). Swap the data
   shapes, or swap which model each boss uses (curator decision).
+
+## Round 14: Gravemaw, burrow hole, spawn origins, resource node, warm Tide/Frost bat skins (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 14). New scripts (shared modules untouched, only imported):
+`deep_kit.py` (helpers), `build_gravemaw.py`, `build_env_origins.py`, `build_bat_skins.py`. Not yet in
+`build_all.py`; proposed lines, after `build_broodmother.py` (the Gravemaw previews load the BroodMother and Skitter
+`.blend` files and the hole FBX) and with `build_env_origins.py` before `build_gravemaw.py`:
+
+```
+"build_env_origins.py", "build_gravemaw.py",   # round 14, after the level bosses
+"build_bat_skins.py",                          # round 14, after build_bat.py (bakes Tide/Frost onto the shipped Bat mesh)
+```
+
+`deep_kit.py`: `PathFZ` / `ride` / `spine_specs` (a spine riding a path in the forward-up plane: dive and breach),
+`crystal_plate`, `petal`, `belly_rings`, `mask_glow` (white emission masks), `unwrap_dk` + `build_mesh_asset_dk`
+(uvlayout's unwrap plus a mid-plane cut of closed one-sided islands; without it the Gravemaw body packed at 0.0 to
+0.3 coverage), `join_skinned` / `build_lod2` (two-material creature), preview helpers (`ground_with_holes`,
+`liquid_sheet`, `tint_emission`). `build_gravemaw.py --blockout` renders raw parts on the rig in a minute (no bakes).
+
+### Gravemaw (`Exports/Gravemaw/`)
+
+| Item | Value |
+| --- | --- |
+| Mesh | one mesh `Gravemaw`, two materials: `Gravemaw_Mat` (body, ~17,200 tris) and `Gravemaw_Crystal_Mat` (~6,900 tris), total ~24,100 |
+| Maps | `Gravemaw_*.png` and `Gravemaw_Crystal_*.png`, 1024 + `Low/` 512 each (Albedo, Normal, Emission, Mask as usual) |
+| Rig | `Gravemaw_Rig`, 38 bones (Root non-deforming, Seg_1..6, Head, Tail, Jaw_T/UR/UL/LR/LL, Arm_L/R_Upper/Fore/Spade, Leg_L/R1..3_Upper/Lower, Debris_L/R1..3) |
+| LOD1 | `Gravemaw_LOD1.fbx`, ~10,000 tris, 30 bones (lower legs and spades folded), same clips and maps |
+| Size | about 5.9 long, 2.8 wide (claws), 2.5 high (crest), Unity scale 1 (BroodMother in game is ~2.5 long) |
+| Clips @30 fps | Crawl 64 (loop, 0.692 per loop), Idle 90 (loop), Hit 16, Death 60, Roar 66, Dive 120, Emerge 112 |
+
+Unity notes:
+
+- **Import:** Scale 1, Bake Axis Conversion, Generic rig, root `Root`, two material slots (keep the order). Debris
+  bones animate **scale** (hidden at 0.001 outside Dive and Emerge): keep "Remove constant scale curves" off.
+- **Dive** (play while the boss stands still): wind-up to frame 24, the drill hits the ground at frame **31**
+  (start the dust/impact VFX and the rumble; debris flies from there), all of it is under the plain by frame
+  **94**; hide the renderer at the end (frame 120). The hole is **2.95 m ahead** of the pivot along its forward
+  axis (x Unity scale): put `Gravemaw_Hole` there when the dive starts. The body travels ~8 m forward along a path
+  under the ground, so the terrain must occlude it (no see-through liquids at the dive spot).
+- **Emerge** (at the new road position, boss logically still): the head breaks the surface at frame **20** (start
+  the burst VFX, sound and debris there), the body arches out and comes to the rest pose at frame **98**; switch to
+  Crawl after 112. The breach hole is **5.66 m behind** the pivot (`emerge.hole_forward` -5.655): place
+  `Gravemaw_Hole` there, so the boss reappears with its pivot 5.66 m further along the road than the hole.
+  The direction cue for "where it surfaces" (STORY_ROADMAP) is that hole position.
+- Roar has its jaws wide from frame ~12 to 50 (the star maw); good for the boss intro and the alarm.
+- Emission: body pink-magenta (petal seams, gullet, segment rims, chevrons), crystal pink to ice; about 2.0 to 2.5.
+
+### Environment (`Exports/Env/`)
+
+| Asset | Tris | Maps | Placement |
+| --- | --- | --- | --- |
+| Gravemaw_Hole | 2,400 | 1024 | ground pivot; 3.5 wide; pit floor at -1.0; pink emission baked |
+| Origin_Water / _Lava / _Quicksand / _Ice / _Bog | 1,800 / 1,800 / 1,700 / 1,800 / 1,800 | 512 | pivot on the liquid surface at the cell centre (`TerrainLiquidBuilder.SurfaceLevel(kind)`), any yaw; Emission is a **white mask**, tint with `NestColor(element)` |
+| ResourceNode (`ResourceNode_Full`, `_Half`, `_Empty` in one FBX) | ~1,800 each (5,398 total) | 1024 shared | ground pivot at the mine cell centre; Half at 50 % stock, Empty on `MineDepleted` (replaces the scale-down in `MiningNodeView`); gold emission baked |
+
+### Bat skins
+
+`build_bat_skins.py` rebuilds the Ember game mesh in a scratch folder, checks it against `Exports/Bat/Bat.fbx`
+(vertices, triangles, UVs; max UV difference 0.0) and bakes `Skins/Tide/` and `Skins/Frost/` with warm glows
+(report: `Skins/Skins_warm_report.json`). `Exports/Bat/Bat.fbx` and its maps are not touched.

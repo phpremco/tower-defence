@@ -216,13 +216,14 @@ def body_parts():
                         segments=(14, 8), style=H.eye(PAL, k * 0.3, 0.95))
     # The gullet behind the petals and the five petals.
     b.ellipsoid("Gullet", MAW_BASE + (MAW_TIP - MAW_BASE).normalized() * 0.04, (0.33, 0.2, 0.3), bone="Head",
-                segments=(32, 16), style=H.inner_glow(PAL, 1.0))
+                segments=(32, 16), style=H.inner_glow(PAL, 0.75))
     a, _, _ = maw_frame()
     length = (MAW_TIP - MAW_BASE).length
     for name, ang in PETALS:
         b.slab("Petal", lambda u, v, ang=ang: petal_point(ang, u, v), lambda u, v, ang=ang: petal_point(ang, u, v, True),
                12, 18, bone=name,
-               style=DK.petal(PAL, k * 0.5, MAW_BASE, a, petal_dir(ang), length, petal_half_width))
+               style=DK.petal(PAL, k * 0.5, MAW_BASE, a, petal_dir(ang), length, petal_half_width, seam_glow=0.7,
+                              inner_glow=0.45))
     # Digging arms: armoured upper arm and forearm, a spade palm with three hooked claws.
     for side, sx in SIDES:
         lg = ARMS[side]
@@ -752,7 +753,7 @@ def previews(arm, mesh, actions, lod, out):
 
     C.set_action(arm, actions["Idle"], 20)
     macros = [("maw", G(0, 0.48, 2.5), 2.0, -32, 14), ("armour", G(0.3, 1.0, 0.5), 2.0, -50, 40),
-              ("spade", G(0.95, 0.15, 2.15), 1.4, -70, 18), ("roar_maw", G(0, 1.4, 2.4), 2.2, -20, 10)]
+              ("spade", G(1.2, 0.12, 2.25), 1.9, -60, 30), ("roar_maw", G(0, 1.4, 2.4), 2.2, -20, 10)]
     for suffix, aim, dist, az, el in macros[:3]:
         paths.append(C.render(C.macro_camera(aim, dist, az, el), os.path.join(out, f"gravemaw_macro_{suffix}.png"), 1280, 720))
     C.set_action(arm, actions["Roar"], 34)
@@ -838,11 +839,11 @@ def main():
         return
     folder = os.path.join(C.EXPORTS, NAME)
     body_b, crys_b = body_parts(), crystal_parts()
-    body = K2.build_mesh_asset_ex(NAME, body_b, voxel=0.012, target_tris=BODY_TRIS, tex_size=TEX, ao_distance=0.35,
+    body = DK.build_mesh_asset_dk(NAME, body_b, voxel=0.012, target_tris=BODY_TRIS, tex_size=TEX, ao_distance=0.35,
                                   extrusion=0.05, ray=0.15, emission_strength=2.5,
-                                  extra=H.weathering(K, markings=PAL.dark, marking_amount=0.4, dust=0.6, seed=401),
+                                  extra=H.weathering(K, markings=PAL.dark, marking_amount=0.18, dust=0.5, seed=401),
                                   specular=0.3, k=K, families=BODY_FAMILIES, low_size=LOW_TEX, out_dir=folder)
-    crystal = K2.build_mesh_asset_ex(CRYSTAL, crys_b, voxel=0.009, target_tris=CRYSTAL_TRIS, tex_size=TEX,
+    crystal = DK.build_mesh_asset_dk(CRYSTAL, crys_b, voxel=0.009, target_tris=CRYSTAL_TRIS, tex_size=TEX,
                                      ao_distance=0.2, extrusion=0.04, ray=0.12, emission_strength=2.2, specular=0.4,
                                      k=K * 0.6, families=CRYSTAL_FAMILIES, low_size=LOW_TEX, out_dir=folder,
                                      smooth_iterations=2)
@@ -851,13 +852,14 @@ def main():
     arm = C.build_armature(NAME + "_Rig", bone_list)
     C.skin(body.low, arm, body_b, rigid=BODY_RIGID, blend=2)
     C.skin(crystal.low, arm, crys_b, rigid=CRYSTAL_RIGID, blend=0)
-    mesh = DK.join_skinned(body.low, crystal.low)
-    mesh.name = NAME
     poser = B.ScalePoser(arm, DEBRIS_NAMES)
     actions = C.key_clips(poser, CLIPS)
     under = dive_under_frame(poser)
+    # The LOD decimates copies of both game meshes, so it is built before they are joined.
     lod = DK.build_lod2(LOD_NAME, [(body, body_b, 0.72), (crystal, crys_b, 0.28)], bone_list, CLIPS, poser, LOD_TRIS,
                         LOD_DROP, LOD_AIMS, scale_bones=DEBRIS_NAMES)
+    mesh = DK.join_skinned(body.low, crystal.low)
+    mesh.name = NAME
     K2.export_rig(os.path.join(folder, NAME + ".fbx"), arm, mesh, actions)
     K2.export_rig(os.path.join(folder, LOD_NAME + ".fbx"), lod[0], lod[1], lod[2])
     frames = {n: CLIPS[n](poser)[0] for n in CLIPS}

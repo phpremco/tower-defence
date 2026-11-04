@@ -49,7 +49,7 @@ def glow(name, strength=1.0, lens=0.0):
 
 
 # Looks beyond tower_kit's (sRGB paint; families from tower_kit.FAMILIES).
-FOIL = tk.Look((0.74, 0.55, 0.22), "metal", rough=0.26, panel=0.11, wear=0.35, grad=0.55)
+FOIL = tk.Look((0.6, 0.44, 0.17), "metal", rough=0.24, panel=0.06, wear=0.3, grad=0.55)
 SOLAR = tk.Look((0.07, 0.12, 0.27), "glass", rough=0.16, panel=0.075, wear=0.15, grad=0.4)
 NAVY = tk.Look((0.1, 0.17, 0.33), "ceramic", rough=0.45, panel=0.0, wear=0.5)
 SHIELD = tk.Look((0.075, 0.066, 0.062), "metal", rough=0.78, panel=0.12, wear=0.5, emit=GLOW["ember"], glow=0.22, grad=0.6)

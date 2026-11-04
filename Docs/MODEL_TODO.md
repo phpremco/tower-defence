@@ -78,7 +78,7 @@ Dit zijn de grootste modellen, met de meeste aandacht en animaties.
 
 | Status | Prio | Model | Gedrag uit het script |
 | --- | --- | --- | --- |
-| ☐ | P2 | **Gravemaw** (continent 1) | Reusachtige graver met kristalpantser. Clips **Dive/Emerge** |
+| ◐ | P2 | **Gravemaw** (continent 1) | Ronde 14 klaar: boormuil van vijf pantserbladen (dicht een gloeiende graafkegel, open een ster rond een witgloeiende keel met Crysium-tanden), zes brede pantsersegmenten met Crysium-platen en een naar achter geveegde kristalkam, twee schopklauwen, drie paar korte stekelpoten, staartschop met kristalvinnen. Twee materialen (lijf + kristal). Clips Crawl/Idle/Hit/Death/Roar/**Dive**/**Emerge** met puinbrokken op eigen botten. Los: `Env/Gravemaw_Hole` (krater). Zie README ronde 14 |
 | ☐ | P3 | **Cinder Matriarch** (2) | Vuurbaas met brandend spoor. Laat vuurlarven los (larve = klein extra model) |
 | ☐ | P3 | **Frost Warden** (3) | Bevriest turrets, wordt sneller. "Bewaker" |
 | ☐ | P3 | **Rotbloom** (4) | Hout- en moerasbaas, herstelt zich en laat slijm achter |
@@ -167,7 +167,7 @@ Animaties: **Fly, Hover, Work** (lichtbundel, vuren of graven).
 | ◐ | P1 | **Basis** (eindpunt, 800 HP) | Ronde 9 klaar: acht modules met eigen pivot (dek, commandopost, schotel, landingsplatform, kern, kristal, habitat, aansluitkasten) voor de timelapse, overlay `Base_Damage`, `Base_Wreck`, sockets als empties. 7.250 driehoeken, LOD1 3.190 |
 | ◐ | P1 | **Basiswapens / -turrets** | Ronde 9 klaar: `Tower_BaseTurret` T1/T2/T3 = Gun Turret-kop op een vierkante bastion-sokkel in basiskleuren, zelfde rig en clips als Tower_Gun. 3.204–4.440 driehoeken |
 | ☐ | P2 | Modules van het upgradescherm (diorama) | Hergebruikt de modellen van de basis |
-| ☐ | P2 | **Grondstofpunt** (Crysium-ader voor de harvest-drone) | |
+| ◐ | P2 | **Grondstofpunt** (Crysium-ader voor de harvest-drone) | Ronde 14 klaar: `Env/ResourceNode` met drie meshes (Full, Half, Empty) op één 1024-set: goud-amber erts-Crysium uit een gespleten basaltblok; Half met afgezaagde, gloeiende snijvlakken, Empty alleen doffe stompen |
 
 ---
 
@@ -212,7 +212,7 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 | Status | Prio | Model |
 | --- | --- | --- |
-| ☐ | P2 | Spawnpunten in water, lava, drijfzand, ijs en moeras (opening waaruit vijanden kruipen) |
+| ◐ | P2 | Spawnpunten in water, lava, drijfzand, ijs en moeras (opening waaruit vijanden kruipen). Ronde 14 klaar: `Env/Origin_Water/_Lava/_Quicksand/_Ice/_Bog` (≤ 1.800 driehoeken, 512), pivot op het vloeistofoppervlak, Emission is een wit masker (Unity kleurt met NestColor). Grond blijft `Burrow_A` |
 
 ### Latere continenten (P3)
 
@@ -396,4 +396,12 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 - **Kleuren in de data volgen de modellen**, als de data een alien koel kleurt of onze kant warm. Dat geldt voor de
   laserstraal, de Attack-drone, de Mine, de Artillery, de Support, het Bulwark-accent en de Stinger. Remco kan dit
   terugdraaien.
-- **Bat-skins Tide en Frost** zijn koel van element en nog niet gebakken. Volgen later, met een warme gloed.
+- **Bat-skins Tide en Frost** zijn koel van element en nog niet gebakken. Volgen later, met een warme gloed. (Ronde 14: gebakken met warme gloed via `build_bat_skins.py`: Tide zee-teal met koraalgloed, Frost ijswit met sintelgloed, in `Exports/Bat/Skins/Tide` en `/Frost`.)
+
+### Ronde 14 (Gravemaw, spawnpunten, grondstofpunt)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Gravemaw | De binnenkant van de bloembladen en de keel is van dichtbij vlak felroze: emissie in Unity lager. Van boven nog wat pissebed-achtig. Poten zijn simpele buizen. Bij Dive rijden de voeten mee, en aan het eind van Emerge glijden ze. UV-dekking van het lijf verschilt per run (fallback niet deterministisch) |
+| Drijfzand-opening | Leest meer als ring dan als zinkgat |
+| IJs-opening | Gloed nauwelijks zichtbaar met de ijswitte tint |

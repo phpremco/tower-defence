@@ -265,8 +265,9 @@ class Probe:
             self.cyl(g, "LegUpper", hip, knee, 0.032, 0.03, tk.GUNMETAL)
             lower_g = g + "_low" if i in snapped else g
             self.cyl(lower_g, "LegLower", knee, foot + V(0, 0, 0.03), 0.024, 0.02, tk.STEEL)
-            self.k.torus("LegFoil", self.P(lower_g, knee.lerp(foot, 0.3)), self.T.get(lower_g, Matrix.Identity(4)).to_3x3() @ (foot - knee), 0.03, 0.012,
-                         self.look(sk.FOIL), "Root", self.on, seg=10, sides=4)
+            if not self.wreck:   # the wreck saves these triangles for the growth
+                self.k.torus("LegFoil", self.P(lower_g, knee.lerp(foot, 0.3)), self.T.get(lower_g, Matrix.Identity(4)).to_3x3() @ (foot - knee), 0.03, 0.012,
+                             self.look(sk.FOIL), "Root", self.on, seg=10, sides=4)
             self.cyl(g, "LegBrace", polar(a, 0.44, 0.82), hip.lerp(knee, 0.7), 0.015, 0.015, tk.STEEL, sides=6)
             self.lathe(lower_g, "Pad", [(0, 0), (0.1, 0), (0.11, 0.02), (0.05, 0.04), (0, 0.04)], tk.frame(foot - V(0, 0, 0.03)), tk.DARK, sides=12)
 
@@ -276,7 +277,7 @@ class Probe:
             self.cyl(g, "WingHinge", (s * 0.62, -0.06, 0.9), (s * 0.62, 0.06, 0.9), 0.035, 0.035, tk.GUNMETAL, sides=8)
             for i in range(2):
                 cx = s * (0.92 + i * 0.52)
-                m = tk.frame((cx, 0, 0.9), rot=(-WING_TILT, 0, 0))
+                m = tk.frame((cx, 0, 0.9), rot=(WING_TILT, 0, 0))
                 self.plate(g, "WingFrame", bk.rect_poly(0.5, 0.56, 0.02), 0.022, m @ tk.frame((0, 0, -0.008)), tk.YELLOW.but(wear=0.7))
                 if cracked == (s, i):
                     bk.shards(self.k, "Cells", bk.rect_poly(0.46, 0.52), 0.02, self.M(g, m @ tk.frame((0, 0, 0.004))), self.look(sk.SOLAR, g),
@@ -351,26 +352,26 @@ class Wreck(Spec):
         T = {"body": body, "drill": body, "leg1": body, "leg3": body @ rot_about(polar(330, 0.36, 0.6), polar(330, 1, 0).cross(UP), -18),
              "leg2": body,
              "leg2_low": lay_flat(polar(210, 0.36, 0.6).lerp(polar(210, 0.88, 0.04), 0.55), polar(210, 0.88, 0.04), V(-1.0, -0.75, 0.1), 115),
-             "wing_L": body @ rot_about((-0.62, 0, 0.9), (0, 1, 0), 48),
-             "wing_R": Matrix.Translation(V(1.95, 0.7, 0.1)) @ Matrix.Rotation(math.radians(28), 4, "Z") @ Matrix.Rotation(math.radians(7), 4, "Y")
-             @ Matrix.Rotation(math.radians(WING_TILT), 4, "X") @ Matrix.Translation(-V(1.15, 0, 0.9)),
+             "wing_L": body @ rot_about((-0.62, 0, 0.9), (0, 1, 0), -52),
+             "wing_R": Matrix.Translation(V(1.95, 0.7, 0.2)) @ Matrix.Rotation(math.radians(28), 4, "Z") @ Matrix.Rotation(math.radians(7), 4, "Y")
+             @ Matrix.Rotation(math.radians(-WING_TILT), 4, "X") @ Matrix.Translation(-V(1.15, 0, 0.9)),
              "dish": Matrix.Translation(V(-1.05, 0.45, -0.78)) @ rot_about((0.1, 0.05, 1.38), (1, 0.2, 0), -78),
              "mast": body @ rot_about((-0.27, -0.17, 1.05), (1, -0.3, 0), 38)}
         probe = Probe(k, on, T, wreck=True)
         probe.build(broken=True)
         # The mire mound and wet puddles.
-        sk.add(k, "Mound", lambda: sk.bm_mound(2.4, 0.26, seed=8), tk.frame((0.2, 0.1, 0)), sk.MUD, "Root", on)
+        sk.add(k, "Mound", lambda: sk.bm_mound(2.4, 0.26, seed=8, rings=5, sectors=18), tk.frame((0.2, 0.1, 0)), sk.MUD, "Root", on)
         for i, (x, y, r) in enumerate(((-1.6, -0.6, 0.45), (1.0, -1.5, 0.35), (1.6, 1.4, 0.4))):
             k.plate("Puddle", blot(r, 20 + i), 0.01, tk.frame((x, y, 0.08 - 0.02 * i)), sk.MIRE, "Root", on, bevel=0.0)
         # Crysium growing out of the hull crack and the mire.
         top = body @ V(0.18, 0.05, 1.06)
-        sk.cluster(k, "Crystal", top, body.to_3x3() @ V(0.2, 0.1, 1), 5, 0.55, seed=3)
-        for i, (x, y, s, n) in enumerate(((-1.35, 0.95, 0.8, 4), (1.25, -0.95, 0.55, 3), (0.45, 1.45, 0.95, 5), (2.15, 0.85, 0.6, 3),
-                                          (-0.6, -1.55, 0.45, 2))):
+        sk.cluster(k, "Crystal", top, body.to_3x3() @ V(0.2, 0.1, 1), 3, 0.6, seed=3)
+        for i, (x, y, s, n) in enumerate(((-1.35, 0.95, 0.8, 3), (1.25, -0.95, 0.55, 2), (0.45, 1.45, 0.95, 4), (2.15, 0.85, 0.6, 2),
+                                          (-0.6, -1.55, 0.45, 1))):
             sk.cluster(k, "Crystal", V(x, y, 0.12), V(0.15 * (x / 2), 0.1 * (y / 2), 1), n, s, seed=10 + i)
         # Alien flora: plum fronds with glowing tips, tendrils over the legs, glow bulbs.
         rng = np.random.default_rng(4)
-        for i in range(7):
+        for i in range(4):
             a = rng.uniform(0, 360)
             r = rng.uniform(1.0, 2.0)
             base = polar(a, r, 0.14)
@@ -378,14 +379,14 @@ class Wreck(Spec):
             tip = sk.glow("lime", 1.0) if i % 2 else sk.glow("pink", 1.0)
             for j in range(3):
                 dd = (Matrix.Rotation(math.radians(j * 120 + rng.uniform(-20, 20)), 3, UP) @ d).normalized()
-                sk.frond(k, "Frond", base, dd + V(0, 0, 0.4), rng.uniform(0.35, 0.55), 0.09, math.radians(55), sk.PLUM, tip, segs=3,
+                sk.frond(k, "Frond", base, dd + V(0, 0, 0.4), rng.uniform(0.35, 0.55), 0.09, math.radians(55), sk.PLUM, tip, segs=2,
                          side=UP.cross(dd))
         legp = [body @ v for v in (polar(90, 0.85, 0.06), polar(90, 0.7, 0.25), polar(90, 0.55, 0.42), polar(70, 0.45, 0.6), polar(40, 0.48, 0.82))]
         sk.tendril(k, "Tendril", legp, 0.03, 0.012, sk.PLUM)
         sk.tendril(k, "Tendril", [V(-0.4, 0.9, 0.1), body @ V(-0.3, 0.42, 0.55), body @ V(-0.45, 0.25, 0.85), body @ V(-0.4, 0.0, 1.06),
                                   body @ V(-0.2, -0.1, 1.12)], 0.028, 0.01, sk.PLUM)
         sk.tendril(k, "Tendril", [V(1.2, 0.4, 0.1), V(1.5, 0.6, 0.2), V(1.8, 0.75, 0.16), V(2.1, 0.7, 0.12)], 0.025, 0.01, sk.PLUM)
-        for i, (x, y) in enumerate(((-0.9, 1.3), (0.9, 1.0), (-1.7, 0.2), (1.6, -0.5), (0.2, -1.6), (-1.1, -1.2))):
+        for i, (x, y) in enumerate(((-0.9, 1.3), (0.9, 1.0), (-1.7, 0.2), (1.6, -0.5))):
             sk.bulb(k, "Bulb", V(x, y, 0.15), 0.042, sk.glow("lime" if i % 2 else "crysium", 0.9))
         self.sockets.update({"StatusLight": body @ V(0.12, 0.16, 1.15), "Smoke": body @ V(-0.1, 0.1, 1.2), "Log": body @ V(0, -0.5, 0.95),
                              "Centre": V(0, 0, 0.6)})
@@ -523,7 +524,7 @@ def render_ora(kit, mat, out):
     arm.animation_data.action = acts["Idle"]
     bpy.context.scene.frame_set(10)
     # Portrait: the bust framing, centred on the core.
-    cam = sk.portrait_camera(V(0, 0, 0.34), distance=1.25)
+    cam = sk.portrait_camera(V(0, 0, 0.33), distance=1.75)
     C.render(cam, os.path.join(out, "ora_portrait.png"), 1024, 1024)
     bk.remove([cam])
     cam = C.closeup_camera(V(0, 0, 0.32), 1.6, azimuth=-35, elevation=18, lens=50)

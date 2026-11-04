@@ -19,7 +19,7 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_roller.py", "build_cragback.py",
            "build_prowler.py", "build_skyray.py", "build_shalebat.py", "build_wisp.py",
            # Round 10: P2 species (creature_kit2.py).
-           "build_stinger.py", "build_bat.py", "build_bulwark.py", "build_oozer.py",
+           "build_stinger.py", "build_bat.py", "build_bat_skins.py","build_bulwark.py", "build_oozer.py",
            # The hero; it also builds and exports his weapons (build_mercer_weapons.py).
            "build_mercer.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
@@ -27,6 +27,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 10 bosses; each loads its species' .blend built above.
            "build_acidempress.py", "build_crystalwarlord.py", "build_skysovereign.py", "build_slimemonarch.py",
            "build_rollerking.py",
+           # Round 14: spawn origins, resource node, then Gravemaw (its previews load the hole and BroodMother).
+           "build_env_origins.py", "build_gravemaw.py",
            # Round 7: towers, build pad, stars and wreck (imports tower_kit.py).
            "build_towers.py",
            # Round 9: gate, base and base turret, drones, gadgets (import base_kit.py; need build_towers first).

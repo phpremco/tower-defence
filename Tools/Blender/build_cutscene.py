@@ -457,7 +457,7 @@ class Mothership(Spec):
             nf = tk.frame(c, z=BACK, y=UP)
             k.lathe("Nozzle", [(0, 0), (0.2, 0), (0.24, 0.12), (0.42, 0.85), (0.39, 0.88), (0.2, 0.22), (0, 0.22)], nf, tk.STEEL.but(rings=0.1),
                     "Root", on, sides=16, bevel=0.0)
-            k.lathe("NozzleGlow", [(0, 0.21), (0.19, 0.22), (0.3, 0.6), (0, 0.6)], nf, sk.glow("engine", 2.6), "Root", on, sides=12, bevel=0.0)
+            k.lathe("NozzleGlow", [(0, 0.21), (0.19, 0.22), (0.3, 0.6), (0, 0.6)], nf, sk.glow("engine", 1.5), "Root", on, sides=12, bevel=0.0)
             self.sockets[f"Nozzle_{i + 1}"] = (c + BACK * 0.9, BACK)
         # Running lights.
         for i in range(7):
