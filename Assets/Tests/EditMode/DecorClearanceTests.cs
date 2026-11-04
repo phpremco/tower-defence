@@ -9,7 +9,7 @@ namespace Game.Tests
     /// <summary>
     /// Playtest 2026-11-04: a rock stuck through the base of C1_01. Every campaign level is dressed as in play (the
     /// procedural props, the imported decor, scatter, cliffs and silhouettes) and no piece of decoration may reach
-    /// into the footprint of the base or a road gate.
+    /// into the footprint of the base, a road gate or the colony rig.
     /// </summary>
     public sealed class DecorClearanceTests
     {
@@ -83,7 +83,7 @@ namespace Game.Tests
             float margin = level.Theme.DecorClearance;
             foreach (StructureClearance.Zone zone in new StructureClearance(level).Zones)
             {
-                if (zone.Name != "Base" && !zone.Name.StartsWith("Gate"))
+                if (zone.Name != "Base" && zone.Name != "Colony rig" && !zone.Name.StartsWith("Gate"))
                 {
                     continue;
                 }

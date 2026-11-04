@@ -152,7 +152,7 @@ namespace Game.UI
                 PoseCurrent(delta * _sequencer.Speed);
             }
 
-            _overlay.SetSkipHint(_skip.IsArmed(Time.unscaledTime));
+            _overlay.SetSkipArmed(_skip.ArmedShare(Time.unscaledTime));
             _dialogueView.SetPlacement(_overlay.BarHeight + DialogueGap, DialogueScale);
             FadeVolumes(delta);
         }
@@ -363,7 +363,7 @@ namespace Game.UI
             _dialogue.Clear();
             _finishFade = _overlay.FadeAlpha;
             _overlay.SetTitle(null, 0f);
-            _overlay.SetSkipHint(false);
+            _overlay.SetSkipArmed(0f);
             _audio.SetMusic(CutsceneMusic.Silence);
         }
 

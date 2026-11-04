@@ -21,10 +21,6 @@ namespace Game.Levels
         [SerializeField] [Min(0f)] private float _emerge = 2.53f;
         [Tooltip("Length of the Open clip (96 frames).")]
         [SerializeField] [Min(0.1f)] private float _open = 3.2f;
-        [Tooltip("The origin stays open this long after its last creature of the wave.")]
-        [SerializeField] [Min(0f)] private float _closeDelay = 3f;
-        [Tooltip("Length of the closing (the Open clip played backwards).")]
-        [SerializeField] [Min(0.1f)] private float _close = 1.6f;
 
         [Header("Origins")]
         [SerializeField] private SpawnOriginArt[] _origins = new SpawnOriginArt[0];
@@ -50,7 +46,7 @@ namespace Game.Levels
         [Tooltip("Glow of the gates as a multiple of their baked emission (README: 1.5 to 2.4).")]
         [SerializeField] [Min(0f)] private float _gateGlow = 1.8f;
 
-        public OriginTiming Timing => new OriginTiming(_openLead, _burst, _emerge, _open, _closeDelay, _close);
+        public OriginTiming Timing => new OriginTiming(_openLead, _burst, _emerge, _open);
         public Vector2 MarkedGlow => _markedGlow;
         public float MarkedPulseSeconds => _markedPulseSeconds;
         public float OpenGlowSeconds => _openGlowSeconds;

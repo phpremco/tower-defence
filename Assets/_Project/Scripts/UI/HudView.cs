@@ -118,6 +118,7 @@ namespace Game.UI
             gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
             // After the panels, so the first-hit warning draws over them wherever the base lies on screen.
             gameObject.AddComponent<BaseAlertView>().Initialize(context, safe, camera);
+            gameObject.AddComponent<GateRebuildBadges>().Initialize(context, safe, camera);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
             BuildDialogue(safe);

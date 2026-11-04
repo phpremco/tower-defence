@@ -115,6 +115,7 @@ namespace Game.Levels
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildMiningNodes(level, grid, parent);
             BuildNests(level, grid, parent, instancer);
+            BuildColonyRig(level, theme, field, parent);
             if (instancer != null)
             {
                 instancer.Finish();
@@ -435,6 +436,30 @@ namespace Game.Levels
         }
 
         // Golden crystal clusters that harvest drones mine; each turns dull once its ore is gone.
+        // The colony's drilling rig beside the field, where the structure clearance found it a spot (decor already keeps
+        // that ground free). Purely a view: nothing in the gameplay knows of it.
+        private static void BuildColonyRig(LevelDefinition level, VisualTheme theme, TerrainField field, Transform parent)
+        {
+            ColonyRigDefinition rig = theme.Environment != null ? theme.Environment.ColonyRig : null;
+            if (rig == null || rig.Drill == null)
+            {
+                return;
+            }
+
+            var clearance = new StructureClearance(level);
+            if (!clearance.HasColonyRig)
+            {
+                return;
+            }
+
+            Vector3 at = clearance.ColonyRigPosition;
+            at.y = field.HeightAt(at.x, at.z);
+            var root = new GameObject("ColonyRig").transform;
+            root.SetParent(parent, false);
+            root.SetPositionAndRotation(at, clearance.ColonyRigFacing);
+            root.gameObject.AddComponent<ColonyRigView>().Initialize(rig);
+        }
+
         private static void BuildMiningNodes(LevelDefinition level, GridMap grid, Transform parent)
         {
             if (level.MineCells.Length == 0)

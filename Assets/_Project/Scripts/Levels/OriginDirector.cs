@@ -7,7 +7,9 @@ namespace Game.Levels
     /// The cycle of every spawn origin (the level's nests), driven by the wave data: an origin any wave sends creatures
     /// through is <see cref="OriginState.Marked"/> from the start, the rest stay <see cref="OriginState.Closed"/>. In a
     /// wave that uses it, it starts opening <see cref="OriginTiming.OpenLead"/> before its first creature is due, bursts,
-    /// lets the creatures out once the maw is up, and closes back to marked a moment after its last one. Pure logic with
+    /// lets the creatures out once the maw is up, and then stays open for the rest of the level (Remco 2026-11-04: a
+    /// side gate that sinks shut again reads like a sphincter); later waves may send more through it or none, as their
+    /// data says. Pure logic with
     /// its own clock; views listen to <see cref="Signalled"/>. Origins cannot be hit, targeted or destroyed.
     /// </summary>
     public sealed class OriginDirector
@@ -19,7 +21,6 @@ namespace Game.Levels
         private readonly bool[] _burst;
         private readonly int[] _planned;
         private readonly int[] _emerged;
-        private readonly float[] _closeAt;
         private readonly NestAssignment[] _waves;
         private float _clock;
         private float _waveClock;
@@ -35,7 +36,6 @@ namespace Game.Levels
             _burst = new bool[nests];
             _planned = new int[nests];
             _emerged = new int[nests];
-            _closeAt = new float[nests];
             _waves = new NestAssignment[waves.Count];
             for (int w = 0; w < waves.Count; w++)
             {
@@ -46,7 +46,6 @@ namespace Game.Levels
             {
                 _states[i] = UsedByAnyWave(i) ? OriginState.Marked : OriginState.Closed;
                 _openAt[i] = float.PositiveInfinity;
-                _closeAt[i] = -1f;
             }
         }
 
@@ -72,7 +71,6 @@ namespace Game.Levels
             {
                 _planned[i] = 0;
                 _emerged[i] = 0;
-                _closeAt[i] = -1f;
                 _openAt[i] = float.PositiveInfinity;
             }
 
@@ -110,15 +108,11 @@ namespace Game.Levels
             return state == OriginState.Open || (state == OriginState.Opening && TimeInState(origin) >= _timing.Emerge);
         }
 
-        /// <summary>A creature came out: once the wave's last one from this origin is out, it closes a moment later.</summary>
+        /// <summary>A creature came out (the view swells the maw for it).</summary>
         public void NotifyEmerged(int origin)
         {
             _emerged[origin]++;
             Signalled?.Invoke(origin, OriginSignal.Emerged);
-            if (_emerged[origin] >= _planned[origin])
-            {
-                _closeAt[origin] = _clock + _timing.CloseDelay;
-            }
         }
 
         /// <summary>Opens an origin at once (a wave called early sends its creatures out without waiting).</summary>
@@ -143,15 +137,10 @@ namespace Game.Levels
             switch (_states[i])
             {
                 case OriginState.Marked:
-                case OriginState.Closing:
                     if (_emerged[i] < _planned[i] && _waveClock >= _openAt[i])
                     {
                         _burst[i] = false;
                         SetState(i, OriginState.Opening);
-                    }
-                    else if (_states[i] == OriginState.Closing && TimeInState(i) >= _timing.Close)
-                    {
-                        SetState(i, OriginState.Marked);
                     }
 
                     break;
@@ -165,14 +154,6 @@ namespace Game.Levels
                     if (TimeInState(i) >= _timing.Open)
                     {
                         SetState(i, OriginState.Open);
-                    }
-
-                    break;
-                case OriginState.Open:
-                    if (_closeAt[i] >= 0f && _clock >= _closeAt[i] && _emerged[i] >= _planned[i])
-                    {
-                        _closeAt[i] = -1f;
-                        SetState(i, OriginState.Closing);
                     }
 
                     break;

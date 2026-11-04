@@ -17,10 +17,14 @@ namespace Game.UI
         private RectTransform _column;
         private Button _controlsButton;
         private Button _soundButton;
+        private Button _storyButton;
 
-        // Eight buttons stand under the title, so the title sits higher and the column a little lower than on the other screens.
+        // The title sits at the top of the safe area and the column hangs a clear gap under it; the column shrinks to
+        // fit above the bottom margin when the screen is short, so the title never runs into the first slider.
         private const float TitleTop = -36f;
-        private const float ColumnDrop = -40f;
+        private const float TitleHeight = 100f;
+        private const float TitleGap = 28f;
+        private const float BottomMargin = 40f;
 
         private const string ControlsText =
             "Move the cursor      Left stick / D-pad    Mouse\n" +
@@ -54,9 +58,9 @@ namespace Game.UI
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, 120f));
+            UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
             _column = UiKit.CreateColumn(root, 24f);
-            _column.anchoredPosition = new Vector2(0f, ColumnDrop);
+            ColumnFit.Attach(_column, -TitleTop + TitleHeight + TitleGap, BottomMargin);
             var volumes = new VolumeControls(progress, mix);
             volumes.Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
@@ -64,6 +68,12 @@ namespace Game.UI
             if (OpeningCutscene() != null)
             {
                 UiKit.CreateButton(_column, "Replay intro", ReplayIntro);
+            }
+
+            // Developer tools only when developer mode is on (editor or development build; never in a release build).
+            if (Services.TryGet(out PlaytestSettings playtest) && playtest.DeveloperModeOn)
+            {
+                _storyButton = UiKit.CreateButton(_column, "Story viewer (dev)", ShowStoryViewer);
             }
 
             UiKit.CreateButton(_column, "Back", Close);
@@ -108,6 +118,19 @@ namespace Game.UI
         {
             _column.gameObject.SetActive(true);
             UiKit.Select(_soundButton);
+        }
+
+        private void ShowStoryViewer()
+        {
+            _column.gameObject.SetActive(false);
+            gameObject.AddComponent<StoryViewerOverlay>().Open(this);
+        }
+
+        /// <summary>The story viewer closes itself and hands the options column back.</summary>
+        public void ReturnFromStoryViewer()
+        {
+            _column.gameObject.SetActive(true);
+            UiKit.Select(_storyButton);
         }
 
         // The opening cutscene plays again from the start and returns to the main menu; it never touches the save.

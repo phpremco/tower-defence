@@ -1,1 +1,1 @@
-_closeDelay 3
+_openLead 2.5

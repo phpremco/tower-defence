@@ -72,9 +72,27 @@ namespace Game.Levels
             {
                 _zones.Add(new Zone($"Nest {nest.Cell}", grid.CellToWorld(nest.Cell), NestRadiusCells * cell + margin, true));
             }
+
+            // Found against the zones above only, so the rig never blocks itself; from here on every decor builder keeps
+            // its ground free like a structure's.
+            ColonyRigDefinition rig = theme != null && theme.Environment != null ? theme.Environment.ColonyRig : null;
+            if (rig != null && rig.Drill != null && ColonyRigPlacement.TryFind(level, rig, this, out Vector3 at, out Quaternion facing))
+            {
+                HasColonyRig = true;
+                ColonyRigPosition = at;
+                ColonyRigFacing = facing;
+                _zones.Add(new Zone("Colony rig", at, rig.ClearRadius + margin, false));
+            }
         }
 
         public IReadOnlyList<Zone> Zones => _zones;
+
+        /// <summary>Whether the continent's colony rig found a spot beside this field.</summary>
+        public bool HasColonyRig { get; }
+
+        public Vector3 ColonyRigPosition { get; }
+
+        public Quaternion ColonyRigFacing { get; }
 
         /// <summary>
         /// True when a piece standing at <paramref name="position"/> and reaching <paramref name="radius"/> round it

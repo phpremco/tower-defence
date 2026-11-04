@@ -59,6 +59,8 @@ namespace Game.Editor
             public int Fireballs = 1;
             public float FireballSize = 1.5f, FireballSizePerRadius = 1.2f, FlashSize = 0.8f, FlashSizePerRadius = 1f, SmokeSize = 1.2f, SmokeDelay = 0.15f, DustSize;
             public float ShockStrength, HazeSeconds = 0.9f;
+            // Remco 2026-11-04: smoke must never hide the field for long; a boss death keeps a little more of its hanging smoke.
+            public float SmokeOpacity = 0.45f, SmokeLifeScale = 0.7f;
             public int Chain = 1;
             public float ChainInterval = 0.25f, ChainSpread = 1f, ChainGrowth = 0.15f;
         }
@@ -111,7 +113,7 @@ namespace Game.Editor
                 Smoke = 3, SmokePerRadius = 0, Shards = 12, ShardsPerRadius = 6, ShardSpeed = 7f, LightIntensity = 14f, LightRange = 10f, LightSeconds = 0.5f, Shake = 0.8f,
                 Fireball = ExplosionBoss, Fireballs = 2, FireballSize = 2.6f, FireballSizePerRadius = 1.2f, Flash = EnergyImpact, FlashSize = 1.2f, FlashSizePerRadius = 0.6f, SmokeSheet = SmokePuff, SmokeSize = 1.8f,
                 Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.5f, ShockSheet = ShockDistort, ShockStrength = 0.03f, Haze = HeatHaze, HazeSeconds = 1.4f, Linger = SmokeLinger,
-                Chain = 3, ChainInterval = 0.28f, ChainSpread = 1.4f, ChainGrowth = 0.2f,
+                Chain = 3, ChainInterval = 0.28f, ChainSpread = 1.4f, ChainGrowth = 0.2f, SmokeOpacity = 0.55f, SmokeLifeScale = 0.85f,
             },
             new VfxSpec
             {
@@ -249,6 +251,8 @@ namespace Game.Editor
             so.FindProperty("_smokeSheet").objectReferenceValue = Sheet(sheets, spec.SmokeSheet);
             so.FindProperty("_smokeSize").floatValue = spec.SmokeSize;
             so.FindProperty("_smokeDelay").floatValue = spec.SmokeDelay;
+            so.FindProperty("_smokeOpacity").floatValue = spec.SmokeOpacity;
+            so.FindProperty("_smokeLifeScale").floatValue = spec.SmokeLifeScale;
             so.FindProperty("_sparkSheet").objectReferenceValue = Sheet(sheets, spec.Sparkle);
             so.FindProperty("_debrisSheet").objectReferenceValue = Sheet(sheets, spec.Debris);
             so.FindProperty("_ringSheet").objectReferenceValue = Sheet(sheets, spec.RingSheet);

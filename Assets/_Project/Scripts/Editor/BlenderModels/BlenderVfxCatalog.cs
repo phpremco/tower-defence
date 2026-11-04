@@ -44,7 +44,7 @@ namespace Game.Editor
         /// <summary>One sheet: its name in the export, how it is drawn and the colour per channel.</summary>
         public readonly struct Sheet
         {
-            public Sheet(string name, Kind kind, Color core, Color glow, Color third, float opacity = 0f, string noise = null, float noiseStrength = 0f, Vector4 noiseScroll = default)
+            public Sheet(string name, Kind kind, Color core, Color glow, Color third, float opacity = 0f, string noise = null, float noiseStrength = 0f, Vector4 noiseScroll = default, float softness = 1f)
             {
                 Name = name;
                 Kind = kind;
@@ -55,6 +55,7 @@ namespace Game.Editor
                 Noise = noise;
                 NoiseStrength = noiseStrength;
                 NoiseScroll = noiseScroll;
+                Softness = softness;
             }
 
             public string Name { get; }
@@ -72,6 +73,9 @@ namespace Game.Editor
             public float NoiseStrength { get; }
             public Vector4 NoiseScroll { get; }
 
+            /// <summary>Six-way sheets: the power on the painted alpha; above 1 the thin rims fade sooner (softer smoke edges).</summary>
+            public float Softness { get; }
+
             /// <summary>Six-way sheets come as a pair of maps.</summary>
             public bool SixWay => Kind == Kind.SixWay;
         }
@@ -81,6 +85,11 @@ namespace Game.Editor
         private static readonly Color White3 = Hdr(1f, 1f, 1f, 3f);
         private static readonly Color White2 = Hdr(1f, 1f, 1f, 2f);
         private static readonly Color None = new Color(0f, 0f, 0f, 0f);
+
+        // Remco 2026-11-04: the smoke covered the field like a solid blot. The power on its alpha thins the wisps; how much
+        // it covers and how long it lives are on each impact recipe (ImpactVfxDefinition: smoke opacity and life).
+        private const float SmokeSoftness = 1.8f;
+        private const float ExplosionSoftness = 1.3f;
 
         // The textures the game wears. Scorch_Decal stays in ArtSource until ground decals are wanted.
         public static readonly Sheet[] Sheets =
@@ -101,12 +110,12 @@ namespace Game.Editor
             new Sheet("Cryo_Burst", Kind.Glow, White2, Hdr(0.55f, 0.95f, 1f, 2f), Hdr(0.8f, 0.95f, 1f, 0.5f)),
             new Sheet("Acid_Splash", Kind.Cover, Hdr(0.55f, 1f, 0.15f, 1.3f), Hdr(0.25f, 0.6f, 0.05f, 1.5f), Hdr(1f, 1f, 1f, 0.6f), 1f),
             new Sheet("Debris_Shards", Kind.Cover, Hdr(1f, 0.45f, 0.1f, 3f), None, Hdr(0.16f, 0.15f, 0.14f, 1f), 1f),
-            new Sheet("Explosion_Small", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None),
-            new Sheet("Explosion_Large", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None),
-            new Sheet("Explosion_Boss", Kind.SixWay, new Color(0.32f, 0.29f, 0.27f), new Color(1.2f, 0f, 0f), None),
+            new Sheet("Explosion_Small", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None, softness: ExplosionSoftness),
+            new Sheet("Explosion_Large", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None, softness: ExplosionSoftness),
+            new Sheet("Explosion_Boss", Kind.SixWay, new Color(0.32f, 0.29f, 0.27f), new Color(1.2f, 0f, 0f), None, softness: ExplosionSoftness),
             // The cooled smoke a shade lighter than the fireball's soot: at 0.4 it read as a dark blot on the dark levels.
-            new Sheet("Smoke_Puff", Kind.SixWay, new Color(0.54f, 0.52f, 0.5f), new Color(0.35f, 0f, 0f), None),
-            new Sheet("Smoke_Linger", Kind.SixWay, new Color(0.5f, 0.48f, 0.46f), new Color(0.25f, 0f, 0f), None),
+            new Sheet("Smoke_Puff", Kind.SixWay, new Color(0.54f, 0.52f, 0.5f), new Color(0.35f, 0f, 0f), None, softness: SmokeSoftness),
+            new Sheet("Smoke_Linger", Kind.SixWay, new Color(0.5f, 0.48f, 0.46f), new Color(0.25f, 0f, 0f), None, softness: SmokeSoftness),
             new Sheet("Dust_Burst", Kind.SixWay, new Color(0.45f, 0.38f, 0.3f), new Color(0f, 0f, 0f), None),
             new Sheet("Shockwave_Distort", Kind.Distortion, None, None, None),
             new Sheet("HeatHaze_Distort", Kind.Distortion, None, None, None),

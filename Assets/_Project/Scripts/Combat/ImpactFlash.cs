@@ -32,6 +32,10 @@ namespace Game.Combat
         private const int MaxConcurrentShocks = 2;
         private const float SmokeLifeStretch = 1.25f;
         private const float LingerLifeStretch = 1.3f;
+        // Smoke thins out from a third of its life on, so a puff never stands over the field at full cover for long.
+        private const float SmokeFadeIn = 0.08f;
+        private const float LingerFadeIn = 0.15f;
+        private const float SmokeFadeFrom = 0.3f;
         private const float RingPeak = 1.6f;
         private const float SparkLength = 0.05f;
         private const float FireballJitter = 0.15f;
@@ -167,14 +171,14 @@ namespace Game.Combat
             life = Mathf.Max(life, SheetLife(vfx.Fireball));
             life = Mathf.Max(life, SheetLife(vfx.Flash));
             life = Mathf.Max(life, SheetLife(vfx.DustSheet));
-            life = Mathf.Max(life, vfx.SmokeDelay + SheetLife(vfx.SmokeSheet) * SmokeLifeStretch);
+            life = Mathf.Max(life, vfx.SmokeDelay + SheetLife(vfx.SmokeSheet) * vfx.SmokeLifeScale * SmokeLifeStretch);
             life = Mathf.Max(life, vfx.HeatHaze != null ? vfx.HeatHazeSeconds : 0f);
             // Sparks and shards fall for at most a second and a bit.
             life = Mathf.Max(life, 1.2f);
             life += vfx.ChainSeconds;
             if (vfx.LingerSmoke != null)
             {
-                life = Mathf.Max(life, vfx.ChainSeconds + SheetLife(vfx.LingerSmoke) * LingerLifeStretch);
+                life = Mathf.Max(life, vfx.ChainSeconds + SheetLife(vfx.LingerSmoke) * vfx.SmokeLifeScale * LingerLifeStretch);
             }
 
             return life;
@@ -292,14 +296,17 @@ namespace Game.Combat
             }
 
             float size = _vfx.SmokeSize * (1f + 0.4f * _radius) * _burstScale[index];
-            Emit(_smoke, _burstAt[index] + Vector3.up * size * 0.15f, Budget(_vfx.SmokeFor(_radius), MaxSmoke), size * 0.8f, size * 1.2f, _vfx.SmokeSheet.Lifetime * Random.Range(1f, SmokeLifeStretch), SmokeColor, -0.04f, 0.2f, 0.5f);
+            Emit(_smoke, _burstAt[index] + Vector3.up * size * 0.15f, Budget(_vfx.SmokeFor(_radius), MaxSmoke), size * 0.8f, size * 1.2f, _vfx.SmokeSheet.Lifetime * _vfx.SmokeLifeScale * Random.Range(1f, SmokeLifeStretch), Translucent(SmokeColor), -0.04f, 0.2f, 0.5f);
         }
 
         private void Linger()
         {
             float size = _vfx.FireballSizeFor(_radius) * 0.8f;
-            Emit(_linger, transform.position + Vector3.up * size * 0.2f, Budget(LingerPuffs, MaxLinger), size * 0.8f, size * 1.1f, _vfx.LingerSmoke.Lifetime * LingerLifeStretch, LingerColor, -0.02f, 0.1f, 0.3f);
+            Emit(_linger, transform.position + Vector3.up * size * 0.2f, Budget(LingerPuffs, MaxLinger), size * 0.8f, size * 1.1f, _vfx.LingerSmoke.Lifetime * _vfx.SmokeLifeScale * LingerLifeStretch, Translucent(LingerColor), -0.02f, 0.1f, 0.3f);
         }
+
+        // The recipe's opacity rides on the start colour's alpha, which the smoke shader multiplies into its cover.
+        private Color Translucent(Color colour) => new Color(colour.r, colour.g, colour.b, _vfx.SmokeOpacity);
 
         private static void Emit(ParticleSystem system, Vector3 at, int count, float minSize, float maxSize, float life, Color colour, float gravity, float minSpeed, float maxSpeed)
         {
@@ -379,10 +386,10 @@ namespace Game.Combat
             _dust = VfxParticles.Create(transform, "Dust", MaxDust);
             _smoke = VfxParticles.Create(transform, "Smoke", MaxSmoke);
             ParticleSystem.ColorOverLifetimeModule smoke = _smoke.colorOverLifetime;
-            smoke.color = VfxParticles.Fade(0.12f, 0.55f);
+            smoke.color = VfxParticles.Fade(SmokeFadeIn, SmokeFadeFrom);
             _linger = VfxParticles.Create(transform, "LingerSmoke", MaxLinger);
             ParticleSystem.ColorOverLifetimeModule linger = _linger.colorOverLifetime;
-            linger.color = VfxParticles.Fade(0.2f, 0.5f);
+            linger.color = VfxParticles.Fade(LingerFadeIn, SmokeFadeFrom);
 
             _sparks = VfxParticles.Create(transform, "Sparks", MaxSparks);
             var sparkRenderer = _sparks.GetComponent<ParticleSystemRenderer>();

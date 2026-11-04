@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Core::Game.Core.PlaytestSettings
   _unlockAllWeapons: 0
   _infiniteMoney: 0
-  _allowSkipWave: 1
+  _developerMode: 1

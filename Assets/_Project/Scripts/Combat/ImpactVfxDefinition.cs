@@ -61,6 +61,10 @@ namespace Game.Combat
         [SerializeField] private VfxSheet _smokeSheet;
         [SerializeField] [Min(0f)] private float _smokeSize = 1.2f;
         [SerializeField] [Min(0f)] private float _smokeDelay = 0.15f;
+        [Tooltip("How much the smoke (and the hanging smoke) covers what is behind it, 0 clear to 1 solid. Kept low so a blast never hides towers or creatures.")]
+        [SerializeField] [Range(0f, 1f)] private float _smokeOpacity = 0.45f;
+        [Tooltip("The smoke's life against its painted sheet's, below 1 so it clears quickly.")]
+        [SerializeField] [Range(0.2f, 1.5f)] private float _smokeLifeScale = 0.7f;
         [SerializeField] private VfxSheet _sparkSheet;
         [SerializeField] private VfxSheet _debrisSheet;
         [SerializeField] private VfxSheet _ringSheet;
@@ -111,6 +115,8 @@ namespace Game.Combat
         public VfxSheet SmokeSheet => _smokeSheet;
         public float SmokeSize => _smokeSize;
         public float SmokeDelay => _smokeDelay;
+        public float SmokeOpacity => _smokeOpacity;
+        public float SmokeLifeScale => _smokeLifeScale;
         public VfxSheet SparkSheet => _sparkSheet;
         public VfxSheet DebrisSheet => _debrisSheet;
         public VfxSheet RingSheet => _ringSheet;

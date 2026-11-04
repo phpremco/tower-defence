@@ -7,13 +7,12 @@ namespace Game.Levels
     /// The look of one spawn origin (README round 23): the living burrow or liquid vent and its clips, glow, light and
     /// spores, following the <see cref="OriginDirector"/>. Closed shows bare ground; Marked breathes (a burrow's cracks
     /// pulse); the opening rumbles up to the burst, where the effect library's earth burst plays and the camera kicks
-    /// once; open it idles and swells as each creature comes out; closing plays the opening backwards. View only.
+    /// once; open it idles and swells as each creature comes out, and it stays open between waves. View only.
     /// </summary>
     public sealed class SpawnOriginView : MonoBehaviour
     {
         private const string GlowSocket = "Glow";
         private const string DustSocket = "Dust";
-        private const float CloseRate = -2f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private ArtModel _model;
@@ -122,7 +121,6 @@ namespace Game.Levels
 
         private void Enter(OriginState state)
         {
-            OriginState previous = _state;
             _state = state;
             _stateTime = 0f;
             _glowFrom = _glow;
@@ -140,10 +138,7 @@ namespace Game.Levels
                     break;
                 case OriginState.Marked:
                     player.Loop(_markedClip, 1f);
-                    if (previous != OriginState.Closing)
-                    {
-                        player.StopOnce();
-                    }
+                    player.StopOnce();
 
                     break;
                 case OriginState.Opening:
@@ -154,10 +149,6 @@ namespace Game.Levels
                     // The idle starts on the opening's last frame: swap the cycle under the held clip, then let it go.
                     player.Loop(_idleClip, 1f);
                     player.StopOnce();
-                    break;
-                case OriginState.Closing:
-                    player.Loop(_markedClip, 1f);
-                    player.PlayOnce(_openClip, 0f, false, CloseRate);
                     break;
             }
 
@@ -214,8 +205,7 @@ namespace Game.Levels
                 case OriginState.Closed: return closed;
                 case OriginState.Marked: return Mathf.Lerp(_glowFrom, marked, ramp);
                 case OriginState.Opening: return Mathf.Lerp(_glowFrom, 1f, ramp);
-                case OriginState.Open: return 1f;
-                default: return Mathf.Lerp(1f, marked, ramp);
+                default: return 1f;
             }
         }
 
@@ -233,7 +223,6 @@ namespace Game.Levels
             {
                 case OriginState.Opening: return ramp;
                 case OriginState.Open: return 1f;
-                case OriginState.Closing: return 1f - ramp;
                 default: return 0f;
             }
         }

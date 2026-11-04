@@ -1,5 +1,5 @@
 // Sets tunables of the Crystal Plains spawn origin definition from Tools/PlayTest/origin_tune.txt ("field value" lines,
-// e.g. "_closeDelay 3"), saved; the builder leaves these numbers alone on a regeneration.
+// e.g. "_openLead 2.5"), saved; the builder leaves these numbers alone on a regeneration.
 var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.SpawnOriginDefinition>("Assets/_Project/Data/Art/Origins/SpawnOrigins_CrystalPlains.asset");
 var so = new UnityEditor.SerializedObject(definition);
 var text = "";

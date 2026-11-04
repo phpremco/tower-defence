@@ -98,7 +98,7 @@ if (args[0] == "stepto")
         for (int i = 0; i < context.Origins.Count; i++)
         {
             var s = context.Origins.StateOf(i);
-            if (s == Game.Levels.OriginState.Opening || s == Game.Levels.OriginState.Open || s == Game.Levels.OriginState.Closing) { origin = i; break; }
+            if (s == Game.Levels.OriginState.Opening || s == Game.Levels.OriginState.Open) { origin = i; break; }
         }
     }
     else origin = int.Parse(args[1]);
@@ -127,7 +127,7 @@ if (args[0] == "view")
         int index = 0;
         for (int i = 0; i < origins.Length; i++)
         {
-            bool busy = origins[i].State == Game.Levels.OriginState.Opening || origins[i].State == Game.Levels.OriginState.Open || origins[i].State == Game.Levels.OriginState.Closing;
+            bool busy = origins[i].State == Game.Levels.OriginState.Opening || origins[i].State == Game.Levels.OriginState.Open;
             if (args.Length > 3 && args[3] == "busy" ? busy : origins[i].name.StartsWith("Origin_" + (args.Length > 3 ? args[3] : "0") + "_")) { index = i; break; }
         }
         focus = origins[index].transform.position;

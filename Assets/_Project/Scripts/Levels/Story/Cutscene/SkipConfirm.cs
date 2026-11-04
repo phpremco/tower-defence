@@ -13,6 +13,9 @@ namespace Game.Levels
         /// <summary>True while a second press would skip.</summary>
         public bool IsArmed(float now) => now - _armedAt <= WindowSeconds;
 
+        /// <summary>How much of the confirm window is left, 1 just after the first press down to 0 when it runs out.</summary>
+        public float ArmedShare(float now) => IsArmed(now) ? 1f - (now - _armedAt) / WindowSeconds : 0f;
+
         /// <summary>Returns true when this press confirms the skip; otherwise it arms the window.</summary>
         public bool Press(float now)
         {

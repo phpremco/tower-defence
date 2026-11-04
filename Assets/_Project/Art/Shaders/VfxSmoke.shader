@@ -19,6 +19,7 @@ Shader "Game/VfxSmoke"
         [HDR] _FireWhite ("Fire, white-hot", Color) = (8, 7.2, 6, 1)
         _FireStrength ("Fire strength", Float) = 1
         _Opacity ("Opacity", Range(0, 1)) = 1
+        _AlphaCurve ("Softness (alpha power, above 1 thins the edges)", Range(0.5, 4)) = 1
         _SoftDistance ("Soft particle distance", Float) = 0.6
         _Grid ("Atlas columns, rows", Vector) = (8, 8, 0, 0)
         _EdgeFade ("Fade at the cell edges", Range(0, 0.3)) = 0.08
@@ -65,6 +66,7 @@ Shader "Game/VfxSmoke"
             half4 _FireWhite;
             half _FireStrength;
             half _Opacity;
+            half _AlphaCurve;
             float _SoftDistance;
             float4 _Grid;
             half _EdgeFade;
@@ -140,7 +142,8 @@ Shader "Game/VfxSmoke"
                 // Some simulations grow to the edge of their cell; fading the rim hides the straight cut.
                 float2 cell = frac(input.uv.xy * max(_Grid.xy, 1.0));
                 half rim = (half)(smoothstep(0.0, _EdgeFade, cell.x) * smoothstep(0.0, _EdgeFade, 1.0 - cell.x) * smoothstep(0.0, _EdgeFade, 1.0 - cell.y) * smoothstep(0.0, _EdgeFade * 0.4, cell.y));
-                half alpha = pos.a * input.color.a * _Opacity * rim;
+                // Raising the painted alpha to a power thins the wispy rims faster than the dense core: softer edges, same middle.
+                half alpha = pow(max(pos.a, 0.0h), _AlphaCurve) * input.color.a * _Opacity * rim;
 #if defined(_SOFT_PARTICLES)
                 alpha *= VfxSoftFade(input.screenPos, input.eyeDepth, _SoftDistance);
 #endif

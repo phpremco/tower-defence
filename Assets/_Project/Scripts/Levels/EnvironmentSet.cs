@@ -18,6 +18,9 @@ namespace Game.Levels
         [Tooltip("The ground shader (Game/EnvironmentGround), referenced so a build keeps it.")]
         [SerializeField] private Shader _groundShader;
 
+        [Tooltip("The colony's drilling rig that stands beside the field in every level of the continent (decoration only); none when empty.")]
+        [SerializeField] private ColonyRigDefinition _colonyRig;
+
         [Header("Ground layers")]
         [SerializeField] private EnvironmentLayer _ground = new EnvironmentLayer();
         [Tooltip("The second ground layer (flora, ash, moss): noise patches away from the road.")]
@@ -124,6 +127,7 @@ namespace Game.Levels
         [SerializeField] [Min(0f)] private float _flutter = 0.012f;
 
         public string Prefix => _prefix;
+        public ColonyRigDefinition ColonyRig => _colonyRig;
         public Shader GroundShader => _groundShader;
         public EnvironmentLayer Ground => _ground;
         public EnvironmentLayer GroundAlt => _groundAlt;

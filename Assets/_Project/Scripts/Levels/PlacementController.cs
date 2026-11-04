@@ -34,6 +34,13 @@ namespace Game.Levels
         private static readonly Vector2Int[] Neighbours = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         private const float MarkerEmission = 1.6f;
 
+        // What the pointer can hit before the ground: every structure as a column the size of its drawn model, measured
+        // from its renderers at most once a second (models swap on an upgrade, a wreck or a rebuild).
+        private const float ColumnRefreshSeconds = 1f;
+        private const float DefaultColumnHeightCells = 1.4f;
+        private const float MinColumnRadiusCells = 0.3f;
+        private const float MaxColumnRadiusCells = 0.5f;
+
         // The cursor is a soft tint while browsing (a gamepad needs to see where it is) and firmer while placing.
         private const float BrowsingAlpha = 0.28f;
         private const float PlacingAlpha = 0.55f;
@@ -72,6 +79,10 @@ namespace Game.Levels
         private float _repeatTimer;
         private float _lastPointerMove = float.NegativeInfinity;
         private Vector2 _lastPointer;
+        private readonly List<TowerPicking.Column> _columns = new List<TowerPicking.Column>();
+        private readonly List<Renderer> _renderers = new List<Renderer>();
+        private float _columnsValidUntil = float.NegativeInfinity;
+        private System.Func<Vector3, float> _groundHeight;
 
         /// <summary>The level's fixed blockades, in the order the level lists them.</summary>
         public IReadOnlyList<Tower> Blockades => _blockades;
@@ -85,6 +96,7 @@ namespace Game.Levels
             _map = context.Level.Grid;
             _terrain = context.Level.Terrain;
             _buildGrid = new BuildGrid(context.Level);
+            _groundHeight = point => _terrain.HeightAt(_map.WorldToCell(point));
             _context.SelectedTower = context.AvailableTowers.Count > 0 ? context.AvailableTowers[0] : null;
             SpawnBlockades();
             SpawnBaseTurrets();
@@ -202,16 +214,88 @@ namespace Game.Levels
                 return;
             }
 
+            // A structure drawn under the pointer wins over the ground behind it: the slanted camera draws a tower's
+            // body over the cells past its foot, and a raised cell lifts the ground the ray comes down on.
             Ray ray = _camera.ScreenPointToRay(pointer);
-            var ground = new Plane(Vector3.up, Vector3.zero);
-            if (ground.Raycast(ray, out float distance))
+            if (TowerPicking.TryPick(ray, PickColumns(), out Vector2Int picked))
             {
-                Vector2Int cell = _map.WorldToCell(ray.GetPoint(distance));
+                MoveCursor(picked);
+                return;
+            }
+
+            if (TowerPicking.TryGround(ray, _groundHeight, out Vector3 point))
+            {
+                Vector2Int cell = _map.WorldToCell(point);
                 if (_map.Contains(cell))
                 {
                     MoveCursor(cell);
                 }
             }
+        }
+
+        // One column per occupied cell: a tower where it stands (shifted from the road), a gate on each cell of its rung.
+        private List<TowerPicking.Column> PickColumns()
+        {
+            if (Time.unscaledTime < _columnsValidUntil)
+            {
+                return _columns;
+            }
+
+            _columns.Clear();
+            bool measured = true;
+            foreach (KeyValuePair<Vector2Int, Tower> pair in _towers)
+            {
+                Tower tower = pair.Value;
+                bool gate = tower.Definition.BlocksGroundEnemies;
+                Vector3 foot = gate ? CellWorld(pair.Key) : tower.Position;
+                measured &= Measure(tower, foot, out float radius, out float height);
+                _columns.Add(new TowerPicking.Column(pair.Key, foot, gate ? MaxColumnRadiusCells * _map.CellSize : radius, height));
+            }
+
+            // A model that has not been built yet is measured again on the next pointer move.
+            _columnsValidUntil = measured ? Time.unscaledTime + ColumnRefreshSeconds : float.NegativeInfinity;
+            return _columns;
+        }
+
+        private void InvalidatePickColumns() => _columnsValidUntil = float.NegativeInfinity;
+
+        // How high and how wide the structure's model is drawn round its foot, from its visible mesh renderers.
+        private bool Measure(Tower tower, Vector3 foot, out float radius, out float height)
+        {
+            float cell = _map.CellSize;
+            radius = MinColumnRadiusCells * cell;
+            height = DefaultColumnHeightCells * cell;
+            tower.GetComponentsInChildren(false, _renderers);
+            bool any = false;
+            Bounds bounds = default;
+            for (int i = 0; i < _renderers.Count; i++)
+            {
+                Renderer renderer = _renderers[i];
+                if (!(renderer is MeshRenderer || renderer is SkinnedMeshRenderer) || !renderer.enabled)
+                {
+                    continue;
+                }
+
+                if (any)
+                {
+                    bounds.Encapsulate(renderer.bounds);
+                }
+                else
+                {
+                    bounds = renderer.bounds;
+                    any = true;
+                }
+            }
+
+            if (!any)
+            {
+                return false;
+            }
+
+            height = Mathf.Max(bounds.max.y - foot.y, MinColumnRadiusCells * cell);
+            float reach = Mathf.Max(Mathf.Max(foot.x - bounds.min.x, bounds.max.x - foot.x), Mathf.Max(foot.z - bounds.min.z, bounds.max.z - foot.z));
+            radius = Mathf.Clamp(reach, MinColumnRadiusCells * cell, MaxColumnRadiusCells * cell);
+            return true;
         }
 
         private void MoveCursor(Vector2Int cell)
@@ -386,6 +470,7 @@ namespace Game.Levels
             Tower tower = CreateTower(definition, _cursor, preview: false);
             _towers[_cursor] = tower;
             _buildGrid.Occupy(_cursor);
+            InvalidatePickColumns();
             _context.Mode = PlacementMode.Browsing;
             _context.TowerBuilt.Raise();
             Refresh();
@@ -543,6 +628,7 @@ namespace Game.Levels
 
         private void OnWrecked(Tower tower)
         {
+            InvalidatePickColumns();
             _context.StructureWrecked.Raise(tower.Position);
             _context.TowerWrecked.Raise(tower);
         }
@@ -557,6 +643,7 @@ namespace Game.Levels
 
             if (_context.Wallet.TrySpend(tower.NextUpgradeCost))
             {
+                InvalidatePickColumns();
                 tower.Upgrade();
                 _context.TowerUpgraded.Raise();
                 Refresh();
@@ -574,6 +661,7 @@ namespace Game.Levels
             if (_context.Wallet.TrySpend(tower.RepairCost))
             {
                 tower.RepairFully();
+                InvalidatePickColumns();
                 _context.TowerRepaired.Raise();
                 Refresh();
             }
@@ -613,6 +701,7 @@ namespace Game.Levels
             Vector2Int cell = _map.WorldToCell(tower.Position);
             _towers.Remove(cell);
             _buildGrid.Release(cell);
+            InvalidatePickColumns();
             tower.Retire();
             Destroy(tower.gameObject);
         }
@@ -868,6 +957,7 @@ namespace Game.Levels
             hybrid.SetLevel(Mathf.Min(selected.LevelIndex, partner.LevelIndex));
             hybrid.InheritedValue = inherited;
             _towers[cell] = hybrid;
+            InvalidatePickColumns();
             _context.TowerUpgraded.Raise();
             CloseMenu();
         }

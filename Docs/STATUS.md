@@ -2031,3 +2031,67 @@ committed; the full generator was not run (targeted menu items below; both build
 - **Tools:** `round_ui_shots.sh` (play a level or the menu, then probe/shot/still/click/place/fight/pair actions),
   `fight_hurt.cs`, `walk_probe.cs`, `head_probe.cs`, `walker_pos.cs`, `walker_zoom.cs`, `walk_pair.cs`, `trail_probe.cs`,
   `marker_nodes.cs`, `marker_uvs.cs`, `fbx_head.cs`, `Scripts/ReserializeCleanup.cs` (one-off).
+
+## Playtest fixes, night 1 (2026-11-04)
+
+Remco's feedback after his fresh-save playtest, one item at a time. Not committed; no balance change; the full generator was
+not run (targeted menu items only: "Blender VFX" and the new "Colony Rig").
+- **Hero HUD centred:** `HeroQuickBar` hangs every row from the top centre (header, name, icons, labels under them);
+  `HeroPanelView` centres its header and state line and lays its actions out as centred columns round the panel's middle
+  (`PlaceColumns`); the blockade prompt ("BLOCKADE 2 / MOVE HERO HERE") shows the one icon centred with its label under it.
+- **Options layout:** new `UI/ColumnFit` hangs a menu column a fixed gap under its title and shrinks it evenly when it would
+  run past the bottom margin (the wide editor view: 0.69; 16:9 at 720p and 1080p: 1.0, same canvas units). Options and the
+  story viewer use it; the title never overlaps the first slider.
+- **Cutscene skip:** `CutsceneOverlay` builds a 300x78 kit button (Button_Normal, Focus while armed) bottom-right under the
+  dialogue box: a key cap "Esc / B", "SKIP" and the kit arrow; after the first press the frame lights up, "Press again to
+  skip" shows above and a bar drains over the two-second window (`SkipConfirm.ArmedShare`, `SetSkipArmed`). Still
+  two presses (no hold logic existed); mouse clicks work the same way.
+- **Tower picking:** new pure `Levels/TowerPicking`: every structure is a vertical column (its drawn model's height and
+  reach, measured from its renderers at most once a second and after build/upgrade/repair/wreck/sell/combine; gates one per
+  rung cell); the pointer ray takes the nearest column first, else the ground at the terrain height where the ray comes
+  down. The real cause was raised ground: the old ray hit the flat y = 0 plane, so on a plateau it picked the cell behind
+  the tower (probe: plain ray cell (26,4), tower (26,3); now a real mouse move + click on the body selects it). The marker,
+  range ring and placement preview already used the tower's shifted position; `TowerMenuView` now hangs the menu over the
+  model's drawn top when there is room under the top bar, else under its foot, clear of both HUD bars (was a fixed 2.7 m
+  anchor and a fixed 240-unit flip). Stick/D-pad cursor unchanged (cell to cell; the marker sits on the tower).
+  `TowerPickingTests` (5).
+- **Explosion smoke:** `ImpactVfxDefinition` gained `SmokeOpacity` (0.45; BossDeath 0.55) and `SmokeLifeScale` (0.7;
+  BossDeath 0.85), set from `ProjectGenerator.Vfx` specs; `ImpactFlash` puts the opacity on the start alpha, scales the
+  life and fades from 30 % of it (was 55 %). `Game/VfxSmoke` has `_AlphaCurve` (softness: a power on the painted alpha),
+  `BlenderVfxCatalog` sets 1.8 for Smoke_Puff/Linger and 1.3 for the explosion sheets.
+- **Drill rig in every Crystal Plains level:** `ColonyRigDefinition` (drill + hauler art, scale, footprint, height, flight
+  oval, lap) on `EnvironmentSet.ColonyRig`, built by `ColonyRigBuilder` (menu `Tools/Generate/Colony Rig (drill beside
+  every Crystal Plains level)`, generator step "Colony rig" after "Story art") from the cutscene cast's derrick and hauler.
+  `ColonyRigPlacement` (pure) searches the ground outside the grid that the zoomed-out 16:9 view shows (foot and top, inside
+  the band the HUD leaves; new `FixedCameraRig.InView`), clear of every structure zone, nearest the base; the spot becomes a
+  "Colony rig" zone in `StructureClearance`, so all decor keeps off it. `ColonyRigView`: string sunk (Deploy held), Spin
+  looping, three haulers flying an oval with their pods lit on the way out. No collider, health or target. All six C1
+  levels find a spot just right of the base. `ColonyRigTests`, `DecorClearanceTests` now also guards the rig.
+- **Developer mode + story viewer:** `PlaytestSettings._developerMode` (on in the project's asset) and `-devmode` on the
+  command line, resolved by `Core/DeveloperMode` (never on in a release build: editor or development build only).
+  Options shows "Story viewer (dev)" in developer mode: `StoryViewerOverlay` pages through `Levels/StoryIndex` (page 1 the
+  opening cutscene plus each of its conversations by shot, then one page per level: briefing + every trigger dialogue with
+  its moment). A dialogue plays in the level's dialogue box (nothing marked seen), a cutscene in the intro scene (back to
+  the main menu), a briefing as a text card. Controller: up/down, A, the Previous/Next/Back row; A/B in the dialogue.
+  `DeveloperModeTests` (3; every dialogue asset is listed).
+- **Gate rebuild (question):** a wrecked gate is rebuilt from its menu (click the gate or its rung, R, or the repair icon):
+  it costs the gate's level-1 build price (60 for the Blockade), is instant, comes back at full health and keeps its upgrade
+  level. Repair drones and the hero's repair do not rebuild wrecks. New `GateRebuildBadges`: a wreck shows "Rebuild 60"
+  with the repair icon over it (red when unaffordable) until it stands again; the gate menu's info line says the rebuild
+  is instant.
+- **Spawn origins stay open (Remco, item 9a; 9b dropped):** `OriginDirector` no longer closes: once an origin has opened
+  it stays Open (idle between waves, the Spawn swell per creature); a later wave's creatures come straight out, no second
+  burst. Removed: `OriginState.Closing`, `OriginTiming.CloseDelay/Close`, `SpawnOriginDefinition._closeDelay/_close`, the
+  view's closing clip. `SpawnOriginTests` updated + `AnOpenOrigin_StaysOpenThroughLaterWaves...`.
+- **Tests:** EditMode 371/371. PlayMode one class at a time: ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2 (the first run after the
+  pointer-click screenshot sessions failed once on a stray "[Placement] confirm" log, most likely the simulated mouse
+  left behind by `simulate_pointer`; two reruns green), StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot
+  3/3, ModelPerformance 1/1; BalanceProbe skipped. 0 compile errors/warnings. Remco's fresh save
+  restored byte-identical after every PlayMode run (MD5 ec2a1f6d...).
+- **Screenshots:** session scratchpad `night1/`.
+- **Tools:** `n1_shots.sh` (round_ui_shots + `arg:` and `pointer:` actions), `n1_pick.cs`, `n1_bounds.cs`, `n1_hero.cs`,
+  `n1_rig.cs`, `n1_skip.cs`, `n1_options_probe.cs`, `n1_origin.sh`, `rig_probe.cs`, `rig_space_probe.cs`,
+  `n1_raised_probe.cs`, `dev_mode_on.cs` (`dev_arg.txt` "off" turns the data flag off).
+- **Open / for Remco:** the smoke may now read too faint in a big fight (one number per recipe); the rig at scale 0.7 is
+  modest next to the base; the skip hint says "Esc / B" although during a conversation those skip the conversation first
+  (Start/B then skip the cutscene); the gate badge uses the small body font.

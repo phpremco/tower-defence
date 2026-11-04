@@ -36,6 +36,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaCurve: 1.3
     - _AmbientStrength: 0.6
     - _EdgeFade: 0.14
     - _FireStrength: 1.2

@@ -8,21 +8,19 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>The spawn origins' cycle follows the wave data: marked when used, opening ahead of the first creature, closing after the last.</summary>
+    /// <summary>The spawn origins' cycle follows the wave data: marked when used, opening ahead of the first creature, then open for good.</summary>
     public sealed class SpawnOriginTests
     {
         private const float Lead = 2.5f;
         private const float Burst = 1.8f;
         private const float Emerge = 2.53f;
         private const float Open = 3.2f;
-        private const float CloseDelay = 1.5f;
-        private const float Close = 1.6f;
         private const float Step = 0.05f;
         private const float NestDelay = 10f;
         private const float NestInterval = 2f;
         private const int NestCount = 3;
 
-        private static readonly OriginTiming Timing = new OriginTiming(Lead, Burst, Emerge, Open, CloseDelay, Close);
+        private static readonly OriginTiming Timing = new OriginTiming(Lead, Burst, Emerge, Open);
 
         private EnemyDefinition _stone;
         private EnemyDefinition _walker;
@@ -99,7 +97,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OriginOpens_LeadBeforeItsFirstCreature_BurstsThenLetsThemOut_AndClosesAfterTheLast()
+        public void OriginOpens_LeadBeforeItsFirstCreature_BurstsThenLetsThemOut_AndStaysOpen()
         {
             OriginDirector director = Director(NestWave());
             var scheduler = new WaveScheduler(NestWave(), _difficulty);
@@ -126,7 +124,8 @@ namespace Game.Tests
             Assert.IsTrue(director.IsReady(0), "the first creature can come out when it is due");
             Assert.LessOrEqual(openAt + Emerge, NestDelay + Step, "ready no later than the first creature's moment");
 
-            // The three creatures come out on their schedule; the origin closes a moment after the last.
+            // The three creatures come out on their schedule; after the last the origin stays open (Remco: it must not
+            // sink shut again like a sphincter).
             for (int k = 0; k < NestCount; k++)
             {
                 float due = scheduler.PlannedTime(1, k);
@@ -136,13 +135,32 @@ namespace Game.Tests
             }
 
             float last = clock;
-            clock = Run(director, CloseDelay - Step, clock);
-            Assert.AreEqual(OriginState.Open, director.StateOf(0), "it waits after the last creature");
-            clock = Run(director, 2f * Step, clock);
-            Assert.AreEqual(OriginState.Closing, director.StateOf(0), "closing after the delay");
-            Run(director, Close + Step, clock);
-            Assert.AreEqual(OriginState.Marked, director.StateOf(0), "marked again once shut");
+            Run(director, 30f, clock);
+            Assert.AreEqual(OriginState.Open, director.StateOf(0), "still open long after the last creature");
             Assert.Greater(last, openAt);
+        }
+
+        [Test]
+        public void AnOpenOrigin_StaysOpenThroughLaterWaves_AndLetsTheirCreaturesOutWithoutANewBurst()
+        {
+            OriginDirector director = Director(NestWave(), GateWave(), NestWave());
+            var signals = new List<OriginSignal>();
+            director.Signalled += (origin, signal) => signals.Add(signal);
+
+            director.BeginWave(0, new WaveScheduler(NestWave(), _difficulty));
+            Run(director, NestDelay + Open);
+            Assert.AreEqual(OriginState.Open, director.StateOf(0), "open after its first wave");
+            int bursts = signals.FindAll(s => s == OriginSignal.Burst).Count;
+
+            director.BeginWave(1, new WaveScheduler(GateWave(), _difficulty));
+            Run(director, 30f);
+            Assert.AreEqual(OriginState.Open, director.StateOf(0), "a wave that sends nothing through it leaves it open");
+
+            director.BeginWave(2, new WaveScheduler(NestWave(), _difficulty));
+            Assert.IsTrue(director.IsReady(0), "creatures of a later wave come straight out");
+            Run(director, NestDelay + Open);
+            Assert.AreEqual(OriginState.Open, director.StateOf(0));
+            Assert.AreEqual(bursts, signals.FindAll(s => s == OriginSignal.Burst).Count, "the ground bursts only the first time");
         }
 
         [Test]

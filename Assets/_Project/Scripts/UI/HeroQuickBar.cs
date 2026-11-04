@@ -39,6 +39,8 @@ namespace Game.UI
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
         private static readonly Color PostTint = new Color(0.5f, 0.6f, 1f);
+        // Every row hangs from the top centre, so icons and their labels line up in one centred column.
+        private static readonly Vector2 Top = new Vector2(0.5f, 1f);
 
         private LevelContext _context;
         private Commander _hero;
@@ -71,12 +73,12 @@ namespace Game.UI
             UiKit.CreatePanel(_root, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
 
             float y = -Padding;
-            Text header = UiKit.CreateFixedText(_root, "Hero", HeaderSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, y), new Vector2(Width - Padding * 2f, HeaderHeight));
+            Text header = UiKit.CreateFixedText(_root, "Hero", HeaderSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, HeaderHeight));
             // The same display face as the drones panel header, so the two panels read as a pair.
             header.font = UiKit.DefaultFont;
             header.color = HeaderColor;
             y -= HeaderHeight;
-            _name = UiKit.CreateFixedText(_root, _hero.Definition.DisplayName, NameSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, y), new Vector2(Width - Padding * 2f, NameHeight));
+            _name = UiKit.CreateFixedText(_root, _hero.Definition.DisplayName, NameSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, NameHeight));
             y -= NameHeight + BarGap;
             _healthFill = HeroPanelStyle.CreateHealthBar(_root, new Vector2(Padding, y), new Vector2(Width - Padding * 2f, BarHeight));
             y -= BarHeight + RowGap;
@@ -124,13 +126,13 @@ namespace Game.UI
             Destroy(button.GetComponent<LayoutElement>());
             HeroPanelStyle.Tint(button, tint);
             RectTransform rect = button.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(Padding, top);
+            rect.anchorMin = Top;
+            rect.anchorMax = Top;
+            rect.pivot = Top;
+            rect.anchoredPosition = new Vector2(0f, top);
             rect.sizeDelta = new Vector2(IconSize, IconSize);
 
-            label = UiKit.CreateFixedText(_root, string.Empty, LabelSize, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(Padding, top - IconSize), new Vector2(Width - Padding * 2f, LabelHeight));
+            label = UiKit.CreateFixedText(_root, string.Empty, LabelSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, top - IconSize), new Vector2(Width - Padding * 2f, LabelHeight));
             label.color = TextColor;
             return button;
         }

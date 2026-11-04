@@ -17,12 +17,14 @@ namespace Game.UI
         private const float LabelHeight = 64f;
         private const float LabelGap = 8f;
         private const int LabelSize = 24;
-        private const float WorldHeight = 2.7f;
+        // Room the HUD bars take at the top and bottom of the screen, and the gap between the menu and the tower.
+        private const float TopReserve = 90f;
+        private const float BottomReserve = 165f;
+        private const float AnchorGap = 16f;
+        private const float FallbackHeight = 1.4f;
         private const float RefreshSeconds = 0.25f;
         private const float BackdropPadding = 14f;
         private const float PanelWidth = 1000f;
-        private const float TopFraction = 0.1f;
-        private const float BelowOffset = 240f;
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color Unavailable = new Color(0.5f, 0.5f, 0.55f);
         private static readonly Color TooExpensive = new Color(1f, 0.5f, 0.45f);
@@ -36,6 +38,11 @@ namespace Game.UI
         private Camera _camera;
         private Font _font;
         private RectTransform _panel;
+        private readonly System.Collections.Generic.List<Renderer> _renderers = new System.Collections.Generic.List<Renderer>();
+        private Tower _measuredTower;
+        private int _measuredLevel;
+        private bool _measuredWreck;
+        private float _drawnHeight;
         private Text _info;
         private Button _upgrade;
         private Button _repair;
@@ -211,7 +218,9 @@ namespace Game.UI
             _upgradePrice.color = canUpgrade ? TextColor : tower.CanUpgrade ? TooExpensive : Unavailable;
             _repairPrice.color = canRepair ? TextColor : tower.NeedsRepair ? TooExpensive : Unavailable;
 
-            string state = tower.IsWrecked ? "wrecked" : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
+            // A wrecked gate comes back at once when paid for; a wrecked tower is scrapped and built again.
+            string wreck = tower.Definition.BlocksGroundEnemies ? "wrecked - rebuild restores it at once, full health, same level" : "wrecked";
+            string state = tower.IsWrecked ? wreck : $"HP {Mathf.CeilToInt(tower.Health.Current)}/{Mathf.CeilToInt(tower.Health.Max)}";
             _info.text = $"{tower.Definition.DisplayName}  {(tower.CanUpgrade ? $"Lv {tower.LevelIndex + 1}" : "MAX")}  {state}" + UpgradePreview(tower);
 
             if (!_wasOpen)
@@ -251,21 +260,57 @@ namespace Game.UI
             }
         }
 
-        // Above the tower, or hanging below it when the tower is near the top of the screen.
+        // The menu hangs just over the tower's drawn top when there is room under the top bar, else just under its
+        // foot, kept clear of the HUD bars; both sides follow the model's real size on screen at any zoom.
         private void PositionAbove(Tower tower)
         {
-            Vector3 screen = _camera.WorldToScreenPoint(tower.Position + Vector3.up * WorldHeight);
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local))
+            float height = DrawnHeight(tower);
+            if (!ToLocal(tower.Position + Vector3.up * height, out Vector2 top) || !ToLocal(tower.Position, out Vector2 foot))
             {
                 return;
             }
 
             // Kept inside the screen sideways, so a base or tower at the edge still shows its whole menu.
             float halfRoom = _root.rect.width * 0.5f - PanelWidth * 0.5f - BackdropPadding;
-            local.x = Mathf.Clamp(local.x, -halfRoom, halfRoom);
-            bool nearTop = local.y > _root.rect.height * TopFraction;
-            _panel.pivot = new Vector2(0.5f, nearTop ? 1f : 0f);
-            _panel.anchoredPosition = nearTop ? local - new Vector2(0f, BelowOffset) : local;
+            float x = Mathf.Clamp(top.x, -halfRoom, halfRoom);
+            float half = _root.rect.height * 0.5f;
+            float panel = _panel.sizeDelta.y + BackdropPadding * 2f;
+            bool above = top.y + AnchorGap + panel <= half - TopReserve;
+            float y = above ? top.y + AnchorGap + BackdropPadding : foot.y - AnchorGap - BackdropPadding;
+            y = above ? y : Mathf.Max(y, -half + BottomReserve + panel - BackdropPadding);
+            _panel.pivot = new Vector2(0.5f, above ? 0f : 1f);
+            _panel.anchoredPosition = new Vector2(x, y);
+        }
+
+        private bool ToLocal(Vector3 world, out Vector2 local)
+        {
+            Vector3 screen = _camera.WorldToScreenPoint(world);
+            return RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out local);
+        }
+
+        // The top of the tower's visible model above its foot, measured once per tower and level (a model swaps on an
+        // upgrade or a wreck), never every frame.
+        private float DrawnHeight(Tower tower)
+        {
+            if (tower == _measuredTower && tower.LevelIndex == _measuredLevel && tower.IsWrecked == _measuredWreck && _drawnHeight > 0f)
+            {
+                return _drawnHeight;
+            }
+
+            _measuredTower = tower;
+            _measuredLevel = tower.LevelIndex;
+            _measuredWreck = tower.IsWrecked;
+            _drawnHeight = 0f;
+            tower.GetComponentsInChildren(false, _renderers);
+            foreach (Renderer renderer in _renderers)
+            {
+                if ((renderer is MeshRenderer || renderer is SkinnedMeshRenderer) && renderer.enabled)
+                {
+                    _drawnHeight = Mathf.Max(_drawnHeight, renderer.bounds.max.y - tower.Position.y);
+                }
+            }
+
+            return _drawnHeight > 0f ? _drawnHeight : FallbackHeight;
         }
     }
 }

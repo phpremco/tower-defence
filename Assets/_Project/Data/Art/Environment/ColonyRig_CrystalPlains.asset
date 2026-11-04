@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a23fbaecd069b14391b6d8e34a70793, type: 3}
+  m_Name: ColonyRig_CrystalPlains
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.ColonyRigDefinition
+  _drill: {fileID: 11400000, guid: 7bbb734a1a262c24489e47f98e2094cb, type: 2}
+  _drillScale: 0.7
+  _footprintRadius: 1.8
+  _height: 3.4
+  _fieldGap: 0.6
+  _hauler: {fileID: 11400000, guid: af8f5befdfe8648478771406d831e650, type: 2}
+  _haulers: 3
+  _haulerScale: 1.1
+  _flightRadius: {x: 2.6, y: 1.4}
+  _flightHeight: 2.4
+  _lapSeconds: 11
+  _bob: 0.12

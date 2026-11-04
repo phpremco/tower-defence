@@ -120,6 +120,7 @@ namespace Game.Editor
                     material.SetFloat("_SoftDistance", SmokeSoftDistance);
                     material.SetVector("_Grid", new Vector4(layout.Columns, layout.Rows, 0f, 0f));
                     material.SetFloat("_EdgeFade", SmokeEdgeFade);
+                    material.SetFloat("_AlphaCurve", entry.Softness);
                     Keyword(material, "_FLIPBOOK_BLEND", "_FlipbookBlend", true);
                     Keyword(material, "_SOFT_PARTICLES", "_SoftParticles", !low);
                     Keyword(material, "_HEAT_STREAM", "_HeatStream", true);

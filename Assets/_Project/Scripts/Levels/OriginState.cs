@@ -12,10 +12,7 @@ namespace Game.Levels
         /// <summary>Breaking open: tremor, bulge, the burst, the maw rising.</summary>
         Opening = 2,
 
-        /// <summary>Open, breathing, creatures coming out.</summary>
+        /// <summary>Open, breathing, creatures coming out; once open it stays open for the rest of the level.</summary>
         Open = 3,
-
-        /// <summary>Sinking shut again after the wave's last creature from it.</summary>
-        Closing = 4,
     }
 }

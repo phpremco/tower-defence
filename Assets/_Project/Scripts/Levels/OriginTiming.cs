@@ -6,14 +6,12 @@ namespace Game.Levels
     /// </summary>
     public readonly struct OriginTiming
     {
-        public OriginTiming(float openLead, float burst, float emerge, float open, float closeDelay, float close)
+        public OriginTiming(float openLead, float burst, float emerge, float open)
         {
             OpenLead = openLead;
             Burst = burst;
             Emerge = emerge;
             Open = open;
-            CloseDelay = closeDelay;
-            Close = close;
         }
 
         /// <summary>The ground starts to open this long before the origin's first creature of the wave is due.</summary>
@@ -27,11 +25,5 @@ namespace Game.Levels
 
         /// <summary>Length of the opening; the origin is fully open after it.</summary>
         public float Open { get; }
-
-        /// <summary>The origin stays open this long after its last creature of the wave.</summary>
-        public float CloseDelay { get; }
-
-        /// <summary>Length of the closing; it is marked again after it.</summary>
-        public float Close { get; }
     }
 }

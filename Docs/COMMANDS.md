@@ -535,3 +535,13 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
 | Upgrade screen with subjects selected, plus a preview PNG and an imported/built audit of every subject | `OUT=<windows folder> bash Tools/PlayTest/upgrade_shots.sh <prefix> Cannon Mercer Repair Base` (pictures of the previews in `$OUT/previews`) |
 | Menu camera onto a point (`zoom_arg.txt`: x y z distance pitch yaw), lists the pools and banks | `eval_file --file Tools/PlayTest/menu_zoom.cs` |
 | Menu art, height map, ground under each menu creature, display stage nodes | `menu_art_probe.cs`, `menu_ground_probe.cs` (in play), `display_probe.cs` |
+
+## Night 1 fixes (added 2026-11-04)
+
+| Goal | Command |
+| --- | --- |
+| Put the colony drill rig on the Crystal Plains set | `unity command menu --path "Tools/Generate/Colony Rig (drill beside every Crystal Plains level)" --timeout 120` (also generator step "Colony rig") |
+| Where each level's rig stands | `eval_file --file Tools/PlayTest/rig_probe.cs` |
+| Developer mode data flag on / off | `eval_file --file Tools/PlayTest/dev_mode_on.cs` (`Tools/PlayTest/dev_arg.txt`: `off` to turn it off); a development build also takes `-devmode` |
+| Level shots with pointer clicks | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/n1_shots.sh <prefix> <level index or none> ...` (adds `arg:<file>=<value>` and `pointer:<move|click>` at `n1_pick_xy.txt` to round_ui_shots' actions) |
+| Origins staying open after their first wave | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/n1_origin.sh <prefix> 0 8 16` |

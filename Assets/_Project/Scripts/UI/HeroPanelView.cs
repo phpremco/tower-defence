@@ -46,6 +46,8 @@ namespace Game.UI
         private static readonly Color Unaffordable = new Color(1f, 0.55f, 0.5f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
         private static readonly Color PostTint = new Color(0.5f, 0.6f, 1f);
+        private static readonly Vector2 Top = new Vector2(0.5f, 1f);
+        private static readonly Vector2 Bottom = new Vector2(0.5f, 0f);
 
         private LevelContext _context;
         private Commander _hero;
@@ -81,14 +83,13 @@ namespace Game.UI
             _panel.anchorMax = new Vector2(0.5f, 0.5f);
 
             UiKit.CreatePanel(_panel, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
-            _header = CreateText("Header", TextAnchor.MiddleLeft, HeaderSize, -Padding, HeaderHeight);
+            _header = CreateText("Header", TextAnchor.MiddleCenter, HeaderSize, -Padding, HeaderHeight);
             _header.color = HeaderColor;
-            _state = CreateText("State", TextAnchor.MiddleLeft, StateSize, -Padding - HeaderHeight, StateHeight);
+            _state = CreateText("State", TextAnchor.MiddleCenter, StateSize, -Padding - HeaderHeight, StateHeight);
             _healthFill = HeroPanelStyle.CreateHealthBar(_panel, new Vector2(Padding, -Padding - HeaderHeight - StateHeight - BarGap), new Vector2(FullWidth - Padding * 2f, BarHeight));
             _healthBar = _healthFill.transform.parent.GetComponent<RectTransform>();
 
-            _postButton = CreateAction(0, IconFactory.Get(IconType.Hero), PostTint, OnPostPressed, out _postLabel);
-            int column = 1;
+            _postButton = CreateAction(IconFactory.Get(IconType.Hero), PostTint, OnPostPressed, out _postLabel);
             for (int slot = 0; slot < _hero.Abilities.Count; slot++)
             {
                 HeroAbilityState state = _hero.Abilities[slot];
@@ -98,7 +99,7 @@ namespace Game.UI
                 }
 
                 int pressed = slot;
-                Button button = CreateAction(column++, HeroAbilityHud.IconFor(state.Definition), state.Definition.Tint, () => _context.HeroAbilityRequested.Raise(pressed), out Text label);
+                Button button = CreateAction(HeroAbilityHud.IconFor(state.Definition), state.Definition.Tint, () => _context.HeroAbilityRequested.Raise(pressed), out Text label);
                 _abilities.Add(new HeroAbilityButton(slot, state, button, label));
             }
 
@@ -140,9 +141,8 @@ namespace Game.UI
             }
         }
 
-        private Button CreateAction(int index, Sprite icon, Color tint, UnityEngine.Events.UnityAction action, out Text label)
+        private Button CreateAction(Sprite icon, Color tint, UnityEngine.Events.UnityAction action, out Text label)
         {
-            float x = Padding + index * ColumnWidth;
             Button button = UiKit.CreateIconButton(_panel, icon, IconSize, () =>
             {
                 action();
@@ -152,23 +152,21 @@ namespace Game.UI
             Destroy(button.GetComponent<LayoutElement>());
             HeroPanelStyle.Tint(button, tint);
             RectTransform rect = button.GetComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.zero;
-            rect.pivot = Vector2.zero;
+            rect.anchorMin = Bottom;
+            rect.anchorMax = Bottom;
+            rect.pivot = Bottom;
             rect.sizeDelta = new Vector2(IconSize, IconSize);
-            rect.anchoredPosition = new Vector2(x, ButtonBottom);
 
-            label = CreateText("Label", TextAnchor.MiddleLeft, LabelSize, 0f, 32f);
+            label = CreateText("Label", TextAnchor.MiddleCenter, LabelSize, 0f, 32f);
             RectTransform labelRect = label.rectTransform;
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.zero;
-            labelRect.pivot = Vector2.zero;
-            labelRect.anchoredPosition = new Vector2(x, LabelBottom);
+            labelRect.anchorMin = Bottom;
+            labelRect.anchorMax = Bottom;
+            labelRect.pivot = Bottom;
             labelRect.sizeDelta = new Vector2(ColumnWidth - 6f, 32f);
             return button;
         }
 
-        // A line of text hung from the panel's top-left corner, as wide as the panel allows.
+        // A centred line of text hung from the top of the panel, as wide as the panel allows.
         private Text CreateText(string objectName, TextAnchor alignment, int fontSize, float top, float height)
         {
             var go = new GameObject(objectName, typeof(RectTransform));
@@ -182,10 +180,10 @@ namespace Game.UI
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             RectTransform rect = text.rectTransform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(Padding, top);
+            rect.anchorMin = Top;
+            rect.anchorMax = Top;
+            rect.pivot = Top;
+            rect.anchoredPosition = new Vector2(0f, top);
             rect.sizeDelta = new Vector2(FullWidth - Padding * 2f, height);
             return text;
         }
@@ -251,6 +249,24 @@ namespace Game.UI
             }
         }
 
+        // The visible actions stand side by side round the panel's centre line, each label centred under its icon:
+        // the post button first, then the abilities. The prompt shows the post button alone, in the middle.
+        private void PlaceColumns(int visible)
+        {
+            float first = -(visible - 1) * 0.5f * ColumnWidth;
+            Place(_postButton.transform, _postLabel, first);
+            for (int i = 0; i < _abilities.Count; i++)
+            {
+                Place(_abilities[i].Button.transform, _abilities[i].Label, first + (i + 1) * ColumnWidth);
+            }
+        }
+
+        private static void Place(Transform button, Text label, float x)
+        {
+            ((RectTransform)button).anchoredPosition = new Vector2(x, ButtonBottom);
+            label.rectTransform.anchoredPosition = new Vector2(x, LabelBottom);
+        }
+
         private void RefreshPrompt(int post)
         {
             _panel.sizeDelta = new Vector2(PromptWidth, PromptHeight);
@@ -261,6 +277,7 @@ namespace Game.UI
 
             _postButton.gameObject.SetActive(true);
             ShowAbilities(false);
+            PlaceColumns(1);
             _postLabel.text = "Move hero here";
             _postLabel.color = TextColor;
         }
@@ -275,6 +292,7 @@ namespace Game.UI
 
             _postButton.gameObject.SetActive(true);
             ShowAbilities(true);
+            PlaceColumns(1 + _abilities.Count);
 
             string postName = _context.HeroPostNames[_hero.PostIndex];
             if (_hero.IsDown)

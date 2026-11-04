@@ -83,6 +83,8 @@ MonoBehaviour:
   _smokeSheet: {fileID: 11400000, guid: ca4142dc62e839748a234858a6f713e8, type: 2}
   _smokeSize: 1.1
   _smokeDelay: 0.15
+  _smokeOpacity: 0.45
+  _smokeLifeScale: 0.7
   _sparkSheet: {fileID: 11400000, guid: 9448b5a59c12b0041898042fd96bdbbe, type: 2}
   _debrisSheet: {fileID: 11400000, guid: 4aba1d028133ec041b7f3751720e24ee, type: 2}
   _ringSheet: {fileID: 11400000, guid: 29f67317c2eef6d41bb74a7a708a573e, type: 2}

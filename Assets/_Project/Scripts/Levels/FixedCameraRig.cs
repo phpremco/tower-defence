@@ -118,6 +118,20 @@ namespace Game.Levels
                 Mathf.Abs(right.z) * halfWidth + Mathf.Abs(upOnGround.z) * size);
         }
 
+        /// <summary>
+        /// Whether a point shows in the fully zoomed-out view at this aspect, inside the band the HUD leaves free and
+        /// <paramref name="inset"/> units away from its edges (an orthographic view, so screen axes are world axes).
+        /// </summary>
+        public static bool InView(LevelDefinition level, Vector3 point, float aspect, float inset)
+        {
+            CameraSettings settings = level.Camera;
+            Quaternion rotation = Quaternion.Euler(settings.PitchDegrees, settings.YawDegrees, 0f);
+            float size = FitSize(level, aspect);
+            float x = Mathf.Abs(Vector3.Dot(point, rotation * Vector3.right));
+            float y = Mathf.Abs(Vector3.Dot(point, rotation * Vector3.up));
+            return x <= size * aspect - inset && y <= size * (1f - HudReserve) - inset;
+        }
+
         // The whole field must fit the view whatever the camera's pitch and yaw: the ground rectangle (with room for
         // what stands on it) is projected onto the camera's screen axes and the larger half extent sets the size.
         public static float FitSize(LevelDefinition level, float aspect)
