@@ -56,6 +56,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_env_southerncrown.py", "build_env_core.py",
            # Round 20: the S-69-CRYS planet texture set (numpy, no scene).
            "build_planet_s69.py",
+           # Round 20: VFX flipbooks (Mantaflow sims cached in %TEMP%/td_vfx_cache; ~40 min from scratch).
+           "build_vfx.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 
