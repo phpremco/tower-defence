@@ -453,6 +453,19 @@ bijgesteld (helderheid, gloed, rim in `BlenderArtCatalog`); dit zijn de punten d
 | BatBoss (export `SkySovereign`) | Op de Storm Matriarch (vleermuisbaas): haar Laser-clip toont nu de Element Storm (volley). Voor de vleermuizenzwerm (Spawn) is er geen clip |
 | Bat-skin Mire | Niet gebakken; de Mirebat draagt nu de Moss-skin |
 
+### Na import stage 2 (2026-11-04, torens in Unity op spelgrootte)
+
+Gezien op `imp2_*`-screenshots (alle torens op niveau 1 en 3 naast de weg, spelzoom en ingezoomd, wrak). In Unity is al
+bijgesteld: gloed 2,0 (was 1,5), koele rim 0,75, wrak-gloed 0,6. Dit zijn de punten voor de Blender-kant:
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Alle torens | Op spelzoom (ortho 7) ongeveer zo groot als de hero. De vorm leest goed (lichte kop, blauwe voet, gevarenrand), maar T1 en T2 verschillen van boven weinig. Een duidelijker silhouetverschil per niveau (bredere kop, extra loop, hogere mast) helpt meer dan fijn detail |
+| Rangplaat en sterren | De sterren op de rangplaat zijn op spelzoom maar een paar pixels. Grotere of fellere sterren, of de plaat iets hoger |
+| Wrak | De sintels bloeiden bij gloed 1,5 op als gele vlammen (in Unity nu 0,6). De `Debris_<Toren>`-stukken zijn klein (~0,2) en vallen weg naast de romp. Alleen Gun, Cannon, Laser, Flak en Gate Gun hebben debris; Tesla, Railgun, Cryo, Support en de hybrides lenen er een (Laser, Gun of Cannon). Eigen debris per P2-toren zou mooier zijn |
+| Gate Gun | Klein (0,28 hoog) op de balk; de eigen rangplaat staat uit, want de gate toont zijn sterren boven de balk (ook zonder geschut) |
+| Acid Sprayer en Rocket | Geïmporteerd (`Data/Art/Towers/Tower_Acid`, `Tower_Rocket`), maar er is nog geen torendefinitie die ze draagt. De additieve `Slosh`-clip wordt nog niet gebruikt |
+
 ### Ronde 15 (P3-vijanden, nieuwe soorten, verdorven skins)
 
 | Model | Verbeterpunt |
