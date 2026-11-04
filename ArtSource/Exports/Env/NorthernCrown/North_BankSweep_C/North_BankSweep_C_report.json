@@ -1,0 +1,58 @@
+{
+  "asset": "North_BankSweep_C",
+  "continent": "NorthernCrown",
+  "game_tris": 898,
+  "source_tris": 39020,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 37,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.692,
+    "world_per_uv": 1.1780594073572133
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 16.8,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 9.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.001,
+    0.339,
+    0.254
+  ],
+  "round": "24b",
+  "sweep": {
+    "variant": "C",
+    "segment_length": 1.0,
+    "axis": "+X (x = -0.5..0.5)",
+    "liquid_side": "-Y",
+    "shore_line": "y = 0",
+    "lip_top_z": 0.05,
+    "extent_y": [
+      -0.16,
+      0.179
+    ],
+    "extent_z": [
+      -0.181,
+      0.073
+    ],
+    "min_bend_radius": 0.5,
+    "rows_along_x": 17,
+    "uv": "UV0 baked atlas, UV1 'UVSweep' = (x + 0.5, y + 0.5)",
+    "game_tris_after_bisect": 2330
+  }
+}

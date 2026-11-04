@@ -1,0 +1,57 @@
+{
+  "asset": "BankSweep_C",
+  "game_tris": 900,
+  "source_tris": 62300,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 64,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.717,
+    "world_per_uv": 1.4620675098403553
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 12.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 20.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.113,
+    0.389,
+    0.342
+  ],
+  "round": "24b",
+  "sweep": {
+    "variant": "C",
+    "segment_length": 1.0,
+    "axis": "+X (x = -0.5..0.5)",
+    "liquid_side": "-Y",
+    "shore_line": "y = 0",
+    "lip_top_z": 0.05,
+    "extent_y": [
+      -0.18,
+      0.209
+    ],
+    "extent_z": [
+      -0.263,
+      0.079
+    ],
+    "min_bend_radius": 0.5,
+    "rows_along_x": 19,
+    "uv": "UV0 baked atlas, UV1 'UVSweep' = (x + 0.5, y + 0.5)",
+    "game_tris_after_bisect": 2780
+  }
+}

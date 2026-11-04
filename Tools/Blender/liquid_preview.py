@@ -489,7 +489,8 @@ def terrain(dist, mat):
             px = min(int(x * PX_PER_CELL), w - 1)
             py = min(int((FIELD[1] - y) * PX_PER_CELL), h - 1)
             d = dist[py, px]
-            z = -BASIN_DEPTH * (1 - math.exp(-d * 2.2)) - (0.08 if d > 0 else 0.0)
+            # A steep wall just inside the shore (below every liquid level), then the floor deepens.
+            z = -(0.3 + (BASIN_DEPTH - 0.3) * (1 - math.exp(-d * 2.2))) if d > 0 else 0.0
             row.append(bm.verts.new((x, y, z)))
         verts.append(row)
     for j in range(ny):

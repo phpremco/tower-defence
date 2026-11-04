@@ -1,0 +1,58 @@
+{
+  "asset": "Ash_BankSweep_A",
+  "continent": "AshenReach",
+  "game_tris": 900,
+  "source_tris": 41176,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 4,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.731,
+    "world_per_uv": 1.1628608416942656
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 9.7,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 16.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.01,
+    0.344,
+    0.276
+  ],
+  "round": "24b",
+  "sweep": {
+    "variant": "A",
+    "segment_length": 1.0,
+    "axis": "+X (x = -0.5..0.5)",
+    "liquid_side": "-Y",
+    "shore_line": "y = 0",
+    "lip_top_z": 0.05,
+    "extent_y": [
+      -0.156,
+      0.189
+    ],
+    "extent_z": [
+      -0.185,
+      0.09
+    ],
+    "min_bend_radius": 0.5,
+    "rows_along_x": 17,
+    "uv": "UV0 baked atlas, UV1 'UVSweep' = (x + 0.5, y + 0.5)",
+    "game_tris_after_bisect": 2388
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "asset": "North_BankAccent",
+  "continent": "NorthernCrown",
+  "game_tris": 400,
+  "source_tris": 7080,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 40,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.569,
+    "world_per_uv": 0.514370148530072
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 7.3,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 4.3,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.349,
+    0.268,
+    0.146
+  ],
+  "round": "24b",
+  "accent": "scatter on the bank curve, any yaw, pivot on the ground; scale 0.8-1.2"
+}
