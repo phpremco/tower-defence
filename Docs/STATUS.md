@@ -1379,3 +1379,82 @@ view hooks (below); a tower without art keeps its procedural model.
   recoil/flash timing is checked by code and tests, not by eye; `Art/Models/Blender` grows by ~124 MB of tower maps
   and FBX (git LFS question still open); the generator re-saves the scenes with new file IDs (as every run). The full generator also synced the
   round-15 corrupted creature skins (`Skins/Corrupted`, maps git-ignored, folders' .meta new); nothing wears them yet.
+
+## Import stage 3a (2026-11-04)
+Our own side wears its Blender models: the road gate (G1/G2/G3 by gate level, with its wreck), the colony base (with
+damage overlay and wreck), the three drones (Repair, Harvest, Attack), every path object in the data (Land Mine, Chrono
+Field, Lava Ball, Ground Drone, Barrel, Air Net) and the resource node (Full/Half/Empty). Logic is unchanged apart from
+one view hook (below); an owner without art keeps its procedural look. The R.A.T. and its carrier are imported and ready
+(`Data/Art/Colony/Gadget_RAT`, `Gadget_RATCarrier`) but no path object in the data wears them yet.
+- **Data:** `Core/ModelArt/ModelArtDefinition` gains `Yaw` (the exports face -Z once imported, so every colony model
+  turns 180); `ModelClipRole` gains `Repair`, `Build`, `Work`, `Deploy`. New `Towers/GateArtDefinition` (model per
+  level, wreck, the model's width, field share, damage line, the loose panel bones from the report's
+  `damaged_state_hidden_hexes`) on `TowerDefinition.GateArt`; `Levels/BaseArtDefinition` (modules, overlay, wreck, the
+  turning dish and the pulsing crystal by module name, damage line, wreck delay) and the resource node's
+  `ModelArtDefinition` on `VisualTheme.BaseArt` / `ResourceNodeArt`; `DroneDefinition.Art` and `PathObjectDefinition.Art`
+  (one `ModelArtDefinition` each). Generated: `Data/Art/Colony/*.asset` (21), `Art/Materials/Blender/<Export>.mat` (+ `_Low`).
+- **Pipeline:** `Editor/BlenderModels/BlenderColonyCatalog` (exports, owners, take name to role) and
+  `BlenderColonyBuilder` (menu `Tools/Generate/Blender Colony (sync, gate, base, drones, gadgets)`, generator step
+  "Colony art" after "Tower art"); `BlenderSync` handles an export in a sub folder (`Env/ResourceNode`);
+  `BlenderReport.Strings` reads a string array.
+- **View:** `Core/ModelArt/ArtModel` places one imported model (yaw and scale from its art, near and `_Far` meshes under
+  a LOD group, one material or the owner's copy, a `ModelClipPlayer` when it has clips; stills for menus). On top:
+  - **Gate** (`Towers/GateArtRig`, driven by `GateView`): the gate's level model stretched to the corridor width (1x for
+    the 2-cell roads), the energy field centred on the `Field` socket and 78 % of the gate wide; Hit on every lost bit
+    of health (unless a bigger clip plays), below 50 % the `_Damage` overlay shows and the ten loose hex panels are
+    scaled to zero in LateUpdate (sparks from `Spark_n` every ~0.12 s); back above 50 % Repair pops them in. The fall
+    plays Collapse (held) under the existing blast, flash and debris, then swaps to `Gate_Wreck`; a rebuild plays
+    Build. An upgrade swaps G1 -> G2 -> G3. The Gate Gun keeps sitting at 1.17, which is the `GunMount` height.
+  - **Base** (`Levels/BaseArtView`, built by `LevelVisualBuilder` when the theme has base art, at its final size: no
+    `BaseScale`): `Base_Dish` turns (Spinner on its near and far mesh), `Base_Crystal` breathes on its own material
+    copy, the two lights hang at `Light_Core` and `Light_Command`; it follows the base health itself (bound by
+    `BaseView.Bind`): smoke from the three `Smoke_*` sockets grows below 50 %, the `Base_Damage` overlay shows and
+    sparks fly from `Spark_n`; on death the wreck replaces it 0.25 s into the blast (`BaseView` still sinks, tilts and
+    darkens). The upgrade screen tile and turntable show the model (`BuildBaseDisplay(parent, glow, art)`).
+  - **Drones** (`Drones/DroneArtRig`, driven by `DroneView`): the same attitude code (turn, bank, pitch, bob) turns a
+    holder; Idle / Fly / Work cycles follow the drone (Work while repairing, mining or fighting, Fly above 20 % of its
+    top speed); the rotor bones spin at speed in LateUpdate (neighbours opposite); the beam leaves from `Beam` (repair,
+    with the welding sparks there) or `Mine` (harvest drill); flashes at `Muzzle_1/2`; a trail from `Thruster`; the
+    cargo pod glows on its own material copy when loaded (15 % when empty). Menus use `DroneModelBuilder.BuildDisplay`;
+    the cutscene keeps the procedural drones (`Build`), as the cutscene models are a later stage.
+  - **Path objects** (`PathObjects/PathObjectArtRig`, driven by `PathObjectView`): Deploy on placement (mine Arm,
+    emitter Deploy, ball Drop), then Idle; a roller turns towards its travel, the ground drone plays Drive while it
+    moves, the lava ball's `Ball` bone rolls by distance over its radius (0.27); the air net draws glowing strands
+    between `Strand_Ln` and `Strand_Rn`. The slow fields keep their see-through reach disc, the Chrono its motes (the
+    code rings are gone: the model has its own), the lava ball its embers and light. HUD and loadout icons show the model.
+  - **Resource node** (`MiningNodeView` with art): `_Full`, then `_Half` once half the ore is gone, `_Empty` when dry
+    (replaces the scale-down); each node turned 137 degrees from the last so neighbours differ; 1.2x and glow 3.
+- **Logic hook (view only):** `LevelContext.MineHalved` (new event), raised by `DroneController` on the delivery that
+  takes a node to half its stock, like `MineDepleted`.
+- **Colour data follows the models** (curator decision): Land Mine (1, 0.3, 0.2) -> amber (1, 0.72, 0.25), Attack
+  drone (1, 0.45, 0.35) -> azure (0.3, 0.7, 1). Set in `ProjectGenerator.World.cs`, applied by the full generator.
+- **Look at play size** (`imp3_*` in the session scratchpad `imp3_shots/`): glow 2.0 and cool rim 0.75 like the towers;
+  the ore vein at 1.2x and glow 3 (at 1x its gold read small and dim next to the old cluster, `imp3_r1_mine_full`).
+  The gate, its wreck, the base and its wreck, the drones (showcase at zoom 9) and the path objects read well; the
+  gate's loose panels sit on the pylons' inner faces and barely show from the camera. Blender-side points in MODEL_TODO,
+  "Na import stage 3a".
+- **Stage 2's yellow spike cluster** at the lineup's first column was the procedural mining node of Landing Site (the
+  golden crystal cluster at (-14.5, -7.5)): `imp2_phase.cs` lines the towers up from (-15.5, -6.8) without skipping
+  mine cells. Not a bug; that node now wears the Blender ore vein.
+- **Fix found on the way:** with the modelled gate the blast's fireball never shrank (its clock ran in the procedural
+  collapse only); the clock now runs for both.
+- **Performance** (`ModelPerformanceTests`, now with every drone the level allows (8) and every path object in the data
+  placed twice (12) on top of the 60-tower build-out and the densest Psycho wave; editor Play Mode, main-thread
+  `PlayerLoop`, budget p95 <= 33 ms): C1_06 High avg 6.2 / p95 6.8 ms, Low 6.2 / 7.3 ms (179-183 skinned meshes, 66
+  drawn); C1_05 High 6.4 / 7.0 ms, Low 6.4 / 6.6 ms (166 skinned, 78 drawn). As in stage 2 the build-out kills most of
+  the wave within the settle time. Report in `Logs/model_perf.txt`.
+- **Tests:** EditMode 295/295 (new `ColonyArtTests` 5: the gate per level with clips, loose panels, overlay and the hero
+  post on the enemy side; every level's base and ore vein; every drone's cycles and sockets; every path object's model;
+  colours follow the models). PlayMode `ModelPerformanceTests` 1/1, `ContinentSimulationTests` 2/2, `StoryCrystalTests`
+  2/2, `StorySmokeTests` 2/2, `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests` smoke 1/1. Console 0
+  errors, 0 warnings after the runs (the full generator logs the known "Main Object Name '' does not match filename
+  'machinegun.mesh'" once, the EditMode fixture the known "Grid size must be positive"). Save restored to its MD5.
+- **Tools:** `imp3_shots.sh` + `imp3_phase.cs` (base, gate, ore vein, drones, damage, wreck, rebuild), `imp3_gadgets.sh`
+  (every path object along the road), `imp3_regen.sh`, `imp3_inspect.cs`, `imp3_sockets.cs`. See COMMANDS.
+- **Open:** the mine's Trigger and the lava ball's Burst clips are unused (the path object is removed the moment it
+  fires; the view would have to outlive it); the R.A.T. and carrier have art but no path object; the cutscene keeps
+  its procedural base, drones and gates (cutscene models are a later stage, incl. the base modules' `timelapse_order`
+  and Drone_Builder/Drone_Hauler); base turret links (`TurretLink_L/R`) and the hero posts on the gate and base are not
+  used (the hero keeps its own post); the theme base art is set on the two cutscene themes too (harmless: a cutscene
+  builds no base); `Art/Models/Blender` grows by ~43 MB (git LFS question still open); the full generator re-saves the
+  scenes with new file IDs (as every run).

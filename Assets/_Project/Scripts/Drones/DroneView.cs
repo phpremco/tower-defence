@@ -8,7 +8,9 @@ namespace Game.Drones
     /// flies and dips with speed, a gentle bob, blinking navigation lights, thrusters that flare and trail when it
     /// moves, a light beam and a pool of light on whatever it works on, welding sparks for the medic, a spinning
     /// drill with dust for the hauler, a cargo pod that lights up when loaded, muzzle flashes when it fires and a
-    /// floating "+money" when it delivers. Reads the drone, never drives it.
+    /// floating "+money" when it delivers. With imported art (<see cref="DroneArtRig"/>) the Blender drone replaces the
+    /// procedural one: its Idle, Fly and Work cycles follow the drone, its rotors spin at speed, and the beam, sparks,
+    /// flashes and trail leave from its sockets. Reads the drone, never drives it.
     /// </summary>
     [RequireComponent(typeof(Drone))]
     public sealed class DroneView : MonoBehaviour
@@ -39,12 +41,22 @@ namespace Game.Drones
         private const float DustRate = 25f;
         private const float PoolRadius = 0.55f;
         private const float PoolLift = 0.03f;
+        private const float FullTurn = 360f;
+
+        // Above this share of its top speed the imported drone plays its Fly cycle instead of Idle.
+        private const float MovingPace = 0.2f;
+
+        // The flash sits just past the mouth of a modelled gun, along the muzzle bone's +Y.
+        private const float ArtFlashForward = 0.04f;
         private static readonly Color MoneyColor = new Color(1f, 0.9f, 0.4f);
         private static readonly Color SparkColor = new Color(1f, 0.85f, 0.5f);
         private static readonly Color DustColor = new Color(0.55f, 0.45f, 0.32f, 0.7f);
 
         private Drone _drone;
         private DroneModelBuilder.Rig _rig;
+        private DroneArtRig _art;
+        private Transform _model;
+        private float _rotorAngle;
         private Transform _beam;
         private Transform _pool;
         private Transform[] _flashes;
@@ -62,7 +74,6 @@ namespace Game.Drones
         public void Initialize(Drone drone)
         {
             _drone = drone;
-            _rig = DroneModelBuilder.Build(transform, drone.Definition);
             _bobPhase = Random.value * Mathf.PI * 2f;
             _lightPhase = Random.value * StrobePeriod;
 
@@ -74,6 +85,50 @@ namespace Game.Drones
             _pool = GlowDecal.PlacePool(transform.parent, color, PoolRadius).transform;
             _pool.gameObject.SetActive(false);
 
+            if (drone.Definition.Art != null)
+            {
+                InitializeArt(drone.Definition, color);
+            }
+            else
+            {
+                InitializeProcedural(drone.Definition, color);
+            }
+
+            _drone.Fired += OnFired;
+            _drone.Delivered += OnDelivered;
+        }
+
+        // The imported model brings its own rotors, lights and pod; the view adds the flashes, the welding sparks at the
+        // emitter and the thruster trail at its sockets.
+        private void InitializeArt(DroneDefinition definition, Color color)
+        {
+            _art = DroneArtRig.Create(transform, definition.Art);
+            _model = _art.Holder;
+            _flashes = new Transform[_art.Muzzles.Length];
+            for (int i = 0; i < _flashes.Length; i++)
+            {
+                GameObject flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(color, Color.white, 0.6f), _art.Muzzles[i], Vector3.up * ArtFlashForward, Vector3.one * FlashSize, FlashEmission);
+                flash.SetActive(false);
+                _flashes[i] = flash.transform;
+            }
+
+            switch (definition.Kind)
+            {
+                case DroneKind.Repair when _art.Tool != null:
+                    _sparks = ParticleKit.Create(_art.Tool, "Sparks", Vector3.zero, SparkColor, 0.15f, 0.4f, 0.015f, 0.035f, 1.5f, 3.5f, 1.2f, 60, 0.02f);
+                    break;
+                case DroneKind.Harvest:
+                    _dust = ParticleKit.Create(transform.parent, "Dust", Vector3.zero, DustColor, 0.6f, 1.2f, 0.08f, 0.18f, 0.3f, 0.9f, -0.03f, 40, 0.25f);
+                    break;
+            }
+
+            _trails = _art.Thruster != null ? new[] { CreateTrail(_art.Thruster, color) } : new TrailRenderer[0];
+        }
+
+        private void InitializeProcedural(DroneDefinition definition, Color color)
+        {
+            _rig = DroneModelBuilder.Build(transform, definition);
+            _model = _rig.Root.transform;
             _flashes = new Transform[_rig.Muzzles.Length];
             for (int i = 0; i < _flashes.Length; i++)
             {
@@ -90,7 +145,7 @@ namespace Game.Drones
                 _rig.Cargo.sharedMaterials = _cargoEmpty;
             }
 
-            switch (drone.Definition.Kind)
+            switch (definition.Kind)
             {
                 case DroneKind.Repair:
                     _sparks = ParticleKit.Create(_rig.Root.transform, "Sparks", _rig.Tool, SparkColor, 0.15f, 0.4f, 0.015f, 0.035f, 1.5f, 3.5f, 1.2f, 60, 0.02f);
@@ -105,9 +160,6 @@ namespace Game.Drones
             {
                 _trails[i] = CreateTrail(_rig.Thrusters[i], color);
             }
-
-            _drone.Fired += OnFired;
-            _drone.Delivered += OnDelivered;
         }
 
         private static TrailRenderer CreateTrail(Transform thruster, Color color)
@@ -149,6 +201,8 @@ namespace Game.Drones
                 _drone.Fired -= OnFired;
                 _drone.Delivered -= OnDelivered;
             }
+
+            _art?.Dispose();
         }
 
         private void OnFired(Vector3 target)
@@ -170,18 +224,32 @@ namespace Game.Drones
             }
 
             float dt = Time.deltaTime;
-            foreach (Transform rotor in _rig.Rotors)
+            Attitude(dt);
+            if (_art != null)
             {
-                rotor.Rotate(0f, RotorSpeed * dt, 0f, Space.Self);
+                _rotorAngle = (_rotorAngle + RotorSpeed * dt) % FullTurn;
+                ArtThruster();
+                _art.SetLoaded(_drone.IsCarrying);
+            }
+            else
+            {
+                foreach (Transform rotor in _rig.Rotors)
+                {
+                    rotor.Rotate(0f, RotorSpeed * dt, 0f, Space.Self);
+                }
+
+                Lights(dt);
+                Thrusters();
+                Cargo();
             }
 
-            Attitude(dt);
-            Lights(dt);
-            Thrusters();
-            Cargo();
             Flashes(dt);
-            Work();
+            bool working = Work();
+            _art?.Animate(working, _drone.Pace > MovingPace, dt);
         }
+
+        // The clips turn the rotors slowly; at speed they spin far faster, set after the clips have posed the rig.
+        private void LateUpdate() => _art?.SpinRotors(_rotorAngle);
 
         // Turn towards the heading, lean into the turn and dip the nose with speed, like a real quadcopter.
         private void Attitude(float dt)
@@ -192,8 +260,8 @@ namespace Game.Drones
             float bank = Mathf.Clamp(turn, -BankDegrees, BankDegrees) * Mathf.Sign(Vector3.Dot(Vector3.Cross(_facing * Vector3.forward, wanted * Vector3.forward), Vector3.up));
             _pitch = Mathf.Lerp(_pitch, _drone.Pace * PitchDegrees, AttitudeFollow * dt);
             _bobPhase += BobSpeed * dt;
-            _rig.Root.transform.localRotation = _facing * Quaternion.Euler(_pitch, 0f, -bank);
-            _rig.Root.transform.localPosition = Vector3.up * (Mathf.Sin(_bobPhase) * BobHeight);
+            _model.localRotation = _facing * Quaternion.Euler(_pitch, 0f, -bank);
+            _model.localPosition = Vector3.up * (Mathf.Sin(_bobPhase) * BobHeight);
         }
 
         // Port and starboard burn steadily, the strobe flashes, the beacon blinks at an easy pace.
@@ -261,7 +329,8 @@ namespace Game.Drones
         }
 
         // The beam and the pool of light on the work point; sparks while welding, a spinning drill and dust while mining.
-        private void Work()
+        // Returns whether the drone is at its job (welding, drilling or shooting), for the model's Work cycle.
+        private bool Work()
         {
             bool working = _drone.IsAlive && _drone.WorkPoint.HasValue;
             bool repairing = working && _drone.Activity == DroneActivity.Repairing;
@@ -278,17 +347,18 @@ namespace Game.Drones
                 ParticleKit.SetRate(_dust, mining ? DustRate : 0f);
             }
 
-            if (_rig.Drill != null && mining)
+            if (_rig != null && _rig.Drill != null && mining)
             {
                 _rig.Drill.Rotate(0f, 0f, DrillSpeed * Time.deltaTime, Space.Self);
             }
 
+            bool fighting = _drone.IsAlive && _drone.Activity == DroneActivity.Fighting;
             if (!working)
             {
-                return;
+                return fighting;
             }
 
-            Vector3 from = transform.position;
+            Vector3 from = _art != null && _art.Tool != null ? _art.Tool.position : transform.position;
             Vector3 to = _drone.WorkPoint.Value;
             Vector3 delta = to - from;
             float thickness = BeamThickness * (repairing ? 1f + BeamFlicker * (Random.value - 0.5f) : 1f);
@@ -299,6 +369,18 @@ namespace Game.Drones
             if (_dust != null)
             {
                 _dust.transform.position = to;
+            }
+
+            return true;
+        }
+
+        // The imported drone has one exhaust: its trail streams only at a real pace.
+        private void ArtThruster()
+        {
+            bool streaming = _drone.Pace > TrailMinPace && _drone.IsAlive;
+            for (int i = 0; i < _trails.Length; i++)
+            {
+                _trails[i].emitting = streaming;
             }
         }
     }

@@ -134,12 +134,12 @@ Per toren:
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ◐ | P1 | **Land Mine** | Ronde 9 klaar: lage gunmetal schijf met zes ankerklauwen, blauwe band, witte drukkap met gevarenrand en een amber ring als hij scherp staat (bot `Ring`). Clips Arm/Idle/Trigger, socket `Blast`. 1.212 driehoeken, LOD1 632. Open punt: datakleur is rood |
-| ◐ | P1 | **Chrono Field**-emitter | Ronde 9 klaar: driepoot, blauwe kolom, Crysium-scherf tussen twee pinnen in twee tegendraaiende gyroscoopringen (botten `RingA/RingB`), projectorring bij de voet, socket `Field`. Clips Deploy/Idle. 2.008 driehoeken |
-| ◐ | P2 | **Lava Ball** | Ronde 11 klaar: onze machine (thermietroller), geen steen: acht witte pantserplaten en drie gunmetal banden met gele naven rond een gloeiende gesmolten kern (oranje: het wapen zelf, de schil blijft in ons palet). Bot `Ball` rolt om X, sockets `Core`, `Trail`. Clips Drop/Roll/Burst. 1.680 driehoeken |
-| ◐ | P2 | **R.A.T.** (Remote Assault Tank) | Ronde 11 klaar: rupstankje (familie van de Ground Drone) met witte schorten, ronde koepel met cyaan oog, één loop; wielbotten, sockets `Muzzle`, `Lug`. Clips Drive/Fire/Idle/Land (2.180). Plus de **carrier-drone** `Gadget_RATCarrier` (ronde-9-dronefamilie, vier ducts op armen, twee haakklemmen, socket `Cargo`), clips Carry/Release/Fly (2.384) |
-| ◐ | P2 | **Barrel** en **Air Net** | Ronde 9 klaar (statisch): vat in een gunmetal kooi met gevarenbanden en amber ruitjes (1.208); twee palen met gele spoelen op een drempel, sockets `Strand_L1..R3` voor de VFX-draden (1.460) |
-| ◐ | P2 | **Ground Drone** (padobject) | Ronde 9 klaar: vierwielige ramrobot met witte ploeg, cyaan oog. Clips Drive/Idle, wielbotten. 928 driehoeken |
+| ☑ | P1 | **Land Mine** | Import stage 3a: in het spel (Arm bij plaatsen, Idle; datakleur nu amber). Ronde 9 klaar: lage gunmetal schijf met zes ankerklauwen, blauwe band, witte drukkap met gevarenrand en een amber ring als hij scherp staat (bot `Ring`). Clips Arm/Idle/Trigger, socket `Blast`. 1.212 driehoeken, LOD1 632. Open punt: datakleur is rood |
+| ☑ | P1 | **Chrono Field**-emitter | Import stage 3a: in het spel (Deploy, Idle; de code-ringen zijn weg, schijf en motes blijven). Ronde 9 klaar: driepoot, blauwe kolom, Crysium-scherf tussen twee pinnen in twee tegendraaiende gyroscoopringen (botten `RingA/RingB`), projectorring bij de voet, socket `Field`. Clips Deploy/Idle. 2.008 driehoeken |
+| ☑ | P2 | **Lava Ball** | Import stage 3a: in het spel (Drop, bal rolt op afstand, kijkt in de rijrichting). Ronde 11 klaar: onze machine (thermietroller), geen steen: acht witte pantserplaten en drie gunmetal banden met gele naven rond een gloeiende gesmolten kern (oranje: het wapen zelf, de schil blijft in ons palet). Bot `Ball` rolt om X, sockets `Core`, `Trail`. Clips Drop/Roll/Burst. 1.680 driehoeken |
+| ◐ | P2 | **R.A.T.** (Remote Assault Tank) | Import stage 3a: art klaar in Unity (`Data/Art/Colony/Gadget_RAT`, `Gadget_RATCarrier`), maar er is nog geen padobject in de data dat hem draagt. Ronde 11 klaar: rupstankje (familie van de Ground Drone) met witte schorten, ronde koepel met cyaan oog, één loop; wielbotten, sockets `Muzzle`, `Lug`. Clips Drive/Fire/Idle/Land (2.180). Plus de **carrier-drone** `Gadget_RATCarrier` (ronde-9-dronefamilie, vier ducts op armen, twee haakklemmen, socket `Cargo`), clips Carry/Release/Fly (2.384) |
+| ☑ | P2 | **Barrel** en **Air Net** | Import stage 3a: in het spel (Air Net met gloeiende draden tussen `Strand_Ln` en `Strand_Rn`). Ronde 9 klaar (statisch): vat in een gunmetal kooi met gevarenbanden en amber ruitjes (1.208); twee palen met gele spoelen op een drempel, sockets `Strand_L1..R3` voor de VFX-draden (1.460) |
+| ☑ | P2 | **Ground Drone** (padobject) | Import stage 3a: in het spel (Drive als hij rijdt, kijkt in de rijrichting). Ronde 9 klaar: vierwielige ramrobot met witte ploeg, cyaan oog. Clips Drive/Idle, wielbotten. 928 driehoeken |
 | ◐ | P3 | **Decoy Beacon** (2), **Barricade** (4), **Spike Strip** en **Rollback Field** (5) | Ronde 18 klaar. Decoy: seismische stamper op een driepoot met draaiende lokkop (signaalgeel), clips Deploy/Idle/Pulse, sockets `Pulse`, `Lure` (1.448). Barricade: vijf scharnierende keramische platen op een drempel over de weg (1,9 breed, botten `Slab_1..5`), clips Deploy/Hit/Break (1.592). Spike Strip: drie platen met pinnenrijen op botten `Spikes_1..3`, clips Deploy/Idle/Trigger (1.212). Rollback: hexvoet met repulsorschotel naar de vijand en een tegendraaiende chevronring (teal), clips Deploy/Idle/Pulse, sockets `Push`, `Field` (1.746) |
 | ◐ | P3 | Superwapens: **Payload Drop**-bom, **Overcharged Crystal**, **Toxin Bomb** | Ronde 18 klaar (`Super_*`). Bom: neus omlaag, pivot op de neuspunt, vinnen in een ring (bot `Fins`), clips Fall/Arm (1.170). Crystal: draaiend vijfhoekig Crysium in drie klemarmen op een driepoot, drie zwevende splinters, clips Deploy/Idle/Overload, sockets `Core`, `Blast`, `Arc_1..3` (1.312). Toxin Bomb: bus met gifgroene vensters en vier ventielen (sockets `Vent_1..4`), clips Fall/Vent (1.516) |
 
@@ -151,9 +151,9 @@ Animaties: **Fly, Hover, Work** (lichtbundel, vuren of graven).
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ◐ | P1 | **Repair-drone** | Ronde 9 klaar: ronde quad met vier kleine ducts, cyaan plus-in-zeshoek (geen rood kruis), arm met emitter, socket `Beam`. Clips Idle/Fly/Work. ~3.080 driehoeken (boven 2.500: vier ducts), LOD1 ~1.970 |
-| ◐ | P1 | **Harvest-drone** | Ronde 9 klaar: brede hauler op twee grote ducts, boor met drie klauwen, losse vrachtcilinder `Drone_Harvest_Cargo` (amber). Clips Idle/Fly/Work. 2.294 driehoeken |
-| ◐ | P1 | **Attack-drone** | Ronde 9 klaar: pijl met pijlvleugels, ducts op de vleugeltips, dubbele kanonkap, staartstraal (azuur). Clips Idle/Fly/Work (om en om vuren), sockets `Muzzle_1/2`, `Thruster`. 2.208 driehoeken. Open punt: datakleur is koraal (warm) |
+| ☑ | P1 | **Repair-drone** | Import stage 3a: in het spel (Idle/Fly/Work, rotors op snelheid, straal en vonken uit `Beam`). Ronde 9 klaar: ronde quad met vier kleine ducts, cyaan plus-in-zeshoek (geen rood kruis), arm met emitter, socket `Beam`. Clips Idle/Fly/Work. ~3.080 driehoeken (boven 2.500: vier ducts), LOD1 ~1.970 |
+| ☑ | P1 | **Harvest-drone** | Import stage 3a: in het spel (Work bij het boren, straal uit `Mine`, vrachtcilinder gloeit als hij geladen is). Ronde 9 klaar: brede hauler op twee grote ducts, boor met drie klauwen, losse vrachtcilinder `Drone_Harvest_Cargo` (amber). Clips Idle/Fly/Work. 2.294 driehoeken |
+| ☑ | P1 | **Attack-drone** | Import stage 3a: in het spel (Work tijdens het vechten, flitsen op `Muzzle_1/2`, spoor uit `Thruster`; datakleur nu azuur). Ronde 9 klaar: pijl met pijlvleugels, ducts op de vleugeltips, dubbele kanonkap, staartstraal (azuur). Clips Idle/Fly/Work (om en om vuren), sockets `Muzzle_1/2`, `Thruster`. 2.208 driehoeken. Open punt: datakleur is koraal (warm) |
 | ◐ | P2 | **Builder-drone** en **hauler** (cutscene) | Ronde 18 klaar (familie van ronde 9). Builder: drierotor met twee lasarmen en een geel bouwbaken, sockets `Weld_L/R`, clip Work = lassen (2.204). Hauler: lichte tandem (één grote duct voor en achter), vrachtcapsule met amber venster als eigen mesh `Drone_Hauler_Cargo`, Work = loslaten (1.376, licht voor zwermen) |
 | ◐ | P3 | Bombardement-drone (Pathfinder Strike) | Ronde 18 klaar: vliegende vleugel met twee ingebouwde ducts, twee stuwers, bommenluik met twee deuren en twee paar bommetjes (botten `Bay_L/R`, `Bomb_1/2`), sockets `Drop_1..4`, `Thruster_L/R`. Work = één aanval (2.148) |
 
@@ -163,11 +163,11 @@ Animaties: **Fly, Hover, Work** (lichtbundel, vuren of graven).
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ◐ | P1 | **Gate** (blokkade op het pad) | Ronde 9 klaar: G1/G2/G3 (kaal, steunplaten en hoekpantser, vestingversie met hoorns en tankvallen), 18 hexpanelen op eigen botten (clip `Repair` en `Build`), overlay `_Damage`, losse `Gate_Wreck`, clips Hit/Collapse. Sockets `GunMount` (Gate Gun-zadel, 1,17), `Field`, `HeroPost`, `Spark_n`. 5.200–7.600 driehoeken |
-| ◐ | P1 | **Basis** (eindpunt, 800 HP) | Ronde 9 klaar: acht modules met eigen pivot (dek, commandopost, schotel, landingsplatform, kern, kristal, habitat, aansluitkasten) voor de timelapse, overlay `Base_Damage`, `Base_Wreck`, sockets als empties. 7.250 driehoeken, LOD1 3.190 |
+| ☑ | P1 | **Gate** (blokkade op het pad) | Import stage 3a: in het spel (G1–G3 per niveau, Hit/Repair/Build/Collapse, overlay en losse panelen onder 50 %, vonken uit `Spark_n`, wrak, Gate Gun op de balk). Ronde 9 klaar: G1/G2/G3 (kaal, steunplaten en hoekpantser, vestingversie met hoorns en tankvallen), 18 hexpanelen op eigen botten (clip `Repair` en `Build`), overlay `_Damage`, losse `Gate_Wreck`, clips Hit/Collapse. Sockets `GunMount` (Gate Gun-zadel, 1,17), `Field`, `HeroPost`, `Spark_n`. 5.200–7.600 driehoeken |
+| ☑ | P1 | **Basis** (eindpunt, 800 HP) | Import stage 3a: in het spel (schotel draait, kristal ademt, licht uit `Light_Core`/`Light_Command`, rook uit `Smoke_*`, overlay onder 50 %, wrak in de flits; ook in het upgradescherm). Ronde 9 klaar: acht modules met eigen pivot (dek, commandopost, schotel, landingsplatform, kern, kristal, habitat, aansluitkasten) voor de timelapse, overlay `Base_Damage`, `Base_Wreck`, sockets als empties. 7.250 driehoeken, LOD1 3.190 |
 | ◐ | P1 | **Basiswapens / -turrets** | Ronde 9 klaar: `Tower_BaseTurret` T1/T2/T3 = Gun Turret-kop op een vierkante bastion-sokkel in basiskleuren, zelfde rig en clips als Tower_Gun. 3.204–4.440 driehoeken |
 | ☐ | P2 | Modules van het upgradescherm (diorama) | Hergebruikt de modellen van de basis |
-| ◐ | P2 | **Grondstofpunt** (Crysium-ader voor de harvest-drone) | Ronde 14 klaar: `Env/ResourceNode` met drie meshes (Full, Half, Empty) op één 1024-set: goud-amber erts-Crysium uit een gespleten basaltblok; Half met afgezaagde, gloeiende snijvlakken, Empty alleen doffe stompen |
+| ☑ | P2 | **Grondstofpunt** (Crysium-ader voor de harvest-drone) | Import stage 3a: in het spel (Full, Half bij de helft, Empty bij leeg; 1,2x geschaald, gloed 3). Ronde 14 klaar: `Env/ResourceNode` met drie meshes (Full, Half, Empty) op één 1024-set: goud-amber erts-Crysium uit een gespleten basaltblok; Half met afgezaagde, gloeiende snijvlakken, Empty alleen doffe stompen |
 
 ---
 
@@ -465,6 +465,27 @@ bijgesteld: gloed 2,0 (was 1,5), koele rim 0,75, wrak-gloed 0,6. Dit zijn de pun
 | Wrak | De sintels bloeiden bij gloed 1,5 op als gele vlammen (in Unity nu 0,6). De `Debris_<Toren>`-stukken zijn klein (~0,2) en vallen weg naast de romp. Alleen Gun, Cannon, Laser, Flak en Gate Gun hebben debris; Tesla, Railgun, Cryo, Support en de hybrides lenen er een (Laser, Gun of Cannon). Eigen debris per P2-toren zou mooier zijn |
 | Gate Gun | Klein (0,28 hoog) op de balk; de eigen rangplaat staat uit, want de gate toont zijn sterren boven de balk (ook zonder geschut) |
 | Acid Sprayer en Rocket | Geïmporteerd (`Data/Art/Towers/Tower_Acid`, `Tower_Rocket`), maar er is nog geen torendefinitie die ze draagt. De additieve `Slosh`-clip wordt nog niet gebruikt |
+
+### Na import stage 3a (2026-11-04, gate, basis, drones, gadgets en grondstofpunt in Unity)
+
+Gezien op `imp3_*`-screenshots (spelzoom en ingezoomd, beschadigd, wrak, herbouwd, drones in een showcase op zoom 9).
+In Unity al geregeld: elk model 180 graden gedraaid (zie de eerste regel), grondstofpunt 1,2x en gloed 3, gloed van de
+rest 2,0 met koele rim 0,75 zoals de torens. Dit zijn de punten voor de Blender-kant:
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Alle exports | Na de import kijken ze naar **-Z** in Unity, niet naar +Z zoals README ("faces -Y in Blender (Unity +Z)") zegt: de hero-post van de gate staat op +Z, de geweren van de Attack-drone op -Z. Unity draait ze nu 180 graden (`Yaw`); graag de README rechtzetten of de exports omdraaien (dan `Yaw` terug naar 0) |
+| Gate | Van boven lezen de pylonen als twee blauwe blokken met een dunne balk; de hexpanelen zitten op de binnenkant van de pylonen en zijn van de spelcamera nauwelijks te zien, dus het afvallen bij schade (en de `_Damage`-overlay) valt weinig op. Schade op de bovenkant (kappen, balk) zou meer helpen. G1 en G2 blijven op spelzoom erg gelijk |
+| Gate wrak | Leest goed (omgevallen pylonen, balk op de weg); 4,4 breed, dus het steekt over de wegrand: prima |
+| Basis | Leest goed op spelgrootte (dek, commandopost, schotel, kern). De beschadigde staat verschilt nog matig; de rook uit de sockets draagt het. Het wrak leest goed |
+| Grondstofpunt | 0,8 breed is klein naast de oude gouden kristalcluster; in Unity 1,2x en gloed 3. Iets groter bouwen of feller goud in de emissie, dan kan dat terug naar 1x |
+| Repair-drone | Mooi in de showcase. Nog steeds 3.084 driehoeken (budget 2.500) |
+| Attack-drone | Op spelzoom klein (0,88 breed, 0,31 hoog); de staartstraal draagt de herkenning |
+| Chrono-emitter | Klein (0,75 hoog) midden in zijn blauwe schijf; de ringen lezen op spelzoom nauwelijks. Iets hoger of grotere ringen |
+| Land Mine, Lava Ball | Mine `Trigger` en Lava Ball `Burst` worden niet gespeeld: de logica haalt het object weg op het moment dat het afgaat (alleen de blast-VFX blijft). Daarvoor zou de view het object moeten overleven; geen Blender-punt, wel een open punt |
+| Ground Drone | Leest als rijdend autootje; nog steeds het minst uitgesproken gadget |
+| R.A.T. en carrier | Geïmporteerd, maar er is geen padobject in de data (Remco/ontwerp) |
+| Niet geïmporteerd (geen data) | Decoy Beacon, Barricade, Spike Strip, Rollback Field, de superwapens; Drone_Builder en Drone_Hauler horen bij de cutscene (latere stage, de cutscene gebruikt nog de procedurele drones en basis) |
 
 ### Ronde 15 (P3-vijanden, nieuwe soorten, verdorven skins)
 

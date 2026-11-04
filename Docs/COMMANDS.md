@@ -339,3 +339,26 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
   far one (renamed `_Far` at import) on one rig, so a LOD group picks one and one Animator drives both.
 - Each Unity CLI command answered in about a minute on 2026-11-04 (the editor was slow to reply all session); give
   long timeouts and avoid `unity command console` on a full console (it can run for minutes): use `console_status`.
+
+### Our own side: gate, base, drones, path objects, resource node (added 2026-11-04, import stage 3a)
+
+| Goal | Command |
+| --- | --- |
+| Sync the colony exports, rebuild their materials and art, point the gate towers, visual themes, drones and path objects at them | `unity command menu --path "Tools/Generate/Blender Colony (sync, gate, base, drones, gadgets)" --timeout 600` (also the full generator's step "Colony art") |
+| Recompile + colony art in one go (Play Mode must be stopped) | `bash Tools/PlayTest/imp3_regen.sh` |
+| Node tree (renderers, bones with local position) and clips of FBX files | list the asset paths in `Tools/PlayTest/imp3_inspect.txt`, `eval_file --file Tools/PlayTest/imp3_inspect.cs` |
+| World positions and axes of named sockets | asset paths, then a last line with the comma-separated node names, in `imp3_inspect.txt`; `eval_file --file Tools/PlayTest/imp3_sockets.cs` |
+| Screenshots: base and gate at play zoom and close, gate hurt/collapse/wreck/rebuilt/level 3, the ore vein full/half/empty, drones at work and in a showcase, base hurt and wreck | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp3_shots.sh <prefix> [level] [road cell]` |
+| Screenshots: every path object in the data placed along the road (deploy, close, mid, play zoom, after rolling) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp3_gadgets.sh <prefix> [level] [road cell]` |
+
+- **Which model an owner wears** is `BlenderColonyCatalog` (gate levels and wreck, base overlay and wreck, the model per
+  drone kind and per path object look, the clip roles by take name). Generated: `Data/Art/Colony/*.asset`
+  (`ModelArtDefinition` per FBX, `GateArt.asset`, `BaseArt.asset`) and `Art/Materials/Blender/<Export>.mat` / `_Low.mat`.
+  Owners: `TowerDefinition.GateArt` (every gate), `VisualTheme.BaseArt` and `ResourceNodeArt` (every theme),
+  `DroneDefinition.Art`, `PathObjectDefinition.Art`. Without art each keeps its procedural look.
+- The exports face **-Z** once imported (the README's "faces -Y in Blender (Unity +Z)" is the other way round): every
+  colony `ModelArtDefinition` turns its model by `Yaw` 180. `ColonyArtTests` checks the gate's hero post, the base's door
+  and the attack drone's guns end up on the right side.
+- `BlenderSync` takes an export in a sub folder (`Env/ResourceNode`): files are named after the last part.
+- `imp3_phase.cs` holds the level paused between phases like `imp2_phase.cs`; "base 0" ends the level (defeat), so it
+  is the last phase of a run, and the save is restored from `SAVE_BACKUP` afterwards.

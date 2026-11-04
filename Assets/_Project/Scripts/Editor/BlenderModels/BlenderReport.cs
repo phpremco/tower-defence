@@ -48,6 +48,24 @@ namespace Game.Editor
             return details;
         }
 
+        /// <summary>The strings of the array under a key (the gate's loose panel bones), or none.</summary>
+        public List<string> Strings(string key)
+        {
+            var values = new List<string>();
+            Match array = Regex.Match(_json, "\"" + Regex.Escape(key) + "\"\\s*:\\s*\\[([^\\]]*)\\]");
+            if (!array.Success)
+            {
+                return values;
+            }
+
+            foreach (Match value in Regex.Matches(array.Groups[1].Value, "\"([^\"]*)\""))
+            {
+                values.Add(value.Groups[1].Value);
+            }
+
+            return values;
+        }
+
         /// <summary>The first number under any of the keys, or zero.</summary>
         public float Number(params string[] keys)
         {

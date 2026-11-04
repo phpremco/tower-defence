@@ -17,6 +17,7 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: 0f0e452070ce14d41872a276bfb85c32, type: 2}
   _lowMaterial: {fileID: 2100000, guid: f6770432375f406448174061058af177, type: 2}
   _scale: 1
+  _yaw: 0
   _bodyCentrePivot: 0
   _height: 0.83499974
   _lodScreenHeight: 0.05

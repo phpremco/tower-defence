@@ -69,6 +69,12 @@ namespace Game.Levels
         [SerializeField] private Color _shadowTint = new Color(0.9f, 0.95f, 1.1f);
         [SerializeField] private Color _highlightTint = new Color(1.05f, 1f, 0.95f);
 
+        [Header("Imported models")]
+        [Tooltip("The Blender colony base; empty keeps the procedural outpost.")]
+        [SerializeField] private BaseArtDefinition _baseArt;
+        [Tooltip("The Blender resource node (full, half and empty meshes); empty keeps the procedural crystal cluster.")]
+        [SerializeField] private ModelArtDefinition _resourceNodeArt;
+
         public Color BackgroundColor => _backgroundColor;
         public Color GroundColor => _groundColor;
         public Color PathColor => _pathColor;
@@ -131,6 +137,8 @@ namespace Game.Levels
         public float Saturation => _saturation;
         public Color ShadowTint => _shadowTint;
         public Color HighlightTint => _highlightTint;
+        public BaseArtDefinition BaseArt => _baseArt;
+        public ModelArtDefinition ResourceNodeArt => _resourceNodeArt;
     }
 }
 

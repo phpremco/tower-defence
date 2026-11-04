@@ -32,6 +32,8 @@ namespace Game.PathObjects
 
         [SerializeField] private Color _color = new Color(1f, 0.6f, 0.2f);
         [SerializeField] private PathObjectLook _look;
+        [Tooltip("The imported (Blender) model with its clips; empty keeps the procedural look.")]
+        [SerializeField] private ModelArtDefinition _art;
 
         /// <summary>What it does, as the player reads it: the badge on its card and the words in the loadout.</summary>
         [SerializeField] private PathObjectEffect _effect;
@@ -54,6 +56,7 @@ namespace Game.PathObjects
         public float Lifetime => _lifetime;
         public Color Color => _color;
         public PathObjectLook Look => _look;
+        public ModelArtDefinition Art => _art;
         public PathObjectEffect Effect => _effect;
         public Game.Combat.ImpactVfxDefinition ImpactVfx => _impactVfx;
         public string Description => _description;

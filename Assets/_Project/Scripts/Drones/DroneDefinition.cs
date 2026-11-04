@@ -59,6 +59,9 @@ namespace Game.Drones
         [SerializeField] private CreatureSkin.Kind _skin = CreatureSkin.Kind.Plate;
         [SerializeField] private Color _accentColor = Color.white;
 
+        [Tooltip("The imported (Blender) model with its Idle, Fly and Work clips; empty keeps the procedural drone.")]
+        [SerializeField] private ModelArtDefinition _art;
+
         public string DisplayName => _displayName;
         public DroneKind Kind => _kind;
         public float Speed => _speed;
@@ -78,6 +81,7 @@ namespace Game.Drones
         public Color Color => _color;
         public CreatureSkin.Kind Skin => _skin;
         public Color AccentColor => _accentColor;
+        public ModelArtDefinition Art => _art;
 
         private void OnValidate()
         {

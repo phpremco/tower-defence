@@ -44,6 +44,7 @@ MonoBehaviour:
   _sandColor: {r: 0.5, g: 0.42, b: 0.3, a: 1}
   _iceColor: {r: 0.75, g: 0.9, b: 1, a: 1}
   _bogColor: {r: 0.18, g: 0.24, b: 0.12, a: 1}
+  _riftColor: {r: 1, g: 0.58, b: 0.25, a: 1}
   _spawnColor: {r: 1, g: 0.4, b: 0.25, a: 1}
   _plantColor: {r: 0.3, g: 0.28, b: 0.2, a: 1}
   _propKinds: 0000000001000000i
@@ -65,3 +66,5 @@ MonoBehaviour:
   _saturation: -22
   _shadowTint: {r: 1, g: 0.9, b: 0.8, a: 1}
   _highlightTint: {r: 1, g: 0.93, b: 0.82, a: 1}
+  _baseArt: {fileID: 11400000, guid: 8f160802a7716274998a14b5df1a541c, type: 2}
+  _resourceNodeArt: {fileID: 11400000, guid: 7b534e1491bb60944b460f60568749c0, type: 2}

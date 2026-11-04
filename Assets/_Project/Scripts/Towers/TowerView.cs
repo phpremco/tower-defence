@@ -279,7 +279,7 @@ namespace Game.Towers
             {
                 // A gate across the road, with its own look and wreck animation. Its gun sits on the crossbeam and
                 // appears with the first gun upgrade.
-                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color);
+                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color, definition.GateArt);
             }
             else if (shaped)
             {
@@ -331,7 +331,7 @@ namespace Game.Towers
             bool wall = definition.BlocksGroundEnemies;
             if (wall)
             {
-                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color);
+                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color, definition.GateArt);
             }
 
             _head = new GameObject("Head").transform;

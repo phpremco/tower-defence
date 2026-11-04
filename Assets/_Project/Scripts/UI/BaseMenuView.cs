@@ -151,7 +151,7 @@ namespace Game.UI
         // Drones are small, so the picture blows them up and lifts them into the frame the renderer uses for towers.
         private static GameObject BuildPicture(Transform stage, DroneDefinition drone)
         {
-            GameObject root = DroneModelBuilder.Build(stage, drone).Root;
+            GameObject root = DroneModelBuilder.BuildDisplay(stage, drone).Root;
             root.transform.localScale = Vector3.one * PictureScale;
             root.transform.localPosition = Vector3.up * PictureLift;
             root.transform.localRotation = Quaternion.Euler(18f, 35f, 0f);

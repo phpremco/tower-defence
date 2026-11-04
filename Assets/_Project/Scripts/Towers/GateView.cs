@@ -8,7 +8,10 @@ namespace Game.Towers
     /// The look of a road gate (a blockade): two pylons, a crossbeam and a humming energy field between them that
     /// holds the road. The field dims and flickers as the gate takes damage. When the gate falls it blows up: a
     /// flash, a fireball, a shower of sparks and flying debris, then the pylons keel over and the beam crashes
-    /// down, and the wreck keeps smoking and sparking until it is rebuilt. Reacts to Tower events only.
+    /// down, and the wreck keeps smoking and sparking until it is rebuilt. With imported art (<see cref="GateArtDefinition"/>)
+    /// the Blender gate of the gate's level replaces the pylons and beam (<see cref="GateArtRig"/>): it flinches on hits,
+    /// sheds panels when badly hurt and sparks from its torn sockets, plays its collapse and leaves its wreck, and rises
+    /// again on a rebuild; the field, the blast and the debris stay the same. Reacts to Tower events only.
     /// </summary>
     public sealed class GateView : MonoBehaviour
     {
@@ -45,6 +48,8 @@ namespace Game.Towers
         private const float DebrisBounce = 0.3f;
         private const float WreckSmokeRate = 3f;
         private const float WreckSparkRate = 2f;
+        private const float DamagedSparkInterval = 0.12f;
+        private const int DamagedSparkBurst = 3;
         private static readonly Color WreckColor = new Color(0.1f, 0.1f, 0.11f);
         private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
         private static readonly Color FireColor = new Color(1f, 0.5f, 0.15f);
@@ -76,12 +81,22 @@ namespace Game.Towers
         private bool _wrecked;
         private float _leftTilt;
         private float _rightTilt;
+        private GateArtRig _art;
+        private float _lastFraction = 1f;
+        private float _sparkClock;
 
-        public void Initialize(Tower tower, float width, Color colour)
+        public void Initialize(Tower tower, float width, Color colour, GateArtDefinition art = null)
         {
             _tower = tower;
             _width = width;
             _colour = colour;
+            if (art != null)
+            {
+                _art = new GateArtRig(transform, art, width);
+                _art.ShowLevel(tower.LevelIndex);
+                _tower.LevelChanged += OnLevelChanged;
+            }
+
             Build();
             _tower.StateChanged += OnStateChanged;
             OnStateChanged(tower);
@@ -92,8 +107,13 @@ namespace Game.Towers
             if (_tower != null)
             {
                 _tower.StateChanged -= OnStateChanged;
+                _tower.LevelChanged -= OnLevelChanged;
             }
+
+            _art?.Dispose();
         }
+
+        private void OnLevelChanged(Tower tower) => _art.ShowLevel(tower.LevelIndex);
 
         private void Build()
         {
@@ -101,11 +121,23 @@ namespace Game.Towers
             Material wreck = SurfaceMaterials.Create(WreckColor, 0f, 0.15f);
             _wreckMaterials = new[] { wreck, wreck, wreck, wreck };
 
-            Mesh pylon = StructureModelFactory.GatePylon();
-            _leftPylon = Part("PylonL", pylon, new Vector3(-_width * 0.5f, 0f, 0f));
-            _rightPylon = Part("PylonR", pylon, new Vector3(_width * 0.5f, 0f, 0f));
-            _beam = Part("Beam", StructureModelFactory.GateBeam(_width + 0.3f), new Vector3(0f, BeamHeight, 0f));
-            _renderers = new[] { _leftPylon.GetComponent<MeshRenderer>(), _rightPylon.GetComponent<MeshRenderer>(), _beam.GetComponent<MeshRenderer>() };
+            float fieldWidth = _width - FieldInset;
+            float fieldCentre = FieldTop - FieldHeight * 0.5f;
+            if (_art == null)
+            {
+                Mesh pylon = StructureModelFactory.GatePylon();
+                _leftPylon = Part("PylonL", pylon, new Vector3(-_width * 0.5f, 0f, 0f));
+                _rightPylon = Part("PylonR", pylon, new Vector3(_width * 0.5f, 0f, 0f));
+                _beam = Part("Beam", StructureModelFactory.GateBeam(_width + 0.3f), new Vector3(0f, BeamHeight, 0f));
+                _renderers = new[] { _leftPylon.GetComponent<MeshRenderer>(), _rightPylon.GetComponent<MeshRenderer>(), _beam.GetComponent<MeshRenderer>() };
+            }
+            else
+            {
+                // The model brings its own pylons; the field fills the gap between their panels, centred on its socket.
+                _renderers = new MeshRenderer[0];
+                fieldWidth = _width * _art.FieldShare;
+                fieldCentre = _art.FieldHeight;
+            }
 
             // The field is a vertical sheet between the pylons plus a glowing strip on the road under it, so it
             // reads from the camera whichever way the road runs.
@@ -113,8 +145,8 @@ namespace Game.Towers
             var field = new GameObject("Field");
             field.transform.SetParent(transform, false);
             _field = field.transform;
-            FieldSheet("Sheet", new Vector3(0f, FieldTop - FieldHeight * 0.5f, 0f), Quaternion.identity, new Vector3(_width - FieldInset, FieldHeight, 1f));
-            FieldSheet("Floor", new Vector3(0f, FieldFloorHeight, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(_width - FieldInset, FieldFloorDepth, 1f));
+            FieldSheet("Sheet", new Vector3(0f, fieldCentre, 0f), Quaternion.identity, new Vector3(fieldWidth, FieldHeight, 1f));
+            FieldSheet("Floor", new Vector3(0f, FieldFloorHeight, 0f), Quaternion.Euler(90f, 0f, 0f), new Vector3(fieldWidth, FieldFloorDepth, 1f));
 
             _sparks = Burst("Sparks", Color.Lerp(_colour, Color.white, 0.5f) * 2f, 0.3f, 0.8f, 0.03f, 0.07f, 2.5f, 6f, 1.5f, 160);
             _fire = Burst("Fire", FireColor * 2.2f, 0.35f, 0.8f, 0.2f, 0.45f, 1f, 3.5f, -0.4f, 80);
@@ -179,6 +211,19 @@ namespace Game.Towers
             {
                 Restore();
             }
+
+            float fraction = tower.Health.Fraction;
+            if (_art != null && !tower.IsWrecked)
+            {
+                if (fraction < _lastFraction)
+                {
+                    _art.Hit();
+                }
+
+                _art.SetDamaged(fraction < _art.DamagedBelow);
+            }
+
+            _lastFraction = fraction;
         }
 
         private void Explode()
@@ -195,6 +240,7 @@ namespace Game.Towers
             _fire.Emit(BurstFire);
             LaunchDebris();
             ApplyMaterials();
+            _art?.Collapse();
             SetLoop(_smoke, WreckSmokeRate);
             SetLoop(_sparks, WreckSparkRate);
         }
@@ -220,12 +266,20 @@ namespace Game.Towers
             _wrecked = false;
             _collapse = float.PositiveInfinity;
             _debrisAge = float.PositiveInfinity;
-            _leftPylon.localPosition = new Vector3(-_width * 0.5f, 0f, 0f);
-            _rightPylon.localPosition = new Vector3(_width * 0.5f, 0f, 0f);
-            _leftPylon.localRotation = Quaternion.identity;
-            _rightPylon.localRotation = Quaternion.identity;
-            _beam.localPosition = new Vector3(0f, BeamHeight, 0f);
-            _beam.localRotation = Quaternion.identity;
+            if (_art != null)
+            {
+                _art.Rebuild();
+            }
+            else
+            {
+                _leftPylon.localPosition = new Vector3(-_width * 0.5f, 0f, 0f);
+                _rightPylon.localPosition = new Vector3(_width * 0.5f, 0f, 0f);
+                _leftPylon.localRotation = Quaternion.identity;
+                _rightPylon.localRotation = Quaternion.identity;
+                _beam.localPosition = new Vector3(0f, BeamHeight, 0f);
+                _beam.localRotation = Quaternion.identity;
+            }
+
             _field.gameObject.SetActive(true);
             _flash.gameObject.SetActive(false);
             ApplyMaterials();
@@ -256,13 +310,25 @@ namespace Game.Towers
 
         private void Update()
         {
+            _art?.Tick(Time.deltaTime);
             if (_wrecked)
             {
                 Flash();
                 Debris();
-                Collapse();
+                if (_art == null)
+                {
+                    Collapse();
+                }
+                else
+                {
+                    // The model plays its own collapse; the clock still times the fireball.
+                    _collapse += Time.deltaTime;
+                }
+
                 return;
             }
+
+            DamagedSparks();
 
             _fieldOffset += FieldScrollSpeed * Time.deltaTime;
             _fieldMaterial.SetTextureOffset("_BaseMap", new Vector2(0f, _fieldOffset));
@@ -278,6 +344,27 @@ namespace Game.Towers
             }
 
             _fieldMaterial.SetColor("_EmissionColor", _colour * (FieldEmission * strength));
+        }
+
+        private void LateUpdate() => _art?.LateTick();
+
+        // A badly hurt modelled gate spits sparks from its torn sockets now and then.
+        private void DamagedSparks()
+        {
+            if (_art == null || !_art.IsDamaged || _art.Sparks.Length == 0)
+            {
+                return;
+            }
+
+            _sparkClock -= Time.deltaTime;
+            if (_sparkClock > 0f)
+            {
+                return;
+            }
+
+            _sparkClock = DamagedSparkInterval * Random.Range(0.5f, 1.5f);
+            var spark = new ParticleSystem.EmitParams { position = _art.Sparks[Random.Range(0, _art.Sparks.Length)].position, applyShapeToPosition = false };
+            _sparks.Emit(spark, DamagedSparkBurst);
         }
 
         // The fireball: swells fast, then is gone.

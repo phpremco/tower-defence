@@ -47,5 +47,17 @@ namespace Game.Core
 
         /// <summary>A machine's cycle while it keeps firing (a beam's hum, a spinning barrel cluster, alternating barrels). Loops.</summary>
         Firing = 14,
+
+        /// <summary>A structure putting its broken parts back (a gate popping its panels back in), played once.</summary>
+        Repair = 15,
+
+        /// <summary>A structure rising from its wreck when it is rebuilt, played once.</summary>
+        Build = 16,
+
+        /// <summary>A drone at its job: welding, drilling or firing. Loops while it works.</summary>
+        Work = 17,
+
+        /// <summary>A placed object setting itself up (a mine arming, an emitter unfolding, a ball dropping), played once.</summary>
+        Deploy = 18,
     }
 }

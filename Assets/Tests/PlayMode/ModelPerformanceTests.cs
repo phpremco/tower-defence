@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Game.Core;
+using Game.Drones;
 using Game.Enemies;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Towers;
 using NUnit.Framework;
 using Unity.Profiling;
@@ -15,8 +17,9 @@ using UnityEngine.TestTools;
 namespace Game.Tests
 {
     /// <summary>
-    /// The imported creature and tower models under load: every buildable cell within reach of the road holds a tower at
-    /// its top level (all tower types in turn, a full build-out), then the densest wave of Crysium Vein (C1_06) and of
+    /// The imported creature, tower and colony models under load: every buildable cell within reach of the road holds a
+    /// tower at its top level (all tower types in turn, a full build-out), every drone kind flies as many as the level
+    /// allows, every path object in the data is placed along the road (import stage 3a), then the densest wave of Crysium Vein (C1_06) and of
     /// C1_05 on the hardest difficulty is released on its own spawn timing with the wave clock off and measured over a stretch of frames on
     /// the High (PC) and the Low (Switch) model profile. Reports the main-thread player-loop time per frame (average and
     /// 95th percentile) and how many skinned meshes are drawn, and fails above the budget below. The editor adds its
@@ -35,6 +38,12 @@ namespace Game.Tests
         // The build-out: towers on free cells this close to the road, up to this many (a dense late-level defence).
         private const int BuildOutReach = 2;
         private const int BuildOutLimit = 60;
+
+        // Path objects: one of each kind every this many road cells, from this cell on, this many rounds.
+        private const int GadgetSpacing = 4;
+        private const int GadgetStart = 8;
+        private const int GadgetRounds = 2;
+        private const string PathObjectFolder = "Assets/_Project/Data/PathObjects";
 
         private static readonly string[] Levels = { "Level_C1_06", "Level_C1_05" };
 
@@ -72,7 +81,7 @@ namespace Game.Tests
                     yield return Measure(level, low, m => result = m);
                     string line = $"[Perf] {level} {(low ? "Low (Switch)" : "High (PC)")}: wave {result.Wave} ({result.Spawned} creatures), " +
                                   $"player loop avg {result.Average:0.0} ms, p95 {result.Percentile95:0.0} ms, " +
-                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), towers {result.Towers}, enemies alive {result.Alive}";
+                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), towers {result.Towers}, drones {result.Drones}, path objects {result.Gadgets}, enemies alive {result.Alive}";
                     lines.Add(line);
                     TestContext.Out.WriteLine(line);
                     if (result.Percentile95 > BudgetMilliseconds)
@@ -97,6 +106,8 @@ namespace Game.Tests
             public int SkinnedVisible;
             public int Alive;
             public int Towers;
+            public int Drones;
+            public int Gadgets;
         }
 
         private static IEnumerator Measure(string levelName, bool low, System.Action<Measurement> result)
@@ -135,6 +146,8 @@ namespace Game.Tests
             var spawner = (EnemySpawner)typeof(LevelController).GetField("_spawner", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(controller);
             controller.enabled = false;
             int towers = BuildOut(context);
+            int drones = LaunchDrones(context);
+            int gadgets = PlaceGadgets(context);
 
             int spawned = 0;
             yield return Release(waves[densest], spawner, count => spawned = count);
@@ -186,6 +199,8 @@ namespace Game.Tests
                 SkinnedVisible = visible,
                 Alive = alive,
                 Towers = towers,
+                Drones = drones,
+                Gadgets = gadgets,
             });
         }
 
@@ -230,6 +245,75 @@ namespace Game.Tests
             }
 
             return built;
+        }
+
+        // As many drones of every kind as the level lets fly, paid for so the purse is not the limit.
+        private static int LaunchDrones(LevelContext context)
+        {
+            int launched = 0;
+            foreach (DroneDefinition drone in context.Level.Drones)
+            {
+                for (int i = context.ActiveDrones(drone); i < context.MaxDrones(drone); i++)
+                {
+                    context.Wallet.Add(drone.Cost);
+                    context.DroneRequested.Raise(drone);
+                }
+
+                launched += context.ActiveDrones(drone);
+            }
+
+            return launched;
+        }
+
+        // Every path object in the data along the road (the beside kinds a few cells off it), as the placement does it:
+        // rollers get the road ahead, and a used-up object is removed.
+        private static int PlaceGadgets(LevelContext context)
+        {
+            var definitions = new List<PathObjectDefinition>();
+#if UNITY_EDITOR
+            foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:PathObjectDefinition", new[] { PathObjectFolder }))
+            {
+                definitions.Add(UnityEditor.AssetDatabase.LoadAssetAtPath<PathObjectDefinition>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid)));
+            }
+#endif
+            var cells = new List<Vector2Int>(LevelValidator.LandPathCells(context.Level.MainRoad));
+            int placed = 0;
+            for (int round = 0; round < GadgetRounds; round++)
+            {
+                foreach (PathObjectDefinition definition in definitions)
+                {
+                    int index = GadgetStart + placed * GadgetSpacing;
+                    if (index + 1 >= cells.Count)
+                    {
+                        return placed;
+                    }
+
+                    Vector2Int cell = cells[index];
+                    if (definition.Placement == PathObjectPlacement.Beside)
+                    {
+                        Vector2Int step = cells[index + 1] - cell;
+                        cell += new Vector2Int(-step.y, step.x) * (context.Level.Road.Width + 1);
+                    }
+
+                    var go = new GameObject("PerfGadget_" + definition.name);
+                    go.transform.position = context.Level.Grid.CellToWorld(cell);
+                    Vector3[] route = new Vector3[0];
+                    int next = 0;
+                    if (definition.Kind == PathObjectKind.Roller && context.Level.Road.TryLocate(cell, out Vector3[] found, out int nextIndex))
+                    {
+                        route = found;
+                        next = nextIndex;
+                    }
+
+                    var pathObject = go.AddComponent<PathObject>();
+                    pathObject.Initialize(definition, context.Targets, route, next);
+                    go.AddComponent<PathObjectView>().Initialize(pathObject);
+                    pathObject.Finished += finished => Object.Destroy(finished.gameObject);
+                    placed++;
+                }
+            }
+
+            return placed;
         }
 
         // The wave with the most creatures in it.

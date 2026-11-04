@@ -22,6 +22,8 @@ namespace Game.Core
         [Header("Placement")]
         [Tooltip("Factor on the owner's own scale (a boss model is built at its species' size times this).")]
         [SerializeField] [Min(0.01f)] private float _scale = 1f;
+        [Tooltip("Turn about the up axis so the model's front faces the owner's forward (the Blender exports face -Z).")]
+        [SerializeField] [Range(-180f, 180f)] private float _yaw;
         [Tooltip("The model's origin is its body centre (flyers at flight height), not the ground under it.")]
         [SerializeField] private bool _bodyCentrePivot;
         [Tooltip("Height of the model's top in model units, for the health bar.")]
@@ -45,6 +47,7 @@ namespace Game.Core
         public Material Material => _material;
         public Material LowMaterial => _lowMaterial != null ? _lowMaterial : _material;
         public float Scale => _scale;
+        public float Yaw => _yaw;
         public bool BodyCentrePivot => _bodyCentrePivot;
         public float Height => _height;
         public float LodScreenHeight => _lodScreenHeight;
@@ -113,7 +116,9 @@ namespace Game.Core
                 Debug.LogWarning($"ModelArtDefinition '{name}' has no material.", this);
             }
 
-            if (_clips.Length > 0 && IndexOf(ModelClipRole.Move) < 0 && IndexOf(ModelClipRole.Idle) < 0)
+            // A structure rests in its bind pose between its own clips (repair, build); a creature needs a cycle to rest in.
+            bool structure = IndexOf(ModelClipRole.Repair) >= 0 || IndexOf(ModelClipRole.Build) >= 0 || IndexOf(ModelClipRole.Deploy) >= 0;
+            if (_clips.Length > 0 && !structure && IndexOf(ModelClipRole.Move) < 0 && IndexOf(ModelClipRole.Idle) < 0)
             {
                 Debug.LogWarning($"ModelArtDefinition '{name}' has clips but neither a Move nor an Idle cycle.", this);
             }

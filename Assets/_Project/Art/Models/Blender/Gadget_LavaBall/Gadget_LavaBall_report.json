@@ -1,0 +1,65 @@
+{
+  "asset": "Gadget_LavaBall",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.534,
+    "world_per_uv": 2.154
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 43.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 35.9,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_LavaBall.fbx",
+  "tris": 1680,
+  "tris_lod1": 1560,
+  "clips": {
+    "Drop": 24,
+    "Roll": 30,
+    "Burst": 12
+  },
+  "static": false,
+  "sockets": {
+    "Core": [
+      0.0,
+      0.0,
+      0.27
+    ],
+    "Trail": [
+      0.0,
+      0.0,
+      0.01
+    ]
+  },
+  "pivot": "ball's contact point on the ground (the ball centre is the Ball bone at z = R)",
+  "bones": [
+    "Root",
+    "Ball",
+    "Core",
+    "Trail"
+  ],
+  "deform_bones": [
+    "Root",
+    "Ball"
+  ],
+  "roll": {
+    "radius": 0.27,
+    "clip_Roll_turns": 1,
+    "note": "drive Ball's X rotation from the distance: angle = distance / R"
+  }
+}

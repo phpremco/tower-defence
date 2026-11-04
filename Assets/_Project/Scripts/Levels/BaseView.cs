@@ -7,7 +7,8 @@ namespace Game.Levels
     /// <summary>
     /// What the base does when it falls: a flash, a fireball, sparks, debris thrown out of the structure, the
     /// lights going out and a column of smoke while the buildings sink and tilt. Sits on the base's root object;
-    /// the sound and the camera kick come from their own listeners on the same event.
+    /// the sound and the camera kick come from their own listeners on the same event. An imported base
+    /// (<see cref="BaseArtView"/> on the same object) follows the health itself and swaps to its wreck in the flash.
     /// </summary>
     public sealed class BaseView : MonoBehaviour
     {
@@ -43,6 +44,10 @@ namespace Game.Levels
             _context = context;
             _materials = GetComponentInChildren<MeshRenderer>().sharedMaterials;
             _context.BaseHealth.Died += OnDied;
+            if (TryGetComponent(out BaseArtView art))
+            {
+                art.Bind(_context.BaseHealth);
+            }
         }
 
         private void OnDestroy()

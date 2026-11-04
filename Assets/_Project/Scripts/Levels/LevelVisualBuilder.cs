@@ -43,6 +43,9 @@ namespace Game.Levels
         private const float BasePoolRadius = 1.2f;
         private const float BasePoolBrightness = 0.18f;
         private const float BasePoolHeight = 0.05f;
+        private const string BaseCoreLight = "Light_Core";
+        private const string BaseCommandLight = "Light_Command";
+        private const float ResourceNodeTurn = 137f;
         private const float GateLightIntensity = 1.6f;
         private const float GateLightRange = 3f;
         private const float GateLightHeight = 0.6f;
@@ -183,6 +186,12 @@ namespace Game.Levels
                 Vector3 along = level.Road.DirectionAt(baseCell);
                 Vector3 baseCenter = BasePosition(level);
                 Quaternion facing = along.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(-along) : Quaternion.identity;
+                if (theme.BaseArt != null)
+                {
+                    BuildBaseArt(theme, baseCenter, facing, parent);
+                    return routes;
+                }
+
                 StructureModelFactory.BaseParts baseParts = StructureModelFactory.BaseOutpost();
                 Material[] baseMaterials = ModelPalette.Create(theme.BaseColor);
                 Transform baseRoot = PlaceStructure(baseParts.Body, baseParts.Ring, baseParts.RingPivot, baseMaterials, ModelPalette.Glow, baseCenter, facing, BaseScale, BaseRingSpin, parent);
@@ -194,6 +203,20 @@ namespace Game.Levels
             }
 
             return routes;
+        }
+
+        // The imported base: built at its final size (no BaseScale), lit from its own light sockets.
+        private static void BuildBaseArt(VisualTheme theme, Vector3 position, Quaternion facing, Transform parent)
+        {
+            var root = new GameObject("Structure").transform;
+            root.SetParent(parent, false);
+            root.SetPositionAndRotation(position, facing);
+            var view = root.gameObject.AddComponent<BaseArtView>();
+            view.Initialize(theme.BaseArt);
+            AddLight(view.Socket(BaseCoreLight) ?? root, theme.BaseColor, BaseLightIntensity, BaseLightRange, 0f);
+            AddLight(view.Socket(BaseCommandLight) ?? root, theme.BaseColor, BaseTowerLightIntensity, BaseTowerLightRange, 0f);
+            GlowDecal.PlacePool(root, theme.BaseColor * BasePoolBrightness, BasePoolRadius, BasePoolHeight);
+            root.gameObject.AddComponent<BaseView>();
         }
 
         /// <summary>Where the base stands: a little past the end of the main road, so the hero post stays clear.</summary>
@@ -209,8 +232,16 @@ namespace Game.Levels
         /// The outpost as it stands in a level, without lights or the ground pool, for menus that show the base.
         /// Standing on y = 0, facing +z, in level scale; the ring and the dish turn like on the field.
         /// </summary>
-        public static GameObject BuildBaseDisplay(Transform parent, Color glow)
+        public static GameObject BuildBaseDisplay(Transform parent, Color glow) => BuildBaseDisplay(parent, glow, null);
+
+        /// <summary>The base for a menu: the imported model when there is one (its dish turning), else the procedural outpost.</summary>
+        public static GameObject BuildBaseDisplay(Transform parent, Color glow, BaseArtDefinition art)
         {
+            if (art != null)
+            {
+                return BaseArtView.BuildDisplay(parent, art);
+            }
+
             StructureModelFactory.BaseParts parts = StructureModelFactory.BaseOutpost();
             Material[] materials = ModelPalette.Create(glow);
             Transform root = PlaceStructure(parts.Body, parts.Ring, parts.RingPivot, materials, ModelPalette.Glow, Vector3.zero, Quaternion.identity, BaseScale, BaseRingSpin, parent);
@@ -295,6 +326,12 @@ namespace Game.Levels
                 return;
             }
 
+            if (level.Theme.ResourceNodeArt != null)
+            {
+                BuildResourceNodes(level, grid, parent);
+                return;
+            }
+
             Mesh mesh = StructureModelFactory.MiningNode();
             // The boulder wears the level's rock with ore glowing in its cracks; the crystals carry streaks of light.
             Material[] materials = ModelPalette.Create(MineColor);
@@ -310,6 +347,19 @@ namespace Game.Levels
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
                 go.AddComponent<MeshRenderer>().sharedMaterials = materials;
                 go.AddComponent<MiningNodeView>().Initialize(i);
+            }
+        }
+
+        // The imported ore veins, each turned its own way so neighbouring nodes do not look stamped.
+        private static void BuildResourceNodes(LevelDefinition level, GridMap grid, Transform parent)
+        {
+            for (int i = 0; i < level.MineCells.Length; i++)
+            {
+                Vector2Int cell = level.MineCells[i];
+                var go = new GameObject("MiningNode");
+                go.transform.SetParent(parent, false);
+                go.transform.SetPositionAndRotation(grid.CellToWorld(cell) + Vector3.up * level.Terrain.HeightAt(cell), Quaternion.Euler(0f, i * ResourceNodeTurn, 0f));
+                go.AddComponent<MiningNodeView>().Initialize(i, level.Theme.ResourceNodeArt);
             }
         }
 

@@ -28,6 +28,7 @@ MonoBehaviour:
   _projectileSpeed: 14
   _targets: 3
   _projectileStyle: 0
-  _color: {r: 1, g: 0.45, b: 0.35, a: 1}
+  _color: {r: 0.3, g: 0.7, b: 1, a: 1}
   _skin: 11
   _accentColor: {r: 0.92, g: 0.95, b: 1, a: 1}
+  _art: {fileID: 11400000, guid: 8a8ace5a3829a0f42a6be63d71f7eb7f, type: 2}

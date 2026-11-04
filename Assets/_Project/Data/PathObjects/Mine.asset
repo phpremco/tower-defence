@@ -23,8 +23,9 @@ MonoBehaviour:
   _slowFactor: 1
   _speed: 0
   _lifetime: 0
-  _color: {r: 1, g: 0.3, b: 0.2, a: 1}
+  _color: {r: 1, g: 0.72, b: 0.25, a: 1}
   _look: 1
+  _art: {fileID: 11400000, guid: 336979bc557cb2849b7ee87b7373fa09, type: 2}
   _effect: 1
   _impactVfx: {fileID: 11400000, guid: 02696b09b3bb5a64f83689a805bc25f5, type: 2}
   _description: Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.

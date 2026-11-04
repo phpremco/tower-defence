@@ -48,6 +48,32 @@ namespace Game.Drones
             public Vector3 Tool;
         }
 
+        /// <summary>
+        /// The drone for a menu picture or turntable: the imported model when the drone has one (its rotors listed so the
+        /// turntable can spin them), else the procedural model. The cutscene keeps the procedural one through <see cref="Build"/>.
+        /// </summary>
+        public static Rig BuildDisplay(Transform parent, DroneDefinition definition)
+        {
+            if (definition.Art == null)
+            {
+                return Build(parent, definition);
+            }
+
+            DroneArtRig art = DroneArtRig.CreateStill(parent, definition.Art);
+            return new Rig
+            {
+                Root = art.Holder.gameObject,
+                Materials = new[] { art.Model.Material },
+                Rotors = art.Rotors,
+                RotorAxis = Vector3.up,
+                Muzzles = new Vector3[0],
+                Lights = new GameObject[0],
+                LightKinds = new DroneModelFactory.LightKind[0],
+                ThrusterMaterials = new Material[0],
+                Thrusters = new Transform[0],
+            };
+        }
+
         public static Rig Build(Transform parent, DroneDefinition definition)
         {
             DroneModelFactory.Parts parts = DroneModelFactory.For((int)definition.Kind);

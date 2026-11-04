@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 952041817005d72428952698c4cadf28, type: 3}
+  m_Name: GateArt
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.GateArtDefinition
+  _levels:
+  - {fileID: 11400000, guid: 8f20e70a2f8d7584381a3c267d51a7e4, type: 2}
+  - {fileID: 11400000, guid: 8da857854e7a7274889764320d8f6fae, type: 2}
+  - {fileID: 11400000, guid: 2770adbbe239bad4da7d74c889547119, type: 2}
+  _wreck: {fileID: 11400000, guid: c70b03c7a3fa89d44b38f5dc2dbcd2f9, type: 2}
+  _modelWidth: 2.05
+  _fieldShare: 0.78
+  _damagedBelow: 0.5
+  _looseParts:
+  - Hex_L1
+  - Hex_L2
+  - Hex_L4
+  - Hex_L6
+  - Hex_L8
+  - Hex_R1
+  - Hex_R3
+  - Hex_R5
+  - Hex_R6
+  - Hex_R9

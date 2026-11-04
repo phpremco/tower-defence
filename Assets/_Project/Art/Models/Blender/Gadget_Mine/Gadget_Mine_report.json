@@ -1,0 +1,50 @@
+{
+  "asset": "Gadget_Mine",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.657,
+    "world_per_uv": 1.2674
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 25.3,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 21.1,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Mine.fbx",
+  "tris": 1212,
+  "tris_lod1": 632,
+  "clips": {
+    "Arm": 24,
+    "Idle": 60,
+    "Trigger": 8
+  },
+  "static": false,
+  "sockets": {},
+  "pivot": "centre on the ground; faces -Y in Blender (Unity +Z)",
+  "bones": [
+    "Root",
+    "Cap",
+    "Ring",
+    "Blast"
+  ],
+  "deform_bones": [
+    "Root",
+    "Cap",
+    "Ring"
+  ]
+}

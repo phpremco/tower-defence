@@ -25,5 +25,7 @@ MonoBehaviour:
   _lifetime: 0
   _color: {r: 0.4, g: 0.9, b: 1, a: 1}
   _look: 4
+  _art: {fileID: 11400000, guid: dc7fa0ba313036446ac2fa2ea7c657ba, type: 2}
   _effect: 4
+  _impactVfx: {fileID: 0}
   _description: Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.

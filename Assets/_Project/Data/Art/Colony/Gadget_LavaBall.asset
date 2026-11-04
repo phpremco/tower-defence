@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Gadget_LavaBall
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 3f6f8345f8a229d49aaee2502c4b2a92, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 563f941b9f91441408d43cc5e239777f, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: e20a5fadde8a5a042baaa13d4002229e, type: 2}
+  _scale: 1
+  _yaw: 180
+  _bodyCentrePivot: 0
+  _height: 0.5599998
+  _lodScreenHeight: 0.02
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 18
+    _clip: {fileID: -4148556183595721148, guid: 3f6f8345f8a229d49aaee2502c4b2a92, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

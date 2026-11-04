@@ -109,6 +109,7 @@ namespace Game.UI
             public DroneDefinition Drone;
             public HeroDefinition Hero;
             public Color Glow;
+            public BaseArtDefinition BaseArt;
             public bool Locked;
             public readonly List<UpgradeDefinition> Upgrades = new List<UpgradeDefinition>();
             public readonly List<StatLine> Stats = new List<StatLine>();
@@ -281,6 +282,7 @@ namespace Game.UI
                 subject.Kind = SubjectKind.Base;
                 LevelDefinition first = FirstLevel();
                 subject.Glow = first != null && first.Theme != null ? first.Theme.BaseColor : PipOn;
+                subject.BaseArt = first != null && first.Theme != null ? first.Theme.BaseArt : null;
             }
 
             return subject;
@@ -504,7 +506,7 @@ namespace Game.UI
                     key = subject.Drone;
                     build = stage =>
                     {
-                        GameObject model = DroneModelBuilder.Build(stage, subject.Drone).Root;
+                        GameObject model = DroneModelBuilder.BuildDisplay(stage, subject.Drone).Root;
                         model.transform.localScale = Vector3.one * DroneIconScale;
                         model.transform.localPosition = Vector3.up * DroneIconLift;
                         model.transform.localRotation = Quaternion.Euler(18f, 35f, 0f);
@@ -519,7 +521,7 @@ namespace Game.UI
                     key = "Base";
                     build = stage =>
                     {
-                        GameObject model = LevelVisualBuilder.BuildBaseDisplay(stage, subject.Glow);
+                        GameObject model = LevelVisualBuilder.BuildBaseDisplay(stage, subject.Glow, subject.BaseArt);
                         model.transform.localScale = Vector3.one * BaseIconScale;
                         return model;
                     };
@@ -664,7 +666,7 @@ namespace Game.UI
                     _preview.ShowDrone(subject.Drone);
                     break;
                 case SubjectKind.Base:
-                    _preview.ShowBase(subject.Glow);
+                    _preview.ShowBase(subject.Glow, subject.BaseArt);
                     break;
             }
         }

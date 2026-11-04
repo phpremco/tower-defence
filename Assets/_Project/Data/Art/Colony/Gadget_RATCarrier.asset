@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Gadget_RATCarrier
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 35dd3dc0f61837843890ceb34a773c38, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 4d608e6728738af4bb62d7101fb6aca8, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: ebd6ecb577dfe1e4b8ac500b05ebe81d, type: 2}
+  _scale: 1
+  _yaw: 180
+  _bodyCentrePivot: 0
+  _height: 0.10647655
+  _lodScreenHeight: 0.02
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 0
+    _clip: {fileID: -9219896856739254614, guid: 35dd3dc0f61837843890ceb34a773c38, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 0
+    _clip: {fileID: 7580748598079008685, guid: 35dd3dc0f61837843890ceb34a773c38, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

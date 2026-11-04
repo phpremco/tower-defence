@@ -44,6 +44,8 @@ namespace Game.Editor
             new GeneratorStep("Tower looks", GenerateTowerLooks),
             // The Blender tower models: synced, turned into materials and tier art, and worn by the tower definitions.
             new GeneratorStep("Tower art", _ => BlenderTowerBuilder.ApplyToTowers(BlenderTowerBuilder.SyncAndBuild())),
+            // Our own side from Blender: the gate, the base, the resource node, the drones and the path objects.
+            new GeneratorStep("Colony art", _ => BlenderColonyBuilder.Apply(BlenderColonyBuilder.SyncAndBuild())),
             new GeneratorStep("Upgrades", c => c.Upgrades = CreateUpgrades(c.Roster.Standard, c.Roster.Hybrids, c.Drones)),
             new GeneratorStep("Codex", c => c.Codex = CreateCodex(c.Recipes, c.Bestiary)),
             new GeneratorStep("UI skin", c => c.Skin = CreateSkin()),

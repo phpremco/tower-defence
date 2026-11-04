@@ -31,3 +31,4 @@ MonoBehaviour:
   _color: {r: 0.4, g: 0.9, b: 1, a: 1}
   _skin: 11
   _accentColor: {r: 1, g: 0.22, b: 0.28, a: 1}
+  _art: {fileID: 11400000, guid: eeb2a15f119ea7347880aa2b4c339d7b, type: 2}

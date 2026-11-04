@@ -89,12 +89,14 @@ namespace Game.Editor
                 return 0;
             }
 
+            // An asset in a sub folder (Env/ResourceNode) names its files after the last part.
+            string name = Path.GetFileName(asset);
             string to = Path.Combine(TargetPath, asset);
             int copied = 0;
-            copied += CopyIfChanged(Path.Combine(from, asset + ".fbx"), Path.Combine(to, asset + ".fbx"));
-            copied += CopyIfChanged(Path.Combine(from, asset + "_LOD1.fbx"), Path.Combine(to, asset + "_LOD1.fbx"));
-            copied += CopyIfChanged(Path.Combine(from, asset + "_report.json"), Path.Combine(to, asset + "_report.json"));
-            copied += SyncMaps(from, to, asset);
+            copied += CopyIfChanged(Path.Combine(from, name + ".fbx"), Path.Combine(to, name + ".fbx"));
+            copied += CopyIfChanged(Path.Combine(from, name + "_LOD1.fbx"), Path.Combine(to, name + "_LOD1.fbx"));
+            copied += CopyIfChanged(Path.Combine(from, name + "_report.json"), Path.Combine(to, name + "_report.json"));
+            copied += SyncMaps(from, to, name);
 
             // Extra skins baked on the same mesh (the element bats): one folder of maps per skin.
             string skins = Path.Combine(from, SkinFolder);
@@ -102,8 +104,8 @@ namespace Game.Editor
             {
                 foreach (string skin in Directory.GetDirectories(skins))
                 {
-                    string name = Path.GetFileName(skin);
-                    copied += SyncMaps(skin, Path.Combine(to, SkinFolder, name), $"{asset}_{name}");
+                    string skinName = Path.GetFileName(skin);
+                    copied += SyncMaps(skin, Path.Combine(to, SkinFolder, skinName), $"{name}_{skinName}");
                 }
             }
 

@@ -166,6 +166,9 @@ namespace Game.Levels
         /// <summary>Raised with the index of a mining node once the drones have emptied it.</summary>
         public GameEvent<int> MineDepleted { get; } = new GameEvent<int>();
 
+        /// <summary>Raised with the index of a mining node once the drones have taken half its ore (for its look).</summary>
+        public GameEvent<int> MineHalved { get; } = new GameEvent<int>();
+
         /// <summary>Raised with the position of a tower or gate that has just been destroyed.</summary>
         public GameEvent<Vector3> StructureWrecked { get; } = new GameEvent<Vector3>();
 

@@ -5,8 +5,9 @@ using UnityEngine.Rendering;
 namespace Game.PathObjects
 {
     /// <summary>
-    /// Placeholder look of a path object, chosen by kind: a dark disc with a red light, a see-through field or a
-    /// glowing ball. A lava ball also throws embers behind it and lights the road it rolls over.
+    /// Look of a path object: its imported (Blender) model when it has one (<see cref="PathObjectArtRig"/>), else a
+    /// procedural model or a placeholder chosen by kind: a dark disc with a red light, a see-through field or a glowing
+    /// ball. A slow field keeps its see-through reach; a lava ball also throws embers behind it and lights the road.
     /// </summary>
     [RequireComponent(typeof(PathObject))]
     public sealed class PathObjectView : MonoBehaviour
@@ -44,11 +45,18 @@ namespace Game.PathObjects
 
         private Transform _light;
         private PathObject _object;
+        private PathObjectArtRig _art;
 
         public void Initialize(PathObject pathObject)
         {
             _object = pathObject;
             PathObjectDefinition definition = pathObject.Definition;
+            if (definition.Art != null)
+            {
+                BuildArt(definition);
+                return;
+            }
+
             if (definition.Look != PathObjectLook.None)
             {
                 BuildLook(definition);
@@ -100,6 +108,32 @@ namespace Game.PathObjects
             if (definition.Look == PathObjectLook.LavaBall)
             {
                 model.AddComponent<Spinner>().Initialize(LavaBallSpin);
+                BuildEmbers(definition.Color);
+                BuildGlowLight(definition.Color);
+            }
+        }
+
+        // The imported model brings its own rings, cap and shell; the view keeps what is light, not mesh: a slow field's
+        // reach on the ground and its rising motes, a lava ball's embers and glow.
+        private void BuildArt(PathObjectDefinition definition)
+        {
+            _art = new PathObjectArtRig(transform, definition);
+            if (definition.Kind == PathObjectKind.SlowField)
+            {
+                GameObject disc = PlaceholderVisuals.CreatePrimitive(
+                    PrimitiveType.Cylinder, definition.Color, transform, new Vector3(0f, 0.05f, 0f), new Vector3(definition.Radius * 2f, 0.01f, definition.Radius * 2f));
+                disc.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(definition.Color, FieldAlpha, FieldEmission);
+                _light = disc.transform;
+            }
+
+            if (definition.Look == PathObjectLook.Chrono)
+            {
+                ParticleSystem motes = ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare);
+                ParticleKit.SetRate(motes, ChronoMoteRate);
+            }
+
+            if (definition.Look == PathObjectLook.LavaBall)
+            {
                 BuildEmbers(definition.Color);
                 BuildGlowLight(definition.Color);
             }
@@ -191,10 +225,20 @@ namespace Game.PathObjects
             go.AddComponent<LightFlicker>().Initialize(BallLightIntensity, BallLightFlicker, BallLightFlickerSpeed);
         }
 
+        private void LateUpdate() => _art?.LateTick();
+
+        private void OnDestroy() => _art?.Dispose();
+
         // The light of a mine and the surface of a field breathe slowly, so placed objects read as active.
         private void Update()
         {
-            if (_light == null || _object == null)
+            if (_object == null)
+            {
+                return;
+            }
+
+            _art?.Tick(transform.position, Time.deltaTime);
+            if (_light == null)
             {
                 return;
             }

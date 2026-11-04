@@ -20,11 +20,17 @@ namespace Game.PathObjects
             }
         }
 
-        /// <summary>A display copy of the path object, standing on y = 0 under <paramref name="parent"/>.</summary>
+        /// <summary>A display copy of the path object, standing on y = 0 under <paramref name="parent"/>: the imported model when it has one.</summary>
         public static GameObject Build(Transform parent, PathObjectDefinition definition)
         {
             var go = new GameObject(definition.DisplayName);
             go.transform.SetParent(parent, false);
+            if (definition.Art != null)
+            {
+                ArtModel.CreateStill(go.transform, definition.Art);
+                return go;
+            }
+
             go.AddComponent<MeshFilter>().sharedMesh = MeshFor(definition.Look);
             go.AddComponent<MeshRenderer>().sharedMaterials = ModelPalette.Create(definition.Color);
             return go;

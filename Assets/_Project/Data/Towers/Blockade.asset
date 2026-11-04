@@ -61,3 +61,4 @@ MonoBehaviour:
   _modelScale: 1.4
   _keepModelColours: 0
   _art: {fileID: 11400000, guid: 013d1bfae390e294287f562740d67c9a, type: 2}
+  _gateArt: {fileID: 11400000, guid: e9f5e01d5f01b584ea2fc5ec1b49c8bd, type: 2}

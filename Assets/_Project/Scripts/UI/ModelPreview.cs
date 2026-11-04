@@ -120,16 +120,16 @@ namespace Game.UI
         public void ShowDrone(DroneDefinition drone)
         {
             Clear();
-            DroneModelBuilder.Rig rig = DroneModelBuilder.Build(_turntable, drone);
+            DroneModelBuilder.Rig rig = DroneModelBuilder.BuildDisplay(_turntable, drone);
             _spinners.AddRange(rig.Rotors);
             Frame();
         }
 
-        /// <summary>The outpost with its ring and dish turning, in the glow colour of the level.</summary>
-        public void ShowBase(Color glow)
+        /// <summary>The base with its dish turning: the imported model when there is one, else the outpost in the level's glow colour.</summary>
+        public void ShowBase(Color glow, Game.Levels.BaseArtDefinition art = null)
         {
             Clear();
-            Game.Levels.LevelVisualBuilder.BuildBaseDisplay(_turntable, glow);
+            Game.Levels.LevelVisualBuilder.BuildBaseDisplay(_turntable, glow, art);
             Frame();
         }
 

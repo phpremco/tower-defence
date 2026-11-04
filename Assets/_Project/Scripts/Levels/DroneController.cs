@@ -12,6 +12,7 @@ namespace Game.Levels
     public sealed class DroneController : MonoBehaviour
     {
         private const float SpawnSpread = 0.6f;
+        private const float HalfStockShare = 0.5f;
 
         private LevelContext _context;
         private Transform _parent;
@@ -20,6 +21,7 @@ namespace Game.Levels
         private Vector3[] _mineNodes;
         private float[] _mineStocks;
         private bool[] _mineEmpty;
+        private bool[] _mineHalved;
         private RepairDispatcher _repairs;
         private readonly List<Drone> _drones = new List<Drone>();
 
@@ -38,6 +40,7 @@ namespace Game.Levels
             _mineNodes = new Vector3[mines.Length];
             _mineStocks = new float[mines.Length];
             _mineEmpty = new bool[mines.Length];
+            _mineHalved = new bool[mines.Length];
             for (int i = 0; i < mines.Length; i++)
             {
                 _mineNodes[i] = context.Level.Grid.CellToWorld(mines[i]);
@@ -95,12 +98,19 @@ namespace Game.Levels
             _context.DronesChanged.Raise();
         }
 
-        // A delivery is when a node may have run dry, so that is when the field is told about it.
+        // A delivery is when a node may have run dry or half dry, so that is when the field is told about it.
         private void OnCollected(int value)
         {
             _context.Wallet.Add(value);
+            float half = _context.Level.MineStock * HalfStockShare;
             for (int i = 0; i < _mineStocks.Length; i++)
             {
+                if (!_mineHalved[i] && _mineStocks[i] <= half)
+                {
+                    _mineHalved[i] = true;
+                    _context.MineHalved.Raise(i);
+                }
+
                 if (!_mineEmpty[i] && _mineStocks[i] <= 0f)
                 {
                     _mineEmpty[i] = true;

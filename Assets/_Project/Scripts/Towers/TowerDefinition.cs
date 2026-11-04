@@ -60,6 +60,8 @@ namespace Game.Towers
 
         /// <summary>The imported model per level; when set it replaces the procedural shape and the model above.</summary>
         [SerializeField] private TowerArtDefinition _art;
+        [Tooltip("A gate's imported look (pylons, beam, panels, wreck); empty keeps the procedural gate.")]
+        [SerializeField] private GateArtDefinition _gateArt;
 
         public string Id => name;
         public string DisplayName => _displayName;
@@ -94,6 +96,7 @@ namespace Game.Towers
 
         /// <summary>The imported (Blender) look, or null for the procedural shape.</summary>
         public TowerArtDefinition Art => _art;
+        public GateArtDefinition GateArt => _gateArt;
         public int MaxLevelIndex => _levels.Length - 1;
 
         /// <summary>Price to build the tower, which is the cost of its first level.</summary>
