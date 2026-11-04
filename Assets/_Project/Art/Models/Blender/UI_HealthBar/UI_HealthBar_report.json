@@ -1,0 +1,50 @@
+{
+  "textures": {
+    "UI_HealthBar": {
+      "file": "UI_HealthBar.png",
+      "size": [
+        256,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "alpha",
+      "channels": "atlas rows (V bottom-up): armour 0-0.25, fill 0.25-0.5, plate 0.5-1. Plate: R top rim, G shade, A cover (draw at PlateColor, alpha 0.5*A). Fill: R sheen, G body, B 10 % ticks, A cover. Armour: eight segments, R sheen, G body, A cover. Colour = tint * G + R * 0.35 (B darkens by 0.25)"
+    }
+  },
+  "meshes": {
+    "HealthBar_Plate": {
+      "tris": 2,
+      "dims": [
+        0.935,
+        0.0,
+        0.272
+      ],
+      "uv_sets": 2,
+      "pivot": "health line centre (EnemyView _barY)",
+      "note": "plate behind the lines (0.004 further from the camera); UV2.x 0..1 along the bar: the shader clips UV2.x > _Fill (cut from the right) so the mesh is never scaled"
+    },
+    "HealthBar_Fill": {
+      "tris": 2,
+      "dims": [
+        0.85,
+        0.0,
+        0.085
+      ],
+      "uv_sets": 2,
+      "pivot": "health line centre (EnemyView _barY)",
+      "note": "health line; pivot = bar anchor; UV2.x 0..1 along the bar: the shader clips UV2.x > _Fill (cut from the right) so the mesh is never scaled"
+    },
+    "HealthBar_Armour": {
+      "tris": 2,
+      "dims": [
+        0.85,
+        0.0,
+        0.06
+      ],
+      "uv_sets": 2,
+      "pivot": "health line centre (EnemyView _barY)",
+      "note": "armour line above the health line; UV2.x 0..1 along the bar: the shader clips UV2.x > _Fill (cut from the right) so the mesh is never scaled"
+    }
+  },
+  "round": 25
+}

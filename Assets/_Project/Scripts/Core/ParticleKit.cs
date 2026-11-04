@@ -53,6 +53,33 @@ namespace Game.Core
             return system;
         }
 
+        /// <summary>
+        /// Dresses a system in one cell of the Blender particle atlas (README round 25b): additive for motes, embers, frost and
+        /// chrono motes, covering for drips, splats and goo. Keeps the default look when the art is not registered.
+        /// </summary>
+        public static ParticleSystem UseCell(ParticleSystem system, MarkerArt.ParticleCell cell)
+        {
+            MarkerArt art = MarkerArt.Active;
+            Material material = art != null ? art.Particles(cell) : null;
+            if (material == null)
+            {
+                return system;
+            }
+
+            system.GetComponent<ParticleSystemRenderer>().sharedMaterial = material;
+            ParticleSystem.TextureSheetAnimationModule sheet = system.textureSheetAnimation;
+            sheet.enabled = true;
+            sheet.mode = ParticleSystemAnimationMode.Grid;
+            sheet.numTilesX = MarkerArt.ParticleColumns;
+            sheet.numTilesY = MarkerArt.ParticleRows;
+            sheet.animation = ParticleSystemAnimationType.WholeSheet;
+            // The grid counts frames from the top-left like the atlas, so the cell index is the frame.
+            float frame = ((int)cell + 0.5f) / (MarkerArt.ParticleColumns * MarkerArt.ParticleRows);
+            sheet.frameOverTime = new ParticleSystem.MinMaxCurve(frame);
+            sheet.cycleCount = 1;
+            return system;
+        }
+
         public static void SetRate(ParticleSystem system, float rate)
         {
             ParticleSystem.EmissionModule emission = system.emission;

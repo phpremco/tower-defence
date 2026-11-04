@@ -199,7 +199,7 @@ namespace Game.Editor
             var looks = new (string Id, PathObjectLook Look)[]
             {
                 ("SlowField", PathObjectLook.Chrono), ("Mine", PathObjectLook.Mine), ("LavaBall", PathObjectLook.LavaBall),
-                ("ExplosiveBarrel", PathObjectLook.Barrel), ("GroundDrone", PathObjectLook.GroundDrone), ("AntiAirNet", PathObjectLook.AirNet),
+                ("ExplosiveBarrel", PathObjectLook.Barrel), ("GroundDrone", PathObjectLook.GroundDrone),
             };
 
             foreach ((string id, PathObjectLook look) in looks)

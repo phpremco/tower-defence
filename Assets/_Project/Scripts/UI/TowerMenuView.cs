@@ -134,6 +134,7 @@ namespace Game.UI
             rect.anchoredPosition = new Vector2(x, LabelHeight + LabelGap);
             Destroy(button.GetComponent<LayoutElement>());
 
+            UiKit.UseTint(button);
             ColorBlock colors = button.colors;
             colors.normalColor = tint * 0.55f;
             colors.highlightedColor = tint;

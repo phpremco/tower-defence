@@ -1,0 +1,39 @@
+{
+  "textures": {
+    "Proj_EnemyBolt": {
+      "file": "Proj_EnemyBolt.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "spherical UVs. R hot veins, G body glow, B dark membrane spots (subtract: col *= 1 - 0.6 B). Additive or opaque emissive; tint = the creature's bolt colour"
+    }
+  },
+  "meshes": {
+    "Proj_EnemyBolt": {
+      "tris": 89,
+      "dims": [
+        0.155,
+        0.205,
+        0.16
+      ],
+      "uv_sets": 1,
+      "pivot": "glob centre",
+      "note": "0.14 glob, wake and three barbs trail to Unity -Z; replaces the core + halo spheres (CoreSize 0.12, HaloSize 0.26)"
+    },
+    "Proj_EnemyBolt_Glow": {
+      "tris": 4,
+      "dims": [
+        0.26,
+        0.5,
+        0.26
+      ],
+      "uv_sets": 1,
+      "pivot": "0.62 along",
+      "note": "Bolt_Core.png tinted warm, additive (the halo)"
+    }
+  },
+  "round": 25
+}

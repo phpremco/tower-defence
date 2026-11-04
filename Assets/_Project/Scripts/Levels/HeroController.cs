@@ -20,6 +20,8 @@ namespace Game.Levels
         private const float SpotAlpha = 0.16f;
         private const float SpotMargin = 0.1f;
         private const float SpotEmission = 0.35f;
+        // The painted rails carry their own falloff, so they show stronger than the old flat strip.
+        private const float PaintedSpotAlpha = 0.55f;
         private static readonly Color SpotColor = new Color(0.78f, 0.8f, 0.86f);
 
         private LevelContext _context;
@@ -110,6 +112,17 @@ namespace Game.Levels
         private static void CreateSpotMarker(Vector3 position, Vector3 along, int widthCells, float cellSize, Transform parent)
         {
             var size = new Vector3(cellSize * (widthCells - SpotMargin), 0.02f, cellSize * (1f - SpotMargin));
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer painted = art != null ? art.Place(MarkerKind.HeroSpot, parent, "HeroSpot") : null;
+            if (painted != null)
+            {
+                // README round 25b: two rails and a crest across the road in the post colour, a unit quad scaled to the rung.
+                painted.transform.SetPositionAndRotation(position + Vector3.up * SpotHeight, Quaternion.LookRotation(along));
+                painted.transform.localScale = new Vector3(size.x, 1f, size.z);
+                MarkerArt.SetTint(painted, new MaterialPropertyBlock(), new Color(SpotColor.r, SpotColor.g, SpotColor.b, PaintedSpotAlpha));
+                return;
+            }
+
             GameObject marker = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, SpotColor, parent, position + Vector3.up * SpotHeight, size);
             marker.transform.rotation = Quaternion.LookRotation(along);
             marker.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(SpotColor, SpotAlpha, SpotEmission);

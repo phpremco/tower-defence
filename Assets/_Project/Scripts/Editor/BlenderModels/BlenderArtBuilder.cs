@@ -16,6 +16,7 @@ namespace Game.Editor
     {
         public const string ArtDataFolder = "Assets/_Project/Data/Art";
         public const string MaterialFolder = "Assets/_Project/Art/Materials/Blender";
+        private const float CreatureExportYaw = 180f;
         private const string EnemyDataFolder = "Assets/_Project/Data/Enemies";
         private const float FramesPerSecond = 30f;
         private const string PreviewPrefix = "__preview__";
@@ -159,6 +160,8 @@ namespace Game.Editor
             so.FindProperty("_lowSecondMaterial").objectReferenceValue = lowSecond;
             so.FindProperty("_scale").floatValue = entry.Scale;
             so.FindProperty("_bodyCentrePivot").boolValue = entry.BodyCentrePivot;
+            // Every creature export faces -Z once imported (heads at -Z, 2026-11-04): turned half round to walk head first.
+            so.FindProperty("_yaw").floatValue = CreatureExportYaw;
             so.FindProperty("_height").floatValue = ModelTop(model);
             so.FindProperty("_lodScreenHeight").floatValue = entry.Scale < BlenderArtEntry.SpeciesScale ? BossLodScreenHeight : CreatureLodScreenHeight;
             so.FindProperty("_deathFade").vector2Value = DeathFade(entry, clips);

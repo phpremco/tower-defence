@@ -227,7 +227,9 @@ namespace Game.UI
 
         private void BuildGlobe(RectTransform view)
         {
-            RawImage halo = CreateRawImage("Halo", view, PlanetPainter.PaintHalo(HaloTexture), HaloColor);
+            // The halo painted in Blender (README round 25), tinted here; the code halo only without the art set.
+            Texture2D haloTexture = UiArtSet.Active != null && UiArtSet.Active.MapHalo != null ? UiArtSet.Active.MapHalo : PlanetPainter.PaintHalo(HaloTexture);
+            RawImage halo = CreateRawImage("Halo", view, haloTexture, HaloColor);
             _halo = halo.rectTransform;
             _haloImage = halo;
 

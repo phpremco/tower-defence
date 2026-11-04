@@ -17,6 +17,7 @@ namespace Game.UI
 
         public static void Tint(Button button, Color tint)
         {
+            UiKit.UseTint(button);
             ColorBlock colors = button.colors;
             colors.normalColor = tint * NormalShare;
             colors.highlightedColor = tint;

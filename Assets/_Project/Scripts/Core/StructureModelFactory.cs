@@ -461,25 +461,6 @@ namespace Game.Core
             return b.ToMesh("Barrel");
         }
 
-        /// <summary>An anti-air net: two posts with a glowing strand between them.</summary>
-        public static Mesh AirNet()
-        {
-            var b = new PropMeshBuilder();
-            for (int side = -1; side <= 1; side += 2)
-            {
-                b.AddTube(new[] { new Vector3(0.4f * side, 0.02f, 0f), new Vector3(0.4f * side, 0.9f, 0f) }, new[] { 0.06f, 0.035f }, 6, Metal, false);
-                b.AddBlob(new Vector3(0.4f * side, 0.95f, 0f), Vector3.one * 0.06f, 3, 6, 0f, 0, Glow, false);
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                float y = 0.2f + i * 0.2f;
-                b.AddBox(new Vector3(0f, y, 0f), new Vector3(0.8f, 0.02f, 0.02f), Glow);
-            }
-
-            return b.ToMesh("AirNet");
-        }
-
         /// <summary>A resource node: a boulder with a cluster of golden crystals that collector drones mine.</summary>
         public static Mesh MiningNode()
         {

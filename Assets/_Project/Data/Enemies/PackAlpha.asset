@@ -47,8 +47,6 @@ MonoBehaviour:
   _scale: 1.3
   _shape: 34
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: 6008deb61071106438cfa5f18b8fffc5, type: 2}
   _voice: {fileID: 11400000, guid: b27127c04e6955b46a6318550d68fff9, type: 2}
   _description: 'The alpha: a howl that sends the whole pack running.'

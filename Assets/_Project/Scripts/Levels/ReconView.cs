@@ -29,6 +29,13 @@ namespace Game.Levels
         private const float RingEmission = 2.5f;
         private const int RingSegments = 40;
         private const float ScoutSize = 0.9f;
+        // The painted probe is 0.3 across; twice that reads at play zoom without becoming the old 0.9 ball.
+        private const float ProbeScale = 2f;
+        private const float ProbeLightIntensity = 2f;
+        private const float ProbeLightRange = 2.5f;
+        // The painted pulse ring sits at 0.39 of the quad: this many quad units per unit of ring radius.
+        private const float PulseQuadPerRadius = 2.56f;
+        private const float MinHeading = 0.000001f;
         private const float ScoutHeight = 0.6f;
         private const float ScoutEmission = 4f;
         private const float TrailWidth = 0.7f;
@@ -50,6 +57,7 @@ namespace Game.Levels
             public Material Material;
             public Color Colour;
             public float Phase;
+            public bool Painted;
         }
 
         private enum Phase
@@ -184,17 +192,30 @@ namespace Game.Levels
                 Pulse pulse = _pulses[i];
                 float t = Mathf.Repeat(_elapsed / RingPeriod + pulse.Phase, 1f);
                 float radius = Mathf.Lerp(RingStartRadius, RingEndRadius, Mathf.Sqrt(t));
-                pulse.Ring.localScale = new Vector3(radius, 1f, radius);
+                pulse.Ring.localScale = pulse.Painted ? new Vector3(radius * PulseQuadPerRadius, 1f, radius * PulseQuadPerRadius) : new Vector3(radius, 1f, radius);
                 Color colour = pulse.Colour;
                 colour.a = RingAlpha * (1f - t) * (1f - t);
-                pulse.Material.color = colour;
+                if (pulse.Painted)
+                {
+                    pulse.Material.SetColor(MarkerArt.Tint, colour);
+                }
+                else
+                {
+                    pulse.Material.color = colour;
+                }
             }
 
             float share = Mathf.Clamp01(_elapsed / (HoldSeconds * ScoutShare));
             for (int i = 0; i < _scouts.Count; i++)
             {
                 Scout scout = _scouts[i];
-                scout.Light.position = PointAlong(scout, share * scout.Length) + Vector3.up * ScoutHeight;
+                Vector3 at = PointAlong(scout, share * scout.Length) + Vector3.up * ScoutHeight;
+                Vector3 heading = at - scout.Light.position;
+                scout.Light.position = at;
+                if (heading.sqrMagnitude > MinHeading)
+                {
+                    scout.Light.rotation = Quaternion.LookRotation(heading);
+                }
             }
         }
 
@@ -237,6 +258,17 @@ namespace Game.Levels
         // One thin flat ring of unit radius, scaled out as it pulses, with its own see-through material to fade.
         private Pulse BuildPulse(Vector3 centre, Color colour, float phase)
         {
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer painted = art != null ? art.Place(MarkerKind.RoutePulse, _root, "SpawnPulse") : null;
+            if (painted != null)
+            {
+                // README round 25b: the painted pulse ring on a flat quad, scaled out and faded.
+                painted.transform.position = centre;
+                var own = new Material(painted.sharedMaterial);
+                painted.sharedMaterial = own;
+                return new Pulse { Ring = painted.transform, Material = own, Colour = colour, Phase = phase, Painted = true };
+            }
+
             if (_ringMesh == null)
             {
                 var builder = new PropMeshBuilder(1);
@@ -258,6 +290,12 @@ namespace Game.Levels
         // A bright light that runs the route and leaves it lit behind it for as long as the recon lasts.
         private Scout BuildScout(Vector3[] route, Color colour)
         {
+            MarkerArt art = MarkerArt.Active;
+            if (art != null && art.Scout.IsComplete && art.Has(MarkerKind.ScoutTrail))
+            {
+                return Measure(new Scout { Light = BuildProbe(art, route[0] + Vector3.up * ScoutHeight, colour), Route = route, Along = new float[route.Length] });
+            }
+
             GameObject light = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(colour, Color.white, 0.4f), _root, route[0] + Vector3.up * ScoutHeight, Vector3.one * ScoutSize, ScoutEmission);
             light.name = "Scout";
             light.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
@@ -272,7 +310,52 @@ namespace Game.Levels
                 new[] { new GradientAlphaKey(0.9f, 0f), new GradientAlphaKey(0.5f, 1f) });
             trail.colorGradient = gradient;
 
-            var scout = new Scout { Light = light.transform, Route = route, Along = new float[route.Length] };
+            return Measure(new Scout { Light = light.transform, Route = route, Along = new float[route.Length] });
+        }
+
+        // README round 25b: the lit recon probe, lens forward, a small light at its lamp and a painted trail from its tail.
+        private Transform BuildProbe(MarkerArt art, Vector3 start, Color colour)
+        {
+            var probe = new GameObject("Scout");
+            probe.transform.SetParent(_root, false);
+            probe.transform.position = start;
+            probe.transform.localScale = Vector3.one * ProbeScale;
+            probe.AddComponent<MeshFilter>().sharedMesh = art.Scout.Mesh;
+            var renderer = probe.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = art.Scout.Material(ModelQuality.IsLow);
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+
+            var lamp = new GameObject("Lamp");
+            lamp.transform.SetParent(probe.transform, false);
+            lamp.transform.localPosition = art.Scout.SocketB;
+            var light = lamp.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = colour;
+            light.intensity = ProbeLightIntensity;
+            light.range = ProbeLightRange;
+            light.shadows = LightShadows.None;
+
+            var tail = new GameObject("Trail");
+            tail.transform.SetParent(probe.transform, false);
+            tail.transform.localPosition = art.Scout.SocketA;
+            var trail = tail.AddComponent<TrailRenderer>();
+            trail.time = TrailSeconds;
+            trail.widthMultiplier = TrailWidth;
+            trail.minVertexDistance = 0.1f;
+            trail.textureMode = LineTextureMode.Stretch;
+            trail.sharedMaterial = art.Material(MarkerKind.ScoutTrail);
+            trail.shadowCastingMode = ShadowCastingMode.Off;
+            var gradient = new Gradient();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(colour, 0f), new GradientColorKey(colour, 1f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.5f, 1f) });
+            trail.colorGradient = gradient;
+            return probe.transform;
+        }
+
+        private static Scout Measure(Scout scout)
+        {
+            Vector3[] route = scout.Route;
             for (int i = 1; i < route.Length; i++)
             {
                 scout.Along[i] = scout.Along[i - 1] + Vector3.Distance(route[i - 1], route[i]);

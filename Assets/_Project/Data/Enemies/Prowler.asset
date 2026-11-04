@@ -46,8 +46,6 @@ MonoBehaviour:
   _scale: 0.62
   _shape: 24
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: 56b99676ee5f0c74e9f130b93f4aabb4, type: 2}
   _voice: {fileID: 11400000, guid: 9e978155aac60cd4a92c11084220a6cc, type: 2}
   _description: Pack hunter. When a pack mate falls the rest run in a rage; kill them fast or not at all.

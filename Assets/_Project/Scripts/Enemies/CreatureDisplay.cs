@@ -22,6 +22,8 @@ namespace Game.Enemies
             ModelArtDefinition art = definition.Art;
             display._scale = definition.Scale * art.Scale;
             display._model = CreatureModel.Create(root, art, display._scale, ModelQuality.IsLow);
+            // Shown as framed before the creatures were turned to walk head first: the face to the camera side (-Z).
+            display._model.Root.localRotation = Quaternion.identity;
             display._clips = new CreatureClips(display._model.Player, art, System.Array.Empty<string>());
             display._clips.Restart();
             display._model.Player.Evaluate();

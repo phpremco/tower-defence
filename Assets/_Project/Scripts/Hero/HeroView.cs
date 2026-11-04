@@ -122,6 +122,8 @@ namespace Game.Hero
         private const float LyingSparkRate = 1.5f;
         private const float VisorFlickerSpeed = 30f;
         private const float StandRingRadius = 0.5f;
+        // Middle of the painted ring band (0.47-0.53) at scale 1.
+        private const float PaintedRingRadius = 0.5f;
         private const float StandRingThickness = 0.02f;
         private const float StandRingEmission = 1.5f;
         private const float RingSeconds = 0.45f;
@@ -188,6 +190,7 @@ namespace Game.Hero
         private Material _emblemDownMaterial;
         private Renderer _beaconRenderer;
         private Renderer _emblemRenderer;
+        private WorldBar _worldBar;
         private Transform _bar;
         private Renderer _barRenderer;
         private Transform _ring;
@@ -317,6 +320,13 @@ namespace Game.Hero
 
         private void BuildMarkers()
         {
+            MarkerArt art = MarkerArt.Active;
+            if (art != null && art.Has(MarkerKind.HeroRing) && art.Has(MarkerKind.HeroBeacon) && art.Has(MarkerKind.HeroEmblem))
+            {
+                BuildPaintedMarkers(art);
+                return;
+            }
+
             // A thin golden ring on the ground keeps the hero easy to find among towers and enemies, open in the
             // middle so the boots stand on bare ground instead of sinking into a disc.
             var ringBuilder = new PropMeshBuilder();
@@ -339,6 +349,46 @@ namespace Game.Hero
             _ring.gameObject.SetActive(false);
 
             BuildBeacon();
+        }
+
+        // README round 25b: three arcs of light at the feet, a column of rising bands and a faceted crest over the head.
+        private void BuildPaintedMarkers(MarkerArt art)
+        {
+            MeshRenderer stand = art.Place(MarkerKind.HeroRing, transform, "StandRing");
+            stand.transform.localPosition = new Vector3(0f, StandRingThickness, 0f);
+            stand.transform.localScale = Vector3.one * (StandRingRadius / PaintedRingRadius);
+            MarkerArt.SetTint(stand, new MaterialPropertyBlock(), _trim);
+
+            _worldBar = WorldBar.Create(art, transform, new Vector3(0f, BarY, 0f), BarWidth, BarHeight, HealthyColor, HealthyColor, false);
+            _bar = _worldBar.Root;
+
+            GameObject ring = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, _trim, transform, new Vector3(0f, 0.1f, 0f), new Vector3(1f, 0.02f, 1f), RingEmission);
+            ring.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(_trim, RingAlpha, RingEmission);
+            _ring = ring.transform;
+            _ring.gameObject.SetActive(false);
+
+            MeshRenderer beacon = art.Place(MarkerKind.HeroBeacon, transform, "Beacon");
+            beacon.transform.localPosition = new Vector3(0f, BeaconBottom, 0f);
+            _beaconRenderer = beacon;
+            _beaconMaterial = Tinted(beacon.sharedMaterial, _trim);
+            _beaconDownMaterial = Tinted(beacon.sharedMaterial, DownColor);
+            _beaconRenderer.sharedMaterial = _beaconMaterial;
+
+            MeshRenderer emblem = art.Place(MarkerKind.HeroEmblem, transform, "Emblem");
+            emblem.transform.localPosition = new Vector3(0f, BeaconTop, 0f);
+            _emblemRenderer = emblem;
+            _emblemMaterial = Tinted(emblem.sharedMaterial, _trim);
+            _emblemDownMaterial = Tinted(emblem.sharedMaterial, DownColor);
+            _emblemRenderer.sharedMaterial = _emblemMaterial;
+            _emblem = emblem.transform;
+        }
+
+        // The beacon and crest swap their whole material when the hero goes down, so each colour gets its own copy.
+        private static Material Tinted(Material shared, Color colour)
+        {
+            var material = new Material(shared);
+            material.SetColor(MarkerArt.Tint, colour);
+            return material;
         }
 
         // How far the hip comes down when the thigh and the knee bend by these angles, with the leg lengths of the model.
@@ -449,9 +499,17 @@ namespace Game.Hero
         private void Refresh()
         {
             float fraction = _hero.Health.Fraction;
-            _bar.gameObject.SetActive(!_hero.IsDown && fraction < 1f);
-            _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
-            _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), 1.5f);
+            if (_worldBar != null)
+            {
+                _worldBar.Set(fraction, 0f, !_hero.IsDown && fraction < 1f);
+                _worldBar.SetColour(Color.Lerp(DamagedColor, HealthyColor, fraction));
+            }
+            else
+            {
+                _bar.gameObject.SetActive(!_hero.IsDown && fraction < 1f);
+                _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
+                _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), 1.5f);
+            }
 
             // A downed hero sent to another post appears there already lying down.
             if (_hero.IsDown && !_down)

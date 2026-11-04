@@ -17,6 +17,14 @@ namespace Game.Levels
         private const float RouteDotSpacing = 0.9f;
         private const float RouteDashLength = 0.45f;
         private const float RouteHeight = 0.12f;
+        // Road and flight light trails (README round 25b): strip width per cell, cells per streak tile, colour (alpha = strength).
+        private const float RoadTrailWidth = 0.42f;
+        private const float RoadTrailCells = 3f;
+        private const float TrailStep = 0.5f;
+        private const float FlightTrailWidth = 0.16f;
+        private const float FlightTrailCells = 2f;
+        private static readonly Color RoadTrailColour = new Color(1f, 0.85f, 0.45f, 0.6f);
+        private static readonly Color FlightTrailColour = new Color(0.55f, 0.95f, 0.95f, 0.7f);
         private const float RouteEmission = 1.4f;
         private const float RouteAlpha = 0.45f;
         private const float BaseScale = 1.2f;
@@ -86,7 +94,7 @@ namespace Game.Levels
 
             // The imported environment (kit, decor, burrows) is drawn instanced; a theme without a set builds none.
             EnvironmentInstancer instancer = theme.Environment != null ? EnvironmentInstancer.Create(parent) : null;
-            BuildLandscape(level, theme, parent, particleScale, instancer);
+            TerrainField field = BuildLandscape(level, theme, parent, particleScale, instancer);
             if (theme.Mist != null)
             {
                 GroundMistBuilder.Build(level, theme.Mist, parent, !groundMist || ModelQuality.IsLow);
@@ -103,7 +111,7 @@ namespace Game.Levels
                 return new Dictionary<int, GameObject>();
             }
 
-            BuildRoadArrows(level, grid, parent);
+            BuildRoadArrows(level, field, parent);
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildMiningNodes(level, grid, parent);
             BuildNests(level, grid, parent, instancer);
@@ -117,7 +125,7 @@ namespace Game.Levels
             return routes;
         }
 
-        private static void BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale, EnvironmentInstancer instancer)
+        private static TerrainField BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale, EnvironmentInstancer instancer)
         {
             var road = new RoadShape(level);
             var field = new TerrainField(level, road);
@@ -132,6 +140,7 @@ namespace Game.Levels
             }
 
             AmbientParticlesBuilder.Build(level, theme, parent, particleScale);
+            return field;
         }
 
         // The flora sway in the environment shader reads the set's wind from shader globals.
@@ -143,8 +152,15 @@ namespace Game.Levels
         }
 
         // Yellow chevrons on every other road cell show which way enemies walk.
-        private static void BuildRoadArrows(LevelDefinition level, GridMap grid, Transform parent)
+        private static void BuildRoadArrows(LevelDefinition level, TerrainField field, Transform parent)
         {
+            MarkerArt art = MarkerArt.Active;
+            if (art != null && art.Has(MarkerKind.RoadCue))
+            {
+                BuildRoadTrails(level, field, art, parent);
+                return;
+            }
+
             foreach (EnemyPath path in level.Paths)
             {
                 if (path.Flying || path.Waypoints == null)
@@ -165,6 +181,42 @@ namespace Game.Levels
                     PlaceChevron(level.Road.CentreOf(cells[i]), forward, parent);
                 }
             }
+        }
+
+        // README round 25b: soft light streaks that run along each road towards the base (one every three cells), on a
+        // ribbon that follows the corridor's centre line through its bends; they fade in at the gate and out at the base.
+        private static void BuildRoadTrails(LevelDefinition level, TerrainField field, MarkerArt art, Transform parent)
+        {
+            for (int i = 0; i < level.Paths.Length; i++)
+            {
+                EnemyPath path = level.Paths[i];
+                if (path.Flying || path.Waypoints == null)
+                {
+                    continue;
+                }
+
+                List<Vector3> points = OnGround(level.Road.Route(i), field);
+
+                RouteTrail.Build(art, MarkerKind.RoadCue, $"RoadTrail_{i}", parent, points, RoadTrailWidth * level.CellSize, 1f / (RoadTrailCells * level.CellSize), RoadTrailColour);
+            }
+        }
+
+        // The route cut into short steps that follow the ground (pools dig basins beside the road; banks rise), just over it.
+        private static List<Vector3> OnGround(Vector3[] route, TerrainField field)
+        {
+            var points = new List<Vector3>();
+            for (int i = 0; i < route.Length; i++)
+            {
+                int steps = i == 0 ? 1 : Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(route[i - 1], route[i]) / TrailStep));
+                for (int s = i == 0 ? 0 : 1; s <= (i == 0 ? 0 : steps); s++)
+                {
+                    Vector3 p = i == 0 ? route[0] : Vector3.Lerp(route[i - 1], route[i], s / (float)steps);
+                    p.y = field.HeightAt(p.x, p.z) + ArrowHeight;
+                    points.Add(p);
+                }
+            }
+
+            return points;
         }
 
         private static void PlaceChevron(Vector3 center, Vector3 forward, Transform parent, bool transparent = false)
@@ -377,6 +429,7 @@ namespace Game.Levels
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             renderer.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            ParticleKit.UseCell(system, MarkerArt.ParticleCell.Spore);
             system.Play();
             return system;
         }
@@ -570,6 +623,22 @@ namespace Game.Levels
         // A dashed line with a small arrow head at the end of each segment shows where flyers travel.
         private static void BuildFlightRoute(GridMap grid, EnemyPath path, Transform parent)
         {
+            MarkerArt art = MarkerArt.Active;
+            if (art != null && art.Has(MarkerKind.FlightCue))
+            {
+                // README round 25b: beads of light along the flight line instead of dashes and arrow heads.
+                var points = new Vector3[path.Waypoints.Length];
+                for (int i = 0; i < points.Length; i++)
+                {
+                    Vector3 point = grid.CellToWorld(path.Waypoints[i]);
+                    points[i] = new Vector3(point.x, RouteHeight, point.z);
+                }
+
+                RouteTrail.Build(art, MarkerKind.FlightCue, "FlightTrail", parent, points, FlightTrailWidth * grid.CellSize, 1f / (FlightTrailCells * grid.CellSize), FlightTrailColour);
+
+                return;
+            }
+
             for (int i = 1; i < path.Waypoints.Length; i++)
             {
                 Vector3 from = grid.CellToWorld(path.Waypoints[i - 1]);
@@ -620,6 +689,7 @@ namespace Game.Levels
             renderer.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
 
+            ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
             system.Emit(StarCount);
             system.Play();
         }

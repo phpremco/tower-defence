@@ -162,9 +162,6 @@ namespace Game.Tests
                     case PathObjectLook.LavaBall:
                         WithStill(art, model => Assert.IsNotNull(model.Find("Ball"), "the lava ball has no ball to roll"));
                         break;
-                    case PathObjectLook.AirNet:
-                        WithStill(art, model => Assert.IsNotNull(model.Find("Strand_L3"), "the air net has no strand posts"));
-                        break;
                 }
             }
         }

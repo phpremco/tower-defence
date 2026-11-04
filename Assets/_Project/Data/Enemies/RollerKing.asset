@@ -47,8 +47,6 @@ MonoBehaviour:
   _scale: 1.3
   _shape: 38
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: 48bf8a21d9a57c042bc7ba7d9f75452d, type: 2}
   _voice: {fileID: 11400000, guid: 7a2601f2a9a57244b8f7a019e6f50dc7, type: 2}
   _description: 'The roller king: a quake with every landing.'

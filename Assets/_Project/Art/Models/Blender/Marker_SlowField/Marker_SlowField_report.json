@@ -1,0 +1,29 @@
+{
+  "textures": {
+    "Marker_SlowField": {
+      "file": "Marker_SlowField.png",
+      "size": [
+        256,
+        256
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "disc, planar UVs. R rim at r 0.955, G two faint inner ripples (drive them outwards with uv' = 0.5 + (uv-0.5) * frac(-time*0.3) on a second sample; they wobble, so no target look), B soft fill that rises to the rim"
+    }
+  },
+  "meshes": {
+    "Marker_SlowField": {
+      "tris": 40,
+      "dims": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "radius": 1.0,
+      "note": "scale XZ by definition.Radius; place 0.05 up"
+    }
+  },
+  "round": 25
+}

@@ -174,7 +174,7 @@ namespace Game.UI
         {
             foreach (Material field in _gateFields)
             {
-                field.SetTextureOffset("_BaseMap", new Vector2(0f, time * GateScroll));
+                GlowDecal.SetScroll(field, new Vector2(0f, time * GateScroll));
             }
         }
 

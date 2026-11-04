@@ -19,7 +19,7 @@ MonoBehaviour:
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
   _scale: 1.4
-  _yaw: 0
+  _yaw: 180
   _bodyCentrePivot: 0
   _height: 1.0426464
   _lodScreenHeight: 0.05

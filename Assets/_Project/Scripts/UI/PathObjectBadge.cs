@@ -11,7 +11,6 @@ namespace Game.UI
         private static readonly Color BlastColor = new Color(1f, 0.6f, 0.3f);
         private static readonly Color RollColor = new Color(1f, 0.45f, 0.25f);
         private static readonly Color PatrolColor = new Color(0.5f, 0.95f, 1f);
-        private static readonly Color AirNetColor = new Color(0.55f, 0.85f, 1f);
 
         public static void For(PathObjectEffect effect, out IconType icon, out Color colour)
         {
@@ -33,10 +32,6 @@ namespace Game.UI
                     icon = IconType.Patrol;
                     colour = PatrolColor;
                     break;
-                case PathObjectEffect.AirNet:
-                    icon = IconType.Net;
-                    colour = AirNetColor;
-                    break;
                 default:
                     icon = IconType.Trap;
                     colour = TrapColor;
@@ -53,7 +48,6 @@ namespace Game.UI
                 case PathObjectEffect.Blast: return "Area blast";
                 case PathObjectEffect.Roll: return "Rolls and burns";
                 case PathObjectEffect.Patrol: return "Patrols the road";
-                case PathObjectEffect.AirNet: return "Catches flyers";
                 default: return "Trap";
             }
         }

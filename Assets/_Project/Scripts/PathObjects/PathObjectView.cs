@@ -15,6 +15,8 @@ namespace Game.PathObjects
         private const float MineEmission = 1.5f;
         private const float BallEmission = 2.5f;
         private const float FieldAlpha = 0.22f;
+        // README round 25b: the reach lies 0.05 over the ground.
+        private const float FieldHeight = 0.05f;
         private const float FieldEmission = 1.2f;
         private const float PulseSpeed = 3f;
         private const float LavaBallSpin = 120f;
@@ -44,6 +46,7 @@ namespace Game.PathObjects
         private static readonly Color MineBase = new Color(0.12f, 0.13f, 0.16f);
 
         private Transform _light;
+        private bool _paintedField;
         private PathObject _object;
         private PathObjectArtRig _art;
 
@@ -94,10 +97,7 @@ namespace Game.PathObjects
             bool field = definition.Kind == PathObjectKind.SlowField;
             if (field)
             {
-                GameObject disc = PlaceholderVisuals.CreatePrimitive(
-                    PrimitiveType.Cylinder, definition.Color, transform, new Vector3(0f, 0.05f, 0f), new Vector3(definition.Radius * 2f, 0.01f, definition.Radius * 2f));
-                disc.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(definition.Color, FieldAlpha, FieldEmission);
-                _light = disc.transform;
+                _light = BuildFieldDisc(definition);
             }
 
             if (definition.Look == PathObjectLook.Chrono)
@@ -120,15 +120,12 @@ namespace Game.PathObjects
             _art = new PathObjectArtRig(transform, definition);
             if (definition.Kind == PathObjectKind.SlowField)
             {
-                GameObject disc = PlaceholderVisuals.CreatePrimitive(
-                    PrimitiveType.Cylinder, definition.Color, transform, new Vector3(0f, 0.05f, 0f), new Vector3(definition.Radius * 2f, 0.01f, definition.Radius * 2f));
-                disc.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(definition.Color, FieldAlpha, FieldEmission);
-                _light = disc.transform;
+                _light = BuildFieldDisc(definition);
             }
 
             if (definition.Look == PathObjectLook.Chrono)
             {
-                ParticleSystem motes = ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare);
+                ParticleSystem motes = ParticleKit.UseCell(ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare), MarkerArt.ParticleCell.ChronoMote);
                 ParticleKit.SetRate(motes, ChronoMoteRate);
             }
 
@@ -145,7 +142,7 @@ namespace Game.PathObjects
         {
             Ring("ChronoRingOuter", definition.Color, definition.Radius * ChronoOuterShare, ChronoRingHeight, ChronoSpin, ChronoTilt);
             Ring("ChronoRingInner", Color.Lerp(definition.Color, Color.white, 0.5f), definition.Radius * ChronoInnerShare, ChronoRingHeight + 0.12f, -ChronoSpin * 1.6f, -ChronoTilt);
-            ParticleSystem motes = ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare);
+            ParticleSystem motes = ParticleKit.UseCell(ParticleKit.Create(transform, "ChronoMotes", new Vector3(0f, 0.1f, 0f), Color.Lerp(definition.Color, Color.white, 0.6f) * 1.6f, 2.2f, 3.2f, 0.03f, 0.06f, 0.05f, 0.15f, -0.02f, ChronoMotes, definition.Radius * ChronoOuterShare), MarkerArt.ParticleCell.ChronoMote);
             ParticleKit.SetRate(motes, ChronoMoteRate);
         }
 
@@ -167,6 +164,26 @@ namespace Game.PathObjects
         }
 
         // Embers spill from the ball as it moves: emission per distance, so a parked ball only smoulders.
+        // The field's reach on the ground: the painted ring with ripples running outwards (README round 25b), or a plain disc.
+        private Transform BuildFieldDisc(PathObjectDefinition definition)
+        {
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer painted = art != null ? art.Place(MarkerKind.SlowField, transform, "FieldReach") : null;
+            if (painted != null)
+            {
+                painted.transform.localPosition = new Vector3(0f, FieldHeight, 0f);
+                painted.transform.localScale = new Vector3(definition.Radius, 1f, definition.Radius);
+                MarkerArt.SetTint(painted, new MaterialPropertyBlock(), definition.Color);
+                _paintedField = true;
+                return painted.transform;
+            }
+
+            GameObject disc = PlaceholderVisuals.CreatePrimitive(
+                PrimitiveType.Cylinder, definition.Color, transform, new Vector3(0f, FieldHeight, 0f), new Vector3(definition.Radius * 2f, 0.01f, definition.Radius * 2f));
+            disc.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(definition.Color, FieldAlpha, FieldEmission);
+            return disc.transform;
+        }
+
         private void BuildEmbers(Color color)
         {
             var go = new GameObject("Embers");
@@ -209,6 +226,7 @@ namespace Game.PathObjects
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            ParticleKit.UseCell(system, MarkerArt.ParticleCell.Ember);
             system.Play();
         }
 
@@ -250,8 +268,8 @@ namespace Game.PathObjects
             }
             else
             {
-                float diameter = _object.Definition.Radius * 2f * pulse;
-                _light.localScale = new Vector3(diameter, 0.01f, diameter);
+                float radius = _object.Definition.Radius * pulse;
+                _light.localScale = _paintedField ? new Vector3(radius, 1f, radius) : new Vector3(radius * 2f, 0.01f, radius * 2f);
             }
         }
     }

@@ -27,6 +27,7 @@ namespace Game.Enemies
         private const float RingAlpha = 0.85f;
         private const float RingEmission = 2.5f;
         private const int RingSegments = 48;
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private const int PulseSparks = 60;
         private const int SporeBurst = 30;
         private const int VolleyBolts = 6;
@@ -42,6 +43,8 @@ namespace Game.Enemies
         private Renderer _beamTipRenderer;
         private Transform _ring;
         private Material _ringMaterial;
+        private Color _ringColour = Color.white;
+        private bool _paintedRing;
         private float _ringAge = float.PositiveInfinity;
         private float _ringRadius;
         private ParticleSystem _sparks;
@@ -155,9 +158,7 @@ namespace Game.Enemies
                 float t = Mathf.Clamp01(_ringAge / RingSeconds);
                 float radius = Mathf.Lerp(0.3f, _ringRadius, Mathf.Sqrt(t));
                 _ring.localScale = new Vector3(radius, 1f, radius);
-                Color color = _ringMaterial.color;
-                color.a = RingAlpha * (1f - t);
-                _ringMaterial.color = color;
+                SetRingColour(_ringColour, RingAlpha * (1f - t));
                 _ring.gameObject.SetActive(t < 1f);
             }
         }
@@ -167,10 +168,8 @@ namespace Game.Enemies
             _ringAge = 0f;
             _ringRadius = radius;
             _ring.position = new Vector3(centre.x, RingHeight, centre.z);
-            Color tint = color;
-            tint.a = RingAlpha;
-            _ringMaterial.color = tint;
-            _ringMaterial.SetColor("_EmissionColor", color * RingEmission);
+            _ringColour = color;
+            SetRingColour(color, RingAlpha);
             _ring.gameObject.SetActive(true);
 
             _sparks.transform.position = centre + Vector3.up * 0.3f;
@@ -274,9 +273,35 @@ namespace Game.Enemies
             return tip.transform;
         }
 
+        // The painted ring fades through its tint's alpha; the plain one through its colour and keeps its emission.
+        private void SetRingColour(Color colour, float alpha)
+        {
+            if (_paintedRing)
+            {
+                _ringMaterial.SetColor(MarkerArt.Tint, new Color(colour.r, colour.g, colour.b, alpha));
+                return;
+            }
+
+            _ringMaterial.color = new Color(colour.r, colour.g, colour.b, alpha);
+            _ringMaterial.SetColor(EmissionColorId, colour * RingEmission);
+        }
+
         // A thin ring of unit radius, scaled out as the shockwave travels, with its own copy of the see-through material.
         private Transform BuildRing()
         {
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer painted = art != null ? art.Place(MarkerKind.PulseRing, transform.parent, "PulseRing") : null;
+            if (painted != null)
+            {
+                // README round 25b: the serrated organic ring, scaled in XZ only.
+                _paintedRing = true;
+                _ringMaterial = new Material(painted.sharedMaterial);
+                painted.sharedMaterial = _ringMaterial;
+                _attachments.Track(painted.gameObject);
+                painted.gameObject.SetActive(false);
+                return painted.transform;
+            }
+
             var builder = new PropMeshBuilder(1);
             builder.AddTorus(Vector3.zero, Vector3.up, 1f, RingThickness, RingSegments, 6, 0);
             var ring = new GameObject("PulseRing");

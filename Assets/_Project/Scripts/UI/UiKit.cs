@@ -22,16 +22,14 @@ namespace Game.UI
         private static readonly Color ButtonSelected = new Color(0.4f, 0.75f, 1f);
         private static readonly Color ButtonDisabled = new Color(0.28f, 0.3f, 0.36f);
         private static readonly Color Accent = new Color(0.3f, 0.75f, 1f, 0.9f);
-        private const int StarTextureWidth = 1024;
-        private const int StarTextureHeight = 576;
         private const int MinTextSize = 16;
         private const float TextPadding = 18f;
         private const float SliderTrackHeight = 22f;
         private const float SliderTrackGap = 8f;
         private const float SliderHandleSize = 40f;
+        private const string WidePrefix = "Button";
+        private const string SquarePrefix = "ButtonSquare";
         private static readonly Vector2 OutlineDistance = new Vector2(2f, -2f);
-
-        private static Texture2D _starTexture;
 
         private static Font _fallbackFont;
 
@@ -207,6 +205,7 @@ namespace Game.UI
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
             button.colors = ButtonColors();
+            UseButtonArt(button, image, WidePrefix);
             if (onClick != null)
             {
                 button.onClick.AddListener(onClick);
@@ -239,6 +238,7 @@ namespace Game.UI
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
             button.colors = ButtonColors();
+            UseButtonArt(button, image, SquarePrefix);
             if (onClick != null)
             {
                 button.onClick.AddListener(onClick);
@@ -277,15 +277,17 @@ namespace Game.UI
 
         private static void AddStarfield(Transform canvas)
         {
-            if (_starTexture == null)
+            // The menu sky painted in Blender (README round 25: alpha = 3 x brightness over the camera's dark clear colour).
+            Texture2D sky = UiArtSet.Active != null ? UiArtSet.Active.Starfield : null;
+            if (sky == null)
             {
-                _starTexture = StarfieldPainter.Paint(StarTextureWidth, StarTextureHeight, new SpaceStyle());
+                return;
             }
 
             var go = new GameObject("Starfield", typeof(RectTransform));
             go.transform.SetParent(canvas, false);
             var image = go.AddComponent<RawImage>();
-            image.texture = _starTexture;
+            image.texture = sky;
             image.raycastTarget = false;
             Stretch(image.rectTransform);
         }
@@ -341,12 +343,70 @@ namespace Game.UI
             slider.handleRect = handle.rectTransform;
             slider.targetGraphic = handle;
             slider.colors = ButtonColors();
+            UseHandleArt(slider, handle);
             slider.direction = Slider.Direction.LeftToRight;
             slider.minValue = 0f;
             slider.maxValue = 1f;
             slider.value = value;
             slider.onValueChanged.AddListener(onChanged);
             return slider;
+        }
+
+        // README round 25: a text button wears the painted frame and swaps to its focus, pressed and disabled frames (gold
+        // corner brackets on focus) instead of a colour tint.
+        private static void UseButtonArt(Button button, Image image, string prefix)
+        {
+            UiArtSet art = UiArtSet.Active;
+            Sprite normal = art != null ? art.Sprite(prefix + "_Normal") : null;
+            if (normal == null)
+            {
+                return;
+            }
+
+            image.sprite = normal;
+            button.transition = Selectable.Transition.SpriteSwap;
+            Sprite focus = art.Sprite(prefix + "_Focus");
+            button.spriteState = new SpriteState { highlightedSprite = focus, selectedSprite = focus, pressedSprite = art.Sprite(prefix + "_Pressed"), disabledSprite = art.Sprite(prefix + "_Disabled") };
+        }
+
+        /// <summary>
+        /// Puts a text button back on the colour-tint path over the light grey frame, for a screen that colours its
+        /// buttons by state (the hero panel's green, yellow and red).
+        /// </summary>
+        public static void UseTint(Button button)
+        {
+            UiArtSet art = UiArtSet.Active;
+            var image = button.targetGraphic as Image;
+            if (art == null || image == null || button.transition != Selectable.Transition.SpriteSwap)
+            {
+                return;
+            }
+
+            bool square = image.sprite != null && image.sprite.name.StartsWith(SquarePrefix, System.StringComparison.Ordinal);
+            Sprite neutral = art.Sprite((square ? SquarePrefix : WidePrefix) + "_Neutral");
+            if (neutral != null)
+            {
+                button.transition = Selectable.Transition.ColorTint;
+                image.sprite = neutral;
+            }
+        }
+
+        // The Blender handle (README round 25) lights up by swapping to its focus sprite instead of a colour tint.
+        private static void UseHandleArt(Slider slider, Image handle)
+        {
+            UiArtSet art = UiArtSet.Active;
+            Sprite normal = art != null ? art.Sprite("Slider_Handle") : null;
+            Sprite focus = art != null ? art.Sprite("Slider_Handle_Focus") : null;
+            if (normal == null || focus == null)
+            {
+                return;
+            }
+
+            handle.sprite = normal;
+            handle.type = Image.Type.Simple;
+            handle.preserveAspect = true;
+            slider.transition = Selectable.Transition.SpriteSwap;
+            slider.spriteState = new SpriteState { highlightedSprite = focus, selectedSprite = focus, pressedSprite = focus, disabledSprite = normal };
         }
 
         private static ColorBlock ButtonColors()

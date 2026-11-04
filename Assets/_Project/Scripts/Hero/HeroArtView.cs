@@ -592,7 +592,7 @@ namespace Game.Hero
             {
                 _ignite = Mathf.Min(1f, _ignite + deltaTime / IgniteSeconds);
                 _blade.Root.localScale = new Vector3(BladeGlowWidth, Mathf.Max(0.01f, _ignite), BladeGlowWidth);
-                _bladeMaterial.SetColor(EmissionColorId, _bladeColour * (BladeEmission * _ignite));
+                GlowDecal.SetColour(_bladeMaterial, _bladeColour * (BladeEmission * _ignite));
             }
         }
 

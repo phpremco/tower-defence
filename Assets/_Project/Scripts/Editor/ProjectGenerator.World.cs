@@ -105,14 +105,6 @@ namespace Game.Editor
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
                 new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(210, 13f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(310, 20f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
 
-            SetModel(roster.Laser, "turret_single", 1.35f);
-            SetModel(roster.Cryo, "satelliteDish", 1.4f);
-            SetModel(roster.Tesla, "machine_wireless", 1.4f);
-            SetModel(roster.Railgun, "rocket_topA", 1.6f);
-            SetModel(roster.Support, "machine_generatorLarge", 0.9f);
-            SetModel(roster.Artillery, "turret_double", 1.7f);
-            SetModel(roster.StormRifle, "turret_single", 1.6f);
-            SetModel(roster.CryoBeam, "satelliteDish_large", 1.5f);
             return roster;
         }
 
@@ -226,7 +218,6 @@ namespace Game.Editor
             context.LavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f), PathObjectEffect.Roll, "Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.");
             context.Barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 200f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f), PathObjectEffect.Blast, "Stands beside the road. When the enemy passes close it bursts, and the blast reaches far across the road.");
             context.GroundDrone = CreatePathObject("GroundDrone", "Ground drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f), PathObjectEffect.Patrol, "Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.");
-            context.AntiAir = CreatePathObject("AntiAirNet", "Air net", PathObjectKind.SlowField, PathObjectPlacement.Beside, TargetLayers.Air, 60, 2.2f, 0.5f, 0f, 0.4f, 0f, 30f, new Color(0.9f, 0.9f, 0.4f), PathObjectEffect.AirNet, "A net of energy beside the road. Flyers passing over it are caught and slowed while it holds.");
         }
 
         // Three drones, one per job, bought with money in the level, so a drone competes with a tower for the same

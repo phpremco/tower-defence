@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "Cue_Trail": {
+      "file": "Cue_Trail.png",
+      "size": [
+        256,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "road light trail: U along the travel direction (tiles; the head points to +U), V across. R one long soft light streak per tile, G its glow plus a faint continuous guide line, B sparkle motes in the tail. Scroll: uv.x -= time * speed so the pulses run towards the base"
+    },
+    "Cue_Dash": {
+      "file": "Cue_Dash.png",
+      "size": [
+        256,
+        32
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "flight route: four light beads with short tails per tile (heads to +U), faint guide line in G; scroll like Cue_Trail. Replaces the dashes and the arrowheads"
+    },
+    "Cue_Pulse": {
+      "file": "Cue_Pulse.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "pulse ring: R soft ring at r 0.78, G centre dot. Scale the quad 0.4 -> 3 and fade alpha for an expanding pulse (spawn mouths, recon rings, route start)"
+    }
+  },
+  "meshes": {
+    "RoadCue_Strip": {
+      "tris": 2,
+      "dims": [
+        0.42,
+        1.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "1 unit long along Unity +Z (travel), 0.42 wide; U along. One per road cell (Road.CentreOf, LookRotation(forward)), or tile Cue_Trail on a LineRenderer ribbon"
+    },
+    "FlightCue_Strip": {
+      "tris": 2,
+      "dims": [
+        0.16,
+        1.0,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "1 unit long along Unity +Z, 0.16 wide; scale Z by the leg length"
+    }
+  },
+  "round": 25
+}

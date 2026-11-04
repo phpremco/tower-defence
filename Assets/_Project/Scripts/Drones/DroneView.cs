@@ -19,6 +19,9 @@ namespace Game.Drones
         private const float BeamThickness = 0.05f;
         private const float BeamEmission = 3f;
         private const float BeamFlicker = 0.4f;
+        // The painted cone opens to ConeMouth at length 1; the light spot on the work point is this wide.
+        private const float ConeMouth = 0.7f;
+        private const float ConeSpot = 0.3f;
         private const float RotorSpeed = 1500f;
         private const float TurnSpeed = 8f;
         private const float BobHeight = 0.06f;
@@ -60,6 +63,7 @@ namespace Game.Drones
         private Transform _model;
         private float _rotorAngle;
         private Transform _beam;
+        private bool _coneBeam;
         private Transform _pool;
         private Transform[] _flashes;
 
@@ -85,8 +89,21 @@ namespace Game.Drones
             _lightPhase = Random.value * StrobePeriod;
 
             Color color = drone.Definition.Color;
-            _beam = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, null, Vector3.zero, Vector3.one, BeamEmission).transform;
-            _beam.SetParent(transform.parent, true);
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer cone = art != null ? art.Place(MarkerKind.ToolBeam, transform.parent, "ToolBeam") : null;
+            if (cone != null)
+            {
+                // README round 25b: an open cone of light from the tool to the work point with scan rings running down it.
+                MarkerArt.SetTint(cone, new MaterialPropertyBlock(), color);
+                _beam = cone.transform;
+                _coneBeam = true;
+            }
+            else
+            {
+                _beam = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, color, null, Vector3.zero, Vector3.one, BeamEmission).transform;
+                _beam.SetParent(transform.parent, true);
+            }
+
             _beam.gameObject.SetActive(false);
 
             _pool = GlowDecal.PlacePool(transform.parent, color, PoolRadius).transform;
@@ -421,9 +438,18 @@ namespace Game.Drones
             Vector3 to = _drone.WorkPoint.Value;
             Vector3 delta = to - from;
             float thickness = BeamThickness * (repairing ? 1f + BeamFlicker * (Random.value - 0.5f) : 1f);
-            _beam.position = from + delta * 0.5f;
             _beam.rotation = Quaternion.LookRotation(delta);
-            _beam.localScale = new Vector3(thickness, thickness, delta.magnitude);
+            if (_coneBeam)
+            {
+                float mouth = ConeSpot / ConeMouth * (thickness / BeamThickness);
+                _beam.position = from;
+                _beam.localScale = new Vector3(mouth, mouth, delta.magnitude);
+            }
+            else
+            {
+                _beam.position = from + delta * 0.5f;
+                _beam.localScale = new Vector3(thickness, thickness, delta.magnitude);
+            }
             _pool.position = to + Vector3.up * PoolLift;
             if (_dust != null)
             {

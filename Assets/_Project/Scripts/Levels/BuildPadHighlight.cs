@@ -16,6 +16,9 @@ namespace Game.Levels
     {
         private const float FadeSpeed = 6f;
         private const float StructureCellTolerance = 0.3f;
+        private const float CellGlowHeight = 0.04f;
+        // The painted cell is one cell wide; a little under keeps neighbouring glows from touching.
+        private const float CellGlowShare = 0.96f;
 
         // The glow follows the cursor smoothly instead of jumping a cell at a time (per second, exponential).
         private const float CursorFollow = 18f;
@@ -36,6 +39,12 @@ namespace Game.Levels
         private int _structures = -1;
         private Vector3 _cursor;
         private float _radius;
+        private MarkerArt _art;
+        private MeshRenderer[] _cells;
+        private MaterialPropertyBlock _block;
+        private int _reach;
+        private bool _glowing = true;
+        private Color _colour;
 
         public void Initialize(LevelDefinition level)
         {
@@ -57,7 +66,72 @@ namespace Game.Levels
             Shader.SetGlobalVector(GridId, new Vector4(size.x, size.y, 0f, 0f));
             Shader.SetGlobalColor(ColourId, new Color(colour.r, colour.g, colour.b, 1f));
             Shader.SetGlobalFloat(HighlightId, 0f);
+            _colour = new Color(colour.r, colour.g, colour.b, 1f);
+            BuildCellGlows(level.Theme.Environment.PlacingRadiusCells);
             RebuildMask();
+        }
+
+        // README round 25b: the painted soft cell (Marker_FreeCell) on every free cell near the cursor, fading with the
+        // distance. A fixed pool covers the reach; without the art the ground shader lights the cells instead.
+        private void BuildCellGlows(float radiusCells)
+        {
+            _art = MarkerArt.Active;
+            if (_art == null || !_art.Has(MarkerKind.FreeCell))
+            {
+                _art = null;
+                return;
+            }
+
+            _reach = Mathf.CeilToInt(radiusCells);
+            int side = _reach * 2 + 1;
+            _cells = new MeshRenderer[side * side];
+            _block = new MaterialPropertyBlock();
+            for (int i = 0; i < _cells.Length; i++)
+            {
+                _cells[i] = _art.Place(MarkerKind.FreeCell, transform, "FreeCell");
+                _cells[i].transform.localScale = Vector3.one * (_level.CellSize * CellGlowShare);
+                _cells[i].gameObject.SetActive(false);
+            }
+        }
+
+        private void PlaceCellGlows()
+        {
+            if (_highlight <= 0f && !_glowing)
+            {
+                return;
+            }
+
+            _glowing = _highlight > 0f;
+            GridMap grid = _level.Grid;
+            Vector2Int centre = grid.WorldToCell(_cursor);
+            int side = _reach * 2 + 1;
+            for (int i = 0; i < _cells.Length; i++)
+            {
+                var cell = new Vector2Int(centre.x + i % side - _reach, centre.y + i / side - _reach);
+                bool free = _highlight > 0f && grid.Contains(cell) && _pixels[cell.y * grid.Size.x + cell.x].r > 0;
+                float fade = 0f;
+                Vector3 at = Vector3.zero;
+                if (free)
+                {
+                    at = grid.CellToWorld(cell);
+                    float distance = Vector2.Distance(new Vector2(at.x, at.z), new Vector2(_cursor.x, _cursor.z));
+                    fade = (1f - distance / _radius) * _highlight;
+                }
+
+                MeshRenderer glow = _cells[i];
+                bool show = fade > 0f;
+                if (glow.gameObject.activeSelf != show)
+                {
+                    glow.gameObject.SetActive(show);
+                }
+
+                if (show)
+                {
+                    at.y = _level.Terrain.HeightAt(cell) + CellGlowHeight;
+                    glow.transform.position = at;
+                    MarkerArt.SetTint(glow, _block, new Color(_colour.r, _colour.g, _colour.b, fade));
+                }
+            }
         }
 
         private void Update()
@@ -80,6 +154,12 @@ namespace Game.Levels
             _cursor = placing && !_placing ? target : Vector3.Lerp(_cursor, target, 1f - Mathf.Exp(-CursorFollow * Time.unscaledDeltaTime));
             _placing = placing;
             _highlight = Mathf.MoveTowards(_highlight, placing ? 1f : 0f, FadeSpeed * Time.unscaledDeltaTime);
+            if (_art != null)
+            {
+                PlaceCellGlows();
+                return;
+            }
+
             Shader.SetGlobalFloat(HighlightId, _highlight);
             if (_highlight > 0f)
             {

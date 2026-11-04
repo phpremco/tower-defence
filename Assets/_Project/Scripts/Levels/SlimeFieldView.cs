@@ -61,7 +61,7 @@ namespace Game.Levels
                 _quads[i].position = new Vector3(patch.Position.x, Height, patch.Position.z);
                 _quads[i].localScale = new Vector3(size, size * 0.8f, 1f);
                 _quads[i].localRotation = Quaternion.Euler(90f, _phases[i] * 57f, 0f);
-                _materials[i].SetColor("_EmissionColor", patch.Color * (Brightness * fade * fade));
+                GlowDecal.SetColour(_materials[i], patch.Color * (Brightness * fade * fade));
             }
 
             if (patches.Count > 0)

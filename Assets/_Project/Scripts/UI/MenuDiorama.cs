@@ -246,7 +246,8 @@ namespace Game.UI
                 }
 
                 var shape = new LiquidShape(pool.Kind, new[] { Shore(pool.Outline) });
-                LiquidLook look = theme.Liquids != null ? theme.Liquids.For(pool.Kind) : null;
+                // The menu's own look first: the level water reads near black over the island's dark painted basin.
+                LiquidLook look = (art.Liquids != null ? art.Liquids.For(pool.Kind) : null) ?? (theme.Liquids != null ? theme.Liquids.For(pool.Kind) : null);
                 if (look != null)
                 {
                     TerrainLiquidBuilder.BuildOutlinedPool(shape, pool.Surface, look, theme, PoolCellSize, transform, particleScale, low);
@@ -484,6 +485,7 @@ namespace Game.UI
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            ParticleKit.UseCell(system, MarkerArt.ParticleCell.Mote);
             system.Emit(StarCount);
             system.Play();
         }
@@ -536,6 +538,7 @@ namespace Game.UI
             var renderer = go.GetComponent<ParticleSystemRenderer>();
             renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            ParticleKit.UseCell(system, MarkerArt.ParticleCell.Spore);
             system.Play();
         }
 

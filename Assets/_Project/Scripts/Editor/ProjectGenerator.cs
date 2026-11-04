@@ -27,7 +27,6 @@ namespace Game.Editor
         private const string DataRoot = "Assets/_Project/Data";
         private const string ScenesFolder = "Assets/_Project/Scenes";
         private const string InputAssetPath = "Assets/_Project/Settings/Input/GameInput.inputactions";
-        private const string ModelFolder = "Assets/_Project/Art/Models/SpaceKit/";
         private const string UiFolder = "Assets/_Project/Art/UI/";
         private const string SkinAssetPath = "Assets/_Project/Settings/UiSkin.asset";
         private const string DebugAssetPath = "Assets/_Project/Settings/PlaytestSettings.asset";
@@ -79,16 +78,6 @@ namespace Game.Editor
             context.Unlocks = unlocks;
         }
 
-        private static GameObject Model(string name) => AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelFolder}{name}.fbx");
-
-        private static void ClearModel(Object asset)
-        {
-            var so = new SerializedObject(asset);
-            so.FindProperty("_model").objectReferenceValue = null;
-            so.FindProperty("_keepModelColours").boolValue = false;
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         private static HeroWeaponDefinition CreateHeroWeapon(string id, string displayName, HeroWeaponKind kind, HeroWeaponStyle style, float damage, float reach, float interval, TargetLayers targets, Color color)
         {
             var weapon = LoadOrCreate<HeroWeaponDefinition>($"{DataRoot}/Hero/Weapon_{id}.asset");
@@ -103,14 +92,6 @@ namespace Game.Editor
             so.FindProperty("_color").colorValue = color;
             so.ApplyModifiedPropertiesWithoutUndo();
             return weapon;
-        }
-
-        private static void SetModel(Object asset, string modelName, float scale)
-        {
-            var so = new SerializedObject(asset);
-            so.FindProperty("_model").objectReferenceValue = Model(modelName);
-            so.FindProperty("_modelScale").floatValue = scale;
-            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static TowerLevel Lvl(int cost, float damage, float range, float interval, float healthBonus = 0f, float slowFactor = 0f, float slowSeconds = 0f) =>
@@ -186,19 +167,9 @@ namespace Game.Editor
             so.FindProperty("_font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFuture.ttf");
             so.FindProperty("_narrowFont").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFutureNarrow.ttf");
 
-            var sprites = new (string Field, string File)[]
-            {
-                ("_panel", "panel"), ("_panelSquare", "panel_square"), ("_button", "button"), ("_buttonSquare", "button_square"),
-                ("_barBack", "bar_back"), ("_barBlue", "bar_blue"), ("_barGreen", "bar_green"), ("_barYellow", "bar_yellow"), ("_barRed", "bar_red"),
-                ("_cardBlue", "card_blue"), ("_cardGreen", "card_green"), ("_cardYellow", "card_yellow"), ("_cardRed", "card_red"),
-            };
-
-            foreach ((string field, string file) in sprites)
-            {
-                so.FindProperty(field).objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>($"{UiFolder}Sprites/{file}.png");
-            }
-
             so.ApplyModifiedPropertiesWithoutUndo();
+            // Panels, buttons, bars, cards, icons and the dialogue art are painted in Blender (README round 25).
+            BlenderUiBuilder.ApplyToSkin(skin, BlenderUiBuilder.SyncAndBuild());
             return skin;
         }
 
@@ -215,15 +186,6 @@ namespace Game.Editor
             so.FindProperty("_backgroundColor").colorValue = p.Background;
             so.FindProperty("_groundColor").colorValue = p.Ground;
             so.FindProperty("_pathColor").colorValue = p.Path;
-            so.FindProperty("_groundTile").objectReferenceValue = Model("terrain");
-            so.FindProperty("_roadStraight").objectReferenceValue = Model("terrain_roadStraight");
-            so.FindProperty("_roadCorner").objectReferenceValue = Model("terrain_roadCorner");
-            so.FindProperty("_roadEnd").objectReferenceValue = Model("terrain_roadEnd");
-            so.FindProperty("_roadCross").objectReferenceValue = Model("terrain_roadCross");
-            so.FindProperty("_baseModel").objectReferenceValue = Model("machine_generatorLarge");
-            so.FindProperty("_spawnModel").objectReferenceValue = Model("gate_simple");
-            SetObjects(so.FindProperty("_blockedProps"), "rock_largeA", "rock_largeB", "rock_crystals", "meteor");
-            SetObjects(so.FindProperty("_scenery"), "rocks_smallA", "rocks_smallB", "crater", "craterLarge", "rock_crystalsLargeA", "rock_largeA", "meteor");
             so.FindProperty("_slotColor").colorValue = p.Slot;
             so.FindProperty("_baseColor").colorValue = p.Base;
             so.FindProperty("_lightColor").colorValue = p.Light;
@@ -273,15 +235,6 @@ namespace Game.Editor
                 element.FindPropertyRelative("Name").stringValue = paths[i].Name;
                 element.FindPropertyRelative("Flying").boolValue = paths[i].Flying;
                 WriteCells(element.FindPropertyRelative("Waypoints"), paths[i].Waypoints);
-            }
-        }
-
-        private static void SetObjects(SerializedProperty array, params string[] modelNames)
-        {
-            array.arraySize = modelNames.Length;
-            for (int i = 0; i < modelNames.Length; i++)
-            {
-                array.GetArrayElementAtIndex(i).objectReferenceValue = Model(modelNames[i]);
             }
         }
 

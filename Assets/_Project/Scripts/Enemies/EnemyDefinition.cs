@@ -48,8 +48,6 @@ namespace Game.Enemies
         [SerializeField] [Min(0.1f)] private float _scale = 0.6f;
         [SerializeField] private EnemyShape _shape;
         [SerializeField] private DeathStyle _deathStyle;
-        [SerializeField] private GameObject _model;
-        [SerializeField] [Min(0.1f)] private float _modelScale = 1f;
         [Tooltip("The imported (Blender) model this species wears, with its clips. Empty: the procedural body of its shape.")]
         [SerializeField] private ModelArtDefinition _art;
 
@@ -148,14 +146,10 @@ namespace Game.Enemies
         public Color BloodColor => _bloodColor;
         public float Scale => _scale;
 
-        /// <summary>The procedural creature this enemy wears, or None to use <see cref="Model"/> or the placeholder.</summary>
+        /// <summary>The procedural creature this enemy wears, or None for the placeholder.</summary>
         public EnemyShape Shape => _shape;
 
         public DeathStyle DeathStyle => _deathStyle;
-
-        /// <summary>The imported model shown for this enemy, or null to use placeholder shapes.</summary>
-        public GameObject Model => _model;
-        public float ModelScale => _modelScale;
 
         /// <summary>The imported, animated model of this species, or null for the procedural body.</summary>
         public ModelArtDefinition Art => _art;

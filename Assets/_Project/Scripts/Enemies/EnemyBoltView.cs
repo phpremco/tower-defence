@@ -17,6 +17,7 @@ namespace Game.Enemies
         private const float HaloAlpha = 0.35f;
         private const float CoreEmission = 3.5f;
         private const int Sparks = 10;
+        private const float MinHeading = 0.000001f;
 
         private Transform _core;
         private Transform _halo;
@@ -26,6 +27,7 @@ namespace Game.Enemies
         private float _seconds;
         private float _age = float.PositiveInfinity;
         private float _size = 1f;
+        private bool _painted;
 
         public bool InFlight => _age < _seconds;
 
@@ -34,10 +36,27 @@ namespace Game.Enemies
             var go = new GameObject("EnemyBolt");
             go.transform.SetParent(parent, false);
             var bolt = go.AddComponent<EnemyBoltView>();
-            bolt._core = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(color, Color.white, 0.5f), go.transform, Vector3.zero, Vector3.one * CoreSize, CoreEmission).transform;
-            GameObject halo = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, color, go.transform, Vector3.zero, Vector3.one * HaloSize);
-            halo.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(color, HaloAlpha, 1.5f);
-            bolt._halo = halo.transform;
+            MarkerArt art = MarkerArt.Active;
+            if (art != null && art.Has(MarkerKind.EnemyBolt) && art.Has(MarkerKind.EnemyBoltGlow))
+            {
+                // README round 25b: a veined glob with a wake and barbs, inside a warm glow shell, flying head first.
+                var block = new MaterialPropertyBlock();
+                MeshRenderer core = art.Place(MarkerKind.EnemyBolt, go.transform);
+                MeshRenderer glow = art.Place(MarkerKind.EnemyBoltGlow, go.transform);
+                MarkerArt.SetTint(core, block, color);
+                MarkerArt.SetTint(glow, block, color);
+                bolt._core = core.transform;
+                bolt._halo = glow.transform;
+                bolt._painted = true;
+            }
+            else
+            {
+                bolt._core = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(color, Color.white, 0.5f), go.transform, Vector3.zero, Vector3.one * CoreSize, CoreEmission).transform;
+                GameObject halo = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, color, go.transform, Vector3.zero, Vector3.one * HaloSize);
+                halo.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(color, HaloAlpha, 1.5f);
+                bolt._halo = halo.transform;
+            }
+
             Color spark = color * 2f;
             spark.a = 1f;
             bolt._sparks = ParticleKit.Create(parent, "BoltSparks", Vector3.zero, spark, 0.25f, 0.5f, 0.03f, 0.07f, 0.8f, 2.4f, 0.8f, Sparks * 3, 0.1f);
@@ -70,9 +89,24 @@ namespace Game.Enemies
             _age += Time.deltaTime;
             float t = Mathf.Clamp01(_age / _seconds);
             Vector3 at = Vector3.Lerp(_from, _to, t) + Vector3.up * (Mathf.Sin(t * Mathf.PI) * ArcHeight * _size);
+            Vector3 heading = at - transform.position;
             transform.position = at;
-            _halo.localScale = Vector3.one * (HaloSize * (1f + Mathf.Sin(_age * 30f) * 0.15f));
-            _core.localRotation = Quaternion.Euler(0f, _age * 400f, 0f);
+            float pulse = 1f + Mathf.Sin(_age * 30f) * 0.15f;
+            if (_painted)
+            {
+                if (heading.sqrMagnitude > MinHeading)
+                {
+                    transform.rotation = Quaternion.LookRotation(heading);
+                }
+
+                _halo.localScale = Vector3.one * pulse;
+                _core.localRotation = Quaternion.Euler(0f, 0f, _age * 400f);
+            }
+            else
+            {
+                _halo.localScale = Vector3.one * (HaloSize * pulse);
+                _core.localRotation = Quaternion.Euler(0f, _age * 400f, 0f);
+            }
             if (t >= 1f)
             {
                 _sparks.transform.position = _to;

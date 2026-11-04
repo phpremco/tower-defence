@@ -15,6 +15,9 @@ namespace Game.Drones
         private Color _color;
         private float _age;
 
+        /// <summary>The interface font (the skin's), set at boot; the built-in font stands in when nothing set it.</summary>
+        public static Font Font { get; set; }
+
         public static void Show(Transform parent, Vector3 position, int value, Color color)
         {
             var go = new GameObject("MoneyPopup");
@@ -24,7 +27,7 @@ namespace Game.Drones
             popup._color = color;
             popup._text = go.AddComponent<TextMesh>();
             popup._text.text = $"+{value}";
-            popup._text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            popup._text.font = Font != null ? Font : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             popup._text.fontSize = FontSize;
             popup._text.characterSize = CharacterSize;
             popup._text.anchor = TextAnchor.MiddleCenter;

@@ -13,8 +13,6 @@ namespace Game.Towers
     [RequireComponent(typeof(Tower))]
     public sealed class TowerView : MonoBehaviour
     {
-        private const float ModelTintStrength = 0.55f;
-        private const float ModelEmission = 0.25f;
         private const float StarSize = 0.17f;
         private const float StarSpacing = 0.26f;
         private const float StarHeight = 1.4f;
@@ -60,13 +58,12 @@ namespace Game.Towers
 
         private Tower _tower;
         private Transform _head;
+        private WorldBar _worldBar;
         private Transform _bar;
         private Renderer _barRenderer;
         private Renderer[] _modelRenderers;
         private Material[][] _modelMaterials;
         private bool _built;
-        private GameObject _currentModel;
-        private GameObject _currentModelSource;
         private Transform _barrel;
         private MeshFilter _headMesh;
         private MeshFilter _barrelMesh;
@@ -167,42 +164,13 @@ namespace Game.Towers
             }
         }
 
-        // Visual upgrades: the newest level at or below the current one that names a model wins.
+        // Visual upgrades of the procedural shape: its head is rebuilt for the new level.
         private void SwapModelForLevel(Tower tower)
         {
             if (_headMesh != null)
             {
                 RebuildShape(tower.Definition, tower.LevelIndex);
-                return;
             }
-
-            if (_modelRenderers == null)
-            {
-                return;
-            }
-
-            GameObject wanted = null;
-            for (int i = tower.LevelIndex; i >= 0 && wanted == null; i--)
-            {
-                wanted = tower.Definition.GetLevel(i).Model;
-            }
-
-            if (wanted == null || wanted == _currentModelSource)
-            {
-                return;
-            }
-
-            Destroy(_currentModel);
-            PlaceModel(wanted, tower.Definition);
-        }
-
-        private void PlaceModel(GameObject source, TowerDefinition definition)
-        {
-            bool keep = definition.KeepModelColours;
-            Color tint = keep ? Color.white : Color.Lerp(Color.white, definition.Color, ModelTintStrength);
-            _currentModel = ModelFit.Place(source, _head, new Vector3(0f, -0.35f, 0f), 0f, definition.ModelScale, tint, keep ? 0f : ModelEmission);
-            _currentModelSource = source;
-            RememberMaterials(_currentModel.GetComponentsInChildren<Renderer>());
         }
 
         private void RememberMaterials(Renderer[] renderers)
@@ -224,8 +192,16 @@ namespace Game.Towers
             if (damaged)
             {
                 float fraction = tower.Health.Fraction;
-                _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
-                _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), BarEmission);
+                if (_worldBar != null)
+                {
+                    _worldBar.Set(fraction, 0f, true);
+                    _worldBar.SetColour(Color.Lerp(DamagedColor, HealthyColor, fraction));
+                }
+                else
+                {
+                    _bar.localScale = new Vector3(BarWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
+                    _barRenderer.sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(DamagedColor, HealthyColor, fraction), BarEmission);
+                }
             }
 
             float hurt = Mathf.Clamp01(1f - tower.Health.Fraction / SmokeBelow);
@@ -302,10 +278,6 @@ namespace Game.Towers
             if (shaped)
             {
                 BuildShape(definition, pedestal);
-            }
-            else if (definition.Model != null)
-            {
-                PlaceModel(definition.Model, definition);
             }
             else
             {
@@ -385,6 +357,13 @@ namespace Game.Towers
 
         private void BuildBar()
         {
+            _worldBar = WorldBar.Create(MarkerArt.Active, transform, new Vector3(0f, BarY, 0f), BarWidth, BarHeight, HealthyColor, HealthyColor, false);
+            if (_worldBar != null)
+            {
+                _bar = _worldBar.Root;
+                return;
+            }
+
             GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, HealthyColor, transform, new Vector3(0f, BarY, 0f), new Vector3(BarWidth, BarHeight, BarHeight), BarEmission);
             _bar = bar.transform;
             _barRenderer = bar.GetComponent<Renderer>();

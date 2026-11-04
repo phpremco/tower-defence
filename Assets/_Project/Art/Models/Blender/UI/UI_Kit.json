@@ -1,0 +1,972 @@
+{
+ "texture": "UI_Kit.png",
+ "size": [
+  1024,
+  628
+ ],
+ "scale": "2x master: import with Pixels Per Unit 200 (or Image.pixelsPerUnitMultiplier 0.5) so borders read at 1x",
+ "coords": "x, y from the top-left; unity_rect from the bottom-left; border_lbrt = Sprite Editor L, B, R, T (2x px)",
+ "glow_pad": "transparent margin (2x px) around the frame that holds the glow; all states of one element share it",
+ "sprites": {
+  "Panel": {
+   "x": 4,
+   "y": 184,
+   "w": 160,
+   "h": 160,
+   "unity_rect": [
+    4,
+    284,
+    160,
+    160
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._panel: every framed panel (HUD groups, menus, result)"
+  },
+  "Panel_Selected": {
+   "x": 168,
+   "y": 184,
+   "w": 160,
+   "h": 160,
+   "unity_rect": [
+    168,
+    284,
+    160,
+    160
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "a focused/selected panel or list row"
+  },
+  "Panel_Disabled": {
+   "x": 332,
+   "y": 184,
+   "w": 160,
+   "h": 160,
+   "unity_rect": [
+    332,
+    284,
+    160,
+    160
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "a locked/disabled panel"
+  },
+  "PanelSquare": {
+   "x": 496,
+   "y": 184,
+   "w": 160,
+   "h": 160,
+   "unity_rect": [
+    496,
+    284,
+    160,
+    160
+   ],
+   "border_lbrt": [
+    32,
+    32,
+    32,
+    32
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._panelSquare"
+  },
+  "Tooltip": {
+   "x": 820,
+   "y": 184,
+   "w": 160,
+   "h": 112,
+   "unity_rect": [
+    820,
+    332,
+    160,
+    112
+   ],
+   "border_lbrt": [
+    30,
+    30,
+    30,
+    30
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "tooltips and the tower info strip"
+  },
+  "TooltipPointer": {
+   "x": 296,
+   "y": 548,
+   "w": 40,
+   "h": 32,
+   "unity_rect": [
+    296,
+    48,
+    40,
+    32
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 4,
+   "use": "pointer under a tooltip (overlap its bottom edge by 2 px)"
+  },
+  "Card_Blue": {
+   "x": 4,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    4,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._cardBlue: tower/drone/path-object cards"
+  },
+  "Card_Green": {
+   "x": 152,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    152,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._cardGreen: tower/drone/path-object cards"
+  },
+  "Card_Yellow": {
+   "x": 300,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    300,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._cardYellow: tower/drone/path-object cards"
+  },
+  "Card_Red": {
+   "x": 448,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    448,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._cardRed: tower/drone/path-object cards"
+  },
+  "Card_Selected": {
+   "x": 596,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    596,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "the focused card in the tower bar / loadout"
+  },
+  "Card_Disabled": {
+   "x": 744,
+   "y": 4,
+   "w": 144,
+   "h": 176,
+   "unity_rect": [
+    744,
+    448,
+    144,
+    176
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "a card that cannot be afforded or is locked"
+  },
+  "Button_Normal": {
+   "x": 584,
+   "y": 348,
+   "w": 192,
+   "h": 80,
+   "unity_rect": [
+    584,
+    200,
+    192,
+    80
+   ],
+   "border_lbrt": [
+    36,
+    34,
+    36,
+    34
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._button (normal)"
+  },
+  "Button_Focus": {
+   "x": 780,
+   "y": 348,
+   "w": 192,
+   "h": 80,
+   "unity_rect": [
+    780,
+    200,
+    192,
+    80
+   ],
+   "border_lbrt": [
+    36,
+    34,
+    36,
+    34
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "highlighted + selected (gamepad focus, mouse hover)"
+  },
+  "Button_Pressed": {
+   "x": 4,
+   "y": 464,
+   "w": 192,
+   "h": 80,
+   "unity_rect": [
+    4,
+    84,
+    192,
+    80
+   ],
+   "border_lbrt": [
+    36,
+    34,
+    36,
+    34
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "pressed"
+  },
+  "Button_Disabled": {
+   "x": 200,
+   "y": 464,
+   "w": 192,
+   "h": 80,
+   "unity_rect": [
+    200,
+    84,
+    192,
+    80
+   ],
+   "border_lbrt": [
+    36,
+    34,
+    36,
+    34
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "disabled"
+  },
+  "Button_Neutral": {
+   "x": 396,
+   "y": 464,
+   "w": 192,
+   "h": 80,
+   "unity_rect": [
+    396,
+    84,
+    192,
+    80
+   ],
+   "border_lbrt": [
+    36,
+    34,
+    36,
+    34
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "light grey version for the ColorBlock tint transition (UiKit.ButtonColors)"
+  },
+  "ButtonSquare_Normal": {
+   "x": 4,
+   "y": 348,
+   "w": 112,
+   "h": 112,
+   "unity_rect": [
+    4,
+    168,
+    112,
+    112
+   ],
+   "border_lbrt": [
+    36,
+    36,
+    36,
+    36
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "UiSkin._buttonSquare (normal)"
+  },
+  "ButtonSquare_Focus": {
+   "x": 120,
+   "y": 348,
+   "w": 112,
+   "h": 112,
+   "unity_rect": [
+    120,
+    168,
+    112,
+    112
+   ],
+   "border_lbrt": [
+    36,
+    36,
+    36,
+    36
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "highlighted + selected (gamepad focus, mouse hover)"
+  },
+  "ButtonSquare_Pressed": {
+   "x": 236,
+   "y": 348,
+   "w": 112,
+   "h": 112,
+   "unity_rect": [
+    236,
+    168,
+    112,
+    112
+   ],
+   "border_lbrt": [
+    36,
+    36,
+    36,
+    36
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "pressed"
+  },
+  "ButtonSquare_Disabled": {
+   "x": 352,
+   "y": 348,
+   "w": 112,
+   "h": 112,
+   "unity_rect": [
+    352,
+    168,
+    112,
+    112
+   ],
+   "border_lbrt": [
+    36,
+    36,
+    36,
+    36
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "disabled"
+  },
+  "ButtonSquare_Neutral": {
+   "x": 468,
+   "y": 348,
+   "w": 112,
+   "h": 112,
+   "unity_rect": [
+    468,
+    168,
+    112,
+    112
+   ],
+   "border_lbrt": [
+    36,
+    36,
+    36,
+    36
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "light grey version for the ColorBlock tint transition (UiKit.ButtonColors)"
+  },
+  "Bar_Back": {
+   "x": 340,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    340,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "UiSkin._barBack, slider track"
+  },
+  "Bar_Blue": {
+   "x": 440,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    440,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "UiSkin._barBlue fill"
+  },
+  "Bar_Green": {
+   "x": 540,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    540,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "UiSkin._barGreen fill"
+  },
+  "Bar_Yellow": {
+   "x": 640,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    640,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "UiSkin._barYellow fill"
+  },
+  "Bar_Red": {
+   "x": 740,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    740,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "UiSkin._barRed fill"
+  },
+  "Bar_White": {
+   "x": 840,
+   "y": 548,
+   "w": 96,
+   "h": 32,
+   "unity_rect": [
+    840,
+    48,
+    96,
+    32
+   ],
+   "border_lbrt": [
+    12,
+    12,
+    12,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "tintable bar fill"
+  },
+  "Slider_Handle": {
+   "x": 4,
+   "y": 548,
+   "w": 56,
+   "h": 56,
+   "unity_rect": [
+    4,
+    24,
+    56,
+    56
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "slider handle (normal)"
+  },
+  "Slider_Handle_Focus": {
+   "x": 64,
+   "y": 548,
+   "w": 56,
+   "h": 56,
+   "unity_rect": [
+    64,
+    24,
+    56,
+    56
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "slider handle (focused)"
+  },
+  "Tab": {
+   "x": 592,
+   "y": 464,
+   "w": 160,
+   "h": 72,
+   "unity_rect": [
+    592,
+    92,
+    160,
+    72
+   ],
+   "border_lbrt": [
+    30,
+    12,
+    30,
+    30
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "an unselected tab"
+  },
+  "Tab_Selected": {
+   "x": 756,
+   "y": 464,
+   "w": 160,
+   "h": 72,
+   "unity_rect": [
+    756,
+    92,
+    160,
+    72
+   ],
+   "border_lbrt": [
+    30,
+    12,
+    30,
+    30
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "the selected tab"
+  },
+  "Scroll_Track": {
+   "x": 660,
+   "y": 184,
+   "w": 24,
+   "h": 128,
+   "unity_rect": [
+    660,
+    316,
+    24,
+    128
+   ],
+   "border_lbrt": [
+    10,
+    12,
+    10,
+    12
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "ScrollRect vertical bar background"
+  },
+  "Scroll_Thumb": {
+   "x": 920,
+   "y": 464,
+   "w": 24,
+   "h": 64,
+   "unity_rect": [
+    920,
+    100,
+    24,
+    64
+   ],
+   "border_lbrt": [
+    10,
+    14,
+    10,
+    14
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "scroll bar handle"
+  },
+  "Scroll_Thumb_Focus": {
+   "x": 948,
+   "y": 464,
+   "w": 24,
+   "h": 64,
+   "unity_rect": [
+    948,
+    100,
+    24,
+    64
+   ],
+   "border_lbrt": [
+    10,
+    14,
+    10,
+    14
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 2,
+   "use": "scroll bar handle while dragged/focused"
+  },
+  "Toggle_Off": {
+   "x": 124,
+   "y": 548,
+   "w": 56,
+   "h": 56,
+   "unity_rect": [
+    124,
+    24,
+    56,
+    56
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "checkbox off"
+  },
+  "Toggle_On": {
+   "x": 184,
+   "y": 548,
+   "w": 56,
+   "h": 56,
+   "unity_rect": [
+    184,
+    24,
+    56,
+    56
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 6,
+   "use": "checkbox on"
+  },
+  "FocusFrame": {
+   "x": 688,
+   "y": 184,
+   "w": 128,
+   "h": 128,
+   "unity_rect": [
+    688,
+    316,
+    128,
+    128
+   ],
+   "border_lbrt": [
+    40,
+    40,
+    40,
+    40
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 12,
+   "use": "overlay on any focused element (map nodes, portraits) without its own focus sprite"
+  },
+  "CornerOrnament": {
+   "x": 244,
+   "y": 548,
+   "w": 48,
+   "h": 48,
+   "unity_rect": [
+    244,
+    32,
+    48,
+    48
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 0,
+   "use": "loose corner bracket for headers; rotate/flip for the other corners; tint freely"
+  },
+  "Divider": {
+   "x": 4,
+   "y": 608,
+   "w": 256,
+   "h": 16,
+   "unity_rect": [
+    4,
+    4,
+    256,
+    16
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "glow_pad": 0,
+   "use": "horizontal rule between list sections (Simple, stretch horizontally)"
+  }
+ }
+}

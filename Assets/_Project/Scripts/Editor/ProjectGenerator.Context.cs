@@ -55,7 +55,6 @@ namespace Game.Editor
             public PathObjectDefinition LavaBall { get; set; }
             public PathObjectDefinition Barrel { get; set; }
             public PathObjectDefinition GroundDrone { get; set; }
-            public PathObjectDefinition AntiAir { get; set; }
 
             public DroneDefinition RepairDrone { get; set; }
             public DroneDefinition HarvestDrone { get; set; }
@@ -72,7 +71,7 @@ namespace Game.Editor
 
             public DroneDefinition[] Drones => new[] { RepairDrone, HarvestDrone, AttackDrone };
 
-            public PathObjectDefinition[] PathObjects => new[] { SlowField, Mine, LavaBall, Barrel, GroundDrone, AntiAir };
+            public PathObjectDefinition[] PathObjects => new[] { SlowField, Mine, LavaBall, Barrel, GroundDrone };
         }
 
         /// <summary>A generated campaign level, the spec it came from and where it sits: continent and index within it.</summary>

@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Liquid_Water_Menu
+  m_Shader: {fileID: 4800000, guid: ae8bdf7b1120898468bf8e9725e9d9d5, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _LIQUID_WATER
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlbedoA:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AlbedoB:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Flipbook:
+        m_Texture: {fileID: 2800000, guid: 1fa4d0024ce737046a5a287c606096de, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlowMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrostMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeatA:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeatB:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 2800000, guid: 780d3acf7b953db45b363d32096590dc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalA:
+        m_Texture: {fileID: 2800000, guid: 690a3065d7f682d4387592260ec55cf6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalB:
+        m_Texture: {fileID: 2800000, guid: 2bba5e415f52e354186e96e9e826bed1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ProfileMap:
+        m_Texture: {fileID: 2800000, guid: 25a036d461a589b4ea618dcd5aad6058, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StaticCaustics:
+        m_Texture: {fileID: 2800000, guid: 5d8868f9a2215ef46b67f633a2a1af9e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _DepthRange: 0.8
+    - _EmissionStrength: 2
+    - _Liquid: 0
+    - _Low: 0
+    - _Refract: 0
+    - _Refraction: 0.03
+    m_Colors:
+    - _Alpha: {r: 0.86, g: 0.97, b: 0, a: 0}
+    - _CausticColor: {r: 1.2, g: 1.6, b: 1.9, a: 1}
+    - _DeepColor: {r: 0.1, g: 0.34, b: 0.48, a: 1}
+    - _FoamColor: {r: 0.8, g: 0.88, b: 0.95, a: 1}
+    - _GlowColor: {r: 0.25, g: 0.55, b: 1, a: 1}
+    - _NormalScroll: {r: 0.035, g: 0.012, b: -0.05, a: 0.07}
+    - _NormalTiles: {r: 4.8, g: 1.65, b: 0.7, a: 40}
+    - _Pulse: {r: 0.15, g: 1.1, b: 0, a: 0}
+    - _Ramp1: {r: 0.4, g: 0.03, b: 0.005, a: 1}
+    - _Ramp2: {r: 1.6, g: 0.35, b: 0.05, a: 1}
+    - _Ramp3: {r: 3.2, g: 1.3, b: 0.25, a: 1}
+    - _Ramp4: {r: 4, g: 2.8, b: 1.4, a: 1}
+    - _Scroll: {r: 0.018, g: 0.006, b: -0.012, a: 0.014}
+    - _ShallowColor: {r: 0.28, g: 0.62, b: 0.72, a: 1}
+    - _Smoothness: {r: 0.98, g: 0.5, b: 0, a: 0}
+    - _Tiles: {r: 1.8, g: 1.8, b: 1, a: 6.3}
+    - _Waves: {r: 0.025, g: 1.4, b: 1.6, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

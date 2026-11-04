@@ -1,4 +1,3 @@
-using Game.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,9 +14,7 @@ namespace Game.UI
         private const float Size = 420f;
         private const float Margin = 70f;
         private const int Contacts = 42;
-        private const int SweepTrail = 7;
         private const float SweepDegreesPerSecond = 150f;
-        private const float SweepTrailDegrees = 5f;
         private const float DotSize = 16f;
         private const float BlobSize = 300f;
         private const float FadeSpeed = 4f;
@@ -29,9 +26,9 @@ namespace Game.UI
         private const int Seed = 1337;
         private const int HeaderSize = 22;
         private const int CountSize = 26;
+        // README: the scope picture is drawn 1.087 times the scope size (its radius is 471 of 1024 px).
+        private const float PictureScale = 1.087f;
 
-        private static readonly Color ScopeColour = new Color(0.02f, 0.09f, 0.1f, 0.88f);
-        private static readonly Color GridColour = new Color(0.3f, 0.95f, 0.85f, 0.35f);
         private static readonly Color SweepColour = new Color(0.4f, 1f, 0.85f, 0.75f);
         private static readonly Color ContactColour = new Color(1f, 0.75f, 0.3f);
         private static readonly Color HostileColour = new Color(1f, 0.15f, 0.1f);
@@ -63,25 +60,16 @@ namespace Game.UI
             _group.alpha = 0f;
             _group.blocksRaycasts = false;
 
-            Raw(scope, "Back", DialogueArt.Radial, ScopeColour, Size * 1.25f);
-            for (int ring = 1; ring <= 3; ring++)
-            {
-                Raw(scope, $"Ring{ring}", SpriteKit.Ring(), GridColour, Size * ring / 3f);
-            }
-
-            Line(scope, "Cross", GridColour, new Vector2(Size, 2f), 0f);
-            Line(scope, "CrossV", GridColour, new Vector2(2f, Size), 0f);
-
-            _sweep = NewRect("Sweep", scope);
-            _sweep.sizeDelta = Vector2.zero;
-            for (int i = 0; i < SweepTrail; i++)
-            {
-                Color colour = SweepColour;
-                colour.a *= 1f - i / (float)SweepTrail;
-                RectTransform arm = Line(_sweep, $"Arm{i}", colour, new Vector2(i == 0 ? 3f : 6f, Size * 0.5f), -i * SweepTrailDegrees);
-                arm.pivot = new Vector2(0.5f, 0f);
-                arm.anchoredPosition = Vector2.zero;
-            }
+            // README round 25: the pre-coloured scope picture (rings, cross, ticks) and the painted sweep, both drawn so the
+            // scope's 471 px radius of 1024 meets the old ring radius.
+            UiArtSet art = UiArtSet.Active;
+            Raw(scope, "Scope", art != null ? art.Radar : null, Color.white, Size * PictureScale);
+            Image sweep = NewRect("Sweep", scope).gameObject.AddComponent<Image>();
+            sweep.sprite = DialogueArt.RadarSweep;
+            sweep.color = SweepColour;
+            sweep.raycastTarget = false;
+            _sweep = sweep.rectTransform;
+            _sweep.sizeDelta = new Vector2(Size * PictureScale, Size * PictureScale);
 
             _blob = Raw(scope, "Mass", DialogueArt.Radial, HostileColour, BlobSize);
             BuildContacts(scope);
@@ -183,7 +171,7 @@ namespace Game.UI
                 float spread = Mathf.Sqrt((float)random.NextDouble()) * radius * 0.2f;
                 float turn = (float)random.NextDouble() * Mathf.PI * 2f;
                 _crowd[i] = massCentre + new Vector2(Mathf.Cos(turn), Mathf.Sin(turn)) * spread;
-                _dotImages[i] = Raw(scope, $"Contact{i}", DialogueArt.Radial, ContactColour, DotSize * (i == 0 ? 1.5f : 1f));
+                _dotImages[i] = Contact(scope, $"Contact{i}", DotSize * (i == 0 ? 1.5f : 1f));
                 _dots[i] = _dotImages[i].rectTransform;
                 _dots[i].gameObject.SetActive(false);
             }
@@ -211,15 +199,18 @@ namespace Game.UI
             return image;
         }
 
-        private static RectTransform Line(RectTransform parent, string name, Color colour, Vector2 size, float degrees)
+        // A blip from the painted contact sprite, drawn through a RawImage (its colour is set every frame).
+        private static RawImage Contact(RectTransform parent, string name, float size)
         {
-            Image image = NewRect(name, parent).gameObject.AddComponent<Image>();
-            image.color = colour;
-            image.raycastTarget = false;
-            RectTransform rect = image.rectTransform;
-            rect.sizeDelta = size;
-            rect.localRotation = Quaternion.Euler(0f, 0f, degrees);
-            return rect;
+            Sprite sprite = DialogueArt.RadarContact;
+            RawImage image = Raw(parent, name, sprite != null ? sprite.texture : null, ContactColour, size);
+            if (sprite != null)
+            {
+                Rect r = sprite.textureRect;
+                image.uvRect = new Rect(r.x / sprite.texture.width, r.y / sprite.texture.height, r.width / sprite.texture.width, r.height / sprite.texture.height);
+            }
+
+            return image;
         }
 
         private static TextMeshProUGUI Text(RectTransform parent, string name, int size, string text)

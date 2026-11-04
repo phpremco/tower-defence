@@ -1,0 +1,50 @@
+{
+  "textures": {
+    "Marker_RangeRing": {
+      "file": "Marker_RangeRing.png",
+      "size": [
+        256,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "band: U around (24 tiles per turn on the mesh), V inner edge (0) to outer edge (1). R crisp rim at V 0.8, G inner glow (0.22 at V 0, continuing Marker_RangeFill) and outer falloff, B one dash per tile (scroll U slowly for a turning dash)"
+    },
+    "Marker_RangeFill": {
+      "file": "Marker_RangeFill.png",
+      "size": [
+        128,
+        128
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "disc under the band: R soft glow in the outer quarter, rising to 0.22 at the disc rim = the band's inner edge (use the same gain as the band's G so they meet without a seam), G a barely visible flat fill"
+    }
+  },
+  "meshes": {
+    "RangeRing_Band": {
+      "tris": 192,
+      "dims": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "uv_sets": 2,
+      "pivot": "ring centre",
+      "radius": "0.93..1.0 (unit range)",
+      "note": "scale XZ by the range; UV2.y 0 inner / 1 outer for a constant-width shader"
+    },
+    "RangeRing_Fill": {
+      "tris": 48,
+      "dims": [
+        1.86,
+        1.86,
+        0.0
+      ],
+      "uv_sets": 1,
+      "pivot": "ring centre",
+      "radius": 0.93
+    }
+  },
+  "round": 25
+}

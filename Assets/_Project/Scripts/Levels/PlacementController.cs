@@ -37,6 +37,9 @@ namespace Game.Levels
         // The cursor is a soft tint while browsing (a gamepad needs to see where it is) and firmer while placing.
         private const float BrowsingAlpha = 0.28f;
         private const float PlacingAlpha = 0.55f;
+        // The painted cursor carries its own falloff and halo, so it shows at a fuller strength.
+        private const float PaintedBrowsingAlpha = 0.5f;
+        private const float PaintedPlacingAlpha = 0.9f;
         private static readonly Color ValidColor = new Color(0.3f, 1f, 0.8f);
         private static readonly Color InvalidColor = new Color(1f, 0.3f, 0.25f);
         private static readonly Color TowerColor = new Color(1f, 0.9f, 0.35f);
@@ -60,6 +63,8 @@ namespace Game.Levels
         private Transform _marker;
         private bool _markerShown;
         private Renderer _markerRenderer;
+        private bool _paintedMarker;
+        private MaterialPropertyBlock _markerBlock;
         private RangeIndicator _range;
         private Tower _ghost;
         private TowerDefinition _ghostDefinition;
@@ -85,10 +90,18 @@ namespace Game.Levels
             SpawnBaseTurrets();
 
             float size = _map.CellSize;
-            GameObject marker = PlaceholderVisuals.CreatePrimitive(
-                PrimitiveType.Cube, ValidColor, parent, Vector3.zero, new Vector3(size * MarkerCellFraction, 0.03f, size * MarkerCellFraction), MarkerEmission);
-            _marker = marker.transform;
-            _markerRenderer = marker.GetComponent<Renderer>();
+            MarkerArt art = MarkerArt.Active;
+            _markerRenderer = art != null ? art.Place(MarkerKind.PlacementCursor, parent, "PlacementCursor") : null;
+            _paintedMarker = _markerRenderer != null;
+            _markerBlock = new MaterialPropertyBlock();
+            if (!_paintedMarker)
+            {
+                GameObject marker = PlaceholderVisuals.CreatePrimitive(
+                    PrimitiveType.Cube, ValidColor, parent, Vector3.zero, new Vector3(size * MarkerCellFraction, 0.03f, size * MarkerCellFraction), MarkerEmission);
+                _markerRenderer = marker.GetComponent<Renderer>();
+            }
+
+            _marker = _markerRenderer.transform;
             _range = RangeIndicator.Create(parent);
 
             _cursor = new Vector2Int(_map.Size.x / 2, _map.Size.y / 2);
@@ -648,7 +661,14 @@ namespace Game.Levels
             _markerShown = placing || (browsing && (hasTower || !PointerActive));
             _marker.gameObject.SetActive(_markerShown);
             Color markerColor = hasTower ? TowerColor : (placing ? valid : cellFree) ? ValidColor : InvalidColor;
-            _markerRenderer.sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(markerColor, placing ? PlacingAlpha : BrowsingAlpha, MarkerEmission);
+            if (_paintedMarker)
+            {
+                MarkerArt.SetTint(_markerRenderer, _markerBlock, new Color(markerColor.r, markerColor.g, markerColor.b, placing ? PaintedPlacingAlpha : PaintedBrowsingAlpha));
+            }
+            else
+            {
+                _markerRenderer.sharedMaterial = PlaceholderVisuals.TransparentMaterialFor(markerColor, placing ? PlacingAlpha : BrowsingAlpha, MarkerEmission);
+            }
 
             UpdateOffer();
             // The preview and its range ring stand where the tower itself would stand: shifted away from the road.
@@ -672,7 +692,8 @@ namespace Game.Levels
             Vector3 at = wholeCell ? world : hasTower ? hovered.Position : world + RoadClearance(_cursor);
             float size = _map.CellSize * (wholeCell ? MarkerCellFraction : MarkerFootprintCells);
             _marker.position = new Vector3(at.x, world.y + MarkerHeight, at.z);
-            _marker.localScale = new Vector3(size, _marker.localScale.y, size);
+            // The painted cursor has its cell edge at MarkerCellFraction of its scale and a halo beyond it.
+            _marker.localScale = _paintedMarker ? Vector3.one * (size / MarkerCellFraction) : new Vector3(size, _marker.localScale.y, size);
         }
 
         private void UpdateGhost(bool placing, TowerDefinition selected, Vector3 world)

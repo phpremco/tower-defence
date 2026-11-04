@@ -78,6 +78,7 @@ namespace Game.Editor
             WriteItems(so, BlenderJson.Array(BlenderJson.Field(layout, "items")));
             WritePools(so, BlenderJson.Array(BlenderJson.Field(layout, "pools")));
             WriteLights(so, BlenderJson.Array(BlenderJson.Field(layout, "lights")));
+            so.FindProperty("_liquids").objectReferenceValue = BlenderMenuLiquids.Build(AssetDatabase.LoadAssetAtPath<LiquidSet>(BlenderLiquidBuilder.DataFolder + "/Liquids_CrystalPlains.asset"));
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;

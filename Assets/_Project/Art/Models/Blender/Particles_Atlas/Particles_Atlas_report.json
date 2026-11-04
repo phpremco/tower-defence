@@ -1,0 +1,16 @@
+{
+  "textures": {
+    "Particles_Atlas": {
+      "file": "Particles_Atlas.png",
+      "size": [
+        512,
+        256
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "4 x 2 sprites, 128 px, Texture Sheet Animation order (top-left first): Spore, Mote, Ember, Drip, IchorSplat, GooDecal, FrostMote, ChronoMote. R lit core / highlight, G body or glow, B inner detail (cilia, cooling edge, rim, bubbles, branches, ticks), A coverage. Tint per system; additive for Mote/Ember/Frost/Chrono, alpha for Drip/Ichor/Goo, either for Spore"
+    }
+  },
+  "meshes": {},
+  "round": 25
+}

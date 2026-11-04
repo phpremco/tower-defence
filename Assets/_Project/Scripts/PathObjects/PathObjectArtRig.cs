@@ -1,22 +1,17 @@
 using Game.Core;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.PathObjects
 {
     /// <summary>
     /// The imported (Blender) model of a placed path object: it sets itself up when placed (the mine arms, the emitter
     /// unfolds, the ball drops), then idles; a roller turns the way it travels, drives its wheels or rolls its ball by the
-    /// distance covered; an air net stretches glowing strands between its posts. Plain class; <see cref="PathObjectView"/>
+    /// distance covered. Plain class; <see cref="PathObjectView"/>
     /// ticks it from the object's position, so it never reads or changes the object's logic.
     /// </summary>
     public sealed class PathObjectArtRig
     {
         private const string BallBone = "Ball";
-        private const string StrandLeft = "Strand_L";
-        private const string StrandRight = "Strand_R";
-        private const float StrandThickness = 0.012f;
-        private const float StrandEmission = 2.5f;
         private const float TurnSpeed = 10f;
         private const float MinStep = 0.0001f;
 
@@ -49,7 +44,6 @@ namespace Game.PathObjects
             _model.Player?.Loop(_idle, 1f);
             _model.Player?.PlayOnce(art.IndexOf(ModelClipRole.Deploy));
             _last = parent.position;
-            BuildStrands(definition.Color);
         }
 
         /// <summary>Follows the object: a roller faces and drives the way it moved since the last frame.</summary>
@@ -95,33 +89,5 @@ namespace Game.PathObjects
 
         public void Dispose() => _model.Dispose();
 
-        // The net's strands are light, not mesh: thin glowing bars between the matching posts.
-        private void BuildStrands(Color colour)
-        {
-            if (_model.Find(StrandLeft + 1) == null)
-            {
-                return;
-            }
-
-            Material glow = PlaceholderVisuals.MaterialFor(colour, StrandEmission);
-            for (int n = 1; ; n++)
-            {
-                Transform from = _model.Find(StrandLeft + n);
-                Transform to = _model.Find(StrandRight + n);
-                if (from == null || to == null)
-                {
-                    return;
-                }
-
-                Vector3 a = _holder.InverseTransformPoint(from.position);
-                Vector3 b = _holder.InverseTransformPoint(to.position);
-                GameObject strand = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, colour, _holder, (a + b) * 0.5f, new Vector3(Vector3.Distance(a, b), StrandThickness, StrandThickness));
-                strand.name = "Strand";
-                strand.transform.localRotation = Quaternion.FromToRotation(Vector3.right, b - a);
-                var renderer = strand.GetComponent<Renderer>();
-                renderer.sharedMaterial = glow;
-                renderer.shadowCastingMode = ShadowCastingMode.Off;
-            }
-        }
     }
 }

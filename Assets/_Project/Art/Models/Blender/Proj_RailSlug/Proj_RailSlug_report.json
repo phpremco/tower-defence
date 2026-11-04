@@ -1,0 +1,28 @@
+{
+  "textures": {},
+  "meshes": {
+    "Proj_RailSlug": {
+      "tris": 48,
+      "dims": [
+        0.068,
+        0.41,
+        0.059
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "hex dart 0.41 long, faceted; ../Proj_Bolt/Proj_Glow.png with B rings"
+    },
+    "Proj_RailSlug_Glow": {
+      "tris": 4,
+      "dims": [
+        0.16,
+        0.9,
+        0.16
+      ],
+      "uv_sets": 1,
+      "pivot": "0.68 along",
+      "note": "Bolt_Core.png shell, longer (rail streak)"
+    }
+  },
+  "round": 25
+}

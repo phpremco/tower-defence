@@ -447,6 +447,7 @@ namespace Game.Levels
                 var renderer = go.GetComponent<ParticleSystemRenderer>();
                 renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
                 renderer.renderMode = ParticleSystemRenderMode.Billboard;
+                ParticleKit.UseCell(system, MarkerArt.ParticleCell.Ember);
                 system.Play();
             }
         }

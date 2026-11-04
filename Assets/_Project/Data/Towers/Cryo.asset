@@ -22,7 +22,6 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0.5
     SlowSeconds: 2
-    Model: {fileID: 0}
   - Cost: 110
     Damage: 2
     Range: 4
@@ -30,7 +29,6 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0.42
     SlowSeconds: 3
-    Model: {fileID: 0}
   - Cost: 160
     Damage: 2
     Range: 4.3
@@ -38,7 +36,6 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0.35
     SlowSeconds: 4
-    Model: {fileID: 0}
   _projectileSpeed: 12
   _splashRadius: 0
   _fuseRadius: 0
@@ -57,7 +54,5 @@ MonoBehaviour:
   _color: {r: 0.55, g: 0.95, b: 1, a: 1}
   _shape: 3
   _projectileStyle: 4
-  _model: {fileID: 919132149155446097, guid: a9eb359537a548e4796be91e98a52fc3, type: 3}
-  _modelScale: 1.4
-  _keepModelColours: 0
   _art: {fileID: 11400000, guid: 5c0dcec3f7ea23244ba47090e72c20af, type: 2}
+  _gateArt: {fileID: 0}

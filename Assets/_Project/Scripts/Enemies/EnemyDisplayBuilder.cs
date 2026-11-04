@@ -21,11 +21,6 @@ namespace Game.Enemies
             root.SetParent(parent, false);
             if (definition.Shape == EnemyShape.None)
             {
-                if (definition.Model != null)
-                {
-                    Object.Instantiate(definition.Model, root).transform.localScale = Vector3.one * definition.ModelScale;
-                }
-
                 return root;
             }
 

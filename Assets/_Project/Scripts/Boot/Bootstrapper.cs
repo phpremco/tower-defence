@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Core;
+using Game.Drones;
 using Game.Economy;
 using Game.Levels;
 using Game.Platform;
@@ -81,9 +82,14 @@ namespace Game.Boot
             if (_vfxLibrary != null)
             {
                 Services.Register(_vfxLibrary);
+                if (_vfxLibrary.Markers != null)
+                {
+                    Services.Register(_vfxLibrary.Markers);
+                }
             }
 
             UiKit.Skin = _uiSkin;
+            MoneyPopup.Font = _uiSkin.Font;
 
             // The listener carries the master level; the players multiply their own group in from the mix.
             var mix = new AudioMix();

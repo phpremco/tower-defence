@@ -46,8 +46,6 @@ MonoBehaviour:
   _scale: 0.65
   _shape: 22
   _deathStyle: 1
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: b2353fb57a5f73441a6d2c0589ed8a35, type: 2}
   _voice: {fileID: 11400000, guid: 3417d2fe63d010746848028c62f2ab6b, type: 2}
   _description: Element bat. Rises from bog nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.

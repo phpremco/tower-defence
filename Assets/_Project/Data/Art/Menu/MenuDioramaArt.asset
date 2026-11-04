@@ -2068,3 +2068,4 @@ MonoBehaviour:
     Colour: {r: 0.62, g: 0.86, b: 1, a: 1}
     Intensity: 0.9
     Range: 3.5
+  _liquids: {fileID: 11400000, guid: 1837ec3680704464d82956d91290697f, type: 2}

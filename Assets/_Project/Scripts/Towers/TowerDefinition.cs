@@ -52,13 +52,8 @@ namespace Game.Towers
         [SerializeField] private Color _color = new Color(0.3f, 0.6f, 1f);
         [SerializeField] private TowerShape _shape;
         [SerializeField] private ProjectileStyle _projectileStyle;
-        [SerializeField] private GameObject _model;
-        [SerializeField] [Min(0.1f)] private float _modelScale = 1.4f;
 
-        /// <summary>Show the model with its own materials, without the tower tint and glow. For hand-coloured models.</summary>
-        [SerializeField] private bool _keepModelColours;
-
-        /// <summary>The imported model per level; when set it replaces the procedural shape and the model above.</summary>
+        /// <summary>The imported model per level; when set it replaces the procedural shape.</summary>
         [SerializeField] private TowerArtDefinition _art;
         [Tooltip("A gate's imported look (pylons, beam, panels, wreck); empty keeps the procedural gate.")]
         [SerializeField] private GateArtDefinition _gateArt;
@@ -90,9 +85,6 @@ namespace Game.Towers
         /// <summary>How this tower's shots look and sound.</summary>
         public ProjectileStyle ProjectileStyle => _projectileStyle;
 
-        public GameObject Model => _model;
-        public float ModelScale => _modelScale;
-        public bool KeepModelColours => _keepModelColours;
 
         /// <summary>The imported (Blender) look, or null for the procedural shape.</summary>
         public TowerArtDefinition Art => _art;

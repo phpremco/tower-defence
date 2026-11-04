@@ -123,6 +123,7 @@ namespace Game.UI
             rect.sizeDelta = new Vector2(CardWidth, CardHeight);
             Destroy(button.GetComponent<LayoutElement>());
 
+            UiKit.UseTint(button);
             ColorBlock colors = button.colors;
             colors.normalColor = CardTint;
             colors.highlightedColor = Color.Lerp(CardTint, Color.white, 0.35f);

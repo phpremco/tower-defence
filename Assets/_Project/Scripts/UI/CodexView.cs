@@ -351,6 +351,7 @@ namespace Game.UI
             element.preferredHeight = RowHeight;
             element.minHeight = RowHeight;
             Destroy(button.transform.Find("Icon").gameObject);
+            UiKit.UseTint(button);
             ColorBlock colors = button.colors;
             colors.normalColor = RowTint;
             colors.highlightedColor = Color.Lerp(RowTint, Color.white, 0.35f);

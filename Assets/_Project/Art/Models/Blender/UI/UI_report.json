@@ -1,0 +1,107 @@
+{
+ "round": 25,
+ "script": "Tools/Blender/build_ui.py",
+ "files": {
+  "UI_Icons.png": {
+   "size": [
+    1024,
+    640
+   ],
+   "entries": 40,
+   "replaces": "Assets/_Project/Scripts/UI/IconFactory.cs:58-73 (runtime 64 px masks)",
+   "used_by": "BaseAlertView, BossMarkerView, HeroAbilityHud, HeroPanelView, HeroQuickBar, HudView, LoadoutPanelView, ResultView, TowerMenuView, UpgradeCelebration, UpgradeScreen, WorldMapScreen"
+  },
+  "UI_Kit.png": {
+   "size": [
+    1024,
+    628
+   ],
+   "entries": 40,
+   "replaces": "Kenney UI pack sprites referenced by Assets/_Project/Settings/UiSkin.asset (panel, panelSquare, button, buttonSquare, barBack, bar*, card*) + UiKit slider/scroll/toggle styling"
+  },
+  "UI_Dialogue.png": {
+   "size": [
+    1024,
+    588
+   ],
+   "entries": [
+    "Radar_Sweep",
+    "Dialogue_PortraitFrame",
+    "Dialogue_Panel",
+    "Dialogue_Edge",
+    "Dialogue_NameTag",
+    "Dialogue_Arrow",
+    "Radar_Contact"
+   ],
+   "replaces": "Assets/_Project/Scripts/UI/DialogueArt.cs:55-217 (Panel, Edge, Arrow) + RadarOverlay.cs sweep arms/contacts"
+  },
+  "UI_Dialogue_Noise.png": {
+   "size": [
+    256,
+    32
+   ],
+   "replaces": "DialogueArt.Noise (redacted bars; wrap Repeat, filter Point)"
+  },
+  "UI_Dialogue_Scanlines.png": {
+   "size": [
+    8,
+    8
+   ],
+   "replaces": "DialogueArt.Scanlines (wrap Repeat, filter Point; 8 rows = 4 px at 1x)"
+  },
+  "UI_Dialogue_Radial.png": {
+   "size": [
+    128,
+    128
+   ],
+   "replaces": "DialogueArt.Radial (Clamp, Bilinear)"
+  },
+  "UI_Dialogue_Shade.png": {
+   "size": [
+    4,
+    128
+   ],
+   "replaces": "DialogueArt.Shade (Clamp, Bilinear; opaque at the bottom)"
+  },
+  "UI_Radar.png": {
+   "size": [
+    1024,
+    1024
+   ],
+   "scope_radius_px": 471,
+   "replaces": "RadarOverlay.cs:66-75 (Back radial, Ring1-3, Cross lines); the sweep and contacts are Radar_Sweep / Radar_Contact in UI_Dialogue. Pre-coloured: Image.color white. Draw at Size * 1.087 so the scope circle matches Size."
+  },
+  "UI_Starfield.png": {
+   "size": [
+    2048,
+    1152
+   ],
+   "replaces": "StarfieldPainter.Paint via UiKit.AddStarfield (UiKit.cs:278-291)",
+   "note": "straight alpha = 3 x brightness, same rule as the painter; Clamp, Bilinear, no mips"
+  },
+  "UI_PreviewBackdrop.png": {
+   "size": [
+    1024,
+    1024
+   ],
+   "replaces": "ModelPreview.Gradient (ModelPreview.cs:239-249)",
+   "note": "opaque; same bottom/top colours as the old gradient plus a centre glow, a faint hex lattice and a vignette"
+  },
+  "UI_MapHalo.png": {
+   "size": [
+    512,
+    512
+   ],
+   "replaces": "PlanetPainter.PaintHalo (PlanetPainter.cs:13) used by WorldMapScreen.cs:230",
+   "note": "white, tinted by WorldMapScreen.HaloColor as before"
+  }
+ },
+ "previews": {
+  "icons": "C:\\Users\\remco\\Tower defense\\ArtSource\\Previews\\UI\\ui_icons.png",
+  "hud": "C:\\Users\\remco\\Tower defense\\ArtSource\\Previews\\UI\\ui_hud.png",
+  "dialogue": "C:\\Users\\remco\\Tower defense\\ArtSource\\Previews\\UI\\ui_dialogue.png",
+  "menu": "C:\\Users\\remco\\Tower defense\\ArtSource\\Previews\\UI\\ui_menu.png",
+  "misc": "C:\\Users\\remco\\Tower defense\\ArtSource\\Previews\\UI\\ui_misc.png"
+ },
+ "fonts": "unchanged: KenneyFuture / KenneyFutureNarrow (CC0). Drones/MoneyPopup.cs:25-27 still uses the built-in LegacyRuntime font and should take UiKit.Font (UiSkin._font) instead; no art needed."
+}

@@ -131,7 +131,7 @@ namespace Game.UI
             }
 
             float flicker = 0.8f + 0.2f * Mathf.Sin(time * 7f);
-            _crackMaterial.SetColor("_EmissionColor", _crackColour * (CrackGlow * flicker));
+            GlowDecal.SetColour(_crackMaterial, _crackColour * (CrackGlow * flicker));
 
             _deposit.SetActive(crack > 0f);
             bool drilling = depth > 0f;

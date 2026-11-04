@@ -23,6 +23,8 @@ namespace Game.UI
         [SerializeField] private Sprite _cardRed;
         [Tooltip("The pedestal, halo and backdrop the upgrade screen's models turn on (Blender round 27).")]
         [SerializeField] private DisplayStageArt _displayStage;
+        [Tooltip("The icons, nine-slice kit, dialogue pieces and pictures painted in Blender (round 25).")]
+        [SerializeField] private UiArtSet _art;
 
         public Font Font => _font;
         public Font NarrowFont => _narrowFont != null ? _narrowFont : _font;
@@ -42,5 +44,8 @@ namespace Game.UI
 
         /// <summary>The model preview's stage; null on data generated before it existed.</summary>
         public DisplayStageArt DisplayStage => _displayStage;
+
+        /// <summary>The Blender interface art; null on data generated before it existed.</summary>
+        public UiArtSet Art => _art;
     }
 }

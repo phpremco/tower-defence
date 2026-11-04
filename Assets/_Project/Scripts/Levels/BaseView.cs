@@ -23,6 +23,8 @@ namespace Game.Levels
         private const float DebrisSpeed = 4.5f;
         private const float DebrisUp = 7f;
         private const float DebrisSpin = 540f;
+        // The base sheds bigger pieces than a gate: the painted chunks at about twice their size.
+        private const float BaseDebrisSize = 2f;
         private const float Gravity = 16f;
         private const float ShakeSeconds = 1.1f;
         private const float ShakeAmount = 0.12f;
@@ -98,8 +100,9 @@ namespace Game.Levels
             var spins = new Vector3[DebrisCount];
             for (int i = 0; i < DebrisCount; i++)
             {
-                Vector3 size = new Vector3(Random.Range(0.12f, 0.3f), Random.Range(0.08f, 0.22f), Random.Range(0.12f, 0.3f));
-                GameObject chunk = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, DebrisColor, transform.parent, transform.position + Vector3.up * Random.Range(0.4f, 1.6f), size);
+                GameObject chunk = DebrisChunks.Create(transform.parent, false, BaseDebrisSize, DebrisColor, DebrisColor, out _);
+                chunk.transform.position = transform.position + Vector3.up * Random.Range(0.4f, 1.6f);
+                chunk.SetActive(true);
                 debris[i] = chunk.transform;
                 Vector2 flat = Random.insideUnitCircle.normalized * Random.Range(0.4f, 1f) * DebrisSpeed;
                 velocities[i] = new Vector3(flat.x, Random.Range(0.5f, 1f) * DebrisUp, flat.y);

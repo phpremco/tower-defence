@@ -39,12 +39,9 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        // Every tower wears a procedural model; the hand-made gatling stays on disk but is no longer used.
+        // Every tower wears a procedural shape until the Blender tower art replaces it.
         private static void GenerateTowerLooks(GeneratorContext context)
         {
-            ClearModel(context.Pulse);
-            SetModel(context.Cannon, "turret_double", 1.4f);
-            ClearModel(context.Rocket);
             SetShapes(context.Roster, context.Cannon, context.Rocket, context.Blockade);
         }
     }

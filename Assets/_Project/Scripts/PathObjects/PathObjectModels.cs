@@ -16,7 +16,7 @@ namespace Game.PathObjects
                 case PathObjectLook.LavaBall: return StructureModelFactory.LavaBall();
                 case PathObjectLook.GroundDrone: return StructureModelFactory.GroundDrone();
                 case PathObjectLook.Barrel: return StructureModelFactory.Barrel();
-                default: return StructureModelFactory.AirNet();
+                default: return StructureModelFactory.FieldEmitter();
             }
         }
 

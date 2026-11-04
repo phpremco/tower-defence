@@ -173,6 +173,6 @@ Dit is het nieuwe moment "speel het en beslis of het leuk is". Levels 7 t/m 20 v
 | Voor S4 | Moeilijkheid "Psycho" hernoemen naar "Crazy"? (Beide kunnen bij een store-keuring opvallen.) |
 | Continent 2 | Hero zelf besturen (Dash, Charged Slash en Overcharge vragen daarom) of op posts houden? |
 | Continent 2 | Drones en power currency staan niet in het script: blijven ze zoals nu? |
-| Later | Barrel en Air net houden? `SealState` cosmetisch of met gevolgen? Het eigen geluid voor steen |
+| Later | Barrel houden? (Air net verwijderd 2026-11-04.) `SealState` cosmetisch of met gevolgen? Het eigen geluid voor steen |
 
 Het script staat in `Docs/STORY.md`.

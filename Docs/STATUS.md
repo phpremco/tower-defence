@@ -1978,3 +1978,56 @@ stage) are in the game. Not committed; the full generator was not run (targeted 
   shared, so not retuned here); the starfield and spores still use the default particle material (README suggests
   `UI_Starfield.png` and the Particles_Atlas cells, which are not imported yet); glow pools under props are still the
   code radial decal (README: keep); island brightness x2.2 is a judgement call against the Blender render.
+
+## Markers, bars and UI from Blender; menu water; creature facing; Air net removed (2026-11-04)
+
+Blender rounds 25 (UI art) and 25b (markers, bars, projectiles, debris, scout, particle atlas) are in the game. Not
+committed; the full generator was not run (targeted menu items below; both builders are also generator steps).
+- **Markers (round 25b):** `BlenderMarkerBuilder` (menu `Tools/Generate/Blender Markers (sync, meshes, materials)`, generator
+  step "Marker art" after "Effect library") syncs 18 export folders, bakes every node into `Data/Art/Markers/MarkerMeshes.asset`
+  (the FBX arrive half a turn about Y; the bar plate is moved back behind the line), builds `Game/MarkerPack` materials
+  (`Art/Materials/Markers`, High/Low: channel gains, tint per renderer through a property block, UV scroll, second sample
+  that scrolls or ripples, fill clip on UV2.x, B darkening) and writes `MarkerArt` on `VfxLibrary._markers` (registered at
+  boot). Worn by: health/armour bars (`Core/WorldBar`: thin line on a soft plate, turned to the camera, cut from the right,
+  only when hurt) on creatures, towers and the hero; flyer blob shadow; placement cursor; free-cell glow near the cursor only
+  while placing (`BuildPadHighlight`, pooled cells, replaces the ground-shader squares); range ring + fill
+  (`RangeIndicator`); hero post strips, stand ring, beacon and crest; slow-field reach with outward ripples; road light
+  streaks (`RouteTrail`, a strip mesh along each road that follows the ground, one streak per three cells, running to the
+  base; no chevrons) and flight-route beads; glow pools/blades/energy fields (`GlowDecal`, plus `SetColour`/`SetScroll`
+  for both looks); projectile meshes (bolt, rail slug, shell/mortar on the bolt mesh, finned lit missile, alien bolt with
+  glow shell, boss pulse ring); the drone tool cone; the lit recon probe with its light and painted trail plus pulse rings;
+  debris chunks for gates and the base (`Core/DebrisChunks`); the particle atlas (`ParticleKit.UseCell`) for embers, drips,
+  frost, motes, spores, chrono motes, ambient motes and the menu stars/spores.
+- **UI (round 25):** `BlenderUiBuilder` (menu `Tools/Generate/Blender UI (...)`, called by the generator's "UI skin" step)
+  cuts the 87 sprites from the JSON sheets into `Data/Art/UI/UiArtSet.asset` (sub-assets, PPU 200 for the 2x masters,
+  stable on re-run) and maps the kit onto `UiSkin` (`_art`). Text buttons swap Button_Normal/Focus (gold brackets)/Pressed/
+  Disabled; icon buttons ButtonSquare_*; screens that colour their buttons by state call `UiKit.UseTint` (Neutral frame +
+  colour tint): hero panel, base menu cards, codex rows, tower menu. Sliders stay sliders with the painted hexagon handle
+  (focus sprite). `IconFactory` is a lookup of the 40 Blender icons (12 new `IconType` members); `DialogueArt` and the
+  radar use the painted panel, edge, name tag, arrow, tiles, scope picture, sweep and contacts; `UI_Starfield` behind the
+  menus; `UI_MapHalo` on the planet map; `MoneyPopup` uses the skin font (`MoneyPopup.Font`, set at boot).
+- **Menu water:** `MenuDioramaArt._liquids` (`Data/Art/Menu/Liquids_Menu.asset`, written by the menu builder through
+  `BlenderMenuLiquids`) gives the diorama its own `Liquid_Water_Menu(_Low).mat`: lighter lagoon colours, no refraction,
+  fuller cover, glossier, caustic glow 2 and a new `Game/Liquid` `_Reflection` 1.4 (levels keep the default 0.5).
+- **Creatures walked backwards (Remco):** every creature FBX has its head at -Z, and `CreatureModel` ignored the art's yaw,
+  so creatures moved tail first in the menu and in levels. `CreatureModel` now applies `ModelArtDefinition.Yaw`, the
+  creature builder writes 180 (the 65 creature art assets were set by `Tools/PlayTest/creature_yaw.cs`), and
+  `CreatureDisplay` keeps its old framing. Probe: head bone ahead of the heading for every menu creature (dot 0.78-1.0 for
+  banking flyers, 1.0 for walkers); new `CreatureFacingTests`.
+- **Air net removed (Remco):** path object, colony art, look/effect enum members, procedural mesh, badge, sound family and
+  `net_fire` mapping, colony catalog entry, generator rows, test case, marker strand piece; Blender exports left alone and
+  no longer synced. No level, loadout, unlock or codex referenced it; saved loadout/unlock ids that no longer exist are
+  skipped. The balance code never counted it.
+- **Cleanup:** removed the Kenney Space Kit models and UI Pack sprites (+ `ArtImporter`), the custom machinegun
+  (`Art/Models/Custom`, `CustomModelBuilder`, `ModelRecipe`, `GlbMeshReader`, generator step "Models"), the model fields of
+  `TowerDefinition`, `TowerLevel`, `EnemyDefinition` and the nine Kenney fields of `VisualTheme` (data re-serialised),
+  `StarfieldPainter` and the code painters of `IconFactory` and `DialogueArt`. Kept as explicit fallbacks for views built
+  without the registered art (EditMode tests, tools): the cube bars, chevrons, glow textures in `GlowDecal`, the procedural
+  missile/capsule shots, cursor cube, line range ring, `PlanetPainter.PaintHalo` (StoryTests).
+- **Tests:** EditMode 361/361 (new `MarkerArtTests` 6 cases/11 results, `CreatureFacingTests` 1). PlayMode one class at a time:
+  ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3
+  (BalanceProbe and ModelPerformance skipped this round on request).
+  0 compile errors/warnings. Save left for the coordinator (Remco starts fresh tonight).
+- **Tools:** `round_ui_shots.sh` (play a level or the menu, then probe/shot/still/click/place/fight/pair actions),
+  `fight_hurt.cs`, `walk_probe.cs`, `head_probe.cs`, `walker_pos.cs`, `walker_zoom.cs`, `walk_pair.cs`, `trail_probe.cs`,
+  `marker_nodes.cs`, `marker_uvs.cs`, `fbx_head.cs`, `Scripts/ReserializeCleanup.cs` (one-off).

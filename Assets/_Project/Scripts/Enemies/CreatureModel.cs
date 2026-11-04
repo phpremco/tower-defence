@@ -68,6 +68,8 @@ namespace Game.Enemies
         {
             var root = new GameObject($"{art.name}_model").transform;
             root.SetParent(parent, false);
+            // The exports face -Z once imported; the art's yaw turns the head onto the owner's +Z, the way it walks.
+            root.localRotation = Quaternion.Euler(0f, art.Yaw, 0f);
             root.localScale = Vector3.one * scale;
             Material[] materials = CopyMaterials(art, lowDetail);
 

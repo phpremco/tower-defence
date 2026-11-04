@@ -46,8 +46,6 @@ MonoBehaviour:
   _scale: 0.7
   _shape: 8
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: d6d4f8bf93d31254b9af33da25c4b19e, type: 2}
   _voice: {fileID: 11400000, guid: 9fc1cee2ddd03f44f9869b4a44a979bd, type: 2}
   _description: Sand-coloured digger that curls into a ball and shoots down the road, about three times as fast as anything else; slow it before it rolls.

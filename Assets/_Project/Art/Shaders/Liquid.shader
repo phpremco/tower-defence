@@ -42,6 +42,7 @@ Shader "Game/Liquid"
         _Pulse ("Pulse (depth, speed rad/s)", Vector) = (0.15, 1.1, 0, 0)
         _Waves ("Waves (height, length, speed)", Vector) = (0.03, 1.4, 1.6, 0)
         _Refraction ("Refraction offset", Float) = 0.03
+        _Reflection ("Sky reflection at grazing angles", Float) = 0.5
         [Toggle(_LIQUID_LOW)] _Low ("Low profile", Float) = 0
         [Toggle(_LIQUID_REFRACT)] _Refract ("Refract the opaque picture", Float) = 0
         [KeywordEnum(Water, Lava, Bog, Quicksand, Ice, Corruption)] _Liquid ("Kind", Float) = 0
@@ -112,6 +113,7 @@ Shader "Game/Liquid"
             float4 _Pulse;
             float4 _Waves;
             float _Refraction;
+            half _Reflection;
             CBUFFER_END
 
             struct Attributes
@@ -401,7 +403,7 @@ Shader "Game/Liquid"
                 half specular = pow(saturate(dot(n, halfway)), power) * s.smoothness * s.smoothness * 2.0h;
                 half fresnel = pow(1.0h - saturate(dot(n, view)), 4.0h) * s.smoothness;
                 half3 sky = SampleSH(reflect(-view, n));
-                half3 colour = s.albedo * (lit * ndl + SampleSH(n)) + lit * specular + sky * fresnel * 0.5h + s.emission * _EmissionStrength;
+                half3 colour = s.albedo * (lit * ndl + SampleSH(n)) + lit * specular + sky * fresnel * _Reflection + s.emission * _EmissionStrength;
                 half alpha = saturate(s.alpha + specular * 0.5h);
 #if defined(_LIQUID_REFRACT)
                 float2 screenUv = input.screenPos.xy / max(input.screenPos.w, 1e-5);

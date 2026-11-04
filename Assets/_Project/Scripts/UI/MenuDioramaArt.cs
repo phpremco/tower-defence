@@ -1,3 +1,4 @@
+using Game.Levels;
 using UnityEngine;
 
 namespace Game.UI
@@ -38,6 +39,8 @@ namespace Game.UI
         [SerializeField] private MenuDioramaPlacement[] _placements = new MenuDioramaPlacement[0];
         [SerializeField] private MenuDioramaPool[] _pools = new MenuDioramaPool[0];
         [SerializeField] private MenuDioramaLight[] _lights = new MenuDioramaLight[0];
+        [Tooltip("Menu-only pool looks (lighter, more reflective water than the levels'); kinds it lacks use the theme's.")]
+        [SerializeField] private LiquidSet _liquids;
 
         public Mesh Island => _island;
         public Material[] IslandMaterials(bool low) => low && _islandLowMaterials.Length == _islandMaterials.Length ? _islandLowMaterials : _islandMaterials;
@@ -52,6 +55,7 @@ namespace Game.UI
         public float CameraYaw => _cameraYaw;
         public float CameraFieldOfView => _cameraFieldOfView;
         public MenuDioramaModel[] Models => _models;
+        public LiquidSet Liquids => _liquids;
         public MenuDioramaPlacement[] Placements => _placements;
         public MenuDioramaPool[] Pools => _pools;
         public MenuDioramaLight[] Lights => _lights;

@@ -38,7 +38,6 @@ namespace Game.Core
         [SerializeField] private SoundSet _freezes = new SoundSet();
         [SerializeField] private SoundSet _acidSizzles = new SoundSet();
         [SerializeField] private SoundSet _steamBursts = new SoundSet();
-        [SerializeField] private SoundSet _netShots = new SoundSet();
         [SerializeField] private SoundSet _earthquakes = new SoundSet();
 
         [Header("Path objects (loops)")]
@@ -112,7 +111,6 @@ namespace Game.Core
         public SoundSet Freezes => _freezes;
         public SoundSet AcidSizzles => _acidSizzles;
         public SoundSet SteamBursts => _steamBursts;
-        public SoundSet NetShots => _netShots;
         public SoundSet Earthquakes => _earthquakes;
         public SoundSet CartLoops => _cartLoops;
         public SoundSet FireballLoops => _fireballLoops;
@@ -157,7 +155,7 @@ namespace Game.Core
             ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
             ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
-            ("Freeze", _freezes), ("Acid sizzle", _acidSizzles), ("Steam burst", _steamBursts), ("Net shot", _netShots),
+            ("Freeze", _freezes), ("Acid sizzle", _acidSizzles), ("Steam burst", _steamBursts),
             ("Earthquake", _earthquakes), ("Cart loop", _cartLoops), ("Fireball loop", _fireballLoops),
             ("Hero blaster", _heroBlasters), ("Saber swing", _saberSwings), ("Saber hit", _saberHits), ("Saber hum", _saberHums),
             ("Hero pulse", _heroPulses), ("Hero step", _heroSteps), ("Hero death", _heroDeaths), ("Hero fall", _heroFalls),

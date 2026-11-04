@@ -14,17 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.UI::Game.UI.UiSkin
   _font: {fileID: 12800000, guid: 8f1228c8fb4e51e4d8c0b90516398150, type: 3}
   _narrowFont: {fileID: 12800000, guid: de3c7ef7f993151418891869e6911e43, type: 3}
-  _panel: {fileID: 21300000, guid: 812cee1134d50ce40b4600be5a9d5530, type: 3}
-  _panelSquare: {fileID: 21300000, guid: 1a9a18d485f69bb4abe10c19063d512e, type: 3}
-  _button: {fileID: 21300000, guid: 65b1496442fc68047be3a903a24997b7, type: 3}
-  _buttonSquare: {fileID: 21300000, guid: b5424b1541809b74ca4fd3dc58393bc8, type: 3}
-  _barBack: {fileID: 21300000, guid: a759eedac507172468000317d0226418, type: 3}
-  _barBlue: {fileID: 21300000, guid: 54c673662ec19ca4e92fb44cd078f949, type: 3}
-  _barGreen: {fileID: 21300000, guid: dad56f4397cba064288c32ec1d7a4b06, type: 3}
-  _barYellow: {fileID: 21300000, guid: bf8fe48695cbfcb499fe8bddcdc7bc3e, type: 3}
-  _barRed: {fileID: 21300000, guid: bafe2b876b0e77849b5258fe4618f21d, type: 3}
-  _cardBlue: {fileID: 21300000, guid: c341d4245bbb812489b6785555935aca, type: 3}
-  _cardGreen: {fileID: 21300000, guid: a34cd227a9ff0bc4dbb69439d384a453, type: 3}
-  _cardYellow: {fileID: 21300000, guid: c4633c8b456b27a4283acbfb4d23b57c, type: 3}
-  _cardRed: {fileID: 21300000, guid: 99d909195ea15434bb280b40068ee368, type: 3}
+  _panel: {fileID: -3950477328265242145, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _panelSquare: {fileID: -5880760252093380931, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _button: {fileID: -1201046359330054884, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _buttonSquare: {fileID: 5921627012340206643, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _barBack: {fileID: 4546263026095316163, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _barBlue: {fileID: -1280805165014982038, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _barGreen: {fileID: 7056493400310449385, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _barYellow: {fileID: -1590554171395903882, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _barRed: {fileID: 3917632635265997000, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _cardBlue: {fileID: 4708822751976993153, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _cardGreen: {fileID: -6077787768255961295, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _cardYellow: {fileID: 8957435278733561084, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _cardRed: {fileID: 4688250811747412987, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
   _displayStage: {fileID: 11400000, guid: 182f4d9e06967be45946cbe76f5c7992, type: 2}
+  _art: {fileID: 11400000, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}

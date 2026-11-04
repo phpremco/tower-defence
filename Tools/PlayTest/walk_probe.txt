@@ -1,0 +1,1 @@
+Stinger bodyDot=0.95 modelDot=0.95 modelLocalYaw=0; Skitter bodyDot=0.43 modelDot=0.43 modelLocalYaw=0; Skyray bodyDot=1.00 modelDot=1.00 modelLocalYaw=0; Skyray bodyDot=0.99 modelDot=0.99 modelLocalYaw=0; Mirebat bodyDot=0.59 modelDot=0.59 modelLocalYaw=0; 

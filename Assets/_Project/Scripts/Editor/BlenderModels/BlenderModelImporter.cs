@@ -86,6 +86,9 @@ namespace Game.Editor
             return folder == MenuIslandAsset || folder == MenuMouthAsset || folder == UiDisplayAsset;
         }
 
+        // Round 25b: markers, bars, projectiles, debris, the scout and the particle atlas.
+        private static bool IsMarker(string path) => IsOurs(path) && BlenderMarkerCatalog.Contains(ExportFolder(path));
+
         // The export folder an asset path lies in (the first folder under the target root).
         private static string ExportFolder(string path)
         {
@@ -127,6 +130,14 @@ namespace Game.Editor
             {
                 importer.animationType = ModelImporterAnimationType.None;
                 importer.importAnimation = false;
+            }
+
+            if (IsMarker(assetPath))
+            {
+                // Round 25b pieces are static; the builder bakes their node transforms into its own meshes, so it reads them.
+                importer.animationType = ModelImporterAnimationType.None;
+                importer.importAnimation = false;
+                importer.isReadable = true;
             }
 
             if (IsEnvironment(assetPath))
@@ -250,6 +261,18 @@ namespace Game.Editor
                 return;
             }
 
+            if (BlenderUiBuilder.IsUiTexture(assetPath))
+            {
+                BlenderUiBuilder.Preprocess(importer, file);
+                return;
+            }
+
+            if (IsMarker(assetPath) && !BlenderMarkerCatalog.IsLitMap(file))
+            {
+                PreprocessMarkerTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             if (IsLiquid(assetPath))
             {
                 PreprocessLiquidTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
@@ -327,6 +350,22 @@ namespace Game.Editor
             return MapSizeOverrides.TryGetValue(ExportFolder(path), out (int High, int Low) size)
                 ? low ? size.Low : size.High
                 : low ? LowMapSize : FullMapSize;
+        }
+
+        // README round 25b: channel packs are linear data with their alpha as painted, tinted by the material; ribbons and
+        // bands repeat along their length, the rest clamps (the bar atlas would bleed between its rows).
+        private static void PreprocessMarkerTexture(TextureImporter importer, string file, bool low)
+        {
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = false;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.alphaIsTransparency = false;
+            importer.mipmapEnabled = true;
+            importer.wrapMode = BlenderMarkerCatalog.Tiles(file) ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            importer.anisoLevel = AnisoLevel;
+            importer.filterMode = FilterMode.Trilinear;
+            importer.maxTextureSize = low ? LowMapSize : FullMapSize;
+            importer.textureCompression = TextureImporterCompression.CompressedHQ;
         }
 
         // VFX_report.json: every effect texture is linear data (colour comes from the materials), alpha as painted;

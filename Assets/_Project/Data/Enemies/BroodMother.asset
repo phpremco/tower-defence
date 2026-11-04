@@ -48,8 +48,6 @@ MonoBehaviour:
   _scale: 1.3
   _shape: 30
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: dfbf6761708350745a17c3ebdf815b1f, type: 2}
   _voice: {fileID: 11400000, guid: 6ba798a7e122dd5478fb9c67dba78747, type: 2}
   _description: 'Queen of the ants: an endless brood and a burst of venom.'

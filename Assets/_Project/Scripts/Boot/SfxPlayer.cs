@@ -69,7 +69,6 @@ namespace Game.Boot
         private const float UpgradeVolume = 0.6f;
         private const float CashVolume = 0.4f;
         private const float ScrapVolume = 0.5f;
-        private const float NetVolume = 0.5f;
         private const float AcidVolume = 0.15f;
         private const float HeroGunVolume = 0.5f;
         private const float SaberVolume = 0.45f;
@@ -155,7 +154,6 @@ namespace Game.Boot
         private SoundFamily _droneLaser;
         private SoundFamily _structureHit;
         private SoundFamily _freezes;
-        private SoundFamily _net;
         private SoundFamily _acid;
         private LoopVoice _saberHum;
         private readonly LoopVoice[] _beamVoices = new LoopVoice[BeamVoiceCount];
@@ -290,7 +288,6 @@ namespace Game.Boot
             _droneLaser = new SoundFamily(library?.DroneLasers, ProceduralSfx.PulseShot());
             _structureHit = new SoundFamily(library?.StructureHits, ProceduralSfx.StructureHit());
             _freezes = new SoundFamily(library?.Freezes);
-            _net = new SoundFamily(library?.NetShots, ProceduralSfx.Build());
             _acid = new SoundFamily(library?.AcidSizzles);
             _saberHum = LoopVoice.Create(gameObject, library?.SaberHums);
             _droneFan = LoopVoice.Create(gameObject, library?.DroneFanLoops);
@@ -662,14 +659,11 @@ namespace Game.Boot
             Schedule(_cash, CashVolume, SfxKind.Priority, 0.35f);
         }
 
-        // A mine or barrel is a blast; a net is fired over the road; cold is laid down; a roller rumbles until it is done.
+        // A mine or barrel is a blast; cold is laid down; a roller rumbles until it is done.
         private void OnPathObjectSpawned(PathObject pathObject)
         {
             switch (pathObject.Definition.Effect)
             {
-                case PathObjectEffect.AirNet:
-                    Play(_net, NetVolume, SfxKind.Priority);
-                    break;
                 case PathObjectEffect.Slow:
                     Play(_freezes, FreezeFieldVolume, SfxKind.Priority);
                     break;

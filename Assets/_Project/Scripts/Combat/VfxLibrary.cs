@@ -1,4 +1,5 @@
 using System;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Combat
@@ -26,12 +27,17 @@ namespace Game.Combat
         [SerializeField] private ImpactVfxDefinition _bossDeath;
         [SerializeField] private ImpactVfxDefinition _mine;
         [SerializeField] private ImpactVfxDefinition _bossPulse;
+        [Tooltip("The gameplay markers, bars, projectiles and debris painted in Blender (registered at boot).")]
+        [SerializeField] private MarkerArt _markers;
 
         public ImpactVfxDefinition Default => _default;
         public ImpactVfxDefinition Death => _death != null ? _death : _default;
         public ImpactVfxDefinition BossDeath => _bossDeath != null ? _bossDeath : Death;
         public ImpactVfxDefinition Mine => _mine != null ? _mine : _default;
         public ImpactVfxDefinition BossPulse => _bossPulse != null ? _bossPulse : _default;
+
+        /// <summary>The round-25b marker art, or null when the library was built without it.</summary>
+        public MarkerArt Markers => _markers;
 
         /// <summary>The impact of a projectile style.</summary>
         public ImpactVfxDefinition For(ProjectileStyle style)

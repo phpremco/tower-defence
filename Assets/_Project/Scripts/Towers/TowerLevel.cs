@@ -21,7 +21,5 @@ namespace Game.Towers
         [Tooltip("How long that slow lasts at this level; zero keeps the tower's own value.")]
         [Min(0f)] public float SlowSeconds;
 
-        [Tooltip("Optional look for this level. Empty keeps the model of the level before it.")]
-        public GameObject Model;
     }
 }

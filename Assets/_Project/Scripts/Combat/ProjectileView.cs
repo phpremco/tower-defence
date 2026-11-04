@@ -39,6 +39,9 @@ namespace Game.Combat
         private const float RocketWobbleSpeed = 20f;
         private const float Whiteness = 0.55f;
         private const int ShellSmoke = 4;
+        private const float FlakMeshScale = 0.8f;
+        private const float ShellMeshScale = 1.2f;
+        private const float MortarMeshScale = 1.8f;
         private static readonly int TintId = Shader.PropertyToID("_Tint");
         private static readonly int FrameId = Shader.PropertyToID("_Frame");
 
@@ -47,6 +50,9 @@ namespace Game.Combat
         private Transform _core;
         private Transform _slug;
         private Transform _missile;
+        private MarkerArt _art;
+        private MeshRenderer _boltMesh;
+        private MeshRenderer _slugMesh;
         private TrailRenderer _trail;
         private TrailRenderer _smokeTrail;
         private LineRenderer _beam;
@@ -107,7 +113,10 @@ namespace Game.Combat
             // A rounded bar that flies lengthwise: the capsule's long axis is turned onto the heading.
             _slug = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Capsule, Color.white, _visual, Vector3.zero, SlugScale, CoreEmission).transform;
             _slug.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            _missile = BuildMissile(_visual);
+            _art = MarkerArt.Active;
+            _boltMesh = _art != null ? _art.Place(MarkerKind.Bolt, _visual, "BoltMesh") : null;
+            _slugMesh = _art != null ? _art.Place(MarkerKind.RailSlug, _visual, "SlugMesh") : null;
+            _missile = _art != null && _art.Missile.IsComplete ? PlaceMissile(_visual, _art.Missile) : BuildMissile(_visual);
             ShadowsOff(_visual);
 
             _bolt = VfxQuad.Create(transform, "Bolt", VfxQuad.Centred);
@@ -151,6 +160,16 @@ namespace Game.Combat
             return gradient;
         }
 
+        // README round 25b: the finned Blender missile (lit, tower maps), nose to +z.
+        private static Transform PlaceMissile(Transform parent, MarkerArt.LitModel model)
+        {
+            var missile = new GameObject("Missile");
+            missile.transform.SetParent(parent, false);
+            missile.AddComponent<MeshFilter>().sharedMesh = model.Mesh;
+            missile.AddComponent<MeshRenderer>().sharedMaterial = model.Material(ModelQuality.IsLow);
+            return missile.transform;
+        }
+
         // A small missile: a body, a glowing nose and three fins, pointing along +z.
         private static Transform BuildMissile(Transform parent)
         {
@@ -192,6 +211,31 @@ namespace Game.Combat
             }
         }
 
+        // The Blender bolt (pulse, flak, cannon and mortar shells) and rail slug, under the painted glow card where a recipe has one.
+        private void ShowMeshes(ProjectileStyle style, Color colour)
+        {
+            if (_boltMesh == null)
+            {
+                return;
+            }
+
+            bool shell = style == ProjectileStyle.Shell || style == ProjectileStyle.Mortar;
+            bool bolt = style == ProjectileStyle.Bolt || style == ProjectileStyle.Flak || shell;
+            _boltMesh.gameObject.SetActive(bolt);
+            if (bolt)
+            {
+                _boltMesh.transform.localScale = Vector3.one * (style == ProjectileStyle.Mortar ? MortarMeshScale : shell ? ShellMeshScale : style == ProjectileStyle.Flak ? FlakMeshScale : 1f);
+                MarkerArt.SetTint(_boltMesh, _block, style == ProjectileStyle.Flak ? FlakHot : shell ? ShellTracer : colour);
+            }
+
+            bool rail = style == ProjectileStyle.Rail && _slugMesh != null;
+            _slugMesh?.gameObject.SetActive(rail);
+            if (rail)
+            {
+                MarkerArt.SetTint(_slugMesh, _block, colour);
+            }
+        }
+
         private void OnLaunched(Projectile projectile)
         {
             Color color = projectile.Color;
@@ -205,13 +249,14 @@ namespace Game.Combat
 
             bool core = style == ProjectileStyle.Shell || style == ProjectileStyle.Frost || style == ProjectileStyle.Mortar;
             bool painted = _weapon != null && _weapon.Projectile != null;
-            _core.gameObject.SetActive(core && !(painted && style == ProjectileStyle.Frost));
+            _core.gameObject.SetActive(core && !(painted && style == ProjectileStyle.Frost) && !(_boltMesh != null && style != ProjectileStyle.Frost));
             _core.localScale = Vector3.one * (style == ProjectileStyle.Mortar ? 0.3f : style == ProjectileStyle.Shell ? 0.16f : 0.2f);
             _core.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(style == ProjectileStyle.Shell ? new Color(0.2f, 0.2f, 0.22f) : bright, style == ProjectileStyle.Shell ? 0f : CoreEmission);
 
             // Bolts, rail slugs and flak tracers are glowing rounded bars: the rail's longer and brighter, the flak's white-hot.
             bool slug = style == ProjectileStyle.Rail || style == ProjectileStyle.Bolt || flak;
-            _slug.gameObject.SetActive(slug && !painted);
+            _slug.gameObject.SetActive(slug && !painted && _boltMesh == null);
+            ShowMeshes(style, color);
             _slug.localScale = style == ProjectileStyle.Rail ? SlugScale : flak ? FlakScale : BoltScale;
             _slug.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(flak ? FlakHot : bright, style == ProjectileStyle.Rail || flak ? CoreEmission * 1.5f : CoreEmission);
             ShowCard(_bolt, painted ? _weapon.Projectile : null, flak ? FlakHot : color);

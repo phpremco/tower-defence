@@ -48,8 +48,6 @@ MonoBehaviour:
   _scale: 1.5
   _shape: 37
   _deathStyle: 0
-  _model: {fileID: 0}
-  _modelScale: 1
   _art: {fileID: 11400000, guid: 82e7a8203e54f7f489b78e2a6ad0ffe9, type: 2}
   _voice: {fileID: 11400000, guid: e1fa9347db39ec54eadf816db43f45df, type: 2}
   _description: 'The slug monarch: floods of slime and more oozers.'

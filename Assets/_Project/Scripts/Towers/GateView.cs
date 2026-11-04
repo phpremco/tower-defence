@@ -191,12 +191,7 @@ namespace Game.Towers
             for (int i = 0; i < DebrisCount; i++)
             {
                 bool hot = i % 4 == 0;
-                float size = Random.Range(0.07f, 0.16f);
-                _debrisSize[i] = new Vector3(size, size * 0.5f, size * 0.8f);
-                GameObject chunk = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, hot ? EmberColor : WreckColor, transform, Vector3.zero, _debrisSize[i], hot ? 2.5f : 0f);
-                chunk.name = "Debris";
-                chunk.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-                chunk.SetActive(false);
+                GameObject chunk = DebrisChunks.Create(transform, hot, 1f, WreckColor, EmberColor, out _debrisSize[i]);
                 _debris[i] = chunk.transform;
             }
         }
@@ -331,8 +326,7 @@ namespace Game.Towers
             DamagedSparks();
 
             _fieldOffset += FieldScrollSpeed * Time.deltaTime;
-            _fieldMaterial.SetTextureOffset("_BaseMap", new Vector2(0f, _fieldOffset));
-            _fieldMaterial.SetTextureOffset("_EmissionMap", new Vector2(0f, _fieldOffset));
+            GlowDecal.SetScroll(_fieldMaterial, new Vector2(0f, _fieldOffset));
 
             // The field weakens with the gate and starts to stutter once it is badly hurt.
             float fraction = _tower.Health.Fraction;
@@ -343,7 +337,7 @@ namespace Game.Towers
                 strength *= stutter > 0.35f ? 1f : 0.25f;
             }
 
-            _fieldMaterial.SetColor("_EmissionColor", _colour * (FieldEmission * strength));
+            GlowDecal.SetColour(_fieldMaterial, _colour * (FieldEmission * strength));
         }
 
         private void LateUpdate() => _art?.LateTick();

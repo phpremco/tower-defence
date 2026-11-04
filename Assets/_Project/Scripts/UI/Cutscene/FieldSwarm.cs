@@ -95,7 +95,7 @@ namespace Game.UI
             }
 
             float pulse = 0.75f + 0.25f * Mathf.Sin(time * 5f);
-            _crackMaterial.SetColor("_EmissionColor", CrackColour * (CrackGlow * pulse));
+            GlowDecal.SetColour(_crackMaterial, CrackColour * (CrackGlow * pulse));
 
             foreach (Creature creature in _creatures)
             {
@@ -112,7 +112,7 @@ namespace Game.UI
             _ring.gameObject.SetActive(since > 0f && ring < 1f);
             float radius = RingRadius * CutsceneMath.Smooth(ring);
             _ring.localScale = new Vector3(Mathf.Max(0.001f, radius * 2f), Mathf.Max(0.001f, radius * 2f), 1f);
-            _ringMaterial.SetColor("_EmissionColor", RingColour * (1.5f * (1f - ring)));
+            GlowDecal.SetColour(_ringMaterial, RingColour * (1.5f * (1f - ring)));
             if (_screamer == null || !_screamer.Enemy.gameObject.activeSelf)
             {
                 return;

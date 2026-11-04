@@ -26,7 +26,6 @@ namespace Game.Editor
         private static readonly GeneratorStep[] Steps =
         {
             new GeneratorStep("TextMeshPro essentials", _ => EnsureTextMeshProEssentials()),
-            new GeneratorStep("Models", _ => CustomModelBuilder.BuildAll()),
             new GeneratorStep("Towers", GenerateCoreTowers),
             new GeneratorStep("Bestiary", c => c.Bestiary = CreateBestiary()),
             // The Blender models: synced from ArtSource, turned into materials and art data, and worn by the bestiary.
@@ -74,6 +73,8 @@ namespace Game.Editor
             new GeneratorStep("Render pipeline", _ => ConfigureRenderPipeline()),
             new GeneratorStep("Sound library", _ => CreateSfxLibrary()),
             new GeneratorStep("Effect library", _ => CreateVfxLibrary()),
+            // Markers, bars, projectiles, debris and particles (README round 25b), handed to the effect library.
+            new GeneratorStep("Marker art", _ => BlenderMarkerBuilder.Apply(BlenderMarkerBuilder.SyncAndBuild())),
             // The living spawn origins and route gates (README rounds 23, 25b), after the effect library for their burst.
             new GeneratorStep("Origin art", _ => BlenderOriginBuilder.Apply(BlenderOriginBuilder.SyncAndBuild())),
             new GeneratorStep("Scenes", GenerateScenes),

@@ -13,6 +13,10 @@ namespace Game.Core
         private const int TextureSize = 64;
         private const int ScanlineSize = 64;
         private const float DecalHeight = 0.035f;
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
+        private static readonly int MainTexId = Shader.PropertyToID("_MainTex");
+        private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
+        private static readonly int EmissionMapId = Shader.PropertyToID("_EmissionMap");
 
         private static Texture2D _radial;
         private static Texture2D _scanlines;
@@ -23,6 +27,17 @@ namespace Game.Core
         /// <summary>A pool of light on the ground, strongest in the middle and gone at the edge.</summary>
         public static GameObject PlacePool(Transform parent, Color colour, float radius, float height = DecalHeight)
         {
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer painted = art != null ? art.Place(MarkerKind.GlowPool, parent, "GlowPool") : null;
+            if (painted != null)
+            {
+                // The painted pool lies flat already (README round 25b): scale = diameter.
+                painted.transform.localPosition = new Vector3(0f, height, 0f);
+                painted.transform.localScale = new Vector3(radius * 2f, 1f, radius * 2f);
+                painted.sharedMaterial = RadialMaterial(colour);
+                return painted.gameObject;
+            }
+
             var go = new GameObject("GlowPool");
             go.transform.SetParent(parent, false);
             go.transform.localPosition = new Vector3(0f, height, 0f);
@@ -43,7 +58,7 @@ namespace Game.Core
                 return cached;
             }
 
-            Material material = Additive(Radial(), colour);
+            Material material = Painted(MarkerKind.GlowPool, colour) ?? Additive(Radial(), colour);
             RadialMaterials[colour] = material;
             return material;
         }
@@ -52,10 +67,45 @@ namespace Game.Core
         /// An additive glow for a blade mesh whose UV x runs from the core (0) to the rim (1) and UV y from the base (0) to
         /// the tip (1): bright along the core, soft at the edge, fading out at both ends.
         /// </summary>
-        public static Material BladeMaterial(Color colour) => Additive(Blade(), colour);
+        public static Material BladeMaterial(Color colour) => Painted(MarkerKind.GlowBlade, colour) ?? Additive(Blade(), colour);
 
         /// <summary>An additive material with horizontal lines, for energy fields; scroll its texture to animate it.</summary>
-        public static Material ScanlineMaterial(Color colour) => Additive(Scanlines(), colour);
+        public static Material ScanlineMaterial(Color colour) => Painted(MarkerKind.EnergyField, colour) ?? Additive(Scanlines(), colour);
+
+        /// <summary>Recolours a material from this class (painted or fallback) without knowing which it is.</summary>
+        public static void SetColour(Material material, Color colour)
+        {
+            material.SetColor(EmissionColorId, colour);
+            material.SetColor(MarkerArt.Tint, colour);
+        }
+
+        /// <summary>Moves the texture of a material from this class along, to animate a field or a streak.</summary>
+        public static void SetScroll(Material material, Vector2 offset)
+        {
+            if (material.HasProperty(MainTexId))
+            {
+                material.SetTextureOffset(MainTexId, offset);
+                return;
+            }
+
+            material.SetTextureOffset(BaseMapId, offset);
+            material.SetTextureOffset(EmissionMapId, offset);
+        }
+
+        // README round 25b: the painted channel pack in a tinted copy of the marker material, or null without the art.
+        private static Material Painted(MarkerKind kind, Color colour)
+        {
+            MarkerArt art = MarkerArt.Active;
+            Material shared = art != null ? art.Material(kind) : null;
+            if (shared == null)
+            {
+                return null;
+            }
+
+            var material = new Material(shared);
+            material.SetColor(MarkerArt.Tint, colour);
+            return material;
+        }
 
         public static Mesh Quad()
         {

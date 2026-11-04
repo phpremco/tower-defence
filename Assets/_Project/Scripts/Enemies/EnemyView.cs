@@ -24,15 +24,16 @@ namespace Game.Enemies
         private const float BarOffsetY = 1.0f;
         private const float BarEmission = 0.7f;
         private const float BodyEmission = 0.9f;
-        private const float ModelTintStrength = 0.65f;
         private const float FrostEmission = 0.6f;
         private const float FrostRate = 25f;
         private static readonly Color FrostColor = new Color(0.7f, 0.9f, 1f);
-        private const float ModelEmission = 0.2f;
         private const float EyeEmission = 4f;
         private const float EyeSize = 0.14f;
         private const float ShadowSize = 0.6f;
         private const float ShadowHeight = 0.02f;
+        // README: the painted shadow replaces the 0.6 disc at 0.6-0.9 across, black at 0.6 x its density.
+        private const float BlobShadowSize = 0.8f;
+        private static readonly Color BlobShadowTint = new Color(1f, 1f, 1f, 0.6f);
         private const float BarMargin = 0.25f;
         private const float FullHealthFraction = 0.999f;
         private const float GaitPerUnit = 7f;
@@ -228,6 +229,7 @@ namespace Game.Enemies
         private Transform _body;
         private Transform _shell;
         private Vector3 _bodyRestPosition;
+        private WorldBar _worldBar;
         private Transform _bar;
         private Transform _armorBar;
         private Transform _barPlate;
@@ -315,6 +317,7 @@ namespace Game.Enemies
         public void HideHealthBar()
         {
             _barHidden = true;
+            _worldBar?.Show(false, false);
             if (_bar != null)
             {
                 _bar.gameObject.SetActive(false);
@@ -649,20 +652,20 @@ namespace Game.Enemies
             {
                 Color ember = definition.Color * 1.6f;
                 ember.a = 1f;
-                _embers = _attachments.Track(ParticleKit.Create(transform, "Embers", Vector3.up * 0.2f, ember, 0.4f, 0.9f, 0.03f, 0.07f, 0.2f, 0.8f, -0.05f, 60, 0.25f));
+                _embers = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform, "Embers", Vector3.up * 0.2f, ember, 0.4f, 0.9f, 0.03f, 0.07f, 0.2f, 0.8f, -0.05f, 60, 0.25f), MarkerArt.ParticleCell.Ember));
             }
 
             if (_bleeds)
             {
                 Color blood = definition.BloodColor * 1.5f;
                 blood.a = 1f;
-                _drips = _attachments.Track(ParticleKit.Create(transform.parent, "Drips", Vector3.zero, blood, 0.5f, 0.9f, 0.04f, 0.08f, 0.4f, 1.2f, 1.5f, DripBurst * 6, 0.15f));
+                _drips = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Drips", Vector3.zero, blood, 0.5f, 0.9f, 0.04f, 0.08f, 0.4f, 1.2f, 1.5f, DripBurst * 6, 0.15f), MarkerArt.ParticleCell.Drip));
             }
 
             Color rush = definition.AccentColor * 1.4f;
             rush.a = 1f;
-            _rush = _attachments.Track(ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f));
-            _frost = _attachments.Track(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f));
+            _rush = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Rush", Vector3.zero, rush, 0.25f, 0.45f, 0.02f, 0.05f, 0.1f, 0.4f, 0f, 40, 0.15f), MarkerArt.ParticleCell.Mote));
+            _frost = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f), MarkerArt.ParticleCell.FrostMote));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
             _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
 
@@ -1420,12 +1423,6 @@ namespace Game.Enemies
             {
                 BuildCreature(body, definition);
             }
-            else if (definition.Model != null)
-            {
-                // Models sit on y = 0, the body pivot is at half height, so lower the model by that amount.
-                Color tint = Color.Lerp(Color.white, definition.Color, ModelTintStrength);
-                ModelFit.Place(definition.Model, body, new Vector3(0f, -scale * 0.5f, 0f), 0f, definition.ModelScale, tint, ModelEmission);
-            }
             else
             {
                 PrimitiveType shape = air ? PrimitiveType.Sphere : PrimitiveType.Capsule;
@@ -1456,6 +1453,21 @@ namespace Game.Enemies
             // A big creature gets a wider line, so a boss shows its health as plainly as a grunt does.
             _barWidth = Mathf.Clamp(BarWidth * (shaped ? _creatureScale : definition.Scale), BarWidth, MaxBarWidth);
             _barY = barY;
+            _worldBar = WorldBar.Create(MarkerArt.Active, transform, new Vector3(0f, barY, 0f), _barWidth, BarHeight, BarColor, ArmorBarColor, true);
+            if (_worldBar == null)
+            {
+                BuildFallbackBars(barY);
+            }
+
+            if (air)
+            {
+                BuildShadow();
+            }
+        }
+
+        // Without the Blender bar pieces (tests that build a creature on their own): plain cubes.
+        private void BuildFallbackBars(float barY)
+        {
             // A dark plate behind both lines, so the bars read against a bright floor as well as a dark one.
             GameObject plate = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, PlateColor, transform, new Vector3(0f, barY + BarHeight * 0.8f, BarHeight * 0.6f), new Vector3(_barWidth * PlateWidthScale, BarHeight * PlateHeightScale, BarHeight * 0.5f));
             _barPlate = plate.transform;
@@ -1467,12 +1479,23 @@ namespace Game.Enemies
             GameObject armorBar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, ArmorBarColor, transform, new Vector3(0f, barY + BarHeight * 1.6f, 0f), new Vector3(_barWidth, BarHeight * 0.7f, BarHeight), BarEmission);
             _armorBar = armorBar.transform;
             armorBar.SetActive(false);
+        }
 
-            if (air)
+        // A flyer's soft blob shadow on the ground (README round 25b), or a dark disc without the art.
+        private void BuildShadow()
+        {
+            MarkerArt art = MarkerArt.Active;
+            MeshRenderer blob = art != null ? art.Place(MarkerKind.BlobShadow, transform, "Shadow") : null;
+            if (blob != null)
             {
-                GameObject shadow = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, ShadowColor, transform, Vector3.zero, new Vector3(ShadowSize, 0.01f, ShadowSize));
-                _shadow = shadow.transform;
+                blob.transform.localScale = Vector3.one * BlobShadowSize;
+                MarkerArt.SetTint(blob, new MaterialPropertyBlock(), BlobShadowTint);
+                _shadow = blob.transform;
+                return;
             }
+
+            GameObject shadow = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cylinder, ShadowColor, transform, Vector3.zero, new Vector3(ShadowSize, 0.01f, ShadowSize));
+            _shadow = shadow.transform;
         }
 
         // Legs fold up against the body as the creature dies; everything else keeps its pose.
@@ -1712,6 +1735,12 @@ namespace Game.Enemies
 
         private void SetBar(float fraction, float armor)
         {
+            if (_worldBar != null)
+            {
+                _worldBar.Set(fraction, armor, !_barHidden && fraction < FullHealthFraction);
+                return;
+            }
+
             // Both lines shrink from the right, like a gauge, instead of from both ends.
             _bar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
             _bar.localPosition = new Vector3(-_barWidth * (1f - fraction) * 0.5f, _barY, 0f);

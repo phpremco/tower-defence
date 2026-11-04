@@ -19,7 +19,7 @@ MonoBehaviour:
   _secondMaterial: {fileID: 2100000, guid: 8ebcf5258539dcd4b9649f40831e7929, type: 2}
   _lowSecondMaterial: {fileID: 2100000, guid: cefd41150d267ed4691472cf7c538daf, type: 2}
   _scale: 1
-  _yaw: 0
+  _yaw: 180
   _bodyCentrePivot: 0
   _height: 4.741091
   _lodScreenHeight: 0.09

@@ -89,10 +89,6 @@ namespace Game.UI
             {
                 TowerModelBuilder.Build(_turntable, tower, tower.MaxLevelIndex);
             }
-            else if (tower.Model != null)
-            {
-                ModelFit.Place(tower.Model, _turntable, Vector3.zero, 0f, tower.ModelScale, tower.KeepModelColours ? Color.white : Color.Lerp(Color.white, tower.Color, 0.55f), 0.15f);
-            }
 
             Frame();
         }

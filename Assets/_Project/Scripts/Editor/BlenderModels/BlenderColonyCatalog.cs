@@ -36,7 +36,6 @@ namespace Game.Editor
             { PathObjectLook.LavaBall, "Gadget_LavaBall" },
             { PathObjectLook.GroundDrone, "Gadget_GroundDrone" },
             { PathObjectLook.Barrel, "Gadget_Barrel" },
-            { PathObjectLook.AirNet, "Gadget_AirNet" },
         };
 
         /// <summary>Built ahead of their data: no path object or drone wears them yet.</summary>

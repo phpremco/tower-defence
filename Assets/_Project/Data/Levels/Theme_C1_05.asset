@@ -17,26 +17,6 @@ MonoBehaviour:
   _pathColor: {r: 0.8, g: 0.84, b: 0.96, a: 1}
   _slotColor: {r: 0.3, g: 0.55, b: 1, a: 1}
   _baseColor: {r: 0.35, g: 0.85, b: 1, a: 1}
-  _groundTile: {fileID: 919132149155446097, guid: b0e7567a168bda142aaf351c798d1c6d, type: 3}
-  _roadStraight: {fileID: 919132149155446097, guid: 9e22f6d839ffb9c449c0b3546a265bfc, type: 3}
-  _roadCorner: {fileID: 919132149155446097, guid: 82d6372ab7a358f4e940fe555aa4ecf4, type: 3}
-  _roadEnd: {fileID: 919132149155446097, guid: 55392b9e6e7d1ee4596ba2bc65cc90f8, type: 3}
-  _roadCross: {fileID: 919132149155446097, guid: ee2c7c00c93a938408d836a68ea18157, type: 3}
-  _baseModel: {fileID: 919132149155446097, guid: fce17d700aa938c46a7b466f308efe64, type: 3}
-  _spawnModel: {fileID: 919132149155446097, guid: 1774108f8119e7d4ab8ce3006dcd464b, type: 3}
-  _blockedProps:
-  - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
-  - {fileID: 919132149155446097, guid: 3a43b61ecb2500f4e8d4fb1ffd50ab0b, type: 3}
-  - {fileID: 919132149155446097, guid: 751f1f49b991360439c8d4038e85614a, type: 3}
-  - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
-  _scenery:
-  - {fileID: 919132149155446097, guid: 913e6bcd553dff84a91c802132a82d59, type: 3}
-  - {fileID: 919132149155446097, guid: 0c0e3a570df765546874537213c96969, type: 3}
-  - {fileID: 919132149155446097, guid: 13f659c813f22864bbbfd371b634ae7b, type: 3}
-  - {fileID: 919132149155446097, guid: 34baeeb0a89a49b4390e49f411add64f, type: 3}
-  - {fileID: 919132149155446097, guid: f9ca65e09af835244a451ceba7ce7aac, type: 3}
-  - {fileID: 919132149155446097, guid: 2b1fbae6117922549ae04d38e4147933, type: 3}
-  - {fileID: 919132149155446097, guid: 576394ceb2035f048ab1277b8c1efcba, type: 3}
   _rockColor: {r: 0.36, g: 0.36, b: 0.44, a: 1}
   _accentColor: {r: 0.4, g: 0.8, b: 1, a: 1}
   _waterColor: {r: 0.06, g: 0.42, b: 0.66, a: 1}

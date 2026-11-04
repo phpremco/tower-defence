@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7a4d3f57fb563a47ac69fe0d1aeca08, type: 3}
+  m_Name: MarkerArt
+  m_EditorClassIdentifier: Game.Core::Game.Core.MarkerArt
+  _pieces:
+  - _kind: 0
+    _mesh: {fileID: 3717145821036751208, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 485b2c1a3c32dd647b8706615b4cab99, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 7d513ebab8fe352418b730e2fc3de249, type: 2}
+  - _kind: 1
+    _mesh: {fileID: -5671732225462297132, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 02fda732cf20f4c45a8d7714e6fd6ea7, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: db55bcfa56317e747aed7bb68b3df82d, type: 2}
+  - _kind: 2
+    _mesh: {fileID: -3040758726486879785, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 93471c9b016cea843aead71d734f1403, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3eca14a768ab5cd449516fee55dd2661, type: 2}
+  - _kind: 3
+    _mesh: {fileID: -7954310560819637040, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: e2d26eed3a45123439a78662916481eb, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 49149aa4c30b23e4f98bebcb03303837, type: 2}
+  - _kind: 4
+    _mesh: {fileID: -9011618105723501477, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 5ee534c24022aca409d360dbb69281bc, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 618b4df40f19dab4b8e57bcbd76a7eea, type: 2}
+  - _kind: 5
+    _mesh: {fileID: -6388213816835696391, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 68ddec56e6a990a4c8cf8d413d8f1ac7, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3fcb226b6de20414ba4f479e4001c5c0, type: 2}
+  - _kind: 6
+    _mesh: {fileID: -8843697938179544859, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: e323c022370351f46a42dcdefa92d312, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: d25a3427df4fd9a43af724d566b29173, type: 2}
+  - _kind: 7
+    _mesh: {fileID: 4188473884958556960, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 60f79a8265c6f91488e807c84a0e2a4e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5d730271547f8d54db10c9a6f0b32b30, type: 2}
+  - _kind: 8
+    _mesh: {fileID: -3275089980905077343, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 34ecb59586c9e394cb5b7a84d6e925f3, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: a1c160f74b841754a893ac634fc52115, type: 2}
+  - _kind: 9
+    _mesh: {fileID: -4894768478492079490, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 53977475b2696b249b87676e39832466, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 12651a6c5fbbc0e4abec1252643f39da, type: 2}
+  - _kind: 10
+    _mesh: {fileID: 156578828763678589, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 7323ab2abbea3b846a83acc0b80bd6f5, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: f25b281825b21414195c2bb895239966, type: 2}
+  - _kind: 11
+    _mesh: {fileID: 5359149317427368487, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: a980126637ba6604f9fee17d154ba9c9, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 451e9de6c8dc34d4ba338f1decee0374, type: 2}
+  - _kind: 12
+    _mesh: {fileID: -8586578285099199021, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 2d1451025da18d94eaebfa98118522e4, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 7fe6cc8bd7b3b6c4fa6a23a879546150, type: 2}
+  - _kind: 13
+    _mesh: {fileID: 6726565435253884302, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 48ae9b1d812439343baaa6981d6d25f8, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: fbfc3fdefb98a70418451ccc2cffa335, type: 2}
+  - _kind: 14
+    _mesh: {fileID: -6903872162194023418, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 113c52a09c5800841a4b8ea7fbdb8164, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 2f7926401664f4147a6a09cb6d45dea5, type: 2}
+  - _kind: 15
+    _mesh: {fileID: 2079326353317423080, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 8c02d3ac6dbafe046876dbed27e158c5, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 9cc7ee8fb27046146975c61604f700c9, type: 2}
+  - _kind: 16
+    _mesh: {fileID: -151118711209143665, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 445c2be8db5f4da438b689cfefabab9a, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: afa5d028023bfe84b9b67b517648aea8, type: 2}
+  - _kind: 17
+    _mesh: {fileID: -6072145587355886610, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: ca6b7fc1d3063234db574904c780d13b, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3bcf26aa5a03fc34d9fcb3040c3f17ab, type: 2}
+  - _kind: 18
+    _mesh: {fileID: -2238606408384030313, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: e0521701405cd7044971f2d04c733814, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 4ef09d4b7b8463748af25cef5eb33e2d, type: 2}
+  - _kind: 19
+    _mesh: {fileID: -6384596982347906032, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 98bef62facde2c1458494a0902dfbc24, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3a59160658d8eab45972dda420dda2ac, type: 2}
+  - _kind: 20
+    _mesh: {fileID: 1547521254925023471, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 4ca1b8b6769bc3840a3f8bb4738cb863, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 9585ecbc385aa8647bdf3a93af7dbd74, type: 2}
+  - _kind: 21
+    _mesh: {fileID: 496012135361361824, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: b57380694eafbfe4fb54267397c25603, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: d1d3ad2b7b073e84282288ec1300c4a1, type: 2}
+  - _kind: 22
+    _mesh: {fileID: 3547306813809583966, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: f05a4b83b0032164e9062690fab801d5, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 14958b683893bad46ad883febedac144, type: 2}
+  - _kind: 23
+    _mesh: {fileID: 6136214144208728140, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 4a81061263a4141448d2e6b51437293e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 2f35ea6ead3b514449ca0ae4fc911399, type: 2}
+  - _kind: 24
+    _mesh: {fileID: -8467024013697550281, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 7d13ab438a5468e4889a1b14d012efc8, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 49ade6325ec5b44428f44c8d50c6c418, type: 2}
+  - _kind: 25
+    _mesh: {fileID: 8760657406601024295, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: de0eb2e7114554649a9d10dd055455af, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: ce7e0e88d014e5f4382cebcf93bf46ae, type: 2}
+  - _kind: 26
+    _mesh: {fileID: 5412404624181897509, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: c6028f8a66ceaf0419df2e1a69e0352f, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: fffc10d0d9340304aaaff9d098ffb16a, type: 2}
+  - _kind: 27
+    _mesh: {fileID: -6424179985780283328, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 5b5191ad78ddfd344ad986353ee6e686, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 488e9935965739e4eacc9d703420f1bd, type: 2}
+  _missile:
+    _mesh: {fileID: 6313702638122262736, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: 92a201dab45bbef41be1e3ef13bcb52c, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: dba70e604a9d440439e9596b5709ae82, type: 2}
+    _socketA: {x: -0.000000013987644, y: 0, z: -0.16}
+    _socketB: {x: 0.00000001512414, y: 0, z: 0.173}
+  _scout:
+    _mesh: {fileID: -3812519150631184612, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+    _material: {fileID: 2100000, guid: cab73e84a9ec7f644a040a6b9771bf71, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 39f514f3b48f87b4aab3a3a0a0e9de4c, type: 2}
+    _socketA: {x: -0.000000014861872, y: 0, z: -0.17}
+    _socketB: {x: 0.00000000786805, y: 0, z: 0.09}
+  _debris:
+  - {fileID: -5677636193246341225, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: 8460666074658965943, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -2485739773001280528, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -6028749553919136818, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -8849329123020885394, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -5109117408169349632, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: 2330796441251857779, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -1293617861794519763, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: 7494177773833004616, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  - {fileID: -648309988410604509, guid: 93448febbcc3c1546a453521400c369c, type: 2}
+  _hotChunks: 2
+  _debrisMaterial: {fileID: 2100000, guid: 71b16607781591a40a7c8536573c2b94, type: 2}
+  _debrisLowMaterial: {fileID: 2100000, guid: a1c79e9c26e6f564db2df9d0786d3c1d, type: 2}
+  _particleGlow: {fileID: 2100000, guid: 5ebfb74ead067274c82d01055a9ab135, type: 2}
+  _particleGlowLow: {fileID: 2100000, guid: 47406d907d6d8c340948776aebd0b2b5, type: 2}
+  _particleCover: {fileID: 2100000, guid: f237e72e00f968c428ad27422c37f14c, type: 2}
+  _particleCoverLow: {fileID: 2100000, guid: a2878846abcc22842b95853c9724d785, type: 2}

@@ -1,0 +1,70 @@
+{
+  "textures": {
+    "Marker_HeroRing": {
+      "file": "Marker_HeroRing.png",
+      "size": [
+        256,
+        32
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "band: U around (3 tiles = three arcs with gaps), V across. R ring line, G glow, B bright arc-end ticks"
+    },
+    "Marker_Beacon": {
+      "file": "Marker_Beacon.png",
+      "size": [
+        64,
+        256
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "crossed quads: U across, V bottom (0) to top (1). R core column, G halo, B rising bands (tiles in V; sample B a second time with V scrolled)"
+    },
+    "Marker_Emblem": {
+      "file": "Marker_Emblem.png",
+      "size": [
+        64,
+        64
+      ],
+      "colour_space": "linear (sRGB off)",
+      "blend": "add",
+      "channels": "emblem mesh (planar UVs from the front): R centre-bright facet ramp, G rim; opaque emissive"
+    }
+  },
+  "meshes": {
+    "HeroStand_Ring": {
+      "tris": 96,
+      "dims": [
+        1.06,
+        1.06,
+        0.0
+      ],
+      "uv_sets": 2,
+      "pivot": "hero feet",
+      "radius": "0.47..0.53 (StandRingRadius 0.5)"
+    },
+    "HeroStand_Beacon": {
+      "tris": 6,
+      "dims": [
+        0.22,
+        0.191,
+        1.3
+      ],
+      "uv_sets": 1,
+      "pivot": "bottom centre",
+      "note": "place at BeaconBottom 1.7; 1.3 high = BeaconTop - BeaconBottom"
+    },
+    "HeroStand_Emblem": {
+      "tris": 136,
+      "dims": [
+        0.296,
+        0.163,
+        0.28
+      ],
+      "uv_sets": 1,
+      "pivot": "centre",
+      "note": "replaces the 45/45 rotated emblem cube; spin about Y in code"
+    }
+  },
+  "round": 25
+}

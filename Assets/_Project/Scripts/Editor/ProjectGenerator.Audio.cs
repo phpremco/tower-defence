@@ -56,7 +56,6 @@ namespace Game.Editor
             ("_freezes", ApprovedFolder + "/Environment", "item_freeze"),
             ("_acidSizzles", ApprovedFolder + "/Environment", "acid_sizzle"),
             ("_steamBursts", ApprovedFolder + "/Environment", "steam_burst"),
-            ("_netShots", ApprovedFolder + "/Environment", "net_fire"),
             ("_earthquakes", ApprovedFolder + "/Environment", "earthquake"),
             ("_cartLoops", ApprovedFolder + "/Environment", "rc_cart_loop"),
             ("_fireballLoops", ApprovedFolder + "/Environment", "fireball_roll_loop"),

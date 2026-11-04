@@ -399,8 +399,6 @@ namespace Game.Editor
             so.FindProperty("_scale").floatValue = c.Scale;
             so.FindProperty("_shape").intValue = (int)c.Shape;
             so.FindProperty("_deathStyle").enumValueIndex = (int)c.Death;
-            so.FindProperty("_model").objectReferenceValue = null;
-            so.FindProperty("_modelScale").floatValue = 1f;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(enemy);
             return enemy;

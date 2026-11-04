@@ -164,7 +164,6 @@ namespace Game.Tests
             Assert.Greater(flak.SplashRadius, 0f);
             Assert.AreEqual(ProjectileStyle.Flak, flak.ProjectileStyle);
             Assert.AreEqual(TowerShape.Flak, flak.Shape);
-            Assert.IsNull(flak.Model, "the Flak wears its procedural model");
         }
 
         [Test]

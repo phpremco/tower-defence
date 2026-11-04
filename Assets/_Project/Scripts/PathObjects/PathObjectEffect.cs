@@ -21,7 +21,5 @@ namespace Game.PathObjects
         /// <summary>Drives the road and fights what it meets.</summary>
         Patrol,
 
-        /// <summary>Catches and slows flyers overhead.</summary>
-        AirNet,
     }
 }
