@@ -1187,3 +1187,64 @@ The bake leaves helper colour layers (Albedo, Emit, Rough, Fam, AO) on the game 
 export (`env_kit2.strip_colour_layers`): flora FBX files carry exactly one colour set, `Sway`; the other pieces
 carry none. Unity imports only the first vertex-colour set, so round 8's `Flora_*` (six sets, `Sway` last) would
 lose their sway data on import; check that when importing round 8.
+
+
+## Round 18: P3 hybrids, gadgets, superweapons and drones (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 18). Same hard-surface pipeline as rounds 7, 9 and 11; nothing in the shared
+modules or earlier scripts changed. New scripts (they import `build_towers.py`, `build_towers2.py`,
+`build_gadgets.py`, `build_gadgets2.py` and `build_drones.py` read-only):
+
+- `build_towers3.py` (`--only Shatter,ArcLaser,CorrosiveBlast,StormFlak,ThermalShock`, `--nobake`, `--norender`,
+  `--preview <dir>`; `--lineup` renders all five at game zoom from the maps on disk). Its previews put each hybrid's
+  two parents beside its three tiers (`<name>_parents_game/_zoom.png`).
+- `build_gadgets3.py` (`--only Decoy,Barricade,SpikeStrip,Rollback,PayloadBomb,OverchargedCrystal,ToxinBomb`).
+- `build_drones2.py` (`--only Builder,Hauler,Bombard`).
+
+About 1 minute per tower and 30 s per gadget or drone with previews.
+
+| Asset | Tiers | Triangles LOD0 (LOD1) | Bones, sockets and clips (towers: on top of the round-7 rig) |
+| --- | --- | --- | --- |
+| Tower_Shatter | T1, T2, T3 (Cryo + Railgun) | 3,582 / 4,166 / 4,706 (1,502 / 1,854 / 2,134) | IdleSweep 120, Fire_1 10, ChargeUp 24 (rails draw back) |
+| Tower_ArcLaser | T1, T2, T3 (Laser + Tesla) | 3,682 / 4,138 / 4,870 (1,750 / 1,982 / 2,454) | `Prong_1..n` (3 / 4 / 6) with sockets `Arc_1..n` on the tips; IdleSweep, ChargeUp 24, Beam 12 (loop); no Fire_n (continuous) |
+| Tower_CorrosiveBlast | T1, T2, T3 (Cannon + Acid) | 3,378 / 4,380 / 4,830 (1,546 / 2,104 / 2,450) | `Slosh` (meniscus); IdleSweep, Fire_n 10 (T3 two tubes), Slosh 60 (loop) |
+| Tower_StormFlak | T1, T2, T3 (Flak + Tesla) | 4,068 / 4,692 / 4,992 (1,652 / 1,904 / 2,144) | rests at 40 degrees; sockets `Arc_1..n` on the spire prongs (3 / 4 / 6, on `Yaw`); IdleSweep, Fire_1/2, FireAlternate 16 (loop) |
+| Tower_ThermalShock | T1, T2, T3 (Cryo + Lava Ball) | 4,086 / 4,748 / 4,966 (2,086 / 2,316 / 2,550) | IdleSweep, Fire_n (T3: Barrel_1 frost, Barrel_2 thermite) |
+| Gadget_Decoy | – | 1,448 (840) | Root, Hammer, Head; sockets `Pulse` (ground), `Lure`. Deploy 24, Idle 60 (two thumps, loop), Pulse 20 |
+| Gadget_Barricade | – | 1,592 (656) | Root, `Slab_1..5` (hinge at the slab foot); sockets `Spark_1..3`, `Smoke`. Deploy 30, Hit 8, Break 24 |
+| Gadget_SpikeStrip | – | 1,212 (728) | Root, `Spikes_1..3`; socket `Hit`. Deploy 24, Idle 60 (loop), Trigger 10 |
+| Gadget_Rollback | – | 1,746 (1,230) | Root, Dish, Ring; sockets `Push` (dish front), `Field` (ground, 0.45 up the road). Deploy 30, Idle 90 (loop), Pulse 12 |
+| Super_PayloadBomb | – | 1,170 (754) | Root, Body, Fins; sockets `Blast` (nose), `Trail`. Fall 30 (loop), Arm 12 |
+| Super_OverchargedCrystal | – | 1,312 (790) | Root, Crystal, Orbit, `Clamp_1..3`; sockets `Core`, `Blast`, `Arc_1..3` (clamp jaws). Deploy 30, Idle 60 (loop), Overload 36 |
+| Super_ToxinBomb | – | 1,516 (796) | Root, Body, `Valve_1..4`; sockets `Vent_1..4`, `Cloud`, `Blast`. Fall 30 (loop), Vent 16 |
+| Drone_Builder | – | 2,204 (1,428) | Root, Body, Rotor_1..3, Arm_L/R (7 deform); sockets `Weld_L/R`, `Beacon`. Idle, Fly, Work 60 (welding, loop) |
+| Drone_Hauler | – | 1,376 (708), cargo 136 | Root, Body, Rotor_1/2, Grip; socket `Cargo`; `Drone_Hauler_Cargo` own mesh. Idle, Fly, Work 60 (drop and close) |
+| Drone_Bombard | – | 2,148 (1,252) | Root, Body, Rotor_1/2, Bomb_1/2, Bay_L/R (8 deform); sockets `Drop_1..4`, `Thruster_L/R`. Idle, Fly, Work 60 (one strike) |
+
+Files as rounds 7, 9 and 11: towers `Exports/Tower_<Name>/Tower_<Name>_T1..T3.fbx` + 1024 maps + `Low/` 512 + report
+(muzzles, sockets, glow colours, `hybrid_of`); gadgets, superweapons and drones one FBX each, 512 maps + `Low/` 256,
+report with pivot and sockets. Sources: `Blend/Towers3.blend`, `Gadgets3.blend`, `Drones2.blend`.
+
+### Unity notes
+
+- **Import** exactly as rounds 7 and 9 (Scale 1, Bake Axis Conversion, Generic rig, root `Root`, keep non-deforming
+  bones). Final size; do not apply factory scales. As in earlier rounds the exporter warns that n-gon caps stop it
+  writing tangents: let Unity calculate them (Mikktspace).
+- **Hybrids:** three levels, the stars rule of round 7, swap the prefab on merge. Arc Laser: the beam leaves
+  `Muzzle_1`; the jump to the next enemy starts at the nearest `Arc_n`; play ChargeUp then Beam as the Laser.
+  Storm Flak: shells from `Muzzle_n`, chain lightning from `Arc_n` on the spire. Corrosive Blast: Slosh on an
+  additive layer as the Acid. Thermal Shock T3: Barrel_1 shoots frost, Barrel_2 heat.
+- **Decoy:** pivot on the ground; Deploy, then Idle; a ground ripple VFX at `Pulse` on each hammer strike (frames 21
+  and 51 of Idle); the lure light at `Lure`. **Barricade:** pivot at the sill centre, local X across the road, the
+  slabs lean to Unity +Z: face that side towards the enemies. Deploy on placement, Hit when struck, Break at 0 HP
+  (then remove). **Spike Strip:** spans 1.8 across the road; Trigger when an enemy crosses. **Rollback:** face the
+  dish (Unity +Z) up the road towards the enemies; the push field VFX at `Field`, a pulse at `Push`.
+- **Superweapons:** the bombs stand nose down with the pivot on the nose: drop them from above so the pivot lands on
+  the target; Fall loops in the air, the blast at `Blast`. Toxin: Vent on impact, gas at `Vent_n` and `Cloud`.
+  Crystal: pivot on the ground; Deploy, Idle, Overload before the explosion (VFX at `Core`/`Blast`, arcs from `Arc_n`).
+- **Drones:** as round 9 (spin `Rotor_n` in code). Builder: weld sparks at `Weld_L/R` during Work. Hauler: parent the
+  cargo to `Cargo`, give `Drone_Hauler_Cargo` its own material instance for the glow; Work releases. Bombard: Work is
+  one strike: the doors open by frame 9, spawn the bomb projectiles at `Drop_1/2` on frame 15 and `Drop_3/4` on
+  frame 24 (the modelled bombs are hidden from then until frame 48).
+- **Colours (open):** none of these are in the data yet; the glow colours are proposals (towers: report key `glow`;
+  the round's shared palette under `glows`; gadgets and drones: `GL` in their scripts).

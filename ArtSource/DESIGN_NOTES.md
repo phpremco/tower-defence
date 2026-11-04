@@ -1460,3 +1460,93 @@ Two or three passes per continent (tiling sheets, kit and decor sheets, the dior
 - **The Core:** the seal's glyphs read as perforated metal (now sparse script on alternate rings), the broken
   state heaves more; the ground glass was too glossy (reflected the sky and read light); the plateau edges' gold
   veins were halved.
+
+
+# Round 18: P3 hybrids, gadgets, superweapons and drones (2026-11-04)
+
+Brief: the last open gear rows of `Docs/MODEL_TODO.md` (sections 3, 4 and 5). Everything is our side: the
+round-7/9/11 workshop language (white ceramic tops, colony blue, gunmetal undersides, yellow hazard trim, one or two
+saturated cool glows per machine). Nothing here is in the game data yet, so shapes follow `Docs/STORY.md`.
+
+## Hybrids (continent 3 combos; `Docs/STORY.md` table "Combo's")
+
+Recipes from the script: **Shatter = Cryo + Railgun**, **Arc Laser = Laser + Tesla Coil**, **Corrosive Blast = Cannon
++ Acid Sprayer**, **Storm Flak = Flak + Tesla Coil**, **Thermal Shock = Cryo + Lava Ball**. As in round 11 each hybrid
+has three levels (T1..T3, no A/B), the pad, rank plate and stars of round 7, and visibly carries a big part of each
+parent; the tier steps are silhouette steps (longer, wider, an extra barrel, a crown), not fine detail.
+
+- **Shatter:** the Railgun's hull, glacis, capacitor block and its twin rails with the bright plasma channel and
+  square collars, slung on the Cryo's **frosted coolant cylinder** (glowing frost rings) for the rear two thirds;
+  the Cryo's canisters on the hull (1 / 3 / 3) and its **vane flaps** as the muzzle crown. T2 longer rails and a
+  brace, T3 the longest rails, frost fins on the cylinder and the Railgun's heavy drum. Ice blue.
+- **Arc Laser:** the Laser's fork yoke, white emitter and big cyan lens; **Tesla coils** laid round the emitter on
+  dark insulator discs (2 / 3 / 4); the Tesla's caged Crysium cells on the yoke; a ring of **arc prongs** round the
+  lens on bones (they close in on ChargeUp, chatter on Beam), the jump sockets `Arc_n` on their tips (3 / 4 / 6).
+  T3: a wide halo (the Tesla T3A crown) and a small caged discharge ball on the emitter's back. Cyan lens, violet
+  coils (bluer than the Tesla's own violet, which sat close to the aliens' pink).
+- **Corrosive Blast:** the Cannon's wide wedge hull, glacis, side lights, skirts, mantlet, thick tube and box brake;
+  the Acid Sprayer's **tank with a sight glass and level band** on the back (camera side) with the sloshing
+  meniscus on `Slosh`, a feed hose into the mantlet, a gauge on the deck. Green acid rings on the tube, glowing
+  brake ports. T2 twin tanks and an extractor, T3 the Acid T3B **spherical pressure tank** with its hazard band, twin
+  tubes and a rack of acid shells. Acid green.
+- **Storm Flak:** the Flak's carriage, cheeks, elevated guns (40 degrees), hazard-striped shield and ammunition drum;
+  **coils** round the gun jackets, a forked arc muzzle, a Tesla **coil spire** on the back with a caged discharge ball
+  and prongs (`Arc_n` sockets), a Crysium cell (T2+) and the Flak's radar (T2+). T3: the Flak T3B's long heavy pair
+  with brakes and a halo round the spire top (a quad was over budget). Violet. Distinct from the Storm Rifle (Gun +
+  Tesla) through the raised guns and the much taller spire.
+- **Thermal Shock:** the Cryo's hull, cheeks, canisters and frosted cylinder gun with its vane nozzle; the **Lava
+  Ball's plated thermite ball** (eight white/blue plates, gunmetal bands, hazard hubs, molten core) in a clawed
+  cradle on the back as the heat core, a hot conduit into the breech, heat fins with a lava strip on the right
+  flank. T2 a shock collar of hot slits behind the nozzle; T3 a frost barrel and a thermite barrel side by side.
+  Frost cyan with lava orange (the orange is the weapon, as on the Lava Ball). Open point: the roadmap questions a
+  combo whose partner is a gadget; the model exists in case it stays a tower.
+
+## Gadgets
+
+- **Decoy Beacon** (continent 2, lures enemies and draws the diggers up): a **seismic thumper**, not a radio mast:
+  a gunmetal tripod staked into the road, an anvil plate with a hazard ring and a pulse ring, two guide rods with a
+  heavy white **hammer weight** on its own bone that pounds the anvil twice per Idle loop, and a mast with a rotating
+  **lure head** (core, three horn emitters, an aerial). Signal yellow: it must shout.
+- **Barricade** (continent 4, blocks a stretch of road; enemies break through): five white ceramic slabs on hinges
+  along a gunmetal sill (1.9 wide, the road is 2), leaning 14 degrees towards the enemies, braced from behind, a
+  blue lower band, a hazard band on both faces and a lit gate-blue top edge. Low and long next to the gate's tall
+  pylons, so the two never read alike. Deploy: the slabs fold up one by one; Break: they fall out of line.
+- **Spike Strip** (continent 5, damage and slow): three hinged dark plates across the road with yellow hazard edges,
+  a cyan edge light and two rows of steel spikes per plate on their own bones; at rest the tips stand a few cm
+  out, Trigger punches them up. (The first version had blue decks and read as solar panels from the game camera.)
+- **Rollback Field emitter** (continent 5, pushes enemies back along the road): a squat hexagonal emitter beside
+  the road with a white **repulsor dish** in a yoke aimed up the road, two capacitor bottles on the back and a ring
+  of eight backward-pointing **chevrons** that turns against the march (the rewind sign). Teal: apart from the
+  Chrono's pale blue and the acid green.
+
+## Superweapons (continent 5; small objects, the effect is VFX)
+
+- **Payload bomb:** a fat colony bomb standing nose down (pivot on the nose tip, the impact point): white nose with a
+  hazard ring, blue band, six amber arming windows, gunmetal tail cone, four fins in a ring shroud that spin.
+- **Overcharged Crystal:** a containment rig (gunmetal tripod, blue drum, hazard ring, a cyan containment ring) whose
+  three white clamp arms hold a **twisted pentagonal Crysium spire** with three fused side shards (not a quartz
+  prism) and three splinters orbiting it. The crystal glows a hotter pink-lilac than our tamed Crysium: it is the
+  unstable weapon. Overload: it shakes harder, swells, the clamps spring open, the splinters fly out.
+- **Toxin bomb:** a stubby canister bomb, nose down: white shell with hazard bands, four sight windows of glowing
+  toxin (the Acid Sprayer's chemical green), four vent valves on bones that pop and spin, blue tail fins.
+
+## Drones (round-9 family: white shell, blue band, gunmetal belly, ducted rotors with white lips)
+
+- **Builder** (cutscene, welds the base together): a **tri-rotor** (a Y of ducts, unlike the repair quad's X), a
+  hazard ring, a signal-yellow beacon dome on top and two **welding arms** under the nose with blue-white torch tips.
+- **Hauler** (cutscene, ferries Crysium to the base in a swarm): a light **tandem** lifter, one big duct fore and aft
+  on a long spine, four claws gripping a cargo pod with amber ore windows (its own mesh, so Unity can light it).
+  Kept at 1,376 triangles for swarms.
+- **Bombard** (Pathfinder Strike, the hero's ultimate): a **flying wing**: white delta wings with cyan leading edges
+  and yellow chevrons, two embedded ducts, twin thrusters, a bomb bay with two doors and two pairs of small bombs.
+
+## Review passes
+
+- Pass 1 (game zoom next to the parents): all five hybrids read as their two parents. Budget was the problem
+  (Storm Flak T3 6,740, Thermal Shock T3 6,668): torus rings dominated. Coils and bands went to fewer segments, the
+  Storm Flak T3 quad became the heavy pair, Thermal Shock lost duplicate glow strips and its T3 frost fins.
+  Shatter's coolant cylinder was too thin to say "Cryo" and was made fatter and longer.
+- Pass 2: the violet coil glow burned out to lilac-white under bloom; it is now more saturated and weaker.
+  Gadgets: the Spike Strip read as solar panels (dark deck, taller brighter spikes now); the Barricade read as a
+  thin line (taller slabs, a bolder hazard band on both faces, a brighter top light); small blue pieces lost their
+  panel seams, which read as a grid; the Decoy's lure head grew.

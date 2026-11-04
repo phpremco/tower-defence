@@ -124,7 +124,7 @@ Per toren:
 | ◐ | P2 | Hybride **StormRifle** | Ronde 11 klaar: Gun + Tesla: kop en lopen van de Gun met Tesla-spoelen om de mantel, een kleine Tesla-spits achterop, een Crysium-cel als accu. T3 roterend cluster (clip Spin). Periwinkle. 3.728–4.984 driehoeken |
 | ◐ | P2 | **Support** en **Rocket** | Ronde 11 klaar (eenvoudiger, T1–T3): Support = mast met zwevende kern in een ring van vinnen, één halo per niveau (signaalgeel). Rocket = gekantelde buizendoos (2x2, 3x2, 3x3 + reserveraketten), sockets `Tube_n`. 2.408–3.918 driehoeken |
 | ◐ | P3 | **Cryo Turret** | Ronde 11 klaar (vooruit gebouwd voor de CryoBeam): dikke berijpte koelcilinder met ijsringen, uitlopende sproeier met vier vinflappen, koelbussen (2, 3, 4), T3 ijsvinnen. 3.560–4.470 driehoeken |
-| ☐ | P3 | Nieuwe hybrides uit het script (Shatter, Arc Laser, Corrosive Blast, Storm Flak, Thermal Shock) | Twee torens worden samen één nieuwe toren (zie het besluit over combo's) |
+| ◐ | P3 | Nieuwe hybrides uit het script: **Shatter**, **Arc Laser**, **Corrosive Blast**, **Storm Flak**, **Thermal Shock** | Ronde 18 klaar (T1–T3, rig en sterren als ronde 7/11). Shatter = Cryo + Railgun: rails met plasmakanaal op een berijpte koelcilinder, Cryo-bussen, vinflappen als mondingskroon. Arc Laser = Laser + Tesla: vorkjuk en lens met Tesla-spoelen om de zender, Crysium-cellen, boogpennen rond de lens (sockets `Arc_n`), T3 brede halo. Corrosive Blast = Cannon + Acid: wigromp en blokrem, zuurtank met kijkglas achterop (bot `Slosh`), T3 bolle druktank en dubbele loop. Storm Flak = Flak + Tesla: geheven lopen met spoelen, schild, spoelspits achterop (sockets `Arc_n`), T3 halo. Thermal Shock = Cryo + Lava Ball: berijpte cilinder, thermietbal als hittekern achterop, T3 koude en hete loop naast elkaar. 3.378–4.992 driehoeken, LOD1 1.502–2.550 |
 | ◐ | P1 | **Sterren** (upgradeniveau) en **bouwplek-sokkel** | Ronde 7 klaar: zeshoekige sokkel met gevarenrand, ventilatie en lichtring. Een schuine rangplaat aan de camerakant met drie sterren op de botten `Star_1..3` (in elke toren). Losse `Tower_Star.fbx` |
 | ◐ | P1 | **Wrak en scrap-stapel** | Ronde 7 klaar: verbrande sokkel, omgevallen romp, schroot en gloeiende sintels in `Tower_Wreck.fbx`, met `Debris_Gun/Cannon/Laser/Flak/GateGun` |
 
@@ -140,8 +140,8 @@ Per toren:
 | ◐ | P2 | **R.A.T.** (Remote Assault Tank) | Ronde 11 klaar: rupstankje (familie van de Ground Drone) met witte schorten, ronde koepel met cyaan oog, één loop; wielbotten, sockets `Muzzle`, `Lug`. Clips Drive/Fire/Idle/Land (2.180). Plus de **carrier-drone** `Gadget_RATCarrier` (ronde-9-dronefamilie, vier ducts op armen, twee haakklemmen, socket `Cargo`), clips Carry/Release/Fly (2.384) |
 | ◐ | P2 | **Barrel** en **Air Net** | Ronde 9 klaar (statisch): vat in een gunmetal kooi met gevarenbanden en amber ruitjes (1.208); twee palen met gele spoelen op een drempel, sockets `Strand_L1..R3` voor de VFX-draden (1.460) |
 | ◐ | P2 | **Ground Drone** (padobject) | Ronde 9 klaar: vierwielige ramrobot met witte ploeg, cyaan oog. Clips Drive/Idle, wielbotten. 928 driehoeken |
-| ☐ | P3 | **Decoy Beacon** (2), **Barricade** (4), **Spike Strip** en **Rollback Field** (5) | |
-| ☐ | P3 | Superwapens: **Payload Drop**-bom, **Overcharged Crystal**, **Toxin Bomb** | Vooral VFX, plus een klein object |
+| ◐ | P3 | **Decoy Beacon** (2), **Barricade** (4), **Spike Strip** en **Rollback Field** (5) | Ronde 18 klaar. Decoy: seismische stamper op een driepoot met draaiende lokkop (signaalgeel), clips Deploy/Idle/Pulse, sockets `Pulse`, `Lure` (1.448). Barricade: vijf scharnierende keramische platen op een drempel over de weg (1,9 breed, botten `Slab_1..5`), clips Deploy/Hit/Break (1.592). Spike Strip: drie platen met pinnenrijen op botten `Spikes_1..3`, clips Deploy/Idle/Trigger (1.212). Rollback: hexvoet met repulsorschotel naar de vijand en een tegendraaiende chevronring (teal), clips Deploy/Idle/Pulse, sockets `Push`, `Field` (1.746) |
+| ◐ | P3 | Superwapens: **Payload Drop**-bom, **Overcharged Crystal**, **Toxin Bomb** | Ronde 18 klaar (`Super_*`). Bom: neus omlaag, pivot op de neuspunt, vinnen in een ring (bot `Fins`), clips Fall/Arm (1.170). Crystal: draaiend vijfhoekig Crysium in drie klemarmen op een driepoot, drie zwevende splinters, clips Deploy/Idle/Overload, sockets `Core`, `Blast`, `Arc_1..3` (1.312). Toxin Bomb: bus met gifgroene vensters en vier ventielen (sockets `Vent_1..4`), clips Fall/Vent (1.516) |
 
 ---
 
@@ -154,8 +154,8 @@ Animaties: **Fly, Hover, Work** (lichtbundel, vuren of graven).
 | ◐ | P1 | **Repair-drone** | Ronde 9 klaar: ronde quad met vier kleine ducts, cyaan plus-in-zeshoek (geen rood kruis), arm met emitter, socket `Beam`. Clips Idle/Fly/Work. ~3.080 driehoeken (boven 2.500: vier ducts), LOD1 ~1.970 |
 | ◐ | P1 | **Harvest-drone** | Ronde 9 klaar: brede hauler op twee grote ducts, boor met drie klauwen, losse vrachtcilinder `Drone_Harvest_Cargo` (amber). Clips Idle/Fly/Work. 2.294 driehoeken |
 | ◐ | P1 | **Attack-drone** | Ronde 9 klaar: pijl met pijlvleugels, ducts op de vleugeltips, dubbele kanonkap, staartstraal (azuur). Clips Idle/Fly/Work (om en om vuren), sockets `Muzzle_1/2`, `Thruster`. 2.208 driehoeken. Open punt: datakleur is koraal (warm) |
-| ☐ | P2 | **Builder-drone** en **hauler** (cutscene) | Lassen en vliegen in een zwerm. Kunnen varianten van de drones hierboven zijn |
-| ☐ | P3 | Bombardement-drone (Pathfinder Strike) | |
+| ◐ | P2 | **Builder-drone** en **hauler** (cutscene) | Ronde 18 klaar (familie van ronde 9). Builder: drierotor met twee lasarmen en een geel bouwbaken, sockets `Weld_L/R`, clip Work = lassen (2.204). Hauler: lichte tandem (één grote duct voor en achter), vrachtcapsule met amber venster als eigen mesh `Drone_Hauler_Cargo`, Work = loslaten (1.376, licht voor zwermen) |
+| ◐ | P3 | Bombardement-drone (Pathfinder Strike) | Ronde 18 klaar: vliegende vleugel met twee ingebouwde ducts, twee stuwers, bommenluik met twee deuren en twee paar bommetjes (botten `Bay_L/R`, `Bomb_1/2`), sockets `Drop_1..4`, `Thruster_L/R`. Work = één aanval (2.148) |
 
 ---
 
@@ -496,3 +496,17 @@ bijgesteld: gloed 2,0 (was 1,5), koele rim 0,75, wrak-gloed 0,6. Dit zijn de pun
 | Mirewood | Aarden wal blijft wat blokvormig (rechte snede), wortels helpen. Modderplassen renderen zwart in Blender; in Unity spiegelen ze de lucht |
 | Southern Crown | Kruiende ijsrug: hoekige platen, van boven nog wat bladvormig. MixedBoulder: de verschroeide helft gloeit nauwelijks |
 | The Core | Het zegel leest goed op spelgrootte. De glyphs zijn procedurele streepjes, geen echt schrift. Het hart (kristal in het midden) is klein. De vertakkende ader heeft een naadje waar de tak begint |
+
+### Ronde 18 (P3-hybrides, gadgets, superwapens, drones)
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Hybrides algemeen | Geen van de vijf staat al in de data; de gloedkleuren zijn een voorstel (Shatter ijsblauw, Arc Laser cyaan lens met violette spoelen, Corrosive Blast zuurgroen, Storm Flak violet, Thermal Shock vorstcyaan met lava-oranje). Arc Laser en Storm Flak delen het Tesla-violet (bewust, zelfde ouder) |
+| Thermal Shock | Het script maakt dit een combo van de Cryo met een **gadget** (Lava Ball); de roadmap noemt dat een open vraag. Het model is gebouwd als toren (Cryo + thermietbal); als het een interactie wordt in plaats van een toren, vervalt het. Het oranje is het enige warme op onze kant (zoals bij de Lava Ball: het is het wapen) |
+| Shatter | Het meest gelijkend op zijn ouder (Railgun) van boven; de Cryo-kant leest vooral via de bussen en de witte koelcilinder |
+| Storm Flak | T3 is de lange zware dubbele loop (zoals Flak T3B), geen vierloop: het budget. De spoelen op de lopen vallen weg in LOD1 |
+| LOD1 | Boven ~2.000: Thermal Shock T3 2.550 / T2 2.316, Arc Laser T3 2.454, Corrosive Blast T3 2.450. Rollback LOD1 is 70% van LOD0 (veel kleine chevrons) |
+| Barricade | Op spelgrootte vooral een witte lijn over de weg met een lichtrand; de gevarenband zit op beide kanten. Getest zonder echte `BlockadeSpot`; de breedte (1,9) volgt de weg van 2 |
+| Bombard | De buik is in de previews donker; luik en bommen zijn alleen van onder te zien, in het spel waarschijnlijk alleen als de VFX/projectielen vallen |
+| Overcharged Crystal | Het kristal gloeit roze-lila (Crysium zelf, overladen). Dat zit dicht bij de kleur van The Shattered; dat is verhaaltechnisch juist, maar let op leesbaarheid naast aliens |
+| Niet gedaan | **Aarde / S-69-CRYS-globe** en de **oogvorm** van het ogenveld (optioneel) zijn niet gemaakt: de globe wordt in Unity al procedureel geschilderd (`GlobePainter`); een Blender-versie zou dat dupliceren |
