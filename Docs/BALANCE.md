@@ -213,3 +213,58 @@ and the commander never had to act. Easy being hard to lose is fine; the surplus
 - **Why not 1.2x to 1.4x on Easy:** Medium cannot get harder for the bot (it barely holds the Medium boss waves, and the
   smoke run asserts a win), so Easy can only come down to about 0.8 of Medium before the two feel alike: 1.8x to 2x. A
   tighter Easy needs Medium raised first (`TargetPressure`, then the bot recalibrated), a separate decision.
+
+## Heavier curve and the campaign ramp (2026-11-04, later)
+
+Remco: "alles wat zwaarder maken", then: "misschien kunnen we wel rekening houden dat het wel te halen blijft. Hoe verder je in
+het spel komt hoe lastiger, dit moet wel in balans blijven. Maar te makkelijk is saai."
+
+- **The waves are calibrated to a human target curve** (`BalanceRules.HumanSurplus`, `CampaignModel.CalibrateToHuman`). The
+  solver still shapes every wave (opening ramp, rhythm, bosses, breathers) against the bot calibration; then each
+  difficulty's health multipliers are trimmed by one factor so a competent player's towers alone (the human lens, with that
+  difficulty's real money) have exactly the target surplus on the plain waves. Targets at a continent's first level: Easy
+  1.4x, Medium 1.15x, Hard 0.95x, Psycho 0.8x.
+- **The ramp:** the target pressure rises 1.5% per level of a continent (`HumanRampPerLevel`), up to +20% (`HumanRampMax`,
+  reached at level 14), net of the upgrades the progression model expects there. Crystal Plains 1 to 6, towers alone:
+  Easy 1.40 1.38 1.36 1.34 1.32 1.30; Medium 1.15 1.13 1.12 1.10 1.09 1.07; Hard 0.95 0.94 0.92 0.91 0.90 0.90; Psycho 0.80 0.79
+  0.78 0.77 0.75 0.74. Before: Easy 1.85 1.77 1.76 2.00 1.89 1.93, Medium 1.49 1.45 1.46 1.56 1.73 1.65 (C1_04 and C1_05 were
+  the easiest levels), Hard 0.93 0.86 0.83 1.22 1.13 1.24, Psycho 0.81 0.74 0.65 0.96 0.89 0.80.
+- **Beatable, bosses killable:** after the trim no wave may ask more of that player *with the hero* (`HumanWithHero`) than
+  `HeroCap` (Easy 1.0, Medium 1.15, Hard 1.25, Psycho 1.35). A boss wave or spike above it is softened on its own and the other
+  waves are trimmed again (three passes). The ledger's pressure is not monotone in one wave's health near the bottom (the
+  defence is re-chosen and slow creatures of earlier waves arrive with it), so the cap steps the scale down and then bisects.
+  Plain surplus with the hero: Easy 1.50-1.81x, Medium 1.18-1.34x, Hard 1.01-1.09x, Psycho 0.85-0.91x.
+- **What the player is assumed to own** (the progression model, research spent cheapest first): Easy 0, 4, 8, 18, 23, 28
+  research by C1_01..06 (cleared on Easy), Medium 0, 8, 23, 33, 48, 58, Hard 0, 28, 58, 90, 118, 148 (Medium and Hard clears),
+  Psycho 222 at every C1 level: the whole continent so far on Easy, Medium and Hard (towers +38% damage x rate on average,
+  hero damage 1.3, gates 1.4). Psycho below one with the hero is deliberate: the end-game player also brings what the model
+  leaves out (drones, path objects, base turrets, hero abilities).
+- **Difficulty profiles** now set the feel at a given hardness, not the hardness (money and toughness trade against each
+  other under the calibration; a bigger crowd pays for itself): Easy income 0.8, start 0.8, crowd 0.9 (was 0.85/0.8/0.8);
+  Medium income 0.95; Hard crowd 1.3 (was 1.2) and income 1.1; Psycho crowd 1.65 (was 1.5) and income 1.1. Without the extra
+  Hard income its creatures on C1_01-03 came out weaker than Medium's at the same pressure.
+- **Solver and bands:** `TargetPressure` 0.6 -> 0.8 (the Medium trim is then 0.97-1.15), `DifficultyPressure`
+  {0.7, 1, 1.5, 2.1} -> {0.8, 1, 1.35, 1.7}; the bands follow both. All C1 waves inside them.
+- **Checks** (`BalanceLedgerTests`, BalanceLab): `CheckHumanTarget` (each level within 6% of its curve), `CheckRamp` (within a
+  continent no level is more than 3% easier than the one before, per difficulty), `CheckBeatable` (with the hero: plain
+  surplus at least 1.15 / 1.05 / 0.95 / 0.82, no wave over its cap + 4%), `CheckHuman` with `MaxEasySurplus` 2.1 -> 1.6.
+  `balance_ledger.txt` ends with the per-level table and the research assumed.
+- **What changed in the data:** only health multipliers (crowds, rewards and timing are the scripts'). Ground health over a
+  level, C1_01: Easy 8.9k -> 10.9k, Medium 14.5k -> 19.3k, Hard 20.9k -> 24.7k, Psycho 36.6k -> 42.5k; C1_06: Easy 17.9k ->
+  26.6k, Medium 26.0k -> 39.8k, Hard 45.9k -> 67.0k, Psycho 61.7k -> 73.6k.
+- **Tools:** `Tools/PlayTest/Scripts/BalanceCurve.cs` (in-memory curve table, optional overrides in `curve_arg.txt`) and
+  `Tools/PlayTest/Scripts/ApplyWaves.cs` (generator steps Difficulties and Waves only), both through
+  `unity command run_script ... --timeout_ms 900000` (eval_file stops after 5 s; delayCall never runs while the editor is
+  unfocused).
+- **The probe bot now represents the human lens** (`BalanceProbeTests`): placement by road coverage (bends and the gate
+  queue), a second line at the next trunk gate, self-judgement in the human lens with the hero, extra Flak when a raid
+  outgrows the sky guns, new guns and upgrades both weighed by gain per coin times the quality of their spot, repairs, the
+  hero's abilities and the hero falling back with the queue. Last full run on Crystal Plains: Easy 6/6, Medium 6/6, Hard 4/6,
+  Psycho 1/6 (no permanent upgrades). `EasyAndMedium_Bot_ClearsEveryLevel` asserts Easy everywhere and Medium everywhere but
+  Fault Line: its two ground fronts (a second road joins at the last gate) are beyond the bot, which defends one gate and won
+  Fault Line Medium in about half its runs. `Utilisation` 0.27 is kept for the solver's shape; the bot holding
+  Medium bosses that the human lens with the hero rates at about 1.1 supports `HumanUtilisation` 0.34.
+- **How in-level and permanent upgrades are counted:** the ledger buys step by step, a new tower or one level up on a tower it
+  already bought, by gain per coin; an upgrade step costs its own price and adds only the difference over the level below,
+  and air guns kept between waves are charged every step up to their level. Permanent research upgrades (`Progression`)
+  scale the towers' damage, rate and range, the hero and the gates before any of that.

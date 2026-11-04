@@ -1740,6 +1740,52 @@ and the hero never had to act. Approved plan: cut Easy money (start and income),
   `Easy_GreedyBot_StillClearsLandingSiteAndRollerLevel_OnThinnerMoney` (Landing Site won, base 800/800, 171 unspent,
   bot pressure 1.13 on the boss wave with the hero down at the end; Quartz Flats won, base 800/800, 46 unspent).
 
+## Balance: heavier curve and campaign ramp 2026-11-04
+
+Remco: "alles wat zwaarder maken"; then "doe A maar ... hoe verder je in het spel komt hoe lastiger, dit moet wel in balans
+blijven. Maar te makkelijk is saai." Details and numbers in Docs/BALANCE.md, "Heavier curve and the campaign ramp".
+
+- **Model:** every difficulty's waves are calibrated to a human target curve (`BalanceRules.HumanSurplus` Easy 1.4x,
+  Medium 1.15x, Hard 0.95x, Psycho 0.8x at a continent's first level; towers alone, competent player, the upgrades the
+  progression model expects), getting 1.5% harder per level (`HumanRampPerLevel`, at most +20%). `CampaignModel.BuildWaves`
+  trims the solver's health multipliers per difficulty (`CalibrateToHuman`), then caps every wave with the hero at
+  `HeroCap` 1.0 / 1.15 / 1.25 / 1.35 so bosses stay killable. `TargetPressure` 0.6 -> 0.8, `DifficultyPressure` -> 0.8 / 1 /
+  1.35 / 1.7, `MaxEasySurplus` 2.1 -> 1.6.
+- **Profiles:** Easy income 0.8 (was 0.85), crowd 0.9 (was 0.8), start 0.8; Medium income 0.95; Hard crowd 1.3, income 1.1;
+  Psycho crowd 1.65, income 1.1.
+- **Result, human lens towers alone (C1_01 .. C1_06):** Easy 1.40 -> 1.30 (was 1.76-2.00, unordered), Medium 1.15 -> 1.07
+  (was 1.45-1.73; C1_05 was the easiest), Hard 0.95 -> 0.90 (was 0.83-1.24), Psycho 0.80 -> 0.74 (was 0.65-0.96). With the
+  hero: Easy 1.50-1.81x, Medium 1.18-1.34x, Hard 1.01-1.09x, Psycho 0.85-0.91x. Only health multipliers changed in
+  `Data/Waves`; ground health per level up 20-50% on Easy and Medium (C1_06 Medium 26k -> 40k), 10-45% on Hard/Psycho.
+- **Checks:** `BalanceChecks.CheckHumanTarget`, `CheckRamp` (no level more than 3% easier than the one before, per
+  difficulty), `CheckBeatable` (with the hero: plain surplus >= 1.15 / 1.05 / 0.95 / 0.82, no wave over its cap + 4%), in
+  `BalanceLedgerTests` and BalanceLab; new EditMode tests in `BalanceModelTests` for the curve, the checks and the calibration.
+- **Probe bot** (`BalanceProbeTests`): now plays like the human lens. Guns go where they cover the most walk (bends, the
+  queue in front of the defence gate; road past the gate counts 0.35), a second line at the next trunk gate (was the last
+  gate), the bot judges itself in the human lens with the hero, saves for another Flak whenever the standing sky guns cannot
+  hold the next raid, weighs a new gun by the quality of the next free spot and an upgrade by the quality of the gun's own
+  spot, waits for a step 1.3x better per coin (was 1.5x: it almost never upgraded), upgrades once two guns stand (without that floor Glass Meadows Medium was lost three runs in a row), repairs
+  guns below 50% and the defence gate (twice a wave), scraps wrecks, fires the shockwave into 4+ creatures or a boss and the
+  gate repair below 40%, and moves the hero to the next gate while the first one is down. New test
+  `EasyAndMedium_Bot_ClearsEveryLevel` replaces the two-level Easy test. `BalanceRules.Utilisation` (0.27) stays: since the
+  calibration it only shapes the solver; `HumanUtilisation` 0.34 is what the bot now verifies (it holds Medium boss waves the
+  human lens with the hero rates at about 1.1).
+- **Bot results, every C1 level (last Full run):** Easy 6/6 won (base 757-800/800), Medium 6/6 won (base 734-800/800),
+  Hard 4/6 (Glass Meadows lost on the last boss wave; Fault Line lost at wave 8), Psycho 1/6 (Shard Ridge won; the bot buys
+  no permanent upgrades, which the Psycho curve assumes). Over the day's six full runs Medium was won everywhere except
+  Fault Line (about half its runs) and Quartz Flats (lost twice): Fault Line has two ground fronts (half the walkers come up
+  a second road to the last gate) and the bot defends only the trunk gate, so it earns little while both lanes queue. Fault
+  Line is therefore asserted on Easy only (`TwoFrontLevels`; in the air check only that no flyer reaches the base). Open:
+  teach the bot to split over two fronts, then assert Fault Line Medium again.
+- **Upgrades in the checker and the bot:** the ledger buys step by step (a new tower or one level up on a tower it already
+  bought, by gain per coin; a step costs its own price and adds the difference over the level below; kept air guns are
+  charged every step up to their level). Permanent research upgrades enter through `Progression` as damage, rate and range
+  boosts per tower, hero damage and gate health. The bot also weighs new gun against upgrade by gain per coin, both times the
+  quality of the spot, upgrades once two guns stand, and waits for a step 1.3x better per coin (it upgraded 2-11 times a run).
+- **Tests:** EditMode 324/324. PlayMode one class at a time: ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2,
+  CutsceneSmoke 3/3, Screenshot 3/3, BalanceProbe 4/4 (incl. the Full run), ModelPerformance 1/1. Remco's save restored
+  (MD5 914E8160...).
+
 ## Planet S-69-CRYS, mothership v2 and Voss v3 in Unity (2026-11-04)
 
 The planet painted in Blender (README round 20), the round-19 mothership's extras and the MPFB Voss (round 20) are in the

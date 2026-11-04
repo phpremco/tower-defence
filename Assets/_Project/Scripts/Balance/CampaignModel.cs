@@ -23,6 +23,13 @@ namespace Game.Balance
     /// </summary>
     public sealed class CampaignModel
     {
+        private const float CalibrationMinScale = 0.25f;
+        private const float CalibrationMaxScale = 4f;
+        private const int CalibrationIterations = 22;
+        private const int CalibrationPasses = 3;
+        private const float CapStep = 0.92f;
+        private const int CapRefinements = 8;
+
         public readonly List<CampaignLevel> Levels = new List<CampaignLevel>();
         public readonly List<LevelFacts> Facts = new List<LevelFacts>();
         public readonly Dictionary<string, TowerStats> Towers = new Dictionary<string, TowerStats>();
@@ -96,6 +103,11 @@ namespace Game.Balance
             for (int d = 0; d < Difficulties.Count; d++)
             {
                 float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, facts.SecondRoad, Rules);
+                if (Rules.CalibrateToHuman)
+                {
+                    own = CalibrateToHuman(levelIndex, script, d, own, facts.SecondRoad);
+                }
+
                 var waves = new List<WaveSpec>();
                 for (int i = 0; i < script.Waves; i++)
                 {
@@ -106,6 +118,172 @@ namespace Game.Balance
             }
 
             return sets;
+        }
+
+        /// <summary>Index of a level within its continent (0 for the continent's first level).</summary>
+        public int ContinentIndexOf(int levelIndex)
+        {
+            int continent = Levels[levelIndex].Continent;
+            int index = 0;
+            for (int i = 0; i < levelIndex; i++)
+            {
+                index += Levels[i].Continent == continent ? 1 : 0;
+            }
+
+            return index;
+        }
+
+        /// <summary>The plain-wave pressure the human lens should meet on a level and difficulty (one over the target surplus).</summary>
+        public float HumanTarget(int levelIndex, int difficulty) => 1f / Rules.HumanSurplusAt(difficulty, ContinentIndexOf(levelIndex));
+
+        /// <summary>
+        /// Trims one difficulty's health multipliers by a single factor, so a competent player's towers alone (the human lens,
+        /// with the real money of the difficulty) meet <see cref="HumanTarget"/> on the plain waves. The solver gives the shape
+        /// (ramp, rhythm, bosses, breathers) against the bot's calibration; this sets the level of the whole curve, so every
+        /// level of a continent is a little harder than the one before, net of the upgrades the player is expected to own.
+        /// </summary>
+        /// <remarks>
+        /// Then no wave may ask more of that player with the hero (<see cref="BalanceRules.HumanWithHero"/>) than the
+        /// difficulty's <see cref="BalanceRules.HeroCap"/>: a boss wave or a spike above it is softened on its own (bosses keep
+        /// their high health but stay killable), and the other waves are trimmed again so the plain mean stays on the curve.
+        /// </remarks>
+        private float[] CalibrateToHuman(int levelIndex, WaveScriptSpec script, int difficulty, float[] healths, int secondRoad)
+        {
+            BalanceRules human = Rules.HumanTowersOnly();
+            BalanceRules withHero = Rules.HumanWithHero();
+            LevelInput input = InputFor(levelIndex, difficulty);
+            DifficultyStats stats = Difficulties[difficulty];
+            float target = HumanTarget(levelIndex, difficulty);
+            float cap = Rules.HeroCapFor(difficulty);
+            var trimmed = (float[])healths.Clone();
+            var capped = new bool[healths.Length];
+
+            List<WaveLine> Evaluate(float[] health, BalanceRules rules)
+            {
+                var waves = new List<WaveSpec>(script.Waves);
+                for (int i = 0; i < script.Waves; i++)
+                {
+                    waves.Add(WaveComposer.Compose(script, Enemies, difficulty, i + 1, health[i], secondRoad, Rules));
+                }
+
+                return Ledger.Evaluate(input, waves, stats, rules);
+            }
+
+            for (int pass = 0; pass < CalibrationPasses; pass++)
+            {
+                // One factor on every wave not capped yet, so the plain mean meets the target.
+                float[] start = (float[])trimmed.Clone();
+                double factor = Bisect(logScale =>
+                {
+                    float scale = (float)Math.Exp(logScale);
+                    var trial = new float[start.Length];
+                    for (int i = 0; i < start.Length; i++)
+                    {
+                        trial[i] = capped[i] ? start[i] : start[i] * scale;
+                    }
+
+                    return BalanceChecks.PlainMean(Evaluate(trial, human));
+                }, target, Math.Log(CalibrationMinScale), Math.Log(CalibrationMaxScale));
+                for (int i = 0; i < trimmed.Length; i++)
+                {
+                    trimmed[i] = capped[i] ? start[i] : start[i] * (float)factor;
+                }
+
+                // Waves over the cap, in order (the purse of a wave depends on the leaks before it).
+                for (int i = 0; i < trimmed.Length; i++)
+                {
+                    if (Evaluate(trimmed, withHero)[i].Pressure <= cap)
+                    {
+                        continue;
+                    }
+
+                    int wave = i;
+                    float full = trimmed[i];
+                    trimmed[i] = full * CapScale(scale =>
+                    {
+                        trimmed[wave] = full * scale;
+                        return Evaluate(trimmed, withHero)[wave].Pressure;
+                    }, cap);
+                    capped[i] = true;
+                }
+            }
+
+            for (int i = 0; i < trimmed.Length; i++)
+            {
+                // Rounded so the editor and the BalanceLab tool land on the same numbers.
+                trimmed[i] = (float)Math.Round(trimmed[i], 3);
+            }
+
+            return trimmed;
+        }
+
+        // The largest scale of one wave's health (at most one) that brings its pressure under the cap. A wave's own health is
+        // not the only thing in its pressure (the ledger re-chooses the defence, and slow creatures of earlier waves arrive with
+        // it), so the pressure is not monotone near the bottom: the scale steps down until the wave fits, then a bisection
+        // between the last two steps finds the edge; when no step fits, the step with the lowest pressure is kept.
+        private static float CapScale(Func<float, float> pressure, float cap)
+        {
+            float above = 1f;
+            float best = 1f;
+            float lowest = float.MaxValue;
+            for (float scale = CapStep; scale >= CalibrationMinScale; scale *= CapStep)
+            {
+                float value = pressure(scale);
+                if (value <= cap)
+                {
+                    float below = scale;
+                    for (int i = 0; i < CapRefinements; i++)
+                    {
+                        float mid = (above + below) * 0.5f;
+                        if (pressure(mid) <= cap)
+                        {
+                            below = mid;
+                        }
+                        else
+                        {
+                            above = mid;
+                        }
+                    }
+
+                    return below;
+                }
+
+                if (value < lowest)
+                {
+                    lowest = value;
+                    best = scale;
+                }
+
+                above = scale;
+            }
+
+            return best;
+        }
+
+        // Pressure grows with health, so a bisection on the logarithm of a scale finds where it meets the target. Where the purse
+        // breaks (leaks cost kill money) the pressure jumps; the bisection then ends on the jump, and the side closer to the
+        // target is kept.
+        private static double Bisect(Func<double, float> pressure, float target, double lo, double hi)
+        {
+            if (pressure(hi) <= target)
+            {
+                return Math.Exp(hi);
+            }
+
+            for (int i = 0; i < CalibrationIterations; i++)
+            {
+                double mid = (lo + hi) * 0.5;
+                if (pressure(mid) < target)
+                {
+                    lo = mid;
+                }
+                else
+                {
+                    hi = mid;
+                }
+            }
+
+            return Math.Abs(pressure(lo) - target) <= Math.Abs(pressure(hi) - target) ? Math.Exp(lo) : Math.Exp(hi);
         }
 
         /// <summary>

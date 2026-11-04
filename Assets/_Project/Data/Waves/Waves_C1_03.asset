@@ -39,7 +39,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 5.46
-      _healthMultiplier: 0.943
+      _healthMultiplier: 1.144
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -71,7 +71,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 4.788
-      _healthMultiplier: 0.687
+      _healthMultiplier: 0.932
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -103,7 +103,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 7.98
-      _healthMultiplier: 0.776
+      _healthMultiplier: 0.915
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -128,7 +128,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.52
-      _healthMultiplier: 1.226
+      _healthMultiplier: 1.487
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -167,7 +167,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 1.041
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -206,7 +206,7 @@ MonoBehaviour:
         Interval: 0.75
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 1.041
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -245,7 +245,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 1.036
+      _healthMultiplier: 1.323
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -298,7 +298,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 3.8999999
-      _healthMultiplier: 1.236
+      _healthMultiplier: 1.603
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -351,7 +351,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 2.6
-      _healthMultiplier: 1.369
+      _healthMultiplier: 1.571
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -474,7 +474,7 @@ MonoBehaviour:
         Interval: 0.39000002
         Delay: 2.5
         Stagger: 8.58
-      _healthMultiplier: 0.4
+      _healthMultiplier: 0.467
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -555,7 +555,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 0.958
+      _healthMultiplier: 1.136
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -608,7 +608,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 0
-      _healthMultiplier: 0.875
+      _healthMultiplier: 1.372
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -710,7 +710,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 10.4
-      _healthMultiplier: 1.003
+      _healthMultiplier: 1.189
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -889,7 +889,7 @@ MonoBehaviour:
         Interval: 0.39000002
         Delay: 2.5
         Stagger: 20.280003
-      _healthMultiplier: 0.96415734
+      _healthMultiplier: 1.1440784
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -970,7 +970,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.066
+      _healthMultiplier: 1.478
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1086,7 +1086,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 0.678
+      _healthMultiplier: 0.909
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - _startDelay: 10
@@ -1113,7 +1113,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 5.46
-      _healthMultiplier: 0.943
+      _healthMultiplier: 1.24
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1145,7 +1145,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 4.788
-      _healthMultiplier: 0.687
+      _healthMultiplier: 1.011
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1177,7 +1177,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 7.98
-      _healthMultiplier: 0.776
+      _healthMultiplier: 0.993
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1202,7 +1202,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.52
-      _healthMultiplier: 1.226
+      _healthMultiplier: 1.613
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1241,7 +1241,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 1.129
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1280,7 +1280,7 @@ MonoBehaviour:
         Interval: 0.75
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 1.129
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1319,7 +1319,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.951
+      _healthMultiplier: 1.914
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1379,7 +1379,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 2.6
-      _healthMultiplier: 1.236
+      _healthMultiplier: 1.739
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1432,7 +1432,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 3.8999999
-      _healthMultiplier: 1.369
+      _healthMultiplier: 1.704
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1548,7 +1548,7 @@ MonoBehaviour:
         Interval: 0.39000002
         Delay: 2.5
         Stagger: 7.8000007
-      _healthMultiplier: 0.4
+      _healthMultiplier: 0.506
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1622,7 +1622,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 7.7999997
-      _healthMultiplier: 0.958
+      _healthMultiplier: 1.232
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1689,7 +1689,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 2.6
-      _healthMultiplier: 1.096
+      _healthMultiplier: 1.434
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1791,7 +1791,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 10.4
-      _healthMultiplier: 1.003
+      _healthMultiplier: 1.29
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1977,7 +1977,7 @@ MonoBehaviour:
         Interval: 0.39000002
         Delay: 2.5
         Stagger: 19.5
-      _healthMultiplier: 0.96415734
+      _healthMultiplier: 1.2402195
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2058,7 +2058,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.206
+      _healthMultiplier: 1.587
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2188,7 +2188,7 @@ MonoBehaviour:
         Interval: 1.5
         Delay: 19
         Stagger: 0
-      _healthMultiplier: 0.678
+      _healthMultiplier: 1.032
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - _startDelay: 10
@@ -2215,7 +2215,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 5.46
-      _healthMultiplier: 0.943
+      _healthMultiplier: 1.03
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2247,7 +2247,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 4.788
-      _healthMultiplier: 0.687
+      _healthMultiplier: 0.839
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2279,7 +2279,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 7.98
-      _healthMultiplier: 0.776
+      _healthMultiplier: 0.824
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2304,7 +2304,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.52
-      _healthMultiplier: 1.226
+      _healthMultiplier: 1.339
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2343,7 +2343,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 0.938
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2382,7 +2382,7 @@ MonoBehaviour:
         Interval: 0.75
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 0.938
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2421,7 +2421,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 1.467
+      _healthMultiplier: 1.387
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2481,7 +2481,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 2.6
-      _healthMultiplier: 1.236
+      _healthMultiplier: 1.444
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2534,7 +2534,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 3.8999999
-      _healthMultiplier: 1.369
+      _healthMultiplier: 0.328
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2615,7 +2615,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 0.4
+      _healthMultiplier: 0.582
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2696,7 +2696,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 7.7999997
-      _healthMultiplier: 0.958
+      _healthMultiplier: 1.023
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2763,7 +2763,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 2.6
-      _healthMultiplier: 1.096
+      _healthMultiplier: 1.191
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2872,7 +2872,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 10.4
-      _healthMultiplier: 1.003
+      _healthMultiplier: 0.328
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -2946,7 +2946,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.086
+      _healthMultiplier: 1.012
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3020,7 +3020,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.206
+      _healthMultiplier: 1.318
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3150,7 +3150,7 @@ MonoBehaviour:
         Interval: 1.5
         Delay: 19
         Stagger: 0
-      _healthMultiplier: 0.678
+      _healthMultiplier: 0.857
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - _startDelay: 10
@@ -3177,7 +3177,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 5.46
-      _healthMultiplier: 0.943
+      _healthMultiplier: 1.145
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3209,7 +3209,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 4.788
-      _healthMultiplier: 0.687
+      _healthMultiplier: 0.933
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3241,7 +3241,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 7.98
-      _healthMultiplier: 0.776
+      _healthMultiplier: 0.917
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3266,7 +3266,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.52
-      _healthMultiplier: 1.226
+      _healthMultiplier: 1.489
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3305,7 +3305,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 0.858
+      _healthMultiplier: 1.042
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3344,7 +3344,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 0.4
+      _healthMultiplier: 0.23
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3383,7 +3383,7 @@ MonoBehaviour:
         Interval: 1.25
         Delay: 2.5
         Stagger: 0
-      _healthMultiplier: 1.264
+      _healthMultiplier: 1.155
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3443,7 +3443,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 3.8999999
-      _healthMultiplier: 1.236
+      _healthMultiplier: 0.422
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3496,7 +3496,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 3.8999999
-      _healthMultiplier: 1.369
+      _healthMultiplier: 0.365
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3577,7 +3577,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 0.4
+      _healthMultiplier: 0.33
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3651,7 +3651,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 0.958
+      _healthMultiplier: 1.086
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3711,7 +3711,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 2.6
-      _healthMultiplier: 1.096
+      _healthMultiplier: 1.324
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3827,7 +3827,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 2.5
         Stagger: 10.4
-      _healthMultiplier: 1.003
+      _healthMultiplier: 0.708
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3894,7 +3894,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.215
+      _healthMultiplier: 1.079
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -3982,7 +3982,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 0.743
+      _healthMultiplier: 0.74
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -4105,4 +4105,4 @@ MonoBehaviour:
         Interval: 1.5
         Delay: 19
         Stagger: 0
-      _healthMultiplier: 0.678
+      _healthMultiplier: 0.953

@@ -14,7 +14,9 @@ namespace Game.Tests
     /// before it, or late Easy asks nothing (<see cref="BalanceChecks"/>). The player is the one the progression model
     /// expects there: owned towers only, the research of the levels before spent on upgrades. Per level it also applies the
     /// human lens (<see cref="BalanceChecks.CheckHuman"/>): Easy may not hand a competent player far more firepower than
-    /// it needs, and each difficulty must ask more than the one below.
+    /// it needs, and each difficulty must ask more than the one below. Since 2026-11-04 it also checks the human target curve
+    /// (<see cref="BalanceChecks.CheckHumanTarget"/>), the campaign ramp within a continent (<see cref="BalanceChecks.CheckRamp"/>)
+    /// and that every level stays beatable with the hero and the expected upgrades (<see cref="BalanceChecks.CheckBeatable"/>).
     /// </summary>
     public sealed class BalanceLedgerTests
     {
@@ -33,9 +35,14 @@ namespace Game.Tests
             BalanceRules rules = BalanceRules.Default;
             CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
             BalanceRules human = rules.HumanTowersOnly();
+            BalanceRules withHero = rules.HumanWithHero();
 
             var report = new StringBuilder();
+            var curve = new StringBuilder("Human lens per level (towers alone, plain waves; Easy Medium Hard Psycho), with the hero, and the research the campaign expects:\n");
             var failures = new List<string>();
+            // Per continent, in play order: the level names and their human-lens surplus per difficulty, for the ramp check.
+            var rampLevels = new Dictionary<int, List<string>>();
+            var rampSurplus = new Dictionary<int, List<float[]>>();
             int index = 0;
             foreach (MapNode node in catalog.Nodes)
             {
@@ -45,6 +52,8 @@ namespace Game.Tests
                 }
 
                 var plainMeans = new List<float>();
+                var surplus = new float[catalog.Difficulties.Count];
+                var heroLine = new StringBuilder();
                 for (int d = 0; d < catalog.Difficulties.Count; d++)
                 {
                     DifficultyProfile difficulty = catalog.Difficulties[d];
@@ -56,15 +65,36 @@ namespace Game.Tests
                     }
 
                     failures.AddRange(BalanceChecks.Check(node.Level.name, difficulty.name, d, lines, rules));
-                    plainMeans.Add(BalanceChecks.PlainMean(BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, human)));
+                    float mean = BalanceChecks.PlainMean(BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, human));
+                    plainMeans.Add(mean);
+                    surplus[d] = mean > 0f ? 1f / mean : 0f;
+                    List<WaveLine> beatable = BalanceLedger.Evaluate(model, index, node.Level, difficulty, d, null, withHero);
+                    failures.AddRange(BalanceChecks.CheckBeatable(node.Level.name, difficulty.name, d, beatable, rules));
+                    PlayerState player = model.PlayerAt(index, d);
+                    heroLine.Append($" {1f / BalanceChecks.PlainMean(beatable):0.00}x (research {player.ResearchSpent})");
                 }
 
                 report.Append(BalanceChecks.DescribeHuman(node.Level.name, plainMeans)).Append('\n');
                 failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules));
+                failures.AddRange(BalanceChecks.CheckHumanTarget(node.Level.name, model.ContinentIndexOf(index), plainMeans, rules));
+                curve.Append($"  {node.Level.name}: {surplus[0]:0.00}x {surplus[1]:0.00}x {surplus[2]:0.00}x {surplus[3]:0.00}x | with hero{heroLine}\n");
+                if (!rampLevels.ContainsKey(node.Region))
+                {
+                    rampLevels[node.Region] = new List<string>();
+                    rampSurplus[node.Region] = new List<float[]>();
+                }
 
+                rampLevels[node.Region].Add(node.Level.name);
+                rampSurplus[node.Region].Add(surplus);
                 index++;
             }
 
+            foreach (int region in rampLevels.Keys)
+            {
+                failures.AddRange(BalanceChecks.CheckRamp(rampLevels[region], rampSurplus[region], rules));
+            }
+
+            report.Append(curve);
             System.IO.File.WriteAllText(LedgerPath, report.ToString());
             Assert.IsEmpty(failures, string.Join("\n", failures) + "\nSee " + LedgerPath);
         }

@@ -80,8 +80,12 @@ namespace Game.Balance
 
         // ---- The target curve the wave solver aims at (Medium; other difficulties follow their profiles) -------------
 
-        /// <summary>Pressure the solver aims plain Medium waves at, mid-level. One means the towers alone just hold.</summary>
-        public float TargetPressure = 0.6f;
+        /// <summary>
+        /// Pressure the solver aims plain Medium waves at, mid-level (bot calibration, hero included). One means the bot just
+        /// holds. 0.6 until 2026-11-04; raised to 0.8 with the human target curve (<see cref="HumanSurplus"/>), so the solver's
+        /// shape already sits near the level the calibration trims the waves to (Medium trims 0.97 to 1.15 on Crystal Plains).
+        /// </summary>
+        public float TargetPressure = 0.8f;
 
         /// <summary>The opening waves ramp up from this share of the target, over this many waves.</summary>
         public float OpeningShare = 0.45f;
@@ -110,9 +114,10 @@ namespace Game.Balance
         /// <summary>
         /// Pressure of each difficulty as a share of Medium (Easy to Psycho). Used only for the waves a difficulty adds
         /// (extra air raids, extra bosses); everything else follows the difficulty profile, and the profiles are tuned so
-        /// their waves land near these shares.
+        /// their waves land near these shares. { 0.7, 1, 1.5, 2.1 } until 2026-11-04; the human curve (Easy 1.4x, Medium 1.15x,
+        /// Hard 0.95x, Psycho 0.8x) puts the bot-lens shares near 0.8 / 1 / 1.35 / 1.7.
         /// </summary>
-        public float[] DifficultyPressure = { 0.7f, 1f, 1.5f, 2.1f };
+        public float[] DifficultyPressure = { 0.8f, 1f, 1.35f, 1.7f };
 
         // ---- Checks the solver does not optimise -------------------------------------------------------------------
 
@@ -145,8 +150,11 @@ namespace Game.Balance
         /// </summary>
         public float HumanUtilisation = 0.34f;
 
-        /// <summary>Most firepower over need, towers alone, a competent player may have on the plain Easy waves of a level.</summary>
-        public float MaxEasySurplus = 2.1f;
+        /// <summary>
+        /// Most firepower over need, towers alone, a competent player may have on the plain Easy waves of a level. 2.1 until
+        /// 2026-11-04; with the human curve Easy sits at 1.4x at a continent's first level.
+        /// </summary>
+        public float MaxEasySurplus = 1.6f;
 
         /// <summary>
         /// The plain Easy waves of a level may ask at most this share of what the plain Medium waves ask of the same player,
@@ -162,6 +170,67 @@ namespace Game.Balance
             human.HeroShare = 0f;
             return human;
         }
+
+        /// <summary>The human lens with the hero fighting beside the towers: what "beatable" is judged by.</summary>
+        public BalanceRules HumanWithHero()
+        {
+            BalanceRules human = Copy();
+            human.Utilisation = HumanUtilisation;
+            return human;
+        }
+
+        // ---- The human target curve: what the waves are calibrated to (2026-11-04, Remco: "alles wat zwaarder maken") ----
+
+        /// <summary>
+        /// Firepower over need, towers alone, a competent player has on the plain waves of a continent's first level, Easy to
+        /// Psycho. Easy 1.4 (the hero matters on boss and late waves), Medium 1.15 (placement and hero), Hard 0.95 (the hero
+        /// and good play, or some permanent upgrades), Psycho 0.8 (the progression model already counts the continent's
+        /// end-game upgrades for Psycho, <see cref="Progression"/>). Each level's waves are trimmed to this curve
+        /// (<see cref="CampaignModel.BuildWaves"/>) after the solver has shaped them.
+        /// </summary>
+        public float[] HumanSurplus = { 1.4f, 1.15f, 0.95f, 0.8f };
+
+        /// <summary>
+        /// The campaign gets harder level by level (Remco: "hoe verder je in het spel komt hoe lastiger"): the pressure of the
+        /// human target rises by this share per level of a continent, net of the upgrades the player is expected to own there,
+        /// up to <see cref="HumanRampMax"/>.
+        /// </summary>
+        public float HumanRampPerLevel = 0.015f;
+        public float HumanRampMax = 0.2f;
+
+        /// <summary>When false, the waves keep the solver's shape and are not trimmed to the human target (tests of the solver alone).</summary>
+        public bool CalibrateToHuman = true;
+
+        /// <summary>The surplus the human target asks for at a level of a continent (index from 0) on a difficulty.</summary>
+        public float HumanSurplusAt(int difficulty, int continentIndex) =>
+            HumanSurplus[System.Math.Min(difficulty, HumanSurplus.Length - 1)] / (1f + System.Math.Min(HumanRampMax, HumanRampPerLevel * System.Math.Max(0, continentIndex)));
+
+        /// <summary>Most the stored human surplus of a level may stray from its target curve, as a share of the target.</summary>
+        public float HumanTargetTolerance = 0.06f;
+
+        /// <summary>From one level of a continent to the next the human surplus may rise by at most this share (the ramp is monotone).</summary>
+        public float RampTolerance = 0.03f;
+
+        /// <summary>
+        /// Most a single wave (bosses included) may ask of a competent player with the hero (<see cref="HumanWithHero"/>), Easy
+        /// to Psycho. Pressure one is "just holds"; above it a few creatures reach the gate and the base, whose health, the
+        /// hero's abilities, base turrets, drones and path objects (none in the model) carry the rest. Easy bosses fall to the
+        /// defence outright; on Psycho a boss asks for everything the player has. The calibration softens a wave above it on
+        /// its own (<see cref="CampaignModel.BuildWaves"/>), so a boss keeps high health but stays killable.
+        /// </summary>
+        public float[] HeroCap = { 1f, 1.15f, 1.25f, 1.35f };
+
+        public float HeroCapFor(int difficulty) => HeroCap[System.Math.Min(difficulty, HeroCap.Length - 1)];
+
+        /// <summary>
+        /// "Beatable" with the hero and the upgrades the campaign expects (<see cref="BalanceChecks.CheckBeatable"/>): the plain
+        /// waves must leave at least this surplus (Easy to Psycho), and no wave may ask more than its <see cref="HeroCap"/> plus
+        /// <see cref="BeatableTolerance"/>. Psycho below one: the end-game player also brings what the model leaves out.
+        /// </summary>
+        public float[] MinBeatableSurplus = { 1.15f, 1.05f, 0.95f, 0.82f };
+        public float BeatableTolerance = 0.04f;
+
+        public float MinBeatableSurplusFor(int difficulty) => MinBeatableSurplus[System.Math.Min(difficulty, MinBeatableSurplus.Length - 1)];
 
         // ---- Meta economy: research and power between levels -------------------------------------------------------
 

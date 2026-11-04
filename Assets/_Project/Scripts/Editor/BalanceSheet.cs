@@ -64,23 +64,31 @@ namespace Game.Editor
             }
         }
 
-        // Easy's in-level money (2026-11-04, Remco on C1_01 Easy: "je krijgt gewoon te veel geld"): with the full purse a
-        // competent player (BalanceRules.HumanUtilisation) bought 2.3 to 2.6 times the firepower the plain waves need and
-        // never needed the commander. At 85% income and 80% starting money that is 1.75 to 2.0 times, still clearly more
-        // than Medium (1.45 to 1.75): Easy asks about 0.8 of Medium instead of 0.6 to 0.75. The creatures are not touched:
-        // the solver sizes them against the full purse (CampaignModel.ReferenceInputFor).
-        private const float EasyIncome = 0.85f;
+        // In-level money per difficulty. First pass (2026-11-04, Remco on C1_01 Easy: "je krijgt gewoon te veel geld"): Easy
+        // 85% income and 80% start, which took a competent player from 2.3-2.6x to 1.75-2.0x the firepower the plain waves need.
+        //
+        // 2026-11-04, "alles wat zwaarder maken": the waves are now calibrated to a human target curve (BalanceRules.HumanSurplus),
+        // so these shares no longer set how hard a difficulty is; they set what it feels like at that hardness. Less money
+        // means fewer guns against weaker creatures, more money more guns against tougher ones, and more creatures per wave
+        // pay for themselves (kill money follows the crowd). Easy: 80% income, 80% start, 90% of the crowd (was 85/80/80):
+        // fewer guns than before against bigger, weak crowds. Medium: 95% income. Hard and Psycho: bigger crowds (1.3 and
+        // 1.65, were 1.2 and 1.5) and 10% more income, so their creatures stay tougher than Medium's at the same pressure
+        // (at full income Hard's creatures on the first levels came out weaker than Medium's).
+        private const float EasyIncome = 0.8f;
         private const float EasyStartMoney = 0.8f;
+        private const float MediumIncome = 0.95f;
+        private const float HardIncome = 1.1f;
+        private const float PsychoIncome = 1.1f;
 
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
-        // of it; power only from Medium on). Health, numbers and tempo are tuned so each difficulty lands near its share of
-        // the Medium pressure (BalanceRules.DifficultyPressure) in the ledger. The asset ids stay; only Psycho shows another name.
+        // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its
+        // waves to the human curve (CampaignModel.BuildWaves). The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", "Easy", 0.68f, 0.8f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney),
-            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, 1f, 1f),
-            new Difficulty("Hard", "Hard", 1.15f, 1.2f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, 1f, 1f),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.5f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, 1f, 1f),
+            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f),
+            new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, 1f),
         };
 
         /// <summary>

@@ -54,6 +54,8 @@ namespace BalanceLab
             var failures = new List<string>();
             var solved = new Dictionary<int, List<List<WaveSpec>>>();
             var budgetsByLevel = new Dictionary<int, float[]>();
+            var rampLevels = new Dictionary<int, List<string>>();
+            var rampSurplus = new Dictionary<int, List<float[]>>();
             for (int l = 0; l < model.Levels.Count; l++)
             {
                 List<List<WaveSpec>> sets = data.Levels[l].Waves;
@@ -68,6 +70,7 @@ namespace BalanceLab
 
                 var plainMeans = new List<float>();
                 BalanceRules human = model.Rules.HumanTowersOnly();
+                BalanceRules withHero = model.Rules.HumanWithHero();
                 for (int d = 0; d < model.Difficulties.Count && d < sets.Count; d++)
                 {
                     LevelInput input = model.InputFor(l, d);
@@ -80,10 +83,21 @@ namespace BalanceLab
 
                     failures.AddRange(BalanceChecks.Check(model.Levels[l].Key, model.Difficulties[d].Id, d, lines, model.Rules));
                     plainMeans.Add(BalanceChecks.PlainMean(Ledger.Evaluate(input, sets[d], model.Difficulties[d], human)));
+                    failures.AddRange(BalanceChecks.CheckBeatable(model.Levels[l].Key, model.Difficulties[d].Id, d, Ledger.Evaluate(input, sets[d], model.Difficulties[d], withHero), model.Rules));
                 }
 
                 report.Append(BalanceChecks.DescribeHuman(model.Levels[l].Key, plainMeans)).Append('\n');
                 failures.AddRange(BalanceChecks.CheckHuman(model.Levels[l].Key, plainMeans, model.Rules));
+                failures.AddRange(BalanceChecks.CheckHumanTarget(model.Levels[l].Key, model.ContinentIndexOf(l), plainMeans, model.Rules));
+                int continent = model.Levels[l].Continent;
+                if (!rampLevels.ContainsKey(continent))
+                {
+                    rampLevels[continent] = new List<string>();
+                    rampSurplus[continent] = new List<float[]>();
+                }
+
+                rampLevels[continent].Add(model.Levels[l].Key);
+                rampSurplus[continent].Add(plainMeans.Select(m => m > 0f ? 1f / m : 0f).ToArray());
             }
 
             report.Append("\nChecks: ").Append(failures.Count == 0 ? "all inside their bands" : failures.Count + " outside").Append('\n');

@@ -210,6 +210,19 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - Difficulty profiles only: `unity command eval_file --file Tools/PlayTest/apply_difficulties.cs` runs just the generator's
   difficulty step (`BalanceSheet.Difficulties` -> `Data/Difficulty/*.asset`) when the full generator must not run (it
   syncs the Blender exports from ArtSource while a Blender agent works there).
+- Difficulties and waves only (2026-11-04): `unity command run_script --file Tools/PlayTest/Scripts/ApplyWaves.cs --entry
+  ApplyWaves.Run --timeout_ms 900000 --timeout 960` runs the generator's "Difficulties" and "Waves" steps (profiles, level
+  payouts, solved and human-calibrated waves) without the Blender syncs. `eval_file` stops after 5 seconds and an
+  `EditorApplication.delayCall` never runs while the editor is unfocused, so long editor jobs go through `run_script`.
+- Balance curve without writing anything: `unity command run_script --file Tools/PlayTest/Scripts/BalanceCurve.cs --entry
+  BalanceCurve.Run --timeout_ms 900000 --timeout 960` writes `Tools/PlayTest/balance_curve.txt` (per level: human surplus
+  towers alone and with the hero, worst wave with the hero, trim against the solver's shape and creature toughness, bot-lens
+  peaks against the bands). Try a knob first with `Tools/PlayTest/curve_arg.txt` (`TargetPressure=0.8`,
+  `HeroCap=1,1.15,1.25,1.35`, `d2.Income=1.1` for a difficulty field), then put it in code and run ApplyWaves.
+- `balance_ledger.txt` ends with the human curve per level (towers alone and with the hero, research assumed). The ledger
+  test fails when a level is off its curve, easier than the level before it (ramp), or not beatable with the hero.
+- Full bot run (every C1 level on every difficulty): set `Tools/PlayTest/probe_arg.txt` and run
+  `--filter "Game.Tests.BalanceProbeTests.Full_GreedyBot_PlaysEveryLevel_WithoutErrors" --include_explicit true`.
 
 ## Graphics pass (added 2026-11-01, evening)
 

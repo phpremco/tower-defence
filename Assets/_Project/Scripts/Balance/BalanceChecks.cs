@@ -136,5 +136,76 @@ namespace Game.Balance
 
             return failures;
         }
+
+        /// <summary>
+        /// The human lens against the target curve (<see cref="BalanceRules.HumanSurplusAt"/>): on every difficulty a level's
+        /// stored waves leave a competent player within <see cref="BalanceRules.HumanTargetTolerance"/> of the surplus the
+        /// curve asks for at its place in the continent. <paramref name="plainMeans"/> as in <see cref="CheckHuman"/>.
+        /// </summary>
+        public static List<string> CheckHumanTarget(string level, int continentIndex, IReadOnlyList<float> plainMeans, BalanceRules rules)
+        {
+            var failures = new List<string>();
+            for (int d = 0; d < plainMeans.Count; d++)
+            {
+                float target = rules.HumanSurplusAt(d, continentIndex);
+                float surplus = plainMeans[d] > 0f ? 1f / plainMeans[d] : float.PositiveInfinity;
+                if (Math.Abs(surplus - target) > target * rules.HumanTargetTolerance)
+                {
+                    failures.Add($"{level} difficulty {d}: a competent player has {surplus:0.00}x the firepower, the curve asks {target:0.00}x");
+                }
+            }
+
+            return failures;
+        }
+
+        /// <summary>
+        /// The campaign ramp: within a continent each level asks at least as much of a competent player as the one before it
+        /// (net of the upgrades expected there), on every difficulty. <paramref name="surplus"/> holds per level, in play order,
+        /// the human-lens surplus per difficulty; a level may be easier than the one before by at most
+        /// <see cref="BalanceRules.RampTolerance"/>, so no level is a dip.
+        /// </summary>
+        public static List<string> CheckRamp(IReadOnlyList<string> levels, IReadOnlyList<float[]> surplus, BalanceRules rules)
+        {
+            var failures = new List<string>();
+            for (int i = 1; i < surplus.Count; i++)
+            {
+                for (int d = 0; d < surplus[i].Length && d < surplus[i - 1].Length; d++)
+                {
+                    if (surplus[i][d] > surplus[i - 1][d] * (1f + rules.RampTolerance))
+                    {
+                        failures.Add($"{levels[i]} difficulty {d}: easier than {levels[i - 1]} ({surplus[i][d]:0.00}x against {surplus[i - 1][d]:0.00}x)");
+                    }
+                }
+            }
+
+            return failures;
+        }
+
+        /// <summary>
+        /// Beatable: a competent player with the hero (<see cref="BalanceRules.HumanWithHero"/>) and the permanent upgrades the
+        /// campaign expects there holds the plain waves with at least <see cref="BalanceRules.MinBeatableSurplusFor"/>, and no
+        /// wave, bosses included, asks more than the difficulty's <see cref="BalanceRules.HeroCap"/> (plus a little tolerance).
+        /// </summary>
+        public static List<string> CheckBeatable(string level, string difficultyName, int difficulty, IReadOnlyList<WaveLine> withHero, BalanceRules rules)
+        {
+            var failures = new List<string>();
+            float mean = PlainMean(withHero);
+            float floor = rules.MinBeatableSurplusFor(difficulty);
+            if (mean > 0f && 1f / mean < floor)
+            {
+                failures.Add($"{level} {difficultyName}: with the hero a competent player has only {1f / mean:0.00}x the firepower on plain waves (at least {floor:0.00}x)");
+            }
+
+            float most = rules.HeroCapFor(difficulty) * (1f + rules.BeatableTolerance);
+            foreach (WaveLine line in withHero)
+            {
+                if (line.Pressure > most)
+                {
+                    failures.Add($"{level} {difficultyName} wave {line.Wave}{(line.Boss ? " (boss)" : string.Empty)}: pressure {line.Pressure:0.00} with the hero (most {most:0.00})");
+                }
+            }
+
+            return failures;
+        }
     }
 }

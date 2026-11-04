@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Crazy
   _healthMultiplier: 1.65
-  _countMultiplier: 1.5
+  _countMultiplier: 1.65
   _spawnIntervalMultiplier: 0.7
   _rewardMultiplier: 5
   _powerCurrencyMultiplier: 2.2
   _structureDamageMultiplier: 1.4
+  _incomeMultiplier: 1.1
+  _startingMoneyMultiplier: 1

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels::Game.Levels.DifficultyProfile
   _displayName: Easy
   _healthMultiplier: 0.68
-  _countMultiplier: 0.8
+  _countMultiplier: 0.9
   _spawnIntervalMultiplier: 1.2
   _rewardMultiplier: 1
   _powerCurrencyMultiplier: 0
   _structureDamageMultiplier: 0.6
-  _incomeMultiplier: 0.85
+  _incomeMultiplier: 0.8
   _startingMoneyMultiplier: 0.8
