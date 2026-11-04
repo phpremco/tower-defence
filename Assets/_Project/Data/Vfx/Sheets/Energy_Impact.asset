@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d6f33a0590437489b55639ab36c4fb, type: 3}
+  m_Name: Energy_Impact
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.VfxSheet
+  _material: {fileID: 2100000, guid: 141b2471197a7dd4b92c90ba1c0553de, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 4c69cad8fe0a0c1469344f252ed59b23, type: 2}
+  _columns: 6
+  _rows: 6
+  _frames: 36
+  _fps: 60
+  _lifetime: 0.6
+  _worldSize: 0
+  _pivot: {x: 0.5, y: 0.5}
+  _cellAspect: 1

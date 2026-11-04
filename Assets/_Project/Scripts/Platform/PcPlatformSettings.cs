@@ -17,6 +17,8 @@
 
         public float ParticleScale => 1f;
 
+        public bool DistortionEnabled => true;
+
         public bool LowDetailModels => false;
 
         public float LodBias => 1f;

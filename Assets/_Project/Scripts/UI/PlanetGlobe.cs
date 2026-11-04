@@ -27,6 +27,10 @@ namespace Game.UI
         private const float NearDistance = 5f;
         private const float ZoomShift = 0.6f;
         private const float HighlightCloseFade = 0.5f;
+        private const float DefaultCloudClear = 0.5f;
+        // Fully thinned over the heart of the region, back to full cover a little past its rim.
+        private const float ClearInnerShare = 0.55f;
+        private const float ClearOuterShare = 1.1f;
 
         /// <summary>Zoom value at which one region fills the view, with its levels readable.</summary>
         public const float RegionZoom = 1f;
@@ -57,6 +61,8 @@ namespace Game.UI
         private int _highlightId = -1;
         private Color _highlightColour;
         private float _highlightStrength;
+        private Vector3 _clearDirection;
+        private float _clearRadius;
         private Camera _camera;
         private RenderTexture _texture;
         private RectTransform _rect;
@@ -100,8 +106,11 @@ namespace Game.UI
         /// Marks a region of a painted planet (brighter land, a soft rim in its colour along the coast, the rest a little
         /// darker), by its index in the campaign; a negative index clears it. A plain globe has no region map and ignores it.
         /// </summary>
-        public void Highlight(int regionIndex, Color colour, bool open)
+        /// <param name="direction">The region's centre on the globe; the cloud decks thin over it out to <paramref name="radiusDegrees"/>.</param>
+        public void Highlight(int regionIndex, Color colour, bool open, Vector3 direction = default, float radiusDegrees = 0f)
         {
+            _clearDirection = regionIndex >= 0 ? direction : Vector3.zero;
+            _clearRadius = radiusDegrees;
             _highlightId = _painted != null && regionIndex >= 0 ? _painted.RegionId(regionIndex) : -1;
             _highlightColour = colour;
             _highlightStrength = _painted == null ? 0f : open ? 1f : _painted.LockedShare;
@@ -328,6 +337,8 @@ namespace Game.UI
             float cover = (_painted != null ? _painted.MapCloudShare : 1f) * (1f - region);
             PlanetMaterials.SetCloudAlpha(_cloudMaterial, cover);
             PlanetMaterials.SetCloudAlpha(_highCloudMaterial, HighCloudAlpha * cover);
+            ClearOverRegion(_cloudMaterial, _clouds);
+            ClearOverRegion(_highCloudMaterial, _highClouds);
             PlanetMaterials.SetCloudShadow(_surfaceMaterial, _style.CloudShadow * (1f - region));
             PlanetMaterials.SetCloudFrame(_surfaceMaterial, _clouds);
             if (_painted != null)
@@ -337,6 +348,15 @@ namespace Game.UI
             }
 
             _camera.transform.localPosition = new Vector3(ZoomShift * level, 0f, -distance);
+        }
+
+        // The region's centre in the deck's own frame (the decks drift on their own), thinned to its rim.
+        private void ClearOverRegion(Material deck, Transform frame)
+        {
+            bool clear = _clearDirection.sqrMagnitude > 0f && _clearRadius > 0f;
+            float share = clear ? (_painted != null ? _painted.RegionCloudClear : DefaultCloudClear) : 0f;
+            Vector3 local = clear ? frame.InverseTransformDirection(_globe.TransformDirection(_clearDirection)) : Vector3.forward;
+            PlanetMaterials.SetCloudClearing(deck, local, _clearRadius * ClearInnerShare, _clearRadius * ClearOuterShare, share);
         }
 
         private static float Ease(float t) => t * t * (3f - 2f * t);

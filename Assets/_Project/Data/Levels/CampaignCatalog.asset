@@ -51,109 +51,109 @@ MonoBehaviour:
   - DisplayName: The Core
     Longitude: 150
     Latitude: -32
-    RadiusDegrees: 12
+    RadiusDegrees: 14
     Colour: {r: 0.35, g: 0.1, b: 0.06, a: 1}
     Key: C6
     Layer: 1
   _nodes:
   - DisplayName: Landing Site
-    Longitude: -55.53
-    Latitude: -8.22
+    Longitude: -56.07
+    Latitude: -11.07
     Region: 0
     Level: {fileID: 11400000, guid: 2e61070e667e17e4c9384578fa53f532, type: 2}
   - DisplayName: Glass Meadows
-    Longitude: -45.98
-    Latitude: -6.9
+    Longitude: -49.75
+    Latitude: -10.37
     Region: 0
     Level: {fileID: 11400000, guid: efc2c6adb1633ba4486d20733c0ecba9, type: 2}
   - DisplayName: Shard Ridge
-    Longitude: -36.4
-    Latitude: -8.56
+    Longitude: -44.82
+    Latitude: -4.04
     Region: 0
     Level: {fileID: 11400000, guid: 00e794e2509e1404888283a26e238dca, type: 2}
   - DisplayName: Fault Line
-    Longitude: -26.76
-    Latitude: -9.28
+    Longitude: -37.79
+    Latitude: -4.04
     Region: 0
     Level: {fileID: 11400000, guid: 2dfc5973f82d4284cb9f2b0aeb80d18c, type: 2}
   - DisplayName: Quartz Flats
-    Longitude: -17.41
-    Latitude: -6.96
+    Longitude: -28.65
+    Latitude: 0.88
     Region: 0
     Level: {fileID: 11400000, guid: eeddf9fe7ea565c45ab759809c92396a, type: 2}
   - DisplayName: Crysium Vein
-    Longitude: -17.71
-    Latitude: 2.43
+    Longitude: -20.21
+    Latitude: 0.88
     Region: 0
     Level: {fileID: 11400000, guid: 3c23b6abd7b108f4d89316acc20b14ba, type: 2}
   - DisplayName: Crystal Plains 7
-    Longitude: -27.12
-    Latitude: 0.14
+    Longitude: -16
+    Latitude: 6.5
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 8
-    Longitude: -36.82
-    Latitude: 0.73
+    Longitude: -12.48
+    Latitude: 12.13
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 9
-    Longitude: -46.28
-    Latitude: 2.44
+    Longitude: -18.81
+    Latitude: 12.13
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 10
-    Longitude: -55.95
-    Latitude: 1.24
+    Longitude: -24.43
+    Latitude: 8.61
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 11
-    Longitude: -65.38
-    Latitude: 3.21
+    Longitude: -32.87
+    Latitude: 6.5
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 12
-    Longitude: -58.55
-    Latitude: 9.98
+    Longitude: -41.31
+    Latitude: 5.1
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 13
-    Longitude: -48.96
-    Latitude: 11.87
+    Longitude: -49.04
+    Latitude: 2.29
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 14
-    Longitude: -39.2
-    Latitude: 10.43
+    Longitude: -57.48
+    Latitude: -1.93
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 15
-    Longitude: -29.44
-    Latitude: 9.36
+    Longitude: -61.7
+    Latitude: 2.99
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 16
-    Longitude: -19.79
-    Latitude: 11.57
+    Longitude: -55.37
+    Latitude: 4.39
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 17
-    Longitude: -25.34
-    Latitude: 19.36
+    Longitude: -48.34
+    Latitude: 8.61
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 18
-    Longitude: -35.45
-    Latitude: 19.01
+    Longitude: -43.42
+    Latitude: 13.54
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 19
-    Longitude: -45.44
-    Latitude: 20.8
+    Longitude: -37.79
+    Latitude: 10.72
     Region: 0
     Level: {fileID: 0}
   - DisplayName: Crystal Plains 20
-    Longitude: -55.68
-    Latitude: 20.63
+    Longitude: -29.36
+    Latitude: 12.83
     Region: 0
     Level: {fileID: 0}
   _difficulties:

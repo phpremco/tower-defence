@@ -16,18 +16,84 @@ MonoBehaviour:
   _flashSeconds: 0.35
   _fireShare: 0.8
   _ring: 1
-  _ringScale: 3.2
-  _ringAlpha: 0.6
-  _sparks: 18
-  _sparksPerRadius: 16
+  _ringScale: 2.8
+  _ringAlpha: 0.55
+  _sparks: 10
+  _sparksPerRadius: 8
   _sparkSpeed: 5
-  _smoke: 10
-  _smokePerRadius: 8
-  _shards: 6
-  _shardsPerRadius: 6
+  _smoke: 2
+  _smokePerRadius: 1
+  _shards: 3
+  _shardsPerRadius: 3
   _shardSpeed: 6
-  _lightIntensity: 9
+  _lightIntensity: 8
   _lightRange: 6
   _lightSeconds: 0.35
-  _shake: 0.2
-  _shakePerRadius: 0.18
+  _shake: 0
+  _shakePerRadius: 0
+  _fireball: {fileID: 11400000, guid: f9c2ee7ece2e6c34f990f63dbadfb30e, type: 2}
+  _fireballs: 1
+  _fireballSize: 1.4
+  _fireballSizePerRadius: 1
+  _heat:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 1.25
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.45
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _flash: {fileID: 11400000, guid: fd5232ffc6582a445b8be3258b774b69, type: 2}
+  _flashSize: 0.6
+  _flashSizePerRadius: 0.4
+  _smokeSheet: {fileID: 11400000, guid: ca4142dc62e839748a234858a6f713e8, type: 2}
+  _smokeSize: 1.2
+  _smokeDelay: 0.15
+  _sparkSheet: {fileID: 11400000, guid: 9448b5a59c12b0041898042fd96bdbbe, type: 2}
+  _debrisSheet: {fileID: 11400000, guid: 4aba1d028133ec041b7f3751720e24ee, type: 2}
+  _ringSheet: {fileID: 11400000, guid: 29f67317c2eef6d41bb74a7a708a573e, type: 2}
+  _dustSheet: {fileID: 0}
+  _dustSize: 0
+  _shockDistortion: {fileID: 11400000, guid: 75208984f5e0ed04fab654721d915358, type: 2}
+  _shockStrength: 0.025
+  _heatHaze: {fileID: 0}
+  _heatHazeSeconds: 0.9
+  _chain: 1
+  _chainInterval: 0.25
+  _chainSpread: 1
+  _chainGrowth: 0.15
+  _lingerSmoke: {fileID: 0}

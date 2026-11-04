@@ -67,6 +67,8 @@ namespace Game.Levels
         [SerializeField] [Range(0f, 4f)] private float _regionRim = 0.6f;
         [Tooltip("A region that cannot be entered yet glows this much of an open one.")]
         [SerializeField] [Range(0f, 1f)] private float _lockedShare = 0.45f;
+        [Tooltip("How much thinner the clouds are over the chosen region, so its land reads before the view flies in.")]
+        [SerializeField] [Range(0f, 1f)] private float _regionCloudClear = 0.65f;
 
         public Maps High => _high;
         public Maps Low => _low;
@@ -86,6 +88,7 @@ namespace Game.Levels
         public float RegionDim => _regionDim;
         public float RegionRim => _regionRim;
         public float LockedShare => _lockedShare;
+        public float RegionCloudClear => _regionCloudClear;
 
         /// <summary>True when the High maps are all there (the Low size falls back to them).</summary>
         public bool IsComplete => _high != null && _high.IsComplete;

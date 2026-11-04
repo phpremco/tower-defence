@@ -9,7 +9,8 @@ namespace Game.Levels
     public static class ShakeCurve
     {
         public const float Amplitude = 0.18f;
-        private const float Decay = 5.5f;
+        // Fast enough that even a full-strength kick is over in about half a second: a kick, never a lasting shake.
+        private const float Decay = 8f;
         private const float Frequency = 26f;
 
         /// <summary>Below this the shake counts as over.</summary>

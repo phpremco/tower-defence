@@ -1,4 +1,5 @@
-﻿using Game.Core;
+﻿using Game.Combat;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Towers
@@ -36,6 +37,7 @@ namespace Game.Towers
         private const float MuzzleForward = 0.6f;
         private const float MuzzleEmission = 6f;
         private const float MuzzleWhiteness = 0.6f;
+        private const float MuzzleTintWhiteness = 0.2f;
         private static readonly Color StarColor = new Color(1f, 0.9f, 0.3f);
         private static readonly Color HealthyColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color DamagedColor = new Color(1f, 0.55f, 0.2f);
@@ -83,6 +85,7 @@ namespace Game.Towers
         private ParticleSystem _smoke;
         private ParticleSystem _sparks;
         private TowerArtView _art;
+        private MuzzleFlashView _paintedMuzzle;
 
         private void Awake()
         {
@@ -318,6 +321,7 @@ namespace Game.Towers
             Color flashColor = Color.Lerp(definition.Color, Color.white, MuzzleWhiteness);
             _muzzle = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, flashColor, muzzleParent, muzzleAt, Vector3.one * MuzzleSize, MuzzleEmission).transform;
             _muzzle.gameObject.SetActive(false);
+            _paintedMuzzle = PaintedMuzzle(definition);
             _tower.MuzzleProvider = MuzzlePosition;
 
             BuildStars(null);
@@ -343,6 +347,7 @@ namespace Game.Towers
             Color flashColor = Color.Lerp(definition.Color, Color.white, MuzzleWhiteness);
             _muzzle = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, flashColor, _head, Vector3.zero, Vector3.one * ArtFlashSize, MuzzleEmission).transform;
             _muzzle.gameObject.SetActive(false);
+            _paintedMuzzle = PaintedMuzzle(definition);
             _tower.MuzzleProvider = _art.MuzzleFor;
 
             if (wall)
@@ -465,7 +470,7 @@ namespace Game.Towers
                 _barrel.localRotation = _parts.Rotary ? Quaternion.AngleAxis(_spinAngle, Vector3.forward) : Quaternion.identity;
             }
 
-            if (_muzzle != null && _muzzleTime <= MuzzleSeconds)
+            if (_muzzle != null && _paintedMuzzle == null && _muzzleTime <= MuzzleSeconds)
             {
                 _muzzleTime += Time.deltaTime;
                 bool lit = _muzzleTime <= MuzzleSeconds;
@@ -492,6 +497,24 @@ namespace Game.Towers
             _head.rotation = Quaternion.Euler(0f, _restYaw + sweep, 0f);
         }
 
+        // The painted flash of the weapon, when the effect library has one; the glowing sphere stays as the stand-in.
+        private MuzzleFlashView PaintedMuzzle(TowerDefinition definition)
+        {
+            if (!Services.TryGet(out VfxLibrary library))
+            {
+                return null;
+            }
+
+            var view = gameObject.AddComponent<MuzzleFlashView>();
+            if (view.Initialize(library.WeaponFor(definition.ProjectileStyle), Color.Lerp(definition.Color, Color.white, MuzzleTintWhiteness), ModelQuality.IsLow, Camera.main))
+            {
+                return view;
+            }
+
+            Destroy(view);
+            return null;
+        }
+
         private void OnFired(Vector3 targetPosition)
         {
             if (_art != null)
@@ -500,6 +523,12 @@ namespace Game.Towers
                 _muzzleTime = 0f;
                 _muzzle.SetParent(_art.LastMuzzle, false);
                 _muzzle.localPosition = Vector3.up * ArtFlashForward;
+                // The muzzle bone points its +Y out of the barrel.
+                if (_paintedMuzzle != null)
+                {
+                    _paintedMuzzle.Flash(_muzzle, Vector3.up);
+                }
+
                 return;
             }
 
@@ -507,6 +536,11 @@ namespace Game.Towers
             _recoil = 1f;
             _spin = 1f;
             _muzzleTime = 0f;
+            if (_paintedMuzzle != null)
+            {
+                _paintedMuzzle.Flash(_muzzle, Vector3.forward);
+            }
+
             Vector3 flat = targetPosition - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude > 0.0001f)

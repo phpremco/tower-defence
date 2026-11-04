@@ -133,7 +133,52 @@ namespace Game.Editor
             return copied;
         }
 
-        private static string TargetPath => Path.Combine(Path.GetDirectoryName(Application.dataPath) ?? string.Empty, TargetRoot);
+        /// <summary>
+        /// Copies a folder of loosely named textures (the effect sheets): each named PNG in both sizes and the report.
+        /// Returns the number of files copied.
+        /// </summary>
+        public static int SyncFiles(string folder, IEnumerable<string> files, string report)
+        {
+            string source = SourceRoot;
+            if (source == null)
+            {
+                Debug.Log("Blender sync: no ArtSource/Exports folder, keeping the textures already in Assets.");
+                return 0;
+            }
+
+            string from = Path.Combine(source, folder);
+            if (!Directory.Exists(from))
+            {
+                Debug.LogWarning($"Blender sync: no export folder '{folder}' in {SourceRelative}.");
+                return 0;
+            }
+
+            string to = Path.Combine(TargetPath, folder);
+            int copied = 0;
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                copied += CopyIfChanged(Path.Combine(from, report), Path.Combine(to, report));
+                foreach (string file in files)
+                {
+                    copied += CopyIfChanged(Path.Combine(from, file), Path.Combine(to, file));
+                    copied += CopyIfChanged(Path.Combine(from, LowFolder, file), Path.Combine(to, LowFolder, file));
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+
+            if (copied > 0)
+            {
+                AssetDatabase.Refresh();
+            }
+
+            return copied;
+        }
+
+        private static string TargetPath =>Path.Combine(Path.GetDirectoryName(Application.dataPath) ?? string.Empty, TargetRoot);
 
         private static int SyncAsset(string source, string asset)
         {

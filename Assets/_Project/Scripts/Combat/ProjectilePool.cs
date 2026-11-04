@@ -12,21 +12,25 @@ namespace Game.Combat
         private readonly TargetRegistry _registry;
         private readonly Transform _parent;
         private readonly VfxLibrary _vfx;
-        private readonly float _particleScale;
+        private readonly VfxQuality _quality;
+        private readonly Camera _camera;
         private readonly ObjectPool<Projectile> _pool;
         private readonly ObjectPool<ImpactFlash> _flashes;
 
-        public ProjectilePool(TargetRegistry registry, Transform parent, VfxLibrary vfx = null, float particleScale = 1f)
+        public ProjectilePool(TargetRegistry registry, Transform parent, VfxLibrary vfx = null, VfxQuality? quality = null, Camera camera = null)
         {
             _registry = registry;
             _parent = parent;
             _vfx = vfx != null ? vfx : VfxLibrary.CreateFallback();
-            _particleScale = particleScale;
+            _quality = quality ?? VfxQuality.High;
+            _camera = camera;
             _pool = new ObjectPool<Projectile>(Create, p => p.gameObject.SetActive(true), p => p.gameObject.SetActive(false));
             _flashes = new ObjectPool<ImpactFlash>(CreateFlash, f => f.gameObject.SetActive(true), f => f.gameObject.SetActive(false));
         }
 
         public VfxLibrary Vfx => _vfx;
+
+        public VfxQuality Quality => _quality;
 
         public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default, float fuseRadius = 0f)
         {
@@ -58,7 +62,7 @@ namespace Game.Combat
             go.transform.SetParent(_parent, false);
             // Logic first: the view requires it and binds to it in its Awake.
             var projectile = go.AddComponent<Projectile>();
-            go.AddComponent<ProjectileView>();
+            go.AddComponent<ProjectileView>().Configure(_vfx, _quality.LowTextures, _camera);
             projectile.Impacted += OnImpact;
             return projectile;
         }
@@ -78,7 +82,7 @@ namespace Game.Combat
             var go = new GameObject("ImpactFlash");
             go.transform.SetParent(_parent, false);
             var flash = go.AddComponent<ImpactFlash>();
-            flash.Configure(_particleScale);
+            flash.Configure(_quality);
             return flash;
         }
     }

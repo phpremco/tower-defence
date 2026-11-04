@@ -1,182 +1,386 @@
-﻿using Game.Core;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Game.Combat
 {
     /// <summary>
-    /// What a hit looks like, driven by an <see cref="ImpactVfxDefinition"/>: a white-hot core inside a translucent
-    /// fireball that swells and thins out, a shock ring, a spray of sparks, a puff of smoke, shards that cool from
-    /// ember to cinder, and a short point light on the surroundings. Pooled by ProjectilePool; the particle budget
-    /// of the platform scales the counts.
+    /// What a hit looks like, driven by an <see cref="ImpactVfxDefinition"/> and the effect sheets painted in Blender:
+    /// a six-way fireball that leaves white-hot and cools to orange, a flash in the weapon's colour, spark streaks,
+    /// glowing shards, dust from the ground, then smoke that rises and hangs; a shock ring and (high profile) a ring of
+    /// refraction and heat haze; a short point light. A chain plays several blasts one after another (a boss going
+    /// down). Pooled by ProjectilePool; every system is built once and only re-pointed per blast. The profile's
+    /// particle budget scales the counts.
     /// </summary>
     public sealed class ImpactFlash : MonoBehaviour
     {
-        private const float EffectSeconds = 1.6f;
-        private const float StartScale = 0.2f;
-        private const float MinFlashDiameter = 0.4f;
-        // The fireball outlives the core: it keeps swelling and fading after the hot centre has gone.
-        private const float ShellLifeShare = 2.2f;
-        private const string FireballShader = "Game/Fireball";
-        private const float ShellIntensity = 4f;
-        private const float CoreShare = 0.45f;
-        private const float CoreLifeShare = 0.7f;
-        private const float CoreEmission = 4f;
-        private const float RingIntensity = 2.5f;
-        private const float RingHeight = 0.06f;
-        private const float LightHeight = 0.6f;
+        private const int MaxChain = 6;
+        private const int MaxFireballs = 12;
+        private const int MaxFlashes = 8;
         private const int MaxSparks = 60;
-        private const int MaxSmoke = 32;
+        private const int MaxSmoke = 16;
         private const int MaxShards = 40;
-        private const float SmokeAlpha = 0.45f;
-        private static readonly Color FlashColor = new Color(1f, 0.7f, 0.3f);
-        private static readonly Color SparkColor = new Color(1f, 0.85f, 0.45f);
-        // Lit grey rather than soot, so the smoke still reads on the dark ground of every level.
-        private static readonly Color SmokeColor = new Color(0.5f, 0.45f, 0.42f);
-        private static readonly Color EmberColor = new Color(1f, 0.6f, 0.25f);
-        private static readonly Color CinderColor = new Color(0.22f, 0.18f, 0.16f);
+        private const int MaxDust = 6;
+        private const int MaxHaze = 4;
+        private const int MaxLinger = 6;
+        private const int LingerPuffs = 3;
+        private const float MinRingDiameter = 0.2f;
+        private const float RingHeight = 0.05f;
+        private const float ShockHeight = 0.07f;
+        private const float LightHeight = 0.6f;
+        private const float SmokeLifeStretch = 1.25f;
+        private const float LingerLifeStretch = 1.3f;
+        private const float RingPeak = 1.6f;
+        private const float SparkLength = 0.05f;
+        private const float FireballJitter = 0.15f;
+        private static readonly int TintId = Shader.PropertyToID("_Tint");
+        private static readonly int IntensityId = Shader.PropertyToID("_Intensity");
+        private static readonly int StrengthId = Shader.PropertyToID("_Strength");
+        private static readonly Color FireColor = new Color(1f, 0.7f, 0.3f);
+        private static readonly Color SparkColor = new Color(1f, 0.85f, 0.55f);
+        private static readonly Color SmokeColor = new Color(0.85f, 0.82f, 0.8f);
+        private static readonly Color LingerColor = new Color(0.75f, 0.72f, 0.7f);
+
+        private readonly Vector3[] _burstAt = new Vector3[MaxChain];
+        private readonly float[] _burstScale = new float[MaxChain];
 
         private System.Action<ImpactFlash> _release;
-        private Transform _shell;
-        private Material _shellMaterial;
-        private Transform _core;
-        private Transform _ring;
-        private Material _ringMaterial;
-        private Light _light;
+        private ParticleSystem _fireball;
+        private ParticleSystem _flash;
         private ParticleSystem _sparks;
-        private ParticleSystem _smoke;
         private ParticleSystem _shards;
+        private ParticleSystem _dust;
+        private ParticleSystem _smoke;
+        private ParticleSystem _haze;
+        private ParticleSystem _linger;
+        private MeshRenderer _ring;
+        private MeshRenderer _shock;
+        private MaterialPropertyBlock _block;
+        private Light _light;
         private ImpactVfxDefinition _vfx;
-        private Color _flash;
-        private float _particleScale = 1f;
+        private VfxQuality _quality = VfxQuality.High;
+        private Color _tint;
+        private float _radius;
         private float _age;
-        private float _endScale;
-        private float _ringScale;
+        private float _life;
+        private float _ringDiameter;
         private float _lightPeak;
+        private int _bursts;
+        private int _nextBurst;
+        private int _nextSmoke;
+        private bool _lingered;
 
-        /// <summary>Lights cost more than particles, so the low profile (particle scale under one) goes without them.</summary>
-        public void Configure(float particleScale)
-        {
-            _particleScale = particleScale;
-        }
+        public void Configure(VfxQuality quality) => _quality = quality;
 
         public void Show(Vector3 position, float radius, Color color, ImpactVfxDefinition vfx, System.Action<ImpactFlash> release)
         {
-            if (_shell == null)
+            if (_fireball == null)
             {
                 Build();
             }
 
             _vfx = vfx;
-            // Hits glow in the colour of the weapon; big blasts lean towards fire.
-            _flash = radius > 0f ? Color.Lerp(color, FlashColor, vfx.FireShare) : Color.Lerp(color, Color.white, 0.4f);
-            _core.GetComponent<Renderer>().sharedMaterial = PlaceholderVisuals.MaterialFor(Color.Lerp(_flash, Color.white, 0.7f), CoreEmission);
-
-            transform.position = position;
-            _endScale = Mathf.Max(MinFlashDiameter, radius * 2f * vfx.FlashScale);
-            _ringScale = radius * vfx.RingScale;
-            _age = 0f;
+            _radius = radius;
             _release = release;
-            _shell.gameObject.SetActive(true);
-            _core.gameObject.SetActive(true);
-            _ring.gameObject.SetActive(vfx.Ring && radius > 0f);
-            _ringMaterial.SetColor("_BaseColor", new Color(_flash.r * RingIntensity, _flash.g * RingIntensity, _flash.b * RingIntensity, vfx.RingAlpha));
+            _age = 0f;
+            transform.position = position;
+            // Hits glow in the colour of the weapon; big blasts lean towards fire.
+            _tint = radius > 0f ? Color.Lerp(color, FireColor, vfx.FireShare) : Color.Lerp(color, Color.white, 0.35f);
+
+            bool low = _quality.LowTextures;
+            VfxParticles.Use(_fireball, vfx.Fireball, low);
+            VfxParticles.Heat(_fireball, vfx.Heat);
+            VfxParticles.Use(_flash, vfx.Flash, low);
+            VfxParticles.Use(_sparks, vfx.SparkSheet, low, VfxParticles.Frames.RandomRow);
+            VfxParticles.Use(_shards, vfx.DebrisSheet, low, VfxParticles.Frames.RandomCell);
+            VfxParticles.Use(_dust, vfx.DustSheet, low);
+            VfxParticles.Heat(_dust, null);
+            VfxParticles.Use(_smoke, vfx.SmokeSheet, low);
+            VfxParticles.Heat(_smoke, null);
+            VfxParticles.Use(_linger, vfx.LingerSmoke, low);
+            VfxParticles.Heat(_linger, null);
+            VfxParticles.Use(_haze, vfx.HeatHaze, low);
+
+            PlanChain(position, vfx);
+            ShowRings(vfx, radius, low);
+            ShowLight(vfx);
+            _life = LifeOf(vfx);
             Animate();
+        }
 
-            _lightPeak = _particleScale >= 1f ? vfx.LightIntensity : 0f;
-            _light.enabled = _lightPeak > 0f;
-            _light.color = _flash;
-            _light.range = vfx.LightRange;
-            _light.intensity = _lightPeak;
-
-            ParticleSystem.MainModule sparks = _sparks.main;
-            sparks.startColor = Color.Lerp(_flash, SparkColor, 0.5f) * 1.5f;
-            sparks.startSpeed = new ParticleSystem.MinMaxCurve(vfx.SparkSpeed * 0.5f, vfx.SparkSpeed * (1f + 0.5f * radius));
-            _sparks.Emit(Budget(vfx.SparksFor(radius), MaxSparks));
-            if (radius > 0f)
+        // The first blast is where the shot landed; later ones land round it, each a little bigger.
+        private void PlanChain(Vector3 position, ImpactVfxDefinition vfx)
+        {
+            _bursts = Mathf.Clamp(vfx.Chain, 1, MaxChain);
+            for (int i = 0; i < _bursts; i++)
             {
-                _smoke.Emit(Budget(vfx.SmokeFor(radius), MaxSmoke));
-                ParticleSystem.MainModule shards = _shards.main;
-                shards.startSpeed = new ParticleSystem.MinMaxCurve(vfx.ShardSpeed * 0.4f, vfx.ShardSpeed);
-                _shards.Emit(Budget(vfx.ShardsFor(radius), MaxShards));
+                Vector2 offset = i == 0 ? Vector2.zero : Random.insideUnitCircle.normalized * (vfx.ChainSpread * Random.Range(0.5f, 1f));
+                _burstAt[i] = position + new Vector3(offset.x, 0f, offset.y);
+                _burstScale[i] = 1f + vfx.ChainGrowth * i;
+            }
+
+            _nextBurst = 0;
+            _nextSmoke = 0;
+            _lingered = vfx.LingerSmoke == null;
+        }
+
+        private void ShowRings(ImpactVfxDefinition vfx, float radius, bool low)
+        {
+            _ringDiameter = vfx.Ring && radius > 0f ? radius * vfx.RingScale : 0f;
+            bool ring = _ringDiameter > 0f && vfx.RingSheet != null;
+            _ring.gameObject.SetActive(ring);
+            if (ring)
+            {
+                _ring.sharedMaterial = vfx.RingSheet.MaterialFor(low);
+            }
+
+            bool shock = ring && _quality.Distortion && vfx.ShockDistortion != null && vfx.ShockStrength > 0f;
+            _shock.gameObject.SetActive(shock);
+            if (shock)
+            {
+                _shock.sharedMaterial = vfx.ShockDistortion.MaterialFor(low);
             }
         }
 
-        private int Budget(int count, int max) => Mathf.Min(max, Mathf.RoundToInt(count * _particleScale));
+        private void ShowLight(ImpactVfxDefinition vfx)
+        {
+            _light.transform.localPosition = Vector3.up * LightHeight;
+            _lightPeak = _quality.Lights ? vfx.LightIntensity : 0f;
+            _light.enabled = _lightPeak > 0f;
+            _light.color = _tint;
+            _light.range = vfx.LightRange;
+            _light.intensity = _lightPeak;
+        }
+
+        // The effect lives until its last part is gone: the chain, the fire, the smoke after it, the hanging smoke.
+        private float LifeOf(ImpactVfxDefinition vfx)
+        {
+            float life = Mathf.Max(vfx.FlashSeconds * 2f, vfx.LightSeconds);
+            life = Mathf.Max(life, SheetLife(vfx.Fireball));
+            life = Mathf.Max(life, SheetLife(vfx.Flash));
+            life = Mathf.Max(life, SheetLife(vfx.DustSheet));
+            life = Mathf.Max(life, vfx.SmokeDelay + SheetLife(vfx.SmokeSheet) * SmokeLifeStretch);
+            life = Mathf.Max(life, vfx.HeatHaze != null ? vfx.HeatHazeSeconds : 0f);
+            // Sparks and shards fall for at most a second and a bit.
+            life = Mathf.Max(life, 1.2f);
+            life += vfx.ChainSeconds;
+            if (vfx.LingerSmoke != null)
+            {
+                life = Mathf.Max(life, vfx.ChainSeconds + SheetLife(vfx.LingerSmoke) * LingerLifeStretch);
+            }
+
+            return life;
+        }
+
+        private static float SheetLife(VfxSheet sheet) => sheet != null ? sheet.Lifetime : 0f;
+
+        private int Budget(int count, int max) => count <= 0 ? 0 : Mathf.Clamp(Mathf.RoundToInt(count * _quality.ParticleScale), 1, max);
 
         private void Update()
         {
             _age += Time.deltaTime;
             Animate();
-
-            if (_light.enabled)
-            {
-                float lit = 1f - Mathf.Clamp01(_age / _vfx.LightSeconds);
-                _light.intensity = _lightPeak * lit * lit;
-                _light.enabled = lit > 0f;
-            }
-
-            if (_age >= EffectSeconds)
+            if (_age >= _life)
             {
                 _release(this);
             }
         }
 
-        // The core flares and is gone; the shell swells fast, then thins to nothing; the ring races out.
         private void Animate()
         {
-            float t = Mathf.Clamp01(_age / _vfx.FlashSeconds);
-            float shellT = Mathf.Clamp01(_age / (_vfx.FlashSeconds * ShellLifeShare));
-            float swell = 1f - (1f - shellT) * (1f - shellT);
-            _shell.localScale = Vector3.one * Mathf.Lerp(StartScale, _endScale, swell);
-            float thin = (1f - shellT) * (1f - shellT);
-            _shellMaterial.SetColor("_Color", _flash * ShellIntensity);
-            _shellMaterial.SetFloat("_Alpha", thin);
-            _shell.gameObject.SetActive(shellT < 1f);
-
-            float coreT = Mathf.Clamp01(_age / (_vfx.FlashSeconds * CoreLifeShare));
-            _core.localScale = Vector3.one * Mathf.Max(StartScale * 0.5f, _endScale * CoreShare * (1f - coreT));
-            _core.gameObject.SetActive(coreT < 1f);
-
-            if (_ringScale > 0f)
+            while (_nextBurst < _bursts && _age >= _nextBurst * _vfx.ChainInterval)
             {
-                float diameter = Mathf.Lerp(StartScale, _ringScale, Mathf.Sqrt(t));
-                _ring.localScale = new Vector3(diameter, diameter, 1f);
-                Color ringColor = _ringMaterial.GetColor("_BaseColor");
-                ringColor.a = _vfx.RingAlpha * (1f - t);
-                _ringMaterial.SetColor("_BaseColor", ringColor);
-                _ring.gameObject.SetActive(t < 1f);
+                Burst(_nextBurst);
+                _nextBurst++;
             }
+
+            while (_nextSmoke < _bursts && _age >= _nextSmoke * _vfx.ChainInterval + _vfx.SmokeDelay)
+            {
+                Smoke(_nextSmoke);
+                _nextSmoke++;
+            }
+
+            if (!_lingered && _age >= _vfx.ChainSeconds)
+            {
+                Linger();
+                _lingered = true;
+            }
+
+            AnimateRings();
+            AnimateLight();
+        }
+
+        // One blast of the chain: fire, flash, sparks, shards and dust.
+        private void Burst(int index)
+        {
+            Vector3 at = _burstAt[index];
+            float scale = _burstScale[index];
+            float fire = _vfx.FireballSizeFor(_radius) * scale;
+            if (_vfx.Fireball != null)
+            {
+                Emit(_fireball, at, Budget(_vfx.Fireballs, MaxFireballs), fire * (1f - FireballJitter), fire * (1f + FireballJitter), _vfx.Fireball.Lifetime, Color.white, 0f, 0.25f, fire * 0.12f);
+                if (_vfx.HeatHaze != null && _quality.Distortion)
+                {
+                    Emit(_haze, at + Vector3.up * fire * 0.3f, 1, fire * 1.1f, fire * 1.3f, _vfx.HeatHazeSeconds, Color.white, 0f, 0.2f, 0f);
+                }
+            }
+
+            if (_vfx.Flash != null)
+            {
+                float flash = _vfx.FlashSizeFor(_radius) * scale;
+                Emit(_flash, at, 1, flash, flash * 1.1f, _vfx.Flash.Lifetime, _tint, 0f, 0f, 0f);
+            }
+
+            if (_vfx.DustSheet != null && _vfx.DustSize > 0f)
+            {
+                float dust = _vfx.DustSize * (1f + 0.5f * _radius) * scale;
+                Emit(_dust, at, 1, dust * 0.9f, dust * 1.1f, _vfx.DustSheet.Lifetime, Color.white, 0f, 0f, 0f);
+            }
+
+            ParticleSystem.MainModule sparks = _sparks.main;
+            sparks.startColor = Color.Lerp(_tint, SparkColor, 0.5f);
+            int sparkCount = Budget(_vfx.SparksFor(_radius), MaxSparks);
+            Emit(_sparks, at + Vector3.up * 0.15f, sparkCount, SparkLength, SparkLength * 2f, Random.Range(0.25f, 0.55f), sparks.startColor.color, 1.8f, _vfx.SparkSpeed * 0.5f, _vfx.SparkSpeed * (1f + 0.5f * _radius));
+            if (_radius > 0f && _vfx.DebrisSheet != null)
+            {
+                Emit(_shards, at + Vector3.up * 0.1f, Budget(_vfx.ShardsFor(_radius), MaxShards), 0.1f, 0.26f, Random.Range(0.7f, 1.2f), Color.white, 1.6f, _vfx.ShardSpeed * 0.4f, _vfx.ShardSpeed);
+            }
+
+            if (index > 0)
+            {
+                // Every later blast lights the field again.
+                _light.intensity = _lightPeak;
+                _light.enabled = _lightPeak > 0f;
+                _light.transform.position = at + Vector3.up * LightHeight;
+            }
+        }
+
+        private void Smoke(int index)
+        {
+            if (_vfx.SmokeSheet == null)
+            {
+                return;
+            }
+
+            float size = _vfx.SmokeSize * (1f + 0.4f * _radius) * _burstScale[index];
+            Emit(_smoke, _burstAt[index] + Vector3.up * size * 0.15f, Budget(_vfx.SmokeFor(_radius), MaxSmoke), size * 0.8f, size * 1.2f, _vfx.SmokeSheet.Lifetime * Random.Range(1f, SmokeLifeStretch), SmokeColor, -0.04f, 0.2f, 0.5f);
+        }
+
+        private void Linger()
+        {
+            float size = _vfx.FireballSizeFor(_radius) * 0.8f;
+            Emit(_linger, transform.position + Vector3.up * size * 0.2f, Budget(LingerPuffs, MaxLinger), size * 0.8f, size * 1.1f, _vfx.LingerSmoke.Lifetime * LingerLifeStretch, LingerColor, -0.02f, 0.1f, 0.3f);
+        }
+
+        private static void Emit(ParticleSystem system, Vector3 at, int count, float minSize, float maxSize, float life, Color colour, float gravity, float minSpeed, float maxSpeed)
+        {
+            if (count <= 0)
+            {
+                return;
+            }
+
+            ParticleSystem.MainModule main = system.main;
+            main.gravityModifier = gravity;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(minSpeed, Mathf.Max(minSpeed, maxSpeed));
+            main.startSize = new ParticleSystem.MinMaxCurve(minSize, maxSize);
+            main.startLifetime = Mathf.Max(0.05f, life);
+            main.startColor = colour;
+            system.transform.position = at;
+            system.Emit(count);
+        }
+
+        // The ring races out and fades; the refraction rides along it at a strength that dies with it.
+        private void AnimateRings()
+        {
+            if (_ringDiameter <= 0f)
+            {
+                return;
+            }
+
+            float t = Mathf.Clamp01(_age / Mathf.Max(0.05f, _vfx.FlashSeconds * 1.5f));
+            float eased = 1f - (1f - t) * (1f - t);
+            float diameter = Mathf.Lerp(MinRingDiameter, _ringDiameter, eased);
+            if (_ring.gameObject.activeSelf)
+            {
+                _ring.transform.localScale = new Vector3(diameter, diameter, 1f);
+                _block.Clear();
+                _block.SetColor(TintId, _tint);
+                _block.SetFloat(IntensityId, RingPeak * _vfx.RingAlpha * (1f - t));
+                _ring.SetPropertyBlock(_block);
+                if (t >= 1f)
+                {
+                    _ring.gameObject.SetActive(false);
+                }
+            }
+
+            if (_shock.gameObject.activeSelf)
+            {
+                _shock.transform.localScale = new Vector3(diameter * 1.1f, diameter * 1.1f, 1f);
+                _block.Clear();
+                _block.SetFloat(StrengthId, _vfx.ShockStrength * (1f - t));
+                _shock.SetPropertyBlock(_block);
+                if (t >= 1f)
+                {
+                    _shock.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void AnimateLight()
+        {
+            if (!_light.enabled)
+            {
+                return;
+            }
+
+            float since = _age - Mathf.Min(_nextBurst - 1, _bursts - 1) * _vfx.ChainInterval;
+            float lit = 1f - Mathf.Clamp01(since / _vfx.LightSeconds);
+            _light.intensity = _lightPeak * lit * lit;
+            _light.enabled = lit > 0f;
         }
 
         private void Build()
         {
-            GameObject shell = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, FlashColor, transform, Vector3.zero, Vector3.one);
-            // The fresnel shell needs its own shader; a build without it falls back to plain tinted glass.
-            Shader fireball = Shader.Find(FireballShader);
-            _shellMaterial = fireball != null ? new Material(fireball) : new Material(PlaceholderVisuals.TransparentMaterialFor(FlashColor, 0.5f, ShellIntensity));
-            _shellMaterial.SetTexture("_NoiseTex", SpriteKit.Noise());
-            var shellRenderer = shell.GetComponent<Renderer>();
-            shellRenderer.sharedMaterial = _shellMaterial;
-            shellRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            _shell = shell.transform;
+            _block = new MaterialPropertyBlock();
+            _fireball = VfxParticles.Create(transform, "Fireball", MaxFireballs);
+            _flash = VfxParticles.Create(transform, "Flash", MaxFlashes);
+            _haze = VfxParticles.Create(transform, "HeatHaze", MaxHaze);
+            ParticleSystem.ColorOverLifetimeModule haze = _haze.colorOverLifetime;
+            haze.color = VfxParticles.Fade(0.15f, 0.4f);
+            _dust = VfxParticles.Create(transform, "Dust", MaxDust);
+            _smoke = VfxParticles.Create(transform, "Smoke", MaxSmoke);
+            ParticleSystem.ColorOverLifetimeModule smoke = _smoke.colorOverLifetime;
+            smoke.color = VfxParticles.Fade(0.12f, 0.55f);
+            _linger = VfxParticles.Create(transform, "LingerSmoke", MaxLinger);
+            ParticleSystem.ColorOverLifetimeModule linger = _linger.colorOverLifetime;
+            linger.color = VfxParticles.Fade(0.2f, 0.5f);
 
-            GameObject core = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, FlashColor, transform, Vector3.zero, Vector3.one, CoreEmission);
-            core.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-            _core = core.transform;
+            _sparks = VfxParticles.Create(transform, "Sparks", MaxSparks);
+            var sparkRenderer = _sparks.GetComponent<ParticleSystemRenderer>();
+            sparkRenderer.renderMode = ParticleSystemRenderMode.Stretch;
+            sparkRenderer.lengthScale = 2f;
+            sparkRenderer.velocityScale = 0.06f;
+            ParticleSystem.ShapeModule sparkShape = _sparks.shape;
+            sparkShape.shapeType = ParticleSystemShapeType.Hemisphere;
+            sparkShape.radius = 0.1f;
 
-            // The shock ring is a flat textured quad on the ground: a cylinder would read as a solid disc from above.
-            var ring = new GameObject("Ring");
-            ring.transform.SetParent(transform, false);
-            ring.transform.localPosition = new Vector3(0f, RingHeight, 0f);
-            ring.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            ring.AddComponent<MeshFilter>().sharedMesh = Quad();
-            var ringRenderer = ring.AddComponent<MeshRenderer>();
-            _ringMaterial = new Material(GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
-            _ringMaterial.SetTexture("_BaseMap", SpriteKit.Ring());
-            ringRenderer.sharedMaterial = _ringMaterial;
-            ringRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            _ring = ring.transform;
+            _shards = VfxParticles.Create(transform, "Shards", MaxShards);
+            ParticleSystem.MainModule shards = _shards.main;
+            shards.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            ParticleSystem.RotationOverLifetimeModule spin = _shards.rotationOverLifetime;
+            spin.enabled = true;
+            spin.z = new ParticleSystem.MinMaxCurve(-8f, 8f);
+            ParticleSystem.ShapeModule shardShape = _shards.shape;
+            shardShape.shapeType = ParticleSystemShapeType.Hemisphere;
+            shardShape.radius = 0.15f;
+            CoolShards();
+
+            // The shock ring and its refraction are flat cards on the ground.
+            _ring = VfxQuad.Create(transform, "Ring", VfxQuad.Centred);
+            _ring.transform.localPosition = new Vector3(0f, RingHeight, 0f);
+            _ring.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            _shock = VfxQuad.Create(transform, "ShockDistortion", VfxQuad.Centred);
+            _shock.transform.localPosition = new Vector3(0f, ShockHeight, 0f);
+            _shock.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
 
             var lightObject = new GameObject("Light");
             lightObject.transform.SetParent(transform, false);
@@ -184,86 +388,19 @@ namespace Game.Combat
             _light = lightObject.AddComponent<Light>();
             _light.type = LightType.Point;
             _light.shadows = LightShadows.None;
+            _light.renderMode = LightRenderMode.ForcePixel;
             _light.enabled = false;
-
-            _sparks = CreateSystem("Sparks", SparkColor * 1.5f, 0.25f, 0.55f, 0.04f, 0.09f, 1.8f, 0.2f, MaxSparks);
-            _smoke = CreateSystem("Smoke", new Color(SmokeColor.r, SmokeColor.g, SmokeColor.b, SmokeAlpha), 0.8f, 1.5f, 0.4f, 0.8f, -0.15f, 2.4f, MaxSmoke);
-            _smoke.GetComponent<ParticleSystemRenderer>().sharedMaterial = SmokeMaterial();
-            _shards = CreateSystem("Shards", EmberColor, 0.6f, 1.1f, 0.05f, 0.11f, 1.6f, 0.7f, MaxShards);
-            CoolShards();
-            var shardRenderer = _shards.GetComponent<ParticleSystemRenderer>();
-            shardRenderer.renderMode = ParticleSystemRenderMode.Stretch;
-            shardRenderer.lengthScale = 1.6f;
         }
 
-        private static Mesh Quad()
-        {
-            var mesh = new Mesh { name = "RingQuad" };
-            mesh.vertices = new[] { new Vector3(-0.5f, -0.5f, 0f), new Vector3(0.5f, -0.5f, 0f), new Vector3(0.5f, 0.5f, 0f), new Vector3(-0.5f, 0.5f, 0f) };
-            mesh.uv = new[] { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(0f, 1f) };
-            mesh.normals = new[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back };
-            mesh.triangles = new[] { 0, 2, 1, 0, 3, 2 };
-            return mesh;
-        }
-
-        private static Material SmokeMaterial()
-        {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultParticleMaterial);
-            material.SetTexture("_BaseMap", SpriteKit.Puff());
-            return material;
-        }
-
-        // Shards leave as glowing embers and go dark in flight, so they read as debris rather than more sparks.
+        // Shards leave glowing and go dark in flight, so they read as debris rather than more sparks.
         private void CoolShards()
         {
             ParticleSystem.ColorOverLifetimeModule cool = _shards.colorOverLifetime;
             var gradient = new Gradient();
             gradient.SetKeys(
-                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(CinderColor, 0.3f), new GradientColorKey(CinderColor, 1f) },
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(0.45f, 0.4f, 0.38f), 0.35f), new GradientColorKey(new Color(0.35f, 0.32f, 0.3f), 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
             cool.color = gradient;
-        }
-
-        // A burst-only particle system: sparks are quick and bright and fall, smoke is slow and swells as it fades.
-        private ParticleSystem CreateSystem(string name, Color color, float minLife, float maxLife, float minSize, float maxSize, float gravity, float endSize, int max)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(transform, false);
-            var system = go.AddComponent<ParticleSystem>();
-            ParticleSystem.MainModule main = system.main;
-            main.loop = false;
-            main.playOnAwake = false;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(minLife, maxLife);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(0.4f, 1.2f);
-            main.startSize = new ParticleSystem.MinMaxCurve(minSize, maxSize);
-            main.startColor = color;
-            main.gravityModifier = gravity;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = max;
-
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = false;
-
-            ParticleSystem.ShapeModule shape = system.shape;
-            shape.shapeType = ParticleSystemShapeType.Sphere;
-            shape.radius = 0.1f;
-
-            ParticleSystem.SizeOverLifetimeModule size = system.sizeOverLifetime;
-            size.enabled = true;
-            size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, endSize));
-
-            ParticleSystem.ColorOverLifetimeModule fade = system.colorOverLifetime;
-            fade.enabled = true;
-            var gradient = new Gradient();
-            gradient.SetKeys(
-                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0f, 1f) });
-            fade.color = gradient;
-
-            var renderer = go.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
-            renderer.renderMode = ParticleSystemRenderMode.Billboard;
-            return system;
         }
     }
 }

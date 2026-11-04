@@ -1,0 +1,983 @@
+{
+ "round": 20,
+ "folder": "ArtSource/Exports/VFX",
+ "low_folder": "ArtSource/Exports/VFX/Low (half size)",
+ "colour_space": "all textures are linear data: import with sRGB off; colour comes from tints/gradients",
+ "frame_order": "flipbooks start top-left and run row by row (Unity Texture Sheet Animation order)",
+ "total_bytes": 22797227,
+ "textures": {
+  "Acid_Splash": {
+   "kind": "flipbook",
+   "rows": 6,
+   "cols": 6,
+   "frames": 36,
+   "fps": 40,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 0.9,
+   "pivot": [
+    0.5,
+    0.34
+   ],
+   "channels": "R lit shading (diffuse + highlight, premultiplied by alpha), G thickness, B specular only, A alpha",
+   "blend": "Alpha blend premultiplied: rgb = lerp(acid dark, acid bright, G) * R + B * 0.6, emission = G * glow",
+   "tint": "acid lime (0.55, 1, 0.15) to dark olive; a little emission on thick parts",
+   "notes": "Pivot = splash origin (U 0.5, V 0.34 from the bottom). Camera-facing.",
+   "preview_tint": [
+    0.55,
+    1.0,
+    0.15
+   ],
+   "file": "Acid_Splash.png",
+   "size": [
+    1536,
+    1536
+   ],
+   "bytes": 417972,
+   "low_bytes": 144271
+  },
+  "Beam_Core": {
+   "kind": "beam",
+   "layout": "single, tiles in U",
+   "channels": "CG: R core, G glow",
+   "blend": "Additive",
+   "tint": "beam colour on G (Laser, CryoBeam)",
+   "notes": "V across the beam, U along it; tile ~1 per beam width x4.",
+   "preview_tint": [
+    0.35,
+    0.9,
+    1.0
+   ],
+   "file": "Beam_Core.png",
+   "size": [
+    128,
+    64
+   ],
+   "bytes": 1662,
+   "low_bytes": 617
+  },
+  "Beam_Noise": {
+   "kind": "tiling",
+   "layout": "single, tiles in U and V",
+   "channels": "R energy filaments (stretched along U), G crackle network, B soft swirl, A 1",
+   "blend": "multiply into Beam_Core; scroll R at 2-4 tiles/s and G at -1 tile/s for two layers",
+   "tint": "none (mask)",
+   "preview_tint": null,
+   "file": "Beam_Noise.png",
+   "size": [
+    512,
+    128
+   ],
+   "bytes": 86810,
+   "low_bytes": 29419
+  },
+  "Bolt_Core": {
+   "kind": "sprite",
+   "layout": "single",
+   "channels": "CG: R core, G halo, B built-in tail streak, A coverage",
+   "blend": "Additive",
+   "tint": "weapon colour on G (Bolt, Rail, Flak tracer, BaseTurret); R stays white",
+   "notes": "Head at +U. Use on a stretched billboard (length ~3x width) aligned to velocity.",
+   "preview_tint": [
+    0.3,
+    0.7,
+    1.0
+   ],
+   "file": "Bolt_Core.png",
+   "size": [
+    256,
+    64
+   ],
+   "bytes": 2176,
+   "low_bytes": 913
+  },
+  "Cryo_Burst": {
+   "kind": "flipbook",
+   "rows": 6,
+   "cols": 6,
+   "frames": 36,
+   "fps": 48,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 0.75,
+   "channels": "CG: R shard ridges + glints + flash, G shard bodies, B frost mist, A coverage",
+   "blend": "Additive R/G; B alpha-blended pale mist",
+   "tint": "G ice cyan (0.55, 0.95, 1); B mist (0.8, 0.95, 1)",
+   "notes": "Flat on the ground at the hit point (or camera-facing for air targets).",
+   "preview_tint": [
+    0.55,
+    0.95,
+    1.0
+   ],
+   "file": "Cryo_Burst.png",
+   "size": [
+    1536,
+    1536
+   ],
+   "bytes": 779126,
+   "low_bytes": 282792
+  },
+  "Debris_Shards": {
+   "kind": "sprite atlas",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "cell": [
+    128,
+    128
+   ],
+   "channels": "R hot edge (emission), G body alpha, B facet shading, A body alpha",
+   "blend": "Alpha blend body (colour = dark tint * B) + additive emission from R",
+   "tint": "body dark metal/rock (0.12-0.2); edge amber, fade the edge to 0 over the particle life",
+   "notes": "Random frame per particle, rotate over life, gravity on. For flying chunks behind explosions.",
+   "preview_tint": [
+    1.0,
+    0.45,
+    0.1
+   ],
+   "file": "Debris_Shards.png",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 57497,
+   "low_bytes": 21705
+  },
+  "Dust_Burst_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 40,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 1.6,
+   "pivot": [
+    0.5,
+    0.21
+   ],
+   "use": "ground hits (mortar landing, heavy footfalls, crawler emerge)",
+   "world_size": 2.48,
+   "sim": {
+    "res": 112,
+    "domain": [
+     3.4,
+     3.4,
+     2.2
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Dust_Burst_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Dust_Burst_SixWayNeg.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 555608,
+   "low_bytes": 198906
+  },
+  "Dust_Burst_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 40,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 1.6,
+   "pivot": [
+    0.5,
+    0.21
+   ],
+   "use": "ground hits (mortar landing, heavy footfalls, crawler emerge)",
+   "world_size": 2.48,
+   "sim": {
+    "res": 112,
+    "domain": [
+     3.4,
+     3.4,
+     2.2
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Dust_Burst_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Dust_Burst_SixWayPos.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 678888,
+   "low_bytes": 233768
+  },
+  "Energy_Impact": {
+   "kind": "flipbook",
+   "rows": 6,
+   "cols": 6,
+   "frames": 36,
+   "fps": 60,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 0.6,
+   "channels": "CG: R flash + ring front + spark cores, G glow, B inner ring, A coverage",
+   "blend": "Additive",
+   "tint": "weapon colour on G (Bolt/Laser/Rail hits); B can take a second colour",
+   "notes": "Camera-facing at the hit point; pair with Shockwave_Distort at a small strength.",
+   "preview_tint": [
+    0.3,
+    0.75,
+    1.0
+   ],
+   "file": "Energy_Impact.png",
+   "size": [
+    1536,
+    1536
+   ],
+   "bytes": 527302,
+   "low_bytes": 200807
+  },
+  "Explosion_Boss_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 40,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 1.6,
+   "pivot": [
+    0.5,
+    0.029
+   ],
+   "use": "Boss death, base destruction, superweapons (chained sub-bursts)",
+   "world_size": 6.31,
+   "sim": {
+    "res": 192,
+    "domain": [
+     5.0,
+     5.0,
+     7.0
+    ],
+    "sim_frames": 104
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Explosion_Boss_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Boss_SixWayNeg.png",
+   "size": [
+    2048,
+    2048
+   ],
+   "bytes": 1708698,
+   "low_bytes": 617301
+  },
+  "Explosion_Boss_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 40,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 1.6,
+   "pivot": [
+    0.5,
+    0.029
+   ],
+   "use": "Boss death, base destruction, superweapons (chained sub-bursts)",
+   "world_size": 6.31,
+   "sim": {
+    "res": 192,
+    "domain": [
+     5.0,
+     5.0,
+     7.0
+    ],
+    "sim_frames": 104
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Explosion_Boss_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Boss_SixWayPos.png",
+   "size": [
+    2048,
+    2048
+   ],
+   "bytes": 2087267,
+   "low_bytes": 730761
+  },
+  "Explosion_Large_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 48,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 1.33,
+   "pivot": [
+    0.5,
+    0.011
+   ],
+   "use": "Artillery (Mortar), Rocket, Barrel, Lava Ball, tower destruction",
+   "world_size": 5.65,
+   "sim": {
+    "res": 176,
+    "domain": [
+     3.6,
+     3.6,
+     5.4
+    ],
+    "sim_frames": 88
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Explosion_Large_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Large_SixWayNeg.png",
+   "size": [
+    2048,
+    2048
+   ],
+   "bytes": 1470742,
+   "low_bytes": 527862
+  },
+  "Explosion_Large_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 48,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 1.33,
+   "pivot": [
+    0.5,
+    0.011
+   ],
+   "use": "Artillery (Mortar), Rocket, Barrel, Lava Ball, tower destruction",
+   "world_size": 5.65,
+   "sim": {
+    "res": 176,
+    "domain": [
+     3.6,
+     3.6,
+     5.4
+    ],
+    "sim_frames": 88
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Explosion_Large_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Large_SixWayPos.png",
+   "size": [
+    2048,
+    2048
+   ],
+   "bytes": 1814452,
+   "low_bytes": 628744
+  },
+  "Explosion_Small_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 60,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 1.07,
+   "pivot": [
+    0.5,
+    0.025
+   ],
+   "use": "Cannon shell, Pulse hits on armour, mines, small gadgets",
+   "world_size": 3.61,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.4
+    ],
+    "sim_frames": 65
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Explosion_Small_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Small_SixWayNeg.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 556338,
+   "low_bytes": 195845
+  },
+  "Explosion_Small_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 60,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 1.07,
+   "pivot": [
+    0.5,
+    0.025
+   ],
+   "use": "Cannon shell, Pulse hits on armour, mines, small gadgets",
+   "world_size": 3.61,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.4
+    ],
+    "sim_frames": 65
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Explosion_Small_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Explosion_Small_SixWayPos.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 699588,
+   "low_bytes": 231759
+  },
+  "HeatHaze_Distort": {
+   "kind": "distortion/tiling",
+   "layout": "single, tiles in U and V",
+   "channels": "R,G UV offset x/y encoded 0.5 +- 0.5, B height (for a mask), A 1",
+   "blend": "Refraction pass; scroll V upward 0.3-0.6 tiles/s over hot spots, strength 0.004-0.01",
+   "tint": "none",
+   "notes": "Import as Default, sRGB off. Fade with a radial mask on the quad (vertex alpha).",
+   "preview_tint": null,
+   "file": "HeatHaze_Distort.png",
+   "size": [
+    256,
+    256
+   ],
+   "bytes": 129231,
+   "low_bytes": 41626
+  },
+  "Muzzle_Front": {
+   "kind": "sprite atlas",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "channels": "CG: R core, G flame glow, B smoke (cannon rows; alpha-blend grey), A coverage",
+   "blend": "Additive (R, G)",
+   "tint": "G per weapon: gun (1, 0.75, 0.35), cannon (1, 0.6, 0.22), flak white-amber (1, 0.85, 0.55), rail/plasma weapon colour; R stays white",
+   "lifetime": 0.05,
+   "notes": "Rows = Gun, Cannon, Flak, Rail/Plasma; columns = 4 random variants. Show 1-3 frames (50 ms), random column per shot, random roll for the front view.",
+   "cell": [
+    256,
+    256
+   ],
+   "view": "front: barrel axis through the centre (camera looks down it)",
+   "preview_tint": [
+    1.0,
+    0.65,
+    0.25
+   ],
+   "file": "Muzzle_Front.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 372880,
+   "low_bytes": 141518
+  },
+  "Muzzle_Side": {
+   "kind": "sprite atlas",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "channels": "CG: R core, G flame glow, B smoke (cannon rows; alpha-blend grey), A coverage",
+   "blend": "Additive (R, G)",
+   "tint": "G per weapon: gun (1, 0.75, 0.35), cannon (1, 0.6, 0.22), flak white-amber (1, 0.85, 0.55), rail/plasma weapon colour; R stays white",
+   "lifetime": 0.05,
+   "notes": "Rows = Gun, Cannon, Flak, Rail/Plasma; columns = 4 random variants. Show 1-3 frames (50 ms), random column per shot, random roll for the front view.",
+   "cell": [
+    256,
+    128
+   ],
+   "view": "side: barrel at U=0.05 V=0.5, firing towards +U",
+   "preview_tint": [
+    1.0,
+    0.65,
+    0.25
+   ],
+   "file": "Muzzle_Side.png",
+   "size": [
+    1024,
+    512
+   ],
+   "bytes": 137890,
+   "low_bytes": 49405
+  },
+  "Plasma_Bolt": {
+   "kind": "flipbook",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "fps": 24,
+   "loop": true,
+   "cell": [
+    128,
+    128
+   ],
+   "channels": "CG: R core bar + hot streams, G mantle glow, B swirl bands and tendrils, A coverage",
+   "blend": "Additive",
+   "tint": "plasma colour on G, a second (lighter) colour on B",
+   "notes": "Head at +U (U 0.78); loops seamlessly every 16 frames.",
+   "preview_tint": [
+    0.55,
+    0.35,
+    1.0
+   ],
+   "file": "Plasma_Bolt.png",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 145535,
+   "low_bytes": 48288
+  },
+  "Rocket_Exhaust": {
+   "kind": "flipbook",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "fps": 30,
+   "loop": true,
+   "cell": [
+    256,
+    128
+   ],
+   "channels": "CG: R core + shock diamonds, G flame (bright at the nozzle, cooling to the tip), B heat/smoke start (alpha-blend grey), A coverage",
+   "blend": "Additive (R, G); B optional alpha layer",
+   "tint": "G orange-yellow (1, 0.55, 0.2); R white",
+   "notes": "Nozzle at U=0 centre, flame to +U: put the quad behind the rocket with +U opposite to velocity.",
+   "preview_tint": [
+    1.0,
+    0.5,
+    0.15
+   ],
+   "file": "Rocket_Exhaust.png",
+   "size": [
+    1024,
+    512
+   ],
+   "bytes": 99466,
+   "low_bytes": 39951
+  },
+  "Scorch_Decal": {
+   "kind": "decal atlas",
+   "rows": 2,
+   "cols": 2,
+   "frames": 4,
+   "cell": [
+    512,
+    512
+   ],
+   "channels": "R soot opacity, G albedo lightness (char 0.08 to ash 0.4), B ember emission mask, A ember fade threshold (an ember is lit while A > fade, fade 0 to 1 over the decal life)",
+   "blend": "URP Decal Projector or a ground quad (alpha blend): albedo = G * soot tint, alpha = R * fade-out; emission = B * step(fade, A) * ember colour (1, 0.35, 0.08) * 3",
+   "tint": "soot near-black brown, embers orange",
+   "lifetime": 8.0,
+   "notes": "Pick a random cell and rotation per impact. Embers out in ~2 s, soot fades over ~8 s.",
+   "preview_tint": [
+    1.0,
+    0.35,
+    0.08
+   ],
+   "file": "Scorch_Decal.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 405093,
+   "low_bytes": 171280
+  },
+  "Shockwave_Distort": {
+   "kind": "distortion",
+   "layout": "single",
+   "channels": "R,G UV offset x/y encoded 0.5 +- 0.5 (+Y up), B ring mask, A 1",
+   "blend": "Refraction pass: sample _CameraOpaqueTexture at screenUV + (RG*2-1) * B * strength (0.02-0.05)",
+   "tint": "none",
+   "notes": "Import as Default, sRGB off, NOT as a Normal Map (Unity would drop B). Scale the quad outward like the shockwave ring; fade strength to 0.",
+   "preview_tint": null,
+   "file": "Shockwave_Distort.png",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 113816,
+   "low_bytes": 45202
+  },
+  "Shockwave_Ring": {
+   "kind": "sprite",
+   "layout": "single",
+   "channels": "CG: R sharp front, G soft inner glow, B dusty breakup, A coverage",
+   "blend": "Additive (energy) or alpha-blend B as a dust ring",
+   "tint": "weapon colour on G; dust tan on B",
+   "notes": "Scale the quad from ~0.2 to full size with an ease-out over 0.25-0.4 s; flat on the ground for ground hits, camera-facing for air bursts.",
+   "preview_tint": [
+    1.0,
+    0.7,
+    0.35
+   ],
+   "file": "Shockwave_Ring.png",
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 124221,
+   "low_bytes": 47441
+  },
+  "Smoke_Linger_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 24,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 2.67,
+   "pivot": [
+    0.5,
+    0.011
+   ],
+   "use": "lingering column over craters, burning wrecks, damaged base",
+   "world_size": 2.76,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.4
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Smoke_Linger_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Smoke_Linger_SixWayNeg.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 530287,
+   "low_bytes": 191436
+  },
+  "Smoke_Linger_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 24,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 2.67,
+   "pivot": [
+    0.5,
+    0.011
+   ],
+   "use": "lingering column over craters, burning wrecks, damaged base",
+   "world_size": 2.76,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.4
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Smoke_Linger_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Smoke_Linger_SixWayPos.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 659815,
+   "low_bytes": 228691
+  },
+  "Smoke_Puff_SixWayNeg": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 30,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 2.13,
+   "pivot": [
+    0.5,
+    0.0
+   ],
+   "use": "after every explosion, wrecks, damaged towers (dark, billowing)",
+   "world_size": 2.14,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.0
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from left (-X), G light from bottom (-Y), B light from front (camera side), A emissive temperature 0..1 (map through a fire gradient)",
+   "pair": "Smoke_Puff_SixWayPos.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Smoke_Puff_SixWayNeg.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 842261,
+   "low_bytes": 306274
+  },
+  "Smoke_Puff_SixWayPos": {
+   "kind": "flipbook six-way",
+   "rows": 8,
+   "cols": 8,
+   "frames": 64,
+   "fps": 30,
+   "loop": false,
+   "cell": [
+    128,
+    128
+   ],
+   "lifetime": 2.13,
+   "pivot": [
+    0.5,
+    0.0
+   ],
+   "use": "after every explosion, wrecks, damaged towers (dark, billowing)",
+   "world_size": 2.14,
+   "sim": {
+    "res": 112,
+    "domain": [
+     2.6,
+     2.6,
+     3.0
+    ],
+    "sim_frames": 90
+   },
+   "channels": "R light from right (+X), G light from top (+Y), B light from back (behind the smoke, away from the camera), A alpha (straight)",
+   "pair": "Smoke_Puff_SixWayNeg.png",
+   "blend": "Alpha blend (straight alpha in Pos.A); lighting = sum of the six maps weighted by the squared light direction in billboard space; emission = gradient(Neg.A) * intensity added on top",
+   "tint": "smoke albedo dark grey-brown (0.15-0.25); dust: tan (0.45, 0.38, 0.3); fire gradient on Neg.A",
+   "file": "Smoke_Puff_SixWayPos.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 1054121,
+   "low_bytes": 369275
+  },
+  "Smoke_Trail": {
+   "kind": "trail/tiling",
+   "layout": "single, tiles in U",
+   "channels": "R lighting from the ribbon's top edge (0..1), G puff noise, B unused, A density",
+   "blend": "Alpha blend (premultiply in shader: rgb = tint*R*A)",
+   "tint": "smoke grey (0.35, 0.34, 0.33); fade the end of the trail with vertex alpha",
+   "notes": "Tile mode in U (~1 tile per 2 m); scroll slowly so the trail churns.",
+   "preview_tint": [
+    0.35,
+    0.34,
+    0.33
+   ],
+   "file": "Smoke_Trail.png",
+   "size": [
+    512,
+    128
+   ],
+   "bytes": 36851,
+   "low_bytes": 13910
+  },
+  "Spark_Burst": {
+   "kind": "flipbook",
+   "rows": 6,
+   "cols": 6,
+   "frames": 36,
+   "fps": 60,
+   "loop": false,
+   "cell": [
+    256,
+    256
+   ],
+   "lifetime": 0.6,
+   "pivot": [
+    0.5,
+    0.42
+   ],
+   "channels": "CG: R spark cores + flash, G glow, A coverage",
+   "blend": "Additive",
+   "tint": "hot amber (1, 0.6, 0.2) for shells; weapon colour for energy hits",
+   "notes": "Pivot = impact point (U 0.5, V 0.42 from the bottom). Pair with mesh/GPU sparks using Spark_Streaks.",
+   "preview_tint": [
+    1.0,
+    0.55,
+    0.18
+   ],
+   "file": "Spark_Burst.png",
+   "size": [
+    1536,
+    1536
+   ],
+   "bytes": 251559,
+   "low_bytes": 100191
+  },
+  "Spark_Streaks": {
+   "kind": "sprite atlas",
+   "rows": 4,
+   "cols": 1,
+   "frames": 4,
+   "cell": [
+    512,
+    64
+   ],
+   "channels": "CG: R core, G glow, A coverage",
+   "blend": "Additive",
+   "tint": "amber (1, 0.6, 0.2) or weapon colour; fade R and G with particle life",
+   "notes": "Head at +U. Stretched Billboard render mode, speed scale ~0.05, random row per particle (Texture Sheet Animation, rows mode, random row).",
+   "preview_tint": [
+    1.0,
+    0.55,
+    0.18
+   ],
+   "file": "Spark_Streaks.png",
+   "size": [
+    512,
+    256
+   ],
+   "bytes": 14426,
+   "low_bytes": 5030
+  },
+  "Tesla_Arcs": {
+   "kind": "flipbook",
+   "rows": 4,
+   "cols": 4,
+   "frames": 16,
+   "fps": 20,
+   "loop": true,
+   "cell": [
+    512,
+    128
+   ],
+   "channels": "CG: R core (main + branches), G glow (+ end flares), B branches only, A coverage",
+   "blend": "Additive",
+   "tint": "Tesla violet (0.7, 0.5, 1) / StormRifle (0.6, 0.8, 1) on G",
+   "notes": "Each cell runs from U=0.02 to U=0.98 at V=0.5: stretch a quad between muzzle and target; pick a random frame per discharge or play at 20 fps for a crackling stream.",
+   "preview_tint": [
+    0.7,
+    0.5,
+    1.0
+   ],
+   "file": "Tesla_Arcs.png",
+   "size": [
+    2048,
+    512
+   ],
+   "bytes": 401819,
+   "low_bytes": 154713
+  },
+  "Trail_Noise": {
+   "kind": "tiling",
+   "layout": "single, tiles in U and V",
+   "channels": "R ridged strands, G soft wisps (0.5 mean), B unused, A 1",
+   "blend": "multiply into a trail or beam (scroll U at 1-3 tiles/s)",
+   "tint": "none (mask)",
+   "preview_tint": null,
+   "file": "Trail_Noise.png",
+   "size": [
+    256,
+    64
+   ],
+   "bytes": 21701,
+   "low_bytes": 7105
+  },
+  "Trail_Ribbon": {
+   "kind": "trail",
+   "layout": "single, Texture Mode Stretch",
+   "channels": "CG: R core, G glow, A coverage",
+   "blend": "Additive",
+   "tint": "weapon colour on G",
+   "notes": "U=0 head (newest point), U=1 tail. If Unity's trail runs the other way set the material tiling X to -1. Multiply with Trail_Noise scrolled along U for a living trail.",
+   "preview_tint": [
+    0.3,
+    0.7,
+    1.0
+   ],
+   "file": "Trail_Ribbon.png",
+   "size": [
+    512,
+    64
+   ],
+   "bytes": 4024,
+   "low_bytes": 1299
+  }
+ }
+}

@@ -17,6 +17,8 @@ namespace Game.Platform
 
         public float ParticleScale => 0.5f;
 
+        public bool DistortionEnabled => false;
+
         public bool LowDetailModels => true;
 
         public float LodBias => 0.6f;

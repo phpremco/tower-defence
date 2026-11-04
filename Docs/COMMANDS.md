@@ -489,3 +489,20 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
 
 - For exact cutscene stills use `imp3b_cut.sh` (paused seek and render in one call); `fb2_shots.sh` cut stills can land a
   second late, mid-fade. `fb2_still.cs` is the same with the `fb1_tune.txt` shader lines applied.
+
+### Effects from Blender and the painted planet layout (added 2026-11-04, VFX round)
+
+| Goal | Command |
+| --- | --- |
+| Sync `ArtSource/Exports/VFX`, rebuild the effect materials (High + `_Low`) and sheets, rewrite the impact and weapon recipes and the library | `unity command menu --path "Tools/Generate/Blender VFX (sync, materials, effect library)" --timeout 600` (also the full generator's step "Effect library") |
+| Put the painted planet layout on the campaign (continent radii, Crystal Plains sites from `PlanetLayout`, globe rebake) without the full generator | `unity command menu --path "Tools/Generate/Planet Layout (continents, level sites)" --timeout 300` |
+| Screenshots: tower lineup firing at creatures, single impacts in slow motion, a boss killed at the lineup (chain explosion) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/vfx_shots.sh <prefix> [level] [road index] [boss asset]` (phases in `vfx_phase.cs`: `burst`, `boss`, `wave`, `time`, `probe`) |
+
+- Which texture becomes which material is `BlenderVfxCatalog` (shader kind and the colour per packed channel); the atlas
+  layout comes from `VFX_report.json`. Generated: `Data/Vfx/Sheets/<Name>.asset` (`VfxSheet`),
+  `Art/Materials/Vfx/<Name>.mat` / `_Low.mat`. The recipes are `ProjectGenerator.Vfx` (`VfxSpecs`, `WeaponSpecs`):
+  `Data/Vfx/Vfx_<Impact>.asset` and `Data/Vfx/Weapon_<Family>.asset`, mapped per `ProjectileStyle` in `VfxLibrary`.
+- Shaders: `Game/VfxParticle` (premultiplied; additive or covering per material, flipbook frame blending through the
+  UV2/AnimBlend streams, soft particles against the orthographic depth, fixed atlas cell for cards and lines, a scrolling
+  noise layer), `Game/VfxSmoke` (six-way lighting from the main light, temperature through a fire ramp times the heat
+  curve in Custom1.x), `Game/VfxDistortion` (opaque-texture refraction; High only).

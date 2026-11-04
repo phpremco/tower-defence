@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d6f33a0590437489b55639ab36c4fb, type: 3}
+  m_Name: Rocket_Exhaust
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.VfxSheet
+  _material: {fileID: 2100000, guid: 11b5322ad5861a14eb8a2108b73eeea3, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: ebdaad8166f4d294280e22f04d965fe9, type: 2}
+  _columns: 4
+  _rows: 4
+  _frames: 16
+  _fps: 30
+  _lifetime: 0.53333336
+  _worldSize: 0
+  _pivot: {x: 0.5, y: 0.5}
+  _cellAspect: 0.5

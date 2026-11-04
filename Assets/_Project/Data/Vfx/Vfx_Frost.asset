@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef64b93e54cf08a4abc8a1fbc2933ef6, type: 3}
+  m_Name: Vfx_Frost
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.ImpactVfxDefinition
+  _flashScale: 1
+  _flashSeconds: 0.2
+  _fireShare: 0
+  _ring: 0
+  _ringScale: 0
+  _ringAlpha: 0
+  _sparks: 3
+  _sparksPerRadius: 0
+  _sparkSpeed: 2
+  _smoke: 0
+  _smokePerRadius: 0
+  _shards: 0
+  _shardsPerRadius: 0
+  _shardSpeed: 5
+  _lightIntensity: 1.5
+  _lightRange: 2.5
+  _lightSeconds: 0.2
+  _shake: 0
+  _shakePerRadius: 0
+  _fireball: {fileID: 0}
+  _fireballs: 1
+  _fireballSize: 1.5
+  _fireballSizePerRadius: 1.2
+  _heat:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 1.25
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.45
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _flash: {fileID: 11400000, guid: 04e617c7a3830b74a8f4619aa39e4da3, type: 2}
+  _flashSize: 0.9
+  _flashSizePerRadius: 0
+  _smokeSheet: {fileID: 0}
+  _smokeSize: 1.2
+  _smokeDelay: 0.15
+  _sparkSheet: {fileID: 11400000, guid: 9448b5a59c12b0041898042fd96bdbbe, type: 2}
+  _debrisSheet: {fileID: 0}
+  _ringSheet: {fileID: 0}
+  _dustSheet: {fileID: 0}
+  _dustSize: 0
+  _shockDistortion: {fileID: 0}
+  _shockStrength: 0
+  _heatHaze: {fileID: 0}
+  _heatHazeSeconds: 0.9
+  _chain: 1
+  _chainInterval: 0.25
+  _chainSpread: 1
+  _chainGrowth: 0.15
+  _lingerSmoke: {fileID: 0}

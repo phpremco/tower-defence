@@ -25,6 +25,9 @@ namespace Game.UI
         private static readonly int WorldToCloudId = Shader.PropertyToID("_WorldToCloud");
         private static readonly int AlphaId = Shader.PropertyToID("_Alpha");
         private static readonly int CloudShadowId = Shader.PropertyToID("_CloudShadow");
+        private static readonly int ClearCentreId = Shader.PropertyToID("_ClearCentre");
+        private static readonly int ClearInnerId = Shader.PropertyToID("_ClearInner");
+        private static readonly int ClearShareId = Shader.PropertyToID("_ClearShare");
         private static readonly int SelectedRegionId = Shader.PropertyToID("_SelectedRegion");
         private static readonly int RegionColorId = Shader.PropertyToID("_RegionColor");
         private const string TexturedKeyword = "_PLANET_TEXTURED";
@@ -146,6 +149,18 @@ namespace Game.UI
         public static void SetCloudFrame(Material surface, Transform clouds) => surface.SetMatrix(WorldToCloudId, clouds.worldToLocalMatrix);
 
         public static void SetCloudAlpha(Material clouds, float alpha) => clouds.SetFloat(AlphaId, alpha);
+
+        /// <summary>
+        /// Thins a cloud deck over a spot: <paramref name="direction"/> in the deck's own frame, fully thinned inside
+        /// <paramref name="innerDegrees"/> and fading out to <paramref name="outerDegrees"/>; a share of 0 clears nothing.
+        /// </summary>
+        public static void SetCloudClearing(Material clouds, Vector3 direction, float innerDegrees, float outerDegrees, float share)
+        {
+            float outer = Mathf.Cos(Mathf.Max(innerDegrees + 0.5f, outerDegrees) * Mathf.Deg2Rad);
+            clouds.SetVector(ClearCentreId, new Vector4(direction.x, direction.y, direction.z, outer));
+            clouds.SetFloat(ClearInnerId, Mathf.Cos(innerDegrees * Mathf.Deg2Rad));
+            clouds.SetFloat(ClearShareId, share);
+        }
 
         public static void SetCloudShadow(Material surface, float strength) => surface.SetFloat(CloudShadowId, strength);
 

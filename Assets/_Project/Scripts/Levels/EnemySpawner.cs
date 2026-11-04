@@ -21,6 +21,7 @@ namespace Game.Levels
         private const float AirHeightVariation = 0.3f;
         private const float AirLateralCells = 0.7f;
         private const float DeathBurstRadius = 0.5f;
+        private const float BossBurstRadius = 1.5f;
         private const float SpeedVariation = 0.12f;
         private const float MinionSpread = 0.4f;
         private const float SlimeRadiusCells = 0.55f;
@@ -388,7 +389,15 @@ namespace Game.Levels
         private void OnKilled(Enemy enemy)
         {
             _context.Wallet.Earn(enemy.Reward);
-            _context.Projectiles.PlayBurst(enemy.Position, DeathBurstRadius);
+            // A boss goes down in a chain of blasts; any other creature in a small burst.
+            if (enemy.Definition.IsBoss)
+            {
+                _context.Projectiles.PlayBurst(enemy.Position, BossBurstRadius, _context.Projectiles.Vfx.BossDeath);
+            }
+            else
+            {
+                _context.Projectiles.PlayBurst(enemy.Position, DeathBurstRadius);
+            }
             _context.EnemyKilled.Raise(enemy);
             _context.EnemyDefeated.Raise();
             Enrage(enemy);

@@ -5,12 +5,18 @@ using UnityEngine;
 
 namespace Game.Levels
 {
-    /// <summary>Turns heavy moments (explosions, the base taking a hit, a boss falling) into a kick of the camera. View only.</summary>
+    /// <summary>
+    /// Turns heavy moments (big blasts, the base taking a hit, a boss falling) into a short kick of the camera, never a
+    /// lasting shake: kicks die out within half a second, blasts from a busy battery kick at most once per interval,
+    /// and a besieged base only now and then. How hard a blast kicks is part of its impact look (most hits do not).
+    /// View only.
+    /// </summary>
     public sealed class CameraShaker : MonoBehaviour
     {
         private const float BaseHit = 0.7f;
-        private const float BaseHitMinInterval = 1.5f;
-        private const float BossDeath = 0.8f;
+        private const float BaseHitMinInterval = 4f;
+        private const float BlastMinInterval = 1.2f;
+        private const float BigBlast = 0.6f;
         private const float Shockwave = 0.45f;
         private const float StructureWreck = 0.65f;
         private const float HeroDown = 0.4f;
@@ -23,6 +29,7 @@ namespace Game.Levels
         private LevelContext _context;
         private float _lastBaseHealth;
         private float _nextBaseShake;
+        private float _nextBlastShake;
 
         public void Initialize(FixedCameraRig rig, LevelContext context)
         {
@@ -33,7 +40,6 @@ namespace Game.Levels
             context.Projectiles.Burst += OnBurst;
             context.BaseHealth.Changed += OnBaseChanged;
             context.BaseHealth.Died += OnBaseDied;
-            context.EnemyKilled.Subscribe(OnEnemyKilled);
             context.StructureWrecked.Subscribe(OnStructureWrecked);
             context.BossWaveStarted.Subscribe(OnBossWave);
             context.EnemySpawned.Subscribe(OnEnemySpawned);
@@ -72,7 +78,6 @@ namespace Game.Levels
             _context.Projectiles.Burst -= OnBurst;
             _context.BaseHealth.Changed -= OnBaseChanged;
             _context.BaseHealth.Died -= OnBaseDied;
-            _context.EnemyKilled.Unsubscribe(OnEnemyKilled);
             _context.StructureWrecked.Unsubscribe(OnStructureWrecked);
             _context.BossWaveStarted.Unsubscribe(OnBossWave);
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
@@ -84,9 +89,22 @@ namespace Game.Levels
         }
 
         // How hard a blast kicks is part of its look, so it comes from the impact definition.
-        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => _rig.Shake(_context.Projectiles.Vfx.For(style).ShakeFor(radius));
+        private void OnExploded(Vector3 position, float radius, ProjectileStyle style) => Blast(_context.Projectiles.Vfx.For(style).ShakeFor(radius));
 
-        private void OnBurst(Vector3 position, float radius, ImpactVfxDefinition vfx) => _rig.Shake(vfx.ShakeFor(radius));
+        // A boss going down kicks through its own chain-blast look, like every other burst.
+        private void OnBurst(Vector3 position, float radius, ImpactVfxDefinition vfx) => Blast(vfx.ShakeFor(radius));
+
+        private void Blast(float strength)
+        {
+            // A big one (a boss going down) always kicks; everyday blasts wait their turn.
+            if (strength <= 0f || (strength < BigBlast && Time.unscaledTime < _nextBlastShake))
+            {
+                return;
+            }
+
+            _rig.Shake(strength);
+            _nextBlastShake = Time.unscaledTime + BlastMinInterval;
+        }
 
         private void OnBaseChanged(float current)
         {
@@ -98,14 +116,6 @@ namespace Game.Levels
             }
 
             _lastBaseHealth = current;
-        }
-
-        private void OnEnemyKilled(Enemy enemy)
-        {
-            if (enemy.Definition.IsBoss)
-            {
-                _rig.Shake(BossDeath);
-            }
         }
 
         private void OnAbilityUsed(int slot, HeroAbilityDefinition ability, Vector3 position)

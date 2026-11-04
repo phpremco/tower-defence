@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d6f33a0590437489b55639ab36c4fb, type: 3}
+  m_Name: Muzzle_Front
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.VfxSheet
+  _material: {fileID: 2100000, guid: f9cdf6935ec7724429dff9b506c5be9e, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: d2721e7c1808df944aee51b2788febdf, type: 2}
+  _columns: 4
+  _rows: 4
+  _frames: 16
+  _fps: 0
+  _lifetime: 0.05
+  _worldSize: 0
+  _pivot: {x: 0.5, y: 0.5}
+  _cellAspect: 1

@@ -420,7 +420,7 @@ namespace Game.Editor
             return asset;
         }
 
-        private static void EnsureFolder(string folder)
+        internal static void EnsureFolder(string folder)
         {
             if (string.IsNullOrEmpty(folder) || AssetDatabase.IsValidFolder(folder))
             {

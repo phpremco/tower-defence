@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d6f33a0590437489b55639ab36c4fb, type: 3}
+  m_Name: Shockwave_Distort
+  m_EditorClassIdentifier: Game.Combat::Game.Combat.VfxSheet
+  _material: {fileID: 2100000, guid: 0bba278a1181e5d4080b10def6787633, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 3b34a6b5ec8da234581bc04dad563be3, type: 2}
+  _columns: 1
+  _rows: 1
+  _frames: 1
+  _fps: 0
+  _lifetime: 0
+  _worldSize: 0
+  _pivot: {x: 0.5, y: 0.5}
+  _cellAspect: 1

@@ -722,7 +722,7 @@ namespace Game.UI
             string status = total == 0 ? "   -   coming soon" : $"   -   {CampaignRules.CompletedInRegion(_catalog, index, Progress)} / {total} levels";
             _caption.text = region.DisplayName + status;
             _caption.color = _badges[index].Open ? Color.white : Muted;
-            _globe.Highlight(index, region.Colour, _badges[index].Open);
+            _globe.Highlight(index, region.Colour, _badges[index].Open, region.Direction, region.RadiusDegrees);
         }
 
         // Flies onto a region and shows its levels, focusing the one given (or the furthest open one in it).

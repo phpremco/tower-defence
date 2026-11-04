@@ -113,7 +113,9 @@ namespace Game.Boot
             var targets = new TargetRegistry();
             var structures = new StructureRegistry();
             Services.TryGet(out VfxLibrary vfx);
-            var projectiles = new ProjectilePool(targets, root, vfx, Services.Get<IPlatformSettings>().ParticleScale);
+            IPlatformSettings platformSettings = Services.Get<IPlatformSettings>();
+            var quality = new VfxQuality(platformSettings.ParticleScale, platformSettings.LowDetailModels, platformSettings.DistortionEnabled);
+            var projectiles = new ProjectilePool(targets, root, vfx, quality, _camera);
             var wallet = new Wallet(Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier), infiniteMoney, difficulty.IncomeMultiplier);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
@@ -165,7 +167,7 @@ namespace Game.Boot
 
             _cameraRig.gameObject.AddComponent<CameraShaker>().Initialize(_cameraRig, context);
             // Ripples read the opaque texture, which only the high profile renders.
-            if (Services.Get<IPlatformSettings>().BloomEnabled)
+            if (Services.Get<IPlatformSettings>().DistortionEnabled)
             {
                 controllers.AddComponent<RippleEffects>().Initialize(context);
             }

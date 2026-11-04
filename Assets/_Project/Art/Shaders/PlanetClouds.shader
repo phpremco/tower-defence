@@ -13,6 +13,9 @@ Shader "Game/PlanetClouds"
         _Alpha ("Alpha", Range(0, 1)) = 1
         _Detail ("Wisps", Range(0, 1)) = 0.6
         _Octaves ("Noise octaves", Range(1, 8)) = 5
+        _ClearCentre ("Thinned spot: direction (object), cos of the outer radius", Vector) = (0, 0, 1, 2)
+        _ClearInner ("Thinned spot: cos of the inner radius", Float) = 3
+        _ClearShare ("Thinned spot: how much thinner", Range(0, 1)) = 0
     }
 
     SubShader
@@ -45,6 +48,9 @@ Shader "Game/PlanetClouds"
             half _Alpha;
             half _Detail;
             half _Octaves;
+            float4 _ClearCentre;
+            float _ClearInner;
+            half _ClearShare;
             CBUFFER_END
 
             struct Attributes
@@ -90,6 +96,9 @@ Shader "Game/PlanetClouds"
                 float wisps = PlanetFbm(p * 14.0 + swirl * 2.0, octaves);
                 float alpha = saturate(cover * lerp(1.0, wisps * 2.2 - 0.25, _Detail));
                 alpha = saturate(alpha * 1.3) * _Alpha;
+                // The chosen region shows through: the deck thins over it, softly towards its rim.
+                float inside = smoothstep(_ClearCentre.w, _ClearInner, dot(p, normalize(_ClearCentre.xyz)));
+                alpha *= 1.0 - _ClearShare * inside;
 
                 float facingSun = dot(normal, sunDirection);
                 float day = smoothstep(-0.12, 0.25, facingSun);

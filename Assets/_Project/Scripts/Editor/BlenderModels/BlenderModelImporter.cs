@@ -27,6 +27,8 @@ namespace Game.Editor
         private const int PlanetAnisoLevel = 8;
         private const int PlanetMapSize = 4096;
         private const int PlanetLowMapSize = 2048;
+        private const int VfxMapSize = 2048;
+        private const int VfxLowMapSize = 1024;
 
         // Hero assets whose maps are painted larger than the usual 1024 (High, Low), by export folder.
         private static readonly Dictionary<string, (int High, int Low)> MapSizeOverrides = new Dictionary<string, (int High, int Low)>
@@ -58,6 +60,9 @@ namespace Game.Editor
 
         // A planet painted in Blender (texture-only export): equirectangular maps that wrap round in longitude.
         private static bool IsPlanet(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderPlanetCatalog.FolderPrefix, StringComparison.Ordinal);
+
+        // The effect textures painted in Blender (round 20): flipbooks, sprites, ribbons and distortion maps.
+        private static bool IsVfx(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderVfxCatalog.Folder + "/", StringComparison.Ordinal);
 
         // The export folder an asset path lies in (the first folder under the target root).
         private static string ExportFolder(string path)
@@ -211,6 +216,12 @@ namespace Game.Editor
                 return;
             }
 
+            if (IsVfx(assetPath))
+            {
+                PreprocessVfxTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             bool detail = assetPath.Contains("/" + BlenderSync.DetailFolder + "/");
             bool tiling = IsTiling(assetPath);
             bool low = assetPath.Contains("/" + BlenderSync.LowFolder + "/");
@@ -243,6 +254,23 @@ namespace Game.Editor
             return MapSizeOverrides.TryGetValue(ExportFolder(path), out (int High, int Low) size)
                 ? low ? size.Low : size.High
                 : low ? LowMapSize : FullMapSize;
+        }
+
+        // VFX_report.json: every effect texture is linear data (colour comes from the materials), alpha as painted;
+        // flipbooks and sprites clamp so a cell never bleeds into its neighbour at the edge, the tiling noise and ribbon
+        // textures repeat. The offset maps of the distortion stay uncompressed: block compression bends the vectors.
+        private static void PreprocessVfxTexture(TextureImporter importer, string file, bool low)
+        {
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = false;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.alphaIsTransparency = false;
+            importer.mipmapEnabled = true;
+            importer.wrapMode = BlenderVfxCatalog.Tiles(file) ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            importer.anisoLevel = 1;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.maxTextureSize = low ? VfxLowMapSize : VfxMapSize;
+            importer.textureCompression = BlenderVfxCatalog.IsDistortion(file) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
         }
 
         // README round 20: wrap round in longitude, clamp at the poles; colour maps sRGB, the rest data; the region ids

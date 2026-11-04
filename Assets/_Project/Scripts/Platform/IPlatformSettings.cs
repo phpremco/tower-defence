@@ -21,6 +21,9 @@
         /// <summary>Multiplier for particle counts, 1 is full.</summary>
         float ParticleScale { get; }
 
+        /// <summary>Heat haze and shock refraction; they read the opaque texture, which only the high profile renders.</summary>
+        bool DistortionEnabled { get; }
+
         /// <summary>Imported models wear their 512 maps and one detail normal instead of 1024 maps and two.</summary>
         bool LowDetailModels { get; }
 

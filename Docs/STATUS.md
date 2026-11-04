@@ -1830,3 +1830,46 @@ game. Only these exports were synced (targeted import, `Tools/PlayTest/fb2_impor
 - **Open:** the rim is the region's own map colour (Crystal Plains lavender, the Crowns near white): a per-region highlight
   colour would be data on `MapRegion`; clouds are still dense on the far planet view at `MapCloudShare` 0.55; the full
   generator was not run (it would sync the VFX folder); `Height` is not synced.
+
+## VFX from Blender and planet layout 22b (2026-11-04)
+
+The effect textures painted in Blender (README round 20, `ArtSource/Exports/VFX`) are in the game, and the planet map follows
+`ArtSource/Exports/Planet_S69/layout.json` (22b). Not committed; the full generator was not run (it would sync the Blender
+agent's WIP folders): the targeted menu items below did the work.
+- **Pipeline:** `BlenderSync.SyncFiles` (loose PNGs + `Low/` + report) into `Art/Models/Blender/VFX/`; importer: linear,
+  alpha as painted, clamp (repeat for the tiling noise/ribbons/haze), 2048 / Low 1024, distortion maps uncompressed.
+  `BlenderVfxCatalog` (shader kind + colour per packed channel per texture) and `BlenderVfxBuilder` (menu `Tools/Generate/
+  Blender VFX (sync, materials, effect library)`, also the generator step "Effect library") write `Art/Materials/Vfx/<Name>.mat`
+  + `_Low.mat` and `Data/Vfx/Sheets/<Name>.asset` (`VfxSheet`: materials per profile, grid, frames, fps, life, world size,
+  pivot, cell aspect from `VFX_report.json`). Scorch_Decal is not imported (no ground decals yet).
+- **Shaders:** `Game/VfxParticle` (premultiplied: additive or covering per material; flipbook frame blending via UV2/AnimBlend;
+  soft particles against the orthographic depth; fixed atlas cell for cards and lines; scrolling noise), `Game/VfxSmoke`
+  (six-way lighting from the main light + SH ambient, temperature through a red-orange-yellow-white ramp times a per-particle
+  heat curve in Custom1.x, cell-edge fade for sims that touch their cell), `Game/VfxDistortion` (opaque-texture refraction,
+  drawn only where the picture bends). Low (Switch): half-size textures, no soft fade, no noise, no distortion
+  (`IPlatformSettings.DistortionEnabled`, which now also gates the impact ripples; before they were gated by bloom, which
+  Switch has), no blast lights.
+- **Data:** `WeaponVfxDefinition` per projectile style (`Data/Vfx/Weapon_<Pulse|Cannon|Rocket|Laser|Cryo|Tesla|Rail|Artillery|
+  Flak>.asset`: muzzle row of `Muzzle_Side`, bolt/plasma card, ribbon trail, rocket flame + smoke ribbon, beam or arc, impact);
+  `ImpactVfxDefinition` grew the painted layers (fireball, flash, smoke, sparks, shards, ring, dust, shock distortion, heat
+  haze, heat curve, chain, lingering smoke); new impacts Frost, Arc, Rail, BossDeath. `VfxLibrary` maps style -> weapon and has
+  `BossDeath` (EnemySpawner plays it when a boss dies: three growing blasts 0.28 s apart, Explosion_Boss, then hanging smoke).
+- **Views:** `ImpactFlash` rebuilt on pooled burst systems (`VfxParticles`), chain scheduling without allocations;
+  `ProjectileView` wears the recipe (cards laid along the flight via `VfxQuad`, property blocks, cached gradients);
+  `MuzzleFlashView` per tower (random variant of the weapon's row, 1-3 frames) replaces the glowing sphere when a recipe exists.
+- **Camera:** only big blasts kick (Mortar, Mine, Barrel, BossPulse, BossDeath); everyday hits (shell, rocket, flak, energy)
+  no longer shake. `ShakeCurve` decay 5.5 -> 8 (a full kick is over in about half a second; shared with the cutscene camera),
+  blast kicks at most every 1.2 s unless big (boss death always), base-hit kicks every 4 s instead of 1.5 s.
+- **Planet:** `PlanetLayout` (editor table copied from layout.json 22b) gives Crystal Plains' 20 sites; other continents keep
+  `NodePlacer`. Core `RadiusDegrees` 12 -> 14; `PlanetCoordinates`/`NodePlacer.MinimumSpacingDegrees` 8 -> 6. Menu
+  `Tools/Generate/Planet Layout (continents, level sites)` applies it to the catalog and rebakes the procedural globe (its colony
+  lights sit on the sites). Clouds thin over the selected region (`PlanetClouds` `_ClearCentre/_ClearInner/_ClearShare`,
+  tunable `PlanetTextureSet.RegionCloudClear` 0.65).
+- **Tests:** EditMode 334/334 (new `VfxArtTests` 7, `PlanetLayoutTests` 3). PlayMode one class at a time: ContinentSimulation 2/2,
+  StoryCrystal 2/2, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3, ModelPerformance 1/1,
+  BalanceProbe 3/3. 0 compile errors and warnings. Save restored (MD5 914E8160...).
+- **Open / for Remco:** cooled smoke still reads dark on the dark levels (albedo is data in `BlenderVfxCatalog`); the boss
+  sim touches its cell edge in Blender (faded in the shader, a re-export with a bigger domain would be cleaner); shock
+  refraction rings are visible in a busy fight; muzzle flashes are small at play zoom; Scorch_Decal not used; the hero and
+  drone muzzle flashes are still spheres; `ShakeCurve` change also shortens cutscene kicks.
+- **Tools:** `Tools/PlayTest/vfx_shots.sh` + `vfx_phase.cs` (see COMMANDS).

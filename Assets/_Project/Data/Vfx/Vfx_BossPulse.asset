@@ -20,14 +20,80 @@ MonoBehaviour:
   _ringAlpha: 0
   _sparks: 0
   _sparksPerRadius: 0
-  _sparkSpeed: 0
+  _sparkSpeed: 3
   _smoke: 0
   _smokePerRadius: 0
   _shards: 0
   _shardsPerRadius: 0
-  _shardSpeed: 0
+  _shardSpeed: 5
   _lightIntensity: 12
   _lightRange: 9
   _lightSeconds: 0.5
-  _shake: 0.6
+  _shake: 0.45
   _shakePerRadius: 0
+  _fireball: {fileID: 0}
+  _fireballs: 1
+  _fireballSize: 1.5
+  _fireballSizePerRadius: 1.2
+  _heat:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.9
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 1.25
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.45
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _flash: {fileID: 11400000, guid: 354a9dfa145f56648b268179d3871a6b, type: 2}
+  _flashSize: 1.6
+  _flashSizePerRadius: 0
+  _smokeSheet: {fileID: 0}
+  _smokeSize: 1.2
+  _smokeDelay: 0.15
+  _sparkSheet: {fileID: 0}
+  _debrisSheet: {fileID: 0}
+  _ringSheet: {fileID: 0}
+  _dustSheet: {fileID: 0}
+  _dustSize: 0
+  _shockDistortion: {fileID: 0}
+  _shockStrength: 0
+  _heatHaze: {fileID: 0}
+  _heatHazeSeconds: 0.9
+  _chain: 1
+  _chainInterval: 0.25
+  _chainSpread: 1
+  _chainGrowth: 0.15
+  _lingerSmoke: {fileID: 0}

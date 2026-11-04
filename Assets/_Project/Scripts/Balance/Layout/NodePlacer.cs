@@ -26,7 +26,7 @@ namespace Game.Balance
         public const float CoastInsetDegrees = 4f;
 
         /// <summary>No two sites closer than this, in degrees of arc (the planet map's minimum spacing).</summary>
-        public const float MinimumSpacingDegrees = 8f;
+        public const float MinimumSpacingDegrees = 6f;
 
         // The wave of a row: its height as a share of the row step and its length as a share of the widest row.
         private const double WaveShare = 0.25;

@@ -9,7 +9,7 @@ namespace Game.Levels
     public static class PlanetCoordinates
     {
         /// <summary>Two levels closer than this, in degrees of arc, overlap on the map once the view zooms onto their region.</summary>
-        public const float MinimumSpacingDegrees = 8f;
+        public const float MinimumSpacingDegrees = 6f;
 
         /// <summary>
         /// Longitude 0 faces +z, north is +y and east is -x. Unity's frame is left-handed, so this is the handedness

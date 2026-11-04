@@ -52,7 +52,7 @@ namespace Game.Editor
             new ContinentSpec("C3", "Northern Crown", 60f, 62f, 30f, new Color(0.78f, 0.84f, 0.9f), MapLayer.Surface, 0f),
             new ContinentSpec("C4", "Mirewood", -140f, 15f, 30f, new Color(0.26f, 0.42f, 0.3f), MapLayer.Surface, 0f),
             new ContinentSpec("C5", "Southern Crown", 150f, -60f, 30f, new Color(0.74f, 0.8f, 0.88f), MapLayer.Surface, 0f),
-            new ContinentSpec("C6", "The Core", 150f, -32f, 12f, new Color(0.35f, 0.1f, 0.06f), MapLayer.Core, 0f),
+            new ContinentSpec("C6", "The Core", 150f, -32f, 14f, new Color(0.35f, 0.1f, 0.06f), MapLayer.Core, 0f),
         };
 
         // The levels the continent campaign replaced. Their ids are never reused; their data goes, their code support stays.
@@ -89,7 +89,7 @@ namespace Game.Editor
                 }
 
                 ContinentSpec continent = ContinentTable[c];
-                GlobePoint[] places = NodePlacer.Route(continent.Longitude, continent.Latitude, continent.Radius, BalanceSheet.Rules.LevelsPerContinent, continent.Bearing, SiteRuggedness);
+                GlobePoint[] places = PlanetLayout.Sites(continent.Key) ?? NodePlacer.Route(continent.Longitude, continent.Latitude, continent.Radius, BalanceSheet.Rules.LevelsPerContinent, continent.Bearing, SiteRuggedness);
                 for (int i = 0; i < places.Length; i++)
                 {
                     SpecLevel level = levels.Find(l => l.Index == i);
@@ -119,6 +119,62 @@ namespace Game.Editor
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return catalog;
+        }
+
+        /// <summary>
+        /// Puts the painted planet layout on the campaign as it stands (the continents' centres and radii and the painted
+        /// level sites), without running the rest of the generator. The full generator writes the same.
+        /// </summary>
+        [MenuItem("Tools/Generate/Planet Layout (continents, level sites)")]
+        public static void ApplyPlanetLayoutMenu()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>($"{DataRoot}/Levels/CampaignCatalog.asset");
+            if (catalog == null)
+            {
+                Debug.LogWarning("Planet layout: no campaign catalog yet; run the generator first.");
+                return;
+            }
+
+            var so = new SerializedObject(catalog);
+            SerializedProperty regions = so.FindProperty("_regions");
+            for (int i = 0; i < regions.arraySize && i < ContinentTable.Length; i++)
+            {
+                SerializedProperty element = regions.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("Longitude").floatValue = ContinentTable[i].Longitude;
+                element.FindPropertyRelative("Latitude").floatValue = ContinentTable[i].Latitude;
+                element.FindPropertyRelative("RadiusDegrees").floatValue = ContinentTable[i].Radius;
+            }
+
+            int moved = 0;
+            SerializedProperty nodes = so.FindProperty("_nodes");
+            var seen = new int[ContinentTable.Length];
+            for (int i = 0; i < nodes.arraySize; i++)
+            {
+                SerializedProperty node = nodes.GetArrayElementAtIndex(i);
+                int region = node.FindPropertyRelative("Region").intValue;
+                if (region < 0 || region >= ContinentTable.Length)
+                {
+                    continue;
+                }
+
+                GlobePoint[] sites = PlanetLayout.Sites(ContinentTable[region].Key);
+                int index = seen[region]++;
+                if (sites == null || index >= sites.Length)
+                {
+                    continue;
+                }
+
+                node.FindPropertyRelative("Longitude").floatValue = sites[index].Longitude;
+                node.FindPropertyRelative("Latitude").floatValue = sites[index].Latitude;
+                moved++;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(catalog);
+            // The colony lights of the baked globe sit on the level sites, so the globe is painted again.
+            BakeGlobe(catalog);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"Planet layout {PlanetLayout.Version}: {moved} level site(s) placed.");
         }
 
         // The route of level sites keeps off the mountain chains the globe painter draws.

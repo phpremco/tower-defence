@@ -15,23 +15,24 @@ MonoBehaviour:
   _default: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
   _styles:
   - Style: 0
-    Vfx: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
-  - Style: 3
-    Vfx: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
-  - Style: 4
-    Vfx: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
-  - Style: 5
-    Vfx: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
-  - Style: 6
-    Vfx: {fileID: 11400000, guid: 5ba411e82acb338449d0f9b71fa431ce, type: 2}
+    Weapon: {fileID: 11400000, guid: d0215c75d6f97c84981609725e65dd83, type: 2}
   - Style: 1
-    Vfx: {fileID: 11400000, guid: a1df20b4f6a0dd944b1ab6c3edf9072a, type: 2}
+    Weapon: {fileID: 11400000, guid: 7fcfa5193c07e17438283b8d32d0e0e1, type: 2}
   - Style: 2
-    Vfx: {fileID: 11400000, guid: 176477f2fb47a624d9e0148d434efcdb, type: 2}
+    Weapon: {fileID: 11400000, guid: 667ef0f2408906c4dbcd68d3c6f9bdfe, type: 2}
+  - Style: 3
+    Weapon: {fileID: 11400000, guid: 80977e7b14d3ac845a3f0369a3faf1ac, type: 2}
+  - Style: 4
+    Weapon: {fileID: 11400000, guid: e2446f1b66c4282479e1d4bbdd7bbeab, type: 2}
+  - Style: 5
+    Weapon: {fileID: 11400000, guid: 6e48547c0ba9a0a4d9e4b8913d459452, type: 2}
+  - Style: 6
+    Weapon: {fileID: 11400000, guid: bc471394f73a8d4479b9d5c76c791454, type: 2}
   - Style: 7
-    Vfx: {fileID: 11400000, guid: 6e32afa338c6bd142985aa095cb9047f, type: 2}
+    Weapon: {fileID: 11400000, guid: 2b91aa449dc2e87418c2f645de4be9e5, type: 2}
   - Style: 8
-    Vfx: {fileID: 11400000, guid: 96c4bfff01ad82444af3234b4d87945f, type: 2}
+    Weapon: {fileID: 11400000, guid: c6148d6a890b3944db33b97a8ac39643, type: 2}
   _death: {fileID: 11400000, guid: 7e742567fb8b4ea4e8f181fbfd966016, type: 2}
+  _bossDeath: {fileID: 11400000, guid: afc369cf820e8864eb914418c235c7fd, type: 2}
   _mine: {fileID: 11400000, guid: 02696b09b3bb5a64f83689a805bc25f5, type: 2}
   _bossPulse: {fileID: 11400000, guid: da1e11c94810ffd428807b4f13a389ca, type: 2}

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Explosion_Small_Low
+  m_Shader: {fileID: 4800000, guid: 7603ff48ec3400c4b985532e05a09aa5, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _FLIPBOOK_BLEND
+  - _HEAT_STREAM
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NegMap:
+        m_Texture: {fileID: 2800000, guid: 9a85e786c982df04688e73f7f2fd4504, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PosMap:
+        m_Texture: {fileID: 2800000, guid: 6b24f41d082178744bc6640690f32072, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AmbientStrength: 0.6
+    - _EdgeFade: 0.14
+    - _FireStrength: 1
+    - _FlipbookBlend: 1
+    - _HeatStream: 1
+    - _LightStrength: 1.2
+    - _Opacity: 1
+    - _SoftDistance: 0.8
+    - _SoftParticles: 0
+    m_Colors:
+    - _Albedo: {r: 0.34, g: 0.31, b: 0.28, a: 1}
+    - _FireHigh: {r: 4, g: 2.6, b: 1, a: 1}
+    - _FireLow: {r: 0.7, g: 0.08, b: 0.02, a: 1}
+    - _FireMid: {r: 2.4, g: 0.8, b: 0.15, a: 1}
+    - _FireWhite: {r: 8, g: 7.2, b: 6, a: 1}
+    - _Grid: {r: 8, g: 8, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
