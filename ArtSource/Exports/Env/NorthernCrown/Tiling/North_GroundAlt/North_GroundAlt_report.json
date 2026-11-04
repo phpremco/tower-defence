@@ -1,0 +1,20 @@
+{
+  "set": "North_GroundAlt",
+  "continent": "NorthernCrown",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 2.0,
+  "maps": [
+    "Albedo",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.153,
+    0.159,
+    0.186
+  ],
+  "value_mean": 0.16,
+  "smoothness_mean": 0.126,
+  "height_range_m": 0.0255
+}

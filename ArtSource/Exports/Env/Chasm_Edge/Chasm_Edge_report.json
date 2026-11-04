@@ -1,0 +1,36 @@
+{
+  "asset": "Chasm_Edge",
+  "game_tris": 1498,
+  "source_tris": 180376,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 14,
+    "folded_fallback_faces": 10,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.643,
+    "world_per_uv": 4.778984603535638
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 39.8,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 68.3,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.008,
+    0.774,
+    2.49
+  ]
+}

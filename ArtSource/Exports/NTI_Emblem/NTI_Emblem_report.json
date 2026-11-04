@@ -1,0 +1,46 @@
+{
+  "asset": "NTI_Emblem",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.656,
+    "world_per_uv": 1.2616
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 25.2,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 21.0,
+      "mask": "A"
+    }
+  },
+  "fbx": "NTI_Emblem.fbx",
+  "meshes": {
+    "NTI_Emblem": 412
+  },
+  "tris": 412,
+  "lod1": "none (portrait/cutscene or static decor)",
+  "uv_sets": [
+    "UVMap"
+  ],
+  "clips": {},
+  "sockets": {
+    "Centre": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "pivot": "on the ground / badge centre; faces -Y in Blender (Unity +Z)"
+}

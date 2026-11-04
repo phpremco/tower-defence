@@ -1,0 +1,51 @@
+{
+  "asset": "Roller",
+  "game_tris": 3915,
+  "source_tris": 809780,
+  "bones": 20,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 56,
+    "folded_fallback_faces": 26,
+    "mirrored_faces": 1946,
+    "uv_coverage": 0.52,
+    "world_per_uv": 1.8466182002468734
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 30.8,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 23.1,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 20,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 36,
+    "Curl": 14,
+    "Roll": 24,
+    "Uncurl": 14
+  },
+  "walk_distance_per_loop": 0.48,
+  "ball_radius": 0.31,
+  "ball_centre_height": 0.322,
+  "roll_distance_per_loop": 1.948,
+  "lod1": {
+    "fbx": "Roller_LOD1.fbx",
+    "tris": 1700,
+    "bones": 14
+  }
+}

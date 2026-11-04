@@ -1,0 +1,56 @@
+{
+  "asset": "AcidEmpress",
+  "base_species": "Stinger",
+  "game_tris": 14217,
+  "source_tris": 1142440,
+  "bones": 28,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 181,
+    "folded_fallback_faces": 615,
+    "mirrored_faces": 6821,
+    "uv_coverage": 0.527,
+    "world_per_uv": 1.4777807848803888
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 24.6,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 18.5,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 28,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 40,
+    "Strike": 24,
+    "Spray": 48
+  },
+  "scale_keyed_bones": [
+    "Gland"
+  ],
+  "spray_release_frame": 26,
+  "spray_origin_bone": "Gland (nozzles about 0.15 x scale above it)",
+  "strike_hit_frame": 10,
+  "walk_distance_per_loop": 0.52,
+  "unity_scale": 0.8999999999999999,
+  "model_scale_from_stinger_units": 2.2,
+  "lod1": {
+    "fbx": "AcidEmpress_LOD1.fbx",
+    "tris": 5998,
+    "bones": 17
+  }
+}

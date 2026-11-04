@@ -1,0 +1,111 @@
+{
+  "asset": "SealedOne",
+  "game_tris": 34478,
+  "tris_per_material": [
+    25486,
+    8992
+  ],
+  "source_tris": 2503164,
+  "bones": 29,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "materials": {
+    "SealedOne_Mat": "SealedOne_*.png",
+    "SealedOne_Seal_Mat": "SealedOne_Seal_*.png"
+  },
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "SealedOne": {
+      "islands": 154,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 296,
+      "mirrored_faces": 12341,
+      "uv_coverage": 0.588,
+      "world_per_uv": 9.11461091575272
+    },
+    "SealedOne_Seal": {
+      "islands": 55,
+      "closed_islands_cut": 3,
+      "folded_fallback_faces": 283,
+      "mirrored_faces": 4322,
+      "uv_coverage": 0.688,
+      "world_per_uv": 5.567201145063337
+    }
+  },
+  "detail": {
+    "SealedOne": {
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 16.9,
+        "mask": "B"
+      },
+      "membrane": {
+        "map": "Detail_Membrane_Normal.png",
+        "tiling": 25.3,
+        "mask": "A"
+      }
+    },
+    "SealedOne_Seal": {
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 17.2,
+        "mask": "B"
+      },
+      "crystal": {
+        "map": "Detail_Crystal_Normal.png",
+        "tiling": 29.5,
+        "mask": "A"
+      }
+    }
+  },
+  "actions": {
+    "Idle": 120,
+    "Rise": 150,
+    "Summon": 90,
+    "Hit": 18,
+    "Death": 150
+  },
+  "size_m": [
+    6.894,
+    6.901,
+    6.699
+  ],
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Ring_1",
+    "Ring_2",
+    "Ring_3"
+  ],
+  "lod1": {
+    "fbx": "SealedOne_LOD1.fbx",
+    "tris": 13998,
+    "bones": 26
+  },
+  "pivot": "ground at the centre of the seal; the body extends ~0.7 below the ground (hidden by terrain)",
+  "rise": {
+    "frames": 150,
+    "seal_breaks_frame": 22,
+    "hands_slam_frame": 92,
+    "start_depth_m": 5.2,
+    "note": "starts fully under the ground plane: terrain must occlude"
+  },
+  "summon": {
+    "peak_frame": 44,
+    "socket": "Head (the violet column between the face plates)"
+  },
+  "death": {
+    "seal_shut_frame": 128,
+    "below_ground_from_frame": 124
+  },
+  "seal_stone_radius_m": 2.75,
+  "glyph_colour": [
+    1.0,
+    0.7,
+    0.28
+  ]
+}

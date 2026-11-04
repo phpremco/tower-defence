@@ -1,0 +1,73 @@
+{
+  "asset": "Shardback",
+  "game_tris": 3940,
+  "source_tris": 590792,
+  "bones": 23,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 76,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 1970,
+    "uv_coverage": 0.602,
+    "world_per_uv": 1.3841733679984416
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 23.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 19.8,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 32,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 40,
+    "Shatter": 40
+  },
+  "unity_scale": 0.8,
+  "scale_keyed_bones": [
+    "Shard_1",
+    "Shard_2",
+    "Shard_3",
+    "Shard_4",
+    "Shard_5",
+    "Shard_6"
+  ],
+  "lod1": {
+    "fbx": "Shardback_LOD1.fbx",
+    "tris": 1698,
+    "bones": 15
+  },
+  "shard_bones_in_shed_order": [
+    "Shard_1",
+    "Shard_2",
+    "Shard_3",
+    "Shard_4",
+    "Shard_5",
+    "Shard_6"
+  ],
+  "shatter_burst_frames": {
+    "Shard_1": 3,
+    "Shard_2": 8,
+    "Shard_3": 13,
+    "Shard_4": 18,
+    "Shard_5": 23,
+    "Shard_6": 28
+  },
+  "walk_distance_per_loop": 0.2,
+  "pivot": "ground, body centre",
+  "spit_origin": "Throat, about (0, 0.17, 0.46) model units, from the Head bone"
+}

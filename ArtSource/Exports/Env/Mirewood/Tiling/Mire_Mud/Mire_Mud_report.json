@@ -1,0 +1,20 @@
+{
+  "set": "Mire_Mud",
+  "continent": "Mirewood",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.202,
+    0.164,
+    0.124
+  ],
+  "value_mean": 0.169,
+  "smoothness_mean": 0.471,
+  "height_range_m": 0.0311
+}

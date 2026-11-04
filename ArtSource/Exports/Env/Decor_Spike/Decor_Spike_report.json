@@ -1,0 +1,36 @@
+{
+  "asset": "Decor_Spike",
+  "game_tris": 1200,
+  "source_tris": 71420,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 33,
+    "folded_fallback_faces": 6,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.582,
+    "world_per_uv": 1.6034253005282915
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 13.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 22.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.657,
+    0.539,
+    0.971
+  ]
+}

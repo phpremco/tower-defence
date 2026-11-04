@@ -1,0 +1,68 @@
+{
+  "asset": "Cutscene_Mothership",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.336,
+    "world_per_uv": 26.0887
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 521.8,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 434.8,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Mothership.fbx",
+  "meshes": {
+    "Cutscene_Mothership": 9302
+  },
+  "tris": 9302,
+  "lod1": "none: cutscene only",
+  "bones": [
+    "Root",
+    "Ring"
+  ],
+  "deform_bones": [
+    "Root",
+    "Ring"
+  ],
+  "clips": {
+    "Spin": 360
+  },
+  "sockets": {
+    "Bay": [
+      0.0,
+      1.0,
+      -0.96
+    ],
+    "Nozzle_1": [
+      0.0,
+      7.0,
+      0.5
+    ],
+    "Nozzle_2": [
+      -0.433,
+      7.0,
+      -0.25
+    ],
+    "Nozzle_3": [
+      0.433,
+      7.0,
+      -0.25
+    ]
+  },
+  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+}

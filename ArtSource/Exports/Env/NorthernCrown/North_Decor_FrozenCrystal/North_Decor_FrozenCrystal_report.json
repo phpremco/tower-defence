@@ -1,0 +1,37 @@
+{
+  "asset": "North_Decor_FrozenCrystal",
+  "continent": "NorthernCrown",
+  "game_tris": 1300,
+  "source_tris": 47764,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 96,
+    "folded_fallback_faces": 105,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.597,
+    "world_per_uv": 1.3066581458222655
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 18.7,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 10.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.855,
+    0.743,
+    0.83
+  ]
+}

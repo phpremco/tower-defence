@@ -1,0 +1,41 @@
+{
+  "asset": "Flora_GlowTree",
+  "game_tris": 1500,
+  "source_tris": 156108,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 117,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.648,
+    "world_per_uv": 2.4496176899164923
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 30.6,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 40.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.238,
+    1.152,
+    1.488
+  ],
+  "sway": {
+    "attribute": "Sway",
+    "height": 1.75,
+    "channels": "R bend weight (root 0, top 1), G phase 0..1, B flutter"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "asset": "Gadget_Decoy",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.637,
+    "world_per_uv": 1.2776
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 25.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 21.3,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Decoy.fbx",
+  "tris": 1448,
+  "tris_lod1": 840,
+  "clips": {
+    "Deploy": 24,
+    "Idle": 60,
+    "Pulse": 20
+  },
+  "static": false,
+  "sockets": {
+    "Pulse": [
+      0.0,
+      0.0,
+      0.01
+    ],
+    "Lure": [
+      0.0,
+      0.0,
+      0.8
+    ]
+  },
+  "pivot": "centre on the ground (the anvil's centre)",
+  "bones": [
+    "Root",
+    "Hammer",
+    "Head",
+    "Lure",
+    "Pulse"
+  ],
+  "deform_bones": [
+    "Root",
+    "Hammer",
+    "Head"
+  ]
+}

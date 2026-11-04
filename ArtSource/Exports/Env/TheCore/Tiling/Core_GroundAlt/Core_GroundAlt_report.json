@@ -1,0 +1,21 @@
+{
+  "set": "Core_GroundAlt",
+  "continent": "TheCore",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 2.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.166,
+    0.141,
+    0.222
+  ],
+  "value_mean": 0.152,
+  "smoothness_mean": 0.375,
+  "height_range_m": 0.0246
+}

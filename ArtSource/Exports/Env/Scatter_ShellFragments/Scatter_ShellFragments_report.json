@@ -1,0 +1,36 @@
+{
+  "asset": "Scatter_ShellFragments",
+  "game_tris": 200,
+  "source_tris": 15244,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 4,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.687,
+    "world_per_uv": 0.33191700293608967
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 5.5,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 2.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.378,
+    0.311,
+    0.063
+  ]
+}

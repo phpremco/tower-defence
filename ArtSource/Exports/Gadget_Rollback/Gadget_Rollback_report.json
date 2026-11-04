@@ -1,0 +1,62 @@
+{
+  "asset": "Gadget_Rollback",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.675,
+    "world_per_uv": 1.5941
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 31.9,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 26.6,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Rollback.fbx",
+  "tris": 1746,
+  "tris_lod1": 1230,
+  "clips": {
+    "Deploy": 30,
+    "Idle": 90,
+    "Pulse": 12
+  },
+  "static": false,
+  "sockets": {
+    "Push": [
+      0.0,
+      -0.105,
+      0.361
+    ],
+    "Field": [
+      0.0,
+      -0.45,
+      0.01
+    ]
+  },
+  "pivot": "centre on the ground; the dish looks along -Y (Unity +Z): face it up the road, towards the enemies",
+  "bones": [
+    "Root",
+    "Dish",
+    "Ring",
+    "Push",
+    "Field"
+  ],
+  "deform_bones": [
+    "Root",
+    "Dish",
+    "Ring"
+  ]
+}

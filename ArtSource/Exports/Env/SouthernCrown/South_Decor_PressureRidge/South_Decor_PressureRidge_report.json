@@ -1,0 +1,37 @@
+{
+  "asset": "South_Decor_PressureRidge",
+  "continent": "SouthernCrown",
+  "game_tris": 1200,
+  "source_tris": 63212,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 148,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.604,
+    "world_per_uv": 1.6452892816420766
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 23.5,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 13.7,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.467,
+    0.608,
+    0.608
+  ]
+}

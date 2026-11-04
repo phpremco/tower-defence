@@ -1,0 +1,56 @@
+{
+  "asset": "Surgefin",
+  "game_tris": 3947,
+  "source_tris": 195952,
+  "bones": 16,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 38,
+    "folded_fallback_faces": 57,
+    "mirrored_faces": 1949,
+    "uv_coverage": 0.622,
+    "world_per_uv": 0.8038179687254244
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 10.0,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 13.4,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 28,
+    "Swim": 24,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 40,
+    "Emerge": 48
+  },
+  "unity_scale": 0.75,
+  "scale_keyed_bones": [],
+  "lod1": {
+    "fbx": "Surgefin_LOD1.fbx",
+    "tris": 1699,
+    "bones": 10
+  },
+  "walk_distance_per_loop": 0.2,
+  "swim_distance_per_loop": 0.5,
+  "pivot": "ground (dry) or water surface (swimming: Swim keeps the body 0.03 lower)",
+  "emerge": {
+    "surface_frame": 10,
+    "start_depth": 0.45,
+    "start_back": 0.15
+  }
+}

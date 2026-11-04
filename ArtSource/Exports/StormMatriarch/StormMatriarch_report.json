@@ -1,0 +1,52 @@
+{
+  "asset": "StormMatriarch",
+  "base_species": "Skyray",
+  "palette": "cool",
+  "game_tris": 13446,
+  "source_tris": 777884,
+  "bones": 26,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 316,
+    "folded_fallback_faces": 669,
+    "mirrored_faces": 5106,
+    "uv_coverage": 0.541,
+    "world_per_uv": 3.2435017459712783
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 21.3,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 28.5,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 56,
+    "Idle": 72,
+    "Hit": 14,
+    "Death": 48,
+    "Release": 54
+  },
+  "release_frame": 30,
+  "release_point": "Body bone, 0.25 above the back",
+  "fly_beat_seconds": 1.87,
+  "pivot": "body centre (flight height)",
+  "unity_scale": 0.72,
+  "lod1": {
+    "fbx": "StormMatriarch_LOD1.fbx",
+    "tris": 6000,
+    "bones": 16
+  }
+}

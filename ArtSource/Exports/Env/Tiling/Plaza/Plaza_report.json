@@ -1,0 +1,19 @@
+{
+  "set": "Plaza",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.451,
+    0.444,
+    0.524
+  ],
+  "smoothness_mean": 0.375,
+  "height_range_m": 0.0268
+}

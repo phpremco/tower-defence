@@ -1,0 +1,69 @@
+{
+  "asset": "Cutscene_Drill",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.508,
+    "world_per_uv": 10.2336
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 204.7,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 170.6,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Drill.fbx",
+  "meshes": {
+    "Cutscene_Drill": 3630
+  },
+  "tris": 3630,
+  "lod1": "none: cutscene only",
+  "bones": [
+    "Root",
+    "Block",
+    "String",
+    "BitTip",
+    "Cable"
+  ],
+  "deform_bones": [
+    "Root",
+    "Block",
+    "String",
+    "Cable"
+  ],
+  "clips": {
+    "Spin": 30,
+    "Sink": 150
+  },
+  "sockets": {
+    "Exhaust": [
+      0.86,
+      0.82,
+      1.78
+    ],
+    "Beacon": [
+      0.22,
+      -0.22,
+      4.8
+    ],
+    "Dust": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+}

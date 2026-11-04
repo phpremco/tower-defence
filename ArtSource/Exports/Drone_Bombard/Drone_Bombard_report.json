@@ -1,0 +1,108 @@
+{
+  "asset": "Drone_Bombard",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.625,
+    "world_per_uv": 1.7647
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 35.3,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 29.4,
+      "mask": "A"
+    }
+  },
+  "fbx": "Drone_Bombard.fbx",
+  "tris": 2148,
+  "tris_lod1": 1252,
+  "bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Bomb_1",
+    "Bomb_2",
+    "Bay_L",
+    "Bay_R",
+    "Drop_1",
+    "Drop_2",
+    "Drop_3",
+    "Drop_4",
+    "Thruster_L",
+    "Thruster_R"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Bomb_1",
+    "Bomb_2",
+    "Bay_L",
+    "Bay_R"
+  ],
+  "clips": {
+    "Idle": 60,
+    "Fly": 60,
+    "Work": 60
+  },
+  "altitude": 2.2,
+  "rotors": {
+    "Rotor_1": [
+      -0.24,
+      0.05,
+      0.005
+    ],
+    "Rotor_2": [
+      0.24,
+      0.05,
+      0.005
+    ]
+  },
+  "pivot": "drone centre (DroneView root); faces -Y in Blender (Unity +Z)",
+  "sockets": {
+    "Drop_1": [
+      -0.025,
+      -0.03,
+      -0.095
+    ],
+    "Drop_2": [
+      0.025,
+      -0.03,
+      -0.095
+    ],
+    "Drop_3": [
+      -0.025,
+      0.09,
+      -0.095
+    ],
+    "Drop_4": [
+      0.025,
+      0.09,
+      -0.095
+    ],
+    "Thruster_L": [
+      -0.05,
+      0.275,
+      0.015
+    ],
+    "Thruster_R": [
+      0.05,
+      0.275,
+      0.015
+    ]
+  }
+}

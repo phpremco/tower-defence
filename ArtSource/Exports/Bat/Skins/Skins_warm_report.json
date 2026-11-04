@@ -1,0 +1,44 @@
+{
+  "asset": "Bat skins (warm glow)",
+  "skins": {
+    "Tide": "Skins/Tide/",
+    "Frost": "Skins/Frost/"
+  },
+  "palettes": {
+    "Tide": {
+      "top": [
+        0.13,
+        0.33,
+        0.37
+      ],
+      "glow": [
+        1.0,
+        0.42,
+        0.26
+      ],
+      "eye": [
+        1.0,
+        0.86,
+        0.6
+      ]
+    },
+    "Frost": {
+      "top": [
+        0.74,
+        0.8,
+        0.86
+      ],
+      "glow": [
+        1.0,
+        0.44,
+        0.1
+      ],
+      "eye": [
+        1.0,
+        0.8,
+        0.42
+      ]
+    }
+  },
+  "mesh_check_max_uv_diff": 0.0
+}

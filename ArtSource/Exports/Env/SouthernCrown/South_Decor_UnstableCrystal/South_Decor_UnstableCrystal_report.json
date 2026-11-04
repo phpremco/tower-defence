@@ -1,0 +1,37 @@
+{
+  "asset": "South_Decor_UnstableCrystal",
+  "continent": "SouthernCrown",
+  "game_tris": 1300,
+  "source_tris": 58476,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 45,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.593,
+    "world_per_uv": 1.467329883554396
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 21.0,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 12.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.671,
+    0.583,
+    1.19
+  ]
+}

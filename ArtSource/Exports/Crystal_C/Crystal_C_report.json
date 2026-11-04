@@ -1,0 +1,31 @@
+{
+  "asset": "Crystal_C",
+  "game_tris": 1480,
+  "source_tris": 114272,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 165,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.59,
+    "world_per_uv": 1.8124554116734846
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 25.9,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 15.1,
+      "mask": "A"
+    }
+  }
+}

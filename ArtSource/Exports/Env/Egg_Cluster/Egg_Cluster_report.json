@@ -1,0 +1,36 @@
+{
+  "asset": "Egg_Cluster",
+  "game_tris": 1300,
+  "source_tris": 94540,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 130,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.595,
+    "world_per_uv": 1.6754959130948328
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 20.9,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 27.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.835,
+    0.754,
+    0.389
+  ]
+}

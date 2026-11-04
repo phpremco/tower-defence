@@ -1,0 +1,51 @@
+{
+  "asset": "Gadget_Chrono",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.573,
+    "world_per_uv": 1.2074
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 24.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 20.1,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Chrono.fbx",
+  "tris": 2008,
+  "tris_lod1": 1328,
+  "clips": {
+    "Deploy": 30,
+    "Idle": 90
+  },
+  "static": false,
+  "sockets": {},
+  "pivot": "centre on the ground; faces -Y in Blender (Unity +Z)",
+  "bones": [
+    "Root",
+    "Core",
+    "RingA",
+    "RingB",
+    "Field"
+  ],
+  "deform_bones": [
+    "Root",
+    "Core",
+    "RingA",
+    "RingB"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "asset": "South_Cliff_OuterCorner",
+  "continent": "SouthernCrown",
+  "game_tris": 1500,
+  "source_tris": 207492,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 219,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.519,
+    "world_per_uv": 4.69887450738606
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 39.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 67.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.999,
+    1.958,
+    1.819
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "asset": "Gadget_Barrel",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.744,
+    "world_per_uv": 1.7444
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 34.9,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 29.1,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Barrel.fbx",
+  "tris": 1208,
+  "tris_lod1": 656,
+  "clips": {},
+  "static": true,
+  "sockets": {
+    "Blast": [
+      0.0,
+      0.0,
+      0.3
+    ],
+    "Fuse": [
+      -0.07,
+      0.02,
+      0.58
+    ]
+  },
+  "pivot": "centre on the ground; faces -Y in Blender (Unity +Z)"
+}

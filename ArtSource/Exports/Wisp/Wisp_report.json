@@ -1,0 +1,49 @@
+{
+  "asset": "Wisp",
+  "game_tris": 2415,
+  "source_tris": 491816,
+  "bones": 14,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 26,
+    "folded_fallback_faces": 33,
+    "mirrored_faces": 1197,
+    "uv_coverage": 0.578,
+    "world_per_uv": 0.9114005398422386
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 19.0,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 14.2,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Float": 60,
+    "Land": 24,
+    "Grounded": 60,
+    "Hit": 12,
+    "Death": 30
+  },
+  "pivot": "ground",
+  "float_height": 0.42,
+  "grounded_height": 0.24,
+  "ring_spin_degrees_per_second": 180,
+  "lod1": {
+    "fbx": "Wisp_LOD1.fbx",
+    "tris": 999,
+    "bones": 7
+  }
+}

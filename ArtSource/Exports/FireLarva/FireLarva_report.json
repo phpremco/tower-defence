@@ -1,0 +1,49 @@
+{
+  "asset": "FireLarva",
+  "game_tris": 1458,
+  "source_tris": 111780,
+  "bones": 21,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 11,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 729,
+    "uv_coverage": 0.596,
+    "world_per_uv": 0.7090465283765023
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 5.9,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 8.9,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Crawl": 20,
+    "Idle": 48,
+    "Hit": 10,
+    "Death": 30
+  },
+  "unity_scale": 0.6,
+  "scale_keyed_bones": [],
+  "lod1": {
+    "fbx": "FireLarva_LOD1.fbx",
+    "tris": 700,
+    "bones": 13
+  },
+  "crawl_distance_per_loop": 0.2,
+  "minion_of": "CinderMatriarch",
+  "spawn": "leaves the Matriarch's chimney mouths (bones Vent_1..3) at Spawn frame 30-36"
+}

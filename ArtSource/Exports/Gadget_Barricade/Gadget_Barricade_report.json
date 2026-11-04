@@ -1,0 +1,80 @@
+{
+  "asset": "Gadget_Barricade",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.712,
+    "world_per_uv": 2.6025
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 52.0,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 43.4,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_Barricade.fbx",
+  "tris": 1592,
+  "tris_lod1": 656,
+  "clips": {
+    "Deploy": 30,
+    "Hit": 8,
+    "Break": 24
+  },
+  "static": false,
+  "sockets": {
+    "Spark_1": [
+      -0.38,
+      -0.06,
+      0.32
+    ],
+    "Spark_2": [
+      0.0,
+      -0.06,
+      0.25
+    ],
+    "Spark_3": [
+      0.38,
+      -0.06,
+      0.34
+    ],
+    "Smoke": [
+      0.0,
+      0.0,
+      0.3
+    ]
+  },
+  "pivot": "centre of the sill on the ground; spans 1.9 across local X (the road's width); the slabs lean to -Y (Unity +Z, the enemy side)",
+  "bones": [
+    "Root",
+    "Slab_1",
+    "Slab_2",
+    "Slab_3",
+    "Slab_4",
+    "Slab_5",
+    "Spark_1",
+    "Spark_2",
+    "Spark_3",
+    "Smoke"
+  ],
+  "deform_bones": [
+    "Root",
+    "Slab_1",
+    "Slab_2",
+    "Slab_3",
+    "Slab_4",
+    "Slab_5"
+  ]
+}

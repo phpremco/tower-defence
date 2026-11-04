@@ -1,0 +1,28 @@
+{
+  "asset": "Tower_Wreck",
+  "objects": {
+    "Wreck": 3272,
+    "Debris_Gun": 314,
+    "Debris_Cannon": 264,
+    "Debris_Laser": 282,
+    "Debris_Flak": 436,
+    "Debris_GateGun": 156
+  },
+  "uv": {
+    "coverage": 0.611,
+    "world_per_uv": 2.8321
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 56.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 47.2,
+      "mask": "A"
+    }
+  },
+  "note": "Static. Wreck = burnt pad + fallen husk + scrap; show it with the tower's Debris_<Tower>."
+}

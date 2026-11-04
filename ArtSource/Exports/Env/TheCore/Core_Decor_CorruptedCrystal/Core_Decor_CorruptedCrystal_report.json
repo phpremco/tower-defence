@@ -1,0 +1,37 @@
+{
+  "asset": "Core_Decor_CorruptedCrystal",
+  "continent": "TheCore",
+  "game_tris": 1300,
+  "source_tris": 58664,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 38,
+    "folded_fallback_faces": 6,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.571,
+    "world_per_uv": 1.5318363155746089
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 21.9,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 19.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.858,
+    0.689,
+    0.817
+  ]
+}

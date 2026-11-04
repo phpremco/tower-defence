@@ -1,0 +1,21 @@
+{
+  "set": "South_Ground",
+  "continent": "SouthernCrown",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.106,
+    0.12,
+    0.159
+  ],
+  "value_mean": 0.12,
+  "smoothness_mean": 0.648,
+  "height_range_m": 0.0254
+}

@@ -1,0 +1,58 @@
+{
+  "asset": "Gadget_SpikeStrip",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.675,
+    "world_per_uv": 2.3881
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 47.8,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 39.8,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_SpikeStrip.fbx",
+  "tris": 1212,
+  "tris_lod1": 728,
+  "clips": {
+    "Deploy": 24,
+    "Idle": 60,
+    "Trigger": 10
+  },
+  "static": false,
+  "sockets": {
+    "Hit": [
+      0.0,
+      0.0,
+      0.06
+    ]
+  },
+  "pivot": "centre on the ground; spans 1.8 across X, 0.42 along Y",
+  "bones": [
+    "Root",
+    "Spikes_1",
+    "Spikes_2",
+    "Spikes_3",
+    "Hit"
+  ],
+  "deform_bones": [
+    "Root",
+    "Spikes_1",
+    "Spikes_2",
+    "Spikes_3"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "set": "South_CrackedIce",
+  "continent": "SouthernCrown",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.316,
+    0.387,
+    0.496
+  ],
+  "value_mean": 0.38,
+  "smoothness_mean": 0.701,
+  "height_range_m": 0.029
+}

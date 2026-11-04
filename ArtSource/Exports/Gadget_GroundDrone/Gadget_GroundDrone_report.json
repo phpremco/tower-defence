@@ -1,0 +1,55 @@
+{
+  "asset": "Gadget_GroundDrone",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.748,
+    "world_per_uv": 1.2563
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 25.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 20.9,
+      "mask": "A"
+    }
+  },
+  "fbx": "Gadget_GroundDrone.fbx",
+  "tris": 928,
+  "tris_lod1": 544,
+  "clips": {
+    "Drive": 30,
+    "Idle": 60
+  },
+  "static": false,
+  "sockets": {},
+  "pivot": "centre on the ground; faces -Y in Blender (Unity +Z)",
+  "bones": [
+    "Root",
+    "Body",
+    "Wheel_FL",
+    "Wheel_FR",
+    "Wheel_RL",
+    "Wheel_RR",
+    "Ram"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Wheel_FL",
+    "Wheel_FR",
+    "Wheel_RL",
+    "Wheel_RR"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "asset": "Bat",
+  "game_tris": 3896,
+  "source_tris": 342392,
+  "bones": 16,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 42,
+    "folded_fallback_faces": 138,
+    "mirrored_faces": 1911,
+    "uv_coverage": 0.628,
+    "world_per_uv": 0.8758196719698892
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 10.9,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 14.6,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Death": 36
+  },
+  "flap_seconds": 0.43,
+  "pivot": "body centre (flight height)",
+  "unity_scale": 0.65,
+  "default_element": "Ember",
+  "elements": [
+    "Ember",
+    "Moss",
+    "Dust",
+    "Tide",
+    "Frost",
+    "Mire"
+  ],
+  "skins_baked": {
+    "Moss": "Skins/Moss/",
+    "Dust": "Skins/Dust/"
+  },
+  "lod1": {
+    "fbx": "Bat_LOD1.fbx",
+    "tris": 1698,
+    "bones": 10
+  }
+}

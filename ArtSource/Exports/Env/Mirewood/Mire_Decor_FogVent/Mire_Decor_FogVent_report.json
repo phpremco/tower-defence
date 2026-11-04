@@ -1,0 +1,50 @@
+{
+  "asset": "Mire_Decor_FogVent",
+  "continent": "Mirewood",
+  "game_tris": 1000,
+  "source_tris": 44996,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 73,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.739,
+    "world_per_uv": 1.1663536753297095
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 9.7,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 16.7,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.75,
+    0.666,
+    0.562
+  ],
+  "fog_emitter": {
+    "position_blender": [
+      0.0,
+      0.03,
+      0.48000000000000004
+    ],
+    "position_unity": [
+      0.0,
+      0.48000000000000004,
+      0.03
+    ],
+    "note": "spawn the marsh fog particles here, rising, teal-grey"
+  }
+}

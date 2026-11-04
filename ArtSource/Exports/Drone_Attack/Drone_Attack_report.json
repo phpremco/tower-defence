@@ -1,0 +1,69 @@
+{
+  "asset": "Drone_Attack",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.6,
+    "world_per_uv": 1.279
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 25.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 21.3,
+      "mask": "A"
+    }
+  },
+  "fbx": "Drone_Attack.fbx",
+  "tris": 2208,
+  "tris_lod1": 1248,
+  "bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Gun_1",
+    "Muzzle_1",
+    "Gun_2",
+    "Muzzle_2",
+    "Thruster"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Gun_1",
+    "Gun_2"
+  ],
+  "clips": {
+    "Idle": 60,
+    "Fly": 60,
+    "Work": 60
+  },
+  "altitude": 2.2,
+  "rotors": {
+    "Rotor_1": [
+      -0.33,
+      0.1,
+      0.01
+    ],
+    "Rotor_2": [
+      0.33,
+      0.1,
+      0.01
+    ]
+  },
+  "pivot": "drone centre (DroneView root); faces -Y in Blender (Unity +Z)"
+}

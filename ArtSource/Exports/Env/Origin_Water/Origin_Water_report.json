@@ -1,0 +1,38 @@
+{
+  "asset": "Origin_Water",
+  "game_tris": 1800,
+  "source_tris": 361704,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 6,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.732,
+    "world_per_uv": 2.6268495406819574
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 32.8,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 43.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.136,
+    1.126,
+    0.97
+  ],
+  "placement": "pivot on the liquid surface: cell centre at TerrainLiquidBuilder.SurfaceLevel(kind); any yaw; Emission is a white mask, tint it with LevelVisualBuilder.NestColor(element)",
+  "emission": "white mask, tint in Unity"
+}

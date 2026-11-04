@@ -1,0 +1,37 @@
+{
+  "asset": "South_Scatter_Shards",
+  "continent": "SouthernCrown",
+  "game_tris": 200,
+  "source_tris": 3724,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 6,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.488,
+    "world_per_uv": 0.24027407579557244
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 3.4,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 2.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.106,
+    0.274,
+    0.093
+  ]
+}

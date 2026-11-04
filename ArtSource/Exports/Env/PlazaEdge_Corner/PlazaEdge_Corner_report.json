@@ -1,0 +1,36 @@
+{
+  "asset": "PlazaEdge_Corner",
+  "game_tris": 400,
+  "source_tris": 37964,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 13,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.563,
+    "world_per_uv": 1.1402606918651415
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 9.5,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 16.3,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.323,
+    0.322,
+    0.693
+  ]
+}

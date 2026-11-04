@@ -1,0 +1,20 @@
+{
+  "set": "North_Snow",
+  "continent": "NorthernCrown",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.389,
+    0.426,
+    0.508
+  ],
+  "value_mean": 0.424,
+  "smoothness_mean": 0.216,
+  "height_range_m": 0.0474
+}

@@ -1,0 +1,56 @@
+{
+  "asset": "Pioneer1",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.655,
+    "world_per_uv": 4.3252
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 86.5,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 72.1,
+      "mask": "A"
+    }
+  },
+  "fbx": "Pioneer1.fbx",
+  "meshes": {
+    "Pioneer1": 3300
+  },
+  "tris": 3300,
+  "lod1": "none (portrait/cutscene or static decor)",
+  "uv_sets": [
+    "UVMap"
+  ],
+  "clips": {},
+  "sockets": {
+    "StatusLight": [
+      0.12,
+      0.16,
+      1.15
+    ],
+    "Lens": [
+      -0.28,
+      -0.27,
+      1.57
+    ],
+    "Centre": [
+      0.0,
+      0.0,
+      0.9
+    ]
+  },
+  "pivot": "on the ground / badge centre; faces -Y in Blender (Unity +Z)"
+}

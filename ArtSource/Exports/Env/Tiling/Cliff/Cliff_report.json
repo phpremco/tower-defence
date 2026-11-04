@@ -1,0 +1,19 @@
+{
+  "set": "Cliff",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.234,
+    0.234,
+    0.301
+  ],
+  "smoothness_mean": 0.179,
+  "height_range_m": 0.1064
+}

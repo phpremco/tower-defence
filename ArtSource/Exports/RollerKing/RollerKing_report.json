@@ -1,0 +1,56 @@
+{
+  "asset": "RollerKing",
+  "base_species": "Roller",
+  "game_tris": 13835,
+  "source_tris": 2327396,
+  "bones": 20,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 136,
+    "folded_fallback_faces": 111,
+    "mirrored_faces": 6637,
+    "uv_coverage": 0.472,
+    "world_per_uv": 2.012858267064512
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 33.5,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 25.2,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 20,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 36,
+    "Curl": 14,
+    "Roll": 24,
+    "Uncurl": 14,
+    "Quake": 30
+  },
+  "quake_impact_frame": 16,
+  "walk_distance_per_loop": 1.008,
+  "ball_radius": 0.651,
+  "ball_centre_height": 0.676,
+  "roll_distance_per_loop": 4.09,
+  "unity_scale": 0.78,
+  "model_scale_from_roller_units": 2.1,
+  "lod1": {
+    "fbx": "RollerKing_LOD1.fbx",
+    "tris": 5997,
+    "bones": 14
+  }
+}

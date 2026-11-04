@@ -1,0 +1,62 @@
+{
+  "asset": "Ora",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.522,
+    "world_per_uv": 1.128
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 22.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 18.8,
+      "mask": "A"
+    }
+  },
+  "fbx": "Ora.fbx",
+  "meshes": {
+    "Ora": 1622
+  },
+  "tris": 1622,
+  "lod1": "none (portrait/cutscene or static decor)",
+  "uv_sets": [
+    "UVMap",
+    "Bands"
+  ],
+  "clips": {
+    "Idle": 120,
+    "Talk": 60,
+    "Glitch": 24
+  },
+  "sockets": {
+    "Centre": [
+      0.0,
+      0.0,
+      0.34
+    ]
+  },
+  "pivot": "on the ground / badge centre; faces -Y in Blender (Unity +Z)",
+  "bones": [
+    "Root",
+    "Float",
+    "Core",
+    "Inner",
+    "Gaze",
+    "Halo",
+    "Ring_1",
+    "Ring_2",
+    "Ring_3"
+  ]
+}

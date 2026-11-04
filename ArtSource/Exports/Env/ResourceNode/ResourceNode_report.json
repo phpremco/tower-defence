@@ -1,0 +1,55 @@
+{
+  "asset": "ResourceNode",
+  "stages": {
+    "ResourceNode_Full": 1968,
+    "ResourceNode_Half": 1802,
+    "ResourceNode_Empty": 1628
+  },
+  "game_tris_total": 5398,
+  "source_tris": 331232,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 302,
+    "folded_fallback_faces": 12,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.503,
+    "world_per_uv": 2.7945540315497452
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 23.3,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 39.9,
+      "mask": "A"
+    }
+  },
+  "size_m": {
+    "ResourceNode_Full": [
+      0.822,
+      0.798,
+      0.856
+    ],
+    "ResourceNode_Half": [
+      0.816,
+      0.793,
+      0.501
+    ],
+    "ResourceNode_Empty": [
+      0.819,
+      0.589,
+      0.365
+    ]
+  },
+  "placement": "pivot on the ground at the mine cell centre (MineCells); swap Full -> Half at 50 % stock, Empty on MineDepleted",
+  "emission": "baked gold (MineColor), not a mask"
+}

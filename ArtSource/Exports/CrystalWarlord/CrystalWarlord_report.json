@@ -1,0 +1,53 @@
+{
+  "asset": "CrystalWarlord",
+  "base_species": "Bulwark",
+  "game_tris": 14000,
+  "source_tris": 1136008,
+  "bones": 19,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 455,
+    "folded_fallback_faces": 130,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.487,
+    "world_per_uv": 2.29995012616031
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 38.3,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 32.9,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 32,
+    "Idle": 72,
+    "Hit": 14,
+    "Death": 44,
+    "Block": 24,
+    "Sweep": 40
+  },
+  "mirrored_uvs": false,
+  "sweep_hit_frame": 20,
+  "block_up_frame": 7,
+  "walk_distance_per_loop": 1.05,
+  "unity_scale": 0.96,
+  "model_scale_from_bulwark_units": 2.1,
+  "lod1": {
+    "fbx": "CrystalWarlord_LOD1.fbx",
+    "tris": 6000,
+    "bones": 16
+  }
+}

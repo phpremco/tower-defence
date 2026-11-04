@@ -1,0 +1,37 @@
+{
+  "asset": "Ash_Decor_Fulgurite",
+  "continent": "AshenReach",
+  "game_tris": 1200,
+  "source_tris": 72412,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 18,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.525,
+    "world_per_uv": 1.537759231025609
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 22.0,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 12.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.563,
+    0.479,
+    0.685
+  ]
+}

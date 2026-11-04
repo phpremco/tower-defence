@@ -1,0 +1,93 @@
+{
+  "asset": "Drone_Builder",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.543,
+    "world_per_uv": 1.4696
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 29.4,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 24.5,
+      "mask": "A"
+    }
+  },
+  "fbx": "Drone_Builder.fbx",
+  "tris": 2204,
+  "tris_lod1": 1428,
+  "bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Rotor_3",
+    "Arm_L",
+    "Weld_L",
+    "Arm_R",
+    "Weld_R",
+    "Beacon"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Rotor_3",
+    "Arm_L",
+    "Arm_R"
+  ],
+  "clips": {
+    "Idle": 60,
+    "Fly": 60,
+    "Work": 60
+  },
+  "altitude": 2.2,
+  "rotors": {
+    "Rotor_1": [
+      0.0,
+      0.26,
+      0.015
+    ],
+    "Rotor_2": [
+      -0.225,
+      -0.13,
+      0.015
+    ],
+    "Rotor_3": [
+      0.225,
+      -0.13,
+      0.015
+    ]
+  },
+  "pivot": "drone centre (DroneView root); faces -Y in Blender (Unity +Z)",
+  "sockets": {
+    "Weld_L": [
+      -0.058,
+      -0.216,
+      -0.202
+    ],
+    "Weld_R": [
+      0.058,
+      -0.216,
+      -0.202
+    ],
+    "Beacon": [
+      0.0,
+      0.0,
+      0.12
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "asset": "Core_Decor_HexOutcrop",
+  "continent": "TheCore",
+  "game_tris": 1200,
+  "source_tris": 98080,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 7,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.621,
+    "world_per_uv": 1.926007078817709
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 27.5,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 16.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.639,
+    0.738,
+    0.737
+  ]
+}

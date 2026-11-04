@@ -1,0 +1,38 @@
+{
+  "asset": "Gravemaw_Hole",
+  "game_tris": 2400,
+  "source_tris": 680988,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 138,
+    "folded_fallback_faces": 8,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.596,
+    "world_per_uv": 8.08485663988613
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 67.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 115.5,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    3.508,
+    3.505,
+    1.655
+  ],
+  "placement": "pivot on the ground at the hole centre; pit floor at -1.0; place DIVE_HOLE ahead of / EMERGE_HOLE behind the boss pivot (see Gravemaw_report.json)",
+  "emission": "baked pink (Crysium)"
+}

@@ -1,0 +1,76 @@
+{
+  "asset": "Drone_Harvest",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.541,
+    "world_per_uv": 1.9146
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 38.3,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 31.9,
+      "mask": "A"
+    }
+  },
+  "fbx": "Drone_Harvest.fbx",
+  "tris": 2294,
+  "tris_lod1": 1262,
+  "bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Drill",
+    "Mine",
+    "Claw_1",
+    "Claw_2",
+    "Claw_3",
+    "Cargo"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Rotor_1",
+    "Rotor_2",
+    "Drill",
+    "Claw_1",
+    "Claw_2",
+    "Claw_3"
+  ],
+  "clips": {
+    "Idle": 60,
+    "Fly": 60,
+    "Work": 60
+  },
+  "altitude": 2.2,
+  "rotors": {
+    "Rotor_1": [
+      -0.4,
+      0.0,
+      0.03
+    ],
+    "Rotor_2": [
+      0.4,
+      0.0,
+      0.03
+    ]
+  },
+  "pivot": "drone centre (DroneView root); faces -Y in Blender (Unity +Z)",
+  "cargo": {
+    "object": "Drone_Harvest_Cargo",
+    "tris": 340
+  }
+}

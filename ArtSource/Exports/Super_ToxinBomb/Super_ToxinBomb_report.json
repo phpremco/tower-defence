@@ -1,0 +1,91 @@
+{
+  "asset": "Super_ToxinBomb",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.739,
+    "world_per_uv": 1.3296
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 26.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 22.2,
+      "mask": "A"
+    }
+  },
+  "fbx": "Super_ToxinBomb.fbx",
+  "tris": 1516,
+  "tris_lod1": 796,
+  "clips": {
+    "Fall": 30,
+    "Vent": 16
+  },
+  "static": false,
+  "sockets": {
+    "Vent_1": [
+      0.134,
+      0.134,
+      0.2
+    ],
+    "Vent_2": [
+      -0.134,
+      0.134,
+      0.2
+    ],
+    "Vent_3": [
+      -0.134,
+      -0.134,
+      0.2
+    ],
+    "Vent_4": [
+      0.134,
+      -0.134,
+      0.2
+    ],
+    "Cloud": [
+      0.0,
+      0.0,
+      0.3
+    ],
+    "Blast": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "pivot": "nose tip (the impact point); nose down along +Z",
+  "bones": [
+    "Root",
+    "Body",
+    "Valve_1",
+    "Vent_1",
+    "Valve_2",
+    "Vent_2",
+    "Valve_3",
+    "Vent_3",
+    "Valve_4",
+    "Vent_4",
+    "Cloud",
+    "Blast"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Valve_1",
+    "Valve_2",
+    "Valve_3",
+    "Valve_4"
+  ]
+}

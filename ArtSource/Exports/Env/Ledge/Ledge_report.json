@@ -1,0 +1,36 @@
+{
+  "asset": "Ledge",
+  "game_tris": 498,
+  "source_tris": 26768,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 33,
+    "folded_fallback_faces": 4,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.617,
+    "world_per_uv": 0.8852350806504914
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 7.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 12.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.87,
+    0.306,
+    0.185
+  ]
+}

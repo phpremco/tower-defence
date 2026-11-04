@@ -1,0 +1,158 @@
+{
+  "asset": "Tower_StormRifle",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.399,
+    "world_per_uv": 4.9045
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 98.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 81.7,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_StormRifle_T1.fbx",
+      "tris": 3728,
+      "tris_lod1": 1812,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.5938,
+          0.3913
+        ]
+      },
+      "sockets": {}
+    },
+    "T2": {
+      "fbx": "Tower_StormRifle_T2.fbx",
+      "tris": 4804,
+      "tris_lod1": 2620,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.065,
+          -0.6063,
+          0.3913
+        ],
+        "Muzzle_2": [
+          0.065,
+          -0.6063,
+          0.3913
+        ]
+      },
+      "sockets": {}
+    },
+    "T3": {
+      "fbx": "Tower_StormRifle_T3.fbx",
+      "tris": 4984,
+      "tris_lod1": 2312,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Spin": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.65,
+          0.3913
+        ]
+      },
+      "sockets": {}
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235,
+  "glow": [
+    0.4,
+    0.46,
+    1.0
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "asset": "Mire_Decor_Fungus",
+  "continent": "Mirewood",
+  "game_tris": 1300,
+  "source_tris": 62880,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 61,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.705,
+    "world_per_uv": 1.2686660662072582
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 15.9,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 21.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.747,
+    0.641,
+    0.638
+  ]
+}

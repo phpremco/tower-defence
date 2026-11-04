@@ -1,0 +1,157 @@
+{
+  "asset": "Tower_CryoBeam",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.511,
+    "world_per_uv": 3.7884
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 75.8,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 63.1,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_CryoBeam_T1.fbx",
+      "tris": 3906,
+      "tris_lod1": 1862,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.275,
+          0.4787
+        ]
+      },
+      "sockets": {}
+    },
+    "T2": {
+      "fbx": "Tower_CryoBeam_T2.fbx",
+      "tris": 4230,
+      "tris_lod1": 2106,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.275,
+          0.4787
+        ]
+      },
+      "sockets": {}
+    },
+    "T3": {
+      "fbx": "Tower_CryoBeam_T3.fbx",
+      "tris": 4630,
+      "tris_lod1": 2226,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.3,
+          0.4787
+        ]
+      },
+      "sockets": {}
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235,
+  "glow": [
+    0.5,
+    1.0,
+    0.95
+  ]
+}

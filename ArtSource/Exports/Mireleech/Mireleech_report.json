@@ -1,0 +1,51 @@
+{
+  "asset": "Mireleech",
+  "game_tris": 3906,
+  "source_tris": 160260,
+  "bones": 11,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 39,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 1950,
+    "uv_coverage": 0.555,
+    "world_per_uv": 0.7508262045231093
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 9.4,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 12.5,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Crawl": 30,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 40,
+    "Latch": 36
+  },
+  "unity_scale": 0.7,
+  "scale_keyed_bones": [],
+  "lod1": {
+    "fbx": "Mireleech_LOD1.fbx",
+    "tris": 1700,
+    "bones": 11
+  },
+  "crawl_distance_per_loop": 0.32,
+  "latch_bite_frame": 13,
+  "pivot": "ground, body centre",
+  "trail_origin": "under Seg_1 (the rear sucker), on the ground"
+}

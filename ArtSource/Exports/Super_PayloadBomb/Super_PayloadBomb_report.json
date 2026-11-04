@@ -1,0 +1,61 @@
+{
+  "asset": "Super_PayloadBomb",
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.692,
+    "world_per_uv": 1.6888
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 33.8,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 28.1,
+      "mask": "A"
+    }
+  },
+  "fbx": "Super_PayloadBomb.fbx",
+  "tris": 1170,
+  "tris_lod1": 754,
+  "clips": {
+    "Fall": 30,
+    "Arm": 12
+  },
+  "static": false,
+  "sockets": {
+    "Blast": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Trail": [
+      0.0,
+      0.0,
+      0.92
+    ]
+  },
+  "pivot": "nose tip (the impact point); the bomb stands nose down along +Z",
+  "bones": [
+    "Root",
+    "Body",
+    "Fins",
+    "Trail",
+    "Blast"
+  ],
+  "deform_bones": [
+    "Root",
+    "Body",
+    "Fins"
+  ]
+}

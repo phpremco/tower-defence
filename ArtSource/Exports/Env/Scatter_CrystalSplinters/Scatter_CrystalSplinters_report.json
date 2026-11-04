@@ -1,0 +1,36 @@
+{
+  "asset": "Scatter_CrystalSplinters",
+  "game_tris": 198,
+  "source_tris": 12316,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 13,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.584,
+    "world_per_uv": 0.3230141733425962
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 4.6,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 2.7,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.249,
+    0.198,
+    0.18
+  ]
+}

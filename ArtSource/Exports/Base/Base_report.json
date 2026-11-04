@@ -1,0 +1,194 @@
+{
+  "asset": "Base",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.519,
+    "world_per_uv": 16.2188
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 324.4,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 270.3,
+      "mask": "A"
+    }
+  },
+  "modules": {
+    "Deck": {
+      "object": "Base_Deck",
+      "pivot": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tris": 1828,
+      "tris_lod1": 520
+    },
+    "Command": {
+      "object": "Base_Command",
+      "pivot": [
+        0.0,
+        0.38,
+        0.23
+      ],
+      "tris": 1132,
+      "tris_lod1": 320
+    },
+    "Dish": {
+      "object": "Base_Dish",
+      "pivot": [
+        -0.3,
+        0.62,
+        2.02
+      ],
+      "tris": 234,
+      "tris_lod1": 174
+    },
+    "Pad": {
+      "object": "Base_Pad",
+      "pivot": [
+        0.74,
+        -0.5,
+        0.23
+      ],
+      "tris": 520,
+      "tris_lod1": 324
+    },
+    "Core": {
+      "object": "Base_Core",
+      "pivot": [
+        0.82,
+        0.42,
+        0.23
+      ],
+      "tris": 1912,
+      "tris_lod1": 1264
+    },
+    "Crystal": {
+      "object": "Base_Crystal",
+      "pivot": [
+        0.82,
+        0.42,
+        0.59
+      ],
+      "tris": 68,
+      "tris_lod1": 48
+    },
+    "Habitat": {
+      "object": "Base_Habitat",
+      "pivot": [
+        -0.84,
+        -0.3,
+        0.23
+      ],
+      "tris": 1100,
+      "tris_lod1": 492
+    },
+    "Hardpoints": {
+      "object": "Base_Hardpoints",
+      "pivot": [
+        0.0,
+        0.0,
+        0.23
+      ],
+      "tris": 456,
+      "tris_lod1": 48
+    }
+  },
+  "tris_total": 7250,
+  "tris_total_lod1": 3190,
+  "damage_overlay": {
+    "fbx": "Base_Damage.fbx",
+    "tris": 1188
+  },
+  "wreck": {
+    "fbx": "Base_Wreck.fbx",
+    "tris": 3720
+  },
+  "sockets": {
+    "HeroPost": [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    "TurretLink_L": [
+      -1.36,
+      0.05,
+      0.34
+    ],
+    "TurretLink_R": [
+      1.36,
+      0.05,
+      0.34
+    ],
+    "Smoke_Command": [
+      0.1,
+      0.45,
+      1.1
+    ],
+    "Smoke_Core": [
+      0.82,
+      0.42,
+      1.5
+    ],
+    "Smoke_Deck": [
+      -0.4,
+      -0.6,
+      0.3
+    ],
+    "Spark_1": [
+      0.0,
+      0.04,
+      0.55
+    ],
+    "Spark_2": [
+      0.62,
+      0.2,
+      0.4
+    ],
+    "Spark_3": [
+      -0.84,
+      -0.5,
+      0.5
+    ],
+    "Spark_4": [
+      0.4,
+      -0.9,
+      0.24
+    ],
+    "Light_Core": [
+      0.82,
+      0.42,
+      1.0
+    ],
+    "Light_Command": [
+      0.0,
+      0.2,
+      1.2
+    ]
+  },
+  "pivot": "base centre on the ground (LevelVisualBuilder.BasePosition); -Y (Unity +Z) faces the road",
+  "timelapse_order": [
+    "Deck",
+    "Command",
+    "Dish",
+    "Pad",
+    "Core",
+    "Crystal",
+    "Habitat",
+    "Hardpoints"
+  ],
+  "scale": "final size: do not apply LevelVisualBuilder.BaseScale"
+}

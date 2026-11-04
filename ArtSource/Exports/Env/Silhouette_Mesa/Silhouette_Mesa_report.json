@@ -1,0 +1,36 @@
+{
+  "asset": "Silhouette_Mesa",
+  "game_tris": 1000,
+  "source_tris": 85900,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 81,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.602,
+    "world_per_uv": 15.33702448699761
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 12.8,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 21.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    7.378,
+    6.417,
+    6.577
+  ]
+}

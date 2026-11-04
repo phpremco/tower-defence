@@ -1,0 +1,37 @@
+{
+  "asset": "Mire_RoadEdge_Straight",
+  "continent": "Mirewood",
+  "game_tris": 700,
+  "source_tris": 49444,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 5,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.679,
+    "world_per_uv": 1.2167696713338922
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 10.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 17.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.004,
+    0.459,
+    0.234
+  ]
+}

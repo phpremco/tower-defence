@@ -1,0 +1,38 @@
+{
+  "asset": "Queen",
+  "game_tris": 14490,
+  "source_tris": 526788,
+  "bones": 26,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 91,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 7065,
+    "uv_coverage": 0.658,
+    "world_per_uv": 4.353032501078052
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 24.2,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 18.1,
+      "mask": "A"
+    }
+  },
+  "actions": [
+    "Walk",
+    "Idle",
+    "Scream"
+  ]
+}

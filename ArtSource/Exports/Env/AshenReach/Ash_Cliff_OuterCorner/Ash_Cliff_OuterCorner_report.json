@@ -1,0 +1,37 @@
+{
+  "asset": "Ash_Cliff_OuterCorner",
+  "continent": "AshenReach",
+  "game_tris": 1500,
+  "source_tris": 226044,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 70,
+    "folded_fallback_faces": 462,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.567,
+    "world_per_uv": 5.233772730527994
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 43.6,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 74.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.408,
+    2.433,
+    1.999
+  ]
+}

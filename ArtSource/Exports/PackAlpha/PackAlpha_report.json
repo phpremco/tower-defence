@@ -1,0 +1,49 @@
+{
+  "asset": "PackAlpha",
+  "base_species": "Prowler",
+  "game_tris": 14018,
+  "source_tris": 697328,
+  "bones": 24,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 290,
+    "folded_fallback_faces": 411,
+    "mirrored_faces": 6140,
+    "uv_coverage": 0.464,
+    "world_per_uv": 2.4827015043937073
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 29.6,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 22.2,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Run": 20,
+    "Idle": 72,
+    "Hit": 14,
+    "Death": 40,
+    "Howl": 54
+  },
+  "howl_peak_frame": 22,
+  "run_distance_per_loop": 1.907,
+  "unity_scale": 0.78,
+  "lod1": {
+    "fbx": "PackAlpha_LOD1.fbx",
+    "tris": 5997,
+    "bones": 18
+  }
+}

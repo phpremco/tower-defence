@@ -1,0 +1,36 @@
+{
+  "asset": "Silhouette_Ridge",
+  "game_tris": 1200,
+  "source_tris": 146160,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 10,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.464,
+    "world_per_uv": 27.74862370995952
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 23.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 39.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    23.998,
+    4.992,
+    5.836
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "set": "RiftRock",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 2.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.122,
+    0.095,
+    0.101
+  ],
+  "smoothness_mean": 0.288,
+  "height_range_m": 0.0386
+}

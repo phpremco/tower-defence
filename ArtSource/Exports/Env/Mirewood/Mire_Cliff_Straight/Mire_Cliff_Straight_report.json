@@ -1,0 +1,37 @@
+{
+  "asset": "Mire_Cliff_Straight",
+  "continent": "Mirewood",
+  "game_tris": 1500,
+  "source_tris": 223868,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 57,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.704,
+    "world_per_uv": 4.484775392606508
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 37.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 64.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.016,
+    1.996,
+    1.642
+  ]
+}

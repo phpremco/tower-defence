@@ -1,0 +1,192 @@
+{
+  "asset": "Tower_Laser",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.496,
+    "world_per_uv": 3.9537
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 79.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 65.9,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_Laser_T1.fbx",
+      "tris": 3202,
+      "tris_lod1": 1494,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.275,
+          0.4787
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_Laser_T2.fbx",
+      "tris": 3818,
+      "tris_lod1": 1710,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.275,
+          0.4787
+        ]
+      }
+    },
+    "T3A": {
+      "fbx": "Tower_Laser_T3A.fbx",
+      "tris": 4210,
+      "tris_lod1": 2142,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Prong_1",
+        "Prong_2",
+        "Prong_3"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.3,
+          0.4787
+        ]
+      }
+    },
+    "T3B": {
+      "fbx": "Tower_Laser_T3B.fbx",
+      "tris": 3990,
+      "tris_lod1": 1962,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "ChargeUp": 24,
+        "Beam": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.6625,
+          0.4787
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235
+}

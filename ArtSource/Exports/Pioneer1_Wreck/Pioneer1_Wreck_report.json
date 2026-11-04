@@ -1,0 +1,61 @@
+{
+  "asset": "Pioneer1_Wreck",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.656,
+    "world_per_uv": 8.9751
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 179.5,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 149.6,
+      "mask": "A"
+    }
+  },
+  "fbx": "Pioneer1_Wreck.fbx",
+  "meshes": {
+    "Pioneer1_Wreck": 4980
+  },
+  "tris": 4980,
+  "lod1": "none (portrait/cutscene or static decor)",
+  "uv_sets": [
+    "UVMap"
+  ],
+  "clips": {},
+  "sockets": {
+    "StatusLight": [
+      0.333,
+      -0.152,
+      0.901
+    ],
+    "Smoke": [
+      0.124,
+      -0.236,
+      0.962
+    ],
+    "Log": [
+      0.151,
+      -0.674,
+      0.472
+    ],
+    "Centre": [
+      0.0,
+      0.0,
+      0.6
+    ]
+  },
+  "pivot": "on the ground / badge centre; faces -Y in Blender (Unity +Z)"
+}

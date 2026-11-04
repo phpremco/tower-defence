@@ -1,0 +1,60 @@
+{
+  "asset": "Siftjaw",
+  "game_tris": 3950,
+  "source_tris": 278572,
+  "bones": 19,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 32,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 1973,
+    "uv_coverage": 0.612,
+    "world_per_uv": 0.9481167354923091
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 15.8,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 11.9,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 24,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 40,
+    "Burrow": 36,
+    "Emerge": 36
+  },
+  "unity_scale": 0.75,
+  "scale_keyed_bones": [],
+  "lod1": {
+    "fbx": "Siftjaw_LOD1.fbx",
+    "tris": 1698,
+    "bones": 12
+  },
+  "walk_distance_per_loop": 0.2,
+  "pivot": "ground, body centre",
+  "burrow": {
+    "under_frame": 24,
+    "depth": 0.5,
+    "forward": 0.12
+  },
+  "emerge": {
+    "breach_frame": 8,
+    "start_depth": 0.5,
+    "start_back": 0.1
+  }
+}
