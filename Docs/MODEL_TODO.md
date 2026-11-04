@@ -177,16 +177,16 @@ Animaties: **Fly, Hover, Work** (lichtbundel, vuren of graven).
 
 | Status | Model | Extra |
 | --- | --- | --- |
-| ◐ | **Crysium-kristallen** (3 varianten) | Gloed bij de import iets lager, zodat de facetten zichtbaar worden |
-| ◐ | **Rotsen** (3 varianten) | Rock_C is wat druk |
-| ◐ | **Nestkrater / burrow** | Was een vulkaanachtig nest. Textures zacht op 512 |
-| ◐ | **Rotsspleet (Rift)** voor het element Steen | Ronde 8: `Rift_1x1/2x1/3x1/_Cap`, kartelranden, amber gloed, scherven. Alleen rechte stukken |
-| ◐ | **Scree** (puinveld) | Ronde 8: `Scree_Patch` |
-| ◐ | **Boulder, Column, Spike, Spire** | Ronde 8: `Decor_*` |
-| ◐ | **Planten:** Frond, Tendril, GlowTree, Mushroom | Ronde 8: `Flora_*`, pruim met roze/limoen gloed, sway-vertexkleur |
-| ◐ | **Egg** (eierclusters bij nesten) | Ronde 8: `Egg_Cluster` |
-| ◐ | **Kristalader in de grond** | Ronde 8: `CrystalVein` (platte mesh) |
-| ◐ | **Padrand en bouwplek-tegels** | Ronde 8: zie hieronder |
+| ☑ | **Crysium-kristallen** (3 varianten) | Import stage 4a: vervangen de procedurele Crystal-props (op de oude maat, x0,87). Gloed 1,2 in plaats van 2,2, zodat de facetten lezen; buiten het veld gedimd |
+| ☑ | **Rotsen** (3 varianten) | Import stage 4a: PropKind Rock (x0,76), gloed 1,3. Rock_C is wat druk |
+| ☑ | **Nestkrater / burrow** | Import stage 4a: `Burrow_A` bij elk nest op grond, verhoging of rift (0,75x), met het licht, de sporen en de gloedpoel van het oude nest |
+| ☑ | **Rotsspleet (Rift)** voor het element Steen | Import stage 4a: `Rift_*` op rechte spleten van één cel breed (kap, lange stukken, kap). De rifts van continent 1 zijn vooral vlekken van 2-5 cellen: die houden het uitgegraven terrein met de RiftRock-laag in de grond-shader |
+| ☑ | **Scree** (puinveld) | Import stage 4a: PropKind Scree (riftranden) |
+| ☑ | **Boulder, Column, Spike, Spire** | Import stage 4a: de PropKinds Boulder, Column, Spike en Spire |
+| ☑ | **Planten:** Frond, Tendril, GlowTree, Mushroom | Import stage 4a: de PropKinds; wiegen in de shader (vertexkleur `Sway`, in Unity opnieuw opgebouwd, zie "Na import stage 4a") |
+| ☑ | **Egg** (eierclusters bij nesten) | Import stage 4a: PropKind Egg; schelpscherven (`Scatter_ShellFragments`) in een ring om elk nest |
+| ☑ | **Kristalader in de grond** | Import stage 4a: `CrystalVein` als strooisel op open grond (4 % van de cellen) |
+| ☑ | **Padrand en bouwplek-tegels** | Import stage 4a: zie hieronder |
 
 ### Level-omgeving als geheel (P1, Remco 2026-11-03: "de hele environment, de weg, de gates en alles")
 
@@ -196,23 +196,23 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 | Status | Model | Extra |
 | --- | --- | --- |
-| ◐ | **Weg: wegdek-materiaal** | Ronde 8: tiling-set `Road` (gesmolten plaat). Varianten per thema nog niet |
-| ◐ | **Weg: rand-kit** | Ronde 8: `RoadEdge_*` (recht, binnen-/buitenbocht, eind, plein-overgang) |
-| ◐ | **Pleinen** (wide roads en plazas) | Ronde 8: set `Plaza` + `PlazaEdge_*` |
-| ◐ | **Gate-ondergrond** | Ronde 8: `GatePlinth` |
-| ◐ | **Bouwplek-tegel** | Ronde 8: `BuildPadTile` |
-| ◐ | **Grond-materialen** per terreinsoort | Ronde 8: sets `Ground`, `GroundFlora`, `Cliff`, `RiftRock`. Andere elementen later |
-| ◐ | **Kaartrand en kliffen** | Ronde 8: `Cliff_*`, `Chasm_Edge` |
-| ◐ | **Oevers** van vloeistoffen | Ronde 8: `Bank_*` (één stijl voor alle vloeistoffen) |
-| ◐ | **Hoogteverschil-stukken** | Ronde 8: `Slope`, `TerraceStep(_Outer)`, `Ledge` |
-| ◐ | **Kleine strooiers** | Ronde 8: `Scatter_*` (≤ 200 tris) |
-| ◐ | **Achtergrond-silhouetten** | Ronde 8: `Silhouette_*` |
+| ☑ | **Weg: wegdek-materiaal** | Import stage 4a: tiling-set `Road` in de grond-shader (`Game/EnvironmentGround`), precies op de celrand. Varianten per thema nog niet |
+| ☑ | **Weg: rand-kit** | Import stage 4a: `RoadEdge_*` op elke open wegzijde, hoeken per rasterpunt, eindkappen naast elke gate, plein-overgang (gespiegelde kopieën uit de generator) |
+| ☑ | **Pleinen** (wide roads en plazas) | Import stage 4a: set `Plaza` met de tegels vanuit het midden van elk plein (sigil gecentreerd) + `PlazaEdge_*` |
+| ☑ | **Gate-ondergrond** | Import stage 4a: `GatePlinth` onder elke gate (staat grotendeels onder het gate-model) |
+| ☑ | **Bouwplek-tegel** | Import stage 4a: `BuildPadTile` op elke bouwbare cel (ook op verhoging), gloed 1,5 |
+| ☑ | **Grond-materialen** per terreinsoort | Import stage 4a: `Ground` met `GroundFlora` in vlekken van de weg af, `Cliff` op steile grond (plateauwanden, riftwanden, randheuvels), `RiftRock` in de rifts; height blend uit de mask (B), stof (A) glinstert. Andere elementen later |
+| ☑ | **Kaartrand en kliffen** | Import stage 4a: `Cliff_Straight` en `Cliff_InnerCorner` achter het veld (achterkant en de verste 75 % van de flanken), opengelaten bij de wegeinden en de basis; de voorkant blijft open (de goedgekeurde randvulling blijft). `Cliff_OuterCorner` en `Chasm_Edge` niet gebruikt |
+| ☑ | **Oevers** van vloeistoffen | Import stage 4a: `Bank_*` rond water en drijfzand (elke vloeistof behalve de rift), niet aan een wegzijde |
+| ☑ | **Hoogteverschil-stukken** | Import stage 4a: `TerraceStep` op elke rand van verhoogde grond, `TerraceStep_Outer` op de buitenhoeken. `Slope` en `Ledge` niet gebruikt (geen hellingen in de data) |
+| ☑ | **Kleine strooiers** | Import stage 4a: `Scatter_Pebbles` en `_CrystalSplinters` op vrije natuurgrond rond het veld, nooit op een bouwplek |
+| ☑ | **Achtergrond-silhouetten** | Import stage 4a: 7 per level, 6-12 cellen achter de achterrand in de mist |
 
 ### Overige spawnpunten (EnemyOrigin)
 
 | Status | Prio | Model |
 | --- | --- | --- |
-| ◐ | P2 | Spawnpunten in water, lava, drijfzand, ijs en moeras (opening waaruit vijanden kruipen). Ronde 14 klaar: `Env/Origin_Water/_Lava/_Quicksand/_Ice/_Bog` (≤ 1.800 driehoeken, 512), pivot op het vloeistofoppervlak, Emission is een wit masker (Unity kleurt met NestColor). Grond blijft `Burrow_A` |
+| ☑ | P2 | Import stage 4a: per terreinsoort in `EnvironmentSet.Origin` (de gloed getint met de elementkleur van het nest); continent 1 heeft nog geen nest in een vloeistof, dus in het spel nog niet gezien. Spawnpunten in water, lava, drijfzand, ijs en moeras (opening waaruit vijanden kruipen). Ronde 14 klaar: `Env/Origin_Water/_Lava/_Quicksand/_Ice/_Bog` (≤ 1.800 driehoeken, 512), pivot op het vloeistofoppervlak, Emission is een wit masker (Unity kleurt met NestColor). Grond blijft `Burrow_A` |
 
 ### Latere continenten (P3)
 
@@ -507,6 +507,26 @@ hand), Mercer-buste 50 graden bijgedraaid, Voss dichterbij en meer driekwart. Pu
 | Builder | `Work` wordt niet als loop geïmporteerd (de cutscene wikkelt de tijd zelf); geen probleem |
 | Radarconsole | Geïmporteerd maar niet gebruikt: de radar-shot is een overlay op het veld (ontwerpkeuze voor Remco) |
 | Niet gebruikt | Voss/ORA Talk, Blink en Glitch (de portretten zijn stills); Mercer Repair speelt alleen bij Gate Repair |
+
+### Na import stage 4a (2026-11-04, omgeving van Crystal Plains in Unity)
+
+Gezien op `imp4_*`-screenshots (alle zes levels van continent 1: overzicht, spelzoom, wegrand, plein, oever, nest,
+rand, basis, gate, achterwand, hoek; High en Low). In Unity al geregeld: de as-wissel zit op de FBX-node en gaat mee
+onder elke plaatsing; gespiegelde eindkappen en plein-overgangen uit de generator; de Sway-kleuren opnieuw opgebouwd;
+gloed van kristallen 1,2, rotsen 1,3-1,4, planten 1,6, bouwplekken 1,5; decor verder dan 2 cellen buiten het veld
+donkerder (albedo x0,65, gloed x0,35) en zonder schaduw. Punten voor de Blender-kant:
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Kleurlagen (flora ronde 8) | Unity leest alleen de eerste kleurset; bij ronde 8 is dat een bake-hulplaag. Unity bouwt `Sway` nu zelf op uit de vorm (buiging naar hoogte, fase naar de richting waarin een blad wijst, fladderen aan de buitenpunten). Netter: `env_kit2.strip_colour_layers` ook op de vier `Flora_*` van ronde 8 draaien en opnieuw exporteren, dan neemt Unity de echte `Sway` over (de importer herkent dat: rood loopt dan mee met de hoogte) |
+| Assen in de README | Na de import ligt Blender -Y op Unity **-Z**: een randstuk heeft de weg op zijn lokale -Z, dus `LookRotation(naar buiten)`. Ronde 8 zegt `LookRotation(-side)` (de andere kant op); graag rechtzetten, net als bij stage 3a |
+| Stoeprand | Leest op spelzoom nog steeds als een rij tanden (punt uit ronde 8). De doorlopende rand van ronde 17 ook voor Crystal Plains bouwen, met dezelfde namen |
+| Rift | Alleen rechte stukken; de rifts van continent 1 zijn vlekken, dus de kit wordt bijna nergens gebruikt. Een rift-randset zoals de oevers (recht, buiten- en binnenhoek), of hoek- en vlekstukken, zou alle rifts een rand geven |
+| Terras | Geen binnenhoek (drie van vier cellen verhoogd): twee rechte stukken sluiten daar niet. Een `TerraceStep_Inner` erbij |
+| Driehoeken | De verre wildernis is het grootste deel van de omgeving: per level ~370 `Decor_Spire` (1.104 tris, samen ~560k) en ~720 kristallen (~1M). Een far LOD (~300 tris) voor `Decor_Spire` en `Crystal_A/B/C` halveert dat. Low houdt nu 35 % van het verre decor over |
+| Bouwplek | Leest duidelijk; op het overzicht trekken de vele cyaan randen en gele hoekjes wel veel aandacht. Iets dunnere lijnen of minder fel geel |
+| Achterwand | De kliffen met roze aders en kristallen erop zijn van boven wat druk; minder kristallen op de bovenrand |
+| Gate-sokkel | Valt grotendeels onder het gate-model; alleen aan de zijkanten zichtbaar. Prima, of iets breder dan de weg |
 
 ### Ronde 15 (P3-vijanden, nieuwe soorten, verdorven skins)
 

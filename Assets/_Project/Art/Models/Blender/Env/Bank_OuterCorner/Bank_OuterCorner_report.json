@@ -1,0 +1,36 @@
+{
+  "asset": "Bank_OuterCorner",
+  "game_tris": 400,
+  "source_tris": 10636,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 68,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.617,
+    "world_per_uv": 0.599684685215827
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 5.0,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 8.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.308,
+    0.339,
+    0.199
+  ]
+}

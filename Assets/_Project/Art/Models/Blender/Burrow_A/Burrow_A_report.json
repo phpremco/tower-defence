@@ -1,0 +1,31 @@
+{
+  "asset": "Burrow_A",
+  "game_tris": 2600,
+  "source_tris": 331732,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 277,
+    "folded_fallback_faces": 12,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.544,
+    "world_per_uv": 5.309984395459845
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 44.2,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 88.5,
+      "mask": "A"
+    }
+  }
+}

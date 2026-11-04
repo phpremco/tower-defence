@@ -23,6 +23,19 @@ namespace Game.Levels
             TerrainPainter.Result textures = baked
                 ? new TerrainPainter.Result(level.TerrainAlbedo, level.TerrainEmission)
                 : TerrainPainter.Paint(level, theme, field, road);
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = true;
+
+            // An imported environment set blends its tiling ground layers over the painting; without one the painting
+            // is the ground, with a procedural detail layer.
+            Material environment = EnvironmentSurface.Create(level, theme, theme.Environment, field, textures);
+            renderer.sharedMaterial = environment != null ? environment : PaintedMaterial(field, textures);
+            return go;
+        }
+
+        private static Material PaintedMaterial(TerrainField field, TerrainPainter.Result textures)
+        {
             var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
             material.SetTexture("_BaseMap", textures.Albedo);
             material.SetColor("_BaseColor", Color.white);
@@ -42,12 +55,7 @@ namespace Game.Levels
             material.SetFloat("_DetailAlbedoMapScale", DetailAlbedoStrength);
             material.SetFloat("_DetailNormalMapScale", DetailNormalStrength);
             material.SetTextureScale("_DetailAlbedoMap", new Vector2(field.Width, field.Depth) / DetailTileSize);
-
-            var renderer = go.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = true;
-            return go;
+            return material;
         }
 
         private static Mesh BuildMesh(TerrainField field)

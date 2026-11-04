@@ -1,0 +1,1 @@
+_lowFarDecorKeep 0.35

@@ -384,3 +384,30 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
   upper-body layer (`ModelArtDefinition.UpperBodyBone`, `ModelClip.UpperBody`).
 - `cut_shots.sh`/`cut_stills.sh` capture a moment a second or more after the seek (the cutscene keeps playing between CLI
   calls); use `imp3b_cut.sh` for exact frames. Its output path must be a Windows path (`C:/...`), not `/c/...`.
+
+### Level environment: ground sets, kit, decor (added 2026-11-04, import stage 4a)
+
+| Goal | Command |
+| --- | --- |
+| Sync the environment exports (tiling sets, kit, decor, origins), rebuild their materials and the `EnvironmentSet` per continent, point every campaign theme at its continent's set | `unity command menu --path "Tools/Generate/Blender Environment (sync, ground sets, kit, decor)" --timeout 900` (also the full generator's step "Environment art", after "Campaign levels") |
+| Recompile + environment in one go (Play Mode must be stopped) | `bash Tools/PlayTest/imp4_regen.sh` |
+| Screenshots per level: overview, play zoom, road edge, plaza, bank, nest, border, base, gate, back wall, corner (towers by the road, creatures along it) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp4_shots.sh <prefix> <level index> [...]` (phases in `imp4_phase.cs`); `LOW=1` shoots the Low (Switch) profile |
+| Set tunables of the Crystal Plains set (float or Vector2 fields, nested as `_ground._glow`) | write `field value` lines to `Tools/PlayTest/imp4_tune.txt`, `eval_file --file Tools/PlayTest/imp4_tune.cs` |
+| The set's meshes (bounds, vertex colours, decor scales) | `eval_file --file Tools/PlayTest/imp4_inspect.cs`; node transforms inside env FBX files: `imp4_nodes.cs` |
+| Reimport only the environment FBX files (after an importer change that touches only them) | `eval_file --file Tools/PlayTest/imp4_reimport.cs` |
+| Text map with rifts marked `R` | `eval_file --file Tools/PlayTest/imp4_map.cs` |
+
+- **What is placed where** is `EnvironmentLayout` (pure rules, tested by `EnvironmentArtTests`): kerbs on every open road
+  side (end caps beside gates, plaza joins), corners per grid point, pads on every `BuildGrid.CanBuild` cell, plinths
+  under gates, banks round pools, terrace steps round raised cells, rift pieces on one-wide straight fissures, cliff walls
+  behind the field (back and the far 75 % of the flanks, openings at road ends and the base). Which export is which piece
+  is `BlenderEnvironmentCatalog` (one row per continent). Generated: `Data/Art/Environment/CrystalPlains.asset`,
+  `Data/Art/Environment/Meshes/*_Mirrored.asset`, `Art/Materials/Blender/Env/<Export>.mat` / `_Low.mat`.
+- The imported env meshes keep the axis change on the FBX node (Blender Z up as a 90 degree X turn), so each
+  `EnvironmentMesh` stores the node matrix and the instancer puts it under every placement. After the change Blender -Y
+  is Unity -Z: an edge piece has its road on local -Z (the README's `LookRotation(-side)` is the other way round).
+- Round 8's flora FBX files carry six colour sets with `Sway` last; Unity only imports the first, so
+  `BlenderModelImporter.OnPostprocessModel` rebuilds the sway colours from the shape when red does not follow the height
+  (`EnvironmentSway`); every other env mesh drops its helper colour sets.
+- The set's tunables (paint tint, height blend, sharpness, scatter, far decor dimming, wind) are data: the builder does
+  not overwrite them, so tweaks in the asset survive a regeneration.

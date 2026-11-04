@@ -61,9 +61,12 @@ namespace Game.Levels
         private const float PoolRadius = 0.55f;
         private const float PoolBrightness = 0.3f;
 
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Vector2Int[] Steps = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
-        public static void Build(LevelDefinition level, VisualTheme theme, TerrainField field, Transform parent)
+        /// <param name="instancer">Draws the imported stand-ins of the theme's environment set; null keeps every kind procedural.</param>
+        public static void Build(LevelDefinition level, VisualTheme theme, TerrainField field, Transform parent, EnvironmentInstancer instancer = null)
         {
             PropKind[] kinds = theme.PropKinds;
             if (kinds == null || kinds.Length == 0)
@@ -74,7 +77,7 @@ namespace Game.Levels
             var root = new GameObject("Props").transform;
             root.SetParent(parent, false);
 
-            var placer = new Placer(theme, field, root);
+            var placer = new Placer(theme, field, root, instancer);
             GridMap grid = level.Grid;
             TerrainMap terrain = level.Terrain;
             var road = new HashSet<Vector2Int>(level.Road.Cells);
@@ -156,7 +159,8 @@ namespace Game.Levels
         // Small growth in the corner of a free build cell: it never reaches the middle where a tower stands.
         private static void PlaceTuft(Placer placer, Vector2Int cell, int hash, Vector3 centre, HashSet<Vector2Int> road, HashSet<Vector2Int> blocked, TerrainMap terrain)
         {
-            if ((hash % 1000) / 1000f > TuftChance || road.Contains(cell) || blocked.Contains(cell) || terrain.IsLiquid(cell))
+            // An imported environment lays a pad on every free build cell: a tuft would grow through its corner.
+            if (placer.Imported || (hash % 1000) / 1000f > TuftChance || road.Contains(cell) || blocked.Contains(cell) || terrain.IsLiquid(cell))
             {
                 return;
             }
@@ -235,14 +239,21 @@ namespace Game.Levels
         {
             private readonly TerrainField _field;
             private readonly Transform _root;
+            private readonly EnvironmentSet _set;
+            private readonly EnvironmentInstancer _instancer;
+            private readonly bool _low;
+            private readonly Dictionary<Material, Material> _dimmed = new Dictionary<Material, Material>();
             private readonly Material[][] _materials;
             private readonly Dictionary<(PropKind, int), Mesh> _meshes = new Dictionary<(PropKind, int), Mesh>();
             private readonly List<(Transform Prop, PropKind Kind, float Scale, int Hash, Color Colour)> _lit = new List<(Transform, PropKind, float, int, Color)>();
 
-            public Placer(VisualTheme theme, TerrainField field, Transform root)
+            public Placer(VisualTheme theme, TerrainField field, Transform root, EnvironmentInstancer instancer)
             {
                 _field = field;
                 _root = root;
+                _instancer = instancer;
+                _set = instancer != null ? theme.Environment : null;
+                _low = ModelQuality.IsLow;
                 _materials = new Material[PropFactory.ColourVariants][];
                 var pulsing = new List<Material>();
                 for (int i = 0; i < _materials.Length; i++)
@@ -255,12 +266,22 @@ namespace Game.Levels
                 root.gameObject.AddComponent<EmissionPulse>().Initialize(pulsing.ToArray(), PulseDepth, PulseSpeed);
             }
 
+            /// <summary>Whether the theme's imported environment dresses this level.</summary>
+            public bool Imported => _set != null;
+
             /// <param name="onRim">Allowed on the edge of a liquid, where ordinary decoration keeps its distance.</param>
             public void Place(PropKind kind, int hash, float x, float z, float scale, bool formation, bool onRim = false)
             {
                 bool nearLiquid = _field.WaterAt(x, z) > LiquidAvoid || _field.LavaAt(x, z) > LiquidAvoid || _field.SandAt(x, z) > LiquidAvoid;
                 if (nearLiquid && !onRim)
                 {
+                    return;
+                }
+
+                EnvironmentDecor decor = _set != null ? _set.Decor(kind) : null;
+                if (decor != null)
+                {
+                    PlaceImported(decor, kind, hash, x, z, scale, formation);
                     return;
                 }
 
@@ -298,6 +319,51 @@ namespace Game.Levels
                         _lit.Add((go.transform, kind, scale, hash, colour));
                     }
                 }
+            }
+
+            // The imported stand-in, drawn instanced (plants sway in its shader). Glowing kinds still pool light on the
+            // ground and the formations among them may get a light, so they need a small holder object.
+            private void PlaceImported(EnvironmentDecor decor, PropKind kind, int hash, float x, float z, float scale, bool formation)
+            {
+                EnvironmentMesh variant = decor.Variants[(hash >> 7) % decor.Variants.Length];
+                var position = new Vector3(x, _field.HeightAt(x, z) - SinkIntoGround, z);
+                Quaternion rotation = Quaternion.Euler(0f, hash % 360, 0f);
+                bool far = _field.OutsideAt(x, z) > _set.FarDecorStart;
+                if (far && _low && (hash >> 13) % 100 >= _set.LowFarDecorKeep * 100f)
+                {
+                    // The Low profile thins out the far wilderness: it is dim and half hidden in the mist anyway.
+                    return;
+                }
+
+                Material material = far ? Dimmed(variant.MaterialFor(_low)) : null;
+                _instancer.Add(variant, Matrix4x4.TRS(position, rotation, Vector3.one * (scale * decor.Scale)), _low, material, castShadows: !far);
+                if (!PropFactory.IsGlowing(kind) || kind == PropKind.Spike)
+                {
+                    return;
+                }
+
+                var holder = new GameObject(kind.ToString()).transform;
+                holder.SetParent(_root, false);
+                holder.position = position;
+                GlowDecal.PlacePool(holder, decor.Glow * PoolBrightness, PoolRadius * scale);
+                if (formation)
+                {
+                    _lit.Add((holder, kind, scale, hash, decor.Glow));
+                }
+            }
+
+            // The far wilderness wears a darker, dimmer copy of each material, as the painter darkens the far ground.
+            private Material Dimmed(Material source)
+            {
+                if (!_dimmed.TryGetValue(source, out Material copy))
+                {
+                    copy = _instancer.Own(source);
+                    copy.SetColor(BaseColorId, source.GetColor(BaseColorId) * _set.FarDecorAlbedo);
+                    copy.SetColor(EmissionColorId, source.GetColor(EmissionColorId) * _set.FarDecorGlow);
+                    _dimmed[source] = copy;
+                }
+
+                return copy;
             }
 
             // The biggest glowing formations get a light and, for crystals, a drift of sparks. Lights are few, so

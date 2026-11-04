@@ -1,0 +1,36 @@
+{
+  "asset": "BuildPadTile",
+  "game_tris": 200,
+  "source_tris": 117620,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 8,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.616,
+    "world_per_uv": 1.8206102460698876
+  },
+  "detail": {
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 30.3,
+      "mask": "B"
+    },
+    "weave": {
+      "map": "Detail_Weave_Normal.png",
+      "tiling": 72.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.919,
+    0.919,
+    0.124
+  ]
+}

@@ -18,6 +18,8 @@ namespace Game.Editor
         public const string DetailFolder = "Detail";
         public const string LowFolder = "Low";
         public const string SkinFolder = "Skins";
+        public const string EnvironmentFolder = "Env";
+        public const string TilingFolder = "Tiling";
 
         private const string SourceRelative = "ArtSource/Exports";
         private static readonly string[] MapSuffixes = { "_Albedo.png", "_Normal.png", "_Emission.png", "_Mask.png" };

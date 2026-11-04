@@ -1,0 +1,36 @@
+{
+  "asset": "Silhouette_CrystalTower",
+  "game_tris": 900,
+  "source_tris": 68924,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 24,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.577,
+    "world_per_uv": 12.203365181771323
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 10.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 17.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    5.655,
+    4.463,
+    10.744
+  ]
+}

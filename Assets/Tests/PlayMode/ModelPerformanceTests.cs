@@ -81,7 +81,8 @@ namespace Game.Tests
                     yield return Measure(level, low, m => result = m);
                     string line = $"[Perf] {level} {(low ? "Low (Switch)" : "High (PC)")}: wave {result.Wave} ({result.Spawned} creatures), " +
                                   $"player loop avg {result.Average:0.0} ms, p95 {result.Percentile95:0.0} ms, " +
-                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), towers {result.Towers}, drones {result.Drones}, path objects {result.Gadgets}, enemies alive {result.Alive}";
+                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), towers {result.Towers}, drones {result.Drones}, path objects {result.Gadgets}, enemies alive {result.Alive}, " +
+                                  $"draw calls {result.DrawCalls:0}, batches {result.Batches:0}, set-pass calls {result.SetPass:0}, triangles {result.Triangles / 1000f:0}k";
                     lines.Add(line);
                     TestContext.Out.WriteLine(line);
                     if (result.Percentile95 > BudgetMilliseconds)
@@ -108,6 +109,10 @@ namespace Game.Tests
             public int Towers;
             public int Drones;
             public int Gadgets;
+            public float DrawCalls;
+            public float Batches;
+            public float SetPass;
+            public float Triangles;
         }
 
         private static IEnumerator Measure(string levelName, bool low, System.Action<Measurement> result)
@@ -158,7 +163,14 @@ namespace Game.Tests
             }
 
             using ProfilerRecorder loop = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "PlayerLoop", MeasuredFrames);
+            // The render counters of the frame (the whole Game view: terrain, environment kit, units and effects).
+            using ProfilerRecorder drawCalls = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+            using ProfilerRecorder batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count");
+            using ProfilerRecorder setPass = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
+            using ProfilerRecorder triangles = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
             var samples = new List<float>(MeasuredFrames);
+            var render = new Vector4();
+            int renderFrames = 0;
             for (int i = 0; i < MeasuredFrames; i++)
             {
                 yield return null;
@@ -166,7 +178,15 @@ namespace Game.Tests
                 {
                     samples.Add(loop.LastValue / 1e6f);
                 }
+
+                if (drawCalls.Valid && drawCalls.LastValue > 0)
+                {
+                    render += new Vector4(drawCalls.LastValue, batches.LastValue, setPass.LastValue, triangles.LastValue);
+                    renderFrames++;
+                }
             }
+
+            render /= Mathf.Max(1, renderFrames);
 
             samples.Sort();
             float sum = 0f;
@@ -201,6 +221,10 @@ namespace Game.Tests
                 Towers = towers,
                 Drones = drones,
                 Gadgets = gadgets,
+                DrawCalls = render.x,
+                Batches = render.y,
+                SetPass = render.z,
+                Triangles = render.w,
             });
         }
 

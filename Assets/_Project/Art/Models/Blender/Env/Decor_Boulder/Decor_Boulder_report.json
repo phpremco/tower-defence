@@ -1,0 +1,36 @@
+{
+  "asset": "Decor_Boulder",
+  "game_tris": 1200,
+  "source_tris": 72924,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 163,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.559,
+    "world_per_uv": 2.268036350999399
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 18.9,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 32.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.934,
+    0.818,
+    0.805
+  ]
+}

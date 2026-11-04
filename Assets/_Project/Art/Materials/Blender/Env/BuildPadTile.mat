@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BuildPadTile
+  m_Shader: {fileID: 4800000, guid: 0bc3bfc5a51c5694c84dc6adcfa1692c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _DETAIL
+  - _EMISSION
+  - _MASKMAP
+  - _NORMALMAP
+  m_InvalidKeywords: []
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 161ee594d8921a84ba60b327e9dcdb46, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 9ffcdc827e83d0b42bb089a54e3fef52, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 2800000, guid: 41b1c2a00e16ca84aae8ea93bcd66b78, type: 3}
+        m_Scale: {x: 30.3, y: 30.3}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 2800000, guid: b4a433d99ad60e6499d39b0f849708bf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 2800000, guid: 8bfb099e984bac046b74c36e57036666, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BumpScale: 1
+    - _DetailNormalScale: 0.6
+    - _OcclusionStrength: 0.5
+    - _Smoothness: 0.85
+    - _SwayScale: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailFade: {r: 0.004, g: 0.02, b: 0, a: 0}
+    - _EmissionColor: {r: 1.5, g: 1.5, b: 1.5, a: 1.5}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

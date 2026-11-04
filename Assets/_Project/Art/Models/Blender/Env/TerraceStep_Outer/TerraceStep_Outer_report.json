@@ -1,0 +1,36 @@
+{
+  "asset": "TerraceStep_Outer",
+  "game_tris": 800,
+  "source_tris": 50740,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 2,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.141,
+    "world_per_uv": 3.88426296152588
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 32.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 55.5,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.666,
+    0.665,
+    0.715
+  ]
+}

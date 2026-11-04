@@ -68,6 +68,9 @@ namespace Game.Levels
         private static readonly Color MineColor = new Color(1f, 0.8f, 0.25f);
         private const float MineCrackGlow = 0.6f;
         private static readonly Color StarColor = new Color(0.8f, 0.9f, 1f);
+        private static readonly int WindId = Shader.PropertyToID("_EnvWind");
+        private static readonly int WindParamsId = Shader.PropertyToID("_EnvWindParams");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         /// <summary>Builds the level and returns the flight route objects by path index, hidden until a wave uses them.</summary>
         /// <param name="particleScale">The quality profile's share of particles, one for the full amount.</param>
@@ -78,7 +81,9 @@ namespace Game.Levels
             VisualTheme theme = level.Theme;
             GridMap grid = level.Grid;
 
-            BuildLandscape(level, theme, parent, particleScale);
+            // The imported environment (kit, decor, burrows) is drawn instanced; a theme without a set builds none.
+            EnvironmentInstancer instancer = theme.Environment != null ? EnvironmentInstancer.Create(parent) : null;
+            BuildLandscape(level, theme, parent, particleScale, instancer);
             if (groundMist)
             {
                 GroundMistBuilder.Build(level, theme, parent);
@@ -86,6 +91,7 @@ namespace Game.Levels
 
             if (dressingOnly)
             {
+                instancer?.Finish();
                 BuildStarfield(parent, level.WorldSize);
                 return new Dictionary<int, GameObject>();
             }
@@ -93,19 +99,35 @@ namespace Game.Levels
             BuildRoadArrows(level, grid, parent);
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildMiningNodes(level, grid, parent);
-            BuildNests(level, grid, parent);
+            BuildNests(level, grid, parent, instancer);
+            instancer?.Finish();
             BuildStarfield(parent, level.WorldSize);
             return routes;
         }
 
-        private static void BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale)
+        private static void BuildLandscape(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale, EnvironmentInstancer instancer)
         {
             var road = new RoadShape(level);
             var field = new TerrainField(level, road);
             TerrainSurfaceBuilder.Build(level, theme, field, road, parent);
             TerrainLiquidBuilder.Build(level, theme, parent, particleScale);
-            PropScatterBuilder.Build(level, theme, field, parent);
+            PropScatterBuilder.Build(level, theme, field, parent, instancer);
+            if (instancer != null)
+            {
+                EnvironmentSet set = theme.Environment;
+                SetWind(set);
+                EnvironmentKitBuilder.Build(level, set, field, instancer, ModelQuality.IsLow);
+            }
+
             AmbientParticlesBuilder.Build(level, theme, parent, particleScale);
+        }
+
+        // The flora sway in the environment shader reads the set's wind from shader globals.
+        private static void SetWind(EnvironmentSet set)
+        {
+            Vector3 direction = set.WindDirection;
+            Shader.SetGlobalVector(WindId, new Vector4(direction.x, direction.y, direction.z, set.SwayAmplitude));
+            Shader.SetGlobalVector(WindParamsId, new Vector4(set.SwaySpeed, set.Flutter, 0f, 0f));
         }
 
         // Yellow chevrons on every other road cell show which way enemies walk.
@@ -365,14 +387,22 @@ namespace Game.Levels
 
         // Element nests: a crater ringed with the element's colour that breathes and sheds motes, so the player sees
         // where the element creatures will rise. Liquid nests float on their pool, the rest sit on the ground.
-        private static void BuildNests(LevelDefinition level, GridMap grid, Transform parent)
+        private static void BuildNests(LevelDefinition level, GridMap grid, Transform parent, EnvironmentInstancer instancer)
         {
+            var tinted = new Dictionary<Element, Material>();
             foreach (ElementNest nest in level.Nests)
             {
                 Color colour = NestColor(nest.Element);
                 TerrainKind kind = level.Terrain.KindAt(nest.Cell);
                 float height = TerrainMap.IsLiquid(kind) ? TerrainLiquidBuilder.SurfaceLevel(kind) : level.Terrain.HeightAt(nest.Cell);
                 Vector3 position = grid.CellToWorld(nest.Cell) + Vector3.up * height;
+                EnvironmentOrigin origin = instancer != null ? level.Theme.Environment.Origin(kind) : null;
+                if (origin != null)
+                {
+                    BuildOrigin(nest, origin, position, colour, instancer, tinted, parent);
+                    continue;
+                }
+
                 Material[] materials = EnemyModelFactory.CreateMaterials(colour, colour, 1f, NestSkin(nest.Element));
                 Transform root = PlaceStructure(StructureModelFactory.ElementNest(nest.Element, out Mesh ring), ring, Vector3.up * NestRingHeight, materials, EnemyModelFactory.Glow, position, Quaternion.identity, NestScale, NestRingSpin, parent);
                 root.name = $"Nest_{nest.Element}";
@@ -380,6 +410,29 @@ namespace Game.Levels
                 AddSpores(root, colour);
                 GlowDecal.PlacePool(root, colour * NestPoolBrightness, NestPoolRadius, NestPoolHeight);
             }
+        }
+
+        // The imported opening: a burrow in the ground or a vent on a pool (its white glow mask tinted with the element),
+        // with the procedural nest's light, spores and glow pool, so a nest still reads as alive between waves.
+        private static void BuildOrigin(ElementNest nest, EnvironmentOrigin origin, Vector3 position, Color colour, EnvironmentInstancer instancer, Dictionary<Element, Material> tinted, Transform parent)
+        {
+            bool low = ModelQuality.IsLow;
+            Material material = null;
+            if (origin.TintWithElement && !tinted.TryGetValue(nest.Element, out material))
+            {
+                material = instancer.Own(origin.Model.MaterialFor(low));
+                material.SetColor(EmissionColorId, colour * material.GetColor(EmissionColorId).maxColorComponent);
+                tinted[nest.Element] = material;
+            }
+
+            float yaw = TerrainNoise.Hash(nest.Cell.x, nest.Cell.y, 3) * 360f;
+            instancer.Add(origin.Model, Matrix4x4.TRS(position, Quaternion.Euler(0f, yaw, 0f), Vector3.one * origin.Scale), low, material);
+            var root = new GameObject($"Nest_{nest.Element}").transform;
+            root.SetParent(parent, false);
+            root.position = position;
+            AddLight(root, colour, NestLightIntensity, NestLightRange, NestLightHeight);
+            AddSpores(root, colour);
+            GlowDecal.PlacePool(root, colour * NestPoolBrightness, NestPoolRadius, NestPoolHeight);
         }
 
         // The surface a nest is made of: a vent or burrow is cracked stone, a whirl in the water is slick, a stump is bark.

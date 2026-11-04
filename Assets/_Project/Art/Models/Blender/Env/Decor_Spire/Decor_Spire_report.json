@@ -1,0 +1,36 @@
+{
+  "asset": "Decor_Spire",
+  "game_tris": 1500,
+  "source_tris": 56560,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 44,
+    "folded_fallback_faces": 10,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.743,
+    "world_per_uv": 2.5809394730593653
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 14.3,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 24.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.26,
+    1.147,
+    2.917
+  ]
+}

@@ -74,6 +74,8 @@ namespace Game.Levels
         [SerializeField] private BaseArtDefinition _baseArt;
         [Tooltip("The Blender resource node (full, half and empty meshes); empty keeps the procedural crystal cluster.")]
         [SerializeField] private ModelArtDefinition _resourceNodeArt;
+        [Tooltip("The continent's Blender environment (ground layers, kit, decor); empty keeps the procedural landscape.")]
+        [SerializeField] private EnvironmentSet _environment;
 
         public Color BackgroundColor => _backgroundColor;
         public Color GroundColor => _groundColor;
@@ -139,6 +141,7 @@ namespace Game.Levels
         public Color HighlightTint => _highlightTint;
         public BaseArtDefinition BaseArt => _baseArt;
         public ModelArtDefinition ResourceNodeArt => _resourceNodeArt;
+        public EnvironmentSet Environment => _environment;
     }
 }
 

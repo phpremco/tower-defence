@@ -1521,3 +1521,71 @@ without art keeps its procedural look. Imported but not yet used: the radar cons
   portraits are stills (Talk/Blink/Glitch unused); Quick Reload / Wide Slash meshes hidden until such perks exist; the
   Repair kneel only plays on Gate Repair (no repair beam from `Weapon_L`); the full generator re-saves the scenes with new
   file IDs (as every run); `Art/Models/Blender` grows by the story exports (git LFS question still open).
+
+## Import stage 4a (2026-11-04)
+The level environment wears the Blender Crystal Plains kit (ArtSource rounds 8 and 14) on all six continent-1 levels:
+tiling ground sets blended in a new terrain shader, kerbs, plaza edges, build pads, gate plinths, banks, terrace steps,
+rift pieces, border cliffs, silhouettes, scatter, the decor and flora in place of the procedural props, and burrows at
+the nests. Logic, grid and validator are untouched; a theme without an environment set keeps the procedural landscape.
+- **Data:** `Levels/EnvironmentSet` (one per continent, on `VisualTheme.Environment`): six `EnvironmentLayer`s (ground,
+  second ground layer, road, plaza, cliff, element; maps High and `Low/`, tile size from the report, glow), the kit as
+  `EnvironmentPiece`s by `EnvironmentPieceKind`, `EnvironmentDecor` per `PropKind` (variants, scale matched to the
+  procedural kind, glow colour of its light pool), `EnvironmentOrigin` per `TerrainKind` (burrow on ground/raised/rift,
+  `Origin_*` on the pools, glow tinted with the nest's element), scatter, nest scatter, silhouettes, and the tunables
+  (paint tint, height blend, edge sharpness, cliff slope, second-layer coverage, sparkle, far decor dimming, Low share,
+  wall inset and reach, wind). `EnvironmentMesh` = mesh, material per profile, shadow flag and the FBX node matrix (the
+  axis change stays on the node). Generated: `Data/Art/Environment/CrystalPlains.asset`, `Meshes/*_Mirrored.asset` (end
+  cap and plaza join mirrored in X: instanced draws do not flip culling for negative scale),
+  `Art/Materials/Blender/Env/<Export>.mat` / `_Low.mat`. Continents 2-6 are one more row each in
+  `BlenderEnvironmentCatalog` (same kit names under their prefix); not built now, no level uses them yet (stage 4b).
+- **Pipeline:** `Editor/BlenderModels/BlenderEnvironmentCatalog` + `BlenderEnvironmentBuilder` (menu `Tools/Generate/Blender
+  Environment (sync, ground sets, kit, decor)`, generator step "Environment art" after "Campaign levels", so the terrain
+  bake sees the final theme). `BlenderModelImporter`: env meshes without rig or takes and readable; tiling sets repeat
+  with aniso 8; round 8's flora gets its `Sway` colours rebuilt from the shape (`EnvironmentSway`: Unity imports only the
+  first of its six colour sets, a bake helper), every other env mesh drops the helper colours. The resource node in
+  `Env/` keeps its stage 3a import.
+- **Ground** (`Game/EnvironmentGround`, `EnvironmentSurface`, `EnvironmentSplat`): world-space tiling, a splat map built at
+  load from the grid (R road and G plaza exactly on the cell outline, B second layer in noise patches at least one cell
+  off the road, A the element terrain: the rift mask), cliff rock on steep ground by slope (side projection), height
+  blend from each set's mask B, gradients taken outside the branches so empty layers are skipped. The baked painting
+  stays as a broad tint of the natural layers (patches, shores, rock hills, far darkening; mip bias 2.5) and its glow
+  (veins, seams) off the road at 0.55. Plazas lay their tiles from their own centre (sigil in the middle). Mask A
+  glints. Low (`_ENV_LOW`): 512 maps, no detail normal, no sparkle, normals only for ground and road.
+- **Kit and decor** (`Game/EnvironmentLit`: URP PBR with the Blender maps, one detail normal, no rim, world-space sway from
+  the vertex colour in every pass, instancing): `EnvironmentLayout` (pure rules) places a kerb on every open road side
+  (end caps beside each gate, plaza joins), outer/inner corners per grid point, a pad on every buildable cell, a plinth
+  under every gate, banks round water and quicksand (not on a road side), terrace steps and outer corners round raised
+  cells, rift pieces on one-wide straight fissures, cliff walls behind the field (the back and the far 75 % of the
+  flanks, openings at road ends and the base; the front stays open). `EnvironmentKitBuilder` adds scatter on natural
+  ground (never on a pad), shells round nests, veins and silhouettes. `PropScatterBuilder` puts the imported stand-in in
+  place of each procedural kind with the same hashes and scales (light pools and lights kept on small holder objects;
+  no tufts on pads). `EnvironmentInstancer` draws it all with `Graphics.RenderMeshInstanced`, grouped by mesh, material
+  and 10-unit square, culled per square against the main camera, nothing allocated per frame.
+- **Look tuning at play size** (three rounds, `imp4_shots/` in the session scratchpad; before = `before_*`): glow of the
+  crystals 1.2 (curator: lower so the facets show), rocks 1.3-1.4, flora 1.6, pads 1.5; decor more than 2 cells outside
+  the field wears a dimmed copy (albedo x0.65, glow x0.35) and throws no shadow; Low keeps 35 % of that far decor. The
+  white crystal forest round the field is gone: the field is the lit place, the road, pads and dark unbuildable ground
+  read apart, towers and creatures stand out. Blender-side points in MODEL_TODO, "Na import stage 4a".
+- **Performance** (`ModelPerformanceTests`, 60 towers, 8 drones, 12 path objects, densest Psycho wave; now also draw calls,
+  set-pass calls and triangles per frame): before C1_06 High avg 6.6 / p95 8.4 ms, Low 6.6 / 8.4 ms, 6,213 draw calls,
+  1.43M triangles; C1_05 High 6.6 / 8.6, Low 6.5 / 8.2, 8,047 draw calls, 1.55M triangles. After: C1_06 High 8.2 / 10.1 ms,
+  Low 7.7 / 9.4 ms, 1,222 / 1,144 draw calls, 197 / 178 set-pass calls, 3.24M / 2.54M triangles; C1_05 High 7.6 / 10.7,
+  Low 7.4 / 10.3, 1,882 / 1,831 draw calls, 3.05M / 2.39M triangles. Budget p95 <= 33 ms. Draw calls -80 %, triangles x2.1
+  (C1_06: 3,179 instances in 731 groups, 2.56M triangles of which ~560k spires and ~1M crystals in the far wilderness).
+  Report in `Logs/model_perf.txt`.
+- **Tests:** EditMode 304/304 (new `EnvironmentArtTests` 5: every campaign theme wears a set with ground layers, shader
+  and every kit piece, instanced; kerbs equal the open road sides, pads equal the build cells, a plinth per gate and end
+  caps beside it; every piece turned so its road, liquid or plateau lies on its frame's side and edge pieces sit on the
+  cell side; border walls clear of the road entries and the base; the themes' decor kinds are imported and the flora
+  carries its sway). PlayMode `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2, `StorySmokeTests` 2/2,
+  `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests` smoke 1/1, `ModelPerformanceTests` 1/1. Console 0
+  errors, 0 warnings after the runs (the full generator logs the known "Main Object Name '' does not match filename
+  'machinegun.mesh'" once). Save restored to its MD5.
+- **Tools:** `imp4_shots.sh` + `imp4_phase.cs` (`LOW=1` for the Switch profile), `imp4_regen.sh`, `imp4_tune.cs`,
+  `imp4_inspect.cs`, `imp4_nodes.cs`, `imp4_budget.cs`, `imp4_reimport.cs`, `imp4_map.cs`, `imp4_info.cs`. See COMMANDS.
+- **Open:** continents 2-6 not built (stage 4b: rows in the catalog, the element layers per continent); the opening
+  cutscene's field keeps the procedural landscape (its themes are not campaign themes); most continent-1 rifts are blobs
+  the straight rift kit cannot follow; no LODs for kit or decor (none exported) and the far wilderness doubles the
+  triangles; `Chasm_Edge`, `Cliff_OuterCorner`, `Slope`, `Ledge`, `Gravemaw_Hole` imported or available but unused; the
+  liquid origins are wired but no continent-1 nest sits in a pool; `Art/Models/Blender` grows by ~100 MB of env maps and FBX (git
+  LFS question still open); the full generator re-saves the scenes with new file IDs (as every run).

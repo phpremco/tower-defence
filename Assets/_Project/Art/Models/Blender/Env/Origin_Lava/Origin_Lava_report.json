@@ -1,0 +1,38 @@
+{
+  "asset": "Origin_Lava",
+  "game_tris": 1800,
+  "source_tris": 359260,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 60,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.8,
+    "world_per_uv": 2.476023265693849
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 20.6,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 35.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.106,
+    1.103,
+    0.892
+  ],
+  "placement": "pivot on the liquid surface: cell centre at TerrainLiquidBuilder.SurfaceLevel(kind); any yaw; Emission is a white mask, tint it with LevelVisualBuilder.NestColor(element)",
+  "emission": "white mask, tint in Unity"
+}

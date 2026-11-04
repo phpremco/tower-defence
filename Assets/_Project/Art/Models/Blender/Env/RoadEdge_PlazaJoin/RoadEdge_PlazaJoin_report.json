@@ -1,0 +1,36 @@
+{
+  "asset": "RoadEdge_PlazaJoin",
+  "game_tris": 600,
+  "source_tris": 57760,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 61,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.613,
+    "world_per_uv": 1.3307023793290222
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 11.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 19.0,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.986,
+    0.321,
+    0.347
+  ]
+}

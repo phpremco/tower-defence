@@ -1,0 +1,19 @@
+{
+  "set": "Ground",
+  "size": 1024,
+  "low_size": 512,
+  "tile_world": 3.0,
+  "maps": [
+    "Albedo",
+    "Emission",
+    "Mask",
+    "Normal"
+  ],
+  "albedo_mean_srgb": [
+    0.17,
+    0.167,
+    0.223
+  ],
+  "smoothness_mean": 0.142,
+  "height_range_m": 0.0941
+}

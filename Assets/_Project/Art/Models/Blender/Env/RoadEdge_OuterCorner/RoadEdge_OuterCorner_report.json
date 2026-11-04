@@ -1,0 +1,36 @@
+{
+  "asset": "RoadEdge_OuterCorner",
+  "game_tris": 500,
+  "source_tris": 27236,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 37,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.717,
+    "world_per_uv": 0.7879598979894792
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 6.6,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 11.3,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.423,
+    0.362,
+    0.336
+  ]
+}

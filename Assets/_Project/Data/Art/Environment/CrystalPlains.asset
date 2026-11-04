@@ -1,0 +1,1462 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4231e1d5ed79246afe2bc086dab3ef, type: 3}
+  m_Name: CrystalPlains
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.EnvironmentSet
+  _prefix: 
+  _groundShader: {fileID: 4800000, guid: d8b4f6e11fac6864ab13aa91fbffea00, type: 3}
+  _ground:
+    _albedo: {fileID: 2800000, guid: 16eb212d89e0f53409e5c3127bf6bf68, type: 3}
+    _normal: {fileID: 2800000, guid: 396899bde08e07447b6ecbe515699570, type: 3}
+    _mask: {fileID: 2800000, guid: 5c5a422143d07d44e9d4e829958d903b, type: 3}
+    _emission: {fileID: 2800000, guid: 4017a062652aa804ca0a307c3ce7b910, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 47c8374dbfc8c044abd8640f8ed86c2a, type: 3}
+    _lowNormal: {fileID: 2800000, guid: e76a2cf8cfaf22a469bfc158125ec968, type: 3}
+    _lowMask: {fileID: 2800000, guid: fe3b0aac6ddf6f14da42a951db9b5707, type: 3}
+    _lowEmission: {fileID: 2800000, guid: eba02ec37441c034fb2c841b1bb20258, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _groundAlt:
+    _albedo: {fileID: 2800000, guid: bc289f51b7e105047a65b8bab7e19c81, type: 3}
+    _normal: {fileID: 2800000, guid: 35a43bb347adf964da2b654ceaa4bbe3, type: 3}
+    _mask: {fileID: 2800000, guid: 5007b056c7b96db47901d8b7c3ae51d7, type: 3}
+    _emission: {fileID: 2800000, guid: 16a895d471fa82441a86e041022f23d2, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 8be5bf12220a7ec48954937a70d0fdd5, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 28450e7423181684bbf07210733d691f, type: 3}
+    _lowMask: {fileID: 2800000, guid: d7e7f9cb7979acf48842fad194f82551, type: 3}
+    _lowEmission: {fileID: 2800000, guid: b356c1e4b0df5bd4095d0bedb62882dd, type: 3}
+    _tileSize: 2
+    _glow: 1.3
+  _road:
+    _albedo: {fileID: 2800000, guid: 570eff258743b874bb56e48fe7f3375d, type: 3}
+    _normal: {fileID: 2800000, guid: 67675b8333eea58438727e9a9f9e53fb, type: 3}
+    _mask: {fileID: 2800000, guid: 7591d6a5c2beddc4cbd6dac2bcb27f9b, type: 3}
+    _emission: {fileID: 0}
+    _lowAlbedo: {fileID: 2800000, guid: e6fa2185fd03c7e4b8e0a1fd9b483a67, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 19f4f1ba697408a47a760fca4f375aa6, type: 3}
+    _lowMask: {fileID: 2800000, guid: 4b38351b31911b14f8b278de15d0d41e, type: 3}
+    _lowEmission: {fileID: 0}
+    _tileSize: 2
+    _glow: 0
+  _plaza:
+    _albedo: {fileID: 2800000, guid: d3f0b2b1f4981fa488748f91e365d3bb, type: 3}
+    _normal: {fileID: 2800000, guid: 8d547a775ad13ff4e8f8d3e20ef667aa, type: 3}
+    _mask: {fileID: 2800000, guid: b1d2eb8f79d0ae04f87d19d045ae1c54, type: 3}
+    _emission: {fileID: 2800000, guid: 8f0ea7d3ecc61704e9c4d8affb692539, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 419715733656fad47ba90ffc43e7839c, type: 3}
+    _lowNormal: {fileID: 2800000, guid: ffd5554bbe876744a9c526fb6eefd98f, type: 3}
+    _lowMask: {fileID: 2800000, guid: 9e672757fa407fd4c90f881ca14f3c7e, type: 3}
+    _lowEmission: {fileID: 2800000, guid: a65810fb81b14f34ab2299ae437dc3e0, type: 3}
+    _tileSize: 3
+    _glow: 1.6
+  _cliff:
+    _albedo: {fileID: 2800000, guid: acd425316bdf63c4b93611ac85e60e48, type: 3}
+    _normal: {fileID: 2800000, guid: 8b0abb925348d2f4693d5a7496a7d123, type: 3}
+    _mask: {fileID: 2800000, guid: 4aefdbeb3f5fd9f498f184a262f86c70, type: 3}
+    _emission: {fileID: 2800000, guid: e3f0b73aedba1d84f9215fe30c42747a, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: b973b5f37e4367049bacf22bbec27db1, type: 3}
+    _lowNormal: {fileID: 2800000, guid: 2a5acb61956a1404494d3e0441f3f12f, type: 3}
+    _lowMask: {fileID: 2800000, guid: cf317f556f3f56f419fa5d0795e3f9ce, type: 3}
+    _lowEmission: {fileID: 2800000, guid: 93309b31868fd5c4e866c447bd522838, type: 3}
+    _tileSize: 3
+    _glow: 1
+  _element:
+    _albedo: {fileID: 2800000, guid: 77380b33fd348cb46a6980b1c8d36a7a, type: 3}
+    _normal: {fileID: 2800000, guid: 0b3c9a781071fc94c94e64a6ec9cab55, type: 3}
+    _mask: {fileID: 2800000, guid: ad60ed80e4e1c7c4a9ab1fd91afcb9a6, type: 3}
+    _emission: {fileID: 2800000, guid: 161fd75ab84291345999f61d38172f83, type: 3}
+    _lowAlbedo: {fileID: 2800000, guid: 5472d748004081f45a5930abf3a40bff, type: 3}
+    _lowNormal: {fileID: 2800000, guid: a999365560e70d141a3864071e731cc9, type: 3}
+    _lowMask: {fileID: 2800000, guid: f2203a7308b9c8646b73e2c9aed922bc, type: 3}
+    _lowEmission: {fileID: 2800000, guid: 7e7191d00e203b84f81f445aa2e65b0c, type: 3}
+    _tileSize: 2
+    _glow: 2.2
+  _elementTerrain: 7
+  _detailNormal: {fileID: 2800000, guid: a61fa5172ce612b43b99ec798771ce17, type: 3}
+  _detailTileSize: 0.6
+  _detailStrength: 0.5
+  _paintInfluence: 0.6
+  _paintReference: 1.3
+  _paintBlur: 2.5
+  _paintGlow: 0.55
+  _heightBlend: 0.35
+  _roadSharpness: 7
+  _plazaSharpness: 7
+  _altSharpness: 4
+  _elementSharpness: 5
+  _cliffSlope: {x: 0.28, y: 0.5}
+  _altCoverage: 0.55
+  _altNoiseScale: 0.3
+  _altRoadClearance: 0.8
+  _sparkle: 0.6
+  _sparkleColour: {r: 1, g: 0.7, b: 0.95, a: 1}
+  _occlusion: 0.6
+  _smoothness: 1
+  _pieces:
+  - _kind: 0
+    _model:
+      _name: RoadEdge_Straight
+      _mesh: {fileID: -2818115021963357613, guid: 0f7a928a87c189540909190a6a8e8e34, type: 3}
+      _material: {fileID: 2100000, guid: 75c6f9231a4d27b4d8102573fb661032, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 3cce8d587b432874f994726765afb276, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 1
+    _model:
+      _name: RoadEdge_OuterCorner
+      _mesh: {fileID: -8271409875311433037, guid: 97f3224926c6e4b4c84467361db415d4, type: 3}
+      _material: {fileID: 2100000, guid: 31057d877d0d0e24f8c2020b2b006839, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: a20d56141e271fa4b88e5d9b9629d312, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 2
+    _model:
+      _name: RoadEdge_InnerCorner
+      _mesh: {fileID: 1692487713110926195, guid: cabff001ebf1a174fa883b2bc7d2e1f9, type: 3}
+      _material: {fileID: 2100000, guid: 44a7998b546bd5943bb9e7f4a0bec9f4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d20135e94e812414fb654e41edf0a249, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 3
+    _model:
+      _name: RoadEdge_EndCap
+      _mesh: {fileID: -7258990761691312464, guid: 08fb31c02cc3bb840bf3b7e4ccbbc34d, type: 3}
+      _material: {fileID: 2100000, guid: d3f30044142e73b4fa453b61a0936a35, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c5b12625680b52e4c800e43f10aa44b9, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 23
+    _model:
+      _name: RoadEdge_EndCap_Mirrored
+      _mesh: {fileID: 4300000, guid: bf730f5bf19362c47b5c8cee2fd9ea62, type: 2}
+      _material: {fileID: 2100000, guid: d3f30044142e73b4fa453b61a0936a35, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c5b12625680b52e4c800e43f10aa44b9, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 4
+    _model:
+      _name: RoadEdge_PlazaJoin
+      _mesh: {fileID: -7814284935287834333, guid: dff46c379a323a14abd5bcbd0ac8e7b4, type: 3}
+      _material: {fileID: 2100000, guid: e181993a3808ff64aa17481224ce89fe, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: cda0991b131dfdb43a6e966a8ce8858e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 24
+    _model:
+      _name: RoadEdge_PlazaJoin_Mirrored
+      _mesh: {fileID: 4300000, guid: c6726cee73e4dc7489aea4fe974245fb, type: 2}
+      _material: {fileID: 2100000, guid: e181993a3808ff64aa17481224ce89fe, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: cda0991b131dfdb43a6e966a8ce8858e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 5
+    _model:
+      _name: PlazaEdge_Straight
+      _mesh: {fileID: 2078293390306074120, guid: 096fefd83d279504aa63881f6a0a0501, type: 3}
+      _material: {fileID: 2100000, guid: f665b2eec5fe38347a8169c3e6538a6e, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 56104b64075f3164d927a8976d4859a3, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 6
+    _model:
+      _name: PlazaEdge_Corner
+      _mesh: {fileID: 4310018892154205099, guid: e30dbf5c238168646815972ffe10ef9d, type: 3}
+      _material: {fileID: 2100000, guid: ff98b15db79f72f43928bc74517ce6ed, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 173d2e31a75cd184b90419d417331af5, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 7
+    _model:
+      _name: BuildPadTile
+      _mesh: {fileID: -108980100335790629, guid: 18a2a2967b65f8b4093380837924a420, type: 3}
+      _material: {fileID: 2100000, guid: 326e2b3837b2b564681c73ed9d1b5a05, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 04e617d71e25f1948961917b126e9d09, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 8
+    _model:
+      _name: GatePlinth
+      _mesh: {fileID: -1042253140019360578, guid: ab465a50e01a03847bbbbcbf21116bb5, type: 3}
+      _material: {fileID: 2100000, guid: 21e01c291b838994bbabee1057b5a244, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: edb205f5c489ce444bbdfd5731a6f8b7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 9
+    _model:
+      _name: Cliff_Straight
+      _mesh: {fileID: -4507102788956137328, guid: 3abc186036e24e144a862eb773e6d319, type: 3}
+      _material: {fileID: 2100000, guid: 4094cd261983d2c4b8f986aff78de37a, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 68e87dbef64afe348ab9d82a934d56fc, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 10
+    _model:
+      _name: Cliff_OuterCorner
+      _mesh: {fileID: -8316569280479492250, guid: d147ef60aaa787b469411a35a60f0b6c, type: 3}
+      _material: {fileID: 2100000, guid: e7f5ced05355e6048bd31f415cb3c204, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 26843eac4018bf142ad3e3b5b645efb2, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 11
+    _model:
+      _name: Cliff_InnerCorner
+      _mesh: {fileID: -7168350647474548857, guid: ddae24e3a6652ab4a8adbf0e90b3f36c, type: 3}
+      _material: {fileID: 2100000, guid: 6d4f5d66d05d9e347b7e09798c1620ef, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 85315b7f7e229c949b8f4b1317a76c55, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 12
+    _model:
+      _name: Bank_Straight
+      _mesh: {fileID: -6788953199021159558, guid: 264dd6a9b0dc672489d42bdffe548d77, type: 3}
+      _material: {fileID: 2100000, guid: 6aea1739030af354e98d2b1cef3f14c5, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: fa84e2ebb26cf7c47adf07df278c19a3, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 13
+    _model:
+      _name: Bank_OuterCorner
+      _mesh: {fileID: 4646415314238299881, guid: 55bd0696aa258404daf39f79de8f68ac, type: 3}
+      _material: {fileID: 2100000, guid: b0a93636677a3a24e8a0cb21d1bb8142, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 4e558d682aec99240aa9977e27673b94, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 14
+    _model:
+      _name: Bank_InnerCorner
+      _mesh: {fileID: -3822148041012620184, guid: 29544ffeac5c6c24689975dceb0247dc, type: 3}
+      _material: {fileID: 2100000, guid: 5f30a8316010da54681264a79a9966a6, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: afeaaeb8142fedd42b5b7bc0084f60d4, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 15
+    _model:
+      _name: TerraceStep
+      _mesh: {fileID: -3552176793480771963, guid: 8ca2e749248e8d842835e99463a9ef85, type: 3}
+      _material: {fileID: 2100000, guid: 301c4fc8fb1689146bdd7b64bf5c8245, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 3af7b2565ba86e64bacaf871d5906182, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 16
+    _model:
+      _name: TerraceStep_Outer
+      _mesh: {fileID: 2720880092109694822, guid: 144f76870ff9ec2439bcf2b505d926c8, type: 3}
+      _material: {fileID: 2100000, guid: df5e658dd85e72440af313a292e34bcd, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 32ee6c0012243874abcd72f4a8ad7458, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 17
+    _model:
+      _name: Rift_1x1
+      _mesh: {fileID: 8082953884098932026, guid: dc4c75e2322763e468402c1a31fd2a14, type: 3}
+      _material: {fileID: 2100000, guid: 124e27e999e4a0841b8b94d78cff4a01, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 5e3df8fb6c975f249a07ec04cfc40143, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 18
+    _model:
+      _name: Rift_2x1
+      _mesh: {fileID: 1315658804815326591, guid: 6f245bc96abcf54458276a703f6eb250, type: 3}
+      _material: {fileID: 2100000, guid: 403f310c55aa87043b4935d37b95b09f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: a16da2a4bb07dc04dab852d87658d008, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 19
+    _model:
+      _name: Rift_3x1
+      _mesh: {fileID: 2026781329804137683, guid: c4027f078ac26fa478699e3217f38836, type: 3}
+      _material: {fileID: 2100000, guid: c981ad7d94a00d241b7a9ed8deeb10ad, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 916f4c86e8b0db542aea2319b5cfe1d6, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 20
+    _model:
+      _name: Rift_Cap
+      _mesh: {fileID: 5291152895886659440, guid: fd03fcaa7718a1c479a77a0899a5eaaf, type: 3}
+      _material: {fileID: 2100000, guid: a88734d7b8b57eb47ad6815745145339, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: e1067d085a8b18c4693e3408bab4b2f1, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  - _kind: 22
+    _model:
+      _name: CrystalVein
+      _mesh: {fileID: -9166227323127691791, guid: a3897ebec29baac48b10368b81925e09, type: 3}
+      _material: {fileID: 2100000, guid: ed708910763e5144c9771ca3f7d0713c, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 675bc47ba0b25b6479bf9016bb3e30d8, type: 2}
+      _castShadows: 0
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+  _decor:
+  - _kind: 0
+    _variants:
+    - _name: Rock_A
+      _mesh: {fileID: 2649995349246831342, guid: d2bfc4693f67a4c4f9da3c5422f97591, type: 3}
+      _material: {fileID: 2100000, guid: 7fa85a18f18c6354690ee91196e927dc, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: bb34a320ee5ce994fab45b4e36b2db4a, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    - _name: Rock_B
+      _mesh: {fileID: 1617438343633297580, guid: 2cba140043183274eb3516175c0f3a12, type: 3}
+      _material: {fileID: 2100000, guid: 64d25c3c6c5e6a44196411c9af233d30, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d688734c4b0df324eb25505ff4f82ce6, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    - _name: Rock_C
+      _mesh: {fileID: -101496668972229048, guid: c3d50557bb905884b95b17533d380e8c, type: 3}
+      _material: {fileID: 2100000, guid: a5ae3bbaf14d31b4388a8d9745b3d1ab, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 9e019bd768ecc8d48bb49b14f9439f6c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.7571089
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 1
+    _variants:
+    - _name: Decor_Boulder
+      _mesh: {fileID: 5527434386966846922, guid: ce752fd6fafe6f247871c96a804b7ac2, type: 3}
+      _material: {fileID: 2100000, guid: 80c16de8ffa08dc4ba41a5ea9796fdb9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: d89220e3ff2ac9b45b16aebe96c6c5d2, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.6417946
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 2
+    _variants:
+    - _name: Crystal_A
+      _mesh: {fileID: -6837344552803155681, guid: cd56ad7a488e9de449cb94bef14604a4, type: 3}
+      _material: {fileID: 2100000, guid: e746455063acefd409ca7a6557f1ac90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 8c767ce34eeb8e04ca3a5f286bc303c8, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    - _name: Crystal_B
+      _mesh: {fileID: 4603723471363724302, guid: 5b626977a1e3c03488c5026d007db0d8, type: 3}
+      _material: {fileID: 2100000, guid: 948eac08145417c46a929c7d15572871, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 36aae88fa10c150438af17e120a80fd8, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    - _name: Crystal_C
+      _mesh: {fileID: 5162559838310442518, guid: d12698feb7e3aa9448cea4299a5a0b50, type: 3}
+      _material: {fileID: 2100000, guid: bf3813fa559ba114e9abc44245d65dc4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 93b3b7cca770f7343ae9384fe41a229c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.8662262
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 6
+    _variants:
+    - _name: Decor_Column
+      _mesh: {fileID: 9063317403895266749, guid: 412ad3a7b3185244aba10e821d34f345, type: 3}
+      _material: {fileID: 2100000, guid: 83edc6e432bd8c8439a4ea7ae80d75af, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 2041aac376a789e49a2db9c391220286, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.74102855
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 7
+    _variants:
+    - _name: Decor_Spike
+      _mesh: {fileID: 3621839714157612790, guid: dd147a056e3b9d142bd5882e070e385f, type: 3}
+      _material: {fileID: 2100000, guid: be05f868b9f21e34984888d799f36164, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c5b8b89970f47ab43b987f893e8cdc8e, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.9410798
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 10
+    _variants:
+    - _name: Decor_Spire
+      _mesh: {fileID: -2539930366100222090, guid: 5f1ebacbe5f145e4ab4660aff430155a, type: 3}
+      _material: {fileID: 2100000, guid: fa789f57ad61e104cb2897f9491185b0, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 4d79f40a15f18904ba34729fd061f326, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.058557
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 9
+    _variants:
+    - _name: Flora_Frond
+      _mesh: {fileID: -6745173335473831213, guid: fecd0c0283bfff9478efba941acf43aa, type: 3}
+      _material: {fileID: 2100000, guid: 4b9b6ccd8aedec94681b36a3d436b09f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: a95d8092e7f243644b87ce03faa3583b, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.2400391
+    _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
+  - _kind: 5
+    _variants:
+    - _name: Flora_Tendril
+      _mesh: {fileID: -5672764585805426463, guid: 41340c458daa9024ca325829e66d854d, type: 3}
+      _material: {fileID: 2100000, guid: d25111030bd8cd24f86805e29862b351, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: e6b36db175a02194d8dd7645784d9c50, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.9469161
+    _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
+  - _kind: 4
+    _variants:
+    - _name: Flora_GlowTree
+      _mesh: {fileID: 6653382824600790669, guid: 2e12af33d934e6647a9c9338f55b3b48, type: 3}
+      _material: {fileID: 2100000, guid: 832d079881dcffd44b3d1024753e3241, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: be8141f40d199ce49bd633a14a5eef91, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.1122484
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  - _kind: 3
+    _variants:
+    - _name: Flora_Mushroom
+      _mesh: {fileID: 4261056399712068587, guid: 8dc3e1a9b2220244aa556c086c7a18e1, type: 3}
+      _material: {fileID: 2100000, guid: 3475b57749de99140b3fc22b5b78d564, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 35ab70885f6620b47af70d7ef4c79f9f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 1.0468092
+    _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
+  - _kind: 8
+    _variants:
+    - _name: Egg_Cluster
+      _mesh: {fileID: 3859704423981392224, guid: 7d75a5394ca6e074cb7c583efcf8f725, type: 3}
+      _material: {fileID: 2100000, guid: 281fa50f498215848a33d711c883ba90, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1387896f775b81a4180e0808a106588c, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.8123449
+    _glow: {r: 1, g: 0.55, b: 0.25, a: 1}
+  - _kind: 15
+    _variants:
+    - _name: Scree_Patch
+      _mesh: {fileID: 5064502671247578027, guid: 107afdc1ba2c4c84180147f8f8ff3bce, type: 3}
+      _material: {fileID: 2100000, guid: 1788e4817a1552d4d898be3ef5512887, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 360934ca54669434f9b438a41020a17f, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _scale: 0.7370882
+    _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
+  _origins:
+  - _terrain: 0
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 1
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 7
+    _model:
+      _name: Burrow_A
+      _mesh: {fileID: 1426350180477619936, guid: 4eb20a241e252bb4bbdc255fc0cde837, type: 3}
+      _material: {fileID: 2100000, guid: 2e5d34a084d0606408ab6a37fcfe98d2, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: c02a76a65689ce1428edf50d18427ae1, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 0
+    _scale: 0.75
+  - _terrain: 2
+    _model:
+      _name: Origin_Water
+      _mesh: {fileID: -4944273395457058019, guid: 84c212baa8f67e245abccb8037d042f3, type: 3}
+      _material: {fileID: 2100000, guid: 9cf069fda8f86664987ce99d17de4cd9, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: de0ddeeed73ad9b4e9c8a07efab94f67, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 3
+    _model:
+      _name: Origin_Lava
+      _mesh: {fileID: 4837009674793253719, guid: 13b953e949360ab479e1beb45b4e6d2b, type: 3}
+      _material: {fileID: 2100000, guid: ff5a2b107f5b3eb419e4e3f99361f5e7, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 1e3b1b553d7e1284082660057bf50bcf, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 4
+    _model:
+      _name: Origin_Quicksand
+      _mesh: {fileID: 5148176926883119700, guid: 6e93f70d36c47f048a771fed00d8a069, type: 3}
+      _material: {fileID: 2100000, guid: f2fb1b7b0e90aed40bea258fb05068bb, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 38ac5687759f12143a1af43671f7ea70, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 5
+    _model:
+      _name: Origin_Ice
+      _mesh: {fileID: 6358821060508479761, guid: b47edf10fdb826145b3cfa5d913a0b04, type: 3}
+      _material: {fileID: 2100000, guid: 710c189306cd01b43ba6cfeb27232ad4, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 385148fd738b67649b7ee44b8f2b47d7, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  - _terrain: 6
+    _model:
+      _name: Origin_Bog
+      _mesh: {fileID: 1561119442894324442, guid: edcc2e5901c842744aec705c685a78da, type: 3}
+      _material: {fileID: 2100000, guid: 7b4f08064afe34d468e41d89b2a4d20f, type: 2}
+      _lowMaterial: {fileID: 2100000, guid: 785439766913f5a439663cc61ba8feed, type: 2}
+      _castShadows: 1
+      _node:
+        e00: 1
+        e01: 0
+        e02: 0
+        e03: 0
+        e10: 0
+        e11: -0.00000011920929
+        e12: -0.99999994
+        e13: 0
+        e20: 0
+        e21: 0.99999994
+        e22: -0.00000011920929
+        e23: 0
+        e30: 0
+        e31: 0
+        e32: 0
+        e33: 1
+    _tintWithElement: 1
+    _scale: 1
+  _farDecorStart: 2
+  _farDecorAlbedo: 0.65
+  _farDecorGlow: 0.35
+  _lowFarDecorKeep: 0.35
+  _scatter:
+  - _name: Scatter_Pebbles
+    _mesh: {fileID: -3513056290112399987, guid: 788f5b4dbd3d0044f9930544beb5b38f, type: 3}
+    _material: {fileID: 2100000, guid: 108d42ed7f355e74ca481bf5186f471e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 23dbdb599f554484eba3f33fedc1aa0b, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Scatter_CrystalSplinters
+    _mesh: {fileID: 7664679713886782042, guid: 3887ae2a9aab49543b9f29feb7ed62a3, type: 3}
+    _material: {fileID: 2100000, guid: 2f5051fd663f17348852e2410bfdb0b9, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 3b3fd7c30f88427449089dbaca2fbe6c, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Scatter_Pebbles
+    _mesh: {fileID: -3513056290112399987, guid: 788f5b4dbd3d0044f9930544beb5b38f, type: 3}
+    _material: {fileID: 2100000, guid: 108d42ed7f355e74ca481bf5186f471e, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 23dbdb599f554484eba3f33fedc1aa0b, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _nestScatter:
+  - _name: Scatter_ShellFragments
+    _mesh: {fileID: -4815131634080202507, guid: bd2ece2b45ca0e34e9877a103269c040, type: 3}
+    _material: {fileID: 2100000, guid: 0cf435146461a804dac8c4d4518c6f27, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: c9a977fe19a6f4e4e87407a5a3cc048f, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _scatterChance: 0.5
+  _nestScatterRadius: 2.5
+  _veinChance: 0.04
+  _cliffInsetCells: 1.5
+  _cliffSideReach: 0.75
+  _silhouettes:
+  - _name: Silhouette_CrystalTower
+    _mesh: {fileID: -6607887241286514879, guid: 86e122ded53bf234d9170fa84b3c5517, type: 3}
+    _material: {fileID: 2100000, guid: f4b0d20fe18098542810308696ff2ea0, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 958929f2f6dc1884eb0d5e7a9fcca472, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Silhouette_Ridge
+    _mesh: {fileID: -826208709368259724, guid: a6f08c8cba3b9d049aba907cb7e1f51f, type: 3}
+    _material: {fileID: 2100000, guid: b6edd3695c37c4548a8d4ed910e00e8d, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: e1059c975fc13824b929612354e7bb86, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Silhouette_Mesa
+    _mesh: {fileID: 1701877345339242888, guid: 4155e92f6d465494b9d90c26a54f40d6, type: 3}
+    _material: {fileID: 2100000, guid: dea4a55df2b4eea47b91674f614f49a5, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: f89e1fe93f23f8f4fa5f258f4abe0bc7, type: 2}
+    _castShadows: 0
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _silhouetteCount: 7
+  _silhouetteDistance: {x: 6, y: 12}
+  _windDirection: {x: 1, y: 0, z: 0.4}
+  _swayAmplitude: 0.05
+  _swaySpeed: 1
+  _flutter: 0.012

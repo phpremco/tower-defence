@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Game.Core;
+using Game.Levels;
 
 namespace Game.Editor
 {
@@ -38,6 +40,9 @@ namespace Game.Editor
             new GeneratorStep("Recipes", GenerateRecipes),
             new GeneratorStep("Retire old levels", _ => RetireOldLevels()),
             new GeneratorStep("Campaign levels", GenerateCampaignLevels),
+            // The Blender environment per continent (ground sets, kit, decor), worn by each campaign level's theme before
+            // the terrain bake, so the bake sees the theme as it stays.
+            new GeneratorStep("Environment art", c => BlenderEnvironmentBuilder.Apply(BlenderEnvironmentBuilder.SyncAndBuild(), ThemesByContinent(c))),
             new GeneratorStep("Terrain", BakeAllTerrain),
             new GeneratorStep("Unlocks", GenerateUnlocks),
             new GeneratorStep("Playtest settings", c => c.Playtest = LoadOrCreate<PlaytestSettings>(DebugAssetPath)),
@@ -63,6 +68,15 @@ namespace Game.Editor
             new GeneratorStep("Effect library", _ => CreateVfxLibrary()),
             new GeneratorStep("Scenes", GenerateScenes),
         };
+
+        // Every campaign level's theme with the key of its continent (C1 ... C6).
+        private static IEnumerable<(VisualTheme Theme, string Key)> ThemesByContinent(GeneratorContext context)
+        {
+            foreach (SpecLevel level in context.CampaignLevels)
+            {
+                yield return (level.Level.Theme, ContinentTable[level.Continent].Key);
+            }
+        }
 
         private static void RunSteps()
         {

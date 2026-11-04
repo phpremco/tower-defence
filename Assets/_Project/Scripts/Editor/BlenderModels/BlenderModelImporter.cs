@@ -17,16 +17,26 @@ namespace Game.Editor
     {
         private const int AnisoLevel = 2;
         private const int DetailAnisoLevel = 4;
+        private const int TilingAnisoLevel = 8;
         private const int FullMapSize = 1024;
         private const int LowMapSize = 512;
         private const int DetailMapSize = 512;
         private const string LodSuffix = "_LOD1";
         private const string FarSuffix = "_Far";
+        private const string FloraMarker = "Flora_";
 
         // Bumped whenever these settings change, so Unity reimports the models with them.
         public override uint GetVersion() => 2;
 
         private static bool IsOurs(string path) => path.StartsWith(BlenderSync.TargetRoot + "/", StringComparison.Ordinal);
+
+        // The environment kit (import stage 4a): static meshes without a rig, and tiling ground sets that repeat. The
+        // resource node lives in the same folder but is a stage 3a art model (its own import settings).
+        private static bool IsEnvironment(string path) =>
+            path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderSync.EnvironmentFolder + "/", StringComparison.Ordinal) &&
+            !path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderColonyCatalog.ResourceNodeAsset + "/", StringComparison.Ordinal);
+
+        private static bool IsTiling(string path) => IsEnvironment(path) && path.Contains("/" + BlenderSync.TilingFolder + "/");
 
         private void OnPreprocessModel()
         {
@@ -57,6 +67,14 @@ namespace Game.Editor
             importer.removeConstantScaleCurves = false;
             importer.animationCompression = ModelImporterAnimationCompression.KeyframeReduction;
             importer.resampleCurves = true;
+            if (IsEnvironment(assetPath))
+            {
+                // Static kit and decor: no rig, no takes, no Animator on the instance.
+                importer.animationType = ModelImporterAnimationType.None;
+                importer.importAnimation = false;
+                // The generator reads the kit meshes (bounds, the mirrored end caps, the flora sway colours).
+                importer.isReadable = true;
+            }
         }
 
         // The far LOD comes as its own file whose mesh node ends in "_LOD1"; without a "_LOD0" beside it Unity warns about
@@ -73,6 +91,35 @@ namespace Game.Editor
                 if (node.name.EndsWith(LodSuffix, StringComparison.Ordinal))
                 {
                     node.name = node.name.Substring(0, node.name.Length - LodSuffix.Length) + FarSuffix;
+                }
+            }
+        }
+
+        // Only the first vertex colour set reaches Unity. Round 17's flora carries exactly one set, Sway; round 8's carries
+        // six bake helpers with Sway last (MODEL_TODO "Kleurlagen"), so Unity gets a helper. A flora mesh whose red does
+        // not follow its height gets the Sway colours rebuilt from its shape; every other kit mesh drops the helpers.
+        private void OnPostprocessModel(GameObject root)
+        {
+            if (!IsOurs(assetPath) || !IsEnvironment(assetPath))
+            {
+                return;
+            }
+
+            foreach (MeshFilter filter in root.GetComponentsInChildren<MeshFilter>(true))
+            {
+                Mesh mesh = filter.sharedMesh;
+                if (mesh == null)
+                {
+                    continue;
+                }
+
+                if (!mesh.name.Contains(FloraMarker))
+                {
+                    mesh.colors = null;
+                }
+                else if (!EnvironmentSway.Carries(mesh, filter.transform.localToWorldMatrix))
+                {
+                    mesh.colors = EnvironmentSway.Build(mesh, filter.transform.localToWorldMatrix);
                 }
             }
         }
@@ -125,11 +172,13 @@ namespace Game.Editor
             var importer = (TextureImporter)assetImporter;
             string file = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             bool detail = assetPath.Contains("/" + BlenderSync.DetailFolder + "/");
+            bool tiling = IsTiling(assetPath);
             bool low = assetPath.Contains("/" + BlenderSync.LowFolder + "/");
             importer.mipmapEnabled = true;
             importer.alphaIsTransparency = false;
-            importer.wrapMode = detail ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
-            importer.anisoLevel = detail ? DetailAnisoLevel : AnisoLevel;
+            importer.wrapMode = detail || tiling ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            // The ground is seen at the camera's slant over the whole screen: tiling sets get the most filtering.
+            importer.anisoLevel = tiling ? TilingAnisoLevel : detail ? DetailAnisoLevel : AnisoLevel;
             importer.maxTextureSize = detail ? DetailMapSize : low ? LowMapSize : FullMapSize;
             importer.textureCompression = TextureImporterCompression.CompressedHQ;
             if (file.EndsWith("_Normal", StringComparison.Ordinal))

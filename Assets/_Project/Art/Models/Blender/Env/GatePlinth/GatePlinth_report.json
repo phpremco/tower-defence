@@ -1,0 +1,36 @@
+{
+  "asset": "GatePlinth",
+  "game_tris": 1500,
+  "source_tris": 190688,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 140,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.665,
+    "world_per_uv": 2.7604059943714554
+  },
+  "detail": {
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 46.0,
+      "mask": "B"
+    },
+    "weave": {
+      "map": "Detail_Weave_Normal.png",
+      "tiling": 110.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    3.17,
+    1.008,
+    0.36
+  ]
+}
