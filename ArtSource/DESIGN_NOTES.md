@@ -1038,3 +1038,128 @@ Curator decision (2026-11-04): the element stays in the body colour, the light s
 body and membrane with a coral-orange glow and pale amber eyes. **Frost:** pale frost-white body with a bluish cast
 and an ember-orange glow. Baked onto the shipped Bat mesh by a wrapper (`build_bat_skins.py`); `build_bat.py` is
 unchanged.
+
+# Round 15: P3 creatures (2026-11-04)
+
+Six common enemies for the later continents and a "corrupted" skin set for The Core. Helpers in the new
+`Tools/Blender/creature_kit3.py`; the shared modules and the earlier build scripts are only imported. Budgets as for
+every common enemy: ≤ 4,000 triangles, LOD1 ≈ 1,700 with ≤ 16 bones, one material, 1024 maps plus the 512 `Low/` set.
+
+The element rule (STORY.md "trucje" table) is shown on the body, so the trick reads before it happens. Ice and water
+species keep the element in the body colour and a **warm glow** (amber, coral), like the Tide and Frost bat skins.
+
+## Shardback (ice beetle: a crust of ice prisms is its armour; the prisms shatter off as the armour is chipped)
+
+**Earth starting point:** a rhinoceros beetle. Data: Ice, pale blue body, ice-white eyes and accent; Sting attack
+(frost spit at towers); the armour is chipped off plate by plate (`EnemyView` sheds `Plate` parts in index order).
+
+1. **The ice is not the shell.** A low, wide, dark slate-violet carapace under a crust of ice prisms that grew out
+   of it: six removable prism clusters (two on the midline, two pairs on the flanks), each cluster on its own bone
+   (`Shard_1..6`) and its own mesh island, so Unity hides one by setting its bone scale to 0 (and spawns the shards
+   as debris). Prisms are not textbook quartz: hexagonal, twisted, leaning back like a swept crest, with a hot
+   amber core line and frosted rims.
+2. **Sockets that glow when bare.** Every cluster stands in a raised socket collar; the socket floor is raw amber
+   flesh (warm glow), hidden under the ice at rest and visible as soon as a cluster is gone: a chipped Shardback
+   reads as wounded.
+3. **A plough head.** A wide blunt brow plate with a short frosted horn, a split jaw of two side-closing frost
+   mandibles around an amber throat (the frost spit), four small amber eyes under the brow, no antennae.
+4. **Six stocky legs** with a low wide stance and frost-crusted spurs; fixed small frost crystals along the flank
+   edges (not removable, so the outline stays spiky after all clusters are gone).
+
+Colour: dark slate-violet chitin, pale ice prisms with a faint blue glow, warm amber in the joints, sockets, eyes and
+throat. Clips: Walk, Idle, Hit, Death, **Shatter** (all six clusters burst off in index order and shrink away; the
+same order Unity uses to shed them one by one).
+
+## Mireleech (marsh leech: quick and low, leaves a mud slick that hurries everything behind it)
+
+**Earth starting point:** a leech. Data: Bog, mud-brown body, yellow eyes, lime accent, trail VFX.
+
+1. **Armoured rings.** A long, low body of seven segments; each segment carries a hard dark dorsal ring plate with two
+   backward hooks, and the soft swollen flesh between the plates glows lime (a lit bellows as it contracts).
+2. **A three-petal sucker.** No round lamprey mouth (the Oozer has one): the front is a sucker disc of three hinged
+   lip petals (own bones) that open into a Y, each lined with hooked teeth around a glowing gullet.
+3. **Sensor pits, not eyes.** A row of small yellow sensor pits along each flank and two on the head plate.
+4. **A rear sucker** (a leech's anchor) as a flat ringed disc, plus a mud-caked, wet underside.
+
+Colour: dark mud-brown plates, olive flesh, lime glow between the plates, yellow pits. Clips: **Crawl** (an
+inchworm loop: the body arches and stretches while it travels), Idle, Hit, Death, **Latch** (rears up, petals open,
+lunges and clamps on, then sucks in pulses: for the bite on gates and the hero). The mud trail is VFX in Unity,
+from under the rear sucker.
+
+## Four new species (names are proposals for Remco)
+
+Original names, not from any existing game: **Knitback** (wood healer), **Slagstrider** (lava walker), **Siftjaw**
+(sand digger), **Surgefin** (water emerger). Asset ids are the same names.
+
+### Knitback (wood: regrows HP while it walks; camouflaged until close; teaser level 15 and Mirewood 16–19)
+
+**Earth starting point:** a tortoise crossed with a stick insect.
+
+1. **Regrowth organs on the back.** A high arched back of split bark plates; between them three translucent sap
+   pods (own bones `Pod_1..3`) with new shoots inside, glowing amber-green. The pods swell in the **Regrow** clip:
+   healing is something you see.
+2. **Camouflage-capable skin.** Disruptive bark-and-moss mottling in two close values (no high-contrast markings
+   except the pods and eyes), so a Unity camouflage fade (tint towards the ground or dither) works on it; the pods
+   are the only warm light, and they dim with the emission fade.
+3. **Root legs.** Four legs like twisted roots with splayed root claws, knees out, a slow heavy gait.
+4. **A bark mask head.** A low head under a bark mask with amber eye slits and two curled horn shoots.
+5. **Trailing tendrils** from the rear (two hanging root whips).
+
+Colour: dark bark-brown and moss-olive, amber-green sap glow. Clips: Walk, Idle, Hit, Death, **Regrow**.
+
+### Slagstrider (fire: walks through lava unharmed, leaves a burning trail; teaser level 17, Ashen Reach 6)
+
+**Earth starting point:** a harvestman (long-legged arachnid) / a water strider.
+
+1. **Stilts above the heat.** A compact crucible body hung between four long stilt legs whose knees rise above the
+   back; each foot is a heat-proof cone of chilled slag plates (the parts that touch the lava).
+2. **Heat-proof plating.** Overlapping charcoal slag plates over the whole body, molten orange in the seams; a row of
+   furnace vents on the back glow white-hot (heat shimmer and embers in Unity).
+3. **Dripping belly.** The underside is a molten glowing sac (the burning trail starts here, bone `Drip`).
+4. **A slit-jaw head** on a short neck: a long narrow wedge with a glowing slit and a crown of back spikes; no
+   visible eyes, only the slit.
+
+Colour: charcoal black plates, orange-yellow molten glow. Clips: Walk, Idle, Hit, Death.
+
+### Siftjaw (sand: digs in for a moment and dodges turret fire; Ashen Reach 8–9)
+
+**Earth starting point:** a mole cricket / an antlion larva.
+
+1. **A shovel jaw.** The head is a wide flat scoop of two serrated jaw plates that close into a wedge and open sideways
+   (own bones), a row of red eye beads behind them.
+2. **Digging spades.** Two heavy front arms end in toothed spades; four short rear legs push.
+3. **Sand plating.** Ochre-tan overlapping plates with darker bands and red-orange glowing seams; a segmented abdomen
+   ending in a drill-like tail cone (it screws itself in).
+4. **Low wedge silhouette**, widest at the shoulders: from above an arrowhead.
+
+Colour: sand-ochre and dark umber, red-orange glow. Clips: Walk, Idle, Hit, Death, **Burrow** (noses down, spades
+churn, sinks fully under the ground) and **Emerge** (bursts up out of the sand and shakes off).
+
+### Surgefin (water: swims faster on wet parts of the road, surfaces out of water; Mirewood 6–7)
+
+**Earth starting point:** a newt / a mudskipper.
+
+1. **A sail crest.** A row of tall translucent fin sails along the back on spines, coral-orange glowing edges.
+2. **A wide flat head** with a lure organ: a short forward stalk with a glowing coral bulb, a broad mouth with
+   needle teeth, gill slits behind the head that glow.
+3. **Paddle limbs.** Four short paddle limbs splayed out (tucked to the body when it swims), and a long flat finned
+   tail.
+4. **Wet skin:** dark petrol-teal with a paler belly, fine spots, glossy.
+
+Colour: deep teal body (the element), coral-orange glow and lure (warm). Clips: Walk (sprawling, side-to-side spine
+wave), **Swim** (limbs tucked, strong wave, for the wet parts), Idle, Hit, Death, **Emerge** (rises from under the
+water surface, head first, and shakes off).
+
+## Corrupted skin set (The Core: the Sealed One's corrupted Burrowers)
+
+"Same behaviour, but dark with purple glowing crystals" (STORY.md, continent 6). Texture-only: the same mesh and UVs
+as each species, so a corrupted enemy is a material swap. The wrapper reads each species' shipped maps and its game
+mesh (from its `.blend`, read-only) and writes `Exports/<Species>/Skins/Corrupted/`:
+
+- **Albedo:** the species' own colour pushed to near-black violet-grey (value kept so the baked AO, plates and pores
+  survive), plus a network of purple Crysium veins that runs over the body in 3D (continuous across UV seams).
+- **Emission:** every native glow turned purple-violet (the species' glow pattern stays, so it still reads as that
+  species), plus the veins glowing; the veins' bright cores lean magenta-white.
+- **Normal:** the species' own. **Mask:** the species' own, smoother (more glassy) on the veins.
+
+The purple sits apart from the pink Crysium of Crystal Plains (violet, not pink) and from our cool side (no cyan).

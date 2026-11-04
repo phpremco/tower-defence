@@ -170,6 +170,61 @@ def old_proxy():
     return C.flat_proxy(g, "OldHero")
 
 
+def bone_point(arm, bone, tail=False):
+    bpy.context.view_layer.update()
+    pb = arm.pose.bones[bone]
+    return arm.matrix_world @ (pb.tail if tail else pb.head)
+
+
+def render_round16(arm, mesh, actions, weapons, out, prefix="mercer"):
+    """Round 16 checks: plate and glove macros, the two-handed aim up close, the clips that were too subtle at game
+    zoom, and where Down ends relative to the origin. Returns the paths."""
+    C.preview_world()
+    lights = C.light_rig(scale=1.7)
+    C.ground()
+    base = Rig(arm, mesh, weapons)
+    for o in weapons.values():
+        o.hide_render = True
+    paths = []
+    target = Vector((0, 0, 0.85))
+    close = C.closeup_camera(target, 4.2, azimuth=-32, elevation=12, lens=55)
+    pose(base, actions["Idle"], 10, "none")
+    paths.append(C.render(close, os.path.join(out, f"{prefix}_close.png"), 960, 1200))
+    bust = C.closeup_camera(Vector((0, -0.01, 1.33)), 1.45, azimuth=-28, elevation=5, lens=70)
+    paths.append(C.render(bust, os.path.join(out, f"{prefix}_bust.png"), 1024, 1024))
+    paths.append(C.render(C.macro_camera(G(0.18, 1.24, 0.06), 0.55, -30, 18), os.path.join(out, f"{prefix}_macro_plates.png"), 1280, 720))
+    paths.append(C.render(C.macro_camera(G(0.1, 0.5, 0.06), 0.6, -35, 12), os.path.join(out, f"{prefix}_macro_legs.png"), 1280, 720))
+    hand = bone_point(arm, "Hand_L", tail=True)
+    paths.append(C.render(C.macro_camera(hand, 0.6, -55, 10), os.path.join(out, f"{prefix}_macro_glove.png"), 1280, 720))
+    paths.append(C.render(C.macro_camera(hand, 0.6, 120, 10), os.path.join(out, f"{prefix}_macro_glove_palm.png"), 1280, 720))
+    pose(base, actions["Shoot"], 0)
+    paths.append(C.render(close, os.path.join(out, f"{prefix}_close_aim.png"), 960, 1200))
+    grip = bone_point(arm, "Weapon_R")
+    paths.append(C.render(C.macro_camera(grip, 0.8, -60, 15), os.path.join(out, f"{prefix}_aim_hands.png"), 1280, 720))
+    paths.append(C.render(C.macro_camera(grip, 0.8, 20, 30), os.path.join(out, f"{prefix}_aim_hands_top.png"), 1280, 720))
+    front3 = C.closeup_camera(target + Vector((0, -0.1, 0)), 4.4, azimuth=-40, elevation=10, lens=50)
+    paths.append(strip(base, actions["Shoot"], front3, out, f"{prefix}_shoot", [0, 1, 2, 3, 5, 7, 10, 14]))
+    paths.append(strip(base, actions["Reload"], front3, out, f"{prefix}_reload", [0, 4, 8, 12, 16, 20, 23, 28]))
+    top = C.closeup_camera(Vector((0, -0.2, 0.3)), 5.0, azimuth=0, elevation=70, lens=40)
+    paths.append(strip(base, actions["Down"], top, out, f"{prefix}_down_top", [0, 12, 26, 40]))
+    paths.append(strip(base, actions["Down"], front3, out, f"{prefix}_down", [0, 6, 12, 18, 22, 26, 32, 40]))
+    pose(base, actions["Down"], 40, "none")
+    hips = bone_point(arm, "Hips")
+    head = bone_point(arm, "Head")
+    C.log("down end hips", tuple(round(c, 3) for c in hips), "head", tuple(round(c, 3) for c in head))
+    games = [game_scene(base, [(actions["Shoot"], f, (0.0, 0.0, 0), -1.9)], os.path.join(out, f"{prefix}_game_shoot_{f}.png"), 2.6,
+                        close_lights=lights)
+             for f in (0, 2)]
+    games += [game_scene(base, [(actions["Reload"], f, (0.0, 0.0, 0), -1.9)], os.path.join(out, f"{prefix}_game_reload_{f}.png"), 2.6,
+                         close_lights=lights)
+              for f in (0, 12, 20)]
+    C.contact_sheet(games, os.path.join(out, f"{prefix}_game_clips.png"), 5, 400)
+    paths.append(game_scene(base, [(actions["Idle"], 10, (0, 0, 0), 0.0)], os.path.join(out, f"{prefix}_single_zoomed.png"), 2.6,
+                             close_lights=lights))
+    C.contact_sheet([paths[0], paths[1]], os.path.join(out, f"{prefix}_pair.png"), 2, 640)
+    return paths
+
+
 def render_all(arm, asset, lod, actions, weapons, out):
     mesh = asset.low
     C.preview_world()

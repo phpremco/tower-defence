@@ -46,13 +46,13 @@ Per vijand zijn de animaties **Walk, Idle, Hit en Death** nodig, en voor elke vi
 | ◐ | P2 | **Bat** | Elementvleermuis met vliezen vleugels (lucht) | Ronde 10 klaar: één mesh en rig voor alle elementen, het element is een palet. Vleugels over drie haakstekels met een gloeiende voorrand en lichte banden, wigkop met vier ogen per kant, gloeiende boutklier op de borst, zweepstaart met vork. Standaard Ember; Moss en Dust als extra huid gebakken (`--element`). Clips Fly/Glide/Hit/Death. 3.896 driehoeken, 16 botten, LOD1 1.700 / 10 |
 | ◐ | P2 | **Bulwark** | Rechtop staande schilddrager met kristalzwaard | Ronde 10 klaar: saurische tweevoeter, een benen schild gegroeid uit de linkeronderarm (groeiribbels, kleine gloeiende kern), een roze Crysium-zwaard gegroeid uit de rechteronderarm (laag in rust), vizierkop met amber ogen, schouder- en borstplaten, limoen goo in de naden. Niet gespiegeld (geen gespiegelde UV's). Clips Walk/Idle/Hit/Death/**Block** (schild omhoog op frame 7). 3.950 driehoeken, 19 botten, LOD1 1.700 / 16 |
 | ◐ | P2 | **Oozer** | Slak op een slijmvoet met ogen op steeltjes | Ronde 10 klaar: vier oogsteeltjes (eigen botten, trekken in via bot-schaal), mantel met toxineklieren van wisselende grootte, ringmond met haaktanden, doorschijnende slijmvoet met gloeiende rand. Clips Crawl/Idle/Hit/Death. 3.801 driehoeken, 9 botten, LOD1 1.700 / 7. Slijmspoor blijft VFX |
-| ☐ | P3 | **Shardback** | IJskever met een rug van ijsprisma's die afspringen | Breekbare prisma's als losse onderdelen |
-| ☐ | P3 | **Mireleech** | Moerasbloedzuiger: lang en laag, met zuigmond | Modderspoor |
-| ☐ | P3 | Hersteller (nog geen naam) | Vijand die HP terugkrijgt (teaser level 15) | Nog ontwerpen. Mogelijk een variant |
-| ☐ | P3 | Lava-loper (nog geen naam) | Overleeft in lava (level 17, continent 2) | Nog ontwerpen |
-| ☐ | P3 | Graver (nog geen naam) | Graaft zich in (zand, continent 2) | Clip **Burrow/Emerge** |
-| ☐ | P3 | Waterwezen (nog geen naam) | Duikt op uit het water (continent 4) | Clip **Emerge** |
-| ☐ | P3 | Verdorven skin-set | Donkere versies van alle soorten met paars kristal (The Core) | Alleen andere textures. Mesh blijft gelijk |
+| ◐ | P3 | **Shardback** | IJskever met een rug van ijsprisma's die afspringen | Ronde 15 klaar: donker leisteenviolet schild met zes clusters gedraaide ijsprisma's, elk een los eiland op een eigen bot (`Shard_1..6` in afwerpvolgorde), in amber gloeiende kassen die zichtbaar worden als een cluster weg is. Ploegkop met ijshoorn, zijwaartse kaken rond een amber keel (vorstspuug), vier amber ogen, vaste rijpkristallen langs de flanken. Clips Walk/Idle/Hit/Death/**Shatter**. 3.940 driehoeken, 23 botten, LOD1 1.698 / 15 |
+| ◐ | P3 | **Mireleech** | Moerasbloedzuiger: lang en laag, met zuigmond | Ronde 15 klaar: zeven segmenten met donkere rugringen, haken en limoen chevrons, olijf vlees met limoen gloed ertussen, gele zintuigputjes, een zuignap van drie lipbladen (eigen botten) met haaktanden en een achterzuignap. Clips **Crawl** (een bult loopt van staart naar kop, blijft op de grond)/Idle/Hit/Death/**Latch** (beet op frame 13). 3.906 driehoeken, 11 botten, LOD1 1.700 / 11. Modderspoor blijft VFX |
+| ◐ | P3 | **Knitback** (naamvoorstel) | Hout: herstelt HP tijdens het lopen, camouflage (teaser level 15, Mirewood 16–19) | Ronde 15 klaar: schildpadachtig lijf onder gespleten schorsplaten met mos (twee dicht bij elkaar liggende waarden: camouflage), drie sappeulen met jonge scheuten op eigen botten (`Pod_1..3`), wortelpoten, schorsmasker met amber ogen. Clips Walk/Idle/Hit/Death/**Regrow** (peulen zwellen). 3.952 driehoeken, 18 botten, LOD1 1.698 / 12 |
+| ◐ | P3 | **Slagstrider** (naamvoorstel) | Vuur: loopt door lava, laat een brandend spoor achter (level 17, Ashen Reach 6) | Ronde 15 klaar: kroesvormig lijf tussen vier lange steltpoten met hittebestendige slakkegels als voeten, houtskoolplaten met gesmolten naden, drie ovenschoorstenen, gloeiende buikzak (bot `Drip` voor het spoor), spleetkop zonder ogen. Clips Walk/Idle/Hit/Death. 3.957 driehoeken, 13 botten, LOD1 1.699 / 8 |
+| ◐ | P3 | **Siftjaw** (naamvoorstel) | Zand: graaft zich even in en ontwijkt vuur (Ashen Reach 8–9) | Ronde 15 klaar: lage wig met een schepkop van twee gekartelde kaken (eigen botten), vijf rode ogen, twee graafarmen met getande schoppen, okerplaten met rood-oranje naden, boorstaart. Clips Walk/Idle/Hit/Death/**Burrow** (onder de grond vanaf frame 24)/**Emerge** (door de grond op frame 8). 3.950 driehoeken, 19 botten, LOD1 1.698 / 12 |
+| ◐ | P3 | **Surgefin** (naamvoorstel) | Water: duikt op uit het water, zwemt sneller op natte stukken (Mirewood 6–7) | Ronde 15 klaar: salamanderlijf in petrol-teal met koraal gloed, vier zeilvinnen met gloeiende rand, lokorgaan op een steel, kieuwspleten, peddelpoten, staartvin. Clips Walk/**Swim**/Idle/Hit/Death/**Emerge** (kop door het oppervlak op frame 10). 3.947 driehoeken, 16 botten, LOD1 1.699 / 10 |
+| ◐ | P3 | Verdorven skin-set | Donkere versies van alle soorten met paars kristal (The Core) | Ronde 15 klaar: `build_corrupted_skins.py` schrijft `Exports/<Soort>/Skins/Corrupted/` voor alle 17 soorten plus 10 levelbazen (`--bosses`; Gravemaw niet, twee materialen): bijna zwart violetgrijs, eigen gloedpatroon in violet, een 3D-netwerk van paarse Crysium-aders. Zelfde mesh en UV's: in Unity alleen een tweede materiaal |
 
 ### Levelbazen
 
@@ -421,3 +421,36 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | Mothership | Straalpijpen branden bijna wit (bloom); de NTI-badges op de neus zijn klein |
 | Radarconsole | Alleen de console, geen commandopost-interieur. Het achterpaneel zweeft een fractie boven het bureau |
 | Kleurvraag | Pioneer-1 gebruikt de mint logkleur (0.55, 1, 0.8) voor lens en status; dicht bij het groen van de Acid Sprayer |
+
+### Na import stage 1 (2026-11-04, eerste Unity-screenshots op spelgrootte)
+
+Gezien op `imp1_*`-screenshots (lineups van alle soorten en bazen op spelzoom en ingezoomd). In Unity is per materiaal al
+bijgesteld (helderheid, gloed, rim in `BlenderArtCatalog`); dit zijn de punten die in de Blender-scripts horen:
+
+| Model | Verbeterpunt (middelste schaal, op ~20 px) |
+| --- | --- |
+| Skitter | Lijf en poten lezen donkerrood tegen de nachtgrond; in Unity 1,6x opgelicht. In de albedo zelf lichtere, oranje platen en een lichtere rugstreep, zodat hij zonder opheffen leest |
+| Prowler | Nog steeds vooral een donkerrood silhouet (in Unity 1,45x opgelicht, gloed 3,5). Fellere ribspleten en een lichte rugtekening in de maps |
+| Skyray | Koel blauw (open kleurvraag). Vintekening op spelgrootte nauwelijks te zien; grovere, lichtere chevrons |
+| Wisp | Klein op spelgrootte (0,7 groot); de knop leest als een lichte bol zonder vorm. Grotere, donkere bladranden voor contrast |
+| Bulwark | Van boven vooral zwaard en schild, het lijf verdwijnt. Lichtere schouderplaten |
+| Alle soorten | De detail-normals vallen op spelzoom (terecht) weg; de middelste laag (naden, banden) draagt de look. Donkerdere naden en lichtere randen in de albedo helpen meer dan meer porie-detail |
+| Skitter / Queen | Geen `walk_distance_per_loop` in het rapport: in Unity geschat (0,36 en 0,9). Graag in het rapport zetten |
+| Queen | Geen Hit- en Death-clip (alleen Walk/Idle/Scream) en geen LOD1 |
+| RayBoss (export `StormMatriarch`) | Op de Sky Sovereign (rogbaas) gezet; haar macht is een staartlaser, het model heeft daar geen clip voor (alleen Release). Een `Laser`-clip zou passen |
+| BatBoss (export `SkySovereign`) | Op de Storm Matriarch (vleermuisbaas): haar Laser-clip toont nu de Element Storm (volley). Voor de vleermuizenzwerm (Spawn) is er geen clip |
+| Bat-skin Mire | Niet gebakken; de Mirebat draagt nu de Moss-skin |
+
+### Ronde 15 (P3-vijanden, nieuwe soorten, verdorven skins)
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Namen | **Knitback, Slagstrider, Siftjaw, Surgefin** zijn voorstellen voor Remco (eigen namen, niet uit een bestaande game). Schaal in de data ook voorstel (0,85 / 0,8 / 0,75 / 0,75) |
+| Shardback | Poten nog wat dun en spinachtig voor een "stevige" kever. De amber kassen gloeien ook als het ijs er nog staat (bewust: licht onder het ijs), maar dat is vrij veel geel op spelgrootte. Afwerpen: bot-schaal op 0 in LateUpdate (alle clips zetten de schaal op 1) |
+| Mireleech | De voorkant (drie lipbladen) leest van opzij als een snavel of oortjes. Lijkt van boven op een rups; de bult-kruip helpt |
+| Knitback | De sappeulen lezen nog wat als vruchten (paprika). Schorsplaten zijn hoekige blokken; van dichtbij meer steen dan hout |
+| Slagstrider | Bovenpoten lopen vrij vlak naar buiten; de knieën staan maar net boven het lijf (tafelpoten). Gloeiringen op de poten wat regelmatig |
+| Siftjaw | Platen glad en "koekachtig"; de kaken lezen van boven als twee ronde schotels in plaats van een gekartelde wig |
+| Surgefin | Loopgang weinig uitgesproken (korte poten); oranje vlekken op spelgrootte vrij groot |
+| Verdorven skins | Alleen textures: de vorm blijft die van de soort. Paarse aders zijn een procedureel 3D-netwerk; op kleine soorten (Oozer) is de dekking laag |
+

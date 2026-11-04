@@ -907,3 +907,78 @@ no LOD1 (the report says so); the Pioneer-1 wreck is static level decor.
 - **Pioneer-1 wreck (Mirewood, level 8, Rotbloom arena):** static decor on the ground with its own mire mound (about
   4.8 across); a status light still glows at `StatusLight` (a small blinking point light), smoke at `Smoke`, the
   logbook pickup at `Log`.
+
+## Round 15: P3 creatures and the corrupted skin set (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 15). New scripts (shared modules and earlier build scripts untouched, only
+imported): `creature_kit3.py` (helpers), `build_shardback.py`, `build_mireleech.py`, `build_knitback.py`,
+`build_slagstrider.py`, `build_siftjaw.py`, `build_surgefin.py`, `build_corrupted_skins.py`. Not yet in `build_all.py`;
+proposed lines, after the round-10 species and after `build_bat_skins.py` (the corrupted wrapper reads every species'
+`.blend` and maps, so it runs last):
+
+```
+"build_shardback.py", "build_mireleech.py",                       # round 15, P3 species
+"build_knitback.py", "build_slagstrider.py", "build_siftjaw.py", "build_surgefin.py",  # round 15, new species (names proposed)
+"build_corrupted_skins.py",                                        # round 15, last: reads all species' .blend and maps
+```
+
+`creature_kit3.py`: styles `ice_prism` (cold prism, warm root glow), `socket_floor`, `bark` (two-value camouflage),
+`sap_pod`, `wet_skin`, `fin_sail`, `molten_sac`; `ClipPoser` (scale keys per clip; by default every clip keys every
+scale bone, 1 where it does not animate it); `build_lod` (LOD1 with rigid parts and scale keys); leg helpers
+(`limbs`, `place_legs`, `gait_feet`, `splay_feet`); `run_creature` (the whole common-enemy pipeline, with
+`creature_kit2.enemy_previews`).
+
+| Asset | Triangles | Bones | LOD1 (tris / bones) | Clips (frames @30 fps) |
+| --- | --- | --- | --- | --- |
+| Shardback | 3,940 | 23 | 1,698 / 15 | Walk 32 (loop), Idle 72 (loop), Hit 12, Death 40, Shatter 40 |
+| Mireleech | 3,906 | 11 | 1,700 / 11 | Crawl 30 (loop), Idle 72 (loop), Hit 12, Death 40, Latch 36 |
+| Knitback | 3,952 | 18 | 1,698 / 12 | Walk 40 (loop), Idle 72 (loop), Hit 14, Death 44, Regrow 48 |
+| Slagstrider | 3,957 | 13 | 1,699 / 8 | Walk 36 (loop), Idle 72 (loop), Hit 12, Death 42 |
+| Siftjaw | 3,950 | 19 | 1,698 / 12 | Walk 24 (loop), Idle 60 (loop), Hit 12, Death 40, Burrow 36, Emerge 36 |
+| Surgefin | 3,947 | 16 | 1,699 / 10 | Walk 28 (loop), Swim 24 (loop), Idle 72 (loop), Hit 12, Death 40, Emerge 48 |
+
+All: one material, 1024 Albedo/Normal/Emission/Mask plus the 512 `Low/` set, mirrored UVs, `<Asset>_report.json` with
+the detail tiling, gait distances and power frames.
+
+### Unity notes for round 15
+
+- **Import** as the earlier creatures: Scale 1, Bake Axis Conversion, Generic rig, root `Root`, Mikktspace. Takes
+  `<Asset>_Rig|<Clip>`. Keep "Remove constant scale curves" **off** (Shardback shards, Knitback pods).
+- **Shardback shedding:** the prism clusters are bones `Shard_1..Shard_6` in shedding order (rear-mid, rear-left,
+  rear-right, crest, front-left, front-right), each cluster a rigid island. Map `EnemyView`'s plate index i to
+  `Shard_(i+1)`: to shed, set that bone's `localScale` to 0 in **LateUpdate** (every clip keys the shard scale at 1,
+  so the Animator would restore it) and spawn the ice debris at the bone. The amber socket under it shows by
+  itself. `Shatter` bursts all six (bursts at frames 3, 8, 13, 18, 23, 28; all gone by frame 38): play it for a
+  full shatter (Thermal Shock) or skip it when shedding one by one. Frost spit from the throat (about 0.46 forward,
+  0.17 up, model units, on `Head`).
+- **Mireleech:** `Latch` clamps at frame 13 (bite damage there), then sucks in pulses to frame 36. Mud trail VFX
+  from under `Seg_1` (rear sucker). Crawl is a hump that runs tail to head: playback speed
+  `velocity / (0.32 x scale)`.
+- **Knitback:** `Regrow` swells the pods (bones `Pod_1..3`, scale keys) for the regeneration tick; pair it with an
+  emission pulse. Camouflage: fade the albedo towards the ground tint and the emission down while hidden; the skin is
+  two close values on purpose.
+- **Slagstrider:** burning-trail VFX from bone `Drip` (under the belly, 0.32 above the ground; the LOD1 folds it into `Body`). Footfalls
+  (heat puffs) at Walk frames 0 (L1, R2) and 18 (R1, L2). Emission strength 3.0 (vents and seams); heat shimmer from
+  the vents in Unity.
+- **Siftjaw:** `Burrow` is fully under the ground plane from frame 24 (hide the renderer then; it moves 0.12 forward
+  and 0.5 down); `Emerge` starts 0.5 under and 0.1 behind the pivot, breaks the surface at frame 8 (sand burst VFX).
+  Both are root-motion-free in Unity terms: the offsets are on the `Body` bone, the pivot stays.
+- **Surgefin:** `Swim` for wet road (the body rides 0.03 lower: put the pivot on the water surface), `Walk` on dry
+  road. `Emerge` starts 0.45 under the surface, the head breaks it at frame 10 (splash VFX), lands at ~frame 30.
+  The lure bulb and gill slits are in the emission map (coral).
+- **Scale** (`unity_scale` in each report): Shardback 0.8 and Mireleech 0.7 (the data scales); the new species are
+  proposals: Knitback 0.85, Slagstrider 0.8, Siftjaw 0.75, Surgefin 0.75.
+
+### Corrupted skins (`Exports/<Species>/Skins/Corrupted/`)
+
+`build_corrupted_skins.py` writes `<Species>_Corrupted_Albedo/_Normal/_Emission/_Mask.png` (+ `Low/`) for every
+species with a shipped `.blend` and maps (`--bosses` adds the one-material level bosses, `--only` picks). Same mesh and
+UVs as the species: in Unity a corrupted enemy is the species prefab with a second material. Report:
+`Exports/Corrupted_skins_report.json`. The `.blend` files are opened read-only and never saved; the species' own maps
+are not touched. Rerun it whenever a species' mesh or maps change. Suggested emission colour: unchanged (the map is
+already violet), strength as the species.
+
+Mask B/A families (tiling in each report): Shardback chitin/crystal, Mireleech membrane/chitin, Knitback chitin/membrane,
+Slagstrider rock/membrane, Siftjaw chitin/membrane, Surgefin membrane/chitin. Gait playback
+`velocity / (distance_per_loop x scale)`: Shardback 0.2, Knitback 0.194, Slagstrider 0.387, Siftjaw 0.2, Surgefin walk
+0.2 and swim 0.5, Mireleech 0.32 (model units per loop).

@@ -19,7 +19,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_roller.py", "build_cragback.py",
            "build_prowler.py", "build_skyray.py", "build_shalebat.py", "build_wisp.py",
            # Round 10: P2 species (creature_kit2.py).
-           "build_stinger.py", "build_bat.py", "build_bat_skins.py","build_bulwark.py", "build_oozer.py",
+           "build_stinger.py", "build_bat.py", "build_bat_skins.py", "build_bulwark.py", "build_oozer.py",
+           # Round 15: P3 species (creature_kit3.py).
+           "build_shardback.py", "build_mireleech.py",
+           "build_knitback.py", "build_slagstrider.py", "build_siftjaw.py", "build_surgefin.py",
            # The hero; it also builds and exports his weapons (build_mercer_weapons.py).
            "build_mercer.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
@@ -37,6 +40,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_towers2.py", "build_gadgets2.py",
            # Round 13: story characters and cutscene models (story_kit.py).
            "build_voss.py", "build_story_props.py", "build_cutscene.py",
+           # Round 15: corrupted (The Core) skins; reads every species' .blend and maps, so it runs after them.
+           "build_corrupted_skins.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 

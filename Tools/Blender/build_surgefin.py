@@ -1,0 +1,295 @@
+"""Surgefin: the water-element amphibian that surfaces out of water and swims faster on wet road (round 15, name
+proposed; see ArtSource/DESIGN_NOTES.md).
+
+A low newt-like body on four splayed paddle limbs, a crest of four translucent fin sails along the back with
+coral glowing edges, a long tail with a vertical fin; a wide flat head with a lure organ on a stalk (bone Lure),
+needle teeth along the lip, four small coral eyes and glowing gill slits. Wet petrol-teal skin with a paler belly
+and fine spots: the element is in the body, the light is warm.
+
+Clips: Walk (loop, sprawling with a side-to-side spine wave), Swim (loop, limbs tucked, strong wave), Idle (loop),
+Hit, Death, Emerge (rises from under the water surface; the head breaks it at EMERGE_SURFACE_FRAME). Also exports
+Surgefin_LOD1.
+
+Run: blender --background --python Tools/Blender/build_surgefin.py -- [--preview <dir>] [--norender]
+"""
+
+import math
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+from mathutils import Vector  # noqa: E402
+
+import chitin as H  # noqa: E402
+import common as C  # noqa: E402
+import creature_kit2 as K2  # noqa: E402
+import creature_kit3 as K3  # noqa: E402
+from common import G  # noqa: E402
+
+NAME = "Surgefin"
+K = 1.0
+GAME_SCALE = 0.75  # proposal
+
+# Water element in the body (deep petrol-teal, pale warm belly), coral-orange glow (warm).
+PAL = H.Palette(top=(0.07, 0.24, 0.25), side=(0.03, 0.1, 0.11), belly=(0.02, 0.04, 0.045), seam=(0.01, 0.022, 0.026),
+                dark=(0.02, 0.06, 0.07), glow=(1.0, 0.45, 0.24), eye=(1.0, 0.62, 0.3), membrane=(0.12, 0.3, 0.3),
+                bone=(0.72, 0.6, 0.48))
+FIN = H.Palette(top=PAL.top, side=(0.03, 0.09, 0.1), belly=PAL.belly, seam=PAL.seam, dark=PAL.dark, glow=PAL.glow,
+                eye=PAL.eye, membrane=(0.05, 0.15, 0.16), bone=PAL.bone)
+
+SIDES = K3.SIDES
+X, Yv, Z = K3.X, K3.Yv, K3.Z
+
+SPINE = [G(0, 0.11, -0.12), G(0, 0.12, 0.08), G(0, 0.12, 0.27), G(0, 0.12, 0.5)]
+TAIL = [G(0, 0.11, -0.12), G(0, 0.095, -0.3), G(0, 0.08, -0.48), G(0, 0.065, -0.7)]
+SPINE_BONES = ["Spine_1", "Spine_2", "Head"]
+TAIL_BONES = ["Tail_1", "Tail_2", "Tail_3"]
+LEG_TABLE = [((0.085, 0.1, 0.2), (0.23, 0.0, 0.29), (0.11, 0.13)),
+             ((0.085, 0.1, -0.07), (0.23, 0.0, -0.15), (0.11, 0.13))]
+LEG_PARENT = {1: "Spine_2", 2: "Spine_1"}
+SAILS = [(0.19, 0.08, "Spine_2"), (0.06, 0.11, "Spine_2"), (-0.08, 0.1, "Spine_1"), (-0.22, 0.075, "Tail_1")]
+
+
+def legs():
+    return K3.limbs(LEG_TABLE, pole=(0.6, 1.0, 0.0))
+
+
+def build_parts(b=None):
+    b = b or C.PartBuilder()
+    k = K
+    b.ellipsoid("Torso", G(0, 0.12, 0.07), (0.115, 0.23, 0.075), bone="Spine_1", segments=(40, 20),
+                style=K3.wet_skin(PAL, k, spots=70, seed=1, glow_spots=0.3))
+    b.parts[-1].chain = ["Spine_1", "Spine_2"]
+    b.tube("Tail", TAIL[:1] + [G(0, 0.1, -0.22)] + TAIL[1:], [0.08, 0.065, 0.045, 0.025, 0.004], sides=12,
+           chain=TAIL_BONES, style=K3.wet_skin(PAL, k, spots=70, seed=2, glow_spots=0.25))
+    b.ellipsoid("TailFin", G(0, 0.09, -0.52), (0.009, 0.17, 0.055), bone="Tail_2",
+                style=K3.fin_sail(FIN, k, rays=6, edge_glow=0.9, axis=1, height_axis=2, seed=3), segments=(32, 12))
+    b.parts[-1].chain = ["Tail_2", "Tail_3"]
+    # Head: wide and flat, a dark lip line with needle teeth and a glowing mouth seam, eyes, gills, the lure.
+    b.ellipsoid("Head", G(0, 0.125, 0.38), (0.12, 0.13, 0.055), bone="Head", segments=(36, 16),
+                style=K3.wet_skin(PAL, k, spots=80, seed=4, glow_spots=0.4))
+    b.ellipsoid("Jaw", G(0, 0.09, 0.38), (0.108, 0.12, 0.03), bone="Head", segments=(32, 12),
+                style=K3.wet_skin(PAL, k, spots=80, seed=5, belly_light=0.8))
+    b.ellipsoid("MouthSeam", G(0, 0.104, 0.46), (0.085, 0.03, 0.009), bone="Head", style=H.inner_glow(PAL, 0.9), segments=(20, 6))
+    for side, sx in SIDES:
+        for j in range(3):
+            base = K3.gp((0.02 + 0.03 * j, 0.104, 0.49 - 0.012 * j * j), sx)
+            b.tube("Tooth", [base, base + G(0, -0.012, 0.004), base + G(0, -0.024, 0.0)], [0.006, 0.004, 0.0006],
+                   sides=6, chain=["Head"], style=H.hook(PAL, k))
+        for p, r in (((0.055, 0.172, 0.4), 0.017), ((0.085, 0.16, 0.35), 0.012)):
+            b.ellipsoid("Eye", K3.gp(p, sx), (r, r, r * 0.8), bone="Head", style=H.eye(PAL, k, 1.0), segments=(12, 6))
+        for j in range(3):
+            c = K3.gp((0.105 - 0.005 * j, 0.125, 0.27 - 0.03 * j), sx)
+            b.ellipsoid("Gill", c, (0.012, 0.005, 0.03), bone="Spine_2", style=H.inner_glow(PAL, 0.9), segments=(10, 6))
+    lure = [G(0, 0.17, 0.33), G(0, 0.24, 0.38), G(0, 0.255, 0.46), G(0, 0.235, 0.52)]
+    b.tube("LureStalk", lure, [0.014, 0.011, 0.008, 0.007], sides=8, chain=["Lure"],
+           style=H.tube(PAL, k, PAL.side, PAL.top, rings=(0.3, 0.6), ring_dark=0.5))
+    b.ellipsoid("LureBulb", lure[-1] + G(0, -0.01, 0.01), (0.024, 0.024, 0.026), bone="Lure", style=H.eye(PAL, k, 1.0),
+                segments=(14, 8))
+    for i, (f, h, bone) in enumerate(SAILS):
+        c = G(0, 0.18 + h * 0.55, f)
+        b.ellipsoid("Sail", c, (0.008, 0.06, h), bone=bone, segments=(28, 12),
+                    style=K3.fin_sail(FIN, k, rays=4, edge_glow=1.0, axis=1, height_axis=2, seed=10 + i))
+        b.tube("SailSpine", [G(0, 0.16, f + 0.02), G(0, 0.18 + h * 1.2, f - 0.03)], [0.01, 0.002], sides=6, chain=[bone],
+               style=H.hook(PAL, k, glow=0.8, glow_from=0.7))
+    for (side, i), lg in legs().items():
+        hip, knee, foot = lg.rest_points
+        sx = -1 if side == "L" else 1
+        b.tube("LegUpper", [hip, hip.lerp(knee, 0.5), knee], [0.034, 0.028, 0.022], sides=10, chain=[lg.names[0]],
+               style=K3.wet_skin(PAL, k, spots=90, seed=20 + i))
+        b.tube("LegLower", [knee, knee.lerp(foot, 0.5), foot + Vector((0, 0, 0.012))], [0.022, 0.019, 0.016], sides=10,
+               chain=[lg.names[1]], style=K3.wet_skin(PAL, k, spots=90, seed=22 + i))
+        pad = foot + K3.gp((0.015, 0.01, 0.025), sx)
+        b.ellipsoid("Paddle", pad, (0.045, 0.05, 0.01), bone=lg.names[1], segments=(20, 8),
+                    style=K3.fin_sail(FIN, k, rays=3, edge_glow=0.6, axis=1, height_axis=0, seed=24 + i))
+        for j, a in enumerate((-0.6, 0.0, 0.6)):
+            d = K3.gp((math.sin(a) + 0.3, 0.0, math.cos(a)), sx).normalized()
+            b.tube("Toe", [pad, pad + d * 0.045, pad + d * 0.065 + Vector((0, 0, -0.006))], [0.008, 0.006, 0.001], sides=6,
+                   chain=[lg.names[1]], style=H.hook(PAL, k, glow=0.5))
+    return b
+
+
+def bones():
+    out = [("Root", G(0, 0, 0), G(0, 0, 0.12), None, True)]
+    parent = "Root"
+    for i, name in enumerate(SPINE_BONES):
+        out.append((name, SPINE[i], SPINE[i + 1], parent, True))
+        parent = name
+    parent = "Spine_1"
+    for i, name in enumerate(TAIL_BONES):
+        out.append((name, TAIL[i], TAIL[i + 1], parent, True))
+        parent = name
+    out.append(("Lure", G(0, 0.17, 0.33), G(0, 0.235, 0.52), "Head", True))
+    for (side, i), lg in legs().items():
+        out += lg.rest_bones(LEG_PARENT[i])
+    return out
+
+
+# --------------------------------------------------------------------------------------------------------------
+# Animation
+# --------------------------------------------------------------------------------------------------------------
+
+def body_specs(offset=None, wave=(0.0, 0.0), pitch_=0.0, roll=0.0, head=0.0, lure=(0.0, 0.0), tail_lift=0.0):
+    """wave: (amplitude, phase) of the side-to-side wave from the head to the tail tip."""
+    amp, ph = wave
+    specs = {"Root": {"rot": []},
+             "Spine_1": {"rot": [(Z, amp * 0.6 * math.sin(ph)), (Yv, roll), (X, pitch_)],
+                         "loc": offset if offset is not None else Vector()},
+             "Spine_2": {"rot": [(Z, -amp * 0.9 * math.sin(ph + 0.6))]},
+             "Head": {"rot": [(Z, amp * 0.5 * math.sin(ph + 1.2)), (X, head)]}}
+    for i, name in enumerate(TAIL_BONES):
+        specs[name] = {"rot": [(Z, amp * (1.0 + 0.5 * i) * math.sin(ph - 1.0 - 0.9 * i)), (X, tail_lift * (i == 0))]}
+    specs["Lure"] = {"rot": [(Z, lure[0]), (X, lure[1])]}
+    return specs
+
+
+def place(poser, specs, lg, feet):
+    pose = poser.solve(specs)
+    for (side, i), l in lg.items():
+        p = LEG_PARENT[i]
+        move = pose[p] @ poser.rest[p].inverted()
+        foot = feet[(side, i)] if feet is not None else move @ l.foot
+        specs.update(l.pose(poser, move @ l.root, foot, move.to_3x3() @ l.pole))
+    return specs
+
+
+def tucked(poser, specs, lg, amount):
+    """Swimming: the paddles fold back along the flanks (riding with the body)."""
+    pose = poser.solve(specs)
+    for (side, i), l in lg.items():
+        p = LEG_PARENT[i]
+        move = pose[p] @ poser.rest[p].inverted()
+        sx = -1 if side == "L" else 1
+        back = l.root + K3.gp((0.06, 0.02, -0.2), sx)
+        foot = move @ l.foot.lerp(back, amount)
+        specs.update(l.pose(poser, move @ l.root, foot, move.to_3x3() @ l.pole))
+    return specs
+
+
+WALK_FRAMES = 28
+STRIDE, LIFT, STANCE = 0.12, 0.035, 0.6
+PHASES = {("L", 1): 0.0, ("R", 2): 0.0, ("R", 1): 0.5, ("L", 2): 0.5}
+
+
+def walk_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        w = 2 * math.pi * t
+        specs = body_specs(offset=Vector((0, 0, 0.004 * math.cos(2 * w))), wave=(math.radians(11), w),
+                           roll=math.radians(2) * math.sin(w), head=math.radians(2) * math.sin(2 * w),
+                           lure=(math.radians(10) * math.sin(w + 1.5), math.radians(6) * math.sin(2 * w)))
+        return place(poser, specs, lg, K3.gait_feet(lg, t, PHASES, STANCE, STRIDE, LIFT))
+    return WALK_FRAMES, spec, True
+
+
+SWIM_FRAMES = 24
+SWIM_DISTANCE = 0.5
+
+
+def swim_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        w = 2 * math.pi * t
+        specs = body_specs(offset=Vector((0, 0, -0.03 + 0.006 * math.sin(2 * w))), wave=(math.radians(22), w),
+                           roll=math.radians(4) * math.sin(w), head=math.radians(-4),
+                           lure=(math.radians(14) * math.sin(w + 1.0), math.radians(10)))
+        return tucked(poser, specs, lg, 0.85)
+    return SWIM_FRAMES, spec, True
+
+
+def idle_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        w = 2 * math.pi * t
+        specs = body_specs(offset=Vector((0, 0, 0.004 * math.sin(w))), wave=(math.radians(5), w),
+                           head=math.radians(5) * math.sin(w) - math.radians(3),
+                           lure=(math.radians(18) * math.sin(w), math.radians(12) * math.sin(2 * w + 0.5)))
+        return place(poser, specs, lg, {k_: l.foot for k_, l in lg.items()})
+    return 72, spec, True
+
+
+def hit_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        k = K2.recoil(t)
+        specs = body_specs(offset=Vector((0, 0.02 * k, 0.012 * k)), wave=(math.radians(14) * k, 0.8),
+                           pitch_=math.radians(-6) * k, head=math.radians(-10) * k, lure=(0.0, math.radians(30) * k))
+        return place(poser, specs, lg, {key: l.foot for key, l in lg.items()})
+    return 12, spec, False
+
+
+def death_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        flip = K2.ease(0.1, 0.55, t)
+        writhe = math.exp(-t * 4) * math.sin(t * 30)
+        specs = body_specs(offset=Vector((0, 0, 0.06 * K2.pulse(t, 0.05, 0.25, 0.5) - 0.03 * flip)),
+                           wave=(math.radians(25) * writhe + math.radians(12) * flip, 1.2 + t * 6 * (1 - flip)),
+                           roll=math.radians(150) * flip, head=math.radians(10) * flip, lure=(math.radians(30) * flip, math.radians(40) * flip))
+        return place(poser, specs, lg, None)
+    return 40, spec, False
+
+
+EMERGE_FRAMES = 48
+EMERGE_SURFACE_FRAME = 10
+EMERGE_DEPTH = 0.45
+
+
+def emerge_spec(poser):
+    lg = legs()
+
+    def spec(t, f):
+        rise = K2.ease(0.0, 0.5, t)
+        level = K2.ease(0.4, 0.62, t)
+        shake = math.exp(-max(0.0, t - 0.62) * 7) * math.sin(t * 60) * (t > 0.62)
+        specs = body_specs(offset=Vector((0, 0.15 * (1 - rise), -EMERGE_DEPTH * (1 - rise) + 0.04 * K2.pulse(t, 0.35, 0.48, 0.62))),
+                           pitch_=-math.radians(40) * (1 - level), roll=math.radians(14) * shake,
+                           wave=(math.radians(18) * (1 - level) + math.radians(12) * abs(shake), t * 18),
+                           head=math.radians(10) * (1 - level), tail_lift=math.radians(15) * (1 - level),
+                           lure=(math.radians(25) * shake, math.radians(30) * (1 - level)))
+        if level <= 0.0:
+            return tucked(poser, specs, lg, 0.85)
+        pose = poser.solve(specs)
+        for (side, i), l in lg.items():
+            p = LEG_PARENT[i]
+            move = pose[p] @ poser.rest[p].inverted()
+            foot = (move @ l.foot).lerp(l.foot, level)
+            specs.update(l.pose(poser, move @ l.root, foot, move.to_3x3() @ l.pole))
+        return specs
+    return EMERGE_FRAMES, spec, False
+
+
+CLIPS = {"Walk": walk_spec, "Swim": swim_spec, "Idle": idle_spec, "Hit": hit_spec, "Death": death_spec, "Emerge": emerge_spec}
+RIGID = set()
+# LOD1: each leg one bone, the tail two bones, the lure on the head: 10 bones.
+LOD_DROP = {"Lure": "Head", "Tail_3": "Tail_2", **{f"Leg_{s}{i}_Lower": f"Leg_{s}{i}_Upper" for s, _ in SIDES for i in (1, 2)}}
+LOD_AIMS = {"Tail_2": ("Tail_2", "Tail_3"),
+            **{f"Leg_{s}{i}_Upper": (f"Leg_{s}{i}_Upper", f"Leg_{s}{i}_Lower") for s, _ in SIDES for i in (1, 2)}}
+
+
+def main():
+    builder = build_parts()
+    layout = [("Walk", 0, (-1.0, 0.6), 0.2), ("Swim", 8, (0.2, 0.9), -0.15), ("Emerge", 22, (1.2, 0.4), 0.3),
+              ("Walk", 10, (-0.5, -0.4), 0.0), ("Swim", 16, (0.8, -0.6), -0.3)]
+    previews = dict(target=(0, 0.0, 0.12), distance=2.0, move=("Walk", 4), layout=layout,
+                    strips=[("Walk", "side", range(0, WALK_FRAMES, 4)), ("Swim", "top", range(0, SWIM_FRAMES, 3)),
+                            ("Emerge", "side", range(0, EMERGE_FRAMES, 4)), ("Death", "close", range(0, 41, 6))],
+                    macros=[("head", G(0.0, 0.14, 0.42), 0.4, -30, 20), ("sails", G(0.0, 0.25, 0.0), 0.45, -80, 15),
+                            ("paddle", G(0.23, 0.02, 0.3), 0.3, -40, 30)],
+                    rig_scale=1.0, power=("Emerge", 20))
+    K3.run_creature(NAME, builder, bones(), CLIPS, tris=3950, families=("membrane", "chitin", "crystal"), game_scale=GAME_SCALE,
+                    rigid=RIGID, blend=0, lod_drop=LOD_DROP, lod_aims=LOD_AIMS,
+                    extra=H.weathering(K, scratches=0.15, dust=0.0, pits=0.4, seed=41), specular=0.5,
+                    report={"walk_distance_per_loop": round(STRIDE / STANCE, 3), "swim_distance_per_loop": SWIM_DISTANCE,
+                            "pivot": "ground (dry) or water surface (swimming: Swim keeps the body 0.03 lower)",
+                            "emerge": {"surface_frame": EMERGE_SURFACE_FRAME, "start_depth": EMERGE_DEPTH, "start_back": 0.15}},
+                    previews=previews)
+
+
+if __name__ == "__main__":
+    main()

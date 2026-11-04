@@ -55,6 +55,9 @@ def nrm(v):
 
 HIP_Y = 0.84
 UPPER_ARM, FOREARM, HAND_LEN, FINGER_LEN = 0.265, 0.24, 0.085, 0.075
+# Finger groups across the knuckles: (offset towards the thumb, radius, length); the ring and little finger overlap
+# into one group.
+FINGERS = ((0.03, 0.0105, 0.072), (0.005, 0.011, 0.078), (-0.019, 0.0102, 0.07), (-0.033, 0.0088, 0.058))
 THIGH, SHIN = 0.38, 0.372
 ANKLE_UP = 0.09
 
@@ -217,10 +220,27 @@ def R(x, up, fwd):
 LIMB_QUILT = 0.065
 
 
-def wrap_plate(front, half_angle, t0, t1, features=(), seed=0, quilt=True):
-    """A plate wrapping the `front` side of a limb tube between t0 and t1; the rest of the tube is suit."""
-    under = S.styled("suit", (), quilt=("tube", LIMB_QUILT) if quilt else None)
-    return S.wrap(plate(features, seed=seed), under, lambda c: S.sector(c, front, half_angle, t0, t1), depth=0.011)
+def limb_suit(quilt=True):
+    return S.styled("suit", (), quilt=("tube", LIMB_QUILT) if quilt else None)
+
+
+# --- Round 16: hard plates are separate shells (own remesh layer; suit.dome_patch / suit.limb_shell) -------------
+
+dome_patch = S.dome_patch
+limb_shell = S.limb_shell
+
+
+def along(c):
+    """Position 0..1 along a limb shell's limb (for grooves and stripes across the plate)."""
+    a, d, length, _, _ = c.part.limb
+    return ((c.p - np.array(a)) @ np.array(d)) / length
+
+
+def around(c):
+    """Angle (degrees) round a limb shell's limb, 0 at the plate's centre line."""
+    a, d, _, ref, side = c.part.limb
+    rel = c.p - np.array(a)
+    return np.degrees(np.arctan2(rel @ np.array(side), rel @ np.array(ref)))
 
 
 def build_parts():
@@ -231,13 +251,15 @@ def build_parts():
     b.parts[-1].chain = ["Spine1", "Hips"]
     b.ellipsoid("Chest", G(0, 1.19, -0.006), R(0.172, 0.13, 0.122), bone="Spine2", style=suit_body(), segments=(40, 20))
     b.parts[-1].chain = ["Spine2", "Spine1"]
-    b.ellipsoid("ChestPlate", G(0, 1.205, 0.046), R(0.158, 0.112, 0.082), euler(pitch=-8), bone="Spine2",
-                style=plate([(lambda c: S.line(c.u[:, 2], -0.42, 0.035) * (c.u[:, 1] < -0.3), GROOVE),
-                             (lambda c: S.line(np.abs(c.u[:, 0]), 0.58, 0.03) * (c.u[:, 2] > -0.42) * (c.u[:, 1] < -0.3), GROOVE),
-                             (lambda c: S.band(c.u[:, 0], 0.0, 0.13) * S.band(c.u[:, 2], 0.05, 0.07) * (c.u[:, 1] < -0.5), CYAN),
-                             (lambda c: S.band(np.abs(c.u[:, 0]), 0.5, 0.06) * S.band(c.u[:, 2], 0.3, 0.05) * (c.u[:, 1] < -0.5),
-                              dict(emit=S.PAL.yellow, glow=0.8, rough=0.3, family={}))], seed=1),
-                segments=(40, 20), deform=boxy(0.6))
+    # The cuirass: a separate ceramic shell over the chest, narrower at the bottom, with a bevelled rim.
+    chest_c, chest_r = G(0, 1.19, -0.006), R(0.172, 0.13, 0.122)
+    dome_patch(b, "ChestPlate", chest_c, chest_r, euler(pitch=-6), lambda a, v: (a * 1.95, -1.0, v * 0.95 + 0.18), 0.016, "Spine2",
+               plate([(lambda c: S.line(c.u[:, 2], -0.3, 0.022) * (c.u[:, 1] < -0.3), GROOVE),
+                      (lambda c: S.line(np.abs(c.u[:, 0]), 0.5, 0.02) * (c.u[:, 2] > -0.3) * (c.u[:, 1] < -0.3), GROOVE),
+                      (lambda c: S.band(c.u[:, 0], 0.0, 0.11) * S.band(c.u[:, 2], 0.1, 0.06) * (c.u[:, 1] < -0.5), CYAN),
+                      (lambda c: S.band(np.abs(c.u[:, 0]), 0.42, 0.05) * S.band(c.u[:, 2], 0.36, 0.045) * (c.u[:, 1] < -0.5),
+                       dict(emit=S.PAL.yellow, glow=0.8, rough=0.3, family={}))], seed=1),
+               outline=lambda a, v: (a * (0.72 + 0.28 * (v + 1) / 2), v), nu=28, nv=16)
     b.ellipsoid("Belt", G(0, 0.96, 0.0), R(0.156, 0.03, 0.118), bone="Hips", style=metal([(lambda c: S.line(c.u[:, 2], 0.0, 0.06), GROOVE)]),
                 segments=(36, 12), deform=boxy(0.6))
     b.ellipsoid("Buckle", G(0, 0.96, 0.116), R(0.038, 0.027, 0.014), bone="Hips",
@@ -297,42 +319,50 @@ def build_parts():
     # --- Shoulders and arms -----------------------------------------------------------------------------
     for name, sd in SIDE.items():
         sx = sd.sx
-        b.ellipsoid("Yoke", G(0.168 * sx, 1.262, -0.006), R(0.084, 0.074, 0.086), bone=f"Clavicle_{name}", style=suit_body(),
+        b.ellipsoid("Yoke", G(0.168 * sx, 1.25, -0.006), R(0.084, 0.07, 0.086), bone=f"Clavicle_{name}", style=suit_body(),
                     segments=(24, 12))
         b.parts[-1].chain = [f"Clavicle_{name}", "Spine2"]
-        # Pauldron: a broad sloped top plate over a narrower lame, the lame's edge striped yellow.
-        b.ellipsoid("Pauldron", G(0.218 * sx, 1.324, -0.008), R(0.107, 0.055, 0.116), euler(roll=-26 * sx), bone=f"Clavicle_{name}",
-                    style=plate([(lambda c, sx=sx: S.line(c.u[:, 2], 0.5, 0.05) * C.smoothstep(0.0, 0.4, c.u[:, 0] * sx), GROOVE)], seed=12),
-                    segments=(36, 18), deform=boxy(0.55))
-        b.parts[-1].chain = [f"Clavicle_{name}", f"UpperArm_{name}"]
-        b.ellipsoid("Lame", G(0.268 * sx, 1.262, -0.008), R(0.066, 0.042, 0.098), euler(roll=-52 * sx), bone=f"UpperArm_{name}",
-                    style=plate([(lambda c: C.smoothstep(-0.1, -0.45, c.u[:, 2]), YELLOW)], seed=24), segments=(28, 14), deform=boxy(0.55))
-        b.parts[-1].chain = [f"UpperArm_{name}", f"Clavicle_{name}"]
+        # Pauldron: a broad shell sloping down and out over the shoulder, a narrower lame under its outer edge whose
+        # lower rim is striped yellow. Both are separate hard shells (bevelled rims) on the padded yoke.
+        dome_patch(b, "Pauldron", G(0.2 * sx, 1.215, -0.008), R(0.13, 0.112, 0.132), euler(roll=22 * sx),
+                   lambda a, v, sx=sx: (a * 0.98 * sx, v * 0.95, 1.0), 0.018, None,
+                   plate([(lambda c, sx=sx: S.line(c.u[:, 0] * sx, 0.42, 0.03), GROOVE)], seed=12),
+                   chain=[f"Clavicle_{name}", f"UpperArm_{name}"])
+        dome_patch(b, "Lame", G(0.235 * sx, 1.215, -0.008), R(0.08, 0.075, 0.104), euler(roll=62 * sx),
+                   lambda a, v, sx=sx: (a * 0.95 * sx, v * 1.1, 1.0), 0.012, None,
+                   plate([(lambda c, sx=sx: C.smoothstep(0.38, 0.52, c.u[:, 0] * sx), YELLOW)], seed=24),
+                   chain=[f"UpperArm_{name}", f"Clavicle_{name}"], nu=16, nv=12)
         s_, e_, w_ = sd.shoulder, sd.elbow, sd.wrist
         b.tube("UpperArm", [s_, s_.lerp(e_, 0.5), e_], [0.062, 0.057, 0.05], sides=16, chain=[f"UpperArm_{name}"],
                style=S.styled("suit", (), quilt=("tube", LIMB_QUILT)))
         b.ellipsoid("ElbowPad", e_ + G(0, 0.0, -0.024), R(0.046, 0.046, 0.042), bone=f"UpperArm_{name}", style=rubber(), segments=(16, 8))
         b.parts[-1].chain = [f"UpperArm_{name}", f"Forearm_{name}"]
         out = nrm(-sd.hand_z)  # back of the forearm (away from the palm)
-        b.tube("Forearm", [e_, e_.lerp(w_, 0.5), w_], [0.06, 0.057, 0.049], sides=16, chain=[f"Forearm_{name}"],
-               style=wrap_plate(out, 95, 0.22, 0.97, [(lambda c, o=out: S.sector(c, o, 14, 0.35, 0.85), CYAN),
-                                                      (lambda c: S.line(c.t, 0.3, 0.02), GROOVE)], seed=13, quilt=False))
+        b.tube("Forearm", [e_, e_.lerp(w_, 0.5), w_], [0.056, 0.053, 0.046], sides=16, chain=[f"Forearm_{name}"], style=limb_suit(False))
+        limb_shell(b, "ForearmPlate", e_, w_, 0.057, 0.048, out, 92, 0.22, 0.95, 0.011, [f"Forearm_{name}"],
+                   plate([(lambda c: (np.abs(around(c)) < 12) * S.band(along(c), 0.6, 0.24), CYAN),
+                          (lambda c: S.line(along(c), 0.3, 0.012), GROOVE)], seed=13))
         b.ellipsoid("Emitter", w_ + sd.hand_y * -0.02 + out * 0.056, R(0.014, 0.01, 0.014), frame(sd.hand_y, out), bone=f"Forearm_{name}",
                     style=S.light(strength=1.2), segments=(12, 8))
         b.ellipsoid("Cuff", w_ + sd.hand_y * 0.006, (0.046, 0.02, 0.046), frame(sd.hand_y, out), bone=f"Forearm_{name}",
                     style=metal(seed=14), segments=(16, 8))
         b.parts[-1].chain = [f"Forearm_{name}", f"Hand_{name}"]
-        # Gloves: palm block, a back-of-hand plate, the finger mitten (three fingers and the index as one) and the thumb.
+        # Gloves: palm block, a back-of-hand plate, finger groups and the thumb.
         pc = sd.wrist + sd.hand_y * 0.046
         b.ellipsoid("Palm", pc, (0.045, 0.052, 0.029), frame(sd.hand_y, sd.hand_z), bone=f"Hand_{name}",
                     style=rubber([(lambda c: C.smoothstep(0.3, 0.7, -c.u[:, 2]), dict(family=dict(metal=1.0)))]), deform=boxy(0.75),
                     segments=(20, 10))
         b.ellipsoid("Knuckles", pc + sd.hand_y * 0.014 - sd.hand_z * 0.024, (0.04, 0.03, 0.013), frame(sd.hand_y, -sd.hand_z),
                     bone=f"Hand_{name}", style=metal(seed=15), deform=boxy(0.5), segments=(16, 8))
-        k_, f_ = sd.knuckle, sd.finger_tip
-        b.tube("Fingers", [k_ - sd.hand_y * 0.012, k_.lerp(f_, 0.5) + sd.hand_z * 0.004, f_], [0.028, 0.026, 0.019], sides=12,
-               chain=[f"Fingers_{name}"], style=rubber([(lambda c, sd=sd: S.line(np.abs(((c.p - c.part.axis[0]) @ np.array(sd.hand_x)) / 0.018), 0.5, 0.06)
-                                                         * (c.t > 0.15), dict(groove=0.002))]), flatten=0.66)
+        # Three finger groups (index, middle, ring and little finger together) with real gaps between them, all on
+        # the one Fingers bone: a glove, not a mitten.
+        k_ = sd.knuckle
+        for off, r0, length in FINGERS:
+            o = sd.thumb * off
+            base = k_ - sd.hand_y * 0.014 + o + sd.hand_z * 0.002
+            tip = k_ + sd.finger_dir * length + o * 1.08
+            b.tube("Finger", [base, base.lerp(tip, 0.5) + sd.hand_z * 0.003, tip], [r0, r0 * 0.95, r0 * 0.8], sides=10,
+                   chain=[f"Fingers_{name}"], style=rubber([(lambda c: S.band(c.t, 0.5, 0.05), dict(groove=0.0012))]), cap=0.8)
         b.tube("Thumb", [sd.thumb_head - sd.thumb_dir * 0.01, sd.thumb_head.lerp(sd.thumb_tip, 0.5), sd.thumb_tip], [0.02, 0.019, 0.015],
                sides=10, chain=[f"Thumb_{name}"], style=rubber())
     # --- Legs --------------------------------------------------------------------------------------------
@@ -341,17 +371,19 @@ def build_parts():
         h_, k_, a_ = sd.hip, sd.knee, sd.ankle
         down = nrm(k_ - h_)
         outer_front = nrm(FWD + Vector((sx * 0.55, 0, 0)))
-        b.tube("Thigh", [h_ + G(0, 0.03, 0), h_.lerp(k_, 0.5), k_], [0.098, 0.088, 0.072], sides=18, chain=[f"Thigh_{name}"],
-               style=wrap_plate(outer_front, 62, 0.3, 0.86, [(lambda c: S.line(c.t, 0.5, 0.015), GROOVE),
-                                                             (lambda c, o=outer_front: S.sector(c, o, 10, 0.36, 0.8), YELLOW)], seed=16))
+        b.tube("Thigh", [h_ + G(0, 0.03, 0), h_.lerp(k_, 0.5), k_], [0.096, 0.086, 0.07], sides=18, chain=[f"Thigh_{name}"],
+               style=limb_suit())
+        limb_shell(b, "ThighPlate", h_, k_, 0.097, 0.072, outer_front, 60, 0.3, 0.86, 0.012, [f"Thigh_{name}"],
+                   plate([(lambda c: S.line(along(c), 0.52, 0.01), GROOVE),
+                          (lambda c: (np.abs(around(c)) < 9) * S.band(along(c), 0.58, 0.2), YELLOW)], seed=16))
         b.ellipsoid("Holster", sd.holster + down * 0.06 + G(0.004 * sx, 0, 0), (0.026, 0.078, 0.046), frame(-down, FWD), bone=f"Thigh_{name}",
                     style=metal([(lambda c: S.line(c.u[:, 1], 0.55, 0.05), GROOVE)], seed=17), deform=boxy(0.3), segments=(16, 10))
-        b.ellipsoid("KneePad", k_ + G(0, 0.008, 0.05), R(0.058, 0.062, 0.036), bone=f"Shin_{name}",
-                    style=plate([(lambda c: S.line(c.u[:, 2], 0.0, 0.05) * (c.u[:, 1] < 0), GROOVE)], seed=19), deform=boxy(0.65),
-                    segments=(20, 10))
-        b.parts[-1].chain = [f"Shin_{name}", f"Thigh_{name}"]
-        b.tube("Shin", [k_, k_.lerp(a_, 0.5), a_ + G(0, 0.03, 0)], [0.07, 0.064, 0.056], sides=16, chain=[f"Shin_{name}"],
-               style=wrap_plate(FWD, 72, 0.12, 0.8, [(lambda c: S.line(c.t, 0.55, 0.015), GROOVE)], seed=20, quilt=False))
+        dome_patch(b, "KneePad", k_ + G(0, 0.004, 0.012), R(0.062, 0.066, 0.058), None, lambda a, v: (a * 1.0, -1.0, v * 1.05), 0.013,
+                   f"Shin_{name}", plate([(lambda c: S.line(c.u[:, 2], -0.05, 0.03) * (c.u[:, 1] < 0), GROOVE)], seed=19), nu=16, nv=14)
+        b.tube("Shin", [k_, k_.lerp(a_, 0.5), a_ + G(0, 0.03, 0)], [0.066, 0.06, 0.052], sides=16, chain=[f"Shin_{name}"],
+               style=limb_suit(False))
+        limb_shell(b, "ShinPlate", k_, a_, 0.068, 0.055, FWD, 70, 0.12, 0.8, 0.012, [f"Shin_{name}"],
+                   plate([(lambda c: S.line(along(c), 0.55, 0.01), GROOVE)], seed=20))
         # Boot: a cuff, a gunmetal shell from heel to toe, a thick rubber sole and a yellow heel tab.
         b.ellipsoid("BootCuff", a_ + G(0, 0.035, 0.0), R(0.066, 0.05, 0.07), bone=f"Shin_{name}", style=metal(seed=21), deform=boxy(0.7),
                     segments=(20, 10))
@@ -367,7 +399,18 @@ def build_parts():
 
 
 RIGID = {"Helmet", "Visor", "Chin", "Ear", "Lamp", "ChestPlate", "Pack", "PackLid", "Vent", "Cell", "CellCap", "Antenna",
-         "HiltClip", "Collar", "Belt", "Buckle", "Pouch", "Emitter", "Holster", "Knuckles"}
+         "HiltClip", "Collar", "Belt", "Buckle", "Pouch", "Emitter", "Holster", "Knuckles", "KneePad", "ForearmPlate", "ShinPlate",
+         "ThighPlate", "Finger"}
+
+# Round 16 remesh layers (suit.build_layered_asset): the padded suit stays soft; plates, gear and gloves are fused
+# on their own, finer and with less smoothing, so they keep bevelled edges, crisp grooves and finger gaps.
+LAYERS = [S.Layer("suit", None, voxel=0.0034, smooth=6, density=0.75),
+          S.Layer("plates", {"ChestPlate", "Pauldron", "Lame", "ForearmPlate", "ThighPlate", "ShinPlate", "KneePad", "Helmet"},
+                  voxel=0.0019, smooth=2, density=1.0),
+          S.Layer("gear", {"Belt", "Buckle", "Pouch", "Collar", "Visor", "Chin", "Ear", "Lamp", "Pack", "PackLid", "Vent", "Cell",
+                           "CellCap", "Antenna", "HiltClip", "Emitter", "Cuff", "Holster", "BootCuff", "Boot", "Sole"},
+                  voxel=0.0026, smooth=3, density=0.8),
+          S.Layer("hands", {"Palm", "Knuckles", "Finger", "Thumb"}, voxel=0.0015, smooth=3, density=2.2)]
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -630,13 +673,19 @@ AIM_DIR = G(0.02, 0.0, 1.0)
 UP = Z
 
 
+SUPPORT_OFFSET = Vector((0.052, -0.026, 0.012))
+SUPPORT_TILT = 18.0
+SUPPORT_ROLL = -25.0
+
+
 def aim_pose(kick=0.0, back=0.0):
     """Two-handed pistol aim at shoulder height, in chest rest space; `kick` degrees muzzle rise, `back` units."""
     r = sock_frame(AIM_GRIP + G(0, 0.005 * kick, -back), AIM_DIR, UP)
     if kick:
         r = Matrix.Translation(r.translation) @ Matrix.Rotation(rad(-kick), 4, r.to_3x3().col[0]) @ Matrix.Translation(-r.translation) @ r
-    left = r.copy()
-    left.translation = r.translation + r.to_3x3() @ Vector((0.0, -0.042, -0.012)) + X * 0.028
+    # The support hand cups the gun hand from the left: beside the grip (socket +X is the figure's left), a little
+    # lower and forward, its fingers tilted down round the front of the right fist instead of sitting inside it.
+    left = r @ Matrix.Translation(SUPPORT_OFFSET) @ Matrix.Rotation(rad(SUPPORT_TILT), 4, "X") @ Matrix.Rotation(rad(SUPPORT_ROLL), 4, "Z")
     return {"arm.R.mode": "ik", "arm.R.sock": r, "arm.L.mode": "ik", "arm.L.sock": left,
             "arm.L.pole": G(0.6, -0.5, -0.6), "arm.R.pole": G(-0.6, -0.4, -0.7),
             "grip.R.fingers": 0.92, "grip.R.thumb": 0.55, "grip.L.fingers": 0.9, "grip.L.thumb": 0.5}
@@ -646,12 +695,16 @@ SHOOT_FRAMES = 14
 
 
 def shoot_p(t, f):
-    k = math.sin(math.pi * min(1.0, f / 2.0)) if f < 2 else math.exp(-(f - 2) / 2.4)
+    # Round 16: a bigger kick that reads at game zoom (muzzle up, gun and shoulders back, the head ducks a little).
+    k = math.sin(0.5 * math.pi * min(1.0, f / 1.5)) if f < 1.5 else math.exp(-(f - 1.5) / 2.6)
     p = dict(AIM_STANCE)
-    p.update(aim_pose(kick=13 * k, back=0.035 * k))
-    p["spine2.pitch"] = -2.5 * k
-    p["head.pitch"] = 1.0 - 2.0 * k
-    p["clav.R.fwd"] = -4 * k
+    p.update(aim_pose(kick=24 * k, back=0.065 * k))
+    p["spine2.pitch"] = -5.5 * k
+    p["spine1.pitch"] = 1.0 - 2.0 * k
+    p["head.pitch"] = 1.0 - 4.0 * k
+    p["clav.R.fwd"] = -9 * k
+    p["clav.L.fwd"] = -5 * k
+    p["hips.loc"] = AIM_STANCE["hips.loc"] + G(0, 0, -0.012 * k)
     return p
 
 
@@ -662,14 +715,16 @@ def reload_p(t, f):
     aim = aim_pose()
     r_aim, l_aim = aim["arm.R.sock"], aim["arm.L.sock"]
     # The pistol comes in to the chest and tilts so the empty grip faces the left hand.
-    r_in = sock_frame(G(-0.04, 1.2, 0.3), G(0.25, 0.45, 0.85), G(-0.55, 0.8, 0.0))
+    # Round 16: a wider arc so it reads at game zoom: the pistol comes in low to the chest, tipped far over.
+    r_in = sock_frame(G(-0.02, 1.13, 0.26), G(0.35, 0.6, 0.7), G(-0.75, 0.6, 0.0))
+    r_flick = sock_frame(G(-0.1, 1.2, 0.36), G(0.1, 0.75, 0.6), G(-0.9, 0.2, 0.2))
     pouch = sock_frame(G(0.11, 0.97, 0.13), G(0.0, -0.9, 0.3), G(0, 0.1, 1.0))
     below = r_in.translation - r_in.to_3x3().col[1] * 0.11
     mag_up = sock_frame(below, r_in.to_3x3().col[2], r_in.to_3x3().col[1])
     seated = mag_up.copy()
     seated.translation = below + r_in.to_3x3().col[1] * 0.03
-    keysR = [(0, r_aim), (7, r_in), (27, r_in), (34, r_aim)]
-    keysL = [(0, l_aim), (5, sock_frame(G(0.1, 1.08, 0.2), G(0, -0.5, 1), UP)), (11, pouch), (13, pouch), (20, mag_up), (23, seated),
+    keysR = [(0, r_aim), (4, r_flick), (8, r_in), (27, r_in), (34, r_aim)]
+    keysL = [(0, l_aim), (5, sock_frame(G(0.16, 1.04, 0.2), G(0.2, -0.6, 1), UP)), (11, pouch), (13, pouch), (20, mag_up), (23, seated),
              (25, seated), (31, l_aim)]
 
     def track(keys):
@@ -682,13 +737,14 @@ def reload_p(t, f):
     p["arm.R.sock"] = track(keysR)
     p["arm.L.sock"] = track(keysL)
     p["grip.L.fingers"] = 0.9 if 10 <= f <= 24 else 0.6
-    p["head.pitch"] = 1 + 16 * ease((f - 2) / 6) * (1 - ease((f - 26) / 6))
-    p["head.yaw"] = 8 * ease((f - 4) / 6) * (1 - ease((f - 15) / 5))
-    p["spine2.pitch"] = 3 + 5 * math.sin(math.pi * t)
+    p["head.pitch"] = 1 + 24 * ease((f - 2) / 6) * (1 - ease((f - 26) / 6))
+    p["head.yaw"] = 14 * ease((f - 4) / 6) * (1 - ease((f - 15) / 5))
+    p["spine2.pitch"] = 3 + 9 * math.sin(math.pi * t)
+    p["spine2.yaw"] = AIM_STANCE["spine2.yaw"] + 8 * math.sin(math.pi * t)
     p["clav.L.fwd"] = 6 * math.sin(math.pi * min(1.0, f / 24))
     # The palm slaps the magazine home.
     if 22 <= f <= 25:
-        p["spine2.pitch"] += 2.0
+        p["spine2.pitch"] += 4.0
     return p
 
 
@@ -824,35 +880,39 @@ def hit_p(t, f):
 
 DOWN_FRAMES = 40
 FALL_ROLL = -84.0  # onto the right side
+# Round 16: he stumbles half a metre to his left before he topples to his right, so the body ends round the origin
+# (the root does not move: the old fall left the hips 0.89 and the head 1.34 to the side of it).
+DOWN_SHIFT = G(0.5, 0.0, 0.0)
 PIVOT = G(-0.06, 0.06, -0.02)
 
 
 def lying(roll):
-    """Hips location for a body rolled `roll` degrees about the forward axis around the feet."""
+    """Hips location for a body rolled `roll` degrees about the forward axis around the feet (moved DOWN_SHIFT)."""
     hc = SPINE["Hips"][0]
     r = Matrix.Rotation(rad(roll), 3, "Y")
-    return PIVOT + r @ (hc - PIVOT) - hc
+    return PIVOT + r @ (hc - PIVOT) - hc + DOWN_SHIFT
 
 
 def down_end():
     return stance(**{"hips.loc": lying(FALL_ROLL) + G(0, 0.02, 0), "hips.roll": FALL_ROLL, "hips.yaw": -6, "hips.pitch": 10,
                      "spine1.pitch": 14, "spine2.pitch": 8, "spine1.roll": 6, "spine2.roll": 8, "neck.roll": 18, "head.roll": 12,
                      "head.pitch": 10, "head.yaw": -10,
-                     "foot.L.pos": G(-0.12, 0.22, 0.32), "foot.L.pitch": 10, "foot.R.pos": G(-0.22, 0.07, 0.14), "foot.R.pitch": 0,
+                     "foot.L.pos": G(-0.12, 0.22, 0.32) + DOWN_SHIFT, "foot.L.pitch": 10, "foot.R.pos": G(-0.22, 0.07, 0.14) + DOWN_SHIFT,
+                     "foot.R.pitch": 0,
                      "foot.L.pole": G(0.0, 0.3, 1.0), "foot.R.pole": G(0, -0.3, 1.0), "foot.L.yaw": -20, "foot.R.yaw": -20,
                      "arm.R.swing": 70, "arm.R.out": -10, "arm.R.elbow": 70, "arm.L.swing": 30, "arm.L.out": -5, "arm.L.elbow": 45,
                      "arm.L.twist": 30, "grip.L.fingers": 0.3, "grip.R.fingers": 0.3})
 
 
 def down_p(t, f):
-    stagger = stance(**{"hips.loc": STANCE["hips.loc"] + G(-0.02, -0.03, -0.08), "spine1.pitch": -8, "spine2.pitch": -12,
-                        "spine2.yaw": -10, "head.pitch": -16, "neck.pitch": -8, "hips.roll": -4,
-                        "foot.R.pos": foot_at("R", fwd=-0.28, side=0.06), "foot.L.pos": foot_at("L", fwd=0.02, side=0.04),
+    stagger = stance(**{"hips.loc": STANCE["hips.loc"] + G(0.16, -0.03, -0.08), "spine1.pitch": -8, "spine2.pitch": -12,
+                        "spine2.yaw": -10, "head.pitch": -16, "neck.pitch": -8, "hips.roll": 6,
+                        "foot.R.pos": foot_at("R", fwd=-0.28, side=0.06) + G(0.12, 0, 0), "foot.L.pos": foot_at("L", fwd=0.02, side=0.04) + G(0.3, 0, 0),
                         "arm.L.out": 15, "arm.R.out": 20, "arm.L.elbow": 50, "arm.R.elbow": 45, "arm.L.swing": -15, "arm.R.swing": -20,
                         "clav.L.raise": 6, "clav.R.raise": 6, "grip.L.fingers": 0.2, "grip.R.fingers": 0.2})
-    buckle = stance(**{"hips.loc": G(-0.05, -0.2, -0.06), "hips.roll": -20, "spine1.pitch": 6, "spine2.pitch": 4, "spine1.roll": -6,
-                       "head.pitch": 12, "head.roll": -10, "foot.R.pos": foot_at("R", fwd=-0.2, side=0.06),
-                       "foot.L.pos": foot_at("L", fwd=0.08, side=0.04), "arm.R.swing": 40, "arm.R.out": 10, "arm.R.elbow": 50,
+    buckle = stance(**{"hips.loc": G(0.3, -0.22, -0.06), "hips.roll": -20, "spine1.pitch": 6, "spine2.pitch": 4, "spine1.roll": -6,
+                       "head.pitch": 12, "head.roll": -10, "foot.R.pos": foot_at("R", fwd=-0.2, side=0.06) + G(0.4, 0, 0),
+                       "foot.L.pos": foot_at("L", fwd=0.08, side=0.04) + G(0.42, 0, 0), "arm.R.swing": 40, "arm.R.out": 10, "arm.R.elbow": 50,
                        "arm.L.swing": 20, "arm.L.out": 25, "arm.L.elbow": 40})
     end = down_end()
     if f <= 8:
@@ -878,9 +938,10 @@ REVIVE_FRAMES = 36
 
 def revive_p(t, f):
     end = down_end()
-    sit = stance(**{"hips.loc": G(-0.32, 0.2 - 0.9, 0.0), "hips.roll": -38, "hips.pitch": 14, "hips.yaw": -10, "spine1.pitch": 16,
+    sit = stance(**{"hips.loc": G(-0.32, 0.2 - 0.9, 0.0) + DOWN_SHIFT * 0.7, "hips.roll": -38, "hips.pitch": 14, "hips.yaw": -10, "spine1.pitch": 16,
                     "spine2.pitch": 10, "spine1.roll": 16, "spine2.roll": 12, "neck.roll": 4, "head.pitch": 8,
-                    "foot.L.pos": G(0.0, 0.09, 0.32), "foot.L.pole": G(0.3, 0.2, 1), "foot.R.pos": G(-0.3, 0.08, 0.12),
+                    "foot.L.pos": G(0.0, 0.09, 0.32) + DOWN_SHIFT * 0.7, "foot.L.pole": G(0.3, 0.2, 1),
+                    "foot.R.pos": G(-0.3, 0.08, 0.12) + DOWN_SHIFT * 0.7,
                     "foot.R.pole": G(-0.6, -0.5, 1.0), "foot.R.yaw": -30, "foot.R.pitch": 0,
                     "arm.R.swing": 8, "arm.R.out": 32, "arm.R.elbow": 6, "arm.R.wrist": -45, "grip.R.fingers": 0.1,
                     "arm.L.swing": 45, "arm.L.out": -12, "arm.L.elbow": 60})
@@ -918,37 +979,50 @@ def skin_all(mesh_obj, arm, builder):
             mesh_obj.vertex_groups.remove(vg)
 
 
-def build_lod(asset, arm, builder):
+def build_lod(asset, arm, builder, index):
     lod_mesh = C.decimate(asset.low.data.copy(), LOD_TRIS, LOD_NAME, symmetric=True)
     C.shade_smooth(lod_mesh)
     lod = C.link(bpy.data.objects.new(LOD_NAME, lod_mesh))
     lod.data.materials.clear()
     lod.data.materials.append(asset.low.data.materials[0])
+    index.register(lod_mesh)
     skin_all(lod, arm, builder)
     return lod
 
 
+def stage_exports():
+    """`--stage <dir>`: write exports and the .blend there instead of ArtSource (iterations while Unity imports)."""
+    stage = C.cli_args().get("stage")
+    if stage:
+        C.EXPORTS = os.path.join(stage, "Exports")
+        C.BLEND = os.path.join(stage, "Blend")
+
+
 def main():
     C.reset_scene()
+    stage_exports()
     out = C.preview_dir()
     weapons = W.build()
     builder = build_parts()
-    asset = C.build_mesh_asset(NAME, builder, voxel=0.0034, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.06,
-                               extrusion=0.01, ray=0.03, emission_strength=2.5, extra=S.weathering(), specular=0.4,
-                               mirror=True, k=1.0, families=FAMILIES, family_set=S.FAMILY_SET, low_size=LOW_TEX,
-                               preview_detail=(0.8, 0.6), edge_gain=0.45, border_smooth=4)
+    asset, index = S.build_layered_asset(NAME, builder, LAYERS, voxel=0.0034, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.06,
+                                         extrusion=0.01, ray=0.03, emission_strength=2.5, extra=S.weathering(), specular=0.4,
+                                         mirror=True, k=1.0, families=FAMILIES, family_set=S.FAMILY_SET, low_size=LOW_TEX,
+                                         preview_detail=(0.8, 0.6), edge_gain=0.45, border_smooth=4)
     bone_list = bones()
     arm = build_armature(NAME + "_Rig", bone_list)
     skin_all(asset.low, arm, builder)
     poser = C.Poser(arm)
     actions = C.key_clips(poser, CLIPS)
     arm.animation_data.action = actions["Idle"]
-    lod = build_lod(asset, arm, builder)
+    lod = build_lod(asset, arm, builder, index)
+    for o in (asset.low, lod):
+        S.drop_layer_attr(o)
     C.export_fbx(os.path.join(C.EXPORTS, NAME, NAME + ".fbx"), [arm, asset.low, lod], animated=True)
     C.write_report(NAME, {
         "asset": NAME, "game_tris": asset.low_tris, "lod1_tris": C.tri_count(lod), "source_tris": asset.high_tris,
         "bones": len(arm.data.bones), "sockets": sorted(SOCKETS), "texture_size": TEX, "low_texture_size": LOW_TEX,
         "maps": ["Albedo", "Normal", "Emission", "Mask"], "uv": asset.uv_stats, "detail": asset.details,
+        "layers": [layer.name for layer in LAYERS],
         "actions": {n: CLIPS[n](poser)[0] for n in CLIPS},
         "walk_distance_per_loop": round(WALK_STRIDE / WALK_STANCE, 3), "run_distance_per_loop": round(RUN_STRIDE / RUN_STANCE, 3),
         "events": {"Shoot": {"muzzle_flash": 0}, "Reload": {"mag_out": 4, "mag_in": 23}, "Slash": {"hit": 10},
