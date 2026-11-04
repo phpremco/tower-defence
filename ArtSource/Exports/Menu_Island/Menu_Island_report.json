@@ -1,0 +1,38 @@
+{
+ "asset": "Menu_Island",
+ "round": 26,
+ "game_tris": 13800,
+ "tris": {
+  "top": 8463,
+  "cliff": 5337
+ },
+ "maps": {
+  "Top": [
+   "Menu_Island_Top_Albedo.png",
+   "Menu_Island_Top_Normal.png",
+   "Menu_Island_Top_Emission.png",
+   "Menu_Island_Top_Mask.png"
+  ],
+  "Cliff": [
+   "Menu_Island_Cliff_Albedo.png",
+   "Menu_Island_Cliff_Normal.png",
+   "Menu_Island_Cliff_Emission.png",
+   "Menu_Island_Cliff_Mask.png"
+  ]
+ },
+ "sizes": {
+  "Top": 2048,
+  "Cliff": [
+   4096,
+   512
+  ],
+  "Low": "half"
+ },
+ "mask": "Top: R AO (props baked in), G smoothness, B height 0..1, A Crysium dust; Cliff: R AO, G smoothness, B strata band, A vein",
+ "placed_assets": 105,
+ "replaces": [
+  "UI/MenuTerrain.cs:196-236 (mesh, painted albedo/emission)",
+  "UI/MenuDiorama.cs:220-228 (mouth)",
+  "UI/MenuDiorama.cs:271-319 (PropFactory rings)"
+ ]
+}

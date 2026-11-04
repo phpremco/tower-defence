@@ -237,7 +237,7 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 | ☑ | P2 | **Baken** van Mercer | Import stage 3b: in de cutscene (Deploy op de voortgang, dan Idle, licht op `Lamp`). Ronde 13 klaar: driepoot die uitklapt, telescoopmast, pulserende lamp, draaiende ring. 2.162 driehoeken. Clips **Deploy** en **Idle** |
 | ◐ | P2 | **Radarscherm / commandopost-interieur** | Import stage 3b: geïmporteerd (`CutsceneCast.ConsoleArt`), maar de radar-shot is nog een UI-overlay op het veld; een shot in de commandopost is een ontwerpkeuze (open punt). Ronde 13 klaar: radarconsole (bureau, rond radarscherm, twee zijschermen, toetsen, NTI-embleem). Schermen als eigen meshes met 0..1 UV voor een shader. 3.026 driehoeken. Geen volledig interieur |
 | ◐ | P2 | **Aarde** en **S-69-CRYS-globe** | Ronde 20: S-69-CRYS-textureset klaar (`build_planet_s69.py`, `ArtSource/Exports/Planet_S69/`, 4096 + Low 2048): albedo, hoogte (16-bit), normal, mask, regio-ID-mask, emissie en wolken, op de MapRegion-indeling. Nog: koppelen in Unity (`Game/Planet`), Aarde niet gedaan |
-| ☐ | P3 | Ogenveld ondergronds | Is al instanced. Eventueel betere oogvorm |
+| ◐ | P3 | Ogenveld ondergronds | Ronde 26: Burrower-ogen gemaakt, zie sectie 12 |
 
 ---
 
@@ -293,6 +293,26 @@ Unity-ronde maakt een icon-set-asset (naam = `IconType`), zet de UiSkin-sprites 
 | ◐ | P1 | **Dialoog en radar** | `UI_Dialogue` (paneel + gloedrand, naamplaat, portretlijst, pijl, radarsweep en contact), ruis/scanlines/gloed/schaduw, `UI_Radar` | Wit en kleurbaar, behalve de radar |
 | ◐ | P2 | **Achtergronden** | `UI_Starfield` (menu), `UI_PreviewBackdrop` (modelvoorbeeld), `UI_MapHalo` (planeetkaart) | Volgen de oude regels (alfa = licht, halo wit) |
 | ☐ | P2 | **Lettertype geldpopup** | `MoneyPopup` gebruikt nog het ingebouwde LegacyRuntime-font | Geen art nodig: `UiKit.Font` gebruiken |
+
+## 12. Menu, cutscene en luchten
+
+Ronde 26 (2026-11-04, B3 uit de visual audit): de laatste visuals die nog in code gemaakt werden, nu uit Blender.
+Scripts `build_menu_diorama.py`, `build_underground.py`, `build_planet_earth.py`, `build_cutscene_fx.py`,
+`build_skies.py`, `build_decor_c1.py`; import-notities in `ArtSource/README.md` (ronde 26). Niets is nog geïmporteerd.
+
+| Status | Prio | Onderdeel | Inhoud | Vervangt |
+| --- | --- | --- | --- | --- |
+| ◐ | P1 | **Menu-eiland** | `Menu_Island` (13.800 driehoeken: bovenkant ~8.400, onderkant ~5.400; twee materialen): zwevend stuk S-69-CRYS-grond met korfheuvel, vijf poelbekkens op de oude plekken, voetpad rond de heuvel, verhoging voor een kleine NTI-post achterin, onderkant met strata, Crysium-aders en drie hangende spitsen. Top-maps 2048 (planaire UV), Cliff-maps 4096 × 512. Hoogtekaart (16-bit, van het spelmesh) voor `OnGround`, layout-json met 105 geplaatste exports, poelcontouren en lichten | `MenuTerrain.cs:196-236`, `MenuDiorama.cs:271-319` |
+| ◐ | P1 | **Burrow-mond** | `Menu_NestMouth` (2.400, 1024): overkapte chitine-ingang met ribben, tanden, stekels en een gloeiende keel; staat over de inkeping van de veranda zodat de kruipers het donker in lopen | `MenuDiorama.cs:220-228` (zwart ovaal + torus) |
+| ◐ | P2 | **Grotkit ondergronds** | `Underground/Cave_*`: Wall_A, Wall_B (met spleet), Ceiling, Stalactites, Floor_A, Floor_B (gloeiende spleet), Boulder, CrystalCluster, Vein; 300–1.950 driehoeken, 512/1024. The Core-stijl (indigo kristalglas, sporen goud) met cyaan Crysium-licht | `UndergroundSet.cs:49,125,177` (PropFactory-rotsen en -kristallen) |
+| ◐ | P2 | **Burrower-ogen** | `Underground/Eye_Burrower_A/B/C` (~420 driehoeken, 512): oogleden, oogbol met geschilderde iris (spleet, balk, drie pupillen), natte cornea als tweede materiaal. Shape keys Blink en Look×4, plus vertex-kleur-rig (R/G leden, B oogbol) voor een instanced shader | `EyeField.cs:74,122` (ruitvormige quads) |
+| ◐ | P2 | **Aarde (cutscene)** | `Planet_Earth` (4096 + Low 2048): albedo, normal, hoogte (16-bit), mask (R land, G natheid, B gloed, A ijs), emissie (doffe amber steden, de meeste al donker, mijnlichten), smog-wolken (RGBA bruin). Aardse continenten, zelf getekend; 52 terrasmijnen met afvalvijvers, troebele zeeën, gekrompen vuil ijs. Gloss.A = 0,05 + 0,22 × Mask.G | `EarthPainter.cs:54` (`EarthSet.cs:37`) |
+| ◐ | P2 | **Cutscene-gloed en -sprites** | `Cutscene_FX/`: zon (kern, halo, streak), glint, motorgloed, uitlaatpluim, navigatielicht, plasmaspoor, beam-band; grijs en kleurbaar, additief | `SpaceKit.cs:94-143`, `SpaceBackdrop.cs:34-36`, `SurveySet.cs:59-76`, `OrbitSet.cs:189,229`, `CapsuleDrop.cs:179-182`, `FieldSet.cs:412-424` |
+| ◐ | P2 | **Cutscene-decals** | `FX_DrillCracks` (2×2), `FX_CrackStrip_Drill_A/B`, `FX_CrackStrip_Swarm_A/B`, `FX_ScreamRing`, `FX_GateField` | `FieldDrill.cs:75-84`, `FieldSwarm.cs:69-70,285`, `FieldBase.cs:389,483` |
+| ◐ | P2 | **Luchten per thema** | `Skies/Sky_<Thema>` (2048 + Low 512): zes continenten + Earth + Underground, donker met nevel, poollicht (Northern/Southern Crown), rook, mist, gloed van onderen; The Core en Underground als grot. Exposure en trilight-ambient per lucht in `Skies_report.json` | `SkyProbe.cs:40` (cubemap uit drie kleuren) |
+| ◐ | P1 | **Decor-terugval Crystal Plains** | IceShard = `North_Decor_IceShard`, DeadTree = `Mire_Flora_DeadTree`, Reed = `Mire_Flora_Reed` (passen); Snowdrift nieuw: `Env/Decor_Snowdrift` (998, `build_decor_c1.py`) | `PropScatterBuilder.cs:283-323` (PropFactory-terugval) |
+| ☐ | P3 | VisualThemes voor continent 2-6 | De luchten voor C2-C6 volgen DESIGN_NOTES ronde 17; als hun themes er zijn, de kleuren naast elkaar leggen. Zonsrichting gelijkzetten met het key light | |
+| ☐ | P2 | Import ronde 26 | `MenuTerrain.Height` uit `Menu_Island_Height.png`, `PoolCells` uit de poelcontouren, props uit de layout-json; grot opbouwen uit de kit; ogen instanced met de EyeRig-shader | |
 
 ## Budget per soort
 

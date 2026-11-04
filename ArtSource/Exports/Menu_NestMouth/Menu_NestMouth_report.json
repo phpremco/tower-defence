@@ -1,0 +1,40 @@
+{
+  "asset": "Menu_NestMouth",
+  "round": 26,
+  "game_tris": 2400,
+  "source_tris": 261936,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 163,
+    "folded_fallback_faces": 42,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.47,
+    "world_per_uv": 9.628134101684068
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 160.5,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 120.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    3.718,
+    2.86,
+    3.438
+  ],
+  "pivot": "porch floor at the centre of the opening; the opening faces local +Z in Unity (place with yaw 180 so it faces the menu camera, see Menu_Island_layout.json)",
+  "replaces": "UI/MenuDiorama.cs:220-228 (MouthHole quad + MouthRim torus); MouthLight stays"
+}

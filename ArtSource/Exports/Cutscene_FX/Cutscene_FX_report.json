@@ -1,0 +1,232 @@
+{
+  "FX_GlowSoft": {
+    "file": "FX_GlowSoft.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 6855,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "every round glow quad: SpaceKit.Glow (sun parts, glints, engine glows, running lights, capsule heads)",
+    "replaces": "SpaceKit.SoftDot (UI/Cutscene/SpaceKit.cs:94-103, 115-132)",
+    "wrap": "Clamp"
+  },
+  "FX_BeamSoft": {
+    "file": "FX_BeamSoft.png",
+    "size": [
+      256,
+      64
+    ],
+    "bytes": 1891,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "LineRenderer texture (Texture Mode Tile or Stretch): U along the line (tiles seamlessly), V across",
+    "replaces": "SpaceKit.SoftBand (UI/Cutscene/SpaceKit.cs:105-113) via SpaceKit.Line: SurveySet scan/echo and meridians (SurveySet.cs:59-68)",
+    "wrap": "Repeat U, Clamp V"
+  },
+  "FX_SunCore": {
+    "file": "FX_SunCore.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 27720,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "the sun disc quad (scale = SpaceStyle.SunSize); disc fills 34 % of the quad radius, corona to 75 %",
+    "replaces": "SoftDot on SunCore (SpaceBackdrop.cs:35)",
+    "wrap": "Clamp"
+  },
+  "FX_SunHalo": {
+    "file": "FX_SunHalo.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 38255,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "the halo quad around the sun (scale = SpaceStyle.HaloSize); faint fine rays and a limb shoulder",
+    "replaces": "SoftDot on SunHalo (SpaceBackdrop.cs:34)",
+    "wrap": "Clamp"
+  },
+  "FX_SunStreak": {
+    "file": "FX_SunStreak.png",
+    "size": [
+      512,
+      128
+    ],
+    "bytes": 4169,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "anamorphic flare across the sun (quad scaled StreakLength x StreakLength * StreakThickness)",
+    "replaces": "SoftDot on SunStreak (SpaceBackdrop.cs:36)",
+    "wrap": "Clamp"
+  },
+  "FX_Glint": {
+    "file": "FX_Glint.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 4958,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "crystal glints on the survey planet; four long spikes, four short diagonals",
+    "replaces": "SoftDot on Glint quads (SurveySet.cs:70-77)",
+    "wrap": "Clamp"
+  },
+  "FX_EngineGlow": {
+    "file": "FX_EngineGlow.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 10125,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "engine exhaust glow on the mothership nozzles (camera-facing): hot core, lit nozzle ring, shock rings",
+    "replaces": "SoftDot on Exhaust quads (OrbitSet.cs:189)",
+    "wrap": "Clamp"
+  },
+  "FX_ExhaustPlume": {
+    "file": "FX_ExhaustPlume.png",
+    "size": [
+      128,
+      512
+    ],
+    "bytes": 8199,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "optional stretched quad / particle behind a nozzle (nozzle at the top edge, V down the plume); for a plume aligned with the ship's back axis",
+    "replaces": "new (OrbitSet.cs:189 exhaust, if a directional plume is added)",
+    "wrap": "Clamp"
+  },
+  "FX_RunningLight": {
+    "file": "FX_RunningLight.png",
+    "size": [
+      128,
+      128
+    ],
+    "bytes": 2549,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "blinking navigation lights on the mothership: tight dot with a tiny cross",
+    "replaces": "SoftDot on RunningLight quads (OrbitSet.cs:229)",
+    "wrap": "Clamp"
+  },
+  "FX_PlasmaTrail": {
+    "file": "FX_PlasmaTrail.png",
+    "size": [
+      512,
+      128
+    ],
+    "bytes": 6304,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "re-entry plasma trail, LineRenderer Texture Mode Stretch: U = 0 at the capsule (head), 1 at the tail; keep the gradient/width curves",
+    "replaces": "default particle texture on the FieldSet capsule streak (FieldSet.cs:412-424) and SoftBand on the CapsuleDrop trails (CapsuleDrop.cs:179-182)",
+    "wrap": "Clamp"
+  },
+  "FX_DrillCracks": {
+    "file": "FX_DrillCracks.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 182252,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "ground decal under the drill, 2 x 2 sheet (512 px cells, top-left first): radial glowing cracks from the bore hole. One quad of radius ~2.6 m with _BaseMap tiling (0.5, 0.5) and offset per cell; grow its scale with `open`",
+    "cells": {
+      "rows": 2,
+      "cols": 2,
+      "order": "top-left first, row by row"
+    },
+    "replaces": "the 6 stretched GlowDecal.Radial crack quads in FieldDrill (FieldDrill.cs:75-84, posed at FieldDrill.cs:127-134)",
+    "wrap": "Clamp"
+  },
+  "FX_CrackStrip_Drill_A": {
+    "file": "FX_CrackStrip_Drill_A.png",
+    "size": [
+      256,
+      1024
+    ],
+    "bytes": 45652,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "one straight crack per quad, centred, tapering to both ends (scale x = width, y = length)",
+    "replaces": "GlowDecal.Radial on the FieldDrill crack quads (FieldDrill.cs:76-84) if the 6-quad rig is kept",
+    "wrap": "Clamp"
+  },
+  "FX_CrackStrip_Drill_B": {
+    "file": "FX_CrackStrip_Drill_B.png",
+    "size": [
+      256,
+      1024
+    ],
+    "bytes": 48278,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "one straight crack per quad, centred, tapering to both ends (scale x = width, y = length)",
+    "replaces": "GlowDecal.Radial on the FieldDrill crack quads (FieldDrill.cs:76-84) if the 6-quad rig is kept",
+    "wrap": "Clamp"
+  },
+  "FX_CrackStrip_Swarm_A": {
+    "file": "FX_CrackStrip_Swarm_A.png",
+    "size": [
+      256,
+      1024
+    ],
+    "bytes": 42857,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "a ground fissure that opens: molten lens mid-length, crust edges (scale x = width, y = length)",
+    "replaces": "GlowDecal.Radial on the FieldSwarm crack decals (FieldSwarm.cs:69, BuildCracks 164-176, posed 90-98)",
+    "wrap": "Clamp"
+  },
+  "FX_CrackStrip_Swarm_B": {
+    "file": "FX_CrackStrip_Swarm_B.png",
+    "size": [
+      256,
+      1024
+    ],
+    "bytes": 45176,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "a ground fissure that opens: molten lens mid-length, crust edges (scale x = width, y = length)",
+    "replaces": "GlowDecal.Radial on the FieldSwarm crack decals (FieldSwarm.cs:69, BuildCracks 164-176, posed 90-98)",
+    "wrap": "Clamp"
+  },
+  "FX_ScreamRing": {
+    "file": "FX_ScreamRing.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 68445,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "expanding shock ring of the scream (ground decal, scale = radius * 2): sharp leading edge at 90 % of the quad radius, ripples and a fading wake inside",
+    "replaces": "GlowDecal.Radial on ScreamRing (FieldSwarm.cs:70, Decal at 282-293, posed at 112-114)",
+    "wrap": "Clamp"
+  },
+  "FX_GateField": {
+    "file": "FX_GateField.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 35491,
+    "colour_space": "linear (sRGB off)",
+    "blend": "additive (One One), RGB = A",
+    "use": "gate energy sheets: U across the field (built-in edge fade and bright rims), V tiles seamlessly (scroll it like the old scanlines); 6 scanlines, 4 hex rows and vertical shimmer per tile",
+    "replaces": "GlowDecal.Scanlines via GlowDecal.ScanlineMaterial on the FieldBase gate sheets (FieldBase.cs:389-392, Sheet 395-406, posed via _gateFields; also FieldBase.cs:483)",
+    "wrap": "Clamp U, Repeat V"
+  },
+  "_notes": {
+    "round": 26,
+    "convention": "PNG row 0 = top (Unity v = 1). Greyscale RGBA with RGB = A; tint with the existing HDR colours. Low/ = half size."
+  }
+}

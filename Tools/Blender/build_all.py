@@ -68,6 +68,12 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_bank_sweeps.py",
            # Round 25: UI art set (icons, kit, dialogue, radar, starfield, backdrop, halo + mockups).
            "build_ui.py",
+           # Round 26: dying Earth and theme skies (numpy, planet_kit.py).
+           "build_planet_earth.py", "build_skies.py",
+           # Round 26: cutscene glow / trail / crack sprites (numpy) and the Crystal Plains snowdrift.
+           "build_cutscene_fx.py", "build_decor_c1.py",
+           # Round 26: menu diorama (places the exports above) and the underground cave kit and eyes.
+           "build_menu_diorama.py", "build_underground.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 

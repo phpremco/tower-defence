@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Boulder",
+  "round": 26,
+  "game_tris": 898,
+  "source_tris": 44884,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 35,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.549,
+    "world_per_uv": 4.073379827217054
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 33.9,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 58.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    2.059,
+    1.828,
+    1.61
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "loose boulders (PropKind.Boulder)"
+}

@@ -2288,3 +2288,145 @@ The old gate was a bumpy mound with ten cone teeth and a flat glowing hoop. Depa
 - The particle atlas sprites are 128 px and simple; the ichor splat and goo decal are flat masks with no normal.
 - Not made here because round 20 already covers them: hero blaster bolt (`Bolt_Core`), ability beam (`Beam_Core`),
   rocket exhaust and smoke trail.
+
+# Round 26: menu diorama, underground, Earth, cutscene FX, skies (2026-11-04)
+
+Batch B3 of the visual audit: the last visuals that were still made by code. Scripts `build_menu_diorama.py`,
+`build_underground.py`, `build_planet_earth.py`, `build_skies.py`, `build_cutscene_fx.py`, `build_decor_c1.py`;
+helpers `stage_kit.py` and `planet_kit.py`. Unity notes in `README.md` (round 26).
+
+## Menu diorama
+
+Goal: the first thing a player sees should say "a living alien world, and we are the intruders". The composition
+of MenuDiorama is kept exactly (island centre, hive mound, the five pools with their sizes and bank arcs, camera,
+sun, creature routes), because the creatures and the camera drift are code that stays. What changed:
+- **One designed island instead of a height-function mesh.** A floating chunk of S-69-CRYS ground: the plateau keeps
+  its gentle undulation, the edge rolls over in a rounded lip and the underside hangs below as an inverted mountain
+  with strata terraces, overhanging buttresses, Crysium veins glowing pink deeper down and three hanging spires with
+  crystals at their tips. 13,800 tris, about 8,400 on the walkable top (decimation weighted so the top keeps its
+  shape), the rest underneath where only the drift or a side view sees it.
+- **The hive mound is a dome, not a cone,** of wine-dark resin in a honeycomb of cells, radial ribs catching a lighter
+  sheen, pink veins, and a creep of the purple pod-moss (GroundFlora) spreading out from it over the plain. The
+  walkers' lap round it is trodden darker. A crown spire, tendrils, spikes and egg clusters dress it.
+- **The mouth is a real burrow.** The old black oval lay flat on the porch. Now a notch is cut into the mound at porch
+  height and `Menu_NestMouth` covers it: a hooded chitin arch with five ribs (a heavy lip in front), hooked teeth
+  hanging from the lip, spines raking back along the hood, buttress feet, and a wet throat membrane glowing ember
+  from inside. The crawlers' "inside" point now lies under the hood, so they walk out of the dark.
+- **Each corner is painted in its own element:** basalt and ash with cracks that glow up from the lava shore; teal
+  wet moss with sparse glowing spores round the pond; pale drifting sand and grit round the quicksand pit; rime round
+  the frozen lake; black-green glossy mud round the bog. Banks are wet and dark, the lava rim a cooled crust.
+- **Our outpost** (new, optional group): on a small rise at the back left, across the island from the hive, two build
+  pads with a gun and a laser turret, the survey beacon and a crystal, on cleared dusty ground with track marks. It
+  is small and far, so the menu still belongs to the hive, but it tells the story at a glance.
+- **Reuse:** every prop is an existing export (Crystal Plains decor and flora, crystals, rocks, round-17 elemental
+  decor per corner, round-23 pool palettes through the liquid set). AO from all props is baked into the top, so
+  contact shadows exist even where Unity's shadows are soft.
+
+Critique passes (renders `b3/menu/`):
+1. First build: the layout came out mirrored (lava left, outpost right). Cause: Blender (x, y, z) arrives in Unity as
+   (-x, z, -y); `common.G` keeps x, which only mirrors symmetric creatures. Fixed in `stage_kit.u2b` (and the yaw
+   sign). Decimation kept only 8 triangles on the top (the decimate vertex-group weight means "collapse more"); fixed
+   with weights 0.25 top / 1 underside.
+2. The mound read as a pyramid, the spire was taller than the frame, pond spores carpeted the ground, the pink
+   crystal dust was confetti everywhere, the lava rim glowed as a thick halo, the ice corner washed the left half
+   pale -> dome profile, spire at 0.62, sparse spores, crystal dust squared and rarer glints, a narrow crack-driven
+   lava rim, darker and smaller rime.
+3. The hood stood in front of the notch wall, so its throat was walled off, and a spike stood inside the porch ->
+   the notch now runs under the whole hood (to z 5.3), the spike moved. The burrow glows from inside in the menu shot.
+
+## Underground cave and Burrower eyes
+
+Story beat (STORY.md intro shot 6): the dark under the field, crystals trembling with the drill, then eyes opening,
+one pair, another, then hundreds. The eyes are the Burrowers in the walls; the scene is about scale and dread.
+- **Cave kit in The Core's language:** indigo-black crystal glass (the Core palette, darker) with sparse gold veins,
+  lit by the Underground theme's cold cyan Crysium. Walls are stacked chiselled boulders leaning out at the top, with
+  ice-Crysium breaking out of the seams; Wall_B has a deep slot between two buttresses for eye pairs; the ceiling
+  hangs rock drips and crystal points; floors are rubble, one with a glowing cyan fissure; a crystal cluster replaces
+  the trembling PropKind.Crystal; a flat vein strip dresses rock.
+- **The eye:** one eye per mesh, a pair is two instances. An almond opening, fuller at the inner corner and slanted
+  inward (predator), in a knotted chitin socket that sinks into the wall; lids are spherical shells that close by
+  turning about the eye's right axis (so a vertex shader can blink an instanced eye with one angle); the eyeball has
+  a painted iris that glows hot gold round the pupil and deep orange at the rim, with fibres, a limbal ring, and a
+  dark wet sclera with red veins; a clear cornea bulges over it. Three variants, so a wall of eyes is not one
+  creature copied: amber with a vertical slit, ember with a horizontal bar and brow spines, sulphur with three
+  pupils (Earth starting point: cat and goat eyes; the three-pupil eye is the alien turn). About 420 tris.
+
+Critique passes (renders `b3/cave/`):
+1. Eyes: the cornea rendered as an opaque grey ball (material indices were lost when slots were cleared), the lids
+   blinked the wrong way (opening), the socket left a visible gap round the lids, and every imported shape key came in
+   at weight 1 -> indices preserved through material changes, blink sign fixed, socket inner ring tucked under the
+   lids, all keys written at 0 (FBX DeformPercent = Unity's default blend-shape weight).
+2. Iris pale cream under bloom -> saturated gold-to-orange emission, darker albedo, sclera glow nearly off; lid
+   margin darker.
+3. Cave scene: gold veins scribbled over every face, the scene was nearly black and no eye showed (they sat inside
+   the wall boulders) -> veins at 0.3 of the Core amount, walls moved out to radius 6.1 so the eye radius is the wall
+   face, stronger crystal lights and fill; the socket's outer ring made a dark "mask" round each pair, so it was
+   shrunk and pushed back into the wall.
+
+## Earth (cutscene globe)
+
+Goal: the Earth the colonists left, readable as Earth in one glance and as dying in the second. The arrangement of
+the continents is real (hand-placed lobes, domain-warped, fractal coasts), the surface is not: grey-brown land, dead
+forest in the old humid belts, wide dust where the deserts grew, dried lakes as salt flats, dry river beds, grey
+sprawl where the cities were. NTI's industry is visible: 52 terraced open-pit mines with rust and toxic tailings
+ponds, white work lights still burning in them at night. The seas are murky, with silt plumes and algae swirls along
+the currents. The ice has shrunk to grey, soot-streaked caps. At night only about one city cluster in three still
+glows, dim amber, plus a few gas flares. A brown smog deck (dust-yellow over the deserts, soot-dark over the
+industrial belts, a thin veil everywhere) replaces white clouds, and the limb glows tan-orange instead of blue.
+Palette taken from EarthPainter so the cutscene keeps its colours.
+
+Critique: pass 1 found donut-shaped mines, a boxed Greenland ice edge, a broken-up Mediterranean, far too strong
+relief and too heavy smog. Pass 2 found coast shadow lines, mines that still read as rings, salt flats that were too
+bright and a twilight stripe across the disc. Fixes: polyline seas, relief that rises from the shore, broken
+benches, a weaker normal map, a limb-only twilight, a thin smog veil.
+
+## Skies (reflection and ambient per theme)
+
+The old SkyProbe gave metal a three-colour gradient. These skies keep that gradient as the base (it is what reads at
+game scale) and add things a polished turret, the water or the ice can catch: a faint nebula in the continent
+palette, aurora curtains over the two ice continents (green and blue in the north, magenta in the charged south),
+smoke bands over Ashen Reach, mist over Mirewood, and a low glow from below where the land lights the haze (embers,
+amber heat under the ice, charged veins, the seal). The Core and the Underground cave have a rock ceiling with
+crystal glints instead of a sky, so reflections say "underground". The Earth sky is space with a warm sun and the
+brown Earth below. All of them stay dark: zenith 2-6 % value, horizon band 40-55 %. Critique: pass 1 found oversized
+stars, a thin aurora stripe and busy cavern ceilings; pass 2 found an aurora that had become a grey blanket and a
+Core glow band that was too strong. Both were toned down.
+
+## Cutscene FX
+
+The cutscene glows were one soft dot and one soft band painted at runtime, so the sun, a crystal glint, an engine
+and a ground crack all looked like the same blur. Each now has its own shape: a sun disc with limb darkening and a
+streaming corona, a wide halo with faint irregular rays and a limb shoulder, an anamorphic streak with a ghost line,
+a four-plus-four glint star, a nozzle glow with a lit rim, a running light with a small cross, and a re-entry trail
+whose braided filaments break up towards the tail. The ground decals are jagged midpoint-displaced crack lines that
+pinch, swell and fork: radial bore cracks round a scorched hole (four variants), straight drill cracks tapering to
+both ends, and swarm fissures with a narrow molten slit and crust edges. The scream ring is hollow: a sharp leading
+edge, thin ripples and a short wake. The gate sheet combines sharpened scanlines, a faint hex lattice and vertical
+shimmer, with bright rims at its side edges. All are greyscale so the existing HDR tints and bloom do the colour.
+Critique: 1) halo ring and rays read as clip-art, engine rings as a target, cracks as thin lightning, scream ring as a
+filled disc, gate sheet as a solid block -> fixed; 2) halo too plain, swarm fissure too close to the drill crack ->
+sparser sharper rays, a molten opening; 3) the opening showed boxy blotches -> narrowed to a slit with a soft glow.
+
+## Decor fallbacks for Crystal Plains
+
+IceShard (North), DeadTree and Reed (Mire) sit well on Crystal Plains ground under the plains lighting and are mapped
+as they are. The North Snowdrift does not: a bright white sheet with a straight cut edge reads as a tarp on dark
+violet stone. Decor_Snowdrift is the plains version: pale violet frost over Crysium dust, a long windward back and a
+sharp crest with a broken crust lip, an organic outline that thins into the ground, frost needles and two small pink
+shards, faint glow only in the crust cracks.
+
+## Honest weak points
+
+- Menu: the island is judged in EEVEE with stand-in liquids (the lava preview is a crust texture, not the round-24
+  lava shader); the lava rim still leaves warm blotches on the bank; pink spore flecks remain over the mound and the
+  plain; the underside is dark and fairly uniform (it is barely seen); planar top UVs stretch on the steep notch
+  walls, which the hood mostly hides. The front rib of the burrow hood is a smooth tube with little carving. The
+  creatures in the renders are Skitter stand-ins; the queen guardian on the porch was not placed.
+- The island top must be sampled from `Menu_Island_Height.png` in Unity; the old `MenuTerrain.Height` noise no longer
+  matches the mesh.
+- Cave: the walls are boulder stacks, convincing at cutscene speed but repetitive if a camera lingers; the back of a
+  wall piece is a smooth mass. The preview lighting is brighter than Theme_Underground suggests; the Unity cave relies
+  on the five crystal lights. Eye sockets still frame each pair a little like a mask at mid distance.
+- Earth: mining scars read as pale ovals up close; faint coast lines on the shadow side; island chains are blobs.
+- Skies: continents 2-6 have no VisualTheme assets yet (palettes from round 17); LDR PNG plus exposure, not true HDR.
+- FX: previews only imitate Unity's additive shader and bloom; drill cracks may need a larger quad or glow.

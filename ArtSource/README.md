@@ -1950,3 +1950,192 @@ alternative (`Trail_Ribbon`).
   lava), 3 Drip (blood/acid drips), 4 IchorSplat (impact and death splats), 5 GooDecal (slime trails as flat
   particles), 6 FrostMote (frost over chilled creatures), 7 ChronoMote (the Chrono field). R core / highlight, G body,
   B detail, A coverage. Use additive for 1, 2, 6, 7 and alpha for 3, 4, 5 (two materials on the same texture).
+
+## Round 26: menu diorama, underground cave and eyes, Earth, cutscene FX, skies (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 26). These are the last code-made visuals from the visual audit (batch
+B3). Nothing is imported yet. New helper modules: `stage_kit.py` (Unity/Blender frames, 2D noise, PNG I/O,
+placing exports) and `planet_kit.py` (equirect noise and PNG helpers, a read-only copy of the S-69 toolbox).
+
+**Frame rule (important for every placed layout):** the FBX export (forward -Z, up Y) plus Unity's x flip on
+import turn Blender (x, y, z) into Unity (-x, z, -y). A Unity world point (x, y, z) is Blender (-x, -z, y), and a
+Unity yaw of a degrees is a Blender Z rotation of -a. `common.G` keeps x unflipped, which only mirrors symmetric
+creatures; `stage_kit.u2b` uses the true mapping, so the layout json below can be applied in Unity as written.
+
+### Menu diorama (`build_menu_diorama.py`)
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_menu_diorama.py -- [--preview <dir>]
+[--norender] [--skipmouth] [--quick]` (about 9 minutes; `--quick` halves every resolution).
+
+| File | Content | Replaces |
+| --- | --- | --- |
+| `Menu_Island/Menu_Island.fbx` | 13,800 tris (top about 8,400, underside about 5,400), pivot at the world origin, built in Unity world space. Materials `Menu_Island_Top` and `Menu_Island_Cliff` | `MenuTerrain.cs:196-236` (BuildMesh / BuildMaterial) |
+| `Menu_Island_Top_{Albedo,Normal,Emission,Mask}.png` | 2048 (Low 1024). UV u = (x - 3.6 + 13) / 26, v = (z - 2.2 + 13) / 26. Mask R AO (props baked in), G smoothness, B height, A Crysium dust | painted albedo/emission of `MenuTerrain.Paint` |
+| `Menu_Island_Cliff_{...}.png` | 4096 x 512 (Low 2048 x 256). u = angle round (3.6, 2.2), v = 1 - depth below the rim / 11. Mask R AO, G smoothness, B strata band, A vein | new (the old island had no underside) |
+| `Menu_Island_Height.png` | 512, 16-bit ground height ray cast onto the game mesh; decode with `min_y`/`max_y` from the layout json | `MenuTerrain.Height` for `OnGround`/`Normal` |
+| `Menu_Island_layout.json` | island, camera, height map, 5 pool outlines (72 points each, with surface level), lights, 105 placed exports (asset, folder, group, position, yaw, scale, sway, glow_pool, flip) | `MenuDiorama.BuildGrowth` / `Ring` / `PlaceProp`, `MenuTerrain.PoolCells` |
+| `Menu_NestMouth/Menu_NestMouth.fbx` + maps 1024 (Low 512) | 2,379 tris, the hooded burrow over the porch notch; pivot on the porch floor at the opening, opening faces local +Z, placed with yaw 180 | `MenuDiorama.cs:220-228` (MouthHole quad + MouthRim torus) |
+
+Unity notes:
+- Import `Menu_Island` with Bake Axis Conversion, place at (0, 0, 0). Top and Cliff use the env Lit setup
+  (Albedo sRGB, Normal, Emission sRGB with the shared pulse, Mask linear). The mesh replaces `MenuTerrain.Build`.
+- `MenuTerrain.Height(x, z)` becomes a bilinear lookup in `Menu_Island_Height.png` (same UV as the top), so the
+  creatures stand on what is drawn. `PoolCells` becomes a point-in-polygon test against `pools[].outline_xz`; the
+  pool centres, radii and bank arcs are unchanged, so `BuildCreatures` and `PoolDweller` keep working.
+- Pools: keep `TerrainLiquidBuilder.BuildPool` with the round-24 liquid textures (`Exports/Liquids/<Kind>`);
+  the basins (0.8 deep) sit under the surface levels of `TerrainLiquidBuilder`.
+- Props: one prefab per `asset` (the exports already imported for the levels); `sway` true adds `WindSway`,
+  `glow_pool` true keeps `GlowDecal.PlacePool`. Group `outpost` is new (two pads with Gun T1 and Laser T1, the
+  survey beacon, a crystal) on the rise at the back; group `underside` hangs crystals under the island. Both are
+  optional. The routes of `BuildCreatures` are kept clear (0.45 m plus each footprint).
+- Lights: `lights[]` lists the mouth light (now inside the hood), pond and crystal lights as before, plus two new
+  ones (lava glow, outpost lamp).
+- Starfield and spores: `UI/UI_Starfield.png` and the `Particles_Atlas` Spore / Mote cells (round 25) replace the
+  default particle material of `BuildStarfield` / `BuildMotes`.
+
+### Underground cave and Burrower eyes (`build_underground.py`)
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_underground.py -- [--preview <dir>]
+[--part kit|eyes|scene|all] [--only Cave_Wall_A,...] [--norender]` (kit about 12 minutes, eyes seconds).
+
+| Asset (`Exports/Underground/<Asset>/`) | Tris | Maps | Use (replaces in `UI/Cutscene/UndergroundSet.cs`) |
+| --- | --- | --- | --- |
+| `Cave_Wall_A` | 1,900 | 1024 | wall section about 5 m long, 6 m tall, cavern side local +Z (`BuildCave` boulders, :125-132) |
+| `Cave_Wall_B` | 1,950 | 1024 | same with a deep crevice for eye pairs |
+| `Cave_Ceiling` | 1,950 | 1024 | slab with rock drips and crystal points; pivot at the top (`BuildCave` spikes, :140-145) |
+| `Cave_Stalactites` | 998 | 512 | hanging crystal cluster; pivot at the top |
+| `Cave_Floor_A`, `Cave_Floor_B` | 1,500 / 1,700 | 1024 | rubble floor; B with a glowing cyan fissure (`BuildCave` rocks, :134-138) |
+| `Cave_Boulder` | 898 | 512 | loose boulder |
+| `Cave_CrystalCluster` | 1,500 | 512 | the trembling light sources (`BuildCrystals`, :149-175; keep the point lights) |
+| `Cave_Vein` | 300 | 512 | flat glowing vein to lay over rock |
+| `Eye_Burrower_A`, `_B`, `_C` | about 420 | 512 | one eye each; replaces `EyeField.cs:74,122` |
+
+Cave pieces: four maps like every env piece (Mask R AO, G smoothness, B rock / A crystal detail), Low/ at half
+size. Eyes: material `<name>_Eye` (Albedo, Normal, Emission, Mask; emission on the iris only, meant for
+`EyeField.Emission` of about 2.5 to 5 HDR with bloom) and `<name>_Cornea` (clear, smoothness 0.97, alpha about
+0.12; can be dropped on the Low profile). Unit: the slit is 1 m wide, so scale = 2 x `EyeWidth` x size (0.15 per
+unit size); pivot at the eyeball centre, the eye looks along local +Z. A pair is two instances, the second with
+scale x -1, `EyeGap` apart. Variants: A amber with a vertical slit, B ember with a horizontal bar and brow spines,
+C sulphur with three pupils.
+- Shape keys `Blink`, `LookLeft`, `LookRight`, `LookUp`, `LookDown` (the eye's own left). Fine for the two lead
+  pairs as SkinnedMeshRenderers.
+- For the hundreds in the wave, use MeshRenderers with GPU instancing and a vertex shader: vertex colour
+  `EyeRig` R = upper lid, G = lower lid, B = eyeball and cornea. Turn R vertices about the eye's local right axis
+  through the pivot so the upper lid edge moves down by `rig.Blink.upper_lid_deg` x blink, G vertices so the lower
+  edge moves up by `lower_lid_deg` x blink, B vertices by `Look.deg` for a look (values in each report). The
+  existing open / blink timing of `EyeField.Pose` drives the per-instance blink value.
+- The scene layout in `build_underground.py` (`build_scene`) follows UndergroundSet: walls at radius 6.1 on both
+  sides, ceiling at 5.6, floor at -1.6, five clusters, 120 eye pairs.
+
+### Earth (`build_planet_earth.py`)
+
+The exhausted Earth of 2053 as a texture set in the Planet_S69 conventions. Replaces the runtime painter
+`UI/EarthPainter.cs:54` (`Paint(width)`: `Maps.Albedo/Normal/Gloss/Emission` + `Smog`), which
+`UI/Cutscene/EarthSet.cs:37` calls. Procedural numpy (helpers in `planet_kit.py`). The continents are hand-placed,
+domain-warped lobes in roughly the real arrangement; nothing is traced from imagery. Run: `blender --background
+--factory-startup --python Tools/Blender/build_planet_earth.py -- [--res 4096] [--out <dir>] [--renders <dir>]
+[--norender]` (about 8 minutes).
+
+| File (`Exports/Planet_Earth/`, + `Low/` 2048) | Content | Unity |
+| --- | --- | --- |
+| `Planet_Earth_Albedo.png` 4096 x 2048 | sRGB, unlit, no smog: grey-brown land, dead forest, dust belts, salt flats, terraced pits with rust/toxic tailings ponds, murky seas with silt plumes and algae, shrunken dirty ice | `Maps.Albedo` (and `CutsceneCast.EarthSurface`). sRGB, Wrap U Repeat / V Clamp, aniso 8 |
+| `Planet_Earth_Normal.png` | land relief only, sea flat, R = east, G = north (OpenGL) | `Maps.Normal`, Texture Type Normal map |
+| `Planet_Earth_Height.png` 16-bit | 0.5 = sea level, terraced pits | optional (parallax, sea-depth tint) |
+| `Planet_Earth_Mask.png` | linear: R land, G wetness (sea 1, silted 0.85, ice 0.7, ponds 0.6, salt 0.37, land 0.12), B glow, A ice | `Maps.Gloss`: EarthPainter keeps smoothness in Gloss.a; use smoothness = 0.05 + 0.22 x Mask.G (sea 0.27, land 0.08, ice 0.20), baked into an RGBA gloss texture by an editor step or remapped in the shader. sRGB off |
+| `Planet_Earth_Emission.png` | sRGB: dim amber cities (about two thirds dark), white mine work lights, orange gas flares | `Maps.Emission`, HDR multiplier on the night side |
+| `Planet_Earth_Clouds.png` | RGBA smog: RGB = smog tint (brown, yellow dust over deserts, soot over industry), A = cover (max 0.75) | `Smog`. The shader must read RGB as the deck colour (not white like Planet_S69_Clouds) and A as cover; keep `SmogAlpha` |
+
+UV: u = (lon + 180) / 360 with east to the right, top row = north, identical to `PlanetCoordinates.ToUv` and
+GlobePainter. `Planet_Earth_report.json` lists the files, the code mapping and the scar positions.
+
+### Skies (`build_skies.py`)
+
+Equirectangular reflection and ambient skies per theme. They replace the 32 px cubemap that `Levels/SkyProbe.cs:40`
+paints from SkyColor / LightColor x LightIntensity / FogColor x 0.25. Same structure (dark zenith, a bright band in
+the light colour at the horizon, a dark ground hemisphere), plus faint nebula in the palette, aurora over Northern
+and Southern Crown, smoke (Ashen Reach), mist (Mirewood), a low glow from below and sparse stars. The Core and
+Underground are caverns: a rough ceiling with crystal glints. Run: `blender --background --factory-startup --python
+Tools/Blender/build_skies.py -- [--out <dir>] [--renders <dir>] [--only CrystalPlains,Earth]` (about 3 minutes).
+
+| File (`Exports/Skies/`, + `Low/` 512 x 256) | Theme |
+| --- | --- |
+| `Sky_CrystalPlains.png` 2048 x 1024 | Theme_C1_01..06 (indigo, lavender horizon, pink/blue nebula) |
+| `Sky_AshenReach.png` | smoke-brown night, ember horizon |
+| `Sky_NorthernCrown.png` | blue-black, green aurora, amber heat at the horizon |
+| `Sky_Mirewood.png` | foggy teal, violet nebula |
+| `Sky_SouthernCrown.png` | pale cold sky, magenta aurora and charged veins |
+| `Sky_TheCore.png` | cavern: indigo ceiling, gold-white seal light from below, violet nebula |
+| `Sky_Earth.png` | Theme_Earth: space, warm sun, smog-brown Earth filling the lower sky |
+| `Sky_Underground.png` | Theme_Underground: near-black cave, cyan and ember crystal glints |
+
+Unity:
+- Import each PNG as Texture Shape **Cube**, Mapping **Latitude-Longitude Layout (Cylindrical)**, sRGB on, mip maps
+  on (for reflection roughness), BC1 is fine, and the Low (512) set on Switch.
+- SkyProbe.Apply becomes `RenderSettings.customReflectionTexture = theme.SkyCubemap` with `reflectionIntensity =
+  exposure` from `Skies_report.json` (1.3 to 2.0). The PNGs store linear values through a soft shoulder above 0.6,
+  so exposure restores the glow range.
+- For ambient, keep Flat ambient or switch to Trilight with `ambient_trilight_srgb` (sky / equator / ground).
+- Suggested data: a `Cubemap` field on VisualTheme, falling back to the painted cubemap when it is empty. The six C1
+  themes share `Sky_CrystalPlains` (their theme sky colours are identical). `brightest_direction` in the report
+  gives the sun glow's azimuth/elevation; rotate the probe if it should line up with the key light.
+
+### Cutscene FX (`build_cutscene_fx.py`)
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_cutscene_fx.py -- [--preview <dir>]`
+(numpy only, about 30 s; uses `vfx_kit.py` read-only). Files in `ArtSource/Exports/Cutscene_FX/` (+ `Low/` half
+size), listed with use and code site in `Cutscene_FX_report.json`. All sprites are greyscale RGBA with RGB = A: the
+code keeps tinting them with its existing HDR colours (additive One One, like the old runtime textures).
+
+| File | Size | Use | Replaces |
+| --- | --- | --- | --- |
+| `FX_GlowSoft` | 256 | every round glow quad (`SpaceKit.Glow`) | `SpaceKit.SoftDot` (`SpaceKit.cs:94-103, 115-132`) |
+| `FX_BeamSoft` | 256x64 | LineRenderer texture, U along (tiles), V across | `SpaceKit.SoftBand` (`SpaceKit.cs:105-113`), SurveySet scan/echo/meridians (`SurveySet.cs:59-68`) |
+| `FX_SunCore` | 512 | sun disc (limb darkening, corona) | SoftDot on SunCore (`SpaceBackdrop.cs:35`) |
+| `FX_SunHalo` | 512 | wide halo with faint rays and limb shoulder | SoftDot on SunHalo (`SpaceBackdrop.cs:34`) |
+| `FX_SunStreak` | 512x128 | anamorphic flare | SoftDot on SunStreak (`SpaceBackdrop.cs:36`) |
+| `FX_Glint` | 256 | crystal glints, 4 long + 4 short spikes | SoftDot on Glint quads (`SurveySet.cs:70-77`) |
+| `FX_EngineGlow` | 256 | nozzle glow: hot core, lit ring | SoftDot on Exhaust quads (`OrbitSet.cs:189`) |
+| `FX_ExhaustPlume` | 128x512 | optional directional plume (nozzle at the top edge) | new, for `OrbitSet.cs:189` if a plume quad is added |
+| `FX_RunningLight` | 128 | nav-light dot with a tiny cross | SoftDot on RunningLight quads (`OrbitSet.cs:229`) |
+| `FX_PlasmaTrail` | 512x128 | re-entry trail, LineRenderer Stretch, U 0 = capsule | default particle texture on the FieldSet streak (`FieldSet.cs:412-424`), SoftBand on CapsuleDrop trails (`CapsuleDrop.cs:179-182`) |
+| `FX_DrillCracks` | 1024 (2x2, 512 cells) | radial bore-hole cracks, one quad r about 2.6 m, tiling 0.5 + offset per cell | the 6 `GlowDecal.Radial` crack quads (`FieldDrill.cs:75-84`) |
+| `FX_CrackStrip_Drill_A/B` | 256x1024 | one crack per quad tapering to both ends | same quads if the 6-quad rig stays |
+| `FX_CrackStrip_Swarm_A/B` | 256x1024 | opening fissure with molten slit and crust | `GlowDecal.Radial` on the FieldSwarm cracks (`FieldSwarm.cs:69`) |
+| `FX_ScreamRing` | 512 | shock ring, leading edge at 90 % radius, ripples, fading wake | `GlowDecal.Radial` on ScreamRing (`FieldSwarm.cs:70, 285`) |
+| `FX_GateField` | 256 | gate energy sheet: U across (edge fade + rims), V tiles (scanlines, hex rows, shimmer) | `GlowDecal.Scanlines` via `ScanlineMaterial` (`FieldBase.cs:389, 483`) |
+
+Unity import: Texture Type Default, **sRGB off**, Alpha Is Transparency off, mip maps on, Bilinear, Wrap Clamp,
+except `FX_BeamSoft` (Repeat U / Clamp V) and `FX_GateField` (Clamp U / Repeat V). One channel is enough (BC4/R8)
+unless the particle shader samples alpha. `SpaceKit.Additive(texture, colour)` and `GlowDecal.Additive(texture,
+colour)` already take a texture, so a small `CutsceneFxSet` ScriptableObject (or fields on `CutsceneCast`) replaces
+the `SoftDot()`, `SoftBand()`, `Radial()` and `Scanlines()` calls; `GlowDecal.PlacePool` stays on `Decal_GlowPool`.
+
+### Decor fallbacks for Crystal Plains (`build_decor_c1.py`)
+
+PropScatterBuilder (`Levels/PropScatterBuilder.cs:283-323`) asks the level's EnvironmentSet for a decor per PropKind
+and falls back to PropFactory when the set has none. Rendered under the Crystal Plains look next to Decor_Boulder,
+Flora_Frond and Crystal_A, three round-17 exports fit and one did not:
+
+| PropKind | Crystal Plains EnvironmentSet entry | Note |
+| --- | --- | --- |
+| IceShard | `Env/NorthernCrown/North_Decor_IceShard` | fits |
+| Snowdrift | `Env/Decor_Snowdrift` (**new**, 998 tris, 512 maps) | the North drift reads as a white sheet with straight edges; the C1 drift is pale violet frost over Crysium dust |
+| DeadTree | `Env/Mirewood/Mire_Flora_DeadTree` | fits (teal glow a touch off-palette); keeps its Sway colours |
+| Reed | `Env/Mirewood/Mire_Flora_Reed` | fits well; keeps its Sway colours |
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_decor_c1.py -- [--preview <dir>]
+[--norender]`. Import `Decor_Snowdrift` like the round-8 decor (pivot on the ground).
+
+### build_all.py
+
+Not edited here (shared). Lines to add before `"build_env_diorama.py"` (the decor fallback after
+`build_env_decor.py` is also fine):
+
+```
+           # Round 26: dying Earth and theme skies (numpy, planet_kit.py).
+           "build_planet_earth.py", "build_skies.py",
+           # Round 26: cutscene glow / trail / crack sprites (numpy) and the Crystal Plains snowdrift.
+           "build_cutscene_fx.py", "build_decor_c1.py",
+           # Round 26: menu diorama (places the exports above) and the underground cave kit and eyes.
+           "build_menu_diorama.py", "build_underground.py",
+```

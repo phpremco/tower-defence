@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Stalactites",
+  "round": 26,
+  "game_tris": 998,
+  "source_tris": 54720,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 39,
+    "folded_fallback_faces": 6,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.545,
+    "world_per_uv": 2.19953774068385
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 18.3,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 31.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.998,
+    0.808,
+    1.62
+  ],
+  "pivot": "top (hangs down)",
+  "replaces": "same (hanging crystal points)"
+}

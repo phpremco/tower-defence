@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Ceiling",
+  "round": 26,
+  "game_tris": 1950,
+  "source_tris": 147296,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 123,
+    "folded_fallback_faces": 2,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.636,
+    "world_per_uv": 8.663652812865728
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 72.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 123.8,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    5.227,
+    4.695,
+    2.384
+  ],
+  "pivot": "top of the slab (hangs down from it)",
+  "replaces": "UndergroundSet.BuildCave spikes (PropKind.Spike x26 flipped, UndergroundSet.cs:140-145)"
+}

@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Floor_B",
+  "round": 26,
+  "game_tris": 1700,
+  "source_tris": 160136,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 104,
+    "folded_fallback_faces": 6,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.54,
+    "world_per_uv": 8.585298323600485
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 71.5,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 122.6,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    5.107,
+    4.893,
+    0.91
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "same, with a glowing fissure"
+}

@@ -1,0 +1,40 @@
+{
+  "asset": "Cave_Floor_A",
+  "round": 26,
+  "game_tris": 1500,
+  "source_tris": 115104,
+  "texture_size": 1024,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B rock detail, A crystal detail",
+  "uv": {
+    "islands": 111,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.549,
+    "world_per_uv": 8.62483035487414
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 71.9,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 123.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    5.145,
+    5.289,
+    0.878
+  ],
+  "pivot": "on the ground (z = 0), cavern side towards local +Z in Unity",
+  "replaces": "UndergroundSet.BuildCave floor rocks (PropKind.Rock x18, UndergroundSet.cs:134-138)"
+}
