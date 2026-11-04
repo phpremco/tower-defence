@@ -44,7 +44,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 18: P3 hybrids, gadgets, superweapons and drones (import round 7/9/11 scripts read-only).
            "build_towers3.py", "build_gadgets3.py", "build_drones2.py",
            # Round 13: story characters and cutscene models (story_kit.py).
-           "build_voss.py", "build_story_props.py", "build_cutscene.py",
+           # Round 20: Voss on MPFB 2 (needs the MPFB extension + CC0 packs, Docs/COMMANDS.md); replaces
+           # build_voss.py, whose round-13 export would overwrite it.
+           "build_voss3.py", "build_story_props.py", "build_cutscene.py",
            # Round 19: the rebuilt mothership; overwrites the round-13 one from build_cutscene.py.
            "build_mothership2.py",
            # Round 15: corrupted (The Core) skins; reads every species' .blend and maps, so it runs after them.

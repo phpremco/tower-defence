@@ -1296,3 +1296,83 @@ own lights turn with it and have no sockets.
   `Bay` during the capsule drop would light the racked capsules and the doors' inner sides.
 - The mask layout is the usual one (R AO, G smoothness, B metal detail, A ceramic detail); the report's detail tiling
   numbers are computed from the atlas density as before.
+
+
+## Round 19: Dr. Voss rebuilt (`build_voss2.py`, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 19). Replaces `build_voss.py`'s exports (same paths and names);
+`build_voss.py` stays for reference but should no longer run in `build_all.py` (it would overwrite these).
+
+| Asset | Files (`Exports/Voss/`) | Triangles | Maps | Rig and clips |
+| --- | --- | --- | --- | --- |
+| Voss | `Voss.fbx` (mesh `Voss`, armature `Voss_Rig`) | 20,144 (budget ~20k), no LOD1 | **2048** (+ `Low/` **1024**), one material, Mask B weave, A ceramic; the face island at 2.4x density | 10 bones as before (heads moved to the new anatomy); Idle 120, Talk 90, Blink 8 (blink at 70/44 as before); shape keys Blink, Smile, JawOpen, Frown |
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_voss2.py -- [--preview <dir>] [--norender]
+[--stage <dir>] [--size 2048]` (about 1 minute plus previews).
+
+### Unity notes
+
+- **Same names, sockets and clips** (Voss had no sockets): `Voss.fbx`, `Voss_Rig`, the 10 bones, `Idle`/`Talk`/`Blink`;
+  the portrait pose (Idle frame 10) is open-eyed, mouth closed. The eyes stay on y 1.44, so the catalog framing
+  (centre 1.4, turn -14, zoom 1.25) holds; the face is a little larger in frame (head drawn 6 % large).
+- **Full body now:** feet on y 0, coat to the knee, hands in pockets; usable as a cutscene figure (stands, breathes,
+  talks; no walk).
+- **Texture size:** the maps are 2048 (Low 1024). `BlenderModelImporter` caps full maps at 1024 and Low at 512; raise
+  the cap for `Voss` (or for story busts) to get the face detail, otherwise Unity downsizes them (still better than
+  before).
+- **Shape keys** are in the FBX but `BlenderModelImporter` has `importBlendShapes = false`; turn it on for Voss to use
+  Smile/Frown in portraits. The bone-driven Blink and Talk work without them. The FBX also carries the (zero) blend
+  shape channels per take; Unity ignores them while blend shapes are off.
+- Detail tiling in the report: weave 111.4 (B), ceramic 25.3 (A).
+
+## Round 20: S-69-CRYS planet texture set
+
+`blender --background --factory-startup --python Tools/Blender/build_planet_s69.py -- [--res 4096] [--renders <dir>]
+[--compare <screenshot.png>] [--norender]` (~3 min at 4096, numpy only, no downloads). Output
+`ArtSource/Exports/Planet_S69/` + `Low/`: `Planet_S69_Albedo`, `_Height` (16-bit), `_Normal`, `_Mask`, `_Regions`,
+`_Emission`, `_Clouds`, `_report.json`.
+
+### Unity notes
+
+- **UV:** identical to `PlanetCoordinates.ToUv` (u = (lon+180)/360, east right; v = (lat+90)/180; PNG top = north), so
+  the existing `PlanetGlobe` mesh, level points and zoom line up unchanged. Wrap U Repeat, V Clamp.
+- **Import:** Albedo and Emission sRGB; Normal as Normal map (R east, G north, like `GlobePainter.Normals`); Height,
+  Mask, Regions, Clouds linear (sRGB off). Regions: Point filter, no mips (or sample with LOD 0).
+- **Regions:** id = round(value * 255 / 40): 1 Crystal Plains, 2 Ashen Reach, 3 Northern Crown, 4 Mirewood,
+  5 Southern Crown, 6 The Core (crater), 0 sea. R = land only, G = land + its sea territory (good for a highlight),
+  B = soft membership for the edge. Mask.A carries the land ids too, but in `Low/` Mask is box-filtered, so read ids
+  from Regions.
+- **`Game/Planet` shader:** Albedo -> `_AlbedoMap` with `_TextureTint` 1 (or `_Alien` 0) so the painted biomes are not
+  replaced by the procedural palette; Normal -> `_NormalMap` (`_BumpStrength` 1-1.5 map, 2 cutscene); Emission ->
+  `_LightsMap` (neutral `_CityColor` ~ 1.6 white, since the map is already coloured; ~0.4 by day on the map view);
+  Clouds -> `_CloudMap` (.a). `_GlossMap` reads the sea from .a: either bake a gloss texture with A = Mask.G or read
+  Mask.r/g in the shader. `GlobePainter`'s colony lights can stay as a second emission layer.
+
+## Round 20: Dr. Voss on MPFB 2 (`build_voss3.py`, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 20). Replaces round 19's exports (same paths and names). **Requires** the MPFB
+extension and its CC0 packs (makehuman_system_assets, hair01, faceunits01); install: `Docs/COMMANDS.md`, section
+"Blender: MPFB 2". `build_all.py` now runs `build_voss3.py` instead of `build_voss.py`.
+
+| Asset | Files (`Exports/Voss/`) | Triangles | Maps | Rig and clips |
+| --- | --- | --- | --- | --- |
+| Voss | `Voss.fbx` (mesh `Voss`, armature `Voss_Rig`) | 25,228, no LOD1 | 2048 (+ `Low/` 1024), **one material** (atlas); Mask R AO, G smoothness, B weave, A ceramic | the same 10 bones (Root, Spine, Chest, Clavicle_L/R, Neck, Head, Jaw, Lid_L, Lid_R); Idle 120 (blink at 70), Talk 90 (jaw up to 8 degrees, blink at 44), Blink 8; shape keys Blink, Smile, JawOpen, Frown |
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_voss3.py -- [--preview <dir>] [--norender]
+[--stage <dir>] [--size 2048] [--cache <file.npz>] [--recapture] [--geo] [--quick] [--old <round-19 export dir>]`
+(about 1.5 minutes plus previews). `--cache` keeps the MPFB capture so later runs skip MPFB, and `--geo` renders flat
+part colours for fit checks. The script enables MPFB itself, so `--factory-startup` works.
+
+### Unity notes
+
+- **Same names, bones and clips** as rounds 13/16/19; no sockets. Feet on y 0 and eyes on y 1.44, so the catalog
+  framing (centre 1.4, turn -14, zoom 1.25) holds. Idle frame 10 is open-eyed with the mouth closed.
+- **Weights** come from MPFB's default rig, mapped onto the 10 bones: the legs to Root, spine05-03 to Spine,
+  spine02-01 and the breasts to Chest, each arm to its clavicle, the neck bones to Neck, the jaw, tongue and lower-lip
+  bones to Jaw, the rest of the face to Head. The lids come from the blink target (the Lid bones rotate +X by
+  48 degrees). Clothes weights as in round 19.
+- **One material**: `BlenderStoryBuilder` builds one material per export, so everything is in one atlas (no
+  `SecondMaterial`).
+- Texture size and blend shapes as in round 19: raise `BlenderModelImporter`'s cap for Voss to 2048 (Low 1024) and
+  turn `importBlendShapes` on to use Smile/Frown in portraits. Blink and Talk work through the bones without them.
+- The FBX also lists `Key|Voss_Rig|<clip>` takes (the zero shape-key channels per take, as in round 19).

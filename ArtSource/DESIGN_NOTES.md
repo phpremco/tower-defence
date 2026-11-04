@@ -1628,3 +1628,204 @@ is gone. Length 14.95 (nose -7.35 to bell exits 7.6), nose towards -Y as before.
 - Texel density is about 0.017 units per texel at 2048: fine at cutscene distance, soft in a frame-filling close-up
   of the nose (the tiling metal and ceramic detail normals help in Unity).
 - The containers are plain ribbed boxes; the rack frames are simple bars.
+
+
+# Round 19: Dr. Elena Voss rebuilt as a modelled, stylised character (2026-11-04)
+
+Playtest: "Die dr Voss is heel simpel en lelijk." Curator direction: stylised (Mercer's chunky readable family), an
+appealing film-like face instead of the procedural blob, real eye/mouth topology, believable but matte skin, real hair
+volume. Scripts: `build_voss2.py` (orchestration, rig, keys, clips, export, previews), `voss2_head.py` (head field and
+topology), `voss2_body.py` (figure), `voss2_gear.py` (headset, pin, badge, buttons, pens), `voss2_paint.py`
+(texel-space painters), `portrait_kit.py` (generic: SDF toolkit, parameter-space meshing, part assembly with weighted
+UV packing, G-buffer painting). `build_voss.py`, `story_kit.py`, `suit.py`, `common.py` untouched.
+
+## How the head is made
+
+- **Shape:** a signed distance field sculpted from soft volumes with smooth unions: cranium, one tapered jaw ellipsoid
+  (an oval to a small chin, no jaw lumps), chin point, soft jaw angles, frontal cheekbones, cheek fill (no gaunt
+  hollow), shallow sockets, lid spheres round the eyeballs, a short straight nose with a defined tip and narrow wings,
+  upper and lower lips, ears with a bowl and lobe, a neck of natural length. Landmarks: eyes on y 1.44 (as before),
+  nose base 3.4 cm and mouth 4.8 cm below the eyes, chin 8.4 cm; the head is drawn 6 % large (stylised).
+- **Topology:** laid out in a 2D parameter space round a centre in the head (azimuth x a metric-remapped elevation, plus
+  an azimuthal patch for the crown), with five concentric constraint loops round each eye opening and five round the
+  mouth, a size field (1.6 mm at the eyes, 1.7 mm at the lips, ~4 mm on the face, ~8 mm on the scalp), constrained
+  Delaunay + relax, then every vertex shot outwards onto the field and relaxed on it. The eye openings are real holes
+  whose rims roll onto the eyeballs (lid margin, tuck); the mouth slit rolls into the lips and closes in a mouth bag.
+- **Eyes:** separate eyeballs with a cornea bulge (the highlight slides), steel-blue iris with fibres, warm collarette,
+  limbal ring, lid shadow on the sclera; geometric upper lashes lifting at the outer corner; painted lash line and
+  waterline.
+- **Hair:** part of the same field: a cap that thins to nothing at the hairline (no ledge), 14 big sculpted locks combed
+  to the bun with a finer second set, fuller at the temples, a side-swept fringe from a parting on her left (two
+  locks) plus a lock sweeping back on the left, and a coiled bun (1.7 turns round a core) with a pin. Painted strands
+  follow the comb lines (round the coil on the bun, along the lock on the fringe), clumps, dark roots, a soft sheen.
+- **Skin:** matte, painted warmth on cheeks, nose, ears, chin, warm lids with a crease shadow, a cool touch under the
+  eyes, soft painted brows (dense lower edge, feathered top), lips with a vermilion border, darker corners and soft
+  vertical lines in the normal map. No pores.
+
+## Figure (new: full body)
+
+Lab coat to the knee (A-line, buttoned to the chest, notched lapels with thickness, rolled stand collar, set-in sleeves
+with armhole seam and turned cuffs, hip patch pockets she keeps her hands in, breast pocket with two pens, five
+buttons, side/back seams, hem stitch, the colony-blue stripe along each shoulder ridge, the NTI hexagon patch with gold
+nova on her left sleeve), the navy ribbed mock-neck top with the cyan-lit rim, slim slate trousers, dark boots.
+Headset: a band hugging the hair, cyan-ringed earpiece on her right ear, a pad on the left, a boom that keeps clear of
+the cheek with the mic in front of the mouth corner. The yellow NTI badge (photo, navy hex with gold nova, text lines)
+clips to her left lapel. The coat albedo is a touch below white (curator note: it burned out in the portrait light).
+
+## Rig, keys, clips
+
+Same 10 bones (`Root, Spine, Chest, Clavicle_L/R, Neck, Head, Jaw, Lid_L, Lid_R`), heads moved to the new anatomy;
+weights are computed by region: upper lids per column (weight = that column's closing angle over the centre's, falling
+off over three loops), the jaw by position (hard split across the lips, fading over the cheeks, towards the ears and
+the throat), the hands-in-pockets forearms blend to Spine so the breath does not pull them out. Clips Idle 120, Talk 90
+(jaw up to 8 degrees), Blink 8 as before (Lid bones rotate +X by 46 degrees). Face shape keys Blink, Smile, JawOpen,
+Frown (exact lid/jaw rotations, soft displacement fields).
+
+## Review passes (what was seen and changed)
+
+1. Shape field: snout-like muzzle, weak chin, deep sockets -> rebuilt from landmark measurements; the nose undercut
+   artefact fixed by relaxing on the field.
+2. Topology: neck undersampled and anisotropic -> metric from true surface derivatives and an elevation remap; the
+   crown patch was wound inward (dark seam) -> flipped.
+3. Face read skeletal, then pear-shaped, then beak-like (overcorrected taper) -> tapered jaw at 0.72, cheek fill,
+   smaller nose, larger and closer eyes, heavier lids (less white), lower and fuller brows.
+4. Textures: the face had too little texel density (LSCM gave the neck most of the island) -> separate face island at
+   2.4x; barcode brows -> soft painted brows; orange plastic hair -> darker, rougher, less sheen; a skin gap under the
+   fringe -> hairline lowered there; the hairline zigzag -> the cap thins to nothing at the hairline.
+5. Full build: shape-key values left non-zero (closed eyes, open mouth at rest) -> zeroed before export; mouth corners
+   and chin blotches (texels on coarse triangles tested "inside" the mouth) -> region tags from the mesh; the mic sat
+   on the skin -> boom kept off the cheek; yoke stripe smeared down the chest -> drawn along the shoulder ridge; neck
+   still long in 3/4 -> mock collar 1.4 cm higher.
+
+## Honest weak points
+
+- The hair is a smooth sculpted helmet with painted strands: it reads as hair at portrait size but has no flyaways or
+  strand cards and the strand texture is a little wood-grain-like close up.
+- The jaw/cheek on her right still bulges slightly in a strict 3/4; the chin is a touch long and pointed.
+- The mic and boom cast a visible shadow on the chin and jaw in key-lit portraits.
+- Partial blink columns sink a little into the eyeball at mid-blink (linear skinning); the shape key is exact.
+- The mouth bag is a simple pouch (no teeth, no tongue): fine for the 8-degree Talk, dark when wide open.
+- Triangles (head ~7.8k) are a dense Delaunay soup with loops round eyes and mouth, not an all-quad animator's mesh.
+
+## Round 20: the S-69-CRYS world-map planet (`build_planet_s69.py`, 2026-11-04)
+
+The level-picker globe was a procedural Unity paint (round blobs, white splotches, scattered dot islands). Round 20 bakes a
+real texture set in numpy inside Blender: `ArtSource/Exports/Planet_S69/` (4096 x 2048) and `Low/` (2048 x 1024).
+
+- **Layout = CampaignCatalog.** Each surface continent is a set of hand-placed elliptical lobes (plus a few carved bays)
+  around its MapRegion centre, domain-warped twice and broken up with 0.36 x mid-frequency and 0.11 x fine fractal coast
+  noise (gain 0.55, so detail at every scale). All 20 Crystal Plains nodes are on land, in region C1, at least 5.8 degrees
+  from the coast (checked every build, listed in the report). Northern Crown and Southern Crown reach their poles; the
+  Core (C6, underground layer) shows on the surface as a ragged crater (radius ~9 degrees) on Southern Crown's northern
+  arm at (150, -32).
+- **Biomes per region:** Crystal Plains teal and lavender grassland, sage patches, slate-violet ranges with pale lilac
+  (not white) peaks, meandering rivers and glowing cyan crystal fields; Ashen Reach charcoal and ash with ember/rust dune
+  seas (striped dunes), dark basalt flows, broken lava rifts and vents; Northern Crown snow cap, blue glaciers, slate
+  ridges, faint teal crystal veins (hint B); Mirewood dark green-teal canopy, olive bogs, many lakes and channels, faint
+  green bioluminescence; Southern Crown black glassy ice, frost on the heights, magenta vein network; the Core dark
+  violet floor, broken rim, a central spire, violet fractures.
+- **Ocean:** depth from blurred land masks at 2, 4.5 and 13 degrees (turquoise shelves, navy deep), four trenches with a
+  violet tint, a slight per-region sea tint, zonal current streaks, sea ice and floes beyond ~75 degrees.
+- **Archipelagos only where meant:** the Shard Isles (Crystal Plains to Ashen Reach), a volcanic chain east of Ashen
+  Reach, Mirewood's outer keys and a mid-ocean arc. No random dot islands.
+- **Clouds:** a separate cover map, twelve cyclones (point twisted around each storm axis, CCW north / CW south),
+  two warps, zonal stretch and latitude belts (equatorial band, clear subtropics, storm tracks).
+
+### Review passes
+
+1. Clouds covered most of the globe and storm eyes were rings; polar lobes wrapped into planet-wide bands; interior
+   bays left holes; uniform cyan surf outline; straight orange rift strokes; the Core read as a target -> cover cut,
+   eye ring gone, polar lobes smaller, carves moved/removed, surf 0.14 and broken by noise, rifts jittered and broken
+   into segments, crater rings replaced by noisy fractures.
+2. Many small cloud streaks; a lake in Northern Crown; the Core arm a perfect disc (guard too strong); white snow blobs
+   on tropical Crystal Plains peaks -> wisps only near banks, carve removed, crater guard 0.22, lilac peaks.
+3. Relief invisible under camera-side light -> mild baked relief cue in the albedo (highlands lighter, steep flanks
+   darker); a black Core floor -> dark violet with structure.
+4. Preview renderer only: night side too bright, wide twilight band, big soft sea glint -> fixed.
+
+### Honest weak points
+
+- Continents still read as "warped lobes" at a glance; no plate tectonics, rivers do not flow downhill (ridged-noise
+  channels), and Crystal Plains is a broad sheet of two tints rather than distinct sub-biomes.
+- Crystal fields at close zoom look like cyan worm networks; Southern Crown is very dark on the day side.
+- The equirect pinches at the poles: the polar caps have some east-west streaking in the noise detail.
+- The emission has no colony lights; Unity's `GlobePainter` adds them per built level, keep that as an overlay.
+- Previews come from a numpy ray-caster (same UV maths as Unity), not Cycles.
+
+# Round 20: Dr. Elena Voss on MPFB 2 (MakeHuman for Blender, 2026-11-04)
+
+Playtest on round 19: "driehoekig gezicht, het lichaam heeft geen vrouwelijk figuur, heupen, borsten". Remco approved
+MPFB 2 (GPLv3 add-on, CC0 assets and output). Scripts: `build_voss3.py` (orchestration, culling, atlas, rig, keys,
+clips, export, previews), `voss3_human.py` (the MPFB stage: human, expressions, pose, numpy capture/cache),
+`voss3_cloth.py` (clothes and gear measured off her body), `voss3_paint.py` (atlas painters). Round-19 modules are only
+imported read-only (voss2_body lofts and sweeps, voss2_paint palette and badge painter).
+
+## Human
+
+- MPFB phenotype: female, age 0.615 (about 40 in MakeHuman's scale), average weight and muscle, proportions 0.75,
+  height 0.55, cup 0.52, 90 % caucasian. Natural adult proportions (waist, hips, bust) straight from MakeHuman,
+  non-sexualised.
+- Mild stylisation only through MakeHuman targets (`voss3_human.TARGETS`): head-oval, softer chin and jaw drop,
+  slightly fuller cheekbones, eyes +24 %, a finer nose (narrower tip and wings, no hump), slightly thinner and shallower
+  lips with the corners a touch up, a slightly shorter forehead. 30 % of the faceunits smile is baked into the rest face.
+- Assets: young_caucasian_female skin; high-poly eyes (eyeballs only, the transparent cornea shell is dropped for the
+  opaque game shader); eyebrow010 (resampled into the skin from the cards' alpha, not exported); teeth_base
+  (decimated); rehmanpolanski_hair_bun_brown (hair01 pack); shoes04 (sock cut off, under the trouser hem); the MPFB
+  default rig. eyelashes02 was tried and dropped: opaque cards read as eyeliner wings, shortened ones as stripes on the
+  lid, so a lash line is painted along the lid rim instead.
+- Pose: hands in the coat's hip pockets (two-bone IK on MPFB's arms), thighs turned in 3 degrees. Scaled so the eyes
+  sit on y 1.44 (stature 1.556 m with shoes) and the bust framing still fits.
+- Expressions from faceunits01 (ARKit-style units), with every proxy refitted to them: Blink (eyeBlink L/R), JawOpen
+  (jawOpen 0.7), Smile (mouthSmile 0.75 + cheekSquint 0.35), Frown (mouthFrown 0.7 + browInnerUp 0.35 + mouthPress 0.2).
+
+## Clothes
+
+Same design as round 19: coat to the knee with lapels, stand collar, hip pockets with her hands in them, breast pocket
+and pens, five buttons, the colony-blue shoulder band and the NTI sleeve patch; the navy ribbed mock-neck with its cyan
+rim, slate trousers, dark shoes; the headset with the cyan earpiece on her right ear and the yellow NTI badge on the
+left lapel; the bun now has a navy tie. New: everything is measured off the MPFB body. `voss3_cloth.Field` takes
+horizontal slabs of the body's vertices, builds the mirrored 2D convex hull of each slab and stores ray distances per
+angle. The coat uses that field plus ease, with no concavity from bust to waist (the cloth spans it) and a monotone
+skirt below the hips that flares A-line. Sleeves and trousers are swept along the posed limbs, with radii from the
+limbs' support function.
+
+## Texturing
+
+One 2048 atlas (Low 1024), one material. The MPFB parts keep their own UV islands (packed with the clothes, face at
+2.4x density), and their textures are resampled through a `SrcUV` G-buffer channel. The skin is simplified for the
+game: colour from a 26 px blur (no pores, stubble or chin shadow), only a 2.5 % trace of the 3 px detail, painted warmth
+on cheeks, nose, ears and chin, lips from the lips group, a lid tone, the lash line, the brows from the brow cards, a
+dark mouth inside (texels whose forward ray meets the face again), the scalp group painted as combed hair where the
+hair shell leaves it bare, and hair-coloured skin just under the hair's edge. Eyes: blue_eye tinted steel-blue, with a
+lid shadow on the upper sclera. Hair: recoloured to her dark warm brown with damped strand contrast. AO is baked with
+the headset moved away, so the boom leaves no stain on the cheek.
+
+## Review passes (what was seen and changed)
+
+1. Raw MPFB with the first stylisation read as a teenager (big cheeks, baby face) -> fewer cheek and eye targets, a
+   natural chin, a slightly shorter forehead; now adult and oval.
+2. Geometry fit: the coat was cut flat at the shoulders and the sleeve caps were pointy -> the coat body now runs up
+   past the collar line and the sleeves start lower. The trousers flared like bell-bottoms from MPFB's sock and toe
+   vertices -> sock cut, toe points excluded, radii capped, feet closer together.
+3. First paint: panda eyes (no rim found), a dark box round the mouth (the mouth rule caught the cheeks), blue specks
+   in the hair (tie detector), black eyeballs (the cornea shell was kept) -> rim from the blink target, an occlusion
+   test for the mouth, a stricter tie test, the eyeballs kept.
+4. Lashes read as wings, then as stripes -> dropped for a painted lash line along a binned, smoothed rim. Full lips ->
+   lip volume and depth reduced. A notch at the temple next to the hair -> scalp group painted as hair. The cheek smudge
+   turned out to be the boom's cast shadow (boom moved 1.5 cm further out; see weak points).
+5. Final: the rest face carries 30 % of the smile; the nostrils are no longer caught by the mouth rule.
+
+## Honest weak points
+
+- The hair is MPFB's bun shell rendered opaque. It reads well at portrait size, but close up the texture shows a light
+  streak with a dark crease on top, and the side edge above the ears is jagged (softened by painting, not modelled).
+- The skin is deliberately simplified and can look a bit smooth or porcelain-like in close-ups; the skin has no normal
+  detail.
+- The headset boom still casts a soft shadow on her right jaw under a key light from camera-left (lighting, not
+  texture).
+- The lips are still on the full side, and the lower face reads slightly heavy in a strict 3/4 view.
+- The painted lash line is thin; there are no 3D lashes (the opaque shader cannot do alpha cards).
+- The shoes are MPFB's shoes04 low shoes in dark leather under the trouser hem, not tall boots.
+- Stature 1.556 m: she was scaled to keep the eyes on y 1.44 for the existing bust framing, so she is short next to
+  Mercer.
+- 25,228 triangles: the MPFB head and ears stay undecimated for the face (hair at 0.68, teeth at 0.12, shoes at 0.4).

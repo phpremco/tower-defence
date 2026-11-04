@@ -1,8 +1,7 @@
 {
   "asset": "Voss",
-  "game_tris": 10000,
-  "source_tris": 1568548,
-  "lod1": "none: portrait and cutscene only",
+  "game_tris": 25228,
+  "lod1": "none: portrait and cutscene only (Unity's story builder uses no LOD1)",
   "bones": [
     "Root",
     "Spine",
@@ -15,41 +14,33 @@
     "Lid_L",
     "Lid_R"
   ],
-  "texture_size": 1024,
-  "low_texture_size": 512,
+  "texture_size": 2048,
+  "low_texture_size": 1024,
   "maps": [
     "Albedo",
     "Normal",
     "Emission",
     "Mask"
   ],
+  "materials": 1,
   "uv": {
-    "islands": 545,
-    "unwrap": "smart, layer-weighted",
-    "uv_coverage": 0.52,
-    "world_per_uv": 1.6961795638130976
+    "world_per_uv": 1.6693991133832324,
+    "uv_coverage": 0.781,
+    "face_density": 2.4,
+    "unwrap": "MPFB parts keep their own UV islands; clothes metric UVs"
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 113.1,
+      "tiling": 121.1,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 47.1,
+      "tiling": 26.2,
       "mask": "A"
     }
   },
-  "layers": [
-    "head",
-    "eyes",
-    "lids",
-    "hair",
-    "body",
-    "coat",
-    "gear"
-  ],
   "clips": {
     "Idle": 120,
     "Talk": 90,
@@ -63,18 +54,57 @@
       "blink": 44
     }
   },
-  "blink": "Lid_L/Lid_R rotate about +X by 52 degrees to close",
-  "jaw": "Jaw rotates about +X up to 7 degrees in Talk; the mouth is a real slit",
+  "blink": "Lid_L/Lid_R rotate about +X by 48 degrees to close (weights from the MPFB eyeBlink targets)",
+  "jaw": "Jaw rotates about +X up to 8 degrees in Talk; MPFB's jaw/lower-lip weights, teeth inside",
+  "shape_keys": [
+    "Blink",
+    "Smile",
+    "JawOpen",
+    "Frown"
+  ],
+  "shape_keys_note": "face (faceunits01 targets); Unity imports them once importBlendShapes is on (off today)",
+  "figure": "full body (coat to the knee, hands in pockets, trousers, boots); feet on y 0",
+  "stature": 1.378,
+  "parts_tris": {
+    "body": 8242,
+    "eyes": 1060,
+    "hair": 3012,
+    "teeth": 854,
+    "shoes": 1212,
+    "Top": 1088,
+    "Coat": 2726,
+    "Collar": 702,
+    "Lapel_L": 600,
+    "Sleeve_L": 900,
+    "Pocket_L": 70,
+    "Trousers_L": 544,
+    "Lapel_R": 600,
+    "Sleeve_R": 900,
+    "Pocket_R": 70,
+    "Trousers_R": 544,
+    "BreastPocket": 48,
+    "Buttons": 560,
+    "Pens": 96,
+    "Card": 188,
+    "CardClip": 32,
+    "Band": 464,
+    "Earpiece": 176,
+    "EarRing": 176,
+    "EarPad": 128,
+    "Boom": 156,
+    "Mic": 80
+  },
+  "source": "MPFB 2 (MakeHuman) base mesh, skin, eyes, eyebrows (painted in), eyelashes, teeth, hair bun (rehmanpolanski_hair_bun_brown, hair01 pack) and shoes04; all CC0",
   "portrait": {
     "target": [
       0,
-      1.36,
+      1.4,
       0.0
     ],
     "distance": 1.45,
     "azimuth": -28,
     "elevation": 5,
     "lens_mm": 70,
-    "note": "game space (x, up, forward); same camera as mercer_bust.png, aimed 3 cm higher"
+    "note": "game space (x, up, forward); eyes at y 1.44 as before, so the round-16 bust framing holds"
   }
 }
