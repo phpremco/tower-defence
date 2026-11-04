@@ -1,0 +1,257 @@
+{
+  "name": "Planet_S69",
+  "size": [
+    4096,
+    2048
+  ],
+  "low_size": [
+    2048,
+    1024
+  ],
+  "uv_convention": "Equirectangular. u = (longitude + 180) / 360 with east (positive longitude) to the right; v = (latitude + 90) / 180; PNG top row = north pole (v = 1). Identical to Game.Levels.PlanetCoordinates.ToUv; the globe mesh in PlanetGlobe already uses it.",
+  "files": {
+    "Albedo": "sRGB colour, unlit, no clouds. Import sRGB, wrap U Repeat / V Clamp, aniso 8.",
+    "Height": "16-bit grey, linear. 0.5 = sea level, 0.5..1 land (1 = highest peak), 0..0.5 sea floor.",
+    "Normal": "Tangent space from land relief (sea surface flat). R = +east, G = +north (OpenGL / Unity convention, same as GlobePainter.Normals). Import as Normal map.",
+    "Mask": "Linear. R land 0/1 (antialiased coast), G specular/wetness (sea 1, lakes 0.85, black ice 0.6, snow ~0.5, dry land ~0.1), B glow strength, A region id (same values as Regions.R).",
+    "Regions": "Linear, sample with POINT filtering. R region id on land only, G region id including its sea territory, B soft membership 0..1 for a gentle highlight falloff. id = round(value*255/40).",
+    "Emission": "sRGB glow, multiply by an HDR colour/intensity; strongest on the night side.",
+    "Clouds": "Linear; cover in R, G, B and A (the existing shaders read .a). Wraps in longitude."
+  },
+  "regions": [
+    {
+      "key": "C1",
+      "name": "Crystal Plains",
+      "longitude": -40.0,
+      "latitude": 6.0,
+      "radius_degrees": 30.0,
+      "value": 40,
+      "value01": 0.1569,
+      "id": 1
+    },
+    {
+      "key": "C2",
+      "name": "Ashen Reach",
+      "longitude": 60.0,
+      "latitude": -15.0,
+      "radius_degrees": 30.0,
+      "value": 80,
+      "value01": 0.3137,
+      "id": 2
+    },
+    {
+      "key": "C3",
+      "name": "Northern Crown",
+      "longitude": 60.0,
+      "latitude": 62.0,
+      "radius_degrees": 30.0,
+      "value": 120,
+      "value01": 0.4706,
+      "id": 3
+    },
+    {
+      "key": "C4",
+      "name": "Mirewood",
+      "longitude": -140.0,
+      "latitude": 15.0,
+      "radius_degrees": 30.0,
+      "value": 160,
+      "value01": 0.6275,
+      "id": 4
+    },
+    {
+      "key": "C5",
+      "name": "Southern Crown",
+      "longitude": 150.0,
+      "latitude": -60.0,
+      "radius_degrees": 30.0,
+      "value": 200,
+      "value01": 0.7843,
+      "id": 5
+    },
+    {
+      "key": "C6",
+      "name": "The Core",
+      "longitude": 150.0,
+      "latitude": -32.0,
+      "radius_degrees": 12.0,
+      "value": 240,
+      "value01": 0.9412,
+      "id": 6
+    },
+    {
+      "key": "-",
+      "name": "ocean / none",
+      "value": 0
+    }
+  ],
+  "region_note": "The Core (C6) is the crater on Southern Crown's northern arm at its MapRegion centre (150, -32); its surface id covers the crater to its rim (radius ~10 deg).",
+  "nodes": [
+    {
+      "name": "Landing Site",
+      "lon": -55.53,
+      "lat": -8.22,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.7
+    },
+    {
+      "name": "Glass Meadows",
+      "lon": -45.98,
+      "lat": -6.9,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 7.0
+    },
+    {
+      "name": "Shard Ridge",
+      "lon": -36.4,
+      "lat": -8.56,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.5
+    },
+    {
+      "name": "Fault Line",
+      "lon": -26.76,
+      "lat": -9.28,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.5
+    },
+    {
+      "name": "Quartz Flats",
+      "lon": -17.41,
+      "lat": -6.96,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.3
+    },
+    {
+      "name": "Crysium Vein",
+      "lon": -17.71,
+      "lat": 2.43,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.6
+    },
+    {
+      "name": "Crystal Plains 7",
+      "lon": -27.12,
+      "lat": 0.14,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 14.5
+    },
+    {
+      "name": "Crystal Plains 8",
+      "lon": -36.82,
+      "lat": 0.73,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 15.0
+    },
+    {
+      "name": "Crystal Plains 9",
+      "lon": -46.28,
+      "lat": 2.44,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 15.0
+    },
+    {
+      "name": "Crystal Plains 10",
+      "lon": -55.95,
+      "lat": 1.24,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 14.3
+    },
+    {
+      "name": "Crystal Plains 11",
+      "lon": -65.38,
+      "lat": 3.21,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 7.8
+    },
+    {
+      "name": "Crystal Plains 12",
+      "lon": -58.55,
+      "lat": 9.98,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 7.9
+    },
+    {
+      "name": "Crystal Plains 13",
+      "lon": -48.96,
+      "lat": 11.87,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 14.3
+    },
+    {
+      "name": "Crystal Plains 14",
+      "lon": -39.2,
+      "lat": 10.43,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 16.4
+    },
+    {
+      "name": "Crystal Plains 15",
+      "lon": -29.44,
+      "lat": 9.36,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 14.8
+    },
+    {
+      "name": "Crystal Plains 16",
+      "lon": -19.79,
+      "lat": 11.57,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.1
+    },
+    {
+      "name": "Crystal Plains 17",
+      "lon": -25.34,
+      "lat": 19.36,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.1
+    },
+    {
+      "name": "Crystal Plains 18",
+      "lon": -35.45,
+      "lat": 19.01,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.9
+    },
+    {
+      "name": "Crystal Plains 19",
+      "lon": -45.44,
+      "lat": 20.8,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 5.8
+    },
+    {
+      "name": "Crystal Plains 20",
+      "lon": -55.68,
+      "lat": 20.63,
+      "land": true,
+      "region_value": 40,
+      "degrees_to_coast": 6.7
+    }
+  ],
+  "shader_hints": {
+    "Planet_shader": "Feed Albedo -> _AlbedoMap with _TextureTint = 1 (the map already carries the biomes; set _Alien = 0 or bypass the procedural land palette), Normal -> _NormalMap, Emission -> _LightsMap with _CityColor ~ (1.6, 1.6, 1.6), Clouds -> _CloudMap. _GlossMap expects sea in .a: use a gloss texture with A = Mask.G, or change the shader to read Mask.r (land) and Mask.g (specular).",
+    "relief": "_BumpStrength 1.0-1.5 for the map view, 2 for the cutscene; Height can drive a parallax or a sea-depth tint if wanted.",
+    "map_view": "Lit from the camera side: ambient 0.2, emission x0.4 by day so crystal fields still sparkle.",
+    "highlight": "Highlight a region by comparing round(Regions.G*255/40) with the selected id; use Regions.B for a soft edge."
+  }
+}

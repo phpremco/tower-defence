@@ -52,6 +52,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 17: continent environment sets 2-6 (env_kit2.py); each renders its own diorama.
            "build_env_ashenreach.py", "build_env_northerncrown.py", "build_env_mirewood.py",
            "build_env_southerncrown.py", "build_env_core.py",
+           # Round 20: the S-69-CRYS planet texture set (numpy, no scene).
+           "build_planet_s69.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 
