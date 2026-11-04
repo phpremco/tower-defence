@@ -10,6 +10,7 @@ Shader "Game/PlanetClouds"
         _CloudMap ("Clouds", 2D) = "black" {}
         _CloudColor ("Colour", Color) = (1, 1, 1, 1)
         _MapColour ("Deck colour from the map (RGB)", Range(0, 1)) = 0
+        _MapSaturation ("Saturation of the map's colour", Range(0, 1)) = 1
         [HDR] _SunsetColor ("Twilight", Color) = (1.0, 0.45, 0.2, 1)
         _Alpha ("Alpha", Range(0, 1)) = 1
         _Detail ("Wisps", Range(0, 1)) = 0.6
@@ -46,6 +47,7 @@ Shader "Game/PlanetClouds"
             float4 _CloudMap_ST;
             half4 _CloudColor;
             half _MapColour;
+            half _MapSaturation;
             half4 _SunsetColor;
             half _Alpha;
             half _Detail;
@@ -109,7 +111,8 @@ Shader "Game/PlanetClouds"
                 float facing = saturate(dot(normal, view));
                 // Lit tops read brighter where the deck is thick; the limb thins out under the haze.
                 // A painted smog deck (Earth) carries its own tint in RGB; a white cloud map keeps the style colour.
-                half3 tint = lerp(_CloudColor.rgb, _CloudColor.rgb * deck.rgb, _MapColour);
+                half3 mapTint = lerp(dot(deck.rgb, half3(0.3h, 0.59h, 0.11h)).xxx, deck.rgb, _MapSaturation);
+                half3 tint = lerp(_CloudColor.rgb, _CloudColor.rgb * mapTint, _MapColour);
                 half3 colour = tint * sunColour * (0.25 + 0.75 * saturate(facingSun + 0.15)) * day * (0.8 + 0.4 * wisps);
                 colour += _SunsetColor.rgb * twilight * 0.5;
                 alpha *= smoothstep(0.0, 0.35, facing) * lerp(0.75, 1.0, day);

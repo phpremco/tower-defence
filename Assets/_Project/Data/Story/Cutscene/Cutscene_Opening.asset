@@ -42,6 +42,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0
+      KeyColour: {r: 0, g: 0, b: 0, a: 0}
+      KeyIntensity: 0
+      RimColour: {r: 0, g: 0, b: 0, a: 0}
+      RimIntensity: 0
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
   - Set: 1
     Action: 1
     Camera:
@@ -81,6 +90,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0
+      KeyColour: {r: 0, g: 0, b: 0, a: 0}
+      KeyIntensity: 0
+      RimColour: {r: 0, g: 0, b: 0, a: 0}
+      RimIntensity: 0
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
   - Set: 2
     Action: 2
     Camera:
@@ -110,6 +128,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0
+      KeyColour: {r: 0, g: 0, b: 0, a: 0}
+      KeyIntensity: 0
+      RimColour: {r: 0, g: 0, b: 0, a: 0}
+      RimIntensity: 0
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
   - Set: 3
     Action: 3
     Camera:
@@ -173,6 +200,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.5
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.6
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 0.9
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 3
     Action: 4
     Camera:
@@ -209,6 +245,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.8
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.8
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 3
     Action: 5
     Camera:
@@ -248,6 +293,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.8
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.8
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 3
     Action: 6
     Camera:
@@ -282,6 +336,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.8
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.8
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 3
     Action: 7
     Camera:
@@ -316,6 +379,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.8
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.8
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 4
     Action: 8
     Camera:
@@ -355,6 +427,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 1.2
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.25
+      RimColour: {r: 0.4, g: 0.85, b: 1, a: 1}
+      RimIntensity: 0.7
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
   - Set: 4
     Action: 9
     Camera:
@@ -394,6 +475,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 1.2
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.25
+      RimColour: {r: 0.4, g: 0.85, b: 1, a: 1}
+      RimIntensity: 0.7
+      FillColour: {r: 0, g: 0, b: 0, a: 0}
+      FillIntensity: 0
+      ClearView: 0
   - Set: 3
     Action: 10
     Camera:
@@ -428,6 +518,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 0.9
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 1
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1.1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 1
   - Set: 3
     Action: 10
     Camera:
@@ -477,28 +576,37 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 1
     TitleCard: 
+    Lighting:
+      Exposure: 0.9
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 1
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 1.1
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 1
   - Set: 3
     Action: 11
     Camera:
     - At: 0
       Anchor: 6
-      Position: {x: 6, y: 3.2, z: 10}
-      LookAt: {x: 0.5, y: 0.8, z: 1.5}
-      FieldOfView: 45
+      Position: {x: 2.2, y: 1.1, z: 9}
+      LookAt: {x: 0.3, y: 0.6, z: 2.5}
+      FieldOfView: 52
       Ease: 3
       Mode: 0
     - At: 0.55
       Anchor: 6
-      Position: {x: 5, y: 2.2, z: 8.5}
-      LookAt: {x: 1.4, y: 1.6, z: 1.2}
-      FieldOfView: 40
+      Position: {x: 1.8, y: 0.8, z: 7.2}
+      LookAt: {x: 0.4, y: 0.8, z: 2}
+      FieldOfView: 48
       Ease: 3
       Mode: 0
     - At: 1
       Anchor: 6
-      Position: {x: 4, y: 3.5, z: 10}
-      LookAt: {x: 0, y: 0.5, z: 3}
-      FieldOfView: 45
+      Position: {x: 2.5, y: 1.2, z: 8.5}
+      LookAt: {x: 0, y: 0.7, z: 3.5}
+      FieldOfView: 50
       Ease: 3
       Mode: 0
     Timing: 0
@@ -548,21 +656,30 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 1.1
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 1.1
+      RimColour: {r: 1, g: 0.55, b: 0.3, a: 1}
+      RimIntensity: 1.6
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   - Set: 3
     Action: 14
     Camera:
     - At: 0
-      Anchor: 4
-      Position: {x: 2.2, y: 1.6, z: 1.6}
-      LookAt: {x: 0, y: 1.45, z: -0.4}
-      FieldOfView: 38
+      Anchor: 8
+      Position: {x: 1.1, y: 1.6, z: 2.8}
+      LookAt: {x: -0.1, y: 1.45, z: 0.3}
+      FieldOfView: 34
       Ease: 3
       Mode: 0
     - At: 1
-      Anchor: 4
-      Position: {x: 1.6, y: 1.5, z: 0.9}
-      LookAt: {x: 0, y: 1.5, z: -0.9}
-      FieldOfView: 32
+      Anchor: 8
+      Position: {x: 1, y: 1.55, z: 3.6}
+      LookAt: {x: -0.1, y: 1.5, z: 1.2}
+      FieldOfView: 30
       Ease: 3
       Mode: 0
     Timing: 0
@@ -587,6 +704,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 1.1
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 1.3
+      RimColour: {r: 1, g: 0.55, b: 0.3, a: 1}
+      RimIntensity: 1.4
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 1
   - Set: 3
     Action: 12
     Camera:
@@ -633,6 +759,15 @@ MonoBehaviour:
     Letterbox: 1
     Overlay: 0
     TitleCard: 
+    Lighting:
+      Exposure: 1
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 1
+      RimColour: {r: 1, g: 0.55, b: 0.3, a: 1}
+      RimIntensity: 1.4
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 1
   - Set: 3
     Action: 13
     Camera:
@@ -662,6 +797,15 @@ MonoBehaviour:
     Letterbox: 0
     Overlay: 0
     TitleCard: Defend the base
+    Lighting:
+      Exposure: 0.5
+      KeyColour: {r: 0.62, g: 0.72, b: 1, a: 1}
+      KeyIntensity: 0.6
+      RimColour: {r: 0.75, g: 0.85, b: 1, a: 1}
+      RimIntensity: 0.8
+      FillColour: {r: 0.42, g: 0.34, b: 0.6, a: 1}
+      FillIntensity: 0.35
+      ClearView: 0
   _cast: {fileID: 11400000, guid: 0c6238f9e0be8d341b903887d2112ec1, type: 2}
   _handoff: 0
   _handoffDifficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}

@@ -92,6 +92,10 @@ namespace Game.UI
         {
         }
 
+        public void ClearView(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets)
+        {
+        }
+
         public bool TryGetAnchor(CameraAnchor anchor, out Vector3 origin, out Quaternion facing)
         {
             origin = Vector3.zero;

@@ -22,6 +22,7 @@ namespace Game.UI
         private const float DigSnap = 4f;
         private const float DigSideOffset = 3f;
         private const float GuardBehindGate = 1.3f;
+        private const float ReactTurnDegrees = 150f;
 
         public FieldLayout(LevelDefinition level)
         {
@@ -61,6 +62,8 @@ namespace Game.UI
             DigFacing = Facing(gateCentre - DigSite);
             // Mercer holds the gate from behind its field: a step past it on the base side, facing the entrance.
             GuardPost = Ground(gateCentre + roadAhead * GuardBehindGate);
+            // In his reaction he has turned from the gate to step away from it: the swarm stays behind his left shoulder.
+            ReactFacing = DigFacing * Quaternion.Euler(0f, ReactTurnDegrees, 0f);
 
             Pad = Ground(Base + BaseFacing * new Vector3(-2.7f, 0f, -0.6f));
             Core = Ground(Base + BaseFacing * new Vector3(2.5f, 0f, 0.4f));
@@ -96,6 +99,9 @@ namespace Game.UI
         /// <summary>Where the commander holds the first gate in the cutscene: just behind its field, facing the entrance.</summary>
         public Vector3 GuardPost { get; }
 
+        /// <summary>How the commander faces in his reaction: turned away from the gate, the swarm behind his left shoulder.</summary>
+        public Quaternion ReactFacing { get; }
+
         /// <summary>How far along the road the commander's post lies.</summary>
         public float GateDistance { get; }
 
@@ -123,6 +129,9 @@ namespace Game.UI
                     return true;
                 case CameraAnchor.Entrance:
                     (origin, facing) = (Entrance, EntranceFacing);
+                    return true;
+                case CameraAnchor.Commander:
+                    (origin, facing) = (DigSite, ReactFacing);
                     return true;
                 case CameraAnchor.Core:
                     (origin, facing) = (Core, BaseFacing);

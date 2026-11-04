@@ -313,6 +313,16 @@ namespace Game.Enemies
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
 
+        /// <summary>
+        /// Shows the creature as if it climbed out long ago: for a cutscene that re-places a creature already on its way
+        /// (a seek), so it does not climb out of the ground a second time.
+        /// </summary>
+        public void SkipSpawn()
+        {
+            _spawnTime = _spawnSeconds + 1f;
+            _surfaced = true;
+        }
+
         /// <summary>Keeps the health bar out of sight, for creatures shown outside a fight.</summary>
         public void HideHealthBar()
         {

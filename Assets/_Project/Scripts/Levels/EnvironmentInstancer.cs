@@ -23,6 +23,9 @@ namespace Game.Levels
             public bool Shadows;
             public readonly List<Matrix4x4> Building = new List<Matrix4x4>();
             public Matrix4x4[] Matrices;
+
+            // Every piece of the batch; Matrices is all of them or those left after a cleared sight line.
+            public Matrix4x4[] All;
             public Bounds Bounds;
             public bool HasBounds;
         }
@@ -111,12 +114,64 @@ namespace Game.Levels
         {
             foreach (Batch batch in _batches)
             {
-                batch.Matrices = batch.Building.ToArray();
+                batch.All = batch.Building.ToArray();
+                batch.Matrices = batch.All;
                 batch.Building.Clear();
                 batch.Bounds.Expand(CullMargin);
             }
 
             _lookup.Clear();
+        }
+
+        /// <summary>
+        /// Leaves out every piece standing (in plan) within <paramref name="radius"/> of a sight line from a camera spot to
+        /// what it looks at, so a close shot of a character is never blocked by a rock between them; an empty list draws
+        /// everything again. Recomputed only when called (once per shot).
+        /// </summary>
+        public void ClearSightLines(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets, float radius)
+        {
+            foreach (Batch batch in _batches)
+            {
+                if (batch.All == null)
+                {
+                    continue;
+                }
+
+                if (eyes.Count == 0)
+                {
+                    batch.Matrices = batch.All;
+                    continue;
+                }
+
+                var kept = new List<Matrix4x4>(batch.All.Length);
+                foreach (Matrix4x4 matrix in batch.All)
+                {
+                    if (!Blocks(matrix.GetPosition(), eyes, targets, radius))
+                    {
+                        kept.Add(matrix);
+                    }
+                }
+
+                batch.Matrices = kept.Count == batch.All.Length ? batch.All : kept.ToArray();
+            }
+        }
+
+        private static bool Blocks(Vector3 position, IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets, float radius)
+        {
+            var point = new Vector2(position.x, position.z);
+            for (int i = 0; i < eyes.Count; i++)
+            {
+                var a = new Vector2(eyes[i].x, eyes[i].z);
+                var b = new Vector2(targets[i].x, targets[i].z);
+                Vector2 line = b - a;
+                float t = line.sqrMagnitude > 0.0001f ? Mathf.Clamp01(Vector2.Dot(point - a, line) / line.sqrMagnitude) : 0f;
+                if ((a + line * t - point).sqrMagnitude < radius * radius)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void LateUpdate()

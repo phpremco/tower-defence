@@ -27,4 +27,8 @@ image.Apply();
 UnityEngine.RenderTexture.active = null;
 texture.Release();
 System.IO.File.WriteAllBytes(path, image.EncodeToPNG());
-return "wrote " + path + " " + player.Sequencer.Current.Action + " t=" + player.Sequencer.LocalTime.ToString("0.00");
+// Mean luminance (0..1 of the 8-bit picture) of the whole frame and of the middle box, where the subject is framed.
+var px = image.GetPixels32(); double all = 0, mid = 0; int midCount = 0;
+for (int i = 0; i < px.Length; i++) { double l = (0.2126 * px[i].r + 0.7152 * px[i].g + 0.0722 * px[i].b) / 255.0; all += l; int x = i % 1920, y = i / 1920; if (x > 576 && x < 1344 && y > 270 && y < 810) { mid += l; midCount++; } }
+string lum = " lum " + (all / px.Length).ToString("0.000") + " mid " + (mid / midCount).ToString("0.000");
+return "wrote " + System.IO.Path.GetFileName(path) + lum + " " + player.Sequencer.Current.Action + " t=" + player.Sequencer.LocalTime.ToString("0.00");

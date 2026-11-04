@@ -2162,3 +2162,28 @@ no balance change; the full generator was not run (the new menu item, `ApplyCuts
   run (MD5 ec2a1f6d...).
 - **Frames:** session scratchpad `night2/` (final sequence `final_*.png`).
 - **Weak points / for Remco:** the field is a dark night theme, so the build drops and the ore chunks read small in the wide shots (the tether helps; a closer camera would help more); the reaction shot is dark and framed from his front-right with a big rock in the foreground, so the hand-to-visor reads but his face does not; the carried crystal is the base model's own and only lights fully in the cage; the siege crowd at the gate is dense and fixed in its rings (it claws, but from above it reads as a block); the lead crevice pair shows one eye clearly, the other half in the slot; the Earth smog leans orange; skies raise the C1 reflection strength to 1.3 (was 1.0); the Low profile was not shot this round.
+
+### Cinematography pass (night 2, after d36759ab)
+
+- **Per-shot light in data:** `CutsceneShot.Lighting` (`ShotLighting`: exposure in stops, key / rim / fill colour and
+  intensity, `ClearView`), written by the generator per action (`LightingFor`). `CutscenePlayer` turns a three-light
+  directional rig with the camera (moon key from its upper left, rim from behind the subject, violet fill from the lower
+  right) and sets the exposure through a setter Boot supplies (`PostProcessingBuilder.BuildExposure`, a priority-10 volume
+  that only overrides post exposure), easing it in over 0.5 s, snapping on a seek. Field shots +0.5 to +1.1 stops; the
+  swarm, the reaction and the gate stand get a warm rim from the burrows, the cave a cool rim only.
+- **Burrows light their surroundings:** an open maw throws a warm light (3.2, range 7) and flashes 10 at the burst.
+- **Swarm camera:** low beside the road a few metres down it (1.1 m to 0.8 m high, FOV 48-52): bursts fill the frame and
+  the creatures run at the lens. A seek no longer replays each creature's climb out of the ground (`EnemyView.SkipSpawn`
+  for creatures re-placed on their way), which had left the road empty in stills.
+- **Mercer's reaction:** new anchor `CameraAnchor.Commander` and `FieldLayout.ReactFacing` (turned 150 degrees from the
+  gate): he stumbles away from it, hand to the visor, head and torso turned back towards the swarm a little (22 and 10
+  degrees; at 55/30 the camera saw the back of his helmet). The camera stands in front of him, the gate and the crowd
+  behind his shoulder. `ClearView` shots hide the instanced decor standing (in plan) within 1.3 m of each camera key's
+  sight line (`EnvironmentInstancer.ClearSightLines`, recomputed once per shot).
+- **Cave:** eyes about 40 % bigger, a cyan/violet rim light low along every wall, stronger crystal and crevice lights; the
+  lead crevice pairs sit in one plane at the nearer eye's depth, so both eyes show.
+- **Earth smog:** the cloud shader desaturates the painted smog (`_MapSaturation` 0.4) and the Earth style's cloud,
+  atmosphere and twilight colours are brown-grey instead of orange.
+- **Brightness measured:** `n2_still.cs` prints the mean luminance of the frame and of its middle box. Middle box now
+  (0..1): burst 12/0.3 0.15, swarm 12/0.6 0.21 and 12/0.95 0.23, reaction 13/0.5 0.28, gate 14/0.9 0.31, handoff 15/0.3 0.19,
+  cave 9/0.4 0.11 (crystals and eyes carry it), build 4/0.26 0.21, drill 5/0.8 0.16, core 7/0.62 0.20, Earth 0.15. Frames: `night2/light_*.png`.

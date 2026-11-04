@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 using Game.Levels;
 using UnityEngine;
@@ -112,6 +113,10 @@ namespace Game.UI
         }
 
         public void Exit()
+        {
+        }
+
+        public void ClearView(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets)
         {
         }
 

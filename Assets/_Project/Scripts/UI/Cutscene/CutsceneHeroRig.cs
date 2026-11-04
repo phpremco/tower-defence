@@ -220,9 +220,10 @@ namespace Game.UI
         /// <summary>
         /// The commander's disbelief: stepping back <paramref name="stepBack"/> metres from <paramref name="position"/>
         /// (the walk played backwards while <paramref name="stepping"/>), the right hand raised towards the visor by
-        /// <paramref name="hand"/> 0..1, the torso leaning back with it, the head turned by <paramref name="headYaw"/>.
+        /// <paramref name="hand"/> 0..1, the torso leaning back with it and turned by <paramref name="twist"/>, the head turned by
+        /// <paramref name="headYaw"/> (negative: to his left). A negative step moves him forwards, away from what is behind him.
         /// </summary>
-        public void React(Vector3 position, float yawDegrees, float stepBack, bool stepping, float hand, float headYaw, float time)
+        public void React(Vector3 position, float yawDegrees, float stepBack, bool stepping, float hand, float headYaw, float twist, float time)
         {
             Quaternion facing = Quaternion.Euler(0f, yawDegrees, 0f);
             Vector3 at = position - facing * Vector3.forward * stepBack;
@@ -248,6 +249,7 @@ namespace Game.UI
             Vector3 right = facing * Vector3.right;
             float raise = CutsceneMath.Smooth(Mathf.Clamp01(hand));
             Turn(_spine, right, -ReactLeanDegrees * raise);
+            Turn(_spine, Vector3.up, twist);
             Turn(_upperArm, right, -ReactArmRaiseDegrees * raise);
             Turn(_upperArm, Vector3.up, -ReactArmInDegrees * raise);
             Turn(_forearm, right, -ReactForearmDegrees * raise);

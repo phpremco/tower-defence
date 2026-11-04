@@ -15,6 +15,8 @@ namespace Game.UI
         private const float CloudLift = 1.012f;
         private const float CloudDrift = 1.3f;
         private const float CloudStartTurn = 40f;
+        // The painted smog is a strong orange-brown; at half its saturation it reads as dirty brown-grey haze.
+        private const float MapSmogSaturation = 0.4f;
 
         private static Mesh _sphere;
 
@@ -80,7 +82,7 @@ namespace Game.UI
         {
             if (_cloudMaterial != null)
             {
-                PlanetMaterials.SetCloudMapColour(_cloudMaterial, 1f);
+                PlanetMaterials.SetCloudMapColour(_cloudMaterial, 1f, MapSmogSaturation);
             }
         }
 

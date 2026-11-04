@@ -29,11 +29,14 @@ namespace Game.UI
         private const float FloorStep = 4.6f;
         private const float FloorSpan = 4.4f;
         private const int Clusters = 6;
-        private const float CrystalLight = 6f;
+        private const float CrystalLight = 8f;
         private const float CrystalRange = 9f;
         private const float FissureLight = 1.6f;
         private const float FissureRange = 6f;
-        private const float CreviceLight = 2.2f;
+        private const float CreviceLight = 3.5f;
+        private const float WallRimLight = 1.6f;
+        private const float WallRimRange = 5.5f;
+        private static readonly Color RimViolet = new Color(0.65f, 0.4f, 1f);
         private const float CreviceRange = 4.5f;
         private const float TrembleDegrees = 3f;
         private const float TrembleShift = 0.03f;
@@ -52,8 +55,8 @@ namespace Game.UI
         private const float WaveToWatch = 0.4f;
         private const float CreviceHeight = 2.0f;
         private const float SecondCreviceHeight = 2.9f;
-        private const float LeadEyeSize = 1.6f;
-        private const float SecondEyeSize = 1.3f;
+        private const float LeadEyeSize = 2.3f;
+        private const float SecondEyeSize = 1.9f;
         private const float FirstEyeShare = 0.12f;
         private const float SecondEyeShare = 0.28f;
         private const float WaveShare = 0.42f;
@@ -131,6 +134,10 @@ namespace Game.UI
             }
         }
 
+        public void ClearView(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets)
+        {
+        }
+
         public bool TryGetAnchor(CameraAnchor anchor, out Vector3 origin, out Quaternion facing)
         {
             origin = Vector3.zero;
@@ -174,6 +181,8 @@ namespace Game.UI
                     Piece(root, wall, new Vector3(side * WallX + jitter, FloorHeight - 0.2f, z + jitter), Quaternion.Euler(0f, yaw, 0f), 1.05f + CutsceneMath.Hash(k * 2 + s, 155) * 0.2f, true);
                     Piece(root, CavePiece.WallA, new Vector3(side * VaultX, VaultHeight, z + 1f + jitter), Quaternion.Euler(0f, -90f * side, 0f) * Quaternion.Euler(VaultTilt, 0f, 0f), 1.1f, true);
                     Piece(root, CavePiece.Boulder, new Vector3(side * (WallX - 1.3f), FloorHeight - 0.1f, z + 1.8f + jitter), Quaternion.Euler(0f, CutsceneMath.Hash(k * 2 + s, 157) * 360f, 0f), 0.8f + CutsceneMath.Hash(k * 2 + s, 159) * 0.5f, true);
+                    // A low rim light along each wall, cyan and violet in turn, so the rock round the eyes has a form.
+                    AddLight(root, new Vector3(side * (WallX - 2.6f), FloorHeight + 1.6f, z + 0.6f), k % 2 == 0 ? _theme.AccentColor : RimViolet, WallRimLight, WallRimRange);
                 }
             }
 
@@ -257,7 +266,7 @@ namespace Game.UI
                 float z = 4f + CutsceneMath.Hash(i, 135) * (Length - 6f);
                 var origin = new Vector3(0f, 1.2f, z);
                 var direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
-                float size = 1.1f + CutsceneMath.Hash(i, 81) * 1.1f;
+                float size = 1.5f + CutsceneMath.Hash(i, 81) * 1.4f;
                 if (!TrySeat(origin, direction, size, 0f, WaveOpenSeconds, i, WaveToWatch, PairGap, out EyeField.Pair pair) || Crowded(seated, pair))
                 {
                     continue;
@@ -275,7 +284,20 @@ namespace Game.UI
         {
             Vector3 forward = facing.normalized;
             Vector3 origin = wall + Vector3.up * height + forward * 2.5f;
-            return TrySeat(origin, -forward, size, opensAt, LeadOpenSeconds, 0, LeadToWatch, CreviceGap, out pair);
+            if (!TrySeat(origin, -forward, size, opensAt, LeadOpenSeconds, 0, LeadToWatch, CreviceGap, out pair))
+            {
+                return false;
+            }
+
+            // In the slot both eyes sit in one plane at the depth of the nearer one, so neither hides behind a buttress.
+            Vector3 centre = (pair.Left + pair.Right) * 0.5f;
+            Vector3 half = (pair.Right - pair.Left) * 0.5f;
+            float nearer = Mathf.Max(Vector3.Dot(pair.Left - centre, pair.Facing), Vector3.Dot(pair.Right - centre, pair.Facing));
+            Vector3 plane = centre + pair.Facing * nearer;
+            Vector3 across = Vector3.ProjectOnPlane(half, pair.Facing);
+            pair.Left = plane - across;
+            pair.Right = plane + across;
+            return true;
         }
 
         // A pair on the rock the ray meets: each eye cast onto the surface on its own and sunk into it by the seat depth.

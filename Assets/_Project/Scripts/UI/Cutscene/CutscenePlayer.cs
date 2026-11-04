@@ -30,12 +30,16 @@ namespace Game.UI
         // A seek runs particles forward at most this far, which covers every effect and keeps the jump cheap.
         private const float MaxParticleSeekSeconds = 8f;
         private const uint ParticleSeed = 6907u;
+        // A cleared sight line stops this share of the way to the subject, so the ground at its feet stays dressed.
+        private const float ClearShare = 0.8f;
 
         private readonly Dictionary<CutsceneSet, ICutsceneSet> _sets = new Dictionary<CutsceneSet, ICutsceneSet>();
         private readonly Dictionary<CutsceneSet, GameObject> _roots = new Dictionary<CutsceneSet, GameObject>();
         private readonly Dictionary<CutsceneSet, Volume> _volumes = new Dictionary<CutsceneSet, Volume>();
         private readonly List<CameraKey> _keys = new List<CameraKey>();
         private readonly SkipConfirm _skip = new SkipConfirm();
+        private readonly List<Vector3> _clearEyes = new List<Vector3>();
+        private readonly List<Vector3> _clearTargets = new List<Vector3>();
 
         private CutsceneRequest _request;
         private CutsceneContext _context;
@@ -50,6 +54,12 @@ namespace Game.UI
         private ICutsceneSet _current;
         private CutsceneSet _currentSet;
         private float _finishFade = -1f;
+        private Action<float> _setExposure;
+        private Light _key;
+        private Light _rim;
+        private Light _fill;
+        private ShotLighting _lighting;
+        private float _exposure;
         private bool _handedOff;
 
         public CutsceneSequencer Sequencer => _sequencer;
@@ -64,7 +74,7 @@ namespace Game.UI
         /// <summary>True from the end (or a confirmed skip) until the next scene loads.</summary>
         public bool IsFinishing => _finishFade >= 0f;
 
-        public void Initialize(CutsceneRequest request, CampaignCatalog catalog, Camera camera, Func<VisualTheme, Volume> createVolume, IPlatformSettings platform, IInputProvider input, ProgressService progress, AudioMix mix, SfxLibrary library)
+        public void Initialize(CutsceneRequest request, CampaignCatalog catalog, Camera camera, Func<VisualTheme, Volume> createVolume, Action<float> setExposure, IPlatformSettings platform, IInputProvider input, ProgressService progress, AudioMix mix, SfxLibrary library)
         {
             _request = request;
             _progress = progress;
@@ -78,6 +88,10 @@ namespace Game.UI
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.black;
             _camera = new CutsceneCamera(camera, cutscene.CameraFeel);
+            _setExposure = setExposure;
+            _key = RigLight("Key");
+            _rim = RigLight("Rim");
+            _fill = RigLight("Fill");
 
             _audio = new GameObject("CutsceneAudio").AddComponent<CutsceneAudio>();
             _audio.transform.SetParent(transform, false);
@@ -116,6 +130,8 @@ namespace Game.UI
             _finishFade = -1f;
             _sequencer.Seek(shot, progress);
             _camera.ResetClock(_sequencer.LocalTime);
+            _exposure = _lighting.Exposure;
+            _setExposure?.Invoke(_exposure);
             SnapVolumes();
             SimulateParticles(_sequencer.LocalTime);
             PoseCurrent(0f);
@@ -162,6 +178,7 @@ namespace Game.UI
             _overlay.SetSkipArmed(_skip.ArmedShare(Time.unscaledTime));
             _dialogueView.SetPlacement(_overlay.BarHeight + DialogueGap, DialogueScale);
             FadeVolumes(delta);
+            FadeExposure(delta);
         }
 
         private void PoseCurrent(float delta)
@@ -176,6 +193,7 @@ namespace Game.UI
             float progress = _sequencer.Progress;
             _current.Tick(time, progress);
             _camera.Apply(CameraPath.Sample(_keys, progress), delta);
+            PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
             _overlay.SetTitle(shot.TitleCard, TitleAlpha(shot, time));
             _overlay.Radar.Tick(time, progress);
@@ -225,6 +243,8 @@ namespace Game.UI
             _context.Camera.backgroundColor = set.Theme != null ? set.Theme.BackgroundColor : Color.black;
             set.Enter(shot.Action);
             ResolveKeys(shot, set);
+            _lighting = shot.Lighting;
+            ClearView(set);
             _audio.SetMusic(shot.Music);
             _overlay.SetLetterbox(shot.Letterbox);
             _overlay.Radar.Show(shot.Overlay == CutsceneOverlayKind.Radar);
@@ -301,6 +321,69 @@ namespace Game.UI
                 world.Anchor = CameraAnchor.World;
                 _keys.Add(world);
             }
+        }
+
+        // The shot's light rig turns with the camera: the key from its upper left onto the subject, the rim from behind the
+        // subject back towards the camera, the fill from its lower right.
+        private void PoseRig()
+        {
+            Transform view = _context.Camera.transform;
+            Vector3 forward = view.forward;
+            Vector3 right = view.right;
+            Place(_key, forward + right * 0.6f - Vector3.up * 0.8f, _lighting.KeyColour, _lighting.KeyIntensity);
+            Place(_rim, -forward + right * 0.25f - Vector3.up * 0.45f, _lighting.RimColour, _lighting.RimIntensity);
+            Place(_fill, forward - right * 0.8f + Vector3.up * 0.05f, _lighting.FillColour, _lighting.FillIntensity);
+        }
+
+        private static void Place(Light light, Vector3 travel, Color colour, float intensity)
+        {
+            light.enabled = intensity > 0f;
+            if (!light.enabled)
+            {
+                return;
+            }
+
+            light.transform.rotation = Quaternion.LookRotation(travel.normalized);
+            light.color = colour;
+            light.intensity = intensity;
+        }
+
+        private Light RigLight(string name)
+        {
+            var go = new GameObject("Rig" + name);
+            go.transform.SetParent(transform, false);
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.shadows = LightShadows.None;
+            light.enabled = false;
+            return light;
+        }
+
+        private void FadeExposure(float delta)
+        {
+            float next = Mathf.MoveTowards(_exposure, _lighting.Exposure, delta / VolumeFadeSeconds);
+            if (!Mathf.Approximately(next, _exposure))
+            {
+                _exposure = next;
+                _setExposure?.Invoke(_exposure);
+            }
+        }
+
+        // A close shot hides the scattered decor between each camera key and what it looks at, a little short of the subject.
+        private void ClearView(ICutsceneSet set)
+        {
+            _clearEyes.Clear();
+            _clearTargets.Clear();
+            if (_lighting.ClearView)
+            {
+                foreach (CameraKey key in _keys)
+                {
+                    _clearEyes.Add(key.Position);
+                    _clearTargets.Add(Vector3.Lerp(key.Position, key.LookAt, ClearShare));
+                }
+            }
+
+            set.ClearView(_clearEyes, _clearTargets);
         }
 
         private void FadeVolumes(float delta)

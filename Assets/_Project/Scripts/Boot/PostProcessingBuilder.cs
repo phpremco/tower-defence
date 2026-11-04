@@ -63,5 +63,25 @@ namespace Game.Boot
             volume.sharedProfile = profile;
             return volume;
         }
+
+        /// <summary>
+        /// A global volume that only lifts the post exposure (a cutscene shot's own exposure, over whatever theme volume
+        /// blends in), and the setter for it in stops, so the interface code never touches the pipeline's types.
+        /// </summary>
+        public static System.Action<float> BuildExposure(Transform parent)
+        {
+            var profile = ScriptableObject.CreateInstance<VolumeProfile>();
+            var exposure = profile.Add<ColorAdjustments>(true);
+            exposure.postExposure.Override(0f);
+            var go = new GameObject("ShotExposure");
+            go.transform.SetParent(parent, false);
+            var volume = go.AddComponent<Volume>();
+            volume.isGlobal = true;
+            volume.priority = ExposurePriority;
+            volume.sharedProfile = profile;
+            return stops => exposure.postExposure.Override(stops);
+        }
+
+        private const float ExposurePriority = 10f;
     }
 }

@@ -338,9 +338,10 @@ namespace Game.Editor
                     Set = CutsceneSet.Field, Action = CutsceneAction.SwarmPours, Seconds = 11f, Music = CutsceneMusic.Attack, FadeIn = 0.3f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Entrance, new Vector3(6f, 3.2f, 10f), new Vector3(0.5f, 0.8f, 1.5f), 45f),
-                        Key(0.55f, CameraAnchor.Entrance, new Vector3(5f, 2.2f, 8.5f), new Vector3(1.4f, 1.6f, 1.2f), 40f),
-                        Key(1f, CameraAnchor.Entrance, new Vector3(4f, 3.5f, 10f), new Vector3(0f, 0.5f, 3f), 45f),
+                        // Low beside the road, a few metres down it: the bursts fill the frame and the swarm runs at the lens.
+                        Key(0f, CameraAnchor.Entrance, new Vector3(2.2f, 1.1f, 9f), new Vector3(0.3f, 0.6f, 2.5f), 52f),
+                        Key(0.55f, CameraAnchor.Entrance, new Vector3(1.8f, 0.8f, 7.2f), new Vector3(0.4f, 0.8f, 2f), 48f),
+                        Key(1f, CameraAnchor.Entrance, new Vector3(2.5f, 1.2f, 8.5f), new Vector3(0f, 0.7f, 3.5f), 50f),
                     },
                     // One burst after another (the first one kicks the camera), the scream, then the drums as they storm the gate.
                     Cues = new[]
@@ -356,8 +357,9 @@ namespace Game.Editor
                     Set = CutsceneSet.Field, Action = CutsceneAction.MercerReacts, Seconds = 5.5f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.DigSite, new Vector3(2.2f, 1.6f, 1.6f), new Vector3(0f, 1.45f, -0.4f), 38f),
-                        Key(1f, CameraAnchor.DigSite, new Vector3(1.6f, 1.5f, 0.9f), new Vector3(0f, 1.5f, -0.9f), 32f),
+                        // In front of him, a little to his right: his visor in the light, the swarm at the gate behind his shoulder.
+                        Key(0f, CameraAnchor.Commander, new Vector3(1.1f, 1.6f, 2.8f), new Vector3(-0.1f, 1.45f, 0.3f), 34f),
+                        Key(1f, CameraAnchor.Commander, new Vector3(1f, 1.55f, 3.6f), new Vector3(-0.1f, 1.5f, 1.2f), 30f),
                     },
                     Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(3.2f, CutsceneSound.Scream, 0.6f) },
                 },
@@ -415,9 +417,72 @@ namespace Game.Editor
                 shot.FindPropertyRelative("Letterbox").boolValue = spec.Letterbox;
                 shot.FindPropertyRelative("Overlay").intValue = (int)spec.Overlay;
                 shot.FindPropertyRelative("TitleCard").stringValue = spec.Title;
+                WriteLighting(shot.FindPropertyRelative("Lighting"), LightingFor(spec.Action));
                 WriteKeys(shot.FindPropertyRelative("Camera"), spec.Keys);
                 WriteCues(shot.FindPropertyRelative("Cues"), spec.Cues);
             }
+        }
+
+        // Moonlight from the camera side, a rim from behind (warm where the burrows glow, cool elsewhere), a faint violet
+        // fill, and the exposure lifted so the subject reads while the field still feels like night. Space keeps its own
+        // light; the cave gets only a cool rim on top of its crystals.
+        private static readonly Color Moon = new Color(0.62f, 0.72f, 1f);
+        private static readonly Color CoolRim = new Color(0.75f, 0.85f, 1f);
+        private static readonly Color WarmRim = new Color(1f, 0.55f, 0.3f);
+        private static readonly Color VioletFill = new Color(0.42f, 0.34f, 0.6f);
+        private static readonly Color CaveRim = new Color(0.4f, 0.85f, 1f);
+
+        private static ShotLighting LightingFor(CutsceneAction action)
+        {
+            switch (action)
+            {
+                case CutsceneAction.PathfinderLands:
+                    return Night(0.5f, 0.6f, CoolRim, 0.9f, false);
+                case CutsceneAction.BaseUnfolds:
+                case CutsceneAction.DrillDown:
+                case CutsceneAction.DronesHarvest:
+                case CutsceneAction.CoreIgnites:
+                    return Night(0.8f, 0.8f, CoolRim, 1f, false);
+                case CutsceneAction.CrystalsTremble:
+                case CutsceneAction.EyesOpen:
+                    return new ShotLighting { Exposure = 1.2f, KeyColour = Moon, KeyIntensity = 0.25f, RimColour = CaveRim, RimIntensity = 0.7f };
+                case CutsceneAction.GroundShivers:
+                    return Night(0.9f, 1f, CoolRim, 1.1f, true);
+                case CutsceneAction.SwarmPours:
+                    return Night(1.1f, 1.1f, WarmRim, 1.6f, false);
+                case CutsceneAction.MercerReacts:
+                    return Night(1.1f, 1.3f, WarmRim, 1.4f, true);
+                case CutsceneAction.GateStand:
+                    return Night(1f, 1f, WarmRim, 1.4f, true);
+                case CutsceneAction.Handoff:
+                    return Night(0.5f, 0.6f, CoolRim, 0.8f, false);
+                default:
+                    return default;
+            }
+        }
+
+        private static ShotLighting Night(float exposure, float key, Color rim, float rimIntensity, bool clearView) => new ShotLighting
+        {
+            Exposure = exposure,
+            KeyColour = Moon,
+            KeyIntensity = key,
+            RimColour = rim,
+            RimIntensity = rimIntensity,
+            FillColour = VioletFill,
+            FillIntensity = 0.35f,
+            ClearView = clearView,
+        };
+
+        private static void WriteLighting(SerializedProperty lighting, ShotLighting value)
+        {
+            lighting.FindPropertyRelative("Exposure").floatValue = value.Exposure;
+            lighting.FindPropertyRelative("KeyColour").colorValue = value.KeyColour;
+            lighting.FindPropertyRelative("KeyIntensity").floatValue = value.KeyIntensity;
+            lighting.FindPropertyRelative("RimColour").colorValue = value.RimColour;
+            lighting.FindPropertyRelative("RimIntensity").floatValue = value.RimIntensity;
+            lighting.FindPropertyRelative("FillColour").colorValue = value.FillColour;
+            lighting.FindPropertyRelative("FillIntensity").floatValue = value.FillIntensity;
+            lighting.FindPropertyRelative("ClearView").boolValue = value.ClearView;
         }
 
         private static void WriteKeys(SerializedProperty array, CameraKey[] keys)

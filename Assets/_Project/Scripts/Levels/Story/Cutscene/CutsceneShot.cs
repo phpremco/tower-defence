@@ -42,6 +42,9 @@ namespace Game.Levels
         /// <summary>Large text shown over the end of the shot; empty for none.</summary>
         public string TitleCard;
 
+        /// <summary>The shot's own exposure, light rig and clear view (cinematography on top of the set's light).</summary>
+        public ShotLighting Lighting;
+
         /// <summary>The length the camera move and the set animation are timed to.</summary>
         public float CameraLength
         {

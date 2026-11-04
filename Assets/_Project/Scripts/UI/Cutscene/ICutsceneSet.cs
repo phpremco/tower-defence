@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Levels;
 using UnityEngine;
 
@@ -26,5 +27,11 @@ namespace Game.UI
 
         /// <summary>Where an anchor of this set lies: its origin and facing. False when the set has no such anchor.</summary>
         bool TryGetAnchor(CameraAnchor anchor, out Vector3 origin, out Quaternion facing);
+
+        /// <summary>
+        /// Clears the scattered decor off the sight lines from each camera spot to what it looks at (a close shot); empty
+        /// lists bring everything back. A set without scattered decor ignores it.
+        /// </summary>
+        void ClearView(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets);
     }
 }

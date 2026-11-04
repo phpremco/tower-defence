@@ -21,6 +21,8 @@ namespace Game.UI
     {
         private const float StepSeconds = 0.1f;
         private const float SeekThreshold = 0.6f;
+        // Longer than any creature's climb out of the ground.
+        private const float SpawnAge = 1.5f;
         // Faster than in a level: the swarm rushes out of the ground.
         private const float RushShare = 1.3f;
         private const float LaneWidth = 1.2f;
@@ -36,9 +38,10 @@ namespace Game.UI
         private const float OpenGap = 0.8f;
         private const float StreamGap = 0.85f;
         private const float StreamEnd = 15f;
-        private const float BurstLight = 7f;
-        private const float OpenLight = 1.4f;
-        private const float LightRange = 4.5f;
+        private const float BurstLight = 10f;
+        // An open maw lights the ground and the creatures round it from below, warm, so they read against the night.
+        private const float OpenLight = 3.2f;
+        private const float LightRange = 7f;
         private const float FlashSeconds = 0.45f;
         private const int CracksPerBurrow = 3;
         private const float CrackLength = 2.6f;
@@ -93,6 +96,7 @@ namespace Game.UI
             public bool Flies;
             public float GroundY;
             public int Index;
+            public EnemyView View;
         }
 
         private sealed class Burrow
@@ -296,6 +300,12 @@ namespace Game.UI
                 creature.Enemy.Deactivate();
                 float height = creature.Flies ? FlyerHeight : 0f;
                 creature.Enemy.Initialize(creature.Definition, creature.Route, 1f, 1f, height, _targets, _structures, creature.Speed, EnemyOrigin.Nest);
+                if (age > SpawnAge)
+                {
+                    // Re-placed on its way (a seek): it climbed out long ago and must not climb out again.
+                    creature.View.SkipSpawn();
+                }
+
                 creature.Applied = 0f;
             }
 
@@ -446,6 +456,7 @@ namespace Game.UI
                     Index = i,
                 };
                 creature.Enemy = Spawn(definition, i);
+                creature.View = creature.Enemy.GetComponent<EnemyView>();
                 _creatures.Add(creature);
             }
 
@@ -460,6 +471,7 @@ namespace Game.UI
                     Speed = ScreamerSpeed,
                 };
                 _screamer.Enemy = Spawn(cast.Screamer, total);
+                _screamer.View = _screamer.Enemy.GetComponent<EnemyView>();
                 _screamer.Enemy.transform.localScale = Vector3.one * ScreamerScale;
                 _creatures.Add(_screamer);
             }

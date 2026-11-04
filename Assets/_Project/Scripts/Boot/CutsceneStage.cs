@@ -54,7 +54,7 @@ namespace Game.Boot
             Services.TryGet(out AudioMix mix);
             Services.TryGet(out SfxLibrary library);
             var player = new GameObject("CutscenePlayer").AddComponent<CutscenePlayer>();
-            player.Initialize(request, catalog, camera, theme => PostProcessingBuilder.Build(camera, theme, platform, 0f, transform), platform, Services.Get<IInputProvider>(), progress, mix, library);
+            player.Initialize(request, catalog, camera, theme => PostProcessingBuilder.Build(camera, theme, platform, 0f, transform), PostProcessingBuilder.BuildExposure(transform), platform, Services.Get<IInputProvider>(), progress, mix, library);
         }
 
         private void OnDestroy()

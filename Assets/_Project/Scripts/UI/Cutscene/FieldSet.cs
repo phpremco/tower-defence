@@ -66,8 +66,10 @@ namespace Game.UI
         private const float ReactHandFrom = 0.26f;
         private const float ReactHandTo = 0.5f;
         private const float ReactHandDownFrom = 0.82f;
-        private const float ReactHeadDegrees = 18f;
+        private const float ReactHeadDegrees = 22f;
+        private const float ReactTwistDegrees = 10f;
         private const float HeroKeyIntensity = 1.6f;
+        private const float ClearViewRadius = 1.3f;
         private const float HeroKeyRange = 4.5f;
         private static readonly Vector3 HeroKeyOffset = new Vector3(0.9f, 2f, 1.4f);
         private static readonly Color HeroKeyColour = new Color(0.7f, 0.85f, 1f);
@@ -108,6 +110,7 @@ namespace Game.UI
         private FieldSwarm _swarm;
         private ParticleSystem _shiverDust;
         private Light _heroLight;
+        private EnvironmentInstancer[] _instancers = new EnvironmentInstancer[0];
         private float _harvestSeconds;
         private float _coreSeconds;
         private float _swarmShotSeconds;
@@ -150,6 +153,7 @@ namespace Game.UI
             }
 
             BuildShiver(root);
+            _instancers = root.GetComponentsInChildren<EnvironmentInstancer>(true);
         }
 
         public void Enter(CutsceneAction action)
@@ -170,6 +174,14 @@ namespace Game.UI
         }
 
         public bool TryGetAnchor(CameraAnchor anchor, out Vector3 origin, out Quaternion facing) => _layout.TryGetAnchor(anchor, out origin, out facing);
+
+        public void ClearView(IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets)
+        {
+            foreach (EnvironmentInstancer instancer in _instancers)
+            {
+                instancer.ClearSightLines(eyes, targets, ClearViewRadius);
+            }
+        }
 
         public void Tick(float time, float progress)
         {
@@ -368,15 +380,17 @@ namespace Game.UI
             }
         }
 
-        // He cannot believe it: a step back from the dig site, the hand up to the visor, the head following the swarm.
+        // He cannot believe it: away from the gate, the hand up to the visor, the head turned back to the swarm.
         private void PoseReaction(float time, float progress)
         {
             _hero.Root.gameObject.SetActive(true);
             float step = CutsceneMath.Smooth(CutsceneMath.Span(progress, ReactStepFrom, ReactStepTo)) * ReactStepBack;
             bool stepping = progress > ReactStepFrom && progress < ReactStepTo;
             float hand = CutsceneMath.Span(progress, ReactHandFrom, ReactHandTo) * (1f - CutsceneMath.Span(progress, ReactHandDownFrom, 1f));
-            float head = Mathf.Sin(time * 0.9f) * ReactHeadDegrees * CutsceneMath.Span(progress, 0.05f, 0.2f);
-            _hero.React(_layout.DigSite, _layout.DigFacing.eulerAngles.y, step, stepping, hand, head, time);
+            // He has turned from the gate and stumbles away from it, looking back over his left shoulder at the swarm.
+            float look = CutsceneMath.Smooth(CutsceneMath.Span(progress, 0.02f, 0.2f));
+            float head = (-ReactHeadDegrees + Mathf.Sin(time * 0.9f) * 6f) * look;
+            _hero.React(_layout.DigSite, _layout.ReactFacing.eulerAngles.y, -step, stepping, hand, head, -ReactTwistDegrees * look, time);
         }
 
         // Where the reaction left him (a step back from the dig site), back to the gate at a run, round to face the
@@ -384,7 +398,7 @@ namespace Game.UI
         private void PoseHeroRun(float time, float progress)
         {
             _hero.Root.gameObject.SetActive(true);
-            Vector3 from = _layout.Ground(_layout.DigSite - _layout.DigFacing * Vector3.forward * ReactStepBack);
+            Vector3 from = _layout.Ground(_layout.DigSite + _layout.ReactFacing * Vector3.forward * ReactStepBack);
             if (progress < RunShare)
             {
                 Walk(from, _layout.GuardPost, CutsceneMath.Span(progress, 0f, RunShare), 1f, time);
