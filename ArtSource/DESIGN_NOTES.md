@@ -2430,3 +2430,38 @@ shards, faint glow only in the crust cracks.
 - Earth: mining scars read as pale ovals up close; faint coast lines on the shadow side; island chains are blobs.
 - Skies: continents 2-6 have no VisualTheme assets yet (palettes from round 17); LDR PNG plus exposure, not true HDR.
 - FX: previews only imitate Unity's additive shader and bloom; drill cracks may need a larger quad or glow.
+
+## Round 27: upgrade-screen display stage
+
+Goal: the upgrade screen showed towers, the hero, drones and the base on a code-made dark disc, a thin torus and a
+two-colour gradient. The stage now looks like a colony research bay: the model turns on a technical turntable in
+front of a dim hangar wall.
+
+- **Pedestal:** a low drum, top radius 1, 0.2 high (one fifth of the radius, so small drones are not dwarfed).
+  Gunmetal plinth foot, eight white ceramic cladding panels with real gaps (the seams show the dark core drum), two
+  hazard tabs and four seam lamps, a blue lip framing a recessed light channel (the subtle emissive rim, white in the
+  map, tinted in Unity), a dark gunmetal deck with a thin inner light ring and four faint radial seams, and a steel
+  top ring as its own object with twelve yellow index ticks and three lamps so its slow counter-turn reads.
+  Iterations: 3,346 tris on the first pass (bevelled lip, closed drum, four-sided channel) cut to 2,946 by opening
+  the drum, dropping the lip bevel and using a three-sided channel; the deck had heavy scratches (wear 0.4), now
+  0.12 so the model's own wear stays the story; the channel glow was lowered (1.5 -> 1.1) after the first stage render.
+- **Halo ring:** greyscale and additive: a crisp main line just outside the foot with a soft glow, six segmented
+  arcs further out, minor ticks every 5 degrees and major ones every 30. It sits under the foot, so in the void it
+  reads as a hologram projector rather than a floor.
+- **Backdrop:** a small 3D set rendered in EEVEE (panelled outer wall, pillars with blue strips and amber lamps, a
+  chamfered bay with eleven ribs, an overhead light bar, a dim service line, a tiled floor with a threshold light),
+  then softened (35 % sharp / 65 % blurred), bloomed, vignetted and dithered. Iterations: 1) a dark seam plate
+  covered the bay by mistake, so only a gradient showed; 2) with the bay open it was far too bright (mean 0.42, blown
+  back wall); 3) light and emission cut to a calm mean of 0.10, the service line dimmed so it does not cut through
+  the model.
+
+### Honest weak points
+
+- The emission rim and lamps read almost white in the previews (pale tint plus bloom); in Unity a stronger
+  `ColonyRim` tint or lower intensity shows more blue.
+- The pedestal is scaled with the model's footprint (`FloorRadiusShare` 1.25 x the longest horizontal extent), so a
+  long barrel gives a big pedestal and a tower that looks small on it (Cannon render). A cap on the radius or using
+  the pad footprint would fix that in code.
+- The bay light bar and the pillar strips are the brightest pixels behind the model; very bright models (white hero
+  armour) may still compete. One backdrop for every model, no theme variants, no parallax.
+- Faint rain-streak marks from the shared bake shader show on the flat deck.

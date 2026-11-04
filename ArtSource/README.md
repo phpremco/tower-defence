@@ -2139,3 +2139,59 @@ Not edited here (shared). Lines to add before `"build_env_diorama.py"` (the deco
            # Round 26: menu diorama (places the exports above) and the underground cave kit and eyes.
            "build_menu_diorama.py", "build_underground.py",
 ```
+
+## Round 27: upgrade-screen display stage (`build_ui_display.py`, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 27). Replaces the code-made stage in `ModelPreview.BuildStage`
+(`Assets/_Project/Scripts/UI/ModelPreview.cs:207-250`). Nothing is imported yet. Output: `Exports/UI_Display/`
+(+ `Low/`), `UI_Display_report.json`, `Blend/UI_Display.blend`.
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_ui_display.py -- [--preview <dir>]
+[--only pedestal,ring,backdrop,preview] [--nobake] [--norender]` (about 1.5 minutes with previews). Uses
+`tower_kit`, `base_kit`, `story_kit`, `marker_kit` and `stage_kit` read-only.
+
+### Files
+
+| File | Content | Replaces |
+| --- | --- | --- |
+| `UI_DisplayPedestal.fbx` | `UI_DisplayPedestal` (2,366 tris, static base) + `UI_DisplayPedestal_Ring` (580 tris, top ring) | `Floor` (PropMeshBuilder tube, `ModelPreview.cs:209-217`) |
+| `UI_DisplayPedestal_Albedo/_Normal/_Emission/_Mask.png` | 1024 (Low 512), tower-kit self-bake, one atlas for both meshes | `SurfaceMaterials.Create(FloorColor ...)` x4 (`:215`) |
+| `UI_DisplayRing.fbx` + `UI_DisplayRing.png` | flat quad 2.6 x 2.6 + greyscale halo 1024 (Low 512) | `Ring` torus (`:219-226`) |
+| `UI_DisplayBackdrop.png` | 2048 x 1024 (Low 1024 x 512), opaque sRGB research-bay wall | `Backdrop` quad texture `Gradient()` (`:228-250`) and round 25's `UI/UI_PreviewBackdrop.png` |
+
+### Unity notes
+
+- **Pedestal:** import as the towers (Scale 1, Convert Units, Bake Axis Conversion, Normals Import, Tangents
+  Mikktspace, no rig). **Pivot = centre of the top face** for both meshes (top radius 1.0, foot radius 1.08,
+  0.2 high), so the model's feet sit on the pivot. In `PlaceStage` replace the floor placement with
+  `_floor.localPosition = (0, y, 0)` and a **uniform** `_floor.localScale = Vector3.one * radius` (the pedestal keeps
+  its proportions; drop `FloorThickness`). Put `UI_DisplayPedestal_Ring` under the floor at the same origin and turn
+  it slowly about its local Y (e.g. -6 deg/s, against the turntable so it reads as machinery; three white lamps and
+  twelve yellow ticks show the turn). The model now stands 0.2 x radius above the pedestal foot, so `Frame()` should
+  include the pedestal (add about `0.1 * radius` to `tall` and lower the camera by the same, as the preview render
+  does), otherwise the foot is cut off for flat models.
+- **Pedestal material:** `Game/UnitLit` like a tower: Albedo, Normal, Emission, Mask (R AO, G smoothness, B metal
+  detail, A ceramic detail; sRGB off), detail tiling in the report. The Emission map is **white**: the rim channel,
+  the deck light ring, four seam lamps and the three ring lamps take `_EmissionColor`, e.g.
+  `SurfaceMaterials.ColonyRim * 1.3` (the old `RingEmission` 1.1 is a fine start). Shadow casting off (as now).
+- **Ring:** quad lies flat (normal Unity +Y), pivot at its centre; texture radius 1.0 = 1.3 units: main line at
+  1.1 (just outside the foot), segmented arcs at 1.2, ticks between. Place it at the pedestal's foot:
+  `_ring.localPosition = (0, y - 0.2 * radius + 0.003, 0)`, `_ring.localScale = (radius, 1, radius)`. Texture sRGB
+  **off**, Clamp, mip maps on; RGB = A = grey. Additive unlit material (particle-additive or
+  `GlowDecal.Additive(texture, colour)`) tinted `ColonyRim` x about 1.1. A slow spin (2-4 deg/s) suits it.
+- **Backdrop:** texture sRGB on, Clamp, opaque. Keep the unlit quad on the camera pivot but scale it
+  **(BackdropSize, BackdropSize / 2, 1) = 40 x 20** to keep the 2:1 aspect. At the preview's distance (~32) the
+  square RenderTexture sees the centre ~43 % of the width and ~86 % of the height: the lit bay with ribs, light bar
+  and a dim service line; the floor line sits at v 0.32 so the pedestal lands roughly on it. The outer panel wall and
+  the amber pillar lamps only show in wider windows. Display values: mean 0.10, 99th percentile 0.58 (light bar).
+  `ModelPreview.Background` (camera clear colour) can stay; it is hidden.
+- `FloorColor`, `BackdropTop/Bottom`, `GradientSteps` and `RingThicknessShare` become unused after the swap.
+
+### build_all.py
+
+Not edited here (shared). Line to add after `"build_ui.py",`:
+
+```
+           # Round 27: upgrade-screen display stage (pedestal, halo ring, backdrop).
+           "build_ui_display.py",
+```

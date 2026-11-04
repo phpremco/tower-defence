@@ -292,6 +292,7 @@ Unity-ronde maakt een icon-set-asset (naam = `IconType`), zet de UiSkin-sprites 
 | ◐ | P1 | **UI-kit** | `UI_Kit`: panelen, kaarten (blauw/groen/geel/rood/geselecteerd/uit), knoppen in vier toestanden, balken, slider, tabs, tooltip, scrollbalk, vinkje, focusframe, hoekornament, scheidingslijn | 9-slice randen in de json; focus met lichte rand, gloed en gele hoeken |
 | ◐ | P1 | **Dialoog en radar** | `UI_Dialogue` (paneel + gloedrand, naamplaat, portretlijst, pijl, radarsweep en contact), ruis/scanlines/gloed/schaduw, `UI_Radar` | Wit en kleurbaar, behalve de radar |
 | ◐ | P2 | **Achtergronden** | `UI_Starfield` (menu), `UI_PreviewBackdrop` (modelvoorbeeld), `UI_MapHalo` (planeetkaart) | Volgen de oude regels (alfa = licht, halo wit) |
+| ◐ | P2 | **Upgrade-scherm podium** | Ronde 27 (`build_ui_display.py`): `UI_Display/UI_DisplayPedestal` (draaitafel, 2.946 driehoeken, losse bovenring die langzaam draait, 1024/Low 512, emissie wit en kleurbaar), `UI_DisplayRing` (grijze additieve halo + quad), `UI_DisplayBackdrop` (2048 x 1024 donkere onderzoekshal) | `ModelPreview.cs:207-250` (vloerschijf, torus, gradient-quad) |
 | ☐ | P2 | **Lettertype geldpopup** | `MoneyPopup` gebruikt nog het ingebouwde LegacyRuntime-font | Geen art nodig: `UiKit.Font` gebruiken |
 
 ## 12. Menu, cutscene en luchten

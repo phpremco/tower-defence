@@ -68,6 +68,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_bank_sweeps.py",
            # Round 25: UI art set (icons, kit, dialogue, radar, starfield, backdrop, halo + mockups).
            "build_ui.py",
+           # Round 27: upgrade-screen display stage (pedestal, halo ring, backdrop).
+           "build_ui_display.py",
            # Round 26: dying Earth and theme skies (numpy, planet_kit.py).
            "build_planet_earth.py", "build_skies.py",
            # Round 26: cutscene glow / trail / crack sprites (numpy) and the Crystal Plains snowdrift.
