@@ -729,3 +729,139 @@ share the species' rig code and still get its own proportions and organs.
 - **RollerKing (Roller boss: a quake with every landing).** The Roller's eight-plate ball, grown and armoured: a crown
   of hooked keels and heavier plates. Clips Walk, Idle, Hit, Death, Curl, Roll, Uncurl and **Quake** (a hop in the
   ball, landing with a slam).
+
+# Round 11: P2 towers and gadgets (Tesla Coil, Railgun, Acid Sprayer, hybrids, Cryo, Support, Rocket, Lava Ball, R.A.T., 2026-11-04)
+
+Brief (MODEL_TODO sections 3 and 4, STORY.md Crystal Plains table): the rest of continent 1's weapons, in the round-7
+**colonial defence works** kit with nothing new in the language: white ceramic tops, colony-blue hull sides,
+gunmetal undersides, yellow hazard trim, **one cool glow per machine** in coils, slits and lenses. Same pad, rank
+plate and stars, same rig (`Root` > `Yaw` > `Pitch` > `Barrel_n` > `Muzzle_n`, `Smoke`, `Star_1..3`), same budgets
+(5,000 triangles per tier, LOD1 about 2,000, one 1024 map set per tower shared by its tiers). Every role must read
+from the silhouette alone at one cell from the 44 degree camera, next to the round-7 five.
+
+**Silhouette map of the whole roster** (what each tower is from above, so no two collide):
+Gun = one slim jacketed line; Cannon = widest, lowest wedge with a stub; Laser = a lit disc in a fork; Flak = two
+lines aimed at the sky; **Tesla = the only vertical spire** (no barrel); **Railgun = the longest line**, flat and
+twin-railed; **Acid Sprayer = a fat round tank with a short flared nozzle**; Artillery = one thick tube aimed high
+over a wedge; Storm Rifle = the Gun with a small coil spire on its back; Cryo = a fat frosted cylinder with a flared
+vane nozzle; Cryo Beam = the Laser's fork and disc slung over a frost tank; Support = a mast with a floating core in
+a ring of fins (no gun); Rocket = a tilted box of tubes.
+
+## Glow colours (data colour, and where it is warm, our cool answer)
+
+| Tower | Data colour | Model glow |
+| --- | --- | --- |
+| Tesla Coil | violet (0.7, 0.5, 1) | Crysium violet (0.72, 0.56, 1.0): the coils run on tamed Crysium, the same lilac family as the base core |
+| Railgun | white | plasma white-blue (0.72, 0.88, 1.0), hottest in the rail channel |
+| Acid Sprayer | (no tower in the data yet) | acid mint (0.55, 1.0, 0.55): the only green on our side, kept in the sight glass, the gauge and the nozzle ring; the hull stays white and blue |
+| Artillery | orange (1, 0.6, 0.2) | the Cannon's amber (warm data colour: an open point, like the Laser's) |
+| Storm Rifle | (0.6, 0.8, 1) | storm periwinkle (0.58, 0.66, 1.0), between the Gun's azure and the Tesla's violet |
+| Cryo Turret | (0.55, 0.95, 1) | frost (0.62, 0.96, 1.0) |
+| Cryo Beam | (0.7, 1, 1) | ice cyan (0.72, 1.0, 1.0) |
+| Support | green (0.4, 1, 0.6) | signal yellow (1.0, 0.86, 0.42): green belongs to the aliens; open point |
+| Rocket | (no tower uses the shape) | azure-white (0.55, 0.8, 1.0) |
+
+## Tesla Coil (level 9, ground, chain lightning; "runs on Crysium")
+
+**Role:** the spire, the tallest thing we build. No gun: a column of glowing coil rings stacked between white
+insulator discs, a caged discharge sphere on top and arc prongs round it. Two **Crysium cells** stand in small cages
+on the left and right of the base drum, with conduits into the column, so "it runs on crystal" reads from the fixed
+camera whichever way the head turns. Arc sockets `Arc_1..n` (non-deforming, on the prong tips) are where the
+chain-lightning VFX leaves the coil; `Muzzle_1` is the top of the sphere.
+
+1. **T1:** three coils, a two-ring cage round the sphere, three short prongs.
+2. **T2:** four coils, three capacitor pillars round the drum with glowing tips, a bigger sphere, four prongs.
+3. **T3A (Chain, more jumps):** five coils and a wide **halo ring** of six prongs round the sphere: a crown much
+   wider than the column, so the jump count reads as reach.
+   **T3B (Overload, damage):** the sphere is replaced by a big **exposed Crysium crystal** held in three claws, with
+   three heavy capacitor banks round the drum: a crystal spike on a column.
+- Clips: IdleSweep (the head turns slowly), **ChargeUp** (the discharge head rises a little, the prongs open),
+  **Fire_1** (Discharge: a sharp jolt of the head). Unity should not pitch the Tesla.
+
+## Railgun (level 13, ground and air, pierces armour)
+
+**Role:** the lance: the longest, flattest line in the roster. Two gunmetal rails with a glowing plasma channel
+between them, held in square white accelerator collars, on a low armoured breech with a capacitor block behind.
+From above: a long bright line between two dark ones.
+
+1. **T1:** short rails, three collars, a capacitor block with glowing slits.
+2. **T2:** longer rails, four collars with glowing studs, a brace under the rails, capacitor drums on both sides.
+3. **T3A (Twin, rate):** two rail pairs side by side that fire in turn.
+   **T3B (Lance, damage and range):** the longest rails, five collars, a muzzle crown of four vanes, a radiator
+   spine of fins on top and a heavy capacitor drum with a hazard band at the back.
+- Clips: IdleSweep, **ChargeUp** (the rails draw back, charging), **Fire_n** (the strongest recoil of the kit).
+
+## Acid Sprayer (level 16, condition damage)
+
+**Role:** the chemical tank: a fat round white tank on the back of the head with a blue band and a tall **sight
+glass** on the camera side that shows the acid glowing, a hose to a short, **flared** nozzle with a ring, a pressure
+gauge on the hull. The acid glow sits only in the glass, the gauge and the nozzle ring. A `Slosh` bone carries the
+bright meniscus band in the glass (it bobs and tilts) so the liquid seems to move.
+
+1. **T1:** one tank, one nozzle.
+2. **T2:** twin tanks side by side on a manifold, a longer nozzle with a spray guard plate.
+3. **T3A (Fan, area):** three nozzles fanned out from one manifold.
+   **T3B (Pressure lance, damage):** one long thin lance with pressure collars, a big **spherical** pressure tank
+   with a hazard band and two gas bottles.
+- Clips: IdleSweep, **Fire_n** (Spray: a fast shiver of the nozzle while the glass sloshes, loop), **Slosh** (idle).
+
+## Hybrids (two neighbouring towers merge into a new tower; each must show both parents)
+
+Hybrids have three levels (T1 to T3, no A/B): the data has no paths for them.
+
+- **Artillery = Cannon + Flak** (data recipe). The Cannon's wide wedge hull with its glacis, vision slit, skirts and
+  boxy muzzle brake, carrying the Flak's **elevated** gun (40 degrees at rest) behind the Flak's hazard-striped shield,
+  with the Flak's ammunition drums on the cheeks. One thick tube on T1 and T2 (T2 adds the skirts, a fume extractor
+  and a radar mast), two thick tubes and a big radar dish on T3. Amber glow.
+- **Storm Rifle = Gun Turret + Tesla Coil.** The Gun's compact head, glacis, sensor eye and cheek plates; its
+  jacketed barrel (T1), twin barrels (T2) and rotary cluster in a shroud (T3, clip Spin), but the jacket coils are
+  Tesla coils, and a **small Tesla spire** (coils, insulator discs, a discharge ball, prongs) stands on the back of
+  the hull. The Gun's power cell becomes a caged Crysium cell. Periwinkle glow.
+- **Cryo Beam = Laser + Cryo Turret.** The Laser's fork yoke and its white emitter with the big lens, slung over the
+  Cryo's **frosted coolant tank**, with the Cryo's **vane flaps** round the lens housing and the Cryo's coolant
+  canisters on the yoke arms instead of the Laser's cells. T3 adds the Laser's focusing prongs. Ice glow; clips
+  ChargeUp and Beam as the Laser.
+
+## Cryo Turret (continent 2; built now because the Cryo Beam implies it)
+
+**Role:** the fridge: a fat horizontal frosted coolant cylinder (white with frost rings) as the gun, ending in a
+wide nozzle ringed with four vane flaps; upright coolant canisters with glowing caps on the hull sides (two, three,
+four). T3 adds a crown of white frost fins along the top of the cylinder. Three levels.
+
+## Support and Rocket (in the code, not in the campaign; simpler, three levels each)
+
+- **Support:** no gun. A mast on the drum with a floating field core (a glowing sphere on `Barrel_1`) inside a ring of
+  white antenna fins, emitter studs round the drum and one halo ring per level. Signal yellow.
+- **Rocket:** the missile battery: a box launcher tilted 30 degrees on a cradle, its face a grid of dark tube mouths
+  with glowing nose caps (2 x 2, 3 x 2, then 3 x 3 with side racks of standby missiles), a small tracking dish.
+
+## Gadgets
+
+- **Lava Ball (level 18, path object; rolls over the road and burns every walker it touches).** The data says it is
+  *dropped on the road and rolls on towards the base*, and the story has it fail against heat-proof enemies and
+  combine with the Cryo (Thermal Shock), so it is **our machine, not a rock**: a thermite roller. A ball of eight
+  white ceramic armour plates held by three gunmetal great-circle bands with yellow hazard marks, and through the
+  gaps between the plates the **molten core** glows. The lava glow is the one hot colour our side gets, because it is
+  the weapon itself (data colour orange); the hull stays in our palette. The bands make the roll read. Bones `Root`
+  (ground) and `Ball` (rolls about X); sockets `Core` (fire VFX) and `Trail` (ground contact). Clips **Drop** (falls,
+  bounces, settles), **Roll** (one turn in 30 frames; in Unity drive the angle from the distance), **Burst** (swells
+  and is gone).
+- **R.A.T. (Remote Assault Tank, level 19).** A small tracked tank, the same family as the Ground Drone: a low blue
+  hull with a white top, rubber tracks under white side skirts with hazard stripes, a sprocket and an idler at each
+  end (wheel bones), a small round white turret with a cyan eye and one gun with a yellow muzzle ring, and a lift lug
+  on top where the drone holds it. Bones Root, Body, Turret, Gun, Wheel_FL/FR/RL/RR; sockets `Muzzle`, `Lug`. Clips
+  **Drive**, **Fire**, **Idle**, **Land** (squashes on the drop).
+- **R.A.T. carrier drone.** A drone of the round-9 family (white shell, blue band, gunmetal belly, ducted rotors with
+  white lips and yellow stripes): a heavy lifter, four ducts on booms (a wide square silhouette), a short hull and
+  under it two hook **clamps** that grip the tank's lug. Socket `Cargo` (put the tank's `Lug` there); clips **Carry**
+  (hover with the load, clamps closed), **Release** (clamps swing open, the drone kicks up), **Fly** (empty).
+
+
+**After the first render review (changes to the notes above).** The pale glow colours burned out to white under
+bloom, so every round-11 glow is now saturated: Tesla (0.52, 0.28, 1.0) with Crysium cells (0.7, 0.48, 1.0), Railgun
+(0.5, 0.8, 1.0), Acid (0.3, 1.0, 0.38), Storm Rifle (0.4, 0.46, 1.0), Cryo (0.4, 0.9, 1.0), Cryo Beam (0.5, 1.0, 0.95),
+Support (1.0, 0.74, 0.2), Rocket (0.38, 0.7, 1.0); the Lava Ball core (1.0, 0.34, 0.05). The Tesla's insulator discs
+are dark, not white (white discs read as a tiered cake and hid the coils). The Railgun's plasma channel rides level
+with the rail tops (it was hidden between them), its collars are gunmetal and the rail tips yellow. The Acid tanks are
+bigger and carry a glowing level band, so the acid reads from every side, not only through the glass. The Cryo Beam's
+coolant tank rides piggyback on top of the emitter.

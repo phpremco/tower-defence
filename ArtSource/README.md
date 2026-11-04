@@ -656,3 +656,133 @@ Maps: gate, base and base turret 1024 (+ `Low/` 512); drones and gadgets 512 (+ 
 - **Path objects (PathObjectView / PathObjectModels):** Mine plays `Arm` on placement, `Idle`, `Trigger` before the
   blast VFX at `Blast`; Chrono plays `Deploy` then `Idle`, the field shader at `Field` (the code's two VFX rings can go,
   the model has its own); Air Net strands between `Strand_Ln` and `Strand_Rn`; Ground Drone `Drive`.
+
+## Round 11: P2 towers and gadgets (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 11). Same hard-surface pipeline as rounds 7 and 9; nothing in the shared
+modules or the round-7/9 scripts changed. New scripts (they import `build_towers.py`, `build_gadgets.py` and
+`build_drones.py` read-only):
+
+- `build_towers2.py` (`--only Tesla,Railgun,Acid,Artillery,StormRifle,CryoBeam,Cryo,Support,Rocket`, `--nobake`,
+  `--norender`, `--preview <dir>`; `--lineup` renders the whole roster, round 7 and round 11, from the maps on disk);
+- `build_gadgets2.py` (`--only LavaBall,RAT,RATCarrier`, same flags).
+
+| Asset | Tiers | Triangles LOD0 (LOD1) | Extra bones and clips (on top of the round-7 rig and IdleSweep / Fire_n) |
+| --- | --- | --- | --- |
+| Tower_Tesla | T1, T2, T3A chain, T3B overload | 3,564 / 4,220 / 4,840 / 4,120 (1,540 / 1,780 / 2,212 / 1,820) | sockets `Arc_1..n` on the prong tips (3 / 4 / 6 / 3); clips IdleSweep 240 (full turn), ChargeUp 24, Fire_1 10 (discharge, head scale) |
+| Tower_Railgun | T1, T2, T3A twin, T3B lance | 2,768 / 3,364 / 3,936 / 4,320 (1,048 / 1,448 / 1,684 / 1,960) | ChargeUp 24 (rails draw back); T3A fires Barrel_1/2 in turn |
+| Tower_Acid | T1, T2, T3A fan, T3B pressure lance | 3,298 / 3,996 / 4,920 / 4,072 (1,490 / 1,888 / 2,396 / 2,012) | `Slosh` (meniscus in the sight glass); Spray 12 (loop), Slosh 60 (loop); T3A has Barrel_1..3 |
+| Tower_Artillery | T1, T2, T3 (Cannon + Flak) | 3,182 / 3,986 / 4,852 (1,378 / 1,878 / 2,352) | rests at 40 degrees elevation like the Flak |
+| Tower_StormRifle | T1, T2, T3 (Gun + Tesla) | 3,728 / 4,804 / 4,984 (1,812 / 2,620 / 2,312) | T3 Spin 12 (loop) |
+| Tower_CryoBeam | T1, T2, T3 (Laser + Cryo) | 3,906 / 4,230 / 4,630 (1,862 / 2,106 / 2,226) | T3 `Prong_1..3`; ChargeUp 24, Beam 12 (loop), no Fire_n (continuous) |
+| Tower_Cryo | T1, T2, T3 | 3,560 / 3,790 / 4,470 (1,792 / 1,974 / 2,398) | – |
+| Tower_Support | T1, T2, T3 | 3,382 / 3,650 / 3,918 (1,594 / 1,798 / 2,002) | core on `Barrel_1`; IdleSweep is the core's bob and spin, Fire_1 a pulse |
+| Tower_Rocket | T1, T2, T3 | 2,408 / 2,736 / 3,706 (1,052 / 1,316 / 1,982) | rests at 30 degrees; sockets `Tube_1..n` on every tube mouth (4 / 6 / 9) |
+| Gadget_LavaBall | – | 1,680 (1,560) | Root, `Ball` (rolls about X); sockets `Core`, `Trail`. Drop 24, Roll 30 (one turn, loop), Burst 12 |
+| Gadget_RAT | – | 2,180 (1,256) | Root, Body, Turret, Gun, Wheel_FL/FR/RL/RR; sockets `Muzzle`, `Lug`. Drive 30, Fire 10, Idle 90, Land 16 |
+| Gadget_RATCarrier | – | 2,384 (1,296) | Root, Body, Rotor_1..4, Clamp_L/R; socket `Cargo`. Carry 60, Release 20, Fly 60 |
+
+Files as round 7 (towers: `Exports/Tower_<Name>/Tower_<Name>_<Tier>.fbx` + 1024 maps + `Low/` 512 + report) and
+round 9 (gadgets: one FBX, 512 maps + `Low/` 256, report). Reports hold muzzles, sockets, the glow colour and the
+pivot. Small pieces (insulator discs, prong tips, cages, conduits, caps) are LOD0 only.
+
+### Unity notes
+
+- **Import** exactly as rounds 7 and 9. Final size; do not apply the factory scales.
+- **Tesla and Support do not aim:** drive only `Yaw` (or play IdleSweep); never pitch them (their heads sit on
+  `Pitch`/`Barrel_1` above the column). Chain lightning starts at `Arc_n` (pick the nearest to the target); the
+  Tesla's `Muzzle_1` is the tip of the lightning rod.
+- **Railgun:** the plasma channel glows on its own (Emission); for the charge, drive `_EmissionColor` up during
+  ChargeUp. **Acid:** play Spray while firing and Slosh on an additive layer when idle; the acid spray is VFX from
+  `Muzzle_n` (fan: all three).
+- **Artillery and Rocket** rest elevated (40 and 30 degrees): that is their modelled pose. Rocket missiles leave from
+  `Tube_n` in turn (`Muzzle_1` is the pod centre).
+- **Hybrids** have three levels (T1..T3, no A/B) and the same stars rule. Swap the prefab on merge.
+- **Lava Ball (PathObjectView):** pivot on the ground; play Drop on placement, then rotate `Ball` about its X by
+  `distance / 0.27` rad as it rolls (or loop Roll at 2.2 / (2 pi 0.27) = 1.3 turns per second), Burst at the end with
+  the fire VFX at `Core`. **R.A.T.:** pivot on the ground; Land on touchdown, Drive while moving (wheel turns per
+  metre = 1 / (2 pi 0.068)), Fire with the shot from `Muzzle`. **Carrier:** pivot at the drone centre; parent the
+  tank so its `Lug` sits on `Cargo`, play Carry, then Release and unparent the tank at frame 6.
+- **Open colour points:** the data colours of Artillery (orange) and Support (green) are warm; the models glow amber
+  and signal yellow. The Lava Ball's molten core is orange on purpose (the weapon itself); the shell is ours.
+
+## Round 10: P2 enemies and their bosses (Stinger, Bat, Bulwark, Oozer, AcidEmpress, CrystalWarlord, SkySovereign, SlimeMonarch, RollerKing, 2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 10). Builds: `build_stinger.py`, `build_bat.py`, `build_bulwark.py`,
+`build_oozer.py`, then the bosses `build_acidempress.py`, `build_crystalwarlord.py`, `build_skysovereign.py`,
+`build_slimemonarch.py`, `build_rollerking.py` (each boss imports its species' script, and its previews load the
+species' `.blend`, so the species run first). Not yet in `build_all.py`. Helpers in the new `creature_kit2.py`
+(the shared modules are only imported):
+
+- Styles: `armour_plate` (dark plate, worn front lip, hot rear rim, forward chevron, optional crackle),
+  `ring_segment` (ringed tail segment with glowing joints), `ribbed_bladder` (a gourd-like gland, glow between the
+  ribs), `bladder` (veined sac), `scale_hide`, `bone_shield` (a natural shield), `slug_hide` (glands of mixed size),
+  `slime_foot`, `crysium_blade`.
+- `build_mesh_asset_ex` + `rebake_skin`: bake another palette onto the same game mesh (the element bats).
+- `scale_rig` + `export_rig`: bosses are built in their species' units and scaled as a whole at the end (mesh,
+  bones and location keys); `export_rig` exports exactly the given clips (other actions get a guard F-curve for the
+  time of the export, otherwise the FBX exporter adds the LOD's actions as extra takes).
+- `enemy_previews`: the standard sheet for a common enemy.
+
+| Asset | Triangles | Bones | LOD1 (tris / bones) | Clips (frames @30 fps) |
+| --- | --- | --- | --- | --- |
+| Stinger | 3,961 | 25 | 1,697 / 14 | Walk 28 (loop), Idle 60 (loop), Hit 12, Death 40, Strike 24 |
+| Bat | 3,896 | 16 | 1,698 / 10 | Fly 13 (loop), Glide 48 (loop), Hit 12, Death 36 |
+| Bulwark | 3,950 | 19 | 1,700 / 16 | Walk 32 (loop), Idle 72 (loop), Hit 14, Death 44, Block 24 |
+| Oozer | 3,801 | 9 | 1,699 / 7 | Crawl 40 (loop), Idle 72 (loop), Hit 12, Death 40 |
+| AcidEmpress | 14,206 | 28 | 5,987 / 17 | Walk, Idle, Hit, Death, Strike (as the Stinger), Spray 48 |
+| CrystalWarlord | 13,991 | 19 | 5,991 / 16 | Walk, Idle, Hit, Death, Block (as the Bulwark), Sweep 40 |
+| SkySovereign | 12,603 | 19 | 5,996 / 13 | Fly, Glide, Hit, Death (as the Bat), Laser 72 |
+| SlimeMonarch | 12,995 | 13 | 5,994 / 11 | Crawl, Idle, Hit, Death (as the Oozer), Flood 44, Spawn 48 |
+| RollerKing | 13,831 | 20 | 5,993 / 14 | Walk, Idle, Hit, Death, Curl, Roll, Uncurl (as the Roller), Quake 30 |
+
+Maps: one material, 1024 Albedo/Normal/Emission/Mask plus the 512 `Low/` set. Mask B/A families: Stinger,
+AcidEmpress, Oozer and SlimeMonarch chitin/membrane (Oozer and SlimeMonarch membrane/chitin), Bat and SkySovereign
+membrane/chitin, Bulwark and CrystalWarlord chitin/crystal, RollerKing chitin/membrane; tiling in each report's
+`detail`. Boss tilings are computed in species units, so the micro-detail scales with the body (multiply the
+tiling by the report's `model_scale_from_*` for the species' finer grain).
+
+### Element bat skins
+
+`build_bat.py` bakes the default element (Ember) into `Exports/Bat/`. `--element Moss,Dust` (any of Ember, Moss,
+Dust, Tide, Frost, Mire, see `ELEMENTS`) bakes those skins onto the same game mesh and UVs into
+`Exports/Bat/Skins/<Element>/Bat_<Element>_Albedo/_Normal/_Emission/_Mask.png` (+ `Low/`). One FBX and one rig for
+all bats: in Unity each element is a material on the same prefab (Emberbat, Mossbat, Dustbat, Tidebat, Frostbat,
+Mirebat). Baked now: Ember, Moss, Dust. Rebake a skin whenever the bat mesh changes (the skins must share its UVs).
+
+### Unity notes for round 10
+
+- **Import** as the earlier creatures (Scale 1, Bake Axis Conversion, Generic rig, root `Root`, Mikktspace). Take
+  names: the species' FBX files carry `<Asset>_Rig|<Clip>` takes like the earlier ones; the boss FBX files were
+  written by `export_rig` with the same naming.
+- **Scale** (`unity_scale` in each report): Stinger 0.8, Bat 0.65, Bulwark 0.9, Oozer 0.7 (the data scales).
+  Bosses at `Scale x BossScaleFactor`: AcidEmpress 0.9, CrystalWarlord 0.96, SkySovereign 0.84, SlimeMonarch 0.9,
+  RollerKing 0.78.
+- **Pivots:** ground units on the ground (Bulwark between the feet). Bat and SkySovereign: the body centre at flight
+  height, like the Shalebat; turn off the `SurfaceWave` wing wave and drop `CrashSpin` while their Death clip rolls
+  them.
+- **Power timing** (start the VFX / damage on these frames):
+  - Stinger `Strike`: the needle hits at frame **10** (0.33 s), ahead of the head at head height. Play it on the
+    Sting attack against towers.
+  - Bulwark `Block`: shield up at frame **7**, then held to the end (keep the last frame while blocking).
+  - AcidEmpress `Spray`: acid leaves the nozzles at frame **26** (0.87 s), about 0.15 x scale above the `Gland`
+    bone, upwards (acid rain). PlateRegrowth has no clip (its VFX on the plates).
+  - CrystalWarlord `Sweep`: the blade passes the front at frame **20** (0.67 s); start the SwordSweep ring there.
+    CrystalRegrowth: VFX on the crown and shoulder crystals.
+  - SkySovereign `Laser`: beam on from frame **20** to **60** (0.67 to 2.0 s), from the `Emitter` bone along its
+    +Y (the tail swings under the body and aims forward and down; the clip sweeps it side to side).
+  - SlimeMonarch `Flood`: the front slams down at frame **24** (0.8 s), start the slime ring there. `Spawn`: young
+    oozers leave the `Sac_L` / `Sac_R` bones at frame **30** (1.0 s).
+  - RollerKing `Quake`: played rolled up (after `Curl` or during `Roll`), impact at frame **16** (0.53 s); it ends
+    rolled, so `Roll` or `Uncurl` follows.
+- **Scale curves:** Oozer stalks, SlimeMonarch stalks and sacs, AcidEmpress `Gland` animate bone scale (keep
+  "Remove constant scale curves" off).
+- **Gait playback:** `velocity / (distance_per_loop x scale)`: Stinger 0.236, Bulwark 0.5, Oozer 0.3 (a slug glides,
+  the pedal wave is the cue), AcidEmpress 0.52, CrystalWarlord 1.05, SlimeMonarch 0.6, RollerKing walk 1.008 and roll
+  4.09 (model units per loop, see the reports).
+- **Bulwark and CrystalWarlord are not mirror-symmetric** (shield left, sword right): no mirrored UVs, so the
+  whole body sits in the 1024 map at a lower texel density than the mirrored species.
+- **Oozer trail:** VFX from under `Body_1` (the rear) on the ground.
+- **SkySovereign data:** in the data the SkySovereign is the ray boss and the StormMatriarch the bat boss; the models
+  are the other way round (round 6 StormMatriarch is a Skyray boss, this SkySovereign is a bat boss). Swap the data
+  shapes, or swap which model each boss uses (curator decision).

@@ -65,7 +65,7 @@ def armour_plate(pal, k, rim_glow=1.0, chevron=0.8, lip=0.7, chevron_angle=1.2, 
     return style
 
 
-def ring_segment(pal, k, joint_glow=1.0, base=None, tip=None, rings=2, rough=0.6):
+def ring_segment(pal, k, joint_glow=1.0, base=None, tip=None, rings=2, rough=0.6, joint_width=0.14):
     """A ringed tail or limb segment (a tube): plates lit on top, dark bands, and glow leaking at both ends where
     it meets the next segment (the acid in the joints)."""
     base = np.array(base if base is not None else pal.top)
@@ -78,7 +78,7 @@ def ring_segment(pal, k, joint_glow=1.0, base=None, tip=None, rings=2, rough=0.6
         col = col * (0.5 + 0.5 * C.smoothstep(-0.6, 0.7, n[:, 2]))[:, None] * H.mottle(s, idx, 0.1, 140 / k, 9)
         frac = (t * rings) % 1.0
         band = 1 - C.smoothstep(0.0, 0.12, np.minimum(frac, 1 - frac))
-        joint = 1 - C.smoothstep(0.0, 0.14, np.minimum(t, 1 - t))
+        joint = 1 - C.smoothstep(0.0, joint_width, np.minimum(t, 1 - t))
         col = C.lerp3(col, pal.seam, band * 0.6)
         col = C.lerp3(col, pal.glow * 0.6, joint * 0.8)
         s.albedo[idx] = col
@@ -115,6 +115,32 @@ def bladder(pal, k, cells=26, seed=5, glow=1.0, plate=0.35):
     return style
 
 
+def ribbed_bladder(pal, k, ribs=7, seed=5, glow=1.0, plate=0.35, axis=1):
+    """A swollen gland like a gourd: dark chitin ribs running along the local `axis` (1 = length) with the glowing
+    fluid showing between them, brightest towards the far end, broken by a few dark veins; a dark cap on top."""
+    def style(s, idx, part):
+        L = C.local_points(part, s.p[idx])
+        u = _unit(L)
+        n = s.n[idx]
+        others = [i for i in range(3) if i != axis]
+        ang = np.arctan2(u[:, others[0]], u[:, others[1]])
+        rib = np.abs(np.sin(ang * ribs * 0.5 + 0.3 * C.value_noise(s.p[idx], 8 / k, seed)))
+        ridge = C.smoothstep(0.55, 0.95, rib)
+        gap = 1 - C.smoothstep(0.1, 0.5, rib)
+        vein = (1 - C.smoothstep(0.0, 0.05, np.abs(C.value_noise(s.p[idx], 22 / k, seed + 1)))) * gap
+        far = 0.55 + 0.45 * C.smoothstep(-0.8, 0.8, u[:, axis])
+        cap = C.smoothstep(1 - plate - 0.08, 1 - plate + 0.08, u[:, 2]) if plate else np.zeros(len(idx))
+        shell = C.chitin_gradient(n, pal.top, pal.side, pal.belly) * H.mottle(s, idx, 0.12, 50 / k, seed + 2)
+        col = C.lerp3(shell, pal.glow * 0.75, gap * (1 - cap) * 0.9)
+        col = C.lerp3(col, pal.seam, vein * 0.8)
+        s.albedo[idx] = col
+        s.emit[idx] = pal.glow[None, :] * (gap * far * glow * (1 - vein) * (1 - cap))[:, None]
+        s.disp[idx] = 0.004 * k * ridge - 0.002 * k * gap
+        s.rough[idx] = 0.55 - 0.25 * gap
+        H.family(s, idx, chitin=np.maximum(ridge, cap), membrane=gap * (1 - cap), flow=u[:, axis] * part.radii[axis])
+    return style
+
+
 def scale_hide(pal, k, cells=90, seed=0, width=0.04, joint_glow=0.0, belly_light=0.4):
     """Saurian scaled hide on any part: scales of mixed size with dark seams, lit on top, a lighter underside band,
     and optional goo glow in the deepest seams (`joint_glow`). Scales are seeded from the part's own points, so a
@@ -144,31 +170,39 @@ def scale_hide(pal, k, cells=90, seed=0, width=0.04, joint_glow=0.0, belly_light
     return style
 
 
-def bone_shield(pal, k, rings=7, boss_glow=1.0, rim_glow=0.6, seed=0):
-    """A natural shield grown from bone (a flattened ellipsoid, the face along local -X or +X): concentric growth
-    ridges round a glowing central boss, a pale worn rim with a thin glowing seam behind it, dark grooves."""
+def bone_shield(pal, k, rings=7, boss_glow=1.0, rim_glow=0.6, seed=0, ribs=7):
+    """A natural shield grown from bone (a flattened ellipsoid, the face along local -X or +X): warped growth ridges
+    that come and go, radial ribs like a shell, a small glowing boss off-centre in a dark socket, a pale worn rim with a
+    thin glowing seam behind it. Organic, never a target of even rings."""
     def style(s, idx, part):
         L = C.local_points(part, s.p[idx])
         u = _unit(L)
         n = s.n[idx]
-        r = np.hypot(u[:, 1], u[:, 2])
-        frac = (r * rings + 0.2 * C.value_noise(s.p[idx], 8 / k, seed)) % 1.0
-        ridge = C.smoothstep(0.0, 0.35, frac) * (1 - C.smoothstep(0.65, 1.0, frac))
-        groove = 1 - C.smoothstep(0.0, 0.18, np.minimum(frac, 1 - frac))
+        cy, cz = u[:, 1] + 0.12, u[:, 2] - 0.1
+        r = np.hypot(cy, cz)
+        ang = np.arctan2(cz, cy)
+        warp = 0.5 * C.value_noise(s.p[idx], 5 / k, seed) + 0.15 * np.sin(ang * 3 + 1.0)
+        frac = (r * rings + warp) % 1.0
+        broken = C.smoothstep(-0.3, 0.2, C.value_noise(s.p[idx], 7 / k, seed + 3))
+        ridge = C.smoothstep(0.0, 0.35, frac) * (1 - C.smoothstep(0.65, 1.0, frac)) * broken
+        groove = (1 - C.smoothstep(0.0, 0.12, np.minimum(frac, 1 - frac))) * broken
+        rib = 1 - C.smoothstep(0.0, 0.18, np.abs(np.sin(ang * ribs * 0.5 + 0.3 * warp)))
         face = C.smoothstep(0.1, 0.5, np.abs(u[:, 0]))
-        boss = 1 - C.smoothstep(0.08, 0.2, r)
-        rim = C.smoothstep(0.82, 0.97, r)
-        col = C.chitin_gradient(n, pal.top, pal.side, pal.belly) * H.mottle(s, idx, 0.12, 40 / k, seed + 1)
-        col = C.lerp3(col, pal.bone, (0.25 + 0.4 * ridge) * face)
-        col = C.lerp3(col, pal.seam, groove * 0.55 * face)
-        col = C.lerp3(col, pal.bone, rim * 0.85)
-        seam = (1 - C.smoothstep(0.0, 0.03, np.abs(r - 0.78))) * face
-        hot = np.clip(boss * boss_glow + seam * rim_glow, 0, 1)
+        boss = 1 - C.smoothstep(0.05, 0.12, r)
+        socket = (1 - C.smoothstep(0.12, 0.22, r)) * (1 - boss)
+        rim = C.smoothstep(0.85, 0.98, np.hypot(u[:, 1], u[:, 2]))
+        col = C.chitin_gradient(n, pal.top, pal.side, pal.belly) * H.mottle(s, idx, 0.18, 30 / k, seed + 1)
+        col = C.lerp3(col, pal.bone * 0.8, (0.1 + 0.25 * ridge) * face)
+        col = C.lerp3(col, pal.seam, np.maximum(groove * 0.45, rib * 0.55 * C.smoothstep(0.2, 0.4, r)) * face)
+        col = C.lerp3(col, pal.seam, socket * 0.9 * face)
+        col = C.lerp3(col, pal.bone, rim * 0.8)
+        seam = (1 - C.smoothstep(0.0, 0.03, np.abs(np.hypot(u[:, 1], u[:, 2]) - 0.8))) * face
+        hot = np.clip(boss * boss_glow * face + seam * rim_glow, 0, 1)
         col = C.lerp3(col, pal.glow * 0.7, hot)
         s.albedo[idx] = col
         s.emit[idx] = pal.glow[None, :] * hot[:, None]
-        s.disp[idx] = (0.004 * k * ridge - 0.003 * k * groove) * face + 0.004 * k * boss
-        s.rough[idx] = 0.6 - 0.15 * rim - 0.2 * hot
+        s.disp[idx] = (0.004 * k * ridge - 0.003 * k * groove - 0.003 * k * rib - 0.004 * k * socket) * face + 0.004 * k * boss
+        s.rough[idx] = 0.62 - 0.15 * rim - 0.2 * hot
         H.family(s, idx, chitin=1.0 - hot * 0.7, flow=r * part.radii[1])
     return style
 
@@ -188,8 +222,9 @@ def slug_hide(pal, k, glands=34, seed=0, gland_size=0.16, gland_glow=1.0, groove
         radii = gland_size * rng.uniform(0.45, 1.25, len(seeds))
         d = np.full(len(idx), 9.0)
         rad = np.ones(len(idx))
-        for sd, r in zip(seeds, radii):
-            if sd[2] < gland_zone:
+        keep = rng.uniform(0, 1, len(seeds)) < 0.55
+        for sd, r, kp in zip(seeds, radii, keep):
+            if sd[2] < gland_zone or not kp:
                 continue
             dist = np.linalg.norm(u - sd, axis=1) / r
             closer = dist < d
@@ -202,11 +237,13 @@ def slug_hide(pal, k, glands=34, seed=0, gland_size=0.16, gland_glow=1.0, groove
         col = C.lerp3(col, pal.dark, blot * 0.55)
         col = col * (0.82 + 0.18 * tub)[:, None]
         col = C.lerp3(col, pal.seam, groove * 0.4)
-        col = C.lerp3(col, pal.seam, rimg * 0.8)
-        col = C.lerp3(col, pal.glow * 0.75, gland)
+        col = C.lerp3(col, pal.top * 1.3, rimg * 0.5)
+        col = C.lerp3(col, pal.glow * 0.6, gland)
         s.albedo[idx] = col
-        s.emit[idx] = pal.glow[None, :] * (gland * gland_glow * (0.6 + 0.4 * C.smoothstep(0.0, 0.6, 1 - d)))[:, None]
-        s.disp[idx] = 0.003 * k * tub - 0.002 * k * groove + 0.004 * k * gland - 0.002 * k * rimg
+        core = 1 - C.smoothstep(0.0, 0.55, d)
+        s.emit[idx] = pal.glow[None, :] * (gland * gland_glow * (0.25 + 0.75 * core) * (0.7 + 0.3 * tub))[:, None]
+        # A raised pustule rim round each gland, the gland itself slightly sunk (a vent, not a painted spot).
+        s.disp[idx] = 0.003 * k * tub - 0.002 * k * groove - 0.002 * k * gland + 0.005 * k * rimg
         # Wet: low roughness overall, glossier on the glands.
         s.rough[idx] = 0.38 - 0.12 * gland + 0.1 * groove
         H.family(s, idx, membrane=1.0, flow=(1 + u[:, 1]) * part.radii[1])
@@ -373,9 +410,29 @@ def scale_rig(arm, meshes, actions, m):
                 fc.update()
 
 
-def export_rig(path, arm, mesh, actions, names):
-    """Exports `arm` + `mesh` with the actions named by clip (`names`: {clip: action}); other actions in the file
-    that carry a clip name are renamed out of the way first and restored afterwards."""
+def _channelbags(act):
+    bags = []
+    for layer in getattr(act, "layers", ()):
+        for strip in layer.strips:
+            bags.extend(getattr(strip, "channelbags", ()))
+    return bags
+
+
+GUARD_PATH = 'pose.bones["__export_guard__"].location'
+
+
+def export_rig(path, arm, mesh, names):
+    """Exports `arm` + `mesh` with exactly the actions in `names` ({clip: action}) as takes named by clip. The FBX
+    exporter takes every action whose F-curves all resolve on the armature (a LOD's actions do on the full rig), so
+    every other action gets a guard F-curve that cannot resolve for the time of the export."""
+    keep = set(names.values())
+    guards = []
+    for act in bpy.data.actions:
+        if act in keep:
+            continue
+        for bag in _channelbags(act):
+            if bag.fcurves:
+                guards.append((bag, bag.fcurves.new(GUARD_PATH, index=0)))
     taken = {}
     for clip in names:
         other = bpy.data.actions.get(clip)
@@ -385,12 +442,14 @@ def export_rig(path, arm, mesh, actions, names):
     old = {act: act.name for act in names.values()}
     for clip, act in names.items():
         act.name = clip
-    arm.animation_data.action = next(iter(names.values()))
+    C.set_action(arm, next(iter(names.values())), 0)
     C.export_fbx(path, [arm, mesh], animated=True)
     for act, n in old.items():
         act.name = n
     for clip, other in taken.items():
         other.name = clip
+    for bag, fc in guards:
+        bag.fcurves.remove(fc)
 
 
 # ---------------------------------------------------------------------------------------------------------------

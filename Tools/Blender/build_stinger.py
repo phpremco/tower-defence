@@ -37,10 +37,10 @@ GAME_SCALE = 0.8  # EnemyDefinition scale
 # Species colours from ProjectGenerator.Bestiary: violet body (0.6, 0.2, 0.85), magenta eyes and accent, acid green
 # blood. Pushed warmer (plum-magenta) and apart in value: dark plum plates, near-black body, hot magenta plate glow;
 # the tail carries the acid colour (lime-yellow).
-PAL = H.Palette(top=(0.5, 0.15, 0.44), side=(0.17, 0.045, 0.16), belly=(0.045, 0.02, 0.045), seam=(0.03, 0.012, 0.03),
+PAL = H.Palette(top=(0.46, 0.12, 0.4), side=(0.11, 0.03, 0.11), belly=(0.03, 0.014, 0.032), seam=(0.022, 0.01, 0.024),
                 dark=(0.08, 0.03, 0.08), glow=(1.0, 0.28, 0.82), eye=(1.0, 0.55, 0.95), membrane=(0.32, 0.06, 0.26),
                 bone=(0.92, 0.78, 0.84))
-LEGP = H.Palette(top=(0.32, 0.09, 0.3), side=(0.13, 0.035, 0.13), belly=(0.04, 0.018, 0.04), seam=(0.03, 0.012, 0.03),
+LEGP = H.Palette(top=(0.24, 0.065, 0.23), side=(0.08, 0.025, 0.085), belly=(0.03, 0.014, 0.032), seam=(0.03, 0.012, 0.03),
                  dark=(0.06, 0.025, 0.06), glow=PAL.glow, eye=PAL.eye, bone=PAL.bone)
 ACID = H.Palette(top=(0.42, 0.13, 0.38), side=(0.16, 0.045, 0.15), belly=(0.05, 0.02, 0.05), seam=(0.03, 0.015, 0.02),
                  dark=(0.08, 0.03, 0.07), glow=(0.78, 1.0, 0.2), eye=PAL.eye, membrane=(0.4, 0.5, 0.06),
@@ -123,8 +123,8 @@ def build_parts(cfg=CFG, b=None):
                 segments=(20, 10))
     for i in range(cfg["eyes"]):
         a = math.radians(-70 + 140 * i / max(1, cfg["eyes"] - 1))
-        b.ellipsoid("Eye", G(0.05 * math.sin(a), 0.29 + 0.006 * math.cos(a * 2), 0.27 + 0.04 * math.cos(a)),
-                    (0.014, 0.014, 0.012), bone="Body", style=H.eye(PAL, k, 1.0), segments=(12, 6))
+        b.ellipsoid("Eye", G(0.062 * math.sin(a), 0.292 + 0.006 * math.cos(a * 2), 0.27 + 0.048 * math.cos(a)),
+                    (0.017, 0.017, 0.015), bone="Body", style=H.eye(PAL, k, 0.55), segments=(12, 6))
     b.ellipsoid("Mouth", G(0, 0.16, 0.32), (0.045, 0.03, 0.025), bone="Body", style=H.inner_glow(ACID, 0.7), segments=(16, 8))
     for side, sx in SIDES:
         root = G(0.035 * sx, 0.17, 0.32)
@@ -137,6 +137,9 @@ def build_parts(cfg=CFG, b=None):
     for i, (f, hw) in enumerate(cfg["plates"]):
         b.ellipsoid("Plate", G(0, 0.245 + 0.004 * i, f), (hw * w, 0.058, 0.03), pitch(9), bone="Abdomen",
                     style=K2.armour_plate(PAL, k, rim_glow=1.0, chevron=0.85, cells=10, seed=10 + i), segments=(36, 14))
+        base = G(0, 0.27 + 0.004 * i, f - 0.02)
+        b.tube("Keel", [base, base + G(0, 0.03, -0.012), base + G(0, 0.04, -0.045)], [0.013, 0.007, 0.001], sides=8,
+               chain=["Abdomen"], style=H.hook(PAL, k, glow=1.0, glow_from=0.6))
         # A short hook at each plate's rear corners: a serrated outline from above.
         for sx in (-1, 1):
             base = G((hw * w - 0.012) * sx, 0.245, f - 0.03)
@@ -149,17 +152,24 @@ def build_parts(cfg=CFG, b=None):
         a, c = t[i], t[i + 1]
         mid = a.lerp(c, 0.5) + (c - a).cross(X).normalized() * 0.004
         b.tube("TailSeg", [a, mid, c], [r[i] * 0.95, r[i] * 1.08, r[i + 1] * 0.9], sides=12, chain=[SEG_BONES[i]],
-               style=K2.ring_segment(ACID, k, joint_glow=0.9, base=PAL.top, tip=PAL.side * 1.3, rings=2))
+               style=K2.ring_segment(ACID, k, joint_glow=0.9, base=PAL.top, tip=PAL.side * 1.3, rings=2, joint_width=0.07))
+        # A flanged collar at the front of every segment, with three short hooks: a ringed, armoured tail.
+        b.ring("Collar", a.lerp(c, 0.12), c - a, r[i] * 1.12, r[i] * 0.22, arcs=3, sides=6, chain=[SEG_BONES[i]],
+               style=H.band_plates(PAL, k, 1, height=0.0), ref=Vector((1, 0, 0)))
         # A backward spine on top of every segment.
         top = mid + (c - a).cross(X).normalized() * -r[i] * 0.9
         back = (a - c).normalized()
         b.tube("TailSpine", [top, top + back * 0.025 + (top - mid).normalized() * 0.03, top + back * 0.06 + (top - mid).normalized() * 0.035],
                [0.011, 0.006, 0.001], sides=8, chain=[SEG_BONES[i]], style=H.hook(PAL, k, glow=0.7, glow_from=0.7))
     centre, radii = cfg["bladder"]
-    b.ellipsoid("Bladder", centre, radii, pitch(-25), bone="Sting", style=K2.bladder(ACID, k, cells=22, seed=7, plate=0.3),
+    b.ellipsoid("Bladder", centre, radii, pitch(-25), bone="Sting", style=K2.ribbed_bladder(ACID, k, ribs=7, seed=7, plate=0.35),
                 segments=(32, 16))
     b.tube("Needle", cfg["needle"], [0.024, 0.017, 0.009, 0.0015], sides=10, chain=["Sting"],
-           style=H.tube(ACID, k, ACID.bone * 0.5, ACID.bone, tip_glow=1.0, glow_from=0.55))
+           style=H.tube(ACID, k, PAL.side, ACID.bone, tip_glow=1.0, glow_from=0.55))
+    n0, n1 = cfg["needle"][1], cfg["needle"][2]
+    for sx in (-1, 1):
+        b.tube("NeedleBarb", [n0, n0 + G(0.03 * sx, 0.0, 0.015), n0 + G(0.05 * sx, -0.03, 0.03)], [0.011, 0.007, 0.001],
+               sides=8, chain=["Sting"], style=H.hook(ACID, k, glow=1.0, glow_from=0.6))
 
     for side, sx in SIDES:
         shoulder, elbow, wrist, hand, fixed, moving = claw_points(sx, cfg)
@@ -183,8 +193,8 @@ def build_parts(cfg=CFG, b=None):
     for (side, i), lg in legs(cfg).items():
         hip, knee, foot = lg.rest_points
         sx = -1 if side == "L" else 1
-        b.tube("LegUpper", [hip, hip.lerp(knee, 0.5) + Vector((0, 0, 0.012)), knee], [0.026, 0.024, 0.019], sides=10,
-               chain=[lg.names[0]], style=H.leg(LEGP, k, "Femur", spines=2))
+        b.tube("LegUpper", [hip, hip.lerp(knee, 0.5) + Vector((0, 0, 0.012)), knee], [0.03, 0.03, 0.021], sides=10,
+               chain=[lg.names[0]], style=H.leg(LEGP, k, "Femur", spines=3), flatten=0.7)
         b.ellipsoid("Knee", knee, (0.024,) * 3, bone=lg.names[0], style=H.band_plates(LEGP, k, 1, height=0.0), segments=(14, 7))
         b.parts[-1].chain = [lg.names[0], lg.names[1]]
         tip = foot + (foot - knee).normalized() * 0.015
@@ -220,7 +230,7 @@ def bones(cfg=CFG):
 # --------------------------------------------------------------------------------------------------------------
 
 def body_specs(offset=None, pitch_=0.0, roll=0.0, yaw=0.0, belly=0.0, tail=(0.0, 0.0, 0.0), claws=0.0, claw_spread=0.0,
-               pinch=0.0, claw_raise=0.0, sting=0.0):
+               pinch=0.0, claw_raise=0.0, sting=0.0, tail_base=0.0):
     """tail: (curl over the back, sway sideways, wave phase); claws: forearm reach forward; claw_spread: arms swing
     out; pinch: how far the hook-fingers open (rad); claw_raise: claws lifted; sting: extra bend of the sting bone."""
     curl, sway, phase = tail
@@ -233,6 +243,7 @@ def body_specs(offset=None, pitch_=0.0, roll=0.0, yaw=0.0, belly=0.0, tail=(0.0,
     for i, name in enumerate(TAIL_BONES):
         specs[name] = {"rot": [(Z, sway * math.sin(phase - i * 0.8) * (0.5 + 0.25 * i)), (X, curl * weights[i])]}
     specs["Sting"]["rot"].append((X, sting))
+    specs["Tail_1"]["rot"].append((X, tail_base))
     for side, sx in SIDES:
         specs[f"Arm_{side}"] = {"rot": [(Z, -sx * claw_spread), (X, -claw_raise)]}
         specs[f"Claw_{side}"] = {"rot": [(Z, sx * claws * 0.6), (X, -claws * 0.4)]}
@@ -306,8 +317,9 @@ def strike_spec(poser, cfg=CFG):
         hold = K2.ease(hit, hit + 0.05, t) * (1 - K2.ease(0.55, 0.95, t))
         specs = body_specs(offset=Vector((0, -0.02 * stab, -0.012 * stab)), pitch_=math.radians(-3) * wind + math.radians(5) * stab,
                            belly=math.radians(-4) * wind + math.radians(4) * stab,
-                           tail=(math.radians(-16) * wind + math.radians(24) * stab, 0.0, 0.0),
-                           sting=math.radians(-10) * wind + math.radians(30) * stab + math.radians(4) * hold * math.sin(t * 60),
+                           tail=(math.radians(-10) * wind - math.radians(24) * stab, 0.0, 0.0),
+                           tail_base=math.radians(-14) * wind + math.radians(80) * stab,
+                           sting=math.radians(-12) * wind + math.radians(15) * stab + math.radians(4) * hold * math.sin(t * 60),
                            claws=math.radians(8) * stab, claw_spread=math.radians(14) * K2.pulse(t, 0.0, 0.3, 0.9),
                            pinch=math.radians(25) * wind, claw_raise=math.radians(8) * wind)
         return place_legs(poser, specs, {key: lg.foot for key, lg in legs(cfg).items()}, cfg)
@@ -321,7 +333,8 @@ def death_spec(poser, cfg=CFG):
         twitch = math.exp(-max(0.0, t - 0.55) * 6) * math.sin(t * 55) * (1 if t > 0.55 else 0)
         specs = body_specs(offset=Vector((0, 0, 0.025 * jerk - 0.11 * fall)), roll=math.radians(10) * fall,
                            pitch_=math.radians(4) * fall, belly=math.radians(-3) * fall,
-                           tail=(math.radians(-38) * fall + math.radians(4) * twitch, math.radians(14) * fall, 0.6),
+                           tail=(math.radians(-48) * fall + math.radians(4) * twitch, math.radians(14) * fall, 0.6),
+                           tail_base=math.radians(-22) * fall,
                            sting=math.radians(-25) * fall, claws=math.radians(-15) * fall, claw_spread=math.radians(22) * fall,
                            pinch=math.radians(35) * fall, claw_raise=math.radians(-12) * fall)
         pose = poser.solve(specs)

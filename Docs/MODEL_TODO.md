@@ -42,10 +42,10 @@ Per vijand zijn de animaties **Walk, Idle, Hit en Death** nodig, en voor elke vi
 | ◐ | P1 | **Skyray** | Vliegende rog met platte vinnen en stekelstaart (lucht) | Ronde 5 klaar: ramkop met tangen, zes ogen, sikkelvinnen met stralen en gloeiende voorrand, kieuwen op de buik, drietand-staart. Vingolf zit in de botten (voor- en achterketen). Clips Fly/Idle/Hit/Death/Dive, LOD1 klaar. Shader-golf mag uit |
 | ◐ | P1 | **Wisp** | Energiebal met draaiende ringen (lucht, kan landen) | Ronde 5 klaar: knop van vier klauwbladen om een gloeiend hart, twee gyroscoopringen, drie tentakelpoten die landen als driepoot. Clips Float/Land/Grounded/Hit/Death, LOD1 klaar, 2.400 driehoeken. VFX in Unity (halo, bogen, stof bij landen) |
 | ◐ | P1 | **Prowler** | Snelle roedeljager op vier poten | Ronde 4 klaar: schaarkaken, stekelkam, gloeiende ribben, hakken en zweepstaart. Clips Run (laag en plat)/Idle/Hit/Death/Pounce, LOD1 klaar |
-| ☐ | P2 | **Stinger** | Schorpioen: scharen en staart over de rug | Clip **Strike** |
-| ☐ | P2 | **Bat** | Elementvleermuis met vliezen vleugels (lucht) | Per element een andere huid |
-| ☐ | P2 | **Bulwark** | Rechtop staande schilddrager met kristalzwaard | Gepantserd (komt rond level 11–12). Clip **Block** |
-| ☐ | P2 | **Oozer** | Slak op een slijmvoet met ogen op steeltjes | Slijmspoor (VFX) |
+| ◐ | P2 | **Stinger** | Schorpioen: scharen en staart over de rug | Ronde 10 klaar: zes poten, valklauwen met een scharnierende haakvinger, vijf dorsale platen met een magenta achterrand en een pijl naar voren, een geringde zuurstaart met gloeiende gewrichten, een geribde zuurblaas en een naald met weerhaken. Clips Walk/Idle/Hit/Death/**Strike** (raak op frame 10). 3.961 driehoeken, 25 botten, LOD1 1.700 / 14 botten |
+| ◐ | P2 | **Bat** | Elementvleermuis met vliezen vleugels (lucht) | Ronde 10 klaar: één mesh en rig voor alle elementen, het element is een palet. Vleugels over drie haakstekels met een gloeiende voorrand en lichte banden, wigkop met vier ogen per kant, gloeiende boutklier op de borst, zweepstaart met vork. Standaard Ember; Moss en Dust als extra huid gebakken (`--element`). Clips Fly/Glide/Hit/Death. 3.896 driehoeken, 16 botten, LOD1 1.700 / 10 |
+| ◐ | P2 | **Bulwark** | Rechtop staande schilddrager met kristalzwaard | Ronde 10 klaar: saurische tweevoeter, een benen schild gegroeid uit de linkeronderarm (groeiribbels, kleine gloeiende kern), een roze Crysium-zwaard gegroeid uit de rechteronderarm (laag in rust), vizierkop met amber ogen, schouder- en borstplaten, limoen goo in de naden. Niet gespiegeld (geen gespiegelde UV's). Clips Walk/Idle/Hit/Death/**Block** (schild omhoog op frame 7). 3.950 driehoeken, 19 botten, LOD1 1.700 / 16 |
+| ◐ | P2 | **Oozer** | Slak op een slijmvoet met ogen op steeltjes | Ronde 10 klaar: vier oogsteeltjes (eigen botten, trekken in via bot-schaal), mantel met toxineklieren van wisselende grootte, ringmond met haaktanden, doorschijnende slijmvoet met gloeiende rand. Clips Crawl/Idle/Hit/Death. 3.801 driehoeken, 9 botten, LOD1 1.700 / 7. Slijmspoor blijft VFX |
 | ☐ | P3 | **Shardback** | IJskever met een rug van ijsprisma's die afspringen | Breekbare prisma's als losse onderdelen |
 | ☐ | P3 | **Mireleech** | Moerasbloedzuiger: lang en laag, met zuigmond | Modderspoor |
 | ☐ | P3 | Hersteller (nog geen naam) | Vijand die HP terugkrijgt (teaser level 15) | Nog ontwerpen. Mogelijk een variant |
@@ -66,11 +66,11 @@ Animaties: Walk, Idle, Hit, Death, plus een clip per baaskracht.
 | ◐ | P1 | **CoreWisp** | Baasvariant van de Wisp | Ronde 6 klaar: zes korte bloembladen om een groot, half open hart met een gloeiende spleet en twee hoorns aan de voorkant, drie ringen (kralen, haken, kroonring met knopen en stekels), vijf tentakels als komeetstaart die als vijf poten landen. Clips Float/Land/Grounded/Hit/Death/**Pulse** (schok op frame 14), hart en ringen schalen. 8.992 driehoeken, 22 botten, LOD1 4.000. Kleur is één parameter: koel (standaard) en warm (amber hart, limoengroene ringen) ter keuze. VFX in Unity blijft belangrijk (halo, schokring) |
 | ◐ | P1 | **StormMatriarch** | Baasvariant van de Skyray. Laat kleine vliegers los | Ronde 6 klaar: brede sikkelvinnen met condensatorkralen op de gloeiende voorrand, kleine achtervinnen, gekroonde ramkop met grote tangen, twee laadhoorns met lichtknopen, twee rugluiken boven een gloeiende broedkamer, lange drietand. Clips Fly/Idle/Hit/Death/**Release** (luiken open, vliegers op frame 30). 13.446 driehoeken, 26 botten, LOD1 6.000. Kleur is één parameter: koel (standaard) en warm (pruim, magenta, oranje rand) ter keuze. Let op: in de data is ze nog een vleermuisbaas die Mossbats roept |
 | ◐ | P1 | **PackAlpha** | Baasvariant van de Prowler | Ronde 6 klaar: zware schouders en diepe ribbenkast, grotere schaarkaken met tanden en binnenhaken, een kraag van gloeiende stekels in twee waaiers (eigen botten, gaat open bij de Howl), dubbele stekelrij, gloeiende littekens over de ribben, lichte pijl op het zadel. Clips Run/Idle/Hit/Death/**Howl** (piek op frame 22). 14.018 driehoeken, 24 botten, LOD1 6.000 |
-| ☐ | P2 | **AcidEmpress** | Baasvariant van de Stinger | Clip **Spray** |
-| ☐ | P2 | **CrystalWarlord** | Baasvariant van de Bulwark | |
-| ☐ | P2 | **RollerKing** | Baasvariant van de Roller | |
-| ☐ | P2 | **SkySovereign** | Baasvariant van de Bat of Skyray | |
-| ☐ | P2 | **SlimeMonarch** | Baasvariant van de Oozer | |
+| ◐ | P2 | **AcidEmpress** | Baasvariant van de Stinger | Ronde 10 klaar: zeven platen, kroon van magenta Crysium, grotere klauwen, twee zijstaarten, grote geribde sproeiklier (bot-schaal) met drie mondstukken. Clips Walk/Idle/Hit/Death/Strike/**Spray** (zuur op frame 26). 14.206 driehoeken, 28 botten, LOD1 6.000 |
+| ◐ | P2 | **CrystalWarlord** | Baasvariant van de Bulwark | Ronde 10 klaar: groter schild, Crysium-slagzwaard, kroon van Crysium op de helm, kristal door de schouderplaten en langs de rug. Clips Walk/Idle/Hit/Death/Block/**Sweep** (horizontale zwaai, voorlangs op frame 20). 13.991 driehoeken, 19 botten, LOD1 6.000 |
+| ◐ | P2 | **RollerKing** | Baasvariant van de Roller | Ronde 10 klaar: brons in plaats van zand, vijf zaagringen haken, flanknaven met een kroon van ember-Crysium. Clips van de Roller plus **Quake** (sprong als bal, inslag op frame 16). 13.831 driehoeken, 20 botten, LOD1 6.000 |
+| ◐ | P2 | **SkySovereign** | Baasvariant van de Bat of Skyray | Ronde 10 klaar als **vleermuisbaas**: bredere vleugels plus een tweede vleugelpaar, hoornkroon, lange staart met een lensorgaan (bot `Emitter`). Wijnrood met magenta gloed. Clips Fly/Glide/Hit/Death/**Laser** (straal frame 20–60). 12.603 driehoeken, 19 botten, LOD1 6.000. In de data nog de rog-baas: zie verbeterpunten |
+| ◐ | P2 | **SlimeMonarch** | Baasvariant van de Oozer | Ronde 10 klaar: kroon van zes oogsteeltjes en gloeiende stekels, bredere kliermantel, twee broedzakken (bot-schaal). Clips Crawl/Idle/Hit/Death/**Flood** (klap op frame 24)/**Spawn** (oozers op frame 30). 12.995 driehoeken, 13 botten, LOD1 6.000 |
 
 ### Continentbazen
 
@@ -116,14 +116,14 @@ Per toren:
 | ◐ | P1 | **Laser** | Ronde 7 klaar: zender in een vorkjuk met een grote cyaan lens. T2 grotere lens en drie focuspennen, T3A reuzenlens met lange pennen en spoelen, T3B telescoop met focusringen en koelvleugels. Clips **ChargeUp** en **Beam**. Open punt: de datakleur is roze-rood (warm) |
 | ◐ | P1 | **Flak** | Ronde 7 klaar: twee lopen in rust 40 graden omhoog, schild met gevarenstreep, munitietrommels. T2 vlamdempers en radar, T3A vier lopen, T3B lange zware lopen en grote radar. Clip **FireAlternate**. Tot 4.928 driehoeken |
 | ◐ | P1 | **Gate Gun** (geschut op de gate) | Ronde 7 klaar: zadelklem op de balk, kleine kop, T1 één loop, T2 twee lopen en munitiekist, T3 kap en sensormast. Geen A/B. 1.736–2.412 driehoeken |
-| ☐ | P2 | **Tesla Coil** | Spoelen die op Crysium draaien (level 9) |
-| ☐ | P2 | **Railgun** | Lange rails, oplaadgloed (level 13) |
-| ☐ | P2 | **Acid Sprayer** | Nieuw (level 16). Tank met sproeikop |
-| ☐ | P2 | Hybride **Artillery** | Samengevoegde toren |
-| ☐ | P2 | Hybride **CryoBeam** | Samengevoegde toren |
-| ☐ | P2 | Hybride **StormRifle** | Samengevoegde toren |
-| ☐ | P2 | **Support** en **Rocket** | In de code, maar niet in de huidige campagne. Laag |
-| ☐ | P3 | **Cryo Turret** | Continent 2 |
+| ◐ | P2 | **Tesla Coil** | Ronde 11 klaar: de enige spits zonder loop. Violette spoelen op donkere isolatorschijven, een ontlaadbol in een kooi met boogpennen (sockets `Arc_n` voor de kettingbliksem), twee Crysium-cellen in kooitjes links en rechts. T2 condensatorzuilen, T3A brede halo met zes pennen, T3B open Crysium-kristal in drie klauwen. Clips IdleSweep/ChargeUp/Fire_1. 3.564–4.840 driehoeken, LOD1 1.540–2.212 |
+| ◐ | P2 | **Railgun** | Ronde 11 klaar: de langste lijn: twee gunmetal rails met een lichtgevend plasmakanaal ertussen, vierkante versnellerkragen, condensatorblok. T2 zijtrommels, T3A twee railparen om en om, T3B lans met mondingskroon, radiatorrug en zware trommel. Clips ChargeUp/Fire_n. 2.768–4.320 driehoeken |
+| ◐ | P2 | **Acid Sprayer** | Ronde 11 klaar: dikke witte tank met kijkglas en een gloeiende mintgroene band, slang naar een korte uitlopende sproeikop. T2 twee tanks, T3A waaier van drie koppen, T3B bolle druktank met lans. Bot `Slosh` (vloeistof in het glas), clips Spray/Slosh. 3.298–4.920 driehoeken |
+| ◐ | P2 | Hybride **Artillery** | Ronde 11 klaar: Cannon + Flak: wigromp, schort en blokrem van de Cannon, de geheven loop (40 graden), het schild en de trommels van de Flak. T3 dubbele loop en grote radar. Amber. 3.182–4.852 driehoeken |
+| ◐ | P2 | Hybride **CryoBeam** | Ronde 11 klaar: Laser + Cryo: vorkjuk en lens van de Laser, een berijpte koeltank erbovenop, vinflappen rond de lens, koelbussen op de juk-armen. T3 focuspennen. Clips ChargeUp/Beam. 3.906–4.630 driehoeken |
+| ◐ | P2 | Hybride **StormRifle** | Ronde 11 klaar: Gun + Tesla: kop en lopen van de Gun met Tesla-spoelen om de mantel, een kleine Tesla-spits achterop, een Crysium-cel als accu. T3 roterend cluster (clip Spin). Periwinkle. 3.728–4.984 driehoeken |
+| ◐ | P2 | **Support** en **Rocket** | Ronde 11 klaar (eenvoudiger, T1–T3): Support = mast met zwevende kern in een ring van vinnen, één halo per niveau (signaalgeel). Rocket = gekantelde buizendoos (2x2, 3x2, 3x3 + reserveraketten), sockets `Tube_n`. 2.408–3.918 driehoeken |
+| ◐ | P3 | **Cryo Turret** | Ronde 11 klaar (vooruit gebouwd voor de CryoBeam): dikke berijpte koelcilinder met ijsringen, uitlopende sproeier met vier vinflappen, koelbussen (2, 3, 4), T3 ijsvinnen. 3.560–4.470 driehoeken |
 | ☐ | P3 | Nieuwe hybrides uit het script (Shatter, Arc Laser, Corrosive Blast, Storm Flak, Thermal Shock) | Twee torens worden samen één nieuwe toren (zie het besluit over combo's) |
 | ◐ | P1 | **Sterren** (upgradeniveau) en **bouwplek-sokkel** | Ronde 7 klaar: zeshoekige sokkel met gevarenrand, ventilatie en lichtring. Een schuine rangplaat aan de camerakant met drie sterren op de botten `Star_1..3` (in elke toren). Losse `Tower_Star.fbx` |
 | ◐ | P1 | **Wrak en scrap-stapel** | Ronde 7 klaar: verbrande sokkel, omgevallen romp, schroot en gloeiende sintels in `Tower_Wreck.fbx`, met `Debris_Gun/Cannon/Laser/Flak/GateGun` |
@@ -136,8 +136,8 @@ Per toren:
 | --- | --- | --- | --- |
 | ◐ | P1 | **Land Mine** | Ronde 9 klaar: lage gunmetal schijf met zes ankerklauwen, blauwe band, witte drukkap met gevarenrand en een amber ring als hij scherp staat (bot `Ring`). Clips Arm/Idle/Trigger, socket `Blast`. 1.212 driehoeken, LOD1 632. Open punt: datakleur is rood |
 | ◐ | P1 | **Chrono Field**-emitter | Ronde 9 klaar: driepoot, blauwe kolom, Crysium-scherf tussen twee pinnen in twee tegendraaiende gyroscoopringen (botten `RingA/RingB`), projectorring bij de voet, socket `Field`. Clips Deploy/Idle. 2.008 driehoeken |
-| ☐ | P2 | **Lava Ball** | Rollende bol (level 18) |
-| ☐ | P2 | **R.A.T.** (Remote Assault Tank) | Tankje plus de drone die het dropt (level 19). Clips **Drive, Fire** |
+| ◐ | P2 | **Lava Ball** | Ronde 11 klaar: onze machine (thermietroller), geen steen: acht witte pantserplaten en drie gunmetal banden met gele naven rond een gloeiende gesmolten kern (oranje: het wapen zelf, de schil blijft in ons palet). Bot `Ball` rolt om X, sockets `Core`, `Trail`. Clips Drop/Roll/Burst. 1.680 driehoeken |
+| ◐ | P2 | **R.A.T.** (Remote Assault Tank) | Ronde 11 klaar: rupstankje (familie van de Ground Drone) met witte schorten, ronde koepel met cyaan oog, één loop; wielbotten, sockets `Muzzle`, `Lug`. Clips Drive/Fire/Idle/Land (2.180). Plus de **carrier-drone** `Gadget_RATCarrier` (ronde-9-dronefamilie, vier ducts op armen, twee haakklemmen, socket `Cargo`), clips Carry/Release/Fly (2.384) |
 | ◐ | P2 | **Barrel** en **Air Net** | Ronde 9 klaar (statisch): vat in een gunmetal kooi met gevarenbanden en amber ruitjes (1.208); twee palen met gele spoelen op een drempel, sockets `Strand_L1..R3` voor de VFX-draden (1.460) |
 | ◐ | P2 | **Ground Drone** (padobject) | Ronde 9 klaar: vierwielige ramrobot met witte ploeg, cyaan oog. Clips Drive/Idle, wielbotten. 928 driehoeken |
 | ☐ | P3 | **Decoy Beacon** (2), **Barricade** (4), **Spike Strip** en **Rollback Field** (5) | |
@@ -360,3 +360,29 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | Drone_Repair | 3.084 driehoeken, boven het budget van 2.500 (vier ducts) |
 | Ground Drone | Het minst uitgesproken gadget |
 | Kleurvragen | De Attack-drone is in de data koraal (warm), het model gloeit azuur. De Mine is in de data rood, de ring is amber. Het rode kruis op de Repair-drone is vervangen door een cyaan plus in een zeshoek (een rood kruis is een echt embleem en warm). Advies: de data volgt de modellen |
+
+### Ronde 10 (P2-vijanden Stinger, Bat, Bulwark, Oozer en vijf bazen)
+
+| Model | Verbeterpunt |
+| --- | --- |
+| Stinger | Van dichtbij nog duidelijk een (aardse) schorpioen; de platen zijn vrij gladde schijven. Magenta gloed is fel; de oogkraag leest als een witte streep |
+| Bat | De kop blijft klein en rond. Tide en Frost zijn per element koel (blauw); dat is een datakeuze. Alleen Ember, Moss en Dust zijn gebakken |
+| Bulwark | Schouderplaten en vizier lezen nog wat als schijven. Niet gespiegeld: een kwart minder texeldichtheid dan de gespiegelde soorten. Datakleur accent is cyaan; het zwaard is roze Crysium (warm) |
+| Oozer | De mantel ligt als een tweede brood op het lijf. Oogbollen branden wit |
+| AcidEmpress | Kroonscherven wat snoepachtig van dichtbij. De zijstaarten verdwijnen deels achter de hoofdstaart |
+| CrystalWarlord | Het grote schild bedekt van 3/4 een groot deel van het lijf. Lichte kristalgloed; in Unity de emissie iets lager |
+| SkySovereign | **Data-mismatch:** in `ProjectGenerator.Bestiary` is de SkySovereign de rog-baas en de StormMatriarch de vleermuisbaas. Het model is een vleermuisbaas (past bij het StormMatriarch-model als rog-baas). Het tweede vleugelpaar is van boven weinig zichtbaar |
+| SlimeMonarch | Smal voor een baas (2,0 lang, 0,9 breed). De voet gloeit fel op de zool als ze opricht (Flood) |
+| RollerKing | Naden gloeien breder dan bij de Roller (bewust, maar druk). De haken schampen de grond in de Roll, net als bij de Roller |
+
+
+### P2-torens en gadgets ronde 11
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Cryo en CryoBeam | Het meest gelijkende paar in de roster: allebei witte en cyaan cilinders |
+| Railgun | Van boven een felle lans (goed). Close-up en macro zijn slecht in beeld gebracht. De kroon van T3B is klein |
+| Tesla | De magenta-violette gloed zit dicht bij het roze Crysium van de aliens |
+| RATCarrier | Klemmen van opzij slecht zichtbaar. De armen lezen als één steel |
+| LOD1 | Boven ~2.000: StormRifle T2 2.620, Cryo T3 2.398, Acid T3A 2.396, Artillery T3 2.352 |
+| Kleurvragen | Artillery is in de data oranje, het model amber. Support is in de data groen, het model signaalgeel. De kern van de Lava Ball is bewust oranje (dat is het wapen), de schil heeft onze kleuren |

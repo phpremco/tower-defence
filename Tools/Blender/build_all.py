@@ -26,6 +26,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_towers.py",
            # Round 9: gate, base and base turret, drones, gadgets (import base_kit.py; need build_towers first).
            "build_gate.py", "build_base.py", "build_drones.py", "build_gadgets.py",
+           # Round 11: P2 towers, hybrids and gadgets (import build_towers/build_gadgets/build_drones read-only).
+           "build_towers2.py", "build_gadgets2.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
            "build_env_diorama.py"]
 
