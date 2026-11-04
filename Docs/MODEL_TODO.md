@@ -430,7 +430,7 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | Pioneer-1 wrak | Het afgebroken pootstuk en de modderpoelen zijn klein op spelgrootte. De heuvel is een vrij vlakke schijf; in Unity laten aansluiten op het terrein |
 | Capsule | Het bovenvlak van het hitteschild gloeit oranje mee (één emissie-map voor het schild); in Unity uitfaden. In Land frame 0 steken de opgeklapte poten nog wat uit |
 | Drill | De boorkop staat deels achter het motorhuis vanuit de standaardhoek |
-| Mothership | Straalpijpen branden bijna wit (bloom); de NTI-badges op de neus zijn klein |
+| Mothership | ✔ Ronde 19 herbouwd (`build_mothership2.py`, na Remco's speeltest "amateuristisch"): hoekige, taps toelopende commandosectie met brug en pantserplaten, ring met kokerprofiel, schotten en raamrijen, containerrekken, laadruim met open deuren, tankring, radiatoren, zwaar motorblok met drie straalpijpen; naam NEW DAWN, rompcode, NTI-embleem en nummer 01 als decals; 19,4k driehoeken, 2048-maps, LOD1. Nog open: in Unity de 2048-limiet en de LOD1 aanzetten (zie README ronde 19); het laadruim is van binnen donker zonder eigen licht; het schip is overwegend wit en wordt in de schaduw een vlakke grijze massa; containers en rekken zijn nog eenvoudig. Oorspronkelijk: Straalpijpen branden bijna wit (bloom); de NTI-badges op de neus zijn klein |
 | Radarconsole | Alleen de console, geen commandopost-interieur. Het achterpaneel zweeft een fractie boven het bureau |
 | Kleurvraag | Pioneer-1 gebruikt de mint logkleur (0.55, 1, 0.8) voor lens en status; dicht bij het groen van de Acid Sprayer |
 

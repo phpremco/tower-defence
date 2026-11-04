@@ -45,6 +45,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_towers3.py", "build_gadgets3.py", "build_drones2.py",
            # Round 13: story characters and cutscene models (story_kit.py).
            "build_voss.py", "build_story_props.py", "build_cutscene.py",
+           # Round 19: the rebuilt mothership; overwrites the round-13 one from build_cutscene.py.
+           "build_mothership2.py",
            # Round 15: corrupted (The Core) skins; reads every species' .blend and maps, so it runs after them.
            "build_corrupted_skins.py",
            # Round 17: continent environment sets 2-6 (env_kit2.py); each renders its own diorama.

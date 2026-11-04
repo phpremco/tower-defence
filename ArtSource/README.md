@@ -872,7 +872,7 @@ no LOD1 (the report says so); the Pioneer-1 wreck is static level decor.
 | RadarConsole | `RadarConsole.fbx` (+ meshes `_Radar`, `_Screen_L`, `_Screen_R`) | 2,846 + 156 + 12 + 12 | 1024 (+ 512) | static; empties `Radar`, `Operator`; screen meshes have planar 0..1 UVs |
 | Cutscene_Capsule | `Cutscene_Capsule.fbx` (+ mesh `Cutscene_Capsule_Shield`) | 4,262 + 638 | 1024 (+ 512) | 5 bones: Root, Ramp, Leg_1..3. Land 30, Open 48. Empties `Exit`, `Jet_1..4`, `Beacon`, `ShieldCentre` |
 | Cutscene_Drill | `Cutscene_Drill.fbx` | 3,630 | 1024 (+ 512) | 5 bones: Root, Block, String, BitTip (socket), Cable. Spin 30 (loop), Sink 150. Empties `Beacon`, `Exhaust`, `Dust` |
-| Cutscene_Mothership | `Cutscene_Mothership.fbx` | 9,302 (budget 15,000) | 1024 (+ 512) | 2 bones: Root, Ring. Spin 360 (loop). Empties `Bay`, `Nozzle_1..3` |
+| Cutscene_Mothership | replaced in round 19 (`build_mothership2.py`, see below) | ~~9,302~~ 19,442 + LOD1 8,594 | 2048 (+ 1024) | 2 bones: Root, Ring. Spin 360 (loop). Empties `Bay`, `Nozzle_1..3`, round 19 adds `Light_1..10` |
 | Cutscene_Beacon | `Cutscene_Beacon.fbx` | 2,162 | 512 (+ 256) | 8 bones: Root, Leg_1..3, Mast, Mast2, Ring, Lamp (socket). Deploy 54, Idle 60 (loop). Empty `Ground` |
 
 
@@ -1248,3 +1248,51 @@ report with pivot and sockets. Sources: `Blend/Towers3.blend`, `Gadgets3.blend`,
   frame 24 (the modelled bombs are hidden from then until frame 48).
 - **Colours (open):** none of these are in the data yet; the glow colours are proposals (towers: report key `glow`;
   the round's shared palette under `glows`; gadgets and drones: `GL` in their scripts).
+
+## Round 19: the mothership rebuilt (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 19). Build: `build_mothership2.py` (own lofted hull pieces, weighted normals
+and a ship-scale self-bake with plating, windows, livery and projected decals; reuses `tower_kit` pieces, unwrap
+helpers and the FBX export read-only). It **replaces** the `Mothership` spec of `build_cutscene.py`: same file names,
+bones, clip and sockets, so the round-13 import keeps working.
+
+```
+blender --background --factory-startup --python Tools/Blender/build_mothership2.py -- [--preview <dir>] [--norender]
+        [--nobake] [--fast] [--old <folder with a previous export, for compare_*.png>]
+```
+
+- Full bake (2048, 16 samples) takes about 35 minutes on the CPU; `--fast` (1024, 6 samples) is for look-dev only and
+  must not be left in `Exports/`. `--nobake` re-exports the meshes on the maps on disk (the atlas is deterministic).
+- Previews: `ms2_hero`, `_side`, `_under`, `_bay`, `_rear`, `_nose`, `_ring`, `_top`, `_far` (320 x 180), the LOD1 at
+  `ms2_lod1_hero/_far`, and with `--old` the side-by-sides `compare_hero/_side/_under/_rear` (left round 13).
+- **build_all.py:** `build_cutscene.py` still builds its own (round-13) mothership into the same folder, so
+  `build_mothership2.py` must run **after** it: add it right after `"build_cutscene.py"` in `SCRIPTS`.
+
+| Asset | Files (`Exports/Cutscene_Mothership/`) | Triangles | Maps | Rig, clips, sockets |
+| --- | --- | --- | --- | --- |
+| Cutscene_Mothership | `Cutscene_Mothership.fbx`, **new** `Cutscene_Mothership_LOD1.fbx` | 19,442 (budget 40,000); LOD1 8,594 (44 %: no chamfers, no greebles, no ring liner) | **2048** (+ `Low/` 1024) | `Cutscene_Mothership_Rig`: Root, Ring (both deform). Spin 360 (loop, one turn per 12 s about +Y, Unity +Z). Empties `Bay` (+Z down out of the bay), `Nozzle_1..3` (+Z aft), **new** `Light_1..10` |
+
+Hull length 14.95 (Blender y -7.35 nose to 7.6 bell exits), 15.7 with the sensor booms (round 13: 13.6); ring radius 3.42 outside (was 3.0), so it is
+about 10 % bigger in the same scale. Pivot at the ship centre (between the cargo racks), nose -Y (Unity +Z).
+`Bay` moved from (0, 1.0, -0.96) to (0, 0.54, -1.17); `Nozzle_n` sit 1.1 aft of the gimbals at y 7.78.
+
+New sockets `Light_n` (static, on Root; for blinkers or small point lights): 1-2 the sensor boom tips (white),
+3 the dorsal beacon (yellow), 4 the nose cap (white), 5-6 the bay mouth corners (amber), 7-8 the radiator tips (cyan),
+9-10 the engine block top and bottom (white). The glow pips are in the mesh and the Emission map already; the ring's
+own lights turn with it and have no sockets.
+
+### Unity notes
+
+- **Import** as round 13 (Scale 1, Bake Axis Conversion, Generic rig, keep empties, Mikktspace tangents). The FBX
+  carries **custom (weighted) normals**; `BlenderModelImporter` already imports normals from the file
+  (`ModelImporterNormals.Import`). Keep it that way: recalculated normals would no longer match the normal map.
+- **2048 maps:** `BlenderModelImporter.FullMapSize` is 1024, so Unity clamps these maps to 1024 today. For the
+  hero asset raise the limit for this asset only (High 2048, `Low/` 1024), e.g. a per-asset override in the importer.
+- **LOD1:** `BlenderStoryBuilder.BuildArt` sets `_lod1` to null for cutscene models. To use the new
+  `Cutscene_Mothership_LOD1.fbx` (synced by `BlenderSync` automatically), assign it there as `BlenderArtBuilder` does.
+  Without that it is simply unused.
+- **Emission:** windows, ring lights and the bells' throats are in the Emission map (pale blue-white, throats
+  weaker and bluer than round 13); `OrbitSet`'s exhaust sprites at `Nozzle_n` stay. A small cool point light at
+  `Bay` during the capsule drop would light the racked capsules and the doors' inner sides.
+- The mask layout is the usual one (R AO, G smoothness, B metal detail, A ceramic detail); the report's detail tiling
+  numbers are computed from the atlas density as before.

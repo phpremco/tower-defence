@@ -1550,3 +1550,81 @@ parent; the tier steps are silhouette steps (longer, wider, an extra barrel, a c
   Gadgets: the Spike Strip read as solar panels (dark deck, taller brighter spikes now); the Barricade read as a
   thin line (taller slabs, a bolder hazard band on both faces, a brighter top light); small blue pieces lost their
   panel seams, which read as a grid; the Decoy's lure head grew.
+
+# Round 19: the mothership rebuilt as a hero hard-surface asset (2026-11-04)
+
+Brief: Remco after the opening cutscene playtest: "Het ruimteschip en de planeten waren erg amateuristisch. Dit moet
+mooier." Round 13's ship was a truss stick with a capsule-shaped command pod, a torus and boxes: primitives on a
+stick. Round 19 rebuilds it in `Tools/Blender/build_mothership2.py` (own pieces, own bake; `tower_kit` pieces, atlas
+and export reused read-only) as the colony transport of Operation New Dawn, seen at medium to close range in orbit.
+Same faction language as rounds 7, 9 and 13: white and light-grey panels, gunmetal structure, colony blue, a little
+hazard yellow, cool cyan and white lights. Nothing copies a real ship, film or game design.
+
+## Silhouette and hierarchy (big, medium, small)
+
+Read from far as **wedge nose, big ring, boxy middle, heavy engine with three glows**; the old needle-and-pods read
+is gone. Length 14.95 (nose -7.35 to bell exits 7.6), nose towards -Y as before.
+
+1. **Command section** (y -7.35 .. -3.8): a lofted, tapered, angular hull (octagonal sections, flat deck, deep keel
+   chamfer), not a lathe. On the deck a raked **bridge** with a dark glass canopy, gunmetal mullions and one thin cyan
+   light line, and lit window rows along its flanks. Layered **armour plates** on both flanks follow the hull taper.
+   A gunmetal sensor chin with a cyan eye, two forward sensor booms with nav lights, a big dorsal comm dish on a mast
+   and an antenna farm with a yellow beacon. Lit deck windows along both flanks.
+2. **Keel**: an octagonal gunmetal spine in segments with light-grey structural **collars** (hazard tags) between the
+   modules and steel conduits along its flanks.
+3. **Habitat ring** (bone `Ring`, radius 3.15): a box-section ring (not a torus) in eight sectors between raised
+   pressure **bulkheads**, two rows of lit windows on the outer wall, colony-blue rails on both rims, a dark inner
+   liner, cyan ring lights; four diagonal box-beam **spokes** with lift tubes and hazard-banded junction pods; a hub
+   with a blue band and a glow ring between two static bearing collars on the keel.
+4. **Cargo racks** (y -0.85 .. 1.95): three rows of ribbed containers on top and both flanks (white, light grey,
+   colony blue, one yellow), held by light-grey rack frames and corner rails.
+5. **Capsule bay** under the racks: an open hangar (gunmetal walls, lit ceiling strips, cyan wall strips) with three
+   racked landing capsules and **clamshell doors** swung open 62 degrees, hazard-edged, amber lights at the mouth.
+   Socket `Bay` at the mouth, pointing down.
+6. **Tank ring**: four capsule tanks round the keel (white with blue bands, grey with hazard bands).
+7. **Radiators**: on box booms, three dark hinged panels per side in a shallow V with white frames, dark spars and
+   cyan coolant lines; cyan lights on the tips.
+8. **Engine**: a light-grey shadow-shield disc with a hazard rim, then a lofted octagonal thrust block that widens
+   aft (white over a grey belly with a blue pinstripe and band, a hazard band, the hull number and the NTI emblem on
+   top), RCS blocks with small bells, a gunmetal thrust plate and **three bells** on gimbal collars with actuator rods,
+   heat-tinted (straw to blue-violet towards the exit) with a pale-blue glowing throat (round 13's note "the bells
+   burn almost white" is answered: the throat glow is weaker and bluer).
+
+## Surface (all in the maps; one material)
+
+- **Weighted normals**: edges above 50 degrees are sharp, everything else gets face-area weighted normals, so the big
+  faces stay flat and the single-segment chamfers carry a soft highlight. Applied to the bake target and to both
+  exported meshes, so the tangent-space normal map matches.
+- **Plating** (ship-scale self-bake, seams about two texels wide at 2048): staggered rectangular panels (1.6:1), some
+  split once more, a value and smoothness offset per panel, light-grey accent panels (white hull) or darker ones
+  (blue, gunmetal), inset hatch outlines and vent slats in the normal and albedo, low mottling, AO grime.
+- **Livery**: the command hull and the engine block are two-tone (white over a grey belly) with a colony-blue
+  pinstripe on the line.
+- **Windows**: lit rows from the bake (habitat outer wall, command flanks, bridge flanks), about a fifth of them dark
+  so they read as rooms, not a stripe.
+- **Decals** (text and flat shapes rendered to images in the build, projected in the bake): **NEW DAWN** with the hull
+  code **NTI ND-01 COLONY TRANSPORT** under a blue rule on both command flanks, the NTI emblem ahead of it and on top
+  of the engine block, and the engine number **01** with two bars on both engine flanks.
+- **Material breakdown** in the packed mask: painted ceramic panels (smoothness varied per panel, accent panels a bit
+  rougher), bare metal (gunmetal and steel, glossier on chipped edges), glossy glass and decals.
+
+## Critique passes (preview renders, space lighting)
+
+- Pass 1 (first full bake): the ring's grey-white patchwork was noisy and the white hull overexposed; the texel
+  density was low (hidden lathe caps and two 6.8-wide annulus discs on the ring's side walls took the atlas). Fixes:
+  ring and keel split into sectors and segments, per-piece texel weights (hidden and minor parts get fewer texels),
+  seams widened to about two texels, fewer accent panels, hull value lowered, a dark inner liner on the ring. The
+  ship's own shadow fell on the preview planet: the preview planet is now shaded in its material.
+- Pass 2: the bridge window read as a white sticker and the bridge side light floated; the white masses had no value
+  structure. Fixes: a dark canopy with one thin cyan line, shader windows on the bridge flanks, the two-tone livery.
+- Pass 3: from below the bay was a black hole and the rack frames read as a heavy empty cage. Fixes: a lighter bay
+  ceiling with two lit strips, thinner frames, brighter container mix; a dedicated `bay` preview camera.
+
+## Known weak points
+
+- The bay interior is dark when the sun is above the ship (no bounce light in the preview); in Unity a small point
+  light at `Bay` would sell the launches.
+- The ship is still mostly white: it reads clearly in space, but from the far side in shadow it is a flat grey mass.
+- Texel density is about 0.017 units per texel at 2048: fine at cutscene distance, soft in a frame-filling close-up
+  of the nose (the tiling metal and ceramic detail normals help in Unity).
+- The containers are plain ribbed boxes; the rack frames are simple bars.
