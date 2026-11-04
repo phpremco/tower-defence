@@ -25,6 +25,17 @@ All bosses are big, glowing, slow, with a readable head and weapon, and killable
     - immunity becomes resistance (halved damage);
     - "everything dark" becomes one element at a time;
     - an effect never hits more than about a quarter of your towers at once.
+- **Use the terrain (Remco: "het terrein echt goed gebruiken").**
+  - Bosses climb. They clamber over rocks, cliffs and boulders instead of walking round them, and they climb onto gates and the base to attack from above.
+  - This needs a climb layer: a height and surface map that includes rocks, structures and the base roof. Bosses follow it with body tilt and leg reach (IK or baked climb clips from Blender), so their feet stay on the surface.
+  - While a boss stands on a gate, the gate visibly sags and takes damage from its weight. Walkers can follow it over a gate it has climbed.
+  - What each boss climbs:
+    - **Gravemaw** surfaces on rocks and climbs over the edge.
+    - **The Cinder Matriarch** climbs over rock ridges between the pads, on her way to the cold towers.
+    - **The Frost Warden** climbs onto a frozen gate before it smashes it.
+    - **The Shattered**'s shards scale the ruins.
+    - **The Sealed One** pulls itself up onto the base.
+  - The climb layer stays logical. Bosses only climb what is solid. Decor that cannot hold them (crystals, plants) breaks under them.
 - **The balance ledger counts the effects.** Each boss's mechanic is modelled as a loss of firepower for the duration of the effect, inside its HeroCap.
 
 ## Gravemaw (Crystal Plains, finale)
