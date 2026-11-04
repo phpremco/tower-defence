@@ -1,0 +1,178 @@
+{
+ "texture": "UI_Dialogue.png",
+ "size": [
+  1024,
+  588
+ ],
+ "scale": "2x master (Pixels Per Unit 200)",
+ "tint": "all white: DialogueView / CutsceneOverlay / RadarOverlay tint them as before",
+ "sprites": {
+  "Radar_Sweep": {
+   "x": 4,
+   "y": 4,
+   "w": 512,
+   "h": 512,
+   "unity_rect": [
+    4,
+    72,
+    512,
+    512
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "RadarOverlay sweep: replace the 7 trail lines; leading edge points up, trail on the left (it turns clockwise)"
+  },
+  "Dialogue_PortraitFrame": {
+   "x": 520,
+   "y": 4,
+   "w": 160,
+   "h": 160,
+   "unity_rect": [
+    520,
+    424,
+    160,
+    160
+   ],
+   "border_lbrt": [
+    44,
+    44,
+    44,
+    44
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "frame around the portrait"
+  },
+  "Dialogue_Panel": {
+   "x": 684,
+   "y": 4,
+   "w": 128,
+   "h": 128,
+   "unity_rect": [
+    684,
+    456,
+    128,
+    128
+   ],
+   "border_lbrt": [
+    60,
+    60,
+    60,
+    60
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "DialogueArt.Panel (DialogueView, CutsceneOverlay:195)"
+  },
+  "Dialogue_Edge": {
+   "x": 816,
+   "y": 4,
+   "w": 128,
+   "h": 128,
+   "unity_rect": [
+    816,
+    456,
+    128,
+    128
+   ],
+   "border_lbrt": [
+    60,
+    60,
+    60,
+    60
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "DialogueArt.Edge (offset by EdgeOverhang = 18 px at 1x, same geometry as the panel)"
+  },
+  "Dialogue_NameTag": {
+   "x": 4,
+   "y": 520,
+   "w": 160,
+   "h": 64,
+   "unity_rect": [
+    4,
+    4,
+    160,
+    64
+   ],
+   "border_lbrt": [
+    26,
+    20,
+    26,
+    20
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "speaker name plate above the box"
+  },
+  "Dialogue_Arrow": {
+   "x": 168,
+   "y": 520,
+   "w": 64,
+   "h": 64,
+   "unity_rect": [
+    168,
+    4,
+    64,
+    64
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "DialogueArt.Arrow (the 'next' cue, points down)"
+  },
+  "Radar_Contact": {
+   "x": 236,
+   "y": 520,
+   "w": 64,
+   "h": 64,
+   "unity_rect": [
+    236,
+    4,
+    64,
+    64
+   ],
+   "border_lbrt": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "pivot": [
+    0.5,
+    0.5
+   ],
+   "use": "RadarOverlay contact dots / hostile mass (instead of DialogueArt.Radial)"
+  }
+ },
+ "textures": {
+  "UI_Dialogue_Noise.png": "DialogueArt.Noise (redacted bars; wrap Repeat, filter Point)",
+  "UI_Dialogue_Scanlines.png": "DialogueArt.Scanlines (wrap Repeat, filter Point; 8 rows = 4 px at 1x)",
+  "UI_Dialogue_Radial.png": "DialogueArt.Radial (Clamp, Bilinear)",
+  "UI_Dialogue_Shade.png": "DialogueArt.Shade (Clamp, Bilinear; opaque at the bottom)"
+ }
+}
