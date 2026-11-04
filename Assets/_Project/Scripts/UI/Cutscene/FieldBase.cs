@@ -34,7 +34,15 @@ namespace Game.UI
         private const float CorePulseSpeed = 2.2f;
         private const float BuilderOrbit = 1.6f;
         private const float BuilderHeight = 1.8f;
-        private const float BuilderSpeed = 1.3f;
+        private const float BuilderClearance = 0.6f;
+        private const float BuilderTransitShare = 0.05f;
+        private const float BuilderTransitOfGap = 0.6f;
+        private const float BuilderHop = 0.6f;
+        private const float BuilderBob = 0.06f;
+        private const float BuilderBobSpeed = 2.2f;
+        private const float BuilderPitch = 3f;
+        private const float BuilderBankShare = 0.1f;
+        private const float BuilderMaxBank = 9f;
         private const float RotorDegreesPerSecond = 2400f;
         private const int DustBurst = 40;
         private const float SparkRate = 40f;
@@ -78,6 +86,9 @@ namespace Game.UI
             public Vector3 Scale;
             public bool Turns;
             public float Start;
+            public Vector3 Centre;
+            public float Top;
+            public float Reach;
             public ParticleSystem Dust;
         }
 
@@ -260,13 +271,23 @@ namespace Game.UI
             return socket != null ? socket : fallback;
         }
 
-        // The builders circle the module going up and weld at it; when nothing is going up they hover over the base.
+        // The builders fly together from module to module. At each one every builder takes its own station round
+        // it (spread evenly, the same height), hovers level there facing the module and welds; between modules they
+        // cross in a gentle arc, nose first and banked a little. Posed from progress alone.
         private void PoseBuilders(int building, float progress, float time)
         {
+            bool active = progress > 0f && progress < 1f && _modules.Count > 0;
+            int from = 0;
+            int to = 0;
+            float transit = 1f;
+            if (active)
+            {
+                FlightLeg(progress, out from, out to, out transit);
+            }
+
             for (int i = 0; i < _builders.Count; i++)
             {
                 CutsceneDrone drone = _builders[i];
-                bool active = progress > 0f && progress < 1f;
                 drone.Holder.gameObject.SetActive(active);
                 if (!active)
                 {
@@ -274,14 +295,61 @@ namespace Game.UI
                     continue;
                 }
 
-                Transform target = _modules[Mathf.Max(0, building)].Root;
-                float angle = time * BuilderSpeed + i * Mathf.PI * 2f / _builders.Count;
-                Vector3 centre = target.position;
-                Vector3 position = centre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * BuilderOrbit + Vector3.up * (BuilderHeight + 0.15f * Mathf.Sin(time * 3f + i));
-                drone.Holder.SetPositionAndRotation(position, Quaternion.LookRotation(Flat(centre - position)));
-                drone.Pose(building >= 0 ? ModelClipRole.Work : ModelClipRole.Move, time + i * 0.37f, time * RotorDegreesPerSecond, false);
-                ParticleKit.SetRate(_builderSparks[i], building >= 0 ? SparkRate : 0f);
+                Vector3 start = Station(from, i);
+                Vector3 end = Station(to, i);
+                float eased = CutsceneMath.Smooth(transit);
+                float hop = Mathf.Sin(eased * Mathf.PI);
+                Vector3 bob = Vector3.up * (BuilderBob * Mathf.Sin(time * BuilderBobSpeed + i * 2.1f));
+                Vector3 position = Vector3.Lerp(start, end, eased) + Vector3.up * (hop * BuilderHop) + bob;
+
+                Quaternion faceStart = Quaternion.LookRotation(Flat(_modules[from].Centre - start));
+                Quaternion faceEnd = Quaternion.LookRotation(Flat(_modules[to].Centre - end));
+                Quaternion working = Quaternion.Slerp(faceStart, faceEnd, eased);
+                Vector3 travel = Flat(end - start);
+                Quaternion flying = travel.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(travel) : working;
+                Quaternion facing = Quaternion.Slerp(working, flying, hop);
+                float bank = Vector3.SignedAngle(working * Vector3.forward, flying * Vector3.forward, Vector3.up);
+                float lean = Mathf.Clamp(bank * BuilderBankShare, -BuilderMaxBank, BuilderMaxBank) * hop;
+                drone.Holder.SetPositionAndRotation(position, facing * Quaternion.Euler(BuilderPitch * hop, 0f, -lean));
+
+                bool welding = building >= 0 && transit >= 1f;
+                drone.Pose(welding ? ModelClipRole.Work : ModelClipRole.Move, time + i * 0.37f, time * RotorDegreesPerSecond, false);
+                ParticleKit.SetRate(_builderSparks[i], welding ? SparkRate : 0f);
             }
+        }
+
+        // Which module the flock leaves and which it heads for, and how far the crossing is (1 once arrived).
+        private void FlightLeg(float progress, out int from, out int to, out float transit)
+        {
+            to = 0;
+            for (int m = 1; m < _modules.Count; m++)
+            {
+                if (progress >= LeaveFor(m))
+                {
+                    to = m;
+                }
+            }
+
+            from = Mathf.Max(0, to - 1);
+            transit = to == 0 ? 1f : CutsceneMath.Span(progress, LeaveFor(to), _modules[to].Start);
+        }
+
+        // The flock sets off for a module a little before it breaks out of the ground, sooner when the modules are far apart in time.
+        private float LeaveFor(int module)
+        {
+            float gap = _modules[module].Start - _modules[module - 1].Start;
+            return _modules[module].Start - Mathf.Min(BuilderTransitShare, Mathf.Max(0f, gap) * BuilderTransitOfGap);
+        }
+
+        // A builder's hover spot at a module: evenly round it, turned per module so the flock does not line up.
+        private Vector3 Station(int module, int builder)
+        {
+            Module target = _modules[module];
+            float angle = (builder / (float)Mathf.Max(1, _builders.Count) + module * 0.17f) * Mathf.PI * 2f;
+            float reach = Mathf.Max(BuilderOrbit, target.Reach + BuilderClearance);
+            float height = Mathf.Max(target.Centre.y + BuilderHeight, target.Top + BuilderClearance);
+            Vector3 around = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * reach;
+            return new Vector3(target.Centre.x + around.x, height, target.Centre.z + around.z);
         }
 
         private void BuildGates(Transform parent, LevelDefinition level, FieldLayout layout)
@@ -354,7 +422,36 @@ namespace Game.UI
         private void AddModule(Transform root, float start, Transform parent, bool turns)
         {
             ParticleSystem dust = ParticleKit.Create(parent, $"{root.name}Dust", root.position + Vector3.up * 0.2f, DustColour, 0.8f, 1.6f, 0.3f, 0.7f, 0.6f, 2f, -0.05f, 80, 1.1f);
-            _modules.Add(new Module { Root = root, Rotation = root.rotation, Scale = root.localScale, Turns = turns, Start = start, Dust = dust });
+            // Measured as built, so the builders hover clear of the module whatever its pivot or import scale.
+            Bounds bounds = BoundsOf(root);
+            float reach = Mathf.Max(bounds.extents.x, bounds.extents.z);
+            _modules.Add(new Module { Root = root, Rotation = root.rotation, Scale = root.localScale, Turns = turns, Start = start, Dust = dust, Centre = bounds.center, Top = bounds.max.y, Reach = reach });
+        }
+
+        private static Bounds BoundsOf(Transform root)
+        {
+            var bounds = new Bounds(root.position, Vector3.zero);
+            bool found = false;
+            foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>())
+            {
+                Bounds part = renderer.bounds;
+                if (part.size.sqrMagnitude <= 0f)
+                {
+                    continue;
+                }
+
+                if (found)
+                {
+                    bounds.Encapsulate(part);
+                }
+                else
+                {
+                    bounds = part;
+                    found = true;
+                }
+            }
+
+            return bounds;
         }
 
         private static Transform Part(string name, Transform parent, Mesh mesh, Material[] materials, Vector3 position, Quaternion rotation)

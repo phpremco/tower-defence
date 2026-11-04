@@ -32,6 +32,44 @@ MonoBehaviour:
   _drill: {fileID: 0}
   _beacon: {fileID: 0}
   _earthSurface: {fileID: 0}
+  _earthPlanet:
+    Alien: 0
+    DeepSea: {r: 0.02, g: 0.04, b: 0.05, a: 1}
+    ShallowSea: {r: 0.06, g: 0.1, b: 0.09, a: 1}
+    LandA: {r: 0.3, g: 0.26, b: 0.2, a: 1}
+    LandB: {r: 0.36, g: 0.3, b: 0.22, a: 1}
+    Highland: {r: 0.4, g: 0.35, b: 0.3, a: 1}
+    Peak: {r: 0.7, g: 0.68, b: 0.64, a: 1}
+    Crystal: {r: 0.3, g: 1.2, b: 1.5, a: 1}
+    City: {r: 4, g: 2.2, b: 0.8, a: 1}
+    Atmosphere: {r: 0.75, g: 0.58, b: 0.38, a: 1}
+    Twilight: {r: 1, g: 0.45, b: 0.18, a: 1}
+    Cloud: {r: 0.72, g: 0.6, b: 0.46, a: 1}
+    TextureTint: 1
+    CoastWarp: 0.012
+    CrystalDensity: 0.5
+    CloudShadow: 0.4
+    CloudWisps: 0.85
+    SeaGlint: 0.7
+    SeaGlintTightness: 160
+    LimbHaze: 1
+    LimbHazeFalloff: 3
+    NightAmbient: 0.015
+    Relief: 1.2
+    MapRelief: 0.3
+    CoastBlur: 4
+    DayHaze: 0.15
+    AtmosphereStrength: 1.2
+    AtmosphereFalloff: 6
+    AtmosphereLift: 1.06
+    ForwardScatter: 1.5
+    MapTextureTint: 0.6
+    MapAmbient: 0.22
+    MapDayLights: 0.7
+    MapCoastBlur: 1.5
+    MapSeaGlint: 0.3
+    HighOctaves: 6
+    LowOctaves: 3
   _mothershipArt: {fileID: 11400000, guid: 10995a70510b0844aa6b6fd676102704, type: 2}
   _capsuleArt: {fileID: 11400000, guid: 1271af7143d3e874f913949918439f1f, type: 2}
   _drillArt: {fileID: 11400000, guid: 7bbb734a1a262c24489e47f98e2094cb, type: 2}

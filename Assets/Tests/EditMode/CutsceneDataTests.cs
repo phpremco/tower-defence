@@ -127,5 +127,29 @@ namespace Game.Tests
             Assert.Greater(Vector3.Dot(view, levelView), 0.999f, "the long lens looks along the level camera");
             Assert.AreEqual(1f, facing.magnitude, 0.001f);
         }
+
+        // Playtest 2026-11-04: the camera shook all through the planet shots. One small kick at touchdown at most, and a drift too slow to read as shake.
+        [Test]
+        public void Camera_KicksOnceAtMost_AndNeverShakes()
+        {
+            int kicks = 0;
+            foreach (CutsceneShot shot in _cutscene.Shots)
+            {
+                foreach (CutsceneCue cue in shot.Cues)
+                {
+                    if (cue.Kind == CueKind.Shake)
+                    {
+                        kicks++;
+                        Assert.LessOrEqual(cue.Strength, _cutscene.CameraFeel.MaxKick, "a kick stronger than the camera allows");
+                    }
+                }
+            }
+
+            CutsceneCameraFeel feel = _cutscene.CameraFeel;
+            Assert.LessOrEqual(kicks, 1, "the cutscene kicks the camera more than once");
+            Assert.LessOrEqual(feel.MaxKick, 0.35f, "the kick cap is too strong to stay small");
+            Assert.LessOrEqual(feel.DriftHertz, 0.2f, "a drift faster than this reads as shake");
+            Assert.LessOrEqual(feel.Drift, 0.02f, "the drift is wide enough to see");
+        }
     }
 }

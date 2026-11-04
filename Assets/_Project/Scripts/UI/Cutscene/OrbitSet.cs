@@ -12,13 +12,10 @@ namespace Game.UI
     /// </summary>
     public sealed class OrbitSet : ICutsceneSet
     {
-        private const int StarCount = 1600;
         private const float PlanetRadius = 60f;
         private const float DegreesPerSecond = 0.35f;
         private const float StartTurn = 4f;
         private const float CloudAlpha = 1f;
-        private const float RimPower = 2.6f;
-        private const float AtmosphereStrength = 1.5f;
         private const float RingDegreesPerSecond = 7f;
         private const float EngineLight = 6f;
         private const float EngineRange = 9f;
@@ -33,7 +30,6 @@ namespace Game.UI
         // The landing region lies on top of the curve, tipped a little towards the camera.
         private static readonly Vector3 SiteFacing = new Vector3(0f, 1f, -0.35f);
         private static readonly Vector3 SunDirection = new Vector3(0.35f, -0.75f, 0.55f);
-        private static readonly Color AtmosphereColour = new Color(0.4f, 0.65f, 1f);
         private static readonly Color EngineColour = new Color(0.55f, 0.8f, 1f);
 
         private Transform[] _engineGlows = new Transform[0];
@@ -46,6 +42,7 @@ namespace Game.UI
         private Vector3 _bay;
         private CapsuleDrop _capsules;
         private ArtModel _shipArt;
+        private SpaceBackdrop _backdrop;
 
         public VisualTheme Theme => _theme;
 
@@ -53,9 +50,10 @@ namespace Game.UI
         {
             _context = context;
             _theme = context.FieldLevel.Theme;
-            SpaceKit.BuildStars(root, context.Scaled(StarCount));
-            _planet = CrysPlanet.Create(root, context.Catalog, SiteFacing, PlanetCentre, PlanetRadius, CloudAlpha, AtmosphereColour * AtmosphereStrength, RimPower, StartTurn, DegreesPerSecond);
-            SpaceKit.Sun(root, SunDirection, _theme);
+            SpaceStyle space = CrysPlanet.SpaceOf(context.Catalog);
+            _planet = CrysPlanet.Create(root, context.Catalog, SiteFacing, PlanetCentre, PlanetRadius, CloudAlpha, StartTurn, DegreesPerSecond);
+            _planet.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
+            _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
             BuildShip(root);
             _capsules = new CapsuleDrop(root, context, _theme.BaseColor, BayAt, PlanetCentre, PlanetRadius);
         }
@@ -65,6 +63,7 @@ namespace Game.UI
         public void Tick(float time, float progress)
         {
             _planet.Pose(time);
+            _backdrop.Pose(_context.Camera.transform);
             _ship.SetPositionAndRotation(ShipAt(time), Quaternion.LookRotation(ShipFacing));
             _shipArt?.Sample(ModelClipRole.Idle, time, loop: true);
             if (_ring != null)

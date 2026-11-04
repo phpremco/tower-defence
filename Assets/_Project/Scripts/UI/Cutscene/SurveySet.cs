@@ -11,13 +11,10 @@ namespace Game.UI
     /// </summary>
     public sealed class SurveySet : ICutsceneSet
     {
-        private const int StarCount = 1600;
         private const float Radius = 10f;
         private const float DegreesPerSecond = 1.6f;
         private const float StartTurn = 18f;
         private const float CloudAlpha = 0.9f;
-        private const float RimPower = 3.2f;
-        private const float AtmosphereStrength = 1.3f;
         private const float ScanSeconds = 4.2f;
         private const float ScanLift = 1.025f;
         private const float ScanWidth = 0.35f;
@@ -32,7 +29,6 @@ namespace Game.UI
         private const float GlintSize = 0.55f;
         private const float GlintLift = 1.006f;
         private static readonly Vector3 SunDirection = new Vector3(0.4f, -0.3f, 0.87f);
-        private static readonly Color AtmosphereColour = new Color(0.4f, 0.65f, 1f);
         private static readonly Color ScanColour = new Color(0.35f, 1f, 0.9f);
         private static readonly Color MeridianColour = new Color(0.3f, 0.85f, 1f, 0.6f);
         private static readonly Color GlintColour = new Color(0.7f, 0.95f, 1f) * 4f;
@@ -47,6 +43,7 @@ namespace Game.UI
         private PlanetBody _planet;
         private LineRenderer _scan;
         private LineRenderer _echo;
+        private SpaceBackdrop _backdrop;
 
         public VisualTheme Theme => _theme;
 
@@ -54,9 +51,10 @@ namespace Game.UI
         {
             _context = context;
             _theme = context.FieldLevel.Theme;
-            SpaceKit.BuildStars(root, context.Scaled(StarCount));
-            _planet = CrysPlanet.Create(root, context.Catalog, Vector3.back, Vector3.zero, Radius, CloudAlpha, AtmosphereColour * AtmosphereStrength, RimPower, StartTurn, DegreesPerSecond);
-            SpaceKit.Sun(root, SunDirection, _theme);
+            SpaceStyle space = CrysPlanet.SpaceOf(context.Catalog);
+            _planet = CrysPlanet.Create(root, context.Catalog, Vector3.back, Vector3.zero, Radius, CloudAlpha, StartTurn, DegreesPerSecond);
+            _planet.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
+            _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
 
             _scan = SpaceKit.Line(root, "Scan", ScanPoints, true, ScanIntensity);
             _echo = SpaceKit.Line(root, "ScanEcho", ScanPoints, true, ScanIntensity);
@@ -84,6 +82,7 @@ namespace Game.UI
         public void Tick(float time, float progress)
         {
             _planet.Pose(time);
+            _backdrop.Pose(_context.Camera.transform);
             PoseScan(time);
             PoseMeridians(time);
             PoseGlints(time);

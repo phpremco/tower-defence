@@ -11,7 +11,6 @@ namespace Game.UI
     /// </summary>
     public sealed class EarthSet : ICutsceneSet
     {
-        private const int StarCount = 1600;
         private const int MapWidth = 1024;
         private const int LowMapWidth = 512;
         private const float Radius = 10f;
@@ -19,13 +18,12 @@ namespace Game.UI
         private const float StartTurn = 150f;
         private const float DegreesPerSecond = 1.2f;
         private const float SmogAlpha = 0.6f;
-        private const float RimPower = 2.4f;
-        private const float HazeStrength = 1.1f;
         private static readonly Vector3 SunDirection = new Vector3(0.7f, -0.2f, 0.65f);
-        private static readonly Color HazeColour = new Color(0.78f, 0.55f, 0.32f);
 
         private VisualTheme _theme;
         private PlanetBody _earth;
+        private SpaceBackdrop _backdrop;
+        private Transform _view;
 
         public VisualTheme Theme => _theme;
 
@@ -33,7 +31,8 @@ namespace Game.UI
         {
             CutsceneCast cast = context.Cast;
             _theme = cast != null && cast.EarthTheme != null ? cast.EarthTheme : context.FieldLevel.Theme;
-            SpaceKit.BuildStars(root, context.Scaled(StarCount));
+            SpaceStyle space = CrysPlanet.SpaceOf(context.Catalog);
+            _view = context.Camera.transform;
 
             EarthPainter.Painting painting = EarthPainter.Paint(context.ParticleScale < 1f ? LowMapWidth : MapWidth);
             GlobePainter.Maps maps = painting.Maps;
@@ -43,13 +42,18 @@ namespace Game.UI
             }
 
             Quaternion tilt = Quaternion.AngleAxis(AxisTilt, Vector3.forward) * Quaternion.AngleAxis(StartTurn, Vector3.up);
-            _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, maps, painting.Smog, SmogAlpha, HazeColour * HazeStrength, RimPower, tilt, DegreesPerSecond);
-            SpaceKit.Sun(root, SunDirection, _theme);
+            _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, maps, painting.Smog, SmogAlpha, cast != null ? cast.EarthPlanet : PlanetStyle.Earth(), tilt, DegreesPerSecond);
+            _earth.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
+            _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
         }
 
         public void Enter(CutsceneAction action) => SpaceKit.ApplyDarkness(_theme);
 
-        public void Tick(float time, float progress) => _earth.Pose(time);
+        public void Tick(float time, float progress)
+        {
+            _earth.Pose(time);
+            _backdrop.Pose(_view);
+        }
 
         public void Exit()
         {

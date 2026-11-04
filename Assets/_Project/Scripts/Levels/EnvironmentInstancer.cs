@@ -38,6 +38,9 @@ namespace Game.Levels
         /// <summary>How many groups (draws when all are in view) the pieces fell into.</summary>
         public int BatchCount => _batches.Count;
 
+        /// <summary>When set (by tests), the world bounds of every decoration piece added through <see cref="AddDecor"/>.</summary>
+        public List<Bounds> DecorLog { get; set; }
+
         public static EnvironmentInstancer Create(Transform parent)
         {
             var go = new GameObject("Environment");
@@ -83,6 +86,16 @@ namespace Game.Levels
             }
 
             Count++;
+        }
+
+        /// <summary>Adds a piece of decoration (rock, plant, cliff, scatter, silhouette): as <see cref="Add"/>, and logged when a test asks.</summary>
+        public void AddDecor(EnvironmentMesh model, Matrix4x4 matrix, bool low, Material material = null, bool castShadows = true)
+        {
+            Add(model, matrix, low, material, castShadows);
+            if (DecorLog != null && model != null && model.IsValid)
+            {
+                DecorLog.Add(Transform(model.Mesh.bounds, matrix * model.Node));
+            }
         }
 
         /// <summary>A copy of a material this level changes (a tinted glow); destroyed with the level.</summary>

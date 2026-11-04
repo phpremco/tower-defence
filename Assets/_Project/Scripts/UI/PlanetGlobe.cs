@@ -1,4 +1,3 @@
-using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -21,11 +20,6 @@ namespace Game.UI
         private const float HighCloudRadius = 1.03f;
         private const float HighCloudAlpha = 0.4f;
         private const float HighCloudDegreesPerSecond = -0.5f;
-        private const float AtmosphereRadius = 1.07f;
-        private const float AtmosphereRimPower = 3.2f;
-        private const float AtmosphereStrength = 1.3f;
-        private const float LightsEmission = 2.5f;
-        private const float DetailTiling = 48f;
         private const float FieldOfView = 30f;
         private const float FarDistance = 9.4f;
         private const float RegionDistance = 7.2f;
@@ -48,7 +42,6 @@ namespace Game.UI
         private static readonly Color KeyColor = new Color(1f, 0.96f, 0.88f);
         private static readonly Color FillColor = new Color(0.4f, 0.55f, 0.95f);
         private static readonly Color BackColor = new Color(0.5f, 0.7f, 1f);
-        private static readonly Color AtmosphereColor = new Color(0.4f, 0.65f, 1f);
 
         private Transform _rig;
         private Transform _globe;
@@ -56,6 +49,8 @@ namespace Game.UI
         private Transform _highClouds;
         private Material _cloudMaterial;
         private Material _highCloudMaterial;
+        private Material _surfaceMaterial;
+        private PlanetStyle _style;
         private Camera _camera;
         private RenderTexture _texture;
         private RectTransform _rect;
@@ -74,7 +69,7 @@ namespace Game.UI
         /// <summary>True while a snap turn towards a chosen place is still under way.</summary>
         public bool Turning => _snapping && (Mathf.Abs(Mathf.DeltaAngle(_yaw, _targetYaw)) > 0.5f || Mathf.Abs(_pitch - _targetPitch) > 0.5f);
 
-        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds)
+        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds, PlanetStyle style)
         {
             var go = new GameObject("PlanetGlobe", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -87,6 +82,7 @@ namespace Game.UI
 
             var globe = go.AddComponent<PlanetGlobe>();
             globe._rect = rect;
+            globe._style = style;
             globe.Build(image, surface, clouds);
             return globe;
         }
@@ -158,12 +154,15 @@ namespace Game.UI
             rig.transform.position = new Vector3(0f, 0f, -RigDistance);
             _rig = rig.transform;
 
-            _globe = Sphere("Globe", Radius, Surface(surface)).transform;
-            _cloudMaterial = CloudMaterial(clouds[0], 1f);
+            // The same planet materials as the cutscene, with the style's map overrides so every region stays readable.
+            _surfaceMaterial = PlanetMaterials.Surface(surface, clouds[0], _style, forMap: true);
+            _globe = Sphere("Globe", Radius, _surfaceMaterial).transform;
+            _cloudMaterial = PlanetMaterials.Clouds(clouds[0], 1f, _style);
             _clouds = Sphere("Clouds", CloudRadius, _cloudMaterial).transform;
-            _highCloudMaterial = CloudMaterial(clouds[clouds.Length - 1], HighCloudAlpha);
+            _highCloudMaterial = PlanetMaterials.Clouds(clouds[clouds.Length - 1], HighCloudAlpha, _style);
             _highClouds = Sphere("HighClouds", HighCloudRadius, _highCloudMaterial).transform;
-            Sphere("Atmosphere", AtmosphereRadius, AtmosphereMaterial());
+            Material air = PlanetMaterials.Atmosphere(_style, _style.AtmosphereLift);
+            Sphere("Atmosphere", _style.AtmosphereLift, air);
 
             var cameraGo = new GameObject("GlobeCamera");
             cameraGo.transform.SetParent(_rig, false);
@@ -176,7 +175,12 @@ namespace Game.UI
             _camera.nearClipPlane = 0.1f;
             _camera.farClipPlane = 20f;
 
-            AddLight("Key", new Vector3(28f, -40f, 0f), KeyColor, 2f);
+            Light key = AddLight("Key", new Vector3(28f, -40f, 0f), KeyColor, 2f);
+            foreach (Material material in new[] { _surfaceMaterial, _cloudMaterial, _highCloudMaterial, air })
+            {
+                PlanetMaterials.SetSun(material, key);
+            }
+
             AddLight("Fill", new Vector3(-10f, 150f, 0f), FillColor, 0.2f);
             AddLight("Back", new Vector3(-20f, 200f, 0f), BackColor, 0.5f);
             Apply();
@@ -195,76 +199,7 @@ namespace Game.UI
             return go;
         }
 
-        // The stock lit shader, because it reads relief, gloss and lights from maps; the ground detail of the levels
-        // tiles over it so the land still has grain when the view flies onto a region.
-        internal static Material Surface(GlobePainter.Maps maps)
-        {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
-            material.SetTexture("_BaseMap", maps.Albedo);
-            material.SetColor("_BaseColor", Color.white);
-            material.SetTexture("_BumpMap", maps.Normal);
-            material.SetFloat("_BumpScale", 1f);
-            material.EnableKeyword("_NORMALMAP");
-            material.SetTexture("_MetallicGlossMap", maps.Gloss);
-            material.SetFloat("_Smoothness", 1f);
-            material.SetFloat("_Metallic", 0f);
-            material.EnableKeyword("_METALLICSPECGLOSSMAP");
-            material.SetTexture("_EmissionMap", maps.Emission);
-            material.SetColor("_EmissionColor", Color.white * LightsEmission);
-            material.EnableKeyword("_EMISSION");
-            PropTextures.Surface detail = PropTextures.Ground();
-            material.EnableKeyword("_DETAIL_MULX2");
-            material.SetTexture("_DetailAlbedoMap", detail.Albedo);
-            material.SetTexture("_DetailNormalMap", detail.Normal);
-            material.SetFloat("_DetailAlbedoMapScale", 0.5f);
-            material.SetFloat("_DetailNormalMapScale", 0.8f);
-            material.SetTextureScale("_DetailAlbedoMap", new Vector2(DetailTiling * 2f, DetailTiling));
-            return material;
-        }
-
-        // A thin shell of air: brightest along the rim, nothing over the face, so the planet gets its blue edge.
-        private static Material AtmosphereMaterial() => AtmosphereMaterial(AtmosphereColor * AtmosphereStrength, AtmosphereRimPower);
-
-        /// <summary>An atmosphere shell in any colour (already multiplied by its strength); a higher rim power keeps it thinner.</summary>
-        internal static Material AtmosphereMaterial(Color colour, float rimPower)
-        {
-            Shader shader = Shader.Find("Game/Fireball");
-            if (shader == null)
-            {
-                return PlaceholderVisuals.TransparentMaterialFor(colour, 0.15f, 1f);
-            }
-
-            var material = new Material(shader);
-            material.SetColor("_Color", colour);
-            material.SetTexture("_NoiseTex", Texture2D.whiteTexture);
-            material.SetFloat("_RimPower", rimPower);
-            material.SetFloat("_RimStrength", 1f);
-            material.SetFloat("_Fill", 0f);
-            material.SetFloat("_Alpha", 1f);
-            material.SetFloat("_Scroll", 0f);
-            return material;
-        }
-
-        internal static Material CloudMaterial(Texture2D texture, float alpha)
-        {
-            var material = new Material(GraphicsSettings.currentRenderPipeline.defaultMaterial);
-            material.SetFloat("_Surface", 1f);
-            material.SetFloat("_Blend", 0f);
-            material.SetFloat("_ZWrite", 0f);
-            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
-            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
-            material.SetFloat("_SrcBlendAlpha", (float)BlendMode.One);
-            material.SetFloat("_DstBlendAlpha", (float)BlendMode.OneMinusSrcAlpha);
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-            material.renderQueue = (int)RenderQueue.Transparent;
-            material.SetColor("_BaseColor", new Color(1f, 1f, 1f, alpha));
-            material.SetFloat("_Smoothness", 0f);
-            material.SetTexture("_BaseMap", texture);
-            return material;
-        }
-
-        private void AddLight(string name, Vector3 euler, Color color, float intensity)
+        private Light AddLight(string name, Vector3 euler, Color color, float intensity)
         {
             var go = new GameObject(name);
             go.transform.SetParent(_rig, false);
@@ -274,6 +209,7 @@ namespace Game.UI
             light.color = color;
             light.intensity = intensity;
             light.shadows = LightShadows.None;
+            return light;
         }
 
         // A latitude-longitude sphere whose texture coordinates follow PlanetCoordinates.ToUv exactly, so the map
@@ -354,8 +290,10 @@ namespace Game.UI
             float level = Ease(Mathf.Clamp01((_zoom - RegionZoom) / (LevelZoom - RegionZoom)));
             float distance = Mathf.Lerp(Mathf.Lerp(FarDistance, RegionDistance, region), NearDistance, level);
             // Clouds thin out on the way in, so the levels sit on clear land.
-            _cloudMaterial.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f - region));
-            _highCloudMaterial.SetColor("_BaseColor", new Color(1f, 1f, 1f, HighCloudAlpha * (1f - region)));
+            PlanetMaterials.SetCloudAlpha(_cloudMaterial, 1f - region);
+            PlanetMaterials.SetCloudAlpha(_highCloudMaterial, HighCloudAlpha * (1f - region));
+            PlanetMaterials.SetCloudShadow(_surfaceMaterial, _style.CloudShadow * (1f - region));
+            PlanetMaterials.SetCloudFrame(_surfaceMaterial, _clouds);
             _camera.transform.localPosition = new Vector3(ZoomShift * level, 0f, -distance);
         }
 

@@ -18,6 +18,8 @@ namespace Game.Editor
         private const string CutsceneCastPath = CutsceneFolder + "/CutsceneCast.asset";
         private const string HandoffDifficultyName = "Easy";
         private const float HandoffFieldOfView = 14f;
+        // The one camera kick of the cutscene, when the capsule hits the ground; every rumble is told by sound and dust alone.
+        private const float LandingKick = 0.25f;
 
         /// <summary>One shot as the generator writes it.</summary>
         private sealed class ShotSpec
@@ -75,6 +77,7 @@ namespace Game.Editor
             so.FindProperty("_cast").objectReferenceValue = cast;
             so.FindProperty("_handoff").intValue = (int)CutsceneHandoff.FirstCampaignLevel;
             so.FindProperty("_handoffDifficulty").objectReferenceValue = HandoffDifficulty(context.Difficulties);
+            so.FindProperty("_cameraFeel").boxedValue = CutsceneCameraFeel.Calm;
             WriteShots(so.FindProperty("_shots"), shots);
             so.ApplyModifiedPropertiesWithoutUndo();
 
@@ -104,6 +107,7 @@ namespace Game.Editor
             so.FindProperty("_screamer").objectReferenceValue = context.Bestiary.Queen;
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
+            so.FindProperty("_earthPlanet").boxedValue = PlanetStyle.Earth();
             so.ApplyModifiedPropertiesWithoutUndo();
             return cast;
         }
@@ -228,7 +232,7 @@ namespace Game.Editor
                         Key(0.5f, CameraAnchor.Landing, new Vector3(-1.2f, 1.3f, 3.6f), new Vector3(1f, 1f, 0.4f), 42f),
                         Key(1f, CameraAnchor.Landing, new Vector3(0.2f, 1.35f, 3f), new Vector3(2.3f, 0.9f, 0.3f), 38f),
                     },
-                    Cues = new[] { Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, 0.7f), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
+                    Cues = new[] { Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
                 },
                 new ShotSpec
                 {
@@ -253,7 +257,7 @@ namespace Game.Editor
                         Key(0f, CameraAnchor.Drill, new Vector3(-3.5f, 0.8f, -3f), new Vector3(0f, 3.2f, 0f), 52f),
                         Key(1f, CameraAnchor.Drill, new Vector3(-5.5f, 2.6f, -5.5f), new Vector3(0f, 1f, 0f), 45f),
                     },
-                    Cues = new[] { Sound(2f, CutsceneSound.Earthquake, 0.8f), Shake(2f, 0.35f), Shake(5f, 0.25f) },
+                    Cues = new[] { Sound(2f, CutsceneSound.Earthquake, 0.8f) },
                 },
                 new ShotSpec
                 {
@@ -274,13 +278,13 @@ namespace Game.Editor
                         Key(0f, CameraAnchor.Core, new Vector3(-4f, 3f, 6.1f), new Vector3(0f, 1f, 0f), 42f),
                         Key(1f, CameraAnchor.Core, new Vector3(-2.3f, 2.3f, 4.4f), new Vector3(0f, 1f, 0f), 36f),
                     },
-                    Cues = new[] { Sound(3.4f, CutsceneSound.CoreIgnite, 1f), Shake(3.4f, 0.3f) },
+                    Cues = new[] { Sound(3.4f, CutsceneSound.CoreIgnite, 1f) },
                 },
                 new ShotSpec
                 {
                     Set = CutsceneSet.Underground, Action = CutsceneAction.CrystalsTremble, Seconds = 8f, Music = CutsceneMusic.Tension, FadeIn = 1.2f,
                     Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 0.4f, 0f), new Vector3(0f, 0.3f, 10f), 55f), Key(1f, CameraAnchor.World, new Vector3(0f, 0.2f, 3f), new Vector3(0.5f, 0f, 14f), 52f) },
-                    Cues = new[] { Sound(0.5f, CutsceneSound.Rumble, 0.8f), Shake(1f, 0.2f), Sound(4f, CutsceneSound.Earthquake, 0.5f), Shake(4f, 0.25f) },
+                    Cues = new[] { Sound(0.5f, CutsceneSound.Rumble, 0.8f), Sound(4f, CutsceneSound.Earthquake, 0.5f) },
                 },
                 new ShotSpec
                 {
@@ -297,7 +301,7 @@ namespace Game.Editor
                         Key(0f, CameraAnchor.DigSite, new Vector3(1.2f, 1.5f, 3.2f), new Vector3(0f, 1.1f, 0f), 38f),
                         Key(1f, CameraAnchor.DigSite, new Vector3(0.8f, 1f, 2.2f), new Vector3(0f, 0.7f, 0f), 34f),
                     },
-                    Cues = new[] { Sound(0.8f, CutsceneSound.Rumble, 0.7f), Shake(1f, 0.25f), Shake(4f, 0.35f) },
+                    Cues = new[] { Sound(0.8f, CutsceneSound.Rumble, 0.7f) },
                 },
                 new ShotSpec
                 {
@@ -322,7 +326,7 @@ namespace Game.Editor
                     Cues = new[]
                     {
                         Sound(0.6f, CutsceneSound.Emerge, 0.7f), Sound(1.4f, CutsceneSound.Emerge, 0.7f), Sound(2.6f, CutsceneSound.Emerge, 0.8f),
-                        Sound(6f, CutsceneSound.Scream, 1f), Shake(6f, 0.6f), Sound(8.5f, CutsceneSound.Drums, 0.8f),
+                        Sound(6f, CutsceneSound.Scream, 1f), Sound(8.5f, CutsceneSound.Drums, 0.8f),
                     },
                 },
                 new ShotSpec

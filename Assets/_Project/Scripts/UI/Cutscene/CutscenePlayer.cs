@@ -75,7 +75,7 @@ namespace Game.UI
             camera.farClipPlane = FarClip;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.black;
-            _camera = new CutsceneCamera(camera);
+            _camera = new CutsceneCamera(camera, cutscene.CameraFeel);
 
             _audio = new GameObject("CutsceneAudio").AddComponent<CutsceneAudio>();
             _audio.transform.SetParent(transform, false);

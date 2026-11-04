@@ -23,6 +23,8 @@ namespace Game.Editor
             so.FindProperty("_globeNormal").objectReferenceValue = SavePlanetTexture(maps.Normal, "Globe_normal", TextureImporterType.NormalMap, false);
             so.FindProperty("_globeGloss").objectReferenceValue = SavePlanetTexture(maps.Gloss, "Globe_gloss", TextureImporterType.Default, false);
             so.FindProperty("_globeLights").objectReferenceValue = SavePlanetTexture(maps.Emission, "Globe_lights", TextureImporterType.Default, true);
+            so.FindProperty("_planetStyle").boxedValue = PlanetStyle.Crys();
+            so.FindProperty("_spaceStyle").boxedValue = new SpaceStyle();
             SerializedProperty clouds = so.FindProperty("_globeClouds");
             clouds.arraySize = CloudSeeds.Length;
             for (int i = 0; i < CloudSeeds.Length; i++)

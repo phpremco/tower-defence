@@ -156,7 +156,7 @@ MonoBehaviour:
       Kind: 1
       Sound: 0
       Clip: {fileID: 0}
-      Strength: 0.7
+      Strength: 0.25
     - At: 3.2
       Kind: 0
       Sound: 4
@@ -267,16 +267,6 @@ MonoBehaviour:
       Sound: 1
       Clip: {fileID: 0}
       Strength: 0.8
-    - At: 2
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.35
-    - At: 5
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.25
     Music: 0
     FadeIn: 0.4
     FadeOut: 0
@@ -345,11 +335,6 @@ MonoBehaviour:
       Sound: 5
       Clip: {fileID: 0}
       Strength: 1
-    - At: 3.4
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.3
     Music: 0
     FadeIn: 0
     FadeOut: 1.2
@@ -384,21 +369,11 @@ MonoBehaviour:
       Sound: 2
       Clip: {fileID: 0}
       Strength: 0.8
-    - At: 1
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.2
     - At: 4
       Kind: 0
       Sound: 1
       Clip: {fileID: 0}
       Strength: 0.5
-    - At: 4
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.25
     Music: 3
     FadeIn: 1.2
     FadeOut: 0
@@ -472,16 +447,6 @@ MonoBehaviour:
       Sound: 2
       Clip: {fileID: 0}
       Strength: 0.7
-    - At: 1
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.25
-    - At: 4
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.35
     Music: 0
     FadeIn: 1
     FadeOut: 0
@@ -587,11 +552,6 @@ MonoBehaviour:
       Sound: 12
       Clip: {fileID: 0}
       Strength: 1
-    - At: 6
-      Kind: 1
-      Sound: 0
-      Clip: {fileID: 0}
-      Strength: 0.6
     - At: 8.5
       Kind: 0
       Sound: 15
@@ -681,3 +641,8 @@ MonoBehaviour:
   _cast: {fileID: 11400000, guid: 0c6238f9e0be8d341b903887d2112ec1, type: 2}
   _handoff: 0
   _handoffDifficulty: {fileID: 11400000, guid: 0e05aedba53370946a70e2508e12c4e9, type: 2}
+  _cameraFeel:
+    Drift: 0.006
+    DriftHertz: 0.07
+    KickScale: 0.9
+    MaxKick: 0.3

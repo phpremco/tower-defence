@@ -6,14 +6,12 @@ using UnityEngine.Rendering;
 namespace Game.UI
 {
     /// <summary>
-    /// What every set in space shares: a deep starfield around the camera, one hard sun with no fill (so a planet
+    /// What every set in space shares (the sky and stars live in <see cref="SpaceBackdrop"/>): one hard sun with no fill (so a planet
     /// has a real night side) and the dark ambient of space. The sun lives under the set's root, so it goes out with
     /// the set.
     /// </summary>
     public static class SpaceKit
     {
-        private const float StarRadius = 220f;
-        private const float StarLifetime = 1000000f;
         private const float AmbientShare = 0.08f;
         private const float SpaceReflection = 0.12f;
         private const float SunBoost = 3f;
@@ -21,37 +19,6 @@ namespace Game.UI
 
         private static Texture2D _softDot;
         private static Texture2D _softBand;
-
-        /// <summary>Stars on a far sphere around the origin; brightness and size follow one random value.</summary>
-        public static ParticleSystem BuildStars(Transform root, int count)
-        {
-            ParticleSystem stars = ParticleKit.Create(root, "Stars", Vector3.zero, Color.white, 1f, 1f, 0.3f, 0.3f, 0f, 0f, 0f, count, 0f);
-            ParticleSystem.MainModule main = stars.main;
-            main.startLifetime = StarLifetime;
-            ParticleSystem.SizeOverLifetimeModule size = stars.sizeOverLifetime;
-            size.enabled = false;
-            ParticleSystem.ColorOverLifetimeModule colour = stars.colorOverLifetime;
-            colour.enabled = false;
-            var emit = new ParticleSystem.EmitParams();
-            for (int i = 0; i < count; i++)
-            {
-                var direction = new Vector3(CutsceneMath.Hash(i, 71) * 2f - 1f, CutsceneMath.Hash(i, 73) * 2f - 1f, CutsceneMath.Hash(i, 75) * 2f - 1f);
-                if (direction.sqrMagnitude < 0.01f)
-                {
-                    direction = Vector3.forward;
-                }
-
-                float bright = Mathf.Pow(CutsceneMath.Hash(i, 77), 4f);
-                emit.position = direction.normalized * StarRadius;
-                emit.startSize = Mathf.Lerp(0.35f, 1.6f, bright);
-                emit.startColor = Color.Lerp(new Color(0.6f, 0.7f, 1f), Color.white, bright) * Mathf.Lerp(0.6f, 3f, bright);
-                emit.startLifetime = StarLifetime;
-                emit.velocity = Vector3.zero;
-                stars.Emit(emit, 1);
-            }
-
-            return stars;
-        }
 
         /// <summary>
         /// The set's sun in the theme's light colour: a directional light along <paramref name="direction"/> (where

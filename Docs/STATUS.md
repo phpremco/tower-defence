@@ -1663,3 +1663,51 @@ on Remco's request, the build spots no longer cover the map with tiles.
   continent bosses' sizes (art factor 1) and Gravemaw's bar height (1.6 from the rest pose) to check once they get data;
   the new species' scales follow the factory factor 1.4 on the README's proposed data scales; `Art/Models/Blender` grows by
   the round-14/15/16 exports (~git LFS question still open).
+
+## Playtest feedback 2026-11-04
+
+Remco played the opening cutscene and C1_01 (easy). Fixes:
+
+- **Camera shake in the planet shots:** the cutscene camera's hand-held "breathing" ran the shake noise at
+  `0.35 x 26` = ~9 cycles a second with an amplitude of `0.035 x sqrt(distance)` (about 0.2 units at 30 m): a permanent
+  jitter, not a breath. On top of that seven shots fired 1-2 shake cues each (drill, core, rumbles, scream, up to 0.7).
+  Now: `CutsceneDefinition.CameraFeel` (`CutsceneCameraFeel`: Drift 0.006 per sqrt(m) at 0.07 Hz, KickScale 0.9, MaxKick 0.3)
+  drives `CutsceneCamera`; the drift is a slow Perlin wander, a kick is capped by the data and dies out in ~0.5 s. The
+  generator keeps one kick in the whole cutscene (capsule touchdown, `LandingKick` 0.25); rumbles are sound and dust only.
+  `CutsceneDefinition.Validate` rejects more than one kick per shot or a kick above the cap; `CutsceneDataTests.
+  Camera_KicksOnceAtMost_AndNeverShakes` guards it.
+- **Rock through the base (C1_01):** the base stands 0.8 cells past the road end, here just outside the grid (cell 36,16 of
+  36x20), where `PropScatterBuilder`'s outer wilderness ring placed formations with no structure check (the cutscene field
+  had the same rocks in the base). New `StructureClearance` (Levels): kept-free circles round the base (its imported model's
+  measured reach, or `VisualTheme.BaseFootprint` for the procedural outpost), every road gate (road width), the land
+  entrances, mines and nests, plus `VisualTheme.DecorClearance` (0.5). Every decor path asks it: procedural props and
+  imported decor (`PropScatterBuilder.Placer`), cliffs/banks/terraces/rifts/veins of the kit, scatter, silhouettes
+  (`EnvironmentKitBuilder`); nest shells may still lie in their own nest's ring. `EnvironmentInstancer.AddDecor` logs decor
+  bounds for tests. `DecorClearanceTests` dresses every campaign level as in play and asserts no decor reaches into the base
+  or a gate.
+- **Planets and space (cutscene, map globe, menu backdrop):** one shared setup, `PlanetMaterials` + `PlanetStyle` (data on
+  `CampaignCatalog.PlanetStyle` for S-69-CRYS and `CutsceneCast.EarthPlanet`), on new shaders `Game/Planet` (soft
+  terminator with a warm twilight band, coasts cut from the blurred sea mask by sphere noise so the painted blobs and dot
+  islands give way to ragged coasts, alien noise biomes (teal lowland, violet moss, rust ridges, pale mineral peaks), relief
+  from noise height, sea glint, cloud shadows from the turning deck, limb haze; night side: crystal fields (CRYS) or city
+  lights (Earth)), `Game/PlanetClouds` (wisps, lit and thinned at the limb), `Game/PlanetAtmosphere` (glow past the limb by
+  ray height, day/twilight colour, forward scatter). `SpaceBackdrop` + `Game/SpaceSky`: galaxy band, two-colour nebula,
+  dust lanes and procedural pin-sharp stars (fwidth-sized, real star colours; replace the particle stars that a seek
+  cleared), a sun core/halo/streak and a cool rim light for the ship (`SpaceStyle` on the catalog). The map globe wears the
+  same materials with map overrides (`MapTextureTint`, `MapAmbient`, `MapDayLights`, `MapCoastBlur`, `MapSeaGlint`): the key
+  light comes from the camera side, the night side keeps 22 % light, so the chosen region never sinks into shadow. Menu
+  screens' flat star texture is now `StarfieldPainter` (same band, nebula and star colours; alpha follows the light so the
+  options overlay over a level stays see-through). High/Low: noise octaves per style (6/3), sky 6/3. Shader keepers added.
+  The mothership model is untouched (another agent rebuilds it); only the space lighting around it changed.
+- **Cutscene drones:** the haulers snapped 180 degrees and jumped lanes at both ends of their loop and the delivery drone
+  faced backwards half the way; the builders circled the module sideways at 1.3 rad/s and teleported between modules; the
+  Fly clip already leans ~12 degrees and the code added 6 degrees pitch plus a wobbling bank. Now the haulers fly a closed oval
+  (heading from their own path, bank 0.35 x turn up to 10 degrees, pitch at most 3), hold the Work pose while hovering to
+  load, and spread over wider lanes; the builders fly together from module to module in an arc, nose first, and hover level
+  at stations measured from each module's bounds (no clipping into the silo), facing it while they weld. In-level
+  `DroneView`: bank scales with pace (level when turning on the spot), pitch 13 to 7 degrees (the clip leans as well).
+- **Screenshots** (`Tools/PlayTest/fb1_shots.sh <prefix> [cut|map|base|all]`, `fb1_tune.sh` for live shader tuning):
+  before/after in the session scratchpad `fb1_shots/` (`before_*`, `after_*`, `final_*`, tuning rounds in `tune/`).
+- **Open:** Earth reads brown and smoggy by design (dying planet); the survey globe still shows the painted map's continent
+  shapes (region layout is data); the menu starfield uses the default `SpaceStyle`, not the catalog's (UiKit has no
+  catalog); the generator's existing "Main Object Name '' does not match filename 'machinegun.mesh'" warning is unrelated.

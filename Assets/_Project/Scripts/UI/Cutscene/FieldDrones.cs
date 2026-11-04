@@ -16,10 +16,16 @@ namespace Game.UI
         private const float LoopSeconds = 9f;
         private const float CruiseHeight = 2.6f;
         private const float HeightSpread = 0.9f;
-        private const float LaneSpread = 1.4f;
+        private const float LaneSpread = 2.6f;
         private const float RotorDegreesPerSecond = 2400f;
         private const float LoadShare = 0.12f;
-        private const float BankDegrees = 14f;
+        private const float MaxBankDegrees = 10f;
+        private const float BankPerTurnDegree = 0.35f;
+        private const float MaxPitchDegrees = 3f;
+        private const float PitchPerSpeed = 0.8f;
+        private const float HeadingProbe = 0.015f;
+        private const float LaneSwing = 0.9f;
+        private const float HoverSpeed = 0.8f;
         private const float FanShare = 0.35f;
         private const float DeliveryHeight = 3.2f;
         private const float CrystalEmission = 6f;
@@ -95,7 +101,7 @@ namespace Game.UI
                 }
 
                 float loop = Mathf.Repeat(time / LoopSeconds + CutsceneMath.Hash(i, 21), 1f);
-                Place(i, Sample(i, loop, awake), time, loop);
+                PlaceOnLoop(i, loop, awake, time);
             }
 
             _audio.SetLoopVolume(_fans, FanShare * loudness * Mathf.Min(1f, launch * 3f));
@@ -112,43 +118,77 @@ namespace Game.UI
                 return;
             }
 
-            float t = CutsceneMath.Smooth(Mathf.Clamp01(share));
-            Vector3 from = _pickup + Vector3.up * 1.5f;
-            Vector3 position = Vector3.Lerp(from, socket + Vector3.up * 0.9f, t) + Vector3.up * (Mathf.Sin(t * Mathf.PI) * DeliveryHeight);
+            float t = Mathf.Clamp01(share);
+            Vector3 position = DeliveryAt(t, socket);
+            Vector3 velocity = DeliveryAt(Mathf.Min(1f, t + HeadingProbe), socket) - DeliveryAt(Mathf.Max(0f, t - HeadingProbe), socket);
             _holders[0].gameObject.SetActive(true);
-            Place(0, position, time, t);
+            Place(0, position, velocity, velocity, time, loaded: true);
             _crystal.gameObject.SetActive(true);
             _crystal.position = share >= 1f ? socket : position + Vector3.down * (CarryDrop * HaulerScale);
             _crystal.rotation = Quaternion.Euler(0f, time * 90f, 0f);
         }
 
-        // Out along the left lane and back along the right one, rising off the pad and dropping to hover at the drill.
+        // From the drill up in an arc and down onto the core socket.
+        private Vector3 DeliveryAt(float t, Vector3 socket)
+        {
+            float eased = CutsceneMath.Smooth(t);
+            Vector3 from = _pickup + Vector3.up * 1.5f;
+            return Vector3.Lerp(from, socket + Vector3.up * 0.9f, eased) + Vector3.up * (Mathf.Sin(eased * Mathf.PI) * DeliveryHeight);
+        }
+
+        // A closed oval: out along one side of the lane, a wide turn round the drill while it hovers to load, back
+        // along the other side and a turn over the pad. Smooth everywhere, so the heading never snaps round.
         private Vector3 Sample(int index, float loop, float awake)
         {
             float lane = (CutsceneMath.Hash(index, 5) - 0.5f) * LaneSpread;
             float height = CruiseHeight + CutsceneMath.Hash(index, 7) * HeightSpread;
             Vector3 across = Vector3.Cross(Vector3.up, (_pickup - _home).normalized);
-            float outward = loop < 0.5f ? loop * 2f : 1f - (loop - 0.5f) * 2f;
+            float outward = 0.5f - 0.5f * Mathf.Cos(loop * Mathf.PI * 2f);
             float travel = CutsceneMath.Smooth(CutsceneMath.Span(outward, LoadShare, 1f - LoadShare));
-            float side = loop < 0.5f ? 1f : -1f;
-            Vector3 flat = Vector3.Lerp(_home, _pickup, travel) + across * (lane + side * 0.6f);
+            float swing = Mathf.Sin(loop * Mathf.PI * 2f) * LaneSwing;
+            Vector3 flat = Vector3.Lerp(_home, _pickup, travel) + across * (lane + swing);
             float lift = Mathf.Sin(travel * Mathf.PI) * 0.5f + Mathf.Lerp(0.8f, 1f, Mathf.Min(travel, 1f - travel) * 2f);
             Vector3 position = flat + Vector3.up * (height * lift);
             // A drone that has only just taken off still sits low over the pad.
             return Vector3.Lerp(_home + Vector3.up * 0.4f, position, awake);
         }
 
-        private void Place(int index, Vector3 position, float time, float loop)
+        // Heading from the way the drone moves along its own path (a step either side of the moment), so it always
+        // faces where it flies, banks a little into its turns and dips its nose only with speed.
+        private void PlaceOnLoop(int index, float loop, float awake, float time)
+        {
+            Vector3 position = Sample(index, loop, awake);
+            Vector3 before = Sample(index, Mathf.Repeat(loop - HeadingProbe, 1f), awake);
+            Vector3 after = Sample(index, Mathf.Repeat(loop + HeadingProbe, 1f), awake);
+            Vector3 incoming = position - before;
+            Vector3 outgoing = after - position;
+            Place(index, position, incoming, outgoing, time, loop >= 0.5f);
+        }
+
+        private void Place(int index, Vector3 position, Vector3 incoming, Vector3 outgoing, float time, bool loaded)
         {
             Transform holder = _holders[index];
-            CutsceneDrone drone = _drones[index];
-            Vector3 heading = loop < 0.5f ? _pickup - _home : _home - _pickup;
+            Vector3 heading = incoming + outgoing;
             heading.y = 0f;
-            Quaternion facing = heading.sqrMagnitude > 0.001f ? Quaternion.LookRotation(heading) : Quaternion.identity;
-            float bank = Mathf.Sin(time * 1.3f + index) * BankDegrees * 0.3f;
-            holder.SetPositionAndRotation(position, facing * Quaternion.Euler(6f, 0f, bank));
+            if (heading.sqrMagnitude < 0.000001f)
+            {
+                // Hovering still: keep facing the drill, nose level.
+                heading = _pickup - _home;
+                heading.y = 0f;
+            }
+
+            Quaternion facing = Quaternion.LookRotation(heading);
+            float turn = Vector3.SignedAngle(Flat(incoming), Flat(outgoing), Vector3.up);
+            float bank = Mathf.Clamp(turn * BankPerTurnDegree, -MaxBankDegrees, MaxBankDegrees);
+            float speed = Flat(outgoing).magnitude / (HeadingProbe * LoopSeconds);
+            float pitch = Mathf.Min(MaxPitchDegrees, speed * PitchPerSpeed);
+            holder.SetPositionAndRotation(position, facing * Quaternion.Euler(pitch, 0f, -bank));
             // Loaded on the way home: the pod glows with the ore it carries.
-            drone.Pose(ModelClipRole.Move, time + index * 0.29f, time * RotorDegreesPerSecond + index * 37f, loop >= 0.5f);
+            // The flight cycle only while it travels; hovering to load it holds still in its work pose, so its own clip does not rock it.
+            ModelClipRole role = speed > HoverSpeed ? ModelClipRole.Move : ModelClipRole.Work;
+            _drones[index].Pose(role, time + index * 0.29f, time * RotorDegreesPerSecond + index * 37f, loaded);
         }
+
+        private static Vector3 Flat(Vector3 v) => new Vector3(v.x, 0f, v.z);
     }
 }

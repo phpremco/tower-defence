@@ -41,6 +41,8 @@ namespace Game.Levels
         [SerializeField] private GameObject _drill;
         [SerializeField] private GameObject _beacon;
         [SerializeField] private Texture2D _earthSurface;
+        [Tooltip("How Earth looks from orbit in the prologue.")]
+        [SerializeField] private PlanetStyle _earthPlanet = PlanetStyle.Earth();
 
         [Header("Imported (Blender) models: worn before the prefab overrides above and the procedural models")]
         [SerializeField] private ModelArtDefinition _mothershipArt;
@@ -71,6 +73,7 @@ namespace Game.Levels
         public GameObject Drill => _drill;
         public GameObject Beacon => _beacon;
         public Texture2D EarthSurface => _earthSurface;
+        public PlanetStyle EarthPlanet => _earthPlanet ?? (_earthPlanet = PlanetStyle.Earth());
         public ModelArtDefinition MothershipArt => _mothershipArt;
         public ModelArtDefinition CapsuleArt => _capsuleArt;
         public ModelArtDefinition DrillArt => _drillArt;

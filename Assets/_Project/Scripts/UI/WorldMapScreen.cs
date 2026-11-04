@@ -245,7 +245,7 @@ namespace Game.UI
                 _globeClouds = new[] { GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 0f), GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 200f) };
             }
 
-            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds);
+            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds, _catalog.PlanetStyle);
         }
 
         // A level wears its palette, so the lava caves glow orange on the map and the woods turquoise.

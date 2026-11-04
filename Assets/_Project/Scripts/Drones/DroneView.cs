@@ -23,7 +23,7 @@ namespace Game.Drones
         private const float BobHeight = 0.06f;
         private const float BobSpeed = 2.3f;
         private const float BankDegrees = 14f;
-        private const float PitchDegrees = 13f;
+        private const float PitchDegrees = 7f;
         private const float AttitudeFollow = 5f;
         private const float FlashSeconds = 0.06f;
         private const float FlashSize = 0.12f;
@@ -257,7 +257,8 @@ namespace Game.Drones
             Quaternion wanted = Quaternion.LookRotation(_drone.Heading, Vector3.up);
             float turn = Quaternion.Angle(_facing, wanted);
             _facing = Quaternion.Slerp(_facing, wanted, TurnSpeed * dt);
-            float bank = Mathf.Clamp(turn, -BankDegrees, BankDegrees) * Mathf.Sign(Vector3.Dot(Vector3.Cross(_facing * Vector3.forward, wanted * Vector3.forward), Vector3.up));
+            // Only a drone under way leans into a turn: one turning on the spot (hovering at its work) stays level.
+            float bank = Mathf.Clamp(turn, -BankDegrees, BankDegrees) * Mathf.Sign(Vector3.Dot(Vector3.Cross(_facing * Vector3.forward, wanted * Vector3.forward), Vector3.up)) * Mathf.Clamp01(_drone.Pace);
             _pitch = Mathf.Lerp(_pitch, _drone.Pace * PitchDegrees, AttitudeFollow * dt);
             _bobPhase += BobSpeed * dt;
             _model.localRotation = _facing * Quaternion.Euler(_pitch, 0f, -bank);

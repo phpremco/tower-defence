@@ -77,6 +77,14 @@ namespace Game.Levels
         [Tooltip("The continent's Blender environment (ground layers, kit, decor); empty keeps the procedural landscape.")]
         [SerializeField] private EnvironmentSet _environment;
 
+        [Header("Decor clearance")]
+        [Tooltip("Free ground kept round every structure (base, gates, entrances, mines, nests): no rock, plant, cliff or silhouette may reach into it.")]
+        [SerializeField] [Min(0f)] private float _decorClearance = 0.5f;
+        [Tooltip("How far the procedural outpost reaches round its middle; an imported base measures its own model.")]
+        [SerializeField] [Min(0.5f)] private float _baseFootprint = 1.9f;
+
+        public float DecorClearance => _decorClearance;
+        public float BaseFootprint => _baseFootprint;
         public Color BackgroundColor => _backgroundColor;
         public Color GroundColor => _groundColor;
         public Color PathColor => _pathColor;

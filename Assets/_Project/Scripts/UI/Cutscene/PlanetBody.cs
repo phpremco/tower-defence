@@ -1,30 +1,35 @@
+using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Game.UI
 {
     /// <summary>
-    /// A planet standing in a cutscene set as real geometry, lit by the set's own sun: the painted surface (relief,
-    /// gloss and lights), a cloud or smog deck that drifts a little faster than the ground, and a shell of
-    /// atmosphere that glows along the rim. It shares the sphere and the materials of the map's globe, so both
-    /// planets read alike. Posed from time alone.
+    /// A planet standing in a cutscene set as real geometry: the ground, a cloud deck that drifts a little faster
+    /// than the ground and casts its shadows on it, and a shell of air that glows past the limb. It wears the same
+    /// <see cref="PlanetMaterials"/> as the map's globe, so both planets read alike; the set's sun lights it through
+    /// <see cref="SetSun"/>. Posed from time alone.
     /// </summary>
     public sealed class PlanetBody
     {
         private const float CloudLift = 1.012f;
-        private const float AtmosphereLift = 1.06f;
+        private const float CloudDrift = 1.3f;
+        private const float CloudStartTurn = 40f;
 
         private static Mesh _sphere;
 
         private readonly Transform _surface;
         private readonly Transform _clouds;
+        private readonly Material _surfaceMaterial;
+        private readonly Material _cloudMaterial;
+        private readonly Material _atmosphereMaterial;
         private readonly Quaternion _tilt;
         private readonly float _degreesPerSecond;
         private readonly float _cloudDegreesPerSecond;
 
         /// <param name="tilt">The axis tilt and the turn the planet starts in.</param>
         /// <param name="degreesPerSecond">How fast the ground turns; the clouds turn a little faster.</param>
-        public PlanetBody(Transform parent, string name, Vector3 centre, float radius, GlobePainter.Maps maps, Texture2D clouds, float cloudAlpha, Color atmosphere, float rimPower, Quaternion tilt, float degreesPerSecond)
+        public PlanetBody(Transform parent, string name, Vector3 centre, float radius, GlobePainter.Maps maps, Texture2D clouds, float cloudAlpha, PlanetStyle style, Quaternion tilt, float degreesPerSecond)
         {
             Root = new GameObject(name).transform;
             Root.SetParent(parent, false);
@@ -33,15 +38,18 @@ namespace Game.UI
             Radius = radius;
             _tilt = tilt;
             _degreesPerSecond = degreesPerSecond;
-            _cloudDegreesPerSecond = degreesPerSecond * 1.3f;
+            _cloudDegreesPerSecond = degreesPerSecond * CloudDrift;
 
-            _surface = Sphere("Surface", 1f, PlanetGlobe.Surface(maps));
+            _surfaceMaterial = PlanetMaterials.Surface(maps, clouds, style);
+            _surface = Sphere("Surface", 1f, _surfaceMaterial);
             if (clouds != null)
             {
-                _clouds = Sphere("Clouds", CloudLift, PlanetGlobe.CloudMaterial(clouds, cloudAlpha));
+                _cloudMaterial = PlanetMaterials.Clouds(clouds, cloudAlpha, style);
+                _clouds = Sphere("Clouds", CloudLift, _cloudMaterial);
             }
 
-            Sphere("Atmosphere", AtmosphereLift, PlanetGlobe.AtmosphereMaterial(atmosphere, rimPower));
+            _atmosphereMaterial = PlanetMaterials.Atmosphere(style, style.AtmosphereLift);
+            Sphere("Atmosphere", style.AtmosphereLift, _atmosphereMaterial);
             Pose(0f);
         }
 
@@ -54,12 +62,24 @@ namespace Game.UI
         /// <summary>The ground's turn at the last pose, to put things on the surface.</summary>
         public Quaternion Rotation => _surface.rotation;
 
+        /// <summary>Lights every layer with the set's sun.</summary>
+        public void SetSun(Light sun)
+        {
+            PlanetMaterials.SetSun(_surfaceMaterial, sun);
+            PlanetMaterials.SetSun(_atmosphereMaterial, sun);
+            if (_cloudMaterial != null)
+            {
+                PlanetMaterials.SetSun(_cloudMaterial, sun);
+            }
+        }
+
         public void Pose(float time)
         {
             _surface.localRotation = _tilt * Quaternion.AngleAxis(-time * _degreesPerSecond, Vector3.up);
             if (_clouds != null)
             {
-                _clouds.localRotation = _tilt * Quaternion.AngleAxis(-time * _cloudDegreesPerSecond + 40f, Vector3.up);
+                _clouds.localRotation = _tilt * Quaternion.AngleAxis(-time * _cloudDegreesPerSecond + CloudStartTurn, Vector3.up);
+                PlanetMaterials.SetCloudFrame(_surfaceMaterial, _clouds);
             }
         }
 

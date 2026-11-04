@@ -23,6 +23,7 @@ namespace Game.Levels
         public static EnvironmentLayout Build(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low)
         {
             EnvironmentLayout layout = new EnvironmentLayout(level, field).Build(set.CliffInsetCells, set.CliffSideReach);
+            var clearance = new StructureClearance(level);
             foreach (EnvironmentPlacement placement in layout.Placements)
             {
                 // Buildable ground is plain ground at rest; the free cells show on the ground only while placing (BuildPadHighlight).
@@ -32,17 +33,61 @@ namespace Game.Levels
                 }
 
                 EnvironmentMesh piece = set.Piece(placement.Kind);
-                if (piece != null)
+                if (piece == null || !piece.IsValid)
+                {
+                    continue;
+                }
+
+                if (!IsDecor(placement.Kind))
                 {
                     instancer.Add(piece, placement.Matrix, low);
+                }
+                else if (!clearance.Blocks(placement.Position, StructureClearance.Reach(piece.Mesh, placement.Matrix * piece.Node)))
+                {
+                    instancer.AddDecor(piece, placement.Matrix, low);
                 }
             }
 
             var natural = new NaturalGround(level);
-            PlaceScatter(level, set, field, instancer, low, natural);
-            PlaceNestScatter(level, set, field, instancer, low, natural);
-            PlaceSilhouettes(level, set, field, instancer, low);
+            PlaceScatter(level, set, field, instancer, low, natural, clearance);
+            PlaceNestScatter(level, set, field, instancer, low, natural, clearance);
+            PlaceSilhouettes(level, set, field, instancer, low, clearance);
             return layout;
+        }
+
+        // A decoration piece, unless it would reach into a structure; a nest's own shells may lie in its ring.
+        private static void AddClear(EnvironmentInstancer instancer, StructureClearance clearance, EnvironmentMesh piece, Matrix4x4 matrix, bool low, bool nestDressing)
+        {
+            if (piece == null || !piece.IsValid || clearance.Blocks(matrix.GetColumn(3), StructureClearance.Reach(piece.Mesh, matrix * piece.Node), nestDressing))
+            {
+                return;
+            }
+
+            instancer.AddDecor(piece, matrix, low);
+        }
+
+        // The road kit, the pads, the plinths and the burrows belong to the structures; everything else is decoration that keeps clear of them.
+        private static bool IsDecor(EnvironmentPieceKind kind)
+        {
+            switch (kind)
+            {
+                case EnvironmentPieceKind.CliffStraight:
+                case EnvironmentPieceKind.CliffOuterCorner:
+                case EnvironmentPieceKind.CliffInnerCorner:
+                case EnvironmentPieceKind.BankStraight:
+                case EnvironmentPieceKind.BankOuterCorner:
+                case EnvironmentPieceKind.BankInnerCorner:
+                case EnvironmentPieceKind.TerraceStep:
+                case EnvironmentPieceKind.TerraceStepOuter:
+                case EnvironmentPieceKind.RiftShort:
+                case EnvironmentPieceKind.RiftMedium:
+                case EnvironmentPieceKind.RiftLong:
+                case EnvironmentPieceKind.RiftCap:
+                case EnvironmentPieceKind.CrystalVein:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         // Where small things may lie: not on the road, a pool or a build pad.
@@ -74,7 +119,7 @@ namespace Game.Levels
         }
 
         // One small piece per few cells of open ground round the field and on the blocked cells, a vein now and then.
-        private static void PlaceScatter(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low, NaturalGround natural)
+        private static void PlaceScatter(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low, NaturalGround natural, StructureClearance clearance)
         {
             if (set.Scatter.Length == 0)
             {
@@ -104,20 +149,20 @@ namespace Game.Levels
                     spot.y = field.HeightAt(spot.x, spot.z);
                     if (vein != null && roll < set.VeinChance)
                     {
-                        instancer.Add(vein, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one), low);
+                        AddClear(instancer, clearance, vein, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one), low, false);
                     }
                     else if (roll < set.VeinChance + set.ScatterChance)
                     {
                         EnvironmentMesh piece = set.Scatter[(int)(TerrainNoise.Hash(x, y, 15) * set.Scatter.Length) % set.Scatter.Length];
                         float scale = ScatterScaleMin + TerrainNoise.Hash(x, y, 16) * ScatterScaleSpread;
-                        instancer.Add(piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one * scale), low);
+                        AddClear(instancer, clearance, piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one * scale), low, false);
                     }
                 }
             }
         }
 
         // Shell fragments in a loose ring round every nest.
-        private static void PlaceNestScatter(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low, NaturalGround natural)
+        private static void PlaceNestScatter(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low, NaturalGround natural, StructureClearance clearance)
         {
             if (set.NestScatter.Length == 0)
             {
@@ -140,13 +185,13 @@ namespace Game.Levels
                     spot.y = field.HeightAt(spot.x, spot.z);
                     EnvironmentMesh piece = set.NestScatter[i % set.NestScatter.Length];
                     float scale = ScatterScaleMin + TerrainNoise.Hash(nest.Cell.x, nest.Cell.y, 60 + i) * ScatterScaleSpread;
-                    instancer.Add(piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, angle * 3f, 0f), Vector3.one * scale), low);
+                    AddClear(instancer, clearance, piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, angle * 3f, 0f), Vector3.one * scale), low, true);
                 }
             }
         }
 
         // Tall shapes far behind the back wall and the flanks, half lost in the mist, so the world reads as bigger.
-        private static void PlaceSilhouettes(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low)
+        private static void PlaceSilhouettes(LevelDefinition level, EnvironmentSet set, TerrainField field, EnvironmentInstancer instancer, bool low, StructureClearance clearance)
         {
             int count = set.SilhouetteCount;
             if (set.Silhouettes.Length == 0 || count == 0)
@@ -165,7 +210,7 @@ namespace Game.Levels
                 spot.y = field.HeightAt(spot.x, spot.z);
                 EnvironmentMesh piece = set.Silhouettes[(int)(TerrainNoise.Hash(i, 7, 31) * set.Silhouettes.Length) % set.Silhouettes.Length];
                 float yaw = TerrainNoise.Hash(i, 7, 32) * 360f;
-                instancer.Add(piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one), low);
+                AddClear(instancer, clearance, piece, Matrix4x4.TRS(spot, Quaternion.Euler(0f, yaw, 0f), Vector3.one), low, false);
             }
         }
     }

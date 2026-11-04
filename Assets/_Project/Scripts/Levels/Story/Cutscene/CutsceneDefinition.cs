@@ -16,12 +16,15 @@ namespace Game.Levels
         [SerializeField] private CutsceneHandoff _handoff = CutsceneHandoff.FirstCampaignLevel;
         [Tooltip("The difficulty the first campaign level starts on after the cutscene; must be one of the campaign's.")]
         [SerializeField] private DifficultyProfile _handoffDifficulty;
+        [Tooltip("The camera's drift and how hard an impact cue may kick it; no shake may last.")]
+        [SerializeField] private CutsceneCameraFeel _cameraFeel = CutsceneCameraFeel.Calm;
 
         public string Id => name;
         public IReadOnlyList<CutsceneShot> Shots => _shots;
         public CutsceneCast Cast => _cast;
         public CutsceneHandoff Handoff => _handoff;
         public DifficultyProfile HandoffDifficulty => _handoffDifficulty;
+        public CutsceneCameraFeel CameraFeel => _cameraFeel;
 
         /// <summary>The run time when every dialogue closes at once, as in auto-advance.</summary>
         public float AutoSeconds(int fromShot = 0, int toShot = int.MaxValue)
@@ -82,6 +85,7 @@ namespace Game.Levels
             for (int i = 0; i < _shots.Length; i++)
             {
                 ValidateShot(_shots[i], i + 1, errors);
+                ValidateKicks(_shots[i], i + 1, errors);
             }
 
             if (_handoff == CutsceneHandoff.FirstCampaignLevel)
@@ -168,6 +172,35 @@ namespace Game.Levels
                 {
                     errors.Add($"shot {number}: a sound cue without a sound.");
                 }
+            }
+        }
+
+        // No sustained shake: one kick per shot at most, never stronger than the camera feel allows.
+        private void ValidateKicks(CutsceneShot shot, int number, List<string> errors)
+        {
+            if (shot.Cues == null)
+            {
+                return;
+            }
+
+            int kicks = 0;
+            foreach (CutsceneCue cue in shot.Cues)
+            {
+                if (cue.Kind != CueKind.Shake)
+                {
+                    continue;
+                }
+
+                kicks++;
+                if (cue.Strength > _cameraFeel.MaxKick)
+                {
+                    errors.Add($"shot {number}: a kick of {cue.Strength:0.##} is stronger than the camera allows ({_cameraFeel.MaxKick:0.##}).");
+                }
+            }
+
+            if (kicks > 1)
+            {
+                errors.Add($"shot {number} kicks the camera {kicks} times; one kick per shot at most.");
             }
         }
 

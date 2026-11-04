@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.Levels;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
@@ -23,7 +24,6 @@ namespace Game.UI
         private static readonly Color Accent = new Color(0.3f, 0.75f, 1f, 0.9f);
         private const int StarTextureWidth = 1024;
         private const int StarTextureHeight = 576;
-        private const float StarDensity = 0.004f;
         private const int MinTextSize = 16;
         private const float TextPadding = 18f;
         private const float SliderTrackHeight = 22f;
@@ -279,20 +279,7 @@ namespace Game.UI
         {
             if (_starTexture == null)
             {
-                _starTexture = new Texture2D(StarTextureWidth, StarTextureHeight, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
-                var pixels = new Color32[StarTextureWidth * StarTextureHeight];
-                var random = new System.Random(7);
-                for (int i = 0; i < pixels.Length; i++)
-                {
-                    if (random.NextDouble() < StarDensity)
-                    {
-                        byte brightness = (byte)(90 + random.Next(166));
-                        pixels[i] = new Color32(brightness, brightness, 255, brightness);
-                    }
-                }
-
-                _starTexture.SetPixels32(pixels);
-                _starTexture.Apply();
+                _starTexture = StarfieldPainter.Paint(StarTextureWidth, StarTextureHeight, new SpaceStyle());
             }
 
             var go = new GameObject("Starfield", typeof(RectTransform));

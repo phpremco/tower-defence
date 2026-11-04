@@ -77,7 +77,7 @@ namespace Game.Levels
             var root = new GameObject("Props").transform;
             root.SetParent(parent, false);
 
-            var placer = new Placer(theme, field, root, instancer);
+            var placer = new Placer(theme, field, root, instancer, new StructureClearance(level));
             GridMap grid = level.Grid;
             TerrainMap terrain = level.Terrain;
             var road = new HashSet<Vector2Int>(level.Road.Cells);
@@ -241,14 +241,16 @@ namespace Game.Levels
             private readonly Transform _root;
             private readonly EnvironmentSet _set;
             private readonly EnvironmentInstancer _instancer;
+            private readonly StructureClearance _clearance;
             private readonly bool _low;
             private readonly Dictionary<Material, Material> _dimmed = new Dictionary<Material, Material>();
             private readonly Material[][] _materials;
             private readonly Dictionary<(PropKind, int), Mesh> _meshes = new Dictionary<(PropKind, int), Mesh>();
             private readonly List<(Transform Prop, PropKind Kind, float Scale, int Hash, Color Colour)> _lit = new List<(Transform, PropKind, float, int, Color)>();
 
-            public Placer(VisualTheme theme, TerrainField field, Transform root, EnvironmentInstancer instancer)
+            public Placer(VisualTheme theme, TerrainField field, Transform root, EnvironmentInstancer instancer, StructureClearance clearance)
             {
+                _clearance = clearance;
                 _field = field;
                 _root = root;
                 _instancer = instancer;
@@ -290,6 +292,11 @@ namespace Game.Levels
                 {
                     mesh = PropFactory.Create(kind, variant);
                     _meshes[(kind, variant)] = mesh;
+                }
+
+                if (_clearance.Blocks(new Vector3(x, 0f, z), StructureClearance.Reach(mesh, Matrix4x4.Scale(Vector3.one * scale))))
+                {
+                    return;
                 }
 
                 Material[] materials = _materials[(hash >> 9) % _materials.Length];
@@ -335,8 +342,14 @@ namespace Game.Levels
                     return;
                 }
 
+                Matrix4x4 matrix = Matrix4x4.TRS(position, rotation, Vector3.one * (scale * decor.Scale));
+                if (_clearance.Blocks(position, StructureClearance.Reach(variant.Mesh, matrix * variant.Node)))
+                {
+                    return;
+                }
+
                 Material material = far ? Dimmed(variant.MaterialFor(_low)) : null;
-                _instancer.Add(variant, Matrix4x4.TRS(position, rotation, Vector3.one * (scale * decor.Scale)), _low, material, castShadows: !far);
+                _instancer.AddDecor(variant, matrix, _low, material, castShadows: !far);
                 if (!PropFactory.IsGlowing(kind) || kind == PropKind.Spike)
                 {
                     return;

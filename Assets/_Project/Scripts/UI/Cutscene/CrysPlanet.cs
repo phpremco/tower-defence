@@ -14,7 +14,7 @@ namespace Game.UI
 
         /// <param name="faceTowards">Where the landing site ends up facing: back (-z) for a planet seen whole, up for
         /// one seen from low orbit.</param>
-        public static PlanetBody Create(Transform root, CampaignCatalog catalog, Vector3 faceTowards, Vector3 centre, float radius, float cloudAlpha, Color atmosphere, float rimPower, float startTurn, float degreesPerSecond)
+        public static PlanetBody Create(Transform root, CampaignCatalog catalog, Vector3 faceTowards, Vector3 centre, float radius, float cloudAlpha, float startTurn, float degreesPerSecond)
         {
             GlobePainter.Maps maps;
             Texture2D clouds;
@@ -33,7 +33,13 @@ namespace Game.UI
             Vector3 site = first >= 0 ? catalog.Nodes[first].Direction : Vector3.forward;
             Vector2 turn = PlanetCoordinates.TurnToFront(site);
             Quaternion tilt = Quaternion.FromToRotation(Vector3.back, faceTowards) * PlanetCoordinates.Rotation(turn.x + startTurn, turn.y);
-            return new PlanetBody(root, "S-69-CRYS", centre, radius, maps, clouds, cloudAlpha, atmosphere, rimPower, tilt, degreesPerSecond);
+            return new PlanetBody(root, "S-69-CRYS", centre, radius, maps, clouds, cloudAlpha, StyleOf(catalog), tilt, degreesPerSecond);
         }
+
+        /// <summary>The planet style of the campaign, or the agreed look when there is no catalog.</summary>
+        public static PlanetStyle StyleOf(CampaignCatalog catalog) => catalog != null ? catalog.PlanetStyle : PlanetStyle.Crys();
+
+        /// <summary>The space style of the campaign, or the default sky when there is no catalog.</summary>
+        public static SpaceStyle SpaceOf(CampaignCatalog catalog) => catalog != null ? catalog.SpaceStyle : new SpaceStyle();
     }
 }

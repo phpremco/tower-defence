@@ -1,7 +1,8 @@
 {
   "asset": "Cutscene_Mothership",
-  "texture_size": 1024,
-  "low_size": 512,
+  "round": 19,
+  "texture_size": 2048,
+  "low_size": 1024,
   "maps": [
     "Albedo",
     "Normal",
@@ -10,27 +11,30 @@
   ],
   "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
   "uv": {
-    "coverage": 0.336,
-    "world_per_uv": 26.0887
+    "coverage": 0.368,
+    "world_per_uv": 35.2737
   },
   "detail": {
     "metal": {
       "map": "Detail_Metal_Normal.png",
-      "tiling": 521.8,
+      "tiling": 705.5,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 434.8,
+      "tiling": 587.9,
       "mask": "A"
     }
   },
   "fbx": "Cutscene_Mothership.fbx",
+  "lod1_fbx": "Cutscene_Mothership_LOD1.fbx",
   "meshes": {
-    "Cutscene_Mothership": 9302
+    "Cutscene_Mothership": 19442,
+    "Cutscene_Mothership_LOD1": 8594
   },
-  "tris": 9302,
-  "lod1": "none: cutscene only",
+  "tris": 19442,
+  "lod1": 8594,
+  "lod1_ratio": 0.442,
   "bones": [
     "Root",
     "Ring"
@@ -45,24 +49,75 @@
   "sockets": {
     "Bay": [
       0.0,
-      1.0,
-      -0.96
+      0.54,
+      -1.17
     ],
     "Nozzle_1": [
       0.0,
-      7.0,
-      0.5
+      7.78,
+      0.6
     ],
     "Nozzle_2": [
-      -0.433,
-      7.0,
-      -0.25
+      -0.52,
+      7.78,
+      -0.3
     ],
     "Nozzle_3": [
-      0.433,
-      7.0,
-      -0.25
+      0.52,
+      7.78,
+      -0.3
+    ],
+    "Light_1": [
+      -0.3,
+      -7.87,
+      0.1
+    ],
+    "Light_2": [
+      0.3,
+      -7.87,
+      0.1
+    ],
+    "Light_3": [
+      0.05,
+      -4.45,
+      2.003
+    ],
+    "Light_4": [
+      0.0,
+      -7.37,
+      -0.02
+    ],
+    "Light_5": [
+      -0.77,
+      -0.78,
+      -1.0
+    ],
+    "Light_6": [
+      0.77,
+      -0.78,
+      -1.0
+    ],
+    "Light_7": [
+      -4.33,
+      4.98,
+      0.584
+    ],
+    "Light_8": [
+      4.33,
+      4.98,
+      0.584
+    ],
+    "Light_9": [
+      0.0,
+      6.35,
+      1.13
+    ],
+    "Light_10": [
+      0.0,
+      6.35,
+      -1.13
     ]
   },
-  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+  "pivot": "ship centre (between the cargo racks); nose towards -Y in Blender (Unity +Z)",
+  "length": 14.95
 }

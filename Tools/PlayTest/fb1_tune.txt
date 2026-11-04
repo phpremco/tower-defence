@@ -1,0 +1,6 @@
+Planet _MapRelief 0.3
+Planet _BumpStrength 1.2
+Planet _CityColor 4 2.2 0.8
+Planet _SpecPower 160
+PlanetClouds _Alpha 0.4
+PlanetClouds _Detail 0.85
