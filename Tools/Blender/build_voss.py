@@ -600,7 +600,7 @@ def body(b):
     """The navy utility top under the coat (it shows in the V) and its low mock collar with the lit seam."""
     def surf(off):
         def fn(u, v):
-            return torso_pt(0.92 + (1.285 - 0.92) * v, 2 * math.pi * u, off)
+            return torso_pt(0.92 + (1.262 - 0.92) * v, 2 * math.pi * u, off)
         return fn
     b.slab("Torso", surf(-0.009), surf(-0.035), 40, 16, chain=["Chest", "Spine"], style=UNDERSUIT_STYLE)
     b.tube("MockCollar", [G(0, 1.258, -0.02), G(0, 1.287, -0.019), G(0, COLLAR_TOP, -0.018)], [0.062, 0.0595, 0.0575], sides=24,

@@ -474,12 +474,15 @@ def blockout(prefix, mats_colors, bone_list, clips, out, target, distance, still
     C.light_rig(scale=4.0)
     C.ground()
     cams = cameras(target, distance)
+    still_paths = []
     for suffix, cam, clip, frame in stills:
         C.set_action(arm, actions[clip], frame)
-        C.render(cams[cam], os.path.join(out, f"block_{prefix}_{suffix}.png"), 960, 540, bloom=False, samples=8)
+        still_paths.append(C.render(cams[cam], os.path.join(out, f"block_{prefix}_{suffix}.png"), 960, 540, bloom=False,
+                                    samples=8))
     C.set_action(arm, actions[stills[0][2]], stills[0][3])
     game = C.game_camera(Vector((0, 0, 0)), 1280 / C.GAME_PIXELS_PER_UNIT)
-    C.render(game, os.path.join(out, f"block_{prefix}_game.png"), 1280, 720, bloom=False, samples=8)
+    still_paths.append(C.render(game, os.path.join(out, f"block_{prefix}_game.png"), 1280, 720, bloom=False, samples=8))
+    C.contact_sheet(still_paths, os.path.join(out, f"block_{prefix}_sheet.png"), 2, 640)
     for clip, cam, frames in strips:
         paths = []
         for i, f in enumerate(frames):
