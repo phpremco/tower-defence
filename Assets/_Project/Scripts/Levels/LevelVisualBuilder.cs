@@ -100,7 +100,12 @@ namespace Game.Levels
             Dictionary<int, GameObject> routes = BuildMarkers(level, theme, grid, parent);
             BuildMiningNodes(level, grid, parent);
             BuildNests(level, grid, parent, instancer);
-            instancer?.Finish();
+            if (instancer != null)
+            {
+                instancer.Finish();
+                instancer.gameObject.AddComponent<BuildPadHighlight>().Initialize(level);
+            }
+
             BuildStarfield(parent, level.WorldSize);
             return routes;
         }

@@ -67,7 +67,8 @@ namespace Game.Editor
             { "Rock_A", 1.3f }, { "Rock_B", 1.3f }, { "Rock_C", 1.3f }, { "Decor_Boulder", 1.4f }, { "Decor_Column", 1.4f },
             { "Decor_Spike", 1.4f }, { "Decor_Spire", 1.4f }, { "Scree_Patch", 1.4f },
             { "Flora_Frond", 1.6f }, { "Flora_Tendril", 1.6f }, { "Flora_GlowTree", 1.6f }, { "Flora_Mushroom", 1.6f },
-            { "BuildPadTile", 1.5f }, { "Silhouette_CrystalTower", 1.2f }, { "Silhouette_Ridge", 1.2f }, { "Silhouette_Mesa", 1.2f },
+            { "BuildPadTile", 1.5f }, { "RoadEdge_Straight", 0.9f }, { "RoadEdge_OuterCorner", 0.9f }, { "RoadEdge_InnerCorner", 0.9f },
+            { "RoadEdge_EndCap", 0.9f }, { "RoadEdge_PlazaJoin", 0.9f }, { "Silhouette_CrystalTower", 1.2f }, { "Silhouette_Ridge", 1.2f }, { "Silhouette_Mesa", 1.2f },
         };
 
         // Flat or tiny pieces that would only add shadow passes.
@@ -182,6 +183,19 @@ namespace Game.Editor
 
             return assets;
         }
+
+        // Pieces whose material darkens its albedo: the kerb's light stones and glowing tips read as a row of teeth at play
+        // zoom (MODEL_TODO, curator round 8), so it sits closer to the road's value and glows less.
+        private static readonly Dictionary<string, float> AlbedoByAsset = new Dictionary<string, float>
+        {
+            { "RoadEdge_Straight", 0.8f }, { "RoadEdge_OuterCorner", 0.8f }, { "RoadEdge_InnerCorner", 0.8f },
+            { "RoadEdge_EndCap", 0.8f }, { "RoadEdge_PlazaJoin", 0.8f },
+        };
+
+        public static float AlbedoOf(string asset) => AlbedoByAsset.TryGetValue(Name(asset), out float albedo) ? albedo : 1f;
+
+        /// <summary>The build pad: calm by default, lit only while a tower is being placed (BuildPadHighlight).</summary>
+        public static bool IsPad(string asset) => Name(asset) == "BuildPadTile";
 
         public static float GlowOf(string asset) => GlowByAsset.TryGetValue(Name(asset), out float glow) ? glow : KitGlow;
 

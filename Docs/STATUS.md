@@ -1589,3 +1589,10 @@ the nests. Logic, grid and validator are untouched; a theme without an environme
   triangles; `Chasm_Edge`, `Cliff_OuterCorner`, `Slope`, `Ledge`, `Gravemaw_Hole` imported or available but unused; the
   liquid origins are wired but no continent-1 nest sits in a pool; `Art/Models/Blender` grows by ~100 MB of env maps and FBX (git
   LFS question still open); the full generator re-saves the scenes with new file IDs (as every run).
+- **Tuning after curator review (same day):** the build pads are calm by default (outline glow x0.08, tile albedo x0.65:
+  dark tiles in the ground) and light up only while a tower is being placed (`Levels/BuildPadHighlight`, a view on the
+  instancer: reads `LevelContext.Mode`/`SelectedTower`, writes a per-cell mask of free build cells, rebuilt each time
+  placing starts, and a highlight level that fades in 1/6 s; `Game/EnvironmentLit` keyword `_PAD_HIGHLIGHT`, material
+  values `_PadCalmGlow`/`_PadCalmAlbedo`). Pads under towers stay calm. The kerb's albedo x0.8 and glow 0.9 (was 2.2)
+  soften the "row of teeth" a little; the real fix (a continuous kerb as in round 17) stays in MODEL_TODO. Screenshots
+  `t1_L0_*` (`t1_L0_placing*` while placing) against `r3_L0_play`. `imp4_phase.cs` gained `place [off]`.

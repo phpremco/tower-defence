@@ -524,7 +524,8 @@ donkerder (albedo x0,65, gloed x0,35) en zonder schaduw. Punten voor de Blender-
 | Rift | Alleen rechte stukken; de rifts van continent 1 zijn vlekken, dus de kit wordt bijna nergens gebruikt. Een rift-randset zoals de oevers (recht, buiten- en binnenhoek), of hoek- en vlekstukken, zou alle rifts een rand geven |
 | Terras | Geen binnenhoek (drie van vier cellen verhoogd): twee rechte stukken sluiten daar niet. Een `TerraceStep_Inner` erbij |
 | Driehoeken | De verre wildernis is het grootste deel van de omgeving: per level ~370 `Decor_Spire` (1.104 tris, samen ~560k) en ~720 kristallen (~1M). Een far LOD (~300 tris) voor `Decor_Spire` en `Crystal_A/B/C` halveert dat. Low houdt nu 35 % van het verre decor over |
-| Bouwplek | Leest duidelijk; op het overzicht trekken de vele cyaan randen en gele hoekjes wel veel aandacht. Iets dunnere lijnen of minder fel geel |
+| Bouwplek | In Unity nu rustig zolang je niet bouwt (rand x0,08, tegel donkerder) en alleen fel tijdens het plaatsen van een toren. Blender-kant: geen actie nodig |
+| Stoeprand (Unity) | In Unity iets zachter gemaakt (albedo x0,8, gloed 0,9 in plaats van 2,2); de tanden blijven zichtbaar, zie de rij Stoeprand hierboven |
 | Achterwand | De kliffen met roze aders en kristallen erop zijn van boven wat druk; minder kristallen op de bovenrand |
 | Gate-sokkel | Valt grotendeels onder het gate-model; alleen aan de zijkanten zichtbaar. Prima, of iets breder dan de weg |
 

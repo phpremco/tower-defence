@@ -7,5 +7,6 @@ namespace Game.Levels
         public const string Ground = "Game/EnvironmentGround";
         public const string SwayKeyword = "_SWAY";
         public const string LowKeyword = "_ENV_LOW";
+        public const string PadKeyword = "_PAD_HIGHLIGHT";
     }
 }

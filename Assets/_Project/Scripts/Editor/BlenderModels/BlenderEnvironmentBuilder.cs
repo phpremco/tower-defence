@@ -25,6 +25,10 @@ namespace Game.Editor
         private const float OcclusionStrength = 0.5f;
         private const float DetailStrength = 0.6f;
 
+        // The pads at rest: a faint outline and a tile darker than its bake, so the field does not read as a lit grid.
+        private const float PadCalmGlow = 0.08f;
+        private const float PadCalmAlbedo = 0.65f;
+
         // Glow of each ground layer: the grit and the cliff veins stay a hint, the plaza sigil and the rift fissures burn.
         private const float GroundGlow = 1f;
         private const float AltGlow = 1.3f;
@@ -289,7 +293,8 @@ namespace Game.Editor
             material.shader = shader;
             material.shaderKeywords = new string[0];
             string maps = low && File.Exists($"{folder}/{BlenderSync.LowFolder}/{name}_Albedo.png") ? $"{folder}/{BlenderSync.LowFolder}" : folder;
-            material.SetColor("_BaseColor", Color.white);
+            float albedo = BlenderEnvironmentCatalog.AlbedoOf(asset);
+            material.SetColor("_BaseColor", new Color(albedo, albedo, albedo, 1f));
             material.SetTexture("_BaseMap", Texture($"{maps}/{name}_Albedo.png"));
             SetMap(material, "_BumpMap", Texture($"{maps}/{name}_Normal.png"), "_NORMALMAP");
             SetMap(material, "_MaskMap", Texture($"{maps}/{name}_Mask.png"), "_MASKMAP");
@@ -298,6 +303,13 @@ namespace Game.Editor
             material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             material.SetFloat("_Smoothness", Smoothness);
             material.SetFloat("_OcclusionStrength", OcclusionStrength);
+            if (BlenderEnvironmentCatalog.IsPad(asset))
+            {
+                material.EnableKeyword(EnvironmentShaders.PadKeyword);
+                material.SetFloat("_PadCalmGlow", PadCalmGlow);
+                material.SetFloat("_PadCalmAlbedo", PadCalmAlbedo);
+            }
+
             if (BlenderEnvironmentCatalog.Sways(asset))
             {
                 material.EnableKeyword(EnvironmentShaders.SwayKeyword);

@@ -25,6 +25,7 @@ for level in "$@"; do
   phase view overview 12; live 3; shot overview
   phase view road 7; live 0.5; shot play
   phase view road 3; live 0.3; shot road
+  phase place; phase view road 7; live 0.6; shot placing; phase view road 3; live 0.2; shot placing_close; phase place off; live 0.6
   phase view plaza 3; live 0.3; shot plaza
   phase view bank 3; live 0.3; shot bank
   phase view nest 3; live 0.3; shot nest

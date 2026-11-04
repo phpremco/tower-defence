@@ -2,6 +2,7 @@
 // and "pause" (see imp2_phase.cs). Tools/PlayTest/imp4_phase.txt holds one phase:
 //   setup                      waves off, creatures spread along the main road, a few towers beside the road focus
 //   view <overview|road|plaza|bank|nest|border|corner|back|base|gate> <ortho half height>
+//   place [off]                picks a tower to build (the pads light up), or stops placing
 //   play | pause
 string[] args = System.IO.File.ReadAllText("Tools/PlayTest/imp4_phase.txt").Trim().Split(' ');
 var inv = System.Globalization.CultureInfo.InvariantCulture;
@@ -102,6 +103,14 @@ else if (args[0] == "view")
     float fit = UnityEngine.Camera.main.orthographicSize * rig.Zoom;
     rig.SetView(focus, fit / float.Parse(args[2], inv));
     report.Append("view ").Append(what).Append(' ').Append(focus.ToString("0.0")).Append("; ");
+}
+
+else if (args[0] == "place")
+{
+    // Picks the first available tower, as a click on its card does: the build pads light up.
+    if (args.Length > 1 && args[1] == "off") { context.SelectedTower = null; context.Mode = Game.Levels.PlacementMode.Browsing; }
+    else context.SelectTower(context.AvailableTowers[0]);
+    report.Append("mode ").Append(context.Mode).Append("; ");
 }
 
 if (args[0] == "play") UnityEditor.EditorApplication.isPaused = false;

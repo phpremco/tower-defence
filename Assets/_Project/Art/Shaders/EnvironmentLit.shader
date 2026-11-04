@@ -21,6 +21,8 @@ Shader "Game/EnvironmentLit"
         _DetailNormalScale ("Detail strength", Range(0, 2)) = 0.6
         _DetailFade ("Detail fade (tiles per pixel: full, gone)", Vector) = (0.004, 0.02, 0, 0)
         _SwayScale ("Sway scale", Float) = 1
+        _PadCalmGlow ("Pad: glow share while not placing", Range(0, 1)) = 0.12
+        _PadCalmAlbedo ("Pad: albedo share while not placing", Range(0, 1)) = 0.7
     }
 
     SubShader
@@ -41,6 +43,8 @@ Shader "Game/EnvironmentLit"
         float4 _DetailNormalMap_ST;
         float4 _DetailFade;
         float _SwayScale;
+        half _PadCalmGlow;
+        half _PadCalmAlbedo;
         CBUFFER_END
 
         // Set once per level from the environment set (EnvironmentInstancer): direction (xyz) and tip amplitude (w);
@@ -81,6 +85,7 @@ Shader "Game/EnvironmentLit"
             #pragma shader_feature_local_fragment _MASKMAP
             #pragma shader_feature_local_fragment _DETAIL
             #pragma shader_feature_local_vertex _SWAY
+            #pragma shader_feature_local_fragment _PAD_HIGHLIGHT
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -99,6 +104,13 @@ Shader "Game/EnvironmentLit"
             SAMPLER(sampler_MaskMap);
             TEXTURE2D(_DetailNormalMap);
             SAMPLER(sampler_DetailNormalMap);
+
+            // Build pads (BuildPadHighlight): one texel per cell, red where a tower may go; the field rect; and how far
+            // the placing highlight is up (0 calm, 1 placing).
+            TEXTURE2D(_EnvPadMask);
+            SAMPLER(sampler_EnvPadMask);
+            float4 _EnvPadRect;
+            float _EnvPadHighlight;
 
             struct Attributes
             {
@@ -167,6 +179,16 @@ Shader "Game/EnvironmentLit"
                     half fade = 1.0h - smoothstep(_DetailFade.x, _DetailFade.y, footprint);
                     half3 detail = UnpackNormalScale(SAMPLE_TEXTURE2D(_DetailNormalMap, sampler_DetailNormalMap, detailUV), _DetailNormalScale * mask.b * fade);
                     surfaceData.normalTS = normalize(half3(surfaceData.normalTS.xy + detail.xy, surfaceData.normalTS.z * detail.z));
+                #endif
+
+                #if defined(_PAD_HIGHLIGHT)
+                    // Calm by default: a dark tile that sits in the ground. Its outline lights up only while the player
+                    // is choosing a build spot, and only on free cells (a pad under a tower stays calm).
+                    float2 padUV = (input.positionWS.xz - _EnvPadRect.xy) * _EnvPadRect.zw;
+                    half free = SAMPLE_TEXTURE2D(_EnvPadMask, sampler_EnvPadMask, padUV).r;
+                    half lit = saturate(_EnvPadHighlight) * free;
+                    surfaceData.emission *= lerp(_PadCalmGlow, 1.0h, lit);
+                    surfaceData.albedo *= lerp(_PadCalmAlbedo, 1.0h, lit);
                 #endif
 
                 InputData inputData = (InputData)0;

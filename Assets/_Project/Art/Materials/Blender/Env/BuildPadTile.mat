@@ -16,6 +16,7 @@ Material:
   - _EMISSION
   - _MASKMAP
   - _NORMALMAP
+  - _PAD_HIGHLIGHT
   m_InvalidKeywords: []
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 1
@@ -52,6 +53,8 @@ Material:
     - _BumpScale: 1
     - _DetailNormalScale: 0.6
     - _OcclusionStrength: 0.5
+    - _PadCalmAlbedo: 0.65
+    - _PadCalmGlow: 0.08
     - _Smoothness: 0.85
     - _SwayScale: 1
     m_Colors:
