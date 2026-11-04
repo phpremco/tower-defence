@@ -1,6 +1,10 @@
 // The lit surface of everything that acts on the field: towers, gates, the hero, drones and creatures. Standard URP
 // physically based shading plus a rim of light along the silhouette, in a colour per side (cool for the colony, warm
 // for the aliens), so a unit lifts off the dark ground at game zoom. Scenery keeps the plain Lit shader and stays back.
+// Imported (Blender) models add a packed mask (R occlusion, G smoothness, B and A where the two tiling detail normals
+// of their material families apply) and those detail normals, which fade out as their tiles shrink below a few
+// pixels so pores never shimmer at game zoom. An overlay colour (hit flash, frost) lerps the whole surface towards
+// one colour without swapping materials. Old procedural models set none of it and render as before.
 Shader "Game/UnitLit"
 {
     Properties
@@ -21,6 +25,14 @@ Shader "Game/UnitLit"
         _WaveVector ("Wave vector (xyz) and speed (w)", Vector) = (0, 0, 0, 0)
         _WaveRamp ("Wave envelope ramp", Vector) = (0, 0, 0, 1)
         _WaveDirection ("Wave direction (xyz) and phase (w)", Vector) = (0, 1, 0, 0)
+        _MaskMap ("Mask (R occlusion, G smoothness, B detail, A detail 2)", 2D) = "white" {}
+        _OcclusionStrength ("Occlusion strength", Range(0, 1)) = 0.5
+        _DetailNormalMap ("Detail normal", 2D) = "bump" {}
+        _DetailNormalScale ("Detail strength", Range(0, 2)) = 0.8
+        _DetailNormalMap2 ("Detail normal 2", 2D) = "bump" {}
+        _DetailNormalScale2 ("Detail strength 2", Range(0, 2)) = 0.8
+        _DetailFade ("Detail fade (tiles per pixel: full, gone)", Vector) = (0.004, 0.02, 0, 0)
+        [HDR] _OverlayColor ("Overlay colour (a: amount)", Color) = (1, 1, 1, 0)
     }
 
     SubShader
@@ -46,7 +58,21 @@ Shader "Game/UnitLit"
         float4 _WaveVector;
         float4 _WaveRamp;
         float4 _WaveDirection;
+        float4 _DetailNormalMap_ST;
+        float4 _DetailNormalMap2_ST;
+        float4 _DetailFade;
+        half4 _OverlayColor;
+        half _OcclusionStrength;
+        half _DetailNormalScale;
+        half _DetailNormalScale2;
         CBUFFER_END
+
+        TEXTURE2D(_MaskMap);
+        SAMPLER(sampler_MaskMap);
+        TEXTURE2D(_DetailNormalMap);
+        SAMPLER(sampler_DetailNormalMap);
+        TEXTURE2D(_DetailNormalMap2);
+        SAMPLER(sampler_DetailNormalMap2);
 
         // The surface wave (see SurfaceWave.cs): a sine travelling along the wave vector, scaled by a squared ramp
         // over the part, moving vertices along the wave direction. The normal tilts with the slope so the ripple
@@ -86,6 +112,9 @@ Shader "Game/UnitLit"
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _MASKMAP
+            #pragma shader_feature_local_fragment _DETAIL
+            #pragma shader_feature_local_fragment _DETAIL2
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -98,6 +127,17 @@ Shader "Game/UnitLit"
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            // A tiling detail normal on top of the model's own, by whiteout blending, weighted by its mask channel and
+            // faded out as a tile shrinks towards a few pixels: at game zoom the mips would only average it into noise.
+            half3 BlendDetail(half3 normalTS, TEXTURE2D_PARAM(detailMap, detailSampler), float2 uv, float4 tiling, half strength)
+            {
+                float2 detailUV = uv * tiling.xy + tiling.zw;
+                float footprint = max(length(ddx(detailUV)), length(ddy(detailUV)));
+                half fade = 1.0h - smoothstep(_DetailFade.x, _DetailFade.y, footprint);
+                half3 detail = UnpackNormalScale(SAMPLE_TEXTURE2D(detailMap, detailSampler, detailUV), strength * fade);
+                return normalize(half3(normalTS.xy + detail.xy, normalTS.z * detail.z));
+            }
 
             struct Attributes
             {
@@ -157,6 +197,24 @@ Shader "Game/UnitLit"
                 surfaceData.occlusion = 1;
                 surfaceData.emission = SampleEmission(input.uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
                 surfaceData.normalTS = SampleNormal(input.uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+
+                // The albedo already carries the baked occlusion, so the mask's share only shapes the ambient light.
+                half4 mask = half4(1.0h, 1.0h, 1.0h, 1.0h);
+                #if defined(_MASKMAP)
+                    mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, input.uv);
+                    surfaceData.smoothness = mask.g * _Smoothness;
+                    surfaceData.occlusion = lerp(1.0h, mask.r, _OcclusionStrength);
+                #endif
+                #if defined(_DETAIL)
+                    surfaceData.normalTS = BlendDetail(surfaceData.normalTS, TEXTURE2D_ARGS(_DetailNormalMap, sampler_DetailNormalMap), input.uv, _DetailNormalMap_ST, _DetailNormalScale * mask.b);
+                #endif
+                #if defined(_DETAIL2)
+                    surfaceData.normalTS = BlendDetail(surfaceData.normalTS, TEXTURE2D_ARGS(_DetailNormalMap2, sampler_DetailNormalMap2), input.uv, _DetailNormalMap2_ST, _DetailNormalScale2 * mask.a);
+                #endif
+
+                // A hit flash or a frost: the whole surface leans towards one colour and glows in it.
+                surfaceData.albedo = lerp(surfaceData.albedo, saturate(_OverlayColor.rgb), _OverlayColor.a);
+                surfaceData.emission += _OverlayColor.rgb * _OverlayColor.a;
 
                 InputData inputData = (InputData)0;
                 inputData.positionWS = input.positionWS;

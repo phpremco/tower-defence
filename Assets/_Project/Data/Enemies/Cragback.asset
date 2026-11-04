@@ -48,5 +48,6 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: b0de29ca1782ee64194eb756cfe8c3cc, type: 2}
   _voice: {fileID: 11400000, guid: a0e8557ddb7091247b8ac78c3f5e36ad, type: 2}
   _description: 'Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.'

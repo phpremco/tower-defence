@@ -1,0 +1,54 @@
+{
+  "asset": "Oozer",
+  "game_tris": 3801,
+  "source_tris": 269640,
+  "bones": 9,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 27,
+    "folded_fallback_faces": 34,
+    "mirrored_faces": 1893,
+    "uv_coverage": 0.644,
+    "world_per_uv": 0.93510285327151
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 11.7,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 15.6,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Crawl": 40,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 40
+  },
+  "scale_keyed_bones": [
+    "Stalk_L1",
+    "Stalk_L2",
+    "Stalk_R1",
+    "Stalk_R2"
+  ],
+  "crawl_distance_per_loop": 0.3,
+  "unity_scale": 0.7,
+  "pivot": "ground, body centre",
+  "trail_origin": "under Body_1 (rear), on the ground",
+  "lod1": {
+    "fbx": "Oozer_LOD1.fbx",
+    "tris": 1699,
+    "bones": 7
+  }
+}

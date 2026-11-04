@@ -50,5 +50,6 @@ MonoBehaviour:
   _deathStyle: 1
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: 7642e2b167ba49e418a0246d1466aff6, type: 2}
   _voice: {fileID: 11400000, guid: 599b50e85e775994dba2e3bba4bc1c6a, type: 2}
   _description: 'Mother of bats: a storm of element bolts and a swarm at her call.'

@@ -12,6 +12,11 @@ namespace Game.Enemies
 
         public static Transform Build(Transform parent, EnemyDefinition definition)
         {
+            if (definition.Art != null && definition.Art.Model != null)
+            {
+                return CreatureDisplay.Build(parent, definition);
+            }
+
             var root = new GameObject($"{definition.name}_display").transform;
             root.SetParent(parent, false);
             if (definition.Shape == EnemyShape.None)

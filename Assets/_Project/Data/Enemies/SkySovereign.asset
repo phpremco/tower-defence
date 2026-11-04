@@ -49,5 +49,6 @@ MonoBehaviour:
   _deathStyle: 1
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: 41b4aaea1f41bb743a1b7a5307f5fb04, type: 2}
   _voice: {fileID: 11400000, guid: b02e62e959e506a40bfe8e7e9734d240, type: 2}
   _description: 'The ray sovereign: a tail laser swept across the field from the air.'

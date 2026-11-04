@@ -1,0 +1,66 @@
+{
+  "asset": "SlimeMonarch",
+  "base_species": "Oozer",
+  "game_tris": 13000,
+  "source_tris": 643976,
+  "bones": 13,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 112,
+    "folded_fallback_faces": 162,
+    "mirrored_faces": 6187,
+    "uv_coverage": 0.65,
+    "world_per_uv": 1.0115236261442673
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 12.6,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 16.9,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Crawl": 40,
+    "Idle": 72,
+    "Hit": 12,
+    "Death": 40,
+    "Flood": 44,
+    "Spawn": 48
+  },
+  "scale_keyed_bones": [
+    "Stalk_L1",
+    "Stalk_L2",
+    "Stalk_L3",
+    "Stalk_R1",
+    "Stalk_R2",
+    "Stalk_R3",
+    "Sac_L",
+    "Sac_R"
+  ],
+  "flood_slam_frame": 24,
+  "spawn_release_frame": 30,
+  "spawn_point_bones": [
+    "Sac_L",
+    "Sac_R"
+  ],
+  "crawl_distance_per_loop": 0.6,
+  "unity_scale": 0.8999999999999999,
+  "model_scale_from_oozer_units": 2.0,
+  "lod1": {
+    "fbx": "SlimeMonarch_LOD1.fbx",
+    "tris": 5999,
+    "bones": 11
+  }
+}

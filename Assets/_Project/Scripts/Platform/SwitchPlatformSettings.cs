@@ -17,6 +17,10 @@ namespace Game.Platform
 
         public float ParticleScale => 0.5f;
 
+        public bool LowDetailModels => true;
+
+        public float LodBias => 0.6f;
+
         public bool CanQuit => false;
     }
 }

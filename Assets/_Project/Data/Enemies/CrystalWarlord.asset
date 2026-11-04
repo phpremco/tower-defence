@@ -50,5 +50,6 @@ MonoBehaviour:
   _deathStyle: 2
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: 0dbce609f22ebc5439ec848ee7a85e59, type: 2}
   _voice: {fileID: 11400000, guid: 0c5264b3875fa8d4f8f52264ae9935a3, type: 2}
   _description: 'The shield king: a sweeping sword and crystal that regrows.'

@@ -21,6 +21,12 @@
         /// <summary>Multiplier for particle counts, 1 is full.</summary>
         float ParticleScale { get; }
 
+        /// <summary>Imported models wear their 512 maps and one detail normal instead of 1024 maps and two.</summary>
+        bool LowDetailModels { get; }
+
+        /// <summary>Level-of-detail bias: below 1 the far models take over sooner.</summary>
+        float LodBias { get; }
+
         bool CanQuit { get; }
     }
 }

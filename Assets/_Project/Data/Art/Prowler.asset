@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Prowler
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
+  _lod1: {fileID: 919132149155446097, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
+  _material: {fileID: 2100000, guid: b984dd10702397a4cb5e2846ed6cbb1d, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 53f71c989fea83449a96d0ce217ebf05, type: 2}
+  _scale: 1.4
+  _bodyCentrePivot: 0
+  _height: 0.68475145
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0.3, y: 1.0200001}
+  _embers: 0
+  _bleeds: 1
+  _clips:
+  - _role: 2
+    _clip: {fileID: 5436995175585315022, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
+    _farClip: {fileID: 9211858409293320129, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+  - _role: 1
+    _clip: {fileID: 1475319575316955698, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
+    _farClip: {fileID: 3447478519944180105, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 0
+    _clip: {fileID: 6592528590920233474, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
+    _farClip: {fileID: -2550469459367179360, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
+    _distancePerLoop: 1.19
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 3
+    _clip: {fileID: -2547730247473507479, guid: 30de3988202c5114795b1952da49ccd5, type: 3}
+    _farClip: {fileID: -2595395572997673190, guid: f2e2242df70a91c48bcab3f4e10730b2, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

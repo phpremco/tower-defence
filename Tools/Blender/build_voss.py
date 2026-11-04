@@ -158,6 +158,9 @@ SKIN_STYLE = style(skin_color, rough=0.66, disp_fn=skin_disp, grad=(1.03, 1.0, 0
 
 def lip_color(ctx):
     col = mix(SKIN, LIP, np.ones(len(ctx.p)) * 0.8)
+    # The lips' inner faces (towards the slit, not the viewer) darken into the mouth.
+    inner = C.smoothstep(0.55, 0.0, -ctx.n[:, 1]) * C.smoothstep(0.0055, 0.0015, np.abs(ctx.p[:, 2] - MOUTH_Z))
+    col = mix(col, MOUTH * 1.4, inner)
     corner = C.smoothstep(MOUTH_HALF * 0.55, MOUTH_HALF * 1.1, np.abs(ctx.p[:, 0]))
     col = mix(col, SKIN, corner * 0.6)
     return mix(col, MOUTH, C.smoothstep(0.0022, 0.0, np.abs(ctx.p[:, 2] - MOUTH_Z)) * 0.7)
@@ -462,7 +465,7 @@ def build_parts():
     # --- Head and neck (one sculpted surface) ---------------------------------------------------------------
     b.ellipsoid("Head", HEAD_C, R(*HEAD_R), bone="Head", style=SKIN_STYLE, segments=(128, 80), deform=head_deform)
     head_tree = b.bvh()
-    b.tube("Neck", [G(0, 1.25, -0.024), G(0, 1.33, -0.02), G(0, 1.41 - DROP, -0.014)], [0.06, 0.054, 0.05], sides=20, chain=["Neck"],
+    b.tube("Neck", [G(0, 1.25, -0.024), G(0, 1.33, -0.02), G(0, 1.41 - DROP, -0.014)], [0.051, 0.05, 0.049], sides=20, chain=["Neck"],
            style=SKIN_STYLE, cap=0.2)
     for sx in (1, -1):
         b.ellipsoid("Ear", G(0.069 * sx, 1.457 - DROP, -0.012), R(0.009, 0.024, 0.015), rot=Matrix.Rotation(math.radians(12 * sx), 3, "Z"),
@@ -474,8 +477,6 @@ def build_parts():
     tip.y = bridge.y - 0.0115
     b.tube("Nose", [bridge, bridge.lerp(tip, 0.6) + G(0, 0, 0.001), tip], [0.0036, 0.0046, 0.006], sides=12, chain=["Head"],
            style=SKIN_STYLE, cap=0.7)
-    for sx in (1, -1):
-        b.ellipsoid("Nostril", tip + G(0.0068 * sx, -0.0028, -0.0055), R(0.0052, 0.0042, 0.0052), bone="Head", style=SKIN_STYLE, segments=(12, 8))
     # Lips: separate soft volumes either side of the mouth slit. The upper lip has a gentle bow.
     front = face_point(head_tree, 0, MOUTH_Z, 0.0)
     lf = front.y   # Blender y of the face at the mouth (forward is -y)
@@ -486,10 +487,14 @@ def build_parts():
                 segments=(24, 12), deform=bow)
     b.ellipsoid("LipLower", Vector((0, lf + 0.0026, MOUTH_Z - 0.0041)), (MOUTH_HALF * 0.8, 0.0048, 0.0045), bone="Jaw", style=LIP_STYLE,
                 segments=(24, 12))
+    # The mouth's dark inside (its own shell behind the lips): what shows when the jaw parts them.
+    b.ellipsoid("MouthInside", Vector((0, lf + 0.009, MOUTH_Z - 0.001)), (MOUTH_HALF * 0.9, 0.006, 0.0075), bone="Head",
+                style=style(lambda ctx: MOUTH, rough=0.5), segments=(16, 10))
     # --- Eyes and lids ---------------------------------------------------------------------------------------
     for side, c in EYES.items():
         b.ellipsoid("Eye", c, (EYE_R, EYE_R, EYE_R), bone="Head", style=eye_style(c), segments=(28, 18))
-        lid_shell(b, "Lid", c, EYE_R + LID_GAP, EYE_R + LID_GAP + LID_THICK, LID_EDGE, math.radians(78), math.radians(84), f"Lid_{side}",
+        # The lid band runs on over the top of the eyeball, so a closed lid still covers the socket above it.
+        lid_shell(b, "Lid", c, EYE_R + LID_GAP, EYE_R + LID_GAP + LID_THICK, LID_EDGE, math.radians(128), math.radians(84), f"Lid_{side}",
                   style(lid_color(c, True), rough=0.55))
         lid_shell(b, "LowerLid", c, EYE_R + LID_GAP, EYE_R + LID_GAP + LID_THICK * 0.8, math.radians(-70), LOWER_EDGE, math.radians(70),
                   "Head", style(lid_color(c, False), rough=0.55))
@@ -597,11 +602,8 @@ def body(b):
         def fn(u, v):
             return torso_pt(0.92 + (1.285 - 0.92) * v, 2 * math.pi * u, off)
         return fn
-    b.slab("Torso", surf(-0.004), surf(-0.03), 40, 16, chain=["Chest", "Spine"], style=UNDERSUIT_STYLE)
-    for side, sx in (("L", 1), ("R", -1)):
-        b.ellipsoid("Shoulder", G(0.1 * sx, 1.222, -0.018), R(0.08, 0.04, 0.066), bone=f"Clavicle_{side}", style=UNDERSUIT_STYLE, segments=(20, 10))
-        b.parts[-1].chain = [f"Clavicle_{side}", "Chest"]
-    b.tube("MockCollar", [G(0, 1.258, -0.02), G(0, 1.287, -0.019), G(0, COLLAR_TOP, -0.018)], [0.061, 0.0575, 0.0555], sides=24,
+    b.slab("Torso", surf(-0.009), surf(-0.035), 40, 16, chain=["Chest", "Spine"], style=UNDERSUIT_STYLE)
+    b.tube("MockCollar", [G(0, 1.258, -0.02), G(0, 1.287, -0.019), G(0, COLLAR_TOP, -0.018)], [0.062, 0.0595, 0.0575], sides=24,
            chain=["Neck", "Chest"], style=MOCK_COLLAR_STYLE, cap=0.15)
 
 
@@ -618,10 +620,10 @@ def coat(b):
         return fn
     b.slab("Coat", panel(0.011), panel(-0.002), 56, 16, chain=["Chest", "Spine"], style=COAT_STYLE)
     for side, sx in (("L", 1), ("R", -1)):
-        b.ellipsoid("Yoke", G(0.09 * sx, 1.238, -0.018), R(0.097, 0.047, 0.082), rot=Matrix.Rotation(math.radians(-18 * sx), 3, "Y"),
+        b.ellipsoid("Yoke", G(0.088 * sx, 1.232, -0.018), R(0.088, 0.05, 0.078), rot=Matrix.Rotation(math.radians(-18 * sx), 3, "Y"),
                     bone=f"Clavicle_{side}", style=YOKE_STYLE, segments=(28, 14))
         b.parts[-1].chain = [f"Clavicle_{side}", "Chest"]
-        b.tube("Sleeve", [G(0.166 * sx, 1.22, -0.016), G(0.18 * sx, 1.1, -0.01), G(0.186 * sx, 0.95, -0.002)], [0.05, 0.045, 0.043], sides=18,
+        b.tube("Sleeve", [G(0.158 * sx, 1.228, -0.016), G(0.18 * sx, 1.1, -0.01), G(0.186 * sx, 0.95, -0.002)], [0.05, 0.045, 0.043], sides=18,
                chain=[f"Clavicle_{side}"], style=SLEEVE_STYLE, cap=0.8)
 
     # Collar: rises from round the neck at the back and rolls outwards a little; its ends run into the lapel tops.
@@ -696,13 +698,13 @@ def gear(b, head_tree):
                     segments=(12, 6))
 
 
-RIGID = {"Lid", "Eye", "Earpiece", "EarpieceL", "Mic", "MicTip", "Band", "Pin", "Card", "CardClip", "Pen", "Button"}
+RIGID = {"Lid", "Eye", "MouthInside", "Earpiece", "EarpieceL", "Mic", "MicTip", "Band", "Pin", "Card", "CardClip", "Pen", "Button"}
 
-LAYERS = [S.Layer("head", {"Head", "Neck", "Ear", "Nose", "Nostril", "LipUpper", "LipLower"}, voxel=0.0011, smooth=4, tris=3300, uv_scale=1.7),
+LAYERS = [S.Layer("head", {"Head", "Neck", "Ear", "Nose", "LipUpper", "LipLower"}, voxel=0.0011, smooth=4, tris=3300, uv_scale=1.7),
           S.Layer("eyes", {"Eye"}, voxel=0.001, smooth=1, tris=440, uv_scale=2.2),
           S.Layer("lids", {"Lid", "LowerLid"}, voxel=0.00055, smooth=1, tris=760, uv_scale=1.6),
           S.Layer("hair", {"HairCap", "Lock", "Fringe", "BunCore", "Bun", "Brow"}, voxel=0.0011, smooth=2, tris=1500, uv_scale=1.1),
-          S.Layer("body", {"Torso", "Shoulder", "MockCollar"}, voxel=0.0024, smooth=4, tris=420, uv_scale=0.5),
+          S.Layer("body", {"Torso", "MockCollar"}, voxel=0.0024, smooth=4, tris=420, uv_scale=0.5),
           S.Layer("coat", {"Coat", "Yoke", "Sleeve", "Collar", "Lapel", "Pocket", "Placket"}, voxel=0.0018, smooth=3, density=1.0),
           S.Layer("gear", None, voxel=0.0009, smooth=2, tris=750, uv_scale=1.3)]
 
@@ -845,7 +847,7 @@ def main():
     if args.get("fast"):
         fast_preview(builder, out)
         return
-    asset, index = S.build_layered_asset(NAME, builder, LAYERS, voxel=0.0018, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.04,
+    asset, index = S.build_layered_asset(NAME, builder, LAYERS, voxel=0.0018, target_tris=GAME_TRIS, tex_size=TEX, ao_distance=0.02,
                                          extrusion=0.004, ray=0.012, emission_strength=2.2, specular=0.35, mirror=False, k=0.6,
                                          families=FAMILIES, family_set=S.FAMILY_SET, low_size=LOW_TEX, preview_detail=(0.5, 0.5),
                                          edge_gain=0.15, border_smooth=2, symmetric=False,

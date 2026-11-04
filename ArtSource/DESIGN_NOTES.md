@@ -1163,3 +1163,176 @@ mesh (from its `.blend`, read-only) and writes `Exports/<Species>/Skins/Corrupte
 - **Normal:** the species' own. **Mask:** the species' own, smoother (more glassy) on the veins.
 
 The purple sits apart from the pink Crysium of Crystal Plains (violet, not pink) and from our cool side (no cyan).
+
+# Round 16: continent bosses 2-6 (Cinder Matriarch, Frost Warden, Rotbloom, The Shattered, The Sealed One, 2026-11-04)
+
+Brief (MODEL_TODO section 1 "Continentbazen", STORY.md "Continentbazen"): each continent ends in a climax, so each
+boss must be the biggest, most readable thing on its field, clearly not Gravemaw (a long, low, pink crystal
+centipede) and clearly not each other. Remco: bosses big, glowing, slow, with a clear facing. Alien, not Earth.
+
+**Silhouette map** (from the 44 degree game camera, so no two collide):
+Gravemaw = a long low segmented arrow with a crystal crest; **Cinder Matriarch = a tall four-stilt walker carrying a
+huge glowing kiln-sac behind it** (a teardrop with long splayed legs); **Frost Warden = the only upright one**, a
+tall hooded sentinel on four column legs with a broken halo of ice; **Rotbloom = a wide low mound wearing a giant
+five-petalled flower** (a star from above); **The Shattered = a humped knuckle-walking brute** whose armour bursts
+into a crystal star in three steps; **The Sealed One = a vast torso, head and four arms rising out of a broken ring
+of seal stones** (no legs, no tail: it is half in the ground).
+
+**The seal glyph** (shared by the Warden's markings and the Sealed One's seal stones, so the player can connect them
+on the last continent): a ring of seven broken arcs inside an outer ring, seven spokes, seven inward chevrons and a
+ringed eye in the centre. Built in `titan_kit.seal_mask`. Seven is the seal's number throughout (seven spokes,
+seven seal stones; Directive 7 is the human echo of it).
+
+## Cinder Matriarch (continent 2, Ashen Reach: burning trail, releases fire larvae, immune to the Lava Ball)
+
+**Earth starting point:** a harvestman carrying an egg sac, crossed with a kiln. She is the mother of the
+Slagstrider line (same stilt-and-slag language, grown huge and old), not a scaled Slagstrider.
+
+1. **A kiln-sac brood furnace.** The rear is a huge low-slung sac of chilled slag floes broken by molten cracks,
+   hanging between the hind legs; three **larva chimneys** rise from its back (bones `Vent_1..3`, they flare open in
+   Spawn; larvae leave from their mouths), and its tip drips the burning trail (bone `Drip`).
+2. **Four stilt legs** whose knees rise above her back, each foot a heat-proof cone of slag drums (she wades lava;
+   the Lava Ball does nothing), plus **two ember scythes** folded under the head like raptorial arms.
+3. **A forward arrow head:** a long slag wedge whose jaw splits into four glowing mandibles, under a crown of
+   back-swept ember-Crysium horns. Hot front, the sac glows behind: the facing cue is the head's arrow and the
+   bright mouth.
+4. **A mantle of slag shingles** over the thorax with molten seams, and a ridge of ember-Crysium spines down the
+   back (the second material).
+
+Colour: charcoal slag, orange-yellow molten glow, white-hot chimney mouths, ember Crysium (amber to pale gold).
+Clips: Walk, Idle, Hit, Death (the furnace cracks and floods), Spawn (sac heaves, chimneys flare, larvae out),
+Roar (rears up, scythes spread, mandibles wide).
+
+**Fire larva** (her minion, under 1,500 triangles): a short slag grub of five shingled segments with molten seams,
+a hot ember head with two hooked mandibles, three pairs of stub legs. Clips Crawl (a wave front to back), Idle, Hit,
+Death (it cools and curls).
+
+## Frost Warden (continent 3, Northern Crown: freezes towers in a radius, faster as it loses HP, "a guardian")
+
+**Earth starting point:** a praying mantis standing guard, crossed with a hooded statue at a gate. It does not hunt;
+it stands for something.
+
+1. **Sentinel bearing.** The only upright boss: four column legs carry a tall torso (about 3.4 high), the two long
+   arms end in grown ice glaives held crossed in front of the chest at rest, like a guard at a door.
+2. **A hooded crest** of dark slate plates over a narrow face: no mouth, a vertical slit and amber eye-pits in a
+   ring (the seal's eye).
+3. **Ancient markings:** the seal glyph engraved large on the chest plate and small on both shoulder plates, lit warm
+   amber-gold. They are older than the creature's armour (worn, partly frosted over).
+4. **A broken halo of ice** behind the head (bone `Halo`) and ice prism clusters on the shoulders and back (ice
+   with the warm root glow of the Shardback, its smaller kin). FreezePulse: the arms rise and drive both glaives into
+   the ground, the halo flares (bone scale) and the frost ring leaves the impact point. Enrage: it drops from the
+   upright guard into a forward hunch, the glaives come out wide and the halo flares: a visibly faster, angrier
+   silhouette for the low-HP phase.
+
+Colour: dark slate violet stone-chitin, frosted blue-white ice with amber roots, amber-gold rune light. Two
+materials (body, ice). Clips: Walk, Idle, Hit, Death (kneels and bows, glaives planted), FreezePulse, Enrage.
+
+## Rotbloom (continent 4, Mirewood: regenerates, slime trail that hastes enemies behind it, fought at Pioneer-1)
+
+**Earth starting point:** a corpse flower (rafflesia) growing on the back of a bog tortoise. The creature is the
+flower's walking soil.
+
+1. **A wide low mound** of rotting bark plates and moss on six short root legs, dragging a translucent slime skirt
+   whose rim glows lime (the trail starts under it: bone `Trail`).
+2. **The bloom:** a giant five-petalled carrion flower covers the back (petals on bones `Petal_1..5`), wine-dark
+   outside, glowing coral to lime inside, round a pit-maw ringed with stamen spikes. Bloom: the petals open flat, the
+   stamens rise and spores burst. From above it is a star: unmistakable.
+3. **Regrowth pods:** four sap pods on the flanks (bones `Pod_1..4`) swell in Regrow, so healing is something you
+   see (Knitback language, bigger).
+4. **A bark-skull head** low at the front with a broad dripping shovel mouth, amber eyes and dead-branch antlers
+   swept back.
+
+Colour: bark brown and moss olive, lime slime glow, wine and coral petals with a lime throat (warm, rotten). Two
+materials (body, bloom). Clips: Crawl, Idle, Hit, Death (the bloom wilts shut, the mound sinks), Regrow, Bloom.
+
+## The Shattered (continent 5, Southern Crown: a Burrower full of overcharged Crysium, three phases, explodes)
+
+**Earth starting point:** a gorilla-like knuckle-walker with an ankylosaur's back. It used to be a Burrower; our
+superweapons overcharged the crystal inside it ("we made this monster").
+
+1. **A humped brute** that walks on four arms: a massive front pair with spade fists, a shorter hind pair, a high
+   hump of armour plates, a small low head under the hump with a cracked jaw.
+2. **Three states on one rig:** eight armour plates on their own bones (`Shell_1..8`) and six crystal clusters
+   inside (`Crys_1..6`). Intact: all plates on, seams leaking light, crystals small and hidden. Cracked
+   (PhaseBreak1): the four hump plates blow off, the crystals grow out through the gaps. Bursting (PhaseBreak2): the
+   rest blow off, the crystals swell into a white-hot star. Death: the crystals swell past breaking and the body
+   collapses into them (the final explosion).
+3. **The light leaks more each phase:** the body under the plates is a seamed core of overcharged flesh (hot pink to
+   white), so whatever is exposed burns brighter; Unity raises the emission per phase.
+
+Colour: the old Burrower plum-bronze armour, overcharged Crysium with white-hot cores, magenta-pink bodies and violet
+roots. Two materials (body, crystal). Clips: Walk, Idle, Hit, PhaseBreak1, PhaseBreak2, Death.
+
+## The Sealed One (continent 6, The Core: the ancient being under the seal, summons corrupted enemies, final boss)
+
+**Earth starting point:** none that should be recognisable: a vast, eyeless, praying figure. Partly emerged: only
+torso, head and arms rise out of the ground; the rest is under the seal.
+
+1. **Rising out of the seal:** the torso stands in a fissure ringed by **seven broken seal stones** (bones
+   `Seal_1..7`) carved with the glyph in amber-gold; in Death they tilt inward and close over it (the seal is
+   restored) while the body sinks.
+2. **The head:** a tall smooth eyeless crest split into three plates that open (Summon) to show a column of violet
+   light; behind it a **crown of three broken rings** carved with glyph bands (bones `Ring_1..3`) that turn and flare.
+3. **Four arms:** two vast lower arms planted on the ground in front (it is pulling itself out), three-fingered
+   hands with long claws; two thinner upper arms folded high, palms carrying the glyph, raised in Summon.
+4. **Ancient body:** a ribcage of pale ash-ivory bone-stone with deep violet light between the ribs and violet
+   corruption crystals breaking through shoulders and spine (the same violet as the corrupted skins).
+
+Colour: ash-ivory bone-stone, deep violet glow (the entity), amber-gold glyphs on the seal stones and rings (the
+seal). Two materials (body; seal and crystal). Clips: Idle, Rise (from under the ground), Summon, Hit, Death (sinks
+back as the seal stones close).
+
+# Round 16: polish pass on the two humans (Voss, Mercer, 2026-11-04)
+
+Curator feedback on rounds 6 and 13: Voss read as a doll (tube arms, a coat like a padded sweater, one chunk of
+fringe, plastic skin, a bobblehead on a thin neck above a giant collar, faceted eyelids, a Talk jaw that stretched the
+lower face); Mercer's plates were soft pillows fused from simple shapes, with soft panel lines, mitten gloves, a
+support hand inside the gun hand, a Down that ended 0.85 off the origin and Shoot/Reload too subtle at game zoom.
+
+## The cause and the shared fix: layered shells
+
+Both were built with the creature pipeline, which voxel-fuses every part into one surface. That suits chitin, but a
+plate on cloth, a lapel on a coat, a lock of hair on a head and four fingers on a palm all melt into one rounded
+volume. `suit.build_layered_asset` (new, used by both) fuses parts in **layers**: each layer is remeshed on its own
+(own voxel size and smoothing), decimated to its own triangle share or fixed budget, baked from its own source only
+(a ray from the suit can no longer pick up a plate hovering above it), and the part lookups for styles, skin weights
+and UV seams are layer-aware. Separate shells now overlap like real garments and armour pieces.
+
+`suit.dome_patch` and `suit.limb_shell` build hard plates as thickened surface patches with a bevelled rim (a chamfer
+row at the edge, about half the thickness), so the plates have crisp, light-catching edges instead of pillows.
+
+## Mercer (identity unchanged: white helmet with the yellow stripe, white shoulders, navy suit, cyan cells)
+
+- Layers: padded suit (soft, quilted), plates (cuirass, pauldrons and lames, forearm bracers, thigh and shin guards,
+  knee caps, helmet: fine voxel, little smoothing), gear (pack, belt, pouches, boots, visor, collar), gloves.
+- The cuirass is a shell narrower at the waist; pauldrons are shallow sloped shells with a separate yellow-rimmed lame
+  under the outer edge; limb plates wrap part of the limb with bevelled edges and real panel grooves.
+- Gloves: palm, back-of-hand plate, index, middle and a ring-plus-little-finger group with real gaps, and the thumb;
+  all on the existing Fingers/Thumb bones (no new bones).
+- Clips: the support hand now cups the gun hand from the left (beside and slightly below the grip, tilted) instead of
+  sitting inside it; Shoot kicks harder (24 degrees muzzle rise, 6.5 cm back, shoulders and head react); Reload has a
+  wider arc (a flick, the pistol low at the chest, the head and chest turn to it); Down stumbles half a metre to the
+  left before toppling right, so the hips end 0.39 from the origin (was 0.89) and the head 0.84 (was 1.34). Revive
+  starts from the new end pose.
+
+## Voss (a believable stylised scientist)
+
+- Proportions: the head sits 3 cm lower on a thicker neck; the mock collar is higher and the coat collar rolls round
+  the back of the neck, so the neck reads short and the head no longer floats.
+- Head: one sculpted surface (eye sockets, cheekbones, brow, a soft jaw line to a small chin, a flatter face plane, a
+  fuller back of the skull), a small straight nose, lips as their own volumes with a dark mouth inside behind them;
+  dark tapered brow strokes as their own shells.
+- Eyes and lids: eyeballs and lids are separate layers with their own budgets (440 and 760 triangles); the upper lid
+  is a band concentric with the eye that runs over the top of the eyeball, so the blink slides it down without
+  facets or gaps.
+- Hair: a cap with a lower hairline, seventeen locks from the hairline and the side parting swept back, side and
+  back locks gathered into a twisted bun with a pin, a two-lock fringe sweeping to her right temple.
+- Clothes: navy ribbed utility top with the cyan-lit mock collar; a field-lab coat with body panels open in a V above
+  the top button, a buttoned placket below, a rolled collar, notched lapels with real thickness, a yoke with the
+  colony-blue shoulder stripe between stitched seams, set-in sleeves with an armhole seam and a back seam, a breast
+  pocket with two pens, the yellow ID card on the left lapel, the NTI patch on the left sleeve.
+- Skin: matte (roughness 0.66, specular 0.35) with painted warmth on cheeks, nose and ears in place of subsurface.
+- Talk: the jaw (up to 7 degrees) moves only what lies below the lips, split hard across the mouth line and fading
+  over the cheeks and towards the ears, so the lips part instead of the lower face stretching.
+- Budget: 10,000 triangles (portrait and cutscene only; head 3,300, eyes 440, lids 760, hair 1,500, gear 750, top
+  420, the coat the rest). Smart, layer-weighted UVs: the face and eyes get about twice the texel density of the coat.

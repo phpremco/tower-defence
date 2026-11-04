@@ -292,3 +292,31 @@ Editor open. It reads the generated assets and the wave scripts. Docs/BALANCE.md
 - `BalanceProbeTests` writes `Logs/probe_trace.txt`: per wave the money earned, unspent money, base, hero state, creatures
   alive and where (origin, distance walked), base hits by species, flyers shot down, towers with their levels and raw
   damage per second, and the ledger's line for the same wave. Read it after a lost probe run before touching numbers.
+
+## Blender model import (added 2026-11-04, import stage 1)
+
+The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never reads that folder directly. The import:
+
+| Goal | Command |
+| --- | --- |
+| Copy changed exports into `Assets/_Project/Art/Models/Blender/` | `unity command menu --path "Tools/Generate/Sync Blender Models" --timeout 600` |
+| Sync, rebuild materials and art data, point the enemies at them | `unity command menu --path "Tools/Generate/Blender Creatures (sync, materials, enemies)" --timeout 600` |
+| Everything (also part of the full generator, step "Creature art") | `unity command menu --path "Tools/Generate/Scenes and Starter Data" --timeout 600` |
+| Recompile + creature art in one go (Play Mode must be stopped) | `bash Tools/PlayTest/imp_regen.sh` |
+| List every art definition with clips, distances, moments | `eval_file --file Tools/PlayTest/imp_art_probe.cs`, then read `Tools/PlayTest/imp_art_probe.txt` |
+| List the bones, meshes and clips of one imported FBX | write the asset name to `Tools/PlayTest/imp_arg.txt`, `eval_file --file Tools/PlayTest/imp_inspect.cs`, read `imp_inspect.txt` |
+| Performance check (densest wave of C1_06 and C1_05, High and Low) | `run_tests --mode PlayMode --filter ModelPerformanceTests --async_tests true`; numbers in `Logs/model_perf.txt` and the test output |
+
+- **What gets copied** (`BlenderSync`): per asset the FBX, `_LOD1.fbx`, the four 1024 maps, the `Low/` 512 maps, baked skins
+  under `Skins/<Name>/` and the report; plus `Exports/Detail/Detail_*_Normal.png`. A file is copied only when its size or
+  write time differs, so a rerun with unchanged exports copies nothing. Without `ArtSource/` the copies in `Assets` stay.
+- **Import settings** (`BlenderModelImporter`, applies to everything under `Art/Models/Blender/`): scale 1 with file units,
+  Bake Axis Conversion, Generic rig, imported normals with Mikktspace tangents, no materials, scale curves kept, takes
+  renamed from `Rig|Clip` to `Clip` and the cycles looped (`BlenderArtCatalog.IsLoop`); the far LOD's mesh node loses
+  its `_LOD1` suffix (`_Far`) so Unity stops warning about LOD naming. Normal maps as normal maps, Mask and detail
+  normals linear, Albedo and Emission sRGB, detail normals tiling with aniso 4. Bump `GetVersion()` after changing it.
+- **Which model an enemy wears** is `BlenderArtCatalog.EnemyArt`; scales, pivots, power frames and the look per material
+  (emission, smoothness, detail strength, rim, brightness) are the rows in `BlenderArtCatalog.CreateCreatures`. The
+  generated data: `Data/Art/<Id>.asset` (`ModelArtDefinition`), `Art/Materials/Blender/<Id>.mat` and `<Id>_Low.mat`.
+- A new creature: add its export folder name to a row (and the enemy to `EnemyArt`), run the creature menu item.
+- Screenshots of creatures at play size: `Tools/PlayTest/enemy_shots.sh <prefix> <level> <ortho half height> <Enemy> ...`.

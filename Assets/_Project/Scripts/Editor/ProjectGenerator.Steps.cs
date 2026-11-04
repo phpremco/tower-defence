@@ -27,6 +27,8 @@ namespace Game.Editor
             new GeneratorStep("Models", _ => CustomModelBuilder.BuildAll()),
             new GeneratorStep("Towers", GenerateCoreTowers),
             new GeneratorStep("Bestiary", c => c.Bestiary = CreateBestiary()),
+            // The Blender models: synced from ArtSource, turned into materials and art data, and worn by the bestiary.
+            new GeneratorStep("Creature art", _ => BlenderArtBuilder.ApplyToEnemies(BlenderArtBuilder.SyncAndBuildCreatures())),
             new GeneratorStep("Difficulties", GenerateDifficulties),
             new GeneratorStep("Hero", GenerateHero),
             new GeneratorStep("Hero perks", GenerateHeroPerks),

@@ -1255,3 +1255,64 @@ after balance", items 4 and 5.
   runs); `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2. Console 0 errors; warnings only the known test fixture "Grid size must be positive".
   Generator rerun idempotent (only `Waves_C1_03.asset` changed; the scenes get new file ids on every run as before).
   Save restored to its MD5.
+
+## Import stage 1 (2026-11-04)
+The Blender creatures are in the game: every species and boss with an export wears its model (logic untouched, only
+the view side changed). Stages 2-4 (hero and towers, our structures/drones/gadgets, environment) reuse the same parts.
+- **Pipeline (editor):** `Editor/BlenderModels/`: `BlenderSync` copies changed exports from `ArtSource/Exports` into
+  `Art/Models/Blender/<Asset>/` (FBX, far LOD, 1024 and `Low/` 512 maps, skins, report, shared detail normals; skips
+  unchanged files by size and write time); `BlenderModelImporter` (AssetPostprocessor) sets the FBX and texture import
+  settings, renames `Rig|Clip` takes and loops the cycles, renames the far LOD's `_LOD1` node (Unity's LOD-naming
+  warning); `BlenderArtCatalog` (rows: scale, pivot, power frames, look) and `BlenderArtBuilder` (materials High/Low,
+  `ModelArtDefinition` assets, enemy wiring). Menu `Tools/Generate/Sync Blender Models` and `Tools/Generate/Blender
+  Creatures (sync, materials, enemies)`; the full generator runs it as step "Creature art". See COMMANDS.
+- **Data:** `Core/ModelArt/ModelArtDefinition` (model, far LOD, material per profile, scale factor, pivot, top height,
+  LOD switch height, death glow fade, clips by `ModelClipRole` with distance per loop, event second, power trigger,
+  socket and blend weight, plus the far LOD's copy of each clip); `EnemyDefinition.Art`. Without art an enemy keeps its
+  procedural body. Generated: `Data/Art/*.asset` (25), `Art/Materials/Blender/*.mat` (+ `_Low`).
+- **Animation:** a PlayableGraph per rig (`Core/ModelArt/ModelClipPlayer`): a mixer with one input per clip, a
+  cross-faded cycle and one clip on top (fade in/out or hold). Chosen over generated Animator Controllers because the
+  rates, start times and timed powers are set from code each frame without parameter plumbing or controller assets;
+  the player owns the clock and writes every clip time, so the culled far LOD (its own lighter rig and clips) resumes
+  in step. `Enemies/CreatureClips` picks the clips: travel cycle at `speed / (distance per loop x scale)`, idle, Roller
+  Curl/Roll/Uncurl, Wisp and Core Wisp Land/Grounded (Land backwards to lift off), Hit (Block while plates are left for
+  Bulwark and Crystal Warlord), own strike clips (Stinger/Acid Empress Strike, Skyray Dive) timed so the hit frame lands
+  on the attack peak, boss power clips started early from `BossAbilities.SecondsUntil(kind)` (new read-only getter) so
+  the release frame falls on the power (Brood Mother Spawn 40, Pack Alpha Howl 22, Core Wisp Pulse 14, Acid Empress
+  Spray 26, Crystal Warlord Sweep 20, Slime Monarch Flood 24 / Spawn 30, Roller King Quake 16, Queen Scream); sparks at
+  the socket bone at the release frame. `CreatureModel` holds the two LODs under a LODGroup with one instance material
+  (hit flash and frost via the new `_OverlayColor`, boss pulse via `_EmissionColor`). The wing hinge, SurfaceWave and
+  CrashSpin never run on a model. `ModelCorpse` (pooled per model by `EnemyDeathEffectPool.PlayModel`) plays Death,
+  fades the glow (Cragback frames 8-40, others 25-85 % of the clip), drops flyers to the ground, splashes, sinks.
+  `CreatureDisplay` shows models in menus/codex/cutscenes in their idle cycle.
+- **Shader:** `Game/UnitLit` adds `_MaskMap` (`_MASKMAP`: occlusion strength 0.5, smoothness = mask.g x `_Smoothness`),
+  `_DetailNormalMap` (`_DETAIL`, mask.b) and `_DetailNormalMap2` (`_DETAIL2`, mask.a, not on Low) with whiteout blending
+  and a fade by screen footprint (`_DetailFade`, tiles per pixel), and `_OverlayColor`. Old materials unchanged.
+- **Quality:** `IPlatformSettings.LowDetailModels` / `LodBias` (PC false / 1, Switch true / 0.6) -> `ModelQuality`
+  service + `QualitySettings.lodBias` in Bootstrapper. Low wears the 512 maps without `_DETAIL2`.
+- **Curator decision applied:** Storm Matriarch (data: bat boss, Element Storm + Bat Swarm) wears the bat-boss export
+  (`SkySovereign.fbx`, art `BatBoss`, its Laser clip shows the Element Storm volley); Sky Sovereign (data: ray boss, Tail
+  Laser) wears the ray-boss export (`StormMatriarch.fbx`, art `RayBoss`, no laser clip, the beam stays VFX). The L4
+  line "smaller contacts detaching" still fits: the Matriarch still releases Mossbats. Mirebat wears the Moss skin
+  (no bog skin baked); Tide and Frost bats wear their new warm-glow skins.
+- **Scale:** species at data scale x 1.4 (the factory's species factor; without it they were 30 % smaller than before),
+  bosses x 0.6 (the factory boss factor), Queen x 0.33 (round 2 grew her far past the old one), the swapped sky bosses at
+  their built size (0.7 / 0.514).
+- **Look tuning at play size** (screenshots `imp1_c_*`, `imp1_d_*` in the session scratchpad `imp1_shots/`): Skitter
+  albedo 1.6x, glow 3.5, rim 0.9; Prowler 1.45x, glow 3.5, rim 0.9; Skyray glow 3.2. Further mid-scale fixes for the
+  Blender side are in MODEL_TODO, "Na import stage 1".
+- **Performance** (`ModelPerformanceTests`, densest wave on Psycho with the wave clock off, 180 frames, editor Play Mode,
+  main-thread `PlayerLoop`; budget p95 <= 33 ms in the editor): C1_06 wave 16, 63 creatures: High avg 9.4 / p95 11.5 ms,
+  Low 8.4 / 12.4 ms, 124-126 skinned meshes (two LODs each, about 30 in view). C1_05 wave 15, 105 creatures: High
+  12.9 / 19.9 ms, Low 10.0 / 13.5 ms, 204 skinned meshes (102 drawn). An earlier run measured 6.5-11.3 ms avg; the
+  editor's own load varies. Report in `Logs/model_perf.txt`.
+- **Fix found by the tests:** `EnemyView.AddBossPresence` indexed the procedural palette slots; it now takes the
+  glowing materials (a modelled boss passes its one material).
+- **Tests:** EditMode 286/286 (new `CreatureArtTests` 3). PlayMode `ContinentSimulationTests` 2/2, `StoryCrystalTests`
+  2/2, `StorySmokeTests` 2/2, `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests` smoke 1/1, new
+  `ModelPerformanceTests` 1/1. Console 0 errors; warnings only the known fixture "Grid size must be positive" (a
+  reimport of all models after an importer change logs the SpaceKit "Identifier uniqueness violation" warnings once).
+  Save restored to its MD5.
+- **Open:** walk distance per loop of Skitter (0.36) and Queen (0.9) is estimated; Queen has no Hit/Death clip and no
+  far LOD (falls back to idle, corpse without a fall clip); the Ray boss's laser and the Bat boss's swarm have no clip;
+  `Art/Models/Blender` holds ~230 MB of PNG/FBX (git LFS question for Remco); Skyray/Wisp colour question still open.

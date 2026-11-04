@@ -50,5 +50,6 @@ MonoBehaviour:
   _deathStyle: 0
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: 5e3f26eb4819f844795567de71d3a89a, type: 2}
   _voice: {fileID: 11400000, guid: 190b415658643e24e891ab57a140ec00, type: 2}
   _description: 'The hive queen: pulses that shake the field and an endless brood.'

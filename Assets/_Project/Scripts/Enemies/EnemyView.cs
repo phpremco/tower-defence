@@ -184,6 +184,14 @@ namespace Game.Enemies
         private const float HoverPoolRadius = 0.5f;
         private const float HoverPoolBrightness = 0.7f;
         private const float PlateDebrisSize = 0.3f;
+        // An imported model moves its own body: the procedural attack pose only adds a share of its lunge and pitch,
+        // less still when the model has a strike clip of its own.
+        private const float ModelPoseShare = 0.6f;
+        private const float ModelStrikePoseShare = 0.25f;
+        private const float ModelFlashAmount = 0.75f;
+        private const float ModelFrostAmount = 0.5f;
+        // A dead flyer comes to rest with its body centre this far (times its scale) above the ground.
+        private const float FlyerRestHeight = 0.15f;
         private static readonly Color BarColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color ArmorBarColor = new Color(0.7f, 0.85f, 1f);
         private static readonly Color ShadowColor = new Color(0f, 0f, 0f);
@@ -290,6 +298,10 @@ namespace Game.Enemies
         private readonly List<Rig> _jaws = new List<Rig>();
         private readonly List<Renderer> _wavedRenderers = new List<Renderer>();
         private readonly List<SurfaceWave> _waves = new List<SurfaceWave>();
+        private CreatureModel _model;
+        private CreatureClips _clips;
+        private BossAbilities _abilities;
+        private BossAbilityKind[] _powerKinds;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -321,6 +333,7 @@ namespace Game.Enemies
             _enemy.Attacked -= OnAttacked;
             _enemy.Killed -= OnKilled;
             _enemy.Deactivated -= OnDeactivated;
+            _model?.Dispose();
         }
 
         private void LateUpdate()
@@ -334,6 +347,12 @@ namespace Game.Enemies
             {
                 Vector3 position = _enemy.Position;
                 _shadow.position = new Vector3(position.x, ShadowHeight, position.z);
+            }
+
+            if (_model != null)
+            {
+                AnimateModelled();
+                return;
             }
 
             if (_procedural)
@@ -389,6 +408,7 @@ namespace Game.Enemies
             _health.ArmorChanged += OnArmorChanged;
             ShowPlates(_plates.Count);
             SetBar(1f, _health.ArmorMax > 0f ? 1f : 0f);
+            _clips?.Restart();
             BeginSpawn(enemy);
         }
 
@@ -527,7 +547,7 @@ namespace Game.Enemies
             _shellMaterials = materials;
             if (definition.IsBoss)
             {
-                AddBossPresence(body, definition, materials);
+                AddBossPresence(body, definition, new[] { materials[EnemyModelFactory.Eyes], materials[EnemyModelFactory.Glow], materials[EnemyModelFactory.Accent] });
             }
 
             _flashMaterials = new Material[materials.Length];
@@ -567,8 +587,58 @@ namespace Game.Enemies
 
             // Plates drop in index order, so they are kept sorted once.
             _plates.Sort((a, b) => a.Spec.Index.CompareTo(b.Spec.Index));
+            BuildEffects(definition, parts.Embers);
 
-            if (parts.Embers)
+            if (_hover > 0f)
+            {
+                GlowDecal.PlacePool(transform, definition.AccentColor * HoverPoolBrightness, HoverPoolRadius * _creatureScale, ShadowHeight);
+            }
+
+            _barHeight = parts.Height * _creatureScale + _hover + BarMargin;
+        }
+
+        // An imported creature: its model and clips carry the body's motion; the view adds the field around it (spawn,
+        // drift, lunge, flash, frost, trails, bolts) the way it does for a procedural creature.
+        private void BuildModelled(Transform body, EnemyDefinition definition)
+        {
+            ModelArtDefinition art = definition.Art;
+            _boss = definition.IsBoss;
+            _creatureScale = definition.Scale * art.Scale;
+            _bleeds = art.Bleeds;
+            _dangle = definition.Flies;
+            body.localPosition = Vector3.zero;
+            body.localScale = Vector3.one;
+            _model = CreatureModel.Create(body, art, _creatureScale, ModelQuality.IsLow);
+            _shellMaterials = new[] { _model.Material };
+            _abilities = GetComponent<BossAbilities>();
+            BossAbilityDefinition[] abilities = definition.Abilities;
+            _powerKinds = new BossAbilityKind[abilities.Length];
+            var triggers = new string[abilities.Length];
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                _powerKinds[i] = abilities[i].Kind;
+                triggers[i] = abilities[i].Kind.ToString();
+            }
+
+            _clips = new CreatureClips(_model.Player, art, triggers);
+            if (definition.IsBoss)
+            {
+                AddBossPresence(body, definition, _shellMaterials);
+            }
+
+            BuildEffects(definition, art.Embers);
+            if (_clips.Lands)
+            {
+                GlowDecal.PlacePool(transform, definition.AccentColor * HoverPoolBrightness, HoverPoolRadius * _creatureScale, ShadowHeight);
+            }
+
+            _barHeight = art.Height * _creatureScale + BarMargin;
+        }
+
+        // The field around a creature: embers, drips, the haste trail, frost, sparks where its blows land and its bolts.
+        private void BuildEffects(EnemyDefinition definition, bool embers)
+        {
+            if (embers)
             {
                 Color ember = definition.Color * 1.6f;
                 ember.a = 1f;
@@ -597,20 +667,13 @@ namespace Game.Enemies
                     _bolts[i] = _attachments.Track(EnemyBoltView.Create(transform.parent, definition.AccentColor));
                 }
             }
-
-            if (_hover > 0f)
-            {
-                GlowDecal.PlacePool(transform, definition.AccentColor * HoverPoolBrightness, HoverPoolRadius * _creatureScale, ShadowHeight);
-            }
-
-            _barHeight = parts.Height * _creatureScale + _hover + BarMargin;
         }
 
         // A boss burns brighter than its kin: its eyes and seams breathe, and a light in its colour spills over the ground.
-        private static void AddBossPresence(Transform body, EnemyDefinition definition, Material[] materials)
+        private static void AddBossPresence(Transform body, EnemyDefinition definition, Material[] glowing)
         {
             var pulse = body.gameObject.AddComponent<EmissionPulse>();
-            pulse.Initialize(new[] { materials[EnemyModelFactory.Eyes], materials[EnemyModelFactory.Glow], materials[EnemyModelFactory.Accent] }, BossPulseDepth, BossPulseSpeed);
+            pulse.Initialize(glowing, BossPulseDepth, BossPulseSpeed);
 
             var lightGo = new GameObject("BossLight");
             lightGo.transform.SetParent(body, false);
@@ -812,19 +875,11 @@ namespace Game.Enemies
             float pulse = _hover > 0f ? Mathf.Sin(_clock * HoverPulseSpeed + _swayPhase) * HoverPulse : 0f;
             _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash + pulse) * grow);
 
-            if (_embers != null)
-            {
-                ParticleKit.SetRate(_embers, walking ? EmberRate : EmberIdleRate);
-            }
-
-            _rush.transform.position = position - forward * (0.2f * _creatureScale) + Vector3.up * (0.1f * _creatureScale + bob * hoverScale);
-            ParticleKit.SetRate(_rush, hasted && walking ? HasteTrailRate : 0f);
+            UpdateTrails(position, forward, walking, hasted, bob * hoverScale);
 
             // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.
             bool flash = _hitTime < FlashSeconds && !_boss;
             bool slowed = _enemy.IsSlowed;
-            _frost.transform.position = position + Vector3.up * (0.15f * _creatureScale + bob * hoverScale);
-            ParticleKit.SetRate(_frost, slowed ? FrostRate : 0f);
             Material[] look = flash ? _flashMaterials : slowed ? _frostMaterials : _shellMaterials;
             if (look != _currentLook)
             {
@@ -834,6 +889,112 @@ namespace Game.Enemies
                     _partRenderers[i].sharedMaterials = look;
                 }
             }
+        }
+
+        // Embers while it moves, the haste trail behind a hurried creature, frost over a chilled one.
+        private void UpdateTrails(Vector3 position, Vector3 forward, bool walking, bool hasted, float lift)
+        {
+            if (_embers != null)
+            {
+                ParticleKit.SetRate(_embers, walking ? EmberRate : EmberIdleRate);
+            }
+
+            _rush.transform.position = position - forward * (0.2f * _creatureScale) + Vector3.up * (0.1f * _creatureScale + lift);
+            ParticleKit.SetRate(_rush, hasted && walking ? HasteTrailRate : 0f);
+            _frost.transform.position = position + Vector3.up * (0.15f * _creatureScale + lift);
+            ParticleKit.SetRate(_frost, _enemy.IsSlowed ? FrostRate : 0f);
+        }
+
+        // An imported creature: the clips move its legs, wings and body; on top the view turns it along its heading,
+        // lets a flyer drift and roll, lunges into an attack, knocks it back on a hit, and lifts it out of its entrance.
+        // Its own strike and power clips replace most of the procedural attack pose.
+        private void AnimateModelled()
+        {
+            float dt = Time.deltaTime;
+            _clock += dt;
+            Vector3 position = _enemy.Position;
+            float moved = (position - _lastPosition).magnitude;
+            _lastPosition = position;
+            bool walking = moved > StandStillDistance * dt;
+            float strike = AttackCurve(out float rear);
+            float knock = HitCurve();
+            float grow = SpawnCurve(out float emerge);
+            AttackStyle style = _enemy.Definition.AttackStyle;
+            PlayStrikeMoments(strike, style);
+            AnticipatePowers();
+            _clips.Tick(dt, dt > 0f ? moved / dt : 0f, walking, _enemy.IsRolling, _creatureScale);
+            PlayClipMoment();
+
+            Vector3 forward = _enemy.Heading.sqrMagnitude > 0.0001f ? _enemy.Heading.normalized : Vector3.forward;
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            float swayWave = _dangle ? Mathf.Sin(_clock * FlyerSwaySpeed + _swayPhase) : 0f;
+            float sway = swayWave * FlyerSwayDistance * _creatureScale;
+            AttackPose(style, rear, strike, out float attackPitch, out float attackYaw, out float attackLift, out float lunge);
+            float pose = _clips.HasOwnStrike ? ModelStrikePoseShare : ModelPoseShare;
+            float along = (strike * lunge * pose - rear * AttackRearBack * pose - knock * HitKnockBack) * _creatureScale;
+            _body.position = position + Vector3.up * (attackLift * pose * _creatureScale - emerge) + forward * along + right * sway;
+            float lean = _enemy.IsHasted && walking && !_dangle ? HasteLeanDegrees : 0f;
+            float roll = -swayWave * FlyerRollDegrees;
+            if (style == AttackStyle.Whip)
+            {
+                roll += strike * FlyerRollDegrees * 2f * _whipSide * pose;
+            }
+
+            _body.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(attackPitch * pose + lean, attackYaw * pose, roll);
+            _body.localScale = Vector3.one * grow;
+            UpdateTrails(position, forward, walking, _enemy.IsHasted, 0f);
+
+            // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.
+            bool flash = _hitTime < FlashSeconds && !_boss;
+            if (flash)
+            {
+                _model.SetOverlay(Color.white, ModelFlashAmount);
+            }
+            else if (_enemy.IsSlowed)
+            {
+                _model.SetOverlay(FrostColor * FrostEmission, ModelFrostAmount);
+            }
+            else
+            {
+                _model.SetOverlay(Color.white, 0f);
+            }
+        }
+
+        // A boss's power clip starts early, so that its release frame falls on the moment the power fires.
+        private void AnticipatePowers()
+        {
+            if (_abilities == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _powerKinds.Length; i++)
+            {
+                _clips.Anticipate(i, _abilities.SecondsUntil(_powerKinds[i]));
+            }
+        }
+
+        // The moment inside a clip (a brood leaving the vent, the acid leaving the gland, a sweep passing the front)
+        // throws sparks in the creature's colour from the bone it comes out of.
+        private void PlayClipMoment()
+        {
+            int clip = _clips.EventClip;
+            if (clip < 0 || _impact == null)
+            {
+                return;
+            }
+
+            ModelClip moment = _model.Art.Clips[clip];
+            if (moment.Role != ModelClipRole.Power)
+            {
+                return;
+            }
+
+            ParticleSystem.MainModule main = _impact.main;
+            main.startColor = _rush.main.startColor;
+            main.gravityModifier = 0.6f;
+            _impact.transform.position = _model.Socket(moment.Socket).position;
+            _impact.Emit(Mathf.RoundToInt(SlamDustBurst * Mathf.Clamp(_creatureScale, 0.6f, 2f)));
         }
 
         // Insect hips swing and lift with the gait, knees fold as the foot comes up; the front pair claws on a
@@ -1243,7 +1404,11 @@ namespace Game.Enemies
             _body = body;
             _bodyRestPosition = body.localPosition;
 
-            if (definition.Shape != EnemyShape.None)
+            if (definition.Art != null && definition.Art.Model != null)
+            {
+                BuildModelled(body, definition);
+            }
+            else if (definition.Shape != EnemyShape.None)
             {
                 BuildCreature(body, definition);
             }
@@ -1278,9 +1443,10 @@ namespace Game.Enemies
                 _partCurls[i] = DeathCurlFor(_partFilters[i].transform);
             }
 
-            float barY = _procedural ? _barHeight : BarOffsetY;
+            bool shaped = _procedural || _model != null;
+            float barY = shaped ? _barHeight : BarOffsetY;
             // A big creature gets a wider line, so a boss shows its health as plainly as a grunt does.
-            _barWidth = Mathf.Clamp(BarWidth * (_procedural ? _creatureScale : definition.Scale), BarWidth, MaxBarWidth);
+            _barWidth = Mathf.Clamp(BarWidth * (shaped ? _creatureScale : definition.Scale), BarWidth, MaxBarWidth);
             _barY = barY;
             // A dark plate behind both lines, so the bars read against a bright floor as well as a dark one.
             GameObject plate = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, PlateColor, transform, new Vector3(0f, barY + BarHeight * 0.8f, BarHeight * 0.6f), new Vector3(_barWidth * PlateWidthScale, BarHeight * PlateHeightScale, BarHeight * 0.5f));
@@ -1327,6 +1493,7 @@ namespace Game.Enemies
             {
                 _hitTime = 0f;
                 Bleed();
+                _clips?.Hit(_health.ArmorFraction > 0f);
             }
 
             _lastFraction = fraction;
@@ -1434,6 +1601,8 @@ namespace Game.Enemies
 
             _boltPending = _bolts != null;
             _impactPending = _bolts == null;
+            // The model's own strike lands on the attack's peak, where the bolt leaves and the sparks fly.
+            _clips?.Attack(_attackSeconds * (RearShare + (1f - RearShare) * 0.5f));
         }
 
         // The body is handed to the death pool as it stands right now; the pooled enemy itself is recycled at once.
@@ -1445,6 +1614,21 @@ namespace Game.Enemies
         {
             if (_deaths == null || !_built || _partFilters == null)
             {
+                return;
+            }
+
+            if (_model != null)
+            {
+                _deaths.PlayModel(enemy.Definition.Art, _body.position, _body.rotation, _creatureScale, new EnemyDeathEffect.Request
+                {
+                    Centre = _body.position,
+                    Momentum = enemy.Heading * (enemy.Definition.Speed * enemy.SpeedMultiplier),
+                    Color = enemy.Definition.Color,
+                    Blood = enemy.Definition.BloodColor,
+                    Size = _creatureScale,
+                    GroundY = DeathGroundY + (enemy.Definition.Art.BodyCentrePivot ? FlyerRestHeight * _creatureScale : 0f),
+                    Style = enemy.Definition.DeathStyle,
+                });
                 return;
             }
 

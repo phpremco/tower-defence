@@ -982,3 +982,26 @@ Mask B/A families (tiling in each report): Shardback chitin/crystal, Mireleech m
 Slagstrider rock/membrane, Siftjaw chitin/membrane, Surgefin membrane/chitin. Gait playback
 `velocity / (distance_per_loop x scale)`: Shardback 0.2, Knitback 0.194, Slagstrider 0.387, Siftjaw 0.2, Surgefin walk
 0.2 and swim 0.5, Mireleech 0.32 (model units per loop).
+
+## Round 16: polish pass on Voss and Mercer (2026-11-04)
+
+Design notes in `DESIGN_NOTES.md` (round 16). Both are rebuilt with `suit.build_layered_asset` (parts fused per layer:
+own remesh, own triangle share, per-layer bake) instead of one fused blob. File names, bone names, sockets and clip
+names are unchanged, so the import plans hold.
+
+| Asset | Files | Triangles | Rig and clips |
+| --- | --- | --- | --- |
+| Mercer | `Exports/Mercer/Mercer.fbx` (+ maps, `Low/`, `Weapons/` unchanged) | see report (budget 9,800), LOD1 4,000 | 31 bones as before; clips as before. Shoot, Reload and Down re-keyed (bigger kick, wider reload arc, Down ends near the origin); two-handed aim fixed |
+| Voss | `Exports/Voss/Voss.fbx` (+ maps, `Low/`) | 10,000 (budget raised from 6,000: portrait and cutscene only), no LOD1 | 10 bones as before; Idle 120, Talk 90 (jaw up to 7 degrees, was 4), Blink 8 |
+
+New options: both scripts take `--stage <dir>` (exports and .blend go there, for iterations while Unity imports);
+`build_voss.py --fast` renders the styled source without baking (shape checks in about two minutes).
+
+### Unity notes
+
+- Voss now has seven separate shells in one mesh (head, eyes, lids, hair, top, coat, gear); one material as before.
+  The UVs are a smart projection (more islands), so keep the 1024 maps; the Low set is 512.
+- Mercer's plates are separate shells on the suit: plates are rigid to one bone each (as before), the hollow inside
+  of a pauldron can show from a low camera, which the game camera never has.
+- The Down end pose moved: hips about 0.39 and head 0.84 to the figure's right of the root (was 0.89 and 1.34). If a
+  health bar or selection ring follows the hips bone nothing changes; if it uses a fixed offset, use 0.4.

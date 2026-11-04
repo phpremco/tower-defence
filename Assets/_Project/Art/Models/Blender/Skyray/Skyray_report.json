@@ -1,0 +1,48 @@
+{
+  "asset": "Skyray",
+  "game_tris": 3893,
+  "source_tris": 419604,
+  "bones": 22,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 53,
+    "folded_fallback_faces": 81,
+    "mirrored_faces": 1841,
+    "uv_coverage": 0.591,
+    "world_per_uv": 1.372151352938576
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 13.2,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 17.6,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 42,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 40,
+    "Dive": 24
+  },
+  "fly_beat_seconds": 1.4,
+  "pivot": "body centre (flight height)",
+  "dive_strike_frame": 10,
+  "lod1": {
+    "fbx": "Skyray_LOD1.fbx",
+    "tris": 1697,
+    "bones": 12
+  }
+}

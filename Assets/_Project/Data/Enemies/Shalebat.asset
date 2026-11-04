@@ -48,5 +48,6 @@ MonoBehaviour:
   _deathStyle: 1
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: fa3182ba672ba2743a9dd14ba317a40d, type: 2}
   _voice: {fileID: 11400000, guid: ea87553bd0c0d564dbab6c1155d6e555, type: 2}
   _description: Element bat. Rises from stone nests, spits bolts of its element at the towers it passes and crashes back into its element when it falls. Air only.

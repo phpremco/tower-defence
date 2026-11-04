@@ -48,5 +48,6 @@ MonoBehaviour:
   _deathStyle: 3
   _model: {fileID: 0}
   _modelScale: 1
+  _art: {fileID: 11400000, guid: 6f28477d0433e9448a6b0287b4271b0b, type: 2}
   _voice: {fileID: 11400000, guid: 07af71919e53a5c448e0931b08479a06, type: 2}
   _description: Ball of energy walking the road. Low health, high damage, stopped by gates, hit by ground and air guns alike.

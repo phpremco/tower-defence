@@ -1,0 +1,46 @@
+{
+  "asset": "Shalebat",
+  "game_tris": 3908,
+  "source_tris": 399104,
+  "bones": 16,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 47,
+    "folded_fallback_faces": 63,
+    "mirrored_faces": 1900,
+    "uv_coverage": 0.619,
+    "world_per_uv": 1.0242728098620009
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 8.5,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 12.8,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 16,
+    "Glide": 48,
+    "Hit": 12,
+    "Death": 36
+  },
+  "flap_seconds": 0.53,
+  "pivot": "body centre (flight height)",
+  "lod1": {
+    "fbx": "Shalebat_LOD1.fbx",
+    "tris": 1700,
+    "bones": 10
+  }
+}

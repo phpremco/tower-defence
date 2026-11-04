@@ -1,0 +1,46 @@
+{
+  "asset": "Prowler",
+  "game_tris": 3895,
+  "source_tris": 415016,
+  "bones": 22,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 86,
+    "folded_fallback_faces": 207,
+    "mirrored_faces": 1893,
+    "uv_coverage": 0.563,
+    "world_per_uv": 1.135582979278021
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 18.9,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 14.2,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Run": 16,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 36,
+    "Pounce": 26
+  },
+  "run_distance_per_loop": 1.19,
+  "lod1": {
+    "fbx": "Prowler_LOD1.fbx",
+    "tris": 1700,
+    "bones": 14
+  }
+}

@@ -17,6 +17,10 @@
 
         public float ParticleScale => 1f;
 
+        public bool LowDetailModels => false;
+
+        public float LodBias => 1f;
+
         public bool CanQuit => true;
     }
 }

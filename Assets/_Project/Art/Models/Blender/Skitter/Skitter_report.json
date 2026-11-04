@@ -1,0 +1,44 @@
+{
+  "asset": "Skitter",
+  "game_tris": 3799,
+  "source_tris": 247208,
+  "bones": 25,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 31,
+    "folded_fallback_faces": 36,
+    "mirrored_faces": 1892,
+    "uv_coverage": 0.614,
+    "world_per_uv": 0.8236375028162134
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 13.7,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 10.3,
+      "mask": "A"
+    }
+  },
+  "actions": [
+    "Walk",
+    "Idle",
+    "Hit",
+    "Death"
+  ],
+  "lod1": {
+    "fbx": "Skitter_LOD1.fbx",
+    "tris": 1700,
+    "bones": 16
+  }
+}

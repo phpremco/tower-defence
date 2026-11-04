@@ -56,6 +56,9 @@ namespace Game.Boot
             Services.Register<ISaveService>(save);
             Services.Register<IAchievementService>(new NullAchievementService());
             Services.Register<IPlatformSettings>(_lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings());
+            IPlatformSettings quality = Services.Get<IPlatformSettings>();
+            Services.Register(new ModelQuality(quality.LowDetailModels));
+            QualitySettings.lodBias = quality.LodBias;
             if (_tiltShift != null)
             {
                 _tiltShift.SetActive(Services.Get<IPlatformSettings>().DepthOfFieldEnabled);

@@ -50,6 +50,8 @@ namespace Game.Enemies
         [SerializeField] private DeathStyle _deathStyle;
         [SerializeField] private GameObject _model;
         [SerializeField] [Min(0.1f)] private float _modelScale = 1f;
+        [Tooltip("The imported (Blender) model this species wears, with its clips. Empty: the procedural body of its shape.")]
+        [SerializeField] private ModelArtDefinition _art;
 
         [Header("Sound")]
         [Tooltip("Every sound this species makes. Empty: the generic generated sounds.")]
@@ -154,6 +156,9 @@ namespace Game.Enemies
         /// <summary>The imported model shown for this enemy, or null to use placeholder shapes.</summary>
         public GameObject Model => _model;
         public float ModelScale => _modelScale;
+
+        /// <summary>The imported, animated model of this species, or null for the procedural body.</summary>
+        public ModelArtDefinition Art => _art;
 
         /// <summary>The sounds of this species, or null for the generic ones.</summary>
         public CreatureVoice Voice => _voice;

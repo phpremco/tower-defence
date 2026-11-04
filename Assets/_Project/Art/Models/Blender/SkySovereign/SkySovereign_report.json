@@ -1,0 +1,53 @@
+{
+  "asset": "SkySovereign",
+  "base_species": "Bat",
+  "game_tris": 12607,
+  "source_tris": 1143512,
+  "bones": 19,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 370,
+    "folded_fallback_faces": 234,
+    "mirrored_faces": 4366,
+    "uv_coverage": 0.429,
+    "world_per_uv": 1.4543771227566387
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 18.2,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 24.2,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 13,
+    "Glide": 48,
+    "Hit": 12,
+    "Death": 36,
+    "Laser": 72
+  },
+  "laser_on_frame": 20,
+  "laser_off_frame": 60,
+  "laser_origin_bone": "Emitter (beam along its +Y, from its tail)",
+  "flap_seconds": 0.43,
+  "pivot": "body centre (flight height)",
+  "unity_scale": 0.84,
+  "model_scale_from_bat_units": 1.5,
+  "lod1": {
+    "fbx": "SkySovereign_LOD1.fbx",
+    "tris": 6000,
+    "bones": 13
+  }
+}

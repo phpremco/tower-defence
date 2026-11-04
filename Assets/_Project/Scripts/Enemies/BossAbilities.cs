@@ -74,6 +74,24 @@ namespace Game.Enemies
             _enemy.Initialized += OnInitialized;
         }
 
+        /// <summary>
+        /// Seconds until the next timed use of a power kind, or infinity when the boss has none (or only one that
+        /// fires on health). Views read it to start a wind-up in time; it changes nothing.
+        /// </summary>
+        public float SecondsUntil(BossAbilityKind kind)
+        {
+            float soonest = float.PositiveInfinity;
+            for (int i = 0; i < _abilities.Length; i++)
+            {
+                if (_abilities[i].Kind == kind && kind != BossAbilityKind.Split && _timers[i] < soonest)
+                {
+                    soonest = _timers[i];
+                }
+            }
+
+            return soonest;
+        }
+
         /// <summary>Scales the damage of every power, so the difficulty profile reaches the boss as well.</summary>
         public void SetDamageMultiplier(float multiplier) => _damageMultiplier = multiplier;
 

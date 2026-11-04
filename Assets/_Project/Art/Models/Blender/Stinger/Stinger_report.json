@@ -1,0 +1,49 @@
+{
+  "asset": "Stinger",
+  "game_tris": 3961,
+  "source_tris": 390560,
+  "bones": 25,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 95,
+    "folded_fallback_faces": 12,
+    "mirrored_faces": 1968,
+    "uv_coverage": 0.637,
+    "world_per_uv": 1.0984928846861355
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 18.3,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 13.7,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 28,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 40,
+    "Strike": 24
+  },
+  "strike_hit_frame": 10,
+  "walk_distance_per_loop": 0.236,
+  "unity_scale": 0.8,
+  "pivot": "ground, body centre",
+  "lod1": {
+    "fbx": "Stinger_LOD1.fbx",
+    "tris": 1697,
+    "bones": 14
+  }
+}

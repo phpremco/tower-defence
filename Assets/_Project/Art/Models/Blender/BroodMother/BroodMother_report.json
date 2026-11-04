@@ -1,0 +1,55 @@
+{
+  "asset": "BroodMother",
+  "base_species": "Skitter",
+  "game_tris": 14506,
+  "source_tris": 865036,
+  "bones": 29,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 136,
+    "folded_fallback_faces": 27,
+    "mirrored_faces": 6829,
+    "uv_coverage": 0.616,
+    "world_per_uv": 2.5379476516571957
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 28.2,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 21.1,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 48,
+    "Idle": 80,
+    "Hit": 14,
+    "Death": 48,
+    "Spawn": 60
+  },
+  "scale_keyed_bones": [
+    "Sac_L",
+    "Sac_R",
+    "Vent"
+  ],
+  "spawn_release_frame": 40,
+  "spawn_point_bone": "Vent",
+  "walk_distance_per_loop": 0.513,
+  "unity_scale": 0.78,
+  "lod1": {
+    "fbx": "BroodMother_LOD1.fbx",
+    "tris": 6000,
+    "bones": 21
+  }
+}

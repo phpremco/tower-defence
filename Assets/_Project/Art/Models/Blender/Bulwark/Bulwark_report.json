@@ -1,0 +1,49 @@
+{
+  "asset": "Bulwark",
+  "game_tris": 3950,
+  "source_tris": 372988,
+  "bones": 19,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 237,
+    "folded_fallback_faces": 22,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.543,
+    "world_per_uv": 2.0047976994523005
+  },
+  "detail": {
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 33.4,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 28.6,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 32,
+    "Idle": 72,
+    "Hit": 14,
+    "Death": 44,
+    "Block": 24
+  },
+  "block_up_frame": 7,
+  "walk_distance_per_loop": 0.5,
+  "unity_scale": 0.9,
+  "pivot": "ground, between the feet",
+  "lod1": {
+    "fbx": "Bulwark_LOD1.fbx",
+    "tris": 1700,
+    "bones": 16
+  }
+}
