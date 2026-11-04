@@ -36,6 +36,25 @@ All bosses are big, glowing, slow, with a readable head and weapon, and killable
     - **The Shattered**'s shards scale the ruins.
     - **The Sealed One** pulls itself up onto the base.
   - The climb layer stays logical. Bosses only climb what is solid. Decor that cannot hold them (crystals, plants) breaks under them.
+- **Use the pools (water, lava, bog, quicksand, ice).** Bosses can dive into a pool and hide in it.
+  - **While submerged:**
+    - only a wake, bubbles or a glow under the surface shows where the boss is;
+    - towers cannot target it, except splash damage that lands in the pool, which does reduced damage;
+    - it regenerates slowly.
+  - **It surfaces elsewhere:** in another pool, or at the bank nearest the road, with a burst of liquid, a splash on nearby towers and a short kick.
+  - **The limits:**
+    - at most 6 s under per dive;
+    - each pool can be used once per phase;
+    - the boss never vanishes for long, and its health bar stays visible on the HUD.
+  - **The counterplay:**
+    - towers near the banks;
+    - slowing fields at the exit;
+    - mines on the bank.
+  - **Per boss:**
+    - The **Cinder Matriarch** dives into lava and comes up in another lava pool, closer to her cold target.
+    - **Rotbloom** sinks into the bog and lets its roots grow under water to the next bank.
+    - The **Frost Warden** breaks through an ice sheet and swims under it.
+    - **Gravemaw** uses quicksand as a shortcut for its burrow.
 - **The balance ledger counts the effects.** Each boss's mechanic is modelled as a loss of firepower for the duration of the effect, inside its HeroCap.
 
 ## Gravemaw (Crystal Plains, finale)
