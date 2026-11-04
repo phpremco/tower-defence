@@ -40,7 +40,8 @@ namespace Game.Editor
         }
 
         /// <summary>Copies the exports of every named asset plus the shared detail normals; returns the number of files copied.</summary>
-        public static int Sync(IEnumerable<string> assets)
+        /// <param name="extraModels">Per asset, the further FBX files beside <c>&lt;Asset&gt;.fbx</c> (a tower's tiers), by file name.</param>
+        public static int Sync(IEnumerable<string> assets, IReadOnlyDictionary<string, string[]> extraModels = null)
         {
             string source = SourceRoot;
             if (source == null)
@@ -56,6 +57,10 @@ namespace Game.Editor
                 foreach (string asset in assets)
                 {
                     copied += SyncAsset(source, asset);
+                    if (extraModels != null && extraModels.TryGetValue(asset, out string[] models))
+                    {
+                        copied += SyncModels(source, asset, models);
+                    }
                 }
 
                 copied += SyncFolder(Path.Combine(source, DetailFolder), Path.Combine(TargetPath, DetailFolder), "Detail_*_Normal.png");
@@ -100,6 +105,17 @@ namespace Game.Editor
                     string name = Path.GetFileName(skin);
                     copied += SyncMaps(skin, Path.Combine(to, SkinFolder, name), $"{asset}_{name}");
                 }
+            }
+
+            return copied;
+        }
+
+        private static int SyncModels(string source, string asset, string[] models)
+        {
+            int copied = 0;
+            foreach (string model in models)
+            {
+                copied += CopyIfChanged(Path.Combine(source, asset, model), Path.Combine(TargetPath, asset, model));
             }
 
             return copied;

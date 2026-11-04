@@ -114,8 +114,17 @@ namespace Game.Towers
         /// <summary>Raised with the world position of the target whenever the tower fires.</summary>
         public event Action<Vector3> Fired;
 
-        /// <summary>Where shots leave, set by the view to the mouth of its barrel; without it the tower guesses.</summary>
-        public Func<Vector3> MuzzleProvider { get; set; }
+        /// <summary>
+        /// Where a shot at a target position leaves, set by the view to the mouth of the barrel that fires it (the view may
+        /// turn the head first); without it the tower guesses.
+        /// </summary>
+        public Func<Vector3, Vector3> MuzzleProvider { get; set; }
+
+        /// <summary>Raised with the target's position and the seconds until the first shot when a beam locks onto a new target.</summary>
+        public event Action<Vector3, float> Charging;
+
+        /// <summary>Seconds until the tower may fire again; zero when it is ready.</summary>
+        public float SecondsUntilReady => Mathf.Max(0f, _cooldown);
 
         /// <summary>Raised once when the tower goes from standing to wrecked.</summary>
         public event Action<Tower> Wrecked;
@@ -233,6 +242,7 @@ namespace Game.Towers
                 {
                     _beamTarget = target;
                     _cooldown = BeamRetargetSeconds;
+                    Charging?.Invoke(target.Position, BeamRetargetSeconds);
                     return;
                 }
 
@@ -250,7 +260,7 @@ namespace Game.Towers
             Vector3 towards = target.Position - transform.position;
             towards.y = 0f;
             Vector3 muzzle = MuzzleProvider != null
-                ? MuzzleProvider()
+                ? MuzzleProvider(target.Position)
                 : transform.position + Vector3.up * MuzzleHeight + (towards.sqrMagnitude > 0.0001f ? towards.normalized * MuzzleForward : Vector3.zero);
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;

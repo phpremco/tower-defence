@@ -42,6 +42,8 @@ namespace Game.Editor
             new GeneratorStep("Unlocks", GenerateUnlocks),
             new GeneratorStep("Playtest settings", c => c.Playtest = LoadOrCreate<PlaytestSettings>(DebugAssetPath)),
             new GeneratorStep("Tower looks", GenerateTowerLooks),
+            // The Blender tower models: synced, turned into materials and tier art, and worn by the tower definitions.
+            new GeneratorStep("Tower art", _ => BlenderTowerBuilder.ApplyToTowers(BlenderTowerBuilder.SyncAndBuild())),
             new GeneratorStep("Upgrades", c => c.Upgrades = CreateUpgrades(c.Roster.Standard, c.Roster.Hybrids, c.Drones)),
             new GeneratorStep("Codex", c => c.Codex = CreateCodex(c.Recipes, c.Bestiary)),
             new GeneratorStep("UI skin", c => c.Skin = CreateSkin()),

@@ -1316,3 +1316,66 @@ the view side changed). Stages 2-4 (hero and towers, our structures/drones/gadge
 - **Open:** walk distance per loop of Skitter (0.36) and Queen (0.9) is estimated; Queen has no Hit/Death clip and no
   far LOD (falls back to idle, corpse without a fall clip); the Ray boss's laser and the Bat boss's swarm have no clip;
   `Art/Models/Blender` holds ~230 MB of PNG/FBX (git LFS question for Remco); Skyray/Wisp colour question still open.
+
+## Import stage 2 (2026-11-04)
+Every tower wears its Blender model: Gun Turret (PulseRifle), Cannon, Laser, Flak (Rocket id), Gate Gun (Blockade),
+Base Turret, Tesla, Railgun, Cryo, Support and the hybrids Artillery, Storm Rifle and Cryo Beam; Acid Sprayer and the
+missile Rocket are imported and ready but no tower definition wears them yet. Tower logic is unchanged apart from two
+view hooks (below); a tower without art keeps its procedural model.
+- **Data:** `Towers/TowerArtDefinition` (tiers with level and upgrade path, default path A, aim mode, pitch limits,
+  shot-origin bone prefix and choice, charge glow, hidden stars, shared wreck plus debris name, rank star model) and
+  `TowerDefinition.Art`. Each tier is a `ModelArtDefinition` (stage 1 type) with clips by role; new roles `Fire`
+  (per barrel, socket `Muzzle_n`), `Charge` (ChargeUp) and `Firing` (Beam, Spin, FireAlternate, Spray). Level 1 = T1,
+  level 2 = T2, level 3 = T3A on path A and T3B recorded as path B (`ArtFor(level, path)`), or T3 for the hybrids, the
+  Gate Gun and the Base Turret. Generated: `Data/Art/Towers/*.asset` (15 tower art, 50 tiers, wreck),
+  `Art/Materials/Blender/Tower_*.mat` (+ `_Low`).
+- **Pipeline:** `BlenderTowerCatalog` (rows), `BlenderTowerEntry`, `BlenderTowerBuilder` (menu `Tools/Generate/Blender
+  Towers (sync, materials, towers)`, generator step "Tower art" after "Tower looks"); `BlenderSync.Sync` takes extra
+  FBX names per asset (the tier files); the tower cycles loop at import (`BlenderArtCatalog.IsLoop`). Each tier FBX holds
+  the near and the `_Far` mesh on one rig: one Animator, a LOD group picks the mesh (far below 5 % screen height).
+- **View:** `TowerModel` (one tier: LOD group, own material copy, bones Yaw/Pitch/Smoke/Star_k/shot origins with rest
+  poses) and `TowerArtView` (tier swap on upgrade, aim, recoil and cycles through the stage 1 `ModelClipPlayer`, stars,
+  wreck). The root never turns, so the rank plate keeps facing the camera; in LateUpdate the Yaw bone turns about the
+  tower's up axis and Pitch about the turned head's right axis on top of their rest poses (`Aim`), so clip keys on those
+  bones are overruled. Aim modes: Yaw+Pitch (pitch clamped -12..60), Yaw only (Flak, Artillery, Rocket keep their
+  modelled 40/30 degree rest), None (Tesla and Support play IdleSweep). The idle sweep stays in code
+  (`TowerIdleSweep`, shared with the procedural look) so it sweeps around the last aim, not the rest pose. Fire_n
+  plays once on the barrel that fired; towers with a firing cycle (Gun T3A Spin, Flak FireAlternate, Laser/Cryo Beam
+  Beam) loop it while engaged instead; ChargeUp plays before the first beam shot (timed to the lock-on) and before
+  each Railgun/Tesla shot (ends on the shot via `Tower.SecondsUntilReady`); the Railgun's plasma glow climbs to 2.5x
+  during the charge. Stars: `Star_k` scaled to 0 above level+1 every LateUpdate. Damage smoke and sparks rise from the
+  Smoke socket (a wreck keeps that height). Wreck: the tier hides, `Tower_Wreck` shows with this tower's
+  `Debris_<Tower>` (P2 towers borrow Gun, Cannon or Laser debris); rebuild swaps back. Gate: the gun sits on the beam
+  at the old head height, its rank plate hidden; the gate's three stars are `Tower_Star` models over the beam.
+- **Logic hooks (view only):** `Tower.MuzzleProvider` now gets the target position (the view turns the head and names
+  the barrel before the shot leaves, so the first shot in a new direction comes from the right barrel); new
+  `Tower.Charging` event (beam lock-on, with the seconds to the first shot) and `SecondsUntilReady` getter.
+- **UI:** `TowerModelBuilder` builds stills from the art (near LOD, rest pose, stars of the level) at 1.6x, as the
+  cards and turntable were framed for the larger procedural towers; build bar, upgrade screen, loadout and reward use
+  it. The placement ghost and hybrid merges build a real `TowerView`, so they wear the model with no extra code.
+- **Colour data follows the models** (curator decision): Laser (1, 0.35, 0.45) -> cyan (0.35, 0.9, 1) (beam, muzzle
+  flash, codex/badges), Support (0.4, 1, 0.6) -> signal yellow (1, 0.74, 0.2), Artillery (1, 0.6, 0.2) -> amber
+  (1, 0.78, 0.3). Set in `ProjectGenerator.World.cs`, applied by the full generator. Remco can revert.
+- **Look tuning at play size** (`imp2_*` in the session scratchpad `imp2_shots/`): tower glow 2.0 (README 1.5), cool rim 0.75; wreck glow 0.6 (its embers bloomed into yellow flames) and albedo 1.7x. Blender-side points in
+  MODEL_TODO, "Na import stage 2".
+- **Quality:** as stage 1 (`ModelQuality`: Low wears the 512 maps without `_DETAIL2`; LOD bias 0.6).
+- **Performance** (`ModelPerformanceTests`, now with a full build-out: 60 towers at level 3, every tower type in turn on
+  the free cells within two of the road, then the densest Psycho wave; editor Play Mode, main-thread `PlayerLoop`,
+  budget p95 <= 33 ms): C1_06 High avg 6.5 / p95 8.4 ms, Low 6.0 / 8.1 ms; C1_05 High 6.5 / 8.6 ms, Low 6.6 / 8.6 ms;
+  124-142 skinned meshes (towers count two each: near and far mesh), 48-62 drawn. The build-out kills most of the
+  wave within the settle time (0-7 creatures alive while measuring), so this measures the towers firing rather than a
+  crowd; stage 1's creature-only numbers stand for the crowd. Report in `Logs/model_perf.txt`.
+- **Tests:** EditMode 290/290 (new `TowerArtTests` 4: a look per level for every tower, path A/B at level 3, shot
+  origins and clips, colours follow the models). PlayMode `ContinentSimulationTests` 2/2, `StoryCrystalTests` 2/2,
+  `StorySmokeTests` 2/2, `CutsceneSmokeTests` 3/3, `ScreenshotTests` 3/3, `BalanceProbeTests` smoke 1/1,
+  `ModelPerformanceTests` 1/1. Console 0 errors, 0 warnings after the runs (the full generator logs the known
+  "Main Object Name '' does not match filename 'machinegun.mesh'" once). Save restored to its MD5.
+- **Tools:** `imp2_shots.sh` + `imp2_phase.cs` (the level is held paused between phases and runs only for set real
+  seconds: `EditorApplication.Step()` in a loop advances one frame, not many, so `step_frames.cs` does not move time),
+  `imp2_tests.sh` (PlayMode classes one by one with save restore), `imp2_compile.sh`, `imp2_regen.sh`, `imp2_inspect.cs`.
+- **Open:** Acid Sprayer and missile Rocket have art but no tower definition (and the Acid `Slosh` additive clip is
+  unused); upgrade paths A/B do not exist in the data yet (path B looks recorded only); the burnt wreck still reads as a
+  dark lump at play size; a small yellow glowing spike cluster sits at the lineup's first column in every capture (not the Artillery glow: lowering it changed nothing; probably a level prop, unchecked); the screenshots never caught a projectile in flight (creatures were few and died fast), so
+  recoil/flash timing is checked by code and tests, not by eye; `Art/Models/Blender` grows by ~124 MB of tower maps
+  and FBX (git LFS question still open); the generator re-saves the scenes with new file IDs (as every run). The full generator also synced the
+  round-15 corrupted creature skins (`Skins/Corrupted`, maps git-ignored, folders' .meta new); nothing wears them yet.

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Towers
@@ -9,11 +10,20 @@ namespace Game.Towers
     /// </summary>
     public static class TowerModelBuilder
     {
-        public static bool HasModel(TowerDefinition definition) => definition.Shape != TowerShape.None;
+        // The imported towers are built at play size, about 0.6 of the procedural ones the cards and turntables were
+        // framed for, so their stills are shown larger.
+        private const float ArtDisplayScale = 1.6f;
+
+        public static bool HasModel(TowerDefinition definition) => definition.Art != null || definition.Shape != TowerShape.None;
 
         /// <summary>The model at the given level, standing on y = 0 under <paramref name="parent"/>, facing +z.</summary>
         public static GameObject Build(Transform parent, TowerDefinition definition, int level)
         {
+            if (definition.Art != null)
+            {
+                return BuildArt(parent, definition, level);
+            }
+
             var root = new GameObject(definition.DisplayName);
             root.transform.SetParent(parent, false);
             Material[] materials = TowerModelFactory.CreateMaterials(definition.Color, level);
@@ -32,6 +42,21 @@ namespace Game.Towers
             head.localScale = Vector3.one * parts.Scale;
             Part("ShapeHead", head, parts.Head, materials, Vector3.zero);
             Part("ShapeBarrel", head, parts.Barrel, materials, parts.BarrelPivot);
+            return root;
+        }
+
+        // The imported tier of that level in its rest pose, with as many rank stars as the level has.
+        private static GameObject BuildArt(Transform parent, TowerDefinition definition, int level)
+        {
+            var root = new GameObject(definition.DisplayName);
+            root.transform.SetParent(parent, false);
+            root.transform.localScale = Vector3.one * ArtDisplayScale;
+            ModelArtDefinition art = definition.Art.ArtFor(level);
+            if (art != null)
+            {
+                TowerModel.CreateStill(root.transform, art, ModelQuality.IsLow).ShowStars(definition.Art.HideStars ? 0 : level + 1);
+            }
+
             return root;
         }
 

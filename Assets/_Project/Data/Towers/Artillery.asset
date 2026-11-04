@@ -41,6 +41,7 @@ MonoBehaviour:
     Model: {fileID: 0}
   _projectileSpeed: 8
   _splashRadius: 1.8
+  _fuseRadius: 0
   _maxHealth: 240
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
@@ -53,9 +54,10 @@ MonoBehaviour:
   _supportRateBonus: 0
   _blocksGroundEnemies: 0
   _isBaseDefence: 0
-  _color: {r: 1, g: 0.6, b: 0.2, a: 1}
+  _color: {r: 1, g: 0.78, b: 0.3, a: 1}
   _shape: 8
   _projectileStyle: 7
   _model: {fileID: 919132149155446097, guid: e6d5134f3eacf474489bde12aad2880a, type: 3}
   _modelScale: 1.7
   _keepModelColours: 0
+  _art: {fileID: 11400000, guid: 145a2aaba2d7906438e4bcf1e701ff48, type: 2}

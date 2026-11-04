@@ -31,11 +31,6 @@ namespace Game.Towers
         private const float RecoilRecovery = 6f;
         private const float SpinKick = 1080f;
         private const float SpinDecay = 2.2f;
-        // A tower with nothing to shoot keeps watch: after a pause the head sweeps slowly around where it last aimed.
-        private const float IdleAfterSeconds = 2.5f;
-        private const float IdleSweepDegrees = 22f;
-        private const float IdleSweepSpeed = 0.45f;
-        private const float IdleEaseSeconds = 1.5f;
         private const float MuzzleSeconds = 0.07f;
         private const float MuzzleSize = 0.3f;
         private const float MuzzleForward = 0.6f;
@@ -53,6 +48,11 @@ namespace Game.Towers
         private const float SparkRate = 2.5f;
         private const float WreckSmokeRate = 2.5f;
         private const float ParticleHeight = 0.55f;
+        private const float BarClearance = 0.35f;
+        // The flash sits just past the mouth of a modelled barrel, along the muzzle bone's +Y.
+        private const float ArtFlashForward = 0.06f;
+        private const float ArtFlashSize = 0.22f;
+        private const float StarModelScale = 1f;
 
         private readonly GameObject[] _stars = new GameObject[TowerDefinition.LevelCount];
 
@@ -82,6 +82,7 @@ namespace Game.Towers
         private float _muzzleTime = float.PositiveInfinity;
         private ParticleSystem _smoke;
         private ParticleSystem _sparks;
+        private TowerArtView _art;
 
         private void Awake()
         {
@@ -103,7 +104,7 @@ namespace Game.Towers
             emission.rateOverTime = rate;
         }
 
-        private Vector3 MuzzlePosition() => _muzzle.position;
+        private Vector3 MuzzlePosition(Vector3 target) => _muzzle.position;
 
         private void OnDestroy()
         {
@@ -120,7 +121,14 @@ namespace Game.Towers
                 _built = true;
             }
 
-            SwapModelForLevel(tower);
+            if (_art != null)
+            {
+                ShowArtLevel(tower);
+            }
+            else
+            {
+                SwapModelForLevel(tower);
+            }
 
             // A blockade only shows its gun once the level has one.
             if (tower.Definition.BlocksGroundEnemies)
@@ -128,9 +136,31 @@ namespace Game.Towers
                 _head.gameObject.SetActive(tower.Definition.GetLevel(tower.LevelIndex).Damage > 0f);
             }
 
+            ShowStars(tower);
+        }
+
+        // The imported look swaps its tier; the bar rides above the new top and the smoke rises from its Smoke socket
+        // (a wreck keeps the old height). The flash leaves the old tier's barrel before that tier goes.
+        private void ShowArtLevel(Tower tower)
+        {
+            _muzzle.SetParent(_head, false);
+            _art.ShowLevel(tower.LevelIndex);
+            _bar.localPosition = new Vector3(0f, _art.Top + BarClearance, 0f);
+            if (!tower.IsWrecked)
+            {
+                _smoke.transform.localPosition = _art.SmokeLocal;
+                _sparks.transform.localPosition = _art.SmokeLocal;
+            }
+        }
+
+        private void ShowStars(Tower tower)
+        {
             for (int i = 0; i < _stars.Length; i++)
             {
-                _stars[i].SetActive(i <= tower.LevelIndex && !tower.IsWrecked);
+                if (_stars[i] != null)
+                {
+                    _stars[i].SetActive(i <= tower.LevelIndex && !tower.IsWrecked);
+                }
             }
         }
 
@@ -198,13 +228,14 @@ namespace Game.Towers
             float hurt = Mathf.Clamp01(1f - tower.Health.Fraction / SmokeBelow);
             SetRate(_smoke, tower.IsWrecked ? WreckSmokeRate : hurt * SmokeRate);
             SetRate(_sparks, tower.IsWrecked ? 0f : hurt * SparkRate);
+            if (_art != null)
+            {
+                _art.SetWrecked(tower.IsWrecked);
+            }
 
             ApplyMaterials();
 
-            for (int i = 0; i < _stars.Length; i++)
-            {
-                _stars[i].SetActive(i <= tower.LevelIndex && !tower.IsWrecked);
-            }
+            ShowStars(tower);
         }
 
         // The current look of the model: wrecked or whole.
@@ -235,6 +266,12 @@ namespace Game.Towers
 
         private void Build(TowerDefinition definition)
         {
+            if (definition.Art != null)
+            {
+                BuildArt(definition, definition.Art);
+                return;
+            }
+
             bool wall = definition.BlocksGroundEnemies;
             bool shaped = definition.Shape != TowerShape.None;
             Renderer pedestal = null;
@@ -283,12 +320,66 @@ namespace Game.Towers
             _muzzle.gameObject.SetActive(false);
             _tower.MuzzleProvider = MuzzlePosition;
 
+            BuildStars(null);
+            BuildBar();
+        }
+
+        // The imported look: the model brings its own pad, head and rank stars; a gate keeps its pylons and beam and
+        // carries the gun on the beam, with its stars on the beam beside it.
+        private void BuildArt(TowerDefinition definition, TowerArtDefinition art)
+        {
+            bool wall = definition.BlocksGroundEnemies;
+            if (wall)
+            {
+                gameObject.AddComponent<GateView>().Initialize(_tower, _tower.Span + WallOverhang, definition.Color);
+            }
+
+            _head = new GameObject("Head").transform;
+            _head.SetParent(transform, false);
+            _head.localPosition = new Vector3(0f, wall ? GateHeadHeight : 0f, 0f);
+            _art = gameObject.AddComponent<TowerArtView>();
+            _art.Initialize(_tower, art, _head);
+
+            Color flashColor = Color.Lerp(definition.Color, Color.white, MuzzleWhiteness);
+            _muzzle = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, flashColor, _head, Vector3.zero, Vector3.one * ArtFlashSize, MuzzleEmission).transform;
+            _muzzle.gameObject.SetActive(false);
+            _tower.MuzzleProvider = _art.MuzzleFor;
+
+            if (wall)
+            {
+                BuildStars(art.Star);
+            }
+
+            BuildBar();
+        }
+
+        // One star per level above the tower; the rank star model when there is one, else a glowing bead.
+        private void BuildStars(GameObject starModel)
+        {
             float startX = -StarSpacing * (_stars.Length - 1) * 0.5f;
             for (int i = 0; i < _stars.Length; i++)
             {
-                _stars[i] = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, StarColor, transform, new Vector3(startX + i * StarSpacing, StarHeight, 0f), Vector3.one * StarSize, StarEmission);
-            }
+                var at = new Vector3(startX + i * StarSpacing, StarHeight, 0f);
+                if (starModel == null)
+                {
+                    _stars[i] = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, StarColor, transform, at, Vector3.one * StarSize, StarEmission);
+                    continue;
+                }
 
+                GameObject star = Instantiate(starModel, transform, false);
+                star.transform.localPosition = at;
+                star.transform.localScale = Vector3.one * StarModelScale;
+                foreach (Renderer renderer in star.GetComponentsInChildren<Renderer>())
+                {
+                    renderer.sharedMaterial = PlaceholderVisuals.MaterialFor(StarColor, StarEmission);
+                }
+
+                _stars[i] = star;
+            }
+        }
+
+        private void BuildBar()
+        {
             GameObject bar = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Cube, HealthyColor, transform, new Vector3(0f, BarY, 0f), new Vector3(BarWidth, BarHeight, BarHeight), BarEmission);
             _bar = bar.transform;
             _barRenderer = bar.GetComponent<Renderer>();
@@ -360,7 +451,11 @@ namespace Game.Towers
 
         private void Update()
         {
-            UpdateIdleSweep();
+            if (_art == null)
+            {
+                UpdateIdleSweep();
+            }
+
             if (_barrel != null && (_recoil > 0f || _spin > 0f))
             {
                 _recoil = Mathf.Max(0f, _recoil - RecoilRecovery * Time.deltaTime);
@@ -375,7 +470,7 @@ namespace Game.Towers
                 _muzzleTime += Time.deltaTime;
                 bool lit = _muzzleTime <= MuzzleSeconds;
                 _muzzle.gameObject.SetActive(lit);
-                _muzzle.localScale = Vector3.one * (MuzzleSize * (1.4f - _muzzleTime / MuzzleSeconds));
+                _muzzle.localScale = Vector3.one * ((_art != null ? ArtFlashSize : MuzzleSize) * (1.4f - _muzzleTime / MuzzleSeconds));
             }
         }
 
@@ -388,18 +483,26 @@ namespace Game.Towers
             }
 
             _sinceFire += Time.deltaTime;
-            if (_sinceFire < IdleAfterSeconds)
+            if (!TowerIdleSweep.IsIdle(_sinceFire))
             {
                 return;
             }
 
-            float ease = Mathf.Clamp01((_sinceFire - IdleAfterSeconds) / IdleEaseSeconds);
-            float sweep = Mathf.Sin((_sinceFire - IdleAfterSeconds) * IdleSweepSpeed + _idlePhase) * IdleSweepDegrees * ease;
+            float sweep = TowerIdleSweep.Degrees(_sinceFire, _idlePhase);
             _head.rotation = Quaternion.Euler(0f, _restYaw + sweep, 0f);
         }
 
         private void OnFired(Vector3 targetPosition)
         {
+            if (_art != null)
+            {
+                _art.OnFired(targetPosition);
+                _muzzleTime = 0f;
+                _muzzle.SetParent(_art.LastMuzzle, false);
+                _muzzle.localPosition = Vector3.up * ArtFlashForward;
+                return;
+            }
+
             _sinceFire = 0f;
             _recoil = 1f;
             _spin = 1f;

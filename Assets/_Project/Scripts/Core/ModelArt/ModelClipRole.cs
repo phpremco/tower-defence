@@ -38,5 +38,14 @@ namespace Game.Core
 
         /// <summary>Raising a shield, held while it lasts.</summary>
         Block = 11,
+
+        /// <summary>A machine's shot from one barrel (its recoil), matched to the barrel by the muzzle bone in its socket.</summary>
+        Fire = 12,
+
+        /// <summary>A machine winding up before a shot or a beam (prongs closing, rails drawing back).</summary>
+        Charge = 13,
+
+        /// <summary>A machine's cycle while it keeps firing (a beam's hum, a spinning barrel cluster, alternating barrels). Loops.</summary>
+        Firing = 14,
     }
 }

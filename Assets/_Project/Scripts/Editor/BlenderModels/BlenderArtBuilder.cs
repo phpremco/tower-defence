@@ -117,7 +117,7 @@ namespace Game.Editor
             return assigned;
         }
 
-        private static string AssetFolder(string asset) => $"{BlenderSync.TargetRoot}/{asset}";
+        internal static string AssetFolder(string asset) => $"{BlenderSync.TargetRoot}/{asset}";
 
         private static ModelArtDefinition Build(BlenderArtEntry entry)
         {
@@ -258,7 +258,7 @@ namespace Game.Editor
         }
 
         // The top of the model in its own units at rest, for the health bar.
-        private static float ModelTop(GameObject model)
+        internal static float ModelTop(GameObject model)
         {
             GameObject probe = Object.Instantiate(model);
             try
@@ -277,7 +277,7 @@ namespace Game.Editor
             }
         }
 
-        private static Material BuildMaterial(BlenderArtEntry entry, BlenderReport report, string maps, string name, bool low)
+        internal static Material BuildMaterial(BlenderArtEntry entry, BlenderReport report, string maps, string name, bool low)
         {
             string path = $"{MaterialFolder}/{name}.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -301,7 +301,7 @@ namespace Game.Editor
             material.SetFloat("_Smoothness", entry.Smoothness);
             material.SetFloat("_Metallic", 0f);
             material.SetFloat("_OcclusionStrength", OcclusionStrength);
-            SurfaceMaterials.SetRim(material, SurfaceMaterials.AlienRim, entry.Rim);
+            SurfaceMaterials.SetRim(material, entry.Colony ? SurfaceMaterials.ColonyRim : SurfaceMaterials.AlienRim, entry.Rim);
             SetDetails(material, report, entry, low);
             EditorUtility.SetDirty(material);
             return material;
@@ -342,7 +342,7 @@ namespace Game.Editor
 
         private static Texture2D Texture(string path) => AssetDatabase.LoadAssetAtPath<Texture2D>(path);
 
-        private static T LoadOrCreate<T>(string path) where T : ScriptableObject
+        internal static T LoadOrCreate<T>(string path) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             if (asset != null)

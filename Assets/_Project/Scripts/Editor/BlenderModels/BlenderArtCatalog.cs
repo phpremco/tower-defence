@@ -17,6 +17,8 @@ namespace Game.Editor
         private static readonly HashSet<string> LoopClips = new HashSet<string>
         {
             "Walk", "Run", "Crawl", "Fly", "Glide", "Float", "Grounded", "Roll", "Idle",
+            // The towers' cycles (README rounds 7 and 11).
+            "IdleSweep", "Spin", "Beam", "FireAlternate", "Spray", "Slosh",
         };
 
         private static List<BlenderArtEntry> _creatures;

@@ -1,0 +1,185 @@
+{
+  "asset": "Tower_Cannon",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.528,
+    "world_per_uv": 4.9764
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 99.5,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 82.9,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_Cannon_T1.fbx",
+      "tris": 2756,
+      "tris_lod1": 1120,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.6313,
+          0.3413
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_Cannon_T2.fbx",
+      "tris": 3468,
+      "tris_lod1": 1448,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.6813,
+          0.3413
+        ]
+      }
+    },
+    "T3A": {
+      "fbx": "Tower_Cannon_T3A.fbx",
+      "tris": 4080,
+      "tris_lod1": 1836,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.0938,
+          -0.6813,
+          0.3413
+        ],
+        "Muzzle_2": [
+          0.0938,
+          -0.6813,
+          0.3413
+        ]
+      }
+    },
+    "T3B": {
+      "fbx": "Tower_Cannon_T3B.fbx",
+      "tris": 3496,
+      "tris_lod1": 1444,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.8375,
+          0.3413
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235
+}

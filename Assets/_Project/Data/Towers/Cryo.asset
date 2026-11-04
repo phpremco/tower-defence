@@ -41,6 +41,7 @@ MonoBehaviour:
     Model: {fileID: 0}
   _projectileSpeed: 12
   _splashRadius: 0
+  _fuseRadius: 0
   _maxHealth: 140
   _sellRefundFraction: 0.7
   _scrapFraction: 0.3
@@ -59,3 +60,4 @@ MonoBehaviour:
   _model: {fileID: 919132149155446097, guid: a9eb359537a548e4796be91e98a52fc3, type: 3}
   _modelScale: 1.4
   _keepModelColours: 0
+  _art: {fileID: 11400000, guid: 5c0dcec3f7ea23244ba47090e72c20af, type: 2}

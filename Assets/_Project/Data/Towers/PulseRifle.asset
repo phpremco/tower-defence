@@ -60,3 +60,4 @@ MonoBehaviour:
   _model: {fileID: 0}
   _modelScale: 1.15
   _keepModelColours: 0
+  _art: {fileID: 11400000, guid: b640de7add8cee849aef85d68fedf870, type: 2}

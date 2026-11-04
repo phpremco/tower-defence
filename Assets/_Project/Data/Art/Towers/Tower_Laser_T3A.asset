@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Laser_T3A
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: ead994dfa7ef9d44e969d0db105d1413, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 1dab7e94edab367498d3e2eae3fa6b16, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: afcf589c50fb20c4b84cadd53b9323b1, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.68964523
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 1
+    _clip: {fileID: 1506865922277025975, guid: ead994dfa7ef9d44e969d0db105d1413, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 13
+    _clip: {fileID: -4094221138909325096, guid: ead994dfa7ef9d44e969d0db105d1413, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 14
+    _clip: {fileID: 8418266418611627157, guid: ead994dfa7ef9d44e969d0db105d1413, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

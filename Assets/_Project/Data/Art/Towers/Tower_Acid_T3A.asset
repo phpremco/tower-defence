@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Acid_T3A
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 756e566eec3f02c4c9af2e6dae65a34a, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: a9336f2491a2e3f47ba3ec5f99f3df4e, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.62874985
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 12
+    _clip: {fileID: -1132379656854661376, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: -3877334544214564527, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_3
+    _weight: 1
+  - _role: 1
+    _clip: {fileID: -2261057516765160602, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 14
+    _clip: {fileID: 9130146182412733477, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: -2695955591471928395, guid: 38f2e0acbde2a7543b66c8f8a55f367f, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_2
+    _weight: 1

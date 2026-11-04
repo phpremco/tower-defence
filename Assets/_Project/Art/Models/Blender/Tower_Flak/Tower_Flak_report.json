@@ -1,0 +1,234 @@
+{
+  "asset": "Tower_Flak",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.419,
+    "world_per_uv": 4.4008
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 88.0,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 73.3,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_Flak_T1.fbx",
+      "tris": 3356,
+      "tris_lod1": 1576,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10,
+        "FireAlternate": 16
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.0563,
+          -0.4213,
+          0.7948
+        ],
+        "Muzzle_2": [
+          0.0563,
+          -0.4213,
+          0.7948
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_Flak_T2.fbx",
+      "tris": 4088,
+      "tris_lod1": 2092,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10,
+        "FireAlternate": 16
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.0563,
+          -0.5267,
+          0.8832
+        ],
+        "Muzzle_2": [
+          0.0563,
+          -0.5267,
+          0.8832
+        ]
+      }
+    },
+    "T3A": {
+      "fbx": "Tower_Flak_T3A.fbx",
+      "tris": 4928,
+      "tris_lod1": 2580,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2",
+        "Barrel_3",
+        "Muzzle_3",
+        "Barrel_4",
+        "Muzzle_4"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2",
+        "Barrel_3",
+        "Barrel_4"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10,
+        "Fire_3": 10,
+        "Fire_4": 10,
+        "FireAlternate": 16
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.0563,
+          -0.5026,
+          0.9119
+        ],
+        "Muzzle_2": [
+          0.0563,
+          -0.5026,
+          0.9119
+        ],
+        "Muzzle_3": [
+          -0.0563,
+          -0.5467,
+          0.8592
+        ],
+        "Muzzle_4": [
+          0.0563,
+          -0.5467,
+          0.8592
+        ]
+      }
+    },
+    "T3B": {
+      "fbx": "Tower_Flak_T3B.fbx",
+      "tris": 3980,
+      "tris_lod1": 2000,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1",
+        "Barrel_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10,
+        "FireAlternate": 16
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.0625,
+          -0.6033,
+          0.9474
+        ],
+        "Muzzle_2": [
+          0.0625,
+          -0.6033,
+          0.9474
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235
+}

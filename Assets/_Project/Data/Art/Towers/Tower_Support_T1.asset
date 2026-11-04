@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Support_T1
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 2fe969e0ae6efaa40984aa0cc017d8aa, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 5f8be921f57e35943aa0907c6703ea5d, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 5496fb558b578fd469138d03a32a893a, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.8490968
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 12
+    _clip: {fileID: -8601530022273261299, guid: 2fe969e0ae6efaa40984aa0cc017d8aa, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1
+  - _role: 1
+    _clip: {fileID: -4120633417372642354, guid: 2fe969e0ae6efaa40984aa0cc017d8aa, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

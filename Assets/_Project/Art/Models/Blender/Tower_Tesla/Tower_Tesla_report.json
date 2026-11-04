@@ -1,0 +1,289 @@
+{
+  "asset": "Tower_Tesla",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.301,
+    "world_per_uv": 5.5069
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 110.1,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 91.8,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_Tesla_T1.fbx",
+      "tris": 3564,
+      "tris_lod1": 1540,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Arc_1",
+        "Arc_2",
+        "Arc_3"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 240,
+        "ChargeUp": 24,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          0.0,
+          0.89
+        ]
+      },
+      "sockets": {
+        "Arc_1": [
+          0.0,
+          0.1562,
+          0.765
+        ],
+        "Arc_2": [
+          -0.1353,
+          -0.0781,
+          0.765
+        ],
+        "Arc_3": [
+          0.1353,
+          -0.0781,
+          0.765
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_Tesla_T2.fbx",
+      "tris": 4220,
+      "tris_lod1": 1780,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Arc_1",
+        "Arc_2",
+        "Arc_3",
+        "Arc_4"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 240,
+        "ChargeUp": 24,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          0.0,
+          0.96
+        ]
+      },
+      "sockets": {
+        "Arc_1": [
+          0.0,
+          0.1562,
+          0.815
+        ],
+        "Arc_2": [
+          -0.1562,
+          0.0,
+          0.815
+        ],
+        "Arc_3": [
+          -0.0,
+          -0.1562,
+          0.815
+        ],
+        "Arc_4": [
+          0.1562,
+          -0.0,
+          0.815
+        ]
+      }
+    },
+    "T3A": {
+      "fbx": "Tower_Tesla_T3A.fbx",
+      "tris": 4840,
+      "tris_lod1": 2212,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Arc_1",
+        "Arc_2",
+        "Arc_3",
+        "Arc_4",
+        "Arc_5",
+        "Arc_6"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 240,
+        "ChargeUp": 24,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          0.0,
+          1.01
+        ]
+      },
+      "sockets": {
+        "Arc_1": [
+          0.2165,
+          0.125,
+          0.91
+        ],
+        "Arc_2": [
+          0.0,
+          0.25,
+          0.91
+        ],
+        "Arc_3": [
+          -0.2165,
+          0.125,
+          0.91
+        ],
+        "Arc_4": [
+          -0.2165,
+          -0.125,
+          0.91
+        ],
+        "Arc_5": [
+          -0.0,
+          -0.25,
+          0.91
+        ],
+        "Arc_6": [
+          0.2165,
+          -0.125,
+          0.91
+        ]
+      }
+    },
+    "T3B": {
+      "fbx": "Tower_Tesla_T3B.fbx",
+      "tris": 4120,
+      "tris_lod1": 1820,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Arc_1",
+        "Arc_2",
+        "Arc_3"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 240,
+        "ChargeUp": 24,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          0.0,
+          1.1037
+        ]
+      },
+      "sockets": {
+        "Arc_1": [
+          0.0,
+          0.09,
+          0.9037
+        ],
+        "Arc_2": [
+          -0.0779,
+          -0.045,
+          0.9037
+        ],
+        "Arc_3": [
+          0.0779,
+          -0.045,
+          0.9037
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235,
+  "glow": [
+    0.52,
+    0.28,
+    1.0
+  ]
+}

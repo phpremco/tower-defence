@@ -5,6 +5,7 @@ using System.Reflection;
 using Game.Core;
 using Game.Enemies;
 using Game.Levels;
+using Game.Towers;
 using NUnit.Framework;
 using Unity.Profiling;
 using UnityEngine;
@@ -14,8 +15,9 @@ using UnityEngine.TestTools;
 namespace Game.Tests
 {
     /// <summary>
-    /// The imported creature models under load: the densest wave of Crysium Vein (C1_06) and of C1_05 on the hardest
-    /// difficulty, released on its own spawn timing with the wave clock off, then measured over a stretch of frames on
+    /// The imported creature and tower models under load: every buildable cell within reach of the road holds a tower at
+    /// its top level (all tower types in turn, a full build-out), then the densest wave of Crysium Vein (C1_06) and of
+    /// C1_05 on the hardest difficulty is released on its own spawn timing with the wave clock off and measured over a stretch of frames on
     /// the High (PC) and the Low (Switch) model profile. Reports the main-thread player-loop time per frame (average and
     /// 95th percentile) and how many skinned meshes are drawn, and fails above the budget below. The editor adds its
     /// own overhead to every frame, so the budget is an editor budget: a player build runs well under it.
@@ -29,6 +31,10 @@ namespace Game.Tests
         private const float SpawnTimeScale = 4f;
         private const float SpawnTimeoutSeconds = 90f;
         private const string ReportPath = "Logs/model_perf.txt";
+
+        // The build-out: towers on free cells this close to the road, up to this many (a dense late-level defence).
+        private const int BuildOutReach = 2;
+        private const int BuildOutLimit = 60;
 
         private static readonly string[] Levels = { "Level_C1_06", "Level_C1_05" };
 
@@ -66,7 +72,7 @@ namespace Game.Tests
                     yield return Measure(level, low, m => result = m);
                     string line = $"[Perf] {level} {(low ? "Low (Switch)" : "High (PC)")}: wave {result.Wave} ({result.Spawned} creatures), " +
                                   $"player loop avg {result.Average:0.0} ms, p95 {result.Percentile95:0.0} ms, " +
-                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), enemies alive {result.Alive}";
+                                  $"skinned meshes {result.Skinned} ({result.SkinnedVisible} drawn), towers {result.Towers}, enemies alive {result.Alive}";
                     lines.Add(line);
                     TestContext.Out.WriteLine(line);
                     if (result.Percentile95 > BudgetMilliseconds)
@@ -90,6 +96,7 @@ namespace Game.Tests
             public int Skinned;
             public int SkinnedVisible;
             public int Alive;
+            public int Towers;
         }
 
         private static IEnumerator Measure(string levelName, bool low, System.Action<Measurement> result)
@@ -127,6 +134,7 @@ namespace Game.Tests
             var controller = Object.FindAnyObjectByType<LevelController>();
             var spawner = (EnemySpawner)typeof(LevelController).GetField("_spawner", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(controller);
             controller.enabled = false;
+            int towers = BuildOut(context);
 
             int spawned = 0;
             yield return Release(waves[densest], spawner, count => spawned = count);
@@ -156,14 +164,14 @@ namespace Game.Tests
 
             int skinned = 0;
             int visible = 0;
-            foreach (SkinnedMeshRenderer renderer in Object.FindObjectsByType<SkinnedMeshRenderer>(FindObjectsSortMode.None))
+            foreach (SkinnedMeshRenderer renderer in Object.FindObjectsByType<SkinnedMeshRenderer>())
             {
                 skinned++;
                 visible += renderer.isVisible ? 1 : 0;
             }
 
             int alive = 0;
-            foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+            foreach (Enemy enemy in Object.FindObjectsByType<Enemy>())
             {
                 alive += enemy.IsAlive ? 1 : 0;
             }
@@ -177,7 +185,51 @@ namespace Game.Tests
                 Skinned = skinned,
                 SkinnedVisible = visible,
                 Alive = alive,
+                Towers = towers,
             });
+        }
+
+        // Fills the cells beside the road with every tower type in turn at its top level, as a player late in a level.
+        private static int BuildOut(LevelContext context)
+        {
+            var grid = new BuildGrid(context.Level);
+            var types = new List<TowerDefinition>();
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                if (!tower.BlocksGroundEnemies && !tower.IsBaseDefence)
+                {
+                    types.Add(tower);
+                }
+            }
+
+            int built = 0;
+            foreach (Vector2Int road in context.Level.MainRoad)
+            {
+                for (int dx = -BuildOutReach; dx <= BuildOutReach && built < BuildOutLimit; dx++)
+                {
+                    for (int dy = -BuildOutReach; dy <= BuildOutReach && built < BuildOutLimit; dy++)
+                    {
+                        Vector2Int cell = road + new Vector2Int(dx, dy);
+                        if (!grid.CanBuild(cell))
+                        {
+                            continue;
+                        }
+
+                        grid.Occupy(cell);
+                        TowerDefinition type = types[built % types.Count];
+                        var go = new GameObject("PerfTower_" + type.name);
+                        go.transform.position = context.Level.Grid.CellToWorld(cell);
+                        var tower = go.AddComponent<Tower>();
+                        go.AddComponent<TowerView>();
+                        tower.Initialize(type, context.Targets, context.Projectiles, context.ModifiersFor(type));
+                        tower.Register(context.Structures);
+                        tower.SetLevel(type.MaxLevelIndex);
+                        built++;
+                    }
+                }
+            }
+
+            return built;
         }
 
         // The wave with the most creatures in it.

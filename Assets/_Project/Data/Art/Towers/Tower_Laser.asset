@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a2acdc37475f9940811408b1f147042, type: 3}
+  m_Name: Tower_Laser
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerArtDefinition
+  _tiers:
+  - _tier: T1
+    _levelIndex: 0
+    _path: 0
+    _art: {fileID: 11400000, guid: 0d03e8b7c774fdc48b456524bb2bb770, type: 2}
+  - _tier: T2
+    _levelIndex: 1
+    _path: 0
+    _art: {fileID: 11400000, guid: 8bfd74d14f89e934f95fa85b8371a924, type: 2}
+  - _tier: T3A
+    _levelIndex: 2
+    _path: 1
+    _art: {fileID: 11400000, guid: 5adf780d021a59548aa5527a20b3e97c, type: 2}
+  - _tier: T3B
+    _levelIndex: 2
+    _path: 2
+    _art: {fileID: 11400000, guid: c702ae9f3c172ec41b32702a8817ceef, type: 2}
+  _defaultPath: 1
+  _aim: 0
+  _pitchLimits: {x: -12, y: 60}
+  _muzzlePrefix: Muzzle
+  _muzzleChoice: 0
+  _chargeGlow: 1
+  _hideStars: 0
+  _wreck: {fileID: 11400000, guid: ee9d6f9544e3a484e9352809d2d26a62, type: 2}
+  _debris: Debris_Laser
+  _star: {fileID: 919132149155446097, guid: 6a5aa7a8bf4586649b8b1bb2ab278090, type: 3}

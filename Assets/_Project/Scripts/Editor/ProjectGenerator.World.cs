@@ -74,7 +74,8 @@ namespace Game.Editor
             var roster = new Roster { Pulse = pulse, Cannon = cannon, Rocket = rocket };
 
             // Fast single-target damage on the ground; a stand-in for a continuous beam until it has its own effect.
-            roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, 40f, 0f, new Color(1f, 0.35f, 0.45f),
+            // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
+            roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, 40f, 0f, new Color(0.35f, 0.9f, 1f),
                 new[] { Lvl(110, 8f, 3.9f, 0.2f), Lvl(130, 12f, 4.1f, 0.18f), Lvl(190, 18f, 4.4f, 0.15f) }, 160f);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
@@ -87,13 +88,15 @@ namespace Game.Editor
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
                 new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f);
 
-            roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(0.4f, 1f, 0.6f),
+            // Signal yellow like the model's halos (was green).
+            roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(1f, 0.74f, 0.2f),
                 new[] { Lvl(120, 0f, 3f, 1f), Lvl(140, 0f, 3.5f, 1f), Lvl(200, 0f, 4f, 1f) }, 140f, support: true, rangeBonus: 0.15f, rateBonus: 0.2f);
 
             // Hybrids come from recipes, so their first level costs nothing to build: the recipe has the price. Every
             // level beats the two parents at that level put together (by 15 to 50 percent), in one cell, and the
             // upgrades cost close to what upgrading both parents would.
-            roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.6f, 0.2f),
+            // The Artillery glows amber like its model (was orange).
+            roster.Artillery = CreateTower("Artillery", "Artillery", TargetLayers.Ground | TargetLayers.Air, 8f, 1.8f, new Color(1f, 0.78f, 0.3f),
                 new[] { Lvl(0, 70f, 5.1f, 1.6f), Lvl(220, 130f, 5.5f, 1.4f), Lvl(320, 220f, 5.9f, 1.2f) }, 240f);
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),

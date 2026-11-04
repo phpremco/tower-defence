@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Artillery_T3
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: c4a5351f7c76d044a926584ce66244ff, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: a33080daab367684da0f128b05881034, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 91a76d7712b1f6645b9216243c8e3e58, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.8890624
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 12
+    _clip: {fileID: -6774741899422372657, guid: c4a5351f7c76d044a926584ce66244ff, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_2
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: 1745112247205521966, guid: c4a5351f7c76d044a926584ce66244ff, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1
+  - _role: 1
+    _clip: {fileID: -8369200478639269498, guid: c4a5351f7c76d044a926584ce66244ff, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

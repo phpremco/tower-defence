@@ -58,6 +58,9 @@ namespace Game.Towers
         /// <summary>Show the model with its own materials, without the tower tint and glow. For hand-coloured models.</summary>
         [SerializeField] private bool _keepModelColours;
 
+        /// <summary>The imported model per level; when set it replaces the procedural shape and the model above.</summary>
+        [SerializeField] private TowerArtDefinition _art;
+
         public string Id => name;
         public string DisplayName => _displayName;
         public TargetLayers Targets => _targets;
@@ -88,6 +91,9 @@ namespace Game.Towers
         public GameObject Model => _model;
         public float ModelScale => _modelScale;
         public bool KeepModelColours => _keepModelColours;
+
+        /// <summary>The imported (Blender) look, or null for the procedural shape.</summary>
+        public TowerArtDefinition Art => _art;
         public int MaxLevelIndex => _levels.Length - 1;
 
         /// <summary>Price to build the tower, which is the cost of its first level.</summary>

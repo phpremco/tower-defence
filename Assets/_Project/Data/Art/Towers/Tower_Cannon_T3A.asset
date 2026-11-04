@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Cannon_T3A
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: fcaedc907dcfa8b4984db3249a64ff2b, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 2200f894e519aa64c921e430a9952757, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: bdddfe14c133cd94ca2a16aec1f8740d, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.45999986
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 12
+    _clip: {fileID: -4765057131268768054, guid: fcaedc907dcfa8b4984db3249a64ff2b, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_2
+    _weight: 1
+  - _role: 1
+    _clip: {fileID: -1311183834111751971, guid: fcaedc907dcfa8b4984db3249a64ff2b, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: 9206841021346183001, guid: fcaedc907dcfa8b4984db3249a64ff2b, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1

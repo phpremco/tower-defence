@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_StormRifle_T1
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 7c9fe964278b26740b96ac6730d737ef, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: 0f0e452070ce14d41872a276bfb85c32, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: f6770432375f406448174061058af177, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.7224997
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 1
+    _clip: {fileID: -3167708828170613836, guid: 7c9fe964278b26740b96ac6730d737ef, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: 4327332398106654661, guid: 7c9fe964278b26740b96ac6730d737ef, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1

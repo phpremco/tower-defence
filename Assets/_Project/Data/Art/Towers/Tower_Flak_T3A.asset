@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: Tower_Flak_T3A
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: b619c7286f88e70429bd5b44c764f701, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 274f07cdd979fcc4fbf2e36fb32a6667, type: 2}
+  _scale: 1
+  _bodyCentrePivot: 0
+  _height: 0.92827564
+  _lodScreenHeight: 0.05
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _clips:
+  - _role: 12
+    _clip: {fileID: -8753150458567870380, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_3
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: -3350262009207904808, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_4
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: 3275357780572391098, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_1
+    _weight: 1
+  - _role: 12
+    _clip: {fileID: 6196881077022960808, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: Muzzle_2
+    _weight: 1
+  - _role: 14
+    _clip: {fileID: -4184167098054568373, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+  - _role: 1
+    _clip: {fileID: -8400417650290213154, guid: 60765fc90d59cf44487a64947bcef337, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1

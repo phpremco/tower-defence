@@ -1,0 +1,265 @@
+{
+  "asset": "Tower_Rocket",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.577,
+    "world_per_uv": 4.1731
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 83.5,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 69.6,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_Rocket_T1.fbx",
+      "tris": 2408,
+      "tris_lod1": 1052,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Tube_1",
+        "Tube_2",
+        "Tube_3",
+        "Tube_4"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.2427,
+          0.7208
+        ]
+      },
+      "sockets": {
+        "Tube_1": [
+          -0.045,
+          -0.2587,
+          0.6781
+        ],
+        "Tube_2": [
+          0.045,
+          -0.2587,
+          0.6781
+        ],
+        "Tube_3": [
+          -0.045,
+          -0.2137,
+          0.756
+        ],
+        "Tube_4": [
+          0.045,
+          -0.2137,
+          0.756
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_Rocket_T2.fbx",
+      "tris": 2736,
+      "tris_lod1": 1316,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Tube_1",
+        "Tube_2",
+        "Tube_3",
+        "Tube_4",
+        "Tube_5",
+        "Tube_6"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.2427,
+          0.7208
+        ]
+      },
+      "sockets": {
+        "Tube_1": [
+          -0.09,
+          -0.2587,
+          0.6781
+        ],
+        "Tube_2": [
+          0.0,
+          -0.2587,
+          0.6781
+        ],
+        "Tube_3": [
+          0.09,
+          -0.2587,
+          0.6781
+        ],
+        "Tube_4": [
+          -0.09,
+          -0.2137,
+          0.756
+        ],
+        "Tube_5": [
+          0.0,
+          -0.2137,
+          0.756
+        ],
+        "Tube_6": [
+          0.09,
+          -0.2137,
+          0.756
+        ]
+      }
+    },
+    "T3": {
+      "fbx": "Tower_Rocket_T3.fbx",
+      "tris": 3706,
+      "tris_lod1": 1982,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Tube_1",
+        "Tube_2",
+        "Tube_3",
+        "Tube_4",
+        "Tube_5",
+        "Tube_6",
+        "Tube_7",
+        "Tube_8",
+        "Tube_9"
+      ],
+      "deform_bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Pitch",
+        "Barrel_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.2427,
+          0.7208
+        ]
+      },
+      "sockets": {
+        "Tube_1": [
+          -0.09,
+          -0.2812,
+          0.6391
+        ],
+        "Tube_2": [
+          0.0,
+          -0.2812,
+          0.6391
+        ],
+        "Tube_3": [
+          0.09,
+          -0.2812,
+          0.6391
+        ],
+        "Tube_4": [
+          -0.09,
+          -0.2362,
+          0.7171
+        ],
+        "Tube_5": [
+          0.0,
+          -0.2362,
+          0.7171
+        ],
+        "Tube_6": [
+          0.09,
+          -0.2362,
+          0.7171
+        ],
+        "Tube_7": [
+          -0.09,
+          -0.1912,
+          0.795
+        ],
+        "Tube_8": [
+          0.0,
+          -0.1912,
+          0.795
+        ],
+        "Tube_9": [
+          0.09,
+          -0.1912,
+          0.795
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground",
+  "yaw_height": 0.235,
+  "glow": [
+    0.38,
+    0.7,
+    1.0
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "asset": "Tower_BaseTurret",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.578,
+    "world_per_uv": 4.8949
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 97.9,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 81.6,
+      "mask": "A"
+    }
+  },
+  "variants": {
+    "T1": {
+      "fbx": "Tower_BaseTurret_T1.fbx",
+      "look": "Gun T1",
+      "tris": 3204,
+      "tris_lod1": 1496,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.5938,
+          0.3913
+        ]
+      }
+    },
+    "T2": {
+      "fbx": "Tower_BaseTurret_T2.fbx",
+      "look": "Gun T2",
+      "tris": 4256,
+      "tris_lod1": 2188,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1",
+        "Barrel_2",
+        "Muzzle_2"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Fire_2": 10
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          -0.065,
+          -0.6063,
+          0.3913
+        ],
+        "Muzzle_2": [
+          0.065,
+          -0.6063,
+          0.3913
+        ]
+      }
+    },
+    "T3": {
+      "fbx": "Tower_BaseTurret_T3.fbx",
+      "look": "Gun T3A",
+      "tris": 4440,
+      "tris_lod1": 2076,
+      "bones": [
+        "Root",
+        "Star_1",
+        "Star_2",
+        "Star_3",
+        "Yaw",
+        "Smoke",
+        "Pitch",
+        "Barrel_1",
+        "Muzzle_1"
+      ],
+      "clips": {
+        "IdleSweep": 120,
+        "Fire_1": 10,
+        "Spin": 12
+      },
+      "muzzles": {
+        "Muzzle_1": [
+          0.0,
+          -0.65,
+          0.3913
+        ]
+      }
+    }
+  },
+  "pivot": "pad centre on the ground; rig, clips and aiming as Tower_Gun (round 7)"
+}

@@ -13,6 +13,19 @@ namespace Game.Editor
         public const float DefaultDetail2 = 0.6f;
         public const float DefaultRim = 0.6f;
 
+        // A machine's glow colour is in its emission map; white times this lights it. README round 7 suggests about 1.5;
+        // at the play zoom (imp2_r5) the lenses and coils read better a little hotter.
+        public const float TowerEmission = 2f;
+
+        // Our machines' cool rim, a little stronger than the creatures' so the small heads separate from the night ground.
+        public const float TowerRim = 0.75f;
+
+        // The wreck's embers bloomed into yellow flames at 1.5 (imp2_r5_wreck): they only smoulder.
+        public const float WreckEmission = 0.6f;
+
+        // The burnt husk read as a dark rock on the night ground (imp2_r7_wreck): its albedo is lifted.
+        public const float WreckBrightness = 1.7f;
+
         // The procedural species are drawn at their data scale times 1.4 (EnemyModelFactory); the exports are built at the
         // factory model's size in their own units, so the same factor keeps every species as big as players know it.
         public const float SpeciesScale = 1.4f;
@@ -57,6 +70,9 @@ namespace Game.Editor
 
         /// <summary>Lightens (above 1) or darkens the baked albedo, for a model that reads too dark at play size.</summary>
         public float Brightness { get; set; } = 1f;
+
+        /// <summary>Our side: rimmed in the colony's cool light instead of the aliens' warm one.</summary>
+        public bool Colony { get; set; }
 
         /// <summary>File prefix of the maps: the asset, or asset and skin.</summary>
         public string MapPrefix => Skin == null ? Asset : $"{Asset}_{Skin}";

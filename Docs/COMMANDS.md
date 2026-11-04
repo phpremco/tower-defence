@@ -320,3 +320,22 @@ The Blender scripts write to `ArtSource/Exports/` (git-ignored); Unity never rea
   generated data: `Data/Art/<Id>.asset` (`ModelArtDefinition`), `Art/Materials/Blender/<Id>.mat` and `<Id>_Low.mat`.
 - A new creature: add its export folder name to a row (and the enemy to `EnemyArt`), run the creature menu item.
 - Screenshots of creatures at play size: `Tools/PlayTest/enemy_shots.sh <prefix> <level> <ortho half height> <Enemy> ...`.
+
+### Towers (added 2026-11-04, import stage 2)
+
+| Goal | Command |
+| --- | --- |
+| Sync the tower exports, rebuild their materials, tier art and tower art, point the towers at them | `unity command menu --path "Tools/Generate/Blender Towers (sync, materials, towers)" --timeout 900` (also the full generator's step "Tower art") |
+| Recompile + tower art in one go (Play Mode must be stopped) | `bash Tools/PlayTest/imp2_regen.sh` |
+| Recompile only, with the error and warning count | `bash Tools/PlayTest/imp2_compile.sh` |
+| Bones (with world rest pose), meshes and clips of one tower tier | write `Tower_Gun/Tower_Gun_T2` to `Tools/PlayTest/imp_arg.txt`, `eval_file --file Tools/PlayTest/imp2_inspect.cs`, read `imp2_inspect.txt` |
+| Screenshots: every tower at level 1 and 3 firing, close-up, damage smoke, wreck | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/imp2_shots.sh <prefix> [level] [road index]` (pictures in `Assets/Temp/`) |
+
+- **Which model a tower wears** is `BlenderTowerCatalog` (tower id, export, tiers, aim, shot-origin bones, wreck debris,
+  look). The generated data: `Data/Art/Towers/Tower_<Name>.asset` (`TowerArtDefinition`: level and path per tier),
+  `Data/Art/Towers/Tower_<Name>_<Tier>.asset` (`ModelArtDefinition` per tier), `Tower_Wreck.asset`, and the materials
+  `Art/Materials/Blender/Tower_<Name>.mat` and `_Low.mat`. A tower without `Art` keeps its procedural model.
+- The tier FBX files are synced by name (`BlenderSync.Sync(assets, extraModels)`); each holds the near mesh and the
+  far one (renamed `_Far` at import) on one rig, so a LOD group picks one and one Animator drives both.
+- Each Unity CLI command answered in about a minute on 2026-11-04 (the editor was slow to reply all session); give
+  long timeouts and avoid `unity command console` on a full console (it can run for minutes): use `console_status`.

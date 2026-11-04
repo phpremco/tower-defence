@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a2acdc37475f9940811408b1f147042, type: 3}
+  m_Name: Tower_BaseTurret
+  m_EditorClassIdentifier: Game.Towers::Game.Towers.TowerArtDefinition
+  _tiers:
+  - _tier: T1
+    _levelIndex: 0
+    _path: 0
+    _art: {fileID: 11400000, guid: 78fee9606ac8cd64692ed5d0214a2cfe, type: 2}
+  - _tier: T2
+    _levelIndex: 1
+    _path: 0
+    _art: {fileID: 11400000, guid: e20d6edbb2bea0649824dfd1c4fcd4ae, type: 2}
+  - _tier: T3
+    _levelIndex: 2
+    _path: 0
+    _art: {fileID: 11400000, guid: de32bb975ec3e0849b01aa4c210b7991, type: 2}
+  _defaultPath: 1
+  _aim: 0
+  _pitchLimits: {x: -12, y: 60}
+  _muzzlePrefix: Muzzle
+  _muzzleChoice: 0
+  _chargeGlow: 1
+  _hideStars: 0
+  _wreck: {fileID: 11400000, guid: ee9d6f9544e3a484e9352809d2d26a62, type: 2}
+  _debris: Debris_Gun
+  _star: {fileID: 919132149155446097, guid: 6a5aa7a8bf4586649b8b1bb2ab278090, type: 3}

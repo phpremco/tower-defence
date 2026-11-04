@@ -71,6 +71,21 @@ namespace Game.Core
             return -1;
         }
 
+        /// <summary>Index of the first clip with a role whose socket is that bone, or -1.</summary>
+        public int IndexOf(ModelClipRole role, string socket)
+        {
+            for (int i = 0; i < _clips.Length; i++)
+            {
+                ModelClip clip = _clips[i];
+                if (clip != null && clip.Role == role && clip.Clip != null && clip.Socket == socket)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         /// <summary>Index of the power clip shown for a power kind, or -1.</summary>
         public int IndexOfTrigger(string trigger)
         {
