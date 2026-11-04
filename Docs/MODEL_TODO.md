@@ -386,3 +386,14 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 | RATCarrier | Klemmen van opzij slecht zichtbaar. De armen lezen als één steel |
 | LOD1 | Boven ~2.000: StormRifle T2 2.620, Cryo T3 2.398, Acid T3A 2.396, Artillery T3 2.352 |
 | Kleurvragen | Artillery is in de data oranje, het model amber. Support is in de data groen, het model signaalgeel. De kern van de Lava Ball is bewust oranje (dat is het wapen), de schil heeft onze kleuren |
+
+### Curator-besluiten voor de import (2026-11-04)
+
+- **SkySovereign / StormMatriarch:** in de data is de StormMatriarch de vleermuisbaas en de SkySovereign de rogbaas.
+  Bij de modellen is dat omgekeerd. Besluit: bij de import kiest elke baasdefinitie het model van haar eigen
+  soortfamilie (vleermuisbaas → vleermuismodel, rogbaas → rogmodel). Asset-id's blijven gelijk. Daarbij nagaan of de
+  dialoog in level 4 ("smaller contacts detaching") en de baaskracht nog kloppen.
+- **Kleuren in de data volgen de modellen**, als de data een alien koel kleurt of onze kant warm. Dat geldt voor de
+  laserstraal, de Attack-drone, de Mine, de Artillery, de Support, het Bulwark-accent en de Stinger. Remco kan dit
+  terugdraaien.
+- **Bat-skins Tide en Frost** zijn koel van element en nog niet gebakken. Volgen later, met een warme gloed.
