@@ -1,3 +1,4 @@
+using Game.Combat;
 using Game.Core;
 using UnityEngine;
 
@@ -48,6 +49,7 @@ namespace Game.Drones
 
         // The flash sits just past the mouth of a modelled gun, along the muzzle bone's +Y.
         private const float ArtFlashForward = 0.04f;
+        private const float MuzzleWhiteness = 0.6f;
         private static readonly Color MoneyColor = new Color(1f, 0.9f, 0.4f);
         private static readonly Color SparkColor = new Color(1f, 0.85f, 0.5f);
         private static readonly Color DustColor = new Color(0.55f, 0.45f, 0.32f, 0.7f);
@@ -60,6 +62,11 @@ namespace Game.Drones
         private Transform _beam;
         private Transform _pool;
         private Transform[] _flashes;
+
+        // The painted flashes of the drone's weapon at its gun mouths, or null: then the glowing spheres stand in.
+        private MuzzleFlashView[] _painted;
+        private Transform[] _mouths;
+        private Vector3 _mouthAxis;
         private ParticleSystem _sparks;
         private ParticleSystem _dust;
         private TrailRenderer[] _trails;
@@ -104,7 +111,7 @@ namespace Game.Drones
         {
             _art = DroneArtRig.Create(transform, definition.Art);
             _model = _art.Holder;
-            _flashes = new Transform[_art.Muzzles.Length];
+            _flashes = PaintMuzzles(definition, color, _art.Muzzles, Vector3.up) ? new Transform[0] : new Transform[_art.Muzzles.Length];
             for (int i = 0; i < _flashes.Length; i++)
             {
                 GameObject flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(color, Color.white, 0.6f), _art.Muzzles[i], Vector3.up * ArtFlashForward, Vector3.one * FlashSize, FlashEmission);
@@ -129,7 +136,7 @@ namespace Game.Drones
         {
             _rig = DroneModelBuilder.Build(transform, definition);
             _model = _rig.Root.transform;
-            _flashes = new Transform[_rig.Muzzles.Length];
+            _flashes = PaintMuzzles(definition, color, ProceduralMouths(), Vector3.forward) ? new Transform[0] : new Transform[_rig.Muzzles.Length];
             for (int i = 0; i < _flashes.Length; i++)
             {
                 GameObject flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(color, Color.white, 0.6f), _rig.Root.transform, _rig.Muzzles[i], Vector3.one * FlashSize, FlashEmission);
@@ -160,6 +167,49 @@ namespace Game.Drones
             {
                 _trails[i] = CreateTrail(_rig.Thrusters[i], color);
             }
+        }
+
+        // The drone's weapon's painted flash at every gun mouth, when the effect library has one for its projectile style.
+        private bool PaintMuzzles(DroneDefinition definition, Color color, Transform[] mouths, Vector3 axis)
+        {
+            if (mouths.Length == 0 || !Services.TryGet(out VfxLibrary library))
+            {
+                return false;
+            }
+
+            WeaponVfxDefinition weapon = library.WeaponFor(definition.ProjectileStyle);
+            var views = new MuzzleFlashView[mouths.Length];
+            for (int i = 0; i < views.Length; i++)
+            {
+                var view = new GameObject("MuzzleFlash").AddComponent<MuzzleFlashView>();
+                view.transform.SetParent(transform, false);
+                if (!view.Initialize(weapon, Color.Lerp(color, Color.white, MuzzleWhiteness), ModelQuality.IsLow, Camera.main))
+                {
+                    Destroy(view.gameObject);
+                    return false;
+                }
+
+                views[i] = view;
+            }
+
+            _painted = views;
+            _mouths = mouths;
+            _mouthAxis = axis;
+            return true;
+        }
+
+        // The procedural rig names its gun mouths as points under its root; the flash needs a node to follow.
+        private Transform[] ProceduralMouths()
+        {
+            var mouths = new Transform[_rig.Muzzles.Length];
+            for (int i = 0; i < mouths.Length; i++)
+            {
+                mouths[i] = new GameObject("Mouth").transform;
+                mouths[i].SetParent(_rig.Root.transform, false);
+                mouths[i].localPosition = _rig.Muzzles[i];
+            }
+
+            return mouths;
         }
 
         private static TrailRenderer CreateTrail(Transform thruster, Color color)
@@ -211,6 +261,14 @@ namespace Game.Drones
             foreach (Transform flash in _flashes)
             {
                 flash.gameObject.SetActive(true);
+            }
+
+            if (_painted != null)
+            {
+                for (int i = 0; i < _painted.Length; i++)
+                {
+                    _painted[i].Flash(_mouths[i], _mouthAxis);
+                }
             }
         }
 

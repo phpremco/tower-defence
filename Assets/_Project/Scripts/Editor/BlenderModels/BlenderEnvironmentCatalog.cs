@@ -57,6 +57,12 @@ namespace Game.Editor
             /// <summary>Story set pieces (a seal in its states, a wreck), export paths; imported, placed by later code only.</summary>
             public string[] Landmarks = new string[0];
 
+            /// <summary>The bendable bank segments swept along the pools' smoothed shores (README round 24b), kit names.</summary>
+            public string[] BankSweeps = { "BankSweep_A", "BankSweep_B", "BankSweep_C" };
+
+            /// <summary>The loose shore rocks laid on the swept bank's joints, kit name.</summary>
+            public string BankAccent = "BankAccent";
+
             /// <summary>Colour of the glints in the ground (mask A).</summary>
             public Color Sparkle = new Color(1f, 0.7f, 0.95f);
 
@@ -351,6 +357,12 @@ namespace Game.Editor
                 assets.UnionWith(row.NestScatter);
                 assets.UnionWith(row.Silhouettes);
                 assets.UnionWith(row.Landmarks);
+                foreach (string sweep in row.BankSweeps)
+                {
+                    assets.Add(row.PieceAsset(sweep));
+                }
+
+                assets.Add(row.PieceAsset(row.BankAccent));
                 foreach ((TerrainKind _, string asset, bool _, float _) in row.Origins)
                 {
                     assets.Add(asset);

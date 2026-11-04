@@ -1136,6 +1136,98 @@ MonoBehaviour:
         e33: 1
     _tintWithElement: 1
     _scale: 1
+  _bankSweeps:
+  - _name: Mire_BankSweep_A
+    _mesh: {fileID: -6134482819482061367, guid: 09a6974890cbd7e48ae953afad9b3444, type: 3}
+    _material: {fileID: 2100000, guid: f3412c82d3a43934cb5f63d753f1aafd, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5f766809f20ed384fb2be0750eabc85a, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Mire_BankSweep_B
+    _mesh: {fileID: -7718124055395676568, guid: a8e7c0a8184b36a4fa3c2f4c51d006d8, type: 3}
+    _material: {fileID: 2100000, guid: 59c5484be15cd1d4aaaf3a922949150b, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 4d01f8a32564aaf4cb47fa7c895b80a8, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: Mire_BankSweep_C
+    _mesh: {fileID: -4710094066055758755, guid: 4a2fceb7ceeba5e47931d340664faa96, type: 3}
+    _material: {fileID: 2100000, guid: b077443fa4bb3a64ebd46fc4ef0f2a58, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: d411e8e62fabd894f9b80c8060420bf9, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _bankAccent:
+    _name: Mire_BankAccent
+    _mesh: {fileID: -4292296345366079528, guid: 4eeb3e7259b873e45b4ba8d0764abb56, type: 3}
+    _material: {fileID: 2100000, guid: c05f510e5f5ea4d4189d3cb5c48d3cb4, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 0de344b54953b074da5e16546034eb39, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _bankAccentShare: 0.6
+  _looseBankAccents: 3
   _farDecorStart: 2
   _farDecorAlbedo: 0.65
   _farDecorGlow: 0.35

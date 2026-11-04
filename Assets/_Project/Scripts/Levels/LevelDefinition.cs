@@ -37,6 +37,8 @@ namespace Game.Levels
         [SerializeField] private BossEntrance _bossEntrance;
         /// <summary>Where element creatures come up. Each nest names a cell off the road and the element it belongs to.</summary>
         [SerializeField] private ElementNest[] _nests = new ElementNest[0];
+        /// <summary>How the nests open and close per wave and what they and the route gates look like; empty keeps the static ones.</summary>
+        [SerializeField] private SpawnOriginDefinition _spawnOrigins;
         [SerializeField] private Texture2D _terrainAlbedo;
         [SerializeField] private Texture2D _terrainEmission;
         /// <summary>Makes every enemy of this level tougher, so later levels are harder before difficulty is applied.</summary>
@@ -114,6 +116,9 @@ namespace Game.Levels
 
         /// <summary>The element nests of this level; a spawn group with source Nest picks one that matches its creature.</summary>
         public ElementNest[] Nests => _nests;
+
+        /// <summary>The living spawn origins and gates, or null for the static nests and procedural gates.</summary>
+        public SpawnOriginDefinition SpawnOrigins => _spawnOrigins;
 
         /// <summary>Raised ground and liquids. Liquids cannot hold towers; every other cell is plain ground.</summary>
         public TerrainPatch[] TerrainPatches => _terrain;

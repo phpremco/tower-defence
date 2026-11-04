@@ -42,3 +42,4 @@ MonoBehaviour:
   _regionDim: 0.25
   _regionRim: 0.6
   _lockedShare: 0.45
+  _regionCloudClear: 0.65

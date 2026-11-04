@@ -76,6 +76,10 @@ namespace Game.Levels
         [SerializeField] private ModelArtDefinition _resourceNodeArt;
         [Tooltip("The continent's Blender environment (ground layers, kit, decor); empty keeps the procedural landscape.")]
         [SerializeField] private EnvironmentSet _environment;
+        [Tooltip("The continent's pool surfaces (Game/Liquid per kind); empty keeps the painted liquid sheets.")]
+        [SerializeField] private LiquidSet _liquids;
+        [Tooltip("The ground mist sheets (Blender mist textures); empty keeps the painted mist.")]
+        [SerializeField] private MistDefinition _mist;
 
         [Header("Decor clearance")]
         [Tooltip("Free ground kept round every structure (base, gates, entrances, mines, nests): no rock, plant, cliff or silhouette may reach into it.")]
@@ -150,6 +154,8 @@ namespace Game.Levels
         public BaseArtDefinition BaseArt => _baseArt;
         public ModelArtDefinition ResourceNodeArt => _resourceNodeArt;
         public EnvironmentSet Environment => _environment;
+        public LiquidSet Liquids => _liquids;
+        public MistDefinition Mist => _mist;
     }
 }
 

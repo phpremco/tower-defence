@@ -1288,6 +1288,98 @@ MonoBehaviour:
         e33: 1
     _tintWithElement: 1
     _scale: 1
+  _bankSweeps:
+  - _name: BankSweep_A
+    _mesh: {fileID: 2873771941870268347, guid: eb209b14adc7c2a4eaa79f7b9436e399, type: 3}
+    _material: {fileID: 2100000, guid: 9294a0200370d27459114fd1bdde70de, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: d68c79189cc392e4f95c8c593d3e7cf9, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: BankSweep_B
+    _mesh: {fileID: -8821477794853508822, guid: 8455b213d335f7a4ea128239691b7dbd, type: 3}
+    _material: {fileID: 2100000, guid: 834ab29c17e0f0c488b6d2682e97e466, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 120f48083c84dfa4b96aa3a635ea04a9, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  - _name: BankSweep_C
+    _mesh: {fileID: -1158807370749864220, guid: 1c9e5aca12094044ea692f53d0b2b774, type: 3}
+    _material: {fileID: 2100000, guid: 25c44cabee2e5954fb754493354559ff, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: e9ad79b3165074b4e8113f8ec44b74cc, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _bankAccent:
+    _name: BankAccent
+    _mesh: {fileID: -789883851465882136, guid: c744feec4db909848ae9de1b810fc73d, type: 3}
+    _material: {fileID: 2100000, guid: 081cd7a1440d3934782da76cf6f84f30, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5867c4cf6bc0d4941838d1871caf9aa7, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+  _bankAccentShare: 0.6
+  _looseBankAccents: 3
   _farDecorStart: 2
   _farDecorAlbedo: 0.65
   _farDecorGlow: 0.35

@@ -181,6 +181,17 @@ namespace Game.Boot
             controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig, spawner.Living, drones.Drones);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);
             FindAnyObjectByType<BaseView>()?.Bind(context);
+            // The spawn origins follow the director the level controller made; the route gates follow the gate spawns.
+            foreach (SpawnOriginView origin in FindObjectsByType<SpawnOriginView>())
+            {
+                origin.Bind(context);
+            }
+
+            foreach (SpawnGateView gate in FindObjectsByType<SpawnGateView>())
+            {
+                gate.Bind(context);
+            }
+
             var hud = controllers.AddComponent<HudView>();
             hud.Initialize(context, time, _camera);
         }

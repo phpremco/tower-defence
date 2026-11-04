@@ -33,6 +33,8 @@ namespace Game.Editor
             "Walk", "Run", "Crawl", "Fly", "Glide", "Float", "Grounded", "Roll", "Idle", "Swim", "WalkEnraged",
             // The towers' cycles (README rounds 7 and 11).
             "IdleSweep", "Spin", "Beam", "FireAlternate", "Spray", "Slosh",
+            // The living spawn origins (README round 23): the marker breath.
+            "Marked",
         };
 
         private static List<BlenderArtEntry> _creatures;

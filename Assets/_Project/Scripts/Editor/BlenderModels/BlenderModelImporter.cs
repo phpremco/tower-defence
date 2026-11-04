@@ -51,10 +51,12 @@ namespace Game.Editor
         private static bool IsOurs(string path) => path.StartsWith(BlenderSync.TargetRoot + "/", StringComparison.Ordinal);
 
         // The environment kit (import stage 4a): static meshes without a rig, and tiling ground sets that repeat. The
-        // resource node lives in the same folder but is a stage 3a art model (its own import settings).
+        // resource node and the living spawn origins (round 23, rigged with takes) live in the same folder but import as
+        // art models.
         private static bool IsEnvironment(string path) =>
             path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderSync.EnvironmentFolder + "/", StringComparison.Ordinal) &&
-            !path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderColonyCatalog.ResourceNodeAsset + "/", StringComparison.Ordinal);
+            !path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderColonyCatalog.ResourceNodeAsset + "/", StringComparison.Ordinal) &&
+            !path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderSync.EnvironmentFolder + "/" + BlenderOriginCatalog.LivingPrefix, StringComparison.Ordinal);
 
         private static bool IsTiling(string path) => IsEnvironment(path) && path.Contains("/" + BlenderSync.TilingFolder + "/");
 
@@ -63,6 +65,9 @@ namespace Game.Editor
 
         // The effect textures painted in Blender (round 20): flipbooks, sprites, ribbons and distortion maps.
         private static bool IsVfx(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderVfxCatalog.Folder + "/", StringComparison.Ordinal);
+
+        // The liquid and mist textures (round 24): tiling surfaces, flipbooks and flow maps for Game/Liquid and Game/Mist.
+        private static bool IsLiquid(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderLiquidCatalog.Folder + "/", StringComparison.Ordinal);
 
         // The export folder an asset path lies in (the first folder under the target root).
         private static string ExportFolder(string path)
@@ -222,6 +227,12 @@ namespace Game.Editor
                 return;
             }
 
+            if (IsLiquid(assetPath))
+            {
+                PreprocessLiquidTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             bool detail = assetPath.Contains("/" + BlenderSync.DetailFolder + "/");
             bool tiling = IsTiling(assetPath);
             bool low = assetPath.Contains("/" + BlenderSync.LowFolder + "/");
@@ -271,6 +282,36 @@ namespace Game.Editor
             importer.filterMode = FilterMode.Bilinear;
             importer.maxTextureSize = low ? VfxLowMapSize : VfxMapSize;
             importer.textureCompression = BlenderVfxCatalog.IsDistortion(file) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+        }
+
+        // Liquids_report.json: only the albedo maps are colour, the normal maps import as normal maps, everything else (masks,
+        // heat, flow, flipbooks, mist) is linear data with its alpha as painted. The tiling maps repeat; the flipbooks and
+        // the vortex clamp, the shore profile repeats along its phase and clamps across. Flow vectors stay uncompressed.
+        private static void PreprocessLiquidTexture(TextureImporter importer, string file, bool low)
+        {
+            importer.mipmapEnabled = true;
+            importer.alphaIsTransparency = false;
+            importer.anisoLevel = TilingAnisoLevel;
+            importer.filterMode = FilterMode.Trilinear;
+            importer.maxTextureSize = low ? LowMapSize : FullMapSize;
+            importer.textureCompression = BlenderLiquidCatalog.IsFlow(file) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+            importer.wrapMode = BlenderLiquidCatalog.Clamps(file) ? TextureWrapMode.Clamp : TextureWrapMode.Repeat;
+            if (BlenderLiquidCatalog.IsProfile(file))
+            {
+                importer.wrapModeU = TextureWrapMode.Repeat;
+                importer.wrapModeV = TextureWrapMode.Clamp;
+            }
+
+            if (BlenderLiquidCatalog.IsNormal(file))
+            {
+                importer.textureType = TextureImporterType.NormalMap;
+                importer.sRGBTexture = false;
+                return;
+            }
+
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = BlenderLiquidCatalog.IsColour(file);
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
         }
 
         // README round 20: wrap round in longitude, clamp at the poles; colour maps sRGB, the rest data; the region ids

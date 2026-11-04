@@ -1,0 +1,39 @@
+{
+  "asset": "Ash_BankAccent",
+  "continent": "AshenReach",
+  "game_tris": 400,
+  "source_tris": 4660,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 43,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.536,
+    "world_per_uv": 0.4348067384392159
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 3.6,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 6.2,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.256,
+    0.232,
+    0.129
+  ],
+  "round": "24b",
+  "accent": "scatter on the bank curve, any yaw, pivot on the ground; scale 0.8-1.2"
+}

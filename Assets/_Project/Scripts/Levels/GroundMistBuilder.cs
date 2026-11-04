@@ -41,6 +41,53 @@ namespace Game.Levels
             Sheet(parent, "MistHigh", centre, size, HighHeight, tint, HighAlpha, HighTiling, new Vector2(-HighSpeed * 0.7f, HighSpeed));
         }
 
+        /// <summary>
+        /// The mist of a definition: one sheet per layer of the Blender mist textures (the Low profile only the first
+        /// <see cref="MistDefinition.LowLayers"/>, at its own alpha and without the soft fade). The shader drifts them.
+        /// </summary>
+        public static void Build(LevelDefinition level, MistDefinition mist, Transform parent, bool low)
+        {
+            GridMap grid = level.Grid;
+            Vector3 centre = (grid.CellToWorld(Vector2Int.zero) + grid.CellToWorld(grid.Size - Vector2Int.one)) * 0.5f;
+            Vector2 size = level.WorldSize + Vector2.one * (mist.MarginCells * 2f * grid.CellSize);
+            int layers = low ? Mathf.Min(mist.LowLayers, mist.Layers.Length) : mist.Layers.Length;
+            for (int i = 0; i < layers; i++)
+            {
+                MistLayer layer = mist.Layers[i];
+                if (layer == null || layer.Density == null || mist.Shader == null)
+                {
+                    continue;
+                }
+
+                var material = new Material(mist.Shader) { name = $"Mist_{i}" };
+                material.SetTexture("_MainTex", layer.DensityFor(low));
+                material.SetColor("_Color", mist.Colour);
+                material.SetFloat("_Alpha", low ? mist.LowAlpha : layer.Alpha);
+                material.SetFloat("_Tile", layer.Tile);
+                material.SetVector("_Scroll", layer.Scroll);
+                material.SetFloat("_SoftDistance", mist.SoftDistance);
+                material.SetFloat("_Glow", mist.Glow);
+                if (low)
+                {
+                    material.DisableKeyword("_MIST_SOFT");
+                }
+                else
+                {
+                    material.EnableKeyword("_MIST_SOFT");
+                }
+
+                var go = new GameObject($"Mist_{i}");
+                go.transform.SetParent(parent, false);
+                go.transform.SetPositionAndRotation(new Vector3(centre.x, layer.Height, centre.z), Quaternion.Euler(90f, 0f, 0f));
+                go.transform.localScale = new Vector3(size.x, size.y, 1f);
+                go.AddComponent<MeshFilter>().sharedMesh = Quad();
+                var renderer = go.AddComponent<MeshRenderer>();
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
+                renderer.receiveShadows = false;
+                renderer.sharedMaterial = material;
+            }
+        }
+
         private static void Sheet(Transform parent, string name, Vector3 centre, Vector2 size, float height, Color tint, float alpha, float tiling, Vector2 velocity)
         {
             var go = new GameObject(name);

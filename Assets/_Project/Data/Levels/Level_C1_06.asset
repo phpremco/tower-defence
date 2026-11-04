@@ -320,6 +320,7 @@ MonoBehaviour:
   _nests:
   - Cell: {x: 39, y: 18}
     Element: 7
+  _spawnOrigins: {fileID: 11400000, guid: 6e01db5cf27d96741b9b169e2c5497b2, type: 2}
   _terrainAlbedo: {fileID: 2800000, guid: 1ba94c37ff8b96640a572603beed37ca, type: 3}
   _terrainEmission: {fileID: 2800000, guid: e99f8452afcb2224d8ec193fba632f5b, type: 3}
   _enemyHealthMultiplier: 1

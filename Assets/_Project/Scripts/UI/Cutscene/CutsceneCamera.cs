@@ -69,7 +69,7 @@ namespace Game.UI
 
             if (_shake > 0f)
             {
-                _shake = ShakeCurve.Fade(_shake, deltaTime);
+                _shake = ShakeCurve.Fade(_shake, deltaTime, _feel.KickDecay > 0f ? _feel.KickDecay : ShakeCurve.CutsceneDecay);
                 if (_shake < ShakeCurve.Floor)
                 {
                     _shake = 0f;

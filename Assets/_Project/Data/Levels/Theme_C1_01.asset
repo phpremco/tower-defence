@@ -69,5 +69,7 @@ MonoBehaviour:
   _baseArt: {fileID: 11400000, guid: 8f160802a7716274998a14b5df1a541c, type: 2}
   _resourceNodeArt: {fileID: 11400000, guid: 7b534e1491bb60944b460f60568749c0, type: 2}
   _environment: {fileID: 11400000, guid: cd4471894553b104597e1e19a4646f95, type: 2}
+  _liquids: {fileID: 11400000, guid: 3a1f91f500f66f941b2468fc5a0e346b, type: 2}
+  _mist: {fileID: 11400000, guid: 35ec1f5673d72fc4fb8cb06fce3f615c, type: 2}
   _decorClearance: 0.5
   _baseFootprint: 1.9

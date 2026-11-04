@@ -506,3 +506,21 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
   UV2/AnimBlend streams, soft particles against the orthographic depth, fixed atlas cell for cards and lines, a scrolling
   noise layer), `Game/VfxSmoke` (six-way lighting from the main light, temperature through a fire ramp times the heat
   curve in Custom1.x), `Game/VfxDistortion` (opaque-texture refraction; High only).
+
+### Liquids, mist, spawn origins and route gates (added 2026-11-04, liquids round)
+
+| Goal | Command |
+| --- | --- |
+| Sync `ArtSource/Exports/Liquids`, build the `Game/Liquid` materials (High + `_Low`), the liquid set and the mist, put them on every level theme | `unity command menu --path "Tools/Generate/Blender Liquids (sync, materials, mist)" --timeout 600` (also the generator step "Liquid art") |
+| Sync the living origins (`Env/Origin2_*`) and `SpawnGate_Ground/Air`, build their art and `Data/Art/Origins/SpawnOrigins_CrystalPlains.asset`, point every level at it | `unity command menu --path "Tools/Generate/Blender Origins (sync, spawn origins, route gates)" --timeout 600` (generator step "Origin art", after "Effect library") |
+| Swept banks (`BankSweep_A/B/C`, `BankAccent` per continent) | part of the environment menu / step "Environment art" |
+| Screenshots: the field, the largest water and lava pool at play zoom and close (every other water pool is turned to lava in memory, restored after) | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/liq_shots.sh <prefix> <level index>`; `LOW=1` for the Low profile |
+| Screenshots: an origin marked at wave 0, the gates, then a wave with nest creatures: tremor, burst, open maw, spawning | `SAVE_BACKUP=<backup> SHOTS=<folder> bash Tools/PlayTest/origin_shots.sh <prefix> <level index> <wave> <seconds before the opening>` (C1_01: wave 8, 16 s) |
+| Which waves send creatures out of a nest, per level | `eval_file --file Tools/PlayTest/origin_waves.cs` |
+| Set origin tunables (`_closeDelay 3`, `_openLead 2.5`, ...) | lines in `Tools/PlayTest/origin_tune.txt`, `eval_file --file Tools/PlayTest/origin_tune.cs` |
+| Whether the liquid and mist shaders compiled | `eval_file --file Tools/PlayTest/liq_shader_probe.cs` |
+
+- Phases in `liq_phase.cs`: `swap`, `view <kind|all|origin|gate>`, `waves off`, `wave <n>` (starts it, controller held),
+  `simulate <s>` (runs the wave logic without frames), `stepto <origin|busy> <state> <s>` (steps real frames), `probe`.
+- `LevelController` holds a nest spawn until its origin is open (the maw is up 2.53 s after the opening starts); a wave
+  called early opens them at once.

@@ -163,6 +163,12 @@ namespace Game.Levels
         /// <summary>Raised with every enemy as it enters the field.</summary>
         public GameEvent<Enemy> EnemySpawned { get; } = new GameEvent<Enemy>();
 
+        /// <summary>A creature came through the gate of the path with this index.</summary>
+        public GameEvent<int> GateSpawned { get; } = new GameEvent<int>();
+
+        /// <summary>The cycle of the level's spawn origins (its nests), or null when the level keeps static nests.</summary>
+        public OriginDirector Origins { get; set; }
+
         /// <summary>Raised with the place an enemy hit a tower, blockade or the base.</summary>
         public GameEvent<Vector3> StructureHit { get; } = new GameEvent<Vector3>();
 

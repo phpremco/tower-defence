@@ -52,20 +52,71 @@ namespace Game.Levels
 
         private static readonly TerrainKind[] Kinds = { TerrainKind.Water, TerrainKind.Lava, TerrainKind.Quicksand, TerrainKind.Ice, TerrainKind.Bog, TerrainKind.Rift };
 
-        public static void Build(LevelDefinition level, VisualTheme theme, Transform parent, float particleScale = 1f)
+        /// <summary>
+        /// Every liquid of the level. With a <see cref="LiquidSet"/> on the theme each pool is its own sheet cut along its
+        /// smoothed shore and worn in the set's material; the kinds the set lacks (and the rifts) keep the painted sheet.
+        /// </summary>
+        public static void Build(LevelDefinition level, VisualTheme theme, Transform parent, TerrainField field, float particleScale = 1f)
         {
             TerrainMap map = level.Terrain;
             float cell = level.CellSize;
             GridMap grid = level.Grid;
+            LiquidSet set = theme.Liquids;
+            bool low = ModelQuality.IsLow;
 
             foreach (TerrainKind kind in Kinds)
             {
+                if (set != null && set.For(kind) != null)
+                {
+                    continue;
+                }
+
                 List<Vector3> cells = CellCentres(map, grid, kind);
                 if (cells.Count > 0)
                 {
                     BuildPool(kind, theme, cells, cell, parent, particleScale);
                 }
             }
+
+            if (set == null)
+            {
+                return;
+            }
+
+            foreach (LiquidShape shape in field.Pools)
+            {
+                LiquidLook look = set.For(shape.Kind);
+                if (look != null)
+                {
+                    BuildShapedPool(shape, look, theme, grid, cell, parent, particleScale, low);
+                }
+            }
+        }
+
+        // One pool's sheet along its smoothed shore; its motes, life and bank light as before.
+        private static void BuildShapedPool(LiquidShape shape, LiquidLook look, VisualTheme theme, GridMap grid, float cellSize, Transform parent, float particleScale, bool low)
+        {
+            float surface = LevelOf(shape.Kind);
+            var go = new GameObject($"Liquid_{shape.Kind}");
+            go.transform.SetParent(parent, false);
+            go.transform.position = new Vector3(0f, surface, 0f);
+            go.AddComponent<MeshFilter>().sharedMesh = LiquidSurfaceMesh.Build(shape);
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.sharedMaterial = look.MaterialFor(low);
+
+            var cells = new List<Vector3>(shape.Cells.Count);
+            foreach (Vector2Int c in shape.Cells)
+            {
+                cells.Add(grid.CellToWorld(c));
+            }
+
+            if (look.BankLight.maxColorComponent > 0f)
+            {
+                PlaceLavaLights(cells, look.BankLight, cellSize, parent);
+            }
+
+            BuildMotes(shape.Kind, cells, theme, cellSize, surface, particleScale, parent);
         }
 
         /// <summary>
@@ -104,7 +155,7 @@ namespace Game.Levels
             if (kind == TerrainKind.Lava)
             {
                 flow.SetPulse(material.GetColor("_EmissionColor"), LavaPulseDepth, LavaPulseSpeed);
-                PlaceLavaLights(cells, theme, cellSize, parent);
+                PlaceLavaLights(cells, theme.LavaColor, cellSize, parent);
             }
             else if (kind == TerrainKind.Rift)
             {
@@ -417,7 +468,7 @@ namespace Game.Levels
         }
 
         // One flickering point light per cluster of lava cells, the biggest clusters first, so the banks glow.
-        private static void PlaceLavaLights(List<Vector3> cells, VisualTheme theme, float cellSize, Transform parent)
+        private static void PlaceLavaLights(List<Vector3> cells, Color colour, float cellSize, Transform parent)
         {
             var clusters = new Dictionary<Vector2Int, (Vector3 Sum, int Count)>();
             float clusterSize = LightClusterCells * cellSize;
@@ -441,7 +492,7 @@ namespace Game.Levels
                 go.transform.position = new Vector3(centre.x, LavaLightHeight, centre.z);
                 var light = go.AddComponent<Light>();
                 light.type = LightType.Point;
-                light.color = theme.LavaColor;
+                light.color = colour;
                 light.range = LavaLightRange;
                 light.shadows = LightShadows.None;
                 go.AddComponent<LightFlicker>().Initialize(LavaLightIntensity * fill, LavaLightFlicker, LavaLightFlickerSpeed);

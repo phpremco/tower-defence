@@ -24,10 +24,17 @@ namespace Game.Levels
         {
             EnvironmentLayout layout = new EnvironmentLayout(level, field).Build(set.CliffInsetCells, set.CliffSideReach);
             var clearance = new StructureClearance(level);
+            bool sweptBanks = set.HasBankSweeps;
             foreach (EnvironmentPlacement placement in layout.Placements)
             {
                 // Buildable ground is plain ground at rest; the free cells show on the ground only while placing (BuildPadHighlight).
                 if (placement.Kind == EnvironmentPieceKind.BuildPad && !set.ShowBuildPads)
+                {
+                    continue;
+                }
+
+                // Pools with swept banks (round 24b) lose the square bank kit: the sweep follows their round shore.
+                if (sweptBanks && IsSquareBank(placement.Kind))
                 {
                     continue;
                 }
@@ -48,6 +55,7 @@ namespace Game.Levels
                 }
             }
 
+            LiquidBankBuilder.Build(field, set, instancer, instancer.transform, low);
             var natural = new NaturalGround(level);
             PlaceScatter(level, set, field, instancer, low, natural, clearance);
             PlaceNestScatter(level, set, field, instancer, low, natural, clearance);
@@ -65,6 +73,9 @@ namespace Game.Levels
 
             instancer.AddDecor(piece, matrix, low);
         }
+
+        private static bool IsSquareBank(EnvironmentPieceKind kind) =>
+            kind == EnvironmentPieceKind.BankStraight || kind == EnvironmentPieceKind.BankOuterCorner || kind == EnvironmentPieceKind.BankInnerCorner;
 
         // The road kit, the pads, the plinths and the burrows belong to the structures; everything else is decoration that keeps clear of them.
         private static bool IsDecor(EnvironmentPieceKind kind)

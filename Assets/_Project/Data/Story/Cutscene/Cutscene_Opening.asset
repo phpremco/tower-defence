@@ -646,3 +646,4 @@ MonoBehaviour:
     DriftHertz: 0.07
     KickScale: 0.9
     MaxKick: 0.3
+    KickDecay: 5.5

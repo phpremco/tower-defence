@@ -1,0 +1,38 @@
+{
+  "asset": "BankAccent",
+  "game_tris": 400,
+  "source_tris": 3684,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 54,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.543,
+    "world_per_uv": 0.3753901247418471
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 3.1,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 5.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.223,
+    0.153,
+    0.105
+  ],
+  "round": "24b",
+  "accent": "scatter on the bank curve, any yaw, pivot on the ground; scale 0.8-1.2"
+}

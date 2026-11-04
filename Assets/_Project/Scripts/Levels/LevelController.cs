@@ -12,7 +12,11 @@ namespace Game.Levels
     public sealed class LevelController : MonoBehaviour
     {
         private readonly List<SpawnRequest> _due = new List<SpawnRequest>();
+
+        // Nest spawns whose origin is not open yet: they come out as soon as the maw is up.
+        private readonly List<SpawnRequest> _held = new List<SpawnRequest>();
         private readonly System.Random _random = new System.Random();
+        private OriginDirector _origins;
 
         private LevelContext _context;
         private IInputProvider _input;
@@ -33,6 +37,8 @@ namespace Game.Levels
             _progress = progress;
 
             _context.NextWaveCountdown = waves[0].StartDelay;
+            _origins = CreateOrigins(context, waves);
+            _context.Origins = _origins;
             PublishRoutes(0);
             _context.BaseHealth.Died += OnBaseDied;
             _input.SkipWave += OnSkipWave;
@@ -57,6 +63,7 @@ namespace Game.Levels
             }
 
             _spawner.Step(Time.deltaTime);
+            _origins?.Advance(Time.deltaTime);
             if (_scheduler != null)
             {
                 SpawnDueEnemies(Time.deltaTime);
@@ -76,16 +83,38 @@ namespace Game.Levels
             }
         }
 
-        private void SpawnDueEnemies(float deltaTime)
+        // A wave called early (force) sends every creature out at once, opening their origins on the spot.
+        private void SpawnDueEnemies(float deltaTime, bool force = false)
         {
             _due.Clear();
+            _due.AddRange(_held);
+            _held.Clear();
             _scheduler.Advance(deltaTime, _due);
             for (int i = 0; i < _due.Count; i++)
             {
-                _spawner.Spawn(_due[i].Enemy, _due[i].PathIndex, _due[i].Source);
+                SpawnRequest request = _due[i];
+                int nest = NestOf(request);
+                if (nest >= 0 && _origins != null)
+                {
+                    if (force)
+                    {
+                        _origins.ForceOpen(nest);
+                    }
+                    else if (!_origins.IsReady(nest))
+                    {
+                        _held.Add(request);
+                        continue;
+                    }
+                }
+
+                _spawner.Spawn(request.Enemy, request.PathIndex, request.Source, nest);
+                if (nest >= 0)
+                {
+                    _origins?.NotifyEmerged(nest);
+                }
             }
 
-            if (_scheduler.IsFinished)
+            if (_scheduler.IsFinished && _held.Count == 0)
             {
                 _scheduler = null;
                 _context.NextWaveCountdown = _nextWaveIndex < _waves.Length ? _waves[_nextWaveIndex].StartDelay : 0f;
@@ -94,9 +123,39 @@ namespace Game.Levels
             }
         }
 
+        // The nest a nest spawn comes out of: drawn when the level started, so its origin could open ahead of it.
+        private int NestOf(SpawnRequest request)
+        {
+            if (request.Source != SpawnSource.Nest || _origins == null)
+            {
+                return NestAssignment.None;
+            }
+
+            return _origins.Wave(_nextWaveIndex - 1).NestOf(request.Group, request.Index);
+        }
+
+        // Every nest spawn of every wave gets its nest now, so the origins any wave uses are marked from the start.
+        private OriginDirector CreateOrigins(LevelContext context, WaveDefinition[] waves)
+        {
+            SpawnOriginDefinition definition = context.Level.SpawnOrigins;
+            if (definition == null)
+            {
+                return null;
+            }
+
+            var assignments = new NestAssignment[waves.Length];
+            for (int w = 0; w < waves.Length; w++)
+            {
+                assignments[w] = NestAssignment.Draw(waves[w], context.Difficulty, context.Level.Nests, _random);
+            }
+
+            return new OriginDirector(context.Level.Nests.Length, assignments, definition.Timing);
+        }
+
         private void StartNextWave()
         {
             _scheduler = new WaveScheduler(_waves[_nextWaveIndex], _context.Difficulty, _random);
+            _origins?.BeginWave(_nextWaveIndex, _scheduler);
             _spawner.WaveHealthScale = _waves[_nextWaveIndex].HealthMultiplier;
             PublishRoutes(_nextWaveIndex);
             _nextWaveIndex++;
@@ -152,7 +211,7 @@ namespace Game.Levels
 
             if (_scheduler != null)
             {
-                SpawnDueEnemies(float.MaxValue);
+                SpawnDueEnemies(float.MaxValue, true);
             }
 
             if (_nextWaveIndex < _waves.Length)

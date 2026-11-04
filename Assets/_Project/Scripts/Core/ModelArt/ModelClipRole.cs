@@ -116,5 +116,14 @@ namespace Game.Core
 
         /// <summary>A creature bursting all its shed parts at once (a full shatter), played once.</summary>
         Shatter = 37,
+
+        /// <summary>A spawn origin shut (one frame, the bind pose).</summary>
+        Closed = 38,
+
+        /// <summary>A spawn origin shut but marked, breathing faintly. Loops.</summary>
+        Marked = 39,
+
+        /// <summary>A creature coming out of a spawn origin or a route gate (the throat swells), played once.</summary>
+        Spawn = 40,
     }
 }

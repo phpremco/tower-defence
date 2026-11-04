@@ -1,0 +1,192 @@
+{
+  "asset": "Origin2_Burrow",
+  "kind": "Burrow",
+  "game_tris": 3900,
+  "source_tris": 822968,
+  "lod1": {
+    "fbx": "Origin2_Burrow_LOD1.fbx",
+    "tris": 1750,
+    "bones": 62
+  },
+  "bones": 62,
+  "deform_bones": 53,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 89,
+    "closed_islands_cut": 15,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.682,
+    "world_per_uv": 4.929218158938505
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 41.1,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 82.2,
+      "mask": "A"
+    }
+  },
+  "fps": 30,
+  "clips": {
+    "Closed": 1,
+    "Marked": 90,
+    "Open": 96,
+    "Idle": 105,
+    "Spawn": 30
+  },
+  "loops": [
+    "Marked",
+    "Idle"
+  ],
+  "open_keys": {
+    "tremor": [
+      0,
+      30
+    ],
+    "bulge": [
+      30,
+      54
+    ],
+    "burst_frame": 54,
+    "burst_seconds": 1.8,
+    "maw_up_frame": 66,
+    "first_emerge_from_frame": 76,
+    "settled_frame": 96
+  },
+  "spawn_keys": {
+    "peak_frame": 6,
+    "start_and_end": "Idle frame 0"
+  },
+  "sockets_open": {
+    "Emerge": [
+      0.0,
+      -0.12,
+      -0.0
+    ],
+    "Glow": [
+      0.0,
+      0.105,
+      -0.0
+    ],
+    "Dust": [
+      0.0,
+      0.02,
+      -0.0
+    ],
+    "Debris_1": [
+      0.767,
+      0.037,
+      0.974
+    ],
+    "Debris_2": [
+      1.129,
+      0.047,
+      -0.941
+    ],
+    "Debris_3": [
+      1.591,
+      0.03,
+      0.228
+    ],
+    "Debris_4": [
+      -1.16,
+      0.041,
+      -0.583
+    ],
+    "Debris_5": [
+      1.143,
+      0.043,
+      -0.497
+    ],
+    "Debris_6": [
+      0.468,
+      0.049,
+      1.775
+    ]
+  },
+  "sockets_closed": {
+    "Emerge": [
+      0.0,
+      -1.37,
+      -0.0
+    ],
+    "Glow": [
+      0.0,
+      -1.145,
+      -0.0
+    ],
+    "Dust": [
+      0.0,
+      0.02,
+      -0.0
+    ],
+    "Debris_1": [
+      0.186,
+      -1.6,
+      0.236
+    ],
+    "Debris_2": [
+      0.23,
+      -1.6,
+      -0.192
+    ],
+    "Debris_3": [
+      0.297,
+      -1.6,
+      0.043
+    ],
+    "Debris_4": [
+      -0.268,
+      -1.6,
+      -0.135
+    ],
+    "Debris_5": [
+      0.275,
+      -1.6,
+      -0.12
+    ],
+    "Debris_6": [
+      0.076,
+      -1.6,
+      0.29
+    ]
+  },
+  "emission": "baked warm (not a mask)",
+  "pivot": "ground at the nest cell centre",
+  "bind_pose": "Closed (maw D under the pivot)",
+  "maw_storage_depth": 1.25,
+  "plate_sink": 0.0,
+  "skins": {
+    "CrystalPlains": "Skins/CrystalPlains",
+    "AshenReach": "Skins/AshenReach",
+    "NorthernCrown": "Skins/NorthernCrown",
+    "Mirewood": "Skins/Mirewood",
+    "SouthernCrown": "Skins/SouthernCrown",
+    "TheCore": "Skins/TheCore"
+  },
+  "camo": "plate tops painted with the ground set at world xy / 3.0 (the sets' tile size) in the model's own space; Closed = emission 0, Marked = emission pulse 0.35..1 on the hairlines",
+  "size_open_m": [
+    3.758,
+    3.857,
+    0.864,
+    0.724
+  ],
+  "size_closed_above_ground_m": [
+    2.035,
+    2.044,
+    0.008,
+    0.008
+  ]
+}

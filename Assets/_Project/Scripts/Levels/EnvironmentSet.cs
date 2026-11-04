@@ -65,6 +65,16 @@ namespace Game.Levels
         [SerializeField] private EnvironmentDecor[] _decor = new EnvironmentDecor[0];
         [SerializeField] private EnvironmentOrigin[] _origins = new EnvironmentOrigin[0];
 
+        [Header("Banks")]
+        [Tooltip("The bendable bank segments (README round 24b, 1 unit along x, liquid on -z), swept along every pool's smoothed shore. Empty keeps the square bank kit.")]
+        [SerializeField] private EnvironmentMesh[] _bankSweeps = new EnvironmentMesh[0];
+        [Tooltip("Loose shore rocks laid on the bank to hide the joints between segments.")]
+        [SerializeField] private EnvironmentMesh _bankAccent;
+        [Tooltip("Share of the joints between bank segments that get a shore rock.")]
+        [SerializeField] [Range(0f, 1f)] private float _bankAccentShare = 0.6f;
+        [Tooltip("Shore rocks per pool laid anywhere along the bank, beside the ones on the joints.")]
+        [SerializeField] [Min(0)] private int _looseBankAccents = 3;
+
         [Header("Far decor")]
         [Tooltip("Decor more than this many cells outside the field is drawn dimmer, so the wild land recedes behind the field.")]
         [SerializeField] [Min(0f)] private float _farDecorStart = 2f;
@@ -143,6 +153,28 @@ namespace Game.Levels
         public float FarDecorAlbedo => _farDecorAlbedo;
         public float FarDecorGlow => _farDecorGlow;
         public float LowFarDecorKeep => _lowFarDecorKeep;
+        public EnvironmentMesh[] BankSweeps => _bankSweeps;
+        public EnvironmentMesh BankAccent => _bankAccent;
+        public float BankAccentShare => _bankAccentShare;
+        public int LooseBankAccents => _looseBankAccents;
+
+        /// <summary>Whether the pools get swept banks (and the square bank kit is left out).</summary>
+        public bool HasBankSweeps
+        {
+            get
+            {
+                foreach (EnvironmentMesh sweep in _bankSweeps)
+                {
+                    if (sweep != null && sweep.IsValid)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
         public EnvironmentMesh[] Scatter => _scatter;
         public EnvironmentMesh[] NestScatter => _nestScatter;
         public float ScatterChance => _scatterChance;

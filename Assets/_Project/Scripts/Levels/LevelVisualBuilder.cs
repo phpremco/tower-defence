@@ -46,6 +46,8 @@ namespace Game.Levels
         private const string BaseCoreLight = "Light_Core";
         private const string BaseCommandLight = "Light_Command";
         private const float ResourceNodeTurn = 137f;
+        private const string GateLightSocket = "Socket_Light";
+        private const string GateSporeSocket = "Socket_Spores";
         private const float GateLightIntensity = 1.6f;
         private const float GateLightRange = 3f;
         private const float GateLightHeight = 0.6f;
@@ -74,7 +76,8 @@ namespace Game.Levels
 
         /// <summary>Builds the level and returns the flight route objects by path index, hidden until a wave uses them.</summary>
         /// <param name="particleScale">The quality profile's share of particles, one for the full amount.</param>
-        /// <param name="groundMist">Whether the drifting mist sheets are built; the low profile leaves them out.</param>
+        /// <param name="groundMist">Whether the full mist is built: the theme's mist definition then draws every sheet, else only its
+        /// Low sheets; without a definition the painted sheets are built only when this is set.</param>
         /// <param name="dressingOnly">Only the landscape, mist and stars: no road arrows, gates, base, flight routes, mining nodes or nests. For cutscenes that stage the field themselves.</param>
         public static Dictionary<int, GameObject> Build(LevelDefinition level, Transform parent, float particleScale = 1f, bool groundMist = true, bool dressingOnly = false)
         {
@@ -84,7 +87,11 @@ namespace Game.Levels
             // The imported environment (kit, decor, burrows) is drawn instanced; a theme without a set builds none.
             EnvironmentInstancer instancer = theme.Environment != null ? EnvironmentInstancer.Create(parent) : null;
             BuildLandscape(level, theme, parent, particleScale, instancer);
-            if (groundMist)
+            if (theme.Mist != null)
+            {
+                GroundMistBuilder.Build(level, theme.Mist, parent, !groundMist || ModelQuality.IsLow);
+            }
+            else if (groundMist)
             {
                 GroundMistBuilder.Build(level, theme, parent);
             }
@@ -115,7 +122,7 @@ namespace Game.Levels
             var road = new RoadShape(level);
             var field = new TerrainField(level, road);
             TerrainSurfaceBuilder.Build(level, theme, field, road, parent);
-            TerrainLiquidBuilder.Build(level, theme, parent, particleScale);
+            TerrainLiquidBuilder.Build(level, theme, parent, field, particleScale);
             PropScatterBuilder.Build(level, theme, field, parent, instancer);
             if (instancer != null)
             {
@@ -188,12 +195,21 @@ namespace Game.Levels
                     continue;
                 }
 
-                // On a road the gate stands on the centre line of the corridor, not on its first row.
-                Vector3 start = level.Road.Route(index)[0] + (path.Flying ? Vector3.up * AirGateHeight : Vector3.zero);
-                float gateScale = path.Flying ? GateScale * AirGateScale : GateScale;
-                Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(theme.SpawnColor, CreatureSkin.Kind.Flesh), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
-                AddLight(gate, theme.SpawnColor, GateLightIntensity, GateLightRange, GateLightHeight);
-                AddSpores(gate, theme.SpawnColor);
+                SpawnOriginDefinition spawnArt = level.SpawnOrigins;
+                ModelArtDefinition gateArt = spawnArt == null ? null : path.Flying ? spawnArt.AirGate : spawnArt.GroundGate;
+                if (gateArt != null)
+                {
+                    BuildGateArt(level, spawnArt, gateArt, index, theme.SpawnColor, parent);
+                }
+                else
+                {
+                    // On a road the gate stands on the centre line of the corridor, not on its first row.
+                    Vector3 start = level.Road.Route(index)[0] + (path.Flying ? Vector3.up * AirGateHeight : Vector3.zero);
+                    float gateScale = path.Flying ? GateScale * AirGateScale : GateScale;
+                    Transform gate = PlaceStructure(StructureModelFactory.EnemyGate(out Mesh gateRing), gateRing, Vector3.zero, EnemyModelFactory.CreateMaterials(theme.SpawnColor, CreatureSkin.Kind.Flesh), EnemyModelFactory.Glow, start, Quaternion.identity, gateScale, GateRingSpin, parent);
+                    AddLight(gate, theme.SpawnColor, GateLightIntensity, GateLightRange, GateLightHeight);
+                    AddSpores(gate, theme.SpawnColor);
+                }
 
                 if (path.Flying)
                 {
@@ -230,6 +246,24 @@ namespace Game.Levels
             }
 
             return routes;
+        }
+
+        // The living route gate (README round 25b) at the start of a path: a mound on the road, a pod at flight height, with
+        // the gate light and spores on its sockets. It plays its Spawn clip as creatures come through (SpawnGateView).
+        private static void BuildGateArt(LevelDefinition level, SpawnOriginDefinition spawnArt, ModelArtDefinition art, int index, Color colour, Transform parent)
+        {
+            bool flying = level.Paths[index].Flying;
+            Vector3 start = level.Road.Route(index)[0] + (flying ? Vector3.up * spawnArt.AirGateHeight : Vector3.zero);
+            var root = new GameObject($"SpawnGate_{index}").transform;
+            root.SetParent(parent, false);
+            root.position = start;
+            root.localScale = Vector3.one * (spawnArt.GateScale * (flying ? spawnArt.AirGateScale : 1f));
+            var view = root.gameObject.AddComponent<SpawnGateView>();
+            view.Initialize(art, index, spawnArt.GateGlow);
+            Transform light = AddLight(root, colour, GateLightIntensity, GateLightRange, 0f);
+            light.position = view.Socket(GateLightSocket).position;
+            Transform spores = AddSpores(root, colour).transform;
+            spores.position = view.Socket(GateSporeSocket).position;
         }
 
         // The imported base: built at its final size (no BaseScale), lit from its own light sockets.
@@ -287,7 +321,7 @@ namespace Game.Levels
             go.AddComponent<Spinner>().Initialize(degreesPerSecond);
         }
 
-        private static void AddLight(Transform root, Color colour, float intensity, float range, float height)
+        private static Transform AddLight(Transform root, Color colour, float intensity, float range, float height)
         {
             var go = new GameObject("Light");
             go.transform.SetParent(root, false);
@@ -298,10 +332,11 @@ namespace Game.Levels
             light.range = range;
             light.shadows = LightShadows.None;
             go.AddComponent<LightFlicker>().Initialize(intensity, StructureFlicker, StructureFlickerSpeed);
+            return go.transform;
         }
 
         // Spores drift up out of the hive mouth, so the entrance reads as alive even between waves.
-        private static void AddSpores(Transform root, Color colour)
+        private static ParticleSystem AddSpores(Transform root, Color colour)
         {
             var go = new GameObject("Spores");
             go.transform.SetParent(root, false);
@@ -343,6 +378,7 @@ namespace Game.Levels
             renderer.sharedMaterial = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.defaultParticleMaterial;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             system.Play();
+            return system;
         }
 
         // Golden crystal clusters that harvest drones mine; each turns dull once its ore is gone.
@@ -395,12 +431,22 @@ namespace Game.Levels
         private static void BuildNests(LevelDefinition level, GridMap grid, Transform parent, EnvironmentInstancer instancer)
         {
             var tinted = new Dictionary<Element, Material>();
-            foreach (ElementNest nest in level.Nests)
+            for (int index = 0; index < level.Nests.Length; index++)
             {
+                ElementNest nest = level.Nests[index];
                 Color colour = NestColor(nest.Element);
                 TerrainKind kind = level.Terrain.KindAt(nest.Cell);
                 float height = TerrainMap.IsLiquid(kind) ? TerrainLiquidBuilder.SurfaceLevel(kind) : level.Terrain.HeightAt(nest.Cell);
                 Vector3 position = grid.CellToWorld(nest.Cell) + Vector3.up * height;
+                SpawnOriginArt living = level.SpawnOrigins != null ? level.SpawnOrigins.For(kind) : null;
+                if (living != null)
+                {
+                    // A burrow in a rift sits on the ground over the fissure, its slabs covering the crack.
+                    Vector3 at = kind == TerrainKind.Rift ? new Vector3(position.x, 0f, position.z) : position;
+                    BuildLivingOrigin(index, nest, living, level.SpawnOrigins, at, colour, parent);
+                    continue;
+                }
+
                 EnvironmentOrigin origin = instancer != null ? level.Theme.Environment.Origin(kind) : null;
                 if (origin != null)
                 {
@@ -415,6 +461,19 @@ namespace Game.Levels
                 AddSpores(root, colour);
                 GlowDecal.PlacePool(root, colour * NestPoolBrightness, NestPoolRadius, NestPoolHeight);
             }
+        }
+
+        // The living opening (README round 23): marked, opening, open and closing as the waves use it (SpawnOriginView).
+        // A burrow keeps its yaw so its camouflage lines up with the ground; a vent in a pool turns any way.
+        private static void BuildLivingOrigin(int index, ElementNest nest, SpawnOriginArt art, SpawnOriginDefinition definition, Vector3 position, Color colour, Transform parent)
+        {
+            float yaw = art.TintWithElement ? TerrainNoise.Hash(nest.Cell.x, nest.Cell.y, 3) * 360f : 0f;
+            var root = new GameObject($"Origin_{index}_{nest.Element}").transform;
+            root.SetParent(parent, false);
+            root.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
+            ParticleSystem spores = AddSpores(root, colour);
+            GameObject pool = GlowDecal.PlacePool(root, colour * NestPoolBrightness, NestPoolRadius, NestPoolHeight);
+            root.gameObject.AddComponent<SpawnOriginView>().Initialize(index, art, definition, colour, spores, pool);
         }
 
         // The imported opening: a burrow in the ground or a vent on a pool (its white glow mask tinted with the element),

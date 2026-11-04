@@ -35,6 +35,7 @@ namespace Game.Hero
         private const float BoltSeconds = 0.09f;
         private const float BoltWidth = 0.06f;
         private const float FlashSize = 0.14f;
+        private const float MuzzleWhiteness = 0.4f;
         private const float FlashEmission = 5f;
         private const float BladeEmission = 3f;
         // The blade mesh is a thin core; the glow is drawn wider than it so it reads as a blade at the play zoom.
@@ -79,6 +80,9 @@ namespace Game.Hero
         private Transform _muzzle;
         private LineRenderer _bolt;
         private Transform _flash;
+
+        // The painted flash of the effect library (the pulse weapons' row), or null: then the glowing sphere stands in.
+        private MuzzleFlashView _paintedFlash;
         private ParticleSystem _sparks;
         private ParticleSystem _smoke;
         private ParticleSystem _dust;
@@ -261,11 +265,34 @@ namespace Game.Hero
             }
         }
 
+        // The pistol fires pulse bolts, so it wears the pulse weapons' painted flash in its own colour.
+        private MuzzleFlashView PaintedFlash(Color colour)
+        {
+            if (!Services.TryGet(out VfxLibrary library))
+            {
+                return null;
+            }
+
+            var view = new GameObject("MuzzleFlash").AddComponent<MuzzleFlashView>();
+            view.transform.SetParent(transform, false);
+            if (view.Initialize(library.WeaponFor(ProjectileStyle.Bolt), Color.Lerp(colour, Color.white, MuzzleWhiteness), ModelQuality.IsLow, Camera.main))
+            {
+                return view;
+            }
+
+            Destroy(view.gameObject);
+            return null;
+        }
+
         private void BuildBolt(Color colour)
         {
-            _flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(colour, Color.white, 0.5f), _muzzle, Vector3.zero, Vector3.one * FlashSize, FlashEmission).transform;
-            _flash.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-            _flash.gameObject.SetActive(false);
+            _paintedFlash = PaintedFlash(colour);
+            if (_paintedFlash == null)
+            {
+                _flash = PlaceholderVisuals.CreatePrimitive(PrimitiveType.Sphere, Color.Lerp(colour, Color.white, 0.5f), _muzzle, Vector3.zero, Vector3.one * FlashSize, FlashEmission).transform;
+                _flash.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+                _flash.gameObject.SetActive(false);
+            }
 
             var boltGo = new GameObject("Bolt");
             boltGo.transform.SetParent(transform, false);
@@ -324,6 +351,7 @@ namespace Game.Hero
                 _player.PlayUpper(_shoot, 0f, hold: true);
                 _boltAge = 0f;
                 _boltTarget = target + Vector3.up * AimHeight;
+                _paintedFlash?.Flash(_muzzle, Vector3.forward);
                 return;
             }
 
@@ -579,13 +607,17 @@ namespace Game.Hero
             _boltAge += deltaTime;
             bool lit = _boltAge < BoltSeconds;
             _bolt.enabled = lit;
-            _flash.gameObject.SetActive(lit);
+            _flash?.gameObject.SetActive(lit);
             if (!lit)
             {
                 return;
             }
 
-            _flash.localScale = Vector3.one * (FlashSize * (1.3f - _boltAge / BoltSeconds));
+            if (_flash != null)
+            {
+                _flash.localScale = Vector3.one * (FlashSize * (1.3f - _boltAge / BoltSeconds));
+            }
+
             _bolt.SetPosition(0, _muzzle.position);
             _bolt.SetPosition(1, _boltTarget);
         }

@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1301165905
+--- !u!1 &39447189
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1301165907}
-  - component: {fileID: 1301165906}
+  - component: {fileID: 39447191}
+  - component: {fileID: 39447190}
   m_Layer: 0
   m_Name: Bootstrapper
   m_TagString: Untagged
@@ -136,13 +136,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1301165906
+--- !u!114 &39447190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1301165905}
+  m_GameObject: {fileID: 39447189}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 509151cc143cb9d48ab286982f070078, type: 3}
@@ -176,13 +176,13 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6e5aeada991bc1c48a6129d7f7d296a4, type: 2}
   - {fileID: 2100000, guid: 9924fa4d96151ef46ad1aaccdf8f75d9, type: 2}
   - {fileID: 2100000, guid: edd54b6ecc0f7404780e30f4d9e47991, type: 2}
---- !u!4 &1301165907
+--- !u!4 &39447191
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1301165905}
+  m_GameObject: {fileID: 39447189}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -195,4 +195,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1301165907}
+  - {fileID: 39447191}

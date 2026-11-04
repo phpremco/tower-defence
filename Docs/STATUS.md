@@ -1873,3 +1873,52 @@ agent's WIP folders): the targeted menu items below did the work.
   refraction rings are visible in a busy fight; muzzle flashes are small at play zoom; Scorch_Decal not used; the hero and
   drone muzzle flashes are still spheres; `ShakeCurve` change also shortens cutscene kicks.
 - **Tools:** `Tools/PlayTest/vfx_shots.sh` + `vfx_phase.cs` (see COMMANDS).
+
+## Liquids, mist, living spawn origins and route gates (2026-11-04)
+
+Blender rounds 23, 24, 24b and 25b (gates only) are in the game; the full generator ran. Not committed.
+- **Round pools:** `LiquidContour` (cell-union outline as loops, dense resample, circular Gaussian sigma 0.55, periodic
+  wobble 0.04) and `LiquidShape` (one pool, its loops and a bucketed signed distance to the shore). `TerrainField` digs
+  every pool's basin from that distance (rifts keep the cell outline; lava lost its thrown-up crater rim, the bank is its
+  rim now), so ground, painting, sheet and bank agree. `LiquidSurfaceMesh` cuts the sheet from the distance (marching
+  squares, 0.25 grid, 0.18 under the bank) and bakes the distance to the shelf into UV1, which the shader uses on both
+  profiles instead of the depth texture. `LiquidBankBuilder` sweeps the continent's `BankSweep_A/B/C` along every loop
+  (whole segments stretched to fit, never the same variant twice, one mesh per pool with a sub-mesh per variant) and lays
+  `BankAccent` rocks on ~60 % of the joints + 3 loose; the square bank kit is skipped when a set has sweeps.
+- **Liquid shader:** `Game/Liquid` (keyword per kind: water, lava, bog, quicksand, ice, corruption; `_LIQUID_LOW`,
+  `_LIQUID_REFRACT` on High water). World-space UVs, vertex waves, README recipe per kind (foam bands from the shore
+  profile, caustic flipbook / static caustics on Low, lava crusts + heat ramp + flow, scum gathering at the bank, frost
+  rings, corruption veins). Data: `LiquidSet` (`Data/Art/Liquids/Liquids_CrystalPlains.asset`, look per kind + bank light)
+  on `VisualTheme.Liquids`; materials `Art/Materials/Liquids/Liquid_<Kind>(_Low).mat` from `BlenderLiquidCatalog` (tiles,
+  scrolls, report palettes; the water lifted about 2x, the report's sea read as a hole). Corruption has a material but no
+  terrain kind yet.
+- **Mist:** `MistDefinition` (`Mist_CrystalPlains`, three sheets of `Mist_Layer_A/B/C`, heights 0.12/0.32/0.6, alpha
+  0.16/0.1/0.06) on `VisualTheme.Mist`, `Game/Mist` shader (world-space density, soft fade against depth on High). Low draws
+  the first sheet at 0.12 (it used to draw none).
+- **Spawn origins (Remco's design):** `NestAssignment` draws the nest of every nest spawn of every wave at level start;
+  `OriginDirector` (pure) marks the origins any wave uses (the rest stay closed), opens an origin `OpenLead` 2.5 s before
+  its first creature of a wave (`WaveScheduler` now draws every spawn's drift up front: `PlannedTime`), signals the burst
+  at 1.8 s (frame 54), is ready at 2.53 s (frame 76), open after 3.2 s, closes `CloseDelay` 3 s after its last creature
+  and is marked again after the 1.6 s closing. `LevelController` holds a nest creature until its origin is ready (a skip
+  opens it at once). Timing and art: `SpawnOriginDefinition` (`Data/Art/Origins/SpawnOrigins_CrystalPlains.asset`) on
+  `LevelDefinition.SpawnOrigins`. `SpawnOriginView` plays Closed/Marked/Open/Idle/Spawn (closing = Open backwards), the
+  burrow's glow 0 closed and a 0.35-1 pulse marked, light and spores by state, and at the burst the new effect-library
+  recipe `Vfx_OriginBurst` (dust, grit, debris, smoke, no fire, kick 0.35). Liquid nests wear `Origin2_<Kind>` tinted by
+  the element. Origins have no collider or structure: they cannot be hit or targeted. New clip roles Closed, Marked, Spawn.
+- **Route gates:** `SpawnGate_Ground` / `_Air` (GateScale 1, air at 1.6 high, 0.8 scale) replace the code-made gates;
+  `SpawnGateView` loops Idle and plays Spawn for each creature through its path (`LevelContext.GateSpawned`).
+- **VFX follow-ups:** shock refraction only for blasts that kick the camera, at most 2 at a time, strengths about a third
+  lower; cooled smoke albedo 0.4 -> 0.54 (puff) and 0.36 -> 0.5 (linger) in `BlenderVfxCatalog`; the hero's pistol and
+  the attack drone's guns wear `MuzzleFlashView` (spheres only as fallback); `ShakeCurve.Fade` takes a decay and the
+  cutscene keeps its own (`CutsceneCameraFeel.KickDecay` 5.5, the old length).
+- **Tests:** EditMode 346/346 (new `LiquidContourTests` 7: no axis-aligned staircase on a diagonal pool, no square corner,
+  stays within 0.32 of the cells, islands and diagonal cells, signed distance, sheet edge + UV1, loop frame; new
+  `SpawnOriginTests` 5: marked/closed from wave data, shut in a wave without nest creatures, open/burst/ready/close timing,
+  nest assignment by element, planned times). PlayMode one class at a time: ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3, BalanceProbe 3/3, ModelPerformance 1/1. Save restored (MD5 914E8160...). 0 compile errors/warnings.
+- **Screenshots** (session scratchpad `round_liquids/`): `s1b_*` (C1_05 with one water pool turned to lava in memory:
+  field, water and lava at play zoom and close), `s1low_*` (Low), `o2_*` (C1_01: origins marked at wave 0, gates, wave 8
+  tremor, burst, open maw with a creature, closing).
+- **Open / for Remco:** no level has lava (C1_05 was swapped in memory for the shots); the marked burrow reads as an orange
+  disc (its baked camo) rather than dark ground with glowing cracks; Low uses the full bank meshes (no decimation, ~2.7k
+  tris per segment); burrow skins per continent are not wired (the root maps are the Crystal Plains skin); the static
+  `Origin_*`/`Burrow_A` stay as the fallback for levels without a definition.

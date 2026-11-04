@@ -1,0 +1,96 @@
+{
+  "asset": "SpawnGate_Ground",
+  "round": 25,
+  "game_tris": 3800,
+  "source_tris": 207312,
+  "texture_size": 512,
+  "low_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B membrane detail, A chitin detail",
+  "uv": {
+    "islands": 288,
+    "folded_fallback_faces": 4,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.511,
+    "world_per_uv": 3.8696059486339167
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 48.4,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 64.5,
+      "mask": "A"
+    }
+  },
+  "bones": [
+    "Root",
+    "Body",
+    "Lip_0",
+    "Lip_1",
+    "Lip_2",
+    "Lip_3",
+    "Lip_4",
+    "Lip_5",
+    "Spine_0",
+    "Spine_1",
+    "Spine_2",
+    "Spine_3",
+    "Spine_4",
+    "Ring",
+    "Socket_Emerge",
+    "Socket_Spores",
+    "Socket_Light"
+  ],
+  "deform_bones": [
+    "Body",
+    "Lip_0",
+    "Lip_1",
+    "Lip_2",
+    "Lip_3",
+    "Lip_4",
+    "Lip_5",
+    "Spine_0",
+    "Spine_1",
+    "Spine_2",
+    "Spine_3",
+    "Spine_4",
+    "Ring"
+  ],
+  "sockets": {
+    "Socket_Emerge": [
+      0,
+      0,
+      0.12
+    ],
+    "Socket_Spores": [
+      0,
+      0,
+      0.24
+    ],
+    "Socket_Light": [
+      0,
+      0,
+      0.6
+    ]
+  },
+  "clips": {
+    "Idle": 360,
+    "Spin": 360,
+    "Spawn": 40
+  },
+  "pivot": "ground: centre of the mound on the ground; air: centre of the pod (hangs 1.6 above the road)",
+  "dims": [
+    1.89,
+    1.773,
+    1.289
+  ]
+}

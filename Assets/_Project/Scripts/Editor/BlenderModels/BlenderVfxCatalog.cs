@@ -104,8 +104,9 @@ namespace Game.Editor
             new Sheet("Explosion_Small", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None),
             new Sheet("Explosion_Large", Kind.SixWay, new Color(0.34f, 0.31f, 0.28f), new Color(1f, 0f, 0f), None),
             new Sheet("Explosion_Boss", Kind.SixWay, new Color(0.32f, 0.29f, 0.27f), new Color(1.2f, 0f, 0f), None),
-            new Sheet("Smoke_Puff", Kind.SixWay, new Color(0.4f, 0.37f, 0.35f), new Color(0.35f, 0f, 0f), None),
-            new Sheet("Smoke_Linger", Kind.SixWay, new Color(0.36f, 0.34f, 0.32f), new Color(0.25f, 0f, 0f), None),
+            // The cooled smoke a shade lighter than the fireball's soot: at 0.4 it read as a dark blot on the dark levels.
+            new Sheet("Smoke_Puff", Kind.SixWay, new Color(0.54f, 0.52f, 0.5f), new Color(0.35f, 0f, 0f), None),
+            new Sheet("Smoke_Linger", Kind.SixWay, new Color(0.5f, 0.48f, 0.46f), new Color(0.25f, 0f, 0f), None),
             new Sheet("Dust_Burst", Kind.SixWay, new Color(0.45f, 0.38f, 0.3f), new Color(0f, 0f, 0f), None),
             new Sheet("Shockwave_Distort", Kind.Distortion, None, None, None),
             new Sheet("HeatHaze_Distort", Kind.Distortion, None, None, None),

@@ -146,6 +146,14 @@ namespace Game.Editor
             WriteArray(so.FindProperty("_nestScatter"), BuildMeshes(row.NestScatter));
             WriteArray(so.FindProperty("_silhouettes"), BuildMeshes(row.Silhouettes));
             WriteArray(so.FindProperty("_landmarks"), BuildMeshes(row.Landmarks));
+            var sweeps = new List<string>();
+            foreach (string sweep in row.BankSweeps)
+            {
+                sweeps.Add(row.PieceAsset(sweep));
+            }
+
+            WriteArray(so.FindProperty("_bankSweeps"), BuildMeshes(sweeps));
+            so.FindProperty("_bankAccent").boxedValue = BuildMesh(row.PieceAsset(row.BankAccent)) ?? new EnvironmentMesh(string.Empty, null, null, null, false, Matrix4x4.identity);
             so.FindProperty("_sparkleColour").colorValue = row.Sparkle;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(set);

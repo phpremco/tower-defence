@@ -1,0 +1,162 @@
+{
+  "asset": "Origin2_Quicksand",
+  "kind": "Quicksand",
+  "game_tris": 2400,
+  "source_tris": 495540,
+  "lod1": {
+    "fbx": "Origin2_Quicksand_LOD1.fbx",
+    "tris": 1080,
+    "bones": 34
+  },
+  "bones": 34,
+  "deform_bones": 27,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 36,
+    "closed_islands_cut": 10,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.654,
+    "world_per_uv": 2.7941671399186228
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 23.3,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 46.6,
+      "mask": "A"
+    }
+  },
+  "fps": 30,
+  "clips": {
+    "Closed": 1,
+    "Marked": 90,
+    "Open": 96,
+    "Idle": 105,
+    "Spawn": 30
+  },
+  "loops": [
+    "Marked",
+    "Idle"
+  ],
+  "open_keys": {
+    "tremor": [
+      0,
+      30
+    ],
+    "bulge": [
+      30,
+      54
+    ],
+    "burst_frame": 54,
+    "burst_seconds": 1.8,
+    "maw_up_frame": 66,
+    "first_emerge_from_frame": 76,
+    "settled_frame": 96
+  },
+  "spawn_keys": {
+    "peak_frame": 6,
+    "start_and_end": "Idle frame 0"
+  },
+  "sockets_open": {
+    "Emerge": [
+      0.0,
+      -0.066,
+      -0.0
+    ],
+    "Glow": [
+      0.0,
+      0.064,
+      -0.0
+    ],
+    "Dust": [
+      0.0,
+      0.02,
+      -0.0
+    ],
+    "Debris_1": [
+      -0.294,
+      0.1,
+      0.06
+    ],
+    "Debris_2": [
+      0.059,
+      0.1,
+      0.294
+    ],
+    "Debris_3": [
+      0.294,
+      0.1,
+      -0.059
+    ],
+    "Debris_4": [
+      -0.059,
+      0.1,
+      -0.294
+    ]
+  },
+  "sockets_closed": {
+    "Emerge": [
+      0.0,
+      -0.966,
+      -0.0
+    ],
+    "Glow": [
+      0.0,
+      -0.836,
+      -0.0
+    ],
+    "Dust": [
+      0.0,
+      0.02,
+      -0.0
+    ],
+    "Debris_1": [
+      0.294,
+      -0.8,
+      -0.06
+    ],
+    "Debris_2": [
+      -0.059,
+      -0.8,
+      -0.294
+    ],
+    "Debris_3": [
+      -0.294,
+      -0.8,
+      0.059
+    ],
+    "Debris_4": [
+      0.059,
+      -0.8,
+      0.294
+    ]
+  },
+  "emission": "white mask, tint with NestColor(element)",
+  "pivot": "on the liquid surface at the cell centre (TerrainLiquidBuilder.SurfaceLevel(kind))",
+  "bind_pose": "Closed (maw D under the pivot)",
+  "maw_storage_depth": 0.9,
+  "plate_sink": 0.16,
+  "size_open_m": [
+    1.268,
+    1.268,
+    0.79,
+    0.499
+  ],
+  "size_closed_above_ground_m": [
+    0.0,
+    0.0,
+    0.0
+  ]
+}

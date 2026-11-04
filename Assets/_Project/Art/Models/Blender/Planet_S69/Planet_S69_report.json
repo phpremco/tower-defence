@@ -74,7 +74,7 @@
       "name": "The Core",
       "longitude": 150.0,
       "latitude": -32.0,
-      "radius_degrees": 12.0,
+      "radius_degrees": 14.0,
       "value": 240,
       "value01": 0.9412,
       "id": 6
@@ -85,167 +85,212 @@
       "value": 0
     }
   ],
-  "region_note": "The Core (C6) is the crater on Southern Crown's northern arm at its MapRegion centre (150, -32); its surface id covers the crater to its rim (radius ~10 deg).",
+  "region_note": "The Core (C6) is the crater on Southern Crown's northern arm at its MapRegion centre (150, -32); its surface id covers the crater to 14 deg.",
+  "layout": "layout.json (round 21): region centres, the Crystal Plains node proposal, lobes, ranges, rivers",
+  "coast_biases": {
+    "C1": -0.0685,
+    "C2": 0.1251,
+    "C3": 0.2459,
+    "C4": 0.2837,
+    "C5": -0.0613
+  },
+  "surface": {
+    "C1": {
+      "name": "Crystal Plains",
+      "land_percent": 4.02,
+      "extent_p95_degrees": 46.0
+    },
+    "C2": {
+      "name": "Ashen Reach",
+      "land_percent": 6.49,
+      "extent_p95_degrees": 38.2
+    },
+    "C3": {
+      "name": "Northern Crown",
+      "land_percent": 6.59,
+      "extent_p95_degrees": 35.9
+    },
+    "C4": {
+      "name": "Mirewood",
+      "land_percent": 6.36,
+      "extent_p95_degrees": 42.2
+    },
+    "C5": {
+      "name": "Southern Crown",
+      "land_percent": 6.07,
+      "extent_p95_degrees": 33.9
+    },
+    "C6": {
+      "name": "The Core",
+      "land_percent": 1.48,
+      "extent_p95_degrees": 13.6
+    },
+    "ocean": {
+      "land_percent": 68.99
+    }
+  },
+  "node_min_spacing_degrees": 6.18,
+  "nodes_ok": true,
   "nodes": [
     {
       "name": "Landing Site",
-      "lon": -55.53,
-      "lat": -8.22,
+      "lon": -56.07,
+      "lat": -11.07,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.7
+      "degrees_to_coast": 4.3
     },
     {
       "name": "Glass Meadows",
-      "lon": -45.98,
-      "lat": -6.9,
+      "lon": -49.75,
+      "lat": -10.37,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 7.0
+      "degrees_to_coast": 4.2
     },
     {
       "name": "Shard Ridge",
-      "lon": -36.4,
-      "lat": -8.56,
+      "lon": -44.82,
+      "lat": -4.04,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.5
+      "degrees_to_coast": 3.8
     },
     {
       "name": "Fault Line",
-      "lon": -26.76,
-      "lat": -9.28,
+      "lon": -37.79,
+      "lat": -4.04,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.5
+      "degrees_to_coast": 4.1
     },
     {
       "name": "Quartz Flats",
-      "lon": -17.41,
-      "lat": -6.96,
+      "lon": -28.65,
+      "lat": 0.88,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.3
+      "degrees_to_coast": 4.1
     },
     {
       "name": "Crysium Vein",
-      "lon": -17.71,
-      "lat": 2.43,
+      "lon": -20.21,
+      "lat": 0.88,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.6
+      "degrees_to_coast": 4.2
     },
     {
       "name": "Crystal Plains 7",
-      "lon": -27.12,
-      "lat": 0.14,
+      "lon": -16.0,
+      "lat": 6.5,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 14.5
+      "degrees_to_coast": 4.3
     },
     {
       "name": "Crystal Plains 8",
-      "lon": -36.82,
-      "lat": 0.73,
+      "lon": -12.48,
+      "lat": 12.13,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 15.0
+      "degrees_to_coast": 4.2
     },
     {
       "name": "Crystal Plains 9",
-      "lon": -46.28,
-      "lat": 2.44,
+      "lon": -18.81,
+      "lat": 12.13,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 15.0
+      "degrees_to_coast": 4.0
     },
     {
       "name": "Crystal Plains 10",
-      "lon": -55.95,
-      "lat": 1.24,
+      "lon": -24.43,
+      "lat": 8.61,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 14.3
+      "degrees_to_coast": 8.7
     },
     {
       "name": "Crystal Plains 11",
-      "lon": -65.38,
-      "lat": 3.21,
+      "lon": -32.87,
+      "lat": 6.5,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 7.8
+      "degrees_to_coast": 4.8
     },
     {
       "name": "Crystal Plains 12",
-      "lon": -58.55,
-      "lat": 9.98,
+      "lon": -41.31,
+      "lat": 5.1,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 7.9
+      "degrees_to_coast": 7.2
     },
     {
       "name": "Crystal Plains 13",
-      "lon": -48.96,
-      "lat": 11.87,
+      "lon": -49.04,
+      "lat": 2.29,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 14.3
+      "degrees_to_coast": 3.9
     },
     {
       "name": "Crystal Plains 14",
-      "lon": -39.2,
-      "lat": 10.43,
+      "lon": -57.48,
+      "lat": -1.93,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 16.4
+      "degrees_to_coast": 6.1
     },
     {
       "name": "Crystal Plains 15",
-      "lon": -29.44,
-      "lat": 9.36,
+      "lon": -61.7,
+      "lat": 2.99,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 14.8
+      "degrees_to_coast": 4.1
     },
     {
       "name": "Crystal Plains 16",
-      "lon": -19.79,
-      "lat": 11.57,
+      "lon": -55.37,
+      "lat": 4.39,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.1
+      "degrees_to_coast": 3.7
     },
     {
       "name": "Crystal Plains 17",
-      "lon": -25.34,
-      "lat": 19.36,
+      "lon": -48.34,
+      "lat": 8.61,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.1
+      "degrees_to_coast": 3.7
     },
     {
       "name": "Crystal Plains 18",
-      "lon": -35.45,
-      "lat": 19.01,
+      "lon": -43.42,
+      "lat": 13.54,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.9
+      "degrees_to_coast": 4.2
     },
     {
       "name": "Crystal Plains 19",
-      "lon": -45.44,
-      "lat": 20.8,
+      "lon": -37.79,
+      "lat": 10.72,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 5.8
+      "degrees_to_coast": 4.6
     },
     {
       "name": "Crystal Plains 20",
-      "lon": -55.68,
-      "lat": 20.63,
+      "lon": -29.36,
+      "lat": 12.83,
       "land": true,
       "region_value": 40,
-      "degrees_to_coast": 6.7
+      "degrees_to_coast": 3.7
     }
   ],
   "shader_hints": {

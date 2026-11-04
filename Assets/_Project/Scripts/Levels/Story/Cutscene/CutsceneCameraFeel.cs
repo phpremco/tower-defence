@@ -23,7 +23,11 @@ namespace Game.Levels
         /// <summary>The strongest kick a cue may give, 0..1.</summary>
         [Range(0f, 1f)] public float MaxKick;
 
+        /// <summary>How fast a kick dies out (per second): the cutscene's own, slower than the level camera's, so the touchdown
+        /// kick keeps its length. Zero takes <see cref="ShakeCurve.CutsceneDecay"/>.</summary>
+        [Min(0f)] public float KickDecay;
+
         /// <summary>The agreed feel: a barely felt drift and one small kick at most.</summary>
-        public static CutsceneCameraFeel Calm => new CutsceneCameraFeel { Drift = 0.006f, DriftHertz = 0.07f, KickScale = 0.9f, MaxKick = 0.3f };
+        public static CutsceneCameraFeel Calm => new CutsceneCameraFeel { Drift = 0.006f, DriftHertz = 0.07f, KickScale = 0.9f, MaxKick = 0.3f, KickDecay = ShakeCurve.CutsceneDecay };
     }
 }

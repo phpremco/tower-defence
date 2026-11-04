@@ -97,7 +97,7 @@ namespace Game.Editor
                 Name = "Mortar", FlashSeconds = 0.4f, FireShare = 0.75f, Ring = true, RingScale = 3f, RingAlpha = 0.6f, Sparks = 14, SparksPerRadius = 8, SparkSpeed = 4.5f,
                 Smoke = 3, SmokePerRadius = 1, Shards = 10, ShardsPerRadius = 6, ShardSpeed = 6f, LightIntensity = 9f, LightRange = 6f, LightSeconds = 0.4f, Shake = 0.25f, ShakePerRadius = 0.1f,
                 Fireball = ExplosionLarge, Fireballs = 2, FireballSize = 1.6f, FireballSizePerRadius = 1.1f, Flash = SparkBurst, FlashSize = 0.8f, FlashSizePerRadius = 0.5f, SmokeSheet = SmokePuff, SmokeSize = 1.5f,
-                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.2f, ShockSheet = ShockDistort, ShockStrength = 0.035f, Haze = HeatHaze, HazeSeconds = 1f,
+                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.2f, ShockSheet = ShockDistort, ShockStrength = 0.022f, Haze = HeatHaze, HazeSeconds = 1f,
             },
             new VfxSpec
             {
@@ -110,7 +110,7 @@ namespace Game.Editor
                 Name = "BossDeath", FlashSeconds = 0.45f, FireShare = 0.9f, Ring = true, RingScale = 3.4f, RingAlpha = 0.7f, Sparks = 18, SparksPerRadius = 8, SparkSpeed = 5f,
                 Smoke = 3, SmokePerRadius = 0, Shards = 12, ShardsPerRadius = 6, ShardSpeed = 7f, LightIntensity = 14f, LightRange = 10f, LightSeconds = 0.5f, Shake = 0.8f,
                 Fireball = ExplosionBoss, Fireballs = 2, FireballSize = 2.6f, FireballSizePerRadius = 1.2f, Flash = EnergyImpact, FlashSize = 1.2f, FlashSizePerRadius = 0.6f, SmokeSheet = SmokePuff, SmokeSize = 1.8f,
-                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.5f, ShockSheet = ShockDistort, ShockStrength = 0.045f, Haze = HeatHaze, HazeSeconds = 1.4f, Linger = SmokeLinger,
+                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.5f, ShockSheet = ShockDistort, ShockStrength = 0.03f, Haze = HeatHaze, HazeSeconds = 1.4f, Linger = SmokeLinger,
                 Chain = 3, ChainInterval = 0.28f, ChainSpread = 1.4f, ChainGrowth = 0.2f,
             },
             new VfxSpec
@@ -118,14 +118,22 @@ namespace Game.Editor
                 Name = "Mine", FlashScale = 0.9f, FlashSeconds = 0.35f, FireShare = 0.7f, Ring = true, RingScale = 3f, RingAlpha = 0.6f, Sparks = 12, SparksPerRadius = 8, SparkSpeed = 4.5f,
                 Smoke = 3, Shards = 10, ShardsPerRadius = 6, ShardSpeed = 7f, LightIntensity = 8f, LightRange = 5f, Shake = 0.25f,
                 Fireball = ExplosionSmall, Fireballs = 2, FireballSize = 1.3f, FireballSizePerRadius = 0.9f, Flash = SparkBurst, FlashSize = 0.6f, FlashSizePerRadius = 0.4f, SmokeSheet = SmokePuff,
-                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 1.6f, ShockSheet = ShockDistort, ShockStrength = 0.03f,
+                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 1.6f, ShockSheet = ShockDistort, ShockStrength = 0.02f,
             },
             new VfxSpec
             {
                 Name = "Barrel", FlashSeconds = 0.4f, FireShare = 0.85f, Ring = true, RingScale = 3.2f, RingAlpha = 0.6f, Sparks = 16, SparksPerRadius = 6, SparkSpeed = 5f,
                 Smoke = 4, Shards = 10, ShardsPerRadius = 6, ShardSpeed = 6f, LightIntensity = 10f, LightRange = 7f, LightSeconds = 0.4f, Shake = 0.3f,
                 Fireball = ExplosionLarge, Fireballs = 2, FireballSize = 1.8f, FireballSizePerRadius = 1f, Flash = SparkBurst, FlashSize = 0.8f, FlashSizePerRadius = 0.4f, SmokeSheet = SmokePuff, SmokeSize = 1.5f,
-                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2f, ShockSheet = ShockDistort, ShockStrength = 0.035f, Haze = HeatHaze, HazeSeconds = 1f,
+                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2f, ShockSheet = ShockDistort, ShockStrength = 0.022f, Haze = HeatHaze, HazeSeconds = 1f,
+            },
+            // A spawn origin breaking open: earth thrown up, dust and grit, a faint flash from the maw, no fire; a short kick.
+            new VfxSpec
+            {
+                Name = "OriginBurst", FlashScale = 0.5f, FlashSeconds = 0.25f, FireShare = 0f, Ring = true, RingScale = 2.6f, RingAlpha = 0.35f, Sparks = 6, SparkSpeed = 3f,
+                Smoke = 3, SmokePerRadius = 1, Shards = 14, ShardsPerRadius = 6, ShardSpeed = 5f, LightIntensity = 4f, LightRange = 4f, LightSeconds = 0.3f, Shake = 0.35f,
+                Flash = SparkBurst, FlashSize = 0.5f, FlashSizePerRadius = 0.2f, SmokeSheet = SmokePuff, SmokeSize = 1.4f, SmokeDelay = 0.05f,
+                Debris = DebrisShards, RingSheet = ShockRing, Dust = DustBurst, DustSize = 2.4f,
             },
             // The boss pulse keeps its own ring and sparks (BossAbilityView) and adds the flash, the light and a kick.
             new VfxSpec { Name = "BossPulse", FlashScale = 0.45f, FlashSeconds = 0.45f, FireShare = 0f, LightIntensity = 12f, LightRange = 9f, LightSeconds = 0.5f, Shake = 0.45f, Flash = EnergyImpact, FlashSize = 1.6f, FlashSizePerRadius = 0f, Sparkle = null },

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Levels
@@ -28,15 +29,14 @@ namespace Game.Levels
         private const float RiftWallStart = 0.05f;
         private const float RiftWallFull = 0.3f;
         private const float ShoreWidthCells = 0.55f;
+        // A pool's shore follows its smoothed outline: the ground starts to fall just outside it, so the liquid meets the
+        // ground about 0.13 inside it, under the swept bank's shelf (README round 24b: the shelf reaches 0.14 to 0.21 in).
+        private const float PoolShoreStart = -0.02f;
+        private const float PoolShoreEnd = 0.4f;
         private const float ShoreWobbleCells = 0.25f;
         private const float CornerRadiusCells = 0.46f;
         private const float BasinStart = 0.1f;
         private const float BasinFull = 0.6f;
-        private const float CraterStart = 0.2f;
-        private const float CraterFull = 0.65f;
-        private const float CraterRimCentre = 0.13f;
-        private const float CraterRimWidth = 0.12f;
-        private const float CraterRimHeight = 0.45f;
         private const float RimStartCells = 1.5f;
         private const float RimEndCells = 7f;
         private const float RimHeight = 3.6f;
@@ -84,12 +84,16 @@ namespace Game.Levels
             _slope = new float[count];
             _roadMask = new float[count];
 
+            Pools = LiquidShape.ForLevel(level);
             FillMasks(level);
             FillHeights(road);
             FillSlopes();
         }
 
         public float CellSize { get; }
+
+        /// <summary>The level's pools with their smoothed shores; the liquid sheets and the swept banks follow the same shapes.</summary>
+        public IReadOnlyList<LiquidShape> Pools { get; }
 
         /// <summary>How many cells the landscape reaches past the field along x and along z.</summary>
         public int MarginCellsX { get; }
@@ -182,8 +186,8 @@ namespace Game.Levels
             FillLiquids(grid, map);
         }
 
-        // A liquid keeps its shore inside its own cells: the mask rises from the cell outline inwards, with a little
-        // wobble, so the ground beside a lake is level right up to the cell edge and a tower there never touches water.
+        // A pool follows its smoothed shore (LiquidShape); a rift keeps its shore inside its own cells: the mask rises from
+        // the cell outline inwards, with a little wobble, so the ground beside it is level right up to the cell edge.
         private void FillLiquids(GridMap grid, TerrainMap map)
         {
             float shore = ShoreWidthCells * CellSize;
@@ -201,37 +205,51 @@ namespace Game.Levels
                     _bog[i] = 0f;
                     _rift[i] = 0f;
 
+                    FillPools(i, x, z);
                     Vector2Int cell = grid.WorldToCell(new Vector3(x, 0f, z));
-                    TerrainKind kind = map.KindAt(cell);
-                    if (!TerrainMap.IsLiquid(kind))
+                    if (map.KindAt(cell) != TerrainKind.Rift)
                     {
                         continue;
                     }
 
                     float wobble = (TerrainNoise.Fbm(x * 1.7f, z * 1.7f, 2, 21f) - 0.5f) * ShoreWobbleCells * CellSize;
-                    float mask = TerrainNoise.SmoothStep(0f, shore, InsideDistance(grid, map, cell, kind, x, z) + wobble);
-                    switch (kind)
-                    {
-                        case TerrainKind.Water:
-                            _water[i] = mask;
-                            break;
-                        case TerrainKind.Lava:
-                            _lava[i] = mask;
-                            break;
-                        case TerrainKind.Ice:
-                            _ice[i] = mask;
-                            break;
-                        case TerrainKind.Bog:
-                            _bog[i] = mask;
-                            break;
-                        case TerrainKind.Rift:
-                            _rift[i] = mask;
-                            break;
-                        default:
-                            _sand[i] = mask;
-                            break;
-                    }
+                    _rift[i] = TerrainNoise.SmoothStep(0f, shore, InsideDistance(grid, map, cell, TerrainKind.Rift, x, z) + wobble);
                 }
+            }
+        }
+
+        // A pool's mask rises across its smoothed shore, so the basin is round even where the cells make a corner.
+        private void FillPools(int i, float x, float z)
+        {
+            for (int p = 0; p < Pools.Count; p++)
+            {
+                LiquidShape pool = Pools[p];
+                Rect bounds = pool.Bounds;
+                if (x < bounds.xMin - LiquidShape.Reach || x > bounds.xMax + LiquidShape.Reach || z < bounds.yMin - LiquidShape.Reach || z > bounds.yMax + LiquidShape.Reach)
+                {
+                    continue;
+                }
+
+                float mask = TerrainNoise.SmoothStep(PoolShoreStart, PoolShoreEnd, pool.SignedDistance(x, z));
+                if (mask <= 0f)
+                {
+                    continue;
+                }
+
+                float[] layer = LayerOf(pool.Kind);
+                layer[i] = Mathf.Max(layer[i], mask);
+            }
+        }
+
+        private float[] LayerOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Water: return _water;
+                case TerrainKind.Lava: return _lava;
+                case TerrainKind.Ice: return _ice;
+                case TerrainKind.Bog: return _bog;
+                default: return _sand;
             }
         }
 
@@ -307,17 +325,15 @@ namespace Game.Levels
 
                     float h = _plateau[i] * TerrainMap.PlateauHeight;
 
-                    // Water and sand slope down gently like a beach; lava sits in a crater with a thrown-up rim
-                    // that drops away steeply on the inside.
+                    // Every pool sinks below its liquid just inside its smoothed shore, under the swept bank; lava
+                    // lies as deep as water (the bank is its rim now, a thrown-up crater rim would poke through it).
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _water[i]) * BasinDepth;
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _sand[i]) * SandDepth;
                     // A frozen lake sits in a shallow dish; a bog sinks a little deeper than sand into soft ground.
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _ice[i]) * IceDepth;
                     h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _bog[i]) * BogDepth;
                     h -= TerrainNoise.SmoothStep(RiftWallStart, RiftWallFull, _rift[i]) * RiftDepth;
-                    float crater = 1f - Mathf.Clamp01(Mathf.Abs(_lava[i] - CraterRimCentre) / CraterRimWidth);
-                    h += crater * crater * CraterRimHeight * (0.7f + 0.6f * TerrainNoise.Fbm(x * 1.3f, z * 1.3f, 2, 7f));
-                    h -= TerrainNoise.SmoothStep(CraterStart, CraterFull, _lava[i]) * BasinDepth;
+                    h -= TerrainNoise.SmoothStep(BasinStart, BasinFull, _lava[i]) * BasinDepth;
 
                     // Low hills rise towards the edge of the map and hide where the world stops.
                     float rim = TerrainNoise.SmoothStep(RimStartCells, RimEndCells, outside);

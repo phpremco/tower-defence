@@ -89,7 +89,7 @@ MonoBehaviour:
   _dustSheet: {fileID: 11400000, guid: 197684430e1e21944bbb920e6f8e802e, type: 2}
   _dustSize: 2
   _shockDistortion: {fileID: 11400000, guid: 75208984f5e0ed04fab654721d915358, type: 2}
-  _shockStrength: 0.035
+  _shockStrength: 0.022
   _heatHaze: {fileID: 11400000, guid: 2ab51b2772cc5a94f83efb0699060ab5, type: 2}
   _heatHazeSeconds: 1
   _chain: 1

@@ -43,6 +43,8 @@ namespace Game.Editor
             // The Blender environment per continent (ground sets, kit, decor), worn by each campaign level's theme before
             // the terrain bake, so the bake sees the theme as it stays.
             new GeneratorStep("Environment art", c => BlenderEnvironmentBuilder.Apply(BlenderEnvironmentBuilder.SyncAndBuild(), ThemesByContinent(c))),
+            // The pool surfaces and the ground mist from the Blender liquid textures (README round 24), on every theme.
+            new GeneratorStep("Liquid art", _ => BlenderLiquidBuilder.ApplyBuilt(BlenderLiquidBuilder.SyncAndBuild())),
             new GeneratorStep("Terrain", BakeAllTerrain),
             new GeneratorStep("Unlocks", GenerateUnlocks),
             new GeneratorStep("Playtest settings", c => c.Playtest = LoadOrCreate<PlaytestSettings>(DebugAssetPath)),
@@ -68,6 +70,8 @@ namespace Game.Editor
             new GeneratorStep("Render pipeline", _ => ConfigureRenderPipeline()),
             new GeneratorStep("Sound library", _ => CreateSfxLibrary()),
             new GeneratorStep("Effect library", _ => CreateVfxLibrary()),
+            // The living spawn origins and route gates (README rounds 23, 25b), after the effect library for their burst.
+            new GeneratorStep("Origin art", _ => BlenderOriginBuilder.Apply(BlenderOriginBuilder.SyncAndBuild())),
             new GeneratorStep("Scenes", GenerateScenes),
         };
 

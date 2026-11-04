@@ -1,0 +1,39 @@
+{
+  "asset": "Mire_BankAccent",
+  "continent": "Mirewood",
+  "game_tris": 400,
+  "source_tris": 5432,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 52,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.555,
+    "world_per_uv": 0.4445433244454001
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 3.7,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 6.4,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.338,
+    0.242,
+    0.122
+  ],
+  "round": "24b",
+  "accent": "scatter on the bank curve, any yaw, pivot on the ground; scale 0.8-1.2"
+}

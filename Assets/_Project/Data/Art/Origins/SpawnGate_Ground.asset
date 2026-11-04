@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: SpawnGate_Ground
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: f5100290d228f68449de9ae710df6e91, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: b88537ec5ee27484691116b92e3af739, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: c100071ce7e303b41bb0fa4e3dfcce3b, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _scale: 1
+  _yaw: 0
+  _bodyCentrePivot: 0
+  _height: 0.985294
+  _lodScreenHeight: 0.04
+  _upperBodyBone: 
+  _deathFade: {x: 0, y: 0}
+  _embers: 0
+  _bleeds: 0
+  _shedBones: []
+  _clips:
+  - _role: 1
+    _clip: {fileID: 6322659971634272393, guid: f5100290d228f68449de9ae710df6e91, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+  - _role: 40
+    _clip: {fileID: -8151225903569759146, guid: f5100290d228f68449de9ae710df6e91, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0

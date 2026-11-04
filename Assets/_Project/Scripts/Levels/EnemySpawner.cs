@@ -100,7 +100,8 @@ namespace Game.Levels
             Slime.Step(deltaTime);
         }
 
-        public void Spawn(EnemyDefinition definition, int pathIndex, SpawnSource source = SpawnSource.Gate)
+        /// <param name="nest">For a nest spawn, the index of the level's nest it comes out of; -1 picks one at random.</param>
+        public void Spawn(EnemyDefinition definition, int pathIndex, SpawnSource source = SpawnSource.Gate, int nest = -1)
         {
             LevelDefinition level = _context.Level;
             // The wave says per group where a boss comes in; an entrance the level does not have falls back to the gate.
@@ -117,7 +118,7 @@ namespace Game.Levels
 
             if (source == SpawnSource.Nest)
             {
-                SpawnFromNest(definition);
+                SpawnFromNest(definition, nest);
                 return;
             }
 
@@ -140,6 +141,7 @@ namespace Game.Levels
             }
 
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, 0f);
+            _context.GateSpawned.Raise(pathIndex);
         }
 
         // A boss that does not use the gate comes up where the level says: out of a pool or out of the ground.
@@ -174,26 +176,36 @@ namespace Game.Levels
             Launch(definition, route, FlightHeight(definition), origin, progress);
         }
 
-        // Out of one of the level's nests of the creature's element, chosen at random, then for the nearest road.
-        // A flyer still dives at the gate nearest its way when it strikes gates.
-        private void SpawnFromNest(EnemyDefinition definition)
+        // Out of the given nest (drawn ahead, so its origin opens in time) or one of the level's nests of the creature's
+        // element at random, then for the nearest road. A flyer still dives at the gate nearest its way when it strikes gates.
+        private void SpawnFromNest(EnemyDefinition definition, int index)
         {
-            _nestBuffer.Clear();
-            foreach (ElementNest nest in _context.Level.Nests)
+            ElementNest[] nests = _context.Level.Nests;
+            ElementNest chosen;
+            if (index >= 0 && index < nests.Length)
             {
-                if (nest.Element == definition.Element)
+                chosen = nests[index];
+            }
+            else
+            {
+                _nestBuffer.Clear();
+                foreach (ElementNest nest in nests)
                 {
-                    _nestBuffer.Add(nest);
+                    if (nest.Element == definition.Element)
+                    {
+                        _nestBuffer.Add(nest);
+                    }
                 }
+
+                if (_nestBuffer.Count == 0)
+                {
+                    Spawn(definition, definition.Flies ? _firstFlightPath : 0);
+                    return;
+                }
+
+                chosen = _nestBuffer[_random.Next(_nestBuffer.Count)];
             }
 
-            if (_nestBuffer.Count == 0)
-            {
-                Spawn(definition, definition.Flies ? _firstFlightPath : 0);
-                return;
-            }
-
-            ElementNest chosen = _nestBuffer[_random.Next(_nestBuffer.Count)];
             Vector3 start = _context.Level.Grid.CellToWorld(chosen.Cell);
             Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
             if (definition.Flies && definition.GateStrikes > 0)

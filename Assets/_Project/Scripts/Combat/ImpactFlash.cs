@@ -27,6 +27,9 @@ namespace Game.Combat
         private const float RingHeight = 0.05f;
         private const float ShockHeight = 0.07f;
         private const float LightHeight = 0.6f;
+
+        // At most this many shock refractions bend the picture at once: in a busy fight more rings read as a glitch.
+        private const int MaxConcurrentShocks = 2;
         private const float SmokeLifeStretch = 1.25f;
         private const float LingerLifeStretch = 1.3f;
         private const float RingPeak = 1.6f;
@@ -54,6 +57,10 @@ namespace Game.Combat
         private ParticleSystem _linger;
         private MeshRenderer _ring;
         private MeshRenderer _shock;
+
+        // Shock rings showing on every pooled flash together (all flashes run on the main thread).
+        private static int _activeShocks;
+        private bool _shockCounted;
         private MaterialPropertyBlock _block;
         private Light _light;
         private ImpactVfxDefinition _vfx;
@@ -133,8 +140,10 @@ namespace Game.Combat
                 _ring.sharedMaterial = vfx.RingSheet.MaterialFor(low);
             }
 
-            bool shock = ring && _quality.Distortion && vfx.ShockDistortion != null && vfx.ShockStrength > 0f;
-            _shock.gameObject.SetActive(shock);
+            // Only blasts that kick the camera bend it, and only a few at a time.
+            bool shock = ring && _quality.Distortion && vfx.ShockDistortion != null && vfx.ShockStrength > 0f
+                         && vfx.ShakeFor(radius) > 0f && _activeShocks < MaxConcurrentShocks;
+            SetShock(shock);
             if (shock)
             {
                 _shock.sharedMaterial = vfx.ShockDistortion.MaterialFor(low);
@@ -181,9 +190,30 @@ namespace Game.Combat
             Animate();
             if (_age >= _life)
             {
+                SetShock(false);
                 _release(this);
             }
         }
+
+        private void OnDisable() => SetShock(false);
+
+        private void SetShock(bool on)
+        {
+            if (on != _shockCounted)
+            {
+                _activeShocks += on ? 1 : -1;
+                _shockCounted = on;
+            }
+
+            if (_shock != null)
+            {
+                _shock.gameObject.SetActive(on);
+            }
+        }
+
+        // A play session without a domain reload starts with no rings counted.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetShocks() => _activeShocks = 0;
 
         private void Animate()
         {
@@ -320,7 +350,7 @@ namespace Game.Combat
                 _shock.SetPropertyBlock(_block);
                 if (t >= 1f)
                 {
-                    _shock.gameObject.SetActive(false);
+                    SetShock(false);
                 }
             }
         }
