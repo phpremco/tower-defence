@@ -42,7 +42,8 @@ namespace Game.UI
             }
 
             Quaternion tilt = Quaternion.AngleAxis(AxisTilt, Vector3.forward) * Quaternion.AngleAxis(StartTurn, Vector3.up);
-            _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, maps, painting.Smog, SmogAlpha, cast != null ? cast.EarthPlanet : PlanetStyle.Earth(), tilt, DegreesPerSecond);
+            PlanetStyle style = cast != null ? cast.EarthPlanet : PlanetStyle.Earth();
+            _earth = new PlanetBody(root, "Earth", Vector3.zero, Radius, PlanetMaterials.Surface(maps, painting.Smog, style), painting.Smog, SmogAlpha, style, tilt, DegreesPerSecond);
             _earth.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
             _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
         }

@@ -80,6 +80,59 @@ namespace Game.Editor
             return copied;
         }
 
+        /// <summary>
+        /// Copies a texture-only export (a planet): <c>&lt;Asset&gt;_&lt;Map&gt;.png</c> for each map named, the same in
+        /// <c>Low/</c>, and the report. Returns the number of files copied.
+        /// </summary>
+        /// <param name="lowOnly">Maps taken from <c>Low/</c> alone, for both profiles (data that gains nothing from the big size).</param>
+        public static int SyncTextures(string asset, IEnumerable<string> maps, IEnumerable<string> lowOnly = null)
+        {
+            string source = SourceRoot;
+            if (source == null)
+            {
+                Debug.Log("Blender sync: no ArtSource/Exports folder, keeping the textures already in Assets.");
+                return 0;
+            }
+
+            string from = Path.Combine(source, asset);
+            if (!Directory.Exists(from))
+            {
+                Debug.LogWarning($"Blender sync: no export for '{asset}' in {SourceRelative}.");
+                return 0;
+            }
+
+            string to = Path.Combine(TargetPath, asset);
+            int copied = 0;
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                copied += CopyIfChanged(Path.Combine(from, asset + "_report.json"), Path.Combine(to, asset + "_report.json"));
+                foreach (string map in maps)
+                {
+                    string file = $"{asset}_{map}.png";
+                    copied += CopyIfChanged(Path.Combine(from, file), Path.Combine(to, file));
+                    copied += CopyIfChanged(Path.Combine(from, LowFolder, file), Path.Combine(to, LowFolder, file));
+                }
+
+                foreach (string map in lowOnly ?? new string[0])
+                {
+                    string file = $"{asset}_{map}.png";
+                    copied += CopyIfChanged(Path.Combine(from, LowFolder, file), Path.Combine(to, LowFolder, file));
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+
+            if (copied > 0)
+            {
+                AssetDatabase.Refresh();
+            }
+
+            return copied;
+        }
+
         private static string TargetPath => Path.Combine(Path.GetDirectoryName(Application.dataPath) ?? string.Empty, TargetRoot);
 
         private static int SyncAsset(string source, string asset)

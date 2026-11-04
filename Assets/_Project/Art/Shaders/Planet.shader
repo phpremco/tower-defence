@@ -3,6 +3,8 @@
 // shadows of the cloud deck, an atmospheric haze that thickens towards the limb, and on the night side either city
 // lights (Earth) or glowing crystal fields (an alien world). Unlit by URP's lighting loop on purpose: one hard sun,
 // no ambient probe, so the night side stays night. Noise octaves come from the quality profile.
+// _PLANET_TEXTURED wears a planet painted in Blender instead (albedo, normal, mask, region ids, glow) and can mark
+// one region on the world map.
 Shader "Game/Planet"
 {
     Properties
@@ -40,6 +42,18 @@ Shader "Game/Planet"
         _MapRelief ("Painted relief", Range(0, 1)) = 0.35
         _DayLights ("Lights by day", Range(0, 1)) = 0
         _Octaves ("Noise octaves", Range(1, 8)) = 6
+        _MaskMap ("Painted mask (R land, G gloss)", 2D) = "black" {}
+        _RegionMap ("Region ids (point)", 2D) = "black" {}
+        _ColonyMap ("Colony lights", 2D) = "black" {}
+        [HDR] _ColonyColor ("Colony light colour", Color) = (1, 1, 1, 1)
+        _Grain ("Land grain", Range(0, 0.5)) = 0.12
+        _SelectedRegion ("Selected region id (-1 none)", Float) = -1
+        _RegionStep ("Region value step", Float) = 40
+        [HDR] _RegionColor ("Selected region colour", Color) = (0.5, 0.8, 1, 1)
+        _RegionLift ("Selected region lift", Range(0, 1)) = 0.22
+        _RegionDim ("Other regions dim", Range(0, 1)) = 0.25
+        _RegionRim ("Selected region rim", Range(0, 4)) = 0.6
+        _SeaLift ("Painted sea lift", Range(1, 4)) = 1.8
     }
 
     SubShader
@@ -55,6 +69,8 @@ Shader "Game/Planet"
             #pragma target 3.5
             #pragma vertex PlanetVertex
             #pragma fragment PlanetFragment
+            // The painted (Blender) planet or the noise planet; both are used at run time, so both are always built.
+            #pragma multi_compile_local _ _PLANET_TEXTURED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "PlanetCommon.hlsl"
 
@@ -63,6 +79,9 @@ Shader "Game/Planet"
             TEXTURE2D(_NormalMap); SAMPLER(sampler_NormalMap);
             TEXTURE2D(_LightsMap); SAMPLER(sampler_LightsMap);
             TEXTURE2D(_CloudMap); SAMPLER(sampler_CloudMap);
+            TEXTURE2D(_MaskMap); SAMPLER(sampler_MaskMap);
+            TEXTURE2D(_RegionMap); SAMPLER(sampler_RegionMap);
+            TEXTURE2D(_ColonyMap); SAMPLER(sampler_ColonyMap);
 
             CBUFFER_START(UnityPerMaterial)
             float4 _SunDirection;
@@ -95,6 +114,15 @@ Shader "Game/Planet"
             half _DayLights;
             half _Octaves;
             float4x4 _WorldToCloud;
+            half4 _ColonyColor;
+            half _Grain;
+            float _SelectedRegion;
+            float _RegionStep;
+            half4 _RegionColor;
+            half _RegionLift;
+            half _RegionDim;
+            half _RegionRim;
+            half _SeaLift;
             CBUFFER_END
 
             struct Attributes
@@ -113,6 +141,18 @@ Shader "Game/Planet"
                 float4 tangentWS : TEXCOORD2;
                 float3 positionOS : TEXCOORD3;
                 float2 uv : TEXCOORD4;
+            };
+
+            // What the ground is at a point, before the sun lights it.
+            struct Ground
+            {
+                half3 albedo;
+                float3 normal;
+                float sea;      // 1 over water, 0 on land
+                float gloss;    // how much the sun glints off it
+                float crystal;  // procedural crystal fields (alien noise mode only)
+                half3 glow;     // night lights of the surface
+                half3 marked;   // the selected region's own light, shown by day and by night
             };
 
             Varyings PlanetVertex(Attributes input)
@@ -142,17 +182,50 @@ Shader "Game/Planet"
                 return normalize(abs(det) * normal - gradient);
             }
 
-            half4 PlanetFragment(Varyings input) : SV_Target
+            float3 MapNormal(Varyings input, float3 geometric, float strength)
             {
-                int octaves = (int)_Octaves;
-                float3 p = normalize(input.positionOS);
-                float3 geometric = normalize(input.normalWS);
-                float3 view = normalize(GetCameraPositionWS() - input.positionWS);
-                float3 sunDirection = normalize(_SunDirection.xyz);
-                half3 sunColour = _SunColor.rgb;
-                float3 toSun = sunDirection;
+                float3 tangent = normalize(input.tangentWS.xyz);
+                float3 bitangent = cross(geometric, tangent) * input.tangentWS.w;
+                float3 mapNormal = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv));
+                mapNormal.xy *= strength;
+                return normalize(mapNormal.x * tangent + mapNormal.y * bitangent + mapNormal.z * geometric);
+            }
 
-                // Coasts: the painted sea mask, blurred and pushed around by noise, then cut at a ragged threshold.
+        #if defined(_PLANET_TEXTURED)
+            // A planet painted in Blender: its own coasts, biomes, gloss and glow; noise only adds a fine grain for
+            // close views. The region map marks the chosen continent: its land lit a little brighter, the others a
+            // little darker, and a soft rim of its colour in its sea along the coast.
+            Ground PaintedGround(Varyings input, float3 p, float3 geometric, int octaves)
+            {
+                Ground ground;
+                half4 mask = SAMPLE_TEXTURE2D(_MaskMap, sampler_MaskMap, input.uv);
+                ground.sea = 1.0 - mask.r;
+                ground.gloss = mask.g * mask.g;
+                ground.crystal = 0.0;
+                float grain = PlanetFbm(p * 90.0, max(1, octaves - 3)) - 0.5;
+                ground.albedo = SAMPLE_TEXTURE2D(_AlbedoMap, sampler_AlbedoMap, input.uv).rgb * (1.0 + grain * _Grain * 2.0 * mask.r) * lerp(1.0, _SeaLift, ground.sea);
+                ground.normal = MapNormal(input, geometric, _BumpStrength);
+                ground.glow = SAMPLE_TEXTURE2D(_LightsMap, sampler_LightsMap, input.uv).rgb * _CityColor.rgb
+                    + SAMPLE_TEXTURE2D(_ColonyMap, sampler_ColonyMap, input.uv).rgb * _ColonyColor.rgb * mask.r;
+
+                half4 region = SAMPLE_TEXTURE2D_LOD(_RegionMap, sampler_RegionMap, input.uv, 0);
+                float id = round(region.g * 255.0 / _RegionStep);
+                float chosen = _SelectedRegion > 0.0 ? 1.0 : 0.0;
+                float member = (1.0 - step(0.5, abs(id - _SelectedRegion))) * chosen;
+                float soft = member * region.b;
+                ground.albedo *= 1.0 + _RegionLift * soft * mask.r;
+                ground.albedo *= 1.0 - _RegionDim * chosen * (1.0 - member) * mask.r;
+                // The rim peaks where the membership falls off across the sea territory, so it hugs the coast.
+                float band = soft * (1.0 - soft) * 4.0;
+                float rim = band * band * ground.sea;
+                ground.marked = _RegionColor.rgb * (rim * _RegionRim + soft * mask.r * _RegionLift * 0.25);
+                return ground;
+            }
+        #else
+            // The painted map only gives the coasts; noise breaks them up and paints alien biomes or tints the map.
+            Ground NoiseGround(Varyings input, float3 p, float3 geometric, int octaves)
+            {
+                Ground ground;
                 float warp = PlanetFbm(p * 5.0, 3) - 0.5;
                 float2 uv = input.uv + float2(warp, PlanetFbm(p * 5.0 + 11.0, 3) - 0.5) * _CoastWarp;
                 float seaField = SAMPLE_TEXTURE2D_LOD(_GlossMap, sampler_GlossMap, uv, _CoastBlur).a;
@@ -177,16 +250,36 @@ Shader "Game/Planet"
                 land = lerp(land, _Peak.rgb, ice);
                 half3 water = lerp(_DeepSea.rgb, _ShallowSea.rgb, shallow * shallow);
                 water = lerp(water, painted * 0.6, (1.0 - _Alien) * 0.35);
-                half3 albedo = lerp(land, water, sea);
+                ground.albedo = lerp(land, water, sea);
+                ground.sea = sea;
+                ground.gloss = sea;
 
                 // Relief: the painted normal map plus the noise height on land.
-                float3 tangent = normalize(input.tangentWS.xyz);
-                float3 bitangent = cross(geometric, tangent) * input.tangentWS.w;
-                float3 mapNormal = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv));
-                mapNormal.xy *= _MapRelief;
-                float3 normal = normalize(mapNormal.x * tangent + mapNormal.y * bitangent + mapNormal.z * geometric);
+                float3 normal = MapNormal(input, geometric, _MapRelief);
                 float height = (elevation + PlanetFbm(p * 40.0, max(1, octaves - 2)) * 0.3) * (1.0 - sea) * _BumpStrength * 0.004;
-                normal = BumpFromHeight(normal, input.positionWS, height * length(GetObjectToWorldMatrix()._m00_m10_m20));
+                ground.normal = BumpFromHeight(normal, input.positionWS, height * length(GetObjectToWorldMatrix()._m00_m10_m20));
+
+                ground.glow = SAMPLE_TEXTURE2D(_LightsMap, sampler_LightsMap, input.uv).rgb * _CityColor.rgb;
+                ground.crystal = smoothstep(1.0 - _CrystalDensity * 0.45, 1.0 - _CrystalDensity * 0.3, PlanetFbm(p * 11.0 + 3.1, octaves)) * (1.0 - sea) * (1.0 - ice) * _Alien;
+                ground.marked = 0.0;
+                return ground;
+            }
+        #endif
+
+            half4 PlanetFragment(Varyings input) : SV_Target
+            {
+                int octaves = (int)_Octaves;
+                float3 p = normalize(input.positionOS);
+                float3 geometric = normalize(input.normalWS);
+                float3 view = normalize(GetCameraPositionWS() - input.positionWS);
+                half3 sunColour = _SunColor.rgb;
+                float3 toSun = normalize(_SunDirection.xyz);
+
+            #if defined(_PLANET_TEXTURED)
+                Ground ground = PaintedGround(input, p, geometric, octaves);
+            #else
+                Ground ground = NoiseGround(input, p, geometric, octaves);
+            #endif
 
                 float facingSun = dot(geometric, toSun);
                 float day = smoothstep(-0.1, 0.2, facingSun);
@@ -198,16 +291,16 @@ Shader "Game/Planet"
                 float shade = 1.0 - cloud * _CloudShadow;
 
                 half3 light = sunColour;
-                half3 colour = albedo * light * saturate(dot(normal, toSun)) * day * shade;
+                half3 colour = ground.albedo * light * saturate(dot(ground.normal, toSun)) * day * shade;
                 float twilight = exp(-pow((facingSun - 0.02) / 0.13, 2.0));
-                colour += albedo * _SunsetColor.rgb * twilight * 0.35;
-                colour += albedo * _Ambient;
+                colour += ground.albedo * _SunsetColor.rgb * twilight * 0.35;
+                colour += ground.albedo * _Ambient;
 
                 // Sun glint on the sea: a tight hot spot and a broad sheen.
                 float3 halfway = normalize(toSun + view);
                 float glint = pow(saturate(dot(geometric, halfway)), _SpecPower) * _SpecStrength
                     + pow(saturate(dot(geometric, halfway)), _SpecPower * 0.08) * _SpecStrength * 0.025;
-                colour += light * glint * sea * day * shade;
+                colour += light * glint * ground.gloss * day * shade;
 
                 // Air: a thin daylight haze over the face that thickens to the limb, warm along the terminator.
                 float limb = pow(1.0 - saturate(dot(geometric, view)), _RimPower);
@@ -216,12 +309,11 @@ Shader "Game/Planet"
                 colour = lerp(colour, air * light * 0.35 * airLight, saturate(_DayHaze + limb * 0.75) * airLight * _RimStrength * 0.6);
                 colour += air * limb * _RimStrength * airLight * 0.6;
 
-                // Night: city lights or crystal fields under the clouds.
-                half3 lights = SAMPLE_TEXTURE2D(_LightsMap, sampler_LightsMap, input.uv).rgb * _CityColor.rgb;
-                float fields = smoothstep(1.0 - _CrystalDensity * 0.45, 1.0 - _CrystalDensity * 0.3, PlanetFbm(p * 11.0 + 3.1, octaves)) * (1.0 - sea) * (1.0 - ice);
+                // Night: city lights, painted glow or crystal fields under the clouds.
                 float sparkle = 0.35 + PlanetFbm(p * 70.0, 2) * 1.3;
-                half3 crystals = _CrystalColor.rgb * fields * sparkle * _Alien;
-                colour += (lights * max(night, _DayLights) + crystals * lerp(0.06, 1.0, night)) * (1.0 - cloud * 0.75);
+                half3 crystals = _CrystalColor.rgb * ground.crystal * sparkle;
+                colour += (ground.glow * max(night, _DayLights) + crystals * lerp(0.06, 1.0, night)) * (1.0 - cloud * 0.75);
+                colour += ground.marked;
 
                 return half4(colour, 1.0);
             }

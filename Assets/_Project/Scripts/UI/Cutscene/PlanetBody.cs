@@ -29,7 +29,9 @@ namespace Game.UI
 
         /// <param name="tilt">The axis tilt and the turn the planet starts in.</param>
         /// <param name="degreesPerSecond">How fast the ground turns; the clouds turn a little faster.</param>
-        public PlanetBody(Transform parent, string name, Vector3 centre, float radius, GlobePainter.Maps maps, Texture2D clouds, float cloudAlpha, PlanetStyle style, Quaternion tilt, float degreesPerSecond)
+        /// <param name="surface">The ground material (<see cref="PlanetMaterials.Surface(GlobePainter.Maps, Texture2D, PlanetStyle, bool)"/> or its painted twin); the body owns it from here.</param>
+        /// <param name="cloudWisps">How far noise tears the cloud map into wisps; the style's amount when negative.</param>
+        public PlanetBody(Transform parent, string name, Vector3 centre, float radius, Material surface, Texture2D clouds, float cloudAlpha, PlanetStyle style, Quaternion tilt, float degreesPerSecond, float cloudWisps = -1f)
         {
             Root = new GameObject(name).transform;
             Root.SetParent(parent, false);
@@ -40,11 +42,11 @@ namespace Game.UI
             _degreesPerSecond = degreesPerSecond;
             _cloudDegreesPerSecond = degreesPerSecond * CloudDrift;
 
-            _surfaceMaterial = PlanetMaterials.Surface(maps, clouds, style);
+            _surfaceMaterial = surface;
             _surface = Sphere("Surface", 1f, _surfaceMaterial);
             if (clouds != null)
             {
-                _cloudMaterial = PlanetMaterials.Clouds(clouds, cloudAlpha, style);
+                _cloudMaterial = PlanetMaterials.Clouds(clouds, cloudAlpha, style, cloudWisps);
                 _clouds = Sphere("Clouds", CloudLift, _cloudMaterial);
             }
 

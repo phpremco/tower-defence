@@ -63,10 +63,20 @@ namespace Game.Editor
         // the emblem's star lowered to gold, the wide probe shrunk to fit.
         public static readonly Bust[] Busts =
         {
-            new Bust("Voss", PortraitModel.Scientist, 1.4f, -14f, 1.25f, 1f, 10f / 30f),
+            // Voss is scaled to 1.65 m (ModelScales): centre and zoom scaled with her, so the picture stays the same.
+            new Bust("Voss", PortraitModel.Scientist, 1.4f * VossScale, -14f, 1.25f / VossScale, 1f, 10f / 30f),
             new Bust("Ora", PortraitModel.Hologram, 0.34f, 0f, 1.1f, 1f, 10f / 30f),
             new Bust("NTI_Emblem", PortraitModel.Emblem, 0f, 8f, 1.05f, 0.35f, 0f),
             new Bust("Pioneer1", PortraitModel.Probe, 0.95f, 10f, 0.24f, 1f, 0f),
+        };
+
+        // README round 20: the MPFB Voss stands 1.556 m; an adult woman next to Mercer reads better at about 1.65 m.
+        private const float VossScale = 1.06f;
+
+        /// <summary>The story exports worn at another size than they were modelled, by export folder.</summary>
+        public static readonly IReadOnlyDictionary<string, float> ModelScales = new Dictionary<string, float>
+        {
+            { "Voss", VossScale },
         };
 
         /// <summary>Mercer's bust (README round 6: the camera aimed at y 1.33).</summary>

@@ -462,3 +462,17 @@ blender --background --factory-startup --python install_packs.py -- <zip> <zip> 
 Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender_org.mpfb")`), so they still run with
 `--factory-startup`. Python API: `bl_ext.blender_org.mpfb.services.humanservice.HumanService.create_human()`,
 `add_builtin_rig`, `add_mhclo_asset`, `set_character_skin`; targets via `TargetService`.
+
+### Planet S-69-CRYS, mothership v2, Voss v3 (added 2026-11-04)
+
+| Goal | Command |
+| --- | --- |
+| Sync the planet maps and wire them to the campaign | `unity command menu --path "Tools/Generate/Blender Planet (sync, S-69-CRYS maps)" --timeout 600` (also the generator step "Planet art") |
+| Targeted import without the full generator (mothership maps reimported at 2048, mothership + Voss rebuilt, planet synced) | `eval_file --file Tools/PlayTest/fb2_import.cs` (times out the CLI after 5 s and keeps running; wait for `Data/Art/Planet/Planet_S69.asset`) |
+| Rebuild only some story exports | `Game.Editor.BlenderStoryBuilder.RebuildOnly("<Export>", ...)` from an eval script |
+| Set the planet look tunables | `field value` lines (`_seaLift 1.8`, `_regionRim 0.6`, ...) in `Tools/PlayTest/fb2_set_tune.txt`, `eval_file --file Tools/PlayTest/fb2_set_tune.cs` |
+| Screenshots: map per region, region zoom, level, survey/orbit, mothership close-ups | `OUT=<windows folder> bash Tools/PlayTest/fb2_shots.sh <prefix> [map\|cut\|all]` |
+| PlayMode test classes one at a time | `bash Tools/PlayTest/fb2_playmode.sh ContinentSimulationTests StoryCrystalTests ...` |
+
+- For exact cutscene stills use `imp3b_cut.sh` (paused seek and render in one call); `fb2_shots.sh` cut stills can land a
+  second late, mid-fade. `fb2_still.cs` is the same with the `fb1_tune.txt` shader lines applied.

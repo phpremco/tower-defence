@@ -1739,3 +1739,48 @@ and the hero never had to act. Approved plan: cut Easy money (start and income),
   `BalanceProbeTests` smoke (Medium Shard Ridge and Crysium Vein won, base 800/800) and new
   `Easy_GreedyBot_StillClearsLandingSiteAndRollerLevel_OnThinnerMoney` (Landing Site won, base 800/800, 171 unspent,
   bot pressure 1.13 on the boss wave with the hero down at the end; Quartz Flats won, base 800/800, 46 unspent).
+
+## Planet S-69-CRYS, mothership v2 and Voss v3 in Unity (2026-11-04)
+
+The planet painted in Blender (README round 20), the round-19 mothership's extras and the MPFB Voss (round 20) are in the
+game. Only these exports were synced (targeted import, `Tools/PlayTest/fb2_import.cs`); the VFX folder was not touched.
+- **Planet data:** `Levels/PlanetTextureSet` (ScriptableObject: High 4096 and Low 2048 maps Albedo, Normal, Mask, Regions,
+  Emission, Clouds; region id rule `FirstRegionId` + region index, value step 40; look tunables: emission, map day glow,
+  map/cutscene relief, cloud wisps, sea lift, cloud share map/cutscene, land grain, colony lights, selected region lift,
+  dim, rim, locked share) at `Data/Art/Planet/Planet_S69.asset`, worn by `CampaignCatalog.PlanetTextures`. The builder
+  writes only the maps; `Tools/PlayTest/fb2_set_tune.cs` sets the tunables from `fb2_set_tune.txt`.
+- **Pipeline:** `BlenderSync.SyncTextures` (texture-only exports, `lowOnly` maps), `BlenderPlanetCatalog` +
+  `BlenderPlanetBuilder` (menu `Tools/Generate/Blender Planet (sync, S-69-CRYS maps)`, generator step "Planet art" after
+  "Globe"). `BlenderModelImporter`: planet folders (`Planet_*`) get U repeat / V clamp, aniso 8, 4096 (Low 2048), sRGB for
+  Albedo/Emission, Regions point filtered, no mips, uncompressed; the Height map stays in ArtSource (the normal map carries
+  the relief) and Regions comes from `Low/` for both profiles (exact ids, a quarter of the memory).
+- **Shader:** `Game/Planet` has a `_PLANET_TEXTURED` variant (multi_compile_local, so both always build): painted albedo with
+  a fine grain on land and a sea lift (the painted sea is near black in linear), the normal map at `_BumpStrength`, gloss from
+  Mask.G, painted glow as night lights (`_CityColor`) plus `GlobePainter`'s colony lights as a second layer (`_ColonyMap`),
+  and the selected region from the Regions map (G id, B soft membership): its land a little brighter, the others a little
+  darker, a soft rim in its colour in its sea along the coast. Earth keeps the noise variant. `PlanetMaterials.Surface(set, ...)`
+  and `SetSelectedRegion`; `PlanetBody` now takes the ground material from its owner.
+- **Map:** `PlanetGlobe.Create(..., painted)` and `Highlight(region, colour, open)` (locked regions at `LockedShare`; the mark
+  halves in the level close-up); `WorldMapScreen.FocusRegion` sets it. Key light, level points, zoom, route dots unchanged.
+  Both cloud decks wear the painted cloud map, at `MapCloudShare`. **Cutscene:** `CrysPlanet` wears the set in the survey and
+  orbit shots (relief 1, clouds at `CutsceneCloudShare`). Relief 2 (README) blacked out the land at survey distance; 1 reads.
+- **Mothership:** `BlenderModelImporter.MapSizeOverrides` (mothership 2048/1024; Voss too); `BlenderStoryBuilder` wears an
+  export's `_LOD1.fbx` with its own clips (`_farClip`), `ArtModel` instantiates a separate far file under the near model
+  (LOD group, sampled and played on both rigs). `OrbitSet`: a cool point light inside the bay that swells with every
+  capsule drop (`CapsuleDrop.BayGlow`), and ten blinking running lights on `Light_1..10` (colours per README, own rhythms).
+  The moved `Bay` socket is read from the model: capsules leave the new bay mouth (checked on `fb2_shots/after2_cut_ship_drop`).
+- **Voss:** synced (2048/1024 maps, `importBlendShapes` on for her: Blink, Smile, JawOpen, Frown; bone takes win over the
+  `Key|` shape-key takes in `OnPreprocessAnimation`), scaled to 1.65 m (`BlenderStoryCatalog.ModelScales`, 1.06) with her
+  bust centre and zoom scaled to match, so the portrait frames the same. She only appears as a portrait (no 3D cutscene
+  shot). Portrait blinks stay on the bones (portraits are stills).
+- **Tools:** `fb2_shots.sh` (map per region, zoom, level, cutscene, ship close-ups via `fb2_ship.cs`), `fb2_still.cs` (exact
+  paused cutscene still with shader tune lines), `fb2_planet_probe.cs`, `fb2_voss_probe.cs`, `fb2_ssao.cs`, `fb2_playmode.sh`
+  (PlayMode classes one at a time). Screenshots in the session scratchpad `fb2_shots/` (`before_*`, `after1_*`, `after2_*`,
+  `final_still_*`, `portrait_voss.png`, `after_dlg_voss.png`).
+- **Tests:** EditMode 320/320 (new `PlanetArtTests` 4: the campaign wears a complete set at 4096/2048, every surface level
+  site lies in its own region id, the maps import as the shader reads them, the mothership wears its LOD1 with its own
+  clips and has `Bay` and `Light_n`). PlayMode one class at a time: ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2,
+  CutsceneSmoke 3/3, Screenshot 3/3, BalanceProbe 3/3, ModelPerformance 1/1. 0 compile errors and warnings. Save untouched.
+- **Open:** the rim is the region's own map colour (Crystal Plains lavender, the Crowns near white): a per-region highlight
+  colour would be data on `MapRegion`; clouds are still dense on the far planet view at `MapCloudShare` 0.55; the full
+  generator was not run (it would sync the VFX folder); `Height` is not synced.

@@ -28,6 +28,8 @@ namespace Game.UI
         private const float ShieldEmission = 5f;
         private const float TrailIntensity = 3f;
         private const float ColdHead = 0.25f;
+        private const float BayWarmUp = 0.4f;
+        private const float BayFade = 1.6f;
         private static readonly Color HotColour = new Color(1f, 0.5f, 0.15f);
         private static readonly Color CoreColour = new Color(1f, 0.85f, 0.6f) * 3f;
 
@@ -68,7 +70,7 @@ namespace Game.UI
             for (int i = 0; i < _capsules.Count; i++)
             {
                 Capsule capsule = _capsules[i];
-                float release = FirstRelease + i * ReleaseGap + CutsceneMath.Hash(i, 61) * 0.4f;
+                float release = Release(i);
                 float age = time < release ? -1f : Mathf.Repeat(time - release, _cycle);
                 bool falling = age >= 0f && age < FallSeconds;
                 capsule.Root.gameObject.SetActive(falling);
@@ -96,6 +98,31 @@ namespace Game.UI
                 capsule.Trail.widthMultiplier = TrailWidth * Mathf.Max(0.1f, heat);
             }
         }
+
+        /// <summary>
+        /// How brightly the open bay is lit at a moment, 0..1: it brightens just before each capsule leaves and fades as
+        /// the capsule falls clear, so a light in the bay shows the racked capsules and the doors at each drop.
+        /// </summary>
+        public float BayGlow(float time)
+        {
+            float glow = 0f;
+            for (int i = 0; i < _capsules.Count; i++)
+            {
+                float release = Release(i);
+                if (time < release - BayWarmUp)
+                {
+                    continue;
+                }
+
+                float age = Mathf.Repeat(time - release + BayWarmUp, _cycle) - BayWarmUp;
+                float g = age < 0f ? 1f + age / BayWarmUp : Mathf.Exp(-age * BayFade);
+                glow = Mathf.Max(glow, g);
+            }
+
+            return glow;
+        }
+
+        private static float Release(int index) => FirstRelease + index * ReleaseGap + CutsceneMath.Hash(index, 61) * 0.4f;
 
         // Out of the bay with a small push down and ahead, then a falling curve that keeps speeding up into the air.
         private Vector3 PathPoint(int index, float launched, float age)

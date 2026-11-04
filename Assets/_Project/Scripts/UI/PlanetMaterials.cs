@@ -25,6 +25,10 @@ namespace Game.UI
         private static readonly int WorldToCloudId = Shader.PropertyToID("_WorldToCloud");
         private static readonly int AlphaId = Shader.PropertyToID("_Alpha");
         private static readonly int CloudShadowId = Shader.PropertyToID("_CloudShadow");
+        private static readonly int SelectedRegionId = Shader.PropertyToID("_SelectedRegion");
+        private static readonly int RegionColorId = Shader.PropertyToID("_RegionColor");
+        private const string TexturedKeyword = "_PLANET_TEXTURED";
+        private const float NoRegion = -1f;
 
         /// <summary>The ground. <paramref name="forMap"/> applies the style's map overrides (more region colour, a lit night side).</summary>
         public static Material Surface(GlobePainter.Maps maps, Texture2D clouds, PlanetStyle style, bool forMap = false)
@@ -65,14 +69,52 @@ namespace Game.UI
             return material;
         }
 
-        public static Material Clouds(Texture2D clouds, float alpha, PlanetStyle style)
+        /// <summary>
+        /// The ground of a planet painted in Blender (<see cref="PlanetTextureSet"/>): its own maps for the quality
+        /// profile, the style's sun, air and clouds, and <paramref name="colonyLights"/> (the baked colony glow of the
+        /// level sites) over the painted glow. <paramref name="forMap"/> uses the map's light and relief.
+        /// </summary>
+        public static Material Surface(PlanetTextureSet set, Texture2D colonyLights, PlanetStyle style, bool forMap = false)
+        {
+            PlanetTextureSet.Maps maps = set.For(ModelQuality.IsLow);
+            var painted = new GlobePainter.Maps { Albedo = maps.Albedo, Normal = maps.Normal, Gloss = Texture2D.blackTexture, Emission = maps.Emission };
+            Material material = Surface(painted, maps.Clouds, style, forMap);
+            material.EnableKeyword(TexturedKeyword);
+            material.SetTexture("_MaskMap", maps.Mask);
+            material.SetTexture("_RegionMap", maps.Regions);
+            material.SetTexture("_ColonyMap", colonyLights != null ? colonyLights : Texture2D.blackTexture);
+            material.SetColor("_ColonyColor", style.City * set.ColonyLights);
+            material.SetColor("_CityColor", set.Emission);
+            material.SetFloat("_Alien", 0f);
+            material.SetFloat("_TextureTint", 1f);
+            material.SetFloat("_BumpStrength", forMap ? set.MapRelief : set.CutsceneRelief);
+            material.SetFloat("_DayLights", forMap ? set.MapDayEmission : 0f);
+            material.SetFloat("_Grain", set.Grain);
+            material.SetFloat("_RegionStep", set.RegionValueStep);
+            material.SetFloat("_RegionLift", set.RegionLift);
+            material.SetFloat("_RegionDim", set.RegionDim);
+            material.SetFloat("_RegionRim", set.RegionRim);
+            material.SetFloat("_SeaLift", set.SeaLift);
+            material.SetFloat(SelectedRegionId, NoRegion);
+            return material;
+        }
+
+        /// <summary>Marks one region of a painted planet (its id in the region map), or none with a negative id.</summary>
+        public static void SetSelectedRegion(Material surface, int regionId, Color colour, float strength)
+        {
+            surface.SetFloat(SelectedRegionId, regionId > 0 ? regionId : NoRegion);
+            surface.SetColor(RegionColorId, colour * strength);
+        }
+
+        /// <param name="wisps">How far noise tears the map into wisps; the style's own amount when negative.</param>
+        public static Material Clouds(Texture2D clouds, float alpha, PlanetStyle style, float wisps = -1f)
         {
             var material = Create(CloudShader, "PlanetClouds");
             material.SetTexture("_CloudMap", clouds);
             material.SetColor("_CloudColor", style.Cloud);
             material.SetColor("_SunsetColor", style.Twilight);
             material.SetFloat(AlphaId, alpha);
-            material.SetFloat("_Detail", style.CloudWisps);
+            material.SetFloat("_Detail", wisps >= 0f ? wisps : style.CloudWisps);
             material.SetFloat("_Octaves", Mathf.Max(1, Octaves(style) - 1));
             return material;
         }

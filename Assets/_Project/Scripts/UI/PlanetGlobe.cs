@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -25,6 +26,7 @@ namespace Game.UI
         private const float RegionDistance = 7.2f;
         private const float NearDistance = 5f;
         private const float ZoomShift = 0.6f;
+        private const float HighlightCloseFade = 0.5f;
 
         /// <summary>Zoom value at which one region fills the view, with its levels readable.</summary>
         public const float RegionZoom = 1f;
@@ -51,6 +53,10 @@ namespace Game.UI
         private Material _highCloudMaterial;
         private Material _surfaceMaterial;
         private PlanetStyle _style;
+        private PlanetTextureSet _painted;
+        private int _highlightId = -1;
+        private Color _highlightColour;
+        private float _highlightStrength;
         private Camera _camera;
         private RenderTexture _texture;
         private RectTransform _rect;
@@ -69,7 +75,9 @@ namespace Game.UI
         /// <summary>True while a snap turn towards a chosen place is still under way.</summary>
         public bool Turning => _snapping && (Mathf.Abs(Mathf.DeltaAngle(_yaw, _targetYaw)) > 0.5f || Mathf.Abs(_pitch - _targetPitch) > 0.5f);
 
-        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds, PlanetStyle style)
+        /// <param name="painted">The planet painted in Blender: when set it replaces <paramref name="surface"/> and the cloud
+        /// maps, and <paramref name="surface"/>'s emission stays as the colony lights over its glow.</param>
+        public static PlanetGlobe Create(RectTransform parent, float size, GlobePainter.Maps surface, Texture2D[] clouds, PlanetStyle style, PlanetTextureSet painted = null)
         {
             var go = new GameObject("PlanetGlobe", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -83,8 +91,20 @@ namespace Game.UI
             var globe = go.AddComponent<PlanetGlobe>();
             globe._rect = rect;
             globe._style = style;
+            globe._painted = painted;
             globe.Build(image, surface, clouds);
             return globe;
+        }
+
+        /// <summary>
+        /// Marks a region of a painted planet (brighter land, a soft rim in its colour along the coast, the rest a little
+        /// darker), by its index in the campaign; a negative index clears it. A plain globe has no region map and ignores it.
+        /// </summary>
+        public void Highlight(int regionIndex, Color colour, bool open)
+        {
+            _highlightId = _painted != null && regionIndex >= 0 ? _painted.RegionId(regionIndex) : -1;
+            _highlightColour = colour;
+            _highlightStrength = _painted == null ? 0f : open ? 1f : _painted.LockedShare;
         }
 
         /// <summary>Turns the globe by hand: x spins it, y tilts it. Cancels any snap turn under way.</summary>
@@ -155,11 +175,26 @@ namespace Game.UI
             _rig = rig.transform;
 
             // The same planet materials as the cutscene, with the style's map overrides so every region stays readable.
-            _surfaceMaterial = PlanetMaterials.Surface(surface, clouds[0], _style, forMap: true);
+            // A painted planet brings its own cloud map; both decks wear it, turned apart, so they never line up.
+            Texture2D lowDeck = clouds[0];
+            Texture2D highDeck = clouds[clouds.Length - 1];
+            float wisps = -1f;
+            if (_painted != null)
+            {
+                _surfaceMaterial = PlanetMaterials.Surface(_painted, surface.Emission, _style, forMap: true);
+                lowDeck = _painted.For(ModelQuality.IsLow).Clouds;
+                highDeck = lowDeck;
+                wisps = _painted.CloudWisps;
+            }
+            else
+            {
+                _surfaceMaterial = PlanetMaterials.Surface(surface, lowDeck, _style, forMap: true);
+            }
+
             _globe = Sphere("Globe", Radius, _surfaceMaterial).transform;
-            _cloudMaterial = PlanetMaterials.Clouds(clouds[0], 1f, _style);
+            _cloudMaterial = PlanetMaterials.Clouds(lowDeck, 1f, _style, wisps);
             _clouds = Sphere("Clouds", CloudRadius, _cloudMaterial).transform;
-            _highCloudMaterial = PlanetMaterials.Clouds(clouds[clouds.Length - 1], HighCloudAlpha, _style);
+            _highCloudMaterial = PlanetMaterials.Clouds(highDeck, HighCloudAlpha, _style, wisps);
             _highClouds = Sphere("HighClouds", HighCloudRadius, _highCloudMaterial).transform;
             Material air = PlanetMaterials.Atmosphere(_style, _style.AtmosphereLift);
             Sphere("Atmosphere", _style.AtmosphereLift, air);
@@ -290,10 +325,17 @@ namespace Game.UI
             float level = Ease(Mathf.Clamp01((_zoom - RegionZoom) / (LevelZoom - RegionZoom)));
             float distance = Mathf.Lerp(Mathf.Lerp(FarDistance, RegionDistance, region), NearDistance, level);
             // Clouds thin out on the way in, so the levels sit on clear land.
-            PlanetMaterials.SetCloudAlpha(_cloudMaterial, 1f - region);
-            PlanetMaterials.SetCloudAlpha(_highCloudMaterial, HighCloudAlpha * (1f - region));
+            float cover = (_painted != null ? _painted.MapCloudShare : 1f) * (1f - region);
+            PlanetMaterials.SetCloudAlpha(_cloudMaterial, cover);
+            PlanetMaterials.SetCloudAlpha(_highCloudMaterial, HighCloudAlpha * cover);
             PlanetMaterials.SetCloudShadow(_surfaceMaterial, _style.CloudShadow * (1f - region));
             PlanetMaterials.SetCloudFrame(_surfaceMaterial, _clouds);
+            if (_painted != null)
+            {
+                // The mark softens in the close-up on a level, where the level's own panel takes over.
+                PlanetMaterials.SetSelectedRegion(_surfaceMaterial, _highlightId, _highlightColour, _highlightStrength * (1f - HighlightCloseFade * level));
+            }
+
             _camera.transform.localPosition = new Vector3(ZoomShift * level, 0f, -distance);
         }
 

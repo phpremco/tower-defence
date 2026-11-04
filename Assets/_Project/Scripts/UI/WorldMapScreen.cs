@@ -245,7 +245,7 @@ namespace Game.UI
                 _globeClouds = new[] { GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 0f), GlobePainter.PaintClouds(CloudTexture, CloudTexture / 2, 200f) };
             }
 
-            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds, _catalog.PlanetStyle);
+            _globe = PlanetGlobe.Create(view, GlobeSize, _globeMaps, _globeClouds, _catalog.PlanetStyle, _catalog.PlanetTextures);
         }
 
         // A level wears its palette, so the lava caves glow orange on the map and the woods turquoise.
@@ -722,6 +722,7 @@ namespace Game.UI
             string status = total == 0 ? "   -   coming soon" : $"   -   {CampaignRules.CompletedInRegion(_catalog, index, Progress)} / {total} levels";
             _caption.text = region.DisplayName + status;
             _caption.color = _badges[index].Open ? Color.white : Muted;
+            _globe.Highlight(index, region.Colour, _badges[index].Open);
         }
 
         // Flies onto a region and shows its levels, focusing the one given (or the furthest open one in it).

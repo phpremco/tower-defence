@@ -76,6 +76,37 @@ namespace Game.Editor
             return built;
         }
 
+        /// <summary>
+        /// Syncs and rebuilds only the named cutscene models and busts in place, leaving every other story export alone
+        /// (one being reworked in Blender is not picked up half-done). Their art assets keep their owners, so nothing needs
+        /// pointing again. Returns how many were rebuilt.
+        /// </summary>
+        public static int RebuildOnly(params string[] assets)
+        {
+            BlenderSync.Sync(assets);
+            int rebuilt = 0;
+            foreach (string asset in assets)
+            {
+                ModelArtDefinition model = BuildSingle(asset, StoryEmission, CutsceneLodScreenHeight);
+                if (model == null)
+                {
+                    continue;
+                }
+
+                rebuilt++;
+                foreach (BlenderStoryCatalog.Bust bust in BlenderStoryCatalog.Busts)
+                {
+                    if (bust.Asset == asset)
+                    {
+                        BuildBust(bust, model);
+                    }
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return rebuilt;
+        }
+
         /// <summary>Points the heroes, the speakers and the cutscene casts at their art; returns how many wear one.</summary>
         public static int Apply(Built built)
         {
@@ -120,7 +151,7 @@ namespace Game.Editor
             }
 
             BlenderReport report = BlenderReport.Load($"{folder}/{asset}_report.json");
-            ModelArtDefinition body = BuildArt(asset, $"{folder}/{asset}.fbx", high, low, HeroLodScreenHeight, ExportYaw, report, BlenderStoryCatalog.UpperBodyBone);
+            ModelArtDefinition body = BuildArt(asset, $"{folder}/{asset}.fbx", null, high, low, HeroLodScreenHeight, ExportYaw, report, BlenderStoryCatalog.UpperBodyBone);
             if (body == null)
             {
                 return null;
@@ -150,7 +181,7 @@ namespace Game.Editor
 
         private static ModelArtDefinition Weapon(string folder, string name, Material high, Material low)
         {
-            return high == null ? null : BuildArt(name, $"{folder}/{name}.fbx", high, low, HeroLodScreenHeight, 0f, null, string.Empty);
+            return high == null ? null : BuildArt(name, $"{folder}/{name}.fbx", null, high, low, HeroLodScreenHeight, 0f, null, string.Empty);
         }
 
         private static PortraitArtDefinition BuildBust(BlenderStoryCatalog.Bust bust, ModelArtDefinition model)
@@ -173,7 +204,9 @@ namespace Game.Editor
         {
             string folder = BlenderArtBuilder.AssetFolder(asset);
             (Material high, Material low) = Materials(folder, asset, emission);
-            return high == null ? null : BuildArt(asset, $"{folder}/{asset}.fbx", high, low, lodScreenHeight, ExportYaw, null, string.Empty);
+            // A far mesh of its own (the round-19 mothership) is worn from its own file; the others have none.
+            string lod1 = $"{folder}/{asset}_LOD1.fbx";
+            return high == null ? null : BuildArt(asset, $"{folder}/{asset}.fbx", File.Exists(lod1) ? lod1 : null, high, low, lodScreenHeight, ExportYaw, null, string.Empty);
         }
 
         // The export's High and Low material in the colony's cool rim, or nulls when the maps are not synced. An export
@@ -200,7 +233,7 @@ namespace Game.Editor
             return (high, low);
         }
 
-        private static ModelArtDefinition BuildArt(string name, string modelPath, Material high, Material low, float lodScreenHeight, float yaw, BlenderReport report, string upperBodyBone)
+        private static ModelArtDefinition BuildArt(string name, string modelPath, string lod1Path, Material high, Material low, float lodScreenHeight, float yaw, BlenderReport report, string upperBodyBone)
         {
             var model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             if (model == null)
@@ -212,10 +245,10 @@ namespace Game.Editor
             var art = BlenderArtBuilder.LoadOrCreate<ModelArtDefinition>($"{StoryArtFolder}/{name}.asset");
             var so = new SerializedObject(art);
             so.FindProperty("_model").objectReferenceValue = model;
-            so.FindProperty("_lod1").objectReferenceValue = null;
+            so.FindProperty("_lod1").objectReferenceValue = lod1Path != null ? AssetDatabase.LoadAssetAtPath<GameObject>(lod1Path) : null;
             so.FindProperty("_material").objectReferenceValue = high;
             so.FindProperty("_lowMaterial").objectReferenceValue = low;
-            so.FindProperty("_scale").floatValue = 1f;
+            so.FindProperty("_scale").floatValue = BlenderStoryCatalog.ModelScales.TryGetValue(name, out float scale) ? scale : 1f;
             so.FindProperty("_yaw").floatValue = yaw;
             so.FindProperty("_bodyCentrePivot").boolValue = false;
             so.FindProperty("_height").floatValue = BlenderArtBuilder.ModelTop(model);
@@ -224,14 +257,15 @@ namespace Game.Editor
             so.FindProperty("_deathFade").vector2Value = Vector2.zero;
             so.FindProperty("_embers").boolValue = false;
             so.FindProperty("_bleeds").boolValue = false;
-            WriteClips(so.FindProperty("_clips"), modelPath, report);
+            WriteClips(so.FindProperty("_clips"), modelPath, lod1Path, report);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
         }
 
-        private static void WriteClips(SerializedProperty array, string modelPath, BlenderReport report)
+        private static void WriteClips(SerializedProperty array, string modelPath, string lod1Path, BlenderReport report)
         {
+            Dictionary<string, AnimationClip> far = ClipsByName(lod1Path);
             var clips = new List<AnimationClip>();
             foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(modelPath))
             {
@@ -251,7 +285,7 @@ namespace Game.Editor
                 SerializedProperty element = array.GetArrayElementAtIndex(i);
                 element.FindPropertyRelative("_role").enumValueIndex = (int)BlenderStoryCatalog.Roles[clip.name];
                 element.FindPropertyRelative("_clip").objectReferenceValue = clip;
-                element.FindPropertyRelative("_farClip").objectReferenceValue = null;
+                element.FindPropertyRelative("_farClip").objectReferenceValue = far.TryGetValue(clip.name, out AnimationClip farClip) ? farClip : null;
                 element.FindPropertyRelative("_distancePerLoop").floatValue = Report(report, BlenderStoryCatalog.DistanceKeys, clip.name, 1f);
                 element.FindPropertyRelative("_eventSeconds").floatValue = Report(report, BlenderStoryCatalog.EventKeys, clip.name, 1f / FramesPerSecond);
                 element.FindPropertyRelative("_trigger").stringValue = string.Empty;
@@ -285,6 +319,25 @@ namespace Game.Editor
                     yield return asset;
                 }
             }
+        }
+
+        private static Dictionary<string, AnimationClip> ClipsByName(string path)
+        {
+            var clips = new Dictionary<string, AnimationClip>();
+            if (path == null)
+            {
+                return clips;
+            }
+
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(path))
+            {
+                if (asset is AnimationClip clip && !clip.name.StartsWith(PreviewPrefix))
+                {
+                    clips[clip.name] = clip;
+                }
+            }
+
+            return clips;
         }
 
         private static void WriteStrings(SerializedProperty array, string[] values)

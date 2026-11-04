@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ca2547ab5689874ea279e080c815505, type: 3}
+  m_Name: Planet_S69
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.PlanetTextureSet
+  _high:
+    Albedo: {fileID: 2800000, guid: 4d41f6fef29a0dc4daf1362296fbd86a, type: 3}
+    Normal: {fileID: 2800000, guid: df45c53924e3eb54bbbe04207a6babc7, type: 3}
+    Mask: {fileID: 2800000, guid: eb0fa147e7d052d4185641eb1d6bb2cb, type: 3}
+    Regions: {fileID: 2800000, guid: 084d82fb48198b84d816ec869ae4a432, type: 3}
+    Emission: {fileID: 2800000, guid: 5136b78f038d49f4d811bc7f52be9a3d, type: 3}
+    Clouds: {fileID: 2800000, guid: 9ebf3e63952284c4aac23b70e959b156, type: 3}
+  _low:
+    Albedo: {fileID: 2800000, guid: 2f7c16db749d6a148a345173330dbb43, type: 3}
+    Normal: {fileID: 2800000, guid: ab585bb76d7aab64aba8362e02944f57, type: 3}
+    Mask: {fileID: 2800000, guid: 1f43143328bdbef46974b0e91490ee97, type: 3}
+    Regions: {fileID: 2800000, guid: 084d82fb48198b84d816ec869ae4a432, type: 3}
+    Emission: {fileID: 2800000, guid: 4562d954990e3ac4088d50e84560f47d, type: 3}
+    Clouds: {fileID: 2800000, guid: 0c87e6db1f2c1a54cb6a500a7fc570b2, type: 3}
+  _firstRegionId: 1
+  _regionValueStep: 40
+  _emission: {r: 1.6, g: 1.6, b: 1.6, a: 1}
+  _mapDayEmission: 0.3
+  _mapRelief: 0.8
+  _cutsceneRelief: 1
+  _seaLift: 1.8
+  _mapCloudShare: 0.55
+  _cutsceneCloudShare: 0.75
+  _cloudWisps: 0.3
+  _grain: 0.12
+  _colonyLights: 1
+  _regionLift: 0.22
+  _regionDim: 0.25
+  _regionRim: 0.6
+  _lockedShare: 0.45

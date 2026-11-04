@@ -18,10 +18,10 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: aeeee776a068131478f1d0fdb3e7c295, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
-  _scale: 1
+  _scale: 1.06
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 1.572517
+  _height: 1.5570135
   _lodScreenHeight: 0.02
   _upperBodyBone: 
   _deathFade: {x: 0, y: 0}

@@ -207,6 +207,7 @@ MonoBehaviour:
     MapSeaGlint: 0.3
     HighOctaves: 6
     LowOctaves: 3
+  _planetTextures: {fileID: 11400000, guid: 35511592ea731f04e8554f1aaa674d7a, type: 2}
   _spaceStyle:
     NebulaA: {r: 0.32, g: 0.12, b: 0.42, a: 1}
     NebulaB: {r: 0.06, g: 0.32, b: 0.42, a: 1}

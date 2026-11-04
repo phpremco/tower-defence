@@ -240,6 +240,21 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 ---
 
+## 9. VFX-texturen (projectielen, mondingsvuur, explosies)
+
+Ronde 20 (2026-11-04, `Tools/Blender/build_vfx.py`): texturen in `ArtSource/Exports/VFX/` (+ `Low/`), indeling per
+textuur in `VFX_report.json` en `ArtSource/README.md`. Nog niet in het spel: de Unity-VFX-ronde bouwt de shaders
+(additief met frame blending en soft particles, six-way rook, vervorming) en de particle-opzet.
+
+| Status | Prio | Set | Inhoud | Extra |
+| --- | --- | --- | --- | --- |
+| ◐ | P1 | **Explosies** | `Explosion_Small/Large/Boss` (Mantaflow vuur + rook, six-way lightmaps, 8 x 8 flipbooks) | Klein: kanon, mijnen; groot: mortier, raket, vat, lavabal, toren kapot; baas: drie opeenvolgende ontploffingen |
+| ◐ | P1 | **Rook en stof** | `Smoke_Puff`, `Smoke_Linger`, `Dust_Burst` (sims, six-way) | Donker en licht kleurbaar per levelpalet; stof voor inslagen op de grond |
+| ◐ | P1 | **Projectielen** | `Bolt_Core` (afgeronde staaf), `Trail_Ribbon` + `Trail_Noise`, `Plasma_Bolt`, `Rocket_Exhaust` + `Smoke_Trail`, `Beam_Core` + `Beam_Noise`, `Tesla_Arcs` | Kern wit, gloed in de torenkleur; bogen en stralen beginnen bij de loop |
+| ◐ | P1 | **Mondingsvuur** | `Muzzle_Side` en `Muzzle_Front`: geweer, kanon, flak, rail/plasma, elk 4 varianten | 1-3 frames per schot |
+| ◐ | P2 | **Inslagen** | `Spark_Burst`, `Spark_Streaks`, `Debris_Shards`, `Energy_Impact`, `Cryo_Burst`, `Acid_Splash` | Vonken en scherven ook als losse particles |
+| ◐ | P2 | **Ringen, vervorming, decals** | `Shockwave_Ring`, `Shockwave_Distort`, `HeatHaze_Distort`, `Scorch_Decal` (4 varianten met dovende sintels) | Lokale rimpel in plaats van schermschok |
+
 ## Budget per soort
 
 | Soort | Driehoeken (High) | LOD1 / Low | Botten | Textures |

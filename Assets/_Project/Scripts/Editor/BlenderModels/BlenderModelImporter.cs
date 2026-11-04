@@ -24,6 +24,24 @@ namespace Game.Editor
         private const string LodSuffix = "_LOD1";
         private const string FarSuffix = "_Far";
         private const string FloraMarker = "Flora_";
+        private const int PlanetAnisoLevel = 8;
+        private const int PlanetMapSize = 4096;
+        private const int PlanetLowMapSize = 2048;
+
+        // Hero assets whose maps are painted larger than the usual 1024 (High, Low), by export folder.
+        private static readonly Dictionary<string, (int High, int Low)> MapSizeOverrides = new Dictionary<string, (int High, int Low)>
+        {
+            { BlenderStoryCatalog.Mothership, (2048, 1024) },
+            { VossAsset, (2048, 1024) },
+        };
+
+        // Exports whose shape keys (Voss's Smile, Frown, Blink, JawOpen) are imported as blend shapes.
+        private static readonly HashSet<string> BlendShapeAssets = new HashSet<string> { VossAsset };
+
+        private const string VossAsset = "Voss";
+
+        // Shape-key channels come as extra takes "Key|Rig|Clip" beside the bone takes "Rig|Clip" of the same clip.
+        private const string ShapeKeyTakePrefix = "Key|";
 
         // Bumped whenever these settings change, so Unity reimports the models with them.
         public override uint GetVersion() => 2;
@@ -37,6 +55,17 @@ namespace Game.Editor
             !path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderColonyCatalog.ResourceNodeAsset + "/", StringComparison.Ordinal);
 
         private static bool IsTiling(string path) => IsEnvironment(path) && path.Contains("/" + BlenderSync.TilingFolder + "/");
+
+        // A planet painted in Blender (texture-only export): equirectangular maps that wrap round in longitude.
+        private static bool IsPlanet(string path) => path.StartsWith(BlenderSync.TargetRoot + "/" + BlenderPlanetCatalog.FolderPrefix, StringComparison.Ordinal);
+
+        // The export folder an asset path lies in (the first folder under the target root).
+        private static string ExportFolder(string path)
+        {
+            string rest = path.Substring(BlenderSync.TargetRoot.Length + 1);
+            int slash = rest.IndexOf('/');
+            return slash >= 0 ? rest.Substring(0, slash) : rest;
+        }
 
         private void OnPreprocessModel()
         {
@@ -53,7 +82,7 @@ namespace Game.Editor
             importer.importCameras = false;
             importer.importLights = false;
             importer.importVisibility = false;
-            importer.importBlendShapes = false;
+            importer.importBlendShapes = BlendShapeAssets.Contains(ExportFolder(assetPath));
             importer.materialImportMode = ModelImporterMaterialImportMode.None;
             importer.importNormals = ModelImporterNormals.Import;
             importer.importTangents = ModelImporterTangents.CalculateMikk;
@@ -133,8 +162,11 @@ namespace Game.Editor
             }
 
             var importer = (ModelImporter)assetImporter;
-            ModelImporterClipAnimation[] takes = importer.defaultClipAnimations;
-            var clips = new List<ModelImporterClipAnimation>(takes.Length);
+            // The bone take of a clip wins over its shape-key twin: the clips pose the bones (Talk and Blink work through them).
+            var takes = new List<ModelImporterClipAnimation>();
+            takes.AddRange(Array.FindAll(importer.defaultClipAnimations, take => !IsShapeKeyTake(take)));
+            takes.AddRange(Array.FindAll(importer.defaultClipAnimations, IsShapeKeyTake));
+            var clips = new List<ModelImporterClipAnimation>(takes.Count);
             var names = new HashSet<string>();
             foreach (ModelImporterClipAnimation take in takes)
             {
@@ -156,6 +188,8 @@ namespace Game.Editor
             importer.clipAnimations = clips.ToArray();
         }
 
+        private static bool IsShapeKeyTake(ModelImporterClipAnimation take) => take.takeName.StartsWith(ShapeKeyTakePrefix, StringComparison.Ordinal);
+
         public static string ClipName(string take)
         {
             int bar = take.LastIndexOf('|');
@@ -171,6 +205,12 @@ namespace Game.Editor
 
             var importer = (TextureImporter)assetImporter;
             string file = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            if (IsPlanet(assetPath))
+            {
+                PreprocessPlanetTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             bool detail = assetPath.Contains("/" + BlenderSync.DetailFolder + "/");
             bool tiling = IsTiling(assetPath);
             bool low = assetPath.Contains("/" + BlenderSync.LowFolder + "/");
@@ -179,7 +219,7 @@ namespace Game.Editor
             importer.wrapMode = detail || tiling ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
             // The ground is seen at the camera's slant over the whole screen: tiling sets get the most filtering.
             importer.anisoLevel = tiling ? TilingAnisoLevel : detail ? DetailAnisoLevel : AnisoLevel;
-            importer.maxTextureSize = detail ? DetailMapSize : low ? LowMapSize : FullMapSize;
+            importer.maxTextureSize = detail ? DetailMapSize : MapSize(assetPath, low);
             importer.textureCompression = TextureImporterCompression.CompressedHQ;
             if (file.EndsWith("_Normal", StringComparison.Ordinal))
             {
@@ -195,6 +235,53 @@ namespace Game.Editor
             if (!mask)
             {
                 importer.textureCompression = TextureImporterCompression.Compressed;
+            }
+        }
+
+        private static int MapSize(string path, bool low)
+        {
+            return MapSizeOverrides.TryGetValue(ExportFolder(path), out (int High, int Low) size)
+                ? low ? size.Low : size.High
+                : low ? LowMapSize : FullMapSize;
+        }
+
+        // README round 20: wrap round in longitude, clamp at the poles; colour maps sRGB, the rest data; the region ids
+        // exact (point filter, no mips, uncompressed) so a border never blends two ids into a third.
+        private static void PreprocessPlanetTexture(TextureImporter importer, string file, bool low)
+        {
+            importer.mipmapEnabled = true;
+            importer.alphaIsTransparency = false;
+            importer.wrapModeU = TextureWrapMode.Repeat;
+            importer.wrapModeV = TextureWrapMode.Clamp;
+            importer.wrapModeW = TextureWrapMode.Clamp;
+            importer.anisoLevel = PlanetAnisoLevel;
+            importer.filterMode = FilterMode.Trilinear;
+            importer.maxTextureSize = low ? PlanetLowMapSize : PlanetMapSize;
+            importer.textureCompression = TextureImporterCompression.CompressedHQ;
+            importer.alphaSource = TextureImporterAlphaSource.None;
+            if (file.EndsWith("_Normal", StringComparison.Ordinal))
+            {
+                importer.textureType = TextureImporterType.NormalMap;
+                importer.sRGBTexture = false;
+                return;
+            }
+
+            importer.textureType = TextureImporterType.Default;
+            bool colour = file.EndsWith("_Albedo", StringComparison.Ordinal) || file.EndsWith("_Emission", StringComparison.Ordinal);
+            importer.sRGBTexture = colour;
+            if (file.EndsWith("_Regions", StringComparison.Ordinal))
+            {
+                importer.filterMode = FilterMode.Point;
+                importer.mipmapEnabled = false;
+                importer.anisoLevel = 0;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                return;
+            }
+
+            // The cloud shader reads the cover from alpha, the mask carries the land ids there.
+            if (file.EndsWith("_Clouds", StringComparison.Ordinal) || file.EndsWith("_Mask", StringComparison.Ordinal))
+            {
+                importer.alphaSource = TextureImporterAlphaSource.FromInput;
             }
         }
     }

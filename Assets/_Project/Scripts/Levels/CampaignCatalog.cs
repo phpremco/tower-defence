@@ -46,6 +46,8 @@ namespace Game.Levels
         [SerializeField] private Texture2D[] _globeClouds = new Texture2D[0];
         [Tooltip("How S-69-CRYS looks from space: the cutscene planets and the map globe wear the same style.")]
         [SerializeField] private PlanetStyle _planetStyle = PlanetStyle.Crys();
+        [Tooltip("S-69-CRYS painted in Blender; when complete, the map globe and the cutscene wear it instead of the baked maps.")]
+        [SerializeField] private PlanetTextureSet _planetTextures;
         [Tooltip("Deep space behind the planet: galaxy band, nebula, stars, the sun and the rim light for ships.")]
         [SerializeField] private SpaceStyle _spaceStyle = new SpaceStyle();
 
@@ -63,6 +65,9 @@ namespace Game.Levels
         public Texture2D[] GlobeClouds => _globeClouds;
         public PlanetStyle PlanetStyle => _planetStyle ?? (_planetStyle = PlanetStyle.Crys());
         public SpaceStyle SpaceStyle => _spaceStyle ?? (_spaceStyle = new SpaceStyle());
+
+        /// <summary>The painted planet, or null when there is none or it misses maps.</summary>
+        public PlanetTextureSet PlanetTextures => _planetTextures != null && _planetTextures.IsComplete ? _planetTextures : null;
 
         /// <summary>True when the generator baked every map of the planet.</summary>
         public bool HasGlobeMaps => _globeAlbedo != null && _globeNormal != null && _globeGloss != null && _globeLights != null && _globeClouds.Length > 0;

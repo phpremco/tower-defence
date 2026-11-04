@@ -23,6 +23,14 @@ namespace Game.UI
         private const float EnginePulse = 0.08f;
         private const string ShipBay = "Bay";
         private const string ShipNozzle = "Nozzle";
+        private const string ShipLight = "Light";
+        private const float BayLightRange = 4f;
+        private const float BayLightRest = 0.6f;
+        private const float BayLightPeak = 5f;
+        // Inside the bay, behind its mouth (the Bay socket's +Z points down out of it).
+        private const float BayLightInset = 0.6f;
+        private const float RunningLightSize = 0.55f;
+        private const float RunningLightDim = 0.08f;
         private static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
         private static readonly Vector3 ShipStart = new Vector3(-9f, 1f, 30f);
         private static readonly Vector3 ShipVelocity = new Vector3(0.16f, -0.01f, 0.03f);
@@ -31,8 +39,27 @@ namespace Game.UI
         private static readonly Vector3 SiteFacing = new Vector3(0f, 1f, -0.35f);
         private static readonly Vector3 SunDirection = new Vector3(0.35f, -0.75f, 0.55f);
         private static readonly Color EngineColour = new Color(0.55f, 0.8f, 1f);
+        private static readonly Color BayColour = new Color(0.65f, 0.85f, 1f);
+
+        // README round 19, sockets Light_1..10: boom tips white, dorsal beacon yellow, nose white, bay corners amber,
+        // radiator tips cyan, engine block white. Each blinks in its own rhythm: (colour, period s, phase, lit share).
+        private static readonly (Color Colour, float Period, float Phase, float Lit)[] RunningLights =
+        {
+            (new Color(1f, 1f, 1f) * 4f, 1.6f, 0f, 0.08f),
+            (new Color(1f, 1f, 1f) * 4f, 1.6f, 0.5f, 0.08f),
+            (new Color(1f, 0.8f, 0.3f) * 3f, 1.1f, 0.2f, 0.45f),
+            (new Color(1f, 1f, 1f) * 4f, 2.4f, 0.3f, 0.06f),
+            (new Color(1f, 0.6f, 0.2f) * 2.5f, 0.9f, 0f, 0.5f),
+            (new Color(1f, 0.6f, 0.2f) * 2.5f, 0.9f, 0.5f, 0.5f),
+            (new Color(0.4f, 1f, 1f) * 2f, 3f, 0f, 0.85f),
+            (new Color(0.4f, 1f, 1f) * 2f, 3f, 0.4f, 0.85f),
+            (new Color(1f, 1f, 1f) * 4f, 2f, 0.65f, 0.07f),
+            (new Color(1f, 1f, 1f) * 4f, 2f, 0.15f, 0.07f),
+        };
 
         private Transform[] _engineGlows = new Transform[0];
+        private Transform[] _runningLights = new Transform[0];
+        private Light _bayLight;
         private VisualTheme _theme;
         private CutsceneContext _context;
         private PlanetBody _planet;
@@ -81,6 +108,7 @@ namespace Game.UI
             }
 
             _capsules.Pose(time);
+            PoseLights(time, view);
         }
 
         public void Exit()
@@ -92,6 +120,23 @@ namespace Game.UI
             origin = Vector3.zero;
             facing = Quaternion.identity;
             return false;
+        }
+
+        // The bay light swells with each capsule drop; the running lights face the camera and blink in their rhythms.
+        private void PoseLights(float time, Transform view)
+        {
+            if (_bayLight != null)
+            {
+                _bayLight.intensity = Mathf.Lerp(BayLightRest, BayLightPeak, _capsules.BayGlow(time));
+            }
+
+            for (int i = 0; i < _runningLights.Length; i++)
+            {
+                var blink = RunningLights[i];
+                bool on = Mathf.Repeat(time / blink.Period + blink.Phase, 1f) < blink.Lit;
+                _runningLights[i].rotation = view.rotation;
+                _runningLights[i].localScale = Vector3.one * (RunningLightSize * (on ? 1f : RunningLightDim));
+            }
         }
 
         private static Vector3 ShipAt(float time) => ShipStart + ShipVelocity * time;
@@ -111,7 +156,10 @@ namespace Game.UI
             {
                 // The imported ship turns its own habitat ring (Spin); the capsules leave from its Bay, the glow sits at its nozzles.
                 _shipArt = ArtModel.CreateSampled(_ship, art, ownMaterial: false);
-                _bay = Local(_shipArt.Find(ShipBay), _bay);
+                Transform bay = _shipArt.Find(ShipBay);
+                _bay = Local(bay, _bay);
+                BuildBayLight(bay);
+                BuildRunningLights(_shipArt.Numbered(ShipLight));
                 Transform[] found = _shipArt.Numbered(ShipNozzle);
                 if (found.Length > 0)
                 {
@@ -152,6 +200,36 @@ namespace Game.UI
             light.intensity = EngineLight;
             light.range = EngineRange;
             light.shadows = LightShadows.None;
+        }
+
+        private void BuildBayLight(Transform bay)
+        {
+            if (bay == null)
+            {
+                return;
+            }
+
+            var go = new GameObject("BayLight");
+            go.transform.SetParent(_ship, false);
+            go.transform.localPosition = _ship.InverseTransformPoint(bay.position - bay.forward * BayLightInset);
+            _bayLight = go.AddComponent<Light>();
+            _bayLight.type = LightType.Point;
+            _bayLight.color = BayColour;
+            _bayLight.intensity = BayLightRest;
+            _bayLight.range = BayLightRange;
+            _bayLight.shadows = LightShadows.None;
+        }
+
+        private void BuildRunningLights(Transform[] sockets)
+        {
+            int count = Mathf.Min(sockets.Length, RunningLights.Length);
+            _runningLights = new Transform[count];
+            for (int i = 0; i < count; i++)
+            {
+                Transform glow = SpaceKit.Glow(_ship, $"RunningLight{i + 1}", RunningLights[i].Colour);
+                glow.localPosition = Local(sockets[i], Vector3.zero);
+                _runningLights[i] = glow;
+            }
         }
 
         // A socket of the imported ship in the ship's own space (where the procedural parts are given), or the fallback.

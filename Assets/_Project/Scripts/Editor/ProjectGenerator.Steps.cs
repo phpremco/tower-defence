@@ -57,6 +57,8 @@ namespace Game.Editor
             new GeneratorStep("Campaign", c => c.Campaign = CreateCampaign(c)),
             new GeneratorStep("Waves", c => GenerateCampaignWaves(c.Campaign, c.Upgrades, c.Unlocks, c.Bestiary)),
             new GeneratorStep("Globe", c => BakeGlobe(c.Campaign)),
+            // S-69-CRYS painted in Blender: worn by the map globe and the cutscene planets instead of the baked maps.
+            new GeneratorStep("Planet art", _ => BlenderPlanetBuilder.Apply(BlenderPlanetBuilder.SyncAndBuild())),
             new GeneratorStep("Menu stage", c => CreateMenuStage(c.Levels, c.Bestiary)),
             new GeneratorStep("Story", c => CreateStory(c.Campaign)),
             new GeneratorStep("Level story", GenerateLevelStory),
