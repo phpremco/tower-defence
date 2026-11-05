@@ -728,3 +728,19 @@ Wat Unity nu met code-plaatsing oplost en beter uit Blender kan komen:
 | Scheurlijn | Getekend met de geverfde gloei-kling (`MarkerKind.GlowBlade`) als oranje naad. Een eigen scheurstrook (donkere spleet, gloeiende kern, opgeworpen randbrokken, tegelbaar langs een pad) zou er als echte grondscheur uitzien |
 | Wake | Onder water toont Unity een gloeipoel plus gegenereerde belletjes; een bel-/kolk-sheet per vloeistof (drijfzand: zand dat in een trechter zakt) ontbreekt |
 | Geworpen toren | Geen eigen clip: de toren wordt als geheel opgetild, gekanteld en weer rechtgezet (TowerDisplacementView). Een "ontworteld"-pose (losgerukte voet, brokken) per toren zou het leesbaarder maken |
+
+### Ronde 4b Unity (Cinder Matriarch en Frost Warden speelbaar, 2026-11-05)
+
+Wat nu met bestaande assets of code-plaatsing is opgelost en beter uit Blender kan komen:
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Frost Warden clips | De oudere clips (Walk, Idle, Hit, Death, Enrage, FreezePulse, WalkEnraged) zetten de botten `Armour_1..8` op schaal 0; alleen de ronde-28-clips hebben ze op 1. Unity houdt de platen nu zelf op schaal 1 zolang het pantser er is (`BoneScaleView`). Beter: in Blender die keys uit de oude acties halen of op 1 zetten |
+| Lavaspoor | Geen eigen strook: elk spoorstukje is een geverfde gloeipoel die in 6 s afkoelt (`LavaTrailView`). Een tegelbare lavaspoor-decal (gestold korstje met gloeiende scheuren, afkoelvarianten) zou echt als spoor lezen |
+| Hittelijn | Getekend met de gloei-kling (`CrackStyle.Heat`), dun oranje. Een eigen "hittedraad"-sheet (trillende lucht, vonkjes) mag |
+| Rijp/vorst voor de Warden | Een bleke gloeipoel met nevel 2,2 m voor hem uit. Een vorstdecal (ijskristallen die over de grond kruipen) ontbreekt |
+| IJsblok-poort | Een kubus in het Blender-ijsmateriaal van de vloeistoffen (`Liquid_Ice`) rond de poort; leest als glas. Een eigen ijsblok-mesh (ruwe randen, ingesloten poortdelen, scheuren) en scherven-VFX bij het breken ontbreken |
+| Warme gloed / blauwe waas op een toren | Gloeipoel + puntlicht + nevel (`TowerAuraView`); een eigen "verhit"-overlay op het torenmateriaal zou sterker zijn |
+| Cinder Matriarch in de Codex | Op het weergavepodium zweeft ze boven de schijf (pivot onder het borststuk, lange poten); de podiumcamera moet haar lager zetten of de pivot klopt niet met de voeten |
+| Cinder Matriarch poten | Haar poten spreiden ~4,6 m: op een vol veld (torens 2,5 cel uit elkaar) raken ze zichtbaar buurtorens, ook al blijft haar lijf er vrij van. Smallere loop-houding tijdens Hunt_Stride zou helpen |
+| CinderEgg | Geïmporteerd en gebruikt (Idle, Hatch op frame 32, Burst als dood). Geen geluid van zichzelf: het borrelt met de lava-lus |

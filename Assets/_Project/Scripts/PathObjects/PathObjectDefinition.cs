@@ -5,7 +5,7 @@ namespace Game.PathObjects
 {
     /// <summary>Data of one purchasable object that is placed on or beside the road: mine, slow field, lava ball and so on.</summary>
     [CreateAssetMenu(menuName = "Game/Path Object Definition", fileName = "PathObjectDefinition")]
-    public sealed class PathObjectDefinition : ScriptableObject
+    public sealed class PathObjectDefinition : ScriptableObject, Game.Combat.IBurningSource
     {
         [SerializeField] private string _displayName = "Path object";
         [SerializeField] private PathObjectKind _kind;
@@ -23,6 +23,9 @@ namespace Game.PathObjects
         [SerializeField] [Min(0f)] private float _damage = 100f;
 
         [SerializeField] [Range(0.1f, 1f)] private float _slowFactor = 0.5f;
+
+        [Tooltip("It burns what it hits (a lava ball): ice armour cracks under it.")]
+        [SerializeField] private bool _burns;
 
         /// <summary>Movement speed of a roller, in cells per second.</summary>
         [SerializeField] [Min(0f)] private float _speed = 2f;
@@ -52,6 +55,7 @@ namespace Game.PathObjects
         public float TriggerRadius => _triggerRadius;
         public float Damage => _damage;
         public float SlowFactor => _slowFactor;
+        public bool Burns => _burns;
         public float Speed => _speed;
         public float Lifetime => _lifetime;
         public Color Color => _color;

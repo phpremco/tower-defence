@@ -10,12 +10,12 @@ using UnityEngine;
 namespace Game.Bosses
 {
     /// <summary>
-    /// Runs a continent boss from its <see cref="BossDefinition"/>: its entrance (a crack to the colony rig that it smashes),
-    /// its signature (Burrow: at each threshold it dives under, runs a crack line round towers and gates to the tower that
-    /// hurt it most and throws that tower), and the shared framework every boss uses: walking back to the road round
-    /// towers, climbing rocks, gates and the base (a gate sags and takes its weight), breaking fragile decoration, and
-    /// diving into pools within the rules. While it acts the creature is directed and its own walk waits; between acts it
-    /// walks the road like any creature. Logic only: it moves the creature and tells the views what to show.
+    /// The body every continent boss shares (Docs/BOSSES.md): its entrance out of a pool, walking back to the road round
+    /// towers, climbing rocks, gates and the base (a gate sags, takes its weight and lets the walkers follow over it),
+    /// breaking fragile decoration, and diving into pools within the rules. Its one signature mechanic is a separate
+    /// <see cref="IBossSignature"/> chosen from its data; the brain asks it each step on the road whether it wants to act.
+    /// While it acts the creature is directed and its own walk waits; between acts it walks the road as any creature.
+    /// Logic only: it moves the creature and tells the views what to show.
     /// </summary>
     [RequireComponent(typeof(Enemy))]
     public sealed class ContinentBossBrain : MonoBehaviour
@@ -23,79 +23,95 @@ namespace Game.Bosses
         private const float BreakEverySeconds = 0.2f;
         private const float BodyRadiusPerScale = 0.9f;
         private const float DiveCheckSeconds = 0.4f;
-        private const float EntranceCrackCells = 7f;
-        private const float RevealLead = 2.5f;
-        private const float MinTravelMargin = 0.5f;
         private const float RoarRate = 1.2f;
-        private const float StunWobbleDegrees = 9f;
-        private const float StunWobbleSpeed = 7f;
-        private const float StunIdleRate = 0.4f;
         private const float GateLoopRate = 0.35f;
         private const float HeightFollow = 6f;
         private const float MaxSlopeTilt = 0.6f;
-        private const float RoadSurfaceAhead = 7f;
-        private const float DestinationSearchCells = 4f;
-        private const float ThrowBurstRadius = 1.4f;
         private const float BreakoutBurstRadius = 1.8f;
         private const float DebrisBurstRadius = 0.6f;
-        private const float RumbleRise = 1.5f;
         private const int MaxReplans = 4;
 
         // Where it comes out of a pool: the bank nearest the road weighs this much more than the far side of the pool.
         private const float RoadPull = 4f;
         private const float RefreshSeconds = 0.5f;
 
-        // README round 28: what the throw flings stands about this far (model units) to the right of the hole.
-        private const float ThrowSideCells = 1f;
+        // A trip from one pool to another swims at most this many times its own speed, so it never flashes across the map.
+        private const float ShortcutSpeedUp = 2f;
+
+        // Before it rises out of its pool the surface churns this long: the warning.
+        private const float StirSeconds = 1.6f;
+
+        // A bank where its body would come up over a tower loses this much against one where it would not.
+        private const float BodyOverlapCost = 40f;
+        private const int EdgeCells = 2;
+        private static readonly Vector2Int NoCell = new Vector2Int(-1, -1);
+
+        // A boss rising out of a pool takes one that joins the road no later than this share of the way to the base.
+        private const float MaxEntranceRoadShare = 0.5f;
+
         private static readonly Color CrystalShards = new Color(0.7f, 0.85f, 1f);
-        private static readonly Color Earth = new Color(1f, 0.55f, 0.25f);
         private static readonly Color SandSplash = new Color(0.85f, 0.72f, 0.45f);
         private static readonly Color WaterSplash = new Color(0.55f, 0.85f, 1f);
-        private static readonly Color UnderGlow = new Color(1f, 0.35f, 0.6f, 0.8f);
+        private static readonly Color LavaSplash = new Color(1f, 0.45f, 0.12f);
+        private static readonly Color IceSplash = new Color(0.85f, 0.95f, 1f);
         private static readonly Color Bubbles = new Color(0.85f, 0.9f, 1f, 0.7f);
-        private static readonly float[] Turns = { 0f, 25f, -25f, 50f, -50f, 80f, -80f, 120f, -120f, 180f };
 
         private readonly List<Vector3> _route = new List<Vector3>(64);
-        private readonly List<Vector3> _crack = new List<Vector3>(64);
         private readonly DamageTally<Tower> _tally = new DamageTally<Tower>();
-        private readonly List<Tower> _thrown = new List<Tower>();
+        private readonly BossRecord _record = new BossRecord();
         private BossField _field;
         private Enemy _enemy;
         private EnemyView _view;
         private BossDefinition _boss;
-        private ThresholdTracker _burrows;
+        private IBossSignature _signature;
+        private BossSignature _signatureKind = (BossSignature)(-1);
         private PoolDiveRules _dives;
         private TargetRingView _ring;
         private WakeView _wake;
         private float _sinceBreak;
         private float _sinceDiveCheck;
-        private bool _struck;
-        private bool _enraged;
         private bool _rocksClosed;
         private Coroutine _life;
 
         /// <summary>What it is doing right now, for probes and tests.</summary>
-        public string State { get; private set; } = "Idle";
+        public string State { get; internal set; } = "Idle";
+
+        /// <summary>What it did in this fight.</summary>
+        public BossRecord Record => _record;
 
         /// <summary>How many times it has gone under at a threshold.</summary>
-        public int Burrows { get; private set; }
+        public int Burrows => _record.Burrows;
 
         /// <summary>How many times it hid in a pool.</summary>
-        public int Dives { get; private set; }
+        public int Dives => _record.Dives;
 
         /// <summary>How many rocks, gates or base roofs it climbed.</summary>
-        public int Climbs { get; private set; }
+        public int Climbs => _record.Climbs;
 
         /// <summary>Every tower it has thrown, in order.</summary>
-        public IReadOnlyList<Tower> Thrown => _thrown;
+        public IReadOnlyList<Tower> Thrown => _record.Thrown;
 
         /// <summary>True while it stands on a gate or the base roof (its footprint overlaps the structure by design).</summary>
-        public bool OnStructure { get; private set; }
+        public bool OnStructure { get; internal set; }
 
         /// <summary>True while it is under the ground or a liquid.</summary>
         public bool Hidden => _enemy != null && _enemy.IsConcealed;
 
         public BossDefinition Boss => _boss;
+
+        /// <summary>Its signature mechanic, for the tests.</summary>
+        public IBossSignature Signature => _signature;
+
+        internal BossField Field => _field;
+        internal Enemy Enemy => _enemy;
+        internal EnemyView View => _view;
+        internal DamageTally<Tower> Tally => _tally;
+        internal TargetRingView Ring => _ring;
+        internal bool Alive => _enemy != null && _enemy.IsAlive;
+        internal float Scale => _view != null ? _view.ModelScale : 1f;
+
+        /// <summary>Half the width of its body, legs included, in world units (its data).</summary>
+        internal float BodyHalfWidth => _boss.BodyHalfWidth;
 
         public void Initialize(BossField field)
         {
@@ -103,9 +119,8 @@ namespace Game.Bosses
             _enemy = GetComponent<Enemy>();
             _view = GetComponent<EnemyView>();
             _ring = TargetRingView.Create(field.Effects);
-            _wake = WakeView.Create(field.Effects, UnderGlow, Bubbles);
+            _wake = WakeView.Create(field.Effects, new DivePower().WakeGlow, Bubbles);
             _enemy.DamagedBy += OnDamaged;
-            _enemy.StruckWhileHidden += OnStruckWhileHidden;
             _enemy.Deactivated += OnDeactivated;
         }
 
@@ -113,14 +128,18 @@ namespace Game.Bosses
         public void Begin()
         {
             _boss = _enemy.Definition.Boss;
-            _burrows = new ThresholdTracker(_boss.Signature == BossSignature.Burrow ? _boss.Burrow.Thresholds : new float[0]);
+            if (_signature == null || _signatureKind != _boss.Signature)
+            {
+                _signature = BossSignatures.For(_boss.Signature, this);
+                _signatureKind = _boss.Signature;
+            }
+
             _dives = new PoolDiveRules(_boss.Dive.MaxSeconds);
+            _wake.SetGlow(_boss.Dive.WakeGlow);
             _tally.Clear();
-            _thrown.Clear();
-            Burrows = Dives = Climbs = 0;
-            _struck = false;
-            _enraged = false;
+            _record.Clear();
             OnStructure = false;
+            _signature.Begin();
             if (_life != null)
             {
                 StopCoroutine(_life);
@@ -134,7 +153,6 @@ namespace Game.Bosses
             if (_enemy != null)
             {
                 _enemy.DamagedBy -= OnDamaged;
-                _enemy.StruckWhileHidden -= OnStruckWhileHidden;
                 _enemy.Deactivated -= OnDeactivated;
             }
         }
@@ -147,8 +165,6 @@ namespace Game.Bosses
             }
         }
 
-        private void OnStruckWhileHidden(Enemy enemy, float amount) => _struck = true;
-
         private void OnDeactivated(Enemy enemy)
         {
             if (_life != null)
@@ -160,33 +176,53 @@ namespace Game.Bosses
             _ring.Hide();
             _wake.Show(false, transform.position);
             _field.Context.BossRumble = 0f;
+            _signature?.End();
             State = "Gone";
         }
 
-        private bool Alive => _enemy != null && _enemy.IsAlive;
-
-        private float Scale => _view != null ? _view.ModelScale : 1f;
+        private void Update()
+        {
+            if (_life != null && Alive)
+            {
+                _signature.Always(Time.deltaTime);
+            }
+        }
 
         private IEnumerator Life()
         {
             if (_boss.Arrival == BossArrival.ColonyRig && _field.HasRig)
             {
-                yield return Entrance();
+                IEnumerator entrance = _signature.Entrance();
+                if (entrance != null)
+                {
+                    yield return entrance;
+                }
+            }
+            else if (_boss.Arrival == BossArrival.Pool)
+            {
+                bool rose = false;
+                yield return RiseFromPool(value => rose = value);
+                if (rose)
+                {
+                    // Out of its pool it may set off on its mechanic at once (a hunt); else it makes for the road.
+                    yield return _signature.NextAct() ?? BackToRoad();
+                }
             }
 
             while (Alive)
             {
                 State = "Road";
-                if (_burrows.TryCross(_enemy.Health.Fraction))
+                IEnumerator act = _signature.NextAct();
+                if (act != null)
                 {
-                    yield return Burrow(true);
+                    yield return act;
                     continue;
                 }
 
                 IStructure ledge = StructureAhead();
                 if (ledge != null)
                 {
-                    yield return ClimbStructure(ledge);
+                    yield return _signature.AtStructure(ledge) ?? ClimbStructure(ledge);
                     continue;
                 }
 
@@ -196,311 +232,15 @@ namespace Game.Bosses
                     continue;
                 }
 
-                CheckRage();
+                _signature.OnRoad(Time.deltaTime);
                 BreakDecorNear(Time.deltaTime);
                 yield return null;
             }
         }
 
-        // ---------------------------------------------------------------- entrance
+        // ---------------------------------------------------------------- shared moments
 
-        // The ground cracks open along the field's edge towards the colony rig; the boss breaks out under it, flings the
-        // derrick over and roars, then makes for the road.
-        private IEnumerator Entrance()
-        {
-            State = "Entrance";
-            _enemy.SetDirected(true);
-            _enemy.SetConcealed(true, 0f);
-            _field.Refresh();
-            Vector3 rig = _field.RigPosition;
-            Vector3 towards = Flat(OffRoadRoute.NearestRoadCellWorld(_field.Level, rig) - rig);
-            BossClip throwClip = BossClip.Of(_view, ModelClipRole.SurfaceThrow, _boss.MechanicClipRate);
-            Vector3 inward = towards;
-            Vector3 hole = rig;
-            Vector3 pivot = rig;
-            // It comes up facing the field, the rig on its right where the throw lands; it turns until its body has room.
-            foreach (float turn in Turns)
-            {
-                inward = Quaternion.Euler(0f, turn, 0f) * towards;
-                hole = rig - Vector3.Cross(Vector3.up, inward) * (ThrowSideCells * Scale);
-                pivot = hole - inward * throwClip.Anchor;
-                if (BossRoutes.ClearOfFootprints(_field, pivot, pivot + inward * throwClip.Forward))
-                {
-                    break;
-                }
-            }
-
-            Vector3 origin = EntranceOrigin(rig);
-            _crack.Clear();
-            _crack.Add(origin);
-            _crack.Add(hole);
-            _route.Clear();
-            _route.Add(origin);
-            _route.Add(pivot);
-            _enemy.Place(origin, Flat(pivot - origin));
-            yield return TravelUnder(_crack, _route, null, false);
-            yield return Breakout(pivot, inward, null, true);
-            yield return Burrow(false);
-        }
-
-        // Where the entrance crack begins: along the field's edge from the rig, on the side that stays outside the field.
-        private Vector3 EntranceOrigin(Vector3 rig)
-        {
-            Vector3 outward = rig;
-            outward.y = 0f;
-            Vector3 along = Vector3.Cross(Vector3.up, outward.normalized) * (EntranceCrackCells * _field.Grid.CellSize);
-            Vector2 half = _field.Level.WorldSize * 0.5f;
-            Vector3 first = rig + along;
-            return ColonyRigPlacement.OutsideField(first, half, 0f) ? first : rig - along;
-        }
-
-        // ---------------------------------------------------------------- burrow (Gravemaw's signature)
-
-        // The signature dive at a threshold goes for the tower that hurt it most; the dive after the entrance (not a
-        // signature one) only carries it from the rig to the start of the road, so the fight runs the whole road.
-        private IEnumerator Burrow(bool signature)
-        {
-            State = "Burrow";
-            Burrows += signature ? 1 : 0;
-            _enemy.SetDirected(true);
-            _field.Refresh();
-            Tower target = signature ? _tally.Top(StillStanding) : null;
-            Vector3? destination = signature ? (Vector3?)null : RoadPoint(_boss.Burrow.ReturnToRoadShare);
-            BossClip down = BossClip.Of(_view, ModelClipRole.BurrowDown, _boss.MechanicClipRate);
-            BossClip up = BossClip.Of(_view, ModelClipRole.SurfaceThrow, _boss.MechanicClipRate);
-            if (!PlanBurrow(target, destination, down, up, out Vector3 heading, out Vector3 pivot, out Vector3 forward, out bool throws))
-            {
-                // Nowhere to go under without crossing a structure: it roars and keeps walking.
-                yield return Roar();
-                yield return BackToRoad();
-                yield break;
-            }
-
-            _enemy.Place(transform.position, heading);
-            _view.PlayScripted(ModelClipRole.BurrowDown, down.Rate, true);
-            yield return Wait(down.Moment);
-            Vector3 hole0 = transform.position + heading * down.Anchor;
-            Impact(hole0, BreakoutBurstRadius, Earth);
-            _enemy.SetConcealed(true, 0f);
-            yield return Wait(down.Seconds - down.Moment);
-            _enemy.Place(transform.position + heading * down.Forward, heading);
-            _crack.Insert(0, hole0);
-            _route.Clear();
-            _route.Add(transform.position);
-            for (int i = 2; i < _crack.Count - 1; i++)
-            {
-                _route.Add(_crack[i]);
-            }
-
-            _route.Add(pivot);
-            yield return TravelUnder(_crack, _route, throws ? target : null, signature, signature ? 1f : _boss.Burrow.ReturnSpeedFactor);
-            yield return Breakout(transform.position, _struck ? _enemy.Heading : forward, throws && !_struck ? target : null, false);
-        }
-
-        // A point on the main road, a share of the way from its start.
-        private Vector3 RoadPoint(float share)
-        {
-            Vector2Int[] road = _field.Level.MainRoad;
-            int index = Mathf.Clamp(Mathf.RoundToInt(share * (road.Length - 1)), 0, road.Length - 1);
-            return _field.Level.Road.CentreOf(road[index]);
-        }
-
-        private bool StillStanding(Tower tower) => tower != null && tower.IsAlive && !tower.IsUpset && _field.Context.Structures.Contains(tower);
-
-        // Which way it dives, where it travels to and where it comes up: beside the target when it can, else down the road.
-        private bool PlanBurrow(Tower target, Vector3? destination, BossClip down, BossClip up, out Vector3 heading, out Vector3 pivot, out Vector3 forward, out bool throws)
-        {
-            heading = pivot = forward = Vector3.zero;
-            throws = false;
-            Vector3 position = transform.position;
-            Vector3 aim = target != null ? Flat(target.Position - position) : destination.HasValue ? Flat(destination.Value - position) : _enemy.Heading;
-            // Of the ways it can dive without its body crossing a structure, it takes the one whose crack line runs the
-            // shortest to where it comes up: a short, direct line reads as "it is coming for that tower".
-            float best = float.PositiveInfinity;
-            var bestCrack = new List<Vector3>();
-            foreach (float turn in Turns)
-            {
-                Vector3 dir = Quaternion.Euler(0f, turn, 0f) * aim;
-                Vector3 start = position + dir * down.Forward;
-                bool inside = _field.Grid.Contains(_field.Grid.WorldToCell(start)) || destination.HasValue;
-                if (!inside || !BossRoutes.ClearOfFootprints(_field, position, start)
-                    || !PlanCrack(target, destination, start, up, out Vector3 end, out Vector3 endForward, out bool hit))
-                {
-                    continue;
-                }
-
-                float length = PathLength(_crack) + down.Forward;
-                if (length < best)
-                {
-                    best = length;
-                    heading = dir;
-                    pivot = end;
-                    forward = endForward;
-                    throws = hit;
-                    bestCrack.Clear();
-                    bestCrack.AddRange(_crack);
-                }
-            }
-
-            _crack.Clear();
-            _crack.AddRange(bestCrack);
-            return !float.IsPositiveInfinity(best);
-        }
-
-        // The crack from where it travels under the ground to where it comes up: beside the target when there is room,
-        // else on the road (ahead of it, or by its destination).
-        private bool PlanCrack(Tower target, Vector3? destination, Vector3 start, BossClip up, out Vector3 pivot, out Vector3 forward, out bool throws)
-        {
-            Vector3 position = transform.position;
-            pivot = forward = Vector3.zero;
-            throws = false;
-            float holeAhead = up.Anchor;
-            if (target != null && BossRoutes.SurfaceBeside(_field, target, start, holeAhead, up.Forward, out Vector3 hole, out pivot, out forward)
-                && BossRoutes.Crack(_field, start, hole, _boss.Burrow.QuicksandFactor, _crack))
-            {
-                throws = true;
-                return true;
-            }
-
-            Vector3 from = destination ?? start;
-            Vector3 along = _field.Level.Road.DirectionAt(_field.Grid.WorldToCell(destination ?? position));
-            along = along.sqrMagnitude > 0.01f ? along : _enemy.Heading;
-            float ahead = (destination.HasValue ? DestinationSearchCells : RoadSurfaceAhead) * _field.Grid.CellSize;
-            if (BossRoutes.SurfaceOnRoad(_field, from, along, ahead, up.Forward, out pivot))
-            {
-                forward = along;
-                Vector3 roadHole = pivot + along * holeAhead;
-                return BossRoutes.Crack(_field, start, roadHole, _boss.Burrow.QuicksandFactor, _crack);
-            }
-
-            return false;
-        }
-
-        // Under the ground along the route, the crack opening ahead of it; the target is ringed for the last seconds; an
-        // enraged boss sends creatures up out of the crack. A mine going off on it ends the trip where it is.
-        private IEnumerator TravelUnder(List<Vector3> crack, List<Vector3> route, Tower target, bool signature, float speedFactor = 1f)
-        {
-            State = signature ? "Burrowed" : "Arriving";
-            _enemy.SetConcealed(true, 0f);
-            _view.LoopScripted(ModelClipRole.BurrowTravel);
-            _struck = false;
-            CrackLineView line = CrackLineView.Create(_field.Effects, _field.Draped(crack));
-            BurrowPower power = _boss.Burrow;
-            float length = PathLength(route);
-            float speed = power.TravelSpeed * speedFactor * (_enraged ? power.EnragedSpeed : 1f);
-            // The warning must have its full time: a short trip goes slower rather than surprising the player.
-            float minimum = power.TelegraphSeconds + MinTravelMargin;
-            if (target != null && length / speed < minimum)
-            {
-                speed = length / minimum;
-            }
-
-            float travelled = 0f;
-            float total = length / Mathf.Max(0.01f, speed);
-            int minions = signature && _enraged ? power.MinionsPerCrack : 0;
-            int sent = 0;
-            bool ringed = false;
-            while (travelled < length && Alive)
-            {
-                if (_struck && signature)
-                {
-                    break;
-                }
-
-                float dt = Time.deltaTime;
-                Vector3 at = PointAlong(route, travelled, out Vector3 dir);
-                float factor = _field.Climb.KindAt(at) == SurfaceKind.Quicksand ? power.QuicksandFactor : 1f;
-                travelled = Mathf.Min(length, travelled + speed * factor * dt);
-                at = PointAlong(route, travelled, out dir);
-                _enemy.Place(OnGround(at), dir);
-                line.OpenTo(Mathf.Min(line.Length, travelled + RevealLead + (line.Length - length)));
-                float remaining = (length - travelled) / Mathf.Max(0.01f, speed);
-                _field.Context.BossRumble = Mathf.Clamp01(RumbleRise * (1f - remaining / Mathf.Max(0.01f, total)) + 0.25f);
-                if (target != null && !ringed && remaining <= power.TelegraphSeconds)
-                {
-                    ringed = true;
-                    _ring.Show(target.Position, remaining);
-                }
-
-                if (sent < minions && travelled >= length * (sent + 1f) / (minions + 1f))
-                {
-                    _field.SpawnFromCrack?.Invoke(power.CrackMinion, BossRoutes.BesideCrack(at, dir, sent % 2 == 0 ? 1 : -1));
-                    sent++;
-                }
-
-                yield return null;
-            }
-
-            line.OpenTo(line.Length);
-            line.Fade();
-        }
-
-        // Up out of the ground: the burst of earth, and at the throw moment the tower beside it (or the rig) is flung.
-        private IEnumerator Breakout(Vector3 pivot, Vector3 forward, Tower target, bool rig)
-        {
-            State = "Surfacing";
-            BossClip up = BossClip.Of(_view, ModelClipRole.SurfaceThrow, _boss.MechanicClipRate);
-            _enemy.Place(OnGround(pivot), forward);
-            _view.PlayScripted(ModelClipRole.SurfaceThrow, up.Rate, true);
-            yield return Wait(up.Cue);
-            Vector3 hole = pivot + forward * up.Anchor;
-            Impact(hole, BreakoutBurstRadius, Earth);
-            _enemy.SetConcealed(false);
-            _field.Context.BossRumble = 0f;
-            yield return Wait(up.Moment - up.Cue);
-            _ring.Hide();
-            Vector3 right = Vector3.Cross(Vector3.up, forward);
-            if (target != null && StillStanding(target))
-            {
-                target.Toss(right, _boss.Burrow.ThrowHealthShare, _boss.Burrow.ThrowSilenceSeconds);
-                _thrown.Add(target);
-                Impact(target.Position, ThrowBurstRadius, Earth);
-                _field.Context.BossImpact.Raise(_boss.ImpactKick);
-            }
-            else if (rig)
-            {
-                _field.Rig?.Smash(hole);
-                Impact(_field.RigPosition, BreakoutBurstRadius, Earth);
-                _field.Context.BossImpact.Raise(_boss.ImpactKick);
-            }
-
-            yield return Wait(up.Seconds - up.Moment);
-            _enemy.Place(OnGround(pivot + forward * up.Forward), forward);
-            _view.ReleaseScript();
-            if (_struck)
-            {
-                yield return Stunned();
-            }
-            else if (rig)
-            {
-                yield return Roar();
-            }
-
-            _struck = false;
-            if (!rig)
-            {
-                yield return BackToRoad();
-            }
-        }
-
-        // A mine went off on it while it burrowed: it stands dazed, in full view and in full reach of every tower.
-        private IEnumerator Stunned()
-        {
-            State = "Stunned";
-            _view.LoopScripted(ModelClipRole.Idle, StunIdleRate);
-            float stunned = 0f;
-            while (stunned < _boss.Burrow.StunSeconds && Alive)
-            {
-                stunned += Time.deltaTime;
-                _view.Tilt = Quaternion.AngleAxis(Mathf.Sin(stunned * StunWobbleSpeed) * StunWobbleDegrees, _enemy.Heading);
-                yield return null;
-            }
-
-            _view.Tilt = Quaternion.identity;
-            _view.ReleaseScript();
-        }
-
-        private IEnumerator Roar()
+        internal IEnumerator Roar()
         {
             BossClip roar = BossClip.Of(_view, ModelClipRole.Roar, RoarRate);
             if (!roar.Exists)
@@ -514,21 +254,52 @@ namespace Game.Bosses
             _view.ReleaseScript();
         }
 
-        // Below its last threshold it rages: faster, and its crack lines send creatures up.
-        private void CheckRage()
+        /// <summary>Plays one of its clips to the end at its mechanic rate, breaking fragile decor while it lasts.</summary>
+        internal IEnumerator PlayClip(ModelClipRole role, float rate)
         {
-            if (_enraged || !_burrows.Done || _enemy.Health.Fraction > _burrows.Last || _boss.Signature != BossSignature.Burrow)
+            BossClip clip = BossClip.Of(_view, role, rate);
+            if (!clip.Exists)
             {
-                return;
+                yield break;
             }
 
-            _enraged = true;
-            _enemy.SetPace(_boss.Burrow.EnragedSpeed);
+            _view.PlayScripted(role, clip.Rate, true);
+            yield return WaitBreaking(clip.Seconds);
+            _view.ReleaseScript();
         }
+
+        internal void Impact(Vector3 at, float radius, Color colour, bool kick = true)
+        {
+            ProjectilePool projectiles = _field.Context.Projectiles;
+            projectiles.PlayBurst(new Vector3(at.x, 0f, at.z), radius, kick ? projectiles.Vfx.Mine : projectiles.Vfx.Death, colour);
+        }
+
+        internal IEnumerator Wait(float seconds)
+        {
+            float waited = 0f;
+            while (waited < seconds && Alive)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        internal IEnumerator WaitBreaking(float seconds)
+        {
+            float waited = 0f;
+            while (waited < seconds && Alive)
+            {
+                waited += Time.deltaTime;
+                BreakDecorNear(Time.deltaTime);
+                yield return null;
+            }
+        }
+
+        internal Vector3 OnGround(Vector3 at) => new Vector3(at.x, _field.GroundAt(at), at.z);
 
         // ---------------------------------------------------------------- walking off the road and climbing
 
-        private IEnumerator BackToRoad()
+        internal IEnumerator BackToRoad()
         {
             _rocksClosed = false;
             for (int attempt = 0; attempt < MaxReplans && Alive; attempt++)
@@ -551,7 +322,59 @@ namespace Game.Bosses
             JoinRoad();
         }
 
-        private void JoinRoad()
+        /// <summary>
+        /// Walks off the road to a cell (a spot beside a tower, a bank), round towers, over rocks, replanning when the way
+        /// changes; reports whether it got there. <paramref name="clearance"/> keeps its whole body a cell off every tower.
+        /// </summary>
+        internal IEnumerator WalkTo(Vector2Int goal, bool clearance, System.Func<bool> abort, System.Action<bool> arrived, string state)
+        {
+            _rocksClosed = false;
+            arrived(false);
+            for (int attempt = 0; attempt < MaxReplans && Alive; attempt++)
+            {
+                if (abort != null && abort())
+                {
+                    yield break;
+                }
+
+                _field.Refresh();
+                bool rocks = _boss.Climb.ClimbsRocks && !_rocksClosed;
+                if (!PlanWalk(goal, rocks, clearance ? ClearanceCells : 0))
+                {
+                    yield break;
+                }
+
+                bool replan = false;
+                yield return WalkRoute(_route, value => replan = value, abort, state);
+                if (!replan)
+                {
+                    _view.Tilt = Quaternion.identity;
+                    arrived(_field.Grid.WorldToCell(transform.position) == goal);
+                    yield break;
+                }
+            }
+
+            _view.Tilt = Quaternion.identity;
+        }
+
+        // Its body clear of the towers if it can, a cell less if that finds no way, at last any way round the footprints.
+        private bool PlanWalk(Vector2Int goal, bool rocks, int clearance)
+        {
+            for (int cells = clearance; cells >= 0; cells--)
+            {
+                if (BossRoutes.WalkTo(_field, transform.position, goal, rocks, cells, _route))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Cells kept between its pivot and a tower so its legs pass clear: half its body plus half a tower, in whole cells.
+        private int ClearanceCells => Mathf.Max(1, Mathf.CeilToInt(BodyHalfWidth + 0.5f) - 1);
+
+        internal void JoinRoad()
         {
             Vector3[] road = OffRoadRoute.Build(_field.Level, transform.position, out float progress);
             road[0] = transform.position;
@@ -562,9 +385,9 @@ namespace Game.Bosses
         // Walks a planned route at its own pace, following the ground's height with a tilt and breaking fragile decor. A
         // rock straight ahead, as far off as the climb clip's ledge, is climbed; then (or when a tower went up on the way,
         // or a rock it cannot climb is next) the caller plans again from where it stands. It never walks through a rock.
-        private IEnumerator WalkRoute(List<Vector3> route, System.Action<bool> replan)
+        internal IEnumerator WalkRoute(List<Vector3> route, System.Action<bool> replan, System.Func<bool> abort = null, string state = "Walking")
         {
-            State = "Walking";
+            State = state;
             replan(false);
             BossClip up = BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
             float sinceRefresh = 0f;
@@ -573,6 +396,11 @@ namespace Game.Bosses
                 Vector3 target = route[i];
                 while (Alive)
                 {
+                    if (abort != null && abort())
+                    {
+                        yield break;
+                    }
+
                     Vector3 position = transform.position;
                     Vector3 flat = new Vector3(target.x - position.x, 0f, target.z - position.z);
                     float distance = flat.magnitude;
@@ -658,8 +486,9 @@ namespace Game.Bosses
                 yield break;
             }
 
+            string was = State;
             State = "Climbing";
-            Climbs++;
+            _record.Climbs++;
             _view.Tilt = Quaternion.identity;
             float height = Mathf.Max(_field.Climb.HeightAt(_field.Grid.WorldToCell(top)), up.Up);
             _enemy.Place(start, dir);
@@ -670,19 +499,22 @@ namespace Game.Bosses
             yield return WaitBreaking(down.Seconds);
             _enemy.Place(land, dir);
             _view.ReleaseScript();
+            State = was;
             done(true);
         }
 
-        // A gate (or the base) in front: it climbs onto it, weighs it down and strikes it from above until it falls (or a
-        // burrow is due), then climbs down the far side.
-        private IEnumerator ClimbStructure(IStructure structure)
+        /// <summary>
+        /// A gate (or the base) in front: it climbs onto it, weighs it down and strikes it from above until it falls (or
+        /// its mechanic calls it away), then climbs down the far side. Walkers follow it over the gate while it stands there.
+        /// </summary>
+        internal IEnumerator ClimbStructure(IStructure structure)
         {
             State = "ClimbingGate";
-            Climbs++;
+            _record.Climbs++;
             _enemy.SetDirected(true);
             BossClip up = BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
             BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
-            Vector3 dir = Flat(structure.Position - transform.position);
+            Vector3 dir = BossGeometry.Flat(structure.Position - transform.position);
             Vector3 start = transform.position;
             _enemy.Place(start, dir);
             _view.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
@@ -698,7 +530,7 @@ namespace Game.Bosses
             float blowEvery = kind.AttackInterval;
             float sinceBlow = 0f;
             float multiplier = _field.Context.Difficulty.StructureDamageMultiplier;
-            while (Alive && structure.IsAlive && !_burrows.IsDue(_enemy.Health.Fraction))
+            while (Alive && structure.IsAlive && !_signature.WantsOffStructure)
             {
                 float dt = Time.deltaTime;
                 structure.TakeDamage(_boss.Climb.GateWeightDamage * multiplier * dt);
@@ -720,6 +552,13 @@ namespace Game.Bosses
                 yield break;
             }
 
+            yield return ClimbDown(top, dir);
+        }
+
+        /// <summary>Climbs down off a structure on its far side and walks on along the road.</summary>
+        internal IEnumerator ClimbDown(Vector3 top, Vector3 dir)
+        {
+            BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
             _view.PlayScripted(ModelClipRole.ClimbDown, down.Rate, true);
             yield return Wait(down.Seconds);
             OnStructure = false;
@@ -749,11 +588,11 @@ namespace Game.Bosses
                 return null;
             }
 
-            Vector3 to = Flat(structure.Position - transform.position);
+            Vector3 to = BossGeometry.Flat(structure.Position - transform.position);
             return Vector3.Dot(to, _enemy.Heading) > 0.5f ? structure : null;
         }
 
-        private void BreakDecorNear(float dt)
+        internal void BreakDecorNear(float dt)
         {
             _sinceBreak += dt;
             if (_sinceBreak < BreakEverySeconds)
@@ -771,9 +610,9 @@ namespace Game.Bosses
 
         // ---------------------------------------------------------------- pools
 
-        private readonly struct DivePlan
+        internal readonly struct DivePlan
         {
-            public DivePlan(int pool, TerrainKind kind, Vector3 heading, Vector3 under, Vector3 exit, Vector3 exitHeading)
+            public DivePlan(int pool, TerrainKind kind, Vector3 heading, Vector3 under, Vector3 exit, Vector3 exitHeading, float speedUp = 1f)
             {
                 Pool = pool;
                 Kind = kind;
@@ -781,6 +620,7 @@ namespace Game.Bosses
                 Under = under;
                 Exit = exit;
                 ExitHeading = exitHeading;
+                SpeedUp = speedUp;
             }
 
             public int Pool { get; }
@@ -789,6 +629,9 @@ namespace Game.Bosses
             public Vector3 Under { get; }
             public Vector3 Exit { get; }
             public Vector3 ExitHeading { get; }
+
+            /// <summary>How much faster than its own swim it may go (a trip from one pool to another).</summary>
+            public float SpeedUp { get; }
         }
 
         private bool TryPlanDive(out DivePlan plan)
@@ -816,15 +659,15 @@ namespace Game.Bosses
                 int count = _field.Pools.Count(kind);
                 for (int p = 0; p < count; p++)
                 {
-                    int id = (int)kind * 1000 + p;
+                    int id = PoolId(kind, p);
                     if (!_dives.CanUse(id, phase))
                     {
                         continue;
                     }
 
                     IReadOnlyList<Vector2Int> cells = _field.Pools.Pool(kind, p);
-                    Vector3 nearest = Nearest(cells, position, out float distance);
-                    if (distance > dive.Reach + into.Forward * 0.5f || Vector3.Dot(Flat(nearest - position), _enemy.Heading) < -0.2f)
+                    Vector3 nearest = BossGeometry.Nearest(_field.Grid, cells, position, out float distance);
+                    if (distance > dive.Reach + into.Forward * 0.5f || Vector3.Dot(BossGeometry.Flat(nearest - position), _enemy.Heading) < -0.2f)
                     {
                         continue;
                     }
@@ -835,8 +678,8 @@ namespace Game.Bosses
                         continue;
                     }
 
-                    Vector3 heading = Flat(nearest - position);
-                    Vector3 under = Nearest(cells, position + heading * into.Forward, out _);
+                    Vector3 heading = BossGeometry.Flat(nearest - position);
+                    Vector3 under = BossGeometry.Nearest(_field.Grid, cells, position + heading * into.Forward, out _);
                     _dives.MarkUsed(id, phase);
                     plan = new DivePlan(id, kind, heading, under, exit, exitHeading);
                     return true;
@@ -846,8 +689,70 @@ namespace Game.Bosses
             return false;
         }
 
-        // Where it comes up: the pool cell, as far as can be from where it went in, whose bank landing lies clear and
-        // nearest the road (BOSSES.md: "at the bank nearest the road").
+        /// <summary>
+        /// A dive as a shortcut (Docs/BOSSES.md: the Cinder Matriarch "comes up in another lava pool, closer to her
+        /// target"): into a pool within reach and out of another pool's bank at least <paramref name="gain"/> nearer the
+        /// goal, within the rules (each pool once per phase, at most its limit under).
+        /// </summary>
+        internal bool TryPlanDiveTowards(Vector3 goal, float gain, out DivePlan plan)
+        {
+            plan = default;
+            DivePower dive = _boss.Dive;
+            BossClip into = BossClip.Of(_view, ModelClipRole.DiveIn, _boss.MechanicClipRate);
+            BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
+            if (!dive.Dives || !into.Exists || !burst.Exists)
+            {
+                return false;
+            }
+
+            _field.Refresh();
+            int phase = _boss.PhaseAt(_enemy.Health.Fraction);
+            Vector3 position = transform.position;
+            float now = BossGeometry.FlatDistance(position, goal);
+            float reachUnder = dive.SwimSpeed * ShortcutSpeedUp * _dives.MaxSeconds;
+            float best = now - gain;
+            bool found = false;
+            foreach (TerrainKind kind in PoolKindsOf(dive.Pools))
+            {
+                for (int p = 0; p < _field.Pools.Count(kind); p++)
+                {
+                    int entry = PoolId(kind, p);
+                    IReadOnlyList<Vector2Int> cells = _field.Pools.Pool(kind, p);
+                    Vector3 bank = BossGeometry.Nearest(_field.Grid, cells, position, out float distance);
+                    if (!_dives.CanUse(entry, phase) || distance > dive.Reach + into.Forward * 0.5f)
+                    {
+                        continue;
+                    }
+
+                    Vector3 heading = BossGeometry.Flat(bank - position);
+                    Vector3 under = BossGeometry.Nearest(_field.Grid, cells, position + heading * into.Forward, out _);
+                    for (int q = 0; q < _field.Pools.Count(kind); q++)
+                    {
+                        int exitPool = PoolId(kind, q);
+                        if (q == p || !_dives.CanUse(exitPool, phase)
+                            || !TryExitTowards(_field.Pools.Pool(kind, q), under, goal, reachUnder, burst, out Vector3 exit, out Vector3 exitHeading, out float left)
+                            || left >= best)
+                        {
+                            continue;
+                        }
+
+                        best = left;
+                        found = true;
+                        plan = new DivePlan(entry, kind, heading, under, exit, exitHeading, ShortcutSpeedUp);
+                    }
+                }
+            }
+
+            if (found)
+            {
+                _dives.MarkUsed(plan.Pool, phase);
+            }
+
+            return found;
+        }
+
+        // Where it comes out of a pool: the pool cell, as far as can be from where it went in, whose bank landing lies clear
+        // and nearest the road (BOSSES.md: "at the bank nearest the road").
         private bool TryExit(IReadOnlyList<Vector2Int> cells, Vector3 entry, BossClip burst, out Vector3 exit, out Vector3 heading)
         {
             exit = heading = Vector3.zero;
@@ -860,13 +765,15 @@ namespace Game.Bosses
                 {
                     Vector3 dir = Quaternion.Euler(0f, t * 45f, 0f) * Vector3.forward;
                     Vector3 land = at + dir * burst.Forward;
-                    if (!BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOfFootprints(_field, at, land))
+                    if (!WellInside(at) || !WellInside(land) || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOfFootprints(_field, at, land))
                     {
                         continue;
                     }
 
                     Vector3 road = OffRoadRoute.NearestRoadCellWorld(_field.Level, land);
-                    float score = (at - entry).magnitude - (road - land).magnitude * RoadPull;
+                    // Its whole body comes up clear of the towers on the bank where it can.
+                    int overlaps = BossRoutes.BodyOverlaps(_field, at, land, BodyHalfWidth, NoCell);
+                    float score = (at - entry).magnitude - (road - land).magnitude * RoadPull - overlaps * BodyOverlapCost;
                     if (score > best)
                     {
                         best = score;
@@ -879,22 +786,54 @@ namespace Game.Bosses
             return !float.IsNegativeInfinity(best);
         }
 
+        // The cell of another pool, within reach under, whose clear bank landing lies nearest the goal.
+        private bool TryExitTowards(IReadOnlyList<Vector2Int> cells, Vector3 from, Vector3 goal, float reach, BossClip burst, out Vector3 exit, out Vector3 heading, out float left)
+        {
+            exit = heading = Vector3.zero;
+            left = float.PositiveInfinity;
+            GridMap grid = _field.Grid;
+            foreach (Vector2Int cell in cells)
+            {
+                Vector3 at = grid.CellToWorld(cell);
+                if (BossGeometry.FlatDistance(at, from) > reach)
+                {
+                    continue;
+                }
+
+                for (int t = 0; t < 8; t++)
+                {
+                    Vector3 dir = Quaternion.Euler(0f, t * 45f, 0f) * Vector3.forward;
+                    Vector3 land = at + dir * burst.Forward;
+                    float distance = BossGeometry.FlatDistance(land, goal);
+                    if (distance >= left || !WellInside(at) || !WellInside(land) || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOfFootprints(_field, at, land)
+                        || BossRoutes.BodyOverlaps(_field, at, land, BodyHalfWidth, NoCell) > 0)
+                    {
+                        continue;
+                    }
+
+                    left = distance;
+                    exit = at;
+                    heading = dir;
+                }
+            }
+
+            return !float.IsPositiveInfinity(left);
+        }
+
         // Into the pool from the bank, hidden under the surface (only blasts reach it, and it heals a little) for no more
         // than its limit, and out at the far bank with a burst that splashes the structures there.
-        private IEnumerator Dive(DivePlan plan)
+        internal IEnumerator Dive(DivePlan plan, bool backToRoad = true)
         {
             State = "Diving";
-            Dives++;
+            _record.Dives++;
             DivePower dive = _boss.Dive;
             _enemy.SetDirected(true);
             BossClip into = BossClip.Of(_view, ModelClipRole.DiveIn, _boss.MechanicClipRate);
-            BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
             float surface = TerrainLiquidBuilder.SurfaceLevel(plan.Kind);
-            Color splash = plan.Kind == TerrainKind.Quicksand ? SandSplash : WaterSplash;
             _enemy.Place(transform.position, plan.Heading);
             _view.PlayScripted(ModelClipRole.DiveIn, into.Rate, true);
             yield return Wait(into.Moment);
-            Impact(transform.position + plan.Heading * into.Forward * 0.5f, BreakoutBurstRadius, splash, false);
+            Impact(transform.position + plan.Heading * into.Forward * 0.5f, BreakoutBurstRadius, SplashOf(plan.Kind), false);
             _enemy.SetConcealed(true, dive.SplashShare);
             yield return Wait(into.Seconds - into.Moment);
             _view.SetHidden(true);
@@ -902,7 +841,24 @@ namespace Game.Bosses
             Vector3 from = new Vector3(plan.Under.x, surface, plan.Under.z);
             Vector3 to = new Vector3(plan.Exit.x, surface, plan.Exit.z);
             float distance = Vector3.Distance(from, to);
-            float seconds = _dives.SecondsFor(distance, dive.SwimSpeed);
+            float seconds = _dives.SecondsFor(distance, dive.SwimSpeed * plan.SpeedUp);
+            yield return Swim(from, to, seconds);
+            if (!Alive)
+            {
+                yield break;
+            }
+
+            yield return BurstOut(to, plan.ExitHeading, plan.Kind);
+            if (backToRoad)
+            {
+                yield return BackToRoad();
+            }
+        }
+
+        // Hidden under the surface from one point to another, the wake following it wherever there is liquid above it.
+        private IEnumerator Swim(Vector3 from, Vector3 to, float seconds)
+        {
+            DivePower dive = _boss.Dive;
             _wake.Show(true, from);
             float elapsed = 0f;
             while (elapsed < seconds && Alive)
@@ -910,63 +866,159 @@ namespace Game.Bosses
                 float dt = Time.deltaTime;
                 elapsed = Mathf.Min(seconds, elapsed + dt);
                 Vector3 at = Vector3.Lerp(from, to, seconds > 0f ? elapsed / seconds : 1f);
-                _enemy.Place(at, Flat(to - from));
-                _wake.Follow(at);
+                _enemy.Place(at, BossGeometry.Flat(to - from));
+                _wake.Show(_field.Climb.KindAt(at) == SurfaceKind.Liquid || _field.Climb.KindAt(at) == SurfaceKind.Quicksand, at);
                 _enemy.Health.Heal(_enemy.Health.Max * dive.RegenPerSecond * dt);
                 yield return null;
             }
 
             _wake.Show(false, to);
-            if (!Alive)
+        }
+
+        // Up out of the pool onto the bank: the burst splashes the structures there, one kick when it lands.
+        private IEnumerator BurstOut(Vector3 to, Vector3 heading, TerrainKind kind)
+        {
+            DivePower dive = _boss.Dive;
+            BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
+            State = "Bursting";
+            _enemy.Place(to, heading);
+            _view.SetHidden(false);
+            _view.PlayScripted(ModelClipRole.SurfaceBurst, burst.Rate, true);
+            yield return Wait(burst.Moment);
+            Vector3 land = to + heading * burst.Forward;
+            _enemy.SetConcealed(false);
+            Impact(to + heading * (burst.Forward * 0.5f), BreakoutBurstRadius, SplashOf(kind));
+            _field.Context.Structures.DamageInRadius(land, dive.BurstRadius, dive.BurstDamage * _field.Context.Difficulty.StructureDamageMultiplier);
+            yield return Wait(burst.Seconds - burst.Moment);
+            _enemy.Place(new Vector3(land.x, 0f, land.z), heading);
+            _view.ReleaseScript();
+        }
+
+        // The pool entrance (Docs/BOSSES.md: the Cinder Matriarch out of the largest lava pool, the Frost Warden out of a
+        // frozen lake that cracks open): hidden in its middle, the surface churns and the ground rumbles, then it swims to
+        // the bank nearest the road and bursts out with a kick and a roar. False when the level has no such pool.
+        private IEnumerator RiseFromPool(System.Action<bool> rose)
+        {
+            rose(false);
+            BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
+            if (!burst.Exists || !TryLargestPool(out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int pool))
             {
                 yield break;
             }
 
-            State = "Bursting";
-            _enemy.Place(to, plan.ExitHeading);
-            _view.SetHidden(false);
-            _view.PlayScripted(ModelClipRole.SurfaceBurst, burst.Rate, true);
-            yield return Wait(burst.Moment);
-            Vector3 land = to + plan.ExitHeading * burst.Forward;
-            _enemy.SetConcealed(false);
-            Impact(to + plan.ExitHeading * (burst.Forward * 0.5f), BreakoutBurstRadius, splash);
-            _field.Context.Structures.DamageInRadius(land, dive.BurstRadius, dive.BurstDamage * _field.Context.Difficulty.StructureDamageMultiplier);
-            yield return Wait(burst.Seconds - burst.Moment);
-            _enemy.Place(new Vector3(land.x, 0f, land.z), plan.ExitHeading);
-            _view.ReleaseScript();
-            yield return BackToRoad();
-        }
-
-        // ---------------------------------------------------------------- helpers
-
-        private void Impact(Vector3 at, float radius, Color colour, bool kick = true)
-        {
-            ProjectilePool projectiles = _field.Context.Projectiles;
-            projectiles.PlayBurst(new Vector3(at.x, 0f, at.z), radius, kick ? projectiles.Vfx.Mine : projectiles.Vfx.Death, colour);
-        }
-
-        private IEnumerator Wait(float seconds)
-        {
-            float waited = 0f;
-            while (waited < seconds && Alive)
+            State = "Entrance";
+            _enemy.SetDirected(true);
+            _enemy.SetConcealed(true, 0f);
+            _view.SetHidden(true);
+            // It has just come out of this pool: it does not dive straight back into it.
+            _dives.MarkUsed(pool, 0);
+            _field.Refresh();
+            Vector3 middle = Middle(cells);
+            float surface = TerrainLiquidBuilder.SurfaceLevel(kind);
+            Vector3 from = new Vector3(middle.x, surface, middle.z);
+            if (!TryExit(cells, middle, burst, out Vector3 exit, out Vector3 heading))
             {
-                waited += Time.deltaTime;
+                exit = middle;
+                heading = BossGeometry.Flat(OffRoadRoute.NearestRoadCellWorld(_field.Level, middle) - middle);
+            }
+
+            _enemy.Place(from, heading);
+            _wake.Show(true, from);
+            float stirred = 0f;
+            while (stirred < StirSeconds && Alive)
+            {
+                stirred += Time.deltaTime;
+                _field.Context.BossRumble = Mathf.Clamp01(stirred / StirSeconds);
                 yield return null;
+            }
+
+            Impact(from, BreakoutBurstRadius, SplashOf(kind), false);
+            Vector3 to = new Vector3(exit.x, surface, exit.z);
+            yield return Swim(from, to, _dives.SecondsFor(Vector3.Distance(from, to), _boss.Dive.SwimSpeed));
+            _field.Context.BossRumble = 0f;
+            yield return BurstOut(to, heading, kind);
+            _field.Context.BossImpact.Raise(_boss.ImpactKick);
+            yield return Roar();
+            rose(Alive);
+        }
+
+        // The largest pool whose way to the road joins it in the road's first half, so the fight runs the road (a lake
+        // by the base would skip it); without one, the pool that joins the road earliest.
+        private bool TryLargestPool(out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int id)
+        {
+            kind = TerrainKind.Ground;
+            cells = null;
+            id = -1;
+            float earliest = float.PositiveInfinity;
+            bool early = false;
+            foreach (TerrainKind candidate in PoolKindsOf(_boss.Dive.Pools))
+            {
+                for (int p = 0; p < _field.Pools.Count(candidate); p++)
+                {
+                    IReadOnlyList<Vector2Int> pool = _field.Pools.Pool(candidate, p);
+                    float share = RoadShareAt(Middle(pool));
+                    bool isEarly = share <= MaxEntranceRoadShare;
+                    bool better = isEarly ? !early || pool.Count > cells.Count : !early && share < earliest;
+                    if (better)
+                    {
+                        cells = pool;
+                        kind = candidate;
+                        id = PoolId(candidate, p);
+                        early |= isEarly;
+                        earliest = Mathf.Min(earliest, share);
+                    }
+                }
+            }
+
+            return cells != null;
+        }
+
+        // How far along the road (0 at its start, 1 at the base) a walker from that point joins it.
+        private float RoadShareAt(Vector3 point)
+        {
+            Vector3[] route = OffRoadRoute.Build(_field.Level, point, out float progress);
+            float rest = 0f;
+            for (int i = 2; i < route.Length; i++)
+            {
+                rest += Vector3.Distance(route[i - 1], route[i]);
+            }
+
+            float total = progress + rest;
+            return total > 0f ? progress / total : 0f;
+        }
+
+        // The pool cell nearest the middle of the pool.
+        private Vector3 Middle(IReadOnlyList<Vector2Int> cells)
+        {
+            Vector3 sum = Vector3.zero;
+            foreach (Vector2Int cell in cells)
+            {
+                sum += _field.Grid.CellToWorld(cell);
+            }
+
+            return BossGeometry.Nearest(_field.Grid, cells, sum / Mathf.Max(1, cells.Count), out _);
+        }
+
+        // A landing in the field's outer cells would come up behind the border cliffs, out of sight.
+        private bool WellInside(Vector3 point)
+        {
+            Vector2Int cell = _field.Grid.WorldToCell(point);
+            Vector2Int size = _field.Grid.Size;
+            return cell.x >= EdgeCells && cell.y >= EdgeCells && cell.x < size.x - EdgeCells && cell.y < size.y - EdgeCells;
+        }
+
+        internal static Color SplashOf(TerrainKind kind)
+        {
+            switch (kind)
+            {
+                case TerrainKind.Quicksand: return SandSplash;
+                case TerrainKind.Lava: return LavaSplash;
+                case TerrainKind.Ice: return IceSplash;
+                default: return WaterSplash;
             }
         }
 
-        private IEnumerator WaitBreaking(float seconds)
-        {
-            float waited = 0f;
-            while (waited < seconds && Alive)
-            {
-                waited += Time.deltaTime;
-                BreakDecorNear(Time.deltaTime);
-                yield return null;
-            }
-        }
-
-        private static IEnumerable<TerrainKind> PoolKindsOf(PoolKinds kinds)
+        internal static IEnumerable<TerrainKind> PoolKindsOf(PoolKinds kinds)
         {
             if ((kinds & PoolKinds.Quicksand) != 0) yield return TerrainKind.Quicksand;
             if ((kinds & PoolKinds.Water) != 0) yield return TerrainKind.Water;
@@ -975,69 +1027,6 @@ namespace Game.Bosses
             if ((kinds & PoolKinds.Ice) != 0) yield return TerrainKind.Ice;
         }
 
-        private Vector3 Nearest(IReadOnlyList<Vector2Int> cells, Vector3 position, out float distance)
-        {
-            Vector3 best = position;
-            float bestSqr = float.PositiveInfinity;
-            foreach (Vector2Int cell in cells)
-            {
-                Vector3 at = _field.Grid.CellToWorld(cell);
-                float sqr = (at - new Vector3(position.x, 0f, position.z)).sqrMagnitude;
-                if (sqr < bestSqr)
-                {
-                    bestSqr = sqr;
-                    best = at;
-                }
-            }
-
-            distance = Mathf.Sqrt(bestSqr);
-            return best;
-        }
-
-        private static float PathLength(List<Vector3> points)
-        {
-            float total = 0f;
-            for (int i = 1; i < points.Count; i++)
-            {
-                total += Vector3.Distance(Flat3(points[i - 1]), Flat3(points[i]));
-            }
-
-            return total;
-        }
-
-        private static Vector3 PointAlong(List<Vector3> points, float distance, out Vector3 dir)
-        {
-            dir = Vector3.forward;
-            for (int i = 1; i < points.Count; i++)
-            {
-                Vector3 a = Flat3(points[i - 1]);
-                Vector3 b = Flat3(points[i]);
-                float span = Vector3.Distance(a, b);
-                if (span <= 0.0001f)
-                {
-                    continue;
-                }
-
-                dir = (b - a) / span;
-                if (distance <= span)
-                {
-                    return a + dir * distance;
-                }
-
-                distance -= span;
-            }
-
-            return Flat3(points[points.Count - 1]);
-        }
-
-        private Vector3 OnGround(Vector3 at) => new Vector3(at.x, _field.GroundAt(at), at.z);
-
-        private static Vector3 Flat3(Vector3 v) => new Vector3(v.x, 0f, v.z);
-
-        private static Vector3 Flat(Vector3 v)
-        {
-            v.y = 0f;
-            return v.sqrMagnitude > 0.0001f ? v.normalized : Vector3.forward;
-        }
+        private static int PoolId(TerrainKind kind, int index) => (int)kind * 1000 + index;
     }
 }

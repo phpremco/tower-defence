@@ -52,7 +52,8 @@ namespace Game.Bosses
                 brain.Initialize(Field());
             }
 
-            if (definition.Boss.Arrival == BossArrival.ColonyRig)
+            // A boss with an entrance of its own (a crack to the rig, a pool) rises its own way, not out of the spawn.
+            if (definition.Boss.Arrival != BossArrival.Wave)
             {
                 enemy.GetComponent<EnemyView>()?.SkipSpawn();
             }
@@ -66,7 +67,7 @@ namespace Game.Bosses
             {
                 var effects = new GameObject("BossEffects").transform;
                 effects.SetParent(transform, false);
-                _field = new BossField(_context, _decor != null ? _decor.Formations : null, _decor, _rig, _spawner.SpawnFromCrack, effects);
+                _field = new BossField(_context, _decor != null ? _decor.Formations : null, _decor, _rig, _spawner, effects);
             }
 
             return _field;

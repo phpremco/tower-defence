@@ -194,8 +194,13 @@ namespace Game.Tests
 
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             Assert.IsNotNull(catalog.BossArena, "the developer boss arena is not on the campaign");
-            CollectionAssert.AreEqual(new[] { Gravemaw() }, catalog.BossArena.Bosses);
+            var cinder = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/CinderMatriarch.asset");
+            var warden = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/FrostWarden.asset");
+            CollectionAssert.AreEqual(new[] { Gravemaw(), cinder, warden }, catalog.BossArena.Bosses);
             Assert.IsNotNull(catalog.BossArena.Level);
+            Assert.AreEqual(catalog.BossArena.Level, catalog.BossArena.LevelFor(Gravemaw()), "Gravemaw fights on Shard Ridge");
+            Assert.Greater(new LiquidPools(catalog.BossArena.LevelFor(cinder)).Count(TerrainKind.Lava), 1, "the Matriarch needs lava pools to rise from and dive between");
+            Assert.Greater(new LiquidPools(catalog.BossArena.LevelFor(warden)).Count(TerrainKind.Ice), 0, "the Warden needs a frozen lake");
             WaveDefinition[] waves = catalog.BossArena.WavesFor(Gravemaw());
             Assert.AreEqual(1, waves.Length);
             Assert.IsTrue(new List<SpawnGroup>(waves[0].Groups).Exists(g => g.Enemy == Gravemaw() && g.Source == SpawnSource.Entrance));

@@ -22,6 +22,9 @@ namespace Game.Core
         [SerializeField] private Material _secondMaterial;
         [SerializeField] private Material _lowSecondMaterial;
 
+        [Tooltip("Extra objects of the model with a material of their own (a boss's ice armour), or none.")]
+        [SerializeField] private ModelPart[] _parts = new ModelPart[0];
+
         [Header("Placement")]
         [Tooltip("Factor on the owner's own scale (a boss model is built at its species' size times this).")]
         [SerializeField] [Min(0.01f)] private float _scale = 1f;
@@ -56,6 +59,7 @@ namespace Game.Core
         public Material SecondMaterial => _secondMaterial;
         public Material LowSecondMaterial => _lowSecondMaterial != null ? _lowSecondMaterial : _secondMaterial;
         public bool HasSecondMaterial => _secondMaterial != null;
+        public ModelPart[] Parts => _parts;
         public float Scale => _scale;
         public float Yaw => _yaw;
         public bool BodyCentrePivot => _bodyCentrePivot;

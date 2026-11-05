@@ -9,7 +9,7 @@ namespace Game.Towers
     /// Finds a target in range and fires projectiles, can be damaged, repaired, upgraded and sold.
     /// Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource
+    public sealed class Tower : MonoBehaviour, IStructure, IGuardable, ISupportSource, IBridgeable
     {
         private const float SupportLevelGrowth = 0.5f;
         private const float MuzzleHeight = 1f;
@@ -90,7 +90,12 @@ namespace Game.Towers
         /// <summary>Blockades are part of the level: they cannot be sold, only repaired or rebuilt.</summary>
         public bool CanBeSold => !_definition.BlocksGroundEnemies && !_definition.IsBaseDefence;
 
-        public bool BlocksGround => _definition.BlocksGroundEnemies && IsAlive;
+        public bool BlocksGround => _definition.BlocksGroundEnemies && IsAlive && !IsBridged;
+
+        /// <summary>A gate a boss stands on lets the walkers behind it follow over its top (Docs/BOSSES.md).</summary>
+        public bool IsBridged => _definition.BlocksGroundEnemies && IsAlive && Burden > 0f;
+
+        public float BridgeHeight => BridgedHeight;
         public bool IsBase => false;
 
         /// <summary>A wrecked blockade can be rebuilt; a wrecked tower is scrapped and built again instead.</summary>
@@ -134,6 +139,10 @@ namespace Game.Towers
 
         private bool _wasWrecked;
         private float _upsetRemaining;
+        private float _frozenRemaining;
+
+        // The top of a gate's beam, where a walker following a boss over it climbs (ClimbLayer.GateHeight in the bosses).
+        private const float BridgedHeight = 1.15f;
 
         /// <summary>True while the tower lies tilted after a boss threw it: it fires nothing until it has righted itself.</summary>
         public bool IsUpset => _upsetRemaining > 0f;
@@ -171,6 +180,68 @@ namespace Game.Towers
             _beamTarget = null;
             _beamLive = false;
             Tossed?.Invoke(this, away, upsetSeconds);
+        }
+
+        /// <summary>True while a boss's breath holds the structure in an ice block: it stands and blocks, but fires nothing and takes no hits.</summary>
+        public bool IsFrozen => _frozenRemaining > 0f && !IsWrecked;
+
+        /// <summary>Seconds the ice block still holds.</summary>
+        public float FrozenRemaining => IsFrozen ? _frozenRemaining : 0f;
+
+        /// <summary>Raised when the structure freezes into an ice block (true) or thaws out of it (false).</summary>
+        public event Action<Tower, bool> FrozenChanged;
+
+        /// <summary>Raised when a boss smashes or shatters the structure into a wreck, with where the blow came from.</summary>
+        public event Action<Tower, Vector3> Smashed;
+
+        /// <summary>A boss's breath turns the structure into an ice block for a while (it keeps standing).</summary>
+        public void Freeze(float seconds)
+        {
+            if (IsWrecked || seconds <= 0f)
+            {
+                return;
+            }
+
+            bool fresh = !IsFrozen;
+            _frozenRemaining = Mathf.Max(_frozenRemaining, seconds);
+            _beamTarget = null;
+            _beamLive = false;
+            if (fresh)
+            {
+                FrozenChanged?.Invoke(this, true);
+            }
+        }
+
+        /// <summary>Breaks the ice early (the hero's repair): the structure is itself again, nothing lost.</summary>
+        public void Thaw()
+        {
+            if (!IsFrozen)
+            {
+                return;
+            }
+
+            _frozenRemaining = 0f;
+            FrozenChanged?.Invoke(this, false);
+        }
+
+        /// <summary>A boss's blow turns the structure into a wreck at once, whatever its health and guard (a rebuild brings it back).</summary>
+        public void Smash(Vector3 from)
+        {
+            if (IsWrecked)
+            {
+                return;
+            }
+
+            bool wasFrozen = IsFrozen;
+            _frozenRemaining = 0f;
+            _upsetRemaining = 0f;
+            if (wasFrozen)
+            {
+                FrozenChanged?.Invoke(this, false);
+            }
+
+            Smashed?.Invoke(this, from);
+            Health.TakeDamage(Health.Current);
         }
 
         /// <summary>Sets the weight of a boss standing on the structure (0 when it has left).</summary>
@@ -214,16 +285,24 @@ namespace Game.Towers
 
         public void TakeDamage(float amount)
         {
+            // An ice block shrugs off blows; only the boss that froze it breaks it.
+            if (IsFrozen)
+            {
+                return;
+            }
+
             Health.TakeDamage(Guard != null ? Guard.Absorb(amount) : amount);
         }
 
         // A wreck is rebuilt, not patched up, so the hero's repair has nothing to do on one.
-        public bool CanRestore => !IsWrecked && Health.Current < Health.Max;
+        public bool CanRestore => !IsWrecked && (Health.Current < Health.Max || IsFrozen);
 
+        // The hero's repair also thaws a frozen gate (Docs/BOSSES.md, Frost Warden), so it is not lost.
         public void Restore(float fraction)
         {
             if (!IsWrecked)
             {
+                Thaw();
                 Health.Heal(Health.Max * fraction);
             }
         }
@@ -278,6 +357,19 @@ namespace Game.Towers
                 _upsetRemaining -= Time.deltaTime;
                 _beamTarget = null;
                 _beamLive = false;
+                return;
+            }
+
+            if (_frozenRemaining > 0f)
+            {
+                _frozenRemaining -= Time.deltaTime;
+                _beamTarget = null;
+                _beamLive = false;
+                if (_frozenRemaining <= 0f)
+                {
+                    FrozenChanged?.Invoke(this, false);
+                }
+
                 return;
             }
 

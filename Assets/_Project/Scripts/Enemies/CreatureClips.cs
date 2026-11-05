@@ -20,7 +20,8 @@ namespace Game.Enemies
 
         private readonly ModelClipPlayer _player;
         private readonly ModelArtDefinition _art;
-        private readonly int _move;
+        private readonly int _ownMove;
+        private int _move;
         private readonly int _idle;
         private readonly int _hit;
         private readonly int _attack;
@@ -47,7 +48,8 @@ namespace Game.Enemies
         {
             _player = player;
             _art = art;
-            _move = art.IndexOf(ModelClipRole.Move);
+            _ownMove = art.IndexOf(ModelClipRole.Move);
+            _move = _ownMove;
             _idle = art.IndexOf(ModelClipRole.Idle);
             _hit = art.IndexOf(ModelClipRole.Hit);
             _attack = art.IndexOf(ModelClipRole.Attack);
@@ -78,9 +80,17 @@ namespace Game.Enemies
         /// <summary>The clip whose moment passed this frame (a power's release, a strike's hit), or -1.</summary>
         public int EventClip => _eventClip;
 
+        /// <summary>Travels in another cycle of the model (a hunting stride, an enraged walk); Move, or a role it lacks, is its own.</summary>
+        public void UseMove(ModelClipRole role)
+        {
+            int index = role == ModelClipRole.Move ? -1 : _art.IndexOf(role);
+            _move = index >= 0 ? index : _ownMove;
+        }
+
         /// <summary>Back to the start for a pooled creature sent out again.</summary>
         public void Restart()
         {
+            _move = _ownMove;
             _player.Restart();
             _rolled = false;
             _landed = false;

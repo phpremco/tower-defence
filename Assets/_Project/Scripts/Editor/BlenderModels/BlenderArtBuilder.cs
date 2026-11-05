@@ -196,6 +196,17 @@ namespace Game.Editor
                 lowSecond = BuildMaterial(entry, prefix, secondDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{entry.SecondMaterial}_Low", true);
             }
 
+            // Extra parts (an ice armour) wear their own maps with the second slot's detail families.
+            var parts = new List<ModelPart>(entry.ExtraParts.Length);
+            foreach (string part in entry.ExtraParts)
+            {
+                string prefix = $"{entry.MapPrefix}_{part}";
+                List<BlenderReport.Detail> partDetails = DetailsOfPart(details, 1);
+                Material partHigh = BuildMaterial(entry, prefix, partDetails, maps, $"{entry.Id}_{part}", false);
+                Material partLow = BuildMaterial(entry, prefix, partDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{part}_Low", true);
+                parts.Add(new ModelPart($"{entry.Asset}_{part}", partHigh, partLow));
+            }
+
             List<ClipRow> clips = CollectClips(entry, report, $"{folder}/{entry.Asset}.fbx", lod1 != null ? $"{folder}/{entry.Asset}_LOD1.fbx" : null);
 
             var art = LoadOrCreate<ModelArtDefinition>($"{ArtDataFolder}/{entry.Id}.asset");
@@ -217,6 +228,7 @@ namespace Game.Editor
             so.FindProperty("_bleeds").boolValue = entry.Bleeds;
             WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());
             WriteClips(so.FindProperty("_clips"), clips);
+            WriteParts(so.FindProperty("_parts"), parts);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
@@ -242,11 +254,14 @@ namespace Game.Editor
                 }
 
                 ModelClipRole role = spec?.Role ?? RolesByName[clip.name];
-                float distance = DistancePerLoop(role, entry, report);
+                travel.TryGetValue(clip.name, out BlenderTravelClips.Facts facts);
+                // The round-28 block names each in-place cycle's own distance and each mechanic's moment; the row's frame wins.
+                float distance = facts.Distance > 0f ? facts.Distance : DistancePerLoop(role, entry, report);
                 float weight = spec?.Weight ?? (role == ModelClipRole.Hit ? HitWeight : 1f);
                 far.TryGetValue(clip.name, out AnimationClip farClip);
-                travel.TryGetValue(clip.name, out BlenderTravelClips.Facts facts);
-                clips.Add(new ClipRow(role, clip, farClip, distance, (spec?.EventFrame ?? 0) / FramesPerSecond, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, facts));
+                int eventFrame = spec?.EventFrame ?? 0;
+                float eventSeconds = (eventFrame > 0 ? eventFrame : facts.EventFrame) / FramesPerSecond;
+                clips.Add(new ClipRow(role, clip, farClip, distance, eventSeconds, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, facts));
             }
 
             return clips;
@@ -302,6 +317,18 @@ namespace Game.Editor
         {
             float reported = report.Number("walk_distance_per_loop", "run_distance_per_loop", "crawl_distance_per_loop");
             return reported > 0f ? reported : entry.MoveDistance;
+        }
+
+        private static void WriteParts(SerializedProperty array, List<ModelPart> parts)
+        {
+            array.arraySize = parts.Count;
+            for (int i = 0; i < parts.Count; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("_object").stringValue = parts[i].Object;
+                element.FindPropertyRelative("_material").objectReferenceValue = parts[i].Material;
+                element.FindPropertyRelative("_lowMaterial").objectReferenceValue = parts[i].MaterialFor(true);
+            }
         }
 
         private static void WriteClips(SerializedProperty array, List<ClipRow> clips)

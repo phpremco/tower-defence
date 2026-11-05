@@ -276,6 +276,31 @@ namespace Game.Levels
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Rift, progress);
         }
 
+        /// <summary>
+        /// Puts a creature on the field at a point and hands it back (a boss's egg in a pool): its route leads to the nearest
+        /// road, but whoever placed it usually holds it there.
+        /// </summary>
+        public Enemy SpawnAt(EnemyDefinition definition, Vector3 point)
+        {
+            if (definition == null)
+            {
+                return null;
+            }
+
+            Vector3[] route = OffRoadRoute.Build(_context.Level, point, out float progress);
+            route[0] = new Vector3(point.x, 0f, point.z);
+            return Launch(definition, route, 0f, EnemyOrigin.Lava, progress);
+        }
+
+        /// <summary>Takes a creature off the field without a reward or a hit on the base (an egg that hatched).</summary>
+        public void Withdraw(Enemy enemy)
+        {
+            if (enemy != null && _living.Contains(enemy))
+            {
+                Release(enemy);
+            }
+        }
+
         /// <summary>Sends a creature out of a boss's body, down the rest of the boss's road.</summary>
         public void SpawnMinion(EnemyDefinition definition, Enemy boss)
         {
@@ -302,7 +327,7 @@ namespace Game.Levels
             }
         }
 
-        private void Launch(EnemyDefinition definition, Vector3[] route, float height, EnemyOrigin origin, float progress)
+        private Enemy Launch(EnemyDefinition definition, Vector3[] route, float height, EnemyOrigin origin, float progress)
         {
             Enemy enemy = PoolFor(definition).Get();
             DifficultyProfile difficulty = _context.Difficulty;
@@ -326,6 +351,7 @@ namespace Game.Levels
             }
 
             _context.EnemySpawned.Raise(enemy);
+            return enemy;
         }
 
         // The gate nearest the flight route becomes a waypoint, inserted before the first point past it, so the

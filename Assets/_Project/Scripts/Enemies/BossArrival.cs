@@ -8,5 +8,8 @@ namespace Game.Enemies
 
         /// <summary>A crack runs across the map to the colony drill rig; the boss breaks out under it and smashes it.</summary>
         ColonyRig = 1,
+
+        /// <summary>It rises out of the largest pool of a liquid it dives in (a lava pool, a frozen lake that cracks open).</summary>
+        Pool = 2,
     }
 }

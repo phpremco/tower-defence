@@ -18,7 +18,8 @@ namespace Game.Levels
             Id = enemy.name,
             Layer = (int)enemy.Layer,
             Flies = enemy.Flies,
-            Health = enemy.MaxHealth,
+            // An ice armour that soaks part of each hit counts as that much more health to burn through.
+            Health = enemy.MaxHealth * (enemy.Boss != null ? enemy.Boss.EffectiveHealthFactor() : 1f),
             Armor = enemy.Armor,
             Speed = enemy.AverageSpeed,
             FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,

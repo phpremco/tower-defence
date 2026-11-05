@@ -6,7 +6,7 @@
     5056
   ],
   "source_tris": 854196,
-  "bones": 26,
+  "bones": 30,
   "texture_size": 1024,
   "low_texture_size": 512,
   "materials": {
@@ -69,7 +69,16 @@
     "Hit": 16,
     "Death": 72,
     "Spawn": 64,
-    "Roar": 70
+    "Roar": 70,
+    "Climb_Up": 186,
+    "Climb_Loop": 81,
+    "Climb_Down": 186,
+    "Submerged_Loop": 80,
+    "Dive_Into_Liquid": 66,
+    "Surface_Burst": 64,
+    "Hunt_Stride": 50,
+    "Smash": 64,
+    "Lay_Eggs": 96
   },
   "size_m": [
     4.655,
@@ -85,7 +94,7 @@
   "lod1": {
     "fbx": "CinderMatriarch_LOD1.fbx",
     "tris": 8997,
-    "bones": 21
+    "bones": 25
   },
   "walk_distance_per_loop": 1.288,
   "pivot": "ground, under the thorax",
@@ -104,5 +113,102 @@
   "minion": {
     "fbx": "../FireLarva/FireLarva.fbx",
     "unity_scale": 0.6
+  },
+  "round28": {
+    "clips": {
+      "Climb_Up": {
+        "end_offset_forward_m": 5.023,
+        "end_offset_up_m": 1.5,
+        "edge_forward_m": 2.0,
+        "ledge_height_m": 1.5,
+        "cycles": 3,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Walk",
+        "frames": 186,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 1.03,
+        "playback": "speed / (1.03 x scale) loops per second x 81 frames",
+        "note": "pivot on the top surface; in place; pin the IK_* markers to the climb layer",
+        "frames": 81,
+        "loop": true
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 5.023,
+        "end_offset_up_m": -1.5,
+        "edge_forward_m": 2.0,
+        "drop_height_m": 1.5,
+        "cycles": 3,
+        "note": "starts with the pivot on the top surface (Climb_Loop / Climb_Up end pose); at the last frame move the transform by the end offset",
+        "frames": 186,
+        "loop": false
+      },
+      "Submerged_Loop": {
+        "depth_m": 3.3441006660461428,
+        "note": "pivot on the liquid surface; everything stays under it; in place",
+        "frames": 80,
+        "loop": true,
+        "mesh_top_m": -0.2
+      },
+      "Dive_Into_Liquid": {
+        "end_offset_forward_m": 3.2,
+        "depth_m": 3.344,
+        "takeoff_frame": 20,
+        "splash_frame": 28,
+        "under_frame": 52,
+        "note": "at the last frame move the transform by end_offset_forward and loop Submerged_Loop",
+        "frames": 66,
+        "loop": false
+      },
+      "Surface_Burst": {
+        "start_depth_m": 3.344,
+        "end_offset_forward_m": 3.0,
+        "breach_frame": 16,
+        "land_frame": 32,
+        "note": "start under the exit point (the pivot on the liquid surface, facing the bank); the splash on nearby towers at breach_frame, the camera kick at land_frame; move the transform by end_offset_forward at the end and go to Walk",
+        "frames": 64,
+        "loop": false
+      },
+      "Hunt_Stride": {
+        "distance_per_loop_m": 1.61,
+        "note": "in place; off-road hunt towards a cold tower (BOSSES.md)",
+        "frames": 50,
+        "loop": true
+      },
+      "Smash": {
+        "impact_frame": 30,
+        "target_forward_m": 3.1,
+        "note": "the tower 3.1 ahead becomes a wreck at the impact frame; shove to 44",
+        "frames": 64,
+        "loop": false
+      },
+      "Lay_Eggs": {
+        "egg_frames": [
+          34,
+          52,
+          70
+        ],
+        "socket": "Drip (tail: the sac tip)",
+        "prop": "../CinderEgg/CinderEgg.fbx",
+        "note": "stand with the sac tip over the lava pool (the tip is ~2.8 behind the pivot)",
+        "frames": 96,
+        "loop": false
+      }
+    },
+    "markers": [
+      "IK_Leg_L1",
+      "IK_Leg_L2",
+      "IK_Leg_R1",
+      "IK_Leg_R2"
+    ],
+    "extra_objects": [],
+    "climb_height_m": 1.5,
+    "liquid": "lava",
+    "submerged_depth_m": 3.344,
+    "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
+    "props": {
+      "CinderEgg": "../CinderEgg/CinderEgg.fbx"
+    },
+    "mechanic": "Hatred of the Cold: Hunt_Stride off the road, Climb_* over the ridges between pads, Smash on the cold tower, Dive/Submerged/Surface_Burst through the lava pools, Lay_Eggs below 50%"
   }
 }

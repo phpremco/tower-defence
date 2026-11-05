@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Game.Combat;
-using Game.Enemies;
 using Game.Levels;
 using Game.Towers;
 using UnityEngine;
@@ -21,7 +19,7 @@ namespace Game.Bosses
         private readonly List<Tower> _towers = new List<Tower>(32);
         private readonly List<Vector3> _broken = new List<Vector3>(8);
 
-        public BossField(LevelContext context, IReadOnlyList<DecorFormation> formations, EnvironmentInstancer decor, ColonyRigView rig, Action<EnemyDefinition, Vector3> spawnFromCrack, Transform effects)
+        public BossField(LevelContext context, IReadOnlyList<DecorFormation> formations, EnvironmentInstancer decor, ColonyRigView rig, EnemySpawner spawner, Transform effects)
         {
             Context = context;
             Level = context.Level;
@@ -31,7 +29,7 @@ namespace Game.Bosses
             Pools = new LiquidPools(Level);
             Decor = decor;
             Rig = rig;
-            SpawnFromCrack = spawnFromCrack;
+            Spawner = spawner;
             Effects = effects;
             var clearance = new StructureClearance(Level);
             HasRig = clearance.HasColonyRig;
@@ -48,7 +46,8 @@ namespace Game.Bosses
         public ColonyRigView Rig { get; }
         public bool HasRig { get; }
         public Vector3 RigPosition { get; }
-        public Action<EnemyDefinition, Vector3> SpawnFromCrack { get; }
+        /// <summary>Sends creatures out of a crack or an egg, puts eggs on the field and takes hatched ones off; null in tests.</summary>
+        public EnemySpawner Spawner { get; }
 
         /// <summary>Parent for the views a boss lays on the field (crack lines, rings, wakes).</summary>
         public Transform Effects { get; }

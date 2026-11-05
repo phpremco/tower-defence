@@ -13,19 +13,12 @@ namespace Game.Bosses
     /// </summary>
     public sealed class CrackLineView : MonoBehaviour
     {
-        private const float Width = 0.75f;
-        private const float GlowWidth = 2.2f;
         private const float Lift = 0.05f;
-        private const float FadeSeconds = 4f;
-        private const float HeadLightRadius = 1.4f;
         private const float GritRate = 36f;
         // The blade texture fades out at both of its ends (v 0 and 1); the seam keeps clear of them.
         private const float AlongMin = 0.2f;
         private const float AlongSpan = 0.6f;
-        private static readonly Color Seam = new Color(1f, 0.42f, 0.1f, 1f) * 2.6f;
-        private static readonly Color Halo = new Color(1f, 0.35f, 0.08f, 1f) * 0.7f;
-        private static readonly Color HeadGlow = new Color(1f, 0.5f, 0.15f, 0.9f);
-        private static readonly Color Grit = new Color(0.55f, 0.42f, 0.3f, 0.8f);
+        private CrackStyle _style;
 
         private readonly List<float> _along = new List<float>();
         private readonly List<Material> _materials = new List<Material>(2);
@@ -39,11 +32,15 @@ namespace Game.Bosses
         private ParticleSystem _grit;
 
         /// <summary>Lays a crack along world points (on the ground); nothing shows until it opens.</summary>
-        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points)
+        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points) => Create(parent, points, CrackStyle.Burrow);
+
+        /// <summary>Lays a line in a style of its own (a thin heat line, a creeping frost) along world points.</summary>
+        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points, CrackStyle style)
         {
             var go = new GameObject("CrackLine");
             go.transform.SetParent(parent, false);
             var view = go.AddComponent<CrackLineView>();
+            view._style = style;
             view.Build(points);
             return view;
         }
@@ -72,7 +69,7 @@ namespace Game.Bosses
             }
 
             _head.position = PointAt(distance) + Vector3.up * Lift;
-            ParticleKit.SetRate(_grit, distance < _length ? GritRate : 0f);
+            ParticleKit.SetRate(_grit, distance < _length ? GritRate * _style.GritShare : 0f);
         }
 
         /// <summary>Lets the crack cool down and disappear.</summary>
@@ -95,15 +92,15 @@ namespace Game.Bosses
             }
 
             _fade += Time.deltaTime;
-            float left = 1f - _fade / FadeSeconds;
+            float left = 1f - _fade / _style.FadeSeconds;
             if (left <= 0f)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            _materials[0].SetColor(MarkerArt.Tint, Seam * left);
-            _materials[1].SetColor(MarkerArt.Tint, Halo * left);
+            _materials[0].SetColor(MarkerArt.Tint, _style.Seam * left);
+            _materials[1].SetColor(MarkerArt.Tint, _style.Halo * left);
             _head.localScale = Vector3.one * left;
         }
 
@@ -137,12 +134,12 @@ namespace Game.Bosses
             }
 
             _length = total;
-            Layer("Seam", Width, Seam);
-            Layer("Halo", GlowWidth, Halo);
+            Layer("Seam", _style.Width, _style.Seam);
+            Layer("Halo", _style.GlowWidth, _style.Halo);
             _head = new GameObject("Head").transform;
             _head.SetParent(transform, false);
-            GlowDecal.PlacePool(_head, HeadGlow, HeadLightRadius);
-            _grit = ParticleKit.Create(_head, "Grit", Vector3.up * 0.05f, Grit, 0.4f, 0.9f, 0.04f, 0.12f, 1.2f, 2.8f, 1.2f, 80, 0.3f);
+            GlowDecal.PlacePool(_head, _style.HeadGlow, _style.HeadRadius);
+            _grit = ParticleKit.Create(_head, "Grit", Vector3.up * 0.05f, _style.Grit, 0.4f, 0.9f, 0.04f, 0.12f, 1.2f, 2.8f, 1.2f, 80, 0.3f);
             ParticleKit.SetRate(_grit, 0f);
             OpenTo(0f);
         }

@@ -44,6 +44,11 @@ namespace Game.Enemies
         private bool _directed;
         private float _concealedShare = -1f;
         private float _pace = 1f;
+        private float _damageScale = 1f;
+        private float _bridgeLift;
+
+        // A walker passing a gate a boss stands on climbs over it within this distance of the gate's middle.
+        private const float BridgeReach = 1.6f;
 
         public EnemyDefinition Definition => _definition;
 
@@ -164,6 +169,8 @@ namespace Game.Enemies
             _directed = false;
             _concealedShare = -1f;
             _pace = 1f;
+            _damageScale = 1f;
+            _bridgeLift = 0f;
             Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
             Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);
@@ -197,6 +204,7 @@ namespace Game.Enemies
                 amount *= _concealedShare;
             }
 
+            amount *= _damageScale;
             if (amount <= 0f)
             {
                 return;
@@ -221,6 +229,11 @@ namespace Game.Enemies
 
         /// <summary>A speed factor of its own on top of its kind's (an enraged boss).</summary>
         public void SetPace(float pace) => _pace = Mathf.Max(MinSpeedFactor, pace);
+
+        /// <summary>The share of every hit that lands (ice armour soaking it, a cracked armour letting double through).</summary>
+        public float DamageScale => _damageScale;
+
+        public void SetDamageScale(float scale) => _damageScale = Mathf.Max(0f, scale);
 
         /// <summary>Puts a directed creature at a point (its height included) facing a direction on the ground.</summary>
         public void Place(Vector3 position, Vector3 heading)
@@ -338,6 +351,8 @@ namespace Game.Enemies
 
             TryAttackStructure(deltaTime);
             UpdateRoll(deltaTime);
+            // The climb over a bridged gate is laid on top of the walk, so the walk itself stays on the flat route.
+            transform.position -= Vector3.up * _bridgeLift;
 
             float remaining = GroundSpeed * CurrentSpeedFactor(deltaTime) * deltaTime;
             float stepped = 0f;
@@ -371,6 +386,8 @@ namespace Game.Enemies
             }
 
             DropTrail(stepped);
+            _bridgeLift = _definition.Flies ? 0f : _structures.BridgeLiftAt(transform.position, BridgeReach);
+            transform.position += Vector3.up * _bridgeLift;
 
             if (_nextWaypoint >= _waypoints.Length && !IsBesiegingEnd(deltaTime))
             {

@@ -24,6 +24,8 @@ namespace Game.Enemies
         [Tooltip("Damage to every structure near the bank where it bursts out.")]
         [SerializeField] [Min(0f)] private float _burstDamage = 30f;
         [SerializeField] [Min(0.5f)] private float _burstRadius = 2.4f;
+        [Tooltip("The glow under the surface that shows where it swims.")]
+        [SerializeField] private Color _wakeGlow = new Color(1f, 0.35f, 0.6f, 0.8f);
 
         public PoolKinds Pools => _pools;
         public bool Dives => _pools != PoolKinds.None;
@@ -34,5 +36,6 @@ namespace Game.Enemies
         public float Reach => _reach;
         public float BurstDamage => _burstDamage;
         public float BurstRadius => _burstRadius;
+        public Color WakeGlow => _wakeGlow;
     }
 }

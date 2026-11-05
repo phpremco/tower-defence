@@ -195,6 +195,7 @@ namespace Game.Enemies
         private const float ModelStrikePoseShare = 0.25f;
         private const float ModelFlashAmount = 0.75f;
         private const float ModelFrostAmount = 0.5f;
+        private const float BossFrostAmount = 0.18f;
         // A dead flyer comes to rest with its body centre this far (times its scale) above the ground.
         private const float FlyerRestHeight = 0.15f;
         private static readonly Color BarColor = new Color(0.4f, 1f, 0.4f);
@@ -311,6 +312,7 @@ namespace Game.Enemies
         private BossAbilityKind[] _powerKinds;
         private bool _scripted;
         private bool _hidden;
+        private readonly List<string> _hiddenParts = new List<string>(1);
         private Quaternion _tilt = Quaternion.identity;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
@@ -399,6 +401,14 @@ namespace Game.Enemies
                 renderer.enabled = !hidden;
             }
 
+            if (!hidden)
+            {
+                foreach (string part in _hiddenParts)
+                {
+                    _model.SetPartVisible(part, false);
+                }
+            }
+
             if (_shadow != null)
             {
                 _shadow.gameObject.SetActive(!hidden);
@@ -413,6 +423,33 @@ namespace Game.Enemies
                 SetBar(_health.Fraction, _health.ArmorMax > 0f ? _health.ArmorFraction : 0f);
             }
         }
+
+        /// <summary>The bone of that name in each LOD's rig (a boss's icicles, for a view that grows them), or none.</summary>
+        public Transform[] Bones(string bone) => _model != null ? _model.Bones(bone) : new Transform[0];
+
+        /// <summary>Where a bone of the near model is in the world (a breath socket, an egg sac), or the body when it has none.</summary>
+        public Vector3 SocketPosition(string bone) => _model != null ? _model.Socket(bone).position : transform.position;
+
+        /// <summary>Shows or hides an extra part of the model (an ice armour); it stays so through hiding under a liquid.</summary>
+        public void SetPartVisible(string part, bool visible)
+        {
+            if (visible)
+            {
+                _hiddenParts.Remove(part);
+            }
+            else if (!_hiddenParts.Contains(part))
+            {
+                _hiddenParts.Add(part);
+            }
+
+            if (!_hidden)
+            {
+                _model?.SetPartVisible(part, visible);
+            }
+        }
+
+        /// <summary>Which cycle the creature travels in (a boss's hunting stride, its enraged walk); Move is its own.</summary>
+        public void UseMoveCycle(ModelClipRole role) => _clips?.UseMove(role);
 
         /// <summary>Keeps the health bar out of sight, for creatures shown outside a fight.</summary>
         public void HideHealthBar()
@@ -522,6 +559,12 @@ namespace Game.Enemies
             _tilt = Quaternion.identity;
             SetHidden(false);
             _clips?.Restart();
+            foreach (string part in _hiddenParts)
+            {
+                _model?.SetPartVisible(part, true);
+            }
+
+            _hiddenParts.Clear();
             BeginSpawn(enemy);
         }
 
@@ -1072,7 +1115,8 @@ namespace Game.Enemies
             }
             else if (_enemy.IsSlowed)
             {
-                _model.SetOverlay(FrostColor * FrostEmission, ModelFrostAmount);
+                // A chilled boss keeps most of its own colours (the Cinder Matriarch is chilled all through her hunt).
+                _model.SetOverlay(FrostColor * FrostEmission, _boss ? BossFrostAmount : ModelFrostAmount);
             }
             else
             {

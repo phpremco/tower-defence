@@ -65,6 +65,9 @@ namespace Game.Editor
         /// <summary>The second material's name in the export (<c>Crystal</c> for <c>&lt;Asset&gt;_Crystal_*.png</c>), or null for one material.</summary>
         public string SecondMaterial { get; set; }
 
+        /// <summary>Extra objects of the model with maps of their own (<c>&lt;Asset&gt;_&lt;Part&gt;_*.png</c>), shown or hidden on their own.</summary>
+        public string[] ExtraParts { get; set; } = new string[0];
+
         /// <summary>The report key of the bones shed with the armour, in order, or null.</summary>
         public string ShedBonesKey { get; set; }
 

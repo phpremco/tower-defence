@@ -152,5 +152,26 @@ namespace Game.Core
 
         /// <summary>Breaking out of the ground beside a structure and flinging it up, played once.</summary>
         SurfaceThrow = 49,
+
+        /// <summary>A boss's long hunting stride off the road. Loops; its speed follows the ground speed.</summary>
+        HuntMove = 50,
+
+        /// <summary>A boss's blow that turns the structure ahead into a wreck at its moment, played once.</summary>
+        Smash = 51,
+
+        /// <summary>A boss laying eggs from its tail: the cue is the first egg, the moment the last, played once.</summary>
+        LayEggs = 52,
+
+        /// <summary>A boss breathing frost over the gate ahead: it becomes an ice block at the moment, played once.</summary>
+        FreezeGate = 53,
+
+        /// <summary>A boss breaking through the frozen gate ahead: the gate shatters at the moment, played once and moved by its end offset.</summary>
+        ShatterThrough = 54,
+
+        /// <summary>A boss's armour plates bursting off for good (the moment: all off), played once.</summary>
+        ArmourBreak = 55,
+
+        /// <summary>An egg cracking open: the creature inside leaves at the moment, played once and held.</summary>
+        Hatch = 56,
     }
 }

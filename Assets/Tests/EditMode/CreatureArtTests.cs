@@ -130,6 +130,13 @@ namespace Game.Tests
                 }
 
                 int move = enemy.Art.IndexOf(ModelClipRole.Move);
+                if (move < 0)
+                {
+                    // Only a creature that is held where it lies (an egg) may lack a walk.
+                    Assert.IsTrue(enemy.Boss == null && enemy.Speed <= 0.1f, $"{enemy.name} has no walk");
+                    continue;
+                }
+
                 Assert.Greater(enemy.Art.Clips[move].DistancePerLoop, 0f, $"{enemy.name}: the walk would slide");
             }
         }

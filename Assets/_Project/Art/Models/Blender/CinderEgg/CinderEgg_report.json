@@ -1,0 +1,61 @@
+{
+  "asset": "CinderEgg",
+  "round": 28,
+  "game_tris": 1420,
+  "source_tris": 252272,
+  "bones": 5,
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "CinderEgg_Mat",
+  "uv": {
+    "islands": 8,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 710,
+    "uv_coverage": 0.679,
+    "world_per_uv": 1.0325218790574768
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 14.3,
+      "mask": "B"
+    },
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 21.5,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Idle": 48,
+    "Hatch": 54,
+    "Burst": 20
+  },
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Shell_1",
+    "Shell_2",
+    "Shell_3",
+    "Core"
+  ],
+  "size_m": [
+    0.477,
+    0.506,
+    0.608
+  ],
+  "pivot": "the lava surface at the egg's centre (the collar sits in the lava)",
+  "hatch": {
+    "larva_spawn_frame": 32,
+    "larva": "../FireLarva/FireLarva.fbx",
+    "larva_unity_scale": 0.6,
+    "shells_gone_frame": 50,
+    "note": "BOSSES.md: hatch after 10 s unless shot: play Idle, then Hatch; Burst when shot"
+  },
+  "laid_by": "CinderMatriarch Lay_Eggs (bone Drip)"
+}

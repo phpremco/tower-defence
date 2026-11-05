@@ -125,6 +125,15 @@ namespace Game.Editor
             return roster;
         }
 
+        // A lava ball burns what it rolls over: the Frost Warden's ice armour cracks under it (Docs/BOSSES.md).
+        internal static void MarkBurning(PathObjectDefinition asset)
+        {
+            var so = new SerializedObject(asset);
+            so.FindProperty("_burns").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
+        }
+
         private static PathObjectDefinition CreatePathObject(
             string id,
             string displayName,
@@ -270,6 +279,7 @@ namespace Game.Editor
             // Amber like the model's armed ring (curator decision 2026-11-04: our colours follow the models).
             context.Mine = CreatePathObject("Mine", "Land Mine", PathObjectKind.Mine, PathObjectPlacement.Road, TargetLayers.Ground, 35, 1.4f, 0.6f, 140f, 1f, 0f, 0f, new Color(1f, 0.72f, 0.25f), PathObjectEffect.Trap, "Buried in the road. Goes off once, under the first enemy that steps on it, and hurts everything close by.");
             context.LavaBall = CreatePathObject("LavaBall", "Lava ball", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 70, 0.9f, 0.5f, 55f, 1f, 2.2f, 0f, new Color(1f, 0.45f, 0.1f), PathObjectEffect.Roll, "Dropped on the road, it rolls on towards the base and burns every walker it touches along the way.");
+            MarkBurning(context.LavaBall);
             context.Barrel = CreatePathObject("ExplosiveBarrel", "Barrel", PathObjectKind.Mine, PathObjectPlacement.Beside, TargetLayers.Ground, 50, 2f, 1.1f, 200f, 1f, 0f, 0f, new Color(0.9f, 0.5f, 0.1f), PathObjectEffect.Blast, "Stands beside the road. When the enemy passes close it bursts, and the blast reaches far across the road.");
             context.GroundDrone = CreatePathObject("GroundDrone", "Ground drone", PathObjectKind.Roller, PathObjectPlacement.Road, TargetLayers.Ground, 80, 1.1f, 0.5f, 30f, 1f, 1.1f, 0f, new Color(0.4f, 0.9f, 1f), PathObjectEffect.Patrol, "Drives down the road at a steady pace and rams every walker it meets, dealing damage as long as it runs.");
         }

@@ -17,8 +17,12 @@ namespace Game.Enemies
         [SerializeField] private BossArrival _arrival;
         [SerializeField] private BossSignature _signature;
         [SerializeField] private BurrowPower _burrow = new BurrowPower();
+        [SerializeField] private HuntPower _hunt = new HuntPower();
+        [SerializeField] private GateBreakerPower _gateBreaker = new GateBreakerPower();
         [SerializeField] private ClimbPower _climb = new ClimbPower();
         [SerializeField] private DivePower _dive = new DivePower();
+        [Tooltip("Half the width of its body, legs included, in world units: its routes keep this clear of every tower.")]
+        [SerializeField] [Min(0.3f)] private float _bodyHalfWidth = 1.1f;
         [Tooltip("How hard the camera kicks on its real impacts (breaking out, a throw, a burst from a pool). Never sustained.")]
         [SerializeField] [Range(0f, 1f)] private float _impactKick = 0.35f;
         [Tooltip("Playback rate of its burrow, throw, dive and burst clips (the climbs have their own).")]
@@ -33,9 +37,12 @@ namespace Game.Enemies
         public BossArrival Arrival => _arrival;
         public BossSignature Signature => _signature;
         public BurrowPower Burrow => _burrow;
+        public HuntPower Hunt => _hunt;
+        public GateBreakerPower GateBreaker => _gateBreaker;
         public ClimbPower Climb => _climb;
         public DivePower Dive => _dive;
         public float ImpactKick => _impactKick;
+        public float BodyHalfWidth => _bodyHalfWidth;
         public float MechanicClipRate => _mechanicClipRate;
 
         /// <summary>What its mechanic does, for the Codex.</summary>
@@ -71,13 +78,36 @@ namespace Game.Enemies
         /// </summary>
         public float FirepowerLossSeconds()
         {
-            if (_signature != BossSignature.Burrow)
+            switch (_signature)
             {
-                return 0f;
+                case BossSignature.Burrow:
+                    int burrows = _burrow.Thresholds.Length;
+                    return burrows * (_burrow.ExpectedHiddenSeconds + MaxFieldShare * _burrow.ThrowSilenceSeconds);
+                case BossSignature.HuntTheCold:
+                    // One smashed tower per phase, out until it is rebuilt, counted as the quarter the rules let one effect reach.
+                    return _phases.Length * MaxFieldShare * _hunt.RebuildSeconds;
+                case BossSignature.GateBreaker:
+                    // Each frozen gate's gun is silent for the freeze, counted as the quarter of the field.
+                    return _gateBreaker.ExpectedGates * MaxFieldShare * _gateBreaker.FreezeSeconds;
+                default:
+                    return 0f;
+            }
+        }
+
+        /// <summary>
+        /// How much tougher its own defence makes it than its health says, for the balance ledger: an ice armour that lets
+        /// only a share of each hit through over the armoured phases costs that much more firepower per point of health.
+        /// </summary>
+        public float EffectiveHealthFactor()
+        {
+            if (_signature != BossSignature.GateBreaker)
+            {
+                return 1f;
             }
 
-            int burrows = _burrow.Thresholds.Length;
-            return burrows * (_burrow.ExpectedHiddenSeconds + MaxFieldShare * _burrow.ThrowSilenceSeconds);
+            int exposed = Mathf.Clamp(_gateBreaker.ExposedPhase, 0, _phases.Length - 1);
+            float armouredShare = exposed > 0 ? 1f - _phases[exposed].StartsAt : 0f;
+            return 1f + armouredShare * (1f / _gateBreaker.ArmourSoak - 1f);
         }
 
         private void OnValidate()
@@ -107,6 +137,16 @@ namespace Game.Enemies
             if (_signature == BossSignature.Burrow && _burrow.MinionsPerCrack > 0 && _burrow.CrackMinion == null)
             {
                 Debug.LogWarning($"BossDefinition '{name}': the crack line spawns minions but names no creature.", this);
+            }
+
+            if (_signature == BossSignature.HuntTheCold && _hunt.Clutches > 0 && (_hunt.Egg == null || _hunt.Hatchling == null))
+            {
+                Debug.LogWarning($"BossDefinition '{name}': it lays eggs but names no egg or hatchling.", this);
+            }
+
+            if (_signature == BossSignature.GateBreaker && _gateBreaker.ExposedPhase >= _phases.Length)
+            {
+                Debug.LogWarning($"BossDefinition '{name}': the exposed phase lies past its last phase.", this);
             }
 
             if (string.IsNullOrEmpty(_signatureText) || string.IsNullOrEmpty(_telegraphText) || string.IsNullOrEmpty(_counterText))

@@ -128,13 +128,11 @@ namespace Game.Levels
             }
 
             Arena = arena;
-            var page = new Page($"{ArenaPageTitle}: {arena.Level.DisplayName}");
+            var page = new Page(ArenaPageTitle);
             foreach (EnemyDefinition boss in arena.Bosses)
             {
-                if (boss != null)
-                {
-                    page.Entries.Add(new Entry($"Fight {boss.DisplayName}", EntryKind.BossArena, null, null, null, boss));
-                }
+                LevelDefinition level = arena.LevelFor(boss);
+                page.Entries.Add(new Entry($"Fight {boss.DisplayName} ({level.DisplayName})", EntryKind.BossArena, null, null, null, boss));
             }
 
             _pages.Add(page);

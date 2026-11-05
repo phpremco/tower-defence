@@ -18,6 +18,11 @@ namespace Game.Bosses
         private const float AwayFromRoadPenalty = 16f;
         private const float BesideStructurePenalty = 25f;
 
+        // A spot where the body would lie over another tower loses to any spot where it does not (Docs/BOSSES.md: the field
+        // stays consistent), but still beats coming up on the road, so the signature never fails on a dense field.
+        private const float BodyOverlapPenalty = 60f;
+        private const int StrikeDirections = 16;
+
         private static readonly Vector2Int[] Neighbours =
         {
             new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1),
@@ -92,7 +97,7 @@ namespace Game.Bosses
         /// </summary>
         /// <param name="holeAhead">How far ahead of the pivot the hole lies (world units).</param>
         /// <param name="travel">How far the pivot moves forward over the clip (world units).</param>
-        public static bool SurfaceBeside(BossField field, Tower tower, Vector3 near, float holeAhead, float travel, out Vector3 hole, out Vector3 pivot, out Vector3 forward)
+        public static bool SurfaceBeside(BossField field, Tower tower, Vector3 near, float holeAhead, float travel, float halfWidth, out Vector3 hole, out Vector3 pivot, out Vector3 forward)
         {
             hole = pivot = forward = Vector3.zero;
             GridMap grid = field.Grid;
@@ -119,7 +124,8 @@ namespace Game.Bosses
 
                 float cellSqr = grid.CellSize * grid.CellSize;
                 float score = (at - near).sqrMagnitude + (NearRoad(field, cell) ? 0f : cellSqr * AwayFromRoadPenalty)
-                    + (BesideOtherFootprint(field, cell, towerCell) ? cellSqr * BesideStructurePenalty : 0f);
+                    + (BesideOtherFootprint(field, cell, towerCell) ? cellSqr * BesideStructurePenalty : 0f)
+                    + BodyOverlaps(field, start, end, halfWidth, towerCell) * cellSqr * BodyOverlapPenalty;
                 if (score < best)
                 {
                     best = score;
@@ -194,6 +200,162 @@ namespace Game.Bosses
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// How many footprint cells (other than <paramref name="except"/>) the body lying from one point to another covers
+        /// along its flanks: zero when the whole body is clear of every tower and gate.
+        /// </summary>
+        public static int BodyOverlaps(BossField field, Vector3 from, Vector3 to, float halfWidth, Vector2Int except)
+        {
+            GridMap grid = field.Grid;
+            Vector3 along = to - from;
+            along.y = 0f;
+            Vector3 side = along.sqrMagnitude > 0.0001f ? Vector3.Cross(Vector3.up, along.normalized) * halfWidth : Vector3.right * halfWidth;
+            float length = along.magnitude;
+            int samples = Mathf.Max(1, Mathf.CeilToInt(length / SampleStep));
+            var hit = new HashSet<Vector2Int>();
+            for (int i = 0; i <= samples; i++)
+            {
+                Vector3 at = Vector3.Lerp(from, to, i / (float)samples);
+                for (int s = -1; s <= 1; s++)
+                {
+                    Vector2Int cell = grid.WorldToCell(at + side * s);
+                    if (cell != except && field.Climb.IsFootprint(cell))
+                    {
+                        hit.Add(cell);
+                    }
+                }
+            }
+
+            return hit.Count;
+        }
+
+        /// <summary>
+        /// Plans a walk off the road to a goal cell round every footprint (and, with <paramref name="clearance"/>, a cell
+        /// clear of every tower so its whole body passes between the pads); the points are the start and the cell centres
+        /// after it. False when the goal cannot be reached that way.
+        /// </summary>
+        public static bool WalkTo(BossField field, Vector3 from, Vector2Int goal, bool climbsRocks, int clearance, List<Vector3> points) =>
+            WalkTo(field.Climb, from, goal, climbsRocks, clearance, points);
+
+        /// <summary>The same walk over a bare climb layer (the tests).</summary>
+        public static bool WalkTo(ClimbLayer layer, Vector3 from, Vector2Int goal, bool climbsRocks, int clearance, List<Vector3> points)
+        {
+            points.Clear();
+            GridMap grid = layer.Grid;
+            Vector2Int start = Clamp(grid, grid.WorldToCell(from));
+            var cells = new List<Vector2Int>();
+            System.Func<Vector2Int, float> cost = c => Crowded(layer, c, start, goal, clearance) ? float.PositiveInfinity : layer.WalkCost(c, climbsRocks);
+            if (!GridRouter.TryFind(grid.Size, start, goal, cost, cells, false, ClimbLayer.CheapestWalk))
+            {
+                return false;
+            }
+
+            points.Add(from);
+            for (int i = 1; i < cells.Count; i++)
+            {
+                points.Add(grid.CellToWorld(cells[i]));
+            }
+
+            return true;
+        }
+
+        // A cell within the clearance (cells) of a tower, away from the start and the goal (where it must stand anyway).
+        private static bool Crowded(ClimbLayer layer, Vector2Int cell, Vector2Int start, Vector2Int goal, int clearance)
+        {
+            if (clearance <= 0 || Near(cell, start, 1) || Near(cell, goal, 1))
+            {
+                return false;
+            }
+
+            for (int x = -clearance; x <= clearance; x++)
+            {
+                for (int y = -clearance; y <= clearance; y++)
+                {
+                    if (layer.KindAt(cell + new Vector2Int(x, y)) == SurfaceKind.Tower)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool Near(Vector2Int a, Vector2Int b, int cells) => Mathf.Abs(a.x - b.x) <= cells && Mathf.Abs(a.y - b.y) <= cells;
+
+        /// <summary>
+        /// Where a boss stands to strike a tower that lies <paramref name="reach"/> ahead of its pivot (the Smash clip): a
+        /// walkable cell at that distance, facing the tower, its body from <paramref name="tail"/> behind the pivot to the
+        /// tower clear of every other footprint; the one nearest <paramref name="near"/> wins.
+        /// </summary>
+        public static bool StrikeSpot(BossField field, Vector3 target, float reach, float tail, float halfWidth, Vector3 near, out Vector3 pivot, out Vector3 facing)
+        {
+            pivot = facing = Vector3.zero;
+            GridMap grid = field.Grid;
+            Vector2Int targetCell = grid.WorldToCell(target);
+            float best = float.PositiveInfinity;
+            for (int t = 0; t < StrikeDirections; t++)
+            {
+                Vector3 dir = Quaternion.Euler(0f, t * 360f / StrikeDirections, 0f) * Vector3.forward;
+                Vector3 at = target - dir * reach;
+                Vector2Int cell = grid.WorldToCell(at);
+                if (!grid.Contains(cell) || field.Climb.IsFootprint(cell) || float.IsPositiveInfinity(field.Climb.WalkCost(cell, false))
+                    || !Clear(field, at - dir * tail, at) || BodyOverlaps(field, at - dir * tail, target - dir * 0.5f, halfWidth, targetCell) > 0)
+                {
+                    continue;
+                }
+
+                float score = (at - near).sqrMagnitude;
+                if (score < best)
+                {
+                    best = score;
+                    pivot = grid.CellToWorld(cell);
+                    facing = BossGeometry.Flat(target - pivot);
+                }
+            }
+
+            return !float.IsPositiveInfinity(best);
+        }
+
+        /// <summary>
+        /// Where a boss stands on a pool's bank with its tail over the liquid (to lay eggs from its sac): a walkable, clear
+        /// cell <paramref name="behind"/> in front of a pool cell, facing away from the pool; the one nearest
+        /// <paramref name="near"/> wins.
+        /// </summary>
+        public static bool BankSpot(BossField field, IReadOnlyList<Vector2Int> pool, float behind, float halfWidth, Vector3 near, out Vector3 pivot, out Vector3 facing, out Vector3 over)
+        {
+            pivot = facing = over = Vector3.zero;
+            GridMap grid = field.Grid;
+            float best = float.PositiveInfinity;
+            foreach (Vector2Int liquid in pool)
+            {
+                Vector3 at = grid.CellToWorld(liquid);
+                for (int t = 0; t < 8; t++)
+                {
+                    Vector3 dir = Quaternion.Euler(0f, t * 45f, 0f) * Vector3.forward;
+                    Vector3 stand = at + dir * behind;
+                    Vector2Int cell = grid.WorldToCell(stand);
+                    if (!grid.Contains(cell) || field.Climb.IsFootprint(cell) || float.IsPositiveInfinity(field.Climb.WalkCost(cell, false)))
+                    {
+                        continue;
+                    }
+
+                    // A bank where her body would lie over a tower loses to any clear one, but a crowded bank still serves.
+                    int overlaps = BodyOverlaps(field, stand, stand + dir * behind, halfWidth, new Vector2Int(-1, -1));
+                    float score = (stand - near).sqrMagnitude + overlaps * grid.CellSize * grid.CellSize * BodyOverlapPenalty;
+                    if (score < best)
+                    {
+                        best = score;
+                        pivot = grid.CellToWorld(cell);
+                        facing = dir;
+                        over = at;
+                    }
+                }
+            }
+
+            return !float.IsPositiveInfinity(best);
         }
 
         /// <summary>The point a little to the side of a crack where a creature climbs out.</summary>

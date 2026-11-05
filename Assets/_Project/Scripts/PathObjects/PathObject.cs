@@ -80,7 +80,7 @@ namespace Game.PathObjects
             _targets.FindInRadius(transform.position, _definition.Radius, _definition.Targets, _buffer);
             for (int i = 0; i < _buffer.Count; i++)
             {
-                _buffer[i].TakeDamage(_definition.Damage);
+                Hit(_buffer[i], _definition.Damage);
             }
 
             Triggered?.Invoke(transform.position, _definition.Radius);
@@ -108,7 +108,7 @@ namespace Game.PathObjects
             float damage = _definition.Damage * Time.deltaTime;
             for (int i = 0; i < _buffer.Count; i++)
             {
-                _buffer[i].TakeDamage(damage);
+                Hit(_buffer[i], damage);
             }
         }
 
@@ -135,6 +135,19 @@ namespace Game.PathObjects
             if (_nextWaypoint >= _road.Length)
             {
                 Finish();
+            }
+        }
+
+        // The blast or the roll is passed with its definition as the source, so a boss knows a lava ball burned it.
+        private void Hit(ITargetable target, float damage)
+        {
+            if (target is ISourcedTarget sourced)
+            {
+                sourced.TakeDamageFrom(damage, _definition, true);
+            }
+            else
+            {
+                target.TakeDamage(damage);
             }
         }
 

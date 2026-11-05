@@ -6,7 +6,7 @@
     6373
   ],
   "source_tris": 1059428,
-  "bones": 23,
+  "bones": 41,
   "texture_size": 1024,
   "low_texture_size": 512,
   "materials": {
@@ -70,7 +70,16 @@
     "Hit": 16,
     "Death": 84,
     "FreezePulse": 64,
-    "Enrage": 48
+    "Enrage": 48,
+    "Climb_Up": 210,
+    "Climb_Loop": 93,
+    "Climb_Down": 210,
+    "Submerged_Loop": 96,
+    "Dive_Into_Liquid": 70,
+    "Surface_Burst": 64,
+    "Freeze_Gate": 64,
+    "Shatter_Through": 84,
+    "Armour_Break": 56
   },
   "size_m": [
     3.118,
@@ -84,7 +93,7 @@
   "lod1": {
     "fbx": "FrostWarden_LOD1.fbx",
     "tris": 9496,
-    "bones": 22
+    "bones": 40
   },
   "walk_distance_per_loop": 1.029,
   "walk_enraged_distance_per_loop": 1.338,
@@ -103,5 +112,141 @@
     0.7,
     0.28
   ],
-  "footfalls": "Walk frames 0 (L1, R2) and 32 (R1, L2)"
+  "footfalls": "Walk frames 0 (L1, R2) and 32 (R1, L2)",
+  "round28": {
+    "clips": {
+      "Climb_Up": {
+        "end_offset_forward_m": 4.015,
+        "end_offset_up_m": 1.5,
+        "edge_forward_m": 1.5,
+        "ledge_height_m": 1.5,
+        "cycles": 3,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Walk",
+        "frames": 210,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 0.824,
+        "playback": "speed / (0.824 x scale) loops per second x 93 frames",
+        "note": "pivot on the top surface; in place; pin the IK_* markers to the climb layer",
+        "frames": 93,
+        "loop": true
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 4.015,
+        "end_offset_up_m": -1.5,
+        "edge_forward_m": 1.5,
+        "drop_height_m": 1.5,
+        "cycles": 3,
+        "note": "starts with the pivot on the top surface (Climb_Loop / Climb_Up end pose); at the last frame move the transform by the end offset",
+        "frames": 210,
+        "loop": false
+      },
+      "Submerged_Loop": {
+        "depth_m": 4.726869535446167,
+        "note": "pivot on the liquid surface; everything stays under it; in place",
+        "frames": 96,
+        "loop": true,
+        "mesh_top_m": -0.2
+      },
+      "Dive_Into_Liquid": {
+        "end_offset_forward_m": 2.6,
+        "depth_m": 4.727,
+        "takeoff_frame": 22,
+        "splash_frame": 30,
+        "under_frame": 56,
+        "note": "at the last frame move the transform by end_offset_forward and loop Submerged_Loop",
+        "ice_break_frame": 18,
+        "frames": 70,
+        "loop": false
+      },
+      "Surface_Burst": {
+        "start_depth_m": 4.727,
+        "end_offset_forward_m": 2.6,
+        "breach_frame": 16,
+        "land_frame": 32,
+        "note": "start under the exit point (the pivot on the liquid surface, facing the bank); the splash on nearby towers at breach_frame, the camera kick at land_frame; move the transform by end_offset_forward at the end and go to Walk",
+        "frames": 64,
+        "loop": false
+      },
+      "Freeze_Gate": {
+        "cast_frame": 30,
+        "gate_forward_m": 2.4,
+        "socket": "Socket_Breath",
+        "note": "the gate becomes an ice block at cast_frame (8 s, BOSSES.md)",
+        "frames": 64,
+        "loop": false
+      },
+      "Shatter_Through": {
+        "gate_forward_m": 2.4,
+        "impact_frame": 51,
+        "end_offset_forward_m": 2.676,
+        "note": "start with the frozen gate GATE_F ahead of the pivot; at impact_frame the gate shatters (wreck, shards VFX); at the end move the transform by end_offset_forward and loop WalkEnraged",
+        "frames": 84,
+        "loop": false
+      },
+      "Armour_Break": {
+        "first_plate_frame": 12,
+        "all_off_frame": 35,
+        "note": "then hide FrostWarden_IceArmour (or keep it: every plate ends at scale 0) and loop WalkEnraged; icicles leave with the armour",
+        "frames": 56,
+        "loop": false
+      }
+    },
+    "markers": [
+      "IK_Leg_L1",
+      "IK_Leg_L2",
+      "IK_Leg_R1",
+      "IK_Leg_R2",
+      "Armour_1",
+      "Armour_2",
+      "Armour_3",
+      "Armour_4",
+      "Armour_5",
+      "Armour_6",
+      "Armour_7",
+      "Armour_8",
+      "Icicle_1",
+      "Icicle_2",
+      "Icicle_3",
+      "Icicle_4",
+      "Icicle_5",
+      "Socket_Breath"
+    ],
+    "extra_objects": [
+      "FrostWarden_IceArmour",
+      "FrostWarden_IceArmour_LOD1"
+    ],
+    "climb_height_m": 1.5,
+    "liquid": "ice (water under an ice sheet)",
+    "submerged_depth_m": 4.727,
+    "ice_armour": {
+      "object": "FrostWarden_IceArmour",
+      "material": "FrostWarden_IceArmour_Mat",
+      "maps": "FrostWarden_IceArmour_*.png (512, Low 256)",
+      "tris": 3187,
+      "lod1_object": "FrostWarden_IceArmour_LOD1",
+      "lod1_tris": 1497,
+      "plates": [
+        "Armour_1",
+        "Armour_2",
+        "Armour_3",
+        "Armour_4",
+        "Armour_5",
+        "Armour_6",
+        "Armour_7",
+        "Armour_8"
+      ],
+      "icicles": [
+        "Icicle_1",
+        "Icicle_2",
+        "Icicle_3",
+        "Icicle_4",
+        "Icicle_5"
+      ],
+      "icicle_rage_scale": "0.2 (calm) to 1.0 (max rage), uniform localScale in LateUpdate"
+    },
+    "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
+    "mechanic": "Gate Breaker: Freeze_Gate, Climb_Up onto the frozen gate (it sags), Shatter_Through; ice armour soaks damage until Armour_Break (below 40% or a Lava Ball)"
+  }
 }

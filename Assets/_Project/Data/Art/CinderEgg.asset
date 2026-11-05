@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: CinderEgg
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 52207900fe4a22d40aba5d77ca2941a0, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: c8dc9e9494c14894994c57326edd5ce0, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 7be24206608466e40a2985a3082caaaa, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _parts: []
+  _scale: 1.4
+  _yaw: 180
+  _bodyCentrePivot: 0
+  _height: 0.5475275
+  _lodScreenHeight: 0.05
+  _upperBodyBone: 
+  _deathFade: {x: 0.16666667, y: 0.5666667}
+  _embers: 1
+  _bleeds: 0
+  _shedBones: []
+  _clips:
+  - _role: 56
+    _clip: {fileID: -4487849814792073304, guid: 52207900fe4a22d40aba5d77ca2941a0, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 1.0666667
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 1
+    _clip: {fileID: -3340769368044947330, guid: 52207900fe4a22d40aba5d77ca2941a0, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 3
+    _clip: {fileID: -7068788124118341918, guid: 52207900fe4a22d40aba5d77ca2941a0, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0

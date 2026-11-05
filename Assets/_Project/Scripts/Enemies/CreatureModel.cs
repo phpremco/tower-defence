@@ -75,7 +75,7 @@ namespace Game.Enemies
 
             GameObject near = Object.Instantiate(art.Model, root, false);
             near.name = art.Model.name;
-            Renderer[] nearRenderers = Dress(near, materials);
+            Renderer[] nearRenderers = Dress(near, materials, art);
             Animator[] animators;
             Renderer[] all;
             GameObject far = null;
@@ -83,7 +83,7 @@ namespace Game.Enemies
             {
                 far = Object.Instantiate(art.Lod1, root, false);
                 far.name = art.Lod1.name;
-                Renderer[] farRenderers = Dress(far, materials);
+                Renderer[] farRenderers = Dress(far, materials, art);
                 var group = root.gameObject.AddComponent<LODGroup>();
                 group.SetLODs(new[] { new LOD(art.LodScreenHeight, nearRenderers), new LOD(FarLodScreenHeight, farRenderers) });
                 group.RecalculateBounds();
@@ -171,26 +171,40 @@ namespace Game.Enemies
             }
         }
 
+        // The first slot, the second (crystals, ice) when the model has one, then one per extra part (an ice armour).
         private static Material[] CopyMaterials(ModelArtDefinition art, bool lowDetail)
         {
-            var first = new Material(art.MaterialFor(lowDetail)) { name = art.name };
-            if (!art.HasSecondMaterial)
+            var materials = new List<Material>(2 + art.Parts.Length) { new Material(art.MaterialFor(lowDetail)) { name = art.name } };
+            if (art.HasSecondMaterial)
             {
-                return new[] { first };
+                materials.Add(new Material(art.SecondMaterialFor(lowDetail)) { name = art.name + "_Second" });
             }
 
-            return new[] { first, new Material(art.SecondMaterialFor(lowDetail)) { name = art.name + "_Second" } };
+            foreach (ModelPart part in art.Parts)
+            {
+                Material source = part.MaterialFor(lowDetail);
+                materials.Add(new Material(source != null ? source : art.MaterialFor(lowDetail)) { name = art.name + "_" + part.Object });
+            }
+
+            return materials.ToArray();
         }
 
-        // A mesh with two sub-meshes (body and crystals) wears both slots, in the export's order; every other mesh the first.
-        private static Renderer[] Dress(GameObject instance, Material[] materials)
+        // An extra part wears its own material; a mesh with two sub-meshes (body and crystals) wears both slots, in the
+        // export's order; every other mesh the first.
+        private static Renderer[] Dress(GameObject instance, Material[] materials, ModelArtDefinition art)
         {
             Renderer[] renderers = instance.GetComponentsInChildren<Renderer>(true);
+            int slots = art.HasSecondMaterial ? 2 : 1;
             foreach (Renderer renderer in renderers)
             {
-                if (materials.Length > 1 && SubMeshes(renderer) > 1)
+                int part = PartOf(art, renderer.name);
+                if (part >= 0)
                 {
-                    renderer.sharedMaterials = materials;
+                    renderer.sharedMaterial = materials[slots + part];
+                }
+                else if (slots > 1 && SubMeshes(renderer) > 1)
+                {
+                    renderer.sharedMaterials = new[] { materials[0], materials[1] };
                 }
                 else
                 {
@@ -206,6 +220,35 @@ namespace Game.Enemies
             }
 
             return renderers;
+        }
+
+        private static int PartOf(ModelArtDefinition art, string rendererName)
+        {
+            for (int i = 0; i < art.Parts.Length; i++)
+            {
+                if (art.Parts[i] != null && art.Parts[i].Owns(rendererName))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>Shows or hides an extra part of the model (an ice armour) in both LODs; false when the model has no such part.</summary>
+        public bool SetPartVisible(string part, bool visible)
+        {
+            bool found = false;
+            foreach (Renderer renderer in Renderers)
+            {
+                if (renderer != null && renderer.name.StartsWith(part, System.StringComparison.Ordinal))
+                {
+                    renderer.enabled = visible;
+                    found = true;
+                }
+            }
+
+            return found;
         }
 
         private static int SubMeshes(Renderer renderer)

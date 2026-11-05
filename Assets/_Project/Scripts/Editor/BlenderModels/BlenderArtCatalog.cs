@@ -36,7 +36,7 @@ namespace Game.Editor
             // The living spawn origins (README round 23): the marker breath.
             "Marked",
             // The continent bosses' mechanic cycles (README round 28): in place, the owner moves the body.
-            "Climb_Loop", "Submerged_Loop", "Burrow_Travel",
+            "Climb_Loop", "Submerged_Loop", "Burrow_Travel", "Hunt_Stride",
         };
 
         private static List<BlenderArtEntry> _creatures;
@@ -83,6 +83,9 @@ namespace Game.Editor
             { "CinderMatriarch", "CinderMatriarch" },
             { "FrostWarden", "FrostWarden" },
             { "Rotbloom", "Rotbloom" },
+            // The Cinder Matriarch's brood (round 28): the egg she lays in the lava and the fire larva that hatches from it.
+            { "CinderEgg", "CinderEgg" },
+            { "FireLarva", "FireLarva" },
             { "Shattered", "Shattered" },
         };
 
@@ -254,20 +257,54 @@ namespace Game.Editor
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Crystal",
+                    Embers = true,
                     Clips = new[]
                     {
                         new BlenderClipSpec("Spawn", ModelClipRole.Power, 30, "Spawn", "Vent_1"),
                         new BlenderClipSpec("Roar", ModelClipRole.Roar, 20),
+                        // Round 28: Hatred of the Cold; moments, offsets and the strike reach come from the round28 block.
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 28),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 16),
+                        new BlenderClipSpec("Hunt_Stride", ModelClipRole.HuntMove),
+                        new BlenderClipSpec("Smash", ModelClipRole.Smash),
+                        new BlenderClipSpec("Lay_Eggs", ModelClipRole.LayEggs, 0, string.Empty, "Drip"),
+                    },
+                },
+                // Her egg (round 28): it rests, then hatches (the larva leaves at frame 32) or bursts when it is shot.
+                new BlenderArtEntry("CinderEgg", "CinderEgg")
+                {
+                    Bleeds = false,
+                    Embers = true,
+                    Clips = new[]
+                    {
+                        new BlenderClipSpec("Hatch", ModelClipRole.Hatch, 32),
+                        new BlenderClipSpec("Burst", ModelClipRole.Death),
                     },
                 },
                 new BlenderArtEntry("FrostWarden", "FrostWarden")
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Ice",
+                    // Round 28: the ice armour is an object of its own with its own maps (FrostWarden_IceArmour_*).
+                    ExtraParts = new[] { "IceArmour" },
                     Clips = new[]
                     {
                         new BlenderClipSpec("FreezePulse", ModelClipRole.Power, 30, "Pulse"),
                         new BlenderClipSpec("Enrage", ModelClipRole.Enrage),
+                        // Round 28: Gate Breaker; moments, offsets and the gate reach come from the round28 block.
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 30),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 16),
+                        new BlenderClipSpec("Freeze_Gate", ModelClipRole.FreezeGate, 0, string.Empty, "Socket_Breath"),
+                        new BlenderClipSpec("Shatter_Through", ModelClipRole.ShatterThrough),
+                        new BlenderClipSpec("Armour_Break", ModelClipRole.ArmourBreak),
                     },
                 },
                 new BlenderArtEntry("Rotbloom", "Rotbloom")

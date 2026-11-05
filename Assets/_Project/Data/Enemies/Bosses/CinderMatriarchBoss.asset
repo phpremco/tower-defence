@@ -17,7 +17,7 @@ MonoBehaviour:
     StartsAt: 1
   - Name: Brood
     StartsAt: 0.5
-  _arrival: 0
+  _arrival: 2
   _signature: 2
   _burrow:
     _thresholds:
@@ -37,6 +37,56 @@ MonoBehaviour:
     _returnToRoadShare: 0.08
     _returnSpeedFactor: 2.5
     _expectedHiddenSeconds: 6
+  _hunt:
+    _cooldownSeconds: 14
+    _heatLineSeconds: 1.5
+    _huntPace: 1.25
+    _diveGain: 4
+    _rebuildSeconds: 12
+    _trailSeconds: 6
+    _trailSpacing: 0.6
+    _trailRadius: 0.7
+    _trailBehind: 1.6
+    _towerBurn: 14
+    _walkerBurn: 4
+    _broodPhase: 1
+    _egg: {fileID: 11400000, guid: 35a7022c60291a949a67785e3920a4f3, type: 2}
+    _hatchling: {fileID: 11400000, guid: d59bdbd9a038cd84087dd46581c5c12c, type: 2}
+    _eggsPerClutch: 3
+    _hatchlingsPerEgg: 2
+    _hatchSeconds: 10
+    _clutches: 2
+    _clutchInterval: 30
+    _sacBehind: 2.2
+  _gateBreaker:
+    _freezeSeconds: 8
+    _warnDistance: 7
+    _refreezeSeconds: 12
+    _ragePerGate: 0.15
+    _maxRage: 4
+    _rageBones:
+    - Icicle_1
+    - Icicle_2
+    - Icicle_3
+    - Icicle_4
+    - Icicle_5
+    _rageScale: {x: 0.2, y: 1}
+    _armourPart: 
+    _armourBones:
+    - Armour_1
+    - Armour_2
+    - Armour_3
+    - Armour_4
+    - Armour_5
+    - Armour_6
+    - Armour_7
+    - Armour_8
+    _armourSoak: 0.5
+    _crackedFactor: 2
+    _crackSeconds: 5
+    _exposedPhase: 1
+    _exposedPace: 1.35
+    _expectedGates: 3
   _climb:
     _climbsRocks: 1
     _climbsGates: 1
@@ -53,8 +103,10 @@ MonoBehaviour:
     _reach: 2.5
     _burstDamage: 30
     _burstRadius: 2.4
+    _wakeGlow: {r: 1, g: 0.45, b: 0.1, a: 0.9}
+  _bodyHalfWidth: 1.8
   _impactKick: 0.35
   _mechanicClipRate: 1.4
-  _signatureText: She leaves the road to hunt your cold towers across the map and smashes each into a wreck you can rebuild. Without cold towers she walks the road. Her trail of lava burns towers it touches; below half her health she lays eggs in the lava.
-  _telegraphText: A thin line of heat runs from her to her first target, and that tower starts to glow warm.
-  _counterText: Use a cheap cold tower far from the road as bait so she walks past your firepower, or build no cold at all and let her take the long road. Shoot her eggs before they hatch.
+  _signatureText: 'She leaves the road to hunt your cold towers (every tower that slows), the nearest first, and smashes it into a wreck you can rebuild: one tower each time she sets out, never more than about a quarter of your towers. She walks between the pads round your towers and climbs the rock ridges, and a lava pool nearer her prey is her shortcut. Without cold towers she walks the road. Her trail of lava burns the towers it touches, and walkers less. Below half her health she lays eggs in the lava that hatch into fire larvae after ten seconds.'
+  _telegraphText: She rises out of the largest lava pool. When she sets out she rears up, a thin line of heat runs from her to the tower she hunts, and that tower starts to glow warm.
+  _counterText: Use a cheap cold tower far from the road as bait so she walks a long way past your firepower, or build no cold at all and let her take the long road. Keep towers off the banks of the lava pools, and shoot her eggs before they hatch.

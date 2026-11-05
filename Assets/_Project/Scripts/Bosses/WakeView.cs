@@ -35,5 +35,14 @@ namespace Game.Bosses
         }
 
         public void Follow(Vector3 at) => transform.position = at;
+
+        /// <summary>Recolours the glow under the surface (pink sand, orange lava, pale ice).</summary>
+        public void SetGlow(Color glow)
+        {
+            if (_glow.TryGetComponent(out Renderer renderer))
+            {
+                renderer.sharedMaterial = GlowDecal.RadialMaterial(glow);
+            }
+        }
     }
 }

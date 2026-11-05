@@ -87,6 +87,33 @@ namespace Game.Combat
             return best;
         }
 
+        /// <summary>
+        /// How high a walker at a point climbs to pass over a bridged structure (a gate a boss stands on): the full top
+        /// height on it, falling off to zero at the given reach; zero away from every bridge.
+        /// </summary>
+        public float BridgeLiftAt(Vector3 origin, float reach)
+        {
+            float lift = 0f;
+            for (int i = 0; i < _structures.Count; i++)
+            {
+                if (!(_structures[i] is IBridgeable bridge) || !bridge.IsBridged)
+                {
+                    continue;
+                }
+
+                float dx = _structures[i].Position.x - origin.x;
+                float dz = _structures[i].Position.z - origin.z;
+                float distance = Mathf.Sqrt(dx * dx + dz * dz);
+                if (distance < reach)
+                {
+                    float share = 1f - distance / reach;
+                    lift = Mathf.Max(lift, bridge.BridgeHeight * Mathf.SmoothStep(0f, 1f, share));
+                }
+            }
+
+            return lift;
+        }
+
         /// <summary>Damages every living structure within a radius and returns how many were hit.</summary>
         public int DamageInRadius(Vector3 origin, float radius, float damage)
         {

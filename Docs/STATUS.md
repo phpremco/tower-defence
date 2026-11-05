@@ -2255,3 +2255,38 @@ Docs/BOSSES.md has the design and the implementation notes. Not committed; the f
   the pivot is kept off footprints); a thrown tower reads small next to the boss; cracks next to a gate that stands beside the
   target pass close to its pylon; climbing over a 1 m rock with 1.2 m clips looks rough; walkers do not follow it over a
   gate; the exit of a pool dive can land on the far bank behind decor.
+
+## Round 4b: boss brain split, Cinder Matriarch, Frost Warden (2026-11-05)
+
+Docs/BOSSES.md "Implementation notes (round 4b)" has the details. Not committed; the full generator was not run (targeted:
+`Tools/PlayTest/Scripts/ApplyBosses.cs` syncs and rebuilds Gravemaw, CinderMatriarch, CinderEgg, FireLarva and FrostWarden
+art plus the "Continent bosses" step; `ApplyBossData.cs` runs the step alone and validates the arena levels).
+- **Split:** `ContinentBossBrain` keeps the shared body; signatures behind `IBossSignature` chosen by
+  `BossSignatures.For(BossDefinition.Signature)`: `BurrowSignature` (Gravemaw), `HuntSignature`, `GateBreakerSignature`,
+  `NoSignature`; counts in `BossRecord`; pure logic `ColdHunt`, `LavaTrail`, `EggClutch`, `GateRage`, `IceArmour`; views
+  `TowerAuraView`, `IceBlockView`, `LavaTrailView`, `BoneScaleView`, `CrackStyle`; `BroodKeeper` holds the eggs.
+- **Gravemaw follow-ups:** walkers follow it over a gate it stands on (`Tower.IsBridged`, walkers climb over); surfacing
+  spots pay for every footprint under its body; pool exits stay out of the field's two outer cells (re-shot: it now comes
+  out on the road by the quicksand, `g01`/`g02`).
+- **Cinder Matriarch** and **Frost Warden** play their full BOSSES.md signatures (see the notes); new data `HuntPower`,
+  `GateBreakerPower`, `BossArrival.Pool`, `BossDefinition.BodyHalfWidth`, `DivePower.WakeGlow`; engine hooks
+  `Tower.Freeze/Thaw/Smash/IsFrozen`, `Enemy.SetDamageScale`, `IBurningSource` (`LavaBall.Burns`), `IBridgeable`,
+  `EnemySpawner.SpawnAt/Withdraw`, `LevelContext.BossGateWarned/BossGateFrozen` (crack and freeze sounds), new clip roles
+  HuntMove, Smash, LayEggs, FreezeGate, ShatterThrough, ArmourBreak, Hatch, `ModelPart` (the IceArmour mesh with its own
+  material), `EnemyView.Bones/SocketPosition/SetPartVisible/UseMoveCycle`. New creatures `CinderEgg`, `FireLarva` (with voices).
+- **Arena:** entries per boss with a level; `Arena_Lava` (Crysium Vein water -> lava) and `Arena_Ice` (Quartz Flats water ->
+  ice) under `Data/Levels/Arena` because no Crystal Plains level has lava or ice (curator fallback; arena only).
+- **Small look decisions:** chilled bosses keep their colours (frost overlay 0.18); Codex says "Towers: see its signature"
+  for a signature boss; a pool entrance takes the largest pool that joins the road in its first half.
+- **Ledger:** mechanic loss Cinder 6 s, Frost 6 s, inside the 0.35 cap; Frost's ice armour counts as x1.6 health. No band or
+  campaign data changed (neither boss is placed in the campaign).
+- **Tests:** EditMode 404/404 (new `BossSignatureTests` 13). PlayMode one class at a time: GravemawArenaTests 1/1,
+  CinderMatriarchArenaTests 1/1 (rises from lava, hunts and smashes only cold towers within the limits, lava trail, eggs, no
+  pivot on a footprint), FrostWardenArenaTests 1/1 (frozen lake, freeze/climb/shatter, rage, thaw saves a gate, lava ball
+  doubles damage, armour breaks); the other classes: see the round-4b report. Remco's save restored byte-identical after
+  every PlayMode run (MD5 ec2a1f6d...).
+- **Screenshots:** session scratchpad `round4b/` (c01-c09 Cinder, f01-f12 Frost, g01-g02 Gravemaw).
+- **Weak points:** the Matriarch's 4.6 m leg span still brushes neighbouring towers on a dense field (pivot and body stay
+  clear, legs do not); the ice block is a box in the liquid ice material; the lava trail and frost creep are glow pools;
+  the older Frost Warden clips key its armour plates to 0 (held at 1 in code); test drivers pump damage to finish the
+  fights in time, so their pacing says nothing about balance; neither boss has a campaign level or a HeroCap tuning yet.

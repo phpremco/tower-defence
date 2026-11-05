@@ -13,11 +13,13 @@ namespace Game.Editor
     {
         public readonly struct Facts
         {
-            public Facts(Vector2 endOffset, float anchor, float cueFrame)
+            public Facts(Vector2 endOffset, float anchor, float cueFrame, float distance, float eventFrame)
             {
+                EventFrame = eventFrame;
                 EndOffset = endOffset;
                 Anchor = anchor;
                 CueFrame = cueFrame;
+                Distance = distance;
             }
 
             /// <summary>Model units forward (x) and up (y) the body has moved by the last frame.</summary>
@@ -28,9 +30,39 @@ namespace Game.Editor
 
             /// <summary>Frame of the burst before the main moment (a throw), or zero.</summary>
             public float CueFrame { get; }
+
+            /// <summary>Model units one loop of an in-place cycle covers (a hunting stride), or zero.</summary>
+            public float Distance { get; }
+
+            /// <summary>Frame of the clip's main moment from the report (the impact, the cast, the last egg), or zero.</summary>
+            public float EventFrame { get; }
         }
 
-        private static readonly string[] AnchorKeys = { "hole_forward_m", "bank_forward_m", "exit_forward_m", "edge_forward_m" };
+        private static readonly string[] AnchorKeys = { "hole_forward_m", "bank_forward_m", "exit_forward_m", "edge_forward_m", "target_forward_m", "gate_forward_m" };
+
+        private static readonly string[] EventKeys = { "impact_frame", "cast_frame", "all_off_frame" };
+
+        // The main moment the report names for a clip: the impact, the cast, the last plate off, or the last egg.
+        private static float EventOf(Dictionary<string, object> fields)
+        {
+            foreach (string key in EventKeys)
+            {
+                object value = BlenderJson.Field(fields, key);
+                if (value != null)
+                {
+                    return BlenderJson.Number(value);
+                }
+            }
+
+            List<object> eggs = BlenderJson.Array(BlenderJson.Field(fields, "egg_frames"));
+            return eggs.Count > 0 ? BlenderJson.Number(eggs[eggs.Count - 1]) : 0f;
+        }
+
+        private static float FirstOf(object array)
+        {
+            List<object> values = BlenderJson.Array(array);
+            return values.Count > 0 ? BlenderJson.Number(values[0]) : 0f;
+        }
 
         public static Dictionary<string, Facts> Read(string reportPath)
         {
@@ -63,8 +95,8 @@ namespace Game.Editor
                 }
 
                 // A throw has its burst first: that is the cue; every other clip has only its main moment.
-                float cue = BlenderJson.Field(fields, "throw_frame") != null ? BlenderJson.Number(BlenderJson.Field(fields, "burst_frame")) : 0f;
-                facts[clip.Key] = new Facts(end, anchor, cue);
+                float cue = BlenderJson.Field(fields, "throw_frame") != null ? BlenderJson.Number(BlenderJson.Field(fields, "burst_frame")) : FirstOf(BlenderJson.Field(fields, "egg_frames"));
+                facts[clip.Key] = new Facts(end, anchor, cue, BlenderJson.Number(BlenderJson.Field(fields, "distance_per_loop_m")), EventOf(fields));
             }
 
             return facts;

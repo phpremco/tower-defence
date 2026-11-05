@@ -22,6 +22,19 @@ namespace Game.Editor
         private const string ArenaLevel = "Level_C1_03";
         private const int ArenaDifficulty = 1;
 
+        // The signatures that run (round 4b); a boss with another is Codex data until its round.
+        private static readonly BossSignature[] Fightable = { BossSignature.Burrow, BossSignature.HuntTheCold, BossSignature.GateBreaker };
+
+        // No Crystal Plains level has lava or ice yet, so the bosses that need them are fought on a copy of a level whose
+        // pools are turned into their liquid (arena only; the campaign never sees these copies).
+        private static readonly (string Boss, string Source, string Id, string Name, TerrainKind[] From, TerrainKind To)[] ArenaLiquids =
+        {
+            ("CinderMatriarch", "Level_C1_06", "Arena_Lava", "Crysium Vein, molten", new[] { TerrainKind.Water }, TerrainKind.Lava),
+            ("FrostWarden", "Level_C1_05", "Arena_Ice", "Quartz Flats, frozen", new[] { TerrainKind.Water }, TerrainKind.Ice),
+        };
+
+        private const string ArenaLevelFolder = DataRoot + "/Levels/Arena";
+
         // The Sealed One's imported model (round 16) has no walk yet; it wears none until its round-28 clips are in.
         private static readonly string[] WithoutArtYet = { "SealedOne" };
 
@@ -34,6 +47,11 @@ namespace Game.Editor
             public BossArrival Arrival;
             public PoolKinds Pools;
             public bool ClimbsGates = true;
+            public Color WakeGlow = new Color(1f, 0.35f, 0.6f, 0.8f);
+            public string ArmourPart = string.Empty;
+
+            // Half its body width in world units, legs included (the model's width at the titans' scale of 0.8).
+            public float BodyHalfWidth = 1.1f;
             public string SignatureText;
             public string TelegraphText;
             public string CounterText;
@@ -68,22 +86,30 @@ namespace Game.Editor
                 Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 5000f, 0f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
                 Phases = new[] { new BossPhase("Hunting", 1f), new BossPhase("Brood", 0.5f) },
                 Signature = BossSignature.HuntTheCold,
+                Arrival = BossArrival.Pool,
                 Pools = PoolKinds.Lava,
-                SignatureText = "She leaves the road to hunt your cold towers across the map and smashes each into a wreck you can rebuild. Without cold towers she walks the road. Her trail of lava burns towers it touches; below half her health she lays eggs in the lava.",
-                TelegraphText = "A thin line of heat runs from her to her first target, and that tower starts to glow warm.",
-                CounterText = "Use a cheap cold tower far from the road as bait so she walks past your firepower, or build no cold at all and let her take the long road. Shoot her eggs before they hatch.",
+                WakeGlow = new Color(1f, 0.45f, 0.1f, 0.9f),
+                BodyHalfWidth = 1.8f,
+                SignatureText = "She leaves the road to hunt your cold towers (every tower that slows), the nearest first, and smashes it into a wreck you can rebuild: one tower each time she sets out, never more than about a quarter of your towers. She walks between the pads round your towers and climbs the rock ridges, and a lava pool nearer her prey is her shortcut. Without cold towers she walks the road. Her trail of lava burns the towers it touches, and walkers less. Below half her health she lays eggs in the lava that hatch into fire larvae after ten seconds.",
+                TelegraphText = "She rises out of the largest lava pool. When she sets out she rears up, a thin line of heat runs from her to the tower she hunts, and that tower starts to glow warm.",
+                CounterText = "Use a cheap cold tower far from the road as bait so she walks a long way past your firepower, or build no cold at all and let her take the long road. Keep towers off the banks of the lava pools, and shoot her eggs before they hatch.",
                 Voice = new VoiceSpec { Enemy = "CinderMatriarch", Move = "Bosses/Ant/ant_walk_loop_boss", Screech = "Bosses/Ant/ant_screech_boss", Growl = "Bosses/Ant/ant_screech_boss" },
             };
             yield return new BossSpec
             {
                 Id = "FrostWarden",
-                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 4500f, 1500f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
+                // No armour layer on its health: its ice armour is the mechanic (a share of each hit lands until it breaks).
+                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 4500f, 0f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
                 Phases = new[] { new BossPhase("Armoured", 1f), new BossPhase("Exposed", 0.4f) },
                 Signature = BossSignature.GateBreaker,
-                Pools = PoolKinds.Ice,
-                SignatureText = "Every gate it reaches it freezes solid for a few seconds, then walks straight through and shatters it into a wreck. Each broken gate makes it angrier and faster.",
-                TelegraphText = "Frost creeps over the ground in front of it, a gate it targets gets a blue haze and cracks, and icicles grow on its back as its rage rises.",
-                CounterText = "Do not lean on gates: spread towers along the long road. Fire breaks its ice armour for double damage, and the hero can thaw a frozen gate with Repair.",
+                Arrival = BossArrival.Pool,
+                Pools = PoolKinds.Ice | PoolKinds.Water,
+                WakeGlow = new Color(0.55f, 0.85f, 1f, 0.8f),
+                BodyHalfWidth = 1.25f,
+                ArmourPart = "FrostWarden_IceArmour",
+                SignatureText = "Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.",
+                TelegraphText = "It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.",
+                CounterText = "Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. The hero's repair thaws a frozen gate, and the Warden slips off without breaking it.",
                 Voice = new VoiceSpec { Enemy = "FrostWarden", Move = "Bosses/IceBeetle/ice_beetle_walk_loop_boss", Screech = "Bosses/IceBeetle/ice_beetle_screech_boss", Growl = "Bosses/IceBeetle/ice_beetle_screech_boss" },
             };
             yield return new BossSpec
@@ -143,10 +169,17 @@ namespace Game.Editor
         {
             EnsureFolder(BossFolder);
             var skitter = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{DataRoot}/Enemies/Skitter.asset");
+            (EnemyDefinition egg, EnemyDefinition larva) = CreateBrood();
+            var lavaBall = AssetDatabase.LoadAssetAtPath<Game.PathObjects.PathObjectDefinition>($"{DataRoot}/PathObjects/LavaBall.asset");
+            if (lavaBall != null)
+            {
+                MarkBurning(lavaBall);
+            }
+
             var made = new List<EnemyDefinition>();
             foreach (BossSpec spec in ContinentBosses())
             {
-                BossDefinition boss = CreateBossData(spec, skitter);
+                BossDefinition boss = CreateBossData(spec, skitter, egg, larva);
                 EnemyDefinition enemy = CreateEnemy(spec.Creature);
                 var so = new SerializedObject(enemy);
                 so.FindProperty("_boss").objectReferenceValue = boss;
@@ -161,7 +194,39 @@ namespace Game.Editor
             return made;
         }
 
-        private static BossDefinition CreateBossData(BossSpec spec, EnemyDefinition skitter)
+        // The Cinder Matriarch's brood (Docs/BOSSES.md): the egg she lays in the lava (it lies still, shootable, and hatches
+        // unless shot) and the fire larva that crawls out of it, both wearing their round-28 Blender art.
+        private static (EnemyDefinition Egg, EnemyDefinition Larva) CreateBrood()
+        {
+            EnemyDefinition larva = CreateEnemy(new Creature
+            {
+                Id = "FireLarva", Description = "A fire bug hatched from the Cinder Matriarch's eggs: small, quick and hot.", Layer = TargetLayers.Ground,
+                Health = 24f, Speed = 1.3f, BaseDamage = 1, Element = Element.Fire, Attack = AttackStyle.Bite, BlockadeDamage = 4f, AttackRange = 2.5f, AttackInterval = 1f,
+                Color = new Color(1f, 0.4f, 0.1f), Eyes = new Color(1f, 0.85f, 0.4f), Accent = new Color(1f, 0.55f, 0.15f), Blood = new Color(1f, 0.6f, 0.2f),
+                Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
+            });
+            EnemyDefinition egg = CreateEnemy(new Creature
+            {
+                Id = "CinderEgg", Description = "An egg of the Cinder Matriarch in the lava. Shoot it before it hatches.", Layer = TargetLayers.Ground,
+                Health = 70f, Speed = 0.1f, BaseDamage = 0, Element = Element.Fire, Attack = AttackStyle.Bite, AttackRange = 0.5f, AttackInterval = 1f,
+                Color = new Color(0.5f, 0.15f, 0.05f), Eyes = new Color(1f, 0.55f, 0.15f), Accent = new Color(1f, 0.5f, 0.1f), Blood = new Color(1f, 0.55f, 0.15f),
+                Scale = 1f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
+            });
+            CreateVoice(new VoiceSpec { Enemy = "FireLarva", Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/Ant/ant_screech", Pitch = 1.35f });
+            // The egg never walks: its "move" is the lava bubbling round it.
+            CreateVoice(new VoiceSpec { Enemy = "CinderEgg", Move = EnvironmentFolder + "lava_bubbling_loop" });
+            foreach (EnemyDefinition brood in new[] { larva, egg })
+            {
+                var so = new SerializedObject(brood);
+                so.FindProperty("_art").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{BlenderArtBuilder.ArtDataFolder}/{brood.name}.asset");
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(brood);
+            }
+
+            return (egg, larva);
+        }
+
+        private static BossDefinition CreateBossData(BossSpec spec, EnemyDefinition skitter, EnemyDefinition egg, EnemyDefinition larva)
         {
             var boss = LoadOrCreate<BossDefinition>($"{BossFolder}/{spec.Id}Boss.asset");
             var so = new SerializedObject(boss);
@@ -180,6 +245,13 @@ namespace Game.Editor
             so.FindProperty("_burrow._minionsPerCrack").intValue = spec.Signature == BossSignature.Burrow ? 4 : 0;
             so.FindProperty("_climb._climbsGates").boolValue = spec.ClimbsGates;
             so.FindProperty("_dive._pools").intValue = (int)spec.Pools;
+            so.FindProperty("_dive._wakeGlow").colorValue = spec.WakeGlow;
+            so.FindProperty("_bodyHalfWidth").floatValue = spec.BodyHalfWidth;
+            bool hunts = spec.Signature == BossSignature.HuntTheCold;
+            so.FindProperty("_hunt._egg").objectReferenceValue = hunts ? egg : null;
+            so.FindProperty("_hunt._hatchling").objectReferenceValue = hunts ? larva : null;
+            so.FindProperty("_hunt._clutches").intValue = hunts ? 2 : 0;
+            so.FindProperty("_gateBreaker._armourPart").stringValue = spec.ArmourPart;
             so.FindProperty("_signatureText").stringValue = spec.SignatureText;
             so.FindProperty("_telegraphText").stringValue = spec.TelegraphText;
             so.FindProperty("_counterText").stringValue = spec.CounterText;
@@ -218,6 +290,74 @@ namespace Game.Editor
             EditorUtility.SetDirty(codex);
         }
 
+        // The level a boss is fought in: a copy with its pools turned into the liquid the boss needs, or none (the arena's own).
+        private static LevelDefinition ArenaLevelFor(string boss)
+        {
+            foreach (var liquid in ArenaLiquids)
+            {
+                if (liquid.Boss == boss)
+                {
+                    return CreateArenaLevel(liquid.Source, liquid.Id, liquid.Name, liquid.From, liquid.To);
+                }
+            }
+
+            return null;
+        }
+
+        // A copy of a campaign level (same asset GUID on every run, so the arena keeps pointing at it) with some pool
+        // kinds turned into another; everything else, art included, stays the source's.
+        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to)
+        {
+            var original = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/{source}.asset");
+            if (original == null)
+            {
+                return null;
+            }
+
+            EnsureFolder(ArenaLevelFolder);
+            string path = $"{ArenaLevelFolder}/{id}.asset";
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(path);
+            if (level == null)
+            {
+                level = Object.Instantiate(original);
+                AssetDatabase.CreateAsset(level, path);
+            }
+            else
+            {
+                EditorUtility.CopySerialized(original, level);
+            }
+
+            level.name = id;
+            var so = new SerializedObject(level);
+            so.FindProperty("_displayName").stringValue = displayName;
+            SerializedProperty terrain = so.FindProperty("_terrain");
+            var turned = new HashSet<Vector2Int>();
+            for (int i = 0; i < terrain.arraySize; i++)
+            {
+                SerializedProperty patch = terrain.GetArrayElementAtIndex(i);
+                SerializedProperty kind = patch.FindPropertyRelative("Kind");
+                if (System.Array.IndexOf(from, (TerrainKind)kind.intValue) >= 0)
+                {
+                    kind.intValue = (int)to;
+                    turned.Add(patch.FindPropertyRelative("Cell").vector2IntValue);
+                }
+            }
+
+            // A nest of the old liquid's element no longer has its home: the arena's own wave uses no nests, so it goes.
+            SerializedProperty nests = so.FindProperty("_nests");
+            for (int i = nests.arraySize - 1; i >= 0; i--)
+            {
+                if (turned.Contains(nests.GetArrayElementAtIndex(i).FindPropertyRelative("Cell").vector2IntValue))
+                {
+                    nests.DeleteArrayElementAtIndex(i);
+                }
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(level);
+            return level;
+        }
+
         // The developer boss arena: Shard Ridge on Medium, a few Skitters, and every continent boss that can be fought yet.
         internal static void CreateBossArena(List<EnemyDefinition> bosses)
         {
@@ -226,17 +366,25 @@ namespace Game.Editor
             var so = new SerializedObject(arena);
             so.FindProperty("_level").objectReferenceValue = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/{ArenaLevel}.asset");
             so.FindProperty("_difficulty").objectReferenceValue = catalog != null && catalog.Difficulties.Count > ArenaDifficulty ? catalog.Difficulties[ArenaDifficulty] : null;
-            var playable = new List<Object>();
+            var playable = new List<BossArenaEntry>();
             foreach (EnemyDefinition boss in bosses)
             {
                 // A boss is fightable once its signature runs; the others are Codex data until their round.
-                if (boss.Boss != null && boss.Boss.Signature == BossSignature.Burrow)
+                if (boss.Boss != null && System.Array.IndexOf(Fightable, boss.Boss.Signature) >= 0)
                 {
-                    playable.Add(boss);
+                    playable.Add(new BossArenaEntry(boss, ArenaLevelFor(boss.name)));
                 }
             }
 
-            SetReferences(so.FindProperty("_bosses"), playable.ToArray());
+            SerializedProperty entries = so.FindProperty("_entries");
+            entries.arraySize = playable.Count;
+            for (int i = 0; i < playable.Count; i++)
+            {
+                SerializedProperty entry = entries.GetArrayElementAtIndex(i);
+                entry.FindPropertyRelative("_boss").objectReferenceValue = playable[i].Boss;
+                entry.FindPropertyRelative("_level").objectReferenceValue = playable[i].Level;
+            }
+
             so.FindProperty("_escort").objectReferenceValue = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{DataRoot}/Enemies/Skitter.asset");
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(arena);

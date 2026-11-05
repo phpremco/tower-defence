@@ -41,6 +41,56 @@ MonoBehaviour:
     _returnToRoadShare: 0.08
     _returnSpeedFactor: 2.5
     _expectedHiddenSeconds: 6
+  _hunt:
+    _cooldownSeconds: 14
+    _heatLineSeconds: 1.5
+    _huntPace: 1.25
+    _diveGain: 4
+    _rebuildSeconds: 12
+    _trailSeconds: 6
+    _trailSpacing: 0.6
+    _trailRadius: 0.7
+    _trailBehind: 1.6
+    _towerBurn: 14
+    _walkerBurn: 4
+    _broodPhase: 1
+    _egg: {fileID: 0}
+    _hatchling: {fileID: 0}
+    _eggsPerClutch: 3
+    _hatchlingsPerEgg: 2
+    _hatchSeconds: 10
+    _clutches: 0
+    _clutchInterval: 30
+    _sacBehind: 2.2
+  _gateBreaker:
+    _freezeSeconds: 8
+    _warnDistance: 7
+    _refreezeSeconds: 12
+    _ragePerGate: 0.15
+    _maxRage: 4
+    _rageBones:
+    - Icicle_1
+    - Icicle_2
+    - Icicle_3
+    - Icicle_4
+    - Icicle_5
+    _rageScale: {x: 0.2, y: 1}
+    _armourPart: 
+    _armourBones:
+    - Armour_1
+    - Armour_2
+    - Armour_3
+    - Armour_4
+    - Armour_5
+    - Armour_6
+    - Armour_7
+    - Armour_8
+    _armourSoak: 0.5
+    _crackedFactor: 2
+    _crackSeconds: 5
+    _exposedPhase: 1
+    _exposedPace: 1.35
+    _expectedGates: 3
   _climb:
     _climbsRocks: 1
     _climbsGates: 0
@@ -57,6 +107,8 @@ MonoBehaviour:
     _reach: 2.5
     _burstDamage: 30
     _burstRadius: 2.4
+    _wakeGlow: {r: 1, g: 0.35, b: 0.6, a: 0.8}
+  _bodyHalfWidth: 1.1
   _impactKick: 0.35
   _mechanicClipRate: 1.4
   _signatureText: It learns. The tower type that hurt it most in one phase does half damage in the next, and each phase drains one gate's gun until the phase ends.

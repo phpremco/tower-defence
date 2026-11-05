@@ -179,3 +179,69 @@ All bosses are big, glowing, slow, with a readable head and weapon, and killable
 **Gravemaw as built:** enters through a crack along the field edge to the colony rig, breaks out under it (Surface_Throw), the derrick falls across the view (decor only) and it roars; then it burrows straight back to the start of the main road (8 % along, 2.5x speed, not a signature burrow), because the rig stands next to the base and a fight from there would skip the whole road (curator decision). At 75/50/25 % it burrows: the dive faces the shortest crack, the crack runs round towers and gates (a cell clear where it can, never through a footprint, quicksand at a third of the cost), opens ahead of it in warm orange, the rumble swells, the target (top damage, still standing, not upset) gets the pulsing red ring for the last 3 s (a trip slows down to give the full 3 s). It surfaces beside the target with the tower on its right, the tower is flung (loses 40 % of its full health, never its last point, silent 1.1 s in the air plus 4 s tilted) and rights itself. A mine going off on it while it burrows ends the trip there: it surfaces dazed for 4 s with no throw. Sold or moved target: it surfaces, nothing is thrown. Below 25 %: 1.35x pace and 4 Skitters out of each crack. Health 1050 (tuned so the C1_06 finale with Gravemaw stays inside the HeroCap with the hero; re-tune when the real C1 finale exists).
 
 **Placement:** the roadmap puts Gravemaw at the Crystal Plains finale (level 20, S5); only C1_01..06 exist, so it is not placed in the campaign. The developer boss arena (`Data/Levels/BossArena.asset` on the campaign; dev story viewer page "Boss arena") fights any boss in its list on Shard Ridge (C1_03, quicksand, rocks, two gates), Medium, 3000 money, 40 s to build, wave health x2.5, six Skitters; it pays and saves nothing.
+
+## Implementation notes (round 4b, 2026-11-05)
+
+**Brain split.** `ContinentBossBrain` is now only the shared body: the pool entrance, walking back to the road and off-road walks
+round towers (`WalkTo`, clearance in whole cells from `BossDefinition.BodyHalfWidth`), climbing rocks and structures, pool
+dives (with a pool-to-pool shortcut, `TryPlanDiveTowards`), and the helpers. Each signature is its own class behind
+`IBossSignature` (`Begin`, `Entrance`, `NextAct`, `AtStructure`, `WantsOffStructure`, `OnRoad`, `Always`, `End`), picked by
+`BossSignatures.For` from `BossDefinition.Signature` (never from the name): `BurrowSignature` (Gravemaw, unchanged
+behaviour), `HuntSignature` (Cinder Matriarch), `GateBreakerSignature` (Frost Warden), `NoSignature` (the three not built
+yet). What a boss did is kept in `BossRecord` (burrows, throws, hunts, smashes, eggs, frozen/shattered/thawed gates, rage,
+armour, the largest share of the field one effect reached). Pure logic in its own classes: `ColdHunt`, `LavaTrail`,
+`EggClutch<T>`, `GateRage`, `IceArmour`. Views: `TowerAuraView` (warm glow / blue haze / frost creep), `IceBlockView`,
+`LavaTrailView`, `BoneScaleView` (icicles, armour plates), `CrackStyle` (burrow crack, heat line, frost) for `CrackLineView`.
+
+**Shared rules added.**
+- `BossArrival.Pool`: the boss rises out of the largest pool of its dive kinds whose way to the road joins it in the road's
+  first half (a lake by the base would skip the fight; curator decision), the surface churns 1.6 s with a rumble, it swims to
+  the bank nearest the road and bursts out (one kick, a roar). That pool counts as used for its first phase.
+- Pool exits keep the whole body clear of towers where they can and never land in the two outer cells of the field (the
+  4a "exit behind the decor" bug). Gravemaw's surfacing spot beside its target now pays for every other footprint under
+  its body (it picks a clear spot when there is one).
+- Walkers follow a boss over a gate it stands on: a gate with a boss's weight on it is *bridged* (`Tower.IsBridged`,
+  `IBridgeable`): it holds no walker back and walkers within 1.6 m climb over its top (`StructureRegistry.BridgeLiftAt`).
+- Damage scale on a creature (`Enemy.SetDamageScale`) for armour mechanics; a burning source (`IBurningSource`, the Lava Ball's
+  `PathObjectDefinition.Burns`) is passed by path objects as the damage source.
+- Bosses keep most of their colour when chilled (frost overlay 0.18 instead of 0.5), as they already skip the white hit flash.
+- Codex: a boss with a signature says "Towers: see its signature" instead of "leaves them alone".
+
+**Cinder Matriarch as built.** Rises from a lava pool. Every 0.5 s on the road she looks for the nearest standing tower that
+slows (`ColdHunt.IsCold`: its own or any level's slow factor); none: she walks the road. She may set out while she has
+smashed fewer than `max(1, floor(towers / 4))` and 14 s have passed since her last smash (one tower per approach). The hunt:
+she rears and roars while a thin heat line (1.5 s) runs to the tower and it glows warm (light + glow pool); the line cools as
+she sets off. She plans a strike spot 3.1 model units (Smash `target_forward_m`) from the tower with her whole body (half
+width 1.8 m) clear of other towers, takes a lava pool as a shortcut when its far bank is at least 4 m nearer, walks there
+off the road in her Hunt_Stride at 1.25x, two cells clear of every tower where a way exists (else one, else just round the
+footprints), climbing ridges and breaking plants on the way, and smashes the tower into a wreck at the Smash impact frame
+(`Tower.Smash`). A tower that is sold, wrecked or thrown meanwhile ends the hunt; one she cannot reach is skipped for the
+fight. Her lava trail: a patch every 0.6 m from 1.6 m behind her pivot, 6 s, burning structures 14/s (x difficulty structure
+damage) and walkers 4/s. Brood (phase 2, below 50 %): up to 2 clutches 30 s apart; she walks to the nearest pool bank, tail
+over the lava, and three eggs drop between the first and last egg frame of Lay_Eggs. Eggs are creatures (`CinderEgg`, 70 hp,
+shootable, held still by `BroodKeeper`, which outlives her): unshot after 10 s they play Hatch and two `FireLarva` climb out
+at frame 32 and make for the road. The data names egg and hatchling.
+
+**Frost Warden as built.** Rises from a frozen lake (ice dives too). On the road frost creeps 2.2 m ahead of it (pale glow +
+mist); the next gate ahead within 7 m gets a blue haze and the ice-crack sound (`LevelContext.BossGateWarned`). At the
+Freeze_Gate reach (2.4 model units) it stops and breathes: at the cast frame the gate becomes an ice block for 8 s
+(`Tower.Freeze`: it still blocks, fires nothing, takes no blows; `IceBlockView` in the level's ice liquid material,
+`BossGateFrozen` plays the freeze sound). It climbs onto the block (it sags, walkers follow over) and, timed so the impact
+lands as the freeze runs out, crashes down through it (Shatter_Through, from the top to the ground beyond): the gate is a
+wreck (`Tower.Smash`), shards, one kick; rage +1 (pace +15 % per gate, up to 4; icicle bones grow 0.2 -> 1.0 in
+LateUpdate) and the Enrage clip. The hero's Repair on a frozen gate thaws it (`Tower.Restore` -> `Thaw`): with the Warden on
+top it slips down the far side and the gate stands; before it climbed, it attacks the gate like any creature; that gate
+cannot be refrozen for 12 s. Ice armour (`IceArmour`): while armoured only half of each hit lands; a burning hit (Lava Ball)
+cracks it, the armour mesh hides and hits land double for 5 s; in its Exposed phase (below 40 %) it plays Armour_Break, the
+armour and icicles go for good, every hit lands in full and it runs (1.35x, WalkEnraged). Its data has no health armour
+layer any more (the ice armour is the mechanic).
+
+**Arena.** `BossArenaDefinition` lists entries (boss + level); the dev Story viewer page "Boss arena" shows one entry per
+boss with its level. No Crystal Plains level has lava or ice, so the generator copies a level and turns its water into the
+liquid (`Data/Levels/Arena/Arena_Lava.asset` from Crysium Vein, 4 lava pools; `Arena_Ice.asset` from Quartz Flats, 3 ice
+pools; nests on turned cells are dropped; both pass the level validator). They are arena only, not in the campaign.
+
+**Ledger.** `BossDefinition.FirepowerLossSeconds`: Cinder = phases x a quarter of the field x 12 s rebuild (6 s), Frost =
+3 expected gates x a quarter x 8 s freeze (6 s); `EffectiveHealthFactor` counts the ice armour as more health (Frost x1.6).
+Both stay under `MaxBossMechanicShare` on the C1_06 finale fight (test `BossSignatureTests.Ledger_...`). Neither is in a
+campaign wave yet, so no band moved.

@@ -606,7 +606,9 @@ namespace Game.UI
 
             _builder.Append("\nSpeed ").Append(enemy.Speed.ToString("0.0")).Append("   Bounty ").Append(enemy.Reward).Append("   Base damage ").Append(enemy.BaseDamage).Append('\n');
 
-            _builder.Append("Towers: ").Append(enemy.AttackDamage > 0f ? $"damages them ({enemy.AttackDamage:0} per hit)" : "leaves them alone");
+            // A continent boss's own mechanic decides what it does to towers; the signature below says it.
+            string towers = enemy.AttackDamage > 0f ? $"damages them ({enemy.AttackDamage:0} per hit)" : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? "see its signature" : "leaves them alone";
+            _builder.Append("Towers: ").Append(towers);
             _builder.Append("   Gates and hero: ").Append(enemy.BlockadeDamage > 0f ? $"{enemy.BlockadeDamage:0} per hit" : "no");
             if (enemy.GateStrikes > 0)
             {

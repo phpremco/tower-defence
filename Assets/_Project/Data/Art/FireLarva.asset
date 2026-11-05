@@ -18,6 +18,7 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 20dcf36826ceab44087c19d84420e11b, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
+  _parts: []
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
@@ -29,15 +30,6 @@ MonoBehaviour:
   _bleeds: 1
   _shedBones: []
   _clips:
-  - _role: 2
-    _clip: {fileID: 4487095027481443831, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
-    _farClip: {fileID: -6095986624472624857, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
-    _distancePerLoop: 0
-    _eventSeconds: 0
-    _trigger: 
-    _socket: 
-    _weight: 0.6
-    _upperBody: 0
   - _role: 0
     _clip: {fileID: -4180571800164350763, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
     _farClip: {fileID: -7453941303050706997, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
@@ -47,6 +39,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 3
     _clip: {fileID: 8449317911502482974, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
     _farClip: {fileID: 1913656463738122847, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
@@ -56,6 +51,21 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 2
+    _clip: {fileID: 4487095027481443831, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
+    _farClip: {fileID: -6095986624472624857, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 1
     _clip: {fileID: -2451719760099836084, guid: f465085cdff5fdf43af1c6dddfa12a4d, type: 3}
     _farClip: {fileID: 6345453815553134408, guid: 7df02f1d19d02024b8f37f5e9bfde93b, type: 3}
@@ -65,3 +75,6 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0

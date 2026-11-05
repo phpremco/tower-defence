@@ -17,7 +17,7 @@ MonoBehaviour:
     StartsAt: 1
   - Name: Exposed
     StartsAt: 0.4
-  _arrival: 0
+  _arrival: 2
   _signature: 3
   _burrow:
     _thresholds:
@@ -37,6 +37,56 @@ MonoBehaviour:
     _returnToRoadShare: 0.08
     _returnSpeedFactor: 2.5
     _expectedHiddenSeconds: 6
+  _hunt:
+    _cooldownSeconds: 14
+    _heatLineSeconds: 1.5
+    _huntPace: 1.25
+    _diveGain: 4
+    _rebuildSeconds: 12
+    _trailSeconds: 6
+    _trailSpacing: 0.6
+    _trailRadius: 0.7
+    _trailBehind: 1.6
+    _towerBurn: 14
+    _walkerBurn: 4
+    _broodPhase: 1
+    _egg: {fileID: 0}
+    _hatchling: {fileID: 0}
+    _eggsPerClutch: 3
+    _hatchlingsPerEgg: 2
+    _hatchSeconds: 10
+    _clutches: 0
+    _clutchInterval: 30
+    _sacBehind: 2.2
+  _gateBreaker:
+    _freezeSeconds: 8
+    _warnDistance: 7
+    _refreezeSeconds: 12
+    _ragePerGate: 0.15
+    _maxRage: 4
+    _rageBones:
+    - Icicle_1
+    - Icicle_2
+    - Icicle_3
+    - Icicle_4
+    - Icicle_5
+    _rageScale: {x: 0.2, y: 1}
+    _armourPart: FrostWarden_IceArmour
+    _armourBones:
+    - Armour_1
+    - Armour_2
+    - Armour_3
+    - Armour_4
+    - Armour_5
+    - Armour_6
+    - Armour_7
+    - Armour_8
+    _armourSoak: 0.5
+    _crackedFactor: 2
+    _crackSeconds: 5
+    _exposedPhase: 1
+    _exposedPace: 1.35
+    _expectedGates: 3
   _climb:
     _climbsRocks: 1
     _climbsGates: 1
@@ -45,7 +95,7 @@ MonoBehaviour:
     _gateWeightDamage: 18
     _maxTilt: 22
   _dive:
-    _pools: 8
+    _pools: 9
     _maxSeconds: 6
     _splashShare: 0.5
     _regenPerSecond: 0.006
@@ -53,8 +103,10 @@ MonoBehaviour:
     _reach: 2.5
     _burstDamage: 30
     _burstRadius: 2.4
+    _wakeGlow: {r: 0.55, g: 0.85, b: 1, a: 0.8}
+  _bodyHalfWidth: 1.25
   _impactKick: 0.35
   _mechanicClipRate: 1.4
-  _signatureText: Every gate it reaches it freezes solid for a few seconds, then walks straight through and shatters it into a wreck. Each broken gate makes it angrier and faster.
-  _telegraphText: Frost creeps over the ground in front of it, a gate it targets gets a blue haze and cracks, and icicles grow on its back as its rage rises.
-  _counterText: 'Do not lean on gates: spread towers along the long road. Fire breaks its ice armour for double damage, and the hero can thaw a frozen gate with Repair.'
+  _signatureText: 'Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.'
+  _telegraphText: It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.
+  _counterText: 'Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. The hero''s repair thaws a frozen gate, and the Warden slips off without breaking it.'
