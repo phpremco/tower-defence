@@ -2926,3 +2926,126 @@ In the session scratchpad, `blender32/`:
 
 No change: `build_frostwarden.py` and `build_frostwarden_mech.py` keep their names and order. `round32_views.py` is
 QA only (do not list it).
+
+## Round 33: gate-crossing clips for Gravemaw and the Cinder Matriarch (2026-11-05)
+
+Remco: "de gravemaw animatie op de gate ziet er heel raar uit, het lichaam beweegt alsof hij erop staat op vlakke
+grond". In game the boss crossed a gate with its rock clips (Climb_Up / Climb_Loop / Climb_Down), so on the gate it
+played a flat crawl at beam height. Round 33 adds three clips fitted to the real gate geometry. Design notes and weak
+points are in `DESIGN_NOTES.md` (round 33). Nothing is imported into Unity, and the shared modules are untouched.
+
+**Scripts:**
+
+- **New:**
+  - `gate_kit.py`: the gate's measured geometry, the sag maths, `FootPlan`, the `plan_steps` step planner,
+    `monotone_samples`, and the QA (`import_gate`, `GateCheck`, `previews_and_check`).
+  - `gravemaw_gate.py`: Gravemaw's three clips (the spine rides an arch over the beam).
+  - `cinder_gate.py`: the Cinder Matriarch's three clips (she strides over on her stilts).
+- **Changed:** `build_gravemaw_mech.py` and `build_cindermatriarch_mech.py` key the three clips with the other
+  mechanic clips, export them in both FBX files, write the facts to the report and render the gate previews. A new
+  flag `--gate-only` renders only the gate strips (Gravemaw ~1 min, Cinder ~40 s with it).
+
+### The gate as authored
+
+The bosses play at Unity creature scale 0.8 (`ProjectGenerator.Bosses`, `Scale = 0.8f`) and the gates at 1.0. The
+clips are therefore authored round the real `Gate_G2.fbx` scaled by 1/0.8. Every distance in the reports is in model
+metres; `BossClip` multiplies by `ModelScale`, as for the other travel clips.
+
+| Gate part (G1, G2 and G3 alike) | World | Model (x 1.25) |
+| --- | --- | --- |
+| Beam top (a bar, open under it from 1.04) | 1.171 | 1.464 |
+| Beam depth along the road | +-0.105 | +-0.13 |
+| Crown tops (pylons, x 0.88..1.2) | 1.20 (beacon 1.27) | 1.50 |
+| Crown faces along the road (heights 1.0..1.2) | +-0.232 | +-0.29 |
+| Pylon faces along the road (heights 0.45..1.0) | +-0.195 | +-0.244 |
+
+**Tier differences:** the beam, the crowns and the faces the feet touch are the same in G1, G2 and G3. G2's
+buttresses reach 0.34 along the road below 0.3 high and G3's reach 0.52. No foot lands there: the step planner keeps
+ground feet at least 0.58 world from the gate centre. G3 also has a spike on the outer crown corner up to 1.46,
+beside the feet on the crown. The contact check passes on all three tiers with the same numbers, so Unity needs no
+per-tier timing or height.
+
+### Contract for Unity
+
+- **Gate_Mount:** pivot fixed; the gate's road centre is `gate_forward_m` ahead at the start (anchor key
+  `gate_forward_m`, already in `BlenderTravelClips.AnchorKeys`). At the last frame move the transform by the end
+  offset. That puts it **onto the gate centre, on the ground** (`end_offset_up_m` 0, not `ClimbLayer.GateHeight`).
+- **Gate_Straddle_Loop:** in place, pivot on the gate centre on the ground, facing over the gate.
+- **Gate_Dismount:** starts in the loop's pose, then move the transform by its end offset (on the ground) and walk on.
+- **The sag:**
+  - Every clip reports `gate_burden`, one value per frame (frames + 1 values). It is the `Tower.SetBurden` value
+    that makes `TowerDisplacementView` drop the beam top exactly as far as the clip presses the belly down. The beam
+    top drops 0.307 world per unit of burden (squash 0.16, drop 0.12).
+  - The burden is about 0.21 while the boss lies on the gate and peaks at about 0.73 at a heavy push.
+  - Replace `SetBurden(1f)` with the curve. At burden 1 the beam would sit 0.31 world under the belly.
+- **Events:**
+  - `weight_frames`: one per heavy push. Add the key to `SeriesKeys` to read them all. At each: structure hit, dust,
+    camera kick.
+  - `impact_frame`: the first weight frame (read by `EventKeys`).
+  - Gravemaw's Mount also has `hook_frames`, where the spades bite the crowns (sparks, a clank).
+  - `off_gate_frame`: from here the burden is 0 and walkers no longer need the bridge.
+- **Climb_Up / Climb_Loop / Climb_Down stay** for rocks. Map a gate climb (`ContinentBossBrain.ClimbStructure`) to
+  new `ModelClipRole`s (GateMount, GateLoop, GateDismount) and fall back to the Climb roles when a boss has no gate
+  clips. The base climb stays on Climb_*.
+- **Loop rate:** the loop is 96 frames (3.2 s at 30 fps). Play it at rate 1 so the weight frames line up with the
+  blows; `GateLoopRate` can sync `AttackInterval` to the weight frames.
+
+### Gravemaw (`gravemaw_gate.py`)
+
+Files: `Gravemaw.fbx` / `_LOD1.fbx` (mesh, rig and the 16 old clips unchanged; 19 clips now). The debris bones stay
+hidden in the new clips, as in every clip without a burst.
+
+| Clip | Frames | Loop | Events | Offsets (model / world) | What it does |
+| --- | --- | --- | --- | --- | --- |
+| Gate_Mount | 168 | no | braces 36/42, hooks 62/68 (`hook_frames`), belly lands **146** | gate 3.2 / 2.56 ahead; end 3.2 / 2.56 fwd, 0 up | rears against the gate, the spades brace on the crowns' near faces, reach up and hook over the crowns' far edges; it hauls itself up the arch while the legs scrabble, then on the pylon faces and crowns; the spades let go 104/112 and dig into the far ground 120/128; the belly drops onto the beam |
+| Gate_Straddle_Loop | 96 | yes | weight **22, 70** | in place | draped over the beam between the pylons. The spades are dug in on the far side, legs 1 grip the crowns' far faces, legs 2 stand on the crown tops, legs 3 brace on the crowns' near faces. The front heaves up, a spade slams in (weight) and rakes the body forward 0.16, then the weight drags it back. The hind feet slip down the faces and re-grip. Left spade first, then right |
+| Gate_Dismount | 150 | no | shove **14**, off the gate 112 | end 5.0 / 4.0 fwd, 0 up | shoves off, pours head first down the far side, the spades walk on the far ground, the legs scramble over the crowns, the tail slides over the beam; ends in Crawl frame 0 |
+
+### Cinder Matriarch (`cinder_gate.py`)
+
+Her stilt feet stand at x +-2.0 model, outside the pylons. So she does not climb: she rises, strides over and lowers
+her thorax onto the beam. The sac hangs down on the near side.
+
+| Clip | Frames | Loop | Events | Offsets (model / world) | What it does |
+| --- | --- | --- | --- | --- | --- |
+| Gate_Mount | 150 | no | thorax lands **128** | gate 3.6 / 2.88 ahead; end 3.6 / 2.88 fwd | rises on her stilts (head and mandibles clear the crowns), strides in with one long step over the gate per leg, scythes raised, settles her thorax on the beam |
+| Gate_Straddle_Loop | 96 | yes | weight **24, 72** | in place | thorax on the beam, stilts braced fore and aft; a scythe rises and hacks the beam's far edge as she bears down (left, then right) |
+| Gate_Dismount | 140 | no | shove **12**, off the gate 104 | end 4.4 / 3.52 fwd | shoves, strides off, rises again so the low waist clears the beam, the sac curls up over it, steps down; ends in Walk frame 0 |
+
+### Rotbloom: not made
+
+Rotbloom has a rigid round body with legs of 0.92 m on hips 0.5 high. It cannot reach the ground from a 1.46 beam, and
+it cannot drape over a bar. On the gate it would balance on the beam like a ball on a fence. Proposal: Rotbloom does
+not climb gates (`ClimbsGates` off). It batters them like a creature, or roots in front of them. A real crossing
+needs a body change first: a jointed body or longer legs.
+
+### QA (report `round28.gate.check`, model metres)
+
+| Clip | Boss into gate | Beam into boss | Planted foot gap | Notes |
+| --- | --- | --- | --- | --- |
+| Gravemaw Gate_Mount | 0.074 | 0.052 | 0.123 (spade hook) / 0.073 (legs) | the spade's claws bite over the crown edge; the hooked tip sits 0.12 off the face because the palm lies on the crown top |
+| Gravemaw Gate_Straddle_Loop | 0.039 | 0.044 | 0.073 | belly on the beam at every frame (the beam pressed 0.04 into the belly plates) |
+| Gravemaw Gate_Dismount | 0.043 | 0.061 | 0.073 | a hind foot crosses a crown edge at 36 |
+| Cinder Gate_Mount | 0.012 | 0 | 0 | |
+| Cinder Gate_Straddle_Loop | 0.02 | 0.036 | 0 | |
+| Cinder Gate_Dismount | 0.02 | 0.018 | 0 | |
+
+- **Foot gaps:** planted feet are measured at the `IK_*` marker. Feet pressed on a face sit 0.07 out, because the
+  foot is that thick.
+- **Clip scales:** `check_clip_scales.py` on all four FBX files. Gravemaw's `Debris_*` are at 0 in the gate clips (as
+  intended). The Cinder Matriarch has no bone off scale.
+- **inspect_fbx.py:** 19 clips per Gravemaw FBX and 18 per Cinder Matriarch FBX. The meshes are unchanged
+  (24,078 / 9,983 and 23,048 / 8,992 tris after the FBX round trip).
+
+### Previews
+
+In the session scratchpad, `blender33/`:
+
+- `gm/` and `cm/`: `<Boss>_Gate_<Clip>_side.png` (a low side view) and `_game.png` (the 44-degree ortho game
+  camera). Each strip has 8 frames, with Gate_G2 in the scene and sagged in sync with the clip.
+- `backup/`: the round-32 Gravemaw and Cinder Matriarch exports, reports and `.blend` files.
+
+### build_all.py
+
+No change. The new modules are imported by `build_gravemaw_mech.py` and `build_cindermatriarch_mech.py`, which keep
+their names and order.

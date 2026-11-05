@@ -10,11 +10,13 @@ with the round-14 spine machinery (the spine rides a path in the forward-up plan
 - Burrow_Travel: loop under the ground, only the crystal crest ridge breaks the surface (the crack line);
 - Surface_Throw: bursts straight up out of the ground beside the target tower, flings it with the maw (bone
   `Socket_Throw` at the maw tip) and crashes down onto the road.
+- Round 33 (gravemaw_gate.py): Gate_Mount / Gate_Straddle_Loop / Gate_Dismount, fitted to the real Gate_G2 (the old
+  Climb_* clips stay for rocks).
 
 Crawl stays its Walk and Roar its Rage; Dive/Emerge (round 14) stay for the entrance.
 
 Run: blender --background --factory-startup --python Tools/Blender/build_gravemaw_mech.py --
-     [--preview <dir>] [--norender]
+     [--preview <dir>] [--norender] [--gate-only]   (--gate-only: render only the round-33 gate strips)
 """
 
 import math
@@ -30,6 +32,8 @@ import build_gravemaw as BG  # noqa: E402
 import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
 import deep_kit as DK  # noqa: E402
+import gate_kit as GK  # noqa: E402
+import gravemaw_gate as GG  # noqa: E402
 from boss_mech_kit import ease, pulse  # noqa: E402
 from common import G  # noqa: E402
 
@@ -420,7 +424,16 @@ def key_all(boss):
     boss.key("Burrow_Down", fn, facts)
     fn, facts = surface_throw(bur_depth)
     boss.key("Surface_Throw", fn, facts)
+    for clip, make, *_ in GATE_CLIPS:
+        fn, facts = make()
+        boss.key(clip, fn, facts)
     return sub_depth, bur_depth
+
+
+# Round 33: over a gate (gravemaw_gate.py): (clip, maker, gate forward, sag per frame, preview centre, QA key).
+GATE_CLIPS = (("Gate_Mount", GG.mount, GG.MOUNT_GATE_F, GG.mount_sag, GG.MOUNT_GATE_F * 0.6, "Mount"),
+              ("Gate_Straddle_Loop", GG.straddle, 0.0, GG.straddle_sag, 0.3, "Straddle"),
+              ("Gate_Dismount", GG.dismount, 0.0, GG.dismount_sag, 2.0, "Dismount"))
 
 
 def previews(boss, sub_depth, bur_depth, out):
@@ -476,15 +489,22 @@ def main():
     boss.add_bones([("Socket_Throw", BG.MAW_TIP, BG.MAW_TIP + (BG.MAW_TIP - BG.MAW_BASE).normalized() * 0.3, "Head")])
     sub_depth, bur_depth = key_all(boss)
     boss.export()
+    gate = dict(GK.gate_facts(), clips=[c[0] for c in GATE_CLIPS], usage=GK.USAGE)
     boss.report({"climb_height_m": CLIMB_H, "liquid": "quicksand (its burrow shortcut) or any pool",
                  "submerged_path_depth_m": sub_depth, "burrow_path_depth_m": bur_depth,
                  "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
                  "walk_and_rage": "Crawl is its Walk, Roar its Rage (round 14)",
                  "mechanic": "Burrow at 75/50/25%: Burrow_Down, Burrow_Travel along the crack line, Surface_Throw "
-                             "beside the top-damage tower; Climb_* over rock edges; quicksand via Dive_Into_Liquid"})
+                             "beside the top-damage tower; Climb_* over rock edges; quicksand via Dive_Into_Liquid",
+                 "gate": gate})
     boss.save()
-    if not args.get("norender"):
+    if args.get("norender"):
+        return
+    if not args.get("gate-only"):
         previews(boss, sub_depth, bur_depth, out)
+    M.preview_scene()
+    GK.write_check(NAME, GK.previews_and_check(boss, NAME, [(c, gf, sag, centre, key) for c, _, gf, sag, centre, key
+                                                            in GATE_CLIPS], GG.PLANTED, out))
 
 
 if __name__ == "__main__":

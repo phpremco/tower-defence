@@ -8,12 +8,14 @@ with the round-16 pose functions (build_cindermatriarch.specs, legs, gait):
 - Hunt_Stride: the off-road stride towards a Cryo tower (in place, longer steps, head low, scythes forward);
 - Smash: rears and brings the scythes and fore stilts down on a tower 3.1 ahead (impact frame in the report);
 - Lay_Eggs: the sac dips over the lava and three eggs drop from bone `Drip` (frames in the report).
+- Round 33 (cinder_gate.py): Gate_Mount / Gate_Straddle_Loop / Gate_Dismount: she strides over a gate on her stilts
+  and lowers her thorax onto the beam (Climb_* stay for the rock ridges).
 
 Prop `CinderEgg` (own FBX, rig and clips Idle / Hatch / Burst): the egg she lays; Hatch releases a FireLarva (the
 existing round-16 minion is the fire bug hatchling) at the frame in its report.
 
 Run: blender --background --factory-startup --python Tools/Blender/build_cindermatriarch_mech.py --
-     [--preview <dir>] [--norender] [--skip-props]
+     [--preview <dir>] [--norender] [--skip-props] [--gate-only]   (--gate-only: only the round-33 gate strips)
 """
 
 import math
@@ -24,6 +26,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from mathutils import Matrix, Vector  # noqa: E402
 
 import boss_mech_kit as M  # noqa: E402
+import cinder_gate as CG  # noqa: E402
+import gate_kit as GK  # noqa: E402
 import build_cindermatriarch as BC  # noqa: E402
 import chitin as H  # noqa: E402
 import common as C  # noqa: E402
@@ -277,7 +281,16 @@ def key_all(boss):
     boss.key("Lay_Eggs", lay_spec, {"egg_frames": list(EGG_FRAMES), "socket": "Drip (tail: the sac tip)",
                                     "prop": f"../{EGG}/{EGG}.fbx",
                                     "note": "stand with the sac tip over the lava pool (the tip is ~2.8 behind the pivot)"})
+    for clip, make, *_ in GATE_CLIPS:
+        fn, facts = make()
+        boss.key(clip, fn, facts)
     return ad, depth
+
+
+# Round 33: over a gate (cinder_gate.py): (clip, maker, gate forward, sag per frame, preview centre, QA key).
+GATE_CLIPS = (("Gate_Mount", CG.mount, CG.MOUNT_GATE_F, CG.mount_sag, CG.MOUNT_GATE_F * 0.55, "Mount"),
+              ("Gate_Straddle_Loop", CG.straddle, 0.0, CG.straddle_sag, 0.0, "Straddle"),
+              ("Gate_Dismount", CG.dismount, 0.0, CG.dismount_sag, 2.0, "Dismount"))
 
 
 def previews(boss, ad, depth, out):
@@ -367,7 +380,7 @@ def egg_previews(out):
 def main():
     args = C.cli_args()
     out = C.preview_dir()
-    if not args.get("skip-props"):
+    if not args.get("skip-props") and not args.get("gate-only"):
         build_egg()
         if not args.get("norender"):
             egg_previews(out)
@@ -380,10 +393,17 @@ def main():
                  "props": {EGG: f"../{EGG}/{EGG}.fbx"},
                  "mechanic": "Hatred of the Cold: Hunt_Stride off the road, Climb_* over the ridges between pads, "
                              "Smash on the cold tower, Dive/Submerged/Surface_Burst through the lava pools, "
-                             "Lay_Eggs below 50%"})
+                             "Lay_Eggs below 50%",
+                 "gate": dict(GK.gate_facts(), clips=[c[0] for c in GATE_CLIPS], usage=GK.USAGE)})
     boss.save()
-    if not args.get("norender"):
+    if args.get("norender"):
+        return
+    if not args.get("gate-only"):
         previews(boss, ad, depth, out)
+    M.preview_scene()
+    GK.write_check(NAME, GK.previews_and_check(boss, NAME, [(c, gf, sag, centre, key) for c, _, gf, sag, centre, key
+                                                            in GATE_CLIPS], CG.PLANTED, out, ortho=11.0,
+                                               distance=14.0))
 
 
 if __name__ == "__main__":

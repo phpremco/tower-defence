@@ -2858,3 +2858,64 @@ final `body/`, `clips/`, `game/`, backup in `backup/`).
 - **Dive:** the ice smash blends into the generic dive between frames 22 and 30. The fists slide a little there.
 - **Shatter_Through:** the rear (frames 8-31) lifts the head out of a tight game frame. The arm step at 64-88 is
   long (2.4 m), so the arms stretch.
+
+## Round 33: gate-crossing clips (2026-11-05)
+
+Remco: the Gravemaw on a gate moved "as if it stands on flat ground". The cause was that Unity played the rock clips
+on a gate: Climb_Up, then Climb_Loop (a flat crawl) lifted to the beam height. Previews are in the session
+scratchpad, `blender33/` (`gm/`, `cm/`, the round-32 backup in `backup/`).
+
+**Measure first:**
+
+- **The gate is small next to a boss.** The beam is a bar 1.17 m high and 0.21 m deep. The crowns stand only 3 cm
+  higher, and the span is 2.7 m. The bosses play at 0.8, so in model units the beam is 1.46 high and the crowns 1.5.
+- **Gravemaw cannot stand on top of it.** Its legs are 0.84 long on hips 0.3 high, so on top it would have nowhere
+  for its feet. The only honest pose is draped over the bar: belly on the beam, the front half pouring down the far
+  side, the rear half on the near side.
+- **The Cinder Matriarch stands wider than the gate.** Her stilt feet land at x 2.0, outside the pylons, so she
+  strides over and sits her thorax on the beam.
+
+**Gravemaw, how the drape works:**
+
+- **The arch:** the round-14 spine rides a path in the forward-up plane. Round 33 gives it an arch with a long ramp
+  on the near side (the tail drags), a tight fold over the beam (the weight hangs there) and a steep far side (the
+  head pours down to the claws).
+- **Catmull-Rom looped:** the first arch with Catmull-Rom made loops on the uneven point spacing, and the body
+  folded through itself. A monotone cubic (`gate_kit.monotone_samples`) cannot overshoot.
+- **Feet on real surfaces:**
+  - The spades dig into the far ground.
+  - Legs 1 grip the crowns' far faces, legs 2 stand on the crown tops, legs 3 brace on the crowns' near faces.
+  - I picked these because the legs are short: a hip 1.3 above the ground reaches nothing else. The crown faces and
+    tops are the same in every tier, so one clip fits G1, G2 and G3.
+- **Weight:**
+  - The front heaves up, a spade slams in, the beam is pressed down (Unity sags it with the reported burden) and the
+    body is raked forward. Then the weight drags it back over the beam, and the hind feet slip down the faces and
+    re-grip.
+  - The nodes next to the beam go down by the full sag, the ends stay on the ground. A first version let the belly
+    rise 6 cm off the beam at every push: the head heave also lifted the middle node.
+- **Mount, the order that works:**
+  - The rear-up lifts the shoulders out of reach of the ground. So the spades first brace on the crowns' near faces,
+    then hook over the far edges once the body has leaned in far enough.
+  - Before the shoulders get past the gate, the hook was out of reach by 0.2 to 0.7.
+  - The legs lose the ground while the hips climb, and scrabble in the air (a paddle) until a pylon face or crown is
+    in reach. The step planner (`gate_kit.plan_steps`) chooses the nearest reachable surface every time a foot would
+    over-stretch.
+- **A check that sees the beam:** a thin bar can pass right through a body without one body vertex inside it. The
+  contact check now also tests the gate's vertices inside the deformed boss mesh. That showed the Cinder
+  Matriarch's low waist swallowing the beam on the way down (0.29 deep), so she now rises on her stilts again while
+  the waist crosses.
+
+### Honest weak points
+
+- **Feet pressed into faces:** the spade claws bite up to 7 cm (model) into the crown edge while hooked, and a hind
+  foot cuts a crown corner for a few frames on the way over. At play zoom it reads as gripping.
+- **The Mount haul is long:** the legs dangle and scrabble from about frame 34 to 90 while the spades do the work. It
+  reads as being hauled, but a viewer may notice the legs doing little.
+- **Gravemaw's body is about as wide as the gate.** From the game camera the crowns show at its flanks, but the beam
+  itself is hidden under the body while it lies there. The sag is mostly read from the crowns and the dust.
+- **The Cinder Matriarch's weight is subtle:** she is tall, so her thorax pressing down reads less than Gravemaw's
+  drape. The scythe hacks carry the loop.
+- **Rotbloom has no gate clips.** Its rigid round body and short legs cannot drape or straddle. See the README
+  proposal.
+- **Not checked in Unity:** the burden curve assumes `TowerDisplacementView` keeps squash 0.16 and drop 0.12. If those
+  change, the belly floats or sinks.

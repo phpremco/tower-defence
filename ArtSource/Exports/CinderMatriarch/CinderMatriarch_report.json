@@ -78,7 +78,10 @@
     "Surface_Burst": 64,
     "Hunt_Stride": 50,
     "Smash": 64,
-    "Lay_Eggs": 96
+    "Lay_Eggs": 96,
+    "Gate_Mount": 150,
+    "Gate_Straddle_Loop": 96,
+    "Gate_Dismount": 140
   },
   "size_m": [
     4.655,
@@ -193,6 +196,438 @@
         "note": "stand with the sac tip over the lava pool (the tip is ~2.8 behind the pivot)",
         "frames": 96,
         "loop": false
+      },
+      "Gate_Mount": {
+        "gate_forward_m": 3.6,
+        "end_offset_forward_m": 3.6,
+        "end_offset_up_m": 0.0,
+        "weight_frames": [
+          128
+        ],
+        "impact_frame": 128,
+        "gate_burden": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.031,
+          0.114,
+          0.231,
+          0.364,
+          0.498,
+          0.615,
+          0.697,
+          0.729,
+          0.729,
+          0.729,
+          0.725,
+          0.714,
+          0.697,
+          0.675,
+          0.647,
+          0.616,
+          0.582,
+          0.546,
+          0.507,
+          0.469,
+          0.43,
+          0.391,
+          0.355,
+          0.321,
+          0.29,
+          0.262,
+          0.24,
+          0.223,
+          0.212,
+          0.208
+        ],
+        "note": "authored with the pivot fixed, the gate centre gate_forward_m ahead; she rises, strides in and lowers her thorax onto the beam at impact_frame; then move the transform onto the gate centre and loop Gate_Straddle_Loop",
+        "frames": 150,
+        "loop": false
+      },
+      "Gate_Straddle_Loop": {
+        "loop": true,
+        "weight_frames": [
+          24,
+          72
+        ],
+        "impact_frame": 24,
+        "gate_burden": [
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.247,
+          0.343,
+          0.469,
+          0.594,
+          0.69,
+          0.729,
+          0.724,
+          0.711,
+          0.69,
+          0.663,
+          0.631,
+          0.594,
+          0.554,
+          0.512,
+          0.469,
+          0.425,
+          0.383,
+          0.343,
+          0.306,
+          0.274,
+          0.247,
+          0.226,
+          0.213,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.247,
+          0.343,
+          0.469,
+          0.594,
+          0.69,
+          0.729,
+          0.724,
+          0.711,
+          0.69,
+          0.663,
+          0.631,
+          0.594,
+          0.554,
+          0.512,
+          0.469,
+          0.425,
+          0.383,
+          0.343,
+          0.306,
+          0.274,
+          0.247,
+          0.226,
+          0.213,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208
+        ],
+        "end_offset_forward_m": 0.0,
+        "end_offset_up_m": 0.0,
+        "pivot": "the gate's road centre on the ground, facing over the gate",
+        "note": "in place; Tower.SetBurden(gate_burden[frame]); at weight_frames a scythe hacks the beam's far edge (left then right): structure hit, sparks",
+        "frames": 96
+      },
+      "Gate_Dismount": {
+        "end_offset_forward_m": 4.4,
+        "end_offset_up_m": 0.0,
+        "weight_frames": [
+          12
+        ],
+        "impact_frame": 12,
+        "gate_burden": [
+          0.208,
+          0.208,
+          0.208,
+          0.223,
+          0.262,
+          0.321,
+          0.391,
+          0.469,
+          0.546,
+          0.616,
+          0.675,
+          0.714,
+          0.729,
+          0.721,
+          0.7,
+          0.667,
+          0.626,
+          0.577,
+          0.524,
+          0.469,
+          0.413,
+          0.36,
+          0.311,
+          0.27,
+          0.237,
+          0.216,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.208,
+          0.207,
+          0.202,
+          0.196,
+          0.187,
+          0.176,
+          0.163,
+          0.15,
+          0.135,
+          0.12,
+          0.104,
+          0.089,
+          0.073,
+          0.059,
+          0.045,
+          0.033,
+          0.022,
+          0.013,
+          0.006,
+          0.002,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "off_gate_frame": 104,
+        "note": "starts in Gate_Straddle_Loop's pose; she shoves off at impact_frame, strides off, the sac slides over the beam (burden 0 from off_gate_frame); move the transform by the end offset and go on with Walk",
+        "frames": 140,
+        "loop": false
       }
     },
     "markers": [
@@ -209,6 +644,215 @@
     "props": {
       "CinderEgg": "../CinderEgg/CinderEgg.fbx"
     },
-    "mechanic": "Hatred of the Cold: Hunt_Stride off the road, Climb_* over the ridges between pads, Smash on the cold tower, Dive/Submerged/Surface_Burst through the lava pools, Lay_Eggs below 50%"
+    "mechanic": "Hatred of the Cold: Hunt_Stride off the road, Climb_* over the ridges between pads, Smash on the cold tower, Dive/Submerged/Surface_Burst through the lava pools, Lay_Eggs below 50%",
+    "gate": {
+      "model_scale": 0.8,
+      "beam_top_world": 1.171,
+      "beam_top_model": 1.464,
+      "crown_top_world": 1.2,
+      "crown_top_model": 1.5,
+      "beam_bottom_world": 1.04,
+      "beam_half_depth_world": 0.105,
+      "pylon_face_world": 0.195,
+      "crown_face_world": 0.232,
+      "crown_x_world": [
+        0.88,
+        1.2
+      ],
+      "tiers": {
+        "G1": "the reference shape; pylon foot 0.20 along the road",
+        "G2": "same beam, crowns and pylon faces as G1; buttresses reach 0.34 along the road below 0.3 high (no foot of the clips touches them)",
+        "G3": "same beam and crown top; buttresses reach 0.52 below 0.3 high, and a spike rises to 1.46 on the outer crown corner (x 1.12, 0.2 towards the enemy) beside the feet on the crown; the round-33 contact check passes on G1, G2 and G3 alike"
+      },
+      "sag": "TowerDisplacementView drops the beam top 0.307 world per unit burden (squash 0.16, drop 0.12); the clips' gate_burden curves use that",
+      "clips": [
+        "Gate_Mount",
+        "Gate_Straddle_Loop",
+        "Gate_Dismount"
+      ],
+      "usage": "Gate_Mount from the road (gate centre gate_forward_m ahead of the pivot), then move the transform onto the gate centre (end offset, on the ground) and loop Gate_Straddle_Loop while it weighs the gate down, then Gate_Dismount over the far side and move the transform by its end offset. Drive the gate's burden from each clip's gate_burden (one value per frame, TowerDisplacementView units) and hit the gate at its weight_frames (impact_frame = the first). Climb_Up/Loop/Down stay for rocks.",
+      "check": {
+        "Gate_Mount": {
+          "mesh_into_gate": [
+            0.012,
+            128,
+            [
+              -0.05,
+              3.66,
+              1.15
+            ]
+          ],
+          "feet": {
+            "IK_Leg_L1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_L2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            }
+          },
+          "gate_inside_mesh": [
+            0.0
+          ]
+        },
+        "Gate_Straddle_Loop": {
+          "mesh_into_gate": [
+            0.02,
+            24,
+            [
+              -0.28,
+              0.1,
+              1.16
+            ]
+          ],
+          "feet": {
+            "IK_Leg_L1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_L2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            }
+          },
+          "gate_inside_mesh": [
+            0.036,
+            24,
+            [
+              -0.22,
+              0.13,
+              1.18
+            ]
+          ]
+        },
+        "Gate_Dismount": {
+          "mesh_into_gate": [
+            0.02,
+            60,
+            [
+              0.27,
+              0.01,
+              1.36
+            ]
+          ],
+          "feet": {
+            "IK_Leg_L1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_L2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R1": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            },
+            "IK_Leg_R2": {
+              "gap": [
+                0.0,
+                null
+              ],
+              "sink": [
+                0.0,
+                null
+              ]
+            }
+          },
+          "gate_inside_mesh": [
+            0.018,
+            56,
+            [
+              0.23,
+              -0.13,
+              1.38
+            ]
+          ]
+        }
+      }
+    }
   }
 }

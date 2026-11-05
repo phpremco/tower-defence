@@ -941,3 +941,33 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Onderdeel | Verbeterpunt |
 | --- | --- |
 | Frost Warden (ronde 32) | Recht van voren nog een aapachtige houding (schildbanden, ogen en kieuwen dragen het buitenaardse). Schouder- en elleboogbollen nog zichtbaar van opzij. IJs leest in de studio als glanzend glas (in Unity beslist IceLook). Groot naast een G2-poort; de kop kan de poort verbergen op castafstand. Climb/Submerged/Burst gebruiken de generieke bossgang (vuisten niet hoger dan de achterpoten). Vuisten glijden iets bij de overgang ijsslag naar duik (frames 22-30). In Shatter_Through rekken de armen bij de lange stap (64-88) |
+
+### Ronde 33 (poortclips voor Gravemaw en de Cinder Matriarch, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 33.
+
+- **Waarom:** op een poort speelde Gravemaw zijn rotsclips, dus een vlakke kruipgang op balkhoogte.
+- **Nieuw voor Gravemaw en de Cinder Matriarch:**
+  - `Gate_Mount`: van de weg, het poortmidden staat `gate_forward_m` vooruit.
+  - `Gate_Straddle_Loop`: in place, met het pivot op het poortmidden op de grond.
+  - `Gate_Dismount`: over de andere kant naar beneden.
+- **Gravemaw:**
+  - Hangt over de balk tussen de pylonen. De schoppen haken over de kronen en graven aan de overkant in de grond.
+  - De poten staan op de kroonkanten en -toppen.
+  - `weight` bij elke zware duw.
+- **Cinder Matriarch:** stapt op haar stelten over de poort en legt haar borststuk op de balk. De sikkels hakken op
+  de balk.
+- **Unity:**
+  - Opnieuw importeren.
+  - Bij een poort de nieuwe clips spelen in `ClimbStructure`, met nieuwe `ModelClipRole`s. Climb_* blijven voor
+    rotsen.
+  - Het pivot op het poortmidden op de grond zetten, niet op `GateHeight`.
+  - `SetBurden` per frame uit `gate_burden` halen in plaats van 1.
+  - `weight_frames` toevoegen aan `SeriesKeys`.
+- **Rotbloom:** geen poortclips (stijf rond lijf, korte poten). Voorstel: Rotbloom klimt niet op poorten.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Gravemaw poortclips (ronde 33) | Schopklauwen bijten tot 7 cm (model) in de kroonrand. Bij Mount bungelen de poten lang (34-90) terwijl de schoppen trekken. Het lijf is even breed als de poort, dus de balk is onder het lijf niet te zien (de doorzakking lees je aan de kronen) |
+| Cinder Matriarch poortclips (ronde 33) | Het gewicht leest zwakker dan bij Gravemaw (ze is hoog), de sikkelslagen dragen de loop. Bij Dismount krult de zak flink omhoog om over de balk te komen |
+| Rotbloom | Kan niet over een poort zonder een ander lijf (gelede romp of langere poten) |
