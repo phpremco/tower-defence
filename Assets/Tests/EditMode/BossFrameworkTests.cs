@@ -242,7 +242,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Ledger_CountsGravemawsMechanic_AndItsFightStaysInsideTheHeroCap()
+        public void Ledger_CountsGravemawsMechanic_InsideTheMechanicCap()
         {
             EnemyDefinition gravemaw = Gravemaw();
             EnemyStats stats = BalanceLedger.Stats(gravemaw);
@@ -259,16 +259,10 @@ namespace Game.Tests
             withoutMechanic.MechanicLossSeconds = 0f;
             for (int d = 0; d < catalog.Difficulties.Count; d++)
             {
-                // The finale as it will be: the last level's last boss wave, its boss swapped for Gravemaw.
+                // The last real level's last boss wave with Gravemaw in it (its killability at the real finale: ContinentFinaleTests).
                 List<WaveSpec> waves = SpecsWithFinale(model, level, catalog.Difficulties[d], stats, out int finale);
                 var loads = new List<WaveLoad>();
                 List<WaveLine> lines = Ledger.Evaluate(model.InputFor(levelIndex, d), waves, model.Difficulties[d], withHero, loads);
-                float most = withHero.HeroCapFor(d) * (1f + withHero.BeatableTolerance);
-                if (lines[finale].Pressure > most)
-                {
-                    failures.Add($"{catalog.Difficulties[d].name}: Gravemaw's finale asks {lines[finale].Pressure:0.00} with the hero (most {most:0.00})");
-                }
-
                 string mechanic = BalanceChecks.CheckBossMechanic(gravemaw.name, stats.MechanicLossSeconds, loads[finale].BossFight, withHero);
                 if (mechanic != null)
                 {

@@ -32,6 +32,15 @@ namespace Game.Bosses
         private const float DebrisBurstRadius = 0.6f;
         private const int MaxReplans = 4;
 
+        // Gate crossings (README round 33): a gate it lies on keeps at least this burden so the walkers keep their bridge; a
+        // blow on a gate raises dust this wide and kicks the camera at this share of its impact kick.
+        private const float StandingBurden = 0.05f;
+        private const float GateDustRadius = 1.1f;
+        private const float GateBlowKick = 0.45f;
+        private const float MinClipSeconds = 0.1f;
+        private const string Battering = "Battering";
+        private static readonly Color GateDust = new Color(0.62f, 0.6f, 0.56f);
+
         // Where it comes out of a pool: the bank nearest the road weighs this much more than the far side of the pool.
         private const float RoadPull = 4f;
         private const float RefreshSeconds = 0.5f;
@@ -233,6 +242,13 @@ namespace Game.Bosses
                 if (ledge != null)
                 {
                     yield return _signature.AtStructure(ledge) ?? ClimbStructure(ledge);
+                    continue;
+                }
+
+                IStructure rammed = RamTarget();
+                if (rammed != null)
+                {
+                    yield return Ram(rammed);
                     continue;
                 }
 
@@ -516,26 +532,33 @@ namespace Game.Bosses
         /// <summary>
         /// A gate (or the base) in front: it climbs onto it, weighs it down and strikes it from above until it falls (or
         /// its mechanic calls it away), then climbs down the far side. Walkers follow it over the gate while it stands there.
+        /// A boss with its own gate crossing (Gate_Mount, Gate_Straddle_Loop, Gate_Dismount) plays that on a gate; the base
+        /// and a boss without them use the rock climb.
         /// </summary>
         internal IEnumerator ClimbStructure(IStructure structure)
         {
             State = "ClimbingGate";
             _record.Climbs++;
             _enemy.SetDirected(true);
-            ModelClipRole mount = GateRole(ModelClipRole.GateMount, ModelClipRole.ClimbUp);
-            BossClip up = BossClip.Of(_view, mount, _boss.Climb.ClipRate);
+            if (structure is Tower gate && !structure.IsBase && HasGateCrossing)
+            {
+                yield return CrossGate(gate);
+                yield break;
+            }
+
+            BossClip up = BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
             Vector3 dir = BossGeometry.Flat(structure.Position - transform.position);
             Vector3 start = transform.position;
             _enemy.Place(start, dir);
-            _view.PlayScripted(mount, up.Rate, true);
+            _view.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
             yield return Wait(up.Seconds);
             float height = structure.IsBase ? ClimbLayer.BaseHeight : ClimbLayer.GateHeight;
             Vector3 top = start + dir * up.Forward;
             _enemy.Place(new Vector3(top.x, height, top.z), dir);
             Straddle();
             OnStructure = true;
-            var gate = structure as Tower;
-            gate?.SetBurden(1f);
+            var tower = structure as Tower;
+            tower?.SetBurden(1f);
             EnemyDefinition kind = _enemy.Definition;
             float blowEvery = kind.AttackInterval;
             float sinceBlow = 0f;
@@ -555,7 +578,7 @@ namespace Game.Bosses
                 yield return null;
             }
 
-            gate?.SetBurden(0f);
+            tower?.SetBurden(0f);
             if (!Alive)
             {
                 OnStructure = false;
@@ -565,12 +588,11 @@ namespace Game.Bosses
             yield return ClimbDown(top, dir);
         }
 
-        /// <summary>Climbs down off a structure on its far side and walks on along the road.</summary>
+        /// <summary>Climbs down off a structure on its far side (the rock-climb clip) and walks on along the road.</summary>
         internal IEnumerator ClimbDown(Vector3 top, Vector3 dir)
         {
-            ModelClipRole dismount = GateRole(ModelClipRole.GateDismount, ModelClipRole.ClimbDown);
-            BossClip down = BossClip.Of(_view, dismount, _boss.Climb.ClipRate);
-            _view.PlayScripted(dismount, down.Rate, true);
+            BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
+            _view.PlayScripted(ModelClipRole.ClimbDown, down.Rate, true);
             yield return Wait(down.Seconds);
             OnStructure = false;
             Vector3 land = top + dir * down.Forward;
@@ -579,23 +601,153 @@ namespace Game.Bosses
             JoinRoad();
         }
 
-        // A gate crossing clip of its own when the model has one (Gravemaw's Gate_* clips), else the rock-climb clip.
-        internal ModelClipRole GateRole(ModelClipRole gate, ModelClipRole climb) => _view.HasClip(gate) ? gate : climb;
+        /// <summary>True when the model carries its own gate crossing (ArtSource README round 33): all three clips.</summary>
+        internal bool HasGateCrossing =>
+            _view.HasClip(ModelClipRole.GateMount) && _view.HasClip(ModelClipRole.GateStraddle) && _view.HasClip(ModelClipRole.GateDismount);
 
-        // On a gate it clings in place (Remco: the crawl cycle looked like walking on flat ground): its own straddle loop, or
-        // else the climb loop held still on one pose.
-        internal void Straddle()
+        // Its own crossing (README round 33). The clips are authored round the real gate with the pivot fixed: Mount starts
+        // with the gate's centre gate_forward_m ahead and ends with the body over it, so the pivot then moves onto the gate
+        // centre ON THE GROUND (end_offset_up_m is 0; the clip itself lifts the body onto the beam). The gate sags by the
+        // clip's own per-frame burden instead of a flat 1, and each weight frame is a blow with dust and a kick.
+        private IEnumerator CrossGate(Tower gate)
         {
-            if (_view.HasClip(ModelClipRole.GateStraddle))
+            float rate = _boss.Climb.GateCrossRate;
+            BossClip mount = BossClip.Of(_view, ModelClipRole.GateMount, rate);
+            Vector3 centre = new Vector3(gate.Position.x, 0f, gate.Position.z);
+            Vector3 dir = BossGeometry.Flat(centre - transform.position);
+            // It set off at the clip's own reach (StructureAhead), less at most a frame's step: start exactly there.
+            _enemy.Place(OnGround(centre - dir * mount.Anchor), dir);
+            _view.PlayScripted(ModelClipRole.GateMount, mount.Rate, true);
+            float blow = _enemy.Definition.BlockadeDamage * _field.Context.Difficulty.StructureDamageMultiplier;
+            yield return PressGate(gate, mount, blow);
+            if (Alive)
             {
-                _view.LoopScripted(ModelClipRole.GateStraddle);
+                _enemy.Place(OnGround(centre), dir);
+                OnStructure = true;
+                State = "OnGate";
+                yield return Straddling(gate);
+            }
+
+            if (!Alive)
+            {
+                gate.SetBurden(0f);
+                OnStructure = false;
+                yield break;
+            }
+
+            State = "ClimbingDown";
+            BossClip dismount = BossClip.Of(_view, ModelClipRole.GateDismount, rate);
+            _view.PlayScripted(ModelClipRole.GateDismount, dismount.Rate, true);
+            yield return PressGate(gate, dismount, blow);
+            gate.SetBurden(0f);
+            OnStructure = false;
+            _enemy.Place(OnGround(centre + dir * dismount.Forward), dir);
+            _view.ReleaseScript();
+            JoinRoad();
+        }
+
+        // Plays out a fixed-pivot crossing clip already started: the gate's sag follows the clip frame by frame, and each
+        // weight frame is a blow of the given damage.
+        private IEnumerator PressGate(Tower gate, BossClip clip, float blow)
+        {
+            ModelClip source = _view.ClipOf(clip.Role);
+            float[] moments = source != null ? source.MomentSeconds : System.Array.Empty<float>();
+            int next = 0;
+            float elapsed = 0f;
+            while (elapsed < clip.Seconds && Alive)
+            {
+                elapsed += Time.deltaTime;
+                float at = elapsed * clip.Rate;
+                gate.SetBurden(gate.IsAlive && source != null ? source.BurdenAt(at) : 0f);
+                for (; next < moments.Length && at >= moments[next]; next++)
+                {
+                    GateBlow(gate, blow);
+                }
+
+                yield return null;
+            }
+        }
+
+        // Draped over the gate in its straddle loop at rate 1, so the blows fall on the authored weight frames: the beam sags
+        // with the loop's burden (never quite 0 while it lies there, so the walkers keep their bridge), its weight wears the
+        // gate down and each weight frame strikes it. A blow carries the creature's damage per attack interval, so the gate
+        // falls as fast as it did under the old timed blows. It leaves when the gate falls, or at the end of a loop once its
+        // mechanic calls it away (the dismount starts in the loop's first pose).
+        private IEnumerator Straddling(Tower gate)
+        {
+            _view.LoopScripted(ModelClipRole.GateStraddle, 1f);
+            ModelClip loop = _view.ClipOf(ModelClipRole.GateStraddle);
+            float length = Mathf.Max(MinClipSeconds, loop.Length);
+            float[] moments = loop.MomentSeconds;
+            EnemyDefinition kind = _enemy.Definition;
+            float multiplier = _field.Context.Difficulty.StructureDamageMultiplier;
+            float interval = Mathf.Max(MinClipSeconds, kind.AttackInterval);
+            float blow = moments.Length > 0 ? kind.BlockadeDamage * multiplier * (length / moments.Length) / interval : kind.BlockadeDamage * multiplier;
+            float sinceBlow = 0f;
+            float at = 0f;
+            bool leaving = false;
+            while (Alive && gate.IsAlive)
+            {
+                float dt = Time.deltaTime;
+                float was = at;
+                at += dt;
+                bool wrapped = at >= length;
+                if (wrapped)
+                {
+                    at -= length;
+                }
+
+                gate.SetBurden(Mathf.Max(StandingBurden, loop.BurdenAt(at)));
+                gate.TakeDamage(_boss.Climb.GateWeightDamage * multiplier * dt);
+                for (int i = 0; i < moments.Length; i++)
+                {
+                    bool crossed = wrapped ? moments[i] > was || moments[i] <= at : moments[i] > was && moments[i] <= at;
+                    if (crossed)
+                    {
+                        GateBlow(gate, blow);
+                    }
+                }
+
+                if (moments.Length == 0)
+                {
+                    // A loop without weight frames keeps the old timed blows.
+                    sinceBlow += dt;
+                    if (sinceBlow >= interval)
+                    {
+                        sinceBlow -= interval;
+                        GateBlow(gate, blow);
+                    }
+                }
+
+                leaving |= _signature.WantsOffStructure;
+                if (leaving && wrapped)
+                {
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+        // One heavy push on a gate: the hit, dust at the beam and a short kick.
+        private void GateBlow(IStructure gate, float damage)
+        {
+            if (!gate.IsAlive)
+            {
                 return;
             }
 
-            _view.LoopScripted(ModelClipRole.ClimbLoop, 0f);
+            gate.TakeDamage(damage);
+            _field.Context.StructureHit.Raise(gate.Position);
+            Impact(gate.Position, GateDustRadius, GateDust, false);
+            _field.Context.BossImpact.Raise(_boss.ImpactKick * GateBlowKick);
         }
 
-        // A living gate or the base straight ahead, as far ahead as the climb clip reaches.
+        // On a gate without its own crossing it clings in place (Remco: the crawl cycle looked like walking on flat ground):
+        // the climb loop held still on one pose.
+        internal void Straddle() => _view.LoopScripted(ModelClipRole.ClimbLoop, 0f);
+
+        // A living gate or the base straight ahead, as far ahead as its climb clip reaches (its own mount for a gate).
         private IStructure StructureAhead()
         {
             if (!_boss.Climb.ClimbsGates || _enemy.IsDirected)
@@ -603,20 +755,82 @@ namespace Game.Bosses
                 return null;
             }
 
-            BossClip up = BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
-            if (!up.Exists)
+            BossClip up = HasGateCrossing
+                ? BossClip.Of(_view, ModelClipRole.GateMount, _boss.Climb.GateCrossRate)
+                : BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
+            return up.Exists ? Ahead(up.Anchor) : null;
+        }
+
+        // The nearest living gate or the base straight ahead within the given reach, or null. Only real structures count: the
+        // hero holding the road at a gate post also blocks walkers, but a boss never climbs onto (or rams) the hero.
+        private IStructure Ahead(float reach)
+        {
+            StructureRegistry structures = _field.Context.Structures;
+            IStructure best = null;
+            float bestSqr = reach * reach;
+            for (int i = 0; i < structures.Count; i++)
+            {
+                IStructure candidate = structures[i];
+                if (!candidate.BlocksGround || !(candidate is Tower || candidate.IsBase))
+                {
+                    continue;
+                }
+
+                Vector3 to = candidate.Position - transform.position;
+                to.y = 0f;
+                float sqr = to.sqrMagnitude;
+                if (sqr <= bestSqr && Vector3.Dot(BossGeometry.Flat(to), _enemy.Heading) > 0.5f)
+                {
+                    best = candidate;
+                    bestSqr = sqr;
+                }
+            }
+
+            return best;
+        }
+
+        // Batter (a body that cannot climb, Rotbloom): a living gate ahead within its body plus the ram clearance.
+        private IStructure RamTarget()
+        {
+            ClimbPower climb = _boss.Climb;
+            if (!climb.BattersGates || _enemy.IsDirected || !_view.HasClip(climb.RamClip))
             {
                 return null;
             }
 
-            IStructure structure = _field.Context.Structures.FindBlocker(transform.position, up.Anchor);
-            if (structure == null)
+            IStructure structure = Ahead(_boss.BodyHalfWidth + climb.RamClearance);
+            return structure != null && !structure.IsBase ? structure : null;
+        }
+
+        // One ram at the gate in front with its own clip; the blow lands on the clip's moment. Between two
+        // rams it is free for one step, so the brain can still run its mechanic (a spore volley); it stops again at once, its
+        // reach being longer than the distance a creature is held at. It walks on once the gate is down. A ram
+        // carries the creature's damage per attack interval over the clip's length, so a gate lasts as long as under bites.
+        private IEnumerator Ram(IStructure gate)
+        {
+            ClimbPower climb = _boss.Climb;
+            BossClip ram = BossClip.Of(_view, climb.RamClip, climb.RamRate);
+            State = Battering;
+            _enemy.SetDirected(true);
+            Vector3 dir = BossGeometry.Flat(gate.Position - transform.position);
+            _enemy.Place(transform.position, dir);
+            _view.PlayScripted(climb.RamClip, ram.Rate, true);
+            yield return Wait(ram.Moment);
+            EnemyDefinition kind = _enemy.Definition;
+            if (Alive && gate.IsAlive)
             {
-                return null;
+                float blows = Mathf.Max(1f, ram.Seconds / Mathf.Max(MinClipSeconds, kind.AttackInterval));
+                GateBlow(gate, kind.BlockadeDamage * _field.Context.Difficulty.StructureDamageMultiplier * blows);
+                _record.Rams++;
             }
 
-            Vector3 to = BossGeometry.Flat(structure.Position - transform.position);
-            return Vector3.Dot(to, _enemy.Heading) > 0.5f ? structure : null;
+            yield return Wait(ram.Seconds - ram.Moment);
+            _view.ReleaseScript();
+            _enemy.SetDirected(false);
+            if (Alive && !gate.IsAlive)
+            {
+                JoinRoad();
+            }
         }
 
         internal void BreakDecorNear(float dt)

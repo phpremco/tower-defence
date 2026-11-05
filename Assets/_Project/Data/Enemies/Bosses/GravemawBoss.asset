@@ -152,8 +152,12 @@ MonoBehaviour:
     _expectedPhaseSeconds: 15
   _climb:
     _climbsRocks: 1
-    _climbsGates: 1
+    _gateBehaviour: 0
     _clipRate: 3
+    _gateCrossRate: 1.5
+    _ramClip: 33
+    _ramRate: 1.2
+    _ramClearance: 0.5
     _minLedge: 0.75
     _gateWeightDamage: 18
     _maxTilt: 22

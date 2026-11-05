@@ -247,6 +247,12 @@ namespace Game.Levels
             foreach (KeyValuePair<Vector2Int, Tower> pair in _towers)
             {
                 Tower tower = pair.Value;
+                if (tower == null)
+                {
+                    // Destroyed outside the controller (a test clearing the field): nothing to pick.
+                    continue;
+                }
+
                 bool gate = tower.Definition.BlocksGroundEnemies;
                 Vector3 foot = gate ? CellWorld(pair.Key) : tower.Position;
                 measured &= Measure(tower, foot, out float radius, out float height);

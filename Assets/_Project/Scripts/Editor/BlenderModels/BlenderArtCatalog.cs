@@ -274,8 +274,7 @@ namespace Game.Editor
                         new BlenderClipSpec("Burrow_Down", ModelClipRole.BurrowDown, 31),
                         new BlenderClipSpec("Burrow_Travel", ModelClipRole.BurrowTravel),
                         new BlenderClipSpec("Surface_Throw", ModelClipRole.SurfaceThrow, 30),
-                        // Its own gate crossing (2026-11-05, in the making): picked up when the export has them; until then the
-                        // brain falls back to the rock-climb clips (ContinentBossBrain.ClimbStructure).
+                        // Round 33: its own gate crossing (weights and the per-frame gate burden from the round28 block).
                         new BlenderClipSpec("Gate_Mount", ModelClipRole.GateMount),
                         new BlenderClipSpec("Gate_Straddle_Loop", ModelClipRole.GateStraddle),
                         new BlenderClipSpec("Gate_Dismount", ModelClipRole.GateDismount),
@@ -300,6 +299,10 @@ namespace Game.Editor
                         new BlenderClipSpec("Hunt_Stride", ModelClipRole.HuntMove),
                         new BlenderClipSpec("Smash", ModelClipRole.Smash),
                         new BlenderClipSpec("Lay_Eggs", ModelClipRole.LayEggs, 0, string.Empty, "Drip"),
+                        // Round 33: she strides over a gate on her stilts and settles her thorax on the beam.
+                        new BlenderClipSpec("Gate_Mount", ModelClipRole.GateMount),
+                        new BlenderClipSpec("Gate_Straddle_Loop", ModelClipRole.GateStraddle),
+                        new BlenderClipSpec("Gate_Dismount", ModelClipRole.GateDismount),
                     },
                 },
                 // Her egg (round 28): it rests, then hatches (the larva leaves at frame 32) or bursts when it is shot.

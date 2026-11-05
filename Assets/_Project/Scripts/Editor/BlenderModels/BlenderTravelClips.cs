@@ -13,8 +13,10 @@ namespace Game.Editor
     {
         public readonly struct Facts
         {
-            public Facts(Vector2 endOffset, float anchor, float cueFrame, float distance, float eventFrame)
+            public Facts(Vector2 endOffset, float anchor, float cueFrame, float distance, float eventFrame, float[] momentFrames = null, float[] burden = null)
             {
+                MomentFrames = momentFrames ?? System.Array.Empty<float>();
+                Burden = burden ?? System.Array.Empty<float>();
                 EventFrame = eventFrame;
                 EndOffset = endOffset;
                 Anchor = anchor;
@@ -36,6 +38,12 @@ namespace Game.Editor
 
             /// <summary>Frame of the clip's main moment from the report (the impact, the cast, the last egg), or zero.</summary>
             public float EventFrame { get; }
+
+            /// <summary>Frames of each heavy push (a gate crossing's <c>weight_frames</c>), or empty.</summary>
+            public float[] MomentFrames { get; }
+
+            /// <summary>The structure burden per frame (a gate crossing's <c>gate_burden</c>), or empty.</summary>
+            public float[] Burden { get; }
         }
 
         private static readonly string[] AnchorKeys = { "hole_forward_m", "bank_forward_m", "exit_forward_m", "edge_forward_m", "target_forward_m", "gate_forward_m", "base_forward_m" };
@@ -59,7 +67,7 @@ namespace Game.Editor
             return series.Count > 0 ? BlenderJson.Number(series[series.Count - 1]) : 0f;
         }
 
-        private static readonly string[] SeriesKeys = { "egg_frames", "shot_frames" };
+        private static readonly string[] SeriesKeys = { "egg_frames", "shot_frames", "weight_frames" };
 
         private static List<object> Series(Dictionary<string, object> fields)
         {
@@ -73,6 +81,18 @@ namespace Game.Editor
             }
 
             return new List<object>();
+        }
+
+        private static float[] Numbers(object array)
+        {
+            List<object> values = BlenderJson.Array(array);
+            var numbers = new float[values.Count];
+            for (int i = 0; i < values.Count; i++)
+            {
+                numbers[i] = BlenderJson.Number(values[i]);
+            }
+
+            return numbers;
         }
 
         private static float FirstOf(object array)
@@ -113,7 +133,7 @@ namespace Game.Editor
 
                 // A throw has its burst first: that is the cue; every other clip has only its main moment.
                 float cue = BlenderJson.Field(fields, "throw_frame") != null ? BlenderJson.Number(BlenderJson.Field(fields, "burst_frame")) : FirstOf(Series(fields));
-                facts[clip.Key] = new Facts(end, anchor, cue, BlenderJson.Number(BlenderJson.Field(fields, "distance_per_loop_m")), EventOf(fields));
+                facts[clip.Key] = new Facts(end, anchor, cue, BlenderJson.Number(BlenderJson.Field(fields, "distance_per_loop_m")), EventOf(fields), Numbers(BlenderJson.Field(fields, "weight_frames")), Numbers(BlenderJson.Field(fields, "gate_burden")));
             }
 
             return facts;

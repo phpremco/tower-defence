@@ -58,7 +58,7 @@ namespace Game.Editor
             public BossSignature Signature;
             public BossArrival Arrival;
             public PoolKinds Pools;
-            public bool ClimbsGates = true;
+            public GateBehaviour Gates = GateBehaviour.Climb;
             public Color WakeGlow = new Color(1f, 0.35f, 0.6f, 0.8f);
             public string ArmourPart = string.Empty;
 
@@ -79,6 +79,11 @@ namespace Game.Editor
             public VoiceSpec Voice;
         }
 
+        // Health (2026-11-05, Docs/BALANCE.md "Continent bosses as played"): set at each boss's continent finale (level 20,
+        // the roadmap's loadout, Medium money). The ledger's human lens keeps every boss alone under the hero cap
+        // (ContinentFinaleTests); the finale probe on its arena field (a plain builder: level-1 guns spread along the road, no
+        // upgrades, no hero play) set the numbers: it just beats Gravemaw, Rotbloom, the Warden and the Shattered, and beats the
+        // Matriarch only when it plays her counter (no cold tower on the road), so a competent player has a margin.
         private static IEnumerable<BossSpec> ContinentBosses()
         {
             yield return new BossSpec
@@ -87,7 +92,7 @@ namespace Game.Editor
                 Creature = new Creature
                 {
                     Id = "Gravemaw", Description = "The planet's digging maw: it answers the colony's drill with a drill of its own.",
-                    Layer = TargetLayers.Ground, Health = 1050f, Speed = 0.55f, BaseDamage = 25, Boss = true,
+                    Layer = TargetLayers.Ground, Health = 2200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
                     Attack = AttackStyle.Bite, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
                     Color = new Color(0.55f, 0.2f, 0.4f), Eyes = new Color(1f, 0.45f, 0.75f), Accent = new Color(1f, 0.4f, 0.8f), Blood = new Color(1f, 0.45f, 0.7f),
                     Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,
@@ -104,7 +109,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "CinderMatriarch",
-                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 5000f, 0f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
+                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 1250f, 0f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
                 Phases = new[] { new BossPhase("Hunting", 1f), new BossPhase("Brood", 0.5f) },
                 Signature = BossSignature.HuntTheCold,
                 Arrival = BossArrival.Pool,
@@ -120,7 +125,7 @@ namespace Game.Editor
             {
                 Id = "FrostWarden",
                 // No armour layer on its health: its ice armour is the mechanic (a share of each hit lands until it breaks).
-                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 4500f, 0f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
+                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 850f, 0f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
                 Phases = new[] { new BossPhase("Armoured", 1f), new BossPhase("Exposed", 0.4f) },
                 Signature = BossSignature.GateBreaker,
                 Arrival = BossArrival.Pool,
@@ -136,13 +141,16 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Rotbloom",
-                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 4000f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
+                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 3350f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
                 Phases = new[] { new BossPhase("Rooted", 1f), new BossPhase("Uprooted", 0.5f) },
                 Signature = BossSignature.Overgrowth,
                 Arrival = BossArrival.Pool,
                 Pools = PoolKinds.Bog,
                 WakeGlow = new Color(0.55f, 1f, 0.3f, 0.8f),
                 BodyHalfWidth = 1.6f,
+                // A rigid round body on short legs cannot drape over a beam (ArtSource README round 33): it rams the gate with
+                // its maw instead (Roar, the jaw wide at frame 16).
+                Gates = GateBehaviour.Batter,
                 SignatureText = "Every twelve seconds it fires spore pods at the fullest cluster of towers within its reach: three pads at most, and never more than about a quarter of your towers overgrown at once. An overgrown pad cannot be built on, and the tower on it fires at 70% while vines grow over it, until the growth is burned away. Rooted, it creeps along the road on growing roots; below half its health it tears itself out, walks faster and leaves rot behind it. It sinks into the bog and comes up at another bank.",
                 TelegraphText = "Roots spread at the bank of a bog over the three waves before it comes, and it grows out of that bog. Before a volley the flower opens its petals with a sweet rising sound, and the target pads glow green two seconds before the pods land.",
                 CounterText = "Splash damage (cannon, mortar) that lands on a pad burns it clean, and the hero's repair burns the vines off the tower it guards. The pods fly: air towers can shoot them down before they land. Do not stack all your towers in one cluster.",
@@ -151,7 +159,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Shattered",
-                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 4800f, 0f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
+                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 1600f, 0f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
                 Phases = new[] { new BossPhase("Whole", 1f), new BossPhase("Split", 0.66f), new BossPhase("Rejoined", 0.33f) },
                 Signature = BossSignature.Splitting,
                 Arrival = BossArrival.Ruins,
@@ -166,14 +174,14 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "SealedOne",
-                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 9000f, 0f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
+                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 3100f, 0f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
                 Phases = new[] { new BossPhase("First seal", 1f), new BossPhase("Second seal", 0.75f), new BossPhase("Third seal", 0.5f), new BossPhase("Release", 0.25f) },
                 Signature = BossSignature.Recognition,
                 Arrival = BossArrival.Rift,
                 Pools = PoolKinds.Water | PoolKinds.Quicksand,
                 WakeGlow = new Color(0.7f, 0.4f, 1f, 0.9f),
                 BodyHalfWidth = 2.4f,
-                ClimbsGates = false,
+                Gates = GateBehaviour.Besiege,
                 SignatureText = "It does not come to you: the ground at the centre of the map cracks open, a new road rises from there to your base, and it hauls itself along it and onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
                 TelegraphText = "The ground rumbles and violet cracks open at the centre before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.",
                 CounterText = "Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.",
@@ -374,7 +382,7 @@ namespace Game.Editor
             so.FindProperty("_signature").enumValueIndex = (int)spec.Signature;
             so.FindProperty("_burrow._crackMinion").objectReferenceValue = spec.Signature == BossSignature.Burrow ? skitter : null;
             so.FindProperty("_burrow._minionsPerCrack").intValue = spec.Signature == BossSignature.Burrow ? 4 : 0;
-            so.FindProperty("_climb._climbsGates").boolValue = spec.ClimbsGates;
+            so.FindProperty("_climb._gateBehaviour").enumValueIndex = (int)spec.Gates;
             so.FindProperty("_dive._pools").intValue = (int)spec.Pools;
             so.FindProperty("_dive._wakeGlow").colorValue = spec.WakeGlow;
             so.FindProperty("_bodyHalfWidth").floatValue = spec.BodyHalfWidth;

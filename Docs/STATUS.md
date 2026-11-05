@@ -2563,3 +2563,29 @@ not the full generator.
   mostly by its glow lines); a purple crystal plant in the left foreground of the attack shot hides part of the
   Cragback; Mercer's raised hand covers half the visor at the peak of the gesture; the Stinger is the only one with a
   strike clip, the others only turn their heads; the music cue is still the Attack theme.
+
+## Round 9: real gate crossings, Rotbloom rams gates, continent bosses balanced at their finales (2026-11-05)
+
+**Gate crossings (Blender round 33).** Gravemaw and the Cinder Matriarch are re-imported (targeted:
+`Tools/PlayTest/Scripts/ApplyGateClips.cs`) with `Gate_Mount`, `Gate_Straddle_Loop` and `Gate_Dismount`. On a gate they now
+rear up / stride over, lie on the beam in their own loop and climb off the far side; the pivot ends on the gate centre on the
+ground, the beam sags frame by frame with the clip's `gate_burden`, and every weight frame is a blow with dust and a short
+camera kick (same gate damage per second as before). Rocks and the base keep the old climb. Fix: a boss no longer climbs onto
+the hero standing at a gate post. Details: Docs/BOSSES.md round 9.
+
+**Rotbloom no longer climbs** (round body, short legs): it stops in front of a gate and rams it with its maw
+(`GateBehaviour.Batter`, data on the boss). The Sealed One keeps biting gates like any creature.
+
+**Continent bosses as played** (Docs/BALANCE.md): each boss checked at its continent's level 20 with the weapons, research,
+money and counterplay the roadmap gives by then, in the ledger (`FinaleModel`, `ContinentFinaleTests`) and in a real fight on
+its arena field. Health now: Gravemaw 2200 (was 1050, too easy), Cinder Matriarch 1250 (5000), Frost Warden 850 (4500),
+Rotbloom 3350 (4000), the Shattered 1600 (4800), the Sealed One 3100 (9000). Every counter a boss needs is owned before its
+finale. Open for Remco: the Sealed One's new road from the centre skips the defence (lost with 85 % left; options in
+BALANCE.md), and on Hard/Psycho the boss itself asks less than a plain wave (proposal: a boss health share per difficulty).
+
+**Also:** `PlacementController` skips a tower destroyed behind its back (the slime test logged a MissingReference).
+
+**Checks:** 0 compile errors/warnings; EditMode 466/466; PlayMode one class at a time: the six boss arenas, SlimeBoost,
+OverviewRadarSmoke and BalanceProbe (3/3) green. Save restored byte-identical (ec2a1f6d) after every Play Mode run.
+
+**Try it:** open the project, Boot, dev Story viewer page "Boss arena": Gravemaw or the Matriarch on a gate, Rotbloom at a gate.

@@ -409,6 +409,18 @@ namespace Game.Editor
                 element.FindPropertyRelative("_endOffset").vector2Value = clip.Travel.EndOffset;
                 element.FindPropertyRelative("_anchorForward").floatValue = clip.Travel.Anchor;
                 element.FindPropertyRelative("_cueSeconds").floatValue = clip.Travel.CueFrame / FramesPerSecond;
+                WriteFloats(element.FindPropertyRelative("_momentSeconds"), clip.Travel.MomentFrames, 1f / FramesPerSecond);
+                WriteFloats(element.FindPropertyRelative("_burden"), clip.Travel.Burden, 1f);
+            }
+        }
+
+        private static void WriteFloats(SerializedProperty array, float[] values, float scale)
+        {
+            values = values ?? System.Array.Empty<float>();
+            array.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                array.GetArrayElementAtIndex(i).floatValue = values[i] * scale;
             }
         }
 

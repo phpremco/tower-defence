@@ -38,6 +38,14 @@ namespace Game.Core
         [Tooltip("Where the clip meets the world ahead of the pivot, in model units: the hole it digs or breaks out of, the bank or ledge it starts from.")]
         [SerializeField] private float _anchorForward;
 
+        [Tooltip("Seconds into the clip of each heavy push (a gate crossing's weight frames): a blow, dust and a kick at each.")]
+        [SerializeField] private float[] _momentSeconds = System.Array.Empty<float>();
+
+        [Tooltip("How hard the body presses a structure under it, one value per frame at 30 fps (a gate crossing's gate_burden).")]
+        [SerializeField] private float[] _burden = System.Array.Empty<float>();
+
+        private const float FramesPerSecond = 30f;
+
         public ModelClipRole Role => _role;
         public AnimationClip Clip => _clip;
 
@@ -58,5 +66,25 @@ namespace Game.Core
         /// <summary>Model units ahead of the pivot where the clip meets the world (a hole, a bank edge, a ledge face).</summary>
         public float AnchorForward => _anchorForward;
         public float Length => _clip != null ? _clip.length : 0f;
+
+        /// <summary>Seconds into the clip of each heavy push, in order (empty for most clips).</summary>
+        public float[] MomentSeconds => _momentSeconds ?? System.Array.Empty<float>();
+
+        /// <summary>True when the clip says frame by frame how hard it presses the structure under it.</summary>
+        public bool HasBurden => _burden != null && _burden.Length > 0;
+
+        /// <summary>The structure burden at a time into the clip (frames interpolated), or zero without a curve.</summary>
+        public float BurdenAt(float seconds)
+        {
+            if (!HasBurden)
+            {
+                return 0f;
+            }
+
+            float frame = Mathf.Clamp(seconds * FramesPerSecond, 0f, _burden.Length - 1);
+            int below = Mathf.FloorToInt(frame);
+            int above = Mathf.Min(below + 1, _burden.Length - 1);
+            return Mathf.Lerp(_burden[below], _burden[above], frame - below);
+        }
     }
 }

@@ -34,6 +34,8 @@ MonoBehaviour:
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
+  _slimeImmune: 0
+  _hitCooldown: 0
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3

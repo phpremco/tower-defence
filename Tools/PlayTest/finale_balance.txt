@@ -1,0 +1,25 @@
+Continent bosses at their finales (level 20, stand-in field, human lens)
+Gravemaw         C1 Easy    towers 6 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.65/1.56 boss 0.80 cap 1.00 mechanic 0.09 -> good
+Gravemaw         C1 Medium  towers 6 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 2.45/2.31 boss 1.10 cap 1.15 mechanic 0.09 -> good
+Gravemaw         C1 Hard    towers 6 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 2.31/2.18 boss 0.81 cap 1.25 mechanic 0.09 -> boss alone under a plain wave (see the probe)
+Gravemaw         C1 Psycho  towers 6 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.69/2.43 boss 0.78 cap 1.35 mechanic 0.10 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Easy    towers 7 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.06/0.97 boss 0.36 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Medium  towers 7 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 1.56/1.48 boss 0.49 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Hard    towers 7 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 1.62/1.53 boss 0.36 cap 1.25 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Psycho  towers 7 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.02/1.87 boss 0.34 cap 1.35 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+FrostWarden      C3 Easy    towers 7 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.17/1.06 boss 0.44 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+FrostWarden      C3 Medium  towers 7 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 1.76/1.60 boss 0.60 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+FrostWarden      C3 Hard    towers 7 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 1.74/1.64 boss 0.44 cap 1.25 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+FrostWarden      C3 Psycho  towers 7 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.13/1.97 boss 0.41 cap 1.35 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+Rotbloom         C4 Easy    towers 7 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.68/1.59 boss 0.80 cap 1.00 mechanic 0.01 -> good
+Rotbloom         C4 Medium  towers 7 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 2.50/2.37 boss 1.09 cap 1.15 mechanic 0.01 -> good
+Rotbloom         C4 Hard    towers 7 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 2.37/2.16 boss 0.82 cap 1.25 mechanic 0.01 -> boss alone under a plain wave (see the probe)
+Rotbloom         C4 Psycho  towers 7 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.66/2.41 boss 0.76 cap 1.35 mechanic 0.01 -> boss alone under a plain wave (see the probe)
+Shattered        C5 Easy    towers 7 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.24/1.17 boss 0.52 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+Shattered        C5 Medium  towers 7 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 1.91/1.74 boss 0.71 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+Shattered        C5 Hard    towers 7 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 1.92/1.76 boss 0.52 cap 1.25 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+Shattered        C5 Psycho  towers 7 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.28/2.08 boss 0.49 cap 1.35 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+SealedOne        C6 Easy    towers 7 research  138 money  1281 scale 1.56 plain 0.86/0.74 wave 1.69/1.61 boss 0.81 cap 1.00 mechanic 0.01 -> good
+SealedOne        C6 Medium  towers 7 research  276 money  1407 scale 1.55 plain 1.04/0.95 wave 2.51/2.40 boss 1.10 cap 1.15 mechanic 0.01 -> good
+SealedOne        C6 Hard    towers 7 research  690 money  1923 scale 1.77 plain 1.26/1.17 wave 2.37/2.17 boss 0.83 cap 1.25 mechanic 0.01 -> boss alone under a plain wave (see the probe)
+SealedOne        C6 Psycho  towers 7 research  900 money  1817 scale 1.53 plain 1.50/1.35 wave 2.66/2.42 boss 0.76 cap 1.35 mechanic 0.01 -> boss alone under a plain wave (see the probe)

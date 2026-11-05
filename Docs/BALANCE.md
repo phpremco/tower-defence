@@ -421,3 +421,73 @@ bot changed; no level, wave or money data moved, so the ledger is unchanged.
 | with the splash habit | 1-7 | 7 of 7 (base 600/600 every seed) | 7 of 7 (base 132-588) |
 
 Crysium Vein Easy/Medium also won on all seven seeds in the same runs. C1_05 Easy money was not raised.
+
+## Continent bosses as played (2026-11-05)
+
+Remco: "check aan het eind nog even of dit in balans is op het moment dat die levels gespeeld worden, dus welke wapens heb
+je, welke upgrades heb je unlockt, heb je superweapons, lukt het met geld etc."
+
+**How (two lenses, both on a stand-in, because only C1_01-06 exist).**
+- **Ledger** (`FinaleModel`, Game.Balance; `ContinentFinaleTests`): the campaign extended to level 20 of Crystal Plains
+  (`FinaleModel.Planned`: the real six levels, then planned levels on C1_06's field paying the continent's research curve,
+  `BalanceSheet.PlannedTowers` handing out Tesla from C1_09, Railgun from C1_13, Cryo from C2_04). Each finale is C1_06's own
+  waves with its last boss wave carrying the continent boss, all waves scaled by one factor so the plain waves sit on the
+  level-20 human curve (ramp +20 %). Every later continent is judged as "a player at the end of a continent": later
+  continents raise creatures and firepower together through the solver's wave factor, so the boss against its own field is
+  what matters. Lines in `Tools/PlayTest/finale_balance.txt`.
+- **Finale probe** (scratchpad `round9/finale.sh`): the boss's arena field on Medium, every wave at the finale's health (C1_06's
+  Medium boss wave x the level-20 scale 1.55), the finale's Medium money (1407) spent by a plain builder on the loadout at
+  level 1 (11 guns spread along the main road, no upgrades, no hero abilities), the hero on its post, one seed.
+
+**Expected player at each finale.**
+
+| Finale | Guns owned (counted) | Research earned E / M / H / P | Not counted (surplus) |
+| --- | --- | --- | --- |
+| Gravemaw, C1_20 | Gun, Cannon, Laser, Flak, Tesla, Railgun | 138 / 276 / 690 / 900 (all C1 upgrades from Hard on) | Acid Sprayer (no data), Mine, Chrono Field, Lava Ball, base turrets, drones, Quick Reload/Wide Slash/Field Repair |
+| Cinder Matriarch, C2_20 | + Cryo (no upgrades: C2 research has no budget yet) | same | Decoy Beacon (no data), the above |
+| Frost Warden, C3_20 | same | same | the five combos (no data; Artillery/Cryo Beam/Storm Rifle left out) |
+| Rotbloom, C4_20 | same | same | Barricade (no data) |
+| The Shattered, C5_20 | same | same | superweapons, Spike Strip, Rollback Field (no data) |
+| The Sealed One, C6_20 | same | same | allied Burrowers (no data) |
+
+Money at the boss wave (ledger purse): Easy 1281, Medium 1407, Hard 1923, Psycho 1817. Superweapons do not exist yet, so the
+C5/C6 finales are judged without them: they can only make those fights easier.
+
+**Counterplay owned by its finale** (`BalanceSheet.Finales`, `EveryBossCounterplay_IsOwnedByItsFinale`): Gravemaw's Mine and
+spreading (C1); the Matriarch's Cryo bait (Cryo returns in C2, before her finale) or no cold at all; the Warden's fire (the
+Lava Ball arrives in Crystal Plains 7-20, so long before C3) and the hero's Repair; Rotbloom's splash (Cannon), sky guns for
+the pods (Flak) and Repair; the Shattered's sky guns and the second road; the Sealed One's mix of 3-4 tower types. Nothing
+depends on a tool that arrives later. Cryo itself is counted at level 1 strength (its continent has no research budget yet).
+
+**Result per boss (health after the change; ledger: boss alone with the hero, against plain waves and the cap; probe on
+Medium).**
+
+| Boss | Health before -> after | Ledger boss alone E / M / H / P (cap 1.00 / 1.15 / 1.25 / 1.35) | Finale probe, Medium | Verdict |
+| --- | --- | --- | --- | --- |
+| Gravemaw | 1050 -> 2200 | 0.80 / 1.10 / 0.81 / 0.78 | won, base 600/600 (5401 hp in game; burrows give the guns time) | good; at 1050 it was a pushover at its finale (0.45 of the cap) |
+| Cinder Matriarch | 5000 -> 1250 | 0.36 / 0.49 / 0.36 / 0.34 | at 2750/1500/1250 with a Cryo on the road: lost (boss left at 53/22/19 %); at 1250 without cold towers: won, base 583 | good: her counter decides the fight (5000 was 2.8x the cap) |
+| Frost Warden | 4500 -> 850 | 0.44 / 0.60 / 0.44 / 0.41 | at 1550: lost at 47 % left; at 850: won, base 600 | good (4500 x1.6 armour was 4x the cap: round 8's "reached the base with 11 %" was this) |
+| Rotbloom | 4000 -> 3350 | 0.80 / 1.09 / 0.82 / 0.76 | won, base 600/600 | good |
+| The Shattered | 4800 -> 1600 | 0.52 / 0.71 / 0.52 / 0.49 | at 2450/1950: lost at 21 %; at 1600: won, base 600 | good |
+| The Sealed One | 9000 -> 3100 | 0.81 / 1.10 / 0.83 / 0.76 | lost with 85 % left (7611 hp): its new road from the centre skips the defence along the main road | **too hard, open** (below) |
+
+Mechanic loss stays at 1-10 % of each fight (cap 35 %). Rewards follow threat (Gravemaw 257 -> 500, the Sealed One 1778 -> 681).
+
+**What the two lenses taught.**
+- The ledger rates a lone boss as easier to stop than the game does: a boss that reaches the base ends the level in seconds
+  (it climbs on and the base has 600), and slow bosses spend less time in range than the window assumes. Gravemaw is the
+  exception because its burrows hold it on the field. So the health was set by the probe (a plain builder that just wins
+  leaves a competent player with upgrades and hero play a margin) and the ledger test only guards the top (killable inside
+  the hero cap everywhere); "boss alone under a plain wave" is reported, not failed.
+- **Hard and Psycho:** with one health for all difficulties the boss alone asks 0.35-0.8 of those caps, below their plain
+  waves; their difficulty comes from the bigger crowds and extra boss waves. If Remco wants the boss itself to be the climax
+  there, a per-difficulty boss health share on `DifficultyProfile` (about Hard x1.45, Psycho x1.65) would do it: a proposal,
+  not built.
+- **Finale escorts:** C1_06's last boss wave with any of these bosses asks 1.5-2.4 with the hero, well over the cap; the solver
+  would soften the whole wave, boss included. A finale script should send its continent boss with light escorts.
+- **The Sealed One (open):** "the map comes to it" puts its road from the centre to the base, so a defence built along the old
+  road barely touches it. The ledger counts the main road. Options for Remco: let the new road be at least as long as half the
+  main road, open it a wave earlier so players can build along it, or lower its health much further (about 450 would let the
+  probe win, which is no final boss).
+- Probe caveats: one seed, Medium only, no upgrades, Remco's save not used for upgrades in the reasoning (it was restored
+  byte-identical after every run).

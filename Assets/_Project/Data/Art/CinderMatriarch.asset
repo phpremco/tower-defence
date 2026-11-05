@@ -44,6 +44,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 2
     _clip: {fileID: 6915122293702346868, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -1452645137070158648, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -56,6 +58,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 1
     _clip: {fileID: 4336013932227953542, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 625385282841491500, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -68,6 +72,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 33
     _clip: {fileID: -2243036503271527938, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 7760276999112184040, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -80,6 +86,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 5
     _clip: {fileID: -8259480850601320843, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -6237870157900311361, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -92,6 +100,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 0
     _clip: {fileID: -704831411696456289, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -4850325007883852859, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -104,6 +114,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 52
     _clip: {fileID: 230603827079614325, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 4061700010085230781, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -116,6 +128,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 1.1333333
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 41
     _clip: {fileID: -2490553062615148108, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 8170384353229973872, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -128,6 +142,8 @@ MonoBehaviour:
     _endOffset: {x: 5.023, y: 1.5}
     _cueSeconds: 0
     _anchorForward: 2
+    _momentSeconds: []
+    _burden: []
   - _role: 44
     _clip: {fileID: 578708461982713194, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 2419064132064542153, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -140,6 +156,8 @@ MonoBehaviour:
     _endOffset: {x: 3.2, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 50
     _clip: {fileID: -6115084784922529272, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -5648822538530098761, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -152,6 +170,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 51
     _clip: {fileID: 4572349687771551863, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 3081156675119649666, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -164,6 +184,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 3.1
+    _momentSeconds: []
+    _burden: []
   - _role: 45
     _clip: {fileID: 2195763201964849360, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -1219438395795127034, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -176,6 +198,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 46
     _clip: {fileID: 3601700821718376434, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -5324471007170329761, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -188,6 +212,8 @@ MonoBehaviour:
     _endOffset: {x: 3, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 42
     _clip: {fileID: -5523490196864983151, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: 2091643546035042651, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -200,6 +226,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 43
     _clip: {fileID: 7761358919551854431, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
     _farClip: {fileID: -1343587120531743892, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
@@ -212,3 +240,440 @@ MonoBehaviour:
     _endOffset: {x: 5.023, y: -1.5}
     _cueSeconds: 0
     _anchorForward: 2
+    _momentSeconds: []
+    _burden: []
+  - _role: 66
+    _clip: {fileID: -1512916975220998771, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 1598053752804933591, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.8
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0.8
+    _anchorForward: 0
+    _momentSeconds:
+    - 0.8000001
+    - 2.4
+    _burden:
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.247
+    - 0.343
+    - 0.469
+    - 0.594
+    - 0.69
+    - 0.729
+    - 0.724
+    - 0.711
+    - 0.69
+    - 0.663
+    - 0.631
+    - 0.594
+    - 0.554
+    - 0.512
+    - 0.469
+    - 0.425
+    - 0.383
+    - 0.343
+    - 0.306
+    - 0.274
+    - 0.247
+    - 0.226
+    - 0.213
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.247
+    - 0.343
+    - 0.469
+    - 0.594
+    - 0.69
+    - 0.729
+    - 0.724
+    - 0.711
+    - 0.69
+    - 0.663
+    - 0.631
+    - 0.594
+    - 0.554
+    - 0.512
+    - 0.469
+    - 0.425
+    - 0.383
+    - 0.343
+    - 0.306
+    - 0.274
+    - 0.247
+    - 0.226
+    - 0.213
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+  - _role: 65
+    _clip: {fileID: 1969187541648615632, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 5041216129435578114, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 4.266667
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 3.6, y: 0}
+    _cueSeconds: 4.266667
+    _anchorForward: 3.6
+    _momentSeconds:
+    - 4.266667
+    _burden:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.031
+    - 0.114
+    - 0.231
+    - 0.364
+    - 0.498
+    - 0.615
+    - 0.697
+    - 0.729
+    - 0.729
+    - 0.729
+    - 0.725
+    - 0.714
+    - 0.697
+    - 0.675
+    - 0.647
+    - 0.616
+    - 0.582
+    - 0.546
+    - 0.507
+    - 0.469
+    - 0.43
+    - 0.391
+    - 0.355
+    - 0.321
+    - 0.29
+    - 0.262
+    - 0.24
+    - 0.223
+    - 0.212
+    - 0.208
+  - _role: 67
+    _clip: {fileID: 7013323366273901852, guid: c99f37bc88b6ff74daf62c2208e3873c, type: 3}
+    _farClip: {fileID: 5805560150966416286, guid: 125c2883decfb2740a8f935babec2b3d, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.4
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 4.4, y: 0}
+    _cueSeconds: 0.4
+    _anchorForward: 0
+    _momentSeconds:
+    - 0.40000004
+    _burden:
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.223
+    - 0.262
+    - 0.321
+    - 0.391
+    - 0.469
+    - 0.546
+    - 0.616
+    - 0.675
+    - 0.714
+    - 0.729
+    - 0.721
+    - 0.7
+    - 0.667
+    - 0.626
+    - 0.577
+    - 0.524
+    - 0.469
+    - 0.413
+    - 0.36
+    - 0.311
+    - 0.27
+    - 0.237
+    - 0.216
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.208
+    - 0.207
+    - 0.202
+    - 0.196
+    - 0.187
+    - 0.176
+    - 0.163
+    - 0.15
+    - 0.135
+    - 0.12
+    - 0.104
+    - 0.089
+    - 0.073
+    - 0.059
+    - 0.045
+    - 0.033
+    - 0.022
+    - 0.013
+    - 0.006
+    - 0.002
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0

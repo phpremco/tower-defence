@@ -318,10 +318,10 @@ namespace Game.Bosses
         {
             _brain.State = "ClimbingGate";
             _brain.Record.Climbs++;
-            ModelClipRole mount = _brain.GateRole(ModelClipRole.GateMount, ModelClipRole.ClimbUp);
-            BossClip up = BossClip.Of(View, mount, Boss.Climb.ClipRate);
+            // An ice block is not a beam: it climbs it with the rock climb, not a gate crossing.
+            BossClip up = BossClip.Of(View, ModelClipRole.ClimbUp, Boss.Climb.ClipRate);
             BossClip shatter = BossClip.Of(View, ModelClipRole.ShatterThrough, Boss.MechanicClipRate);
-            View.PlayScripted(mount, up.Rate, true);
+            View.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
             yield return _brain.Wait(up.Seconds);
             Vector3 top = new Vector3(gate.Position.x, ClimbLayer.GateHeight, gate.Position.z);
             Enemy.Place(top, dir);

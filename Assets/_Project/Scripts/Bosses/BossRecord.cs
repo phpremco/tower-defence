@@ -9,6 +9,9 @@ namespace Game.Bosses
         public int Burrows { get; internal set; }
         public int Dives { get; internal set; }
         public int Climbs { get; internal set; }
+
+        /// <summary>Rams at a gate it cannot climb (GateBehaviour.Batter).</summary>
+        public int Rams { get; internal set; }
         public int Hunts { get; internal set; }
         public int EggsLaid { get; internal set; }
         public int EggsHatched { get; internal set; }
@@ -53,7 +56,7 @@ namespace Game.Bosses
 
         public void Clear()
         {
-            Burrows = Dives = Climbs = Hunts = 0;
+            Burrows = Dives = Climbs = Rams = Hunts = 0;
             EggsLaid = EggsHatched = EggsShot = 0;
             GatesFrozen = GatesShattered = GatesThawed = ArmourCracks = Rage = 0;
             ArmourBroken = false;

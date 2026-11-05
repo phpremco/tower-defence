@@ -15,11 +15,11 @@ MonoBehaviour:
   _displayName: Sealed One
   _layer: 1
   _flies: 0
-  _maxHealth: 9000
+  _maxHealth: 3100
   _armor: 0
   _armorReduction: 0.6
   _speed: 0.25
-  _reward: 1778
+  _reward: 681
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -34,6 +34,8 @@ MonoBehaviour:
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
+  _slimeImmune: 0
+  _hitCooldown: 0
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3

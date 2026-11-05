@@ -469,3 +469,42 @@ and on the gate the climb loop is held on one pose (`Straddle`) instead of crawl
 **Hit reactions** (all creatures and bosses): `HitReaction` rations the flinch (clip and procedural knock): a cooldown
 (0.7 s, bosses 1.8 s, never shorter than the hit clip, `EnemyDefinition.HitCooldown` overrides), chip damage gathered
 until 4 % (bosses 1.5 %) of its health, and never during a scripted mechanic clip. Every hit still flashes and bleeds.
+
+## Round 9: real gate crossings, Rotbloom batters, finale health (2026-11-05)
+
+**Import (targeted).** `Tools/PlayTest/Scripts/ApplyGateClips.cs` syncs and rebuilds only Gravemaw and the Cinder Matriarch
+(Blender round 33) and runs the "Continent bosses" generator step. The importer reads two new series from the report's
+round28 block: `weight_frames` (added to `BlenderTravelClips.SeriesKeys`; the clip's cue is the first weight frame, its
+event the `impact_frame`) and the per-frame `gate_burden`. Both land on `ModelClip` (`MomentSeconds`, `BurdenAt(seconds)`,
+interpolated per frame at 30 fps). Clips stay in model metres; `BossClip` multiplies by `ModelScale` as before.
+
+**Gate crossing (`ContinentBossBrain.CrossGate`)**, used when the model has all three of `GateMount`, `GateStraddle`,
+`GateDismount`; the base and bosses without them keep the rock climb (`Climb_*`), and rocks always use `Climb_*`.
+- It sets off at the mount's own reach (`gate_forward_m` x scale: Gravemaw 2.56 m, Matriarch 2.88 m) and starts exactly
+  there. After Gate_Mount the pivot goes onto the gate centre **on the ground** (not `GateHeight`); the clip lifts the body.
+- The sag follows the clip frame by frame (`Tower.SetBurden(clip.BurdenAt(t))`) through mount, loop and dismount instead
+  of a flat 1 (lying ~0.21, a heavy push ~0.6-0.7, 0 from `off_gate_frame`). While it lies there the burden never drops
+  under 0.05, so the walkers keep their bridge.
+- Each weight frame is a blow: the hit, dust at the beam and a short kick (0.45 x the boss's impact kick). The straddle
+  loop plays at rate 1 so the blows fall on the authored frames; a loop blow carries the creature's damage per attack
+  interval (`BlockadeDamage x loop length / weights / AttackInterval`), so a gate falls exactly as fast as under the old
+  timed blows. Mount and dismount play at `ClimbPower.GateCrossRate` (1.5).
+- It leaves when the gate falls (at once) or, when its mechanic calls (Gravemaw's next burrow), at the end of a loop, since
+  the dismount starts in the loop's first pose. States for probes: `ClimbingGate` (mount), `OnGate`, `ClimbingDown`.
+- Fix found on the way: the structure ahead was "the nearest blocker", which can be the hero holding the post (`HeroTarget`
+  blocks walkers too). Gravemaw climbed onto Mercer in the first probe. `ContinentBossBrain.Ahead` now only takes gates
+  (towers) and the base.
+- The Frost Warden climbs its ice block with the rock climb (a block is not a beam), as before.
+
+**Rotbloom batters (curator decision, README round 33: rigid round body, short legs).** New `GateBehaviour` on
+`ClimbPower` (replaces `ClimbsGates`): `Climb` (Gravemaw, Matriarch, Warden, Shattered), `Batter` (Rotbloom), `Besiege`
+(the Sealed One, unchanged: held and biting like any creature). A batterer stops with its body clear of the gate (half
+width + `RamClearance` 0.5 m) and rams with `RamClip` (Rotbloom: Roar, jaw wide at frame 16) at `RamRate` 1.2; the blow
+lands on the clip's moment (dust, hit, small kick) and carries the damage of the attack intervals the clip lasts. Between
+rams it is free for a step, so its volleys still run. `BossRecord.Rams` counts them.
+
+**Gallery** (`scratchpad/gallery/Gravemaw/21-29`, `CinderMatriarch/21-28`, `Rotbloom/21-23`, captions in `index.txt`).
+
+**Health retuned for the finales** (Docs/BALANCE.md, "Continent bosses as played"): Gravemaw 1050 -> 2200, Cinder Matriarch
+5000 -> 2750, Frost Warden 4500 -> 1550 (x1.6 ice armour in the ledger), Rotbloom 4000 -> 3350, the Shattered 4800 -> 2450,
+the Sealed One 9000 -> 3100. Rewards follow threat.
