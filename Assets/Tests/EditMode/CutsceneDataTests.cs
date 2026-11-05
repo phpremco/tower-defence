@@ -19,6 +19,10 @@ namespace Game.Tests
         // The prologue (Earth, survey, orbit) is mostly reading: a few seconds per shot when the boxes close at once.
         private const float MaxPrologueAutoSeconds = 30f;
 
+        // The attack: a few of the brood with the Queen, walkers and flyers together.
+        private const int MinBrood = 3;
+        private const int MaxBrood = 7;
+
         private CampaignCatalog _catalog;
         private CutsceneDefinition _cutscene;
 
@@ -117,6 +121,29 @@ namespace Game.Tests
                 Assert.IsNotNull(flyer);
                 Assert.IsTrue(flyer.Flies, $"{flyer.name} must fly over the swarm");
             }
+        }
+
+        // Remco, 2026-11-05: no legion of rollers in the opening. The angry Queen and a few of her brood, of different
+        // species, standing and glaring at the colony are enough; nothing in it rolls.
+        [Test]
+        public void Attack_IsTheQueenAndAFewOfHerBrood_NothingRolls()
+        {
+            CutsceneCast cast = _cutscene.Cast;
+            Assert.LessOrEqual(cast.SwarmCount + cast.FlyerCount, MaxBrood, "the attack is a horde again");
+            Assert.GreaterOrEqual(cast.SwarmCount, MinBrood, "the Queen needs a few of her brood around her");
+            var species = new HashSet<EnemyDefinition>();
+            for (int i = 0; i < cast.SwarmCount; i++)
+            {
+                species.Add(cast.Swarm[i % cast.Swarm.Length]);
+            }
+
+            Assert.AreEqual(cast.SwarmCount, species.Count, "every one of the brood is a different species");
+            foreach (EnemyDefinition creature in species)
+            {
+                Assert.IsFalse(creature.Rolls, $"{creature.name} rolls");
+            }
+
+            Assert.IsFalse(cast.Screamer.Rolls);
         }
 
         [Test]

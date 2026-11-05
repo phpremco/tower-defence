@@ -16,9 +16,11 @@ MonoBehaviour:
   _hauler: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
   _builder: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
   _swarm:
-  - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+  - {fileID: 11400000, guid: 8f3c0afb49037a14ea2496d54baaffde, type: 2}
   - {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
-  - {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+  - {fileID: 11400000, guid: b0bc085e45973a7478f000bca933941a, type: 2}
+  - {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+  - {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
   _screamer: {fileID: 11400000, guid: d830dda47c6b4aa45981a5405dc4300a, type: 2}
   _fieldLevel: {fileID: 0}
   _earthTheme: {fileID: 11400000, guid: 20c7d6fc5e9f2a34883b0bc3cb413318, type: 2}
@@ -26,7 +28,7 @@ MonoBehaviour:
   _capsuleCount: 9
   _eyePairs: 300
   _droneCount: 8
-  _swarmCount: 40
+  _swarmCount: 5
   _mothership: {fileID: 0}
   _capsule: {fileID: 0}
   _drill: {fileID: 0}
@@ -93,5 +95,4 @@ MonoBehaviour:
     Smog: {fileID: 2800000, guid: 5e8306c89313ae44c88311590ee0b221, type: 3}
   _flyers:
   - {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
-  - {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
-  _flyerCount: 8
+  _flyerCount: 1

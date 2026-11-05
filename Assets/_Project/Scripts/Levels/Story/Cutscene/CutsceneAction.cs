@@ -21,7 +21,7 @@ namespace Game.Levels
         GateStand = 12,
         Handoff = 13,
 
-        /// <summary>A close shot of the commander as the swarm pours out: disbelief, a step back, a hand to the visor.</summary>
+        /// <summary>A close shot of the commander as the creatures gather: disbelief, a step back, a hand to the visor.</summary>
         MercerReacts = 14,
     }
 }

@@ -30,7 +30,7 @@ namespace Game.Levels
         /// <summary>The base's energy core (the procedural cage beside the base, or the imported base's crystal), facing as the base.</summary>
         Core = 7,
 
-        /// <summary>The commander as he reacts to the swarm: his spot and the way he faces, turned towards the camera's side.</summary>
+        /// <summary>The commander as he reacts to the creatures: his spot, facing the gate and them as he backs away.</summary>
         Commander = 8,
     }
 }

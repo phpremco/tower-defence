@@ -9,26 +9,20 @@ using UnityEngine.Rendering;
 namespace Game.UI
 {
     /// <summary>
-    /// The attack: the ground bursts open beside the road at the entrance, one living burrow after another (the
-    /// level's Blender spawn origin with its own opening: tremor, cracks spreading, the burst with dust, thrown slabs
-    /// and a flash, then the open maw), and the creatures run out at speed in their own run cycles and stream down the
-    /// road; rollers roll, flyers swoop over them, and a big one climbs out at the entrance and screams. At the first
-    /// gate they are held by its field and claw at it, the crowd growing back towards the entrance, so nothing ever
-    /// stands idle. The creatures are the game's own <see cref="Enemy"/> and <see cref="EnemyView"/>, driven by the
-    /// swarm clock (seconds since the first tremor): a jump in time re-places them, so any moment can be sought.
+    /// The threat: the ground bursts open beside the road at the entrance, one living burrow after another (the level's
+    /// Blender spawn origin with its own opening: tremor, cracks spreading, the burst with dust, thrown slabs and a flash,
+    /// then the open maw), and a small brood of different species climbs out and takes up its place in slow steps. The
+    /// Queen rises in front of them, walks up to the head of the group, rears and screams; then they all stand and glare
+    /// at the colony, turning their heads now and then, a flyer or two hovering over them. Later they creep a few metres
+    /// closer to the gate and stand again. Nothing runs, nothing rolls: the menace is in the stillness (Remco,
+    /// 2026-11-05). The creatures are the game's own <see cref="Enemy"/> and <see cref="EnemyView"/>, placed by the swarm
+    /// clock (seconds since the first tremor) as a pure function of time, so any moment can be sought.
     /// </summary>
     public sealed class FieldSwarm
     {
-        private const float StepSeconds = 0.1f;
         private const float SeekThreshold = 0.6f;
         // Longer than any creature's climb out of the ground.
         private const float SpawnAge = 1.5f;
-        // Faster than in a level: the swarm rushes out of the ground.
-        private const float RushShare = 1.3f;
-        private const float LaneWidth = 1.2f;
-        private const float RingSpacing = 1.15f;
-        private const int Rings = 9;
-        private const float RingSeconds = 1.4f;
 
         // The burrows (README round 23): the opening clip's tremor, burst (1.8 s), maw up, the first creature at 2.53 s.
         private const float BurstAt = 1.8f;
@@ -36,8 +30,7 @@ namespace Game.UI
         private const float GlowRampSeconds = 1f;
         private const float FirstOpen = 0.4f;
         private const float OpenGap = 0.8f;
-        private const float StreamGap = 0.85f;
-        private const float StreamEnd = 15f;
+        private const float EmergeGap = 0.7f;
         private const float BurstLight = 10f;
         // An open maw lights the ground and the creatures round it from below, warm, so they read against the night.
         private const float OpenLight = 3.2f;
@@ -50,53 +43,83 @@ namespace Game.UI
         private const int BurstDust = 14;
         private const int BurstDebris = 22;
 
-        // Flyers lift out of the maw to a cruising height and swoop as they go.
-        private const float FlyerHeight = 2.4f;
-        private const float FlyerLiftSeconds = 1.2f;
-        private const float SwoopHeight = 0.7f;
-        private const float SwoopSeconds = 2.6f;
+        // The brood climbs out, then walks to its place in slow, deliberate steps (world units per second).
+        private const float RiseSeconds = 1.1f;
+        private const float BroodPace = 0.75f;
+        private const float QueenPace = 0.6f;
+        // Later they all creep this far further down the road towards the gate, slower still, one after another.
+        private const float AdvanceAt = 12.5f;
+        private const float AdvanceStagger = 0.9f;
+        private const float AdvanceDistance = 3f;
+        private const float AdvancePace = 0.35f;
+        // Standing, they turn towards the colony and their heads keep searching a little.
+        private const float TurnSeconds = 0.8f;
+        private const float GlareSwayDegrees = 9f;
+        private const float GlareSwayRate = 0.35f;
+        // A creature with a strike of its own snaps at the air now and then while it stands.
+        private const float SnapGap = 4.2f;
+        private const float SnapJitter = 1.6f;
 
-        private const float ScreamerEmerge = 3.2f;
-        private const float ScreamAt = 6f;
+        private const float FlyerLiftSeconds = 1.4f;
+        private const float HoverBob = 0.18f;
+        private const float HoverBobSeconds = 2.8f;
+
+        private const float QueenEmerge = 3.2f;
+        private const float ScreamAt = 7.8f;
         private const float RingSecondsScream = 1.3f;
-        private const float ScreamRadius = 7f;
-        private const float RearHeight = 0.35f;
-        private const float ScreamerScale = 0.7f;
-        private const float ScreamerSpeed = 0.25f;
-        private const float ScreamerWalk = 9f;
+        private const float ScreamRadius = 6f;
+        private const float RearHeight = 0.2f;
+        private const float QueenScale = 0.8f;
         private static readonly Color CrackColour = new Color(1f, 0.32f, 0.12f);
         private static readonly Color RingColour = new Color(1f, 0.35f, 0.2f);
         private static readonly Color FlashColour = new Color(1f, 0.45f, 0.18f);
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         // Where the burrows break open: distance along the road from the entrance and to its side (negative: left).
-        private static readonly Vector2[] BurrowSpots = { new Vector2(1.2f, 3.1f), new Vector2(3.2f, -3.4f), new Vector2(5.6f, 4.0f), new Vector2(0.4f, -1.6f) };
+        private static readonly Vector2[] BurrowSpots = { new Vector2(1.2f, 3.1f), new Vector2(3.2f, -3.4f), new Vector2(0.4f, -1.6f) };
+
+        // Where each of the brood first stands (along the road, to its side): a loose, uneven group flanking the Queen, so
+        // the low camera in front of her sees them on both sides of her, never a line. Flyers hover over theirs at the height in z.
+        private static readonly Vector2[] WalkerSpots = { new Vector2(5.6f, -2.2f), new Vector2(5.3f, 1.9f), new Vector2(3.9f, -3f), new Vector2(4f, 2.6f), new Vector2(6.4f, -1.2f), new Vector2(2.4f, 1.7f) };
+        private static readonly Vector3[] FlyerSpots = { new Vector3(3.4f, 1.4f, 3f), new Vector3(3f, -1.8f, 2.6f) };
+
+        // The Queen climbs out a little behind the head of the group and walks up to it.
+        private static readonly Vector2 QueenRise = new Vector2(3.8f, 0.6f);
+        private static readonly Vector2 QueenStand = new Vector2(5.4f, 0f);
 
         private readonly List<Creature> _creatures = new List<Creature>();
         private readonly List<Burrow> _burrows = new List<Burrow>();
         private readonly TargetRegistry _targets = new TargetRegistry();
         private readonly StructureRegistry _structures = new StructureRegistry();
         private readonly CutsceneContext _context;
+        private readonly FieldLayout _layout;
         private readonly Transform _ring;
         private readonly Material _ringMaterial;
         private readonly Material _crackMaterial;
-        private Creature _screamer;
-        private Vector3 _screamerSpot;
-        private float _simClock;
+        private Creature _queen;
         private float _lastClock = -1f;
 
+        /// <summary>One creature of the brood and its choreography: out of the ground, to its place, later a little closer.</summary>
         private sealed class Creature
         {
             public Enemy Enemy;
-            public EnemyDefinition Definition;
-            public Vector3[] Route;
-            public float Emerge;
-            public float Applied = -1f;
-            public float Speed;
-            public bool Flies;
-            public float GroundY;
-            public int Index;
             public EnemyView View;
+            public EnemyDefinition Definition;
+            public int Index;
+            public float Emerge;
+            public Vector3 From;
+            public Vector3 Stand;
+            public Vector3 Advance;
+            public float Pace;
+            public float AdvanceFrom;
+            public float Hover;
+            public float SnapUntil = -1f;
+            public float NextSnap;
+            public bool Active;
+
+            public float WalkFrom => Emerge + RiseSeconds;
+            public float WalkTo => WalkFrom + Vector3.Distance(Flat(From), Flat(Stand)) / Pace;
+            public float AdvanceTo => AdvanceFrom + Vector3.Distance(Flat(Stand), Flat(Advance)) / AdvancePace;
         }
 
         private sealed class Burrow
@@ -113,53 +136,23 @@ namespace Game.UI
             public ImpactFlash Flash;
         }
 
-        /// <summary>A ring of the crowd at the first gate: it holds walkers once the swarm clock has reached it.</summary>
-        private sealed class HoldRing : IStructure
-        {
-            private readonly FieldSwarm _swarm;
-            private readonly float _from;
-
-            public HoldRing(FieldSwarm swarm, Vector3 position, float from)
-            {
-                _swarm = swarm;
-                Position = position;
-                _from = from;
-            }
-
-            public Vector3 Position { get; }
-            public bool IsAlive => true;
-            public bool BlocksGround => _swarm._simClock >= _from;
-            public bool IsBase => false;
-            public float HealthFraction => 1f;
-
-            public void TakeDamage(float amount)
-            {
-            }
-
-            public void Repair(float amount)
-            {
-            }
-        }
-
         public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context)
         {
             _context = context;
+            _layout = layout;
             Root = new GameObject("Swarm").transform;
             Root.SetParent(parent, false);
             _crackMaterial = Additive(CutsceneSprite.CrackSwarmA, CrackColour * CrackGlow);
             _ringMaterial = Additive(CutsceneSprite.ScreamRing, RingColour);
-            BuildBurrows(layout, context);
-            BuildCreatures(layout, context);
-            BuildRings(layout);
-            _ring = Decal("ScreamRing", _ringMaterial, _screamerSpot + Vector3.up * 0.06f);
+            BuildBurrows(context);
+            BuildCreatures(context);
+            Vector3 ringAt = _queen != null ? _queen.Stand : OnRoad(QueenStand);
+            _ring = Decal("ScreamRing", _ringMaterial, ringAt + Vector3.up * 0.06f);
         }
 
         public Transform Root { get; }
 
-        /// <summary>Where the big one stands and screams, for the camera and the dust.</summary>
-        public Vector3 ScreamerSpot => _screamerSpot;
-
-        /// <summary>The shot of the swarm begins: its burst effects start their clock; in any other shot they rest.</summary>
+        /// <summary>The shot of the attack begins: its burst effects start their clock; in any other shot they rest.</summary>
         public void Enter(bool bursting)
         {
             foreach (Burrow burrow in _burrows)
@@ -191,6 +184,7 @@ namespace Game.UI
                 return;
             }
 
+            bool played = _lastClock >= 0f && clock >= _lastClock && clock - _lastClock < SeekThreshold;
             foreach (Burrow burrow in _burrows)
             {
                 PoseBurrow(burrow, clock, time);
@@ -198,10 +192,10 @@ namespace Game.UI
 
             foreach (Creature creature in _creatures)
             {
-                Drive(creature, clock);
+                Place(creature, clock, played);
             }
 
-            PoseScreamer(clock);
+            PoseQueen(clock, played);
             _lastClock = clock;
         }
 
@@ -253,7 +247,9 @@ namespace Game.UI
 
         private static void ParkFlash(ImpactFlash flash) => flash.gameObject.SetActive(false);
 
-        private void PoseScreamer(float clock)
+        // The ring of the scream spreads from her feet; she swells for it and plays her own scream when the moment is played
+        // (a seek shows her standing). Size, not height: a lift would read as walking to the view.
+        private void PoseQueen(float clock, bool played)
         {
             float since = clock - ScreamAt;
             float ring = CutsceneMath.Span(since, 0f, RingSecondsScream);
@@ -261,76 +257,150 @@ namespace Game.UI
             float radius = ScreamRadius * CutsceneMath.Smooth(ring);
             _ring.localScale = new Vector3(Mathf.Max(0.001f, radius * 2f), Mathf.Max(0.001f, radius * 2f), 1f);
             GlowDecal.SetColour(_ringMaterial, RingColour * (1.5f * (1f - ring)));
-            if (_screamer == null || !_screamer.Enemy.gameObject.activeSelf)
+            if (_queen == null || !_queen.Active)
             {
                 return;
             }
 
-            // It rears up for the scream and settles again, then comes on behind its brood.
+            if (played && _lastClock < ScreamAt && clock >= ScreamAt)
+            {
+                Strike(_queen, ModelClipRole.Power, clock);
+            }
+
             float rear = Mathf.Sin(CutsceneMath.Span(since, -0.4f, 1.6f) * Mathf.PI);
-            Transform body = _screamer.Enemy.transform;
-            Vector3 position = body.position;
-            position.y = _screamerSpot.y + RearHeight * rear;
-            body.position = position;
-            body.localScale = Vector3.one * (ScreamerScale * (1f + 0.08f * rear));
+            _queen.Enemy.transform.localScale = Vector3.one * (QueenScale * (1f + 0.08f * rear));
         }
 
-        // Each creature has its own clock from the moment it climbs out. Small steps keep the run and the turns exact; a
-        // jump (a seek, or the next shot) starts it over and runs it up to the moment. The gate's rings read the clock of
-        // the step being taken, so a creature re-run after a seek meets the crowd it met when the moment was played.
-        private void Drive(Creature creature, float clock)
+        // Out of the ground when its time comes, then wherever its choreography has it at this moment. A jump in time (a
+        // seek, the next shot) starts the creature over at the moment, without a second climb out of the ground.
+        private void Place(Creature creature, float clock, bool played)
         {
-            float age = clock - creature.Emerge;
             GameObject go = creature.Enemy.gameObject;
-            if (age <= 0f)
+            if (clock < creature.Emerge)
             {
-                if (go.activeSelf)
+                if (creature.Active)
                 {
+                    EndStrike(creature);
                     creature.Enemy.Deactivate();
                     go.SetActive(false);
+                    creature.Active = false;
                 }
 
-                creature.Applied = -1f;
                 return;
             }
 
-            if (creature.Applied < 0f || age < creature.Applied || age - creature.Applied > SeekThreshold)
+            Vector3 position = PositionAt(creature, clock, out Vector3 heading);
+            if (!creature.Active || !played)
             {
+                EndStrike(creature);
                 go.SetActive(true);
                 creature.Enemy.Deactivate();
-                float height = creature.Flies ? FlyerHeight : 0f;
-                creature.Enemy.Initialize(creature.Definition, creature.Route, 1f, 1f, height, _targets, _structures, creature.Speed, EnemyOrigin.Nest);
-                if (age > SpawnAge)
+                creature.Enemy.Initialize(creature.Definition, new[] { position, position + heading }, 1f, 1f, 0f, _targets, _structures, 1f, EnemyOrigin.Nest);
+                if (clock - creature.Emerge > SpawnAge)
                 {
-                    // Re-placed on its way (a seek): it climbed out long ago and must not climb out again.
                     creature.View.SkipSpawn();
                 }
 
-                creature.Applied = 0f;
+                creature.Active = true;
+                creature.NextSnap = Mathf.Max(FirstSnap(creature), clock + CutsceneMath.Hash(creature.Index, 29) * SnapJitter);
             }
 
-            while (creature.Applied < age)
+            creature.Enemy.Place(position, heading);
+            if (creature.SnapUntil >= 0f && clock >= creature.SnapUntil)
             {
-                float step = Mathf.Min(StepSeconds, age - creature.Applied);
-                _simClock = creature.Emerge + creature.Applied + step;
-                creature.Enemy.Step(step);
-                creature.Applied += step;
+                EndStrike(creature);
             }
 
-            creature.Applied = age;
-            if (creature.Flies)
+            if (played && creature != _queen)
             {
-                // Out of the maw and up, then a slow swoop over the road.
-                Transform body = creature.Enemy.transform;
-                float lift = CutsceneMath.Smooth(CutsceneMath.Span(age, 0f, FlyerLiftSeconds));
-                float swoop = Mathf.Sin((age / SwoopSeconds + CutsceneMath.Hash(creature.Index, 41)) * Mathf.PI * 2f) * SwoopHeight;
-                Vector3 position = body.position;
-                position.y = creature.GroundY + (FlyerHeight + swoop) * lift;
-                body.position = position;
+                Snap(creature, clock);
             }
         }
 
-        private void BuildBurrows(FieldLayout layout, CutsceneContext context)
+        // Rising out of the maw, a slow walk to its place, a turn to the colony; later the same again a few metres closer.
+        // Standing, the head keeps searching: a slow sway of the heading round the line to the gate.
+        private Vector3 PositionAt(Creature creature, float clock, out Vector3 heading)
+        {
+            Vector3 position;
+            Vector3 travel;
+            float turn;
+            if (clock < creature.AdvanceFrom)
+            {
+                position = Vector3.Lerp(creature.From, creature.Stand, CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.WalkFrom, creature.WalkTo)));
+                travel = creature.Stand - creature.From;
+                turn = CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.WalkTo, creature.WalkTo + TurnSeconds));
+            }
+            else
+            {
+                position = Vector3.Lerp(creature.Stand, creature.Advance, CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.AdvanceFrom, creature.AdvanceTo)));
+                travel = creature.Advance - creature.Stand;
+                turn = clock < creature.AdvanceTo
+                    ? 1f - CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.AdvanceFrom, creature.AdvanceFrom + TurnSeconds))
+                    : CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.AdvanceTo, creature.AdvanceTo + TurnSeconds));
+            }
+
+            position = _layout.Ground(position);
+            Vector3 look = Flat(_layout.GateCentre - position).normalized;
+            float sway = Mathf.Sin((clock * GlareSwayRate + CutsceneMath.Hash(creature.Index, 31)) * Mathf.PI * 2f) * GlareSwayDegrees;
+            look = Quaternion.Euler(0f, sway, 0f) * look;
+            travel = Flat(travel);
+            Vector3 along = travel.sqrMagnitude > 0.0001f ? travel.normalized : look;
+            heading = Vector3.Slerp(along, look, turn);
+            if (creature.Hover > 0f)
+            {
+                float age = clock - creature.Emerge;
+                float lift = CutsceneMath.Smooth(CutsceneMath.Span(age, 0f, FlyerLiftSeconds));
+                float bob = Mathf.Sin((age / HoverBobSeconds + CutsceneMath.Hash(creature.Index, 41)) * Mathf.PI * 2f) * HoverBob;
+                position.y += (creature.Hover + bob) * lift;
+            }
+
+            return position;
+        }
+
+        private static bool IsStanding(Creature creature, float clock) => clock >= creature.WalkTo && (clock < creature.AdvanceFrom || clock >= creature.AdvanceTo);
+
+        private static float FirstSnap(Creature creature) => creature.WalkTo + TurnSeconds + CutsceneMath.Hash(creature.Index, 37) * SnapJitter;
+
+        // Now and then, while it stands, a creature with a strike of its own snaps at the air: a warning, not an attack.
+        private static void Snap(Creature creature, float clock)
+        {
+            if (creature.SnapUntil >= 0f || clock < creature.NextSnap)
+            {
+                return;
+            }
+
+            if (IsStanding(creature, clock))
+            {
+                Strike(creature, ModelClipRole.Attack, clock);
+            }
+
+            creature.NextSnap = clock + SnapGap + CutsceneMath.Hash(creature.Index, Mathf.FloorToInt(clock)) * SnapJitter;
+        }
+
+        private static void Strike(Creature creature, ModelClipRole role, float clock)
+        {
+            ModelClip clip = creature.View.ClipOf(role);
+            if (clip == null)
+            {
+                return;
+            }
+
+            creature.View.PlayScripted(role);
+            creature.SnapUntil = clock + clip.Length;
+        }
+
+        private static void EndStrike(Creature creature)
+        {
+            if (creature.SnapUntil < 0f)
+            {
+                return;
+            }
+
+            creature.View.ReleaseScript();
+            creature.SnapUntil = -1f;
+        }
+
+        private void BuildBurrows(CutsceneContext context)
         {
             SpawnOriginDefinition origins = context.FieldLevel.SpawnOrigins;
             SpawnOriginArt art = origins != null ? origins.For(TerrainKind.Ground) : null;
@@ -338,11 +408,7 @@ namespace Game.UI
             ImpactVfxDefinition burst = origins != null ? origins.BurstVfx : null;
             for (int i = 0; i < BurrowSpots.Length; i++)
             {
-                Vector2 spot = BurrowSpots[i];
-                Vector3 onRoad = FieldLayout.PointAlong(layout.Road, spot.x);
-                Vector3 ahead = FieldLayout.PointAlong(layout.Road, spot.x + 0.5f) - onRoad;
-                Vector3 side = Vector3.Cross(Vector3.up, ahead.normalized);
-                Vector3 position = layout.Ground(onRoad + side * spot.y);
+                Vector3 position = OnRoad(BurrowSpots[i]);
                 var root = new GameObject($"Burrow{i}").transform;
                 root.SetParent(Root, false);
                 // README round 23: yaw 0 keeps the burrow's camouflage in line with the ground texture.
@@ -390,9 +456,6 @@ namespace Game.UI
             {
                 Debug.LogWarning("The cutscene swarm has no burrow art (the level's ground spawn origin); no creature breaks out.");
             }
-
-            Vector3 entranceSide = layout.EntranceFacing * Vector3.right;
-            _screamerSpot = layout.Ground(layout.Entrance + layout.EntranceFacing * Vector3.forward * 1.2f + entranceSide * 1.6f);
         }
 
         // Fissures radiating from the opening, each a Blender crack strip that grows out from the maw.
@@ -419,91 +482,79 @@ namespace Game.UI
             return cracks;
         }
 
-        private void BuildCreatures(FieldLayout layout, CutsceneContext context)
+        // A few of the brood, each from a burrow in turn, a flyer or two over them, and the Queen at their head.
+        private void BuildCreatures(CutsceneContext context)
         {
             CutsceneCast cast = context.Cast;
-            if (cast == null || cast.Swarm == null || cast.Swarm.Length == 0 || _burrows.Count == 0)
+            if (cast == null || _burrows.Count == 0)
             {
                 return;
             }
 
-            int walkers = context.Scaled(cast.SwarmCount);
-            int flyers = cast.Flyers != null && cast.Flyers.Length > 0 ? context.Scaled(cast.FlyerCount) : 0;
-            int total = walkers + flyers;
-            for (int i = 0; i < total; i++)
+            int walkers = cast.Swarm != null && cast.Swarm.Length > 0 ? Mathf.Min(context.Scaled(cast.SwarmCount), WalkerSpots.Length) : 0;
+            int flyers = cast.Flyers != null && cast.Flyers.Length > 0 ? Mathf.Min(context.Scaled(cast.FlyerCount), FlyerSpots.Length) : 0;
+            for (int i = 0; i < walkers; i++)
             {
-                bool flies = i % Mathf.Max(1, total / Mathf.Max(1, flyers)) == 1 && flyers > 0;
-                EnemyDefinition definition = flies ? cast.Flyers[i % cast.Flyers.Length] : cast.Swarm[i % cast.Swarm.Length];
-                if (definition == null)
-                {
-                    continue;
-                }
+                AddFromBurrow(cast.Swarm[i % cast.Swarm.Length], i, WalkerSpots[i], 0f);
+            }
 
-                Burrow burrow = _burrows[i % _burrows.Count];
-                int wave = i / _burrows.Count;
-                float first = burrow.Open + EmergeAt;
-                float emerge = Mathf.Min(StreamEnd, first + wave * StreamGap + CutsceneMath.Hash(i, 17) * 0.3f);
-                float lane = (CutsceneMath.Hash(i, 11) - 0.5f) * 2f * LaneWidth;
-                Vector3 start = burrow.Emerge.position;
-                var creature = new Creature
-                {
-                    Definition = definition,
-                    Route = RouteFrom(layout, start, lane),
-                    Emerge = emerge,
-                    Speed = RushShare * (0.9f + 0.2f * CutsceneMath.Hash(i, 19)),
-                    Flies = flies,
-                    GroundY = burrow.Root.position.y,
-                    Index = i,
-                };
-                creature.Enemy = Spawn(definition, i);
-                creature.View = creature.Enemy.GetComponent<EnemyView>();
-                _creatures.Add(creature);
+            for (int i = 0; i < flyers; i++)
+            {
+                Vector3 spot = FlyerSpots[i];
+                AddFromBurrow(cast.Flyers[i % cast.Flyers.Length], walkers + i, new Vector2(spot.x, spot.y), spot.z);
             }
 
             if (cast.Screamer != null)
             {
-                Vector3 ahead = FieldLayout.PointAlong(layout.Road, ScreamerWalk);
-                _screamer = new Creature
-                {
-                    Definition = cast.Screamer,
-                    Route = new[] { _screamerSpot, layout.Ground(ahead) },
-                    Emerge = ScreamerEmerge,
-                    Speed = ScreamerSpeed,
-                };
-                _screamer.Enemy = Spawn(cast.Screamer, total);
-                _screamer.View = _screamer.Enemy.GetComponent<EnemyView>();
-                _screamer.Enemy.transform.localScale = Vector3.one * ScreamerScale;
-                _creatures.Add(_screamer);
+                _queen = Add(cast.Screamer, walkers + flyers, QueenEmerge, OnRoad(QueenRise), QueenStand, QueenPace, AdvanceAt, 0f);
             }
         }
 
-        // The crowd at the first gate: a ring at the field, then rings further back towards the entrance that start to hold
-        // walkers one after another once the first ones have arrived, so the crowd grows backwards instead of stacking.
-        private void BuildRings(FieldLayout layout)
+        private void AddFromBurrow(EnemyDefinition definition, int index, Vector2 spot, float hover)
         {
-            float front = float.MaxValue;
-            foreach (Creature creature in _creatures)
-            {
-                if (creature.Flies || creature == _screamer)
-                {
-                    continue;
-                }
-
-                float distance = layout.GateCentreDistance - FieldLayout.DistanceAlong(layout.Road, creature.Route[0]);
-                front = Mathf.Min(front, creature.Emerge + Mathf.Max(0f, distance) / Mathf.Max(0.1f, creature.Definition.Speed * creature.Speed));
-            }
-
-            if (front == float.MaxValue)
+            if (definition == null)
             {
                 return;
             }
 
-            for (int k = 0; k < Rings; k++)
-            {
-                Vector3 centre = FieldLayout.PointAlong(layout.Road, layout.GateCentreDistance - k * RingSpacing);
-                _structures.Add(new HoldRing(this, centre, k == 0 ? 0f : front + k * RingSeconds));
-            }
+            Burrow burrow = _burrows[index % _burrows.Count];
+            int turn = index / _burrows.Count;
+            float emerge = burrow.Open + EmergeAt + turn * EmergeGap + CutsceneMath.Hash(index, 17) * 0.3f;
+            float pace = BroodPace * (0.85f + 0.3f * CutsceneMath.Hash(index, 19));
+            float advance = AdvanceAt + AdvanceStagger * (1f + CutsceneMath.Hash(index, 23) * 2f);
+            Add(definition, index, emerge, _layout.Ground(burrow.Emerge.position), spot, pace, advance, hover);
         }
+
+        private Creature Add(EnemyDefinition definition, int index, float emerge, Vector3 from, Vector2 spot, float pace, float advance, float hover)
+        {
+            var creature = new Creature
+            {
+                Definition = definition,
+                Index = index,
+                Emerge = emerge,
+                From = from,
+                Stand = OnRoad(spot),
+                Advance = OnRoad(spot + Vector2.right * AdvanceDistance),
+                Pace = pace,
+                AdvanceFrom = advance,
+                Hover = hover,
+            };
+            creature.Enemy = Spawn(definition, index);
+            creature.View = creature.Enemy.GetComponent<EnemyView>();
+            _creatures.Add(creature);
+            return creature;
+        }
+
+        // A spot given as distance along the road from the entrance and to its side (negative: left), on the ground.
+        private Vector3 OnRoad(Vector2 spot)
+        {
+            Vector3 onRoad = FieldLayout.PointAlong(_layout.Road, spot.x);
+            Vector3 ahead = FieldLayout.PointAlong(_layout.Road, spot.x + 0.5f) - onRoad;
+            Vector3 side = Vector3.Cross(Vector3.up, ahead.normalized);
+            return _layout.Ground(onRoad + side * spot.y);
+        }
+
+        private static Vector3 Flat(Vector3 vector) => new Vector3(vector.x, 0f, vector.z);
 
         private Enemy Spawn(EnemyDefinition definition, int index)
         {
@@ -517,35 +568,6 @@ namespace Game.UI
             return enemy;
         }
 
-        // From the maw to the road just ahead, then down the road on a lane of its own all the way to the base.
-        private static Vector3[] RouteFrom(FieldLayout layout, Vector3 start, float lane)
-        {
-            Vector3[] road = layout.Road;
-            float joinAlong = FieldLayout.DistanceAlong(road, start) + 1.2f;
-            var points = new List<Vector3> { start, Offset(road, joinAlong, lane, FieldLayout.PointAlong(road, joinAlong)) };
-            float walked = 0f;
-            for (int i = 1; i < road.Length; i++)
-            {
-                walked += Vector3.Distance(road[i - 1], road[i]);
-                if (walked > joinAlong)
-                {
-                    points.Add(Offset(road, walked, lane, road[i]));
-                }
-            }
-
-            return points.ToArray();
-        }
-
-        // Shifts a road point sideways onto a lane, using the direction of the road just before it.
-        private static Vector3 Offset(Vector3[] road, float along, float lane, Vector3 point)
-        {
-            Vector3 ahead = FieldLayout.PointAlong(road, along + 0.3f);
-            Vector3 behind = FieldLayout.PointAlong(road, Mathf.Max(0f, along - 0.3f));
-            Vector3 direction = ahead - behind;
-            direction.y = 0f;
-            Vector3 side = direction.sqrMagnitude > 0.0001f ? Vector3.Cross(Vector3.up, direction.normalized) : Vector3.right;
-            return point + side * lane;
-        }
 
         private Transform Decal(string name, Material material, Vector3 position)
         {

@@ -18,6 +18,7 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 6181f020531d8f84d8bcc6e4e2b3acd9, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
+  _parts: []
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
@@ -28,6 +29,8 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 0
   _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
   _clips:
   - _role: 24
     _clip: {fileID: 3558831407817159945, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
@@ -38,6 +41,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 2
     _clip: {fileID: -2657204913998804871, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -47,6 +53,9 @@ MonoBehaviour:
     _socket: 
     _weight: 0.7
     _upperBody: 1
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 1
     _clip: {fileID: -3361698912171937484, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -56,6 +65,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 21
     _clip: {fileID: -5185193301206192574, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -65,6 +77,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 1
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 15
     _clip: {fileID: -1191071353320640173, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -74,6 +89,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 25
     _clip: {fileID: -4591548029631766312, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -83,6 +101,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 0
     _clip: {fileID: -590782249698727303, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -92,6 +113,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 23
     _clip: {fileID: -394628502360404339, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -101,6 +125,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 20
     _clip: {fileID: 6541232865160742065, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -110,6 +137,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 1
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 22
     _clip: {fileID: -8909386692762522077, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -119,6 +149,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 1
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 19
     _clip: {fileID: 2154215910235551346, guid: 28090be176d3c8447ba1087517a5443b, type: 3}
     _farClip: {fileID: 0}
@@ -128,3 +161,6 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0

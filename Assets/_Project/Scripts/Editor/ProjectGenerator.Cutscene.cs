@@ -19,7 +19,7 @@ namespace Game.Editor
         private const string HandoffDifficultyName = "Easy";
         private const float HandoffFieldOfView = 14f;
         // The camera only kicks on a real impact, once in a shot and briefly: the capsule hitting the ground, the drill bit
-        // biting into it, the ground bursting open under the swarm. Every other rumble is told by sound and dust alone.
+        // biting into it, the ground bursting open at the entrance. Every other rumble is told by sound and dust alone.
         private const float LandingKick = 0.25f;
         private const float DrillKick = 0.18f;
         private const float BurstKick = 0.3f;
@@ -27,10 +27,13 @@ namespace Game.Editor
         // When the drill bit reaches the ground in its shot (FieldSet: the sink runs 0.2..0.85 of 10 s, contact at 0.27 of it).
         private const float DrillContactSeconds = 3.75f;
 
-        // When the burrows burst in the swarm shot (FieldSwarm: they start to open at 0.4 s, 0.8 s apart, burst 1.8 s in).
-        private static readonly float[] BurstSeconds = { 2.2f, 3f, 3.8f, 4.6f };
-        private const int SwarmWalkers = 40;
-        private const int SwarmFlyers = 8;
+        // When the burrows burst in the attack shot (FieldSwarm: three, they start to open at 0.4 s, 0.8 s apart, burst 1.8 s in),
+        // and when the Queen screams at the head of her brood (FieldSwarm.ScreamAt).
+        private static readonly float[] BurstSeconds = { 2.2f, 3f, 3.8f };
+        private const float QueenScreamSeconds = 7.8f;
+        // Remco, 2026-11-05: no horde. The angry Queen and a few of her brood standing and glaring at the colony are enough.
+        private const int BroodWalkers = 5;
+        private const int BroodFlyers = 1;
 
         /// <summary>One shot as the generator writes it.</summary>
         private sealed class ShotSpec
@@ -108,7 +111,8 @@ namespace Game.Editor
             so.FindProperty("_hauler").objectReferenceValue = context.HarvestDrone;
             so.FindProperty("_builder").objectReferenceValue = context.RepairDrone;
             SerializedProperty swarm = so.FindProperty("_swarm");
-            var crawlers = new[] { context.Bestiary.Skitter, context.Bestiary.Prowler, context.Bestiary.Roller };
+            // One of each, different silhouettes; nothing that rolls.
+            var crawlers = new[] { context.Bestiary.Stinger, context.Bestiary.Prowler, context.Bestiary.Bulwark, context.Bestiary.Cragback, context.Bestiary.Skitter };
             swarm.arraySize = crawlers.Length;
             for (int i = 0; i < crawlers.Length; i++)
             {
@@ -117,15 +121,15 @@ namespace Game.Editor
 
             so.FindProperty("_screamer").objectReferenceValue = context.Bestiary.Queen;
             SerializedProperty flyers = so.FindProperty("_flyers");
-            var wings = new[] { context.Bestiary.Shalebat, context.Bestiary.Skyray };
+            var wings = new[] { context.Bestiary.Shalebat };
             flyers.arraySize = wings.Length;
             for (int i = 0; i < wings.Length; i++)
             {
                 flyers.GetArrayElementAtIndex(i).objectReferenceValue = wings[i];
             }
 
-            so.FindProperty("_flyerCount").intValue = SwarmFlyers;
-            so.FindProperty("_swarmCount").intValue = SwarmWalkers;
+            so.FindProperty("_flyerCount").intValue = BroodFlyers;
+            so.FindProperty("_swarmCount").intValue = BroodWalkers;
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
             so.FindProperty("_earthPlanet").boxedValue = PlanetStyle.Earth();
@@ -338,34 +342,37 @@ namespace Game.Editor
                     Set = CutsceneSet.Field, Action = CutsceneAction.SwarmPours, Seconds = 11f, Music = CutsceneMusic.Attack, FadeIn = 0.3f,
                     Keys = new[]
                     {
-                        // Low beside the road, a few metres down it: the bursts fill the frame and the swarm runs at the lens.
-                        Key(0f, CameraAnchor.Entrance, new Vector3(2.2f, 1.1f, 9f), new Vector3(0.3f, 0.6f, 2.5f), 52f),
-                        Key(0.55f, CameraAnchor.Entrance, new Vector3(1.8f, 0.8f, 7.2f), new Vector3(0.4f, 0.8f, 2f), 48f),
-                        Key(1f, CameraAnchor.Entrance, new Vector3(2.5f, 1.2f, 8.5f), new Vector3(0f, 0.7f, 3.5f), 50f),
+                        // Low on the road, down it from the entrance: wide on the bursts, then a slow push in on the Queen as she
+                        // takes the head of her brood, the lens below her eyes so she towers over it when she screams.
+                        Key(0f, CameraAnchor.Entrance, new Vector3(1.6f, 1.3f, 12f), new Vector3(0f, 0.6f, 3f), 50f),
+                        Key(0.45f, CameraAnchor.Entrance, new Vector3(1.3f, 1f, 11.2f), new Vector3(0f, 0.85f, 4.4f), 46f),
+                        Key(1f, CameraAnchor.Entrance, new Vector3(1.1f, 0.7f, 10.8f), new Vector3(0f, 1f, 5f), 40f),
                     },
-                    // One burst after another (the first one kicks the camera), the scream, then the drums as they storm the gate.
+                    // One burst after another (the first one kicks the camera), the brood hissing as it takes its places, the
+                    // Queen's scream, then the drums under the stare.
                     Cues = new[]
                     {
                         Sound(BurstSeconds[0], CutsceneSound.Emerge, 0.9f), Shake(BurstSeconds[0], BurstKick), Sound(BurstSeconds[1], CutsceneSound.Emerge, 0.75f),
-                        Sound(BurstSeconds[2], CutsceneSound.Emerge, 0.8f), Sound(BurstSeconds[3], CutsceneSound.Emerge, 0.7f),
-                        Sound(6f, CutsceneSound.Scream, 1f), Sound(8.5f, CutsceneSound.Drums, 0.8f),
+                        Sound(BurstSeconds[2], CutsceneSound.Emerge, 0.8f), Sound(5.2f, CutsceneSound.Growl, 0.6f), Sound(6.4f, CutsceneSound.Growl, 0.5f),
+                        Sound(QueenScreamSeconds, CutsceneSound.Scream, 1f), Sound(9.6f, CutsceneSound.Drums, 0.7f),
                     },
                 },
                 new ShotSpec
                 {
-                    // Close on the commander at his dig site past the gate: the swarm storms it behind him; he cannot believe it.
+                    // Close on the commander at his dig site past the gate: he stares at them and cannot believe it.
                     Set = CutsceneSet.Field, Action = CutsceneAction.MercerReacts, Seconds = 5.5f,
                     Keys = new[]
                     {
-                        // In front of him, a little to his right: his visor in the light, the swarm at the gate behind his shoulder.
-                        Key(0f, CameraAnchor.Commander, new Vector3(1.1f, 1.6f, 2.8f), new Vector3(-0.1f, 1.45f, 0.3f), 34f),
-                        Key(1f, CameraAnchor.Commander, new Vector3(1f, 1.55f, 3.6f), new Vector3(-0.1f, 1.5f, 1.2f), 30f),
+                        // Docs/CUTSCENES_CONTINENTS.md section 8: between him and the creatures, about 27 degrees to his right at
+                        // eye height, so the visor faces the lens; it follows his steps back with a slight push in.
+                        Key(0f, CameraAnchor.Commander, new Vector3(1.2f, 1.4f, 2.3f), new Vector3(0f, 1.3f, 0f), 32f),
+                        Key(1f, CameraAnchor.Commander, new Vector3(1f, 1.4f, 0.9f), new Vector3(0f, 1.3f, -1.1f), 30f),
                     },
-                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(3.2f, CutsceneSound.Scream, 0.6f) },
+                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(3.2f, CutsceneSound.Growl, 0.6f) },
                 },
                 new ShotSpec
                 {
-                    // Back to the gate at a run, round behind its field to face the crowd clawing at it, the blaster up.
+                    // Back to the gate at a run, round behind its field to face the brood glaring across it, the blaster up.
                     Set = CutsceneSet.Field, Action = CutsceneAction.GateStand, Timing = ShotTiming.AfterDialogue, Seconds = 2.5f, CameraSeconds = 10f,
                     Dialogue = gate, DialogueDelay = 6.5f,
                     Keys = new[]
@@ -449,7 +456,7 @@ namespace Game.Editor
                 case CutsceneAction.GroundShivers:
                     return Night(0.9f, 1f, CoolRim, 1.1f, true);
                 case CutsceneAction.SwarmPours:
-                    return Night(1.1f, 1.1f, WarmRim, 1.6f, false);
+                    return Night(1.25f, 1.2f, WarmRim, 1.8f, false);
                 case CutsceneAction.MercerReacts:
                     return Night(1.1f, 1.3f, WarmRim, 1.4f, true);
                 case CutsceneAction.GateStand:

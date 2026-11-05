@@ -2523,3 +2523,43 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
   the long-crack shots are the real style laid by a probe; branch hairlines are fairly straight; the gate fallback is a
   held pose, the proper clinging comes with Gravemaw's Gate_* clips; the Codex pedestal lights the Colossus very white;
   overview/radar are mouse-and-keyboard tested, gamepad only through the smoke test; no rebinding screen exists.
+
+## Opening cutscene: the Queen and her brood instead of a horde (2026-11-05)
+
+Remco: "die eerste cutscene heeft nog steeds een legioen aan rollende armadillos ... de boze queen en een paar enemies
+die boos staan te kijken lijkt mij voldoende." Not committed; only the cutscene data was regenerated (`ApplyCutscene.cs`),
+not the full generator.
+- **Attack beat (`SwarmPours`, data name kept):** three burrows break open (was four), one camera kick at the first burst
+  (0.3, unchanged rule). `FieldSwarm` no longer runs a crowd down the road: five of the brood, each a different species
+  (Stinger, Prowler, Bulwark, Cragback, Skitter; no Roller, nothing that rolls) and one Shalebat climb out and walk in
+  slow steps to their own spots flanking the road; the Queen rises behind the head of the group, walks up to it (5.4 m
+  down the road), swells, plays her own scream clip (Power, "Scream") at 7.8 s with the scream ring, then everybody stands
+  and glares at the colony: headings turned to the gate with a slow search sway, the Stinger snaps at the air now and
+  then (its own strike clip), the bat hovers with a bob. From 12.5 s (during Mercer's reaction) they creep 3 m closer in
+  staggered slow steps and stand again, so the gate shot shows the Queen and her brood glaring across the gate field.
+  Positions are a pure function of the swarm clock (seek-safe); no gate rings, no clawing crowd.
+- **Camera:** low on the road down from the entrance, wide on the bursts, a slow push in to the Queen from below
+  (FOV 50 to 40); exposure +1.25, warm rim 1.8. Cues: three bursts, two growls as the brood takes its places, the scream,
+  drums at 9.6 s.
+- **Mercer's reaction fixed (CUTSCENES_CONTINENTS.md section 8):** he now faces the gate and the creatures and backs away
+  from them (head search 5 degrees, no twist; `FieldLayout.ReactFacing` removed, anchor `Commander` = dig site facing the
+  gate); the camera stands between him and them, about 27 degrees to his right at eye height (1.4), FOV 32 to 30, and
+  follows his step back. Measured: root forward to camera 24 to 28 degrees at 0.15/0.6/0.85 (rule: under 40).
+- **Data:** `CutsceneCast` swarm = 5 species, `_swarmCount` 5, flyers = Shalebat, `_flyerCount` 1 (generator and asset).
+  New EditMode test `CutsceneDataTests.Attack_IsTheQueenAndAFewOfHerBrood_NothingRolls` (3..7 creatures, all different
+  species, none rolls).
+- **Side effect of ApplyCutscene:** its story/cutscene art hand-out re-serialised 44 story materials and art assets
+  (`Art/Materials/Blender/*`, `Data/Art/Story/*`) with new default fields only (insertions, no value changes).
+- **Tools:** `n2_cut.sh` gained `play:<shot> <progress> <frames>` (`opening_play.cs`: seek, then real frames at 1/30 s, so
+  played-only moments such as the scream show); `open_react_probe.cs` measures Mercer's facing against the camera;
+  `opening_cast_probe.cs` lists every creature's clip roles. A still taken right after a played scream can still show the
+  scream pose (the clip fades out over real frames); take it before or after another seek.
+- **Tests:** 0 compile errors/warnings; EditMode 458/458; PlayMode one class at a time: CutsceneSmoke 3/3, StorySmoke 2/2,
+  StoryGuard 3/3, StoryListener 1/1, StoryCrystal 2/2. Console clean in the capture runs. Save restored byte-identical
+  (ec2a1f6d) after every run; the Game view was not touched (stills render to their own texture).
+- **Gallery** (session scratchpad `gallery/Opening/`, Dutch captions in `index.txt`): `00a`/`00b` before, `01` bursts,
+  `02` Queen rises, `03` scream (played), `04` brood glares, `05`/`06` Mercer front-facing, `07` gate stare, `08` handoff.
+- **Weak points:** the brood is dark against the night where no maw lights it (the Prowler left of the Queen reads
+  mostly by its glow lines); a purple crystal plant in the left foreground of the attack shot hides part of the
+  Cragback; Mercer's raised hand covers half the visor at the peak of the gesture; the Stinger is the only one with a
+  strike clip, the others only turn their heads; the music cue is still the Attack theme.

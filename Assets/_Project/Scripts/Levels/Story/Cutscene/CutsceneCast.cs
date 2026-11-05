@@ -18,7 +18,9 @@ namespace Game.Levels
         [SerializeField] private HeroDefinition _hero;
         [SerializeField] private DroneDefinition _hauler;
         [SerializeField] private DroneDefinition _builder;
+        [Tooltip("The brood that climbs out with the Queen and stands glaring at the colony: walkers, one of each in turn.")]
         [SerializeField] private EnemyDefinition[] _swarm = new EnemyDefinition[0];
+        [Tooltip("The Queen: she rises at the head of the brood and screams.")]
         [SerializeField] private EnemyDefinition _screamer;
 
         [Header("Places")]
@@ -33,7 +35,8 @@ namespace Game.Levels
         [SerializeField] [Min(1)] private int _capsuleCount = 9;
         [SerializeField] [Min(1)] private int _eyePairs = 300;
         [SerializeField] [Min(1)] private int _droneCount = 8;
-        [SerializeField] [Min(1)] private int _swarmCount = 36;
+        [Tooltip("How many of the brood stand with the Queen; a few, never a horde (the set has places for six).")]
+        [SerializeField] [Min(1)] private int _swarmCount = 5;
 
         [Header("Optional models (empty builds the procedural one)")]
         [SerializeField] private GameObject _mothership;
@@ -66,9 +69,9 @@ namespace Game.Levels
         [SerializeField] private EarthMaps _earthMapsLow = new EarthMaps();
 
         [Header("Attack")]
-        [Tooltip("Flyers that swoop over the road with the swarm.")]
+        [Tooltip("Flyers that hover over the brood.")]
         [SerializeField] private EnemyDefinition[] _flyers = new EnemyDefinition[0];
-        [SerializeField] [Min(0)] private int _flyerCount = 8;
+        [SerializeField] [Min(0)] private int _flyerCount = 1;
 
         public HeroDefinition Hero => _hero;
         public DroneDefinition Hauler => _hauler;

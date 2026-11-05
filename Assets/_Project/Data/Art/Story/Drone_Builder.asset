@@ -18,6 +18,7 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 9f70c182f419dd04e9878ae462179bb0, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
+  _parts: []
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
@@ -28,6 +29,8 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 0
   _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
   _clips:
   - _role: 0
     _clip: {fileID: -9077256178040249251, guid: c381a023dbe5b5b408a4c41b4125bfc7, type: 3}
@@ -38,6 +41,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 1
     _clip: {fileID: -1528776504236188599, guid: c381a023dbe5b5b408a4c41b4125bfc7, type: 3}
     _farClip: {fileID: 0}
@@ -47,6 +53,9 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
   - _role: 17
     _clip: {fileID: -5505482632887952599, guid: c381a023dbe5b5b408a4c41b4125bfc7, type: 3}
     _farClip: {fileID: 0}
@@ -56,3 +65,6 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
