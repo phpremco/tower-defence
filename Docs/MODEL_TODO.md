@@ -971,3 +971,26 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Gravemaw poortclips (ronde 33) | Schopklauwen bijten tot 7 cm (model) in de kroonrand. Bij Mount bungelen de poten lang (34-90) terwijl de schoppen trekken. Het lijf is even breed als de poort, dus de balk is onder het lijf niet te zien (de doorzakking lees je aan de kronen) |
 | Cinder Matriarch poortclips (ronde 33) | Het gewicht leest zwakker dan bij Gravemaw (ze is hoog), de sikkelslagen dragen de loop. Bij Dismount krult de zak flink omhoog om over de balk te komen |
 | Rotbloom | Kan niet over een poort zonder een ander lijf (gelede romp of langere poten) |
+
+
+### Ronde 35 (Mercers reactieclips, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 35.
+
+- **Waarom:** Mercer stond neutraal met de armen omlaag in de reactieshots. Remco wil dat hij echt "wtf???" gaat
+  als een baas verschijnt.
+- **Nieuw in `Mercer.fbx`** (game-hero en cutscene-Commander zijn één export; nu 16 clips, mesh en oude clips
+  ongewijzigd):
+  - `Startled` (24, event `flinch` 2): schrikreactie, halve stap terug, pistool schiet omhoog, kijkt omhoog.
+  - `Startled_Hold` (48, loop): gespannen houding, snel ademen, trillend wapen.
+  - `Disbelief` (84, event `hand_up` 22): leunt achterover, hand naar de kin onder het vizier, schudt één keer het
+    hoofd. Het vizier blijft vrij.
+  - `Point_Shout` (42, event `point` 9): wijst en roept, op de bovenlijf-laag.
+  - `Lower_Weapon` (70, event `lowered` 22): wapen omlaag, diepe zucht, schouders zakken.
+- **Unity:**
+  - Opnieuw importeren, rollen en `EventKeys` toevoegen, `Point_Shout` in `UpperBody`.
+  - Pistool in `Weapon_R` bij deze clips. `Holster` bestaat nog niet.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Mercer reactieclips (ronde 35) | Wijzen leest slecht als Mercer naar de spelcamera kijkt (arm verkort), goed als hij het scherm in kijkt. Geen wijsvinger in het rig (platte hand). De hoofdkanteling van Startled zie je van boven minder; de leun en het hoge wapen dragen het. `Holster`-clip nog niet gemaakt |

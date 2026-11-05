@@ -3049,3 +3049,55 @@ In the session scratchpad, `blender33/`:
 
 No change. The new modules are imported by `build_gravemaw_mech.py` and `build_cindermatriarch_mech.py`, which keep
 their names and order.
+
+
+## Round 35: Mercer's reaction clips (2026-11-05)
+
+Remco wants Mercer to really go "wtf???" when a boss appears (`Docs/BOSS_INTROS.md`), and the continent cutscenes
+need him to lower his gun after a boss falls (`Docs/CUTSCENES_CONTINENTS.md`). Round 35 adds five clips to the hero.
+There is one Mercer export: the in-game hero and the cutscene/portrait figure (asset id `Commander` in Unity) both use
+`Exports/Mercer/Mercer.fbx`, so both get the clips. Design notes in `DESIGN_NOTES.md` (round 35). Nothing is imported
+into Unity.
+
+**Script:** `build_mercer_reactions.py` (new). It opens `Blend/Mercer.blend`, keys the five clips with
+`build_mercer`'s own pose language (`compose`, `stance`, the aim), re-exports `Mercer.fbx` with all 16 clips, merges
+the facts into `Mercer_report.json` (`actions`, `events`, new block `round35`) and saves the .blend. No rebake: the
+mesh, maps, rig, sockets and the eleven old clips are unchanged. Running it twice gives the same result. Previews:
+`mercer_reaction_previews.py` (new). Options: `--preview <dir>`, `--norender`. About 1 minute with previews.
+
+Run it after `build_mercer.py` (a full Mercer rebuild drops the round-35 clips until this script runs again).
+
+### Clips (30 fps, in place, no root motion; the pistol is in `Weapon_R` in all five)
+
+| Clip | Frames | Loop | Layer | Events (report `round35.clips.<clip>.events`) | What it does |
+| --- | --- | --- | --- | --- | --- |
+| Startled | 24 | no | full | **flinch 2**, foot_plant 9, weapon_up 11, hold 20 | From Idle frame 0: shoulders jerk up, head snaps back, arms pull in (2-3); the back foot lifts and steps half a step back (6-9); the pistol snaps up two-handed to a high aim (about 40-45 degrees up) beside the visor; knees bent, leaning back, head tilted far up at something huge. Ends exactly in Startled_Hold frame 0 |
+| Startled_Hold | 48 | yes | full | | The tense hold: two quick shallow breaths per loop, a small tremble on the muzzle, the head scans slowly along the huge thing |
+| Disbelief | 84 | no | full | **hand_up 22**, shake_start 26, shake_left 38, shake_right 52, shake_end 62 | Cutscene beat. Leans back, weight on the back foot; the free (left) hand rises to the chin guard, just under the visor (the visor stays fully readable); the head shakes slowly once (20 degrees each way); the hand settles a little lower. Clamp the last frame to hold |
+| Point_Shout | 42 | no | upper (hips and legs stay in the stance) | **point 9**, shout 9, jab 18 | Bark. A short wind-up, then the chest drives forward and the left arm points flat-handed forward, up and a little to his left; a second jab at 18; back to Idle frame 0. Layers over Idle or Walk with the `Spine1` mask |
+| Lower_Weapon | 70 | no | full | **lowered 22**, release 30, breath_in 40, relief 48 | From the aim (Shoot frame 0): a beat, the gun comes down to a two-handed low ready, the support hand lets go, a deep breath in (chest and shoulders up, head up), then the shoulders drop and the head bows (relief). Ends near Idle frame 0 with the pistol hanging in the right hand |
+
+`events` in the report holds one primary key per new clip (`flinch`, `hand_up`, `point`, `lowered`, the bold ones),
+because `BlenderStoryCatalog.EventKeys` reads one key per take. The full lists are in `round35.clips`.
+
+### Unity notes (not done)
+
+- Re-sync and re-import `Mercer.fbx` (16 takes). Add roles for the new takes in `BlenderStoryCatalog.Roles` (new
+  `ModelClipRole`s, for example Startled, StartledHold, Disbelief, PointShout, LowerWeapon) and the event keys in
+  `EventKeys`: `Startled` -> `flinch`, `Disbelief` -> `hand_up`, `Point_Shout` -> `point`, `Lower_Weapon` ->
+  `lowered`. `Point_Shout` can go in `UpperBody` (weight 1).
+- **Boss intro:** play Startled, then loop Startled_Hold while the camera holds. The pistol must be in `Weapon_R`
+  (draw it at frame 0 if it was holstered). Barks: Point_Shout on the upper body. Cutscenes: Disbelief for the
+  "can't believe my eyes" beat, Lower_Weapon for `HeroStandsDown` (start it from the aim). The `Holster` clip of
+  `CUTSCENES_CONTINENTS.md` is still not made, so snap the pistol to `Holster_R` off-screen or after the clip.
+- Turn Mercer to face the boss before Startled starts: the high aim points along his forward axis.
+
+### Checks
+
+- `inspect_fbx.py`: 31 bones, Mercer 9,752 tris and Mercer_LOD1 3,996 (as round 16), 16 actions (the 11 old ones
+  with their old lengths plus the 5 new ones).
+- Previews in the session scratchpad, `blender35/`: `r35_<Clip>_front_strip.png` (front eye-level cutscene camera,
+  35 mm), `r35_<Clip>_game_strip.png` (44-degree game camera, three-quarter towards the camera),
+  `r35_<Clip>_game_away_strip.png` (game camera, facing up the screen), `r35_Disbelief_visor_strip.png` (visor
+  close-up), `r35_keys_front.png` and `r35_keys_game(_zoomed).png` (the key poses beside Idle). The round-16 FBX,
+  report and .blend are kept in `blender35/backup/`.

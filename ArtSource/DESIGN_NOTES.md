@@ -2919,3 +2919,40 @@ scratchpad, `blender33/` (`gm/`, `cm/`, the round-32 backup in `backup/`).
   proposal.
 - **Not checked in Unity:** the burden curve assumes `TowerDisplacementView` keeps squash 0.16 and drop 0.12. If those
   change, the belly floats or sinks.
+
+
+## Round 35: Mercer's reaction clips (2026-11-05)
+
+Goal: Mercer reacts like a person to a boss ("wtf???"), with silhouettes that read from the 44-degree game camera
+and from a front eye-level cutscene camera. His face is never shown (the visor stays clear).
+
+### Choices
+
+- **Keyed on the saved .blend, not a rebuild.** The clips use `build_mercer`'s pose language, so they share the
+  stance, the IK aim and the support grip with the old clips. A small key-pose layer (`KeyClip`) blends body numbers
+  as `build_mercer.keyed` does. An arm that is IK in either neighbouring key is driven by IK in armature space between
+  the two achieved socket frames, with the elbow pole taken from the FK pose, so FK <-> IK changes (gun up, support
+  hand letting go) have no jump.
+- **Startled:** the readable parts are the crouch and lean back, the bladed wide stance after the step and the gun
+  pointing high. A first version held the gun in front of the face: from the front it hid the visor and read as
+  "holding a candle". The grip now sits 8 cm to his right and lower, so the visor shows beside the gun and tilts up.
+  The flinch keeps the arms near the chest for two frames (a protective twitch) before the gun comes up.
+- **Disbelief:** two hand placements failed before the current one. A fist at the temple read as "thinking/crazy",
+  and an open palm facing out read as waving. The final hand is relaxed, back of the hand to the camera, fingers at
+  the chin guard below the visor. The shake is slow (one left-right over 36 frames).
+- **Point_Shout:** hips and legs are exactly the stance, so it works on the upper-body layer over Idle or Walk. The
+  arm points forward, about 14 degrees above level and 22 degrees out to his left, so it does not hide his body from
+  the front. The flat hand is the only option (one finger bone per hand, no index finger).
+- **Lower_Weapon:** starts in the Shoot aim (the in-game ready pose), so the cutscene can start from that or blend
+  from Startled_Hold. The relief is a breath in with the head up, then the shoulders drop and the head bows.
+
+### Honest weak points
+
+- **Pointing seen from the game camera:** when Mercer faces the camera, the pointing arm is foreshortened and hard to
+  see. Facing up the screen (the usual case when a boss enters at the top) it reads clearly.
+- **The head tilt of Startled** reads from the front and side, less from above (the 44-degree camera mostly sees the
+  helmet top). The lean and the high gun carry it there.
+- **No index finger:** the pointing hand is a flat hand, and the Disbelief hand is a loose curl.
+- **Holster still missing:** Lower_Weapon ends with the pistol in hand. The `Holster` clip from
+  `CUTSCENES_CONTINENTS.md` is not part of this round.
+- **Not checked in Unity:** cross-fade lengths into Startled and out of Lower_Weapon.

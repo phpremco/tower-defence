@@ -25,6 +25,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_knitback.py", "build_slagstrider.py", "build_siftjaw.py", "build_surgefin.py",
            # The hero; it also builds and exports his weapons (build_mercer_weapons.py).
            "build_mercer.py",
+           # Round 35: Mercer reaction clips (Startled, Startled_Hold, Disbelief, Point_Shout, Lower_Weapon).
+           "build_mercer_reactions.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
            "build_broodmother.py", "build_packalpha.py", "build_stormmatriarch.py", "build_corewisp.py",
            # Round 10 bosses; each loads its species' .blend built above.
