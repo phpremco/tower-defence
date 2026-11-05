@@ -84,6 +84,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 29: boss props (ruin gate, seal crystals, ice block, drill wreck, drained maps), then the boss
            # decals, flipbooks and the dampened HUD overlay. Needs gate, towers, cutscene and cutscene_fx above.
            "build_bosses29_props.py", "build_bosses29_fx.py",
+           # Round 30: Gravemaw's crack slabs (GW1; imports build_bosses29_props, preview reads Exports/Boss_FX).
+           "build_bosses30_props.py",
            "build_env_diorama.py"]
 
 for script in SCRIPTS:

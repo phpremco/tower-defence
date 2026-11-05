@@ -2625,3 +2625,86 @@ separate mask.
   - The water wake's V arms can read as two streaks.
   - Rejoin is the Split sheet reversed.
   - The decal tiles repeat every 5-14 m: give each piece a random U offset.
+
+## Round 30: Frost Warden redesign, crack slabs, ice block and seal crystals (2026-11-05)
+
+Brief: MODEL_TODO "Ronde 5 Unity" (FW1-FW7, GW1, IB1, SC1). Remco judged the Frost Warden and Gravemaw's crack "niet
+heel super". Seen from the game camera, the Warden's armour read as paper cards floating off a purple, amber-seamed
+body. That was the lava boss's palette, and the amber undersides of the plates showed as yellow post-its. Before and
+after renders are in the session scratchpad, `blender30/` (`before/`, `after4/`, `mech4/`, `fw4/`, `props*/`,
+`slabs3/`).
+
+**What changed in the Warden (silhouette and palette, the hero lesson):**
+
+- **Cold body (FW5):** slate blue-grey stone-chitin with frosted pale rims, rime on the up faces, and seams and plate
+  rims in pale ice blue. The amber is kept only in the six eye pits, the face slit and the chest seal glyph (the
+  enemy colour code and the story hint). The weathering pass no longer adds warm grime.
+- **Solid armour (FW1, FW2):** the eight plates are now hewn ice volumes (`ice_kit.chunk`: an ellipsoid cut by
+  14-18 planes) 15-35 cm deep. They sink into the body, so no edge or underside shows. The mapping changed:
+  - chest: covers the lower half of the glyph;
+  - two heavy pauldrons, each with three big spikes;
+  - back;
+  - both forearms (on `Arm_*_Fore`);
+  - both front shins (on `Leg_*1_Lower`).
+  The train lost its armour and keeps a ridge of body ice.
+- **Ice texture (FW2):** `ice_kit.frost_ice` is deep blue-green and darker in the middle of each facet (looking into
+  the ice). The frost is white, broken rime along the facet ridges (the style knows the cutting planes) and on the
+  up faces. Inner fracture planes go into the normal map, and thin cyan light runs in a few of them. There are no
+  glowing areas and no warm root light.
+- **Top-down silhouette (FW4):** shoulders about 25 % wider (a yoke, wider pauldrons and the armour on top). A crown
+  of spikes sits on the pauldrons and hood. The five rage icicles stand on the upper back between the shoulders.
+  The halo is bigger and thicker and tilted back 46 degrees, so the 44-degree game camera sees a full ring (a crown)
+  instead of an edge.
+- **Glaives (FW6):** `ice_kit.kite_blade`, a six-point section (cutting edge, flanks, faceted spine ridge), so the
+  blade is triangular in section and catches light. It is longer, its tip almost on the ground in Idle, and it
+  curves slightly like a scythe.
+- **Scale (FW7):** the whole model and rig are 15 % larger. The round-16 design numbers stay; `ice_kit.scale_builder`
+  and the scaled rig apply `SC`. Stride, lift and every measured clip offset follow automatically. The climb ledge
+  (1.5 m, the frozen gate) does not scale.
+
+**Found on the way:** the old clips did not key the armour bones' location and rotation either, only their scale
+(round 29). Blender then showed the plates where Armour_Break leaves them, flown off, in Idle and Walk; the FBX
+exporter can bake that too. `hold_rest` now keys the rest pose of `Armour_*` and `Icicle_*` in every old clip.
+
+**Iterations:** blockout 1 had a halo that read as a tall blade from the side, and small, blob-like armour.
+  - **Blockout 2:** halo tilted to face the camera, plates and limbs thicker.
+  - **Bake 1:** plates flown off (the hold bug above).
+  - **Bake 2:** the ice was nearly black and read as obsidian.
+  - **Bake 3:** lighter ice, but the ridge frost read as white grout lines.
+  - **Bake 4:** broken rime on the ridges, softer up-face frost, the torso glow lowered (it read as pale plastic).
+
+**Props:**
+
+- **GW1, crack slabs:** four thin tilted basalt plates, hinged on the ground and rising towards the fissure. The top
+  shows the strip's own cracked-cell basalt (a 2D Voronoi in the slab plane). The raised edge, its underside and the
+  seams near it carry the molten glow. A first version with a broken-off chip on the edge read as bottles, so the
+  chip went and the plates got thinner.
+- **IB1, ice block:**
+  - Clear blue in the middle of the big facets (alpha 0.25); white frost on the facet ridges, fracture planes and
+    up faces (alpha up to 0.9). The fine secondary crack web is halved.
+  - An overhanging frost lip along both long top edges, with seven icicles hanging from each lip. The first try hung
+    them inside the bulge of the block, where they did not show.
+- **SC1, seal crystals:** flat-faced crystals (no flutes or twist, hard edges, light smoothing). `facet_glow` lights
+  the middle of every face a step above its edges, so a tinted crystal reads as cut planes, not a lamp. Spire A has
+  two branch crystals out of its flank and side crystals at its foot; B has side crystals. The small ones have no
+  node rings, which made them read as drill bits.
+
+### Honest weak points
+
+- **Frost Warden:**
+  - The column legs and arms are still the round-16 tubes, only thicker. From close by, the limbs are the plainest
+    part.
+  - The ridge rime still reads a little as a pattern of light lines on the big pauldron facets.
+  - The body is dark against dark ground. From the game camera the ice and the halo carry the read; Unity's cold rim
+    helps.
+  - The chest glyph is half covered and still the brightest thing on the model (by design: amber only there).
+  - The halo is large (the model is 5.7 m tall to the halo tips). On a cramped map, Unity can scale `Halo` to 0.85.
+  - Spikes are separate islands in the armour mesh (32 islands, none mixed). They ride their plate's bone, so they
+    leave with it.
+- **Crack slabs:** static and tilted only one way. Slab C is 308 tris (brief 150-300). Seen from the camera side,
+  the near-lip slabs show their face and read as small boulders. Yaw and sink them so mostly the raised glowing
+  edge shows.
+- **Ice block:** still sized for G3. The icicles are short at the ends of the lips. The transparency depends on
+  Unity using the albedo alpha.
+- **Seal crystals:** with the facet glow, a strongly tinted crystal can read as a striped lantern. Lower the
+  emission multiplier to about 2 if so.

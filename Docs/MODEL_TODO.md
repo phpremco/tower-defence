@@ -841,3 +841,41 @@ hem heen), maar de vorm blijft lezen als papier en plastic. Precieze verzoeken v
 | GW1 | Gravemaw-scheur | Unity bouwt de scheur nu uit de `BossFX_GroundCrack`-strook met opgeworpen lippen en rotsbrokken (`Debris_*`). Een **losse set van 3-4 gekantelde aardschotsen** (low-poly, 150-300 tris, eigen 256-maps, dezelfde basalt-look als de strook) zou de lippen echt 3D maken |
 | IB1 | `Gate_IceBlock` | Lees vanuit de spelcamera vooral als witte glans. Graag **meer dikte-variatie in de alpha** (helder 0,25 in het midden van grote vlakken, 0,9 in breuken) en een paar **ijspegels aan de bovenrand**, zodat het van boven als blok ijs leest en niet als glazen kist |
 | SC1 | `SealCrystal` | Spits A is een gladde kegel; geef A en B **facetten en kleine zijkristallen**, zodat de getinte gloed niet als effen lamp leest |
+
+### Ronde 30 (Frost Warden-herontwerp, scheurschotsen, ijsblok, zegelkristallen, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 30.
+
+**Afgehandeld uit "Ronde 5 Unity":**
+
+- FW1: het pantser bestaat uit acht massieve, gefacetteerde ijsblokken die in het lijf zakken. De indeling is nieuw:
+  borst, twee schouders met elk drie pieken, rug, twee onderarmen en twee voorste schenen. De botten
+  `Armour_1..8` blijven, maar sommige ouders zijn veranderd (zie README).
+- FW2: diep blauwgroen ijs met een donkere kern, rijp alleen op ribben en bovenvlakken, scheuren in de normal map en
+  dunne cyaan gloed in een paar scheuren. Geen oranje of warme vlakken meer.
+- FW3: er zijn geen amberkleurige kaarten meer. De schouder- en voorhoofdrunen zijn ijsblauw. Amber zit alleen nog
+  in de ogen, de mondspleet en het zegelteken op de borst (half bedekt).
+- FW4: de schouders zijn ~25 % breder, met een kroon van pieken op schouders en kap. De ijspegels staan bovenop de
+  rug, en de halo is groter, dikker en 46° naar achter gekanteld (van boven een volle ring).
+- FW5: het lijf is leisteen-blauwgrijs met berijpte lichte randen en ijsblauwe naden.
+- FW6: de glaives zijn driehoekig in doorsnede met een gefacetteerde rug, langer, tot bijna op de grond in Idle.
+- FW7: model en rig zijn 15 % groter. De eindverschuivingen zijn opnieuw gemeten (tabel in de README). Freeze_Gate
+  en Shatter_Through rekenen nu met een poort op 2,6 m in plaats van 2,4.
+- GW1: `Gravemaw_CrackSlabs`, vier gekantelde basaltschotsen (144-308 tris, 256-maps) met het scharnier als pivot en
+  gloed aan de opgeworpen rand.
+- IB1: `Gate_IceBlock` heeft alpha 0,25 midden in grote vlakken en tot 0,9 in breuken, ribben en rijp. Aan beide
+  lange bovenranden zit een rijprand met zeven ijspegels.
+- SC1: `SealCrystal` A en B zijn kristallen met platte facetten, harde randen en zijkristallen (A ook twee
+  zijtakken). De gloed is per facet het sterkst in het midden.
+
+Ook gevonden en opgelost: de oude clips van de Frost Warden zetten de pantserbotten niet terug op hun ruststand.
+Positie en draaiing bleven staan waar Armour_Break ze had weggeslingerd. Nu wordt de ruststand in elke oude clip
+vastgezet.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Frost Warden | Benen en armen zijn nog de buizen van ronde 16 (dikker); van dichtbij het eenvoudigste deel. De rijp op de grote schoudervlakken leest een beetje als lichte lijntjes. Het lijf is donker op donkere grond; ijs en halo dragen het silhouet. De halo maakt hem 5,7 m hoog: op een krappe kaart `Halo` op ~0,85 |
+| Unity | De `IceLook`-override (één koude tint) kan weg: de gebakken ijs-maps zijn nu koud. Check de nieuwe plaat-indeling als iets op plaatnummer werkte |
+| Scheurschotsen | Statisch en maar één kant op gekanteld. Schots C heeft 308 tris. Schotsen op de lip aan de camerakant tonen hun vlak en lezen als keitjes: draai ze zo dat vooral de gloeiende rand zichtbaar is |
+| Gate_IceBlock | Nog steeds op G3 gemaat. De ijspegels aan de uiteinden van de rand zijn kort |
+| SealCrystal | Sterk getint kan een kristal als gestreepte lantaarn lezen; zet de emissie dan op ~x2 |

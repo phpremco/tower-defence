@@ -33,6 +33,7 @@ import common as C  # noqa: E402
 import creature_kit2 as K2  # noqa: E402
 import creature_kit3 as K3  # noqa: E402
 import deep_kit as DK  # noqa: E402
+import ice_kit as IK  # noqa: E402
 import titan_kit as T  # noqa: E402
 from boss_mech_kit import at, ease, pulse  # noqa: E402
 from common import G  # noqa: E402
@@ -41,7 +42,7 @@ NAME = BW.NAME
 ARMOUR = NAME + "_IceArmour"
 R = math.radians
 CLIMB_H = 1.5
-GATE_F = 2.4
+GATE_F = 2.6  # round 30: the Warden is 15 % bigger, its glaive tips reach 2.05 ahead
 FREEZE_FRAMES, FREEZE_PEAK = 64, 30
 SHATTER_CYCLES = 2
 BREAK_FRAMES, BREAK_START = 56, 12
@@ -83,120 +84,129 @@ def adapter():
 # The ice armour (geometry and bones)
 # ------------------------------------------------------------------------------------------------------------
 
-def train_ellipsoid(i):
-    (f0, u0), (f1, u1) = BW.TRAIN[i], BW.TRAIN[i + 1]
-    front, back = G(0, u0, f0), G(0, u1, f1)
-    c = front.lerp(back, 0.5)
-    return (c + G(0, 0.16, 0.08), (BW.TRAIN_W[i] * 1.12, (front - back).length * 0.64, 0.24), T.forward_frame(front, back))
+SC = BW.SC
 
 
-# (parent bone, centre, radii, rotation, axes, a range, b range, sign, bulge, keel)
-PLATES = [("Chest", BW.CHEST_C - G(0, 0, 0.08), (0.5, 0.2, 0.6), T.rot(pitch=-6), (0, 2), (-0.72, 0.72), (-0.7, 0.8), -1, 0.05, 0.08),
-          ("Chest", G(-0.66, 2.88, 0.04), (0.4, 0.42, 0.23), T.rot(roll=28, pitch=-6), (0, 1), (-0.78, 0.78), (-0.78, 0.78), 1, 0.05, 0.12),
-          ("Chest", G(0.66, 2.88, 0.04), (0.4, 0.42, 0.23), T.rot(roll=-28, pitch=-6), (0, 1), (-0.78, 0.78), (-0.78, 0.78), 1, 0.05, 0.12),
-          ("Chest", G(0, 2.48, -0.3), (0.52, 0.3, 0.62), T.rot(pitch=10), (0, 2), (-0.7, 0.7), (-0.55, 0.8), 1, 0.04, 0.0),
-          ("Hips", *train_ellipsoid(0), (0, 1), (-0.72, 0.72), (-0.78, 0.7), 1, 0.05, 0.14),
-          ("Abdomen_1", *train_ellipsoid(1), (0, 1), (-0.72, 0.72), (-0.78, 0.7), 1, 0.05, 0.12),
-          ("Abdomen_2", *train_ellipsoid(2), (0, 1), (-0.7, 0.7), (-0.75, 0.6), 1, 0.04, 0.1),
-          ("Hips", G(0, 1.34, 0.12), (0.62, 0.56, 0.42), T.rot(), (0, 2), (-0.62, 0.62), (-0.35, 0.55), -1, 0.04, 0.0)]
+def _plates():
+    """Round 30 (FW1): eight solid plates of grown ice (hewn `ice_kit.chunk` volumes 15-35 cm deep that sink into
+    the body, so no plate floats or shows a card edge), in design space like build_frostwarden (scaled by SC).
+    Each plate: parent bone, anchor on its surface, outward direction, chunks (centre, radii, rotation, seed, mirror)
+    and spikes (base, direction, radius, length). Armour_1 chest (covers the lower half of the seal glyph),
+    Armour_2/3 the left/right pauldrons with a crown of spikes, Armour_4 the back, Armour_5/6 the left/right forearms,
+    Armour_7/8 the left/right front shins."""
+    out = [{"parent": "Chest", "anchor": G(0, 2.1, 0.72), "dir": G(0, 0.15, 1.0).normalized(),
+            "chunks": [(G(0, 2.08, 0.5), (0.52, 0.2, 0.34), T.rot(pitch=-14), 401, False),
+                       (G(0, 2.0, 0.62), (0.14, 0.16, 0.34), T.rot(pitch=-14), 402, False)],
+            "spikes": [(G(0.36 * sx, 2.32, 0.6), G(0.6 * sx, 0.8, 0.5), 0.06, 0.34) for sx in (-1, 1)]}]
+    for side, sx in T.SIDES:
+        out.append({"parent": "Chest", "anchor": G(1.02 * sx, 3.26, 0.0), "dir": G(0.45 * sx, 1.0, 0.0).normalized(),
+                    "chunks": [(G(0.98 * sx, 3.0, 0.0), (0.6, 0.55, 0.3), T.rot(roll=-22 * sx, pitch=-6), 410, sx < 0),
+                               (G(1.32 * sx, 2.68, 0.04), (0.34, 0.46, 0.2), T.rot(roll=-58 * sx), 411, sx < 0)],
+                    "spikes": [(G(0.86 * sx, 3.2, -0.08), G(0.25 * sx, 1.0, -0.35), 0.11, 0.85),
+                               (G(1.16 * sx, 3.14, 0.12), G(0.6 * sx, 1.0, 0.1), 0.095, 0.66),
+                               (G(1.42 * sx, 2.96, -0.12), G(1.0 * sx, 0.7, -0.3), 0.085, 0.56)]})
+    out.append({"parent": "Chest", "anchor": G(0, 2.45, -0.6), "dir": G(0, 0.3, -1.0).normalized(),
+                "chunks": [(G(0, 2.4, -0.42), (0.5, 0.22, 0.42), T.rot(pitch=12), 420, False)],
+                "spikes": [(G(0.2 * sx, 2.3, -0.56), G(0.4 * sx, 0.3, -1.0), 0.055, 0.32) for sx in (-1, 1)]})
+    for side, sx in T.SIDES:
+        sh, el, wr, tip = BW.arm_pts(sx)
+        c = el.lerp(wr, 0.5) + G(0.1 * sx, 0.06, 0.02)
+        out.append({"parent": f"Arm_{side}_Fore", "anchor": c + G(0.15 * sx, 0.05, 0), "dir": G(sx, 0.3, 0).normalized(),
+                    "chunks": [(c, (0.2, 0.17, 0.36), T.frame_from(wr - el), 430, sx < 0)],
+                    "spikes": [(el + G(0.06 * sx, 0.05, -0.04), G(0.3 * sx, 0.3, -1.0), 0.07, 0.42)]})
+    lg = BW.legs(1.0)
+    for side, sx in T.SIDES:
+        leg = lg[(side, 1)]
+        hip, knee, foot = leg.rest_points
+        c = knee.lerp(foot, 0.4) + G(0.5 * sx, 0, 1.0).normalized() * 0.1
+        out.append({"parent": leg.names[1], "anchor": c + G(0.4 * sx, 0, 1.0).normalized() * 0.14,
+                    "dir": G(0.4 * sx, 0, 1.0).normalized(),
+                    "chunks": [(c, (0.19, 0.15, 0.38), T.frame_from(foot - knee), 440, sx < 0)],
+                    "spikes": [(knee + G(0.03 * sx, 0.04, 0.1), G(0.2 * sx, 0.6, 1.0), 0.07, 0.36)]})
+    return out
+
+
+PLATES = _plates()
+PLATE_NAMES = ["chest", "left pauldron", "right pauldron", "back", "left forearm", "right forearm",
+               "left front shin", "right front shin"]
 ICICLES = 5
-ICICLE_ROOTS = [(0.0, 2.92, -0.5, (0.0, 0.85, -0.55), 0.62), (0.22, 2.75, -0.52, (0.35, 0.8, -0.55), 0.5),
-                (-0.22, 2.75, -0.52, (-0.35, 0.8, -0.55), 0.5), (0.3, 2.45, -0.55, (0.5, 0.65, -0.6), 0.4),
-                (-0.3, 2.45, -0.55, (-0.5, 0.65, -0.6), 0.4)]
-ICE_ARMOUR = dict(root=(0.08, 0.14, 0.32), body=(0.3, 0.46, 0.74), tip=(0.72, 0.84, 0.97), ice_glow=(0.45, 0.72, 1.0),
-                  warm=(1.0, 0.6, 0.2))
-
-
-def plate_anchor(entry):
-    parent, c, r, rot_m, axes, ar, br, sign, *_ = entry
-    w = [0.0, 0.0, 0.0]
-    w[axes[0]], w[axes[1]] = (ar[0] + ar[1]) / 2, (br[0] + br[1]) / 2
-    w[3 - axes[0] - axes[1]] = sign * math.sqrt(max(1 - w[axes[0]] ** 2 - w[axes[1]] ** 2, 0.01))
-    return Vector(c) + rot_m @ Vector((w[0] * r[0], w[1] * r[1], w[2] * r[2]))
-
-
-def ice_slab(k, seed=0, warm_glow=0.8):
-    """Grown ice armour: frosted pale blue, dark inner fracture planes, a cold rim glow, the warm amber flesh light
-    on the face that lies against the body (it shows when a plate lifts off)."""
-    root, bodyc, tip, glow, warm = (np.array(ICE_ARMOUR[n]) for n in ("root", "body", "tip", "ice_glow", "warm"))
-
-    def style(s, idx, part):
-        p = s.p[idx]
-        n = s.n[idx]
-        centre = np.array(part.frame.inverted().translation)
-        d = p - centre
-        d /= np.maximum(np.linalg.norm(d, axis=1, keepdims=True), 1e-9)
-        outward = C.smoothstep(-0.1, 0.35, np.einsum("ij,ij->i", n, d))
-        frost = C.smoothstep(0.1, 0.65, C.value_noise(p, 26 / k, seed))
-        plane = (1 - C.smoothstep(0.0, 0.05, np.abs(C.value_noise(p, 10 / k, seed + 3)))) * \
-            C.smoothstep(-0.2, 0.3, C.value_noise(p, 3 / k, seed + 4))
-        col = C.lerp3(bodyc, tip, frost * 0.4)
-        col = C.lerp3(col, root * 0.55, plane * 0.75)
-        col = C.lerp3(col, warm * 0.6, (1 - outward) * 0.85)
-        s.albedo[idx] = col * (0.88 + 0.1 * C.value_noise(p, 6 / k, seed + 5))[:, None]
-        cold = glow[None, :] * (0.18 + 0.35 * frost * (1 - plane))[:, None] * outward[:, None]
-        hot = warm[None, :] * ((1 - outward) * warm_glow)[:, None]
-        s.emit[idx] = np.clip(cold + hot, 0, 1)
-        s.rough[idx] = 0.22 + 0.35 * frost + 0.15 * plane
-        s.disp[idx] = -0.004 * k * plane
-        s.fam[idx] = (0.0, 0.0, 1.0, 0.0)
-        s.flow[idx] = 0.0
-    return style
+# The rage icicles on the upper back and between the shoulders (root, direction, length, radius), design space.
+ICICLE_ROOTS = [(G(0, 3.0, -0.38), G(0, 1.0, -0.5), 0.95, 0.085),
+                (G(-0.28, 3.04, -0.42), G(-0.35, 1.0, -0.5), 0.8, 0.075),
+                (G(0.28, 3.04, -0.42), G(0.35, 1.0, -0.5), 0.8, 0.075),
+                (G(-0.2, 2.98, -0.55), G(-0.2, 0.8, -0.8), 0.6, 0.07),
+                (G(0.2, 2.98, -0.55), G(0.2, 0.8, -0.8), 0.6, 0.07)]
 
 
 def armour_parts():
     b = C.PartBuilder()
     k = BW.K * 0.5
-    for i, entry in enumerate(PLATES):
-        parent, c, r, rot_m, axes, ar, br, sign, bulge, keel = entry
-        T.ellipsoid_patch(b, "IcePlate", c, r, rot_m, axes, ar, br, sign, 0.035, 0.07, f"Armour_{i + 1}",
-                          ice_slab(k, seed=400 + i), nu=14, nv=14, bulge=bulge, keel=keel)
-    # Ice spurs grown out of the shoulder and back plates (they leave with their plate).
-    for i, sx in ((1, -1), (2, 1)):
-        a = plate_anchor(PLATES[i])
-        for j, (d, l, rad) in enumerate((((0.3, 1.0, -0.2), 0.55, 0.07), ((0.85, 0.5, 0.1), 0.38, 0.05))):
-            b.shard("IceSpur", a + G(0.05 * sx, 0.05, 0), G(d[0] * sx, d[1], d[2]).normalized(), rad, l, sides=6, flute=0.3,
-                    twist=0.5 * sx, bone=f"Armour_{i + 1}", style=K3.ice_prism(k, seed=420 + j, **ICE_ARMOUR))
-    a = plate_anchor(PLATES[0])
-    for j, sx in enumerate((-1, 1)):
-        b.shard("IceSpur", a + G(0.28 * sx, 0.25, 0.04), G(0.4 * sx, 0.6, 0.7).normalized(), 0.05, 0.32, sides=6,
-                flute=0.3, bone="Armour_1", style=K3.ice_prism(k, seed=430 + j, **ICE_ARMOUR))
-    for j in range(3):
-        a = plate_anchor(PLATES[4 + j])
-        b.shard("IceSpur", a + G(0, 0.04, 0), G(0, 1.0, -0.45).normalized(), 0.06 - 0.01 * j, 0.42 - 0.08 * j, sides=6,
-                flute=0.3, bone=f"Armour_{5 + j}", style=K3.ice_prism(k, seed=440 + j, **ICE_ARMOUR))
-    # The rage icicles on the back (own scale bones).
-    for i, (x, u, f, d, l) in enumerate(ICICLE_ROOTS):
-        b.shard("Icicle", G(x, u, f), G(*d).normalized(), 0.05 + 0.02 * l, l, sides=6, flute=0.35, twist=0.6,
-                bone=f"Icicle_{i + 1}", style=K3.ice_prism(k, seed=450 + i, **ICE_ARMOUR))
-    return b
+    for i, pl in enumerate(PLATES):
+        bone = f"Armour_{i + 1}"
+        for c, r, rot_m, seed, mirror in pl["chunks"]:
+            IK.chunk(b, "IcePlate", c, r, rot_m, bone, seed, count=18, depth=0.22, squash=(0.8, 1.0), mirror=mirror, k=k)
+        for j, (base, d, rad, ln) in enumerate(pl["spikes"]):
+            b.shard("IceSpur", base, d.normalized(), rad, ln, sides=6, flute=0.3, twist=0.5, bone=bone,
+                    style=IK.frost_ice(k, seed=450 + 10 * i + j))
+    for i, (root, d, ln, rad) in enumerate(ICICLE_ROOTS):
+        b.shard("Icicle", root, d.normalized(), rad, ln, sides=6, flute=0.35, twist=0.6, bone=f"Icicle_{i + 1}",
+                style=IK.frost_ice(k, seed=480 + i))
+    return IK.scale_builder(b, SC)
 
 
 def armour_bones():
     out = []
-    for i, entry in enumerate(PLATES):
-        a = plate_anchor(entry)
-        c = Vector(entry[1])
-        d = (a - c).normalized()
-        out.append((f"Armour_{i + 1}", a - d * 0.15, a + d * 0.15, entry[0]))
-    for i, (x, u, f, d, l) in enumerate(ICICLE_ROOTS):
-        root = G(x, u, f)
-        out.append((f"Icicle_{i + 1}", root, root + G(*d).normalized() * 0.3, "Chest"))
-    out.append(("Socket_Breath", G(0, 3.17, 0.42), G(0, 3.14, 0.75), "Head"))
+    for i, pl in enumerate(PLATES):
+        a, d = pl["anchor"], pl["dir"]
+        out.append((f"Armour_{i + 1}", BW.sc(a - d * 0.15), BW.sc(a + d * 0.15), pl["parent"]))
+    for i, (root, d, ln, rad) in enumerate(ICICLE_ROOTS):
+        out.append((f"Icicle_{i + 1}", BW.sc(root), BW.sc(root + d.normalized() * 0.3), "Chest"))
+    out.append(("Socket_Breath", BW.sc(G(0, 3.17, 0.42)), BW.sc(G(0, 3.14, 0.75)), "Head"))
     return out
+
+
+def island_check(obj):
+    """Logs the loose islands of the armour and the bones that weigh on each (a plate fused to its neighbour would
+    show two Armour bones on one island and could not burst off alone)."""
+    mesh = obj.data
+    n = len(mesh.vertices)
+    edges = np.empty(len(mesh.edges) * 2, dtype=np.int64)
+    mesh.edges.foreach_get("vertices", edges)
+    parent = np.arange(n)
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    for a, b in edges.reshape(-1, 2):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+    roots = np.array([find(i) for i in range(n)])
+    names = {vg.index: vg.name for vg in obj.vertex_groups}
+    per = {}
+    for v in mesh.vertices:
+        for g in v.groups:
+            if g.weight > 0.2:
+                per.setdefault(int(roots[v.index]), set()).add(names[g.group])
+    mixed = {r: sorted(s) for r, s in per.items() if len(s) > 1}
+    C.log(obj.name, "islands", len(set(roots.tolist())), "mixed", list(mixed.values()))
+    return len(set(roots.tolist())), list(mixed.values())
 
 
 def build_armour(boss):
     folder = os.path.join(C.EXPORTS, NAME)
     builder = armour_parts()
-    asset = DK.build_mesh_asset_dk(ARMOUR, builder, voxel=0.008, target_tris=3200, tex_size=512, ao_distance=0.2,
-                                   extrusion=0.04, ray=0.1, emission_strength=2.2, specular=0.45, k=BW.K * 0.5,
+    asset = DK.build_mesh_asset_dk(ARMOUR, builder, voxel=0.008, target_tris=3800, tex_size=512, ao_distance=0.2,
+                                   extrusion=0.04, ray=0.12, emission_strength=2.0, specular=0.5, k=BW.K * 0.5,
                                    families=("crystal", "rock"), low_size=256, out_dir=folder, smooth_iterations=2)
     bpy.data.objects.remove(bpy.data.objects[ARMOUR + "_High"])
     rigid = {"IcePlate", "IceSpur", "Icicle"}
     C.skin(asset.low, boss.arm, builder, rigid=rigid, blend=0)
     T.island_rigid(asset.low, [f"Armour_{i + 1}" for i in range(len(PLATES))] + [f"Icicle_{i + 1}" for i in range(ICICLES)])
-    lod_mesh = C.decimate(asset.low.data.copy(), 1500, ARMOUR + "_LOD1", symmetric=True)
+    boss.armour_islands = island_check(asset.low)
+    lod_mesh = C.decimate(asset.low.data.copy(), 1700, ARMOUR + "_LOD1", symmetric=True)
     C.shade_smooth(lod_mesh)
     lod = C.link(bpy.data.objects.new(ARMOUR + "_LOD1", lod_mesh))
     lod.data.materials.clear()
@@ -238,7 +248,7 @@ def shatter_through(ad):
     frames = cycles * cycle
     stride = ad.stride * 1.3
     travel = cycles * stride / ad.stance
-    chest_f = BW.CHEST_C.y * -1 + 0.3
+    chest_f = -BW.CHEST_C.y * BW.SC + 0.3
     impact_t = min(max((GATE_F - chest_f) / travel, 0.05), 0.95)
     impact = int(round(impact_t * frames))
 
@@ -278,8 +288,7 @@ def armour_break(poser):
         for j, i in enumerate(order):
             s0 = BREAK_START + 2 * j
             u = ease(s0, s0 + 9, f)
-            a = plate_anchor(PLATES[i])
-            d = (a - Vector(PLATES[i][1])).normalized()
+            d = PLATES[i]["dir"]
             crack = 0.02 * ease(0, BREAK_START, f) * (1 - u)
             armour[i] = {"rot": [(Vector((0.3, 0.2, 1.0)).normalized(), R(160) * u)],
                          "loc": d * (crack + 1.1 * u) + Vector((0, 0, 0.5)) * math.sin(math.pi * min(u, 1.0)),
@@ -306,6 +315,32 @@ def ice_dive_extra(t, f, st):
 # ------------------------------------------------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------------------------------------------------
+
+def hold_rest(boss, clips, bones):
+    """Constant rest location (0) and rotation (identity) keys for `bones` in `clips` (full and LOD actions), so a
+    clip that never animates them does not inherit the pose another clip left behind."""
+    lod_names = {b.name for b in boss.lod_arm.data.bones} if boss.lod_arm is not None else set()
+    for clip in clips:
+        for name, names in ((clip, None), (clip + "_LOD", lod_names)):
+            act = bpy.data.actions.get(name)
+            if act is None:
+                continue
+            a, b = act.frame_range
+            for bag in K2._channelbags(act)[:1]:
+                for bone in bones:
+                    if names is not None and bone not in names:
+                        continue
+                    for prop, values in (("location", (0.0, 0.0, 0.0)), ("rotation_quaternion", (1.0, 0.0, 0.0, 0.0))):
+                        path = f'pose.bones["{bone}"].{prop}'
+                        for i, v in enumerate(values):
+                            fc = bag.fcurves.find(path, index=i)
+                            if fc is not None:
+                                bag.fcurves.remove(fc)
+                            fc = bag.fcurves.new(path, index=i)
+                            for f in (a, b):
+                                fc.keyframe_points.insert(f, v).interpolation = "CONSTANT"
+    C.log(NAME, "held rest pose of", len(bones), "bones in", len(clips), "clips")
+
 
 def fit_depth(boss, make, name, start, margin=0.2):
     depth = start
@@ -394,7 +429,7 @@ def previews(boss, ad, depth, out):
     M.strip(NAME, arm, acts["Armour_Break"], cam, out, "Armour_Break", [0, 8, BREAK_START + 2, BREAK_START + 6,
                                                                        BREAK_START + 12, BREAK_START + 20, 44, BREAK_FRAMES])
     M.remove([cam])
-    M.turntable(NAME, arm, bpy.data.actions["Idle"], 20, (0, -0.4, 1.9), 15, out, label="turntable_armoured")
+    M.turntable(NAME, arm, bpy.data.actions["Idle"], 20, (0, -0.4, 2.1), 17, out, label="turntable_armoured")
 
 
 def main():
@@ -411,13 +446,21 @@ def main():
     # pose the previous clip left (Armour_Break's end: plates at scale 0). Key them at 1; only Armour_Break removes them.
     boss.hold(list(BW.CLIPS), {n: 1.0 for n in [f"Armour_{i + 1}" for i in range(len(PLATES))] +
                                [f"Icicle_{i + 1}" for i in range(ICICLES)]})
+    # Round 30: the same holds for location and rotation (the exporter also baked Armour_Break's last pose, plates
+    # flown off, into the old clips for the unkeyed channels).
+    hold_rest(boss, list(BW.CLIPS), [f"Armour_{i + 1}" for i in range(len(PLATES))] + [f"Icicle_{i + 1}" for i in range(ICICLES)])
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "ice (water under an ice sheet)", "submerged_depth_m": depth,
                  "ice_armour": {"object": ARMOUR, "material": f"{ARMOUR}_Mat", "maps": f"{ARMOUR}_*.png (512, Low 256)",
                                 "tris": C.tri_count(asset.low), "lod1_object": ARMOUR + "_LOD1",
                                 "lod1_tris": C.tri_count(lod), "plates": [f"Armour_{i + 1}" for i in range(len(PLATES))],
                                 "icicles": [f"Icicle_{i + 1}" for i in range(ICICLES)],
-                                "icicle_rage_scale": "0.2 (calm) to 1.0 (max rage), uniform localScale in LateUpdate"},
+                                "icicle_rage_scale": "0.2 (calm) to 1.0 (max rage), uniform localScale in LateUpdate",
+                                "round30_plate_map": {f"Armour_{i + 1}": f"{n} (parent {p['parent']})" for i, (n, p) in
+                                                      enumerate(zip(PLATE_NAMES, PLATES))},
+                                "islands": boss.armour_islands[0],
+                                "note": "round 30: solid faceted ice volumes sunk into the body; plates, icicles and "
+                                        "the rest pose are keyed in every old clip (only Armour_Break moves them)"},
                  "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
                  "mechanic": "Gate Breaker: Freeze_Gate, Climb_Up onto the frozen gate (it sags), Shatter_Through; "
                              "ice armour soaks damage until Armour_Break (below 40% or a Lava Ball)"})

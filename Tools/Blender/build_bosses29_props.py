@@ -35,6 +35,7 @@ import common as C  # noqa: E402
 import crysium as Y  # noqa: E402
 import env_kit as E  # noqa: E402
 import env_kit2 as K  # noqa: E402
+import ice_kit as IK  # noqa: E402
 import story_kit as sk  # noqa: E402
 import tower_kit as tk  # noqa: E402
 from boss_mech_kit import ease  # noqa: E402
@@ -418,33 +419,84 @@ def seal_stone(seed, inlay=0.0):
 
 def crystal(seed, strength=1.0):
     """A darker glow mask than the decor crystals: bright flutes, node rings and tip, a dim body, so the facets and
-    fracture lines still show once Unity tints and blooms it."""
+    fracture lines still show once Unity tints and blooms it. Round 30: on flat-faced crystals the face centres catch
+    the flute glow and the edges stay dark, so every facet reads as its own plane."""
     return Y.shard_style("seal_white", 0.62 * strength, seed=seed, flute_glow=0.9)
+
+
+def facet_glow(style, sides, phase, gain=0.35):
+    """Round 30: lights the middle of each flat face a step more than its edges (the inner light shows through
+    the faces, the edges stay dark lines), so a flat-faced crystal never reads as a plain lamp."""
+    cell = 2 * math.pi / sides
+
+    def wrapped(s, idx, part):
+        style(s, idx, part)
+        L = C.local_points(part, s.p[idx])
+        z = np.clip(L[:, 2], 0, 1)
+        ang = (np.arctan2(L[:, 1], L[:, 0]) - phase) % cell
+        centre = 1 - np.abs(ang - cell / 2) / (cell / 2)
+        face = ss(0.35, 0.95, centre) * ss(0.05, 0.3, z)
+        edge = 1 - ss(0.04, 0.16, centre)
+        s.emit[idx] = np.clip(s.emit[idx] * (1 - 0.6 * edge)[:, None] + (gain * face)[:, None], 0, 1)
+        s.albedo[idx] = s.albedo[idx] * (1 - 0.35 * edge)[:, None]
+    return wrapped
+
+
+def faceted(b, name, base, direction, radius, length, seed, tip=0.32, phase=0.0, strength=1.0, sides=6, bottom=0.0,
+            nodes=(0.32, 0.58, 0.8)):
+    """Round 30 (SC1): a flat-faced crystal: straight prism faces (no twist, no flutes) up to 1 - `tip`, then a
+    pyramid point; `bottom` > 0 also points the root (a doubly terminated crystal). The irregular `phase` keeps
+    neighbours from lining up."""
+    def profile(t):
+        r = 1.0 if t < 1 - tip else max((1 - t) / tip, 0.0)
+        if bottom and t < bottom:
+            r *= 0.35 + 0.65 * t / bottom
+        return r
+    style = Y.shard_style("seal_white", 0.62 * strength, nodes=nodes, seed=seed, flute_glow=0.9)
+    return b.shard(name, base, direction, radius, length, sides=sides, twist=0.0, flute=0.0, profile=profile, rings=14,
+                   phase=phase, bone="Root", style=facet_glow(style, sides, phase))
+
+
+def side_crystals(b, o, centre_z, count, radius, length, seed, spread=0.32, lean=0.9, strength=0.85):
+    """Small crystals sprouting round a base or up a spire at odd angles (they make the glow break into facets)."""
+    rng = np.random.default_rng(seed)
+    for k_ in range(count):
+        a = 2 * math.pi * k_ / count + rng.uniform(-0.4, 0.4)
+        out = Vector((math.cos(a), math.sin(a), 0))
+        z = centre_z + rng.uniform(-0.04, 0.08)
+        d = out * lean + Vector((0, 0, 1.0)) + Vector(rng.uniform(-0.2, 0.2, 3))
+        faceted(b, "SideCrystal", o + out * spread + Vector((0, 0, z)), d, radius * rng.uniform(0.75, 1.2),
+                length * rng.uniform(0.6, 1.4), seed + k_, tip=0.4, phase=rng.uniform(0, 1), strength=strength, nodes=())
 
 
 def seal_parts():
     b = C.PartBuilder()
     rng = np.random.default_rng(2920)
-    # A: a tall spire rising out of a carved collar, two splinters at its foot.
+    # A: a tall faceted spire rising out of a carved collar, a branch crystal grown out of its flank, small side
+    # crystals round its foot and two splinters.
     o = Vector((SEAL_X["A"], 0, 0))
-    b.shard("Spire", o + Vector((0, 0, -0.05)), Vector((0.06, 0.03, 1)), 0.2, 1.65, sides=6, twist=0.5, flute=0.25,
-            profile=lambda t: (1 - t) ** 0.55 * (0.85 + 0.15 * min(1.0, t * 6)), bone="Root", style=crystal(2921, 1.0))
+    faceted(b, "Spire", o + Vector((0, 0, -0.05)), Vector((0.06, 0.03, 1)), 0.2, 1.65, 2921, tip=0.3, phase=0.2)
+    faceted(b, "Branch", o + Vector((0.08, 0.02, 0.55)), Vector((0.75, 0.25, 1.0)), 0.085, 0.62, 2924, tip=0.4, phase=0.6)
+    faceted(b, "Branch", o + Vector((-0.06, -0.05, 0.85)), Vector((-0.55, -0.6, 1.0)), 0.065, 0.45, 2925, tip=0.45,
+            phase=0.1)
     for k_ in range(6):
         a = 2 * math.pi * k_ / 6
         b.ellipsoid("Collar", o + Vector((math.cos(a) * 0.3, math.sin(a) * 0.3, 0.12)), (0.17, 0.12, 0.17), K.rz(math.degrees(a)),
                     bone="Root", style=seal_stone(2922 + k_), segments=(14, 8), deform=C.chiselled(8, 2922 + k_, 0.3))
+    side_crystals(b, o, 0.1, 4, 0.06, 0.32, 2934, spread=0.36)
     for k_, a in enumerate((0.8, 3.6)):
         d = Vector((math.cos(a), math.sin(a), 1.6))
-        b.shard("Splinter", o + Vector((math.cos(a) * 0.38, math.sin(a) * 0.38, 0.0)), d, 0.07, 0.45 - 0.1 * k_, sides=6,
-                twist=0.7, flute=0.3, bone="Root", style=crystal(2930 + k_, 0.9))
-    # B: three crystals leaning out of a broken socket.
+        faceted(b, "Splinter", o + Vector((math.cos(a) * 0.42, math.sin(a) * 0.42, 0.0)), d, 0.07, 0.45 - 0.1 * k_,
+                2930 + k_, tip=0.4, phase=0.3 * k_, strength=0.9)
+    # B: three faceted crystals leaning out of a broken socket, small side crystals round them.
     o = Vector((SEAL_X["B"], 0, 0))
     b.ellipsoid("Socket", o + Vector((0, 0, 0.08)), (0.5, 0.44, 0.2), bone="Root", style=seal_stone(2940),
                 segments=(24, 10), deform=C.chiselled(12, 2940, 0.3))
-    for k_, (dx, dy, ln, lean, r) in enumerate(((0.0, 0.05, 1.15, (0.1, 0.05), 0.15), (0.22, -0.12, 0.8, (0.6, -0.3), 0.11),
-                                                (-0.2, -0.08, 0.6, (-0.55, -0.35), 0.1))):
-        b.shard("Cluster", o + Vector((dx, dy, 0.1)), Vector((lean[0], lean[1], 1)), r, ln, sides=6, twist=0.6, flute=0.3,
-                bone="Root", style=crystal(2941 + k_, 1.0))
+    for k_, (dx, dy, ln, lean, r) in enumerate(((0.0, 0.05, 1.15, (0.1, 0.05), 0.16), (0.22, -0.12, 0.8, (0.6, -0.3), 0.12),
+                                                (-0.2, -0.08, 0.6, (-0.55, -0.35), 0.11))):
+        faceted(b, "Cluster", o + Vector((dx, dy, 0.1)), Vector((lean[0], lean[1], 1)), r, ln, 2941 + k_, tip=0.32,
+                phase=0.37 * k_)
+    side_crystals(b, o + Vector((0.02, 0.1, 0)), 0.2, 5, 0.055, 0.3, 2944, spread=0.24, lean=1.2)
     # C: a crystal held up in a cradle of three curved stone claws.
     o = Vector((SEAL_X["C"], 0, 0))
     b.ellipsoid("CradleBase", o + Vector((0, 0, 0.06)), (0.42, 0.42, 0.14), bone="Root", style=seal_stone(2950),
@@ -455,8 +507,8 @@ def seal_parts():
         pts = [o + out * 0.3 + Vector((0, 0, 0.1)), o + out * 0.42 + Vector((0, 0, 0.55)), o + out * 0.3 + Vector((0, 0, 0.95)),
                o + out * 0.16 + Vector((0, 0, 1.12))]
         b.tube("Claw", pts, [0.09, 0.075, 0.055, 0.025], sides=8, chain=["Root"], style=seal_stone(2951 + k_))
-    b.shard("Held", o + Vector((0, 0, 0.32)), Vector((0, 0, 1)), 0.17, 0.95, sides=6, twist=0.8, flute=0.3,
-            profile=lambda t: math.sin(math.pi * min(1.0, 0.08 + t * 0.95)) ** 0.7, bone="Root", style=crystal(2955, 1.1))
+    faceted(b, "Held", o + Vector((0, 0, 0.3)), Vector((0, 0, 1)), 0.17, 0.97, 2955, tip=0.28, bottom=0.25, phase=0.4,
+            strength=1.1)
     for k_ in range(5):
         a = rng.uniform(0, 2 * math.pi)
         K.chip(b, (o.x + math.cos(a) * 0.55, math.sin(a) * 0.5, 0.0), (0.07, 0.06, 0.05), 2960 + k_, seal_stone(2960 + k_))
@@ -464,9 +516,10 @@ def seal_parts():
 
 
 def build_seal():
-    asset = M.static_asset(SEAL, seal_parts(), 4200, families=("crystal", "rock"), voxel=0.006, ao=0.12, extrusion=0.02,
-                           ray=0.05, emission=2.6, k=1.0, mirror=False)
-    asset.low.data.set_sharp_from_angle(angle=R(40))
+    asset = C.build_mesh_asset(SEAL, seal_parts(), voxel=0.005, target_tris=5200, tex_size=512, ao_distance=0.12,
+                               extrusion=0.02, ray=0.05, emission_strength=2.6, smooth_iterations=2, symmetric=False,
+                               sharp_angle=35, specular=0.3, mirror=False, k=1.0, families=("crystal", "rock"),
+                               low_size=256)
     objs = split_by_x(asset.low, SEAL_X, SEAL)
     bpy.data.objects.remove(asset.low)
     M.export_static(os.path.join(C.EXPORTS, SEAL, SEAL + ".fbx"), objs)
@@ -476,6 +529,8 @@ def build_seal():
         "texture_size": 512, "low_texture_size": 256, "material": f"{SEAL}_Mat (shared by the three)",
         "maps": ["Albedo", "Normal", "Emission", "Mask"], "detail": asset.details,
         "pivot": "each crystal's centre on the ground", "unity_scale": 1.0,
+        "round30": "SC1: flat-faced crystals (no flutes, no twist, hard edges) with the glow brightest in the middle "
+                   "of each face and dark edge lines; A gets two branch crystals and side crystals, B side crystals",
         "emission": "greyscale mask (white glow, stone black): set _EmissionColor = the immune tower's colour x 2.4; "
                     "dormant/neutral: lilac (0.62, 0.45, 1.0) x 1.6; Release: white x 3",
         "use": "BOSSES.md 'the sealed crystals turn the colour of the immune type': 3-5 round the rift (mix A/B/C, "
@@ -510,21 +565,42 @@ def split_by_x(obj, centres, prefix, half=1.2):
 ICE_W, ICE_D, ICE_H = 1.6, 0.74, 1.9        # half width, half depth, height (over Gate_G3: 2.68 x 1.06 x 1.49)
 
 
-def ice_style(seed, glow=0.35):
-    base = K.rock(PACK, seed, strata=0.0, crack=0.95, rough=0.12, crack_glow=glow, crack_color=COLD, frost=0.45)
+def ice_style(seed, glow=0.35, facets=None, frost=1.0):
+    """Round 30 (IB1): clear blue ice in the middle of the big faces (the albedo alpha turns that into ~0.25
+    opacity), white where it is thick or broken: fracture planes inside, frost on the facet ridges (`facets`, an
+    ice_kit.Facets), rime patches on the up faces. The whiter the texel, the more opaque (alpha_from_cracks)."""
+    clear = np.array((0.4, 0.64, 0.84))
+    white = np.array((0.93, 0.97, 1.0))
 
     def style(s, idx, part):
-        base(s, idx, part)
         p = s.p[idx]
-        # Fractures inside the ice, seen through it: bright white planes where the noise crosses zero.
+        n = s.n[idx]
+        if facets is not None:
+            ridge, inner = facets.ridge(C.local_points(part, p))
+        else:
+            ridge, inner = np.zeros(len(idx)), np.ones(len(idx))
         q = p * np.array((1.0, 1.0, 0.8))
-        frac = 1 - ss(0.0, 0.05, np.abs(C.value_noise(q, 2.2, seed + 5)))
-        frac = np.maximum(frac, (1 - ss(0.0, 0.03, np.abs(C.value_noise(q, 5.0, seed + 6)))) * 0.7)
-        s.albedo[idx] = C.lerp3(s.albedo[idx], np.array((0.93, 0.97, 1.0)), frac * 0.85)
-        s.emit[idx] = np.clip(s.emit[idx] + COLD[None, :] * (0.25 * frac)[:, None], 0, 1)
-        s.rough[idx] = np.clip(s.rough[idx] * (1 - frac) + 0.6 * frac, 0.05, 1)
+        frac = (1 - ss(0.0, 0.045, np.abs(C.value_noise(q, 2.2, seed + 5)))) * ss(-0.3, 0.2, C.value_noise(q, 0.9, seed + 2))
+        frac = np.maximum(frac, (1 - ss(0.0, 0.02, np.abs(C.value_noise(q, 5.0, seed + 6)))) * 0.35)
+        up = ss(0.45, 0.9, n[:, 2]) * ss(-0.3, 0.3, C.value_noise(p, 3.0, seed + 7))
+        edge = ridge * (0.6 + 0.4 * ss(-0.3, 0.3, C.value_noise(p, 6.0, seed + 9)))
+        col = clear * (0.9 + 0.12 * C.value_noise(p, 1.5, seed + 1))[:, None]
+        col = C.lerp3(col, clear * 0.75, inner * 0.3)
+        amount = np.clip(np.maximum.reduce([frac * 0.9, edge * frost, up * 0.85 * frost]), 0, 1)
+        col = C.lerp3(col, white, amount)
+        s.albedo[idx] = col
+        line = (1 - ss(0.0, 0.03, np.abs(C.value_noise(q, 3.5, seed + 11)))) * ss(0.1, 0.4, C.value_noise(q, 1.2, seed + 12))
+        s.emit[idx] = np.clip(COLD[None, :] * (0.2 * frac + glow * line)[:, None], 0, 1)
+        s.rough[idx] = np.clip(0.06 + 0.55 * amount, 0.05, 1)
+        s.disp[idx] = -0.004 * frac + 0.003 * edge
         s.fam[idx] = E.FAM_CRYSTAL
     return style
+
+
+def ice_chunk(b, centre, radii, rot, seed, count=14, depth=0.28, glow=0.35):
+    f = IK.Facets(count, seed, depth)
+    b.ellipsoid("Ice", Vector(centre), radii, rot, bone="Root", style=ice_style(seed, glow, facets=f), segments=(26, 14),
+                deform=f.deform)
 
 
 def ice_parts():
@@ -535,8 +611,7 @@ def ice_parts():
               ((0.0, 0.0, 0.95), (1.05, 0.7, 0.92)), ((-0.35, -0.2, 0.45), (0.9, 0.6, 0.5)),
               ((0.45, 0.2, 0.5), (0.9, 0.6, 0.55)), ((0.0, 0.05, 1.55), (0.95, 0.55, 0.45))]
     for k_, (c, r) in enumerate(chunks):
-        b.ellipsoid("Ice", Vector(c), r, K.rz(rng.uniform(-12, 12)), bone="Root", style=ice_style(2926 + k_),
-                    segments=(26, 14), deform=C.chiselled(14, 2926 + k_, 0.28))
+        ice_chunk(b, c, r, K.rz(rng.uniform(-12, 12)), 2926 + k_)
     # Frost spikes grown off the top and the corners (the Warden's breath froze outwards).
     for k_ in range(9):
         x = rng.uniform(-1.4, 1.4)
@@ -549,6 +624,18 @@ def ice_parts():
         y = -0.55 if k_ < 2 else 0.55
         b.prism("Spike", Vector((sx * 1.4, y, 0.25)), Vector((sx * 1.0, y, 0.6)), 0.09, 0.3, 0.2, sides=5, twist=0.4 * k_,
                 bone="Root", style=ice_style(2950 + k_, 0.5), taper=0.8)
+    # Round 30 (IB1): icicles hanging off the top rim of both long faces, so the block reads as frozen ice (and its
+    # outline breaks up) from the game camera.
+    for side in (-1, 1):
+        # An overhanging frost lip along the rim, which the icicles hang from.
+        ice_chunk(b, (0, side * 0.64, 1.5), (1.3, 0.2, 0.13), K.rz(3 * side), 2965 + side, count=12, depth=0.3)
+        for k_, x in enumerate(np.linspace(-1.2, 1.2, 7)):
+            x += rng.uniform(-0.1, 0.1)
+            top = 1.5 - 0.05 * abs(x)
+            base = Vector((x, side * (0.76 - 0.1 * (x / 1.3) ** 2), top))
+            ln = rng.uniform(0.3, 0.62)
+            b.shard("Icicle", base, Vector((rng.uniform(-0.08, 0.08), side * 0.12, -1.0)), rng.uniform(0.06, 0.095), ln,
+                    sides=6, twist=rng.uniform(0, 1), flute=0.25, bone="Root", style=ice_style(2970 + k_, 0.4, frost=0.7))
     # A frost apron on the road.
     b.ellipsoid("Apron", Vector((0, 0, 0.0)), (1.85, 1.05, 0.08), bone="Root", style=ice_style(2960, 0.2), segments=(30, 8),
                 deform=E.boxy(2960, 0.2, 8, 0.2))
@@ -556,23 +643,25 @@ def ice_parts():
 
 
 def build_ice():
-    asset = M.static_asset(ICE, ice_parts(), 2400, families=("crystal", "rock"), voxel=0.012, ao=0.2, extrusion=0.03,
+    asset = M.static_asset(ICE, ice_parts(), 2900, families=("crystal", "rock"), voxel=0.012, ao=0.2, extrusion=0.03,
                            ray=0.08, emission=2.0, k=2.0, mirror=False)
     low = asset.low
     low.data.set_sharp_from_angle(angle=R(38))
     alpha_from_cracks(os.path.join(C.EXPORTS, ICE))
     M.export_static(os.path.join(C.EXPORTS, ICE, ICE + ".fbx"), [low])
     C.write_report(ICE, {
-        "asset": ICE, "round": ROUND, "game_tris": C.tri_count(low), "source_tris": asset.high_tris,
+        "asset": ICE, "round": 30, "game_tris": C.tri_count(low), "source_tris": asset.high_tris,
         "size_m": [round(d, 3) for d in low.dimensions], "texture_size": 512, "low_texture_size": 256,
         "material": f"{ICE}_Mat", "maps": ["Albedo (RGBA: alpha = opacity)", "Normal", "Emission", "Mask"],
         "detail": asset.details, "unity_scale": 1.0,
         "pivot": "road centre on the ground, as the Gate prefab: put it at the gate's own position and rotation",
         "fits": "Gate_G1 (2.52 x 0.57 x 1.28) to Gate_G3 (2.68 x 1.06 x 1.49) with 0.1-0.25 m of ice round them",
-        "material_note": "transparent (alpha blend, depth write on, rendered after the gate): Albedo alpha is 0.35 in "
-                         "clear ice up to 0.95 in the white fractures and frost; smoothness from the Mask G; emission a "
-                         "faint cold glow in the cracks (x 1.2). The Liquid_Ice shader's fresnel/refraction may be "
-                         "layered on top",
+        "material_note": "transparent (alpha blend, depth write on, rendered after the gate): Albedo alpha is 0.25 in "
+                         "the clear middle of the big faces up to 0.9 in the white fractures, facet ridges, frost and "
+                         "icicles; smoothness from the Mask G; emission a faint cold glow in the cracks (x 1.2). The "
+                         "Liquid_Ice shader's fresnel/refraction may be layered on top",
+        "round30": "IB1: thickness variation in the alpha (clear faces 0.25, breaks 0.9) and 14 icicles hanging off "
+                   "the top rim of both long faces",
         "use": "Frost Warden Freeze_Gate: show for 8 s over the gate (scale 0.9 -> 1 in 0.3 s at the cast frame); on "
                "Shatter_Through hide it with the ice shard burst (VFX Debris_Shards tinted ice)"})
     C.save_blend(ICE)
@@ -580,7 +669,8 @@ def build_ice():
 
 
 def alpha_from_cracks(folder):
-    """Albedo alpha from the baked colour: the whiter (fractures, frost, spikes' frosted tips), the more opaque."""
+    """Albedo alpha from the baked colour: clear blue ice 0.25, the whiter (fractures, frost, ridges, icicles) the
+    more opaque, up to 0.9."""
     for sub in ("", "Low"):
         path = os.path.join(folder, sub, f"{ICE}_Albedo.png")
         if not os.path.exists(path):
@@ -589,8 +679,8 @@ def alpha_from_cracks(folder):
         rgb = img[..., :3]
         lum = rgb.mean(axis=2)
         sat = rgb.max(axis=2) - rgb.min(axis=2)
-        white = np.clip((lum - 0.45) / 0.4, 0, 1) * np.clip(1 - sat * 2.5, 0, 1)
-        img[..., 3] = np.clip(0.35 + 0.6 * white, 0, 1)
+        white = np.clip((lum - 0.5) / 0.38, 0, 1) * np.clip(1 - sat * 2.2, 0, 1)
+        img[..., 3] = np.clip(0.25 + 0.65 * white ** 0.8, 0, 1)
         C.array_to_image(img, path)
 
 

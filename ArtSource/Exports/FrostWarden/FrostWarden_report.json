@@ -1,11 +1,11 @@
 {
   "asset": "FrostWarden",
-  "game_tris": 23880,
+  "game_tris": 24053,
   "tris_per_material": [
-    17507,
-    6373
+    17536,
+    6517
   ],
-  "source_tris": 1059428,
+  "source_tris": 1701700,
   "bones": 41,
   "texture_size": 1024,
   "low_texture_size": 512,
@@ -21,44 +21,44 @@
   ],
   "uv": {
     "FrostWarden": {
-      "islands": 110,
+      "islands": 108,
       "closed_islands_cut": 0,
       "folded_fallback_faces": 0,
-      "mirrored_faces": 8506,
-      "uv_coverage": 0.599,
-      "world_per_uv": 5.3333796400012154
+      "mirrored_faces": 8470,
+      "uv_coverage": 0.596,
+      "world_per_uv": 6.50394356718734
     },
     "FrostWarden_Ice": {
-      "islands": 127,
+      "islands": 90,
       "closed_islands_cut": 0,
-      "folded_fallback_faces": 169,
-      "mirrored_faces": 2589,
-      "uv_coverage": 0.681,
-      "world_per_uv": 1.9554631230012638
+      "folded_fallback_faces": 389,
+      "mirrored_faces": 2846,
+      "uv_coverage": 0.64,
+      "world_per_uv": 2.964559423763508
     }
   },
   "detail": {
     "FrostWarden": {
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 11.1,
+        "tiling": 13.5,
         "mask": "B"
       },
       "chitin": {
         "map": "Detail_Chitin_Normal.png",
-        "tiling": 22.2,
+        "tiling": 27.1,
         "mask": "A"
       }
     },
     "FrostWarden_Ice": {
       "crystal": {
         "map": "Detail_Crystal_Normal.png",
-        "tiling": 11.6,
+        "tiling": 17.6,
         "mask": "B"
       },
       "rock": {
         "map": "Detail_Rock_Normal.png",
-        "tiling": 6.8,
+        "tiling": 10.3,
         "mask": "A"
       }
     }
@@ -82,9 +82,9 @@
     "Armour_Break": 56
   },
   "size_m": [
-    3.118,
-    4.722,
-    4.869
+    3.597,
+    5.722,
+    5.697
   ],
   "unity_scale": 1.0,
   "scale_keyed_bones": [
@@ -92,15 +92,15 @@
   ],
   "lod1": {
     "fbx": "FrostWarden_LOD1.fbx",
-    "tris": 9496,
+    "tris": 9500,
     "bones": 40
   },
-  "walk_distance_per_loop": 1.029,
-  "walk_enraged_distance_per_loop": 1.338,
+  "walk_distance_per_loop": 1.184,
+  "walk_enraged_distance_per_loop": 1.539,
   "pivot": "ground, under the hips",
   "freeze_pulse": {
     "impact_frame": 30,
-    "frost_ring_origin": "between the glaive tips, ~1.5 ahead",
+    "frost_ring_origin": "between the glaive tips, ~1.8 ahead",
     "halo_peak_frame": 32
   },
   "enrage": {
@@ -109,16 +109,30 @@
   },
   "glyph_colour": [
     1.0,
-    0.7,
-    0.28
+    0.68,
+    0.26
   ],
+  "seam_colour": [
+    0.55,
+    0.85,
+    1.0
+  ],
+  "eye_colour": [
+    1.0,
+    0.62,
+    0.2
+  ],
+  "round30": {
+    "scale_vs_round16": 1.15,
+    "note": "model and rig 15 % larger; keep Unity scale 1 (TitanFactor unchanged) for a 15 % bigger Warden"
+  },
   "footfalls": "Walk frames 0 (L1, R2) and 32 (R1, L2)",
   "round28": {
     "clips": {
       "Climb_Up": {
-        "end_offset_forward_m": 4.015,
+        "end_offset_forward_m": 4.617,
         "end_offset_up_m": 1.5,
-        "edge_forward_m": 1.5,
+        "edge_forward_m": 1.657,
         "ledge_height_m": 1.5,
         "cycles": 3,
         "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Walk",
@@ -126,16 +140,16 @@
         "loop": false
       },
       "Climb_Loop": {
-        "distance_per_loop_m": 0.824,
-        "playback": "speed / (0.824 x scale) loops per second x 93 frames",
+        "distance_per_loop_m": 0.947,
+        "playback": "speed / (0.947 x scale) loops per second x 93 frames",
         "note": "pivot on the top surface; in place; pin the IK_* markers to the climb layer",
         "frames": 93,
         "loop": true
       },
       "Climb_Down": {
-        "end_offset_forward_m": 4.015,
+        "end_offset_forward_m": 4.617,
         "end_offset_up_m": -1.5,
-        "edge_forward_m": 1.5,
+        "edge_forward_m": 1.657,
         "drop_height_m": 1.5,
         "cycles": 3,
         "note": "starts with the pivot on the top surface (Climb_Loop / Climb_Up end pose); at the last frame move the transform by the end offset",
@@ -143,7 +157,7 @@
         "loop": false
       },
       "Submerged_Loop": {
-        "depth_m": 4.726869535446167,
+        "depth_m": 5.972193431854248,
         "note": "pivot on the liquid surface; everything stays under it; in place",
         "frames": 96,
         "loop": true,
@@ -151,7 +165,7 @@
       },
       "Dive_Into_Liquid": {
         "end_offset_forward_m": 2.6,
-        "depth_m": 4.727,
+        "depth_m": 5.972,
         "takeoff_frame": 22,
         "splash_frame": 30,
         "under_frame": 56,
@@ -161,7 +175,7 @@
         "loop": false
       },
       "Surface_Burst": {
-        "start_depth_m": 4.727,
+        "start_depth_m": 5.972,
         "end_offset_forward_m": 2.6,
         "breach_frame": 16,
         "land_frame": 32,
@@ -171,16 +185,16 @@
       },
       "Freeze_Gate": {
         "cast_frame": 30,
-        "gate_forward_m": 2.4,
+        "gate_forward_m": 2.6,
         "socket": "Socket_Breath",
         "note": "the gate becomes an ice block at cast_frame (8 s, BOSSES.md)",
         "frames": 64,
         "loop": false
       },
       "Shatter_Through": {
-        "gate_forward_m": 2.4,
-        "impact_frame": 51,
-        "end_offset_forward_m": 2.676,
+        "gate_forward_m": 2.6,
+        "impact_frame": 48,
+        "end_offset_forward_m": 3.078,
         "note": "start with the frozen gate GATE_F ahead of the pivot; at impact_frame the gate shatters (wreck, shards VFX); at the end move the transform by end_offset_forward and loop WalkEnraged",
         "frames": 84,
         "loop": false
@@ -219,14 +233,14 @@
     ],
     "climb_height_m": 1.5,
     "liquid": "ice (water under an ice sheet)",
-    "submerged_depth_m": 4.727,
+    "submerged_depth_m": 5.972,
     "ice_armour": {
       "object": "FrostWarden_IceArmour",
       "material": "FrostWarden_IceArmour_Mat",
       "maps": "FrostWarden_IceArmour_*.png (512, Low 256)",
-      "tris": 3187,
+      "tris": 3788,
       "lod1_object": "FrostWarden_IceArmour_LOD1",
-      "lod1_tris": 1497,
+      "lod1_tris": 1697,
       "plates": [
         "Armour_1",
         "Armour_2",
@@ -244,7 +258,19 @@
         "Icicle_4",
         "Icicle_5"
       ],
-      "icicle_rage_scale": "0.2 (calm) to 1.0 (max rage), uniform localScale in LateUpdate"
+      "icicle_rage_scale": "0.2 (calm) to 1.0 (max rage), uniform localScale in LateUpdate",
+      "round30_plate_map": {
+        "Armour_1": "chest (parent Chest)",
+        "Armour_2": "left pauldron (parent Chest)",
+        "Armour_3": "right pauldron (parent Chest)",
+        "Armour_4": "back (parent Chest)",
+        "Armour_5": "left forearm (parent Arm_L_Fore)",
+        "Armour_6": "right forearm (parent Arm_R_Fore)",
+        "Armour_7": "left front shin (parent Leg_L1_Lower)",
+        "Armour_8": "right front shin (parent Leg_R1_Lower)"
+      },
+      "islands": 32,
+      "note": "round 30: solid faceted ice volumes sunk into the body; plates, icicles and the rest pose are keyed in every old clip (only Armour_Break moves them)"
     },
     "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
     "mechanic": "Gate Breaker: Freeze_Gate, Climb_Up onto the frozen gate (it sags), Shatter_Through; ice armour soaks damage until Armour_Break (below 40% or a Lava Ball)"

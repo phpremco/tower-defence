@@ -2591,3 +2591,110 @@ Not edited here (shared). The shard climbs, OnBase_Loop and the scale fix live i
            # the dampened HUD overlay.
            "build_bosses29_fx.py",
 ```
+
+## Round 30: Frost Warden redesign, crack slabs, ice block, seal crystals (2026-11-05)
+
+Brief: `Docs/MODEL_TODO.md` "Ronde 5 Unity" (FW1-FW7, GW1, IB1, SC1). Design notes and weak points in `DESIGN_NOTES.md`
+(round 30). Nothing is imported into Unity.
+
+**Scripts:**
+
+- New:
+  - `ice_kit.py`: `Facets`, `frost_ice`, `chunk`, `kite_blade`, `scale_builder`.
+  - `build_bosses30_props.py`: GW1.
+  - `round30_views.py`: QA turntable and game-camera views with a G1 gate.
+- Changed:
+  - `build_frostwarden.py`: body redesign.
+  - `build_frostwarden_mech.py`: new armour, rest-pose holds.
+  - `build_bosses29_props.py`: IB1 and SC1.
+- The shared modules are untouched.
+
+Run order is unchanged: `build_frostwarden.py`, then `build_frostwarden_mech.py`. Each takes about 5 and 3 minutes.
+
+### Frost Warden (`FrostWarden.fbx` / `_LOD1.fbx`, same names, same rig layout)
+
+- **Look:** a cold slate blue-grey body with ice-blue seams. Amber shows only in the eyes, the face slit and the chest
+  seal glyph. Solid, faceted ice armour, a crown of ice spikes, the halo tilted back 46 degrees to face the game
+  camera, and triangular-section glaives.
+- **Scale:** the model and rig are **15 % larger** than round 29 (`SC = 1.15`). Keep Unity scale 1 and `TitanFactor`
+  as it is to get the bigger Warden; size is now 3.6 x 5.7 x 5.7 m (w x l x h to the halo tips), shoulder 3.0 m.
+- **Meshes:** `FrostWarden` (body + ice, ~24,000 tris, two materials as before) and `FrostWarden_IceArmour` (~3,800
+  tris, LOD ~1,700, its 512/256 maps redone). 41 bones (40 LOD), same names.
+- **Armour plate mapping changed** (the bones and their names are kept; some parents changed):
+
+| Bone | Plate | Parent |
+| --- | --- | --- |
+| Armour_1 | chest (covers the lower half of the glyph) | Chest |
+| Armour_2 / Armour_3 | left / right pauldron with three spikes | Chest |
+| Armour_4 | back | Chest |
+| Armour_5 / Armour_6 | left / right forearm | Arm_L_Fore / Arm_R_Fore |
+| Armour_7 / Armour_8 | left / right front shin | Leg_L1_Lower / Leg_R1_Lower |
+| Icicle_1..5 | rage icicles on the upper back between the shoulders | Chest |
+
+- **Clips:** all old and round-28 clips are kept, with the same names, frame counts and event frames, except
+  Shatter_Through's impact frame. Armour plates and icicles are keyed at scale 1 **and at their rest location and
+  rotation** in Walk, WalkEnraged, Idle, Hit, Death, Enrage and FreezePulse. Before, Blender left them where
+  Armour_Break had thrown them, and the FBX exporter can bake that. Only Armour_Break moves and hides them.
+  `check_clip_scales.py` reports no off-scale `Armour_`/`Icicle_` bones outside Armour_Break.
+- **Re-measured clip facts** (report `round28.clips`):
+
+| Clip | Round 29 | Round 30 |
+| --- | --- | --- |
+| Walk / WalkEnraged distance per loop | 1.03 / 1.34 | 1.184 / 1.539 |
+| Climb_Up / Climb_Down (ledge 1.5, unchanged) | face 1.5, end 4.02 fwd | face 1.657 ahead, end 4.617 fwd, +-1.5 |
+| Dive_Into_Liquid / Surface_Burst | end 2.6 | end 2.6 (unchanged) |
+| Submerged_Loop depth | 4.73 | 5.972 |
+| Freeze_Gate | gate 2.4 ahead | gate **2.6** ahead (the glaive tips reach 2.05) |
+| Shatter_Through | gate 2.4, impact 51, end 2.68 | gate **2.6**, impact **48**, end **3.078** |
+| Armour_Break | plates 12-35 | unchanged |
+
+- **Unity notes:**
+  - Drop the round-5 `IceLook` override (one flat cold tint) for the ice slot and the armour. The baked maps carry no
+    warm colour now; keep the cold rim and the faint glow (emission x ~2).
+  - The rage icicles still scale 0.2 to 1.0 from their roots.
+  - If anything placed the armour by plate index, check the new mapping above.
+
+### GW1 Gravemaw crack slabs (`Exports/Gravemaw_CrackSlabs/`, `build_bosses30_props.py`)
+
+- **Mesh:** `Gravemaw_CrackSlabs.fbx` holds four static objects `CrackSlab_A..D`: 250, 198, 308 and 144 tris, about
+  0.4-0.6 m long, tilted 22-38 degrees. They share one material `Gravemaw_CrackSlabs_Mat` (256 maps, `Low/` 128).
+- **Look:** the strip's cracked basalt, with molten glow on the raised edge, its underside and the seams near it.
+- **Pivot:** the hinge, i.e. the low edge on the ground. The slab rises and glows towards Blender +X (the fissure
+  side).
+- **Use:** 3-6 per opened crack along both lips.
+  - Yaw them so the raised edge faces the fissure; random pick, scale 0.8-1.3, sunk 0.03-0.08 m.
+  - Show them as the crack opens, with emission about x3, cooling with the strip.
+- **Run:** `blender --background --factory-startup --python Tools/Blender/build_bosses30_props.py -- [--preview
+  <dir>] [--norender]` (about 1 minute). It needs `Exports/Boss_FX` only for the preview.
+
+### IB1 ice block and SC1 seal crystals (`build_bosses29_props.py --only IceBlock,SealCrystal`)
+
+- **`Gate_IceBlock`** (2,898 tris, same size and pivot):
+  - The albedo alpha is now 0.25 in the clear middle of the big facets and up to 0.9 in fractures, facet ridges,
+    up-face frost and icicles.
+  - A frost lip runs along both long top edges, with seven icicles hanging from each.
+  - Import as before.
+- **`SealCrystal_A/B/C`** (2,247 / 1,250 / 1,700 tris, same sizes and pivots):
+  - Flat-faced crystals with hard edges; A has two branch crystals and side crystals, B has side crystals.
+  - The emission is still a white mask. The middle of every face glows a step brighter than its edges.
+
+### Previews
+
+In the session scratchpad, `blender30/`:
+
+- `before/`: round-29 Warden turntable and game views, ice block and seal crystals.
+- `after4/`: Warden turntable, close-ups and game views with a G1 gate.
+- `mech4/`: clip strips and the armoured turntable.
+- `fw4/`: body sheets and strips.
+- `props*/`, `slabs3/`: prop previews.
+
+### build_all.py
+
+Not edited here (shared). Add this line after `"build_bosses29_props.py", "build_bosses29_fx.py",`:
+
+```
+           # Round 30: Gravemaw's crack slabs (GW1; imports build_bosses29_props, preview reads Exports/Boss_FX).
+           "build_bosses30_props.py",
+```
+
+`ice_kit.py` is a module, and `round30_views.py` is QA only (do not list them).

@@ -1,0 +1,63 @@
+{
+  "asset": "Gravemaw_CrackSlabs",
+  "round": 30,
+  "objects": {
+    "CrackSlab_A": 250,
+    "CrackSlab_B": 198,
+    "CrackSlab_C": 308,
+    "CrackSlab_D": 144
+  },
+  "size_m": {
+    "CrackSlab_A": [
+      0.576,
+      0.518,
+      0.333
+    ],
+    "CrackSlab_B": [
+      0.504,
+      0.407,
+      0.226
+    ],
+    "CrackSlab_C": [
+      0.625,
+      0.606,
+      0.479
+    ],
+    "CrackSlab_D": [
+      0.417,
+      0.343,
+      0.207
+    ]
+  },
+  "tilt_deg": {
+    "CrackSlab_A": 30,
+    "CrackSlab_B": 22,
+    "CrackSlab_C": 38,
+    "CrackSlab_D": 26
+  },
+  "texture_size": 256,
+  "low_texture_size": 128,
+  "material": "Gravemaw_CrackSlabs_Mat (shared by the four)",
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 14.7,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 29.4,
+      "mask": "A"
+    }
+  },
+  "unity_scale": 1.0,
+  "pivot": "the hinge: the low edge on the ground at the origin; the slab rises and glows towards Blender +X (the fissure side)",
+  "emission": "baked warm (1, 0.42, 0.1) on the fissure-facing edge and the seams near it: emission strength ~3 while the crack is hot, cool it with the strip's 10 s cooling (glow first)",
+  "use": "GW1: 3-6 per opened crack along both lips (yaw so +X faces the fissure, random pick and scale 0.8-1.3, sink 0.03-0.08), shown as the crack opens next to the BossFX_GroundCrack strip; they replace the flat lips of the strip where they stand"
+}
