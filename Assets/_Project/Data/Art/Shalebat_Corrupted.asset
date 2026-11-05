@@ -18,6 +18,7 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 37fb62f76e94d7440897040c4e216570, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
+  _parts: []
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 1
@@ -28,6 +29,8 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
   _clips:
   - _role: 0
     _clip: {fileID: -8547296870844211802, guid: 09fe5b02dd1775b4095da535d39ceec0, type: 3}
@@ -38,6 +41,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 1
     _clip: {fileID: -2743493200662582364, guid: 09fe5b02dd1775b4095da535d39ceec0, type: 3}
     _farClip: {fileID: -1055047841340249585, guid: 25ec23bfc3e0df34f8b803ac4a9d8b90, type: 3}
@@ -47,6 +55,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 3
     _clip: {fileID: 8736625553037910121, guid: 09fe5b02dd1775b4095da535d39ceec0, type: 3}
     _farClip: {fileID: -5758087247266290398, guid: 25ec23bfc3e0df34f8b803ac4a9d8b90, type: 3}
@@ -56,6 +69,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 2
     _clip: {fileID: -5519419473897192151, guid: 09fe5b02dd1775b4095da535d39ceec0, type: 3}
     _farClip: {fileID: -1742940858109722192, guid: 25ec23bfc3e0df34f8b803ac4a9d8b90, type: 3}
@@ -65,3 +83,22 @@ MonoBehaviour:
     _socket: 
     _weight: 0.6
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
+  - _role: 4
+    _clip: {fileID: -6463208871420027209, guid: 09fe5b02dd1775b4095da535d39ceec0, type: 3}
+    _farClip: {fileID: -2491966854164154597, guid: 25ec23bfc3e0df34f8b803ac4a9d8b90, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0.33333334
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []

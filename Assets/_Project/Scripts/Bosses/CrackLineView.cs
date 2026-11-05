@@ -222,6 +222,50 @@ namespace Game.Bosses
             }
         }
 
+        /// <summary>
+        /// How far along the line (in the planned length callers use) its point nearest <paramref name="at"/> lies, searched
+        /// from <paramref name="from"/> up to <paramref name="reach"/> metres on, so a road that doubles back never jumps legs.
+        /// </summary>
+        public float AlongNear(Vector3 at, float from, float reach)
+        {
+            float scale = _planned > 0f ? _length / _planned : 1f;
+            float start = Mathf.Max(0f, from * scale);
+            float end = start + reach * scale;
+            float best = float.MaxValue;
+            float bestAlong = start;
+            for (int i = 1; i < _points.Length; i++)
+            {
+                if (_along[i] < start || _along[i - 1] > end)
+                {
+                    continue;
+                }
+
+                Vector3 a = _points[i - 1];
+                Vector3 ab = _points[i] - a;
+                ab.y = 0f;
+                Vector3 ap = at - a;
+                ap.y = 0f;
+                float t = ab.sqrMagnitude > 0.0001f ? Mathf.Clamp01(Vector3.Dot(ap, ab) / ab.sqrMagnitude) : 0f;
+                float distance = (ap - ab * t).sqrMagnitude;
+                if (distance < best)
+                {
+                    best = distance;
+                    bestAlong = Mathf.Lerp(_along[i - 1], _along[i], t);
+                }
+            }
+
+            return Mathf.Max(start, bestAlong) / scale;
+        }
+
+        /// <summary>Pinches the open end of a painted mark to a point over this many metres (a furrow ending under its tail).</summary>
+        public void SetHeadTaper(float metres) => _mark?.SetFloat(HeadTaperId, metres);
+
+        /// <summary>
+        /// Lets a painted mark break off round the keep-out circles of <see cref="GroundKeepOut"/> (structures, the hero): it
+        /// tapers to a torn end before each, and the ground inside stays intact.
+        /// </summary>
+        public void KeepOffStructures() => _mark?.SetFloat(GroundKeepOut.EnabledId, 1f);
+
         /// <summary>Lets the crack cool down and disappear.</summary>
         public void Fade() => Fade(-1f);
 

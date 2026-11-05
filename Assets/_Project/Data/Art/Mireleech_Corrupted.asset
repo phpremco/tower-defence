@@ -18,6 +18,7 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 7fd1c76f05d65264ea0ef9c9e7635112, type: 2}
   _secondMaterial: {fileID: 0}
   _lowSecondMaterial: {fileID: 0}
+  _parts: []
   _scale: 1.4
   _yaw: 180
   _bodyCentrePivot: 0
@@ -28,6 +29,8 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
   _clips:
   - _role: 4
     _clip: {fileID: 7954629216147967311, guid: 5a63519fd18614b44a616fca3c9b8f12, type: 3}
@@ -38,6 +41,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 3
     _clip: {fileID: -3149394758432586382, guid: 5a63519fd18614b44a616fca3c9b8f12, type: 3}
     _farClip: {fileID: -4414287319533676242, guid: c076639cdaf708141ae62c1ad2a8debf, type: 3}
@@ -47,6 +55,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 2
     _clip: {fileID: 2727202478642905131, guid: 5a63519fd18614b44a616fca3c9b8f12, type: 3}
     _farClip: {fileID: 4708640887229708404, guid: c076639cdaf708141ae62c1ad2a8debf, type: 3}
@@ -56,6 +69,11 @@ MonoBehaviour:
     _socket: 
     _weight: 0.6
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 1
     _clip: {fileID: 8353763543954305733, guid: 5a63519fd18614b44a616fca3c9b8f12, type: 3}
     _farClip: {fileID: 5011928601301371942, guid: c076639cdaf708141ae62c1ad2a8debf, type: 3}
@@ -65,6 +83,11 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 0
     _clip: {fileID: 4222558684184757034, guid: 5a63519fd18614b44a616fca3c9b8f12, type: 3}
     _farClip: {fileID: -7441706851275012596, guid: c076639cdaf708141ae62c1ad2a8debf, type: 3}
@@ -74,3 +97,8 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+    _momentSeconds: []
+    _burden: []

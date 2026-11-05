@@ -47,6 +47,8 @@ MonoBehaviour:
   _accentColor: {r: 0.8, g: 0.95, b: 1, a: 1}
   _bloodColor: {r: 0.8, g: 0.95, b: 1, a: 1}
   _scale: 0.8
+  _bodyHalfWidth: 0
+  _groundBody: 0
   _shape: 0
   _deathStyle: 2
   _art: {fileID: 11400000, guid: a3bef3b68bb45c74d9895e1e946f61b7, type: 2}

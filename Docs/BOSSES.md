@@ -570,3 +570,33 @@ bar, then ORA and Voss answer in their own dialogue box (fast typing, auto-advan
 (keyboard, mouse, gamepad), at once on a pause; never during a held story box. Later meetings: a bark from the pool. Mid-fight
 barks at the signature moments (`BossMoments`), with Point_Shout on Mercer's upper body, 14 s per boss and 6 s between any two
 (`BarkCooldown`); none while he is down.
+
+## Round 13a: one ribbon per trail, the Sealed One's furrow only behind it (2026-11-05)
+
+**Lava and rot trails are one ribbon** (Remco: the Matriarch's trail was messy in turns, pieces painting over each other, and
+"a row of tiles"). `LavaTrailView` no longer places a `GroundMark.Piece` per patch; it rebuilds ONE ribbon mesh each frame
+from the live patches of the `LavaTrail` ring (oldest first, `SlotInOrder`), Catmull-Rom smoothed (3 samples per patch),
+reaching on to where the boss walks now (`LavaTrail.Head`). U runs along the distance walked (no repeating tiles); vertex
+colour R carries each point's own cooling (`_VertexProgress` on `Game/BossDecal`) and A its fade, so the trail cools along its
+length. The head rounds off over 0.7 of its width, the tail over 1.6 and narrows to 0.4 (UV3 end data). A lift (dive, climb)
+starts a new stretch (`LavaTrail.StartsRun`). Where the ribbon crosses itself (tight turn, U-turn) every pixel is drawn once:
+the trail material sets stencil bit 32 where it draws (`_StencilRef/_StencilComp/_StencilPass`, newest part drawn first so it
+wins) and skips pixels already set; `_ClipBelow` 0.03 keeps faint fringes from claiming pixels. Rotbloom's rot uses the same view.
+
+**The Sealed One opens the ground only where it has been** (Remco: the whole road dug open and lit violet at once looked
+wrong; gates and the hero stood on sunken ground). The up-front violet road (`CrackStyle.Seal` along the whole way), the
+sinking old road (`RoadSink`) and `RecognitionPower.RoadRiseSeconds` are gone; the rumble, the rift, its six cracks, the seal
+crystals and the Rise stay. The furrow (`CrackStyle.Furrow`) opens to the point nearest its pivot (`CrackLineView.AlongNear`,
+searched forward only), half its body width behind it, and pinches to a point over 3 m (`_HeadTaper`). It never runs under a
+structure or the hero: `GroundKeepOut` publishes circles (base 1.6 cells, every gate half the road width, towers and wrecks
+0.6 cells, the hero 0.7 m, each + 0.6 m) as shader globals, and `Game/BossDecal` on a mark with `_KeepOut` ends the mark
+there like a real end (torn taper over 1.4 m, lips flat, nothing inside). Codex signature text and `BossArrival.Rift` updated.
+
+**Base radar** turns about world up (`Spinner.Initialize(speed, true)`; the cutscene `FieldBase` turns dish and crystal about
+the parent's up), so the old base's -90 X node rotation no longer tips it; `RenderersEndingWith` also finds `_LOD1` twins.
+
+**Round-36 attack clips** (`Tools/PlayTest/Scripts/ApplyAttacks36.cs`): `Strike` (Attack, hit frame 10) for Skitter, Prowler,
+Roller, Cragback, Bulwark, Shardback, Shalebat and every bat skin (shared `bat` array), plus their corrupted skins; Skyray
+Dive, Stinger Strike, Mireleech Latch (scale keys on Seg_1..6/Head kept) reimported. Wisp: `Strike_Float` (Attack) and
+`Strike_Ground` (new role `GroundedAttack`), picked by stance in `CreatureClips.Attack`. With an own strike the impact and
+bolt fire on the clip's hit frame (`CreatureClips.StrikeLanded`), falling back to the end of the attack so no blow is lost.

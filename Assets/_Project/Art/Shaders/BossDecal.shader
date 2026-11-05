@@ -32,6 +32,12 @@ Shader "Game/BossDecal"
         _EndTaper ("Rounded ends: length as a multiple of the built one (UV3.x)", Float) = 1
         _EndRagged ("Rounded ends: how torn their edge is", Range(0, 1)) = 0.5
         _EndSoft ("Rounded ends: edge softness (share of the half width)", Range(0.01, 0.5)) = 0.14
+        [MaterialToggle] _VertexProgress ("Progress per vertex (vertex colour R times _Progress)", Float) = 0
+        _ClipBelow ("Discard below this alpha (draw-once marks)", Range(0, 0.5)) = 0
+        [MaterialToggle] _KeepOut ("Break off round the keep-out circles (_GroundKeepOut)", Float) = 0
+        _StencilRef ("Draw-once stencil bit (0: off)", Float) = 0
+        [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp ("Stencil compare", Float) = 8
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilPass ("Stencil pass", Float) = 0
     }
 
     SubShader
@@ -40,6 +46,16 @@ Shader "Game/BossDecal"
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
         Cull Off
+        // A ribbon that crosses itself (a trail through a U-turn) draws each pixel once: it sets its bit where it draws and
+        // skips pixels where the bit is already set (Ref 0 leaves the stencil alone).
+        Stencil
+        {
+            Ref [_StencilRef]
+            ReadMask [_StencilRef]
+            WriteMask [_StencilRef]
+            Comp [_StencilComp]
+            Pass [_StencilPass]
+        }
 
         Pass
         {
@@ -82,7 +98,14 @@ Shader "Game/BossDecal"
             float _EndTaper;
             half _EndRagged;
             half _EndSoft;
+            half _VertexProgress;
+            half _ClipBelow;
+            half _KeepOut;
             CBUFFER_END
+
+            // Ground a mark must leave intact (GroundKeepOut.cs): xy the centre on the ground, z the radius, w the taper length.
+            float4 _GroundKeepOut[48];
+            float _GroundKeepOutCount;
 
             struct Attributes
             {
@@ -108,6 +131,20 @@ Shader "Game/BossDecal"
                 float3 ends : TEXCOORD6;
             };
 
+            // How far a point lies outside the nearest keep-out circle, in that circle's taper lengths (negative inside).
+            float KeepOutAt(float3 positionWS)
+            {
+                float nearest = 10000.0;
+                int count = min((int)_GroundKeepOutCount, 48);
+                for (int i = 0; i < count; i++)
+                {
+                    float4 circle = _GroundKeepOut[i];
+                    nearest = min(nearest, (distance(positionWS.xz, circle.xy) - circle.z) / circle.w);
+                }
+
+                return nearest;
+            }
+
             // How far open this vertex is: the whole strip at _Progress, or ramping in behind the open end.
             half OpenAt(float along)
             {
@@ -124,7 +161,9 @@ Shader "Game/BossDecal"
                 Varyings output;
                 half open = OpenAt(input.path.x);
                 float3 position = input.positionOS.xyz;
-                position.y += _LipHeight * input.path.y * open * _Progress;
+                // Round a structure or the hero the mark ends as if it ended there: it tapers to a torn point and its lips lie flat.
+                float keep = _KeepOut > 0.5 ? KeepOutAt(TransformObjectToWorld(position)) : 10000.0;
+                position.y += _LipHeight * input.path.y * open * _Progress * saturate(keep);
                 // A tearing fissure comes to a point at its open end instead of a square-cut ribbon (UV3: offset from the centre).
                 if (_HeadTaper > 0.0 && _OpenDistance >= 0.0)
                 {
@@ -141,6 +180,10 @@ Shader "Game/BossDecal"
                 output.open = open;
                 output.fog = (half)ComputeFogFactor(positions.positionCS.z);
                 output.ends = input.ends;
+                if (keep < 10000.0)
+                {
+                    output.ends = float3(min(input.ends.z > 0.5 ? input.ends.x : 10000.0, keep * _EndTaper), input.ends.y, 1.0);
+                }
                 return output;
             }
 
@@ -152,6 +195,12 @@ Shader "Game/BossDecal"
                 if (ends.z < 0.5)
                 {
                     return 1.0h;
+                }
+
+                // Past the end (inside a keep-out circle) nothing is drawn.
+                if (ends.x <= 0.0)
+                {
+                    return 0.0h;
                 }
 
                 float t = saturate(ends.x / max(_EndTaper, 0.001));
@@ -192,7 +241,7 @@ Shader "Game/BossDecal"
             {
                 half4 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv) * _Tint;
                 half4 pack = SAMPLE_TEXTURE2D(_GlowMap, sampler_GlowMap, input.uv);
-                half progress = _Progress * input.open;
+                half progress = _Progress * input.open * (_VertexProgress > 0.5h ? input.color.r : 1.0h);
                 half shown = Threshold(pack.g, progress);
                 half ends = EndMask(input.ends, input.positionWS);
                 half alpha = albedo.a * shown * _Fade * input.color.a * ends;
@@ -220,6 +269,8 @@ Shader "Game/BossDecal"
                 half3 colour = MixFog(lit + glow, input.fog);
                 // The glow may outshine a thin coverage at the fissure's edge.
                 alpha = saturate(max(alpha, saturate(dot(glow, half3(0.3h, 0.4h, 0.3h))) * shown * _Fade));
+                // A draw-once mark must not claim a pixel it hardly covers, or it would cut a seam into the trail it crosses.
+                clip(alpha - _ClipBelow);
                 return half4(colour, alpha);
             }
             ENDHLSL

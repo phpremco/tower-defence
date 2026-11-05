@@ -98,10 +98,11 @@ namespace Game.UI
         private Color _coreColour;
         private Light _coreLight;
         private GameObject _corePool;
-        private Transform _crystalSpin;
-        private Quaternion _crystalRest = Quaternion.identity;
-        private Transform _dish;
-        private Quaternion _dishRest;
+        // The turning parts and their rest rotations, near and far twins alike.
+        private Transform[] _crystalSpins = new Transform[0];
+        private Quaternion[] _crystalRests = new Quaternion[0];
+        private Transform[] _dishes = new Transform[0];
+        private Quaternion[] _dishRests = new Quaternion[0];
         private float _dishDegreesPerSecond;
         private Vector3 _coreSocket;
         private float _crystalTop;
@@ -207,15 +208,37 @@ namespace Game.UI
             }
 
             _lastUnfold = progress;
-            if (_dish != null)
-            {
-                _dish.localRotation = _dishRest * Quaternion.AngleAxis(time * _dishDegreesPerSecond, Vector3.up);
-            }
+            Turn(_dishes, _dishRests, time * _dishDegreesPerSecond);
 
             for (int i = 0; i < _builders.Count; i++)
             {
                 PoseBuilder(_builders[i], i, progress, time, visible);
             }
+        }
+
+        // Turns each part about world up (in its parent's axes) through its own pivot: an imported part's own Y carries the
+        // FBX axis conversion (the old base's -90 X), so turning about it tipped the dish over (Remco: horizontal only).
+        private static void Turn(Transform[] parts, Quaternion[] rests, float degrees)
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                Transform part = parts[i];
+                Vector3 up = part.parent != null ? part.parent.InverseTransformDirection(Vector3.up) : Vector3.up;
+                part.localRotation = Quaternion.AngleAxis(degrees, up) * rests[i];
+            }
+        }
+
+        private static Transform[] Transforms(Renderer[] renderers, out Quaternion[] rests)
+        {
+            var parts = new Transform[renderers.Length];
+            rests = new Quaternion[renderers.Length];
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                parts[i] = renderers[i].transform;
+                rests[i] = parts[i].localRotation;
+            }
+
+            return parts;
         }
 
         /// <summary>
@@ -230,10 +253,7 @@ namespace Game.UI
             _crystal.SetColor(EmissionColorId, _crystalLit * (emission / CoreLitEmission));
             _coreLight.intensity = CoreLightIntensity * ignite * pulse;
             _corePool.SetActive(ignite > 0.05f);
-            if (_crystalSpin != null)
-            {
-                _crystalSpin.localRotation = _crystalRest * Quaternion.Euler(0f, time * 20f * ignite, 0f);
-            }
+            Turn(_crystalSpins, _crystalRests, time * 20f * ignite);
         }
 
         /// <summary>
@@ -520,8 +540,8 @@ namespace Game.UI
             _crystalLit = _coreColour * CoreLitEmission;
             Transform crystal = Part("Crystal", parent, BaseModuleFactory.CoreCrystal(), new[] { _crystal }, layout.Core, layout.BaseFacing);
             crystal.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            _crystalSpin = crystal;
-            _crystalRest = crystal.localRotation;
+            _crystalSpins = new[] { crystal };
+            _crystalRests = new[] { crystal.localRotation };
             _coreSocket = crystal.position;
             _crystalTop = 1.2f;
             _crystalParts.Add(new CrystalPart { Transform = crystal, Position = crystal.position, Scale = crystal.localScale });
@@ -568,16 +588,14 @@ namespace Game.UI
             Renderer[] dish = model.RenderersEndingWith(art.TurningModule);
             if (dish.Length > 0)
             {
-                _dish = dish[0].transform;
-                _dishRest = _dish.localRotation;
+                _dishes = Transforms(dish, out _dishRests);
                 _dishDegreesPerSecond = art.TurnDegreesPerSecond;
             }
 
             Renderer[] crystal = model.RenderersEndingWith(art.PulsingModule);
             if (crystal.Length > 0)
             {
-                _crystalSpin = crystal[0].transform;
-                _crystalRest = _crystalSpin.localRotation;
+                _crystalSpins = Transforms(crystal, out _crystalRests);
             }
 
             _crystal = new Material(model.Material) { name = art.PulsingModule };

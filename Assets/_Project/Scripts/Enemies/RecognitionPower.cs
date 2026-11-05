@@ -24,10 +24,8 @@ namespace Game.Enemies
         [Header("The map comes to it")]
         [Tooltip("Where along the main road the ground opens, as a share of its length from the start: early, so it walks past the whole defence (round 9 rose at the centre and skipped it).")]
         [SerializeField] [Range(0f, 0.5f)] private float _riftRoadShare = 0.06f;
-        [Tooltip("Seconds the ground rumbles and cracks before the new road rises and it comes up.")]
+        [Tooltip("Seconds the ground rumbles and cracks before it comes up.")]
         [SerializeField] [Min(0.5f)] private float _riftSeconds = 2.5f;
-        [Tooltip("Seconds the new road takes to light up from the rift to the base.")]
-        [SerializeField] [Min(0.2f)] private float _roadRiseSeconds = 2f;
         [Tooltip("Damage the base takes when it crushes it from above (x the difficulty's structure damage), then per blow.")]
         [SerializeField] [Min(0f)] private float _crushDamage = 120f;
         [Tooltip("Seconds between its blows on the base once it lies on it: the last threat, with time for an answer.")]
@@ -51,7 +49,6 @@ namespace Game.Enemies
         public string[] PhaseLooks => _phaseLooks ?? new string[0];
         public float RiftRoadShare => _riftRoadShare;
         public float RiftSeconds => _riftSeconds;
-        public float RoadRiseSeconds => _roadRiseSeconds;
         public float CrushDamage => _crushDamage;
         public float BaseBlowSeconds => _baseBlowSeconds;
         public ModelClipRole OnBaseStandIn => _onBaseStandIn;

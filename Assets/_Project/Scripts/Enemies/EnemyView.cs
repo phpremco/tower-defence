@@ -1287,6 +1287,13 @@ namespace Game.Enemies
         {
             bool peaking = strike >= 0.5f && _lastStrike < 0.5f;
             _lastStrike = strike;
+            if (_clips != null && _clips.HasOwnStrike)
+            {
+                // The blow lands on the model's own hit frame; should the clip not have reached it by the end of the
+                // attack (cut short, a mechanic took over), it lands then, so a blow is never lost.
+                peaking = _clips.StrikeLanded || (_attackTime > _attackSeconds && (_boltPending || _impactPending));
+            }
+
             if (!peaking)
             {
                 return;

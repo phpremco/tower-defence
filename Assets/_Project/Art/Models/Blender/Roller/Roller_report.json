@@ -37,7 +37,8 @@
     "Death": 36,
     "Curl": 14,
     "Roll": 24,
-    "Uncurl": 14
+    "Uncurl": 14,
+    "Strike": 24
   },
   "walk_distance_per_loop": 0.48,
   "ball_radius": 0.31,
@@ -47,5 +48,45 @@
     "fbx": "Roller_LOD1.fbx",
     "tris": 1700,
     "bones": 14
+  },
+  "round36": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Idle frame 0",
+      "body_bone": "Band_4",
+      "body_travel_at_impact": {
+        "forward": 0.05,
+        "up": -0.0
+      },
+      "body_travel_max": 0.09,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.888,
+          "top": 0.604,
+          "bottom": -0.015
+        },
+        "impact": {
+          "tip_forward": 0.981,
+          "top": 0.606,
+          "bottom": -0.052
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

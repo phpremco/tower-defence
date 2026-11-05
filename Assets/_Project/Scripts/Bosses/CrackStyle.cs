@@ -103,7 +103,7 @@ namespace Game.Bosses
         /// <summary>A crystal giant's cracks of light and its shards' routes lighting up: thin, cold white-blue, no grit.</summary>
         public static CrackStyle Light => new CrackStyle(0.22f, 1.1f, new Color(0.75f, 0.9f, 1f, 1f) * 2.4f, new Color(0.55f, 0.75f, 1f, 1f) * 0.45f, new Color(0.8f, 0.92f, 1f, 0.8f), 0.9f, new Color(0.85f, 0.95f, 1f, 0.6f), 0.2f, 1.2f);
 
-        /// <summary>The new road that rises to the Sealed One's base: a wide violet seam with stone grit where it opens.</summary>
+        /// <summary>The Sealed One's violet seam (its rift cracks): a wide violet seam with stone grit where it opens.</summary>
         public static CrackStyle Seal => new CrackStyle(1f, 2.6f, new Color(0.7f, 0.35f, 1f, 1f) * 2.2f, new Color(0.45f, 0.2f, 0.9f, 1f) * 0.55f, new Color(0.75f, 0.45f, 1f, 0.9f), 1.6f, new Color(0.5f, 0.45f, 0.55f, 0.8f), 1f, 3f).WithMark(BossFxArt.Mark.GroundCrack, 2.6f, 4, new Color(0.62f, 0.3f, 1f, 1f) * 3.2f);
 
         /// <summary>The furrow a hauling body ploughs: dark broken ground with a faint violet glow, grit along it.</summary>

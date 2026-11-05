@@ -2647,3 +2647,18 @@ Not committed.
   the boss's colour as rim light, not a true reflection of the boss.
 - **Try it:** open the project, Boot, dev Story viewer page "Boss arena" (practice) - the intros play there only when the
   session asks for them; in the campaign they play at each continent boss's first appearance.
+
+## Round 13a: continuous lava/rot trails, the Sealed One's furrow behind it, radar axis, round-36 attack clips (2026-11-05)
+
+Not committed.
+- **Trails:** `LavaTrailView` draws one smoothed ribbon per trail (cooling along its length, tapered head and tail, no tiles);
+  self-overlap drawn once via a stencil bit in `Game/BossDecal`. Same for Rotbloom's rot.
+- **The Sealed One:** no violet road or sinking road ahead of it; the furrow opens only behind it with a pointed end, and
+  breaks off round gates, towers, wrecks, the base and the hero (`GroundKeepOut`, shader keep-out circles). Codex text updated.
+- **Base radar:** turns about world up only (works for the old -90 X base and the upright new one; far LOD twins turn too).
+- **Attacks:** round-36 Strike clips imported for nine species and all bat skins (and corrupted skins); Wisp picks
+  Strike_Float or Strike_Ground by stance; the blow's sparks/bolt land on the clip's hit frame.
+- **Checks:** 0 compile errors/warnings; EditMode 477/477 (new `LavaTrail_KeepsItsPatchesInLaidOrder_...`); PlayMode one class
+  at a time (see the round report). Save restored byte-identical (ec2a1f6d) after every Play Mode run; Game view not touched.
+- **Gallery:** `gallery/CinderMatriarch/50-51`, `Rotbloom/50-51`, `SealedOne/50-52`, `Base/50-51`, `Attacks/50-61`.
+- **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Cinder Matriarch, Rotbloom or the Sealed One.

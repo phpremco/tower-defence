@@ -128,15 +128,17 @@ namespace Game.Editor
 
         private static List<BlenderArtEntry> CreateCreatures()
         {
-            var bat = new[] { new BlenderClipSpec("Glide", ModelClipRole.Idle) };
+            // Round 36: every species lunges with a strike of its own (anticipation, stretch, follow-through; hit on frame 10).
+            var strike = new BlenderClipSpec("Strike", ModelClipRole.Attack, 10);
+            var bat = new[] { new BlenderClipSpec("Glide", ModelClipRole.Idle), strike };
             var rows = new List<BlenderArtEntry>
             {
                 // Look numbers below come from play-size screenshots (imp1_*): the small and the dark-red species read too dark
                 // against the night ground, so their albedo is lifted and their glow pushed.
-                new BlenderArtEntry("Skitter", "Skitter") { MoveDistance = 0.36f, Brightness = 1.6f, Emission = 3.5f, Rim = 0.9f },
-                new BlenderArtEntry("Roller", "Roller"),
-                new BlenderArtEntry("Cragback", "Cragback") { DeathFadeFrom = 8, DeathFadeTo = 40 },
-                new BlenderArtEntry("Prowler", "Prowler") { Brightness = 1.45f, Emission = 3.5f, Rim = 0.9f },
+                new BlenderArtEntry("Skitter", "Skitter") { MoveDistance = 0.36f, Brightness = 1.6f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
+                new BlenderArtEntry("Roller", "Roller") { Clips = new[] { strike } },
+                new BlenderArtEntry("Cragback", "Cragback") { DeathFadeFrom = 8, DeathFadeTo = 40, Clips = new[] { strike } },
+                new BlenderArtEntry("Prowler", "Prowler") { Brightness = 1.45f, Emission = 3.5f, Rim = 0.9f, Clips = new[] { strike } },
                 new BlenderArtEntry("Skyray", "Skyray")
                 {
                     Emission = 3.2f,
@@ -144,9 +146,14 @@ namespace Game.Editor
                     Clips = new[] { new BlenderClipSpec("Dive", ModelClipRole.Attack, 10) },
                 },
                 new BlenderArtEntry("Shalebat", "Shalebat") { BodyCentrePivot = true, Clips = bat },
-                new BlenderArtEntry("Wisp", "Wisp") { Bleeds = false },
+                // Round 36: the wisp strikes floating or settled, whichever stance it is in.
+                new BlenderArtEntry("Wisp", "Wisp")
+                {
+                    Bleeds = false,
+                    Clips = new[] { new BlenderClipSpec("Strike_Float", ModelClipRole.Attack, 10), new BlenderClipSpec("Strike_Ground", ModelClipRole.GroundedAttack, 10) },
+                },
                 new BlenderArtEntry("Stinger", "Stinger") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
-                new BlenderArtEntry("Bulwark", "Bulwark") { Clips = new[] { new BlenderClipSpec("Block", ModelClipRole.Block, 7) } },
+                new BlenderArtEntry("Bulwark", "Bulwark") { Clips = new[] { new BlenderClipSpec("Block", ModelClipRole.Block, 7), strike } },
                 // Round 31: the slug strike stretches the body itself (impact frame 10).
                 new BlenderArtEntry("Oozer", "Oozer") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
                 new BlenderArtEntry("Bat", "Bat") { BodyCentrePivot = true, Clips = bat },
@@ -239,7 +246,7 @@ namespace Game.Editor
                 {
                     Emission = 2f,
                     ShedBonesKey = "shard_bones_in_shed_order",
-                    Clips = new[] { new BlenderClipSpec("Shatter", ModelClipRole.Shatter, 3) },
+                    Clips = new[] { new BlenderClipSpec("Shatter", ModelClipRole.Shatter, 3), strike },
                 },
                 new BlenderArtEntry("Mireleech", "Mireleech") { Clips = new[] { new BlenderClipSpec("Latch", ModelClipRole.Attack, 13) } },
 

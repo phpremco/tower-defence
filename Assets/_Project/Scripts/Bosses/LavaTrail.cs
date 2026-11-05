@@ -12,12 +12,15 @@ namespace Game.Bosses
     {
         private readonly Vector3[] _points;
         private readonly float[] _ages;
+        private readonly bool[] _runStarts;
         private readonly float _lifetime;
         private readonly float _spacing;
         private int _next;
         private int _count;
         private Vector3 _last;
         private bool _started;
+        private Vector3 _head;
+        private bool _walking;
 
         public LavaTrail(float lifetime, float spacing, int capacity = 64)
         {
@@ -25,6 +28,7 @@ namespace Game.Bosses
             _spacing = Mathf.Max(0.05f, spacing);
             _points = new Vector3[capacity];
             _ages = new float[capacity];
+            _runStarts = new bool[capacity];
         }
 
         public int Capacity => _points.Length;
@@ -33,6 +37,20 @@ namespace Game.Bosses
         public Vector3 PointAt(int slot) => _points[slot];
 
         public float AgeAt(int slot) => _ages[slot];
+
+        /// <summary>True when the patch in a slot starts a fresh stretch of trail (the first one, or the first after a <see cref="Lift"/>).</summary>
+        public bool StartsRun(int slot) => _runStarts[slot];
+
+        /// <summary>How many slots of the ring have been laid (live or not), for walking them in the order they were laid.</summary>
+        public int Count => _count;
+
+        /// <summary>The slot laid <paramref name="order"/>-th, counted from the oldest still in the ring.</summary>
+        public int SlotInOrder(int order) => (_next - _count + order + _points.Length * 2) % _points.Length;
+
+        /// <summary>Where the boss last walked, ahead of the newest patch, while it is walking (not lifted).</summary>
+        public Vector3 Head => _head;
+
+        public bool IsWalking => _walking;
 
         public bool IsLive(int slot) => slot < _count && _ages[slot] < _lifetime;
 
@@ -48,6 +66,7 @@ namespace Game.Bosses
         {
             _count = 0;
             _next = 0;
+            _walking = false;
             _started = false;
         }
 
@@ -55,11 +74,14 @@ namespace Game.Bosses
         public void Walk(Vector3 at)
         {
             at.y = 0f;
+            _head = at;
+            _walking = true;
             if (_started && (at - _last).sqrMagnitude < _spacing * _spacing)
             {
                 return;
             }
 
+            _runStarts[_next] = !_started;
             _started = true;
             _last = at;
             _points[_next] = at;
@@ -71,7 +93,11 @@ namespace Game.Bosses
         }
 
         /// <summary>A break in the trail (it dived, it climbed): the next patch starts afresh.</summary>
-        public void Lift() => _started = false;
+        public void Lift()
+        {
+            _started = false;
+            _walking = false;
+        }
 
         public void Step(float deltaTime)
         {

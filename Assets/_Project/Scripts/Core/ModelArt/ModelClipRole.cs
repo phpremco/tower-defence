@@ -221,5 +221,8 @@ namespace Game.Core
 
         /// <summary>Lowering the aimed weapon and breathing out (the cue: lowered), played once.</summary>
         LowerWeapon = 72,
+
+        /// <summary>The strike of a creature settled on the ground (a grounded wisp); <see cref="Attack"/> is its floating one.</summary>
+        GroundedAttack = 73,
     }
 }

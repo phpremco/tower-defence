@@ -182,7 +182,7 @@ namespace Game.Editor
                 WakeGlow = new Color(0.7f, 0.4f, 1f, 0.9f),
                 BodyHalfWidth = 2.4f,
                 Gates = GateBehaviour.Besiege,
-                SignatureText = "It does not come to you: the ground near the start of the road cracks open, the road sinks and a new road of violet light runs from the rift to your base. It rises out of the rift and hauls itself down that road past your whole defence, biting through your gates, and climbs onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
+                SignatureText = "It does not come to you: the ground near the start of the road cracks open and it rises out of the rift. It hauls itself down your road past your whole defence, ploughing a violet furrow behind it, biting through your gates, and climbs onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
                 TelegraphText = "The ground rumbles and violet cracks open near the start of the road before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.",
                 CounterText = "Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.",
                 HoldResultForDeath = true,

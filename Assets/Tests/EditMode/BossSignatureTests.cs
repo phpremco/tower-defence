@@ -121,6 +121,34 @@ namespace Game.Tests
         }
 
         [Test]
+        public void LavaTrail_KeepsItsPatchesInLaidOrder_AndMarksWhereAStretchStarts()
+        {
+            // The ribbon view walks the ring oldest first and breaks it where the boss lifted (dived, climbed).
+            var trail = new LavaTrail(6f, 0.5f, 4);
+            trail.Walk(new Vector3(0f, 0f, 0f));
+            trail.Walk(new Vector3(1f, 0f, 0f));
+            trail.Lift();
+            Assert.IsFalse(trail.IsWalking);
+            trail.Walk(new Vector3(5f, 0f, 0f));
+            trail.Walk(new Vector3(6f, 0f, 0f));
+            trail.Walk(new Vector3(7f, 0f, 0f));
+            Assert.AreEqual(4, trail.Count, "the ring holds four");
+            float[] xs = new float[4];
+            bool[] starts = new bool[4];
+            for (int k = 0; k < 4; k++)
+            {
+                int slot = trail.SlotInOrder(k);
+                xs[k] = trail.PointAt(slot).x;
+                starts[k] = trail.StartsRun(slot);
+            }
+
+            CollectionAssert.AreEqual(new[] { 1f, 5f, 6f, 7f }, xs, "oldest first; the first patch was overwritten");
+            CollectionAssert.AreEqual(new[] { false, true, false, false }, starts, "a new stretch after the lift");
+            Assert.IsTrue(trail.IsWalking);
+            Assert.AreEqual(7f, trail.Head.x, 0.001f);
+        }
+
+        [Test]
         public void Gate_FreezesIntoABlock_ThawsOnRepair_AndShattersIntoAWreck()
         {
             Tower gate = Gate(out GameObject go);

@@ -105,7 +105,8 @@ namespace Game.Levels
         {
             foreach (Renderer renderer in model.RenderersEndingWith(art.TurningModule))
             {
-                renderer.gameObject.AddComponent<Spinner>().Initialize(art.TurnDegreesPerSecond);
+                // The FBX axis conversion sits in the part's own rotation: it turns around world up (Remco: horizontal only).
+                renderer.gameObject.AddComponent<Spinner>().Initialize(art.TurnDegreesPerSecond, true);
             }
         }
 

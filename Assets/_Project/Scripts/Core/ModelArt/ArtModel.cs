@@ -13,6 +13,8 @@ namespace Game.Core
     public sealed class ArtModel
     {
         private const string FarSuffix = "_Far";
+        // A far twin that kept its export name (the far LOD from a file of its own).
+        private const string SourceFarSuffix = "_LOD1";
 
         // The far LOD stays drawn however small the model gets.
         private const float FarLodScreenHeight = 0.0005f;
@@ -140,7 +142,7 @@ namespace Game.Core
             var found = new List<Renderer>(2);
             foreach (Renderer renderer in Renderers)
             {
-                if (renderer.name.EndsWith(suffix) || renderer.name.EndsWith(suffix + FarSuffix))
+                if (renderer.name.EndsWith(suffix) || renderer.name.EndsWith(suffix + FarSuffix) || renderer.name.EndsWith(suffix + SourceFarSuffix))
                 {
                     found.Add(renderer);
                 }

@@ -35,7 +35,9 @@
     "Land": 24,
     "Grounded": 60,
     "Hit": 12,
-    "Death": 30
+    "Death": 30,
+    "Strike_Float": 24,
+    "Strike_Ground": 24
   },
   "pivot": "ground",
   "float_height": 0.42,
@@ -45,5 +47,82 @@
     "fbx": "Wisp_LOD1.fbx",
     "tris": 999,
     "bones": 7
+  },
+  "round36": {
+    "Strike_Float": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Float frame 0",
+      "body_bone": "Core",
+      "body_travel_at_impact": {
+        "forward": 0.08,
+        "up": -0.07
+      },
+      "body_travel_max": 0.106,
+      "root_moves": false,
+      "feet_planted": false,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.271,
+          "top": 0.795,
+          "bottom": -0.012
+        },
+        "impact": {
+          "tip_forward": 0.354,
+          "top": 0.75,
+          "bottom": -0.037
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike_Float\", ModelClipRole.Attack, 10)"
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)",
+    "Strike_Ground": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Grounded frame 0",
+      "body_bone": "Core",
+      "body_travel_at_impact": {
+        "forward": 0.04,
+        "up": -0.04
+      },
+      "body_travel_max": 0.057,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.405,
+          "top": 0.428,
+          "bottom": -0.024
+        },
+        "impact": {
+          "tip_forward": 0.412,
+          "top": 0.379,
+          "bottom": -0.024
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike_Ground\", ModelClipRole.Attack, 10)"
+    }
   }
 }

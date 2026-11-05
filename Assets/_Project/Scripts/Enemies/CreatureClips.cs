@@ -25,6 +25,7 @@ namespace Game.Enemies
         private readonly int _idle;
         private readonly int _hit;
         private readonly int _attack;
+        private readonly int _groundedAttack;
         private readonly int _block;
         private readonly int _curl;
         private readonly int _roll;
@@ -53,6 +54,7 @@ namespace Game.Enemies
             _idle = art.IndexOf(ModelClipRole.Idle);
             _hit = art.IndexOf(ModelClipRole.Hit);
             _attack = art.IndexOf(ModelClipRole.Attack);
+            _groundedAttack = art.IndexOf(ModelClipRole.GroundedAttack);
             _block = art.IndexOf(ModelClipRole.Block);
             _curl = art.IndexOf(ModelClipRole.Curl);
             _roll = art.IndexOf(ModelClipRole.Roll);
@@ -73,6 +75,9 @@ namespace Game.Enemies
 
         /// <summary>True when the model has a strike clip of its own (a sting, a tail lash).</summary>
         public bool HasOwnStrike => _attack >= 0;
+
+        /// <summary>True on the frame the model's own strike reaches its hit frame (where the blow lands).</summary>
+        public bool StrikeLanded => _eventClip >= 0 && (_eventClip == _attack || _eventClip == _groundedAttack);
 
         /// <summary>True while a boss mechanic plays its own clips: the cycle choice and pending strikes wait.</summary>
         public bool Scripted { get; set; }
@@ -143,21 +148,23 @@ namespace Game.Enemies
         /// <summary>The creature's own strike, timed so its hit frame falls a peak delay after now.</summary>
         public void Attack(float peakDelay)
         {
-            if (_attack < 0)
+            // A settled floater strikes from the ground (its own clip starts on the grounded pose), otherwise the floating one.
+            int attack = _landed && _groundedAttack >= 0 ? _groundedAttack : _attack;
+            if (attack < 0)
             {
                 return;
             }
 
-            float lead = _art.Clips[_attack].EventSeconds;
+            float lead = _art.Clips[attack].EventSeconds;
             if (lead <= peakDelay)
             {
-                _pending = _attack;
+                _pending = attack;
                 _pendingDelay = peakDelay - lead;
                 _pendingStart = 0f;
                 return;
             }
 
-            _player.PlayOnce(_attack, lead - peakDelay);
+            _player.PlayOnce(attack, lead - peakDelay);
         }
 
         /// <summary>
