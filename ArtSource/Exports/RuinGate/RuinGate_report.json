@@ -1,0 +1,81 @@
+{
+  "asset": "RuinGate",
+  "round": 28,
+  "game_tris": 6400,
+  "source_tris": 2110180,
+  "bones": 11,
+  "texture_size": 1024,
+  "low_texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "RuinGate_Mat",
+  "uv": {
+    "islands": 230,
+    "folded_fallback_faces": 2028,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.561,
+    "world_per_uv": 16.144344513853856
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 44.8,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 76.9,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Closed_Idle": 72,
+    "Open": 160,
+    "Opened_Idle": 72
+  },
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Seal",
+    "Seal_1",
+    "Seal_2",
+    "Seal_3",
+    "Seal_4"
+  ],
+  "size_m": [
+    8.677,
+    2.177,
+    7.768
+  ],
+  "pivot": "centre of the threshold on the ground; the gate faces -Y in Blender (Unity +Z after the FBX axis conversion): the giant walks out towards -Y",
+  "opening_m": {
+    "width": 4.0,
+    "height": 4.3,
+    "note": "The Shattered (3.4 x 5.3 x 3.6) fits"
+  },
+  "clips_info": {
+    "Closed_Idle": {
+      "frames": 72,
+      "loop": true,
+      "note": "dormant: the seal knot breathes"
+    },
+    "Open": {
+      "frames": 160,
+      "loop": false,
+      "seal_crack_frame": 30,
+      "first_light_frame": 38,
+      "swing_start_frame": 52,
+      "fully_open_frame": 130,
+      "note": "the first and only opening; rumble 0-30 (camera shake, dust off the voussoirs), crack: the knot collapses and four seal shards fly (flash + shard burst at Seal), first light: the seams open (raise the emission and a point light inside), the petals swing back bottom first; spawn the giant in the flash at first_light or when fully open"
+    },
+    "Opened_Idle": {
+      "frames": 72,
+      "loop": true,
+      "note": "stays open for the rest of the level"
+    }
+  },
+  "emission": "magenta glyph grooves, jamb seams, petal rims and sigil, crystals; suggested _EmissionColor strength 0.6 while closed (dormant), ramp to 2.5 from first_light to fully_open, then 1.6"
+}

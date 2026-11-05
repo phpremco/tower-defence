@@ -407,6 +407,10 @@ def main():
     boss.scale_bones += [f"Armour_{i + 1}" for i in range(len(PLATES))] + [f"Icicle_{i + 1}" for i in range(ICICLES)]
     asset, lod = build_armour(boss)
     ad, depth = key_all(boss)
+    # Round 29: the round-16 clips never keyed the armour plates and icicles, so the FBX exporter baked them with the
+    # pose the previous clip left (Armour_Break's end: plates at scale 0). Key them at 1; only Armour_Break removes them.
+    boss.hold(list(BW.CLIPS), {n: 1.0 for n in [f"Armour_{i + 1}" for i in range(len(PLATES))] +
+                               [f"Icicle_{i + 1}" for i in range(ICICLES)]})
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "ice (water under an ice sheet)", "submerged_depth_m": depth,
                  "ice_armour": {"object": ARMOUR, "material": f"{ARMOUR}_Mat", "maps": f"{ARMOUR}_*.png (512, Low 256)",

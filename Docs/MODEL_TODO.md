@@ -765,3 +765,57 @@ Alles uit de ronde-28-exports is geïmporteerd (Rotbloom met RotSporePod, RotOve
 | Gedempt-icoon op de bossbalk | Het torenicoon is de HUD-kaartfoto, grijs getint. Een eigen "gedempt"-overlay (doorgestreepte ring) uit de UI-set zou duidelijker zijn |
 
 Opgelost in ronde 4c: "Cinder Matriarch in de Codex" (ronde 4b) lag niet aan de pivot maar aan de podiumcamera, die haar in de bind-pose en met de verre LOD mat; Unity meet nu de geposeerde nabije LOD.
+
+### Ronde 29 (ontbrekende baas-art voor ronde 4a/4b/4c, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 29.
+
+**Afgehandeld uit de lijsten van ronde 4a/4b/4c:**
+
+- Ronde 4a:
+  - Boorinstallatie: `Cutscene_Drill_Wreck`.
+  - Scheurlijn: `BossFX_GroundCrack`.
+  - Wake: `BossFX_DiveWake_*` voor water, lava, veen, drijfzand en ijs.
+- Ronde 4b:
+  - Frost Warden-clips: de pantserplaten staan op schaal 1 in alle oude clips. `BoneScaleView` mag weg.
+  - Lavaspoor: `BossFX_LavaTrail`.
+  - Rijp/vorst: `BossFX_FrostCreep`.
+  - IJsblok-poort: `Gate_IceBlock`. De scherven-VFX bij het breken is nog open.
+- Ronde 4c:
+  - Verzegelde ruïnepoort: `RuinGate` met Open en Opened_Idle.
+  - Scherven klimmen: Climb_* voor ShardRunner en ShardCrawler.
+  - Rotbloom-rotspoor: `BossFX_RotTrail`.
+  - Groene waas: `BossFX_SporeCloud`.
+  - Overgroeide pad bij branden: `BossFX_VineBurn`.
+  - Voor van the Sealed One: `BossFX_Furrow`.
+  - Oude weg zakt: `BossFX_RoadSink`. Een terreinstrook die oprijst is nog open.
+  - Verzegelde kristallen: `SealCrystal` A/B/C met een witte emissiemasker.
+  - Sealed One op de basis: `OnBase_Loop`.
+  - Leeggezogen poort: `Gate_Drained_Emission` en `Tower_GateGun_Drained_Emission`.
+  - Gedempt-icoon: `UI_Dampened`.
+  - The Shattered split/rejoin-flits: `BossFX_ShardFlash`.
+
+Ook gevonden en opgelost: bij the Sealed One stonden `Seal_1..7` en `Rubble` in elke clip op schaal 0, ook in Rise. Nu zijn ze alleen in Rise zichtbaar.
+
+**Nog open uit ronde 4a/4b/4c:**
+
+- Geworpen toren: een "ontworteld"-pose.
+- Hittedraad-sheet.
+- Een "verhit"-overlay op het torenmateriaal.
+- Smallere Hunt_Stride.
+- Kruipende Rotbloom-wortels.
+- Een terreinstrook die oprijst voor de nieuwe weg.
+- Ijsscherven-VFX.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Scherven klimmen | Eén randhoogte (1,0 m). De ShardRunner springt er in 32 frames op; zijn achtervoet zweeft op frame 0, dus de overgang vanuit Walk is niet exact. De ShardCrawler doet er 3,1 s over. De klim-verplaatsing zit op het Root-bot (Unity heeft geen root-motion-node, dus dat werkt) |
+| OnBase_Loop | Twee slagen per lus (frames 34 en 82). Adapt op de basis heeft nog geen eigen clip |
+| Zegelstenen | Ze verdwijnen in één keer bij de overgang van Rise naar Walk (ze hangen aan Root). Een losse zegelprop bij de scheur zou mooier zijn |
+| RuinGate | De buitenmaat is 8,7 m breed: schaal hem op een kleine kaart naar ~0,8. Open bladen lezen van voren als platte donkere platen. Er is geen licht in de opening (dat doet Unity met de flits) |
+| SealCrystal | Spits A is een vrij gladde kegel, B is eenvoudig |
+| Gate_IceBlock | Gemaat op G3, dus veel ijs boven G1. Het scheurpatroon op de voet is druk. De doorschijnendheid hangt af van de albedo-alpha in Unity |
+| Drill wreck | De weggeslingerde boorkop leest een beetje als een torpedo. Het motorhuis houdt zijn cyaan raamgloed |
+| Decals | Het hete lavaspoor gloeit nog over een groot deel van zijn scheurnet: begin op cool 0,2. De schimmelringen in het rotspoor zijn even groot. Vorst bestaat alleen uit ronde cellen. De tegels herhalen om de 5-14 m: geef elk stuk een willekeurige U-offset |
+| Flipbooks | De V-armen van de waterkielzog lezen klein als twee strepen. Rejoin is de Split-sheet achterstevoren. Sporenwolk en rankbrand zijn naar de camera gerichte sheets |
+| Gedempte poort | Een rekenkundige variant van de bestaande emissie. Nog niet op het model bekeken |

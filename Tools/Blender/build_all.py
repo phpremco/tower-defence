@@ -81,6 +81,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 26: menu diorama (places the exports above) and the underground cave kit and eyes.
            "build_menu_diorama.py", "build_underground.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.
+           # Round 29: boss props (ruin gate, seal crystals, ice block, drill wreck, drained maps), then the boss
+           # decals, flipbooks and the dampened HUD overlay. Needs gate, towers, cutscene and cutscene_fx above.
+           "build_bosses29_props.py", "build_bosses29_fx.py",
            "build_env_diorama.py"]
 
 for script in SCRIPTS:

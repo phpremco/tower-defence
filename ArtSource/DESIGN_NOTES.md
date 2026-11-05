@@ -2548,3 +2548,80 @@ every clip, which this round did not take on.
 - Rooted_Idle sinks the feet 0.2 into the ground; on a bog surface that is right, on hard ground it would clip.
 - The ice armour covers the Warden's seal glyph in the armoured phase (deliberate: the glyph is revealed when the
   armour breaks), but the armoured Warden is less amber at play size.
+
+## Round 29: missing boss art (2026-11-05)
+
+**Scale fix.** Bones that a clip does not key are baked by the FBX exporter with the pose the previous clip left
+behind. The round-28 bones were added after the round-16 clips existed: the Frost Warden's armour plates, the
+Sealed One's seal stones and its rubble ring. So the round-16 clips came out with them at scale 0, depending on
+export order. Every clip now keys them explicitly. The Sealed One shows its seal only in Rise; that is the one
+clip that starts at the seal now that it moves around.
+
+**Shard climbs.** The shards reuse the bosses' generic climb (planted feet over a ledge, pivot fixed, end offsets
+in the report) with three changes for small, fast bodies:
+
+- The body ramp starts later (lead 0.3-0.5 instead of 1.1). Otherwise the body was already lifting on frame 0.
+- The runner, a biped whose two hips sit side by side, takes only half the climb pitch. Its full pitch made it rear
+  up about 55 degrees.
+- The runner's ledge face moves 0.6 further out, because its long stride swings the front foot past the default
+  face and frame 0 would have stood on the top.
+
+The travel is keyed on Root: a few fused vertices are skinned to Root and stretched back to the pivot (seen in the
+first crawler strip as a magenta streak). The runner reads as a vault, the crawler as a spider tipping over a
+step.
+
+**OnBase_Loop.** It starts in Rise_OntoBase's last pose so the hand-over needs no blend. Two alternating hammer
+blows per loop: the hand goes up and back while the torso rears against it, then both come down together, so the
+blow reads from the top-down camera as a lunge onto the roof, not just an arm moving.
+
+**Props.**
+
+- **RuinGate:** reads as old and alien rather than as a door. A pointed arch of eleven pale-granite voussoirs (the
+  Southern Crown granite and the Shattered's palette) carries eroded glyph grooves, so the magenta light burns
+  unevenly instead of like a neon sign. Leaning buttresses are split by overcharge crystals, and three crystal
+  horns on the crown mark it from the top-down camera.
+  - The seal is an iris of five black-glass petals with concentric sigil rings and a crystal knot in the centre.
+  - Opening breaks the knot and folds the petals back like a flower, the bottom one flat onto the ground.
+- **SealCrystal:** a neutral lilac-grey body with a white glow mask and dimmed flutes, so the facets still show once
+  Unity tints them to the immune type.
+- **Ice block:** grown, hewn chunks with white fracture planes painted into the alpha, and five-sided frost prisms
+  (twisted spikes read as drill bits).
+- **Drill wreck:** reuses the colony derrick's own pieces, snapped at the first brace level and folded over
+  Gravemaw's heave, with its crystals breaking through the ground as the story hint.
+
+**2D set.** The decals are painted as height fields lit from the top-left, like the baked meshes, with the glow in a
+separate mask.
+
+- **Threshold:** one G threshold per decal turns the stand-ins' fades into motion. Lava cools from the edges to the
+  channel, the crack opens out from the fissure, frost creeps along 60-degree fern branches, rot decays from the
+  edges, and the old road sinks from its middle.
+- **Colours:** each boss keeps its colour: lava orange, rot green, frost ice-blue, violet seep for the Sealed One.
+- **Plates:** warped Voronoi cells keep the plate networks from tiling into a honeycomb.
+- **Flipbooks:** they follow the round-20 CG and LIT packs, so the existing VFX shader recipes apply.
+
+### Honest weak points
+
+- **Shard climbs:**
+  - One ledge height (1.0 m). The runner's vault is fast (32 frames); its rear foot is mid-swing at frame 0, so the
+    hand-over from Walk is not exact.
+  - The crawler's Climb_Up and Climb_Down are long (93 frames, 3.1 s); Unity may play them faster.
+- **OnBase_Loop:** the lifted hand is partly hidden behind the torso from the side, but reads clearly from the game
+  camera. Adapt on the base still has no clip of its own.
+- **Sealed One seal:** the seal stones pop out at the Rise -> Walk switch, because they ride on Root; a static seal
+  prop left at the rift would be cleaner.
+- **RuinGate:**
+  - The outer footprint is 8.7 m wide; scale it to about 0.8 on small maps.
+  - Seen from the front, the opened petals read as flat dark slabs.
+  - There is no light inside the opening (Unity's flash).
+- **SealCrystal:** spire A is a fairly smooth cone.
+- **Gate_IceBlock:** it is sized for G3 (a lot of ice over G1), and the apron's crack pattern is busy.
+- **Drill wreck:** the thrown drill bit reads a bit like a torpedo, and the motor house keeps its cyan window
+  glow.
+- **Drained maps:** a numeric transform, not rendered on the models.
+- **2D set:**
+  - The hot lava trail glows over much of its crack net until it has cooled a little.
+  - The rot trail's mould rings are even in size, so it reads spotted.
+  - Frost has radial cells only, no strip.
+  - The water wake's V arms can read as two streaks.
+  - Rejoin is the Split sheet reversed.
+  - The decal tiles repeat every 5-14 m: give each piece a random U offset.

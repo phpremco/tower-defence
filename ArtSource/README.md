@@ -2421,3 +2421,173 @@ Not edited here (shared). Lines to add right after the round-16 continent bosses
            "build_shattered2.py", "build_gravemaw_mech.py", "build_cindermatriarch_mech.py",
            "build_frostwarden_mech.py", "build_rotbloom_mech.py", "build_shattered_mech.py", "build_sealedone_mech.py",
 ```
+
+## Round 29: missing boss art for Unity's round 4a/4b/4c (2026-11-05)
+
+Brief: the Blender items in `Docs/MODEL_TODO.md` "Ronde 4a/4b/4c Unity". Design notes in `DESIGN_NOTES.md` (round
+29). Nothing is imported into Unity. New scripts: `build_bosses29_props.py` (ruin gate, seal crystals, gate ice
+block, drill-rig wreck, drained gate emission), `build_bosses29_fx.py` (ground decals, flipbooks, the dampened HUD
+overlay), `check_clip_scales.py` (QA). Changed: `build_shattered_mech.py` (shard climbs, `--only-shards`),
+`build_sealedone_mech.py` (OnBase_Loop, seal keys), `build_frostwarden_mech.py` (armour keys) and
+`boss_mech_kit.py` (`Boss.hold` / `hold_scale`).
+
+### Clip scale fix (Frost Warden, Sealed One)
+
+The FBX exporter bakes a bone that a clip does not key with whatever pose the previous clip left behind. Bones
+added after a clip existed therefore came out at scale 0:
+
+- **Frost Warden:** `Armour_1..8` were at scale 0 in Walk, WalkEnraged, Idle, Hit, Death, Enrage and FreezePulse.
+  These clips now key the plates and `Icicle_1..5` at 1. Armour_Break is the only clip that removes the plates.
+  Unity's `BoneScaleView` workaround can go.
+- **Sealed One:** `Seal_1..7` and `Rubble` were at scale 0 in every clip, Rise included. They are now keyed in
+  every clip: scale 1 in **Rise** only (the stones burst at frame 22, as built in round 16), 0.001 everywhere
+  else. That includes Idle, Summon, Hit and Death, which are now played away from the seal.
+
+`boss_mech_kit.Boss.hold(clips, {bone: scale})` writes those constant keys into the full and LOD actions.
+`check_clip_scales.py -- --fbx <path> [--bones Armour_,Seal_]` re-imports an FBX and lists the bones whose scale is
+not 1, per clip. Run it after any rig change. The other bosses are as intended: Gravemaw's `Debris_*` stay hidden
+outside their bursts, and Cinder, Rotbloom and Shattered scale only what their clips key.
+
+### Shard climbs (`build_shattered_mech.py -- --only-shards`)
+
+ShardRunner and ShardCrawler get Climb_Up, Climb_Loop and Climb_Down over a **1.0 m** ruin ledge. They follow the
+round-28 boss conventions. The ShardFlyer does not climb. The facts are in `<Shard>_report.json` → `round29`.
+
+| Shard | Clip | Frames | Loop | Facts |
+| --- | --- | --- | --- | --- |
+| ShardRunner | Climb_Up | 32 | no | face 1.15 ahead; end offset 2.62 fwd, +1.0; a crouched vault, one stride onto the top |
+| ShardRunner | Climb_Loop | 26 | yes | 2.10 per loop, low and wide on the top |
+| ShardRunner | Climb_Down | 32 | no | lip 1.15 ahead; end offset 2.62 fwd, -1.0 |
+| ShardCrawler | Climb_Up | 93 | no | face 1.25 ahead; end offset 3.60 fwd, +1.0; front legs reach up the face, body tips over the lip |
+| ShardCrawler | Climb_Loop | 34 | yes | 0.80 per loop |
+| ShardCrawler | Climb_Down | 93 | no | lip 1.25 ahead; end offset 3.60 fwd, -1.0 |
+
+- **Transform:** the pivot is authored fixed. On the last frame, move the transform by the end offset.
+- **Root bone:** unlike the bosses, the climb travel is keyed on the **Root bone**. A few fused vertices are
+  weighted to Root and would otherwise stay behind. That is safe in Unity: the importer sets no root motion node
+  and `applyRootMotion` is off, so Root plays as an ordinary bone.
+- **Markers:** there are no IK markers on the shards (baked clips plus a slope tilt, as for the bosses).
+- **Rebuild:** the run rebuilds and re-bakes all three shards, the flyer unchanged.
+
+### Sealed One `OnBase_Loop` (`build_sealedone_mech.py`)
+
+| Clip | Frames | Loop | Events |
+| --- | --- | --- | --- |
+| OnBase_Loop | 96 | yes | strike frames **34** (left lower hand) and **82** (right) |
+
+- **Pose:** frame 0 (= the last frame) is Rise_OntoBase's last pose at the same transform, so Unity switches into
+  the loop straight from that clip.
+- **Motion:** each hand is pulled up and back, the torso rears into it, then the hand slams onto the roof and the
+  torso drops onto it. Put the base hit, dust and a camera kick on each strike frame. The rings make one full turn
+  per loop.
+- **Adapt:** on the base it still has no clip of its own. Play Adapt, or keep the loop running.
+
+### Props (`build_bosses29_props.py`)
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_bosses29_props.py -- [--preview <dir>]
+[--norender] [--nobake] [--only RuinGate,SealCrystal,IceBlock,DrillWreck,Drained]` (about 6-7 minutes). It reuses
+`build_cutscene.Drill` pieces in code and reads the shipped gate emission maps, so it runs after `build_gate.py`,
+`build_towers*.py` and `build_cutscene.py`.
+
+| Asset | Contents | Maps | Size (m) | Pivot |
+| --- | --- | --- | --- | --- |
+| `RuinGate/RuinGate.fbx` | `RuinGate` 6,385 tris, `RuinGate_Rig` 11 bones (Root, Seal, Seal_1..4, Petal_1..5) | 1024 (Low 512) | 8.68 x 2.18 x 7.77; opening 4.0 wide x 4.3 high | threshold centre on the ground; the giant walks out towards Blender -Y (Unity +Z) |
+| `SealCrystal/SealCrystal.fbx` | `SealCrystal_A` 1,644 (spire in a collar), `_B` 881 (cluster in a socket), `_C` 1,674 (crystal in three claws); one shared material, static | 512 (Low 256) | ~1.0 x 0.9 x 1.35-1.68 | centre on the ground |
+| `Gate_IceBlock/Gate_IceBlock.fbx` | 2,398 tris, static; Albedo RGBA (alpha = opacity) | 512 (Low 256) | 3.65 x 2.07 x 2.56; encloses Gate_G1..G3 | road centre on the ground, like the Gate prefab |
+| `Cutscene_Drill_Wreck/Cutscene_Drill_Wreck.fbx` | 4,716 tris, static, tower-kit self-bake | 1024 (Low 512) | 7.81 x 4.16 x 2.67 | rig deck centre, like `Cutscene_Drill` (swaps in place) |
+| `Gate/Gate_Drained_Emission.png`, `Tower_GateGun/Tower_GateGun_Drained_Emission.png` (+ `Low/`) | same atlas as the shipped emission | | | |
+
+**RuinGate clips** (`RuinGate_Rig|<clip>`). Scale keys: `Seal`, `Seal_1..4`.
+
+| Clip | Frames | Loop | Events |
+| --- | --- | --- | --- |
+| Closed_Idle | 72 | yes | the seal knot breathes |
+| Open | 160 | no | rumble 0-30; **seal_crack 30** (the knot collapses, four seal shards fly and vanish by 48); **first_light 38** (seams open); **swing_start 52** (petals fold back 98 degrees, bottom first and flat at 88); **fully_open 130**; settles to 160 |
+| Opened_Idle | 72 | yes | open petals sway; seal at scale 0 |
+
+Unity notes:
+
+- **RuinGate:** import like CinderEgg, at scale 1.
+  - Emission (magenta glyph grooves, seams, sigil, crystals): about 0.6 while closed, rising to about 2.5 from
+    first_light to fully_open, then about 1.6.
+  - Put a flash and point light inside the opening at first_light and a shard burst at the `Seal` bone at
+    seal_crack. The giant appears in that flash.
+- **SealCrystal:** the emission map is a **white mask**. Set `_EmissionColor` to the immune tower's colour x ~2.4;
+    dormant lilac (0.62, 0.45, 1.0) x 1.6; Release white x 3. Place 3-5 round the rift at any yaw, scale 0.8-1.2.
+- **Gate_IceBlock:** alpha-blended with depth write, drawn after the gate, on the gate's own transform.
+  - Albedo alpha runs from 0.35 in clear ice to 0.95 in the fractures. Smoothness is in Mask G; the faint crack
+    emission is about x 1.2.
+  - Show it at the Freeze_Gate cast (scale 0.9 to 1 over 0.3 s). Hide it with an ice-shard burst on
+    Shatter_Through. It replaces the `Liquid_Ice` cube.
+- **Cutscene_Drill_Wreck:**
+  - The shape: the derrick snaps at 1.3 m and folds about 110 degrees over the +X legs (angle in the report).
+    Pipes, rubble and three Crysium crystals lie in the heave, and the glow is dead apart from a few embers.
+  - At Gravemaw's smash frame, hide `Cutscene_Drill` and show the wreck in the dust, yawed with the top away from
+    the hole.
+- **Drained gate:** while a gate is drained, swap `_EmissionMap` to the `*_Drained_Emission` maps (lit texels at
+  14 %, an uneven flicker pattern, a faint violet residue). Swap back when the gate recovers.
+
+### Boss decals, flipbooks and the dampened icon (`build_bosses29_fx.py`)
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_bosses29_fx.py -- [--preview <dir>]
+[--only decals,sheets,icon,previews]` (about 2 minutes; numpy, plus one Cycles render for the icon). Files go to
+`ArtSource/Exports/Boss_FX/` (+ `Low/` at half size) with `Boss_FX_report.json`: per file the size, layout, use,
+colour space, wrap, threshold, tint and what it replaces. The icon goes to `ArtSource/Exports/UI/UI_Dampened.png`
+(+ `@2x`); the existing atlases are unchanged.
+
+Conventions:
+
+- **Decals** have two files:
+  - `BossFX_<Name>_Albedo.png`: sRGB, straight alpha = coverage, top-left light baked in.
+  - `BossFX_<Name>_Emission.png`: sRGB off. **R** glow mask, **G** a progress threshold, B 0, A 1.
+- **Strips** are 1024 x 256. U runs along the path (Repeat), V runs across (Clamp, soft edges). Use LineRenderer
+  Tile mode, or quads with a random U offset.
+- **Flipbooks** are 4 x 4 frames of 256 (1024), sRGB off, frame 0 top-left. Two packs:
+  - CG pack (additive, tinted): R core, G glow, B extra, A coverage.
+  - LIT pack (the round-20 Acid_Splash recipe): R lit shading x A, G thickness/heat, B specular, A alpha.
+
+| File | Size / layout | Use | Threshold / tint | Replaces |
+| --- | --- | --- | --- | --- |
+| BossFX_LavaTrail | strip, 1.4 m wide, 5.6 m per tile | Cinder Matriarch trail: basalt plates, ropy flow, glowing cracks, molten channel | G = heat: lit while G > cool (0 to 1 over 6 s; the edges cool first). Emission (1, 0.35, 0.08) x 3 | LavaTrailView glow pools |
+| BossFX_GroundCrack | strip, 2 m wide, 8 m per tile | Gravemaw crack line / entrance: fissure, molten core, heaved plates | show where G > 1 - open. Emission (1, 0.42, 0.1) x 3-4 | MarkerKind.GlowBlade seam (also CrackStyle.Heat) |
+| BossFX_Furrow | strip, 3 m wide, 12 m per tile | Sealed One haul: dark trench, drag scratches, heaved lips, dust | R = faint violet seep (0.6, 0.3, 1) x 1.5 | CrackStyle.Furrow |
+| BossFX_RotTrail | strip, 1.6 m wide, 6.4 m per tile | Rotbloom trail: slime, mould rings, pustules, spores | visible while G > decay. Emission (0.55, 1, 0.2) x 1.5 | LavaTrailView in rot colours |
+| BossFX_RoadSink | strip, ~3.5 m wide, 14 m per tile | old road sinking when the Sealed One's road rises | show where G > 1 - sink (~2 s, middle first); R void seep (0.55, 0.25, 1) | nothing yet |
+| BossFX_FrostCreep | 1024, 2 x 2 radial cells of ~2.5 m | Frost Warden rime ahead of it and under a frozen gate | show where G < grow (0 to 1 in ~1 s). Emission (0.5, 0.85, 1) x 1.2; tiling 0.5 + offset per cell | pale glow pool + mist |
+| BossFX_SporeCloud | 4x4, 12 fps, CG, pivot (0.5, 0.2) | spore pod lands on a pad: cloud falls, spreads, thins | G tint (0.5, 1, 0.25) | TowerAuraView green haze |
+| BossFX_VineBurn | 4x4, 16 fps, CG, pivot (0.5, 0) | burning the overgrowth off a pad | G (1, 0.45, 0.1); 3-5 quads round the tower while `Retracted` runs 0 to 100 | emission flash on the vines |
+| BossFX_ShardFlash | 4x4, 24 fps, CG | Shattered Split burst (frame 28, ~6 m); **Rejoin = the same sheet played backwards**, ending on form frame 30 | G (0.95, 0.45, 1); B ring (0.6, 0.9, 1) | generic flash |
+| BossFX_DiveWake_Water / _Lava / _Bog / _Quicksand / _Ice | 4x4 loop, 12 fps, LIT | flat on the surface over a submerged boss (top = forward), ~1.2 x boss width; quicksand is a spinning funnel, ice bobbing slush plates | per-liquid tints in the report; lava emission G x (1, 0.4, 0.08) x 4 | glow pool + generated bubbles |
+| UI/UI_Dampened (+@2x) | 128 (256), sRGB, straight alpha | boss bar: broken three-piece ring with an "off" slash over the greyed tower picture | white, tint violet (0.72, 0.45, 1.0) | grey-tinted HUD card |
+
+Unity import:
+
+- Albedo: sRGB on, Alpha Is Transparency on. Emission maps and all flipbooks: sRGB off.
+- Strips: Wrap Repeat U / Clamp V. Everything else: Clamp. Mip maps on, Bilinear.
+- Decals: a URP Decal Projector, or a ground quad with an alpha-blended decal material. Each one needs a single
+  float (cool / open / decay / sink / grow) for its threshold.
+- Flipbooks: Texture Sheet Animation 4 x 4.
+
+### Previews
+
+Previews are in the session scratchpad, `bosses29/` (not kept in the repo):
+
+- Shard climbs: `ShardRunner_Climb_*.png`, `ShardCrawler_Climb_*.png`, plus the `_Climb_Up_game` views.
+- Sealed One: `sealed/SealedOne_OnBase_Loop(_game).png`.
+- Frost Warden: `frost/FrostWarden_*.png`.
+- Props: `props/RuinGate_*.png`, `SealCrystal(_tints).png`, `Gate_IceBlock.png`, `Cutscene_Drill_Wreck.png`.
+- FX: `fx/bossfx_field.png`, `bossfx_decals.png`, `bossfx_sheets.png`, `bossfx_icon.png`.
+
+### build_all.py
+
+Not edited here (shared). The shard climbs, OnBase_Loop and the scale fix live in scripts that are already listed
+(round 28). Add these lines:
+
+```
+           # Round 29 (after the round-28 boss block): ruin gate, seal crystals, gate ice block, drill-rig wreck and
+           # drained gate glow (needs build_gate.py, build_towers*.py and build_cutscene.py first).
+           "build_bosses29_props.py",
+           # Round 29 (after "build_cutscene_fx.py", "build_decor_c1.py"): boss ground decals, boss flipbooks and
+           # the dampened HUD overlay.
+           "build_bosses29_fx.py",
+```

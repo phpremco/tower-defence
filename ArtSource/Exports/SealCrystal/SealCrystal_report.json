@@ -1,0 +1,51 @@
+{
+  "asset": "SealCrystal",
+  "round": 29,
+  "objects": {
+    "SealCrystal_A": 1644,
+    "SealCrystal_B": 882,
+    "SealCrystal_C": 1674
+  },
+  "size_m": {
+    "SealCrystal_A": [
+      0.981,
+      0.861,
+      1.677
+    ],
+    "SealCrystal_B": [
+      1.115,
+      0.895,
+      1.339
+    ],
+    "SealCrystal_C": [
+      1.041,
+      1.058,
+      1.351
+    ]
+  },
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "material": "SealCrystal_Mat (shared by the three)",
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 55.7,
+      "mask": "B"
+    },
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 32.5,
+      "mask": "A"
+    }
+  },
+  "pivot": "each crystal's centre on the ground",
+  "unity_scale": 1.0,
+  "emission": "greyscale mask (white glow, stone black): set _EmissionColor = the immune tower's colour x 2.4; dormant/neutral: lilac (0.62, 0.45, 1.0) x 1.6; Release: white x 3",
+  "use": "BOSSES.md 'the sealed crystals turn the colour of the immune type': 3-5 round the rift (mix A/B/C, any yaw, scale 0.8-1.2)"
+}

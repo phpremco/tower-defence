@@ -15,7 +15,10 @@ shards fly in, it reassembles in the phase-3 "rejoined" look and roars), Roar, C
 (its shards scale the ruins: the giant climbs too), Dive_Into_Liquid / Submerged_Loop / Surface_Burst.
 
 Run: blender --background --factory-startup --python Tools/Blender/build_shattered_mech.py --
-     [--preview <dir>] [--norender] [--skip-shards]
+     [--preview <dir>] [--norender] [--skip-shards] [--only-shards]
+
+Round 29: ShardRunner and ShardCrawler also get Climb_Up / Climb_Loop / Climb_Down over a 1.0 m ruin ledge
+(round-28 boss conventions); `--only-shards` rebuilds the three shards without touching the giant.
 """
 
 import math
@@ -424,9 +427,71 @@ def crawler_rejoin(poser):
     return unfold_spec(crawler_specs, lg, lambda sp, ft: K3.place_legs(poser, sp, lg, ft), 30, R(50), "Body", flip=True)
 
 
+# ------------------------------------------------------------------------------------------------------------
+# Round 29: the runner and the crawler scale the ruins (BOSSES.md "The Shattered's shards scale the ruins")
+# ------------------------------------------------------------------------------------------------------------
+
+SHARD_CLIMB_H = 1.0     # one ruin ledge for both shards (the giant's is 1.5); other heights: tilt + blend in Unity
+
+
+def runner_body(off, pitch=0.0, roll=0.0, yaw=0.0, crouch=0.0, look=0.0, mouth=0.0, rage=0.0, tuck=0.0, reach=0.0):
+    """The generic climb amounts on the runner: it crouches into the spring, the spear head stays on the target."""
+    sp = runner_specs(off=at(0, 0, -0.22 * crouch), lean=R(10) + R(16) * crouch + R(8) * reach, roll=roll,
+                      yaw=yaw, head=-R(6) + look - pitch * 0.3, tail=-pitch * 0.4 + R(12) * crouch,
+                      curl=R(10) * tuck)
+    # A biped's two hips sit side by side, so the climb pitch over its short span is steep: it takes half of it.
+    sp["Hips"]["rot"].append((M.X, -pitch * 0.45))
+    sp["Root"]["loc"] = off
+    return sp
+
+
+def crawler_body(off, pitch=0.0, roll=0.0, yaw=0.0, crouch=0.0, look=0.0, mouth=0.0, rage=0.0, tuck=0.0, reach=0.0):
+    sp = crawler_specs(off=at(0, 0, -0.14 * crouch), pitch=pitch, roll=roll, yaw=yaw,
+                       head=look - pitch * 0.4 + R(6) * reach, mand=R(8) + R(22) * max(mouth, 0.6 * rage, 0.5 * reach),
+                       curl=R(8) * tuck)
+    # The travel goes on Root: a few fused-in vertices are weighted to Root and would stay behind at the pivot.
+    sp["Root"]["loc"] = off
+    return sp
+
+
+def runner_adapter():
+    return M.Legged(runner_body, [(runner_legs(), "Hips")], [RUN_PH], 0.42, 1.1, 0.32, 20, hip_span=(0.35, -0.35))
+
+
+def crawler_adapter():
+    return M.Legged(crawler_body, [(crawler_legs(), "Body")], [CRAWL_PH], 0.6, 0.6, 0.2, 26, hip_span=(0.45, -0.45))
+
+
+def shard_climbs(ad, slow, stride_k, lift_k=1.0, lead=0.5, reach=0.0):
+    """Climb_Up / Climb_Loop / Climb_Down over a SHARD_CLIMB_H ledge with the round-28 conventions (pivot fixed,
+    end offsets in the report, Climb_Loop in place on the top). Returns (clips, facts)."""
+    lift, front = ad.lift, ad.foot_front
+    ad.lift = lift * lift_k
+    # The ledge face sits 0.45 ahead of the front foot's rest contact; a long stride swings the foot past that, so the
+    # face moves out by `reach` and frame 0 stays the plain gait pose on flat ground.
+    ad.foot_front = front + reach
+    up, fu = M.climb_up(ad, SHARD_CLIMB_H, slow=slow, stride_k=stride_k, crouch=0.5, look=0.3, lead=lead, trail=0.6)
+    loop, fl = M.climb_loop(ad, slow=1.3, crouch=0.5, width=1.1)
+    down, fd = M.climb_down(ad, SHARD_CLIMB_H, slow=slow, stride_k=stride_k, crouch=0.4, trail=0.3, lead=0.8)
+    ad.lift, ad.foot_front = lift, front
+
+    def frames_of(fn):
+        return fn(None)[0]
+    clips = {"Climb_Up": up, "Climb_Loop": loop, "Climb_Down": down}
+    facts = {"Climb_Up": fu, "Climb_Loop": fl, "Climb_Down": fd}
+    for name, fn in clips.items():
+        facts[name] = dict(facts[name], frames=frames_of(fn), loop=name == "Climb_Loop")
+    return clips, facts
+
+
+RUNNER_CLIMB = shard_climbs(runner_adapter(), slow=1.6, stride_k=1.0, lift_k=1.3, lead=0.3, reach=0.6)
+CRAWLER_CLIMB = shard_climbs(crawler_adapter(), slow=1.2, stride_k=1.2, lift_k=1.6)
+
+
 SHARDS = {
     RUNNER: (runner_parts, runner_bones, {"Walk": runner_walk, "Idle": runner_idle, "Hit": runner_hit,
-                                          "Death": runner_death, "Spawn": runner_spawn, "Rejoin": runner_rejoin},
+                                          "Death": runner_death, "Spawn": runner_spawn, "Rejoin": runner_rejoin,
+                                          **RUNNER_CLIMB[0]},
              2200, {"Spear", "Fin", "Crest", "Tail", "Shin", "Plate"},
              {"route": "the second road", "walk_distance_per_loop": round(1.1 / 0.42, 3), "move": "ground"}),
     FLYER: (flyer_parts, flyer_bones, {"Fly": flyer_fly, "Idle": flyer_idle, "Hit": flyer_hit, "Death": flyer_death,
@@ -435,7 +500,8 @@ SHARDS = {
             {"route": "the air route", "move": "air (pivot = body centre; a ground shadow like every flyer)",
              "death": "drops 3.0 m; hide at frame 44"}),
     CRAWLER: (crawler_parts, crawler_bones, {"Walk": crawler_walk, "Idle": crawler_idle, "Hit": crawler_hit,
-                                             "Death": crawler_death, "Spawn": crawler_spawn, "Rejoin": crawler_rejoin},
+                                             "Death": crawler_death, "Spawn": crawler_spawn, "Rejoin": crawler_rejoin,
+                                             **CRAWLER_CLIMB[0]},
               2400, {"Plate", "Spike", "Mandible", "Blade"},
               {"route": "the ground route (the giant's road)", "walk_distance_per_loop": round(0.6 / 0.6, 3),
                "move": "ground"}),
@@ -443,6 +509,7 @@ SHARDS = {
 
 
 LIMBS = {RUNNER: runner_legs, CRAWLER: crawler_legs}
+CLIMBS = {RUNNER: RUNNER_CLIMB, CRAWLER: CRAWLER_CLIMB}
 
 
 def build_shards():
@@ -452,6 +519,13 @@ def build_shards():
                       spawn="play Spawn at the spawn offset at the giant's Split burst frame",
                       rejoin="play Rejoin, then fly the shard to the giant over ~0.6 s; the giant's Rejoin forms at "
                              f"frame {REJOIN_FORM}")
+        if name in CLIMBS:
+            report["round29"] = {"climb_height_m": SHARD_CLIMB_H, "clips": CLIMBS[name][1],
+                                 "foot_markers": "none: no IK markers on the shards (baked clips plus a slope tilt, "
+                                                 "as Unity climbs the bosses)",
+                                 "note": "round-28 boss climb conventions: Climb_Up/Climb_Down authored with the pivot "
+                                         "fixed, move the transform by end_offset_forward_m / end_offset_up_m on the "
+                                         "last frame; Climb_Loop in place on the top surface"}
         M.small_rig(name, parts(), bones(), clips, tris, families=("crystal", "chitin", "rock"), rigid=rigid, blend=1,
                     scale_bones=["Root"] + ([f"Wing_{s}_1" for s, _ in SIDES] if name == FLYER else
                                             [n for lg in LIMBS[name]().values() for n in lg.names]),
@@ -616,8 +690,34 @@ def stage_shards(out):
         M.strip(name, arm, acts["Spawn"], cam, out, "Spawn", [0, 6, 12, 18, 24, 30])
         M.strip(name, arm, acts["Rejoin"], cam, out, "Rejoin", [0, 6, 12, 18, 24, 30])
         M.strip(name, arm, acts["Death"], cam, out, "Death", M.frames_of(acts["Death"].frame_range[1], 6))
+        if name in CLIMBS:
+            stage_climb(name, arm, acts, out, ground=bpy.data.objects.get("Ground"))
         paths[name] = M.turntable(name, arm, acts["Idle"], 8, target, 4.5, out)
     return paths
+
+
+def stage_climb(name, arm, acts, out, ground=None):
+    """Round 29: side strips of the shard climbing a SHARD_CLIMB_H ruin ledge, up and down, plus the crawl on top
+    and one game-camera frame mid climb."""
+    facts = CLIMBS[name][1]
+    up, down = facts["Climb_Up"], facts["Climb_Down"]
+    props = M.ledge_props(up["edge_forward_m"], SHARD_CLIMB_H, half=2.0)
+    cam = M.side_cam((0, -up["end_offset_forward_m"] * 0.5, 1.2), 9.0, elevation=8)
+    M.strip(name, arm, acts["Climb_Up"], cam, out, "Climb_Up", M.frames_of(up["frames"]))
+    game = C.game_camera(Vector((0, -up["edge_forward_m"], 0.8)), 640 / C.GAME_PIXELS_PER_UNIT * 0.45)
+    M.strip(name, arm, acts["Climb_Up"], game, out, "Climb_Up_game", M.frames_of(up["frames"], 4))
+    M.remove(props + [cam, game])
+    if ground is not None:
+        ground.location.z = -SHARD_CLIMB_H
+    props = M.ledge_props(down["edge_forward_m"], SHARD_CLIMB_H, half=2.0, down=True)
+    cam = M.side_cam((0, -down["end_offset_forward_m"] * 0.5, 0.3), 9.0, elevation=8)
+    M.strip(name, arm, acts["Climb_Down"], cam, out, "Climb_Down", M.frames_of(down["frames"]))
+    M.remove(props + [cam])
+    if ground is not None:
+        ground.location.z = 0
+    cam = C.closeup_camera(Vector((0, 0, 0.5)), 4.5, azimuth=-60, elevation=18, lens=50)
+    M.strip(name, arm, acts["Climb_Loop"], cam, out, "Climb_Loop", M.frames_of(facts["Climb_Loop"]["frames"] - 1, 4))
+    M.remove([cam])
 
 
 def previews(boss, ad, depth, out):
@@ -663,6 +763,8 @@ def main():
         build_shards()
         if not args.get("norender"):
             stage_shards(out)
+    if args.get("only-shards"):
+        return
     clip_scales = {c: BS.SCALE_BONES for c in BS.CLIPS}
     clip_scales.update(SPLIT_REJOIN)
     boss = M.Boss(NAME, list(BS.CLIPS), scale_bones=GIANT_SCALE, clip_scales=clip_scales)

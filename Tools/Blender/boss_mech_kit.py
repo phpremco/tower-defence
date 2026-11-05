@@ -208,6 +208,20 @@ class Boss:
         C.log(self.name, "keyed", clip, frames)
         return self.new[clip]
 
+    def hold(self, clips, values):
+        """Round 29: keys constant bone scales {bone: uniform scale} into `clips` (full and LOD actions). The FBX
+        exporter bakes a bone that a clip does not key with whatever pose the previous clip left behind, so bones added
+        after a clip was made (armour plates, seal stones, rubble) must be keyed in every clip explicitly."""
+        lod_names = {b.name for b in self.lod_arm.data.bones} if self.lod_arm is not None else set()
+        for clip in clips:
+            act = bpy.data.actions.get(clip)
+            if act is not None:
+                hold_scale(act, values)
+            lod = bpy.data.actions.get(clip + "_LOD")
+            if lod is not None:
+                hold_scale(lod, {b: v for b, v in values.items() if b in lod_names})
+        C.log(self.name, "held scales", len(values), "bones in", len(clips), "clips")
+
     def actions(self):
         out = {n: bpy.data.actions[n] for n in self.original}
         out.update(self.new)
@@ -246,6 +260,22 @@ class Boss:
 
     def save(self):
         C.save_blend(self.name)
+
+
+def hold_scale(act, values):
+    """Constant scale keys {bone: uniform scale} over the action's frame range (replacing any scale curves)."""
+    a, b = act.frame_range
+    for bag in K2._channelbags(act)[:1]:
+        for bone, v in values.items():
+            path = f'pose.bones["{bone}"].scale'
+            for i in range(3):
+                fc = bag.fcurves.find(path, index=i)
+                if fc is not None:
+                    bag.fcurves.remove(fc)
+                fc = bag.fcurves.new(path, index=i)
+                for f in (a, b):
+                    k = fc.keyframe_points.insert(f, v)
+                    k.interpolation = "CONSTANT"
 
 
 def ik_name(lg):

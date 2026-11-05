@@ -12,7 +12,9 @@ Opens ArtSource/Blend/SealedOne.blend (round 16: mesh, rig, LOD1, Idle/Rise/Summ
   Low 512): phase 1 = the shipped violet and gold; 2 brighter violet; 3 hot magenta-violet, the gold glyphs dimming
   (the seal fails); 4 white-violet blaze; Release white;
 - the seven seal stones stay on Root: every clip that moves the body away from the seal keys them at scale 0
-  (`Seal_1..7`, uniform), so Unity never has to hide them by hand.
+  (`Seal_1..7`, uniform), so Unity never has to hide them by hand;
+- round 29: OnBase_Loop (it lies over the base after Rise_OntoBase and pounds it, strike frames in the report); the
+  seal stones and the rubble ring are keyed in every clip (shown only in Rise).
 
 Run: blender --background --factory-startup --python Tools/Blender/build_sealedone_mech.py --
      [--preview <dir>] [--norender] [--skip-maps]
@@ -43,8 +45,9 @@ BASE_F, BASE_H = 3.4, 0.9
 RISE_GRAB, RISE_CRUSH, RISE_FRAMES = 34, 96, 130
 ADAPT_FRAMES, ADAPT_PULSE = 64, 30
 RELEASE_FRAMES, RELEASE_WHITE = 170, 64
+ONBASE_FRAMES, ONBASE_STRIKES = 96, (34, 82)
 MOBILE = ["Walk", "Climb_Up", "Climb_Loop", "Climb_Down", "Dive_Into_Liquid", "Submerged_Loop", "Surface_Burst",
-          "Rise_OntoBase"]
+          "Rise_OntoBase", "OnBase_Loop"]
 STILL = ["Roar", "Adapt", "Release"]
 CLIP_SCALES = {**{c: BS.RING_NAMES + SEALS + ["Rubble"] for c in MOBILE}, **{c: BS.RING_NAMES for c in STILL}}
 
@@ -273,6 +276,40 @@ def rise_onto_base(poser):
     return RISE_FRAMES, spec, False
 
 
+def on_base_loop(poser):
+    """Round 29: it lies over the base where Rise_OntoBase ended and pounds it, one lower hand after the other: each
+    hand is pulled up and back, the torso rears into it, then the hand slams down on the roof (strike frames
+    ONBASE_STRIKES: the base takes a hit, dust and a camera kick) and the torso drops onto it. Frame 0 (= the last
+    frame) is Rise_OntoBase's last pose, so Unity goes straight from that clip into this loop; the rings keep turning
+    (one full turn per loop)."""
+    grab = {s: rest_hand(s) + at(0, BASE_F - 1.75 + 0.2, BASE_H) + at(-0.5 if s == "R" else 0.5, 0, 0) for s in ("L", "R")}
+    s0 = (RISE_FRAMES * 0.05, -RISE_FRAMES * 0.05, RISE_FRAMES * 0.04)
+
+    def stroke(f, strike):
+        g = (f - (strike - 34)) % ONBASE_FRAMES
+        raise_ = ease(6, 26, g) * (1 - ease(28, 34, g))
+        slam = pulse(g, 30, 34, 46)
+        return raise_, slam
+
+    def spec(t, f):
+        w = 2 * math.pi * t
+        (rl, sl), (rr, sr) = stroke(f, ONBASE_STRIKES[0]), stroke(f, ONBASE_STRIKES[1])
+        rear, slam = max(rl, rr), max(sl, sr)
+        sp = pose(sink=-BASE_H + 0.04 * math.sin(w) - 0.18 * rear + 0.14 * slam, travel=1.6 - 0.12 * rear + 0.1 * slam,
+                  hidden=True, lean=R(26) - R(10) * rear + R(9) * slam, roll=R(6) * (rl - rr) + R(3) * (sl - sr),
+                  yaw=R(5) * (rl - rr), head=R(18) - R(8) * rear + R(12) * slam, head_yaw=R(6) * (rr - rl),
+                  plates=R(36) + R(10) * slam + R(4) * math.sin(w), rings=1.3 + 0.08 * slam,
+                  spin=(s0[0] + w, s0[1] - w, s0[2] + w), uarm_up=R(60) + R(25) * rear - R(10) * slam,
+                  uarm_out=R(40) + R(10) * rear)
+        h = {}
+        for side, (r_, s_) in (("L", (rl, sl)), ("R", (rr, sr))):
+            up = grab[side] + at(0, -0.35, 1.5)
+            h[side] = grab[side].lerp(up, r_) + at(0, 0.15 * s_, -0.05 * s_)
+        curl = {"L": R(35) * (1 - rl) + R(10) * sl, "R": R(35) * (1 - rr) + R(10) * sr}
+        return BS.place_hands(poser, sp, h, curl=(curl["L"] + curl["R"]) * 0.5)
+    return ONBASE_FRAMES, spec, True
+
+
 def adapt(poser):
     """Recognition: it goes still, the head tilts as if listening, the plates part, the three rings swing into one
     plane and flare at ADAPT_PULSE (the violet pulse: dim that tower's icon on the boss bar), palms turn out."""
@@ -394,12 +431,26 @@ def key_all(boss):
                                                "crush_frame": RISE_CRUSH,
                                                "note": "start with the base BASE_F ahead; the base takes the hit at "
                                                        "crush_frame (BOSSES.md: it pulls itself up onto the base)"})
+    boss.key("OnBase_Loop", on_base_loop, {"strike_frames": list(ONBASE_STRIKES), "base_forward_m": BASE_F,
+                                           "base_top_m": BASE_H, "hands": {"L": ONBASE_STRIKES[0], "R": ONBASE_STRIKES[1]},
+                                           "note": "loop after Rise_OntoBase (frame 0 = its last pose, same transform); "
+                                                   "the base takes a blow at each strike frame (dust, kick); Adapt "
+                                                   "on the base still has no clip of its own"})
     boss.key("Adapt", adapt, {"pulse_frame": ADAPT_PULSE,
                               "note": "play at each phase change; ORA's line and the dimmed icon at pulse_frame"})
     boss.key("Release", release, {"white_frame": RELEASE_WHITE, "kneel_done_frame": 150,
                                   "note": "swap both emission maps to the Release set at white_frame and fade the "
                                           "emission strength up; the epilogue starts at the last frame"})
     return depth
+
+
+def hold_seal(boss):
+    """Round 29: the seal stones and the rubble ring are keyed in every clip. Unkeyed, the FBX exporter baked them
+    with the pose the previous clip left (scale 0 in all of them, Rise included). Rise (the entrance out of the seal)
+    shows them; every other clip plays away from the seal, so they stay collapsed (scale 0.001)."""
+    hidden = {n: 0.001 for n in SEALS + ["Rubble"]}
+    boss.hold(["Rise"], {n: 1.0 for n in SEALS + ["Rubble"]})
+    boss.hold([c for c in list(BS.CLIPS) + STILL if c != "Rise"], hidden)
 
 
 def previews(boss, depth, out):
@@ -419,7 +470,10 @@ def previews(boss, depth, out):
                  M.mat("PropBase", (0.6, 0.64, 0.7), rough=0.4, emission=(0.3, 0.7, 1.0), strength=0.3))
     cam = M.side_cam((0, -2.0, 2.6), 22, elevation=12, azimuth=-70)
     M.strip(NAME, arm, acts["Rise_OntoBase"], cam, out, "Rise_OntoBase", [0, 16, RISE_GRAB, 56, 76, RISE_CRUSH, 112, RISE_FRAMES])
-    M.remove([base, cam])
+    M.strip(NAME, arm, acts["OnBase_Loop"], cam, out, "OnBase_Loop", [0, 16, 26, ONBASE_STRIKES[0], 48, 74, ONBASE_STRIKES[1], 95])
+    game = C.game_camera(Vector((0, -BASE_F, 1.0)), 640 / C.GAME_PIXELS_PER_UNIT * 1.2)
+    M.strip(NAME, arm, acts["OnBase_Loop"], game, out, "OnBase_Loop_game", [0, 26, ONBASE_STRIKES[0], 74])
+    M.remove([base, cam, game])
     up = boss.info["Climb_Up"]
     props = M.ledge_props(up["edge_forward_m"], CLIMB_H)
     cam = M.side_cam((0, -1.6, 2.8), 22, elevation=10, azimuth=-80)
@@ -477,11 +531,13 @@ def main():
     split_rubble(boss)
     maps = {} if args.get("skip-maps") else phase_maps()
     depth = key_all(boss)
+    hold_seal(boss)
     boss.export()
     boss.report({"climb_height_m": CLIMB_H, "liquid": "void pool (any liquid)", "submerged_depth_m": depth,
                  "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
-                 "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28) keyed at "
-                                "scale 0 in " + ", ".join(MOBILE) + "; not keyed in the other clips",
+                 "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28): scale 1 in "
+                                "Rise only (the entrance out of the seal); scale 0 in every other clip (round 29: "
+                                "keyed explicitly in all clips)",
                  "phase_looks": {"maps": maps, "emission_strength": {"Phase1": 2.6, "Phase2": 3.0, "Phase3": 3.4,
                                                                     "Phase4": 3.9, "Release": 4.5},
                                  "note": "swap SealedOne_Emission and SealedOne_Seal_Emission per phase (Adapt marks "

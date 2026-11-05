@@ -1,0 +1,45 @@
+{
+  "asset": "Cutscene_Drill_Wreck",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.518,
+    "world_per_uv": 12.5277
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 250.6,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 208.8,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Drill_Wreck.fbx",
+  "tris": 4716,
+  "round": 29,
+  "size_m": [
+    7.812,
+    4.156,
+    2.667
+  ],
+  "lod1": "none (one per level, story decor)",
+  "pivot": "the rig deck's centre on the ground, as Cutscene_Drill: swap it in place",
+  "fall": {
+    "break_height_m": 1.3,
+    "fold_angle_deg": 117.4,
+    "direction": "the top lies towards Blender +X (turned 16 deg towards +Y): the side away from where Gravemaw surfaces in BOSSES.md, if Unity faces -X at the hole"
+  },
+  "emission": "dead: two vent / panel embers left (strength 0.35 of the shipped colony cyan)",
+  "use": "Gravemaw entrance (ColonyRig arrival): hide Cutscene_Drill at the smash frame and show the wreck in the dust; keep Gravemaw_Hole / glow pool beside it"
+}

@@ -78,6 +78,7 @@
     "Dive_Into_Liquid": 90,
     "Surface_Burst": 100,
     "Rise_OntoBase": 130,
+    "OnBase_Loop": 96,
     "Adapt": 64,
     "Release": 170
   },
@@ -193,6 +194,21 @@
         "frames": 130,
         "loop": false
       },
+      "OnBase_Loop": {
+        "strike_frames": [
+          34,
+          82
+        ],
+        "base_forward_m": 3.4,
+        "base_top_m": 0.9,
+        "hands": {
+          "L": 34,
+          "R": 82
+        },
+        "note": "loop after Rise_OntoBase (frame 0 = its last pose, same transform); the base takes a blow at each strike frame (dust, kick); Adapt on the base still has no clip of its own",
+        "frames": 96,
+        "loop": true
+      },
       "Adapt": {
         "pulse_frame": 30,
         "note": "play at each phase change; ORA's line and the dimmed icon at pulse_frame",
@@ -217,7 +233,7 @@
     "liquid": "void pool (any liquid)",
     "submerged_depth_m": 5.575,
     "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
-    "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28) keyed at scale 0 in Walk, Climb_Up, Climb_Loop, Climb_Down, Dive_Into_Liquid, Submerged_Loop, Surface_Burst, Rise_OntoBase; not keyed in the other clips",
+    "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28): scale 1 in Rise only (the entrance out of the seal); scale 0 in every other clip (round 29: keyed explicitly in all clips)",
     "phase_looks": {
       "maps": {
         "Phase1": [
