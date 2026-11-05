@@ -36,7 +36,7 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
-  _projectileSpeed: 40
+  _projectileSpeed: 400
   _splashRadius: 0
   _fuseRadius: 0
   _maxHealth: 160
@@ -54,5 +54,7 @@ MonoBehaviour:
   _color: {r: 0.35, g: 0.9, b: 1, a: 1}
   _shape: 2
   _projectileStyle: 3
+  _beamLockSeconds: 0.35
+  _beamSweepSeconds: 0.05
   _art: {fileID: 11400000, guid: 043a5f0a78644994b8224ba627356b8e, type: 2}
   _gateArt: {fileID: 0}

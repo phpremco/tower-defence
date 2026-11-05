@@ -12,6 +12,9 @@ namespace Game.Balance
         public LevelShape Shape = new LevelShape();
         public int MineCount;
         public int MineStock;
+
+        /// <summary>False when the level offers no harvest drone (yet): its ore pays nothing.</summary>
+        public bool Harvest = true;
         public int SecondRoad = -1;
         public float GateHealth;
     }
@@ -61,6 +64,7 @@ namespace Game.Balance
                 Shape = facts.Shape,
                 MineCount = facts.MineCount,
                 MineStock = facts.MineStock,
+                Harvest = facts.Harvest,
                 HarvesterCost = HarvesterCost,
                 Hero = Hero,
                 HeroDamage = player.HeroDamage,

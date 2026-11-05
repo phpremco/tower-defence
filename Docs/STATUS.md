@@ -2187,3 +2187,35 @@ no balance change; the full generator was not run (the new menu item, `ApplyCuts
 - **Brightness measured:** `n2_still.cs` prints the mean luminance of the frame and of its middle box. Middle box now
   (0..1): burst 12/0.3 0.15, swarm 12/0.6 0.21 and 12/0.95 0.23, reaction 13/0.5 0.28, gate 14/0.9 0.31, handoff 15/0.3 0.19,
   cave 9/0.4 0.11 (crystals and eyes carry it), build 4/0.26 0.21, drill 5/0.8 0.16, core 7/0.62 0.20, Earth 0.15. Frames: `night2/light_*.png`.
+
+## Laser role and drone introductions, night 3 (2026-11-05)
+
+Remco's playtest: the laser is pricier than the gun yet worse against the ants, and the drones have no introduction (they
+must not be selectable before it). Not committed; the full generator was not run (Blender WIP in `ArtSource`): targeted
+runners `Tools/PlayTest/Scripts/ApplyTowers.cs` (generator "Roster" step), `ApplyDrones.cs` (drone offers per level + the
+"Level story" step) and `ApplyWaves.cs`. Details and numbers: Docs/BALANCE.md, "Laser and gun" and "Drones, one at a time".
+- **Laser:** a beam holds its creature until it dies or leaves reach, charges (0.35 s) only when idle, sweeps on to the next
+  creature 0.05 s after a kill, and lands the frame it fires (`TowerDefinition.BeamLockSeconds`, `BeamSweepSeconds`, Laser
+  projectile speed 400). Before: 17% of its data DPS against dense Skitters (re-charged on every target change). After: 1.2 to
+  2x the gun's holding power per coin against swarms, 1.05 to 1.2x against heavy creatures; damage, rate, range and prices
+  unchanged. The Cryo Beam (dormant hybrid, same beam style) gets the sticky beam but no sweep. The ledger keeps the laser at
+  its data DPS (modelling the sweep toughened the opening waves until the bot lost).
+- **Drones one kind a level:** repair drone from Glass Meadows (C1_02), harvest drone from Shard Ridge (C1_03), attack drone
+  from Fault Line (C1_04); Landing Site offers none (the panel is hidden and the base's doorstep opens nothing).
+  `CampaignLevelSpec.IntroduceDrones` -> `ConfigureLevelDrones`. Intro dialogues at level start, once per save (proposed text,
+  ORA/Voss/Mercer): `Dlg_L02_RepairDrone`, `Dlg_L03_HarvestDrone`, `Dlg_L04_AttackDrone`; they list in the dev Story viewer
+  under their level. While one plays, `BaseMenuView` frames the introduced card in pulsing yellow with a NEW tag (15 s after,
+  or until the first purchase), from `DialogueDefinition.IntroducedDrones`.
+- **Balance:** the ledger books no ore on a level without a harvest drone (`LevelInput.Harvest`), so C1_01 and C1_02 were
+  re-solved (a little weaker creatures; C1_03-06 waves unchanged). The probe bot now prints wear: gate and gun health lost
+  and money spent on repairs per run.
+- **Tests:** EditMode 381/381 (new `DroneIntroTests` 4, `BalanceModelTests.Mines_PayNothing_InALevelWithoutAHarvestDrone`).
+  PlayMode one class at a time: StoryListener 1/1, StoryGuard 3/3, StorySmoke 2/2, StoryCrystal 2/2, ContinentSimulation 2/2,
+  CutsceneSmoke 3/3, Screenshot 3/3, ModelPerformance 1/1, BalanceProbe 3/3 (smoke, Easy and Medium on every level, air check). Of two whole-class runs one lost Quartz Flats Medium at wave 15: the bot is bistable there, it wins when it buys a Cannon early and loses when it buys a Laser it never upgrades (that level's waves are unchanged tonight; the separate Easy/Medium run won it too). 0 compile errors/warnings. Remco's save
+  restored byte-identical after every PlayMode run (MD5 ec2a1f6d...).
+- **Tools:** `LaserDuel.cs` (duel simulation, `duel_arg.txt` for beam variants), `DroneValue.cs` (harvester value per level,
+  `drone_value.txt`), `n3_laser.cs`, `n3_dialogue.cs`. Screenshots: session scratchpad `night3/`.
+- **Open / for Remco:** the dialogue lines are proposals; the ledger's ore model is about 3x too generous (one harvester
+  mines a third of what it books) and should be fixed together with a bot that harvests and a new `Utilisation`; replaying an
+  earlier level does not offer later drones (as with gadgets); drone upgrades still show on the upgrade screen before their
+  drone is introduced; a laser-heavy player now has more surplus on swarm levels than the curve targets.

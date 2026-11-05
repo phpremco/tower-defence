@@ -43,6 +43,12 @@ namespace Game.Editor
         /// <summary>Who made what the level unlocks, shown on the result screen instead of the source text ("Rebuilt by Dr. Voss's lab").</summary>
         public string Credit = string.Empty;
 
+        /// <summary>
+        /// Drone ids (asset names) this level offers for the first time; every later level offers them too. The level's story
+        /// should introduce each one (a LevelStart dialogue whose IntroducedDrones names it, see DroneIntroTests).
+        /// </summary>
+        public string[] IntroduceDrones = new string[0];
+
         public StorySpec[] Story = new StorySpec[0];
 
         public int Money = 200;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Drones;
 using UnityEngine;
 
 namespace Game.Levels
@@ -9,8 +10,17 @@ namespace Game.Levels
     {
         [SerializeField] private DialogueLine[] _lines = new DialogueLine[0];
 
+        [Tooltip("Drone kinds this conversation introduces: the drone panel lights their cards up while it plays and until one is bought.")]
+        [SerializeField] private DroneDefinition[] _introducedDrones = new DroneDefinition[0];
+
         public string Id => name;
         public IReadOnlyList<DialogueLine> Lines => _lines;
+
+        public IReadOnlyList<DroneDefinition> IntroducedDrones => _introducedDrones ?? NoDrones;
+
+        public bool Introduces(DroneDefinition drone) => drone != null && _introducedDrones != null && System.Array.IndexOf(_introducedDrones, drone) >= 0;
+
+        private static readonly DroneDefinition[] NoDrones = new DroneDefinition[0];
 
         /// <summary>Adds every data problem to the list; returns true when there is none.</summary>
         public bool Validate(List<string> errors)

@@ -14,7 +14,6 @@ namespace Game.Towers
         private const float SupportLevelGrowth = 0.5f;
         private const float MuzzleHeight = 1f;
         private const float MuzzleForward = 0.55f;
-        private const float BeamRetargetSeconds = 0.35f;
         private const float SupportRefreshSeconds = 0.25f;
 
         private TowerDefinition _definition;
@@ -24,6 +23,7 @@ namespace Game.Towers
         private PlayerModifiers _modifiers;
         private float _cooldown;
         private ITargetable _beamTarget;
+        private bool _beamLive;
         private float _supportRange;
         private float _supportRate;
         private float _supportTimer;
@@ -213,8 +213,16 @@ namespace Game.Towers
         private void Update()
         {
             RefreshSupport();
+            if (IsWrecked)
+            {
+                _beamTarget = null;
+                _beamLive = false;
+                return;
+            }
+
+            ReleaseBeam();
             _cooldown -= Time.deltaTime;
-            if (_cooldown > 0f || IsWrecked)
+            if (_cooldown > 0f)
             {
                 return;
             }
@@ -229,28 +237,64 @@ namespace Game.Towers
             // A long frame (high game speed, low frame rate) may owe more than one shot; see Cadence.
             for (int shots = 0; Cadence.Due(_cooldown, shots); shots++)
             {
-                ITargetable target = _registry.FindBest(transform.position, Range, _definition.Targets);
+                ITargetable target = _beamTarget ?? _registry.FindBest(transform.position, Range, _definition.Targets);
                 if (target == null)
                 {
                     _beamTarget = null;
+                    _beamLive = false;
                     break;
                 }
 
-                // A beam is continuous: it only breaks to swing onto a new target, so the player sees and hears it stop
-                // and start as the enemies change.
-                if (_definition.ProjectileStyle == ProjectileStyle.Laser && !ReferenceEquals(target, _beamTarget))
+                // A beam is continuous: an idle beam charges before it burns, a live one swings straight on to the next
+                // creature. Charging on every new target (until 2026-11-05) left the laser at a fifth of its damage in a
+                // swarm, where the creature furthest along changes all the time.
+                if (_definition.IsBeam && !ReferenceEquals(target, _beamTarget))
                 {
                     _beamTarget = target;
-                    _cooldown = BeamRetargetSeconds;
-                    Charging?.Invoke(target.Position, BeamRetargetSeconds);
-                    return;
+                    if (!_beamLive)
+                    {
+                        _cooldown = _definition.BeamLockSeconds;
+                        Charging?.Invoke(target.Position, _definition.BeamLockSeconds);
+                        return;
+                    }
                 }
 
                 Shoot(level, target);
+                _beamLive = _definition.IsBeam;
                 _cooldown = Cadence.Rearm(_cooldown, level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power)));
             }
 
             _cooldown = Cadence.Idle(_cooldown);
+        }
+
+        // A beam holds its creature until it dies or walks out of reach. A kill frees it at once: the beam sweeps on to the
+        // next creature within its sweep time instead of finishing the pulse, which is what makes it the swarm gun.
+        private void ReleaseBeam()
+        {
+            if (_beamTarget == null)
+            {
+                return;
+            }
+
+            bool killed = !_beamTarget.IsAlive;
+            if (!killed && FlatDistanceSqr(transform.position, _beamTarget.Position) <= Range * Range)
+            {
+                return;
+            }
+
+            if (killed && _beamLive && _definition.BeamSweepSeconds > 0f)
+            {
+                _cooldown = Mathf.Min(_cooldown, _definition.BeamSweepSeconds);
+            }
+
+            _beamTarget = null;
+        }
+
+        private static float FlatDistanceSqr(Vector3 a, Vector3 b)
+        {
+            float dx = a.x - b.x;
+            float dz = a.z - b.z;
+            return dx * dx + dz * dz;
         }
 
         private void Shoot(TowerLevel level, ITargetable target)

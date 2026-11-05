@@ -175,6 +175,7 @@ namespace BalanceLab
                     Shape = level.Shape,
                     MineCount = level.MineCount,
                     MineStock = level.MineStock,
+                    Harvest = level.Harvest,
                     SecondRoad = level.SecondRoad,
                     GateHealth = data.TowerHealth.TryGetValue(level.GateTowerId, out float health) ? health : 0f,
                 });

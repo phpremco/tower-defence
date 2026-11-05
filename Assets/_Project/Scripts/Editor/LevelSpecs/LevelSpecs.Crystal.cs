@@ -100,8 +100,12 @@ namespace Game.Editor
                 Story = new[]
                 {
                     new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L02_Start" },
+                    new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L02_RepairDrone" },
                     new StorySpec { Kind = "WaveStart", Wave = 6, Dialogue = "Dlg_L02_Swarm" },
                 },
+                // Drones one kind a level, where the balance model first finds them worth their price (Docs/BALANCE.md, "Drones,
+                // one at a time"): the gates lose 500 to 1000 health here, more than a repair drone costs to mend by hand.
+                IntroduceDrones = new[] { "RepairDrone" },
                 Money = 200 + CrystalMoneyStep,
             },
 
@@ -137,9 +141,13 @@ namespace Game.Editor
                 Story = new[]
                 {
                     new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L03_Start" },
+                    new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L03_HarvestDrone" },
                     new StorySpec { Kind = "FirstSighting", Enemy = "Skyray", Dialogue = "Dlg_L03_Air" },
                     new StorySpec { Kind = "LevelWon", Dialogue = "Dlg_L03_Won" },
                 },
+                // The ore nodes lie closest to the base here and the level is long: one harvester earns its price back and more
+                // (at Glass Meadows it would not).
+                IntroduceDrones = new[] { "HarvestDrone" },
                 Money = 200 + CrystalMoneyStep * 2,
             },
 
@@ -182,8 +190,11 @@ namespace Game.Editor
                 Story = new[]
                 {
                     new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L04_Start" },
+                    new StorySpec { Kind = "LevelStart", Dialogue = "Dlg_L04_AttackDrone" },
                     new StorySpec { Kind = "BossSpawn", Enemy = "StormMatriarch", Dialogue = "Dlg_L04_Boss" },
                 },
+                // The second road and the flyers that bite guns: a gun that flies to whatever the towers do not cover.
+                IntroduceDrones = new[] { "AttackDrone" },
                 Money = 200 + CrystalMoneyStep * 3,
             },
 

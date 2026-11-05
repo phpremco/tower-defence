@@ -195,9 +195,9 @@ MonoBehaviour:
   _expectedUpgradeBonus: 0
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
-  _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
-  _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
-  _attackDrone: {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
+  _repairDrone: {fileID: 0}
+  _harvestDrone: {fileID: 0}
+  _attackDrone: {fileID: 0}
   _recipes: []
   _pathObjects: []
   _availableTowers:

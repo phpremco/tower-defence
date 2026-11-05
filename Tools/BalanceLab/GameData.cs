@@ -17,6 +17,9 @@ namespace BalanceLab
         public LevelShape Shape;
         public int MineCount;
         public int MineStock;
+
+        /// <summary>False when the level offers no harvest drone (yet), as the game's bridge reads it.</summary>
+        public bool Harvest = true;
         public int SecondRoad = -1;
         public List<string> TowerIds = new List<string>();
         public string RewardTowerId = string.Empty;
@@ -277,6 +280,7 @@ namespace BalanceLab
                 HealthScale = n["_enemyHealthMultiplier"].Float,
                 MineCount = n["_mineCells"].Items.Count,
                 MineStock = n["_mineStock"].Int,
+                Harvest = !string.IsNullOrEmpty(n["_harvestDrone"].Guid),
                 Research = n["_reward"]["ResearchPoints"].Int,
                 Power = n["_reward"]["PowerCurrency"].Int,
                 HeroGuid = n["_hero"].Guid,

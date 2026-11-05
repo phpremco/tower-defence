@@ -564,3 +564,15 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
 - The round-26 FBX files arrive turned half a turn about Y like every export of ours (an eye's cornea at -Z, a wall's
   backing at +Z): `UndergroundSet` and `EyeField` add a 180 degree turn under the node matrix to get the README frame
   (cavern side and eye forward +Z, `axis_unity` as written).
+
+## Laser duel, drone value and targeted generator steps (added 2026-11-05)
+
+| What | Command |
+| --- | --- |
+| Tower duel: Gun against Laser per species, useful DPS and holding power per 100 coins | `unity command run_script --file Tools/PlayTest/Scripts/LaserDuel.cs --entry LaserDuel.Run --timeout_ms 600000 --timeout 660` (table in `Tools/PlayTest/laser_duel.txt`; beam variants in `duel_arg.txt`, e.g. `sticky=0`, `swing=10`, `speed=40` for the beam before 2026-11-05) |
+| What a harvest drone earns per level and difficulty, gun-biters and flyers per level | `run_script --file Tools/PlayTest/Scripts/DroneValue.cs --entry DroneValue.Run` (writes `Tools/PlayTest/drone_value.txt`) |
+| Only the generator's "Roster" step (Laser and the other non-core towers) | `run_script --file Tools/PlayTest/Scripts/ApplyTowers.cs --entry ApplyTowers.Run` |
+| Only the drone offers per level and the "Level story" step (dialogues, triggers) | `run_script --file Tools/PlayTest/Scripts/ApplyDrones.cs --entry ApplyDrones.Run` |
+| Screenshots: a drone introduction with its lit card, a Laser against a Skitter swarm | `bash Tools/PlayTest/n3_shots.sh` (pictures in `Assets/Temp/n3_*.png`; restore the save after; `n3_beam_probe.cs` prints the beam's target and cooldown) |
+
+The probe bot's `[Probe]` lines now end with the wear of the run: gate and gun health lost and money spent on repairs.

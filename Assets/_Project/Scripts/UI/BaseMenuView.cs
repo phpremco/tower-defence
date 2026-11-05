@@ -11,6 +11,8 @@ namespace Game.UI
     /// price and how many are out, greyed out when money is short or that kind is at its limit. A click buys.
     /// On a gamepad, confirming on the base's doorstep focuses the panel (the stick then walks the cards, A buys,
     /// B leaves), which is what <see cref="LevelContext.BaseMenuOpen"/> means. Only reads LevelContext.
+    /// A level that offers no drones yet shows no panel. While a dialogue that introduces a drone kind plays (and for a
+    /// while after, until that kind is bought) its card is framed in a pulsing light with a "NEW" tag across its top.
     /// </summary>
     public sealed class BaseMenuView : MonoBehaviour
     {
@@ -33,6 +35,16 @@ namespace Game.UI
         private static readonly Color CardTint = new Color(0.16f, 0.26f, 0.42f);
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
 
+        // The introduction highlight: signal yellow like the colony's markings, breathing so it catches the eye.
+        private const float HighlightLingerSeconds = 15f;
+        private const float HighlightPulseRate = 4f;
+        private const float HighlightMinAlpha = 0.35f;
+        private const float HighlightPad = 7f;
+        private const float NewTagHeight = 26f;
+        private const int NewTagSize = 20;
+        private const string NewTagText = "NEW";
+        private static readonly Color HighlightColour = new Color(1f, 0.82f, 0.25f);
+
         private LevelContext _context;
         private RectTransform _root;
         private Font _font;
@@ -45,6 +57,11 @@ namespace Game.UI
             public DroneDefinition Drone;
             public Button Button;
             public Text Label;
+            public Image Highlight;
+            public Text NewTag;
+
+            /// <summary>Unscaled time until which the card stays lit; zero when it was never introduced.</summary>
+            public float HighlightUntil;
         }
 
         public void Initialize(LevelContext context, RectTransform root, Camera camera, Font font)
@@ -114,6 +131,15 @@ namespace Game.UI
 
         private DroneButton CreateDroneButton(DroneDefinition drone, float x)
         {
+            // Built before the card so it draws behind it: only the rim around the card shows.
+            Image highlight = UiKit.CreatePanel(_panel, "Highlight", Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero, HighlightColour);
+            RectTransform glow = highlight.rectTransform;
+            glow.pivot = Vector2.zero;
+            glow.anchoredPosition = new Vector2(x - HighlightPad, Padding + LabelHeight - HighlightPad);
+            glow.sizeDelta = new Vector2(CardWidth + HighlightPad * 2f, CardHeight + HighlightPad * 2f);
+            highlight.raycastTarget = false;
+            highlight.gameObject.SetActive(false);
+
             Button button = UiKit.CreateIconButton(_panel, null, CardHeight, () => OnClicked(drone));
             RectTransform rect = button.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0f, 0f);
@@ -144,9 +170,61 @@ namespace Game.UI
                 }
             });
 
-            var entry = new DroneButton { Drone = drone, Button = button };
+            var entry = new DroneButton { Drone = drone, Button = button, Highlight = highlight };
             entry.Label = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth + CardGap, LabelHeight), LabelSize);
+            entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight - NewTagHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), NewTagSize);
+            entry.NewTag.text = NewTagText;
+            entry.NewTag.color = HighlightColour;
+            entry.NewTag.fontStyle = FontStyle.Bold;
+            entry.NewTag.gameObject.SetActive(false);
             return entry;
+        }
+
+        // Polled, because the dialogue player has no "started" event and a card must light up the frame its introduction
+        // shows. No allocations: the current dialogue is compared against each card's drone.
+        private void Update()
+        {
+            if (_buttons == null || _buttons.Length == 0)
+            {
+                return;
+            }
+
+            DialogueDefinition current = _context.Dialogue != null ? _context.Dialogue.Current : null;
+            float now = Time.unscaledTime;
+            float pulse = Mathf.Lerp(HighlightMinAlpha, 1f, 0.5f + 0.5f * Mathf.Sin(now * HighlightPulseRate));
+            for (int i = 0; i < _buttons.Length; i++)
+            {
+                // Lit while the introduction talks about it, then until the player buys one or the linger runs out.
+                bool introducing = current != null && current.Introduces(_buttons[i].Drone);
+                if (introducing)
+                {
+                    _buttons[i].HighlightUntil = now + HighlightLingerSeconds;
+                }
+
+                bool lit = introducing || (now < _buttons[i].HighlightUntil && _context.ActiveDrones(_buttons[i].Drone) == 0);
+                if (!lit)
+                {
+                    _buttons[i].HighlightUntil = 0f;
+                }
+
+                SetHighlight(_buttons[i], lit, pulse);
+            }
+        }
+
+        private static void SetHighlight(DroneButton entry, bool lit, float pulse)
+        {
+            if (entry.Highlight.gameObject.activeSelf != lit)
+            {
+                entry.Highlight.gameObject.SetActive(lit);
+                entry.NewTag.gameObject.SetActive(lit);
+            }
+
+            if (lit)
+            {
+                Color colour = HighlightColour;
+                colour.a = pulse;
+                entry.Highlight.color = colour;
+            }
         }
 
         // Drones are small, so the picture blows them up and lifts them into the frame the renderer uses for towers.
@@ -192,7 +270,7 @@ namespace Game.UI
         private void Refresh()
         {
             bool running = _context.Outcome == LevelOutcome.Running;
-            _panel.gameObject.SetActive(running);
+            _panel.gameObject.SetActive(running && _buttons.Length > 0);
             if (!running)
             {
                 return;

@@ -206,6 +206,7 @@ namespace Game.Levels
                 Shape = Shape(level),
                 MineCount = level.MineCells.Length,
                 MineStock = level.MineStock,
+                Harvest = level.HarvestDrone != null,
                 SecondRoad = SecondRoad(level),
                 GateHealth = gateHealth,
             });

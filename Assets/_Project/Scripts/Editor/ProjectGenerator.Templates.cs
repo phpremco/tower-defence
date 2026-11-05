@@ -57,7 +57,8 @@ namespace Game.Editor
 
             var level = LoadOrCreate<LevelDefinition>($"{DataRoot}/Levels/Level_{spec.Key}.asset");
             WriteLevelBasics(level, spec, continent, theme, context);
-            ConfigureLevelExtras(level, forSale, new CombineRecipe[0], context.RepairDrone, context.HarvestDrone, context.AttackDrone);
+            ConfigureLevelExtras(level, forSale, new CombineRecipe[0]);
+            ConfigureLevelDrones(level, spec.Key, context);
 
             var failures = new List<string>();
             for (int attempt = 0; attempt < RoadGenerator.Attempts; attempt++)

@@ -68,7 +68,7 @@ namespace Game.Editor
                 Say(ora, "Perimeter holding. Wave repelled."),
                 Say(mercer, "We woke something up down there."));
 
-            CreateCrystalDialogues(ora, voss, mercer);
+            CreateCrystalDialogues(ora, voss, mercer, context);
 
             foreach (SpecLevel level in context.CampaignLevels)
             {
@@ -163,6 +163,21 @@ namespace Game.Editor
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return dialogue;
+        }
+
+        // A dialogue that introduces a drone kind: the drone panel lights the card up while it plays (DialogueDefinition.IntroducedDrones).
+        private static void CreateDroneIntro(string id, Game.Drones.DroneDefinition drone, params LineSpec[] lines)
+        {
+            if (drone == null)
+            {
+                throw new System.InvalidOperationException($"{id}: the drones must be generated before the level story.");
+            }
+
+            var so = new SerializedObject(CreateDialogue(id, lines));
+            SerializedProperty drones = so.FindProperty("_introducedDrones");
+            drones.arraySize = 1;
+            drones.GetArrayElementAtIndex(0).objectReferenceValue = drone;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static StoryTrigger Trigger(StoryTriggerKind kind, DialogueDefinition dialogue, int wave = 0)

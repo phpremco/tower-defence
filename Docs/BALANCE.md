@@ -268,3 +268,95 @@ het spel komt hoe lastiger, dit moet wel in balans blijven. Maar te makkelijk is
   already bought, by gain per coin; an upgrade step costs its own price and adds only the difference over the level below,
   and air guns kept between waves are charged every step up to their level. Permanent research upgrades (`Progression`)
   scale the towers' damage, rate and range, the hero and the gates before any of that.
+
+## Laser and gun (2026-11-05)
+
+Remco: "laser turret heeft een hoge fire rate, maar lage damage, maar hij is minder effectief dan de gun turret met de
+mieren, dat zou niet moeten, hij is duurder."
+
+**Measured** with a duel simulation that runs the game's own rules frame by frame (`Tools/PlayTest/Scripts/LaserDuel.cs`:
+`Tower.Update` with `Cadence`, the furthest-along target, homing shots wasted on a creature that died before they land, the
+beam's lock): one tower beside a straight road against a stream of one species. *Holding power* = the toughest creature it
+stops with at most 10% leaking, as health per second per 100 coins of the tower's total price.
+
+| Stream | Gun L1 / L2 / L3 | Laser before | Laser after |
+| --- | --- | --- | --- |
+| Skitters every 0.2 s (dense swarm) | 5 / 2 / 38 | 2 / 1 / 1 | 62 / 55 / 46 |
+| Skitters every 0.45 s | 22 / 18 / 33 | 1 / 12 / 10 | 41 / 36 / 41 |
+| Wisps | 23 / 25 / 29 | 24 / 21 / 21 | 33 / 34 / 32 |
+| Prowlers (raging) | 17 / 27 / 25 | 10 / 9 / 15 | 31 / 36 / 31 |
+| Rollers | 20 / 24 / 30 | 18 / 16 / 18 | 31 / 27 / 32 |
+| Cragbacks | 27 / 28 / 32 | 28 / 27 / 28 | 33 / 34 / 34 |
+| A boss (useful DPS per 100 coins) | 29 / 28 / 30 | 30 / 30 / 30 | 30 / 30 / 30 |
+
+**Why it lost:** the beam charged 0.35 s on *every* new target. Towers aim at the creature furthest along the road; in a
+swarm that is the one about to leave reach or the one just killed, so the laser spent most of its time charging: 17% of
+its data DPS against dense Skitters (the gun 92-100%), under 50% against Prowlers. On paper (and in the ledger) it was 30.8
+DPS per 100 coins against the gun's 28.6, so the model counted a laser the game did not have.
+
+**The change (mechanics and three data fields; no damage, rate, range or price changed):**
+- A beam holds its creature until it dies or leaves reach (`Tower.ReleaseBeam`), and charges (`TowerDefinition.BeamLockSeconds`,
+  0.35) only when it was idle. A live beam swings straight on to the next creature.
+- `BeamSweepSeconds` (Laser 0.05): after a kill the beam is on the next creature within 0.05 s instead of waiting out its
+  pulse interval. Small creatures die at the rate the beam can swing, not at its pulse rate: that is the swarm role. On a
+  big creature nothing changes (a plain 40 / 67 / 120 DPS).
+- The Laser's pulse lands the frame it is fired (`ProjectileSpeed` 40 -> 400, the beam's view is unchanged), so it never
+  spends a second pulse on a creature that is already dead.
+
+**Roles now:** the Gun is the cheap all-rounder (the only C1 gun that hits ground and air, 50 to build, fills spots);
+the Laser is the swarm melter on the ground: 1.2 to 2x the gun's holding power per coin against Skitters and Prowlers,
+it alone holds a dense swarm, and 1.05 to 1.2x against heavy creatures; the Cannon is splash and heavy hides.
+
+**In the model: unchanged.** The ledger already counted the laser at its data DPS (30.8 per 100 coins, against the gun's 28.6),
+which the laser now really delivers; against swarms it delivers more. Modelling the sweep (tried tonight: a creature that
+needs k pulses dies in (k-1) intervals plus the sweep, capped at 1.3x) made the solver build Glass Meadows' and Quartz Flats'
+opening waves 10 to 45% tougher (it expects lasers on the first ants), and the probe bot lost both on Medium three runs out of
+three. So a laser player keeps the swarm advantage as surplus, and a gun player is not punished for it.
+
+## Drones, one at a time (2026-11-05)
+
+Remco: "De drones krijgen geen introductie, dit moet wel gebeuren met uitleg in de eerste levels, tot de uitleg er is moet je
+ze niet kunnen kiezen."
+
+**Where each drone first earns its price** (Crystal Plains, from `Tools/PlayTest/Scripts/DroneValue.cs` and the wear the
+probe bot measured, `[Probe] ... wear gates / guns, repairs bought`):
+
+| Level | Gate / gun wear Easy, Medium (HP over the level) | One harvester nets (Easy / Medium / Hard) | Other |
+| --- | --- | --- | --- |
+| C1_01 Landing Site | 500 / 1771, guns 86 / 81 | +24 / +59 / +90 | no gun-biters, one front; the tutorial level |
+| C1_02 Glass Meadows | 490 / 989, guns 22 / 54 | -41 / -21 / +1 (short level, far nodes) | |
+| C1_03 Shard Ridge | 1062 / 1165, guns 0 / 141 | **+39 / +80 / +107** (nearest nodes, 16 waves) | first flyers that bite guns (Skyray) |
+| C1_04 Fault Line | 1500 (Easy), guns 209 | +10 / +41 / +75 | **two ground fronts**, packed raids, bat swarms |
+| C1_05 Quartz Flats | 209 (Easy), guns 18 | +40 / +68 / +97 | |
+| C1_06 Crysium Vein | | +6 / +22 / +50 (far nodes) | 40-54 gun-biters |
+
+A repair drone (120) mends 8 HP a second for free; mending by hand costs 0.3 a health point, so it pays for itself after
+400 HP of wear. A harvester (150) brings 10 ore a trip; a trip is two flights between base and node plus 4 s of mining.
+The attack drone (180, 12 DPS, flies) is poor DPS per coin (a sixth of a gun) but goes where the towers are not.
+
+**Choice (one kind a level):** repair drone at **C1_02** (the gates lose 500 to 1000 health there, more than the drone costs
+to mend by hand; C1_01 stays the tutorial: turrets, the gate, the hero), harvest drone at **C1_03** (the first level where one
+harvester clearly earns its price back; at C1_02 it would lose money), attack drone at **C1_04** (the second road and the
+flyers that bite guns).
+
+**How it works:** `CampaignLevelSpec.IntroduceDrones` names the kinds a level brings in; the generator offers a kind from
+that level on, in campaign order (`ConfigureLevelDrones`; a kind not introduced yet leaves the level's drone slot empty, so
+the panel never shows it and the base's doorstep does not open an empty panel). The intro dialogue (`Dlg_L02_RepairDrone`,
+`Dlg_L03_HarvestDrone`, `Dlg_L04_AttackDrone`, LevelStart, after the level's own opening line, once per save) names its drone
+in `DialogueDefinition.IntroducedDrones`; while it plays the drone panel frames that card in pulsing yellow with a NEW tag,
+and keeps it lit for 15 s afterwards or until the first one is bought. Replaying an earlier level does not offer later
+drones (the same rule as the gadgets sold per level). `DroneIntroTests` guard it: level 1 offers none, an offered kind is
+never taken away, every kind is introduced by a dialogue where it is first offered, an intro plays at level start and only
+names drones the level offers.
+
+**In the model:** `LevelInput.Harvest` (false while the level offers no harvest drone): the ledger books no ore there.
+C1_01 and C1_02 therefore lost the ore money the model used to give them, and their creatures were re-solved to the same
+human curve (mean toughness Easy/Medium/Hard/Psycho: C1_01 1.30/2.29/2.13/2.87 -> 1.03/1.76/1.80/2.42, C1_02
+1.10/1.66/1.51/2.11 -> 0.99/1.34/1.24/1.93). The waves of C1_03 to C1_06 are byte-for-byte what they were.
+
+**Finding, not changed:** the ledger books the nodes' whole stock (less one harvester) over the first 60% of the waves.
+Measured trip times say one harvester mines about a third of that in a level, two about two thirds. A rate-limited ore
+model (tried tonight) took 150 to 250 coins a level off the model's purse, which pushed C1_04 Medium off its curve and C1_03
+Psycho's boss waves over the hero cap. `Utilisation` and `HumanUtilisation` were calibrated against a bot that never
+harvests while the model counted ore, so the ore model and those two calibrations should change together, with a bot that
+buys harvesters. Left for a separate pass.

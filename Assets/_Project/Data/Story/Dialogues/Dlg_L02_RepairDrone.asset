@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d739c3f664720374da6d2402ae0ff1fc, type: 3}
+  m_Name: Dlg_L02_RepairDrone
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.DialogueDefinition
+  _lines:
+  - Id: Dlg_L02_RepairDrone.01
+    Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
+    Segments:
+    - Text: Repair drone cleared for launch. It welds damaged gates and turrets back together on its own.
+      Style: 0
+    GlitchIntensity: 0
+  - Id: Dlg_L02_RepairDrone.02
+    Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
+    Segments:
+    - Text: 'It costs money, like a turret. Drones panel, bottom right: click its card. On a controller, put the cursor on the base and press A.'
+      Style: 0
+    GlitchIntensity: 0
+  - Id: Dlg_L02_RepairDrone.03
+    Speaker: {fileID: 11400000, guid: 5caf20e24e6050f40b85b8db1269e8c2, type: 2}
+    Segments:
+    - Text: Someone to patch the gate while I hold it. Good.
+      Style: 0
+    GlitchIntensity: 0
+  _introducedDrones:
+  - {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

@@ -69,14 +69,31 @@ namespace Game.Editor
             public TowerDefinition[] Hybrids => new[] { Artillery, StormRifle, CryoBeam };
         }
 
+        // A beam pulse lands the frame it is fired (it crosses any tower's reach in one frame), so the beam knows at once
+        // that its creature died and never spends a second pulse on it.
+        private const float BeamSpeed = 400f;
+
+        // How soon the laser's beam is on the next creature after a kill: three frames at 60 fps.
+        private const float LaserSweepSeconds = 0.05f;
+
+        private static void SetBeam(TowerDefinition tower, float sweepSeconds)
+        {
+            var so = new SerializedObject(tower);
+            so.FindProperty("_beamSweepSeconds").floatValue = sweepSeconds;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         private static Roster CreateRoster(TowerDefinition pulse, TowerDefinition cannon, TowerDefinition rocket)
         {
             var roster = new Roster { Pulse = pulse, Cannon = cannon, Rocket = rocket };
 
-            // Fast single-target damage on the ground; a stand-in for a continuous beam until it has its own effect.
+            // The swarm gun: fast light pulses on the ground. The beam lands at once (hitscan speed), holds its creature and
+            // sweeps on to the next one right after a kill (2026-11-05, Docs/BALANCE.md "Laser and gun"), so small creatures
+            // die at the rate the beam can swing, not at its pulse rate; on a big creature it is a plain 40 DPS.
             // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
-            roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, 40f, 0f, new Color(0.35f, 0.9f, 1f),
+            roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, BeamSpeed, 0f, new Color(0.35f, 0.9f, 1f),
                 new[] { Lvl(110, 8f, 3.9f, 0.2f), Lvl(130, 12f, 4.1f, 0.18f), Lvl(190, 18f, 4.4f, 0.15f) }, 160f);
+            SetBeam(roster.Laser, LaserSweepSeconds);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
                 new[] { Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Lvl(110, 2f, 4f, 0.45f, 0f, 0.42f, 3f), Lvl(160, 2f, 4.3f, 0.4f, 0f, 0.35f, 4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
@@ -183,21 +200,58 @@ namespace Game.Editor
             return asset;
         }
 
-        // Path objects, drones and recipes are shared by all levels; each level only chooses which it sells.
-        private static void ConfigureLevelExtras(
-            LevelDefinition level,
-            PathObjectDefinition[] pathObjects,
-            CombineRecipe[] recipes,
-            DroneDefinition repairDrone,
-            DroneDefinition harvestDrone,
-            DroneDefinition attackDrone)
+        // Path objects and recipes are shared by all levels; each level only chooses which it sells.
+        private static void ConfigureLevelExtras(LevelDefinition level, PathObjectDefinition[] pathObjects, CombineRecipe[] recipes)
         {
             var so = new SerializedObject(level);
             SetReferences(so.FindProperty("_pathObjects"), pathObjects);
             SetReferences(so.FindProperty("_recipes"), recipes);
-            so.FindProperty("_repairDrone").objectReferenceValue = repairDrone;
-            so.FindProperty("_harvestDrone").objectReferenceValue = harvestDrone;
-            so.FindProperty("_attackDrone").objectReferenceValue = attackDrone;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // A drone kind is offered from the level whose spec introduces it on, in campaign order, and never taken away again
+        // (Remco 2026-11-05: no drone before its introduction). A kind not introduced yet leaves its slot empty.
+        private static void ConfigureLevelDrones(LevelDefinition level, string key, GeneratorContext context)
+        {
+            var offered = new HashSet<string>();
+            foreach (CampaignLevelSpec[] continent in LevelSpecs.Continents)
+            {
+                foreach (CampaignLevelSpec spec in continent)
+                {
+                    offered.UnionWith(spec.IntroduceDrones);
+                    if (spec.Key == key)
+                    {
+                        WriteDrones(level, offered, context);
+                        return;
+                    }
+                }
+            }
+
+            throw new System.InvalidOperationException($"No campaign spec with key {key}.");
+        }
+
+        private static void WriteDrones(LevelDefinition level, HashSet<string> offered, GeneratorContext context)
+        {
+            foreach (DroneDefinition drone in context.Drones)
+            {
+                if (drone == null)
+                {
+                    throw new System.InvalidOperationException("The drones must be generated before the campaign levels.");
+                }
+            }
+
+            foreach (string id in offered)
+            {
+                if (System.Array.Find(context.Drones, d => d.name == id) == null)
+                {
+                    throw new System.InvalidOperationException($"A level spec introduces drone '{id}', which does not exist.");
+                }
+            }
+
+            var so = new SerializedObject(level);
+            so.FindProperty("_repairDrone").objectReferenceValue = offered.Contains(context.RepairDrone.name) ? context.RepairDrone : null;
+            so.FindProperty("_harvestDrone").objectReferenceValue = offered.Contains(context.HarvestDrone.name) ? context.HarvestDrone : null;
+            so.FindProperty("_attackDrone").objectReferenceValue = offered.Contains(context.AttackDrone.name) ? context.AttackDrone : null;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

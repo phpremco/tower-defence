@@ -284,7 +284,7 @@ MonoBehaviour:
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}
   _harvestDrone: {fileID: 11400000, guid: 369a11c383f30ee44bc444c28fda4318, type: 2}
-  _attackDrone: {fileID: 11400000, guid: fb56937d94918464f8d78565425ee115, type: 2}
+  _attackDrone: {fileID: 0}
   _recipes: []
   _pathObjects: []
   _availableTowers:
@@ -315,6 +315,12 @@ MonoBehaviour:
     Enemy: {fileID: 0}
     PathObject: {fileID: 0}
     Dialogue: {fileID: 11400000, guid: 069a66ec5dcd57b46aa7daeacfd4099c, type: 2}
+    Repeat: 0
+  - Kind: 0
+    Wave: 0
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 1976000b4beb47f48bbb839339d30556, type: 2}
     Repeat: 0
   - Kind: 2
     Wave: 0

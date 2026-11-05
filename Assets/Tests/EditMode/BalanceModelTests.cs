@@ -44,6 +44,19 @@ namespace Game.Tests
         private static DifficultyStats Medium => new DifficultyStats { Id = "Medium", Index = 1 };
 
         [Test]
+        public void Mines_PayNothing_InALevelWithoutAHarvestDrone()
+        {
+            LevelInput level = Level(Rifle());
+            level.MineCount = 3;
+            level.MineStock = 140;
+            level.HarvesterCost = 150;
+
+            Assert.Greater(Ledger.MoneyAt(level, 10, 12, 0f, Rules), 200, "with a harvest drone the nodes pay");
+            level.Harvest = false;
+            Assert.AreEqual(200, Ledger.MoneyAt(level, 10, 12, 0f, Rules), "no harvest drone offered yet: the ore stays in the ground");
+        }
+
+        [Test]
         public void Reward_GrowsWithThreat_AndBossesPayMore()
         {
             EnemyStats small = Walker("Small", 20f);

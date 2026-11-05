@@ -269,6 +269,12 @@ MonoBehaviour:
     PathObject: {fileID: 0}
     Dialogue: {fileID: 11400000, guid: fc7405bd0fe06c04e99bd4647761b538, type: 2}
     Repeat: 0
+  - Kind: 0
+    Wave: 0
+    Enemy: {fileID: 0}
+    PathObject: {fileID: 0}
+    Dialogue: {fileID: 11400000, guid: 9f47f21af4dc4584d8b6de6061650287, type: 2}
+    Repeat: 0
   - Kind: 3
     Wave: 0
     Enemy: {fileID: 11400000, guid: b45db3e3f620dde419c95d8f782bef7e, type: 2}

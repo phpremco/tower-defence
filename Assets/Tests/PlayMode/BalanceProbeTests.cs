@@ -244,6 +244,14 @@ namespace Game.Tests
             public int Repairs;
             public int Post = -1;
             public int Fallback = -1;
+
+            /// <summary>Money spent on repairs in the whole run (the work a repair drone would do for free).</summary>
+            public int RepairSpent;
+
+            /// <summary>Health the gates and the guns lost in the whole run, and the health each had at the last look.</summary>
+            public float GateDamage;
+            public float TowerDamage;
+            public readonly Dictionary<Tower, float> LastHealth = new Dictionary<Tower, float>();
         }
 
         /// <summary>The ledger's view of one run: its lines for the trace, and the wave loads and level input the bot judges its own towers with.</summary>
@@ -375,6 +383,7 @@ namespace Game.Tests
                         }
 
                         trace.Sample(towers, note);
+                        MeasureWear(watch, towers, gates);
                         nextBuy -= Time.deltaTime;
                         if (nextBuy <= 0f)
                         {
@@ -408,7 +417,7 @@ namespace Game.Tests
                     FlyerBaseHits = trace.FlyerBaseHits,
                     BaseDamage = context.BaseHealth.Max - context.BaseHealth.Current,
                 });
-                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}");
+                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
             }
 
             Application.logMessageReceived -= onLog;
@@ -920,7 +929,7 @@ namespace Game.Tests
             }
 
             if (gate != null && watch.Repairs < GateRepairsPerWave && gate.NeedsRepair && (gate.IsWrecked || gate.HealthFraction < RepairBelow)
-                && context.Wallet.TrySpend(gate.RepairCost))
+                && Spend(context, watch, gate.RepairCost))
             {
                 gate.RepairFully();
                 watch.Repairs++;
@@ -929,7 +938,7 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                if (tower.NeedsRepair && tower.HealthFraction < RepairBelow && context.Wallet.TrySpend(tower.RepairCost))
+                if (tower.NeedsRepair && tower.HealthFraction < RepairBelow && Spend(context, watch, tower.RepairCost))
                 {
                     tower.RepairFully();
                     return true;
@@ -937,6 +946,39 @@ namespace Game.Tests
             }
 
             return false;
+        }
+
+        private static bool Spend(LevelContext context, GateWatch watch, int cost)
+        {
+            if (!context.Wallet.TrySpend(cost))
+            {
+                return false;
+            }
+
+            watch.RepairSpent += cost;
+            return true;
+        }
+
+        // Every structure's lost health since the last frame, gates and guns apart; repairs and rebuilds only raise it.
+        private static void MeasureWear(GateWatch watch, List<Tower> towers, List<Tower> gates)
+        {
+            foreach (Tower gate in gates)
+            {
+                watch.GateDamage += Lost(watch, gate);
+            }
+
+            foreach (Tower tower in towers)
+            {
+                watch.TowerDamage += Lost(watch, tower);
+            }
+        }
+
+        private static float Lost(GateWatch watch, Tower structure)
+        {
+            float now = structure.Health.Current;
+            float lost = watch.LastHealth.TryGetValue(structure, out float before) ? Mathf.Max(0f, before - now) : 0f;
+            watch.LastHealth[structure] = now;
+            return lost;
         }
 
         private static float NextSpotQuality(LevelContext context, BuildSpots spots, List<Tower> towers) =>

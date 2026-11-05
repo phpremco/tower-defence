@@ -26,6 +26,9 @@ namespace Game.Balance
         public LevelShape Shape = new LevelShape();
         public int MineCount;
         public int MineStock;
+
+        /// <summary>False when this level offers no harvest drone yet: the ore stays in the ground.</summary>
+        public bool Harvest = true;
         public int HarvesterCost;
 
         /// <summary>The guns the player owns at this point of the campaign and this level sells.</summary>
@@ -173,9 +176,10 @@ namespace Game.Balance
 
         private static int Cap(LevelInput level, BalanceRules rules) => rules.TowersPerFront * Math.Max(1, level.Shape.GroundFronts(rules.TrunkReference));
 
+        // Only a level that offers a harvest drone mines its nodes (drones arrive one kind a level since 2026-11-05).
         private static int MineIncome(LevelInput level, int waveIndex, int waveCount, BalanceRules rules)
         {
-            if (level.MineCount == 0 || waveIndex < rules.MinesOpenFromWave)
+            if (!level.Harvest || level.MineCount == 0 || waveIndex < rules.MinesOpenFromWave)
             {
                 return 0;
             }

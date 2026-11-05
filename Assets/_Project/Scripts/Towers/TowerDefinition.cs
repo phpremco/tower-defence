@@ -53,6 +53,12 @@ namespace Game.Towers
         [SerializeField] private TowerShape _shape;
         [SerializeField] private ProjectileStyle _projectileStyle;
 
+        [Tooltip("Beam only: seconds the beam charges before its first pulse when it was idle. A live beam swings on to the next creature without charging.")]
+        [SerializeField] [Min(0f)] private float _beamLockSeconds = 0.35f;
+
+        [Tooltip("Beam only: after a kill the beam sweeps on to the next creature this soon, instead of waiting out its pulse interval. Zero waits the full interval.")]
+        [SerializeField] [Min(0f)] private float _beamSweepSeconds;
+
         /// <summary>The imported model per level; when set it replaces the procedural shape.</summary>
         [SerializeField] private TowerArtDefinition _art;
         [Tooltip("A gate's imported look (pylons, beam, panels, wreck); empty keeps the procedural gate.")]
@@ -84,6 +90,13 @@ namespace Game.Towers
 
         /// <summary>How this tower's shots look and sound.</summary>
         public ProjectileStyle ProjectileStyle => _projectileStyle;
+
+        /// <summary>A beam holds one creature until it dies or leaves reach, instead of picking a target every pulse.</summary>
+        public bool IsBeam => _projectileStyle == ProjectileStyle.Laser;
+
+        public float BeamLockSeconds => _beamLockSeconds;
+
+        public float BeamSweepSeconds => _beamSweepSeconds;
 
 
         /// <summary>The imported (Blender) look, or null for the procedural shape.</summary>

@@ -1,0 +1,31 @@
+Harvest drone: cost 150, speed 4, 10 ore per trip, 4s mining
+Level_C1_01 (Landing Site): 3 nodes x 140, distance nearest 10.3 mean 20.0, trip 14.0s, 43 ore/min per drone
+  Easy    12 waves, 5.1 min; payback 263s; one drone nets 24 (of 336 ore), two net 36; creatures 563, gun-biters 0, flyers 0
+  Medium  12 waves, 5.1 min; payback 221s; one drone nets 59 (of 399 ore), two net 99; creatures 554, gun-biters 0, flyers 0
+  Hard    12 waves, 5.1 min; payback 191s; one drone nets 90 (of 462 ore), two net 162; creatures 536, gun-biters 0, flyers 0
+  Psycho  12 waves, 5.2 min; payback 191s; one drone nets 93 (of 462 ore), two net 162; creatures 522, gun-biters 0, flyers 0
+Level_C1_02 (Glass Meadows): 3 nodes x 140, distance nearest 15.7 mean 24.4, trip 16.2s, 37 ore/min per drone
+  Easy    12 waves, 3.7 min; payback 304s; one drone nets -41 (of 336 ore), two net -81; creatures 476, gun-biters 0, flyers 0
+  Medium  12 waves, 3.7 min; payback 256s; one drone nets -21 (of 399 ore), two net -43; creatures 476, gun-biters 0, flyers 0
+  Hard    12 waves, 3.7 min; payback 221s; one drone nets 1 (of 462 ore), two net 3; creatures 459, gun-biters 0, flyers 0
+  Psycho  12 waves, 3.8 min; payback 221s; one drone nets 5 (of 462 ore), two net 10; creatures 443, gun-biters 0, flyers 0
+Level_C1_03 (Shard Ridge): 3 nodes x 140, distance nearest 10.3 mean 16.9, trip 12.5s, 48 ore/min per drone
+  Easy    16 waves, 4.9 min; payback 234s; one drone nets 39 (of 336 ore), two net 36; creatures 571, gun-biters 11, flyers 11
+  Medium  16 waves, 5.0 min; payback 197s; one drone nets 80 (of 399 ore), two net 99; creatures 575, gun-biters 15, flyers 15
+  Hard    16 waves, 4.8 min; payback 170s; one drone nets 107 (of 462 ore), two net 162; creatures 489, gun-biters 23, flyers 23
+  Psycho  16 waves, 5.0 min; payback 170s; one drone nets 117 (of 462 ore), two net 162; creatures 481, gun-biters 25, flyers 25
+Level_C1_04 (Fault Line): 3 nodes x 140, distance nearest 7.5 mean 20.6, trip 14.3s, 42 ore/min per drone
+  Easy    16 waves, 4.8 min; payback 268s; one drone nets 10 (of 336 ore), two net 20; creatures 470, gun-biters 10, flyers 10
+  Medium  16 waves, 4.8 min; payback 226s; one drone nets 41 (of 399 ore), two net 82; creatures 446, gun-biters 18, flyers 18
+  Hard    16 waves, 4.9 min; payback 195s; one drone nets 75 (of 462 ore), two net 149; creatures 422, gun-biters 26, flyers 26
+  Psycho  16 waves, 4.9 min; payback 195s; one drone nets 77 (of 462 ore), two net 155; creatures 386, gun-biters 30, flyers 30
+Level_C1_05 (Quartz Flats): 3 nodes x 140, distance nearest 17.6 mean 21.2, trip 14.6s, 41 ore/min per drone
+  Easy    17 waves, 5.8 min; payback 274s; one drone nets 40 (of 336 ore), two net 36; creatures 695, gun-biters 8, flyers 8
+  Medium  17 waves, 5.6 min; payback 230s; one drone nets 68 (of 399 ore), two net 99; creatures 652, gun-biters 17, flyers 17
+  Hard    17 waves, 5.5 min; payback 199s; one drone nets 97 (of 462 ore), two net 162; creatures 614, gun-biters 23, flyers 23
+  Psycho  17 waves, 5.5 min; payback 199s; one drone nets 100 (of 462 ore), two net 162; creatures 591, gun-biters 27, flyers 27
+Level_C1_06 (Crysium Vein): 3 nodes x 140, distance nearest 22.5 mean 32.6, trip 20.3s, 30 ore/min per drone
+  Easy    18 waves, 6.6 min; payback 381s; one drone nets 6 (of 336 ore), two net 11; creatures 549, gun-biters 40, flyers 39
+  Medium  18 waves, 6.1 min; payback 321s; one drone nets 22 (of 399 ore), two net 43; creatures 525, gun-biters 44, flyers 43
+  Hard    18 waves, 6.2 min; payback 277s; one drone nets 50 (of 462 ore), two net 101; creatures 499, gun-biters 44, flyers 43
+  Psycho  18 waves, 6.0 min; payback 277s; one drone nets 45 (of 462 ore), two net 90; creatures 427, gun-biters 54, flyers 53

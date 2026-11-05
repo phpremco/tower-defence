@@ -373,7 +373,8 @@ namespace Game.Levels
                 _context.HeroMenuPost = HeroPostAt(_cursor);
                 _cellMessage = string.Empty;
             }
-            else if (IsBaseCell(_cursor))
+            // The base's doorstep opens the drone panel, once the level offers drones at all.
+            else if (IsBaseCell(_cursor) && _context.Level.Drones.Length > 0)
             {
                 _context.BaseMenuOpen = true;
                 _cellMessage = string.Empty;
