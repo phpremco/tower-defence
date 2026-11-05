@@ -915,3 +915,29 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Warden-concepten | Blockouts: buizen als ledematen, ijsbarsten te regelmatig, kieuwgloed wordt wit. A lijkt het meest op een gorilla/golem. B: poten lezen als flippers (schildpad); de kroon staat van achteren op zijn kant. C: dunne poten en een kleine kop op spelzoom |
 | Slakken-strike | Rek komt uit vier botten: de mantel blijft bij volle reik wat stijf. De streepjes op de voetzool rekken zichtbaar. Flood's oprichten leest van boven verkort. Terugveren is subtiel bij de kleine Oozer |
 | Boortoren-collapse | Frame 0 heeft geen cyaan gloed (valt weg in de stofwolk). Het platte motorhuis ligt van bovenaf onder het vakwerk. Het middenstuk rust iets hoog op de geknikte poten. Sommige schoren vliegen 3-4 m ver |
+
+### Ronde 32 (Frost Warden wordt de Rime Colossus, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 32.
+
+- **Concept A uitgewerkt:** de Warden is nu een gebogen knokkelloper. Zware onderarmen eindigen in ijsknotsen op de
+  vuisten (wapen én voeten). Een bult met vijf schildbanden, drie vorstkieuwen per flank en een ijspegelkam. Een lage
+  wigkop met drie oranje ogen, kaakplaten en een cyaan muil tussen de vuisten.
+  - Formaat: 6,0 x 5,7 x 4,6 m, 4,8 m tot de pegels.
+  - Polygonen en maps: 23.995 tris (LOD 9.500) + pantser 3.788 (LOD 1.700). Dezelfde drie materialen en mapnamen.
+- **Pantser:** `Armour_1` voorste rugschots, 2/3 schouderstukken, 4 achterste rugschots, 5/6 handschoenen op de
+  onderarm, 7/8 dijschotsen. `Icicle_1..5` staan op de bultkam.
+- **Clips:** dezelfde namen; `Shatter_Through` is nu 100 frames. Nieuwe feiten in het rapport:
+  - poortafstand 4,3 (was 2,6); Shatter-impact 35 (was 48), eindverschuiving 3,8;
+  - Climb rand 2,4, eind 5,571; Climb_Loop 1,143;
+  - diepte onder water 4,897; Dive/Burst eind 2,8;
+  - Walk 1,429 en WalkEnraged 1,857 per loop.
+- **Unity:**
+  - Opnieuw importeren.
+  - `BodyHalfWidth` van de Frost Warden van 1,25 naar ~2,0.
+  - Camera en hoogte van de levensbalk controleren.
+  - Alles wat pantserplaten op index plaatst controleren.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Frost Warden (ronde 32) | Recht van voren nog een aapachtige houding (schildbanden, ogen en kieuwen dragen het buitenaardse). Schouder- en elleboogbollen nog zichtbaar van opzij. IJs leest in de studio als glanzend glas (in Unity beslist IceLook). Groot naast een G2-poort; de kop kan de poort verbergen op castafstand. Climb/Submerged/Burst gebruiken de generieke bossgang (vuisten niet hoger dan de achterpoten). Vuisten glijden iets bij de overgang ijsslag naar duik (frames 22-30). In Shatter_Through rekken de armen bij de lange stap (64-88) |

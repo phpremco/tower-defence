@@ -2769,3 +2769,92 @@ with a bent kelly (no torpedo); every lit part is burnt, the only light is a few
 Weak points: the standing frame has no cyan glow (hidden under the impact dust); the crushed house sits under the
 lattice from the game camera; the middle section rests a little high on the bent legs; some braces fly 3-4 m out,
 possibly outside the dust; the kelly is a plain square bar with a small torn cap.
+
+## Round 32: the Frost Warden becomes the Rime Colossus (2026-11-05)
+
+Remco picked concept A of round 31. The brief: the anatomy must read instantly from the 44-degree game camera, with no
+tube limbs, natural cracks, glow that never clips to white, and no plain gorilla or golem. Previews and the round-30
+backup are in the session scratchpad, `blender32/` (`block1/`, `block2/`, `body1/`, `body2/`, `mech1/`, `mech2/`,
+final `body/`, `clips/`, `game/`, backup in `backup/`).
+
+**One anatomy:** a hunched knuckle-walker. Almost all of the mass sits in the shoulders and forearms:
+
+- **Arms:** the forearms flare towards the wrist and carry grown-ice mauls on the fists. The fists are both the feet
+  and the weapon.
+- **Back and head:** the hump rises behind the shoulders. The head is a low, flat wedge slung forward between the
+  fists, so from the camera the eyes and the maw are the obvious front.
+- **Hind legs:** short and thick, pushing from behind.
+- **Armour:** the floes sit where the mass is: the pauldrons, the gauntlets on the forearms, two back floes, and the
+  thighs.
+- **Rage telegraph:** the icicle crest stands on the hump ridge, the highest point, so it shows from every angle.
+
+**Against the gorilla/golem read (the round-31 weak point of A):**
+
+- **Carapace:** five shingled bands run over the hump and back, each tucked under the one in front. They are darker
+  and bluer than the hide and have pale frosted rims. They make it an armoured alien (an insect echo for the alien
+  race), not a furry ape.
+- **Head:** three amber eyes in a triangle and four mandible plates round a cyan maw. Swept-back horn brows replace a
+  face.
+- **Vents:** three frost vents run along each flank of the hump (raised lips round a cyan throat). Crystals grow out
+  of the vents.
+- **Ice growing out of the body:** elbow spurs, a ridge on the outer forearm, knee spurs, brow crystals and a rump
+  cluster. This ice is part of the body (the `Ice` material), so it stays when the armour breaks.
+- **Hide, not stone:** leathery folds, pores and dark broken bands across the body.
+- **Cracks:** a warped world-space Voronoi whose borders mostly stay shut, vary in width and send off only a few
+  hairlines. They are denser on the carapace. One field covers the whole body, so a crack runs across part seams.
+  The first bake cracked every border evenly and read as a stone golem.
+- **Glow:** baked emission is at most ~0.5 in the vents and maw and ~0.4 in crack cores. The eyes are smaller and
+  dimmer (0.55) after the first bake rendered them as yellow-white blobs.
+
+**Massing (no tube limbs):**
+
+- **Arms:** shoulder ball, a shorter and thinner upper arm with a bicep mass, a small elbow ball, then the
+  forearm (tube plus an outer muscle mass, radius 0.42 at the elbow to 0.72 at the wrist), the fist and the maul.
+- **Legs:** a big thigh mass, a knee ball, a short shin and a splayed foot with two claws.
+- **Trunk:** the pelvis and belly were slimmed after blockout 2, where the rump read as a round backside.
+- **Bend:** the arm lengths (1.48 + 1.7 + 0.5) leave a real elbow bend at rest, and the pole flares the elbows out
+  and back, so from above the arms bow round the head instead of standing as columns.
+
+**Ice:**
+
+- **Look:** a lighter frosted version of `ice_kit.frost_ice` (more clear blue, rime on the facet ridges and up
+  faces, crack light 0.42), shared by the mauls, the grown ice and the armour.
+- **Why:** bake 2 read as dark teal glass with near-white crack lines.
+- `ice_kit` itself is unchanged; its props keep their look.
+
+**Motion:**
+
+- **Gait:** a lateral-sequence knuckle walk (left hind, left fist, right hind, right fist). The body drops onto each
+  landing fist, the shoulders yaw with the swinging arm, the head counter-yaws to stay on its target, and the fists
+  swing round, not through.
+- **Attacks are lunges, not bobs:**
+  - FreezePulse and Shatter_Through rear the whole body back about the hips, curl the fists together over the head,
+    then hammer them down with the body following the blow and squashing.
+  - Enrage throws the fists wide and slams them.
+  - Freeze_Gate inhales (rears, head up), then thrusts the wedge head low and forward with the maw wide.
+- **Arm IK:** the fists are the arms' feet. Every clip poses them by IK, with the fist direction set per pose
+  (knuckles down to walk, knuckles up overhead).
+
+**Iterations:**
+
+1. **Blockout 1:** gorilla read (a smooth balloon hump, pillar arms, a small hidden head).
+2. **Blockout 2:** carapace bands, head pushed forward and enlarged, elbows flared.
+3. **Bake 1:** an even crack network (golem), mauls hidden inside the fists, eyes clipping.
+4. **Bake 2:** sparse cracks, a bluer carapace, big mauls, armour floes enlarged ~1.25x; the ice still dark teal.
+5. **Bake 3 (final):** lighter frosted ice and dimmer crack light.
+
+### Honest weak points
+
+- **Silhouette:** from straight in front it is still an ape-like stance. The carapace, eyes and vents carry the
+  alien read, and that gets weaker at true play zoom.
+- **Joints:** the shoulder and elbow balls still show as rounded joints from the side. A muscle pass (deltoid into
+  the carapace) would help.
+- **Ice:** reads as glossy glass in the studio renders. In game the IceLook rim and glow decide it.
+- **Size:** the Warden is large next to a G2 gate (2.68 m): 6.0 m wide from fist spike to fist spike, 5.7 m long,
+  4.8 m to the icicle tips (round 30: 3.6 x 5.7 x 5.7). From the game camera the head can hide the gate at the cast
+  distance. Unity's `BodyHalfWidth` (1.25) is now too small, about 2.0 fits.
+- **Generic clips:** Climb_*, Submerged_Loop and Surface_Burst use the shared boss gait, so the fists lift no higher
+  than the hind feet there.
+- **Dive:** the ice smash blends into the generic dive between frames 22 and 30. The fists slide a little there.
+- **Shatter_Through:** the rear (frames 8-31) lifts the head out of a tight game frame. The arm step at 64-88 is
+  long (2.4 m), so the arms stretch.

@@ -2801,3 +2801,128 @@ Not edited here (shared). Add this line right after `"build_slimemonarch.py",` (
 
 The drill collapse needs no line (`build_bosses29_props.py` is listed and calls `build_drill_collapse.py`, a
 module). `build_warden_concepts.py` is QA only (do not list it).
+
+## Round 32: the Frost Warden becomes the Rime Colossus (2026-11-05)
+
+Brief: Remco picked concept A of round 31. The finished model replaces the round-30 Warden under the same names
+(`Exports/FrostWarden/`, `Blend/FrostWarden.blend`). Design notes and weak points are in `DESIGN_NOTES.md` (round 32).
+Nothing is imported into Unity, and the shared modules are untouched.
+
+**Scripts:**
+
+- **Rewritten:**
+  - `build_frostwarden.py`: body, ice, rig and the seven base clips. `--blockout` gives a raw-parts preview in ~40 s.
+  - `build_frostwarden_mech.py`: armour, markers and the mechanic clips.
+- **New:** `round32_views.py` (QA only): a turntable, game-camera views next to a Gate_G2 and a Tower_Gun_T2, and
+  game-angle clip strips:
+  `blender --background --factory-startup --python Tools/Blender/round32_views.py -- --preview <dir> [--gate 4.3]
+  [--clips Walk,Freeze_Gate,...]`.
+- **Run order (unchanged):** `build_frostwarden.py` (~5 min), then `build_frostwarden_mech.py` (~4 min).
+
+### Model
+
+- **Body plan:** a hunched knuckle-walker.
+  - **Arms:** the forearms are the dominant mass. They flare to the wrist and end in fists that carry grown-ice mauls
+    with three knuckle spikes.
+  - **Back:** a hump plated with five carapace bands, with three frost vents on each flank and the rage-icicle crest
+    on the ridge.
+  - **Head:** a low wedge slung forward between the fists, with three amber eyes, a cyan maw and four mandible plates.
+  - **Hind legs:** short and thick.
+- **Size:** 6.0 x 5.7 x 4.6 m (w x l x h) at Unity scale 1, 4.8 m to the icicle tips (round 30: 3.6 x 5.7 x 5.7).
+  Keep `TitanFactor`.
+- **Pivot:** on the ground under the middle of the body. The knuckles touch down 1.95 ahead, the hind toes 1.25
+  behind.
+- **Meshes and maps:**
+
+| Object | Tris (LOD1) | Material | Maps (Low) |
+| --- | --- | --- | --- |
+| `FrostWarden` | 23,995 (9,500): body 17,502 + ice 6,493 | `FrostWarden_Mat` (hide and carapace) + `FrostWarden_Ice_Mat` (mauls and grown ice) | 1024 (512) each, `FrostWarden_*` / `FrostWarden_Ice_*` |
+| `FrostWarden_IceArmour` | 3,788 (1,700), 21 islands, none mixed | `FrostWarden_IceArmour_Mat` | 512 (256) |
+
+- **Detail tiling:** body rock 16.5 (B) / chitin 33.1 (A); ice crystal 20.8 / rock 12.2. The full values are in the
+  report under `detail`.
+- **Looks:**
+  - **Hide:** cold slate, light on top, near-black below, with leathery folds, pores and dark broken bands.
+  - **Carapace:** bluer and darker, with frosted rims.
+  - **Cracks:** sparse and irregular, with a thin cyan core.
+  - **Glow:** the vents and maw bake at 0.5 or less and the crack cores at 0.4 or less, so nothing clips. The amber
+    eyes bake at 0.55.
+  - **Ice:** a lighter `frost_ice` (`ICE_LOOK`): clear blue, rime on the ridges and up faces, crack light 0.42.
+
+### Rig (37 bones, LOD1 36 without `Neck`)
+
+`Root, Hips, Spine` (hump), `Chest` (shoulder girdle), `Neck, Head, Jaw`, and three-bone limbs
+`Arm_<L|R>_Upper/Fore/Fist` (the fist is the arm's foot) and `Leg_<L|R>_Upper/Lower/Foot`. Markers and sockets:
+
+| Bone | What | Parent |
+| --- | --- | --- |
+| `IK_Arm_L/R` | knuckle contact (round-28 foot marker) | `Arm_*_Fist` |
+| `IK_Leg_L/R` | hind toe contact | `Leg_*_Foot` |
+| `Socket_Breath` | the maw; +Y points forward and slightly down (the breath cone) | `Head` |
+| `Armour_1` | front back floe, between the shoulders | `Chest` |
+| `Armour_2` / `Armour_3` | left / right pauldron (two spikes) | `Arm_L_Upper` / `Arm_R_Upper` |
+| `Armour_4` | rear back floe, over the hips | `Spine` |
+| `Armour_5` / `Armour_6` | left / right gauntlet over the forearm | `Arm_L_Fore` / `Arm_R_Fore` |
+| `Armour_7` / `Armour_8` | left / right thigh floe | `Leg_L_Upper` / `Leg_R_Upper` |
+| `Icicle_1..5` | rage crest on the hump ridge: centre (tallest), left, right, rear left, rear right | `Spine` |
+
+**Removed bones:** `Halo`, `Abdomen_1/2`, `Arm_*_Blade`, `Leg_*1/2_*`, `IK_Leg_L1..R2`. Unity references none of
+them; it uses `Socket_Breath`, `Icicle_1..5`, `Armour_*` and `FrostWarden_IceArmour`, which all keep their names.
+
+`check_clip_scales.py --bones Armour_,Icicle_` on both FBX files: every clip is at scale 1 except Armour_Break.
+`inspect_fbx.py` finds two meshes per FBX and 16 clips.
+
+### Clips (same names; report `round28.clips` re-measured)
+
+| Clip | Frames | Loop | Events and facts |
+| --- | --- | --- | --- |
+| Walk | 64 | yes | lateral-sequence knuckle walk; **1.429 per loop** (was 1.184); left hind lands 0, left fist 16, right hind 32, right fist 48 |
+| WalkEnraged | 40 | yes | lower, mouth open, longer stride; **1.857 per loop** (was 1.539) |
+| Idle | 120 | yes | breathing hump, head scan, regrips the left fist at 64-88 |
+| Hit | 16 | no | recoil back, head snaps |
+| Death | 84 | no | staggers, the arms buckle outwards, the chest crashes down between the fists, rolls onto its left side |
+| FreezePulse | 64 | no | rears, fists curled over the head 14-24, both fists hammer the ground **2.7 ahead at 30** (frost ring origin; frame unchanged) |
+| Enrage | 48 | no | rears with fists thrown wide, roars, **slams at 22**, settles into the WalkEnraged hunch |
+| Climb_Up / Climb_Down | 210 / 210 | no | ledge 1.5 (unchanged); **edge 2.4 ahead** (was 1.657); **end offset 5.571 fwd** (was 4.617), +-1.5; the fists land on the top first |
+| Climb_Loop | 93 | yes | **1.143 per loop** (was 0.947) |
+| Dive_Into_Liquid | 70 | no | fists over the head, smash the ice sheet at **18**, take-off 22, splash 30, under 56; **end offset 2.8** (was 2.6) |
+| Submerged_Loop | 96 | yes | **depth 4.897** (was 5.972), mesh top -0.2 |
+| Surface_Burst | 64 | no | breach 16, land 32; **end offset 2.8** (was 2.6) |
+| Freeze_Gate | 64 | no | **gate 4.3 ahead** (was 2.6); inhales 2-22, head thrust, **cast 30** (breath from `Socket_Breath`, held to 44) |
+| Shatter_Through | **100** (was 84) | no | **gate 4.3 ahead**; crouch, rear with the fists over the head 22-31, the fists hit the frozen gate's top at **impact 35** (was 48) and are through to the ground by 40; lunge; **end offset 3.8** (was 3.078), then WalkEnraged |
+| Armour_Break | 56 | no | floes burst off 12-35 (order 1, 4, 2, 3, 5, 6, 7, 8), roar, hunch; the icicles stay |
+
+### Unity notes
+
+- **Travel facts:** `BlenderTravelClips` reads the anchors and events from the report. The walk speeds come from
+  `walk_distance_per_loop` / `walk_enraged_distance_per_loop`. Re-import, then check:
+  - `BlenderClipSpec("FreezePulse", Power, 30)` still matches.
+  - Enrage now has a slam at 22 if a moment is wanted there.
+- **Gate distance:** 4.3 m (was 2.6) for both Freeze_Gate and Shatter_Through. The head reaches about 3.0 m, and the
+  2.07 m deep ice block would intersect it at a smaller distance.
+- **Body size:** `BodyHalfWidth` in `ProjectGenerator.Bosses.cs` is 1.25; the new body is about 6 m wide over the
+  fists, so about 2.0 fits (route clearance, wake size). The Warden is wider and lower than before: check the
+  camera framing and the health-bar height (top 4.6-4.8 m).
+- **IceLook:** keep it (no flat colour, emission x ~2). The maps are lighter now; if the ice reads too glassy in game,
+  raise the rim or lower the smoothness.
+- **Armour and icicles:**
+  - The armour plate mapping changed (table above). Anything placed by plate index should be checked.
+  - The icicles still scale 0.2 to 1.0 from their roots.
+- **Climb:** Climb_Up/Down travel 5.57 m now (a longer body).
+
+### Previews
+
+In the session scratchpad, `blender32/`:
+
+- `backup/`: the round-30 exports, `.blend` and scripts.
+- `block1/`, `block2/`: blockouts with game views.
+- `body1/`, `body2/`, `mech1/`, `mech2/`: bake iterations.
+- `body/`: the final round-16-style set (`sheet_warden.png`, `strips_warden.png`, macros, game view with Gravemaw).
+- `clips/`: every mechanic clip strip and `FrostWarden_turntable_armoured.png`.
+- `game/`: `final_turntable.png`, `final_game.png` (3/4, coming down the screen, walking away, next to Gate_G2 and a
+  tower), `final_game_playzoom.png`, and the game-angle strips `final_game_<clip>.png`.
+
+### build_all.py
+
+No change: `build_frostwarden.py` and `build_frostwarden_mech.py` keep their names and order. `round32_views.py` is
+QA only (do not list it).
