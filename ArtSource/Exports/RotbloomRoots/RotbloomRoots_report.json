@@ -1,0 +1,25 @@
+{
+  "asset": "RotbloomRoots",
+  "round": 28,
+  "objects": {
+    "RotbloomRoots_Stage1": 734,
+    "RotbloomRoots_Stage2": 1844,
+    "RotbloomRoots_Stage3": 3894
+  },
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "material": "RotbloomRoots_Mat (shared)",
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "pivot": "each stage's centre on the ground (bog bank or in the bog)",
+  "use": "BOSSES.md: roots spread over three waves before Rotbloom appears; show Stage1 at wave N-3, Stage2 at N-2, Stage3 at N-1 (swap, or scale up from 0.6 while swapping)",
+  "spread_m": {
+    "Stage1": 2.4,
+    "Stage2": 4.0,
+    "Stage3": 5.2
+  }
+}

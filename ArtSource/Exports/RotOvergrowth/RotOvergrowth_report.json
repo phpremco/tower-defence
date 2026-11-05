@@ -1,0 +1,25 @@
+{
+  "asset": "RotOvergrowth",
+  "round": 28,
+  "game_tris": 2600,
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "RotOvergrowth_Mat",
+  "size_m": [
+    1.324,
+    1.386,
+    1.689
+  ],
+  "pivot": "the build pad's centre on its top surface; fits a 1 x 1 pad and a tower up to ~0.45 radius and 1.75 high (scale to the tower)",
+  "growth": {
+    "shape_key": "Retracted (1 = flat on the pad, 0 = grown)",
+    "color_attribute": "Growth: R = growth order 0..1 (pad first, tips last), G = jitter for a ragged front",
+    "recipe": "grow over ~1 s: blend shape 100 -> 0 while a clip threshold on Growth.R runs 0 -> 1; burn away: reverse with an emission flash"
+  }
+}

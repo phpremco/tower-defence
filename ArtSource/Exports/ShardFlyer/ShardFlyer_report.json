@@ -1,0 +1,67 @@
+{
+  "asset": "ShardFlyer",
+  "round": 28,
+  "game_tris": 2004,
+  "source_tris": 472092,
+  "bones": 7,
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "ShardFlyer_Mat",
+  "uv": {
+    "islands": 11,
+    "folded_fallback_faces": 36,
+    "mirrored_faces": 990,
+    "uv_coverage": 0.631,
+    "world_per_uv": 1.5841379046172426
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 37.7,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 44.0,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 24,
+    "Idle": 32,
+    "Hit": 12,
+    "Death": 44,
+    "Spawn": 30,
+    "Rejoin": 30
+  },
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Root",
+    "Wing_L_1",
+    "Wing_R_1"
+  ],
+  "size_m": [
+    2.632,
+    1.84,
+    0.437
+  ],
+  "route": "the air route",
+  "move": "air (pivot = body centre; a ground shadow like every flyer)",
+  "death": "drops 3.0 m; hide at frame 44",
+  "shard_of": "Shattered",
+  "spawn_offset": [
+    0.0,
+    3.2,
+    -0.4
+  ],
+  "giant_spire": "Core_Air",
+  "hp_share": "a third of the giant's remaining HP (BOSSES.md)",
+  "spawn": "play Spawn at the spawn offset at the giant's Split burst frame",
+  "rejoin": "play Rejoin, then fly the shard to the giant over ~0.6 s; the giant's Rejoin forms at frame 30"
+}

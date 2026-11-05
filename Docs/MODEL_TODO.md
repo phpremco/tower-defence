@@ -699,3 +699,20 @@ gloed 2,0. Punten voor de Blender-kant:
 | Naden | Elke variant heeft een eigen gebakken atlas: op de gladde stijlen (Mirewood, Core) is de las tussen twee segmenten van dichtbij een zwakke lijn; accenten op de lassen verbergen het meeste |
 | Bochten | Minimale straal 0,5 (preview haalt 0,38 op twee plekken, nog netjes). Smalle armen van één cel worden een ronde lob |
 | Budget | ~2.400 tris per segment na het snijden, ~50k per poel van 20 segmenten: per poel samenvoegen, voor Low decimeren |
+
+### Ronde 28 (continentbazen klaar voor hun mechaniek, 2026-11-05)
+
+Nieuwe clips voor alle zes bazen (klimmen, poelen, eigen mechaniek), props en een verbeterronde van The Shattered.
+Details per baas in `ArtSource/README.md` ronde 28, kritiek in `ArtSource/DESIGN_NOTES.md` ronde 28. Nog niets
+geïmporteerd. Regels voor `build_all.py` staan in de README.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Alle zes | Klim-clips zijn lang (Gravemaw ~11 s, Rotbloom ~8 s, rest 6-7 s): het hele lijf moet over de rand met geplante voeten. In Unity sneller afspelen mag (voeten blijven geplant, alleen de cadans verandert). Eén randhoogte per baas (1,2-2,0 m); andere hoogtes via de `IK_*`-markers |
+| Alle zes | Duik/onder water/opduiken is voor de vier pootbazen dezelfde choreografie; Gravemaw (pad) en The Sealed One (handen) hebben een eigen. Onderwaterdieptes zijn groot (Cinder 3,3, Warden 4,7, Shattered 4,7, Sealed One 5,6 m): de vloeistofshader moet alles eronder verbergen |
+| Gravemaw | Burrow_Travel laat alleen de kristalkam boven de grond (0,3 m): de gloeiende scheurlijn moet in Unity langs die kam lopen. Surface_Throw gooit de toren rechts van het gat; Unity draait de baas zo dat het doel rechts staat |
+| Cinder Matriarch | Ei (`CinderEgg`) leest als gloeiende kern in drie korstklauwen; Hatch laat een FireLarva los op frame 32. Smash raakt een toren 3,1 m vooruit |
+| Frost Warden | IJspantser is een tweede mesh in dezelfde FBX (`FrostWarden_IceArmour`); het bedekt het zegelteken tot Armour_Break (bewust). IJspegels (rage) via schaal in LateUpdate |
+| Rotbloom | Overwoekering (`RotOvergrowth`) groeit via blend shape `Retracted` + kleurkanaal `Growth`; in Unity nog een shader-drempel nodig. Rooted_Idle zet de voeten 0,2 m in de grond (goed op veen, niet op harde grond) |
+| The Shattered | Verbeterd (lichte ijsgraniet-platen, kristalkroon, kristalhakmessen, drie scherfspitsen) maar nog steeds een knokkelloper; volledige herontwerp zou rig en alle clips raken. De drie scherven zijn eenvoudig (2.000-2.400 tris); Split/Rejoin leunen op een flits-VFX. PhaseBreak1/2 zijn vervangen door Split/Rejoin |
+| The Sealed One | Romp ploegt door de grond bij Walk/Climb/Rise_OntoBase: voor plausibiliteit een voor-decal en stof. Rise_OntoBase eindigt over de voorrand van de basis, niet er helemaal op. Puin-ring (`Rubble`) en zegelstenen verdwijnen zodra hij van het zegel weggaat |

@@ -6,7 +6,7 @@
     8992
   ],
   "source_tris": 2503164,
-  "bones": 29,
+  "bones": 32,
   "texture_size": 1024,
   "low_texture_size": 512,
   "materials": {
@@ -68,7 +68,18 @@
     "Rise": 150,
     "Summon": 90,
     "Hit": 18,
-    "Death": 150
+    "Death": 150,
+    "Walk": 80,
+    "Roar": 72,
+    "Climb_Up": 132,
+    "Climb_Loop": 100,
+    "Climb_Down": 132,
+    "Submerged_Loop": 96,
+    "Dive_Into_Liquid": 90,
+    "Surface_Burst": 100,
+    "Rise_OntoBase": 130,
+    "Adapt": 64,
+    "Release": 170
   },
   "size_m": [
     6.894,
@@ -84,7 +95,7 @@
   "lod1": {
     "fbx": "SealedOne_LOD1.fbx",
     "tris": 13998,
-    "bones": 26
+    "bones": 29
   },
   "pivot": "ground at the centre of the seal; the body extends ~0.7 below the ground (hidden by terrain)",
   "rise": {
@@ -107,5 +118,148 @@
     1.0,
     0.7,
     0.28
-  ]
+  ],
+  "round28": {
+    "clips": {
+      "Walk": {
+        "distance_per_loop_m": 2.364,
+        "note": "in place; the lower torso ploughs the ground (furrow + dust decal); seal stones at scale 0",
+        "frames": 80,
+        "loop": true
+      },
+      "Roar": {
+        "slam_frame": 30,
+        "plates_open_frames": [
+          14,
+          60
+        ],
+        "frames": 72,
+        "loop": false
+      },
+      "Climb_Up": {
+        "end_offset_forward_m": 3.2,
+        "end_offset_up_m": 2.0,
+        "edge_forward_m": 2.8,
+        "ledge_height_m": 2.0,
+        "grip_frame": 30,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset",
+        "frames": 132,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 2.364,
+        "note": "the haul on top of a ledge or the base roof; in place",
+        "frames": 100,
+        "loop": true
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 3.2,
+        "end_offset_up_m": -2.0,
+        "edge_forward_m": 2.8,
+        "drop_height_m": 2.0,
+        "grip_frame": 30,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset",
+        "frames": 132,
+        "loop": false
+      },
+      "Submerged_Loop": {
+        "note": "in place under the surface; only the violet glow shows",
+        "frames": 96,
+        "loop": true,
+        "depth_m": 5.575,
+        "mesh_top_m": -0.2
+      },
+      "Dive_Into_Liquid": {
+        "end_offset_forward_m": 2.0,
+        "depth_m": 5.575,
+        "note": "ends in Submerged_Loop frame 0 moved end_offset forward",
+        "frames": 90,
+        "loop": false
+      },
+      "Surface_Burst": {
+        "start_depth_m": 5.575,
+        "end_offset_forward_m": 2.4,
+        "hands_slam_frame": 24,
+        "note": "start under the exit point; at the end move the transform by end_offset_forward",
+        "frames": 100,
+        "loop": false
+      },
+      "Rise_OntoBase": {
+        "base_forward_m": 3.4,
+        "base_top_m": 0.9,
+        "grab_frame": 34,
+        "crush_frame": 96,
+        "note": "start with the base BASE_F ahead; the base takes the hit at crush_frame (BOSSES.md: it pulls itself up onto the base)",
+        "frames": 130,
+        "loop": false
+      },
+      "Adapt": {
+        "pulse_frame": 30,
+        "note": "play at each phase change; ORA's line and the dimmed icon at pulse_frame",
+        "frames": 64,
+        "loop": false
+      },
+      "Release": {
+        "white_frame": 64,
+        "kneel_done_frame": 150,
+        "note": "swap both emission maps to the Release set at white_frame and fade the emission strength up; the epilogue starts at the last frame",
+        "frames": 170,
+        "loop": false
+      }
+    },
+    "markers": [
+      "IK_LArm_L",
+      "IK_LArm_R",
+      "Rubble"
+    ],
+    "extra_objects": [],
+    "climb_height_m": 2.0,
+    "liquid": "void pool (any liquid)",
+    "submerged_depth_m": 5.575,
+    "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
+    "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28) keyed at scale 0 in Walk, Climb_Up, Climb_Loop, Climb_Down, Dive_Into_Liquid, Submerged_Loop, Surface_Burst, Rise_OntoBase; not keyed in the other clips",
+    "phase_looks": {
+      "maps": {
+        "Phase1": [
+          "SealedOne_Phase1_Emission.png",
+          "SealedOne_Seal_Phase1_Emission.png",
+          "Low/SealedOne_Phase1_Emission.png",
+          "Low/SealedOne_Seal_Phase1_Emission.png"
+        ],
+        "Phase2": [
+          "SealedOne_Phase2_Emission.png",
+          "SealedOne_Seal_Phase2_Emission.png",
+          "Low/SealedOne_Phase2_Emission.png",
+          "Low/SealedOne_Seal_Phase2_Emission.png"
+        ],
+        "Phase3": [
+          "SealedOne_Phase3_Emission.png",
+          "SealedOne_Seal_Phase3_Emission.png",
+          "Low/SealedOne_Phase3_Emission.png",
+          "Low/SealedOne_Seal_Phase3_Emission.png"
+        ],
+        "Phase4": [
+          "SealedOne_Phase4_Emission.png",
+          "SealedOne_Seal_Phase4_Emission.png",
+          "Low/SealedOne_Phase4_Emission.png",
+          "Low/SealedOne_Seal_Phase4_Emission.png"
+        ],
+        "Release": [
+          "SealedOne_Release_Emission.png",
+          "SealedOne_Seal_Release_Emission.png",
+          "Low/SealedOne_Release_Emission.png",
+          "Low/SealedOne_Seal_Release_Emission.png"
+        ]
+      },
+      "emission_strength": {
+        "Phase1": 2.6,
+        "Phase2": 3.0,
+        "Phase3": 3.4,
+        "Phase4": 3.9,
+        "Release": 4.5
+      },
+      "note": "swap SealedOne_Emission and SealedOne_Seal_Emission per phase (Adapt marks the change); the decor crystals take the immune tower's colour (BOSSES.md)"
+    },
+    "mechanic": "Recognition: Adapt at each phase change, 4 phase looks, Release at the end; Rise_OntoBase as its last threat; Walk/Climb/Dive to follow the risen road"
+  }
 }

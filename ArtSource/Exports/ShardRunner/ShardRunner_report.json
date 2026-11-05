@@ -1,0 +1,69 @@
+{
+  "asset": "ShardRunner",
+  "round": 28,
+  "game_tris": 2217,
+  "source_tris": 572020,
+  "bones": 9,
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "ShardRunner_Mat",
+  "uv": {
+    "islands": 14,
+    "folded_fallback_faces": 96,
+    "mirrored_faces": 1108,
+    "uv_coverage": 0.622,
+    "world_per_uv": 1.7496398716956199
+  },
+  "detail": {
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 41.7,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 48.6,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Walk": 20,
+    "Idle": 48,
+    "Hit": 12,
+    "Death": 40,
+    "Spawn": 30,
+    "Rejoin": 30
+  },
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Root",
+    "Leg_L1_Upper",
+    "Leg_L1_Lower",
+    "Leg_R1_Upper",
+    "Leg_R1_Lower"
+  ],
+  "size_m": [
+    0.747,
+    2.54,
+    1.803
+  ],
+  "route": "the second road",
+  "walk_distance_per_loop": 2.619,
+  "move": "ground",
+  "shard_of": "Shattered",
+  "spawn_offset": [
+    1.6,
+    0.0,
+    2.2
+  ],
+  "giant_spire": "Core_Road",
+  "hp_share": "a third of the giant's remaining HP (BOSSES.md)",
+  "spawn": "play Spawn at the spawn offset at the giant's Split burst frame",
+  "rejoin": "play Rejoin, then fly the shard to the giant over ~0.6 s; the giant's Rejoin forms at frame 30"
+}

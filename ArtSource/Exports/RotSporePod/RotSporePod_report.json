@@ -1,0 +1,58 @@
+{
+  "asset": "RotSporePod",
+  "round": 28,
+  "game_tris": 900,
+  "source_tris": 225952,
+  "bones": 6,
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "material": "RotSporePod_Mat",
+  "uv": {
+    "islands": 21,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.594,
+    "world_per_uv": 1.2546934780882923
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 31.4,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 41.8,
+      "mask": "A"
+    }
+  },
+  "actions": {
+    "Fly": 24,
+    "Burst": 16
+  },
+  "unity_scale": 1.0,
+  "scale_keyed_bones": [
+    "Core",
+    "Tail",
+    "Bract_1",
+    "Bract_2",
+    "Bract_3"
+  ],
+  "size_m": [
+    0.315,
+    0.676,
+    0.322
+  ],
+  "pivot": "the spore core's centre; flies along its forward axis (nose = bract hooks)",
+  "burst": {
+    "pop_frame": 6,
+    "note": "impact on a pad or shot down in the air (BOSSES.md)"
+  },
+  "fired_by": "Rotbloom Spore_Volley from bone Socket_Spore"
+}

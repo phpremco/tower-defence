@@ -2465,3 +2465,86 @@ front of a dim hangar wall.
 - The bay light bar and the pillar strips are the brightest pixels behind the model; very bright models (white hero
   armour) may still compete. One backdrop for every model, no theme variants, no parallax.
 - Faint rain-streak marks from the shared bake shader show on the flat deck.
+
+## Round 28: the continent bosses get their signature mechanics (clips, props, one improvement pass)
+
+Brief: Docs/BOSSES.md (2026-11-04). Every boss must climb (rocks, gates, the base), use pools (dive, hide, burst
+out) and play its own signature mechanic; the field must stay consistent, so every effect needs a visible body
+action with a clear frame to hang the gameplay event on.
+
+### Review against the design sheet and the alien rule (turntables before any change)
+
+| Boss | Verdict | Why |
+| --- | --- | --- |
+| Gravemaw | keep | A long low armoured drill-worm with a crystal crest; the star maw and the crest read at play size. Pink on dark plum is a single family, but that is its continent. |
+| Cinder Matriarch | keep | The kiln sac and the stilts are the most distinct silhouette of the six. From above it is still a little spider/ant-like (round-16 note); the glowing sac carries it. |
+| Frost Warden | keep, armour added | The only upright one; the halo and glaives read as head and weapon. The new ice armour overlay gives the armoured phase its own look (pale ice over the dark stone) and covers the seal glyph until it breaks. |
+| Rotbloom | keep | The five-petalled flower is a star from above, the bark mound and root legs are not an Earth animal. The petals are glossy red at close range. |
+| The Shattered | **improved** (build_shattered2.py) | Weakest of the six: a brown gorilla silhouette in Gravemaw's plum-bronze, a small low head, no weapon, nothing that said "three". |
+| The Sealed One | keep | Eyeless praying torso, crown rings and seal stones: the most alien of the set. |
+
+**The Shattered, what changed (visible at play size):** palette from plum-bronze to pale shattered-ice granite over a
+black-glass under-layer (the Southern Crown's own "pale ice over dark rock"), the overcharge light stays magenta to
+white; a crown of five crystal blades on the head (the head now reads above the hump); a crystal cleaver out of each
+fist (its weapon); three crystal spires on the back, each shaped like the shard it becomes (spear fan = ShardRunner,
+swept wing blades = ShardFlyer, low claw ring = ShardCrawler). Rig, budgets (17.5k + 6.5k tris, 1024 maps) and the
+round-16 clips are unchanged. It is still a knuckle-walker underneath: a full redesign would change the rig and
+every clip, which this round did not take on.
+
+### How the clips are built (boss_mech_kit.py)
+
+- **No rebake:** each `build_<boss>_mech.py` opens the boss's `.blend` and keys new clips with the boss script's own
+  pose functions, then re-exports both FBX files with the old and the new clips. Re-running is idempotent.
+- **Planted feet on a height profile:** the climbs move the body at exactly the gait's stance speed, so every foot
+  is fixed on the ground while it is down; each footfall is placed on the profile (ground, face, top) and never on
+  the face or the lip itself (it lands short of it or past it). The body height follows a wider ramp of the profile
+  and pitches with the slope; necks and torsos take part of the pitch back so heads stay on target.
+- **Gravemaw rides paths:** its spine follows a path in the forward-up plane (round-14 machinery), so it climbs by
+  laying its body up the rock face like a centipede; the feet are planted on the path surface.
+- **Depths are measured, not guessed:** each submerged loop is keyed, the deformed mesh's top is measured and the
+  depth corrected until everything is 0.2 under the surface (Burrow_Travel: until only the crest's top 0.3 shows).
+- **Loops are in place** (no root motion). Travel clips are authored with the pivot fixed and report an end offset;
+  Unity moves the transform by it on the last frame and continues with the next clip, which starts in that pose.
+
+### Iterations
+
+1. Cinder Matriarch: the kiln sac scraped the ledge corner on the way up and down; the body ramp now trails behind
+   the hips (1.7 m up, a long lead down) and the sac lifts with the slope. The first egg had box-mapped side plates
+   (a barrel with slits) and its plates fused (with each other at the crown, the core with the collar) in the remesh,
+   so they tore into long triangles when they flew. It is now a three-clawed bud of crust plates, open at the crown,
+   every plate its own island on its own bone: they peel open and fly off cleanly (checked island by island).
+2. Gravemaw: the first climb path ran through the rock (the body vanished into the ledge); the path now runs just
+   outside the face. Surface_Throw started at a different depth than Burrow_Travel; both now share the fitted depth.
+3. Frost Warden: the ice armour baked nearly white (it read as plaster); the ice is now deeper blue with less frost.
+4. Rotbloom: the spore pod read as a can (blunt ends); the core and bracts are longer and close over the nose. The
+   volley kick was invisible at play size; the bloom swells and recoils harder at each shot. Climbs shortened with a
+   longer step.
+5. The Shattered: the first crest was hidden behind the hump; the blades are longer and stand up.
+6. The Sealed One: phase 4 and Release looked the same; phase 4 is now lilac-white, Release pure white.
+7. The Sealed One: its submerged loop kept 0.46 m above the surface after three depth fits: the heaved rubble ring
+   was skinned to Root and never moved with the body. It is now on its own bone `Rubble` and leaves with the seal
+   stones (scale 0, dropped under the ground) in every clip that moves the body away from the seal.
+8. RotOvergrowth: the blend shape was saved at weight 1 (the FBX opened flat); it is now 0 (grown) by default.
+9. Liquid previews: the first liquid material was opaque and blown out, so the submerged clips showed nothing; the
+   preview liquid is now a thin translucent plane (preview only, the game uses its own `Game/Liquid` shader).
+
+### Honest weak points
+
+- **Climb clips are long** for the big bosses (Gravemaw ~11 s, Rotbloom ~8 s, others 6-7 s): the whole body has
+  to get over the edge at a stance-locked speed. Unity can play them faster (they are planted, so speed only
+  changes the cadence) or cut the obstacle height.
+- One ledge height per boss (1.2-2.0 m, in the reports). Other heights need the foot markers and a vertical blend
+  of the transform; the hands of the Sealed One do not follow other heights.
+- The generic dive/burst clips are the same choreography for the four legged bosses (crouch, hop, plunge; surge,
+  arc, land): readable but not individual. Gravemaw (path) and the Sealed One (hands) have their own.
+- Submerged depths are deep (Cinder ~3.4, Warden ~4.6, Sealed One ~5.6 m): the liquid shader must hide everything
+  under the surface, or the pool must be dug that deep.
+- The Sealed One's lower torso ploughs through the terrain when it moves (Walk, Climb, Rise_OntoBase); a furrow
+  decal and dust are needed so it reads as wading through the ground, not clipping.
+- The Shattered is still a knuckle-walker; its shards are simple (2,000-2,400 tris, 512 maps) and their Spawn and
+  Rejoin are a curl/unfold with scale, so the flash VFX has to sell the split.
+- Rise_OntoBase hauls the torso 1.6 m forward and 0.9 m up: it looms over the base's front edge rather than
+  climbing all the way onto it; with a bigger base the offsets in the script (BASE_F, BASE_H) need a re-run.
+- Rooted_Idle sinks the feet 0.2 into the ground; on a bog surface that is right, on hard ground it would clip.
+- The ice armour covers the Warden's seal glyph in the armoured phase (deliberate: the glyph is revealed when the
+  armour breaks), but the armoured Warden is less amber at play size.

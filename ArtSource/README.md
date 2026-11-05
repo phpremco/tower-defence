@@ -2195,3 +2195,229 @@ Not edited here (shared). Line to add after `"build_ui.py",`:
            # Round 27: upgrade-screen display stage (pedestal, halo ring, backdrop).
            "build_ui_display.py",
 ```
+
+## Round 28: continent bosses ready for their signature mechanics (2026-11-05)
+
+Brief: `Docs/BOSSES.md` (climb layer, pools, one signature mechanic per boss). Design notes and the review in
+`DESIGN_NOTES.md` (round 28). New scripts (shared modules untouched, only imported): `boss_mech_kit.py` (helpers),
+`build_gravemaw_mech.py`, `build_cindermatriarch_mech.py`, `build_frostwarden_mech.py`, `build_rotbloom_mech.py`,
+`build_shattered2.py` (improvement pass, replaces the round-16 Shattered export), `build_shattered_mech.py`,
+`build_sealedone_mech.py`. Nothing is imported into Unity yet.
+
+**How the mech scripts work:** each opens `ArtSource/Blend/<Boss>.blend`, adds marker bones, keys the new clips
+with the boss build script's own pose functions (no rebake: mesh, maps and the old clips are unchanged), keys the
+LOD1 rig from the full rig, re-exports `<Boss>.fbx` and `<Boss>_LOD1.fbx` with **all** clips (old + new), merges a
+`round28` block into `<Boss>_report.json` (every clip's frames, loop flag, event frames, offsets, depths) and saves
+the `.blend`. Re-running is idempotent (the previous round-28 clips, markers and extra meshes are removed first).
+So the boss build script must run first and its mech script after it. Run any of them with
+`blender --background --factory-startup --python Tools/Blender/<script> -- [--preview <dir>] [--norender]`
+(about 1-3 minutes each, props included; `build_shattered2.py` about 7 minutes, it bakes).
+
+### Conventions for every boss (read this first)
+
+- **Axes and facing:** built like every creature: Blender -Y forward, Z up; exported FBX -Z forward, Y up (Bake
+  Axis Conversion). Unity found the creature FBX turned 180 degrees about Y (head at -Z): keep the same import
+  correction as the other creatures. Every "forward" in the reports is along the creature's own facing.
+- **Loops are in place** (no root motion; frame 0 = last frame). `Climb_Loop`, `Submerged_Loop`, `Burrow_Travel`,
+  `Hunt_Stride`, `Walk`, `Rooted_Idle`, `Fly`, `Idle`.
+- **Travel clips are authored with the pivot fixed** (the Root bone never moves): `Climb_Up`, `Climb_Down`,
+  `Dive_Into_Liquid`, `Surface_Burst`, `Burrow_Down`, `Surface_Throw`, `Shatter_Through`, `Rise_OntoBase`. The report
+  gives `end_offset_forward_m` / `end_offset_up_m`: on the last frame move the transform by that offset and start the
+  next clip (its first frame is the same pose relative to the new pivot). Apply Root Motion stays off.
+- **Climb_Up / Climb_Loop / Climb_Down:** over a ledge of the reported height (`ledge_height_m`) whose face is
+  `edge_forward_m` ahead of the pivot at the start. Feet are planted (the body moves at exactly the stance speed of
+  the gait), no foot lands on the face or the lip. `Climb_Loop` is the braced crawl on top (pivot on the top
+  surface; lower, wider, slower than Walk). Different heights: pin the `IK_*` markers to the climb layer and blend
+  the transform height.
+- **Foot markers `IK_<limb>`** (e.g. `IK_Leg_L1`, `IK_Arm_R`, `IK_LArm_L`): one bone per limb at the rest foot
+  contact, child of the limb's last bone, pointing up 0.25. Deform flag on (so the FBX keeps them) but no vertex
+  weights. Use them to raycast and pin feet (two-bone IK) on rocks, gate tops and the base roof.
+- **Pools:** `Dive_Into_Liquid` starts on the bank (pivot on the liquid level, bank edge just ahead of the front
+  feet) and ends in `Submerged_Loop`'s first pose; `Submerged_Loop` keeps the whole mesh 0.2 under the surface at
+  `submerged_depth_m` (measured on the deformed mesh); `Surface_Burst` starts in that pose under the exit point and
+  lands on the bank `end_offset_forward_m` ahead. The liquid must hide everything under the surface (or the pool must
+  be that deep): only the glow, a wake and bubbles show (BOSSES.md). Event frames: `splash_frame`, `breach_frame`,
+  `land_frame`.
+- **Scale keys:** clips that hide parts key bone **scale** (keep "Remove constant scale curves" off). New clips key
+  only the scale bones they use (listed per boss below); Unity's phase overrides in LateUpdate keep working.
+- **Previews** (`--preview <dir>`): `<Boss>_<Clip>.png` strips (8 key poses, 4 for loops) with stand-in props
+  (ledge, gate, tower, translucent pool), `<Boss>_turntable.png`, prop strips, `SealedOne_Phases.png`.
+
+### Gravemaw (`build_gravemaw_mech.py`)
+
+Files: `Gravemaw.fbx` / `_LOD1.fbx` (24,093 / 9,999 tris, unchanged), 47 bones (39 LOD). New bones: `IK_Arm_L/R`,
+`IK_Leg_L1..R3`, `Socket_Throw` (maw tip). Crawl stays its Walk, Roar its Rage; Dive/Emerge (round 14) stay for the
+entrance. Scale keys: `Debris_*` (as round 14).
+
+| Clip | Frames | Loop | Mechanic (BOSSES.md) | Key facts (report `round28.clips`) |
+| --- | --- | --- | --- | --- |
+| Climb_Up | 336 | no | surfaces on rocks, climbs over the edge | ledge 1.2 at 3.2 ahead; end offset 3.30 fwd, 1.2 up; the spine lies up the face like a centipede |
+| Climb_Loop | 80 | yes | crawl on a rock top | 0.588 per loop |
+| Climb_Down | 336 | no | off the rock | end offset 3.32 fwd, -1.2 |
+| Dive_Into_Liquid | 96 | no | quicksand as a burrow shortcut | bank 3.2 ahead, splash 42, end offset 9.20 fwd |
+| Submerged_Loop | 96 | yes | hidden in the pool | path depth 1.84, mesh top -0.25 |
+| Surface_Burst | 100 | no | out at the bank | breaks the surface 3.4 ahead at frame 24, end offset 6.93 |
+| Burrow_Down | 110 | no | Burrow at 75/50/25 % | drill impact (debris, rumble) 31 at the hole 2.95 ahead; ends in Burrow_Travel, end offset 7.48 |
+| Burrow_Travel | 72 | yes | the crack line | under the ground at path depth 1.29; only the crest ridge breaks the surface (top +0.3): run the glowing crack along it |
+| Surface_Throw | 96 | no | surfaces beside the top-damage tower and throws it | from Burrow_Travel; hole 1.0 ahead, burst 14 (debris), throw 30 (`Socket_Throw`; the tower ~1.0 right of the hole is flung up and right), crashes down; end offset 2.86 |
+
+### Cinder Matriarch (`build_cindermatriarch_mech.py`)
+
+Files: `CinderMatriarch.fbx` / `_LOD1.fbx` (23,051 / 8,997 tris, unchanged), 30 bones (25 LOD), new `IK_Leg_L1..R2`.
+Props: `Exports/CinderEgg/` (new). The fire bug hatchling is the round-16 `FireLarva` (unchanged). Scale keys: `Vent_1..3`.
+
+| Clip | Frames | Loop | Mechanic | Key facts |
+| --- | --- | --- | --- | --- |
+| Climb_Up / Climb_Down | 186 / 186 | no | climbs the rock ridges between the pads | ledge 1.5, face 2.0 ahead; end offset 5.02 fwd, +-1.5 |
+| Climb_Loop | 81 | yes | on the ridge | 1.03 per loop |
+| Dive_Into_Liquid | 66 | no | into one lava pool ... | take-off 20, splash 28, under 52; end offset 3.2 |
+| Submerged_Loop | 80 | yes | hidden in the lava | depth 3.34 |
+| Surface_Burst | 64 | no | ... out of the one nearer the cold target | breach 16, land 32, end offset 3.0 |
+| Hunt_Stride | 50 | yes | Hatred of the Cold: off-road hunt | head low, scythes forward, crouched; 1.61 per loop |
+| Smash | 64 | no | wrecks the cold tower | rears to 20, impact 30 on a tower 3.1 ahead (make it a wreck), shove to 44 |
+| Lay_Eggs | 96 | no | eggs in the lava below 50 % | eggs leave bone `Drip` (sac tip, ~2.8 behind the pivot: stand with it over the lava) at 34, 52, 70 |
+
+**CinderEgg** (`CinderEgg.fbx`, 1,420 tris, one 512 material `CinderEgg_Mat` + Low 256, 5 bones, Unity scale 1, 0.5 x
+0.6 high): a molten core gripped by three crust claw-plates. Pivot on the lava surface (the collar floats in it).
+Clips: Idle 48 (loop, pulse), Hatch 54 (shakes to 28, plates peel and fly 30-50; spawn a `FireLarva` at frame 32,
+Unity scale 0.6), Burst 20 (shot: plates pop, the core collapses by 10, no larva). Scale keys `Shell_1..3`, `Core`.
+BOSSES.md: hatch after 10 s unless shot.
+
+### Frost Warden (`build_frostwarden_mech.py`)
+
+Files: `FrostWarden.fbx` / `_LOD1.fbx` now hold **two meshes**: `FrostWarden` (23,880, unchanged) and the new
+**`FrostWarden_IceArmour`** (3,187 tris; LOD `FrostWarden_IceArmour_LOD1` 1,497), skinned to the same rig, material
+`FrostWarden_IceArmour_Mat` with `FrostWarden_IceArmour_Albedo/_Normal/_Emission/_Mask.png` (512, Low 256) in
+`Exports/FrostWarden/`. 41 bones (40 LOD). New bones: `IK_Leg_L1..R2`, `Armour_1..8` (plates: chest, shoulders,
+back, train x3, hip), `Icicle_1..5` (back icicles), `Socket_Breath` (face slit, forward). Scale keys: `Halo`,
+`Armour_*`, `Icicle_*` (all clips key them at 1 except Armour_Break). FreezePulse/Enrage/WalkEnraged stay.
+
+| Clip | Frames | Loop | Mechanic | Key facts |
+| --- | --- | --- | --- | --- |
+| Climb_Up / Climb_Down | 210 / 210 | no | climbs onto a frozen gate before it smashes it | ledge 1.5, face 1.5 ahead; end offset 4.02 fwd, +-1.5; the gate sags under it (Unity) |
+| Climb_Loop | 93 | yes | on the gate | 0.824 per loop |
+| Dive_Into_Liquid | 70 | no | breaks through an ice sheet | glaives smash the ice at 18, take-off 22, splash 30, under 56; end offset 2.6 |
+| Submerged_Loop | 96 | yes | swims under the ice | depth 4.73 |
+| Surface_Burst | 64 | no | out through the ice | breach 16, land 32, end offset 2.6 |
+| Freeze_Gate | 64 | no | Gate Breaker: freezes the gate solid | gate 2.4 ahead; breath cone from `Socket_Breath` and the halo flare at 30 (the gate becomes an ice block for 8 s) |
+| Shatter_Through | 84 | no | walks straight through the frozen gate | hunched charge, glaives crossed; the chest hits the gate (2.4 ahead) at 51: shatter it into the wreck; end offset 2.68, then WalkEnraged |
+| Armour_Break | 56 | no | armour breaks below 40 % / Lava Ball | stagger, plates fly off one by one 12-35 (scale 0), roar, ends in the WalkEnraged hunch |
+
+**Ice armour in Unity:** phase "armoured" = `FrostWarden_IceArmour` renderer on; after `Armour_Break` turn it off (or
+leave it: every plate ends at scale 0). The Lava Ball's 5 s of double damage: play Armour_Break and show the armour
+again afterwards (renderer on, plates back at 1). Rage telegraph: set `Icicle_1..5` uniform scale 0.2 (calm) to 1.0
+(max rage) in LateUpdate; the icicles belong to the armour mesh.
+
+### Rotbloom (`build_rotbloom_mech.py`)
+
+Files: `Rotbloom.fbx` / `_LOD1.fbx` (23,968 / 9,498, unchanged), 34 bones (32 LOD), new `IK_Leg_L1..R3`,
+`Socket_Spore` (above the bloom throat, child of `Bloom`). Scale keys: `Pod_*`, `Bloom`. Props: `Exports/RotSporePod/`,
+`Exports/RotOvergrowth/`, `Exports/RotbloomRoots/` (new).
+
+| Clip | Frames | Loop | Mechanic | Key facts |
+| --- | --- | --- | --- | --- |
+| Rooted_Idle | 120 | yes | phase rooted: stands still on the bog | body 0.22 down, feet 0.2 into the bog; creep forward by moving the transform slowly |
+| Uproot | 64 | no | phase uprooted below 50 % | legs tear out at 14/17/22/25/30/33 (mud bursts at the feet), roar 36; ends in the Idle/Crawl stance |
+| Spore_Volley | 84 | no | Overgrowth every 12 s | petals open 6-26 (sweet sound), pods pump, a `RotSporePod` leaves `Socket_Spore` at 32, 40, 48 (max 3 pads) |
+| Roar | 66 | no | intro / alarm | jaw wide 16-50 |
+| Climb_Up / Climb_Down | 232 / 232 | no | (all bosses climb) | ledge 1.2, face 1.6 ahead; end offset 4.57 fwd, +-1.2 |
+| Climb_Loop | 93 | yes | | 0.571 per loop |
+| Dive_Into_Liquid | 72 | no | sinks into the bog | take-off 22, splash 30, under 58; end offset 2.4 |
+| Submerged_Loop | 96 | yes | its roots grow under water to the next bank | depth 2.29 |
+| Surface_Burst | 64 | no | out at the next bank | breach 18, land 34, end offset 2.4 |
+
+**RotSporePod** (`RotSporePod.fbx`, 900 tris, 512/256 material, 6 bones, 0.68 long): a glowing spore core in three
+hooked bark bracts, two slime tendrils; flies nose first. Clips Fly 24 (loop: spins, bracts breathe), Burst 16
+(bracts snap open, the core pops at 6: spore cloud VFX). Fly it ballistic from `Socket_Spore` to the pad; Burst on
+impact or when shot down (BOSSES.md: shooting the pods prevents the overgrowth). Scale keys `Core`, `Tail`,
+`Bract_1..3`.
+
+**RotOvergrowth** (`RotOvergrowth.fbx`, 2,592 tris, 512/256, static, no rig): seven thorned vines with glowing
+pustules spiral up from the pad edge over a tower (radius ~0.45, up to 1.75 high) plus a mat of rootlets on the pad.
+Pivot: the pad centre on its top. Growth: blend shape **`Retracted`** (weight 100 = flat on the pad, 0 = grown) and
+the colour attribute **`Growth`** (R = growth order 0 at the pad to 1 at the highest tips, G = jitter). Recipe: blend
+shape 100 -> 0 over ~1 s while a clip threshold on `Growth.R` runs 0 -> 1; burning it away (explosion, hero) is the
+reverse with an emission flash. Scale it to the tower if needed.
+
+**RotbloomRoots** (`RotbloomRoots.fbx`: `RotbloomRoots_Stage1/2/3`, 734 / 1,844 / 3,894 tris, one shared 512/256
+material `RotbloomRoots_Mat`, static): the roots that announce Rotbloom over three waves (BOSSES.md entrance). Stage 1:
+five thin roots (~2 m across); stage 2: eight thicker roots with thorns and four glowing pods (~3.7 m); stage 3: a big
+arching root mass, six pods and a closed wine-red bud in the middle (~4.9 m). Pivot: the stage centre on the ground.
+Swap the stage each wave (or scale the next one up from 0.6 while swapping).
+
+### The Shattered (`build_shattered2.py`, then `build_shattered_mech.py`)
+
+**Improvement pass** (`build_shattered2.py`, overwrites the round-16 `Shattered.fbx`, `_LOD1.fbx`, maps and
+`.blend`): pale shattered-ice granite plates over black glass instead of Gravemaw's plum-bronze, a crown of crystal
+blades on the head, a crystal cleaver out of each fist, and three crystal spires on the back on scale bones
+`Core_Road`, `Core_Air`, `Core_Land` (each shaped like its shard). Same rig plus those three bones, same budgets
+(24,025 tris: 17,493 body + 6,532 crystal; LOD1 9,499), same round-16 clips and phase table. Run it after
+`build_shattered.py` and before `build_shattered_mech.py`.
+
+Files after the mech script: 34 bones (33 LOD), new `IK_Arm_L1/R1`, `IK_Leg_L1/R1`. Shards in `Exports/ShardRunner/`,
+`Exports/ShardFlyer/`, `Exports/ShardCrawler/` (new). Scale keys: Split and Rejoin key `Shell_*`, `Crys_*`, `Core_*`,
+`Pelvis` and the limb bones; the other new clips key no scale (the phase table override in LateUpdate keeps working).
+
+| Clip | Frames | Loop | Mechanic | Key facts |
+| --- | --- | --- | --- | --- |
+| Split | 64 | no | Splitting at 66 % | light cracks, crystals swell, it rises (to 26); burst at **28**: plates thrown off, the three spires fly to the spawn points, the body collapses into the flash (gone by 36). Spawn the shards at 28 at their offsets (x right, up, forward): ShardRunner (1.6, 0, 2.2), ShardFlyer (0, 3.2, -0.4), ShardCrawler (-1.6, 0, -1.8). Hide the giant after the clip |
+| Rejoin | 80 | no | rejoin at 33 % where they are | starts empty; fly the surviving shards in during 0-24, remove them at **30** (form): the spires land, the body grows out of them (overshoot), it roars; ends in the phase-3 (rejoined) look. A dead shard: set its `Core_*` scale to 0.35 after the clip |
+| Roar | 70 | no | intro / alarm | rears on the hind legs, cleavers up, jaw wide 18-54 |
+| Climb_Up / Climb_Down | 186 / 186 | no | its shards scale the ruins (the giant climbs too) | ledge 1.5, face 1.95 ahead; end offset 5.66 fwd, +-1.5 |
+| Climb_Loop | 81 | yes | | 1.161 per loop |
+| Dive_Into_Liquid / Submerged_Loop / Surface_Burst | 66 / 80 / 64 | no / yes / no | pools | depth 4.70; splash 28; breach 16, land 32; end offsets 2.8 |
+
+Phases (round 28 design): 1 whole (phase-1 table), 2 split (giant hidden, three shards on the land, air and second
+road), 3 rejoined (phase-3 table, Rejoin ends in it). `PhaseBreak1/2` (round 16) are superseded by Split/Rejoin;
+keep them as a heavy damage stagger or drop them.
+
+**Shards** (one 512/256 material each, Unity scale 1, the giant's palette and light; report: route, spawn offset,
+HP share):
+
+| Asset | Tris / bones | Size (w x l x h) | Clips (frames) | Notes |
+| --- | --- | --- | --- | --- |
+| ShardRunner | 2,215 / 9 | 0.75 x 2.6 x 1.8 | Walk 20 (loop, 2.62 per loop), Idle 48, Hit 12, Death 40, Spawn 30, Rejoin 30 | the second road: a two-legged strider with a spear head and a blade crest |
+| ShardFlyer | 2,003 / 7 | 2.6 x 1.85 x 0.45 | Fly 24 (loop), Idle 32 (hover), Hit 12, Death 44, Spawn 30, Rejoin 30 | the air route: a kite of crystal feather-blades; pivot = body centre (give it the flyer ground shadow); Death drops 3.0 and the blades shatter (scale 0 by 14) |
+| ShardCrawler | 2,425 / 17 | 2.1 x 2.1 x 1.25 | Walk 26 (loop, 1.0 per loop), Idle 48, Hit 12, Death 40, Spawn 30, Rejoin 30 | the ground route: six blade legs under a pale shell |
+
+Spawn unfolds the shard from a curled ball at scale 0.3; Rejoin curls it up and springs (Unity then flies it to the
+giant in ~0.6 s). Scale keys: `Root` and the limb bones (crawler, runner), `Root` and `Wing_*_1` (flyer).
+
+### The Sealed One (`build_sealedone_mech.py`)
+
+Files: `SealedOne.fbx` / `_LOD1.fbx` (34,478 / 13,998, unchanged mesh), 32 bones (29 LOD), new `IK_LArm_L/R` (the
+lower hands) and **`Rubble`** (the heaved ground ring round the fissure was skinned to Root; it is now on its own
+bone at the pivot). Scale keys: `Ring_1..3` in every new clip; `Seal_1..7` and `Rubble` (scale 0, dropped 1.5 under
+the ground) in the clips that leave the seal: Walk, Climb_*, Dive_Into_Liquid, Submerged_Loop, Surface_Burst,
+Rise_OntoBase. Idle/Rise/Summon/Hit/Death (round 16) stay; Rise is still the entrance from the seal.
+
+| Clip | Frames | Loop | Mechanic | Key facts |
+| --- | --- | --- | --- | --- |
+| Walk | 80 | yes | follows the risen road | hand over hand, the torso surges and ploughs the ground (add a furrow decal and dust); 2.36 per loop |
+| Roar | 72 | no | intro / phase change | rears, both hands slam at 30, plates open 14-60 |
+| Climb_Up / Climb_Down | 132 / 132 | no | climbs a ledge | hands grip the top at 30, the torso is hauled over; ledge 2.0, face 2.8 ahead; end offset 3.2 fwd, +-2.0 |
+| Climb_Loop | 100 | yes | on top | the haul, slower and lower |
+| Dive_Into_Liquid | 90 | no | sinks into a pool | plates close, rings shrink to 0.45; end offset 2.0 |
+| Submerged_Loop | 96 | yes | hidden | depth 5.58 (the rings glow through) |
+| Surface_Burst | 100 | no | out at the bank | hands slam on the bank at 24, the torso is hauled out, roar; end offset 2.4 |
+| Rise_OntoBase | 130 | no | pulls itself up onto the base | the base 3.4 ahead, top 0.9: hands grab at 34, the torso heaves on and the base takes the hit at **96**, then it looms with the plates open |
+| Adapt | 64 | no | Recognition (halved damage per phase) | goes still and listens, rings align, the violet pulse at **30**: ORA's line and the dimmed icon there |
+| Release | 170 | no | the last phase: it opens | rings unfold to 1.8 and slow, plates wide, it kneels by 150; swap to the Release emission maps at **64** and fade the emission up; the epilogue starts on the last frame |
+
+**Phase looks:** emission variants next to the shipped maps (1024 and `Low/` 512):
+`SealedOne_Phase1..4_Emission.png`, `SealedOne_Seal_Phase1..4_Emission.png`, `SealedOne_Release_Emission.png`,
+`SealedOne_Seal_Release_Emission.png`. Phase 1 = the shipped violet and gold; 2 brighter violet; 3 hot
+magenta-violet with the gold glyphs dimming (the seal fails); 4 lilac-white blaze, glyphs almost out; Release white.
+Swap both materials' emission texture per phase (Adapt marks the change); suggested emission strengths 2.6 / 3.0 /
+3.4 / 3.9 / 4.5 (report `round28.phase_looks`). The decor crystals turning the immune type's colour is Unity's job.
+
+### build_all.py
+
+Not edited here (shared). Lines to add right after the round-16 continent bosses (`"build_sealedone.py",`):
+
+```
+           # Round 28: the Shattered improvement pass (overwrites build_shattered.py's export), then the mechanic
+           # clips and props of the six continent bosses (boss_mech_kit.py; each opens its boss's .blend).
+           "build_shattered2.py", "build_gravemaw_mech.py", "build_cindermatriarch_mech.py",
+           "build_frostwarden_mech.py", "build_rotbloom_mech.py", "build_shattered_mech.py", "build_sealedone_mech.py",
+```

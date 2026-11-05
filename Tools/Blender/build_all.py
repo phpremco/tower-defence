@@ -37,6 +37,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 16: continent bosses 2-6 (titan_kit.py); previews load Gravemaw and Skitter.
            "build_cindermatriarch.py", "build_frostwarden.py", "build_rotbloom.py", "build_shattered.py",
            "build_sealedone.py",
+           # Round 28: the Shattered improvement pass (overwrites build_shattered.py's export), then the mechanic
+           # clips and props of the six continent bosses (boss_mech_kit.py; each opens its boss's .blend).
+           "build_shattered2.py", "build_gravemaw_mech.py", "build_cindermatriarch_mech.py",
+           "build_frostwarden_mech.py", "build_rotbloom_mech.py", "build_shattered_mech.py", "build_sealedone_mech.py",
            # Round 7: towers, build pad, stars and wreck (imports tower_kit.py).
            "build_towers.py",
            # Round 9: gate, base and base turret, drones, gadgets (import base_kit.py; need build_towers first).

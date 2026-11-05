@@ -4,7 +4,7 @@
   "body_tris": 17209,
   "crystal_tris": 6884,
   "source_tris": 864444,
-  "bones": 38,
+  "bones": 47,
   "texture_size": 1024,
   "low_texture_size": 512,
   "materials": {
@@ -64,7 +64,16 @@
     "Death": 60,
     "Roar": 66,
     "Dive": 120,
-    "Emerge": 112
+    "Emerge": 112,
+    "Climb_Up": 336,
+    "Climb_Down": 336,
+    "Climb_Loop": 80,
+    "Submerged_Loop": 96,
+    "Burrow_Travel": 72,
+    "Dive_Into_Liquid": 96,
+    "Surface_Burst": 100,
+    "Burrow_Down": 110,
+    "Surface_Throw": 96
   },
   "size_m": [
     2.785,
@@ -99,6 +108,108 @@
   "lod1": {
     "fbx": "Gravemaw_LOD1.fbx",
     "tris": 9999,
-    "bones": 30
+    "bones": 39
+  },
+  "round28": {
+    "clips": {
+      "Climb_Up": {
+        "end_offset_forward_m": 3.302,
+        "end_offset_up_m": 1.203,
+        "edge_forward_m": 3.2,
+        "ledge_height_m": 1.2,
+        "cycles": 6,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Crawl",
+        "frames": 336,
+        "loop": false
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 3.315,
+        "end_offset_up_m": -1.2,
+        "edge_forward_m": 3.2,
+        "ledge_height_m": 1.2,
+        "cycles": 6,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Crawl",
+        "frames": 336,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 0.588,
+        "note": "pivot on the top surface; in place",
+        "frames": 80,
+        "loop": true
+      },
+      "Submerged_Loop": {
+        "note": "in place under the surface",
+        "frames": 96,
+        "loop": true,
+        "path_depth_m": 1.844,
+        "mesh_top_m": -0.25
+      },
+      "Burrow_Travel": {
+        "note": "in place; only the crest ridge (~0.3 high) breaks the ground: the glowing crack line follows it; Unity moves the transform along the crack path",
+        "frames": 72,
+        "loop": true,
+        "path_depth_m": 1.294,
+        "crest_top_m": 0.3
+      },
+      "Dive_Into_Liquid": {
+        "end_offset_forward_m": 9.196,
+        "depth_m": 1.844,
+        "bank_forward_m": 3.2,
+        "splash_frame": 42,
+        "note": "starts on the bank; ends in Submerged_Loop frame 0 moved end_offset forward",
+        "frames": 96,
+        "loop": false
+      },
+      "Surface_Burst": {
+        "start_depth_m": 1.844,
+        "exit_forward_m": 3.4,
+        "end_offset_forward_m": 6.927,
+        "breach_frame": 24,
+        "note": "starts in the Submerged_Loop pose under the pivot; the head breaks the surface exit_forward ahead at breach_frame; move the transform by end_offset_forward at the end and go to Crawl",
+        "frames": 100,
+        "loop": false
+      },
+      "Burrow_Down": {
+        "hole_forward_m": 2.95,
+        "impact_frame": 31,
+        "debris_frame": 31,
+        "end_offset_forward_m": 7.476,
+        "burrow_depth_m": 1.294,
+        "note": "place Gravemaw_Hole at hole_forward when it starts; ends in Burrow_Travel frame 0 moved end_offset forward",
+        "frames": 110,
+        "loop": false
+      },
+      "Surface_Throw": {
+        "hole_forward_m": 1.0,
+        "burst_frame": 14,
+        "throw_frame": 30,
+        "end_offset_forward_m": 2.86,
+        "socket": "Socket_Throw",
+        "target": "the thrown tower stands ~1.0 to the right of the hole (it is flung up and to the right)",
+        "note": "start from Burrow_Travel (same depth); the target ring pulses 3 s before (BOSSES.md)",
+        "frames": 96,
+        "loop": false
+      }
+    },
+    "markers": [
+      "IK_Arm_L",
+      "IK_Arm_R",
+      "IK_Leg_L1",
+      "IK_Leg_L2",
+      "IK_Leg_L3",
+      "IK_Leg_R1",
+      "IK_Leg_R2",
+      "IK_Leg_R3",
+      "Socket_Throw"
+    ],
+    "extra_objects": [],
+    "climb_height_m": 1.2,
+    "liquid": "quicksand (its burrow shortcut) or any pool",
+    "submerged_path_depth_m": 1.844,
+    "burrow_path_depth_m": 1.294,
+    "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
+    "walk_and_rage": "Crawl is its Walk, Roar its Rage (round 14)",
+    "mechanic": "Burrow at 75/50/25%: Burrow_Down, Burrow_Travel along the crack line, Surface_Throw beside the top-damage tower; Climb_* over rock edges; quicksand via Dive_Into_Liquid"
   }
 }

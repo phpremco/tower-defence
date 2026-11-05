@@ -6,7 +6,7 @@
     6979
   ],
   "source_tris": 1459456,
-  "bones": 27,
+  "bones": 34,
   "texture_size": 1024,
   "low_texture_size": 512,
   "materials": {
@@ -69,7 +69,17 @@
     "Hit": 16,
     "Death": 84,
     "Regrow": 60,
-    "Bloom": 72
+    "Bloom": 72,
+    "Rooted_Idle": 120,
+    "Uproot": 64,
+    "Spore_Volley": 84,
+    "Roar": 66,
+    "Climb_Up": 232,
+    "Climb_Loop": 93,
+    "Climb_Down": 232,
+    "Submerged_Loop": 96,
+    "Dive_Into_Liquid": 72,
+    "Surface_Burst": 64
   },
   "size_m": [
     3.848,
@@ -87,7 +97,7 @@
   "lod1": {
     "fbx": "Rotbloom_LOD1.fbx",
     "tris": 9498,
-    "bones": 25
+    "bones": 32
   },
   "crawl_distance_per_loop": 0.714,
   "pivot": "ground, under the mound",
@@ -109,5 +119,127 @@
       26
     ]
   },
-  "footfalls": "Crawl frames 0 (L1, R2, L3) and 32 (R1, L2, R3)"
+  "footfalls": "Crawl frames 0 (L1, R2, L3) and 32 (R1, L2, R3)",
+  "round28": {
+    "clips": {
+      "Rooted_Idle": {
+        "sink_m": 0.22,
+        "feet_depth_m": 0.2,
+        "note": "phase 1 (rooted): loops on the bog; creeps forward by moving the transform slowly while the RotbloomRoots decor grows ahead",
+        "frames": 120,
+        "loop": true
+      },
+      "Uproot": {
+        "tear_frames": [
+          14,
+          17,
+          22,
+          25,
+          30,
+          33
+        ],
+        "roar_frame": 36,
+        "note": "phase 2 below 50%: ends in the Idle/Crawl stance",
+        "frames": 64,
+        "loop": false
+      },
+      "Spore_Volley": {
+        "petals_open_frames": [
+          6,
+          26
+        ],
+        "shot_frames": [
+          32,
+          40,
+          48
+        ],
+        "socket": "Socket_Spore",
+        "prop": "../RotSporePod/RotSporePod.fbx",
+        "note": "one pod per target pad (max 3, BOSSES.md); the green haze on the pads starts 2 s before impact",
+        "frames": 84,
+        "loop": false
+      },
+      "Roar": {
+        "jaw_wide_frames": [
+          16,
+          50
+        ],
+        "frames": 66,
+        "loop": false
+      },
+      "Climb_Up": {
+        "end_offset_forward_m": 4.571,
+        "end_offset_up_m": 1.2,
+        "edge_forward_m": 1.6,
+        "ledge_height_m": 1.2,
+        "cycles": 4,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Walk",
+        "frames": 232,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 0.571,
+        "playback": "speed / (0.571 x scale) loops per second x 93 frames",
+        "note": "pivot on the top surface; in place; pin the IK_* markers to the climb layer",
+        "frames": 93,
+        "loop": true
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 4.571,
+        "end_offset_up_m": -1.2,
+        "edge_forward_m": 1.6,
+        "drop_height_m": 1.2,
+        "cycles": 4,
+        "note": "starts with the pivot on the top surface (Climb_Loop / Climb_Up end pose); at the last frame move the transform by the end offset",
+        "frames": 232,
+        "loop": false
+      },
+      "Submerged_Loop": {
+        "depth_m": 2.293517541885376,
+        "note": "pivot on the liquid surface; everything stays under it; in place",
+        "frames": 96,
+        "loop": true,
+        "mesh_top_m": -0.2
+      },
+      "Dive_Into_Liquid": {
+        "end_offset_forward_m": 2.4,
+        "depth_m": 2.294,
+        "takeoff_frame": 22,
+        "splash_frame": 30,
+        "under_frame": 58,
+        "note": "at the last frame move the transform by end_offset_forward and loop Submerged_Loop",
+        "frames": 72,
+        "loop": false
+      },
+      "Surface_Burst": {
+        "start_depth_m": 2.294,
+        "end_offset_forward_m": 2.4,
+        "breach_frame": 18,
+        "land_frame": 34,
+        "note": "start under the exit point (the pivot on the liquid surface, facing the bank); the splash on nearby towers at breach_frame, the camera kick at land_frame; move the transform by end_offset_forward at the end and go to Walk",
+        "frames": 64,
+        "loop": false
+      }
+    },
+    "markers": [
+      "IK_Leg_L1",
+      "IK_Leg_L2",
+      "IK_Leg_L3",
+      "IK_Leg_R1",
+      "IK_Leg_R2",
+      "IK_Leg_R3",
+      "Socket_Spore"
+    ],
+    "extra_objects": [],
+    "climb_height_m": 1.2,
+    "liquid": "bog",
+    "submerged_depth_m": 2.294,
+    "foot_markers": "IK_<limb> bones at the rest foot contacts (deform flag on, no weights)",
+    "props": {
+      "RotSporePod": "../RotSporePod/RotSporePod.fbx",
+      "RotOvergrowth": "../RotOvergrowth/RotOvergrowth.fbx",
+      "RotbloomRoots": "../RotbloomRoots/RotbloomRoots.fbx"
+    },
+    "mechanic": "Overgrowth: Spore_Volley at up to 3 pads every 12 s (RotSporePod, then RotOvergrowth on the pad); phases Rooted_Idle -> Uproot -> Crawl; RotbloomRoots announce it"
+  }
 }
