@@ -36,10 +36,15 @@
     "Idle": 72,
     "Hit": 12,
     "Death": 40,
-    "Flood": 44,
-    "Spawn": 48
+    "Spawn": 48,
+    "Strike": 30,
+    "Flood": 44
   },
   "scale_keyed_bones": [
+    "Body_1",
+    "Body_2",
+    "Body_3",
+    "Head",
     "Stalk_L1",
     "Stalk_L2",
     "Stalk_L3",
@@ -62,5 +67,54 @@
     "fbx": "SlimeMonarch_LOD1.fbx",
     "tris": 5999,
     "bones": 11
+  },
+  "round31": {
+    "Strike": {
+      "frames": 30,
+      "loop": false,
+      "impact_frame": 13,
+      "impact": {
+        "front_min_z": 0.001,
+        "tip_forward": 1.771,
+        "rear": 1.045,
+        "min_z": -0.01
+      },
+      "rest": {
+        "front_min_z": 0.039,
+        "tip_forward": 1.0,
+        "rear": 1.017,
+        "min_z": -0.01
+      },
+      "snap_back_shortest": {
+        "front_min_z": 0.02,
+        "tip_forward": 0.901,
+        "rear": 1.013,
+        "min_z": -0.011
+      }
+    },
+    "Flood": {
+      "frames": 44,
+      "loop": false,
+      "slam_frame": 24,
+      "top": {
+        "front_min_z": 0.677,
+        "tip_forward": 1.332,
+        "rear": 1.038,
+        "min_z": -0.01
+      },
+      "slam": {
+        "front_min_z": -0.01,
+        "tip_forward": 1.297,
+        "rear": 1.029,
+        "min_z": -0.01
+      }
+    },
+    "chain_scale_bones": [
+      "Body_1",
+      "Body_2",
+      "Body_3",
+      "Head"
+    ],
+    "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
   }
 }

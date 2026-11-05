@@ -2708,3 +2708,64 @@ exporter can bake that too. `hold_rest` now keys the rest pose of `Armour_*` and
   Unity using the albedo alpha.
 - **Seal crystals:** with the facet glow, a strongly tinted crystal can read as a striped lantern. Lower the
   emission multiplier to about 2 if so.
+
+## Round 31: Frost Warden concepts, slug strike, drill rig collapse (2026-11-05)
+
+### Frost Warden: three body plans
+
+**Why:** Remco read the round-16/30 Warden (a humanoid torso on a six-legged body) as an "ice scorpion" with unclear
+proportions ("ik weet niet waar ik naar kijk"). Each concept therefore has one anatomy that reads at once from the
+44-degree game camera: an obvious front (eyes plus breath glow), one obvious weapon and one dominant mass. No mixed
+plans.
+
+- **A Rime Colossus** puts the mass in the arms: a fist-walker whose ice mauls are both weapon and armour. Alien
+  cues: no neck, three eyes, four mandible plates round the maw, flank gills, a crystal crest on the hump.
+- **B Crown Floe-beast** puts it in a horizontal slab: a ram with a crown-shield and tusks, six eyes under the crown,
+  neck gills, floes on the back; the most natural swimmer.
+- **C Lantern Stilt-warden** puts it in height: a tripod on stilts (knees above the hood), one central glaive arm,
+  a hanging ice lantern as the cast source; the lantern is the strongest signal at play zoom.
+
+Each supports all five mechanics: freeze-gate breath, climb and smash, losing armour plates, rage icicles, diving.
+Cold palette only; amber is limited to small eyes, breath and crack glow are cyan.
+
+Critique passes: metaball bodies were too thin, then too bloated; the Skin-modifier graph gives exact radii. B was
+raised off the ground and its crown made bigger and more upright. C went from four stilts (read as a harvestman) to a
+tripod.
+
+Weak points: A is the closest to a gorilla/golem, its arms are smooth tubes, and the pauldron/gauntlet can overlap the
+head in 3/4. At game angle B's legs read as flippers (turtle/ankylosaur echo), and from behind its crown is edge-on.
+C's thin legs and small head get small at play zoom; a tripod can still hint "spider". All: tube limbs, even voronoi
+cracks, gill glow clips to white. These are blockouts for choosing a direction, not models.
+
+### Slug strike: stretch, not bob
+
+Remco: "het hele lichaam beweegt wippend om iets te slaan, het zou mooier zijn als die lichamen rekken". A slug has
+no legs to swing and no jaw to snap; its one dramatic move is to lengthen. The strike is classic squash and stretch:
+gather (shorter and fatter, the front cocked up), a fast lunge in which the body grows ~38 % and thins with volume
+kept (width L^-0.65, height L^-0.35), the mouth slapping down on the target, then a damped spring snap back that
+overshoots once into a short fat bunch before it settles. The tail never moves, so the eye reads the reach against a
+planted anchor. The front segments take most of the reach (shares 0.1 / 0.45 / 0.62 / 0.3). Eye stalks fold back
+during the reach and spring out after. The boss plays the same strike 1.25x slower for weight. Flood turns the old
+rear-and-drop into stretch-up, whip-down, slap flat and long, snap back.
+
+Weak points: four chain bones only (the mantle stays fairly stiff at full reach); the foot's pedal stripes stretch
+visibly when the front lifts (reads as slime); Flood's rear-up is foreshortened from the game camera; the snap past
+rest is subtle on the small Oozer at game zoom; Unity's procedural Slam must be turned off for these two or it still
+adds a small hop.
+
+### Drill rig collapse
+
+Remco found the tipping derrick silly: a rigid model falling over reads as a toy. A real derrick fails from below:
+the legs buckle at their first joint, the lattice folds at a brace level, and the heavy top snaps off and hits the
+ground beyond. The rig is cut at the brace levels into a deck, four bent legs, a middle section and the top. The
+middle tips 72 degrees over the +X legs and the top folds until it rests on the ground (the fold angle is solved).
+Eight braces tear off and land flat. The motor house is squashed to 42 % with its roof sheared, and the stack folds
+over. Gravemaw's heave and three crystals push up under the deck at the impact. The drill string is thrown out of the
+hole and snaps in two: the kelly lands on the far side and the bit lands tip-first, buried to the shoulder. Motion
+follows gravity (angles grow with t^2, a small rebound on landing, debris in arcs). Each part's last frame is its
+wreck transform, so wreck and clip end cannot drift. Round-29 notes fixed: the bit has cutter teeth, stands tip-down
+with a bent kelly (no torpedo); every lit part is burnt, the only light is a few dim ember slivers in torn ends.
+
+Weak points: the standing frame has no cyan glow (hidden under the impact dust); the crushed house sits under the
+lattice from the game camera; the middle section rests a little high on the bent legs; some braces fly 3-4 m out,
+possibly outside the dust; the kelly is a plain square bar with a small torn cap.

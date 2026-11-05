@@ -9,9 +9,8 @@
   immune type's colour through `_EmissionColor` (BOSSES.md "The sealed crystals turn the colour of the immune type").
 - `Gate_IceBlock` (Exports/Gate_IceBlock/): the Frost Warden's frozen gate (Freeze_Gate), a chunk of grown ice that
   fits over every gate tier (G1-G3) with frost spikes; albedo alpha carries the opacity (clear ice, white cracks).
-- `Cutscene_Drill_Wreck` (Exports/Cutscene_Drill_Wreck/): the colony drill rig after Gravemaw surfaced under it:
-  the derrick snapped above the first brace level and folded over onto the heaved ground, the drill string thrown
-  out, loose pipes, rubble and Gravemaw's crystals in the heave. Built from build_cutscene.Drill's own pieces.
+- `Cutscene_Drill_Wreck` (Exports/Cutscene_Drill_Wreck/): the colony drill rig after Gravemaw surfaced under it.
+  Since round 31 built by build_drill_collapse.py (rigged, bind pose = the wreck, clip Collapse).
 - Drained gate emission (Exports/Gate/, Exports/Tower_GateGun/): `*_Drained_Emission.png` (+ Low): the gate and
   gate gun glow dying to a faint violet residue (the Sealed One's GateDrainer).
 
@@ -28,16 +27,12 @@ import bpy  # noqa: E402
 import numpy as np  # noqa: E402
 from mathutils import Matrix, Vector  # noqa: E402
 
-import base_kit as bk  # noqa: E402
 import boss_mech_kit as M  # noqa: E402
-import build_cutscene as BC  # noqa: E402
 import common as C  # noqa: E402
 import crysium as Y  # noqa: E402
 import env_kit as E  # noqa: E402
 import env_kit2 as K  # noqa: E402
 import ice_kit as IK  # noqa: E402
-import story_kit as sk  # noqa: E402
-import tower_kit as tk  # noqa: E402
 from boss_mech_kit import ease  # noqa: E402
 from env_kit import ss  # noqa: E402
 
@@ -688,150 +683,12 @@ def alpha_from_cracks(folder):
 # Cutscene_Drill_Wreck
 # =============================================================================================================
 
-BREAK_Z = 1.3
-FALL_YAW = 16.0
-
-
-class WreckKit(tk.Kit):
-    """tower_kit.Kit that splits every tube crossing BREAK_Z into a standing stub and a falling stump, with a
-    ragged break height per tube."""
-
-    def __init__(self, name, variants, seed=29):
-        super().__init__(name, variants)
-        self.rng = np.random.default_rng(seed)
-
-    def cyl(self, name, p0, p1, r0, r1=None, look=None, bone=None, on=None, sides=14, bevel=0.005, lod=True):
-        p0, p1 = Vector(p0), Vector(p1)
-        lo, hi = (p0, p1) if p0.z <= p1.z else (p1, p0)
-        if name == "Cable":
-            return None
-        if lo.z < BREAK_Z - 0.05 and hi.z > BREAK_Z + 0.05:
-            cut = BREAK_Z + self.rng.uniform(-0.12, 0.08)
-            t = (cut - lo.z) / (hi.z - lo.z)
-            m = lo.lerp(hi, t)
-            m2 = lo.lerp(hi, t + 0.025)
-            super().cyl(name + "Stub", lo, m + Vector((self.rng.uniform(-0.03, 0.03), self.rng.uniform(-0.03, 0.03), 0)),
-                        r0, r1, look=bk.scorch(look, 0.4), bone=bone, on=on, sides=sides, bevel=bevel, lod=lod)
-            return super().cyl(name, m2, hi, r0, r1, look=look, bone=bone, on=on, sides=sides, bevel=bevel, lod=lod)
-        return super().cyl(name, p0, p1, r0, r1, look=look, bone=bone, on=on, sides=sides, bevel=bevel, lod=lod)
-
-
-class DrillWreck(BC.Drill):
-    name = WRECK
-
-    def kit(self):
-        k = WreckKit(self.name, self.variants)
-        self.pieces(k)
-        self.wreck(k)
-        return k
-
-    def hinge(self):
-        return Vector((self.half(BREAK_Z), 0.0, BREAK_Z))
-
-    def fall_matrix(self, angle):
-        h = self.hinge()
-        return (Matrix.Translation(h) @ Matrix.Rotation(R(FALL_YAW), 4, "Z") @ Matrix.Rotation(angle, 4, "Y")
-                @ Matrix.Translation(-h))
-
-    def wreck(self, k):
-        rng = np.random.default_rng(2929)
-        standing, falling, string = [], [], []
-        for p in list(k.pieces):
-            z = p.world()[:, 2].mean()
-            if p.bone == "String":
-                string.append(p)
-            elif z > BREAK_Z - 0.02 and not p.name.endswith("Stub") and not p.name.startswith("Stack"):
-                falling.append(p)
-            else:
-                standing.append(p)
-        # Broken lattice: a third of the fallen braces and rails are gone, the glow is dead but for a few embers.
-        for p in list(falling):
-            if p.name in ("Brace", "Rail") and rng.random() < 0.33:
-                k.pieces.remove(p)
-                falling.remove(p)
-        for p in k.pieces:
-            if p.look.fam == "glow":
-                keep = p.name in ("PanelScreen", "Vent") and rng.random() < 0.6
-                p.look = p.look.but(glow=p.look.glow * 0.35) if keep else bk.burn(p.look)
-            elif rng.random() < 0.45:
-                p.look = bk.scorch(p.look, rng.uniform(0.3, 0.7))
-        # The top folds over the +X legs: the angle where the lowest fallen point just reaches the ground.
-        lo, hi = R(80), R(150)
-        for _ in range(30):
-            mid = (lo + hi) / 2
-            m = np.array(self.fall_matrix(mid))
-            low = min(float((np.c_[p.world(), np.ones(len(p.local))] @ m.T)[:, 2].min()) for p in falling)
-            lo, hi = (mid, hi) if low > 0.02 else (lo, mid)
-        self.fall_angle = lo
-        fm = self.fall_matrix(lo)
-        for p in falling:
-            p.matrix = fm @ p.matrix
-            p.bone = "Root"
-        # The drill string was thrown out: it lies on the heave, the bit half buried.
-        sm = (Matrix.Translation(Vector((-1.75, 0.95, 0.12))) @ Matrix.Rotation(R(-24), 4, "Z") @ Matrix.Rotation(R(-86), 4, "Y")
-              @ Matrix.Translation(Vector((0, 0, -self.BIT_TIP - 0.6))))
-        for p in string:
-            p.matrix = sm @ p.matrix
-            p.bone = "Root"
-        # The deck sits tilted on the ground Gravemaw heaved up.
-        tilt = Matrix.Translation(Vector((0, 0, 0.12))) @ Matrix.Rotation(R(-5), 4, "X") @ Matrix.Rotation(R(3), 4, "Y")
-        for p in standing:
-            p.matrix = tilt @ p.matrix
-        self.fall_matrix_world = fm
-        self.loose(k, rng)
-
-    def loose(self, k, rng):
-        on = ["Main"]
-        # Heaved ground under the deck and Gravemaw's crystal crest breaking through it.
-        sk.add(k, "Heave", lambda: sk.bm_mound(2.1, 0.32, seed=2931, rough=0.35), tk.frame((0.1, 0.0, -0.02)), sk.MUD, "Root",
-               on)
-        for i, (x, y, r) in enumerate(((-1.6, -1.2, 0.22), (1.3, -1.5, 0.18), (-0.4, 1.7, 0.26), (2.4, 1.2, 0.2),
-                                       (-1.9, 0.2, 0.15), (0.9, 1.9, 0.14), (3.6, -0.9, 0.17))):
-            sk.add(k, "Rubble", lambda r=r, i=i: sk.bm_mound(r, r * 0.8, seed=2933 + i, rings=3, sectors=7, rough=0.5),
-                   tk.frame((x, y, -0.02), rot=(rng.uniform(-15, 15), rng.uniform(-15, 15), rng.uniform(0, 90))),
-                   tk.DARK.but(paint=(0.11, 0.1, 0.1), fam="ceramic", rough=0.9) if i % 2 else sk.MUD, "Root", on)
-        for i, (x, y, ln, a) in enumerate(((-1.25, -1.1, 0.9, 35), (-0.9, -1.35, 0.6, 60), (1.5, -1.25, 0.7, -30))):
-            d = Vector((math.cos(R(a)) * 0.45, math.sin(R(a)) * 0.45, 1)).normalized()
-            sk.crystal(k, "Crest", Vector((x, y, 0.05)), d, 0.09, ln, sk.CRYS, "Root", on, seed=2932 + i)
-        # Loose pipes off the rack, one leaning on the deck edge.
-        for i, (x, y, yaw, ln, r) in enumerate(((-1.4, 1.35, 20, 1.5, 0.06), (-1.2, 1.55, 28, 1.3, 0.06),
-                                                (2.2, -1.3, -50, 1.6, 0.07), (0.8, -1.55, 80, 1.1, 0.05))):
-            d = Vector((math.cos(R(yaw)), math.sin(R(yaw)), 0))
-            p0 = Vector((x, y, r)) - d * ln / 2
-            k.cyl("Pipe", p0, p0 + d * ln, r, look=bk.scorch(tk.STEEL.but(rings=0.1), 0.3) if i % 2 else tk.GUNMETAL,
-                  bone="Root", on=on, sides=10)
-        k.cyl("Pipe", Vector((-1.35, -0.55, 0.0)), Vector((-0.95, -0.15, 0.62)), 0.065, look=tk.STEEL, bone="Root", on=on,
-              sides=10)
-        # The torn cables lying in coils from the crown.
-        h = self.hinge()
-        k.cyl("CableTorn", h + Vector((0, 0.1, 0.05)), Vector((-0.6, 1.2, 0.03)), 0.012, look=tk.DARK, bone="Root", on=on,
-              sides=4, bevel=0.0)
-
-    def bones(self):
-        return [tk.Bone("Root", (0, 0, 0), bk.UP, length=0.2)]
-
+# Round 31: the wreck is now the bind pose of a rigged, fractured rig with a Collapse clip that starts from the
+# standing derrick (build_drill_collapse.py). This entry point stays so `--only DrillWreck` keeps working.
 
 def build_wreck(bake=True):
-    bk.clear_actions()
-    tk.metal_detail_map()
-    spec = DrillWreck()
-    kit = spec.kit()
-    out_dir = os.path.join(C.EXPORTS, WRECK)
-    mat, report = bk.bake_set(kit, out_dir, 1024, 512, bake, samples=16)
-    obj = sk.static_object(kit, "Main", mat, WRECK)
-    bk.export_fbx(os.path.join(out_dir, WRECK + ".fbx"), [obj], animated=False)
-    report.update({"fbx": WRECK + ".fbx", "tris": C.tri_count(obj), "round": ROUND,
-                   "size_m": [round(d, 3) for d in obj.dimensions], "lod1": "none (one per level, story decor)",
-                   "pivot": "the rig deck's centre on the ground, as Cutscene_Drill: swap it in place",
-                   "fall": {"break_height_m": BREAK_Z, "fold_angle_deg": round(math.degrees(spec.fall_angle), 1),
-                            "direction": "the top lies towards Blender +X (turned 16 deg towards +Y): the side away "
-                                         "from where Gravemaw surfaces in BOSSES.md, if Unity faces -X at the hole"},
-                   "emission": "dead: two vent / panel embers left (strength 0.35 of the shipped colony cyan)",
-                   "use": "Gravemaw entrance (ColonyRig arrival): hide Cutscene_Drill at the smash frame and show the "
-                          "wreck in the dust; keep Gravemaw_Hole / glow pool beside it"})
-    tk.write_json(os.path.join(out_dir, WRECK + "_report.json"), report)
-    C.save_blend(WRECK)
-    return obj
+    import build_drill_collapse as DC
+    return DC.build_wreck(bake=bake)
 
 
 # =============================================================================================================
@@ -986,9 +843,10 @@ def main():
     if "DrillWreck" in names:
         C.reset_scene()
         C.preview_world()
-        obj = build_wreck(bake=not args.get("nobake"))
+        spec, objs, acts = build_wreck(bake=not args.get("nobake"))
         if render:
-            preview_static([obj], out, WRECK, (1.0, 0, 0.8), 10.0, game_zoom=1.0)
+            import build_drill_collapse as DC
+            DC.previews(spec, objs, acts, out)
     if "Drained" in names:
         drained_maps()
 

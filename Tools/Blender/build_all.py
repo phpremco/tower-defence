@@ -29,6 +29,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_broodmother.py", "build_packalpha.py", "build_stormmatriarch.py", "build_corewisp.py",
            # Round 10 bosses; each loads its species' .blend built above.
            "build_acidempress.py", "build_crystalwarlord.py", "build_skysovereign.py", "build_slimemonarch.py",
+           # Round 31: the slugs strike by stretching (Strike clip; the SlimeMonarch's Flood rebuilt the same way).
+           "build_slug_strike.py",
            "build_rollerking.py",
            # Round 14: spawn origins, resource node, then Gravemaw (its previews load the hole and BroodMother).
            "build_env_origins.py", "build_gravemaw.py",

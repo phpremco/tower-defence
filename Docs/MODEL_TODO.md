@@ -879,3 +879,39 @@ vastgezet.
 | Scheurschotsen | Statisch en maar één kant op gekanteld. Schots C heeft 308 tris. Schotsen op de lip aan de camerakant tonen hun vlak en lezen als keitjes: draai ze zo dat vooral de gloeiende rand zichtbaar is |
 | Gate_IceBlock | Nog steeds op G3 gemaat. De ijspegels aan de uiteinden van de rand zijn kort |
 | SealCrystal | Sterk getint kan een kristal als gestreepte lantaarn lezen; zet de emissie dan op ~x2 |
+
+### Ronde 31 (Frost Warden-concepten, slakken rekken, boortoren stort in, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 31.
+
+- **Frost Warden-concepten** (`build_warden_concepts.py`, alleen QA, geen export). Vergelijkingsblad in de scratchpad:
+  `blender31/warden_concepts/warden_concepts_sheet.png`.
+  - **A Rime Colossus:** gebogen knokkelloper. Twee enorme ijsvuisten zijn het wapen; de lage wigkop met drie ogen
+    ademt vorst tussen de vuisten door.
+  - **B Crown Floe-beast:** brede, lage gletsjer-viervoeter. Een ijzen kroonschild met slagtanden ramt de poort, de
+    gloeiende keel ademt vorst, ijsschotsen op de rug.
+  - **C Lantern Stilt-warden:** hoog schild op drie steltpoten. Eén grote glaive-arm vooraan; een ijslantaarn onder
+    de buik werpt de vorst.
+  - **Wacht op Remco:** hij kiest A, B of C (of een mix). Daarna volgt het echte model met rig, clips en pantser- en
+    ijspegelbotten volgens de ronde-28-conventies.
+- **Slakken slaan door te rekken** (`build_slug_strike.py`): Oozer en SlimeMonarch hebben een eigen `Strike`-clip.
+  Het lijf rekt ~38 % naar het doel (dunner bij het uitrekken, dikker bij het terugveren), de staart blijft staan,
+  de mond klapt op het doel en het lijf veert elastisch terug. Oozer 24 frames, impact 10; SlimeMonarch 30 frames,
+  impact 13. `Flood` is zo opnieuw gemaakt (44 frames, klap op 24). Geen nieuwe botten.
+  - Unity: `BlenderClipSpec("Strike", ModelClipRole.Attack, 10)` (Oozer) en `(..., 13)` (SlimeMonarch) toevoegen, en
+    in `EnemyView.cs` pitch/lift/lunge/squash op 0 als het model een eigen strike heeft (of een `Stretch`-stijl).
+    Anders stapelt er een wipje bovenop. Alleen naar `Bite` wisselen is niet genoeg.
+- **Boortoren stort echt in:** `Cutscene_Drill_Wreck` is nu gerigd. De rustpose is het wrak; `Collapse` (84 frames)
+  begint als de staande toren en eindigt precies in het wrak: de grond breekt open, de boorstang wordt eruit
+  geslingerd en knapt, de poten knikken, het middenstuk kantelt, de top breekt af en slaat neer, het motorhuis wordt
+  platgedrukt, schoren vliegen weg. Momenten: impact 3, top_hits_ground 40, collapse_end 60 (rest in de README).
+  - Wrakfixes uit ronde 29: de boorkop heeft tanden en steekt met de punt in de grond (geen torpedo), geen cyaan
+    gloed meer, alleen een paar zwakke sintels.
+  - Unity: in `BlenderBossFxBuilder.ApplyWreck` `Collapse` op de Death-rol zetten; `ColonyRigView` speelt die al af
+    bij de smash.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Warden-concepten | Blockouts: buizen als ledematen, ijsbarsten te regelmatig, kieuwgloed wordt wit. A lijkt het meest op een gorilla/golem. B: poten lezen als flippers (schildpad); de kroon staat van achteren op zijn kant. C: dunne poten en een kleine kop op spelzoom |
+| Slakken-strike | Rek komt uit vier botten: de mantel blijft bij volle reik wat stijf. De streepjes op de voetzool rekken zichtbaar. Flood's oprichten leest van boven verkort. Terugveren is subtiel bij de kleine Oozer |
+| Boortoren-collapse | Frame 0 heeft geen cyaan gloed (valt weg in de stofwolk). Het platte motorhuis ligt van bovenaf onder het vakwerk. Het middenstuk rust iets hoog op de geknikte poten. Sommige schoren vliegen 3-4 m ver |

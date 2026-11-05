@@ -2698,3 +2698,106 @@ Not edited here (shared). Add this line after `"build_bosses29_props.py", "build
 ```
 
 `ice_kit.py` is a module, and `round30_views.py` is QA only (do not list them).
+
+## Round 31: Frost Warden concepts, slug strike, drill rig collapse (2026-11-05)
+
+Brief: Remco's feedback of 2026-11-05 (the Warden reads as a confusing "ice scorpion", the slugs bob their whole
+body to strike, the toppling drill rig looks silly). Design notes and weak points in `DESIGN_NOTES.md` (round 31).
+Nothing is imported into Unity. Shared modules are untouched.
+
+### Frost Warden concepts (`build_warden_concepts.py`, QA only)
+
+Three body-plan blockouts for Remco to choose from. Nothing is exported and nothing replaces `FrostWarden.fbx`.
+
+- Run: `blender --background --factory-startup --python Tools/Blender/build_warden_concepts.py -- --preview <dir>
+  [--only A,B,C] [--nosheet] [--save]` (about 25 s, EEVEE).
+- **Build:** each body is one Skin-modifier graph (spine plus limbs, subdivided, noise-displaced); ice armour is the
+  convex hull of random points (hard facets). Procedural materials: slate body (light top, dark underside), ice with a
+  deep core, frost on glancing faces and thin cyan cracks; amber only in the small eyes.
+- **Poses:** `rest` and `cast` (frost cone from the breath source). `--save` writes
+  `ArtSource/Blend/FrostWarden_Concepts.blend` (one collection per concept and pose).
+- **Output:** `Warden_<X>_game.png` (3/4 front at a Gate_G2 and a Tower_Gun_T2, walking away, the cast, true play
+  zoom), `Warden_<X>_turntable.png` (front 3/4, side, back, top), `warden_concepts_sheet.png` (labelled comparison).
+- Scale: at Unity scale 1 Gate_G2 is 2.68 x 0.73 x 1.28 m, so a 5-6 m Warden dwarfs it (the true proportion).
+
+| Concept | Body plan | Size (w x l x h) | Breath | Weapon / smash | Armour | Rage icicles |
+| --- | --- | --- | --- | --- | --- | --- |
+| A Rime Colossus | hunched knuckle-walker | 5.1 x 4.5 x 6.2 | maw under the low head, flank gills | two ice-gauntlet fists | gauntlets, pauldrons, back floes, forearm plates | crest on the hump |
+| B Crown Floe-beast | broad low quadruped with a tail | 5.1 x 7.4 x 5.2 | throat slit, neck gills | crown-shield ram and two tusks | three back floes, flank floes, knee caps | 3 x 3 field between the floes |
+| C Lantern Stilt-warden | high carapace on three stilts | 4.7 x 6.5 x 6.0 | ice lantern under the belly | one glaive arm in front | carapace floes, knee caps, greaves | hang from the hood rim |
+
+### Slug strike (`build_slug_strike.py`)
+
+The Oozer and the SlimeMonarch had no strike clip, so Unity bobbed the whole body (procedural Slam). Both now get a
+`Strike` that stretches the body towards the target, and the SlimeMonarch's `Flood` is rebuilt the same way. No new
+bones; mesh, maps and tris unchanged (Oozer 9 / LOD 7 bones, SlimeMonarch 13 / 11). The script opens the `.blend`,
+keys the clips, keys LOD1 from the full rig, re-exports both FBX with all clips, merges `round31` into the report and
+saves the `.blend` (idempotent).
+
+| Asset | Clip | Frames | Event | Notes |
+| --- | --- | --- | --- | --- |
+| Oozer | Strike (new) | 24 | impact 10 | gather 0-4, lunge, mouth slaps down at 10 (tip 0.50 -> 0.88 ahead), elastic snap back ~10 % shorter, rest by 24 |
+| SlimeMonarch | Strike (new) | 30 | impact 13 | the same strike 1.25x slower (tip 1.00 -> 1.77) |
+| SlimeMonarch | Flood (rebuilt) | 44 | slam 24 (unchanged) | stretches up into a column (0-17), the front lands flat and long at 24, snaps back, ripples, rest by 44 |
+
+- The tail end stays planted; Body_1..3 and Head lengthen by L (shares 0.1 / 0.45 / 0.62 / 0.3 of the reach), width
+  L^-0.65, height L^-0.35. Eye stalks and sacs ride on the stretched bones unsquashed.
+- Body_1..3 and Head now carry scale keys: every old clip holds them at 1 (`check_clip_scales.py --bones Body_,Head`).
+  Unity must not set their scale from code.
+- Unity: add `new BlenderClipSpec("Strike", ModelClipRole.Attack, 10)` (Oozer) and `(..., 13)` (SlimeMonarch); Flood
+  stays `("Flood", ModelClipRole.Power, 24, "Pulse")`. Then zero the procedural pitch/lift/lunge/squash when the model
+  has its own strike, or add a `Stretch` style that keeps Slam's dust and impact moments; `Bite` alone still crouches
+  and shakes, and Slam at the 25 % own-strike share still adds a small hop.
+- Run after `build_oozer.py` and `build_slimemonarch.py` (re-running those wipes Strike and the new Flood):
+  `blender --background --factory-startup --python Tools/Blender/build_slug_strike.py -- [--only Oozer,SlimeMonarch]
+  [--preview <dir>] [--norender] [--before]`. Skins are maps only (no rebuild).
+
+### Drill rig collapse (`build_drill_collapse.py`; `build_bosses29_props.py --only DrillWreck` calls it)
+
+`Cutscene_Drill_Wreck.fbx` is now rigged: the same pieces as `Cutscene_Drill`, cut at 0.85 (knees), 1.3 (start of
+the middle) and 2.2 (top), one rigid bone per part. The **bind pose is the wreck**; `Collapse` frame 0 is the
+standing rig (string sunk, as after Sink), and each part's last frame is generated as its wreck transform, so the clip
+ends in the wreck by construction. No separate collapse export; `Cutscene_Drill` is unchanged.
+
+| Asset | Tris / bones | Maps | Size (m) | Pivot |
+| --- | --- | --- | --- | --- |
+| `Cutscene_Drill_Wreck` | 5,120 / 30 (Root + 29) | 1024 (Low 512), one material | 8.17 x 5.35 x 2.82 | rig deck centre on the ground, as Cutscene_Drill |
+
+| Clip | Frames | Loop | Events (report `clips.Collapse.events`) |
+| --- | --- | --- | --- |
+| Collapse | 84 | no | impact 3 (heave, crystals), string_thrown 4, legs_buckle 7, mid_tips 12, top_snaps 17, braces_fly 18-39, block_lands 28, kelly_lands 32, house_crushed 34, bit_lands 36, top_hits_ground 40, collapse_end 60 (holds to 84) |
+| Standing | 1 | no | the standing rig |
+| Wrecked | 1 | no | the wreck (bind pose) |
+
+- Bones: Deck, Stub_1..4, Mid, Top, House (scale key: crushed), Roof, Stack, Block, Kelly, Bit, KellyBent, Heave,
+  Rubble_1..3, Crest_1..3, Debris_1..8, all children of Root.
+- The fall goes towards +X, turned 22 degrees towards the motor house; the middle tips 72 degrees and the top folds a
+  further 46. The string lands on -X, the hole side.
+- Round-29 wreck notes fixed: no cyan left, only dim ember slivers in the torn leg ends and the crushed house (keep
+  WreckEmission ~0.6). The bit lies tip-down, buried to the shoulder, with a ring of cutter teeth and the lower kelly
+  bent (no more torpedo).
+- Unity: in `BlenderBossFxBuilder.ApplyWreck` pass roles `{"Collapse": ModelClipRole.Death}` to `BuildProp` instead of
+  `null`; `ColonyRigView.ShowWreck` already plays Death from 0 at the smash. Dust at impact, sparks and a camera kick at
+  top_hits_ground and house_crushed. Without the mapping Unity shows the wreck (the bind pose), as before.
+- Frame 0 has no live cyan glow (the lit parts are baked dead): hidden in the impact dust; if it shows, fade the hidden
+  drill's emission over 2-3 frames before the swap.
+
+### Previews
+
+In the session scratchpad, `blender31/`: `warden_concepts/` (sheet, game strips, turntables), `slugs/`
+(`*_before_SlamBob`, `*_before_Crawl/Hit`, `*_Strike`, `SlimeMonarch_Flood`, `*_after_Crawl`, side and game),
+`rig/` (`DrillCollapse_game/side.png`, `DrillWreck_after.png`, `before/drill_and_wreck_round29.png`). Backups of the
+old slug blends and FBX in `blender31/slug_backup/`.
+
+### build_all.py
+
+Not edited here (shared). Add this line right after `"build_slimemonarch.py",` (it must run after
+`build_oozer.py` and `build_slimemonarch.py`):
+
+```
+           # Round 31: the slugs strike by stretching (Strike clip; the SlimeMonarch's Flood rebuilt the same way).
+           "build_slug_strike.py",
+```
+
+The drill collapse needs no line (`build_bosses29_props.py` is listed and calls `build_drill_collapse.py`, a
+module). `build_warden_concepts.py` is QA only (do not list it).
