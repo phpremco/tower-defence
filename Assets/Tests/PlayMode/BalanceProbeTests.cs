@@ -26,13 +26,20 @@ namespace Game.Tests
     /// </summary>
     public sealed class BalanceProbeTests
     {
-        private const float SimulationSpeed = 20f;
         private const float TimeoutSeconds = 900f;
-        // No frame may jump further than this in game time. At twenty times speed a slow editor frame became one to three
-        // game seconds: creatures skipped past gates, guns lost shots, and the bot lost to the frame rate, not to the waves.
-        // The time scale follows the editor's frame rate so a slow frame only slows the run down.
-        private const float MaxFrameSeconds = 0.2f;
+        // Every frame advances the game by exactly this (Time.captureDeltaTime), however long the editor took to draw it.
+        // Until 2026-11-05 the time scale followed the editor's frame rate (up to twenty times, at most 0.2 s a frame), so
+        // a slow frame or a busy machine changed the steps the game was simulated in and two runs of one build differed.
+        // With fixed steps and seeded draws (ProbeSeed) a run is reproducible: the same build plays the same game.
+        private const float StepSeconds = 0.2f;
+        // "step=0" replays the timing before 2026-11-05 for comparisons: the time scale follows the editor's frame rate (up
+        // to AdaptiveSpeed, AdaptiveFrameSeconds a frame unless a frame takes longer), so runs depend on the machine.
+        private const float AdaptiveSpeed = 20f;
+        private const float AdaptiveFrameSeconds = 0.2f;
         private const float MinFrameSeconds = 0.0001f;
+        // The seed of the level's draws (nests, group spacing) for every run; a "seed=N" line in the filter file overrides it
+        // to sample other draws of the same waves (see Docs/BALANCE.md, probe seeds).
+        private const int ProbeSeed = 1;
         private const float BuyIntervalSeconds = 1f;
         // The bot judges its towers against the wave being fought and the next one: on a long road the creatures of a
         // wave reach the gate while the next one spawns.
@@ -86,6 +93,7 @@ namespace Game.Tests
         private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
         private const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
         private const string TracePath = "Logs/probe_trace.txt";
+        private const string ResultsPath = "Logs/probe_results.txt";
 
         // The smoke run: Shard Ridge (first flyers) and Crysium Vein (the last level of the slice), on Medium.
         private static readonly int[] SmokeLevels = { 2, 5 };
@@ -113,6 +121,14 @@ namespace Game.Tests
             {
                 System.IO.File.Delete(TracePath);
             }
+        }
+
+        // A run cut off by the timeout must not leave the editor stepping in fixed game time.
+        [TearDown]
+        public void ResetTime()
+        {
+            Time.captureDeltaTime = 0f;
+            Time.timeScale = 1f;
         }
 
         [UnityTest]
@@ -315,7 +331,10 @@ namespace Game.Tests
                     owned.RemoveAll(id => !HitsBoth(definition, id));
                 }
 
-                Services.Register(new LevelSession(definition, catalog.Difficulties[difficulty]));
+                int seed = Seed();
+                float step = Step();
+                UnityEngine.Random.InitState(seed);
+                Services.Register(new LevelSession(definition, catalog.Difficulties[difficulty], seed: seed));
                 SceneManager.LoadScene(SceneNames.Level);
                 yield return null;
                 yield return null;
@@ -329,7 +348,8 @@ namespace Game.Tests
                     }
                 }
 
-                Time.timeScale = SimulationSpeed;
+                Time.timeScale = 1f;
+                Time.captureDeltaTime = step;
                 float started = Time.realtimeSinceStartup;
                 float nextBuy = 0f;
                 LevelContext context = null;
@@ -392,18 +412,19 @@ namespace Game.Tests
                         }
                     }
 
-                    if (Time.timeScale > 0f)
+                    if (step <= 0f && Time.timeScale > 0f)
                     {
-                        Time.timeScale = Mathf.Clamp(MaxFrameSeconds / Mathf.Max(MinFrameSeconds, Time.unscaledDeltaTime), 1f, SimulationSpeed);
+                        Time.timeScale = Mathf.Clamp(AdaptiveFrameSeconds / Mathf.Max(MinFrameSeconds, Time.unscaledDeltaTime), 1f, AdaptiveSpeed);
                     }
 
                     yield return null;
                 }
 
+                Time.captureDeltaTime = 0f;
                 Time.timeScale = 1f;
                 Assert.IsNotNull(context);
                 trace.Detach();
-                traces.Add($"{definition.DisplayName} on difficulty {difficulty}{(gunOnly ? " (gun only)" : string.Empty)}");
+                traces.Add($"{definition.DisplayName} on difficulty {difficulty}, seed {seed}{(gunOnly ? " (gun only)" : string.Empty)}");
                 traces.AddRange(trace.Lines);
                 traces.Add(ProbeTrace.Layout(definition, towers));
                 Assert.AreEqual(0, errors, "the level logged errors");
@@ -417,12 +438,14 @@ namespace Game.Tests
                     FlyerBaseHits = trace.FlyerBaseHits,
                     BaseDamage = context.BaseHealth.Max - context.BaseHealth.Current,
                 });
-                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty}: {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
+                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty} (seed {seed}, step {step:0.###}): {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
             }
 
             Application.logMessageReceived -= onLog;
             LogAssert.ignoreFailingMessages = false;
             System.IO.File.AppendAllLines(TracePath, traces);
+            // One line per run, kept over test runs, so repeated runs and seed sweeps can be compared.
+            System.IO.File.AppendAllLines(ResultsPath, report);
             Debug.Log(string.Join(" | ", report));
         }
 
@@ -471,7 +494,30 @@ namespace Game.Tests
             return levels;
         }
 
-        // An optional filter file narrows a run, one "levels=0,1" or "difficulties=1,2" line each; no file means everything.
+        // The seed of every run: ProbeSeed, or the "seed=N" line of the filter file.
+        private static int Seed() => (int)Setting("seed", ProbeSeed);
+
+        // Game seconds per frame: StepSeconds, or the "step=S" line of the filter file (to compare finer steps).
+        private static float Step() => Setting("step", StepSeconds);
+
+        private static float Setting(string key, float fallback)
+        {
+            if (System.IO.File.Exists(FilterPath))
+            {
+                foreach (string line in System.IO.File.ReadAllLines(FilterPath))
+                {
+                    string[] parts = line.Split('=');
+                    if (parts.Length == 2 && parts[0].Trim() == key && float.TryParse(parts[1].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value))
+                    {
+                        return value;
+                    }
+                }
+            }
+
+            return fallback;
+        }
+
+        // An optional filter file narrows a run, one "levels=0,1" or "difficulties=1,2" line each (and "seed=N" for the draws, "step=S" for the game seconds per frame); no file means everything.
         private static bool Wanted(string key, int value)
         {
             if (!System.IO.File.Exists(FilterPath))

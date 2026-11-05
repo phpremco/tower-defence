@@ -92,7 +92,7 @@ MonoBehaviour:
     _maxPads: 3
     _warnSeconds: 2
     _reach: 16
-    _clusterRadius: 2.6
+    _clusterRadius: 3.5
     _pod: {fileID: 0}
     _arcHeight: 3.5
     _minFlightSeconds: 0.7
@@ -149,6 +149,9 @@ MonoBehaviour:
     _riftSeconds: 2.5
     _roadRiseSeconds: 2
     _crushDamage: 120
+    _baseBlowSeconds: 3
+    _onBaseStandIn: 1
+    _onBaseLoopRate: 0.8
     _expectedTopShare: 0.3
     _gateGunShare: 0.08
     _expectedPhaseSeconds: 15
@@ -172,6 +175,7 @@ MonoBehaviour:
   _bodyHalfWidth: 1.25
   _impactKick: 0.35
   _mechanicClipRate: 1.4
+  _resultHoldSeconds: 0
   _signatureText: 'Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.'
   _telegraphText: It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.
   _counterText: 'Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. The hero''s repair thaws a frozen gate, and the Warden slips off without breaking it.'

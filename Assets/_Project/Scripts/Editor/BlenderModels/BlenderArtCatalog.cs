@@ -402,6 +402,7 @@ namespace Game.Editor
                         new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 24),
                         new BlenderClipSpec("Rise_OntoBase", ModelClipRole.RiseOntoBase, 96),
                         new BlenderClipSpec("Adapt", ModelClipRole.Adapt, 30),
+                        new BlenderClipSpec("OnBase_Loop", ModelClipRole.OnBaseLoop),
                     },
                 },
             };

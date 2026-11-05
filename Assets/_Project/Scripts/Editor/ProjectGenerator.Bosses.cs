@@ -64,6 +64,15 @@ namespace Game.Editor
 
             // Half its body width in world units, legs included (the model's width at the titans' scale of 0.8).
             public float BodyHalfWidth = 1.1f;
+
+            // Towers within this many world units of each other count as one cluster for a spore volley. Cells are 1 m and a
+            // defence usually stands 2.7 to 3.2 m apart (a tower and its neighbours, diagonals included): at 2.6 nearly every
+            // tower was a cluster of one and a volley hit one pad. At 3.5 the fullest cluster of a normal defence holds 3 to 5
+            // towers, so a volley draws its 3 pods; the quarter cap (BossDefinition.MaxFieldShare) still limits small defences.
+            public float ClusterRadius = 3.5f;
+
+            // The victory panel waits for its death clip (the Sealed One's white Release) when true.
+            public bool HoldResultForDeath;
             public string SignatureText;
             public string TelegraphText;
             public string CounterText;
@@ -168,6 +177,7 @@ namespace Game.Editor
                 SignatureText = "It does not come to you: the ground at the centre of the map cracks open, a new road rises from there to your base, and it hauls itself along it and onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
                 TelegraphText = "The ground rumbles and violet cracks open at the centre before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.",
                 CounterText = "Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.",
+                HoldResultForDeath = true,
                 Voice = new VoiceSpec { Enemy = "SealedOne", Move = "Bosses/EnergyBall/energy_ball_static_loop_boss", Screech = "Bosses/EnergyBall/energy_ball_death_boss" },
             };
         }
@@ -253,6 +263,14 @@ namespace Game.Editor
         }
 
         private static ModelArtDefinition Art(string id) => AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{BlenderArtBuilder.ArtDataFolder}/{id}.asset");
+
+        // The length of the art's death clip as the corpse plays it, or zero without one.
+        private static float DeathSeconds(string id)
+        {
+            ModelArtDefinition art = Art(id);
+            int death = art != null ? art.IndexOf(ModelClipRole.Death) : -1;
+            return death >= 0 ? art.Clips[death].Length : 0f;
+        }
 
         // Rotbloom's spore pod (round 28): a small flyer, so the air towers can shoot it down before it lands on a pad.
         private static EnemyDefinition CreateSporePod()
@@ -368,6 +386,8 @@ namespace Game.Editor
             so.FindProperty("_signatureText").stringValue = spec.SignatureText;
             so.FindProperty("_telegraphText").stringValue = spec.TelegraphText;
             so.FindProperty("_counterText").stringValue = spec.CounterText;
+            so.FindProperty("_overgrowth._clusterRadius").floatValue = spec.ClusterRadius;
+            so.FindProperty("_resultHoldSeconds").floatValue = spec.HoldResultForDeath ? DeathSeconds(spec.Id) : 0f;
             // Written with the rest, so the boss validates whole.
             WriteOvergrowth(so, spec.Signature == BossSignature.Overgrowth ? pod : null);
             WriteShards(so, spec.Signature == BossSignature.Splitting ? shards : new ShardSpec[0]);

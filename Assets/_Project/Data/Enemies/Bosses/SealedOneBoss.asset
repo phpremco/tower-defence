@@ -96,7 +96,7 @@ MonoBehaviour:
     _maxPads: 3
     _warnSeconds: 2
     _reach: 16
-    _clusterRadius: 2.6
+    _clusterRadius: 3.5
     _pod: {fileID: 0}
     _arcHeight: 3.5
     _minFlightSeconds: 0.7
@@ -153,6 +153,9 @@ MonoBehaviour:
     _riftSeconds: 2.5
     _roadRiseSeconds: 2
     _crushDamage: 120
+    _baseBlowSeconds: 3
+    _onBaseStandIn: 1
+    _onBaseLoopRate: 0.8
     _expectedTopShare: 0.3
     _gateGunShare: 0.08
     _expectedPhaseSeconds: 15
@@ -176,6 +179,7 @@ MonoBehaviour:
   _bodyHalfWidth: 2.4
   _impactKick: 0.35
   _mechanicClipRate: 1.4
+  _resultHoldSeconds: 5.666667
   _signatureText: 'It does not come to you: the ground at the centre of the map cracks open, a new road rises from there to your base, and it hauls itself along it and onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate''s gun (the gate still blocks) until the phase ends.'
   _telegraphText: The ground rumbles and violet cracks open at the centre before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.
   _counterText: Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.

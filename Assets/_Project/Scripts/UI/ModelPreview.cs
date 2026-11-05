@@ -25,6 +25,10 @@ namespace Game.UI
         private const float LookDownDegrees = 16f;
         private const float FieldOfView = 30f;
         private const float FrameFill = 0.8f;
+        private const int FitSamples = 16;
+        private const int FitRounds = 6;
+        private const int BoxCorners = 8;
+        private const float MinFitDistance = 0.5f;
         private const float RotorDegreesPerSecond = 1400f;
         private const float KeyIntensity = 1.6f;
         private const float FillIntensity = 0.5f;
@@ -51,6 +55,7 @@ namespace Game.UI
         private RenderTexture _texture;
         private readonly List<Material> _owned = new List<Material>();
         private readonly List<Vector3> _vertices = new List<Vector3>(4096);
+        private readonly List<Vector3> _fitPoints = new List<Vector3>(64);
         private readonly HashSet<Renderer> _farLods = new HashSet<Renderer>();
         private Mesh _baked;
         private int _reframeIn;
@@ -157,6 +162,9 @@ namespace Game.UI
         {
             var bounds = new Bounds(Vector3.zero, Vector3.zero);
             bool any = false;
+            // The padded bounds' top: a turning, breathing creature can reach above its measured pose (the Shattered's
+            // spires were cut off at the top), so the picture keeps room up to it; the seat still uses the posed feet.
+            float ceiling = float.MinValue;
             CollectFarLods();
             foreach (Renderer renderer in _turntable.GetComponentsInChildren<Renderer>())
             {
@@ -174,6 +182,7 @@ namespace Game.UI
                 }
 
                 Bounds part = renderer is SkinnedMeshRenderer skinned ? PosedBounds(skinned) : renderer.bounds;
+                ceiling = Mathf.Max(ceiling, renderer.bounds.max.y);
                 if (!any)
                 {
                     bounds = part;
@@ -198,15 +207,78 @@ namespace Game.UI
             _turntable.localPosition = new Vector3(-centre.x, -centre.y + lift, -centre.z);
 
             // The model turns, so sideways it may show its longest horizontal side; vertically only its height counts.
-            float halfTan = Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
             float wide = Mathf.Max(bounds.extents.x, bounds.extents.z);
             float tall = Mathf.Max(bounds.extents.y + lift, 0.1f);
-            float radius = Mathf.Max(bounds.extents.magnitude, 0.2f);
-            float distance = (Mathf.Max(wide, tall) / halfTan + wide) / FrameFill;
-            _camera.transform.localPosition = new Vector3(0f, 0f, -distance);
+            float radius = Mathf.Max(bounds.extents.magnitude, 0.2f) + floorRadius;
+            PlaceStage(bounds, floorRadius);
+            CollectFitPoints(wide, tall + Mathf.Max(0f, ceiling - bounds.max.y), lift * 2f - tall);
+            Vector2 view = FitView(Mathf.Max(wide, tall) / Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad) + wide);
+            float distance = view.x;
+            _camera.transform.localPosition = new Vector3(0f, view.y, -distance);
             _camera.nearClipPlane = Mathf.Max(0.05f, distance - radius * 2f);
             _camera.farClipPlane = distance + BackdropDistance + radius;
-            PlaceStage(bounds, floorRadius);
+        }
+
+        // What must stay in the picture while the turntable turns, in the camera pivot's frame: the rings the model sweeps
+        // at its head and at its feet, and the pedestal as it really stands (its foot flares wider than its top and, seen
+        // from above, its near edge reaches lowest: the Shattered's pedestal was cut off at the bottom by a box fit).
+        private void CollectFitPoints(float bodyRadius, float top, float feet)
+        {
+            _fitPoints.Clear();
+            Quaternion toCamera = Quaternion.Inverse(Quaternion.Euler(LookDownDegrees, 0f, 0f));
+            for (int i = 0; i < FitSamples; i++)
+            {
+                float angle = i * Mathf.PI * 2f / FitSamples;
+                var round = new Vector3(Mathf.Cos(angle) * bodyRadius, 0f, Mathf.Sin(angle) * bodyRadius);
+                _fitPoints.Add(toCamera * (round + Vector3.up * top));
+                _fitPoints.Add(toCamera * (round + Vector3.up * feet));
+            }
+
+            if (_floor == null)
+            {
+                return;
+            }
+
+            foreach (Renderer renderer in _floor.GetComponentsInChildren<Renderer>())
+            {
+                Bounds part = renderer.bounds;
+                for (int corner = 0; corner < BoxCorners; corner++)
+                {
+                    var world = new Vector3(
+                        (corner & 1) == 0 ? part.min.x : part.max.x,
+                        (corner & 2) == 0 ? part.min.y : part.max.y,
+                        (corner & 4) == 0 ? part.min.z : part.max.z);
+                    _fitPoints.Add(toCamera * (world - _rig.position));
+                }
+            }
+        }
+
+        // The camera's distance (x) and its shift along its own up axis (y) so the fit points fill FrameFill of the picture,
+        // as much room above as below. A few rounds of moving and scaling settle it; the start is the old box fit.
+        private Vector2 FitView(float start)
+        {
+            float reach = Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad) * FrameFill;
+            float distance = Mathf.Max(start, MinFitDistance);
+            float up = 0f;
+            for (int round = 0; round < FitRounds; round++)
+            {
+                float top = float.MinValue;
+                float bottom = float.MaxValue;
+                float side = 0f;
+                foreach (Vector3 point in _fitPoints)
+                {
+                    float depth = Mathf.Max(point.z + distance, MinFitDistance);
+                    float slope = (point.y - up) / depth;
+                    top = Mathf.Max(top, slope);
+                    bottom = Mathf.Min(bottom, slope);
+                    side = Mathf.Max(side, Mathf.Abs(point.x) / depth);
+                }
+
+                up += (top + bottom) * 0.5f * distance;
+                distance = Mathf.Max(MinFitDistance, distance * Mathf.Max((top - bottom) * 0.5f, side) / reach);
+            }
+
+            return new Vector2(distance, up);
         }
 
         private void CollectFarLods()

@@ -7,8 +7,18 @@ namespace Game.Levels
     /// <summary>Which level, on which difficulty, the generic Level scene must build.</summary>
     public sealed class LevelSession
     {
-        public LevelSession(LevelDefinition level, DifficultyProfile difficulty, bool briefing = false, IReadOnlyList<PathObjectDefinition> loadout = null, WaveDefinition[] waves = null, int startingMoney = -1)
+        // Keeps the streams of neighbouring seeds apart.
+        private const int StreamSpread = 7919;
+
+        /// <summary>The draws of the spawner (nest choice, lateral spread, pool cells).</summary>
+        public const int SpawnStream = 1;
+
+        /// <summary>The draws of the wave flow (nest assignment, group jitter).</summary>
+        public const int WaveStream = 2;
+
+        public LevelSession(LevelDefinition level, DifficultyProfile difficulty, bool briefing = false, IReadOnlyList<PathObjectDefinition> loadout = null, WaveDefinition[] waves = null, int startingMoney = -1, int? seed = null)
         {
+            Seed = seed;
             Waves = waves;
             StartingMoney = startingMoney;
             Briefing = briefing;
@@ -35,5 +45,14 @@ namespace Game.Levels
 
         /// <summary>Money to start with instead of the level's, or below zero for the level's own.</summary>
         public int StartingMoney { get; }
+
+        /// <summary>
+        /// The seed of the level's draws (which nest a creature comes out of, the spacing of a group), or null for a fresh
+        /// draw every run. A balance probe seeds it so two runs of the same build see the same waves.
+        /// </summary>
+        public int? Seed { get; }
+
+        /// <summary>The generator for one stream of the level's draws: seeded from <see cref="Seed"/> when there is one.</summary>
+        public Random RandomFor(int stream) => Seed.HasValue ? new Random(unchecked(Seed.Value * StreamSpread + stream)) : new Random();
     }
 }

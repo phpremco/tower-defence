@@ -15,7 +15,7 @@ namespace Game.Levels
 
         // Nest spawns whose origin is not open yet: they come out as soon as the maw is up.
         private readonly List<SpawnRequest> _held = new List<SpawnRequest>();
-        private readonly System.Random _random = new System.Random();
+        private System.Random _random;
         private OriginDirector _origins;
 
         private LevelContext _context;
@@ -27,8 +27,9 @@ namespace Game.Levels
         private bool _skipAllowed;
         private ProgressService _progress;
 
-        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, bool skipAllowed)
+        public void Initialize(LevelContext context, WaveDefinition[] waves, EnemySpawner spawner, IInputProvider input, ProgressService progress, bool skipAllowed, System.Random random = null)
         {
+            _random = random ?? new System.Random();
             _context = context;
             _waves = waves;
             _spawner = spawner;

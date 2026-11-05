@@ -42,7 +42,7 @@ namespace Game.Levels
         private readonly float _roadEdge;
         private readonly float _maxLateral;
         private readonly int _firstFlightPath;
-        private readonly System.Random _random = new System.Random();
+        private readonly System.Random _random;
         private readonly EnemyDeathEffectPool _deathEffects;
         private readonly LiquidPools _liquids;
         private readonly Vector3[] _gates;
@@ -51,8 +51,10 @@ namespace Game.Levels
         private HeroTarget _heroTarget;
         private readonly Dictionary<EnemyDefinition, ObjectPool<Enemy>> _pools = new Dictionary<EnemyDefinition, ObjectPool<Enemy>>();
 
-        public EnemySpawner(LevelContext context, Transform parent)
+        /// <param name="random">The spawner's draws (nest choice, spread, pool cells); seeded for a reproducible run.</param>
+        public EnemySpawner(LevelContext context, Transform parent, System.Random random = null)
         {
+            _random = random ?? new System.Random();
             _context = context;
             _parent = parent;
             _deathEffects = new EnemyDeathEffectPool(parent);

@@ -1,4 +1,5 @@
 using System;
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Enemies
@@ -29,6 +30,10 @@ namespace Game.Enemies
         [SerializeField] [Min(0f)] private float _crushDamage = 120f;
         [Tooltip("Seconds between its blows on the base once it lies on it: the last threat, with time for an answer.")]
         [SerializeField] [Min(0.5f)] private float _baseBlowSeconds = 3f;
+        [Tooltip("The loop it plays on the base while its art has no OnBaseLoop clip (README round 28 lists Idle, Roar, Adapt): it stands on the roof in it.")]
+        [SerializeField] private ModelClipRole _onBaseStandIn = ModelClipRole.Idle;
+        [Tooltip("Playback rate of the loop on the base (its own OnBaseLoop clip or the stand-in).")]
+        [SerializeField] [Min(0.1f)] private float _onBaseLoopRate = 0.8f;
 
         [Header("Balance ledger")]
         [Tooltip("Share of the defence's damage the top tower type deals in a mixed loadout.")]
@@ -46,6 +51,8 @@ namespace Game.Enemies
         public float RoadRiseSeconds => _roadRiseSeconds;
         public float CrushDamage => _crushDamage;
         public float BaseBlowSeconds => _baseBlowSeconds;
+        public ModelClipRole OnBaseStandIn => _onBaseStandIn;
+        public float OnBaseLoopRate => _onBaseLoopRate;
         public float ExpectedTopShare => _expectedTopShare;
         public float GateGunShare => _gateGunShare;
         public float ExpectedPhaseSeconds => _expectedPhaseSeconds;

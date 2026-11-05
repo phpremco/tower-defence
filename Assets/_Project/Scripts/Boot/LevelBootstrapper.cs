@@ -121,7 +121,8 @@ namespace Game.Boot
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
-            context.Practice = Services.Get<LevelSession>().Practice;
+            LevelSession session = Services.Get<LevelSession>();
+            context.Practice = session.Practice;
             context.GlobalModifiers = global;
             context.HeroPerks = UnlockedPerks(level.Hero, progress, unlockAll);
             foreach (Game.Drones.DroneDefinition drone in new[] { level.RepairDrone, level.HarvestDrone, level.AttackDrone })
@@ -150,7 +151,7 @@ namespace Game.Boot
 
             var drones = new GameObject("Drones").AddComponent<DroneController>();
             drones.Initialize(context, root);
-            var spawner = new EnemySpawner(context, root);
+            var spawner = new EnemySpawner(context, root, session.RandomFor(LevelSession.SpawnStream));
             var slime = new GameObject("Slime");
             slime.transform.SetParent(root, false);
             slime.AddComponent<SlimeFieldView>().Initialize(spawner.Slime);
@@ -160,7 +161,7 @@ namespace Game.Boot
             controllers.AddComponent<Game.Bosses.BossDirector>().Initialize(context, spawner, progress, waves);
             controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
             var levelController = controllers.AddComponent<LevelController>();
-            levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);
+            levelController.Initialize(context, waves, spawner, input, progress, skipAllowed, session.RandomFor(LevelSession.WaveStream));
             var placement = controllers.AddComponent<PlacementController>();
             placement.Initialize(context, input, _camera, root);
             controllers.AddComponent<HeroController>().Initialize(context, input, placement.Blockades, root);

@@ -197,6 +197,9 @@ PlayMode tests: the CLI runner reports 0 tests, so close Unity and use `-runTest
 - Balance probe: `run_tests --mode PlayMode --filter BalanceProbeTests --async_tests true`, then poll `test_status`
   and read the `[Probe]` line from `console`. The bot builds four towers, then upgrades the cheapest upgrade it can
   afford, then builds more. It still has no drones and does not move the hero.
+- The probe is deterministic since 2026-11-05 (seeded draws, fixed 0.2 s game steps). `Tools/PlayTest/probe_arg.txt` may add
+  `seed=N` and `step=S` (also read by the explicit `Full` test with `levels=`/`difficulties=`); each run appends a line to
+  `Logs/probe_results.txt`. Rerun a failure with its seed to reproduce it exactly.
 - `unity recompile` takes no `--result-only`; if a flag is rejected nothing recompiled, and a generator run right after
   uses the old code. Always check `console_status` for `compilationFailed: false` before `menu` or `run_tests`.
 - If `test_status` says "running" for minutes while `editor_status` says play mode is stopped, the runner is stuck (it

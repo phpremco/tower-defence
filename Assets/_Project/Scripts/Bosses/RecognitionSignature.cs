@@ -346,18 +346,41 @@ namespace Game.Bosses
             yield return _brain.Wait(rise.Seconds - rise.Moment);
             _brain.OnStructure = true;
             _brain.State = "OnBase";
+            LieOnBase(home, dir);
+            BossClip adapt = BossClip.Of(View, ModelClipRole.Adapt, Boss.MechanicClipRate);
             float blowEvery = Power.BaseBlowSeconds;
             float sinceBlow = 0f;
+            int learning = -1;
+            float learnIn = 0f;
+            float loopIn = -1f;
             while (_brain.Alive && home.IsAlive)
             {
+                float dt = Time.deltaTime;
                 int phase = Boss.PhaseAt(Enemy.Health.Fraction);
-                if (phase != _phase)
+                if (phase != _phase && learning < 0)
                 {
-                    // On the base it adapts without leaving it: the pulse, the line and the look, no clip.
-                    Learn(phase);
+                    // On the base it adapts without leaving it: its Adapt pulse over the roof, then back to its loop.
+                    learning = phase;
+                    learnIn = adapt.Moment;
+                    loopIn = adapt.Seconds;
+                    if (adapt.Exists)
+                    {
+                        View.PlayScripted(ModelClipRole.Adapt, adapt.Rate, true);
+                    }
                 }
 
-                sinceBlow += Time.deltaTime;
+                if (learning >= 0 && (learnIn -= dt) <= 0f)
+                {
+                    Learn(learning);
+                    learning = -1;
+                }
+
+                if (loopIn >= 0f && (loopIn -= dt) < 0f)
+                {
+                    LoopOnBase();
+                }
+
+                sinceBlow += dt;
                 if (sinceBlow >= blowEvery)
                 {
                     sinceBlow -= blowEvery;
@@ -369,6 +392,25 @@ namespace Game.Bosses
             }
 
             _brain.OnStructure = false;
+        }
+
+        // Its own OnBaseLoop is drawn from the rise's pivot over the base. Until the art has one, it climbs onto the roof
+        // and stands there in the stand-in loop of its data: the rise's last frame no longer freezes.
+        private void LieOnBase(IStructure home, Vector3 dir)
+        {
+            if (View.ClipOf(ModelClipRole.OnBaseLoop) == null)
+            {
+                Vector3 roof = home.Position;
+                Enemy.Place(new Vector3(roof.x, ClimbLayer.BaseHeight, roof.z), dir);
+            }
+
+            LoopOnBase();
+        }
+
+        private void LoopOnBase()
+        {
+            bool own = View.ClipOf(ModelClipRole.OnBaseLoop) != null;
+            View.LoopScripted(own ? ModelClipRole.OnBaseLoop : Power.OnBaseStandIn, Power.OnBaseLoopRate);
         }
 
         // ---------------------------------------------------------------- recognition

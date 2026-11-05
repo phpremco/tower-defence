@@ -30,6 +30,8 @@ namespace Game.Enemies
         [SerializeField] [Range(0f, 1f)] private float _impactKick = 0.35f;
         [Tooltip("Playback rate of its burrow, throw, dive and burst clips (the climbs have their own).")]
         [SerializeField] [Min(0.5f)] private float _mechanicClipRate = 1.4f;
+        [Tooltip("Seconds the victory panel waits after it falls, so its end plays first (the Sealed One's white Release: its death clip's length). 0 shows the panel at once.")]
+        [SerializeField] [Min(0f)] private float _resultHoldSeconds;
 
         [Header("Codex (plain words, shown once the boss has been seen)")]
         [SerializeField] [TextArea(2, 4)] private string _signatureText = string.Empty;
@@ -50,6 +52,7 @@ namespace Game.Enemies
         public float ImpactKick => _impactKick;
         public float BodyHalfWidth => _bodyHalfWidth;
         public float MechanicClipRate => _mechanicClipRate;
+        public float ResultHoldSeconds => _resultHoldSeconds;
 
         /// <summary>What its mechanic does, for the Codex.</summary>
         public string SignatureText => _signatureText;

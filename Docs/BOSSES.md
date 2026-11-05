@@ -319,3 +319,22 @@ there (the victory panel comes up over it); the epilogue is a later round.
 (a third of the field on the wrong route); the Sealed One: 4 phases x 8 % (one gate gun) x 15 s = 4.8 s, and the learned
 weapon's lost half counts as health (x1.225: 75 % of its health x 30 % top share x 1). All inside `MaxBossMechanicShare` on the
 C1_06 finale fight (`BossRound4cTests.Ledger_...`); none is in a campaign wave, so no band moved.
+
+**Fixes from the 4c review (round 4d).**
+- The learned weapon beside the boss bar is a card (92 px, was 60): the tower's own picture from the tower bar
+  (`ModelIconRenderer`, same key and model as the card, so the cached picture), drained of colour (a grey copy made once per
+  tower), a violet strike across it and the share it loses ("-50%" from `RecognitionPower.DampenedShare`) on the
+  `Card_Disabled` frame. The round-4c icon showed as a solid red square; the rebuilt card shows the real picture.
+- On the base the Sealed One no longer freezes on Rise_OntoBase's last frame: it stands on the base roof
+  (`ClimbLayer.BaseHeight`) in a loop, its own `OnBaseLoop` clip (new role 64, Blender name `OnBase_Loop`, played from the
+  rise's pivot) when the art has one, else the data's stand-in (`RecognitionPower.OnBaseStandIn` Idle at
+  `OnBaseLoopRate` 0.8). A phase change on the base plays Adapt over the roof (learning at its pulse), then the loop again.
+- The victory panel waits for a boss's end: `BossDefinition.ResultHoldSeconds` (written by the generator from the art's
+  death clip: the Sealed One's Release, 5.67 s; 0 for the others); `ResultView` holds a victory that long after the kill
+  (game time, so a pause holds it too) and asks the story again before it shows.
+- The Codex pedestal frames tall creatures whole: the fit measures the pedestal as it stands (its renderers' bounds, the
+  foot flares wider than the top), the rings the turning model sweeps up to its padded top, through the camera's tilt,
+  and centres them with as much room above as below (`ModelPreview.FitView`).
+- Rotbloom's cluster radius is data (`OvergrowthPower.ClusterRadius`, generator `BossSpec.ClusterRadius`) at 3.5 m (was 2.6):
+  cells are 1 m and a defence stands 2.7-3.2 m apart, so at 2.6 almost every tower was a cluster of one. With 12 towers the
+  first volley now sends 3 pods. The quarter cap is unchanged and still decides small defences (5 towers: 1 pad at a time).

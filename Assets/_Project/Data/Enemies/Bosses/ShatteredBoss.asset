@@ -94,7 +94,7 @@ MonoBehaviour:
     _maxPads: 3
     _warnSeconds: 2
     _reach: 16
-    _clusterRadius: 2.6
+    _clusterRadius: 3.5
     _pod: {fileID: 0}
     _arcHeight: 3.5
     _minFlightSeconds: 0.7
@@ -163,6 +163,9 @@ MonoBehaviour:
     _riftSeconds: 2.5
     _roadRiseSeconds: 2
     _crushDamage: 120
+    _baseBlowSeconds: 3
+    _onBaseStandIn: 1
+    _onBaseLoopRate: 0.8
     _expectedTopShare: 0.3
     _gateGunShare: 0.08
     _expectedPhaseSeconds: 15
@@ -186,6 +189,7 @@ MonoBehaviour:
   _bodyHalfWidth: 1.4
   _impactKick: 0.35
   _mechanicClipRate: 1.4
+  _resultHoldSeconds: 0
   _signatureText: 'At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.'
   _telegraphText: It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.
   _counterText: 'Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.'

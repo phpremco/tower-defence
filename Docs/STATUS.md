@@ -2344,3 +2344,37 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
   reach (cluster of 2.6 m against towers 2.5 m apart), so a volley is usually one or two pods; the victory panel covers the
   Sealed One's white release; the Shattered's tall pedestal picture is cut at the window's bottom after the re-frame; the
   arena drivers pump damage, so their pacing says nothing about balance; none of the three is tuned against a HeroCap.
+
+## Round 4d: probe determinism and boss polish (2026-11-05)
+
+- **BalanceProbe verdict:** the 4c flakiness was neither a regression nor spawn variance. 4c changed no campaign data and
+  its shared-code hooks are inert outside those boss fights; the old probe's adaptive time scale turned slow editor frames
+  (the parallel Blender agent, imports) into game steps of up to 0.333 s, and at 0.333 s the bot loses exactly Crysium Vein,
+  Landing Site and Shard Ridge Medium at the last wave (seeded runs; at 0.2 s 42/42 won over seeds 1-7, at 0.05 s 12/12).
+  Details and table in `Docs/BALANCE.md` "Probe determinism".
+- **Probe now deterministic:** fixed game steps (`Time.captureDeltaTime` 0.2 s), seeded level draws (`LevelSession.Seed`,
+  `RandomFor(SpawnStream/WaveStream)`, `EnemySpawner`/`LevelController` take the generator; the game stays unseeded),
+  `UnityEngine.Random.InitState`, a `TearDown` that resets time; `probe_arg.txt` accepts `seed=N` and `step=S` (`step=0`
+  replays the old adaptive timing); `Logs/probe_results.txt` keeps one line per run.
+- **Open, pre-existing:** determinism exposed that Quartz Flats **Easy** is bistable for the bot (3 of 7 seeds won, Medium
+  7 of 7; the committed 4c probe also wins only 3 of 5): it wins when it buys a Cannon before the crowd waves and loses all
+  Pulse. BalanceProbe is therefore 2/3 on three identical runs (smoke and air check green, Easy/Medium red on Quartz Flats
+  Easy seed 1). Not loosened; options in `Docs/BALANCE.md`.
+- **Boss polish (4c review):** the dampened-weapon card beside the boss bar (real tower picture, greyed, violet strike,
+  "-50%", 92 px; the red square is gone); the Sealed One stands on the base roof in a loop (`OnBaseLoop` role 64 /
+  `OnBase_Loop` when Blender delivers it, else `RecognitionPower.OnBaseStandIn` Idle) and plays Adapt there; the victory
+  panel waits `BossDefinition.ResultHoldSeconds` (Sealed One 5.67 s = its Release clip) so the white Release shows first;
+  the Codex pedestal fits tall creatures whole (pedestal bounds + padded top, centred through the camera tilt); Rotbloom
+  `OvergrowthPower.ClusterRadius` 3.5 (was 2.6; generator `BossSpec.ClusterRadius`): with 12 towers the first volley sends
+  3 pods (the quarter cap still limits small defences). Boss data regenerated with only the generator's boss step (no art
+  rebuild, no Blender sync).
+- **Tests:** EditMode 414/414. PlayMode one class at a time: Gravemaw, CinderMatriarch, FrostWarden, Rotbloom, Shattered,
+  SealedOne arenas 1/1 each; ContinentSimulation 2/2, CutsceneSmoke 3/3, ModelPerformance 1/1, Screenshot 3/3,
+  StoryCrystal 2/2, StoryGuard 3/3, StoryListener 1/1, StorySmoke 2/2; BalanceProbe 2/3, 2/3, 2/3 (identical, see above).
+  0 compile errors/warnings. Remco's save restored byte-identical after every PlayMode run (MD5 ec2a1f6d...).
+- **Screenshots:** session scratchpad `round4d/shots/` (01 dampened card, 02a/b Sealed One on the base, 03 Adapt on the base,
+  04 white Release with no panel, 05 the panel after the hold, 06/06b three-pod volley, 07 Codex Shattered page,
+  07b/07c pedestal renders).
+- **Weak points:** the on-base stand-in is the Idle loop placed on the roof (it pops from the rise's last pose; Blender's
+  `OnBase_Loop` will replace it); the Sealed One floats a little above its Codex pedestal (its seat pose, unchanged); the
+  card's "-50%" sits on the frame's lower edge.

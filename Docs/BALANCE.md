@@ -360,3 +360,49 @@ model (tried tonight) took 150 to 250 coins a level off the model's purse, which
 Psycho's boss waves over the hero cap. `Utilisation` and `HumanUtilisation` were calibrated against a bot that never
 harvests while the model counted ore, so the ore model and those two calibrations should change together, with a bot that
 buys harvesters. Left for a separate pass.
+
+## Probe determinism (2026-11-05, round 4d)
+
+After boss round 4c the probe went from 3/3 to 1/3, 1/3 and 2/3 over three whole-class runs, each losing a different
+Medium level (Crysium Vein, Landing Site, Shard Ridge). Verdict: **not a regression, and not spawn variance: a harness
+artefact of slow editor frames.**
+
+- **No campaign change in 4c.** `git diff 2462c6d2..853372dd` touches no campaign data (levels, waves, towers, creatures,
+  difficulties); the code it adds to shared classes is inert in a level without those bosses (`Enemy.SourceScale` null,
+  `Tower` overgrowth rate 1 and never drained, `ClosedPads` empty, `RootOmen` only built when a wave sends a rooted boss,
+  `BossFrostShade` a boss-only overlay colour).
+- **Old timing.** The probe set `Time.timeScale = clamp(0.2 / realFrame, 1, 20)`. That kept a step at 0.2 s only while an
+  editor frame took 10-200 ms; a frame slower than 0.2 s (an import, the Blender agent exporting in parallel, a GC) hit the
+  floor of 1 and became a step of up to `Time.maximumDeltaTime` (0.333 s). The steps a run took depended on the machine,
+  so two runs of one build differed, and coarse steps cost the bot shots and gate holds.
+- **Now.** Every frame advances the game by exactly `StepSeconds` 0.2 (`Time.captureDeltaTime`), and the level's draws
+  (spawner: nests, spread, pool cells; wave flow: nest assignment, group jitter) are seeded from the test
+  (`LevelSession.Seed` -> `RandomFor(SpawnStream/WaveStream)`; `ProbeSeed` 1; unseeded in the game). Two runs of one
+  build give byte-identical traces. `Tools/PlayTest/probe_arg.txt` takes `seed=N` and `step=S` to sample other draws or
+  step sizes; every run appends a line to `Logs/probe_results.txt`.
+- **Evidence (Landing Site, Shard Ridge, Crysium Vein; Easy and Medium):**
+
+| Step | Seeds | Runs | Lost |
+| --- | --- | --- | --- |
+| 0.2 s (the probe's) | 1-7 | 42 | 0 |
+| 0.05 s (finer than any old frame) | 1-2 | 12 | 0 |
+| 0.333 s (a hitching editor) | 1-4 | 24 | 3: Crysium Vein Medium seed 1, Landing Site Medium seed 3, Shard Ridge Medium seed 4, each at its last wave |
+
+  The three levels that lost under 0.333 s steps are exactly the three the flaky runs lost. Finer steps win like the
+  probe's 0.2 s, so 0.2 s is not a generous setting; spawn draws alone never decided a run. Shard Ridge Medium is the
+  thinnest margin (base 480-522 of 600 at 0.2 s).
+- **Assertions unchanged:** every band, check and win requirement stands; the seed and the step only remove the machine
+  from the result.
+- **What determinism exposed: Quartz Flats Easy is bistable for the bot (open, pre-existing).** With the fixed seed the
+  Easy/Medium class fails the same way every run: Quartz Flats **Easy** lost at wave 15 (seed 1), while Quartz Flats Medium
+  wins. Seeds 1-7 at 0.2 s: Easy won 3 of 7 (lost seeds 1, 2, 3, 7), Medium 7 of 7. It is not the step (0.05 s: 1 of 3 won;
+  the old adaptive timing: 1 of 4 won), not the new seeding (both streams sharing one seed: 3 of 6 won), and not round 4c:
+  the committed probe and spawner (unseeded, old timing) won 3 of 5. The earlier green runs were luck. The branch: the
+  winning runs buy one Cannon before the dense waves (12-15), the losing runs stay all Pulse Rifle (10-12 towers, 0-2
+  upgrades), the hero goes down at the trunk gate from wave 12 and the crowd breaks through. The ledger disagrees: it rates
+  C1_05 Easy at 1.32x the firepower needed against Medium 1.09x (Easy asks 0.82 of Medium). So either the bot's purse
+  timing misses the splash gun a player would buy for the crowd waves, or Easy's thinner money (income 0.8, start 0.8)
+  costs more on this level than the model counts. The assertion is unchanged (it still fails at seed 1); choosing a
+  winning seed or narrowing the level would hide the finding. Options for the curator: a bot rule "one splash gun before
+  a dense wave in the preview" (like its Flak reserve), a look at C1_05 Easy money, or a documented narrower assertion like
+  `TwoFrontLevels`.

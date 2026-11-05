@@ -21,8 +21,8 @@ namespace Game.Enemies
         [SerializeField] [Min(0.5f)] private float _warnSeconds = 2f;
         [Tooltip("How far from it a pad may be to be spored (world units).")]
         [SerializeField] [Min(1f)] private float _reach = 16f;
-        [Tooltip("Pads within this many world units of each other count as one cluster: it goes for the fullest one.")]
-        [SerializeField] [Min(0.5f)] private float _clusterRadius = 2.6f;
+        [Tooltip("Pads within this many world units of each other count as one cluster: it goes for the fullest one. A defence stands about 2.7 to 3.2 m apart (cells are 1 m): 3.5 takes the neighbours in, diagonals included.")]
+        [SerializeField] [Min(0.5f)] private float _clusterRadius = 3.5f;
         [Tooltip("The pod it fires: a small flyer the air towers can shoot down before it lands.")]
         [SerializeField] private EnemyDefinition _pod;
         [Tooltip("Height of the pods' arc at its top (world units).")]

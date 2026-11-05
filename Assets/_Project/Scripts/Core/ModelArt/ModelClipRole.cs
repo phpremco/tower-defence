@@ -194,5 +194,8 @@ namespace Game.Core
 
         /// <summary>A boss adapting to what hurt it at a phase change: the moment is the pulse, played once.</summary>
         Adapt = 63,
+
+        /// <summary>A boss lying on the base it has climbed onto, striking it. Loops in place.</summary>
+        OnBaseLoop = 64,
     }
 }

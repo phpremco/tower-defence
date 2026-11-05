@@ -96,7 +96,7 @@ MonoBehaviour:
     _maxPads: 3
     _warnSeconds: 2
     _reach: 16
-    _clusterRadius: 2.6
+    _clusterRadius: 3.5
     _pod: {fileID: 0}
     _arcHeight: 3.5
     _minFlightSeconds: 0.7
@@ -153,6 +153,9 @@ MonoBehaviour:
     _riftSeconds: 2.5
     _roadRiseSeconds: 2
     _crushDamage: 120
+    _baseBlowSeconds: 3
+    _onBaseStandIn: 1
+    _onBaseLoopRate: 0.8
     _expectedTopShare: 0.3
     _gateGunShare: 0.08
     _expectedPhaseSeconds: 15
@@ -176,6 +179,7 @@ MonoBehaviour:
   _bodyHalfWidth: 1.1
   _impactKick: 0.35
   _mechanicClipRate: 1.4
+  _resultHoldSeconds: 0
   _signatureText: At three quarters, half and a quarter of its health it dives under the ground. A crack line runs round your towers to the tower that hurt it most; it breaks out beside it and throws that tower. The tower lands tilted, loses 40% of its health and stays silent for a few seconds, but it is not destroyed. It takes quicksand as a shortcut, climbs over rocks and onto gates, and can hide in a pool for a few seconds.
   _telegraphText: The crack glows warm orange and runs ahead of it, the ground rumbles louder as it comes up, and the tower it is after gets a pulsing red ring three seconds before it breaks out.
   _counterText: 'Spread your damage over several towers, so no single tower draws it. Sell or move the ringed tower in time, or put a mine on the crack line: a mine that goes off while it burrows leaves it stunned on the surface. Below a quarter it moves faster and its cracks send up Skitters.'

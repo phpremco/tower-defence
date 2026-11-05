@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Game.Core;
+using Game.Enemies;
 using Game.Levels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,17 +37,21 @@ namespace Game.UI
         private GameObject _root;
         private bool _shown;
         private bool _waiting;
+        // Game time until which a victory waits for a fallen boss's end (BossDefinition.ResultHoldSeconds).
+        private float _holdUntil;
 
         public void Initialize(LevelContext context, RectTransform safeRoot)
         {
             _context = context;
             _safeRoot = safeRoot;
             _context.Changed.Subscribe(Refresh);
+            _context.EnemyKilled.Subscribe(OnKilled);
         }
 
         private void OnDestroy()
         {
             _context?.Changed.Unsubscribe(Refresh);
+            _context?.EnemyKilled.Unsubscribe(OnKilled);
         }
 
         private void Refresh()
@@ -66,7 +71,36 @@ namespace Game.UI
                 return;
             }
 
+            // A boss whose end is a sight of its own (the Sealed One's white Release) plays it before the panel covers it.
+            if (Time.time < _holdUntil)
+            {
+                _waiting = true;
+                StartCoroutine(RefreshAfterHold());
+                return;
+            }
+
             Show();
+        }
+
+        private void OnKilled(Enemy enemy)
+        {
+            BossDefinition boss = enemy.Definition.Boss;
+            if (boss != null && boss.ResultHoldSeconds > 0f)
+            {
+                _holdUntil = Mathf.Max(_holdUntil, Time.time + boss.ResultHoldSeconds);
+            }
+        }
+
+        // In game time, so a paused game holds it too; the story may have started meanwhile, so it asks again.
+        private IEnumerator RefreshAfterHold()
+        {
+            while (Time.time < _holdUntil)
+            {
+                yield return null;
+            }
+
+            _waiting = false;
+            Refresh();
         }
 
         private IEnumerator ShowAfter(float seconds)
