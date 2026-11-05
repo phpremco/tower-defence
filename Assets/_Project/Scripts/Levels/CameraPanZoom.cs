@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Platform;
 using UnityEngine;
 
@@ -16,7 +17,6 @@ namespace Game.Levels
         public const float PlayOrthoSize = 7f;
         private const float MinZoom = 0.9f;
         private const float MaxZoom = 4.5f;
-        private const float PanSpeedAtFullZoom = 30f;
         private const float ContinuousZoomRate = 1.2f;
         private const float ScrollStep = 0.12f;
         private const float ScrollThreshold = 1.5f;
@@ -39,6 +39,9 @@ namespace Game.Levels
         private float _glideTime = float.PositiveInfinity;
         private Vector2 _lastPointer;
         private float _pointerMovedAt = float.NegativeInfinity;
+        private float _fieldSpan;
+        private float _panHeld;
+        private CameraControls _controls;
 
         /// <summary>The zoom the level is played at: close enough to read the hero.</summary>
         public float PlayZoom => _playZoom;
@@ -56,6 +59,9 @@ namespace Game.Levels
             _camera = rig.GetComponent<Camera>();
             _input = input;
             _halfField = level.WorldSize * 0.5f;
+            _fieldSpan = Mathf.Max(level.WorldSize.x, level.WorldSize.y);
+            // A tool scene without the boot services pans at the default speed with edge scrolling on.
+            _controls = Services.TryGet(out CameraControls controls) ? controls : new CameraControls();
             _playZoom = PlayZoomFor(FixedCameraRig.FitSize(level, _camera.aspect));
             // Where the mouse already is does not count as a move, or a mouse parked at the edge would pan the first seconds.
             _lastPointer = input.PointerPosition;
@@ -109,14 +115,19 @@ namespace Game.Levels
                 changed = true;
             }
 
-            Vector2 pan = _input.CameraPan + EdgePan();
+            Vector2 pan = Vector2.ClampMagnitude(_input.CameraPan + EdgePan(), 1f);
             if (pan.sqrMagnitude > DeadZone * DeadZone)
             {
-                // Closer in covers less ground per screen, so panning slows down with the zoom.
-                float speed = PanSpeedAtFullZoom / _zoom;
+                // Measured in screens, so a pan feels the same at every zoom; holding it speeds up across big maps.
+                _panHeld += dt;
+                float speed = PanSpeedCurve.Speed(_camera.orthographicSize * 2f, _fieldSpan, _panHeld, _controls.SpeedScale);
                 _focus += new Vector3(pan.x, 0f, pan.y) * (speed * dt);
                 _glideTime = float.PositiveInfinity;
                 changed = true;
+            }
+            else
+            {
+                _panHeld = 0f;
             }
 
             if (_glideTime < GlideSeconds)
@@ -150,7 +161,7 @@ namespace Game.Levels
                 _pointerMovedAt = Time.unscaledTime;
             }
 
-            if (!Application.isFocused || _context.PointerOverUi || Time.unscaledTime - _pointerMovedAt > EdgePanRecentSeconds)
+            if (!_controls.EdgeScrolling || !Application.isFocused || _context.PointerOverUi || Time.unscaledTime - _pointerMovedAt > EdgePanRecentSeconds)
             {
                 return Vector2.zero;
             }

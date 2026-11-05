@@ -28,6 +28,7 @@ namespace Game.UI
         private LevelContext _context;
         private Camera _camera;
         private RectTransform _area;
+        private HudKeepOut _keepOut;
         private RectTransform _arrow;
         private Text _text;
         private RectTransform _label;
@@ -35,9 +36,10 @@ namespace Game.UI
         private float _until = float.NegativeInfinity;
         private bool _shown;
 
-        public void Initialize(LevelContext context, RectTransform root, Camera camera)
+        public void Initialize(LevelContext context, RectTransform root, Camera camera, HudKeepOut keepOut)
         {
             _context = context;
+            _keepOut = keepOut;
             _camera = camera;
             _area = root;
             _lastHealth = context.BaseHealth.Current;
@@ -110,6 +112,13 @@ namespace Game.UI
                 // A wide label needs more room than the arrow when it hangs beside it at a left or right edge.
                 Vector2 inward = direction.normalized;
                 _label.anchoredPosition = edge - inward * (LabelGap + Mathf.Abs(inward.x) * LabelWidth * 0.5f);
+            }
+
+            // The HUD stays readable: the warning moves off any panel it would cover, or waits while it cannot.
+            if (!_keepOut.PlaceTogether(_arrow, _label))
+            {
+                Show(false);
+                return;
             }
 
             float wave = Mathf.Sin(Time.unscaledTime * PulseRate);

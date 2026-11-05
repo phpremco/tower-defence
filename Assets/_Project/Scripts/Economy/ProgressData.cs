@@ -15,6 +15,13 @@ namespace Game.Economy
         public int MusicVolumePercent = 70;
         public int EffectsVolumePercent = 100;
         public int AmbienceVolumePercent = 80;
+
+        /// <summary>The camera pan speed as a percent of the default; saves from before the option load the default.</summary>
+        public int CameraSpeedPercent = 100;
+
+        /// <summary>Off by choice: false (the default) keeps edge scrolling on, also for older saves.</summary>
+        public bool EdgeScrollingOff;
+
         public bool IntroSeen;
 
         /// <summary>Ids of story moments already shown, so a story trigger plays once per save.</summary>

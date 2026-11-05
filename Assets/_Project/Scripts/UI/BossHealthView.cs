@@ -66,6 +66,12 @@ namespace Game.UI
         private Enemy _boss;
         private Image _dampened;
         private Image _dampenedCard;
+
+        /// <summary>The boss bar with its name and rows, for the HUD keep-out (active only while a boss lives).</summary>
+        public RectTransform Panel => _root;
+
+        /// <summary>The dampened-weapon card that hangs beside the bar.</summary>
+        public RectTransform DampenedCard => _dampenedCard != null ? _dampenedCard.rectTransform : null;
         private Text _dampenedShare;
         private readonly Dictionary<Sprite, Sprite> _greyed = new Dictionary<Sprite, Sprite>();
         private TowerDefinition _shownDampened;

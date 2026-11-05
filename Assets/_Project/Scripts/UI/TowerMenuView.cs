@@ -38,6 +38,9 @@ namespace Game.UI
         private Camera _camera;
         private Font _font;
         private RectTransform _panel;
+
+        /// <summary>The open tower menu, for the HUD keep-out.</summary>
+        public RectTransform Panel => _panel;
         private readonly System.Collections.Generic.List<Renderer> _renderers = new System.Collections.Generic.List<Renderer>();
         private Tower _measuredTower;
         private int _measuredLevel;

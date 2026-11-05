@@ -103,25 +103,42 @@ namespace Game.UI
             UiKit.EnsureEventSystem();
 
             RectTransform safe = UiKit.CreateRoot(transform, false);
-            AddBackdrops(safe);
+            // World labels (markers and badges over things on the field) live in the bottom layer, so every HUD panel
+            // draws over them, and they ask the keep-out where they may sit, so they never hide behind a panel either.
+            RectTransform worldLabels = CreateWorldLabelLayer(safe);
+            var keepOut = new HudKeepOut(safe);
+            AddBackdrops(safe, keepOut);
             BuildTexts(safe);
+            keepOut.Add(_moneyText);
+            keepOut.Add(_statusText);
+            keepOut.Add(_countdownText);
             BuildTowerBar(safe);
             // Made before the icons so the book button can open it; it builds its page the first time it opens.
             _codex = gameObject.AddComponent<CodexView>();
             _codex.Initialize(context, safe, time, _input);
             BuildIcons(safe);
-            gameObject.AddComponent<BossMarkerView>().Initialize(context, safe, camera);
-            gameObject.AddComponent<BossHealthView>().Initialize(context, safe);
-            gameObject.AddComponent<BaseMenuView>().Initialize(context, safe, camera, _font);
-            gameObject.AddComponent<HeroPanelView>().Initialize(context, safe, camera, _font);
-            gameObject.AddComponent<HeroQuickBar>().Initialize(context, safe);
-            gameObject.AddComponent<TowerMenuView>().Initialize(context, safe, camera, _font);
-            // After the panels, so the first-hit warning draws over them wherever the base lies on screen.
-            gameObject.AddComponent<BaseAlertView>().Initialize(context, safe, camera);
-            gameObject.AddComponent<GateRebuildBadges>().Initialize(context, safe, camera);
+            gameObject.AddComponent<BossMarkerView>().Initialize(context, worldLabels, camera, keepOut);
+            var bossBar = gameObject.AddComponent<BossHealthView>();
+            bossBar.Initialize(context, safe);
+            keepOut.Add(bossBar.Panel);
+            keepOut.Add(bossBar.DampenedCard);
+            var baseMenu = gameObject.AddComponent<BaseMenuView>();
+            baseMenu.Initialize(context, safe, camera, _font);
+            keepOut.Add(baseMenu.Panel);
+            var heroMenu = gameObject.AddComponent<HeroPanelView>();
+            heroMenu.Initialize(context, safe, camera, _font);
+            keepOut.Add(heroMenu.Panel);
+            var heroBar = gameObject.AddComponent<HeroQuickBar>();
+            heroBar.Initialize(context, safe);
+            keepOut.Add(heroBar.Panel);
+            var towerMenu = gameObject.AddComponent<TowerMenuView>();
+            towerMenu.Initialize(context, safe, camera, _font);
+            keepOut.Add(towerMenu.Panel);
+            gameObject.AddComponent<BaseAlertView>().Initialize(context, worldLabels, camera, keepOut);
+            gameObject.AddComponent<GateRebuildBadges>().Initialize(context, worldLabels, camera, keepOut);
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
-            BuildDialogue(safe);
+            BuildDialogue(safe, keepOut);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
             gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
 
@@ -197,7 +214,7 @@ namespace Game.UI
         }
 
         // The level's dialogue player draws through this box. Without a player (a tool scene) there is no box.
-        private void BuildDialogue(RectTransform safe)
+        private void BuildDialogue(RectTransform safe, HudKeepOut keepOut)
         {
             DialoguePlayer player = _context.Dialogue;
             if (player == null)
@@ -208,6 +225,7 @@ namespace Game.UI
             var portraits = new PortraitProvider(_context.Hero != null ? _context.Hero.Definition : null);
             var view = gameObject.AddComponent<DialogueView>();
             view.Initialize(safe, player, portraits);
+            keepOut.Add(view.Box);
             player.Presenter = view;
             if (_context.StoryEnabled)
             {
@@ -220,10 +238,22 @@ namespace Game.UI
         private void OnBaseChanged(float _) => Refresh();
 
         // Dark translucent strips behind the text so it stays readable over any terrain.
-        private static void AddBackdrops(RectTransform safe)
+        private static void AddBackdrops(RectTransform safe, HudKeepOut keepOut)
         {
-            UiKit.CreatePanel(safe, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopBarHeight), Vector2.zero, Backdrop);
-            UiKit.CreatePanel(safe, "BottomBar", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, BottomBarHeight), Backdrop);
+            keepOut.Add(UiKit.CreatePanel(safe, "TopBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopBarHeight), Vector2.zero, Backdrop).rectTransform);
+            keepOut.Add(UiKit.CreatePanel(safe, "BottomBar", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, BottomBarHeight), Backdrop).rectTransform);
+        }
+
+        // Covers the safe area exactly, so a label's anchored position there is a position in the keep-out's space.
+        private static RectTransform CreateWorldLabelLayer(RectTransform safe)
+        {
+            var layer = new GameObject("WorldLabels", typeof(RectTransform)).GetComponent<RectTransform>();
+            layer.SetParent(safe, false);
+            layer.anchorMin = Vector2.zero;
+            layer.anchorMax = Vector2.one;
+            layer.offsetMin = Vector2.zero;
+            layer.offsetMax = Vector2.zero;
+            return layer;
         }
 
         private void BuildTexts(RectTransform safe)

@@ -19,6 +19,7 @@ namespace Game.Boot
     {
         private const string SaveFolderName = "Saves";
         private const float MaxVolumePercent = 100f;
+        private const float PercentScale = 100f;
 
         [SerializeField] private InputActionAsset _inputActions;
         [SerializeField] private CampaignCatalog _campaign;
@@ -102,6 +103,10 @@ namespace Game.Boot
             mix.Set(data.MasterVolumePercent / MaxVolumePercent, data.MusicVolumePercent / MaxVolumePercent, data.EffectsVolumePercent / MaxVolumePercent, data.AmbienceVolumePercent / MaxVolumePercent);
             Services.Register(mix);
             AudioListener.volume = mix.Master;
+
+            var cameraControls = new CameraControls();
+            cameraControls.Set(data.CameraSpeedPercent / PercentScale, !data.EdgeScrollingOff);
+            Services.Register(cameraControls);
         }
 
         // The first launch opens with the cutscene and drops into the first level; every later one goes to the menu.

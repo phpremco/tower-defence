@@ -29,6 +29,8 @@ namespace Game.UI
         private GameObject _confirmPage;
         private GameObject _soundPage;
         private Button _soundBack;
+        private GameObject _cameraPage;
+        private Selectable _cameraFirst;
         private Button _resume;
         private Button _keepPlaying;
         private bool _wasOpen;
@@ -67,6 +69,7 @@ namespace Game.UI
             RectTransform main = _mainPage.GetComponent<RectTransform>();
             _resume = AddButton(main, "Resume", () => _time.TogglePause());
             AddButton(main, "Sound", ShowSound);
+            AddButton(main, "Camera", ShowCamera);
             AddButton(main, "Restart level", Restart);
             AddButton(main, "Quit to map", ShowConfirm);
 
@@ -95,6 +98,21 @@ namespace Game.UI
 
             _soundBack = AddButton(sound, "Back", ShowMain);
             _soundPage.SetActive(false);
+
+            // Pan speed and edge scrolling, so a camera that feels slow can be fixed mid-fight.
+            _cameraPage = CreatePage(panel.rectTransform, "Camera");
+            RectTransform cameraRect = _cameraPage.GetComponent<RectTransform>();
+            Services.TryGet(out CameraControls cameraControls);
+            var cameraOptions = new CameraOptionControls(progress, cameraControls ?? new CameraControls());
+            cameraOptions.Build(cameraRect);
+            foreach (Button button in cameraRect.GetComponentsInChildren<Button>())
+            {
+                button.GetComponent<LayoutElement>().preferredHeight = UiKit.ButtonHeight;
+            }
+
+            _cameraFirst = cameraOptions.First;
+            AddButton(cameraRect, "Back", ShowMain);
+            _cameraPage.SetActive(false);
 
             _root.SetActive(false);
         }
@@ -148,10 +166,18 @@ namespace Game.UI
             UiKit.Select(_soundBack);
         }
 
+        private void ShowCamera()
+        {
+            _mainPage.SetActive(false);
+            _cameraPage.SetActive(true);
+            UiKit.Select(_cameraFirst);
+        }
+
         private void ShowMain()
         {
             _confirmPage.SetActive(false);
             _soundPage.SetActive(false);
+            _cameraPage.SetActive(false);
             _mainPage.SetActive(true);
             UiKit.Select(_resume);
         }
@@ -171,7 +197,7 @@ namespace Game.UI
                 return;
             }
 
-            if (_confirmPage.activeSelf || _soundPage.activeSelf)
+            if (_confirmPage.activeSelf || _soundPage.activeSelf || _cameraPage.activeSelf)
             {
                 ShowMain();
             }

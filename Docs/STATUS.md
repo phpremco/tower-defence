@@ -2398,3 +2398,41 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
 - **Weak points:** Frost Warden model (flat armour cards, warm body, small silhouette from above); the Matriarch's eggs and
   Rotbloom's death are hard to frame; shard climb clips are mapped but the shards have no climb logic yet; the Sealed One's
   furrow reads mostly as a dark band at play zoom; the seal crystals are small at play zoom.
+
+## Round 6: HUD keep-out for world labels, faster camera pan with options (2026-11-05)
+
+- **Audit (Remco: "Rebuild 60" drawn over the tower bar).** World labels drawn as screen-space UI could cover the HUD:
+  the gate rebuild badge (`GateRebuildBadges`), the boss arrow + "BOSS" (`BossMarkerView`, pinned 90 px from the bottom
+  edge, i.e. inside the 156 px tower bar) and the "BASE UNDER ATTACK!" warning (`BaseAlertView`, deliberately created
+  after the panels, 150 px edge margin) were all siblings after the tower bar and drew on top of it, the money line,
+  the hero panel and the drones panel. Everything else that labels the field is a 3D object (health/armour `WorldBar`,
+  tower stars, `MoneyPopup`, origin/route markers) and always renders under the Screen Space Overlay canvas. There are
+  no floating damage numbers in the game. The world-anchored menus (tower, hero, base) already clamped themselves
+  above the bar (`BottomReserve`).
+- **Fix.** `HudView` creates a `WorldLabels` layer as the first child of the safe area (every HUD panel draws over it)
+  and a `HudKeepOut` (UI layer only; gameplay unchanged): the registered panels (top bar, bottom bar, money/status/
+  countdown text at their word width, boss bar + dampened card, hero quick bar, drones panel, open tower and hero
+  menus, dialogue box), measured once per frame while active. `KeepOutMath.Resolve` slides a label the shortest way
+  off each panel it covers while staying on screen, or reports it unplaceable (hidden). The rebuild badge of a wreck
+  under a panel sits just off it with a small arrow pointing back at the wreck; a wreck off screen has no badge. Boss
+  and base markers move arrow and word together (`HudKeepOut.PlaceTogether`).
+- **Camera pan.** `PanSpeedCurve` (Levels): speed in screens per second (1.4 view heights/s at the first moment, so it
+  feels the same at any zoom), easing within 0.9 s of holding to max(2.2x, field long side / 3 s). Keys, stick and
+  screen edge share it. At play zoom on C1_01-C1_06 (fields 36-42 units): old 11.7-13.6 u/s (2.6-3.6 s across), new
+  19.6 u/s tap, 43 u/s held (about 1.4 s across); a 140-unit field would still cross in ~3 s.
+- **Options.** `CameraControls` (Core service, set at boot from the save) with "Camera speed" slider 50-250 %
+  (snaps to 10 %) and an "Edge scrolling On/Off" switch (`CameraOptionControls`), in the main Options column and on a
+  new "Camera" page in the pause menu (live). Saved as `ProgressData.CameraSpeedPercent` (default 100) and
+  `EdgeScrollingOff` (default false, so older saves keep edge scrolling).
+- **Screenshots** (session scratchpad `round6/`, game view set to 1280x720 and 1920x1080 with
+  `PlayModeWindow.SetCustomRenderingResolution`): `wreck_bar_*` (badge above the tower bar with its arrow), `wreck_left_*`
+  (badge beside the hero panel), `wreck_top_*`, `busy_*`/`busy_low_*` (wave fight near the bar, boss marker pinned above
+  the money line), `options_*`. The overlap probe reported 0 label/panel overlaps in every shot at both sizes.
+  The editor Game view is left at the custom 1920x1080 size.
+- **Tests:** 0 compile errors/warnings; EditMode 433/433 (new `HudKeepOutTests` 8, `PanSpeedCurveTests` 6); PlayMode one
+  class at a time: the six boss arenas 1/1 each, ContinentSimulation 2/2, CutsceneSmoke 3/3, ModelPerformance 1/1,
+  Screenshot 3/3, StoryCrystal 2/2, StoryGuard 3/3, StoryListener 1/1, StorySmoke 2/2, BalanceProbe 3/3. Save restored
+  byte-identical (ec2a1f6d) after every run. Probe scripts: session scratchpad `round6/` (`shots.sh`, `keepout_probe.cs`,
+  `wreck_under_bar.cs`, `res.cs`, `pan_table.cs`).
+- **Weak points:** the speed slider's 100 % sits at a quarter of its track (range 50-250 %); with the gamepad it steps
+  20 %. The edge-scroll switch is a button that flips (there is no toggle widget in `UiKit`).

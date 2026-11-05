@@ -54,6 +54,9 @@ namespace Game.UI
         private RectTransform _root;
         private Camera _camera;
         private RectTransform _panel;
+
+        /// <summary>The open hero menu, for the HUD keep-out.</summary>
+        public RectTransform Panel => _panel;
         private Text _header;
         private Text _state;
         private RectTransform _healthBar;

@@ -49,6 +49,9 @@ namespace Game.UI
         private RectTransform _root;
         private Font _font;
         private RectTransform _panel;
+
+        /// <summary>The drones panel in the bottom-right corner, for the HUD keep-out.</summary>
+        public RectTransform Panel => _panel;
         private DroneButton[] _buttons;
         private bool _wasFocused;
 

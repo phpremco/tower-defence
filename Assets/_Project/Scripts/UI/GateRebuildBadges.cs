@@ -10,7 +10,8 @@ namespace Game.UI
     /// A wrecked gate says how to get it back: a small badge over the wreck with the repair icon and "Rebuild" with
     /// its price, white when the player can pay and red when not, until the gate stands again. Rebuilding is instant
     /// (the gate's menu, R or the repair icon: full health, its level kept), so the badge shows a price, not a
-    /// timer. Hidden while that gate's own menu is open, which shows the same price on its button.
+    /// timer. Hidden while that gate's own menu is open, which shows the same price on its button. A wreck under a
+    /// HUD panel (the tower bar, say) keeps its badge just off that panel with a small arrow pointing back at it.
     /// </summary>
     public sealed class GateRebuildBadges : MonoBehaviour
     {
@@ -20,6 +21,9 @@ namespace Game.UI
         private const float IconSize = 40f;
         private const float Inset = 10f;
         private const int TextSize = 26;
+        private const float TailSize = 30f;
+        // Moves smaller than this are the badge nudged on screen, not pushed away from its wreck.
+        private const float TailThreshold = 24f;
         private static readonly Color Backdrop = new Color(0.05f, 0.09f, 0.18f, 0.9f);
         private static readonly Color Affordable = new Color(0.9f, 0.95f, 1f);
         private static readonly Color TooExpensive = new Color(1f, 0.55f, 0.5f);
@@ -28,6 +32,7 @@ namespace Game.UI
         {
             public RectTransform Rect;
             public Text Label;
+            public RectTransform Tail;
         }
 
         private readonly Dictionary<Tower, Badge> _badges = new Dictionary<Tower, Badge>();
@@ -35,12 +40,14 @@ namespace Game.UI
         private LevelContext _context;
         private RectTransform _root;
         private Camera _camera;
+        private HudKeepOut _keepOut;
 
-        public void Initialize(LevelContext context, RectTransform root, Camera camera)
+        public void Initialize(LevelContext context, RectTransform root, Camera camera, HudKeepOut keepOut)
         {
             _context = context;
             _root = root;
             _camera = camera;
+            _keepOut = keepOut;
             _context.TowerWrecked.Subscribe(OnWrecked);
         }
 
@@ -84,18 +91,42 @@ namespace Game.UI
         {
             bool menuOpen = _context.Mode == PlacementMode.TowerMenu && _context.SelectedPlacedTower == gate;
             Vector3 screen = _camera.WorldToScreenPoint(gate.Position + Vector3.up * Lift);
-            bool onScreen = RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local);
-            bool visible = onScreen && !menuOpen && _context.Outcome == LevelOutcome.Running && screen.z > 0f;
+            bool projected = RectTransformUtility.ScreenPointToLocalPointInRectangle(_root, screen, null, out Vector2 local);
+            // A wreck out of view gets no badge; one in view but under a HUD panel gets its badge just off that panel.
+            // The room asked for includes the tail's strip under the badge, so the arrow stays clear of the panel too.
+            bool inView = projected && screen.z > 0f && _keepOut.Area.Contains(local);
+            Vector2 offset = Vector2.zero;
+            bool visible = inView && !menuOpen && _context.Outcome == LevelOutcome.Running
+                && _keepOut.Place(new Rect(local.x - Width * 0.5f, local.y - TailSize, Width, Height + TailSize), out offset);
             badge.Rect.gameObject.SetActive(visible);
             if (!visible)
             {
                 return;
             }
 
-            badge.Rect.anchoredPosition = local;
+            badge.Rect.anchoredPosition = local + offset;
+            PointTail(badge, offset);
             int price = gate.RepairCost;
             badge.Label.text = $"Rebuild  {price}";
             badge.Label.color = _context.Wallet.CanAfford(price) ? Affordable : TooExpensive;
+        }
+
+        // A badge pushed off a panel loses its place over the wreck, so a small arrow on its edge points back at it.
+        private static void PointTail(Badge badge, Vector2 offset)
+        {
+            bool moved = offset.sqrMagnitude > TailThreshold * TailThreshold;
+            badge.Tail.gameObject.SetActive(moved);
+            if (!moved)
+            {
+                return;
+            }
+
+            Vector2 back = -offset.normalized;
+            Vector2 centre = new Vector2(0f, Height * 0.5f);
+            Vector2 half = new Vector2(Width * 0.5f, Height * 0.5f);
+            float reach = Mathf.Min(half.x / Mathf.Max(0.001f, Mathf.Abs(back.x)), half.y / Mathf.Max(0.001f, Mathf.Abs(back.y)));
+            badge.Tail.anchoredPosition = centre + back * (reach + TailSize * 0.5f);
+            badge.Tail.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(back.y, back.x) * Mathf.Rad2Deg);
         }
 
         private Badge BadgeFor(Tower gate)
@@ -124,7 +155,18 @@ namespace Game.UI
 
             Text label = UiKit.CreateFixedText(rect, string.Empty, TextSize, TextAnchor.MiddleCenter, new Vector2(1f, 0.5f), new Vector2(-Inset, 0f), new Vector2(Width - IconSize - Inset * 3f, Height - Inset));
             label.raycastTarget = false;
-            badge = new Badge { Rect = rect, Label = label };
+
+            var tail = new GameObject("Tail", typeof(RectTransform)).AddComponent<Image>();
+            tail.transform.SetParent(rect, false);
+            tail.sprite = IconFactory.Get(IconType.Arrow);
+            tail.color = Affordable;
+            tail.raycastTarget = false;
+            RectTransform tailRect = tail.rectTransform;
+            tailRect.anchorMin = tailRect.anchorMax = new Vector2(0.5f, 0f);
+            tailRect.sizeDelta = new Vector2(TailSize, TailSize);
+            tail.gameObject.SetActive(false);
+
+            badge = new Badge { Rect = rect, Label = label, Tail = tailRect };
             _badges[gate] = badge;
 
             return badge;

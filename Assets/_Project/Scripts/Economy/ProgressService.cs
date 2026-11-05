@@ -235,6 +235,14 @@ namespace Game.Economy
             Save();
         }
 
+        /// <summary>Stores the camera options: pan speed in percent of the default, and edge scrolling on or off.</summary>
+        public void SetCameraControls(int speedPercent, bool edgeScrolling)
+        {
+            Data.CameraSpeedPercent = speedPercent;
+            Data.EdgeScrollingOff = !edgeScrolling;
+            Save();
+        }
+
         /// <summary>The street weapons chosen last time, by asset name.</summary>
         public IReadOnlyList<string> Loadout => Data.LoadoutIds;
 

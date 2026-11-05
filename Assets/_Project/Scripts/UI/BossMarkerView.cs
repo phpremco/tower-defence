@@ -29,15 +29,17 @@ namespace Game.UI
         private LevelContext _context;
         private Camera _camera;
         private RectTransform _area;
+        private HudKeepOut _keepOut;
         private RectTransform _arrow;
         private RectTransform _label;
         private Enemy _boss;
         private Vector3 _target;
         private bool _tracking;
 
-        public void Initialize(LevelContext context, RectTransform root, Camera camera)
+        public void Initialize(LevelContext context, RectTransform root, Camera camera, HudKeepOut keepOut)
         {
             _context = context;
+            _keepOut = keepOut;
             _camera = camera;
             _area = root;
 
@@ -169,6 +171,13 @@ namespace Game.UI
                 _arrow.anchoredPosition = edge;
                 _arrow.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
                 _label.anchoredPosition = edge - direction.normalized * LabelGap;
+            }
+
+            // The HUD stays readable: a marker that would cover a panel moves off it, or waits while it cannot.
+            if (!_keepOut.PlaceTogether(_arrow, _label))
+            {
+                Show(false);
+                return;
             }
 
             _arrow.localScale = Vector3.one * (1f + PulseDepth * Mathf.Sin(Time.unscaledTime * PulseRate));

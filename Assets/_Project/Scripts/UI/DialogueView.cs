@@ -92,6 +92,9 @@ namespace Game.UI
         private GameObject _root;
         private CanvasGroup _group;
         private RectTransform _box;
+
+        /// <summary>The speech box, for the HUD keep-out (inactive while no one speaks).</summary>
+        public RectTransform Box => _box;
         private Image _edge;
         private RectTransform _portraitFrame;
         private RawImage _portraitGlow;

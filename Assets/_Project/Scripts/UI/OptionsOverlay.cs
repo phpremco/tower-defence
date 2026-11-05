@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 namespace Game.UI
 {
-    /// <summary>Options panel over the main menu: the four volume sliders (stored in the saved progress), the controls, the
-    /// sound test and a replay of the opening cutscene.</summary>
+    /// <summary>Options panel over the main menu: the four volume sliders and the camera speed and edge scrolling
+    /// (stored in the saved progress), the controls, the sound test and a replay of the opening cutscene.</summary>
     public sealed class OptionsOverlay : MonoBehaviour
     {
         private MainMenuScreen _owner;
@@ -63,6 +63,8 @@ namespace Game.UI
             ColumnFit.Attach(_column, -TitleTop + TitleHeight + TitleGap, BottomMargin);
             var volumes = new VolumeControls(progress, mix);
             volumes.Build(_column);
+            Services.TryGet(out CameraControls cameraControls);
+            new CameraOptionControls(progress, cameraControls ?? new CameraControls()).Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
             _soundButton = UiKit.CreateButton(_column, "Sound test", ShowSoundBoard);
             if (OpeningCutscene() != null)

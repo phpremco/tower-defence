@@ -45,6 +45,9 @@ namespace Game.UI
         private LevelContext _context;
         private Commander _hero;
         private RectTransform _root;
+
+        /// <summary>The panel on the left, for the HUD keep-out; null in a level without a hero.</summary>
+        public RectTransform Panel => _root;
         private Text _name;
         private Image _healthFill;
         private readonly List<HeroAbilityButton> _abilities = new List<HeroAbilityButton>();
