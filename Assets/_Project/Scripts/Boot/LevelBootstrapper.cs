@@ -36,7 +36,7 @@ namespace Game.Boot
                 return;
             }
 
-            WaveDefinition[] waves = level.GetWaves(session.Difficulty);
+            WaveDefinition[] waves = session.Waves ?? level.GetWaves(session.Difficulty);
             if (waves == null)
             {
                 Debug.LogError($"Level '{level.name}' has no waves for difficulty '{session.Difficulty.name}'.", level);
@@ -47,7 +47,7 @@ namespace Game.Boot
             _cameraRig.Apply(level);
             PostProcessingBuilder.Build(_camera, level.Theme, Services.Get<IPlatformSettings>());
             Dictionary<int, GameObject> routes = BuildEnvironment(level);
-            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing, session.Loadout);
+            BuildGameplay(level, session.Difficulty, waves, debug, routes, session.Briefing, session.Loadout, session.StartingMoney);
         }
 
         private static Dictionary<int, GameObject> BuildEnvironment(LevelDefinition level)
@@ -78,7 +78,7 @@ namespace Game.Boot
             return perks;
         }
 
-        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing, IReadOnlyList<Game.PathObjects.PathObjectDefinition> loadout)
+        private void BuildGameplay(LevelDefinition level, DifficultyProfile difficulty, WaveDefinition[] waves, PlaytestSettings debug, Dictionary<int, GameObject> routes, bool briefing, IReadOnlyList<Game.PathObjects.PathObjectDefinition> loadout, int startingMoney)
         {
             bool unlockAll = debug != null && debug.UnlockAllWeapons;
             bool infiniteMoney = debug != null && debug.InfiniteMoney;
@@ -116,10 +116,12 @@ namespace Game.Boot
             IPlatformSettings platformSettings = Services.Get<IPlatformSettings>();
             var quality = new VfxQuality(platformSettings.ParticleScale, platformSettings.LowDetailModels, platformSettings.DistortionEnabled);
             var projectiles = new ProjectilePool(targets, root, vfx, quality, _camera);
-            var wallet = new Wallet(Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier), infiniteMoney, difficulty.IncomeMultiplier);
+            int money = startingMoney >= 0 ? startingMoney : Mathf.RoundToInt(level.StartingMoney * difficulty.StartingMoneyMultiplier);
+            var wallet = new Wallet(money, infiniteMoney, difficulty.IncomeMultiplier);
             var baseHealth = new Health(level.BaseHealth + global.BaseHealthBonus);
             var context = new LevelContext(level, difficulty, wallet, baseHealth, targets, structures, projectiles, level.AvailableTowers, towers, towerModifiers, waves.Length, skipAllowed);
             context.BriefingPending = briefing && level.Briefing.Length > 0;
+            context.Practice = Services.Get<LevelSession>().Practice;
             context.GlobalModifiers = global;
             context.HeroPerks = UnlockedPerks(level.Hero, progress, unlockAll);
             foreach (Game.Drones.DroneDefinition drone in new[] { level.RepairDrone, level.HarvestDrone, level.AttackDrone })
@@ -154,6 +156,8 @@ namespace Game.Boot
             slime.AddComponent<SlimeFieldView>().Initialize(spawner.Slime);
 
             var controllers = new GameObject("Controllers");
+            // The continent bosses' brains, before the level controller sends the first creature out.
+            controllers.AddComponent<Game.Bosses.BossDirector>().Initialize(context, spawner, progress);
             controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
             var levelController = controllers.AddComponent<LevelController>();
             levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);

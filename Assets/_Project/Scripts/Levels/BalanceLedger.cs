@@ -28,6 +28,7 @@ namespace Game.Levels
             AttackInterval = enemy.AttackInterval,
             BlockadeDamage = enemy.BlockadeDamage,
             IsBoss = enemy.IsBoss,
+            MechanicLossSeconds = enemy.Boss != null ? enemy.Boss.FirepowerLossSeconds() : 0f,
         };
 
         public static TowerStats Stats(TowerDefinition tower)

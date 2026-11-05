@@ -86,6 +86,8 @@ namespace Game.Boot
         private const float DroneWorkVolume = 0.07f;
         private const float DroneLaserVolume = 0.07f;
         private const float CartVolume = 0.1f;
+        // The ground rumbling under a burrowing continent boss swells to this as it nears the surface.
+        private const float RumbleVolume = 0.6f;
         private const float FireballVolume = 0.14f;
         private const float FreezeFieldVolume = 0.4f;
         private const float RollersForFullLoop = 2f;
@@ -163,6 +165,7 @@ namespace Game.Boot
         private LoopVoice _droneRepair;
         private LoopVoice _droneHarvest;
         private LoopVoice _cart;
+        private LoopVoice _rumble;
         private LoopVoice _fireball;
         private AudioClip _rollerCurl;
         private AudioClip _emergeWater;
@@ -294,6 +297,7 @@ namespace Game.Boot
             _droneRepair = LoopVoice.Create(gameObject, library?.DroneRepairLoops);
             _droneHarvest = LoopVoice.Create(gameObject, library?.DroneHarvestLoops);
             _cart = LoopVoice.Create(gameObject, library?.CartLoops);
+            _rumble = LoopVoice.Create(gameObject, library?.Earthquakes);
             _fireball = LoopVoice.Create(gameObject, library?.FireballLoops);
             _rollerCurl = ProceduralSfx.RollerCurl();
             _emergeWater = ProceduralSfx.EmergeWater();
@@ -392,6 +396,12 @@ namespace Game.Boot
             float fade = dt / LaserFadeSeconds;
             _bossLaserLoop.volume = Mathf.MoveTowards(_bossLaserLoop.volume, _bossLasers > 0 ? BossLaserVolume * effects * running : 0f, fade);
             _chorus.Update(dt, filler);
+            if (_rumble != null)
+            {
+                _rumble.Target = RumbleVolume * _context.BossRumble * running;
+                _rumble.Tick(dt, effects);
+            }
+
             UpdateHero(dt, filler);
             UpdateBeams(dt, filler);
             UpdateDrones(dt, filler);

@@ -72,6 +72,9 @@ namespace Game.Enemies
         /// <summary>True when the model has a strike clip of its own (a sting, a tail lash).</summary>
         public bool HasOwnStrike => _attack >= 0;
 
+        /// <summary>True while a boss mechanic plays its own clips: the cycle choice and pending strikes wait.</summary>
+        public bool Scripted { get; set; }
+
         /// <summary>The clip whose moment passed this frame (a power's release, a strike's hit), or -1.</summary>
         public int EventClip => _eventClip;
 
@@ -96,6 +99,13 @@ namespace Game.Enemies
         /// <param name="scale">The model's world scale, to turn model units per loop into world units.</param>
         public void Tick(float deltaTime, float groundSpeed, bool moving, bool rolling, float scale)
         {
+            if (Scripted)
+            {
+                _player.Tick(deltaTime);
+                DetectEvent();
+                return;
+            }
+
             if (rolling != _rolled)
             {
                 _rolled = rolling;

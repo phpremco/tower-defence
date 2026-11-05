@@ -1,0 +1,21 @@
+{
+    "name": "Game.Bosses",
+    "rootNamespace": "Game.Bosses",
+    "references": [
+        "Game.Core",
+        "Game.Combat",
+        "Game.Enemies",
+        "Game.Towers",
+        "Game.Levels",
+        "Game.Economy"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

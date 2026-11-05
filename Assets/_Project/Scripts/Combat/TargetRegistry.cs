@@ -9,11 +9,33 @@ namespace Game.Combat
     {
         private readonly List<ITargetable> _targets = new List<ITargetable>();
 
+        // Targets hidden under the ground or a liquid: no tower aims at them, but a blast that lands on them still reaches them.
+        private readonly HashSet<ITargetable> _concealed = new HashSet<ITargetable>();
+
         public int Count => _targets.Count;
 
         public void Add(ITargetable target) => _targets.Add(target);
 
-        public void Remove(ITargetable target) => _targets.Remove(target);
+        public void Remove(ITargetable target)
+        {
+            _targets.Remove(target);
+            _concealed.Remove(target);
+        }
+
+        /// <summary>Hides a target from aiming (a boss under a pool) or shows it again; splash still finds it.</summary>
+        public void SetConcealed(ITargetable target, bool concealed)
+        {
+            if (concealed)
+            {
+                _concealed.Add(target);
+            }
+            else
+            {
+                _concealed.Remove(target);
+            }
+        }
+
+        public bool IsConcealed(ITargetable target) => _concealed.Contains(target);
 
         /// <summary>Returns the target in range that is furthest along its path, or null.</summary>
         public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask)
@@ -25,7 +47,7 @@ namespace Game.Combat
             for (int i = 0; i < _targets.Count; i++)
             {
                 ITargetable candidate = _targets[i];
-                if (!candidate.IsAlive || !mask.CanHit(candidate.Layer))
+                if (!candidate.IsAlive || !mask.CanHit(candidate.Layer) || _concealed.Contains(candidate))
                 {
                     continue;
                 }

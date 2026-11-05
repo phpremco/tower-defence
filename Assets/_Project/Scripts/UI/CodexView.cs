@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Game.Core;
+using Game.Economy;
 using Game.Enemies;
 using Game.Levels;
 using Game.Platform;
@@ -75,6 +76,7 @@ namespace Game.UI
         private Text _detailName;
         private Text _detailText;
         private readonly List<ModelPreview> _previews = new List<ModelPreview>();
+        private readonly List<EnemyDefinition> _shownEnemies = new List<EnemyDefinition>();
         private readonly List<Text> _operators = new List<Text>();
         private readonly List<Button> _rows = new List<Button>();
         private readonly StringBuilder _builder = new StringBuilder();
@@ -290,7 +292,8 @@ namespace Game.UI
             }
 
             _rows.Clear();
-            int count = page == Page.Recipes ? _catalog.Recipes.Count : _catalog.Enemies.Count;
+            ListShownEnemies();
+            int count = page == Page.Recipes ? _catalog.Recipes.Count : _shownEnemies.Count;
             for (int i = 0; i < count; i++)
             {
                 int index = i;
@@ -304,7 +307,7 @@ namespace Game.UI
                 }
                 else
                 {
-                    EnemyDefinition enemy = _catalog.Enemies[i];
+                    EnemyDefinition enemy = _shownEnemies[i];
                     name = enemy.DisplayName;
                     note = enemy.IsBoss ? "Boss" : enemy.Flies ? "Air" : "Ground";
                 }
@@ -368,6 +371,20 @@ namespace Game.UI
             return button;
         }
 
+        // A boss is described only once the player has met it (Docs/BOSSES.md); every other creature is listed from the start.
+        private void ListShownEnemies()
+        {
+            _shownEnemies.Clear();
+            Services.TryGet(out ProgressService progress);
+            foreach (EnemyDefinition enemy in _catalog.Enemies)
+            {
+                if (enemy != null && (!enemy.IsBoss || progress == null || progress.HasSeenEnemy(enemy.name)))
+                {
+                    _shownEnemies.Add(enemy);
+                }
+            }
+        }
+
         private void Show(int index)
         {
             if (index == _selected)
@@ -383,7 +400,7 @@ namespace Game.UI
             }
             else
             {
-                ShowEnemy(_catalog.Enemies[index]);
+                ShowEnemy(_shownEnemies[index]);
             }
         }
 
@@ -558,6 +575,25 @@ namespace Game.UI
             _detailText.rectTransform.sizeDelta = new Vector2(width, 420f);
         }
 
+        // A continent boss: its phases, its signature, how to see it coming and how to beat it, in plain words.
+        private void DescribeBoss(BossDefinition boss)
+        {
+            if (boss == null)
+            {
+                return;
+            }
+
+            _builder.Append("\n\nPhases: ");
+            for (int i = 0; i < boss.Phases.Length; i++)
+            {
+                _builder.Append(i > 0 ? ", " : string.Empty).Append(boss.Phases[i].Name);
+            }
+
+            _builder.Append("\nSignature: ").Append(boss.SignatureText);
+            _builder.Append("\nSee it coming: ").Append(boss.TelegraphText);
+            _builder.Append("\nHow to beat it: ").Append(boss.CounterText);
+        }
+
         private string DescribeEnemy(EnemyDefinition enemy)
         {
             _builder.Clear();
@@ -613,6 +649,8 @@ namespace Game.UI
             {
                 _builder.Append('\n').Append(enemy.Description);
             }
+
+            DescribeBoss(enemy.Boss);
 
             return _builder.ToString();
         }

@@ -231,7 +231,10 @@ namespace Game.Levels
 
             _context.Outcome = outcome;
             _context.Result = RewardCalculator.Compute(_context.Level, _context.Difficulty, _progress, outcome == LevelOutcome.Won, _context.BaseHealth.Fraction);
-            RewardCalculator.Apply(_context.Result, _context.Level, _context.Difficulty, _progress);
+            if (!_context.Practice)
+            {
+                RewardCalculator.Apply(_context.Result, _context.Level, _context.Difficulty, _progress);
+            }
             _context.Changed.Raise();
         }
     }

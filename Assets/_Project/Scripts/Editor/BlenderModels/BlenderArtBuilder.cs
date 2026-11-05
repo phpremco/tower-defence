@@ -35,8 +35,9 @@ namespace Game.Editor
         // One clip as the builder collects it, before it is written into the art definition.
         private readonly struct ClipRow
         {
-            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight)
+            public ClipRow(ModelClipRole role, AnimationClip clip, AnimationClip farClip, float distance, float eventSeconds, string trigger, string socket, float weight, BlenderTravelClips.Facts travel = default)
             {
+                Travel = travel;
                 Role = role;
                 Clip = clip;
                 FarClip = farClip;
@@ -55,6 +56,7 @@ namespace Game.Editor
             public string Trigger { get; }
             public string Socket { get; }
             public float Weight { get; }
+            public BlenderTravelClips.Facts Travel { get; }
             public float Length => Clip.length;
         }
 
@@ -94,6 +96,52 @@ namespace Game.Editor
             }
 
             return built;
+        }
+
+        /// <summary>
+        /// Syncs and rebuilds only the named creature rows (a boss whose clips changed in Blender) and points the enemies
+        /// that wear them at the result; every other creature's art stays exactly as it is. Returns how many enemies wear it.
+        /// </summary>
+        public static int RebuildOnly(params string[] ids)
+        {
+            var wanted = new HashSet<string>(ids);
+            var entries = new List<BlenderArtEntry>();
+            var assets = new HashSet<string>();
+            foreach (BlenderArtEntry entry in BlenderArtCatalog.Creatures)
+            {
+                if (wanted.Contains(entry.Id))
+                {
+                    entries.Add(entry);
+                    assets.Add(entry.Asset);
+                }
+            }
+
+            BlenderSync.Sync(assets);
+            var built = new Dictionary<string, ModelArtDefinition>();
+            foreach (BlenderArtEntry entry in entries)
+            {
+                ModelArtDefinition art = Build(entry);
+                if (art != null)
+                {
+                    built[entry.Id] = art;
+                }
+            }
+
+            int assigned = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { EnemyDataFolder }))
+            {
+                var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                if (BlenderArtCatalog.EnemyArt.TryGetValue(enemy.name, out string id) && built.TryGetValue(id, out ModelArtDefinition wear))
+                {
+                    var so = new SerializedObject(enemy);
+                    so.FindProperty("_art").objectReferenceValue = wear;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                    assigned++;
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            return assigned;
         }
 
         /// <summary>Points every enemy definition at its art (or at none); returns how many wear a model.</summary>
@@ -179,6 +227,7 @@ namespace Game.Editor
         {
             var clips = new List<ClipRow>();
             Dictionary<string, AnimationClip> far = ClipsByName(farPath);
+            Dictionary<string, BlenderTravelClips.Facts> travel = BlenderTravelClips.Read(Path.ChangeExtension(modelPath, null) + "_report.json");
             foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(modelPath))
             {
                 if (!(asset is AnimationClip clip) || clip.name.StartsWith(PreviewPrefix))
@@ -196,7 +245,8 @@ namespace Game.Editor
                 float distance = DistancePerLoop(role, entry, report);
                 float weight = spec?.Weight ?? (role == ModelClipRole.Hit ? HitWeight : 1f);
                 far.TryGetValue(clip.name, out AnimationClip farClip);
-                clips.Add(new ClipRow(role, clip, farClip, distance, (spec?.EventFrame ?? 0) / FramesPerSecond, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight));
+                travel.TryGetValue(clip.name, out BlenderTravelClips.Facts facts);
+                clips.Add(new ClipRow(role, clip, farClip, distance, (spec?.EventFrame ?? 0) / FramesPerSecond, spec?.Trigger ?? string.Empty, spec?.Socket ?? string.Empty, weight, facts));
             }
 
             return clips;
@@ -243,6 +293,7 @@ namespace Game.Editor
                 case ModelClipRole.Roll: return report.Number("roll_distance_per_loop");
                 case ModelClipRole.Swim: return report.Number("swim_distance_per_loop");
                 case ModelClipRole.EnragedMove: return report.Number("walk_enraged_distance_per_loop");
+                case ModelClipRole.ClimbLoop: return report.Number("distance_per_loop_m");
                 default: return 0f;
             }
         }
@@ -268,6 +319,9 @@ namespace Game.Editor
                 element.FindPropertyRelative("_trigger").stringValue = clip.Trigger;
                 element.FindPropertyRelative("_socket").stringValue = clip.Socket;
                 element.FindPropertyRelative("_weight").floatValue = clip.Weight;
+                element.FindPropertyRelative("_endOffset").vector2Value = clip.Travel.EndOffset;
+                element.FindPropertyRelative("_anchorForward").floatValue = clip.Travel.Anchor;
+                element.FindPropertyRelative("_cueSeconds").floatValue = clip.Travel.CueFrame / FramesPerSecond;
             }
         }
 

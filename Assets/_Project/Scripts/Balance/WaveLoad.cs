@@ -22,6 +22,15 @@ namespace Game.Balance
 
         public float Window;
         public float BossWindow;
+
+        /// <summary>Seconds of full firepower the bosses' mechanics take away (see <see cref="EnemyStats.MechanicLossSeconds"/>).</summary>
+        public float BossMechanicLoss;
+
+        /// <summary>Seconds the bosses spend on the field: the main road at their pace, plus the time a gate holds them.</summary>
+        public float BossFight;
+
+        /// <summary>Share of the fight their mechanics take the defence's firepower away (zero without a continent boss).</summary>
+        public float BossMechanicShare => BossFight > 0f ? BossMechanicLoss / BossFight : 0f;
         public float AirWindow;
         public float GroundSpeed = 1f;
         public float BossSpeed = 1f;
@@ -32,6 +41,12 @@ namespace Game.Balance
         public float MeanAirHealth;
         public int KillMoney;
         public bool HasBoss;
+
+        /// <summary>
+        /// The seconds a gun gets on the bosses out of the time they spend in its reach: the mechanics take away their share
+        /// of the fight (a burrow can happen anywhere on the road), never more than the rules' cap (Docs/BOSSES.md).
+        /// </summary>
+        public float BossSeconds(float inReach, BalanceRules rules) => inReach * (1f - Math.Min(rules.MaxBossMechanicShare, BossMechanicShare));
 
         public float GroundPressure(float stream, float single)
         {
@@ -103,6 +118,7 @@ namespace Game.Balance
                     bossSpeed += enemy.InRangeSpeed * count;
                     bosses += count;
                     bossGateDps += strike;
+                    load.BossMechanicLoss += enemy.MechanicLossSeconds * count;
                     continue;
                 }
 
@@ -128,6 +144,7 @@ namespace Game.Balance
             float hold = GateHold(level, gateDps, rules);
             load.Window = span + hold * rules.GateWindowShare;
             load.BossWindow = GateHold(level, bossGateDps, rules) * rules.GateWindowShare;
+            load.BossFight = bosses > 0 ? level.Shape.MainLength / Math.Max(0.01f, load.BossSpeed) + load.BossWindow : 0f;
             load.AirWindow = airSpan;
             return load;
         }

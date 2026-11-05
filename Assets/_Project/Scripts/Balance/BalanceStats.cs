@@ -35,6 +35,12 @@ namespace Game.Balance
         public float BlockadeDamage;
         public bool IsBoss;
 
+        /// <summary>
+        /// Seconds of the whole defence's firepower a continent boss's mechanic takes away over one fight (hidden under the
+        /// ground, a thrown tower silent), from its boss data; zero for every other creature.
+        /// </summary>
+        public float MechanicLossSeconds;
+
         /// <summary>Health plus armour: armour soaks that many points before it is gone, whatever its share per hit.</summary>
         public float EffectiveHealth => Health + Armor;
     }

@@ -189,6 +189,22 @@ namespace Game.Economy
             Save();
         }
 
+        /// <summary>True once the player has met this creature (bosses: their Codex entry is open).</summary>
+        public bool HasSeenEnemy(string enemyId) => Data.SeenEnemyIds != null && Data.SeenEnemyIds.Contains(enemyId);
+
+        /// <summary>Remembers that the player has met a creature, so its Codex entry stays open.</summary>
+        public void MarkEnemySeen(string enemyId)
+        {
+            if (HasSeenEnemy(enemyId))
+            {
+                return;
+            }
+
+            Data.SeenEnemyIds ??= new List<string>();
+            Data.SeenEnemyIds.Add(enemyId);
+            Save();
+        }
+
         public bool HasSeenStory(string storyId) => Data.SeenStoryIds.Contains(storyId);
 
         /// <summary>Remembers that a story moment has played, so a once-per-save trigger stays quiet afterwards.</summary>

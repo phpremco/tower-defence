@@ -43,6 +43,7 @@ namespace Game.Levels
             context.StructureWrecked.Subscribe(OnStructureWrecked);
             context.BossWaveStarted.Subscribe(OnBossWave);
             context.EnemySpawned.Subscribe(OnEnemySpawned);
+            context.BossImpact.Subscribe(OnBossImpact);
             if (context.Hero != null)
             {
                 context.Hero.AbilityUsed += OnAbilityUsed;
@@ -55,11 +56,16 @@ namespace Game.Levels
         // A boss breaking out of the ground shakes harder than one stepping through the gate.
         private void OnEnemySpawned(Enemy enemy)
         {
-            if (enemy.Definition.IsBoss)
+            // A boss that breaks out somewhere of its own kicks the camera itself, at the moment it breaks out.
+            BossDefinition boss = enemy.Definition.Boss;
+            if (enemy.Definition.IsBoss && (boss == null || boss.Arrival == BossArrival.Wave))
             {
                 _rig.Shake(enemy.Origin == EnemyOrigin.Ground ? BossGroundEntrance : BossEntrance);
             }
         }
+
+        // One kick per real impact of a continent boss; its own data says how hard.
+        private void OnBossImpact(float strength) => _rig.Shake(strength);
 
         private void OnHeroDown() => _rig.Shake(HeroDown);
 
@@ -81,6 +87,7 @@ namespace Game.Levels
             _context.StructureWrecked.Unsubscribe(OnStructureWrecked);
             _context.BossWaveStarted.Unsubscribe(OnBossWave);
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
+            _context.BossImpact.Unsubscribe(OnBossImpact);
             if (_context.Hero != null)
             {
                 _context.Hero.AbilityUsed -= OnAbilityUsed;

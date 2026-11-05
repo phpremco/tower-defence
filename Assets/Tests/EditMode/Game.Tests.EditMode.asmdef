@@ -5,7 +5,7 @@
                        "Game.Core",
                        "Game.Balance",
                        "Game.Combat",
-                       "Game.Enemies",
+                       "Game.Enemies","Game.Bosses",
                        "Game.Towers",
                        "Game.Hero",
                        "Game.PathObjects",

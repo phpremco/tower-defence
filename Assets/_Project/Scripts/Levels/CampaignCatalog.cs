@@ -37,6 +37,8 @@ namespace Game.Levels
         [SerializeField] private List<MapNode> _nodes = new List<MapNode>();
         [SerializeField] private List<DifficultyProfile> _difficulties = new List<DifficultyProfile>();
         [SerializeField] private StoryDefinition _story;
+        [Tooltip("The developer boss arena: a level and a list of bosses to fight there, shown in the dev story viewer.")]
+        [SerializeField] private BossArenaDefinition _bossArena;
         [Header("Planet")]
         [Tooltip("How S-69-CRYS looks from space: the cutscene planets and the map globe wear the same style.")]
         [SerializeField] private PlanetStyle _planetStyle = PlanetStyle.Crys();
@@ -51,6 +53,9 @@ namespace Game.Levels
 
         /// <summary>The intro and the rest of the story told around the campaign; may be null while there is none.</summary>
         public StoryDefinition Story => _story;
+
+        /// <summary>The developer boss arena, or null.</summary>
+        public BossArenaDefinition BossArena => _bossArena;
 
         public PlanetStyle PlanetStyle => _planetStyle ?? (_planetStyle = PlanetStyle.Crys());
         public SpaceStyle SpaceStyle => _spaceStyle ?? (_spaceStyle = new SpaceStyle());

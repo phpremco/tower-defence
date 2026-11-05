@@ -182,6 +182,19 @@ namespace Game.Balance
         }
 
         /// <summary>
+        /// The rule for a continent boss's mechanic (Docs/BOSSES.md, "no wipe-outs"): over a fight of the given seconds in reach of
+        /// the defence it may take away at most <see cref="BalanceRules.MaxBossMechanicShare"/> of the firepower. Returns the
+        /// failure, or null when it keeps inside.
+        /// </summary>
+        public static string CheckBossMechanic(string boss, float lossSeconds, float fightSeconds, BalanceRules rules)
+        {
+            float share = fightSeconds > 0f ? lossSeconds / fightSeconds : 1f;
+            return share > rules.MaxBossMechanicShare
+                ? $"{boss}: its mechanic takes {share:P0} of the defence's firepower over a {fightSeconds:0}s fight (most {rules.MaxBossMechanicShare:P0})"
+                : null;
+        }
+
+        /// <summary>
         /// Beatable: a competent player with the hero (<see cref="BalanceRules.HumanWithHero"/>) and the permanent upgrades the
         /// campaign expects there holds the plain waves with at least <see cref="BalanceRules.MinBeatableSurplusFor"/>, and no
         /// wave, bosses included, asks more than the difficulty's <see cref="BalanceRules.HeroCap"/> (plus a little tolerance).

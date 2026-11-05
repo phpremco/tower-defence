@@ -7,8 +7,10 @@ namespace Game.Levels
     /// <summary>Which level, on which difficulty, the generic Level scene must build.</summary>
     public sealed class LevelSession
     {
-        public LevelSession(LevelDefinition level, DifficultyProfile difficulty, bool briefing = false, IReadOnlyList<PathObjectDefinition> loadout = null)
+        public LevelSession(LevelDefinition level, DifficultyProfile difficulty, bool briefing = false, IReadOnlyList<PathObjectDefinition> loadout = null, WaveDefinition[] waves = null, int startingMoney = -1)
         {
+            Waves = waves;
+            StartingMoney = startingMoney;
             Briefing = briefing;
             Loadout = loadout;
             Level = level != null ? level : throw new ArgumentNullException(nameof(level));
@@ -24,5 +26,14 @@ namespace Game.Levels
 
         /// <summary>The street weapons the player takes along, or null to offer whatever the level lists (tests and tools).</summary>
         public IReadOnlyList<PathObjectDefinition> Loadout { get; }
+
+        /// <summary>Waves that replace the level's own (the developer boss arena), or null for the level's waves.</summary>
+        public WaveDefinition[] Waves { get; }
+
+        /// <summary>A practice run (the boss arena): it pays nothing and saves no progress.</summary>
+        public bool Practice => Waves != null;
+
+        /// <summary>Money to start with instead of the level's, or below zero for the level's own.</summary>
+        public int StartingMoney { get; }
     }
 }

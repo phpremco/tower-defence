@@ -204,7 +204,7 @@ namespace Game.Balance
 
         private static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.Window * rules.HeroShare;
 
-        private static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.BossWindow * rules.HeroShare;
+        private static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.BossSeconds(load.BossWindow, rules) * rules.HeroShare;
 
         // ---- Buying ------------------------------------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ namespace Game.Balance
                         Cost = stats.Cost,
                         AirOnly = air && !ground,
                         Stream = ground ? dps * Overkill(damage, load.MeanHealth) * Splash(tower.Splash, load.GroundDensity, rules) * (load.Window + 2f * range / load.GroundSpeed) * rules.Utilisation : 0f,
-                        Single = ground ? dps * (load.BossWindow + 2f * range / load.BossSpeed) * rules.Utilisation : 0f,
+                        Single = ground ? dps * load.BossSeconds(load.BossWindow + 2f * range / load.BossSpeed, rules) * rules.Utilisation : 0f,
                         Air = air ? dps * Overkill(damage, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, rules) * (load.AirWindow + 2f * range / load.AirSpeed) * rules.Utilisation : 0f,
                     });
                 }

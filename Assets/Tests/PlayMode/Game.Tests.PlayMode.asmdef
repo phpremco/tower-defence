@@ -4,7 +4,7 @@
     "references":  [
                        "Game.Core",
                        "Game.Levels",
-                       "Game.Enemies",
+                       "Game.Enemies","Game.Bosses",
                        "Game.Hero",
                        "Game.Towers",
                        "Game.Combat",

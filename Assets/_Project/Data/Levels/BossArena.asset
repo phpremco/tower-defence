@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b5e4671b00e08347ab3b3c32f088b03, type: 3}
+  m_Name: BossArena
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.BossArenaDefinition
+  _level: {fileID: 11400000, guid: 00e794e2509e1404888283a26e238dca, type: 2}
+  _difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
+  _bosses:
+  - {fileID: 11400000, guid: ab9724850781eea4ca1772822888c137, type: 2}
+  _startingMoney: 3000
+  _buildSeconds: 40
+  _escort: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+  _escortCount: 6
+  _escortInterval: 1.5
+  _healthMultiplier: 2.5

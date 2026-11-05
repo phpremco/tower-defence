@@ -2219,3 +2219,39 @@ runners `Tools/PlayTest/Scripts/ApplyTowers.cs` (generator "Roster" step), `Appl
   mines a third of what it books) and should be fixed together with a bot that harvests and a new `Utilisation`; replaying an
   earlier level does not offer later drones (as with gadgets); drone upgrades still show on the upgrade screen before their
   drone is introduced; a laser-heavy player now has more surplus on swarm levels than the curve targets.
+
+## Round 4a: continent boss framework and Gravemaw (2026-11-05)
+
+Docs/BOSSES.md has the design and the implementation notes. Not committed; the full generator was not run (targeted runners:
+`Tools/PlayTest/Scripts/ApplyBosses.cs` syncs and rebuilds only Gravemaw's art plus the "Continent bosses" step,
+`ApplyBossData.cs` the step alone).
+- **Built:** new assembly `Game.Bosses` (`BossDirector`, `ContinentBossBrain`, `BossField`, `ClimbLayer`, `GridRouter`,
+  `BossRoutes`, `ThresholdTracker`, `DamageTally`, `PoolDiveRules`, `BossClip`, views `CrackLineView`, `TargetRingView`,
+  `WakeView`); `BossDefinition` + `BossPhase`/`BurrowPower`/`ClimbPower`/`DivePower`/`BossSignature`/`BossArrival`/`PoolKinds`
+  (Game.Enemies) on `EnemyDefinition.Boss`; nine new `ModelClipRole`s (ClimbUp ... SurfaceThrow) and `ModelClip` end offset,
+  cue and anchor read from the report's `round28` block (`BlenderTravelClips`); `BlenderArtBuilder.RebuildOnly`.
+  Engine hooks: `Enemy` directed/concealed/pace/place/reroute and damage attribution (`ISourcedTarget`, projectiles pass their
+  tower), `TargetRegistry.SetConcealed`, `Tower.Toss`/`IsUpset`/`SetBurden` + `TowerDisplacementView`, `EnemyView` scripted
+  clips/tilt/hide, `EnvironmentInstancer.Formations`/`Break`, `ColonyRigView.Smash`, `LevelContext.BossImpact`/`BossRumble`
+  (camera kick, rumble loop in `SfxPlayer`), boss bar phase marks + phase name, Codex boss text shown once met
+  (`ProgressData.SeenEnemyIds`; practice runs mark nothing), `LevelSession` waves/money override + `Practice` (no reward).
+- **Data:** the six continent bosses (`Data/Enemies/<Id>.asset`, `Data/Enemies/Bosses/<Id>Boss.asset`, voices) in the Codex;
+  only Gravemaw has a running signature. The Sealed One wears no model yet (its round-16 export has no walk).
+- **Placement decision (curator default, for Remco):** the roadmap's Crystal Plains finale is level 20 (S5), which does not
+  exist; C1_06 is not the finale, so Gravemaw is not in the campaign. It is fought in the developer **Boss arena** (dev story
+  viewer, last page; `Data/Levels/BossArena.asset`: Shard Ridge, Medium, 3000 money, a list of bosses).
+- **Other decisions:** after smashing the rig (which stands next to the base) Gravemaw burrows back to the start of the
+  road instead of attacking the base at once; climbing uses baked clips plus a slope tilt (no foot IK); rocks are preferred
+  over walking round them; the boss bar and Codex now hide every boss until it is met (also the existing level bosses).
+- **Ledger:** boss mechanics cost firepower (`EnemyStats.MechanicLossSeconds`, spread over `WaveLoad.BossFight`, capped by
+  `BalanceRules.MaxBossMechanicShare` 0.35, `BalanceChecks.CheckBossMechanic`). Existing bands untouched (no other boss has
+  boss data). Gravemaw's health (1050) is tuned so C1_06's last boss wave with Gravemaw stays inside the HeroCap with the hero
+  on every difficulty (`BossFrameworkTests.Ledger_...`); the arena wave scales it by 2.5.
+- **Tests:** EditMode 391/391 (new `BossFrameworkTests` 10). PlayMode `GravemawArenaTests` 1/1 (sped-up fight to death: three
+  burrows, thrown towers survive, no pivot on a tower or living gate footprint, rig smashed, no errors); then one class at a time: ContinentSimulation 2/2, StoryCrystal 2/2, StorySmoke 2/2, StoryGuard 3/3,
+  StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3, ModelPerformance 1/1, BalanceProbe 3/3. 0 compile errors/warnings. Remco's save restored byte-identical after every PlayMode run (MD5 ec2a1f6d...).
+- **Screenshots:** session scratchpad `round4a/`.
+- **Weak points:** the boss body (4.7 m) still overlaps neighbouring towers visually when it surfaces in a dense cluster (only
+  the pivot is kept off footprints); a thrown tower reads small next to the boss; cracks next to a gate that stands beside the
+  target pass close to its pylon; climbing over a 1 m rock with 1.2 m clips looks rough; walkers do not follow it over a
+  gate; the exit of a pool dive can land on the far bank behind decor.

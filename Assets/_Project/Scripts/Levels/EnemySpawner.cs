@@ -104,6 +104,11 @@ namespace Game.Levels
         public void Spawn(EnemyDefinition definition, int pathIndex, SpawnSource source = SpawnSource.Gate, int nest = -1)
         {
             LevelDefinition level = _context.Level;
+            if (definition.Boss != null && definition.Boss.Arrival == BossArrival.ColonyRig && TrySpawnAtRig(definition))
+            {
+                return;
+            }
+
             // The wave says per group where a boss comes in; an entrance the level does not have falls back to the gate.
             if (source == SpawnSource.Entrance)
             {
@@ -142,6 +147,22 @@ namespace Game.Levels
 
             Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, 0f);
             _context.GateSpawned.Raise(pathIndex);
+        }
+
+        // A continent boss that answers the colony's drill comes up under the rig beside the field and makes for the road;
+        // its own mechanic hides it until it breaks out. Without a rig it uses the entrance the wave names.
+        private bool TrySpawnAtRig(EnemyDefinition definition)
+        {
+            var clearance = new StructureClearance(_context.Level);
+            if (!clearance.HasColonyRig)
+            {
+                return false;
+            }
+
+            Vector3 start = clearance.ColonyRigPosition;
+            Vector3[] route = OffRoadRoute.Build(_context.Level, start, out float progress);
+            Launch(definition, route, 0f, EnemyOrigin.Ground, progress);
+            return true;
         }
 
         // A boss that does not use the gate comes up where the level says: out of a pool or out of the ground.
@@ -241,6 +262,18 @@ namespace Game.Levels
 
             _heroTarget ??= new HeroTarget(hero);
             return _heroTarget;
+        }
+
+        /// <summary>A creature clawing up out of a crack at a point on the field, then making for the nearest road.</summary>
+        public void SpawnFromCrack(EnemyDefinition definition, Vector3 point)
+        {
+            if (definition == null)
+            {
+                return;
+            }
+
+            Vector3[] route = OffRoadRoute.Build(_context.Level, point, out float progress);
+            Launch(definition, route, FlightHeight(definition), EnemyOrigin.Rift, progress);
         }
 
         /// <summary>Sends a creature out of a boss's body, down the rest of the boss's road.</summary>

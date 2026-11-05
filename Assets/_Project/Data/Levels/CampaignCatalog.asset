@@ -162,6 +162,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
   - {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
   _story: {fileID: 11400000, guid: 5b0885be512d33c4db11f5c65e96a4a5, type: 2}
+  _bossArena: {fileID: 11400000, guid: 071a7b1c0bd5bde44857bae75021678b, type: 2}
   _planetStyle:
     Alien: 1
     DeepSea: {r: 0.03, g: 0.11, b: 0.21, a: 1}

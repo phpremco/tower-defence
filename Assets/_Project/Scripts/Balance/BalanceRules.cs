@@ -128,6 +128,13 @@ namespace Game.Balance
         public float BandMargin = 1.4f;
         public float BossAllowance = 1.6f;
 
+        /// <summary>
+        /// Most of a boss fight's firepower a continent boss's mechanic may take away (Docs/BOSSES.md: no wipe-outs, an effect
+        /// reaches about a quarter of the field): the ledger never counts more, and <see cref="BalanceChecks.CheckBossMechanic"/>
+        /// fails a boss whose mechanic would.
+        /// </summary>
+        public float MaxBossMechanicShare = 0.35f;
+
         /// <summary>Most pressure a plain wave may reach on a difficulty (Easy to Psycho).</summary>
         public float MaxPressure(int difficulty) =>
             DifficultyPressure[System.Math.Min(difficulty, DifficultyPressure.Length - 1)] * TargetPressure * LateTargetShare * HeavyFactor * BandMargin;

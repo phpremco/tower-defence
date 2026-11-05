@@ -194,6 +194,12 @@ namespace Game.UI
                     _briefing.SetActive(true);
                     UiKit.Select(_briefingBack);
                     break;
+                case StoryIndex.EntryKind.BossArena:
+                    // A practice fight: the arena's level with only the boss wave; nothing is paid or saved.
+                    BossArenaDefinition arena = _index.Arena;
+                    Services.Register(new LevelSession(arena.Level, arena.Difficulty, false, null, arena.WavesFor(entry.Boss), arena.StartingMoney));
+                    SceneManager.LoadScene(SceneNames.Level);
+                    break;
                 case StoryIndex.EntryKind.Dialogue:
                     _playing = true;
                     _guardUntil = Time.unscaledTime + InputGuardSeconds;

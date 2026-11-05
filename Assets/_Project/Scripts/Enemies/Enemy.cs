@@ -10,7 +10,7 @@ namespace Game.Enemies
     /// flyers may stop to strike the gates they pass, trail layers drop a patch every so often, and anything can be
     /// slowed or hurried for a while. Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Enemy : MonoBehaviour, ITargetable
+    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget
     {
         private const float ArrivalDistance = 0.02f;
         private const float MinSpeedFactor = 0.1f;
@@ -41,6 +41,9 @@ namespace Game.Enemies
         private float _rollTimer;
         private int _gateStrikesLeft;
         private float _sinceTrailDrop;
+        private bool _directed;
+        private float _concealedShare = -1f;
+        private float _pace = 1f;
 
         public EnemyDefinition Definition => _definition;
 
@@ -97,6 +100,24 @@ namespace Game.Enemies
         /// <summary>Raised with the ground position where a trail layer left a fresh patch.</summary>
         public event Action<Enemy, Vector3> TrailDropped;
 
+        /// <summary>Raised with the creature, what hit it (a tower, or null) and the damage it took.</summary>
+        public event Action<Enemy, object, float> DamagedBy;
+
+        /// <summary>Raised with the damage of anything that reached it while it was hidden (a mine going off over a burrow).</summary>
+        public event Action<Enemy, float> StruckWhileHidden;
+
+        /// <summary>Raised every step a living gate holds a walker up, with that gate.</summary>
+        public event Action<Enemy, IStructure> HeldByGate;
+
+        /// <summary>True while a boss mechanic moves the creature itself: its own walk, siege and attacks wait.</summary>
+        public bool IsDirected => _directed;
+
+        /// <summary>True while it is hidden under the ground or a liquid: towers cannot aim at it.</summary>
+        public bool IsConcealed => _concealedShare >= 0f;
+
+        /// <summary>World units per second it walks right now, before slows and hastes.</summary>
+        public float GroundSpeed => _definition.Speed * _speedMultiplier * _pace;
+
         public void Initialize(
             EnemyDefinition definition,
             Vector3[] waypoints,
@@ -140,6 +161,9 @@ namespace Game.Enemies
             _rollTimer = definition.WalkSeconds;
             _gateStrikesLeft = definition.Flies ? definition.GateStrikes : 0;
             _sinceTrailDrop = 0f;
+            _directed = false;
+            _concealedShare = -1f;
+            _pace = 1f;
             Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
             Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);
@@ -151,7 +175,73 @@ namespace Game.Enemies
             Initialized?.Invoke(this);
         }
 
-        public void TakeDamage(float amount) => Health?.TakeDamage(amount);
+        // Anything without a source (a mine, the hero, a pulse) counts as a blast: it still reaches a hidden boss in part.
+        public void TakeDamage(float amount) => TakeDamageFrom(amount, null, true);
+
+        public void TakeDamageFrom(float amount, object source, bool splash)
+        {
+            if (Health == null || !_active)
+            {
+                return;
+            }
+
+            if (IsConcealed)
+            {
+                // An aimed shot cannot find it; a blast that lands on the spot reaches it at a share.
+                if (!splash)
+                {
+                    return;
+                }
+
+                StruckWhileHidden?.Invoke(this, amount);
+                amount *= _concealedShare;
+            }
+
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            Health.TakeDamage(amount);
+            DamagedBy?.Invoke(this, source, amount);
+        }
+
+        /// <summary>Hands the creature to a boss mechanic (true) or back to its own walk (false).</summary>
+        public void SetDirected(bool directed) => _directed = directed;
+
+        /// <summary>
+        /// Hides it from aiming (under the ground or a liquid), with the share of a blast that still reaches it; zero means
+        /// nothing gets through. Shows it again when <paramref name="concealed"/> is false.
+        /// </summary>
+        public void SetConcealed(bool concealed, float blastShare = 0f)
+        {
+            _concealedShare = concealed ? Mathf.Clamp01(blastShare) : -1f;
+            _registry?.SetConcealed(this, concealed);
+        }
+
+        /// <summary>A speed factor of its own on top of its kind's (an enraged boss).</summary>
+        public void SetPace(float pace) => _pace = Mathf.Max(MinSpeedFactor, pace);
+
+        /// <summary>Puts a directed creature at a point (its height included) facing a direction on the ground.</summary>
+        public void Place(Vector3 position, Vector3 heading)
+        {
+            transform.position = position;
+            Heading = Flat(heading);
+        }
+
+        /// <summary>Gives the creature a new way to walk from where it is, counted from a road progress, and lets it walk.</summary>
+        public void Reroute(Vector3[] route, float progress)
+        {
+            _waypoints = route;
+            _nextWaypoint = route.Length > 1 ? 1 : route.Length;
+            _travelled = progress;
+            _directed = false;
+            if (route.Length > 1)
+            {
+                Heading = Flat(route[1] - route[0]);
+            }
+        }
+
 
         public void ApplySlow(float speedFactor, float seconds)
         {
@@ -199,6 +289,8 @@ namespace Game.Enemies
             }
 
             _active = false;
+            _concealedShare = -1f;
+            _directed = false;
             _registry.Remove(this);
             Health.Died -= OnDied;
             Deactivated?.Invoke(this);
@@ -223,7 +315,7 @@ namespace Game.Enemies
         /// <summary>Advances the enemy by a time step. Update calls it with the frame time; tests call it directly.</summary>
         public void Step(float deltaTime)
         {
-            if (!_active)
+            if (!_active || _directed)
             {
                 return;
             }
@@ -247,7 +339,7 @@ namespace Game.Enemies
             TryAttackStructure(deltaTime);
             UpdateRoll(deltaTime);
 
-            float remaining = _definition.Speed * _speedMultiplier * CurrentSpeedFactor(deltaTime) * deltaTime;
+            float remaining = GroundSpeed * CurrentSpeedFactor(deltaTime) * deltaTime;
             float stepped = 0f;
 
             while (remaining > 0f && _nextWaypoint < _waypoints.Length)
@@ -355,6 +447,12 @@ namespace Game.Enemies
             if (blocker == null)
             {
                 return false;
+            }
+
+            HeldByGate?.Invoke(this, blocker);
+            if (_directed)
+            {
+                return true;
             }
 
             _attackCooldown -= deltaTime;

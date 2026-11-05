@@ -92,6 +92,9 @@ namespace Game.Levels
         /// </summary>
         public bool InputBlocked => Paused || Held;
 
+        /// <summary>A practice run (the developer boss arena): winning or losing pays nothing and saves nothing.</summary>
+        public bool Practice { get; set; }
+
         /// <summary>Whether this run plays story dialogues. The campaign flow allows it; tests and tools do not.</summary>
         public bool StoryEnabled { get; set; }
 
@@ -213,6 +216,12 @@ namespace Game.Levels
 
         /// <summary>Raised with the boss position whenever it rallies the field.</summary>
         public GameEvent<Vector3> BossRallied { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised with the strength of a continent boss's real impact (breaking out, a throw), for one short camera kick.</summary>
+        public GameEvent<float> BossImpact { get; } = new GameEvent<float>();
+
+        /// <summary>How loud the ground rumbles under a burrowing boss right now, 0 to 1; audio swells with it.</summary>
+        public float BossRumble { get; set; }
 
         /// <summary>Confirmations of the player's actions on the field, for audio and effects.</summary>
         public GameEvent TowerBuilt { get; } = new GameEvent();

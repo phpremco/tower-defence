@@ -35,6 +35,8 @@ namespace Game.Editor
             "IdleSweep", "Spin", "Beam", "FireAlternate", "Spray", "Slosh",
             // The living spawn origins (README round 23): the marker breath.
             "Marked",
+            // The continent bosses' mechanic cycles (README round 28): in place, the owner moves the body.
+            "Climb_Loop", "Submerged_Loop", "Burrow_Travel",
         };
 
         private static List<BlenderArtEntry> _creatures;
@@ -76,6 +78,12 @@ namespace Game.Editor
             { "SkySovereign", "RayBoss" },
             { "Shardback", "Shardback" },
             { "Mireleech", "Mireleech" },
+            // The continent bosses (Docs/BOSSES.md); only Gravemaw is placed so far, the others are Codex data.
+            { "Gravemaw", "Gravemaw" },
+            { "CinderMatriarch", "CinderMatriarch" },
+            { "FrostWarden", "FrostWarden" },
+            { "Rotbloom", "Rotbloom" },
+            { "Shattered", "Shattered" },
         };
 
         public static bool IsLoop(string clip) => LoopClips.Contains(clip);
@@ -230,6 +238,16 @@ namespace Game.Editor
                         new BlenderClipSpec("Roar", ModelClipRole.Roar, 12),
                         new BlenderClipSpec("Dive", ModelClipRole.Burrow, 31),
                         new BlenderClipSpec("Emerge", ModelClipRole.Emerge, 20),
+                        // Round 28: the mechanic clips; their offsets, holes and banks come from the report's round28 block.
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 42),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 24),
+                        new BlenderClipSpec("Burrow_Down", ModelClipRole.BurrowDown, 31),
+                        new BlenderClipSpec("Burrow_Travel", ModelClipRole.BurrowTravel),
+                        new BlenderClipSpec("Surface_Throw", ModelClipRole.SurfaceThrow, 30),
                     },
                 },
                 new BlenderArtEntry("CinderMatriarch", "CinderMatriarch")

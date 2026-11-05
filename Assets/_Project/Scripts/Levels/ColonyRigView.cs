@@ -16,6 +16,11 @@ namespace Game.Levels
         private const float EmptyCargoGlow = 0.15f;
         private const float BankDegrees = 10f;
         private const float BobCycles = 0.5f;
+        private const float FallSeconds = 1.5f;
+        private const float FallDegrees = 78f;
+        private const float SinkDepth = 0.45f;
+        private const float FleeSpeed = 4f;
+        private const float FleeSeconds = 3f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private ColonyRigDefinition _rig;
@@ -27,11 +32,41 @@ namespace Game.Levels
         private Material[] _cargo = new Material[0];
         private Color _cargoGlow;
         private float _clock;
+        private Transform _drillRoot;
+        private float _smashAge = -1f;
+        private Vector3 _fallAxis = Vector3.right;
+        private Vector3 _flee = Vector3.forward;
+
+        /// <summary>True once a boss has broken out under the rig and knocked the derrick over.</summary>
+        public bool Smashed => _smashAge >= 0f;
+
+        /// <summary>
+        /// A boss breaks out under the rig (Gravemaw's entrance, a story beat): the derrick topples away from the point it
+        /// came up at and sinks into the broken ground, the string stops, and the haulers scatter and are gone.
+        /// </summary>
+        public void Smash(Vector3 from)
+        {
+            if (Smashed)
+            {
+                return;
+            }
+
+            // It falls across the view (left or right, away from the break-out), so the fixed camera sees it go down.
+            Camera view = Camera.main;
+            Vector3 across = view != null ? view.transform.right : Vector3.right;
+            across.y = 0f;
+            across = across.sqrMagnitude > 0.01f ? across.normalized : Vector3.right;
+            Vector3 away = Vector3.Dot(transform.position - from, across) >= 0f ? across : -across;
+            _fallAxis = transform.InverseTransformDirection(Vector3.Cross(Vector3.up, away));
+            _flee = away;
+            _smashAge = 0f;
+        }
 
         public void Initialize(ColonyRigDefinition rig)
         {
             _rig = rig;
             var drillRoot = new GameObject("Drill").transform;
+            _drillRoot = drillRoot;
             drillRoot.SetParent(transform, false);
             drillRoot.localScale = Vector3.one * rig.DrillScale;
             _drill = ArtModel.CreateSampled(drillRoot, rig.Drill, ownMaterial: false);
@@ -94,6 +129,12 @@ namespace Game.Levels
 
             float dt = Time.deltaTime;
             _clock += dt;
+            if (Smashed)
+            {
+                Topple(dt);
+                return;
+            }
+
             _drill.Sample(ModelClipRole.Idle, _clock, loop: true);
             for (int i = 0; i < _haulers.Length; i++)
             {
@@ -102,6 +143,30 @@ namespace Game.Levels
                 if (_cargo[i] != null)
                 {
                     _cargo[i].SetColor(EmissionColorId, _cargoGlow * (Loaded(lap) ? 1f : EmptyCargoGlow));
+                }
+            }
+        }
+
+        private void Topple(float dt)
+        {
+            _smashAge += dt;
+            float fall = Mathf.Clamp01(_smashAge / FallSeconds);
+            // It leans slowly, then goes over fast, the way a tall thing falls.
+            float eased = fall * fall;
+            _drillRoot.localRotation = Quaternion.AngleAxis(FallDegrees * eased, _fallAxis);
+            _drillRoot.localPosition = Vector3.down * (SinkDepth * eased);
+            for (int i = 0; i < _holders.Length; i++)
+            {
+                Transform holder = _holders[i];
+                if (!holder.gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                holder.position += (_flee + Vector3.up * 0.5f) * (FleeSpeed * dt);
+                if (_smashAge > FleeSeconds)
+                {
+                    holder.gameObject.SetActive(false);
                 }
             }
         }

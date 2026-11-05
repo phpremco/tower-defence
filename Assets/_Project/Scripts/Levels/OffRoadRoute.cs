@@ -43,6 +43,9 @@ namespace Game.Levels
             return result;
         }
 
+        /// <summary>The middle of the road cell closest to a world position.</summary>
+        public static Vector3 NearestRoadCellWorld(LevelDefinition level, Vector3 position) => level.Grid.CellToWorld(NearestRoadCell(level, position));
+
         /// <summary>The road cell closest to a world position, by straight-line distance.</summary>
         public static Vector2Int NearestRoadCell(LevelDefinition level, Vector3 position)
         {

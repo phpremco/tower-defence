@@ -309,6 +309,9 @@ namespace Game.Enemies
         private CreatureClips _clips;
         private BossAbilities _abilities;
         private BossAbilityKind[] _powerKinds;
+        private bool _scripted;
+        private bool _hidden;
+        private Quaternion _tilt = Quaternion.identity;
 
         /// <summary>Gives the view the pool its death animation plays from. Without one the enemy simply disappears.</summary>
         public void Initialize(EnemyDeathEffectPool deaths) => _deaths = deaths;
@@ -321,6 +324,94 @@ namespace Game.Enemies
         {
             _spawnTime = _spawnSeconds + 1f;
             _surfaced = true;
+        }
+
+        /// <summary>True when the creature wears an imported model with a clip of this role.</summary>
+        public bool HasClip(ModelClipRole role) => _model != null && _model.Art.IndexOf(role) >= 0;
+
+        /// <summary>The imported clip of a role (its length, moments and end offset), or null.</summary>
+        public ModelClip ClipOf(ModelClipRole role)
+        {
+            int index = _model != null ? _model.Art.IndexOf(role) : -1;
+            return index >= 0 ? _model.Art.Clips[index] : null;
+        }
+
+        /// <summary>The model's world scale: clip offsets in model units times this are world units.</summary>
+        public float ModelScale => _creatureScale;
+
+        /// <summary>
+        /// Lets a boss mechanic play one clip of its own (a climb, a dive, a burrow) at a rate; held clips stay on their last
+        /// frame. The creature's own cycle choice waits until <see cref="ReleaseScript"/>.
+        /// </summary>
+        public void PlayScripted(ModelClipRole role, float rate = 1f, bool hold = false)
+        {
+            int index = _model != null ? _model.Art.IndexOf(role) : -1;
+            if (index < 0)
+            {
+                return;
+            }
+
+            _scripted = true;
+            _model.Player.PlayOnce(index, 0f, hold, rate);
+        }
+
+        /// <summary>Loops a cycle of a boss mechanic (crawling on a ledge, travelling under the ground) at a rate.</summary>
+        public void LoopScripted(ModelClipRole role, float rate = 1f)
+        {
+            int index = _model != null ? _model.Art.IndexOf(role) : -1;
+            if (index < 0)
+            {
+                return;
+            }
+
+            _scripted = true;
+            _model.Player.StopOnce();
+            _model.Player.Loop(index, rate);
+        }
+
+        /// <summary>Seconds into the scripted one-off clip, or zero when none plays.</summary>
+        public float ScriptedTime => _model != null ? _model.Player.OnceTime : 0f;
+
+        /// <summary>Hands the clips back to the creature's own choice.</summary>
+        public void ReleaseScript()
+        {
+            _scripted = false;
+            _model?.Player.StopOnce();
+        }
+
+        /// <summary>A turn laid over the body (a climb's pitch, a landing's roll); identity for none.</summary>
+        public Quaternion Tilt
+        {
+            set => _tilt = value;
+        }
+
+        /// <summary>Hides the whole body, its shadow and its bar (deep under a liquid), or shows them again.</summary>
+        public void SetHidden(bool hidden)
+        {
+            if (_hidden == hidden || _model == null)
+            {
+                return;
+            }
+
+            _hidden = hidden;
+            foreach (Renderer renderer in _model.Renderers)
+            {
+                renderer.enabled = !hidden;
+            }
+
+            if (_shadow != null)
+            {
+                _shadow.gameObject.SetActive(!hidden);
+            }
+
+            if (hidden)
+            {
+                _worldBar?.Show(false, false);
+            }
+            else if (_health != null)
+            {
+                SetBar(_health.Fraction, _health.ArmorMax > 0f ? _health.ArmorFraction : 0f);
+            }
         }
 
         /// <summary>Keeps the health bar out of sight, for creatures shown outside a fight.</summary>
@@ -427,6 +518,9 @@ namespace Game.Enemies
             ShowPlates(_plates.Count);
             _shed?.SetShed(0);
             SetBar(1f, _health.ArmorMax > 0f ? 1f : 0f);
+            _scripted = false;
+            _tilt = Quaternion.identity;
+            SetHidden(false);
             _clips?.Restart();
             BeginSpawn(enemy);
         }
@@ -941,7 +1035,12 @@ namespace Game.Enemies
             float grow = SpawnCurve(out float emerge);
             AttackStyle style = _enemy.Definition.AttackStyle;
             PlayStrikeMoments(strike, style);
-            AnticipatePowers();
+            if (!_scripted)
+            {
+                AnticipatePowers();
+            }
+
+            _clips.Scripted = _scripted;
             _clips.Tick(dt, dt > 0f ? moved / dt : 0f, walking, _enemy.IsRolling, _creatureScale);
             _shed?.Apply();
             PlayClipMoment();
@@ -961,7 +1060,7 @@ namespace Game.Enemies
                 roll += strike * FlyerRollDegrees * 2f * _whipSide * pose;
             }
 
-            _body.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(attackPitch * pose + lean, attackYaw * pose, roll);
+            _body.rotation = _tilt * Quaternion.LookRotation(forward) * Quaternion.Euler(attackPitch * pose + lean, attackYaw * pose, roll);
             _body.localScale = Vector3.one * grow;
             UpdateTrails(position, forward, walking, _enemy.IsHasted, 0f);
 

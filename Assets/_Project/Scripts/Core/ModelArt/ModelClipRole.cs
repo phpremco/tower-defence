@@ -125,5 +125,32 @@ namespace Game.Core
 
         /// <summary>A creature coming out of a spawn origin or a route gate (the throat swells), played once.</summary>
         Spawn = 40,
+
+        /// <summary>A boss clambering up a ledge, played once; the pivot stays put and the owner moves it by the clip's end offset.</summary>
+        ClimbUp = 41,
+
+        /// <summary>The braced crawl on top of a ledge, a gate or the base roof. Loops; its speed follows the ground speed.</summary>
+        ClimbLoop = 42,
+
+        /// <summary>A boss climbing down off a ledge, played once, moved by its end offset at the end.</summary>
+        ClimbDown = 43,
+
+        /// <summary>A boss diving from the bank into a pool, played once, moved by its end offset at the end.</summary>
+        DiveIn = 44,
+
+        /// <summary>Hidden under a liquid's surface. Loops in place while the owner moves it.</summary>
+        Submerged = 45,
+
+        /// <summary>Bursting out of a pool onto the bank, played once, moved by its end offset at the end.</summary>
+        SurfaceBurst = 46,
+
+        /// <summary>Drilling down into the ground, played once, moved by its end offset at the end.</summary>
+        BurrowDown = 47,
+
+        /// <summary>Travelling under the ground with only the crest showing. Loops in place while the owner moves it.</summary>
+        BurrowTravel = 48,
+
+        /// <summary>Breaking out of the ground beside a structure and flinging it up, played once.</summary>
+        SurfaceThrow = 49,
     }
 }

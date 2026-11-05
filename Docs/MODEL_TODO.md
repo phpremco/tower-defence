@@ -716,3 +716,15 @@ geïmporteerd. Regels voor `build_all.py` staan in de README.
 | Rotbloom | Overwoekering (`RotOvergrowth`) groeit via blend shape `Retracted` + kleurkanaal `Growth`; in Unity nog een shader-drempel nodig. Rooted_Idle zet de voeten 0,2 m in de grond (goed op veen, niet op harde grond) |
 | The Shattered | Verbeterd (lichte ijsgraniet-platen, kristalkroon, kristalhakmessen, drie scherfspitsen) maar nog steeds een knokkelloper; volledige herontwerp zou rig en alle clips raken. De drie scherven zijn eenvoudig (2.000-2.400 tris); Split/Rejoin leunen op een flits-VFX. PhaseBreak1/2 zijn vervangen door Split/Rejoin |
 | The Sealed One | Romp ploegt door de grond bij Walk/Climb/Rise_OntoBase: voor plausibiliteit een voor-decal en stof. Rise_OntoBase eindigt over de voorrand van de basis, niet er helemaal op. Puin-ring (`Rubble`) en zegelstenen verdwijnen zodra hij van het zegel weggaat |
+
+### Ronde 4a Unity (Gravemaw speelbaar, 2026-11-05)
+
+Wat Unity nu met code-plaatsing oplost en beter uit Blender kan komen:
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Boorinstallatie | Geen wrak-export: bij Gravemaws entree kantelt Unity de hele boortoren 78 graden en laat hem wegzakken; een `Cutscene_Drill`-wrak (geknakte toren, losse buizen, puin) zou beter lezen |
+| Gravemaw_Hole | `Exports/Env/Gravemaw_Hole` bestaat maar wordt niet geïmporteerd (BlenderArtBuilder heeft geen pad voor statische env-props met eigen maps). Nu: een gloeipoel en een aardplof bij elk gat |
+| Scheurlijn | Getekend met de geverfde gloei-kling (`MarkerKind.GlowBlade`) als oranje naad. Een eigen scheurstrook (donkere spleet, gloeiende kern, opgeworpen randbrokken, tegelbaar langs een pad) zou er als echte grondscheur uitzien |
+| Wake | Onder water toont Unity een gloeipoel plus gegenereerde belletjes; een bel-/kolk-sheet per vloeistof (drijfzand: zand dat in een trechter zakt) ontbreekt |
+| Geworpen toren | Geen eigen clip: de toren wordt als geheel opgetild, gekanteld en weer rechtgezet (TowerDisplacementView). Een "ontworteld"-pose (losgerukte voet, brokken) per toren zou het leesbaarder maken |

@@ -39,6 +39,8 @@ namespace Game.Enemies
         [SerializeField] [Min(0f)] private float _rageRadius = 3f;
         [SerializeField] private bool _isBoss;
         [SerializeField] private BossAbilityDefinition[] _abilities = new BossAbilityDefinition[0];
+        [Tooltip("A continent boss: its phases, signature mechanic, climbing, diving and Codex text. Empty for every other boss.")]
+        [SerializeField] private BossDefinition _boss;
 
         [Header("Look")]
         [SerializeField] private Color _color = new Color(0.9f, 0.3f, 0.15f);
@@ -135,6 +137,9 @@ namespace Game.Enemies
 
         /// <summary>The special powers of a boss; empty for ordinary enemies.</summary>
         public BossAbilityDefinition[] Abilities => _abilities;
+
+        /// <summary>The continent boss data, or null for every other creature.</summary>
+        public BossDefinition Boss => _boss;
 
         public Color Color => _color;
         public Color EyeColor => _eyeColor;

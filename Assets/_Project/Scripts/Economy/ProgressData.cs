@@ -20,6 +20,9 @@ namespace Game.Economy
         /// <summary>Ids of story moments already shown, so a story trigger plays once per save.</summary>
         public List<string> SeenStoryIds = new List<string>();
 
+        /// <summary>Asset names of the bosses the player has met, so the Codex describes them only once they were seen.</summary>
+        public List<string> SeenEnemyIds = new List<string>();
+
         public List<string> UnlockedTowerIds = new List<string>();
         public List<string> CompletedLevels = new List<string>();
         public List<UpgradeLevel> Upgrades = new List<UpgradeLevel>();

@@ -16,6 +16,9 @@ namespace Game.Towers
         private const float MuzzleForward = 0.55f;
         private const float SupportRefreshSeconds = 0.25f;
 
+        // A throw never wrecks a tower: it keeps at least this much health.
+        private const float HealthKeptAfterToss = 1f;
+
         private TowerDefinition _definition;
         private TargetRegistry _registry;
         private StructureRegistry _structures;
@@ -130,6 +133,56 @@ namespace Game.Towers
         public event Action<Tower> Wrecked;
 
         private bool _wasWrecked;
+        private float _upsetRemaining;
+
+        /// <summary>True while the tower lies tilted after a boss threw it: it fires nothing until it has righted itself.</summary>
+        public bool IsUpset => _upsetRemaining > 0f;
+
+        /// <summary>Seconds until a thrown tower stands upright again.</summary>
+        public float UpsetRemaining => Mathf.Max(0f, _upsetRemaining);
+
+        /// <summary>How hard a boss standing on this structure weighs it down, from 0 (nothing) to 1 (full weight).</summary>
+        public float Burden { get; private set; }
+
+        /// <summary>Raised with the tower, the direction it was flung and the seconds it stays upset.</summary>
+        public event Action<Tower, Vector3, float> Tossed;
+
+        /// <summary>Raised when the weight on the structure changes, so the view can sag it.</summary>
+        public event Action<Tower> BurdenChanged;
+
+        /// <summary>
+        /// A boss breaks out beside the tower and flings it: it loses a share of its full health (never its last hit point)
+        /// and lies tilted, silent, for a while before it rights itself.
+        /// </summary>
+        public void Toss(Vector3 away, float healthShare, float upsetSeconds)
+        {
+            if (IsWrecked)
+            {
+                return;
+            }
+
+            float loss = Mathf.Min(Health.Max * healthShare, Health.Current - HealthKeptAfterToss);
+            if (loss > 0f)
+            {
+                Health.TakeDamage(loss);
+            }
+
+            _upsetRemaining = Mathf.Max(_upsetRemaining, upsetSeconds);
+            _beamTarget = null;
+            _beamLive = false;
+            Tossed?.Invoke(this, away, upsetSeconds);
+        }
+
+        /// <summary>Sets the weight of a boss standing on the structure (0 when it has left).</summary>
+        public void SetBurden(float burden)
+        {
+            burden = Mathf.Clamp01(burden);
+            if (!Mathf.Approximately(burden, Burden))
+            {
+                Burden = burden;
+                BurdenChanged?.Invoke(this);
+            }
+        }
 
         public void Initialize(TowerDefinition definition, TargetRegistry registry, ProjectilePool projectiles, PlayerModifiers modifiers)
         {
@@ -215,6 +268,14 @@ namespace Game.Towers
             RefreshSupport();
             if (IsWrecked)
             {
+                _beamTarget = null;
+                _beamLive = false;
+                return;
+            }
+
+            if (_upsetRemaining > 0f)
+            {
+                _upsetRemaining -= Time.deltaTime;
                 _beamTarget = null;
                 _beamLive = false;
                 return;
@@ -309,7 +370,7 @@ namespace Game.Towers
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
             float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this);
             Fired?.Invoke(target.Position);
         }
 

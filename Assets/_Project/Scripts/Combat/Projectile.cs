@@ -28,6 +28,7 @@ namespace Game.Combat
         private float _startDistance;
         private float _fuseRadius;
         private Vector3 _impactPoint;
+        private object _source;
 
         /// <summary>Raised when the projectile leaves the barrel, so the view can dress it.</summary>
         public event Action<Projectile> Launched;
@@ -68,9 +69,11 @@ namespace Game.Combat
             float slowSeconds,
             ProjectileStyle style,
             Color color,
-            float fuseRadius = 0f)
+            float fuseRadius = 0f,
+            object source = null)
         {
             transform.position = from;
+            _source = source;
             Origin = from;
             _target = target;
             _lastTargetPosition = target.Position;
@@ -126,19 +129,31 @@ namespace Game.Combat
                 _registry.FindInRadius(_impactPoint, _splashRadius, _mask, _splashTargets);
                 for (int i = 0; i < _splashTargets.Count; i++)
                 {
-                    _splashTargets[i].TakeDamage(_damage);
+                    Deal(_splashTargets[i], true);
                     _splashTargets[i].ApplySlow(_slowFactor, _slowSeconds);
                 }
             }
             else if (_target != null && _target.IsAlive)
             {
-                _target.TakeDamage(_damage);
+                Deal(_target, false);
                 _target.ApplySlow(_slowFactor, _slowSeconds);
             }
 
             Impacted?.Invoke(_impactPoint, _splashRadius, Color, Style);
             _target = null;
+            _source = null;
             _release(this);
+        }
+
+        private void Deal(ITargetable target, bool splash)
+        {
+            if (target is ISourcedTarget sourced)
+            {
+                sourced.TakeDamageFrom(_damage, _source, splash);
+                return;
+            }
+
+            target.TakeDamage(_damage);
         }
     }
 }

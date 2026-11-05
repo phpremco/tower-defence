@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5bbf51dfe602a4080cdcb2ab5e55bf, type: 3}
+  m_Name: Voice_Gravemaw
+  m_EditorClassIdentifier: Game.Core::Game.Core.CreatureVoice
+  _moveLoop:
+    _clips:
+    - {fileID: 8300000, guid: 4d71d0afd3f720744a1a812016e981fc, type: 3}
+    _gain: 0.46434352
+    _pitch: 1
+  _steps:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _stepSpacing: 0.5
+  _presence: 1
+  _rollLoop:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _screeches:
+    _clips:
+    - {fileID: 8300000, guid: 72e422b44b2d8cc48990e851de73c34f, type: 3}
+    - {fileID: 8300000, guid: a861136cab7f67f49af47d8c050cd17e, type: 3}
+    _gain: 0.32239926
+    _pitch: 1
+  _growls:
+    _clips:
+    - {fileID: 8300000, guid: 72e422b44b2d8cc48990e851de73c34f, type: 3}
+    - {fileID: 8300000, guid: a861136cab7f67f49af47d8c050cd17e, type: 3}
+    _gain: 0.32239926
+    _pitch: 1
+  _attacks:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _impacts:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _pulse:
+    _clips:
+    - {fileID: 8300000, guid: a856d20eed61b7d4d8f5ab2b8e8af6e9, type: 3}
+    _gain: 0.29146495
+    _pitch: 1
+  _volleyLaunch:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _volleyImpact:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _rally:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _regrow:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _spawn:
+    _clips: []
+    _gain: 1
+    _pitch: 1
+  _laserStart:
+    _clips: []
+    _gain: 1
+    _pitch: 1

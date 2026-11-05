@@ -32,6 +32,13 @@ namespace Game.Levels
 
         private readonly Dictionary<(Mesh, Material, bool, Vector2Int), Batch> _lookup = new Dictionary<(Mesh, Material, bool, Vector2Int), Batch>();
         private readonly List<Batch> _batches = new List<Batch>();
+
+        // Decoration that cannot hold a boss's weight (crystals, plants): it breaks when one walks into it.
+        private readonly List<(Batch Batch, Matrix4x4 Matrix)> _fragile = new List<(Batch, Matrix4x4)>();
+        private Batch _lastBatch;
+        private Matrix4x4 _lastMatrix;
+        private Bounds _lastBounds;
+        private readonly List<DecorFormation> _formations = new List<DecorFormation>();
         private readonly Plane[] _planes = new Plane[6];
         private readonly List<Material> _ownMaterials = new List<Material>();
 
@@ -77,7 +84,10 @@ namespace Game.Levels
             }
 
             batch.Building.Add(matrix);
+            _lastBatch = batch;
+            _lastMatrix = matrix;
             Bounds bounds = Transform(model.Mesh.bounds, matrix);
+            _lastBounds = bounds;
             if (batch.HasBounds)
             {
                 batch.Bounds.Encapsulate(bounds);
@@ -92,9 +102,22 @@ namespace Game.Levels
         }
 
         /// <summary>Adds a piece of decoration (rock, plant, cliff, scatter, silhouette): as <see cref="Add"/>, and logged when a test asks.</summary>
-        public void AddDecor(EnvironmentMesh model, Matrix4x4 matrix, bool low, Material material = null, bool castShadows = true)
+        /// <param name="fragile">True for decoration a boss breaks instead of climbing (crystals, plants).</param>
+        /// <param name="formation">True for the formation standing on a blocked cell of the field, which the climb layer reads.</param>
+        public void AddDecor(EnvironmentMesh model, Matrix4x4 matrix, bool low, Material material = null, bool castShadows = true, bool fragile = false, bool formation = false)
         {
+            _lastBatch = null;
             Add(model, matrix, low, material, castShadows);
+            if (formation && _lastBatch != null)
+            {
+                _formations.Add(new DecorFormation(_lastBounds.center, _lastBounds.extents, fragile));
+            }
+
+            if (fragile && _lastBatch != null)
+            {
+                _fragile.Add((_lastBatch, _lastMatrix));
+            }
+
             if (DecorLog != null && model != null && model.IsValid)
             {
                 DecorLog.Add(Transform(model.Mesh.bounds, matrix * model.Node));
@@ -154,6 +177,61 @@ namespace Game.Levels
 
                 batch.Matrices = kept.Count == batch.All.Length ? batch.All : kept.ToArray();
             }
+        }
+
+        /// <summary>The formations on the field's blocked cells as drawn: where, how big, and whether they break.</summary>
+        public IReadOnlyList<DecorFormation> Formations => _formations;
+
+        /// <summary>How many fragile pieces still stand.</summary>
+        public int FragileCount => _fragile.Count;
+
+        /// <summary>
+        /// Breaks every fragile piece standing (in plan) within <paramref name="radius"/> of a point: it is no longer drawn,
+        /// and its place is added to <paramref name="broken"/> so a view can shatter it. Returns how many broke.
+        /// </summary>
+        public int Break(Vector3 centre, float radius, List<Vector3> broken = null)
+        {
+            int count = 0;
+            float radiusSqr = radius * radius;
+            for (int i = _fragile.Count - 1; i >= 0; i--)
+            {
+                (Batch batch, Matrix4x4 matrix) = _fragile[i];
+                Vector3 at = matrix.GetPosition();
+                float dx = at.x - centre.x;
+                float dz = at.z - centre.z;
+                if (dx * dx + dz * dz > radiusSqr)
+                {
+                    continue;
+                }
+
+                _fragile.RemoveAt(i);
+                Remove(batch, matrix);
+                broken?.Add(at);
+                count++;
+            }
+
+            return count;
+        }
+
+        private static void Remove(Batch batch, Matrix4x4 matrix)
+        {
+            if (batch.All == null)
+            {
+                batch.Building.Remove(matrix);
+                return;
+            }
+
+            int index = System.Array.IndexOf(batch.All, matrix);
+            if (index < 0)
+            {
+                return;
+            }
+
+            var kept = new Matrix4x4[batch.All.Length - 1];
+            System.Array.Copy(batch.All, 0, kept, 0, index);
+            System.Array.Copy(batch.All, index + 1, kept, index, kept.Length - index);
+            batch.All = kept;
+            batch.Matrices = kept;
         }
 
         private static bool Blocks(Vector3 position, IReadOnlyList<Vector3> eyes, IReadOnlyList<Vector3> targets, float radius)

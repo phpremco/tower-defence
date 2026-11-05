@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Enemies;
 
 namespace Game.Levels
 {
@@ -11,19 +12,24 @@ namespace Game.Levels
     public sealed class StoryIndex
     {
         public const string CutscenePageTitle = "Cutscenes";
+        public const string ArenaPageTitle = "Boss arena";
 
         public enum EntryKind
         {
             Cutscene,
             Dialogue,
             Briefing,
+
+            /// <summary>A fight against one boss in the developer boss arena.</summary>
+            BossArena,
         }
 
         /// <summary>One thing the viewer can play.</summary>
         public readonly struct Entry
         {
-            public Entry(string label, EntryKind kind, CutsceneDefinition cutscene, DialogueDefinition dialogue, string text)
+            public Entry(string label, EntryKind kind, CutsceneDefinition cutscene, DialogueDefinition dialogue, string text, EnemyDefinition boss = null)
             {
+                Boss = boss;
                 Label = label;
                 Kind = kind;
                 Cutscene = cutscene;
@@ -38,6 +44,9 @@ namespace Game.Levels
 
             /// <summary>The briefing's text (briefings are plain text on the level, not dialogue assets).</summary>
             public string Text { get; }
+
+            /// <summary>The boss to fight in the arena.</summary>
+            public EnemyDefinition Boss { get; }
         }
 
         public sealed class Page
@@ -66,9 +75,14 @@ namespace Game.Levels
                     AddLevel(node.Level, seen.Count);
                 }
             }
+
+            AddArena(catalog.BossArena);
         }
 
         public IReadOnlyList<Page> Pages => _pages;
+
+        /// <summary>The arena the boss entries are fought in, or null.</summary>
+        public BossArenaDefinition Arena { get; private set; }
 
         /// <summary>Every dialogue the index can play, for checks that nothing in the data is left out.</summary>
         public IEnumerable<DialogueDefinition> Dialogues()
@@ -99,6 +113,27 @@ namespace Game.Levels
                     {
                         page.Entries.Add(new Entry($"Shot {i + 1}: {dialogue.Id}", EntryKind.Dialogue, null, dialogue, null));
                     }
+                }
+            }
+
+            _pages.Add(page);
+        }
+
+        // One entry per boss the arena lists, fought in the arena's level.
+        private void AddArena(BossArenaDefinition arena)
+        {
+            if (arena == null || arena.Level == null || arena.Bosses.Count == 0)
+            {
+                return;
+            }
+
+            Arena = arena;
+            var page = new Page($"{ArenaPageTitle}: {arena.Level.DisplayName}");
+            foreach (EnemyDefinition boss in arena.Bosses)
+            {
+                if (boss != null)
+                {
+                    page.Entries.Add(new Entry($"Fight {boss.DisplayName}", EntryKind.BossArena, null, null, null, boss));
                 }
             }
 

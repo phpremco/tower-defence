@@ -91,6 +91,8 @@ namespace Game.Towers
             _tower.LevelChanged += OnLevelChanged;
             _tower.StateChanged += OnStateChanged;
             _tower.Fired += OnFired;
+            // A boss can fling the tower or weigh down the gate; that look lives in its own view.
+            gameObject.AddComponent<TowerDisplacementView>();
             _smoke = ParticleKit.Create(transform, "Smoke", Vector3.up * ParticleHeight, SmokeColor, 1.2f, 2.2f, 0.2f, 0.45f, 0.3f, 0.7f, -0.12f, 30, 0.25f);
             _sparks = ParticleKit.Create(transform, "Sparks", Vector3.up * ParticleHeight, SparkColor, 0.3f, 0.7f, 0.03f, 0.06f, 2f, 5f, 1.5f, 60, 0.2f);
             SetRate(_smoke, 0f);

@@ -16,6 +16,8 @@ namespace Game.Combat
 
         public IStructure this[int index] => _structures[index];
 
+        public bool Contains(IStructure structure) => _structures.Contains(structure);
+
         /// <summary>Returns the living structure with the lowest health share below full, or null when all are healthy.</summary>
         public IStructure FindMostDamaged()
         {

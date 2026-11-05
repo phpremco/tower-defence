@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd57b57b094ba9242b73b13fc3036781, type: 3}
+  m_Name: ShatteredBoss
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossDefinition
+  _phases:
+  - Name: Whole
+    StartsAt: 1
+  - Name: Split
+    StartsAt: 0.66
+  - Name: Rejoined
+    StartsAt: 0.33
+  _arrival: 0
+  _signature: 5
+  _burrow:
+    _thresholds:
+    - 0.75
+    - 0.5
+    - 0.25
+    _travelSpeed: 2.6
+    _quicksandFactor: 2
+    _telegraphSeconds: 3
+    _throwHealthShare: 0.4
+    _upsetSeconds: 4
+    _airSeconds: 1.1
+    _stunSeconds: 4
+    _enragedSpeed: 1.35
+    _crackMinion: {fileID: 0}
+    _minionsPerCrack: 0
+    _returnToRoadShare: 0.08
+    _returnSpeedFactor: 2.5
+    _expectedHiddenSeconds: 6
+  _climb:
+    _climbsRocks: 1
+    _climbsGates: 1
+    _clipRate: 3
+    _minLedge: 0.75
+    _gateWeightDamage: 18
+    _maxTilt: 22
+  _dive:
+    _pools: 0
+    _maxSeconds: 6
+    _splashShare: 0.5
+    _regenPerSecond: 0.006
+    _swimSpeed: 2.4
+    _reach: 2.5
+    _burstDamage: 30
+    _burstRadius: 2.4
+  _impactKick: 0.35
+  _mechanicClipRate: 1.4
+  _signatureText: 'At two thirds of its health it splits into three shards that each take a different route: the land, the air and the second road. At a third the survivors pull back together where they stand.'
+  _telegraphText: Cracks of light on the giant show where it will split, and each shard's route lights up briefly.
+  _counterText: Cover every route, the air and the second front too. Each shard you kill takes a share off the giant that rejoins.

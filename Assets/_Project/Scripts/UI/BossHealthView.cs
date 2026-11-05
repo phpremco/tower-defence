@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Enemies;
 using Game.Levels;
 using UnityEngine;
@@ -24,6 +25,13 @@ namespace Game.UI
         private static readonly Color HealthColor = new Color(1f, 0.35f, 0.3f);
         private static readonly Color ArmorColor = new Color(0.7f, 0.88f, 1f);
         private static readonly Color LabelColor = new Color(1f, 0.6f, 0.55f);
+        private static readonly Color MarkerColor = new Color(1f, 0.92f, 0.75f, 0.95f);
+        private const float MarkerWidth = 3f;
+        private const float MarkerOverhang = 4f;
+
+        private readonly List<GameObject> _markers = new List<GameObject>();
+        private RectTransform _healthRow;
+        private int _phase = -1;
 
         private LevelContext _context;
         private RectTransform _root;
@@ -48,7 +56,7 @@ namespace Game.UI
             _label.color = LabelColor;
 
             _armorRow = Row(_root, "Armor", -LabelHeight, ArmorHeight, ArmorColor, out _armorFill);
-            Row(_root, "Health", -(LabelHeight + ArmorHeight + Gap), HealthHeight, HealthColor, out _healthFill);
+            _healthRow = Row(_root, "Health", -(LabelHeight + ArmorHeight + Gap), HealthHeight, HealthColor, out _healthFill).GetComponent<RectTransform>();
 
             _root.gameObject.SetActive(false);
             context.EnemySpawned.Subscribe(OnSpawned);
@@ -97,7 +105,9 @@ namespace Game.UI
             if (enemy.Definition.IsBoss)
             {
                 _boss = enemy;
+                _phase = -1;
                 _label.text = enemy.Definition.DisplayName.ToUpperInvariant();
+                MarkPhases(enemy.Definition.Boss);
             }
         }
 
@@ -123,6 +133,7 @@ namespace Game.UI
             }
 
             Fill(_healthFill, _boss.Health.Fraction);
+            ShowPhase();
             bool armoured = _boss.Health.ArmorMax > 0f;
             if (_armorRow.activeSelf != armoured)
             {
@@ -132,6 +143,53 @@ namespace Game.UI
             if (armoured)
             {
                 Fill(_armorFill, _boss.Health.ArmorFraction);
+            }
+        }
+
+        // A thin mark on the health bar where each later phase begins, so the player sees the next change coming.
+        private void MarkPhases(BossDefinition boss)
+        {
+            foreach (GameObject marker in _markers)
+            {
+                Destroy(marker);
+            }
+
+            _markers.Clear();
+            if (boss == null)
+            {
+                return;
+            }
+
+            for (int i = 1; i < boss.Phases.Length; i++)
+            {
+                var image = new GameObject("Phase" + i, typeof(RectTransform)).AddComponent<Image>();
+                image.transform.SetParent(_healthRow, false);
+                image.color = MarkerColor;
+                image.raycastTarget = false;
+                RectTransform rect = image.rectTransform;
+                rect.anchorMin = new Vector2(boss.Phases[i].StartsAt, 0f);
+                rect.anchorMax = new Vector2(boss.Phases[i].StartsAt, 1f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.sizeDelta = new Vector2(MarkerWidth, MarkerOverhang * 2f);
+                rect.anchoredPosition = Vector2.zero;
+                _markers.Add(image.gameObject);
+            }
+        }
+
+        // A continent boss's name carries the phase it is in.
+        private void ShowPhase()
+        {
+            BossDefinition boss = _boss.Definition.Boss;
+            if (boss == null)
+            {
+                return;
+            }
+
+            int phase = boss.PhaseAt(_boss.Health.Fraction);
+            if (phase != _phase)
+            {
+                _phase = phase;
+                _label.text = $"{_boss.Definition.DisplayName.ToUpperInvariant()}  -  {boss.PhaseName(phase).ToUpperInvariant()}";
             }
         }
 

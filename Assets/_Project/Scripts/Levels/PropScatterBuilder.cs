@@ -87,8 +87,7 @@ namespace Game.Levels
             {
                 int hash = Hash(cell);
                 Vector3 centre = grid.CellToWorld(cell);
-                float scale = BlockedScaleMin + (hash % 100) / 100f * BlockedScaleSpread;
-                placer.Place(kinds[hash % kinds.Length], hash, centre.x, centre.z, scale, formation: true);
+                placer.Place(FormationAt(cell, kinds), hash, centre.x, centre.z, FormationScale(cell), formation: true);
             }
 
             foreach (KeyValuePair<Vector2Int, TerrainKind> patch in terrain.Cells)
@@ -223,6 +222,35 @@ namespace Game.Levels
             }
         }
 
+        /// <summary>
+        /// Decoration that cannot hold a boss's weight: crystals, plants, eggs and ice prisms break when one walks into
+        /// them. Rocks, boulders, columns, spires, spikes, drifts and scree are solid and get climbed.
+        /// </summary>
+        public static bool IsFragile(PropKind kind)
+        {
+            switch (kind)
+            {
+                case PropKind.Crystal:
+                case PropKind.Mushroom:
+                case PropKind.GlowTree:
+                case PropKind.Tendril:
+                case PropKind.Egg:
+                case PropKind.Frond:
+                case PropKind.IceShard:
+                case PropKind.DeadTree:
+                case PropKind.Reed:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>The formation the scatter puts on a blocked cell of a level with these decoration kinds.</summary>
+        public static PropKind FormationAt(Vector2Int cell, PropKind[] kinds) => kinds[Hash(cell) % kinds.Length];
+
+        /// <summary>How big the scatter makes the formation on a blocked cell, as a scale on the decoration kind's size.</summary>
+        public static float FormationScale(Vector2Int cell) => BlockedScaleMin + (Hash(cell) % 100) / 100f * BlockedScaleSpread;
+
         // A stable pseudo-random number per cell.
         private static int Hash(Vector2Int cell)
         {
@@ -349,7 +377,7 @@ namespace Game.Levels
                 }
 
                 Material material = far ? Dimmed(variant.MaterialFor(_low)) : null;
-                _instancer.AddDecor(variant, matrix, _low, material, castShadows: !far);
+                _instancer.AddDecor(variant, matrix, _low, material, castShadows: !far, fragile: IsFragile(kind), formation: formation);
                 if (!PropFactory.IsGlowing(kind) || kind == PropKind.Spike)
                 {
                     return;

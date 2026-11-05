@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd57b57b094ba9242b73b13fc3036781, type: 3}
+  m_Name: RotbloomBoss
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossDefinition
+  _phases:
+  - Name: Rooted
+    StartsAt: 1
+  - Name: Uprooted
+    StartsAt: 0.5
+  _arrival: 0
+  _signature: 4
+  _burrow:
+    _thresholds:
+    - 0.75
+    - 0.5
+    - 0.25
+    _travelSpeed: 2.6
+    _quicksandFactor: 2
+    _telegraphSeconds: 3
+    _throwHealthShare: 0.4
+    _upsetSeconds: 4
+    _airSeconds: 1.1
+    _stunSeconds: 4
+    _enragedSpeed: 1.35
+    _crackMinion: {fileID: 0}
+    _minionsPerCrack: 0
+    _returnToRoadShare: 0.08
+    _returnSpeedFactor: 2.5
+    _expectedHiddenSeconds: 6
+  _climb:
+    _climbsRocks: 1
+    _climbsGates: 1
+    _clipRate: 3
+    _minLedge: 0.75
+    _gateWeightDamage: 18
+    _maxTilt: 22
+  _dive:
+    _pools: 16
+    _maxSeconds: 6
+    _splashShare: 0.5
+    _regenPerSecond: 0.006
+    _swimSpeed: 2.4
+    _reach: 2.5
+    _burstDamage: 30
+    _burstRadius: 2.4
+  _impactKick: 0.35
+  _mechanicClipRate: 1.4
+  _signatureText: 'Every few seconds it spores a small group of build pads: you cannot build there and a tower on one fires slower until the growth is burned away.'
+  _telegraphText: The flower opens its petals with a sweet rising sound, and the target pads get a green haze two seconds before the spores land.
+  _counterText: Splash damage burns the pads clean, the hero can clear them, and shooting down the spore pods in the air stops the growth. Do not stack all your towers in one cluster.

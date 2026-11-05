@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
+  m_Name: Rotbloom
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
+  _displayName: Rotbloom
+  _layer: 1
+  _flies: 0
+  _maxHealth: 4000
+  _armor: 0
+  _armorReduction: 0.6
+  _speed: 0.3
+  _reward: 857
+  _baseDamage: 25
+  _element: 0
+  _attackStyle: 4
+  _attackDamage: 0
+  _blockadeDamage: 110
+  _attackRange: 2.5
+  _attackInterval: 1.4
+  _gateStrikes: 0
+  _walkSeconds: 0
+  _rollSeconds: 0
+  _rollSpeedMultiplier: 2.5
+  _trailSeconds: 0
+  _trailHaste: 1.4
+  _trailDamagePerSecond: 0
+  _rageSeconds: 0
+  _rageSpeedMultiplier: 1.5
+  _rageRadius: 3
+  _isBoss: 1
+  _abilities: []
+  _boss: {fileID: 11400000, guid: f113f8a06ba398e4c8a936e50f169d58, type: 2}
+  _color: {r: 0.35, g: 0.45, b: 0.15, a: 1}
+  _eyeColor: {r: 0.75, g: 1, b: 0.3, a: 1}
+  _accentColor: {r: 0.75, g: 1, b: 0.3, a: 1}
+  _bloodColor: {r: 0.75, g: 1, b: 0.3, a: 1}
+  _scale: 0.8
+  _shape: 0
+  _deathStyle: 2
+  _art: {fileID: 11400000, guid: 99df6b02bb070e548b33f16b0e3f6f40, type: 2}
+  _voice: {fileID: 11400000, guid: bc3fc522c2b044849a7ef510ba9ca716, type: 2}
+  _description: A walking flower of rot that makes the map itself hostile.

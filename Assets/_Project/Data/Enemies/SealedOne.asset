@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
+  m_Name: SealedOne
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
+  _displayName: Sealed One
+  _layer: 1
+  _flies: 0
+  _maxHealth: 9000
+  _armor: 0
+  _armorReduction: 0.6
+  _speed: 0.25
+  _reward: 1778
+  _baseDamage: 25
+  _element: 0
+  _attackStyle: 4
+  _attackDamage: 0
+  _blockadeDamage: 110
+  _attackRange: 2.5
+  _attackInterval: 1.4
+  _gateStrikes: 0
+  _walkSeconds: 0
+  _rollSeconds: 0
+  _rollSpeedMultiplier: 2.5
+  _trailSeconds: 0
+  _trailHaste: 1.4
+  _trailDamagePerSecond: 0
+  _rageSeconds: 0
+  _rageSpeedMultiplier: 1.5
+  _rageRadius: 3
+  _isBoss: 1
+  _abilities: []
+  _boss: {fileID: 11400000, guid: cb6a708e4e3ea9846aab1c2c4834bd7b, type: 2}
+  _color: {r: 0.85, g: 0.85, b: 0.95, a: 1}
+  _eyeColor: {r: 1, g: 1, b: 1, a: 1}
+  _accentColor: {r: 1, g: 1, b: 1, a: 1}
+  _bloodColor: {r: 1, g: 1, b: 1, a: 1}
+  _scale: 0.8
+  _shape: 0
+  _deathStyle: 2
+  _art: {fileID: 0}
+  _voice: {fileID: 11400000, guid: 0a90d756a54e9e34fb875ebec08ed896, type: 2}
+  _description: 'The secret under the planet: its immune system, not an animal.'

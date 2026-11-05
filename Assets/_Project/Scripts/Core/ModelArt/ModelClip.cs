@@ -29,6 +29,15 @@ namespace Game.Core
         [Tooltip("Plays on the upper body only (from the art's upper-body bone down), over whatever the legs do.")]
         [SerializeField] private bool _upperBody;
 
+        [Tooltip("For a travel clip authored with its pivot fixed: how far the body has moved by its last frame, in model units (x forward, y up). The owner moves by this much when the clip ends.")]
+        [SerializeField] private Vector2 _endOffset;
+
+        [Tooltip("An earlier moment inside the clip, before the main one (a burst of earth before the throw), or zero.")]
+        [SerializeField] [Min(0f)] private float _cueSeconds;
+
+        [Tooltip("Where the clip meets the world ahead of the pivot, in model units: the hole it digs or breaks out of, the bank or ledge it starts from.")]
+        [SerializeField] private float _anchorForward;
+
         public ModelClipRole Role => _role;
         public AnimationClip Clip => _clip;
 
@@ -40,6 +49,14 @@ namespace Game.Core
         public string Socket => _socket;
         public float Weight => _weight;
         public bool UpperBody => _upperBody;
+
+        /// <summary>Model units the body has travelled by the last frame of a fixed-pivot travel clip (x forward, y up).</summary>
+        public Vector2 EndOffset => _endOffset;
+
+        public float CueSeconds => _cueSeconds;
+
+        /// <summary>Model units ahead of the pivot where the clip meets the world (a hole, a bank edge, a ledge face).</summary>
+        public float AnchorForward => _anchorForward;
         public float Length => _clip != null ? _clip.length : 0f;
     }
 }
