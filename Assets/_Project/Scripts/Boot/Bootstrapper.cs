@@ -106,6 +106,7 @@ namespace Game.Boot
 
             var cameraControls = new CameraControls();
             cameraControls.Set(data.CameraSpeedPercent / PercentScale, !data.EdgeScrollingOff);
+            cameraControls.SetRadar(!data.RadarOff, data.RadarSizePercent / PercentScale);
             Services.Register(cameraControls);
         }
 

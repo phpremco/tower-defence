@@ -11,6 +11,7 @@ namespace Game.Tests
         public Vector2 CameraPan => Vector2.zero;
         public float CameraZoom => 0f;
         public Vector2 PointerPosition => Vector2.zero;
+        public bool OverviewHeld => false;
         public bool FromPointer { get; set; }
 
         public event Action Confirmed;

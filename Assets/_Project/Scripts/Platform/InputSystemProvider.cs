@@ -25,6 +25,7 @@ namespace Game.Platform
         private const string HeroPostAction = "HeroPost";
         private const string HeroAbility1Action = "HeroAbility1";
         private const string HeroAbility2Action = "HeroAbility2";
+        private const string OverviewAction = "Overview";
 
         private readonly InputActionMap _map;
         private readonly InputAction _heroPost;
@@ -44,6 +45,7 @@ namespace Game.Platform
         private readonly InputAction _upgrade;
         private readonly InputAction _repair;
         private readonly InputAction _sell;
+        private readonly InputAction _overview;
 
         public InputSystemProvider(InputActionAsset asset)
         {
@@ -65,6 +67,7 @@ namespace Game.Platform
             _heroPost = _map.FindAction(HeroPostAction, true);
             _heroAbility1 = _map.FindAction(HeroAbility1Action, true);
             _heroAbility2 = _map.FindAction(HeroAbility2Action, true);
+            _overview = _map.FindAction(OverviewAction, true);
 
             _heroPost.performed += OnHeroPost;
             _heroAbility1.performed += OnHeroAbility1;
@@ -79,6 +82,8 @@ namespace Game.Platform
             _upgrade.performed += OnUpgrade;
             _repair.performed += OnRepair;
             _sell.performed += OnSell;
+            _overview.performed += OnOverviewHeld;
+            _overview.canceled += OnOverviewReleased;
             _map.Enable();
         }
 
@@ -89,6 +94,9 @@ namespace Game.Platform
         public float CameraZoom => _zoom.ReadValue<float>();
 
         public Vector2 PointerPosition => _point.ReadValue<Vector2>();
+
+        // Performed when held (at once for the key, after the hold time on the gamepad), cancelled on release.
+        public bool OverviewHeld { get; private set; }
 
         public event Action Confirmed;
         public event Action Cancelled;
@@ -118,6 +126,8 @@ namespace Game.Platform
             _upgrade.performed -= OnUpgrade;
             _repair.performed -= OnRepair;
             _sell.performed -= OnSell;
+            _overview.performed -= OnOverviewHeld;
+            _overview.canceled -= OnOverviewReleased;
             _map.Disable();
         }
 
@@ -152,6 +162,10 @@ namespace Game.Platform
         private void OnRepair(InputAction.CallbackContext _) => RepairPressed?.Invoke();
 
         private void OnSell(InputAction.CallbackContext _) => SellPressed?.Invoke();
+
+        private void OnOverviewHeld(InputAction.CallbackContext _) => OverviewHeld = true;
+
+        private void OnOverviewReleased(InputAction.CallbackContext _) => OverviewHeld = false;
 
         private void OnHeroPost(InputAction.CallbackContext _) => HeroPostPressed?.Invoke();
 

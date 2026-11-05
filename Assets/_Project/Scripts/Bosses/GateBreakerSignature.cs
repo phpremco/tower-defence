@@ -318,13 +318,14 @@ namespace Game.Bosses
         {
             _brain.State = "ClimbingGate";
             _brain.Record.Climbs++;
-            BossClip up = BossClip.Of(View, ModelClipRole.ClimbUp, Boss.Climb.ClipRate);
+            ModelClipRole mount = _brain.GateRole(ModelClipRole.GateMount, ModelClipRole.ClimbUp);
+            BossClip up = BossClip.Of(View, mount, Boss.Climb.ClipRate);
             BossClip shatter = BossClip.Of(View, ModelClipRole.ShatterThrough, Boss.MechanicClipRate);
-            View.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
+            View.PlayScripted(mount, up.Rate, true);
             yield return _brain.Wait(up.Seconds);
             Vector3 top = new Vector3(gate.Position.x, ClimbLayer.GateHeight, gate.Position.z);
             Enemy.Place(top, dir);
-            View.LoopScripted(ModelClipRole.ClimbLoop);
+            _brain.Straddle();
             _brain.OnStructure = true;
             gate.SetBurden(1f);
             while (_brain.Alive && gate.IsFrozen && gate.FrozenRemaining > shatter.Moment)

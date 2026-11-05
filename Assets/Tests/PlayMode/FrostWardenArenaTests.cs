@@ -23,7 +23,9 @@ namespace Game.Tests
         private const float SimulationSpeed = 4f;
         private const float TimeoutSeconds = 300f;
         private const int Towers = 10;
-        private const float ExtraSharePerSecond = 0.02f;
+        // Round 32: the Rime Colossus travels further per gate (climb 5.6 m, shatter 3.8 m, freeze from 4.3 m), so the stretch
+        // after its second gate is a few seconds shorter than with the old body; 2% a second left it at 11% at the base.
+        private const float ExtraSharePerSecond = 0.03f;
 
         [UnityTest]
         public IEnumerator FrostWarden_FoughtToDeath_FreezesAndShattersGates_ThawSaves_FireCracksArmour()

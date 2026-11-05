@@ -9,7 +9,8 @@ namespace Game.Levels
     /// The game is played close in, at a zoom where the hero and the creatures can be read (about fifty pixels of
     /// hero on a handheld screen); zooming all the way out still shows the whole field. The camera glides to the
     /// hero whenever it is sent somewhere, and follows the mouse at the screen edge for mouse players. The view
-    /// can never leave the field. Uses unscaled time, so it also works while the game is paused or sped up.
+    /// can never leave the field. Holding the overview button eases out to the whole field and back (OverviewFraming).
+    /// Uses unscaled time, so it also works while the game is paused or sped up.
     /// </summary>
     public sealed class CameraPanZoom : MonoBehaviour
     {
@@ -25,6 +26,12 @@ namespace Game.Levels
         private const float EdgePanPixels = 36f;
         private const float EdgePanRecentSeconds = 10f;
         private const float GlideSeconds = 0.9f;
+        // The overview aim moves across the whole field in this many seconds with the stick or the pan keys.
+        private const float AimCrossSeconds = 2.5f;
+        private const float ReticleRadius = 1.6f;
+        private const float PointerMovedPixels = 2f;
+        private static readonly Color ReticleAim = new Color(0.35f, 1f, 0.9f, 1f) * 0.9f;
+        private static readonly Color ReticlePicked = new Color(0.45f, 1f, 0.95f, 1f) * 2.2f;
 
         private FixedCameraRig _rig;
         private Camera _camera;
@@ -42,6 +49,15 @@ namespace Game.Levels
         private float _fieldSpan;
         private float _panHeld;
         private CameraControls _controls;
+        private bool _overviewing;
+        private float _overviewShare;
+        private Vector3 _returnFocus;
+        private float _returnZoom;
+        private Vector3 _aim;
+        private bool _picked;
+        private Vector2 _aimPointer;
+        private Transform _reticle;
+        private Material _reticleMaterial;
 
         /// <summary>The zoom the level is played at: close enough to read the hero.</summary>
         public float PlayZoom => _playZoom;
@@ -68,12 +84,23 @@ namespace Game.Levels
             _zoom = _playZoom;
             _focus = Vector3.zero;
             _context.CameraFocusRequested.Subscribe(GlideTo);
+            _input.Confirmed += OnOverviewConfirmed;
             Apply();
         }
 
         private void OnDestroy()
         {
             _context?.CameraFocusRequested.Unsubscribe(GlideTo);
+            if (_input != null)
+            {
+                _input.Confirmed -= OnOverviewConfirmed;
+            }
+
+            if (_reticle != null)
+            {
+                Destroy(_reticle.gameObject);
+                Destroy(_reticleMaterial);
+            }
         }
 
         /// <summary>Puts the view somewhere at once, cancelling any glide.</summary>
@@ -101,6 +128,11 @@ namespace Game.Levels
             }
 
             float dt = Time.unscaledDeltaTime;
+            if (UpdateOverview(dt))
+            {
+                return;
+            }
+
             bool changed = false;
 
             float zoomInput = _input.CameraZoom;
@@ -142,6 +174,138 @@ namespace Game.Levels
             {
                 Apply();
             }
+        }
+
+        /// <summary>True while the overview is held or the camera is still easing between it and the play view.</summary>
+        public bool InOverview => _overviewing || _overviewShare > 0f;
+
+        // Holding the overview button eases the camera out to the whole field; letting go eases it back to where it was, or
+        // to the spot picked meanwhile (a click, or A on the aim the stick or pan keys move). The clock may run or stand
+        // still: the camera uses unscaled time either way. Returns true while the overview owns the camera.
+        private bool UpdateOverview(float dt)
+        {
+            bool want = _input.OverviewHeld && !_context.InputBlocked && _context.Outcome == LevelOutcome.Running;
+            if (want && !_overviewing)
+            {
+                BeginOverview();
+            }
+            else if (!want && _overviewing)
+            {
+                EndOverview();
+            }
+
+            if (!InOverview)
+            {
+                return false;
+            }
+
+            _overviewShare = Mathf.MoveTowards(_overviewShare, _overviewing ? 1f : 0f, dt / OverviewFraming.BlendSeconds);
+            if (_overviewing)
+            {
+                MoveAim(dt);
+            }
+
+            OverviewFraming.Blend(_returnFocus, _returnZoom, _overviewShare, out Vector3 focus, out float zoom);
+            _rig.SetView(focus, zoom);
+            if (_overviewShare <= 0f)
+            {
+                // Back in the play view: the camera carries on from the spot it returned to.
+                _focus = _returnFocus;
+                _zoom = _returnZoom;
+                _context.OverviewActive = false;
+                Apply();
+            }
+
+            return true;
+        }
+
+        private void BeginOverview()
+        {
+            _overviewing = true;
+            _glideTime = float.PositiveInfinity;
+            if (_overviewShare <= 0f)
+            {
+                _returnFocus = _focus;
+                _returnZoom = _zoom;
+            }
+
+            _aim = _returnFocus;
+            _picked = false;
+            _aimPointer = _input.PointerPosition;
+            _context.OverviewActive = true;
+            ShowReticle(true);
+        }
+
+        private void EndOverview()
+        {
+            _overviewing = false;
+            if (_picked)
+            {
+                _returnFocus = _aim;
+            }
+
+            ShowReticle(false);
+        }
+
+        // The aim follows the mouse where it points on the ground, or moves with the stick and the pan keys.
+        private void MoveAim(float dt)
+        {
+            if (!_picked)
+            {
+                Vector2 pointer = _input.PointerPosition;
+                Vector2 stick = Vector2.ClampMagnitude(_input.CursorMove + _input.CameraPan, 1f);
+                if (stick.sqrMagnitude > DeadZone * DeadZone)
+                {
+                    _aim += new Vector3(stick.x, 0f, stick.y) * (_fieldSpan / AimCrossSeconds * dt);
+                }
+                else if (pointer != Vector2.zero && (pointer - _aimPointer).sqrMagnitude > PointerMovedPixels * PointerMovedPixels
+                    && OverviewFraming.GroundPoint(_camera.ScreenPointToRay(pointer), out Vector3 ground))
+                {
+                    _aimPointer = pointer;
+                    _aim = ground;
+                }
+
+                _aim = OverviewFraming.KeepOnField(_aim, _halfField, EdgeMargin);
+            }
+
+            if (_reticle != null)
+            {
+                _reticle.position = _aim;
+            }
+        }
+
+        // A click (not on the HUD) or A while the overview is held fixes the spot the camera goes to on release.
+        private void OnOverviewConfirmed()
+        {
+            if (!_overviewing || (_input.FromPointer && _context.PointerOverUi))
+            {
+                return;
+            }
+
+            if (_input.FromPointer && OverviewFraming.GroundPoint(_camera.ScreenPointToRay(_input.PointerPosition), out Vector3 ground))
+            {
+                _aim = OverviewFraming.KeepOnField(ground, _halfField, EdgeMargin);
+            }
+
+            _picked = true;
+            GlowDecal.SetColour(_reticleMaterial, ReticlePicked);
+            _reticle.position = _aim;
+        }
+
+        // A soft pool of light on the ground where the camera will go; built on first use and reused.
+        private void ShowReticle(bool shown)
+        {
+            if (_reticle == null)
+            {
+                _reticle = new GameObject("OverviewAim").transform;
+                GameObject pool = GlowDecal.PlacePool(_reticle, ReticleAim, ReticleRadius);
+                _reticleMaterial = new Material(pool.GetComponent<Renderer>().sharedMaterial);
+                pool.GetComponent<Renderer>().sharedMaterial = _reticleMaterial;
+            }
+
+            GlowDecal.SetColour(_reticleMaterial, ReticleAim);
+            _reticle.position = _aim;
+            _reticle.gameObject.SetActive(shown);
         }
 
         // A mouse at the edge of the screen pans that way, unless it is there to use the HUD. A mouse that has not

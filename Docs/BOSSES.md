@@ -427,3 +427,45 @@ reads the rig (only `ColonyRigView`), so nothing treats it as working afterwards
 **Ice block and seal crystals.** The ice block is fitted per axis to the gate it holds (measured in the gate's frame:
 width = span + 0.2 m a side, depth likewise but never under 0.55 of the width scale, height as before), so a G1 gate
 gets a thinner, lower block. Seal crystals: learned tint x 2 (was 2.4) so the facets read.
+
+## Round 8: the Rime Colossus in the game, Gravemaw's torn fissure, gate crossings (2026-11-05)
+
+**Frost Warden = Rime Colossus (Blender round 32).** Imported with the targeted path (`ApplyBossFx.cs`, art list now
+`FrostWarden` only). The re-measured clip facts arrive through the report: Walk / WalkEnraged 1.429 / 1.857 per loop,
+Climb edge 2.4, end 5.571 (+-1.5), Climb_Loop 1.143, Dive / Surface end 2.8, Freeze_Gate gate 4.3 with the breath at 30,
+Shatter_Through 100 frames, gate 4.3, impact 35, end 3.8; FreezePulse still at 30. `BodyHalfWidth` 1.25 -> 2.0 (the
+body is about 6 m over the fists at Unity scale 1, 4.8 m at the titans' 0.8). Nothing placed armour by plate number, so
+the new bone map needs no code. The health bar follows the art's measured height. The flow lines up in the arena: it
+stops 3.4 m (4.3 x 0.8) before a gate, breathes, climbs onto the block, the fists come down through it at 35, Enrage,
+armour break below 40%, icicles grow and leave with the armour. The ice look stays (no flat colour, glow x 2); the
+screenshots read as cold ice gauntlets and floes, so the material was not touched. `FrostWardenArenaTests`: with the
+new body (longer climb, shatter and freeze distances) the fight reached the base at 11% health with the test's 2%/s
+extra damage after the second gate; the test now adds 3%/s (balance itself is untouched; checked with the old width
+too, the width was not the cause).
+
+**Gravemaw's crack as a torn fissure** (Remco: "a thin glowing laser line", then "die open start met recht einde en die
+rechte hoek zijn niet zo mooi"). All look values sit in `CrackStyle.Burrow` + `FissureLook` (data):
+- 4.4 m wide (was 3), a dark gap of 1.4 m (`GapHalf` 0.16) between two lit lips (`LipGlow` 0.75, band 0.025) over a
+  faint core deep in the gap (`CoreGlow` 0.3); the lip glow is uneven along its length. `Game/BossDecal` gained
+  `_LipGlow`, `_LipBand`, `_CoreGlow` and `_HeadTaper`; the other marks keep their old profile (defaults).
+- Shape: the planned route is resampled every 0.5 m and smoothed three times with a 2.5 m moving average (corners become
+  curves of a few metres), then meanders up to 0.35 m sideways; its width breathes +-22 % and narrows to a hairline over
+  2.6 m at both ends (at most 30 % of a short crack). The tearing head comes to a point over 2.4 m (vertex pinch in the
+  shader). Two hairline branches split off near each end and open with the line.
+- The view keeps the callers' length (the drawn line is a little longer), so the head still follows the boss.
+- Footprints: the strip fades out (vertex alpha, glow too) where it would reach under a tower or gate; chunks and slabs
+  keep off them as before. The no-overlap rule uses the wider width.
+- Slabs: 2.0 x the export (1-1.7 m plates), hinge on the lip outside the gap, stood up 35 degrees past their modelled tilt,
+  glow 0.25 of the hot material, so they read as tilted basalt plates on the lips, not glowing discs over the gap.
+- Rubble: up to four debris meshes thrown up and tumbling at the open end (16/s).
+
+**Gate crossings (Remco: "het lichaam beweegt alsof hij erop staat op vlakke grond").** On a gate the bosses played the
+rock-climb crawl cycle in place, which reads as walking. New roles `GateMount`, `GateStraddle`, `GateDismount`
+(Gravemaw's `Gate_Mount`, `Gate_Straddle_Loop`, `Gate_Dismount` in `BlenderArtCatalog`, events from the report's
+round28 block like the other mechanic clips). `ContinentBossBrain.ClimbStructure`, `ClimbDown` and the Frost Warden's
+`OntoTheIce` use them when the model has them; until the export arrives they fall back to `Climb_Up` / `Climb_Down`,
+and on the gate the climb loop is held on one pose (`Straddle`) instead of crawling.
+
+**Hit reactions** (all creatures and bosses): `HitReaction` rations the flinch (clip and procedural knock): a cooldown
+(0.7 s, bosses 1.8 s, never shorter than the hit clip, `EnemyDefinition.HitCooldown` overrides), chip damage gathered
+until 4 % (bosses 1.5 %) of its health, and never during a scripted mechanic clip. Every hit still flashes and bleeds.

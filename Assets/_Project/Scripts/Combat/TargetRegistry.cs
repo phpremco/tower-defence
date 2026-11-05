@@ -14,6 +14,8 @@ namespace Game.Combat
 
         public int Count => _targets.Count;
 
+        public ITargetable this[int index] => _targets[index];
+
         public void Add(ITargetable target) => _targets.Add(target);
 
         public void Remove(ITargetable target)

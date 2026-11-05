@@ -197,5 +197,14 @@ namespace Game.Core
 
         /// <summary>A boss lying on the base it has climbed onto, striking it. Loops in place.</summary>
         OnBaseLoop = 64,
+
+        /// <summary>Climbing up onto a gate (not a rock ledge): front feet on the gate top, body pulled over the wall.</summary>
+        GateMount = 65,
+
+        /// <summary>The loop while it straddles a gate, clinging to its top and sides (in place, never a walk).</summary>
+        GateStraddle = 66,
+
+        /// <summary>Climbing down off a gate on its far side.</summary>
+        GateDismount = 67,
     }
 }

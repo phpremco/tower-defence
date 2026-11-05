@@ -23,6 +23,10 @@ Shader "Game/BossDecal"
         _Depth ("Darkens the gap along the strip's middle", Range(0, 1)) = 0
         _DepthFrom ("Dark gap half width (share of the strip)", Range(0, 0.5)) = 0.22
         _EdgeGlow ("Glow away from the fissure (share)", Range(0, 1)) = 1
+        _CoreGlow ("Glow of the thin molten core (share)", Range(0, 1)) = 1
+        _LipGlow ("Glow along the lips of the dark gap (share)", Range(0, 2)) = 0
+        _LipBand ("Half width of the lit lip band (share of the strip)", Range(0.005, 0.2)) = 0.03
+        _HeadTaper ("Pinch to a point over this many m behind the open end (0: off)", Float) = 0
         _LipHeight ("Lip height at UV2.y = 1 (m)", Float) = 0
         _Pulse ("Glow pulse (amplitude, speed)", Vector) = (0, 0, 0, 0)
     }
@@ -66,6 +70,10 @@ Shader "Game/BossDecal"
             half _Depth;
             half _DepthFrom;
             half _EdgeGlow;
+            half _CoreGlow;
+            half _LipGlow;
+            half _LipBand;
+            float _HeadTaper;
             float _LipHeight;
             float4 _Pulse;
             CBUFFER_END
@@ -77,6 +85,7 @@ Shader "Game/BossDecal"
                 half4 color : COLOR;
                 float2 uv : TEXCOORD0;
                 float2 path : TEXCOORD1;
+                float2 side : TEXCOORD2;
             };
 
             struct Varyings
@@ -108,6 +117,12 @@ Shader "Game/BossDecal"
                 half open = OpenAt(input.path.x);
                 float3 position = input.positionOS.xyz;
                 position.y += _LipHeight * input.path.y * open * _Progress;
+                // A tearing fissure comes to a point at its open end instead of a square-cut ribbon (UV3: offset from the centre).
+                if (_HeadTaper > 0.0 && _OpenDistance >= 0.0)
+                {
+                    float pinch = smoothstep(0.0, 1.0, saturate((_OpenDistance - input.path.x) / _HeadTaper));
+                    position.xz -= input.side * (1.0 - pinch);
+                }
                 VertexPositionInputs positions = GetVertexPositionInputs(position);
                 output.positionCS = positions.positionCS;
                 output.positionWS = positions.positionWS;
@@ -166,10 +181,14 @@ Shader "Game/BossDecal"
 
                 // Heat: the glow lives while G is above the cooling front; elsewhere the glow follows what is shown.
                 half heat = _Mode > 1.5 && _Mode < 2.5 ? smoothstep(progress - _Softness, progress, pack.g) : shown;
-                // A crack glows in its fissure; the cracks in its heaved plates only smoulder.
-                half core = lerp(_EdgeGlow, 1.0h, 1.0h - smoothstep(0.006h, 0.03h, input.across));
+                // A crack glows in its fissure; the cracks in its heaved plates only smoulder. A torn fissure (lip glow on) is a
+                // dark gap whose two lips are lit from the melt below, unevenly along their length, over a faint deep core.
+                half core = lerp(_EdgeGlow * (1.0h - depth * saturate(_LipGlow)), _CoreGlow, 1.0h - smoothstep(0.006h, 0.03h, input.across));
+                half lip = 1.0h - smoothstep(0.0h, _LipBand, abs(input.across - _DepthFrom * 0.9h));
+                half ragged = 0.7h + 0.3h * sin(input.uv.x * 61.0 + sin(input.uv.x * 13.0) * 2.0);
                 half pulse = 1.0h + _Pulse.x * sin(_Time.y * _Pulse.y + input.positionWS.x * 0.7 + input.positionWS.z * 0.5);
-                half3 glow = pack.r * core * heat * _EmissionColor.rgb * _GlowFade * pulse * input.open;
+                // Vertex alpha also dims the glow: a strip faded off a footprint must not glow under it.
+                half3 glow = (pack.r * core + _LipGlow * lip * ragged) * heat * _EmissionColor.rgb * _GlowFade * pulse * input.open * input.color.a;
                 half3 colour = MixFog(lit + glow, input.fog);
                 // The glow may outshine a thin coverage at the fissure's edge.
                 alpha = saturate(max(alpha, saturate(dot(glow, half3(0.3h, 0.4h, 0.3h))) * shown * _Fade));

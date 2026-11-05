@@ -266,6 +266,8 @@ namespace Game.Enemies
         private bool _impactPending;
         private float _lastStrike;
         private float _hitTime = float.PositiveInfinity;
+        private float _flashTime = float.PositiveInfinity;
+        private HitReaction _reaction = new HitReaction(HitReaction.CreatureCooldown, HitReaction.CreatureChipShare);
         private float _spawnTime = float.PositiveInfinity;
         private float _spawnSeconds = 0.45f;
         private float _spawnDepth = 0.5f;
@@ -499,6 +501,9 @@ namespace Game.Enemies
                 return;
             }
 
+            _flashTime += Time.deltaTime;
+            _reaction.Tick(Time.deltaTime);
+
             if (_shadow != null)
             {
                 Vector3 position = _enemy.Position;
@@ -547,6 +552,8 @@ namespace Game.Enemies
             _lastArmor = 1f;
             _hitTime = float.PositiveInfinity;
             _attackTime = float.PositiveInfinity;
+            _flashTime = float.PositiveInfinity;
+            _reaction = HitReaction.For(enemy.Definition, ClipOf(ModelClipRole.Hit)?.Length ?? 0f);
             _attackSeconds = Mathf.Clamp(enemy.Definition.AttackInterval * AttackIntervalShare, AttackMinSeconds, AttackMaxSeconds);
             _boltPending = false;
             _impactPending = false;
@@ -1045,7 +1052,7 @@ namespace Game.Enemies
             UpdateTrails(position, forward, walking, hasted, bob * hoverScale);
 
             // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.
-            bool flash = _hitTime < FlashSeconds && !_boss;
+            bool flash = _flashTime < FlashSeconds && !_boss;
             bool slowed = _enemy.IsSlowed;
             Material[] look = flash ? _flashMaterials : slowed ? _frostMaterials : _shellMaterials;
             if (look != _currentLook)
@@ -1118,7 +1125,7 @@ namespace Game.Enemies
             UpdateTrails(position, forward, walking, _enemy.IsHasted, 0f);
 
             // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.
-            bool flash = _hitTime < FlashSeconds && !_boss;
+            bool flash = _flashTime < FlashSeconds && !_boss;
             if (flash)
             {
                 _model.SetOverlay(Color.white, ModelFlashAmount);
@@ -1685,9 +1692,15 @@ namespace Game.Enemies
             float fraction = _health.Fraction;
             if (fraction < _lastFraction)
             {
-                _hitTime = 0f;
+                // Every hit flashes and bleeds; the body flinches only as often as its reaction allows, and never over a
+                // mechanic's own clip (a climb, a dive, a burrow loop).
+                _flashTime = 0f;
                 Bleed();
-                _clips?.Hit(_health.ArmorFraction > 0f);
+                if (_reaction.Register(_lastFraction - fraction, _scripted))
+                {
+                    _hitTime = 0f;
+                    _clips?.Hit(_health.ArmorFraction > 0f);
+                }
             }
 
             _lastFraction = fraction;

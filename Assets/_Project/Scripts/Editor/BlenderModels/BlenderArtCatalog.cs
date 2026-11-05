@@ -38,6 +38,8 @@ namespace Game.Editor
             "Marked",
             // The continent bosses' mechanic cycles (README round 28): in place, the owner moves the body.
             "Climb_Loop", "Submerged_Loop", "Burrow_Travel", "Hunt_Stride", "Rooted_Idle",
+            // Gravemaw's gate crossing (2026-11-05, being made in Blender).
+            "Gate_Straddle_Loop",
         };
 
         // A shard's burst out of the giant and its flight back into it (README round 28).
@@ -272,6 +274,11 @@ namespace Game.Editor
                         new BlenderClipSpec("Burrow_Down", ModelClipRole.BurrowDown, 31),
                         new BlenderClipSpec("Burrow_Travel", ModelClipRole.BurrowTravel),
                         new BlenderClipSpec("Surface_Throw", ModelClipRole.SurfaceThrow, 30),
+                        // Its own gate crossing (2026-11-05, in the making): picked up when the export has them; until then the
+                        // brain falls back to the rock-climb clips (ContinentBossBrain.ClimbStructure).
+                        new BlenderClipSpec("Gate_Mount", ModelClipRole.GateMount),
+                        new BlenderClipSpec("Gate_Straddle_Loop", ModelClipRole.GateStraddle),
+                        new BlenderClipSpec("Gate_Dismount", ModelClipRole.GateDismount),
                     },
                 },
                 new BlenderArtEntry("CinderMatriarch", "CinderMatriarch")

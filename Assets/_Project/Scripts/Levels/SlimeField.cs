@@ -9,7 +9,7 @@ namespace Game.Levels
 {
     /// <summary>
     /// The slime that trail layers smear over the road. Every patch lives for a while, hurries creatures of other
-    /// species that cross it, and eats at the hero and at gates that stand in it. Towers are out of its reach by
+    /// species that cross it (never the slugs), and eats at the hero and at gates that stand in it. Towers are out of its reach by
     /// design: the trail is a road hazard, not a siege weapon. Pure logic; the view draws the patches it lists.
     /// </summary>
     public sealed class SlimeField
@@ -58,9 +58,11 @@ namespace Game.Levels
         /// <summary>The hero the slime may burn; null when the level has none.</summary>
         public void SetHero(Commander hero) => _hero = hero;
 
-        public void Add(Enemy layer, Vector3 position)
+        public void Add(Enemy layer, Vector3 position) => Add(layer.Definition, position);
+
+        /// <summary>A patch as a creature of this kind leaves it (the layer itself need not be on the field).</summary>
+        public void Add(EnemyDefinition definition, Vector3 position)
         {
-            EnemyDefinition definition = layer.Definition;
             var patch = new Patch
             {
                 Position = position,
@@ -94,13 +96,14 @@ namespace Game.Levels
             }
         }
 
-        // The slime is a gift to every other species: those that lay it gain nothing from their own.
+        // The slime is a gift to every other species: those that lay it gain nothing from their own, and the slugs
+        // (SlimeImmune in their data) gain nothing from anyone's.
         private void HurryCrossers(Patch patch, float reachSqr)
         {
             for (int i = 0; i < _enemies.Count; i++)
             {
                 Enemy enemy = _enemies[i];
-                if (!enemy.IsAlive || enemy.Definition == patch.Layer || enemy.Definition.Flies)
+                if (!enemy.IsAlive || enemy.Definition == patch.Layer || enemy.Definition.SlimeImmune || enemy.Definition.Flies)
                 {
                     continue;
                 }

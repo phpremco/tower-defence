@@ -38,7 +38,15 @@ namespace Game.Bosses
         }
 
         /// <summary>A strip along world points (already on the ground), its tiles starting at a random U.</summary>
-        public static MeshRenderer Strip(Transform parent, string name, IReadOnlyList<Vector3> points, float width, float tileLength, Material material, bool lips)
+        public static MeshRenderer Strip(Transform parent, string name, IReadOnlyList<Vector3> points, float width, float tileLength, Material material, bool lips) =>
+            Strip(parent, name, points, width, tileLength, material, lips, null, 0f);
+
+        /// <summary>
+        /// A strip whose width is scaled per point (<paramref name="widthScale"/>, null: even), its open distance counted from
+        /// <paramref name="alongStart"/> (a branch opens with the line it grows from). UV3 holds each vertex's offset from the
+        /// centre line, so the shader can pinch the strip to a point at its open end.
+        /// </summary>
+        public static MeshRenderer Strip(Transform parent, string name, IReadOnlyList<Vector3> points, float width, float tileLength, Material material, bool lips, IReadOnlyList<float> widthScale, float alongStart)
         {
             int count = points.Count;
             int columns = Across.Length;
@@ -46,8 +54,10 @@ namespace Game.Bosses
             var uvs = new Vector2[vertices.Length];
             var path = new Vector2[vertices.Length];
             var normals = new Vector3[vertices.Length];
+            var offsets = new Vector2[vertices.Length];
+            var colours = new Color32[vertices.Length];
             var triangles = new List<int>((count - 1) * (columns - 1) * 6);
-            float along = 0f;
+            float along = alongStart;
             float start = Random.value;
             float lipHeight = lips && material != null && material.HasProperty("_LipHeight") ? material.GetFloat("_LipHeight") : 0f;
             for (int i = 0; i < count; i++)
@@ -58,10 +68,14 @@ namespace Game.Bosses
                 }
 
                 Vector3 side = Side(points, i);
+                float half = width * 0.5f * (widthScale != null ? widthScale[i] : 1f);
                 for (int c = 0; c < columns; c++)
                 {
                     int v = i * columns + c;
-                    vertices[v] = points[i] + side * (Across[c] * width * 0.5f) + Vector3.up * Lift;
+                    Vector3 offset = side * (Across[c] * half);
+                    vertices[v] = points[i] + offset + Vector3.up * Lift;
+                    offsets[v] = new Vector2(offset.x, offset.z);
+                    colours[v] = new Color32(255, 255, 255, 255);
                     uvs[v] = new Vector2(start + along / Mathf.Max(0.01f, tileLength), (Across[c] + 1f) * 0.5f);
                     path[v] = new Vector2(along, lips ? Rise[c] : 0f);
                     normals[v] = LipNormal(side, c, width, lipHeight);
@@ -88,6 +102,8 @@ namespace Game.Bosses
             mesh.uv = uvs;
             mesh.uv2 = path;
             mesh.normals = normals;
+            mesh.uv3 = offsets;
+            mesh.colors32 = colours;
             mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds();
             Bounds bounds = mesh.bounds;

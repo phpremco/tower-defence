@@ -7,8 +7,8 @@ namespace Game.UI
 {
     /// <summary>
     /// The camera options the options panel and the pause menu share: a "Camera speed" slider (a factor on the default
-    /// pan speed, for keys, stick and screen edge alike) and an edge-scrolling switch. The level camera hears every
-    /// change at once; the progress file keeps the speed in whole percents.
+    /// pan speed, for keys, stick and screen edge alike), an edge-scrolling switch, and the HUD radar (a switch and a size
+    /// slider). The level camera and the HUD hear every change at once; the progress file keeps speed and size in percents.
     /// </summary>
     public sealed class CameraOptionControls
     {
@@ -20,6 +20,9 @@ namespace Game.UI
         private Slider _slider;
         private Text _speedLabel;
         private Text _edgeLabel;
+        private Slider _radarSize;
+        private Text _radarSizeLabel;
+        private Text _radarLabel;
 
         public CameraOptionControls(ProgressService progress, CameraControls controls)
         {
@@ -37,6 +40,10 @@ namespace Game.UI
             _speedLabel = _slider.GetComponentInChildren<Text>();
             Button edge = UiKit.CreateButton(column, EdgeLabel(_controls.EdgeScrolling), OnEdgeToggled);
             _edgeLabel = edge.GetComponentInChildren<Text>();
+            Button radar = UiKit.CreateButton(column, RadarLabel(_controls.RadarOn), OnRadarToggled);
+            _radarLabel = radar.GetComponentInChildren<Text>();
+            _radarSize = UiKit.CreateSlider(column, RadarSizeLabel(Percent(_controls.RadarScale)), ToRadarSlider(_controls.RadarScale), OnRadarSize);
+            _radarSizeLabel = _radarSize.GetComponentInChildren<Text>();
         }
 
         private void OnSpeed(float value)
@@ -51,6 +58,26 @@ namespace Game.UI
         {
             Store(_controls.SpeedScale, !_controls.EdgeScrolling);
             _edgeLabel.text = EdgeLabel(_controls.EdgeScrolling);
+        }
+
+        private void OnRadarToggled()
+        {
+            StoreRadar(!_controls.RadarOn, _controls.RadarScale);
+            _radarLabel.text = RadarLabel(_controls.RadarOn);
+        }
+
+        private void OnRadarSize(float value)
+        {
+            float scale = Mathf.Lerp(CameraControls.MinRadarScale, CameraControls.MaxRadarScale, value);
+            int percent = Mathf.RoundToInt(scale * PercentScale / SnapPercent) * SnapPercent;
+            StoreRadar(_controls.RadarOn, percent / PercentScale);
+            _radarSizeLabel.text = RadarSizeLabel(Percent(_controls.RadarScale));
+        }
+
+        private void StoreRadar(bool on, float scale)
+        {
+            _controls.SetRadar(on, scale);
+            _progress?.SetRadar(_controls.RadarOn, Percent(_controls.RadarScale));
         }
 
         private void Store(float scale, bool edgeScrolling)
@@ -69,5 +96,11 @@ namespace Game.UI
         private static string SpeedLabel(int percent) => $"Camera speed   {percent}%";
 
         private static string EdgeLabel(bool on) => on ? "Edge scrolling   On" : "Edge scrolling   Off";
+
+        private static float ToRadarSlider(float scale) => Mathf.InverseLerp(CameraControls.MinRadarScale, CameraControls.MaxRadarScale, scale);
+
+        private static string RadarLabel(bool on) => on ? "Radar   On" : "Radar   Off";
+
+        private static string RadarSizeLabel(int percent) => $"Radar size   {percent}%";
     }
 }

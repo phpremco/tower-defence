@@ -10,9 +10,9 @@ using UnityEditor;
 /// </summary>
 public static class ApplyBossFx
 {
-    // Round 30 rebuilt the Frost Warden; round 31 the slugs with their Strike (the builder adds slabs, ice block, crystals
+    // Round 32 rebuilt the Frost Warden as the Rime Colossus (round 31: the slugs with their Strike) (the builder adds slabs, ice block, crystals
     // and the rigged drill wreck).
-    private static readonly string[] Art = { "Oozer", "SlimeMonarch" };
+    private static readonly string[] Art = { "FrostWarden" };
 
     public static string Run()
     {

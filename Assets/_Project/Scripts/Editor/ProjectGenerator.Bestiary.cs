@@ -91,6 +91,7 @@ namespace Game.Editor
             public float TrailSeconds;
             public float TrailHaste;
             public float TrailDamage;
+            public bool SlimeImmune;
             public float RageSeconds;
             public float RageSpeed;
             public float RageRadius;
@@ -190,7 +191,7 @@ namespace Game.Editor
             {
                 Id = "Oozer", Description = "Slug on a toxic slime foot. Its trail speeds up other species and burns the hero and gates, never towers.", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
                 Attack = AttackStyle.Slam, BlockadeDamage = 9f, AttackRange = 2.5f, AttackInterval = 1.5f,
-                TrailSeconds = 9f, TrailHaste = 1.45f, TrailDamage = 2.5f,
+                TrailSeconds = 9f, TrailHaste = 1.45f, TrailDamage = 2.5f, SlimeImmune = true,
                 Color = new Color(0.55f, 0.8f, 0.15f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.5f, 1f, 0.2f), Blood = SlimeGreen,
                 Scale = 0.7f, Shape = EnemyShape.Oozer, Death = DeathStyle.Shatter,
             });
@@ -323,7 +324,7 @@ namespace Game.Editor
             {
                 Id = "SlimeMonarch", Description = "The slug monarch: floods of slime and more oozers.", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Slam, AttackDamage = 20f, BlockadeDamage = 70f, AttackRange = 2f, AttackInterval = 1.6f,
-                TrailSeconds = 14f, TrailHaste = 1.6f, TrailDamage = 5f,
+                TrailSeconds = 14f, TrailHaste = 1.6f, TrailDamage = 5f, SlimeImmune = true,
                 Color = new Color(0.45f, 0.7f, 0.1f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.6f, 1f, 0.2f), Blood = SlimeGreen,
                 Scale = 1.5f, Shape = EnemyShape.SlimeMonarch, Death = DeathStyle.Shatter, Abilities = new[] { spawnOozers, slimeFlood },
             });
@@ -387,6 +388,7 @@ namespace Game.Editor
             so.FindProperty("_trailSeconds").floatValue = c.TrailSeconds;
             so.FindProperty("_trailHaste").floatValue = c.TrailHaste > 0f ? c.TrailHaste : 1.4f;
             so.FindProperty("_trailDamagePerSecond").floatValue = c.TrailDamage;
+            so.FindProperty("_slimeImmune").boolValue = c.SlimeImmune;
             so.FindProperty("_rageSeconds").floatValue = c.RageSeconds;
             so.FindProperty("_rageSpeedMultiplier").floatValue = c.RageSpeed > 0f ? c.RageSpeed : 1.5f;
             so.FindProperty("_rageRadius").floatValue = c.RageRadius > 0f ? c.RageRadius : 3f;

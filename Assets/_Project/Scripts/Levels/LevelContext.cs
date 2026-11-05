@@ -129,6 +129,9 @@ namespace Game.Levels
         /// <summary>Set by the HUD every frame so a click on a HUD icon does not also act on the field.</summary>
         public bool PointerOverUi { get; set; }
 
+        /// <summary>True while the overview is held or easing back: a click then picks where the camera goes, never a cell.</summary>
+        public bool OverviewActive { get; set; }
+
         /// <summary>Raised whenever something the HUD shows has changed.</summary>
         public GameEvent Changed { get; } = new GameEvent();
 

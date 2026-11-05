@@ -34,11 +34,13 @@ MonoBehaviour:
   _trailSeconds: 9
   _trailHaste: 1.45
   _trailDamagePerSecond: 2.5
+  _slimeImmune: 1
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 0
   _abilities: []
+  _boss: {fileID: 0}
   _color: {r: 0.55, g: 0.8, b: 0.15, a: 1}
   _eyeColor: {r: 1, g: 1, b: 0.5, a: 1}
   _accentColor: {r: 0.5, g: 1, b: 0.2, a: 1}

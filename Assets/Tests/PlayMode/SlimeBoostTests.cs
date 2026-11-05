@@ -17,7 +17,8 @@ namespace Game.Tests
     /// Proof of the slime rule (Docs bestiary; Remco 2026-11-05: "bewijs dat de boost werkt") in a real level with the
     /// real creature data: a creature of another species walking a slime trail goes the Oozer's trail haste times its
     /// own pace, and its own pace again once it is off the trail and the haste has run out; an Oozer gains nothing from
-    /// its own slime; slime burns a gate and the hero but never a tower. The measured numbers go to the log.
+    /// its own slime, nor from a SlimeMonarch's (the slugs are slime-immune), while that slime still hurries a
+    /// Skitter; slime burns a gate and the hero but never a tower. The measured numbers go to the log.
     /// </summary>
     public sealed class SlimeBoostTests
     {
@@ -33,7 +34,7 @@ namespace Game.Tests
         private EnemySpawner _spawner;
 
         [UnityTest]
-        public IEnumerator SlimeHurriesOtherSpecies_NotTheOozer_AndBurnsGateAndHeroButNoTower()
+        public IEnumerator SlimeHurriesOtherSpecies_NeverASlug_AndBurnsGateAndHeroButNoTower()
         {
             yield return LoadLevel();
             var oozerDefinition = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyFolder + "Oozer.asset");
@@ -54,7 +55,7 @@ namespace Game.Tests
                 yield return Walk(MeasureSeconds * 0.5f);
                 float[] clean = new float[1];
                 yield return Measure(walker, MeasureSeconds, false, clean);
-                LayTrail(oozer, walker);
+                LayTrail(oozerDefinition, walker);
                 float[] slimed = new float[1];
                 yield return WaitHasted(walker);
                 yield return Measure(walker, MeasureSeconds, true, slimed);
@@ -71,11 +72,33 @@ namespace Game.Tests
             // A live Oozer crawls over its own slime the whole time it moves.
             oozer = Spawn(oozerDefinition);
             yield return Walk(MeasureSeconds);
-            LayTrail(oozer, oozer);
+            LayTrail(oozerDefinition, oozer, true);
             float[] own = new float[1];
             yield return Measure(oozer, MeasureSeconds, false, own, true);
             report.Add($"Oozer on its own slime: x{own[0]:0.000} (never hasted)");
             Assert.AreEqual(1f, own[0], Tolerance, "the Oozer gains nothing from its own slime");
+
+            // Another species' slime (the SlimeMonarch's flood): it still hurries a Skitter, but never an Oozer.
+            var monarch = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyFolder + "SlimeMonarch.asset");
+            Assert.IsTrue(oozerDefinition.SlimeImmune && monarch.SlimeImmune, "the slugs are not slime-immune in the data");
+            LayTrail(monarch, oozer, true);
+            float[] monarchOnOozer = new float[1];
+            yield return Measure(oozer, MeasureSeconds, false, monarchOnOozer, true);
+            report.Add($"Oozer on SlimeMonarch slime: x{monarchOnOozer[0]:0.000} (never hasted)");
+            Assert.AreEqual(1f, monarchOnOozer[0], Tolerance, "the SlimeMonarch's slime hurried an Oozer");
+
+            // The Oozer leaves and its own slime dries up first, so the Skitter is measured on the monarch's slime alone.
+            oozer.Deactivate();
+            yield return Walk(oozerDefinition.TrailSeconds + 1f);
+            Enemy skitter = Spawn(AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyFolder + "Skitter.asset"));
+            yield return Walk(MeasureSeconds * 0.5f);
+            LayTrail(monarch, skitter);
+            yield return WaitHasted(skitter);
+            float[] monarchOnSkitter = new float[1];
+            yield return Measure(skitter, MeasureSeconds, true, monarchOnSkitter);
+            report.Add($"Skitter on SlimeMonarch slime: x{monarchOnSkitter[0]:0.000}");
+            Assert.AreEqual(monarch.TrailHaste, monarchOnSkitter[0], monarch.TrailHaste * Tolerance, "the SlimeMonarch's slime did not hurry a Skitter");
+            skitter.TakeDamageFrom(skitter.Health.Current + 1f, null, false);
 
             yield return CheckBurns(oozer, report);
             Debug.Log("Slime boost proof:\n" + string.Join("\n", report));
@@ -128,11 +151,11 @@ namespace Game.Tests
         }
 
         // Patches the Oozer would leave, laid along the walker's road ahead of it.
-        private void LayTrail(Enemy layer, Enemy walker)
+        private void LayTrail(EnemyDefinition layer, Enemy walker, bool underIt = false)
         {
             Vector3[] route = walker.RemainingRoute();
             float along = 0f;
-            float next = layer == walker ? 0f : TrailAhead;
+            float next = underIt ? 0f : TrailAhead;
             for (int i = 1; i < route.Length && next < TrailAhead + TrailLength; i++)
             {
                 float leg = Vector3.Distance(route[i - 1], route[i]);

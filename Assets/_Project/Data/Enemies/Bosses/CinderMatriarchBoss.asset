@@ -72,15 +72,6 @@ MonoBehaviour:
     - Icicle_5
     _rageScale: {x: 0.2, y: 1}
     _armourPart: 
-    _armourBones:
-    - Armour_1
-    - Armour_2
-    - Armour_3
-    - Armour_4
-    - Armour_5
-    - Armour_6
-    - Armour_7
-    - Armour_8
     _armourSoak: 0.5
     _crackedFactor: 2
     _crackSeconds: 5

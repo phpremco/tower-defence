@@ -22,6 +22,12 @@ namespace Game.Economy
         /// <summary>Off by choice: false (the default) keeps edge scrolling on, also for older saves.</summary>
         public bool EdgeScrollingOff;
 
+        /// <summary>Off by choice: false (the default) shows the HUD radar, also for older saves.</summary>
+        public bool RadarOff;
+
+        /// <summary>The radar size as a percent of the default; older saves load the default.</summary>
+        public int RadarSizePercent = 100;
+
         public bool IntroSeen;
 
         /// <summary>Ids of story moments already shown, so a story trigger plays once per save.</summary>

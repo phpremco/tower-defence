@@ -243,6 +243,14 @@ namespace Game.Economy
             Save();
         }
 
+        /// <summary>Stores the radar options: shown or not, and its size in percent of the default.</summary>
+        public void SetRadar(bool on, int sizePercent)
+        {
+            Data.RadarOff = !on;
+            Data.RadarSizePercent = sizePercent;
+            Save();
+        }
+
         /// <summary>The street weapons chosen last time, by asset name.</summary>
         public IReadOnlyList<string> Loadout => Data.LoadoutIds;
 

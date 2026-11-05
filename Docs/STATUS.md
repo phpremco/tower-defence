@@ -2483,3 +2483,43 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
   "never overlap" rule mostly shows on entrance/return lines; slabs read as glowing lumps more than tilted plates from
   far; the slime smear is an additive glow, not truly glossy; the Oozer strike strip is short because the G1 gate broke
   within a few frames; SlimeMonarch's slime would still hurry Oozers (the rule only exempts the layer's own species).
+
+## Round 8: Rime Colossus in the game, Gravemaw's torn fissure, slime rule, overview and radar, hit cooldown, gate crossings (2026-11-05)
+
+- **Frost Warden = Rime Colossus** (Blender round 32) imported (targeted `ApplyBossFx.cs`); clip facts arrive through the
+  report (walk 1.429/1.857, climb edge 2.4 / end 5.571, loop 1.143, dive/surface 2.8, Freeze_Gate 4.3 / cast 30,
+  Shatter_Through 100 f / 4.3 / impact 35 / end 3.8); `BodyHalfWidth` 2.0. Mechanic flow checked in the arena and on
+  screenshots; ice material left as is. Details in `Docs/BOSSES.md` "Round 8".
+- **Gravemaw's crack:** 4.4 m wide, dark gap between lit ragged lips, rounded bends, meander and breathing width, ends
+  narrowing to hairlines with branches, a pointed tearing head, slabs standing on the lips, rubble at the head; fades
+  where it would reach under a structure (`FissureLook` data + `Game/BossDecal` lip/head-taper properties).
+- **Slime rule:** `EnemyDefinition.SlimeImmune` (Oozer and SlimeMonarch, written by the bestiary generator): no slime
+  hurries a slug, whoever laid it; the layer's own species stays exempt too. `SlimeBoostTests` now also proves the
+  SlimeMonarch's slime never hurries an Oozer (x1.000) and still hurries a Skitter (its x1.6).
+- **Overview (hold Tab / gamepad View held):** eases out to the whole field (`OverviewFraming`, 0.45 s, zoom blended on a
+  log scale) and back; the mouse or the stick/pan keys aim (a soft cyan pool on the ground), a click or A fixes the
+  spot and release goes there at the old zoom. Build clicks and the build cursor are blocked while it is active
+  (`LevelContext.OverviewActive`). Works paused or running (unscaled time), not while the pause menu/overlays hold.
+  Gamepad skip-wave on the same button is now a tap.
+- **Radar (`RadarView`, HUD top right under the icons, keep-out registered):** the cutscene's scope picture and sweep,
+  the field painted once (road, ground, rock, lit border), turned by the camera yaw; base icon, gates as white bars
+  across the road, towers as blue squares (wrecks grey), enemies as red contacts flaring under the sweep, fliers as
+  hollow orange rings, bosses big and pulsing; spawn nests only once open; the camera's view frame. Click jumps the
+  camera. Pooled symbols refreshed 10x a second, no per-frame allocation. Options "Radar On/Off" and "Radar size"
+  (70-150 %), saved (`ProgressData.RadarOff`, `RadarSizePercent`), in the main Options and the pause menu's Camera page.
+- **Hit cooldown** (Remco: flinch replays very fast under rapid fire): `HitReaction` (cooldown 0.7 s / bosses 1.8 s,
+  chip damage gathered to 4 % / 1.5 %, never over a mechanic clip); flash and blood still on every hit.
+- **Gate crossings:** roles `GateMount` / `GateStraddle` / `GateDismount` mapped for Gravemaw's coming Blender clips,
+  used by every boss that has them; fallback Climb_Up / held climb pose / Climb_Down (no crawl cycle on the gate).
+- **Tests:** 0 compile errors/warnings; EditMode 457/457 (new `RadarMathTests` 6, `OverviewFramingTests` 5,
+  `HitReactionTests` 5); PlayMode one class at a time: the six boss arenas 1/1 each (FrostWarden with 3%/s extra test
+  damage, see BOSSES.md), SlimeBoost 1/1 (extended), OverviewRadarSmoke 1/1 (new), ContinentSimulation 2/2,
+  CutsceneSmoke 3/3, ModelPerformance 1/1, Screenshot 3/3, StoryCrystal 2/2, StoryGuard 3/3, StoryListener 1/1,
+  StorySmoke 2/2, BalanceProbe 3/3. Save restored byte-identical (ec2a1f6d) after every run; Game view left at 1920x1080.
+- **Gallery** (session scratchpad `gallery/`, Dutch captions in `index.txt`): `FrostWarden/` fully re-shot (19 shots),
+  Gravemaw `01`, `03`, `03b`, `03c` (new crack), `03z_before_remco` (his screenshot), `06c`/`06d` (gate, after; `06_on_the_gate`
+  is before), new `Overview/` (play, overview, pick, return, radar click, options at 1280x720 and 1920x1080).
+- **Weak points:** in a real fight the signature cracks are still often short (the hurt tower stands near the dive);
+  the long-crack shots are the real style laid by a probe; branch hairlines are fairly straight; the gate fallback is a
+  held pose, the proper clinging comes with Gravemaw's Gate_* clips; the Codex pedestal lights the Colossus very white;
+  overview/radar are mouse-and-keyboard tested, gamepad only through the smoke test; no rebinding screen exists.

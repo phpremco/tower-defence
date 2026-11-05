@@ -18,6 +18,9 @@ namespace Game.Platform
         /// <summary>Pointer position in screen pixels, for mouse users.</summary>
         Vector2 PointerPosition { get; }
 
+        /// <summary>True while the overview button is held (Tab; the gamepad View button held a moment, so a tap stays skip-wave).</summary>
+        bool OverviewHeld { get; }
+
         event Action Confirmed;
         event Action Cancelled;
 

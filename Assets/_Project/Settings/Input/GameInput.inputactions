@@ -157,6 +157,15 @@
                                          "processors":  "",
                                          "interactions":  "",
                                          "initialStateCheck":  false
+                                     },
+                                     {
+                                         "name":  "Overview",
+                                         "type":  "Button",
+                                         "id":  "3d6e1b52-8f0a-4c47-9a1e-7b2c5d8e4f61",
+                                         "expectedControlType":  "Button",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  false
                                      }
                                  ],
                      "bindings":  [
@@ -549,7 +558,7 @@
                                           "name":  "",
                                           "id":  "6b52f646-27d3-4dcf-abd8-c88ee2b4e743",
                                           "path":  "\u003cGamepad\u003e/select",
-                                          "interactions":  "",
+                                          "interactions":  "tap(duration=0.25)",
                                           "processors":  "",
                                           "groups":  "",
                                           "action":  "SkipWave",
@@ -663,6 +672,28 @@
                                           "processors":  "",
                                           "groups":  "",
                                           "action":  "HeroAbility2",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "3d6e1b52-8f0a-4c47-9a1e-7b2c5d8e4f62",
+                                          "path":  "<Keyboard>/tab",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Overview",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "3d6e1b52-8f0a-4c47-9a1e-7b2c5d8e4f63",
+                                          "path":  "<Gamepad>/select",
+                                          "interactions":  "hold(duration=0.25)",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Overview",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       }

@@ -126,7 +126,7 @@ namespace Game.Editor
                 Arrival = BossArrival.Pool,
                 Pools = PoolKinds.Ice | PoolKinds.Water,
                 WakeGlow = new Color(0.55f, 0.85f, 1f, 0.8f),
-                BodyHalfWidth = 1.25f,
+                BodyHalfWidth = 2.0f,
                 ArmourPart = "FrostWarden_IceArmour",
                 SignatureText = "Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.",
                 TelegraphText = "It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.",

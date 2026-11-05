@@ -172,7 +172,8 @@ namespace Game.Levels
             {
                 Refresh();
             }
-            if (_context.Mode != PlacementMode.TowerMenu)
+            // While the overview is held the stick aims the overview, not the build cursor.
+            if (_context.Mode != PlacementMode.TowerMenu && !_context.OverviewActive)
             {
                 UpdateStick();
             }
@@ -209,7 +210,7 @@ namespace Game.Levels
 
             _lastPointer = pointer;
             _lastPointerMove = Time.unscaledTime;
-            if (_context.PointerOverUi)
+            if (_context.PointerOverUi || _context.OverviewActive)
             {
                 return;
             }
@@ -313,6 +314,11 @@ namespace Game.Levels
 
         private void OnConfirmed()
         {
+            if (_context.OverviewActive)
+            {
+                return;
+            }
+
             if (_context.Outcome != LevelOutcome.Running || _context.InputBlocked || _context.PointerOverUi)
             {
                 Debug.Log($"[Placement] confirm ignored: outcome={_context.Outcome} paused={_context.Paused} held={_context.Held} pointerOverUi={_context.PointerOverUi}");

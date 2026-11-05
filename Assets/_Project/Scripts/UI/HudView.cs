@@ -24,6 +24,7 @@ namespace Game.UI
         private const float Margin = 20f;
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
+        private const float RadarGap = 12f;
         private const float TopTextY = -16f;
         private const float HeroTextGap = 40f;
         private const float BottomBarHeight = 156f;
@@ -117,6 +118,9 @@ namespace Game.UI
             _codex = gameObject.AddComponent<CodexView>();
             _codex.Initialize(context, safe, time, _input);
             BuildIcons(safe);
+            // Under the world-anchored menus made below, so an open tower menu near the corner draws over it.
+            RadarView radar = RadarView.Create(context, safe, camera, new Vector2(-Margin, -(TopBarHeight + RadarGap)));
+            keepOut.Add(radar.Panel);
             gameObject.AddComponent<BossMarkerView>().Initialize(context, worldLabels, camera, keepOut);
             var bossBar = gameObject.AddComponent<BossHealthView>();
             bossBar.Initialize(context, safe);

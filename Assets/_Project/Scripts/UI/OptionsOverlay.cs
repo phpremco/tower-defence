@@ -30,6 +30,8 @@ namespace Game.UI
             "Move the cursor      Left stick / D-pad    Mouse\n" +
             "Move the camera      Right stick    WASD / arrow keys\n" +
             "Zoom                 L3 / R3    - / +    Mouse wheel\n" +
+            "Overview (hold)      View (hold)    Tab   (click or A: go there on release)\n" +
+            "Radar                Top right: click to send the camera there\n" +
             "Confirm              A    Enter    Left click\n" +
             "Cancel               B    Esc    Right click\n" +
             "Switch tower         LB / RB    Q / E\n" +
@@ -39,7 +41,7 @@ namespace Game.UI
             "Drones               Panel bottom right: click a card, or A on the base doorstep, then the stick\n" +
             "Game speed           Y    Space\n" +
             "Pause                Start    P\n" +
-            "Skip wave (test)     Select    N";
+            "Skip wave (test)     View (tap)    N";
 
         public void Open(MainMenuScreen owner)
         {

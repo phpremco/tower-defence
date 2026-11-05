@@ -13,6 +13,7 @@
                        "Game.Economy",
                        "Game.Balance",
                        "Game.UI",
+                       "Game.Platform",
                        "UnityEngine.TestRunner",
                        "UnityEditor.TestRunner"
                    ],

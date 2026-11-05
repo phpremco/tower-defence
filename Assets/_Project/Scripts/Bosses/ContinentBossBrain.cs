@@ -26,7 +26,6 @@ namespace Game.Bosses
         private const float BodyRadiusPerScale = 0.9f;
         private const float DiveCheckSeconds = 0.4f;
         private const float RoarRate = 1.2f;
-        private const float GateLoopRate = 0.35f;
         private const float HeightFollow = 6f;
         private const float MaxSlopeTilt = 0.6f;
         private const float BreakoutBurstRadius = 1.8f;
@@ -523,17 +522,17 @@ namespace Game.Bosses
             State = "ClimbingGate";
             _record.Climbs++;
             _enemy.SetDirected(true);
-            BossClip up = BossClip.Of(_view, ModelClipRole.ClimbUp, _boss.Climb.ClipRate);
-            BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
+            ModelClipRole mount = GateRole(ModelClipRole.GateMount, ModelClipRole.ClimbUp);
+            BossClip up = BossClip.Of(_view, mount, _boss.Climb.ClipRate);
             Vector3 dir = BossGeometry.Flat(structure.Position - transform.position);
             Vector3 start = transform.position;
             _enemy.Place(start, dir);
-            _view.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
+            _view.PlayScripted(mount, up.Rate, true);
             yield return Wait(up.Seconds);
             float height = structure.IsBase ? ClimbLayer.BaseHeight : ClimbLayer.GateHeight;
             Vector3 top = start + dir * up.Forward;
             _enemy.Place(new Vector3(top.x, height, top.z), dir);
-            _view.LoopScripted(ModelClipRole.ClimbLoop, GateLoopRate);
+            Straddle();
             OnStructure = true;
             var gate = structure as Tower;
             gate?.SetBurden(1f);
@@ -569,14 +568,31 @@ namespace Game.Bosses
         /// <summary>Climbs down off a structure on its far side and walks on along the road.</summary>
         internal IEnumerator ClimbDown(Vector3 top, Vector3 dir)
         {
-            BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
-            _view.PlayScripted(ModelClipRole.ClimbDown, down.Rate, true);
+            ModelClipRole dismount = GateRole(ModelClipRole.GateDismount, ModelClipRole.ClimbDown);
+            BossClip down = BossClip.Of(_view, dismount, _boss.Climb.ClipRate);
+            _view.PlayScripted(dismount, down.Rate, true);
             yield return Wait(down.Seconds);
             OnStructure = false;
             Vector3 land = top + dir * down.Forward;
             _enemy.Place(new Vector3(land.x, 0f, land.z), dir);
             _view.ReleaseScript();
             JoinRoad();
+        }
+
+        // A gate crossing clip of its own when the model has one (Gravemaw's Gate_* clips), else the rock-climb clip.
+        internal ModelClipRole GateRole(ModelClipRole gate, ModelClipRole climb) => _view.HasClip(gate) ? gate : climb;
+
+        // On a gate it clings in place (Remco: the crawl cycle looked like walking on flat ground): its own straddle loop, or
+        // else the climb loop held still on one pose.
+        internal void Straddle()
+        {
+            if (_view.HasClip(ModelClipRole.GateStraddle))
+            {
+                _view.LoopScripted(ModelClipRole.GateStraddle);
+                return;
+            }
+
+            _view.LoopScripted(ModelClipRole.ClimbLoop, 0f);
         }
 
         // A living gate or the base straight ahead, as far ahead as the climb clip reaches.

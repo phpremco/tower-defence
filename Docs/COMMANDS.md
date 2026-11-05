@@ -579,3 +579,25 @@ Scripts that need MPFB enable it themselves (`addon_utils.enable("bl_ext.blender
 | Screenshots: a drone introduction with its lit card, a Laser against a Skitter swarm | `bash Tools/PlayTest/n3_shots.sh` (pictures in `Assets/Temp/n3_*.png`; restore the save after; `n3_beam_probe.cs` prints the beam's target and cooldown) |
 
 The probe bot's `[Probe]` lines now end with the wear of the run: gate and gun health lost and money spent on repairs.
+
+## Round 8: overview, radar, crack showcase (added 2026-11-05)
+
+**Input.** New action `Overview` in `Settings/Input/GameInput.inputactions`: hold **Tab**, or hold the gamepad **View**
+(Select) button for 0.25 s. The gamepad's Skip-wave binding on the same button is now a tap (`tap(duration=0.25)`).
+The binding lives in the action asset, so it can be rebound there (there is no in-game rebinding screen yet).
+While held: the mouse points (click fixes the spot), or the left stick / pan keys move the aim and A fixes it;
+release returns to the play view, at the fixed spot when there is one. The radar (top right) takes a click to send the
+camera; options "Radar On/Off" and "Radar size" (saved as `RadarOff`, `RadarSizePercent`).
+
+| What | Command |
+| --- | --- |
+| Hold / release the overview in Play Mode | `unity command simulate_key --key Tab --action down` / `--action up` |
+| Click (real UI click: down, wait, up; `click` alone is too quick for the radar) | `simulate_pointer --x X --y Y --action down`, then `--action up` (y from the bottom) |
+| Radar and overview screenshots at one Game view size | `sh <scratchpad>/round8/r8shots.sh 1280 720` (C1_04, an opened nest, play, overview, pick, return, radar click, Options) |
+| Lay a burrow crack along a stretch of road to judge its look | `eval_file --file <scratchpad>/round8/crack_show.cs` (args `startShare cells openShare zoom` in `crack_show.txt`; `crack_clear.cs` removes it, `zoom_at.cs` zooms on a slab) |
+| Only the Frost Warden's art | `run_script --file Tools/PlayTest/Scripts/ApplyBossFx.cs --entry ApplyBossFx.Run --timeout_ms 900000 --timeout 960` |
+
+- `capture_game_view` always writes 1280x720; the Game view size (`PlayModeWindow.SetCustomRenderingResolution`) still
+  decides the layout. The Game view is left at 1920x1080.
+- The PlayMode test runner can keep a queued run after `cancel_tests`; check `test_status` and `editor_status` again
+  before the next recompile.

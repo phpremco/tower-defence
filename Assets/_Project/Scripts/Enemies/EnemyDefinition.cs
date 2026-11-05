@@ -34,6 +34,10 @@ namespace Game.Enemies
         [SerializeField] [Min(0f)] private float _trailSeconds;
         [SerializeField] [Min(1f)] private float _trailHaste = 1.4f;
         [SerializeField] [Min(0f)] private float _trailDamagePerSecond;
+        [Tooltip("Never hurried by any slime trail, whoever laid it (the slugs: slime is the ground they crawl on).")]
+        [SerializeField] private bool _slimeImmune;
+        [Tooltip("Seconds between two hit flinches (0: the shared default, longer for bosses), so rapid fire never jitters it.")]
+        [SerializeField] [Min(0f)] private float _hitCooldown;
         [SerializeField] [Min(0f)] private float _rageSeconds;
         [SerializeField] [Min(1f)] private float _rageSpeedMultiplier = 1.5f;
         [SerializeField] [Min(0f)] private float _rageRadius = 3f;
@@ -121,6 +125,12 @@ namespace Game.Enemies
         public float TrailDamagePerSecond => _trailDamagePerSecond;
 
         public bool LeavesTrail => _trailSeconds > 0f;
+
+        /// <summary>True for the slugs: no slime trail hurries it, its own species' or another's.</summary>
+        public bool SlimeImmune => _slimeImmune;
+
+        /// <summary>Seconds between two hit flinches; zero takes the shared default (<see cref="HitReaction"/>).</summary>
+        public float HitCooldown => _hitCooldown;
 
         /// <summary>How long pack mates run faster after one of their kind dies nearby; zero for loners.</summary>
         public float RageSeconds => _rageSeconds;
