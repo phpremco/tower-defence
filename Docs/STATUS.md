@@ -2378,3 +2378,23 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
 - **Weak points:** the on-base stand-in is the Idle loop placed on the roof (it pops from the rise's last pose; Blender's
   `OnBase_Loop` will replace it); the Sealed One floats a little above its Codex pedestal (its seat pose, unchanged); the
   card's "-50%" sits on the frame's lower edge.
+
+## Round 5: round-29 boss art imported, boss look pass, gallery (2026-11-05)
+
+- **Balance (task 0):** the probe bot buys one splash gun before the first crowd wave (`SplashReserve`, like its Flak
+  reserve; data untouched). Quartz Flats seeds 1-7: Easy 7/7 (was 3/7), Medium 7/7; see `Docs/BALANCE.md`.
+- **Import (task 1):** `Tools/PlayTest/Scripts/ApplyBossFx.cs` (targeted: Frost Warden, Sealed One, ShardRunner, ShardCrawler
+  rebuilt; new `BlenderBossFxBuilder` for Boss_FX, RuinGate, SealCrystal, Gate_IceBlock, Cutscene_Drill_Wreck, drained gate
+  maps, UI_Dampened; generator step "Boss FX art"). Everything wired where 4a-4c had stand-ins; details in `Docs/BOSSES.md`
+  "Round 5". New shader `Game/BossDecal`; `Game/UnitLit` gained `_SrcBlend/_DstBlend/_ZWrite/_RimAlpha` (defaults unchanged)
+  for the see-through ice block. `BoneScaleView` no longer holds the Warden's armour plates (scale-0 fix in the FBX).
+- **Look (task 2):** Gravemaw's crack is a torn fissure (raised lips, dark gap, molten core only, heaved basalt chunks, dust
+  and sparks at the head, slow cooling). Frost Warden: cold flat ice instead of the brown/orange baked ice, bright cold rim,
+  cold mist and a chest light; painted ice block fitted to the gate; frost creep decals. Ruin gate faces the camera. Seven
+  Blender requests for the Warden model and four smaller ones in `Docs/MODEL_TODO.md` "Ronde 5 Unity".
+- **Gallery (task 3):** 90 game-camera shots of all six bosses in the session scratchpad `gallery/<Boss>/`, captions in
+  `gallery/index.txt` (Dutch).
+- **Tests:** 0 compile errors/warnings; EditMode 414/414 + new `BossFxArtTests` 5/5; PlayMode one class at a time: the six boss arenas 1/1 each, ContinentSimulation 2/2, CutsceneSmoke 3/3, ModelPerformance 1/1, Screenshot 3/3, StoryCrystal 2/2, StoryGuard 3/3, StoryListener 1/1, StorySmoke 2/2, BalanceProbe 3/3 three times. Save restored byte-identical (ec2a1f6d) after every run.
+- **Weak points:** Frost Warden model (flat armour cards, warm body, small silhouette from above); the Matriarch's eggs and
+  Rotbloom's death are hard to frame; shard climb clips are mapped but the shards have no climb logic yet; the Sealed One's
+  furrow reads mostly as a dark band at play zoom; the seal crystals are small at play zoom.

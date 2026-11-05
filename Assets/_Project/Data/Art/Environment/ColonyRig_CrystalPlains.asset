@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels::Game.Levels.ColonyRigDefinition
   _drill: {fileID: 11400000, guid: 7bbb734a1a262c24489e47f98e2094cb, type: 2}
   _drillScale: 0.7
+  _wreck: {fileID: 11400000, guid: 0bae009067d6cd545b529cb060646b35, type: 2}
   _footprintRadius: 1.8
   _height: 3.4
   _fieldGap: 0.6

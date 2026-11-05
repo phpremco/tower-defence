@@ -1,0 +1,615 @@
+{
+  "BossFX_LavaTrail_Albedo": {
+    "file": "BossFX_LavaTrail_Albedo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 396053,
+    "low_bytes": 127289,
+    "albedo": "BossFX_LavaTrail_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_LavaTrail_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "1.4 wide, 5.6 per tile",
+    "use": "Cinder Matriarch lava trail: one strip along her trail (LineRenderer Tile, or per-piece quads with a random U offset)",
+    "threshold": "G = heat: a pixel glows while G > cool, cool 0 -> 1 over the 6 s cooling (edges cool first, the molten channel last); emission = R * smoothstep(cool - 0.08, cool, G) * lava colour (1, 0.35, 0.08) x 3; fade albedo alpha out over the last seconds",
+    "replaces": "LavaTrailView painted glow pools (MODEL_TODO ronde 4b 'Lavaspoor')",
+    "preview_glow": [
+      1.0,
+      0.33,
+      0.07
+    ],
+    "part": "albedo"
+  },
+  "BossFX_LavaTrail_Emission": {
+    "file": "BossFX_LavaTrail_Emission.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 99035,
+    "low_bytes": 37272,
+    "albedo": "BossFX_LavaTrail_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_LavaTrail_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "1.4 wide, 5.6 per tile",
+    "use": "Cinder Matriarch lava trail: one strip along her trail (LineRenderer Tile, or per-piece quads with a random U offset)",
+    "threshold": "G = heat: a pixel glows while G > cool, cool 0 -> 1 over the 6 s cooling (edges cool first, the molten channel last); emission = R * smoothstep(cool - 0.08, cool, G) * lava colour (1, 0.35, 0.08) x 3; fade albedo alpha out over the last seconds",
+    "replaces": "LavaTrailView painted glow pools (MODEL_TODO ronde 4b 'Lavaspoor')",
+    "preview_glow": [
+      1.0,
+      0.33,
+      0.07
+    ],
+    "part": "emission"
+  },
+  "BossFX_GroundCrack_Albedo": {
+    "file": "BossFX_GroundCrack_Albedo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 316819,
+    "low_bytes": 100241,
+    "albedo": "BossFX_GroundCrack_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_GroundCrack_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "2.0 wide, 8 per tile",
+    "use": "Gravemaw's crack line over Burrow_Travel (along the crest ridge) and the entrance crack towards the colony rig",
+    "threshold": "G = 1 - distance from the fissure: the crack opens while `open` rises 0 -> 1: show alpha where G > 1 - open (the fissure first, the heaved lips last); emission = R * warm colour (1, 0.42, 0.1) x 3-4",
+    "replaces": "MarkerKind.GlowBlade orange seam (MODEL_TODO ronde 4a 'Scheurlijn'); also fits CrackStyle.Heat",
+    "preview_glow": [
+      1.0,
+      0.4,
+      0.1
+    ],
+    "part": "albedo"
+  },
+  "BossFX_GroundCrack_Emission": {
+    "file": "BossFX_GroundCrack_Emission.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 106990,
+    "low_bytes": 36453,
+    "albedo": "BossFX_GroundCrack_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_GroundCrack_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "2.0 wide, 8 per tile",
+    "use": "Gravemaw's crack line over Burrow_Travel (along the crest ridge) and the entrance crack towards the colony rig",
+    "threshold": "G = 1 - distance from the fissure: the crack opens while `open` rises 0 -> 1: show alpha where G > 1 - open (the fissure first, the heaved lips last); emission = R * warm colour (1, 0.42, 0.1) x 3-4",
+    "replaces": "MarkerKind.GlowBlade orange seam (MODEL_TODO ronde 4a 'Scheurlijn'); also fits CrackStyle.Heat",
+    "preview_glow": [
+      1.0,
+      0.4,
+      0.1
+    ],
+    "part": "emission"
+  },
+  "BossFX_Furrow_Albedo": {
+    "file": "BossFX_Furrow_Albedo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 279148,
+    "low_bytes": 95524,
+    "albedo": "BossFX_Furrow_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_Furrow_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "3.0 wide, 12 per tile",
+    "use": "The Sealed One's furrow behind Walk / Climb_* / Rise_OntoBase (it ploughs the ground; add dust puffs)",
+    "threshold": "G = 1 (unused); R = a faint violet seep in the deepest drag scratches: emission colour (0.6, 0.3, 1) x 1.5, fade it with the phase",
+    "replaces": "CrackStyle.Furrow dark seam (MODEL_TODO ronde 4c 'Voor van the Sealed One')",
+    "preview_glow": [
+      0.6,
+      0.3,
+      1.0
+    ],
+    "part": "albedo"
+  },
+  "BossFX_Furrow_Emission": {
+    "file": "BossFX_Furrow_Emission.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 1748,
+    "low_bytes": 623,
+    "albedo": "BossFX_Furrow_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_Furrow_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "3.0 wide, 12 per tile",
+    "use": "The Sealed One's furrow behind Walk / Climb_* / Rise_OntoBase (it ploughs the ground; add dust puffs)",
+    "threshold": "G = 1 (unused); R = a faint violet seep in the deepest drag scratches: emission colour (0.6, 0.3, 1) x 1.5, fade it with the phase",
+    "replaces": "CrackStyle.Furrow dark seam (MODEL_TODO ronde 4c 'Voor van the Sealed One')",
+    "preview_glow": [
+      0.6,
+      0.3,
+      1.0
+    ],
+    "part": "emission"
+  },
+  "BossFX_RotTrail_Albedo": {
+    "file": "BossFX_RotTrail_Albedo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 274939,
+    "low_bytes": 90855,
+    "albedo": "BossFX_RotTrail_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_RotTrail_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "1.6 wide, 6.4 per tile",
+    "use": "Rotbloom's rot trail (per trail piece, like the lava trail)",
+    "threshold": "G = life: the decal is visible while G > decay, decay 0 -> 1 over its life (the edges and the mould rings go first); emission = R * spore green (0.55, 1.0, 0.2) x 1.5 (pustules and spores)",
+    "replaces": "LavaTrailView in rot colours (MODEL_TODO ronde 4c 'Rotbloom-rotspoor')",
+    "preview_glow": [
+      0.55,
+      1.0,
+      0.2
+    ],
+    "part": "albedo"
+  },
+  "BossFX_RotTrail_Emission": {
+    "file": "BossFX_RotTrail_Emission.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 133075,
+    "low_bytes": 52779,
+    "albedo": "BossFX_RotTrail_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_RotTrail_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "1.6 wide, 6.4 per tile",
+    "use": "Rotbloom's rot trail (per trail piece, like the lava trail)",
+    "threshold": "G = life: the decal is visible while G > decay, decay 0 -> 1 over its life (the edges and the mould rings go first); emission = R * spore green (0.55, 1.0, 0.2) x 1.5 (pustules and spores)",
+    "replaces": "LavaTrailView in rot colours (MODEL_TODO ronde 4c 'Rotbloom-rotspoor')",
+    "preview_glow": [
+      0.55,
+      1.0,
+      0.2
+    ],
+    "part": "emission"
+  },
+  "BossFX_RoadSink_Albedo": {
+    "file": "BossFX_RoadSink_Albedo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 339140,
+    "low_bytes": 112286,
+    "albedo": "BossFX_RoadSink_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_RoadSink_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "road width (about 3.5), 14 per tile",
+    "use": "laid over the old road when the Sealed One's new road rises (the old one sinks and goes dark)",
+    "threshold": "G = sink order: show where G > 1 - sink, sink 0 -> 1 over ~2 s (the middle first, then out to the shear cracks); R = void seep in the deepest cracks, colour (0.55, 0.25, 1) x 1.5",
+    "replaces": "nothing yet: the old road did not change (MODEL_TODO ronde 4c 'Nieuwe weg van the Sealed One')",
+    "preview_glow": [
+      0.55,
+      0.25,
+      1.0
+    ],
+    "part": "albedo"
+  },
+  "BossFX_RoadSink_Emission": {
+    "file": "BossFX_RoadSink_Emission.png",
+    "size": [
+      1024,
+      256
+    ],
+    "bytes": 57742,
+    "low_bytes": 23737,
+    "albedo": "BossFX_RoadSink_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_RoadSink_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "strip decal",
+    "wrap": "Repeat U, Clamp V",
+    "world_size_m": "road width (about 3.5), 14 per tile",
+    "use": "laid over the old road when the Sealed One's new road rises (the old one sinks and goes dark)",
+    "threshold": "G = sink order: show where G > 1 - sink, sink 0 -> 1 over ~2 s (the middle first, then out to the shear cracks); R = void seep in the deepest cracks, colour (0.55, 0.25, 1) x 1.5",
+    "replaces": "nothing yet: the old road did not change (MODEL_TODO ronde 4c 'Nieuwe weg van the Sealed One')",
+    "preview_glow": [
+      0.55,
+      0.25,
+      1.0
+    ],
+    "part": "emission"
+  },
+  "BossFX_FrostCreep_Albedo": {
+    "file": "BossFX_FrostCreep_Albedo.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 656024,
+    "low_bytes": 210492,
+    "albedo": "BossFX_FrostCreep_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_FrostCreep_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "radial decal atlas",
+    "rows": 2,
+    "cols": 2,
+    "cell": [
+      512,
+      512
+    ],
+    "wrap": "Clamp",
+    "world_size_m": "about 2.5 across per cell",
+    "use": "Frost Warden rime: one cell (random, random rotation) 2.2 m ahead of it and under a frozen gate; _BaseMap tiling (0.5, 0.5), offset per cell",
+    "threshold": "G = growth order (0 at the centre, 1 at the branch tips): show alpha where G < grow, grow 0 -> 1 over ~1 s, so the frost creeps out along the dendrites; emission = R * ice (0.5, 0.85, 1) x 1.2",
+    "replaces": "the pale glow pool with mist 2.2 m ahead of the Warden (MODEL_TODO ronde 4b 'Rijp/vorst')",
+    "preview_glow": [
+      0.5,
+      0.85,
+      1.0
+    ],
+    "part": "albedo"
+  },
+  "BossFX_FrostCreep_Emission": {
+    "file": "BossFX_FrostCreep_Emission.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 327282,
+    "low_bytes": 116896,
+    "albedo": "BossFX_FrostCreep_Albedo.png (sRGB on, straight alpha = coverage)",
+    "emission": "BossFX_FrostCreep_Emission.png (sRGB off: R glow mask, G threshold, B 0, A 1)",
+    "kind": "radial decal atlas",
+    "rows": 2,
+    "cols": 2,
+    "cell": [
+      512,
+      512
+    ],
+    "wrap": "Clamp",
+    "world_size_m": "about 2.5 across per cell",
+    "use": "Frost Warden rime: one cell (random, random rotation) 2.2 m ahead of it and under a frozen gate; _BaseMap tiling (0.5, 0.5), offset per cell",
+    "threshold": "G = growth order (0 at the centre, 1 at the branch tips): show alpha where G < grow, grow 0 -> 1 over ~1 s, so the frost creeps out along the dendrites; emission = R * ice (0.5, 0.85, 1) x 1.2",
+    "replaces": "the pale glow pool with mist 2.2 m ahead of the Warden (MODEL_TODO ronde 4b 'Rijp/vorst')",
+    "preview_glow": [
+      0.5,
+      0.85,
+      1.0
+    ],
+    "part": "emission"
+  },
+  "BossFX_SporeCloud": {
+    "file": "BossFX_SporeCloud.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 208268,
+    "low_bytes": 73415,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": [
+      0.5,
+      1.0,
+      0.25
+    ],
+    "fps": 12,
+    "loop": false,
+    "lifetime": 1.4,
+    "pivot": [
+      0.5,
+      0.2
+    ],
+    "channels": "CG: R spore specks, G cloud density, B 0, A coverage",
+    "blend": "Additive (or alpha blend on G for a murkier cloud)",
+    "tint": "G spore green (0.5, 1.0, 0.25), R pale yellow-green (0.9, 1, 0.6)",
+    "use": "Rotbloom's spore pod lands on a target pad: camera-facing quad ~2.5 m on the pad, pivot on the pad",
+    "replaces": "the green glow pool + point light + mist of TowerAuraView (MODEL_TODO ronde 4c 'Groene waas')"
+  },
+  "BossFX_VineBurn": {
+    "file": "BossFX_VineBurn.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 117882,
+    "low_bytes": 43802,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": [
+      1.0,
+      0.45,
+      0.1
+    ],
+    "fps": 16,
+    "loop": false,
+    "lifetime": 1.0,
+    "pivot": [
+      0.5,
+      0.0
+    ],
+    "channels": "CG: R flame front + embers (hot core), G flame body, B char line (the burnt vine), A coverage",
+    "blend": "Additive R/G; B can alpha-darken the vine if drawn over the mesh",
+    "tint": "G fire orange (1, 0.45, 0.1), R yellow-white (1, 0.85, 0.5)",
+    "use": "burning the overgrowth off a pad: 3-5 camera-facing quads round the tower (about 0.8 x 1.8 m), random flip, while RotOvergrowth's Retracted blend shape runs 0 -> 100",
+    "replaces": "the emission flash on the shrinking vines (MODEL_TODO ronde 4c 'Overgroeide pad bij branden')"
+  },
+  "BossFX_ShardFlash": {
+    "file": "BossFX_ShardFlash.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 412556,
+    "low_bytes": 152329,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": [
+      0.95,
+      0.45,
+      1.0
+    ],
+    "fps": 24,
+    "loop": false,
+    "lifetime": 0.67,
+    "channels": "CG: R white-hot core, star spikes, fragment heads; G glow; B hexagon shock ring; A coverage",
+    "blend": "Additive",
+    "tint": "G crystal pink-violet (0.95, 0.45, 1.0) as the giant's crystals, B ice (0.6, 0.9, 1)",
+    "use": "Split at the burst frame (28), camera-facing ~6 m at chest height, plus one per shard spawn point at 1/3 size; Rejoin: play it backwards (frame 15 -> 0, the fragments and ring converge) ending on the form frame (30)",
+    "replaces": "the generic crystal flash of the Split/Rejoin (MODEL_TODO ronde 28 'The Shattered')"
+  },
+  "BossFX_DiveWake_Water": {
+    "file": "BossFX_DiveWake_Water.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 597610,
+    "low_bytes": 215638,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": null,
+    "fps": 12,
+    "loop": true,
+    "lifetime": 1.33,
+    "channels": "LIT (as round-20 Acid_Splash): R lit shading (premultiplied by A), G thickness / heat, B specular, A alpha",
+    "blend": "Alpha blend premultiplied: rgb = lerp(dark, bright, G) * R + B * 0.6 (+ emission for lava)",
+    "tint": "foam white-blue; G foam thickness (no emission)",
+    "preview_dark": [
+      0.08,
+      0.2,
+      0.3
+    ],
+    "preview_bright": [
+      0.85,
+      0.95,
+      1.0
+    ],
+    "use": "flat on the water surface over a submerged boss (Submerged_Loop / Burrow_Travel in quicksand), the top of the frame = the boss's forward; ~1.2 x the boss's width; spawn a one-shot ring of it at Dive splash / Surface breach frames",
+    "replaces": "the glow pool + generated bubbles (MODEL_TODO ronde 4a 'Wake')"
+  },
+  "BossFX_DiveWake_Lava": {
+    "file": "BossFX_DiveWake_Lava.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 1238375,
+    "low_bytes": 413114,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": null,
+    "fps": 12,
+    "loop": true,
+    "lifetime": 1.33,
+    "channels": "LIT (as round-20 Acid_Splash): R lit shading (premultiplied by A), G thickness / heat, B specular, A alpha",
+    "blend": "Alpha blend premultiplied: rgb = lerp(dark, bright, G) * R + B * 0.6 (+ emission for lava)",
+    "tint": "crust near-black to molten orange; G heat: emission = G * (1, 0.4, 0.08) x 4",
+    "preview_dark": [
+      0.08,
+      0.02,
+      0.01
+    ],
+    "preview_bright": [
+      1.0,
+      0.45,
+      0.08
+    ],
+    "use": "flat on the lava surface over a submerged boss (Submerged_Loop / Burrow_Travel in quicksand), the top of the frame = the boss's forward; ~1.2 x the boss's width; spawn a one-shot ring of it at Dive splash / Surface breach frames",
+    "replaces": "the glow pool + generated bubbles (MODEL_TODO ronde 4a 'Wake')"
+  },
+  "BossFX_DiveWake_Bog": {
+    "file": "BossFX_DiveWake_Bog.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 921913,
+    "low_bytes": 310097,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": null,
+    "fps": 12,
+    "loop": true,
+    "lifetime": 1.33,
+    "channels": "LIT (as round-20 Acid_Splash): R lit shading (premultiplied by A), G thickness / heat, B specular, A alpha",
+    "blend": "Alpha blend premultiplied: rgb = lerp(dark, bright, G) * R + B * 0.6 (+ emission for lava)",
+    "tint": "dark olive scum to murky green; G = gas bubbles, a faint marsh-gas glow (0.5, 0.9, 0.3) x 0.5 optional",
+    "preview_dark": [
+      0.04,
+      0.06,
+      0.02
+    ],
+    "preview_bright": [
+      0.35,
+      0.42,
+      0.15
+    ],
+    "use": "flat on the bog surface over a submerged boss (Submerged_Loop / Burrow_Travel in quicksand), the top of the frame = the boss's forward; ~1.2 x the boss's width; spawn a one-shot ring of it at Dive splash / Surface breach frames",
+    "replaces": "the glow pool + generated bubbles (MODEL_TODO ronde 4a 'Wake')"
+  },
+  "BossFX_DiveWake_Quicksand": {
+    "file": "BossFX_DiveWake_Quicksand.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 920605,
+    "low_bytes": 321940,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": null,
+    "fps": 12,
+    "loop": true,
+    "lifetime": 1.33,
+    "channels": "LIT (as round-20 Acid_Splash): R lit shading (premultiplied by A), G thickness / heat, B specular, A alpha",
+    "blend": "Alpha blend premultiplied: rgb = lerp(dark, bright, G) * R + B * 0.6 (+ emission for lava)",
+    "tint": "dark wet sand to dry sand; G = streaming grains (lighter)",
+    "preview_dark": [
+      0.18,
+      0.12,
+      0.06
+    ],
+    "preview_bright": [
+      0.62,
+      0.48,
+      0.3
+    ],
+    "use": "flat on the quicksand surface over a submerged boss (Submerged_Loop / Burrow_Travel in quicksand), the top of the frame = the boss's forward; ~1.2 x the boss's width; spawn a one-shot ring of it at Dive splash / Surface breach frames",
+    "replaces": "the glow pool + generated bubbles (MODEL_TODO ronde 4a 'Wake')"
+  },
+  "BossFX_DiveWake_Ice": {
+    "file": "BossFX_DiveWake_Ice.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 1213171,
+    "low_bytes": 410318,
+    "kind": "flipbook",
+    "rows": 4,
+    "cols": 4,
+    "frames": 16,
+    "cell": [
+      256,
+      256
+    ],
+    "colour_space": "linear (sRGB off)",
+    "frame_order": "top-left first, row by row (Texture Sheet Animation)",
+    "wrap": "Clamp",
+    "preview_tint": null,
+    "fps": 12,
+    "loop": true,
+    "lifetime": 1.33,
+    "channels": "LIT (as round-20 Acid_Splash): R lit shading (premultiplied by A), G thickness / heat, B specular, A alpha",
+    "blend": "Alpha blend premultiplied: rgb = lerp(dark, bright, G) * R + B * 0.6 (+ emission for lava)",
+    "tint": "slush blue to white plates; G slush and cracks, a faint ice glow (0.5, 0.85, 1) x 0.6",
+    "preview_dark": [
+      0.25,
+      0.4,
+      0.55
+    ],
+    "preview_bright": [
+      0.9,
+      0.97,
+      1.0
+    ],
+    "use": "flat on the ice surface over a submerged boss (Submerged_Loop / Burrow_Travel in quicksand), the top of the frame = the boss's forward; ~1.2 x the boss's width; spawn a one-shot ring of it at Dive splash / Surface breach frames",
+    "replaces": "the glow pool + generated bubbles (MODEL_TODO ronde 4a 'Wake')"
+  },
+  "UI_Dampened": {
+    "file": "UI_Dampened.png",
+    "file_2x": "UI_Dampened@2x.png",
+    "size": [
+      128,
+      128
+    ],
+    "size_2x": [
+      256,
+      256
+    ],
+    "folder": "ArtSource/Exports/UI",
+    "colour_space": "sRGB, straight alpha",
+    "style": "UI_Icons stroke weights, bevel and soft dark rim (build_ui.py); white, tint with Image.color",
+    "tint": "violet (0.72, 0.45, 1.0), the Sealed One's adaptation colour, or white",
+    "use": "Image over the dampened tower's picture beside the boss bar (same rect, preserve aspect); the picture itself greyed as now; pulse its alpha at the Adapt pulse frame",
+    "replaces": "the plain grey-tinted HUD card (MODEL_TODO ronde 4c 'Gedempt-icoon op de bossbalk')"
+  },
+  "_notes": {
+    "round": 29,
+    "script": "Tools/Blender/build_bosses29_fx.py",
+    "convention": "PNG row 0 = top (Unity v = 1). Decal albedo sRGB on, everything else sRGB off. Strips: U along the path (Repeat), V across (Clamp). Low/ = half size."
+  }
+}

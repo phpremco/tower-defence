@@ -24,6 +24,13 @@ namespace Game.Bosses
         private const float HazeIntensity = 5f;
         private const float CreepIntensity = 2.5f;
         private const float CreepAhead = 2.2f;
+        private const float ChillMistHeight = 0.25f;
+        private const float ChillMistRadius = 1.4f;
+        private const float ChillMistRate = 12f;
+        private const float ChillLightHeight = 3f;
+        private const float ChillLightRange = 6f;
+        private const float ChillLightIntensity = 2.5f;
+        private static readonly Color ChillMist = new Color(0.75f, 0.9f, 1f, 0.28f);
         private const float BreathBurstRadius = 1.2f;
         private const float ShardBurstRadius = 1.8f;
         private static readonly Color Haze = new Color(0.5f, 0.82f, 1f);
@@ -36,9 +43,10 @@ namespace Game.Bosses
         private readonly List<Transform> _rageBones = new List<Transform>(10);
         private readonly TowerAuraView _haze;
         private readonly TowerAuraView _creep;
+        private readonly FrostCreepView _frost;
+        private readonly ParticleSystem _chill;
+        private readonly Light _chillLight;
         private readonly BoneScaleView _icicles;
-        private readonly BoneScaleView _plates;
-        private readonly List<Transform> _plateBones = new List<Transform>(16);
         private GateRage _rage = new GateRage(0f, 1);
         private IceArmour _armour = new IceArmour(1f, 1f, 1f);
         private Tower _warned;
@@ -49,8 +57,20 @@ namespace Game.Bosses
             _brain = brain;
             _haze = TowerAuraView.Create(brain.Field.Effects, "GateHaze");
             _creep = TowerAuraView.Create(brain.Field.Effects, "FrostCreep");
+            _frost = FrostCreepView.Create(brain.Field.Effects);
+            // Cold rolls off it: a low mist round its feet and a pale light on its chest, so it reads as ice from above.
+            _chill = ParticleKit.Create(brain.transform, "ColdMist", Vector3.up * ChillMistHeight, ChillMist, 1.6f, 2.6f, 0.7f, 1.4f, 0.05f, 0.25f, -0.01f, 90, ChillMistRadius);
+            ParticleKit.SetRate(_chill, ChillMistRate);
+            var glow = new GameObject("ColdLight");
+            glow.transform.SetParent(brain.transform, false);
+            glow.transform.localPosition = Vector3.up * ChillLightHeight;
+            _chillLight = glow.AddComponent<Light>();
+            _chillLight.type = LightType.Point;
+            _chillLight.color = Haze;
+            _chillLight.range = ChillLightRange;
+            _chillLight.intensity = ChillLightIntensity;
+            _chillLight.shadows = LightShadows.None;
             _icicles = brain.gameObject.AddComponent<BoneScaleView>();
-            _plates = brain.gameObject.AddComponent<BoneScaleView>();
             brain.Enemy.DamagedBy += OnDamaged;
         }
 
@@ -70,6 +90,8 @@ namespace Game.Bosses
 
         public void Begin()
         {
+            ParticleKit.SetRate(_chill, ChillMistRate);
+            _chillLight.enabled = true;
             _rage = new GateRage(Power.RagePerGate, Power.MaxRage);
             _armour = new IceArmour(Power.ArmourSoak, Power.CrackedFactor, Power.CrackSeconds);
             _exposed = false;
@@ -89,15 +111,6 @@ namespace Game.Bosses
 
             _icicles.SetBones(_rageBones.ToArray());
             _icicles.SetScale(_rage.BoneScale(Power.RageScale), true);
-            _plateBones.Clear();
-            foreach (string bone in Power.ArmourBones)
-            {
-                _plateBones.AddRange(View.Bones(bone));
-            }
-
-            _plates.SetBones(_plateBones.ToArray());
-            _plates.SetScale(1f, true);
-            _plates.Holding = true;
         }
 
         public IEnumerator Entrance() => null;
@@ -120,6 +133,7 @@ namespace Game.Bosses
         {
             Vector3 ahead = Position + Enemy.Heading * CreepAhead;
             _creep.Show(new Vector3(ahead.x, Field.GroundAt(ahead), ahead.z), Creep, CreepIntensity, true);
+            _frost?.Creep(new Vector3(ahead.x, Field.GroundAt(ahead), ahead.z));
             Tower gate = GateAhead(Power.WarnDistance);
             if (gate == _warned)
             {
@@ -169,6 +183,8 @@ namespace Game.Bosses
 
         public void End()
         {
+            ParticleKit.SetRate(_chill, 0f);
+            _chillLight.enabled = false;
             _haze.Hide();
             _creep.Hide();
             _warned = null;
@@ -209,8 +225,6 @@ namespace Game.Bosses
             _brain.State = "ArmourBreak";
             Enemy.SetDirected(true);
             _creep.Hide();
-            // From here the plates are the Armour_Break clip's: they burst off.
-            _plates.Holding = false;
             BossClip clip = BossClip.Of(View, ModelClipRole.ArmourBreak, Boss.MechanicClipRate);
             if (clip.Exists)
             {
@@ -282,7 +296,7 @@ namespace Game.Bosses
             gate.Freeze(Power.FreezeSeconds);
             _brain.Record.GatesFrozen++;
             RecordShare();
-            IceBlockView.Create(Field.Effects, gate, Field.Level.Road.DirectionAt(Field.Grid.WorldToCell(gate.Position)), IceMaterial(), Field.Context.Projectiles);
+            IceBlockView.Create(Field.Effects, gate, Field.Level.Road.DirectionAt(Field.Grid.WorldToCell(gate.Position)), IceMaterial(), Field.Context.Projectiles, _frost);
             Field.Context.BossGateFrozen.Raise(gate.Position);
             _haze.Hide();
             _warned = null;

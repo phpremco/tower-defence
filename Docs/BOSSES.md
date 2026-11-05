@@ -338,3 +338,51 @@ C1_06 finale fight (`BossRound4cTests.Ledger_...`); none is in a campaign wave, 
 - Rotbloom's cluster radius is data (`OvergrowthPower.ClusterRadius`, generator `BossSpec.ClusterRadius`) at 3.5 m (was 2.6):
   cells are 1 m and a defence stands 2.7-3.2 m apart, so at 2.6 almost every tower was a cluster of one. With 12 towers the
   first volley now sends 3 pods. The quarter cap is unchanged and still decides small defences (5 towers: 1 pad at a time).
+
+## Round 5: round-29 art and the boss look (2026-11-05)
+
+**Import (targeted, no full art rebuild).** `Tools/PlayTest/Scripts/ApplyBossFx.cs` rebuilds only the re-exported bosses and
+shards (`BlenderArtBuilder.RebuildOnly`: FrostWarden, SealedOne, ShardRunner, ShardCrawler) and runs the new
+`BlenderBossFxBuilder` (menu `Tools/Generate/Blender Boss FX (sync, marks, sheets, boss props)`, generator step "Boss FX art"
+after "Marker art"). It writes `Data/Vfx/BossFxArt.asset` (`BossFxArt`, Game.Core, hung on the `VfxLibrary` and registered at
+boot like `MarkerArt`): six ground marks on the new `Game/BossDecal` shader (albedo + R glow / G threshold pack, `_Progress`,
+`_OpenDistance` along UV2.x, lips raised by UV2.y, a dark gap along the strip's middle, glow only in the fissure), eight
+flipbooks on `Game/VfxParticle`, the ruin gate, seal crystals and ice block (`Data/Art/Bosses/*.asset`), the drained gate
+maps and the dampened overlay; the drill wreck goes on `ColonyRigDefinition.Wreck`. Import settings per README round 29
+(`BlenderBossFxCatalog.Preprocess`: albedo sRGB + transparent alpha, packs linear, strips Repeat U / Clamp V).
+
+**Wired where 4a-4c had stand-ins.**
+- Crack lines (`CrackLineView`): `CrackStyle.Burrow` and `Seal` draw the `GroundCrack` strip (Seal tinted violet), `Furrow`
+  the furrow strip; the blade seam is gone for marks, the halo stays faint. Strips start at a random U (`GroundMark.Strip`).
+- Lava and rot trails (`LavaTrailView`): one painted piece per patch, turned along the walk, random U, heat cooling from 0.2
+  (lava) / decay (rot), fading over the last 30 %.
+- Frost creep (`FrostCreepView`): a random frost cell every 1.2 m ahead of the Warden, grows in 1 s, holds 4.5 s, thaws; a
+  large held cell under every frozen gate.
+- Ice block (`IceBlockView`): the painted block on the gate's own transform, as tall as the gate and wider, centred on it,
+  snaps from 0.9 to 1 in 0.3 s, fades on a thaw, two shard bursts on a shatter. The Liquid_Ice cube stays as the fallback.
+- Dive wakes (`WakeView`): the liquid's sheet lies flat over the boss, top along its swim, ~2.4 x its half width.
+- Spore cloud on a landed pod, vine burn round a burned pad (`VinesView`), shard flash at the split and played backwards
+  before the rejoin (`FlipbookFx`).
+- Ruin gate (`RuinGateView`): the Shattered's entrance stands the gate facing the camera; closed and breathing, rumble 0.8 s,
+  Open (seal shards at 30, light and a point light from 38), the giant appears in the flash and walks out when it is open.
+- Seal crystals (`SealCrystalsView`): five round the rift on open ground, rising out of it, dormant lilac, the learned
+  weapon's colour x 2.4, white at the release.
+- Old road sinks (`RecognitionSignature.SinkOldRoad`): a `RoadSink` strip over the old road nearest the rift while the new
+  road rises (decor only; walkers keep the old road).
+- Drained gate (`DrainedLook`): the drained gate's renderers get the drained emission map by property block, back on release.
+- Sealed One on the base: its own `OnBase_Loop`; the base takes its blows at the strike frames 34 and 82 (same damage per
+  second as the stand-in's timed blows) with dust and a short kick.
+- Drill wreck: shown in place of the derrick at Gravemaw's smash, its fallen top away from the hole.
+- Dampened card: the `UI_Dampened` ring in the adaptation violet replaces the drawn strike.
+- Shard climbs: ShardRunner and ShardCrawler carry Climb_Up/Loop/Down (role mapping only; the shards still walk their route,
+  no shard climb logic yet).
+- Frost Warden scale fix: `BoneScaleView` no longer holds the armour plates (`GateBreakerPower.ArmourBones` removed); it still
+  grows the icicles with the rage.
+
+**Look changes (judged from the game camera).**
+- Gravemaw's crack is a fissure: lips raised 0.22 m with lit slopes, a dark gap, the molten glow only in its core (edge glow
+  0.15), dark basalt chunks heaved up along both sides as it opens, dust and sparks at its head; cools over 10 s (glow first).
+- Frost Warden: its ice (second slot and armour) drops the baked albedo and glow maps, which carried warm brown and orange
+  patches that read as dirt and post-its, for one cold tint (0.32, 0.52, 0.72), smoothness 0.85, a bright cold rim and a
+  faint glow (`IceLook` on the catalog row); cold mist rolls round its feet and a blue point light hangs on its chest. The
+  model itself is still the weak point: see MODEL_TODO "Ronde 5 Unity" (FW1-FW7).

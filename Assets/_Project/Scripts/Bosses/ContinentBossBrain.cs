@@ -21,6 +21,8 @@ namespace Game.Bosses
     public sealed class ContinentBossBrain : MonoBehaviour
     {
         private const float BreakEverySeconds = 0.2f;
+        // The wake sheet across: about 1.2 times the body (README round 29), the body twice its half width.
+        private float WakeSize => _boss.BodyHalfWidth * 2.4f;
         private const float BodyRadiusPerScale = 0.9f;
         private const float DiveCheckSeconds = 0.4f;
         private const float RoarRate = 1.2f;
@@ -851,6 +853,7 @@ namespace Game.Bosses
             Vector3 to = new Vector3(plan.Exit.x, surface, plan.Exit.z);
             float distance = Vector3.Distance(from, to);
             float seconds = _dives.SecondsFor(distance, dive.SwimSpeed * plan.SpeedUp);
+            _wake.SetKind(plan.Kind, WakeSize);
             yield return Swim(from, to, seconds);
             if (!Alive)
             {
@@ -876,6 +879,7 @@ namespace Game.Bosses
                 elapsed = Mathf.Min(seconds, elapsed + dt);
                 Vector3 at = Vector3.Lerp(from, to, seconds > 0f ? elapsed / seconds : 1f);
                 _enemy.Place(at, BossGeometry.Flat(to - from));
+                _wake.Face(to - from);
                 _wake.Show(_field.Climb.KindAt(at) == SurfaceKind.Liquid || _field.Climb.KindAt(at) == SurfaceKind.Quicksand, at);
                 _enemy.Health.Heal(_enemy.Health.Max * dive.RegenPerSecond * dt);
                 yield return null;
@@ -931,6 +935,7 @@ namespace Game.Bosses
                 heading = BossGeometry.Flat(OffRoadRoute.NearestRoadCellWorld(_field.Level, middle) - middle);
             }
 
+            _wake.SetKind(kind, WakeSize);
             _enemy.Place(from, heading);
             _wake.Show(true, from);
             float stirred = 0f;

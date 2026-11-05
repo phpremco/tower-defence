@@ -819,3 +819,25 @@ Ook gevonden en opgelost: bij the Sealed One stonden `Seal_1..7` en `Rubble` in 
 | Decals | Het hete lavaspoor gloeit nog over een groot deel van zijn scheurnet: begin op cool 0,2. De schimmelringen in het rotspoor zijn even groot. Vorst bestaat alleen uit ronde cellen. De tegels herhalen om de 5-14 m: geef elk stuk een willekeurige U-offset |
 | Flipbooks | De V-armen van de waterkielzog lezen klein als twee strepen. Rejoin is de Split-sheet achterstevoren. Sporenwolk en rankbrand zijn naar de camera gerichte sheets |
 | Gedempte poort | Een rekenkundige variant van de bestaande emissie. Nog niet op het model bekeken |
+
+### Ronde 5 Unity (boss-look, 2026-11-05): verzoeken voor Blender
+
+Ronde 29 is in het spel (alle onderdelen van "Afgehandeld" hierboven zijn bedraad, behalve: de scherven hebben hun klimclips maar nog geen klimlogica).
+
+Ronde 29 is geïmporteerd (zie `Docs/BOSSES.md`, "Round 5 look"). Bij het kritisch kijken vanuit de spelcamera bleek dat de
+**Frost Warden zelf** het probleem is, niet alleen zijn materiaal. Unity heeft gedaan wat met materiaal kan (het pantser
+en de glaives donkerder en kouder getint, een heldere koude rand, gloed uit de scheuren, koude mist en een blauw licht om
+hem heen), maar de vorm blijft lezen als papier en plastic. Precieze verzoeken voor de Blender-agent:
+
+| # | Onderdeel | Verzoek |
+| --- | --- | --- |
+| FW1 | IJspantser (`FrostWarden_IceArmour`) | De platen zijn platte, enkelzijdige kaarten die los van het lijf zweven. Maak er **dikke, gefacetteerde ijsvolumes** van (solidify 8-14 cm, afgeschuinde kristalvlakken, gekartelde breukranden) die **aansluiten op het lijf**: twee zware schouderstukken, een borstplaat die het zegelteken half bedekt, onderarm- en scheenplaten. Geen kaart mag van boven als een plat vlak lezen. Houd de botten `Armour_1..8` en de Armour_Break-clip |
+| FW2 | IJspantser-textuur | De albedo heeft oranje vlakken (onbenutte of binnenkant-UV's) en een blauwe camouflage met witte vlekken. Maak hem **diep blauwgroen met een donkere kern** (alsof je in het ijs kijkt), witte rijp alleen op de randen en ribbels, ingesloten scheuren in de normal map, en de oranje vlakken weg. Emissie: alleen dunne cyaan scheuren (geen vlakken) |
+| FW3 | Amber "kaarten" | De felle amberkleurige vierkanten op schouders en onderarmen zijn platte gloeiende vlakken en lezen van boven als gele post-its. Vervang ze door **ingegraveerde, verzonken runen** (gloei alleen in de groeven) of laat ze weg; amber alleen nog in de ogen en het zegelteken |
+| FW4 | Silhouet van boven | De camera kijkt schuin van boven: wat telt zijn de **schouders, de rug en de kroon**. Maak de schouders 20-30 % breder, zet een rij ijspegels (de rage-botten `Icicle_1..5`) op de **rug en schouders** zodat ze van boven groeien, en maak de gebroken halo (`Halo`) groter en dikker, schuin naar achter, zodat hij van boven als kroon leest |
+| FW5 | Lijfkleur | Het lijf is donker paars met amber naden, gelijk aan de lavabaas. Maak het **koud**: leisteen-blauwgrijs met bevroren, lichte randen, naden in bleek ijsblauw; de amber ogen blijven het enige warme punt (vijandkleur) |
+| FW6 | Glaives | De ijsglaives zijn dunne platte messen. Maak ze **driehoekig in doorsnede** met een gefacetteerde rug, zodat ze licht vangen, en iets langer (tot de grond in Idle) |
+| FW7 | Schaal tegenover poorten | In het spel staat hij met 2,1 m schouderhoogte naast een G1-poort van ~1,9 m. Voor "dreigende bewaker" mag het model 15 % hoger en breder (Unity houdt `TitanFactor`; alle clips met eindverschuivingen moeten dan opnieuw gemeten in het rapport) |
+| GW1 | Gravemaw-scheur | Unity bouwt de scheur nu uit de `BossFX_GroundCrack`-strook met opgeworpen lippen en rotsbrokken (`Debris_*`). Een **losse set van 3-4 gekantelde aardschotsen** (low-poly, 150-300 tris, eigen 256-maps, dezelfde basalt-look als de strook) zou de lippen echt 3D maken |
+| IB1 | `Gate_IceBlock` | Lees vanuit de spelcamera vooral als witte glans. Graag **meer dikte-variatie in de alpha** (helder 0,25 in het midden van grote vlakken, 0,9 in breuken) en een paar **ijspegels aan de bovenrand**, zodat het van boven als blok ijs leest en niet als glazen kist |
+| SC1 | `SealCrystal` | Spits A is een gladde kegel; geef A en B **facetten en kleine zijkristallen**, zodat de getinte gloed niet als effen lamp leest |

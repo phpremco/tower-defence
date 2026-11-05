@@ -15,6 +15,8 @@ namespace Game.Levels
         [Tooltip("The derrick; its Deploy clip (the string sinking) is held at its end and its Idle clip (the spin) loops.")]
         [SerializeField] private ModelArtDefinition _drill;
         [SerializeField] [Min(0.1f)] private float _drillScale = 0.7f;
+        [Tooltip("The broken derrick shown in place of the drill once a boss has broken out under it (static, same pivot).")]
+        [SerializeField] private ModelArtDefinition _wreck;
         [Tooltip("How far round its pivot the rig keeps the ground free, in world units at its scale.")]
         [SerializeField] [Min(0.5f)] private float _footprintRadius = 1.8f;
         [Tooltip("How tall the rig stands at its scale; its top must stay on screen.")]
@@ -34,6 +36,7 @@ namespace Game.Levels
 
         public ModelArtDefinition Drill => _drill;
         public float DrillScale => _drillScale;
+        public ModelArtDefinition Wreck => _wreck;
         public float FootprintRadius => _footprintRadius;
         public float Height => _height;
         public float FieldGap => _fieldGap;

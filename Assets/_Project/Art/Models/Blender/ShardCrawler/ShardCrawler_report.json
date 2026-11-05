@@ -38,7 +38,10 @@
     "Hit": 12,
     "Death": 40,
     "Spawn": 30,
-    "Rejoin": 30
+    "Rejoin": 30,
+    "Climb_Up": 93,
+    "Climb_Loop": 34,
+    "Climb_Down": 93
   },
   "unity_scale": 1.0,
   "scale_keyed_bones": [
@@ -73,5 +76,39 @@
   "giant_spire": "Core_Land",
   "hp_share": "a third of the giant's remaining HP (BOSSES.md)",
   "spawn": "play Spawn at the spawn offset at the giant's Split burst frame",
-  "rejoin": "play Rejoin, then fly the shard to the giant over ~0.6 s; the giant's Rejoin forms at frame 30"
+  "rejoin": "play Rejoin, then fly the shard to the giant over ~0.6 s; the giant's Rejoin forms at frame 30",
+  "round29": {
+    "climb_height_m": 1.0,
+    "clips": {
+      "Climb_Up": {
+        "end_offset_forward_m": 3.6,
+        "end_offset_up_m": 1.0,
+        "edge_forward_m": 1.25,
+        "ledge_height_m": 1.0,
+        "cycles": 3,
+        "note": "authored with the pivot fixed; at the last frame move the transform by the end offset and continue with Climb_Loop (pivot on the top surface) or Walk",
+        "frames": 93,
+        "loop": false
+      },
+      "Climb_Loop": {
+        "distance_per_loop_m": 0.8,
+        "playback": "speed / (0.8 x scale) loops per second x 34 frames",
+        "note": "pivot on the top surface; in place; pin the IK_* markers to the climb layer",
+        "frames": 34,
+        "loop": true
+      },
+      "Climb_Down": {
+        "end_offset_forward_m": 3.6,
+        "end_offset_up_m": -1.0,
+        "edge_forward_m": 1.25,
+        "drop_height_m": 1.0,
+        "cycles": 3,
+        "note": "starts with the pivot on the top surface (Climb_Loop / Climb_Up end pose); at the last frame move the transform by the end offset",
+        "frames": 93,
+        "loop": false
+      }
+    },
+    "foot_markers": "none: no IK markers on the shards (baked clips plus a slope tilt, as Unity climbs the bosses)",
+    "note": "round-28 boss climb conventions: Climb_Up/Climb_Down authored with the pivot fixed, move the transform by end_offset_forward_m / end_offset_up_m on the last frame; Climb_Loop in place on the top surface"
+  }
 }

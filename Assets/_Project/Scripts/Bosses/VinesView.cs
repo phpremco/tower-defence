@@ -12,7 +12,11 @@ namespace Game.Bosses
     {
         private const string RetractedShape = "Retracted";
         private const float FullWeight = 100f;
-        private const float BurnSeconds = 0.6f;
+        private const float BurnSeconds = 1f;
+        private const int BurnQuads = 4;
+        private const float BurnRing = 0.55f;
+        // A flame sheet is about 0.8 x 1.8 m (README round 29), its pivot at the bottom: the centre sits this high.
+        private const float BurnSize = 1.6f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color Burn = new Color(1f, 0.55f, 0.15f) * 3f;
 
@@ -24,6 +28,7 @@ namespace Game.Bosses
         private float _growSeconds = 1f;
         private float _grown;
         private bool _burning;
+        private FlipbookFx _flames;
 
         public bool Active => gameObject.activeSelf;
 
@@ -32,6 +37,7 @@ namespace Game.Bosses
             var go = new GameObject("Vines");
             go.transform.SetParent(parent, false);
             var view = go.AddComponent<VinesView>();
+            view._flames = FlipbookFx.Create(parent, "VineBurn", BossFxArt.Sheet.VineBurn, false);
             if (art != null && art.Model != null)
             {
                 view._material = new Material(art.MaterialFor(ModelQuality.IsLow)) { name = art.name + "_Vines" };
@@ -62,10 +68,27 @@ namespace Game.Bosses
             if (gameObject.activeSelf)
             {
                 _burning = true;
+                PlayFlames();
             }
         }
 
         public void Hide() => gameObject.SetActive(false);
+
+        // Fire runs up the vines from a few points round the tower while they pull back (README round 29: VineBurn).
+        private void PlayFlames()
+        {
+            if (_flames == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < BurnQuads; i++)
+            {
+                float angle = (i + Random.value * 0.5f) * Mathf.PI * 2f / BurnQuads;
+                Vector3 at = transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * BurnRing + Vector3.up * (BurnSize * 0.5f);
+                _flames.Play(at, BurnSize * Random.Range(0.85f, 1.1f), 0f, Color.white);
+            }
+        }
 
         private void Update()
         {

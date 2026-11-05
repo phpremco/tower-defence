@@ -29,6 +29,8 @@ namespace Game.Combat
         [SerializeField] private ImpactVfxDefinition _bossPulse;
         [Tooltip("The gameplay markers, bars, projectiles and debris painted in Blender (registered at boot).")]
         [SerializeField] private MarkerArt _markers;
+        [Tooltip("The marks, sheets and props bosses leave on the field (round 29; registered at boot).")]
+        [SerializeField] private BossFxArt _bossFx;
 
         public ImpactVfxDefinition Default => _default;
         public ImpactVfxDefinition Death => _death != null ? _death : _default;
@@ -38,6 +40,9 @@ namespace Game.Combat
 
         /// <summary>The round-25b marker art, or null when the library was built without it.</summary>
         public MarkerArt Markers => _markers;
+
+        /// <summary>The round-29 boss art, or null when the library was built without it.</summary>
+        public BossFxArt BossFx => _bossFx;
 
         /// <summary>The impact of a projectile style.</summary>
         public ImpactVfxDefinition For(ProjectileStyle style)

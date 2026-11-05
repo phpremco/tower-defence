@@ -29,8 +29,6 @@ namespace Game.Enemies
         [Header("Ice armour")]
         [Tooltip("The model's armour object, shown while it is armoured.")]
         [SerializeField] private string _armourPart = string.Empty;
-        [Tooltip("Bones that carry the armour plates: held at full size while it is armoured (the older clips key them at 0).")]
-        [SerializeField] private string[] _armourBones = { "Armour_1", "Armour_2", "Armour_3", "Armour_4", "Armour_5", "Armour_6", "Armour_7", "Armour_8" };
         [Tooltip("Share of each hit that lands while the armour holds: resistance, never immunity.")]
         [SerializeField] [Range(0.2f, 1f)] private float _armourSoak = 0.5f;
         [Tooltip("Damage factor while fire has cracked the armour.")]
@@ -54,7 +52,6 @@ namespace Game.Enemies
         public string[] RageBones => _rageBones;
         public Vector2 RageScale => _rageScale;
         public string ArmourPart => _armourPart;
-        public string[] ArmourBones => _armourBones;
         public float ArmourSoak => _armourSoak;
         public float CrackedFactor => _crackedFactor;
         public float CrackSeconds => _crackSeconds;

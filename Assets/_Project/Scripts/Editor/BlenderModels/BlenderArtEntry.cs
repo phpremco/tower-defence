@@ -92,6 +92,13 @@ namespace Game.Editor
         /// <summary>Our side: rimmed in the colony's cool light instead of the aliens' warm one.</summary>
         public bool Colony { get; set; }
 
+        /// <summary>
+        /// Ice on an alien (the Frost Warden's armour and glaives): the second slot and the extra parts get a darker, colder
+        /// tint over their albedo, a bright cold rim and a glow from the cracks, so they read as clear ice with lit edges at
+        /// play size instead of flat painted plastic. Null keeps the row's own look.
+        /// </summary>
+        public IceLook Ice { get; set; }
+
         /// <summary>The same row wearing a baked skin of the same mesh (a corrupted variant), under its own id.</summary>
         public BlenderArtEntry WithSkin(string id, string skin)
         {

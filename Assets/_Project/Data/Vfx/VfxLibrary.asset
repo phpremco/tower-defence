@@ -37,3 +37,4 @@ MonoBehaviour:
   _mine: {fileID: 11400000, guid: 02696b09b3bb5a64f83689a805bc25f5, type: 2}
   _bossPulse: {fileID: 11400000, guid: da1e11c94810ffd428807b4f13a389ca, type: 2}
   _markers: {fileID: 11400000, guid: d1843a76be631f143b2db76ff0fd6676, type: 2}
+  _bossFx: {fileID: 11400000, guid: 935c6708f7ceb4f47ae420c77fd3f8dc, type: 2}

@@ -33,6 +33,10 @@ Shader "Game/UnitLit"
         _DetailNormalScale2 ("Detail strength 2", Range(0, 2)) = 0.8
         _DetailFade ("Detail fade (tiles per pixel: full, gone)", Vector) = (0.004, 0.02, 0, 0)
         [HDR] _OverlayColor ("Overlay colour (a: amount)", Color) = (1, 1, 1, 0)
+        _RimAlpha ("Rim adds coverage (see-through surfaces)", Range(0, 2)) = 0
+        [HideInInspector] _SrcBlend ("Source blend", Float) = 1
+        [HideInInspector] _DstBlend ("Destination blend", Float) = 0
+        [HideInInspector] _ZWrite ("Depth write", Float) = 1
     }
 
     SubShader
@@ -54,6 +58,7 @@ Shader "Game/UnitLit"
         half _BumpScale;
         half _RimPower;
         half _RimStrength;
+        half _RimAlpha;
         float _WaveAmplitude;
         float4 _WaveVector;
         float4 _WaveRamp;
@@ -101,7 +106,8 @@ Shader "Game/UnitLit"
         {
             Name "ForwardLit"
             Tags { "LightMode" = "UniversalForward" }
-            ZWrite On
+            Blend [_SrcBlend] [_DstBlend]
+            ZWrite [_ZWrite]
             Cull Back
 
             HLSLPROGRAM
@@ -245,7 +251,8 @@ Shader "Game/UnitLit"
                 color.rgb += _RimColor.rgb * rim * fromAbove;
 
                 color.rgb = MixFog(color.rgb, inputData.fogCoord);
-                color.a = alpha;
+                // A see-through surface (ice) is clear face-on and dense along its silhouette, as real ice reads.
+                color.a = saturate(alpha + rim * fromAbove * _RimAlpha);
                 return color;
             }
             ENDHLSL

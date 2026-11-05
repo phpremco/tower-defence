@@ -406,3 +406,18 @@ artefact of slow editor frames.**
   winning seed or narrowing the level would hide the finding. Options for the curator: a bot rule "one splash gun before
   a dense wave in the preview" (like its Flak reserve), a look at C1_05 Easy money, or a documented narrower assertion like
   `TwoFrontLevels`.
+
+### Quartz Flats Easy: a splash gun before the crowd (2026-11-05, round 5)
+
+Curator decision on the bistable Quartz Flats Easy: the bot gets a human-like habit, analogous to its Flak reserve. While no
+splash gun stands and a wave to come is a crowd for a shell (the ledger's splash count `1 + 2 x radius x ground density`
+reaches `CrowdSplashTargets` 2), it saves the cheapest owned splash gun's price from the wave whose income covers it twice
+(`SavingFrom`, shared with the air reserve) and builds it (`SplashReserve`, `CheapestSplash` in `BalanceProbeTests`). Only the
+bot changed; no level, wave or money data moved, so the ledger is unchanged.
+
+| Quartz Flats, step 0.2 | Seeds | Easy won | Medium won |
+| --- | --- | --- | --- |
+| before (round 4d) | 1-7 | 3 of 7 | 7 of 7 |
+| with the splash habit | 1-7 | 7 of 7 (base 600/600 every seed) | 7 of 7 (base 132-588) |
+
+Crysium Vein Easy/Medium also won on all seven seeds in the same runs. C1_05 Easy money was not raised.

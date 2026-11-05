@@ -289,6 +289,12 @@ namespace Game.Editor
                 return;
             }
 
+            if (BlenderBossFxCatalog.IsBossFx(assetPath))
+            {
+                BlenderBossFxCatalog.Preprocess(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));
+                return;
+            }
+
             if (IsVfx(assetPath))
             {
                 PreprocessVfxTexture(importer, file, assetPath.Contains("/" + BlenderSync.LowFolder + "/"));

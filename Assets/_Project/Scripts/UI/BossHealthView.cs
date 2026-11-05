@@ -42,6 +42,7 @@ namespace Game.UI
         private const float LumaGreen = 0.59f;
         private const float LumaBlue = 0.11f;
         private static readonly Color StrikeColour = new Color(0.7f, 0.4f, 1f, 0.9f);
+        private static readonly Color RingColour = new Color(0.72f, 0.45f, 1f, 1f);
         private const float IconGap = 10f;
         private const float NoticeHeight = 26f;
         private const int NoticeSize = 20;
@@ -263,14 +264,28 @@ namespace Game.UI
             _dampened.color = DimmedIcon;
             Stretch(_dampened.rectTransform, IconInset);
 
-            var strike = new GameObject("Strike", typeof(RectTransform)).AddComponent<Image>();
-            strike.transform.SetParent(rect, false);
-            strike.raycastTarget = false;
-            strike.color = StrikeColour;
-            RectTransform strikeRect = strike.rectTransform;
-            strikeRect.anchorMin = strikeRect.anchorMax = strikeRect.pivot = new Vector2(0.5f, 0.5f);
-            strikeRect.sizeDelta = new Vector2(IconSize * StrikeLength, StrikeWidth);
-            strikeRect.localRotation = Quaternion.Euler(0f, 0f, StrikeDegrees);
+            Game.Core.BossFxArt art = Game.Core.BossFxArt.Active;
+            if (art != null && art.Dampened != null)
+            {
+                // README round 29: the broken ring with its "off" slash over the greyed picture, in the adaptation violet.
+                var ring = new GameObject("DampenedRing", typeof(RectTransform)).AddComponent<RawImage>();
+                ring.transform.SetParent(rect, false);
+                ring.raycastTarget = false;
+                ring.texture = art.Dampened;
+                ring.color = RingColour;
+                Stretch(ring.rectTransform, IconInset);
+            }
+            else
+            {
+                var strike = new GameObject("Strike", typeof(RectTransform)).AddComponent<Image>();
+                strike.transform.SetParent(rect, false);
+                strike.raycastTarget = false;
+                strike.color = StrikeColour;
+                RectTransform strikeRect = strike.rectTransform;
+                strikeRect.anchorMin = strikeRect.anchorMax = strikeRect.pivot = new Vector2(0.5f, 0.5f);
+                strikeRect.sizeDelta = new Vector2(IconSize * StrikeLength, StrikeWidth);
+                strikeRect.localRotation = Quaternion.Euler(0f, 0f, StrikeDegrees);
+            }
 
             _dampenedShare = UiKit.CreateFixedText(rect, string.Empty, ShareSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, ShareLift), new Vector2(IconSize, ShareSize + ShareLift));
             _dampenedShare.color = OraColour;

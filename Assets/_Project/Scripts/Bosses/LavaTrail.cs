@@ -38,6 +38,9 @@ namespace Game.Bosses
 
         public float Lifetime => _lifetime;
 
+        /// <summary>How far apart the patches are laid.</summary>
+        public float Spacing => _spacing;
+
         /// <summary>Raised with the slot of a patch just laid, for the view.</summary>
         public event System.Action<int> Laid;
 

@@ -25,6 +25,7 @@ namespace Game.Levels
 
         private ColonyRigDefinition _rig;
         private ArtModel _drill;
+        private Transform _wreck;
         private ArtModel[] _haulers = new ArtModel[0];
         private Transform[] _holders = new Transform[0];
         private Transform[][] _rotors = new Transform[0][];
@@ -60,6 +61,7 @@ namespace Game.Levels
             _fallAxis = transform.InverseTransformDirection(Vector3.Cross(Vector3.up, away));
             _flee = away;
             _smashAge = 0f;
+            ShowWreck(from);
         }
 
         public void Initialize(ColonyRigDefinition rig)
@@ -147,14 +149,49 @@ namespace Game.Levels
             }
         }
 
+        // README round 29: the wreck (the derrick snapped and folded over, pipes and crystals in the heave) takes the drill's
+        // place in the dust, its fallen top turned away from the hole the boss came up through.
+        private void ShowWreck(Vector3 from)
+        {
+            if (_rig.Wreck == null)
+            {
+                return;
+            }
+
+            _wreck = new GameObject("DrillWreck").transform;
+            _wreck.SetParent(transform, false);
+            _wreck.localScale = Vector3.one * _rig.DrillScale;
+            Vector3 away = transform.position - from;
+            away.y = 0f;
+            if (away.sqrMagnitude > 0.0001f)
+            {
+                // The model folds over its +X legs: turn its +X away from the hole.
+                _wreck.rotation = Quaternion.FromToRotation(Vector3.right, away.normalized);
+            }
+
+            ArtModel.CreateStill(_wreck, _rig.Wreck);
+            _drillRoot.gameObject.SetActive(false);
+        }
+
         private void Topple(float dt)
         {
             _smashAge += dt;
+            if (_wreck != null)
+            {
+                FleeHaulers(dt);
+                return;
+            }
+
             float fall = Mathf.Clamp01(_smashAge / FallSeconds);
             // It leans slowly, then goes over fast, the way a tall thing falls.
             float eased = fall * fall;
             _drillRoot.localRotation = Quaternion.AngleAxis(FallDegrees * eased, _fallAxis);
             _drillRoot.localPosition = Vector3.down * (SinkDepth * eased);
+            FleeHaulers(dt);
+        }
+
+        private void FleeHaulers(float dt)
+        {
             for (int i = 0; i < _holders.Length; i++)
             {
                 Transform holder = _holders[i];

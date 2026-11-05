@@ -79,6 +79,10 @@ namespace Game.Tests
         private const float MinSpotQuality = 0.3f;
         // Up to this ground pressure on the waves at hand (judged with the human lens) the bot still puts the air gun's price aside.
         private const float ReserveCeiling = 1.6f;
+        // A wave a splash gun's blast meets at least this many walkers of (the ledger's splash count, 1 + 2 x radius x density)
+        // is a crowd: a player who sees it in the preview builds one splash gun before it, as the Flak before a raid (2026-11-05:
+        // Quartz Flats Easy was lost on 4 of 7 seeds by bots that stayed all Pulse Rifle into the crowd waves 12-15).
+        private const float CrowdSplashTargets = 2f;
         // The hero's abilities as a player uses them: the shockwave into a crowd or a boss at the post, the gate repair when
         // the gate is down to this share; towers are repaired below RepairBelow, wrecks scrapped so their spot is free.
         private const int ShockwaveCrowd = 4;
@@ -814,7 +818,15 @@ namespace Game.Tests
                 return;
             }
 
-            int purse = context.Wallet.Money - reserve;
+            // The same habit for the crowd waves: one splash gun stands before the first wave a shell would hit two walkers in.
+            TowerDefinition splashGun = CheapestSplash(context, owned);
+            int splash = SplashReserve(splashGun, towers, ledger, current);
+            if (splash > 0 && context.Wallet.CanAfford(reserve + splash) && TryBuy(context, spots, towers, owned, t => t == splashGun))
+            {
+                return;
+            }
+
+            int purse = context.Wallet.Money - reserve - splash;
             // A step a wave's kills away is worth waiting for while the ground holds, if it is clearly better per coin
             // (an air gun before a raid enters the waves at hand, a big upgrade) than what the purse buys now.
             int reach = groundHolds ? purse + ledger.Lines[current].KillMoney : purse;
@@ -1077,17 +1089,57 @@ namespace Game.Tests
                 return 0;
             }
 
-            int from = 0;
-            for (int i = raid; i >= 0; i--)
+            return current >= SavingFrom(ledger, raid, price) ? price : 0;
+        }
+
+        // The wave from whose income (the ledger's money) until the wave in need the price is covered with a margin.
+        private static int SavingFrom(LedgerView ledger, int needed, int price)
+        {
+            for (int i = needed; i >= 0; i--)
             {
-                if (ledger.Lines[raid].Money - ledger.Lines[i].Money >= price * ReserveMargin)
+                if (ledger.Lines[needed].Money - ledger.Lines[i].Money >= price * ReserveMargin)
                 {
-                    from = i;
-                    break;
+                    return i;
                 }
             }
 
-            return current >= from ? price : 0;
+            return 0;
+        }
+
+        // The cheapest owned gun whose shells burst on the ground, or null.
+        private static TowerDefinition CheapestSplash(LevelContext context, List<string> owned)
+        {
+            TowerDefinition cheapest = null;
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                bool splashes = !tower.IsSupport && tower.SplashRadius > 0f && (tower.Targets & TargetLayers.Ground) != 0;
+                if (splashes && owned.Contains(tower.Id) && (cheapest == null || tower.BuildCost < cheapest.BuildCost))
+                {
+                    cheapest = tower;
+                }
+            }
+
+            return cheapest;
+        }
+
+        // The splash gun's price while no splash gun stands and a crowd wave (CrowdSplashTargets) is still to come, from the
+        // wave whose income covers it before the crowd; 0 otherwise.
+        private static int SplashReserve(TowerDefinition gun, List<Tower> towers, LedgerView ledger, int current)
+        {
+            if (gun == null || towers.Exists(t => t.Definition.SplashRadius > 0f && (t.Definition.Targets & TargetLayers.Ground) != 0))
+            {
+                return 0;
+            }
+
+            for (int i = current; i < ledger.Count; i++)
+            {
+                if (1f + 2f * gun.SplashRadius * ledger.Loads[i].GroundDensity >= CrowdSplashTargets)
+                {
+                    return current >= SavingFrom(ledger, i, gun.BuildCost) ? gun.BuildCost : 0;
+                }
+            }
+
+            return 0;
         }
 
         // What a step adds: the rise of the worse side's cover over the waves at hand; when the bottleneck does not move

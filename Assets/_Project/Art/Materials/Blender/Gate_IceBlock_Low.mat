@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Gate_IceBlock_Low
+  m_Shader: {fileID: 4800000, guid: 08753bb50a483c648a4407a741ada705, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _DETAIL
+  - _EMISSION
+  - _MASKMAP
+  - _NORMALMAP
+  m_InvalidKeywords: []
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    RenderType: Transparent
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 6f7392c450184184d93df4ab1f283159, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 7d4662b0955f8244b8f7085282781940, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 2800000, guid: 639c4ce98d21c5540b8895dbbe555093, type: 3}
+        m_Scale: {x: 53.8, y: 53.8}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 2800000, guid: dd1b19d08e73a984aba69c7dccef0baa, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 2800000, guid: edf8f23c529bcff4fb137f8fc9d64e0e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalScale: 0.8
+    - _DetailNormalScale2: 0.8
+    - _DstBlend: 10
+    - _Metallic: 0
+    - _OcclusionStrength: 0.5
+    - _RimAlpha: 0.7
+    - _RimPower: 2.2
+    - _RimStrength: 1.1
+    - _Smoothness: 0.92
+    - _SrcBlend: 5
+    - _WaveAmplitude: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailFade: {r: 0.004, g: 0.02, b: 0, a: 0}
+    - _EmissionColor: {r: 1.2, g: 1.2, b: 1.2, a: 1.2}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0}
+    - _RimColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+    - _WaveDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _WaveRamp: {r: 0, g: 0, b: 0, a: 1}
+    - _WaveVector: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

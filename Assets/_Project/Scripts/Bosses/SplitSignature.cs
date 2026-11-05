@@ -26,6 +26,11 @@ namespace Game.Bosses
         private const float WarnLift = 1.6f;
         private const float SplitBurstRadius = 2.2f;
         private const float ChestHeight = 2f;
+        private const float GateRumbleSeconds = 0.8f;
+        // The gate stands this far behind the spot the giant appears on, so the giant steps out of its threshold.
+        private const float GateBehind = 0.6f;
+        // The split flash across (README round 29: about 6 m at chest height).
+        private const float FlashSize = 6f;
         private static readonly Color Crystal = new Color(0.72f, 0.88f, 1f);
 
         private sealed class Shard
@@ -41,6 +46,8 @@ namespace Game.Bosses
         private readonly List<Shard> _shards = new List<Shard>(3);
         private readonly List<CrackLineView> _lines = new List<CrackLineView>(8);
         private readonly TowerAuraView _glow;
+        private readonly FlipbookFx _flash;
+        private readonly FlipbookFx _rejoinFlash;
         private readonly BoneScaleView _shells;
         private readonly BoneScaleView _crystals;
         private readonly BoneScaleView _deadCores;
@@ -50,6 +57,8 @@ namespace Game.Bosses
         {
             _brain = brain;
             _glow = TowerAuraView.Create(brain.Field.Effects, "SplitCracks");
+            _flash = FlipbookFx.Create(brain.Field.Effects, "ShardFlash", BossFxArt.Sheet.ShardFlash, false);
+            _rejoinFlash = FlipbookFx.Create(brain.Field.Effects, "RejoinFlash", BossFxArt.Sheet.ShardFlash, false, true);
             _shells = brain.gameObject.AddComponent<BoneScaleView>();
             _crystals = brain.gameObject.AddComponent<BoneScaleView>();
             _deadCores = brain.gameObject.AddComponent<BoneScaleView>();
@@ -90,6 +99,16 @@ namespace Game.Bosses
             View.SetHidden(true);
             Vector3 spot = _brain.OnGround(Position);
             Vector3 towardRoad = BossGeometry.Flat(OffRoadRoute.NearestRoadCellWorld(Field.Level, spot) - spot);
+            // The gate faces the fixed camera, so its opening and the light inside it are seen (side on it reads as a wall).
+            Camera view = Camera.main;
+            Vector3 facing = view != null ? BossGeometry.Flat(-view.transform.forward) : towardRoad;
+            RuinGateView gate = RuinGateView.Create(Field.Effects, spot - facing * GateBehind, facing, Crystal);
+            if (gate != null)
+            {
+                yield return ThroughTheGate(gate, spot, towardRoad);
+                yield break;
+            }
+
             for (int i = 0; i < EntranceCracks; i++)
             {
                 Vector3 dir = Quaternion.Euler(0f, i * 360f / EntranceCracks, 0f) * towardRoad;
@@ -121,6 +140,40 @@ namespace Game.Bosses
             View.SetHidden(false);
             Enemy.SetConcealed(false);
             yield return _brain.Roar();
+            yield return _brain.BackToRoad();
+        }
+
+        // README round 29: the sealed gate rumbles shut, its seal cracks (shards), light floods the seams and the giant
+        // stands in the flash as the petals fold back; it walks out once the gate stands open.
+        private IEnumerator ThroughTheGate(RuinGateView gate, Vector3 spot, Vector3 towardRoad)
+        {
+            Field.BreakDecor(spot, EntranceBurstRadius);
+            float stirred = 0f;
+            while (stirred < GateRumbleSeconds && _brain.Alive)
+            {
+                stirred += Time.deltaTime;
+                Field.Context.BossRumble = Mathf.Clamp01(stirred / GateRumbleSeconds);
+                yield return null;
+            }
+
+            gate.Open();
+            yield return _brain.Wait(RuinGateView.SealCrackSeconds);
+            _brain.Impact(gate.SealPosition, EntranceBurstRadius * 0.6f, Crystal, false);
+            yield return _brain.Wait(RuinGateView.FirstLightSeconds - RuinGateView.SealCrackSeconds);
+            Field.Context.BossRumble = 0f;
+            _flash?.Play(spot + Vector3.up * (ChestHeight * _brain.Scale), FlashSize * _brain.Scale, 0f, Color.white);
+            _brain.Impact(spot, EntranceBurstRadius, Crystal);
+            Field.Context.BossImpact.Raise(Boss.ImpactKick);
+            Enemy.Place(spot, towardRoad);
+            View.SetHidden(false);
+            Enemy.SetConcealed(false);
+            yield return _brain.Roar();
+            float wait = RuinGateView.FullyOpenSeconds - gate.Opened;
+            if (wait > 0f)
+            {
+                yield return _brain.Wait(wait);
+            }
+
             yield return _brain.BackToRoad();
         }
 
@@ -187,6 +240,7 @@ namespace Game.Bosses
 
             Vector3 at = Position;
             _brain.Impact(at, SplitBurstRadius, Crystal);
+            _flash?.Play(at + Vector3.up * (ChestHeight * _brain.Scale), FlashSize * _brain.Scale, 0f, Color.white);
             Field.Context.BossImpact.Raise(Boss.ImpactKick);
             Field.Context.BossSplit.Raise(at);
             // Its health is the shards' now: towers cannot reach the giant until it forms again.
@@ -404,6 +458,12 @@ namespace Game.Bosses
                 View.PlayScripted(ModelClipRole.Rejoin, clip.Rate, true);
             }
 
+            if (_rejoinFlash != null)
+            {
+                // The split played backwards: the fragments and the ring converge and end on the forming frame.
+                _brain.StartCoroutine(FlashAt(spot + Vector3.up * (ChestHeight * _brain.Scale), (clip.Exists ? clip.Moment : 0f) - _rejoinFlash.Lifetime));
+            }
+
             yield return FlyBack(survivors, spot + Vector3.up * (ChestHeight * _brain.Scale), Mathf.Min(Power.FlyBackSeconds, clip.Exists ? clip.Moment : Power.FlyBackSeconds));
             yield return _brain.Wait((clip.Exists ? clip.Moment : 0f) - Power.FlyBackSeconds);
             // What the survivors still have as they melt into it (they were shot on the way in too).
@@ -605,6 +665,16 @@ namespace Game.Bosses
                 line.Fade();
                 _lines.Remove(line);
             }
+        }
+
+        private IEnumerator FlashAt(Vector3 at, float delay)
+        {
+            if (delay > 0f)
+            {
+                yield return _brain.Wait(delay);
+            }
+
+            _rejoinFlash.Play(at, FlashSize * _brain.Scale, 0f, Color.white);
         }
 
         private void FadeLines()

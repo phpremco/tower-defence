@@ -194,6 +194,8 @@ namespace Game.Editor
                 List<BlenderReport.Detail> secondDetails = DetailsOfPart(details, 1);
                 second = BuildMaterial(entry, prefix, secondDetails, maps, $"{entry.Id}_{entry.SecondMaterial}", false);
                 lowSecond = BuildMaterial(entry, prefix, secondDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{entry.SecondMaterial}_Low", true);
+                entry.Ice?.Apply(second);
+                entry.Ice?.Apply(lowSecond);
             }
 
             // Extra parts (an ice armour) wear their own maps with the second slot's detail families.
@@ -204,6 +206,8 @@ namespace Game.Editor
                 List<BlenderReport.Detail> partDetails = DetailsOfPart(details, 1);
                 Material partHigh = BuildMaterial(entry, prefix, partDetails, maps, $"{entry.Id}_{part}", false);
                 Material partLow = BuildMaterial(entry, prefix, partDetails, $"{maps}/{BlenderSync.LowFolder}", $"{entry.Id}_{part}_Low", true);
+                entry.Ice?.Apply(partHigh);
+                entry.Ice?.Apply(partLow);
                 parts.Add(new ModelPart($"{entry.Asset}_{part}", partHigh, partLow));
             }
 

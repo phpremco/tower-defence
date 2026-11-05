@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a611c0fb2cdcd46af4ce4a83f2c986, type: 3}
+  m_Name: BossFxArt
+  m_EditorClassIdentifier: Game.Core::Game.Core.BossFxArt
+  _marks:
+  - _mark: 0
+    _material: {fileID: 2100000, guid: b6a132e3d0e7ce148a6e4194f5f05934, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 9759584886d01ba45b3ebaa32a11aa0a, type: 2}
+    _width: 2
+    _tileLength: 8
+  - _mark: 1
+    _material: {fileID: 2100000, guid: 4a84bf4e9604c454696e27a03184e346, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 7483000f438384d41afdfd132cf22630, type: 2}
+    _width: 1.4
+    _tileLength: 5.6
+  - _mark: 2
+    _material: {fileID: 2100000, guid: 025e1ca06db7cc24e9cc835ade4fab46, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: afef01bb2d3a3f64a9caf95b31132a92, type: 2}
+    _width: 3
+    _tileLength: 12
+  - _mark: 3
+    _material: {fileID: 2100000, guid: c6b00b11273aa064f8ba94b962e6b60d, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 0eeb8ba68767f4e4bb539434d7e87e14, type: 2}
+    _width: 1.6
+    _tileLength: 6.4
+  - _mark: 4
+    _material: {fileID: 2100000, guid: ba4d0524c99fc7542815b1369b99b578, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: de65f0e07437a684c8d4044cc33ad02a, type: 2}
+    _width: 3.5
+    _tileLength: 14
+  - _mark: 5
+    _material: {fileID: 2100000, guid: c6690df7a8a374043863715032af57c7, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 1646b9a6ffb426d49afddc24aabcd6d2, type: 2}
+    _width: 2.5
+    _tileLength: 2.5
+  _sheets:
+  - _sheet: 0
+    _material: {fileID: 2100000, guid: ca5851923a472d8409a7577e592d6400, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 75fa892ed9a331145852e15eb88767c2, type: 2}
+    _framesPerSecond: 12
+  - _sheet: 1
+    _material: {fileID: 2100000, guid: d234ecf125dbc674fab14264d19709a2, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 487ce5a03c5952e42bd2ccc1bf640e1d, type: 2}
+    _framesPerSecond: 16
+  - _sheet: 2
+    _material: {fileID: 2100000, guid: af8f61721a2fac647ad2cf069ea1f046, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 651a06bcc5c946d478e4105da1f12beb, type: 2}
+    _framesPerSecond: 24
+  - _sheet: 3
+    _material: {fileID: 2100000, guid: ee6f473294cd85044b1f3a06e2d0b29c, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 722863004c9da9b40bfd96c9a1871e2f, type: 2}
+    _framesPerSecond: 12
+  - _sheet: 4
+    _material: {fileID: 2100000, guid: ee7f15acb4fa39848bac19a525379984, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 7f456d30c4c5eb647ac45a3d45172ab5, type: 2}
+    _framesPerSecond: 12
+  - _sheet: 5
+    _material: {fileID: 2100000, guid: bfb5130f0f4ed4c428a0aca348932822, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 63c38b94e1188df449a6a87d6c14aeb6, type: 2}
+    _framesPerSecond: 12
+  - _sheet: 6
+    _material: {fileID: 2100000, guid: 80f784f1f2f433b4faa0e563243e3ddd, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: d9dc318fdfa600f4cb087720c534c065, type: 2}
+    _framesPerSecond: 12
+  - _sheet: 7
+    _material: {fileID: 2100000, guid: 75ac955c4df16564797e9773f12bb151, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 93144fc9972c0c548aeb85aeb72f54a7, type: 2}
+    _framesPerSecond: 12
+  _ruinGate: {fileID: 11400000, guid: 9983eff0ded1b534383dd5272778ca06, type: 2}
+  _ruinGateScale: 0.65
+  _sealCrystals: {fileID: 11400000, guid: 5d6202ec817f3c74583e450551a96e95, type: 2}
+  _sealCrystalParts:
+  - SealCrystal_A
+  - SealCrystal_B
+  - SealCrystal_C
+  _iceBlock: {fileID: 11400000, guid: cbff37aeabc7c1248b86986f1e009f48, type: 2}
+  _drainedMaps:
+  - _lit: {fileID: 2800000, guid: 37ec5a039571b834d8559dfd8f64ecf5, type: 3}
+    _drained: {fileID: 2800000, guid: e6bf0e905cbcee04bb5c589f164ebfcb, type: 3}
+  - _lit: {fileID: 2800000, guid: 55a9f05f0d03d2f498f8fd3d82449147, type: 3}
+    _drained: {fileID: 2800000, guid: b957955de08db9640ab06c3ea85dd911, type: 3}
+  - _lit: {fileID: 2800000, guid: 795fc288352ae184ca4d1de04217db16, type: 3}
+    _drained: {fileID: 2800000, guid: 94decfab69ff1724f907aaebd631d74d, type: 3}
+  - _lit: {fileID: 2800000, guid: cce5cebf86d8340458c3398365dd4496, type: 3}
+    _drained: {fileID: 2800000, guid: 9bbb63018c474dd4dbe0c2f08c5fe646, type: 3}
+  _dampened: {fileID: 2800000, guid: fc14b57b9ecf3ec4d8e888f56ec9a396, type: 3}

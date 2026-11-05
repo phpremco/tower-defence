@@ -20,6 +20,9 @@ namespace Game.Bosses
     public sealed class OvergrowthSignature : IBossSignature
     {
         private const float HazeIntensity = 3.2f;
+        // The spore sheet: about 2.5 m on the pad, its pivot a fifth up the frame (README round 29).
+        private const float SporeCloudSize = 2.5f;
+        private const float SporeCloudLift = 0.75f;
         private const float RetrySeconds = 1f;
         private const float BurstRadius = 0.9f;
         private const float RootsAhead = 2.4f;
@@ -61,6 +64,7 @@ namespace Game.Bosses
         private readonly RootsView[] _creepRoots = new RootsView[CreepRoots];
         private readonly LavaTrail _rot;
         private readonly LavaTrailView _rotView;
+        private readonly FlipbookFx _spores;
         private float _sinceVolley;
         private bool _uprooted;
         private float _crept;
@@ -72,6 +76,7 @@ namespace Game.Bosses
             _brain = brain;
             _rot = new LavaTrail(Power.RotSeconds, RotSpacing);
             _rotView = LavaTrailView.Create(brain.Field.Effects, _rot, RotRadius, Rot, RotSpores, "RotTrail");
+            _spores = FlipbookFx.Create(brain.Field.Effects, "SporeCloud", BossFxArt.Sheet.SporeCloud, false);
             for (int i = 0; i < CreepRoots; i++)
             {
                 _creepRoots[i] = RootsView.Create(brain.Field.Effects, Power.Roots, Power.RootStages, "CreepRoots");
@@ -364,6 +369,8 @@ namespace Game.Bosses
                 return;
             }
 
+            // The pod bursts on the pad: a cloud of spores falls, spreads and thins over it (README round 29).
+            _spores?.Play(at + Vector3.up * SporeCloudLift, SporeCloudSize, 0f, Color.white);
             Field.Context.ClosedPads.Add(cell);
             Field.Refresh();
             foreach (Tower tower in Field.Towers)

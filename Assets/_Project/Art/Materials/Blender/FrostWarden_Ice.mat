@@ -29,7 +29,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: b7bbe17fb789b69429de5ab4c6a5415c, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -45,7 +45,7 @@ Material:
         m_Scale: {x: 6.8, y: 6.8}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 2800000, guid: e7ac085c2bfe04a42862351dae2d31c6, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
@@ -58,18 +58,22 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalScale: 0.8
     - _DetailNormalScale2: 0.6
+    - _DstBlend: 0
     - _Metallic: 0
     - _OcclusionStrength: 0.5
-    - _RimPower: 2.4
-    - _RimStrength: 0.6
-    - _Smoothness: 1
+    - _RimAlpha: 0
+    - _RimPower: 3.2
+    - _RimStrength: 1.5
+    - _Smoothness: 0.85
+    - _SrcBlend: 1
     - _WaveAmplitude: 0
+    - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 0.32, g: 0.52, b: 0.72, a: 1}
     - _DetailFade: {r: 0.004, g: 0.02, b: 0, a: 0}
-    - _EmissionColor: {r: 2.5, g: 2.5, b: 2.5, a: 2.5}
+    - _EmissionColor: {r: 0.1575, g: 0.2975, b: 0.35, a: 0.35}
     - _OverlayColor: {r: 1, g: 1, b: 1, a: 0}
-    - _RimColor: {r: 1, g: 0.55, b: 0.3, a: 1}
+    - _RimColor: {r: 0.62, g: 0.92, b: 1, a: 1}
     - _WaveDirection: {r: 0, g: 1, b: 0, a: 0}
     - _WaveRamp: {r: 0, g: 0, b: 0, a: 1}
     - _WaveVector: {r: 0, g: 0, b: 0, a: 0}

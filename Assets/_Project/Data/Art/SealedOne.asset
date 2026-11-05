@@ -254,3 +254,15 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+  - _role: 64
+    _clip: {fileID: -5054491169094880797, guid: 05d876f24ca148d46a76bf081f16ab49, type: 3}
+    _farClip: {fileID: -4105773097384249435, guid: 04c84a04dd3637340969796e1d041833, type: 3}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 3.4

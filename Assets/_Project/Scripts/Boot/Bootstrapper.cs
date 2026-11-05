@@ -86,6 +86,11 @@ namespace Game.Boot
                 {
                     Services.Register(_vfxLibrary.Markers);
                 }
+
+                if (_vfxLibrary.BossFx != null)
+                {
+                    Services.Register(_vfxLibrary.BossFx);
+                }
             }
 
             UiKit.Skin = _uiSkin;

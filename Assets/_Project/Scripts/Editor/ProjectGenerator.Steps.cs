@@ -80,6 +80,8 @@ namespace Game.Editor
             new GeneratorStep("Effect library", _ => CreateVfxLibrary()),
             // Markers, bars, projectiles, debris and particles (README round 25b), handed to the effect library.
             new GeneratorStep("Marker art", _ => BlenderMarkerBuilder.Apply(BlenderMarkerBuilder.SyncAndBuild())),
+            // The boss marks, sheets and props (README round 29), handed to the effect library; the wreck to the colony rig.
+            new GeneratorStep("Boss FX art", _ => BlenderBossFxBuilder.SyncAndBuild()),
             // The living spawn origins and route gates (README rounds 23, 25b), after the effect library for their burst.
             new GeneratorStep("Origin art", _ => BlenderOriginBuilder.Apply(BlenderOriginBuilder.SyncAndBuild())),
             new GeneratorStep("Scenes", GenerateScenes),

@@ -30,7 +30,14 @@ namespace Game.Bosses
         private const float BaseBurstRadius = 2.2f;
         // After a haul that found no way for its body it walks the road this long before it looks for one again.
         private const float HaulRetrySeconds = 2f;
+        // Cells of the old road either side of the point nearest the rift that sink as the new road rises.
+        private const int RoadSinkReach = 9;
         private static readonly Color Violet = new Color(0.7f, 0.4f, 1f);
+        private static readonly Color RoofDust = new Color(0.55f, 0.5f, 0.48f);
+        // OnBase_Loop's hand strikes (README round 29) and its frame rate.
+        private static readonly float[] OnBaseStrikeFrames = { 34f, 82f };
+        private const float ClipFramesPerSecond = 30f;
+        private const float StrikeKickShare = 0.4f;
         private static readonly Vector2Int NoCell = new Vector2Int(-1, -1);
 
         private readonly ContinentBossBrain _brain;
@@ -40,6 +47,8 @@ namespace Game.Bosses
         private readonly List<Vector3> _plan = new List<Vector3>(64);
         private readonly TowerAuraView _crystals;
         private readonly TowerAuraView _drainHaze;
+        private SealCrystalsView _seal;
+        private MeshRenderer _sink;
         private readonly System.Func<object, float> _scale;
         private CrackLineView _road;
         private CrackLineView _furrow;
@@ -75,6 +84,7 @@ namespace Game.Bosses
         public void Begin()
         {
             _tally.Clear();
+            DrainedLook.Apply(_drainer.Drained, false);
             _drainer.Release();
             _phase = 0;
             _sinceHaulFailed = HaulRetrySeconds;
@@ -98,6 +108,11 @@ namespace Game.Bosses
             Vector3 home = HomePosition();
             Enemy.Place(centre, BossGeometry.Flat(home - centre));
             PlanRoad(centre);
+            if (_seal == null)
+            {
+                _seal = SealCrystalsView.Create(Field.Effects, centre, at => Field.Climb.KindAt(at) == SurfaceKind.Open || Field.Climb.KindAt(at) == SurfaceKind.Fragile, Field.GroundAt);
+            }
+
             for (int i = 0; i < RiftCracks; i++)
             {
                 Vector3 dir = Quaternion.Euler(0f, i * 360f / RiftCracks + 15f, 0f) * Vector3.forward;
@@ -158,6 +173,9 @@ namespace Game.Bosses
 
         public void End()
         {
+            // Its release: the crystals go white; a fight that ends otherwise leaves them dormant.
+            _seal?.Tint(_brain.Alive ? SealCrystalsView.Dormant : SealCrystalsView.Released, false);
+            DrainedLook.Apply(_drainer.Drained, false);
             _drainer.Release();
             Enemy.SourceScale = null;
             Field.Context.BossDampened = null;
@@ -206,11 +224,16 @@ namespace Game.Bosses
 
         private IEnumerator RaiseRoad()
         {
+            SinkOldRoad();
             float elapsed = 0f;
             while (elapsed < Power.RoadRiseSeconds && _brain.Alive)
             {
                 elapsed += Time.deltaTime;
                 _road.OpenTo(_road.Length * Mathf.Clamp01(elapsed / Power.RoadRiseSeconds));
+                if (_sink != null)
+                {
+                    _sink.sharedMaterial.SetFloat(GroundMark.Progress, Mathf.Clamp01(elapsed / Power.RoadRiseSeconds));
+                }
                 yield return null;
             }
         }
@@ -288,6 +311,56 @@ namespace Game.Bosses
             }
         }
 
+        // README round 29 (RoadSink): where the new road leaves the old one, the old road tears and darkens, the middle first,
+        // violet seeping from its deepest cracks. Only the stretch nearest the rift: the walkers still use the old road.
+        private void SinkOldRoad()
+        {
+            Material material = GroundMark.MaterialFor(BossFxArt.Mark.RoadSink);
+            EnemyPath[] paths = Field.Level.Paths;
+            if (material == null || paths == null || paths.Length == 0 || paths[0].Waypoints == null || paths[0].Waypoints.Length < 2)
+            {
+                return;
+            }
+
+            var dense = new List<Vector3>();
+            Vector2Int[] waypoints = paths[0].Waypoints;
+            for (int i = 0; i < waypoints.Length - 1; i++)
+            {
+                Vector3 a = Field.Grid.CellToWorld(waypoints[i]);
+                Vector3 b = Field.Grid.CellToWorld(waypoints[i + 1]);
+                int steps = Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(a, b)));
+                for (int s = 0; s < steps; s++)
+                {
+                    dense.Add(Vector3.Lerp(a, b, s / (float)steps));
+                }
+            }
+
+            dense.Add(Field.Grid.CellToWorld(waypoints[waypoints.Length - 1]));
+            int nearest = 0;
+            float best = float.MaxValue;
+            for (int i = 0; i < dense.Count; i++)
+            {
+                float distance = BossGeometry.FlatDistance(dense[i], Position);
+                if (distance < best)
+                {
+                    best = distance;
+                    nearest = i;
+                }
+            }
+
+            int from = Mathf.Max(0, nearest - RoadSinkReach);
+            int to = Mathf.Min(dense.Count - 1, nearest + RoadSinkReach);
+            if (to - from < 2)
+            {
+                return;
+            }
+
+            float width = Field.Level.RoadWidth * Field.Grid.CellSize;
+            material.SetFloat(GroundMark.Progress, 0f);
+            _sink = GroundMark.Strip(Field.Effects, "RoadSink", Field.Draped(dense.GetRange(from, to - from + 1)), width,
+                BossFxArt.Active.TileLength(BossFxArt.Mark.RoadSink) * width / BossFxArt.Active.Width(BossFxArt.Mark.RoadSink), material, false);
+        }
+
         private Vector3 HomePosition() => Field.Context.Base != null ? Field.Context.Base.Position : LevelVisualBuilder.BasePosition(Field.Level);
 
         // ---------------------------------------------------------------- hauling and the base
@@ -353,6 +426,7 @@ namespace Game.Bosses
             int learning = -1;
             float learnIn = 0f;
             float loopIn = -1f;
+            float loopClock = 0f;
             while (_brain.Alive && home.IsAlive)
             {
                 float dt = Time.deltaTime;
@@ -378,14 +452,38 @@ namespace Game.Bosses
                 if (loopIn >= 0f && (loopIn -= dt) < 0f)
                 {
                     LoopOnBase();
+                    loopClock = 0f;
                 }
 
-                sinceBlow += dt;
-                if (sinceBlow >= blowEvery)
+                ModelClip loop = View.ClipOf(ModelClipRole.OnBaseLoop);
+                if (loop != null && loop.Length > 0f)
                 {
-                    sinceBlow -= blowEvery;
-                    home.TakeDamage(Enemy.Definition.BlockadeDamage * multiplier);
-                    Field.Context.StructureHit.Raise(home.Position);
+                    // Its own loop slams a hand on the roof twice (README round 29: frames 34 and 82): the base takes each blow
+                    // with dust and a short kick there, as hard per second as the timed blows of the stand-in.
+                    if (learning < 0 && loopIn < 0f)
+                    {
+                        float before = loopClock;
+                        loopClock += dt * Power.OnBaseLoopRate;
+                        float seconds = loop.Length / Power.OnBaseLoopRate;
+                        float blow = Enemy.Definition.BlockadeDamage * multiplier * (seconds / OnBaseStrikeFrames.Length) / blowEvery;
+                        foreach (float frame in OnBaseStrikeFrames)
+                        {
+                            if (Crossed(before, loopClock, frame / ClipFramesPerSecond, loop.Length))
+                            {
+                                Strike(home, blow);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    sinceBlow += dt;
+                    if (sinceBlow >= blowEvery)
+                    {
+                        sinceBlow -= blowEvery;
+                        home.TakeDamage(Enemy.Definition.BlockadeDamage * multiplier);
+                        Field.Context.StructureHit.Raise(home.Position);
+                    }
                 }
 
                 yield return null;
@@ -405,6 +503,23 @@ namespace Game.Bosses
             }
 
             LoopOnBase();
+        }
+
+        // True when a looping clip's clock passed a moment of the loop between two frames.
+        private static bool Crossed(float before, float after, float moment, float length)
+        {
+            float from = Mathf.Repeat(before, length);
+            float span = after - before;
+            float to = from + span;
+            return (moment > from && moment <= to) || (moment + length > from && moment + length <= to);
+        }
+
+        private void Strike(IStructure home, float damage)
+        {
+            home.TakeDamage(damage);
+            Field.Context.StructureHit.Raise(home.Position);
+            _brain.Impact(home.Position, BaseBurstRadius * 0.6f, RoofDust, false);
+            Field.Context.BossImpact.Raise(Boss.ImpactKick * StrikeKickShare);
         }
 
         private void LoopOnBase()
@@ -446,6 +561,7 @@ namespace Game.Bosses
                 Field.Context.BossAdapted.Raise(string.Format(Power.AdaptLine, learned.DisplayName));
                 // The sealed crystals at the rift take the colour of the weapon it has learned.
                 _crystals.Show(_crystals.transform.position, learned.Color, CrystalIntensity, false);
+                _seal?.Tint(learned.Color, true);
             }
 
             DrainNextGate();
@@ -462,6 +578,8 @@ namespace Game.Bosses
             Tower previous = _drainer.Drained;
             Tower gate = GateDrainer.Choose(Field.Context.Structures, Position, previous);
             _drainer.Drain(gate);
+            DrainedLook.Apply(previous, false);
+            DrainedLook.Apply(gate, true);
             if (gate == null)
             {
                 _drainHaze.Hide();

@@ -44,6 +44,10 @@ namespace Game.Editor
         {
             new BlenderClipSpec("Spawn", ModelClipRole.Spawn),
             new BlenderClipSpec("Rejoin", ModelClipRole.Rejoin),
+            // Round 29: the runner and the crawler climb a 1 m ruin ledge (the flyer has no climb clips; a missing clip is skipped).
+            new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+            new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+            new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
         };
 
         private static List<BlenderArtEntry> _creatures;
@@ -302,6 +306,8 @@ namespace Game.Editor
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Ice",
+                    // Round 5 boss look: the armour and glaives read as flat blue plastic at play size; clear ice with lit edges.
+                    Ice = new IceLook(),
                     // Round 28: the ice armour is an object of its own with its own maps (FrostWarden_IceArmour_*).
                     ExtraParts = new[] { "IceArmour" },
                     Clips = new[]
