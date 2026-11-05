@@ -28,6 +28,20 @@ namespace Game.Bosses
         private const float ThrowBurstRadius = 1.4f;
         private const float BreakoutBurstRadius = 1.8f;
         private const float RumbleRise = 1.5f;
+        // An old crack the new one would touch cools away this fast, before the new one opens over that ground.
+        private const float CrossedFadeSeconds = 0.8f;
+        // How far either side of its line a crack's footprint reaches beyond its painted half width.
+        private const float CrackClearanceMargin = 0.5f;
+        // The planned line must start this far ahead of the dive hole along the dive, else the hole replaces its start.
+        private const float MinStartLead = 0.3f;
+        private const float RigDustRadius = 3.4f;
+        private const float RigSparkRadius = 1.8f;
+        private const float RigSparkHeight = 1.6f;
+        private const float RigSecondDustShare = 0.7f;
+        // The debris flies up between the hole and the derrick.
+        private const float RigDebrisShare = 0.5f;
+        private static readonly Color RigDust = new Color(0.55f, 0.48f, 0.4f);
+        private static readonly Color RigSparks = new Color(1f, 0.6f, 0.2f);
 
         // README round 28: what the throw flings stands about this far (model units) to the right of the hole.
         private const float ThrowSideCells = 1f;
@@ -37,6 +51,10 @@ namespace Game.Bosses
         private readonly ContinentBossBrain _brain;
         private readonly List<Vector3> _route = new List<Vector3>(64);
         private readonly List<Vector3> _crack = new List<Vector3>(64);
+        // The cracks still on the field and the lines they were laid along: a new one keeps off them, or they go first.
+        private readonly List<CrackLineView> _lines = new List<CrackLineView>(4);
+        private readonly List<List<Vector3>> _linePaths = new List<List<Vector3>>(4);
+        private readonly HashSet<Vector2Int> _scarred = new HashSet<Vector2Int>();
         private ThresholdTracker _burrows = new ThresholdTracker(new float[0]);
         private bool _struck;
         private bool _enraged;
@@ -147,6 +165,7 @@ namespace Game.Bosses
             Enemy.SetDirected(true);
             Field.Refresh();
             Tower target = signature ? _brain.Tally.Top(StillStanding) : null;
+            MarkScarred();
             Vector3? destination = signature ? (Vector3?)null : RoadPoint(Boss.Burrow.ReturnToRoadShare);
             BossClip down = BossClip.Of(View, ModelClipRole.BurrowDown, Boss.MechanicClipRate);
             BossClip up = BossClip.Of(View, ModelClipRole.SurfaceThrow, Boss.MechanicClipRate);
@@ -158,6 +177,8 @@ namespace Game.Bosses
                 yield break;
             }
 
+            // An old crack the new line still meets cools away during the dive, before the new one opens there.
+            FadeCrossed(_crack);
             Enemy.Place(Position, heading);
             View.PlayScripted(ModelClipRole.BurrowDown, down.Rate, true);
             yield return _brain.Wait(down.Moment);
@@ -166,11 +187,30 @@ namespace Game.Bosses
             Enemy.SetConcealed(true, 0f);
             yield return _brain.Wait(down.Seconds - down.Moment);
             Enemy.Place(Position + heading * down.Forward, heading);
-            _crack.Insert(0, hole0);
+            // The hole opens the line; when the planned start lies behind it the strip would double back, so the hole
+            // takes the start's place instead.
+            bool replaced = Vector3.Dot(BossGeometry.Flat(_crack[0] - hole0), heading) < MinStartLead;
+            if (replaced)
+            {
+                _crack[0] = hole0;
+            }
+            else
+            {
+                _crack.Insert(0, hole0);
+            }
+
+            CrackPath.RemoveBacktracks(_crack, MinStartLead);
+            FadeCrossed(_crack);
             _route.Clear();
             _route.Add(Position);
-            for (int i = 2; i < _crack.Count - 1; i++)
+            for (int i = 1; i < _crack.Count - 1; i++)
             {
+                // The first point at or behind where it now stands under the ground is already passed.
+                if (i == 1 && Vector3.Dot(BossGeometry.Flat(_crack[1] - Position), heading) <= MinStartLead)
+                {
+                    continue;
+                }
+
                 _route.Add(_crack[i]);
             }
 
@@ -239,7 +279,7 @@ namespace Game.Bosses
             float holeAhead = up.Anchor;
             float halfWidth = _brain.BodyHalfWidth;
             if (target != null && BossRoutes.SurfaceBeside(Field, target, start, holeAhead, up.Forward, halfWidth, out Vector3 hole, out pivot, out forward)
-                && BossRoutes.Crack(Field, start, hole, Boss.Burrow.QuicksandFactor, _crack))
+                && BossRoutes.Crack(Field, start, hole, Boss.Burrow.QuicksandFactor, _crack, _scarred))
             {
                 throws = true;
                 return true;
@@ -253,7 +293,7 @@ namespace Game.Bosses
             {
                 forward = along;
                 Vector3 roadHole = pivot + along * holeAhead;
-                return BossRoutes.Crack(Field, start, roadHole, Boss.Burrow.QuicksandFactor, _crack);
+                return BossRoutes.Crack(Field, start, roadHole, Boss.Burrow.QuicksandFactor, _crack, _scarred);
             }
 
             return false;
@@ -267,7 +307,9 @@ namespace Game.Bosses
             Enemy.SetConcealed(true, 0f);
             View.LoopScripted(ModelClipRole.BurrowTravel);
             _struck = false;
-            CrackLineView line = CrackLineView.Create(Field.Effects, Field.Draped(crack));
+            CrackLineView line = CrackLineView.Create(Field.Effects, Field.Draped(crack), CrackStyle.Burrow, IsFootprint);
+            _lines.Add(line);
+            _linePaths.Add(new List<Vector3>(crack));
             BurrowPower power = Boss.Burrow;
             float length = BossGeometry.PathLength(route);
             float speed = power.TravelSpeed * speedFactor * (_enraged ? power.EnragedSpeed : 1f);
@@ -318,6 +360,40 @@ namespace Game.Bosses
             line.Fade();
         }
 
+        private bool IsFootprint(Vector3 at) => Field.Climb.IsFootprint(Field.Grid.WorldToCell(at));
+
+        // The ground under every crack still on the field (the faded ones dropped), for the next line to keep off.
+        private void MarkScarred()
+        {
+            for (int i = _lines.Count - 1; i >= 0; i--)
+            {
+                if (_lines[i] == null)
+                {
+                    _lines.RemoveAt(i);
+                    _linePaths.RemoveAt(i);
+                }
+            }
+
+            _scarred.Clear();
+            foreach (List<Vector3> path in _linePaths)
+            {
+                CrackPath.Cover(path, CrackStyle.Burrow.MarkWidth * 0.5f + CrackClearanceMargin, Field.Grid.CellSize, Field.Grid.WorldToCell, _scarred);
+            }
+        }
+
+        // Where the new line still meets an old crack (it could not keep off it), the old one cools away first.
+        private void FadeCrossed(List<Vector3> crack)
+        {
+            float clearance = CrackStyle.Burrow.MarkWidth + CrackClearanceMargin;
+            for (int i = 0; i < _lines.Count; i++)
+            {
+                if (_lines[i] != null && CrackPath.Distance(_linePaths[i], crack) < clearance)
+                {
+                    _lines[i].Fade(CrossedFadeSeconds);
+                }
+            }
+        }
+
         // Up out of the ground: the burst of earth, and at the throw moment the tower beside it (or the rig) is flung.
         private IEnumerator Breakout(Vector3 pivot, Vector3 forward, Tower target, bool rig)
         {
@@ -327,7 +403,11 @@ namespace Game.Bosses
             View.PlayScripted(ModelClipRole.SurfaceThrow, up.Rate, true);
             yield return _brain.Wait(up.Cue);
             Vector3 hole = pivot + forward * up.Anchor;
-            _brain.Impact(hole, BreakoutBurstRadius, Earth);
+            _brain.Impact(hole, BreakoutBurstRadius, Earth, !rig);
+            if (rig)
+            {
+                WreckRig(hole);
+            }
             Enemy.SetConcealed(false);
             Field.Context.BossRumble = 0f;
             yield return _brain.Wait(up.Moment - up.Cue);
@@ -338,12 +418,6 @@ namespace Game.Bosses
                 target.Toss(right, Boss.Burrow.ThrowHealthShare, Boss.Burrow.ThrowSilenceSeconds);
                 _brain.Record.Thrown.Add(target);
                 _brain.Impact(target.Position, ThrowBurstRadius, Earth);
-                Field.Context.BossImpact.Raise(Boss.ImpactKick);
-            }
-            else if (rig)
-            {
-                Field.Rig?.Smash(hole);
-                _brain.Impact(Field.RigPosition, BreakoutBurstRadius, Earth);
                 Field.Context.BossImpact.Raise(Boss.ImpactKick);
             }
 
@@ -364,6 +438,45 @@ namespace Game.Bosses
             {
                 yield return _brain.BackToRoad();
             }
+        }
+
+        // It bursts up under the derrick: one kick, and in the dust, sparks and debris the derrick becomes its wreck (the
+        // view swaps the model under the cloud; it never tips the intact rig over).
+        private void WreckRig(Vector3 hole)
+        {
+            Vector3 rig = Field.RigPosition;
+            ProjectilePool projectiles = Field.Context.Projectiles;
+            projectiles.PlayBurst(new Vector3(rig.x, 0f, rig.z), RigDustRadius, projectiles.Vfx.Death, RigDust);
+            projectiles.PlayBurst(rig + Vector3.up * RigSparkHeight, RigSparkRadius, projectiles.Vfx.Mine, RigSparks);
+            projectiles.PlayBurst(Vector3.Lerp(hole, rig, RigDebrisShare), BreakoutBurstRadius, projectiles.Vfx.Default, Earth);
+            Field.Context.BossImpact.Raise(Boss.ImpactKick);
+            if (Field.Rig == null)
+            {
+                return;
+            }
+
+            Field.Rig.Smash(hole);
+            if (Field.Rig.CollapseMoment > 0f)
+            {
+                _brain.StartCoroutine(RigCollapse(Field.Rig.CollapseMoment));
+            }
+        }
+
+        // The derrick's top hits the ground in its collapse clip: sparks off the steel and a second, lower dust cloud (no
+        // second kick: the one at the break-out is the impact).
+        private IEnumerator RigCollapse(float moment)
+        {
+            float waited = 0f;
+            while (waited < moment)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
+
+            Vector3 rig = Field.RigPosition;
+            ProjectilePool projectiles = Field.Context.Projectiles;
+            projectiles.PlayBurst(new Vector3(rig.x, 0f, rig.z), RigDustRadius * RigSecondDustShare, projectiles.Vfx.Death, RigDust);
+            projectiles.PlayBurst(rig + Vector3.up * (RigSparkHeight * RigSecondDustShare), RigSparkRadius, projectiles.Vfx.Mine, RigSparks);
         }
 
         // A mine went off on it while it burrowed: it stands dazed, in full view and in full reach of every tower.

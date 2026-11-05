@@ -1,12 +1,12 @@
 {
   "asset": "Gate_IceBlock",
-  "round": 29,
-  "game_tris": 2400,
-  "source_tris": 593756,
+  "round": 30,
+  "game_tris": 2900,
+  "source_tris": 659324,
   "size_m": [
     3.651,
-    2.068,
-    2.56
+    2.071,
+    2.561
   ],
   "texture_size": 512,
   "low_texture_size": 256,
@@ -20,18 +20,19 @@
   "detail": {
     "crystal": {
       "map": "Detail_Crystal_Normal.png",
-      "tiling": 53.8,
+      "tiling": 60.0,
       "mask": "B"
     },
     "rock": {
       "map": "Detail_Rock_Normal.png",
-      "tiling": 31.4,
+      "tiling": 35.0,
       "mask": "A"
     }
   },
   "unity_scale": 1.0,
   "pivot": "road centre on the ground, as the Gate prefab: put it at the gate's own position and rotation",
   "fits": "Gate_G1 (2.52 x 0.57 x 1.28) to Gate_G3 (2.68 x 1.06 x 1.49) with 0.1-0.25 m of ice round them",
-  "material_note": "transparent (alpha blend, depth write on, rendered after the gate): Albedo alpha is 0.35 in clear ice up to 0.95 in the white fractures and frost; smoothness from the Mask G; emission a faint cold glow in the cracks (x 1.2). The Liquid_Ice shader's fresnel/refraction may be layered on top",
+  "material_note": "transparent (alpha blend, depth write on, rendered after the gate): Albedo alpha is 0.25 in the clear middle of the big faces up to 0.9 in the white fractures, facet ridges, frost and icicles; smoothness from the Mask G; emission a faint cold glow in the cracks (x 1.2). The Liquid_Ice shader's fresnel/refraction may be layered on top",
+  "round30": "IB1: thickness variation in the alpha (clear faces 0.25, breaks 0.9) and 14 icicles hanging off the top rim of both long faces",
   "use": "Frost Warden Freeze_Gate: show for 8 s over the gate (scale 0.9 -> 1 in 0.3 s at the cast frame); on Shatter_Through hide it with the ice shard burst (VFX Debris_Shards tinted ice)"
 }

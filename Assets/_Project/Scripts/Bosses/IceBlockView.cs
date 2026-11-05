@@ -27,8 +27,9 @@ namespace Game.Bosses
         private const float HeightOverGate = 1.08f;
         private const float MinScale = 0.55f;
         private const float MaxScale = 1.6f;
-        // The block's export width (README round 29: 3.65 m).
-        private const float ModelWidth = 3.65f;
+        // Ice round the gate on each side across and along the road (README round 30: 0.1-0.25 m).
+        private const float IceMargin = 0.2f;
+        private const float MinDepthShare = 0.55f;
         private const float RimeSize = 4.2f;
         private static readonly Color Shards = new Color(0.8f, 0.95f, 1f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -91,20 +92,20 @@ namespace Game.Bosses
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             }
 
-            // As tall as the gate and wider than it, centred on it (the export encloses the tallest gate from its own pivot).
-            float tall = (gateBounds.max.y - gate.Position.y) * HeightOverGate / Mathf.Max(0.1f, art.Height * art.Scale);
-            float wide = Mathf.Max(gateBounds.size.x, gateBounds.size.z) * HeightOverGate / ModelWidth;
-            float scale = Mathf.Clamp(Mathf.Max(tall, wide), MinScale, MaxScale);
-            _full = Vector3.one * scale;
+            // Fitted per axis to the gate it holds (the export is sized for the largest gate, README round 30): as tall as
+            // that gate with a little ice above it, as wide as its span and as deep as it plus a margin, all measured in
+            // the gate's own frame. Depth never drops far below the width scale, or the facets and icicles look squashed.
+            Bounds ice = LocalBounds(transform, _renderers);
+            Vector3 gateSize = gateBounds.size;
+            float tall = (gateBounds.max.y - transform.InverseTransformPoint(gate.Position).y) * HeightOverGate / Mathf.Max(0.1f, ice.max.y);
+            float wide = (gateSize.x + IceMargin * 2f) / Mathf.Max(0.1f, ice.size.x);
+            float deep = (gateSize.z + IceMargin * 2f) / Mathf.Max(0.1f, ice.size.z);
+            wide = Mathf.Clamp(wide, MinScale, MaxScale);
+            _full = new Vector3(wide, Mathf.Clamp(tall, MinScale, MaxScale), Mathf.Clamp(Mathf.Max(deep, wide * MinDepthShare), MinScale, MaxScale));
             _block = holder;
             _block.localScale = _full;
-            Bounds ice = new Bounds(holder.position, Vector3.zero);
-            foreach (Renderer renderer in _renderers)
-            {
-                ice.Encapsulate(renderer.bounds);
-            }
-
-            Vector3 shift = gateBounds.center - ice.center;
+            ice = LocalBounds(transform, _renderers);
+            Vector3 shift = transform.TransformPoint(gateBounds.center) - transform.TransformPoint(ice.center);
             holder.position += new Vector3(shift.x, 0f, shift.z);
             _block.localScale = _full * StartScale;
             _painted = true;
@@ -128,19 +129,49 @@ namespace Game.Bosses
             _block = block.transform;
         }
 
-        // The gate's model in the world (its mesh renderers), before the block is there.
+        // The gate's model (its mesh renderers) in the gate's own frame, before the block is there.
         private static Bounds GateBounds(Tower gate)
         {
-            var bounds = new Bounds(gate.Position + Vector3.up * 0.5f, Vector3.one * 0.5f);
+            var bounds = new Bounds(Vector3.up * 0.5f, Vector3.one * 0.5f);
             foreach (Renderer renderer in gate.GetComponentsInChildren<Renderer>())
             {
                 if (renderer is MeshRenderer || renderer is SkinnedMeshRenderer)
                 {
-                    bounds.Encapsulate(renderer.bounds);
+                    Encapsulate(ref bounds, gate.transform, renderer);
                 }
             }
 
             return bounds;
+        }
+
+        private static Bounds LocalBounds(Transform frame, Renderer[] renderers)
+        {
+            var bounds = new Bounds(Vector3.zero, Vector3.zero);
+            bool first = true;
+            foreach (Renderer renderer in renderers)
+            {
+                if (first)
+                {
+                    bounds = new Bounds(frame.InverseTransformPoint(renderer.bounds.center), Vector3.zero);
+                    first = false;
+                }
+
+                Encapsulate(ref bounds, frame, renderer);
+            }
+
+            return bounds;
+        }
+
+        // A renderer's own mesh box carried into a frame corner by corner (a world box would grow on a turned gate).
+        private static void Encapsulate(ref Bounds bounds, Transform frame, Renderer renderer)
+        {
+            Transform space = renderer is SkinnedMeshRenderer skinned && skinned.rootBone != null ? skinned.rootBone : renderer.transform;
+            Bounds local = renderer.localBounds;
+            for (int corner = 0; corner < 8; corner++)
+            {
+                Vector3 offset = Vector3.Scale(local.extents, new Vector3((corner & 1) == 0 ? -1f : 1f, (corner & 2) == 0 ? -1f : 1f, (corner & 4) == 0 ? -1f : 1f));
+                bounds.Encapsulate(frame.InverseTransformPoint(space.TransformPoint(local.center + offset)));
+            }
         }
 
         private void OnDestroy()

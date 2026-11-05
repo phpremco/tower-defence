@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Core;
+using UnityEngine;
 
 namespace Game.Editor
 {
@@ -142,7 +143,8 @@ namespace Game.Editor
                 new BlenderArtEntry("Wisp", "Wisp") { Bleeds = false },
                 new BlenderArtEntry("Stinger", "Stinger") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
                 new BlenderArtEntry("Bulwark", "Bulwark") { Clips = new[] { new BlenderClipSpec("Block", ModelClipRole.Block, 7) } },
-                new BlenderArtEntry("Oozer", "Oozer"),
+                // Round 31: the slug strike stretches the body itself (impact frame 10).
+                new BlenderArtEntry("Oozer", "Oozer") { Clips = new[] { new BlenderClipSpec("Strike", ModelClipRole.Attack, 10) } },
                 new BlenderArtEntry("Bat", "Bat") { BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Bat_Moss", "Bat", "Moss") { BodyCentrePivot = true, Clips = bat },
                 new BlenderArtEntry("Bat_Dust", "Bat", "Dust") { BodyCentrePivot = true, Clips = bat },
@@ -197,6 +199,8 @@ namespace Game.Editor
                     {
                         new BlenderClipSpec("Flood", ModelClipRole.Power, 24, "Pulse"),
                         new BlenderClipSpec("Spawn", ModelClipRole.Power, 30, "Spawn", "Sac_L"),
+                        // Round 31: the stretching strike (impact frame 13).
+                        new BlenderClipSpec("Strike", ModelClipRole.Attack, 13),
                     },
                 },
                 new BlenderArtEntry("RollerKing", "RollerKing")
@@ -306,8 +310,9 @@ namespace Game.Editor
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Ice",
-                    // Round 5 boss look: the armour and glaives read as flat blue plastic at play size; clear ice with lit edges.
-                    Ice = new IceLook(),
+                    // Round 30: the baked ice maps are cold now, so the round-5 flat tint is dropped (baked albedo and glow
+                    // kept); the cold rim and a faint glow (emission x 2, README round 30) stay.
+                    Ice = new IceLook { FlatColour = false, Tint = Color.white, Glow = Color.white, GlowStrength = 2f },
                     // Round 28: the ice armour is an object of its own with its own maps (FrostWarden_IceArmour_*).
                     ExtraParts = new[] { "IceArmour" },
                     Clips = new[]

@@ -190,9 +190,10 @@ namespace Game.Enemies
         private const float ShedShardBrightness = 1.8f;
         private const float ShedShardGravity = 1.2f;
         // An imported model moves its own body: the procedural attack pose only adds a share of its lunge and pitch,
-        // less still when the model has a strike clip of its own.
+        // and none when the model has a strike clip of its own (Remco 2026-11-05: a hop stacked on the slugs' stretch
+        // read as bobbing).
         private const float ModelPoseShare = 0.6f;
-        private const float ModelStrikePoseShare = 0.25f;
+        private const float ModelStrikePoseShare = 0f;
         private const float ModelFlashAmount = 0.75f;
         private const float ModelFrostAmount = 0.5f;
         private const float BossFrostAmount = 0.18f;

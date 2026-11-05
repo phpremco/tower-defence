@@ -33,7 +33,34 @@ namespace Game.Bosses
         private const float ChunkSide = 0.22f;
         // How deep a heaved chunk stays in the ground, so it juts out of the lip instead of lying on it.
         private const float ChunkBedded = 0.08f;
-        private static readonly Color Dust = new Color(0.36f, 0.3f, 0.26f, 0.55f);
+        // README round 30 crack slabs: about this many metres apart along the lips, alternating sides, a few per crack.
+        private const float SlabSpacingMin = 1.8f;
+        private const float SlabSpacingMax = 3.4f;
+        private const int SlabsMin = 3;
+        private const float SlabEndMargin = 1f;
+        private const float SlabScaleMin = 0.8f;
+        private const float SlabScaleMax = 1.3f;
+        // The export is metre-sized; at the game camera on a 3 m fissure the slabs need this much to read as slabs.
+        private const float SlabWorldScale = 1.6f;
+        private const float SlabSinkMin = 0.03f;
+        private const float SlabSinkMax = 0.08f;
+        // The hinge sits on the lip, this share of the mark's width out from the line, so the raised edge leans over the gap.
+        private const float SlabHingeShare = 0.32f;
+        private const float SlabHingeJitter = 0.12f;
+        private const float SlabReach = 0.55f;
+        // More slabs on the far lip, whose raised glowing edges face the camera.
+        private const float SlabFarLipShare = 0.65f;
+        // A slab on the near lip turns along the crack until mostly its edge, not its flat top, faces the camera.
+        private const float SlabNearAlong = 0.75f;
+        private const float SlabYawJitter = 15f;
+        private const float SlabRiseSeconds = 0.4f;
+        private const float SlabRiseDepth = 0.25f;
+        private const float SlabFlatTilt = 30f;
+        private const float SlabOvershoot = 6f;
+        private const float SlabSettleDepth = 0.18f;
+        private const float SlabSettleTilt = 14f;
+        private const float SlabSettleRate = 1.4f;
+        private static readonly Color Dust =new Color(0.36f, 0.3f, 0.26f, 0.55f);
         private static readonly Color Sparks = new Color(1f, 0.55f, 0.18f, 1f);
         private static readonly Color Rock = new Color(0.3f, 0.26f, 0.24f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -58,6 +85,21 @@ namespace Game.Bosses
         private Material _mark;
         private Mesh _markMesh;
         private Color _markGlow;
+        private readonly List<SlabPlace> _slabs = new List<SlabPlace>();
+        private CrackSlabPool _slabPool;
+        private System.Func<Vector3, bool> _blocked;
+        private MaterialPropertyBlock _slabBlock;
+        private float _slabGlow = -1f;
+        private float _fadeSeconds = -1f;
+
+        private sealed class SlabPlace
+        {
+            public CrackSlabPool.Slab Slab;
+            public Vector3 Rest;
+            public Quaternion Yaw;
+            public float Along;
+            public float Age = -1f;
+        }
 
         private sealed class Chunk
         {
@@ -71,12 +113,16 @@ namespace Game.Bosses
         public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points) => Create(parent, points, CrackStyle.Burrow);
 
         /// <summary>Lays a line in a style of its own (a thin heat line, a creeping frost) along world points.</summary>
-        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points, CrackStyle style)
+        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points, CrackStyle style) => Create(parent, points, style, null);
+
+        /// <summary>A line whose slabs (when its style has them) keep off the spots <paramref name="blocked"/> names.</summary>
+        public static CrackLineView Create(Transform parent, IReadOnlyList<Vector3> points, CrackStyle style, System.Func<Vector3, bool> blocked)
         {
             var go = new GameObject("CrackLine");
             go.transform.SetParent(parent, false);
             var view = go.AddComponent<CrackLineView>();
             view._style = style;
+            view._blocked = blocked;
             view.Build(points);
             return view;
         }
@@ -124,8 +170,25 @@ namespace Game.Bosses
         }
 
         /// <summary>Lets the crack cool down and disappear.</summary>
-        public void Fade()
+        public void Fade() => Fade(-1f);
+
+        /// <summary>
+        /// Cools it away within a time of its own (another crack is about to open over it): never slower than it already
+        /// goes, and how far it has cooled carries over.
+        /// </summary>
+        public void Fade(float seconds)
         {
+            float current = FadeSeconds;
+            if (seconds > 0f && seconds < current)
+            {
+                if (_fade > 0f)
+                {
+                    _fade *= seconds / current;
+                }
+
+                _fadeSeconds = seconds;
+            }
+
             if (_fade < 0f)
             {
                 _fade = 0f;
@@ -141,16 +204,18 @@ namespace Game.Bosses
         private void Update()
         {
             UpdateChunks();
+            UpdateSlabs();
             if (_fade < 0f)
             {
                 return;
             }
 
             _fade += Time.deltaTime;
-            float seconds = _style.FadeSeconds * (_mark != null ? MarkFadeFactor : 1f);
-            float left = 1f - _fade / seconds;
+            float left = 1f - _fade / FadeSeconds;
             if (left <= 0f)
             {
+                // The slabs go back to the pool before the crack is destroyed (children cannot leave a dying parent).
+                ReleaseSlabs();
                 Destroy(gameObject);
                 return;
             }
@@ -176,7 +241,7 @@ namespace Game.Bosses
         private void UpdateChunks()
         {
             float dt = Time.deltaTime;
-            float sink = _fade >= 0f ? Mathf.Clamp01(_fade / (_style.FadeSeconds * MarkFadeFactor) * 1.6f - 0.6f) : 0f;
+            float sink = _fade >= 0f ? Mathf.Clamp01(_fade / FadeSeconds * 1.6f - 0.6f) : 0f;
             for (int i = 0; i < _chunks.Count; i++)
             {
                 Chunk chunk = _chunks[i];
@@ -197,8 +262,83 @@ namespace Game.Bosses
             }
         }
 
+        private float FadeSeconds => _fadeSeconds > 0f ? _fadeSeconds : _style.FadeSeconds * (_mark != null ? MarkFadeFactor : 1f);
+
+        // The slabs tip up off their hinges as the crack opens past them (with a little overshoot); as it cools they
+        // settle back and sink while their glow goes with the strip's.
+        private void UpdateSlabs()
+        {
+            if (_slabs.Count == 0)
+            {
+                return;
+            }
+
+            float settle = _fade >= 0f ? Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_fade / FadeSeconds * SlabSettleRate)) : 0f;
+            for (int i = 0; i < _slabs.Count; i++)
+            {
+                SlabPlace place = _slabs[i];
+                if (place.Age < 0f)
+                {
+                    if (_open < place.Along)
+                    {
+                        continue;
+                    }
+
+                    place.Age = 0f;
+                    place.Slab.Holder.gameObject.SetActive(true);
+                }
+
+                place.Age += Time.deltaTime;
+                float t = Mathf.Clamp01(place.Age / SlabRiseSeconds);
+                float up = Mathf.SmoothStep(0f, 1f, t);
+                float tilt = SlabFlatTilt * (1f - up) - SlabOvershoot * Mathf.Sin(t * Mathf.PI) + SlabSettleTilt * settle;
+                Vector3 at = place.Rest + Vector3.down * (SlabRiseDepth * (1f - up) + SlabSettleDepth * settle);
+                place.Slab.Holder.SetPositionAndRotation(at, place.Yaw * Quaternion.Euler(tilt, 0f, 0f));
+            }
+
+            // The glow cools with the strip's molten core (GroundMark.GlowFade in Update).
+            float glow = _fade >= 0f ? Mathf.Clamp01((1f - _fade / FadeSeconds) * 2f - 1f) : 1f;
+            glow *= glow;
+            if (Mathf.Approximately(glow, _slabGlow))
+            {
+                return;
+            }
+
+            _slabGlow = glow;
+            for (int i = 0; i < _slabs.Count; i++)
+            {
+                Renderer renderer = _slabs[i].Slab.Renderer;
+                if (renderer != null)
+                {
+                    renderer.GetPropertyBlock(_slabBlock);
+                    _slabBlock.SetColor(EmissionColorId, _slabPool.HotGlow * glow);
+                    renderer.SetPropertyBlock(_slabBlock);
+                }
+            }
+        }
+
+        private void ReleaseSlabs()
+        {
+            if (_slabPool != null)
+            {
+                foreach (SlabPlace place in _slabs)
+                {
+                    if (place.Slab.Renderer != null)
+                    {
+                        place.Slab.Renderer.SetPropertyBlock(null);
+                    }
+
+                    _slabPool.Give(place.Slab);
+                }
+            }
+
+            _slabs.Clear();
+        }
+
         private void OnDestroy()
         {
+            // Torn down with the level: the slabs go with it.
+            _slabs.Clear();
             foreach (Mesh mesh in _meshes)
             {
                 Destroy(mesh);
@@ -282,6 +422,10 @@ namespace Game.Bosses
             MeshRenderer strip = GroundMark.Strip(transform, "Mark", points, _style.MarkWidth, tile, _mark, true);
             _markMesh = strip.GetComponent<MeshFilter>().sharedMesh;
             PlaceChunks();
+            if (_style.Slabs)
+            {
+                PlaceSlabs();
+            }
         }
 
         private void PlaceChunks()
@@ -314,6 +458,61 @@ namespace Game.Bosses
                 go.SetActive(false);
                 _chunks.Add(new Chunk { Transform = go.transform, Rest = rest, Along = along });
             }
+        }
+
+        // Slabs along both lips at random spacing, variant, size and sink, never on a tower or gate; each raised edge leans
+        // over the fissure, and on the lip nearest the camera they turn along the crack so the edge still shows.
+        private void PlaceSlabs()
+        {
+            _slabPool = CrackSlabPool.For(transform.parent);
+            if (_slabPool == null || _length < SlabEndMargin * 2f)
+            {
+                return;
+            }
+
+            _slabBlock = new MaterialPropertyBlock();
+            Camera view = Camera.main;
+            Vector3 toCamera = view != null ? -view.transform.forward : Vector3.back;
+            toCamera.y = 0f;
+            toCamera = toCamera.sqrMagnitude > 0.0001f ? toCamera.normalized : Vector3.back;
+            float along = SlabEndMargin + Random.Range(0f, SlabSpacingMin);
+            int tried = 0;
+            while (along < _length - SlabEndMargin || (tried < SlabsMin && along < _length))
+            {
+                TryPlaceSlab(along, toCamera);
+                tried++;
+                along += Random.Range(SlabSpacingMin, SlabSpacingMax);
+            }
+        }
+
+        private void TryPlaceSlab(float along, Vector3 toCamera)
+        {
+            Vector3 at = PointAt(along);
+            Vector3 side = SideAt(along);
+            Vector3 tangent = Vector3.Cross(side, Vector3.up);
+            float farSign = Vector3.Dot(side, toCamera) >= 0f ? -1f : 1f;
+            float sign = Random.value < SlabFarLipShare ? farSign : -farSign;
+            float scale = Random.Range(SlabScaleMin, SlabScaleMax) * SlabWorldScale;
+            float hingeOut = _style.MarkWidth * SlabHingeShare * (1f + Random.Range(-SlabHingeJitter, SlabHingeJitter));
+            Vector3 hinge = at + side * (sign * hingeOut);
+            Vector3 facing = -side * sign;
+            if (Vector3.Dot(facing, toCamera) < 0f)
+            {
+                Vector3 edge = Vector3.Dot(tangent, toCamera) >= 0f ? tangent : -tangent;
+                facing = Vector3.Lerp(facing, edge, SlabNearAlong).normalized;
+            }
+
+            facing = Quaternion.Euler(0f, Random.Range(-SlabYawJitter, SlabYawJitter), 0f) * facing;
+            if (_blocked != null && (_blocked(hinge) || _blocked(hinge + facing * (SlabReach * scale))))
+            {
+                return;
+            }
+
+            CrackSlabPool.Slab slab = _slabPool.Take(Random.Range(0, _slabPool.Variants));
+            slab.Holder.SetParent(transform, false);
+            slab.Holder.localScale = Vector3.one * scale;
+            Vector3 rest = hinge - Vector3.up * (Lift + Random.Range(SlabSinkMin, SlabSinkMax) * scale);
+            _slabs.Add(new SlabPlace { Slab = slab, Rest = rest, Yaw = Quaternion.LookRotation(facing, Vector3.up), Along = along });
         }
 
         // The debris pieces in the colour of torn basalt: dark, no glow (the shared debris look is a hot hex chunk).

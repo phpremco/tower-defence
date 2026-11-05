@@ -10,36 +10,106 @@
   ],
   "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
   "uv": {
-    "coverage": 0.518,
-    "world_per_uv": 12.5277
+    "coverage": 0.474,
+    "world_per_uv": 13.545
   },
   "detail": {
     "metal": {
       "map": "Detail_Metal_Normal.png",
-      "tiling": 250.6,
+      "tiling": 270.9,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 208.8,
+      "tiling": 225.8,
       "mask": "A"
     }
   },
   "fbx": "Cutscene_Drill_Wreck.fbx",
-  "tris": 4716,
-  "round": 29,
-  "size_m": [
-    7.812,
-    4.156,
-    2.667
-  ],
+  "round": 31,
+  "tris": 5120,
   "lod1": "none (one per level, story decor)",
+  "bones": [
+    "Root",
+    "Deck",
+    "Mid",
+    "Top",
+    "House",
+    "Roof",
+    "Stack",
+    "Stub_1",
+    "Stub_2",
+    "Stub_3",
+    "Stub_4",
+    "Block",
+    "Kelly",
+    "Bit",
+    "KellyBent",
+    "Heave",
+    "Rubble_1",
+    "Rubble_2",
+    "Rubble_3",
+    "Crest_1",
+    "Crest_2",
+    "Crest_3",
+    "Debris_1",
+    "Debris_2",
+    "Debris_3",
+    "Debris_4",
+    "Debris_5",
+    "Debris_6",
+    "Debris_7",
+    "Debris_8"
+  ],
+  "size_m": [
+    8.172,
+    5.347,
+    2.823
+  ],
   "pivot": "the rig deck's centre on the ground, as Cutscene_Drill: swap it in place",
-  "fall": {
-    "break_height_m": 1.3,
-    "fold_angle_deg": 117.4,
-    "direction": "the top lies towards Blender +X (turned 16 deg towards +Y): the side away from where Gravemaw surfaces in BOSSES.md, if Unity faces -X at the hole"
+  "bind_pose": "the wreck (a static use of the FBX shows the wreck)",
+  "clips": {
+    "Collapse": {
+      "frames": 84,
+      "loop": false,
+      "events": {
+        "impact": 3,
+        "string_thrown": 4,
+        "legs_buckle": 7,
+        "mid_tips": 12,
+        "top_snaps": 17,
+        "braces_fly": 18,
+        "house_crushed": 34,
+        "block_lands": 28,
+        "kelly_lands": 32,
+        "bit_lands": 36,
+        "top_hits_ground": 40,
+        "collapse_end": 60
+      },
+      "start": "frame 0 = Cutscene_Drill standing with its string sunk (after Sink), glow off",
+      "end": "frame 60.. 84 = the bind pose (the wreck), held"
+    },
+    "Standing": {
+      "frames": 1,
+      "loop": false,
+      "note": "the standing rig (Collapse frame 0)"
+    },
+    "Wrecked": {
+      "frames": 1,
+      "loop": false,
+      "note": "the wreck (bind pose)"
+    }
   },
-  "emission": "dead: two vent / panel embers left (strength 0.35 of the shipped colony cyan)",
-  "use": "Gravemaw entrance (ColonyRig arrival): hide Cutscene_Drill at the smash frame and show the wreck in the dust; keep Gravemaw_Hole / glow pool beside it"
+  "fall": {
+    "cuts_m": [
+      0.85,
+      1.3,
+      2.2
+    ],
+    "mid_angle_deg": 72.0,
+    "top_fold_deg": 46.0,
+    "direction": "the top lies towards Blender +X turned 22 deg towards +Y (over the motor house); the thrown string lands on -X, the side Gravemaw comes up"
+  },
+  "emission": "dead: no cyan left; dim ember slivers in the torn leg ends and the crushed house (ember orange x0.55; keep Unity's WreckEmission 0.6)",
+  "use": "ColonyRigView.Smash: show the wreck at the smash frame and play Collapse (role Death) from 0; it ends in the wreck pose and holds it. Dust at impact, sparks at top_hits_ground and house_crushed."
 }

@@ -439,7 +439,7 @@ namespace Game.Enemies
             if (_sinceTrailDrop >= TrailSpacing)
             {
                 _sinceTrailDrop = 0f;
-                TrailDropped?.Invoke(this, new Vector3(transform.position.x, 0f, transform.position.z));
+                TrailDropped?.Invoke(this, transform.position);
             }
         }
 

@@ -34,9 +34,14 @@
     "Crawl": 40,
     "Idle": 72,
     "Hit": 12,
-    "Death": 40
+    "Death": 40,
+    "Strike": 24
   },
   "scale_keyed_bones": [
+    "Body_1",
+    "Body_2",
+    "Body_3",
+    "Head",
     "Stalk_L1",
     "Stalk_L2",
     "Stalk_R1",
@@ -50,5 +55,37 @@
     "fbx": "Oozer_LOD1.fbx",
     "tris": 1699,
     "bones": 7
+  },
+  "round31": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "impact": {
+        "front_min_z": -0.005,
+        "tip_forward": 0.883,
+        "rear": 0.472,
+        "min_z": -0.007
+      },
+      "rest": {
+        "front_min_z": 0.014,
+        "tip_forward": 0.499,
+        "rear": 0.469,
+        "min_z": -0.005
+      },
+      "snap_back_shortest": {
+        "front_min_z": 0.01,
+        "tip_forward": 0.446,
+        "rear": 0.468,
+        "min_z": -0.006
+      }
+    },
+    "chain_scale_bones": [
+      "Body_1",
+      "Body_2",
+      "Body_3",
+      "Head"
+    ],
+    "note": "tail end planted; the chain stretches toward the target (length L, width L^-0.65, height L^-0.35); old clips hold the chain at scale 1"
   }
 }

@@ -2,22 +2,24 @@ using Game.Core;
 using UnityEditor;
 
 /// <summary>
-/// Imports the round-29 boss art only: rebuilds the re-exported bosses and shards (Frost Warden and Sealed One with the
-/// clip scale fix, OnBase_Loop, the shards' climbs, the Frost Warden's ice look) and runs the boss FX builder (ground
-/// marks, flipbooks, ruin gate, seal crystals, ice block, drill wreck, drained gate maps, dampened icon). Nothing else is
+/// Imports the round-30/31 art only: rebuilds the re-exported creatures named below (round 29 rebuilt the Sealed One
+/// and the shards, round 30 the Frost Warden) and runs the boss FX builder (ground marks, flipbooks, ruin gate, seal crystals,
+/// ice block, crack slabs, drill wreck, drained gate maps, dampened icon). Nothing else is
 /// synced or rebuilt. Run:
 /// unity command run_script --file Tools/PlayTest/Scripts/ApplyBossFx.cs --entry ApplyBossFx.Run --timeout_ms 900000 --timeout 960
 /// </summary>
 public static class ApplyBossFx
 {
-    private static readonly string[] Art = { "FrostWarden", "SealedOne", "ShardRunner", "ShardCrawler" };
+    // Round 30 rebuilt the Frost Warden; round 31 the slugs with their Strike (the builder adds slabs, ice block, crystals
+    // and the rigged drill wreck).
+    private static readonly string[] Art = { "Oozer", "SlimeMonarch" };
 
     public static string Run()
     {
         int worn = Game.Editor.BlenderArtBuilder.RebuildOnly(Art);
         BossFxArt fx = Game.Editor.BlenderBossFxBuilder.SyncAndBuild();
         AssetDatabase.SaveAssets();
-        string report = $"worn {worn}; fx {(fx != null ? fx.name : "none")}; ruin gate {fx?.RuinGate != null}; crystals {fx?.SealCrystals != null}; ice {fx?.IceBlock != null}; dampened {fx?.Dampened != null}";
+        string report = $"worn {worn}; fx {(fx != null ? fx.name : "none")}; ruin gate {fx?.RuinGate != null}; crystals {fx?.SealCrystals != null}; ice {fx?.IceBlock != null}; slabs {fx?.CrackSlabs != null}; dampened {fx?.Dampened != null}";
         foreach (BossFxArt.Mark mark in System.Enum.GetValues(typeof(BossFxArt.Mark)))
         {
             report += $"\nmark {mark}: {fx != null && fx.Has(mark)}";
@@ -39,7 +41,7 @@ public static class ApplyBossFx
 
             foreach (ModelClip clip in art.Clips)
             {
-                report += $"{clip.Role}({clip.Length:0.00}s) ";
+                report += $"{clip.Role}({clip.Length:0.00}s d{clip.DistancePerLoop:0.000} a{clip.AnchorForward:0.000} e{clip.EndOffset.x:0.000}/{clip.EndOffset.y:0.000} ev{clip.EventSeconds * 30f:0}) ";
             }
         }
 

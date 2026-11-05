@@ -84,6 +84,12 @@ MonoBehaviour:
   - SealCrystal_B
   - SealCrystal_C
   _iceBlock: {fileID: 11400000, guid: cbff37aeabc7c1248b86986f1e009f48, type: 2}
+  _crackSlabs: {fileID: 11400000, guid: fe6d9ca8a4048c344a83be5b6e0c4eaf, type: 2}
+  _crackSlabParts:
+  - CrackSlab_A
+  - CrackSlab_B
+  - CrackSlab_C
+  - CrackSlab_D
   _drainedMaps:
   - _lit: {fileID: 2800000, guid: 37ec5a039571b834d8559dfd8f64ecf5, type: 3}
     _drained: {fileID: 2800000, guid: e6bf0e905cbcee04bb5c589f164ebfcb, type: 3}

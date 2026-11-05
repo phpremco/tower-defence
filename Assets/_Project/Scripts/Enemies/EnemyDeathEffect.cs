@@ -112,6 +112,8 @@ namespace Game.Enemies
         private ParticleSystem _puff;
         private Transform _pool;
         private Material _poolMaterial;
+        // The pool's own flat scale (the painted pool lies flat at (d, 1, d), the plain quad is turned up at (d, d, 1)).
+        private Vector3 _poolScale;
         private int _active;
         private float _age;
         private Vector3 _groupVelocity;
@@ -426,13 +428,14 @@ namespace Game.Enemies
             {
                 GameObject go = GlowDecal.PlacePool(transform.parent, color, PoolRadius);
                 _pool = go.transform;
+                _poolScale = _pool.localScale;
                 _poolMaterial = new Material(go.GetComponent<MeshRenderer>().sharedMaterial);
                 go.GetComponent<MeshRenderer>().sharedMaterial = _poolMaterial;
             }
 
             _pool.gameObject.SetActive(true);
             _pool.position = new Vector3(at.x, at.y + 0.03f, at.z);
-            _pool.localScale = new Vector3(PoolRadius * 2f * size, PoolRadius * 2f * size, 1f);
+            _pool.localScale = _poolScale * size;
             _poolMaterial.SetColor("_EmissionColor", color * PoolBrightness);
         }
 

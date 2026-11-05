@@ -21,7 +21,8 @@ namespace Game.Bosses
         private const float BlendSeconds = 0.8f;
         public static readonly Color Dormant = new Color(0.62f, 0.45f, 1f) * 1.6f;
         public static readonly Color Released = Color.white * 3f;
-        private const float LearnedGlow = 2.4f;
+        // README round 30: a strong tint at x 2.4 read as a striped lantern; at x 2 the brighter facet middles show.
+        private const float LearnedGlow = 2f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private readonly List<Transform> _crystals = new List<Transform>(Count);
@@ -65,7 +66,7 @@ namespace Game.Bosses
             return view;
         }
 
-        /// <summary>Glow towards a colour (a learned weapon's x 2.4, or <see cref="Dormant"/> / <see cref="Released"/>).</summary>
+        /// <summary>Glow towards a colour (a learned weapon's x 2, or <see cref="Dormant"/> / <see cref="Released"/>).</summary>
         public void Tint(Color colour, bool learned)
         {
             _from = Current;

@@ -22,7 +22,7 @@ MonoBehaviour:
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 2.2918792
+  _height: 2.2912374
   _lodScreenHeight: 0.05
   _upperBodyBone: 
   _deathFade: {x: 0, y: 0}

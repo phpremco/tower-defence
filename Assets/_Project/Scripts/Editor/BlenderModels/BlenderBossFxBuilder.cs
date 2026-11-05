@@ -10,7 +10,8 @@ namespace Game.Editor
 {
     /// <summary>
     /// Imports the round-29 boss art (ArtSource README round 29) without touching any other art: syncs <c>Boss_FX</c>, the
-    /// ruin gate, the seal crystals, the gate ice block, the drill-rig wreck, the drained gate maps and the dampened icon;
+    /// ruin gate, the seal crystals, the gate ice block, the drill-rig wreck, the drained gate maps and the dampened icon
+    /// (and since round 30 Gravemaw's crack slabs);
     /// builds the ground-mark materials (<c>Game/BossDecal</c>), the flipbook materials (<c>Game/VfxParticle</c>) and the
     /// props' art, writes them into <see cref="BossFxArt"/>, hangs that on the <see cref="VfxLibrary"/> and the wreck on
     /// the colony rig. Re-running updates the same assets in place.
@@ -27,6 +28,8 @@ namespace Game.Editor
         private const float PropLodScreenHeight = 0.05f;
         private const float ExportYaw = 180f;
         private const float SealCrystalEmission = 1.6f;
+        // README round 30: the slabs' baked glow at about x3 while the crack is hot; the view cools it with the strip.
+        private const float CrackSlabEmission = 3f;
         private const float RuinGateEmission = 1f;
         // README round 29: the gate is 8.7 m wide; on a small map about 0.65 so it does not hide the road beside it.
         private const float RuinGateScale = 0.65f;
@@ -41,6 +44,16 @@ namespace Game.Editor
         {
             { "Closed_Idle", ModelClipRole.Closed }, { "Open", ModelClipRole.Open }, { "Opened_Idle", ModelClipRole.Idle },
         };
+
+        // README round 31: the wreck's collapse, from the standing rig to the wreck pose, played as its Death role.
+        private static readonly Dictionary<string, ModelClipRole> WreckRoles = new Dictionary<string, ModelClipRole>
+        {
+            { "Collapse", ModelClipRole.Death },
+            // The held wreck pose as its rest cycle (a model with clips needs one).
+            { "Wrecked", ModelClipRole.Idle },
+        };
+
+        private const float ClipFramesPerSecond = 30f;
 
         [MenuItem("Tools/Generate/Blender Boss FX (sync, marks, sheets, boss props)")]
         public static void BuildMenu()
@@ -63,6 +76,7 @@ namespace Game.Editor
             so.FindProperty("_ruinGateScale").floatValue = RuinGateScale;
             so.FindProperty("_sealCrystals").objectReferenceValue = BuildProp(BlenderBossFxCatalog.SealCrystal, SealCrystalEmission, null);
             so.FindProperty("_iceBlock").objectReferenceValue = BuildIceBlock();
+            so.FindProperty("_crackSlabs").objectReferenceValue = BuildProp(BlenderBossFxCatalog.CrackSlabs, CrackSlabEmission, null);
             WriteDrained(so.FindProperty("_drainedMaps"));
             so.FindProperty("_dampened").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Texture2D>(
                 $"{BlenderSync.TargetRoot}/{BlenderBossFxCatalog.UiFolder}/{BlenderBossFxCatalog.Dampened}@2x.png");
@@ -97,7 +111,11 @@ namespace Game.Editor
             }
 
             BlenderSync.SyncFiles(BlenderBossFxCatalog.Folder, files, BlenderBossFxCatalog.Report);
-            BlenderSync.Sync(new[] { BlenderBossFxCatalog.RuinGate, BlenderBossFxCatalog.SealCrystal, BlenderBossFxCatalog.IceBlock, BlenderBossFxCatalog.DrillWreck });
+            BlenderSync.Sync(new[]
+            {
+                BlenderBossFxCatalog.RuinGate, BlenderBossFxCatalog.SealCrystal, BlenderBossFxCatalog.IceBlock, BlenderBossFxCatalog.DrillWreck,
+                BlenderBossFxCatalog.CrackSlabs,
+            });
             foreach ((string folder, string _, string drained) in BlenderBossFxCatalog.DrainedMaps)
             {
                 BlenderSync.SyncFiles(folder, new[] { drained + ".png" }, folder + "_report.json");
@@ -345,11 +363,26 @@ namespace Game.Editor
         private static void ApplyWreck()
         {
             var rig = AssetDatabase.LoadAssetAtPath<ColonyRigDefinition>(RigPath);
-            ModelArtDefinition wreck = BuildProp(BlenderBossFxCatalog.DrillWreck, BlenderArtEntry.WreckEmission, null);
+            ModelArtDefinition wreck = BuildProp(BlenderBossFxCatalog.DrillWreck, BlenderArtEntry.WreckEmission, WreckRoles);
             if (rig == null || wreck == null)
             {
                 return;
             }
+
+            // README round 31: the collapse's main moment (the top hitting the ground) for the sparks and the second dust.
+            string report = $"{BlenderArtBuilder.AssetFolder(BlenderBossFxCatalog.DrillWreck)}/{BlenderBossFxCatalog.DrillWreck}_report.json";
+            float impact = File.Exists(report) ? CollapseFrame(File.ReadAllText(report)) : 0f;
+            var clips = new SerializedObject(wreck).FindProperty("_clips");
+            for (int i = 0; i < clips.arraySize; i++)
+            {
+                SerializedProperty clip = clips.GetArrayElementAtIndex(i);
+                if (clip.FindPropertyRelative("_role").enumValueIndex == (int)ModelClipRole.Death)
+                {
+                    clip.FindPropertyRelative("_eventSeconds").floatValue = impact / ClipFramesPerSecond;
+                }
+            }
+
+            clips.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
             if (rig.Drill != null)
             {
@@ -363,6 +396,13 @@ namespace Game.Editor
             so.FindProperty("_wreck").objectReferenceValue = wreck;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(rig);
+        }
+
+        private static float CollapseFrame(string json)
+        {
+            Dictionary<string, object> root = BlenderJson.Object(BlenderJson.Parse(json));
+            Dictionary<string, object> collapse = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(root, "clips")), "Collapse"));
+            return BlenderJson.Number(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(collapse, "events")), "top_hits_ground"));
         }
 
         private static string FxFolder(bool low) =>

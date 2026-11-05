@@ -16,34 +16,59 @@ namespace Game.Levels
         private const float EmptyCargoGlow = 0.15f;
         private const float BankDegrees = 10f;
         private const float BobCycles = 0.5f;
-        private const float FallSeconds = 1.5f;
-        private const float FallDegrees = 78f;
-        private const float SinkDepth = 0.45f;
-        private const float FleeSpeed = 4f;
-        private const float FleeSeconds = 3f;
+        private const float FleeSpeed = 6f;
+        private const float FleeClimb = 0.45f;
+        private const float FleeSpreadDegrees = 40f;
+        private const float FleeSeconds = 4f;
+        private const float CrashSeconds = 1.1f;
+        private const float CrashTumbleDegrees = 220f;
+        private const float CrashRestHeight = 0.15f;
+        private const float CrashSinkSeconds = 6f;
+        private const float CrashSinkDepth = 0.6f;
+        private const float CrashSinkStart = 0.6f;
+        private const float CrashDrift = 1.5f;
+        private const float CrashPitchDegrees = 35f;
+        private const float CrashRollShare = 0.25f;
+        private const float FleeRampSeconds = 0.6f;
+        private const float FleePitchDegrees = 12f;
+        private const float FleeTurnRate = 4f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private ColonyRigDefinition _rig;
         private ArtModel _drill;
-        private Transform _wreck;
+        private ArtModel _wreck;
         private ArtModel[] _haulers = new ArtModel[0];
         private Transform[] _holders = new Transform[0];
         private Transform[][] _rotors = new Transform[0][];
         private Quaternion[][] _rotorRest = new Quaternion[0][];
         private Material[] _cargo = new Material[0];
+        private Vector3[] _flee = new Vector3[0];
+        private Vector3[] _crashFrom = new Vector3[0];
         private Color _cargoGlow;
         private float _clock;
         private Transform _drillRoot;
         private float _smashAge = -1f;
-        private Vector3 _fallAxis = Vector3.right;
-        private Vector3 _flee = Vector3.forward;
+        private int _crasher = -1;
 
-        /// <summary>True once a boss has broken out under the rig and knocked the derrick over.</summary>
+        /// <summary>True once a boss has broken out under the rig and wrecked the derrick.</summary>
         public bool Smashed => _smashAge >= 0f;
 
+        /// <summary>Seconds into the wreck's collapse clip when its top hits the ground, or zero without such a clip.</summary>
+        public float CollapseMoment
+        {
+            get
+            {
+                ModelArtDefinition wreck = _rig != null ? _rig.Wreck : null;
+                int index = wreck != null ? wreck.IndexOf(ModelClipRole.Death) : -1;
+                return index >= 0 ? wreck.Clips[index].EventSeconds : 0f;
+            }
+        }
+
         /// <summary>
-        /// A boss breaks out under the rig (Gravemaw's entrance, a story beat): the derrick topples away from the point it
-        /// came up at and sinks into the broken ground, the string stops, and the haulers scatter and are gone.
+        /// A boss breaks out under the rig (Gravemaw's entrance, a story beat). The caller hides the moment in a dust and
+        /// spark burst; under it the intact derrick is swapped for the wreck at once (no toppling of the whole model), its
+        /// collapse clip (the wreck's Death role) playing when the art has one. The string stops; the hauler nearest the
+        /// break-out crashes beside the rig and the others scatter away from it and are gone: nothing hauls to a wreck.
         /// </summary>
         public void Smash(Vector3 from)
         {
@@ -52,16 +77,9 @@ namespace Game.Levels
                 return;
             }
 
-            // It falls across the view (left or right, away from the break-out), so the fixed camera sees it go down.
-            Camera view = Camera.main;
-            Vector3 across = view != null ? view.transform.right : Vector3.right;
-            across.y = 0f;
-            across = across.sqrMagnitude > 0.01f ? across.normalized : Vector3.right;
-            Vector3 away = Vector3.Dot(transform.position - from, across) >= 0f ? across : -across;
-            _fallAxis = transform.InverseTransformDirection(Vector3.Cross(Vector3.up, away));
-            _flee = away;
             _smashAge = 0f;
             ShowWreck(from);
+            ScatterHaulers(from);
         }
 
         public void Initialize(ColonyRigDefinition rig)
@@ -85,6 +103,8 @@ namespace Game.Levels
             _rotors = new Transform[count][];
             _rotorRest = new Quaternion[count][];
             _cargo = new Material[count];
+            _flee = new Vector3[count];
+            _crashFrom = new Vector3[count];
             for (int i = 0; i < count; i++)
             {
                 var holder = new GameObject($"Hauler{i}").transform;
@@ -133,7 +153,20 @@ namespace Game.Levels
             _clock += dt;
             if (Smashed)
             {
-                Topple(dt);
+                _smashAge += dt;
+                _wreck?.Sample(ModelClipRole.Death, _smashAge, loop: false);
+                for (int i = 0; i < _holders.Length; i++)
+                {
+                    if (i == _crasher)
+                    {
+                        Crash(i);
+                    }
+                    else
+                    {
+                        Flee(i, dt);
+                    }
+                }
+
                 return;
             }
 
@@ -149,8 +182,10 @@ namespace Game.Levels
             }
         }
 
-        // README round 29: the wreck (the derrick snapped and folded over, pipes and crystals in the heave) takes the drill's
-        // place in the dust, its fallen top turned away from the hole the boss came up through.
+        // README round 29/31: the wreck takes the drill's place in the dust, its fallen top turned away from the hole the
+        // boss came up through. Its collapse clip (round 31) starts in the standing rig and breaks it apart into the wreck
+        // pose; without a clip the wreck simply stands there. Without the art at all the derrick only goes dark and still:
+        // a tipping intact model reads as a toy falling over.
         private void ShowWreck(Vector3 from)
         {
             if (_rig.Wreck == null)
@@ -158,53 +193,94 @@ namespace Game.Levels
                 return;
             }
 
-            _wreck = new GameObject("DrillWreck").transform;
-            _wreck.SetParent(transform, false);
-            _wreck.localScale = Vector3.one * _rig.DrillScale;
+            var holder = new GameObject("DrillWreck").transform;
+            holder.SetParent(transform, false);
+            holder.localScale = Vector3.one * _rig.DrillScale;
             Vector3 away = transform.position - from;
             away.y = 0f;
             if (away.sqrMagnitude > 0.0001f)
             {
                 // The model folds over its +X legs: turn its +X away from the hole.
-                _wreck.rotation = Quaternion.FromToRotation(Vector3.right, away.normalized);
+                holder.rotation = Quaternion.FromToRotation(Vector3.right, away.normalized);
             }
 
-            ArtModel.CreateStill(_wreck, _rig.Wreck);
+            _wreck = ArtModel.CreateSampled(holder, _rig.Wreck, ownMaterial: false);
+            _wreck.Sample(ModelClipRole.Death, 0f, loop: false);
             _drillRoot.gameObject.SetActive(false);
         }
 
-        private void Topple(float dt)
+        // The nearest hauler is caught in the blast and comes down; the rest fly off away from the hole, fanned out.
+        private void ScatterHaulers(Vector3 from)
         {
-            _smashAge += dt;
-            if (_wreck != null)
+            float nearest = float.PositiveInfinity;
+            for (int i = 0; i < _holders.Length; i++)
             {
-                FleeHaulers(dt);
+                Vector3 at = _holders[i].position;
+                Vector3 away = at - from;
+                away.y = 0f;
+                away = away.sqrMagnitude > 0.01f ? away.normalized : transform.forward;
+                float spread = (_holders.Length > 1 ? i / (_holders.Length - 1f) - 0.5f : 0f) * 2f * FleeSpreadDegrees;
+                _flee[i] = Quaternion.Euler(0f, spread, 0f) * away;
+                _crashFrom[i] = _holders[i].localPosition;
+                float distance = (at - from).sqrMagnitude;
+                if (distance < nearest)
+                {
+                    nearest = distance;
+                    _crasher = i;
+                }
+
+                if (_cargo[i] != null)
+                {
+                    _cargo[i].SetColor(EmissionColorId, _cargoGlow * EmptyCargoGlow);
+                }
+            }
+
+            // One hauler alone would only crash: with a single one it flies off instead, the rig never looks still in use.
+            if (_holders.Length < 2)
+            {
+                _crasher = -1;
+            }
+        }
+
+        private void Flee(int index, float dt)
+        {
+            Transform holder = _holders[index];
+            if (!holder.gameObject.activeSelf)
+            {
                 return;
             }
 
-            float fall = Mathf.Clamp01(_smashAge / FallSeconds);
-            // It leans slowly, then goes over fast, the way a tall thing falls.
-            float eased = fall * fall;
-            _drillRoot.localRotation = Quaternion.AngleAxis(FallDegrees * eased, _fallAxis);
-            _drillRoot.localPosition = Vector3.down * (SinkDepth * eased);
-            FleeHaulers(dt);
+            float ramp = Mathf.Clamp01(_smashAge / FleeRampSeconds);
+            Vector3 heading = _flee[index] + Vector3.up * FleeClimb;
+            holder.position += heading * (FleeSpeed * ramp * dt);
+            holder.rotation = Quaternion.Slerp(holder.rotation, Quaternion.LookRotation(_flee[index]) * Quaternion.Euler(FleePitchDegrees, 0f, 0f), dt * FleeTurnRate);
+            SpinRotors(index);
+            if (_smashAge > FleeSeconds)
+            {
+                holder.gameObject.SetActive(false);
+            }
         }
 
-        private void FleeHaulers(float dt)
+        // Down in a tumble beside the rig, its rotors dead, then it sinks into the dust and is gone.
+        private void Crash(int index)
         {
-            for (int i = 0; i < _holders.Length; i++)
+            Transform holder = _holders[index];
+            if (!holder.gameObject.activeSelf)
             {
-                Transform holder = _holders[i];
-                if (!holder.gameObject.activeSelf)
-                {
-                    continue;
-                }
+                return;
+            }
 
-                holder.position += (_flee + Vector3.up * 0.5f) * (FleeSpeed * dt);
-                if (_smashAge > FleeSeconds)
-                {
-                    holder.gameObject.SetActive(false);
-                }
+            float fall = Mathf.Clamp01(_smashAge / CrashSeconds);
+            float eased = fall * fall;
+            Vector3 start = _crashFrom[index];
+            Vector3 drift = transform.InverseTransformDirection(_flee[index]) * (eased * CrashDrift);
+            float height = Mathf.Lerp(start.y, CrashRestHeight, eased);
+            float sink = Mathf.Clamp01((_smashAge - CrashSinkSeconds * CrashSinkStart) / (CrashSinkSeconds * (1f - CrashSinkStart))) * CrashSinkDepth;
+            holder.localPosition = new Vector3(start.x + drift.x, height - sink, start.z + drift.z);
+            holder.localRotation = Quaternion.Euler(eased * CrashPitchDegrees, 0f, eased * CrashTumbleDegrees * CrashRollShare) * Quaternion.Euler(0f, eased * CrashTumbleDegrees, 0f);
+            if (_smashAge > CrashSinkSeconds)
+            {
+                holder.gameObject.SetActive(false);
             }
         }
 
@@ -220,7 +296,11 @@ namespace Game.Levels
             holder.localPosition = local + Vector3.up * (_rig.FlightHeight + bob);
             // Leaning into the oval's turn, never more than a few degrees.
             holder.localRotation = Quaternion.LookRotation(ahead.normalized) * Quaternion.Euler(0f, 0f, -BankDegrees);
+            SpinRotors(index);
+        }
 
+        private void SpinRotors(int index)
+        {
             ArtModel hauler = _haulers[index];
             if (!hauler.Sample(ModelClipRole.Move, _clock, loop: true))
             {
@@ -241,6 +321,7 @@ namespace Game.Levels
         private void OnDestroy()
         {
             _drill?.Dispose();
+            _wreck?.Dispose();
             foreach (ArtModel hauler in _haulers)
             {
                 hauler?.Dispose();

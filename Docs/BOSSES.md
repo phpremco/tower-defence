@@ -366,7 +366,7 @@ maps and the dampened overlay; the drill wreck goes on `ColonyRigDefinition.Wrec
 - Ruin gate (`RuinGateView`): the Shattered's entrance stands the gate facing the camera; closed and breathing, rumble 0.8 s,
   Open (seal shards at 30, light and a point light from 38), the giant appears in the flash and walks out when it is open.
 - Seal crystals (`SealCrystalsView`): five round the rift on open ground, rising out of it, dormant lilac, the learned
-  weapon's colour x 2.4, white at the release.
+  weapon's colour x 2 (round 7; was x 2.4), white at the release.
 - Old road sinks (`RecognitionSignature.SinkOldRoad`): a `RoadSink` strip over the old road nearest the rift while the new
   road rises (decor only; walkers keep the old road).
 - Drained gate (`DrainedLook`): the drained gate's renderers get the drained emission map by property block, back on release.
@@ -386,3 +386,44 @@ maps and the dampened overlay; the drill wreck goes on `ColonyRigDefinition.Wrec
   patches that read as dirt and post-its, for one cold tint (0.32, 0.52, 0.72), smoothness 0.85, a bright cold rim and a
   faint glow (`IceLook` on the catalog row); cold mist rolls round its feet and a blue point light hangs on its chest. The
   model itself is still the weak point: see MODEL_TODO "Ronde 5 Unity" (FW1-FW7).
+
+## Round 7: Blender rounds 30-31 in the game, clean cracks, real rig destruction (2026-11-05)
+
+**Import (targeted).** `Tools/PlayTest/Scripts/ApplyBossFx.cs` rebuilt the Frost Warden (round 30, before Remco parked
+it for a new body plan; not re-shot), then the Oozer and the SlimeMonarch (round 31 `Strike`), and runs
+`BlenderBossFxBuilder` (new: `Gravemaw_CrackSlabs`, the re-exported `Gate_IceBlock`, `SealCrystal` and the rigged
+`Cutscene_Drill_Wreck`). The Warden's clip facts come through the import (`round28.clips` in its report): Walk /
+WalkEnraged 1.184 / 1.539 per loop, Climb lip 1.657, end 4.617 (+-1.5), Freeze_Gate gate 2.6, Shatter_Through gate
+2.6, impact frame 48, end 3.078 (verified on `Data/Art/FrostWarden.asset`). Submerged depth (5.972) is not read by
+Unity: the submerged clip stays under its pivot by itself. Nothing placed armour by plate number (only the icicles by
+name), so the plate remap needs no code. The round-5 `IceLook` flat tint is off (`FlatColour = false`, white tint):
+the baked cold maps show, with the cold rim and glow x 2.
+
+**Gravemaw's cracks (Remco: "sommige overlappen elkaar").**
+- A crack is planned on the grid and then shaped (`CrackPath`, called from `BossRoutes.Crack`): pulled straight where
+  no costlier ground lies between, back-tracking points dropped, corners rounded (Chaikin, cut at most 1.2 cells).
+  The cell staircase whose 3 m strip folded over itself at every step is gone.
+- A new burrow keeps off the ground of cracks still on the field (`OldCrackPenalty` on their cells), and any old crack
+  it still comes within a strip width of cools away in 0.8 s during the dive, before the new one opens there
+  (`CrackLineView.Fade(seconds)`). The dive hole replaces the line's start when the start lies behind it, so a line
+  never doubles back at its first bend.
+- Probe on the arena: entrance, return and two signature cracks, no self-overlap and no two live cracks closer than a
+  strip width (3.7 m apart at the closest).
+- Slabs (`CrackSlabPool`, `CrackStyle.WithSlabs`, burrow only): `CrackSlab_A..D` along both lips every 1.8-3.4 m (at
+  least three), random variant, scale 0.8-1.3 x 1.6 (the export is too small at the game camera), sunk 0.03-0.08,
+  hinge 0.32 of the mark width out from the line, rising edge over the fissure. 65 % on the far lip (edge towards the
+  camera); on the near lip they turn 75 % along the crack so the edge, not the flat top, shows. Never on a tower or gate
+  footprint (hinge and tip checked). They tip up off their hinge as the crack opens past them (0.4 s, small overshoot),
+  glow x 3 and cool with the strip, and settle back and sink as it fades. Pooled per field: built once, reused.
+
+**Colony rig (Remco: "de toren die omvalt ziet er heel dom uit").** Gravemaw bursts up under the derrick at the
+break-out cue: one kick, a dust cloud, sparks and debris; the intact rig is swapped for the rigged wreck, which plays
+its `Collapse` clip (role Death, round 31) from the standing pose into the wreck; at `top_hits_ground` (frame 40, data
+from the report as the clip's event) a second dust and sparks. No toppling of the intact model any more (without the
+art the derrick just stops). The haulers: the nearest crashes in a tumble beside the rig and sinks away after 6 s,
+the others scatter away from the hole and are gone after 4 s; their cargo glow goes out. Nothing else in the game
+reads the rig (only `ColonyRigView`), so nothing treats it as working afterwards.
+
+**Ice block and seal crystals.** The ice block is fitted per axis to the gate it holds (measured in the gate's frame:
+width = span + 0.2 m a side, depth likewise but never under 0.55 of the width scale, height as before), so a G1 gate
+gets a thinner, lower block. Seal crystals: learned tint x 2 (was 2.4) so the facets read.

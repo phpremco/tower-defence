@@ -13,6 +13,9 @@ namespace Game.Bosses
     public static class BossRoutes
     {
         private const float SampleStep = 0.25f;
+        private const float OldCrackPenalty = 12f;
+        private const float MinCrackLeg = 0.3f;
+        private const float MaxCornerCut = 1.2f;
         private const int RoadTries = 6;
         private const float SideOffset = 1f;
         private const float AwayFromRoadPenalty = 16f;
@@ -67,14 +70,16 @@ namespace Game.Bosses
         /// Plans a crack line from where the boss starts travelling under the ground to the hole it breaks out of: the
         /// points start at <paramref name="travelStart"/> and end on the hole. False when no line reaches it.
         /// </summary>
-        public static bool Crack(BossField field, Vector3 travelStart, Vector3 hole, float quicksandFactor, List<Vector3> points)
+        /// <param name="avoid">Cells under cracks still on the field: the line keeps off them where it can (never closed).</param>
+        public static bool Crack(BossField field, Vector3 travelStart, Vector3 hole, float quicksandFactor, List<Vector3> points, HashSet<Vector2Int> avoid = null)
         {
             points.Clear();
             ClimbLayer layer = field.Climb;
             GridMap grid = field.Grid;
             var cells = new List<Vector2Int>();
             Vector2Int start = Clamp(grid, grid.WorldToCell(travelStart));
-            if (!GridRouter.TryFind(grid.Size, start, grid.WorldToCell(hole), c => layer.CrackCost(c, quicksandFactor), cells, false, 1f / Mathf.Max(1f, quicksandFactor)))
+            System.Func<Vector2Int, float> cost = c => layer.CrackCost(c, quicksandFactor) + (avoid != null && avoid.Contains(c) ? OldCrackPenalty : 0f);
+            if (!GridRouter.TryFind(grid.Size, start, grid.WorldToCell(hole), cost, cells, false, 1f / Mathf.Max(1f, quicksandFactor)))
             {
                 return false;
             }
@@ -86,6 +91,33 @@ namespace Game.Bosses
             }
 
             points.Add(new Vector3(hole.x, 0f, hole.z));
+            Shape(field, points, cost);
+            return true;
+        }
+
+        // The cell staircase pulled straight where no costlier ground lies between, back-tracks dropped, corners rounded:
+        // one clean fissure whose wide strip never folds over itself at a step.
+        private static void Shape(BossField field, List<Vector3> points, System.Func<Vector2Int, float> cost)
+        {
+            GridMap grid = field.Grid;
+            CrackPath.Straighten(points, (a, b) => Straight(grid, cost, a, b));
+            CrackPath.RemoveBacktracks(points, grid.CellSize * MinCrackLeg);
+            CrackPath.Smooth(points, grid.CellSize * MaxCornerCut);
+        }
+
+        private static bool Straight(GridMap grid, System.Func<Vector2Int, float> cost, Vector3 a, Vector3 b)
+        {
+            float limit = Mathf.Max(cost(grid.WorldToCell(a)), cost(grid.WorldToCell(b))) + 0.01f;
+            float length = Vector3.Distance(a, b);
+            int samples = Mathf.Max(1, Mathf.CeilToInt(length / SampleStep));
+            for (int i = 1; i < samples; i++)
+            {
+                if (cost(grid.WorldToCell(Vector3.Lerp(a, b, i / (float)samples))) > limit)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

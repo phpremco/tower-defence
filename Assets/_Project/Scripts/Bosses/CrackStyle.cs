@@ -25,6 +25,14 @@ namespace Game.Bosses
             MarkWidth = 0f;
             Chunks = 0;
             MarkGlow = default;
+            Slabs = false;
+        }
+
+        private CrackStyle(CrackStyle style, bool slabs)
+            : this(style, style.Mark, style.MarkWidth, style.Chunks, style.MarkGlow)
+        {
+            HasMark = style.HasMark;
+            Slabs = slabs;
         }
 
         private CrackStyle(CrackStyle style, BossFxArt.Mark mark, float markWidth, int chunks, Color markGlow)
@@ -47,11 +55,17 @@ namespace Game.Bosses
         /// <summary>Rock chunks heaved up beside the line per metre (0: none).</summary>
         public int Chunks { get; }
 
+        /// <summary>True when basalt slabs (README round 30, Gravemaw's crack slabs) heave up along both lips.</summary>
+        public bool Slabs { get; }
+
         /// <summary>The mark's glow in another colour than its own (alpha 0: its own).</summary>
         public Color MarkGlow { get; }
 
         /// <summary>The same line drawn as a ground mark: the glow seam stays only as a soft halo over it.</summary>
         public CrackStyle WithMark(BossFxArt.Mark mark, float markWidth, int chunksPerFourMetres, Color glow = default) => new CrackStyle(this, mark, markWidth, chunksPerFourMetres, glow);
+
+        /// <summary>The same line with heaved basalt slabs along its lips where the art exists.</summary>
+        public CrackStyle WithSlabs() => new CrackStyle(this, true);
 
         public float Width { get; }
         public float GlowWidth { get; }
@@ -66,7 +80,7 @@ namespace Game.Bosses
         public float FadeSeconds { get; }
 
         /// <summary>The burrow's crack: wide, warm orange, a spray of grit where it opens.</summary>
-        public static CrackStyle Burrow => new CrackStyle(0.75f, 2.2f, new Color(1f, 0.42f, 0.1f, 1f) * 2.6f, new Color(1f, 0.35f, 0.08f, 1f) * 0.7f, new Color(1f, 0.5f, 0.15f, 0.9f), 1.4f, new Color(0.55f, 0.42f, 0.3f, 0.8f), 1f, 4f).WithMark(BossFxArt.Mark.GroundCrack, 3f, 5);
+        public static CrackStyle Burrow => new CrackStyle(0.75f, 2.2f, new Color(1f, 0.42f, 0.1f, 1f) * 2.6f, new Color(1f, 0.35f, 0.08f, 1f) * 0.7f, new Color(1f, 0.5f, 0.15f, 0.9f), 1.4f, new Color(0.55f, 0.42f, 0.3f, 0.8f), 1f, 4f).WithMark(BossFxArt.Mark.GroundCrack, 3f, 5).WithSlabs();
 
         /// <summary>"She has smelled you": a thin, hot thread of light from the boss to the hunted tower.</summary>
         public static CrackStyle Heat => new CrackStyle(0.14f, 0.6f, new Color(1f, 0.5f, 0.15f, 1f) * 1.6f, new Color(1f, 0.3f, 0.05f, 1f) * 0.3f, new Color(1f, 0.55f, 0.2f, 0.8f), 0.7f, new Color(1f, 0.6f, 0.3f, 0.6f), 0.3f, 2.5f);

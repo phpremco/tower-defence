@@ -2436,3 +2436,50 @@ ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` vali
   `wreck_under_bar.cs`, `res.cs`, `pan_table.cs`).
 - **Weak points:** the speed slider's 100 % sits at a quarter of its track (range 50-250 %); with the gamepad it steps
   20 %. The edge-scroll switch is a button that flips (there is no toggle widget in `UiKit`).
+
+## Round 7: Blender rounds 30-31 imported, clean Gravemaw cracks with slabs, real rig destruction, slime fixes (2026-11-05)
+
+- **Import (targeted, `Tools/PlayTest/Scripts/ApplyBossFx.cs`):** Frost Warden round 30 (clip facts flow through the
+  report, verified; `IceLook` flat tint dropped; not re-shot: the Warden is being rebuilt), Oozer and SlimeMonarch with
+  their round-31 `Strike`, and via `BlenderBossFxBuilder` the new `Gravemaw_CrackSlabs`, `Gate_IceBlock`, `SealCrystal`
+  and the rigged `Cutscene_Drill_Wreck` (`Collapse` -> Death role with its `top_hits_ground` moment, `Wrecked` -> Idle).
+  Details in `Docs/BOSSES.md` "Round 7".
+- **Gravemaw cracks never overlap:** `CrackPath` straightens, de-folds and rounds every planned line; a new burrow keeps
+  off live cracks and makes any old crack it still meets cool away (0.8 s) before it opens there. Basalt slabs
+  (`CrackSlabPool`) heave up along both lips, glowing edge over the fissure, never on a footprint, pooled.
+- **Drill rig:** burst-up under it with one kick, dust/sparks/debris, the wreck plays its collapse; the nearest hauler
+  crashes, the others fly off; nothing keeps hauling.
+- **Ice block** fitted per axis to each gate level; **seal crystals** learned tint x 2.
+- **Slugs:** no procedural hop on top of a model's own strike clip (`ModelStrikePoseShare` 0).
+- **Slime trail (Remco: "schijven die verticaal in de grond steken"):** `SlimeFieldView` turned the painted pool (flat
+  already) another 90 degrees, so every patch stood up as a blade. Now each piece lies flat at the ground height of its
+  patch and stretches back to the previous patch of the same layer: one continuous soft green smear. Same latent bug
+  fixed in `EnemyDeathEffect.ShowPool` (scaled the flat pool on the wrong axes). Lava/rot trails and frost creep use
+  `GroundMark.Piece` (flat by construction) and are fine.
+- **Slime boost proven** (`SlimeBoostTests`, PlayMode, real level C1_01 and real data, measured speed / own pace):
+
+| Creature | Clean road | On Oozer slime | After the trail |
+| --- | --- | --- | --- |
+| Skitter | x1.000 | x1.450 | x1.000 |
+| Prowler | x1.000 | x1.450 | x1.000 |
+| Cragback | x1.000 | x1.450 | x1.000 |
+| Oozer (own slime) | x1.000 (never hasted) | | |
+
+  Data multiplier `Oozer.TrailHaste` = 1.45. In 2 s of slime a PulseRifle took 0 damage, a gate 118 and the hero 200
+  (the test lays a patch per frame, so those numbers are the stacked maximum, not a normal fight). The boosted cue that
+  already exists: a speed-streak particle trail behind the creature and a forward lean (`EnemyView` haste trail).
+- **Gallery** (session scratchpad `gallery/`, captions in `gallery/index.txt`, Dutch): Gravemaw `01_rig_before_breakout`,
+  `02_rig_impact`, `02b_rig_collapse`, `02_rig_wreck`, `03_burrow_crack`, `03b_crack_opening`, `04_crack_runs_to_target`,
+  `04b_second_burrow_start`; SealedOne `04_road_wide`, `04c_seal_crystals_close`, `06_adapt`, `06c_crystals_learned`;
+  `Slugs/Oozer_strike_01..12` (slime after the fix and the strike at a gate). Before images in scratchpad
+  `round7/before/` and `round7/slime_before/`. Frost Warden not re-shot (being rebuilt).
+- **Tests:** 0 compile errors/warnings; EditMode 441/441 (new `CrackPathTests` 7, `BossFxArtTests` +1); PlayMode one class
+  at a time: the six boss arenas 1/1 each, SlimeBoost 1/1 (new), ContinentSimulation 2/2, CutsceneSmoke 3/3,
+  ModelPerformance 1/1, Screenshot 3/3, StoryCrystal 2/2, StoryGuard 3/3, StoryListener 1/1, StorySmoke 2/2,
+  BalanceProbe 3/3. Save restored byte-identical (ec2a1f6d) after every run.
+- **Weak points:** the break-out dust under the rig is faint at play zoom (the pink crystal flash dominates); the rig
+  stands at the field edge so the camera cannot centre it; signature cracks are often short (Gravemaw surfaces next to
+  the tower that hurt it), and successive cracks rarely coexist (10 s cooling vs. the time between thresholds), so the
+  "never overlap" rule mostly shows on entrance/return lines; slabs read as glowing lumps more than tilted plates from
+  far; the slime smear is an additive glow, not truly glossy; the Oozer strike strip is short because the G1 gate broke
+  within a few frames; SlimeMonarch's slime would still hurry Oozers (the rule only exempts the layer's own species).

@@ -6,9 +6,10 @@ namespace Game.Core
     /// <summary>
     /// The art bosses leave on the field (ArtSource README round 29): ground marks (<c>Game/BossDecal</c> strips and the
     /// frost atlas), flipbook sheets (<c>Game/VfxParticle</c>), the props a boss uses (the ruin gate it breaks out of, the
-    /// seal crystals round its rift, the ice block a frozen gate becomes) and the drained emission maps of a gate whose gun
-    /// a boss has drained. Written by the generator (Tools/Generate/Blender Boss FX); hung on the <c>VfxLibrary</c> and
-    /// registered in <see cref="Services"/> at boot. Without it every view keeps its plain stand-in.
+    /// seal crystals round its rift, the ice block a frozen gate becomes, the slabs heaved up along a burrow crack) and the
+    /// drained emission maps of a gate whose gun a boss has drained. Written by the generator (Tools/Generate/Blender Boss
+    /// FX); hung on the <c>VfxLibrary</c> and registered in <see cref="Services"/> at boot. Without it every view keeps its
+    /// plain stand-in.
     /// </summary>
     [CreateAssetMenu(menuName = "Game/Boss FX Art", fileName = "BossFxArt")]
     public sealed class BossFxArt : ScriptableObject
@@ -90,6 +91,9 @@ namespace Game.Core
         [SerializeField] private string[] _sealCrystalParts = { "SealCrystal_A", "SealCrystal_B", "SealCrystal_C" };
         [Tooltip("The ice block round a frozen gate (alpha = opacity), sized to the largest gate.")]
         [SerializeField] private ModelArtDefinition _iceBlock;
+        [Tooltip("Gravemaw's crack slabs (README round 30): one model holding the variants, each pivoted on its hinge, rising and glowing towards the fissure.")]
+        [SerializeField] private ModelArtDefinition _crackSlabs;
+        [SerializeField] private string[] _crackSlabParts = { "CrackSlab_A", "CrackSlab_B", "CrackSlab_C", "CrackSlab_D" };
         [SerializeField] private DrainedMap[] _drainedMaps = new DrainedMap[0];
         [Header("HUD")]
         [Tooltip("The broken-ring overlay over a dampened tower's picture beside the boss bar (white, tinted).")]
@@ -103,6 +107,8 @@ namespace Game.Core
         public ModelArtDefinition SealCrystals => _sealCrystals;
         public string[] SealCrystalParts => _sealCrystalParts;
         public ModelArtDefinition IceBlock => _iceBlock;
+        public ModelArtDefinition CrackSlabs => _crackSlabs;
+        public string[] CrackSlabParts => _crackSlabParts;
         public Texture2D Dampened => _dampened;
 
         public bool Has(Mark mark) => FindMark(mark) != null;

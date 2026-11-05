@@ -67,7 +67,18 @@ namespace Game.Tests
             Assert.AreEqual(3, art.SealCrystalParts.Length);
             Assert.IsNotNull(art.IceBlock, "no ice block");
             Assert.AreEqual((float)UnityEngine.Rendering.BlendMode.SrcAlpha, art.IceBlock.Material.GetFloat("_SrcBlend"), "the ice block is not see-through");
+            Assert.IsNotNull(art.CrackSlabs, "no crack slabs");
+            Assert.AreEqual(4, art.CrackSlabParts.Length);
             Assert.IsNotNull(art.Dampened, "no dampened overlay");
+        }
+
+        [Test]
+        public void DrillWreck_CarriesItsCollapse_AsDeathWithTheImpactMoment()
+        {
+            var rig = AssetDatabase.LoadAssetAtPath<ColonyRigDefinition>(RigPath);
+            int index = rig.Wreck.IndexOf(ModelClipRole.Death);
+            Assert.GreaterOrEqual(index, 0, "the wreck has no collapse clip");
+            Assert.Greater(rig.Wreck.Clips[index].EventSeconds, 0f, "the collapse has no impact moment");
         }
 
         [Test]
