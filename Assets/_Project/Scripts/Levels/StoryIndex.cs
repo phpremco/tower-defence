@@ -76,7 +76,7 @@ namespace Game.Levels
                 }
             }
 
-            AddArena(catalog.BossArena);
+            AddArena(catalog.BossArena, catalog.Story);
         }
 
         public IReadOnlyList<Page> Pages => _pages;
@@ -119,8 +119,8 @@ namespace Game.Levels
             _pages.Add(page);
         }
 
-        // One entry per boss the arena lists, fought in the arena's level.
-        private void AddArena(BossArenaDefinition arena)
+        // One entry per boss the arena lists, fought in the arena's level, and the answer of its intro (Docs/BOSS_INTROS.md).
+        private void AddArena(BossArenaDefinition arena, StoryDefinition story)
         {
             if (arena == null || arena.Level == null || arena.Bosses.Count == 0)
             {
@@ -133,6 +133,11 @@ namespace Game.Levels
             {
                 LevelDefinition level = arena.LevelFor(boss);
                 page.Entries.Add(new Entry($"Fight {boss.DisplayName} ({level.DisplayName})", EntryKind.BossArena, null, null, null, boss));
+                DialogueDefinition answer = story != null && story.IntroFor(boss) != null ? story.IntroFor(boss).Answer : null;
+                if (answer != null)
+                {
+                    page.Entries.Add(new Entry($"Intro of {boss.DisplayName}: {answer.Id}", EntryKind.Dialogue, null, answer, null));
+                }
             }
 
             _pages.Add(page);

@@ -24,6 +24,9 @@ namespace Game.Hero
         private const float AimMaxDegrees = 60f;
         private const float AimFollowSpeed = 10f;
         private const float AimHeight = 0.4f;
+        // README round 35: after the Startled flinch he holds the aim on the boss this long (game seconds), then lowers the
+        // gun and holsters it; a bark may only point while nothing else plays on his upper body.
+        private const float StartledHoldSeconds = 2.2f;
 
         // A slash starts this long before its hit frame and a shockwave before its impact frame, so the blow lands just
         // after the damage is dealt (the logic hits at once).
@@ -53,6 +56,15 @@ namespace Game.Hero
         private static readonly Color SmokeColor = new Color(0.25f, 0.24f, 0.24f, 0.4f);
         private static readonly Color DustColor = new Color(0.5f, 0.45f, 0.4f, 0.5f);
         private static readonly Color ThrusterColor = new Color(0.5f, 0.9f, 1f);
+
+        // A boss's first entrance: the flinch, the held aim, lowering the gun.
+        private enum Reaction
+        {
+            None,
+            Startled,
+            Holding,
+            Lowering,
+        }
 
         private enum Hand
         {
@@ -99,6 +111,10 @@ namespace Game.Hero
         private int _hit;
         private int _down;
         private int _revive;
+        private int _startled;
+        private int _startledHold;
+        private int _pointShout;
+        private int _lowerWeapon;
 
         private Hand _drawn = Hand.None;
         private float _combatUntil;
@@ -114,6 +130,9 @@ namespace Game.Hero
         private float _downAge;
         private bool _impacted;
         private float _reviveAge = float.PositiveInfinity;
+        private Reaction _reaction;
+        private float _reactionAge;
+        private Vector3 _reactFacing;
 
         public void Initialize(Commander hero, HeroArtDefinition art)
         {
@@ -143,6 +162,8 @@ namespace Game.Hero
             _hero.Downed += OnDowned;
             _hero.Revived += OnRevived;
             _hero.Changed += OnChanged;
+            _hero.Startled += OnStartled;
+            _hero.Called += OnCalled;
         }
 
         private void OnDestroy()
@@ -155,6 +176,8 @@ namespace Game.Hero
                 _hero.Downed -= OnDowned;
                 _hero.Revived -= OnRevived;
                 _hero.Changed -= OnChanged;
+                _hero.Startled -= OnStartled;
+                _hero.Called -= OnCalled;
             }
 
             _body?.Dispose();
@@ -202,6 +225,10 @@ namespace Game.Hero
             _hit = body.IndexOf(ModelClipRole.Hit);
             _down = body.IndexOf(ModelClipRole.Down);
             _revive = body.IndexOf(ModelClipRole.Revive);
+            _startled = body.IndexOf(ModelClipRole.Startled);
+            _startledHold = body.IndexOf(ModelClipRole.StartledHold);
+            _pointShout = body.IndexOf(ModelClipRole.PointShout);
+            _lowerWeapon = body.IndexOf(ModelClipRole.LowerWeapon);
         }
 
         private Transform[] Bones(string[] names)
@@ -391,9 +418,92 @@ namespace Game.Hero
             _player.PlayOnce(_repair);
         }
 
+        // README round 35: turned to the boss, the pistol to hand, the flinch and the high aim; then the held aim.
+        private void OnStartled(Vector3 at)
+        {
+            if (_isDown || _player == null || _startled < 0)
+            {
+                return;
+            }
+
+            Vector3 to = at - transform.position;
+            to.y = 0f;
+            _reactFacing = to.sqrMagnitude > 0.0001f ? to.normalized : Facing();
+            Draw(Hand.Ranged);
+            _boltAge = float.PositiveInfinity;
+            _player.StopUpper();
+            _player.PlayOnce(_startled);
+            _reaction = Reaction.Startled;
+            _reactionAge = 0f;
+        }
+
+        // A bark: the point and shout on the upper body, only when nothing else plays there.
+        private void OnCalled()
+        {
+            if (_isDown || _player == null || _pointShout < 0 || _player.Upper >= 0 || _reaction == Reaction.Startled)
+            {
+                return;
+            }
+
+            _player.PlayUpper(_pointShout);
+        }
+
+        // The flinch plays out into the held aim (Startled ends in Startled_Hold frame 0), the aim holds a moment, the gun
+        // comes down (Lower_Weapon) and goes back into the holster at its end.
+        private void React(float deltaTime)
+        {
+            _reactionAge += deltaTime;
+            _figure.rotation = Quaternion.RotateTowards(_figure.rotation, Quaternion.LookRotation(_reactFacing), TurnWalkingDegreesPerSecond * deltaTime);
+            switch (_reaction)
+            {
+                case Reaction.Startled:
+                    _player.Loop(_startledHold >= 0 ? _startledHold : _idle, 1f);
+                    if (_player.Once < 0 || _reactionAge >= _body.Art.Clips[_startled].Length)
+                    {
+                        _reaction = Reaction.Holding;
+                        _reactionAge = 0f;
+                    }
+
+                    break;
+                case Reaction.Holding:
+                    _player.Loop(_startledHold >= 0 ? _startledHold : _idle, 1f);
+                    if (_reactionAge >= StartledHoldSeconds)
+                    {
+                        _reaction = Reaction.Lowering;
+                        _reactionAge = 0f;
+                        if (_lowerWeapon >= 0)
+                        {
+                            _player.PlayOnce(_lowerWeapon);
+                        }
+                    }
+
+                    break;
+                default:
+                    _player.Loop(_idle, 1f);
+                    if (_lowerWeapon < 0 || _reactionAge >= _body.Art.Clips[_lowerWeapon].Length)
+                    {
+                        // README round 35: no holster clip yet, so the pistol snaps to Holster_R once the gun is down.
+                        Draw(Hand.None);
+                        _reaction = Reaction.None;
+                    }
+
+                    break;
+            }
+        }
+
+        /// <summary>True while the hero plays his reaction to a boss (flinch, held aim, lowering the gun).</summary>
+        public bool IsReacting => _reaction != Reaction.None;
+
+        /// <summary>A bone of his model by name (the head for the visor cut-in camera), or null.</summary>
+        public Transform Bone(string name) => _body?.Find(name);
+
+        /// <summary>Where he faces now (the figure, which turns towards a boss he reacts to).</summary>
+        public Vector3 FigureForward => _figure != null ? _figure.forward : transform.forward;
+
         private void OnDowned()
         {
             _isDown = true;
+            _reaction = Reaction.None;
             _downAge = 0f;
             _impacted = false;
             _reviveAge = float.PositiveInfinity;
@@ -467,6 +577,10 @@ namespace Game.Hero
             if (_isDown)
             {
                 Fall(deltaTime);
+            }
+            else if (_reaction != Reaction.None)
+            {
+                React(deltaTime);
             }
             else
             {

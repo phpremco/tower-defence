@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bcc5fc71e60744c83feff3cc48b346, type: 3}
+  m_Name: Intro_SealedOne
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
+  _boss: {fileID: 11400000, guid: 62ab7f89a7b068946adaabf64fbf0d3e, type: 2}
+  _heroLine: ...Doc. The ground is moving. The whole ground.
+  _answer: {fileID: 11400000, guid: f3bdb818d7d3553419d807e3c3a1eb39, type: 2}
+  _repeatBarks:
+  - It's awake again. Mix it up.
+  - The ground's moving. Here we go.
+  _barks:
+  - Moment: 10
+    Line: It learned. It actually learned.
+  - Moment: 11
+    Line: Get OFF my base!
+  _cutInTint: {r: 0.66, g: 0.36, b: 1, a: 1}
+  _slowFactor: 0.25
+  _focusSeconds: 0.5
+  _heroLineSeconds: 1.4
+  _lineHoldSeconds: 0.6
+  _typeSpeed: 75
+  _maxBeatSeconds: 5.8
+  _barkCooldownSeconds: 14

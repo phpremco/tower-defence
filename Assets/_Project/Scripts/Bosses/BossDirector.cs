@@ -58,6 +58,8 @@ namespace Game.Bosses
         private void OnSpawned(Enemy enemy)
         {
             EnemyDefinition definition = enemy.Definition;
+            // Read before it is marked: the boss intro plays the full beat only for a first meeting.
+            bool firstMeeting = _progress == null || !_progress.HasSeenEnemy(definition.name);
             if (definition.IsBoss && !_context.Practice)
             {
                 _progress?.MarkEnemySeen(definition.name);
@@ -75,6 +77,7 @@ namespace Game.Bosses
                 brain.Initialize(Field());
             }
 
+            brain.FirstMeeting = firstMeeting;
             // A boss with an entrance of its own (a crack to the rig, a pool) rises its own way, not out of the spawn.
             if (definition.Boss.Arrival != BossArrival.Wave)
             {

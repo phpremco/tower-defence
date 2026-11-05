@@ -94,6 +94,23 @@ namespace Game.Core
         [Tooltip("Gravemaw's crack slabs (README round 30): one model holding the variants, each pivoted on its hinge, rising and glowing towards the fissure.")]
         [SerializeField] private ModelArtDefinition _crackSlabs;
         [SerializeField] private string[] _crackSlabParts = { "CrackSlab_A", "CrackSlab_B", "CrackSlab_C", "CrackSlab_D" };
+        [Header("Gravemaw fissure (README round 34)")]
+        [Tooltip("The modular fissure kit: one model holding the modules (start, straights, curves, head, branches), bent along a burrow crack.")]
+        [SerializeField] private GameObject _fissureKit;
+        [Tooltip("The same modules with fewer rows and pebbles, for the low profile.")]
+        [SerializeField] private GameObject _fissureKitLow;
+        [SerializeField] private Material _fissureRock;
+        [SerializeField] private Material _fissureRockLow;
+        [Tooltip("The first punch stage: marks the gap opening where it is in view (Game/DepthPunch), so the walls below can show.")]
+        [SerializeField] private Material _fissurePunch;
+        [Tooltip("The second punch stage: the far depth where the first marked the opening (Game/DepthPunch with _FAR_DEPTH).")]
+        [SerializeField] private Material _fissureClear;
+        [Tooltip("Uniform scale of the kit (modelled 1.44 m wide): 2 gives a crack about 2.9 m wide with a 1.1 m gap.")]
+        [SerializeField] [Min(0.5f)] private float _fissureScale = 2f;
+        [Tooltip("Metres behind the open front over which the crack tears from shut to fully open.")]
+        [SerializeField] [Min(0.1f)] private float _fissureOpenLength = 2.2f;
+        [Tooltip("Seconds the molten core keeps glowing after the crack has fully opened.")]
+        [SerializeField] [Min(0.1f)] private float _fissureCoolSeconds = 10f;
         [SerializeField] private DrainedMap[] _drainedMaps = new DrainedMap[0];
         [Header("HUD")]
         [Tooltip("The broken-ring overlay over a dampened tower's picture beside the boss bar (white, tinted).")]
@@ -110,6 +127,19 @@ namespace Game.Core
         public ModelArtDefinition CrackSlabs => _crackSlabs;
         public string[] CrackSlabParts => _crackSlabParts;
         public Texture2D Dampened => _dampened;
+
+        /// <summary>True when the fissure kit, its rock and its punch are all there.</summary>
+        public bool HasFissure => _fissureKit != null && _fissureRock != null && _fissurePunch != null && _fissureClear != null;
+
+        /// <summary>The fissure kit for the current profile.</summary>
+        public GameObject FissureKit => ModelQuality.IsLow && _fissureKitLow != null ? _fissureKitLow : _fissureKit;
+
+        public Material FissureRock => ModelQuality.IsLow && _fissureRockLow != null ? _fissureRockLow : _fissureRock;
+        public Material FissurePunch => _fissurePunch;
+        public Material FissureClear => _fissureClear;
+        public float FissureScale => _fissureScale;
+        public float FissureOpenLength => _fissureOpenLength;
+        public float FissureCoolSeconds => _fissureCoolSeconds;
 
         public bool Has(Mark mark) => FindMark(mark) != null;
 

@@ -98,6 +98,9 @@ namespace Game.Levels
         /// <summary>Whether this run plays story dialogues. The campaign flow allows it; tests and tools do not.</summary>
         public bool StoryEnabled { get; set; }
 
+        /// <summary>Whether the hero meets the continent bosses with their intro beat and barks (Docs/BOSS_INTROS.md).</summary>
+        public bool BossIntros { get; set; }
+
         /// <summary>True while a dialogue plays or waits to play. The result screen waits for it to clear.</summary>
         public bool StoryBusy { get; set; }
 

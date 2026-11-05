@@ -97,6 +97,9 @@ namespace Game.Editor
         private const int CutsceneFxMapSize = 1024;
         private const int CutsceneFxLowMapSize = 512;
         private static bool IsUnderground(string path) => IsOurs(path) && ExportFolder(path) == UndergroundFolder;
+        // Round 34: Gravemaw's modular fissure kit (static meshes and one atlas that repeats along the crack).
+        public const string FissureAsset = "Gravemaw_Fissure";
+        private static bool IsFissure(string path) => IsOurs(path) && ExportFolder(path) == FissureAsset;
         private static bool IsCutsceneFx(string path) => IsOurs(path) && ExportFolder(path) == CutsceneFxFolder;
         private static bool IsSky(string path) => IsOurs(path) && ExportFolder(path) == SkiesFolder;
 
@@ -144,6 +147,14 @@ namespace Game.Editor
             {
                 importer.animationType = ModelImporterAnimationType.None;
                 importer.importAnimation = false;
+            }
+
+            if (IsFissure(assetPath))
+            {
+                // README round 34: static modules the crack view bends along its path on the CPU, so it reads them.
+                importer.animationType = ModelImporterAnimationType.None;
+                importer.importAnimation = false;
+                importer.isReadable = true;
             }
 
             if (IsUnderground(assetPath))
@@ -348,6 +359,14 @@ namespace Game.Editor
             importer.anisoLevel = tiling ? TilingAnisoLevel : detail ? DetailAnisoLevel : AnisoLevel;
             importer.maxTextureSize = detail ? DetailMapSize : MapSize(assetPath, low);
             importer.textureCompression = TextureImporterCompression.CompressedHQ;
+            if (IsFissure(assetPath))
+            {
+                // README round 34: U is metres along the crack and repeats every metre; V is the cross-section and clamps.
+                importer.wrapModeU = TextureWrapMode.Repeat;
+                importer.wrapModeV = TextureWrapMode.Clamp;
+                importer.anisoLevel = TilingAnisoLevel;
+            }
+
             if (file.EndsWith("_Normal", StringComparison.Ordinal))
             {
                 importer.textureType = TextureImporterType.NormalMap;
@@ -363,6 +382,7 @@ namespace Game.Editor
             {
                 importer.textureCompression = TextureImporterCompression.Compressed;
             }
+
         }
 
         // Cutscene_FX_report.json: greyscale sprites with RGB = A, tinted additively by the code, so linear data; the beam

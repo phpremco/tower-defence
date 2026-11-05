@@ -21,8 +21,8 @@ namespace Game.Tests
         public BossArenaDefinition Arena { get; private set; }
         public List<string> Overlaps { get; } = new List<string>();
 
-        /// <summary>Loads the arena fight of the boss with that asset name and waits for the level to stand.</summary>
-        public IEnumerator Load(string bossName)
+        /// <summary>Loads the arena fight of the boss with that asset name (with the boss intros, if asked) and waits for the level to stand.</summary>
+        public IEnumerator Load(string bossName, bool bossIntros = false)
         {
             SceneManager.LoadScene(SceneNames.Boot);
             yield return null;
@@ -39,7 +39,7 @@ namespace Game.Tests
             }
 
             Boss = boss;
-            Services.Register(new LevelSession(Arena.LevelFor(boss), Arena.Difficulty, false, null, Arena.WavesFor(boss), Arena.StartingMoney));
+            Services.Register(new LevelSession(Arena.LevelFor(boss), Arena.Difficulty, false, null, Arena.WavesFor(boss), Arena.StartingMoney) { BossIntros = bossIntros });
             SceneManager.LoadScene(SceneNames.Level);
             yield return null;
             yield return null;

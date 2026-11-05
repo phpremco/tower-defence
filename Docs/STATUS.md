@@ -2614,3 +2614,36 @@ Not committed.
 - **Gallery:** `gallery/SealedOne/21-26` (rift at the road start, the violet road over the whole field, on the road to the
   first gate), Dutch captions in `index.txt`.
 - **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Sealed One.
+
+## Round 12: Gravemaw's 3D fissure, rounded ground marks, wide bodies inside the kerbs, Mercer's reactions and boss intros (2026-11-05)
+
+Not committed.
+- **Gravemaw's fissure** (Blender round 34): `FissureKitView` bends the kit along the crack line (spline deform; start,
+  straights, head, side cracks; scale 2), one mesh, opening/cooling/healing through material values (`Game/FissureRock`
+  reveal from the UV2/UV3 closed offsets) and a two-stage depth punch (`Game/DepthPunch`: stencil mark, then far depth) so
+  the ground never covers the gap. Replaces the painted strip, its halo and the slabs along a burrow crack. Import:
+  `Tools/PlayTest/Scripts/ApplyFissure.cs` (boss FX builder; the importer keeps the kit readable and its maps repeating along U).
+- **No square ends** on any ground mark: `Game/BossDecal` rounds every strip and trail piece to a blunt, torn point (UV3
+  end data from `GroundMark`); lava and rot trails narrow into a tail over their oldest pieces; frost cells are round;
+  furrow, violet road and sinking road round their corners (`GroundMark.Rounded`).
+- **Wide bodies stay inside the kerbs:** `EnemyDefinition.BodyHalfWidth` and `GroundBody` (data; generator and
+  `Tools/PlayTest/Scripts/ApplyBodyWidths.cs`); the spawner keeps each lane inside the kerb's inner face and fits ground
+  bodies between the stones (`Enemy.BodyFit`, Slime Monarch 0.89). Wide creatures and bosses now walk the centre.
+- **Mercer's reaction clips** (Blender round 35): roles Startled, StartledHold, Disbelief, PointShout (upper body from
+  Spine1), LowerWeapon with cues flinch / hand_up / point / lowered (`Tools/PlayTest/Scripts/ApplyMercer.cs`).
+  `HeroArtView` plays Startled -> hold -> Lower_Weapon -> pistol to Holster_R on `Commander.Startle`, Point_Shout on
+  `Commander.CallOut`. The opening cutscene's reaction shot plays Disbelief after the step back.
+- **Boss intros** (Docs/BOSS_INTROS.md, details in Docs/BOSSES.md round 12): `BossIntroDefinition` per continent boss on the
+  story (`Tools/PlayTest/Scripts/ApplyBossIntros.cs` or the generator step "Boss intros"); `BossIntroDirector` in the HUD:
+  first meeting = slow motion 0.25 (< 6 s, any button skips), Startled, line over his head, visor cut-in, Codex note,
+  ORA then Voss in their own box; later meetings a bark; mid-fight barks with a cooldown. On in the campaign (story on) and
+  where a `LevelSession` asks for them (`BossIntros`).
+- **Checks:** 0 compile errors/warnings; EditMode 476/476 (new `BossIntroRulesTests`); PlayMode one class at a time (see
+  the round report). Save restored byte-identical (ec2a1f6d) after every Play Mode run; Game view not touched.
+- **Gallery:** `gallery/<Boss>/30-33_r12_*`, `gallery/Slugs/30-31`, `gallery/Intros/30-38`, `gallery/Opening/30-31`, Dutch
+  captions in `index.txt`.
+- **Curator choices to confirm with Remco:** the barks for a later meeting (the doc gives one, for Gravemaw); the intro box is
+  the normal dialogue box (it covers the lower middle for about three seconds); the cut-in shows the visor from the front with
+  the boss's colour as rim light, not a true reflection of the boss.
+- **Try it:** open the project, Boot, dev Story viewer page "Boss arena" (practice) - the intros play there only when the
+  session asks for them; in the campaign they play at each continent boss's first appearance.

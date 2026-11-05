@@ -1025,3 +1025,12 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Onderdeel | Verbeterpunt |
 | --- | --- |
 | Gravemaw-kloof (ronde 34) | Als de kloof recht naar de camera loopt, zie je de hele kernbodem: een felle (wel korstige) lavaband in een donkere sleuf. Bochten zijn vast op 20 graden (spline-deform aanbevolen). De textuur van de lipbovenkant herhaalt elke meter. Zonder dieptepunch in Unity bedekt de grond de kloof |
+
+### Ronde 12 (Unity, 2026-11-05): wat de import liet zien
+
+| Onderdeel | Status / verbeterpunt |
+| --- | --- |
+| Gravemaw-kloof (ronde 34) | In het spel, gebogen langs het pad (spline-deform; de bochtstukken zijn niet nodig). De dieptepunch werkt in twee stappen (stencil, dan verre diepte). Waar de kloof onder een verhoogde terrasrand door loopt verdwijnt hij eronder; dat leest goed. Mogelijk: een korter eindstuk voor korte scheuren (nu worden Start en Head samengedrukt tot 45 %) |
+| Mercer-reacties (ronde 35) | Alle vijf clips in het spel. Een echte Holster-clip ontbreekt nog: het pistool springt na Lower_Weapon naar Holster_R |
+| Stripvenster (boss-intro) | Gebruikt nu een effen paneel uit de UI-kit in de bosskleur. Een getekend stripframe uit de UI-kit (rafelrand, schaduw) zou het mooier maken |
+| Vizier in het stripvenster | Het randlicht van de boss staat er; een echte weerspiegeling van de boss in het vizier zou een reflectieprobe of een getekende overlay vragen |

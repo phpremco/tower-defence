@@ -13,3 +13,10 @@ MonoBehaviour:
   m_Name: Story
   m_EditorClassIdentifier: Game.Levels::Game.Levels.StoryDefinition
   _openingCutscene: {fileID: 11400000, guid: e7153e3adf1be1f44ae5b9aa89a8b681, type: 2}
+  _bossIntros:
+  - {fileID: 11400000, guid: c592f9760a6d1bf46836bb8c8d890bb1, type: 2}
+  - {fileID: 11400000, guid: c0c10df6edd06194e97f876197b7a63c, type: 2}
+  - {fileID: 11400000, guid: 4f0ce8a73cbed1349ac8c914ab36b275, type: 2}
+  - {fileID: 11400000, guid: 15921a1cb1b1bc441a4b3e2050a1119f, type: 2}
+  - {fileID: 11400000, guid: da02f49f1fbb20d489ab112ca2966cc7, type: 2}
+  - {fileID: 11400000, guid: 68bf32e0f7629524d9cc3941a171503f, type: 2}

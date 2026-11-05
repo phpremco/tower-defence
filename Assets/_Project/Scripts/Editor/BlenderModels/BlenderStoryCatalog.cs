@@ -107,6 +107,12 @@ namespace Game.Editor
             { "Sink", ModelClipRole.Deploy },
             { "Deploy", ModelClipRole.Deploy },
             { "Work", ModelClipRole.Work },
+            // README round 35: Mercer's reactions to a boss and the end of a fight.
+            { "Startled", ModelClipRole.Startled },
+            { "Startled_Hold", ModelClipRole.StartledHold },
+            { "Disbelief", ModelClipRole.Disbelief },
+            { "Point_Shout", ModelClipRole.PointShout },
+            { "Lower_Weapon", ModelClipRole.LowerWeapon },
         };
 
         /// <summary>Mercer's clips that play on the upper body (README round 6), with how much of the pose each takes.</summary>
@@ -117,6 +123,8 @@ namespace Game.Editor
             { "Slash", 1f },
             // A hit only flinches: most of the stance keeps going underneath it.
             { "Hit", 0.7f },
+            // README round 35: the bark's point and shout, from Spine1 up, over Idle or Walk.
+            { "Point_Shout", 1f },
         };
 
         /// <summary>The report key of each Mercer clip's moment (a frame number), by take.</summary>
@@ -127,6 +135,10 @@ namespace Game.Editor
             { "Slash", "hit" },
             { "Shockwave", "impact" },
             { "Down", "ground" },
+            { "Startled", "flinch" },
+            { "Disbelief", "hand_up" },
+            { "Point_Shout", "point" },
+            { "Lower_Weapon", "lowered" },
         };
 
         /// <summary>The report key of each Mercer travel cycle's distance per loop.</summary>

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bcc5fc71e60744c83feff3cc48b346, type: 3}
+  m_Name: Intro_FrostWarden
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
+  _boss: {fileID: 11400000, guid: 241eba79783ca9e439c2085aca9748d4, type: 2}
+  _heroLine: Those fists are bigger than my gate. Why are they bigger than my gate?
+  _answer: {fileID: 11400000, guid: 4cab979b54395e841bc564ef03a1b07d, type: 2}
+  _repeatBarks:
+  - Big, cold and back. Light it up.
+  - The fists are back. Fire on the armour!
+  _barks:
+  - Moment: 4
+    Line: My gate's an ice cube. Fantastic.
+  - Moment: 5
+    Line: Armour's off! Hit it with everything!
+  _cutInTint: {r: 0.55, g: 0.85, b: 1, a: 1}
+  _slowFactor: 0.25
+  _focusSeconds: 0.5
+  _heroLineSeconds: 1.4
+  _lineHoldSeconds: 0.6
+  _typeSpeed: 75
+  _maxBeatSeconds: 5.8
+  _barkCooldownSeconds: 14

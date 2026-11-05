@@ -19,6 +19,7 @@ namespace Game.Editor
         public const string IceBlock = "Gate_IceBlock";
         public const string DrillWreck = "Cutscene_Drill_Wreck";
         public const string CrackSlabs = "Gravemaw_CrackSlabs";
+        public const string Fissure = BlenderModelImporter.FissureAsset;
         public const string UiFolder = "UI";
         public const string Dampened = "UI_Dampened";
 

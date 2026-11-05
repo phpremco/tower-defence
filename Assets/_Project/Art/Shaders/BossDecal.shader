@@ -29,6 +29,9 @@ Shader "Game/BossDecal"
         _HeadTaper ("Pinch to a point over this many m behind the open end (0: off)", Float) = 0
         _LipHeight ("Lip height at UV2.y = 1 (m)", Float) = 0
         _Pulse ("Glow pulse (amplitude, speed)", Vector) = (0, 0, 0, 0)
+        _EndTaper ("Rounded ends: length as a multiple of the built one (UV3.x)", Float) = 1
+        _EndRagged ("Rounded ends: how torn their edge is", Range(0, 1)) = 0.5
+        _EndSoft ("Rounded ends: edge softness (share of the half width)", Range(0.01, 0.5)) = 0.14
     }
 
     SubShader
@@ -76,6 +79,9 @@ Shader "Game/BossDecal"
             float _HeadTaper;
             float _LipHeight;
             float4 _Pulse;
+            float _EndTaper;
+            half _EndRagged;
+            half _EndSoft;
             CBUFFER_END
 
             struct Attributes
@@ -86,6 +92,7 @@ Shader "Game/BossDecal"
                 float2 uv : TEXCOORD0;
                 float2 path : TEXCOORD1;
                 float2 side : TEXCOORD2;
+                float3 ends : TEXCOORD3;
             };
 
             struct Varyings
@@ -98,6 +105,7 @@ Shader "Game/BossDecal"
                 half3 normalWS : TEXCOORD2;
                 half open : TEXCOORD3;
                 half fog : TEXCOORD4;
+                float3 ends : TEXCOORD6;
             };
 
             // How far open this vertex is: the whole strip at _Progress, or ramping in behind the open end.
@@ -132,7 +140,26 @@ Shader "Game/BossDecal"
                 output.across = (half)abs(input.uv.y - 0.5);
                 output.open = open;
                 output.fog = (half)ComputeFogFactor(positions.positionCS.z);
+                output.ends = input.ends;
                 return output;
+            }
+
+            // Remco 2026-11-05: a mark never ends square. UV3 (z = 1 where the mesh carries it) holds the distance to the
+            // nearer end in end lengths and the place across (-1..1): the mark narrows to a rounded point over its end
+            // length, its edge torn by a little noise that is strongest at the very end.
+            half EndMask(float3 ends, float3 positionWS)
+            {
+                if (ends.z < 0.5)
+                {
+                    return 1.0h;
+                }
+
+                float t = saturate(ends.x / max(_EndTaper, 0.001));
+                // Between a round cap and a straight taper: a blunt point, not a capsule.
+                half rounded = (half)lerp(sqrt(saturate(1.0 - (1.0 - t) * (1.0 - t))), t, 0.5);
+                half torn = (half)(sin(positionWS.x * 3.7 + sin(positionWS.z * 2.3) * 1.7) * 0.55 + sin(positionWS.z * 6.1 + positionWS.x * 1.9) * 0.45);
+                half allowed = rounded * (1.0h + _EndSoft) + torn * _EndRagged * (1.0h - (half)t * 0.7h) * 0.5h;
+                return 1.0h - smoothstep(allowed - _EndSoft, allowed, (half)abs(ends.y));
             }
 
             half Threshold(half g, half progress)
@@ -167,7 +194,8 @@ Shader "Game/BossDecal"
                 half4 pack = SAMPLE_TEXTURE2D(_GlowMap, sampler_GlowMap, input.uv);
                 half progress = _Progress * input.open;
                 half shown = Threshold(pack.g, progress);
-                half alpha = albedo.a * shown * _Fade * input.color.a;
+                half ends = EndMask(input.ends, input.positionWS);
+                half alpha = albedo.a * shown * _Fade * input.color.a * ends;
 
                 // A deep fissure: the middle of the crack is dark, only its molten core (R) lights it.
                 half depth = _Depth * (1.0h - smoothstep(0.05h, _DepthFrom, input.across));
@@ -188,7 +216,7 @@ Shader "Game/BossDecal"
                 half ragged = 0.7h + 0.3h * sin(input.uv.x * 61.0 + sin(input.uv.x * 13.0) * 2.0);
                 half pulse = 1.0h + _Pulse.x * sin(_Time.y * _Pulse.y + input.positionWS.x * 0.7 + input.positionWS.z * 0.5);
                 // Vertex alpha also dims the glow: a strip faded off a footprint must not glow under it.
-                half3 glow = (pack.r * core + _LipGlow * lip * ragged) * heat * _EmissionColor.rgb * _GlowFade * pulse * input.open * input.color.a;
+                half3 glow = (pack.r * core + _LipGlow * lip * ragged) * heat * _EmissionColor.rgb * _GlowFade * pulse * input.open * input.color.a * ends;
                 half3 colour = MixFog(lit + glow, input.fog);
                 // The glow may outshine a thin coverage at the fissure's edge.
                 alpha = saturate(max(alpha, saturate(dot(glow, half3(0.3h, 0.4h, 0.3h))) * shown * _Fade));

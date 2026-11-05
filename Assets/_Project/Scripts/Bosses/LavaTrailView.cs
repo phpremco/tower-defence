@@ -19,6 +19,11 @@ namespace Game.Bosses
         // The hot lava starts a little cooled (README round 29: the fresh strip glows over too much of its crack net).
         private const float FirstCool = 0.2f;
         private const float FadeFrom = 0.7f;
+        // The newest and the oldest piece round off over most of their half length (the trail's two ends); the ones
+        // between only over the share that the next piece covers anyway (GroundMark: no square ends).
+        private const float TrailEndTaper = 2f;
+        private const float TailNarrowest = 0.4f;
+        private const float TailPieces = 2.5f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color Hot = new Color(1f, 0.45f, 0.08f, 1f) * 2.2f;
         private static readonly Color Ember = new Color(1f, 0.6f, 0.2f, 0.9f);
@@ -32,6 +37,7 @@ namespace Game.Bosses
         private bool _heat;
         private Vector3 _lastLaid;
         private bool _hasLast;
+        private int _newest = -1;
 
         public static LavaTrailView Create(Transform parent, LavaTrail trail, float radius) => Create(parent, trail, radius, Hot, Ember, "LavaTrail", BossFxArt.Mark.LavaTrail);
 
@@ -91,6 +97,7 @@ namespace Game.Bosses
 
             _lastLaid = at;
             _hasLast = true;
+            _newest = slot;
             piece.gameObject.SetActive(true);
             _embers.transform.position = at;
             _embers.Emit(2);
@@ -98,6 +105,7 @@ namespace Game.Bosses
 
         private void Update()
         {
+            int oldest = OldestLive();
             for (int i = 0; i < _pools.Length; i++)
             {
                 Transform piece = _pools[i].transform.parent;
@@ -118,6 +126,8 @@ namespace Game.Bosses
                 {
                     _block.SetFloat(GroundMark.Progress, _heat ? Mathf.Lerp(FirstCool, 1f, age) : age);
                     _block.SetFloat(GroundMark.Fade, 1f - Mathf.Clamp01((age - FadeFrom) / (1f - FadeFrom)));
+                    _block.SetFloat(GroundMark.EndTaper, i == _newest || i == oldest ? TrailEndTaper : 1f);
+                    piece.localScale = new Vector3(TailWidth(i), 1f, 1f);
                 }
                 else
                 {
@@ -131,10 +141,43 @@ namespace Game.Bosses
             }
         }
 
+        // The oldest pieces narrow towards the end of the trail, so it tapers off over a few pieces instead of stopping.
+        private float TailWidth(int slot)
+        {
+            int older = 0;
+            float age = _trail.AgeAt(slot);
+            for (int i = 0; i < _pools.Length; i++)
+            {
+                if (i != slot && _pools[i].transform.parent.gameObject.activeSelf && _trail.IsLive(i) && _trail.AgeAt(i) > age)
+                {
+                    older++;
+                }
+            }
+
+            return Mathf.Lerp(TailNarrowest, 1f, Mathf.Clamp01(older / TailPieces));
+        }
+
+        private int OldestLive()
+        {
+            int oldest = -1;
+            float age = -1f;
+            for (int i = 0; i < _pools.Length; i++)
+            {
+                if (_pools[i].transform.parent.gameObject.activeSelf && _trail.IsLive(i) && _trail.AgeAt(i) > age)
+                {
+                    age = _trail.AgeAt(i);
+                    oldest = i;
+                }
+            }
+
+            return oldest;
+        }
+
         /// <summary>Puts every patch out at once (the boss left the field).</summary>
         public void Clear()
         {
             _hasLast = false;
+            _newest = -1;
             foreach (Renderer pool in _pools)
             {
                 pool.transform.parent.gameObject.SetActive(false);

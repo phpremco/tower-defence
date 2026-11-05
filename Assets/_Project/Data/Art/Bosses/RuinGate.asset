@@ -44,6 +44,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 1
     _clip: {fileID: 360638642050581009, guid: 8e557cdf3f08a344f8a504383b3f3cd2, type: 3}
     _farClip: {fileID: 0}
@@ -56,6 +58,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 29
     _clip: {fileID: -4577243411151536061, guid: 8e557cdf3f08a344f8a504383b3f3cd2, type: 3}
     _farClip: {fileID: 0}
@@ -68,3 +72,5 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []

@@ -206,5 +206,20 @@ namespace Game.Core
 
         /// <summary>Climbing down off a gate on its far side.</summary>
         GateDismount = 67,
+
+        /// <summary>A character recoiling from something huge: half a step back, weapon up, a look up (the cue: the flinch), played once.</summary>
+        Startled = 68,
+
+        /// <summary>The tense hold after <see cref="Startled"/>: quick breaths, the muzzle trembling. Loops.</summary>
+        StartledHold = 69,
+
+        /// <summary>A character who cannot believe his eyes: a hand to the chin guard, a slow head shake (the cue: the hand up), held at its end.</summary>
+        Disbelief = 70,
+
+        /// <summary>Pointing and shouting on the upper body over whatever the legs do (the cue: the point), played once.</summary>
+        PointShout = 71,
+
+        /// <summary>Lowering the aimed weapon and breathing out (the cue: lowered), played once.</summary>
+        LowerWeapon = 72,
     }
 }

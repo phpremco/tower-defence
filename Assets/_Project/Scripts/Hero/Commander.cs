@@ -98,6 +98,30 @@ namespace Game.Hero
         /// <summary>Raised with the reload time when the ranged weapon runs dry and starts to reload.</summary>
         public event Action<float> Reloading;
 
+        /// <summary>Raised with where it is when something huge appears that the hero recoils from (a boss's first entrance).</summary>
+        public event Action<Vector3> Startled;
+
+        /// <summary>Raised when the hero calls out (a bark): the view points and shouts.</summary>
+        public event Action Called;
+
+        /// <summary>The hero recoils from something huge at a point; only the views react, the fight goes on.</summary>
+        public void Startle(Vector3 at)
+        {
+            if (!IsDown)
+            {
+                Startled?.Invoke(at);
+            }
+        }
+
+        /// <summary>The hero calls out a short line; only the views react.</summary>
+        public void CallOut()
+        {
+            if (!IsDown)
+            {
+                Called?.Invoke();
+            }
+        }
+
         public void Initialize(HeroDefinition definition, TargetRegistry targets, IReadOnlyList<HeroPost> posts, int startPost, PlayerModifiers modifiers)
         {
             Initialize(definition, targets, posts, startPost, modifiers, null);

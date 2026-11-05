@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bcc5fc71e60744c83feff3cc48b346, type: 3}
+  m_Name: Intro_Shattered
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
+  _boss: {fileID: 11400000, guid: bec538117011ce7439f9fb36705a3193, type: 2}
+  _heroLine: Doc... was that door supposed to open?
+  _answer: {fileID: 11400000, guid: 0d55a9cc617cf7844bc6c985404d76d0, type: 2}
+  _repeatBarks:
+  - Glass giant. Cover every road.
+  - It's back in one piece. For now.
+  _barks:
+  - Moment: 8
+    Line: Three of them. Of course there are three of them.
+  - Moment: 9
+    Line: And they're... putting themselves back together. Wonderful.
+  _cutInTint: {r: 0.85, g: 0.6, b: 1, a: 1}
+  _slowFactor: 0.25
+  _focusSeconds: 0.5
+  _heroLineSeconds: 1.4
+  _lineHoldSeconds: 0.6
+  _typeSpeed: 75
+  _maxBeatSeconds: 5.8
+  _barkCooldownSeconds: 14

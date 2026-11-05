@@ -64,6 +64,15 @@ namespace Game.Enemies
         /// <summary>Direction of travel on the ground plane, for views that turn towards it.</summary>
         public Vector3 Heading { get; private set; } = Vector3.forward;
 
+        /// <summary>
+        /// How much of its own width a body that lies on the ground keeps across its heading (1: all of it), so a road
+        /// narrower than it fits it between the edge stones. Set by the spawner from the road; views read it.
+        /// </summary>
+        public float BodyFit { get; private set; } = 1f;
+
+        /// <summary>Narrows a ground body to a share of its width (clamped to 0.1..1); the next Initialize resets it.</summary>
+        public void FitBody(float share) => BodyFit = Mathf.Clamp(share, 0.1f, 1f);
+
         public TargetLayers Layer => _definition.Layer;
 
         /// <summary>Distance covered along the road, counted from the road's start even for enemies that joined it halfway.</summary>
@@ -172,6 +181,7 @@ namespace Game.Enemies
             _damageScale = 1f;
             _bridgeLift = 0f;
             SourceScale = null;
+            BodyFit = 1f;
             Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
             Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);

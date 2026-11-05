@@ -11,6 +11,7 @@
                        "Game.Drones",
                        "Game.Hero",
                        "Game.Enemies",
+                       "Game.Bosses",
                        "Game.Platform",
                        "UnityEngine.UI",
                        "Unity.InputSystem",

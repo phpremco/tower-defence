@@ -25,6 +25,10 @@ namespace Game.Editor
         private const string MaterialFolder = "Assets/_Project/Art/Materials/Vfx/Bosses";
         private const string DecalShader = "Game/BossDecal";
         private const string ParticleShader = "Game/VfxParticle";
+        private const string FissureRockShader = "Game/FissureRock";
+        private const string FissurePunchShader = "Game/DepthPunch";
+        // README round 34: emission (1, 0.42, 0.1) from the map at about x2.6 while hot.
+        private static readonly Color FissureGlow = new Color(2.6f, 1.09f, 0.26f, 1f);
         private const float PropLodScreenHeight = 0.05f;
         private const float ExportYaw = 180f;
         private const float SealCrystalEmission = 1.6f;
@@ -78,6 +82,7 @@ namespace Game.Editor
             so.FindProperty("_iceBlock").objectReferenceValue = BuildIceBlock();
             so.FindProperty("_crackSlabs").objectReferenceValue = BuildProp(BlenderBossFxCatalog.CrackSlabs, CrackSlabEmission, null);
             WriteDrained(so.FindProperty("_drainedMaps"));
+            WriteFissure(so);
             so.FindProperty("_dampened").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Texture2D>(
                 $"{BlenderSync.TargetRoot}/{BlenderBossFxCatalog.UiFolder}/{BlenderBossFxCatalog.Dampened}@2x.png");
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -114,7 +119,7 @@ namespace Game.Editor
             BlenderSync.Sync(new[]
             {
                 BlenderBossFxCatalog.RuinGate, BlenderBossFxCatalog.SealCrystal, BlenderBossFxCatalog.IceBlock, BlenderBossFxCatalog.DrillWreck,
-                BlenderBossFxCatalog.CrackSlabs,
+                BlenderBossFxCatalog.CrackSlabs, BlenderBossFxCatalog.Fissure,
             });
             foreach ((string folder, string _, string drained) in BlenderBossFxCatalog.DrainedMaps)
             {
@@ -327,6 +332,72 @@ namespace Game.Editor
                 element.FindPropertyRelative("_socket").stringValue = string.Empty;
                 element.FindPropertyRelative("_weight").floatValue = 1f;
             }
+        }
+
+        // README round 34: the fissure kit's two models, its rock (Game/FissureRock, one atlas, a low set) and the depth punch
+        // of its gap opening. The scale and timings keep whatever the asset holds.
+        private static void WriteFissure(SerializedObject so)
+        {
+            string folder = BlenderArtBuilder.AssetFolder(BlenderBossFxCatalog.Fissure);
+            var kit = AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{BlenderBossFxCatalog.Fissure}.fbx");
+            var kitLow = AssetDatabase.LoadAssetAtPath<GameObject>($"{folder}/{BlenderBossFxCatalog.Fissure}_LOD1.fbx");
+            Material rock = FissureRock(folder, false);
+            if (kit == null || rock == null)
+            {
+                Debug.LogWarning("Blender boss FX: no fissure kit or maps.");
+                return;
+            }
+
+            so.FindProperty("_fissureKit").objectReferenceValue = kit;
+            so.FindProperty("_fissureKitLow").objectReferenceValue = kitLow;
+            so.FindProperty("_fissureRock").objectReferenceValue = rock;
+            so.FindProperty("_fissureRockLow").objectReferenceValue = FissureRock($"{folder}/{BlenderSync.LowFolder}", true) ?? rock;
+            so.FindProperty("_fissurePunch").objectReferenceValue = PunchStage("_Punch", false);
+            so.FindProperty("_fissureClear").objectReferenceValue = PunchStage("_PunchClear", true);
+        }
+
+        // The two stages of Game/DepthPunch: the mark sets a stencil bit where the opening passes the depth test against the
+        // ground (queue +1); the clear writes the far depth there and resets the bit (queue +2); the rock draws after (+3).
+        private static Material PunchStage(string suffix, bool clear)
+        {
+            Material material = LoadOrCreateMaterial($"{MaterialFolder}/{BlenderBossFxCatalog.Fissure}{suffix}.mat", FissurePunchShader);
+            material.SetFloat("_ZTest", (float)(clear ? UnityEngine.Rendering.CompareFunction.Always : UnityEngine.Rendering.CompareFunction.LessEqual));
+            material.SetFloat("_ZWrite", clear ? 1f : 0f);
+            material.SetFloat("_StencilComp", (float)(clear ? UnityEngine.Rendering.CompareFunction.Equal : UnityEngine.Rendering.CompareFunction.Always));
+            material.SetFloat("_StencilPass", (float)(clear ? UnityEngine.Rendering.StencilOp.Zero : UnityEngine.Rendering.StencilOp.Replace));
+            material.SetFloat("_FarDepth", clear ? 1f : 0f);
+            if (clear)
+            {
+                material.EnableKeyword("_FAR_DEPTH");
+            }
+            else
+            {
+                material.DisableKeyword("_FAR_DEPTH");
+            }
+
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry + (clear ? 2 : 1);
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
+        private static Material FissureRock(string folder, bool low)
+        {
+            string name = BlenderBossFxCatalog.Fissure;
+            Texture2D albedo = Texture($"{folder}/{name}_Albedo.png");
+            if (albedo == null)
+            {
+                return null;
+            }
+
+            Material material = LoadOrCreateMaterial($"{MaterialFolder}/{name}_Rock{(low ? "_Low" : string.Empty)}.mat", FissureRockShader);
+            material.SetTexture("_BaseMap", albedo);
+            material.SetTexture("_BumpMap", Texture($"{folder}/{name}_Normal.png"));
+            material.SetTexture("_EmissionMap", Texture($"{folder}/{name}_Emission.png"));
+            material.SetTexture("_MaskMap", Texture($"{folder}/{name}_Mask.png"));
+            material.SetColor("_EmissionColor", FissureGlow);
+            material.renderQueue = -1;
+            EditorUtility.SetDirty(material);
+            return material;
         }
 
         private static void WriteDrained(SerializedProperty array)

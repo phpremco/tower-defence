@@ -59,15 +59,10 @@ namespace Game.UI
         private const float IgniteTo = 0.8f;
         private const float CarriedCrystalGlow = 0.8f;
 
-        // The disbelief: a look, a step back, the hand to the visor, and down again.
+        // The disbelief: a look, a step back, then the Disbelief clip (hand to the chin guard, a slow head shake).
         private const float ReactStepFrom = 0.18f;
         private const float ReactStepTo = 0.46f;
         private const float ReactStepBack = 1.1f;
-        private const float ReactHandFrom = 0.26f;
-        private const float ReactHandTo = 0.5f;
-        private const float ReactHandDownFrom = 0.82f;
-        // He stares at them: the head only searches a little, so the visor keeps facing the camera in front of him.
-        private const float ReactHeadSearchDegrees = 5f;
         private const float HeroKeyIntensity = 1.6f;
         private const float ClearViewRadius = 1.3f;
         private const float HeroKeyRange = 4.5f;
@@ -386,9 +381,9 @@ namespace Game.UI
             _hero.Root.gameObject.SetActive(true);
             float step = CutsceneMath.Smooth(CutsceneMath.Span(progress, ReactStepFrom, ReactStepTo)) * ReactStepBack;
             bool stepping = progress > ReactStepFrom && progress < ReactStepTo;
-            float hand = CutsceneMath.Span(progress, ReactHandFrom, ReactHandTo) * (1f - CutsceneMath.Span(progress, ReactHandDownFrom, 1f));
-            float head = Mathf.Sin(time * 0.9f) * ReactHeadSearchDegrees;
-            _hero.React(_layout.DigSite, _layout.DigFacing.eulerAngles.y, step, stepping, hand, head, 0f, time);
+            // Once he has backed away, the Disbelief clip (README round 35) from the moment the step ends.
+            float since = Mathf.Max(0f, progress - ReactStepTo) * _reactShotSeconds;
+            _hero.Disbelief(_layout.DigSite, _layout.DigFacing.eulerAngles.y, step, stepping, since, time);
         }
 
         // Where the reaction left him (a step back from the dig site), back to the gate at a run, round to face the

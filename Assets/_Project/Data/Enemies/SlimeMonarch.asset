@@ -35,6 +35,7 @@ MonoBehaviour:
   _trailHaste: 1.6
   _trailDamagePerSecond: 5
   _slimeImmune: 1
+  _hitCooldown: 0
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
@@ -48,6 +49,8 @@ MonoBehaviour:
   _accentColor: {r: 0.6, g: 1, b: 0.2, a: 1}
   _bloodColor: {r: 0.45, g: 1, b: 0.15, a: 1}
   _scale: 1.5
+  _bodyHalfWidth: 0.95
+  _groundBody: 1
   _shape: 37
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 82e7a8203e54f7f489b78e2a6ad0ffe9, type: 2}

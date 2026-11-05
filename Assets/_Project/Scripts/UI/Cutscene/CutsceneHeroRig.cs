@@ -264,6 +264,33 @@ namespace Game.UI
             }
         }
 
+        /// <summary>
+        /// The commander's disbelief with the Blender clip (README round 35): while <paramref name="stepping"/> he backs
+        /// <paramref name="stepBack"/> metres away as in <see cref="React"/>, then plays Disbelief from
+        /// <paramref name="seconds"/> into it (the hand to the chin guard, a slow head shake), held on its last frame.
+        /// Without the clip it falls back to <see cref="React"/> with the hand up.
+        /// </summary>
+        public void Disbelief(Vector3 position, float yawDegrees, float stepBack, bool stepping, float seconds, float time)
+        {
+            if (_art == null || _artDefinition.Body.IndexOf(ModelClipRole.Disbelief) < 0 || stepping)
+            {
+                React(position, yawDegrees, stepBack, stepping, stepping ? 0f : 1f, 0f, 0f, time);
+                return;
+            }
+
+            Quaternion facing = Quaternion.Euler(0f, yawDegrees, 0f);
+            Root.SetPositionAndRotation(position - facing * Vector3.forward * stepBack, facing);
+            RestoreOverrides();
+            _art.Sample(ModelClipRole.Disbelief, seconds, loop: false);
+            if (_pistol != null && _drawn)
+            {
+                _drawn = false;
+                _pistol.SetParent(_holster, false);
+                _pistol.localPosition = Vector3.zero;
+                _pistol.localRotation = Quaternion.identity;
+            }
+        }
+
         private void RestoreOverrides()
         {
             for (int i = 0; i < _overridden.Length; i++)

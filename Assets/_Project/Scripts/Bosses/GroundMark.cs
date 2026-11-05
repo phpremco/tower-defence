@@ -22,7 +22,18 @@ namespace Game.Bosses
         public static readonly int Tint = Shader.PropertyToID("_Tint");
         private static readonly int BaseMapSt = Shader.PropertyToID("_BaseMap_ST");
 
+        /// <summary>How long a mark's rounded ends are, as a multiple of its own end length (1: as built).</summary>
+        public static readonly int EndTaper = Shader.PropertyToID("_EndTaper");
+
         private const float Lift = 0.03f;
+
+        // Remco 2026-11-05: no ground mark ends square. A strip rounds off over this many of its widths at each end (at most
+        // this share of its length); a piece over this share of its half length, so the pieces of a trail, a spacing apart
+        // and overlapping, still cover each other completely between their centres.
+        private const float StripEndWidths = 0.9f;
+        private const float StripEndShare = 0.3f;
+        private const float PieceEndShare = 0.47f;
+        private const float RoundStep = 0.5f;
 
         // Across the strip: where each column lies (share of the half width) and how much it rises with the lips. The
         // lips stand just outside the fissure so the dark middle reads as a gap between two heaved edges.
@@ -56,7 +67,15 @@ namespace Game.Bosses
             var normals = new Vector3[vertices.Length];
             var offsets = new Vector2[vertices.Length];
             var colours = new Color32[vertices.Length];
+            var ends = new Vector3[vertices.Length];
             var triangles = new List<int>((count - 1) * (columns - 1) * 6);
+            float total = 0f;
+            for (int i = 1; i < count; i++)
+            {
+                total += Vector3.Distance(points[i - 1], points[i]);
+            }
+
+            float endLength = Mathf.Max(0.01f, Mathf.Min(width * StripEndWidths, total * StripEndShare));
             float along = alongStart;
             float start = Random.value;
             float lipHeight = lips && material != null && material.HasProperty("_LipHeight") ? material.GetFloat("_LipHeight") : 0f;
@@ -78,6 +97,8 @@ namespace Game.Bosses
                     colours[v] = new Color32(255, 255, 255, 255);
                     uvs[v] = new Vector2(start + along / Mathf.Max(0.01f, tileLength), (Across[c] + 1f) * 0.5f);
                     path[v] = new Vector2(along, lips ? Rise[c] : 0f);
+                    float fromStart = along - alongStart;
+                    ends[v] = new Vector3(Mathf.Min(fromStart, total - fromStart) / endLength, Across[c], 1f);
                     normals[v] = LipNormal(side, c, width, lipHeight);
                 }
             }
@@ -104,6 +125,7 @@ namespace Game.Bosses
             mesh.normals = normals;
             mesh.uv3 = offsets;
             mesh.colors32 = colours;
+            mesh.SetUVs(3, ends);
             mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds();
             Bounds bounds = mesh.bounds;
@@ -119,14 +141,96 @@ namespace Game.Bosses
             float u1 = u0 + length / Mathf.Max(0.01f, tileLength);
             float hl = length * 0.5f;
             float hw = width * 0.5f;
+            // Three rows along it (start, middle, end), so the distance to the nearer end the shader rounds the ends off by
+            // rises to the middle and falls again (UV3: that distance in end lengths, the place across, a flag).
+            float endLength = Mathf.Max(0.01f, hl * PieceEndShare);
+            var vertices = new Vector3[6];
+            var uvs = new Vector2[6];
+            var ends = new Vector3[6];
+            for (int row = 0; row < 3; row++)
+            {
+                float z = (row - 1) * hl;
+                float u = Mathf.Lerp(u0, u1, row * 0.5f);
+                float fromEnd = row == 1 ? hl : 0f;
+                for (int side = 0; side < 2; side++)
+                {
+                    int v = row * 2 + side;
+                    vertices[v] = new Vector3(side == 0 ? -hw : hw, Lift, z);
+                    uvs[v] = new Vector2(u, side);
+                    ends[v] = new Vector3(fromEnd / endLength, side == 0 ? -1f : 1f, 1f);
+                }
+            }
+
             var mesh = new Mesh { name = "GroundMark" + name };
-            mesh.vertices = new[] { new Vector3(-hw, Lift, -hl), new Vector3(hw, Lift, -hl), new Vector3(hw, Lift, hl), new Vector3(-hw, Lift, hl) };
-            mesh.uv = new[] { new Vector2(u0, 0f), new Vector2(u0, 1f), new Vector2(u1, 1f), new Vector2(u1, 0f) };
-            mesh.uv2 = new[] { Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero };
-            mesh.normals = new[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up };
-            mesh.triangles = new[] { 0, 2, 1, 0, 3, 2 };
+            mesh.vertices = vertices;
+            mesh.uv = uvs;
+            mesh.uv2 = new Vector2[6];
+            mesh.SetUVs(3, ends);
+            mesh.normals = new[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up, Vector3.up, Vector3.up };
+            mesh.triangles = new[] { 0, 3, 1, 0, 2, 3, 2, 5, 3, 2, 4, 5 };
             mesh.RecalculateBounds();
             return Place(parent, name, mesh, material);
+        }
+
+        /// <summary>
+        /// A path with its corners rounded (Remco 2026-11-05: no hard right-angle bends in a ground mark): resampled every
+        /// half metre and averaged over about <paramref name="radius"/> metres either side, three times; the ends stay put.
+        /// </summary>
+        public static List<Vector3> Rounded(IReadOnlyList<Vector3> points, float radius)
+        {
+            var result = new List<Vector3>();
+            if (points == null || points.Count < 3)
+            {
+                if (points != null)
+                {
+                    result.AddRange(points);
+                }
+
+                return result;
+            }
+
+            float length = 0f;
+            for (int i = 1; i < points.Count; i++)
+            {
+                length += Vector3.Distance(points[i - 1], points[i]);
+            }
+
+            int count = Mathf.Max(2, Mathf.CeilToInt(length / RoundStep) + 1);
+            int segment = 1;
+            float segmentStart = 0f;
+            for (int k = 0; k < count; k++)
+            {
+                float target = length * k / (count - 1);
+                while (segment < points.Count - 1 && segmentStart + Vector3.Distance(points[segment - 1], points[segment]) < target)
+                {
+                    segmentStart += Vector3.Distance(points[segment - 1], points[segment]);
+                    segment++;
+                }
+
+                float span = Vector3.Distance(points[segment - 1], points[segment]);
+                result.Add(Vector3.Lerp(points[segment - 1], points[segment], span > 0.0001f ? Mathf.Clamp01((target - segmentStart) / span) : 1f));
+            }
+
+            int halfWindow = Mathf.Max(1, Mathf.RoundToInt(radius / RoundStep));
+            for (int pass = 0; pass < 3; pass++)
+            {
+                var next = new List<Vector3>(result.Count);
+                for (int i = 0; i < result.Count; i++)
+                {
+                    int reach = Mathf.Min(halfWindow, Mathf.Min(i, result.Count - 1 - i));
+                    Vector3 sum = Vector3.zero;
+                    for (int k = -reach; k <= reach; k++)
+                    {
+                        sum += result[i + k];
+                    }
+
+                    next.Add(sum / (reach * 2 + 1));
+                }
+
+                result = next;
+            }
+
+            return result;
         }
 
         /// <summary>Points a piece's renderer at one cell of a 2 x 2 atlas (the frost) through a property block.</summary>

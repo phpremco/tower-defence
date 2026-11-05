@@ -44,6 +44,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 1
     _clip: {fileID: 7520933859723631812, guid: 724467bacb2075d429e043fde44a6384, type: 3}
     _farClip: {fileID: 0}
@@ -56,3 +58,5 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []

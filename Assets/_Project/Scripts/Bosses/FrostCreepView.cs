@@ -18,6 +18,8 @@ namespace Game.Bosses
         private const float ThawSeconds = 1.5f;
         private const float SizeMin = 2.2f;
         private const float SizeMax = 3f;
+        // A cell rounds off from its middle out (GroundMark end taper over its whole half length): a round patch, never a square.
+        private const float CellRound = 2.1f;
 
         private readonly Renderer[] _pieces = new Renderer[Pieces];
         private readonly float[] _ages = new float[Pieces];
@@ -137,6 +139,7 @@ namespace Game.Bosses
             _pieces[slot].GetPropertyBlock(_block);
             _block.SetFloat(GroundMark.Progress, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(age / GrowSeconds)));
             _block.SetFloat(GroundMark.Fade, 1f - Mathf.Clamp01((age - GrowSeconds - HoldSeconds) / ThawSeconds));
+            _block.SetFloat(GroundMark.EndTaper, CellRound);
             _pieces[slot].SetPropertyBlock(_block);
         }
     }

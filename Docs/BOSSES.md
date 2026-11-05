@@ -533,3 +533,40 @@ every difficulty): Gravemaw 2300, Cinder Matriarch 1450, Frost Warden 1300, Rotb
 3350. In those runs the Sealed One rises at the road's start, walks the whole road, is held at the last gate on every
 difficulty and costs the gates 750-2400 hp; it never reached the base against a mixed defence (round 9: it skipped the
 defence and won with 85 % left).
+
+## Round 12: Gravemaw's 3D fissure, rounded trail ends, wide bodies inside the kerbs, Mercer's boss intros (2026-11-05)
+
+**Gravemaw's fissure is real geometry** (Blender round 34, `Exports/Gravemaw_Fissure`). `FissureKitView` lays the kit along
+the drawn crack line (the smoothed, blurred `CrackPath` route): `Fissure_Start` at the dive hole, straights A/B/C behind it,
+`Fissure_Head` pointed at the far end, a side crack every 6-10 m. Every module is bent onto the line vertex by vertex (spline
+deform), so the crack follows the rounded path without a kink, never ends square and never overlaps itself (the planner's
+clearance is unchanged); the curve modules are not needed. All modules go into one mesh, scale `BossFxArt.FissureScale` 2
+(about 2.9 m wide, 1.1 m gap). It tears open behind the boss through the `Closed` offsets (UV2/UV3, `Game/FissureRock`
+vertex reveal over `FissureOpenLength` 2.2 m), the core glows fresh behind the front and cools over `FissureCoolSeconds`
+10 s (the bottom last), and when the crack heals the lips fold flat and the gap shuts. The gap is cut out of the ground in
+two stages (`Game/DepthPunch`): a mark pass sets a stencil bit where the opening passes the depth test (pulled 0.3 m along
+the view ray so it wins over road tiles), a clear pass writes the far depth there; a single pass cannot do both, because a
+fragment that writes its own depth is also tested with it. The painted `BossFX_GroundCrack` strip, its glow halo and the
+`Gravemaw_CrackSlabs` no longer draw along a burrow crack (they stay as the fallback without the kit).
+
+**Ground marks never end square** (Remco: lava trail, rule for every trail). `Game/BossDecal` rounds every mark that carries
+end data (UV3) to a blunt, slightly torn point: strips over 0.9 of their width (at most 30 % of their length), trail pieces
+over the half length the next piece covers. The Matriarch's lava and Rotbloom's rot trail narrow over their last pieces
+into a tail (`LavaTrailView`, the oldest pieces 0.4-1 wide); frost cells are round patches; the furrow, the violet road and
+the sinking road round their corners (`GroundMark.Rounded`, 1-1.5 m). Slime smears were already radial.
+
+**Wide bodies stay inside the edge stones** (Remco: the slug boss under the kerb). `EnemyDefinition.BodyHalfWidth` (data,
+measured from the models) keeps a walker's lane inside the kerb's inner face less 5 cm; wide creatures and bosses walk the
+centre. A body that lies on the ground (`GroundBody`: Oozer, Slime Monarch) narrows across to fit between the stones
+(`Enemy.BodyFit`, never below 0.8): the Slime Monarch walks at 0.89 of its width.
+
+**Boss intros** (Docs/BOSS_INTROS.md): `BossIntroDefinition` per continent boss on the story (`Data/Story/Intros`), lines
+from the doc, curator barks for later meetings. First meeting (`ContinentBossBrain.FirstMeeting`, the Codex seen flag read
+before the spawn sets it): when the boss is out (Surfacing, Bursting, Roar or Road) the game slows to 0.25 (never pauses),
+the camera glides to the boss (with Mercer when he is within 16 m), Mercer turns to it and plays Startled, holds the aim,
+lowers the gun (Lower_Weapon) and holsters; his line shows over his head, the visor cut-in (a camera on his head bone into a
+texture, rim light in the boss's tint, the visor hides his face) slides in at the right, the Codex note shows under the boss
+bar, then ORA and Voss answer in their own dialogue box (fast typing, auto-advance). Ends within 5.8 s or on any button
+(keyboard, mouse, gamepad), at once on a pause; never during a held story box. Later meetings: a bark from the pool. Mid-fight
+barks at the signature moments (`BossMoments`), with Point_Shout on Mercer's upper body, 14 s per boss and 6 s between any two
+(`BarkCooldown`); none while he is down.

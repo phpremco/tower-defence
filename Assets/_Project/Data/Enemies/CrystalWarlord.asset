@@ -34,6 +34,8 @@ MonoBehaviour:
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
+  _slimeImmune: 0
+  _hitCooldown: 0
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
@@ -41,11 +43,14 @@ MonoBehaviour:
   _abilities:
   - {fileID: 11400000, guid: 145a8ae459bbda34fbaf2aea1cfc8f59, type: 2}
   - {fileID: 11400000, guid: 8ff8cf57b782e6543bbacb179c5a03d1, type: 2}
+  _boss: {fileID: 0}
   _color: {r: 0.2, g: 0.45, b: 0.3, a: 1}
   _eyeColor: {r: 1, g: 0.85, b: 0.3, a: 1}
   _accentColor: {r: 0.5, g: 1, b: 1, a: 1}
   _bloodColor: {r: 0.35, g: 1, b: 0.25, a: 1}
   _scale: 1.6
+  _bodyHalfWidth: 1.8
+  _groundBody: 0
   _shape: 33
   _deathStyle: 2
   _art: {fileID: 11400000, guid: 0dbce609f22ebc5439ec848ee7a85e59, type: 2}

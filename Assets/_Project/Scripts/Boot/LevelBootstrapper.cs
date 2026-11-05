@@ -123,6 +123,7 @@ namespace Game.Boot
             context.BriefingPending = briefing && level.Briefing.Length > 0;
             LevelSession session = Services.Get<LevelSession>();
             context.Practice = session.Practice;
+            context.BossIntros = briefing || session.BossIntros;
             context.GlobalModifiers = global;
             context.HeroPerks = UnlockedPerks(level.Hero, progress, unlockAll);
             foreach (Game.Drones.DroneDefinition drone in new[] { level.RepairDrone, level.HarvestDrone, level.AttackDrone })

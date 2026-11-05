@@ -92,6 +92,8 @@ namespace Game.Editor
             public float TrailHaste;
             public float TrailDamage;
             public bool SlimeImmune;
+            public float BodyHalfWidth;
+            public bool GroundBody;
             public float RageSeconds;
             public float RageSpeed;
             public float RageRadius;
@@ -160,7 +162,7 @@ namespace Game.Editor
             });
             b.Bulwark = CreateEnemy(new Creature
             {
-                Id = "Bulwark", Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = 220f, Armor = 160f, ArmorReduction = 0.7f, Speed = 0.7f, BaseDamage = 5,
+                Id = "Bulwark", BodyHalfWidth = 0.9f, Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = 220f, Armor = 160f, ArmorReduction = 0.7f, Speed = 0.7f, BaseDamage = 5,
                 Attack = AttackStyle.Slash, AttackDamage = 9f, BlockadeDamage = 24f, AttackRange = 1.6f, AttackInterval = 1.6f,
                 Color = new Color(0.3f, 0.6f, 0.35f), Eyes = new Color(1f, 0.9f, 0.4f), Accent = new Color(0.4f, 1f, 0.95f), Blood = GooGreen,
                 Scale = 0.9f, Shape = EnemyShape.Bulwark, Death = DeathStyle.Collapse,
@@ -189,7 +191,7 @@ namespace Game.Editor
             });
             b.Oozer = CreateEnemy(new Creature
             {
-                Id = "Oozer", Description = "Slug on a toxic slime foot. Its trail speeds up other species and burns the hero and gates, never towers.", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
+                Id = "Oozer", BodyHalfWidth = 0.55f, GroundBody = true, Description = "Slug on a toxic slime foot. Its trail speeds up other species and burns the hero and gates, never towers.", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
                 Attack = AttackStyle.Slam, BlockadeDamage = 9f, AttackRange = 2.5f, AttackInterval = 1.5f,
                 TrailSeconds = 9f, TrailHaste = 1.45f, TrailDamage = 2.5f, SlimeImmune = true,
                 Color = new Color(0.55f, 0.8f, 0.15f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.5f, 1f, 0.2f), Blood = SlimeGreen,
@@ -197,7 +199,7 @@ namespace Game.Editor
             });
             b.Roller = CreateEnemy(new Creature
             {
-                Id = "Roller", Description = "Sand-coloured digger that curls into a ball and shoots down the road, about three times as fast as anything else; slow it before it rolls.", Layer = TargetLayers.Ground, Health = 110f, Speed = 1.4f, BaseDamage = 2,
+                Id = "Roller", BodyHalfWidth = 0.6f, Description = "Sand-coloured digger that curls into a ball and shoots down the road, about three times as fast as anything else; slow it before it rolls.", Layer = TargetLayers.Ground, Health = 110f, Speed = 1.4f, BaseDamage = 2,
                 Attack = AttackStyle.Bite, BlockadeDamage = 8f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 WalkSeconds = 1f, RollSeconds = 3f, RollSpeed = 3.6f,
                 Color = new Color(0.95f, 0.8f, 0.48f), Eyes = new Color(1f, 0.8f, 0.3f), Accent = new Color(1f, 0.7f, 0.3f), Blood = RollerOchre,
@@ -207,7 +209,7 @@ namespace Game.Editor
             // Stone (S4): heavy and slow, no armour yet; the script gives the stone species their plates in level 11.
             b.Cragback = CreateEnemy(new Creature
             {
-                Id = "Cragback", Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Speed = 0.6f, BaseDamage = 4,
+                Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Speed = 0.6f, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
                 Color = new Color(0.4f, 0.36f, 0.32f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(0.85f, 0.42f, 0.14f), Blood = new Color(0.9f, 0.55f, 0.25f),
                 Scale = 0.85f, Shape = EnemyShape.Cragback, Death = DeathStyle.Shatter,
@@ -272,14 +274,14 @@ namespace Game.Editor
 
             b.BroodMother = CreateEnemy(new Creature
             {
-                Id = "BroodMother", Description = "Queen of the ants: an endless brood and a burst of venom.", Layer = TargetLayers.Ground, Health = 900f, Speed = 0.55f, BaseDamage = 10, Boss = true,
+                Id = "BroodMother", BodyHalfWidth = 1.3f, Description = "Queen of the ants: an endless brood and a burst of venom.", Layer = TargetLayers.Ground, Health = 900f, Speed = 0.55f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 45f, AttackRange = 2.5f, AttackInterval = 1.3f,
                 Color = new Color(0.95f, 0.45f, 0.08f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.9f, 1f, 0.3f), Blood = VenomGreen,
                 Scale = 1.3f, Shape = EnemyShape.BroodMother, Death = DeathStyle.Shatter, Abilities = new[] { brood, venomBurst },
             });
             b.AcidEmpress = CreateEnemy(new Creature
             {
-                Id = "AcidEmpress", Description = "The scorpion queen: acid rain on the towers and plates that grow back.", Layer = TargetLayers.Ground, Health = 1300f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.6f, BaseDamage = 12, Boss = true,
+                Id = "AcidEmpress", BodyHalfWidth = 1.6f, Description = "The scorpion queen: acid rain on the towers and plates that grow back.", Layer = TargetLayers.Ground, Health = 1300f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.6f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Sting, AttackDamage = 14f, BlockadeDamage = 60f, AttackRange = 3.5f, AttackInterval = 1f,
                 Color = new Color(0.45f, 0.1f, 0.7f), Eyes = new Color(1f, 0.4f, 1f), Accent = new Color(1f, 0.3f, 0.8f), Blood = new Color(0.6f, 1f, 0.3f),
                 Scale = 1.5f, Shape = EnemyShape.AcidEmpress, Death = DeathStyle.Shatter, Abilities = new[] { acidRain, plateRegrowth },
@@ -293,14 +295,14 @@ namespace Game.Editor
             });
             b.CrystalWarlord = CreateEnemy(new Creature
             {
-                Id = "CrystalWarlord", Description = "The shield king: a sweeping sword and crystal that regrows.", Layer = TargetLayers.Ground, Health = 1800f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.5f, BaseDamage = 15, Boss = true,
+                Id = "CrystalWarlord", BodyHalfWidth = 1.8f, Description = "The shield king: a sweeping sword and crystal that regrows.", Layer = TargetLayers.Ground, Health = 1800f, Armor = 700f, ArmorReduction = 0.6f, Speed = 0.5f, BaseDamage = 15, Boss = true,
                 Attack = AttackStyle.Slash, AttackDamage = 30f, BlockadeDamage = 90f, AttackRange = 2f, AttackInterval = 1.4f,
                 Color = new Color(0.2f, 0.45f, 0.3f), Eyes = new Color(1f, 0.85f, 0.3f), Accent = new Color(0.5f, 1f, 1f), Blood = GooGreen,
                 Scale = 1.6f, Shape = EnemyShape.CrystalWarlord, Death = DeathStyle.Collapse, Abilities = new[] { swordSweep, crystalRegrowth },
             });
             b.PackAlpha = CreateEnemy(new Creature
             {
-                Id = "PackAlpha", Description = "The alpha: a howl that sends the whole pack running.", Layer = TargetLayers.Ground, Health = 800f, Speed = 1.3f, BaseDamage = 8, Boss = true,
+                Id = "PackAlpha", BodyHalfWidth = 1.2f, Description = "The alpha: a howl that sends the whole pack running.", Layer = TargetLayers.Ground, Health = 800f, Speed = 1.3f, BaseDamage = 8, Boss = true,
                 Attack = AttackStyle.Bite, AttackDamage = 12f, BlockadeDamage = 40f, AttackRange = 2f, AttackInterval = 0.9f,
                 WalkSeconds = 4f, RollSeconds = 1.5f, RollSpeed = 2.2f, RageSeconds = 4f, RageSpeed = 1.7f, RageRadius = 5f,
                 Color = new Color(0.6f, 0.15f, 0.1f), Eyes = new Color(1f, 0.3f, 0.15f), Accent = new Color(1f, 0.5f, 0.15f), Blood = RedBlood,
@@ -322,7 +324,7 @@ namespace Game.Editor
             });
             b.SlimeMonarch = CreateEnemy(new Creature
             {
-                Id = "SlimeMonarch", Description = "The slug monarch: floods of slime and more oozers.", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, BaseDamage = 12, Boss = true,
+                Id = "SlimeMonarch", BodyHalfWidth = 0.95f, GroundBody = true, Description = "The slug monarch: floods of slime and more oozers.", Layer = TargetLayers.Ground, Health = 1100f, Speed = 0.45f, BaseDamage = 12, Boss = true,
                 Attack = AttackStyle.Slam, AttackDamage = 20f, BlockadeDamage = 70f, AttackRange = 2f, AttackInterval = 1.6f,
                 TrailSeconds = 14f, TrailHaste = 1.6f, TrailDamage = 5f, SlimeImmune = true,
                 Color = new Color(0.45f, 0.7f, 0.1f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.6f, 1f, 0.2f), Blood = SlimeGreen,
@@ -330,7 +332,7 @@ namespace Game.Editor
             });
             b.RollerKing = CreateEnemy(new Creature
             {
-                Id = "RollerKing", Description = "The roller king: a quake with every landing.", Layer = TargetLayers.Ground, Health = 1100f, Armor = 500f, ArmorReduction = 0.6f, Speed = 0.9f, BaseDamage = 10, Boss = true,
+                Id = "RollerKing", BodyHalfWidth = 1.4f, Description = "The roller king: a quake with every landing.", Layer = TargetLayers.Ground, Health = 1100f, Armor = 500f, ArmorReduction = 0.6f, Speed = 0.9f, BaseDamage = 10, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 60f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 WalkSeconds = 3f, RollSeconds = 3f, RollSpeed = 2.8f,
                 Color = new Color(0.7f, 0.4f, 0.15f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(1f, 0.6f, 0.2f), Blood = RollerOchre,
@@ -338,7 +340,7 @@ namespace Game.Editor
             });
             b.Queen = CreateEnemy(new Creature
             {
-                Id = "HiveQueen", Description = "The hive queen: pulses that shake the field and an endless brood.", Layer = TargetLayers.Ground, Health = 3200f, Speed = 0.55f, BaseDamage = 20, Boss = true,
+                Id = "HiveQueen", BodyHalfWidth = 2.2f, Description = "The hive queen: pulses that shake the field and an endless brood.", Layer = TargetLayers.Ground, Health = 3200f, Speed = 0.55f, BaseDamage = 20, Boss = true,
                 Attack = AttackStyle.Bite, BlockadeDamage = 120f, AttackRange = 2.5f, AttackInterval = 1.2f,
                 Color = new Color(0.6f, 0.05f, 0.1f), Eyes = new Color(1f, 0.4f, 0.4f), Accent = new Color(1f, 0.3f, 0.4f), Blood = new Color(0.7f, 0.1f, 0.2f),
                 Scale = 2.7f, Shape = EnemyShape.Queen, Death = DeathStyle.Shatter, Abilities = new[] { queenBrood, queenPulse },
@@ -399,6 +401,8 @@ namespace Game.Editor
             so.FindProperty("_accentColor").colorValue = c.Accent;
             so.FindProperty("_bloodColor").colorValue = c.Blood;
             so.FindProperty("_scale").floatValue = c.Scale;
+            so.FindProperty("_bodyHalfWidth").floatValue = c.BodyHalfWidth;
+            so.FindProperty("_groundBody").boolValue = c.GroundBody;
             so.FindProperty("_shape").intValue = (int)c.Shape;
             so.FindProperty("_deathStyle").enumValueIndex = (int)c.Death;
             so.ApplyModifiedPropertiesWithoutUndo();

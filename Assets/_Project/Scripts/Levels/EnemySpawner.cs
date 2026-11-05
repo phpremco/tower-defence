@@ -26,12 +26,14 @@ namespace Game.Levels
         private const float MinionSpread = 0.4f;
         private const float SlimeRadiusCells = 0.55f;
 
-        // How far from the centre line a walker may be on a one-cell road: up to the shoulder, less the room its own
-        // body takes. Every extra cell of road width adds half a cell of shoulder and a little less of spread, so the
-        // crowd stays off the very edge in the corners.
-        private const float RoadEdgeCells = 0.55f;
-        private const float RoadEdgePerExtraCell = 0.5f;
+        // How far from the centre line a walker may be: up to the inner face of the edge stones, less a small gap and the
+        // room its own body takes (Remco 2026-11-05: the slug boss slid under the stones). Every extra cell of road width
+        // adds a little less of spread, so the crowd stays off the very edge in the corners. A body whose data gives no
+        // width is estimated from its scale.
+        private const float KerbMargin = 0.05f;
         private const float BodyHalfWidthPerScale = 0.3f;
+        // A ground body (a slug's foot) wider than the road narrows to fit between the stones, but never below this share.
+        private const float MinBodyFit = 0.8f;
         private const float MaxLateralCells = 0.35f;
         private const float MaxLateralPerExtraCell = 0.35f;
         private const float MinLateral = 0.02f;
@@ -39,7 +41,7 @@ namespace Game.Levels
         private readonly LevelContext _context;
         private readonly Transform _parent;
         private readonly Vector3[][] _paths;
-        private readonly float _roadEdge;
+        private readonly float _kerb;
         private readonly float _maxLateral;
         private readonly int _firstFlightPath;
         private readonly System.Random _random;
@@ -80,7 +82,7 @@ namespace Game.Levels
             }
 
             int extraCells = road.Width - 1;
-            _roadEdge = (RoadEdgeCells + extraCells * RoadEdgePerExtraCell) * context.Level.CellSize;
+            _kerb = road.HalfWidthCells * context.Level.CellSize - KerbMargin;
             _maxLateral = (MaxLateralCells + extraCells * MaxLateralPerExtraCell) * context.Level.CellSize;
         }
 
@@ -139,7 +141,7 @@ namespace Game.Levels
             float cell = level.CellSize;
             float lateralRoom = air
                 ? AirLateralCells * cell
-                : Mathf.Clamp(_roadEdge - definition.Scale * BodyHalfWidthPerScale * cell, 0f, _maxLateral);
+                : Mathf.Clamp(_kerb - BodyHalf(definition), 0f, _maxLateral);
             float lateral = Range(-lateralRoom, lateralRoom);
             Vector3[] route = Mathf.Abs(lateral) > MinLateral ? PathOffset.Shift(_paths[pathIndex], lateral) : _paths[pathIndex];
             if (air && definition.GateStrikes > 0)
@@ -406,6 +408,12 @@ namespace Game.Levels
                 origin,
                 progress,
                 difficulty.StructureDamageMultiplier);
+            if (!definition.Flies && definition.GroundBody)
+            {
+                float half = BodyHalf(definition);
+                enemy.FitBody(half > _kerb ? Mathf.Max(MinBodyFit, _kerb / half) : 1f);
+            }
+
             Alive++;
             _living.Add(enemy);
             if (definition.IsBoss)
@@ -416,6 +424,12 @@ namespace Game.Levels
             _context.EnemySpawned.Raise(enemy);
             return enemy;
         }
+
+        // Half its body across its heading: its data (a continent boss's own), else an estimate from its scale.
+        private float BodyHalf(EnemyDefinition definition) =>
+            definition.BodyHalfWidth > 0f ? definition.BodyHalfWidth
+            : definition.Boss != null ? definition.Boss.BodyHalfWidth
+            : definition.Scale * BodyHalfWidthPerScale * _context.Level.CellSize;
 
         // The gate nearest the flight route becomes a waypoint, inserted before the first point past it, so the
         // flyer dives at the gate and carries on along its route afterwards.

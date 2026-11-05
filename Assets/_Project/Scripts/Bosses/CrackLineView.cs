@@ -23,6 +23,8 @@ namespace Game.Bosses
         private const int CurvePasses = 3;
         private const int CurveHalfWindow = 5;
         private const float ShapeStep = 0.5f;
+        // A painted mark (the furrow, the violet road) rounds its corners over about this many metres: no hard bends.
+        private const float MarkCornerRadius = 1.5f;
         // The width share left at the very ends (and at a branch's tip): a hairline.
         private const float HairlineShare = 0.05f;
         private const float MaxTaperShare = 0.3f;
@@ -131,6 +133,8 @@ namespace Game.Bosses
         private MaterialPropertyBlock _slabBlock;
         private float _slabGlow = -1f;
         private float _fadeSeconds = -1f;
+        // Gravemaw's crack as real geometry (README round 34) where the kit exists; it replaces the painted strip and slabs.
+        private FissureKitView _kit;
 
         private sealed class SlabPlace
         {
@@ -170,7 +174,10 @@ namespace Game.Bosses
         public float Length => _planned;
 
         /// <summary>True when the line is drawn as a ground mark (the art exists).</summary>
-        public bool IsMark => _mark != null;
+        public bool IsMark => _mark != null || _kit != null;
+
+        /// <summary>True when the crack is the 3D fissure kit (README round 34), not a painted strip.</summary>
+        public bool IsFissure => _kit != null;
 
         /// <summary>Opens the crack up to a distance along it.</summary>
         public void OpenTo(float distance)
@@ -193,6 +200,7 @@ namespace Game.Bosses
                 _meshes[i].SetTriangles(_triangles[i], 0, segments * TrianglesPerSegment, 0, false);
             }
 
+            _kit?.OpenTo(distance);
             if (_mark != null)
             {
                 // The ramp runs behind the open end, so the very end is the fissure just starting to part.
@@ -270,6 +278,13 @@ namespace Game.Bosses
                 return;
             }
 
+            if (_kit != null)
+            {
+                _kit.Fade(left);
+                _head.localScale = Vector3.one * left;
+                return;
+            }
+
             int layer = 0;
             if (_mark != null)
             {
@@ -318,7 +333,7 @@ namespace Game.Bosses
         // A short crack tapers over a share of its length, so it never becomes a hairline from end to end.
         private static float TaperFor(FissureLook look, float length) => Mathf.Min(look.EndTaper, length * MaxTaperShare);
 
-        private float FadeSeconds => _fadeSeconds > 0f ? _fadeSeconds : _style.FadeSeconds * (_mark != null ? MarkFadeFactor : 1f);
+        private float FadeSeconds => _fadeSeconds > 0f ? _fadeSeconds : _style.FadeSeconds * (IsMark ? MarkFadeFactor : 1f);
 
         // The slabs tip up off their hinges as the crack opens past them (with a little overshoot); as it cools they
         // settle back and sink while their glow goes with the strip's.
@@ -419,7 +434,8 @@ namespace Game.Bosses
         private void Build(IReadOnlyList<Vector3> planned)
         {
             _planned = PathLength(planned);
-            IReadOnlyList<Vector3> points = _style.Fissure.IsSet ? Shape(planned, _style.Fissure, out _widthScale) : planned;
+            IReadOnlyList<Vector3> points = _style.Fissure.IsSet ? Shape(planned, _style.Fissure, out _widthScale)
+                : _style.HasMark ? GroundMark.Rounded(planned, MarkCornerRadius) : planned;
             _points = new Vector3[points.Count];
             _along.Clear();
             float total = 0f;
@@ -435,23 +451,32 @@ namespace Game.Bosses
             }
 
             _length = total;
-            if (_style.HasMark)
+            if (_style.HasMark && _style.Fissure.IsSet)
+            {
+                _kit = FissureKitView.Create(transform, points, _blocked);
+            }
+
+            if (_style.HasMark && _kit == null)
             {
                 BuildMark(points);
             }
 
-            if (_mark == null)
+            if (!IsMark)
             {
                 Layer("Seam", _style.Width, _style.Seam);
             }
 
-            Layer("Halo", _style.GlowWidth, _style.Halo * (_mark != null ? MarkHaloShare : 1f));
+            // The real fissure lights itself from its core; a glow strip over it read as streaks of light (round 8).
+            if (_kit == null)
+            {
+                Layer("Halo", _style.GlowWidth, _style.Halo * (_mark != null ? MarkHaloShare : 1f));
+            }
             _head = new GameObject("Head").transform;
             _head.SetParent(transform, false);
             GlowDecal.PlacePool(_head, _style.HeadGlow, _style.HeadRadius);
             _grit = ParticleKit.Create(_head, "Grit", Vector3.up * 0.05f, _style.Grit, 0.4f, 0.9f, 0.04f, 0.12f, 1.2f, 2.8f, 1.2f, 80, 0.3f);
             ParticleKit.SetRate(_grit, 0f);
-            if (_mark != null && _style.Chunks > 0)
+            if (IsMark && _style.Chunks > 0)
             {
                 // The front of a tearing fissure: dust thrown up and sparks off the molten core.
                 _dust = ParticleKit.Create(_head, "Dust", Vector3.up * 0.1f, Dust, 0.9f, 1.8f, 0.35f, 0.8f, 0.3f, 1.1f, -0.04f, 90, 0.6f);

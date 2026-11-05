@@ -40,6 +40,8 @@ namespace Game.Editor
             "Climb_Loop", "Submerged_Loop", "Burrow_Travel", "Hunt_Stride", "Rooted_Idle",
             // Gravemaw's gate crossing (2026-11-05, being made in Blender).
             "Gate_Straddle_Loop",
+            // Mercer's tense hold after the Startled flinch (README round 35).
+            "Startled_Hold",
         };
 
         // A shard's burst out of the giant and its flight back into it (README round 28).

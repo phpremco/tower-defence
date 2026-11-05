@@ -34,17 +34,22 @@ MonoBehaviour:
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
+  _slimeImmune: 0
+  _hitCooldown: 0
   _rageSeconds: 0
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
   _abilities:
   - {fileID: 11400000, guid: b6126562af72c19459d0c58f8d8db04d, type: 2}
+  _boss: {fileID: 0}
   _color: {r: 0.7, g: 0.4, b: 0.15, a: 1}
   _eyeColor: {r: 1, g: 0.75, b: 0.3, a: 1}
   _accentColor: {r: 1, g: 0.6, b: 0.2, a: 1}
   _bloodColor: {r: 0.8, g: 0.6, b: 0.2, a: 1}
   _scale: 1.3
+  _bodyHalfWidth: 1.4
+  _groundBody: 0
   _shape: 38
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 48bf8a21d9a57c042bc7ba7d9f75452d, type: 2}

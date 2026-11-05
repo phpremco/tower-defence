@@ -89,6 +89,12 @@ namespace Game.Bosses
         /// <summary>What it did in this fight.</summary>
         public BossRecord Record => _record;
 
+        /// <summary>
+        /// True when the player had never met this boss before it came out this time (the Codex's seen flag, read before
+        /// the spawn set it): its intro plays the full beat, later meetings only a bark.
+        /// </summary>
+        public bool FirstMeeting { get; internal set; }
+
         /// <summary>How many times it has gone under at a threshold.</summary>
         public int Burrows => _record.Burrows;
 

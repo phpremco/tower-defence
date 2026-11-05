@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bcc5fc71e60744c83feff3cc48b346, type: 3}
+  m_Name: Intro_Rotbloom
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.BossIntroDefinition
+  _boss: {fileID: 11400000, guid: c1b8cbc5173ce3c40a1f3c8b904ff18d, type: 2}
+  _heroLine: Has that flower been watching us this whole time?
+  _answer: {fileID: 11400000, guid: 794222b2f8e26d449ad357cf9493d5a5, type: 2}
+  _repeatBarks:
+  - The flower again. Burn it clean.
+  - It grew back. Of course it grew back.
+  _barks:
+  - Moment: 6
+    Line: Get these weeds off my guns!
+  - Moment: 7
+    Line: It's walking. The flower is walking.
+  _cutInTint: {r: 0.62, g: 1, b: 0.3, a: 1}
+  _slowFactor: 0.25
+  _focusSeconds: 0.5
+  _heroLineSeconds: 1.4
+  _lineHoldSeconds: 0.6
+  _typeSpeed: 75
+  _maxBeatSeconds: 5.8
+  _barkCooldownSeconds: 14

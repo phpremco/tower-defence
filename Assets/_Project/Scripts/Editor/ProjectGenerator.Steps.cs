@@ -69,6 +69,8 @@ namespace Game.Editor
             new GeneratorStep("Menu art", _ => BlenderMenuBuilder.Apply(BlenderMenuBuilder.SyncAndBuild())),
             new GeneratorStep("Story", c => CreateStory(c.Campaign)),
             new GeneratorStep("Level story", GenerateLevelStory),
+            // Docs/BOSS_INTROS.md: after the speakers (level story) and the bosses.
+            new GeneratorStep("Boss intros", _ => GenerateBossIntros()),
             new GeneratorStep("Cutscene", GenerateCutscene),
             // The story from Blender: Mercer and his weapons, the dialogue busts and the cutscene's machines and drones.
             new GeneratorStep("Story art", _ => BlenderStoryBuilder.Apply(BlenderStoryBuilder.SyncAndBuild())),

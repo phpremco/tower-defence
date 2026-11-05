@@ -34,6 +34,12 @@ namespace Game.Levels
         /// <summary>Whether the level opens with its story briefing; the campaign flow asks for it, tests and tools do not.</summary>
         public bool Briefing { get; }
 
+        /// <summary>
+        /// Plays the boss intros and barks even without the story briefing (a tool or test that wants them; the campaign
+        /// flow has them with its story anyway).
+        /// </summary>
+        public bool BossIntros { get; set; }
+
         /// <summary>The street weapons the player takes along, or null to offer whatever the level lists (tests and tools).</summary>
         public IReadOnlyList<PathObjectDefinition> Loadout { get; }
 

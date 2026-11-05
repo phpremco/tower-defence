@@ -52,6 +52,10 @@ namespace Game.Enemies
         [SerializeField] private Color _accentColor = new Color(0.4f, 1f, 0.9f);
         [SerializeField] private Color _bloodColor = new Color(0.6f, 1f, 0.3f);
         [SerializeField] [Min(0.1f)] private float _scale = 0.6f;
+        [Tooltip("Half the width of its body across its heading, legs included (m); 0 estimates it from its scale. The spawner keeps the body this far inside the road's edge stones.")]
+        [SerializeField] [Min(0f)] private float _bodyHalfWidth;
+        [Tooltip("Its body lies on the ground (a slug's foot): where the road is narrower than the body the view narrows it to fit between the edge stones, so they never show through it.")]
+        [SerializeField] private bool _groundBody;
         [SerializeField] private EnemyShape _shape;
         [SerializeField] private DeathStyle _deathStyle;
         [Tooltip("The imported (Blender) model this species wears, with its clips. Empty: the procedural body of its shape.")]
@@ -160,6 +164,12 @@ namespace Game.Enemies
         /// <summary>What the creature bleeds: venom, goo, sparks. Views read it, logic does not.</summary>
         public Color BloodColor => _bloodColor;
         public float Scale => _scale;
+
+        /// <summary>Half its body width across its heading in metres, or 0 when only its scale says.</summary>
+        public float BodyHalfWidth => _bodyHalfWidth;
+
+        /// <summary>True when its body lies on the ground (fitted between the edge stones, never under them).</summary>
+        public bool GroundBody => _groundBody;
 
         /// <summary>The procedural creature this enemy wears, or None for the placeholder.</summary>
         public EnemyShape Shape => _shape;

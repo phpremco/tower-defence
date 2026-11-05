@@ -1,0 +1,235 @@
+{
+  "asset": "Gravemaw_Fissure",
+  "round": 34,
+  "objects": {
+    "Fissure_Straight_A": 1128,
+    "Fissure_Straight_B": 1670,
+    "Fissure_Straight_C": 1184,
+    "Fissure_Curve_L": 1128,
+    "Fissure_Curve_R": 1084,
+    "Fissure_Start": 1264,
+    "Fissure_Head": 1366,
+    "Fissure_Branch_L": 874,
+    "Fissure_Branch_R": 934,
+    "Fissure_Straight_A_LOD1": 492,
+    "Fissure_Straight_B_LOD1": 700,
+    "Fissure_Straight_C_LOD1": 494,
+    "Fissure_Curve_L_LOD1": 474,
+    "Fissure_Curve_R_LOD1": 438,
+    "Fissure_Start_LOD1": 536,
+    "Fissure_Head_LOD1": 552,
+    "Fissure_Branch_L_LOD1": 394,
+    "Fissure_Branch_R_LOD1": 394
+  },
+  "modules": {
+    "Fissure_Straight_A": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.0,
+        0.0,
+        2.0
+      ],
+      "end_yaw_deg": -0.0
+    },
+    "Fissure_Straight_B": {
+      "length_m": 3.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.0,
+        0.0,
+        3.0
+      ],
+      "end_yaw_deg": -0.0
+    },
+    "Fissure_Straight_C": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.0,
+        0.0,
+        2.0
+      ],
+      "end_yaw_deg": -0.0
+    },
+    "Fissure_Curve_L": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.3455,
+        0.0,
+        1.9596
+      ],
+      "end_yaw_deg": -20.0
+    },
+    "Fissure_Curve_R": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        0.3455,
+        0.0,
+        1.9596
+      ],
+      "end_yaw_deg": 20.0
+    },
+    "Fissure_Start": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.0,
+        0.0,
+        2.0
+      ],
+      "end_yaw_deg": -0.0
+    },
+    "Fissure_Head": {
+      "length_m": 2.0,
+      "path_start_unity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "end_offset_unity": [
+        -0.0,
+        0.0,
+        2.0
+      ],
+      "end_yaw_deg": -0.0
+    },
+    "Fissure_Branch_L": {
+      "length_m": 1.6,
+      "path_start_unity": [
+        -0.2,
+        0.0,
+        0.05
+      ],
+      "end_offset_unity": [
+        -0.9683,
+        0.0,
+        1.4457
+      ],
+      "end_yaw_deg": 18.335
+    },
+    "Fissure_Branch_R": {
+      "length_m": 1.6,
+      "path_start_unity": [
+        0.2,
+        0.0,
+        0.05
+      ],
+      "end_offset_unity": [
+        0.9683,
+        0.0,
+        1.4457
+      ],
+      "end_yaw_deg": -18.335
+    }
+  },
+  "join_profile": {
+    "half_columns_t_z": [
+      [
+        -0.02,
+        -0.52
+      ],
+      [
+        0.085,
+        -0.46
+      ],
+      [
+        0.13,
+        -0.35
+      ],
+      [
+        0.18,
+        -0.25
+      ],
+      [
+        0.2,
+        -0.14
+      ],
+      [
+        0.25,
+        -0.03
+      ],
+      [
+        0.27,
+        0.07
+      ],
+      [
+        0.3,
+        0.105
+      ],
+      [
+        0.4,
+        0.08
+      ],
+      [
+        0.49,
+        0.045
+      ],
+      [
+        0.51,
+        0.01
+      ],
+      [
+        0.72,
+        0.006
+      ]
+    ],
+    "lip_dip_at_join": 0.35,
+    "full_width_m": 1.44,
+    "gap_top_width_m": 0.54,
+    "gap_depth_m": 0.52,
+    "canonical_hold_m": 0.025
+  },
+  "texture_size": 512,
+  "low_texture_size": 256,
+  "u_period_m": 1.0,
+  "materials": [
+    "Gravemaw_Fissure_Mat (slot 0, rock)",
+    "Gravemaw_Fissure_Punch (slot 1, depth punch)"
+  ],
+  "maps": [
+    "Albedo (RGB + A coverage)",
+    "Normal",
+    "Emission",
+    "Mask (R AO, G smoothness, B/A 0)"
+  ],
+  "uv": {
+    "UV0": "atlas: U metres along / 1 m repeat, V cross-section",
+    "UV1 (Reveal)": "x metres along the module, y 0..1 along the module",
+    "UV2 (CloseXY)": "Closed minus open, Unity X and Y",
+    "UV3 (CloseZ)": "x = Closed minus open, Unity Z"
+  },
+  "vertex_color": "R depth 0..1 (0 at ground, 1 at the core floor), G 1 on pebbles, B 1 on hairlines, A footprint fade (0 at the skirt edge and the hairline tips)",
+  "shape_keys": [
+    "Closed"
+  ],
+  "emission_strength": 2.6,
+  "unity_scale": "uniform 1.8 (see README)",
+  "pivot": "segment start on the path centre line, at ground level; forward = Blender -Y (Unity +Z)"
+}

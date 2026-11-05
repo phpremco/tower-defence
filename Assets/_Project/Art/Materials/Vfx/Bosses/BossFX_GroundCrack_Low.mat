@@ -33,11 +33,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _CoreGlow: 1
     - _Depth: 1
     - _DepthFrom: 0.13
     - _EdgeGlow: 0.2
+    - _EndRagged: 0.5
+    - _EndSoft: 0.14
+    - _EndTaper: 1
     - _Fade: 1
     - _GlowFade: 1
+    - _HeadTaper: 0
+    - _LipBand: 0.03
+    - _LipGlow: 0
     - _LipHeight: 0.22
     - _Mode: 0
     - _OpenDistance: -1

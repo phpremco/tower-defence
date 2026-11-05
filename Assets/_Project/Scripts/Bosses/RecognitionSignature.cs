@@ -33,6 +33,8 @@ namespace Game.Bosses
         private const float FurrowLead = 0.5f;
         // Cells of the old road either side of the point nearest the rift that sink as the new road rises.
         private const int RoadSinkReach = 9;
+        // The sinking road follows the road but softens its corners a little (no hard right-angle bend in a ground mark).
+        private const float RoadSinkCorner = 1f;
         private static readonly Color Violet = new Color(0.7f, 0.4f, 1f);
         private static readonly Color RoofDust = new Color(0.55f, 0.5f, 0.48f);
         // OnBase_Loop's hand strikes (README round 29) and its frame rate.
@@ -394,7 +396,7 @@ namespace Game.Bosses
 
             float width = Field.Level.RoadWidth * Field.Grid.CellSize;
             material.SetFloat(GroundMark.Progress, 0f);
-            _sink = GroundMark.Strip(Field.Effects, "RoadSink", Field.Draped(dense.GetRange(from, to - from + 1)), width,
+            _sink = GroundMark.Strip(Field.Effects, "RoadSink", Field.Draped(GroundMark.Rounded(dense.GetRange(from, to - from + 1), RoadSinkCorner)), width,
                 BossFxArt.Active.TileLength(BossFxArt.Mark.RoadSink) * width / BossFxArt.Active.Width(BossFxArt.Mark.RoadSink), material, false);
         }
 

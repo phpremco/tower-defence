@@ -68,6 +68,7 @@ namespace Game.UI
         private Text _heroText;
         private Text _countdownText;
         private CodexView _codex;
+        private PortraitProvider _portraits;
         private Button _codexButton;
         private int _shownCountdown = int.MinValue;
         private int _heroSecondsShown = -1;
@@ -143,6 +144,7 @@ namespace Game.UI
             gameObject.AddComponent<ResultView>().Initialize(context, safe);
             // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
             BuildDialogue(safe, keepOut);
+            BuildBossIntros(safe, worldLabels, camera, keepOut);
             gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
             gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
 
@@ -226,15 +228,26 @@ namespace Game.UI
                 return;
             }
 
-            var portraits = new PortraitProvider(_context.Hero != null ? _context.Hero.Definition : null);
+            _portraits = new PortraitProvider(_context.Hero != null ? _context.Hero.Definition : null);
             var view = gameObject.AddComponent<DialogueView>();
-            view.Initialize(safe, player, portraits);
+            view.Initialize(safe, player, _portraits);
             keepOut.Add(view.Box);
             player.Presenter = view;
             if (_context.StoryEnabled)
             {
                 view.Prewarm(_context.Level.StoryTriggers);
             }
+        }
+
+        // Mercer meets the continent bosses (Docs/BOSS_INTROS.md): over the HUD like the story box, sharing its pictures.
+        private void BuildBossIntros(RectTransform safe, RectTransform worldLabels, Camera camera, HudKeepOut keepOut)
+        {
+            if (_portraits == null || !Services.TryGet(out CampaignCatalog campaign) || campaign.Story == null)
+            {
+                return;
+            }
+
+            gameObject.AddComponent<BossIntroDirector>().Initialize(_context, _time, campaign.Story, safe, worldLabels, camera, keepOut, _portraits);
         }
 
         private void OnMoneyChanged(int _) => Refresh();

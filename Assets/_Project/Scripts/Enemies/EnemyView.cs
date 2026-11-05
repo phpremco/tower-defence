@@ -347,6 +347,9 @@ namespace Game.Enemies
         /// <summary>The model's world scale: clip offsets in model units times this are world units.</summary>
         public float ModelScale => _creatureScale;
 
+        // A body on the ground narrowed to fit between the road's edge stones (Enemy.BodyFit), across its heading only.
+        private Vector3 BodyScale(float uniform) => new Vector3(uniform * _enemy.BodyFit, uniform, uniform);
+
         /// <summary>
         /// Lets a boss mechanic play one clip of its own (a climb, a dive, a burrow) at a rate; held clips stay on their last
         /// frame. The creature's own cycle choice waits until <see cref="ReleaseScript"/>.
@@ -528,7 +531,7 @@ namespace Game.Enemies
             }
 
             float grow = SpawnCurve(out float emerge);
-            _body.localScale = Vector3.one * grow;
+            _body.localScale = BodyScale(grow);
             _body.localPosition = _bodyRestPosition - Vector3.up * emerge;
         }
 
@@ -1047,7 +1050,7 @@ namespace Game.Enemies
             float squash = style == AttackStyle.Slam ? strike * HitSquash : 0f;
             // A floating core throbs, so it never hangs in the air like a fixed lamp.
             float pulse = _hover > 0f ? Mathf.Sin(_clock * HoverPulseSpeed + _swayPhase) * HoverPulse : 0f;
-            _body.localScale = Vector3.one * (_creatureScale * (1f + knock * HitSquash + squash + pulse) * grow);
+            _body.localScale = BodyScale(_creatureScale * (1f + knock * HitSquash + squash + pulse) * grow);
 
             UpdateTrails(position, forward, walking, hasted, bob * hoverScale);
 
@@ -1121,7 +1124,7 @@ namespace Game.Enemies
             }
 
             _body.rotation = _tilt * Quaternion.LookRotation(forward) * Quaternion.Euler(attackPitch * pose + lean, attackYaw * pose, roll);
-            _body.localScale = Vector3.one * grow;
+            _body.localScale = BodyScale(grow);
             UpdateTrails(position, forward, walking, _enemy.IsHasted, 0f);
 
             // A boss is hit many times a second; flashing it white every time is a strobe, so it keeps its own glow.

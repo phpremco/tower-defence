@@ -90,6 +90,15 @@ MonoBehaviour:
   - CrackSlab_B
   - CrackSlab_C
   - CrackSlab_D
+  _fissureKit: {fileID: 919132149155446097, guid: 5884fac56a5c9444a87221f3a6d7e92a, type: 3}
+  _fissureKitLow: {fileID: 919132149155446097, guid: 24ccb721bef722543b14a2227f6fa745, type: 3}
+  _fissureRock: {fileID: 2100000, guid: 7a0a87cf0a8882149b32c94ccfbd38a3, type: 2}
+  _fissureRockLow: {fileID: 2100000, guid: 347c78bffc1f37843825f9ca6b4d90ea, type: 2}
+  _fissurePunch: {fileID: 2100000, guid: 40935c1405632304cbeefd6942b27ec8, type: 2}
+  _fissureClear: {fileID: 2100000, guid: 01e3d7d915379914fa9c043c1bddafa9, type: 2}
+  _fissureScale: 2
+  _fissureOpenLength: 2.2
+  _fissureCoolSeconds: 10
   _drainedMaps:
   - _lit: {fileID: 2800000, guid: 37ec5a039571b834d8559dfd8f64ecf5, type: 3}
     _drained: {fileID: 2800000, guid: e6bf0e905cbcee04bb5c589f164ebfcb, type: 3}

@@ -45,17 +45,22 @@
     "hands"
   ],
   "actions": {
-    "Idle": 72,
-    "Walk": 32,
-    "Run": 16,
-    "Shoot": 14,
-    "Reload": 36,
-    "Slash": 22,
-    "Shockwave": 30,
-    "Hit": 12,
+    "Disbelief": 84,
     "Down": 40,
+    "Hit": 12,
+    "Idle": 72,
+    "Lower_Weapon": 70,
+    "Point_Shout": 42,
+    "Reload": 36,
+    "Repair": 48,
     "Revive": 36,
-    "Repair": 48
+    "Run": 16,
+    "Shockwave": 30,
+    "Shoot": 14,
+    "Slash": 22,
+    "Startled": 24,
+    "Startled_Hold": 48,
+    "Walk": 32
   },
   "walk_distance_per_loop": 0.968,
   "run_distance_per_loop": 2.529,
@@ -75,7 +80,85 @@
     },
     "Down": {
       "ground": 26
+    },
+    "Startled": {
+      "flinch": 2
+    },
+    "Disbelief": {
+      "hand_up": 22
+    },
+    "Point_Shout": {
+      "point": 9
+    },
+    "Lower_Weapon": {
+      "lowered": 22
     }
   },
-  "upper_body_mask": "Spine1 and all its children"
+  "upper_body_mask": "Spine1 and all its children",
+  "round35": {
+    "clips": {
+      "Startled": {
+        "frames": 24,
+        "loop": false,
+        "layer": "full",
+        "events": {
+          "flinch": 2,
+          "foot_plant": 9,
+          "weapon_up": 11,
+          "hold": 20
+        },
+        "weapon": "pistol in Weapon_R"
+      },
+      "Startled_Hold": {
+        "frames": 48,
+        "loop": true,
+        "layer": "full",
+        "events": {},
+        "weapon": "pistol in Weapon_R"
+      },
+      "Disbelief": {
+        "frames": 84,
+        "loop": false,
+        "layer": "full",
+        "events": {
+          "hand_up": 22,
+          "shake_start": 26,
+          "shake_left": 38,
+          "shake_right": 52,
+          "shake_end": 62
+        },
+        "weapon": "pistol in Weapon_R"
+      },
+      "Point_Shout": {
+        "frames": 42,
+        "loop": false,
+        "layer": "upper (hips and legs stay in the stance)",
+        "events": {
+          "point": 9,
+          "shout": 9,
+          "jab": 18
+        },
+        "weapon": "pistol in Weapon_R"
+      },
+      "Lower_Weapon": {
+        "frames": 70,
+        "loop": false,
+        "layer": "full",
+        "events": {
+          "lowered": 22,
+          "release": 30,
+          "breath_in": 40,
+          "relief": 48
+        },
+        "weapon": "pistol in Weapon_R"
+      }
+    },
+    "chain": {
+      "Startled": "ends in Startled_Hold frame 0 (play Startled, then loop Startled_Hold)",
+      "Lower_Weapon": "starts in Shoot frame 0 (the aim), ends near Idle frame 0 with the pistol in the right hand (holster it after, or snap it to Holster_R)",
+      "Disbelief": "starts at Idle frame 0, ends holding the hand at the jaw (clamp the last frame)",
+      "Point_Shout": "starts and ends at Idle frame 0"
+    },
+    "visor": "the left hand stays below and beside the visor in Disbelief; the visor is never covered"
+  }
 }
