@@ -2589,3 +2589,28 @@ BALANCE.md), and on Hard/Psycho the boss itself asks less than a plain wave (pro
 OverviewRadarSmoke and BalanceProbe (3/3) green. Save restored byte-identical (ec2a1f6d) after every Play Mode run.
 
 **Try it:** open the project, Boot, dev Story viewer page "Boss arena": Gravemaw or the Matriarch on a gate, Rotbloom at a gate.
+
+## Round 10: the Sealed One starts at the road, boss health per difficulty, bosses tuned as played (2026-11-05)
+
+Not committed.
+- **The Sealed One** (Remco: "pad veranderen zodat hij vanaf het begin begint"): the rift now opens near the start of the main
+  road (`RecognitionPower.RiftRoadShare` 0.06), the old road sinks there and the violet new road runs from the rift along the
+  old road to the base; it rises (rumble, cracks, seal crystals, Rise clip unchanged) and walks the whole road like any
+  creature, held and biting at every gate, its furrow opening behind it; Recognition, gate drain, Rise_OntoBase and the
+  Release unchanged. The cross-country haul is gone. Codex texts updated. Details: Docs/BOSSES.md round 10.
+- **Boss health per difficulty:** `DifficultyProfile.BossHealthShare` Easy 1 / Medium 1 / Hard 1.45 / Psycho 1.7 for the
+  six continent bosses (level bosses keep the wave solver's sizing), in the spawner and the ledger; derived and checked by
+  `ContinentFinaleTests.BossHealthShare_GivesEveryContinentBossMediumsShareOfTheCap` (table
+  `Tools/PlayTest/finale_boss_share.txt`); `BalanceModelTests.BossHealthShare_ScalesOnlyAContinentBoss`.
+- **Bosses tuned with a probe that plays like the expected player** (research of each difficulty's path, drones, upgrades,
+  hero abilities, all four difficulties): Gravemaw 2300, Cinder Matriarch 1450, Frost Warden 1300, Rotbloom 3100, the
+  Shattered 2200, the Sealed One 3350. Easy forgiving; Medium a real gate fight for every boss (base never reached against a
+  mixed defence; the Matriarch wins without her counter); Hard tense for the rushers; Psycho lost by the plain bot to the
+  Matriarch (13 % left), Warden (2 %) and Shattered (19 %). Table and verdicts: Docs/BALANCE.md round 10. Open: the
+  Shattered's arena ruin gate sits 10.7 m from the base, which decides Hard/Psycho.
+- **Checks:** 0 compile errors/warnings; EditMode 468/468; PlayMode one class at a time: the six boss arenas, SlimeBoost,
+  OverviewRadarSmoke, BalanceProbe (3/3) green, no test driver changed. Save restored byte-identical (ec2a1f6d) after every
+  Play Mode run; Game view not touched.
+- **Gallery:** `gallery/SealedOne/21-26` (rift at the road start, the violet road over the whole field, on the road to the
+  first gate), Dutch captions in `index.txt`.
+- **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Sealed One.

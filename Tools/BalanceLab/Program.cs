@@ -200,6 +200,7 @@ namespace BalanceLab
                 stats.StructureDamage = sheet[d].StructureDamage;
                 stats.Income = sheet[d].Income;
                 stats.StartMoney = sheet[d].StartMoney;
+                stats.BossHealth = sheet[d].BossHealth;
             }
 
             foreach (EnemyStats enemy in model.Enemies.Values)

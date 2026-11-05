@@ -75,7 +75,7 @@ namespace Game.Balance
                 float travel = Travel(group) / Math.Max(0.01f, enemy.Speed);
                 // A boss is its own single target (WaveLoad.BossHealth), not part of a later wave's stream.
                 bool ground = Layer.Has(enemy.Layer, Layer.Ground) && !enemy.IsBoss;
-                float health = enemy.EffectiveHealth * scale;
+                float health = enemy.EffectiveHealth * scale * _difficulty.ShareFor(enemy);
                 for (int k = 0; k < count; k++)
                 {
                     float spawn = group.Delay + (group.Stagger + k * group.Interval) * _difficulty.Interval;

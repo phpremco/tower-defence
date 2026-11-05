@@ -156,6 +156,7 @@ namespace Game.Editor
             so.FindProperty("_structureDamageMultiplier").floatValue = sheet.StructureDamage;
             so.FindProperty("_incomeMultiplier").floatValue = sheet.Income;
             so.FindProperty("_startingMoneyMultiplier").floatValue = sheet.StartMoney;
+            so.FindProperty("_bossHealthShare").floatValue = sheet.BossHealth;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }

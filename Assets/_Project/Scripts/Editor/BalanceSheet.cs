@@ -30,7 +30,10 @@ namespace Game.Editor
             /// <summary>Starting money as a share of the level's own.</summary>
             public readonly float StartMoney;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney)
+            /// <summary>Extra health of a continent boss on top of <see cref="Health"/> (Docs/BALANCE.md, "Boss health per difficulty").</summary>
+            public readonly float BossHealth;
+
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth)
             {
                 Id = id;
                 DisplayName = displayName;
@@ -42,6 +45,7 @@ namespace Game.Editor
                 StructureDamage = structureDamage;
                 Income = income;
                 StartMoney = startMoney;
+                BossHealth = bossHealth;
             }
         }
 
@@ -80,15 +84,24 @@ namespace Game.Editor
         private const float HardIncome = 1.1f;
         private const float PsychoIncome = 1.1f;
 
+        // 2026-11-05, Remco: boss health per difficulty. One health for all difficulties left the continent boss alone asking
+        // 0.6-0.65 of the Hard/Psycho hero cap against 0.96 on Medium (FinaleModel): there the plain waves were the climax, not
+        // the boss. These shares put a continent boss on Hard and Psycho at about Medium's share of its cap (ContinentFinaleTests
+        // derives and checks them). Easy keeps one: the model would ask about 1.2, and Easy is meant to forgive.
+        private const float EasyBossHealth = 1f;
+        private const float MediumBossHealth = 1f;
+        private const float HardBossHealth = 1.45f;
+        private const float PsychoBossHealth = 1.7f;
+
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its
         // waves to the human curve (CampaignModel.BuildWaves). The asset ids stay; only Psycho shows another name.
         public static Difficulty[] Difficulties => new[]
         {
-            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney),
-            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f),
-            new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, 1f),
+            new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth),
+            new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth),
+            new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, 1f, PsychoBossHealth),
         };
 
         /// <summary>

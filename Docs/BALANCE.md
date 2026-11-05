@@ -491,3 +491,58 @@ Mechanic loss stays at 1-10 % of each fight (cap 35 %). Rewards follow threat (G
   probe win, which is no final boss).
 - Probe caveats: one seed, Medium only, no upgrades, Remco's save not used for upgrades in the reasoning (it was restored
   byte-identical after every run).
+
+## Boss health per difficulty and the finale probe as played (2026-11-05, round 10)
+
+Remco: boss health per difficulty, yes. Curator concern: round 9 set boss health with 11 level-1 guns, no upgrades, no hero
+abilities, Medium only, which is weaker than a real player ("te makkelijk is saai").
+
+**Boss share (data).** `DifficultyProfile.BossHealthShare` (generator: `BalanceSheet.Difficulty.BossHealth`): Easy 1.0,
+Medium 1.0, Hard 1.45, Psycho 1.7, on top of the difficulty's creature health. Applied in `EnemySpawner.Launch` to creatures
+with boss data (the six continent bosses) and in the ledger through `EnemyStats.IsContinentBoss` /
+`DifficultyStats.ShareFor` (`WaveLoad`, `KillPurse`). Level bosses in campaign waves (Hive Queen, Brood Mother, Crystal
+Warlord, Acid Empress ...) do not take it: the wave solver already sizes them per difficulty with the rest of their wave
+(bands x1.8 for boss waves), so no campaign wave or band moved. Derivation (`ContinentFinaleTests.BossHealthShare_...`,
+table `Tools/PlayTest/finale_boss_share.txt`): with one health everywhere the boss alone asked 0.96 of Medium's hero cap but
+0.65 / 0.58 of Hard's / Psycho's; the share each needs to match Medium's ratio is 1.44-1.48 (Hard) and 1.66-1.73 (Psycho)
+for all six bosses. Easy would need 1.19; it stays at 1 (Easy forgives: 0.84x Medium's ratio). The test fails when Hard or
+Psycho leave Medium's ratio by more than 12 % or Easy asks more than Medium.
+
+**Finale probe as played** (scratchpad `round10/finale.sh`, `batch_f.sh`): the boss's arena field on each difficulty; every
+wave at the finale's health (the stand-in's last boss wave on that difficulty x the plain-wave scale of `FinaleModel`:
+1.56 / 1.55 / 1.77 / 1.53); the finale money (1281 / 1407 / 1923 / 1817); the research that difficulty's path earns by
+Crystal Plains 20 (138 / 276 / 690 / 900) bought cheapest first into the in-memory progress (Medium: every C1 gun damage 2,
+range 2, rate 1, base, gates and hero 2; Hard/Psycho: all C1 upgrades); a repair and an attack drone bought first; about 60 %
+of the money on the six C1 guns in turn spread along the main road, the rest on their upgrades, then more guns; income spent
+on upgrades during the fight; the hero's shockwave and gate repair used as the probe bot does; a hurt gate repaired with
+money. The Cinder Matriarch's player uses her counter (a Cryo as bait near the road's start); one Medium run without it.
+One seed, 0.2 s steps.
+
+| Boss | Easy | Medium | Hard | Psycho | Final health |
+| --- | --- | --- | --- | --- | --- |
+| Gravemaw (2500 in the runs) | won, base 800/800, to 3.9 m of the base, gates -700, mechanic 40 % | won, 800/800, 3.9 m, -700, 43 % | won, 900/900, 3.9 m, -1600, 36 % | won, 900/900, 3.9 m, -800, 36 % | 2200 -> **2300** (ledger ceiling) |
+| Cinder Matriarch, Cryo bait | won, 800/800, held in her hunt, 98 % | won, 800/800, gates -700, 51 %; **no bait: lost, boss at 25 %** | won, 900/900, 80 % | **lost**, boss at 13 %, 88 % | 1250 -> **1450** |
+| Frost Warden | won, 800/800, got 62 % of the way (15.5 of 41 m), gates -1400, 20 % | won, 800/800, 71 % (11.8 m), gates -2100, 26 % | won, 900/900, 77 % (9.4 m), gates -3200, 28 % | **lost**, boss at 2 %, gates -4000, 37 % | 850 -> **1300** |
+| Rotbloom | won, 800/800, 16.9 of 30 m, -786, 14 % | won, 800/800, 8.1 m, -2951, 25 % | won, 900/900, 18.5 m, -2587, 36 % | won, 900/900, 3.1 m, -4203, 30 % | 3350 -> **3100** (3350 lost Medium with the boss at 0 %) |
+| The Shattered | won (2350), 800/800, -758, 42 % | won, 800/800, gates untouched, 50 % | **lost**, boss at 29 %, 71 % | **lost**, boss at 19 %, 65 % | 1600 -> **2200** |
+| The Sealed One (3500 in the runs) | won, 800/800, held at the last gate (6.7 m), gates -756, 6 % | won, 800/800, last gate, -1502, 5 % | won, 900/900, last gate, -1670, 6 % | won, 900/900, last gate, -2430, 7 % | 3100 -> **3350** (ledger ceiling) |
+
+"Mechanic" is the share of the boss's time alive in any state but walking the road (entrance, burrow, hunt, climb, freeze,
+split, adapt). Base 800/900 is the research base upgrade.
+
+**Verdicts.**
+- **Easy:** forgiving everywhere (all won with the base whole; in an earlier 0.1 s run at 2200 Gravemaw reached the base on Easy and took 80 of it).
+- **Medium:** every boss reaches deep into the defence and costs gates 700-3000 hp; none touches the base against a mixed,
+  upgraded defence. The Matriarch without her counter wins (lost with her at 25 %); with it she dies in her hunt. Medium is
+  now a real gate fight; the base threat comes from the bosses that rush (Matriarch, Shattered, Warden).
+- **Hard:** tense for the rushers (Warden won at 77 % of the way, Shattered lost at 29 %), comfortable for the slow walkers.
+- **Psycho:** the plain bot loses to the Matriarch (13 %), the Warden (2 %) and the Shattered (19 %), all close; it wins the
+  slow three with the base whole. A player who builds at the boss's way in (the bot spreads along the whole road) and plays
+  the counter wins; never impossible, but no margin.
+- **Ledger ceiling:** the slow walkers (Gravemaw, the Sealed One) are held at the last gate in every run whatever their
+  health (3100-3900 for the Sealed One, 2200-2800 for Gravemaw gave the same picture), but the ledger rates them at the hero
+  cap; their health is the highest that keeps `ContinentFinaleTests` killable (boss alone <= cap x 1.04). Their threat is the
+  gate fight, not the base.
+- **Open:** the Shattered's arena ruin gate is 10.7 m from the base, so its split and rejoin happen next to the base; on Hard
+  and Psycho that decides it (lost at 2200, 2350 and 2600; Medium flips from trivial at 2200 to lost at 2600). The real C5
+  finale should put its ruin gate earlier on the road; re-tune it then.

@@ -70,6 +70,27 @@ namespace Game.Tests
         }
 
         [Test]
+        public void BossHealthShare_ScalesOnlyAContinentBoss()
+        {
+            LevelInput level = Level(Rifle());
+            EnemyStats levelBoss = Walker("LevelBoss", 400f);
+            levelBoss.IsBoss = true;
+            EnemyStats continentBoss = Walker("ContinentBoss", 400f);
+            continentBoss.IsBoss = true;
+            continentBoss.IsContinentBoss = true;
+            var hard = new DifficultyStats { Id = "Hard", Index = 2, BossHealth = 1.5f };
+
+            float plainMedium = Ledger.EvaluateWave(level, Wave(levelBoss, 1), Medium, 400, Rules).Pressure;
+            float plainHard = Ledger.EvaluateWave(level, Wave(levelBoss, 1), hard, 400, Rules).Pressure;
+            float bossMedium = Ledger.EvaluateWave(level, Wave(continentBoss, 1), Medium, 400, Rules).Pressure;
+            float bossHard = Ledger.EvaluateWave(level, Wave(continentBoss, 1), hard, 400, Rules).Pressure;
+
+            Assert.AreEqual(plainMedium, plainHard, 1e-4f, "a level boss is sized by the wave solver, not by the boss share");
+            Assert.AreEqual(plainMedium, bossMedium, 1e-4f, "a share of one changes nothing");
+            Assert.Greater(bossHard, bossMedium * 1.3f, "the share must reach the continent boss's health");
+        }
+
+        [Test]
         public void Pressure_RisesWithHealth_AndFallsWithMoney()
         {
             LevelInput level = Level(Rifle());

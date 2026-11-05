@@ -11,7 +11,7 @@ var sb = new System.Text.StringBuilder();
 foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:DifficultyProfile", new[] { "Assets/_Project/Data/Difficulty" }))
 {
     var profile = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.DifficultyProfile>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
-    sb.Append(profile.name).Append(": income ").Append(profile.IncomeMultiplier).Append(", start money ").Append(profile.StartingMoneyMultiplier).Append('\n');
+    sb.Append(profile.name).Append(": income ").Append(profile.IncomeMultiplier).Append(", start money ").Append(profile.StartingMoneyMultiplier).Append(", boss health ").Append(profile.BossHealthShare).Append('\n');
 }
 
 return sb.ToString();

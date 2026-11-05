@@ -15,6 +15,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _structureDamageMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _incomeMultiplier = 1f;
         [SerializeField] [Min(0.1f)] private float _startingMoneyMultiplier = 1f;
+        [Tooltip("Extra health of a continent boss on this difficulty, on top of the health multiplier every creature gets: the boss carries its share of the finale threat (Docs/BALANCE.md). Level bosses in campaign waves are sized by the wave solver instead.")]
+        [SerializeField] [Min(0.1f)] private float _bossHealthShare = 1f;
 
         public string DisplayName => _displayName;
         public float HealthMultiplier => _healthMultiplier;
@@ -38,5 +40,8 @@ namespace Game.Levels
 
         /// <summary>Scales the level's starting money.</summary>
         public float StartingMoneyMultiplier => _startingMoneyMultiplier;
+
+        /// <summary>Extra health of a continent boss (one with boss data) on this difficulty, over <see cref="HealthMultiplier"/>.</summary>
+        public float BossHealthShare => _bossHealthShare;
     }
 }

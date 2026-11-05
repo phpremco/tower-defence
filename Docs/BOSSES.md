@@ -139,7 +139,7 @@ All bosses are big, glowing, slow, with a readable head and weapon, and killable
 
 **Theme:** the secret under the planet. The thing the crystals were guarding. It is not an animal; it is the planet's immune system.
 
-- **Entrance:** it does not come to you. **The map comes to it.** At the start of the boss wave the ground under the map cracks open, the road sinks and a new road rises that leads to the base from the centre of the map.
+- **Entrance:** it does not come to you. **The map comes to it.** At the start of the boss wave the ground near the start of the road cracks open, the road sinks there and a new road of violet light runs from the rift along the old road to the base, so it passes the whole defence (2026-11-05, Remco: the centre road of round 9 skipped the defence).
 - **Signature, Recognition:**
   - It "learns". The tower type that dealt the most damage in the previous phase does **half damage** in the next phase (shown on the boss bar with that tower's icon dimmed). Remco judged full immunity too strong.
   - Each phase drains energy from one gate: its gun stops firing, but the gate keeps blocking and returns when the phase ends.
@@ -508,3 +508,28 @@ rams it is free for a step, so its volleys still run. `BossRecord.Rams` counts t
 **Health retuned for the finales** (Docs/BALANCE.md, "Continent bosses as played"): Gravemaw 1050 -> 2200, Cinder Matriarch
 5000 -> 2750, Frost Warden 4500 -> 1550 (x1.6 ice armour in the ledger), Rotbloom 4000 -> 3350, the Shattered 4800 -> 2450,
 the Sealed One 9000 -> 3100. Rewards follow threat.
+
+## Round 10: the Sealed One rises at the start of the road, boss health per difficulty (2026-11-05)
+
+**Remco:** "ik zou gokken op het pad veranderen zodat hij vanaf het begin begint ofzo?" (round 9: its road from the centre
+skipped the whole defence; the probe lost with 85 % left).
+
+**The Sealed One as built now.** The map still comes to it, but at the start of the road: the rift opens at
+`RecognitionPower.RiftRoadShare` (0.06) of the main road's length from its start, at the open cell nearest that point where
+its body is clear of every tower (search up to 10 cells). The rumble, the six violet cracks, the seal crystals, the sinking
+of the old road round the rift and the Rise clip are as before. The new road of violet light (`CrackStyle.Seal`) now runs
+from the rift onto the old road and along it to the base (`OffRoadRoute.Build`), lighting up in `RoadRiseSeconds`; it comes
+up facing down that road. After the rise it drains its first gate and takes the road like any creature (`JoinRoad`), so
+every tower along the road gets its turn and every gate holds it (`GateBehaviour.Besiege`: it bites its way through); its
+furrow (`CrackStyle.Furrow`) opens along the road behind it by its path progress. The cross-country haul (`Haul`, its
+retry timer) is gone. Recognition, the gate drain, Rise_OntoBase at the base, the on-base loop and the Release are
+unchanged. Codex texts (signature, telegraph) say "near the start of the road".
+
+**Boss health per difficulty (Remco: yes).** `DifficultyProfile.BossHealthShare` Easy 1.0 / Medium 1.0 / Hard 1.45 /
+Psycho 1.7 on top of the creature health, for continent bosses only (level bosses keep the wave solver's sizing), derived
+from the ledger so the boss asks Medium's share of each difficulty's hero cap (Docs/BALANCE.md, "Boss health per
+difficulty"). **Health set by a probe that plays like the expected player** (upgrades, research, drones, hero abilities,
+every difficulty): Gravemaw 2300, Cinder Matriarch 1450, Frost Warden 1300, Rotbloom 3100, the Shattered 2200, the Sealed One
+3350. In those runs the Sealed One rises at the road's start, walks the whole road, is held at the last gate on every
+difficulty and costs the gates 750-2400 hp; it never reached the base against a mixed defence (round 9: it skipped the
+defence and won with 85 % left).

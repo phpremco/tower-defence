@@ -63,6 +63,7 @@ namespace BalanceLab
                 Replace(path, "_structureDamageMultiplier", F(stats.StructureDamage));
                 ReplaceOrAdd(path, "_incomeMultiplier", F(stats.Income), "_structureDamageMultiplier");
                 ReplaceOrAdd(path, "_startingMoneyMultiplier", F(stats.StartMoney), "_incomeMultiplier");
+                ReplaceOrAdd(path, "_bossHealthShare", F(stats.BossHealth), "_startingMoneyMultiplier");
             }
 
             for (int l = 0; l < _model.Levels.Count; l++)

@@ -24,6 +24,10 @@ namespace Game.Tests
         private const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
         private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
         private const string TableFile = "Tools/PlayTest/finale_balance.txt";
+        private const string ShareFile = "Tools/PlayTest/finale_boss_share.txt";
+        private const int MediumIndex = 1;
+        // How far Hard's and Psycho's boss may sit from Medium's share of the cap (pressure is not exactly linear in health).
+        private const float ShareTolerance = 0.12f;
 
         [Test]
         public void EveryContinentBoss_AtItsFinale_IsKillableInsideTheHeroCap()
@@ -60,6 +64,55 @@ namespace Game.Tests
 
             System.IO.File.WriteAllText(TableFile, table.ToString());
             Assert.IsEmpty(failures, string.Join("\n", failures) + "\n" + table);
+        }
+
+        /// <summary>
+        /// Remco 2026-11-05: boss health per difficulty. With one health everywhere the boss alone asked about 0.6 of the Hard
+        /// and Psycho caps against about 0.96 of Medium's. The difficulty's boss share must bring Hard and Psycho to Medium's
+        /// share of their cap (the boss carries its part of the climax there too); Easy stays at or under Medium's (forgiving).
+        /// The share each difficulty would need is derived from the ledger and written beside the table.
+        /// </summary>
+        [Test]
+        public void BossHealthShare_GivesEveryContinentBossMediumsShareOfTheCap()
+        {
+            var failures = new List<string>();
+            var table = new StringBuilder("\nBoss health share per difficulty (boss alone / cap; share needed for Medium's ratio, linear)\n");
+            foreach (BalanceSheet.ContinentFinale finale in BalanceSheet.Finales)
+            {
+                Setup setup = Prepare(finale);
+                int count = setup.Catalog.Difficulties.Count;
+                var ratios = new float[count];
+                for (int d = 0; d < count; d++)
+                {
+                    List<WaveSpec> waves = SpecsWithBoss(setup, d, out int boss);
+                    FinaleLine line = FinaleModel.Judge(setup.Planned, waves, boss, d, setup.Extra);
+                    ratios[d] = line.BossAlone / line.Cap;
+                }
+
+                float medium = ratios[MediumIndex];
+                var row = new StringBuilder($"{finale.Boss,-16}");
+                for (int d = 0; d < count; d++)
+                {
+                    DifficultyProfile profile = setup.Catalog.Difficulties[d];
+                    float needed = profile.BossHealthShare * medium / ratios[d];
+                    row.Append($" {profile.name} {ratios[d]:0.00} (share {profile.BossHealthShare:0.00}, needs {needed:0.00})");
+                    float relative = ratios[d] / medium;
+                    if (d > MediumIndex && System.Math.Abs(relative - 1f) > ShareTolerance)
+                    {
+                        failures.Add($"{finale.Boss} {profile.name}: the boss alone asks {relative:0.00}x Medium's share of the cap (share {profile.BossHealthShare:0.00}, needs about {needed:0.00})");
+                    }
+
+                    if (d < MediumIndex && relative > 1f + ShareTolerance)
+                    {
+                        failures.Add($"{finale.Boss} {profile.name}: the boss asks more of Easy's cap than of Medium's ({relative:0.00}x)");
+                    }
+                }
+
+                table.AppendLine(row.ToString());
+            }
+
+            System.IO.File.WriteAllText(ShareFile, table.ToString());
+            Assert.IsEmpty(failures, string.Join("\n", failures) + table);
         }
 
         [Test]

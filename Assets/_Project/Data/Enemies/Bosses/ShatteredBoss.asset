@@ -151,6 +151,7 @@ MonoBehaviour:
     - Phase2
     - Phase3
     - Phase4
+    _riftRoadShare: 0.06
     _riftSeconds: 2.5
     _roadRiseSeconds: 2
     _crushDamage: 120

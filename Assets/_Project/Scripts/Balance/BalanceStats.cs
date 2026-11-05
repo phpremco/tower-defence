@@ -41,6 +41,9 @@ namespace Game.Balance
         /// </summary>
         public float MechanicLossSeconds;
 
+        /// <summary>True for a continent boss: its health takes the difficulty's boss share (<see cref="DifficultyStats.BossHealth"/>).</summary>
+        public bool IsContinentBoss;
+
         /// <summary>Health plus armour: armour soaks that many points before it is gone, whatever its share per hit.</summary>
         public float EffectiveHealth => Health + Armor;
     }
@@ -134,6 +137,12 @@ namespace Game.Balance
 
         /// <summary>Starting money as a share of the level's own.</summary>
         public float StartMoney = 1f;
+
+        /// <summary>Extra health share of a continent boss on this difficulty, over the plain creatures' <see cref="Health"/>.</summary>
+        public float BossHealth = 1f;
+
+        /// <summary>The health factor of one creature beyond <see cref="Health"/>: the boss share for a continent boss, else one.</summary>
+        public float ShareFor(EnemyStats enemy) => enemy.IsContinentBoss ? BossHealth : 1f;
     }
 
     /// <summary>A permanent upgrade bought with research or power between levels.</summary>

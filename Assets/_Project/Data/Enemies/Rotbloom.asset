@@ -15,11 +15,11 @@ MonoBehaviour:
   _displayName: Rotbloom
   _layer: 1
   _flies: 0
-  _maxHealth: 3350
+  _maxHealth: 3100
   _armor: 0
   _armorReduction: 0.6
   _speed: 0.3
-  _reward: 730
+  _reward: 681
   _baseDamage: 25
   _element: 0
   _attackStyle: 4

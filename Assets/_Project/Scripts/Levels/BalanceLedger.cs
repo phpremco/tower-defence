@@ -30,6 +30,7 @@ namespace Game.Levels
             BlockadeDamage = enemy.BlockadeDamage,
             IsBoss = enemy.IsBoss,
             MechanicLossSeconds = enemy.Boss != null ? enemy.Boss.FirepowerLossSeconds() : 0f,
+            IsContinentBoss = enemy.Boss != null,
         };
 
         public static TowerStats Stats(TowerDefinition tower)
@@ -65,6 +66,7 @@ namespace Game.Levels
             StructureDamage = difficulty.StructureDamageMultiplier,
             Income = difficulty.IncomeMultiplier,
             StartMoney = difficulty.StartingMoneyMultiplier,
+            BossHealth = difficulty.BossHealthShare,
         };
 
         public static UpgradeStats Stats(UpgradeDefinition upgrade)

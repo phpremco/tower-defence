@@ -1,0 +1,8 @@
+
+Boss health share per difficulty (boss alone / cap; share needed for Medium's ratio, linear)
+Gravemaw         Easy 0.84 (share 1.00, needs 1.19) Medium 1.00 (share 1.00, needs 1.00) Hard 0.98 (share 1.45, needs 1.47) Psycho 1.02 (share 1.70, needs 1.66)
+CinderMatriarch  Easy 0.42 (share 1.00, needs 1.19) Medium 0.50 (share 1.00, needs 1.00) Hard 0.49 (share 1.45, needs 1.48) Psycho 0.49 (share 1.70, needs 1.73)
+FrostWarden      Easy 0.67 (share 1.00, needs 1.19) Medium 0.80 (share 1.00, needs 1.00) Hard 0.79 (share 1.45, needs 1.48) Psycho 0.80 (share 1.70, needs 1.71)
+Rotbloom         Easy 0.74 (share 1.00, needs 1.18) Medium 0.88 (share 1.00, needs 1.00) Hard 0.88 (share 1.45, needs 1.44) Psycho 0.88 (share 1.70, needs 1.69)
+Shattered        Easy 0.71 (share 1.00, needs 1.19) Medium 0.85 (share 1.00, needs 1.00) Hard 0.83 (share 1.45, needs 1.48) Psycho 0.84 (share 1.70, needs 1.71)
+SealedOne        Easy 0.88 (share 1.00, needs 1.18) Medium 1.03 (share 1.00, needs 1.00) Hard 1.04 (share 1.45, needs 1.45) Psycho 1.03 (share 1.70, needs 1.71)

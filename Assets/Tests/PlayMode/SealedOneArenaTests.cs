@@ -13,7 +13,7 @@ namespace Game.Tests
 {
     /// <summary>
     /// Fights the Sealed One in the developer arena (Shard Ridge, gates with guns), sped up, to its release: it rises out
-    /// of the rift at the centre, learns at each phase change the tower type that hurt it most in the phase before (ORA says
+    /// of the rift near the road's start, takes the road past the defence, learns at each phase change the tower type that hurt it most in the phase before (ORA says
     /// so, the boss bar knows it) and takes only half from that type, never nothing; each phase drains exactly one gate's
     /// gun (the gate still blocks) and gives it back. Its body never stands on a tower outside its mechanic; nothing logs
     /// an error.

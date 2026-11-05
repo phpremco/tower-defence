@@ -10,9 +10,10 @@ using UnityEngine;
 namespace Game.Bosses
 {
     /// <summary>
-    /// Recognition (the Sealed One, Docs/BOSSES.md). It does not come to you: the map comes to it. The ground at the centre
-    /// of the field rumbles and cracks open, a new road of violet light rises from there to the base, and it rises out of
-    /// the rift and hauls itself along that road (ploughing a furrow) round the towers, onto the base. It learns: at every
+    /// Recognition (the Sealed One, Docs/BOSSES.md). It does not come to you: the map comes to it. The ground near the
+    /// start of the road rumbles and cracks open, the road sinks there and a new road of violet light runs from the rift along
+    /// it to the base, and it rises out of the rift and hauls itself down that road past the whole defence, held by the gates
+    /// like any creature, onto the base. It learns: at every
     /// phase change it adapts, and the tower type that dealt it the most damage in the phase before lands only a share of
     /// its hits in the next (ORA names it, the boss bar shows its icon dimmed, the sealed crystals at the rift take its
     /// colour). Each phase drains one gate's gun (the gate keeps blocking) and gives it back at the phase's end. Its glow
@@ -20,7 +21,7 @@ namespace Game.Bosses
     /// </summary>
     public sealed class RecognitionSignature : IBossSignature
     {
-        private const int CentreSearchCells = 10;
+        private const int RiftSearchCells = 10;
         private const int RiftCracks = 6;
         private const float RiftCrackLength = 3.2f;
         private const float RiftBurstRadius = 2.6f;
@@ -28,8 +29,8 @@ namespace Game.Bosses
         private const float DrainIntensity = 3.5f;
         private const float ArriveMargin = 1.5f;
         private const float BaseBurstRadius = 2.2f;
-        // After a haul that found no way for its body it walks the road this long before it looks for one again.
-        private const float HaulRetrySeconds = 2f;
+        // How far ahead of its pivot the furrow its lower body ploughs is already open.
+        private const float FurrowLead = 0.5f;
         // Cells of the old road either side of the point nearest the rift that sink as the new road rises.
         private const int RoadSinkReach = 9;
         private static readonly Color Violet = new Color(0.7f, 0.4f, 1f);
@@ -52,10 +53,9 @@ namespace Game.Bosses
         private readonly System.Func<object, float> _scale;
         private CrackLineView _road;
         private CrackLineView _furrow;
-        private Vector3 _furrowFrom;
+        private float _furrowFrom;
         private int _phase;
         private bool _onBase;
-        private float _sinceHaulFailed = HaulRetrySeconds;
 
         public RecognitionSignature(ContinentBossBrain brain)
         {
@@ -87,7 +87,6 @@ namespace Game.Bosses
             DrainedLook.Apply(_drainer.Drained, false);
             _drainer.Release();
             _phase = 0;
-            _sinceHaulFailed = HaulRetrySeconds;
             _onBase = false;
             Enemy.SourceScale = _scale;
             Field.Context.BossDampened = null;
@@ -96,7 +95,8 @@ namespace Game.Bosses
             _drainHaze.Hide();
         }
 
-        // The map comes to it: the centre of the field rumbles and cracks, the new road rises to the base, and it comes up.
+        // The map comes to it: the ground near the road's start rumbles and cracks, the old road sinks there and the new road
+        // of light runs from the rift along it to the base; it comes up and takes that road past every tower and gate.
         public IEnumerator Entrance()
         {
             _brain.State = "Entrance";
@@ -104,27 +104,26 @@ namespace Game.Bosses
             Enemy.SetConcealed(true, 0f);
             View.SetHidden(true);
             Field.Refresh();
-            Vector3 centre = CentreSpot();
-            Vector3 home = HomePosition();
-            Enemy.Place(centre, BossGeometry.Flat(home - centre));
-            PlanRoad(centre);
+            Vector3 rift = RiftSpot();
+            PlanRoad(rift);
+            Enemy.Place(rift, HeadingAlongPlan(rift));
             if (_seal == null)
             {
-                _seal = SealCrystalsView.Create(Field.Effects, centre, at => Field.Climb.KindAt(at) == SurfaceKind.Open || Field.Climb.KindAt(at) == SurfaceKind.Fragile, Field.GroundAt);
+                _seal = SealCrystalsView.Create(Field.Effects, rift, at => Field.Climb.KindAt(at) == SurfaceKind.Open || Field.Climb.KindAt(at) == SurfaceKind.Fragile, Field.GroundAt);
             }
 
             for (int i = 0; i < RiftCracks; i++)
             {
                 Vector3 dir = Quaternion.Euler(0f, i * 360f / RiftCracks + 15f, 0f) * Vector3.forward;
-                _cracks.Add(CrackLineView.Create(Field.Effects, Field.Draped(new List<Vector3> { centre, centre + dir * RiftCrackLength }), CrackStyle.Seal));
+                _cracks.Add(CrackLineView.Create(Field.Effects, Field.Draped(new List<Vector3> { rift, rift + dir * RiftCrackLength }), CrackStyle.Seal));
             }
 
             _road = CrackLineView.Create(Field.Effects, Field.Draped(_plan), CrackStyle.Seal);
-            yield return Rumble(centre);
+            yield return Rumble(rift);
             yield return RaiseRoad();
-            yield return Rise(centre);
-            _furrowFrom = Position;
+            yield return Rise(rift);
             DrainNextGate();
+            TakeTheRoad();
         }
 
         public IEnumerator NextAct()
@@ -153,7 +152,7 @@ namespace Game.Bosses
                 return RiseOntoBase(home, rise);
             }
 
-            return _sinceHaulFailed >= HaulRetrySeconds ? Haul(home, reach) : null;
+            return null;
         }
 
         public IEnumerator AtStructure(IStructure structure) => null;
@@ -164,10 +163,9 @@ namespace Game.Bosses
 
         public void Always(float deltaTime)
         {
-            _sinceHaulFailed += deltaTime;
-            if (_furrow != null && !Enemy.IsConcealed)
+            if (_furrow != null && !Enemy.IsConcealed && !_onBase)
             {
-                _furrow.OpenTo(Mathf.Min(_furrow.Length, BossGeometry.FlatDistance(_furrowFrom, Position) + 0.5f));
+                _furrow.OpenTo(Mathf.Min(_furrow.Length, Enemy.PathProgress - _furrowFrom + FurrowLead));
             }
         }
 
@@ -204,7 +202,7 @@ namespace Game.Bosses
 
         // ---------------------------------------------------------------- the rift
 
-        private IEnumerator Rumble(Vector3 centre)
+        private IEnumerator Rumble(Vector3 rift)
         {
             float elapsed = 0f;
             while (elapsed < Power.RiftSeconds && _brain.Alive)
@@ -212,7 +210,7 @@ namespace Game.Bosses
                 elapsed += Time.deltaTime;
                 float share = Mathf.Clamp01(elapsed / Power.RiftSeconds);
                 Field.Context.BossRumble = share;
-                _crystals.Show(centre, Violet, CrystalIntensity * share, true);
+                _crystals.Show(rift, Violet, CrystalIntensity * share, true);
                 foreach (CrackLineView crack in _cracks)
                 {
                     crack.OpenTo(crack.Length * share);
@@ -239,7 +237,7 @@ namespace Game.Bosses
         }
 
         // Out of the rift (its Rise clip): the seal breaks at the clip's moment with a burst and one kick; it can be shot once up.
-        private IEnumerator Rise(Vector3 centre)
+        private IEnumerator Rise(Vector3 rift)
         {
             _brain.State = "Rising";
             View.SetHidden(false);
@@ -251,14 +249,14 @@ namespace Game.Bosses
 
             yield return _brain.Wait(rise.Moment);
             Field.Context.BossRumble = 0f;
-            Field.BreakDecor(centre, RiftBurstRadius);
-            _brain.Impact(centre, RiftBurstRadius, Violet);
+            Field.BreakDecor(rift, RiftBurstRadius);
+            _brain.Impact(rift, RiftBurstRadius, Violet);
             Field.Context.BossImpact.Raise(Boss.ImpactKick);
             Enemy.SetConcealed(false);
             yield return _brain.Wait(rise.Seconds - rise.Moment);
             View.ReleaseScript();
             _brain.Record.RoseFromRift = true;
-            _crystals.Show(centre, Violet, CrystalIntensity, false);
+            _crystals.Show(rift, Violet, CrystalIntensity, false);
             // The rift has opened: its cracks die down, the new road stays lit.
             foreach (CrackLineView crack in _cracks)
             {
@@ -268,13 +266,13 @@ namespace Game.Bosses
             _cracks.Clear();
         }
 
-        // The open cell nearest the middle of the field where its whole body comes up clear of every tower.
-        private Vector3 CentreSpot()
+        // The spot its data names on the main road (a share of its length from the start), or the open cell nearest it where
+        // its whole body comes up clear of every tower: early enough that the whole defence stands between it and the base.
+        private Vector3 RiftSpot()
         {
             GridMap grid = Field.Grid;
-            Vector2Int middle = new Vector2Int(grid.Size.x / 2, grid.Size.y / 2);
-            Vector3 best = grid.CellToWorld(middle);
-            for (int ring = 0; ring <= CentreSearchCells; ring++)
+            Vector2Int mark = grid.WorldToCell(PointAlong(Field.Level.MainRoad, Power.RiftRoadShare));
+            for (int ring = 0; ring <= RiftSearchCells; ring++)
             {
                 for (int x = -ring; x <= ring; x++)
                 {
@@ -285,7 +283,7 @@ namespace Game.Bosses
                             continue;
                         }
 
-                        Vector2Int cell = middle + new Vector2Int(x, y);
+                        Vector2Int cell = mark + new Vector2Int(x, y);
                         Vector3 at = grid.CellToWorld(cell);
                         if (grid.Contains(cell) && Field.Climb.KindAt(cell) == SurfaceKind.Open && BossRoutes.BodyOverlaps(Field, at, at, _brain.BodyHalfWidth, NoCell) == 0)
                         {
@@ -295,20 +293,59 @@ namespace Game.Bosses
                 }
             }
 
-            return _brain.OnGround(best);
+            return _brain.OnGround(grid.CellToWorld(mark));
         }
 
-        // The new road: the way its body can haul from the rift to the base round the towers, or straight when there is none.
+        // The point a share of the way along a road of waypoints, by length.
+        private Vector3 PointAlong(Vector2Int[] waypoints, float share)
+        {
+            GridMap grid = Field.Grid;
+            if (waypoints == null || waypoints.Length == 0)
+            {
+                return grid.CellToWorld(new Vector2Int(grid.Size.x / 2, grid.Size.y / 2));
+            }
+
+            float total = 0f;
+            for (int i = 1; i < waypoints.Length; i++)
+            {
+                total += Vector2Int.Distance(waypoints[i - 1], waypoints[i]);
+            }
+
+            float left = total * Mathf.Clamp01(share);
+            for (int i = 1; i < waypoints.Length; i++)
+            {
+                float leg = Vector2Int.Distance(waypoints[i - 1], waypoints[i]);
+                if (left <= leg && leg > 0f)
+                {
+                    return Vector3.Lerp(grid.CellToWorld(waypoints[i - 1]), grid.CellToWorld(waypoints[i]), left / leg);
+                }
+
+                left -= leg;
+            }
+
+            return grid.CellToWorld(waypoints[waypoints.Length - 1]);
+        }
+
+        // The new road: from the rift onto the old road and along it to the base, the way it will haul.
         private void PlanRoad(Vector3 from)
         {
-            Vector3 home = HomePosition();
-            Vector3 goal = from + BossGeometry.Flat(home - from) * Mathf.Max(0f, BossGeometry.FlatDistance(from, home) - 3f);
-            if (!BossRoutes.WalkTo(Field, from, Field.Grid.WorldToCell(goal), Boss.Climb.ClimbsRocks, 1, _plan))
+            _plan.Clear();
+            _plan.AddRange(OffRoadRoute.Build(Field.Level, from, out _));
+            _plan[0] = from;
+        }
+
+        // It comes up facing down the new road (the first point of it a body length away), not across the field at the base.
+        private Vector3 HeadingAlongPlan(Vector3 from)
+        {
+            foreach (Vector3 point in _plan)
             {
-                _plan.Clear();
-                _plan.Add(from);
-                _plan.Add(goal);
+                if (BossGeometry.FlatDistance(point, from) > _brain.BodyHalfWidth)
+                {
+                    return BossGeometry.Flat(point - from);
+                }
             }
+
+            return BossGeometry.Flat(HomePosition() - from);
         }
 
         // README round 29 (RoadSink): where the new road leaves the old one, the old road tears and darkens, the middle first,
@@ -365,31 +402,14 @@ namespace Game.Bosses
 
         // ---------------------------------------------------------------- hauling and the base
 
-        // Along the new road to the base, round the towers, its lower body ploughing a furrow; a phase change stops it.
-        private IEnumerator Haul(IStructure home, float reach)
+        // Down the new road to the base like any creature, so every tower along the road gets its turn and every gate holds
+        // it (it bites its way through); its lower body ploughs a furrow into the road behind it.
+        private void TakeTheRoad()
         {
-            _brain.State = "Hauling";
-            Enemy.SetDirected(true);
-            Vector3 dir = BossGeometry.Flat(home.Position - Position);
-            Vector3 stand = home.Position - dir * reach;
-            Vector2Int goal = Field.Grid.WorldToCell(stand);
-            int phase = _phase;
-            _furrowFrom = Position;
-            Field.Refresh();
-            if (BossRoutes.WalkTo(Field, Position, goal, Boss.Climb.ClimbsRocks, 1, _plan) || BossRoutes.WalkTo(Field, Position, goal, Boss.Climb.ClimbsRocks, 0, _plan))
-            {
-                _furrow?.Fade();
-                _furrow = CrackLineView.Create(Field.Effects, Field.Draped(_plan), CrackStyle.Furrow);
-            }
-
-            bool arrived = false;
-            yield return _brain.WalkTo(goal, true, () => Boss.PhaseAt(Enemy.Health.Fraction) != phase, value => arrived = value, "Hauling");
-            if (!arrived && Boss.PhaseAt(Enemy.Health.Fraction) == phase && _brain.Alive)
-            {
-                // No way for its body between the towers: it takes the road like any creature for a while and fights through.
-                _sinceHaulFailed = 0f;
-                _brain.JoinRoad();
-            }
+            _brain.JoinRoad();
+            _furrowFrom = Enemy.PathProgress;
+            _furrow?.Fade();
+            _furrow = CrackLineView.Create(Field.Effects, Field.Draped(_plan), CrackStyle.Furrow);
         }
 
         // It pulls itself up onto the base (the base takes the crush at the clip's moment) and stays on it, striking it.

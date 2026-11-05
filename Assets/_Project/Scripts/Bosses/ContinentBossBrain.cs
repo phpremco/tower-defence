@@ -220,7 +220,7 @@ namespace Game.Bosses
             }
             else if (_boss.Arrival == BossArrival.Ruins || _boss.Arrival == BossArrival.Rift)
             {
-                // Its own way in: the sealed ruin gate, or the ground at the centre opening and the map coming to it.
+                // Its own way in: the sealed ruin gate, or the ground near the road's start opening and the map coming to it.
                 IEnumerator entrance = _signature.Entrance();
                 if (entrance != null)
                 {

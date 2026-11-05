@@ -397,7 +397,7 @@ namespace Game.Levels
             enemy.Initialize(
                 definition,
                 route,
-                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale,
+                difficulty.HealthMultiplier * _context.Level.EnemyHealthScale * WaveHealthScale * (definition.Boss != null ? difficulty.BossHealthShare : 1f),
                 1f,
                 height,
                 _context.Targets,

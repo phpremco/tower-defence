@@ -94,7 +94,7 @@ namespace Game.Balance
                 }
 
                 int count = enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * difficulty.Count));
-                float each = enemy.EffectiveHealth * scale;
+                float each = enemy.EffectiveHealth * scale * difficulty.ShareFor(enemy);
                 float health = each * count;
                 float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
                 load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
