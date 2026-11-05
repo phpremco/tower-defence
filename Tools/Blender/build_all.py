@@ -90,6 +90,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_bosses29_props.py", "build_bosses29_fx.py",
            # Round 30: Gravemaw's crack slabs (GW1; imports build_bosses29_props, preview reads Exports/Boss_FX).
            "build_bosses30_props.py",
+           # Round 34: Gravemaw's modular 3D fissure kit (preview reads Env/Tiling, Tower_Gun and Gate exports).
+           "build_fissure34.py",
            "build_env_diorama.py"]
 
 for script in SCRIPTS:

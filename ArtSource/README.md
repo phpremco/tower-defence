@@ -3101,3 +3101,190 @@ because `BlenderStoryCatalog.EventKeys` reads one key per take. The full lists a
   `r35_<Clip>_game_away_strip.png` (game camera, facing up the screen), `r35_Disbelief_visor_strip.png` (visor
   close-up), `r35_keys_front.png` and `r35_keys_game(_zoomed).png` (the key poses beside Idle). The round-16 FBX,
   report and .blend are kept in `blender35/backup/`.
+
+## Round 34: Gravemaw's modular 3D fissure kit (2026-11-05)
+
+Remco found the crack ugly (square ends, right-angle bends, overlaps). After two Unity passes on the flat
+`BossFX_GroundCrack` strip it read as orange light streaks on the ground. A flat decal cannot show depth from the
+44-degree camera. Round 34 is real geometry that Unity lays along the smoothed `CrackPath`: two raised lips of broken
+ground slabs, a dark recessed gap with walls going down, and molten glow only in the core at the bottom. Design notes
+and weak points are in `DESIGN_NOTES.md` (round 34). Nothing is imported into Unity, and the shared modules are
+untouched.
+
+**Script:** `build_fissure34.py` (new; pure geometry and numpy textures, no bake, about 3 minutes with previews).
+
+Run: `blender --background --factory-startup --python Tools/Blender/build_fissure34.py -- [--preview <dir>]
+[--norender] [--notex]`. `--notex` keeps the maps on disk.
+
+**Files** (`ArtSource/Exports/Gravemaw_Fissure/`):
+
+- `Gravemaw_Fissure.fbx`: the nine modules.
+- `Gravemaw_Fissure_LOD1.fbx`: the same modules with the suffix `_LOD1`. They have half the rows, two fewer columns
+  and a third of the pebbles.
+- Maps: `Gravemaw_Fissure_Albedo/Normal/Emission/Mask.png` at 512, plus a `Low/` set at 256.
+- `Gravemaw_Fissure_report.json`: tris, the end transform of every module, and the join profile.
+- `ArtSource/Blend/Gravemaw_Fissure.blend`.
+
+### Modules
+
+**Conventions:**
+
+- **Pivot:** the segment start, on the path centre line, at ground level.
+- **Directions:** forward is Blender -Y (Unity +Z) and left is Blender +X (Unity -X).
+- **Lengths:** whole metres, because the texture repeats every 1 m along the path.
+- **Width:** about 1.44 m across the skirts. The gap is 0.54 m wide at the top and 0.52 m deep.
+- **End offsets and yaw:** given in Unity terms. A positive yaw turns right, towards +X.
+
+| Module | Length (m) | End offset (Unity x, z) / yaw | Tris (LOD1) | What it is |
+| --- | --- | --- | --- | --- |
+| Fissure_Straight_A | 2.0 | (0, 2.0) / 0 | 1,128 (492) | straight, 3-4 slabs a lip |
+| Fissure_Straight_B | 3.0 | (0, 3.0) / 0 | 1,670 (700) | long straight |
+| Fissure_Straight_C | 2.0 | (0, 2.0) / 0 | 1,184 (494) | straight with more rubble |
+| Fissure_Curve_L | 2.0 (arc) | (-0.346, 1.960) / -20 | 1,128 (474) | gentle left arc, radius 5.73 m |
+| Fissure_Curve_R | 2.0 (arc) | (0.346, 1.960) / +20 | 1,084 (438) | gentle right arc |
+| Fissure_Start | 2.0 | (0, 2.0) / 0 | 1,264 (536) | from a point at the dive hole to full width by 1.4 m; four hairlines fan out backwards from the pivot and two run off the lips |
+| Fissure_Head | 2.0 | tip at (0, 2.0) | 1,366 (552) | from full width down to a jagged point at 2.0 m. The lips heave up near the tip, with five pushed-up chunks and three hairlines running ahead of the tip |
+| Fissure_Branch_L | 1.6 | starts at (-0.2, 0.05); ends at (-0.968, 1.446) / +18 | 874 (394) | side crack off the main lip, half width, tapering to hairlines |
+| Fissure_Branch_R | 1.6 | mirror: starts at (0.2, 0.05) | 934 (394) | mirror of L |
+
+**Join profile:** the two ends of every joinable module have the same cross-section, without any noise. Every row
+within 2.5 cm of the end is that canonical section, and the noise ramps in over the next 12 cm. That keeps the
+normals identical on both sides of the join.
+
+- **Where the join sits:** at a crack between two slabs, so the lips dip to 50 % height right at the join. A seam
+  there reads as one more slab crack.
+- **Which ends join:**
+  - Straight and Curve: both ends.
+  - Start: its far end only.
+  - Head: its near end only.
+  - Branches: neither end. They lie on top of a main module.
+- **Half columns (t across, z up, m):**
+  - Core floor: (-0.02, -0.52).
+  - Core edge: (0.085, -0.46).
+  - Walls: (0.13, -0.35), (0.18, -0.25) ledge, (0.20, -0.14), (0.25, -0.03).
+  - Lip edge: (0.27, 0.07).
+  - Crest: (0.30, 0.105).
+  - Lip top: (0.40, 0.08).
+  - Slab edge: (0.49, 0.045).
+  - Slab foot: (0.51, 0.01).
+  - Skirt: (0.72, 0.006).
+
+  The exact values are in the report's `join_profile`.
+
+**Look:**
+
+- **Slabs:** each lip is broken into slabs 0.25-0.8 m long. Each slab has its own height, an outward tilt and an
+  in/out shift, and the cracks between slabs run at a slant.
+- **Gap:**
+  - The inner edge is jagged every 7-16 cm, and the gap breathes ±16 % in width and meanders a little.
+  - The walls step down past a ledge to a V-shaped core.
+  - Pebbles lie on the lips, on the skirt and on the ledge.
+- **Texture:** one atlas.
+  - **U:** metres along the path, repeating every 1 m. It runs on across joins.
+  - **V:** the place in the cross-section. From the bottom: molten core with dark crust plates, dark walls (warm at
+    the bottom), the raw broken face, a lighter rim on the crest, the lip top (Crystal Plains basalt: violet grey with
+    slab seams), the slab step, the skirt, then a hairline groove.
+  - **Emission:** only in the core and the lowest third of the walls.
+- **Mask:** R is AO, G is smoothness, and B and A are 0 (no detail normals).
+
+### Vertex data
+
+| Channel | Content |
+| --- | --- |
+| UV0 `UV` | atlas (above) |
+| UV1 `Reveal` | x = metres along the module from its start (a pebble uses its centre, a hairline its root). y = the same distance as 0..1 |
+| UV2 `CloseXY`, UV3 `CloseZ` | the `Closed` offset (closed minus open position) in **Unity mesh space**: UV2 = (dx, dy), UV3.x = dz |
+| Colour `Col` | R depth 0..1 (0 at the ground, 1 at the core floor); G 1 on pebbles; B 1 on hairlines; A footprint fade (0 at the skirt edge, the hairline tips and the narrow tips) |
+| Material slot 0 `Gravemaw_Fissure_Mat` | the rock |
+| Material slot 1 `Gravemaw_Fissure_Punch` | the gap opening at ground level (y = 0.003) |
+
+### Reveal: how the crack opens
+
+The `Closed` state folds everything onto the path's centre line, so it has no area and is invisible:
+
+- The lips lie flat and the gap is shut.
+- The walls rise to the surface.
+- The pebbles sink 0.2 m and collapse.
+- The hairlines shrink to their roots.
+
+There are two ways to drive it, with the same data:
+
+1. **Vertex shader (recommended):** `pos = pos + delta * closed`, with `delta = (uv2.x, uv2.y, uv3.x)` and
+   `closed = 1 - saturate((front - (_ModuleStart + uv1.x)) / _OpenLength)`.
+   - `front` is the head's distance along the crack.
+   - `_ModuleStart` is the module's start distance along the path, set per instance with a property block.
+   - `_OpenLength` is about 1.5-2.5 m.
+
+   The crack then tears open continuously behind the head, and the meshes stay static (they can be batched). Turn
+   off **Import BlendShapes** on the FBX, so the importer does not make SkinnedMeshRenderers.
+2. **Shape key:** import with blend shapes and set the `Closed` weight per module from the front (100 ahead of it,
+   0 behind it). It is simpler, but each module opens as a whole.
+
+**Cooling:** use the same distance to cool the glow. Multiply the emission by a `heat` that falls over about 10 s,
+the glow first, as now. `Col.R` (depth) can keep the very bottom glowing longest.
+
+### Unity integration notes
+
+- **Placement along `CrackPath`:**
+  - Walk the smoothed path and lay `Start`, then Straights and Curves, then `Head`.
+  - Choose a curve where the path turns more than about 10 degrees over 2 m. Its end offset and yaw are in the
+    report.
+  - Fit the pieces with a little bend: either let the last straight before a turn absorb the error, or deform each
+    module's vertices along the path (spline deform). Spline deform is cleanest, because every vertex is a
+    function of `uv1.x` along the module and sits at a fixed distance across it.
+  - The modules' own meander stays under ±5 cm.
+- **Head:** keep `Fissure_Head` on the boss's front end. Move it along as the crack advances, and lay new modules
+  behind it as the front passes their start.
+- **Branches:** place them with the transform of a main module start (the same pivot). They start on the lip at
+  ±0.2 m and run out at 38 degrees. Use one per 6-10 m, alternating sides.
+- **Scale:**
+  - Model width is 1.44 m. The previews use a uniform **1.8** (gap about 1 m, crack about 2.6 m wide, lips 0.19 m
+    high, 0.94 m deep).
+  - Uniform 1.6-2.2 is fine. A non-uniform XZ scale works too, but keep Y at least 1.4 so the depth still reads.
+- **The ground must not cover the gap.** The ground is opaque at y = 0, and the walls are below it. Material slot 1
+  is the opening polygon:
+  - **Depth punch:** draw it after the ground and before the rock (for example queue Geometry+1 for the punch and
+    Geometry+2 for the rock). Use ZTest LEqual, ColorMask 0, ZWrite On, and write the far-plane depth (`SV_Depth` =
+    0 with reversed Z, else 1).
+  - **Or a stencil:** the punch writes stencil 1 and the ground shader skips stencil 1. That needs the ground drawn
+    after the punch.
+  - The previews fake it with a ground alpha mask.
+  - Without one of these the crack looks like two rock rows on the ground.
+- **Footprints:**
+  - The planner already keeps the crack off towers and gates. Where it must pass one, end it with `Fissure_Head`
+    before the footprint and restart with `Fissure_Start` after it. It reads as the crack diving under.
+  - Never scale a module down to squeeze it in.
+  - Col.A fades the skirt edge into the terrain (alpha-test, dithered, or a blend on the skirt).
+  - The skirt sits at y 0.006 above the ground. If the terrain is not flat, raise the skirt with a small depth
+    offset.
+- **Shader:**
+  - Albedo, normal and mask, with the alpha = Albedo.a × Col.a.
+  - Emission (1, 0.42, 0.1) from the map × ~2.6 while hot.
+  - The maps are sRGB for albedo and emission, linear for normal and mask. U wraps Repeat and V Clamp.
+- **Other themes:** the lip and skirt colours match Crystal Plains. For other themes, multiply albedo by a tint
+  where V > 0.4, or simply tint `_BaseColor` (the walls and core are dark either way).
+- **LOD:** `_LOD1` modules have the same names plus `_LOD1` and the same pivots and ends. Their join rows match each
+  other, but not LOD0 exactly, so switch a whole crack at once.
+- **What it replaces:** the `BossFX_GroundCrack` strip and the `Gravemaw_CrackSlabs` along it. The slabs are now part
+  of the lips. The strip can stay as a faint scorch decal under the skirt.
+
+### Previews
+
+In the session scratchpad, `blender34/v6/` (earlier iterations in `v1`-`v5`):
+
+- `fissure_game.png`: the 44-degree game camera at play zoom. It shows ten modules plus two branches on Crystal
+  Plains ground and road, with a G1 gate and a T2 gun tower (×1.4) for scale.
+- `fissure_overview.png`: the whole crack.
+- `fissure_game_zoom.png`: 2.2× game zoom.
+- `fissure_close.png`: a perspective close-up.
+- `fissure_reveal.png`: the front at three places along the crack.
+- `fissure_modules.png`: each module alone, looking straight down its length (worst case for the core glow).
+
+### build_all.py
+
+Not edited here (shared). Add this line after `"build_bosses30_props.py",`:
+
+```
+           # Round 34: Gravemaw's modular 3D fissure kit (preview reads Env/Tiling, Tower_Gun and Gate exports).
+           "build_fissure34.py",
+```

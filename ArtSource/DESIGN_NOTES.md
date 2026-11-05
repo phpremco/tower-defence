@@ -2956,3 +2956,60 @@ and from a front eye-level cutscene camera. His face is never shown (the visor s
 - **Holster still missing:** Lower_Weapon ends with the pistol in hand. The `Holster` clip from
   `CUTSCENES_CONTINENTS.md` is not part of this round.
 - **Not checked in Unity:** cross-fade lengths into Startled and out of Lower_Weapon.
+
+## Round 34: the Gravemaw fissure as real geometry (2026-11-05)
+
+Remco on the in-game crack: square-cut ends, hard right-angle bends, overlaps. After two Unity passes it read as
+"orange light streaks across the ground". Previews are in the session scratchpad, `blender34/` (`v1`-`v6`).
+
+**Why geometry:**
+
+- From the 44-degree ortho camera, a flat strip can only paint depth, and bloom turns any glow on it into a stripe.
+- Depth reads when real walls go down: the far wall is lit and visible, the near wall hides its own face, and the
+  glow sits at the bottom where only part of it can be seen.
+- At 0.54 m wide the sight line at 44 degrees reaches about 0.5 m down the far wall. So the core sits 0.52 deep in a
+  V, and its glow climbs only the lowest third of the walls. You see molten light deep in a dark slot, not a lit
+  line.
+
+**Kit design:**
+
+- **Two half-strips per module:** each side has its own rows, so its slab cracks fall where they like. The halves
+  overlap 2 cm at the core floor (left 1.2 cm higher, no z-fight).
+- **Joins:** a canonical section is held for 2.5 cm at each joinable end, and all noise (jag, breathing, meander,
+  slab height/tilt, slab-crack slant, wall jitter) is multiplied by an envelope that is 0 there. The normals then
+  match on both sides without custom normals.
+- **The join sits at a slab crack:** the lips dip there, so the seam reads as one more crack.
+- **Slabs:** the lips are not separate props any more (`Gravemaw_CrackSlabs` looked like discs on the decal). The
+  lip itself is the broken ground: slabs with their own height, outward tilt and in/out step, with slanted cracks.
+- **A step at the slab foot:** this is what makes the lip read as ground lifted off the ground.
+- **One strip atlas:** U in metres along the path, V across the section, so all pieces share one 512 material. The
+  rock and the melt run on across joins (whole-metre lengths).
+- **Hairlines:** flat ribbons with an alpha groove, fading at the tip. They give the Start, Head and Branch ends a
+  natural run-out instead of a square end.
+- **Depth punch:** the ground is opaque at y = 0, so the opening is a second material slot. Unity clears the ground's
+  depth there, and the preview fakes it with a mask. This is the one piece of Unity work the kit cannot do itself.
+
+**Iterations:**
+
+- **v3:** the gap first showed through (the punch is needed).
+- **v3-v4:**
+  - The walls looked like wood grain (strata 34 per V unit), so they became darker blocky joints.
+  - The lips were black blocks, so they got a ground-matching violet grey, lower crests (0.105) and slanted slab
+    cracks.
+- **v4-v6:** the core was a solid yellow river, especially looking down the crack. It now has dark crust plates with
+  the light in the cracks between them, emission strength 2.6, and the wall heat only in the lowest third.
+
+### Honest weak points
+
+- **Looking straight down the crack** (a crack running towards the camera), the core floor is visible over its full
+  length and reads as a bright, crusted ribbon in a dark slot. It is far better than the decal, but it is the
+  brightest case. If it is too strong in game, lower emission by the path direction against the camera.
+- **The curves are fixed at ±20 degrees.** A real `CrackPath` bends continuously, so either spline-deform the modules
+  (recommended; every vertex knows its distance along the module) or accept small kinks at the joins.
+- **The depth punch needs Unity shader work.** Without it the crack is two rock rows on the ground.
+- **Texture repeats every 1 m:** the lip-top slab seams repeat visibly along a long straight run when you look for
+  them. The geometry slabs vary, but the texture under them does not.
+- **The near wall never shows** (it faces away), so the near lip is only its top and step. That is right for the
+  ortho camera.
+- **The pebbles are icosahedra** (20 tris). At play zoom they read as grit; up close they are simple.
+- **LOD1 joins** match each other but not LOD0.

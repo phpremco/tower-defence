@@ -994,3 +994,34 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Onderdeel | Verbeterpunt |
 | --- | --- |
 | Mercer reactieclips (ronde 35) | Wijzen leest slecht als Mercer naar de spelcamera kijkt (arm verkort), goed als hij het scherm in kijkt. Geen wijsvinger in het rig (platte hand). De hoofdkanteling van Startled zie je van boven minder; de leun en het hoge wapen dragen het. `Holster`-clip nog niet gemaakt |
+
+### Ronde 34 (Gravemaw-scheur als echte 3D-kloof, 2026-11-05)
+
+Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 34.
+
+- **Waarom:** Remco vond de platte scheur lelijk: rechte uiteinden, harde hoeken, overlap. Na twee Unity-passes leek
+  hij op oranje lichtstrepen. Een plat decal toont geen diepte vanuit de 44-gradencamera.
+- **Nieuw:** `Exports/Gravemaw_Fissure/`, een bouwset van echte 3D-kloofstukken (gedeeld 512-materiaal, plus LOD1):
+  - `Fissure_Straight_A/B/C` (2, 3 en 2 m).
+  - `Fissure_Curve_L/R` (2 m, 20 graden).
+  - `Fissure_Start` (vanaf het duikgat, met haarscheurtjes).
+  - `Fissure_Head` (een spitse punt met opgeduwde brokken).
+  - `Fissure_Branch_L/R` (zijscheuren).
+- **Hoe hij eruitziet:**
+  - Lippen van gebroken grondschotsen, licht omhoog en naar buiten gekanteld.
+  - Een donkere kloof, 0,52 m diep, met wanden die naar beneden gaan.
+  - Gloed alleen diep in de kern, onder een korst.
+  - Puin op de lippen.
+- **De stukken passen naadloos:** elk stuk heeft aan beide uiteinden hetzelfde profiel.
+- **Openen:** de shape key `Closed`, en dezelfde verschuiving in UV2/UV3 voor een vertex-shader die de kloof achter
+  de kop laat opentrekken.
+- **Unity:**
+  - Importeren.
+  - De stukken langs `CrackPath` leggen (bij voorkeur met spline-deform), schaal ±1,8.
+  - De **dieptepunch** (materiaalslot 1) bouwen, zodat de grond de kloof niet bedekt.
+  - Bij voetafdrukken eindigen met Head en verder gaan met Start.
+  - `BossFX_GroundCrack` en `Gravemaw_CrackSlabs` vervallen langs de scheur.
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Gravemaw-kloof (ronde 34) | Als de kloof recht naar de camera loopt, zie je de hele kernbodem: een felle (wel korstige) lavaband in een donkere sleuf. Bochten zijn vast op 20 graden (spline-deform aanbevolen). De textuur van de lipbovenkant herhaalt elke meter. Zonder dieptepunch in Unity bedekt de grond de kloof |
