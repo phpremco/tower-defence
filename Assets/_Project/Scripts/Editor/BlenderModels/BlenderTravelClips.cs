@@ -38,7 +38,7 @@ namespace Game.Editor
             public float EventFrame { get; }
         }
 
-        private static readonly string[] AnchorKeys = { "hole_forward_m", "bank_forward_m", "exit_forward_m", "edge_forward_m", "target_forward_m", "gate_forward_m" };
+        private static readonly string[] AnchorKeys = { "hole_forward_m", "bank_forward_m", "exit_forward_m", "edge_forward_m", "target_forward_m", "gate_forward_m", "base_forward_m" };
 
         private static readonly string[] EventKeys = { "impact_frame", "cast_frame", "all_off_frame" };
 
@@ -54,8 +54,25 @@ namespace Game.Editor
                 }
             }
 
-            List<object> eggs = BlenderJson.Array(BlenderJson.Field(fields, "egg_frames"));
-            return eggs.Count > 0 ? BlenderJson.Number(eggs[eggs.Count - 1]) : 0f;
+            // A series of moments (eggs laid, pods fired): the last is the main one.
+            List<object> series = Series(fields);
+            return series.Count > 0 ? BlenderJson.Number(series[series.Count - 1]) : 0f;
+        }
+
+        private static readonly string[] SeriesKeys = { "egg_frames", "shot_frames" };
+
+        private static List<object> Series(Dictionary<string, object> fields)
+        {
+            foreach (string key in SeriesKeys)
+            {
+                List<object> values = BlenderJson.Array(BlenderJson.Field(fields, key));
+                if (values.Count > 0)
+                {
+                    return values;
+                }
+            }
+
+            return new List<object>();
         }
 
         private static float FirstOf(object array)
@@ -95,7 +112,7 @@ namespace Game.Editor
                 }
 
                 // A throw has its burst first: that is the cue; every other clip has only its main moment.
-                float cue = BlenderJson.Field(fields, "throw_frame") != null ? BlenderJson.Number(BlenderJson.Field(fields, "burst_frame")) : FirstOf(BlenderJson.Field(fields, "egg_frames"));
+                float cue = BlenderJson.Field(fields, "throw_frame") != null ? BlenderJson.Number(BlenderJson.Field(fields, "burst_frame")) : FirstOf(Series(fields));
                 facts[clip.Key] = new Facts(end, anchor, cue, BlenderJson.Number(BlenderJson.Field(fields, "distance_per_loop_m")), EventOf(fields));
             }
 

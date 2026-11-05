@@ -34,6 +34,8 @@ namespace Game.Enemies
         private float _fallSpeed;
         private Vector3 _slide;
         private bool _landed;
+        private float _deathLookAt = -1f;
+        private bool _deathLookShown;
 
         public static ModelCorpse Create(Transform parent, ModelArtDefinition art, float scale, bool lowDetail)
         {
@@ -46,6 +48,8 @@ namespace Game.Enemies
             corpse._shed = art.ShedBones.Length > 0 ? new ModelShedParts(corpse._model) : null;
             int death = art.IndexOf(ModelClipRole.Death);
             corpse._clipSeconds = death >= 0 ? art.Clips[death].Length : 0f;
+            // A body that releases its glow at its death (the Sealed One's white) swaps to that look at the clip's moment.
+            corpse._deathLookAt = death >= 0 && art.EmissionSet(art.DeathEmissionSet) != null ? art.Clips[death].EventSeconds : -1f;
             return corpse;
         }
 
@@ -62,6 +66,8 @@ namespace Game.Enemies
             _model.Root.localScale = Vector3.one * scale;
             _model.SetGlow(1f);
             _model.SetOverlay(Color.white, 0f);
+            _model.SetEmissionSet(null, ModelQuality.IsLow);
+            _deathLookShown = false;
             _clips.Restart();
             _clips.Die();
             _shed?.SetShed(request.Shed);
@@ -75,6 +81,7 @@ namespace Game.Enemies
             _age += dt;
             _clips.Tick(dt, 0f, false, false, _scale);
             FadeGlow();
+            ShowDeathLook();
             Fall(dt);
             float lieUntil = _clipSeconds + RestSeconds;
             if (_age <= lieUntil)
@@ -94,6 +101,17 @@ namespace Game.Enemies
 
         // The death clip keys the shed parts at full size; the ones the creature had lost stay off.
         private void LateUpdate() => _shed?.Apply();
+
+        private void ShowDeathLook()
+        {
+            if (_deathLookShown || _deathLookAt < 0f || _age < _deathLookAt)
+            {
+                return;
+            }
+
+            _deathLookShown = true;
+            _model.SetEmissionSet(_model.Art.EmissionSet(_model.Art.DeathEmissionSet), ModelQuality.IsLow);
+        }
 
         private void FadeGlow()
         {

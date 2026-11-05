@@ -245,3 +245,77 @@ pools; nests on turned cells are dropped; both pass the level validator). They a
 3 expected gates x a quarter x 8 s freeze (6 s); `EffectiveHealthFactor` counts the ice armour as more health (Frost x1.6).
 Both stay under `MaxBossMechanicShare` on the C1_06 finale fight (test `BossSignatureTests.Ledger_...`). Neither is in a
 campaign wave yet, so no band moved.
+
+## Implementation notes (round 4c, 2026-11-05)
+
+**All six signatures run.** `BossSignatures.For` now also picks `OvergrowthSignature` (Rotbloom), `SplitSignature` (the
+Shattered) and `RecognitionSignature` (the Sealed One); their numbers are data (`OvergrowthPower`, `SplitPower` with one
+`ShardSpec` per shard, `RecognitionPower`), pure logic in `OvergrowthTargets`, `OvergrowthPads`, `SporeVolley`,
+`ShardSplit`, `RecognitionTally<T>`, `GateDrainer`. New arrivals: `BossArrival.Ruins` (the level's boss entrance as a
+sealed ruin gate) and `BossArrival.Rift` (the centre of the map); the brain runs the signature's `Entrance` for both.
+All three wear their round-28 exports (new clip roles Rooted, Uproot, SporeVolley, Split, Rejoin, RiseOntoBase, Adapt).
+
+**Rotbloom as built.** Roots announce it: `RootOmen` (run by `BossDirector` from the level's waves) reads which wave brings
+a boss with roots and shows `RotbloomRoots` Stage1/2/3 at the start of the third, second and last wave before it
+(`OvergrowthPower.StageFor`), at the bog bank nearest the road of the pool it will rise from; the arena compresses this into
+three short escort waves (`BossArenaEntry.LeadWaves`). It rises out of that bog (`BossArrival.Pool`, bog). Rooted (phase 1)
+it creeps along the road at 0.35x in its Rooted_Idle loop and drops a fresh Stage1 root clump 2.4 m ahead every 3 m. Every
+12 s (the first after 6 s) it blooms: it picks the fullest cluster of standing towers within 16 m (cluster radius 2.6 m), at
+most 3 pads, never past a quarter of the towers overgrown counting the pods in the air; the target pads get a green haze,
+`LevelContext.BossBloomed` plays a sweet rising chime, the Spore_Volley petals open and one `RotSporePod` per pad leaves
+`Socket_Spore` between the first and last shot frame, timed to land as the 2 s warning runs out (at least 0.7 s in the air)
+on a 3.5 m arc. A pod is a creature on the air layer: air towers shoot it down and its pad is spared. A pod that lands
+overgrows its pad: `LevelContext.ClosedPads` (placement refuses it, "Overgrown: burn it clean first"), the tower on it fires
+at 70 % (`Tower.Overgrow`) and `RotOvergrowth` grows over it in 1 s (blend shape Retracted 100 -> 0). Any splash explosion
+(`ProjectilePool.Exploded`) whose radius reaches a pad burns it clean, and so does the hero's repair on the tower it guards
+(`Tower.Restore` clears the overgrowth; `CanRestore` counts it); the vines flare and pull back. Below 50 % it plays Uproot
+(roar and one small kick at frame 36), walks at full pace in its Crawl and leaves an 8 s rot trail (green glow patches). Its
+bog dives are the shared body's. When it dies its vines wither and every pad opens.
+
+**The Shattered as built.** It breaks out of a sealed ruin gate: the arena copy of Fault Line (`Arena_Ruins`: two roads, two
+flight paths) carries a ground boss entrance a few cells off the main road near its first bend (the generator picks it);
+there the ground cracks with five lines of light for 1.6 s with a rumble, then a crystal burst, one kick and a roar. Within
+8 % above its split point a cold light pulses at its chest. At 66 % it plays Split; at the burst frame (28): a flash, one kick,
+the shatter sound (`LevelContext.BossSplit`), and the three shards leave at their report offsets, each with a third of what it
+had left (`ShardSplit.ShardHealth`, `Health.Refill`): the crawler on the giant's own road, the runner on the other road, the
+flyer on the first flight path (`ShardRoute`, `EnemySpawner.SpawnOnPath`); each plays Spawn in place, then takes its route,
+and each route lights up for 2.5 s. The giant is hidden and out of reach while split; its health follows the shards' together,
+so the HUD bar keeps telling the truth. At 33 % the survivors play Rejoin and fly into the giant, which forms where the one
+nearest the base stands (a flyer leader forms it on the nearest road cell), with what they have at that moment less 30 % per
+dead shard (`ShardSplit.RejoinHealth`); its phase-3 look holds the shells at 0, the crystals at 1.35 and a dead shard's spire
+at 0.35 (`BoneScaleView`). A shard that reached the base is gone without a penalty; if every shard dies the giant dies.
+
+**The Sealed One as built.** "The map comes to it", done in light (no terrain change, see MODEL_TODO): hidden at the open cell
+nearest the field's middle where its body is clear of towers, the ground rumbles and six violet cracks open for 2.5 s, then
+the new road (a wide violet seam, `CrackStyle.Seal`) runs from the rift to the base round the towers in 2 s and stays lit; it
+rises (its Rise clip; the seal breaks at frame 22 with a burst and one kick, then it can be shot) and the cracks die down.
+It hauls along that way off the road (`WalkTo` with clearance, climbing rocks; a dark furrow opens behind it), falls back to
+the road if no way fits its body, and at the base plays Rise_OntoBase: the base takes 120 (x structure damage) at the crush
+frame (96), then a blow of its gate damage every 3 s while it lies there (`RecognitionPower.BaseBlowSeconds`). Recognition:
+`RecognitionTally` counts each phase's damage per tower type; at each phase change it plays Adapt and at the pulse frame (30)
+learns the type with the most damage, which lands only 50 % in the next phase (`Enemy.SourceScale`, never immunity);
+`LevelContext.BossAdapted` carries ORA's line ("Adaptation detected: Cannon signature dampened", shown under the boss bar for
+5 s with an alert tone) and `LevelContext.BossDampened` puts that tower's picture, greyed, beside the bar; the glow at the
+rift (standing in for the sealed crystals) takes the tower's colour. Each phase drains one gate's gun (`GateDrainer`,
+`Tower.SetDrained`: the gate still blocks; violet haze and a drain thread), the nearest gate with a gun other than the last,
+and gives it back at the phase's end and when the boss dies. Its glow is the art's Phase1..4 emission set per phase
+(`ModelArtDefinition` emission sets, `EnemyView.SetEmissionSet`). Its end is the Release clip (mapped to Death): at the white
+frame (64) the corpse swaps to the white Release set (`ModelArtDefinition.DeathEmissionSet`). In the arena the fight ends
+there (the victory panel comes up over it); the epilogue is a later round.
+
+**Fixes from the 4b review.**
+- The Matriarch's grey wash at the smash was the chill overlay: the Cryo she hunts chills her, and the overlay adds its colour
+  as light over her near-black body. A chilled boss now cools only a shade (overlay colour x0.12, `BossFrostShade`).
+- The world "BOSS" label no longer sits over the HUD bar: while a boss lives (the bar names it) the marker drops its word and
+  keeps its arrow 185 px below the top (`BossMarkerView.BarClearance`), also when pinned to the top edge.
+- The Codex pedestal seats a model by its posed near-LOD vertices (baked skinned meshes; the far LOD and particles left
+  out) and frames a creature again once its animator has posed its idle: it was framed in its bind pose with the far LOD
+  (longer, lower legs), so the Matriarch hung a metre above the disc.
+
+**Arena.** All six bosses are entries: Rotbloom on `Arena_Bog` (Glass Meadows, water -> bog, 3 lead waves), the Shattered on
+`Arena_Ruins`, the Sealed One on the arena's own Shard Ridge (its gates need an upgrade to have a gun to drain).
+
+**Ledger.** Rotbloom: 4 volleys x a quarter x 30 % slower x 20 s overgrown = 6 s; the Shattered: 18 s split / 3 shards = 6 s
+(a third of the field on the wrong route); the Sealed One: 4 phases x 8 % (one gate gun) x 15 s = 4.8 s, and the learned
+weapon's lost half counts as health (x1.225: 75 % of its health x 30 % top share x 1). All inside `MaxBossMechanicShare` on the
+C1_06 finale fight (`BossRound4cTests.Ledger_...`); none is in a campaign wave, so no band moved.

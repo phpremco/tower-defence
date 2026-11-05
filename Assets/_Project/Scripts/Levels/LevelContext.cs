@@ -226,6 +226,21 @@ namespace Game.Levels
         /// <summary>Raised with a gate a boss has just breathed into an ice block.</summary>
         public GameEvent<Vector3> BossGateFrozen { get; } = new GameEvent<Vector3>();
 
+        /// <summary>Raised where a boss opens up to fire its spores (the sweet rising sound of the telegraph).</summary>
+        public GameEvent<Vector3> BossBloomed { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised where a boss bursts into its shards.</summary>
+        public GameEvent<Vector3> BossSplit { get; } = new GameEvent<Vector3>();
+
+        /// <summary>Raised with ORA's line when a boss has learned a weapon (the HUD shows it under the boss bar).</summary>
+        public GameEvent<string> BossAdapted { get; } = new GameEvent<string>();
+
+        /// <summary>The tower type a boss has learned and takes only a share from, for the boss bar; null when none.</summary>
+        public TowerDefinition BossDampened { get; set; }
+
+        /// <summary>Build pads nothing may be built on right now (overgrown by a boss's spores).</summary>
+        public HashSet<Vector2Int> ClosedPads { get; } = new HashSet<Vector2Int>();
+
         /// <summary>How loud the ground rumbles under a burrowing boss right now, 0 to 1; audio swells with it.</summary>
         public float BossRumble { get; set; }
 

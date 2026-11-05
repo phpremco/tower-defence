@@ -91,6 +91,71 @@ MonoBehaviour:
     _exposedPhase: 1
     _exposedPace: 1.35
     _expectedGates: 3
+  _overgrowth:
+    _interval: 12
+    _maxPads: 3
+    _warnSeconds: 2
+    _reach: 16
+    _clusterRadius: 2.6
+    _pod: {fileID: 0}
+    _arcHeight: 3.5
+    _minFlightSeconds: 0.7
+    _fireRate: 0.7
+    _vines: {fileID: 0}
+    _growSeconds: 1
+    _expectedOvergrownSeconds: 20
+    _expectedVolleys: 4
+    _uprootPhase: 1
+    _rootedPace: 0.35
+    _rootSpacing: 3
+    _rotSeconds: 8
+    _roots: {fileID: 0}
+    _rootStages:
+    - RotbloomRoots_Stage1
+    - RotbloomRoots_Stage2
+    - RotbloomRoots_Stage3
+  _split:
+    _splitPhase: 1
+    _rejoinPhase: 2
+    _shards: []
+    _deadShardPenalty: 0.3
+    _routeLightSeconds: 2.5
+    _warnShare: 0.08
+    _flyBackSeconds: 0.6
+    _expectedSplitSeconds: 18
+    _shellBones:
+    - Shell_1
+    - Shell_2
+    - Shell_3
+    - Shell_4
+    - Shell_5
+    - Shell_6
+    - Shell_7
+    - Shell_8
+    _crystalBones:
+    - Crys_1
+    - Crys_2
+    - Crys_3
+    - Crys_4
+    - Crys_5
+    - Crys_6
+    _rejoinedCrystalScale: 1.35
+    _deadCoreScale: 0.35
+  _recognition:
+    _dampenedShare: 0.5
+    _drainsGates: 1
+    _adaptLine: 'Adaptation detected: {0} signature dampened'
+    _phaseLooks:
+    - Phase1
+    - Phase2
+    - Phase3
+    - Phase4
+    _riftSeconds: 2.5
+    _roadRiseSeconds: 2
+    _crushDamage: 120
+    _expectedTopShare: 0.3
+    _gateGunShare: 0.08
+    _expectedPhaseSeconds: 15
   _climb:
     _climbsRocks: 1
     _climbsGates: 1

@@ -744,3 +744,24 @@ Wat nu met bestaande assets of code-plaatsing is opgelost en beter uit Blender k
 | Cinder Matriarch in de Codex | Op het weergavepodium zweeft ze boven de schijf (pivot onder het borststuk, lange poten); de podiumcamera moet haar lager zetten of de pivot klopt niet met de voeten |
 | Cinder Matriarch poten | Haar poten spreiden ~4,6 m: op een vol veld (torens 2,5 cel uit elkaar) raken ze zichtbaar buurtorens, ook al blijft haar lijf er vrij van. Smallere loop-houding tijdens Hunt_Stride zou helpen |
 | CinderEgg | Geïmporteerd en gebruikt (Idle, Hatch op frame 32, Burst als dood). Geen geluid van zichzelf: het borrelt met de lava-lus |
+
+### Ronde 4c Unity (Rotbloom, the Shattered en the Sealed One speelbaar, 2026-11-05)
+
+Alles uit de ronde-28-exports is geïmporteerd (Rotbloom met RotSporePod, RotOvergrowth en RotbloomRoots, the Shattered met ShardRunner/ShardFlyer/ShardCrawler, the Sealed One met Walk, Roar, Climb_*, pool-clips, Rise_OntoBase, Adapt, Release en de Phase1-4/Release-emissiesets). Wat nu met bestaande assets of code-plaatsing is opgelost en beter uit Blender kan komen:
+
+| Onderdeel | Verbeterpunt |
+| --- | --- |
+| Verzegelde ruïnepoort (the Shattered) | Geen export: de entree is een plek in de data (`BossEntrance` Ground op de arena-kopie van Fault Line) met lichtscheuren, gerommel en een kristalflits; de reus verschijnt in de flits. Nodig: een `RuinGate`-prop (verzegelde stenen poort met Open-clip, eenmalig) die in de decor van een ruïne-level staat |
+| Scherven klimmen | ShardRunner/ShardFlyer/ShardCrawler hebben geen Climb_*-clips; ze lopen hun route als gewone wezens. BOSSES.md wil dat de scherven de ruïnes beklimmen: Climb_Up/Loop/Down voor runner en crawler (zelfde conventies als de bazen) |
+| Rotbloom-rotspoor | Een groene gloeipoel per spoorstukje (`LavaTrailView` in rotkleuren). Een eigen rot-decal (slijm, schimmelvlekken, sporen) ontbreekt |
+| Groene waas op doelplekken | Gloeipoel + puntlicht + nevel (`TowerAuraView`). Een "sporenwolk"-sheet die op de plek neerdaalt zou sterker zijn |
+| Overgroeide pad bij branden | De ranken krimpen terug (blend shape) met een emissie-flits; een vuur-VFX dat langs het `Growth`-attribuut omhoog brandt (de README-clipdrempel) ontbreekt, Unity gebruikt het Growth-attribuut nog niet |
+| Wortels die vooruit kruipen | Rotbloom zet in zijn wortelfase elke 3 m een Stage1-wortelplukje voor zich neer (hergebruik van RotbloomRoots). Een kruipende wortel-clip of een wortel-strook die meegroeit zou beter lezen |
+| Nieuwe weg van the Sealed One | Er verandert geen terrein: een brede violette lichtnaad (`CrackStyle.Seal`) loopt van de scheur in het midden naar de basis en blijft branden; de oude weg zakt niet. Voor echt "de kaart komt naar hem toe": een terrein-strook die oprijst (weg-tegels met een Rise-clip of een vervormbare grond-mesh) en een zak/verdonker-decal voor de oude weg |
+| Voor van the Sealed One | Een donkere scheurlijn (`CrackStyle.Furrow`) langs zijn geplande route, die opengaat waar hij sleept. De README vraagt een voor-decal met stof: een tegelbare ploegvoor-strook ontbreekt |
+| Verzegelde kristallen | Er staan geen zegelkristallen in de decor: een gloeipoel met puntlicht bij de scheur kleurt mee met het geleerde wapen. Nodig: een `SealCrystal`-prop (3-5 stuks rond de scheur) met een emissiekleur die Unity kan zetten |
+| Sealed One op de basis | Rise_OntoBase eindigt over de voorrand van de basis; Unity houdt het laatste frame vast en laat hem van daar slaan. Een `OnBase_Loop`-clip (op het dak, slaan) ontbreekt; Adapt wordt op de basis zonder clip gespeeld |
+| Leeggezogen poort | Violette waas op de poort (`TowerAuraView`) en een dunne violette draad bij het leegzuigen; het poortmodel zelf laat geen "stroom eruit" zien. Een gedoofde-loop-emissie op de poortkanonnen zou helpen |
+| Gedempt-icoon op de bossbalk | Het torenicoon is de HUD-kaartfoto, grijs getint. Een eigen "gedempt"-overlay (doorgestreepte ring) uit de UI-set zou duidelijker zijn |
+
+Opgelost in ronde 4c: "Cinder Matriarch in de Codex" (ronde 4b) lag niet aan de pivot maar aan de podiumcamera, die haar in de bind-pose en met de verre LOD mat; Unity meet nu de geposeerde nabije LOD.

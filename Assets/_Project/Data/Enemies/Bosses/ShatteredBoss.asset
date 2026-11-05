@@ -19,7 +19,7 @@ MonoBehaviour:
     StartsAt: 0.66
   - Name: Rejoined
     StartsAt: 0.33
-  _arrival: 0
+  _arrival: 3
   _signature: 5
   _burrow:
     _thresholds:
@@ -89,6 +89,83 @@ MonoBehaviour:
     _exposedPhase: 1
     _exposedPace: 1.35
     _expectedGates: 3
+  _overgrowth:
+    _interval: 12
+    _maxPads: 3
+    _warnSeconds: 2
+    _reach: 16
+    _clusterRadius: 2.6
+    _pod: {fileID: 0}
+    _arcHeight: 3.5
+    _minFlightSeconds: 0.7
+    _fireRate: 0.7
+    _vines: {fileID: 0}
+    _growSeconds: 1
+    _expectedOvergrownSeconds: 20
+    _expectedVolleys: 4
+    _uprootPhase: 1
+    _rootedPace: 0.35
+    _rootSpacing: 3
+    _rotSeconds: 8
+    _roots: {fileID: 0}
+    _rootStages:
+    - RotbloomRoots_Stage1
+    - RotbloomRoots_Stage2
+    - RotbloomRoots_Stage3
+  _split:
+    _splitPhase: 1
+    _rejoinPhase: 2
+    _shards:
+    - _enemy: {fileID: 11400000, guid: 0304f6ce3189b994db6143f60a16a4c0, type: 2}
+      _route: 0
+      _offset: {x: -1.6, y: 0, z: -1.8}
+      _spire: Core_Land
+    - _enemy: {fileID: 11400000, guid: 6d9f92848fb7f85448e36935a70065d7, type: 2}
+      _route: 1
+      _offset: {x: 1.6, y: 0, z: 2.2}
+      _spire: Core_Road
+    - _enemy: {fileID: 11400000, guid: 54860accb88ab3c4499b2bdd6a88dc8e, type: 2}
+      _route: 2
+      _offset: {x: 0, y: 3.2, z: -0.4}
+      _spire: Core_Air
+    _deadShardPenalty: 0.3
+    _routeLightSeconds: 2.5
+    _warnShare: 0.08
+    _flyBackSeconds: 0.6
+    _expectedSplitSeconds: 18
+    _shellBones:
+    - Shell_1
+    - Shell_2
+    - Shell_3
+    - Shell_4
+    - Shell_5
+    - Shell_6
+    - Shell_7
+    - Shell_8
+    _crystalBones:
+    - Crys_1
+    - Crys_2
+    - Crys_3
+    - Crys_4
+    - Crys_5
+    - Crys_6
+    _rejoinedCrystalScale: 1.35
+    _deadCoreScale: 0.35
+  _recognition:
+    _dampenedShare: 0.5
+    _drainsGates: 1
+    _adaptLine: 'Adaptation detected: {0} signature dampened'
+    _phaseLooks:
+    - Phase1
+    - Phase2
+    - Phase3
+    - Phase4
+    _riftSeconds: 2.5
+    _roadRiseSeconds: 2
+    _crushDamage: 120
+    _expectedTopShare: 0.3
+    _gateGunShare: 0.08
+    _expectedPhaseSeconds: 15
   _climb:
     _climbsRocks: 1
     _climbsGates: 1
@@ -97,7 +174,7 @@ MonoBehaviour:
     _gateWeightDamage: 18
     _maxTilt: 22
   _dive:
-    _pools: 0
+    _pools: 1
     _maxSeconds: 6
     _splashShare: 0.5
     _regenPerSecond: 0.006
@@ -105,10 +182,10 @@ MonoBehaviour:
     _reach: 2.5
     _burstDamage: 30
     _burstRadius: 2.4
-    _wakeGlow: {r: 1, g: 0.35, b: 0.6, a: 0.8}
-  _bodyHalfWidth: 1.1
+    _wakeGlow: {r: 0.7, g: 0.88, b: 1, a: 0.8}
+  _bodyHalfWidth: 1.4
   _impactKick: 0.35
   _mechanicClipRate: 1.4
-  _signatureText: 'At two thirds of its health it splits into three shards that each take a different route: the land, the air and the second road. At a third the survivors pull back together where they stand.'
-  _telegraphText: Cracks of light on the giant show where it will split, and each shard's route lights up briefly.
-  _counterText: Cover every route, the air and the second front too. Each shard you kill takes a share off the giant that rejoins.
+  _signatureText: 'At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.'
+  _telegraphText: It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.
+  _counterText: 'Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.'

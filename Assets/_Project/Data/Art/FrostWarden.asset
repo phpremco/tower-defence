@@ -32,6 +32,8 @@ MonoBehaviour:
   _embers: 0
   _bleeds: 1
   _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
   _clips:
   - _role: 3
     _clip: {fileID: 7808484544301855561, guid: 2634d0f58951ddb4188b87b5fffeba49, type: 3}

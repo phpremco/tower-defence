@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
+  m_Name: ShardCrawler
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
+  _displayName: Shard Crawler
+  _layer: 1
+  _flies: 0
+  _maxHealth: 300
+  _armor: 0
+  _armorReduction: 0.6
+  _speed: 0.6
+  _reward: 19
+  _baseDamage: 8
+  _element: 0
+  _attackStyle: 4
+  _attackDamage: 0
+  _blockadeDamage: 40
+  _attackRange: 2
+  _attackInterval: 1.2
+  _gateStrikes: 0
+  _walkSeconds: 0
+  _rollSeconds: 0
+  _rollSpeedMultiplier: 2.5
+  _trailSeconds: 0
+  _trailHaste: 1.4
+  _trailDamagePerSecond: 0
+  _rageSeconds: 0
+  _rageSpeedMultiplier: 1.5
+  _rageRadius: 3
+  _isBoss: 0
+  _abilities: []
+  _boss: {fileID: 0}
+  _color: {r: 0.6, g: 0.75, b: 0.95, a: 1}
+  _eyeColor: {r: 0.8, g: 0.95, b: 1, a: 1}
+  _accentColor: {r: 0.8, g: 0.95, b: 1, a: 1}
+  _bloodColor: {r: 0.8, g: 0.95, b: 1, a: 1}
+  _scale: 0.8
+  _shape: 0
+  _deathStyle: 0
+  _art: {fileID: 11400000, guid: 1f2f1818a1527584f84d1fbe77d59ebe, type: 2}
+  _voice: {fileID: 11400000, guid: 819727259db69864cbc07fbcae461bfb, type: 2}
+  _description: 'A shard of the Shattered on six legs: it keeps to the giant''s road.'

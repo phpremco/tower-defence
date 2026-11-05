@@ -384,7 +384,7 @@ namespace Game.Levels
                 _cellMessage = string.Empty;
                 _context.Mode = PlacementMode.Placing;
             }
-            else if (_context.SelectedPathObject == null && _buildGrid.CanBuild(_cursor) && _context.SelectedTower != null)
+            else if (_context.SelectedPathObject == null && CanBuildTower(_cursor) && _context.SelectedTower != null)
             {
                 _cellMessage = string.Empty;
                 _context.Mode = PlacementMode.Placing;
@@ -462,7 +462,7 @@ namespace Game.Levels
             }
 
             TowerDefinition definition = _context.SelectedTower;
-            if (definition == null || !_buildGrid.CanBuild(_cursor) || !_context.Wallet.TrySpend(definition.BuildCost))
+            if (definition == null || !CanBuildTower(_cursor) || !_context.Wallet.TrySpend(definition.BuildCost))
             {
                 Debug.Log($"[Placement] place refused: tower={(definition != null ? definition.name : "none")} canBuild={_buildGrid.CanBuild(_cursor)} money={_context.Wallet.Money}");
                 return;
@@ -741,7 +741,7 @@ namespace Game.Levels
             bool placing = _context.Mode == PlacementMode.Placing;
             TowerDefinition selected = _context.SelectedTower;
             PathObjectDefinition pathObject = _context.SelectedPathObject;
-            bool cellFree = pathObject != null ? CanPlacePathObject(pathObject, _cursor) : _buildGrid.CanBuild(_cursor);
+            bool cellFree = pathObject != null ? CanPlacePathObject(pathObject, _cursor) : CanBuildTower(_cursor);
             int price = pathObject != null ? pathObject.Cost : selected != null ? selected.BuildCost : 0;
             bool valid = !hasTower && cellFree && (pathObject != null || selected != null) && _context.Wallet.CanAfford(price);
 
@@ -849,8 +849,11 @@ namespace Game.Levels
                 return _buildGrid.IsRoad(cell) && !_buildGrid.IsOccupied(cell);
             }
 
-            return _buildGrid.CanBuild(cell);
+            return CanBuildTower(cell);
         }
+
+        // A free pad that no boss has overgrown (Docs/BOSSES.md, Rotbloom: "you cannot build there").
+        private bool CanBuildTower(Vector2Int cell) => _buildGrid.CanBuild(cell) && !_context.ClosedPads.Contains(cell);
 
         private void TryPlacePathObject(PathObjectDefinition definition)
         {
@@ -1000,6 +1003,11 @@ namespace Game.Levels
             if (valid)
             {
                 return $"{selected.DisplayName} ({selected.BuildCost})";
+            }
+
+            if (_context.ClosedPads.Contains(_cursor))
+            {
+                return "Overgrown: burn it clean first";
             }
 
             if (!_buildGrid.CanBuild(_cursor))

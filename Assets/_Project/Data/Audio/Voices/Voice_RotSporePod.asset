@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5bbf51dfe602a4080cdcb2ab5e55bf, type: 3}
+  m_Name: Voice_RotSporePod
+  m_EditorClassIdentifier: Game.Core::Game.Core.CreatureVoice
+  _moveLoop:
+    _clips:
+    - {fileID: 8300000, guid: 6ef0f1a981c8c2d45a82344233c0a56a, type: 3}
+    _gain: 0.49134117
+    _pitch: 1.6
+  _steps:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _stepSpacing: 0.5
+  _presence: 1
+  _rollLoop:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _screeches:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _growls:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _attacks:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _impacts:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _pulse:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _volleyLaunch:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _volleyImpact:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _rally:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _regrow:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _spawn:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6
+  _laserStart:
+    _clips: []
+    _gain: 1
+    _pitch: 1.6

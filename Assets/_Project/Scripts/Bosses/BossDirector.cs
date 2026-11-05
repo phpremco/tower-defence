@@ -18,9 +18,12 @@ namespace Game.Bosses
         private EnvironmentInstancer _decor;
         private ColonyRigView _rig;
         private EnemySpawner _spawner;
+        private RootOmen _omen;
+        private WaveDefinition[] _waves;
 
-        public void Initialize(LevelContext context, EnemySpawner spawner, ProgressService progress)
+        public void Initialize(LevelContext context, EnemySpawner spawner, ProgressService progress, WaveDefinition[] waves = null)
         {
+            _waves = waves;
             _context = context;
             _spawner = spawner;
             _progress = progress;
@@ -28,9 +31,29 @@ namespace Game.Bosses
             _decor = FindAnyObjectByType<EnvironmentInstancer>();
             _rig = FindAnyObjectByType<ColonyRigView>();
             context.EnemySpawned.Subscribe(OnSpawned);
+            context.WaveStarted.Subscribe(OnWaveStarted);
         }
 
-        private void OnDestroy() => _context?.EnemySpawned.Unsubscribe(OnSpawned);
+        /// <summary>The roots that announce a rooted boss over the waves before it, for the tests and probes.</summary>
+        public RootOmen Omen => _omen;
+
+        private void OnDestroy()
+        {
+            _context?.EnemySpawned.Unsubscribe(OnSpawned);
+            _context?.WaveStarted.Unsubscribe(OnWaveStarted);
+        }
+
+        private void OnWaveStarted()
+        {
+            // Only a level that sends a boss with roots builds the boss field this early.
+            if (_omen == null && !RootOmen.Needed(_waves))
+            {
+                return;
+            }
+
+            _omen ??= new RootOmen(Field(), _waves);
+            _omen.OnWaveStarted(_context.WaveNumber - 1);
+        }
 
         private void OnSpawned(Enemy enemy)
         {

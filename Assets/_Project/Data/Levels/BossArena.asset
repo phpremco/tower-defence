@@ -17,13 +17,27 @@ MonoBehaviour:
   _entries:
   - _boss: {fileID: 11400000, guid: ab9724850781eea4ca1772822888c137, type: 2}
     _level: {fileID: 0}
+    _leadWaves: 0
   - _boss: {fileID: 11400000, guid: 3110a316c339d8c468f29b380d71c64a, type: 2}
     _level: {fileID: 11400000, guid: e17eb22cedec74647bd2ac16aff9e01b, type: 2}
+    _leadWaves: 0
   - _boss: {fileID: 11400000, guid: 241eba79783ca9e439c2085aca9748d4, type: 2}
     _level: {fileID: 11400000, guid: 3d3516a949eaba2479c80b023313453c, type: 2}
+    _leadWaves: 0
+  - _boss: {fileID: 11400000, guid: c1b8cbc5173ce3c40a1f3c8b904ff18d, type: 2}
+    _level: {fileID: 11400000, guid: 5d7067f3a4f094448a1352fa1ac2e9e7, type: 2}
+    _leadWaves: 3
+  - _boss: {fileID: 11400000, guid: bec538117011ce7439f9fb36705a3193, type: 2}
+    _level: {fileID: 11400000, guid: 458fb9c3e5655fb4ab43c95cdca54793, type: 2}
+    _leadWaves: 0
+  - _boss: {fileID: 11400000, guid: 62ab7f89a7b068946adaabf64fbf0d3e, type: 2}
+    _level: {fileID: 0}
+    _leadWaves: 0
   _startingMoney: 3000
   _buildSeconds: 40
   _escort: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
   _escortCount: 6
   _escortInterval: 1.5
   _healthMultiplier: 2.5
+  _leadWaveSeconds: 6
+  _leadWaveEscorts: 2

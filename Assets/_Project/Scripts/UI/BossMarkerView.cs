@@ -21,6 +21,9 @@ namespace Game.UI
         private const float PulseRate = 5f;
         private const float PulseDepth = 0.12f;
         private const string Label = "BOSS";
+        // The boss bar (BossHealthView) hangs this far down from the top of the safe area with its name and phase line:
+        // while it shows, the marker stays below it so the two never overlap.
+        private const float BarClearance = 185f;
         private static readonly Color Warning = new Color(1f, 0.4f, 0.32f);
 
         private LevelContext _context;
@@ -135,11 +138,19 @@ namespace Game.UI
             inner.xMax -= EdgeMargin;
             inner.yMin += EdgeMargin;
             inner.yMax -= EdgeMargin;
+            // While the boss lives its bar names it at the top: the marker keeps below the bar and drops its own word.
+            bool barShown = _boss != null;
+            if (barShown)
+            {
+                inner.yMax = Mathf.Min(inner.yMax, _area.rect.yMax - BarClearance);
+            }
 
             Show(true);
-            if (screen.z > 0f && inner.Contains(local))
+            ShowLabel(!barShown);
+            if (screen.z > 0f && inner.xMin <= local.x && local.x <= inner.xMax && inner.yMin <= local.y && local.y <= inner.yMax + (barShown ? BarClearance : 0f))
             {
-                // In view: the arrow hangs over the boss pointing down, the word above it.
+                // In view: the arrow hangs over the boss pointing down (never up into the bar), the word above it.
+                local.y = Mathf.Min(local.y, inner.yMax);
                 _arrow.anchoredPosition = local;
                 _arrow.localRotation = Quaternion.Euler(0f, 0f, -90f);
                 _label.anchoredPosition = local + Vector2.up * LabelGap;
@@ -168,6 +179,14 @@ namespace Game.UI
             if (_arrow.gameObject.activeSelf != on)
             {
                 _arrow.gameObject.SetActive(on);
+                _label.gameObject.SetActive(on);
+            }
+        }
+
+        private void ShowLabel(bool on)
+        {
+            if (_label.gameObject.activeSelf != on)
+            {
                 _label.gameObject.SetActive(on);
             }
         }

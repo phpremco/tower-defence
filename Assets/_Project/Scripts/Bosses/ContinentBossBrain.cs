@@ -208,6 +208,15 @@ namespace Game.Bosses
                     yield return _signature.NextAct() ?? BackToRoad();
                 }
             }
+            else if (_boss.Arrival == BossArrival.Ruins || _boss.Arrival == BossArrival.Rift)
+            {
+                // Its own way in: the sealed ruin gate, or the ground at the centre opening and the map coming to it.
+                IEnumerator entrance = _signature.Entrance();
+                if (entrance != null)
+                {
+                    yield return entrance;
+                }
+            }
 
             while (Alive)
             {
@@ -901,7 +910,7 @@ namespace Game.Bosses
         {
             rose(false);
             BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
-            if (!burst.Exists || !TryLargestPool(out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int pool))
+            if (!burst.Exists || !TryEntrancePool(_field, _boss.Dive.Pools, out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int pool))
             {
                 yield break;
             }
@@ -913,7 +922,7 @@ namespace Game.Bosses
             // It has just come out of this pool: it does not dive straight back into it.
             _dives.MarkUsed(pool, 0);
             _field.Refresh();
-            Vector3 middle = Middle(cells);
+            Vector3 middle = Middle(_field, cells);
             float surface = TerrainLiquidBuilder.SurfaceLevel(kind);
             Vector3 from = new Vector3(middle.x, surface, middle.z);
             if (!TryExit(cells, middle, burst, out Vector3 exit, out Vector3 heading))
@@ -944,19 +953,19 @@ namespace Game.Bosses
 
         // The largest pool whose way to the road joins it in the road's first half, so the fight runs the road (a lake
         // by the base would skip it); without one, the pool that joins the road earliest.
-        private bool TryLargestPool(out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int id)
+        internal static bool TryEntrancePool(BossField field, PoolKinds kinds, out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int id)
         {
             kind = TerrainKind.Ground;
             cells = null;
             id = -1;
             float earliest = float.PositiveInfinity;
             bool early = false;
-            foreach (TerrainKind candidate in PoolKindsOf(_boss.Dive.Pools))
+            foreach (TerrainKind candidate in PoolKindsOf(kinds))
             {
-                for (int p = 0; p < _field.Pools.Count(candidate); p++)
+                for (int p = 0; p < field.Pools.Count(candidate); p++)
                 {
-                    IReadOnlyList<Vector2Int> pool = _field.Pools.Pool(candidate, p);
-                    float share = RoadShareAt(Middle(pool));
+                    IReadOnlyList<Vector2Int> pool = field.Pools.Pool(candidate, p);
+                    float share = RoadShareAt(field, Middle(field, pool));
                     bool isEarly = share <= MaxEntranceRoadShare;
                     bool better = isEarly ? !early || pool.Count > cells.Count : !early && share < earliest;
                     if (better)
@@ -974,9 +983,9 @@ namespace Game.Bosses
         }
 
         // How far along the road (0 at its start, 1 at the base) a walker from that point joins it.
-        private float RoadShareAt(Vector3 point)
+        private static float RoadShareAt(BossField field, Vector3 point)
         {
-            Vector3[] route = OffRoadRoute.Build(_field.Level, point, out float progress);
+            Vector3[] route = OffRoadRoute.Build(field.Level, point, out float progress);
             float rest = 0f;
             for (int i = 2; i < route.Length; i++)
             {
@@ -988,15 +997,15 @@ namespace Game.Bosses
         }
 
         // The pool cell nearest the middle of the pool.
-        private Vector3 Middle(IReadOnlyList<Vector2Int> cells)
+        internal static Vector3 Middle(BossField field, IReadOnlyList<Vector2Int> cells)
         {
             Vector3 sum = Vector3.zero;
             foreach (Vector2Int cell in cells)
             {
-                sum += _field.Grid.CellToWorld(cell);
+                sum += field.Grid.CellToWorld(cell);
             }
 
-            return BossGeometry.Nearest(_field.Grid, cells, sum / Mathf.Max(1, cells.Count), out _);
+            return BossGeometry.Nearest(field.Grid, cells, sum / Mathf.Max(1, cells.Count), out _);
         }
 
         // A landing in the field's outer cells would come up behind the border cliffs, out of sight.

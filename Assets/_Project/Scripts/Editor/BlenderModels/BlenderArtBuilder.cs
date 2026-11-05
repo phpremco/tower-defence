@@ -229,6 +229,8 @@ namespace Game.Editor
             WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());
             WriteClips(so.FindProperty("_clips"), clips);
             WriteParts(so.FindProperty("_parts"), parts);
+            WriteEmissionSets(so.FindProperty("_emissionSets"), EmissionSetsOf(entry, folder));
+            so.FindProperty("_deathEmissionSet").stringValue = entry.DeathEmissionSet ?? string.Empty;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
@@ -317,6 +319,60 @@ namespace Game.Editor
         {
             float reported = report.Number("walk_distance_per_loop", "run_distance_per_loop", "crawl_distance_per_loop");
             return reported > 0f ? reported : entry.MoveDistance;
+        }
+
+        // The named glow looks baked beside the model (README round 28 phase_looks), each strength against the first look's,
+        // since the material already burns at the first look's strength.
+        private static List<ModelEmissionSet> EmissionSetsOf(BlenderArtEntry entry, string folder)
+        {
+            var sets = new List<ModelEmissionSet>(entry.EmissionSets.Length);
+            if (entry.EmissionSets.Length == 0)
+            {
+                return sets;
+            }
+
+            var maps = new List<string>();
+            foreach (string set in entry.EmissionSets)
+            {
+                maps.Add($"{set}_Emission");
+                if (entry.SecondMaterial != null)
+                {
+                    maps.Add($"{entry.SecondMaterial}_{set}_Emission");
+                }
+            }
+
+            BlenderSync.SyncTextures(entry.Asset, maps);
+            Dictionary<string, object> root = BlenderJson.Object(BlenderJson.Parse(File.ReadAllText($"{folder}/{entry.Asset}_report.json")));
+            Dictionary<string, object> strengths = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(root, "round28")), "phase_looks")), "emission_strength"));
+            float first = BlenderJson.Number(BlenderJson.Field(strengths, entry.EmissionSets[0]), 1f);
+            foreach (string set in entry.EmissionSets)
+            {
+                string second = entry.SecondMaterial != null ? $"{entry.Asset}_{entry.SecondMaterial}_{set}_Emission.png" : null;
+                sets.Add(new ModelEmissionSet(
+                    set,
+                    AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}/{entry.Asset}_{set}_Emission.png"),
+                    second != null ? AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}/{second}") : null,
+                    AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}/{BlenderSync.LowFolder}/{entry.Asset}_{set}_Emission.png"),
+                    second != null ? AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}/{BlenderSync.LowFolder}/{second}") : null,
+                    BlenderJson.Number(BlenderJson.Field(strengths, set), first) / Mathf.Max(0.01f, first)));
+            }
+
+            return sets;
+        }
+
+        private static void WriteEmissionSets(SerializedProperty array, List<ModelEmissionSet> sets)
+        {
+            array.arraySize = sets.Count;
+            for (int i = 0; i < sets.Count; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("_name").stringValue = sets[i].Name;
+                element.FindPropertyRelative("_body").objectReferenceValue = sets[i].BodyFor(false);
+                element.FindPropertyRelative("_second").objectReferenceValue = sets[i].SecondFor(false);
+                element.FindPropertyRelative("_lowBody").objectReferenceValue = sets[i].BodyFor(true);
+                element.FindPropertyRelative("_lowSecond").objectReferenceValue = sets[i].SecondFor(true);
+                element.FindPropertyRelative("_strength").floatValue = sets[i].Strength;
+            }
         }
 
         private static void WriteParts(SerializedProperty array, List<ModelPart> parts)

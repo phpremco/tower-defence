@@ -19,6 +19,28 @@ namespace Game.Bosses
         public int ArmourCracks { get; internal set; }
         public bool ArmourBroken { get; internal set; }
         public int Rage { get; internal set; }
+        public int Volleys { get; internal set; }
+        public int PadsOvergrown { get; internal set; }
+        public int PadsCleaned { get; internal set; }
+        public int SporesShot { get; internal set; }
+        public bool Uprooted { get; internal set; }
+        public int Splits { get; internal set; }
+        public int ShardsKilled { get; internal set; }
+        public bool Rejoined { get; internal set; }
+
+        /// <summary>The rejoined giant's health against its full health, at the moment it formed.</summary>
+        public float RejoinedShare { get; internal set; }
+        public bool RoseFromRift { get; internal set; }
+        public int BaseCrushes { get; internal set; }
+
+        /// <summary>Every tower type it learned, in order (one per phase change).</summary>
+        public List<TowerDefinition> Learned { get; } = new List<TowerDefinition>();
+
+        /// <summary>Every gate it drained, in order (one per phase).</summary>
+        public List<Tower> Drained { get; } = new List<Tower>();
+
+        /// <summary>Its shards, in order of the split.</summary>
+        public List<Game.Enemies.Enemy> Shards { get; } = new List<Game.Enemies.Enemy>();
 
         /// <summary>Every tower it threw, in order.</summary>
         public List<Tower> Thrown { get; } = new List<Tower>();
@@ -35,6 +57,12 @@ namespace Game.Bosses
             EggsLaid = EggsHatched = EggsShot = 0;
             GatesFrozen = GatesShattered = GatesThawed = ArmourCracks = Rage = 0;
             ArmourBroken = false;
+            Volleys = PadsOvergrown = PadsCleaned = SporesShot = Splits = ShardsKilled = BaseCrushes = 0;
+            Uprooted = Rejoined = RoseFromRift = false;
+            RejoinedShare = 0f;
+            Learned.Clear();
+            Drained.Clear();
+            Shards.Clear();
             MostFieldShare = 0f;
             Thrown.Clear();
             Smashed.Clear();

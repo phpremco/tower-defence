@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ba537cfb0204418cc131eb4b17c0f, type: 3}
+  m_Name: ShardRunner
+  m_EditorClassIdentifier: Game.Core::Game.Core.ModelArtDefinition
+  _model: {fileID: 919132149155446097, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+  _lod1: {fileID: 0}
+  _material: {fileID: 2100000, guid: fc4a38c891649c74e8a29eb25c0ccccc, type: 2}
+  _lowMaterial: {fileID: 2100000, guid: 3079ee8459f4f71469c3b61295756786, type: 2}
+  _secondMaterial: {fileID: 0}
+  _lowSecondMaterial: {fileID: 0}
+  _parts: []
+  _scale: 1
+  _yaw: 180
+  _bodyCentrePivot: 0
+  _height: 2.0649464
+  _lodScreenHeight: 0.09
+  _upperBodyBone: 
+  _deathFade: {x: 0.33333334, y: 1.1333334}
+  _embers: 0
+  _bleeds: 1
+  _shedBones: []
+  _emissionSets: []
+  _deathEmissionSet: 
+  _clips:
+  - _role: 3
+    _clip: {fileID: -4396248758080118150, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 1
+    _clip: {fileID: 9087647471180731609, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 2
+    _clip: {fileID: 8734453361109906801, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 0.6
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 0
+    _clip: {fileID: 1619894263135196892, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 2.619
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 61
+    _clip: {fileID: -5474023211651820123, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0
+  - _role: 40
+    _clip: {fileID: -7892352614270013399, guid: 14fd950df78aa22499375a474f395bba, type: 3}
+    _farClip: {fileID: 0}
+    _distancePerLoop: 0
+    _eventSeconds: 0
+    _trigger: 
+    _socket: 
+    _weight: 1
+    _upperBody: 0
+    _endOffset: {x: 0, y: 0}
+    _cueSeconds: 0
+    _anchorForward: 0

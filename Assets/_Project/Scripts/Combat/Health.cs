@@ -64,6 +64,19 @@ namespace Game.Combat
             Changed?.Invoke(Current);
         }
 
+        /// <summary>Gives the owner a new maximum and fills it to that (a boss's shard that takes its share of the whole).</summary>
+        public void Refill(float max)
+        {
+            if (max <= 0f || IsDead)
+            {
+                return;
+            }
+
+            Max = max;
+            Current = max;
+            Changed?.Invoke(Current);
+        }
+
         /// <summary>Restores health, never above the maximum.</summary>
         public void Heal(float amount)
         {

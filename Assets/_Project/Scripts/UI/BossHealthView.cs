@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Enemies;
 using Game.Levels;
+using Game.Towers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,16 @@ namespace Game.UI
         private static readonly Color MarkerColor = new Color(1f, 0.92f, 0.75f, 0.95f);
         private const float MarkerWidth = 3f;
         private const float MarkerOverhang = 4f;
+        private const float IconSize = 60f;
+        private const float IconGap = 10f;
+        private const float NoticeHeight = 26f;
+        private const int NoticeSize = 20;
+        private const float NoticeSeconds = 5f;
+        private const float NoticeFade = 1f;
+        private const string OraPrefix = "ORA: ";
+        private static readonly Color OraColour = new Color(0.35f, 0.85f, 1f);
+        // A learned weapon's icon is shown greyed out: that weapon does only part of its damage now.
+        private static readonly Color DimmedIcon = new Color(0.62f, 0.62f, 0.68f, 0.85f);
 
         private readonly List<GameObject> _markers = new List<GameObject>();
         private RectTransform _healthRow;
@@ -40,6 +51,10 @@ namespace Game.UI
         private GameObject _armorRow;
         private Text _label;
         private Enemy _boss;
+        private Image _dampened;
+        private TowerDefinition _shownDampened;
+        private Text _notice;
+        private float _noticeLeft;
 
         public void Initialize(LevelContext context, RectTransform parent)
         {
@@ -58,9 +73,14 @@ namespace Game.UI
             _armorRow = Row(_root, "Armor", -LabelHeight, ArmorHeight, ArmorColor, out _armorFill);
             _healthRow = Row(_root, "Health", -(LabelHeight + ArmorHeight + Gap), HealthHeight, HealthColor, out _healthFill).GetComponent<RectTransform>();
 
+            CreateDampened();
+            _notice = UiKit.CreateFixedText(_root, string.Empty, NoticeSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 1f), new Vector2(0f, -(LabelHeight + ArmorHeight + Gap + HealthHeight + Gap)), new Vector2(Width + IconSize * 4f, NoticeHeight));
+            _notice.color = OraColour;
+
             _root.gameObject.SetActive(false);
             context.EnemySpawned.Subscribe(OnSpawned);
             context.EnemyKilled.Subscribe(OnKilled);
+            context.BossAdapted.Subscribe(OnAdapted);
         }
 
         private void OnDestroy()
@@ -72,6 +92,7 @@ namespace Game.UI
 
             _context.EnemySpawned.Unsubscribe(OnSpawned);
             _context.EnemyKilled.Unsubscribe(OnKilled);
+            _context.BossAdapted.Unsubscribe(OnAdapted);
         }
 
         // A dark backing with a fill that is cut from the left as the value drops.
@@ -106,6 +127,7 @@ namespace Game.UI
             {
                 _boss = enemy;
                 _phase = -1;
+                _noticeLeft = 0f;
                 _label.text = enemy.Definition.DisplayName.ToUpperInvariant();
                 MarkPhases(enemy.Definition.Boss);
             }
@@ -134,6 +156,8 @@ namespace Game.UI
 
             Fill(_healthFill, _boss.Health.Fraction);
             ShowPhase();
+            ShowDampened();
+            ShowNotice();
             bool armoured = _boss.Health.ArmorMax > 0f;
             if (_armorRow.activeSelf != armoured)
             {
@@ -191,6 +215,63 @@ namespace Game.UI
                 _phase = phase;
                 _label.text = $"{_boss.Definition.DisplayName.ToUpperInvariant()}  -  {boss.PhaseName(phase).ToUpperInvariant()}";
             }
+        }
+
+        // The icon of the weapon the boss has learned, greyed out, at the right end of the bar.
+        private void CreateDampened()
+        {
+            _dampened = new GameObject("Dampened", typeof(RectTransform)).AddComponent<Image>();
+            _dampened.transform.SetParent(_root, false);
+            _dampened.raycastTarget = false;
+            _dampened.preserveAspect = true;
+            _dampened.color = DimmedIcon;
+            RectTransform rect = _dampened.rectTransform;
+            rect.anchorMin = new Vector2(1f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(IconGap, -LabelHeight * 0.5f);
+            rect.sizeDelta = new Vector2(IconSize, IconSize);
+            _dampened.gameObject.SetActive(false);
+        }
+
+        private void ShowDampened()
+        {
+            TowerDefinition learned = _context.BossDampened;
+            if (learned == _shownDampened)
+            {
+                return;
+            }
+
+            _shownDampened = learned;
+            _dampened.gameObject.SetActive(false);
+            if (learned == null)
+            {
+                return;
+            }
+
+            ModelIconRenderer.Request(learned, stage => TowerModelBuilder.Build(stage, learned, 0), sprite =>
+            {
+                if (_dampened != null && _shownDampened == learned)
+                {
+                    _dampened.sprite = sprite;
+                    _dampened.gameObject.SetActive(sprite != null);
+                }
+            });
+        }
+
+        private void OnAdapted(string line)
+        {
+            _notice.text = OraPrefix + line;
+            _noticeLeft = NoticeSeconds;
+        }
+
+        // ORA's line stays a few seconds under the bar, then fades.
+        private void ShowNotice()
+        {
+            _noticeLeft = Mathf.Max(0f, _noticeLeft - Time.unscaledDeltaTime);
+            Color colour = OraColour;
+            colour.a = Mathf.Clamp01(_noticeLeft / NoticeFade);
+            _notice.color = colour;
         }
 
         private static void Fill(RectTransform fill, float fraction)

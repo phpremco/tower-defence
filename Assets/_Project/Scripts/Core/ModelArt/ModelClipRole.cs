@@ -173,5 +173,26 @@ namespace Game.Core
 
         /// <summary>An egg cracking open: the creature inside leaves at the moment, played once and held.</summary>
         Hatch = 56,
+
+        /// <summary>A boss standing rooted, creeping on by growing roots. Loops; its speed follows the ground speed.</summary>
+        Rooted = 57,
+
+        /// <summary>A rooted boss tearing itself out of the ground, played once.</summary>
+        Uproot = 58,
+
+        /// <summary>A boss opening up and firing a volley of pods: the cue is the first shot, the moment the last, played once.</summary>
+        SporeVolley = 59,
+
+        /// <summary>A boss bursting into parts that go their own way: the moment is the burst, played once.</summary>
+        Split = 60,
+
+        /// <summary>Parts pulling back together into the whole (or a part flying back into it): the moment is when it forms, played once.</summary>
+        Rejoin = 61,
+
+        /// <summary>A boss pulling itself up onto the base: the moment is when the base takes the blow, played once.</summary>
+        RiseOntoBase = 62,
+
+        /// <summary>A boss adapting to what hurt it at a phase change: the moment is the pulse, played once.</summary>
+        Adapt = 63,
     }
 }

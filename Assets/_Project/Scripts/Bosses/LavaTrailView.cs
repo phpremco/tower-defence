@@ -18,27 +18,32 @@ namespace Game.Bosses
         private static readonly Color Ember = new Color(1f, 0.6f, 0.2f, 0.9f);
 
         private LavaTrail _trail;
+        private Color _hot;
         private MeshRenderer[] _pools;
         private MaterialPropertyBlock _block;
         private ParticleSystem _embers;
 
-        public static LavaTrailView Create(Transform parent, LavaTrail trail, float radius)
+        public static LavaTrailView Create(Transform parent, LavaTrail trail, float radius) => Create(parent, trail, radius, Hot, Ember, "LavaTrail");
+
+        /// <summary>A trail in other colours (the rot an uprooted flower leaves behind it).</summary>
+        public static LavaTrailView Create(Transform parent, LavaTrail trail, float radius, Color hot, Color ember, string name)
         {
-            var go = new GameObject("LavaTrail");
+            var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             var view = go.AddComponent<LavaTrailView>();
             view._trail = trail;
+            view._hot = hot;
             view._block = new MaterialPropertyBlock();
             view._pools = new MeshRenderer[trail.Capacity];
             for (int i = 0; i < trail.Capacity; i++)
             {
                 var slot = new GameObject("Patch").transform;
                 slot.SetParent(go.transform, false);
-                view._pools[i] = GlowDecal.PlacePool(slot, Hot, radius * PoolScale).GetComponent<MeshRenderer>();
+                view._pools[i] = GlowDecal.PlacePool(slot, hot, radius * PoolScale).GetComponent<MeshRenderer>();
                 slot.gameObject.SetActive(false);
             }
 
-            view._embers = ParticleKit.Create(go.transform, "Embers", Vector3.zero, Ember, 0.6f, 1.2f, 0.04f, 0.1f, 0.4f, 1f, -0.4f, 80, radius);
+            view._embers = ParticleKit.Create(go.transform, "Embers", Vector3.zero, ember, 0.6f, 1.2f, 0.04f, 0.1f, 0.4f, 1f, -0.4f, 80, radius);
             ParticleKit.SetRate(view._embers, 0f);
             trail.Laid += view.OnLaid;
             return view;
@@ -78,7 +83,7 @@ namespace Game.Bosses
                 }
 
                 float heat = 1f - _trail.AgeAt(i) / _trail.Lifetime;
-                Color glow = Hot * (heat * heat);
+                Color glow = _hot * (heat * heat);
                 _pools[i].GetPropertyBlock(_block);
                 _block.SetColor(MarkerArt.Tint, glow);
                 _block.SetColor(EmissionColorId, glow);

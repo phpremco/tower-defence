@@ -68,6 +68,15 @@ namespace Game.Editor
         /// <summary>Extra objects of the model with maps of their own (<c>&lt;Asset&gt;_&lt;Part&gt;_*.png</c>), shown or hidden on their own.</summary>
         public string[] ExtraParts { get; set; } = new string[0];
 
+        /// <summary>
+        /// Named looks of the glow baked beside the model (<c>&lt;Asset&gt;_&lt;Set&gt;_Emission.png</c> and the second material's
+        /// <c>&lt;Asset&gt;_&lt;Second&gt;_&lt;Set&gt;_Emission.png</c>), strengths from the report's round-28 phase looks.
+        /// </summary>
+        public string[] EmissionSets { get; set; } = new string[0];
+
+        /// <summary>The glow look the body takes at its death clip's moment (a white release), or null.</summary>
+        public string DeathEmissionSet { get; set; }
+
         /// <summary>The report key of the bones shed with the armour, in order, or null.</summary>
         public string ShedBonesKey { get; set; }
 

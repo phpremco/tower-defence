@@ -288,6 +288,47 @@ namespace Game.Core
             s.Normalize(0.95f);
         }, 4.6f);
 
+        /// <summary>A flower of rot opening to spore: a sweet, rising, slightly sickly chime over a soft breath.</summary>
+        public static AudioClip BossBloom() => Cached("BossBloom", s =>
+        {
+            float[] notes = { 660f, 830f, 990f, 1245f };
+            for (int i = 0; i < notes.Length; i++)
+            {
+                s.Tone(i * 0.22f, 1.1f, notes[i], notes[i] * 1.06f, 0.35f, 0.12f, SynthWave.Sine, 0.6f);
+            }
+
+            s.Noise(0f, 1.4f, 0.25f, 0.5f, 900f, 2400f, 1.2f);
+            s.Echo(0.17f, 0.4f, 3);
+            s.LowPass(5200f);
+            s.Normalize(0.65f);
+        }, 1.9f);
+
+        /// <summary>A crystal giant bursting into shards: a bright glassy crack and a ringing tail.</summary>
+        public static AudioClip BossShatter() => Cached("BossShatter", s =>
+        {
+            s.Noise(0f, 0.25f, 1f, 0.002f, 7000f, 1500f);
+            s.Tone(0f, 0.6f, 90f, 40f, 0.8f, 0.004f, SynthWave.Sine);
+            float[] rings = { 2350f, 3120f, 4180f };
+            for (int i = 0; i < rings.Length; i++)
+            {
+                s.Tone(0.03f + i * 0.04f, 1.2f, rings[i], rings[i] * 0.97f, 0.25f, 0.003f, SynthWave.Sine);
+            }
+
+            s.Crackle(0.05f, 0.6f, 0.5f, 0.01f);
+            s.Echo(0.09f, 0.35f, 3);
+            s.Normalize(0.9f);
+        }, 1.5f);
+
+        /// <summary>ORA's alert as the boss adapts: two clean tones and a low pulse under them.</summary>
+        public static AudioClip OraAlert() => Cached("OraAlert", s =>
+        {
+            s.Tone(0f, 0.18f, 1320f, 1320f, 0.45f, 0.005f, SynthWave.Sine, 0.8f);
+            s.Tone(0.2f, 0.3f, 990f, 990f, 0.45f, 0.005f, SynthWave.Sine, 0.8f);
+            s.Tone(0f, 0.9f, 70f, 55f, 0.6f, 0.05f, SynthWave.Sine);
+            s.Echo(0.12f, 0.3f, 2);
+            s.Normalize(0.7f);
+        }, 1.1f);
+
         /// <summary>A boss shockwave hitting the field.</summary>
         public static AudioClip BossPulse() => Cached("BossPulse", s =>
         {

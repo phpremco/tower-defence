@@ -49,6 +49,12 @@ namespace Game.Core
         [Tooltip("Bones that are shed in this order as the armour is chipped away (scaled to zero), or none.")]
         [SerializeField] private string[] _shedBones = new string[0];
 
+        [Header("Glow looks")]
+        [Tooltip("Named looks of the glow a view can swap to (a boss's phase maps), or none.")]
+        [SerializeField] private ModelEmissionSet[] _emissionSets = new ModelEmissionSet[0];
+        [Tooltip("The glow look the body takes at the death clip's moment (a white release), or empty to keep its own.")]
+        [SerializeField] private string _deathEmissionSet = string.Empty;
+
         [Header("Clips")]
         [SerializeField] private ModelClip[] _clips = new ModelClip[0];
 
@@ -72,6 +78,22 @@ namespace Game.Core
         public bool Bleeds => _bleeds;
         public string[] ShedBones => _shedBones;
         public ModelClip[] Clips => _clips;
+        public ModelEmissionSet[] EmissionSets => _emissionSets ?? new ModelEmissionSet[0];
+        public string DeathEmissionSet => _deathEmissionSet;
+
+        /// <summary>The glow look of that name, or null.</summary>
+        public ModelEmissionSet EmissionSet(string setName)
+        {
+            foreach (ModelEmissionSet set in EmissionSets)
+            {
+                if (set != null && set.Name == setName)
+                {
+                    return set;
+                }
+            }
+
+            return null;
+        }
 
         /// <summary>The material for the active quality profile.</summary>
         public Material MaterialFor(bool lowDetail) => lowDetail ? LowMaterial : _material;

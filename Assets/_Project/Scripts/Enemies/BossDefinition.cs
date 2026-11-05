@@ -19,6 +19,9 @@ namespace Game.Enemies
         [SerializeField] private BurrowPower _burrow = new BurrowPower();
         [SerializeField] private HuntPower _hunt = new HuntPower();
         [SerializeField] private GateBreakerPower _gateBreaker = new GateBreakerPower();
+        [SerializeField] private OvergrowthPower _overgrowth = new OvergrowthPower();
+        [SerializeField] private SplitPower _split = new SplitPower();
+        [SerializeField] private RecognitionPower _recognition = new RecognitionPower();
         [SerializeField] private ClimbPower _climb = new ClimbPower();
         [SerializeField] private DivePower _dive = new DivePower();
         [Tooltip("Half the width of its body, legs included, in world units: its routes keep this clear of every tower.")]
@@ -39,6 +42,9 @@ namespace Game.Enemies
         public BurrowPower Burrow => _burrow;
         public HuntPower Hunt => _hunt;
         public GateBreakerPower GateBreaker => _gateBreaker;
+        public OvergrowthPower Overgrowth => _overgrowth;
+        public SplitPower Split => _split;
+        public RecognitionPower Recognition => _recognition;
         public ClimbPower Climb => _climb;
         public DivePower Dive => _dive;
         public float ImpactKick => _impactKick;
@@ -89,6 +95,15 @@ namespace Game.Enemies
                 case BossSignature.GateBreaker:
                     // Each frozen gate's gun is silent for the freeze, counted as the quarter of the field.
                     return _gateBreaker.ExpectedGates * MaxFieldShare * _gateBreaker.FreezeSeconds;
+                case BossSignature.Overgrowth:
+                    // Each volley slows up to a quarter of the field to its fire share until the vines are burned off.
+                    return _overgrowth.ExpectedVolleys * MaxFieldShare * (1f - _overgrowth.FireRate) * _overgrowth.ExpectedOvergrownSeconds;
+                case BossSignature.Splitting:
+                    // While it is split, the towers on the routes a shard does not take fire at nothing: a third of the field.
+                    return _split.ExpectedSplitSeconds / Mathf.Max(1, _split.Shards.Length);
+                case BossSignature.Recognition:
+                    // Each phase one gate's gun is drained for the phase.
+                    return _recognition.DrainsGates ? _phases.Length * _recognition.GateGunShare * _recognition.ExpectedPhaseSeconds : 0f;
                 default:
                     return 0f;
             }
@@ -100,6 +115,13 @@ namespace Game.Enemies
         /// </summary>
         public float EffectiveHealthFactor()
         {
+            if (_signature == BossSignature.Recognition)
+            {
+                // From its second phase on the tower type that hurt it most lands only a share of its hits.
+                float learnedShare = _phases.Length > 1 ? _phases[1].StartsAt : 0f;
+                return 1f + learnedShare * _recognition.ExpectedTopShare * (1f / _recognition.DampenedShare - 1f);
+            }
+
             if (_signature != BossSignature.GateBreaker)
             {
                 return 1f;
@@ -142,6 +164,16 @@ namespace Game.Enemies
             if (_signature == BossSignature.HuntTheCold && _hunt.Clutches > 0 && (_hunt.Egg == null || _hunt.Hatchling == null))
             {
                 Debug.LogWarning($"BossDefinition '{name}': it lays eggs but names no egg or hatchling.", this);
+            }
+
+            if (_signature == BossSignature.Overgrowth && _overgrowth.Pod == null)
+            {
+                Debug.LogWarning($"BossDefinition '{name}': it spores the pads but names no pod.", this);
+            }
+
+            if (_signature == BossSignature.Splitting && (_split.Shards.Length == 0 || _split.RejoinPhase <= _split.SplitPhase || _split.RejoinPhase >= _phases.Length))
+            {
+                Debug.LogWarning($"BossDefinition '{name}': it splits but has no shards, or its rejoin phase does not follow its split.", this);
             }
 
             if (_signature == BossSignature.GateBreaker && _gateBreaker.ExposedPhase >= _phases.Length)

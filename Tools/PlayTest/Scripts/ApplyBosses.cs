@@ -5,14 +5,19 @@ using UnityEditor;
 
 /// <summary>
 /// Imports the continent bosses' round-28 art (syncs only their Blender exports and rebuilds only their art: Gravemaw, the
-/// Cinder Matriarch with her egg and fire larva, the Frost Warden with its ice armour) and runs only the generator's
+/// Cinder Matriarch with her egg and fire larva, the Frost Warden with its ice armour, Rotbloom with its pod, vines and roots,
+/// the Shattered with its three shards, the Sealed One with its phase glows) and runs only the generator's
 /// "Continent bosses" step (the bosses' data, their brood, their Codex rows, the developer boss arena and its liquid
 /// levels), for a boss change while the full generator must not run (it syncs every Blender export). Run:
 /// unity command run_script --file Tools/PlayTest/Scripts/ApplyBosses.cs --entry ApplyBosses.Run --timeout_ms 900000 --timeout 960
 /// </summary>
 public static class ApplyBosses
 {
-    private static readonly string[] Art = { "Gravemaw", "CinderMatriarch", "CinderEgg", "FireLarva", "FrostWarden" };
+    private static readonly string[] Art =
+    {
+        "Gravemaw", "CinderMatriarch", "CinderEgg", "FireLarva", "FrostWarden",
+        "Rotbloom", "RotSporePod", "RotOvergrowth", "RotbloomRoots", "Shattered", "ShardRunner", "ShardFlyer", "ShardCrawler", "SealedOne",
+    };
 
     public static string Run()
     {
@@ -21,7 +26,7 @@ public static class ApplyBosses
         typeof(Game.Editor.ProjectGenerator).GetMethod("GenerateContinentBosses", flags).Invoke(null, null);
         AssetDatabase.SaveAssets();
         string report = $"worn {worn}; ";
-        foreach (string id in new[] { "Gravemaw", "CinderMatriarch", "FrostWarden", "CinderEgg" })
+        foreach (string id in new[] { "Gravemaw", "CinderMatriarch", "FrostWarden", "CinderEgg", "Rotbloom", "RotSporePod", "Shattered", "ShardRunner", "ShardFlyer", "ShardCrawler", "SealedOne" })
         {
             var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"Assets/_Project/Data/Enemies/{id}.asset");
             ModelArtDefinition art = enemy != null ? enemy.Art : null;

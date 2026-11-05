@@ -171,6 +171,7 @@ namespace Game.Enemies
             _pace = 1f;
             _damageScale = 1f;
             _bridgeLift = 0f;
+            SourceScale = null;
             Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
             Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);
@@ -205,6 +206,11 @@ namespace Game.Enemies
             }
 
             amount *= _damageScale;
+            if (SourceScale != null)
+            {
+                amount *= SourceScale(source);
+            }
+
             if (amount <= 0f)
             {
                 return;
@@ -234,6 +240,12 @@ namespace Game.Enemies
         public float DamageScale => _damageScale;
 
         public void SetDamageScale(float scale) => _damageScale = Mathf.Max(0f, scale);
+
+        /// <summary>
+        /// A share of the hits from one source on top of <see cref="DamageScale"/> (a boss that has learned a weapon takes
+        /// half from it), or null for every source alike. Cleared whenever the creature is sent out again.
+        /// </summary>
+        public Func<object, float> SourceScale { get; set; }
 
         /// <summary>Puts a directed creature at a point (its height included) facing a direction on the ground.</summary>
         public void Place(Vector3 position, Vector3 heading)

@@ -50,6 +50,11 @@ namespace Game.UI
         private Camera _camera;
         private RenderTexture _texture;
         private readonly List<Material> _owned = new List<Material>();
+        private readonly List<Vector3> _vertices = new List<Vector3>(4096);
+        private readonly HashSet<Renderer> _farLods = new HashSet<Renderer>();
+        private Mesh _baked;
+        private int _reframeIn;
+        private const int ReframeFrames = 2;
         private DisplayStageArt _stage;
         private Transform _floor;
         private Transform _floorTop;
@@ -102,6 +107,8 @@ namespace Game.UI
             Clear();
             Game.Enemies.EnemyDisplayBuilder.Build(_turntable, enemy);
             Frame();
+            // A skinned creature stands in its bind pose until its animator has run once: frame it again in its idle.
+            _reframeIn = ReframeFrames;
         }
 
         /// <summary>The commander standing at rest with the weapon in hand.</summary>
@@ -150,21 +157,31 @@ namespace Game.UI
         {
             var bounds = new Bounds(Vector3.zero, Vector3.zero);
             bool any = false;
+            CollectFarLods();
             foreach (Renderer renderer in _turntable.GetComponentsInChildren<Renderer>())
             {
-                if (!renderer.enabled)
+                // The far LOD is not what the window shows, and its rig poses its own (lower) legs.
+                if (_farLods.Contains(renderer))
                 {
                     continue;
                 }
 
+                // Sparks and trails are no part of the body; a skinned mesh's own bounds are padded for its whole range of
+                // motion, which left a boss standing in the air above the pedestal: its posed vertices are measured instead.
+                if (!renderer.enabled || !(renderer is MeshRenderer || renderer is SkinnedMeshRenderer))
+                {
+                    continue;
+                }
+
+                Bounds part = renderer is SkinnedMeshRenderer skinned ? PosedBounds(skinned) : renderer.bounds;
                 if (!any)
                 {
-                    bounds = renderer.bounds;
+                    bounds = part;
                     any = true;
                 }
                 else
                 {
-                    bounds.Encapsulate(renderer.bounds);
+                    bounds.Encapsulate(part);
                 }
             }
 
@@ -190,6 +207,47 @@ namespace Game.UI
             _camera.nearClipPlane = Mathf.Max(0.05f, distance - radius * 2f);
             _camera.farClipPlane = distance + BackdropDistance + radius;
             PlaceStage(bounds, floorRadius);
+        }
+
+        private void CollectFarLods()
+        {
+            _farLods.Clear();
+            foreach (LODGroup group in _turntable.GetComponentsInChildren<LODGroup>())
+            {
+                LOD[] lods = group.GetLODs();
+                for (int i = 1; i < lods.Length; i++)
+                {
+                    foreach (Renderer renderer in lods[i].renderers)
+                    {
+                        if (renderer != null)
+                        {
+                            _farLods.Add(renderer);
+                        }
+                    }
+                }
+            }
+        }
+
+        // The world bounds of a skinned mesh in the pose it stands in now (baked), not its padded import bounds.
+        private Bounds PosedBounds(SkinnedMeshRenderer skinned)
+        {
+            _baked ??= new Mesh();
+            // Unscaled, so the transform's own matrix scales it exactly once.
+            skinned.BakeMesh(_baked, false);
+            _baked.GetVertices(_vertices);
+            if (_vertices.Count == 0)
+            {
+                return skinned.bounds;
+            }
+
+            Matrix4x4 toWorld = skinned.transform.localToWorldMatrix;
+            var bounds = new Bounds(toWorld.MultiplyPoint3x4(_vertices[0]), Vector3.zero);
+            for (int i = 1; i < _vertices.Count; i++)
+            {
+                bounds.Encapsulate(toWorld.MultiplyPoint3x4(_vertices[i]));
+            }
+
+            return bounds;
         }
 
         // Grows with the footprint across the narrow side (Clear() has turned the model to rest), never past the old
@@ -339,6 +397,11 @@ namespace Game.UI
                 return;
             }
 
+            if (_reframeIn > 0 && --_reframeIn == 0)
+            {
+                Frame();
+            }
+
             float dt = Time.unscaledDeltaTime;
             _burst = Mathf.Max(0f, _burst - BurstDecay * dt);
             float eased = _burst * _burst;
@@ -365,6 +428,11 @@ namespace Game.UI
 
         private void OnDestroy()
         {
+            if (_baked != null)
+            {
+                Destroy(_baked);
+            }
+
             if (_rig != null)
             {
                 Destroy(_rig.gameObject);

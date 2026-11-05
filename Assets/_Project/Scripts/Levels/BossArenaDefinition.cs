@@ -23,6 +23,9 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _escortInterval = 1.5f;
         [Tooltip("Health scale of the arena's wave: a campaign finale's late wave makes its boss this much tougher.")]
         [SerializeField] [Min(0.1f)] private float _healthMultiplier = 2.5f;
+        [Tooltip("Seconds between the short escort waves that come before a boss with lead waves.")]
+        [SerializeField] [Min(1f)] private float _leadWaveSeconds = 6f;
+        [SerializeField] [Min(1)] private int _leadWaveEscorts = 2;
 
         /// <summary>The arena's own level, for the bosses that name none.</summary>
         public LevelDefinition Level => _level;
@@ -62,9 +65,20 @@ namespace Game.Levels
             return _level;
         }
 
-        /// <summary>The arena's one wave: a few escorts down the road, then the boss through its own entrance.</summary>
+        /// <summary>
+        /// The arena's waves: the short escort waves its entry asks for (compressed, a few seconds apart), then the boss
+        /// wave: a few escorts down the road and the boss through its own entrance.
+        /// </summary>
         public WaveDefinition[] WavesFor(EnemyDefinition boss)
         {
+            var waves = new List<WaveDefinition>();
+            int lead = LeadWavesFor(boss);
+            for (int i = 0; i < lead && _escort != null; i++)
+            {
+                var escorts = new List<SpawnGroup> { new SpawnGroup { Enemy = _escort, Count = _leadWaveEscorts, Interval = _escortInterval, Source = SpawnSource.Gate } };
+                waves.Add(new WaveDefinition(escorts, WaveDefinition.DefaultSpawnJitter, i == 0 ? _buildSeconds : _leadWaveSeconds, _healthMultiplier));
+            }
+
             var groups = new List<SpawnGroup>();
             if (_escort != null && _escortCount > 0)
             {
@@ -73,7 +87,21 @@ namespace Game.Levels
 
             // The boss comes halfway through the escort, as a continent boss does halfway through its wave (Docs/BOSSES.md).
             groups.Add(new SpawnGroup { Enemy = boss, Count = 1, Interval = 1f, Delay = _escortCount * _escortInterval * 0.5f, Source = SpawnSource.Entrance });
-            return new[] { new WaveDefinition(groups, WaveDefinition.DefaultSpawnJitter, _buildSeconds, _healthMultiplier) };
+            waves.Add(new WaveDefinition(groups, WaveDefinition.DefaultSpawnJitter, lead > 0 ? _leadWaveSeconds : _buildSeconds, _healthMultiplier));
+            return waves.ToArray();
+        }
+
+        private int LeadWavesFor(EnemyDefinition boss)
+        {
+            foreach (BossArenaEntry entry in _entries)
+            {
+                if (entry != null && entry.Boss == boss)
+                {
+                    return entry.LeadWaves;
+                }
+            }
+
+            return 0;
         }
 
         private void OnValidate()

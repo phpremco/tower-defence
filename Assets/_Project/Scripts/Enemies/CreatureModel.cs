@@ -14,6 +14,7 @@ namespace Game.Enemies
     {
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly int OverlayColorId = Shader.PropertyToID("_OverlayColor");
+        private static readonly int EmissionMapId = Shader.PropertyToID("_EmissionMap");
 
         // The far LOD stays drawn however small the creature gets: a crowd far off must not wink out.
         private const float FarLodScreenHeight = 0.0005f;
@@ -21,6 +22,8 @@ namespace Game.Enemies
         private readonly Color[] _restEmissions;
         private Color _overlay = Color.clear;
         private float _glow = 1f;
+        private float _strength = 1f;
+        private Texture[] _restMaps;
 
         private CreatureModel(ModelArtDefinition art, Transform root, Transform near, Transform far, Material[] materials, ModelClipPlayer player, Renderer[] renderers)
         {
@@ -35,6 +38,12 @@ namespace Game.Enemies
             for (int i = 0; i < materials.Length; i++)
             {
                 _restEmissions[i] = materials[i].GetColor(EmissionColorId);
+            }
+
+            _restMaps = new Texture[materials.Length];
+            for (int i = 0; i < materials.Length; i++)
+            {
+                _restMaps[i] = materials[i].HasProperty(EmissionMapId) ? materials[i].GetTexture(EmissionMapId) : null;
             }
         }
 
@@ -158,7 +167,29 @@ namespace Game.Enemies
             _glow = factor;
             for (int i = 0; i < Materials.Length; i++)
             {
-                Materials[i].SetColor(EmissionColorId, _restEmissions[i] * factor);
+                Materials[i].SetColor(EmissionColorId, _restEmissions[i] * factor * _strength);
+            }
+        }
+
+        /// <summary>
+        /// Wears a named glow look of its art (a boss's phase maps): the body and second slot take its emission maps and
+        /// its strength; null puts the model's own glow back.
+        /// </summary>
+        public void SetEmissionSet(ModelEmissionSet set, bool lowDetail)
+        {
+            for (int i = 0; i < Materials.Length && i < 2; i++)
+            {
+                Texture map = set == null ? _restMaps[i] : i == 0 ? set.BodyFor(lowDetail) : set.SecondFor(lowDetail);
+                if (map != null && Materials[i].HasProperty(EmissionMapId))
+                {
+                    Materials[i].SetTexture(EmissionMapId, map);
+                }
+            }
+
+            _strength = set != null ? set.Strength : 1f;
+            for (int i = 0; i < Materials.Length; i++)
+            {
+                Materials[i].SetColor(EmissionColorId, _restEmissions[i] * (_glow * _strength));
             }
         }
 

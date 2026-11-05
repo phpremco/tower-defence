@@ -140,6 +140,8 @@ namespace Game.Towers
         private bool _wasWrecked;
         private float _upsetRemaining;
         private float _frozenRemaining;
+        private float _overgrowthRate = 1f;
+        private bool _drained;
 
         // The top of a gate's beam, where a walker following a boss over it climbs (ClimbLayer.GateHeight in the bosses).
         private const float BridgedHeight = 1.15f;
@@ -244,6 +246,55 @@ namespace Game.Towers
             Health.TakeDamage(Health.Current);
         }
 
+        /// <summary>True while a boss's vines grow over the tower: it fires slower until splash or the hero burns them off.</summary>
+        public bool IsOvergrown => _overgrowthRate < 1f;
+
+        /// <summary>Raised when vines overgrow the tower (true) or are burned off it (false).</summary>
+        public event Action<Tower, bool> OvergrowthChanged;
+
+        /// <summary>A boss's spores overgrow the tower: it fires at a share of its rate until they are cleared.</summary>
+        public void Overgrow(float fireRate)
+        {
+            bool fresh = !IsOvergrown;
+            _overgrowthRate = Mathf.Clamp(fireRate, 0.05f, 1f);
+            if (fresh && IsOvergrown)
+            {
+                OvergrowthChanged?.Invoke(this, true);
+            }
+        }
+
+        /// <summary>Burns the vines off (a blast on the pad, the hero's repair): the tower fires at its full rate again.</summary>
+        public void ClearOvergrowth()
+        {
+            if (!IsOvergrown)
+            {
+                return;
+            }
+
+            _overgrowthRate = 1f;
+            OvergrowthChanged?.Invoke(this, false);
+        }
+
+        /// <summary>True while a boss drains the structure's gun: it holds no fire but still blocks.</summary>
+        public bool IsDrained => _drained;
+
+        /// <summary>Raised when a boss drains the gun (true) or the drain ends (false).</summary>
+        public event Action<Tower, bool> DrainedChanged;
+
+        /// <summary>A boss drains the gun (it still blocks the road) or gives it back.</summary>
+        public void SetDrained(bool drained)
+        {
+            if (drained == _drained)
+            {
+                return;
+            }
+
+            _drained = drained;
+            _beamTarget = null;
+            _beamLive = false;
+            DrainedChanged?.Invoke(this, drained);
+        }
+
         /// <summary>Sets the weight of a boss standing on the structure (0 when it has left).</summary>
         public void SetBurden(float burden)
         {
@@ -295,7 +346,7 @@ namespace Game.Towers
         }
 
         // A wreck is rebuilt, not patched up, so the hero's repair has nothing to do on one.
-        public bool CanRestore => !IsWrecked && (Health.Current < Health.Max || IsFrozen);
+        public bool CanRestore => !IsWrecked && (Health.Current < Health.Max || IsFrozen || IsOvergrown);
 
         // The hero's repair also thaws a frozen gate (Docs/BOSSES.md, Frost Warden), so it is not lost.
         public void Restore(float fraction)
@@ -303,6 +354,7 @@ namespace Game.Towers
             if (!IsWrecked)
             {
                 Thaw();
+                ClearOvergrowth();
                 Health.Heal(Health.Max * fraction);
             }
         }
@@ -373,6 +425,13 @@ namespace Game.Towers
                 return;
             }
 
+            if (_drained)
+            {
+                _beamTarget = null;
+                _beamLive = false;
+                return;
+            }
+
             ReleaseBeam();
             _cooldown -= Time.deltaTime;
             if (_cooldown > 0f)
@@ -414,7 +473,7 @@ namespace Game.Towers
 
                 Shoot(level, target);
                 _beamLive = _definition.IsBeam;
-                _cooldown = Cadence.Rearm(_cooldown, level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power)));
+                _cooldown = Cadence.Rearm(_cooldown, level.FireInterval / (_modifiers.TowerFireRateMultiplier * (1f + _supportRate) * Mathf.Max(0.05f, Power) * _overgrowthRate));
             }
 
             _cooldown = Cadence.Idle(_cooldown);

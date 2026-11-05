@@ -175,7 +175,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EveryContinentBoss_HasCodexText_AndIsListedInTheCodex_OnlyGravemawInTheArena()
+        public void EveryContinentBoss_HasCodexText_IsListedInTheCodex_AndFightsInTheArena()
         {
             var codex = AssetDatabase.LoadAssetAtPath<CodexCatalog>(CodexPath);
             foreach (string id in ContinentBosses)
@@ -188,7 +188,7 @@ namespace Game.Tests
                 Assert.IsNotEmpty(enemy.Boss.TelegraphText, id);
                 Assert.IsNotEmpty(enemy.Boss.CounterText, id);
                 Assert.Greater(enemy.Boss.Phases.Length, 1, id);
-                Assert.IsTrue(enemy.Art != null || id == "SealedOne", $"{id} wears no model");
+                Assert.IsNotNull(enemy.Art, $"{id} wears no model");
                 CollectionAssert.Contains(new List<EnemyDefinition>(codex.Enemies), enemy, $"{id} is not in the Codex");
             }
 
@@ -196,7 +196,13 @@ namespace Game.Tests
             Assert.IsNotNull(catalog.BossArena, "the developer boss arena is not on the campaign");
             var cinder = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/CinderMatriarch.asset");
             var warden = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/FrostWarden.asset");
-            CollectionAssert.AreEqual(new[] { Gravemaw(), cinder, warden }, catalog.BossArena.Bosses);
+            var all = new List<EnemyDefinition> { Gravemaw(), cinder, warden };
+            foreach (string id in new[] { "Rotbloom", "Shattered", "SealedOne" })
+            {
+                all.Add(AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"Assets/_Project/Data/Enemies/{id}.asset"));
+            }
+
+            CollectionAssert.AreEqual(all, catalog.BossArena.Bosses, "every continent boss can be fought in the arena");
             Assert.IsNotNull(catalog.BossArena.Level);
             Assert.AreEqual(catalog.BossArena.Level, catalog.BossArena.LevelFor(Gravemaw()), "Gravemaw fights on Shard Ridge");
             Assert.Greater(new LiquidPools(catalog.BossArena.LevelFor(cinder)).Count(TerrainKind.Lava), 1, "the Matriarch needs lava pools to rise from and dive between");

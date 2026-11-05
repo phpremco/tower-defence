@@ -11,5 +11,11 @@ namespace Game.Enemies
 
         /// <summary>It rises out of the largest pool of a liquid it dives in (a lava pool, a frozen lake that cracks open).</summary>
         Pool = 2,
+
+        /// <summary>A sealed gate in the old ruins (the level's boss entrance) opens for the first and only time.</summary>
+        Ruins = 3,
+
+        /// <summary>The map comes to it: the ground at the centre of the field cracks open and a new road rises to the base.</summary>
+        Rift = 4,
     }
 }

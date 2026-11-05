@@ -196,6 +196,9 @@ namespace Game.Enemies
         private const float ModelFlashAmount = 0.75f;
         private const float ModelFrostAmount = 0.5f;
         private const float BossFrostAmount = 0.18f;
+        // A chilled boss cools only a shade: the overlay's own light on its dark body read as a grey wash (the Cinder
+        // Matriarch smashing the Cryo that chills her, round 4b).
+        private const float BossFrostShade = 0.12f;
         // A dead flyer comes to rest with its body centre this far (times its scale) above the ground.
         private const float FlyerRestHeight = 0.15f;
         private static readonly Color BarColor = new Color(0.4f, 1f, 0.4f);
@@ -446,6 +449,12 @@ namespace Game.Enemies
             {
                 _model?.SetPartVisible(part, visible);
             }
+        }
+
+        /// <summary>Wears the art's glow look of that name (a boss's phase maps); empty or unknown puts its own glow back.</summary>
+        public void SetEmissionSet(string setName)
+        {
+            _model?.SetEmissionSet(string.IsNullOrEmpty(setName) ? null : _model.Art.EmissionSet(setName), ModelQuality.IsLow);
         }
 
         /// <summary>Which cycle the creature travels in (a boss's hunting stride, its enraged walk); Move is its own.</summary>
@@ -1116,7 +1125,7 @@ namespace Game.Enemies
             else if (_enemy.IsSlowed)
             {
                 // A chilled boss keeps most of its own colours (the Cinder Matriarch is chilled all through her hunt).
-                _model.SetOverlay(FrostColor * FrostEmission, _boss ? BossFrostAmount : ModelFrostAmount);
+                _model.SetOverlay(FrostColor * (_boss ? BossFrostShade : FrostEmission), _boss ? BossFrostAmount : ModelFrostAmount);
             }
             else
             {

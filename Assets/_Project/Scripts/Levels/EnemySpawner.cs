@@ -292,6 +292,67 @@ namespace Game.Levels
             return Launch(definition, route, 0f, EnemyOrigin.Lava, progress);
         }
 
+        /// <summary>
+        /// Puts a creature on the field at a point and sends it along one of the level's paths from the point of that path
+        /// nearest to it (a boss's shard taking its own route); a flyer at its flight height.
+        /// </summary>
+        public Enemy SpawnOnPath(EnemyDefinition definition, Vector3 point, int pathIndex)
+        {
+            if (definition == null || pathIndex < 0 || pathIndex >= _paths.Length)
+            {
+                return null;
+            }
+
+            Vector3[] route = RouteFrom(_paths[pathIndex], new Vector3(point.x, 0f, point.z), out float progress);
+            return Launch(definition, route, FlightHeight(definition), EnemyOrigin.Gate, progress);
+        }
+
+        /// <summary>The world points of one of the level's paths, from its start to the base.</summary>
+        public IReadOnlyList<Vector3> PathPoints(int pathIndex) => pathIndex >= 0 && pathIndex < _paths.Length ? _paths[pathIndex] : new Vector3[0];
+
+        // From a point onto the nearest spot of a path and along the rest of it; the progress counts from the path's start.
+        private static Vector3[] RouteFrom(Vector3[] path, Vector3 start, out float progress)
+        {
+            progress = 0f;
+            if (path.Length < 2)
+            {
+                return new[] { start, path.Length > 0 ? path[0] : start };
+            }
+
+            int bestSegment = 0;
+            Vector3 bestPoint = path[0];
+            float bestSqr = float.MaxValue;
+            for (int i = 1; i < path.Length; i++)
+            {
+                Vector3 a = new Vector3(path[i - 1].x, 0f, path[i - 1].z);
+                Vector3 b = new Vector3(path[i].x, 0f, path[i].z);
+                Vector3 ab = b - a;
+                float t = ab.sqrMagnitude > 0f ? Mathf.Clamp01(Vector3.Dot(start - a, ab) / ab.sqrMagnitude) : 0f;
+                Vector3 on = a + ab * t;
+                float sqr = (on - start).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    bestSegment = i;
+                    bestPoint = on;
+                }
+            }
+
+            var route = new List<Vector3>(path.Length - bestSegment + 2) { start, bestPoint };
+            for (int i = bestSegment; i < path.Length; i++)
+            {
+                route.Add(path[i]);
+            }
+
+            for (int i = 1; i < bestSegment; i++)
+            {
+                progress += Vector3.Distance(path[i - 1], path[i]);
+            }
+
+            progress += Vector3.Distance(path[bestSegment - 1], bestPoint);
+            return route.ToArray();
+        }
+
         /// <summary>Takes a creature off the field without a reward or a hit on the base (an egg that hatched).</summary>
         public void Withdraw(Enemy enemy)
         {

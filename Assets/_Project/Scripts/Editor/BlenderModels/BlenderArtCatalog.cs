@@ -36,7 +36,14 @@ namespace Game.Editor
             // The living spawn origins (README round 23): the marker breath.
             "Marked",
             // The continent bosses' mechanic cycles (README round 28): in place, the owner moves the body.
-            "Climb_Loop", "Submerged_Loop", "Burrow_Travel", "Hunt_Stride",
+            "Climb_Loop", "Submerged_Loop", "Burrow_Travel", "Hunt_Stride", "Rooted_Idle",
+        };
+
+        // A shard's burst out of the giant and its flight back into it (README round 28).
+        private static readonly BlenderClipSpec[] Shard =
+        {
+            new BlenderClipSpec("Spawn", ModelClipRole.Spawn),
+            new BlenderClipSpec("Rejoin", ModelClipRole.Rejoin),
         };
 
         private static List<BlenderArtEntry> _creatures;
@@ -87,6 +94,12 @@ namespace Game.Editor
             { "CinderEgg", "CinderEgg" },
             { "FireLarva", "FireLarva" },
             { "Shattered", "Shattered" },
+            { "SealedOne", "SealedOne" },
+            // Round 28: Rotbloom's spore pod (a flyer the air towers shoot down) and the Shattered's three shards.
+            { "RotSporePod", "RotSporePod" },
+            { "ShardRunner", "ShardRunner" },
+            { "ShardFlyer", "ShardFlyer" },
+            { "ShardCrawler", "ShardCrawler" },
         };
 
         public static bool IsLoop(string clip) => LoopClips.Contains(clip);
@@ -315,8 +328,30 @@ namespace Game.Editor
                     {
                         new BlenderClipSpec("Regrow", ModelClipRole.Power, 28, "Regrow", "Pod_R1"),
                         new BlenderClipSpec("Bloom", ModelClipRole.Power, 34, "Pulse", "Bloom"),
+                        // Round 28: Overgrowth; shots, offsets and banks come from the round28 block.
+                        new BlenderClipSpec("Rooted_Idle", ModelClipRole.Rooted),
+                        new BlenderClipSpec("Uproot", ModelClipRole.Uproot, 36),
+                        new BlenderClipSpec("Spore_Volley", ModelClipRole.SporeVolley, 0, string.Empty, "Socket_Spore"),
+                        new BlenderClipSpec("Roar", ModelClipRole.Roar, 16),
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 30),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 18),
                     },
                 },
+                // Its props (round 28): the spore pod flies (Fly) and pops (Burst); the vines and the roots are still models.
+                new BlenderArtEntry("RotSporePod", "RotSporePod")
+                {
+                    Scale = TitanFactor,
+                    BodyCentrePivot = true,
+                    Bleeds = false,
+                    Emission = 3.2f,
+                    Clips = new[] { new BlenderClipSpec("Burst", ModelClipRole.Death, 6) },
+                },
+                new BlenderArtEntry("RotOvergrowth", "RotOvergrowth") { Scale = TitanFactor },
+                new BlenderArtEntry("RotbloomRoots", "RotbloomRoots") { Scale = TitanFactor },
                 new BlenderArtEntry("Shattered", "Shattered")
                 {
                     Scale = TitanFactor,
@@ -328,16 +363,45 @@ namespace Game.Editor
                     {
                         new BlenderClipSpec("PhaseBreak1", ModelClipRole.PhaseBreak, 12, "2"),
                         new BlenderClipSpec("PhaseBreak2", ModelClipRole.PhaseBreak, 14, "3"),
+                        // Round 28: Splitting (burst at 28, formed at 30) and the shared body's climbs and dives.
+                        new BlenderClipSpec("Split", ModelClipRole.Split, 28),
+                        new BlenderClipSpec("Rejoin", ModelClipRole.Rejoin, 30),
+                        new BlenderClipSpec("Roar", ModelClipRole.Roar, 18),
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 28),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 16),
                     },
                 },
+                // Its shards (round 28): each bursts out of the giant (Spawn) and flies back into it (Rejoin).
+                new BlenderArtEntry("ShardRunner", "ShardRunner") { Scale = TitanFactor, Clips = Shard },
+                new BlenderArtEntry("ShardFlyer", "ShardFlyer") { Scale = TitanFactor, BodyCentrePivot = true, Clips = Shard },
+                new BlenderArtEntry("ShardCrawler", "ShardCrawler") { Scale = TitanFactor, Clips = Shard },
                 new BlenderArtEntry("SealedOne", "SealedOne")
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Seal",
+                    // Round 28: its glow per phase and the white release, swapped at the Release clip's white frame.
+                    EmissionSets = new[] { "Phase1", "Phase2", "Phase3", "Phase4", "Release" },
+                    DeathEmissionSet = "Release",
                     Clips = new[]
                     {
                         new BlenderClipSpec("Rise", ModelClipRole.Emerge, 22),
                         new BlenderClipSpec("Summon", ModelClipRole.Power, 44, "Spawn", "Head"),
+                        // Its end is the release, not a death; the old Death (the seal shutting) is kept as a burrow.
+                        new BlenderClipSpec("Release", ModelClipRole.Death, 64),
+                        new BlenderClipSpec("Death", ModelClipRole.Burrow, 124),
+                        new BlenderClipSpec("Roar", ModelClipRole.Roar, 30),
+                        new BlenderClipSpec("Climb_Up", ModelClipRole.ClimbUp, 30),
+                        new BlenderClipSpec("Climb_Loop", ModelClipRole.ClimbLoop),
+                        new BlenderClipSpec("Climb_Down", ModelClipRole.ClimbDown, 30),
+                        new BlenderClipSpec("Dive_Into_Liquid", ModelClipRole.DiveIn, 45),
+                        new BlenderClipSpec("Submerged_Loop", ModelClipRole.Submerged),
+                        new BlenderClipSpec("Surface_Burst", ModelClipRole.SurfaceBurst, 24),
+                        new BlenderClipSpec("Rise_OntoBase", ModelClipRole.RiseOntoBase, 96),
+                        new BlenderClipSpec("Adapt", ModelClipRole.Adapt, 30),
                     },
                 },
             };

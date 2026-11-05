@@ -157,7 +157,7 @@ namespace Game.Boot
 
             var controllers = new GameObject("Controllers");
             // The continent bosses' brains, before the level controller sends the first creature out.
-            controllers.AddComponent<Game.Bosses.BossDirector>().Initialize(context, spawner, progress);
+            controllers.AddComponent<Game.Bosses.BossDirector>().Initialize(context, spawner, progress, waves);
             controllers.AddComponent<RouteVisibility>().Initialize(context, routes);
             var levelController = controllers.AddComponent<LevelController>();
             levelController.Initialize(context, waves, spawner, input, progress, skipAllowed);

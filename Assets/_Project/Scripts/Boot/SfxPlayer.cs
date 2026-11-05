@@ -92,6 +92,9 @@ namespace Game.Boot
         private const float FreezeFieldVolume = 0.4f;
         private const float BossGateCrackVolume = 0.7f;
         private const float BossGateFreezeVolume = 0.9f;
+        private const float BossBloomVolume = 0.75f;
+        private const float BossSplitVolume = 0.9f;
+        private const float OraAlertVolume = 0.8f;
         private const float RollersForFullLoop = 2f;
         private const int ScheduleCapacity = 32;
         private static readonly int[] Budgets = { 3, 2, 2, 2, 4, 3, VoiceCount };
@@ -244,6 +247,9 @@ namespace Game.Boot
             context.BossWaveStarted.Subscribe(OnBossWave);
             context.BossGateWarned.Subscribe(OnBossGateWarned);
             context.BossGateFrozen.Subscribe(OnBossGateFrozen);
+            context.BossBloomed.Subscribe(OnBossBloomed);
+            context.BossSplit.Subscribe(OnBossSplit);
+            context.BossAdapted.Subscribe(OnBossAdapted);
             if (context.Hero != null)
             {
                 context.Hero.Struck += OnStruck;
@@ -340,6 +346,9 @@ namespace Game.Boot
             _context.BossWaveStarted.Unsubscribe(OnBossWave);
             _context.BossGateWarned.Unsubscribe(OnBossGateWarned);
             _context.BossGateFrozen.Unsubscribe(OnBossGateFrozen);
+            _context.BossBloomed.Unsubscribe(OnBossBloomed);
+            _context.BossSplit.Unsubscribe(OnBossSplit);
+            _context.BossAdapted.Unsubscribe(OnBossAdapted);
             if (_context.Hero != null)
             {
                 _context.Hero.Struck -= OnStruck;
@@ -924,6 +933,12 @@ namespace Game.Boot
         private void OnBossGateWarned(Vector3 gate) => Play(ProceduralSfx.BossIceCrack(), BossGateCrackVolume, SfxKind.Priority);
 
         private void OnBossGateFrozen(Vector3 gate) => Play(_freezes, BossGateFreezeVolume, SfxKind.Priority);
+
+        private void OnBossBloomed(Vector3 at) => Play(ProceduralSfx.BossBloom(), BossBloomVolume, SfxKind.Priority);
+
+        private void OnBossSplit(Vector3 at) => Play(ProceduralSfx.BossShatter(), BossSplitVolume, SfxKind.Priority);
+
+        private void OnBossAdapted(string line) => Play(ProceduralSfx.OraAlert(), OraAlertVolume, SfxKind.Priority);
 
         private void OnBossLaser(bool on) => _bossLasers = Mathf.Max(0, _bossLasers + (on ? 1 : -1));
 

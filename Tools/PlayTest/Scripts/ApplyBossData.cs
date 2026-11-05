@@ -13,7 +13,7 @@ public static class ApplyBossData
         typeof(Game.Editor.ProjectGenerator).GetMethod("GenerateContinentBosses", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
         AssetDatabase.SaveAssets();
         string report = "continent bosses written";
-        foreach (string id in new[] { "Arena_Lava", "Arena_Ice" })
+        foreach (string id in new[] { "Arena_Lava", "Arena_Ice", "Arena_Bog", "Arena_Ruins" })
         {
             var level = AssetDatabase.LoadAssetAtPath<Game.Levels.LevelDefinition>($"Assets/_Project/Data/Levels/Arena/{id}.asset");
             var errors = new System.Collections.Generic.List<string>();

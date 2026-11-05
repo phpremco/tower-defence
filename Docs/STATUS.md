@@ -2290,3 +2290,57 @@ art plus the "Continent bosses" step; `ApplyBossData.cs` runs the step alone and
   clear, legs do not); the ice block is a box in the liquid ice material; the lava trail and frost creep are glow pools;
   the older Frost Warden clips key its armour plates to 0 (held at 1 in code); test drivers pump damage to finish the
   fights in time, so their pacing says nothing about balance; neither boss has a campaign level or a HeroCap tuning yet.
+
+## Round 4c: Rotbloom, the Shattered, the Sealed One; 4b review fixes (2026-11-05)
+
+Docs/BOSSES.md "Implementation notes (round 4c)" has the details. Not committed; the full generator was not run (targeted:
+`Tools/PlayTest/Scripts/ApplyBosses.cs` now also rebuilds Rotbloom, RotSporePod, RotOvergrowth, RotbloomRoots, Shattered,
+ShardRunner, ShardFlyer, ShardCrawler and SealedOne art; `ApplyBossData.cs` validates the four arena levels).
+- **Fixes from the 4b review:** the Matriarch's grey wash at the smash was the frost overlay's light on her dark body (the
+  Cryo she hunts chills her): a chilled boss now cools only a shade (`EnemyView.BossFrostShade`). The world "BOSS" marker
+  drops its word while the boss bar shows and keeps its arrow below the bar (`BossMarkerView.BarClearance`). The Codex
+  pedestal seats models on their baked near-LOD vertices once the idle has posed them (`ModelPreview.PosedBounds`, re-frame after two frames), so the Matriarch stands on the disc.
+- **Rotbloom:** roots announce it over the three waves before it (`RootOmen` from the level's waves, `RootsView`, Stage1-3 at
+  the bog bank), it grows out of the bog, creeps rooted, spores the fullest cluster every 12 s (`OvergrowthTargets`: at most
+  3 pads, never past a quarter of the towers) with a green haze and a sweet chime 2 s ahead; pods (`RotSporePod`, an air
+  creature) can be shot down; an overgrown pad is closed for building (`LevelContext.ClosedPads`) and its tower fires at 70 %
+  under `RotOvergrowth` vines (`VinesView`) until a splash explosion or the hero's repair burns it clean; uproots below 50 %
+  and leaves rot.
+- **The Shattered:** out of a sealed ruin gate (arena `Arena_Ruins`, ground boss entrance), light cracks near its split point,
+  Split at 66 % into ShardCrawler (its road), ShardRunner (the second road) and ShardFlyer (air), a third of its health each
+  (`EnemySpawner.SpawnOnPath`, `Health.Refill`), routes lit, the boss bar following the shards; Rejoin at 33 % where the
+  leader stands, 30 % off per dead shard (`ShardSplit`), phase-3 look via bone scales.
+- **The Sealed One:** wears its round-28 model (Walk, climbs, pool clips, Rise_OntoBase, Adapt, Release; Phase1-4/Release
+  glow sets as `ModelEmissionSet`s on its art). The map comes to it: rift cracks and a violet new road from the centre to the
+  base (light, no terrain change), it rises, hauls along it with a furrow and pulls itself onto the base. Recognition: at each
+  phase change the top tower type of the phase lands 50 % next phase (`RecognitionTally`, `Enemy.SourceScale`), ORA's line
+  under the boss bar with an alert tone, that tower's picture greyed beside the bar, the rift glow in its colour; one gate's
+  gun drained per phase (`GateDrainer`, `Tower.SetDrained`). Its end is the white Release (death look on the art).
+- **Engine hooks:** `Tower.Overgrow/ClearOvergrowth/IsOvergrown/SetDrained/IsDrained` (+ events), `Enemy.SourceScale`,
+  `Health.Refill`, `EnemySpawner.SpawnOnPath/PathPoints`, `LevelContext.BossBloomed/BossSplit/BossAdapted/BossDampened/
+  ClosedPads`, placement refuses closed pads, `ModelArtDefinition.EmissionSets/DeathEmissionSet` with
+  `CreatureModel.SetEmissionSet`, `EnemyView.SetEmissionSet`, `ModelCorpse` death look, `BossArrival.Ruins/Rift`,
+  `BossArenaEntry.LeadWaves`, new clip roles (Rooted, Uproot, SporeVolley, Split, Rejoin, RiseOntoBase, Adapt), report keys
+  `shot_frames` and `base_forward_m`, sounds `ProceduralSfx.BossBloom/BossShatter/OraAlert`.
+- **Arena:** all six bosses; `Arena_Bog` (Glass Meadows water -> bog) and `Arena_Ruins` (Fault Line + ruin gate) are new
+  arena-only copies; both pass the level validator.
+- **Ledger:** mechanic loss Rotbloom 6 s, Shattered 6 s, Sealed One 4.8 s plus x1.225 effective health, all inside the 0.35
+  cap on the C1_06 finale fight; no band or campaign data changed (none of the three is in a campaign wave).
+- **Tests:** EditMode 414/414 (new `BossRound4cTests` 10: spore target choice and quarter cap, pads burned clean, pod shot
+  down, root stages per wave, overgrowth slows and the hero's repair clears it, split thirds and the dead-shard penalty,
+  recognition picks the top type and halves only it, gate drain one at a time and given back, data/art/arena entries, ledger
+  inside the cap). PlayMode one class at a time: RotbloomArenaTests 1/1, ShatteredArenaTests 1/1, SealedOneArenaTests 1/1,
+  GravemawArenaTests 1/1, CinderMatriarchArenaTests 1/1, FrostWardenArenaTests 1/1, ContinentSimulation 2/2, StoryCrystal
+  2/2, StorySmoke 2/2, StoryGuard 3/3, StoryListener 1/1, CutsceneSmoke 3/3, Screenshot 3/3, ModelPerformance 1/1,
+  BalanceProbe 1/3, 1/3, 2/3 over three runs (see weak points). 0 compile errors/warnings. Remco's save restored
+  byte-identical after every PlayMode run (MD5 ec2a1f6d...).
+- **Screenshots:** session scratchpad `round4c/shots/` (r01-r11 Rotbloom, s01-s09 Shattered, e01-e14 Sealed One, c02/c03 the
+  Matriarch's smash after the fix, x_* Codex pages).
+- **Weak points:** BalanceProbe is flaky at the margin in this round (a different level lost each run: Crysium Vein, Landing
+  Site, Shard Ridge; spawns are unseeded random; 4b had 3/3; no 4c change runs in a campaign level except no-op hooks);
+  the Sealed One's "new road" is light, the terrain does not move; the ruin gate is a data spot with light cracks, no
+  prop; shards do not climb (no clips); the Sealed One holds Rise_OntoBase's last frame on the base and adapts there
+  without a clip; its gates need an upgrade before there is a gun to drain; Rotbloom's first volleys often find one tower in
+  reach (cluster of 2.6 m against towers 2.5 m apart), so a volley is usually one or two pods; the victory panel covers the
+  Sealed One's white release; the Shattered's tall pedestal picture is cut at the window's bottom after the re-frame; the
+  arena drivers pump damage, so their pacing says nothing about balance; none of the three is tuned against a HeroCap.

@@ -22,21 +22,33 @@ namespace Game.Editor
         private const string ArenaLevel = "Level_C1_03";
         private const int ArenaDifficulty = 1;
 
-        // The signatures that run (round 4b); a boss with another is Codex data until its round.
-        private static readonly BossSignature[] Fightable = { BossSignature.Burrow, BossSignature.HuntTheCold, BossSignature.GateBreaker };
-
-        // No Crystal Plains level has lava or ice yet, so the bosses that need them are fought on a copy of a level whose
-        // pools are turned into their liquid (arena only; the campaign never sees these copies).
-        private static readonly (string Boss, string Source, string Id, string Name, TerrainKind[] From, TerrainKind To)[] ArenaLiquids =
+        // The signatures that run (all six since round 4c).
+        private static readonly BossSignature[] Fightable =
         {
-            ("CinderMatriarch", "Level_C1_06", "Arena_Lava", "Crysium Vein, molten", new[] { TerrainKind.Water }, TerrainKind.Lava),
-            ("FrostWarden", "Level_C1_05", "Arena_Ice", "Quartz Flats, frozen", new[] { TerrainKind.Water }, TerrainKind.Ice),
+            BossSignature.Burrow, BossSignature.HuntTheCold, BossSignature.GateBreaker, BossSignature.Overgrowth, BossSignature.Splitting, BossSignature.Recognition,
         };
+
+        // No Crystal Plains level has lava, ice or bog yet, so the bosses that need them are fought on a copy of a level whose
+        // pools are turned into their liquid; the Shattered gets a copy of Fault Line (two roads, two flight paths) with a
+        // sealed ruin gate as its boss entrance (arena only; the campaign never sees these copies).
+        private static readonly (string Boss, string Source, string Id, string Name, TerrainKind[] From, TerrainKind To, bool Ruins)[] ArenaLevels =
+        {
+            ("CinderMatriarch", "Level_C1_06", "Arena_Lava", "Crysium Vein, molten", new[] { TerrainKind.Water }, TerrainKind.Lava, false),
+            ("FrostWarden", "Level_C1_05", "Arena_Ice", "Quartz Flats, frozen", new[] { TerrainKind.Water }, TerrainKind.Ice, false),
+            ("Rotbloom", "Level_C1_02", "Arena_Bog", "Glass Meadows, rotting", new[] { TerrainKind.Water }, TerrainKind.Bog, false),
+            ("Shattered", "Level_C1_04", "Arena_Ruins", "Fault Line, the old ruins", new TerrainKind[0], TerrainKind.Ground, true),
+        };
+
+        // Rotbloom's roots spread over the waves before it: in the arena three short escort waves come first.
+        private static readonly Dictionary<string, int> ArenaLeadWaves = new Dictionary<string, int> { { "Rotbloom", 3 } };
 
         private const string ArenaLevelFolder = DataRoot + "/Levels/Arena";
 
-        // The Sealed One's imported model (round 16) has no walk yet; it wears none until its round-28 clips are in.
-        private static readonly string[] WithoutArtYet = { "SealedOne" };
+        // Where the sealed ruin gate stands: this many cells off the road, near this share of the main road.
+        private const int RuinCellsOffRoad = 3;
+        private const float RuinRoadShare = 0.12f;
+        private const int RuinEdgeCells = 2;
+        private const int RuinRoadMargin = 1;
 
         private sealed class BossSpec
         {
@@ -118,10 +130,13 @@ namespace Game.Editor
                 Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 4000f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
                 Phases = new[] { new BossPhase("Rooted", 1f), new BossPhase("Uprooted", 0.5f) },
                 Signature = BossSignature.Overgrowth,
+                Arrival = BossArrival.Pool,
                 Pools = PoolKinds.Bog,
-                SignatureText = "Every few seconds it spores a small group of build pads: you cannot build there and a tower on one fires slower until the growth is burned away.",
-                TelegraphText = "The flower opens its petals with a sweet rising sound, and the target pads get a green haze two seconds before the spores land.",
-                CounterText = "Splash damage burns the pads clean, the hero can clear them, and shooting down the spore pods in the air stops the growth. Do not stack all your towers in one cluster.",
+                WakeGlow = new Color(0.55f, 1f, 0.3f, 0.8f),
+                BodyHalfWidth = 1.6f,
+                SignatureText = "Every twelve seconds it fires spore pods at the fullest cluster of towers within its reach: three pads at most, and never more than about a quarter of your towers overgrown at once. An overgrown pad cannot be built on, and the tower on it fires at 70% while vines grow over it, until the growth is burned away. Rooted, it creeps along the road on growing roots; below half its health it tears itself out, walks faster and leaves rot behind it. It sinks into the bog and comes up at another bank.",
+                TelegraphText = "Roots spread at the bank of a bog over the three waves before it comes, and it grows out of that bog. Before a volley the flower opens its petals with a sweet rising sound, and the target pads glow green two seconds before the pods land.",
+                CounterText = "Splash damage (cannon, mortar) that lands on a pad burns it clean, and the hero's repair burns the vines off the tower it guards. The pods fly: air towers can shoot them down before they land. Do not stack all your towers in one cluster.",
                 Voice = new VoiceSpec { Enemy = "Rotbloom", Move = "Bosses/Leech/leech_slime_loop_boss", Screech = "Bosses/Leech/leech_screech_boss", Growl = "Bosses/Leech/leech_screech_boss" },
             };
             yield return new BossSpec
@@ -130,9 +145,13 @@ namespace Game.Editor
                 Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 4800f, 0f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
                 Phases = new[] { new BossPhase("Whole", 1f), new BossPhase("Split", 0.66f), new BossPhase("Rejoined", 0.33f) },
                 Signature = BossSignature.Splitting,
-                SignatureText = "At two thirds of its health it splits into three shards that each take a different route: the land, the air and the second road. At a third the survivors pull back together where they stand.",
-                TelegraphText = "Cracks of light on the giant show where it will split, and each shard's route lights up briefly.",
-                CounterText = "Cover every route, the air and the second front too. Each shard you kill takes a share off the giant that rejoins.",
+                Arrival = BossArrival.Ruins,
+                Pools = PoolKinds.Water,
+                WakeGlow = new Color(0.7f, 0.88f, 1f, 0.8f),
+                BodyHalfWidth = 1.4f,
+                SignatureText = "At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.",
+                TelegraphText = "It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.",
+                CounterText = "Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.",
                 Voice = new VoiceSpec { Enemy = "Shattered", Steps = "Bosses/DinoSoldier/dino_soldier_step_boss", StepSpacing = 1f, Screech = "Bosses/DinoSoldier/dino_soldier_death_boss" },
             };
             yield return new BossSpec
@@ -141,10 +160,14 @@ namespace Game.Editor
                 Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 9000f, 0f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
                 Phases = new[] { new BossPhase("First seal", 1f), new BossPhase("Second seal", 0.75f), new BossPhase("Third seal", 0.5f), new BossPhase("Release", 0.25f) },
                 Signature = BossSignature.Recognition,
+                Arrival = BossArrival.Rift,
+                Pools = PoolKinds.Water | PoolKinds.Quicksand,
+                WakeGlow = new Color(0.7f, 0.4f, 1f, 0.9f),
+                BodyHalfWidth = 2.4f,
                 ClimbsGates = false,
-                SignatureText = "It learns. The tower type that hurt it most in one phase does half damage in the next, and each phase drains one gate's gun until the phase ends.",
-                TelegraphText = "ORA names the blocked weapon, the boss bar shows its icon dimmed, and the sealed crystals turn that weapon's colour.",
-                CounterText = "Build a mix of three or four tower types; a single kind loses its punch every phase.",
+                SignatureText = "It does not come to you: the ground at the centre of the map cracks open, a new road rises from there to your base, and it hauls itself along it and onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
+                TelegraphText = "The ground rumbles and violet cracks open at the centre before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.",
+                CounterText = "Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.",
                 Voice = new VoiceSpec { Enemy = "SealedOne", Move = "Bosses/EnergyBall/energy_ball_static_loop_boss", Screech = "Bosses/EnergyBall/energy_ball_death_boss" },
             };
         }
@@ -176,14 +199,17 @@ namespace Game.Editor
                 MarkBurning(lavaBall);
             }
 
+            EnemyDefinition pod = CreateSporePod();
+            ShardSpec[] shards = CreateShards();
             var made = new List<EnemyDefinition>();
             foreach (BossSpec spec in ContinentBosses())
             {
-                BossDefinition boss = CreateBossData(spec, skitter, egg, larva);
+                BossDefinition boss = CreateBossData(spec, skitter, egg, larva, pod, shards);
+
                 EnemyDefinition enemy = CreateEnemy(spec.Creature);
                 var so = new SerializedObject(enemy);
                 so.FindProperty("_boss").objectReferenceValue = boss;
-                so.FindProperty("_art").objectReferenceValue = System.Array.IndexOf(WithoutArtYet, spec.Id) >= 0 ? null : AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{BlenderArtBuilder.ArtDataFolder}/{spec.Id}.asset");
+                so.FindProperty("_art").objectReferenceValue = Art(spec.Id);
                 so.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(enemy);
                 CreateVoice(spec.Voice);
@@ -226,7 +252,94 @@ namespace Game.Editor
             return (egg, larva);
         }
 
-        private static BossDefinition CreateBossData(BossSpec spec, EnemyDefinition skitter, EnemyDefinition egg, EnemyDefinition larva)
+        private static ModelArtDefinition Art(string id) => AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{BlenderArtBuilder.ArtDataFolder}/{id}.asset");
+
+        // Rotbloom's spore pod (round 28): a small flyer, so the air towers can shoot it down before it lands on a pad.
+        private static EnemyDefinition CreateSporePod()
+        {
+            EnemyDefinition pod = CreateEnemy(new Creature
+            {
+                Id = "RotSporePod", Description = "A spore pod Rotbloom fires at your pads. Shoot it down in the air and the pad stays clean.",
+                Layer = TargetLayers.Air, Flies = true, Health = 20f, Speed = 1f, BaseDamage = 0, Attack = AttackStyle.Bite, AttackRange = 0.5f, AttackInterval = 1f,
+                Color = new Color(0.45f, 0.6f, 0.2f), Eyes = new Color(0.75f, 1f, 0.35f), Accent = new Color(0.6f, 1f, 0.3f), Blood = new Color(0.6f, 1f, 0.35f),
+                Scale = 1.5f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
+            });
+            CreateVoice(new VoiceSpec { Enemy = "RotSporePod", Move = "Monsters/Flying/wings_flapping_loop", Pitch = 1.6f });
+            Wear(pod, "RotSporePod");
+            return pod;
+        }
+
+        // The Shattered's three shards (round 28): the crawler keeps its road, the runner takes the second road, the flyer the air.
+        // Their health is set at the split (a third of what the giant had left); the data value only prices them.
+        private static ShardSpec[] CreateShards()
+        {
+            var crystal = new Color(0.6f, 0.75f, 0.95f);
+            var glow = new Color(0.8f, 0.95f, 1f);
+            EnemyDefinition crawler = CreateEnemy(new Creature
+            {
+                Id = "ShardCrawler", Description = "A shard of the Shattered on six legs: it keeps to the giant's road.", Layer = TargetLayers.Ground,
+                Health = 300f, Speed = 0.6f, BaseDamage = 8, Attack = AttackStyle.Slam, BlockadeDamage = 40f, AttackRange = 2f, AttackInterval = 1.2f,
+                Color = crystal, Eyes = glow, Accent = glow, Blood = glow, Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
+            });
+            EnemyDefinition runner = CreateEnemy(new Creature
+            {
+                Id = "ShardRunner", Description = "A shard of the Shattered on two long legs: it runs the second road.", Layer = TargetLayers.Ground,
+                Health = 300f, Speed = 0.9f, BaseDamage = 8, Attack = AttackStyle.Slam, BlockadeDamage = 40f, AttackRange = 2f, AttackInterval = 1.2f,
+                Color = crystal, Eyes = glow, Accent = glow, Blood = glow, Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
+            });
+            EnemyDefinition flyer = CreateEnemy(new Creature
+            {
+                Id = "ShardFlyer", Description = "A shard of the Shattered on crystal wings: it takes the air route.", Layer = TargetLayers.Air, Flies = true,
+                Health = 300f, Speed = 0.8f, BaseDamage = 8, Attack = AttackStyle.Bite, AttackRange = 1f, AttackInterval = 1.2f,
+                Color = crystal, Eyes = glow, Accent = glow, Blood = glow, Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Shatter,
+            });
+            CreateVoice(new VoiceSpec { Enemy = "ShardCrawler", Move = "Monsters/Ant/ant_walk_loop", Screech = "Monsters/DinoSoldier/dino_soldier_death", Pitch = 0.8f });
+            CreateVoice(new VoiceSpec { Enemy = "ShardRunner", Steps = "Monsters/DinoSoldier/dino_soldier_step", StepSpacing = 1.2f, Screech = "Monsters/DinoSoldier/dino_soldier_death" });
+            CreateVoice(new VoiceSpec { Enemy = "ShardFlyer", Move = "Monsters/Flying/large_wings_flapping_loop", Screech = "Monsters/DinoSoldier/dino_soldier_death", Pitch = 1.2f });
+            foreach (EnemyDefinition shard in new[] { crawler, runner, flyer })
+            {
+                Wear(shard, shard.name);
+            }
+
+            // Offsets and spires from the Shattered report's round-28 Split and Rejoin blocks.
+            return new[]
+            {
+                new ShardSpec(crawler, ShardRoute.OwnRoad, new Vector3(-1.6f, 0f, -1.8f), "Core_Land"),
+                new ShardSpec(runner, ShardRoute.OtherRoad, new Vector3(1.6f, 0f, 2.2f), "Core_Road"),
+                new ShardSpec(flyer, ShardRoute.Air, new Vector3(0f, 3.2f, -0.4f), "Core_Air"),
+            };
+        }
+
+        private static void Wear(EnemyDefinition enemy, string art)
+        {
+            var so = new SerializedObject(enemy);
+            so.FindProperty("_art").objectReferenceValue = Art(art);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(enemy);
+        }
+
+        private static void WriteOvergrowth(SerializedObject so, EnemyDefinition pod)
+        {
+            so.FindProperty("_overgrowth._pod").objectReferenceValue = pod;
+            so.FindProperty("_overgrowth._vines").objectReferenceValue = pod != null ? Art("RotOvergrowth") : null;
+            so.FindProperty("_overgrowth._roots").objectReferenceValue = pod != null ? Art("RotbloomRoots") : null;
+        }
+
+        private static void WriteShards(SerializedObject so, ShardSpec[] shards)
+        {
+            SerializedProperty array = so.FindProperty("_split._shards");
+            array.arraySize = shards.Length;
+            for (int i = 0; i < shards.Length; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("_enemy").objectReferenceValue = shards[i].Enemy;
+                element.FindPropertyRelative("_route").enumValueIndex = (int)shards[i].Route;
+                element.FindPropertyRelative("_offset").vector3Value = shards[i].Offset;
+                element.FindPropertyRelative("_spire").stringValue = shards[i].Spire;
+            }
+        }
+
+        private static BossDefinition CreateBossData(BossSpec spec, EnemyDefinition skitter, EnemyDefinition egg, EnemyDefinition larva, EnemyDefinition pod, ShardSpec[] shards)
         {
             var boss = LoadOrCreate<BossDefinition>($"{BossFolder}/{spec.Id}Boss.asset");
             var so = new SerializedObject(boss);
@@ -255,6 +368,9 @@ namespace Game.Editor
             so.FindProperty("_signatureText").stringValue = spec.SignatureText;
             so.FindProperty("_telegraphText").stringValue = spec.TelegraphText;
             so.FindProperty("_counterText").stringValue = spec.CounterText;
+            // Written with the rest, so the boss validates whole.
+            WriteOvergrowth(so, spec.Signature == BossSignature.Overgrowth ? pod : null);
+            WriteShards(so, spec.Signature == BossSignature.Splitting ? shards : new ShardSpec[0]);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(boss);
             return boss;
@@ -293,11 +409,11 @@ namespace Game.Editor
         // The level a boss is fought in: a copy with its pools turned into the liquid the boss needs, or none (the arena's own).
         private static LevelDefinition ArenaLevelFor(string boss)
         {
-            foreach (var liquid in ArenaLiquids)
+            foreach (var arena in ArenaLevels)
             {
-                if (liquid.Boss == boss)
+                if (arena.Boss == boss)
                 {
-                    return CreateArenaLevel(liquid.Source, liquid.Id, liquid.Name, liquid.From, liquid.To);
+                    return CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins);
                 }
             }
 
@@ -305,8 +421,9 @@ namespace Game.Editor
         }
 
         // A copy of a campaign level (same asset GUID on every run, so the arena keeps pointing at it) with some pool
-        // kinds turned into another; everything else, art included, stays the source's.
-        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to)
+        // kinds turned into another and, for a boss out of the ruins, a sealed ruin gate as its boss entrance; everything
+        // else, art included, stays the source's.
+        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to, bool ruins)
         {
             var original = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/{source}.asset");
             if (original == null)
@@ -353,9 +470,64 @@ namespace Game.Editor
                 }
             }
 
+            if (ruins)
+            {
+                SerializedProperty entrance = so.FindProperty("_bossEntrance");
+                entrance.FindPropertyRelative("Kind").intValue = (int)EntranceKind.Ground;
+                entrance.FindPropertyRelative("Cell").vector2IntValue = RuinGateCell(original);
+            }
+
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(level);
             return level;
+        }
+
+        // The sealed ruin gate: open ground a few cells off the main road near its start, clear of the road, pools and the
+        // field's edge, so the giant breaks out in view and has the whole road ahead of it.
+        private static Vector2Int RuinGateCell(LevelDefinition level)
+        {
+            Vector2Int[] road = level.MainRoad;
+            Vector2Int near = road[Mathf.Clamp(Mathf.RoundToInt(road.Length * RuinRoadShare), 0, road.Length - 1)];
+            var roadCells = new HashSet<Vector2Int>(level.Road.Cells);
+            var blocked = new HashSet<Vector2Int>(level.BlockedCells);
+            Vector2Int best = near;
+            float bestScore = float.PositiveInfinity;
+            for (int x = RuinEdgeCells; x < level.GridSize.x - RuinEdgeCells; x++)
+            {
+                for (int y = RuinEdgeCells; y < level.GridSize.y - RuinEdgeCells; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    if (roadCells.Contains(cell) || blocked.Contains(cell) || level.Terrain.IsLiquid(cell) || NearAny(roadCells, cell, RuinRoadMargin))
+                    {
+                        continue;
+                    }
+
+                    float score = Mathf.Abs(Vector2Int.Distance(cell, near) - RuinCellsOffRoad);
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                        best = cell;
+                    }
+                }
+            }
+
+            return best;
+        }
+
+        private static bool NearAny(HashSet<Vector2Int> cells, Vector2Int cell, int reach)
+        {
+            for (int x = -reach; x <= reach; x++)
+            {
+                for (int y = -reach; y <= reach; y++)
+                {
+                    if (cells.Contains(cell + new Vector2Int(x, y)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         // The developer boss arena: Shard Ridge on Medium, a few Skitters, and every continent boss that can be fought yet.
@@ -372,7 +544,8 @@ namespace Game.Editor
                 // A boss is fightable once its signature runs; the others are Codex data until their round.
                 if (boss.Boss != null && System.Array.IndexOf(Fightable, boss.Boss.Signature) >= 0)
                 {
-                    playable.Add(new BossArenaEntry(boss, ArenaLevelFor(boss.name)));
+                    ArenaLeadWaves.TryGetValue(boss.name, out int lead);
+                    playable.Add(new BossArenaEntry(boss, ArenaLevelFor(boss.name), lead));
                 }
             }
 
@@ -383,6 +556,7 @@ namespace Game.Editor
                 SerializedProperty entry = entries.GetArrayElementAtIndex(i);
                 entry.FindPropertyRelative("_boss").objectReferenceValue = playable[i].Boss;
                 entry.FindPropertyRelative("_level").objectReferenceValue = playable[i].Level;
+                entry.FindPropertyRelative("_leadWaves").intValue = playable[i].LeadWaves;
             }
 
             so.FindProperty("_escort").objectReferenceValue = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{DataRoot}/Enemies/Skitter.asset");

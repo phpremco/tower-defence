@@ -4,7 +4,7 @@ namespace Game.Bosses
 {
     /// <summary>
     /// Picks the signature mechanic a boss's data names (<see cref="BossDefinition.Signature"/>): the boss's name never
-    /// decides it. A signature that is not built yet leaves the boss with the shared body only (walk, climb, dive).
+    /// decides it. A boss without a signature has the shared body only (walk, climb, dive).
     /// </summary>
     public static class BossSignatures
     {
@@ -15,6 +15,9 @@ namespace Game.Bosses
                 case BossSignature.Burrow: return new BurrowSignature(brain);
                 case BossSignature.HuntTheCold: return new HuntSignature(brain);
                 case BossSignature.GateBreaker: return new GateBreakerSignature(brain);
+                case BossSignature.Overgrowth: return new OvergrowthSignature(brain);
+                case BossSignature.Splitting: return new SplitSignature(brain);
+                case BossSignature.Recognition: return new RecognitionSignature(brain);
                 default: return new NoSignature();
             }
         }

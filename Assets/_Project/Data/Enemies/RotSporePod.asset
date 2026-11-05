@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5705f7eb7bd9a474a8a4063f5375706f, type: 3}
+  m_Name: RotSporePod
+  m_EditorClassIdentifier: Game.Enemies::Game.Enemies.EnemyDefinition
+  _displayName: Rot Spore Pod
+  _layer: 2
+  _flies: 1
+  _maxHealth: 20
+  _armor: 0
+  _armorReduction: 0.6
+  _speed: 1
+  _reward: 2
+  _baseDamage: 0
+  _element: 0
+  _attackStyle: 0
+  _attackDamage: 0
+  _blockadeDamage: 0
+  _attackRange: 0.5
+  _attackInterval: 1
+  _gateStrikes: 0
+  _walkSeconds: 0
+  _rollSeconds: 0
+  _rollSpeedMultiplier: 2.5
+  _trailSeconds: 0
+  _trailHaste: 1.4
+  _trailDamagePerSecond: 0
+  _rageSeconds: 0
+  _rageSpeedMultiplier: 1.5
+  _rageRadius: 3
+  _isBoss: 0
+  _abilities: []
+  _boss: {fileID: 0}
+  _color: {r: 0.45, g: 0.6, b: 0.2, a: 1}
+  _eyeColor: {r: 0.75, g: 1, b: 0.35, a: 1}
+  _accentColor: {r: 0.6, g: 1, b: 0.3, a: 1}
+  _bloodColor: {r: 0.6, g: 1, b: 0.35, a: 1}
+  _scale: 1.5
+  _shape: 0
+  _deathStyle: 0
+  _art: {fileID: 11400000, guid: 4d2449b892c64484daf69641d36faaa2, type: 2}
+  _voice: {fileID: 11400000, guid: f60e0380b8dbaa84a9ec8dccfd2bcdd8, type: 2}
+  _description: A spore pod Rotbloom fires at your pads. Shoot it down in the air and the pad stays clean.
