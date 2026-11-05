@@ -45,5 +45,43 @@
     "fbx": "Stinger_LOD1.fbx",
     "tris": 1697,
     "bones": 14
+  },
+  "round36": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Idle frame 0",
+      "body_bone": "Body",
+      "body_travel_at_impact": {
+        "forward": 0.03,
+        "up": -0.012
+      },
+      "body_travel_max": 0.032,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.778,
+          "top": 0.754,
+          "bottom": -0.013
+        },
+        "impact": {
+          "tip_forward": 0.819,
+          "top": 0.592,
+          "bottom": -0.013
+        }
+      }
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

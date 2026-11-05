@@ -30,15 +30,56 @@
       "mask": "A"
     }
   },
-  "actions": [
-    "Walk",
-    "Idle",
-    "Hit",
-    "Death"
-  ],
+  "actions": {
+    "Walk": 24,
+    "Idle": 60,
+    "Hit": 12,
+    "Death": 36,
+    "Strike": 24
+  },
   "lod1": {
     "fbx": "Skitter_LOD1.fbx",
     "tris": 1700,
     "bones": 16
+  },
+  "round36": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Idle frame 0",
+      "body_bone": "Thorax",
+      "body_travel_at_impact": {
+        "forward": 0.06,
+        "up": -0.008
+      },
+      "body_travel_max": 0.061,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.604,
+          "top": 0.397,
+          "bottom": -0.008
+        },
+        "impact": {
+          "tip_forward": 0.596,
+          "top": 0.385,
+          "bottom": -0.039
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

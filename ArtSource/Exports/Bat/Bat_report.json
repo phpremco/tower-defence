@@ -34,7 +34,8 @@
     "Fly": 13,
     "Glide": 48,
     "Hit": 12,
-    "Death": 36
+    "Death": 36,
+    "Strike": 24
   },
   "flap_seconds": 0.43,
   "pivot": "body centre (flight height)",
@@ -56,5 +57,45 @@
     "fbx": "Bat_LOD1.fbx",
     "tris": 1698,
     "bones": 10
+  },
+  "round36": {
+    "Strike": {
+      "frames": 24,
+      "loop": false,
+      "impact_frame": 10,
+      "anticipation_frames": [
+        0,
+        5
+      ],
+      "contact_frames": [
+        10,
+        12
+      ],
+      "settled_by_frame": 23,
+      "starts_and_ends_on": "Glide frame 0",
+      "body_bone": "Body",
+      "body_travel_at_impact": {
+        "forward": 0.12,
+        "up": -0.07
+      },
+      "body_travel_max": 0.139,
+      "root_moves": false,
+      "feet_planted": false,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.244,
+          "top": 0.166,
+          "bottom": -0.115
+        },
+        "impact": {
+          "tip_forward": 0.35,
+          "top": 0.035,
+          "bottom": -0.484
+        }
+      },
+      "new_clip": true,
+      "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
   }
 }

@@ -38,7 +38,15 @@
     "Latch": 36
   },
   "unity_scale": 0.7,
-  "scale_keyed_bones": [],
+  "scale_keyed_bones": [
+    "Seg_1",
+    "Seg_2",
+    "Seg_3",
+    "Seg_4",
+    "Seg_5",
+    "Seg_6",
+    "Head"
+  ],
   "lod1": {
     "fbx": "Mireleech_LOD1.fbx",
     "tris": 1700,
@@ -47,5 +55,52 @@
   "crawl_distance_per_loop": 0.32,
   "latch_bite_frame": 13,
   "pivot": "ground, body centre",
-  "trail_origin": "under Seg_1 (the rear sucker), on the ground"
+  "trail_origin": "under Seg_1 (the rear sucker), on the ground",
+  "round36": {
+    "Latch": {
+      "frames": 36,
+      "loop": false,
+      "impact_frame": 13,
+      "anticipation_frames": [
+        0,
+        7
+      ],
+      "contact_frames": [
+        13,
+        15
+      ],
+      "settled_by_frame": 35,
+      "starts_and_ends_on": "Idle frame 0",
+      "body_bone": "Seg_1",
+      "body_travel_at_impact": {
+        "forward": -0.0,
+        "up": 0.0
+      },
+      "body_travel_max": 0.0,
+      "root_moves": false,
+      "feet_planted": true,
+      "mesh": {
+        "rest": {
+          "tip_forward": 0.523,
+          "top": 0.176,
+          "bottom": -0.018
+        },
+        "impact": {
+          "tip_forward": 0.622,
+          "top": 0.184,
+          "bottom": -0.007
+        }
+      }
+    },
+    "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)",
+    "chain_scale_bones": [
+      "Seg_1",
+      "Seg_2",
+      "Seg_3",
+      "Seg_4",
+      "Seg_5",
+      "Seg_6",
+      "Head"
+    ]
+  }
 }

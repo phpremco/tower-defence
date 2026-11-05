@@ -33,6 +33,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_acidempress.py", "build_crystalwarlord.py", "build_skysovereign.py", "build_slimemonarch.py",
            # Round 31: the slugs strike by stretching (Strike clip; the SlimeMonarch's Flood rebuilt the same way).
            "build_slug_strike.py",
+           # Round 36: smoother attacks for the basic species (coil, lunge, held contact, follow-through; new Strike
+           # clips for the species without one, Strike_Float/Strike_Ground for the Wisp; Stinger Strike, Skyray Dive
+           # and Mireleech Latch rebuilt).
+           "build_attacks36.py",
            "build_rollerking.py",
            # Round 14: spawn origins, resource node, then Gravemaw (its previews load the hole and BroodMother).
            "build_env_origins.py", "build_gravemaw.py",
@@ -48,7 +52,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Round 7: towers, build pad, stars and wreck (imports tower_kit.py).
            "build_towers.py",
            # Round 9: gate, base and base turret, drones, gadgets (import base_kit.py; need build_towers first).
-           "build_gate.py", "build_base.py", "build_drones.py", "build_gadgets.py",
+           "build_gate.py", "build_base.py",
+           # Round 37: the expanded colony base (radar, landing zone, drone bays, storage)
+           "build_base2.py",
+           "build_drones.py", "build_gadgets.py",
            # Round 11: P2 towers, hybrids and gadgets (import build_towers/build_gadgets/build_drones read-only).
            "build_towers2.py", "build_gadgets2.py",
            # Round 18: P3 hybrids, gadgets, superweapons and drones (import round 7/9/11 scripts read-only).
