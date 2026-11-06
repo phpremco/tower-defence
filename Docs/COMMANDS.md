@@ -603,3 +603,32 @@ camera; options "Radar On/Off" and "Radar size" (saved as `RadarOff`, `RadarSize
   decides the layout. The Game view is left at 1920x1080.
 - The PlayMode test runner can keep a queued run after `cancel_tests`; check `test_status` and `editor_status` again
   before the next recompile.
+
+## Round 22: the balance pipeline (added 2026-11-06)
+
+One entry point per stage; every stage reads the previous stage's files and the game's definitions (Docs/BALANCE.md,
+"The balance pipeline"). Chained: `bash Tools/PlayTest/balance_pipeline.sh all` (or a list of stages: `measure fit apply
+solve search replay acceptance`, plus `stepcheck`). The optional, untracked `Tools/PlayTest/probe_arg.txt` narrows the
+PlayMode stages (`levels=0,1`, `difficulties=1,2`, `seeds=1,2,3`, `step=0.05`). Check `editor_status` is `stopped` first.
+
+| Stage | Command (CLI) | Writes |
+| --- | --- | --- |
+| measure (yardstick: obvious family + creative, all seeds) | `run_tests --mode PlayMode --filter Measure_Yardstick_ObviousFamily --include_explicit true --async_tests true`, poll `test_status` | `Tools/PlayTest/yardstick.txt`, `calibration_records.txt` |
+| step check (same runs at 0.2 s and 0.05 s) | `run_tests --mode PlayMode --filter Measure_StepCheck_FineAgainstUsual --include_explicit true --async_tests true` | `calibration_records_step.txt` |
+| fit | `run_tests --mode EditMode --filter CalibrationFitTests` or menu `Tools/Generate/Balance/2 Fit calibration` | `calibration.txt` (factor lines, agreement, step check) |
+| apply | `run_script --file Tools/PlayTest/Scripts/ApplyCalibration.cs --entry ApplyCalibration.Run --timeout_ms 120000 --timeout 180` or menu `.../3 Apply calibration` | `Assets/_Project/Data/Balance/BalanceCalibration.asset` |
+| solve | `run_script --file Tools/PlayTest/Scripts/ApplyWaves.cs --entry ApplyWaves.Run --timeout_ms 900000 --timeout 960` or menu `.../4 Solve waves` | the wave assets |
+| search (stage A) | `run_tests --mode EditMode --filter PlanSearchTests` or menu `.../5 Plan search` | `Tools/PlayTest/Plans/<Level>_<d>.txt` + `*.json`, `plans_summary.txt` |
+| replay (stage B) | `run_tests --mode PlayMode --filter Replay_SearchedPlans_EveryCell --include_explicit true --async_tests true` | `plan_replay.txt`, `plan_records.txt` |
+| acceptance | `run_tests --mode EditMode --filter BalanceAcceptanceTests` or menu `.../7 Acceptance report` | `acceptance.txt` |
+
+Batchmode fallback (editor closed): `Unity -batchmode -projectPath . -runTests -testPlatform PlayMode -testFilter
+Measure_Yardstick_ObviousFamily -testResults results.xml -logFile -` for the PlayMode stages (explicit tests run when
+named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` and so on for the EditMode stages, and
+`-executeMethod ApplyCalibration.Run` / `ApplyWaves.Run` for the scripts.
+
+- Every report header states the calibration's state: `calibration <date>, seeds, step, inputs <hash> (current|STALE)`.
+  The hash (`InputHash`) covers towers, creatures, difficulties, upgrades, maps with their spots, gadgets, drones and the
+  rules; a stale calibration is reported by every stage and by `PlanSearchTests` (ignored with the reason), never reused silently.
+- The PlayMode test runner reports `0/0 passed` for these long async runs; judge them by `test_status` and the files written.
+- A PlayMode run creates `Saves/progress.json`; `balance_pipeline.sh` restores the state it found (absent or a backup).

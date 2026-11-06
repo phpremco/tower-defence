@@ -3,6 +3,7 @@ using Game.Balance;
 using Game.Economy;
 using Game.Enemies;
 using Game.Towers;
+using UnityEngine;
 
 namespace Game.Levels
 {
@@ -51,7 +52,8 @@ namespace Game.Levels
                 Splash = tower.SplashRadius,
                 GroundFactor = tower.GroundDamageFactor,
                 AirFactor = tower.AirDamageFactor,
-                Efficiency = tower.LedgerEfficiency,
+                SplashTargets = tower.SplashTargets,
+                SellRefund = tower.SellRefundFraction,
                 IsSupport = tower.IsSupport,
                 BlocksGround = tower.BlocksGroundEnemies,
                 IsBaseDefence = tower.IsBaseDefence,
@@ -145,6 +147,137 @@ namespace Game.Levels
             return LevelShape.Build(roads, gates, nests, entrance);
         }
 
+        /// <summary>Cells beside the road (within this many cells) a tower may stand on: the plan model's build spots.</summary>
+        public const float BesideRoadCells = 2f;
+
+        /// <summary>
+        /// The map for placement: walking and flight routes, gates, the defence gate (the first on the trunk, the ledger's kill
+        /// point), every buildable cell beside the road with its reach multiplier from the terrain (<see cref="TerrainBalance"/>).
+        /// </summary>
+        public static LevelGeometry Geometry(LevelDefinition level)
+        {
+            var roads = new List<RoadInput>();
+            var flights = new List<RoadInput>();
+            for (int i = 0; i < level.Paths.Length; i++)
+            {
+                (level.Paths[i].Flying ? flights : roads).Add(new RoadInput { PathIndex = i, Waypoints = Cells(level.Paths[i].Waypoints) });
+            }
+
+            var gates = new List<Cell>();
+            foreach (BlockadeSpot spot in level.Blockades)
+            {
+                gates.Add(new Cell(spot.Cell.x, spot.Cell.y));
+            }
+
+            LevelShape shape = Shape(level);
+            Cell? defence = null;
+            int best = -1;
+            for (int i = 0; i < shape.Gates.Count && i < level.Blockades.Length; i++)
+            {
+                if (shape.Gates[i].OnTrunk && (best < 0 || shape.Gates[i].Progress < shape.Gates[best].Progress))
+                {
+                    best = i;
+                }
+            }
+
+            if (best < 0 && level.Blockades.Length > 0)
+            {
+                best = 0;
+            }
+
+            if (best >= 0)
+            {
+                defence = gates[best];
+            }
+
+            var spots = new List<Cell>();
+            var grid = new BuildGrid(level);
+            var road = new List<Vector2Int>(level.Road.Cells);
+            for (int x = 0; x < level.GridSize.x; x++)
+            {
+                for (int y = 0; y < level.GridSize.y; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    if (!grid.CanBuild(cell))
+                    {
+                        continue;
+                    }
+
+                    float nearest = float.MaxValue;
+                    foreach (Vector2Int roadCell in road)
+                    {
+                        nearest = Mathf.Min(nearest, Vector2Int.Distance(cell, roadCell));
+                    }
+
+                    if (nearest <= BesideRoadCells)
+                    {
+                        spots.Add(new Cell(x, y));
+                    }
+                }
+            }
+
+            LevelGeometry geometry = LevelGeometry.Build(roads, flights, gates, defence, spots, level.CellSize);
+            foreach (Cell spot in spots)
+            {
+                float multiplier = TerrainBalance.RangeMultiplier(level.Terrain.KindAt(new Vector2Int(spot.X, spot.Y)));
+                if (multiplier != 1f)
+                {
+                    geometry.SetSpotRange(spot, multiplier);
+                }
+            }
+
+            return geometry;
+        }
+
+        /// <summary>The gadgets a level sells, as the plan model prices them.</summary>
+        public static List<GadgetStats> Gadgets(LevelDefinition level)
+        {
+            var gadgets = new List<GadgetStats>();
+            foreach (Game.PathObjects.PathObjectDefinition item in level.PathObjects)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                gadgets.Add(new GadgetStats
+                {
+                    Id = item.name,
+                    Kind = item.Kind == Game.PathObjects.PathObjectKind.Mine ? GadgetKind.Mine : item.Kind == Game.PathObjects.PathObjectKind.SlowField ? GadgetKind.SlowField : GadgetKind.Other,
+                    Cost = item.Cost,
+                    Damage = item.Damage,
+                    Radius = item.Radius,
+                    SlowFactor = item.SlowFactor,
+                });
+            }
+
+            return gadgets;
+        }
+
+        /// <summary>The drones a level offers, as the plan model prices them.</summary>
+        public static List<DroneStats> Drones(LevelDefinition level)
+        {
+            var drones = new List<DroneStats>();
+            foreach (Game.Drones.DroneDefinition drone in level.Drones)
+            {
+                if (drone == null)
+                {
+                    continue;
+                }
+
+                drones.Add(new DroneStats
+                {
+                    Id = drone.name,
+                    Role = drone.Kind == Game.Drones.DroneKind.Harvest ? DroneRole.Harvest : drone.Kind == Game.Drones.DroneKind.Repair ? DroneRole.Repair : drone.Kind == Game.Drones.DroneKind.Attack ? DroneRole.Attack : DroneRole.Other,
+                    Cost = drone.Cost,
+                    Dps = drone.FireInterval > 0f ? drone.Damage / drone.FireInterval : 0f,
+                    Targets = (int)drone.Targets,
+                });
+            }
+
+            return drones;
+        }
+
         /// <summary>Index of the first ground path after the main road, or -1: the second road of the waves.</summary>
         public static int SecondRoad(LevelDefinition level)
         {
@@ -159,7 +292,18 @@ namespace Game.Levels
             return -1;
         }
 
-        /// <summary>The whole campaign: levels in map order, every tower, creature and upgrade they use, and the starting set.</summary>
+        /// <summary>
+        /// The whole campaign: levels in map order, every tower, creature and upgrade they use, and the starting set, with the
+        /// calibration asset's measured numbers applied (<see cref="BalanceCalibration"/>; null leaves the rules' defaults).
+        /// </summary>
+        public static CampaignModel Campaign(CampaignCatalog catalog, UpgradeCatalog upgrades, IEnumerable<string> startingTowers, BalanceRules rules, BalanceCalibration calibration)
+        {
+            CampaignModel model = Campaign(catalog, upgrades, startingTowers, rules);
+            calibration?.Apply(model);
+            return model;
+        }
+
+        /// <summary>The whole campaign without a calibration: every tower at efficiency one, the rules as given.</summary>
         public static CampaignModel Campaign(CampaignCatalog catalog, UpgradeCatalog upgrades, IEnumerable<string> startingTowers, BalanceRules rules)
         {
             var model = new CampaignModel { Rules = rules };
@@ -198,6 +342,7 @@ namespace Game.Levels
                 RewardHeroPerkId = level.Reward.HeroPerk != null ? level.Reward.HeroPerk.Id : string.Empty,
                 Research = level.Reward.ResearchPoints,
                 Power = level.Reward.PowerCurrency,
+                TargetScale = level.BalanceTargetScale,
             };
             foreach (TowerDefinition tower in level.AvailableTowers)
             {
@@ -218,7 +363,9 @@ namespace Game.Levels
                 Harvest = level.HarvestDrone != null,
                 SecondRoad = SecondRoad(level),
                 GateHealth = gateHealth,
-                FieldEase = level.BalanceFieldEase,
+                Gadgets = Gadgets(level),
+                Drones = Drones(level),
+                Geometry = Geometry(level),
             });
             if (level.HarvestDrone != null)
             {

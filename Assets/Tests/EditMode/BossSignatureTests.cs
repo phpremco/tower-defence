@@ -268,7 +268,7 @@ namespace Game.Tests
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             BalanceRules rules = BalanceRules.Default;
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             BalanceRules withHero = rules.HumanWithHero();
             foreach (string id in new[] { "CinderMatriarch", "FrostWarden" })
             {

@@ -1,0 +1,35 @@
+Calibration fit 2026-11-06 21:43: 77 runs (7 replayed plans), seeds 1, step 0.2, inputs 9b275f8f.
+Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health
+there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, "The balance pipeline"). ApplyCalibration writes
+the factor and utilisation lines into the BalanceCalibration asset.
+
+tower          efficiency   dealt   capacity  waves
+Cannon              0.842  398421     473284    493
+Laser               0.569  135939     238902    220
+PulseRifle          0.671  336713     501941    505
+Rocket              1.032   17304      16773     79
+
+Self check (fitted on all): verdict agreement 69/77 (90 %), mono rows 32/34 (94 %), ranking Spearman 0.49 over cells with 4+ runs.
+Hold-out (odd levels judge even and back): agreement 69/77 (90 %), mono 32/34 (94 %), Spearman 0.53.
+Rankings per cell (hold-out): Level_C1_02 1 0.96 (7); Level_C1_02 2 0.64 (6); Level_C1_04 1 0.57 (6); Level_C1_04 2 0.77 (6); Level_C1_06 1 0.37 (6); Level_C1_06 2 -0.66 (6); Level_C1_02 0 1.00 (3); Level_C1_01 1 0.13 (6); Level_C1_01 2 0.95 (5); Level_C1_03 1 0.73 (6); Level_C1_03 2 0.20 (6); Level_C1_05 1 1.00 (6); Level_C1_05 2 0.74 (6); Level_C1_01 0 1.00 (2)
+Disagreements (self check):
+  Level_C1_01 1 mono PulseRifle seed 1: ledger holds (margin 1.12), game lost at wave 12/12
+  Level_C1_01 1 mono Cannon seed 1: ledger falls (margin 0.84 from wave 12), game won 3* at wave 12/12
+  Level_C1_01 2 creative seed 1: ledger falls (margin 0.90 from wave 8), game won 3* at wave 12/12
+  Level_C1_02 1 creative seed 1: ledger falls (margin 0.89 from wave 12), game won 3* at wave 12/12
+  Level_C1_04 1 creative seed 1: ledger falls (margin 0.69 from wave 10), game won 3* at wave 16/16
+  Level_C1_05 1 creative seed 1: ledger holds (margin 1.13), game lost at wave 11/17
+  Level_C1_01 0 plan Level_C1_01_0_plan2 seed 1: ledger holds (margin 1.38), game lost at wave 12/12
+  Level_C1_02 1 plan Level_C1_02_1_best seed 1: ledger falls (margin 0.99 from wave 12), game won 3* at wave 12/12
+
+Step check: no fine-step records (run the PlayMode Measure_StepCheck_FineAgainstUsual).
+
+factor Cannon 0.842
+factor Laser 0.569
+factor PulseRifle 0.671
+factor Rocket 1.032
+utilisation human 0.340
+utilisation bot 0.270
+inputs 9b275f8f
+seeds 1
+step 0.2

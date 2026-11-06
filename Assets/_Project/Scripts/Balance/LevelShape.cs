@@ -214,7 +214,7 @@ namespace Game.Balance
         }
 
         // Every cell along the straight legs between waypoints, as the creatures walk them.
-        private static List<Cell> Expand(Cell[] waypoints)
+        internal static List<Cell> Expand(Cell[] waypoints)
         {
             var cells = new List<Cell>();
             for (int i = 0; i < waypoints.Length; i++)

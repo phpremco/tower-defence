@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Balance;
 using Game.Drones;
 using Game.Enemies;
 using Game.Levels;
@@ -9,8 +10,9 @@ namespace Game.Tests
 {
     /// <summary>
     /// What one probe bot run keeps track of (round 20): its strategy and seeded draws, what it built, sold and placed, the
-    /// drones it bought and what they brought in, and per tower type the damage really dealt against the data's DPS over the
-    /// seconds the towers stood while creatures were on the field (the in-game DPS of BalanceProbeTests and the monoculture probe).
+    /// drones it bought and what they brought in, per tower type the damage really dealt against the data's DPS, and (round
+    /// 22) per wave the towers standing, the health the wave spawned and the damage each tower type took off that wave's
+    /// creatures: the records the calibration is fitted on (<see cref="CalibrationFit"/>).
     /// </summary>
     internal sealed class BotRun
     {
@@ -21,15 +23,24 @@ namespace Game.Tests
         private readonly System.Random _random;
         private readonly HashSet<Enemy> _watched = new HashSet<Enemy>();
         private readonly List<Game.Combat.ITargetable> _near = new List<Game.Combat.ITargetable>();
+        private readonly Dictionary<Enemy, int> _spawnWave = new Dictionary<Enemy, int>();
+        private readonly Dictionary<Enemy, float> _lastHealth = new Dictionary<Enemy, float>();
+        private readonly Dictionary<int, WaveRecord> _records = new Dictionary<int, WaveRecord>();
         private Game.Combat.TargetRegistry _targets;
+        private LevelContext _context;
+        private int _recordedWave = -1;
 
         public BotRun(ProbeStrategy strategy, int seed)
         {
             Strategy = strategy;
-            _random = new System.Random(unchecked(seed * SeedSpread + strategy.Name.Length));
+            Seed = seed;
+            // Each strategy draws its own stream of the seed (the name's hash, not its length: "mono Cannon" and "mono Rocket" differ).
+            _random = new System.Random(unchecked(seed * SeedSpread + Hash(strategy.Name)));
         }
 
         public ProbeStrategy Strategy { get; }
+
+        public int Seed { get; }
 
         public int Built;
         public int Upgrades;
@@ -44,6 +55,13 @@ namespace Game.Tests
         public int MinesThisWave;
         public int FieldWave = -1;
         public int BurrowMined;
+
+        /// <summary>Purchases of the obvious bots (towers and upgrades), for their round-robin rules.</summary>
+        public int Purchases;
+
+        /// <summary>Scripted plans: the next step to take, and the steps that could not be taken at all.</summary>
+        public int PlanStep;
+        public int PlanSkipped;
         public readonly List<string> DronesBought = new List<string>();
 
         /// <summary>Per tower type: damage dealt, tower-seconds with creatures on the field, and the data damage of those seconds.</summary>
@@ -56,38 +74,15 @@ namespace Game.Tests
         public readonly Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
         public readonly Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
 
-        /// <summary>
-        /// Round 21a3, where a tower type's data DPS goes in play: seconds standing with creatures on the field, seconds with
-        /// something it can hit in reach, the tower power (wear) over those seconds, shots fired, aimed hits that landed, and
-        /// of the damage the hits carried: lost to plating, and wasted past the creature's last hit point (overkill).
-        /// </summary>
-        public readonly Dictionary<string, TowerUse> Use = new Dictionary<string, TowerUse>();
-
-        internal sealed class TowerUse
+        /// <summary>The wave records in order, for the calibration.</summary>
+        public List<WaveRecord> Records
         {
-            public float Seconds;
-            public float Busy;
-            public float PowerSeconds;
-            public float DataDamage;
-            public int Shots;
-            public int Hits;
-            public float Carried;
-            public float Plate;
-            public float Overkill;
-            public float Dealt;
-        }
-
-        private readonly Dictionary<Enemy, float> _lastHealth = new Dictionary<Enemy, float>();
-        private readonly HashSet<Tower> _counted = new HashSet<Tower>();
-
-        private TowerUse UseOf(string id)
-        {
-            if (!Use.TryGetValue(id, out TowerUse use))
+            get
             {
-                Use[id] = use = new TowerUse();
+                var list = new List<WaveRecord>(_records.Values);
+                list.Sort((a, b) => a.Wave.CompareTo(b.Wave));
+                return list;
             }
-
-            return use;
         }
 
         /// <summary>The roles a hit is sorted into, in report order.</summary>
@@ -96,9 +91,6 @@ namespace Game.Tests
         // Light creatures with at least this many others this close (cells) count as bunched: a shell catches them together.
         private const float BunchRadius = 1.2f;
         private const int BunchNeighbours = 2;
-
-        // A reach that covers every map: "is anything flying at all".
-        private const float AnywhereRange = 1000f;
 
         public int Next(int count) => _random.Next(count);
 
@@ -113,6 +105,7 @@ namespace Game.Tests
 
         public void Attach(LevelContext context)
         {
+            _context = context;
             _targets = context.Targets;
             context.EnemySpawned.Subscribe(OnSpawned);
             context.DroneLaunched.Subscribe(OnDrone);
@@ -136,6 +129,22 @@ namespace Game.Tests
         public void Sample(LevelContext context, List<Tower> towers, float deltaTime)
         {
             Seconds += deltaTime;
+            // The standing set is refreshed while the wave runs, so towers built mid-wave count for it (the paper side counts them too).
+            if (context.WaveNumber >= 1)
+            {
+                _recordedWave = context.WaveNumber;
+                WaveRecord record = RecordOf(_recordedWave);
+                record.Standing.Clear();
+                foreach (Tower tower in towers)
+                {
+                    if (tower.IsAlive)
+                    {
+                        Vector2Int cell = context.Level.Grid.WorldToCell(tower.Position);
+                        record.Standing.Add((tower.Definition.Id, tower.LevelIndex, new Cell(cell.x, cell.y)));
+                    }
+                }
+            }
+
             foreach (Tower tower in towers)
             {
                 WearSeen |= tower.HealthFraction < WornBelow;
@@ -146,7 +155,6 @@ namespace Game.Tests
                 return;
             }
 
-            bool airPresent = _targets.FindBest(Vector3.zero, AnywhereRange, Game.Core.TargetLayers.Air) != null;
             foreach (Tower tower in towers)
             {
                 if (!tower.IsAlive)
@@ -159,27 +167,17 @@ namespace Game.Tests
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
                 Fire[tower.Definition.Id] = (damage, seconds + deltaTime, data + dps * deltaTime);
                 CoinSeconds[tower.Definition.Id] = (CoinSeconds.TryGetValue(tower.Definition.Id, out float coins) ? coins : 0f) + tower.TotalSpent * deltaTime;
-                // A sky gun is only judged while something flies: the ledger counts it on the air waves alone.
-                if ((tower.Definition.Targets & Game.Core.TargetLayers.Ground) == 0 && !airPresent)
-                {
-                    continue;
-                }
-
-                TowerUse use = UseOf(tower.Definition.Id);
-                use.Seconds += deltaTime;
-                use.DataDamage += dps * deltaTime;
-                use.PowerSeconds += tower.Power * deltaTime;
-                if (_targets.FindBest(tower.Position, tower.Range, tower.Definition.Targets) != null)
-                {
-                    use.Busy += deltaTime;
-                }
-
-                if (_counted.Add(tower))
-                {
-                    string id = tower.Definition.Id;
-                    tower.Fired += _ => UseOf(id).Shots++;
-                }
             }
+        }
+
+        private WaveRecord RecordOf(int wave)
+        {
+            if (!_records.TryGetValue(wave, out WaveRecord record))
+            {
+                _records[wave] = record = new WaveRecord { Wave = wave };
+            }
+
+            return record;
         }
 
         private void OnSpawned(Enemy enemy)
@@ -190,32 +188,33 @@ namespace Game.Tests
                 enemy.DamagedBy += OnDamaged;
             }
 
+            int wave = _context != null ? Mathf.Max(1, _context.WaveNumber) : 1;
+            _spawnWave[enemy] = wave;
             _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current : 0f;
+            // A boss's own minions and the like spawn mid-wave and count with the wave they appear in.
+            RecordOf(wave).Health += enemy.Health != null ? enemy.Health.Max + enemy.Health.ArmorMax : 0f;
         }
 
         private void OnDamaged(Enemy enemy, object source, float amount)
         {
+            WaveRecord record = RecordOf(_spawnWave.TryGetValue(enemy, out int wave) ? wave : Mathf.Max(1, _context.WaveNumber));
+            // What the hit really took off the creature: plating and overkill are the paper model's business, not realised damage.
             float before = _lastHealth.TryGetValue(enemy, out float last) ? last : enemy.Health.Max;
             float dealt = Mathf.Max(0f, before - enemy.Health.Current);
             _lastHealth[enemy] = enemy.Health.Current;
-            if (source is Tower tower)
+            if (source is Tower tower && !tower.Definition.IsBaseDefence)
             {
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
                 Fire[tower.Definition.Id] = (damage + amount, seconds, data);
-                TowerUse use = UseOf(tower.Definition.Id);
-                float through = amount * enemy.ShareThrough(amount);
-                use.Hits++;
-                use.Carried += amount;
-                use.Plate += amount - through;
-                use.Overkill += enemy.Health.IsDead ? Mathf.Max(0f, through - dealt) : 0f;
-                use.Dealt += dealt;
                 // The role numbers count what the hit really took off the creature: a shell on one small ant counts its last hit points.
                 var key = (tower.Definition.Id, RoleOf(enemy));
-                RoleDamage[key] = (RoleDamage.TryGetValue(key, out float sum) ? sum : 0f) + dealt;
+                RoleDamage[key] = (RoleDamage.TryGetValue(key, out float sum) ? sum : 0f) + amount;
+                record.Dealt[tower.Definition.Id] = (record.Dealt.TryGetValue(tower.Definition.Id, out float known2) ? known2 : 0f) + dealt;
             }
-            else if (source is Drone)
+            else
             {
-                DroneDamage += amount;
+                DroneDamage += source is Drone ? amount : 0f;
+                record.OtherDealt += dealt;
             }
         }
 
@@ -244,5 +243,16 @@ namespace Game.Tests
         }
 
         private void OnDrone(Drone drone) => drone.Delivered += value => Harvested += value;
+
+        private static int Hash(string text)
+        {
+            int hash = 17;
+            foreach (char c in text)
+            {
+                hash = unchecked(hash * 31 + c);
+            }
+
+            return hash & 0xFFFF;
+        }
     }
 }

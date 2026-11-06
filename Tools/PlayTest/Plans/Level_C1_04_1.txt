@@ -1,0 +1,25 @@
+Fault Line (Level_C1_04) on Medium: plan search, 3000 plans sampled, 0 hold on paper, cap 1.20. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
+'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
+as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+
+Best spots per tower (first is best):
+  Gun Turret     (32,6) cover 9.0/3.5 air gate bunch 0.8; (33,6) cover 9.0/3.5 air gate bunch 0.8; (28,5) cover 8.0/4.0 air gate bunch 0.6; (29,5) cover 8.0/3.5 air gate bunch 0.7; (29,6) cover 8.0/3.5 air gate bunch 0.8; (32,5) cover 8.0/3.5 air gate bunch 0.8;
+  Cannon         (32,6) cover 9.0/3.5 air gate bunch 0.8; (33,6) cover 9.0/3.5 air gate bunch 0.8; (33,9) cover 7.5/4.5 air gate bunch 1.0; (33,10) cover 7.5/4.0 air gate bunch 1.0; (29,6) cover 8.0/3.5 air gate bunch 0.8; (32,5) cover 8.0/3.5 air gate bunch 0.8;
+  Laser Turret   (28,5) cover 10.0/4.0 air gate bunch 0.7; (29,5) cover 10.0/4.0 air gate bunch 0.7; (32,5) cover 10.0/4.0 air gate bunch 0.9; (33,5) cover 10.0/4.0 air gate bunch 0.9; (33,6) cover 9.5/4.0 air gate bunch 0.8; (33,9) cover 9.5/5.5 air gate bunch 0.8;
+  Flak Turret    (34,9) cover 13.0/9.0 air gate bunch 0.7; (33,9) cover 13.5/8.5 air gate bunch 0.7; (34,6) cover 13.0/8.5 air gate bunch 0.7; (34,10) cover 13.5/8.5 air gate bunch 0.7; (31,9) cover 13.5/8.0 air gate bunch 0.7; (32,9) cover 14.0/8.0 air gate bunch 0.7;
+
+Obvious plans on paper:
+  mono PulseRifle    margin 0.31 falls at wave 9, coins left 32, steps taken 13, 7 never affordable
+  mono Cannon        margin 0.00 falls at wave 3, coins left 83, steps taken 5, 15 never affordable
+  mono Laser         margin 0.00 falls at wave 3, coins left 126, steps taken 3, 17 never affordable
+  naive              margin 0.30 falls at wave 3, coins left 92, steps taken 6, 12 never affordable
+
+Distinct winning plans (0; different spots, mixes or timing):
+
+No plan holds on paper. Best found: margin 0.72, falls at wave 10
+  from wave  1: build Gun Turret at (29,6); build Gun Turret at (29,5); build Flak Turret at (34,10); upgrade the tower at (29,5)
+  from wave  8: build Cannon at (32,6)
+  from wave 10: upgrade the tower at (29,6)
+  from wave 12: upgrade the tower at (29,6); upgrade the tower at (29,5)
+  from wave 14: upgrade the tower at (34,10)

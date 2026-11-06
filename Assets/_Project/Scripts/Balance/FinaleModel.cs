@@ -160,8 +160,8 @@ namespace Game.Balance
             int levelIndex = planned.Levels.Count - 1;
             BalanceRules rules = planned.Rules;
             LevelInput input = planned.InputFor(levelIndex, difficulty);
-            // The finale is a stand-in field, not the map whose waves it borrows: the measured field ease of that map stays out.
-            input.FieldEase = 1f;
+            // The finale is a stand-in field, not the map whose waves it borrows: every gun counts as ideally placed.
+            input.Geometry = null;
             foreach (TowerStats tower in extraTowers)
             {
                 if (!input.Towers.Exists(t => t.Id == tower.Id))

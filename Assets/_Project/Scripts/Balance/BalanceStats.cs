@@ -84,8 +84,17 @@ namespace Game.Balance
         public float GroundFactor = 1f;
         public float AirFactor = 1f;
 
-        /// <summary>In-play efficiency against the ledger's model, measured by the probes (TowerDefinition.LedgerEfficiency).</summary>
+        /// <summary>
+        /// Absolute in-play efficiency of the ledger's capacity for this tower (realised damage over the paper capacity at one),
+        /// fitted on replayed plans and kept on the BalanceCalibration asset, never on the tower (round 22).
+        /// </summary>
         public float Efficiency = 1f;
+
+        /// <summary>Most creatures one blast of a splash gun hurts (TowerDefinition.SplashTargets); zero takes the rules' cap.</summary>
+        public int SplashTargets;
+
+        /// <summary>Share of everything spent on the tower a sale gives back (TowerDefinition.SellRefundFraction).</summary>
+        public float SellRefund = 0.7f;
         public bool IsSupport;
         public bool BlocksGround;
         public bool IsBaseDefence;
@@ -215,5 +224,48 @@ namespace Game.Balance
         public readonly List<GroupSpec> Groups = new List<GroupSpec>();
         public float StartDelay = 8f;
         public float HealthMultiplier = 1f;
+    }
+}
+
+namespace Game.Balance
+{
+    /// <summary>What a path object does, as far as the plan model is concerned.</summary>
+    public enum GadgetKind
+    {
+        Other = 0,
+        Mine = 1,
+        SlowField = 2,
+    }
+
+    /// <summary>A gadget the player lays on the road: its price and its one-wave effect.</summary>
+    public sealed class GadgetStats
+    {
+        public string Id = string.Empty;
+        public GadgetKind Kind;
+        public int Cost;
+        public float Damage;
+        public float Radius;
+
+        /// <summary>Speed share creatures in a slow field are held to (1 = no slow).</summary>
+        public float SlowFactor = 1f;
+    }
+
+    /// <summary>What a drone does, as far as the plan model is concerned.</summary>
+    public enum DroneRole
+    {
+        Other = 0,
+        Harvest = 1,
+        Repair = 2,
+        Attack = 3,
+    }
+
+    /// <summary>A drone the level offers: its price and, for an attack drone, its fire.</summary>
+    public sealed class DroneStats
+    {
+        public string Id = string.Empty;
+        public DroneRole Role;
+        public int Cost;
+        public float Dps;
+        public int Targets = Layer.Ground;
     }
 }

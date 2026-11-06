@@ -43,7 +43,7 @@ namespace Game.Tests
             Assert.IsNotNull(catalog, "Run Tools/Generate/Scenes and Starter Data first.");
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default);
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
 
             var report = new StringBuilder();
             report.Append("Drone lens (report only). One drone of each kind, no permanent drone upgrades. Times are game seconds; a wave is the\n");

@@ -43,11 +43,12 @@ namespace Game.Balance
         /// <summary>Health of one gate with the permanent gate upgrades.</summary>
         public float GateHealth;
 
-        /// <summary>
-        /// How much more the towers do on this map and difficulty than the ledger reckons (measured with the PlayMode probes;
-        /// the first levels' ant crowds and short roads play far easier than the model's average): it scales every gun's capacity.
-        /// </summary>
-        public float FieldEase = 1f;
+        /// <summary>The gadgets this level sells (mines, slow fields) and the drones it offers, for the plan model.</summary>
+        public List<GadgetStats> Gadgets = new List<GadgetStats>();
+        public List<DroneStats> Drones = new List<DroneStats>();
+
+        /// <summary>The map's routes and build spots, for placement; null makes every tower count as ideally placed.</summary>
+        public LevelGeometry Geometry;
 
         public TowerBoost BoostOf(string towerId) => Boosts.TryGetValue(towerId, out TowerBoost boost) ? boost : TowerBoost.None;
     }
@@ -155,7 +156,7 @@ namespace Game.Balance
             return (load.GroundPressure(defence.Stream + HeroStream(level, load, rules), defence.Single + HeroSingle(level, load, rules)), load.AirPressure(defence.Air));
         }
 
-        private static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried)
+        internal static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried)
         {
             WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules);
             load.StreamHealth += carried * rules.CarriedShare;
@@ -208,9 +209,9 @@ namespace Game.Balance
             return blade + gun;
         }
 
-        private static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.Window * rules.HeroShare;
+        internal static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.Window * rules.HeroShare;
 
-        private static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.BossSeconds(load.BossWindow, rules) * rules.HeroShare;
+        internal static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.BossSeconds(load.BossWindow, rules) * rules.HeroShare;
 
         // ---- Buying ------------------------------------------------------------------------------------------------
 
@@ -246,8 +247,8 @@ namespace Game.Balance
             }
         }
 
-        // One tower type at one level: what a single instance contributes against this wave.
-        internal sealed class Option
+        /// <summary>One tower type at one level: what a single instance contributes against this wave (hit points it can take).</summary>
+        public sealed class Option
         {
             public int Tower;
             public int Level;
@@ -266,7 +267,50 @@ namespace Game.Balance
             public int Towers;
         }
 
-        private static List<Option> Options(LevelInput level, WaveLoad load, BalanceRules rules)
+        /// <summary>
+        /// What one tower at one level contributes against a wave from a spot that covers <paramref name="cover"/>: hit points
+        /// of the stream, of the bosses and of the flyers it can take in the time it gets. The time is the spawn span plus its
+        /// own pass (route in reach over the creatures' speed) and, when the gate's queue is in reach, the gate's hold, where a
+        /// splash gun's blast meets its cap. <paramref name="efficiency"/> below zero takes the tower's calibrated value.
+        /// </summary>
+        public static Option Capacity(LevelInput level, WaveLoad load, BalanceRules rules, int towerIndex, int towerLevel, SpotCover cover, float efficiency = -1f)
+        {
+            TowerStats tower = level.Towers[towerIndex];
+            TowerLevelStats stats = tower.Levels[towerLevel];
+            TowerBoost boost = level.BoostOf(tower.Id);
+            bool ground = Layer.Has(tower.Targets, Layer.Ground);
+            bool air = Layer.Has(tower.Targets, Layer.Air);
+            float damage = stats.Damage * boost.Damage;
+            float dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f;
+            // A gun's layer share and the creatures' plating both work per hit, so they scale its damage per layer; the tower's
+            // calibrated in-play efficiency scales everything it deals.
+            float groundHit = damage * tower.GroundFactor;
+            float airHit = damage * tower.AirFactor;
+            float field = dps * (efficiency >= 0f ? efficiency : tower.Efficiency) * rules.Utilisation;
+            float stream = field * tower.GroundFactor * load.StreamPlates.Share(groundHit);
+            float single = field * tower.GroundFactor * load.BossPlates.Share(groundHit);
+            float sky = field * tower.AirFactor * load.AirPlates.Share(airHit);
+            float cap = SplashCap(tower, rules);
+            float pass = cover.GroundPass / Math.Max(0.01f, load.GroundSpeed);
+            float queue = cover.Gate ? load.GateSeconds : 0f;
+            float bossQueue = cover.Gate ? load.BossWindow : 0f;
+            return new Option
+            {
+                Tower = towerIndex,
+                Level = towerLevel,
+                Cost = stats.Cost,
+                AirOnly = air && !ground,
+                Stream = ground ? stream * Overkill(groundHit, load.MeanHealth) * ((load.Span + pass) * Splash(tower.Splash, load.GroundDensity, cap) + queue * (tower.Splash > 0f ? cap : 1f)) : 0f,
+                Single = ground ? single * load.BossSeconds(bossQueue + cover.GroundPass / Math.Max(0.01f, load.BossSpeed), rules) : 0f,
+                Air = air ? sky * Overkill(airHit, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, cap) * (load.AirWindow + cover.AirPass / Math.Max(0.01f, load.AirSpeed)) : 0f,
+            };
+        }
+
+        /// <summary>Spots a competent player has for one tower type: the ledger's typical cover is their mean (LevelGeometry.TypicalCover).</summary>
+        public const int TypicalSpots = 6;
+
+        /// <summary>Every tower and level the player owns, each from a typical good spot of its map (ideal without a map): the purse model buys from these.</summary>
+        internal static List<Option> Options(LevelInput level, WaveLoad load, BalanceRules rules)
         {
             var options = new List<Option>();
             for (int t = 0; t < level.Towers.Count; t++)
@@ -278,44 +322,27 @@ namespace Game.Balance
                 }
 
                 TowerBoost boost = level.BoostOf(tower.Id);
-                bool ground = Layer.Has(tower.Targets, Layer.Ground);
-                bool air = Layer.Has(tower.Targets, Layer.Air);
                 for (int l = 0; l < tower.Levels.Length; l++)
                 {
-                    TowerLevelStats stats = tower.Levels[l];
-                    float damage = stats.Damage * boost.Damage;
-                    float dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f;
-                    float range = stats.Range * boost.Range;
-                    // A gun's layer share and the creatures' plating both work per hit, so they scale its damage per layer; the field
-                    // ease (per map) and the tower's measured in-play efficiency scale everything it deals.
-                    float groundHit = damage * tower.GroundFactor;
-                    float airHit = damage * tower.AirFactor;
-                    float field = dps * level.FieldEase * tower.Efficiency;
-                    float stream = field * tower.GroundFactor * load.StreamPlates.Share(groundHit);
-                    float single = field * tower.GroundFactor * load.BossPlates.Share(groundHit);
-                    float sky = field * tower.AirFactor * load.AirPlates.Share(airHit);
-                    options.Add(new Option
-                    {
-                        Tower = t,
-                        Level = l,
-                        Cost = stats.Cost,
-                        AirOnly = air && !ground,
-                        Stream = ground ? stream * Overkill(groundHit, load.MeanHealth) * Splash(tower.Splash, load.GroundDensity, rules) * (load.Window + 2f * range / load.GroundSpeed) * rules.Utilisation : 0f,
-                        Single = ground ? single * load.BossSeconds(load.BossWindow + 2f * range / load.BossSpeed, rules) * rules.Utilisation : 0f,
-                        Air = air ? sky * Overkill(airHit, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, rules) * (load.AirWindow + 2f * range / load.AirSpeed) * rules.Utilisation : 0f,
-                    });
+                    float range = tower.Levels[l].Range * boost.Range;
+                    bool airOnly = Layer.Has(tower.Targets, Layer.Air) && !Layer.Has(tower.Targets, Layer.Ground);
+                    SpotCover cover = level.Geometry != null ? level.Geometry.TypicalCover(range, airOnly, tower.Splash > 0f, TypicalSpots) : SpotCover.Ideal(range);
+                    options.Add(Capacity(level, load, rules, t, l, cover));
                 }
             }
 
             return options;
         }
 
+        /// <summary>Most creatures one of this tower's blasts hurts: its own cap, else the rules'.</summary>
+        public static float SplashCap(TowerStats tower, BalanceRules rules) => tower.SplashTargets > 0 ? tower.SplashTargets : rules.MaxSplashTargets;
+
         // A hit bigger than the creature is partly wasted.
-        private static float Overkill(float damage, float meanHealth) => meanHealth <= 0f || damage <= meanHealth ? 1f : meanHealth / damage;
+        public static float Overkill(float damage, float meanHealth) => meanHealth <= 0f || damage <= meanHealth ? 1f : meanHealth / damage;
 
         // A splash hit catches more creatures the closer they walk: one plus those inside its diameter, capped.
-        private static float Splash(float radius, float perUnit, BalanceRules rules) =>
-            radius <= 0f ? 1f : Math.Min(rules.MaxSplashTargets, 1f + 2f * radius * perUnit);
+        public static float Splash(float radius, float perUnit, float cap) =>
+            radius <= 0f ? 1f : Math.Min(cap, 1f + 2f * radius * perUnit);
 
         // Greedy purchase, step by step: build a new tower or raise one already built by a level, whichever lowers the
         // wave's worse pressure most per coin. Raising needs a tower at the level below, so steps are never bought alone.

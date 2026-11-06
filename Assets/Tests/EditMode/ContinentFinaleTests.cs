@@ -189,7 +189,7 @@ namespace Game.Tests
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             var boss = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"Assets/_Project/Data/Enemies/{finale.Boss}.asset");
             Assert.IsNotNull(boss, $"run the Continent bosses generator step for {finale.Boss}");
-            CampaignModel real = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default);
+            CampaignModel real = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             var planned = new Dictionary<string, TowerStats>();
             var setup = new Setup { Catalog = catalog, Real = real, Boss = BalanceLedger.Stats(boss) };
             foreach (PlannedTower tower in BalanceSheet.PlannedTowers)

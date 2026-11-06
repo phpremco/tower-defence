@@ -3008,3 +3008,84 @@ Not committed. Changes:
   rhythm, Skitter slip 2); waves are the 21a3 scripts re-solved with the new efficiency. Seed handling: probe_arg `seed=N`;
   seed-1/2 tables of the reverted state are in the scratchpad only. Next round: rebuild the calibration (re-fit the
   utilisation against the current bots) before touching waves again.
+
+## Round 22: the balance pipeline (2026-11-06)
+
+Not committed (the curator commits). Implements the critic's report of round 21 (sections 5-7) and Remco's requirement that
+every stage is a reusable script with one entry point, reading only the definitions and the previous stage's files.
+Docs/BALANCE.md "The balance pipeline" has the method; Docs/COMMANDS.md "Round 22" the commands; chained:
+`bash Tools/PlayTest/balance_pipeline.sh all`.
+
+**Built (files).**
+- Model (`Game.Balance`): `LevelGeometry` (routes sampled with creature shares, gates, build spots, per-spot reach hook,
+  cover per spot), `Ledger.Capacity` (spot-aware capacity; per-tower splash cap; the gate's hold only for guns that reach the
+  queue), `PlanSpec`/`PlanStep` (replayable plans, JSON), `PlanEvaluator` (purse walk, placement, mines, slow fields, drones,
+  sales), `PlanSearch` (stage A: random sampling + local improvement, distinct winners, obvious family on paper),
+  `CalibrationFit` (absolute per-tower efficiency fit with saturation, verdict agreement, Spearman, record text format),
+  `AcceptanceRules` (Remco's rule per difficulty; `TutorialCells` = C1_01 Medium, explicit), `InputHash`.
+- Game side: `BalanceCalibration` asset (`Data/Balance/BalanceCalibration.asset`, written only by the apply stage, carries the
+  InputHash), `TerrainBalance` (the per-terrain reach hook, all 1), `BalanceLedger.Geometry/Gadgets/Drones`,
+  `BalanceLedger.Campaign(..., calibration)`. `TowerDefinition._splashTargets` (Cannon 3, Flak 4); `Projectile` caps its blast
+  at the nearest N. Removed: `_ledgerEfficiency`, `_balanceFieldEase`, `_softTargetShare`, `_slipCrowd` (and their generator,
+  Codex and Enemy code). `BalanceSheet.Prices(id, dps)` derives upgrade steps from `BalanceRules.UpgradeMargin` 1.15.
+- Editor: `BalanceStages` (fit, apply, solve, search, build, acceptance; menu `Tools/Generate/Balance/2..7`), `WaveTuning`
+  (the builder's lever file `Tools/PlayTest/wave_tuning.txt` -> `WaveScriptSpec.TargetScale` -> `LevelDefinition._balanceTargetScale`
+  -> `CampaignModel.HumanTarget`), `ProjectGenerator.SolveWavesOnly`.
+- Tests: PlayMode `BalancePipelineTests` (smoke; `Measure_Yardstick_ObviousFamily`; `Measure_StepCheck_FineAgainstUsual`),
+  `PlanReplayTests` (stage B); EditMode `CalibrationFitTests`, `PlanSearchTests`, `BalanceAcceptanceTests`. The probe bot gained
+  the obvious family (`PlayStyle.MonoRow/NearGate/Affordable`, no ledger) and scripted plans (`PlayStyle.Scripted`), seeds per
+  run (`Probe(..., seed)`, `Seeds()` from probe_arg), and per-wave records (`BotRun.Records`). `MonocultureProbeTests` is gone
+  (replaced by the yardstick); `probe_arg.txt` is untracked (.gitignore) and optional.
+- Scripts: `ApplyCalibration.cs`, `ApplyWaves.cs` (now `BalanceStages.SolveWaves`), `ApplyRoles.cs` (no field ease);
+  `ApplyEfficiency.cs` and `tower_efficiency.txt` deleted.
+
+**Pipeline run of this round (seed 1, step 0.2 s; Medium and Hard measured, every difficulty searched; replay on C1_01/C1_02 Easy and Medium).**
+- Yardstick (`Tools/PlayTest/yardstick.txt`, 70 runs): the obvious family loses every cell from C1_02 on, on Medium and Hard
+  (mono rows, naive and affordable alike); on C1_01 Medium (the tutorial cell) mono Cannon and affordable win 3*, naive and
+  mono Gun Turret lose; C1_01 Hard rejects all of them. The creative reference wins C1_01 and C1_02 Medium, C1_04 Medium, loses
+  the rest (the waves of that run were still the 21a4 solve).
+- Calibration (`Tools/PlayTest/calibration.txt`, 77 runs incl. 7 replayed plans): Cannon 0.842, Gun Turret 0.671, Laser 0.569,
+  Flak 1.032 (absolute, human lens 0.34). Hold-out verdict agreement 90% (mono rows 94%), self 90%: the 90% bar is met.
+  Spearman of the plan ranking per cell 0.53 against the 0.8 bar: NOT met (cells of six runs where most lose; the realised
+  score of losses is waves reached, which the paper margin orders poorly). Every remaining disagreement is "ledger falls,
+  game won" on C1_01 and C1_02 (the paper is conservative on the first two levels), none the other way round.
+- Two model fixes came out of the first fit and are in: a boss wave is judged at cap 1 (`BalanceRules.BossWaveCap`), and the
+  spotless ledger buys from the mean of the six best spots per type (`LevelGeometry.TypicalCover`) instead of an ideal spot,
+  so the solver reckons with the placement the calibration was fitted on. The recorder counts health really taken, not the
+  hit carried (the first sweep had that bug and gave efficiencies of 2.0-2.3; it was re-run).
+- Plan search (`Tools/PlayTest/plans_summary.txt`, 3000 samples per cell, after the solve against the calibration): plans
+  hold on paper on C1_01 Easy/Medium (3/1 distinct), C1_02 Easy (6), C1_04/C1_05/C1_06 Easy (1-2); on every Medium cell from
+  C1_02 and on every Hard and Psycho cell the best found plan is below the cap (margins 0.97 to 0.31) while the spotless
+  ledger (BalanceLedgerTests) says a competent player has the curve's surplus there. The obvious family on paper falls
+  everywhere from Medium on except C1_01 Medium mono Gun Turret (1.17).
+- Replay (`Tools/PlayTest/plan_replay.txt`, 7 runs): 5 of 7 plans won with 3 stars, including C1_02 Medium's "best" (paper
+  margin 0.97): the paper is conservative there; two plans lost because their later builds were never affordable in play
+  (the purse walk is still more generous than the game's).
+- Acceptance (`Tools/PlayTest/acceptance.txt`): C1_01 Easy PASS, C1_01 Medium PASS (tutorial, obvious wins noted), C1_02
+  Easy PASS, C1_02 Medium PASS; the other ten recorded cells FAIL for lack of replayed plans (the search found no holding plan
+  there, so nothing was replayed). Test totals: EditMode 664: 609 passed, 3 failed, 52 skipped (the skips are the reported
+  checks: calibration below its Spearman bar, acceptance cells, plan search on no stale calibration passes). PlayMode: one
+  class at a time, `BalancePipelineTests` smoke and the three explicit stages ran clean (no level errors).
+
+**Open (handover).**
+1. The gap between the spotless ledger (surplus on the curve) and the plan search (no holding plan from C1_02 Medium on) is the
+   round's main open point. Candidates: the search's random plans are poor (a constructive plan that follows the ledger's own
+   greedy purchase on the best spots should be in the sample set; more samples; the local search is shallow); the purse walk
+   differs (the ledger re-buys the whole defence every wave from the full purse, a plan carries its sunk towers); the typical
+   cover of six spots is still above what a real row of 8-12 towers gets. Next step: add the constructive plan, compare its
+   paper line against the ledger's line wave by wave on C1_03 Medium, fix the model side that differs, then re-solve.
+2. `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` fails by a hair on C1_03 Hard wave 16 and C1_04 Hard waves 3,
+   6, 10 (pressure 1.32-1.41 with the hero against 1.30): the human cap trim (CampaignModel.CapScale) stops a step early with
+   the typical cover. `ContinentFinaleTests` fails for Gravemaw (too hard at its finale on every difficulty) and the Psycho
+   boss share (derived 1.45-1.55 instead of 1.75): the continent bosses were tuned under the old ledger and need the finale
+   probe of round 10 again (Remco's "as played" method), not a hand edit.
+3. The step check (`Measure_StepCheck_FineAgainstUsual`) and the Easy/Psycho yardstick were not run (time); the fit reports
+   "no fine-step records". The builder stage (`Tools/Generate/Balance/6`, `BalanceStages.Build`) is implemented but was not
+   run: with no holding plans from C1_02 Medium on it would only lower every cell's target, which is point 1's question first.
+4. Design questions for Remco: (a) the Gun Turret row holds C1_01 Medium on paper (1.17) and C1_01 Medium stays the tutorial
+   exception, fine; but C1_01 Hard and every Medium from C1_02 reject every searched plan on paper while the creative bot won
+   C1_02 Medium and C1_04 Medium in play: is the curve (HumanSurplus 1.15 on Medium) meant to be that tight, or should the
+   plan search's bar be the ledger's hero cap with the base's health as a buffer (the model has no base-health accounting)?
+   (b) Boss waves judged at cap 1 everywhere (a boss at the base ends the level): confirm.
+5. Save state: `progress.json` was absent before the round, the PlayMode runs created one, it was deleted afterwards; the
+   dev backup was not touched. `probe_arg.txt` is untracked and removed (default: every level, every difficulty, seeds 1..3).

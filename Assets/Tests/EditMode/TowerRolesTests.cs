@@ -38,8 +38,6 @@ namespace Game.Tests
         private const float AirDensity = 0.8f;
         private static readonly float[] ArmourPerHit = { 4f, 8f, 12f };
 
-        // An upgrade must beat the towers it replaces by a little, not merely tie (rounding in prices would undo a tie).
-        private const float UpgradeMargin = 1.03f;
 
         // A level of the first continent runs about this many waves: what a gun bought instead of a slow field serves.
         private const int SlowLevelWaves = 16;
@@ -89,6 +87,7 @@ namespace Game.Tests
         {
             List<TowerDefinition> guns = Guns();
             Assert.IsNotEmpty(guns, "Run Tools/Generate/Scenes and Starter Data first.");
+            BalanceRules rules = BalanceRules.Default;
             var failures = new List<string>();
             foreach (TowerDefinition gun in guns)
             {
@@ -99,11 +98,11 @@ namespace Game.Tests
                     TowerLevelStats high = stats.Levels[level + 1];
                     float n = CostTo(gun, level + 1) / (float)Mathf.Max(1, CostTo(gun, level));
                     bool hits = high.Damage > low.Damage;
-                    bool single = high.Dps >= n * low.Dps * UpgradeMargin;
+                    bool single = high.Dps >= n * low.Dps * rules.UpgradeMargin;
                     bool spread = n > 1f;
                     if ((!hits || !single || !spread) && !UpgradeExceptions.ContainsKey(gun.name))
                     {
-                        failures.Add(Invariant($"{gun.name} L{level}->L{level + 1}: hit {low.Damage:0.#}->{high.Damage:0.#}, single {high.Dps:0.#} vs {n:0.00} x {low.Dps:0.#} = {n * low.Dps:0.#} (ratio {high.Dps / Mathf.Max(0.01f, n * low.Dps):0.000}, need {UpgradeMargin})"));
+                        failures.Add(Invariant($"{gun.name} L{level}->L{level + 1}: hit {low.Damage:0.#}->{high.Damage:0.#}, single {high.Dps:0.#} vs {n:0.00} x {low.Dps:0.#} = {n * low.Dps:0.#} (ratio {high.Dps / Mathf.Max(0.01f, n * low.Dps):0.000}, need {rules.UpgradeMargin})"));
                     }
                 }
             }
@@ -120,7 +119,7 @@ namespace Game.Tests
             report.Append("   step: one tower at L+1 (upgrade) vs n towers at L for the same coins. hit = damage per hit; single = DPS on one\n");
             report.Append("   target (no armour); plated8 = single-target DPS through a flat 8 plating (20% floor); multi = DPS into a\n");
             report.Append("   clustered group (splash); targets = creatures hit per volley; risk = share of that damage lost when one tower is wrecked.\n");
-            report.Append("   Remco's rule: the upgrade wins on hit and single; n towers win only on targets/rate. 'rule' = upgrade single >= 1.03 x n towers single.\n");
+            report.Append("   Remco's rule: the upgrade wins on hit and single; n towers win only on targets/rate. 'rule' = upgrade single >= " + rules.UpgradeMargin + " x n towers single.\n");
             int met = 0;
             int steps = 0;
             foreach (TowerDefinition gun in guns)
@@ -131,8 +130,8 @@ namespace Game.Tests
                     TowerLevelStats low = stats.Levels[level];
                     TowerLevelStats high = stats.Levels[level + 1];
                     float n = CostTo(gun, level + 1) / (float)Mathf.Max(1, CostTo(gun, level));
-                    float splash = Splash(stats.Splash, GroupDensity, rules);
-                    bool rule = high.Dps >= n * low.Dps * UpgradeMargin;
+                    float splash = Splash(stats, GroupDensity, rules);
+                    bool rule = high.Dps >= n * low.Dps * rules.UpgradeMargin;
                     met += rule ? 1 : 0;
                     steps++;
                     report.Append(Invariant($"   {gun.name,-11} L{level}->L{level + 1} coins {CostTo(gun, level + 1),4} | upgrade: hit {high.Damage,6:0.#} single {high.Dps,6:0.#} plated8 {Plated(high, 8f),6:0.#} multi {high.Dps * splash,6:0.#} targets {splash,3:0.#} rate {1f / high.Interval,4:0.##}/s risk 100%"));
@@ -152,7 +151,7 @@ namespace Game.Tests
             report.Append(Invariant($"   swarm = {SwarmHealth} hp, {SwarmDensity}/cell (overkill + splash); group = {GroupHealth} hp, {GroupDensity}/cell; air = {AirHealth} hp, {AirDensity}/cell, at the gun's air share;\n"));
             report.Append("   armour: 'pool' is the bosses' armour layer (it soaks a share of every hit until it is gone, the same for every hit\n");
             report.Append("   size, so per coin it ranks like single) and 'plate A' the species' flat per-hit plating (hit - A, at least 20%);\n");
-            report.Append(Invariant($"   single = one high-health target (no overkill, no splash). Splash cap {rules.MaxSplashTargets}.\n"));
+            report.Append(Invariant($"   single = one high-health target (no overkill, no splash). splash cap per gun (TowerDefinition.SplashTargets, else {rules.MaxSplashTargets}).\n"));
             report.Append("   tower       lvl  coins   swarm   group     air    pool  plate4  plate8 plate12  single\n");
             foreach (TowerDefinition gun in guns)
             {
@@ -164,9 +163,9 @@ namespace Game.Tests
                     TowerLevelStats at = stats.Levels[level];
                     float per = CoinUnit / Mathf.Max(1, CostTo(gun, level));
                     report.Append(Invariant($"   {gun.name,-11} L{level} {CostTo(gun, level),6}"));
-                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, SwarmHealth) * Splash(stats.Splash, SwarmDensity, rules) * per));
-                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, GroupHealth) * Splash(stats.Splash, GroupDensity, rules) * per));
-                    report.Append(Cell(air, at.Dps * stats.AirFactor * Overkill(at.Damage * stats.AirFactor, AirHealth) * Splash(stats.Splash, AirDensity, rules) * per));
+                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, SwarmHealth) * Splash(stats, SwarmDensity, rules) * per));
+                    report.Append(Cell(ground, at.Dps * Overkill(at.Damage, GroupHealth) * Splash(stats, GroupDensity, rules) * per));
+                    report.Append(Cell(air, at.Dps * stats.AirFactor * Overkill(at.Damage * stats.AirFactor, AirHealth) * Splash(stats, AirDensity, rules) * per));
                     report.Append(Cell(ground, at.Dps * per));
                     foreach (float armour in ArmourPerHit)
                     {
@@ -427,8 +426,7 @@ namespace Game.Tests
 
         private static float Overkill(float damage, float health) => damage <= health ? 1f : health / damage;
 
-        private static float Splash(float radius, float density, BalanceRules rules) =>
-            radius <= 0f ? 1f : Mathf.Min(rules.MaxSplashTargets, 1f + 2f * radius * density);
+        private static float Splash(TowerStats tower, float density, BalanceRules rules) => Ledger.Splash(tower.Splash, density, Ledger.SplashCap(tower, rules));
 
         private static string Cell(bool applies, float value) => applies ? Invariant($" {value,7:0.0}") : "       -";
 

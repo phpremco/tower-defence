@@ -18,6 +18,11 @@ namespace Game.Editor
         // creature in flight (was 14 cells a second).
         private const float BulletSpeed = 30f;
         private const float CannonSplash = 1.2f;
+
+        // Round 22, the swarm role in the data: a shell hurts at most three creatures (a pack, a queue), a flak burst four packed
+        // flyers, so against a dense ant swarm the rate-of-fire guns deal more per coin and the Cannon keeps the groups and plates.
+        private const int CannonSplashTargets = 3;
+        private const int FlakSplashTargets = 4;
         // Round 21a3: the shell is fired at the spot and flies 0.6 to 0.9 s (3 to 4.5 cells at 5 a second), so an ant at full run
         // (1.6 a second) is about at the blast's edge when it lands, a queue or a pack is not; it used to home in and never miss.
         private const float CannonShellSpeed = 5f;
@@ -34,12 +39,12 @@ namespace Game.Editor
         private static void GenerateCoreTowers(GeneratorContext context)
         {
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, BulletSpeed, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 5f, LightGunReach, 0.35f), Lvl(50, 9f, LightGunReach + 0.3f, 0.3f), Lvl(90, 15f, LightGunReach + 0.6f, 0.25f) }, 150f, airDamageFactor: GunAirShare, softTargetShare: LightGunSoftShare);
+                new[] { Lvl(50, 5f, LightGunReach, 0.35f), Lvl(50, 9f, LightGunReach + 0.3f, 0.3f), Lvl(90, 15f, LightGunReach + 0.6f, 0.25f) }, 150f, airDamageFactor: GunAirShare);
             context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, CannonShellSpeed, CannonSplash, new Color(1f, 0.8f, 0.3f),
-                new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f, homing: false);
+                new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f, homing: false, splashTargets: CannonSplashTargets);
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),
-                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f, retargetRadius: MissileRetargetRadius);
+                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f, retargetRadius: MissileRetargetRadius, splashTargets: FlakSplashTargets);
             SetFuse(context.Rocket, FlakFuse);
 
             // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.

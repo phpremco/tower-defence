@@ -19,6 +19,11 @@ namespace Game.Balance
         public string RewardHeroPerkId = string.Empty;
         public int Research;
         public int Power;
+
+        /// <summary>The builder's target scale per difficulty as stored on the level (LevelDefinition.BalanceTargetScale), 1 = the curve.</summary>
+        public float[] TargetScale = { 1f };
+
+        public float TargetScaleFor(int difficulty) => TargetScale == null || TargetScale.Length == 0 ? 1f : TargetScale[difficulty < TargetScale.Length ? difficulty : TargetScale.Length - 1];
     }
 
     /// <summary>What the player brings into a level on a difficulty: owned towers and the permanent upgrades bought.</summary>

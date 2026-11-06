@@ -13,7 +13,7 @@ namespace Game.Combat
     {
         private const float HitDistance = 0.15f;
 
-        private readonly List<ITargetable> _splashTargets = new List<ITargetable>();
+        private readonly List<ITargetable> _splashTargetList = new List<ITargetable>();
 
         private TargetRegistry _registry;
         private Action<Projectile> _release;
@@ -67,6 +67,9 @@ namespace Game.Combat
         // out of the blast by then while a queue or a pack is not (TowerDefinition.Homing, round 21a3).
         private bool _homing = true;
 
+        // Most creatures one blast hurts, the nearest to the impact first; zero hurts everything in the radius (TowerDefinition.SplashTargets).
+        private int _splashTargets;
+
         public void Launch(
             Vector3 from,
             ITargetable target,
@@ -83,7 +86,8 @@ namespace Game.Combat
             float fuseRadius = 0f,
             object source = null,
             float retargetRadius = 0f,
-            bool homing = true)
+            bool homing = true,
+            int splashTargets = 0)
         {
             transform.position = from;
             _source = source;
@@ -93,6 +97,7 @@ namespace Game.Combat
             _aimedLayer = target.Layer;
             _retargetRadius = retargetRadius;
             _homing = homing;
+            _splashTargets = splashTargets;
             _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
@@ -145,12 +150,12 @@ namespace Game.Combat
 
         private void Retarget()
         {
-            _registry.FindInRadius(_lastTargetPosition, _retargetRadius, _mask, _splashTargets);
+            _registry.FindInRadius(_lastTargetPosition, _retargetRadius, _mask, _splashTargetList);
             ITargetable nearest = null;
             float best = float.MaxValue;
-            for (int i = 0; i < _splashTargets.Count; i++)
+            for (int i = 0; i < _splashTargetList.Count; i++)
             {
-                ITargetable candidate = _splashTargets[i];
+                ITargetable candidate = _splashTargetList[i];
                 float distance = (candidate.Position - _lastTargetPosition).sqrMagnitude;
                 if (candidate.Layer == _aimedLayer && !_registry.IsConcealed(candidate) && distance < best)
                 {
@@ -166,11 +171,12 @@ namespace Game.Combat
         {
             if (_splashRadius > 0f)
             {
-                _registry.FindInRadius(_impactPoint, _splashRadius, _mask, _splashTargets);
-                for (int i = 0; i < _splashTargets.Count; i++)
+                _registry.FindInRadius(_impactPoint, _splashRadius, _mask, _splashTargetList);
+                CapSplash();
+                for (int i = 0; i < _splashTargetList.Count; i++)
                 {
-                    Deal(_splashTargets[i], true);
-                    _splashTargets[i].ApplySlow(_slowFactor, _slowSeconds);
+                    Deal(_splashTargetList[i], true);
+                    _splashTargetList[i].ApplySlow(_slowFactor, _slowSeconds);
                 }
             }
             else if (_target != null && _target.IsAlive)
@@ -183,6 +189,34 @@ namespace Game.Combat
             _target = null;
             _source = null;
             _release(this);
+        }
+
+        // Keeps the nearest creatures to the impact up to the cap (a partial selection sort: the lists are short).
+        private void CapSplash()
+        {
+            if (_splashTargets <= 0 || _splashTargetList.Count <= _splashTargets)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _splashTargets; i++)
+            {
+                int nearest = i;
+                float best = (_splashTargetList[i].Position - _impactPoint).sqrMagnitude;
+                for (int j = i + 1; j < _splashTargetList.Count; j++)
+                {
+                    float distance = (_splashTargetList[j].Position - _impactPoint).sqrMagnitude;
+                    if (distance < best)
+                    {
+                        best = distance;
+                        nearest = j;
+                    }
+                }
+
+                (_splashTargetList[i], _splashTargetList[nearest]) = (_splashTargetList[nearest], _splashTargetList[i]);
+            }
+
+            _splashTargetList.RemoveRange(_splashTargets, _splashTargetList.Count - _splashTargets);
         }
 
         private void Deal(ITargetable target, bool splash)

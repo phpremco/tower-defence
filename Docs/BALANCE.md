@@ -783,3 +783,111 @@ Boss shares re-derived: Hard 1.45, Psycho 1.75. C1_04 Psycho raids 1.2x, C1_06 H
 Railgun instant. The naive probe bot now plays a careless human (first free spots nearest the defence gate, random
 affordable upgrades). Efficiency re-measured; the calibration loop itself (Utilisation fitted to the 2026-11-04 greedy bot)
 is to be rebuilt next round, see STATUS.
+
+## The balance pipeline (2026-11-06, round 22)
+
+Remco's requirement: when anything is tweaked, the whole check runs again with one command and no one has to think
+anything up. The critic of round 21 found the old loop circular (the ledger calibrated on bots that bought by the ledger,
+one seed, a mean-normalised efficiency, wave scripts changed to make a table come out). Round 22 replaces it with a
+pipeline of stages, each one entry point, each reading the previous stage's files and the game's definitions. Nothing is
+typed in from a past run. Commands: Docs/COMMANDS.md "Round 22"; chained: `bash Tools/PlayTest/balance_pipeline.sh all`.
+
+```
+measure (PlayMode)      obvious family + creative reference, every cell, seeds 1..N, fixed step -> yardstick.txt, calibration_records.txt
+fit (EditMode)          per-tower efficiency fitted on the records, hold-out + step check -> calibration.txt
+apply (script/menu)     calibration.txt -> Data/Balance/BalanceCalibration.asset (with the InputHash of the data it was fitted on)
+solve (script/menu)     waves of every level re-solved against the calibrated model (the generator's own steps)
+search (EditMode, A)    thousands of plans per cell on paper -> Plans/<Level>_<d>.txt (readable) + *.json (replayable), plans_summary.txt
+replay (PlayMode, B)    the searched plans over the seeds -> plan_replay.txt, plan_records.txt (feeds the next fit)
+acceptance (EditMode)   Remco's rule per difficulty on the recorded runs -> acceptance.txt
+```
+
+**What is data now.** `BalanceCalibration` (asset, written only by the apply stage): per tower type the absolute in-play
+efficiency, the human and bot utilisation, the seeds, the step, the date and the `InputHash` of the inputs it was fitted
+on. `TowerDefinition._ledgerEfficiency` and `LevelDefinition._balanceFieldEase` are gone (the fudge knobs the critic named).
+Every stage prints the calibration's state against the current `InputHash` (towers, creatures, difficulties, upgrades,
+maps with their build spots and reach multipliers, gadgets, drones, rules; the waves are left out because the solve stage
+changes them on purpose). A different hash means STALE: the report says so, `PlanSearchTests` is ignored with the reason,
+and the right move is measure -> fit -> apply again. Recalibrate after a mechanic or data change; never between a solve
+and its verify.
+
+**Placement is in the model.** `LevelGeometry` (built from the map by `BalanceLedger.Geometry`) samples the walking and
+flight routes cell by cell with the share of creatures that pass each cell (the trunk counts fully, a lane of its own its
+share), knows the gates and every buildable cell beside the road, and gives a spot's cover for a reach: the route cells in
+reach, whether the defence gate's queue is in reach, and the bunched share (queue, bends). `Ledger.Capacity` now takes that
+cover: a gun's time on a wave is the spawn span plus its own pass (route in reach over the creatures' speed) and, only when
+it reaches the queue, the gate's hold, where a splash gun's blast meets its cap. The spotless ledger (solver, bands) uses
+the ideal cover (a straight pass, the queue in reach). Per-spot modifiers are a data hook: `TerrainBalance.RangeMultiplier`
+per `TerrainKind` (all 1 today) feeds `LevelGeometry.SetSpotRange`, and the spot lens, the plan search and the fit all read
+the reach through it, so a raised platform that lengthens reach later needs that one table and `Tower.Range`, no new rule.
+
+**The calibration (fit stage, `CalibrationFit`).** Every recorded run (bot or replayed plan) carries per wave: the towers
+standing with their cells, the health the wave spawned, and the damage each tower type really took off that wave's
+creatures (after plating and overkill). The paper side is `PlanEvaluator.CapacityByType` for the same standing set from
+its real spots at efficiency one, in the human lens with the hero. Per type, efficiency = sum of realised / sum of paper
+capacity, where a wave the defence out-gunned saturates (its capacity counts only up to the health there was to take,
+shared in proportion); iterated to a fixed point. No mean normalisation, no field ease. Then the fit checks itself: with
+the fitted numbers, the ledger's verdict on every run (every wave inside the hero cap) against what happened, mono rows
+counted separately, and per cell the Spearman correlation of the analytic margin and the realised score (stars, base,
+coins). Hold-out: fitted on the odd levels and judged on the even ones and back. The bar: 90% agreement (mono too) and
+Spearman 0.8. The step check fits the same runs at 0.2 s and 0.05 s; a type drifting more than 10% means the coarse step
+is not a calibration step. The calibration's utilisation is the rules' frame (human 0.34, bot 0.27); the efficiencies are
+absolute within it.
+
+**The yardstick (measure stage).** The obvious family reads no balance model, so it never moves between rounds:
+*mono T* (a row of one owned type on its role spots; the row first, then alternating an upgrade and a tower), *naive*
+(the owned types in turn on the first free spots nearest the gate, an air gun every third tower where flyers come, a
+random upgrade every third purchase), *affordable* (the dearest step it can afford, coverage spots). The ledger-driven
+*creative* bot stays as a reference row. Every cell is played over the seeds (default 1..3, `seeds=` in probe_arg) at a
+fixed 0.2 s step; the table shows wins over seeds, the header the seeds, the step and the calibration state.
+
+**The tester, stage A (`PlanSearch`).** Omniscient: it reads every wave, origin and route, as a replaying player learns
+them. A plan (`PlanSpec`, JSON) is an ordered list of steps, each taken from its wave on as soon as the purse has the price
+(an unaffordable step blocks the ones after it, as it would a player following the plan): builds (type, spot, wave),
+upgrades, mines (one blast off the wave's stream), slow fields (the guns covering the cell deal more for that wave),
+drone buys (the harvester opens the ore, the attack drone fires everywhere; the repair drone has no paper value) and, on
+Psycho only, a sale (Remco: selling is a last resort, never required). Spots are the best few per type from the geometry,
+waves are coarse. Thousands of random plans per cell are judged by `PlanEvaluator` (purse walk with the ledger's kill
+timing, placement, gadget windows), the best few are improved by small changes, and the output per cell is readable:
+the best spots per tower with their cover, the obvious family on the same paper, and the distinct winning plans (different
+spots, mixes or timing) wave by wave, which tower where and when, and what to upgrade. Remco can follow a plan himself.
+
+**The tester, stage B (`PlanReplayTests`).** Replays the cell's plans as scripted runs (`ProbeStrategy.Scripted`: no
+decision at run time; the hero fights and wrecks are scrapped as before) over the seeds, records outcome, stars, base
+health and coins, and writes its wave records to `plan_records.txt`, so the next fit learns from plans as well as bots.
+
+**Acceptance per difficulty (`AcceptanceRules`, `BalanceAcceptanceTests`).** Remco's strategy rule holds on every
+difficulty; only the margin grows. Judged on recorded runs; the one exception is explicit in the rule
+(`AcceptanceRules.TutorialCells`: C1_01 Medium may stay forgiving; its obvious wins are noted, not failed).
+
+| Difficulty | Obvious family | Best searched plan | Margin |
+| --- | --- | --- | --- |
+| Easy | two of the three kinds win on most seeds; nobody dies before the last third | wins every seed with 3 stars | beats every obvious run on every seed: a star more, or 25% more base and 20% more coins |
+| Medium | mono rows never win; naive at most 1 in 5 with 1 star; affordable loses on most seeds | wins 4 of 5 with 2 stars; 3 distinct plans win | the obvious plans' best outcome two stars below |
+| Hard | every obvious run loses and falls before the last third | wins 3 of 5 using two of: gadgets, a drone, a sale, three or more upgrades | as Hard |
+| Psycho | as Hard | wins 2 of 5, buys a drone; a plan reaches the finale on every seed; the replayed plans differ in spots, mix or timing | as Hard |
+
+**Data changes of round 22 (the swarm role in the data, the upgrade margin).**
+- `TowerDefinition._splashTargets`: a blast hurts at most that many creatures, the nearest to the impact (Cannon 3, Flak
+  4, others unlimited; the ledger's `Splash` caps at it, the Codex says "hits up to N creatures"). Against a dense ant
+  swarm the rate-of-fire guns now deal more per coin; the Cannon keeps the groups, the queue and the plates.
+- `BalanceRules.UpgradeMargin` 1.15 (was 1.03 in the test only): `BalanceSheet.Prices` derives every upgrade step from
+  the DPS it buys so the coins to reach a level buy at least 1.15x the single-target DPS per coin of the level below
+  (rounded down to 5). Build prices stay a table (Gun Turret 50, Cannon 100, Flak 120, Laser 130, Tesla 140, Railgun
+  220); the steps are no longer typed: Gun Turret 50/40/65, Cannon 100/95/155, Flak 120/80/105, Laser 130/55/100.
+- Removed, as hidden fudges a player cannot see: `_softTargetShare` (light guns aiming past plates: plating should make
+  the Cannon wanted, not quietly steer the light guns) and `_slipCrowd` (ants climbing a crowded gate, added only to break
+  the Cannon's queue feast; the splash cap does that honestly and gates keep their value). The Codex lines went with them.
+
+**Known limits.** The repair drone, tower wear and the hero's abilities have no paper value (the fit absorbs their average
+into the efficiencies). Boss mechanics are the ledger's cap-based loss, as before. The builder (solve against a frozen
+calibration, re-solve only failing cells, at most two iterations, then a design question) runs the solver once per
+pipeline run; per-cell script levers are a later step (see STATUS, round 22).
+
+**First run of the pipeline (2026-11-06, seed 1).** Calibration: Cannon 0.842, Gun Turret 0.671, Laser 0.569, Flak 1.032
+(hold-out agreement 90%, mono 94%, Spearman 0.53: the ranking bar is not met yet). Two fixes came out of the fit: a boss
+wave is judged at cap 1 (`BalanceRules.BossWaveCap`) and the spotless ledger buys from the mean cover of the six best spots
+per type (`LevelGeometry.TypicalCover`, `Ledger.TypicalSpots`), so the solver reckons with the placement the calibration was
+fitted on. The obvious family loses every measured cell from C1_02 on (Medium and Hard), the searched plans hold on paper on
+the Easy cells and C1_01 Medium, and 5 of 7 replayed plans won with 3 stars; from C1_02 Medium on no searched plan holds on
+paper although the spotless ledger puts a competent player on the curve there: the round's open point (STATUS, round 22).

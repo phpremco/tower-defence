@@ -31,6 +31,8 @@ namespace Game.Editor
                     scripts.Add(spec.Waves);
                 }
 
+                // The builder's tuning (round 22) rides on the scripts, so every reader sees the same tuned curve.
+                WaveTuning.Apply(scripts);
                 return scripts.ToArray();
             }
         }

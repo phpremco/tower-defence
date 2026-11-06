@@ -1,0 +1,29 @@
+Quartz Flats (Level_C1_05) on Psycho: plan search, 3000 plans sampled, 0 hold on paper, cap 1.40. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
+'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
+as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+
+Best spots per tower (first is best):
+  Gun Turret     (7,5) cover 15.0 gate bunch 0.6; (7,4) cover 13.0/0.5 air gate bunch 0.6; (20,5) cover 16.0/0.5 air bunch 0.5; (21,5) cover 16.0/0.5 air bunch 0.4; (6,5) cover 12.0 gate bunch 0.7; (6,6) cover 12.0 gate bunch 0.7;
+  Cannon         (7,5) cover 15.0 gate bunch 0.6; (7,4) cover 13.0/0.5 air gate bunch 0.6; (20,5) cover 16.0/0.5 air bunch 0.5; (6,5) cover 12.0 gate bunch 0.7; (6,6) cover 12.0 gate bunch 0.7; (20,4) cover 15.0/2.5 air bunch 0.5;
+  Laser Turret   (7,5) cover 17.0 gate bunch 0.6; (6,6) cover 15.0 gate bunch 0.6; (7,4) cover 15.0/1.5 air gate bunch 0.6; (8,6) cover 15.0 gate bunch 0.5; (20,5) cover 18.0/1.5 air bunch 0.5; (21,5) cover 18.0/1.5 air bunch 0.5;
+  Flak Turret    (34,4) cover 14.0/9.0 air bunch 0.8; (34,5) cover 15.0/9.0 air bunch 0.8; (35,4) cover 13.0/8.5 air bunch 0.8; (33,4) cover 14.0/8.0 air bunch 0.9; (33,5) cover 15.0/8.0 air bunch 0.9; (35,5) cover 14.0/8.0 air bunch 0.8;
+
+Obvious plans on paper:
+  mono PulseRifle    margin 0.05 falls at wave 3, coins left 292, steps taken 18
+  mono Cannon        margin 0.00 falls at wave 4, coins left 2, steps taken 9, 11 never affordable
+  mono Laser         margin 0.00 falls at wave 3, coins left 14, steps taken 6, 14 never affordable
+  naive              margin 0.05 falls at wave 3, coins left 83, steps taken 10, 8 never affordable
+
+Distinct winning plans (0; different spots, mixes or timing):
+
+No plan holds on paper. Best found: margin 0.42, falls at wave 5
+  from wave  1: build Cannon at (7,4); build Cannon at (7,5); build Gun Turret at (20,5); build Flak Turret at (34,4)
+  from wave  3: upgrade the tower at (20,5)
+  from wave  4: upgrade the tower at (7,4); upgrade the tower at (20,5)
+  from wave  5: build Flak Turret at (33,5); build Gun Turret at (21,5); upgrade the tower at (33,5)
+  from wave  6: build Cannon at (20,4); build Cannon at (6,5)
+  from wave  9: build Flak Turret at (34,5)
+  from wave 10: build Laser Turret at (6,6); upgrade the tower at (21,5)
+  from wave 13: upgrade the tower at (7,4); upgrade the tower at (34,5)
+  from wave 17: upgrade the tower at (33,5); upgrade the tower at (21,5); upgrade the tower at (34,5)

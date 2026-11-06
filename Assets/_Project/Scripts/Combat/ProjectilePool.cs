@@ -32,10 +32,10 @@ namespace Game.Combat
 
         public VfxQuality Quality => _quality;
 
-        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default, float fuseRadius = 0f, object source = null, float retargetRadius = 0f, bool homing = true)
+        public void Fire(Vector3 from, ITargetable target, float damage, float speed, float splashRadius, TargetLayers mask, float slowFactor = 1f, float slowSeconds = 0f, ProjectileStyle style = ProjectileStyle.Bolt, Color color = default, float fuseRadius = 0f, object source = null, float retargetRadius = 0f, bool homing = true, int splashTargets = 0)
         {
             Projectile projectile = _pool.Get();
-            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds, style, color == default ? BurstColor : color, fuseRadius, source, retargetRadius, homing);
+            projectile.Launch(from, target, damage, speed, splashRadius, mask, _registry, _pool.Release, slowFactor, slowSeconds, style, color == default ? BurstColor : color, fuseRadius, source, retargetRadius, homing, splashTargets);
             Shot?.Invoke(new ShotInfo(from, splashRadius, mask, slowFactor < 1f, style));
         }
 

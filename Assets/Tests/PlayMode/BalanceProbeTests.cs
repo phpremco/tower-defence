@@ -379,8 +379,31 @@ namespace Game.Tests
             public Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
             public Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
 
-            /// <summary>Per tower type, where its data DPS went in play (see <see cref="BotRun.Use"/>).</summary>
-            public Dictionary<string, BotRun.TowerUse> Use = new Dictionary<string, BotRun.TowerUse>();
+            /// <summary>The seed and step of the run, and its wave records for the calibration (<see cref="Game.Balance.CalibrationFit"/>).</summary>
+            public int Seed;
+            public float Step;
+            public List<Game.Balance.WaveRecord> Records = new List<Game.Balance.WaveRecord>();
+
+            /// <summary>The run as the calibration fit reads it.</summary>
+            public Game.Balance.RunRecord ToRecord()
+            {
+                var record = new Game.Balance.RunRecord
+                {
+                    Level = Asset,
+                    Difficulty = Difficulty,
+                    Strategy = Strategy,
+                    Seed = Seed,
+                    Step = Step,
+                    Won = Outcome == LevelOutcome.Won,
+                    Stars = Stars,
+                    WaveReached = Wave,
+                    WaveCount = WaveCount,
+                    BaseHealth = BaseHealth,
+                    Coins = CoinsUnspent,
+                };
+                record.Waves.AddRange(Records);
+                return record;
+            }
 
             /// <summary>Per tower type: damage dealt in the run, tower-seconds standing while creatures were on the field, and the data DPS of its levels then.</summary>
             public Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
@@ -391,7 +414,11 @@ namespace Game.Tests
             Probe(runs, gunOnly ? ProbeStrategy.GunOnly : ProbeStrategy.Greedy, results);
 
         /// <summary>Plays each (node, difficulty) run with a bot strategy (see <see cref="ProbeStrategy"/>).</summary>
-        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results)
+        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results) =>
+            Probe(runs, strategy, results, null);
+
+        /// <summary>Plays each run with a strategy on a given seed (null: the filter file's or the default).</summary>
+        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results, int? seedOverride)
         {
             var report = new List<string>();
             var traces = new List<string>();
@@ -422,7 +449,7 @@ namespace Game.Tests
                     owned.RemoveAll(id => !Allows(strategy, definition, id));
                 }
 
-                int seed = Seed();
+                int seed = seedOverride ?? Seed();
                 float step = Step();
                 UnityEngine.Random.InitState(seed);
                 Services.Register(new LevelSession(definition, catalog.Difficulties[difficulty], seed: seed));
@@ -550,7 +577,9 @@ namespace Game.Tests
                     RepairSpent = watch.RepairSpent,
                     RoleDamage = run.RoleDamage,
                     CoinSeconds = run.CoinSeconds,
-                    Use = run.Use,
+                    Seed = seed,
+                    Step = step,
+                    Records = run.Records,
                     Earned = trace.Earned,
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,
@@ -634,7 +663,7 @@ namespace Game.Tests
             var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             var upgrades = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Economy.UpgradeCatalog>(UpgradesPath);
             var unlocks = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Economy.UnlockTable>(UnlocksPath);
-            Game.Balance.CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, view.Rules);
+            Game.Balance.CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, view.Rules, UnityEditor.AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             int index = 0;
             for (int i = 0; i < node; i++)
             {
@@ -672,8 +701,11 @@ namespace Game.Tests
         // The seed of every run: ProbeSeed, or the "seed=N" line of the filter file.
         private static int Seed() => (int)Setting("seed", ProbeSeed);
 
+        /// <summary>A step a test sets for its own runs (the step check); null takes the filter file's or the default.</summary>
+        internal static float? StepOverride;
+
         // Game seconds per frame: StepSeconds, or the "step=S" line of the filter file (to compare finer steps).
-        private static float Step() => Setting("step", StepSeconds);
+        private static float Step() => StepOverride ?? Setting("step", StepSeconds);
 
         private static float Setting(string key, float fallback)
         {
@@ -974,6 +1006,18 @@ namespace Game.Tests
             UseHero(context, gates, watch);
             if (Maintain(context, towers, watch, CheapestBuild(context, owned, t => !t.IsSupport && !t.BlocksGroundEnemies && (run.Strategy.Allowed == null || run.Strategy.Allowed(t)))))
             {
+                return;
+            }
+
+            if (run.Strategy.Style == PlayStyle.Scripted)
+            {
+                ScriptedAct(context, towers, run);
+                return;
+            }
+
+            if (run.Strategy.Obvious)
+            {
+                ObviousAct(context, spots, towers, owned, run);
                 return;
             }
 
@@ -1962,6 +2006,343 @@ namespace Game.Tests
             run.Built++;
             return true;
         }
+
+        // ---- The obvious family (round 22): no balance model, so these yardsticks never move between rounds -----------------
+
+        // Mono rows upgrade only once this many towers stand; the careless mix upgrades a random gun every third purchase and
+        // puts an air gun every third tower when the level has flight routes.
+        private const int MonoUpgradeAfterTowers = 4;
+        private const int NaiveUpgradeEvery = 3;
+        private const int NaiveSkyEvery = 3;
+        private const int DefaultSeeds = 3;
+
+        private static void ObviousAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            switch (run.Strategy.Style)
+            {
+                case PlayStyle.MonoRow:
+                    MonoAct(context, spots, towers, owned, run);
+                    break;
+                case PlayStyle.NearGate:
+                    NaiveAct(context, spots, towers, owned, run);
+                    break;
+                default:
+                    AffordableAct(context, spots, towers, owned, run);
+                    break;
+            }
+        }
+
+        // A row of one type: build while spots are free, then alternate an upgrade (the cheapest step) and a tower.
+        private static void MonoAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            bool upgradeTurn = towers.Count >= MonoUpgradeAfterTowers && run.Purchases % 2 == 1;
+            Tower cheapest = CheapestUpgrade(towers, context.Wallet.Money);
+            if (upgradeTurn && cheapest != null)
+            {
+                Buy(context, cheapest, run);
+                return;
+            }
+
+            if (TryBuy(context, spots, towers, owned, null, run))
+            {
+                run.Purchases++;
+            }
+            else if (towers.Count >= MonoUpgradeAfterTowers && cheapest != null)
+            {
+                // The row comes first; only a standing row is raised when the next tower is out of reach.
+                Buy(context, cheapest, run);
+            }
+        }
+
+        // The careless mix: the owned ground types in turn (cheapest first), an air gun now and then where flyers come, a
+        // random upgrade every few purchases; it waits for the price of the tower it wants, nothing more.
+        private static void NaiveAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            if (run.Purchases > 0 && run.Purchases % NaiveUpgradeEvery == NaiveUpgradeEvery - 1)
+            {
+                Tower any = AnyUpgrade(towers, context.Wallet.Money, run);
+                if (any != null)
+                {
+                    Buy(context, any, run);
+                    return;
+                }
+            }
+
+            var ground = new List<TowerDefinition>();
+            var sky = new List<TowerDefinition>();
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                if (tower.IsSupport || !owned.Contains(tower.Id))
+                {
+                    continue;
+                }
+
+                (AirOnly(tower) ? sky : ground).Add(tower);
+            }
+
+            ground.Sort((a, b) => a.BuildCost.CompareTo(b.BuildCost));
+            bool flyers = System.Array.Exists(context.Level.Paths, p => p.Flying);
+            bool skyTurn = flyers && sky.Count > 0 && run.Purchases % NaiveSkyEvery == NaiveSkyEvery - 1;
+            TowerDefinition wanted = skyTurn ? sky[0] : ground.Count > 0 ? ground[run.Purchases % ground.Count] : null;
+            if (wanted != null && context.Wallet.CanAfford(wanted.BuildCost) && TryBuy(context, spots, towers, owned, t => t == wanted, run))
+            {
+                run.Purchases++;
+            }
+        }
+
+        // The dearest affordable step, whatever it is: a new tower (an air gun only where flyers come) or an upgrade.
+        private static void AffordableAct(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, BotRun run)
+        {
+            bool flyers = System.Array.Exists(context.Level.Paths, p => p.Flying);
+            TowerDefinition build = null;
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                bool fits = !tower.IsSupport && owned.Contains(tower.Id) && (flyers || !AirOnly(tower)) && context.Wallet.CanAfford(tower.BuildCost);
+                if (fits && (build == null || tower.BuildCost > build.BuildCost))
+                {
+                    build = tower;
+                }
+            }
+
+            Tower upgrade = null;
+            foreach (Tower tower in towers)
+            {
+                if (tower.CanUpgrade && context.Wallet.CanAfford(tower.NextUpgradeCost) && (upgrade == null || tower.NextUpgradeCost > upgrade.NextUpgradeCost))
+                {
+                    upgrade = tower;
+                }
+            }
+
+            if (upgrade != null && (build == null || upgrade.NextUpgradeCost >= build.BuildCost))
+            {
+                Buy(context, upgrade, run);
+            }
+            else if (build != null && TryBuy(context, spots, towers, owned, t => t == build, run))
+            {
+                run.Purchases++;
+            }
+        }
+
+        private static Tower CheapestUpgrade(List<Tower> towers, int purse)
+        {
+            Tower best = null;
+            foreach (Tower tower in towers)
+            {
+                if (tower.CanUpgrade && tower.NextUpgradeCost <= purse && (best == null || tower.NextUpgradeCost < best.NextUpgradeCost))
+                {
+                    best = tower;
+                }
+            }
+
+            return best;
+        }
+
+        private static void Buy(LevelContext context, Tower upgrade, BotRun run)
+        {
+            if (context.Wallet.TrySpend(upgrade.NextUpgradeCost))
+            {
+                upgrade.Upgrade();
+                run.Upgrades++;
+                run.Purchases++;
+            }
+        }
+
+        // ---- Scripted plans (round 22, the tester's stage B): the steps in order, each as soon as the purse has it ------------
+
+        private static void ScriptedAct(LevelContext context, List<Tower> towers, BotRun run)
+        {
+            Game.Balance.PlanSpec plan = run.Strategy.Plan;
+            int wave = Mathf.Max(1, context.WaveNumber);
+            while (run.PlanStep < plan.Steps.Length && plan.Steps[run.PlanStep].Wave <= wave)
+            {
+                Game.Balance.PlanStep step = plan.Steps[run.PlanStep];
+                var cell = new Vector2Int(step.X, step.Y);
+                Tower at = TowerAt(context, towers, cell);
+                bool done;
+                bool possible;
+                switch (step.Kind)
+                {
+                    case Game.Balance.PlanStep.Build:
+                        TowerDefinition tower = TowerById(context, step.Item);
+                        possible = tower != null && at == null;
+                        done = possible && context.Wallet.CanAfford(tower.BuildCost) && TryBuyAt(context, tower, cell, towers, run);
+                        break;
+                    case Game.Balance.PlanStep.Upgrade:
+                        possible = at != null && at.CanUpgrade;
+                        done = possible && context.Wallet.CanAfford(at.NextUpgradeCost);
+                        if (done)
+                        {
+                            Buy(context, at, run);
+                        }
+
+                        break;
+                    case Game.Balance.PlanStep.Sell:
+                        possible = at != null;
+                        done = possible;
+                        if (done)
+                        {
+                            Sell(context, towers, at, run);
+                        }
+
+                        break;
+                    case Game.Balance.PlanStep.Drone:
+                        Game.Drones.DroneDefinition drone = DroneById(context, step.Item);
+                        possible = drone != null && context.ActiveDrones(drone) < context.MaxDrones(drone);
+                        done = possible && context.Wallet.CanAfford(drone.Cost) && BuyDrone(context, drone, run);
+                        break;
+                    default:
+                        PathObjectDefinition item = GadgetById(context, step.Item);
+                        possible = item != null;
+                        done = possible && context.Wallet.CanAfford(item.Cost) && Place(context, item, cell, run);
+                        break;
+                }
+
+                if (!possible)
+                {
+                    // A step the field does not allow (a taken cell, a full drone bay) is skipped, not waited for.
+                    run.PlanSkipped++;
+                    run.PlanStep++;
+                    continue;
+                }
+
+                if (!done)
+                {
+                    return;
+                }
+
+                run.PlanStep++;
+            }
+        }
+
+        private static Tower TowerAt(LevelContext context, List<Tower> towers, Vector2Int cell)
+        {
+            foreach (Tower tower in towers)
+            {
+                if (context.Level.Grid.WorldToCell(tower.Position) == cell)
+                {
+                    return tower;
+                }
+            }
+
+            return null;
+        }
+
+        private static TowerDefinition TowerById(LevelContext context, string id)
+        {
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                if (tower.Id == id)
+                {
+                    return tower;
+                }
+            }
+
+            return null;
+        }
+
+        private static Game.Drones.DroneDefinition DroneById(LevelContext context, string id)
+        {
+            foreach (Game.Drones.DroneDefinition drone in context.Level.Drones)
+            {
+                if (drone != null && drone.name == id)
+                {
+                    return drone;
+                }
+            }
+
+            return null;
+        }
+
+        private static PathObjectDefinition GadgetById(LevelContext context, string id)
+        {
+            if (context.AvailablePathObjects == null)
+            {
+                return null;
+            }
+
+            foreach (PathObjectDefinition item in context.AvailablePathObjects)
+            {
+                if (item != null && item.name == id)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool BuyDrone(LevelContext context, Game.Drones.DroneDefinition drone, BotRun run)
+        {
+            int before = context.Wallet.Money;
+            context.DroneRequested.Raise(drone);
+            if (context.Wallet.Money >= before)
+            {
+                return false;
+            }
+
+            run.DronesBought.Add(drone.name);
+            return true;
+        }
+
+        private static void Sell(LevelContext context, List<Tower> towers, Tower tower, BotRun run)
+        {
+            context.Wallet.Add(tower.SellValue);
+            tower.Retire();
+            Object.Destroy(tower.gameObject);
+            towers.Remove(tower);
+            run.Sold++;
+        }
+
+        // Builds a tower on an exact cell (the plan's spot) through the same path as the bot's own buys.
+        private static bool TryBuyAt(LevelContext context, TowerDefinition definition, Vector2Int cell, List<Tower> towers, BotRun run)
+        {
+            if (!new BuildGrid(context.Level).CanBuild(cell) || TowerAt(context, towers, cell) != null || !context.Wallet.TrySpend(definition.BuildCost))
+            {
+                return false;
+            }
+
+            var go = new GameObject($"BotTower_{definition.DisplayName}");
+            go.transform.position = context.Level.Grid.CellToWorld(cell);
+            var tower = go.AddComponent<Tower>();
+            go.AddComponent<TowerView>();
+            tower.Initialize(definition, context.Targets, context.Projectiles, context.ModifiersFor(definition));
+            tower.Register(context.Structures);
+            towers.Add(tower);
+            run.Built++;
+            return true;
+        }
+
+        /// <summary>The seeds a sweep plays: the filter file's "seeds=1,2,3" line, else 1 to 3.</summary>
+        internal static List<int> Seeds()
+        {
+            var seeds = new List<int>();
+            if (System.IO.File.Exists(FilterPath))
+            {
+                foreach (string line in System.IO.File.ReadAllLines(FilterPath))
+                {
+                    string[] parts = line.Split('=');
+                    if (parts.Length == 2 && parts[0].Trim() == "seeds")
+                    {
+                        foreach (string item in parts[1].Split(','))
+                        {
+                            if (int.TryParse(item.Trim(), out int seed))
+                            {
+                                seeds.Add(seed);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (seeds.Count == 0)
+            {
+                for (int i = 1; i <= DefaultSeeds; i++)
+                {
+                    seeds.Add(i);
+                }
+            }
+
+            return seeds;
+        }
     }
 }
-

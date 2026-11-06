@@ -88,7 +88,7 @@ namespace BalanceLab
 
                 report.Append(BalanceChecks.DescribeHuman(model.Levels[l].Key, plainMeans)).Append('\n');
                 failures.AddRange(BalanceChecks.CheckHuman(model.Levels[l].Key, plainMeans, model.Rules));
-                failures.AddRange(BalanceChecks.CheckHumanTarget(model.Levels[l].Key, model.ContinentIndexOf(l), plainMeans, model.Rules));
+                failures.AddRange(BalanceChecks.CheckHumanTarget(model.Levels[l].Key, model.ContinentIndexOf(l), plainMeans, model.Rules, model.Levels[l]));
                 int continent = model.Levels[l].Continent;
                 if (!rampLevels.ContainsKey(continent))
                 {
@@ -210,7 +210,13 @@ namespace BalanceLab
 
             foreach (TowerStats tower in model.Towers.Values)
             {
-                int[] prices = BalanceSheet.Prices(tower.Id);
+                var dps = new float[tower.Levels.Length];
+                for (int i = 0; i < dps.Length; i++)
+                {
+                    dps[i] = tower.Levels[i].Dps;
+                }
+
+                int[] prices = BalanceSheet.Prices(tower.Id, dps);
                 for (int i = 0; prices != null && i < prices.Length && i < tower.Levels.Length; i++)
                 {
                     tower.Levels[i].Cost = prices[i];

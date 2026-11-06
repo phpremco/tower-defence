@@ -56,9 +56,6 @@ namespace Game.Editor
         // not (Remco 2026-11-06, the genre's convention; TowerDefinition.RetargetRadius).
         internal const float MissileRetargetRadius = 1.5f;
 
-        // Light guns (Gun Turret, Laser) aim past plates that would stop more than half of their hit (round 21a2).
-        internal const float LightGunSoftShare = 0.5f;
-
         /// <summary>Runs every registered generator step (see <see cref="Steps"/>), then saves the assets.</summary>
         [MenuItem("Tools/Generate/Scenes and Starter Data")]
         public static void GenerateAll()
@@ -111,7 +108,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, float softTargetShare = 0f, bool homing = true, float retargetRadius = 0f)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, bool homing = true, float retargetRadius = 0f, int splashTargets = 0)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -129,7 +126,7 @@ namespace Game.Editor
             so.FindProperty("_groundDamageFactor").floatValue = 1f;
             so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
             so.FindProperty("_retargetRadius").floatValue = retargetRadius;
-            so.FindProperty("_softTargetShare").floatValue = softTargetShare;
+            so.FindProperty("_splashTargets").intValue = splashTargets;
             so.FindProperty("_homing").boolValue = homing;
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_maxHealth").floatValue = health;
@@ -137,8 +134,15 @@ namespace Game.Editor
             so.FindProperty("_repairCostPerHealth").floatValue = RepairCostPerHealth;
             SerializedProperty array = so.FindProperty("_levels");
             array.arraySize = levels.Length;
-            // The balance sheet prices the guns it lists; the others keep the price given here.
-            int[] prices = BalanceSheet.Prices(id);
+            // The balance sheet prices the guns it lists (build price from its table, upgrade steps from the upgrade margin rule);
+            // the others keep the price given here.
+            var dps = new float[levels.Length];
+            for (int i = 0; i < levels.Length; i++)
+            {
+                dps[i] = levels[i].FireInterval > 0f ? levels[i].Damage / levels[i].FireInterval : 0f;
+            }
+
+            int[] prices = BalanceSheet.Prices(id, dps);
             for (int i = 0; i < levels.Length; i++)
             {
                 SerializedProperty element = array.GetArrayElementAtIndex(i);

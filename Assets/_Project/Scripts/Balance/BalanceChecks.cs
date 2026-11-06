@@ -142,12 +142,13 @@ namespace Game.Balance
         /// stored waves leave a competent player within <see cref="BalanceRules.HumanTargetTolerance"/> of the surplus the
         /// curve asks for at its place in the continent. <paramref name="plainMeans"/> as in <see cref="CheckHuman"/>.
         /// </summary>
-        public static List<string> CheckHumanTarget(string level, int continentIndex, IReadOnlyList<float> plainMeans, BalanceRules rules)
+        public static List<string> CheckHumanTarget(string level, int continentIndex, IReadOnlyList<float> plainMeans, BalanceRules rules, CampaignLevel tuned = null)
         {
             var failures = new List<string>();
             for (int d = 0; d < plainMeans.Count; d++)
             {
-                float target = rules.HumanSurplusAt(d, continentIndex);
+                // The builder's target scale (WaveTuning) is part of the curve the level was calibrated to.
+                float target = rules.HumanSurplusAt(d, continentIndex) / (tuned != null ? tuned.TargetScaleFor(d) : 1f);
                 float surplus = plainMeans[d] > 0f ? 1f / plainMeans[d] : float.PositiveInfinity;
                 if (Math.Abs(surplus - target) > target * rules.HumanTargetTolerance)
                 {

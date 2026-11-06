@@ -18,8 +18,10 @@ namespace Game.Balance
         public int SecondRoad = -1;
         public float GateHealth;
 
-        /// <summary>The level's field ease per difficulty (LevelDefinition.BalanceFieldEase); a shorter array repeats its last entry.</summary>
-        public float[] FieldEase = { 1f };
+        /// <summary>The gadgets the level sells and the drones it offers, and its map for placement (null = ideal placement).</summary>
+        public List<GadgetStats> Gadgets = new List<GadgetStats>();
+        public List<DroneStats> Drones = new List<DroneStats>();
+        public LevelGeometry Geometry;
     }
 
     /// <summary>
@@ -73,7 +75,9 @@ namespace Game.Balance
                 HeroDamage = player.HeroDamage,
                 HeroPerks = player.HeroPerks,
                 GateHealth = facts.GateHealth * player.GateHealth,
-                FieldEase = facts.FieldEase.Length == 0 ? 1f : facts.FieldEase[Math.Min(Math.Max(0, difficulty), facts.FieldEase.Length - 1)],
+                Gadgets = facts.Gadgets,
+                Drones = facts.Drones,
+                Geometry = facts.Geometry,
             };
 
             foreach (string id in Levels[levelIndex].TowerIds)
@@ -105,6 +109,8 @@ namespace Game.Balance
         public List<List<WaveSpec>> BuildWaves(int levelIndex, WaveScriptSpec script, out float[] healths)
         {
             LevelFacts facts = Facts[levelIndex];
+            // The script (with the builder's tuning) is the source of the target scale at generation; the asset records it for the checks.
+            Levels[levelIndex].TargetScale = script.TargetScale;
             int medium = Math.Min(WaveSolver.SolveDifficulty, Difficulties.Count - 1);
             healths = WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
             var sets = new List<List<WaveSpec>>();
@@ -142,7 +148,7 @@ namespace Game.Balance
         }
 
         /// <summary>The plain-wave pressure the human lens should meet on a level and difficulty (one over the target surplus).</summary>
-        public float HumanTarget(int levelIndex, int difficulty) => 1f / Rules.HumanSurplusAt(difficulty, ContinentIndexOf(levelIndex));
+        public float HumanTarget(int levelIndex, int difficulty) => Levels[levelIndex].TargetScaleFor(difficulty) / Rules.HumanSurplusAt(difficulty, ContinentIndexOf(levelIndex));
 
         /// <summary>
         /// Trims one difficulty's health multipliers by a single factor, so a competent player's towers alone (the human lens,

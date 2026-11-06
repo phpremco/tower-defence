@@ -1,0 +1,29 @@
+Landing Site (Level_C1_01) on Psycho: plan search, 3000 plans sampled, 0 hold on paper, cap 1.40. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
+'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
+as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+
+Best spots per tower (first is best):
+  Gun Turret     (5,14) cover 15.0 bunch 0.4; (6,14) cover 15.0 bunch 0.3; (31,8) cover 15.0/1.0 air bunch 0.4; (32,8) cover 13.0 bunch 0.5; (5,13) cover 12.0 bunch 0.3; (5,15) cover 12.0/0.5 air bunch 0.3;
+  Cannon         (5,14) cover 15.0 bunch 0.4; (31,8) cover 15.0/1.0 air bunch 0.4; (6,14) cover 15.0 bunch 0.3; (32,8) cover 13.0 bunch 0.5; (14,7) cover 8.0 gate bunch 0.9; (13,7) cover 8.0 gate bunch 0.8;
+  Laser Turret   (6,14) cover 19.0 bunch 0.3; (5,14) cover 17.0 bunch 0.4; (7,14) cover 17.0; (31,8) cover 17.0/2.0 air bunch 0.4; (6,13) cover 15.0 bunch 0.3; (6,15) cover 15.0/1.5 air bunch 0.3;
+  Flak Turret    (30,15) cover 18.0/9.0 air bunch 0.5; (29,15) cover 18.0/8.0 air bunch 0.5; (30,18) cover 11.0/8.0 air bunch 0.6; (31,14) cover 18.0/8.0 air bunch 0.4; (31,15) cover 17.0/8.0 air bunch 0.5; (28,14) cover 18.0/7.5 air bunch 0.5;
+
+Obvious plans on paper:
+  mono PulseRifle    margin 0.55 falls at wave 5, coins left 108, steps taken 18
+  mono Cannon        margin 0.35 falls at wave 5, coins left 99, steps taken 9, 11 never affordable
+  mono Laser         margin 0.31 falls at wave 3, coins left 8, steps taken 6, 14 never affordable
+  naive              margin 0.37 falls at wave 5, coins left 31, steps taken 10, 8 never affordable
+
+Distinct winning plans (0; different spots, mixes or timing):
+
+No plan holds on paper. Best found: margin 0.54, falls at wave 5
+  from wave  1: build Gun Turret at (5,15); build Gun Turret at (32,8); build Gun Turret at (6,14); build Gun Turret at (5,14)
+  from wave  3: build Gun Turret at (5,13)
+  from wave  4: upgrade the tower at (5,14)
+  from wave  5: upgrade the tower at (6,14)
+  from wave  7: upgrade the tower at (32,8); upgrade the tower at (32,8); upgrade the tower at (6,14); sell the tower at (7,14)
+  from wave  8: build Cannon at (14,7)
+  from wave 10: build Laser Turret at (7,14)
+  from wave 11: build Cannon at (13,7)
+  from wave 12: build Laser Turret at (7,14); upgrade the tower at (6,15); upgrade the tower at (6,15)

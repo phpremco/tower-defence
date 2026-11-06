@@ -20,6 +20,9 @@ namespace Game.Balance
         public float StreamReach = 1f;
         public float BossReach = 1f;
 
+        /// <summary>Seconds the wave takes to spawn, and the seconds the gates' hold adds for guns that reach the queue.</summary>
+        public float Span;
+        public float GateSeconds;
         public float Window;
         public float BossWindow;
 
@@ -150,7 +153,9 @@ namespace Game.Balance
             load.AirDensity = air > 1 ? air / Math.Max(1f, airSpan) / load.AirSpeed : 0f;
 
             float hold = GateHold(level, gateDps, rules);
-            load.Window = span + hold * rules.GateWindowShare;
+            load.Span = span;
+            load.GateSeconds = hold * rules.GateWindowShare;
+            load.Window = span + load.GateSeconds;
             load.BossWindow = GateHold(level, bossGateDps, rules) * rules.GateWindowShare;
             load.BossFight = bosses > 0 ? level.Shape.MainLength / Math.Max(0.01f, load.BossSpeed) + load.BossWindow : 0f;
             load.AirWindow = airSpan;

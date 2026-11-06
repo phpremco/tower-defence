@@ -33,7 +33,7 @@ namespace Game.Tests
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             BalanceRules rules = BalanceRules.Default;
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             BalanceRules human = rules.HumanTowersOnly();
             BalanceRules withHero = rules.HumanWithHero();
 
@@ -76,7 +76,7 @@ namespace Game.Tests
 
                 report.Append(BalanceChecks.DescribeHuman(node.Level.name, plainMeans)).Append('\n');
                 failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules));
-                failures.AddRange(BalanceChecks.CheckHumanTarget(node.Level.name, model.ContinentIndexOf(index), plainMeans, rules));
+                failures.AddRange(BalanceChecks.CheckHumanTarget(node.Level.name, model.ContinentIndexOf(index), plainMeans, rules, model.Levels[index]));
                 curve.Append($"  {node.Level.name}: {surplus[0]:0.00}x {surplus[1]:0.00}x {surplus[2]:0.00}x {surplus[3]:0.00}x | with hero{heroLine}\n");
                 if (!rampLevels.ContainsKey(node.Region))
                 {
@@ -109,7 +109,7 @@ namespace Game.Tests
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             BalanceRules rules = BalanceRules.Default;
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
 
             for (int region = 0; region < catalog.Regions.Count; region++)
             {

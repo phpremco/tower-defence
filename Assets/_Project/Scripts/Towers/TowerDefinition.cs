@@ -17,6 +17,12 @@ namespace Game.Towers
         [SerializeField] [Min(0f)] private float _splashRadius;
 
         /// <summary>
+        /// Most creatures one blast hurts (the nearest to the impact); zero hurts everything in the radius. The Cannon's cap keeps
+        /// its shell a group weapon, not a swarm weapon: a dense ant crowd asks for rate of fire (Docs/BALANCE.md, round 22).
+        /// </summary>
+        [SerializeField] [Min(0)] private int _splashTargets;
+
+        /// <summary>
         /// Share of the damage that lands on a target of each layer (a creature that is air only takes the air share). Ground
         /// guns that can also aim up do less up there, so the sky asks for an air gun (Docs/BALANCE.md, "Roles by enemy").
         /// </summary>
@@ -32,25 +38,11 @@ namespace Game.Towers
         [SerializeField] [Min(0f)] private float _retargetRadius;
 
         /// <summary>
-        /// A light gun looks past plates: it aims at the creature furthest along that lets at least this share of its hit
-        /// through, and only shoots a plated one when nothing softer is in reach. Zero aims at the one furthest along, always.
-        /// </summary>
-        [SerializeField] [Range(0f, 1f)] private float _softTargetShare;
-
-        /// <summary>
         /// True: the shot follows its creature and lands on it. False (splash shells only): it is fired at the spot the creature
         /// stood on and bursts there after its flight time (distance over projectile speed), so a fast runner can be out of the
         /// blast while a queue or a pack is not.
         /// </summary>
         [SerializeField] private bool _homing = true;
-
-        /// <summary>
-        /// Balance model only: the share of this tower's data damage it really deals in play beyond what the ledger models
-        /// (reach time, wear, shots that hit nothing), relative to the average tower. Measured by
-        /// MonocultureProbeTests.Measure_TowerEfficiency_OnMedium and written by Tools/PlayTest/Scripts/ApplyEfficiency.cs; never
-        /// typed by hand (Docs/BALANCE.md, "Ledger calibrated in play").
-        /// </summary>
-        [SerializeField] [Min(0.05f)] private float _ledgerEfficiency = 1f;
 
         /// <summary>A proximity fuse: the shell bursts this close to its target. Zero bursts on impact.</summary>
         [SerializeField] [Min(0f)] private float _fuseRadius;
@@ -105,6 +97,7 @@ namespace Game.Towers
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
+        public int SplashTargets => _splashTargets;
         public float GroundDamageFactor => _groundDamageFactor;
         public float AirDamageFactor => _airDamageFactor;
 
@@ -113,9 +106,7 @@ namespace Game.Towers
 
         public float FuseRadius => _fuseRadius;
         public float RetargetRadius => _retargetRadius;
-        public float SoftTargetShare => _softTargetShare;
         public bool Homing => _homing;
-        public float LedgerEfficiency => _ledgerEfficiency;
         public float MaxHealth => _maxHealth;
         public float SellRefundFraction => _sellRefundFraction;
         public float ScrapFraction => _scrapFraction;

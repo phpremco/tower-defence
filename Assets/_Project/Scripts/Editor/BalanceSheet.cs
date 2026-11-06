@@ -191,32 +191,58 @@ namespace Game.Editor
             return ContinentEconomy.Power(Continents[continent].PowerBudget, bosses, Rules);
         }
 
-        /// <summary>
-        /// Tower level prices (build, then each upgrade). Remco's rule (2026-11-06): an upgrade must beat more towers of the same
-        /// type at equal coins on single-target DPS, so every level's DPS per coin spent to reach it is at least about 5% above
-        /// the level below (asserted in TowerRolesTests); more towers still win on targets and spread the risk. Round 21a cut
-        /// the upgrade steps that missed it (Pulse, Cannon, Laser, Tesla, Railgun; the Flak also hits harder). A tower not listed
-        /// keeps the price the generator gives it.
-        /// </summary>
-        public static int[] Prices(string towerId)
+        /// <summary>Build prices of the guns the sheet prices; a tower not listed keeps the price the generator gives it.</summary>
+        private static int BuildPrice(string towerId)
         {
             switch (towerId)
             {
                 case "PulseRifle":
-                    return new[] { 50, 50, 90 };
+                    return 50;
                 case "Cannon":
-                    return new[] { 100, 110, 180 };
+                    return 100;
                 case "Rocket":
-                    return new[] { 120, 100, 150 };
+                    return 120;
                 case "Laser":
-                    return new[] { 130, 75, 145 };
+                    return 130;
                 case "Tesla":
-                    return new[] { 140, 100, 155 };
+                    return 140;
                 case "Railgun":
-                    return new[] { 220, 125, 200 };
+                    return 220;
                 default:
-                    return null;
+                    return 0;
             }
+        }
+
+        /// <summary>Upgrade steps are rounded down to this many coins.</summary>
+        private const int PriceStep = 5;
+
+        /// <summary>
+        /// Tower level prices (build, then each upgrade step) from the tower's DPS per level. Remco's rule (2026-11-06): an upgrade
+        /// must beat more towers of the same type at equal coins on single-target DPS, by a clear margin (<see cref="BalanceRules.UpgradeMargin"/>,
+        /// asserted in TowerRolesTests): the coins spent to reach a level buy at least margin times the DPS per coin of the level
+        /// below, so every step's price follows from the DPS it buys and never has to be typed. More towers still win on targets
+        /// and spread the risk. Null for a tower the sheet does not price.
+        /// </summary>
+        public static int[] Prices(string towerId, float[] dps)
+        {
+            int build = BuildPrice(towerId);
+            if (build <= 0 || dps == null || dps.Length == 0)
+            {
+                return null;
+            }
+
+            var prices = new int[dps.Length];
+            prices[0] = build;
+            int total = build;
+            for (int i = 1; i < dps.Length; i++)
+            {
+                float ratio = dps[i - 1] > 0f ? dps[i] / dps[i - 1] : 1f;
+                int reach = (int)System.Math.Floor(total * ratio / Rules.UpgradeMargin / PriceStep) * PriceStep;
+                prices[i] = System.Math.Max(PriceStep, reach - total);
+                total += prices[i];
+            }
+
+            return prices;
         }
     }
 }

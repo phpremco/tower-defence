@@ -45,8 +45,14 @@ namespace Game.Balance
         /// </summary>
         public float Utilisation = 0.27f;
 
-        /// <summary>Most creatures one splash hit can catch, however dense the stream.</summary>
+        /// <summary>Most creatures one splash hit can catch, however dense the stream, for a splash gun without its own cap (TowerStats.SplashTargets).</summary>
         public float MaxSplashTargets = 2.4f;
+
+        /// <summary>
+        /// An upgrade step must buy at least this many times the single-target DPS per coin of the level below (Remco: high risk,
+        /// high reward; the critic of round 21: 3% was a wash). BalanceSheet prices the steps from it, TowerRolesTests asserts it.
+        /// </summary>
+        public float UpgradeMargin = 1.15f;
 
         /// <summary>Gun towers the player can place usefully per ground front (build spots in reach of the road).</summary>
         public int TowersPerFront = 16;
@@ -235,6 +241,16 @@ namespace Game.Balance
         public float[] HeroCap = { 1f, 1.15f, 1.25f, 1.35f };
 
         public float HeroCapFor(int difficulty) => HeroCap[System.Math.Min(difficulty, HeroCap.Length - 1)];
+
+        /// <summary>
+        /// A boss wave must be held outright: a boss that reaches the base ends the level in seconds (round 9 finale probe), so the
+        /// plan model and the calibration judge a boss wave at this cap, whatever the difficulty's hero cap (round 22: every
+        /// "ledger holds, game lost at the boss wave" disagreement of the first fit was this).
+        /// </summary>
+        public float BossWaveCap = 1f;
+
+        /// <summary>The cap a wave is judged at: the hero cap, or the boss cap on a boss wave.</summary>
+        public float CapFor(float cap, bool bossWave) => bossWave ? System.Math.Min(cap, BossWaveCap) : cap;
 
         /// <summary>
         /// "Beatable" with the hero and the upgrades the campaign expects (<see cref="BalanceChecks.CheckBeatable"/>): the plain

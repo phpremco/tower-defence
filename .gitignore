@@ -56,3 +56,6 @@ Tools/BalanceLab/obj/
 __pycache__/
 
 
+
+# Probe filter (local, optional): levels=, difficulties=, seeds=, step= lines narrow the explicit balance tests
+Tools/PlayTest/probe_arg.txt

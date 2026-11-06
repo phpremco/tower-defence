@@ -1,0 +1,27 @@
+Glass Meadows (Level_C1_02) on Medium: plan search, 3000 plans sampled, 0 hold on paper, cap 1.20. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
+'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
+as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+
+Best spots per tower (first is best):
+  Gun Turret     (7,6) cover 12.0 gate bunch 0.3; (5,6) cover 11.0 gate bunch 0.5; (5,7) cover 11.0 gate bunch 0.6; (6,5) cover 11.0 gate bunch 0.5; (7,5) cover 11.0 gate bunch 0.5; (8,6) cover 11.0 gate bunch 0.3;
+  Cannon         (30,15) cover 11.0/3.0 air bunch 1.0; (30,16) cover 11.0/3.5 air bunch 1.0; (31,16) cover 11.0/5.0 air bunch 1.0; (5,7) cover 11.0 gate bunch 0.6; (4,7) cover 10.0 gate bunch 0.7; (5,6) cover 11.0 gate bunch 0.5;
+  Laser Turret   (7,6) cover 15.0 gate bunch 0.4; (6,5) cover 14.0 gate bunch 0.6; (7,5) cover 14.0 gate bunch 0.4; (4,7) cover 12.0 gate bunch 0.7; (5,7) cover 12.0 gate bunch 0.6; (8,7) cover 12.0 gate bunch 0.3;
+
+Obvious plans on paper:
+  mono PulseRifle    margin 0.84 falls at wave 7, coins left 35, steps taken 14, 4 never affordable
+  mono Cannon        margin 0.51 falls at wave 7, coins left 45, steps taken 7, 13 never affordable
+  mono Laser         margin 0.49 falls at wave 6, coins left 32, steps taken 5, 15 never affordable
+  naive              margin 0.67 falls at wave 10, coins left 20, steps taken 8, 10 never affordable
+
+Distinct winning plans (0; different spots, mixes or timing):
+
+No plan holds on paper. Best found: margin 0.97, falls at wave 12
+  from wave  1: build Cannon at (5,7); build Gun Turret at (5,6)
+  from wave  2: upgrade the tower at (5,7)
+  from wave  3: upgrade the tower at (5,6)
+  from wave  4: build Laser Turret at (6,5)
+  from wave  5: build Gun Turret at (7,6); upgrade the tower at (6,5)
+  from wave  8: upgrade the tower at (7,6)
+  from wave 10: upgrade the tower at (6,5)
+  from wave 12: upgrade the tower at (7,6)

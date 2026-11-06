@@ -21,11 +21,6 @@ namespace Game.Enemies
         /// <summary>Share of every hit that always gets through the plating, so even light guns chip it.</summary>
         [SerializeField] [Range(0f, 1f)] private float _platingFloor = 0.2f;
 
-        /// <summary>
-        /// A small creature that climbs over a gate where at least this many others already crowd, and runs on (zero: it always
-        /// stops at a gate). Keeps ant queues small, so swarms stream past rate-of-fire guns instead of piling up for one shell.
-        /// </summary>
-        [SerializeField] [Min(0)] private int _slipCrowd;
         [SerializeField] [Min(0.1f)] private float _speed = 2f;
         [SerializeField] [Min(0)] private int _reward = 5;
         [SerializeField] [Min(1)] private int _baseDamage = 1;
@@ -103,9 +98,6 @@ namespace Game.Enemies
         public float PlatingFloor => _platingFloor;
 
         public bool HasPlating => _plating > 0f;
-
-        /// <summary>Others at a gate before this creature climbs over it; zero never climbs.</summary>
-        public int SlipCrowd => _slipCrowd;
 
         public float Speed => _speed;
         public int Reward => _reward;

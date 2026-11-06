@@ -20,7 +20,6 @@ MonoBehaviour:
   _armorReduction: 0.6
   _plating: 6
   _platingFloor: 0.2
-  _slipCrowd: 0
   _speed: 0.9
   _reward: 19
   _baseDamage: 3

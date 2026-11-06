@@ -98,6 +98,14 @@ namespace Game.Balance
         /// <summary>From this difficulty index on, plain waves after the first air raid also carry a few flyers.</summary>
         public int AirSprinkleFrom = 4;
 
+        /// <summary>
+        /// The builder bot's lever (round 22, WaveTuning): a scale on the human target pressure per difficulty (Easy to Psycho; a
+        /// shorter array repeats its last entry). 1 is the curve; the builder moves a failing cell by small steps, at most twice.
+        /// </summary>
+        public float[] TargetScale = { 1f };
+
+        public float TargetScaleFor(int difficulty) => TargetScale == null || TargetScale.Length == 0 ? 1f : TargetScale[difficulty < TargetScale.Length ? difficulty : TargetScale.Length - 1];
+
         /// <summary>One letter per wave: P plain, R rush, H heavy, M ambush. A shorter string repeats.</summary>
         public string Rhythm = "P";
         public BossSpec[] Bosses = new BossSpec[0];

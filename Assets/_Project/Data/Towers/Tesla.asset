@@ -22,14 +22,14 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
-  - Cost: 100
+  - Cost: 75
     Damage: 26
     Range: 3.7
     FireInterval: 0.45
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
-  - Cost: 155
+  - Cost: 105
     Damage: 40
     Range: 4
     FireInterval: 0.4
@@ -38,12 +38,11 @@ MonoBehaviour:
     SlowSeconds: 0
   _projectileSpeed: 40
   _splashRadius: 1.3
+  _splashTargets: 0
   _groundDamageFactor: 1
   _airDamageFactor: 1
   _retargetRadius: 0
-  _softTargetShare: 0
   _homing: 1
-  _ledgerEfficiency: 1
   _fuseRadius: 0
   _maxHealth: 160
   _sellRefundFraction: 0.7

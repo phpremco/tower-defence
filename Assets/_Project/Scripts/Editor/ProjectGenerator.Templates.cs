@@ -49,18 +49,6 @@ namespace Game.Editor
             }
         }
 
-        /// <summary>Writes a spec's field ease (balance model only) into its level; also used by Tools/PlayTest/Scripts/ApplyRoles.cs.</summary>
-        internal static void WriteFieldEase(SerializedObject level, CampaignLevelSpec spec)
-        {
-            SerializedProperty ease = level.FindProperty("_balanceFieldEase");
-            float[] values = spec.FieldEase != null && spec.FieldEase.Length > 0 ? spec.FieldEase : new[] { 1f };
-            ease.arraySize = values.Length;
-            for (int i = 0; i < values.Length; i++)
-            {
-                ease.GetArrayElementAtIndex(i).floatValue = values[i];
-            }
-        }
-
         private static LevelDefinition BuildCampaignLevel(CampaignLevelSpec spec, int continent, PathObjectDefinition[] forSale, GeneratorContext context)
         {
             var theme = LoadOrCreate<VisualTheme>($"{DataRoot}/Levels/Theme_{spec.Key}.asset");
@@ -126,7 +114,6 @@ namespace Game.Editor
             camera.FindPropertyRelative("FitMargin").floatValue = 0.04f;
             so.FindProperty("_startingMoney").intValue = spec.Money;
             so.FindProperty("_enemyHealthMultiplier").floatValue = 1f;
-            WriteFieldEase(so, spec);
             so.FindProperty("_baseHealth").intValue = spec.BaseHealth;
             so.FindProperty("_mineStock").intValue = MineStock;
             so.FindProperty("_hero").objectReferenceValue = context.Hero;

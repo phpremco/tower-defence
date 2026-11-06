@@ -91,6 +91,11 @@ namespace Game.Tests
         {
             // Cannon (round 21a2): the slower reload (1.6/1.35/1.15 s) that keeps it from beating rate of fire on loose ants leaves it
             // just under the band against a lone boss; a boss is the Railgun's job, splash is the Cannon's.
+            // Round 22: upgrade steps are priced by the upgrade-margin rule (BalanceSheet.Prices), which moves a few per-coin ratios to the
+            // band's edge; the roles they serve are checked by TowerRolesTests and the yardstick, not by this parity band.
+            { "Cannon L2 heavy", KnownPrefix + "the rule-priced Cannon L2 (350) sits at about 0.74x the median on armoured walkers" },
+            { "CryoBeam L1 air", KnownPrefix + "the hybrid inherits the rule-priced Cryo and Laser steps, about 0.74x the median on flyers" },
+            { "Laser L2 swarm", KnownPrefix + "the rule-priced Laser L2 (285) is about 1.37x the median on swarms: the swarm gun" },
             { "Laser L2 boss", KnownPrefix + "the Laser reaches farther since round 21a3 (4.8 at L2), about 1.38x the median on a lone boss" },
             { "Cannon L0 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.72x the median on a lone boss" },
             { "Cannon L1 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.74x the median on a lone boss" },

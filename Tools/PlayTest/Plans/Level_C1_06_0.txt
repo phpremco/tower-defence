@@ -1,0 +1,48 @@
+Crysium Vein (Level_C1_06) on Easy: plan search, 3000 plans sampled, 1 hold on paper, cap 1.04. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
+'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
+as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+
+Best spots per tower (first is best):
+  Gun Turret     (12,10) cover 7.5 gate bunch 0.7; (12,11) cover 7.5 gate bunch 0.7; (13,10) cover 7.5 gate bunch 0.7; (13,11) cover 7.5 gate bunch 0.7; (14,7) cover 7.5 gate bunch 0.7; (14,11) cover 7.5 gate bunch 0.7;
+  Cannon         (17,11) cover 7.5 gate bunch 0.9; (17,7) cover 7.0 gate bunch 1.0; (17,10) cover 7.0 gate bunch 1.0; (16,11) cover 7.5 gate bunch 0.8; (18,11) cover 7.5 gate bunch 0.8; (12,10) cover 7.5 gate bunch 0.7;
+  Laser Turret   (13,10) cover 9.5 gate bunch 0.8; (11,10) cover 9.0 gate bunch 0.7; (12,10) cover 9.0 gate bunch 0.8; (13,11) cover 9.0 gate bunch 0.6; (14,10) cover 9.0 gate bunch 0.8; (15,10) cover 9.0 gate bunch 0.8;
+  Flak Turret    (36,10) cover 12.5/9.0 air bunch 0.6; (36,7) cover 11.0/8.5 air bunch 0.6; (36,11) cover 13.5/8.5 air bunch 0.7; (34,10) cover 13.5/8.0 air bunch 0.7; (35,10) cover 13.0/8.0 air bunch 0.7; (35,11) cover 14.0/8.0 air bunch 0.7;
+
+Obvious plans on paper:
+  mono PulseRifle    margin 0.21 falls at wave 8, coins left 45, steps taken 18
+  mono Cannon        margin 0.00 falls at wave 7, coins left 68, steps taken 7, 13 never affordable
+  mono Laser         margin 0.00 falls at wave 7, coins left 128, steps taken 5, 15 never affordable
+  naive              margin 0.32 falls at wave 8, coins left 58, steps taken 10, 8 never affordable
+
+Distinct winning plans (2; different spots, mixes or timing):
+
+Level_C1_06_0_plan1: margin 1.07, mean cover 1.47, coins left 154, 14 steps
+  from wave  1: build Gun Turret at (14,7); build Gun Turret at (13,11); buy the HarvestDrone
+  from wave  3: upgrade the tower at (13,11)
+  from wave  4: build Flak Turret at (36,7)
+  from wave  5: build Cannon at (17,10)
+  from wave  7: build Cannon at (17,11)
+  from wave 11: buy the AttackDrone
+  from wave 13: upgrade the tower at (36,7); upgrade the tower at (14,7)
+  from wave 14: build Cannon at (16,11); upgrade the tower at (17,10)
+  from wave 16: upgrade the tower at (14,7)
+  from wave 17: upgrade the tower at (16,11)
+  waves: w1 0.32  w2 0.45  w3 0.56  w4 0.90  w5 0.73  w6 0.84  w7 0.81  w8 0.68  w9 0.73  w10 0.68  w11 0.70  w12 0.72  w13 0.88  w14 0.70  w15 0.89  w16 0.84  w17 0.97  w18B 0.70  
+
+Level_C1_06_0_plan2: margin 1.02, mean cover 1.52, coins left 24, 25 steps
+  from wave  1: build Gun Turret at (14,7); build Gun Turret at (12,10); build Gun Turret at (12,11)
+  from wave  2: build Flak Turret at (36,10)
+  from wave  4: build Cannon at (18,11); build Cannon at (17,10); build Flak Turret at (35,11); upgrade the tower at (14,7); upgrade the tower at (14,7)
+  from wave  5: build Laser Turret at (15,10)
+  from wave  7: build Gun Turret at (13,10)
+  from wave  8: build Laser Turret at (14,10)
+  from wave  9: build Gun Turret at (14,11); build Cannon at (17,11)
+  from wave 11: upgrade the tower at (12,11); upgrade the tower at (35,10); lay a Mine on the road at (13,9)
+  from wave 12: build Flak Turret at (34,10)
+  from wave 14: build Gun Turret at (13,11); upgrade the tower at (12,11)
+  from wave 15: upgrade the tower at (14,11)
+  from wave 16: upgrade the tower at (35,11)
+  from wave 17: upgrade the tower at (13,11); upgrade the tower at (13,11)
+  from wave 18: upgrade the tower at (17,10)
+  waves: w1 0.26  w2 0.37  w3 0.46  w4 0.74  w5 0.76  w6 0.87  w7 0.84  w8 0.65  w9 0.77  w10 0.71  w11 0.68  w12 0.74  w13 0.98  w14 0.80  w15 1.02  w16 1.00  w17 1.02  w18B 0.76  

@@ -275,7 +275,7 @@ namespace Game.Tests
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);
             var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(UnlocksPath);
             BalanceRules rules = BalanceRules.Default;
-            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules);
+            CampaignModel model = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, rules, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             BalanceRules withHero = rules.HumanWithHero();
             (int levelIndex, LevelDefinition level) = LastLevel(catalog);
             var failures = new List<string>();
@@ -295,7 +295,8 @@ namespace Game.Tests
 
                 List<WaveSpec> plain = SpecsWithFinale(model, level, catalog.Difficulties[d], withoutMechanic, out _);
                 List<WaveLine> plainLines = Ledger.Evaluate(model.InputFor(levelIndex, d), plain, model.Difficulties[d], withHero);
-                Assert.Greater(lines[finale].Pressure, plainLines[finale].Pressure, "the ledger must count the mechanic as lost firepower");
+                // The mechanic is a ground boss's: the ground pressure must rise (the air may be the worse side of a finale wave, round 22).
+                Assert.Greater(lines[finale].GroundPressure, plainLines[finale].GroundPressure, "the ledger must count the mechanic as lost firepower");
             }
 
             Assert.IsEmpty(failures, string.Join("\n", failures));

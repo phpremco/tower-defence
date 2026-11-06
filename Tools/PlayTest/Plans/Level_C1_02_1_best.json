@@ -1,0 +1,78 @@
+{
+    "Level": "Level_C1_02",
+    "Difficulty": 1,
+    "Name": "Level_C1_02_1_best",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 5,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 5,
+            "Y": 6,
+            "Wave": 1
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 7,
+            "Wave": 2
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 6,
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 6,
+            "Y": 5,
+            "Wave": 4
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 7,
+            "Y": 6,
+            "Wave": 5
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 5,
+            "Wave": 5
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 6,
+            "Wave": 8
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 5,
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 6,
+            "Wave": 12
+        }
+    ]
+}

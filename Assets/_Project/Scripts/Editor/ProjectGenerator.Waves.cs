@@ -24,7 +24,7 @@ namespace Game.Editor
         private static void GenerateCampaignWaves(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, Bestiary bestiary)
         {
             WriteLevelPayouts(campaign);
-            CampaignModel model = BalanceLedger.Campaign(campaign, upgrades, unlocks.StartingTowerIds, BalanceSheet.Rules);
+            CampaignModel model = BalanceLedger.Campaign(campaign, upgrades, unlocks.StartingTowerIds, BalanceSheet.Rules, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             foreach (EnemyDefinition enemy in bestiary.All)
             {
                 model.Enemies[enemy.name] = BalanceLedger.Stats(enemy);
@@ -42,11 +42,61 @@ namespace Game.Editor
                 }
 
                 List<List<WaveSpec>> sets = model.BuildWaves(index, script, out _);
-                WriteWaveSets(level, campaign, sets, bestiary, model.PlayerAt(index, WaveSolver.SolveDifficulty).MeanTowerBonus);
+                WriteWaveSets(level, campaign, sets, bestiary, model.PlayerAt(index, WaveSolver.SolveDifficulty).MeanTowerBonus, script.TargetScale);
                 written.Add(WavesPath(level));
             }
 
             DeleteStaleWaveAssets(written);
+        }
+
+
+        /// <summary>
+        /// The pipeline's solve stage (round 22, BalanceStages.SolveWaves): only the "Difficulties" and "Waves" steps, with the
+        /// bestiary read from the existing creature assets, so the waves are re-solved against the calibrated model without the
+        /// full generator (which syncs the Blender exports). Tools/PlayTest/Scripts/ApplyWaves.cs calls the same method.
+        /// </summary>
+        public static void SolveWavesOnly()
+        {
+            var context = new GeneratorContext();
+            GenerateDifficulties(context);
+            AssetDatabase.SaveAssets();
+
+            var bestiary = new Bestiary();
+            var byName = new Dictionary<string, EnemyDefinition>();
+            foreach (string guid in AssetDatabase.FindAssets("t:EnemyDefinition", new[] { DataRoot + "/Enemies" }))
+            {
+                var enemy = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                byName[enemy.name] = enemy;
+            }
+
+            foreach (System.Reflection.FieldInfo field in typeof(Bestiary).GetFields())
+            {
+                if (field.FieldType != typeof(EnemyDefinition))
+                {
+                    continue;
+                }
+
+                if (!byName.TryGetValue(field.Name, out EnemyDefinition found))
+                {
+                    foreach (KeyValuePair<string, EnemyDefinition> pair in byName)
+                    {
+                        found = pair.Key.EndsWith(field.Name, System.StringComparison.Ordinal) ? pair.Value : found;
+                    }
+                }
+
+                if (found == null)
+                {
+                    throw new System.InvalidOperationException("No creature asset for " + field.Name);
+                }
+
+                field.SetValue(bestiary, found);
+            }
+
+            var campaign = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(BalanceStages.CampaignPath);
+            var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(BalanceStages.UpgradesPath);
+            var unlocks = AssetDatabase.LoadAssetAtPath<UnlockTable>(BalanceStages.UnlocksPath);
+            GenerateCampaignWaves(campaign, upgrades, unlocks, bestiary);
+            AssetDatabase.SaveAssets();
         }
 
         private static string WavesPath(LevelDefinition level) => $"{WavesFolder}/Waves_{Key(level)}.asset";
@@ -105,7 +155,7 @@ namespace Game.Editor
             }
         }
 
-        private static void WriteWaveSets(LevelDefinition level, CampaignCatalog campaign, List<List<WaveSpec>> sets, Bestiary bestiary, float expectedBonus)
+        private static void WriteWaveSets(LevelDefinition level, CampaignCatalog campaign, List<List<WaveSpec>> sets, Bestiary bestiary, float expectedBonus, float[] targetScale)
         {
             LevelWaves asset = LoadOrCreate<LevelWaves>(WavesPath(level));
             var waveSo = new SerializedObject(asset);
@@ -129,6 +179,15 @@ namespace Game.Editor
 
             // For reference only: the upgrade a Medium player is expected to bring; the waves are already sized for it.
             so.FindProperty("_expectedUpgradeBonus").floatValue = Mathf.Round(Mathf.Clamp01(expectedBonus) * 100f) / 100f;
+            // The builder's target scale the waves were calibrated to (WaveTuning), so the ledger checks judge against the same curve.
+            SerializedProperty scale = so.FindProperty("_balanceTargetScale");
+            float[] values = targetScale != null && targetScale.Length > 0 ? targetScale : new[] { 1f };
+            scale.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                scale.GetArrayElementAtIndex(i).floatValue = values[i];
+            }
+
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

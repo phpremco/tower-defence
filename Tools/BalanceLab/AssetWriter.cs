@@ -88,7 +88,7 @@ namespace BalanceLab
             Console.WriteLine($"Wrote {_files} wave files.");
         }
 
-        private static bool BalanceSheet(string towerId) => Game.Editor.BalanceSheet.Prices(towerId) != null;
+        private static bool BalanceSheet(string towerId) => Game.Editor.BalanceSheet.Prices(towerId, new[] { 1f }) != null;
 
         /// <summary>Unity writes floats in their shortest round-trip form.</summary>
         public static string F(float value) => value.ToString("R", CultureInfo.InvariantCulture);

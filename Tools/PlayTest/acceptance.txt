@@ -1,0 +1,37 @@
+Acceptance per difficulty 2026-11-06 21:43 (Docs/BALANCE.md "Acceptance per difficulty"). calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Obvious family from calibration_records.txt (the yardstick), searched plans from plan_records.txt (the replay). Tutorial cells: Level_C1_01 1 (their obvious wins are forgiven and noted).
+
+Level_C1_01 Easy: PASS
+  note: best plan plan Level_C1_01_0_plan1: wins 1/1, stars 3.0
+  note: 1 of 2 replayed plans win on most seeds
+Level_C1_01 Medium: PASS (tutorial cell)
+  note: best plan plan Level_C1_01_1_plan1: wins 1/1, stars 3.0
+  note: 1 of 1 replayed plans win on most seeds
+  note: tutorial, forgiven: Medium: mono Cannon wins 1/1 (a row of one type must lose)
+  note: tutorial, forgiven: Medium: the affordable buyer wins 1/1 (must lose on most seeds)
+Level_C1_01 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_02 Easy: PASS
+  note: best plan plan Level_C1_02_0_plan2: wins 1/1, stars 3.0
+  note: 2 of 3 replayed plans win on most seeds
+Level_C1_02 Medium: PASS
+  note: best plan plan Level_C1_02_1_best: wins 1/1, stars 3.0
+  note: 1 of 1 replayed plans win on most seeds
+Level_C1_02 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_03 Medium: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_03 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_04 Medium: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_04 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_05 Medium: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_05 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_06 Medium: FAIL
+  fail: no replayed plans (run the plan search and the replay)
+Level_C1_06 Hard: FAIL
+  fail: no replayed plans (run the plan search and the replay)

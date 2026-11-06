@@ -1,0 +1,21 @@
+Plan replay (stage B) 2026-11-06 21:40. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now a39fadd5)
+Yardstick, searched plans: seeds 1, step 0.2 s, 2026-11-06 21:40. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now a39fadd5)
+Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
+
+level        diff    strategy          wins  stars   base  reached   coins
+Level_C1_01  Easy    plan Level_C1_01_0_plan1 1/1    3.0    600  -           162
+Level_C1_01  Easy    plan Level_C1_01_0_plan2 0/1    0.0      0  12/12        91
+Level_C1_01  Medium  plan Level_C1_01_1_plan1 1/1    3.0    600  -           257
+Level_C1_02  Easy    plan Level_C1_02_0_plan1 0/1    0.0      0  12/12        16
+Level_C1_02  Easy    plan Level_C1_02_0_plan2 1/1    3.0    600  -           307
+Level_C1_02  Easy    plan Level_C1_02_0_plan3 1/1    3.0    600  -           198
+Level_C1_02  Medium  plan Level_C1_02_1_best 1/1    3.0    600  -           285
+
+Runs:
+  Level_C1_01  Easy    seed 1 plan Level_C1_01_0_plan1 Won    3* 12/12 base  600 built  5 upg  5 sold 0 mines 0 fields 0 drones - coins  162 repairs 60
+  Level_C1_01  Easy    seed 1 plan Level_C1_01_0_plan2 Lost   0* 12/12 base    0 built  3 upg  6 sold 0 mines 0 fields 0 drones - coins   91 repairs 240
+  Level_C1_01  Medium  seed 1 plan Level_C1_01_1_plan1 Won    3* 12/12 base  600 built  7 upg  6 sold 0 mines 0 fields 0 drones - coins  257 repairs 0
+  Level_C1_02  Easy    seed 1 plan Level_C1_02_0_plan1 Lost   0* 12/12 base    0 built  3 upg  1 sold 0 mines 0 fields 0 drones - coins   16 repairs 420
+  Level_C1_02  Easy    seed 1 plan Level_C1_02_0_plan2 Won    3* 12/12 base  600 built  3 upg  4 sold 0 mines 0 fields 0 drones - coins  307 repairs 0
+  Level_C1_02  Easy    seed 1 plan Level_C1_02_0_plan3 Won    3* 12/12 base  600 built  4 upg  2 sold 0 mines 0 fields 0 drones - coins  198 repairs 60
+  Level_C1_02  Medium  seed 1 plan Level_C1_02_1_best Won    3* 12/12 base  600 built  4 upg  6 sold 0 mines 0 fields 0 drones - coins  285 repairs 0
