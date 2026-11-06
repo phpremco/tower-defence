@@ -4,6 +4,7 @@ using Game.Combat;
 using Game.Core;
 using Game.Hero;
 using Game.Levels;
+using Game.PathObjects;
 using Game.Towers;
 using NUnit.Framework;
 using UnityEngine;
@@ -72,6 +73,21 @@ namespace Game.Tests
         private const float GateOnRouteCells = 3f;
         private const float QueueCells = 3f;
         private const float QueueWeight = 2f;
+        // Role-aware placement (round 20): a splash gun weighs the queue and the bends, where walkers bunch, this much more.
+        private const float SplashQueueWeight = 4f;
+        private const float SplashBendWeight = 2f;
+        private const float BendCos = 0.707f;
+        private const float BendReachCells = 1.5f;
+        // The creative player (round 20): drones once this many guns stand (the harvester not in the last waves), mines a wave
+        // before crowd and boss waves within this many road cells of the gate, and it never sells below this many ground guns.
+        private const int HarvestAfterTowers = 3;
+        private const int NoHarvestLastWaves = 2;
+        private const int RepairAfterTowers = 4;
+        private const int AttackAfterTowers = 8;
+        private const int MinesPerWave = 2;
+        private const int MinesAfterTowers = 4;
+        private const int GadgetRoadCells = 4;
+        private const int SellKeepsGroundGuns = 3;
         private const float PastGateWeight = 0.35f;
         private const float GateReachCells = 7f;
         private const float FarFromGatePenalty = 1.5f;
@@ -93,7 +109,7 @@ namespace Game.Tests
         // three runs in a row (an upgraded Laser as the very first buy covered too little road and starved the level).
         private const int TowersBeforeUpgrades = 2;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
-        private const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
+        internal const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
         private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
         private const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
         private const string TracePath = "Logs/probe_trace.txt";
@@ -254,6 +270,27 @@ namespace Game.Tests
             public Dictionary<Vector2Int, float> Quality { get; }
 
             public List<Vector2Int> Air { get; }
+
+            /// <summary>Per tower type its own ranking and spot values (role-aware placement); types without one use Ground or Air.</summary>
+            public readonly Dictionary<string, List<Vector2Int>> Role = new Dictionary<string, List<Vector2Int>>();
+            public readonly Dictionary<string, Dictionary<Vector2Int, float>> RoleQuality = new Dictionary<string, Dictionary<Vector2Int, float>>();
+
+            /// <summary>True for the naive bot: every spot counts the same, it does not weigh where a gun stands.</summary>
+            public bool Uniform;
+
+            public List<Vector2Int> RankingFor(TowerDefinition tower) =>
+                Role.TryGetValue(tower.Id, out List<Vector2Int> ranking) ? ranking : AirOnly(tower) ? Air : Ground;
+
+            public float QualityFor(TowerDefinition tower, Vector2Int cell)
+            {
+                if (Uniform || AirOnly(tower))
+                {
+                    return 1f;
+                }
+
+                Dictionary<Vector2Int, float> quality = RoleQuality.TryGetValue(tower.Id, out Dictionary<Vector2Int, float> own) ? own : Quality;
+                return quality.TryGetValue(cell, out float value) ? value : MinSpotQuality;
+            }
         }
 
         /// <summary>The gate the defence stands around, and how often it was repaired this wave.</summary>
@@ -292,19 +329,44 @@ namespace Game.Tests
         }
 
         /// <summary>How one bot run ended.</summary>
-        private sealed class ProbeResult
+        internal sealed class ProbeResult
         {
             public string Name;
+            public string Asset;
+            public int Difficulty;
+            public string Strategy;
             public LevelOutcome Outcome;
             public int Wave;
+            public int WaveCount;
+            public int Stars;
+            public float BaseHealth;
+            public float BaseMax;
+            public int TowersBuilt;
+            public int TowersStanding;
+            public int Upgrades;
+            public int CoinsUnspent;
+            public int Sold;
+            public int Mines;
+            public int Fields;
+            public string Drones = string.Empty;
+            public int Harvested;
+            public float DroneDamage;
+            public float GameSeconds;
             public int FlyersSpawned;
             public int FlyersKilled;
             public int FlyerBaseHits;
             public float BaseDamage;
+
+            /// <summary>Per tower type: damage dealt in the run, tower-seconds standing while creatures were on the field, and the data DPS of its levels then.</summary>
+            public Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
         }
 
         // Plays each (node, difficulty) run; gunOnly limits the bot to the owned guns that hit both ground and air.
-        private IEnumerator Probe(List<(int Level, int Difficulty)> runs, bool gunOnly, List<ProbeResult> results)
+        private IEnumerator Probe(List<(int Level, int Difficulty)> runs, bool gunOnly, List<ProbeResult> results) =>
+            Probe(runs, gunOnly ? ProbeStrategy.GunOnly : ProbeStrategy.Greedy, results);
+
+        /// <summary>Plays each (node, difficulty) run with a bot strategy (see <see cref="ProbeStrategy"/>).</summary>
+        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results)
         {
             var report = new List<string>();
             var traces = new List<string>();
@@ -330,9 +392,9 @@ namespace Game.Tests
                 var catalog = Services.Get<CampaignCatalog>();
                 LevelDefinition definition = catalog.Nodes[level].Level;
                 List<string> owned = OwnedTowers(catalog, level);
-                if (gunOnly)
+                if (strategy.Allowed != null)
                 {
-                    owned.RemoveAll(id => !HitsBoth(definition, id));
+                    owned.RemoveAll(id => !Allows(strategy, definition, id));
                 }
 
                 int seed = Seed();
@@ -361,7 +423,7 @@ namespace Game.Tests
                 var towers = new List<Tower>();
                 var gates = new List<Tower>();
                 var watch = new GateWatch();
-                int upgrades = 0;
+                var run = new BotRun(strategy, seed);
                 ProbeTrace trace = null;
                 int notedWave = -1;
                 string note = string.Empty;
@@ -371,8 +433,7 @@ namespace Game.Tests
                     if (context == null && Services.TryGet(out LevelContext found))
                     {
                         context = found;
-                        var quality = new Dictionary<Vector2Int, float>();
-                        spots = new BuildSpots(RankBuildSpots(definition, quality), RankAirSpots(definition), quality);
+                        spots = SpotsFor(definition, context, owned, strategy, run);
                         int post = DefenceGate(definition);
                         if (context.Hero != null && post >= 0)
                         {
@@ -380,6 +441,7 @@ namespace Game.Tests
                         }
 
                         trace = new ProbeTrace(context);
+                        run.Attach(context);
                         foreach (Tower placed in Object.FindObjectsByType<Tower>())
                         {
                             if (placed.Definition.BlocksGroundEnemies)
@@ -408,11 +470,12 @@ namespace Game.Tests
 
                         trace.Sample(towers, note);
                         MeasureWear(watch, towers, gates);
+                        run.Sample(context, towers, Time.deltaTime);
                         nextBuy -= Time.deltaTime;
                         if (nextBuy <= 0f)
                         {
                             nextBuy = BuyIntervalSeconds;
-                            Act(context, spots, towers, gates, watch, owned, ledger, ref upgrades);
+                            Act(context, spots, towers, gates, watch, owned, ledger, run);
                         }
                     }
 
@@ -428,21 +491,42 @@ namespace Game.Tests
                 Time.timeScale = 1f;
                 Assert.IsNotNull(context);
                 trace.Detach();
-                traces.Add($"{definition.DisplayName} on difficulty {difficulty}, seed {seed}{(gunOnly ? " (gun only)" : string.Empty)}");
+                run.Detach(context);
+                traces.Add($"{definition.DisplayName} on difficulty {difficulty}, seed {seed}, strategy {strategy.Name}");
                 traces.AddRange(trace.Lines);
                 traces.Add(ProbeTrace.Layout(definition, towers));
                 Assert.AreEqual(0, errors, "the level logged errors");
+                float baseFraction = context.BaseHealth.Max > 0f ? context.BaseHealth.Current / context.BaseHealth.Max : 0f;
                 results.Add(new ProbeResult
                 {
                     Name = definition.DisplayName,
+                    Asset = definition.name,
+                    Difficulty = difficulty,
+                    Strategy = strategy.Name,
                     Outcome = context.Outcome,
                     Wave = context.WaveNumber,
+                    WaveCount = context.WaveCount,
+                    Stars = context.Outcome == LevelOutcome.Won ? RewardCalculator.StarsFor(definition, baseFraction) : 0,
+                    BaseHealth = context.BaseHealth.Current,
+                    BaseMax = context.BaseHealth.Max,
+                    TowersBuilt = run.Built,
+                    TowersStanding = towers.Count,
+                    Upgrades = run.Upgrades,
+                    CoinsUnspent = context.Wallet.Money,
+                    Sold = run.Sold,
+                    Mines = run.Mines,
+                    Fields = run.Fields,
+                    Drones = string.Join("+", run.DronesBought),
+                    Harvested = run.Harvested,
+                    DroneDamage = run.DroneDamage,
+                    GameSeconds = run.Seconds,
+                    Fire = run.Fire,
                     FlyersSpawned = trace.FlyersSpawned,
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,
                     BaseDamage = context.BaseHealth.Max - context.BaseHealth.Current,
                 });
-                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty} (seed {seed}, step {step:0.###}): {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
+                report.Add($"[Probe] {definition.DisplayName} on difficulty {difficulty} (seed {seed}, step {step:0.###}{(strategy == ProbeStrategy.Greedy ? string.Empty : ", " + strategy.Name)}): {context.Outcome}, wave {context.WaveNumber}/{context.WaveCount}, base {context.BaseHealth.Current:0}/{context.BaseHealth.Max:0}, towers {towers.Count}, upgrades {run.Upgrades}, money {context.Wallet.Money}, wear gates {watch.GateDamage:0} guns {watch.TowerDamage:0}, repairs bought {watch.RepairSpent}");
             }
 
             Application.logMessageReceived -= onLog;
@@ -451,6 +535,57 @@ namespace Game.Tests
             // One line per run, kept over test runs, so repeated runs and seed sweeps can be compared.
             System.IO.File.AppendAllLines(ResultsPath, report);
             Debug.Log(string.Join(" | ", report));
+        }
+
+        // Whether the strategy lets the bot build an owned tower (by id, as the level sells it).
+        private static bool Allows(ProbeStrategy strategy, LevelDefinition level, string towerId)
+        {
+            foreach (TowerDefinition tower in level.AvailableTowers)
+            {
+                if (tower.Id == towerId)
+                {
+                    return strategy.Allowed(tower);
+                }
+            }
+
+            return false;
+        }
+
+        // Where the bot builds: the coverage rankings around the defence gate; per tower type by its own reach and role for
+        // a role-aware strategy; every spot beside the road in a seeded random order for the naive one.
+        private static BuildSpots SpotsFor(LevelDefinition definition, LevelContext context, List<string> owned, ProbeStrategy strategy, BotRun run)
+        {
+            var quality = new Dictionary<Vector2Int, float>();
+            var spots = new BuildSpots(RankBuildSpots(definition, quality), RankAirSpots(definition), quality);
+            if (strategy.Naive)
+            {
+                spots.Uniform = true;
+                run.Shuffle(spots.Ground);
+                run.Shuffle(spots.Air);
+                return spots;
+            }
+
+            if (!strategy.RoleSpots)
+            {
+                return spots;
+            }
+
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                if (!owned.Contains(tower.Id) || tower.IsSupport || AirOnly(tower))
+                {
+                    continue;
+                }
+
+                // A splash gun goes where the walkers bunch (the queue, the bends), a rate-of-fire gun where it covers the most road.
+                bool splash = tower.SplashRadius > 0f;
+                var own = new Dictionary<Vector2Int, float>();
+                float reach = tower.GetLevel(0).Range / Mathf.Max(0.01f, definition.CellSize);
+                spots.Role[tower.Id] = RankBuildSpots(definition, own, reach, splash ? SplashQueueWeight : QueueWeight, splash ? SplashBendWeight : 1f);
+                spots.RoleQuality[tower.Id] = own;
+            }
+
+            return spots;
         }
 
         // The ledger's view of the same level and difficulty: one line per wave to print beside what the bot really had,
@@ -477,7 +612,7 @@ namespace Game.Tests
         }
 
         // Node indices of the levels that exist; the smoke run keeps Shard Ridge and Crysium Vein.
-        private static List<int> ExistingLevels(bool smoke)
+        internal static List<int> ExistingLevels(bool smoke)
         {
             var levels = new List<int>();
 #if UNITY_EDITOR
@@ -522,7 +657,7 @@ namespace Game.Tests
         }
 
         // An optional filter file narrows a run, one "levels=0,1" or "difficulties=1,2" line each (and "seed=N" for the draws, "step=S" for the game seconds per frame); no file means everything.
-        private static bool Wanted(string key, int value)
+        internal static bool Wanted(string key, int value)
         {
             if (!System.IO.File.Exists(FilterPath))
             {
@@ -554,17 +689,17 @@ namespace Game.Tests
         // line where the queue moves when the first gate falls, and for the fast ones that slip through (rollers, raging
         // prowlers). Until 2026-11-04 that was the last gate before the base: on Glass Meadows the first gate fell and the
         // creatures queued at the next one, out of reach of every gun.
-        private static List<Vector2Int> RankBuildSpots(LevelDefinition level, Dictionary<Vector2Int, float> quality)
+        private static List<Vector2Int> RankBuildSpots(LevelDefinition level, Dictionary<Vector2Int, float> quality, float reach = CoverReachCells, float queueWeight = QueueWeight, float bendWeight = 1f)
         {
             int defence = DefenceGate(level);
-            List<Vector2Int> front = RankAround(level, defence >= 0 ? level.Blockades[defence].Cell : (Vector2Int?)null, quality);
+            List<Vector2Int> front = RankAround(level, defence >= 0 ? level.Blockades[defence].Cell : (Vector2Int?)null, quality, reach, queueWeight, bendWeight);
             int fallback = FallbackGate(level, defence);
             if (fallback < 0)
             {
                 return front;
             }
 
-            List<Vector2Int> back = RankAround(level, level.Blockades[fallback].Cell, quality);
+            List<Vector2Int> back = RankAround(level, level.Blockades[fallback].Cell, quality, reach, queueWeight, bendWeight);
             var result = new List<Vector2Int>();
             var taken = new HashSet<Vector2Int>();
             int f = 0;
@@ -587,12 +722,12 @@ namespace Game.Tests
         // than the nearest ring around the gate. Coverage counts the walking routes sample by sample, so the trunk all
         // routes share weighs more; road past the gate counts less (only leakers walk it), and a spot far from the gate
         // loses value, so the defence stays together where the hero holds.
-        private static List<Vector2Int> RankAround(LevelDefinition level, Vector2Int? gate, Dictionary<Vector2Int, float> quality)
+        private static List<Vector2Int> RankAround(LevelDefinition level, Vector2Int? gate, Dictionary<Vector2Int, float> quality, float reach, float queueWeight, float bendWeight)
         {
             var grid = level.Grid;
             var buildGrid = new BuildGrid(level);
             var road = new List<Vector2Int>(level.Road.Cells);
-            List<(Vector2 Point, float Weight)> walk = WalkSamples(level, gate);
+            List<(Vector2 Point, float Weight)> walk = WalkSamples(level, gate, queueWeight, bendWeight);
             var spots = new List<(Vector2Int Cell, float Score)>();
 
             for (int x = 0; x < grid.Size.x; x++)
@@ -619,7 +754,7 @@ namespace Game.Tests
                     float covered = 0f;
                     foreach ((Vector2 point, float weight) in walk)
                     {
-                        if (Vector2.Distance(cell, point) <= CoverReachCells)
+                        if (Vector2.Distance(cell, point) <= reach)
                         {
                             covered += weight;
                         }
@@ -647,7 +782,7 @@ namespace Game.Tests
 
         // Points along every walking route, one per RouteSampleCells, weighted by how much a gun there is worth: the queue in
         // front of the gate most, the walk up to it fully, the road past it a little.
-        private static List<(Vector2 Point, float Weight)> WalkSamples(LevelDefinition level, Vector2Int? gate)
+        private static List<(Vector2 Point, float Weight)> WalkSamples(LevelDefinition level, Vector2Int? gate, float queueWeight, float bendWeight)
         {
             var samples = new List<(Vector2 Point, float Weight)>();
             foreach (EnemyPath path in level.Paths)
@@ -691,7 +826,12 @@ namespace Game.Tests
                     }
                     else if (passesGate && Vector2.Distance(points[i], gate.Value) <= QueueCells)
                     {
-                        weight = QueueWeight;
+                        weight = queueWeight;
+                    }
+
+                    if (bendWeight != 1f && NearBend(path, points[i]))
+                    {
+                        weight *= bendWeight;
                     }
 
                     samples.Add((points[i], weight));
@@ -788,7 +928,7 @@ namespace Game.Tests
         // wave the standing guns cannot meet, starting from the wave whose kill income still pays for it before the raid;
         // everything else goes to the affordable step (a new tower or an upgrade) that lowers the worse pressure of the
         // waves at hand most per coin: money in the bank kills nothing.
-        private static void Act(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, GateWatch watch, List<string> owned, LedgerView ledger, ref int upgrades)
+        private static void Act(LevelContext context, BuildSpots spots, List<Tower> towers, List<Tower> gates, GateWatch watch, List<string> owned, LedgerView ledger, BotRun run)
         {
             if (ledger.Count == 0)
             {
@@ -802,6 +942,11 @@ namespace Game.Tests
             }
 
             int current = Mathf.Clamp(context.WaveNumber - 1, 0, ledger.Count - 1);
+            if (run.Strategy.Creative && Creative(context, towers, owned, ledger, current, run))
+            {
+                return;
+            }
+
             List<(string, int)> standing = Standing(towers);
             float groundCover = Cover(ledger, standing, current, true);
             bool groundHolds = groundCover >= 1f / GroundCeiling;
@@ -812,8 +957,14 @@ namespace Game.Tests
             int reserve = groundCover >= 1f / ReserveCeiling || noSkyGun ? AirReserve(context, towers, owned, ledger, current) : 0;
             // A new gun goes to the best free spot; the ledger counts every gun as well placed, so a step to a poor spot is
             // worth less than its stats, and upgrading a gun in a good spot can beat it.
-            float spotQuality = NextSpotQuality(context, spots, towers);
-            if (reserve > 0 && context.Wallet.CanAfford(reserve) && TryBuy(context, spots, towers, owned, AirOnly))
+            if (reserve > 0 && context.Wallet.CanAfford(reserve) && TryBuy(context, spots, towers, owned, AirOnly, run))
+            {
+                return;
+            }
+
+            // The creative player sells its weakest ground gun for the sky gun the preview asks for when the purse alone is short.
+            if (run.Strategy.Creative && reserve > 0 && !context.Wallet.CanAfford(reserve) && SellForSky(context, towers, reserve, run)
+                && TryBuy(context, spots, towers, owned, AirOnly, run))
             {
                 return;
             }
@@ -821,12 +972,14 @@ namespace Game.Tests
             // The same habit for the crowd waves: one splash gun stands before the first wave a shell would hit two walkers in.
             TowerDefinition splashGun = CheapestSplash(context, owned);
             int splash = SplashReserve(splashGun, towers, ledger, current);
-            if (splash > 0 && context.Wallet.CanAfford(reserve + splash) && TryBuy(context, spots, towers, owned, t => t == splashGun))
+            if (splash > 0 && context.Wallet.CanAfford(reserve + splash) && TryBuy(context, spots, towers, owned, t => t == splashGun, run))
             {
                 return;
             }
 
-            int purse = context.Wallet.Money - reserve - splash;
+            // The creative player puts a wanted drone's price aside while the ground holds and the sky is covered.
+            Game.Drones.DroneDefinition drone = run.Strategy.Creative && groundHolds && reserve == 0 && splash == 0 ? WantedDrone(context, towers, run) : null;
+            int purse = context.Wallet.Money - reserve - splash - (drone != null ? drone.Cost : 0);
             // A step a wave's kills away is worth waiting for while the ground holds, if it is clearly better per coin
             // (an air gun before a raid enters the waves at hand, a big upgrade) than what the purse buys now.
             int reach = groundHolds ? purse + ledger.Lines[current].KillMoney : purse;
@@ -874,7 +1027,7 @@ namespace Game.Tests
                     }
 
                     var next = new List<(string, int)>(standing) { (candidate.Id, 0) };
-                    float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, candidate.BuildCost) * (AirOnly(candidate) ? 1f : spotQuality);
+                    float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, candidate.BuildCost) * NextSpotQuality(context, spots, towers, candidate);
                     if (candidate.BuildCost > purse)
                     {
                         waitValue = Mathf.Max(waitValue, value);
@@ -893,14 +1046,20 @@ namespace Game.Tests
                 return;
             }
 
+            // The naive player upgrades without thought: when an upgrade is the step, any gun it can pay for gets it.
+            if (upgrade != null && run.Strategy.Naive)
+            {
+                upgrade = AnyUpgrade(towers, purse, run) ?? upgrade;
+            }
+
             if (upgrade != null && context.Wallet.TrySpend(upgrade.NextUpgradeCost))
             {
                 upgrade.Upgrade();
-                upgrades++;
+                run.Upgrades++;
             }
             else if (build != null)
             {
-                TryBuy(context, spots, towers, owned, t => t == build);
+                TryBuy(context, spots, towers, owned, t => t == build, run);
             }
         }
 
@@ -1039,12 +1198,13 @@ namespace Game.Tests
             return lost;
         }
 
-        private static float NextSpotQuality(LevelContext context, BuildSpots spots, List<Tower> towers) =>
-            FreeSpot(context, spots.Ground, towers, out Vector2Int cell) && spots.Quality.TryGetValue(cell, out float quality) ? quality : MinSpotQuality;
+        // How good the next free spot for a tower type is (1 for sky guns and for the naive bot).
+        private static float NextSpotQuality(LevelContext context, BuildSpots spots, List<Tower> towers, TowerDefinition candidate) =>
+            spots.Uniform || AirOnly(candidate) ? 1f
+            : FreeSpot(context, spots.RankingFor(candidate), towers, out Vector2Int cell) ? spots.QualityFor(candidate, cell) : MinSpotQuality;
 
         private static float SpotQuality(LevelContext context, BuildSpots spots, Tower tower) =>
-            AirOnly(tower.Definition) ? 1f
-            : spots.Quality.TryGetValue(context.Level.Grid.WorldToCell(tower.Position), out float quality) ? quality : MinSpotQuality;
+            spots.QualityFor(tower.Definition, context.Level.Grid.WorldToCell(tower.Position));
 
         private static Tower Nearest(List<Tower> structures, Vector3 position)
         {
@@ -1236,24 +1396,10 @@ namespace Game.Tests
             return cheapest;
         }
 
-        // The plain gun of the naive check: it aims at ground and air alike.
-        private static bool HitsBoth(LevelDefinition level, string towerId)
-        {
-            foreach (TowerDefinition tower in level.AvailableTowers)
-            {
-                if (tower.Id == towerId)
-                {
-                    return tower.Targets == (TargetLayers.Ground | TargetLayers.Air);
-                }
-            }
-
-            return false;
-        }
-
-        private static bool AirOnly(TowerDefinition tower) => tower.Targets == TargetLayers.Air;
+        internal static bool AirOnly(TowerDefinition tower) => tower.Targets == TargetLayers.Air;
 
         // The starting set plus every tower granted by the levels before this one.
-        private static List<string> OwnedTowers(CampaignCatalog catalog, int level)
+        internal static List<string> OwnedTowers(CampaignCatalog catalog, int level)
         {
             var owned = new List<string>();
 #if UNITY_EDITOR
@@ -1271,6 +1417,326 @@ namespace Game.Tests
             return owned;
         }
 
+        // A walking route point within reach of a bend sharper than BendCos (walkers bunch on the inside of a turn).
+        private static bool NearBend(EnemyPath path, Vector2 point)
+        {
+            for (int i = 1; i + 1 < path.Waypoints.Length; i++)
+            {
+                Vector2 into = ((Vector2)path.Waypoints[i] - path.Waypoints[i - 1]).normalized;
+                Vector2 outOf = ((Vector2)path.Waypoints[i + 1] - path.Waypoints[i]).normalized;
+                if (Vector2.Dot(into, outOf) < BendCos && Vector2.Distance(point, path.Waypoints[i]) <= BendReachCells)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // ---- the creative player (round 20) ------------------------------------------------------------------------
+
+        // What a creative player adds to the towers: the drones the level offers (saved for in Act), mines in the queue before
+        // crowd and boss waves (and on a burrowing boss's line), a slow field at the gate's exit. The sky comes first: nothing
+        // while an air gun is being saved for, and a gadget never takes the price of the next gun. True when the money went to
+        // that this round.
+        private static bool Creative(LevelContext context, List<Tower> towers, List<string> owned, LedgerView ledger, int current, BotRun run)
+        {
+            if (AirReserve(context, towers, owned, ledger, current) > 0)
+            {
+                return false;
+            }
+
+            int keep = CheapestBuild(context, owned, t => !t.IsSupport);
+            return BuyDrone(context, towers, run) || PlaceMines(context, towers, ledger, current, keep, run) || PlaceField(context, towers, ledger, current, keep, run);
+        }
+
+        // The drone the creative player wants next and has not bought, or null: the harvester once the first guns stand and
+        // the ore still has time to pay (not in the last waves), the repair drone once something was hurt, the attack drone
+        // with a full line.
+        private static Game.Drones.DroneDefinition WantedDrone(LevelContext context, List<Tower> towers, BotRun run)
+        {
+            // Income first (the drone lens: a harvester bought early pays most), then repairs, then fire.
+            var drones = new List<Game.Drones.DroneDefinition>(context.Level.Drones);
+            drones.Sort((a, b) => DronePriority(a).CompareTo(DronePriority(b)));
+            foreach (Game.Drones.DroneDefinition drone in drones)
+            {
+                bool wanted;
+                switch (drone.Kind)
+                {
+                    case Game.Drones.DroneKind.Harvest:
+                        wanted = towers.Count >= HarvestAfterTowers && context.Level.MineCells.Length > 0 && context.WaveNumber <= context.WaveCount - NoHarvestLastWaves;
+                        break;
+                    case Game.Drones.DroneKind.Repair:
+                        wanted = towers.Count >= RepairAfterTowers && run.WearSeen;
+                        break;
+                    default:
+                        wanted = towers.Count >= AttackAfterTowers;
+                        break;
+                }
+
+                if (wanted && !run.DronesBought.Contains(drone.name) && context.ActiveDrones(drone) < context.MaxDrones(drone))
+                {
+                    return drone;
+                }
+            }
+
+            return null;
+        }
+
+        private static int DronePriority(Game.Drones.DroneDefinition drone) =>
+            drone.Kind == Game.Drones.DroneKind.Harvest ? 0 : drone.Kind == Game.Drones.DroneKind.Repair ? 1 : 2;
+
+        private static bool BuyDrone(LevelContext context, List<Tower> towers, BotRun run)
+        {
+            Game.Drones.DroneDefinition drone = WantedDrone(context, towers, run);
+            if (drone == null || !context.Wallet.CanAfford(drone.Cost))
+            {
+                return false;
+            }
+
+            int before = context.Wallet.Money;
+            context.DroneRequested.Raise(drone);
+            if (context.Wallet.Money >= before)
+            {
+                return false;
+            }
+
+            run.DronesBought.Add(drone.name);
+            return true;
+        }
+
+        // Mines in the queue before the defence gate while a crowd or a boss wave is at hand (MinesPerWave a wave), and one
+        // on the road nearest a boss travelling under the ground (a mine going off on it stuns it, Docs/BOSSES.md).
+        private static bool PlaceMines(LevelContext context, List<Tower> towers, LedgerView ledger, int current, int keep, BotRun run)
+        {
+            PathObjectDefinition mine = PathObjectOf(context, PathObjectKind.Mine);
+            if (mine == null || !context.Wallet.CanAfford(mine.Cost + keep))
+            {
+                return false;
+            }
+
+            Game.Bosses.ContinentBossBrain burrowing = null;
+            if (context.BossesAlive > 0)
+            {
+                foreach (Game.Bosses.ContinentBossBrain brain in Object.FindObjectsByType<Game.Bosses.ContinentBossBrain>())
+                {
+                    burrowing = brain.State == "Burrowed" ? brain : burrowing;
+                }
+            }
+
+            if (burrowing != null && run.BurrowMined != burrowing.Burrows)
+            {
+                run.BurrowMined = burrowing.Burrows;
+                return Place(context, mine, NearestRoad(context.Level, burrowing.transform.position), run);
+            }
+
+            if (run.MinesWave != context.WaveNumber)
+            {
+                run.MinesWave = context.WaveNumber;
+                run.MinesThisWave = 0;
+            }
+
+            // A crowd wave asks for mines only when the standing guns would not hold it and the first guns stand (round 20: two mines
+            // on wave 1 cost Crysium Vein its second Flak); a boss wave always does.
+            bool pressed = Pressed(towers, ledger, current);
+            bool wanted = false;
+            for (int i = current; i <= current + Horizon && i < ledger.Count; i++)
+            {
+                wanted |= ledger.Lines[i].Boss || (pressed && 1f + 2f * mine.Radius * ledger.Loads[i].GroundDensity >= CrowdSplashTargets);
+            }
+
+            if (!wanted || run.MinesThisWave >= MinesPerWave)
+            {
+                return false;
+            }
+
+            foreach (Vector2Int cell in run.Strategy.Naive ? AnyRoad(context.Level, run) : RoadAtGate(context.Level, true))
+            {
+                if (Place(context, mine, cell, run))
+                {
+                    run.MinesThisWave++;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // One slow field a wave on the road just past the defence gate while creatures are on the field: leakers stay in
+        // the second line's reach longer.
+        private static bool PlaceField(LevelContext context, List<Tower> towers, LedgerView ledger, int current, int keep, BotRun run)
+        {
+            PathObjectDefinition field = PathObjectOf(context, PathObjectKind.SlowField);
+            if (field == null || !Pressed(towers, ledger, current) || run.FieldWave == context.WaveNumber || context.Targets.Count == 0 || !context.Wallet.CanAfford(field.Cost + keep))
+            {
+                return false;
+            }
+
+            foreach (Vector2Int cell in run.Strategy.Naive ? AnyRoad(context.Level, run) : RoadAtGate(context.Level, false))
+            {
+                if (Place(context, field, cell, run))
+                {
+                    run.FieldWave = context.WaveNumber;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Sells the weakest ground gun (lowest level, then cheapest) when its refund makes up what the purse lacks for the
+        // sky gun the preview calls for; never below SellKeepsGroundGuns ground guns.
+        private static bool SellForSky(LevelContext context, List<Tower> towers, int price, BotRun run)
+        {
+            Tower weakest = null;
+            int ground = 0;
+            foreach (Tower tower in towers)
+            {
+                if (AirOnly(tower.Definition) || !tower.IsAlive)
+                {
+                    continue;
+                }
+
+                ground++;
+                if (weakest == null || tower.LevelIndex < weakest.LevelIndex || (tower.LevelIndex == weakest.LevelIndex && tower.TotalSpent < weakest.TotalSpent))
+                {
+                    weakest = tower;
+                }
+            }
+
+            if (weakest == null || ground <= SellKeepsGroundGuns || context.Wallet.Money + weakest.SellValue < price)
+            {
+                return false;
+            }
+
+            context.Wallet.Add(weakest.SellValue);
+            weakest.Retire();
+            Object.Destroy(weakest.gameObject);
+            towers.Remove(weakest);
+            run.Sold++;
+            return true;
+        }
+
+        // Gadgets are for a defence that stands but would not hold the waves at hand: in a thin economy (Crysium Vein Medium,
+        // round 20) a slow field on wave 3 cost the second Cannon and the level.
+        private static bool Pressed(List<Tower> towers, LedgerView ledger, int current) =>
+            towers.Count >= MinesAfterTowers && Cover(ledger, Standing(towers), current, true) < 1f;
+
+        // The naive player's upgrade: a random gun it can pay to raise, wherever it stands.
+        private static Tower AnyUpgrade(List<Tower> towers, int purse, BotRun run)
+        {
+            var candidates = towers.FindAll(t => t.CanUpgrade && t.NextUpgradeCost <= purse);
+            return candidates.Count > 0 ? candidates[run.Next(candidates.Count)] : null;
+        }
+
+        private static PathObjectDefinition PathObjectOf(LevelContext context, PathObjectKind kind)
+        {
+            if (context.AvailablePathObjects == null)
+            {
+                return null;
+            }
+
+            foreach (PathObjectDefinition item in context.AvailablePathObjects)
+            {
+                if (item != null && item.Kind == kind)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        // Road cells of the main road before the defence gate (the queue, nearest the gate first) or just after it (its exit).
+        private static List<Vector2Int> RoadAtGate(LevelDefinition level, bool before)
+        {
+            var cells = new List<Vector2Int>();
+            int defence = DefenceGate(level);
+            Vector2Int[] road = level.MainRoad;
+            if (defence < 0 || road.Length == 0)
+            {
+                return cells;
+            }
+
+            Vector2Int gate = level.Blockades[defence].Cell;
+            int at = 0;
+            for (int i = 1; i < road.Length; i++)
+            {
+                at = Vector2Int.Distance(road[i], gate) < Vector2Int.Distance(road[at], gate) ? i : at;
+            }
+
+            for (int k = 1; k <= GadgetRoadCells; k++)
+            {
+                int index = before ? at - k - 1 : at + k;
+                if (index >= 0 && index < road.Length)
+                {
+                    cells.Add(road[index]);
+                }
+            }
+
+            return cells;
+        }
+
+        // The naive player drops a gadget anywhere on the main road.
+        private static List<Vector2Int> AnyRoad(LevelDefinition level, BotRun run)
+        {
+            var cells = new List<Vector2Int>(level.MainRoad);
+            run.Shuffle(cells);
+            return cells.GetRange(0, Mathf.Min(GadgetRoadCells, cells.Count));
+        }
+
+        private static Vector2Int NearestRoad(LevelDefinition level, Vector3 position)
+        {
+            Vector2Int best = level.MainRoad.Length > 0 ? level.MainRoad[0] : default;
+            float bestDistance = float.MaxValue;
+            foreach (Vector2Int cell in level.Road.Cells)
+            {
+                float distance = Vector3.Distance(level.Grid.CellToWorld(cell), position);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = cell;
+                }
+            }
+
+            return best;
+        }
+
+        // Places a path object the way the player's cursor does (PlacementController checks the cell and takes the money).
+        private static bool Place(LevelContext context, PathObjectDefinition item, Vector2Int cell, BotRun run)
+        {
+            var placement = Object.FindAnyObjectByType<PlacementController>();
+            if (placement == null)
+            {
+                return false;
+            }
+
+            int before = context.Wallet.Money;
+            CursorField.SetValue(placement, cell);
+            PlacePathObject.Invoke(placement, new object[] { item });
+            if (context.Wallet.Money >= before)
+            {
+                return false;
+            }
+
+            if (item.Kind == PathObjectKind.Mine)
+            {
+                run.Mines++;
+            }
+            else
+            {
+                run.Fields++;
+            }
+
+            return true;
+        }
+
+        private static readonly System.Reflection.FieldInfo CursorField =
+            typeof(PlacementController).GetField("_cursor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        private static readonly System.Reflection.MethodInfo PlacePathObject =
+            typeof(PlacementController).GetMethod("TryPlacePathObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
         // The first cell of a ranking that no tower of the bot stands on yet.
         private static bool FreeSpot(LevelContext context, List<Vector2Int> ranking, List<Tower> towers, out Vector2Int cell)
         {
@@ -1287,7 +1753,7 @@ namespace Game.Tests
             return false;
         }
 
-        private static bool TryBuy(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, System.Predicate<TowerDefinition> kind)
+        private static bool TryBuy(LevelContext context, BuildSpots spots, List<Tower> towers, List<string> owned, System.Predicate<TowerDefinition> kind, BotRun run)
         {
             // The dearest affordable tower of the wanted kind.
             TowerDefinition best = null;
@@ -1305,7 +1771,7 @@ namespace Game.Tests
                 }
             }
 
-            if (best == null || !FreeSpot(context, AirOnly(best) ? spots.Air : spots.Ground, towers, out Vector2Int cell) || !context.Wallet.TrySpend(best.BuildCost))
+            if (best == null || !FreeSpot(context, spots.RankingFor(best), towers, out Vector2Int cell) || !context.Wallet.TrySpend(best.BuildCost))
             {
                 return false;
             }
@@ -1317,6 +1783,7 @@ namespace Game.Tests
             tower.Initialize(best, context.Targets, context.Projectiles, context.ModifiersFor(best));
             tower.Register(context.Structures);
             towers.Add(tower);
+            run.Built++;
             return true;
         }
     }

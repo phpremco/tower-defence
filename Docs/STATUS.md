@@ -2905,3 +2905,28 @@ Not committed.
   run failed once with "Burrowed: on PulseRifle at (33, 15)", the rerun passed: a timing-dependent flake of the burrow
   route, unrelated to the gate clips, worth watching), BossIntroSmoke 1/1, Screenshot 3/3; save absent before and after.
   Stills: `Tools/PlayTest/r19_gate_shots.sh` (+ `r19_step_until.cs`: steps the paused editor until a boss state).
+
+## Round 20: monoculture probe, tower-role/drone lenses, GravemawArena flake (2026-11-06)
+
+Not committed. No balance data changed (towers, enemies, waves, difficulties, bosses untouched).
+- **GravemawArena flake (fixed):** the cause was geometric, exposed by frame timing. The burrow route's legs were checked
+  with `BossRoutes.ClearOfFootprints`, which sampled the line every 0.25 m; the second burrow's leg (8.16, 8.44) ->
+  (16.50, 3.50) clips the corner of the PulseRifle cell (33, 15) between x 13.95 and 14.0, so the check passed, and whether
+  the boss, stepped frame by frame, ever stood in that sliver depended on the frame time (the test ran at 4x real time with
+  the editor's frames). Reproduced deterministically with a fixed 1/30 s step. Fix: `GridLine.Touches` (exact cell walk of a
+  segment, both cells at a corner crossing) behind `ClearOfFootprints` and the crack's `Straight` check, and
+  `BossRoutes.KeepOffFootprints` reroutes any route leg that still touches a footprint (smoothed crack corners) round it
+  over the grid before `TravelUnder`. The test is deterministic now: seed 1 and a fixed 1/15 s step
+  (`Time.captureDeltaTime`; `Tools/PlayTest/gravemaw_arg.txt` may set `step=`/`seed=`). Steps 1/40, 1/30, 1/25, 1/15, 1/10
+  pass; the default 5 runs in a row pass. EditMode `GridLineTests` (3).
+- **Monoculture check** (Docs/BALANCE.md, "Monoculture check"): EditMode reports `MonocultureLedgerTests`,
+  `TowerRolesTests`, `DroneLensTests` (-> `Tools/PlayTest/monoculture_ledger.txt`, `tower_roles.txt`, `drone_lens.txt`);
+  PlayMode `MonocultureProbeTests` (smoke 8 runs; explicit full set, category Monoculture -> `monoculture.txt`). The probe bot
+  takes a `ProbeStrategy` (greedy unchanged, gun only, mono T, creative, naive) and tracks a `BotRun` (built, sold, mines,
+  fields, drones, ore, in-game DPS per type). Rules are reported and show the test as ignored ("Known, awaiting Remco's
+  rebalance by role"); level errors still fail.
+- **Result:** from C1_03 on no single type wins on Medium or Hard; C1_01/C1_02 are won by Cannon rows (and everything on
+  Medium) and by the naive bot; creative misses on Quartz Flats Medium (1 star) and loses Crysium Vein Hard; the naive bot
+  wins Shard Ridge Hard. Laser in play 19.3 DPS a tower (14.8 per 100 coins) vs Pulse 5.2 (10.4 per 100 coins).
+- Note: `Tools/PlayTest/probe_arg.txt` (tracked) holds `levels=0` / `difficulties=0,1`; it narrows the explicit Full tests
+  (BalanceProbe and Monoculture). Move it aside for a whole run.

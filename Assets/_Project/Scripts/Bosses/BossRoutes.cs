@@ -108,17 +108,7 @@ namespace Game.Bosses
         private static bool Straight(GridMap grid, System.Func<Vector2Int, float> cost, Vector3 a, Vector3 b)
         {
             float limit = Mathf.Max(cost(grid.WorldToCell(a)), cost(grid.WorldToCell(b))) + 0.01f;
-            float length = Vector3.Distance(a, b);
-            int samples = Mathf.Max(1, Mathf.CeilToInt(length / SampleStep));
-            for (int i = 1; i < samples; i++)
-            {
-                if (cost(grid.WorldToCell(Vector3.Lerp(a, b, i / (float)samples))) > limit)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !GridLine.Touches(grid, a, b, c => cost(c) > limit);
         }
 
         /// <summary>
@@ -216,22 +206,48 @@ namespace Game.Bosses
             return true;
         }
 
-        /// <summary>True when the straight line crosses no footprint (rocks and liquids allowed: it is under the ground).</summary>
+        /// <summary>
+        /// True when the straight line touches no footprint cell (rocks and liquids allowed: it is under the ground). Exact:
+        /// every cell the line passes is checked, so a line that only clips a tower cell's corner counts as crossing it.
+        /// </summary>
         public static bool ClearOfFootprints(BossField field, Vector3 a, Vector3 b)
         {
-            GridMap grid = field.Grid;
-            float length = Vector3.Distance(a, b);
-            int samples = Mathf.Max(1, Mathf.CeilToInt(length / SampleStep));
-            for (int i = 0; i <= samples; i++)
-            {
-                Vector2Int cell = grid.WorldToCell(Vector3.Lerp(a, b, i / (float)samples));
-                if (field.Climb.IsFootprint(cell))
-                {
-                    return false;
-                }
-            }
+            ClimbLayer climb = field.Climb;
+            return !GridLine.Touches(field.Grid, a, b, climb.IsFootprint);
+        }
 
-            return true;
+        /// <summary>
+        /// Makes a travel route touch no footprint cell: a leg that does is replaced by a walk from cell to cell round the
+        /// footprints (GridRouter never cuts a blocked corner), pulled straight where the exact line stays clear. The ends
+        /// stay; a leg with no way round is left as it is.
+        /// </summary>
+        public static void KeepOffFootprints(BossField field, List<Vector3> route)
+        {
+            GridMap grid = field.Grid;
+            ClimbLayer climb = field.Climb;
+            var cells = new List<Vector2Int>();
+            var detour = new List<Vector3>();
+            for (int i = route.Count - 2; i >= 0; i--)
+            {
+                Vector3 a = route[i];
+                Vector3 b = route[i + 1];
+                if (ClearOfFootprints(field, a, b)
+                    || !GridRouter.TryFind(grid.Size, Clamp(grid, grid.WorldToCell(a)), Clamp(grid, grid.WorldToCell(b)), c => climb.IsFootprint(c) ? float.PositiveInfinity : 1f, cells, true))
+                {
+                    continue;
+                }
+
+                detour.Clear();
+                detour.Add(a);
+                for (int c = 1; c < cells.Count - 1; c++)
+                {
+                    detour.Add(grid.CellToWorld(cells[c]));
+                }
+
+                detour.Add(b);
+                CrackPath.Straighten(detour, (p, q) => ClearOfFootprints(field, p, q));
+                route.InsertRange(i + 1, detour.GetRange(1, detour.Count - 2));
+            }
         }
 
         /// <summary>True when the straight line over the ground crosses no footprint and no large decoration piece (a climb's way over).</summary>

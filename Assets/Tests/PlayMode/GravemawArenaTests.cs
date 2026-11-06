@@ -20,7 +20,12 @@ namespace Game.Tests
     /// </summary>
     public sealed class GravemawArenaTests
     {
-        private const float SimulationSpeed = 4f;
+        // Every frame advances the fight by exactly this much game time (Time.captureDeltaTime), and the level's draws are
+        // seeded: until round 20 the test ran at four times real time, so the editor's frame rate decided where the boss stood
+        // at each threshold, which tower had hurt it most and so which burrow it planned (an intermittent "Burrowed: on ...").
+        private const float StepSeconds = 1f / 15f;
+        private const int Seed = 1;
+        private const string ArgPath = "Tools/PlayTest/gravemaw_arg.txt";
         private const float TimeoutSeconds = 240f;
         private const int Towers = 10;
 
@@ -37,7 +42,7 @@ namespace Game.Tests
             BossArenaDefinition arena = catalog.BossArena;
             Assert.IsNotNull(arena, "no boss arena on the campaign");
             EnemyDefinition gravemaw = arena.Bosses[0];
-            Services.Register(new LevelSession(arena.Level, arena.Difficulty, false, null, arena.WavesFor(gravemaw), arena.StartingMoney));
+            Services.Register(new LevelSession(arena.Level, arena.Difficulty, false, null, arena.WavesFor(gravemaw), arena.StartingMoney, Setting("seed", Seed)));
             SceneManager.LoadScene(SceneNames.Level);
             yield return null;
             yield return null;
@@ -51,7 +56,8 @@ namespace Game.Tests
             List<Tower> built = Build(context, Towers);
             Assert.GreaterOrEqual(built.Count, Towers / 2, "too few towers could be built");
             context.SkipWaveRequested.Raise();
-            Time.timeScale = SimulationSpeed;
+            Time.timeScale = 1f;
+            Time.captureDeltaTime = Setting("step", StepSeconds);
 
             float started = Time.realtimeSinceStartup;
             ContinentBossBrain brain = null;
@@ -85,7 +91,7 @@ namespace Game.Tests
                 yield return null;
             }
 
-            Time.timeScale = 1f;
+            Time.captureDeltaTime = 0f;
             Assert.IsNotNull(brain, "Gravemaw never came");
             Assert.AreEqual(LevelOutcome.Won, context.Outcome, $"the fight did not end in a win (last state {brain.State}, health {boss.Health.Fraction:0.00})");
             Assert.AreEqual(3, brain.Burrows, "it dives under at 75, 50 and 25 percent");
@@ -100,6 +106,36 @@ namespace Game.Tests
             Assert.IsTrue(rig == null || rig.Smashed, "the colony rig was not smashed by the entrance");
             LogAssert.NoUnexpectedReceived();
         }
+
+        // A run cut off by the timeout must not leave the editor stepping in fixed game time.
+        [TearDown]
+        public void ResetTime()
+        {
+            Time.captureDeltaTime = 0f;
+            Time.timeScale = 1f;
+        }
+
+        // An optional "step=S" or "seed=N" line in the arg file replays the fight with other steps or draws (Docs/BOSSES.md).
+        private static float Setting(string key, float fallback)
+        {
+            if (!System.IO.File.Exists(ArgPath))
+            {
+                return fallback;
+            }
+
+            foreach (string line in System.IO.File.ReadAllLines(ArgPath))
+            {
+                string[] parts = line.Split('=');
+                if (parts.Length == 2 && parts[0].Trim() == key && float.TryParse(parts[1].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value))
+                {
+                    return value;
+                }
+            }
+
+            return fallback;
+        }
+
+        private static int Setting(string key, int fallback) => (int)Setting(key, (float)fallback);
 
         // Its pivot inside a standing tower's cell, or a living gate's, while it is not climbing a structure by design.
         private static void CheckFootprint(LevelContext context, Enemy boss, ContinentBossBrain brain, List<string> overlaps)

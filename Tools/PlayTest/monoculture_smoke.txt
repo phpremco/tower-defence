@@ -1,0 +1,21 @@
+Monoculture probe, smoke set (round 20; seeded, 0.2 s steps; Docs/BALANCE.md, Monoculture check)
+dps = damage really dealt per tower-second while creatures were on the field, against the data DPS of the levels it stood at.
+
+level        diff    strategy           result stars wave   base     built upg sold mines fields drones                        ore  unspent  in-game dps per type (real/data)
+Level_C1_03  Medium  mono PulseRifle    Lost       0 15/16    0/600     12   4    0     0      0 -                                0        8   PulseRifle 8.2/21.5
+Level_C1_03  Medium  mono Cannon        Lost       0 14/16    0/600      7   0    0     0      0 -                                0       75   Cannon 14.9/17.9
+Level_C1_03  Medium  mono Laser         Lost       0 14/16    0/600      3   3    0     0      0 -                                0      110   Laser 21.4/54.6
+Level_C1_03  Medium  creative           Won        3 16/16  558/600     18   0    2     0      0 RepairDrone                      0       75   Cannon 21.5/17.9 Laser 11.2/40.0 PulseRifle 4.0/14.3 Rocket 2.6/25.5
+Level_C1_06  Medium  mono PulseRifle    Lost       0 10/18    0/600      6   2    0     0      0 -                                0       16   PulseRifle 9.7/26.0
+Level_C1_06  Medium  mono Cannon        Lost       0 12/18    0/600      5   0    0     0      0 -                                0       84   Cannon 12.7/17.9
+Level_C1_06  Medium  mono Laser         Lost       0 12/18    0/600      3   2    0     0      0 -                                0       13   Laser 20.3/53.8
+Level_C1_06  Medium  creative           Won        3 18/18  600/600     20   2    0     1      0 RepairDrone                      0       91   Rocket 3.8/25.5 Cannon 24.2/17.9 PulseRifle 3.3/16.2
+
+In-game DPS per tower type over all runs (per tower-second with creatures on the field; share of the data DPS):
+  Cannon         18.3 dps of   17.9 data (102%) over   2840 tower-s
+  Laser          17.8 dps of   49.6 data ( 36%) over   1240 tower-s
+  PulseRifle      5.1 dps of   17.7 data ( 29%) over   6632 tower-s
+  Rocket          3.3 dps of   25.5 data ( 13%) over   1513 tower-s
+
+Rules (report only): Medium at most one mono type wins, with one star; Hard none; creative wins Medium and Hard with 2+ stars; naive loses Medium+.
+  all met

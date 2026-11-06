@@ -223,6 +223,9 @@ namespace Game.Bosses
             }
 
             _route.Add(pivot);
+            // The crack is shaped for the eye (corners rounded, back-tracks dropped), so a leg of it can still clip the
+            // corner of a footprint; the body travels a route that never does (round 20: "Burrowed: on PulseRifle").
+            BossRoutes.KeepOffFootprints(Field, _route);
             yield return TravelUnder(_crack, _route, throws ? target : null, signature, signature ? 1f : Boss.Burrow.ReturnSpeedFactor);
             yield return Breakout(Position, _struck ? Enemy.Heading : forward, throws && !_struck ? target : null, false);
         }

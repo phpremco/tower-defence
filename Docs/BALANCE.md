@@ -570,3 +570,71 @@ ignored ("Known outlier, awaiting Remco's playtest: ...") until Remco has played
 - Laser 1.38x / 1.355x against a boss at L0 / L1 (cheap beam DPS); against swarms it sits at the median (1.06x). The
   critic's "Laser high vs swarms" does not show in this model.
 - Hybrids: Storm Rifle 1.9 to 2.4x on swarms and air; Artillery and Cryo Beam 0.4 to 0.7x on swarms and air.
+
+## Monoculture check (2026-11-06, round 20)
+
+Remco's rule: "Als je kunt winnen door alleen een rijtje torens neer te zetten van hetzelfde soort, dan is het niet in
+balans." The right towers, upgrades, selling and rebuying, mines, drones (and later superweapons) must change how a run
+goes, and placement must ask for thought. Round 20 built the tools to measure that; **no balance value changed**.
+
+**EditMode (seconds, report only, the suite stays green):**
+- `MonocultureLedgerTests` -> `Tools/PlayTest/monoculture_ledger.txt`: the ledger (human lens, with the hero) per C1 level
+  and difficulty, once with the whole owned loadout and once per owned gun alone. "HOLDS" = every wave inside the hero cap,
+  the bar the full loadout must pass. Breaches of the rule (Medium at most one gun alone, Hard/Psycho none) are listed at
+  the end.
+- `TowerRolesTests` -> `Tools/PlayTest/tower_roles.txt`: (1) upgrade vs n towers of the same type at equal coins, per step:
+  hit, single-target DPS, DPS through an 8 plating, group DPS, targets per volley, rate and risk (Remco: the upgrade must win
+  on hit and single target, more towers only on targets/rate and spread risk; "rule met" per step); (2) role matrix, DPS per
+  100 coins against swarm, clustered group, air, armour (the current pool armour, and a flat per-hit plating 4/8/12 with a
+  20% floor) and one high-health target; hybrids priced as partners + recipe; (3) best vs median build spot on C1_03 per
+  tower: road in reach and bunched road (queue before a gate, bends).
+- `DroneLensTests` -> `Tools/PlayTest/drone_lens.txt`: per level, difficulty and drone its price against 3 x the cheapest
+  owned gun, its rate (harvest coins/s over the real wave timeline and ore stock; repair at the towers' repair price; attack
+  at the waves' bounty per hit point), payback in seconds and waves, and for the harvester the net coins by the level's end
+  when bought at wave 1, a third, half, two thirds and the last two waves, plus the latest wave that still breaks even.
+
+**PlayMode (`MonocultureProbeTests`, one class at a time, deterministic: seed 1, 0.2 s steps):**
+- Strategies (`ProbeStrategy`, state in `BotRun`): *mono T* (one owned type, placed by role, hero on, no drones, gadgets or
+  selling; wrecks scrapped), *creative* (every owned type placed by role: splash guns weigh the queue and bends, rate-of-fire
+  guns the road in reach, sky guns under the flight routes; plus one drone of each kind the level offers, two mines a wave
+  in the gate's queue before crowd and boss waves and one on a burrowing boss, one slow field a wave past the gate, and it
+  sells its weakest ground gun when the refund buys the sky gun the preview asks for), *naive* (the creative bot's purse
+  and choices on seeded random spots, random upgrades, gadgets anywhere on the road). The plain `BalanceProbeTests` bot is
+  unchanged (`ProbeStrategy.Greedy`).
+- Smoke (default category, about 8 runs): C1_03 and C1_06 on Medium, mono Pulse/Cannon/Laser + creative ->
+  `Tools/PlayTest/monoculture_smoke.txt`. Full set: `run_tests --mode PlayMode --filter MonocultureProbeTests --include_explicit true`
+  (category "Monoculture"; `Tools/PlayTest/probe_arg.txt` `levels=`/`difficulties=` narrow it) -> `Tools/PlayTest/monoculture.txt`:
+  6 levels x Medium/Hard x (each owned ground-capable mono type + creative + naive).
+- Columns: result, stars, wave reached, base hp, towers built, upgrades, sold, mines, slow fields, drones, ore delivered,
+  coins unspent, and per tower type the damage really dealt per tower-second with creatures on the field against its data
+  DPS (the "Laser does almost no damage" question). The end of the file sums that over all runs.
+- Rules, **reported, not failed** (the test shows as ignored with "Known, awaiting Remco's rebalance by role" while any
+  breach stands; level errors still fail): Medium at most one mono type wins and only with one star; Hard none; the
+  creative bot wins Medium and Hard with two or more stars; the naive bot loses from Medium on (if it wins, the level does
+  not ask for thought).
+
+**First results (2026-11-06, full set, seed 1; tables in the files above):**
+
+| Level | Medium: mono winners | Medium creative / naive | Hard: mono winners | Hard creative / naive |
+| --- | --- | --- | --- | --- |
+| C1_01 Landing Site | Pulse 3*, Cannon 3* | won 3* / won 3* | Cannon 3* | won 3* / won 3* |
+| C1_02 Glass Meadows | Pulse 3*, Cannon 3*, Laser 3* | won 3* / won 3* | Cannon 3* | won 3* / won 3* |
+| C1_03 Shard Ridge | none | won 3* / lost w13 | none | won 3* / won 3* |
+| C1_04 Fault Line | none | won 3* / lost w8 | none | won 2* / lost w6 |
+| C1_05 Quartz Flats | none | won 1* (base 210) / lost w13 | none | won 2* / lost w11 |
+| C1_06 Crysium Vein | none | won 3* / lost w7 | none | lost w11 / lost w7 |
+
+- From C1_03 on no row of one type wins, on Medium or Hard. C1_01 and C1_02 are won by a row of Cannons on Hard and by
+  every type on Medium, and by the naive bot: the first two levels ask for no thought. Shard Ridge Hard is easier than its
+  Medium for the naive bot (Hard income 1.1 against Medium 0.95).
+- The creative bot misses the bar on Quartz Flats Medium (1 star) and loses Crysium Vein Hard.
+- In-game DPS per tower-second with creatures on the field: Cannon 25.6 (143% of its data: splash hits count per creature),
+  Laser 19.3 (39%), Pulse 5.2 (30%), Flak 4.0 (16%, only fires in raids). Per 100 coins the Laser deals 14.8 against the
+  Pulse's 10.4, so in play the Laser does not do "almost no damage"; both lose most of their data DPS to time without a
+  target in reach. The ledger pre-screen agrees with the probe except on C1_03 Medium (ledger: Pulse alone holds).
+- The ledger lens: an upgrade beats n towers of the same type at equal coins on single-target DPS on 10 of 20 steps (met:
+  Pulse L1->L2, Cannon both, Laser L1->L2, hybrids); not met: Pulse L0->L1, Laser L0->L1, Tesla, Railgun, Flak, Cryo.
+- Drones: the harvester (150 = 3 Pulse Rifles) bought at wave 1 nets +40 to +136 by the level's end, breaks even when
+  bought up to wave 7-12 of 16-18, and loses 60-110 in the last two waves. The creative bot (which saves for it once three
+  guns stand and the sky is covered) never had 150 spare before the late waves on Medium; the repair drone it did buy pays
+  back after 50 busy seconds; the attack drone (12 DPS for 180) is a quarter of a Pulse Rifle per coin.
