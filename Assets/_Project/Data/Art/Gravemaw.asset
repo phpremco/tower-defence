@@ -22,9 +22,10 @@ MonoBehaviour:
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
-  _height: 1.6088986
+  _height: 1.6045849
   _lodScreenHeight: 0.09
   _upperBodyBone: 
+  _displayExposure: 1
   _deathFade: {x: 0.5, y: 1.7}
   _embers: 0
   _bleeds: 1
@@ -153,7 +154,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 7.476, y: 0}
+    _endOffset: {x: 7.498, y: 0}
     _cueSeconds: 0
     _anchorForward: 2.95
     _momentSeconds: []
@@ -167,7 +168,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 3.302, y: 1.203}
+    _endOffset: {x: 7.623, y: 1.2}
     _cueSeconds: 0
     _anchorForward: 3.2
     _momentSeconds: []
@@ -181,7 +182,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 2.86, y: 0}
+    _endOffset: {x: 4.312, y: 0}
     _cueSeconds: 0.46666667
     _anchorForward: 1
     _momentSeconds: []
@@ -209,7 +210,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 6.927, y: 0}
+    _endOffset: {x: 6.924, y: 0}
     _cueSeconds: 0
     _anchorForward: 3.4
     _momentSeconds: []
@@ -223,7 +224,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 9.196, y: 0}
+    _endOffset: {x: 9.203, y: 0}
     _cueSeconds: 0
     _anchorForward: 3.2
     _momentSeconds: []
@@ -251,7 +252,7 @@ MonoBehaviour:
     _socket: 
     _weight: 1
     _upperBody: 0
-    _endOffset: {x: 3.315, y: -1.2}
+    _endOffset: {x: 7.623, y: -1.2}
     _cueSeconds: 0
     _anchorForward: 3.2
     _momentSeconds: []

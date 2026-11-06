@@ -214,6 +214,14 @@ namespace Game.Bosses
                 _route.Add(_crack[i]);
             }
 
+            // The crack is routed round every footprint up to its hole, but the pivot lies a little short of the hole
+            // along the surfacing line: a straight cut from the last crack bend to the pivot can pass under the target
+            // tower itself. Then it runs on to the hole first (the surfacing line from there back to the pivot is clear).
+            if (!BossRoutes.ClearOfFootprints(Field, _route[_route.Count - 1], pivot))
+            {
+                _route.Add(_crack[_crack.Count - 1]);
+            }
+
             _route.Add(pivot);
             yield return TravelUnder(_crack, _route, throws ? target : null, signature, signature ? 1f : Boss.Burrow.ReturnSpeedFactor);
             yield return Breakout(Position, _struck ? Enemy.Heading : forward, throws && !_struck ? target : null, false);

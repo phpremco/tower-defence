@@ -2822,3 +2822,59 @@ Not committed.
   errors/warnings. Larva stills: `Tools/PlayTest/r17_larva_shots.sh` (Cinder arena, `r17_spawn_larva.cs` sends three
   larvae out of the boss, `r17_larva_focus.cs` follows one, `r17_fixed_step.cs` makes each stepped frame 1/30 s).
   `r17_sync.cs` syncs only FireLarva and SealedOne.
+
+## Round 18: Gravemaw's path flips, Frost Warden fists, Bulwark chop (2026-11-06)
+
+Not committed.
+- **Gravemaw (HIGH, fixed):** two causes. (1) `deep_kit.PathFZ` smoothed with a uniform Catmull-Rom; a 20 m lead-in
+  next to 0.3 m corner segments made it overshoot and run backwards (tangent reversals up to 180 degrees). It now splits
+  segments longer than 1 m and uses a centripetal Catmull-Rom (`split_long`, `centripetal_catmull_rom`); only Gravemaw
+  uses PathFZ (its unsmoothed paths, Dive and the gate, are unchanged). (2) The spine nodes ride up to 0.66 m off the
+  path; in the steep climb face and the burrow shaft the inside corner was tighter than that, so neighbouring nodes
+  crossed. `build_gravemaw_mech.step_path / plunge_path / rise_path` are now polylines with arcs (`fillet`; inside
+  corners 0.9 m, outside 0.3-0.6 m). The round-14 Emerge is re-keyed inside the mech script (`rekey_emerge`, no mesh
+  rebuild) and the report's emerge facts follow (`refresh_emerge_report`: hole -5.657, burst frame 21).
+  Report changes: Climb_Up/Climb_Down end offset 3.30 -> 7.62 m (the old path looped back, so the clip used to end
+  with the tail still under the ledge; 7.6 m is the travel the script asks for), Burrow_Down 2.86 -> 4.31 m, Dive
+  splash 42 -> 35, Surface_Burst breach 24 -> 22. A `--norender` run drops the gate contact check from the report:
+  `Tools/Blender/merge_gate_check.py --old <HEAD report>` puts it back (gate clips unchanged). Art rebuilt with
+  `Tools/PlayTest/r18_rebuild_art.cs` (`BlenderArtBuilder.RebuildOnly` for the assets in `r18_arg.txt`).
+  Sweep: no visible Gravemaw bone over 60 degrees/frame in Emerge, Burrow_Down, Climb_Up/Down, Dive, Surface_Burst,
+  Surface_Throw. Left: Gate_Mount spades 115 (elbow plane swings round the reach while the spade goes from the crown
+  to the far ground; a new pole only moved it, reverted) and gate leg lowers 60-80.
+- **Frost Warden (fixed):** fist directions were lerped between nearly opposite directions. `build_frostwarden.turn`
+  (slerp, optionally over `FIST_OVER` = forward for the hammer blows) in FreezePulse and in the mech's Shatter_Through
+  and Dive; FreezePulse re-keyed inside the mech script. Now FreezePulse 61, Shatter_Through 71, Dive 63/74 (fast
+  continuous swings, no flips).
+- **Bulwark Strike (fixed):** the coil collapsed in one frame and dropped the cocked sword arm 108 degrees; the blade
+  now falls from the cock to the target up to the impact (`build_attacks36.bulwark_strike`, `--only Bulwark`). No step
+  over 60.
+- **Not changed:** Roller/RollerKing Curl/Uncurl femurs (~87, a deliberately quick 14-frame fold; slerping the leg
+  pole made no difference, reverted), Mercer Slash forearm (104 on the impact frame: the ease-in chop that stops
+  dead on the hit, intended).
+- **Tests:** `CreatureArtTests.Gravemaw_PathClips_NeverFlipAVisibleBone` (60), `FrostWarden_Fists_TurnWithoutAFlip`
+  (90), `Bulwark_Strike_SwingsTheSwordWithoutAPop` (60). Diagnostics: `Tools/Blender/diag_path.py` (tangent reversals
+  and offset folds), `diag_spine.py` (spine bone turns per frame without a rig), `diag_twobone.py` (pole vs reach).
+- **Gravemaw burrow route (game code, small):** with the Surface_Throw clip's true travel (end offset 2.86 -> 4.31 m:
+  the old looped path left its tail in the hole) `BossRoutes.SurfaceBeside` picks other surfacing spots, and in the
+  arena the straight cut from the last crack bend to the surfacing pivot ran under the target tower
+  (`GravemawArenaTests`: "Burrowed: on PulseRifle"; it passed with the HEAD art and failed with the new art, also
+  with only the burrow offset put back). `BurrowSignature.Burrow` now routes via the hole first when that cut is not
+  clear of footprints (the crack is routed round footprints up to the hole; hole -> pivot lies on the checked
+  surfacing line). GravemawArenaTests green again.
+- **Checks:** EditMode 597/597; PlayMode one class at a time: GravemawArena 1/1, FrostWardenArena 1/1,
+  BossIntroSmoke 1/1, CutsceneSmoke 3/3, Screenshot 3/3; 0 errors. Stills: `Tools/PlayTest/r18_gravemaw_shots.sh`
+  (+ `r18_hurt_boss.cs`).
+- **Balance check after the longer Gravemaw clips:** ContinentSimulation 2/2, BalanceProbe 3/3 (probe lines identical to
+  the previous run; the probe has no Gravemaw level). Finale probe (round-10 scratchpad scripts, save rule kept),
+  Gravemaw Easy/Medium/Hard/Psycho: all won, base full, gate damage 700/700/1596/800, mechanic share 66/65/71/58 % (as
+  before), closest to the base 4.2 m (was 3.9), alive 146-178 s (round-10 runs 150-199 s, with older boss health).
+- **Climb landings (route side, `ContinentBossBrain`):** probe `Tools/PlayTest/r18_climb_probe.cs` on the Gravemaw arena
+  (Level_C1_03): at model scale 0.8 Climb_Up/Down travel 6.1 m past a 2.56 m face, so a rock top must run 6.1 m; the
+  level's 20 climbable rock faces are all 1 m deep (with the old 3.3 m clips it needed 2.6 m, also more than any rock),
+  and a base climb ended 2.0 m past the base's far edge and climbed down 9.6 m away. Now: a rock is climbed only when
+  its top is rock from the up face to the down face (`RockTopHolds`; else it plans round it, as for "no room to land");
+  a structure climb (the base, or a gate for a boss without its own crossing) slides the transform back by the clip's
+  surplus while the clip plays (`PlaySliding`) so the pivot ends on the structure's centre, and climbs down one cell past
+  the footprint, turning on top to the first side with clear ground (the base's back cell is taken on C1_03). All six
+  boss arenas and BossIntroSmoke green after the change; EditMode 597/597.

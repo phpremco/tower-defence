@@ -89,6 +89,28 @@ def gdir(v, sx=1):
     return G(v[0] * sx, v[1], v[2]).normalized()
 
 
+# The knuckles turn over the front between fists raised overhead and fists hammered down.
+FIST_OVER = G(0.0, 0.0, 1.0)
+
+
+def turn(a, b, k, via=None):
+    """Direction turned from `a` towards `b` by k along the arc between them. Round 18: a straight lerp between two
+    nearly opposite fist directions passes close to zero, so the normalised direction (and the fist with it) flipped
+    110-140 degrees in one frame; along the arc it sweeps evenly.
+    `via`: a direction the turn passes through (a hammer blow turns the knuckles over the front, not round the back),
+    at an even angular speed over both legs."""
+    k = min(max(k, 0.0), 1.0)
+    a, b = Vector(a).normalized(), Vector(b).normalized()
+    if via is None:
+        return a.slerp(b, k, a).normalized()
+    via = Vector(via).normalized()
+    first, second = a.angle(via, 0.0), via.angle(b, 0.0)
+    angle = k * (first + second)
+    if angle <= first:
+        return a.slerp(via, angle / first if first > 1e-6 else 1.0, a).normalized()
+    return via.slerp(b, (angle - first) / second if second > 1e-6 else 1.0, via).normalized()
+
+
 def make_limbs():
     arms, legs = {}, {}
     for side, sx in SIDES:
@@ -575,15 +597,15 @@ def freeze_spec(poser):
             hit = G(0.62 * sx, 0.02, PULSE_FWD)
             if f <= 20:
                 feet[("arm", side)] = arc(rest, top, K2.ease(3, 19, f), 0.4)
-                fists[side] = gdir((0.0, -1.0, 0.2)).lerp(gdir((-0.4 * sx, 1.0, -0.4)), K2.ease(3, 17, f))
+                fists[side] = turn(gdir((0.0, -1.0, 0.2)), gdir((-0.4 * sx, 1.0, -0.4)), K2.ease(3, 17, f), FIST_OVER)
             elif f <= PULSE_IMPACT:
                 s = K2.ease(24, PULSE_IMPACT, f)
                 feet[("arm", side)] = top.lerp(hit, s) + G(0, 0.9 * math.sin(math.pi * s), 0.6 * math.sin(math.pi * s))
-                fists[side] = gdir((-0.4 * sx, 1.0, -0.4)).lerp(gdir((0.0, -1.0, 0.25)), K2.ease(24, PULSE_IMPACT - 1, f))
+                fists[side] = turn(gdir((-0.4 * sx, 1.0, -0.4)), gdir((0.0, -1.0, 0.25)), K2.ease(24, PULSE_IMPACT - 1, f), FIST_OVER)
             else:
                 back = K2.ease(44, 62, f)
                 feet[("arm", side)] = arc(hit, rest, back, 0.3)
-                fists[side] = gdir((0.0, -1.0, 0.25)).lerp(gdir(FIST_DIR, sx), back)
+                fists[side] = turn(gdir((0.0, -1.0, 0.25)), gdir(FIST_DIR, sx), back)
         return place(poser, sp, feet, fists)
     return PULSE_FRAMES, spec, False
 

@@ -94,9 +94,9 @@
     "frames": 120
   },
   "emerge": {
-    "hole_forward": -5.655,
-    "burst_frame": 20,
-    "debris_frame": 20,
+    "hole_forward": -5.657,
+    "burst_frame": 21,
+    "debris_frame": 21,
     "rest_pose_frame": 98,
     "frames": 112
   },
@@ -116,8 +116,8 @@
   "round28": {
     "clips": {
       "Climb_Up": {
-        "end_offset_forward_m": 3.302,
-        "end_offset_up_m": 1.203,
+        "end_offset_forward_m": 7.623,
+        "end_offset_up_m": 1.2,
         "edge_forward_m": 3.2,
         "ledge_height_m": 1.2,
         "cycles": 6,
@@ -126,7 +126,7 @@
         "loop": false
       },
       "Climb_Down": {
-        "end_offset_forward_m": 3.315,
+        "end_offset_forward_m": 7.623,
         "end_offset_up_m": -1.2,
         "edge_forward_m": 3.2,
         "ledge_height_m": 1.2,
@@ -156,10 +156,10 @@
         "crest_top_m": 0.3
       },
       "Dive_Into_Liquid": {
-        "end_offset_forward_m": 9.196,
+        "end_offset_forward_m": 9.203,
         "depth_m": 1.844,
         "bank_forward_m": 3.2,
-        "splash_frame": 42,
+        "splash_frame": 35,
         "note": "starts on the bank; ends in Submerged_Loop frame 0 moved end_offset forward",
         "frames": 96,
         "loop": false
@@ -167,8 +167,8 @@
       "Surface_Burst": {
         "start_depth_m": 1.844,
         "exit_forward_m": 3.4,
-        "end_offset_forward_m": 6.927,
-        "breach_frame": 24,
+        "end_offset_forward_m": 6.924,
+        "breach_frame": 22,
         "note": "starts in the Submerged_Loop pose under the pivot; the head breaks the surface exit_forward ahead at breach_frame; move the transform by end_offset_forward at the end and go to Crawl",
         "frames": 100,
         "loop": false
@@ -177,7 +177,7 @@
         "hole_forward_m": 2.95,
         "impact_frame": 31,
         "debris_frame": 31,
-        "end_offset_forward_m": 7.476,
+        "end_offset_forward_m": 7.498,
         "burrow_depth_m": 1.294,
         "note": "place Gravemaw_Hole at hole_forward when it starts; ends in Burrow_Travel frame 0 moved end_offset forward",
         "frames": 110,
@@ -187,7 +187,7 @@
         "hole_forward_m": 1.0,
         "burst_frame": 14,
         "throw_frame": 30,
-        "end_offset_forward_m": 2.86,
+        "end_offset_forward_m": 4.312,
         "socket": "Socket_Throw",
         "target": "the thrown tower stands ~1.0 to the right of the hole (it is flung up and to the right)",
         "note": "start from Burrow_Travel (same depth); the target ring pulses 3 s before (BOSSES.md)",

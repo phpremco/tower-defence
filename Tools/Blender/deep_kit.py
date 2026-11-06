@@ -168,9 +168,12 @@ class PathFZ:
     node whose u is its rest forward position sits on the ground at rest. Beyond either end the path continues
     along its end tangent."""
 
+    # Longest control segment fed to the smoothing; longer straight runs are split into equal pieces first.
+    MAX_SEGMENT = 1.0
+
     def __init__(self, points, anchor="start", samples=12, smooth=True):
         pts = [Vector((f, 0.0, z)) for f, z in points]
-        dense = C.catmull_rom(pts, samples) if smooth else pts
+        dense = centripetal_catmull_rom(split_long(pts, self.MAX_SEGMENT), samples) if smooth else pts
         self.f = np.array([p.x for p in dense])
         self.z = np.array([p.z for p in dense])
         seg = np.hypot(np.diff(self.f), np.diff(self.z))
@@ -207,6 +210,42 @@ class PathFZ:
             return None
         best = min(cross, key=lambda i: abs(self.f[i] - f))
         return float(self.s[best] + self.offset)
+
+
+def split_long(points, max_segment):
+    """Points with every segment longer than `max_segment` split into equal straight pieces (round 18: a 20 m lead-in
+    next to 0.3 m corner segments dominated the spline's tangents)."""
+    out = [points[0]]
+    for a, b in zip(points, points[1:]):
+        pieces = max(1, math.ceil((b - a).length / max_segment))
+        out += [a.lerp(b, i / pieces) for i in range(1, pieces + 1)]
+    return out
+
+
+def centripetal_catmull_rom(points, samples):
+    """Catmull-Rom through `points` with centripetal (alpha 0.5) knots, `samples` per segment. Round 18: the uniform
+    spline overshot uneven control points and ran backwards for a stretch (tangent reversals of up to 180 degrees),
+    which flipped Gravemaw's spine bones in one frame; the centripetal form never forms cusps or loops in a segment."""
+    if len(points) == 2:
+        return [points[0].lerp(points[1], i / samples) for i in range(samples + 1)]
+    pts = [points[0] * 2 - points[1]] + list(points) + [points[-1] * 2 - points[-2]]
+    out = []
+    for i in range(1, len(pts) - 2):
+        p0, p1, p2, p3 = pts[i - 1], pts[i], pts[i + 1], pts[i + 2]
+        t0 = 0.0
+        t1 = t0 + max((p1 - p0).length, 1e-6) ** 0.5
+        t2 = t1 + max((p2 - p1).length, 1e-6) ** 0.5
+        t3 = t2 + max((p3 - p2).length, 1e-6) ** 0.5
+        for s in range(samples):
+            t = t1 + (t2 - t1) * s / samples
+            a1 = p0 * ((t1 - t) / (t1 - t0)) + p1 * ((t - t0) / (t1 - t0))
+            a2 = p1 * ((t2 - t) / (t2 - t1)) + p2 * ((t - t1) / (t2 - t1))
+            a3 = p2 * ((t3 - t) / (t3 - t2)) + p3 * ((t - t2) / (t3 - t2))
+            b1 = a1 * ((t2 - t) / (t2 - t0)) + a2 * ((t - t0) / (t2 - t0))
+            b2 = a2 * ((t3 - t) / (t3 - t1)) + a3 * ((t - t1) / (t3 - t1))
+            out.append(b1 * ((t2 - t) / (t2 - t1)) + b2 * ((t - t1) / (t2 - t1)))
+    out.append(points[-1])
+    return out
 
 
 def ride(path, nodes, D, lateral=None):

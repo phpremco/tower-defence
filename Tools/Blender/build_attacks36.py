@@ -242,10 +242,14 @@ def bulwark_strike(m, poser, bt):
     def spec(f):
         r, c, k = bt.r(f), bt.coil(f), bt.contact(f)
         e = max(0.0, r)
+        # Round 18: the coil collapses from 1 to 0 in the frame after coil_end, which dropped the cocked sword arm
+        # 108 degrees in one frame (neighbours ~20). The blade now falls from the cock to the target over the frames
+        # up to the impact: still a fast chop, without the one-frame pop.
+        cock = c if f <= bt.coil_end else 1 - sstep(bt.coil_end, bt.impact, f)
         specs = m.body_specs(offset=Vector((0, -0.04 * r, m.CROUCH - 0.03 * e - 0.01 * c)), lean=d(6) + d(10) * r,
                              twist=-d(20) * c + d(14) * e, neck=-d(3) - d(4) * c + d(3) * e, head=d(4) * e,
                              jaw=d(14) * c, tail=(d(8) * e, 1.0 + 2.0 * r, -d(4) + d(10) * e),
-                             sword=(d(5) + d(115) * c + d(22) * e, d(6) + d(18) * c, d(10) + d(70) * c - d(4) * e),
+                             sword=(d(5) + d(115) * cock + d(22) * e, d(6) + d(18) * cock, d(10) + d(70) * cock - d(4) * e),
                              shield=(d(10) + d(20) * c + d(8) * e, d(4) + d(10) * c, d(15) + d(20) * c))
         return poser.solve(m.place_legs(poser, specs, {key: lg.foot for key, lg in m.legs().items()}))
     return spec

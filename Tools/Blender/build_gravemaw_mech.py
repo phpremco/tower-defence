@@ -19,6 +19,7 @@ Run: blender --background --factory-startup --python Tools/Blender/build_gravema
      [--preview <dir>] [--norender] [--gate-only]   (--gate-only: render only the round-33 gate strips)
 """
 
+import json
 import math
 import os
 import sys
@@ -100,17 +101,52 @@ def wiggle(pos, t, amp=0.03, cycles=1):
     return [p + Vector((( amp + 0.012 * j) * math.sin(w - j * 0.55), 0, 0)) for j, p in enumerate(pos)]
 
 
+# Round 18: the spine nodes ride the path up to 0.66 m off it along its normal. In a concave corner tighter than that,
+# the offset path gets shorter than the path itself and neighbouring nodes cross: the bone between them turned
+# 100-170 degrees in one frame. Concave corners are therefore rounded wider than the highest node; convex ones
+# (where the offset path stretches) keep a small rounding.
+CONCAVE_R, CONVEX_R = 0.9, 0.3
+
+
+def fillet(points, radii, steps=8):
+    """The polyline `points` [(forward, up)] with each interior corner i replaced by a circular arc of radius
+    radii[i - 1] tangent to both legs (0: the corner stays sharp)."""
+    out = [points[0]]
+    for i in range(1, len(points) - 1):
+        r = radii[i - 1]
+        p, c, n = (Vector((x, z, 0.0)) for x, z in (points[i - 1], points[i], points[i + 1]))
+        a, b = (p - c).normalized(), (n - c).normalized()
+        turn = math.pi - a.angle(b)
+        if r <= 0 or turn < 1e-3:
+            out.append(points[i])
+            continue
+        t = r * math.tan(turn / 2)
+        start, end = c + a * t, c + b * t
+        bis = (a + b).normalized()
+        centre = c + bis * (r / math.cos(turn / 2))
+        u, v = start - centre, end - centre
+        sweep = math.atan2(u.x * v.y - u.y * v.x, u.dot(v))
+        base = math.atan2(u.y, u.x)
+        out += [(centre.x + r * math.cos(base + sweep * k / steps), centre.y + r * math.sin(base + sweep * k / steps))
+                for k in range(steps + 1)]
+    out.append(points[-1])
+    # Two arcs that meet (a face exactly as high as both radii) share an end point; a zero-length segment would give
+    # the path a zero tangent there.
+    return [q for i, q in enumerate(out) if i == 0 or math.dist(q, out[i - 1]) > 1e-6]
+
+
 def step_path(edge, height):
-    """Flat ground, a steep rounded face at `edge`, flat again `height` higher (negative: a drop)."""
+    """Flat ground, a steep face just short of `edge` (the spine rides above it along the normal, i.e. off the wall),
+    flat again `height` higher (negative: a drop). The foot of the face is the concave corner."""
     if height >= 0:
-        # The face path runs just outside the rock (the spine rides above it along the normal, i.e. off the wall).
-        pts = [(-20.0, 0.0), (edge - 1.1, 0.0), (edge - 0.4, 0.05), (edge - 0.1, height * 0.35),
-               (edge - 0.03, height * 0.8), (edge + 0.25, height + 0.02), (edge + 0.9, height), (edge + 20.0, height)]
+        face = edge - 0.05
+        pts = [(-20.0, 0.0), (face, 0.0), (face, height), (edge + 20.0, height)]
+        radii = [CONCAVE_R, CONVEX_R]
     else:
-        h = -height
-        pts = [(-20.0, 0.0), (edge - 0.9, 0.0), (edge - 0.25, -0.02), (edge + 0.03, -h * 0.2), (edge + 0.1, -h * 0.65),
-               (edge + 0.4, -h * 0.97), (edge + 1.1, -h), (edge + 20.0, -h)]
-    return DK.PathFZ(pts, anchor="start", samples=14)
+        face = edge + 0.05
+        pts = [(-20.0, 0.0), (face, 0.0), (face, height), (edge + 20.0, height)]
+        radii = [CONVEX_R, CONCAVE_R]
+    return DK.PathFZ(fillet(pts, radii), anchor="start", samples=6)
 
 
 def climb(kind):
@@ -201,17 +237,15 @@ def plunge_path(edge, depth, slope=38.0):
     """Down from the bank (or hole) at `edge` at `slope` degrees to `depth`, then flat."""
     s = math.radians(slope)
     run = depth / math.tan(s)
-    return DK.PathFZ([(-20.0, 0.0), (edge - 0.6, 0.0), (edge, -0.08), (edge + run * 0.5, -depth * 0.5),
-                      (edge + run, -depth * 0.97), (edge + run + 0.8, -depth), (edge + 30.0, -depth)],
-                     anchor="start", samples=14)
+    return DK.PathFZ(fillet([(-20.0, 0.0), (edge, 0.0), (edge + run, -depth), (edge + 30.0, -depth)],
+                            [CONVEX_R * 2, CONCAVE_R]), anchor="start", samples=6)
 
 
 def rise_path(depth, exit_f, slope=40.0):
     s = math.radians(slope)
     run = depth / math.tan(s)
-    return DK.PathFZ([(-20.0, -depth), (exit_f - run - 0.8, -depth), (exit_f - run, -depth * 0.97),
-                      (exit_f - run * 0.5, -depth * 0.5), (exit_f, -0.05), (exit_f + 0.6, 0.0), (exit_f + 30.0, 0.0)],
-                     anchor="start", samples=14)
+    return DK.PathFZ(fillet([(-20.0, -depth), (exit_f - run, -depth), (exit_f, 0.0), (exit_f + 30.0, 0.0)],
+                            [CONCAVE_R, CONVEX_R * 2]), anchor="start", samples=6)
 
 
 def end_travel(path, frontier):
@@ -427,7 +461,27 @@ def key_all(boss):
     for clip, make, *_ in GATE_CLIPS:
         fn, facts = make()
         boss.key(clip, fn, facts)
+    rekey_emerge(boss)
     return sub_depth, bur_depth
+
+
+def rekey_emerge(boss):
+    """Round 18: the round-14 entrance rides EMERGE_PATH, whose old uniform spline ran backwards for a stretch near the
+    surface (the spine flipped 130-180 degrees per frame). It is keyed again here on the centripetal path, without the
+    full mesh rebuild; it stays an original clip (not a round-28 one), so its info leaves the round-28 list."""
+    boss.key("Emerge", BG.CLIPS["Emerge"])
+    boss.info.pop("Emerge", None)
+
+
+def refresh_emerge_report():
+    """The emerge facts in the round-14 part of the report follow the new path (hole and burst frame)."""
+    path = os.path.join(C.EXPORTS, NAME, NAME + "_report.json")
+    with open(path, encoding="utf-8") as fh:
+        rep = json.load(fh)
+    rep["emerge"].update({"hole_forward": round(BG.EMERGE_HOLE, 3), "burst_frame": BG.EMERGE_BURST,
+                          "debris_frame": BG.EMERGE_BURST})
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(rep, fh, indent=2)
 
 
 # Round 33: over a gate (gravemaw_gate.py): (clip, maker, gate forward, sag per frame, preview centre, QA key).
@@ -497,6 +551,7 @@ def main():
                  "mechanic": "Burrow at 75/50/25%: Burrow_Down, Burrow_Travel along the crack line, Surface_Throw "
                              "beside the top-damage tower; Climb_* over rock edges; quicksand via Dive_Into_Liquid",
                  "gate": gate})
+    refresh_emerge_report()
     boss.save()
     if args.get("norender"):
         return

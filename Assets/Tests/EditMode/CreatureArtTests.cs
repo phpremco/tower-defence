@@ -305,5 +305,86 @@ namespace Game.Tests
                 previous = LocalRotations(bones);
             }
         }
+
+        // Round 18: Gravemaw's spine rode paths whose uniform spline ran backwards (and whose inside corners were
+        // tighter than the spine rides above them), so spine, head and limbs flipped 130-180 degrees in one frame.
+        // Every clip that rides such a path is checked on every bone that shows (hidden debris collapses to scale 0).
+        [Test]
+        public void Gravemaw_PathClips_NeverFlipAVisibleBone()
+        {
+            const float MaxDegreesPerFrame = 60f;
+            string[] clips = { "Emerge", "Burrow_Down", "Climb_Up", "Climb_Down", "Dive_Into_Liquid", "Surface_Burst", "Surface_Throw" };
+            AssertArtClipsSmooth("Gravemaw", clips, null, MaxDegreesPerFrame);
+        }
+
+        // Round 18: the Frost Warden's fists turned by a straight lerp between nearly opposite directions (110-140
+        // degrees in one frame). The hammer blows stay fast (up to ~75 degrees a frame); a flip is far beyond that.
+        [Test]
+        public void FrostWarden_Fists_TurnWithoutAFlip()
+        {
+            AssertArtClipsSmooth("FrostWarden", new[] { "FreezePulse", "Shatter_Through", "Dive_Into_Liquid" }, "Arm_", 90f);
+        }
+
+        // Round 18: the Bulwark's chop dropped the cocked sword arm 108 degrees in one frame.
+        [Test]
+        public void Bulwark_Strike_SwingsTheSwordWithoutAPop()
+        {
+            AssertArtClipsSmooth("Bulwark", new[] { "Strike" }, "UpperArm_", 60f);
+        }
+
+        /// <summary>Every named clip of the art, every bone whose name starts with the prefix (all when null) and that shows on both frames.</summary>
+        private static void AssertArtClipsSmooth(string artName, string[] clipNames, string bonePrefix, float maxDegreesPerFrame)
+        {
+            const float FramesPerSecond = 30f;
+            const float VisibleScale = 0.1f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/{artName}.asset");
+            var model = Object.Instantiate(art.Model);
+            try
+            {
+                var bones = new System.Collections.Generic.List<Transform>();
+                foreach (Transform node in model.GetComponentsInChildren<Transform>(true))
+                {
+                    if (node != model.transform && (bonePrefix == null || node.name.StartsWith(bonePrefix)))
+                    {
+                        bones.Add(node);
+                    }
+                }
+
+                int checkedClips = 0;
+                foreach (ModelClip clip in art.Clips)
+                {
+                    if (clip.Clip == null || System.Array.IndexOf(clipNames, clip.Clip.name) < 0)
+                    {
+                        continue;
+                    }
+
+                    checkedClips++;
+                    int frames = Mathf.RoundToInt(clip.Clip.length * FramesPerSecond);
+                    var previous = new Quaternion[bones.Count];
+                    var shown = new bool[bones.Count];
+                    for (int f = 0; f <= frames; f++)
+                    {
+                        clip.Clip.SampleAnimation(model, Mathf.Min(f / FramesPerSecond, clip.Clip.length));
+                        for (int b = 0; b < bones.Count; b++)
+                        {
+                            bool shows = bones[b].lossyScale.x > VisibleScale;
+                            if (f > 0 && shows && shown[b])
+                            {
+                                Assert.Less(Quaternion.Angle(previous[b], bones[b].localRotation), maxDegreesPerFrame, $"{artName} {clip.Clip.name}: {bones[b].name} jumps at frame {f}");
+                            }
+
+                            previous[b] = bones[b].localRotation;
+                            shown[b] = shows;
+                        }
+                    }
+                }
+
+                Assert.AreEqual(clipNames.Length, checkedClips, $"{artName}: not every clip is in the art");
+            }
+            finally
+            {
+                Object.DestroyImmediate(model);
+            }
+        }
     }
 }

@@ -284,18 +284,18 @@ def shatter_through(poser):
             a0, a1 = arm_steps[side]
             if f <= 26:
                 feet[("arm", side)] = BW.arc(rest, top, ease(8, 26, f), 0.5)
-                fists[side] = BW.gdir(BW.FIST_DIR, sx).lerp(up_dir, ease(8, 22, f))
+                fists[side] = BW.turn(BW.gdir(BW.FIST_DIR, sx), up_dir, ease(8, 22, f), BW.FIST_OVER)
             elif f <= SHATTER_IMPACT:
                 s = ease(31, SHATTER_IMPACT, f)
                 feet[("arm", side)] = top.lerp(hit_top[sx], s) + G(0, 0.7 * math.sin(math.pi * s), 0.5 * math.sin(math.pi * s))
-                fists[side] = up_dir.lerp(down_dir, s)
+                fists[side] = BW.turn(up_dir, down_dir, s, BW.FIST_OVER)
             elif f <= 40:
                 feet[("arm", side)] = hit_top[sx].lerp(hit_ground[sx], ease(SHATTER_IMPACT, 40, f))
                 fists[side] = down_dir
             elif f <= a1:
                 feet[("arm", side)] = BW.arc(hit_ground[sx], rest + G(0, 0, end), (f - a0) / (a1 - a0), 0.55) if f > a0 \
                     else hit_ground[sx]
-                fists[side] = down_dir.lerp(BW.gdir(BW.FIST_DIR, sx), ease(a0, a1, f))
+                fists[side] = BW.turn(down_dir, BW.gdir(BW.FIST_DIR, sx), ease(a0, a1, f))
             else:
                 feet[("arm", side)] = rest + G(0, 0, end)
                 fists[side] = BW.gdir(BW.FIST_DIR, sx)
@@ -368,11 +368,11 @@ def dive_with_smash(ad, depth, takeoff=22):
                 top = BW.overhead(sx, up=4.9, fwd=0.6)
                 hit = G(0.62 * sx, 0.0, smash_f)
                 if f <= 12:
-                    p, d = BW.arc(rest, top, ease(0, 12, f), 0.4), BW.gdir(BW.FIST_DIR, sx).lerp(BW.gdir((-0.4 * sx, 1, -0.4)), ease(0, 11, f))
+                    p, d = BW.arc(rest, top, ease(0, 12, f), 0.4), BW.turn(BW.gdir(BW.FIST_DIR, sx), BW.gdir((-0.4 * sx, 1, -0.4)), ease(0, 11, f))
                 elif f <= 18:
                     s = ease(12, 18, f)
                     p, d = top.lerp(hit, s) + G(0, 0.6 * math.sin(math.pi * s), 0.3 * math.sin(math.pi * s)), \
-                        BW.gdir((-0.4 * sx, 1, -0.4)).lerp(BW.gdir((0, -1, 0.3)), s)
+                        BW.turn(BW.gdir((-0.4 * sx, 1, -0.4)), BW.gdir((0, -1, 0.3)), s)
                 else:
                     p, d = hit, BW.gdir((0, -1, 0.3))
                 tip = pose[a.names[-1]] @ poser.rest[a.names[-1]].inverted() @ (rest)
@@ -455,6 +455,11 @@ def key_all(boss):
                                             "note": "then hide FrostWarden_IceArmour (or keep it: every floe ends at "
                                                     "scale 0) and loop WalkEnraged; the icicles stay (they are the "
                                                     "rage telegraph and belong to the armour mesh)"})
+    # Round 18: the base FreezePulse turned its fists with a straight lerp between nearly opposite directions (a
+    # 119-degree flip in one frame); it is keyed again here with BW.turn, without rebuilding the mesh. It stays an
+    # original clip, so its info leaves the round-28 list.
+    boss.key("FreezePulse", BW.CLIPS["FreezePulse"])
+    boss.info.pop("FreezePulse", None)
     return ad, depth
 
 

@@ -41,6 +41,7 @@ namespace Game.Bosses
         private const float GateDustRadius = 1.1f;
         private const float GateBlowKick = 0.45f;
         private const float MinClipSeconds = 0.1f;
+        private const float MaxFootprintReach = 4f;
         private const string Battering = "Battering";
         private static readonly Color GateDust = new Color(0.62f, 0.6f, 0.56f);
 
@@ -520,7 +521,8 @@ namespace Game.Bosses
             Vector3 land = top + dir * down.Forward;
             land.y = 0f;
             done(false);
-            if (!up.Exists || !down.Exists || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOverGround(_field, start, land))
+            if (!up.Exists || !down.Exists || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOverGround(_field, start, land)
+                || !RockTopHolds(start + dir * up.Anchor, top + dir * down.Anchor))
             {
                 yield break;
             }
@@ -540,6 +542,52 @@ namespace Game.Bosses
             _view.ReleaseScript();
             State = was;
             done(true);
+        }
+
+        // The clips haul the whole body up onto the top and down off it again: the top must run as rock from the up face
+        // (where Climb_Up meets the ledge) to the down face (where Climb_Down leaves it), or the body would end in the air
+        // past a narrow rock. Too short a top: it plans round the rock instead.
+        private bool RockTopHolds(Vector3 upFace, Vector3 downFace)
+        {
+            float length = Vector3.Distance(upFace, downFace);
+            int samples = Mathf.Max(1, Mathf.CeilToInt(length / (_field.Grid.CellSize * 0.5f)));
+            for (int i = 0; i <= samples; i++)
+            {
+                Vector2Int cell = _field.Grid.WorldToCell(Vector3.Lerp(upFace, downFace, i / (float)samples));
+                if (_field.Climb.KindAt(cell) != SurfaceKind.Rock || _field.Climb.HeightAt(cell) < _boss.Climb.MinLedge)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // How far from `centre` along `dir` the footprint it stands in reaches (a gate's rung or the base).
+        private float FootprintReach(Vector3 centre, Vector3 dir)
+        {
+            float step = _field.Grid.CellSize * 0.25f;
+            float reach = 0f;
+            while (reach < MaxFootprintReach && _field.Climb.IsFootprint(_field.Grid.WorldToCell(centre + dir * (reach + step))))
+            {
+                reach += step;
+            }
+
+            return reach;
+        }
+
+        // Plays a fixed-pivot clip whose body travels further than the structure is deep: the transform slides back by
+        // the surplus over the clip, so the body ends where the structure needs it instead of past it (the feet slip a
+        // little rather than the body popping at the end).
+        private IEnumerator PlaySliding(Vector3 from, Vector3 dir, float back, float seconds)
+        {
+            float elapsed = 0f;
+            while (elapsed < seconds && Alive)
+            {
+                elapsed += Time.deltaTime;
+                _enemy.Place(from - dir * (back * Mathf.Clamp01(elapsed / Mathf.Max(seconds, MinClipSeconds))), dir);
+                yield return null;
+            }
         }
 
         /// <summary>
@@ -564,9 +612,12 @@ namespace Game.Bosses
             Vector3 start = transform.position;
             _enemy.Place(start, dir);
             _view.PlayScripted(ModelClipRole.ClimbUp, up.Rate, true);
-            yield return Wait(up.Seconds);
+            // Round 18: Gravemaw's Climb_Up hauls its whole body up (6 m and more), further than the base is deep; its
+            // pivot ends on the structure's centre, never past it.
+            float onto = Mathf.Min(up.Forward, Vector3.Distance(BossGeometry.Flat(start), BossGeometry.Flat(structure.Position)));
+            yield return PlaySliding(start, dir, up.Forward - onto, up.Seconds);
             float height = structure.IsBase ? ClimbLayer.BaseHeight : ClimbLayer.GateHeight;
-            Vector3 top = start + dir * up.Forward;
+            Vector3 top = start + dir * onto;
             _enemy.Place(new Vector3(top.x, height, top.z), dir);
             Straddle();
             OnStructure = true;
@@ -598,17 +649,38 @@ namespace Game.Bosses
                 yield break;
             }
 
-            yield return ClimbDown(top, dir);
+            // Down the far side: it lands one cell past the footprint, not a whole clip's travel away; where that cell is
+            // taken (the base's back often is), it turns on top to the first side with clear ground.
+            Vector3 centre = new Vector3(top.x, 0f, top.z);
+            Vector3 right = Vector3.Cross(Vector3.up, dir);
+            foreach (Vector3 side in new[] { dir, right, -right, -dir })
+            {
+                float travel = FootprintReach(centre, side) + _field.Grid.CellSize;
+                Vector3 land = centre + side * travel;
+                if (BossRoutes.Clear(_field, land, land))
+                {
+                    _enemy.Place(new Vector3(top.x, height, top.z), side);
+                    yield return ClimbDown(top, side, travel);
+                    yield break;
+                }
+            }
+
+            yield return ClimbDown(top, dir, FootprintReach(centre, dir) + _field.Grid.CellSize);
         }
 
-        /// <summary>Climbs down off a structure on its far side (the rock-climb clip) and walks on along the road.</summary>
-        internal IEnumerator ClimbDown(Vector3 top, Vector3 dir)
+        /// <summary>
+        /// Climbs down off a structure on its far side (the rock-climb clip) and walks on along the road. With
+        /// <paramref name="maxTravel"/> the landing comes no further than that from the top (the transform slides back
+        /// by the clip's surplus while it plays).
+        /// </summary>
+        internal IEnumerator ClimbDown(Vector3 top, Vector3 dir, float maxTravel = float.PositiveInfinity)
         {
             BossClip down = BossClip.Of(_view, ModelClipRole.ClimbDown, _boss.Climb.ClipRate);
             _view.PlayScripted(ModelClipRole.ClimbDown, down.Rate, true);
-            yield return Wait(down.Seconds);
+            float travel = Mathf.Min(down.Forward, maxTravel);
+            yield return PlaySliding(new Vector3(top.x, transform.position.y, top.z), dir, down.Forward - travel, down.Seconds);
             OnStructure = false;
-            Vector3 land = top + dir * down.Forward;
+            Vector3 land = top + dir * travel;
             _enemy.Place(new Vector3(land.x, 0f, land.z), dir);
             _view.ReleaseScript();
             JoinRoad();
