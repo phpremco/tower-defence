@@ -2878,3 +2878,30 @@ Not committed.
   surplus while the clip plays (`PlaySliding`) so the pivot ends on the structure's centre, and climbs down one cell past
   the footprint, turning on top to the first side with clear ground (the base's back cell is taken on C1_03). All six
   boss arenas and BossIntroSmoke green after the change; EditMode 597/597.
+
+## Round 19: Gravemaw's gate clips without spinning spades or leg flips (2026-11-06)
+
+Not committed.
+- **Spades (Gate_Mount 115, Gate_Dismount 75 degrees/frame):** a three-bone `common.Limb` took the spade's roll from the
+  elbow plane's normal; while the spade went from the crown to the far ground it lay close to that normal, so it spun
+  about itself. New opt-in `Limb.pose(..., foot_roll="swing")`: the spade keeps its rest roll relative to the forearm
+  and only swings off it the shortest way (identity at rest). Only `gravemaw_gate.pose` passes it, together with a
+  `swung_pole` (the carried rest pole turned with the reach, so it never lines up with the shoulder-wrist line). Every
+  other caller keeps the old default; no other creature was re-exported.
+- **Legs (60-92 degrees/frame):** `gate_kit.plan_steps` let a foot that lost its hold jump to its scrabble pose in one
+  frame. New opt-in `release` (frames to ease from the hold to the tuck); Gravemaw's gate clips use 6
+  (`LEG_RELEASE`). The Cinder Matriarch's gate planner keeps 0. Step plans and planted frames are unchanged.
+- **Re-export:** `build_gravemaw_mech.py --gate-only` (renders the gate strips, so the gate contact check is fresh; no
+  merge needed). Report: end offsets, hook/weight frames and gate burden curves unchanged; only the frame where an
+  equal QA maximum is first reached moved. Synced and rebuilt with `r18_rebuild_art.cs` (`r18_arg.txt` "Gravemaw").
+  No in-game timing changes, so no climb probe was needed.
+- **Sweep:** Gravemaw at 40 degrees: only four Gate_Dismount leg steps of 46-50 left (hidden debris aside); Mount and
+  Straddle all under 40. Full sweep at 60: the same list as round 18 without any Gravemaw bone.
+  Diagnostic: `Tools/Blender/diag_gate_steps.py` (solves the gate clips on the rig without keying; per-bone worst step
+  plus the planner's step/tuck log near it).
+- **Test:** `CreatureArtTests.Gravemaw_PathClips_NeverFlipAVisibleBone` now also covers Gate_Mount,
+  Gate_Straddle_Loop and Gate_Dismount (60).
+- **Checks:** 0 compile errors/warnings; EditMode 597/597; PlayMode one class at a time: GravemawArena 1/1 (the first
+  run failed once with "Burrowed: on PulseRifle at (33, 15)", the rerun passed: a timing-dependent flake of the burrow
+  route, unrelated to the gate clips, worth watching), BossIntroSmoke 1/1, Screenshot 3/3; save absent before and after.
+  Stills: `Tools/PlayTest/r19_gate_shots.sh` (+ `r19_step_until.cs`: steps the paused editor until a boss state).

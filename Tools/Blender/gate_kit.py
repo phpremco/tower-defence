@@ -297,7 +297,7 @@ def rot_about(p, centre, axis, angle):
 # ---------------------------------------------------------------------------------------------------------------
 
 def plan_steps(frames, keys, hip, natural, candidates, reach, stride=0.45, swing=8, lift=0.22, forced=None,
-               tuck=None, gap=3, start=None, hold=0, bias=None):
+               tuck=None, gap=3, start=None, hold=0, bias=None, release=0):
     """Per-frame feet for legs whose body motion is already known.
 
     hip(key, f) -> Vector; natural(key, f) -> Vector (where the foot would rest on flat ground, carried by the body);
@@ -307,7 +307,9 @@ def plan_steps(frames, keys, hip, natural, candidates, reach, stride=0.45, swing
     (it scrabbles there, not planted). At most one leg per side starts a step every `gap` frames unless a foot is
     over-stretched. `start`: the planted feet at frame 0 (the previous clip's last pose); `hold`: no voluntary step
     before this frame; `bias` {key: frames}: a leg waits that long before a voluntary step (breaks the mirror
-    symmetry of left and right). Returns ({key: [(point, planted)] * (frames + 1)}, step log)."""
+    symmetry of left and right); `release` (opt-in, round 19): a foot that lets go eases from where it stood to the
+    tuck over that many frames (0: it is there at once, a one-frame flip of the leg). Returns ({key: [(point, planted)]
+    * (frames + 1)}, step log)."""
     side_of = lambda k: k[0] if isinstance(k, tuple) else k  # noqa: E731
 
     def choose(k, f):
@@ -326,6 +328,16 @@ def plan_steps(frames, keys, hip, natural, candidates, reach, stride=0.45, swing
     last_start = {}
     first_want = {}
     log = []
+    let_go = {}
+
+    def hanging(k, f):
+        """Where a foot that holds nothing is: at the tuck, or still easing there from where it let go."""
+        p = (tuck(k, f) if tuck else natural(k, f)).copy()
+        if k in let_go and f - let_go[k][0] < release:
+            s = (f - let_go[k][0]) / release
+            p = let_go[k][1].lerp(p, (1 - math.cos(math.pi * s)) * 0.5)
+        return p
+
     for f in range(frames + 1):
         for k in keys:
             if k in swing_of:
@@ -351,10 +363,11 @@ def plan_steps(frames, keys, hip, natural, candidates, reach, stride=0.45, swing
                 continue
             land = min(f + swing, frames)
             t = choose(k, land)
-            start = p if p is not None else (tuck(k, f) if tuck else natural(k, f))
+            start = p if p is not None else hanging(k, f)
             if t is None:
                 if p is not None:
                     cur[k] = None          # lets go and scrabbles
+                    let_go[k] = (f, p.copy())
                     log.append((k, f, "tuck"))
                 continue
             if (t - start).length < 0.03:
@@ -378,7 +391,7 @@ def plan_steps(frames, keys, hip, natural, candidates, reach, stride=0.45, swing
                 p.z = base + (max(p0.z, p1.z) - base + lift) * math.sin(math.pi * s)
                 out[k].append((p, False))
             elif cur[k] is None:
-                out[k].append(((tuck(k, f) if tuck else natural(k, f)).copy(), False))
+                out[k].append((hanging(k, f), False))
             else:
                 out[k].append((cur[k].copy(), True))
     return out, log

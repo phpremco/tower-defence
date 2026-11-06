@@ -122,9 +122,21 @@ def pose(poser, pos, ups, jaw, arms, legs, arm_dirs=None, debris=None):
             if side not in arm_dirs:
                 continue
             root = DK.carried(poser, sp, "Seg_1", lg.root)
-            pole = DK.carried_dir(poser, sp, "Seg_1", lg.pole)
-            sp.update(lg.pose(poser, root, arms[side], pole, arm_dirs[side]))
+            body_rot = sp["Seg_1"]["abs"].to_3x3() @ poser.rest["Seg_1"].to_3x3().inverted()
+            pole = swung_pole(lg, body_rot, root, arms[side], arm_dirs[side])
+            # Round 19: the spade only swings off the forearm (its roll no longer comes from the elbow plane, whose
+            # normal it lay close to while it went from the crown to the far ground: 115 degree spins in three frames).
+            sp.update(lg.pose(poser, root, arms[side], pole, arm_dirs[side], foot_roll="swing"))
     return sp
+
+
+def swung_pole(lg, body_rot, root, foot, foot_dir):
+    """The arm's pole turned with its reach: the carried rest pole swung the shortest way from the carried rest reach
+    (shoulder -> wrist) onto the reach now, so it keeps its rest angle to the reach line instead of lining up with it
+    when the spade reaches up over a crown and down to the far ground (the elbow then orbits the reach)."""
+    wrist = foot - Vector(foot_dir).normalized() * lg.lengths[2]
+    rest_reach = body_rot @ (lg.rest_points[2] - lg.rest_points[0])
+    return rest_reach.rotation_difference(wrist - root) @ (body_rot @ lg.pole)
 
 
 def side_x(p, side):
@@ -252,6 +264,8 @@ def straddle_planted():
 LEG_REACH = 0.8
 SIDE_X = {"L": -1.0, "R": 1.0}
 LEG_BIAS = {("L", 1): 0, ("R", 1): 3, ("L", 2): 2, ("R", 2): 0, ("L", 3): 1, ("R", 3): 4}
+LEG_RELEASE = 6                  # frames a leg takes to let go of a hold and fold to its scrabble (round 19: was 0, a
+#                                   one-frame leg flip of 60-90 degrees)
 HOOK = G(-1.25, 1.42, 0.41)      # gate space, L: the spade tip hooked down over the crown's far edge
 HOOK_DIR = {"L": G(0.05, -1.0, 0.12).normalized(), "R": G(-0.05, -1.0, 0.12).normalized()}
 
@@ -381,7 +395,8 @@ def mount_legs(poser, D_s):
         return end[key] if f >= MOUNT_FRAMES - 22 else None
     feet, log = GK.plan_steps(MOUNT_FRAMES, list(BG.LEGS.keys()), lambda k, f: hips[(k, f)],
                               lambda k, f: nats[(k, f)], leg_candidates(G0), LEG_REACH, stride=0.42, swing=8,
-                              lift=0.2, forced=forced, tuck=lambda k, f: tucks[(k, f)], bias=LEG_BIAS)
+                              lift=0.2, forced=forced, tuck=lambda k, f: tucks[(k, f)], bias=LEG_BIAS,
+                              release=LEG_RELEASE)
     return gate_sagged(feet, mount_sag), log
 
 
@@ -470,7 +485,7 @@ def dismount_plan(poser, D_s, D_e):
                               lambda k, f: nats[(k, f)], leg_candidates(0.0), LEG_REACH, stride=0.42, swing=8,
                               lift=0.32, forced=forced, tuck=lambda k, f: tucks[(k, f)],
                               start={k: start_legs[k] + Vector((0, 0, BASE_SAG)) for k in BG.LEGS}, hold=12,
-                              bias=LEG_BIAS)
+                              bias=LEG_BIAS, release=LEG_RELEASE)
     # The spades walk on the far ground.
     sh, an = {}, {}
     for f in range(DISMOUNT_FRAMES + 1):

@@ -309,11 +309,17 @@ namespace Game.Tests
         // Round 18: Gravemaw's spine rode paths whose uniform spline ran backwards (and whose inside corners were
         // tighter than the spine rides above them), so spine, head and limbs flipped 130-180 degrees in one frame.
         // Every clip that rides such a path is checked on every bone that shows (hidden debris collapses to scale 0).
+        // Round 19: the gate clips too (the spades spun about themselves with the elbow plane, ~115 degrees in three
+        // frames, and a leg that let go of a hold jumped to its scrabble in one frame, 60-90 degrees).
         [Test]
         public void Gravemaw_PathClips_NeverFlipAVisibleBone()
         {
             const float MaxDegreesPerFrame = 60f;
-            string[] clips = { "Emerge", "Burrow_Down", "Climb_Up", "Climb_Down", "Dive_Into_Liquid", "Surface_Burst", "Surface_Throw" };
+            string[] clips =
+            {
+                "Emerge", "Burrow_Down", "Climb_Up", "Climb_Down", "Dive_Into_Liquid", "Surface_Burst", "Surface_Throw",
+                "Gate_Mount", "Gate_Straddle_Loop", "Gate_Dismount",
+            };
             AssertArtClipsSmooth("Gravemaw", clips, null, MaxDegreesPerFrame);
         }
 

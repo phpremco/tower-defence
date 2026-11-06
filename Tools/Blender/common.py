@@ -1275,12 +1275,30 @@ class Limb:
             prev = name
         return out
 
-    def pose(self, poser, root_now, foot_now, pole=None, foot_dir=None):
+    def pose(self, poser, root_now, foot_now, pole=None, foot_dir=None, foot_roll=None):
+        """`foot_roll="swing"` (opt-in, three-bone limbs; round 19): the foot bone keeps its rest roll relative to the
+        shin and only swings off it the shortest way. By default its roll comes from the knee plane's normal, which is
+        ill-conditioned when the foot bone lies close to that normal: the foot then spins about itself within a few
+        frames (Gravemaw's spades reaching from a gate crown to the far ground: 115 degrees in three frames)."""
         pole = Vector(pole) if pole is not None else self.pole
         pts = self.points(root_now, foot_now, pole, foot_dir)
         normals = self._normals(pts, pole)
+        if foot_roll == "swing" and len(self.names) == 3:
+            normals = normals[:2] + [self._swung_foot_normal(pts, normals[1])]
         return {name: {"abs": aim_matrix(pts[i], pts[i + 1] - pts[i], normals[i], poser.rest[name], self.rest_normals[i])}
                 for i, name in enumerate(self.names)}
+
+    def _swung_foot_normal(self, pts, shin_normal):
+        """The rest foot normal carried rest foot -> rest shin (shortest swing), rest shin -> shin now (the shin's own
+        turn, roll included) and shin now -> foot now (shortest swing): the identity at rest."""
+        rp = self.rest_points
+        rest_shin, rest_foot = rp[2] - rp[1], rp[3] - rp[2]
+        shin, foot = pts[2] - pts[1], pts[3] - pts[2]
+        shin_turn = (aim_matrix(Vector(), shin, shin_normal, Matrix.Identity(4), self.rest_normals[1]).to_3x3()
+                     @ aim_matrix(Vector(), rest_shin, self.rest_normals[1], Matrix.Identity(4),
+                                  self.rest_normals[1]).to_3x3().inverted())
+        n = rest_foot.rotation_difference(rest_shin) @ self.rest_normals[2]
+        return shin.rotation_difference(foot) @ (shin_turn @ n)
 
 
 def step_curve(phase, stance, stride, lift):
