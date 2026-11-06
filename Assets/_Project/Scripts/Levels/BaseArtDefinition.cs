@@ -88,7 +88,7 @@ namespace Game.Levels
         [Tooltip("Factor on the wreck's painted colour: the charred deck is lifted a little so its shape reads.")]
         [SerializeField] [Range(1f, 3f)] private float _wreckLift = 1.5f;
         [Tooltip("Factor on the wreck's painted glow (its embers and torn cables).")]
-        [SerializeField] [Range(0f, 6f)] private float _wreckGlow = 2.5f;
+        [SerializeField] [Range(0f, 6f)] private float _wreckGlow = 1f;
         [Tooltip("Colour of the fire that keeps burning in the wreck: its light, its rim on the plates and its embers.")]
         [SerializeField] private Color _wreckFireColor = new Color(1f, 0.48f, 0.16f);
         [SerializeField] [Min(0f)] private float _wreckFireIntensity = 5f;

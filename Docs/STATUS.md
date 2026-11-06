@@ -2742,3 +2742,20 @@ Not committed.
   preview Key light is `RenderSettings.sun` in a level; this is why pale models wash out and it may affect the level's own
   lighting. Not changed (it would change the look everywhere); worth a decision. The ice block and vines (also one-mesh
   roots) now stand as exported; arenas pass, not checked by eye.
+
+## Round 15b: root-turn eye check, wreck glow, preview-light trial (2026-11-06)
+
+Not committed.
+- **Eye check after the ArtModel root-turn fix:** `Gate_IceBlock` now stands as exported (2.56 m tall, frost lip and
+  icicles on top, around the gate; before it lay on its side as a low slab) and `RotOvergrowth` spirals up over the tower.
+  Both correct; no change. Staged with `Tools/PlayTest/r15b_stage.sh` / `r15b_props.cs`.
+- **Wreck glow:** `_wreckGlow` 2.5 -> 1 (1.8 still burned the core out white; at 1 it is a soft pink glow and the wreck
+  reads through the fire light and embers). `Tools/PlayTest/Scripts/ApplyR15b.cs`.
+- **Preview-light trial** (`PlaytestSettings._isolatePreviewLights`, default OFF; `_previewLayer` 31): ON puts each
+  `ModelPreview` rig on its own layer (camera and its Key/Fill/Rim culling mask), makes the theme's Sun the
+  `RenderSettings.sun` and keeps Sun/RimLight off that layer (`ThemeLighting`). Measured: before the codex opens a level
+  has 2 directional lights (Sun 1.25 soft shadows, RimLight 0.5); the codex builds 3 rigs on first open that stay for
+  the level (9 more directional lights, all culling masks "everything", Key 1.6 with soft shadows) and
+  `RenderSettings.sun` then reports a preview Key. Paired stills after opening the codex (`r15b_lighting.sh`,
+  gallery `Lighting/72_*`): the field differs on 0.1-1.6 % of pixels, the codex preview on ~5.5 %; ON looks the same on
+  all six themes and needs no re-tuning. The washed-out Frost Warden was its pale albedo, not the leak (round 15 fix).

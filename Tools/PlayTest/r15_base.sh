@@ -34,6 +34,7 @@ still_world wreck_play_world_early
 echo "base 5" > Tools/PlayTest/r14_focus.txt; run r14_focus.cs; step 2; still_world wreck_close_world_early
 for i in 1 2 3 4 5 6 7 8; do step 100; done
 still_world wreck_close_world_late
+if [ -n "${GLOWS:-}" ]; then for g in $GLOWS; do echo "$g" > Tools/PlayTest/r15b_glow.txt; run r15b_wreck_glow.cs; step 2; still_world "wreck_glow_$g"; done; fi
 echo "play 0" > Tools/PlayTest/r14_focus.txt; run r14_focus.cs; step 2; still_world wreck_play_world_late
 echo "=== CONSOLE"
 unity command console --result-only 2>&1 | grep -o '"message": "[^"]*' | grep -v "allocation" | sort | uniq -c | sort -rn | head -8

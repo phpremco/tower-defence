@@ -74,7 +74,7 @@ MonoBehaviour:
   _damagedBelow: 0.5
   _wreckDelay: 0.25
   _wreckLift: 1.5
-  _wreckGlow: 2.5
+  _wreckGlow: 1
   _wreckFireColor: {r: 1, g: 0.48, b: 0.16, a: 1}
   _wreckFireIntensity: 5
   _wreckFireRange: 6

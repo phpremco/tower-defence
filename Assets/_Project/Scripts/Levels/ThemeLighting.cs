@@ -54,8 +54,24 @@ namespace Game.Levels
             rim.shadows = LightShadows.None;
             rimObject.transform.rotation = Quaternion.Euler(RimPitchDegrees, theme.SunYaw + RimYawOffsetDegrees, 0f);
 
+            IsolateFromPreviews(light, rim);
             ApplyAtmosphere(theme);
             return new Lights(light, rim);
+        }
+
+        // Lighting trial (PlaytestSettings): the theme's sun is the scene's sun, so a display stage's brighter key light can
+        // never become the main light, and neither field light reaches the display stages' layer.
+        private static void IsolateFromPreviews(Light sun, Light rim)
+        {
+            int layer = Game.Core.PlaytestSettings.IsolatedPreviewLayer();
+            if (layer < 0)
+            {
+                return;
+            }
+
+            RenderSettings.sun = sun;
+            sun.cullingMask = ~(1 << layer);
+            rim.cullingMask = ~(1 << layer);
         }
 
         /// <summary>Fog, ambient and reflections only, for a set that brings its own lights.</summary>

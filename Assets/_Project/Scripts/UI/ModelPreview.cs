@@ -66,6 +66,9 @@ namespace Game.UI
         private Transform _ring;
         private float _burst;
 
+        // The lighting trial's preview layer (PlaytestSettings), or -1: then the rig renders on Default as it always did.
+        private int _layer = -1;
+
         public static ModelPreview Create(RectTransform parent, Vector2 size)
         {
             var go = new GameObject("ModelPreview", typeof(RectTransform));
@@ -160,6 +163,11 @@ namespace Game.UI
         // Centres whatever stands on the turntable and backs the camera off until it fills most of the window.
         private void Frame()
         {
+            if (_layer >= 0)
+            {
+                SetLayer(_turntable);
+            }
+
             var bounds = new Bounds(Vector3.zero, Vector3.zero);
             bool any = false;
             // The padded bounds' top: a turning, breathing creature can reach above its measured pose (the Shattered's
@@ -447,6 +455,36 @@ namespace Game.UI
             AddLight("Fill", new Vector3(20f, 60f, 0f), FillColor, FillIntensity);
             AddLight("Rim", new Vector3(-20f, 160f, 0f), RimColor, RimIntensity);
             BuildStage();
+            Isolate();
+        }
+
+        // Lighting trial: the camera sees and the three lights touch only the preview layer, so no stage light reaches the
+        // field and no field or other stage light reaches this model.
+        private void Isolate()
+        {
+            _layer = PlaytestSettings.IsolatedPreviewLayer();
+            if (_layer < 0)
+            {
+                return;
+            }
+
+            int mask = 1 << _layer;
+            _camera.cullingMask = mask;
+            foreach (Light light in _rig.GetComponentsInChildren<Light>(true))
+            {
+                light.cullingMask = mask;
+            }
+
+            SetLayer(_rig);
+        }
+
+        private void SetLayer(Transform root)
+        {
+            root.gameObject.layer = _layer;
+            for (int i = 0; i < root.childCount; i++)
+            {
+                SetLayer(root.GetChild(i));
+            }
         }
 
         private Light AddLight(string name, Vector3 euler, Color color, float intensity)
