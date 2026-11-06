@@ -1,0 +1,39 @@
+{
+  "asset": "Remains_Stone",
+  "game_tris": 700,
+  "source_tris": 50652,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 108,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.596,
+    "world_per_uv": 0.9876674293863253
+  },
+  "detail": {
+    "rock": {
+      "map": "Detail_Rock_Normal.png",
+      "tiling": 8.2,
+      "mask": "B"
+    },
+    "crystal": {
+      "map": "Detail_Crystal_Normal.png",
+      "tiling": 14.1,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    0.602,
+    0.723,
+    0.264
+  ],
+  "round": 38,
+  "role": "remains of a smashed decor piece (Docs/BOSSES.md round 13b)",
+  "span_half": 0.5
+}

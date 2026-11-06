@@ -600,3 +600,47 @@ Roller, Cragback, Bulwark, Shardback, Shalebat and every bat skin (shared `bat` 
 Dive, Stinger Strike, Mireleech Latch (scale keys on Seg_1..6/Head kept) reimported. Wisp: `Strike_Float` (Attack) and
 `Strike_Ground` (new role `GroundedAttack`), picked by stance in `CreatureClips.Attack`. With an own strike the impact and
 bolt fire on the clip's hit frame (`CreatureClips.StrikeLanded`), falling back to the end of the attack so no blow is lost.
+
+## Round 13b: bosses and the decor off the road, intro leftovers (2026-11-06)
+
+**Decor off the road** (Remco: "when the bosses go off-road they walk through things like the crystals or rises, and
+nothing happens"). Every imported decor mesh now carries a `DecorContact` (data on `EnvironmentMesh`, set by the
+environment generator per decoration kind or kit piece in `BlenderEnvironmentCatalog.ContactOf`; logic never asks a name):
+- **Breakable** (crystals, ice shards, flora, eggs, dead trees, reeds, small rocks and basalt spikes, the crystal vein):
+  smashed when the body overlaps it (`BodyHalfWidth` x 0.8 plus half the piece's reach, every 0.2 s while it walks or plays
+  a mechanic clip). A shard burst in the piece's family colour (crystal pink, flora green, stone dust), the brittle icicle
+  impacts pitched down (`SfxLibrary.DecorSmashes`, `LevelContext.DecorSmashed`), and the piece is swapped for its remains
+  (Blender round 38, `Tools/Blender/build_decor_remains.py`: `Remains_Crystal` snapped stumps and strewn shards,
+  `Remains_Flora` torn bulb and limp blades, `Remains_Stone` rubble), fitted to the piece's footprint, for the rest of the
+  level (`EnvironmentInstancer.Break` / `LayRemains`; `EnvironmentSet.Remains`). Before, only formation crystals broke, at
+  0.9 m from the pivot, with no remains; the crystal veins and pool-rim plants never did.
+- **Obstacle** (spires, columns, border cliffs): every cell under the piece is `SurfaceKind.Obstacle`, closed to walks and
+  cracks; a walk keeps its body clearance from it as from a tower (`BossRoutes.Crowded`), and a rock climb never lands
+  across one (`BossRoutes.ClearOverGround`).
+- **Climbable** (boulders, drifts, scree, terrace steps): a low rise the body walks over; a climbable piece 0.9 m or
+  taller is still a rock climbed with Climb_Up/Climb_Down (`ClimbLayer.MaxStepHeight`).
+- **Height follow:** `BodyGround` samples the landscape and the climbable tops under the whole footprint (front, back,
+  sides at 0.7 of the half width), lifts the body halfway to the highest point and pitches it by front minus back; height
+  and tilt ease in over 0.18 s. Measured: onto a plateau 0 -> 0.55 m over about 2 m, no snap (the old per-cell
+  `MoveTowards` jumped at the cell edge and the body half sank into the plateau beside it).
+
+**Intro leftovers (round 12).**
+- (a) Comic frame: `Tools/Blender/build_ui_comic.py` -> `UI_ComicFrame` (ink border with brush flicks, cyan inlay,
+  corner tab with speed stripes, bottom ticks), cut as a 9-sliced sprite by `BlenderUiBuilder`; `BossCutIn` and the
+  answer box wear it (without the art the cut-in falls back to the tinted panel).
+- (b) Visor reflection: a second camera at the visor looks at the boss (192 px, 128 on Low) and `Game/UI/VisorReflection`
+  lays it over the visor in the cut-in: barrel-warped, mirrored, tinted halfway to white from the boss colour, added, in a
+  soft oval, brighter to the rim. The oval is placed by projecting the visor (head bone + 0.075 up + 0.1 forward, 0.26 x
+  0.08 m) through the cut-in camera every frame. The face stays hidden.
+- (c) Labels vs the bubble: `HudKeepOut.AddPriorityLabel` (the hero's speech bubble); while it shows, the other world
+  labels (gate Rebuild, boss and base markers) keep off it like off the HUD, moving aside or hiding; the bubble itself
+  keeps off the HUD only (`PlaceOverHud`).
+- (d) Answer box: `BossAnswerBox`, a compact comic-framed box (600 x 196 canvas units, portrait, name, 26 px text) at the
+  right edge where the cut-in was; it takes over when the cut-in slides out. The lower middle stays free.
+
+**Gallery:** `CinderMatriarch/60-62` (crystal before, smash, remains), `Shattered/60-63` (onto and on top of a rise,
+spire ahead and passed), `Intros/60-64` (comic cut-in, visor close-up, bubble vs Rebuild label, answer box). The rise and
+spire shots are staged walks (the boss's own off-road walk sent past the piece).
+
+**Known:** on narrow strips a climbing boss still vaults a group of tall boulders with its long Climb_Up/Climb_Down pair
+(existing behaviour); it can no longer land across an obstacle.

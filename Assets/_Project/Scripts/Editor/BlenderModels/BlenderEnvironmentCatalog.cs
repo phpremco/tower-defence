@@ -337,10 +337,71 @@ namespace Game.Editor
             (TerrainKind.Bog, "Env/Origin_Bog", true, 1f),
         };
 
+        /// <summary>
+        /// The remains a smashed piece leaves (Blender round 38), in <see cref="DecorRemains"/> order from Crystal; one kit
+        /// for every continent, since it takes the broken piece's footprint, not its look.
+        /// </summary>
+        public static readonly string[] Remains = { "Env/Remains_Crystal", "Env/Remains_Flora", "Env/Remains_Stone" };
+
+        /// <summary>
+        /// What a boss does with a decoration kind off the road (Docs/BOSSES.md round 13b): crystals, flora, eggs and small
+        /// rocks are smashed; boulders, drifts and scree are low rises it climbs; columns and spires stand too tall and
+        /// solid, so it steers round them. Per kind, not per export: Ashen Reach's fulgurite is a crystal and a spire.
+        /// </summary>
+        public static (DecorContact Contact, DecorRemains Remains) ContactOf(PropKind kind)
+        {
+            switch (kind)
+            {
+                case PropKind.Crystal:
+                case PropKind.IceShard:
+                    return (DecorContact.Breakable, DecorRemains.Crystal);
+                case PropKind.Mushroom:
+                case PropKind.GlowTree:
+                case PropKind.Tendril:
+                case PropKind.Frond:
+                case PropKind.Egg:
+                case PropKind.DeadTree:
+                case PropKind.Reed:
+                    return (DecorContact.Breakable, DecorRemains.Flora);
+                case PropKind.Rock:
+                case PropKind.Spike:
+                    return (DecorContact.Breakable, DecorRemains.Stone);
+                case PropKind.Boulder:
+                case PropKind.Snowdrift:
+                case PropKind.Scree:
+                    return (DecorContact.Climbable, DecorRemains.None);
+                default:
+                    return (DecorContact.Obstacle, DecorRemains.None);
+            }
+        }
+
+        /// <summary>
+        /// What a boss does with a kit piece: the crystal vein breaks like a crystal, the terrace steps are the faces of a
+        /// rise it climbs (the landscape carries their height), the border cliffs are walls; kerbs, pads, banks, rifts and
+        /// scatter are flat or tiny and stay as they are.
+        /// </summary>
+        public static (DecorContact Contact, DecorRemains Remains) ContactOf(EnvironmentPieceKind kind)
+        {
+            switch (kind)
+            {
+                case EnvironmentPieceKind.CrystalVein:
+                    return (DecorContact.Breakable, DecorRemains.Crystal);
+                case EnvironmentPieceKind.TerraceStep:
+                case EnvironmentPieceKind.TerraceStepOuter:
+                    return (DecorContact.Climbable, DecorRemains.None);
+                case EnvironmentPieceKind.CliffStraight:
+                case EnvironmentPieceKind.CliffOuterCorner:
+                case EnvironmentPieceKind.CliffInnerCorner:
+                    return (DecorContact.Obstacle, DecorRemains.None);
+                default:
+                    return (DecorContact.None, DecorRemains.None);
+            }
+        }
+
         /// <summary>Every export path the rows use (meshes and tiling sets), for the sync.</summary>
         public static IEnumerable<string> SyncedAssets()
         {
-            var assets = new HashSet<string>();
+            var assets = new HashSet<string>(Remains);
             foreach (ContinentRow row in Continents)
             {
                 foreach (string set in new[] { row.Ground, row.GroundAlt, row.Road, row.Plaza, row.Cliff, row.Element })

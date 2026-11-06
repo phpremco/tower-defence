@@ -26,6 +26,8 @@ namespace Game.Editor
             "UI_Icons.png", "UI_Icons@2x.png", "UI_Kit.png", "UI_Dialogue.png", "UI_Dialogue_Noise.png", "UI_Dialogue_Scanlines.png",
             "UI_Dialogue_Radial.png", "UI_Dialogue_Shade.png", "UI_Radar.png", "UI_Starfield.png", "UI_PreviewBackdrop.png", "UI_MapHalo.png",
             "UI_Icons.json", "UI_Kit.json", "UI_Dialogue.json",
+            // Round 38: the comic frame of the boss-intro cut-in and answer box.
+            "UI_ComicFrame.png", "UI_ComicFrame.json",
         };
 
         // UiSkin field, kit sprite. Buttons wear the light grey Neutral frame so the colour-tint focus path keeps working.
@@ -71,6 +73,7 @@ namespace Game.Editor
             var entries = new List<(string Name, Sprite Sprite)>();
             Cut(art, existing, entries, folder, "UI_Kit", "UI_Kit", 1f, MasterPixelsPerUnit);
             Cut(art, existing, entries, folder, "UI_Dialogue", "UI_Dialogue", 1f, MasterPixelsPerUnit);
+            Cut(art, existing, entries, folder, "UI_ComicFrame", "UI_ComicFrame", 1f, MasterPixelsPerUnit);
             // Icons are shown from 24 to 96 px: cut from the 2x sheet (rects doubled), white glyphs tinted as before.
             Cut(art, existing, entries, folder, IconSheet, IconSheet2x, 2f, MasterPixelsPerUnit);
             foreach (KeyValuePair<string, Sprite> stale in existing)

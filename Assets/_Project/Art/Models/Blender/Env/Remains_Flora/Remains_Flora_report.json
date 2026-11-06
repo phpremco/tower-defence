@@ -1,0 +1,39 @@
+{
+  "asset": "Remains_Flora",
+  "game_tris": 700,
+  "source_tris": 37480,
+  "texture_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "uv": {
+    "islands": 81,
+    "folded_fallback_faces": 0,
+    "mirrored_faces": 0,
+    "uv_coverage": 0.6,
+    "world_per_uv": 0.8921053737140715
+  },
+  "detail": {
+    "membrane": {
+      "map": "Detail_Membrane_Normal.png",
+      "tiling": 11.2,
+      "mask": "B"
+    },
+    "chitin": {
+      "map": "Detail_Chitin_Normal.png",
+      "tiling": 14.9,
+      "mask": "A"
+    }
+  },
+  "size_m": [
+    1.084,
+    0.836,
+    0.179
+  ],
+  "round": 38,
+  "role": "remains of a smashed decor piece (Docs/BOSSES.md round 13b)",
+  "span_half": 0.5
+}

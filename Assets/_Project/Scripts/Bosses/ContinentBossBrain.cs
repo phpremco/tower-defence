@@ -23,13 +23,16 @@ namespace Game.Bosses
         private const float BreakEverySeconds = 0.2f;
         // The wake sheet across: about 1.2 times the body (README round 29), the body twice its half width.
         private float WakeSize => _boss.BodyHalfWidth * 2.4f;
-        private const float BodyRadiusPerScale = 0.9f;
+        // Decor is smashed where this share of the body's half width reaches it (the legs and belly, not the claws' tips).
+        private const float BodyBreakShare = 0.8f;
+        private const float MinShatterRadius = 0.4f;
+        private const float ShatterPerReach = 1.2f;
         private const float DiveCheckSeconds = 0.4f;
         private const float RoarRate = 1.2f;
-        private const float HeightFollow = 6f;
+        // The body eases onto a new ground height over about this many seconds (a rise, a boulder): never a snap.
+        private const float HeightSmoothing = 0.18f;
         private const float MaxSlopeTilt = 0.6f;
         private const float BreakoutBurstRadius = 1.8f;
-        private const float DebrisBurstRadius = 0.6f;
         private const int MaxReplans = 4;
 
         // Gate crossings (README round 33): a gate it lies on keeps at least this burden so the walkers keep their bridge; a
@@ -59,7 +62,9 @@ namespace Game.Bosses
         // A boss rising out of a pool takes one that joins the road no later than this share of the way to the base.
         private const float MaxEntranceRoadShare = 0.5f;
 
-        private static readonly Color CrystalShards = new Color(0.7f, 0.85f, 1f);
+        private static readonly Color CrystalShards = new Color(1f, 0.55f, 0.9f);
+        private static readonly Color FloraShreds = new Color(0.55f, 0.85f, 0.3f);
+        private static readonly Color StoneDust = new Color(0.6f, 0.58f, 0.62f);
         private static readonly Color SandSplash = new Color(0.85f, 0.72f, 0.45f);
         private static readonly Color WaterSplash = new Color(0.55f, 0.85f, 1f);
         private static readonly Color LavaSplash = new Color(1f, 0.45f, 0.12f);
@@ -462,11 +467,13 @@ namespace Game.Bosses
 
                     float step = Mathf.Min(distance, _enemy.GroundSpeed * Time.deltaTime);
                     Vector3 next = position + dir * step;
-                    float ground = Mathf.Max(_field.Climb.HeightAt(_field.Grid.WorldToCell(next)), _field.GroundAt(next));
-                    next.y = Mathf.MoveTowards(position.y, ground, HeightFollow * Time.deltaTime);
+                    BodyGround body = BodyGround.Under(_field, next, dir, BodyHalfWidth);
+                    float follow = 1f - Mathf.Exp(-Time.deltaTime / HeightSmoothing);
+                    next.y = Mathf.Lerp(position.y, body.Height, follow);
                     _enemy.Place(next, dir);
-                    float slope = step > 0.0001f ? Mathf.Clamp((next.y - position.y) / step, -MaxSlopeTilt, MaxSlopeTilt) : 0f;
-                    _view.Tilt = Quaternion.AngleAxis(-slope * _boss.Climb.MaxTilt, Vector3.Cross(Vector3.up, dir));
+                    float slope = Mathf.Clamp(body.Slope, -MaxSlopeTilt, MaxSlopeTilt);
+                    Quaternion tilt = Quaternion.AngleAxis(-slope * _boss.Climb.MaxTilt, Vector3.Cross(Vector3.up, dir));
+                    _view.Tilt = Quaternion.Slerp(_view.Tilt, tilt, follow);
                     BreakDecorNear(Time.deltaTime);
                     yield return null;
                     sinceRefresh += Time.deltaTime;
@@ -500,7 +507,7 @@ namespace Game.Bosses
             Vector3 at = position + dir * (ledgeAhead + _field.Grid.CellSize * 0.5f);
             Vector2Int cell = _field.Grid.WorldToCell(at);
             return _field.Climb.KindAt(cell) == SurfaceKind.Rock && _field.Climb.HeightAt(cell) >= _boss.Climb.MinLedge
-                && BossRoutes.ClearOfFootprints(_field, position, at);
+                && BossRoutes.ClearOverGround(_field, position, at);
         }
 
         // Clambers up the rock in front and down the far side (fixed-pivot clips played faster), if it can land clear.
@@ -513,7 +520,7 @@ namespace Game.Bosses
             Vector3 land = top + dir * down.Forward;
             land.y = 0f;
             done(false);
-            if (!up.Exists || !down.Exists || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOfFootprints(_field, start, land))
+            if (!up.Exists || !down.Exists || !BossRoutes.Clear(_field, land, land) || !BossRoutes.ClearOverGround(_field, start, land))
             {
                 yield break;
             }
@@ -848,10 +855,23 @@ namespace Game.Bosses
             }
 
             _sinceBreak = 0f;
-            IReadOnlyList<Vector3> broken = _field.BreakDecor(transform.position, BodyRadiusPerScale * Scale);
+            IReadOnlyList<BrokenDecor> broken = _field.BreakDecor(transform.position, BodyHalfWidth * BodyBreakShare);
             for (int i = 0; i < broken.Count; i++)
             {
-                _field.Context.Projectiles.PlayBurst(broken[i], DebrisBurstRadius, _field.Context.Projectiles.Vfx.Death, CrystalShards);
+                BrokenDecor piece = broken[i];
+                float radius = Mathf.Max(MinShatterRadius, piece.Radius * ShatterPerReach);
+                _field.Context.Projectiles.PlayBurst(piece.Position, radius, _field.Context.Projectiles.Vfx.Death, ShatterColour(piece.Kind));
+                _field.Context.DecorSmashed.Raise(piece.Position);
+            }
+        }
+
+        private static Color ShatterColour(DecorRemains kind)
+        {
+            switch (kind)
+            {
+                case DecorRemains.Flora: return FloraShreds;
+                case DecorRemains.Stone: return StoneDust;
+                default: return CrystalShards;
             }
         }
 

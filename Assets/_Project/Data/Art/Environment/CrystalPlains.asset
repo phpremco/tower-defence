@@ -127,6 +127,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 1
     _model:
       _name: RoadEdge_OuterCorner
@@ -151,6 +153,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 2
     _model:
       _name: RoadEdge_InnerCorner
@@ -175,6 +179,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 3
     _model:
       _name: RoadEdge_EndCap
@@ -199,6 +205,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 23
     _model:
       _name: RoadEdge_EndCap_Mirrored
@@ -223,6 +231,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 4
     _model:
       _name: RoadEdge_PlazaJoin
@@ -247,6 +257,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 24
     _model:
       _name: RoadEdge_PlazaJoin_Mirrored
@@ -271,6 +283,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 5
     _model:
       _name: PlazaEdge_Straight
@@ -295,6 +309,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 6
     _model:
       _name: PlazaEdge_Corner
@@ -319,6 +335,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 7
     _model:
       _name: BuildPadTile
@@ -343,6 +361,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 8
     _model:
       _name: GatePlinth
@@ -367,6 +387,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 9
     _model:
       _name: Cliff_Straight
@@ -391,6 +413,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 2
+      _remains: 0
   - _kind: 10
     _model:
       _name: Cliff_OuterCorner
@@ -415,6 +439,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 2
+      _remains: 0
   - _kind: 11
     _model:
       _name: Cliff_InnerCorner
@@ -439,6 +465,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 2
+      _remains: 0
   - _kind: 12
     _model:
       _name: Bank_Straight
@@ -463,6 +491,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 13
     _model:
       _name: Bank_OuterCorner
@@ -487,6 +517,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 14
     _model:
       _name: Bank_InnerCorner
@@ -511,6 +543,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 15
     _model:
       _name: TerraceStep
@@ -535,6 +569,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 3
+      _remains: 0
   - _kind: 16
     _model:
       _name: TerraceStep_Outer
@@ -559,6 +595,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 3
+      _remains: 0
   - _kind: 17
     _model:
       _name: Rift_1x1
@@ -583,6 +621,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 18
     _model:
       _name: Rift_2x1
@@ -607,6 +647,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 19
     _model:
       _name: Rift_3x1
@@ -631,6 +673,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 20
     _model:
       _name: Rift_Cap
@@ -655,6 +699,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
   - _kind: 22
     _model:
       _name: CrystalVein
@@ -679,6 +725,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 1
   _decor:
   - _kind: 0
     _variants:
@@ -704,6 +752,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 3
     - _name: Rock_B
       _mesh: {fileID: 1617438343633297580, guid: 2cba140043183274eb3516175c0f3a12, type: 3}
       _material: {fileID: 2100000, guid: 64d25c3c6c5e6a44196411c9af233d30, type: 2}
@@ -726,6 +776,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 3
     - _name: Rock_C
       _mesh: {fileID: -101496668972229048, guid: c3d50557bb905884b95b17533d380e8c, type: 3}
       _material: {fileID: 2100000, guid: a5ae3bbaf14d31b4388a8d9745b3d1ab, type: 2}
@@ -748,6 +800,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 3
     _scale: 0.7571089
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 1
@@ -774,6 +828,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 3
+      _remains: 0
     _scale: 1.6417946
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 2
@@ -800,6 +856,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 1
     - _name: Crystal_B
       _mesh: {fileID: 4603723471363724302, guid: 5b626977a1e3c03488c5026d007db0d8, type: 3}
       _material: {fileID: 2100000, guid: 948eac08145417c46a929c7d15572871, type: 2}
@@ -822,6 +880,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 1
     - _name: Crystal_C
       _mesh: {fileID: 5162559838310442518, guid: d12698feb7e3aa9448cea4299a5a0b50, type: 3}
       _material: {fileID: 2100000, guid: bf3813fa559ba114e9abc44245d65dc4, type: 2}
@@ -844,6 +904,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 1
     _scale: 0.8662262
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 6
@@ -870,6 +932,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 2
+      _remains: 0
     _scale: 0.74102855
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 7
@@ -896,6 +960,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 3
     _scale: 0.9410798
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 10
@@ -922,6 +988,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 2
+      _remains: 0
     _scale: 1.058557
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 9
@@ -948,6 +1016,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 1.2400391
     _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
   - _kind: 5
@@ -974,6 +1044,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 0.9469161
     _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
   - _kind: 4
@@ -1000,6 +1072,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 1.1122484
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 3
@@ -1026,6 +1100,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 1.0468092
     _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
   - _kind: 8
@@ -1052,6 +1128,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 0.8123449
     _glow: {r: 1, g: 0.55, b: 0.25, a: 1}
   - _kind: 15
@@ -1078,6 +1156,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 3
+      _remains: 0
     _scale: 0.7370882
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 11
@@ -1104,6 +1184,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 1
     _scale: 1.3558223
     _glow: {r: 0.55, g: 0.85, b: 1, a: 1}
   - _kind: 12
@@ -1130,6 +1212,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 3
+      _remains: 0
     _scale: 0.6899198
     _glow: {r: 1, g: 0.5, b: 0.9, a: 1}
   - _kind: 13
@@ -1156,6 +1240,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 1.5168856
     _glow: {r: 0.3, g: 1, b: 0.8, a: 1}
   - _kind: 14
@@ -1182,6 +1268,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 1
+      _remains: 2
     _scale: 1.0856493
     _glow: {r: 0.75, g: 1, b: 0.35, a: 1}
   _origins:
@@ -1209,6 +1297,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 0
     _scale: 0.75
   - _terrain: 1
@@ -1235,6 +1325,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 0
     _scale: 0.75
   - _terrain: 7
@@ -1261,6 +1353,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 0
     _scale: 0.75
   - _terrain: 2
@@ -1287,6 +1381,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 1
     _scale: 1
   - _terrain: 3
@@ -1313,6 +1409,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 1
     _scale: 1
   - _terrain: 4
@@ -1339,6 +1437,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 1
     _scale: 1
   - _terrain: 5
@@ -1365,6 +1465,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 1
     _scale: 1
   - _terrain: 6
@@ -1391,6 +1493,8 @@ MonoBehaviour:
         e31: 0
         e32: 0
         e33: 1
+      _contact: 0
+      _remains: 0
     _tintWithElement: 1
     _scale: 1
   _bankSweeps:
@@ -1416,6 +1520,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: BankSweep_B
     _mesh: {fileID: -8821477794853508822, guid: 8455b213d335f7a4ea128239691b7dbd, type: 3}
     _material: {fileID: 2100000, guid: 834ab29c17e0f0c488b6d2682e97e466, type: 2}
@@ -1438,6 +1544,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: BankSweep_C
     _mesh: {fileID: -1158807370749864220, guid: 1c9e5aca12094044ea692f53d0b2b774, type: 3}
     _material: {fileID: 2100000, guid: 25c44cabee2e5954fb754493354559ff, type: 2}
@@ -1460,6 +1568,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   _bankAccent:
     _name: BankAccent
     _mesh: {fileID: -789883851465882136, guid: c744feec4db909848ae9de1b810fc73d, type: 3}
@@ -1483,6 +1593,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   _bankAccentShare: 0.6
   _looseBankAccents: 3
   _farDecorStart: 2
@@ -1512,6 +1624,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: Scatter_CrystalSplinters
     _mesh: {fileID: 7664679713886782042, guid: 3887ae2a9aab49543b9f29feb7ed62a3, type: 3}
     _material: {fileID: 2100000, guid: 2f5051fd663f17348852e2410bfdb0b9, type: 2}
@@ -1534,6 +1648,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: Scatter_Pebbles
     _mesh: {fileID: -3513056290112399987, guid: 788f5b4dbd3d0044f9930544beb5b38f, type: 3}
     _material: {fileID: 2100000, guid: 108d42ed7f355e74ca481bf5186f471e, type: 2}
@@ -1556,6 +1672,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   _nestScatter:
   - _name: Scatter_ShellFragments
     _mesh: {fileID: -4815131634080202507, guid: bd2ece2b45ca0e34e9877a103269c040, type: 3}
@@ -1579,6 +1697,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   _scatterChance: 0.5
   _nestScatterRadius: 2.5
   _veinChance: 0.04
@@ -1607,6 +1727,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: Silhouette_Ridge
     _mesh: {fileID: -826208709368259724, guid: a6f08c8cba3b9d049aba907cb7e1f51f, type: 3}
     _material: {fileID: 2100000, guid: b6edd3695c37c4548a8d4ed910e00e8d, type: 2}
@@ -1629,6 +1751,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   - _name: Silhouette_Mesa
     _mesh: {fileID: 1701877345339242888, guid: 4155e92f6d465494b9d90c26a54f40d6, type: 3}
     _material: {fileID: 2100000, guid: dea4a55df2b4eea47b91674f614f49a5, type: 2}
@@ -1651,6 +1775,8 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    _contact: 0
+    _remains: 0
   _silhouetteCount: 7
   _silhouetteDistance: {x: 6, y: 12}
   _showBuildPads: 0
@@ -1658,6 +1784,79 @@ MonoBehaviour:
   _placingGlow: 0.9
   _placingRadiusCells: 4.5
   _landmarks: []
+  _remains:
+  - _name: Remains_Crystal
+    _mesh: {fileID: 3707033296802642100, guid: 6db3a4136157e7d40a046ab9a4663989, type: 3}
+    _material: {fileID: 2100000, guid: 38878394e97f9c84ca449d7bfc1038c3, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: e433521befc71234184f4bfa0f200656, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _contact: 0
+    _remains: 0
+  - _name: Remains_Flora
+    _mesh: {fileID: 2027391982546625532, guid: e5ad97d220e86234fa148029cd256e70, type: 3}
+    _material: {fileID: 2100000, guid: 1f787ed72f0cacf44a0d4ef14c43ea23, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 5ec56f8a9c1add64ca3679904f531b01, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _contact: 0
+    _remains: 0
+  - _name: Remains_Stone
+    _mesh: {fileID: 2811336961247847507, guid: 3b2f7f0481ef48f4b9f930434a35c3c6, type: 3}
+    _material: {fileID: 2100000, guid: b48dc36830a9ac94580243922f3ccd43, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 6f57a2828e8f4a244964d56f3166bfc5, type: 2}
+    _castShadows: 1
+    _node:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: -0.00000011920929
+      e12: -0.99999994
+      e13: 0
+      e20: 0
+      e21: 0.99999994
+      e22: -0.00000011920929
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    _contact: 0
+    _remains: 0
   _windDirection: {x: 1, y: 0, z: 0.4}
   _swayAmplitude: 0.05
   _swaySpeed: 1

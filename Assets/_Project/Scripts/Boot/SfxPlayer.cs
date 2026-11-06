@@ -34,6 +34,7 @@ namespace Game.Boot
         private const float BeamFallbackGain = 0.5f;
         private const float HeavyShotVolume = 0.6f;
         private const float HitVolume = 0.4f;
+        private const float DecorSmashVolume = 0.45f;
         private const float SpawnVolume = 0.6f;
         private const float BundleSeconds = 0.06f;
         // Rapid fire is heard as a volley rather than as every bullet: while a rapid shot sound is on cooldown, the
@@ -160,6 +161,7 @@ namespace Game.Boot
         private AudioClip _droneBuy;
         private SoundFamily _droneLaser;
         private SoundFamily _structureHit;
+        private SoundFamily _decorSmash;
         private SoundFamily _freezes;
         private SoundFamily _acid;
         private LoopVoice _saberHum;
@@ -231,6 +233,7 @@ namespace Game.Boot
             context.EnemyKilled.Subscribe(OnKilled);
             context.EnemySpawned.Subscribe(OnSpawned);
             context.StructureHit.Subscribe(OnStructureHit);
+            context.DecorSmashed.Subscribe(OnDecorSmashed);
             context.TowerWrecked.Subscribe(OnTowerWrecked);
             context.BaseHealth.Changed += OnBaseChanged;
             context.BaseHealth.Died += OnBaseDied;
@@ -300,6 +303,7 @@ namespace Game.Boot
             _droneBuy = ProceduralSfx.DroneBuy();
             _droneLaser = new SoundFamily(library?.DroneLasers, ProceduralSfx.PulseShot());
             _structureHit = new SoundFamily(library?.StructureHits, ProceduralSfx.StructureHit());
+            _decorSmash = new SoundFamily(library?.DecorSmashes, ProceduralSfx.StructureHit());
             _freezes = new SoundFamily(library?.Freezes);
             _acid = new SoundFamily(library?.AcidSizzles);
             _saberHum = LoopVoice.Create(gameObject, library?.SaberHums);
@@ -330,6 +334,7 @@ namespace Game.Boot
             _context.EnemyKilled.Unsubscribe(OnKilled);
             _context.EnemySpawned.Unsubscribe(OnSpawned);
             _context.StructureHit.Unsubscribe(OnStructureHit);
+            _context.DecorSmashed.Unsubscribe(OnDecorSmashed);
             _context.TowerWrecked.Unsubscribe(OnTowerWrecked);
             _context.BaseHealth.Changed -= OnBaseChanged;
             _context.BaseHealth.Died -= OnBaseDied;
@@ -640,6 +645,8 @@ namespace Game.Boot
         }
 
         private void OnStructureHit(Vector3 position) => Play(_structureHit, HitVolume, SfxKind.Hit);
+
+        private void OnDecorSmashed(Vector3 position) => Play(_decorSmash, DecorSmashVolume, SfxKind.Hit);
 
         // A gate goes with a blast; a weapon tower tears itself apart.
         private void OnTowerWrecked(Tower tower)

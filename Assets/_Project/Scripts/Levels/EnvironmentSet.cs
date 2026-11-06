@@ -119,6 +119,10 @@ namespace Game.Levels
         [Tooltip("The continent's story set pieces (a seal in its states, a wreck), by mesh name; placed only by the level code that asks for one.")]
         [SerializeField] private EnvironmentMesh[] _landmarks = new EnvironmentMesh[0];
 
+        [Header("Boss contact")]
+        [Tooltip("What a smashed decoration piece leaves (Blender round 38), in DecorRemains order from Crystal: crystal, flora, stone.")]
+        [SerializeField] private EnvironmentMesh[] _remains = new EnvironmentMesh[0];
+
         [Header("Wind")]
         [SerializeField] private Vector3 _windDirection = new Vector3(1f, 0f, 0.4f);
         [Tooltip("Sway of the flora tips in world units (README: about 0.04).")]
@@ -253,6 +257,19 @@ namespace Game.Levels
             }
 
             return null;
+        }
+
+        /// <summary>The remains a smashed piece of that kind leaves, or null when the set has none (the piece just vanishes).</summary>
+        public EnvironmentMesh Remains(DecorRemains kind)
+        {
+            int index = (int)kind - (int)DecorRemains.Crystal;
+            if (index < 0 || index >= _remains.Length)
+            {
+                return null;
+            }
+
+            EnvironmentMesh model = _remains[index];
+            return model != null && model.IsValid ? model : null;
         }
 
         /// <summary>Whether the terrain shader has the layers it needs.</summary>

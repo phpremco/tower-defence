@@ -546,3 +546,27 @@ split, adapt). Base 800/900 is the research base upgrade.
 - **Open:** the Shattered's arena ruin gate is 10.7 m from the base, so its split and rejoin happen next to the base; on Hard
   and Psycho that decides it (lost at 2200, 2350 and 2600; Medium flips from trivial at 2200 to lost at 2600). The real C5
   finale should put its ruin gate earlier on the road; re-tune it then.
+
+## Tower parity check (2026-11-06, round 13b)
+
+`TowerParityTests` (EditMode, a test only: no balance value changed) values every buildable gun at every level per coin
+against four fixed reference streams and writes the table to `Tools/PlayTest/tower_parity.txt`. It uses the ledger's
+per-tower formula: DPS x overkill x splash (density-based, capped at `MaxSplashTargets`) x time in reach
+(`window + 2 x range / speed`), divided by the coins to reach that level. Hybrids cost both partners plus the recipe,
+combined at the cheapest level. Utilisation cancels and is left out; slow, beam lock, placement and permanent upgrades are
+not modelled.
+
+Streams: swarm (ground, 40 hp, 1.4 speed, 1.2 per cell, 10 s), heavy (ground, 450 effective hp, 0.7, 0.15, 12 s), air
+(45 hp, 1.4, 0.8, 10 s), boss (one target, 2500 hp, 0.5, 4 s gate hold). Gates, the base turret, Support and slow masts
+under 10 DPS (Cryo) are skipped. Ground-only guns are not compared on air, Flak only on air.
+
+Bands: value per coin within 0.75 to 1.35 of the median of the towers on the same layer at the same level; an upgrade buys
+at least 0.85 of what a new build buys per coin. 46 cases fall outside; they are listed in `KnownOutliers` and show as
+ignored ("Known outlier, awaiting Remco's playtest: ...") until Remco has played them:
+
+- Railgun: 0.16 to 0.46x on swarms and air (overkill), 0.70x on heavy at L2; its upgrades fall to 0.46x.
+- Tesla 1.8 to 1.9x on swarms, above the Cannon (1.48x at L0, its L2 upgrade 0.59x from overkill).
+- Flak 1.8 to 2.4x the air median, but its upgrades buy only 0.82x a new build.
+- Laser 1.38x / 1.355x against a boss at L0 / L1 (cheap beam DPS); against swarms it sits at the median (1.06x). The
+  critic's "Laser high vs swarms" does not show in this model.
+- Hybrids: Storm Rifle 1.9 to 2.4x on swarms and air; Artillery and Cryo Beam 0.4 to 0.7x on swarms and air.

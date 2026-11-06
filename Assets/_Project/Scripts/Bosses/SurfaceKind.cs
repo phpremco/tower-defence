@@ -17,5 +17,8 @@ namespace Game.Bosses
         Tower = 7,
         Gate = 8,
         Base = 9,
+
+        /// <summary>A large solid decoration piece (spire, column): nothing walks or cracks through it; walks steer round.</summary>
+        Obstacle = 10,
     }
 }

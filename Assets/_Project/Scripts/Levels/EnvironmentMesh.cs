@@ -15,6 +15,10 @@ namespace Game.Levels
         [SerializeField] private bool _castShadows = true;
         [Tooltip("The mesh node's transform inside its FBX (the axis change: Blender Z up becomes Unity Y up).")]
         [SerializeField] private Matrix4x4 _node = Matrix4x4.identity;
+        [Tooltip("What a continent boss does with this piece off the road: smash it, steer round it or climb over it (set by the generator).")]
+        [SerializeField] private DecorContact _contact;
+        [Tooltip("The remains a smashed piece leaves (Breakable only).")]
+        [SerializeField] private DecorRemains _remains;
 
         public EnvironmentMesh(string name, Mesh mesh, Material material, Material lowMaterial, bool castShadows, Matrix4x4 node)
         {
@@ -37,5 +41,12 @@ namespace Game.Levels
         public bool IsValid => _mesh != null && _material != null;
 
         public Material MaterialFor(bool low) => low && _lowMaterial != null ? _lowMaterial : _material;
+
+        public DecorContact Contact => _contact;
+        public DecorRemains Remains => _remains;
+
+        /// <summary>A copy of this piece with a boss contact (the generator sets it per use: one export can be a crystal and a spire).</summary>
+        public EnvironmentMesh WithContact(DecorContact contact, DecorRemains remains) =>
+            new EnvironmentMesh(_name, _mesh, _material, _lowMaterial, _castShadows, _node) { _contact = contact, _remains = remains };
     }
 }

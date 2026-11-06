@@ -31,6 +31,8 @@ namespace Game.Core
 
         [Header("Structures and base")]
         [SerializeField] private SoundSet _structureHits = new SoundSet();
+        [Tooltip("A boss smashing a crystal, plant or rock off the road.")]
+        [SerializeField] private SoundSet _decorSmashes = new SoundSet();
         [SerializeField] private SoundSet _baseAlerts = new SoundSet();
         [SerializeField] private SoundSet _upgrades = new SoundSet();
         [SerializeField] private SoundSet _scrapPickups = new SoundSet();
@@ -104,6 +106,7 @@ namespace Game.Core
         public SoundSet BaseExplosions => _baseExplosions;
         public SoundSet TowerBreaks => _towerBreaks;
         public SoundSet StructureHits => _structureHits;
+        public SoundSet DecorSmashes => _decorSmashes;
         public SoundSet BaseAlerts => _baseAlerts;
         public SoundSet Upgrades => _upgrades;
         public SoundSet ScrapPickups => _scrapPickups;
@@ -153,7 +156,7 @@ namespace Game.Core
             ("Pulse shot", _pulseShots), ("Heavy shot", _heavyShots), ("Rocket launch", _rocketLaunches), ("Cryo shot", _cryoShots),
             ("Tesla shot", _teslaShots), ("Rail shot", _railShots), ("Flak shot", _flakShots), ("Flak burst", _flakBursts), ("Cannon explosion", _cannonExplosions),
             ("Rocket explosion", _rocketExplosions), ("Mine explosion", _mineExplosions), ("Gate explosion", _gateExplosions),
-            ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits),
+            ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits), ("Decor smash", _decorSmashes),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
             ("Freeze", _freezes), ("Acid sizzle", _acidSizzles), ("Steam burst", _steamBursts),
             ("Earthquake", _earthquakes), ("Cart loop", _cartLoops), ("Fireball loop", _fireballLoops),

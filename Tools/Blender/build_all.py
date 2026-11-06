@@ -85,10 +85,14 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_ui.py",
            # Round 27: upgrade-screen display stage (pedestal, halo ring, backdrop).
            "build_ui_display.py",
+           # Round 38: the comic frame of the boss-intro cut-in and answer box.
+           "build_ui_comic.py",
            # Round 26: dying Earth and theme skies (numpy, planet_kit.py).
            "build_planet_earth.py", "build_skies.py",
            # Round 26: cutscene glow / trail / crack sprites (numpy) and the Crystal Plains snowdrift.
            "build_cutscene_fx.py", "build_decor_c1.py",
+           # Round 38: the remains a boss leaves of a smashed crystal, plant or rock (round 13b).
+           "build_decor_remains.py",
            # Round 26: menu diorama (places the exports above) and the underground cave kit and eyes.
            "build_menu_diorama.py", "build_underground.py",
            # Renders a 12 x 8 cell Crystal Plains level from the exports above; exports nothing. Keep last.

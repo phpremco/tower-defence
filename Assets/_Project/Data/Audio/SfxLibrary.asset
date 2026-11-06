@@ -122,6 +122,13 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 713369c452922264b9ccc00885932f3c, type: 3}
     _gain: 0.16921285
     _pitch: 1
+  _decorSmashes:
+    _clips:
+    - {fileID: 8300000, guid: 4ffd133bbfcccdc48875dcd580db19e1, type: 3}
+    - {fileID: 8300000, guid: a9c2022aad0a2884b912cea8e85cedc5, type: 3}
+    - {fileID: 8300000, guid: df33434958983494097a02fe1f8b6fbd, type: 3}
+    _gain: 0.38638833
+    _pitch: 0.85
   _baseAlerts:
     _clips:
     - {fileID: 8300000, guid: 5ecc1f44144b0ee4da8d83c71ec4e3c2, type: 3}
@@ -159,12 +166,6 @@ MonoBehaviour:
     _clips:
     - {fileID: 8300000, guid: d6a4800a68e351f44be511a66b51465a, type: 3}
     _gain: 0.60667396
-    _pitch: 1
-  _netShots:
-    _clips:
-    - {fileID: 8300000, guid: 483fff17f8aeae442a02586b4085d370, type: 3}
-    - {fileID: 8300000, guid: 9106451b08bafbf4ebbb4b52eb2b1947, type: 3}
-    _gain: 0.4456733
     _pitch: 1
   _earthquakes:
     _clips:

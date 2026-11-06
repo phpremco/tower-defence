@@ -44,6 +44,7 @@ namespace Game.UI
             _text = UiKit.CreateFixedText(_panel, string.Empty, TextSize, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(Width - 24f, Height - 12f));
             _text.color = Speaker;
             _panel.gameObject.SetActive(false);
+            keepOut.AddPriorityLabel(_panel);
         }
 
         /// <summary>Shows a line over a transform (the hero) for some real seconds.</summary>
@@ -98,7 +99,7 @@ namespace Game.UI
             local.y = Mathf.Clamp(local.y, area.yMin + Height, area.yMax - Height);
             _panel.anchoredPosition = local;
             var rect = new Rect(local - _panel.sizeDelta * 0.5f, _panel.sizeDelta);
-            if (_keepOut.Place(rect, out Vector2 offset))
+            if (_keepOut.PlaceOverHud(rect, out Vector2 offset))
             {
                 _panel.anchoredPosition = local + offset;
             }

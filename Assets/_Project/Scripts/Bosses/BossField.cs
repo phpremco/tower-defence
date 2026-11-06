@@ -17,7 +17,7 @@ namespace Game.Bosses
         private const float DrapeStep = 0.5f;
 
         private readonly List<Tower> _towers = new List<Tower>(32);
-        private readonly List<Vector3> _broken = new List<Vector3>(8);
+        private readonly List<BrokenDecor> _broken = new List<BrokenDecor>(8);
 
         public BossField(LevelContext context, IReadOnlyList<DecorFormation> formations, EnvironmentInstancer decor, ColonyRigView rig, EnemySpawner spawner, Transform effects)
         {
@@ -109,8 +109,8 @@ namespace Game.Bosses
             return draped;
         }
 
-        /// <summary>Breaks the fragile decoration within a radius; returns where pieces broke (reused list).</summary>
-        public IReadOnlyList<Vector3> BreakDecor(Vector3 centre, float radius)
+        /// <summary>Smashes the breakable decoration a body of this radius overlaps; returns what broke (reused list).</summary>
+        public IReadOnlyList<BrokenDecor> BreakDecor(Vector3 centre, float radius)
         {
             _broken.Clear();
             Decor?.Break(centre, radius, _broken);

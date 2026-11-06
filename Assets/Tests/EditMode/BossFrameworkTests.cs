@@ -96,8 +96,8 @@ namespace Game.Tests
         [Test]
         public void Walk_ClimbsRocks_OnlyWhenTheBossClimbs_AndNeverCrossesAFootprint()
         {
-            var rock = new DecorFormation(new Vector3(-0.5f, 0.6f, -0.5f), new Vector3(0.5f, 0.6f, 0.5f), false);
-            var crystal = new DecorFormation(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.4f, 0.5f, 0.4f), true);
+            var rock = new DecorFormation(new Vector3(-0.5f, 0.6f, -0.5f), new Vector3(0.5f, 0.6f, 0.5f), DecorContact.Climbable);
+            var crystal = new DecorFormation(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.4f, 0.5f, 0.4f), DecorContact.Breakable);
             var layer = new ClimbLayer(new GridMap(new Vector2Int(4, 4), 1f), new List<Vector2Int>(), new TerrainMap(new TerrainPatch[0]), new[] { rock, crystal });
             Vector2Int rockCell = layer.Grid.WorldToCell(rock.Centre);
             Assert.AreEqual(SurfaceKind.Rock, layer.KindAt(rockCell));
@@ -108,6 +108,30 @@ namespace Game.Tests
             layer.MarkTower(new Vector2Int(0, 0));
             Assert.IsTrue(float.IsPositiveInfinity(layer.WalkCost(new Vector2Int(0, 0), true)), "a tower is never walked over");
             Assert.Greater(layer.WalkCost(new Vector2Int(0, 1), true), 1f, "beside a tower costs extra, to keep clear");
+        }
+
+        [Test]
+        public void Decor_ObstaclesCloseTheirWholeFootprint_LowRisesAreWalkedOverWithTheirTop()
+        {
+            var spire = new DecorFormation(new Vector3(-2.5f, 1f, -0.5f), new Vector3(1.6f, 1f, 1.6f), DecorContact.Obstacle);
+            var boulder = new DecorFormation(new Vector3(2.5f, 0.28f, 0.5f), new Vector3(0.6f, 0.28f, 0.6f), DecorContact.Climbable);
+            var layer = new ClimbLayer(new GridMap(new Vector2Int(10, 6), 1f), new List<Vector2Int>(), new TerrainMap(new TerrainPatch[0]), new[] { spire, boulder });
+            Vector2Int spireCell = layer.Grid.WorldToCell(spire.Centre);
+            Assert.AreEqual(SurfaceKind.Obstacle, layer.KindAt(spireCell));
+            Assert.AreEqual(SurfaceKind.Obstacle, layer.KindAt(spireCell + Vector2Int.right), "a spire wider than a cell closes its neighbours too");
+            Assert.IsTrue(float.IsPositiveInfinity(layer.WalkCost(spireCell, true)), "even a climbing boss steers round a spire");
+            Assert.IsTrue(float.IsPositiveInfinity(layer.CrackCost(spireCell, 1f)), "a crack goes round it too");
+            Vector2Int boulderCell = layer.Grid.WorldToCell(boulder.Centre);
+            Assert.AreEqual(SurfaceKind.Raised, layer.KindAt(boulderCell), "a low boulder is a rise, not a rock to climb with a clip");
+            Assert.AreEqual(boulder.Top, layer.DecorTopAt(boulderCell), 0.001f);
+            Assert.Less(layer.WalkCost(boulderCell, false), float.PositiveInfinity, "a boss that does not climb still steps over it");
+
+            var path = new List<Vector3>();
+            Assert.IsTrue(BossRoutes.WalkTo(layer, layer.Grid.CellToWorld(new Vector2Int(0, 2)), new Vector2Int(9, 2), true, 0, path));
+            foreach (Vector3 point in path)
+            {
+                Assert.AreNotEqual(SurfaceKind.Obstacle, layer.KindAt(layer.Grid.WorldToCell(point)), "the walk never crosses the spire");
+            }
         }
 
         [Test]

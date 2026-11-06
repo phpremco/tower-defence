@@ -222,29 +222,6 @@ namespace Game.Levels
             }
         }
 
-        /// <summary>
-        /// Decoration that cannot hold a boss's weight: crystals, plants, eggs and ice prisms break when one walks into
-        /// them. Rocks, boulders, columns, spires, spikes, drifts and scree are solid and get climbed.
-        /// </summary>
-        public static bool IsFragile(PropKind kind)
-        {
-            switch (kind)
-            {
-                case PropKind.Crystal:
-                case PropKind.Mushroom:
-                case PropKind.GlowTree:
-                case PropKind.Tendril:
-                case PropKind.Egg:
-                case PropKind.Frond:
-                case PropKind.IceShard:
-                case PropKind.DeadTree:
-                case PropKind.Reed:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         /// <summary>The formation the scatter puts on a blocked cell of a level with these decoration kinds.</summary>
         public static PropKind FormationAt(Vector2Int cell, PropKind[] kinds) => kinds[Hash(cell) % kinds.Length];
 
@@ -377,7 +354,7 @@ namespace Game.Levels
                 }
 
                 Material material = far ? Dimmed(variant.MaterialFor(_low)) : null;
-                _instancer.AddDecor(variant, matrix, _low, material, castShadows: !far, fragile: IsFragile(kind), formation: formation);
+                _instancer.AddDecor(variant, matrix, _low, material, castShadows: !far, formation: formation);
                 if (!PropFactory.IsGlowing(kind) || kind == PropKind.Spike)
                 {
                     return;

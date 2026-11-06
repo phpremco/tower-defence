@@ -1,0 +1,28 @@
+{
+  "round": 38,
+  "use": "BossCutIn frame and the boss-intro answer box (9-sliced)",
+  "window": [
+    44,
+    468
+  ],
+  "sprites": {
+    "ComicFrame": {
+      "unity_rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "border_lbrt": [
+        96,
+        96,
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

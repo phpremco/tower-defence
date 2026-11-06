@@ -49,6 +49,8 @@ namespace Game.Editor
             ("_baseExplosions", ApprovedFolder + "/Explosions", "explosion_base"),
             ("_towerBreaks", ApprovedFolder + "/Environment", "tower_break"),
             ("_structureHits", ApprovedFolder + "/Environment", "metal_dull_hit"),
+            // A boss smashing a crystal or a rock off the road: the brittle icicle impacts, pitched down for a heavier crunch.
+            ("_decorSmashes", ApprovedFolder + "/Monsters/IceBeetle", "icicle_impact"),
             ("_baseAlerts", ApprovedFolder + "/Environment", "base_alert"),
             ("_upgrades", ApprovedFolder + "/Environment", "upgrade"),
             ("_scrapPickups", ApprovedFolder + "/Environment", "scrap_pickup"),
@@ -96,6 +98,7 @@ namespace Game.Editor
             ["_flakShots"] = 1.3f,
             ["_flakBursts"] = 1.25f,
             ["_riftLoops"] = 0.8f,
+            ["_decorSmashes"] = 0.85f,
         };
 
         // One voice per species. Paths are folders under Approved plus the file name without its variant number.

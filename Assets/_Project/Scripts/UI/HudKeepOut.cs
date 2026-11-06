@@ -6,8 +6,9 @@ namespace Game.UI
 {
     /// <summary>
     /// The HUD's no-go areas for world labels (rebuild badges, boss and base markers): every HUD panel that is showing,
-    /// as a rect in the safe area's space. The HUD registers its panels once; the labels ask where they may sit, so the
-    /// HUD stays on top and readable and a label is never drawn over a card, a price or a menu. Lives in the UI layer;
+    /// as a rect in the safe area's space, and the priority labels (the hero's speech bubble) the others must not cover.
+    /// The HUD registers its panels once; the labels ask where they may sit, so the HUD stays on top and readable and a
+    /// label is never drawn over a card, a price or a menu. Lives in the UI layer;
     /// gameplay knows nothing of it. The rects are measured at most once per frame, however many labels ask.
     /// </summary>
     public sealed class HudKeepOut
@@ -20,6 +21,8 @@ namespace Game.UI
         private readonly List<RectTransform> _panels = new List<RectTransform>();
         private readonly List<Text> _texts = new List<Text>();
         private readonly List<Rect> _zones = new List<Rect>();
+        private readonly List<RectTransform> _priority = new List<RectTransform>();
+        private readonly List<Rect> _hudZones = new List<Rect>();
         private readonly Vector3[] _corners = new Vector3[4];
         private int _measuredFrame = -1;
 
@@ -37,6 +40,19 @@ namespace Game.UI
             if (panel != null && !_panels.Contains(panel))
             {
                 _panels.Add(panel);
+            }
+        }
+
+        /// <summary>
+        /// A world label that wins over the others (the hero's speech bubble, Docs/BOSS_INTROS.md): while it shows, the other
+        /// labels keep off it as they keep off the HUD, moving aside or hiding. It keeps off the HUD itself through
+        /// <see cref="PlaceOverHud"/>.
+        /// </summary>
+        public void AddPriorityLabel(RectTransform label)
+        {
+            if (label != null && !_priority.Contains(label))
+            {
+                _priority.Add(label);
             }
         }
 
@@ -63,6 +79,13 @@ namespace Game.UI
         public bool Place(Rect label, out Vector2 offset)
         {
             return KeepOutMath.Resolve(label, Zones, _area.rect, out offset);
+        }
+
+        /// <summary>As <see cref="Place"/> for a priority label: it keeps off the HUD only, never off itself or the other labels.</summary>
+        public bool PlaceOverHud(Rect label, out Vector2 offset)
+        {
+            Measure();
+            return KeepOutMath.Resolve(label, _hudZones, _area.rect, out offset);
         }
 
         /// <summary>
@@ -129,6 +152,16 @@ namespace Game.UI
                     {
                         _zones.Add(Expand(words));
                     }
+                }
+            }
+
+            _hudZones.Clear();
+            _hudZones.AddRange(_zones);
+            foreach (RectTransform label in _priority)
+            {
+                if (label != null && label.gameObject.activeInHierarchy)
+                {
+                    _zones.Add(Expand(ToArea(label)));
                 }
             }
         }

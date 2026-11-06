@@ -131,6 +131,9 @@ namespace Game.Editor
                     continue;
                 }
 
+                (DecorContact contact, DecorRemains remains) = BlenderEnvironmentCatalog.ContactOf(pair.Key);
+                model = model.WithContact(contact, remains);
+
                 pieces.Add(new EnvironmentPiece(pair.Key, model));
                 EnvironmentPieceKind? mirrored = MirroredKind(pair.Key);
                 if (mirrored.HasValue)
@@ -146,6 +149,7 @@ namespace Game.Editor
             WriteArray(so.FindProperty("_nestScatter"), BuildMeshes(row.NestScatter));
             WriteArray(so.FindProperty("_silhouettes"), BuildMeshes(row.Silhouettes));
             WriteArray(so.FindProperty("_landmarks"), BuildMeshes(row.Landmarks));
+            WriteArray(so.FindProperty("_remains"), BuildMeshes(BlenderEnvironmentCatalog.Remains));
             var sweeps = new List<string>();
             foreach (string sweep in row.BankSweeps)
             {
@@ -180,6 +184,9 @@ namespace Game.Editor
                 {
                     continue;
                 }
+
+                (DecorContact contact, DecorRemains remains) = BlenderEnvironmentCatalog.ContactOf(entry.Kind);
+                variants = variants.ConvertAll(variant => variant.WithContact(contact, remains));
 
                 decor.Add(new EnvironmentDecor(entry.Kind, variants.ToArray(), MatchingScale(entry.Kind, variants), entry.Glow));
             }

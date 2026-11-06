@@ -2662,3 +2662,25 @@ Not committed.
   at a time (see the round report). Save restored byte-identical (ec2a1f6d) after every Play Mode run; Game view not touched.
 - **Gallery:** `gallery/CinderMatriarch/50-51`, `Rotbloom/50-51`, `SealedOne/50-52`, `Base/50-51`, `Attacks/50-61`.
 - **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Cinder Matriarch, Rotbloom or the Sealed One.
+
+## Round 13b: bosses smash, avoid and climb the decor off the road; intro leftovers; tower parity test (2026-11-06)
+
+Not committed.
+- **Decor off the road:** every imported decor mesh carries a `DecorContact` (Breakable / Obstacle / Climbable / None, set by
+  the environment generator per kind in `BlenderEnvironmentCatalog.ContactOf`). Breakable pieces (crystals, flora, small
+  rocks, veins) are smashed when the boss body overlaps them: shard burst, crunch (`SfxLibrary.DecorSmashes`) and Blender
+  remains (round 38, `build_decor_remains.py`) that stay for the level. Obstacles (spires, columns, cliffs) are closed cells
+  the off-road router keeps its body clear of. Climbables and plateaus are walked over with the height sampled under the
+  whole body (`BodyGround`), eased in, no snapping. Import: `Tools/PlayTest/Scripts/ApplyDecorContact.cs`.
+- **Intros:** Blender comic frame (`build_ui_comic.py`, `UI_ComicFrame`, 9-sliced) on the cut-in and the answer box; the
+  boss mirrored in the visor (second camera, `Game/UI/VisorReflection`); the speech bubble is a priority label in
+  `HudKeepOut` (other world labels move aside or hide); ORA/Voss answer in a compact `BossAnswerBox` at the right edge.
+  Import: `Tools/PlayTest/Scripts/ApplyComicFrame.cs`.
+- **Tower parity:** `TowerParityTests` (EditMode, no data changed) writes `Tools/PlayTest/tower_parity.txt`; 46 known
+  outliers ignored with "Known outlier, awaiting Remco's playtest" (Docs/BALANCE.md).
+- **Checks:** 0 compile errors/warnings; EditMode 631 (585 passed, 46 ignored = the known outliers, 0 failed); PlayMode one
+  class at a time: the six boss arenas, SlimeBoost, OverviewRadarSmoke, BossIntroSmoke, BalanceProbe (3/3) green, 0 errors
+  and 0 warnings in the console. Save restored byte-identical (ec2a1f6d) after every Play Mode run; Game view not touched.
+- **Gallery:** `CinderMatriarch/60-62`, `Shattered/60-63`, `Intros/60-64`, Dutch captions in `index.txt`.
+- **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Cinder Matriarch (hunts off the road through
+  the crystals), or any boss for the intro (campaign first meeting).

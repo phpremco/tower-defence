@@ -181,6 +181,9 @@ namespace Game.Levels
         /// <summary>Raised with the place an enemy hit a tower, blockade or the base.</summary>
         public GameEvent<Vector3> StructureHit { get; } = new GameEvent<Vector3>();
 
+        /// <summary>A boss smashed a piece of decoration off the road (a crystal, a plant, a rock) at this point.</summary>
+        public GameEvent<Vector3> DecorSmashed { get; } = new GameEvent<Vector3>();
+
         /// <summary>Raised with the index of a mining node once the drones have emptied it.</summary>
         public GameEvent<int> MineDepleted { get; } = new GameEvent<int>();
 

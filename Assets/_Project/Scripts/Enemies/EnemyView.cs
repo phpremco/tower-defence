@@ -393,6 +393,7 @@ namespace Game.Enemies
         /// <summary>A turn laid over the body (a climb's pitch, a landing's roll); identity for none.</summary>
         public Quaternion Tilt
         {
+            get => _tilt;
             set => _tilt = value;
         }
 

@@ -14,8 +14,8 @@ namespace Game.UI
     /// Mercer meets the continent bosses (Docs/BOSS_INTROS.md). When a boss has come out of its entrance for the first
     /// time ever, a short beat plays: the game slows to a share of its speed, the camera glides to the boss, Mercer
     /// recoils (Startled) and says his line over his head while his visor cut-in slides in, then ORA and Dr. Voss answer
-    /// in a dialogue box of its own that types fast and moves on by itself; the Codex notes the new entry. Any button
-    /// (keyboard, mouse or gamepad) ends it early, and it never runs while the game is paused, held by a story box or
+    /// in a compact box at the right edge (where the cut-in was) that types fast and moves on by itself; the Codex notes
+    /// the new entry. Any button (keyboard, mouse or gamepad) ends it early, and it never runs while the game is paused, held by a story box or
     /// ended. Later meetings only get a bark; during the fight Mercer calls out the boss's signature moments, under a
     /// cooldown. Reads the boss brains and the intro data; drives views and the clock only.
     /// </summary>
@@ -39,7 +39,7 @@ namespace Game.UI
         private BossCutIn _cutIn;
         private CodexToast _toast;
         private DialoguePlayer _answers;
-        private DialogueView _box;
+        private BossAnswerBox _box;
         private Beat _beat;
         private IDisposable _skipListener;
         private bool _skip;
@@ -75,7 +75,7 @@ namespace Game.UI
         public string ShownLine => _bubble != null ? _bubble.Line : string.Empty;
 
         /// <summary>The answer box, for tests and probes.</summary>
-        public DialogueView AnswerBox => _box;
+        public BossAnswerBox AnswerBox => _box;
 
         public void Initialize(LevelContext context, TimeController time, StoryDefinition story, RectTransform safe, RectTransform worldLabels, Camera camera, HudKeepOut keepOut, PortraitProvider portraits)
         {
@@ -91,9 +91,9 @@ namespace Game.UI
             _toast = gameObject.AddComponent<CodexToast>();
             _toast.Initialize(safe);
             keepOut.Add(_toast.Panel);
-            _box = gameObject.AddComponent<DialogueView>();
+            _box = gameObject.AddComponent<BossAnswerBox>();
             _answers = new DialoguePlayer(null);
-            _box.Initialize(safe, _answers, portraits);
+            _box.Initialize(safe, portraits);
             keepOut.Add(_box.Box);
             _answers.Presenter = _box;
             context.EnemySpawned.Subscribe(OnSpawned);
@@ -240,7 +240,7 @@ namespace Game.UI
                 HeroArtView art = hero.GetComponentInChildren<HeroArtView>();
                 if (art != null)
                 {
-                    _cutIn.Show(art, boss.Position, intro.CutInTint);
+                    _cutIn.Show(art, boss.transform, intro.CutInTint);
                 }
             }
 

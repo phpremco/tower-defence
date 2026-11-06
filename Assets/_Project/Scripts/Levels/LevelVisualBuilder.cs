@@ -119,6 +119,7 @@ namespace Game.Levels
             if (instancer != null)
             {
                 instancer.Finish();
+                instancer.UseRemains(theme.Environment, ModelQuality.IsLow);
                 instancer.gameObject.AddComponent<BuildPadHighlight>().Initialize(level);
             }
 

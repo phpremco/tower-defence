@@ -25,6 +25,9 @@ namespace Game.Bosses
         // A formation lower than this is rubble a boss simply walks over.
         private const float MinRockHeight = 0.35f;
 
+        // A climbable piece at least this high is too tall to step over: it is climbed like a rock (Climb_Up/Climb_Down).
+        public const float MaxStepHeight = 0.9f;
+
         // Staying a cell clear of a tower costs this much extra, so a walk keeps its distance where it can.
         private const float NearTowerPenalty = 0.8f;
         private const float RaisedCost = 1.3f;
@@ -45,6 +48,7 @@ namespace Game.Bosses
 
         private readonly Dictionary<Vector2Int, SurfaceKind> _ground = new Dictionary<Vector2Int, SurfaceKind>();
         private readonly Dictionary<Vector2Int, float> _heights = new Dictionary<Vector2Int, float>();
+        private readonly Dictionary<Vector2Int, float> _decorTops = new Dictionary<Vector2Int, float>();
         private readonly Dictionary<Vector2Int, SurfaceKind> _structures = new Dictionary<Vector2Int, SurfaceKind>();
         private readonly HashSet<Vector2Int> _nearTower = new HashSet<Vector2Int>();
         private readonly HashSet<Vector2Int> _nearFootprint = new HashSet<Vector2Int>();
@@ -75,22 +79,71 @@ namespace Game.Bosses
             foreach (DecorFormation formation in formations)
             {
                 Vector2Int cell = grid.WorldToCell(formation.Centre);
-                if (!grid.Contains(cell) || _ground.TryGetValue(cell, out SurfaceKind under) && under == SurfaceKind.Road)
+                if (!grid.Contains(cell) || IsRoad(cell))
                 {
                     continue;
                 }
 
-                if (formation.Fragile)
+                switch (formation.Contact)
                 {
-                    _ground[cell] = SurfaceKind.Fragile;
-                }
-                else if (formation.Top >= MinRockHeight)
-                {
-                    _ground[cell] = SurfaceKind.Rock;
-                    _heights[cell] = Mathf.Max(formation.Top, _heights.TryGetValue(cell, out float h) ? h : 0f);
+                    case DecorContact.Breakable:
+                        _ground[cell] = SurfaceKind.Fragile;
+                        break;
+                    case DecorContact.Obstacle:
+                        MarkObstacle(formation);
+                        break;
+                    case DecorContact.Climbable when formation.Top >= MinRockHeight:
+                        MarkRise(cell, formation.Top);
+                        break;
                 }
             }
         }
+
+        private bool IsRoad(Vector2Int cell) => _ground.TryGetValue(cell, out SurfaceKind under) && under == SurfaceKind.Road;
+
+        // A spire or column closes every cell its body stands over (it can be wider than a cell), never the road.
+        private void MarkObstacle(DecorFormation formation)
+        {
+            Vector2Int centre = Grid.WorldToCell(formation.Centre);
+            float reach = formation.PlanRadius;
+            int cells = Mathf.CeilToInt(reach / Grid.CellSize);
+            for (int x = -cells; x <= cells; x++)
+            {
+                for (int y = -cells; y <= cells; y++)
+                {
+                    var cell = centre + new Vector2Int(x, y);
+                    Vector3 at = Grid.CellToWorld(cell);
+                    float dx = at.x - formation.Centre.x;
+                    float dz = at.z - formation.Centre.z;
+                    if (Grid.Contains(cell) && !IsRoad(cell) && dx * dx + dz * dz <= reach * reach)
+                    {
+                        _ground[cell] = SurfaceKind.Obstacle;
+                    }
+                }
+            }
+
+            _ground[centre] = SurfaceKind.Obstacle;
+        }
+
+        // A low rise is walked over with the body following its top; one too high for a step is a rock, climbed with the
+        // climb clip by a boss that climbs and walked round by one that does not.
+        private void MarkRise(Vector2Int cell, float top)
+        {
+            float height = Mathf.Max(top, _heights.TryGetValue(cell, out float h) ? h : 0f);
+            _heights[cell] = height;
+            if (height >= MaxStepHeight)
+            {
+                _ground[cell] = SurfaceKind.Rock;
+                return;
+            }
+
+            _ground[cell] = SurfaceKind.Raised;
+            _decorTops[cell] = height;
+        }
+
+        /// <summary>The top of a climbable decoration piece on a cell (a boulder, a drift), 0 where none stands; the landscape's
+        /// own rises are in the terrain field.</summary>
+        public float DecorTopAt(Vector2Int cell) => _decorTops.TryGetValue(cell, out float top) ? top : 0f;
 
         /// <summary>The climb layer of a level, with the formations as the environment drew them.</summary>
         public static ClimbLayer For(LevelDefinition level, IReadOnlyList<DecorFormation> formations) =>

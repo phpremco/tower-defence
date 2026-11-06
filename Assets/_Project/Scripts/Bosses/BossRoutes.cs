@@ -207,7 +207,7 @@ namespace Game.Bosses
                 }
 
                 SurfaceKind kind = field.Climb.KindAt(cell);
-                if (field.Climb.IsFootprint(cell) || kind == SurfaceKind.Rock || kind == SurfaceKind.Liquid)
+                if (field.Climb.IsFootprint(cell) || kind == SurfaceKind.Rock || kind == SurfaceKind.Obstacle || kind == SurfaceKind.Liquid)
                 {
                     return false;
                 }
@@ -226,6 +226,24 @@ namespace Game.Bosses
             {
                 Vector2Int cell = grid.WorldToCell(Vector3.Lerp(a, b, i / (float)samples));
                 if (field.Climb.IsFootprint(cell))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>True when the straight line over the ground crosses no footprint and no large decoration piece (a climb's way over).</summary>
+        public static bool ClearOverGround(BossField field, Vector3 a, Vector3 b)
+        {
+            GridMap grid = field.Grid;
+            float length = Vector3.Distance(a, b);
+            int samples = Mathf.Max(1, Mathf.CeilToInt(length / SampleStep));
+            for (int i = 0; i <= samples; i++)
+            {
+                Vector2Int cell = grid.WorldToCell(Vector3.Lerp(a, b, i / (float)samples));
+                if (field.Climb.IsFootprint(cell) || field.Climb.KindAt(cell) == SurfaceKind.Obstacle)
                 {
                     return false;
                 }
@@ -293,7 +311,8 @@ namespace Game.Bosses
             return true;
         }
 
-        // A cell within the clearance (cells) of a tower, away from the start and the goal (where it must stand anyway).
+        // A cell within the clearance (cells) of a tower or a large decoration piece (its body would pass through it), away
+        // from the start and the goal (where it must stand anyway).
         private static bool Crowded(ClimbLayer layer, Vector2Int cell, Vector2Int start, Vector2Int goal, int clearance)
         {
             if (clearance <= 0 || Near(cell, start, 1) || Near(cell, goal, 1))
@@ -305,7 +324,8 @@ namespace Game.Bosses
             {
                 for (int y = -clearance; y <= clearance; y++)
                 {
-                    if (layer.KindAt(cell + new Vector2Int(x, y)) == SurfaceKind.Tower)
+                    SurfaceKind near = layer.KindAt(cell + new Vector2Int(x, y));
+                    if (near == SurfaceKind.Tower || near == SurfaceKind.Obstacle)
                     {
                         return true;
                     }
