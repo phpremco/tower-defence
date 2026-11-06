@@ -2784,3 +2784,41 @@ Not committed.
   Blender side); the Sealed One's Dive_Into_Liquid unwinds its rings ~26 degrees/frame in its last 8 frames (under the
   surface). `ArtSource/Exports/ShardFlyer/ShardFlyer.fbx` is newer than the copy in Assets: a full sync would pull it in
   (reverted here, not part of this round).
+
+## Round 17: animation seams in the Blender clips (2026-11-06)
+
+Not committed.
+- **FireLarva legs:** the larva's segment chain pivots about the head, so the rear hips swung ~0.09 m sideways on the
+  9-degree body wave while the legs reach only 0.11 m: a world-planted foot ended up under its own hip and the
+  two-bone IK flipped 100-172 degrees in one frame (Crawl, Hit, Death). `build_cindermatriarch.larva_place` now carries
+  the foot targets with their segment (`LARVA_FOOT_FOLLOW` 1.0; Crawl `LARVA_CRAWL_FOOT_FOLLOW` 0.8 so the feet still
+  grip). Worst step now 48 degrees/frame (a fast leg swing in a 0.67 s scuttle). New flag `--larva-only` rebuilds just
+  the larva. Re-exported (`--larva-only --norender`) and synced.
+- **Sealed One Dive_Into_Liquid:** the rings turned 0.03 rad/frame, ended 2.7 rad in and the last-8-frames blend into
+  Submerged_Loop frame 0 unwound them ~26 degrees/frame. They now turn exactly one whole turn over the dive (between the
+  Walk and Submerged_Loop ring speeds). Re-exported with `--norender --skip-maps`. Note: `--skip-maps` writes an empty
+  `phase_looks.maps` into the report; the report was restored from git (only that block differed).
+- **Tests:** `CreatureArtTests.SealedOne_CrownRings_DiveIntoTheLiquidWithoutUnwinding` (no ring step > 15 degrees in
+  the dive or into the loop) and `FireLarva_Legs_NeverFlipInAnyClip` (no leg step > 60 degrees, loop seam included).
+- **Sweep** (`Tools/PlayTest/r17_seam_sweep.cs`, args in `r17_arg.txt` "<name part or *> <degrees>", full list in
+  `Logs/r17_seam_sweep.txt`; 702 clips): steps > 60 degrees/frame on hidden bones (scale ~0: gate hex build/repair,
+  Gravemaw debris, shard Rejoin) and steady fast spins (CoreWisp rings) are harmless. Real ones, not fixed:
+  - HIGH: **Gravemaw** Emerge, Burrow_Down, Climb_Up/Down, Dive_Into_Liquid, Surface_Burst, Surface_Throw: spine, head
+    and limbs flip 130-180 degrees in one frame, segment after segment. Cause found: `deep_kit.PathFZ` smooths its
+    points with a uniform Catmull-Rom, and the 20-30 m end segments next to 0.3-0.6 m ones make the spline overshoot
+    and run backwards (tangent reversals of 128-180 degrees, `Tools/Blender/diag_path.py`). Fix proposal: subdivide long
+    path segments before smoothing (or centripetal Catmull-Rom), re-run `build_gravemaw.py` (Emerge) and
+    `build_gravemaw_mech.py`, regenerate the creature art (the clips' end offsets come from the report).
+  - MEDIUM: Frost Warden fists in FreezePulse / Shatter_Through / Dive_Into_Liquid (110-140), Bulwark Strike upper arm
+    (91, single-frame spike), Mercer Slash forearm (104), Roller and RollerKing Curl/Uncurl femurs (~90, fast).
+  - LOW (death/one-shot): PackAlpha and Prowler Death hind feet (82-98), Wisp/CoreWisp Death tendril (74-76),
+    Cutscene_Drill_Wreck Collapse block (171), Surgefin Emerge (67), ShardRunner Climb_Up (81), Rotbloom Climb_Up (61),
+    Mercer Run shins (67).
+- **ShardFlyer:** `ArtSource/Exports/ShardFlyer/ShardFlyer.fbx` was re-exported as a side effect of the round-29
+  `build_shattered_mech.py --only-shards` run (only the runner and crawler got climb clips). Compared in Blender
+  (`Tools/Blender/diag_fbx_compare.py`): same mesh, bones, six clips and poses to the last digit, same report and maps.
+  Not an improvement, so not synced.
+- **Checks:** EditMode 594/594, PlayMode CinderMatriarchArenaTests, SealedOneArenaTests, ScreenshotTests green, 0
+  errors/warnings. Larva stills: `Tools/PlayTest/r17_larva_shots.sh` (Cinder arena, `r17_spawn_larva.cs` sends three
+  larvae out of the boss, `r17_larva_focus.cs` follows one, `r17_fixed_step.cs` makes each stepped frame 1/30 s).
+  `r17_sync.cs` syncs only FireLarva and SealedOne.

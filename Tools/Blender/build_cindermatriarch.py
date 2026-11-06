@@ -10,7 +10,7 @@ Crysium horns, spines and knee spikes). Clips: Walk (loop), Idle (loop), Hit, De
 CinderMatriarch_LOD1 and the minion `FireLarva` (+ LOD1; clips Crawl, Idle, Hit, Death).
 
 Run: blender --background --factory-startup --python Tools/Blender/build_cindermatriarch.py -- [--preview <dir>]
-     [--norender] [--blockout] [--skip-larva]
+     [--norender] [--blockout] [--skip-larva] [--larva-only]
 """
 
 import math
@@ -459,13 +459,23 @@ def larva_specs(wave=0.0, phase=0.0, lift=0.0, curl=0.0, mand=0.0, roll=0.0, dro
     return out
 
 
-def larva_place(poser, sp, feet):
+# How far a foot target rides along with its body segment (0 = planted in the world, 1 = carried by the segment).
+# The segment chain pivots about the head, so the rear hips swing ~0.09 m sideways on a 9-degree wave while the legs
+# reach only 0.11 m: a world-planted foot ends up under (or beyond) its own hip and the two-bone IK flips through
+# 100-170 degrees in one frame (round 17). Carrying the targets with the segment keeps every hip-foot distance near
+# its rest length; a little world anchoring is kept on the crawl so the feet still read as gripping the ground.
+LARVA_FOOT_FOLLOW = 1.0
+LARVA_CRAWL_FOOT_FOLLOW = 0.8
+
+
+def larva_place(poser, sp, feet, follow=LARVA_FOOT_FOLLOW):
     lg = larva_legs()
     pose = poser.solve(sp)
     for key, l in lg.items():
         seg = ("Seg_2", "Seg_3", "Seg_4")[key[1] - 1]
         move = pose[seg] @ poser.rest[seg].inverted()
-        sp.update(l.pose(poser, move @ l.root, feet[key], move.to_3x3() @ l.pole))
+        foot = feet[key].lerp(move @ feet[key], follow)
+        sp.update(l.pose(poser, move @ l.root, foot, move.to_3x3() @ l.pole))
     return sp
 
 
@@ -478,7 +488,7 @@ def larva_crawl(poser):
     def spec(t, f):
         w = 2 * math.pi * t
         sp = larva_specs(wave=math.radians(9), phase=w, lift=math.radians(5), mand=math.radians(8) * math.sin(2 * w))
-        return larva_place(poser, sp, K3.gait_feet(lg, t, LARVA_PHASES, 0.6, 0.12, 0.04))
+        return larva_place(poser, sp, K3.gait_feet(lg, t, LARVA_PHASES, 0.6, 0.12, 0.04), LARVA_CRAWL_FOOT_FOLLOW)
     return 20, spec, True
 
 
@@ -553,6 +563,8 @@ def main():
         return
     if not args.get("skip-larva"):
         build_larva()
+    if args.get("larva-only"):
+        return
     C.reset_scene()
     mats = [T.Mat(body_parts(), 18000, ("rock", "membrane", "chitin"), voxel=0.012, ao=0.35, k=K, emission=3.4,
                   specular=0.25, extra=H.weathering(K, scratches=0.4, dust=0.3, seed=161), rigid=BODY_RIGID,

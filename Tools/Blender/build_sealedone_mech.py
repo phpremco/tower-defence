@@ -208,17 +208,21 @@ def submerged(depth):
 
 def dive(depth, travel=2.0):
     """Both hands press down on the bank edge, the plates close, the rings shrink to 0.45 and the torso slides
-    forward and down into the liquid (the head under at the frame in the report)."""
+    forward and down into the liquid (the head under at the frame in the report). Every crown ring turns exactly one
+    whole turn over the clip (round 17: at 0.03 rad/frame they ended 2.7 rad in, and the last-frames blend into
+    Submerged_Loop frame 0 unwound them ~26 degrees per frame); a turn per 90 frames also sits between the Walk and
+    Submerged_Loop ring speeds, so the hand-over is seamless in angle and nearly in speed."""
     frames = 90
 
     def fn(poser):
         def spec(t, f):
             go = ease(14, 80, f)
             z = depth * go ** 1.3
+            turn = 2 * math.pi * f / frames
             sp = pose(sink=z - 0.2 * pulse(f, 0, 12, 24), travel=travel * go, hidden=True,
                       lean=R(20) * pulse(f, 6, 30, 70) + R(10) * go, head=R(14) * go,
                       plates=R(10) * (1 - ease(8, 30, f)), rings=1.0 - 0.55 * ease(10, 50, f),
-                      spin=(f * 0.03, -f * 0.03, f * 0.02))
+                      spin=(turn, -turn, turn))
             press = {s: rest_hand(s) + at(0, 0.6, 0) for s in ("L", "R")}
             h = {s: rest_hand(s).lerp(press[s], ease(0, 12, f)) for s in ("L", "R")}
             car = carried_hands(poser, sp, tuck=0.6)

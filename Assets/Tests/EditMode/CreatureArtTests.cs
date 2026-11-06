@@ -195,5 +195,115 @@ namespace Game.Tests
                 Object.DestroyImmediate(model);
             }
         }
+
+        // Round 17: the dive ended 2.7 rad into the rings' turn and blended back to Submerged_Loop frame 0, so the rings
+        // unwound ~26 degrees a frame. They now turn whole turns: no step inside the dive or across into the loop.
+        [Test]
+        public void SealedOne_CrownRings_DiveIntoTheLiquidWithoutUnwinding()
+        {
+            const float MaxDegreesPerFrame = 15f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/SealedOne.asset");
+            AnimationClip dive = art.Clips[art.IndexOf(ModelClipRole.DiveIn)].Clip;
+            AnimationClip submerged = art.Clips[art.IndexOf(ModelClipRole.Submerged)].Clip;
+            var model = Object.Instantiate(art.Model);
+            try
+            {
+                Transform[] rings = FindBones(model, "Ring_1", "Ring_2", "Ring_3");
+                AssertNoStep(dive, model, rings, MaxDegreesPerFrame, false);
+                dive.SampleAnimation(model, dive.length);
+                Quaternion[] last = LocalRotations(rings);
+                submerged.SampleAnimation(model, 0f);
+                for (int b = 0; b < rings.Length; b++)
+                {
+                    Assert.Less(Quaternion.Angle(last[b], rings[b].localRotation), MaxDegreesPerFrame, $"{rings[b].name} snaps from the dive into the submerged loop");
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(model);
+            }
+        }
+
+        // Round 17: the fire larva's legs flipped through 100-170 degrees in one frame (a world-planted foot ended up
+        // under its own swinging hip). A fast scuttle may swing a leg ~50 degrees a frame; a flip is far beyond that.
+        [Test]
+        public void FireLarva_Legs_NeverFlipInAnyClip()
+        {
+            const float MaxDegreesPerFrame = 60f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/FireLarva.asset");
+            var model = Object.Instantiate(art.Model);
+            try
+            {
+                var legs = new System.Collections.Generic.List<Transform>();
+                foreach (Transform node in model.GetComponentsInChildren<Transform>(true))
+                {
+                    if (node.name.StartsWith("Leg_"))
+                    {
+                        legs.Add(node);
+                    }
+                }
+
+                Assert.IsNotEmpty(legs, "the larva has no leg bones");
+                foreach (ModelClip clip in art.Clips)
+                {
+                    if (clip.Clip != null)
+                    {
+                        AssertNoStep(clip.Clip, model, legs.ToArray(), MaxDegreesPerFrame, clip.Clip.isLooping);
+                    }
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(model);
+            }
+        }
+
+        private static Transform[] FindBones(GameObject model, params string[] names)
+        {
+            var bones = new Transform[names.Length];
+            foreach (Transform node in model.GetComponentsInChildren<Transform>(true))
+            {
+                int index = System.Array.IndexOf(names, node.name);
+                if (index >= 0)
+                {
+                    bones[index] = node;
+                }
+            }
+
+            CollectionAssert.AllItemsAreNotNull(bones, $"bones missing: {string.Join(", ", names)}");
+            return bones;
+        }
+
+        private static Quaternion[] LocalRotations(Transform[] bones)
+        {
+            var rotations = new Quaternion[bones.Length];
+            for (int b = 0; b < bones.Length; b++)
+            {
+                rotations[b] = bones[b].localRotation;
+            }
+
+            return rotations;
+        }
+
+        /// <summary>Samples the clip at 30 fps (and, for a loop, once past its end) and fails on any bone step above the limit.</summary>
+        private static void AssertNoStep(AnimationClip clip, GameObject model, Transform[] bones, float maxDegreesPerFrame, bool acrossSeam)
+        {
+            const float FramesPerSecond = 30f;
+            int frames = Mathf.RoundToInt(clip.length * FramesPerSecond);
+            Quaternion[] previous = null;
+            for (int f = 0; f <= frames + (acrossSeam ? 1 : 0); f++)
+            {
+                clip.SampleAnimation(model, f > frames ? 1f / FramesPerSecond : Mathf.Min(f / FramesPerSecond, clip.length));
+                if (previous != null)
+                {
+                    for (int b = 0; b < bones.Length; b++)
+                    {
+                        Assert.Less(Quaternion.Angle(previous[b], bones[b].localRotation), maxDegreesPerFrame, $"{clip.name}: {bones[b].name} jumps at frame {f}");
+                    }
+                }
+
+                previous = LocalRotations(bones);
+            }
+        }
     }
 }
