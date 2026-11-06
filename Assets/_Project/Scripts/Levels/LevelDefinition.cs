@@ -45,6 +45,13 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _enemyHealthMultiplier = 1f;
 
         /// <summary>
+        /// Balance model only, per difficulty (Easy to Psycho; a shorter array repeats its last entry): how much more the towers do
+        /// on this map than the ledger reckons, measured with the PlayMode probes. The wave solver counts the towers that much
+        /// stronger, so the waves play on the difficulty curve. 1 = as the ledger reckons (Docs/BALANCE.md, "Roles by enemy").
+        /// </summary>
+        [SerializeField] private float[] _balanceFieldEase = { 1f };
+
+        /// <summary>
         /// The permanent tower upgrade (damage times fire rate, minus one) the balance model expects a Medium player to
         /// bring by now, written by the generator for reference. It does not scale enemies: the wave solver already
         /// sized the waves against it.
@@ -141,6 +148,9 @@ namespace Game.Levels
         /// Docs/BALANCE.md), and <see cref="ExpectedUpgradeBonus"/> only reports that expectation.
         /// </summary>
         public float EnemyHealthScale => _enemyHealthMultiplier;
+
+        /// <summary>The balance model's field ease per difficulty (see the field).</summary>
+        public float[] BalanceFieldEase => _balanceFieldEase != null && _balanceFieldEase.Length > 0 ? _balanceFieldEase : new[] { 1f };
         public TowerDefinition BaseTurret => _baseTurret;
         public HeroDefinition Hero => _hero;
 
@@ -223,6 +233,14 @@ namespace Game.Levels
         private void OnValidate()
         {
             _terrainMap = null;
+            for (int i = 0; _balanceFieldEase != null && i < _balanceFieldEase.Length; i++)
+            {
+                if (_balanceFieldEase[i] < 0.1f)
+                {
+                    Debug.LogWarning($"LevelDefinition '{name}': field ease {_balanceFieldEase[i]} on difficulty {i} must be at least 0.1.", this);
+                }
+            }
+
             _road = null;
             if (!IsValid(out string error))
             {

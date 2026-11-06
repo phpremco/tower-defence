@@ -9,6 +9,8 @@ namespace Game.Combat
     {
         /// <param name="source">What fired the shot (a tower), or null.</param>
         /// <param name="splash">True for a blast that caught the target, false for a shot aimed at it.</param>
-        void TakeDamageFrom(float amount, object source, bool splash);
+        /// <param name="continuous">True for damage dealt a little every frame (a rolling lava ball): it has no single hit for
+        /// plating to stop, so it passes the plates.</param>
+        void TakeDamageFrom(float amount, object source, bool splash, bool continuous = false);
     }
 }

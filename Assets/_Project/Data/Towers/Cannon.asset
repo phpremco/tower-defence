@@ -22,7 +22,7 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
-  - Cost: 120
+  - Cost: 110
     Damage: 48
     Range: 4.3
     FireInterval: 1.2
@@ -38,6 +38,8 @@ MonoBehaviour:
     SlowSeconds: 0
   _projectileSpeed: 9
   _splashRadius: 1.2
+  _groundDamageFactor: 1
+  _airDamageFactor: 1
   _fuseRadius: 0
   _maxHealth: 220
   _sellRefundFraction: 0.7
@@ -54,5 +56,7 @@ MonoBehaviour:
   _color: {r: 1, g: 0.8, b: 0.3, a: 1}
   _shape: 1
   _projectileStyle: 1
+  _beamLockSeconds: 0.35
+  _beamSweepSeconds: 0
   _art: {fileID: 11400000, guid: 67eadd0f2b534644594839c14c177588, type: 2}
   _gateArt: {fileID: 0}

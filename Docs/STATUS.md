@@ -2930,3 +2930,26 @@ Not committed. No balance data changed (towers, enemies, waves, difficulties, bo
   wins Shard Ridge Hard. Laser in play 19.3 DPS a tower (14.8 per 100 coins) vs Pulse 5.2 (10.4 per 100 coins).
 - Note: `Tools/PlayTest/probe_arg.txt` (tracked) holds `levels=0` / `difficulties=0,1`; it narrows the explicit Full tests
   (BalanceProbe and Monoculture). Move it aside for a whole run.
+
+## Round 21a: roles by enemy (2026-11-06)
+
+Not committed. Docs/BALANCE.md "Roles by enemy" has the why and the numbers.
+- **Mechanics:** flat per-hit plating with a 20% floor (`EnemyDefinition._plating/_platingFloor`, `Health.ThroughPlating`,
+  model copy `Game.Balance.Plating`/`PlateMix`; continuous damage passes it); per-layer damage share on towers (Gun Turret
+  half damage to air-only creatures); aimed shots retarget to a live creature within 1.5 cells when theirs died in flight;
+  loose single-file troops in the composer (`TroopSpec.Loose`); per-level, per-difficulty `LevelDefinition._balanceFieldEase`
+  (balance model only, measured with the probes). Codex shows plating. Bosses keep their armour pool.
+- **Data:** Cragback plating 5 (light hide; reward 10 -> 14); Stinger/Shardback/Bulwark pool armour -> plating (unused in C1);
+  upgrade prices so every step beats more towers of the same type (asserted, Cryo the documented exception); Flak 14/25/40;
+  C1_01..C1_06 waves by role (ant packs, loose runners, plated Cragbacks earlier, more and bigger raids); Psycho boss health
+  share 1.7 -> 1.15.
+- **Bots:** repair only when the structure would fall in the coming wave or the repair beats a gun per point (coins on repairs
+  in monoculture.txt and the probe trace); creative saves for the harvester early while it holds; slow field where its guns
+  overlap when the slow pays; no sky gun before a ground gun, a second only with three ground guns.
+- **Tests:** `PlatingTests` (9), `TowerRolesTests.EveryUpgradeStep_BeatsMoreTowersOfTheSameType`, slow lens in
+  tower_roles.txt, `MonocultureProbeTests.Full_Monoculture_FirstLevels_OnEasy` (explicit) -> Tools/PlayTest/monoculture_easy.txt.
+- **Apply without the full generator:** `run_script Tools/PlayTest/Scripts/ApplyRoles.cs` (towers, bestiary, field ease), then
+  `ApplyWaves.cs`.
+- **Open for the curator/Remco:** Cragback plating from level 1 vs the story's "armour from level 11" (the dialogue already says
+  "heavy shells for heavy hides"); creative bot short on C1_02 Medium/Hard, C1_04/05/06 Hard, C1_05 Medium 1 star; Cannon row
+  still wins C1_02 Hard; C1_01 Medium left forgiving (mono rows and naive win).

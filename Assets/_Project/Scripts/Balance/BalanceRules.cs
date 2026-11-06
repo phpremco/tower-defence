@@ -13,6 +13,13 @@ namespace Game.Balance
         public float HealthPerThreat = 20f;
         public float AirThreatFactor = 1.2f;
         public float ArmorThreatShare = 0.8f;
+
+        /// <summary>
+        /// The hit size plating is priced against in threat: a plated creature counts as its health over the share of such a
+        /// hit that gets through (a middling gun, between the Pulse Rifle and the Cannon), so its kill money pays for the
+        /// heavier gun it asks for.
+        /// </summary>
+        public float PlatingReferenceHit = 15f;
         public float BaseDamageThreat = 0.04f;
         public float AttackDamageThreat = 0.03f;
 

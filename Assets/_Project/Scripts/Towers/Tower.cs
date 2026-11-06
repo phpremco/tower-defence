@@ -511,7 +511,8 @@ namespace Game.Towers
 
         private void Shoot(TowerLevel level, ITargetable target)
         {
-            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power;
+            // The layer share follows the aimed creature (a gun that also aims up hits the sky softer).
+            float damage = level.Damage * _modifiers.TowerDamageMultiplier * Power * _definition.DamageFactorAgainst(target.Layer);
             // The shot leaves from the mouth of the barrel: a little above the base and towards the target.
             Vector3 towards = target.Position - transform.position;
             towards.y = 0f;

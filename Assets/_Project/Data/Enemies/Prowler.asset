@@ -18,6 +18,8 @@ MonoBehaviour:
   _maxHealth: 62
   _armor: 0
   _armorReduction: 0.6
+  _plating: 0
+  _platingFloor: 0.2
   _speed: 1.5
   _reward: 4
   _baseDamage: 2
@@ -34,16 +36,21 @@ MonoBehaviour:
   _trailSeconds: 0
   _trailHaste: 1.4
   _trailDamagePerSecond: 0
+  _slimeImmune: 0
+  _hitCooldown: 0
   _rageSeconds: 3
   _rageSpeedMultiplier: 1.6
   _rageRadius: 3
   _isBoss: 0
   _abilities: []
+  _boss: {fileID: 0}
   _color: {r: 0.8, g: 0.28, b: 0.15, a: 1}
   _eyeColor: {r: 1, g: 0.35, b: 0.2, a: 1}
   _accentColor: {r: 1, g: 0.6, b: 0.2, a: 1}
   _bloodColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   _scale: 0.62
+  _bodyHalfWidth: 0
+  _groundBody: 0
   _shape: 24
   _deathStyle: 0
   _art: {fileID: 11400000, guid: 56b99676ee5f0c74e9f130b93f4aabb4, type: 2}

@@ -17,6 +17,9 @@ namespace Game.Balance
         public bool Harvest = true;
         public int SecondRoad = -1;
         public float GateHealth;
+
+        /// <summary>The level's field ease per difficulty (LevelDefinition.BalanceFieldEase); a shorter array repeats its last entry.</summary>
+        public float[] FieldEase = { 1f };
     }
 
     /// <summary>
@@ -70,6 +73,7 @@ namespace Game.Balance
                 HeroDamage = player.HeroDamage,
                 HeroPerks = player.HeroPerks,
                 GateHealth = facts.GateHealth * player.GateHealth,
+                FieldEase = facts.FieldEase.Length == 0 ? 1f : facts.FieldEase[Math.Min(Math.Max(0, difficulty), facts.FieldEase.Length - 1)],
             };
 
             foreach (string id in Levels[levelIndex].TowerIds)

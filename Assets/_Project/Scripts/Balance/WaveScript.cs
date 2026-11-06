@@ -30,6 +30,12 @@ namespace Game.Balance
 
         /// <summary>Creatures that never come alone come in groups of about this many; zero mixes singles and threes.</summary>
         public int Pack;
+
+        /// <summary>
+        /// Creatures that come one at a time, a whole interval apart: too spread for a shell to catch two, so rate of fire is
+        /// the answer (round 21a, Docs/BALANCE.md "Roles by enemy"). Ignored for a pack species.
+        /// </summary>
+        public bool Loose;
     }
 
     /// <summary>A boss, the wave it walks in on, from which difficulty, and its way in per difficulty.</summary>

@@ -364,7 +364,7 @@ namespace Game.Balance
                 };
                 if (troop.Source == 0)
                 {
-                    Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, troop.Pack);
+                    Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, troop.Pack, troop.Loose);
                 }
                 else
                 {
@@ -401,8 +401,14 @@ namespace Game.Balance
             !enemy.Flies && secondRoad >= 0 ? new[] { Road, secondRoad } : new[] { Road };
 
         // Cuts one stream into clusters that take turns on the lanes; a cluster of n claims n stream intervals.
-        private static void Scatter(GroupSpec group, int seed, int[] lanes, List<GroupSpec> output, int pack)
+        private static void Scatter(GroupSpec group, int seed, int[] lanes, List<GroupSpec> output, int pack, bool loose = false)
         {
+            if (loose && pack <= 0)
+            {
+                Single(group, seed, lanes, output);
+                return;
+            }
+
             int[] pattern = pack > 0 ? new[] { pack, pack + 1, pack, pack + 2 } : ClusterPatterns[seed % ClusterPatterns.Length];
             float inner = Math.Max(ClusterMinInterval, group.Interval * (pack > 0 ? PackInnerIntervalShare : ClusterInnerIntervalShare));
             int remaining = group.Count;
@@ -426,6 +432,31 @@ namespace Game.Balance
                 offset += size * group.Interval;
                 remaining -= size;
                 step++;
+            }
+        }
+
+        // A loose troop walks in one at a time, each a whole interval behind the last, taking turns on the lanes: one group per
+        // lane at the lanes' share of the rate, offset so the walkers alternate.
+        private static void Single(GroupSpec group, int seed, int[] lanes, List<GroupSpec> output)
+        {
+            for (int l = 0; l < lanes.Length; l++)
+            {
+                int count = group.Count / lanes.Length + (l < group.Count % lanes.Length ? 1 : 0);
+                if (count <= 0)
+                {
+                    continue;
+                }
+
+                output.Add(new GroupSpec
+                {
+                    Enemy = group.Enemy,
+                    Count = count,
+                    Interval = group.Interval * lanes.Length,
+                    Delay = group.Delay,
+                    Source = group.Source,
+                    Stagger = l * group.Interval,
+                    Path = lanes[(seed + l) % lanes.Length],
+                });
             }
         }
     }

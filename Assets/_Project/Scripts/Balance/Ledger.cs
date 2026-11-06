@@ -43,6 +43,12 @@ namespace Game.Balance
         /// <summary>Health of one gate with the permanent gate upgrades.</summary>
         public float GateHealth;
 
+        /// <summary>
+        /// How much more the towers do on this map and difficulty than the ledger reckons (measured with the PlayMode probes;
+        /// the first levels' ant crowds and short roads play far easier than the model's average): it scales every gun's capacity.
+        /// </summary>
+        public float FieldEase = 1f;
+
         public TowerBoost BoostOf(string towerId) => Boosts.TryGetValue(towerId, out TowerBoost boost) ? boost : TowerBoost.None;
     }
 
@@ -280,15 +286,22 @@ namespace Game.Balance
                     float damage = stats.Damage * boost.Damage;
                     float dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f;
                     float range = stats.Range * boost.Range;
+                    // A gun's layer share and the creatures' plating both work per hit, so they scale its damage per layer.
+                    float groundHit = damage * tower.GroundFactor;
+                    float airHit = damage * tower.AirFactor;
+                    float field = dps * level.FieldEase;
+                    float stream = field * tower.GroundFactor * load.StreamPlates.Share(groundHit);
+                    float single = field * tower.GroundFactor * load.BossPlates.Share(groundHit);
+                    float sky = field * tower.AirFactor * load.AirPlates.Share(airHit);
                     options.Add(new Option
                     {
                         Tower = t,
                         Level = l,
                         Cost = stats.Cost,
                         AirOnly = air && !ground,
-                        Stream = ground ? dps * Overkill(damage, load.MeanHealth) * Splash(tower.Splash, load.GroundDensity, rules) * (load.Window + 2f * range / load.GroundSpeed) * rules.Utilisation : 0f,
-                        Single = ground ? dps * load.BossSeconds(load.BossWindow + 2f * range / load.BossSpeed, rules) * rules.Utilisation : 0f,
-                        Air = air ? dps * Overkill(damage, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, rules) * (load.AirWindow + 2f * range / load.AirSpeed) * rules.Utilisation : 0f,
+                        Stream = ground ? stream * Overkill(groundHit, load.MeanHealth) * Splash(tower.Splash, load.GroundDensity, rules) * (load.Window + 2f * range / load.GroundSpeed) * rules.Utilisation : 0f,
+                        Single = ground ? single * load.BossSeconds(load.BossWindow + 2f * range / load.BossSpeed, rules) * rules.Utilisation : 0f,
+                        Air = air ? sky * Overkill(airHit, load.MeanAirHealth) * Splash(tower.Splash, load.AirDensity, rules) * (load.AirWindow + 2f * range / load.AirSpeed) * rules.Utilisation : 0f,
                     });
                 }
             }

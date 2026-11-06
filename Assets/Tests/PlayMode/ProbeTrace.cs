@@ -65,7 +65,7 @@ namespace Game.Tests
         }
 
         /// <summary>Called every frame; writes one line when a new wave has just started.</summary>
-        public void Sample(List<Tower> towers, string ledgerLine)
+        public void Sample(List<Tower> towers, string ledgerLine, int repairSpent = 0)
         {
             foreach (Tower tower in towers)
             {
@@ -86,6 +86,7 @@ namespace Game.Tests
             _recordedWave = _context.WaveNumber;
             var line = new StringBuilder();
             line.Append($"w{_recordedWave,-2} earned {Earned,5} unspent {_context.Wallet.Money,4} base {_context.BaseHealth.Current,4:0}");
+            line.Append($" repairs {repairSpent,4}");
             line.Append($" hero {(_context.Hero == null ? "none" : _context.Hero.IsDown ? "down" : "up")}");
             line.Append($" alive {_spawnedTotal - _killed,3}");
             line.Append($" frame {(_frames > 0 ? _frameTime / _frames : 0f):0.000}s");

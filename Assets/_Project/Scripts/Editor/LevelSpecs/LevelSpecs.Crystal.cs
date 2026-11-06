@@ -18,12 +18,26 @@ namespace Game.Editor
         private const float PackedFlyers = 0.45f;
         private const float LooseFlyers = 0.8f;
 
+        // Seconds between loose ants, one at a time: 1.6 cells apart at their pace, more than a shell's reach (Cannon splash 1.2),
+        // so rate of fire is the answer (round 21a, Docs/BALANCE.md "Roles by enemy").
+        private const float LooseRunners = 1f;
+
+        // Field ease (balance model only, LevelDefinition._balanceFieldEase), measured with the round-21a probes: how much more
+        // the towers do on a map than the ledger reckons. The two short opening levels were held by every bot with the base
+        // untouched and money to spare (Hard on Landing Site, Medium and Hard on Glass Meadows); on the longer levels the
+        // creative bot fell short of the competent player the ledger assumes on the difficulties marked ThinFieldEase.
+        private const float OpeningEase = 1.6f;
+        private const float SwarmEase = 1.8f;
+        private const float SwarmHardEase = 1.2f;
+        private const float ThinFieldEase = 0.85f;
+
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
         // (curator decision after balance, 2026-11-04). 1.3, the low end of the curator's range: at 1.6 the gun-only probe
         // bot lost every Medium run, at 1.3 it lost two of four (one Skyray through is enough) while the Flak bot held
         // all four untouched. Level 4 keeps its raids: its road joins late, the guns stand where the flight routes meet,
         // and a gun-only bot downed every flyer even at 1.6 and 1.8 times the raid.
-        private static readonly float[] BigRaidsFromMedium = { 1f, 1.3f };
+        // Round 21a: Hard adds 1.5, and level 4 gets rising raids too (the Gun Turret does half damage up there now).
+        private static readonly float[] RisingRaids = { 1f, 1.3f, 1.5f };
 
         /// <summary>Gun (PulseRifle), Cannon, Laser, Flak (Rocket), Tesla and Railgun; the Acid Sprayer joins in S5.</summary>
         public static readonly string[] CrystalRoster = { "PulseRifle", "Cannon", "Laser", "Rocket", "Tesla", "Railgun" };
@@ -49,8 +63,14 @@ namespace Game.Editor
                     Key = "C1_01",
                     Waves = 12,
                     Budget = 7f, FinalBudget = 95f,
-                    Troops = new[] { Join("Skitter", 1, 3f, 0.45f, pack: 6), Join("Cragback", 5, 1.4f, 2.6f, Nest, 7f) },
-                    Rhythm = "PPPRPHPMRPHP",
+                    // Roles from the first level (round 21a): ant packs that bunch for the Cannon, loose runners for the Gun
+                    // Turret's rate of fire, and plated Cragbacks (road and rifts) that shrug off fresh light guns.
+                    Troops = new[]
+                    {
+                        Join("Skitter", 1, 2f, 0.45f, pack: 6), Join("Skitter", 3, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.4f, 2.6f, Nest, 7f),
+                        Join("Cragback", 6, 1f, 2.6f),
+                    },
+                    Rhythm = "PPRHPRMHRPHP",
                     AirSprinkleFrom = 4,
                     Bosses = new[] { Boss(12, "BroodMother"), Boss(8, "BroodMother", Hard), Boss(5, "BroodMother", Psycho) },
                 },
@@ -66,6 +86,9 @@ namespace Game.Editor
                     new StorySpec { Kind = "BossSpawn", Dialogue = "Dlg_L01_Boss" },
                     new StorySpec { Kind = "LevelWon", Dialogue = "Dlg_L01_Won" },
                 },
+                // Easy and Medium stay forgiving for the first level (curator rule, round 21a); Hard is solved against the towers
+                // as strong as they play.
+                FieldEase = new[] { 1f, 1f, OpeningEase },
                 Money = 200,
             },
 
@@ -88,8 +111,14 @@ namespace Game.Editor
                     Key = "C1_02",
                     Waves = 12,
                     Budget = 8f, FinalBudget = 115f,
-                    Troops = new[] { Join("Skitter", 1, 4f, 0.35f, pack: 10), Join("Wisp", 6, 1.5f, 1.3f), Join("Cragback", 8, 1.2f, 2.6f) },
-                    Rhythm = "PRPPRHRPMRHP",
+                    // The swarm level: most ants come loose (rate of fire, the new Laser), a few packs bunch for the Cannon,
+                    // and plated Cragbacks from wave 5 stop a row of light guns (round 21a).
+                    Troops = new[]
+                    {
+                        Join("Skitter", 1, 4f, LooseRunners, loose: true), Join("Skitter", 4, 1.5f, 0.35f, pack: 8), Join("Cragback", 5, 1.5f, 2.6f),
+                        Join("Wisp", 6, 1.5f, 1.3f),
+                    },
+                    Rhythm = "PRPHRPHRPHRP",
                     AirSprinkleFrom = 4,
                     Bosses = new[] { Boss(12, "BroodMother"), Boss(9, "CoreWisp", Hard), Boss(5, "BroodMother", Psycho) },
                 },
@@ -107,6 +136,9 @@ namespace Game.Editor
                 // one at a time"): the gates lose 500 to 1000 health here, more than a repair drone costs to mend by hand.
                 IntroduceDrones = new[] { "RepairDrone" },
                 Money = 200 + CrystalMoneyStep,
+                // The probes win the swarm level with the base untouched on Medium and Hard (round 21a): the ledger counts a
+                // shell on at most a few ants and sells it short here, so the waves are solved against towers this much stronger.
+                FieldEase = new[] { 1f, SwarmEase, SwarmHardEase },
             },
 
             // A second track out of the south; the first flyers come late, packed, over the ridge.
@@ -128,12 +160,17 @@ namespace Game.Editor
                     Key = "C1_03",
                     Waves = 16,
                     Budget = 9f, FinalBudget = 150f,
-                    Troops = new[] { Join("Skitter", 1, 3f, 0.42f, pack: 6), Join("Cragback", 4, 1.3f, 2.5f), Join("Wisp", 8, 1.4f, 1.3f) },
+                    // Roles (round 21a): packs for the Cannon, loose runners for rate of fire, plated Cragbacks, raids for the Flak.
+                    Troops = new[]
+                    {
+                        Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.3f, 2.5f),
+                        Join("Wisp", 8, 1.4f, 1.3f),
+                    },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,
-                    AirRaidScale = BigRaidsFromMedium,
-                    AirWaves = new[] { 12, 15, 14 },
-                    AirWavesPerDifficulty = new[] { 2, 2, 3, 3 },
+                    AirRaidScale = RisingRaids,
+                    AirWaves = new[] { 12, 15, 11, 14 },
+                    AirWavesPerDifficulty = new[] { 2, 3, 4, 4 },
                     AirSprinkleFrom = 2,
                     Rhythm = "PRPHPRMPHRPMHRPH",
                     Bosses = new[] { Boss(16, "BroodMother"), Boss(10, "CoreWisp", Hard), Boss(6, "BroodMother", Psycho) },
@@ -149,6 +186,7 @@ namespace Game.Editor
                 // (at Glass Meadows it would not).
                 IntroduceDrones = new[] { "HarvestDrone" },
                 Money = 200 + CrystalMoneyStep * 2,
+                FieldEase = new[] { 1f, ThinFieldEase, 1f },
             },
 
             // The plain splits open: rifts everywhere, stone bats rising from them, rays overhead. Ground and air mixed.
@@ -174,11 +212,12 @@ namespace Game.Editor
                     Budget = 9f, FinalBudget = 100f,
                     Troops = new[]
                     {
-                        Join("Skitter", 1, 3f, 0.4f, pack: 6), Join("Shalebat", 5, 1.5f, 1.2f, Nest, 7f), Join("Wisp", 7, 1.4f, 1.3f),
-                        Join("Cragback", 9, 1.3f, 2.5f),
+                        Join("Skitter", 1, 2.4f, 0.4f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Shalebat", 5, 1.5f, 1.2f, Nest, 7f),
+                        Join("Wisp", 7, 1.4f, 1.3f), Join("Cragback", 6, 1.3f, 2.5f),
                     },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,
+                    AirRaidScale = new[] { 1f, 1.2f, 1.4f },
                     AirWaves = new[] { 3, 6, 9, 12, 15, 8, 14 },
                     AirWavesPerDifficulty = new[] { 4, 5, 6, 7 },
                     AirSprinkleFrom = 2,
@@ -219,7 +258,7 @@ namespace Game.Editor
                     Budget = 10f, FinalBudget = 185f,
                     Troops = new[]
                     {
-                        Join("Skitter", 1, 2.6f, 0.42f, pack: 6), Join("Cragback", 3, 1.3f, 2.5f), Join("Shalebat", 6, 1.5f, 1.3f, Nest, 7f),
+                        Join("Skitter", 1, 2.2f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Cragback", 3, 1.3f, 2.5f), Join("Shalebat", 6, 1.5f, 1.3f, Nest, 7f),
                         Join("Wisp", 9, 1.4f, 1.3f),
                     },
                     Flyer = "Skyray",
@@ -238,6 +277,7 @@ namespace Game.Editor
                     new StorySpec { Kind = "FirstSighting", Enemy = "Roller", Dialogue = "Dlg_L05_Fast" },
                 },
                 Money = 200 + CrystalMoneyStep * 4,
+                FieldEase = new[] { ThinFieldEase, ThinFieldEase, 1f },
             },
 
             // The vein that never runs dry: the fast rollers and the pack hunters in earnest, and the first gadgets.
@@ -261,8 +301,8 @@ namespace Game.Editor
                     Budget = 10f, FinalBudget = 210f,
                     Troops = new[]
                     {
-                        Join("Roller", 2, 1.4f, 1.6f), Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Prowler", 6, 2.2f, 1.1f, pack: 3),
-                        Join("Shalebat", 5, 1.3f, 1.4f, Nest, 8f), Join("Cragback", 10, 1.2f, 2.5f),
+                        Join("Roller", 2, 1.4f, 1.6f), Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Skitter", 3, 1.5f, LooseRunners, loose: true), Join("Prowler", 6, 2.2f, 1.1f, pack: 3),
+                        Join("Shalebat", 5, 1.3f, 1.4f, Nest, 8f), Join("Cragback", 7, 1.2f, 2.5f),
                     },
                     Flyer = "Skyray",
                     FlyerInterval = LooseFlyers,

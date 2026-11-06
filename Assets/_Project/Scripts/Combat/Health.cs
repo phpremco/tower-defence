@@ -6,7 +6,9 @@ namespace Game.Combat
     /// <summary>
     /// Hit points with events. Plain class so enemies, the base and towers can share it. An optional layer of
     /// armour sits in front of the hit points: while any armour is left it soaks up a share of every hit, and the
-    /// rest goes through to the body. Once the armour is chipped away every hit lands in full.
+    /// rest goes through to the body. Once the armour is chipped away every hit lands in full. Plating is different: it never
+    /// wears off and takes the same number of points off every hit, never more than all but a floor share of it, so a few
+    /// heavy hits pass it far better than many light ones (Docs/BALANCE.md, "Roles by enemy").
     /// </summary>
     public sealed class Health
     {
@@ -16,13 +18,21 @@ namespace Game.Combat
 
         /// <param name="armor">Hit points of the armour layer; zero for creatures without one.</param>
         /// <param name="armorReduction">Share of each hit the armour absorbs while it lasts, from 0 to 1.</param>
-        public Health(float max, float armor, float armorReduction)
+        public Health(float max, float armor, float armorReduction) : this(max, armor, armorReduction, 0f, 0f)
+        {
+        }
+
+        /// <param name="plating">Points every hit loses to the plates; zero for creatures without plating.</param>
+        /// <param name="platingFloor">Share of a hit that always gets through the plates, from 0 to 1.</param>
+        public Health(float max, float armor, float armorReduction, float plating, float platingFloor)
         {
             Max = Mathf.Max(1f, max);
             Current = Max;
             ArmorMax = Mathf.Max(0f, armor);
             Armor = ArmorMax;
             ArmorReduction = Mathf.Clamp01(armorReduction);
+            Plating = Mathf.Max(0f, plating);
+            PlatingFloor = Mathf.Clamp01(platingFloor);
         }
 
         public float Max { get; private set; }
@@ -34,6 +44,11 @@ namespace Game.Combat
         public float Armor { get; private set; }
 
         public float ArmorReduction { get; }
+
+        /// <summary>Points every hit loses to the plates (see <see cref="ThroughPlating"/>).</summary>
+        public float Plating { get; }
+
+        public float PlatingFloor { get; }
 
         public bool IsDead => Current <= 0f;
 
@@ -101,11 +116,26 @@ namespace Game.Combat
             ArmorChanged?.Invoke(Armor);
         }
 
-        public void TakeDamage(float amount)
+        /// <summary>
+        /// What one hit leaves after a flat plating: the hit less the plating, but never less than the floor share of the hit.
+        /// The balance model uses the same rule (<c>Game.Balance.Plating.Through</c>).
+        /// </summary>
+        public static float ThroughPlating(float hit, float plating, float floor) =>
+            plating <= 0f ? hit : Mathf.Max(hit - plating, hit * floor);
+
+        public void TakeDamage(float amount) => TakeDamage(amount, false);
+
+        /// <param name="pastPlating">True for damage dealt a little every frame, which has no single hit for the plates to stop.</param>
+        public void TakeDamage(float amount, bool pastPlating)
         {
             if (IsDead || amount <= 0f)
             {
                 return;
+            }
+
+            if (!pastPlating)
+            {
+                amount = ThroughPlating(amount, Plating, PlatingFloor);
             }
 
             if (Armor > 0f)

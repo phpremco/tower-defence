@@ -26,7 +26,9 @@ namespace Game.Tests
     {
         private const string SmokePath = "Tools/PlayTest/monoculture_smoke.txt";
         private const string FullPath = "Tools/PlayTest/monoculture.txt";
+        private const string EasyPath = "Tools/PlayTest/monoculture_easy.txt";
         private const string TracePath = "Logs/probe_trace.txt";
+        private const int Easy = 0;
         private const int Medium = 1;
         private const int Hard = 2;
         private const int MediumMonoWins = 1;
@@ -38,6 +40,7 @@ namespace Game.Tests
         private static readonly string[] SmokeLevels = { "Level_C1_03", "Level_C1_06" };
         private static readonly string[] SmokeMono = { "PulseRifle", "Cannon", "Laser" };
         private static readonly int[] FullDifficulties = { Medium, Hard };
+        private static readonly string[] EasyLevels = { "Level_C1_01", "Level_C1_02", "Level_C1_03" };
 
         // The probe appends every run's trace; one test's file holds its own runs.
         [SetUp]
@@ -104,6 +107,34 @@ namespace Game.Tests
 
             Assert.IsNotEmpty(results);
             Conclude(results, FullPath, "full set");
+        }
+
+        /// <summary>
+        /// Round 21a: Easy must stay comfortable on the first levels for a normal player, so the creative and the naive bot
+        /// both must win Landing Site, Glass Meadows and Shard Ridge on Easy (reported like the full set).
+        /// </summary>
+        [UnityTest]
+        [Category("Monoculture")]
+        [Explicit("The first three levels on Easy, creative and naive bot; run on request.")]
+        [Timeout(7200000)]
+        public IEnumerator Full_Monoculture_FirstLevels_OnEasy()
+        {
+            var results = new List<BalanceProbeTests.ProbeResult>();
+            foreach (int node in Levels(EasyLevels))
+            {
+                var run = new List<(int, int)> { (node, Easy) };
+                yield return BalanceProbeTests.Probe(run, ProbeStrategy.CreativeBot(), results);
+                yield return BalanceProbeTests.Probe(run, ProbeStrategy.NaiveBot(), results);
+            }
+
+            Assert.AreEqual(EasyLevels.Length * 2, results.Count, "a run did not finish");
+            var breaches = results.FindAll(r => r.Outcome != LevelOutcome.Won).ConvertAll(r => $"{r.Asset} Easy: {r.Strategy} {r.Outcome} at wave {r.Wave}/{r.WaveCount} (must win)");
+            System.IO.File.WriteAllText(EasyPath, Table(results, breaches, "first levels on Easy"));
+            Debug.Log($"[Monoculture] Easy: {results.Count} runs, {breaches.Count} losses, see {EasyPath}");
+            if (breaches.Count > 0)
+            {
+                Assert.Ignore(KnownPrefix + string.Join("; ", breaches));
+            }
         }
 
         // Writes the table and the rule check; the breaches are printed and the test is marked ignored (known) when any exist.
@@ -173,12 +204,12 @@ namespace Game.Tests
         private static string Table(List<BalanceProbeTests.ProbeResult> results, List<string> breaches, string set)
         {
             var text = new StringBuilder();
-            text.Append($"Monoculture probe, {set} (round 20; seeded, 0.2 s steps; Docs/BALANCE.md, Monoculture check)\n");
+            text.Append($"Monoculture probe, {set} (round 21a; seeded, 0.2 s steps; Docs/BALANCE.md, Monoculture check and Roles by enemy)\n");
             text.Append("dps = damage really dealt per tower-second while creatures were on the field, against the data DPS of the levels it stood at.\n\n");
-            text.Append("level        diff    strategy           result stars wave   base     built upg sold mines fields drones                        ore  unspent  in-game dps per type (real/data)\n");
+            text.Append("level        diff    strategy           result stars wave   base     built upg sold mines fields drones                        ore  unspent repairs(%earned)  in-game dps per type (real/data)\n");
             foreach (BalanceProbeTests.ProbeResult r in results)
             {
-                text.Append(Invariant($"{r.Asset,-12} {DifficultyName(r.Difficulty),-7} {r.Strategy,-18} {r.Outcome,-6} {r.Stars,5} {r.Wave,2}/{r.WaveCount,-2} {r.BaseHealth,4:0}/{r.BaseMax,-4:0} {r.TowersBuilt,5} {r.Upgrades,3} {r.Sold,4} {r.Mines,5} {r.Fields,6} {(r.Drones.Length > 0 ? r.Drones : "-"),-29} {r.Harvested,4} {r.CoinsUnspent,8}  "));
+                text.Append(Invariant($"{r.Asset,-12} {DifficultyName(r.Difficulty),-7} {r.Strategy,-18} {r.Outcome,-6} {r.Stars,5} {r.Wave,2}/{r.WaveCount,-2} {r.BaseHealth,4:0}/{r.BaseMax,-4:0} {r.TowersBuilt,5} {r.Upgrades,3} {r.Sold,4} {r.Mines,5} {r.Fields,6} {(r.Drones.Length > 0 ? r.Drones : "-"),-29} {r.Harvested,4} {r.CoinsUnspent,8} {r.RepairSpent,7} ({100f * r.RepairSpent / Mathf.Max(1, r.Earned),3:0}%)  "));
                 foreach (KeyValuePair<string, (float Damage, float Seconds, float DataDamage)> fire in r.Fire)
                 {
                     text.Append(Invariant($" {fire.Key} {Rate(fire.Value.Damage, fire.Value.Seconds):0.0}/{Rate(fire.Value.DataDamage, fire.Value.Seconds):0.0}"));
@@ -203,6 +234,15 @@ namespace Game.Tests
                 text.Append(Invariant($"  {total.Key,-12} {Rate(total.Value.Damage, total.Value.Seconds),6:0.0} dps of {Rate(total.Value.Data, total.Value.Seconds),6:0.0} data ({100f * total.Value.Damage / Mathf.Max(0.01f, total.Value.Data),3:0}%) over {total.Value.Seconds,6:0} tower-s\n"));
             }
 
+            int repairs = 0;
+            int earned = 0;
+            foreach (BalanceProbeTests.ProbeResult r in results)
+            {
+                repairs += r.RepairSpent;
+                earned += r.Earned;
+            }
+
+            text.Append(Invariant($"\nRepairs bought with coins over all runs: {repairs} of {earned} earned ({100f * repairs / Mathf.Max(1, earned):0.0}%).\n"));
             text.Append("\nRules (report only): Medium at most one mono type wins, with one star; Hard none; creative wins Medium and Hard with 2+ stars; naive loses Medium+.\n");
             text.Append(breaches.Count == 0 ? "  all met\n" : "  " + string.Join("\n  ", breaches) + "\n");
             return text.ToString();

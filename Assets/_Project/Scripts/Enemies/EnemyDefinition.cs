@@ -14,6 +14,12 @@ namespace Game.Enemies
         [SerializeField] [Min(1f)] private float _maxHealth = 20f;
         [SerializeField] [Min(0f)] private float _armor;
         [SerializeField] [Range(0f, 1f)] private float _armorReduction = 0.6f;
+
+        /// <summary>Flat plating: points every hit loses, whatever the hit (Health.ThroughPlating). Zero for soft creatures.</summary>
+        [SerializeField] [Min(0f)] private float _plating;
+
+        /// <summary>Share of every hit that always gets through the plating, so even light guns chip it.</summary>
+        [SerializeField] [Range(0f, 1f)] private float _platingFloor = 0.2f;
         [SerializeField] [Min(0.1f)] private float _speed = 2f;
         [SerializeField] [Min(0)] private int _reward = 5;
         [SerializeField] [Min(1)] private int _baseDamage = 1;
@@ -83,6 +89,14 @@ namespace Game.Enemies
         public float ArmorReduction => _armorReduction;
 
         public bool HasArmor => _armor > 0f;
+
+        /// <summary>Points every hit loses to the plates; heavy single shots pass them far better than many light ones.</summary>
+        public float Plating => _plating;
+
+        /// <summary>Share of a hit that always gets through the plates.</summary>
+        public float PlatingFloor => _platingFloor;
+
+        public bool HasPlating => _plating > 0f;
 
         public float Speed => _speed;
         public int Reward => _reward;
@@ -195,6 +209,11 @@ namespace Game.Enemies
             if (_flies && (_layer & TargetLayers.Air) == 0)
             {
                 Debug.LogWarning($"EnemyDefinition '{name}' flies but air defence cannot hit it.", this);
+            }
+
+            if (_plating > 0f && _platingFloor <= 0f)
+            {
+                Debug.LogWarning($"EnemyDefinition '{name}' has plating without a floor: light guns could never hurt it.", this);
             }
 
             if (_rollSeconds > 0f && _walkSeconds <= 0f)

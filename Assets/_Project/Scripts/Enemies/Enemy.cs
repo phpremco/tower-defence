@@ -184,7 +184,7 @@ namespace Game.Enemies
             BodyFit = 1f;
             Origin = origin;
             Reward = Mathf.RoundToInt(definition.Reward * rewardMultiplier);
-            Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction);
+            Health = new Health(definition.MaxHealth * healthMultiplier, definition.Armor * healthMultiplier, definition.ArmorReduction, definition.Plating, definition.PlatingFloor);
             Health.Died += OnDied;
             transform.position = waypoints[0] + Vector3.up * heightOffset;
             Heading = waypoints.Length > 1 ? Flat(waypoints[1] - waypoints[0]) : Vector3.forward;
@@ -196,7 +196,7 @@ namespace Game.Enemies
         // Anything without a source (a mine, the hero, a pulse) counts as a blast: it still reaches a hidden boss in part.
         public void TakeDamage(float amount) => TakeDamageFrom(amount, null, true);
 
-        public void TakeDamageFrom(float amount, object source, bool splash)
+        public void TakeDamageFrom(float amount, object source, bool splash, bool continuous = false)
         {
             if (Health == null || !_active)
             {
@@ -226,7 +226,7 @@ namespace Game.Enemies
                 return;
             }
 
-            Health.TakeDamage(amount);
+            Health.TakeDamage(amount, continuous);
             DamagedBy?.Invoke(this, source, amount);
         }
 

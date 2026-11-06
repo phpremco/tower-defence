@@ -76,6 +76,7 @@ namespace Game.Editor
             public float Health;
             public float Armor;
             public float ArmorReduction;
+            public float Plating;
             public float Speed;
             public int BaseDamage;
             public Element Element;
@@ -108,6 +109,13 @@ namespace Game.Editor
             public BossAbilityDefinition[] Abilities;
         }
 
+        // Every plated species lets this share of a hit through its plates, so even light guns chip it (Docs/BALANCE.md).
+        private const float PlatingFloor = 0.2f;
+
+        // Takes most of a light gun's pulse and little of a shell (Pulse Rifle 5 -> 1, Laser 8 -> 3, Cannon 25 -> 20; upgraded
+        // 15 -> 10, 18 -> 13, 85 -> 80), so its waves ask for the Cannon or upgrades, not a row of fresh light guns.
+        private const float CragbackPlating = 5f;
+
         private static readonly Color VenomGreen = new Color(0.62f, 1f, 0.2f);
         private static readonly Color GooGreen = new Color(0.35f, 1f, 0.25f);
         private static readonly Color RedBlood = new Color(0.9f, 0.2f, 0.2f);
@@ -132,7 +140,7 @@ namespace Game.Editor
             });
             b.Stinger = CreateEnemy(new Creature
             {
-                Id = "Stinger", Description = "Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots crack the plates.", Layer = TargetLayers.Ground, Health = 120f, Armor = 80f, ArmorReduction = 0.65f, Speed = 0.9f, BaseDamage = 3,
+                Id = "Stinger", Description = "Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots crack the plates.", Layer = TargetLayers.Ground, Health = 200f, Plating = 6f, Speed = 0.9f, BaseDamage = 3,
                 Attack = AttackStyle.Sting, AttackDamage = 3f, BlockadeDamage = 10f, AttackRange = 2.6f, AttackInterval = 2f,
                 Color = new Color(0.6f, 0.2f, 0.85f), Eyes = new Color(1f, 0.5f, 1f), Accent = new Color(1f, 0.35f, 0.9f), Blood = new Color(0.55f, 1f, 0.35f),
                 Scale = 0.8f, Shape = EnemyShape.Stinger, Death = DeathStyle.Shatter,
@@ -146,7 +154,7 @@ namespace Game.Editor
             // The ice beetle: slow and heavily plated under its ice, spitting frost at the towers it passes.
             b.Shardback = CreateEnemy(new Creature
             {
-                Id = "Shardback", Description = "Ice beetle under a crust of shards. Slow and heavily plated; spits frost at the towers it passes.", Layer = TargetLayers.Ground, Health = 130f, Armor = 90f, ArmorReduction = 0.65f, Speed = 0.75f, BaseDamage = 4,
+                Id = "Shardback", Description = "Ice beetle under a crust of shards. Slow and heavily plated; spits frost at the towers it passes.", Layer = TargetLayers.Ground, Health = 220f, Plating = 7f, Speed = 0.75f, BaseDamage = 4,
                 Attack = AttackStyle.Sting, AttackDamage = 4f, BlockadeDamage = 14f, AttackRange = 2.6f, AttackInterval = 1.9f, Element = Element.Ice,
                 Color = new Color(0.55f, 0.75f, 0.9f), Eyes = new Color(0.85f, 1f, 1f), Accent = new Color(0.8f, 0.95f, 1f), Blood = new Color(0.75f, 0.9f, 1f),
                 Scale = 0.8f, Shape = EnemyShape.Shardback, Death = DeathStyle.Shatter,
@@ -162,7 +170,7 @@ namespace Game.Editor
             });
             b.Bulwark = CreateEnemy(new Creature
             {
-                Id = "Bulwark", BodyHalfWidth = 0.9f, Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = 220f, Armor = 160f, ArmorReduction = 0.7f, Speed = 0.7f, BaseDamage = 5,
+                Id = "Bulwark", BodyHalfWidth = 0.9f, Description = "Shield bearer with a crystal sword. Natural shields soak damage; it hacks at towers and gates in its way.", Layer = TargetLayers.Ground, Health = 380f, Plating = 9f, Speed = 0.7f, BaseDamage = 5,
                 Attack = AttackStyle.Slash, AttackDamage = 9f, BlockadeDamage = 24f, AttackRange = 1.6f, AttackInterval = 1.6f,
                 Color = new Color(0.3f, 0.6f, 0.35f), Eyes = new Color(1f, 0.9f, 0.4f), Accent = new Color(0.4f, 1f, 0.95f), Blood = GooGreen,
                 Scale = 0.9f, Shape = EnemyShape.Bulwark, Death = DeathStyle.Collapse,
@@ -206,10 +214,11 @@ namespace Game.Editor
                 Scale = 0.7f, Shape = EnemyShape.Roller, Death = DeathStyle.Shatter,
             });
 
-            // Stone (S4): heavy and slow, no armour yet; the script gives the stone species their plates in level 11.
+            // Stone (S4): heavy and slow. The Cragback's dense hide is a light plating from level 1 (Dlg_L01_Stone: "heavy shells
+            // for heavy hides"), so the Cannon is wanted from the first level (round 21a); the heavy plates come in level 11.
             b.Cragback = CreateEnemy(new Creature
             {
-                Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Speed = 0.6f, BaseDamage = 4,
+                Id = "Cragback", BodyHalfWidth = 0.65f, Description = "Stone crawler. A walking boulder: slow, heavy and very tough, it slams the gates in its way. Heavy shells crack it best.", Layer = TargetLayers.Ground, Health = 160f, Plating = CragbackPlating, Speed = 0.6f, BaseDamage = 4,
                 Attack = AttackStyle.Slam, BlockadeDamage = 16f, AttackRange = 2.4f, AttackInterval = 1.8f, Element = Element.Stone,
                 Color = new Color(0.4f, 0.36f, 0.32f), Eyes = new Color(1f, 0.75f, 0.3f), Accent = new Color(0.85f, 0.42f, 0.14f), Blood = new Color(0.9f, 0.55f, 0.25f),
                 Scale = 0.85f, Shape = EnemyShape.Cragback, Death = DeathStyle.Shatter,
@@ -354,6 +363,8 @@ namespace Game.Editor
             Flies = c.Flies,
             Health = c.Health,
             Armor = c.Armor,
+            Plating = c.Plating,
+            PlatingFloor = PlatingFloor,
             Speed = c.Speed,
             BaseDamage = c.BaseDamage,
             AttackDamage = c.AttackDamage,
@@ -373,6 +384,8 @@ namespace Game.Editor
             so.FindProperty("_maxHealth").floatValue = c.Health;
             so.FindProperty("_armor").floatValue = c.Armor;
             so.FindProperty("_armorReduction").floatValue = c.Armor > 0f ? c.ArmorReduction : 0.6f;
+            so.FindProperty("_plating").floatValue = c.Plating;
+            so.FindProperty("_platingFloor").floatValue = PlatingFloor;
             so.FindProperty("_speed").floatValue = c.Speed;
             // Kill money follows threat, so a new or retuned creature never needs a hand-set reward.
             so.FindProperty("_reward").intValue = Threat.Reward(StatsOf(c), BalanceSheet.Rules);

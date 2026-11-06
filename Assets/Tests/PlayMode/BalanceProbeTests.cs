@@ -82,6 +82,11 @@ namespace Game.Tests
         // before crowd and boss waves within this many road cells of the gate, and it never sells below this many ground guns.
         private const int HarvestAfterTowers = 3;
         private const int NoHarvestLastWaves = 2;
+        // The creative player saves for the harvester in the first 40% of a level while its guns (nearly) hold the waves at hand.
+        private const float InvestShare = 0.4f;
+        private const float InvestCover = 0.9f;
+        // Ground guns standing before a second sky gun is bought.
+        private const int GroundBeforeSecondSkyGun = 3;
         private const int RepairAfterTowers = 4;
         private const int AttackAfterTowers = 8;
         private const int MinesPerWave = 2;
@@ -104,6 +109,8 @@ namespace Game.Tests
         private const int ShockwaveCrowd = 4;
         private const float GateRepairBelow = 0.4f;
         private const float RepairBelow = 0.5f;
+        // A structure's loss in the next wave is reckoned as the worse of this wave and the last, times this for the growth.
+        private const float LossGrowth = 1.25f;
         private const int GateRepairsPerWave = 2;
         // Guns standing before the bot upgrades any: one on each side of the queue. With none, Glass Meadows Medium was lost
         // three runs in a row (an upgraded Laser as the very first buy covered too little road and starved the level).
@@ -309,6 +316,11 @@ namespace Game.Tests
             public float GateDamage;
             public float TowerDamage;
             public readonly Dictionary<Tower, float> LastHealth = new Dictionary<Tower, float>();
+
+            /// <summary>Health each structure lost in the wave being fought and in the one before: what the next wave may cost it.</summary>
+            public readonly Dictionary<Tower, float> LossThisWave = new Dictionary<Tower, float>();
+            public readonly Dictionary<Tower, float> LossLastWave = new Dictionary<Tower, float>();
+            public int LossWave = -1;
         }
 
         /// <summary>The ledger's view of one run: its lines for the trace, and the wave loads and level input the bot judges its own towers with.</summary>
@@ -356,6 +368,10 @@ namespace Game.Tests
             public int FlyersKilled;
             public int FlyerBaseHits;
             public float BaseDamage;
+
+            /// <summary>Coins spent on repairs in the run, and everything the run earned (start money and kills), for the share.</summary>
+            public int RepairSpent;
+            public int Earned;
 
             /// <summary>Per tower type: damage dealt in the run, tower-seconds standing while creatures were on the field, and the data DPS of its levels then.</summary>
             public Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
@@ -468,7 +484,7 @@ namespace Game.Tests
                             note = ledger.LineFor(notedWave) + BotNote(ledger, towers, notedWave);
                         }
 
-                        trace.Sample(towers, note);
+                        trace.Sample(towers, note, watch.RepairSpent);
                         MeasureWear(watch, towers, gates);
                         run.Sample(context, towers, Time.deltaTime);
                         nextBuy -= Time.deltaTime;
@@ -522,6 +538,8 @@ namespace Game.Tests
                     GameSeconds = run.Seconds,
                     Fire = run.Fire,
                     FlyersSpawned = trace.FlyersSpawned,
+                    RepairSpent = watch.RepairSpent,
+                    Earned = trace.Earned,
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,
                     BaseDamage = context.BaseHealth.Max - context.BaseHealth.Current,
@@ -936,7 +954,7 @@ namespace Game.Tests
             }
 
             UseHero(context, gates, watch);
-            if (Maintain(context, towers, watch))
+            if (Maintain(context, towers, watch, CheapestBuild(context, owned, t => !t.IsSupport && !t.BlocksGroundEnemies && (run.Strategy.Allowed == null || run.Strategy.Allowed(t)))))
             {
                 return;
             }
@@ -950,6 +968,11 @@ namespace Game.Tests
             List<(string, int)> standing = Standing(towers);
             float groundCover = Cover(ledger, standing, current, true);
             bool groundHolds = groundCover >= 1f / GroundCeiling;
+            if (run.Strategy.Creative && SavesForHarvester(context, towers, run, groundCover))
+            {
+                return;
+            }
+
             // A player who sees flyers in the next waves' preview saves for the air gun unless the ground is falling apart; the
             // first one comes whatever the ground does (Quartz Flats Medium: the Skyrays took the base while the bot kept buying
             // ground guns for a heavy roller wave).
@@ -1120,7 +1143,7 @@ namespace Game.Tests
 
         // A player keeps the defence standing before buying more: a badly hurt gun is repaired, a wrecked gun scrapped so its
         // spot takes a new one. True when the money went to that this round.
-        private static bool Maintain(LevelContext context, List<Tower> towers, GateWatch watch)
+        private static bool Maintain(LevelContext context, List<Tower> towers, GateWatch watch, int cheapestStep)
         {
             for (int i = towers.Count - 1; i >= 0; i--)
             {
@@ -1143,10 +1166,17 @@ namespace Game.Tests
             {
                 watch.Wave = context.WaveNumber;
                 watch.Repairs = 0;
+                watch.LossLastWave.Clear();
+                foreach (KeyValuePair<Tower, float> loss in watch.LossThisWave)
+                {
+                    watch.LossLastWave[loss.Key] = loss.Value;
+                }
+
+                watch.LossThisWave.Clear();
             }
 
             if (gate != null && watch.Repairs < GateRepairsPerWave && gate.NeedsRepair && (gate.IsWrecked || gate.HealthFraction < RepairBelow)
-                && Spend(context, watch, gate.RepairCost))
+                && WorthRepair(context, watch, gate, cheapestStep) && Spend(context, watch, gate.RepairCost))
             {
                 gate.RepairFully();
                 watch.Repairs++;
@@ -1155,7 +1185,7 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                if (tower.NeedsRepair && tower.HealthFraction < RepairBelow && Spend(context, watch, tower.RepairCost))
+                if (tower.NeedsRepair && tower.HealthFraction < RepairBelow && WorthRepair(context, watch, tower, cheapestStep) && Spend(context, watch, tower.RepairCost))
                 {
                     tower.RepairFully();
                     return true;
@@ -1195,7 +1225,41 @@ namespace Game.Tests
             float now = structure.Health.Current;
             float lost = watch.LastHealth.TryGetValue(structure, out float before) ? Mathf.Max(0f, before - now) : 0f;
             watch.LastHealth[structure] = now;
+            watch.LossThisWave[structure] = (watch.LossThisWave.TryGetValue(structure, out float sum) ? sum : 0f) + lost;
             return lost;
+        }
+
+        // What a structure may lose before the next wave is over: the worse of this wave and the last, with a margin for the
+        // growth from wave to wave.
+        private static float ExpectedLoss(GateWatch watch, Tower structure)
+        {
+            float now = watch.LossThisWave.TryGetValue(structure, out float a) ? a : 0f;
+            float last = watch.LossLastWave.TryGetValue(structure, out float b) ? b : 0f;
+            return Mathf.Max(now, last) * LossGrowth;
+        }
+
+        // Remco (2026-11-06): the bots wasted money repairing gates instead of building. A repair is bought only when the
+        // structure would fall in the coming wave (its health below what the waves at hand take from it), or when restoring
+        // that health is cheaper per point than the cheapest new gun that would have to stop the same leak for the rest of
+        // the level; otherwise the coins go to the defence.
+        private static bool WorthRepair(LevelContext context, GateWatch watch, Tower structure, int cheapestStep)
+        {
+            float expected = ExpectedLoss(watch, structure);
+            if (expected <= 0f)
+            {
+                return false;
+            }
+
+            if (structure.IsWrecked || structure.Health.Current <= expected)
+            {
+                return true;
+            }
+
+            float missing = structure.Health.Max - structure.Health.Current;
+            float repairPerPoint = structure.RepairCost / Mathf.Max(1f, missing);
+            int wavesLeft = Mathf.Max(1, context.WaveCount - context.WaveNumber + 1);
+            float stepPerPoint = cheapestStep / Mathf.Max(1f, expected * wavesLeft);
+            return cheapestStep > 0 && repairPerPoint < stepPerPoint;
         }
 
         // How good the next free spot for a tower type is (1 for sky guns and for the naive bot).
@@ -1230,6 +1294,16 @@ namespace Game.Tests
         {
             int price = CheapestBuild(context, owned, AirOnly);
             if (price == 0)
+            {
+                return 0;
+            }
+
+            // Ground guns pay for everything: with the Gun Turret at half damage up there (round 21a), the preview of an early
+            // raid made the bot spend the whole starting purse on two Flaks and never earn a kill (Quartz Flats). A sky gun
+            // waits for a ground gun, and a second one for the ground line of a few guns.
+            int ground = towers.FindAll(t => !AirOnly(t.Definition)).Count;
+            int sky = towers.Count - ground;
+            if (ground == 0 || (sky > 0 && ground < GroundBeforeSecondSkyGun))
             {
                 return 0;
             }
@@ -1483,6 +1557,27 @@ namespace Game.Tests
             return null;
         }
 
+        // The creative player invests in the harvester early, once its first guns hold the waves at hand outright (Remco: an
+        // investment paid for with early risk; the drone lens: an early buy pays most). In the first part of the level it puts
+        // the price aside before any other step and buys the drone as soon as the purse has it; when the waves press, it builds.
+        // Round 20: saving only from what was left over, it never had the price before the late waves on Medium.
+        private static bool SavesForHarvester(LevelContext context, List<Tower> towers, BotRun run, float groundCover)
+        {
+            if (groundCover < InvestCover || context.WaveNumber > Mathf.CeilToInt(context.WaveCount * InvestShare))
+            {
+                return false;
+            }
+
+            Game.Drones.DroneDefinition drone = WantedDrone(context, towers, run);
+            if (drone == null || drone.Kind != Game.Drones.DroneKind.Harvest)
+            {
+                return false;
+            }
+
+            BuyDrone(context, towers, run);
+            return true;
+        }
+
         private static int DronePriority(Game.Drones.DroneDefinition drone) =>
             drone.Kind == Game.Drones.DroneKind.Harvest ? 0 : drone.Kind == Game.Drones.DroneKind.Repair ? 1 : 2;
 
@@ -1567,12 +1662,27 @@ namespace Game.Tests
         private static bool PlaceField(LevelContext context, List<Tower> towers, LedgerView ledger, int current, int keep, BotRun run)
         {
             PathObjectDefinition field = PathObjectOf(context, PathObjectKind.SlowField);
-            if (field == null || !Pressed(towers, ledger, current) || run.FieldWave == context.WaveNumber || context.Targets.Count == 0 || !context.Wallet.CanAfford(field.Cost + keep))
+            if (field == null || run.FieldWave == context.WaveNumber || context.Targets.Count == 0 || !context.Wallet.CanAfford(field.Cost + keep))
             {
                 return false;
             }
 
-            foreach (Vector2Int cell in run.Strategy.Naive ? AnyRoad(context.Level, run) : RoadAtGate(context.Level, false))
+            List<Vector2Int> cells = run.Strategy.Naive ? AnyRoad(context.Level, run) : RoadAtGate(context.Level, false);
+            if (!run.Strategy.Naive)
+            {
+                // Remco (2026-11-06): a slow field is a damage tactic, laid where the guns overlap, not only a last resort.
+                cells.Sort((a, b) => CoverDps(context, towers, b).CompareTo(CoverDps(context, towers, a)));
+                if (!Pressed(towers, ledger, current) && (cells.Count == 0 || !FieldPays(context, towers, field, cells[0], keep)))
+                {
+                    return false;
+                }
+            }
+            else if (!Pressed(towers, ledger, current))
+            {
+                return false;
+            }
+
+            foreach (Vector2Int cell in cells)
             {
                 if (Place(context, field, cell, run))
                 {
@@ -1582,6 +1692,48 @@ namespace Game.Tests
             }
 
             return false;
+        }
+
+        // Data DPS of the standing ground guns that reach a road cell: what a slow there multiplies.
+        private static float CoverDps(LevelContext context, List<Tower> towers, Vector2Int cell)
+        {
+            Vector3 point = context.Level.Grid.CellToWorld(cell);
+            float dps = 0f;
+            foreach (Tower tower in towers)
+            {
+                TowerLevel level = tower.Definition.GetLevel(tower.LevelIndex);
+                Vector3 offset = tower.Position - point;
+                offset.y = 0f;
+                if (!tower.IsWrecked && (tower.Definition.Targets & TargetLayers.Ground) != 0 && level.FireInterval > 0f && offset.magnitude <= tower.Range)
+                {
+                    dps += level.Damage / level.FireInterval;
+                }
+            }
+
+            return dps;
+        }
+
+        // The slow pays when the damage it adds to every creature crossing it (the guns' DPS there times the extra seconds in
+        // the field) beats what the same coins in the cheapest gun would add to every creature for the rest of the level: a
+        // field lasts about a wave, a gun every wave left (TowerRolesTests reports the same break-even per level).
+        private static bool FieldPays(LevelContext context, List<Tower> towers, PathObjectDefinition field, Vector2Int cell, int cheapestGun)
+        {
+            TowerDefinition gun = null;
+            foreach (TowerDefinition tower in context.AllTowers)
+            {
+                gun = tower.BuildCost == cheapestGun && !tower.IsSupport && (tower.Targets & TargetLayers.Ground) != 0 ? tower : gun;
+            }
+
+            if (gun == null || field.SlowFactor <= 0f || field.SlowFactor >= 1f)
+            {
+                return false;
+            }
+
+            TowerLevel first = gun.GetLevel(0);
+            float gunPerCreature = first.Damage / first.FireInterval / gun.BuildCost * field.Cost * 2f * first.Range;
+            float fieldPerCreature = CoverDps(context, towers, cell) * 2f * field.Radius * (1f / field.SlowFactor - 1f);
+            int wavesLeft = Mathf.Max(1, context.WaveCount - context.WaveNumber + 1);
+            return fieldPerCreature >= gunPerCreature * wavesLeft;
         }
 
         // Sells the weakest ground gun (lowest level, then cheapest) when its refund makes up what the purse lacks for the

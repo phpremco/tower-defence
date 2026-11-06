@@ -42,6 +42,11 @@ namespace Game.Balance
         public int KillMoney;
         public bool HasBoss;
 
+        /// <summary>The plating of the ground stream, the bosses and the flyers, by health: how much of a hit of each size lands.</summary>
+        public readonly PlateMix StreamPlates = new PlateMix();
+        public readonly PlateMix BossPlates = new PlateMix();
+        public readonly PlateMix AirPlates = new PlateMix();
+
         /// <summary>
         /// The seconds a gun gets on the bosses out of the time they spend in its reach: the mechanics take away their share
         /// of the fight (a burrow can happen anywhere on the road), never more than the rules' cap (Docs/BOSSES.md).
@@ -104,6 +109,7 @@ namespace Game.Balance
                 if (!Layer.Has(enemy.Layer, Layer.Ground))
                 {
                     load.AirHealth += health;
+                    load.AirPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
                     airSpan = Math.Max(airSpan, end);
                     airSpeed += enemy.InRangeSpeed * count;
                     air += count;
@@ -114,6 +120,7 @@ namespace Game.Balance
                 if (enemy.IsBoss)
                 {
                     load.BossHealth += health;
+                    load.BossPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
                     bossReachWeighted += reach * health;
                     bossSpeed += enemy.InRangeSpeed * count;
                     bosses += count;
@@ -123,6 +130,7 @@ namespace Game.Balance
                 }
 
                 load.StreamHealth += health;
+                load.StreamPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
                 reachWeighted += reach * health;
                 span = Math.Max(span, end);
                 speed += enemy.InRangeSpeed * count;

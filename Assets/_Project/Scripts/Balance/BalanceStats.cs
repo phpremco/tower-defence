@@ -19,6 +19,10 @@ namespace Game.Balance
         public bool Flies;
         public float Health = 1f;
         public float Armor;
+
+        /// <summary>Flat per-hit plating and the share of a hit that always gets through it (see <see cref="Balance.Plating"/>).</summary>
+        public float Plating;
+        public float PlatingFloor = 0.2f;
         public float Speed = 1f;
 
         /// <summary>
@@ -75,6 +79,10 @@ namespace Game.Balance
         public string Id = string.Empty;
         public int Targets = Layer.Ground;
         public float Splash;
+
+        /// <summary>Share of the damage that lands on ground and on air-only creatures (a gun that also aims up may hit softer there).</summary>
+        public float GroundFactor = 1f;
+        public float AirFactor = 1f;
         public bool IsSupport;
         public bool BlocksGround;
         public bool IsBaseDefence;

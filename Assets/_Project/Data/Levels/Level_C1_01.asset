@@ -192,6 +192,10 @@ MonoBehaviour:
   _terrainAlbedo: {fileID: 2800000, guid: 8e5e3e37a11ebad439d59f5158c593d3, type: 3}
   _terrainEmission: {fileID: 2800000, guid: 8b464e248d183a644b09da83f38d93cf, type: 3}
   _enemyHealthMultiplier: 1
+  _balanceFieldEase:
+  - 1
+  - 1
+  - 1.6
   _expectedUpgradeBonus: 0
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}

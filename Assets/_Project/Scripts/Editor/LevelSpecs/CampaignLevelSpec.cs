@@ -51,6 +51,12 @@ namespace Game.Editor
 
         public StorySpec[] Story = new StorySpec[0];
 
+        /// <summary>
+        /// Balance model only, per difficulty (Easy to Psycho; a shorter array repeats its last entry): how much more the towers
+        /// do on this map than the ledger reckons, measured with the PlayMode probes (LevelDefinition._balanceFieldEase).
+        /// </summary>
+        public float[] FieldEase = { 1f };
+
         public int Money = 200;
         public int BaseHealth = 600;
     }

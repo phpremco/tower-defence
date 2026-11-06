@@ -16,6 +16,13 @@ namespace Game.Towers
         [SerializeField] [Min(1f)] private float _projectileSpeed = 10f;
         [SerializeField] [Min(0f)] private float _splashRadius;
 
+        /// <summary>
+        /// Share of the damage that lands on a target of each layer (a creature that is air only takes the air share). Ground
+        /// guns that can also aim up do less up there, so the sky asks for an air gun (Docs/BALANCE.md, "Roles by enemy").
+        /// </summary>
+        [SerializeField] [Range(0f, 1f)] private float _groundDamageFactor = 1f;
+        [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
+
         /// <summary>A proximity fuse: the shell bursts this close to its target. Zero bursts on impact.</summary>
         [SerializeField] [Min(0f)] private float _fuseRadius;
         [SerializeField] [Min(1f)] private float _maxHealth = 100f;
@@ -69,6 +76,12 @@ namespace Game.Towers
         public TargetLayers Targets => _targets;
         public float ProjectileSpeed => _projectileSpeed;
         public float SplashRadius => _splashRadius;
+        public float GroundDamageFactor => _groundDamageFactor;
+        public float AirDamageFactor => _airDamageFactor;
+
+        /// <summary>The damage share against a target of this layer: air only takes the air share, anything on the ground the ground share.</summary>
+        public float DamageFactorAgainst(TargetLayers layer) => (layer & TargetLayers.Ground) != 0 ? _groundDamageFactor : _airDamageFactor;
+
         public float FuseRadius => _fuseRadius;
         public float MaxHealth => _maxHealth;
         public float SellRefundFraction => _sellRefundFraction;
@@ -114,6 +127,11 @@ namespace Game.Towers
             if (_levels == null || _levels.Length != LevelCount)
             {
                 Debug.LogWarning($"TowerDefinition '{name}' must have exactly {LevelCount} levels.", this);
+            }
+
+            if (((_targets & TargetLayers.Ground) != 0 && _groundDamageFactor <= 0f) || ((_targets & TargetLayers.Air) != 0 && _airDamageFactor <= 0f))
+            {
+                Debug.LogWarning($"TowerDefinition '{name}' aims at a layer it deals no damage to: drop the layer from its targets instead.", this);
             }
         }
     }

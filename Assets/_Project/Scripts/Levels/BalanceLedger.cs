@@ -21,6 +21,8 @@ namespace Game.Levels
             // An ice armour that soaks part of each hit counts as that much more health to burn through.
             Health = enemy.MaxHealth * (enemy.Boss != null ? enemy.Boss.EffectiveHealthFactor() : 1f),
             Armor = enemy.Armor,
+            Plating = enemy.Plating,
+            PlatingFloor = enemy.PlatingFloor,
             Speed = enemy.AverageSpeed,
             FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,
             Reward = enemy.Reward,
@@ -47,6 +49,8 @@ namespace Game.Levels
                 Id = tower.Id,
                 Targets = (int)tower.Targets,
                 Splash = tower.SplashRadius,
+                GroundFactor = tower.GroundDamageFactor,
+                AirFactor = tower.AirDamageFactor,
                 IsSupport = tower.IsSupport,
                 BlocksGround = tower.BlocksGroundEnemies,
                 IsBaseDefence = tower.IsBaseDefence,
@@ -213,6 +217,7 @@ namespace Game.Levels
                 Harvest = level.HarvestDrone != null,
                 SecondRoad = SecondRoad(level),
                 GateHealth = gateHealth,
+                FieldEase = level.BalanceFieldEase,
             });
             if (level.HarvestDrone != null)
             {

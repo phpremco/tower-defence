@@ -88,10 +88,12 @@ namespace Game.Editor
         // 0.6-0.65 of the Hard/Psycho hero cap against 0.96 on Medium (FinaleModel): there the plain waves were the climax, not
         // the boss. These shares put a continent boss on Hard and Psycho at about Medium's share of its cap (ContinentFinaleTests
         // derives and checks them). Easy keeps one: the model would ask about 1.2, and Easy is meant to forgive.
+        // Round 21a: with the end-game Psycho player's cheaper upgrades and the roles by enemy (plating, the Gun Turret's half
+        // damage in the air) the derived Psycho share fell from 1.7 to about 1.1-1.15; Hard stays 1.45.
         private const float EasyBossHealth = 1f;
         private const float MediumBossHealth = 1f;
         private const float HardBossHealth = 1.45f;
-        private const float PsychoBossHealth = 1.7f;
+        private const float PsychoBossHealth = 1.15f;
 
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its
@@ -188,26 +190,28 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// Tower level prices (build, then each upgrade). Each upgrade buys at least as much damage per passing creature per
-        /// coin as the level before it, so upgrading always pays; the long-range and single-target guns are priced by
-        /// damage times range, not damage alone. A tower not listed keeps the price the generator gives it.
+        /// Tower level prices (build, then each upgrade). Remco's rule (2026-11-06): an upgrade must beat more towers of the same
+        /// type at equal coins on single-target DPS, so every level's DPS per coin spent to reach it is at least about 5% above
+        /// the level below (asserted in TowerRolesTests); more towers still win on targets and spread the risk. Round 21a cut
+        /// the upgrade steps that missed it (Pulse, Cannon, Laser, Tesla, Railgun; the Flak also hits harder). A tower not listed
+        /// keeps the price the generator gives it.
         /// </summary>
         public static int[] Prices(string towerId)
         {
             switch (towerId)
             {
                 case "PulseRifle":
-                    return new[] { 50, 60, 90 };
+                    return new[] { 50, 50, 90 };
                 case "Cannon":
-                    return new[] { 100, 120, 180 };
+                    return new[] { 100, 110, 180 };
                 case "Rocket":
-                    return new[] { 120, 140, 200 };
+                    return new[] { 120, 100, 150 };
                 case "Laser":
-                    return new[] { 130, 90, 170 };
+                    return new[] { 130, 75, 145 };
                 case "Tesla":
-                    return new[] { 140, 115, 190 };
+                    return new[] { 140, 100, 155 };
                 case "Railgun":
-                    return new[] { 220, 150, 255 };
+                    return new[] { 220, 125, 200 };
                 default:
                     return null;
             }

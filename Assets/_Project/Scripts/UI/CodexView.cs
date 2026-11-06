@@ -604,6 +604,11 @@ namespace Game.UI
                 _builder.Append("   Armour ").Append(Mathf.RoundToInt(enemy.Armor)).Append(" (takes ").Append(Mathf.RoundToInt(enemy.ArmorReduction * 100f)).Append("% less until it is chipped away)");
             }
 
+            if (enemy.HasPlating)
+            {
+                _builder.Append("   Plating ").Append(Mathf.RoundToInt(enemy.Plating)).Append(" (every hit loses that much, at least ").Append(Mathf.RoundToInt(enemy.PlatingFloor * 100f)).Append("% gets through: heavy shots pass it)");
+            }
+
             _builder.Append("\nSpeed ").Append(enemy.Speed.ToString("0.0")).Append("   Bounty ").Append(enemy.Reward).Append("   Base damage ").Append(enemy.BaseDamage).Append('\n');
 
             // A continent boss's own mechanic decides what it does to towers; the signature below says it.

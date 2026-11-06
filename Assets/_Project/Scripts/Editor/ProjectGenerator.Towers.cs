@@ -11,15 +11,18 @@ namespace Game.Editor
         private const float FlakSplash = 1.1f;
         private const float FlakFuse = 0.6f;
 
+        // The Gun Turret aims up too but its pulses do half damage there, so the sky asks for the Flak (round 21a, Docs/BALANCE.md).
+        private const float GunAirShare = 0.5f;
+
         private static void GenerateCoreTowers(GeneratorContext context)
         {
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(60, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f);
+                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(60, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f, airDamageFactor: GunAirShare);
             context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, 1.2f, new Color(1f, 0.8f, 0.3f),
                 new[] { Lvl(100, 25f, 4f, 1.4f), Lvl(120, 48f, 4.3f, 1.2f), Lvl(180, 85f, 4.6f, 1f) }, 220f);
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),
-                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(140, 22f, 5.9f, 0.5f), Lvl(200, 34f, 6.3f, 0.45f) }, 130f);
+                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f);
             SetFuse(context.Rocket, FlakFuse);
 
             // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.

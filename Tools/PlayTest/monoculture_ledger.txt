@@ -4,145 +4,145 @@ holds = every wave inside the hero cap (the bar the full loadout must pass). Rul
 alone holds, Hard and Psycho none. Air-only guns cannot hold a ground wave and are listed for completeness.
 
 Level_C1_01 Easy (hero cap 1.04)
-  all owned          surplus  1.87x worst  0.71 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  1.84x worst  0.71 waves over cap  0/12 HOLDS
-  Cannon only        surplus  1.65x worst  0.99 waves over cap  0/12 HOLDS
+  all owned          surplus  1.83x worst  0.73 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  1.53x worst  0.83 waves over cap  0/12 HOLDS
+  Cannon only        surplus  1.66x worst  1.00 waves over cap  0/12 HOLDS
 Level_C1_01 Medium (hero cap 1.20)
-  all owned          surplus  1.42x worst  0.96 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  1.08x worst  1.33 waves over cap  1/12 falls
-  Cannon only        surplus  1.40x worst  1.39 waves over cap  1/12 falls
+  all owned          surplus  1.36x worst  1.07 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.93x worst  1.38 waves over cap  1/12 falls
+  Cannon only        surplus  1.32x worst  1.43 waves over cap  1/12 falls
 Level_C1_01 Hard (hero cap 1.30)
-  all owned          surplus  1.11x worst  1.14 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  0.88x worst  1.56 waves over cap  2/12 falls
-  Cannon only        surplus  1.06x worst  1.43 waves over cap  1/12 falls
+  all owned          surplus  1.09x worst  1.25 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.60x worst  2.51 waves over cap  7/12 falls
+  Cannon only        surplus  1.03x worst  1.67 waves over cap  1/12 falls
 Level_C1_01 Psycho (hero cap 1.40)
-  all owned          surplus  1.00x worst  1.35 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  0.71x worst  1.87 waves over cap  3/12 falls
-  Cannon only        surplus  0.87x worst  1.75 waves over cap  3/12 falls
-  Laser only         surplus  0.66x worst  1.89 waves over cap  5/12 falls
-  Rocket only        surplus  0.08x worst 20.77 waves over cap 12/12 falls
+  all owned          surplus  0.89x worst  1.35 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.49x worst  2.60 waves over cap  7/12 falls
+  Cannon only        surplus  0.80x worst  2.00 waves over cap  3/12 falls
+  Laser only         surplus  0.43x worst  3.19 waves over cap  9/12 falls
+  Rocket only        surplus  0.04x worst 35.23 waves over cap 12/12 falls
 
 Level_C1_02 Easy (hero cap 1.04)
-  all owned          surplus  1.71x worst  0.79 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  1.39x worst  0.91 waves over cap  0/12 HOLDS
-  Cannon only        surplus  1.51x worst  0.93 waves over cap  0/12 HOLDS
-  Laser only         surplus  1.42x worst  0.95 waves over cap  0/12 HOLDS
+  all owned          surplus  1.73x worst  0.96 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  1.38x worst  0.95 waves over cap  0/12 HOLDS
+  Cannon only        surplus  1.70x worst  1.19 waves over cap  1/12 falls
+  Laser only         surplus  1.36x worst  0.96 waves over cap  0/12 HOLDS
 Level_C1_02 Medium (hero cap 1.20)
-  all owned          surplus  1.35x worst  0.93 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  1.08x worst  1.15 waves over cap  0/12 HOLDS
-  Cannon only        surplus  1.31x worst  1.07 waves over cap  0/12 HOLDS
-  Laser only         surplus  1.08x worst  1.18 waves over cap  0/12 HOLDS
+  all owned          surplus  1.23x worst  1.06 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.80x worst  1.70 waves over cap  5/12 falls
+  Cannon only        surplus  1.18x worst  1.11 waves over cap  0/12 HOLDS
+  Laser only         surplus  0.82x worst  1.50 waves over cap  4/12 falls
 Level_C1_02 Hard (hero cap 1.30)
-  all owned          surplus  1.08x worst  1.25 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  0.87x worst  1.45 waves over cap  1/12 falls
-  Cannon only        surplus  1.05x worst  1.31 waves over cap  1/12 falls
-  Laser only         surplus  0.78x worst  1.56 waves over cap  3/12 falls
+  all owned          surplus  1.05x worst  1.25 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.63x worst  2.04 waves over cap  6/12 falls
+  Cannon only        surplus  1.04x worst  1.26 waves over cap  0/12 HOLDS
+  Laser only         surplus  0.52x worst  2.48 waves over cap  9/12 falls
 Level_C1_02 Psycho (hero cap 1.40)
-  all owned          surplus  0.88x worst  1.35 waves over cap  0/12 HOLDS
-  PulseRifle only    surplus  0.54x worst  2.04 waves over cap  7/12 falls
-  Cannon only        surplus  0.78x worst  1.83 waves over cap  1/12 falls
-  Laser only         surplus  0.54x worst  2.19 waves over cap  7/12 falls
-  Rocket only        surplus  0.05x worst 26.92 waves over cap 12/12 falls
+  all owned          surplus  0.92x worst  1.33 waves over cap  0/12 HOLDS
+  PulseRifle only    surplus  0.48x worst  2.59 waves over cap  8/12 falls
+  Cannon only        surplus  0.83x worst  1.96 waves over cap  4/12 falls
+  Laser only         surplus  0.46x worst  2.74 waves over cap  8/12 falls
+  Rocket only        surplus  0.05x worst 39.14 waves over cap 12/12 falls
 
 Level_C1_03 Easy (hero cap 1.04)
-  all owned          surplus  1.68x worst  1.00 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  1.49x worst  0.89 waves over cap  0/16 HOLDS
-  Cannon only        surplus   0.00x worst   inf waves over cap  3/16 falls
-  Laser only         surplus   0.00x worst   inf waves over cap  3/16 falls
-  Rocket only        surplus  0.29x worst  9.35 waves over cap 13/16 falls
+  all owned          surplus  1.67x worst  0.75 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  1.28x worst  1.38 waves over cap  2/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  2/16 falls
+  Laser only         surplus   0.00x worst   inf waves over cap  2/16 falls
+  Rocket only        surplus  0.29x worst  6.54 waves over cap 13/16 falls
 Level_C1_03 Medium (hero cap 1.20)
-  all owned          surplus  1.27x worst  1.12 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  1.05x worst  1.18 waves over cap  0/16 HOLDS
+  all owned          surplus  1.35x worst  1.01 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  1.05x worst  1.57 waves over cap  3/16 falls
   Cannon only        surplus   0.00x worst   inf waves over cap  4/16 falls
   Laser only         surplus   0.00x worst   inf waves over cap  5/16 falls
-  Rocket only        surplus  0.15x worst 16.62 waves over cap 15/16 falls
+  Rocket only        surplus  0.23x worst  9.40 waves over cap 14/16 falls
 Level_C1_03 Hard (hero cap 1.30)
-  all owned          surplus  1.07x worst  1.19 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  0.94x worst  1.68 waves over cap  1/16 falls
+  all owned          surplus  1.06x worst  1.23 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  0.63x worst  2.57 waves over cap  5/16 falls
   Cannon only        surplus   0.00x worst   inf waves over cap  6/16 falls
   Laser only         surplus   0.00x worst   inf waves over cap  6/16 falls
-  Rocket only        surplus  0.12x worst 23.12 waves over cap 15/16 falls
+  Rocket only        surplus  0.12x worst 12.48 waves over cap 15/16 falls
 Level_C1_03 Psycho (hero cap 1.40)
-  all owned          surplus  0.90x worst  1.35 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  0.72x worst  1.99 waves over cap  5/16 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap  9/16 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 10/16 falls
-  Rocket only        surplus  0.07x worst 41.69 waves over cap 16/16 falls
+  all owned          surplus  0.92x worst  1.35 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  0.54x worst  2.89 waves over cap  5/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  7/16 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 11/16 falls
+  Rocket only        surplus  0.09x worst 20.95 waves over cap 16/16 falls
 
 Level_C1_04 Easy (hero cap 1.04)
-  all owned          surplus  1.61x worst  0.90 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  1.50x worst  1.12 waves over cap  1/16 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap  7/16 falls
+  all owned          surplus  1.64x worst  0.95 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  1.55x worst  1.17 waves over cap  1/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  6/16 falls
   Laser only         surplus   0.00x worst   inf waves over cap  7/16 falls
-  Rocket only        surplus  0.26x worst 10.30 waves over cap 13/16 falls
+  Rocket only        surplus  0.32x worst  9.65 waves over cap 12/16 falls
 Level_C1_04 Medium (hero cap 1.20)
   all owned          surplus  1.25x worst  1.15 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  1.15x worst  1.22 waves over cap  1/16 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap  8/16 falls
-  Laser only         surplus   0.00x worst   inf waves over cap  9/16 falls
-  Rocket only        surplus  0.16x worst 14.22 waves over cap 14/16 falls
+  PulseRifle only    surplus  1.09x worst  1.79 waves over cap  2/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  7/16 falls
+  Laser only         surplus   0.00x worst   inf waves over cap  7/16 falls
+  Rocket only        surplus  0.21x worst  9.32 waves over cap 14/16 falls
 Level_C1_04 Hard (hero cap 1.30)
-  all owned          surplus  1.04x worst  1.25 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  1.02x worst  1.48 waves over cap  1/16 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 13/16 falls
+  all owned          surplus  1.02x worst  1.25 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  0.61x worst  2.79 waves over cap  6/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap 11/16 falls
   Laser only         surplus   0.00x worst   inf waves over cap 11/16 falls
-  Rocket only        surplus  0.13x worst 24.10 waves over cap 16/16 falls
+  Rocket only        surplus  0.14x worst 19.29 waves over cap 16/16 falls
 Level_C1_04 Psycho (hero cap 1.40)
-  all owned          surplus  0.85x worst  1.35 waves over cap  0/16 HOLDS
-  PulseRifle only    surplus  0.88x worst  1.70 waves over cap  2/16 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 14/16 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 14/16 falls
-  Rocket only        surplus  0.09x worst 32.36 waves over cap 16/16 falls
+  all owned          surplus  0.83x worst  1.35 waves over cap  0/16 HOLDS
+  PulseRifle only    surplus  0.45x worst  3.03 waves over cap  7/16 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap 13/16 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 12/16 falls
+  Rocket only        surplus  0.11x worst 23.42 waves over cap 16/16 falls
 
 Level_C1_05 Easy (hero cap 1.04)
-  all owned          surplus  1.50x worst  0.90 waves over cap  0/17 HOLDS
-  PulseRifle only    surplus  1.22x worst  1.03 waves over cap  0/17 HOLDS
+  all owned          surplus  1.56x worst  0.94 waves over cap  0/17 HOLDS
+  PulseRifle only    surplus  1.36x worst  1.62 waves over cap  2/17 falls
   Cannon only        surplus   0.00x worst   inf waves over cap  3/17 falls
-  Laser only         surplus   0.00x worst   inf waves over cap  5/17 falls
-  Rocket only        surplus  0.17x worst 13.92 waves over cap 15/17 falls
+  Laser only         surplus   0.00x worst   inf waves over cap  3/17 falls
+  Rocket only        surplus  0.27x worst  8.21 waves over cap 14/17 falls
 Level_C1_05 Medium (hero cap 1.20)
-  all owned          surplus  1.21x worst  1.15 waves over cap  0/17 HOLDS
-  PulseRifle only    surplus  0.99x worst  1.25 waves over cap  1/17 falls
+  all owned          surplus  1.25x worst  1.15 waves over cap  0/17 HOLDS
+  PulseRifle only    surplus  0.98x worst  1.96 waves over cap  3/17 falls
   Cannon only        surplus   0.00x worst   inf waves over cap  5/17 falls
-  Laser only         surplus   0.00x worst   inf waves over cap  8/17 falls
-  Rocket only        surplus  0.12x worst 20.12 waves over cap 16/17 falls
+  Laser only         surplus   0.00x worst   inf waves over cap  5/17 falls
+  Rocket only        surplus  0.18x worst 13.99 waves over cap 15/17 falls
 Level_C1_05 Hard (hero cap 1.30)
-  all owned          surplus  1.05x worst  1.25 waves over cap  0/17 HOLDS
-  PulseRifle only    surplus  1.00x worst  1.34 waves over cap  2/17 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 11/17 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 14/17 falls
-  Rocket only        surplus  0.07x worst 40.43 waves over cap 16/17 falls
+  all owned          surplus  1.10x worst  1.25 waves over cap  0/17 HOLDS
+  PulseRifle only    surplus  0.89x worst  2.03 waves over cap  5/17 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  9/17 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 10/17 falls
+  Rocket only        surplus  0.11x worst 19.97 waves over cap 16/17 falls
 Level_C1_05 Psycho (hero cap 1.40)
-  all owned          surplus  0.87x worst  1.35 waves over cap  0/17 HOLDS
-  PulseRifle only    surplus  0.76x worst  2.21 waves over cap  5/17 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 11/17 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 13/17 falls
-  Rocket only        surplus  0.04x worst 71.33 waves over cap 16/17 falls
+  all owned          surplus  0.84x worst  1.35 waves over cap  0/17 HOLDS
+  PulseRifle only    surplus  0.56x worst  2.63 waves over cap  6/17 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap  9/17 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 11/17 falls
+  Rocket only        surplus  0.06x worst 38.01 waves over cap 16/17 falls
 
 Level_C1_06 Easy (hero cap 1.04)
-  all owned          surplus  1.54x worst  0.84 waves over cap  0/18 HOLDS
-  PulseRifle only    surplus  1.40x worst  0.96 waves over cap  0/18 HOLDS
+  all owned          surplus  1.62x worst  0.95 waves over cap  0/18 HOLDS
+  PulseRifle only    surplus  1.48x worst  1.19 waves over cap  1/18 falls
   Cannon only        surplus   0.00x worst   inf waves over cap  6/18 falls
-  Laser only         surplus   0.00x worst   inf waves over cap  8/18 falls
-  Rocket only        surplus  0.20x worst 11.83 waves over cap 17/18 falls
+  Laser only         surplus   0.00x worst   inf waves over cap  6/18 falls
+  Rocket only        surplus  0.25x worst  9.91 waves over cap 16/18 falls
 Level_C1_06 Medium (hero cap 1.20)
-  all owned          surplus  1.18x worst  1.15 waves over cap  0/18 HOLDS
-  PulseRifle only    surplus  1.03x worst  1.45 waves over cap  3/18 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 11/18 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 12/18 falls
-  Rocket only        surplus  0.14x worst 18.66 waves over cap 18/18 falls
+  all owned          surplus  1.23x worst  1.18 waves over cap  0/18 HOLDS
+  PulseRifle only    surplus  1.01x worst  1.62 waves over cap  4/18 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap 10/18 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 10/18 falls
+  Rocket only        surplus  0.16x worst 15.67 waves over cap 17/18 falls
 Level_C1_06 Hard (hero cap 1.30)
-  all owned          surplus  1.01x worst  1.25 waves over cap  0/18 HOLDS
-  PulseRifle only    surplus  0.85x worst  1.85 waves over cap  6/18 falls
-  Cannon only        surplus   0.00x worst   inf waves over cap 12/18 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 14/18 falls
-  Rocket only        surplus  0.07x worst 37.09 waves over cap 18/18 falls
+  all owned          surplus  0.97x worst  1.25 waves over cap  0/18 HOLDS
+  PulseRifle only    surplus  0.79x worst  2.50 waves over cap  3/18 falls
+  Cannon only        surplus   0.00x worst   inf waves over cap 11/18 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 13/18 falls
+  Rocket only        surplus  0.09x worst 30.02 waves over cap 18/18 falls
 Level_C1_06 Psycho (hero cap 1.40)
-  all owned          surplus  0.87x worst  1.35 waves over cap  0/18 HOLDS
-  PulseRifle only    surplus  0.74x worst  2.04 waves over cap  8/18 falls
+  all owned          surplus  0.92x worst  1.35 waves over cap  0/18 HOLDS
+  PulseRifle only    surplus  0.66x worst  2.86 waves over cap 11/18 falls
   Cannon only        surplus   0.00x worst   inf waves over cap 13/18 falls
-  Laser only         surplus   0.00x worst   inf waves over cap 16/18 falls
-  Rocket only        surplus  0.06x worst 47.74 waves over cap 18/18 falls
+  Laser only         surplus   0.00x worst   inf waves over cap 15/18 falls
+  Rocket only        surplus  0.07x worst 37.99 waves over cap 18/18 falls
 
 Rule breaches (known, awaiting Remco's rebalance by role):
-  Level_C1_02 Medium: 3 guns hold alone (PulseRifle, Cannon, Laser), allowed 1
+  Level_C1_02 Hard: 1 guns hold alone (Cannon), allowed 0

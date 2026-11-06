@@ -104,7 +104,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -119,6 +119,8 @@ namespace Game.Editor
             so.FindProperty("_targets").intValue = (int)targets;
             so.FindProperty("_projectileSpeed").floatValue = projectileSpeed;
             so.FindProperty("_splashRadius").floatValue = splash;
+            so.FindProperty("_groundDamageFactor").floatValue = 1f;
+            so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_maxHealth").floatValue = health;
             so.FindProperty("_damagedPowerFloor").floatValue = DamagedPowerFloor;

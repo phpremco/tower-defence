@@ -638,3 +638,80 @@ goes, and placement must ask for thought. Round 20 built the tools to measure th
   bought up to wave 7-12 of 16-18, and loses 60-110 in the last two waves. The creative bot (which saves for it once three
   guns stand and the sky is covered) never had 150 spare before the late waves on Medium; the repair drone it did buy pays
   back after 50 busy seconds; the attack drone (12 DPS for 180) is a quarter of a Pulse Rifle per coin.
+
+## Roles by enemy (2026-11-06, round 21a)
+
+Remco's role model (memory `tower-defense-balance-principle`): many enemies want rate of fire, enemies close together want
+the Cannon's splash, air wants air guns, armour and high health want Railgun and Cannon; an upgrade must hit harder than a
+second tower of the same type for the same coins; placement must matter; a drone is an investment. Round 21a turns the
+round-20 measurements into mechanics and data.
+
+**Mechanics (code, data-driven):**
+- **Plating** (`EnemyDefinition._plating`, `_platingFloor` 0.2): every hit loses the plating's points, at least the floor
+  share gets through (`Health.ThroughPlating`; the model's copy `Game.Balance.Plating`, checked equal in `PlatingTests`). It
+  never wears off, so it taxes light hits and barely touches heavy ones. Damage dealt a little every frame (a rolling lava
+  ball, a ground drone) passes it (`ISourcedTarget.TakeDamageFrom(..., continuous)`). The bosses keep their armour pool
+  (bar, regrowth); species armour is plating now: Stinger 200 hp/6, Shardback 220/7, Bulwark 380/9 (none in C1).
+  **Cragback**: a light hide of 5 ("Use the cannon. Heavy shells for heavy hides", Dlg_L01_Stone): Gun Turret 5 -> 1,
+  Laser 8 -> 3, Cannon 25 -> 20 (upgraded 15 -> 10, 18 -> 13, 85 -> 80). The heavy plates of level 11 stay a story beat.
+  Threat prices plating against a 15-point hit (`BalanceRules.PlatingReferenceHit`), so a plated creature pays more.
+- **Layer share** (`TowerDefinition._groundDamageFactor` / `_airDamageFactor`): the Gun Turret does half damage to air-only
+  creatures (a Wisp walks the road and takes full damage). The ledger and the lenses use the same share.
+- **Aimed shots retarget** (`Projectile`): a single-target shot whose creature died in flight turns to the nearest live
+  creature of the same layer within 1.5 cells instead of landing on nothing. Round 20 measured the Gun Turret at 30% of its
+  data DPS in play, mostly shots on ants already killed by the shot before; a shell's splash never lost them.
+- **Ledger**: per-wave health-weighted plating mixes (`WaveLoad.StreamPlates/BossPlates/AirPlates`, `PlateMix`) scale each
+  gun's capacity by the share of its hit that lands; the layer share likewise. FinaleModel, the role lens and the probe bot's
+  own judgement use the same ledger.
+- **Field ease** (`LevelDefinition._balanceFieldEase`, per difficulty, balance model only): how much more the towers do on a
+  map than the ledger reckons, measured with the probes. The two short opening levels were held by every bot with the base
+  untouched and 150-250 coins to spare on Medium and Hard (the ledger counts a shell on at most 2.4 ants; packs of six die to
+  one). Values (Easy/Medium/Hard/Psycho, a short array repeats its last): C1_01 1/1/1.6 (Easy and Medium stay forgiving,
+  curator rule), C1_02 1/1.8/1.2, C1_03 1/0.85/1, C1_05 0.85/0.85/1, others 1. Below 1 where the creative bot fell short
+  of the competent player the ledger assumes. FinaleModel ignores it (its field is a stand-in).
+- **Loose troops** (`TroopSpec.Loose`): creatures that walk in one at a time, a whole interval apart (`LooseRunners` 1 s =
+  1.6 cells, beyond a shell's reach), alternating over the lanes.
+
+**Upgrades** (BalanceSheet prices, Flak damage): every step's DPS per coin spent to reach it is at least 3% above the level
+below, asserted in `TowerRolesTests.EveryUpgradeStep_BeatsMoreTowersOfTheSameType` (exception: the Cryo, a slow mast whose
+stars buy chill, Remco 2026-11-01). Prices build/L1/L2: Gun Turret 50/50/90 (was 60), Cannon 100/110/180 (120), Flak
+120/100/150 (140/200; damage 14/25/40, was 22/34), Laser 130/75/145 (90/170), Tesla 140/100/155 (115/190), Railgun
+220/125/200 (150/255). More towers still win on targets per volley, rate and spread risk (tower_roles.txt).
+
+**Waves** (LevelSpecs.Crystal): C1_01 ant packs (Cannon) + loose runners from wave 3 (rate) + Cragbacks from the rifts (4)
+and the road (6), rhythm with real heavy waves; C1_02 mostly loose runners, packs from 4, Cragbacks from 5; C1_03 to C1_06
+add loose runners, Cragbacks earlier (C1_04 wave 6, C1_06 wave 7), more and bigger raids (C1_03 Medium 3 raids, Hard 4,
+raid scale 1/1.3/1.5; C1_04 1/1.2/1.4; C1_05 unchanged sprinkle). Flak is owned from C1_03, where the first
+flyers come; the Cannon (plating's answer) from the start; Railgun (C1_13) is not needed in C1.
+
+**Bots** (BalanceProbeTests, every strategy): a repair is bought only when the structure would fall in the coming wave (its
+health below the worse of this and the last wave's loss x1.25) or when the repair is cheaper per point than the cheapest
+gun that would have to stop the same leak for the rest of the level; coins spent on repairs are a column in
+monoculture.txt and in the probe trace. The creative bot saves for the harvester in the first third of a level while its
+guns hold the waves at hand outright, and lays a slow field where its guns overlap most when the slow pays (below), not
+only when pressed.
+
+**Slow as damage** (tower_roles.txt section 4): damage per creature passing = DPS x seconds in reach; a slowed stretch L at
+speed share s adds L/v x (1/s - 1). Cryo L0 (90 coins, 0.5) doubles a neighbour's damage per creature on its stretch and
+pays from 26 DPS of neighbours (L1 41, L2 55): two Gun Turrets or one Cannon L1 beside it. The Chrono Field (45 coins, 0.45,
+20 s) multiplies by 1.56 and pays from 23 DPS against a gun counted for one wave, but 368 DPS against a gun kept for a
+16-wave level: it is a late-wave and boss tool, not a default. The creative bot uses that rule (field pays when the guns'
+DPS at the queue x the extra seconds beats the same coins in the cheapest gun for the waves left).
+
+**Results (full set, seed 1; Tools/PlayTest/monoculture.txt; before = round 20, after = round 21a):**
+
+| Level | Medium mono winners | Medium creative / naive | Hard mono winners | Hard creative / naive |
+| --- | --- | --- | --- | --- |
+| C1_01 Landing Site | Pulse 3*, Cannon 3* -> Pulse 3*, Cannon 3* (forgiving, by rule) | won 3* / won 3* -> won 3* / won 3* | Cannon 3* -> none | won 3* / won -> won 3* / lost |
+| C1_02 Glass Meadows | Pulse, Cannon, Laser 3* -> none | won 3* / won -> lost w12 (boss) / lost | Cannon 3* -> Cannon 3* | won 3* / won -> lost w12 / lost |
+| C1_03 Shard Ridge | none -> none | won 3* / lost -> won 3* / lost | none -> none | won 3* / won -> won 2* / lost |
+| C1_04 Fault Line | none -> none | won 3* / lost -> won 3* / lost | none -> none | won 2* / lost -> lost w10 / lost |
+| C1_05 Quartz Flats | none -> none | won 1* / lost -> won 1* / lost | none -> none | won 2* / lost -> lost w15 / lost |
+| C1_06 Crysium Vein | none -> none | won 3* / lost -> won 3* / lost | none -> none | lost w11 / lost -> lost w10 / lost |
+
+Mono rows now lose everywhere from C1_02 Medium on except Cannon on C1_02 Hard; C1_01 Hard rejects every mono row and the
+naive bot; the naive bot loses every Medium+ run from C1_02 on (Shard Ridge Hard fixed). Open: the creative bot misses its bar
+on C1_02 Medium/Hard (the Brood Mother at wave 12), C1_04/C1_05/C1_06 Hard and C1_05 Medium (1 star). In play per tower-second:
+Cannon 26.4 (138% of data), Laser 24.3 (45%), Gun Turret 14.5 (46%, was 30% before the retarget), Flak 5.1. Repairs bought
+with coins: 4.5% of everything earned over the set. Psycho continent-boss health share 1.7 -> 1.15 (ContinentFinaleTests
+derives it; the end-game player's cheaper upgrades moved it).
