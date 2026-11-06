@@ -39,6 +39,8 @@ namespace Game.Editor
             // The menu island: Top 2048, Cliff 4096 x 512 (Low half); the display backdrop 2048 x 1024.
             { MenuIslandAsset, (4096, 2048) },
             { UiDisplayAsset, (2048, 1024) },
+            // Round 37: the expanded colony base is about three times the old one on the ground.
+            { BlenderColonyCatalog.BaseAsset, (2048, 1024) },
         };
 
         // Exports whose shape keys (Voss's Smile, Frown, Blink, JawOpen) are imported as blend shapes.

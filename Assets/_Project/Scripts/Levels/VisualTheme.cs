@@ -80,7 +80,7 @@ namespace Game.Levels
         [Tooltip("Free ground kept round every structure (base, gates, entrances, mines, nests): no rock, plant, cliff or silhouette may reach into it.")]
         [SerializeField] [Min(0f)] private float _decorClearance = 0.5f;
         [Tooltip("How far the procedural outpost reaches round its middle; an imported base measures its own model.")]
-        [SerializeField] [Min(0.5f)] private float _baseFootprint = 1.9f;
+        [SerializeField] [Min(0.5f)] private float _baseFootprint = 3.7f;
 
         public float DecorClearance => _decorClearance;
         public float BaseFootprint => _baseFootprint;

@@ -16,16 +16,54 @@ MonoBehaviour:
   _damage: {fileID: 11400000, guid: bf12f83ef9f4c0142ab08965fa6d93d1, type: 2}
   _wreck: {fileID: 11400000, guid: d0636cf6c1d1f6d4696dc7110f9076ad, type: 2}
   _turningModule: Base_Dish
-  _turnDegreesPerSecond: 40
+  _turnDegreesPerSecond: 24
   _pulsingModule: Base_Crystal
   _timelapseOrder:
   - Base_Deck
   - Base_Command
+  - Base_Hardpoints
+  - Base_Habitat
+  - Base_Radar
   - Base_Dish
-  - Base_Pad
+  - Base_Beacon
+  - Base_Bays
+  - Base_BayDoor_1
+  - Base_BayDoor_2
+  - Base_BayDoor_3
+  - Base_BayDoor_4
+  - Base_Storage
   - Base_Core
   - Base_Crystal
-  - Base_Habitat
-  - Base_Hardpoints
+  - Base_Pad
+  - Base_PadGear
+  - Base_Shuttle
+  _beaconModule: Base_Beacon
+  _beaconPeriod: 1.6
+  _beaconLitShare: 0.22
+  _beaconLitGlow: 3
+  _beaconDimGlow: 0.15
+  _shuttleModule: Base_Shuttle
+  _exhaustSocket: Socket_ShuttleExhaust
+  _shuttleRestSeconds: 16
+  _shuttleAwaySeconds: 12
+  _shuttleFlightSeconds: 5
+  _shuttleClimb: 7
+  _shuttleDrift: 2.5
+  _engineColor: {r: 0.55, g: 0.8, b: 1, a: 1}
+  _bayDoorPrefix: Base_BayDoor
+  _dockSocketPrefix: Socket_DroneBay
+  _doorClosedDegrees: 100
+  _doorSeconds: 0.7
+  _dockSeconds: 1.2
+  _footprintMin: {x: -2.6780002, y: -2.4880002}
+  _footprintMax: {x: 2.6780002, y: 1.8123062}
+  _turretMounts:
+  - {x: 2.08, y: 0.34, z: 0.35999984}
+  - {x: -2.08, y: 0.34, z: 0.3600002}
+  _dockPoints:
+  - {x: 2, y: 0.31, z: -0.3200002}
+  - {x: 1.3199999, y: 0.31, z: -0.32000014}
+  - {x: 1.9999999, y: 0.31, z: -1.0000001}
+  - {x: 1.3199998, y: 0.31, z: -1.0000001}
   _damagedBelow: 0.5
   _wreckDelay: 0.25

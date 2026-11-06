@@ -1,7 +1,7 @@
 {
   "asset": "Base",
-  "texture_size": 1024,
-  "low_size": 512,
+  "texture_size": 2048,
+  "low_size": 1024,
   "maps": [
     "Albedo",
     "Normal",
@@ -10,18 +10,18 @@
   ],
   "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
   "uv": {
-    "coverage": 0.519,
-    "world_per_uv": 16.2188
+    "coverage": 0.289,
+    "world_per_uv": 31.6487
   },
   "detail": {
     "metal": {
       "map": "Detail_Metal_Normal.png",
-      "tiling": 324.4,
+      "tiling": 633.0,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 270.3,
+      "tiling": 527.5,
       "mask": "A"
     }
   },
@@ -33,162 +33,429 @@
         0.0,
         0.0
       ],
-      "tris": 1828,
-      "tris_lod1": 520
+      "tris": 2408,
+      "tris_lod1": 746,
+      "upright": false
     },
     "Command": {
       "object": "Base_Command",
       "pivot": [
         0.0,
-        0.38,
-        0.23
-      ],
-      "tris": 1132,
-      "tris_lod1": 320
-    },
-    "Dish": {
-      "object": "Base_Dish",
-      "pivot": [
-        -0.3,
-        0.62,
-        2.02
-      ],
-      "tris": 234,
-      "tris_lod1": 174
-    },
-    "Pad": {
-      "object": "Base_Pad",
-      "pivot": [
-        0.74,
         -0.5,
         0.23
       ],
-      "tris": 520,
-      "tris_lod1": 324
-    },
-    "Core": {
-      "object": "Base_Core",
-      "pivot": [
-        0.82,
-        0.42,
-        0.23
-      ],
-      "tris": 1912,
-      "tris_lod1": 1264
-    },
-    "Crystal": {
-      "object": "Base_Crystal",
-      "pivot": [
-        0.82,
-        0.42,
-        0.59
-      ],
-      "tris": 68,
-      "tris_lod1": 48
-    },
-    "Habitat": {
-      "object": "Base_Habitat",
-      "pivot": [
-        -0.84,
-        -0.3,
-        0.23
-      ],
-      "tris": 1100,
-      "tris_lod1": 492
+      "tris": 2118,
+      "tris_lod1": 888,
+      "upright": false
     },
     "Hardpoints": {
       "object": "Base_Hardpoints",
       "pivot": [
         0.0,
-        0.0,
+        -0.36,
         0.23
       ],
-      "tris": 456,
-      "tris_lod1": 48
+      "tris": 928,
+      "tris_lod1": 208,
+      "upright": false
+    },
+    "Habitat": {
+      "object": "Base_Habitat",
+      "pivot": [
+        -0.47,
+        1.62,
+        0.23
+      ],
+      "tris": 1632,
+      "tris_lod1": 844,
+      "upright": false
+    },
+    "Radar": {
+      "object": "Base_Radar",
+      "pivot": [
+        -1.78,
+        1.86,
+        0.23
+      ],
+      "tris": 1612,
+      "tris_lod1": 676,
+      "upright": false
+    },
+    "Dish": {
+      "object": "Base_Dish",
+      "pivot": [
+        -1.78,
+        1.86,
+        2.09
+      ],
+      "tris": 1578,
+      "tris_lod1": 538,
+      "upright": true
+    },
+    "Beacon": {
+      "object": "Base_Beacon",
+      "pivot": [
+        -1.78,
+        1.86,
+        2.83
+      ],
+      "tris": 206,
+      "tris_lod1": 166,
+      "upright": true
+    },
+    "Bays": {
+      "object": "Base_Bays",
+      "pivot": [
+        -1.66,
+        0.66,
+        0.23
+      ],
+      "tris": 2628,
+      "tris_lod1": 1068,
+      "upright": false
+    },
+    "BayDoor_1": {
+      "object": "Base_BayDoor_1",
+      "pivot": [
+        -2.34,
+        0.32,
+        0.548
+      ],
+      "tris": 232,
+      "tris_lod1": 72,
+      "upright": true
+    },
+    "BayDoor_2": {
+      "object": "Base_BayDoor_2",
+      "pivot": [
+        -0.98,
+        0.32,
+        0.548
+      ],
+      "tris": 232,
+      "tris_lod1": 72,
+      "upright": true
+    },
+    "BayDoor_3": {
+      "object": "Base_BayDoor_3",
+      "pivot": [
+        -2.34,
+        1.0,
+        0.548
+      ],
+      "tris": 232,
+      "tris_lod1": 72,
+      "upright": true
+    },
+    "BayDoor_4": {
+      "object": "Base_BayDoor_4",
+      "pivot": [
+        -0.98,
+        1.0,
+        0.548
+      ],
+      "tris": 232,
+      "tris_lod1": 72,
+      "upright": true
+    },
+    "Storage": {
+      "object": "Base_Storage",
+      "pivot": [
+        2.18,
+        0.23,
+        0.23
+      ],
+      "tris": 3084,
+      "tris_lod1": 1232,
+      "upright": false
+    },
+    "Core": {
+      "object": "Base_Core",
+      "pivot": [
+        1.22,
+        0.34,
+        0.23
+      ],
+      "tris": 2130,
+      "tris_lod1": 1386,
+      "upright": false
+    },
+    "Crystal": {
+      "object": "Base_Crystal",
+      "pivot": [
+        1.22,
+        0.34,
+        0.59
+      ],
+      "tris": 108,
+      "tris_lod1": 108,
+      "upright": true
+    },
+    "Pad": {
+      "object": "Base_Pad",
+      "pivot": [
+        1.58,
+        1.56,
+        0.23
+      ],
+      "tris": 812,
+      "tris_lod1": 308,
+      "upright": false
+    },
+    "PadGear": {
+      "object": "Base_PadGear",
+      "pivot": [
+        1.58,
+        1.56,
+        0.23
+      ],
+      "tris": 320,
+      "tris_lod1": 140,
+      "upright": false
+    },
+    "Shuttle": {
+      "object": "Base_Shuttle",
+      "pivot": [
+        1.58,
+        1.56,
+        0.305
+      ],
+      "tris": 1860,
+      "tris_lod1": 1276,
+      "upright": true
     }
   },
-  "tris_total": 7250,
-  "tris_total_lod1": 3190,
+  "tris_total": 22352,
+  "tris_total_lod1": 9872,
   "damage_overlay": {
     "fbx": "Base_Damage.fbx",
-    "tris": 1188
+    "tris": 1939
   },
   "wreck": {
     "fbx": "Base_Wreck.fbx",
-    "tris": 3720
+    "tris": 7064
   },
   "sockets": {
     "HeroPost": [
       0.0,
-      -1.0,
+      -1.95,
       0.0
     ],
     "TurretLink_L": [
-      -1.36,
-      0.05,
+      -2.08,
+      -0.36,
       0.34
     ],
     "TurretLink_R": [
-      1.36,
-      0.05,
+      2.08,
+      -0.36,
       0.34
     ],
     "Smoke_Command": [
       0.1,
-      0.45,
-      1.1
+      -0.55,
+      1.45
     ],
     "Smoke_Core": [
-      0.82,
-      0.42,
-      1.5
+      1.22,
+      0.34,
+      1.55
     ],
     "Smoke_Deck": [
-      -0.4,
       -0.6,
+      -0.95,
       0.3
+    ],
+    "Smoke_Bays": [
+      -1.66,
+      0.66,
+      0.6
+    ],
+    "Smoke_Pad": [
+      1.28,
+      1.36,
+      0.5
     ],
     "Spark_1": [
       0.0,
-      0.04,
+      -1.2,
       0.55
     ],
     "Spark_2": [
-      0.62,
-      0.2,
-      0.4
-    ],
-    "Spark_3": [
-      -0.84,
-      -0.5,
+      1.9,
+      0.05,
       0.5
     ],
+    "Spark_3": [
+      -1.66,
+      0.26,
+      0.55
+    ],
     "Spark_4": [
-      0.4,
-      -0.9,
-      0.24
+      0.45,
+      -1.3,
+      0.26
+    ],
+    "Spark_5": [
+      -1.6,
+      1.6,
+      0.9
+    ],
+    "Spark_6": [
+      1.2,
+      1.4,
+      0.35
     ],
     "Light_Core": [
-      0.82,
-      0.42,
+      1.22,
+      0.34,
       1.0
     ],
     "Light_Command": [
       0.0,
-      0.2,
-      1.2
+      -0.45,
+      1.35
     ]
+  },
+  "sockets_new": {
+    "Socket_DroneBay_1": [
+      -2.0,
+      0.32,
+      0.31
+    ],
+    "Socket_DroneBay_2": [
+      -1.32,
+      0.32,
+      0.31
+    ],
+    "Socket_DroneBay_3": [
+      -2.0,
+      1.0,
+      0.31
+    ],
+    "Socket_DroneBay_4": [
+      -1.32,
+      1.0,
+      0.31
+    ],
+    "Socket_Landing": [
+      1.58,
+      1.56,
+      0.305
+    ],
+    "Socket_Beacon": [
+      -1.78,
+      1.86,
+      2.88
+    ]
+  },
+  "sockets_shuttle": [
+    "Socket_ShuttleLift_L",
+    "Socket_ShuttleLift_R",
+    "Socket_ShuttleExhaust"
+  ],
+  "footprint": {
+    "reach": 3.655,
+    "reach_wreck": 3.779,
+    "extent_xyz": [
+      [
+        -2.678,
+        2.678
+      ],
+      [
+        -1.811,
+        2.488
+      ],
+      [
+        -0.002,
+        2.935
+      ]
+    ],
+    "note": "reach = widest mesh bounding-box corner round the pivot (StructureClearance.BaseFootprint); extent in Blender axes (-Y = road / Unity +Z)"
+  },
+  "animated": {
+    "Base_Dish": {
+      "pivot": [
+        -1.78,
+        1.86,
+        2.09
+      ],
+      "turn": "Unity local +Y (= world up); node rotation identity",
+      "note": "pivot on the mast axis at the bearing top; turn about Y only"
+    },
+    "Base_Beacon": {
+      "pivot": [
+        -1.78,
+        1.86,
+        2.83
+      ],
+      "anim": "blink its emission (static, on the radar axis above the head)"
+    },
+    "Base_Crystal": {
+      "pivot": [
+        1.22,
+        0.34,
+        0.59
+      ],
+      "turn": "Unity local +Y; pulses"
+    },
+    "Base_Shuttle": {
+      "pivot": [
+        1.58,
+        1.56,
+        0.305
+      ],
+      "anim": "translate along Unity +Y to take off; skids rest on the pivot plane",
+      "yaw_deg_baked": 32.0
+    },
+    "Base_BayDoor_N": {
+      "pivots": {
+        "BayDoor_1": [
+          -2.34,
+          0.32,
+          0.548
+        ],
+        "BayDoor_2": [
+          -0.98,
+          0.32,
+          0.548
+        ],
+        "BayDoor_3": [
+          -2.34,
+          1.0,
+          0.548
+        ],
+        "BayDoor_4": [
+          -0.98,
+          1.0,
+          0.548
+        ]
+      },
+      "rest": "open, 100.0 degrees up on the outer wall",
+      "anim": "close by turning DOOR_OPEN degrees about the hinge (Unity local Z, the road axis), lid falling toward the Base_Bays centre"
+    }
   },
   "pivot": "base centre on the ground (LevelVisualBuilder.BasePosition); -Y (Unity +Z) faces the road",
   "timelapse_order": [
     "Deck",
     "Command",
+    "Hardpoints",
+    "Habitat",
+    "Radar",
     "Dish",
-    "Pad",
+    "Beacon",
+    "Bays",
+    "BayDoor_1",
+    "BayDoor_2",
+    "BayDoor_3",
+    "BayDoor_4",
+    "Storage",
     "Core",
     "Crystal",
-    "Habitat",
-    "Hardpoints"
+    "Pad",
+    "PadGear",
+    "Shuttle"
   ],
-  "scale": "final size: do not apply LevelVisualBuilder.BaseScale"
+  "scale": "final size: do not apply LevelVisualBuilder.BaseScale",
+  "axes": "upright parts: FBX node rotation identity (local +Y up). Other modules and the round-9 sockets keep Blender's root -90 X."
 }

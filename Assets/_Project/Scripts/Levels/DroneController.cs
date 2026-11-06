@@ -17,6 +17,7 @@ namespace Game.Levels
         private LevelContext _context;
         private Transform _parent;
         private Vector3 _home;
+        private Vector3[] _docks;
         private int _launched;
         private Vector3[] _mineNodes;
         private float[] _mineStocks;
@@ -35,6 +36,7 @@ namespace Game.Levels
 
             Vector2Int[] road = context.Level.MainRoad;
             _home = context.Level.Road.CentreOf(road[road.Length - 1]);
+            _docks = DockPoints(context.Level);
 
             Vector2Int[] mines = context.Level.MineCells;
             _mineNodes = new Vector3[mines.Length];
@@ -84,18 +86,42 @@ namespace Game.Levels
             go.transform.SetParent(_parent, false);
             var drone = go.AddComponent<Drone>();
 
-            // Newly launched drones start side by side so they do not sit on top of each other.
-            float offset = ((_launched % 4) - 1.5f) * SpawnSpread;
+            // The first drones each live in a bay of the base and start from it; the rest start side by side at the road end
+            // so they do not sit on top of each other.
+            bool docked = _launched < _docks.Length;
+            Vector3 home = docked ? _docks[_launched] : _home;
+            float offset = docked ? 0f : ((_launched % 4) - 1.5f) * SpawnSpread;
             _launched++;
-            var world = new DroneWorld(_home, _context.Structures, _repairs, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
-            drone.Initialize(definition, _home + new Vector3(offset, 0f, 0f), _context.ModifiersFor(definition), world);
+            var world = new DroneWorld(home, _context.Structures, _repairs, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
+            drone.Initialize(definition, home + new Vector3(offset, 0f, 0f), _context.ModifiersFor(definition), world);
             go.AddComponent<DroneView>().Initialize(drone);
             drone.Downed += OnDowned;
             drone.Delivered += OnCollected;
             _drones.Add(drone);
+            _context.DroneLaunched.Raise(drone);
 
             _context.SetActiveDrones(definition, _context.ActiveDrones(definition) + 1);
             _context.DronesChanged.Raise();
+        }
+
+        // The bays of the imported base on the field, or none (the procedural outpost has no bays).
+        private static Vector3[] DockPoints(LevelDefinition level)
+        {
+            BaseArtDefinition art = level.Theme != null ? level.Theme.BaseArt : null;
+            if (art == null || level.MainRoad.Length == 0)
+            {
+                return new Vector3[0];
+            }
+
+            Vector3 centre = LevelVisualBuilder.BasePosition(level);
+            Quaternion facing = LevelVisualBuilder.BaseFacing(level);
+            var docks = new Vector3[art.DockPoints.Length];
+            for (int i = 0; i < docks.Length; i++)
+            {
+                docks[i] = BaseArtDefinition.ToWorld(art.DockPoints[i], centre, facing);
+            }
+
+            return docks;
         }
 
         // A delivery is when a node may have run dry or half dry, so that is when the field is told about it.

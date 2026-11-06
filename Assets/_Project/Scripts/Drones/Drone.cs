@@ -101,6 +101,15 @@ namespace Game.Drones
         /// <summary>Raised with the money when a harvest drone hands its load in at the base.</summary>
         public event Action<int> Delivered;
 
+        /// <summary>Raised when the drone settles at home with nothing to do (true) and when it sets off again (false).</summary>
+        public event Action<Drone, bool> HomeChanged;
+
+        /// <summary>Where the drone lives: it idles, charges and hands its loads in above this point.</summary>
+        public Vector3 Home => _home;
+
+        /// <summary>True while the drone waits or charges at home.</summary>
+        public bool IsHome { get; private set; }
+
         public void Initialize(DroneDefinition definition, Vector3 start, DroneModifiers modifiers, DroneWorld world)
         {
             _definition = definition;
@@ -112,6 +121,9 @@ namespace Game.Drones
             Health.Died += OnDied;
             transform.position = new Vector3(start.x, Altitude, start.z);
             _lastPosition = transform.position;
+            // A drone launched over its home starts there; its first frame tells whether it sets off at once.
+            Vector3 fromHome = transform.position - _home;
+            IsHome = fromHome.x * fromHome.x + fromHome.z * fromHome.z <= WorkDistance * WorkDistance;
             _world.Structures.Add(this);
         }
 
@@ -145,9 +157,24 @@ namespace Game.Drones
                 UpdateWork();
             }
 
+            UpdateHome();
+
             float step = _speed * Time.deltaTime;
             Pace = step > 0f ? Mathf.Clamp01(Vector3.Distance(transform.position, _lastPosition) / step) : 0f;
             _lastPosition = transform.position;
+        }
+
+        // Home means idle or charging over the home point; the base's bays hear about it only when that changes.
+        private void UpdateHome()
+        {
+            bool waiting = Activity == DroneActivity.Idle || Activity == DroneActivity.Recharging;
+            Vector3 offset = transform.position - _home;
+            bool home = waiting && offset.x * offset.x + offset.z * offset.z <= WorkDistance * WorkDistance;
+            if (home != IsHome)
+            {
+                IsHome = home;
+                HomeChanged?.Invoke(this, home);
+            }
         }
 
         private void UpdateWork()

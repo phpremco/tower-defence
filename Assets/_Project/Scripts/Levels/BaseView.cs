@@ -48,7 +48,7 @@ namespace Game.Levels
             _context.BaseHealth.Died += OnDied;
             if (TryGetComponent(out BaseArtView art))
             {
-                art.Bind(_context.BaseHealth);
+                art.Bind(_context.BaseHealth, _context.DroneLaunched);
             }
         }
 

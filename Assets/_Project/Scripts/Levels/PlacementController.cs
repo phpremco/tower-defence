@@ -534,6 +534,13 @@ namespace Game.Levels
             var side = new Vector2Int(-Mathf.RoundToInt(along.z), Mathf.RoundToInt(along.x));
             int count = Mathf.Min(BaseTurretSides, weaponLevel);
             int startLevel = Mathf.Clamp(weaponLevel - BaseTurretSides, 0, turret.MaxLevelIndex);
+            BaseArtDefinition art = _context.Level.Theme != null ? _context.Level.Theme.BaseArt : null;
+            if (art != null && art.TurretMounts.Length >= count)
+            {
+                MountBaseTurrets(turret, art, count, startLevel);
+                return;
+            }
+
             for (int i = 0; i < count; i++)
             {
                 Vector2Int step = i == 0 ? side : -side;
@@ -555,6 +562,33 @@ namespace Game.Levels
                     _buildGrid.Occupy(cell);
                     break;
                 }
+            }
+        }
+
+        // The imported base has its own gun mounts on its front hardpoints (inside its footprint, where no tower may be
+        // built): the turrets stand there, each keyed to the cell under it so the cursor still selects and upgrades it.
+        private void MountBaseTurrets(TowerDefinition turret, BaseArtDefinition art, int count, int startLevel)
+        {
+            Vector3 centre = LevelVisualBuilder.BasePosition(_context.Level);
+            Quaternion facing = LevelVisualBuilder.BaseFacing(_context.Level);
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 mount = BaseArtDefinition.ToWorld(art.TurretMounts[i], centre, facing);
+                Vector2Int cell = _map.WorldToCell(mount);
+                if (!_map.Contains(cell) || _towers.ContainsKey(cell))
+                {
+                    continue;
+                }
+
+                Tower tower = CreateTower(turret, cell, preview: false);
+                tower.transform.position = mount;
+                for (int level = 0; level < startLevel; level++)
+                {
+                    tower.Upgrade();
+                }
+
+                _towers[cell] = tower;
+                _buildGrid.Occupy(cell);
             }
         }
 

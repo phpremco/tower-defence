@@ -2,19 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Combat;
 using Game.Core;
+using Game.Drones;
 using UnityEngine;
 
 namespace Game.Levels
 {
     /// <summary>
-    /// The imported (Blender) colony base on the field: its modules with the dish turning and the core crystal breathing,
-    /// smoke from its sockets and the damage overlay once it is badly hurt, and the wreck that replaces it in the flash
-    /// when it falls (<see cref="BaseView"/> plays the blast itself). Reacts to the base's health; changes nothing.
+    /// The imported (Blender) colony base on the field: its modules with the radar dish turning, the core crystal breathing
+    /// and the mast beacon blinking, the shuttle on its round (<see cref="BaseShuttleView"/>), the drone bays
+    /// (<see cref="BaseDockView"/>), smoke from its sockets and the damage overlay once it is badly hurt, and the wreck that
+    /// replaces it in the flash when it falls (<see cref="BaseView"/> plays the blast itself). Reacts to the base's health
+    /// and its drones; changes nothing.
     /// </summary>
     public sealed class BaseArtView : MonoBehaviour
     {
         private const string SmokePrefix = "Smoke_";
         private const string SparkPrefix = "Spark";
+        private static readonly string[] ShuttleLiftSockets = { "Socket_ShuttleLift_L", "Socket_ShuttleLift_R" };
         private const float CrystalPulseDepth = 0.3f;
         private const float CrystalPulseSpeed = 1.6f;
         private const float SmokeRate = 9f;
@@ -34,14 +38,19 @@ namespace Game.Levels
         private Health _health;
         private bool _damaged;
         private float _sparkClock;
+        private Material _beacon;
+        private EmissionBlink _blink;
+        private BaseShuttleView _shuttle;
+        private BaseDockView _docks;
 
-        /// <summary>A display copy has no health to follow: it only turns and glows.</summary>
+        /// <summary>A display copy has no health to follow: it only turns and glows, its bays shut.</summary>
         public static GameObject BuildDisplay(Transform parent, BaseArtDefinition art)
         {
             var root = new GameObject("BaseModel");
             root.transform.SetParent(parent, false);
             ArtModel model = ArtModel.CreateStill(root.transform, art.Model);
             AddTurning(model, art);
+            BaseDockView.CloseLids(art, model);
             return root;
         }
 
@@ -50,6 +59,10 @@ namespace Game.Levels
             _art = art;
             _model = ArtModel.Create(transform, art.Model, ownMaterial: true);
             AddTurning(_model, art);
+            AddBeacon();
+            AddShuttle();
+            _docks = gameObject.AddComponent<BaseDockView>();
+            _docks.Initialize(art, _model);
 
             // The crystal breathes on its own copy of the material, so the rest of the base keeps its glow steady.
             Renderer[] crystal = _model.RenderersEndingWith(art.PulsingModule);
@@ -76,12 +89,13 @@ namespace Game.Levels
         /// <summary>The socket of that name on the model (a light, smoke or spark point), or null.</summary>
         public Transform Socket(string name) => _model?.Find(name);
 
-        /// <summary>Follows the level's base health from now on.</summary>
-        public void Bind(Health health)
+        /// <summary>Follows the level's base health and its drones from now on.</summary>
+        public void Bind(Health health, GameEvent<Drone> droneLaunched)
         {
             _health = health;
             _health.Changed += OnChanged;
             _health.Died += OnDied;
+            _docks.Bind(droneLaunched);
         }
 
         private void OnDestroy()
@@ -99,6 +113,58 @@ namespace Game.Levels
             {
                 Destroy(_crystal);
             }
+
+            if (_beacon != null)
+            {
+                Destroy(_beacon);
+            }
+        }
+
+        // The beacon on the radar mast blinks on its own copy of the material, like the crystal breathes on its.
+        private void AddBeacon()
+        {
+            Renderer[] beacon = string.IsNullOrEmpty(_art.BeaconModule) ? new Renderer[0] : _model.RenderersEndingWith(_art.BeaconModule);
+            if (beacon.Length == 0)
+            {
+                return;
+            }
+
+            _beacon = new Material(_model.Material) { name = _art.BeaconModule };
+            foreach (Renderer renderer in beacon)
+            {
+                renderer.sharedMaterial = _beacon;
+            }
+
+            _blink = gameObject.AddComponent<EmissionBlink>();
+            _blink.Initialize(_beacon, _art.BeaconPeriod, _art.BeaconLitShare, _art.BeaconLitGlow, _art.BeaconDimGlow);
+        }
+
+        private void AddShuttle()
+        {
+            Renderer[] shuttle = string.IsNullOrEmpty(_art.ShuttleModule) ? new Renderer[0] : _model.RenderersEndingWith(_art.ShuttleModule);
+            if (shuttle.Length == 0)
+            {
+                return;
+            }
+
+            var parts = new Transform[shuttle.Length];
+            for (int i = 0; i < shuttle.Length; i++)
+            {
+                parts[i] = shuttle[i].transform;
+            }
+
+            _shuttle = gameObject.AddComponent<BaseShuttleView>();
+            var lifts = new List<Transform>(ShuttleLiftSockets.Length);
+            foreach (string socket in ShuttleLiftSockets)
+            {
+                Transform lift = _model.Find(socket);
+                if (lift != null)
+                {
+                    lifts.Add(lift);
+                }
+            }
+
+            _shuttle.Initialize(_art, parts, _model.Find(_art.ExhaustSocket), lifts.ToArray());
         }
 
         private static void AddTurning(ArtModel model, BaseArtDefinition art)
@@ -144,7 +210,18 @@ namespace Game.Levels
             }
         }
 
-        private void OnDied() => StartCoroutine(BecomeWreck());
+        // The lights go out at once: the beacon dims, the shuttle drops back onto its pad and the bays stop.
+        private void OnDied()
+        {
+            if (_blink != null)
+            {
+                _blink.enabled = false;
+            }
+
+            _shuttle?.Stop();
+            _docks.enabled = false;
+            StartCoroutine(BecomeWreck());
+        }
 
         // The blast hides the swap: a moment after the flash the modules give way to the wreck.
         private IEnumerator BecomeWreck()

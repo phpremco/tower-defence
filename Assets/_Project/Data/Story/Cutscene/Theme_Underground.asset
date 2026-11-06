@@ -55,4 +55,4 @@ MonoBehaviour:
   _liquids: {fileID: 0}
   _mist: {fileID: 0}
   _decorClearance: 0.5
-  _baseFootprint: 1.9
+  _baseFootprint: 3.7

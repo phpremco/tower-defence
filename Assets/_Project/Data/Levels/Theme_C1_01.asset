@@ -55,4 +55,4 @@ MonoBehaviour:
   _liquids: {fileID: 11400000, guid: 3a1f91f500f66f941b2468fc5a0e346b, type: 2}
   _mist: {fileID: 11400000, guid: 35ec1f5673d72fc4fb8cb06fce3f615c, type: 2}
   _decorClearance: 0.5
-  _baseFootprint: 1.9
+  _baseFootprint: 3.7

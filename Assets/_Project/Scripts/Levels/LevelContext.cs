@@ -294,6 +294,9 @@ namespace Game.Levels
         /// <summary>Raised when the number of flying drones changes, so the HUD can grey out a full type.</summary>
         public GameEvent DronesChanged { get; } = new GameEvent();
 
+        /// <summary>Raised with every drone as it is launched, so the base can open a bay for it.</summary>
+        public GameEvent<Drone> DroneLaunched { get; } = new GameEvent<Drone>();
+
         /// <summary>The path object that is chosen for placing, or null when towers are being placed.</summary>
         public PathObjectDefinition SelectedPathObject { get; set; }
 

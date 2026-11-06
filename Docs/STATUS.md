@@ -2684,3 +2684,37 @@ Not committed.
 - **Gallery:** `CinderMatriarch/60-62`, `Shattered/60-63`, `Intros/60-64`, Dutch captions in `index.txt`.
 - **Try it:** open the project, Boot, dev Story viewer page "Boss arena": the Cinder Matriarch (hunts off the road through
   the crystals), or any boss for the intro (campaign first meeting).
+
+## Round 14: the expanded colony base (Blender round 37) in the game (2026-11-06)
+
+Not committed.
+- **Import:** `Tools/PlayTest/Scripts/ApplyBase2.cs` syncs only `ArtSource/Exports/Base` (2048 maps, 1024 Low; the importer's
+  map size override now lists `Base`), rebuilds `Data/Art/Colony/BaseArt` through `BlenderColonyBuilder.BuildBase`
+  (18 modules in the report's timelapse order, overlay, wreck) and points all 8 themes at it. The builder now also measures
+  the model's footprint (x -2.68..2.68, z -2.49..1.81 in the base frame, z towards the road), the gun mounts
+  (`TurretLink_L/R`) and the four drone docks (`Socket_DroneBay_1..4`) into `BaseArtDefinition`.
+- **Footprint/clearance:** `VisualTheme._baseFootprint` 1.9 -> 3.7 (default and data); decor clearance already measures the
+  model (3.66 + margin). `BuildGrid` blocks every cell whose middle the model covers (+0.25 cell): 8 cells beside the road
+  end on every level. The base turrets now stand on the base's own mounts (`PlacementController.MountBaseTurrets`), keyed to
+  the cell under them. `LevelValidator.CheckBaseFootprint`: no gate, mine or nest under the base, no road under it beyond
+  the last rung (all 10 levels incl. the arenas pass; the base hangs ~2.8 m past the grid's east edge everywhere, as the old
+  one did, over open ground). Base position, enemy stop distance (1.4 m from the road end = 0.4 m before the deck), hero
+  post and boss climb (`ClimbLayer.BaseHeight`, `BossField`) unchanged.
+- **Life (view only):** radar dish turns about world up at 24 deg/s; mast beacon blinks (`Core/EmissionBlink`, own material);
+  `BaseShuttleView`: 16 s on the pad, 5 s eased climb on a slant with lift jets, engine light and a wash on the pad,
+  shrinks away, 12 s away, lands the same way; `BaseDockView`: drones launched first live in the four bays (their logic home
+  is the dock, `Drone.HomeChanged` event), lid opens (100 deg about local Z), drone sinks in folded to 60 %, lid closes;
+  leaving reverses it. Lids are shut on menu displays and in the cutscene; the cutscene leaves the shuttle out (its haulers
+  use the pad). On base death beacon, shuttle and bays stop.
+- **Checks:** 0 compile errors/warnings; EditMode 635 (589 passed, 46 known outliers ignored, 0 failed; new
+  `ExpandedBaseTests` 4/4). PlayMode one class at a time: six boss arenas (Gravemaw failed once with "Burrowed: on Laser
+  at (33,15)", passed on the rerun: frame-timing flake), BossIntroSmoke, ContinentSimulation 2/2, CutsceneSmoke 3/3,
+  ModelPerformance, OverviewRadarSmoke, Screenshot 3/3, SlimeBoost, StoryCrystal 2/2, StoryGuard 3/3, StoryListener,
+  StorySmoke 2/2, BalanceProbe 3/3; 0 console errors/warnings. Save restored byte-identical (ec2a1f6d) after every Play Mode run.
+- **Gallery:** `gallery/Base/60_r14_*` (overview, close turrets, shuttle landing, drone launch/docking/in bay, siege x2,
+  Sealed One on the base). The two docking stills are posed with the bay's own pose code (`r14_stage_dock.cs`).
+- **Open:** gateless levels would start the hero at `BasePosition - 1 cell` (inside the new deck; no such level exists);
+  the shuttle reads ambiguous in height from the fixed camera (wash and engine glow help); drones past the fourth still
+  idle at the road end; the wreck is the round-37 wreck, dark at the play zoom.
+- **Try it:** open the project, Boot, play Crystal Plains level 4 (all three drones): buy drones and watch them leave and
+  return to their bays, the shuttle comes and goes every ~38 s.

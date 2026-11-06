@@ -38,11 +38,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
         m_Texture: {fileID: 2800000, guid: 9ad1271b94365f14899d6696c01401f9, type: 3}
-        m_Scale: {x: 324.4, y: 324.4}
+        m_Scale: {x: 633, y: 633}
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap2:
         m_Texture: {fileID: 2800000, guid: 41b1c2a00e16ca84aae8ea93bcd66b78, type: 3}
-        m_Scale: {x: 270.3, y: 270.3}
+        m_Scale: {x: 527.5, y: 527.5}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 2800000, guid: 3caaf53d688e2b6428c8b3f61f7e211d, type: 3}
@@ -58,12 +58,16 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalScale: 0.8
     - _DetailNormalScale2: 0.6
+    - _DstBlend: 0
     - _Metallic: 0
     - _OcclusionStrength: 0.5
+    - _RimAlpha: 0
     - _RimPower: 2.4
     - _RimStrength: 0.75
     - _Smoothness: 1
+    - _SrcBlend: 1
     - _WaveAmplitude: 0
+    - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _DetailFade: {r: 0.004, g: 0.02, b: 0, a: 0}

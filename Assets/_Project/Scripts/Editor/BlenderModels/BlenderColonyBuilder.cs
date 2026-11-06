@@ -38,6 +38,10 @@ namespace Game.Editor
         private const float ResourceNodeScale = 1.2f;
         private const float ResourceNodeEmission = 3f;
 
+        // The base report's sockets for its own guns (left first: one gun at base weapon level one) and its drone docks.
+        private static readonly string[] BaseTurretSockets = { "TurretLink_L", "TurretLink_R" };
+        private const string BaseDockPrefix = "Socket_DroneBay";
+
         /// <summary>The colony art built in one run, by owner.</summary>
         public sealed class Built
         {
@@ -218,6 +222,7 @@ namespace Game.Editor
             so.FindProperty("_model").objectReferenceValue = BuildArt(asset, $"{folder}/{asset}.fbx", high, low, StructureLodScreenHeight);
             so.FindProperty("_damage").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseDamage, $"{folder}/{BlenderColonyCatalog.BaseDamage}.fbx", high, low, StructureLodScreenHeight);
             so.FindProperty("_wreck").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseWreck, $"{folder}/{BlenderColonyCatalog.BaseWreck}.fbx", high, low, StructureLodScreenHeight);
+            WriteFootprint(so, so.FindProperty("_model").objectReferenceValue as ModelArtDefinition);
             List<string> order = BlenderReport.Load($"{folder}/{asset}_report.json").Strings("timelapse_order");
             SerializedProperty modules = so.FindProperty("_timelapseOrder");
             modules.arraySize = order.Count;
@@ -229,6 +234,92 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
+        }
+
+        // The ground the model covers in the base's own frame (the art's yaw and scale applied), from its mesh bounds, so
+        // the build grid keeps exactly that free whatever size the next export has.
+        private static void WriteFootprint(SerializedObject so, ModelArtDefinition art)
+        {
+            if (art == null || art.Model == null)
+            {
+                return;
+            }
+
+            Matrix4x4 placed = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, art.Yaw, 0f), Vector3.one * art.Scale) * art.Model.transform.worldToLocalMatrix;
+            var min = new Vector2(float.MaxValue, float.MaxValue);
+            var max = new Vector2(float.MinValue, float.MinValue);
+            foreach (MeshFilter filter in art.Model.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter.sharedMesh == null)
+                {
+                    continue;
+                }
+
+                Bounds bounds = filter.sharedMesh.bounds;
+                Matrix4x4 matrix = placed * filter.transform.localToWorldMatrix;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 point = matrix.MultiplyPoint3x4(new Vector3(
+                        (corner & 1) == 0 ? bounds.min.x : bounds.max.x,
+                        (corner & 2) == 0 ? bounds.min.y : bounds.max.y,
+                        (corner & 4) == 0 ? bounds.min.z : bounds.max.z));
+                    min = Vector2.Min(min, new Vector2(point.x, point.z));
+                    max = Vector2.Max(max, new Vector2(point.x, point.z));
+                }
+            }
+
+            if (min.x < max.x)
+            {
+                so.FindProperty("_footprintMin").vector2Value = min;
+                so.FindProperty("_footprintMax").vector2Value = max;
+            }
+
+            WritePlaces(so.FindProperty("_turretMounts"), art.Model.transform, placed, BaseTurretSockets);
+            WritePlaces(so.FindProperty("_dockPoints"), art.Model.transform, placed, NumberedSockets(art.Model.transform, BaseDockPrefix));
+        }
+
+        // The named sockets that exist, in the base's own frame.
+        private static void WritePlaces(SerializedProperty array, Transform model, Matrix4x4 placed, IReadOnlyList<string> sockets)
+        {
+            var points = new List<Vector3>();
+            foreach (string socket in sockets)
+            {
+                Transform node = FindDeep(model, socket);
+                if (node != null)
+                {
+                    points.Add(placed.MultiplyPoint3x4(node.position));
+                }
+            }
+
+            array.arraySize = points.Count;
+            for (int i = 0; i < points.Count; i++)
+            {
+                array.GetArrayElementAtIndex(i).vector3Value = points[i];
+            }
+        }
+
+        private static List<string> NumberedSockets(Transform model, string prefix)
+        {
+            var names = new List<string>();
+            for (int n = 1; FindDeep(model, $"{prefix}_{n}") != null; n++)
+            {
+                names.Add($"{prefix}_{n}");
+            }
+
+            return names;
+        }
+
+        private static Transform FindDeep(Transform root, string name)
+        {
+            foreach (Transform node in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (node.name == name)
+                {
+                    return node;
+                }
+            }
+
+            return null;
         }
 
         // The export's High and Low material, rimmed in the colony's cool light, or nulls when the export is not synced.

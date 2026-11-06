@@ -561,9 +561,14 @@ namespace Game.UI
             ArtModel model = ArtModel.CreateStill(command, art.Model);
             GlowDecal.PlacePool(command, glow * 0.18f, 1.4f);
 
+            // The haulers take off from and land on the pad, so the shuttle that lives there stays out of the cutscene;
+            // the bays stand shut as on the field before the first drone.
+            HideModule(model, art.ShuttleModule);
+            BaseDockView.CloseLids(art, model);
+
             foreach (string module in art.TimelapseOrder)
             {
-                if (module == art.PulsingModule)
+                if (module == art.PulsingModule || module == art.ShuttleModule)
                 {
                     continue;
                 }
@@ -621,6 +626,19 @@ namespace Game.UI
             _corePool = GlowDecal.PlacePool(command, _coreColour * 0.3f, 2.2f);
             _corePool.transform.position = new Vector3(_coreSocket.x, layout.Base.y + 0.035f, _coreSocket.z);
             AddLight(Socket(model, CommandLightSocket, command), glow, CommandLightIntensity, CommandLightRange, 0f);
+        }
+
+        private static void HideModule(ArtModel model, string module)
+        {
+            if (string.IsNullOrEmpty(module))
+            {
+                return;
+            }
+
+            foreach (Renderer renderer in model.RenderersEndingWith(module))
+            {
+                renderer.gameObject.SetActive(false);
+            }
         }
 
         private static Transform Socket(ArtModel model, string name, Transform fallback)

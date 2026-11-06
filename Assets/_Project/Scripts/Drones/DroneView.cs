@@ -81,6 +81,9 @@ namespace Game.Drones
         private float _lightPhase;
         private float _pitch;
         private Quaternion _facing = Quaternion.identity;
+        private Vector3 _dockOffset;
+        private float _dockShare;
+        private Vector3 _restScale = Vector3.one;
 
         public void Initialize(Drone drone)
         {
@@ -118,6 +121,7 @@ namespace Game.Drones
                 InitializeProcedural(drone.Definition, color);
             }
 
+            _restScale = _model.localScale;
             _drone.Fired += OnFired;
             _drone.Delivered += OnDelivered;
         }
@@ -289,6 +293,18 @@ namespace Game.Drones
             }
         }
 
+        /// <summary>
+        /// Shows the model away from the drone by a world offset (a base bay lowering it into its dock), with
+        /// <paramref name="share"/> of the way done (0 flying free, 1 settled), so the hover bob fades as it settles, and at
+        /// <paramref name="scale"/> of its size (folded to fit the bay).
+        /// </summary>
+        public void SetDock(Vector3 offset, float share, float scale)
+        {
+            _dockOffset = offset;
+            _dockShare = share;
+            _model.localScale = _restScale * scale;
+        }
+
         private void OnDelivered(int value) => MoneyPopup.Show(transform.parent, transform.position, value, MoneyColor);
 
         private void Update()
@@ -337,7 +353,8 @@ namespace Game.Drones
             _pitch = Mathf.Lerp(_pitch, _drone.Pace * PitchDegrees, AttitudeFollow * dt);
             _bobPhase += BobSpeed * dt;
             _model.localRotation = _facing * Quaternion.Euler(_pitch, 0f, -bank);
-            _model.localPosition = Vector3.up * (Mathf.Sin(_bobPhase) * BobHeight);
+            // Settled in a bay the drone stops bobbing; the bay moves the model down to its dock, the drone itself stays put.
+            _model.localPosition = Vector3.up * (Mathf.Sin(_bobPhase) * BobHeight * (1f - _dockShare)) + transform.InverseTransformVector(_dockOffset);
         }
 
         // Port and starboard burn steadily, the strobe flashes, the beacon blinks at an easy pace.

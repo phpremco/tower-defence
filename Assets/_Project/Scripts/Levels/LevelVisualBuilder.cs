@@ -279,10 +279,8 @@ namespace Game.Levels
             if (road.Length > 0)
             {
                 // The outpost stands a little past the end of the road, door towards it, so the hero post stays clear.
-                Vector2Int baseCell = road[road.Length - 1];
-                Vector3 along = level.Road.DirectionAt(baseCell);
                 Vector3 baseCenter = BasePosition(level);
-                Quaternion facing = along.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(-along) : Quaternion.identity;
+                Quaternion facing = BaseFacing(level);
                 if (theme.BaseArt != null)
                 {
                     BuildBaseArt(theme, baseCenter, facing, parent);
@@ -340,6 +338,14 @@ namespace Game.Levels
             Vector2Int[] road = level.MainRoad;
             Vector2Int baseCell = road[road.Length - 1];
             return level.Road.CentreOf(baseCell) + level.Road.DirectionAt(baseCell) * (BaseSetBackCells * level.CellSize);
+        }
+
+        /// <summary>How the base stands: its back to the end of the road, its front (+Z) towards the creatures coming down it.</summary>
+        public static Quaternion BaseFacing(LevelDefinition level)
+        {
+            Vector2Int[] road = level.MainRoad;
+            Vector3 along = level.Road.DirectionAt(road[road.Length - 1]);
+            return along.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(-along) : Quaternion.identity;
         }
 
         // A second turning part on a structure, around its own pivot.

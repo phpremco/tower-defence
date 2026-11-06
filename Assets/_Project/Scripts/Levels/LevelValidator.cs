@@ -20,6 +20,9 @@ namespace Game.Levels
         private const float DefenceWindowShare = 0.85f;
         private const int MinPlotsPerGate = 8;
 
+        // How many road cells before its end the base model may cover (the deck reaches over the last rung).
+        private const int BaseDoorstepCells = 1;
+
         public static bool Validate(LevelDefinition level, List<string> errors)
         {
             if (!ValidateLayout(level, errors) && !level.IsValid(out _))
@@ -54,6 +57,7 @@ namespace Game.Levels
             CheckMines(level, grid, errors);
             CheckRoad(level, grid, errors);
             CheckRoadsReachBase(level, errors);
+            CheckBaseFootprint(level, grid, errors);
             CheckBossEntrance(level, grid, errors);
             CheckNests(level, grid, errors);
             CheckDefenceZones(level, grid, errors);
@@ -278,6 +282,55 @@ namespace Game.Levels
             if (level.GridSize.x * level.GridSize.y - level.Road.Cells.Count - seen.Count <= 0)
             {
                 errors.Add("Level has no buildable cells.");
+            }
+        }
+
+        // The imported base covers several cells past the road's end: no gate, mining node or nest may lie under it, and no
+        // road but the main road's own last stretch (the base's doorstep) may run beneath it.
+        private static void CheckBaseFootprint(LevelDefinition level, GridMap grid, List<string> errors)
+        {
+            BaseArtDefinition art = level.Theme != null ? level.Theme.BaseArt : null;
+            Vector2Int[] main = level.MainRoad;
+            if (art == null || main.Length == 0)
+            {
+                return;
+            }
+
+            Vector3 centre = LevelVisualBuilder.BasePosition(level);
+            Quaternion facing = LevelVisualBuilder.BaseFacing(level);
+            bool Under(Vector2Int cell) => art.Covers(grid.CellToWorld(cell), centre, facing, 0f);
+            foreach (BlockadeSpot gate in level.Blockades)
+            {
+                if (art.Covers(level.Road.CentreOf(gate.Cell), centre, facing, 0f))
+                {
+                    errors.Add($"The gate at {gate.Cell} stands under the base.");
+                }
+            }
+
+            foreach (Vector2Int mine in level.MineCells)
+            {
+                if (Under(mine))
+                {
+                    errors.Add($"The mining node at {mine} lies under the base.");
+                }
+            }
+
+            foreach (ElementNest nest in level.Nests)
+            {
+                if (Under(nest.Cell))
+                {
+                    errors.Add($"The {nest.Element} nest at {nest.Cell} lies under the base.");
+                }
+            }
+
+            Vector2Int end = main[main.Length - 1];
+            float doorstep = (BaseDoorstepCells + 0.5f) * level.CellSize;
+            foreach (Vector2Int cell in level.Road.Cells)
+            {
+                if (Under(cell) && Vector3.Distance(level.Road.CentreOf(cell), level.Road.CentreOf(end)) > doorstep)
+                {
+                    errors.Add($"The road cell {cell} runs under the base beyond its doorstep.");
+                }
             }
         }
 
