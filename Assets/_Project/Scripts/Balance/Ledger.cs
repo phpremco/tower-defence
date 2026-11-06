@@ -286,10 +286,11 @@ namespace Game.Balance
                     float damage = stats.Damage * boost.Damage;
                     float dps = stats.Interval > 0f ? damage * boost.Rate / stats.Interval : 0f;
                     float range = stats.Range * boost.Range;
-                    // A gun's layer share and the creatures' plating both work per hit, so they scale its damage per layer.
+                    // A gun's layer share and the creatures' plating both work per hit, so they scale its damage per layer; the field
+                    // ease (per map) and the tower's measured in-play efficiency scale everything it deals.
                     float groundHit = damage * tower.GroundFactor;
                     float airHit = damage * tower.AirFactor;
-                    float field = dps * level.FieldEase;
+                    float field = dps * level.FieldEase * tower.Efficiency;
                     float stream = field * tower.GroundFactor * load.StreamPlates.Share(groundHit);
                     float single = field * tower.GroundFactor * load.BossPlates.Share(groundHit);
                     float sky = field * tower.AirFactor * load.AirPlates.Share(airHit);

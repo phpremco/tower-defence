@@ -741,3 +741,39 @@ What changed after round 21a, and why:
 - **Derived boss shares moved again** (ContinentFinaleTests): Hard 1.45 -> 1.75, Psycho 1.15 -> 1.5 (continent bosses only;
   none in a C1 campaign wave). TowerParityTests: Cannon L0-L2 against a lone boss sit at 0.72-0.74x the median (band 0.75)
   since the slower reload; listed as known outliers.
+
+## Ledger calibrated in play (2026-11-06, round 21a3)
+
+**Where a light gun's data DPS went** (Tools/PlayTest/tower_efficiency.txt, Medium, every level, mono rows + creative):
+
+| tower | idle (nothing in reach) | wear | waste (shots hitting nothing) | plate | overkill | raw in play / data |
+| --- | --- | --- | --- | --- | --- | --- |
+| Gun Turret, reach 3.5 (21a2) | 0.52 | 0.00 | 0.09 | 0.10 | 0.14 | 0.47 |
+| Gun Turret, reach 4.0 (21a3) | 0.43 | 0.00 | 0.09 | 0.11 | 0.13 | 0.53 |
+| Laser, reach 4.3 (21a3) | 0.43 | 0.00 | 0.12 | 0.11 | 0.17 | 0.47 |
+| Cannon (shell to the spot) | 0.41 | 0.00 | - | 0.04 | 0.25 | 1.09 (every creature caught) |
+
+Time with nothing in reach is the main loss, so the Gun Turret and the Laser reach as far as the Cannon now (4.0 / 4.3,
++0.3 to +0.8 by level). Overkill is the Cannon's cost: a quarter of what its shells carry is past the last hit point.
+
+**The calibration:** `TowerDefinition._ledgerEfficiency` (balance model only) scales every gun's capacity in the ledger.
+It is the share of data damage the ledger does not model (aimed guns: hits carried over data damage; splash guns: time with
+something in reach x tower power, the hits per burst the ledger models itself), relative to the tower-seconds mean. A sky gun
+is judged only while something flies. Values now: Cannon 1.135, Laser 0.912, Gun Turret 1.017, Flak 0.446 (others 1).
+**Re-measure** after any tower, wave or bot change that moves where guns stand or what they hit:
+1. `run_tests --mode PlayMode --filter Measure_TowerEfficiency_OnMedium --include_explicit true` (about 8 minutes; move
+   `Tools/PlayTest/probe_arg.txt` aside) -> `Tools/PlayTest/tower_efficiency.txt`;
+2. `run_script Tools/PlayTest/Scripts/ApplyEfficiency.cs` writes the factor lines into the TowerDefinitions (never by hand;
+   the generator does not touch the field);
+3. `ApplyWaves.cs`, then EditMode `BalanceLedgerTests`/`ContinentFinaleTests` and the probes.
+
+**Field ease is 1 on every level** (the knob stays, unused).
+
+**Swarm role mechanics:** the Cannon's shell is fired at the spot (`TowerDefinition._homing` false) and flies at 5 cells a
+second, so a running ant can be at the blast's edge when it lands; queues, packs and slow walkers are not. Role numbers
+count the hit points really taken (overkill out).
+
+**Per role in play (DPS per 100 coins standing):** loose: Laser 6.3 > Cannon 5.6 > Gun Turret 4.8; bunched: Cannon 7.1 >
+Laser 3.7 / Gun Turret 3.5; plated: Cannon 3.1 > Laser 2.8 > Gun Turret 2.2; air: Flak 1.7 (Gun Turret 0.2).
+
+Boss shares re-derived: Hard 1.45, Psycho 1.75. C1_04 Psycho raids 1.2x, C1_06 Hard four raids (band edges).

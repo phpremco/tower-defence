@@ -31,10 +31,10 @@ Level_C1_04 Fault Line
   HarvestDrone Medium  price  150 vs 3 x 50 =  150 (1.00x) | 1.07 coins/s, payback 141 s (6.8 waves of 21 s), stock 420 x income 0.95 | net @ w1(w1)   125 1/3(w6)    78 1/2(w9)    40 2/3(w11)    21 last2(w15)   -74 | break-even until wave 12 of 16
   HarvestDrone Hard    price  150 vs 3 x 50 =  150 (1.00x) | 1.32 coins/s, payback 114 s (5.1 waves of 22 s), stock 420 x income 1.1 | net @ w1(w1)   180 1/3(w6)   136 1/2(w9)    81 2/3(w11)    59 last2(w15)   -62 | break-even until wave 13 of 16
   HarvestDrone Psycho  price  150 vs 3 x 50 =  150 (1.00x) | 1.35 coins/s, payback 111 s (5.1 waves of 22 s), stock 420 x income 1.1 | net @ w1(w1)   180 1/3(w6)   125 1/2(w9)    81 2/3(w11)    59 last2(w15)   -51 | break-even until wave 13 of 16
-  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.77 coins/s while every shot lands, pays back after 233 busy s (10.2 waves)
-  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.60 coins/s while every shot lands, pays back after 301 busy s (14.6 waves)
-  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.63 coins/s while every shot lands, pays back after 286 busy s (12.9 waves)
-  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.48 coins/s while every shot lands, pays back after 373 busy s (17.1 waves)
+  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.75 coins/s while every shot lands, pays back after 241 busy s (10.5 waves)
+  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.55 coins/s while every shot lands, pays back after 329 busy s (16.0 waves)
+  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.71 coins/s while every shot lands, pays back after 252 busy s (11.3 waves)
+  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.60 coins/s while every shot lands, pays back after 300 busy s (13.8 waves)
 
 Level_C1_05 Quartz Flats
   RepairDrone  Easy    price  120 vs 3 x 50 =  150 (0.80x) | repairs 8 hp/s = 2.40 coins/s of repairs while busy, pays back after 50 busy s (1.8 waves busy)
@@ -45,10 +45,10 @@ Level_C1_05 Quartz Flats
   HarvestDrone Medium  price  150 vs 3 x 50 =  150 (1.00x) | 0.62 coins/s, payback 241 s (9.6 waves of 25 s), stock 420 x income 0.95 | net @ w1(w1)   154 1/3(w6)   106 1/2(w9)    59 2/3(w12)     2 last2(w16)   -93 | break-even until wave 12 of 17
   HarvestDrone Hard    price  150 vs 3 x 50 =  150 (1.00x) | 0.71 coins/s, payback 210 s (8.2 waves of 26 s), stock 420 x income 1.1 | net @ w1(w1)   202 1/3(w6)   147 1/2(w9)   103 2/3(w12)    37 last2(w16)   -84 | break-even until wave 13 of 17
   HarvestDrone Psycho  price  150 vs 3 x 50 =  150 (1.00x) | 0.71 coins/s, payback 211 s (8.2 waves of 26 s), stock 420 x income 1.1 | net @ w1(w1)   202 1/3(w6)   147 1/2(w9)   103 2/3(w12)    37 last2(w16)   -84 | break-even until wave 13 of 17
-  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.60 coins/s while every shot lands, pays back after 298 busy s (10.6 waves)
-  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.51 coins/s while every shot lands, pays back after 354 busy s (14.0 waves)
-  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.45 coins/s while every shot lands, pays back after 399 busy s (15.5 waves)
-  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.32 coins/s while every shot lands, pays back after 566 busy s (22.0 waves)
+  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.54 coins/s while every shot lands, pays back after 336 busy s (11.9 waves)
+  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.43 coins/s while every shot lands, pays back after 417 busy s (16.5 waves)
+  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.51 coins/s while every shot lands, pays back after 350 busy s (13.6 waves)
+  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.37 coins/s while every shot lands, pays back after 484 busy s (18.8 waves)
 
 Level_C1_06 Crysium Vein
   RepairDrone  Easy    price  120 vs 3 x 50 =  150 (0.80x) | repairs 8 hp/s = 2.40 coins/s of repairs while busy, pays back after 50 busy s (2.0 waves busy)
@@ -57,10 +57,10 @@ Level_C1_06 Crysium Vein
   RepairDrone  Psycho  price  120 vs 3 x 50 =  150 (0.80x) | repairs 8 hp/s = 2.40 coins/s of repairs while busy, pays back after 50 busy s (2.1 waves busy)
   HarvestDrone Easy    price  150 vs 3 x 50 =  150 (1.00x) | 0.42 coins/s, payback 360 s (14.1 waves of 26 s), stock 420 x income 0.8 | net @ w1(w1)    50 1/3(w7)    10 1/2(w10)    -6 2/3(w13)   -38 last2(w17)  -102 | break-even until wave 8 of 18
   HarvestDrone Medium  price  150 vs 3 x 50 =  150 (1.00x) | 0.56 coins/s, payback 269 s (11.8 waves of 23 s), stock 420 x income 0.95 | net @ w1(w1)    68 1/3(w7)    30 1/2(w10)     2 2/3(w13)   -36 last2(w17)  -112 | break-even until wave 10 of 18
-  HarvestDrone Hard    price  150 vs 3 x 50 =  150 (1.00x) | 0.61 coins/s, payback 246 s (10.2 waves of 24 s), stock 420 x income 1.1 | net @ w1(w1)   114 1/3(w7)    70 1/2(w10)    37 2/3(w13)    -7 last2(w17)  -106 | break-even until wave 12 of 18
+  HarvestDrone Hard    price  150 vs 3 x 50 =  150 (1.00x) | 0.60 coins/s, payback 249 s (10.2 waves of 24 s), stock 420 x income 1.1 | net @ w1(w1)   114 1/3(w7)    70 1/2(w10)    37 2/3(w13)    -7 last2(w17)  -106 | break-even until wave 12 of 18
   HarvestDrone Psycho  price  150 vs 3 x 50 =  150 (1.00x) | 0.62 coins/s, payback 243 s (10.2 waves of 24 s), stock 420 x income 1.1 | net @ w1(w1)   114 1/3(w7)    70 1/2(w10)    37 2/3(w13)   -18 last2(w17)  -106 | break-even until wave 12 of 18
-  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.64 coins/s while every shot lands, pays back after 283 busy s (11.0 waves)
-  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.45 coins/s while every shot lands, pays back after 402 busy s (17.7 waves)
-  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.41 coins/s while every shot lands, pays back after 442 busy s (18.4 waves)
-  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.39 coins/s while every shot lands, pays back after 467 busy s (19.6 waves)
+  AttackDrone  Easy    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.47 coins/s while every shot lands, pays back after 382 busy s (14.9 waves)
+  AttackDrone  Medium  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.40 coins/s while every shot lands, pays back after 450 busy s (19.8 waves)
+  AttackDrone  Hard    price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.34 coins/s while every shot lands, pays back after 530 busy s (21.8 waves)
+  AttackDrone  Psycho  price  180 vs 3 x 50 =  150 (1.20x) | 12 DPS (6.7 per 100 coins; cheapest gun 28.6), bounty 0.39 coins/s while every shot lands, pays back after 462 busy s (19.4 waves)
 

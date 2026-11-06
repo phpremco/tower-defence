@@ -377,6 +377,9 @@ namespace Game.Tests
             public Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
             public Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
 
+            /// <summary>Per tower type, where its data DPS went in play (see <see cref="BotRun.Use"/>).</summary>
+            public Dictionary<string, BotRun.TowerUse> Use = new Dictionary<string, BotRun.TowerUse>();
+
             /// <summary>Per tower type: damage dealt in the run, tower-seconds standing while creatures were on the field, and the data DPS of its levels then.</summary>
             public Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
         }
@@ -545,6 +548,7 @@ namespace Game.Tests
                     RepairSpent = watch.RepairSpent,
                     RoleDamage = run.RoleDamage,
                     CoinSeconds = run.CoinSeconds,
+                    Use = run.Use,
                     Earned = trace.Earned,
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,

@@ -71,18 +71,18 @@ in EveryUpgradeStep_BeatsMoreTowersOfTheSameType; the role matrix and the spots 
    Artillery   range  5.1 | reach best  30.5 median  16.0 x 1.9 | bunched best  15.0 median   3.5 x 4.3 | splash: bunched road counts
    CryoBeam    range  4.3 | reach best  24.5 median  11.0 x 2.2 | bunched best  12.0 median   3.0 x 4.0 | rate of fire: road in reach counts
    StormRifle  range  4.1 | reach best  22.5 median   9.0 x 2.5 | bunched best  11.5 median   2.0 x 5.8 | splash: bunched road counts
-   PulseRifle  range  3.5 | reach best  17.0 median   6.5 x 2.6 | bunched best   9.5 median   1.0 x 9.5 | rate of fire: road in reach counts
+   PulseRifle  range  4.0 | reach best  21.5 median   7.5 x 2.9 | bunched best  11.5 median   2.0 x 5.8 | rate of fire: road in reach counts
    Cryo        range  3.7 | reach best  20.0 median   7.5 x 2.7 | bunched best  10.5 median   1.5 x 7.0 | rate of fire: road in reach counts
    Cannon      range  4.0 | reach best  21.5 median   7.5 x 2.9 | bunched best  11.5 median   2.0 x 5.8 | splash: bunched road counts
-   Laser       range  3.9 | reach best  20.0 median   7.5 x 2.7 | bunched best  10.5 median   1.5 x 7.0 | rate of fire: road in reach counts
+   Laser       range  4.3 | reach best  24.5 median  11.0 x 2.2 | bunched best  12.0 median   3.0 x 4.0 | rate of fire: road in reach counts
    Tesla       range  3.5 | reach best  17.0 median   6.5 x 2.6 | bunched best   9.5 median   1.0 x 9.5 | splash: bunched road counts
    Railgun     range  6.0 | reach best  36.0 median  21.0 x 1.7 | bunched best  18.0 median   4.0 x 4.5 | rate of fire: road in reach counts
    (379 build spots beside the road)
 
 4. Slow as a damage multiplier (per creature passing; neighbours = the guns covering the slowed stretch)
-   reference: Gun Turret L0, 28.6 DPS per 100 coins, 7.0 cells of road in reach
-   Cryo L0      coins   90 slow 0.50 stretch  7.0 | x2.00 damage per creature for a neighbour of the gun's reach, +7.0 cell-seconds at speed 1 | pays from    26 DPS of neighbours (permanent)
-   Cryo L1      coins  200 slow 0.42 stretch  7.0 | x2.38 damage per creature for a neighbour of the gun's reach, +9.7 cell-seconds at speed 1 | pays from    41 DPS of neighbours (permanent)
-   Cryo L2      coins  360 slow 0.35 stretch  7.0 | x2.86 damage per creature for a neighbour of the gun's reach, +13.0 cell-seconds at speed 1 | pays from    55 DPS of neighbours (permanent)
-   SlowField    coins   45 slow 0.45 stretch  3.2 | x1.56 damage per creature for a neighbour of the gun's reach, +3.9 cell-seconds at speed 1 | pays from    23 DPS of neighbours (20 s, vs a gun for one wave)
-   SlowField    coins   45 slow 0.45 stretch  3.2 | x1.56 damage per creature for a neighbour of the gun's reach, +3.9 cell-seconds at speed 1 | pays from   368 DPS of neighbours (20 s, vs a gun for 16 waves)
+   reference: Gun Turret L0, 28.6 DPS per 100 coins, 8.0 cells of road in reach
+   Cryo L0      coins   90 slow 0.50 stretch  7.4 | x1.93 damage per creature for a neighbour of the gun's reach, +7.4 cell-seconds at speed 1 | pays from    28 DPS of neighbours (permanent)
+   Cryo L1      coins  200 slow 0.42 stretch  8.0 | x2.38 damage per creature for a neighbour of the gun's reach, +11.0 cell-seconds at speed 1 | pays from    41 DPS of neighbours (permanent)
+   Cryo L2      coins  360 slow 0.35 stretch  8.0 | x2.86 damage per creature for a neighbour of the gun's reach, +14.9 cell-seconds at speed 1 | pays from    55 DPS of neighbours (permanent)
+   SlowField    coins   45 slow 0.45 stretch  3.2 | x1.49 damage per creature for a neighbour of the gun's reach, +3.9 cell-seconds at speed 1 | pays from    26 DPS of neighbours (20 s, vs a gun for one wave)
+   SlowField    coins   45 slow 0.45 stretch  3.2 | x1.49 damage per creature for a neighbour of the gun's reach, +3.9 cell-seconds at speed 1 | pays from   421 DPS of neighbours (20 s, vs a gun for 16 waves)

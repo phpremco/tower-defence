@@ -36,12 +36,14 @@ MonoBehaviour:
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
-  _projectileSpeed: 9
+  _projectileSpeed: 5
   _splashRadius: 1.2
   _groundDamageFactor: 1
   _airDamageFactor: 1
   _retargetRadius: 1.5
   _softTargetShare: 0
+  _homing: 0
+  _ledgerEfficiency: 1.135
   _fuseRadius: 0
   _maxHealth: 220
   _sellRefundFraction: 0.7

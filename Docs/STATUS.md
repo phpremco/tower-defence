@@ -2973,3 +2973,20 @@ Not committed. Docs/BALANCE.md "Roles in play, round 21a2".
   creative bot.
 - Boss health share Hard 1.75, Psycho 1.5 (derived by ContinentFinaleTests after the Cannon change); Cannon-vs-boss parity
   cases are known outliers. EditMode 660: 614 passed, 0 failed, 46 skipped; console clean.
+
+## Round 21a3: ledger calibrated in play (2026-11-06)
+
+Not committed. Docs/BALANCE.md "Ledger calibrated in play".
+- The ledger scales every gun by `TowerDefinition._ledgerEfficiency`, measured by the explicit PlayMode
+  `MonocultureProbeTests.Measure_TowerEfficiency_OnMedium` (-> Tools/PlayTest/tower_efficiency.txt) and written by
+  `Tools/PlayTest/Scripts/ApplyEfficiency.cs`: Cannon 1.135, Laser 0.912, Gun Turret 1.017, Flak 0.446. Field ease is 1 on
+  every level.
+- Light guns lost most to idle time (43-52% of their seconds with nothing in reach): Gun Turret reach 4.0/4.3/4.6, Laser
+  4.3/4.5/4.8. The Cannon fires its shell at the spot (`_homing` false, shell 5 cells/s). Role numbers count hit points
+  really taken. Boss shares Hard 1.45, Psycho 1.75; C1_04 Psycho raids 1.2x, C1_06 Hard four raids.
+- Result: creative wins C1_01/C1_02 Medium+Hard, C1_04/C1_05/C1_06 Medium and C1_03/C1_04 Hard with 3 stars; loses C1_03
+  Medium (w15), C1_05 Hard (w12), C1_06 Hard (w8). Cannon row wins C1_01 and C1_02 Medium/Hard, the Laser row C1_02 Medium;
+  the naive bot wins C1_01 Medium/Hard, loses everything from C1_02. Easy: naive loses C1_02 and C1_03. The greedy
+  BalanceProbeTests bot loses Quartz Flats (EasyAndMedium test fails).
+- Open: the opening levels play far easier than the curve (every bot holds them untouched) now that field ease is gone; the
+  Gun Turret is still below the Cannon per coin on loose ants in play (4.8 vs 5.6; the Laser is above at 6.3).

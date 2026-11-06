@@ -35,6 +35,21 @@ namespace Game.Towers
         /// </summary>
         [SerializeField] [Range(0f, 1f)] private float _softTargetShare;
 
+        /// <summary>
+        /// True: the shot follows its creature and lands on it. False (splash shells only): it is fired at the spot the creature
+        /// stood on and bursts there after its flight time (distance over projectile speed), so a fast runner can be out of the
+        /// blast while a queue or a pack is not.
+        /// </summary>
+        [SerializeField] private bool _homing = true;
+
+        /// <summary>
+        /// Balance model only: the share of this tower's data damage it really deals in play beyond what the ledger models
+        /// (reach time, wear, shots that hit nothing), relative to the average tower. Measured by
+        /// MonocultureProbeTests.Measure_TowerEfficiency_OnMedium and written by Tools/PlayTest/Scripts/ApplyEfficiency.cs; never
+        /// typed by hand (Docs/BALANCE.md, "Ledger calibrated in play").
+        /// </summary>
+        [SerializeField] [Min(0.05f)] private float _ledgerEfficiency = 1f;
+
         /// <summary>A proximity fuse: the shell bursts this close to its target. Zero bursts on impact.</summary>
         [SerializeField] [Min(0f)] private float _fuseRadius;
         [SerializeField] [Min(1f)] private float _maxHealth = 100f;
@@ -97,6 +112,8 @@ namespace Game.Towers
         public float FuseRadius => _fuseRadius;
         public float RetargetRadius => _retargetRadius;
         public float SoftTargetShare => _softTargetShare;
+        public bool Homing => _homing;
+        public float LedgerEfficiency => _ledgerEfficiency;
         public float MaxHealth => _maxHealth;
         public float SellRefundFraction => _sellRefundFraction;
         public float ScrapFraction => _scrapFraction;
@@ -141,6 +158,11 @@ namespace Game.Towers
             if (_levels == null || _levels.Length != LevelCount)
             {
                 Debug.LogWarning($"TowerDefinition '{name}' must have exactly {LevelCount} levels.", this);
+            }
+
+            if (!_homing && _splashRadius <= 0f)
+            {
+                Debug.LogWarning($"TowerDefinition '{name}' fires unaimed single shots: only a splash shell may be fired at a spot.", this);
             }
 
             if (((_targets & TargetLayers.Ground) != 0 && _groundDamageFactor <= 0f) || ((_targets & TargetLayers.Air) != 0 && _airDamageFactor <= 0f))

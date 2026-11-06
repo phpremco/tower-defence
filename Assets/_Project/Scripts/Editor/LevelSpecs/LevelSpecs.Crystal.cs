@@ -22,14 +22,6 @@ namespace Game.Editor
         // so rate of fire is the answer (round 21a, Docs/BALANCE.md "Roles by enemy").
         private const float LooseRunners = 1f;
 
-        // Field ease (balance model only, LevelDefinition._balanceFieldEase), measured with the round-21a probes: how much more
-        // the towers do on a map than the ledger reckons. The two short opening levels were held by every bot with the base
-        // untouched and money to spare (Hard on Landing Site, Medium and Hard on Glass Meadows); on the longer levels the
-        // creative bot fell short of the competent player the ledger assumes on the difficulties marked ThinFieldEase.
-        private const float OpeningEase = 1.4f;
-        private const float SwarmEase = 1.3f;
-        private const float SwarmHardEase = 1.1f;
-        private const float ThinFieldEase = 0.85f;
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
         // (curator decision after balance, 2026-11-04). 1.3, the low end of the curator's range: at 1.6 the gun-only probe
@@ -86,9 +78,6 @@ namespace Game.Editor
                     new StorySpec { Kind = "BossSpawn", Dialogue = "Dlg_L01_Boss" },
                     new StorySpec { Kind = "LevelWon", Dialogue = "Dlg_L01_Won" },
                 },
-                // Easy and Medium stay forgiving for the first level (curator rule, round 21a); Hard is solved against the towers
-                // as strong as they play.
-                FieldEase = new[] { 1f, 1f, OpeningEase, 1f },
                 Money = 200,
             },
 
@@ -136,9 +125,6 @@ namespace Game.Editor
                 // one at a time"): the gates lose 500 to 1000 health here, more than a repair drone costs to mend by hand.
                 IntroduceDrones = new[] { "RepairDrone" },
                 Money = 200 + CrystalMoneyStep,
-                // The probes win the swarm level with the base untouched on Medium and Hard (round 21a): the ledger counts a
-                // shell on at most a few ants and sells it short here, so the waves are solved against towers this much stronger.
-                FieldEase = new[] { 1f, SwarmEase, SwarmHardEase, 1f },
             },
 
             // A second track out of the south; the first flyers come late, packed, over the ridge.
@@ -186,7 +172,6 @@ namespace Game.Editor
                 // (at Glass Meadows it would not).
                 IntroduceDrones = new[] { "HarvestDrone" },
                 Money = 200 + CrystalMoneyStep * 2,
-                FieldEase = new[] { 1f, ThinFieldEase, 1f },
             },
 
             // The plain splits open: rifts everywhere, stone bats rising from them, rays overhead. Ground and air mixed.
@@ -217,7 +202,7 @@ namespace Game.Editor
                     },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,
-                    AirRaidScale = new[] { 1f, 1.2f, 1.4f, 1.3f },
+                    AirRaidScale = new[] { 1f, 1.2f, 1.4f, 1.2f },
                     AirWaves = new[] { 3, 6, 9, 12, 15, 8, 14 },
                     AirWavesPerDifficulty = new[] { 4, 5, 6, 7 },
                     AirSprinkleFrom = 2,
@@ -277,7 +262,6 @@ namespace Game.Editor
                     new StorySpec { Kind = "FirstSighting", Enemy = "Roller", Dialogue = "Dlg_L05_Fast" },
                 },
                 Money = 200 + CrystalMoneyStep * 4,
-                FieldEase = new[] { ThinFieldEase, ThinFieldEase, 1f },
             },
 
             // The vein that never runs dry: the fast rollers and the pack hunters in earnest, and the first gadgets.
@@ -307,7 +291,8 @@ namespace Game.Editor
                     Flyer = "Skyray",
                     FlyerInterval = LooseFlyers,
                     AirWaves = new[] { 8, 11, 14, 17, 5, 15 },
-                    AirWavesPerDifficulty = new[] { 3, 4, 5, 6 },
+                    // Round 21a3: four raids on Hard, not five (the band check put the competent player just under the bar).
+                    AirWavesPerDifficulty = new[] { 3, 4, 4, 6 },
                     AirSprinkleFrom = 1,
                     Rhythm = "RMPHRPMRHPRMPHPRMH",
                     Bosses = new[] { Boss(18, "PackAlpha"), Boss(12, "CoreWisp", Hard), Boss(7, "StormMatriarch", Psycho) },

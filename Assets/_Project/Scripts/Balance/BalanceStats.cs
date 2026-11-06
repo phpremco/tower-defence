@@ -83,6 +83,9 @@ namespace Game.Balance
         /// <summary>Share of the damage that lands on ground and on air-only creatures (a gun that also aims up may hit softer there).</summary>
         public float GroundFactor = 1f;
         public float AirFactor = 1f;
+
+        /// <summary>In-play efficiency against the ledger's model, measured by the probes (TowerDefinition.LedgerEfficiency).</summary>
+        public float Efficiency = 1f;
         public bool IsSupport;
         public bool BlocksGround;
         public bool IsBaseDefence;

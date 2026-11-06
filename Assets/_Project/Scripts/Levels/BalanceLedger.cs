@@ -51,6 +51,7 @@ namespace Game.Levels
                 Splash = tower.SplashRadius,
                 GroundFactor = tower.GroundDamageFactor,
                 AirFactor = tower.AirDamageFactor,
+                Efficiency = tower.LedgerEfficiency,
                 IsSupport = tower.IsSupport,
                 BlocksGround = tower.BlocksGroundEnemies,
                 IsBaseDefence = tower.IsBaseDefence,

@@ -63,6 +63,10 @@ namespace Game.Combat
         // tower's data sets it (TowerDefinition.RetargetRadius, round 21a: light guns lost most of their shots on ant swarms).
         private float _retargetRadius;
 
+        // False for a shell fired at the spot its creature stood on: it flies its time and bursts there, so a fast runner can be
+        // out of the blast by then while a queue or a pack is not (TowerDefinition.Homing, round 21a3).
+        private bool _homing = true;
+
         public void Launch(
             Vector3 from,
             ITargetable target,
@@ -78,7 +82,8 @@ namespace Game.Combat
             Color color,
             float fuseRadius = 0f,
             object source = null,
-            float retargetRadius = 0f)
+            float retargetRadius = 0f,
+            bool homing = true)
         {
             transform.position = from;
             _source = source;
@@ -87,6 +92,7 @@ namespace Game.Combat
             _lastTargetPosition = target.Position;
             _aimedLayer = target.Layer;
             _retargetRadius = retargetRadius;
+            _homing = homing;
             _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
@@ -109,7 +115,7 @@ namespace Game.Combat
                 Retarget();
             }
 
-            if (_target != null && _target.IsAlive)
+            if (_homing && _target != null && _target.IsAlive)
             {
                 _lastTargetPosition = _target.Position;
             }

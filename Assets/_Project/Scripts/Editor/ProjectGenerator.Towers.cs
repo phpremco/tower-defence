@@ -14,6 +14,12 @@ namespace Game.Editor
         // The Gun Turret aims up too but its pulses do half damage there, so the sky asks for the Flak (round 21a, Docs/BALANCE.md).
         private const float GunAirShare = 0.5f;
         private const float CannonSplash = 1.2f;
+        // Round 21a3: the shell is fired at the spot and flies 0.6 to 0.9 s (3 to 4.5 cells at 5 a second), so an ant at full run
+        // (1.6 a second) is about at the blast's edge when it lands, a queue or a pack is not; it used to home in and never miss.
+        private const float CannonShellSpeed = 5f;
+        // Round 21a3: half the Gun Turret's and the Laser's seconds passed with nothing in reach (Tools/PlayTest/tower_efficiency.txt),
+        // so both reach as far as the Cannon; the ledger now counts what they really deal (TowerDefinition.LedgerEfficiency).
+        internal const float LightGunReach = 4f;
 
         // Round 21a2, the swarm role in play: the probes measured the Gun Turret below the Cannon per coin even against loose
         // ants (9.2 against 11.4 DPS per 100 coins): the Cannon reloads slower now. A longer-reaching, faster gun (4.0, 0.30 s)
@@ -24,9 +30,9 @@ namespace Game.Editor
         private static void GenerateCoreTowers(GeneratorContext context)
         {
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(50, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f, airDamageFactor: GunAirShare, softTargetShare: LightGunSoftShare);
-            context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, CannonSplash, new Color(1f, 0.8f, 0.3f),
-                new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f);
+                new[] { Lvl(50, 5f, LightGunReach, 0.35f), Lvl(50, 9f, LightGunReach + 0.3f, 0.3f), Lvl(90, 15f, LightGunReach + 0.6f, 0.25f) }, 150f, airDamageFactor: GunAirShare, softTargetShare: LightGunSoftShare);
+            context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, CannonShellSpeed, CannonSplash, new Color(1f, 0.8f, 0.3f),
+                new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f, homing: false);
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),
                 new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f);

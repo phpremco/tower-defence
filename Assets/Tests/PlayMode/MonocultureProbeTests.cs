@@ -27,6 +27,7 @@ namespace Game.Tests
         private const string SmokePath = "Tools/PlayTest/monoculture_smoke.txt";
         private const string FullPath = "Tools/PlayTest/monoculture.txt";
         private const string EasyPath = "Tools/PlayTest/monoculture_easy.txt";
+        private const string EfficiencyPath = "Tools/PlayTest/tower_efficiency.txt";
         private const string TracePath = "Logs/probe_trace.txt";
         private const int Easy = 0;
         private const int Medium = 1;
@@ -135,6 +136,132 @@ namespace Game.Tests
             {
                 Assert.Ignore(KnownPrefix + string.Join("; ", breaches));
             }
+        }
+
+        /// <summary>
+        /// Round 21a3, the ledger's in-play efficiency per tower type: plays every level on Medium with each owned mono type
+        /// and the creative bot, splits where each type's data DPS goes (no target in reach, wear, shots that hit nothing,
+        /// plating, overkill) and writes Tools/PlayTest/tower_efficiency.txt with one "factor" line per type: the share of its
+        /// data damage that the ledger does not already model (reach time, wear, wasted shots; splash, plating and overkill it
+        /// models itself), relative to the mean over all tower-seconds. Tools/PlayTest/Scripts/ApplyEfficiency.cs writes the
+        /// factors into the TowerDefinitions; never type them by hand (Docs/BALANCE.md, "Ledger calibrated in play").
+        /// </summary>
+        [UnityTest]
+        [Category("Monoculture")]
+        [Explicit("Measures the ledger's in-play tower efficiency; run on request, then ApplyEfficiency.cs.")]
+        [Timeout(7200000)]
+        public IEnumerator Measure_TowerEfficiency_OnMedium()
+        {
+            var results = new List<BalanceProbeTests.ProbeResult>();
+            foreach (int node in BalanceProbeTests.ExistingLevels(false))
+            {
+                if (!BalanceProbeTests.Wanted("levels", node))
+                {
+                    continue;
+                }
+
+                var run = new List<(int, int)> { (node, Medium) };
+                foreach (string tower in MonoTypes(node))
+                {
+                    yield return BalanceProbeTests.Probe(run, ProbeStrategy.Mono(tower), results);
+                }
+
+                yield return BalanceProbeTests.Probe(run, ProbeStrategy.CreativeBot(), results);
+            }
+
+            Assert.IsNotEmpty(results);
+            System.IO.File.WriteAllText(EfficiencyPath, Efficiency(results));
+            Debug.Log("[Monoculture] tower efficiency written to " + EfficiencyPath);
+        }
+
+        private static string Efficiency(List<BalanceProbeTests.ProbeResult> results)
+        {
+            var sum = new SortedDictionary<string, BotRun.TowerUse>();
+            var splash = new HashSet<string>();
+            foreach (BalanceProbeTests.ProbeResult r in results)
+            {
+                foreach (KeyValuePair<string, BotRun.TowerUse> pair in r.Use)
+                {
+                    if (!sum.TryGetValue(pair.Key, out BotRun.TowerUse total))
+                    {
+                        sum[pair.Key] = total = new BotRun.TowerUse();
+                    }
+
+                    BotRun.TowerUse u = pair.Value;
+                    total.Seconds += u.Seconds;
+                    total.Busy += u.Busy;
+                    total.PowerSeconds += u.PowerSeconds;
+                    total.DataDamage += u.DataDamage;
+                    total.Shots += u.Shots;
+                    total.Hits += u.Hits;
+                    total.Carried += u.Carried;
+                    total.Plate += u.Plate;
+                    total.Overkill += u.Overkill;
+                    total.Dealt += u.Dealt;
+                }
+            }
+
+            CampaignCatalog catalog = Catalog();
+            foreach (string id in sum.Keys)
+            {
+                foreach (MapNode node in catalog.Nodes)
+                {
+                    if (node.Level == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (TowerDefinition tower in node.Level.AvailableTowers)
+                    {
+                        if (tower.Id == id && tower.SplashRadius > 0f)
+                        {
+                            splash.Add(id);
+                        }
+                    }
+                }
+            }
+
+            var text = new StringBuilder();
+            text.Append("Tower efficiency in play (round 21a3; Medium, every level, each owned mono type and the creative bot; seed 1, 0.2 s steps).\n");
+            text.Append("Of each type's data damage over its seconds standing with creatures on the field: idle = no target in reach, wear =\n");
+            text.Append("lost to tower damage (power), waste = shots that hit nothing (aimed guns), then of what the hits carried: plate =\n");
+            text.Append("stopped by plating, overkill = past the creature's last hit point. raw = hits carried / data damage (splash counts every\n");
+            text.Append("creature caught). own = the share the ledger does not model: aimed guns raw, splash guns (1 - idle) x power.\n");
+            text.Append("factor = own / the mean own over all tower-seconds: ApplyEfficiency.cs writes it into TowerDefinition._ledgerEfficiency.\n\n");
+            text.Append("tower        seconds  idle  wear  waste  plate overkill   raw   own  factor\n");
+            var own = new Dictionary<string, float>();
+            float weighted = 0f;
+            float seconds = 0f;
+            foreach (KeyValuePair<string, BotRun.TowerUse> pair in sum)
+            {
+                BotRun.TowerUse u = pair.Value;
+                float busy = u.Busy / Mathf.Max(0.01f, u.Seconds);
+                float power = u.PowerSeconds / Mathf.Max(0.01f, u.Seconds);
+                float raw = u.Carried / Mathf.Max(0.01f, u.DataDamage);
+                own[pair.Key] = splash.Contains(pair.Key) ? busy * power : raw;
+                weighted += own[pair.Key] * u.Seconds;
+                seconds += u.Seconds;
+            }
+
+            float mean = weighted / Mathf.Max(0.01f, seconds);
+            var factors = new StringBuilder();
+            foreach (KeyValuePair<string, BotRun.TowerUse> pair in sum)
+            {
+                BotRun.TowerUse u = pair.Value;
+                float busy = u.Busy / Mathf.Max(0.01f, u.Seconds);
+                float power = u.PowerSeconds / Mathf.Max(0.01f, u.Seconds);
+                bool aimed = !splash.Contains(pair.Key);
+                float waste = aimed && u.Shots > 0 ? 1f - Mathf.Min(1f, u.Hits / (float)u.Shots) : 0f;
+                float plate = u.Plate / Mathf.Max(0.01f, u.Carried);
+                float overkill = u.Overkill / Mathf.Max(0.01f, u.Carried - u.Plate);
+                float raw = u.Carried / Mathf.Max(0.01f, u.DataDamage);
+                float factor = own[pair.Key] / Mathf.Max(0.01f, mean);
+                text.Append(Invariant($"{pair.Key,-12} {u.Seconds,7:0} {1f - busy,5:0.00} {1f - power,5:0.00} {(aimed ? Invariant($"{waste,6:0.00}") : "     -")} {plate,6:0.00} {overkill,8:0.00} {raw,5:0.00} {own[pair.Key],5:0.00} {factor,7:0.00}\n"));
+                factors.Append(Invariant($"factor {pair.Key} {factor:0.000}\n"));
+            }
+
+            text.Append('\n').Append(factors);
+            return text.ToString();
         }
 
         // Writes the table and the rule check; the breaches are printed and the test is marked ignored (known) when any exist.

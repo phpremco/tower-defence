@@ -2,89 +2,88 @@ Monoculture probe, full set (round 21a; seeded, 0.2 s steps; Docs/BALANCE.md, Mo
 dps = damage really dealt per tower-second while creatures were on the field, against the data DPS of the levels it stood at.
 
 level        diff    strategy           result stars wave   base     built upg sold mines fields drones                        ore  unspent repairs(%earned)  in-game dps per type (real/data)
-Level_C1_01  Medium  mono PulseRifle    Won        3 12/12  600/600      5   8    0     0      0 -                                0      118       0 (  0%)   PulseRifle 21.0/41.3
-Level_C1_01  Medium  mono Cannon        Won        3 12/12  600/600      7   0    0     0      0 -                                0      228       0 (  0%)   Cannon 16.9/15.6
-Level_C1_01  Medium  creative           Won        3 12/12  600/600      5   7    0     0      0 -                                0      158       0 (  0%)   Cannon 27.7/15.6 PulseRifle 15.3/38.4
-Level_C1_01  Medium  naive              Won        3 12/12  600/600      5   5    0     0      0 -                                0      229     180 ( 17%)   Cannon 20.9/15.6 PulseRifle 6.0/29.8
-Level_C1_01  Hard    mono PulseRifle    Lost       0 10/12    0/600      7   6    0     0      0 -                                0       13       0 (  0%)   PulseRifle 19.4/28.2
-Level_C1_01  Hard    mono Cannon        Won        3 12/12  600/600      6   3    0     0      0 -                                0      223     408 ( 28%)   Cannon 34.7/19.6
-Level_C1_01  Hard    creative           Won        3 12/12  600/600      9  14    0     0      0 -                                0       52       0 (  0%)   Cannon 27.4/21.0 PulseRifle 13.0/36.3
-Level_C1_01  Hard    naive              Lost       0 12/12    0/600      9  15    0     0      0 -                                0       32       0 (  0%)   Cannon 19.3/16.5 PulseRifle 15.0/40.5
-Level_C1_02  Medium  mono PulseRifle    Lost       0 12/12    0/600      4   8    0     0      0 -                                0       33      60 (  7%)   PulseRifle 31.2/42.8
-Level_C1_02  Medium  mono Cannon        Won        3 12/12  600/600      5   3    0     0      0 -                                0      210       0 (  0%)   Cannon 31.4/19.5
-Level_C1_02  Medium  mono Laser         Lost       0 12/12    0/600      3   3    0     0      0 -                                0       64      60 (  8%)   Laser 39.5/58.6
-Level_C1_02  Medium  creative           Won        3 12/12  600/600      7   6    0     0      0 -                                0       70       0 (  0%)   Cannon 25.0/15.6 PulseRifle 38.7/44.8
-Level_C1_02  Medium  naive              Lost       0 12/12    0/600      6   4    0     0      0 -                                0       48     120 ( 15%)   Cannon 30.5/15.6 PulseRifle 12.0/26.3
-Level_C1_02  Hard    mono PulseRifle    Lost       0 10/12    0/600      6   6    0     0      0 -                                0       26      60 (  9%)   PulseRifle 19.9/29.1
-Level_C1_02  Hard    mono Cannon        Won        3 12/12  600/600      8   5    0     0      0 -                                0      269       0 (  0%)   Cannon 31.6/21.8
-Level_C1_02  Hard    mono Laser         Lost       0  8/12    0/600      2   2    0     0      0 -                                0       72     159 ( 26%)   Laser 41.2/55.1
-Level_C1_02  Hard    creative           Won        3 12/12  600/600      7   8    0     0      0 RepairDrone                      0      179       0 (  0%)   Cannon 27.1/18.6 PulseRifle 31.0/43.1
-Level_C1_02  Hard    naive              Lost       0 12/12    0/600      8   5    0     0      0 RepairDrone                      0        6     120 ( 12%)   Cannon 30.4/15.6 PulseRifle 11.2/28.1
-Level_C1_03  Medium  mono PulseRifle    Lost       0 13/16    0/600      5   7    0     0      0 -                                0       29       0 (  0%)   PulseRifle 10.6/33.4
-Level_C1_03  Medium  mono Cannon        Lost       0 13/16    0/600      7   0    0     0      0 -                                0       13       0 (  0%)   Cannon 11.9/15.6
-Level_C1_03  Medium  mono Laser         Lost       0 13/16    0/600      3   3    0     0      0 -                                0       83       0 (  0%)   Laser 17.3/55.6
-Level_C1_03  Medium  creative           Won        3 16/16  600/600      9   5    0     0      0 RepairDrone                      0       97       0 (  0%)   Cannon 8.8/15.6 Laser 7.8/81.6 PulseRifle 2.9/28.4 Rocket 0.7/25.5
-Level_C1_03  Medium  naive              Lost       0 14/16    0/600      5   2    0     0      0 HarvestDrone                   160       86     214 ( 25%)   Cannon 21.0/15.6 PulseRifle 8.3/23.5 Rocket 4.7/25.5
-Level_C1_03  Hard    mono PulseRifle    Lost       0 13/16    0/600      6   9    0     0      0 -                                0       75       0 (  0%)   PulseRifle 15.1/35.6
-Level_C1_03  Hard    mono Cannon        Lost       0 13/16    0/600      9   0    0     0      0 -                                0        4      43 (  5%)   Cannon 12.7/15.6
-Level_C1_03  Hard    mono Laser         Lost       0 13/16    0/600      3   5    0     0      0 -                                0       41       0 (  0%)   Laser 29.1/69.5
-Level_C1_03  Hard    creative           Won        3 16/16  600/600     16  12    4     0      0 HarvestDrone+RepairDrone       250      245       0 (  0%)   Cannon 19.0/15.6 Laser 23.1/63.4 PulseRifle 12.3/38.0 Rocket 6.3/29.2
-Level_C1_03  Hard    naive              Lost       0  7/16    0/600      3   1    0     0      0 HarvestDrone                    20       32       0 (  0%)   Cannon 20.5/15.6 Laser 17.0/40.0 PulseRifle 0.0/16.1
-Level_C1_04  Medium  mono PulseRifle    Lost       0 14/16    0/600      4   6    0     0      0 -                                0       50       0 (  0%)   PulseRifle 7.7/30.5
-Level_C1_04  Medium  mono Cannon        Lost       0  7/16    0/600      3   0    0     0      0 -                                0       58       0 (  0%)   Cannon 8.0/15.6
-Level_C1_04  Medium  mono Laser         Lost       0  7/16    0/600      2   1    0     0      0 -                                0       20       0 (  0%)   Laser 6.6/42.0
-Level_C1_04  Medium  creative           Won        3 16/16  600/600     10   4    2     0      0 -                                0      200       0 (  0%)   Cannon 14.6/15.6 Rocket 4.7/33.1 PulseRifle 10.0/23.8
-Level_C1_04  Medium  naive              Lost       0  8/16    0/600      3   0    0     0      0 -                                0      123       0 (  0%)   Cannon 12.4/15.6 Rocket 0.0/25.5 PulseRifle 9.8/14.3
-Level_C1_04  Hard    mono PulseRifle    Lost       0  5/16    0/600      3   3    0     0      0 -                                0        8       0 (  0%)   PulseRifle 9.6/39.8
-Level_C1_04  Hard    mono Cannon        Lost       0  5/16    0/600      3   0    0     0      0 -                                0       50       0 (  0%)   Cannon 11.3/15.6
-Level_C1_04  Hard    mono Laser         Lost       0  5/16    0/600      2   1    0     0      0 -                                0        8       0 (  0%)   Laser 7.9/40.7
-Level_C1_04  Hard    creative           Won        1 16/16   96/600     19  11    3     0      0 HarvestDrone+RepairDrone       300      107     208 ( 11%)   Cannon 16.1/15.6 Rocket 5.1/28.6 PulseRifle 9.1/28.7
-Level_C1_04  Hard    naive              Lost       0  5/16    0/600      3   0    0     0      0 -                                0      104       0 (  0%)   Cannon 20.1/15.6 Rocket 0.0/25.5 PulseRifle 11.4/14.3
-Level_C1_05  Medium  mono PulseRifle    Lost       0  9/17    0/600      4   5    0     0      0 -                                0       32       0 (  0%)   PulseRifle 13.9/37.4
-Level_C1_05  Medium  mono Cannon        Lost       0  9/17    0/600      5   0    0     0      0 -                                0       14       0 (  0%)   Cannon 11.6/15.6
-Level_C1_05  Medium  mono Laser         Lost       0  9/17    0/600      2   2    0     0      0 -                                0      113       0 (  0%)   Laser 20.5/54.3
-Level_C1_05  Medium  creative           Lost       0 17/17    0/600     14   6    3     0      0 HarvestDrone+RepairDrone       230       10      60 (  4%)   Cannon 30.3/15.6 Rocket 2.9/25.5 PulseRifle 16.5/27.6
-Level_C1_05  Medium  naive              Lost       0 11/17    0/600      5   2    0     0      0 HarvestDrone                   100        8      60 (  8%)   Cannon 38.4/15.6 Rocket 0.5/25.5 PulseRifle 2.9/27.4
-Level_C1_05  Hard    mono PulseRifle    Lost       0  7/17    0/600      4   5    0     0      0 -                                0       22       0 (  0%)   PulseRifle 18.1/38.2
-Level_C1_05  Hard    mono Cannon        Lost       0  7/17    0/600      5   0    0     0      0 -                                0       39       0 (  0%)   Cannon 18.5/15.6
-Level_C1_05  Hard    mono Laser         Lost       0  7/17    0/600      2   2    0     0      0 -                                0      115       0 (  0%)   Laser 25.7/54.4
-Level_C1_05  Hard    creative           Lost       0 13/17    0/600      6   4    1     0      0 HarvestDrone                   160       48     287 ( 31%)   Cannon 38.3/15.6 Rocket 7.2/36.1 PulseRifle 18.9/26.7
-Level_C1_05  Hard    naive              Lost       0  9/17    0/600      4   3    0     0      0 HarvestDrone                    70       29      29 (  5%)   Cannon 42.5/15.6 Rocket 5.0/31.7 PulseRifle 5.1/19.8
-Level_C1_06  Medium  mono PulseRifle    Lost       0 11/18    0/600      4   6    0     0      0 -                                0        3       0 (  0%)   PulseRifle 12.4/38.2
-Level_C1_06  Medium  mono Cannon        Lost       0 11/18    0/600      5   0    0     0      0 -                                0       70       0 (  0%)   Cannon 9.7/15.6
-Level_C1_06  Medium  mono Laser         Lost       0 11/18    0/600      2   3    0     0      0 -                                0        7       0 (  0%)   Laser 17.9/56.4
-Level_C1_06  Medium  creative           Lost       0 16/18    0/600      6   3    1     0      0 HarvestDrone                   120       56     240 ( 26%)   Cannon 25.2/15.6 Rocket 5.0/25.5 PulseRifle 12.0/24.0
-Level_C1_06  Medium  naive              Lost       0 11/18    0/600      3   0    0     0      0 -                                0        8     201 ( 41%)   Cannon 8.5/15.6 Rocket 2.4/25.5 PulseRifle 6.4/14.3
-Level_C1_06  Hard    mono PulseRifle    Lost       0  7/18    0/600      4   5    0     0      0 -                                0       22       0 (  0%)   PulseRifle 18.0/38.8
-Level_C1_06  Hard    mono Cannon        Lost       0  7/18    0/600      4   1    0     0      0 -                                0        1       0 (  0%)   Cannon 16.4/15.6
-Level_C1_06  Hard    mono Laser         Lost       0  7/18    0/600      2   2    0     0      0 -                                0      102       0 (  0%)   Laser 24.8/53.8
-Level_C1_06  Hard    creative           Lost       0  9/18    0/600      4   1    0     0      0 HarvestDrone                    20       42       0 (  0%)   Cannon 29.2/15.6 Rocket 1.7/25.5 PulseRifle 12.7/25.7
-Level_C1_06  Hard    naive              Lost       0  6/18    0/600      3   1    0     0      0 -                                0       23      60 ( 15%)   Cannon 12.3/15.6 Rocket 0.0/25.5 PulseRifle 12.3/25.1
+Level_C1_01  Medium  mono PulseRifle    Won        3 12/12  600/600      4   8    0     0      0 -                                0      168       0 (  0%)   PulseRifle 24.9/41.4
+Level_C1_01  Medium  mono Cannon        Won        3 12/12  600/600      7   0    0     0      0 -                                0      233       0 (  0%)   Cannon 17.5/15.6
+Level_C1_01  Medium  creative           Won        3 12/12  600/600      6   4    0     0      0 -                                0      198       0 (  0%)   Cannon 19.4/15.6 PulseRifle 24.4/39.5
+Level_C1_01  Medium  naive              Won        3 12/12  600/600      5   5    0     0      0 -                                0      229     180 ( 17%)   Cannon 23.6/15.6 PulseRifle 7.3/29.3
+Level_C1_01  Hard    mono PulseRifle    Lost       0 11/12    0/600      8   7    0     0      0 -                                0       35       0 (  0%)   PulseRifle 19.1/28.5
+Level_C1_01  Hard    mono Cannon        Won        3 12/12  600/600      8   5    0     0      0 -                                0      195       0 (  0%)   Cannon 30.7/25.6
+Level_C1_01  Hard    creative           Won        3 12/12  600/600      9  15    0     0      0 -                                0       66       0 (  0%)   Cannon 29.5/18.9 PulseRifle 14.9/34.5
+Level_C1_01  Hard    naive              Won        3 12/12  600/600      9  14    0     0      0 -                                0      215       0 (  0%)   Cannon 34.0/15.6 PulseRifle 12.1/35.3
+Level_C1_02  Medium  mono PulseRifle    Lost       0 12/12    0/600      6  10    0     0      0 -                                0       18       0 (  0%)   PulseRifle 26.5/42.7
+Level_C1_02  Medium  mono Cannon        Won        3 12/12  600/600      7   1    0     0      0 -                                0      226       0 (  0%)   Cannon 28.3/17.8
+Level_C1_02  Medium  mono Laser         Won        3 12/12  600/600      4   5    0     0      0 -                                0       71       0 (  0%)   Laser 40.8/60.1
+Level_C1_02  Medium  creative           Won        3 12/12  600/600      7   7    0     0      0 -                                0        6       0 (  0%)   Cannon 20.5/15.7 PulseRifle 33.8/40.3
+Level_C1_02  Medium  naive              Lost       0 12/12    0/600      6   5    0     0      0 -                                0       60     120 ( 15%)   Cannon 25.4/15.6 PulseRifle 17.2/28.0
+Level_C1_02  Hard    mono PulseRifle    Lost       0 11/12    0/600      7  10    0     0      0 -                                0       29       0 (  0%)   PulseRifle 25.8/39.6
+Level_C1_02  Hard    mono Cannon        Won        3 12/12  600/600      9   3    0     0      0 -                                0      222     167 ( 11%)   Cannon 32.3/20.5
+Level_C1_02  Hard    mono Laser         Lost       0 12/12    0/600      4   5    0     0      0 -                                0      113     248 ( 20%)   Laser 47.5/67.7
+Level_C1_02  Hard    creative           Won        3 12/12  600/600      8   9    0     0      0 RepairDrone                      0      128      81 (  5%)   Cannon 30.1/15.9 PulseRifle 24.5/38.5
+Level_C1_02  Hard    naive              Lost       0 12/12    0/600      8   6    0     0      0 RepairDrone                      0       61      60 (  6%)   Cannon 30.3/15.6 PulseRifle 12.6/28.4
+Level_C1_03  Medium  mono PulseRifle    Lost       0 13/16    0/600      5   7    0     0      0 -                                0       58       0 (  0%)   PulseRifle 15.5/36.7
+Level_C1_03  Medium  mono Cannon        Lost       0 13/16    0/600      7   0    0     0      0 -                                0        8       0 (  0%)   Cannon 12.7/15.6
+Level_C1_03  Medium  mono Laser         Lost       0 13/16    0/600      3   3    0     0      0 -                                0       58       0 (  0%)   Laser 22.3/54.7
+Level_C1_03  Medium  creative           Lost       0 15/16    0/600      9   3    2     0      0 -                                0       52       0 (  0%)   Cannon 17.7/15.6 PulseRifle 17.7/26.9 Rocket 1.7/25.5
+Level_C1_03  Medium  naive              Lost       0 12/16    0/600      4   2    0     0      0 HarvestDrone                   110       66      82 ( 13%)   Cannon 20.9/15.6 PulseRifle 8.7/23.9 Rocket 3.7/25.5
+Level_C1_03  Hard    mono PulseRifle    Lost       0 13/16    0/600      8   9    0     0      0 -                                0       52      24 (  3%)   PulseRifle 14.9/28.9
+Level_C1_03  Hard    mono Cannon        Lost       0 13/16    0/600      8   0    0     0      0 -                                0       98      43 (  5%)   Cannon 14.5/15.6
+Level_C1_03  Hard    mono Laser         Lost       0 13/16    0/600      4   4    0     0      0 -                                0      125       0 (  0%)   Laser 27.9/58.8
+Level_C1_03  Hard    creative           Won        3 16/16  600/600     17  10    5     0      0 RepairDrone                      0      275       0 (  0%)   Cannon 17.5/15.6 Laser 26.9/63.4 PulseRifle 12.1/37.9 Rocket 3.2/25.5
+Level_C1_03  Hard    naive              Lost       0  7/16    0/600      4   2    0     0      0 HarvestDrone                    30        4       0 (  0%)   Cannon 21.6/15.6 PulseRifle 8.2/23.5
+Level_C1_04  Medium  mono PulseRifle    Lost       0  7/16    0/600      4   3    0     0      0 -                                0        5       0 (  0%)   PulseRifle 5.4/26.9
+Level_C1_04  Medium  mono Cannon        Lost       0  7/16    0/600      3   0    0     0      0 -                                0       55       0 (  0%)   Cannon 6.1/15.6
+Level_C1_04  Medium  mono Laser         Lost       0  7/16    0/600      2   1    0     0      0 -                                0       21       0 (  0%)   Laser 9.0/42.0
+Level_C1_04  Medium  creative           Won        3 16/16  600/600     12   4    3     0      0 -                                0       25      25 (  2%)   Cannon 14.9/15.6 Rocket 4.3/35.0 PulseRifle 14.6/26.1
+Level_C1_04  Medium  naive              Lost       0  7/16    0/600      3   0    0     0      0 -                                0      106       0 (  0%)   Cannon 8.2/15.6 Rocket 0.0/25.5 PulseRifle 11.1/14.3
+Level_C1_04  Hard    mono PulseRifle    Lost       0  5/16    0/600      3   3    0     0      0 -                                0        8       0 (  0%)   PulseRifle 9.3/39.9
+Level_C1_04  Hard    mono Cannon        Lost       0  5/16    0/600      3   0    0     0      0 -                                0       45       0 (  0%)   Cannon 8.2/15.6
+Level_C1_04  Hard    mono Laser         Lost       0  5/16    0/600      2   1    0     0      0 -                                0       13       0 (  0%)   Laser 9.5/41.4
+Level_C1_04  Hard    creative           Won        3 16/16  576/600     21   9    5     0      0 HarvestDrone+RepairDrone       300       21      54 (  3%)   Cannon 12.9/15.6 Rocket 3.5/32.9 PulseRifle 10.8/28.2
+Level_C1_04  Hard    naive              Lost       0  5/16    0/600      3   0    0     0      0 -                                0       91       0 (  0%)   Cannon 12.7/15.6 Rocket 0.0/25.5 PulseRifle 11.2/14.3
+Level_C1_05  Medium  mono PulseRifle    Lost       0  9/17    0/600      4   5    0     0      0 -                                0       31       0 (  0%)   PulseRifle 18.8/37.4
+Level_C1_05  Medium  mono Cannon        Lost       0  9/17    0/600      5   0    0     0      0 -                                0       14       0 (  0%)   Cannon 15.6/15.6
+Level_C1_05  Medium  mono Laser         Lost       0  9/17    0/600      2   2    0     0      0 -                                0      111       0 (  0%)   Laser 26.3/54.3
+Level_C1_05  Medium  creative           Won        3 17/17  600/600     12   4    3     0      0 AttackDrone+RepairDrone          0       73       0 (  0%)   Cannon 29.1/15.6 Rocket 1.6/25.5 PulseRifle 23.3/40.5
+Level_C1_05  Medium  naive              Lost       0 11/17    0/600      6   2    0     0      0 -                                0       50       0 (  0%)   Cannon 41.8/15.6 Rocket 0.4/25.5 PulseRifle 1.2/19.0
+Level_C1_05  Hard    mono PulseRifle    Lost       0  7/17    0/600      4   5    0     0      0 -                                0       16       0 (  0%)   PulseRifle 22.3/38.3
+Level_C1_05  Hard    mono Cannon        Lost       0  7/17    0/600      5   0    0     0      0 -                                0       23       0 (  0%)   Cannon 21.1/15.6
+Level_C1_05  Hard    mono Laser         Lost       0  7/17    0/600      2   2    0     0      0 -                                0       95       0 (  0%)   Laser 30.2/54.2
+Level_C1_05  Hard    creative           Lost       0 12/17    0/600      9   3    1     0      0 -                                0       24     144 ( 15%)   Cannon 41.4/15.6 Rocket 3.4/25.5 PulseRifle 18.4/25.6
+Level_C1_05  Hard    naive              Lost       0 10/17    0/600      4   3    0     0      0 -                                0       81      32 (  5%)   Cannon 44.3/15.6 Rocket 3.7/42.9 PulseRifle 8.0/22.7
+Level_C1_06  Medium  mono PulseRifle    Lost       0 11/18    0/600      4   6    0     0      0 -                                0        3       0 (  0%)   PulseRifle 13.9/38.0
+Level_C1_06  Medium  mono Cannon        Lost       0 11/18    0/600      5   0    0     0      0 -                                0       59       0 (  0%)   Cannon 12.0/15.6
+Level_C1_06  Medium  mono Laser         Lost       0 11/18    0/600      2   3    0     0      0 -                                0       17       0 (  0%)   Laser 21.0/57.3
+Level_C1_06  Medium  creative           Won        3 18/18  600/600     15   9    2     2      1 HarvestDrone+RepairDrone       200       60       0 (  0%)   Cannon 19.6/15.6 Rocket 3.8/34.2 PulseRifle 11.8/28.5
+Level_C1_06  Medium  naive              Lost       0  7/18    0/600      3   0    0     0      0 -                                0       21     101 ( 25%)   Cannon 11.7/15.6 Rocket 0.0/25.5 PulseRifle 9.1/14.3
+Level_C1_06  Hard    mono PulseRifle    Lost       0  7/18    0/600      4   5    0     0      0 -                                0       22       0 (  0%)   PulseRifle 20.6/38.7
+Level_C1_06  Hard    mono Cannon        Lost       0  7/18    0/600      4   0    0     0      0 -                                0       21      91 ( 18%)   Cannon 19.5/15.6
+Level_C1_06  Hard    mono Laser         Lost       0  7/18    0/600      2   2    0     0      0 -                                0      101       0 (  0%)   Laser 29.0/53.8
+Level_C1_06  Hard    creative           Lost       0  9/18    0/600      3   2    0     0      0 -                                0       18     149 ( 27%)   Cannon 33.5/15.6 Rocket 2.0/25.5 PulseRifle 23.7/34.1
+Level_C1_06  Hard    naive              Lost       0  6/18    0/600      3   1    0     0      0 -                                0       10      60 ( 16%)   Cannon 14.9/15.6 Rocket 0.0/25.5 PulseRifle 18.4/25.7
 
 In-game DPS per tower type over all runs (per tower-second with creatures on the field; share of the data DPS):
-  Cannon         22.3 dps of   17.0 data (131%) over  20880 tower-s
-  Laser          22.0 dps of   60.9 data ( 36%) over   5267 tower-s
-  PulseRifle     13.4 dps of   32.5 data ( 41%) over  27658 tower-s
-  Rocket          3.2 dps of   27.6 data ( 12%) over   8813 tower-s
+  Cannon         23.3 dps of   16.9 data (138%) over  19190 tower-s
+  Laser          30.4 dps of   58.1 data ( 52%) over   4756 tower-s
+  PulseRifle     16.0 dps of   32.7 data ( 49%) over  27146 tower-s
+  Rocket          2.8 dps of   29.3 data (  9%) over   8192 tower-s
 
 Roles in play: DPS per 100 coins standing, by what the hits landed on (loose = a light walker with fewer than two
 others within 1.2 cells, bunched = with two or more), summed over all runs:
   tower           loose  bunched   plated      air     boss
-  Cannon           9.13     7.43     3.65     0.00     0.57
-  Laser            5.63     2.70     3.28     0.00     0.09
-  PulseRifle       4.94     3.27     3.49     0.23     0.59
-  Rocket           0.00     0.00     0.00     2.32     0.18
+  Cannon           5.57     7.06     3.10     0.00     0.51
+  Laser            6.25     3.66     2.75     0.00     0.40
+  PulseRifle       4.77     3.45     2.16     0.16     0.62
+  Rocket           0.00     0.00     0.00     1.74     0.18
 
-Repairs bought with coins over all runs: 2569 of 47488 earned (5.4%).
+Repairs bought with coins over all runs: 1661 of 48961 earned (3.4%).
 
 Rules (report only): Medium at most one mono type wins, with one star; Hard none; creative wins Medium and Hard with 2+ stars; naive loses Medium+.
   Level_C1_01 Medium: mono wins PulseRifle 3*, Cannon 3* (at most 1, with 1 star)
   Level_C1_01 Medium: naive won with 3 stars (must lose: the level does not ask for thought)
   Level_C1_01 Hard: mono wins Cannon 3* (none allowed)
-  Level_C1_02 Medium: mono wins Cannon 3* (at most 1, with 1 star)
+  Level_C1_01 Hard: naive won with 3 stars (must lose: the level does not ask for thought)
+  Level_C1_02 Medium: mono wins Cannon 3*, Laser 3* (at most 1, with 1 star)
   Level_C1_02 Hard: mono wins Cannon 3* (none allowed)
-  Level_C1_04 Hard: creative Won with 1 stars at wave 16/16 (must win with 2)
-  Level_C1_05 Medium: creative Lost with 0 stars at wave 17/17 (must win with 2)
-  Level_C1_05 Hard: creative Lost with 0 stars at wave 13/17 (must win with 2)
-  Level_C1_06 Medium: creative Lost with 0 stars at wave 16/18 (must win with 2)
+  Level_C1_03 Medium: creative Lost with 0 stars at wave 15/16 (must win with 2)
+  Level_C1_05 Hard: creative Lost with 0 stars at wave 12/17 (must win with 2)
   Level_C1_06 Hard: creative Lost with 0 stars at wave 9/18 (must win with 2)

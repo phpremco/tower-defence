@@ -91,6 +91,7 @@ namespace Game.Tests
         {
             // Cannon (round 21a2): the slower reload (1.6/1.35/1.15 s) that keeps it from beating rate of fire on loose ants leaves it
             // just under the band against a lone boss; a boss is the Railgun's job, splash is the Cannon's.
+            { "Laser L2 boss", KnownPrefix + "the Laser reaches farther since round 21a3 (4.8 at L2), about 1.38x the median on a lone boss" },
             { "Cannon L0 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.72x the median on a lone boss" },
             { "Cannon L1 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.74x the median on a lone boss" },
             { "Cannon L2 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.74x the median on a lone boss" },

@@ -17,21 +17,21 @@ MonoBehaviour:
   _levels:
   - Cost: 50
     Damage: 5
-    Range: 3.5
+    Range: 4
     FireInterval: 0.35
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
   - Cost: 50
     Damage: 9
-    Range: 3.8
+    Range: 4.3
     FireInterval: 0.3
     HealthBonus: 0
     SlowFactor: 0
     SlowSeconds: 0
   - Cost: 90
     Damage: 15
-    Range: 4.1
+    Range: 4.6
     FireInterval: 0.25
     HealthBonus: 0
     SlowFactor: 0
@@ -42,6 +42,8 @@ MonoBehaviour:
   _airDamageFactor: 0.5
   _retargetRadius: 1.5
   _softTargetShare: 0.5
+  _homing: 1
+  _ledgerEfficiency: 1.017
   _fuseRadius: 0
   _maxHealth: 150
   _sellRefundFraction: 0.7
