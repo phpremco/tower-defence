@@ -76,6 +76,7 @@ namespace Game.Bosses
             _brain = brain;
             _rot = new LavaTrail(Power.RotSeconds, RotSpacing);
             _rotView = LavaTrailView.Create(brain.Field.Effects, _rot, RotRadius, Rot, RotSpores, "RotTrail");
+            _rotView.ReachUnder(brain.transform);
             _spores = FlipbookFx.Create(brain.Field.Effects, "SporeCloud", BossFxArt.Sheet.SporeCloud, false);
             for (int i = 0; i < CreepRoots; i++)
             {

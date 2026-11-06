@@ -2,6 +2,7 @@ using Game.Core;
 using Game.Enemies;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 namespace Game.Tests
 {
@@ -138,6 +139,60 @@ namespace Game.Tests
                 }
 
                 Assert.Greater(enemy.Art.Clips[move].DistancePerLoop, 0f, $"{enemy.name}: the walk would slide");
+            }
+        }
+
+        // Remco 2026-11-06: the Sealed One's outer crown ring turned half a turn per haul and snapped back at every loop.
+        // Each looping clip is sampled frame by frame, across the loop's seam too: no crown ring may jump.
+        [Test]
+        public void SealedOne_CrownRings_TurnWithoutASnap_ThroughEveryLoop()
+        {
+            const float FramesPerSecond = 30f;
+            const float MaxDegreesPerFrame = 15f;
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/SealedOne.asset");
+            var model = Object.Instantiate(art.Model);
+            try
+            {
+                var rings = new[] { "Ring_1", "Ring_2", "Ring_3" };
+                var bones = new Transform[rings.Length];
+                foreach (Transform node in model.GetComponentsInChildren<Transform>(true))
+                {
+                    int index = System.Array.IndexOf(rings, node.name);
+                    if (index >= 0)
+                    {
+                        bones[index] = node;
+                    }
+                }
+
+                CollectionAssert.AllItemsAreNotNull(bones, "the crown ring bones are missing");
+                foreach (ModelClip clip in art.Clips)
+                {
+                    if (clip.Clip == null || !clip.Clip.isLooping)
+                    {
+                        continue;
+                    }
+
+                    int frames = Mathf.RoundToInt(clip.Clip.length * FramesPerSecond);
+                    var previous = new Quaternion[bones.Length];
+                    for (int f = 0; f <= frames + 1; f++)
+                    {
+                        // Past the last frame the loop starts again: the seam is checked like any other step.
+                        clip.Clip.SampleAnimation(model, f > frames ? 1f / FramesPerSecond : f / FramesPerSecond);
+                        for (int b = 0; b < bones.Length; b++)
+                        {
+                            if (f > 0)
+                            {
+                                Assert.Less(Quaternion.Angle(previous[b], bones[b].localRotation), MaxDegreesPerFrame, $"{clip.Clip.name}: {rings[b]} jumps at frame {f}");
+                            }
+
+                            previous[b] = bones[b].localRotation;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(model);
             }
         }
     }

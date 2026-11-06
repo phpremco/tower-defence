@@ -30,6 +30,11 @@ namespace Game.Bosses
         private const float BreakSpacings = 2.2f;
         private const float HeadMinGap = 0.05f;
 
+        // Remco 2026-11-06: a trail whose fresh end rounded off just behind the boss's tail read as the start of a trail.
+        // The newest stretch runs on from where the trail is laid to the body's pivot, under the body, so the rounded head
+        // hides beneath it and the trail comes out from under it at full width. Never further than this (a teleport).
+        private const float BodyReachMax = 4f;
+
         // GroundMark rule (no square ends): the head rounds off over this many widths, the tail over more, and the tail
         // also narrows over its last metres so the trail thins out instead of stopping. Neither end takes more than this
         // share of a short stretch.
@@ -57,6 +62,7 @@ namespace Game.Bosses
         private static readonly float[] Across = { -1f, 0f, 1f };
 
         private LavaTrail _trail;
+        private Transform _body;
         private Color _hot;
         private MaterialPropertyBlock _block;
         private ParticleSystem _embers;
@@ -139,10 +145,12 @@ namespace Game.Bosses
             _along = new float[capacity];
             _order = new int[capacity];
             _runStarts = new int[capacity + 1];
-            _points = new Vector3[capacity + 1];
-            _pointAge = new float[capacity + 1];
-            _pointAlong = new float[capacity + 1];
-            int rows = (capacity + 1) * Subdivisions + capacity + 1;
+            // Room for every patch plus the two points the newest stretch reaches on with (where the boss walks, its body).
+            int points = capacity + 2;
+            _points = new Vector3[points];
+            _pointAge = new float[points];
+            _pointAlong = new float[points];
+            int rows = points * Subdivisions + points;
             _vertices = new Vector3[rows * Columns];
             _normals = new Vector3[_vertices.Length];
             _uvs = new Vector2[_vertices.Length];
@@ -299,7 +307,11 @@ namespace Game.Bosses
             return runs;
         }
 
-        // One stretch's points from its head back to its tail; the newest stretch reaches on to where the boss walks now.
+        /// <summary>The newest stretch runs on in under this body (its pivot) while the trail is being laid.</summary>
+        public void ReachUnder(Transform body) => _body = body;
+
+        // One stretch's points from its head back to its tail; the newest stretch reaches on to where the boss walks now
+        // and on under its body.
         private int FillRun(int from, int to, bool newest)
         {
             int count = 0;
@@ -308,7 +320,19 @@ namespace Game.Bosses
             {
                 Vector3 now = _trail.Head;
                 float gap = Vector3.Distance(now, _trail.PointAt(head));
-                if (gap > HeadMinGap && gap < BreakSpacings * _trail.Spacing)
+                bool joins = gap < BreakSpacings * _trail.Spacing;
+                Vector3 body = _body != null ? _body.position : now;
+                body.y = now.y;
+                float reach = Vector3.Distance(body, now);
+                if (joins && reach > HeadMinGap && reach < BodyReachMax)
+                {
+                    _points[count] = body;
+                    _pointAge[count] = 0f;
+                    _pointAlong[count] = _along[head] + gap + reach;
+                    count++;
+                }
+
+                if (joins && gap > HeadMinGap)
                 {
                     _points[count] = now;
                     _pointAge[count] = 0f;

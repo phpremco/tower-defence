@@ -123,7 +123,8 @@ def haul_hands(t, stride=HAUL_STRIDE, lift=0.7, base=None):
 
 def walk(poser, sink=0.3, slow=1.0, tag=None):
     """Hand over hand: each lower hand reaches out, plants and pulls; the torso surges with each pull, leans into
-    it, the head low and searching; the lower torso ploughs through the ground (leave a furrow)."""
+    it, the head low and searching; the lower torso ploughs through the ground (leave a furrow). Every crown ring turns
+    whole turns per loop (Unity round 16, Remco 2026-11-06: the outer ring turned half a turn and snapped back each loop)."""
     frames = int(round(HAUL_FRAMES * slow))
 
     def spec(t, f):
@@ -131,7 +132,7 @@ def walk(poser, sink=0.3, slow=1.0, tag=None):
         surge = math.sin(2 * w)
         sp = pose(sink=sink + 0.06 * math.cos(2 * w), travel=0.12 * surge, hidden=True, lean=R(14) + R(4) * surge,
                   roll=R(5) * math.sin(w), yaw=R(4) * math.sin(w), head=R(6) + R(3) * math.sin(2 * w + 0.6),
-                  head_yaw=R(8) * math.sin(w + 0.4), plates=R(4), spin=(w, -w, w * 0.5), uarm_up=R(6) * math.sin(w))
+                  head_yaw=R(8) * math.sin(w + 0.4), plates=R(4), spin=(w, -w, w), uarm_up=R(6) * math.sin(w))
         return BS.place_hands(poser, sp, haul_hands(t), curl=R(20))
     return frames, spec, True
 
@@ -199,7 +200,7 @@ def submerged(depth):
             w = 2 * math.pi * t
             sp = pose(sink=depth + 0.08 * math.sin(w), hidden=True, lean=R(10) + R(3) * math.sin(w),
                       roll=R(3) * math.sin(w + 0.5), head=R(14), plates=0.0, rings=0.45 + 0.05 * math.sin(2 * w),
-                      spin=(w, -w, w * 0.5), uarm_up=R(4) * math.sin(w))
+                      spin=(w, -w, w), uarm_up=R(4) * math.sin(w))
             return BS.place_hands(poser, sp, carried_hands(poser, sp, tuck=0.6), curl=R(30))
         return 96, spec, True
     return fn

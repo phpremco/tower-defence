@@ -167,18 +167,18 @@
         "note": "in place under the surface; only the violet glow shows",
         "frames": 96,
         "loop": true,
-        "depth_m": 5.575,
+        "depth_m": 5.519,
         "mesh_top_m": -0.2
       },
       "Dive_Into_Liquid": {
         "end_offset_forward_m": 2.0,
-        "depth_m": 5.575,
+        "depth_m": 5.519,
         "note": "ends in Submerged_Loop frame 0 moved end_offset forward",
         "frames": 90,
         "loop": false
       },
       "Surface_Burst": {
-        "start_depth_m": 5.575,
+        "start_depth_m": 5.519,
         "end_offset_forward_m": 2.4,
         "hands_slam_frame": 24,
         "note": "start under the exit point; at the end move the transform by end_offset_forward",
@@ -231,7 +231,7 @@
     "extra_objects": [],
     "climb_height_m": 2.0,
     "liquid": "void pool (any liquid)",
-    "submerged_depth_m": 5.575,
+    "submerged_depth_m": 5.519,
     "hand_markers": "IK_LArm_L / IK_LArm_R at the lower hands' rest contacts",
     "seal_stones": "Seal_1..7 and Rubble (the heaved ground ring, moved off Root in round 28): scale 1 in Rise only (the entrance out of the seal); scale 0 in every other clip (round 29: keyed explicitly in all clips)",
     "phase_looks": {

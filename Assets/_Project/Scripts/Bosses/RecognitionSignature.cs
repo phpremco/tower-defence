@@ -13,8 +13,8 @@ namespace Game.Bosses
     /// <summary>
     /// Recognition (the Sealed One, Docs/BOSSES.md). It does not come to you: the map comes to it. The ground near the
     /// start of the road rumbles and cracks open, it rises out of the rift and hauls itself down the road past the whole
-    /// defence, held by the gates like any creature, onto the base; the violet furrow its lower body ploughs opens only
-    /// behind it and breaks off round every structure and the hero. It learns: at every
+    /// defence, held by the gates like any creature, onto the base; the violet furrow its lower body ploughs runs in under
+    /// it at full width, never ahead of it, and breaks off round every structure and the hero. It learns: at every
     /// phase change it adapts, and the tower type that dealt it the most damage in the phase before lands only a share of
     /// its hits in the next (ORA names it, the boss bar shows its icon dimmed, the sealed crystals at the rift take its
     /// colour). Each phase drains one gate's gun (the gate keeps blocking) and gives it back at the phase's end. Its glow
@@ -30,10 +30,13 @@ namespace Game.Bosses
         private const float DrainIntensity = 3.5f;
         private const float ArriveMargin = 1.5f;
         private const float BaseBurstRadius = 2.2f;
-        // Remco 2026-11-05: the furrow opens only where it has been. Its open end lies this share of the body's half width
-        // behind its pivot and pinches to a point over FurrowTaper metres, so it trails out from under its tail.
-        private const float FurrowBehindShare = 0.5f;
-        private const float FurrowTaper = 3f;
+        // Remco 2026-11-05: the furrow opens only where it has been, nothing ahead of it. Remco 2026-11-06: a furrow that
+        // pinched to a point behind its tail read as the start of a trail; it is dug right now, so its open end lies under
+        // its pivot (the torso), its lips rise over this short ramp and it is cut off ahead by a pinch this short, both
+        // under the body: it runs in at full width where the dust and the heaved chunks come up, and it rounds off only at
+        // the rift it rose from.
+        private const float FurrowOpenRamp = 0.8f;
+        private const float FurrowCut = 0.4f;
         // How far ahead along the furrow its pivot is looked for each frame (it never jumps to another leg of the road).
         private const float FurrowSearch = 8f;
         // Ground left intact round what stands on the road: the structure's footprint plus this margin, and the furrow
@@ -178,7 +181,7 @@ namespace Game.Bosses
             if (!Enemy.IsConcealed && !_onBase)
             {
                 _furrowOpen = Mathf.Max(_furrowOpen, _furrow.AlongNear(Position, _furrowOpen, FurrowSearch));
-                _furrow.OpenTo(_furrowOpen - _brain.BodyHalfWidth * FurrowBehindShare);
+                _furrow.OpenTo(_furrowOpen);
             }
 
             PublishKeepOut();
@@ -358,7 +361,8 @@ namespace Game.Bosses
             _furrowOpen = 0f;
             _furrow?.Fade();
             _furrow = CrackLineView.Create(Field.Effects, Field.Draped(_plan), CrackStyle.Furrow);
-            _furrow.SetHeadTaper(FurrowTaper);
+            _furrow.SetHeadTaper(FurrowCut);
+            _furrow.SetOpenRamp(FurrowOpenRamp);
             _furrow.KeepOffStructures();
         }
 

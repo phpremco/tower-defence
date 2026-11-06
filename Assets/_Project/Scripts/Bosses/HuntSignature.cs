@@ -84,6 +84,7 @@ namespace Game.Bosses
                 }
 
                 _trailView = LavaTrailView.Create(Field.Effects, _trail, Hunt.TrailRadius);
+                _trailView.ReachUnder(_brain.transform);
             }
 
             _trail.Clear();

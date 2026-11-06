@@ -2759,3 +2759,28 @@ Not committed.
   `RenderSettings.sun` then reports a preview Key. Paired stills after opening the codex (`r15b_lighting.sh`,
   gallery `Lighting/72_*`): the field differs on 0.1-1.6 % of pixels, the codex preview on ~5.5 %; ON looks the same on
   all six themes and needs no re-tuning. The washed-out Frost Warden was its pale albedo, not the leak (round 15 fix).
+
+## Round 16: the Sealed One's furrow and its crown rings, spinner audit (2026-11-06)
+
+Not committed.
+- **Furrow (Remco: "alsof het het begin is"):** the round-13 furrow opened half a body width behind the pivot and pinched
+  to a point over 3 m, so it read as the start of a trail. Its open end now lies under the pivot (the torso), the lips
+  rise over a 0.8 m ramp and a 0.4 m pinch cuts it off, both under the body: it runs in at full width where the dust,
+  grit and heaved chunks come up, and rounds off only at the rift. The pinch stays because the furrow material's
+  threshold mode is Always (the opening does not hide it; without the cut the whole route ahead showed). Keep-out
+  circles unchanged. `CrackLineView.SetOpenRamp`, `RecognitionSignature.FurrowOpenRamp/FurrowCut`.
+- **Lava and rot trails:** same reading (their fresh end rounded 1.6 / 1.4 m behind the pivot, at the tail). The
+  newest stretch now runs on to the body's pivot (`LavaTrailView.ReachUnder`, used by `HuntSignature` and
+  `OvergrowthSignature`); look only, the burning patches (logic) are unchanged. Gravemaw's crack is not changed: it is
+  a tearing tip running ahead of a buried body, where a point is right.
+- **Crown rings:** not the radar bug (they turn about one fixed axis), but a Blender clip seam: `Ring_3` turned half a
+  turn per loop in Walk, Climb_Loop and Submerged_Loop and snapped back 178 degrees at every loop.
+  `Tools/Blender/build_sealedone_mech.py` now turns every ring whole turns per loop; SealedOne re-exported (`--norender`)
+  and synced. EditMode test `CreatureArtTests.SealedOne_CrownRings_TurnWithoutASnap_ThroughEveryLoop`.
+- **Spinner audit:** `Tools/PlayTest/r16_loop_seams.cs` (every clip of every art, per-frame steps and loop seams, edit
+  mode) and `r16_spin_probe.cs` (every steady spinner in a running scene with its axis). Shots/probes:
+  `r16_boss_shots.sh` (+ `r16_focus_boss.cs`, `r16_furrow_mode.cs` old/new furrow in one frame, `r16_trail_mode.cs`, `r16_trail_probe.cs`, `r16_hide_boss.cs`), `r16_own_axis.cs` (spin axis of each part in its own frame), `r16_playmode.sh` (PlayMode classes one at a time, save kept).
+- **Leftovers:** FireLarva's Crawl loop flips `Leg_L2_Upper` up to 172 degrees in one frame (an IK flip in the export,
+  Blender side); the Sealed One's Dive_Into_Liquid unwinds its rings ~26 degrees/frame in its last 8 frames (under the
+  surface). `ArtSource/Exports/ShardFlyer/ShardFlyer.fbx` is newer than the copy in Assets: a full sync would pull it in
+  (reverted here, not part of this round).

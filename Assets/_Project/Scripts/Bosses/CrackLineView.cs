@@ -118,6 +118,7 @@ namespace Game.Bosses
         private float[] _widthScale;
         private readonly List<Mesh> _branchMeshes = new List<Mesh>(4);
         private float _open = -1f;
+        private float _openRamp = OpenRamp;
         private float _fade = -1f;
         private Transform _head;
         private ParticleSystem _grit;
@@ -204,7 +205,7 @@ namespace Game.Bosses
             if (_mark != null)
             {
                 // The ramp runs behind the open end, so the very end is the fissure just starting to part.
-                _mark.SetFloat(GroundMark.OpenDistance, distance + (distance >= _length - 0.01f ? OpenRamp : 0f));
+                _mark.SetFloat(GroundMark.OpenDistance, distance + (distance >= _length - 0.01f ? _openRamp : 0f));
             }
 
             _head.position = PointAt(distance) + Vector3.up * Lift;
@@ -257,8 +258,22 @@ namespace Game.Bosses
             return Mathf.Max(start, bestAlong) / scale;
         }
 
-        /// <summary>Pinches the open end of a painted mark to a point over this many metres (a furrow ending under its tail).</summary>
+        /// <summary>
+        /// Pinches the open end of a painted mark to nothing over this many metres; nothing of it shows past the open end.
+        /// A mark whose threshold does not follow the opening (the furrow's Always mode) needs it to stay off the ground
+        /// ahead; a short pinch under the body keeps it full width up to there (Remco 2026-11-06).
+        /// </summary>
         public void SetHeadTaper(float metres) => _mark?.SetFloat(HeadTaperId, metres);
+
+        /// <summary>
+        /// How many metres behind its open end a painted mark takes to open fully (its lips rise and its glow comes up). A
+        /// furrow being dug right now opens over a short ramp hidden under the body, so it runs in at full width.
+        /// </summary>
+        public void SetOpenRamp(float metres)
+        {
+            _openRamp = Mathf.Max(0.01f, metres);
+            _mark?.SetFloat(GroundMark.OpenRamp, _openRamp);
+        }
 
         /// <summary>
         /// Lets a painted mark break off round the keep-out circles of <see cref="GroundKeepOut"/> (structures, the hero): it
