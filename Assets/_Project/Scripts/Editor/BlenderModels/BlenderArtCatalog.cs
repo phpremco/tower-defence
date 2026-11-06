@@ -328,6 +328,8 @@ namespace Game.Editor
                 new BlenderArtEntry("FrostWarden", "FrostWarden")
                 {
                     Scale = TitanFactor,
+                    // Round 15: its pale stone and ice washed out white on the codex pedestal.
+                    DisplayExposure = 0.6f,
                     SecondMaterial = "Ice",
                     // Round 30: the baked ice maps are cold now, so the round-5 flat tint is dropped (baked albedo and glow
                     // kept); the cold rim and a faint glow (emission x 2, README round 30) stay.

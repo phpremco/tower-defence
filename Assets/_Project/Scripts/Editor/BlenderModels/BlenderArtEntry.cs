@@ -89,6 +89,9 @@ namespace Game.Editor
         /// <summary>Lightens (above 1) or darkens the baked albedo, for a model that reads too dark at play size.</summary>
         public float Brightness { get; set; } = 1f;
 
+        /// <summary>Factor on the painted colour on a display stage (codex, upgrade screen, menus): below 1 for a pale model that washes out white.</summary>
+        public float DisplayExposure { get; set; } = 1f;
+
         /// <summary>Our side: rimmed in the colony's cool light instead of the aliens' warm one.</summary>
         public bool Colony { get; set; }
 

@@ -27,6 +27,18 @@ namespace Game.Levels
         private static readonly Color SmokeColor = new Color(0.2f, 0.19f, 0.18f, 0.35f);
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f) * 2f;
 
+        // Where the wreck keeps burning, as shares of its footprint (x across, y towards the road), and how it flickers.
+        private static readonly Vector2[] WreckFireSpots = { new Vector2(0.35f, 0.55f), new Vector2(0.7f, 0.3f), new Vector2(0.25f, 0.2f) };
+        private const float WreckFireLift = 0.5f;
+        private const float EmberGlow = 2.5f;
+        private const float FlickerSpeed = 3.2f;
+        private const float FlickerDepth = 0.35f;
+        private static readonly Color WreckSmokeColor = new Color(0.22f, 0.18f, 0.16f, 0.4f);
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
+        private static readonly int RimColorId = Shader.PropertyToID("_RimColor");
+        private static readonly int RimStrengthId = Shader.PropertyToID("_RimStrength");
+
         private BaseArtDefinition _art;
         private ArtModel _model;
         private ArtModel _damage;
@@ -42,6 +54,7 @@ namespace Game.Levels
         private EmissionBlink _blink;
         private BaseShuttleView _shuttle;
         private BaseDockView _docks;
+        private Light _fire;
 
         /// <summary>A display copy has no health to follow: it only turns and glows, its bays shut.</summary>
         public static GameObject BuildDisplay(Transform parent, BaseArtDefinition art)
@@ -232,12 +245,53 @@ namespace Game.Levels
             _damage?.SetActive(false);
             if (_art.Wreck != null)
             {
-                _wreck = ArtModel.Create(transform, _art.Wreck, ownMaterial: false);
+                _wreck = ArtModel.Create(transform, _art.Wreck, ownMaterial: true);
+                KeepBurning();
+            }
+        }
+
+        // The fallen base keeps burning so it reads at the play zoom: its plates a little lighter, its painted embers hotter, a
+        // warm rim from the fire on every edge, a flickering fire light and embers and smoke rising from the footprint.
+        private void KeepBurning()
+        {
+            Material material = _wreck.Material;
+            Color fire = _art.WreckFireColor;
+            material.SetColor(BaseColorId, material.GetColor(BaseColorId) * _art.WreckLift);
+            material.SetColor(EmissionColorId, material.GetColor(EmissionColorId) * _art.WreckGlow);
+            material.SetColor(RimColorId, fire);
+            material.SetFloat(RimStrengthId, _art.WreckRim);
+
+            _fire = new GameObject("WreckFire").AddComponent<Light>();
+            _fire.transform.SetParent(transform, false);
+            _fire.transform.localPosition = Vector3.up * _art.WreckFireHeight;
+            _fire.type = LightType.Point;
+            _fire.color = fire;
+            _fire.range = _art.WreckFireRange;
+            _fire.intensity = _art.WreckFireIntensity;
+            _fire.shadows = LightShadows.None;
+
+            Vector2 min = _art.FootprintMin;
+            Vector2 max = _art.FootprintMax;
+            Color ember = fire * EmberGlow;
+            ember.a = 1f;
+            for (int i = 0; i < WreckFireSpots.Length; i++)
+            {
+                Vector2 share = WreckFireSpots[i];
+                var spot = new Vector3(Mathf.Lerp(min.x, max.x, share.x), WreckFireLift, Mathf.Lerp(min.y, max.y, share.y));
+                ParticleSystem embers = ParticleKit.UseCell(ParticleKit.Create(transform, "WreckEmbers", spot, ember, 1.2f, 2.4f, 0.04f, 0.09f, 0.3f, 0.9f, -0.08f, 60, 0.45f), MarkerArt.ParticleCell.Ember);
+                ParticleKit.SetRate(embers, _art.WreckEmberRate);
+                ParticleSystem smoke = ParticleKit.Create(transform, "WreckSmoke", spot, WreckSmokeColor, 2.5f, 4f, 0.5f, 1.1f, 0.3f, 0.6f, -0.1f, 30, 0.35f);
+                ParticleKit.SetRate(smoke, _art.WreckSmokeRate);
             }
         }
 
         private void Update()
         {
+            if (_fire != null)
+            {
+                _fire.intensity = _art.WreckFireIntensity * (1f - FlickerDepth + FlickerDepth * Mathf.PerlinNoise(Time.time * FlickerSpeed, 0f) * 2f);
+            }
+
             if (!_damaged || _sparkSockets.Length == 0)
             {
                 return;

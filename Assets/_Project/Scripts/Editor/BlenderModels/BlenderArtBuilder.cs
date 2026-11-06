@@ -230,6 +230,7 @@ namespace Game.Editor
             so.FindProperty("_deathFade").vector2Value = DeathFade(entry, clips);
             so.FindProperty("_embers").boolValue = entry.Embers;
             so.FindProperty("_bleeds").boolValue = entry.Bleeds;
+            so.FindProperty("_displayExposure").floatValue = entry.DisplayExposure;
             WriteStrings(so.FindProperty("_shedBones"), entry.ShedBonesKey != null ? report.Strings(entry.ShedBonesKey) : new List<string>());
             WriteClips(so.FindProperty("_clips"), clips);
             WriteParts(so.FindProperty("_parts"), parts);

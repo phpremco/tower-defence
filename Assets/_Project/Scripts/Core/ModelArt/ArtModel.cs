@@ -170,7 +170,9 @@ namespace Game.Core
             instance.name = art.name;
             Transform root = instance.transform;
             root.localPosition = Vector3.zero;
-            root.localRotation = Quaternion.Euler(0f, art.Yaw, 0f);
+            // A one-mesh export carries the FBX axis turn on its root itself (the base's wreck and damage overlay, the gate's
+            // wreck): replacing it with the yaw stood those models on their edge, so the yaw is put in front of it instead.
+            root.localRotation = Quaternion.Euler(0f, art.Yaw, 0f) * art.Model.transform.localRotation;
             root.localScale = Vector3.one * art.Scale;
             Renderer[] renderers = instance.GetComponentsInChildren<Renderer>(true);
             Transform farRig = null;

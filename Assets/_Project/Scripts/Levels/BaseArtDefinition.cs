@@ -71,12 +71,36 @@ namespace Game.Levels
         [SerializeField] private Vector3[] _turretMounts = new Vector3[0];
         [Tooltip("The drone bays' dock sockets: the first drones launched live in these and idle above them.")]
         [SerializeField] private Vector3[] _dockPoints = new Vector3[0];
+        [Tooltip("Where drones beyond the bays hover (only x and z count; they fly at their own height): over the low roofs and the deck's front lip, clear of the radar mast, the command post and the shuttle's climb.")]
+        [SerializeField] private Vector3[] _idlePoints =
+        {
+            new Vector3(0.15f, 0f, -1.4f), new Vector3(1.3f, 0f, 1.5f), new Vector3(-1.3f, 0f, 1.5f),
+            new Vector3(-0.4f, 0f, -0.6f), new Vector3(0f, 0f, 1.6f),
+        };
 
         [Header("Damage")]
         [Tooltip("Health share below which the damage overlay shows and the sockets smoke.")]
         [SerializeField] [Range(0.05f, 0.95f)] private float _damagedBelow = 0.5f;
         [Tooltip("Seconds after the base falls before the wreck replaces it: the flash hides the swap.")]
         [SerializeField] [Min(0f)] private float _wreckDelay = 0.25f;
+
+        [Header("Wreck look (it must read at the play zoom on a dark field)")]
+        [Tooltip("Factor on the wreck's painted colour: the charred deck is lifted a little so its shape reads.")]
+        [SerializeField] [Range(1f, 3f)] private float _wreckLift = 1.5f;
+        [Tooltip("Factor on the wreck's painted glow (its embers and torn cables).")]
+        [SerializeField] [Range(0f, 6f)] private float _wreckGlow = 2.5f;
+        [Tooltip("Colour of the fire that keeps burning in the wreck: its light, its rim on the plates and its embers.")]
+        [SerializeField] private Color _wreckFireColor = new Color(1f, 0.48f, 0.16f);
+        [SerializeField] [Min(0f)] private float _wreckFireIntensity = 5f;
+        [SerializeField] [Min(0.5f)] private float _wreckFireRange = 6f;
+        [Tooltip("Height of the fire light over the deck.")]
+        [SerializeField] [Min(0f)] private float _wreckFireHeight = 1.3f;
+        [Tooltip("Strength of the warm rim the fire gives the wreck's edges.")]
+        [SerializeField] [Range(0f, 3f)] private float _wreckRim = 1.2f;
+        [Tooltip("Embers rising from the wreck per second, per fire.")]
+        [SerializeField] [Min(0f)] private float _wreckEmberRate = 10f;
+        [Tooltip("Smoke puffs per second, per fire.")]
+        [SerializeField] [Min(0f)] private float _wreckSmokeRate = 3f;
 
         public ModelArtDefinition Model => _model;
         public ModelArtDefinition Damage => _damage;
@@ -109,6 +133,16 @@ namespace Game.Levels
         public Vector3[] DockPoints => _dockPoints;
         public float DamagedBelow => _damagedBelow;
         public float WreckDelay => _wreckDelay;
+        public float WreckLift => _wreckLift;
+        public float WreckGlow => _wreckGlow;
+        public Color WreckFireColor => _wreckFireColor;
+        public float WreckFireIntensity => _wreckFireIntensity;
+        public float WreckFireRange => _wreckFireRange;
+        public float WreckFireHeight => _wreckFireHeight;
+        public float WreckRim => _wreckRim;
+        public float WreckEmberRate => _wreckEmberRate;
+        public float WreckSmokeRate => _wreckSmokeRate;
+        public Vector3[] IdlePoints => _idlePoints;
 
         /// <summary>A point of the base's own frame on the field, the base standing at <paramref name="centre"/> with <paramref name="facing"/>.</summary>
         public static Vector3 ToWorld(Vector3 local, Vector3 centre, Quaternion facing) => centre + facing * local;

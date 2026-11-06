@@ -15,6 +15,8 @@ namespace Game.Levels
         private const int MaxPerDraw = 1023;
         private const float ChunkSize = 10f;
         private const float CullMargin = 3f;
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private sealed class Batch
         {
@@ -33,10 +35,16 @@ namespace Game.Levels
         private readonly Dictionary<(Mesh, Material, bool, Vector2Int), Batch> _lookup = new Dictionary<(Mesh, Material, bool, Vector2Int), Batch>();
         private readonly List<Batch> _batches = new List<Batch>();
 
-        // A remains piece is fitted to this share of the smashed piece's reach: the rubble spreads a little wider than the piece stood, so it reads at the game camera.
-        private const float RemainsFit = 1.2f;
-        private const float MinRemainsScale = 0.3f;
-        private const float MaxRemainsScale = 3f;
+        // A remains piece is fitted to this share of the smashed piece's reach: the rubble spreads well wider than the piece
+        // stood and heaps a little higher than modelled, so it reads at the game camera on a dark field (round 15).
+        private const float RemainsFit = 1.7f;
+        private const float MinRemainsScale = 0.8f;
+        private const float MaxRemainsScale = 4.5f;
+        private const float RemainsHeap = 1.35f;
+
+        // Crystal shards glow in the colour family of the level's crystals (their light pools), a little lifted, so they read.
+        private const float CrystalRemainsGlow = 2.4f;
+        private const float RemainsAlbedoLift = 1.3f;
 
         // Decoration a boss smashes when its body overlaps it (DecorContact.Breakable), with its reach and its remains.
         private readonly List<(Batch Batch, Matrix4x4 Matrix, float Radius, DecorRemains Remains)> _breakable = new List<(Batch, Matrix4x4, float, DecorRemains)>();
@@ -45,6 +53,8 @@ namespace Game.Levels
         private readonly Dictionary<(Mesh, Vector2Int), Batch> _remainsLookup = new Dictionary<(Mesh, Vector2Int), Batch>();
         private EnvironmentSet _remainsSet;
         private bool _remainsLow;
+        private Color _crystalGlow;
+        private Material _crystalRemains;
         private Batch _lastBatch;
         private Matrix4x4 _lastMatrix;
         private Bounds _lastBounds;
@@ -209,6 +219,8 @@ namespace Game.Levels
         {
             _remainsSet = set;
             _remainsLow = low;
+            EnvironmentDecor crystal = set != null ? set.Decor(PropKind.Crystal) ?? set.Decor(PropKind.IceShard) : null;
+            _crystalGlow = crystal != null ? crystal.Glow : Color.clear;
         }
 
         /// <summary>
@@ -256,12 +268,12 @@ namespace Game.Levels
             float scale = span > 0.001f ? Mathf.Clamp(reach * RemainsFit / span, MinRemainsScale, MaxRemainsScale) : 1f;
             Vector3 side = piece.GetColumn(0);
             float yaw = Mathf.Atan2(side.z, side.x) * Mathf.Rad2Deg;
-            Matrix4x4 matrix = Matrix4x4.TRS(piece.GetPosition(), Quaternion.Euler(0f, -yaw, 0f), Vector3.one * scale) * model.Node;
+            Matrix4x4 matrix = Matrix4x4.TRS(piece.GetPosition(), Quaternion.Euler(0f, -yaw, 0f), new Vector3(scale, scale * RemainsHeap, scale)) * model.Node;
             Bounds bounds = Transform(model.Mesh.bounds, matrix);
             var chunk = new Vector2Int(Mathf.FloorToInt(bounds.center.x / ChunkSize), Mathf.FloorToInt(bounds.center.z / ChunkSize));
             if (!_remainsLookup.TryGetValue((model.Mesh, chunk), out Batch batch))
             {
-                batch = new Batch { Mesh = model.Mesh, Material = model.MaterialFor(_remainsLow), Shadows = false, All = new Matrix4x4[0], Bounds = bounds, HasBounds = true };
+                batch = new Batch { Mesh = model.Mesh, Material = RemainsMaterial(kind, model), Shadows = false, All = new Matrix4x4[0], Bounds = bounds, HasBounds = true };
                 _remainsLookup[(model.Mesh, chunk)] = batch;
                 _batches.Add(batch);
             }
@@ -274,6 +286,27 @@ namespace Game.Levels
             bounds.Expand(CullMargin);
             batch.Bounds.Encapsulate(bounds);
             RemainsCount++;
+        }
+
+        // Stone and plant debris wear their own material; crystal shards a level copy lit in the level's crystal colour.
+        private Material RemainsMaterial(DecorRemains kind, EnvironmentMesh model)
+        {
+            Material source = model.MaterialFor(_remainsLow);
+            if (kind != DecorRemains.Crystal || _crystalGlow.maxColorComponent <= 0f)
+            {
+                return source;
+            }
+
+            if (_crystalRemains == null)
+            {
+                Color hue = _crystalGlow / _crystalGlow.maxColorComponent;
+                hue.a = 1f;
+                _crystalRemains = Own(source);
+                _crystalRemains.SetColor(BaseColorId, source.GetColor(BaseColorId) * RemainsAlbedoLift);
+                _crystalRemains.SetColor(EmissionColorId, hue * CrystalRemainsGlow);
+            }
+
+            return _crystalRemains;
         }
 
         private static void Remove(Batch batch, Matrix4x4 matrix)

@@ -65,5 +65,20 @@ MonoBehaviour:
   - {x: 1.3199999, y: 0.31, z: -0.32000014}
   - {x: 1.9999999, y: 0.31, z: -1.0000001}
   - {x: 1.3199998, y: 0.31, z: -1.0000001}
+  _idlePoints:
+  - {x: 0.15, y: 0, z: -1.4}
+  - {x: 1.3, y: 0, z: 1.5}
+  - {x: -1.3, y: 0, z: 1.5}
+  - {x: -0.4, y: 0, z: -0.6}
+  - {x: 0, y: 0, z: 1.6}
   _damagedBelow: 0.5
   _wreckDelay: 0.25
+  _wreckLift: 1.5
+  _wreckGlow: 2.5
+  _wreckFireColor: {r: 1, g: 0.48, b: 0.16, a: 1}
+  _wreckFireIntensity: 5
+  _wreckFireRange: 6
+  _wreckFireHeight: 1.3
+  _wreckRim: 1.2
+  _wreckEmberRate: 10
+  _wreckSmokeRate: 3

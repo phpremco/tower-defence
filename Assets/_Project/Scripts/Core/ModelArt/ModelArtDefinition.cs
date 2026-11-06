@@ -38,6 +38,8 @@ namespace Game.Core
         [SerializeField] [Range(0.001f, 1f)] private float _lodScreenHeight = 0.06f;
         [Tooltip("The bone whose branch the upper-body clips move (a hero's spine), or empty when every clip moves the whole body.")]
         [SerializeField] private string _upperBodyBone = string.Empty;
+        [Tooltip("Factor on the painted colour when the model stands on a display stage (codex, upgrade screen, menus): below 1 for a pale body that washes out white under the stage's lights, so it keeps its colour. Its glow is left as it is.")]
+        [SerializeField] [Range(0.2f, 1.5f)] private float _displayExposure = 1f;
 
         [Header("Moments")]
         [Tooltip("Seconds into the Death clip over which the glow dies away (x start, y end); zero keeps it lit.")]
@@ -72,6 +74,7 @@ namespace Game.Core
         public float Height => _height;
         public float LodScreenHeight => _lodScreenHeight;
         public string UpperBodyBone => _upperBodyBone;
+        public float DisplayExposure => _displayExposure;
         public Vector2 DeathFade => _deathFade;
         public bool FadesOnDeath => _deathFade.y > _deathFade.x;
         public bool Embers => _embers;

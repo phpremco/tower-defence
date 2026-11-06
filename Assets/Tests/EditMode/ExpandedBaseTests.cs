@@ -121,6 +121,54 @@ namespace Game.Tests
             Assert.IsEmpty(failures, string.Join("\n", failures));
         }
 
+        // Round 15: the wreck and the damage overlay are one-mesh exports whose FBX axis turn sits on the root; built as the
+        // level builds them they lie on the deck (wider than tall), not on their edge.
+        [Test]
+        public void WreckAndDamageOverlay_LieFlat()
+        {
+            BaseArtDefinition art = Art();
+            foreach (ModelArtDefinition part in new[] { art.Wreck, art.Damage })
+            {
+                var parent = new GameObject("BasePartStill");
+                try
+                {
+                    ArtModel model = ArtModel.CreateStill(parent.transform, part);
+                    Bounds bounds = model.Renderers[0].bounds;
+                    foreach (Renderer renderer in model.Renderers)
+                    {
+                        bounds.Encapsulate(renderer.bounds);
+                    }
+
+                    Assert.Less(bounds.size.y, Mathf.Min(bounds.size.x, bounds.size.z), $"{part.name} stands on its edge: {bounds.size}");
+                }
+                finally
+                {
+                    Object.DestroyImmediate(parent);
+                }
+            }
+        }
+
+        // Round 15: drones past the bays hover over the deck at spots of their own, apart from each other and the docks.
+        [Test]
+        public void IdleSpots_LieOnTheDeck_ApartFromTheDocks()
+        {
+            BaseArtDefinition art = Art();
+            const float MinimumGap = 0.9f;
+            Assert.IsNotEmpty(art.IdlePoints, "no idle spots");
+            var taken = new List<Vector3>(art.DockPoints);
+            foreach (Vector3 spot in art.IdlePoints)
+            {
+                Assert.IsTrue(art.Covers(spot, Vector3.zero, Quaternion.identity, 0f), $"idle spot {spot} is off the deck");
+                foreach (Vector3 other in taken)
+                {
+                    var flat = new Vector2(spot.x - other.x, spot.z - other.z);
+                    Assert.GreaterOrEqual(flat.magnitude, MinimumGap, $"idle spot {spot} crowds {other}");
+                }
+
+                taken.Add(spot);
+            }
+        }
+
         private static BaseArtDefinition Art()
         {
             var art = AssetDatabase.LoadAssetAtPath<BaseArtDefinition>(BaseArtPath);

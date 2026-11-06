@@ -2718,3 +2718,27 @@ Not committed.
   idle at the road end; the wreck is the round-37 wreck, dark at the play zoom.
 - **Try it:** open the project, Boot, play Crystal Plains level 4 (all three drones): buy drones and watch them leave and
   return to their bays, the shuttle comes and goes every ~38 s.
+
+## Round 15: visual leftovers (decor remains, base wreck, Codex pedestal, idle drones) (2026-11-06)
+
+Not committed.
+- **Root turn bug (cause of the dark wreck):** `ArtModel.Build` replaced the model root's rotation with the art's yaw. The
+  one-mesh exports carry their FBX axis turn on the root (Base_Wreck, Base_Damage, Gate_Wreck, Gate_IceBlock,
+  RotOvergrowth), so the base wreck, the base damage overlay and the gate wreck stood on their edge. The yaw now goes in
+  front of the root's own turn. New EditMode test `ExpandedBaseTests.WreckAndDamageOverlay_LieFlat`.
+- **Base wreck:** wears its own material copy, lifted (`BaseArtDefinition` "Wreck look": lift 1.5, glow 2.5, warm rim
+  1.2), a flickering fire light and three ember/smoke spots over the footprint. All values are data on `BaseArt`.
+- **Decor remains:** fitted wider (1.7 x the piece's reach, scale 0.8..4.5) and heaped 1.35 x higher; crystal shards wear
+  a level copy glowing in the level's crystal colour (`EnvironmentDecor.Glow`), albedo x1.3 (`EnvironmentInstancer`).
+- **Codex pedestal:** `ModelArtDefinition.DisplayExposure` (Frost Warden 0.6, set in `BlenderArtCatalog` and in data)
+  tones down the painted colour of a display creature (`CreatureDisplay`), glow untouched. Other entries unchanged
+  (image diff 0.01 %).
+- **Idle drones:** drones past the four bays get their own logic home over the deck (`BaseArtDefinition.IdlePoints`, five
+  spots on the base frame clear of the radar mast, command post and shuttle climb; `DroneController.HomeFor`); only
+  past those they wait at the road end. Test `ExpandedBaseTests.IdleSpots_LieOnTheDeck_ApartFromTheDocks`.
+- **Apply:** `Tools/PlayTest/Scripts/ApplyR15.cs` (writes the Frost Warden exposure and the new BaseArt fields).
+  Probes/shots: `r15_base.sh`, `r15_codex.sh`, `r15_remains.sh` (+ `r15_*.cs`).
+- **Open:** the preview rigs' Key/Fill/Rim directional lights (`ModelPreview`) light everything (culling mask all) and a
+  preview Key light is `RenderSettings.sun` in a level; this is why pale models wash out and it may affect the level's own
+  lighting. Not changed (it would change the look everywhere); worth a decision. The ice block and vines (also one-mesh
+  roots) now stand as exported; arenas pass, not checked by eye.

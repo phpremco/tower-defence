@@ -18,6 +18,7 @@ namespace Game.Levels
         private Transform _parent;
         private Vector3 _home;
         private Vector3[] _docks;
+        private Vector3[] _idleSpots;
         private int _launched;
         private Vector3[] _mineNodes;
         private float[] _mineStocks;
@@ -36,7 +37,9 @@ namespace Game.Levels
 
             Vector2Int[] road = context.Level.MainRoad;
             _home = context.Level.Road.CentreOf(road[road.Length - 1]);
-            _docks = DockPoints(context.Level);
+            BaseArtDefinition art = context.Level.Theme != null ? context.Level.Theme.BaseArt : null;
+            _docks = BasePoints(context.Level, art != null ? art.DockPoints : null);
+            _idleSpots = BasePoints(context.Level, art != null ? art.IdlePoints : null);
 
             Vector2Int[] mines = context.Level.MineCells;
             _mineNodes = new Vector3[mines.Length];
@@ -86,11 +89,9 @@ namespace Game.Levels
             go.transform.SetParent(_parent, false);
             var drone = go.AddComponent<Drone>();
 
-            // The first drones each live in a bay of the base and start from it; the rest start side by side at the road end
-            // so they do not sit on top of each other.
-            bool docked = _launched < _docks.Length;
-            Vector3 home = docked ? _docks[_launched] : _home;
-            float offset = docked ? 0f : ((_launched % 4) - 1.5f) * SpawnSpread;
+            // The first drones each live in a bay of the base and start from it; the next ones hover over the base deck at a
+            // spot of their own (the base art's idle points), and only past those do they wait side by side at the road end.
+            Vector3 home = HomeFor(_launched, out float offset);
             _launched++;
             var world = new DroneWorld(home, _context.Structures, _repairs, _context.Targets, _context.Projectiles, _mineNodes, _mineStocks);
             drone.Initialize(definition, home + new Vector3(offset, 0f, 0f), _context.ModifiersFor(definition), world);
@@ -104,24 +105,42 @@ namespace Game.Levels
             _context.DronesChanged.Raise();
         }
 
-        // The bays of the imported base on the field, or none (the procedural outpost has no bays).
-        private static Vector3[] DockPoints(LevelDefinition level)
+        // A bay, else an idle spot over the deck, else the road end with a sideways start offset so they do not stack.
+        private Vector3 HomeFor(int index, out float offset)
         {
-            BaseArtDefinition art = level.Theme != null ? level.Theme.BaseArt : null;
-            if (art == null || level.MainRoad.Length == 0)
+            offset = 0f;
+            if (index < _docks.Length)
+            {
+                return _docks[index];
+            }
+
+            index -= _docks.Length;
+            if (index < _idleSpots.Length)
+            {
+                return _idleSpots[index];
+            }
+
+            offset = ((index % 4) - 1.5f) * SpawnSpread;
+            return _home;
+        }
+
+        // Points of the imported base (its bays or idle spots) on the field, or none (the procedural outpost has neither).
+        private static Vector3[] BasePoints(LevelDefinition level, Vector3[] local)
+        {
+            if (local == null || level.MainRoad.Length == 0)
             {
                 return new Vector3[0];
             }
 
             Vector3 centre = LevelVisualBuilder.BasePosition(level);
             Quaternion facing = LevelVisualBuilder.BaseFacing(level);
-            var docks = new Vector3[art.DockPoints.Length];
-            for (int i = 0; i < docks.Length; i++)
+            var points = new Vector3[local.Length];
+            for (int i = 0; i < points.Length; i++)
             {
-                docks[i] = BaseArtDefinition.ToWorld(art.DockPoints[i], centre, facing);
+                points[i] = BaseArtDefinition.ToWorld(local[i], centre, facing);
             }
 
-            return docks;
+            return points;
         }
 
         // A delivery is when a node may have run dry or half dry, so that is when the field is told about it.
