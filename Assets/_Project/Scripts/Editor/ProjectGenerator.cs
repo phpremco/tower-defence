@@ -52,8 +52,9 @@ namespace Game.Editor
         private const float DamagedPowerFloor = 0.75f;
         private const float RepairCostPerHealth = 0.3f;
 
-        // An aimed shot whose creature died in flight turns to a live one this close (cells): Docs/BALANCE.md, "Roles by enemy".
-        private const float ShotRetargetRadius = 1.5f;
+        // A guided missile whose creature died in flight turns to a live one this close (cells); bullets, shells and beams do
+        // not (Remco 2026-11-06, the genre's convention; TowerDefinition.RetargetRadius).
+        internal const float MissileRetargetRadius = 1.5f;
 
         // Light guns (Gun Turret, Laser) aim past plates that would stop more than half of their hit (round 21a2).
         internal const float LightGunSoftShare = 0.5f;
@@ -110,7 +111,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, float softTargetShare = 0f, bool homing = true)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, float softTargetShare = 0f, bool homing = true, float retargetRadius = 0f)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -127,7 +128,7 @@ namespace Game.Editor
             so.FindProperty("_splashRadius").floatValue = splash;
             so.FindProperty("_groundDamageFactor").floatValue = 1f;
             so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
-            so.FindProperty("_retargetRadius").floatValue = ShotRetargetRadius;
+            so.FindProperty("_retargetRadius").floatValue = retargetRadius;
             so.FindProperty("_softTargetShare").floatValue = softTargetShare;
             so.FindProperty("_homing").boolValue = homing;
             so.FindProperty("_color").colorValue = color;

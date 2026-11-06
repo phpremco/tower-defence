@@ -87,6 +87,8 @@ namespace Game.Tests
         private const float InvestCover = 1.2f;
         // Ground guns standing before a second sky gun is bought.
         private const int GroundBeforeSecondSkyGun = 3;
+        // At most one sky gun for this many ground guns (round 21a4: Shard Ridge Medium, four Flaks and a sold Cannon, lost to ants).
+        private const int SkyPerGround = 2;
         private const int RepairAfterTowers = 4;
         private const int AttackAfterTowers = 8;
         private const int MinesPerWave = 2;
@@ -587,9 +589,15 @@ namespace Game.Tests
             var spots = new BuildSpots(RankBuildSpots(definition, quality), RankAirSpots(definition), quality);
             if (strategy.Naive)
             {
+                // Round 21a4: a careless player, not random spots: the first free spots beside the road nearest the defence gate,
+                // whatever the overlap, the bends or the queue (ties in a seeded order). Random spots off the road made Easy look hard.
                 spots.Uniform = true;
                 run.Shuffle(spots.Ground);
                 run.Shuffle(spots.Air);
+                int gate = DefenceGate(definition);
+                Vector2 near = gate >= 0 ? (Vector2)definition.Blockades[gate].Cell : Vector2.zero;
+                spots.Ground.Sort((a, b) => Vector2.Distance(a, near).CompareTo(Vector2.Distance(b, near)));
+                spots.Air.Sort((a, b) => Vector2.Distance(a, near).CompareTo(Vector2.Distance(b, near)));
                 return spots;
             }
 
@@ -1313,7 +1321,7 @@ namespace Game.Tests
             // waits for a ground gun, and a second one for the ground line of a few guns.
             int ground = towers.FindAll(t => !AirOnly(t.Definition)).Count;
             int sky = towers.Count - ground;
-            if (ground == 0 || (sky > 0 && ground < GroundBeforeSecondSkyGun))
+            if (ground == 0 || (sky > 0 && ground < GroundBeforeSecondSkyGun) || (sky > 0 && sky * SkyPerGround > ground))
             {
                 return 0;
             }
@@ -1760,6 +1768,12 @@ namespace Game.Tests
                 }
 
                 ground++;
+                // Never the last gun of its kind: the role it fills (the only Cannon for the packs) is why it stands there.
+                if (towers.FindAll(t => t.Definition == tower.Definition && t.IsAlive).Count <= 1)
+                {
+                    continue;
+                }
+
                 if (weakest == null || tower.LevelIndex < weakest.LevelIndex || (tower.LevelIndex == weakest.LevelIndex && tower.TotalSpent < weakest.TotalSpent))
                 {
                     weakest = tower;

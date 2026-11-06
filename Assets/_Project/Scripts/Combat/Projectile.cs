@@ -58,9 +58,9 @@ namespace Game.Combat
 
         private TargetLayers _aimedLayer;
 
-        // An aimed shot whose creature died in flight (a crowd of guns on the one furthest along) turns to the nearest live
-        // creature of the same layer this close to where it was heading, instead of landing on nothing; zero never turns. The
-        // tower's data sets it (TowerDefinition.RetargetRadius, round 21a: light guns lost most of their shots on ant swarms).
+        // A guided shot whose creature died in flight turns to the nearest live creature of the same layer this close to where
+        // it was heading; zero never turns. The tower's data sets it (TowerDefinition.RetargetRadius: missiles turn, bullets,
+        // shells and instant beams do not).
         private float _retargetRadius;
 
         // False for a shell fired at the spot its creature stood on: it flies its time and bursts there, so a fast runner can be
@@ -110,7 +110,7 @@ namespace Game.Combat
 
         private void Update()
         {
-            if (_target != null && !_target.IsAlive && _splashRadius <= 0f && _fuseRadius <= 0f && _retargetRadius > 0f)
+            if (_homing && _retargetRadius > 0f && _target != null && !_target.IsAlive)
             {
                 Retarget();
             }

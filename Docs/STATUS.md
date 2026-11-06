@@ -2990,3 +2990,21 @@ Not committed. Docs/BALANCE.md "Ledger calibrated in play".
   BalanceProbeTests bot loses Quartz Flats (EasyAndMedium test fails).
 - Open: the opening levels play far easier than the curve (every bot holds them untouched) now that field ease is gone; the
   Gun Turret is still below the Cannon per coin on loose ants in play (4.8 vs 5.6; the Laser is above at 6.3).
+
+## Round 21a4: steadier yardsticks, opening levels (2026-11-06)
+
+Not committed. Changes:
+- Naive bot = a careless human: the first free spots beside the road nearest the defence gate (overlap, bends and the queue
+  ignored; seeded ties), random affordable upgrades (BalanceProbeTests.SpotsFor).
+- Creative bot: never sells the last gun of its kind for a sky gun; at most one sky gun per two ground guns (Shard Ridge
+  Medium w15: four Flaks and a sold Cannon, lost to ants).
+- Owned types: C1_01 Gun Turret + Cannon (start); C1_02 + Laser (C1_01 reward); the Flak from C1_03 (C1_02 reward).
+- Retarget by the genre convention (Remco 2026-11-06), per tower in data (`_retargetRadius`, default 0): the Flak's guided
+  shells turn (1.5 cells); the Gun Turret's bullets do not and fly at 30 cells/s (was 14); the Cannon's shells land where
+  aimed; Laser, Tesla and Railgun are instant. Efficiency re-measured after it (tower_efficiency.txt).
+- Stopped by the curator (critic: the ledger <-> bot <-> wave loop is circular; Utilisation/HumanUtilisation were fitted to
+  the old greedy bot on 2026-11-04 and never re-fitted, `_ledgerEfficiency` only shifts relative weights, the ledger still
+  rates the Gun Turret about 2x too high). The verdict-chasing wave changes of this round were reverted (C1_02 weights, C1_05
+  rhythm, Skitter slip 2); waves are the 21a3 scripts re-solved with the new efficiency. Seed handling: probe_arg `seed=N`;
+  seed-1/2 tables of the reverted state are in the scratchpad only. Next round: rebuild the calibration (re-fit the
+  utilisation against the current bots) before touching waves again.

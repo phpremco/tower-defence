@@ -38,6 +38,12 @@ MonoBehaviour:
     SlowSeconds: 0
   _projectileSpeed: 20
   _splashRadius: 0.8
+  _groundDamageFactor: 1
+  _airDamageFactor: 1
+  _retargetRadius: 0
+  _softTargetShare: 0
+  _homing: 1
+  _ledgerEfficiency: 1
   _fuseRadius: 0
   _maxHealth: 190
   _sellRefundFraction: 0.7
@@ -54,5 +60,7 @@ MonoBehaviour:
   _color: {r: 0.6, g: 0.8, b: 1, a: 1}
   _shape: 9
   _projectileStyle: 5
+  _beamLockSeconds: 0.35
+  _beamSweepSeconds: 0
   _art: {fileID: 11400000, guid: caf0e6c63ed57d347a295cc74b42f726, type: 2}
   _gateArt: {fileID: 0}

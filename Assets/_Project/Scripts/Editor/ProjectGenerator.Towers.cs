@@ -13,6 +13,10 @@ namespace Game.Editor
 
         // The Gun Turret aims up too but its pulses do half damage there, so the sky asks for the Flak (round 21a, Docs/BALANCE.md).
         private const float GunAirShare = 0.5f;
+
+        // The Gun Turret's bullets do not turn (Remco 2026-11-06), so they fly fast enough to be near instant: few die with their
+        // creature in flight (was 14 cells a second).
+        private const float BulletSpeed = 30f;
         private const float CannonSplash = 1.2f;
         // Round 21a3: the shell is fired at the spot and flies 0.6 to 0.9 s (3 to 4.5 cells at 5 a second), so an ant at full run
         // (1.6 a second) is about at the blast's edge when it lands, a queue or a pack is not; it used to home in and never miss.
@@ -29,13 +33,13 @@ namespace Game.Editor
 
         private static void GenerateCoreTowers(GeneratorContext context)
         {
-            context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
+            context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, BulletSpeed, 0f, new Color(0.3f, 0.7f, 1f),
                 new[] { Lvl(50, 5f, LightGunReach, 0.35f), Lvl(50, 9f, LightGunReach + 0.3f, 0.3f), Lvl(90, 15f, LightGunReach + 0.6f, 0.25f) }, 150f, airDamageFactor: GunAirShare, softTargetShare: LightGunSoftShare);
             context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, CannonShellSpeed, CannonSplash, new Color(1f, 0.8f, 0.3f),
                 new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f, homing: false);
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),
-                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f);
+                new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f, retargetRadius: MissileRetargetRadius);
             SetFuse(context.Rocket, FlakFuse);
 
             // Level 0 cost is the price to rebuild a wrecked blockade. The gun arrives with the first upgrade.

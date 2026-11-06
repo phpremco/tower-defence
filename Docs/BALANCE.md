@@ -777,3 +777,9 @@ count the hit points really taken (overkill out).
 Laser 3.7 / Gun Turret 3.5; plated: Cannon 3.1 > Laser 2.8 > Gun Turret 2.2; air: Flak 1.7 (Gun Turret 0.2).
 
 Boss shares re-derived: Hard 1.45, Psycho 1.75. C1_04 Psycho raids 1.2x, C1_06 Hard four raids (band edges).
+
+**Round 21a4 (2026-11-06):** retarget follows the genre convention, per tower (`TowerDefinition._retargetRadius`, default
+0): Flak guided shells 1.5 cells; Gun Turret bullets none, at 30 cells/s; Cannon shells land where aimed; Laser, Tesla,
+Railgun instant. The naive probe bot now plays a careless human (first free spots nearest the defence gate, random
+affordable upgrades). Efficiency re-measured; the calibration loop itself (Utilisation fitted to the 2026-11-04 greedy bot)
+is to be rebuilt next round, see STATUS.

@@ -40,7 +40,7 @@ MonoBehaviour:
   _splashRadius: 1.2
   _groundDamageFactor: 1
   _airDamageFactor: 1
-  _retargetRadius: 1.5
+  _retargetRadius: 0
   _softTargetShare: 0
   _homing: 0
   _ledgerEfficiency: 1.135

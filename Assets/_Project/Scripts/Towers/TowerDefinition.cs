@@ -24,10 +24,12 @@ namespace Game.Towers
         [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
 
         /// <summary>
-        /// An aimed shot whose creature dies in flight turns to the nearest live creature of the same layer this close to where
-        /// it was heading (cells); zero lets it land on nothing. Splash and fused shells ignore it (round 21a, Docs/BALANCE.md).
+        /// A guided shot whose creature dies in flight turns to the nearest live creature of the same layer this close to where
+        /// it was heading (cells); zero lets it land on nothing. Remco (2026-11-06), the genre's convention: guided missiles (the
+        /// Flak) turn; bullets (the Gun Turret, fast enough to be near instant), ballistic shells (the Cannon) and instant beams,
+        /// chains and rails (Laser, Tesla, Railgun) do not. Only homing shots can turn.
         /// </summary>
-        [SerializeField] [Min(0f)] private float _retargetRadius = 1.5f;
+        [SerializeField] [Min(0f)] private float _retargetRadius;
 
         /// <summary>
         /// A light gun looks past plates: it aims at the creature furthest along that lets at least this share of its hit
