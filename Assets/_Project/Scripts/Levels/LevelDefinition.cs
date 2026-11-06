@@ -230,6 +230,14 @@ namespace Game.Levels
         private static readonly DifficultyWaves[] NoWaves = new DifficultyWaves[0];
         private static readonly StoryTrigger[] NoStory = new StoryTrigger[0];
 
+        // Only a saved level is judged: tests and tools build in-memory levels field by field, and a half-built one is not an
+        // error in the data (it filled the console with "LevelDefinition '' is invalid" during the EditMode run).
+#if UNITY_EDITOR
+        private bool IsDataAsset => UnityEditor.EditorUtility.IsPersistent(this);
+#else
+        private bool IsDataAsset => true;
+#endif
+
         private void OnValidate()
         {
             _terrainMap = null;
@@ -242,7 +250,7 @@ namespace Game.Levels
             }
 
             _road = null;
-            if (!IsValid(out string error))
+            if (IsDataAsset && !IsValid(out string error))
             {
                 Debug.LogWarning($"LevelDefinition '{name}' is invalid: {error}", this);
             }

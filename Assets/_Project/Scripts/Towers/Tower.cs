@@ -449,7 +449,7 @@ namespace Game.Towers
             // A long frame (high game speed, low frame rate) may owe more than one shot; see Cadence.
             for (int shots = 0; Cadence.Due(_cooldown, shots); shots++)
             {
-                ITargetable target = _beamTarget ?? _registry.FindBest(transform.position, Range, _definition.Targets);
+                ITargetable target = _beamTarget ?? FindTarget(level);
                 if (target == null)
                 {
                     _beamTarget = null;
@@ -478,6 +478,11 @@ namespace Game.Towers
 
             _cooldown = Cadence.Idle(_cooldown);
         }
+
+        private ITargetable FindTarget(TowerLevel level) =>
+            _definition.SoftTargetShare > 0f
+                ? _registry.FindBest(transform.position, Range, _definition.Targets, level.Damage, _definition.SoftTargetShare)
+                : _registry.FindBest(transform.position, Range, _definition.Targets);
 
         // A beam holds its creature until it dies or walks out of reach. A kill frees it at once: the beam sweeps on to the
         // next creature within its sweep time instead of finishing the pulse, which is what makes it the swarm gun.
@@ -522,7 +527,7 @@ namespace Game.Towers
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
             float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this, _definition.RetargetRadius);
             Fired?.Invoke(target.Position);
         }
 

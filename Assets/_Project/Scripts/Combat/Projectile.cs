@@ -13,11 +13,6 @@ namespace Game.Combat
     {
         private const float HitDistance = 0.15f;
 
-        // An aimed shot whose creature died in flight (a crowd of guns on the one furthest along) turns to the nearest live
-        // creature of the same layer this close to where it was heading, instead of landing on nothing (round 21a: light guns
-        // lost most of their shots that way against ant swarms, a shell's splash never did).
-        private const float RetargetRadius = 1.5f;
-
         private readonly List<ITargetable> _splashTargets = new List<ITargetable>();
 
         private TargetRegistry _registry;
@@ -63,6 +58,11 @@ namespace Game.Combat
 
         private TargetLayers _aimedLayer;
 
+        // An aimed shot whose creature died in flight (a crowd of guns on the one furthest along) turns to the nearest live
+        // creature of the same layer this close to where it was heading, instead of landing on nothing; zero never turns. The
+        // tower's data sets it (TowerDefinition.RetargetRadius, round 21a: light guns lost most of their shots on ant swarms).
+        private float _retargetRadius;
+
         public void Launch(
             Vector3 from,
             ITargetable target,
@@ -77,7 +77,8 @@ namespace Game.Combat
             ProjectileStyle style,
             Color color,
             float fuseRadius = 0f,
-            object source = null)
+            object source = null,
+            float retargetRadius = 0f)
         {
             transform.position = from;
             _source = source;
@@ -85,6 +86,7 @@ namespace Game.Combat
             _target = target;
             _lastTargetPosition = target.Position;
             _aimedLayer = target.Layer;
+            _retargetRadius = retargetRadius;
             _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
@@ -102,7 +104,7 @@ namespace Game.Combat
 
         private void Update()
         {
-            if (_target != null && !_target.IsAlive && _splashRadius <= 0f && _fuseRadius <= 0f)
+            if (_target != null && !_target.IsAlive && _splashRadius <= 0f && _fuseRadius <= 0f && _retargetRadius > 0f)
             {
                 Retarget();
             }
@@ -137,7 +139,7 @@ namespace Game.Combat
 
         private void Retarget()
         {
-            _registry.FindInRadius(_lastTargetPosition, RetargetRadius, _mask, _splashTargets);
+            _registry.FindInRadius(_lastTargetPosition, _retargetRadius, _mask, _splashTargets);
             ITargetable nearest = null;
             float best = float.MaxValue;
             for (int i = 0; i < _splashTargets.Count; i++)

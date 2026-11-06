@@ -2953,3 +2953,23 @@ Not committed. Docs/BALANCE.md "Roles by enemy" has the why and the numbers.
 - **Open for the curator/Remco:** Cragback plating from level 1 vs the story's "armour from level 11" (the dialogue already says
   "heavy shells for heavy hides"); creative bot short on C1_02 Medium/Hard, C1_04/05/06 Hard, C1_05 Medium 1 star; Cannon row
   still wins C1_02 Hard; C1_01 Medium left forgiving (mono rows and naive win).
+
+## Round 21a2: creative bot, swarm role, Easy, clean console (2026-11-06)
+
+Not committed. Docs/BALANCE.md "Roles in play, round 21a2".
+- Mechanics: Skitters climb over a gate with three others at it (`_slipCrowd`); light guns aim past plates
+  (`_softTargetShare`); retarget radius on TowerDefinition (`_retargetRadius`); per-role in-play DPS per 100 coins in
+  monoculture.txt (BotRun.RoleDamage/CoinSeconds). Cannon reload slower. `LevelDefinition`
+  only warns about invalid saved assets (EditorUtility.IsPersistent): the "LevelDefinition '' is invalid" warning came from
+  EditMode tests building in-memory levels field by field (the check is from before round 21a).
+- Result (full set): creative wins C1_01..C1_04 Medium and C1_01..C1_03 Hard with 3 stars, C1_04 Hard with 1; loses C1_05
+  and C1_06 on Medium and Hard. The Cannon row wins C1_01 and C1_02 Medium and Hard; the naive bot wins C1_01 Medium and
+  loses every Hard run and every run from C1_02 on. Easy: creative wins C1_01..C1_03 with 3 stars; naive wins C1_01 and
+  C1_02, loses C1_03 at wave 11.
+- Open: in play the Cannon still beats the Gun Turret and the Laser per coin on loose ants (9.1 vs 4.9 / 5.6). The ledger
+  rates the light guns far above what they deal in play (Gun Turret 41%, Laser 36% of data DPS, Cannon 131%), so the solver
+  sizes waves for light guns that do not exist and the creative bot (which buys by the ledger) underbuilds Cannons on the
+  long levels. Next lever: an in-play efficiency per tower kind in the ledger (measured by these probes), or a role-aware
+  creative bot.
+- Boss health share Hard 1.75, Psycho 1.5 (derived by ContinentFinaleTests after the Cannon change); Cannon-vs-boss parity
+  cases are known outliers. EditMode 660: 614 passed, 0 failed, 46 skipped; console clean.

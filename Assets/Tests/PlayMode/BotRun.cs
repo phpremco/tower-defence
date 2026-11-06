@@ -19,6 +19,8 @@ namespace Game.Tests
 
         private readonly System.Random _random;
         private readonly HashSet<Enemy> _watched = new HashSet<Enemy>();
+        private readonly List<Game.Combat.ITargetable> _near = new List<Game.Combat.ITargetable>();
+        private Game.Combat.TargetRegistry _targets;
 
         public BotRun(ProbeStrategy strategy, int seed)
         {
@@ -46,6 +48,20 @@ namespace Game.Tests
         /// <summary>Per tower type: damage dealt, tower-seconds with creatures on the field, and the data damage of those seconds.</summary>
         public readonly Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
 
+        /// <summary>
+        /// Round 21a2, the roles in play: damage per tower type by what it hit (see <see cref="RoleOf"/>), and coin-seconds per
+        /// tower type (coins spent on the standing towers times the seconds with creatures on the field), for DPS per 100 coins.
+        /// </summary>
+        public readonly Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
+        public readonly Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
+
+        /// <summary>The roles a hit is sorted into, in report order.</summary>
+        public static readonly string[] Roles = { "loose", "bunched", "plated", "air", "boss" };
+
+        // Light creatures with at least this many others this close (cells) count as bunched: a shell catches them together.
+        private const float BunchRadius = 1.2f;
+        private const int BunchNeighbours = 2;
+
         public int Next(int count) => _random.Next(count);
 
         public void Shuffle<T>(List<T> list)
@@ -59,6 +75,7 @@ namespace Game.Tests
 
         public void Attach(LevelContext context)
         {
+            _targets = context.Targets;
             context.EnemySpawned.Subscribe(OnSpawned);
             context.DroneLaunched.Subscribe(OnDrone);
         }
@@ -102,6 +119,7 @@ namespace Game.Tests
                 float dps = level.FireInterval > 0f ? level.Damage / level.FireInterval : 0f;
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
                 Fire[tower.Definition.Id] = (damage, seconds + deltaTime, data + dps * deltaTime);
+                CoinSeconds[tower.Definition.Id] = (CoinSeconds.TryGetValue(tower.Definition.Id, out float coins) ? coins : 0f) + tower.TotalSpent * deltaTime;
             }
         }
 
@@ -120,11 +138,37 @@ namespace Game.Tests
             {
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
                 Fire[tower.Definition.Id] = (damage + amount, seconds, data);
+                var key = (tower.Definition.Id, RoleOf(enemy));
+                RoleDamage[key] = (RoleDamage.TryGetValue(key, out float sum) ? sum : 0f) + amount;
             }
             else if (source is Drone)
             {
                 DroneDamage += amount;
             }
+        }
+
+        // What a hit landed on: a boss, a flyer, a plated creature, or a light walker that is bunched (two or more others
+        // within a shell's reach) or loose.
+        private string RoleOf(Enemy enemy)
+        {
+            EnemyDefinition kind = enemy.Definition;
+            if (kind.IsBoss)
+            {
+                return "boss";
+            }
+
+            if (kind.Flies)
+            {
+                return "air";
+            }
+
+            if (kind.HasPlating)
+            {
+                return "plated";
+            }
+
+            _targets.FindInRadius(enemy.Position, BunchRadius, Game.Core.TargetLayers.Ground, _near);
+            return _near.Count - 1 >= BunchNeighbours ? "bunched" : "loose";
         }
 
         private void OnDrone(Drone drone) => drone.Delivered += value => Harvested += value;

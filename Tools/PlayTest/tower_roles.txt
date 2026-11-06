@@ -16,8 +16,8 @@ in EveryUpgradeStep_BeatsMoreTowersOfTheSameType; the role matrix and the spots 
    PulseRifle  L1->L2 coins  190 | upgrade: hit     15 single     60 plated8     28 multi     60 targets   1 rate    4/s risk 100% | 1.90 x L1: hit      9 single     57 plated8   11.4 multi     57 targets 1.9 rate 6.33/s risk  53% | single ratio 1.05 plated8 ratio 2.46 rule met
    Cryo        L0->L1 coins  200 | upgrade: hit      2 single    4.4 plated8    0.9 multi    4.4 targets   1 rate 2.22/s risk 100% | 2.22 x L0: hit      2 single    8.9 plated8    1.8 multi    8.9 targets 2.2 rate 4.44/s risk  45% | single ratio 0.50 plated8 ratio 0.50 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
    Cryo        L1->L2 coins  360 | upgrade: hit      2 single      5 plated8      1 multi      5 targets   1 rate  2.5/s risk 100% | 1.80 x L1: hit      2 single      8 plated8    1.6 multi      8 targets 1.8 rate    4/s risk  56% | single ratio 0.63 plated8 ratio 0.63 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
-   Cannon      L0->L1 coins  210 | upgrade: hit     48 single     40 plated8   33.3 multi     96 targets 2.4 rate 0.83/s risk 100% | 2.10 x L0: hit     25 single   37.5 plated8   25.5 multi     90 targets   5 rate  1.5/s risk  48% | single ratio 1.07 plated8 ratio 1.31 rule met
-   Cannon      L1->L2 coins  390 | upgrade: hit     85 single     85 plated8     77 multi    204 targets 2.4 rate    1/s risk 100% | 1.86 x L1: hit     48 single   74.3 plated8   61.9 multi  178.3 targets 4.5 rate 1.55/s risk  54% | single ratio 1.14 plated8 ratio 1.24 rule met
+   Cannon      L0->L1 coins  210 | upgrade: hit     48 single   35.6 plated8   29.6 multi   85.3 targets 2.4 rate 0.74/s risk 100% | 2.10 x L0: hit     25 single   32.8 plated8   22.3 multi   78.8 targets   5 rate 1.31/s risk  48% | single ratio 1.08 plated8 ratio 1.33 rule met
+   Cannon      L1->L2 coins  390 | upgrade: hit     85 single   73.9 plated8     67 multi  177.4 targets 2.4 rate 0.87/s risk 100% | 1.86 x L1: hit     48 single     66 plated8     55 multi  158.5 targets 4.5 rate 1.38/s risk  54% | single ratio 1.12 plated8 ratio 1.22 rule met
    Rocket      L0->L1 coins  220 | upgrade: hit     25 single     50 plated8     34 multi    120 targets 2.4 rate    2/s risk 100% | 1.83 x L0: hit     14 single   46.7 plated8     20 multi    112 targets 4.4 rate 3.33/s risk  55% | single ratio 1.07 plated8 ratio 1.70 rule met
    Rocket      L1->L2 coins  370 | upgrade: hit     40 single   88.9 plated8   71.1 multi  213.3 targets 2.4 rate 2.22/s risk 100% | 1.68 x L1: hit     25 single   84.1 plated8   57.2 multi  201.8 targets   4 rate 3.36/s risk  59% | single ratio 1.06 plated8 ratio 1.24 rule met
    Laser       L0->L1 coins  205 | upgrade: hit     12 single   66.7 plated8   22.2 multi   66.7 targets   1 rate 5.56/s risk 100% | 1.58 x L0: hit      8 single   63.1 plated8   12.6 multi   63.1 targets 1.6 rate 7.88/s risk  63% | single ratio 1.06 plated8 ratio 1.76 rule met
@@ -49,9 +49,9 @@ in EveryUpgradeStep_BeatsMoreTowersOfTheSameType; the role matrix and the spots 
    Cryo        L0     90     4.4     4.4     4.4     4.4     0.9     0.9     0.9     4.4
    Cryo        L1    200     2.2     2.2     2.2     2.2     0.4     0.4     0.4     2.2
    Cryo        L2    360     1.4     1.4     1.4     1.4     0.3     0.3     0.3     1.4
-   Cannon      L0    100    42.9    42.9       -    17.9    15.0    12.1     9.3    17.9
-   Cannon      L1    210    38.1    45.7       -    19.0    17.5    15.9    14.3    19.0
-   Cannon      L2    390    24.6    52.3       -    21.8    20.8    19.7    18.7    21.8
+   Cannon      L0    100    37.5    37.5       -    15.6    13.1    10.6     8.1    15.6
+   Cannon      L1    210    33.9    40.6       -    16.9    15.5    14.1    12.7    16.9
+   Cannon      L2    390    21.4    45.5       -    19.0    18.1    17.2    16.3    19.0
    Rocket      L0    120       -       -    50.9       -       -       -       -    21.2
    Rocket      L1    220       -       -    54.5       -       -       -       -    22.7
    Rocket      L2    370       -       -    57.7       -       -       -       -    24.0

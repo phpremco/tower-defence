@@ -82,9 +82,9 @@ namespace Game.Tests
         // before crowd and boss waves within this many road cells of the gate, and it never sells below this many ground guns.
         private const int HarvestAfterTowers = 3;
         private const int NoHarvestLastWaves = 2;
-        // The creative player saves for the harvester in the first 40% of a level while its guns (nearly) hold the waves at hand.
+        // The creative player saves for the harvester in the first 40% of a level while its guns hold the waves at hand with a margin (at 0.9 it starved Fault Line and Quartz Flats Hard).
         private const float InvestShare = 0.4f;
-        private const float InvestCover = 0.9f;
+        private const float InvestCover = 1.2f;
         // Ground guns standing before a second sky gun is bought.
         private const int GroundBeforeSecondSkyGun = 3;
         private const int RepairAfterTowers = 4;
@@ -373,6 +373,10 @@ namespace Game.Tests
             public int RepairSpent;
             public int Earned;
 
+            /// <summary>Per tower type and role, damage dealt; per tower type, coin-seconds (see <see cref="BotRun.RoleDamage"/>).</summary>
+            public Dictionary<(string Tower, string Role), float> RoleDamage = new Dictionary<(string, string), float>();
+            public Dictionary<string, float> CoinSeconds = new Dictionary<string, float>();
+
             /// <summary>Per tower type: damage dealt in the run, tower-seconds standing while creatures were on the field, and the data DPS of its levels then.</summary>
             public Dictionary<string, (float Damage, float Seconds, float DataDamage)> Fire = new Dictionary<string, (float, float, float)>();
         }
@@ -539,6 +543,8 @@ namespace Game.Tests
                     Fire = run.Fire,
                     FlyersSpawned = trace.FlyersSpawned,
                     RepairSpent = watch.RepairSpent,
+                    RoleDamage = run.RoleDamage,
+                    CoinSeconds = run.CoinSeconds,
                     Earned = trace.Earned,
                     FlyersKilled = trace.FlyersKilled,
                     FlyerBaseHits = trace.FlyerBaseHits,

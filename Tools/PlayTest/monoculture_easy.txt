@@ -2,20 +2,26 @@ Monoculture probe, first levels on Easy (round 21a; seeded, 0.2 s steps; Docs/BA
 dps = damage really dealt per tower-second while creatures were on the field, against the data DPS of the levels it stood at.
 
 level        diff    strategy           result stars wave   base     built upg sold mines fields drones                        ore  unspent repairs(%earned)  in-game dps per type (real/data)
-Level_C1_01  Easy    creative           Won        3 12/12  600/600      4   5    0     0      0 -                                0      184       0 (  0%)   Cannon 26.1/17.9 PulseRifle 11.0/31.2
-Level_C1_01  Easy    naive              Won        3 12/12  600/600      4   5    0     0      0 -                                0      208       0 (  0%)   Cannon 24.2/17.9 PulseRifle 4.5/38.6
-Level_C1_02  Easy    creative           Won        3 12/12  600/600      5   6    0     0      0 -                                0       69       0 (  0%)   Cannon 22.1/17.9 PulseRifle 22.2/34.4
-Level_C1_02  Easy    naive              Lost       0 12/12    0/600      4   3    0     0      0 -                                0       60     240 ( 29%)   Cannon 15.9/17.9 PulseRifle 11.3/28.4
-Level_C1_03  Easy    creative           Won        3 16/16  600/600      7   5    0     0      0 RepairDrone                      0      132       0 (  0%)   Cannon 17.8/17.9 PulseRifle 11.3/31.9 Rocket 1.3/25.5
-Level_C1_03  Easy    naive              Lost       0 12/16    0/600      4   2    0     0      0 HarvestDrone                   120       49       0 (  0%)   Cannon 19.8/17.9 PulseRifle 4.0/16.2 Rocket 0.0/25.5
+Level_C1_01  Easy    creative           Won        3 12/12  600/600      5   4    0     0      0 -                                0      134       0 (  0%)   Cannon 22.4/15.6 PulseRifle 14.1/39.0
+Level_C1_01  Easy    naive              Won        3 12/12  600/600      3   3    0     0      0 -                                0      164     240 ( 24%)   Cannon 15.7/15.6 PulseRifle 5.7/28.7
+Level_C1_02  Easy    creative           Won        3 12/12  600/600      4   6    0     0      0 -                                0      169       0 (  0%)   Cannon 16.6/15.6 PulseRifle 26.6/41.1
+Level_C1_02  Easy    naive              Won        3 12/12  600/600      4   5    0     0      0 -                                0      163     120 ( 12%)   Cannon 7.7/15.6 PulseRifle 15.8/40.2
+Level_C1_03  Easy    creative           Won        3 16/16  600/600      7   4    0     0      0 HarvestDrone+RepairDrone       140      184       0 (  0%)   Cannon 16.2/15.6 PulseRifle 9.7/25.4 Rocket 1.4/25.5
+Level_C1_03  Easy    naive              Lost       0 11/16    0/600      4   1    0     0      0 HarvestDrone                    90       39       0 (  0%)   Cannon 19.1/15.6 PulseRifle 2.7/15.0 Rocket 0.0/25.5
 
 In-game DPS per tower type over all runs (per tower-second with creatures on the field; share of the data DPS):
-  Cannon         20.5 dps of   17.9 data (115%) over   2288 tower-s
-  PulseRifle     10.5 dps of   30.7 data ( 34%) over   4403 tower-s
-  Rocket          1.2 dps of   25.5 data (  5%) over    858 tower-s
+  Cannon         16.0 dps of   15.6 data (102%) over   2267 tower-s
+  PulseRifle     11.9 dps of   31.2 data ( 38%) over   4151 tower-s
+  Rocket          1.3 dps of   25.5 data (  5%) over    859 tower-s
 
-Repairs bought with coins over all runs: 240 of 5746 earned (4.2%).
+Roles in play: DPS per 100 coins standing, by what the hits landed on (loose = a light walker with fewer than two
+others within 1.2 cells, bunched = with two or more), summed over all runs:
+  tower           loose  bunched   plated      air     boss
+  Cannon           9.86     3.51     2.44     0.00     0.17
+  PulseRifle       5.45     2.16     3.22     0.00     0.72
+  Rocket           0.00     0.00     0.00     1.09     0.00
+
+Repairs bought with coins over all runs: 360 of 5950 earned (6.1%).
 
 Rules (report only): Medium at most one mono type wins, with one star; Hard none; creative wins Medium and Hard with 2+ stars; naive loses Medium+.
-  Level_C1_02 Easy: naive Lost at wave 12/12 (must win)
-  Level_C1_03 Easy: naive Lost at wave 12/16 (must win)
+  Level_C1_03 Easy: naive Lost at wave 11/16 (must win)

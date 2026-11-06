@@ -23,6 +23,18 @@ namespace Game.Towers
         [SerializeField] [Range(0f, 1f)] private float _groundDamageFactor = 1f;
         [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
 
+        /// <summary>
+        /// An aimed shot whose creature dies in flight turns to the nearest live creature of the same layer this close to where
+        /// it was heading (cells); zero lets it land on nothing. Splash and fused shells ignore it (round 21a, Docs/BALANCE.md).
+        /// </summary>
+        [SerializeField] [Min(0f)] private float _retargetRadius = 1.5f;
+
+        /// <summary>
+        /// A light gun looks past plates: it aims at the creature furthest along that lets at least this share of its hit
+        /// through, and only shoots a plated one when nothing softer is in reach. Zero aims at the one furthest along, always.
+        /// </summary>
+        [SerializeField] [Range(0f, 1f)] private float _softTargetShare;
+
         /// <summary>A proximity fuse: the shell bursts this close to its target. Zero bursts on impact.</summary>
         [SerializeField] [Min(0f)] private float _fuseRadius;
         [SerializeField] [Min(1f)] private float _maxHealth = 100f;
@@ -83,6 +95,8 @@ namespace Game.Towers
         public float DamageFactorAgainst(TargetLayers layer) => (layer & TargetLayers.Ground) != 0 ? _groundDamageFactor : _airDamageFactor;
 
         public float FuseRadius => _fuseRadius;
+        public float RetargetRadius => _retargetRadius;
+        public float SoftTargetShare => _softTargetShare;
         public float MaxHealth => _maxHealth;
         public float SellRefundFraction => _sellRefundFraction;
         public float ScrapFraction => _scrapFraction;

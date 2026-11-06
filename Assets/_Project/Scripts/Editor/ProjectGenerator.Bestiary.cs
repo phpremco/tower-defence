@@ -77,6 +77,7 @@ namespace Game.Editor
             public float Armor;
             public float ArmorReduction;
             public float Plating;
+            public int SlipCrowd;
             public float Speed;
             public int BaseDamage;
             public Element Element;
@@ -116,6 +117,9 @@ namespace Game.Editor
         // 15 -> 10, 18 -> 13, 85 -> 80), so its waves ask for the Cannon or upgrades, not a row of fresh light guns.
         private const float CragbackPlating = 5f;
 
+        // An ant climbs over a gate where this many others already bite (round 21a2: the queue was one perfect shell target).
+        private const int SkitterSlipCrowd = 3;
+
         private static readonly Color VenomGreen = new Color(0.62f, 1f, 0.2f);
         private static readonly Color GooGreen = new Color(0.35f, 1f, 0.25f);
         private static readonly Color RedBlood = new Color(0.9f, 0.2f, 0.2f);
@@ -133,7 +137,7 @@ namespace Game.Editor
 
             b.Skitter = CreateEnemy(new Creature
             {
-                Id = "Skitter", Description = "Ant swarm. Weak alone and dangerous in crowds; splash damage thins them fast. Bites gates and the hero.", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1,
+                Id = "Skitter", Description = "Ant swarm. Weak alone and dangerous in crowds; splash damage thins packs fast, but loose ants climb over a crowded gate and run on, so fast guns along the road count. Bites gates and the hero.", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1, SlipCrowd = SkitterSlipCrowd,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
                 Color = new Color(1f, 0.5f, 0.14f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
                 Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
@@ -386,6 +390,7 @@ namespace Game.Editor
             so.FindProperty("_armorReduction").floatValue = c.Armor > 0f ? c.ArmorReduction : 0.6f;
             so.FindProperty("_plating").floatValue = c.Plating;
             so.FindProperty("_platingFloor").floatValue = PlatingFloor;
+            so.FindProperty("_slipCrowd").intValue = c.SlipCrowd;
             so.FindProperty("_speed").floatValue = c.Speed;
             // Kill money follows threat, so a new or retuned creature never needs a hand-set reward.
             so.FindProperty("_reward").intValue = Threat.Reward(StatsOf(c), BalanceSheet.Rules);

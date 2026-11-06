@@ -20,6 +20,7 @@ MonoBehaviour:
   _armorReduction: 0.6
   _plating: 0
   _platingFloor: 0.2
+  _slipCrowd: 3
   _speed: 1.6
   _reward: 1
   _baseDamage: 1
@@ -55,4 +56,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: c21501357c0b47e40975816108fbfb48, type: 2}
   _voice: {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
-  _description: Ant swarm. Weak alone and dangerous in crowds; splash damage thins them fast. Bites gates and the hero.
+  _description: Ant swarm. Weak alone and dangerous in crowds; splash damage thins packs fast, but loose ants climb over a crowded gate and run on, so fast guns along the road count. Bites gates and the hero.

@@ -40,6 +40,8 @@ MonoBehaviour:
   _splashRadius: 0
   _groundDamageFactor: 1
   _airDamageFactor: 1
+  _retargetRadius: 1.5
+  _softTargetShare: 0.5
   _fuseRadius: 0
   _maxHealth: 160
   _sellRefundFraction: 0.7

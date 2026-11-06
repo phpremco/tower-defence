@@ -13,13 +13,20 @@ namespace Game.Editor
 
         // The Gun Turret aims up too but its pulses do half damage there, so the sky asks for the Flak (round 21a, Docs/BALANCE.md).
         private const float GunAirShare = 0.5f;
+        private const float CannonSplash = 1.2f;
+
+        // Round 21a2, the swarm role in play: the probes measured the Gun Turret below the Cannon per coin even against loose
+        // ants (9.2 against 11.4 DPS per 100 coins): the Cannon reloads slower now. A longer-reaching, faster gun (4.0, 0.30 s)
+        // only made the ledger, which already rates it far above its in-play share, solve harsher waves (the greedy probe lost
+        // Quartz Flats and Crysium Vein), and a smaller first shell and blast lost the creative bot more levels than the Cannon
+        // row; both were dropped. Every step still beats more towers of the same type (TowerRolesTests).
 
         private static void GenerateCoreTowers(GeneratorContext context)
         {
             context.Pulse = CreateTower("PulseRifle", "Gun Turret", TargetLayers.Ground | TargetLayers.Air, 14f, 0f, new Color(0.3f, 0.7f, 1f),
-                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(60, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f, airDamageFactor: GunAirShare);
-            context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, 1.2f, new Color(1f, 0.8f, 0.3f),
-                new[] { Lvl(100, 25f, 4f, 1.4f), Lvl(120, 48f, 4.3f, 1.2f), Lvl(180, 85f, 4.6f, 1f) }, 220f);
+                new[] { Lvl(50, 5f, 3.5f, 0.35f), Lvl(50, 9f, 3.8f, 0.3f), Lvl(90, 15f, 4.1f, 0.25f) }, 150f, airDamageFactor: GunAirShare, softTargetShare: LightGunSoftShare);
+            context.Cannon = CreateTower("Cannon", "Cannon", TargetLayers.Ground, 9f, CannonSplash, new Color(1f, 0.8f, 0.3f),
+                new[] { Lvl(100, 25f, 4f, 1.6f), Lvl(110, 48f, 4.3f, 1.35f), Lvl(180, 85f, 4.6f, 1.15f) }, 220f);
             // The Flak (the old Rocket, id unchanged): air only, fast proximity-fused shells that burst among packed flyers.
             context.Rocket = CreateTower("Rocket", "Flak Turret", TargetLayers.Air, FlakShellSpeed, FlakSplash, new Color(0.9f, 0.9f, 1f),
                 new[] { Lvl(120, 14f, 5.5f, 0.55f), Lvl(100, 25f, 5.9f, 0.5f), Lvl(150, 40f, 6.3f, 0.45f) }, 130f);

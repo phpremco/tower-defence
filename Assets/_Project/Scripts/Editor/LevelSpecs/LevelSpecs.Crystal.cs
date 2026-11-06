@@ -26,9 +26,9 @@ namespace Game.Editor
         // the towers do on a map than the ledger reckons. The two short opening levels were held by every bot with the base
         // untouched and money to spare (Hard on Landing Site, Medium and Hard on Glass Meadows); on the longer levels the
         // creative bot fell short of the competent player the ledger assumes on the difficulties marked ThinFieldEase.
-        private const float OpeningEase = 1.6f;
-        private const float SwarmEase = 1.8f;
-        private const float SwarmHardEase = 1.2f;
+        private const float OpeningEase = 1.4f;
+        private const float SwarmEase = 1.3f;
+        private const float SwarmHardEase = 1.1f;
         private const float ThinFieldEase = 0.85f;
 
         // From Medium on level 3's raids are bigger, so a gun-only defence feels the missing Flak; Easy stays forgiving
@@ -88,7 +88,7 @@ namespace Game.Editor
                 },
                 // Easy and Medium stay forgiving for the first level (curator rule, round 21a); Hard is solved against the towers
                 // as strong as they play.
-                FieldEase = new[] { 1f, 1f, OpeningEase },
+                FieldEase = new[] { 1f, 1f, OpeningEase, 1f },
                 Money = 200,
             },
 
@@ -138,7 +138,7 @@ namespace Game.Editor
                 Money = 200 + CrystalMoneyStep,
                 // The probes win the swarm level with the base untouched on Medium and Hard (round 21a): the ledger counts a
                 // shell on at most a few ants and sells it short here, so the waves are solved against towers this much stronger.
-                FieldEase = new[] { 1f, SwarmEase, SwarmHardEase },
+                FieldEase = new[] { 1f, SwarmEase, SwarmHardEase, 1f },
             },
 
             // A second track out of the south; the first flyers come late, packed, over the ridge.
@@ -217,7 +217,7 @@ namespace Game.Editor
                     },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,
-                    AirRaidScale = new[] { 1f, 1.2f, 1.4f },
+                    AirRaidScale = new[] { 1f, 1.2f, 1.4f, 1.3f },
                     AirWaves = new[] { 3, 6, 9, 12, 15, 8, 14 },
                     AirWavesPerDifficulty = new[] { 4, 5, 6, 7 },
                     AirSprinkleFrom = 2,
@@ -309,7 +309,7 @@ namespace Game.Editor
                     AirWaves = new[] { 8, 11, 14, 17, 5, 15 },
                     AirWavesPerDifficulty = new[] { 3, 4, 5, 6 },
                     AirSprinkleFrom = 1,
-                    Rhythm = "RMPHRPMRHPRMPHRPMH",
+                    Rhythm = "RMPHRPMRHPRMPHPRMH",
                     Bosses = new[] { Boss(18, "PackAlpha"), Boss(12, "CoreWisp", Hard), Boss(7, "StormMatriarch", Psycho) },
                 },
                 Story = new[]

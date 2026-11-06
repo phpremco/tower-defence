@@ -89,6 +89,11 @@ namespace Game.Tests
         /// </summary>
         private static readonly Dictionary<string, string> KnownOutliers = new Dictionary<string, string>
         {
+            // Cannon (round 21a2): the slower reload (1.6/1.35/1.15 s) that keeps it from beating rate of fire on loose ants leaves it
+            // just under the band against a lone boss; a boss is the Railgun's job, splash is the Cannon's.
+            { "Cannon L0 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.72x the median on a lone boss" },
+            { "Cannon L1 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.74x the median on a lone boss" },
+            { "Cannon L2 boss", KnownPrefix + "Cannon reloads slower since round 21a2, about 0.74x the median on a lone boss" },
             // Railgun: 80 to 180 damage slugs waste most of each hit on 40-health creatures, and the price climbs faster than the damage.
             { "Railgun L0 swarm", KnownPrefix + "Railgun slugs overkill small creatures, about 0.34x the median" },
             { "Railgun L1 swarm", KnownPrefix + "Railgun slugs overkill small creatures, about 0.23x the median" },

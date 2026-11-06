@@ -234,6 +234,36 @@ namespace Game.Tests
                 text.Append(Invariant($"  {total.Key,-12} {Rate(total.Value.Damage, total.Value.Seconds),6:0.0} dps of {Rate(total.Value.Data, total.Value.Seconds),6:0.0} data ({100f * total.Value.Damage / Mathf.Max(0.01f, total.Value.Data),3:0}%) over {total.Value.Seconds,6:0} tower-s\n"));
             }
 
+            text.Append("\nRoles in play: DPS per 100 coins standing, by what the hits landed on (loose = a light walker with fewer than two\n");
+            text.Append("others within 1.2 cells, bunched = with two or more), summed over all runs:\n");
+            text.Append("  tower       ").Append(string.Join("", System.Array.ConvertAll(BotRun.Roles, r => $"{r,9}"))).Append('\n');
+            var coins = new SortedDictionary<string, float>();
+            var roleDamage = new Dictionary<(string, string), float>();
+            foreach (BalanceProbeTests.ProbeResult r in results)
+            {
+                foreach (KeyValuePair<string, float> pair in r.CoinSeconds)
+                {
+                    coins[pair.Key] = (coins.TryGetValue(pair.Key, out float c) ? c : 0f) + pair.Value;
+                }
+
+                foreach (KeyValuePair<(string Tower, string Role), float> pair in r.RoleDamage)
+                {
+                    roleDamage[pair.Key] = (roleDamage.TryGetValue(pair.Key, out float d) ? d : 0f) + pair.Value;
+                }
+            }
+
+            foreach (KeyValuePair<string, float> tower in coins)
+            {
+                text.Append($"  {tower.Key,-12}");
+                foreach (string role in BotRun.Roles)
+                {
+                    float damage = roleDamage.TryGetValue((tower.Key, role), out float d) ? d : 0f;
+                    text.Append(Invariant($"{100f * damage / Mathf.Max(1f, tower.Value),9:0.00}"));
+                }
+
+                text.Append('\n');
+            }
+
             int repairs = 0;
             int earned = 0;
             foreach (BalanceProbeTests.ProbeResult r in results)

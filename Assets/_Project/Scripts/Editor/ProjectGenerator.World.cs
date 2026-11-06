@@ -92,7 +92,7 @@ namespace Game.Editor
             // die at the rate the beam can swing, not at its pulse rate; on a big creature it is a plain 40 DPS.
             // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
             roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, BeamSpeed, 0f, new Color(0.35f, 0.9f, 1f),
-                new[] { Lvl(110, 8f, 3.9f, 0.2f), Lvl(130, 12f, 4.1f, 0.18f), Lvl(190, 18f, 4.4f, 0.15f) }, 160f);
+                new[] { Lvl(110, 8f, 3.9f, 0.2f), Lvl(130, 12f, 4.1f, 0.18f), Lvl(190, 18f, 4.4f, 0.15f) }, 160f, softTargetShare: LightGunSoftShare);
             SetBeam(roster.Laser, LaserSweepSeconds);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),

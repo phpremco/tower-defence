@@ -52,6 +52,12 @@ namespace Game.Editor
         private const float DamagedPowerFloor = 0.75f;
         private const float RepairCostPerHealth = 0.3f;
 
+        // An aimed shot whose creature died in flight turns to a live one this close (cells): Docs/BALANCE.md, "Roles by enemy".
+        private const float ShotRetargetRadius = 1.5f;
+
+        // Light guns (Gun Turret, Laser) aim past plates that would stop more than half of their hit (round 21a2).
+        internal const float LightGunSoftShare = 0.5f;
+
         /// <summary>Runs every registered generator step (see <see cref="Steps"/>), then saves the assets.</summary>
         [MenuItem("Tools/Generate/Scenes and Starter Data")]
         public static void GenerateAll()
@@ -104,7 +110,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, float softTargetShare = 0f)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -121,6 +127,8 @@ namespace Game.Editor
             so.FindProperty("_splashRadius").floatValue = splash;
             so.FindProperty("_groundDamageFactor").floatValue = 1f;
             so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
+            so.FindProperty("_retargetRadius").floatValue = ShotRetargetRadius;
+            so.FindProperty("_softTargetShare").floatValue = softTargetShare;
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_maxHealth").floatValue = health;
             so.FindProperty("_damagedPowerFloor").floatValue = DamagedPowerFloor;

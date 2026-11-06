@@ -89,11 +89,12 @@ namespace Game.Editor
         // the boss. These shares put a continent boss on Hard and Psycho at about Medium's share of its cap (ContinentFinaleTests
         // derives and checks them). Easy keeps one: the model would ask about 1.2, and Easy is meant to forgive.
         // Round 21a: with the end-game Psycho player's cheaper upgrades and the roles by enemy (plating, the Gun Turret's half
-        // damage in the air) the derived Psycho share fell from 1.7 to about 1.1-1.15; Hard stays 1.45.
+        // damage in the air) the derived Psycho share fell from 1.7 to about 1.1-1.15; round 21a2 (the Cannon reloads slower)
+        // moved it again: Hard about 1.76, Psycho about 1.49.
         private const float EasyBossHealth = 1f;
         private const float MediumBossHealth = 1f;
-        private const float HardBossHealth = 1.45f;
-        private const float PsychoBossHealth = 1.15f;
+        private const float HardBossHealth = 1.75f;
+        private const float PsychoBossHealth = 1.5f;
 
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its

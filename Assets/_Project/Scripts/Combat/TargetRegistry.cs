@@ -66,6 +66,44 @@ namespace Game.Combat
             return best;
         }
 
+        /// <summary>
+        /// As <see cref="FindBest(Vector3, float, TargetLayers)"/>, but a light gun looks past plates: the target furthest along
+        /// that lets at least <paramref name="minShare"/> of a hit of <paramref name="hit"/> through, else the one furthest along.
+        /// </summary>
+        public ITargetable FindBest(Vector3 origin, float range, TargetLayers mask, float hit, float minShare)
+        {
+            ITargetable best = null;
+            ITargetable soft = null;
+            float bestProgress = float.NegativeInfinity;
+            float softProgress = float.NegativeInfinity;
+            float rangeSqr = range * range;
+
+            for (int i = 0; i < _targets.Count; i++)
+            {
+                ITargetable candidate = _targets[i];
+                if (!candidate.IsAlive || !mask.CanHit(candidate.Layer) || _concealed.Contains(candidate) || FlatDistanceSqr(origin, candidate.Position) > rangeSqr)
+                {
+                    continue;
+                }
+
+                float progress = candidate.PathProgress;
+                if (progress > bestProgress)
+                {
+                    best = candidate;
+                    bestProgress = progress;
+                }
+
+                bool passes = !(candidate is IPlated plated) || plated.ShareThrough(hit) >= minShare;
+                if (passes && progress > softProgress)
+                {
+                    soft = candidate;
+                    softProgress = progress;
+                }
+            }
+
+            return soft ?? best;
+        }
+
         /// <summary>Fills results with every live target within radius. The caller owns and reuses the list.</summary>
         public void FindInRadius(Vector3 origin, float radius, TargetLayers mask, List<ITargetable> results)
         {

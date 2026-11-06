@@ -715,3 +715,29 @@ on C1_02 Medium/Hard (the Brood Mother at wave 12), C1_04/C1_05/C1_06 Hard and C
 Cannon 26.4 (138% of data), Laser 24.3 (45%), Gun Turret 14.5 (46%, was 30% before the retarget), Flak 5.1. Repairs bought
 with coins: 4.5% of everything earned over the set. Psycho continent-boss health share 1.7 -> 1.15 (ContinentFinaleTests
 derives it; the end-game player's cheaper upgrades moved it).
+
+## Roles in play, round 21a2 (2026-11-06)
+
+What changed after round 21a, and why:
+- **Ants climb over a crowded gate** (`EnemyDefinition._slipCrowd`, Skitter 3): an ant that reaches a gate where three
+  others already bite climbs over and runs on (never past the base). The gate queue was one perfect shell target, so the
+  Cannon beat rate of fire even against loose runners.
+- **Light guns look past plates** (`TowerDefinition._softTargetShare`, Gun Turret and Laser 0.5;
+  `TargetRegistry.FindBest(..., hit, minShare)`, `IPlated`): they aim at the creature furthest along that lets at least half
+  of their hit through, and shoot a plated one only when nothing softer is in reach.
+- **Shot retarget is data** (`TowerDefinition._retargetRadius`, 1.5 cells for every tower; 0 turns it off; drones 0).
+- **Cannon** reloads in 1.6/1.35/1.15 s (was 1.4/1.2/1.0). Tried and dropped: a longer-reaching, faster Gun Turret (4.0,
+  0.30 s; the ledger, which already overrates it in play, solved harsher waves and the greedy probe lost Quartz Flats and
+  Crysium Vein) and a smaller first shell and blast (22, splash 1.0; the creative bot lost more levels than the Cannon row).
+- **Bots:** the creative bot saves for the harvester only while its guns hold the waves at hand with a margin (cover 1.2;
+  at 0.9 it starved Fault Line and Quartz Flats Hard).
+- **Field ease lowered toward 1:** C1_01 1/1/1.4/1 (was 1.6 on Hard), C1_02 1/1.3/1.1/1 (was 1.8/1.2), C1_03 1/0.85/1,
+  C1_05 0.85/0.85/1, others 1. C1_06 wave 15 is plain instead of a rush and C1_04's Psycho raids are 1.3x instead of 1.4x (two band checks sat on their
+  edge).
+- **Per-role in play** (Tools/PlayTest/monoculture.txt "Roles in play": DPS per 100 coins standing by what the hits landed
+  on; loose = a light walker with fewer than two others within 1.2 cells): Cannon 9.1 loose / 7.4 bunched / 3.7 plated,
+  Laser 5.6 / 2.7 / 3.3, Gun Turret 4.9 / 3.3 / 3.5, Flak 2.3 on air. The Cannon still wins per coin on loose ants in play;
+  the swarm role is not real yet (see STATUS, round 21a2).
+- **Derived boss shares moved again** (ContinentFinaleTests): Hard 1.45 -> 1.75, Psycho 1.15 -> 1.5 (continent bosses only;
+  none in a C1 campaign wave). TowerParityTests: Cannon L0-L2 against a lone boss sit at 0.72-0.74x the median (band 0.75)
+  since the slower reload; listed as known outliers.

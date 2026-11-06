@@ -10,7 +10,7 @@ namespace Game.Enemies
     /// flyers may stop to strike the gates they pass, trail layers drop a patch every so often, and anything can be
     /// slowed or hurried for a while. Has no knowledge of how it looks.
     /// </summary>
-    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget
+    public sealed class Enemy : MonoBehaviour, ITargetable, ISourcedTarget, IPlated
     {
         private const float ArrivalDistance = 0.02f;
         private const float MinSpeedFactor = 0.1f;
@@ -28,6 +28,14 @@ namespace Game.Enemies
         private float _travelled;
         private float _heightOffset;
         private TargetRegistry _registry;
+
+        // A small creature climbs over a gate that already has a crowd at it (EnemyDefinition.SlipCrowd): the gate it passed, the
+        // creatures counted there and the time to the next count (counting every frame would cost a scan per held creature).
+        private const float GateCrowdRadius = 1.5f;
+        private const float CrowdCheckSeconds = 0.5f;
+        private readonly System.Collections.Generic.List<ITargetable> _crowd = new System.Collections.Generic.List<ITargetable>();
+        private IStructure _slippedGate;
+        private float _crowdCheck;
         private StructureRegistry _structures;
         private float _attackCooldown;
         private bool _active;
@@ -174,6 +182,8 @@ namespace Game.Enemies
             _rolling = false;
             _rollTimer = definition.WalkSeconds;
             _gateStrikesLeft = definition.Flies ? definition.GateStrikes : 0;
+            _slippedGate = null;
+            _crowdCheck = 0f;
             _sinceTrailDrop = 0f;
             _directed = false;
             _concealedShare = -1f;
@@ -192,6 +202,9 @@ namespace Game.Enemies
             _registry.Add(this);
             Initialized?.Invoke(this);
         }
+
+        public float ShareThrough(float hit) =>
+            Health == null || Health.Plating <= 0f || hit <= 0f ? 1f : Health.ThroughPlating(hit, Health.Plating, Health.PlatingFloor) / hit;
 
         // Anything without a source (a mine, the hero, a pulse) counts as a blast: it still reaches a hidden boss in part.
         public void TakeDamage(float amount) => TakeDamageFrom(amount, null, true);
@@ -483,7 +496,7 @@ namespace Game.Enemies
             }
 
             IStructure blocker = _structures.FindBlocker(transform.position, BlockadeStopDistance);
-            if (blocker == null)
+            if (blocker == null || SlipsPast(blocker, deltaTime))
             {
                 return false;
             }
@@ -502,6 +515,44 @@ namespace Game.Enemies
                 _attackCooldown = Cadence.Idle(Cadence.Rearm(_attackCooldown, _definition.AttackInterval));
             }
 
+            return true;
+        }
+
+        // Round 21a2: ants crowding a gate made one perfect splash target, so the Cannon beat rate of fire even against loose
+        // runners. A creature that slips (SlipCrowd > 0) climbs over a gate where that many others already stand and runs on,
+        // so the queue stays small and the rest stream past the guns; never past the base.
+        private bool SlipsPast(IStructure blocker, float deltaTime)
+        {
+            if (_definition.SlipCrowd <= 0 || blocker.IsBase || _directed)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(blocker, _slippedGate))
+            {
+                return true;
+            }
+
+            _crowdCheck -= deltaTime;
+            if (_crowdCheck > 0f)
+            {
+                return false;
+            }
+
+            _crowdCheck = CrowdCheckSeconds;
+            _registry.FindInRadius(blocker.Position, GateCrowdRadius, TargetLayers.Ground, _crowd);
+            int others = 0;
+            for (int i = 0; i < _crowd.Count; i++)
+            {
+                others += ReferenceEquals(_crowd[i], this) ? 0 : 1;
+            }
+
+            if (others < _definition.SlipCrowd)
+            {
+                return false;
+            }
+
+            _slippedGate = blocker;
             return true;
         }
 

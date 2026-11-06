@@ -116,6 +116,51 @@ namespace Game.Tests
             Assert.Less(Health.ThroughPlating(5f, crag.Plating, crag.PlatingFloor) / 5f, 0.5f, "a light pulse does not");
         }
 
+        [Test]
+        public void LightGuns_LookPastPlates_WhenSomethingSofterIsInReach()
+        {
+            var registry = new TargetRegistry();
+            var plated = new FakeTarget(new UnityEngine.Vector3(1f, 0f, 0f), 10f, 5f);
+            var soft = new FakeTarget(new UnityEngine.Vector3(2f, 0f, 0f), 6f, 0f);
+            registry.Add(plated);
+            registry.Add(soft);
+            Assert.AreSame(plated, registry.FindBest(UnityEngine.Vector3.zero, 4f, TargetLayers.Ground), "a plain gun takes the one furthest along");
+            Assert.AreSame(soft, registry.FindBest(UnityEngine.Vector3.zero, 4f, TargetLayers.Ground, 5f, 0.5f), "a 5 hit loses 4 of 5 to the plates: the soft one");
+            Assert.AreSame(plated, registry.FindBest(UnityEngine.Vector3.zero, 4f, TargetLayers.Ground, 25f, 0.5f), "a shell passes the plates");
+            registry.Remove(soft);
+            Assert.AreSame(plated, registry.FindBest(UnityEngine.Vector3.zero, 4f, TargetLayers.Ground, 5f, 0.5f), "with nothing softer it still shoots");
+        }
+
+        private sealed class FakeTarget : ITargetable, IPlated
+        {
+            private readonly float _plating;
+
+            public FakeTarget(UnityEngine.Vector3 position, float progress, float plating)
+            {
+                Position = position;
+                PathProgress = progress;
+                _plating = plating;
+            }
+
+            public UnityEngine.Vector3 Position { get; }
+
+            public TargetLayers Layer => TargetLayers.Ground;
+
+            public float PathProgress { get; }
+
+            public bool IsAlive => true;
+
+            public void TakeDamage(float amount)
+            {
+            }
+
+            public void ApplySlow(float speedFactor, float seconds)
+            {
+            }
+
+            public float ShareThrough(float hit) => Health.ThroughPlating(hit, _plating, Floor) / hit;
+        }
+
         // Damage per coin one level-0 tower deals to a wave of a single creature with this plating, from the ledger's own load.
         private static float PerCoin(TowerStats tower, float plating)
         {
