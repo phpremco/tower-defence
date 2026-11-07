@@ -344,11 +344,14 @@ namespace Game.Editor
             public bool Stale;
         }
 
+        /// <summary>Stage A (round 22e): the strategy search; the fixed-timeline plan search of round 22 stays as <see cref="SearchFixedPlans"/>.</summary>
+        public static SearchReport SearchPlans(int samples = StrategySamples) => SearchStrategies(samples);
+
         /// <summary>
-        /// Searches plans for every level and difficulty the filter file allows, writes one readable file per cell and the
+        /// Searches fixed plans for every level and difficulty the filter file allows, writes one readable file per cell and the
         /// replayable plans (JSON) under Tools/PlayTest/Plans, and a summary. Reads the calibrated model.
         /// </summary>
-        public static SearchReport SearchPlans(int samples = 3000)
+        public static SearchReport SearchFixedPlans(int samples = 3000)
         {
             Loaded loaded = Load(true);
             var report = new SearchReport { Stale = loaded.Stale };
@@ -694,6 +697,7 @@ namespace Game.Editor
                 }
             }
 
+            text.Append('\n').Append(InPlayRamp(loaded, obvious.FindAll(r => !r.FreshPlayer), plans.FindAll(r => !r.FreshPlayer), out _));
             File.WriteAllText(AcceptancePath, text.ToString());
             report.Text = text.ToString();
             return report;

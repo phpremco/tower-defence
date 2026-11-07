@@ -1068,3 +1068,52 @@ its bar, or on Easy fewer than two obvious kinds win; both at once: a design que
 cell's target scale one step (1.15) that way, at most twice per cell over the rounds (`Tools/PlayTest/builder_iterations.txt`), then solves.
 The search and the replay then judge the new waves. `Tools/PlayTest/Plans/README.md` is now written from the replay
 (`BalanceStages.WriteWinningPlans`, stage `readme`): the plans that won in play, one or two per cell, with the best spots.
+
+## Adaptive strategies, the first-attempt player and the in-play ramp (2026-11-07, round 22e)
+
+**Play is the judge (the curator's decision 1).** The paper ramp rule (each level of a continent at least as hard as the one
+before, `BalanceChecks.CheckRamp`) is a report check now: `BalanceLedgerTests` writes its warnings into `balance_ledger.txt`
+and the log and no longer fails on it, because the builder moves a cell's target scale on stage-B verdicts and those moves
+pull against the paper ramp (C1_03-C1_06 eased, C1_01 hardened); where they conflict stage B wins. The ramp is judged in play
+instead: `AcceptanceRules.PlayMargin` scores a group of runs 0 to 1 (a win 0.5 plus half its stars share, a loss half of how far
+it got), `CellMargin` is the mean of the best replayed plan's and the creative reference's margin, and `InPlayRamp` flags a level
+whose margin is above the level before's by more than `BalanceRules.InPlayRampTolerance` (0.15) as a dip. The acceptance report
+and the builder print the table; the builder nudges a dip harder when the verdicts leave the cell alone.
+
+**The expected player is the first-attempt player (decision 3).** `Progression.StateAt` builds the player who first plausibly
+tries a cell: the towers and perks of the levels before, their research on the path of the difficulty (`PathOf`: Easy on Easy,
+Medium on Medium, Hard on Medium and Hard, Psycho on all four), plus the level itself cleared on the lower difficulties of that
+path (`OwnLevelPathOf`: a Hard player beat the level on Medium first, a Psycho player on Easy, Medium and Hard). C1_01 Psycho is
+now a player with the first level's research three times over (few upgrades, base 600), not the end-game player with base 800.
+The level's own tower reward is not counted (the bar sells the level's towers whatever the player owns, and the PlayMode probe
+owns the levels before). `ContinentEconomyTests.Psycho_IsTheFirstAttemptPlayer_NotTheEndGame` fixes the rule. The Hard and
+Psycho waves were re-solved for this player (Easy and Medium are unchanged).
+
+**Strategies instead of fixed scripts (decision 2).** A `StrategySpec` is a way of playing: per tower type the spots it takes
+first (`SpotPriority`), a favoured type per threat (`ThreatWeight` over swarm, pack, plated, air, boss), the upgrade policy
+(`UpgradeBias`, `TowersBeforeUpgrades`), the mine, slow-field and drone triggers (`MineCoverBelow`, `MineOnBoss`, `FieldCoverBelow`,
+`HarvesterCover` and `HarvesterShare`, `RepairDroneWear`, `AttackDroneAfterTowers`), the repair rule as the bots have it, and
+`AllowSell` (Psycho only for searched strategies). The creative reference bot is the point with no spot lists and every weight
+one (`StrategySpec.Creative`). The threat shares of a wave come from its load (`StrategyExecutor.ThreatShares`: swarm by count,
+pack by density, plated by the share a light hit loses to plating, air and boss by health share); a candidate tower's value per
+coin is multiplied by the strategy's mean weight over the waves at hand.
+
+- *Executor on paper* (`StrategyExecutor`): `PlanEvaluator.Evaluate` takes a `PlanPolicy` that adds steps at the start of every
+  wave; the executor mirrors the adaptive bot's `Act` (repairs by rule, the harvester while the guns hold, the sky gun's price
+  aside before a raid the sky guns cannot hold, a splash gun before the first crowd wave, gadgets and drones by the triggers, then
+  the best step per coin with the wait rule). The outcome's plan is the concrete order the paper took.
+- *Executor in play*: the creative bot reads the same parameters from `ProbeStrategy.Spec` (spot lists ahead of its own ranking,
+  threat weights on new towers, the bias on upgrades, the triggers); `ProbeStrategy.Adaptive(spec)` plays a searched strategy.
+  `BotRun.Moves` records every build, upgrade, gadget, drone and sale with its wave; the records carry them (`move` lines) and
+  the README prints the winning seed's order beside the strategy's words. The acceptance rules judge the features a run used
+  from its moves (`AcceptanceRules.SpecOf`), so "three upgrades, a drone, a gadget" is what really happened.
+- *Search* (`StrategySearch`): samples the space (spot order from the geometry's best spots, kept or shuffled by neighbour swaps;
+  a favoured type for some threats; the knobs from small grids), executes each on paper, improves the best few one parameter at a
+  time, keeps the distinct winners. Two strategies are distinct when they differ in two of: the first three spots of a type,
+  the favourite per threat, the timing category of the gadgets and drones (`StrategySpec.DistinctFrom`).
+
+**Script levers (decision 4).** For a cell the scale cannot move (C1_01 Easy and Hard keep the base whole at any scale), the
+builder applies, in order and one per round, `WaveScriptSpec.PlatedBias` (plated troops weigh 1.5x in every fill of the
+difficulty), `Tempo` (every group's interval x0.85) and `RaidWave` (wave 3 opens with five fast, spread runners of the cheapest
+troop). They live in `wave_tuning.txt` beside the scales (`WaveTuning.ReadLevers`) and the composer applies them per difficulty.
+An air lever is not used on a level whose player owns no sky gun.

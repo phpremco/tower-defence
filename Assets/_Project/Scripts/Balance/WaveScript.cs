@@ -106,6 +106,23 @@ namespace Game.Balance
 
         public float TargetScaleFor(int difficulty) => TargetScale == null || TargetScale.Length == 0 ? 1f : TargetScale[difficulty < TargetScale.Length ? difficulty : TargetScale.Length - 1];
 
+        /// <summary>
+        /// The builder's script-level levers per difficulty (round 22e, the curator's decision 4; WaveTuning): the weight of plated
+        /// troops in every fill (1 = as written), the tempo of every group's interval (below 1 faster), and a wave that opens with a
+        /// small raid of fast, spread runners (0 = none). For cells the target scale cannot move, such as C1_01 Easy and Hard.
+        /// </summary>
+        public float[] PlatedBias = { 1f };
+        public float[] Tempo = { 1f };
+        public int[] RaidWave = { 0 };
+
+        public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty, 1f);
+
+        public float TempoFor(int difficulty) => At(Tempo, difficulty, 1f);
+
+        public int RaidWaveFor(int difficulty) => RaidWave == null || RaidWave.Length == 0 ? 0 : RaidWave[difficulty < RaidWave.Length ? difficulty : RaidWave.Length - 1];
+
+        private static float At(float[] values, int difficulty, float fallback) => values == null || values.Length == 0 ? fallback : values[difficulty < values.Length ? difficulty : values.Length - 1];
+
         /// <summary>One letter per wave: P plain, R rush, H heavy, M ambush. A shorter string repeats.</summary>
         public string Rhythm = "P";
         public BossSpec[] Bosses = new BossSpec[0];

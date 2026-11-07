@@ -141,7 +141,7 @@ namespace Game.Tests
 
             CollectionAssert.AreEquivalent(new[] { "Rifle" }, first.OwnedTowers);
             CollectionAssert.AreEquivalent(new[] { "Rifle", "Cannon", "Laser" }, third.OwnedTowers);
-            Assert.IsTrue(endGame.OwnedTowers.Contains("Rocket"), "Psycho expects the whole campaign behind the player");
+            Assert.IsFalse(endGame.OwnedTowers.Contains("Cannon"), "Psycho on the first level is a player who has not been further (round 22e)");
         }
 
         [Test]

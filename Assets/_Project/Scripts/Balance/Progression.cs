@@ -63,14 +63,15 @@ namespace Game.Balance
     }
 
     /// <summary>
-    /// Walks the campaign in order and works out, per level and difficulty, what the player owns and has bought by then.
-    /// Towers come from the starting set plus the rewards of the levels before. Research comes from the levels before,
-    /// on the path a player of that difficulty takes: an Easy player clears each level on Easy; a Medium player on
-    /// Medium; a Hard player on Medium and Hard. Psycho is the end game of the level's own continent: every level up to the
-    /// end of that continent cleared on Easy, Medium and Hard, with that continent's weapons owned (GAME_DESIGN: Psycho
-    /// asks for a fully upgraded commander; counting the whole campaign would put six continents of research into the
-    /// first). The research is spent cheapest first on upgrades of the owned guns, the hero and the gates, which is
-    /// roughly how a player spreads it.
+    /// Walks the campaign in order and works out, per level and difficulty, what the player owns and has bought by then: the
+    /// player at the moment they would first plausibly try that cell (the curator, round 22e), not the end-game player. Towers
+    /// and perks come from the starting set plus the rewards of the levels before. Research comes from the levels before, on the
+    /// path a player of that difficulty takes (<see cref="PathOf"/>: an Easy player clears each level on Easy; a Medium player
+    /// on Medium; a Hard player on Medium and Hard; a Psycho player on all four), plus the level itself cleared on the lower
+    /// difficulties of that path (<see cref="OwnLevelPathOf"/>: a Hard player has beaten the level on Medium first, a Psycho
+    /// player on Easy, Medium and Hard). So C1_01 Psycho is a player with the first level's research three times over and few
+    /// upgrades, not one with the whole continent behind them. The research is spent cheapest first on upgrades of the owned
+    /// guns, the hero, the gates and the base, which is roughly how a player spreads it.
     /// </summary>
     public static class Progression
     {
@@ -88,8 +89,24 @@ namespace Game.Balance
                 case 2:
                     return new[] { 1, 2 };
                 default:
-                    return new[] { 0, 1, 2 };
+                    return new[] { 0, 1, 2, 3 };
             }
+        }
+
+        /// <summary>The difficulties a player of the given difficulty has cleared the level itself on before trying it: the path below it.</summary>
+        public static int[] OwnLevelPathOf(int difficulty)
+        {
+            int[] path = PathOf(difficulty);
+            var below = new List<int>();
+            foreach (int d in path)
+            {
+                if (d < difficulty)
+                {
+                    below.Add(d);
+                }
+            }
+
+            return below.ToArray();
         }
 
         public static PlayerState StateAt(
@@ -112,10 +129,7 @@ namespace Game.Balance
                 multiplier += rules.ResearchMultipliers[Math.Min(d, rules.ResearchMultipliers.Length - 1)];
             }
 
-            // Psycho is the end game: the player is expected to have the level's whole continent behind them on the lower
-            // difficulties, its weapons and every upgrade that buys (GAME_DESIGN: fully upgraded, no mistakes).
-            int before = difficulty >= EndGameDifficulty ? EndOfContinent(campaign, levelIndex) : levelIndex;
-            for (int i = 0; i < before && i < campaign.Count; i++)
+            for (int i = 0; i < levelIndex && i < campaign.Count; i++)
             {
                 if (!string.IsNullOrEmpty(campaign[i].RewardTowerId))
                 {
@@ -128,6 +142,19 @@ namespace Game.Balance
                 }
 
                 state.ResearchEarned += (int)Math.Round(campaign[i].Research * multiplier, MidpointRounding.AwayFromZero);
+            }
+
+            // The level itself, beaten on the lower difficulties of the path before this attempt (its tower reward is not counted:
+            // the bar sells the level's own towers whatever the player owns, and the PlayMode probe owns the levels before only).
+            if (levelIndex >= 0 && levelIndex < campaign.Count)
+            {
+                float own = 0f;
+                foreach (int d in OwnLevelPathOf(difficulty))
+                {
+                    own += rules.ResearchMultipliers[Math.Min(d, rules.ResearchMultipliers.Length - 1)];
+                }
+
+                state.ResearchEarned += (int)Math.Round(campaign[levelIndex].Research * own, MidpointRounding.AwayFromZero);
             }
 
             Spend(state, upgrades);

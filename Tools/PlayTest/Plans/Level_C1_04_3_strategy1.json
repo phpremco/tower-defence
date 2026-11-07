@@ -1,0 +1,101 @@
+{
+    "Level": "Level_C1_04",
+    "Difficulty": 3,
+    "Name": "Level_C1_04_3_strategy1",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                28,
+                29,
+                32,
+                33,
+                32,
+                29
+            ],
+            "Y": [
+                5,
+                5,
+                6,
+                6,
+                5,
+                6
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                33,
+                33,
+                32,
+                29,
+                33,
+                32
+            ],
+            "Y": [
+                9,
+                6,
+                6,
+                6,
+                10,
+                5
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                28,
+                29,
+                32,
+                33,
+                33,
+                33
+            ],
+            "Y": [
+                5,
+                5,
+                5,
+                5,
+                6,
+                9
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                34,
+                34,
+                33,
+                34,
+                31,
+                32
+            ],
+            "Y": [
+                9,
+                10,
+                9,
+                6,
+                9,
+                9
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "air",
+            "Tower": "Cannon",
+            "Weight": 1.0198421478271484
+        }
+    ],
+    "UpgradeBias": 1.6699999570846558,
+    "TowersBeforeUpgrades": 2,
+    "MineCoverBelow": 1.2999999523162842,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 1.2000000476837158,
+    "HarvesterShare": 0.30000001192092896,
+    "RepairDroneWear": 0.25,
+    "AttackDroneAfterTowers": 8,
+    "AllowSell": true
+}

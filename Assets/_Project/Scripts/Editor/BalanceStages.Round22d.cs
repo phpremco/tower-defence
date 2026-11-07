@@ -49,8 +49,11 @@ namespace Game.Editor
             plans.RemoveAll(r => r.FreshPlayer);
             Dictionary<(string Key, int Difficulty), float> scales = WaveTuning.Read();
             Dictionary<string, int> moves = ReadIterations();
+            Dictionary<(string Key, int Difficulty), ScriptLever> levers = WaveTuning.ReadLevers();
             var questions = new List<string>();
             bool changed = false;
+            // The in-play ramp (round 22e): a cell the verdicts leave alone but that plays easier than the level before is nudged harder.
+            text.Append(InPlayRamp(loaded, obvious, plans, out List<(string Level, int Difficulty, string Reason)> dips)).Append('\n');
             foreach (MapNode map in loaded.Catalog.Nodes)
             {
                 if (map.Level == null)
@@ -72,6 +75,12 @@ namespace Game.Editor
                     }
 
                     AcceptanceRules.Lever lever = AcceptanceRules.LeverFor(map.Level.name, d, cellObvious, cellPlans, medium, out string reason);
+                    (string Level, int Difficulty, string Reason) dip = dips.Find(x => x.Level == map.Level.name && x.Difficulty == d);
+                    if (lever == AcceptanceRules.Lever.None && reason.Length == 0 && dip.Level != null)
+                    {
+                        lever = AcceptanceRules.Lever.Harder;
+                        reason = "in-play ramp: " + dip.Reason;
+                    }
                     float scale = scales.TryGetValue((key, d), out float s) ? s : 1f;
                     int used = moves.TryGetValue(cell, out int m) ? m : 0;
                     string state = lever == AcceptanceRules.Lever.Harder ? "too easy" : lever == AcceptanceRules.Lever.Easier ? "too hard" : string.IsNullOrEmpty(reason) ? "ok" : "pulls both ways";
@@ -83,6 +92,25 @@ namespace Game.Editor
                             questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: pulls both ways ({reason}); a script-level lever or a design choice is needed."));
                         }
 
+                        continue;
+                    }
+
+                    // A cell still too easy after a scale move gets a script-level lever instead (the curator's decision 4, round 22e):
+                    // the scale evidently does not bite there (C1_01 Easy and Hard keep the base whole at any scale).
+                    if (lever == AcceptanceRules.Lever.Harder && used >= 1)
+                    {
+                        ScriptLever current = levers.TryGetValue((key, d), out ScriptLever l) ? l : ScriptLever.None;
+                        string applied = NextScriptLever(ref current);
+                        if (applied == null)
+                        {
+                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after the scale and every script lever (plated {current.Plated:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({reason}); a design choice is needed."));
+                            continue;
+                        }
+
+                        levers[(key, d)] = current;
+                        moves[cell] = used + 1;
+                        changed = true;
+                        text.Append(Invariant($"    -> script lever: {applied}\n"));
                         continue;
                     }
 
@@ -101,7 +129,7 @@ namespace Game.Editor
 
             if (changed)
             {
-                WaveTuning.Write(scales);
+                WaveTuning.Write(scales, levers);
                 WriteIterations(moves);
                 text.Append("  tuning written to ").Append(WaveTuning.Path).Append("; solving the waves.\n");
                 SolveWaves();
@@ -115,6 +143,35 @@ namespace Game.Editor
             text.Append(questions.Count == 0 ? "  none\n" : "  " + string.Join("\n  ", questions) + "\n");
             File.WriteAllText(BuilderReportPath, text.ToString());
             return text.ToString();
+        }
+
+        // The script levers in order (the curator's decision 4): plated troops against a light row, a faster tempo, then a small early
+        // raid of spread runners against a splash row. Each is applied once; null when all three are in.
+        private const float PlatedLeverStep = 1.5f;
+        private const float TempoLeverStep = 0.85f;
+        private const int RaidLeverWave = 3;
+
+        private static string NextScriptLever(ref ScriptLever lever)
+        {
+            if (lever.Plated == 1f)
+            {
+                lever.Plated = PlatedLeverStep;
+                return Invariant($"plated troops weighted x{PlatedLeverStep}");
+            }
+
+            if (lever.Tempo == 1f)
+            {
+                lever.Tempo = TempoLeverStep;
+                return Invariant($"tempo x{TempoLeverStep} (groups come faster)");
+            }
+
+            if (lever.Raid == 0)
+            {
+                lever.Raid = RaidLeverWave;
+                return Invariant($"a raid of fast, spread runners opens wave {RaidLeverWave}");
+            }
+
+            return null;
         }
 
         [MenuItem("Tools/Generate/Balance/6b Build from stage-B verdicts (lever once, solve)")]
@@ -195,6 +252,8 @@ namespace Game.Editor
                         specs[plan.Name] = plan;
                     }
 
+                    Dictionary<string, StrategySpec> strategies = LoadStrategies(map.Level.name, d);
+
                     var input = new PlanSearchInput
                     {
                         LevelKey = map.Level.name,
@@ -205,7 +264,7 @@ namespace Game.Editor
                         Judge = rules.HumanWithHero(),
                         Cap = rules.HeroCapFor(d) * (1f + rules.BeatableTolerance),
                     };
-                    text.Append(ReadmeFromReplay(map.Level, d, runs, specs, PlanSearch.BestSpots(input), input.Level, out bool won));
+                    text.Append(ReadmeFromReplay(map.Level, d, runs, specs, strategies, PlanSearch.BestSpots(input), input.Level, out bool won));
                     winners += won ? 1 : 0;
                 }
 
@@ -220,7 +279,7 @@ namespace Game.Editor
         [MenuItem("Tools/Generate/Balance/8 README from the stage-B winners")]
         private static void MenuWriteWinningPlans() => Debug.Log("[Balance] " + WriteWinningPlans());
 
-        private static string ReadmeFromReplay(LevelDefinition level, int difficulty, List<RunRecord> runs, Dictionary<string, PlanSpec> specs, Dictionary<string, List<(Cell Cell, SpotCover Cover)>> bestSpots, LevelInput input, out bool won)
+        private static string ReadmeFromReplay(LevelDefinition level, int difficulty, List<RunRecord> runs, Dictionary<string, PlanSpec> specs, Dictionary<string, StrategySpec> strategies, Dictionary<string, List<(Cell Cell, SpotCover Cover)>> bestSpots, LevelInput input, out bool won)
         {
             string Name(string id)
             {
@@ -287,7 +346,7 @@ namespace Game.Editor
                     break;
                 }
 
-                string planName = strategy.Replace("plan ", string.Empty);
+                string planName = RunRecord.PlanNameOf(strategy);
                 if (!winner)
                 {
                     int reached = 0;
@@ -308,11 +367,37 @@ namespace Game.Editor
                         baseLeft += run.Won ? run.BaseHealth : 0f;
                     }
 
-                    text.Append(Invariant($"**{planName}** (won {wins}/{planRuns.Count} seeds, {stars / wins:0.0} stars, base {baseLeft / wins:0} left{(specs.TryGetValue(planName, out PlanSpec spec) && UsesRepairDrone(spec, input) ? ", repair drone" : string.Empty)})\n\n"));
+                    PlanSpec played = AcceptanceRules.SpecOf(planRuns, specs);
+                    text.Append(Invariant($"**{planName}** (won {wins}/{planRuns.Count} seeds, {stars / wins:0.0} stars, base {baseLeft / wins:0} left{(played != null && UsesRepairDrone(played, input) ? ", repair drone" : string.Empty)})\n\n"));
                 }
 
                 text.Append("```\n");
-                text.Append(specs.TryGetValue(planName, out PlanSpec plan) ? plan.Describe(Name) : "  (plan file missing: the search has rewritten the plans since this replay)\n");
+                if (strategies.TryGetValue(planName, out StrategySpec strategySpec))
+                {
+                    // A strategy: its words, then the build order the best seed really took (round 22e).
+                    var groundIds = new List<string>();
+                    foreach (TowerStats tower in input.Towers)
+                    {
+                        if (tower.IsGun && Layer.Has(tower.Targets, Layer.Ground))
+                        {
+                            groundIds.Add(tower.Id);
+                        }
+                    }
+
+                    text.Append(strategySpec.Describe(groundIds, Name));
+                    RunRecord bestSeed = planRuns[0];
+                    foreach (RunRecord run in planRuns)
+                    {
+                        bestSeed = run.RealisedScore > bestSeed.RealisedScore ? run : bestSeed;
+                    }
+
+                    text.Append(Invariant($"  The build order seed {bestSeed.Seed} took ({(bestSeed.Won ? bestSeed.Stars + " stars, base " + bestSeed.BaseHealth.ToString("0", CultureInfo.InvariantCulture) : "lost at wave " + bestSeed.WaveReached)}):\n"));
+                    text.Append(bestSeed.Moves.Count > 0 ? bestSeed.MovesAsPlan().Describe(Name) : "  (no moves recorded)\n");
+                }
+                else
+                {
+                    text.Append(specs.TryGetValue(planName, out PlanSpec plan) ? plan.Describe(Name) : "  (plan file missing: the search has rewritten the plans since this replay)\n");
+                }
                 text.Append("```\n\n");
                 shown++;
                 if (shown >= ReadmePlans)

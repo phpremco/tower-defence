@@ -1,0 +1,97 @@
+{
+    "Level": "Level_C1_02",
+    "Difficulty": 2,
+    "Name": "Level_C1_02_2_strategy4",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                5,
+                7,
+                6,
+                5,
+                8,
+                7
+            ],
+            "Y": [
+                6,
+                6,
+                5,
+                7,
+                6,
+                5
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                4,
+                30,
+                30,
+                5,
+                5,
+                31
+            ],
+            "Y": [
+                7,
+                15,
+                16,
+                7,
+                6,
+                16
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                7,
+                7,
+                5,
+                6,
+                4,
+                8
+            ],
+            "Y": [
+                6,
+                5,
+                7,
+                5,
+                7,
+                7
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "swarm",
+            "Tower": "PulseRifle",
+            "Weight": 1.267931580543518
+        },
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 2.3954720497131348
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 2.158047676086426
+        },
+        {
+            "Threat": "air",
+            "Tower": "PulseRifle",
+            "Weight": 0.6043969392776489
+        }
+    ],
+    "UpgradeBias": 1.0399999618530273,
+    "TowersBeforeUpgrades": 1,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 1.2000000476837158,
+    "HarvesterShare": 0.6000000238418579,
+    "RepairDroneWear": 9.0,
+    "AttackDroneAfterTowers": 0,
+    "AllowSell": false
+}

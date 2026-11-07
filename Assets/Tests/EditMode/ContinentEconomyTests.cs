@@ -78,7 +78,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Psycho_IsTheEndGameOfItsOwnContinent()
+        public void Psycho_IsTheFirstAttemptPlayer_NotTheEndGame()
         {
             var campaign = new System.Collections.Generic.List<CampaignLevel>
             {
@@ -88,10 +88,21 @@ namespace Game.Tests
             };
             var upgrades = new System.Collections.Generic.List<UpgradeStats>();
 
-            PlayerState crazy = Progression.StateAt(campaign, 0, Progression.EndGameDifficulty, new[] { "Rifle" }, upgrades, Rules);
-            Assert.IsTrue(crazy.OwnedTowers.Contains("Laser"), "its own continent's weapons");
+            // The curator (round 22e): the expected player of a cell is the one who first plausibly tries it. A Psycho player on A2
+            // has cleared A1 on every difficulty (1 + 2 + 3 + 5) and A2 itself on Easy, Medium and Hard (1 + 2 + 3) and owns A1's reward.
+            PlayerState crazy = Progression.StateAt(campaign, 1, Progression.EndGameDifficulty, new[] { "Rifle" }, upgrades, Rules);
+            Assert.IsTrue(crazy.OwnedTowers.Contains("Laser"), "the level before's weapon");
             Assert.IsFalse(crazy.OwnedTowers.Contains("Cryo"), "not the next continent's");
-            Assert.AreEqual(2 * 10 * 6, crazy.ResearchEarned, "both levels of the continent on Easy, Medium and Hard (1 + 2 + 3)");
+            Assert.AreEqual(10 * 11 + 10 * 6, crazy.ResearchEarned, "A1 on all four difficulties plus A2 on the three below Psycho");
+            PlayerState first = Progression.StateAt(campaign, 0, Progression.EndGameDifficulty, new[] { "Rifle" }, upgrades, Rules);
+            Assert.AreEqual(10 * 6, first.ResearchEarned, "the first level on Psycho: its own research on Easy, Medium and Hard, nothing more");
+            Assert.IsFalse(first.OwnedTowers.Contains("Laser"), "no reward of a level not yet beaten counts");
+            PlayerState hard = Progression.StateAt(campaign, 1, 2, new[] { "Rifle" }, upgrades, Rules);
+            Assert.AreEqual(10 * 5 + 10 * 2, hard.ResearchEarned, "a Hard player: the level before on Medium and Hard, the level itself on Medium");
+            for (int d = 0; d < 4; d++)
+            {
+                Assert.LessOrEqual(Progression.StateAt(campaign, 0, d, new[] { "Rifle" }, upgrades, Rules).ResearchEarned, Progression.StateAt(campaign, 1, d, new[] { "Rifle" }, upgrades, Rules).ResearchEarned, "research never falls from one level to the next on a difficulty");
+            }
             Assert.AreEqual(3, Progression.EndOfContinent(campaign, 2));
         }
     }

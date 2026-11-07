@@ -1,0 +1,116 @@
+{
+    "Level": "Level_C1_05",
+    "Difficulty": 0,
+    "Name": "Level_C1_05_0_strategy3",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                7,
+                7,
+                21,
+                6,
+                6,
+                20
+            ],
+            "Y": [
+                5,
+                4,
+                5,
+                5,
+                6,
+                5
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                7,
+                6,
+                20,
+                7,
+                20,
+                6
+            ],
+            "Y": [
+                5,
+                5,
+                5,
+                4,
+                4,
+                6
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                7,
+                7,
+                6,
+                21,
+                20,
+                8
+            ],
+            "Y": [
+                5,
+                4,
+                6,
+                5,
+                5,
+                6
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                33,
+                34,
+                34,
+                35,
+                33,
+                35
+            ],
+            "Y": [
+                4,
+                4,
+                5,
+                4,
+                5,
+                5
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "swarm",
+            "Tower": "Cannon",
+            "Weight": 1.8808256387710571
+        },
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 0.5762333869934082
+        },
+        {
+            "Threat": "plated",
+            "Tower": "PulseRifle",
+            "Weight": 0.5603504776954651
+        },
+        {
+            "Threat": "air",
+            "Tower": "PulseRifle",
+            "Weight": 1.9466869831085205
+        }
+    ],
+    "UpgradeBias": 1.090000033378601,
+    "TowersBeforeUpgrades": 2,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 0.0,
+    "HarvesterCover": 0.0,
+    "HarvesterShare": 0.30000001192092896,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 8,
+    "AllowSell": false
+}

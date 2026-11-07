@@ -40,8 +40,9 @@ namespace Game.Tests
         /// <summary>The ledger-less buyer of whatever is dearest and affordable.</summary>
         public static readonly ProbeStrategy AffordableBot = new ProbeStrategy("affordable", style: PlayStyle.Affordable);
 
-        private ProbeStrategy(string name, System.Predicate<TowerDefinition> allowed = null, bool roleSpots = false, bool creative = false, bool naive = false, PlayStyle style = PlayStyle.Ledger, PlanSpec plan = null)
+        private ProbeStrategy(string name, System.Predicate<TowerDefinition> allowed = null, bool roleSpots = false, bool creative = false, bool naive = false, PlayStyle style = PlayStyle.Ledger, PlanSpec plan = null, StrategySpec spec = null)
         {
+            Spec = spec ?? StrategySpec.Creative(string.Empty, 0);
             Name = name;
             Allowed = allowed;
             RoleSpots = roleSpots;
@@ -67,6 +68,9 @@ namespace Game.Tests
 
         public PlanSpec Plan { get; }
 
+        /// <summary>The strategy the creative bot executes (round 22e): the reference point for the plain creative bot, a searched one for the replay.</summary>
+        public StrategySpec Spec { get; }
+
         /// <summary>True for the obvious family: it reads no balance model.</summary>
         public bool Obvious => Style == PlayStyle.MonoRow || Style == PlayStyle.NearGate || Style == PlayStyle.Affordable;
 
@@ -75,6 +79,9 @@ namespace Game.Tests
 
         /// <summary>Every owned tower placed by its role, plus drones, mines, a slow field and sell-and-rebuy (the ledger-driven reference player).</summary>
         public static ProbeStrategy CreativeBot() => new ProbeStrategy("creative", roleSpots: true, creative: true);
+
+        /// <summary>The creative bot executing a searched strategy (the tester's stage B for strategies): its spots, mix, triggers and timing.</summary>
+        public static ProbeStrategy Adaptive(StrategySpec spec) => new ProbeStrategy("strategy " + spec.Name, roleSpots: true, creative: true, spec: spec);
 
         /// <summary>The careless player: the owned types in turn on the first free spots nearest the gate, random upgrades, no gadgets or drones.</summary>
         public static ProbeStrategy NaiveBot() => new ProbeStrategy("naive", naive: true, style: PlayStyle.NearGate);

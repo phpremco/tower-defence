@@ -18,6 +18,7 @@ namespace Game.Tests
         private const int Medium = 1;
 
         [Test]
+        [Timeout(3600000)]
         public void Search_WritesPlansForEveryCell()
         {
             BalanceStages.SearchReport report = BalanceStages.SearchPlans();

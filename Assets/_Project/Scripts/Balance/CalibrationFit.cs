@@ -64,6 +64,18 @@ namespace Game.Balance
         public bool FreshPlayer;
         public readonly List<WaveRecord> Waves = new List<WaveRecord>();
 
+        /// <summary>The build order the run really took (builds, upgrades, gadgets, drones, sales with their wave; round 22e), for the README and the feature checks.</summary>
+        public readonly List<PlanStep> Moves = new List<PlanStep>();
+
+        /// <summary>The plan or strategy name without its "plan " or "strategy " prefix.</summary>
+        public string PlanName => PlanNameOf(Strategy);
+
+        public static string PlanNameOf(string strategy) =>
+            strategy.StartsWith("plan ", StringComparison.Ordinal) ? strategy.Substring(5) : strategy.StartsWith("strategy ", StringComparison.Ordinal) ? strategy.Substring(9) : strategy;
+
+        /// <summary>The moves as a plan (what was really built, in order), so the acceptance rules judge the features a run used.</summary>
+        public PlanSpec MovesAsPlan() => new PlanSpec { Level = Level, Difficulty = Difficulty, Name = PlanName, Steps = Moves.ToArray() };
+
         /// <summary>Stars first, then base health, then coins; a loss ranks by how far it got.</summary>
         public float RealisedScore => Leak.Score(Won, Stars, BaseHealth, Coins, WaveCount, WaveReached);
 
@@ -601,6 +613,11 @@ namespace Game.Balance
 
                     text.Append(string.Join("|", "wave", I(wave.Wave), F(wave.Health), F(wave.OtherDealt), string.Join(";", dealt), string.Join(",", standing), F(wave.BaseLost), F(wave.GateLost), F(wave.RepairDroneSeconds), F(wave.RepairDroneBusy))).Append('\n');
                 }
+
+                foreach (PlanStep move in run.Moves)
+                {
+                    text.Append(string.Join("|", "move", I(move.Wave), move.Kind, move.Item, I(move.X), I(move.Y))).Append('\n');
+                }
             }
 
             return text.ToString();
@@ -664,6 +681,10 @@ namespace Game.Balance
                     }
 
                     current.Waves.Add(wave);
+                }
+                else if (parts.Length >= 6 && parts[0] == "move" && current != null)
+                {
+                    current.Moves.Add(new PlanStep { Wave = int.Parse(parts[1], CultureInfo.InvariantCulture), Kind = parts[2], Item = parts[3], X = int.Parse(parts[4], CultureInfo.InvariantCulture), Y = int.Parse(parts[5], CultureInfo.InvariantCulture) });
                 }
             }
 

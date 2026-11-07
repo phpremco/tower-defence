@@ -1,0 +1,97 @@
+{
+    "Level": "Level_C1_02",
+    "Difficulty": 1,
+    "Name": "Level_C1_02_1_strategy2",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                5,
+                6,
+                7,
+                7,
+                5,
+                8
+            ],
+            "Y": [
+                7,
+                5,
+                6,
+                5,
+                6,
+                6
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                5,
+                30,
+                31,
+                30,
+                5,
+                4
+            ],
+            "Y": [
+                7,
+                15,
+                16,
+                16,
+                6,
+                7
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                7,
+                6,
+                7,
+                4,
+                5,
+                8
+            ],
+            "Y": [
+                6,
+                5,
+                5,
+                7,
+                7,
+                7
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "pack",
+            "Tower": "Laser",
+            "Weight": 1.0334786176681519
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 0.6112480163574219
+        },
+        {
+            "Threat": "air",
+            "Tower": "Cannon",
+            "Weight": 2.2606592178344727
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 0.5527265667915344
+        }
+    ],
+    "UpgradeBias": 1.5,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 0.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 0,
+    "AllowSell": false
+}

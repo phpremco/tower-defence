@@ -251,8 +251,8 @@ namespace Game.Balance
                 verdict.Failures.Add(Invariant($"{name}: the best plan wins {Wins(best)}/{best.Count} (needs {bar:P0})"));
             }
 
-            string planName = best.Count > 0 ? best[0].Strategy.Replace("plan ", string.Empty) : string.Empty;
-            if (specs.TryGetValue(planName, out PlanSpec spec))
+            PlanSpec spec = SpecOf(best, specs);
+            if (spec != null)
             {
                 int features = (spec.Uses(PlanStep.Mine) || spec.Uses(PlanStep.Field) ? 1 : 0) + (spec.Uses(PlanStep.Drone) ? 1 : 0) + (spec.Uses(PlanStep.Sell) ? 1 : 0) + (spec.Upgrades >= 3 ? 1 : 0);
                 if (features < HardFeatures)
@@ -288,9 +288,10 @@ namespace Game.Balance
                 }
 
                 var top = new List<PlanSpec>();
-                foreach (string key in byPlan.Keys)
+                foreach (List<RunRecord> plan in byPlan.Values)
                 {
-                    if (specs.TryGetValue(key.Replace("plan ", string.Empty), out PlanSpec other))
+                    PlanSpec other = SpecOf(plan, specs);
+                    if (other != null)
                     {
                         top.Add(other);
                     }
@@ -369,6 +370,112 @@ namespace Game.Balance
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// The plan a group of runs followed: the written spec by name, else (an adaptive strategy, round 22e) the moves the run with the most
+        /// moves really took, so the feature checks judge what happened in play.
+        /// </summary>
+        public static PlanSpec SpecOf(List<RunRecord> runs, IReadOnlyDictionary<string, PlanSpec> specs)
+        {
+            if (runs.Count == 0)
+            {
+                return null;
+            }
+
+            if (specs != null && specs.TryGetValue(runs[0].PlanName, out PlanSpec spec))
+            {
+                return spec;
+            }
+
+            RunRecord most = runs[0];
+            foreach (RunRecord run in runs)
+            {
+                most = run.Moves.Count > most.Moves.Count ? run : most;
+            }
+
+            return most.Moves.Count > 0 ? most.MovesAsPlan() : null;
+        }
+
+        /// <summary>
+        /// The in-play margin of a group of runs (round 22e, the curator: play judges the ramp), 0 to 1: a win counts 0.5 plus half its
+        /// stars share, a loss half of how far it got. Averaged over the runs.
+        /// </summary>
+        public static float PlayMargin(IReadOnlyList<RunRecord> runs)
+        {
+            if (runs.Count == 0)
+            {
+                return 0f;
+            }
+
+            float sum = 0f;
+            foreach (RunRecord run in runs)
+            {
+                sum += run.Won ? 0.5f + 0.5f * run.Stars / 3f : 0.5f * run.WaveReached / Math.Max(1, run.WaveCount);
+            }
+
+            return sum / runs.Count;
+        }
+
+        /// <summary>A cell's in-play margin: the mean of the best replayed plan's margin and the creative reference's (whichever exist).</summary>
+        public static float CellMargin(IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, out string best)
+        {
+            best = string.Empty;
+            var creative = new List<RunRecord>();
+            foreach (RunRecord run in obvious)
+            {
+                if (run.Strategy.StartsWith("creative", StringComparison.Ordinal))
+                {
+                    creative.Add(run);
+                }
+            }
+
+            List<RunRecord> bestRuns = null;
+            foreach (KeyValuePair<string, List<RunRecord>> plan in Group(plans, r => true))
+            {
+                if (bestRuns == null || PlayMargin(plan.Value) > PlayMargin(bestRuns))
+                {
+                    bestRuns = plan.Value;
+                    best = plan.Key;
+                }
+            }
+
+            float sum = 0f;
+            int parts = 0;
+            if (bestRuns != null)
+            {
+                sum += PlayMargin(bestRuns);
+                parts++;
+            }
+
+            if (creative.Count > 0)
+            {
+                sum += PlayMargin(creative);
+                parts++;
+            }
+
+            return parts > 0 ? sum / parts : 0f;
+        }
+
+        /// <summary>
+        /// The in-play ramp within a continent: per level, in play order, the cell margins per difficulty; a level whose margin is above the
+        /// level before's by more than the tolerance is a dip (easier in play than the one before). Returns the dips as "Level difficulty".
+        /// </summary>
+        public static List<(string Level, int Difficulty, string Reason)> InPlayRamp(IReadOnlyList<string> levels, IReadOnlyList<float[]> margins, float tolerance)
+        {
+            var dips = new List<(string, int, string)>();
+            for (int i = 1; i < margins.Count; i++)
+            {
+                for (int d = 0; d < margins[i].Length && d < margins[i - 1].Length; d++)
+                {
+                    if (margins[i][d] > 0f && margins[i - 1][d] > 0f && margins[i][d] > margins[i - 1][d] + tolerance)
+                    {
+                        dips.Add((levels[i], d, Invariant($"easier in play than {levels[i - 1]} (margin {margins[i][d]:0.00} against {margins[i - 1][d]:0.00})")));
+                    }
+                }
+            }
+
+            return dips;
         }
 
         // Mean base health left over the wins (0 when none won).

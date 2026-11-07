@@ -668,3 +668,19 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
 - `calibration.txt` has a `queueguard <share>` line (the apply stage writes `_queueGuardShare`); the hash no longer covers drone prices.
 - `Tools/PlayTest/builder_iterations.txt` counts the builder's moves per cell (at most two).
 - Scan of the ledger's purchase per wave: `WaveLine.Purchase` (type index:level x count) in an `eval_file` script beside the pressures.
+
+### Round 22e additions (2026-11-07)
+
+- Stage A searches **strategies** (`StrategySearch`, `Tools/Generate/Balance/5`, `PlanSearchTests`): per cell the distinct winning
+  strategies are written as `Tools/PlayTest/Plans/<Level>_<d>_strategyN.json` (a `StrategySpec`: spot priority per tower, favoured
+  tower per threat, upgrade policy, gadget and drone triggers) and described in `<Level>_<d>.txt` with the build order the paper
+  took. About 10 s per cell at 1500 samples. The fixed-plan search of round 22 is still callable as `BalanceStages.SearchFixedPlans`.
+- The replay plays `_strategy*.json` with the adaptive bot (`ProbeStrategy.Adaptive`; record strategy name `strategy <name>`) and any
+  other `<Level>_<d>_*.json` as a scripted plan. The record files carry `move|wave|kind|item|x|y` lines: the build order each run took.
+- `bash Tools/PlayTest/measure_cells.sh "difficulties=2,3"` re-measures the yardstick for a filter and merges the records with the
+  cells outside it (the measure stage writes `calibration_records.txt` whole). `bash Tools/PlayTest/round22e_chain.sh "<filter>"`
+  runs measure (filtered), replay (all), acceptance and readme in one go; start it in the background with a log.
+- `Tools/PlayTest/wave_tuning.txt` may hold script levers beside the scales: `KEY D plated 1.5`, `KEY D tempo 0.85`, `KEY D raid 3`
+  (`WaveTuning.ReadLevers`, applied by the composer per difficulty). The builder applies them in that order to a cell still too easy
+  after a scale move.
+- `acceptance.txt` and `builder.txt` end with the in-play ramp table (`BalanceStages.InPlayRamp`).

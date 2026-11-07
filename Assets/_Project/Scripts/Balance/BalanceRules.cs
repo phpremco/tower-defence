@@ -236,6 +236,12 @@ namespace Game.Balance
         public float RampTolerance = 0.03f;
 
         /// <summary>
+        /// The in-play ramp (round 22e): per level and difficulty the margin the best replayed strategy and the creative reference keep
+        /// (<see cref="AcceptanceRules.PlayMargin"/>, 0 to 1), which may rise from one level of a continent to the next by at most this much.
+        /// </summary>
+        public float InPlayRampTolerance = 0.15f;
+
+        /// <summary>
         /// Most a single wave (bosses included) may ask of a competent player with the hero (<see cref="HumanWithHero"/>), Easy
         /// to Psycho. Pressure one is "just holds"; above it a few creatures reach the gate and the base, whose health, the
         /// hero's abilities, base turrets, drones and path objects (none in the model) carry the rest. Easy bosses fall to the

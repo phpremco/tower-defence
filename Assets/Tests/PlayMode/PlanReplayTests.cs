@@ -57,13 +57,12 @@ namespace Game.Tests
                         continue;
                     }
 
-                    List<PlanSpec> plans = LoadPlans(catalog.Nodes[node].Level.name, difficulty);
                     var run = new List<(int, int)> { (node, difficulty) };
-                    foreach (PlanSpec plan in plans)
+                    foreach (ProbeStrategy strategy in LoadStrategies(catalog.Nodes[node].Level.name, difficulty))
                     {
                         foreach (int seed in seeds)
                         {
-                            yield return BalanceProbeTests.Probe(run, ProbeStrategy.Scripted(plan), results, seed);
+                            yield return BalanceProbeTests.Probe(run, strategy, results, seed);
                         }
                     }
                 }
@@ -75,10 +74,13 @@ namespace Game.Tests
             Debug.Log($"[Balance] replay: {results.Count} runs, see {ReplayPath} and {RecordsPath}");
         }
 
-        /// <summary>The searched plans of a cell as the plan search wrote them (Tools/PlayTest/Plans/LEVEL_DIFFICULTY_*.json), in file order.</summary>
-        private static List<PlanSpec> LoadPlans(string levelName, int difficulty)
+        /// <summary>
+        /// The searched strategies (LEVEL_DIFFICULTY_strategyN.json, played by the adaptive bot; round 22e) and fixed plans (any other
+        /// LEVEL_DIFFICULTY_*.json, replayed step by step) of a cell as the search wrote them under Tools/PlayTest/Plans, in file order.
+        /// </summary>
+        private static List<ProbeStrategy> LoadStrategies(string levelName, int difficulty)
         {
-            var plans = new List<PlanSpec>();
+            var plans = new List<ProbeStrategy>();
             if (!System.IO.Directory.Exists(PlansFolder))
             {
                 return plans;
@@ -88,10 +90,22 @@ namespace Game.Tests
             files.Sort(System.StringComparer.Ordinal);
             foreach (string file in files)
             {
-                PlanSpec plan = JsonUtility.FromJson<PlanSpec>(System.IO.File.ReadAllText(file));
+                string json = System.IO.File.ReadAllText(file);
+                if (System.IO.Path.GetFileName(file).Contains("_strategy"))
+                {
+                    StrategySpec strategy = JsonUtility.FromJson<StrategySpec>(json);
+                    if (strategy != null && strategy.Spots != null)
+                    {
+                        plans.Add(ProbeStrategy.Adaptive(strategy));
+                    }
+
+                    continue;
+                }
+
+                PlanSpec plan = JsonUtility.FromJson<PlanSpec>(json);
                 if (plan != null && plan.Steps != null)
                 {
-                    plans.Add(plan);
+                    plans.Add(ProbeStrategy.Scripted(plan));
                 }
             }
 

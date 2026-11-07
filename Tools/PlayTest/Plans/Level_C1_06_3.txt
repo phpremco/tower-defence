@@ -1,32 +1,70 @@
-Crysium Vein (Level_C1_06) on Psycho: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
-Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
-'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
-A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
-until the guns at the doorstep and the hero kill it; a plan holds when the base survives the level, its stars follow the base left.
-The margin is the worst wave's cap over pressure (below 1 something leaks there).
+Crysium Vein (Level_C1_06) on Psycho: strategy search, 1500 strategies sampled, 0 hold on paper, base 900, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
+A strategy is a way of playing, not a timeline: which spots each tower takes first, which tower answers which threat, when an upgrade beats a
+new gun, when mines, the slow field and the drones come in. The adaptive bot plays it wave by wave; on paper the same rules give the build
+order shown. The paper verdict is a pre-screen (the siege model); the replay over the seeds is the judge. Cells are (x,y) on the level grid.
 
 Best spots per tower (first is best):
-  Gun Turret     (12,10) cover 7.5 gate bunch 0.7; (12,11) cover 7.5 gate bunch 0.7; (13,10) cover 7.5 gate bunch 0.7; (13,11) cover 7.5 gate bunch 0.7; (14,7) cover 7.5 gate bunch 0.7; (14,11) cover 7.5 gate bunch 0.7;
-  Cannon         (17,11) cover 7.5 gate bunch 0.9; (17,7) cover 7.0 gate bunch 1.0; (17,10) cover 7.0 gate bunch 1.0; (16,11) cover 7.5 gate bunch 0.8; (18,11) cover 7.5 gate bunch 0.8; (12,10) cover 7.5 gate bunch 0.7;
-  Laser Turret   (13,10) cover 9.5 gate bunch 0.8; (11,10) cover 9.0 gate bunch 0.7; (12,10) cover 9.0 gate bunch 0.8; (13,11) cover 9.0 gate bunch 0.6; (14,10) cover 9.0 gate bunch 0.8; (15,10) cover 9.0 gate bunch 0.8;
-  Flak Turret    (36,10) cover 12.5/9.0 air door bunch 0.6; (36,7) cover 11.0/8.5 air door bunch 0.6; (36,11) cover 13.5/8.5 air door bunch 0.7; (34,10) cover 13.5/8.0 air door bunch 0.7; (35,10) cover 13.0/8.0 air door bunch 0.7; (35,11) cover 14.0/8.0 air door bunch 0.7;
+  Gun Turret     (12,10) cover 7.5 gate; (12,11) cover 7.5 gate; (13,10) cover 7.5 gate; (13,11) cover 7.5 gate; (14,7) cover 7.5 gate; (14,11) cover 7.5 gate;
+  Cannon         (17,11) cover 7.5 gate; (17,7) cover 7.0 gate; (17,10) cover 7.0 gate; (16,11) cover 7.5 gate; (18,11) cover 7.5 gate; (12,10) cover 7.5 gate;
+  Laser Turret   (13,10) cover 9.5 gate; (11,10) cover 9.0 gate; (12,10) cover 9.0 gate; (13,11) cover 9.0 gate; (14,10) cover 9.0 gate; (15,10) cover 9.0 gate;
+  Flak Turret    (36,10) cover 12.5/9.0 air door; (36,7) cover 11.0/8.5 air door; (36,11) cover 13.5/8.5 air door; (34,10) cover 13.5/8.0 air door; (35,10) cover 13.0/8.0 air door; (35,11) cover 14.0/8.0 air door;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w5, margin 0.08 (leaks from wave 4), coins left 256, steps taken 18
-  mono Cannon        falls w5, margin 0.00 (leaks from wave 5), coins left 57, steps taken 7, 13 never affordable
-  mono Laser         falls w5, margin 0.00 (leaks from wave 4), coins left 37, steps taken 5, 15 never affordable
-  naive              falls w5, margin 0.07 (leaks from wave 3), coins left 115, steps taken 10, 8 never affordable
+  mono PulseRifle    falls w7, margin 0.07 (leaks from wave 4)
+  mono Cannon        falls w7, margin 0.00 (leaks from wave 5)
+  mono Laser         falls w7, margin 0.00 (leaks from wave 3)
+  naive              falls w5, margin 0.07 (leaks from wave 3)
 
-Distinct winning plans (0; different spots, mixes or timing):
+The creative reference on paper: falls w5, margin 0.03
+  from wave  1: build Cannon at (17,11); build Flak Turret at (36,10); build Gun Turret at (12,10)
+  from wave  3: repair the gates when they would fall or it is cheaper than a gun
+  from wave  4: repair the gates when they would fall or it is cheaper than a gun
+  from wave  5: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11)
+  from wave  6: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (36,10); upgrade the tower at (12,10)
+  from wave  7: repair the gates when they would fall or it is cheaper than a gun; buy the HarvestDrone
+  from wave  8: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (36,10); build Cannon at (17,7); upgrade the tower at (12,10)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); build Cannon at (17,7)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (36,10); upgrade the tower at (12,10)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,10); build Gun Turret at (12,11); upgrade the tower at (12,11); upgrade the tower at (36,10); upgrade the tower at (12,10)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,10); upgrade the tower at (12,10); upgrade the tower at (36,10); upgrade the tower at (17,11); build Gun Turret at (12,11)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun
+  from wave 14: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,10)
+  from wave 15: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,10)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11)
+  from wave 17: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,10)
+  from wave 18: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,10)
 
-No plan holds on paper. Best found: falls w12, margin 0.19, leaks from wave 4
-  from wave  1: build Cannon at (18,11); build Laser Turret at (15,10)
-  from wave  2: build Flak Turret at (34,10)
-  from wave  4: upgrade the tower at (15,10)
-  from wave  5: repair the gates when they would fall or it is cheaper than a gun
-  from wave  6: build Laser Turret at (13,10)
-  from wave  8: build Laser Turret at (13,11); upgrade the tower at (12,10)
-  from wave  9: build Cannon at (12,10)
-  from wave 10: build Cannon at (17,10)
-  from wave 16: upgrade the tower at (15,10)
-  from wave 18: upgrade the tower at (13,11); upgrade the tower at (13,11)
+Distinct winning strategies (0; different spots, mixes or timing):
+
+No strategy holds on paper. Best found: falls w5, margin 0.03, leaks from wave 3
+  Towers per threat: swarm: whatever the ledger rates best; pack: whatever the ledger rates best; plated: Cannon; air: Laser Turret; boss: whatever the ledger rates best.
+  Gun Turret spots, best first: (12,11) (12,10) (13,11).
+  Cannon spots, best first: (17,11) (16,11) (17,10).
+  Laser Turret spots, best first: (13,10) (11,10) (12,10).
+  Flak Turret spots, best first: (36,11) (36,7) (36,10).
+  Upgrades: 3 guns down first, then an upgrade is worth 1.05x its value per coin against a new gun.
+  Mines: not for bosses, and before a crowd wave when the guns would not hold it (cover under 1.00).
+  Slow field: when the guns would not hold the wave (cover under 1.20) or the slow pays by the damage rule.
+  Harvester: in the first 40 % of the level, once the guns hold the waves at hand with cover 1.50.
+  Repair drone: once a gun or gate has lost 10 % of its health.
+  Attack drone: never.
+  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
+  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
+  Selling: the weakest ground gun may go for a sky gun the preview asks for (Psycho).
+  from wave  1: build Cannon at (17,11); build Flak Turret at (36,11); build Gun Turret at (12,11)
+  from wave  3: repair the gates when they would fall or it is cheaper than a gun
+  from wave  4: repair the gates when they would fall or it is cheaper than a gun
+  from wave  5: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11)
+  from wave  6: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (36,11); upgrade the tower at (12,11)
+  from wave  7: repair the gates when they would fall or it is cheaper than a gun; buy the HarvestDrone
+  from wave  8: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (36,11); build Cannon at (16,11); upgrade the tower at (12,11)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (16,11); build Cannon at (17,10)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); build Cannon at (16,11)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11); build Gun Turret at (12,10); upgrade the tower at (12,10); upgrade the tower at (36,11); upgrade the tower at (12,10)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11); upgrade the tower at (12,11); upgrade the tower at (36,11); upgrade the tower at (17,11); build Gun Turret at (12,10)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun
+  from wave 14: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 15: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11)
+  from wave 17: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,11)
+  from wave 18: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,11)

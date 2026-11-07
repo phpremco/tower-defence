@@ -20,6 +20,8 @@ namespace Game.Balance
         private const float AmbushDelaySeconds = 12f;
         private const float TroopStagger = 2.5f;
         private const float RushBudget = 1.2f;
+        private const int RaidCount = 5;
+        private const float RaidSpread = 2f;
         private const float HeavyBias = 0.6f;
         private const float MinShare = 0.35f;
         private const int MaxGroupCount = 64;
@@ -142,29 +144,34 @@ namespace Game.Balance
             switch (kind)
             {
                 case Kind.Rush:
-                    shortfall = Fill(result, budget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, secondRoad, random, script, number, enemies, rules);
+                    shortfall = Fill(result, budget * RushBudget, Cheapest(open, 2, enemies, rules), RushTempo, secondRoad, random, script, difficulty, number, enemies, rules);
                     break;
                 case Kind.Heavy:
                     TroopSpec heavy = Toughest(open, enemies, rules);
                     if (heavy != null)
                     {
-                        shortfall = Fill(result, budget * HeavyShare, new List<TroopSpec> { heavy }, HeavyTempo, secondRoad, random, script, number, enemies, rules);
-                        shortfall += Fill(result, budget * (1f - HeavyShare), Without(open, heavy), 1f, secondRoad, random, script, number, enemies, rules);
+                        shortfall = Fill(result, budget * HeavyShare, new List<TroopSpec> { heavy }, HeavyTempo, secondRoad, random, script, difficulty, number, enemies, rules);
+                        shortfall += Fill(result, budget * (1f - HeavyShare), Without(open, heavy), 1f, secondRoad, random, script, difficulty, number, enemies, rules);
                     }
 
                     break;
                 case Kind.Air:
                     AddFlyers(result, flyer, budget * AirShare * script.AirRaidScaleFor(difficulty), 0f, script.FlyerInterval, rules);
-                    shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, script, number, enemies, rules);
+                    shortfall = Fill(result, budget * AirGroundShare, open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
                     break;
                 case Kind.Ambush when pools.Count > 0:
                     float ambush = AmbushSharePerDifficulty[Math.Min(difficulty, AmbushSharePerDifficulty.Length - 1)];
-                    shortfall = Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, script, number, enemies, rules);
-                    shortfall += Fill(result, budget * ambush, pools, 1f, secondRoad, random, script, number, enemies, rules, AmbushDelaySeconds);
+                    shortfall = Fill(result, budget * (1f - ambush), open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
+                    shortfall += Fill(result, budget * ambush, pools, 1f, secondRoad, random, script, difficulty, number, enemies, rules, AmbushDelaySeconds);
                     break;
                 default:
-                    shortfall = Fill(result, budget, open, 1f, secondRoad, random, script, number, enemies, rules);
+                    shortfall = Fill(result, budget, open, 1f, secondRoad, random, script, difficulty, number, enemies, rules);
                     break;
+            }
+
+            if (script.RaidWaveFor(difficulty) == number)
+            {
+                AddRaid(result, open, secondRoad, random, enemies, rules);
             }
 
             if (shortfall > 0f && budget > shortfall)
@@ -309,7 +316,7 @@ namespace Game.Balance
 
         // Spends a budget over troops by weight, leaning towards tougher creatures as the level goes on; gate troops are
         // cut into clusters over the lanes, pool and nest troops surface as one group.
-        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, int secondRoad, Random random, WaveScriptSpec script, int number, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, float extraDelay = 0f)
+        private static float Fill(List<GroupSpec> output, float budget, List<TroopSpec> troops, float tempo, int secondRoad, Random random, WaveScriptSpec script, int difficulty, int number, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules, float extraDelay = 0f)
         {
             if (troops.Count == 0 || budget <= 0f)
             {
@@ -321,7 +328,7 @@ namespace Game.Balance
             float totalWeight = 0f;
             foreach (TroopSpec troop in troops)
             {
-                totalWeight += Weight(troop, bias, enemies, rules);
+                totalWeight += Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies);
             }
 
             int order = 0;
@@ -334,7 +341,7 @@ namespace Game.Balance
                 }
 
                 float threat = Threat.Of(enemy, rules);
-                float share = budget * Weight(troop, bias, enemies, rules) / totalWeight;
+                float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) / totalWeight;
                 int wanted = (int)Math.Round(share / threat);
                 int count = Math.Min(MaxGroupCount, Math.Max(share >= threat * MinShare ? 1 : 0, wanted));
                 if (wanted > MaxGroupCount)
@@ -357,7 +364,7 @@ namespace Game.Balance
                 {
                     Enemy = enemy,
                     Count = count,
-                    Interval = troop.Interval * tempo,
+                    Interval = troop.Interval * tempo * script.TempoFor(difficulty),
                     Delay = troop.Delay + extraDelay + order * TroopStagger,
                     Source = troop.Source,
                     Path = Road,
@@ -379,6 +386,27 @@ namespace Game.Balance
 
         private static float Weight(TroopSpec troop, float bias, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules) =>
             troop.Weight * (float)Math.Pow(ThreatOf(troop, enemies, rules), bias);
+
+        // The builder's plated lever (round 22e): plated troops weigh more in every fill of the difficulty, soft ones as written.
+        private static float PlatedLever(TroopSpec troop, WaveScriptSpec script, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies)
+        {
+            EnemyStats enemy = Get(enemies, troop.Enemy);
+            return enemy != null && enemy.Plating > 0f ? script.PlatedBiasFor(difficulty) : 1f;
+        }
+
+        // The builder's raid lever (round 22e): the wave opens with a few fast, spread runners of the cheapest troop, ahead of its fill.
+        private static void AddRaid(List<GroupSpec> output, List<TroopSpec> open, int secondRoad, Random random, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules)
+        {
+            List<TroopSpec> runners = Cheapest(open, 1, enemies, rules);
+            EnemyStats enemy = runners.Count > 0 ? Get(enemies, runners[0].Enemy) : null;
+            if (enemy == null)
+            {
+                return;
+            }
+
+            var group = new GroupSpec { Enemy = enemy, Count = RaidCount, Interval = runners[0].Interval * RaidSpread, Delay = 0f, Source = runners[0].Source, Path = Road };
+            Scatter(group, random.Next(0, 1000), LanesFor(enemy, secondRoad), output, 0, true);
+        }
 
         // Flyers split over both flight routes, the second route a little behind the first.
         private static void AddFlyers(List<GroupSpec> output, EnemyStats flyer, float budget, float delay, float interval, BalanceRules rules)

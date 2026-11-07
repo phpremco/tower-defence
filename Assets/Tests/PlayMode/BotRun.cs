@@ -16,8 +16,6 @@ namespace Game.Tests
     /// </summary>
     internal sealed class BotRun
     {
-        // A tower this hurt counts as worn: the creative bot's cue for a repair drone.
-        private const float WornBelow = 0.9f;
         private const int SeedSpread = 7919;
         private const float DroneLookupSeconds = 1f;
 
@@ -56,7 +54,16 @@ namespace Game.Tests
         public int Harvested;
         public float DroneDamage;
         public float Seconds;
-        public bool WearSeen;
+        /// <summary>The largest share of its health any gun or gate has lost so far: the creative bot's cue for a repair drone.</summary>
+        public float Wear;
+
+        /// <summary>The build order really taken (builds, upgrades, gadgets, drones, sales with their wave), for the README and the acceptance rules (round 22e).</summary>
+        public readonly List<PlanStep> Moves = new List<PlanStep>();
+
+        public void Note(string kind, string item, Vector2Int cell)
+        {
+            Moves.Add(new PlanStep { Kind = kind, Item = item ?? string.Empty, X = cell.x, Y = cell.y, Wave = Mathf.Max(1, _context != null ? _context.WaveNumber : 1) });
+        }
         public int MinesWave = -1;
         public int MinesThisWave;
         public int FieldWave = -1;
@@ -157,7 +164,12 @@ namespace Game.Tests
 
             foreach (Tower tower in towers)
             {
-                WearSeen |= tower.HealthFraction < WornBelow;
+                Wear = Mathf.Max(Wear, 1f - tower.HealthFraction);
+            }
+
+            for (int i = 0; gates != null && i < gates.Count; i++)
+            {
+                Wear = gates[i] != null ? Mathf.Max(Wear, 1f - gates[i].HealthFraction) : Wear;
             }
 
             if (context.Targets.Count == 0)

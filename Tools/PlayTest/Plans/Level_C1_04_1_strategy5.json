@@ -1,0 +1,101 @@
+{
+    "Level": "Level_C1_04",
+    "Difficulty": 1,
+    "Name": "Level_C1_04_1_strategy5",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                32,
+                33,
+                28,
+                29,
+                29,
+                32
+            ],
+            "Y": [
+                6,
+                6,
+                5,
+                5,
+                6,
+                5
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                32,
+                33,
+                33,
+                33,
+                29,
+                32
+            ],
+            "Y": [
+                6,
+                6,
+                9,
+                10,
+                6,
+                5
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                29,
+                28,
+                32,
+                33,
+                33,
+                33
+            ],
+            "Y": [
+                5,
+                5,
+                5,
+                6,
+                5,
+                9
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                34,
+                33,
+                34,
+                34,
+                31,
+                32
+            ],
+            "Y": [
+                9,
+                9,
+                6,
+                10,
+                9,
+                9
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "air",
+            "Tower": "Laser",
+            "Weight": 1.3837896585464478
+        }
+    ],
+    "UpgradeBias": 1.7400000095367432,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.2999999523162842,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 0.0,
+    "HarvesterShare": 0.4000000059604645,
+    "RepairDroneWear": 0.05000000074505806,
+    "AttackDroneAfterTowers": 0,
+    "AllowSell": false
+}

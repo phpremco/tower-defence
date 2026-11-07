@@ -89,12 +89,22 @@ namespace Game.Tests
                 index++;
             }
 
+            // The paper ramp is a warning, not a failure (the curator, round 22e): play is the judge of the ramp. The builder moves a
+            // cell's scale on stage-B verdicts, and where that pulls against the paper ramp (C1_03-C1_06 eased, C1_01 hardened) stage B
+            // wins; the in-play ramp is checked by the acceptance stage on the recorded runs (AcceptanceRules.InPlayRamp).
+            var rampWarnings = new List<string>();
             foreach (int region in rampLevels.Keys)
             {
-                failures.AddRange(BalanceChecks.CheckRamp(rampLevels[region], rampSurplus[region], rules));
+                rampWarnings.AddRange(BalanceChecks.CheckRamp(rampLevels[region], rampSurplus[region], rules));
             }
 
             report.Append(curve);
+            report.Append("Paper ramp (a report check since round 22e; play judges the ramp): ").Append(rampWarnings.Count == 0 ? "monotone within tolerance\n" : "\n  " + string.Join("\n  ", rampWarnings) + "\n");
+            if (rampWarnings.Count > 0)
+            {
+                UnityEngine.Debug.Log("[Balance] paper ramp warnings (not failures): " + string.Join("; ", rampWarnings));
+            }
+
             System.IO.File.WriteAllText(LedgerPath, report.ToString());
             Assert.IsEmpty(failures, string.Join("\n", failures) + "\nSee " + LedgerPath);
         }

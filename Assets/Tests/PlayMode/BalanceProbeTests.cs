@@ -82,15 +82,11 @@ namespace Game.Tests
         // before crowd and boss waves within this many road cells of the gate, and it never sells below this many ground guns.
         private const int HarvestAfterTowers = 3;
         private const int NoHarvestLastWaves = 2;
-        // The creative player saves for the harvester in the first 40% of a level while its guns hold the waves at hand with a margin (at 0.9 it starved Fault Line and Quartz Flats Hard).
-        private const float InvestShare = 0.4f;
-        private const float InvestCover = 1.2f;
         // Ground guns standing before a second sky gun is bought.
         private const int GroundBeforeSecondSkyGun = 3;
         // At most one sky gun for this many ground guns (round 21a4: Shard Ridge Medium, four Flaks and a sold Cannon, lost to ants).
         private const int SkyPerGround = 2;
         private const int RepairAfterTowers = 4;
-        private const int AttackAfterTowers = 8;
         private const int MinesPerWave = 2;
         private const int MinesAfterTowers = 4;
         private const int GadgetRoadCells = 4;
@@ -114,9 +110,6 @@ namespace Game.Tests
         // A structure's loss in the next wave is reckoned as the worse of this wave and the last, times this for the growth.
         private const float LossGrowth = 1.25f;
         private const int GateRepairsPerWave = 2;
-        // Guns standing before the bot upgrades any: one on each side of the queue. With none, Glass Meadows Medium was lost
-        // three runs in a row (an upgraded Laser as the very first buy covered too little road and starved the level).
-        private const int TowersBeforeUpgrades = 2;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
         internal const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
         internal const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
@@ -387,6 +380,9 @@ namespace Game.Tests
             public float Step;
             public List<Game.Balance.WaveRecord> Records = new List<Game.Balance.WaveRecord>();
 
+            /// <summary>The build order the run really took (round 22e).</summary>
+            public List<Game.Balance.PlanStep> Moves = new List<Game.Balance.PlanStep>();
+
             /// <summary>The run as the calibration fit reads it.</summary>
             public Game.Balance.RunRecord ToRecord()
             {
@@ -406,6 +402,7 @@ namespace Game.Tests
                     FreshPlayer = FreshPlayer,
                 };
                 record.Waves.AddRange(Records);
+                record.Moves.AddRange(Moves);
                 return record;
             }
 
@@ -589,6 +586,7 @@ namespace Game.Tests
                     Fire = run.Fire,
                     FlyersSpawned = trace.FlyersSpawned,
                     RepairSpent = watch.RepairSpent,
+                    Moves = run.Moves,
                     RoleDamage = run.RoleDamage,
                     CoinSeconds = run.CoinSeconds,
                     Seed = seed,
@@ -649,6 +647,18 @@ namespace Game.Tests
                 return spots;
             }
 
+            // A searched strategy (round 22e) brings its own spot priority per type; the bot's ranking follows for the spots it does not name.
+            foreach (Game.Balance.SpotPriority priority in strategy.Spec.Spots)
+            {
+                var ranking = new List<Vector2Int>();
+                for (int i = 0; i < priority.Count; i++)
+                {
+                    ranking.Add(new Vector2Int(priority.X[i], priority.Y[i]));
+                }
+
+                spots.Role[priority.Tower] = ranking;
+            }
+
             foreach (TowerDefinition tower in context.AllTowers)
             {
                 if (!owned.Contains(tower.Id) || tower.IsSupport || AirOnly(tower))
@@ -660,8 +670,28 @@ namespace Game.Tests
                 bool splash = tower.SplashRadius > 0f;
                 var own = new Dictionary<Vector2Int, float>();
                 float reach = tower.GetLevel(0).Range / Mathf.Max(0.01f, definition.CellSize);
-                spots.Role[tower.Id] = RankBuildSpots(definition, own, reach, splash ? SplashQueueWeight : QueueWeight, splash ? SplashBendWeight : 1f);
+                List<Vector2Int> ranked = RankBuildSpots(definition, own, reach, splash ? SplashQueueWeight : QueueWeight, splash ? SplashBendWeight : 1f);
+                if (spots.Role.TryGetValue(tower.Id, out List<Vector2Int> named))
+                {
+                    ranked.RemoveAll(named.Contains);
+                    named.AddRange(ranked);
+                }
+                else
+                {
+                    spots.Role[tower.Id] = ranked;
+                }
+
                 spots.RoleQuality[tower.Id] = own;
+            }
+
+            foreach (Game.Balance.SpotPriority priority in strategy.Spec.Spots)
+            {
+                // A sky gun's named spots are followed by the bot's air ranking.
+                TowerDefinition tower = TowerById(context, priority.Tower);
+                if (tower != null && AirOnly(tower) && spots.Role.TryGetValue(tower.Id, out List<Vector2Int> named))
+                {
+                    named.AddRange(spots.Air.FindAll(c => !named.Contains(c)));
+                }
             }
 
             return spots;
@@ -1063,7 +1093,7 @@ namespace Game.Tests
             }
 
             // The creative player sells its weakest ground gun for the sky gun the preview asks for when the purse alone is short.
-            if (run.Strategy.Creative && reserve > 0 && !context.Wallet.CanAfford(reserve) && SellForSky(context, towers, reserve, run)
+            if (run.Strategy.Creative && run.Strategy.Spec.AllowSell && reserve > 0 && !context.Wallet.CanAfford(reserve) && SellForSky(context, towers, reserve, run)
                 && TryBuy(context, spots, towers, owned, AirOnly, run))
             {
                 return;
@@ -1094,7 +1124,7 @@ namespace Game.Tests
             {
                 Tower tower = towers[i];
                 // A player spreads the first guns over the queue before upgrading one: a single upgraded gun covers little road.
-                if (!tower.CanUpgrade || tower.NextUpgradeCost > reach || (towers.Count < TowersBeforeUpgrades && towers.Count < spots.Ground.Count))
+                if (!tower.CanUpgrade || tower.NextUpgradeCost > reach || (towers.Count < run.Strategy.Spec.TowersBeforeUpgrades && towers.Count < spots.Ground.Count))
                 {
                     continue;
                 }
@@ -1104,7 +1134,7 @@ namespace Game.Tests
                 next.Add((tower.Definition.Id, tower.LevelIndex + 1));
                 // Weighed by the gun's own spot, as a new gun is by the next free spot: upgrading a gun in a good spot beats a new
                 // gun in a poor one, and the other way round.
-                float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, tower.NextUpgradeCost) * SpotQuality(context, spots, tower);
+                float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, tower.NextUpgradeCost) * SpotQuality(context, spots, tower) * run.Strategy.Spec.UpgradeBias;
                 if (tower.NextUpgradeCost > purse)
                 {
                     waitValue = Mathf.Max(waitValue, value);
@@ -1127,7 +1157,7 @@ namespace Game.Tests
                     }
 
                     var next = new List<(string, int)>(standing) { (candidate.Id, 0) };
-                    float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, candidate.BuildCost) * NextSpotQuality(context, spots, towers, candidate);
+                    float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, candidate.BuildCost) * NextSpotQuality(context, spots, towers, candidate) * ThreatWeight(ledger, current, candidate.Id, run);
                     if (candidate.BuildCost > purse)
                     {
                         waitValue = Mathf.Max(waitValue, value);
@@ -1156,6 +1186,7 @@ namespace Game.Tests
             {
                 upgrade.Upgrade();
                 run.Upgrades++;
+                run.Note(Game.Balance.PlanStep.Upgrade, null, context.Level.Grid.WorldToCell(upgrade.Position));
             }
             else if (build != null)
             {
@@ -1617,13 +1648,13 @@ namespace Game.Tests
                 switch (drone.Kind)
                 {
                     case Game.Drones.DroneKind.Harvest:
-                        wanted = towers.Count >= HarvestAfterTowers && context.Level.MineCells.Length > 0 && context.WaveNumber <= context.WaveCount - NoHarvestLastWaves;
+                        wanted = run.Strategy.Spec.HarvesterCover > 0f && towers.Count >= HarvestAfterTowers && context.Level.MineCells.Length > 0 && context.WaveNumber <= context.WaveCount - NoHarvestLastWaves;
                         break;
                     case Game.Drones.DroneKind.Repair:
-                        wanted = towers.Count >= RepairAfterTowers && run.WearSeen;
+                        wanted = towers.Count >= RepairAfterTowers && run.Strategy.Spec.RepairDroneWear < 1f && run.Wear >= run.Strategy.Spec.RepairDroneWear;
                         break;
                     default:
-                        wanted = towers.Count >= AttackAfterTowers;
+                        wanted = run.Strategy.Spec.AttackDroneAfterTowers > 0 && towers.Count >= run.Strategy.Spec.AttackDroneAfterTowers;
                         break;
                 }
 
@@ -1642,7 +1673,7 @@ namespace Game.Tests
         // Round 20: saving only from what was left over, it never had the price before the late waves on Medium.
         private static bool SavesForHarvester(LevelContext context, List<Tower> towers, BotRun run, float groundCover)
         {
-            if (groundCover < InvestCover || context.WaveNumber > Mathf.CeilToInt(context.WaveCount * InvestShare))
+            if (run.Strategy.Spec.HarvesterCover <= 0f || groundCover < run.Strategy.Spec.HarvesterCover || context.WaveNumber > Mathf.CeilToInt(context.WaveCount * run.Strategy.Spec.HarvesterShare))
             {
                 return false;
             }
@@ -1676,6 +1707,7 @@ namespace Game.Tests
             }
 
             run.DronesBought.Add(drone.name);
+            run.Note(Game.Balance.PlanStep.Drone, drone.name, Vector2Int.zero);
             return true;
         }
 
@@ -1712,11 +1744,12 @@ namespace Game.Tests
 
             // A crowd wave asks for mines only when the standing guns would not hold it and the first guns stand (round 20: two mines
             // on wave 1 cost Crysium Vein its second Flak); a boss wave always does.
-            bool pressed = Pressed(towers, ledger, current);
+            Game.Balance.StrategySpec spec = run.Strategy.Spec;
+            bool pressed = spec.MineCoverBelow > 0f && Pressed(towers, ledger, current, spec.MineCoverBelow);
             bool wanted = false;
             for (int i = current; i <= current + Horizon && i < ledger.Count; i++)
             {
-                wanted |= ledger.Lines[i].Boss || (pressed && 1f + 2f * mine.Radius * ledger.Loads[i].GroundDensity >= CrowdSplashTargets);
+                wanted |= (spec.MineOnBoss && ledger.Lines[i].Boss) || (pressed && 1f + 2f * mine.Radius * ledger.Loads[i].GroundDensity >= CrowdSplashTargets);
             }
 
             if (!wanted || run.MinesThisWave >= MinesPerWave)
@@ -1741,7 +1774,8 @@ namespace Game.Tests
         private static bool PlaceField(LevelContext context, List<Tower> towers, LedgerView ledger, int current, int keep, BotRun run)
         {
             PathObjectDefinition field = PathObjectOf(context, PathObjectKind.SlowField);
-            if (field == null || run.FieldWave == context.WaveNumber || context.Targets.Count == 0 || !context.Wallet.CanAfford(field.Cost + keep))
+            float fieldBelow = run.Strategy.Spec.FieldCoverBelow;
+            if (field == null || fieldBelow <= 0f || run.FieldWave == context.WaveNumber || context.Targets.Count == 0 || !context.Wallet.CanAfford(field.Cost + keep))
             {
                 return false;
             }
@@ -1751,12 +1785,12 @@ namespace Game.Tests
             {
                 // Remco (2026-11-06): a slow field is a damage tactic, laid where the guns overlap, not only a last resort.
                 cells.Sort((a, b) => CoverDps(context, towers, b).CompareTo(CoverDps(context, towers, a)));
-                if (!Pressed(towers, ledger, current) && (cells.Count == 0 || !FieldPays(context, towers, field, cells[0], keep)))
+                if (!Pressed(towers, ledger, current, fieldBelow) && (cells.Count == 0 || !FieldPays(context, towers, field, cells[0], keep)))
                 {
                     return false;
                 }
             }
-            else if (!Pressed(towers, ledger, current))
+            else if (!Pressed(towers, ledger, current, fieldBelow))
             {
                 return false;
             }
@@ -1847,6 +1881,7 @@ namespace Game.Tests
             }
 
             context.Wallet.Add(weakest.SellValue);
+            run.Note(Game.Balance.PlanStep.Sell, null, context.Level.Grid.WorldToCell(weakest.Position));
             weakest.Retire();
             Object.Destroy(weakest.gameObject);
             towers.Remove(weakest);
@@ -1856,8 +1891,31 @@ namespace Game.Tests
 
         // Gadgets are for a defence that stands but would not hold the waves at hand: in a thin economy (Crysium Vein Medium,
         // round 20) a slow field on wave 3 cost the second Cannon and the level.
-        private static bool Pressed(List<Tower> towers, LedgerView ledger, int current) =>
-            towers.Count >= MinesAfterTowers && Cover(ledger, Standing(towers), current, true) < 1f;
+        private static bool Pressed(List<Tower> towers, LedgerView ledger, int current, float coverBelow) =>
+            towers.Count >= MinesAfterTowers && Cover(ledger, Standing(towers), current, true) < coverBelow;
+
+        // The strategy's answer to the threats of the waves at hand (round 22e): the mean of its weights for the type over the threat shares.
+        private static float ThreatWeight(LedgerView ledger, int current, string towerId, BotRun run)
+        {
+            if (run.Strategy.Spec.Weights.Length == 0)
+            {
+                return 1f;
+            }
+
+            int cheapest = Game.Balance.PlanEvaluator.CheapestGun(ledger.Input);
+            float sum = 0f;
+            float weight = 0f;
+            for (int i = current; i <= current + Horizon && i < ledger.Count; i++)
+            {
+                foreach ((string threat, float share) in Game.Balance.StrategyExecutor.ThreatShares(ledger.Input, ledger.Loads[i], cheapest))
+                {
+                    sum += share;
+                    weight += share * run.Strategy.Spec.WeightOf(threat, towerId);
+                }
+            }
+
+            return sum > 0f ? weight / sum : 1f;
+        }
 
         // The naive player's upgrade: a random gun it can pay to raise, wherever it stands.
         private static Tower AnyUpgrade(List<Tower> towers, int purse, BotRun run)
@@ -1965,6 +2023,8 @@ namespace Game.Tests
                 run.Fields++;
             }
 
+            run.Note(item.Kind == PathObjectKind.Mine ? Game.Balance.PlanStep.Mine : Game.Balance.PlanStep.Field, item.name, cell);
+
             return true;
         }
 
@@ -2021,6 +2081,7 @@ namespace Game.Tests
             tower.Register(context.Structures);
             towers.Add(tower);
             run.Built++;
+            run.Note(Game.Balance.PlanStep.Build, best.Id, cell);
             return true;
         }
 
@@ -2161,6 +2222,7 @@ namespace Game.Tests
                 upgrade.Upgrade();
                 run.Upgrades++;
                 run.Purchases++;
+                run.Note(Game.Balance.PlanStep.Upgrade, null, context.Level.Grid.WorldToCell(upgrade.Position));
             }
         }
 
@@ -2310,12 +2372,14 @@ namespace Game.Tests
             }
 
             run.DronesBought.Add(drone.name);
+            run.Note(Game.Balance.PlanStep.Drone, drone.name, Vector2Int.zero);
             return true;
         }
 
         private static void Sell(LevelContext context, List<Tower> towers, Tower tower, BotRun run)
         {
             context.Wallet.Add(tower.SellValue);
+            run.Note(Game.Balance.PlanStep.Sell, null, context.Level.Grid.WorldToCell(tower.Position));
             tower.Retire();
             Object.Destroy(tower.gameObject);
             towers.Remove(tower);
@@ -2338,6 +2402,7 @@ namespace Game.Tests
             tower.Register(context.Structures);
             towers.Add(tower);
             run.Built++;
+            run.Note(Game.Balance.PlanStep.Build, definition.Id, cell);
             return true;
         }
 

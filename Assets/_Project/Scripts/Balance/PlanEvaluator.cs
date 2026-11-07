@@ -92,6 +92,23 @@ namespace Game.Balance
     {
         public const float NoThreatCover = 1e6f;
 
+        /// <summary>What a run-time policy sees at the start of a wave on paper (round 22e, <see cref="StrategyExecutor"/>).</summary>
+        public sealed class PolicyView
+        {
+            public int WaveIndex;
+            public int Money;
+            public readonly List<(int Tower, int Level, Cell Cell)> Standing = new List<(int, int, Cell)>();
+            public SiegeState Siege;
+            public bool Harvester;
+            public readonly HashSet<string> Drones = new HashSet<string>();
+
+            /// <summary>The largest share of its health the defence gate has lost so far (guns do not wear on paper).</summary>
+            public float Wear;
+        }
+
+        /// <summary>A policy adds the steps it takes this wave, in order; an unaffordable one blocks the rest, as in a plan.</summary>
+        public delegate void PlanPolicy(PolicyView view, List<PlanStep> steps);
+
         /// <summary>Seconds a slow field lasts against the wave it is laid in, as a share of the wave's window it holds.</summary>
         private const float FieldWaveShare = 1f;
 
@@ -103,9 +120,15 @@ namespace Game.Balance
             public int Spent;
         }
 
-        public static PlanOutcome Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules, PlanSpec plan, float cap)
+        public static PlanOutcome Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules, PlanSpec plan, float cap) =>
+            Evaluate(level, waves, difficulty, rules, plan, cap, null);
+
+        /// <summary>As above; a <paramref name="policy"/> adds steps at the start of every wave, and the outcome's plan is then the concrete order taken.</summary>
+        public static PlanOutcome Evaluate(LevelInput level, IReadOnlyList<WaveSpec> waves, DifficultyStats difficulty, BalanceRules rules, PlanSpec plan, float cap, PlanPolicy policy)
         {
             var outcome = new PlanOutcome { Plan = plan };
+            var steps = new List<PlanStep>(plan.Steps);
+            var view = policy != null ? new PolicyView() : null;
             var purse = new KillPurse(level, difficulty, rules);
             var standing = new List<Standing>();
             int spent = 0;
@@ -132,19 +155,49 @@ namespace Game.Balance
                 var line = new PlanWaveLine { Wave = wave, Boss = load.HasBoss, Money = money, KillMoney = load.KillMoney };
                 var mines = new List<GadgetStats>();
                 var fields = new List<(GadgetStats Gadget, Cell Cell)>();
+                if (policy != null)
+                {
+                    view.WaveIndex = i;
+                    view.Money = money;
+                    view.Siege = siege;
+                    view.Harvester = harvestWave > 0;
+                    view.Standing.Clear();
+                    foreach (Standing tower in standing)
+                    {
+                        view.Standing.Add((tower.Tower, tower.Level, tower.Cell));
+                    }
+
+                    var chosen = new List<PlanStep>();
+                    policy(view, chosen);
+                    foreach (PlanStep step in chosen)
+                    {
+                        step.Wave = wave;
+                    }
+
+                    steps.InsertRange(next, chosen);
+                }
 
                 // Due steps in order, while the purse has them.
-                while (next < plan.Steps.Length && plan.Steps[next].Wave <= wave)
+                while (next < steps.Count && steps[next].Wave <= wave)
                 {
-                    PlanStep step = plan.Steps[next];
+                    PlanStep step = steps[next];
                     int towerIndex = -1;
                     int price = step.Kind == PlanStep.Repair
                         ? RepairPrice(level, load, siege, cheapestGun, waves.Count - i)
                         : Price(level, standing, step, out towerIndex);
                     if (price < 0)
                     {
-                        // A step that cannot be taken at all (no such tower, nothing to upgrade) is skipped, not waited for.
-                        next++;
+                        // A step that cannot be taken at all (no such tower, nothing to upgrade) is skipped, not waited for; a policy's
+                        // skipped step leaves the concrete order, so the README shows what was really done.
+                        if (policy != null)
+                        {
+                            steps.RemoveAt(next);
+                        }
+                        else
+                        {
+                            next++;
+                        }
+
                         continue;
                     }
 
@@ -179,6 +232,7 @@ namespace Game.Balance
                             break;
                         case PlanStep.Drone:
                             DroneStats drone = Drone(level, step.Item);
+                            view?.Drones.Add(step.Item);
                             harvestWave = drone.Role == DroneRole.Harvest && harvestWave == 0 ? wave : harvestWave;
                             attackDps += drone.Role == DroneRole.Attack ? drone.Dps : 0f;
                             attackTargets |= drone.Role == DroneRole.Attack ? drone.Targets : 0;
@@ -249,6 +303,10 @@ namespace Game.Balance
 
                 line.GateLeft = siege.GatesLeft;
                 line.BaseLeft = siege.BaseLeft;
+                if (view != null && trunkGates > 0 && level.GateHealth > 0f)
+                {
+                    view.Wear = Math.Max(view.Wear, 1f - siege.DefenceGate / level.GateHealth);
+                }
                 if (siege.BaseLeft <= 0f && outcome.FallWave == 0)
                 {
                     outcome.FallWave = wave;
@@ -272,7 +330,11 @@ namespace Game.Balance
                 outcome.CoinsLeft = money;
             }
 
-            outcome.StepsBlocked = plan.Steps.Length - next;
+            outcome.StepsBlocked = steps.Count - next;
+            if (policy != null)
+            {
+                outcome.Plan = new PlanSpec { Level = plan.Level, Difficulty = plan.Difficulty, Name = plan.Name, Family = plan.Family, Steps = steps.ToArray() };
+            }
             outcome.Margin = margin == float.MaxValue ? 0f : margin;
             outcome.MeanCover = covered > 0 ? coverSum / covered : 0f;
             outcome.BaseLeft = siege.BaseLeft;

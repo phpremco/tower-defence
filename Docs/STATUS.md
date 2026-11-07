@@ -3474,3 +3474,71 @@ keeps its two known failures.
 
 **Save state.** `progress.json` absent before the round and absent after it: the probe plays an in-memory save now, so the PlayMode runs
 no longer create the file (checked after the smoke run, the yardstick and the replay). The dev backup untouched. `probe_arg.txt` absent.
+
+## Round 22e: play is the judge, the first-attempt player, adaptive strategies (2026-11-07)
+
+Not committed (the curator commits). Implements the curator's decisions on round 22d's open questions. Docs/BALANCE.md "Adaptive
+strategies, the first-attempt player and the in-play ramp" has the model side; Docs/COMMANDS.md "Round 22e additions" the commands.
+**The PlayMode chain was started at 14:20 and is still running when this handover was written** (`Tools/PlayTest/round22e_chain.log`;
+measure on Hard/Psycho, then the replay of the searched strategies on every cell, then acceptance and readme). Its results are not in
+this section; read `acceptance.txt`, `plan_replay.txt`, `Plans/README.md` and the log when it says `== chain done`, then run the builder.
+
+**Built.**
+- Decision 1 (play judges the ramp): `BalanceLedgerTests` no longer fails on the paper ramp; `CheckRamp`'s lines go to
+  `balance_ledger.txt` ("Paper ramp ... a report check since round 22e") and the log. In play: `AcceptanceRules.PlayMargin`,
+  `CellMargin`, `InPlayRamp`, `BalanceRules.InPlayRampTolerance` (0.15); `BalanceStages.InPlayRamp` prints the table at the end of
+  `acceptance.txt` and `builder.txt`; `BuildFromVerdicts` nudges a dip harder when the verdicts leave the cell alone.
+- Decision 3 (the first-attempt player): `Progression.StateAt` = rewards and research of the levels before on `PathOf(d)` (Psycho now
+  {0,1,2,3}, not the whole continent) plus the level itself on `OwnLevelPathOf(d)` (the path's lower difficulties). C1_01 Psycho = the
+  first level's research x6 (base 600, no end-game armour). Tests: `ContinentEconomyTests.Psycho_IsTheFirstAttemptPlayer_NotTheEndGame`,
+  `BalanceModelTests.Progression_*` adjusted. The waves were re-solved (`ApplyWaves`): Hard and Psycho sets changed on all six levels,
+  Easy and Medium are byte-identical, so the 22d yardstick stays valid for Easy/Medium and the chain re-measures difficulties 2,3 only
+  (`measure_cells.sh` merges the records). Band test after the solve: 3 paper warnings left (C1_01 Easy 0.94 of Medium; C1_03 Hard boss
+  wave 16 pressure 1.91 over the cap; C1_06 Psycho asks no more than Hard on paper, the solver's bisection could not reach the target).
+- Decision 2 (strategies): `StrategySpec` (spots per tower, favoured tower per threat, upgrade policy, mine/field/drone triggers,
+  AllowSell), `StrategyExecutor` (the policy on paper through `PlanEvaluator.Evaluate(..., PlanPolicy)`; the outcome's plan is the
+  build order taken), `StrategySearch` (1500 samples per cell, local improvement, distinct winners by spots/mix/timing),
+  `BalanceStages.SearchStrategies` (stage A now; `SearchFixedPlans` keeps the old search), `ProbeStrategy.Adaptive(spec)` and the
+  creative bot parametrised by `Spec` (the plain creative bot = `StrategySpec.Creative`), `BotRun.Moves`/`Wear`, `RunRecord.Moves`
+  (`move` lines in the record files), `AcceptanceRules.SpecOf` (features judged from the moves), README from the replay prints the
+  strategy's words plus the winning seed's build order. The replay plays `_strategy*.json` adaptively and other `.json` scripted.
+- Decision 4 (script levers): `WaveScriptSpec.PlatedBias/Tempo/RaidWave` per difficulty, applied by `WaveComposer` (plated troops
+  weighted, intervals scaled, a raid of 5 spread runners of the cheapest troop at the raid wave), stored in `wave_tuning.txt`
+  (`WaveTuning.ReadLevers`), applied by the builder in that order to a cell still too easy after one scale move (C1_01 Easy/Hard).
+  With all levers at their defaults the solved waves are byte-identical (checked). Not yet exercised by a builder run.
+- Decision 5: not touched (the paper is a pre-screen).
+
+**Stage A on the new waves (`plans_summary.txt`, 14:16, about 4 min for 24 cells).** Strategies hold on paper on every Easy cell but
+C1_04 Easy, on every Medium cell (C1_06 Medium 1/30), on C1_01 and C1_02 Hard; none holds on C1_03-C1_06 Hard or any Psycho. The
+creative point on paper falls on C1_02 Medium/Hard and every Hard/Psycho from C1_03 although it wins several of those in play (22d):
+the paper is pessimistic there now, the opposite of 22c's lenient thin plans. C1_04 Easy "falls w3" for every strategy and the
+creative point: the paper purse is a wave-start purse, so the Flak the bot buys from wave-3 kills in play comes a wave late on paper
+and the wave-3 raid takes the base on paper. The replay is the judge of all of that (the best strategy per cell is replayed even when
+it falls on paper).
+
+**Not built: `FinaleProbeTests`** (goal d). The editor was taken by the chain for the rest of the round and the budget went to the
+strategy executor on both sides. The design of 22c/22d stands; nothing of it is in the tree.
+
+**Commands to continue (after `== chain done` in `round22e_chain.log`; `editor_status` first).**
+1. Delete `Assets/InitTestScene*` if the runner left them; check `probe_arg.txt` is gone.
+2. `bash Tools/PlayTest/balance_pipeline.sh build` (the builder on the stage-B verdicts and the in-play ramp; script levers for cells
+   already moved once), then for the moved cells: `bash Tools/PlayTest/measure_cells.sh "levels=..." "difficulties=..."`,
+   `balance_pipeline.sh search replay acceptance readme` (narrow the replay with probe_arg if only a few cells moved).
+3. Full EditMode suite and the smoke run for the test totals.
+
+**Save state.** `progress.json` absent before and during the round (checked at 14:20); the dev backup untouched.
+
+**Curator's answers to 22e's questions (2026-11-07, to implement after the chain; the editor was busy, no script may change during it).**
+1. The first-attempt player owns the level's own reward weapon and rewards when `OwnLevelPathOf(d)` says they cleared it before (Hard,
+   Psycho): make `Progression.StateAt` add `campaign[levelIndex].RewardTowerId`/`RewardHeroPerkId` when `OwnLevelPathOf(d)` is not empty,
+   and `BalanceProbeTests.OwnedTowers(catalog, level)` the same for the probe (it takes the difficulty then); update the tests
+   (`Psycho_IsTheFirstAttemptPlayer_NotTheEndGame`: `first` owns "Laser"... no: level 0's own reward, so assert the level's own reward is
+   owned on Hard/Psycho and not on Easy/Medium).
+2. The paper model stays a pre-screen; no queue/leak spread term.
+3. No early air raid on Easy before the answer is affordable with margin: a composer/solver rule from data: on Easy the first raid wave
+   >= (the wave by which the expected player's purse covers the cheapest owned sky gun) + 1; a player who owns no sky gun gets no raid.
+   Put it in `WaveComposer`/`CampaignModel.BuildWaves` (shift `AirWaves` on difficulty 0 from the purse walk), not in C1_04's script.
+4. Psycho must ask more than Hard: where the solver's scale cannot reach the Psycho curve (C1_06 Psycho on paper), the builder applies
+   the script levers (plated, tempo, raid) on Psycho; the target is not lowered. Extend `BuildFromVerdicts` with a paper check:
+   `CheckHuman`'s "difficulty 3 asks no more than difficulty 2" line for a level -> next script lever on its Psycho cell.
+Continuation rule: carry on with the STATUS steps only while the context stays under about 500k; otherwise a fresh agent continues.
