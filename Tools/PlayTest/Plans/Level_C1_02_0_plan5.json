@@ -7,64 +7,50 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 5,
+            "X": 4,
             "Y": 7,
             "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 8,
-            "Y": 7,
-            "Wave": 1
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 8,
-            "Y": 7,
-            "Wave": 2
         },
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 4,
-            "Y": 7,
-            "Wave": 5
+            "X": 30,
+            "Y": 15,
+            "Wave": 1
         },
         {
             "Kind": "build",
-            "Item": "Laser",
-            "X": 7,
+            "Item": "Cannon",
+            "X": 5,
             "Y": 6,
-            "Wave": 5
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 6,
-            "Wave": 7
+            "Wave": 6
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 4,
+            "Y": 7,
+            "Wave": 8
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 5,
             "Y": 7,
             "Wave": 9
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 7,
-            "Y": 6,
+            "X": 4,
+            "Y": 7,
             "Wave": 10
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
-            "Y": 7,
+            "Y": 6,
             "Wave": 12
         }
     ]

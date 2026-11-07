@@ -1,10 +1,10 @@
-Yardstick, smoke: seeds 1, step 0.2 s, 2026-11-06 20:11. no calibration asset yet (inputs 9b275f8f)
+Yardstick, smoke: seeds 1, step 0.2 s, 2026-11-06 22:32. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
 Per cell and strategy: wins over seeds, stars (mean of the wins), base left (mean), waves reached (losses), coins unspent (mean).
 
 level        diff    strategy          wins  stars   base  reached   coins
-Level_C1_03  Medium  mono Cannon       0/1    0.0      0  12/16        51
-Level_C1_03  Medium  naive             0/1    0.0      0  13/16        74
+Level_C1_03  Medium  mono Cannon       0/1    0.0      0  13/16        15
+Level_C1_03  Medium  naive             0/1    0.0      0  13/16        75
 
 Runs:
-  Level_C1_03  Medium  seed 1 mono Cannon       Lost   0* 12/16 base    0 built  3 upg  2 sold 0 mines 0 fields 0 drones - coins   51 repairs 60
-  Level_C1_03  Medium  seed 1 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   74 repairs 0
+  Level_C1_03  Medium  seed 1 mono Cannon       Lost   0* 13/16 base    0 built  4 upg  3 sold 0 mines 0 fields 0 drones - coins   15 repairs 0
+  Level_C1_03  Medium  seed 1 naive             Lost   0* 13/16 base    0 built  7 upg  3 sold 0 mines 0 fields 0 drones - coins   75 repairs 0

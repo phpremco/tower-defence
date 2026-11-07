@@ -51,8 +51,9 @@ namespace Game.Balance
     /// The tester's stage A (round 22): an omniscient plan search on paper. It knows every wave, origin and route, as a replaying
     /// player learns them. A plan is an ordered list of builds (type, spot, wave), upgrades, mines and slow fields, drone buys
     /// and, on Psycho only, a sale. Spots come from the map (<see cref="LevelGeometry.Rank"/>: the best few per tower type),
-    /// waves are coarse. Thousands of random plans are judged by <see cref="PlanEvaluator"/> (purse walk, placement, gadget
-    /// windows), the best few are improved by small changes (another spot, an earlier or later step, an upgrade more or less),
+    /// waves are coarse. The constructive family (a primary and a secondary type on their best spots, taken as the purse allows)
+    /// and thousands of random plans are judged by <see cref="PlanEvaluator"/> (purse walk, placement, gadget windows, the leak
+    /// model: a plan holds when the base survives), the best few are improved by small changes (another spot, an earlier or later step, an upgrade more or less),
     /// and the output is readable: the distinct winning plans, the obvious plans on the same scale, the best spots per type.
     /// Everything comes from the level input and the waves; nothing is typed for a level.
     /// </summary>
@@ -67,6 +68,10 @@ namespace Game.Balance
         private const float HarvestChance = 0.5f;
         private const float AttackDroneChance = 0.25f;
         private const float SellChance = 0.2f;
+        private const float RepairDroneChance = 0.3f;
+        private const float RepairChance = 0.4f;
+        private const int MaxRepairs = 3;
+        private const int RepairDroneWave = 3;
         private const int MaxMines = 4;
         private const int QueueCellCount = 4;
         private const int MonoUpgradeAfterTowers = 4;
@@ -90,6 +95,15 @@ namespace Game.Balance
             }
 
             var top = new List<PlanOutcome>();
+            // The constructive plans first (what a player who read the preview would do), then the random sample.
+            foreach (PlanSpec plan in ConstructivePlans(context))
+            {
+                PlanOutcome outcome = Evaluate(input, plan);
+                result.Sampled++;
+                result.Holding += outcome.Holds ? 1 : 0;
+                Insert(top, outcome, input.Keep);
+            }
+
             for (int i = 0; i < input.Samples; i++)
             {
                 PlanSpec plan = Sample(context, random, i);
@@ -191,10 +205,18 @@ namespace Game.Balance
             public readonly List<int> BossWaves = new List<int>();
             public readonly List<int> CrowdWaves = new List<int>();
             public readonly bool Air;
+
+            /// <summary>The first wave with flyers (0 = none) and how many waves bring them.</summary>
+            public readonly int FirstAirWave;
+            public readonly int AirWaves;
             public readonly GadgetStats Mine;
             public readonly GadgetStats Field;
             public readonly DroneStats Harvester;
             public readonly DroneStats Attack;
+            public readonly DroneStats Repair;
+
+            /// <summary>True when the level has trunk gates the plan model wears and repairs.</summary>
+            public readonly bool Gates;
             public readonly int WaveCount;
 
             public Context(PlanSearchInput input)
@@ -231,12 +253,20 @@ namespace Game.Balance
                 Field = input.Level.Gadgets.Find(g => g.Kind == GadgetKind.SlowField);
                 Harvester = input.Level.Drones.Find(d => d.Role == DroneRole.Harvest);
                 Attack = input.Level.Drones.Find(d => d.Role == DroneRole.Attack);
+                Repair = input.Level.Drones.Find(d => d.Role == DroneRole.Repair);
+                Gates = PlanEvaluator.TrunkGates(input.Level) > 0;
                 var purse = new KillPurse(input.Level, input.Stats, input.Judge);
                 for (int i = 0; i < input.Waves.Count; i++)
                 {
                     purse.Begin(input.Waves[i]);
                     WaveLoad load = WaveLoad.Of(input.Level, input.Waves[i], input.Stats, input.Judge);
                     Air |= load.AirHealth > 0f;
+                    if (load.AirHealth > 0f)
+                    {
+                        FirstAirWave = FirstAirWave == 0 ? i + 1 : FirstAirWave;
+                        AirWaves++;
+                    }
+
                     if (load.HasBoss)
                     {
                         BossWaves.Add(i + 1);
@@ -339,6 +369,21 @@ namespace Game.Balance
                 steps.Add(new PlanStep { Kind = PlanStep.Drone, Item = context.Attack.Id, Wave = context.Bucket(random, context.WaveCount / 2, context.WaveCount) });
             }
 
+            // Repairs are a trade (Remco): a repair drone early or mid-level, or a few gate repairs by hand that the evaluator takes only by the bot's rule.
+            if (context.Repair != null && random.NextDouble() < RepairDroneChance)
+            {
+                steps.Add(new PlanStep { Kind = PlanStep.Drone, Item = context.Repair.Id, Wave = context.Bucket(random, 2, Math.Max(2, context.WaveCount * 2 / 3)) });
+            }
+
+            if (context.Gates && random.NextDouble() < RepairChance)
+            {
+                int repairs = 1 + random.Next(MaxRepairs);
+                for (int r = 0; r < repairs; r++)
+                {
+                    steps.Add(new PlanStep { Kind = PlanStep.Repair, Item = PlanStep.Gates, Wave = context.Bucket(random, 3, context.WaveCount) });
+                }
+            }
+
             if (context.Input.AllowSell && built.Count > 2 && random.NextDouble() < SellChance)
             {
                 (TowerStats tower, Cell cell, int _) = built[random.Next(built.Count)];
@@ -349,6 +394,173 @@ namespace Game.Balance
 
             Order(steps);
             return new PlanSpec { Level = context.Input.LevelKey, Difficulty = context.Input.Difficulty, Name = $"sample{index}", Steps = steps.ToArray() };
+        }
+
+        // The constructive family (round 22b): a primary type on its best spots and a secondary type beside it, two guns before the first
+        // wave and then a priority list taken as the purse allows (upgrade the best-placed gun, add a gun, in turn), a sky gun the wave
+        // before the flyers come, the harvester early, a mine before every boss wave. Two orders per pair: upgrades first, or towers first.
+        private static List<PlanSpec> ConstructivePlans(Context context)
+        {
+            var plans = new List<PlanSpec>();
+            foreach (TowerStats primary in context.Ground)
+            {
+                foreach (TowerStats secondary in context.Ground)
+                {
+                    for (int variant = 0; variant < 4; variant++)
+                    {
+                        // Two orders (upgrades first, towers first), each with and without a repair drone, when the level offers one.
+                        bool repairDrone = variant >= 2;
+                        if (repairDrone && context.Repair == null)
+                        {
+                            continue;
+                        }
+
+                        PlanSpec plan = Constructive(context, primary, secondary, variant % 2 == 0, repairDrone);
+                        if (plan != null)
+                        {
+                            plans.Add(plan);
+                        }
+                    }
+                }
+            }
+
+            return plans;
+        }
+
+        private static PlanSpec Constructive(Context context, TowerStats primary, TowerStats secondary, bool upgradesFirst, bool repairDrone)
+        {
+            var steps = new List<PlanStep>();
+            var used = new HashSet<long>();
+            var builtPrimary = new List<Cell>();
+            var builtSecondary = new List<Cell>();
+            int wave = 1;
+            int clock = 0;
+            // Two purchases a wave from the second wave on, as the purse of a plain wave roughly allows.
+            int Next() => Math.Min(context.WaveCount, 1 + (clock++ + 2) / 2);
+
+            bool Build(TowerStats tower, List<Cell> built, int at)
+            {
+                if (!FirstFree(context.Spots[tower.Id], used, out Cell cell))
+                {
+                    return false;
+                }
+
+                steps.Add(new PlanStep { Kind = PlanStep.Build, Item = tower.Id, X = cell.X, Y = cell.Y, Wave = at });
+                built.Add(cell);
+                return true;
+            }
+
+            if (!Build(primary, builtPrimary, wave))
+            {
+                return null;
+            }
+
+            if (secondary != primary)
+            {
+                Build(secondary, builtSecondary, wave);
+            }
+
+            var upgrades = new Dictionary<long, int>();
+            bool Upgrade(List<Cell> built, TowerStats tower)
+            {
+                foreach (Cell cell in built)
+                {
+                    long key = ((long)cell.X << 32) ^ (uint)cell.Y;
+                    int have = upgrades.TryGetValue(key, out int n) ? n : 0;
+                    if (have < tower.Levels.Length - 1)
+                    {
+                        upgrades[key] = have + 1;
+                        steps.Add(new PlanStep { Kind = PlanStep.Upgrade, X = cell.X, Y = cell.Y, Wave = Next() });
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            int builds = 2;
+            for (int round = 0; round < MaxBuilds && builds < MaxBuilds; round++)
+            {
+                bool primaryTurn = round % 2 == 0 || secondary == primary;
+                TowerStats tower = primaryTurn ? primary : secondary;
+                List<Cell> built = primaryTurn ? builtPrimary : builtSecondary;
+                if (upgradesFirst)
+                {
+                    if (!Upgrade(built, tower) && !Build(tower, built, Next()))
+                    {
+                        break;
+                    }
+                }
+                else if (!Build(tower, built, Next()) && !Upgrade(built, tower))
+                {
+                    break;
+                }
+
+                builds++;
+            }
+
+            if (context.Air && context.Sky.Count > 0 && context.FirstAirWave > 0)
+            {
+                TowerStats sky = context.Sky[0];
+                int at = Math.Max(1, context.FirstAirWave - 1);
+                if (FirstFree(context.Spots[sky.Id], used, out Cell cell))
+                {
+                    steps.Add(new PlanStep { Kind = PlanStep.Build, Item = sky.Id, X = cell.X, Y = cell.Y, Wave = at });
+                }
+
+                if (context.AirWaves > 2 && FirstFree(context.Spots[sky.Id], used, out Cell second))
+                {
+                    steps.Add(new PlanStep { Kind = PlanStep.Build, Item = sky.Id, X = second.X, Y = second.Y, Wave = Math.Min(context.WaveCount, context.FirstAirWave + 2) });
+                }
+            }
+
+            if (context.Harvester != null && context.Input.Level.MineCount > 0)
+            {
+                steps.Add(new PlanStep { Kind = PlanStep.Drone, Item = context.Harvester.Id, Wave = 2 });
+            }
+
+            if (context.Mine != null && context.Queue.Count > 0)
+            {
+                foreach (int boss in context.BossWaves)
+                {
+                    steps.Add(new PlanStep { Kind = PlanStep.Mine, Item = context.Mine.Id, X = context.Queue[0].X, Y = context.Queue[0].Y, Wave = Math.Max(1, boss - 1) });
+                }
+            }
+
+            if (repairDrone)
+            {
+                steps.Add(new PlanStep { Kind = PlanStep.Drone, Item = context.Repair.Id, Wave = RepairDroneWave });
+            }
+            else if (context.Gates)
+            {
+                // Without a drone the gates are repaired by hand before every boss and at the last third, where the bot's rule allows it.
+                foreach (int boss in context.BossWaves)
+                {
+                    steps.Add(new PlanStep { Kind = PlanStep.Repair, Item = PlanStep.Gates, Wave = Math.Max(1, boss - 1) });
+                }
+
+                steps.Add(new PlanStep { Kind = PlanStep.Repair, Item = PlanStep.Gates, Wave = Math.Max(1, context.WaveCount * 2 / 3) });
+            }
+
+            Order(steps);
+            string name = $"{primary.Id}+{secondary.Id}{(upgradesFirst ? " upgrades first" : " towers first")}{(repairDrone ? " repair drone" : string.Empty)}";
+            return new PlanSpec { Level = context.Input.LevelKey, Difficulty = context.Input.Difficulty, Name = name, Steps = steps.ToArray() };
+        }
+
+        // The first free spot of a list in rank order (the constructive plans take the best spot first).
+        private static bool FirstFree(List<Cell> spots, HashSet<long> used, out Cell cell)
+        {
+            foreach (Cell candidate in spots)
+            {
+                if (used.Add(((long)candidate.X << 32) ^ (uint)candidate.Y))
+                {
+                    cell = candidate;
+                    return true;
+                }
+            }
+
+            cell = default;
+            return false;
         }
 
         // One small change: another spot of the same type, a step two waves earlier or later, an upgrade more or less.

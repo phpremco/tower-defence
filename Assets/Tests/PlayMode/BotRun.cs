@@ -19,6 +19,7 @@ namespace Game.Tests
         // A tower this hurt counts as worn: the creative bot's cue for a repair drone.
         private const float WornBelow = 0.9f;
         private const int SeedSpread = 7919;
+        private const float DroneLookupSeconds = 1f;
 
         private readonly System.Random _random;
         private readonly HashSet<Enemy> _watched = new HashSet<Enemy>();
@@ -29,6 +30,11 @@ namespace Game.Tests
         private Game.Combat.TargetRegistry _targets;
         private LevelContext _context;
         private int _recordedWave = -1;
+        private float _lastBase = -1f;
+        private float _lastGates;
+        private Drone[] _drones = new Drone[0];
+        private float _droneLookup;
+        public int Repairs;
 
         public BotRun(ProbeStrategy strategy, int seed)
         {
@@ -126,7 +132,9 @@ namespace Game.Tests
             _watched.Clear();
         }
 
-        public void Sample(LevelContext context, List<Tower> towers, float deltaTime)
+        public void Sample(LevelContext context, List<Tower> towers, float deltaTime) => Sample(context, towers, null, deltaTime);
+
+        public void Sample(LevelContext context, List<Tower> towers, List<Tower> gates, float deltaTime)
         {
             Seconds += deltaTime;
             // The standing set is refreshed while the wave runs, so towers built mid-wave count for it (the paper side counts them too).
@@ -134,6 +142,8 @@ namespace Game.Tests
             {
                 _recordedWave = context.WaveNumber;
                 WaveRecord record = RecordOf(_recordedWave);
+                RecordLosses(context, gates, record);
+                RecordRepairDrones(record, deltaTime);
                 record.Standing.Clear();
                 foreach (Tower tower in towers)
                 {
@@ -167,6 +177,51 @@ namespace Game.Tests
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
                 Fire[tower.Definition.Id] = (damage, seconds + deltaTime, data + dps * deltaTime);
                 CoinSeconds[tower.Definition.Id] = (CoinSeconds.TryGetValue(tower.Definition.Id, out float coins) ? coins : 0f) + tower.TotalSpent * deltaTime;
+            }
+        }
+
+        // What the base and the gates lost since the last sample goes on the wave being fought (drops only: a repair is not a gain of the wave).
+        private void RecordLosses(LevelContext context, List<Tower> gates, WaveRecord record)
+        {
+            float baseNow = context.BaseHealth.Current;
+            float gatesNow = 0f;
+            if (gates != null)
+            {
+                foreach (Tower gate in gates)
+                {
+                    gatesNow += gate.Health.Current;
+                }
+            }
+
+            if (_lastBase >= 0f)
+            {
+                record.BaseLost += Mathf.Max(0f, _lastBase - baseNow);
+                record.GateLost += Mathf.Max(0f, _lastGates - gatesNow);
+            }
+
+            _lastBase = baseNow;
+            _lastGates = gatesNow;
+        }
+
+        // Seconds a repair drone is on the field and seconds it spends repairing, per wave (the drones are looked up once a second).
+        private void RecordRepairDrones(WaveRecord record, float deltaTime)
+        {
+            _droneLookup -= deltaTime;
+            if (_droneLookup <= 0f)
+            {
+                _droneLookup = DroneLookupSeconds;
+                _drones = Object.FindObjectsByType<Drone>();
+            }
+
+            foreach (Drone drone in _drones)
+            {
+                if (drone == null || drone.Definition == null || drone.Definition.Kind != DroneKind.Repair)
+                {
+                    continue;
+                }
+
+                record.RepairDroneSeconds += deltaTime;
+                record.RepairDroneBusy += drone.Activity == DroneActivity.Repairing ? deltaTime : 0f;
             }
         }
 

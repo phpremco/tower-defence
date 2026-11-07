@@ -15,6 +15,10 @@ namespace Game.Balance
         public const string Field = "field";
         public const string Drone = "drone";
         public const string Sell = "sell";
+        public const string Repair = "repair";
+
+        /// <summary>The item of a repair step: the defence gates (the base cannot be repaired by hand; a repair drone does both).</summary>
+        public const string Gates = "gates";
 
         /// <summary>One of the kinds above.</summary>
         public string Kind = Build;
@@ -187,6 +191,9 @@ namespace Game.Balance
                         break;
                     case PlanStep.Drone:
                         line = $"buy the {Name(step.Item)}";
+                        break;
+                    case PlanStep.Repair:
+                        line = "repair the gates when they would fall or it is cheaper than a gun";
                         break;
                     default:
                         line = $"lay a {Name(step.Item)} on the road at ({step.X},{step.Y})";

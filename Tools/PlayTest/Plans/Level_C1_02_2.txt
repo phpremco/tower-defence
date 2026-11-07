@@ -1,7 +1,9 @@
-Glass Meadows (Level_C1_02) on Hard: plan search, 3000 plans sampled, 0 hold on paper, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Glass Meadows (Level_C1_02) on Hard: plan search, 3036 plans sampled, 0 hold on paper, base 700, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
-'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
-as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
+A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
+until the guns at the doorstep and the hero kill it; a plan holds when the base survives the level, its stars follow the base left.
+The margin is the worst wave's cap over pressure (below 1 something leaks there).
 
 Best spots per tower (first is best):
   Gun Turret     (7,6) cover 12.0 gate bunch 0.3; (5,6) cover 11.0 gate bunch 0.5; (5,7) cover 11.0 gate bunch 0.6; (6,5) cover 11.0 gate bunch 0.5; (7,5) cover 11.0 gate bunch 0.5; (8,6) cover 11.0 gate bunch 0.3;
@@ -9,19 +11,17 @@ Best spots per tower (first is best):
   Laser Turret   (7,6) cover 15.0 gate bunch 0.4; (6,5) cover 14.0 gate bunch 0.6; (7,5) cover 14.0 gate bunch 0.4; (4,7) cover 12.0 gate bunch 0.7; (5,7) cover 12.0 gate bunch 0.6; (8,7) cover 12.0 gate bunch 0.3;
 
 Obvious plans on paper:
-  mono PulseRifle    margin 0.67 falls at wave 6, coins left 147, steps taken 18
-  mono Cannon        margin 0.45 falls at wave 6, coins left 65, steps taken 9, 11 never affordable
-  mono Laser         margin 0.45 falls at wave 5, coins left 4, steps taken 7, 13 never affordable
-  naive              margin 0.52 falls at wave 7, coins left 94, steps taken 10, 8 never affordable
+  mono PulseRifle    falls w9, margin 0.35 (leaks from wave 6), coins left 26, steps taken 16, 2 never affordable
+  mono Cannon        falls w9, margin 0.25 (leaks from wave 6), coins left 145, steps taken 8, 12 never affordable
+  mono Laser         falls w8, margin 0.20 (leaks from wave 5), coins left 43, steps taken 5, 15 never affordable
+  naive              falls w9, margin 0.20 (leaks from wave 5), coins left 13, steps taken 9, 9 never affordable
 
 Distinct winning plans (0; different spots, mixes or timing):
 
-No plan holds on paper. Best found: margin 0.81, falls at wave 9
-  from wave  1: build Cannon at (4,7); build Cannon at (5,7); build Gun Turret at (7,5)
-  from wave  4: upgrade the tower at (4,7); upgrade the tower at (7,5)
-  from wave  5: build Cannon at (5,6); build Gun Turret at (6,5)
-  from wave  8: upgrade the tower at (6,5); upgrade the tower at (6,5)
-  from wave  9: upgrade the tower at (5,6)
-  from wave 10: upgrade the tower at (7,5)
-  from wave 11: build Laser Turret at (7,6)
-  from wave 12: upgrade the tower at (8,7); upgrade the tower at (8,7)
+No plan holds on paper. Best found: falls w11, margin 0.42, leaks from wave 9
+  from wave  1: build Cannon at (4,7); build Cannon at (5,7)
+  from wave  3: build Cannon at (5,6); upgrade the tower at (4,7); upgrade the tower at (5,7)
+  from wave  5: build Laser Turret at (7,6)
+  from wave  8: build Gun Turret at (6,5); build Cannon at (30,15); repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: upgrade the tower at (6,5); upgrade the tower at (7,6); upgrade the tower at (6,5); upgrade the tower at (5,6)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun

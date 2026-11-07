@@ -43,6 +43,14 @@ namespace Game.Balance
         /// <summary>Health of one gate with the permanent gate upgrades.</summary>
         public float GateHealth;
 
+        /// <summary>Coins one gate hit point costs to repair by hand, and what a wrecked gate costs to rebuild (the Blockade definition).</summary>
+        public float GateRepairCostPerHealth;
+        public int GateRebuildCost;
+
+        /// <summary>Health of the base with the permanent base upgrades, and the base shares that earn the second and third star.</summary>
+        public float BaseHealth;
+        public float[] StarFractions = { 0.5f, 0.9f };
+
         /// <summary>The gadgets this level sells (mines, slow fields) and the drones it offers, for the plan model.</summary>
         public List<GadgetStats> Gadgets = new List<GadgetStats>();
         public List<DroneStats> Drones = new List<DroneStats>();
@@ -156,9 +164,9 @@ namespace Game.Balance
             return (load.GroundPressure(defence.Stream + HeroStream(level, load, rules), defence.Single + HeroSingle(level, load, rules)), load.AirPressure(defence.Air));
         }
 
-        internal static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried)
+        internal static WaveLoad LoadOf(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float carried, float gateHealth = -1f)
         {
-            WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules);
+            WaveLoad load = WaveLoad.Of(level, wave, difficulty, rules, gateHealth);
             load.StreamHealth += carried * rules.CarriedShare;
             return load;
         }
@@ -196,7 +204,7 @@ namespace Game.Balance
         }
 
         // The blade at a gate and half the blaster for the lulls, over half the window.
-        private static float HeroDps(LevelInput level)
+        internal static float HeroDps(LevelInput level)
         {
             if (level.Hero == null)
             {

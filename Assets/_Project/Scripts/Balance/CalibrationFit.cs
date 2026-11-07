@@ -19,6 +19,14 @@ namespace Game.Balance
         /// <summary>Damage by anything that is not a tower the player built: the hero, mines, the base turret, drones.</summary>
         public float OtherDealt;
 
+        /// <summary>Health the base and the gates lost during the wave (repairs not counted back): what the leak really cost (round 22b).</summary>
+        public float BaseLost;
+        public float GateLost;
+
+        /// <summary>Seconds a repair drone was on the field during the wave, and the seconds it spent repairing: its busy share (round 22b).</summary>
+        public float RepairDroneSeconds;
+        public float RepairDroneBusy;
+
         /// <summary>The towers standing when the wave started: type, level and cell.</summary>
         public readonly List<(string Id, int Level, Cell Cell)> Standing = new List<(string, int, Cell)>();
 
@@ -54,7 +62,7 @@ namespace Game.Balance
         public readonly List<WaveRecord> Waves = new List<WaveRecord>();
 
         /// <summary>Stars first, then base health, then coins; a loss ranks by how far it got.</summary>
-        public float RealisedScore => Won ? Stars * 1000f + BaseHealth + 0.1f * Coins : -100f * Math.Max(0, WaveCount - WaveReached) - 1f;
+        public float RealisedScore => Leak.Score(Won, Stars, BaseHealth, Coins, WaveCount, WaveReached);
 
         public string Cell => Level + " " + Difficulty.ToString(CultureInfo.InvariantCulture);
     }
@@ -75,8 +83,9 @@ namespace Game.Balance
     /// dealt over the paper capacity of the same towers from their own spots, summed over all recorded waves. A wave the
     /// defence out-gunned (more capacity than health) saturates: its capacity counts only up to the health there was to take,
     /// shared by the types in proportion to their capacity, which is why the fit iterates. Absolute, per type: no mean
-    /// normalisation, no field ease. Then it checks itself: with the fitted numbers, does the ledger's verdict on each run
-    /// (every wave inside the hero cap) agree with what happened, and does its ranking of the plans in a cell match theirs.
+    /// normalisation, no field ease. Then the leak factor (round 22b): the base health the runs really lost over the leak model's
+    /// paper damage from the same standing sets. Then it checks itself: with the fitted numbers, does the paper verdict on each run
+    /// (the base survives every wave) agree with what happened, and does its ranking of the runs in a cell match theirs.
     /// </summary>
     public static class CalibrationFit
     {
@@ -84,11 +93,35 @@ namespace Game.Balance
         private const float MinEfficiency = 0.05f;
         private const float MaxEfficiency = 4f;
 
+        /// <summary>Longest a leaker is allowed to live at the doorstep in the fit (a whole wave).</summary>
+        private const float MaxLeakSeconds = 300f;
+
         public sealed class Result
         {
             public readonly SortedDictionary<string, float> Efficiency = new SortedDictionary<string, float>(StringComparer.Ordinal);
             public readonly SortedDictionary<string, (float Dealt, float Capacity, int Waves)> Sums = new SortedDictionary<string, (float, float, int)>(StringComparer.Ordinal);
             public int Runs;
+
+            /// <summary>Base health really lost over the leak model's paper damage at factor one (<see cref="BalanceRules.LeakFactor"/>).</summary>
+            public float LeakFactor = 1f;
+            public float BaseLost;
+            public float PaperBaseDamage;
+            public int LeakWaves;
+
+            /// <summary>Share of its field time a repair drone spent repairing, over every recorded wave with one (<see cref="BalanceRules.RepairDroneBusyShare"/>); -1 when none was seen.</summary>
+            public float RepairDroneBusyShare = -1f;
+            public float RepairDroneSeconds;
+        }
+
+        /// <summary>What the leak model predicts for one recorded run from its realised standing sets: the base left, the fall wave, the stars.</summary>
+        public struct Prediction
+        {
+            public float BaseLeft;
+            public int FallWave;
+            public int Stars;
+            public float Margin;
+            public int FirstBreak;
+            public bool Holds => FallWave == 0 && BaseLeft > 0f;
         }
 
         public sealed class Agreement
@@ -140,7 +173,9 @@ namespace Game.Balance
                 result.Runs++;
                 foreach (WaveRecord wave in run.Waves)
                 {
-                    if (wave.Wave < 1 || wave.Wave > cell.Loads.Count || wave.Health <= 0f)
+                    // The wave a lost run ends in is cut short (the base dies while creatures still walk): it says nothing about the guns.
+                    bool cutShort = !run.Won && wave.Wave >= run.WaveReached;
+                    if (wave.Wave < 1 || wave.Wave > cell.Loads.Count || wave.Health <= 0f || cutShort)
                     {
                         continue;
                     }
@@ -195,14 +230,101 @@ namespace Game.Balance
                 result.Efficiency[pair.Key] = (float)Math.Round(pair.Value, 3);
             }
 
+            FitLeak(runs, cellOf, result);
+            FitRepairDrone(runs, result);
             return result;
+        }
+
+        // The leak factor: over every recorded wave, the base health really lost against the leak model's paper damage with the
+        // fitted efficiencies at factor one; a wave's paper damage counts only up to the base there was (a wave cannot kill the base twice).
+        private static void FitLeak(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
+        {
+            foreach (RunRecord run in runs)
+            {
+                RecordedCell cell = cellOf(run);
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                BalanceRules judge = JudgeOf(cell).Copy();
+                judge.LeakFactor = 1f;
+                foreach (WaveRecord wave in run.Waves)
+                {
+                    if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
+                    {
+                        continue;
+                    }
+
+                    LeakLine leak = LeakOf(wave, cell, judge, result.Efficiency);
+                    float paper = leak.BaseDamage;
+                    result.PaperBaseDamage += paper;
+                    result.BaseLost += Math.Min(wave.BaseLost, cell.Input.BaseHealth);
+                    result.LeakWaves += paper > 0f || wave.BaseLost > 0f ? 1 : 0;
+                }
+            }
+
+            result.LeakFactor = result.PaperBaseDamage > 0f && result.BaseLost > 0f ? (float)Math.Round(Math.Min(MaxLeakSeconds, result.BaseLost / result.PaperBaseDamage), 2) : new BalanceRules().LeakFactor;
+        }
+
+        // The repair drone's busy share: over every recorded wave a repair drone was on the field, the seconds it repaired over the seconds it was there.
+        private static void FitRepairDrone(IReadOnlyList<RunRecord> runs, Result result)
+        {
+            float busy = 0f;
+            foreach (RunRecord run in runs)
+            {
+                foreach (WaveRecord wave in run.Waves)
+                {
+                    result.RepairDroneSeconds += wave.RepairDroneSeconds;
+                    busy += wave.RepairDroneBusy;
+                }
+            }
+
+            result.RepairDroneBusyShare = result.RepairDroneSeconds > 0f ? (float)Math.Round(Math.Min(1f, busy / result.RepairDroneSeconds), 3) : -1f;
+        }
+
+        // The leak of one recorded wave from its realised standing set (the paper capacities at the given efficiencies).
+        private static LeakLine LeakOf(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency)
+        {
+            WaveLoad load = cell.Loads[wave.Wave - 1];
+            Pressures(wave, cell, judge, efficiency, out float ground, out float air);
+            return Leak.Of(load, judge, ground, air);
+        }
+
+        // Ground and air pressure of a recorded wave against its standing towers and the hero.
+        private static void Pressures(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency, out float ground, out float air)
+        {
+            WaveLoad load = cell.Loads[wave.Wave - 1];
+            float stream = Ledger.HeroStream(cell.Input, load, judge);
+            float single = Ledger.HeroSingle(cell.Input, load, judge);
+            float sky = 0f;
+            foreach ((string id, int level, Cell spot) in wave.Standing)
+            {
+                int index = cell.Input.Towers.FindIndex(t => t.Id == id);
+                if (index < 0 || level < 0 || level >= cell.Input.Towers[index].Levels.Length)
+                {
+                    continue;
+                }
+
+                TowerStats stats = cell.Input.Towers[index];
+                float range = stats.Levels[level].Range * cell.Input.BoostOf(id).Range;
+                float own = efficiency != null && efficiency.TryGetValue(id, out float e) ? e : 1f;
+                SpotCover cover = PlanEvaluator.CoverOf(cell.Input, spot, range);
+                Ledger.Option option = Ledger.Capacity(cell.Input, load, judge, index, level, cover, own);
+                stream += option.Stream;
+                single += option.Single;
+                sky += option.Air;
+            }
+
+            ground = load.GroundPressure(stream, single);
+            air = load.AirPressure(sky);
         }
 
         /// <summary>
         /// With these efficiencies, the ledger's verdict on every run (its standing towers hold every wave inside the cap)
         /// against what happened, and per cell the Spearman correlation of the analytic and the realised ranking of the runs.
         /// </summary>
-        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency)
+        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float leakFactor = 1f)
         {
             var agreement = new Agreement();
             var cells = new Dictionary<string, List<(float Analytic, float Realised)>>();
@@ -214,8 +336,8 @@ namespace Game.Balance
                     continue;
                 }
 
-                float margin = Margin(run, cell, efficiency, out int firstBreak);
-                bool holds = margin >= 1f;
+                Prediction predicted = Predict(run, cell, efficiency, leakFactor);
+                bool holds = predicted.Holds;
                 bool mono = run.Strategy.StartsWith("mono", StringComparison.Ordinal);
                 agreement.Runs++;
                 agreement.MonoRuns += mono ? 1 : 0;
@@ -226,8 +348,9 @@ namespace Game.Balance
                 }
                 else
                 {
-                    agreement.Disagreements.Add(string.Format(CultureInfo.InvariantCulture, "{0} {1} seed {2}: ledger {3} (margin {4:0.00}{5}), game {6} at wave {7}/{8}",
-                        run.Cell, run.Strategy, run.Seed, holds ? "holds" : "falls", margin, firstBreak > 0 ? " from wave " + firstBreak : string.Empty, run.Won ? "won " + run.Stars + "*" : "lost", run.WaveReached, run.WaveCount));
+                    agreement.Disagreements.Add(string.Format(CultureInfo.InvariantCulture, "{0} {1} seed {2}: paper {3} (base {4:0}{5}, margin {6:0.00}{7}), game {8} at wave {9}/{10} base {11:0}",
+                        run.Cell, run.Strategy, run.Seed, holds ? "survives" : "falls", predicted.BaseLeft, predicted.FallWave > 0 ? " at wave " + predicted.FallWave : string.Empty, predicted.Margin,
+                        predicted.FirstBreak > 0 ? " leaking from wave " + predicted.FirstBreak : string.Empty, run.Won ? "won " + run.Stars + "*" : "lost", run.WaveReached, run.WaveCount, run.BaseHealth));
                 }
 
                 if (!cells.TryGetValue(run.Cell, out List<(float, float)> list))
@@ -235,7 +358,8 @@ namespace Game.Balance
                     cells[run.Cell] = list = new List<(float, float)>();
                 }
 
-                list.Add((margin, run.RealisedScore));
+                float analytic = Leak.Score(holds, predicted.Stars, predicted.BaseLeft, run.Coins, run.WaveCount, predicted.FallWave > 0 ? predicted.FallWave : run.WaveCount);
+                list.Add((analytic, run.RealisedScore));
             }
 
             foreach (KeyValuePair<string, List<(float Analytic, float Realised)>> cell in cells)
@@ -246,12 +370,15 @@ namespace Game.Balance
             return agreement;
         }
 
-        /// <summary>The worst wave's cap over pressure for a run's standing towers, with the given efficiencies (1 for types not listed).</summary>
-        public static float Margin(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, out int firstBreak)
+        /// <summary>
+        /// The leak model's verdict on a recorded run from its realised standing sets, with the given efficiencies (1 for types not
+        /// listed) and leak factor: the base left after every wave, the wave it falls in, the stars, and the worst wave's cap over pressure.
+        /// </summary>
+        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float leakFactor)
         {
-            float margin = float.MaxValue;
-            firstBreak = 0;
-            BalanceRules judge = JudgeOf(cell);
+            var prediction = new Prediction { BaseLeft = cell.Input.BaseHealth, Margin = float.MaxValue };
+            BalanceRules judge = JudgeOf(cell).Copy();
+            judge.LeakFactor = leakFactor;
             foreach (WaveRecord wave in run.Waves)
             {
                 if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
@@ -260,45 +387,31 @@ namespace Game.Balance
                 }
 
                 WaveLoad load = cell.Loads[wave.Wave - 1];
-                float stream = Ledger.HeroStream(cell.Input, load, judge);
-                float single = Ledger.HeroSingle(cell.Input, load, judge);
-                float air = 0f;
-                foreach ((string id, int level, Cell spot) in wave.Standing)
+                Pressures(wave, cell, judge, efficiency, out float ground, out float air);
+                LeakLine leak = Leak.Of(load, judge, ground, air);
+                prediction.BaseLeft = Math.Max(0f, prediction.BaseLeft - leak.BaseDamage);
+                if (prediction.BaseLeft <= 0f && prediction.FallWave == 0)
                 {
-                    int index = cell.Input.Towers.FindIndex(t => t.Id == id);
-                    if (index < 0 || level < 0 || level >= cell.Input.Towers[index].Levels.Length)
-                    {
-                        continue;
-                    }
-
-                    TowerStats stats = cell.Input.Towers[index];
-                    float range = stats.Levels[level].Range * cell.Input.BoostOf(id).Range;
-                    float own = efficiency != null && efficiency.TryGetValue(id, out float e) ? e : 1f;
-                    Ledger.Option option = Ledger.Capacity(cell.Input, load, judge, index, level, PlanEvaluator.CoverOf(cell.Input, spot, range), own);
-                    stream += option.Stream;
-                    single += option.Single;
-                    air += option.Air;
+                    prediction.FallWave = wave.Wave;
                 }
 
-                float pressure = Math.Max(load.GroundPressure(stream, single), load.AirPressure(air));
+                float pressure = Math.Max(ground, air);
                 if (pressure <= 0f)
                 {
                     continue;
                 }
 
                 float waveMargin = float.IsInfinity(pressure) ? 0f : judge.CapFor(cell.Cap, load.HasBoss) / pressure;
-                if (waveMargin < margin)
+                prediction.Margin = Math.Min(prediction.Margin, waveMargin);
+                if (waveMargin < 1f && prediction.FirstBreak == 0)
                 {
-                    margin = waveMargin;
-                }
-
-                if (waveMargin < 1f && firstBreak == 0)
-                {
-                    firstBreak = wave.Wave;
+                    prediction.FirstBreak = wave.Wave;
                 }
             }
 
-            return margin == float.MaxValue ? 0f : margin;
+            prediction.Margin = prediction.Margin == float.MaxValue ? 0f : prediction.Margin;
+            prediction.Stars = Leak.Stars(prediction.BaseLeft, cell.Input.BaseHealth, cell.Input.StarFractions);
+            return prediction;
         }
 
         /// <summary>Spearman's rank correlation of two scores over the same items (1 = same order).</summary>
@@ -379,7 +492,7 @@ namespace Game.Balance
                         standing.Add(id + ":" + I(level) + ":" + I(cell.X) + ":" + I(cell.Y));
                     }
 
-                    text.Append(string.Join("|", "wave", I(wave.Wave), F(wave.Health), F(wave.OtherDealt), string.Join(";", dealt), string.Join(",", standing))).Append('\n');
+                    text.Append(string.Join("|", "wave", I(wave.Wave), F(wave.Health), F(wave.OtherDealt), string.Join(";", dealt), string.Join(",", standing), F(wave.BaseLost), F(wave.GateLost), F(wave.RepairDroneSeconds), F(wave.RepairDroneBusy))).Append('\n');
                 }
             }
 
@@ -418,6 +531,10 @@ namespace Game.Balance
                         Wave = int.Parse(parts[1], CultureInfo.InvariantCulture),
                         Health = float.Parse(parts[2], CultureInfo.InvariantCulture),
                         OtherDealt = float.Parse(parts[3], CultureInfo.InvariantCulture),
+                        BaseLost = parts.Length > 6 ? float.Parse(parts[6], CultureInfo.InvariantCulture) : 0f,
+                        GateLost = parts.Length > 7 ? float.Parse(parts[7], CultureInfo.InvariantCulture) : 0f,
+                        RepairDroneSeconds = parts.Length > 8 ? float.Parse(parts[8], CultureInfo.InvariantCulture) : 0f,
+                        RepairDroneBusy = parts.Length > 9 ? float.Parse(parts[9], CultureInfo.InvariantCulture) : 0f,
                     };
                     foreach (string item in parts[4].Split(';'))
                     {

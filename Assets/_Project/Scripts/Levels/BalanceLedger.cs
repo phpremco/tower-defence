@@ -272,6 +272,7 @@ namespace Game.Levels
                     Cost = drone.Cost,
                     Dps = drone.FireInterval > 0f ? drone.Damage / drone.FireInterval : 0f,
                     Targets = (int)drone.Targets,
+                    RepairPerSecond = drone.RepairPerSecond,
                 });
             }
 
@@ -350,7 +351,8 @@ namespace Game.Levels
                 model.Towers[tower.Id] = Stats(tower);
             }
 
-            float gateHealth = level.Blockades.Length > 0 && level.Blockades[0].Blockade != null ? level.Blockades[0].Blockade.MaxHealth : 0f;
+            Game.Towers.TowerDefinition blockade = level.Blockades.Length > 0 ? level.Blockades[0].Blockade : null;
+            float gateHealth = blockade != null ? blockade.MaxHealth : 0f;
             model.Levels.Add(campaign);
             model.Facts.Add(new LevelFacts
             {
@@ -363,6 +365,10 @@ namespace Game.Levels
                 Harvest = level.HarvestDrone != null,
                 SecondRoad = SecondRoad(level),
                 GateHealth = gateHealth,
+                GateRepairCostPerHealth = blockade != null ? blockade.RepairCostPerHealth : 0f,
+                GateRebuildCost = blockade != null ? blockade.BuildCost : 0,
+                BaseHealth = level.BaseHealth,
+                StarFractions = level.StarBaseHealthFractions,
                 Gadgets = Gadgets(level),
                 Drones = Drones(level),
                 Geometry = Geometry(level),

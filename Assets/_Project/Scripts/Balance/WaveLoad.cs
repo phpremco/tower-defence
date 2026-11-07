@@ -45,6 +45,30 @@ namespace Game.Balance
         public int KillMoney;
         public bool HasBoss;
 
+        /// <summary>Creatures of the ground stream and bosses in the wave (after the difficulty's count share), for the leak model.</summary>
+        public int GroundCount;
+        public int BossCount;
+        public int AirCount;
+
+        /// <summary>
+        /// Structure damage per second one leaked creature does at a gate or the base (mean over the ground stream, over the bosses),
+        /// and the base damage one flyer that reaches the end does (mean): what a leak costs the base (<see cref="Leak"/>).
+        /// </summary>
+        public float GroundStrike;
+        public float BossStrike;
+        public float AirBaseDamage;
+
+        /// <summary>Structure damage per second one flyer does when it lays siege to the base (mean).</summary>
+        public float AirStrike;
+
+        /// <summary>Structure damage per second the queue hammers the trunk gates with: the walkers (up to the rules' attackers) and the bosses apart.</summary>
+        public float GateStrike;
+        public float BossGateStrike;
+
+        /// <summary>Raw seconds the trunk gates hold the walkers and the bosses, before the towers' usable share.</summary>
+        public float GateHold;
+        public float BossGateHold;
+
         /// <summary>The plating of the ground stream, the bosses and the flyers, by health: how much of a hit of each size lands.</summary>
         public readonly PlateMix StreamPlates = new PlateMix();
         public readonly PlateMix BossPlates = new PlateMix();
@@ -76,7 +100,10 @@ namespace Game.Balance
 
         private static float Ratio(float health, float capacity) => capacity <= 0f ? float.PositiveInfinity : health / capacity;
 
-        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules)
+        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules) => Of(level, wave, difficulty, rules, -1f);
+
+        /// <summary>As above with the gates at <paramref name="gateHealth"/> each instead of the level's full gate health (the plan model's worn gates; below zero = full).</summary>
+        public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules, float gateHealth)
         {
             var load = new WaveLoad();
             float span = 0f;
@@ -91,6 +118,10 @@ namespace Game.Balance
             float bossReachWeighted = 0f;
             float gateDps = 0f;
             float bossGateDps = 0f;
+            float strikeSum = 0f;
+            float bossStrikeSum = 0f;
+            float airBaseDamage = 0f;
+            float airStrikeSum = 0f;
             float scale = difficulty.Health * level.HealthScale * wave.HealthMultiplier;
 
             foreach (GroupSpec group in wave.Groups)
@@ -116,6 +147,8 @@ namespace Game.Balance
                     airSpan = Math.Max(airSpan, end);
                     airSpeed += enemy.InRangeSpeed * count;
                     air += count;
+                    airBaseDamage += enemy.BaseDamage * count;
+                    airStrikeSum += strike * count;
                     continue;
                 }
 
@@ -128,6 +161,7 @@ namespace Game.Balance
                     bossSpeed += enemy.InRangeSpeed * count;
                     bosses += count;
                     bossGateDps += strike;
+                    bossStrikeSum += strike * count;
                     load.BossMechanicLoss += enemy.MechanicLossSeconds * count;
                     continue;
                 }
@@ -139,8 +173,16 @@ namespace Game.Balance
                 speed += enemy.InRangeSpeed * count;
                 ground += count;
                 gateDps += strike * Math.Min(count, rules.AttackersPerGate);
+                strikeSum += strike * count;
             }
 
+            load.GroundCount = ground;
+            load.BossCount = bosses;
+            load.AirCount = air;
+            load.GroundStrike = ground > 0 ? strikeSum / ground : 0f;
+            load.BossStrike = bosses > 0 ? bossStrikeSum / bosses : 0f;
+            load.AirBaseDamage = air > 0 ? airBaseDamage / air : 0f;
+            load.AirStrike = air > 0 ? airStrikeSum / air : 0f;
             load.GroundSpeed = ground > 0 ? speed / ground : 1f;
             load.AirSpeed = air > 0 ? airSpeed / air : 1f;
             load.BossSpeed = bosses > 0 ? bossSpeed / bosses : 1f;
@@ -152,11 +194,16 @@ namespace Game.Balance
             load.GroundDensity = ground > 1 ? ground / Math.Max(1f, span) / load.GroundSpeed : 0f;
             load.AirDensity = air > 1 ? air / Math.Max(1f, airSpan) / load.AirSpeed : 0f;
 
-            float hold = GateHold(level, gateDps, rules);
+            float gates = gateHealth < 0f ? level.GateHealth : gateHealth;
+            float hold = GateHoldOf(level, gates, gateDps, rules);
+            load.GateStrike = gateDps;
+            load.BossGateStrike = bossGateDps;
+            load.GateHold = hold;
+            load.BossGateHold = GateHoldOf(level, gates, bossGateDps, rules);
             load.Span = span;
             load.GateSeconds = hold * rules.GateWindowShare;
             load.Window = span + load.GateSeconds;
-            load.BossWindow = GateHold(level, bossGateDps, rules) * rules.GateWindowShare;
+            load.BossWindow = load.BossGateHold * rules.GateWindowShare;
             load.BossFight = bosses > 0 ? level.Shape.MainLength / Math.Max(0.01f, load.BossSpeed) + load.BossWindow : 0f;
             load.AirWindow = airSpan;
             return load;
@@ -202,9 +249,9 @@ namespace Game.Balance
         }
 
         // Seconds the gates on the main road hold the queue: each one until it breaks, at most the cap.
-        private static float GateHold(LevelInput level, float attackDps, BalanceRules rules)
+        private static float GateHoldOf(LevelInput level, float gateHealth, float attackDps, BalanceRules rules)
         {
-            if (attackDps <= 0f || level.GateHealth <= 0f)
+            if (attackDps <= 0f || gateHealth <= 0f)
             {
                 return 0f;
             }
@@ -214,7 +261,7 @@ namespace Game.Balance
             {
                 if (gate.OnTrunk || gate.PathIndex == (level.Shape.Lanes.Count > 0 ? level.Shape.Lanes[0].PathIndex : 0))
                 {
-                    total += Math.Min(rules.MaxGateHoldSeconds, level.GateHealth / attackDps);
+                    total += Math.Min(rules.MaxGateHoldSeconds, gateHealth / attackDps);
                 }
             }
 

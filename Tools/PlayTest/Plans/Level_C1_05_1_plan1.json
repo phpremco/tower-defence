@@ -1,13 +1,13 @@
 {
     "Level": "Level_C1_05",
     "Difficulty": 1,
-    "Name": "Level_C1_05_1_best",
+    "Name": "Level_C1_05_1_plan1",
     "Family": "searched",
     "Steps": [
         {
             "Kind": "build",
-            "Item": "Cannon",
-            "X": 7,
+            "Item": "PulseRifle",
+            "X": 20,
             "Y": 5,
             "Wave": 1
         },
@@ -15,120 +15,120 @@
             "Kind": "build",
             "Item": "Cannon",
             "X": 7,
-            "Y": 4,
+            "Y": 5,
             "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 35,
-            "Y": 4,
-            "Wave": 3
         },
         {
             "Kind": "drone",
             "Item": "HarvestDrone",
             "X": 0,
             "Y": 0,
+            "Wave": 2
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 6,
+            "Y": 6,
             "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 20,
+            "Y": 4,
+            "Wave": 5
         },
         {
             "Kind": "build",
             "Item": "Rocket",
             "X": 33,
             "Y": 5,
-            "Wave": 4
+            "Wave": 6
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 6,
             "Y": 5,
-            "Wave": 5
+            "Wave": 6
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 7,
+            "X": 20,
             "Y": 4,
-            "Wave": 5
+            "Wave": 7
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 34,
-            "Y": 5,
+            "X": 6,
+            "Y": 6,
+            "Wave": 9
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
             "Wave": 9
         },
         {
             "Kind": "build",
             "Item": "Rocket",
-            "X": 34,
+            "X": 33,
             "Y": 4,
             "Wave": 10
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 6,
+            "X": 20,
             "Y": 5,
-            "Wave": 10
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 5,
-            "Wave": 10
+            "Wave": 12
         },
         {
             "Kind": "build",
             "Item": "PulseRifle",
+            "X": 7,
+            "Y": 4,
+            "Wave": 13
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
             "X": 20,
             "Y": 5,
-            "Wave": 11
+            "Wave": 13
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 33,
+            "Y": 4,
+            "Wave": 13
         },
         {
             "Kind": "build",
             "Item": "Laser",
-            "X": 21,
-            "Y": 5,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 34,
-            "Y": 5,
-            "Wave": 13
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 21,
-            "Y": 5,
-            "Wave": 13
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 21,
-            "Y": 5,
-            "Wave": 14
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 6,
+            "X": 8,
             "Y": 6,
             "Wave": 15
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 7,
+            "X": 33,
             "Y": 4,
-            "Wave": 15
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 21,
+            "Y": 5,
+            "Wave": 16
         }
     ]
 }

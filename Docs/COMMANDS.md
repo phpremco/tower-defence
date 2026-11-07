@@ -632,3 +632,15 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
   rules; a stale calibration is reported by every stage and by `PlanSearchTests` (ignored with the reason), never reused silently.
 - The PlayMode test runner reports `0/0 passed` for these long async runs; judge them by `test_status` and the files written.
 - A PlayMode run creates `Saves/progress.json`; `balance_pipeline.sh` restores the state it found (absent or a backup).
+
+### Round 22b additions (2026-11-06)
+
+- The wave records (`calibration_records.txt`, `plan_records.txt`) carry four more fields per wave: base lost, gate lost,
+  repair-drone seconds on the field, repair-drone seconds repairing. Old records read as zeros.
+- `calibration.txt` has two more key lines the apply stage writes to the asset: `leak <factor>` (the leak model's base
+  damage factor) and `repairbusy <share>` (only when a run had a repair drone).
+- The plan search also writes `Tools/PlayTest/Plans/README.md` (the plans for Remco). A plan file may contain `repair`
+  steps (item `gates`); the replay takes them by the bots' repair rule.
+- EditMode `LeakModelTests` covers the leak model without assets.
+- Timing: one probe run at step 0.2 s takes about 20-25 s on this machine when the editor is unfocused; the full
+  yardstick (6 levels x 4 difficulties x 3 seeds x 5-6 strategies, about 430 runs) about 3 hours.

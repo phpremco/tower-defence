@@ -3089,3 +3089,123 @@ Docs/BALANCE.md "The balance pipeline" has the method; Docs/COMMANDS.md "Round 2
    (b) Boss waves judged at cap 1 everywhere (a boss at the base ends the level): confirm.
 5. Save state: `progress.json` was absent before the round, the PlayMode runs created one, it was deleted afterwards; the
    dev backup was not touched. `probe_arg.txt` is untracked and removed (default: every level, every difficulty, seeds 1..3).
+
+## Round 22b: leak-aware plan model, repairs as plan actions (2026-11-06)
+
+Not committed (the curator commits). Continues round 22 with the curator's decisions (a: base and gate health are a buffer,
+a plan holds when it survives; b: boss waves at cap 1; c: soft-target and slip-crowd stay removed) and Remco's addition:
+manual gate repairs and the repair drone are plan actions a plan can trade defence coins for. Docs/BALANCE.md "Leaks, gates
+and repairs in the plan model" has the model; Docs/COMMANDS.md "Round 22b additions" the file formats.
+
+**Built (files).**
+- `Game.Balance.Leak` (new): leak share over pressure one, the siege of the base's doorstep (`WaveLoad.GroundStrike`,
+  `BossStrike`, `AirBaseDamage`, `GroundCount`/`BossCount`/`AirCount`), the doorstep guard (`SpotCover.Base`,
+  `LevelGeometry.Doorstep`, `Leak.Guard`, hero at `BalanceRules.HeroBaseShare`), stars by the level's thresholds
+  (`LevelInput.StarFractions`), one score for paper and play (`Leak.Score`). `BalanceRules.LeakFactor` (calibrated),
+  `RepairDroneBusyShare` (measured), `FirstWaveDelay`/`WaveDelay` (the countdown clock the waves are composed with).
+- `PlanEvaluator`: base and gate state per wave (`BaseStart`, `BaseLeft`, `FallWave`, `Stars`, `Holds` = the base survives,
+  `AnalyticScore`, `GateLeft`, `RepairSpent`, `Repairs`); gate wear (`GateLoss`, only the share of the stream the guns on the
+  walk did not kill reaches the queue), worn gates in the next load (`WaveLoad.Of(..., gateHealth)`, `Ledger.LoadOf`);
+  `repair` steps (`PlanStep.Repair`, item `PlanStep.Gates`) taken by the bots' rule (`RepairPrice`); the repair drone
+  (`DroneStats.RepairPerSecond`, gates first, then the base); `TrunkGates`.
+- `PlanSearch`: the constructive family (`ConstructivePlans`: primary + secondary type on their best spots, priority list,
+  sky gun before the flyers, harvester, mines before bosses; with and without a repair drone; hand repairs before bosses
+  and at the last third), repair steps and repair drones in the random sample, ranking by `PlanOutcome.Score` (the analytic
+  score first).
+- `CalibrationFit`: `WaveRecord.BaseLost/GateLost/RepairDroneSeconds/RepairDroneBusy` (text fields 7-10, old records read as
+  zero), `FitLeak` (leak factor), `FitRepairDrone` (busy share), `Predict` replaces `Margin` (verdict = the base survives;
+  the analytic score beside the realised one for the Spearman).
+- `BalanceCalibration`: `_leakFactor`, `_repairDroneBusyShare`; `BalanceStages`: fit text and `leak`/`repairbusy` lines,
+  apply reads them; the plan files and the summary report stars/base left/fall wave (`Outcome`), repairs and repair-drone
+  winners; `Plans/README.md` (`ReadmeCell`). `LevelInput.BaseHealth` (flat `PlayerState.BaseHealthBonus`),
+  `GateRepairCostPerHealth`, `GateRebuildCost`; `InputHash` covers them.
+- Probe: `BotRun` records base/gate losses and repair-drone seconds per wave (`Sample(context, towers, gates, dt)`);
+  `ScriptedAct` plays `repair` steps through `WorthRepair`; `Maintain` leaves gate repairs to the plan for scripted runs.
+- `CampaignModel.CalibrateToHuman`: a final cap-only sweep (`CapSweeps`) after the passes, and `Composed` puts the stored
+  countdown clock on the composed waves. `ProjectGenerator.WriteWave` writes the spec's start delay.
+- Tests: EditMode `LeakModelTests` (5, pass). `PlanSearchTests` pass/skip (stale calibration until the new fit is applied).
+
+**Band test (goal 4, cause narrowed, NOT fixed).** `EveryWave_StaysInsideItsDifficultyBand` fails on C1_03 Hard w16 and C1_04
+Hard w3/w6/w10 (1.32-1.41 against 1.30 with the hero). The stored waves equal the composed ones exactly (scratch check), so the
+generator's own cap trim leaves them over the cap. Two fixes went in and were verified on freshly composed waves in memory: the
+composed waves now carry the stored countdown clock (`Composed`), and a cap-only final sweep (`CapSweeps`) runs after the passes.
+Neither moves these four waves: `CapScale` finds no scale of the wave's own health that brings it under the cap (its pressure
+hardly answers to its own health multiplier: C1_04 Hard w3 and w6 are the small air raids, 61 and 148 air hit points, w10 and
+C1_03 w16 the boss waves) and keeps the lowest-pressure scale. Next: print `Ledger.Evaluate` for C1_04 Hard w3 at scales 1,
+0.5, 0.25 and look at which side (air/ground/carried health/the greedy purchase without an air gun) keeps the pressure up; the
+fix belongs in `WaveLoad`/`Ledger.Buy`, not in a wider band. The stored waves were not re-solved after the sweep fix (the
+yardstick records must keep matching the waves they were played on).
+
+**Finale tests (goal 4, open).** `ContinentFinaleTests` still fail (Gravemaw/Sealed One too hard at their finale on the ledger,
+Psycho boss share derived 1.45-1.48 vs 1.75). The round-10 finale probe scripts lived in that session's scratchpad and are
+gone; re-deriving "as played" needs a new reusable finale probe (a PlayMode test over `FinaleModel`'s planned loadout). Not
+hand-edited. Proposal for the next round: a `FinaleProbeTests` explicit test that plays C1_06's waves with the continent
+boss swapped in, per difficulty, with the leak-aware verdict, and writes the boss health that just holds.
+
+**Yardstick over 3 seeds (goal 2; `Tools/PlayTest/yardstick.txt`, 420 runs, 2026-11-07 00:57, step 0.2 s, waves = the round-22
+solve against the round-22 calibration, re-solved with the cap-sweep fix).** Wins over seeds 1-3; "obvious" = the best of mono
+rows, naive and affordable; creative = the ledger-driven reference bot.
+
+| level | Easy obvious / creative | Medium obvious / creative | Hard obvious / creative | Psycho obvious / creative |
+| --- | --- | --- | --- | --- |
+| C1_01 Landing Site | 3/3 (all four kinds) / 3/3 | 3/3 (mono Cannon, mono Pulse, affordable; naive 2/3) / 3/3 | 3/3 (mono Cannon, mono Pulse, affordable; naive 2/3) / 3/3 | 0/3 / 0/3 (all fall at wave 9-10 of 12) |
+| C1_02 Glass Meadows | 3/3 (all) / 3/3 | 3/3 (mono Cannon, naive; affordable 2/3, mono Pulse 2/3) / 3/3 | 2/3 (mono Cannon) / 3/3 | 0/3 / 0/3 (wave 8 of 12) |
+| C1_03 Shard Ridge | 0/3 (all fall at 14/16) / 3/3 | 0/3 (13/16) / 2/3 (2 stars) | 0/3 (13/16) / 2/3 (2 stars) | 0/3 / 0/3 (10-12/16) |
+| C1_04 Fault Line | mono Pulse 1/3, naive 2/3 / 3/3 | 0/3 (naive reaches 12-13/16) / 3/3 | 0/3 / 3/3 (1.7 stars) | 0/3 / 0/3 (creative 10/16) |
+| C1_05 Quartz Flats | 0/3 (9/17) / 3/3 | 0/3 / 1/3 | 0/3 / 0/3 (creative 9/17) | 0/3 / 0/3 (7/17) |
+| C1_06 Crysium Vein | 0/3 (12/18) / 3/3 | 0/3 / 1/3 | 0/3 / 0/3 (7/18) | 0/3 / 0/3 (6/18) |
+
+Reading: C1_01 is too easy on every difficulty but Psycho (every obvious kind wins Hard with 3 stars; the tutorial exception is
+Medium only), C1_02 Medium is won by a Cannon row and by the naive mix (3/3), and from C1_03 on the obvious family loses
+everywhere (which is the rule) while the creative reference also loses C1_05/C1_06 Medium on two of three seeds and every Hard
+from C1_05 and every Psycho: the back half of the continent is too hard for a competent bot, the front too easy for a careless
+one. The results are byte-identical per seed to round 22's single-seed runs where both exist (determinism holds).
+
+**Calibration on the leak-aware model (goal 1): NOT met.** Fit on the 427 runs (`Tools/PlayTest/calibration.txt`): Cannon 0.582,
+Laser 0.529, Gun Turret 0.545, Flak 0.699 (the cut-short fall wave of a lost run is excluded from the fit; lifting a 10%
+bias); leak factor 5.71 s (each leaked creature hammers the base for that long on average: base lost 186690 over the paper
+siege of 32703 strike-sums); repair-drone busy share 0.967 (22683 drone-seconds: the drone is almost never idle). Hold-out
+verdict agreement 35% (mono 28%), Spearman -0.05. The asset was NOT updated (the old round-22 calibration stays, reported STALE
+by every stage), so no solve, search, replay or builder ran against a fit this bad; nothing in the wave data moved beyond the
+cap-sweep re-solve. Three leak models were tried on the same records, all far from the bar:
+- siege against a doorstep guard (towers in reach of the last road cells plus the hero), damage = attackers x strike x
+  leak / guard, one factor: 49-52% (the paper falls where the game won 3 stars with the base untouched, 36 runs; the paper
+  survives where the game lost, 170+ runs);
+- the same with flyers besieging too: 51%;
+- linear: attackers x strike x a fitted lifetime, no guard: 35% (266 "paper survives, game lost").
+What the records say (example `Level_C1_03 0 mono PulseRifle seed 1` in calibration_records.txt): waves 1-10 are killed to the
+last point while the gates still lose 67/360/73 health in waves 1-3 (walkers reach and hit the gate before they die: the gate
+wear model is right to count arrival, the leak model's "nothing leaks below pressure one" is not the whole story); base damage
+lags a wave (w12 leaks 263 of 876, base loss 0; w13 base -341; w14 the base dies), and the loss per leaked point is bimodal:
+small leaks cost nothing (the hero cleans up), big ones snowball. One global factor cannot carry that, and the ledger's
+pressure itself still says "holds" for many waves the game loses. **Next step for the leak model:** fit per wave, not per
+run: record the leaked health per wave in play (creatures that pass the defence gate alive, by health) beside the paper leak,
+fit a threshold-and-slope (leak share below which base loss is zero, loss per leaked point above it) and shift base loss one
+wave back for flyers; and check the paper leak against the recorded one before the base damage (two fits, each testable).
+
+**Fine-step cross-check (done):** `Measure_StepCheck_FineAgainstUsual` (C1_03 Medium, 4 runs at 0.2 s and at 0.05 s, 333 s):
+Cannon 0.327 vs 0.349 (drift 7%), Laser 0.363 vs 0.393 (8%), Gun Turret 0.353 vs 0.377 (7%): the 0.2 s step is a valid
+calibration step (every type within 10%). The absolute values of that small set (all losing runs on one cell) sit well below
+the full fit's 0.53-0.58, which is the same losing-run bias the critic named.
+
+**Not done this round (goals 2-5, beyond the yardstick):** apply/solve/search/replay against a passing calibration; the
+builder; the finale probe; `Plans/README.md` is written by the search stage (code in, runs on the stale calibration until the
+fit passes, so it is not the plan list for Remco yet: run `PlanSearchTests` to regenerate it any time).
+
+**Save state:** `progress.json` was absent before the round; the yardstick created it and it was deleted afterwards; the dev
+backup untouched. The step check may create it again: delete it after (the pipeline script does so on its own).
+
+**Commands to continue.** `editor_status` first (playMode stopped). Fit: `unity command run_tests --mode EditMode --filter
+CalibrationFitTests --result-only --timeout 900`, read `Tools/PlayTest/calibration.txt`. When the hold-out bar is met:
+`bash Tools/PlayTest/balance_pipeline.sh apply solve search replay acceptance`, then `Tools/Generate/Balance/6` (builder) and
+`BalanceLedgerTests`/`ContinentFinaleTests`. The yardstick need not be re-run unless towers, creatures or maps change (the
+records are per wave and the fit re-reads the current waves' loads).
+
+**Test totals at handover (2026-11-07 01:35).** EditMode, whole suite: 669 tests, 613 passed, 3 failed, 53 skipped. The three
+failures are the known ones: `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (C1_03 Hard w16, C1_04 Hard w3/w6/w10,
+see above) and the two `ContinentFinaleTests` (Gravemaw/Sealed One too hard at the finale, Psycho boss share). The skips are
+the reported checks (calibration below its bar, acceptance cells without replayed plans, the plan search on a stale
+calibration, the lens reports). PlayMode, one class at a time: `BalancePipelineTests` smoke (2 runs), the yardstick (420 runs)
+and the step check (8 runs) ran clean (no level errors; 0 compile errors, 0 warnings). `BalanceCalibration._leakFactor` default
+10 s (= `BalanceRules.LeakFactor`), never applied from a fit yet. `Tools/PlayTest/Plans/*` were regenerated by the search runs on
+the stale calibration (the README and plan files are placeholders until the fit passes).

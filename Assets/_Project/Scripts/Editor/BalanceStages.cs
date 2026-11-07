@@ -105,7 +105,7 @@ namespace Game.Editor
             var cells = new Dictionary<string, RecordedCell>();
             RecordedCell CellOf(RunRecord run) => CellFor(run, loaded, cells);
             CalibrationFit.Result all = CalibrationFit.Fit(runs, CellOf);
-            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency);
+            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.LeakFactor);
 
             // Hold-out over the levels: fit on the odd ones, judge the even ones, and the other way round.
             var holdOut = new CalibrationFit.Agreement();
@@ -118,7 +118,8 @@ namespace Game.Editor
                     continue;
                 }
 
-                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, CalibrationFit.Fit(train, CellOf).Efficiency);
+                CalibrationFit.Result trained = CalibrationFit.Fit(train, CellOf);
+                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.LeakFactor);
                 holdOut.Runs += check.Runs;
                 holdOut.Agreed += check.Agreed;
                 holdOut.MonoRuns += check.MonoRuns;
@@ -138,8 +139,8 @@ namespace Game.Editor
             var text = new StringBuilder();
             text.Append(Invariant($"Calibration fit {DateTime.Now:yyyy-MM-dd HH:mm}: {runs.Count} runs ({planRuns} replayed plans), seeds {string.Join(",", seeds)}, step {string.Join(",", steps)}, inputs {loaded.Hash}.\n"));
             text.Append("Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health\n");
-            text.Append("there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, \"The balance pipeline\"). ApplyCalibration writes\n");
-            text.Append("the factor and utilisation lines into the BalanceCalibration asset.\n\n");
+            text.Append("there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, \"The balance pipeline\"). The leak factor is the base\n");
+            text.Append("health the runs really lost over the leak model's paper damage (round 22b). ApplyCalibration writes the factor, leak and utilisation lines into the asset.\n\n");
             text.Append("tower          efficiency   dealt   capacity  waves\n");
             foreach (KeyValuePair<string, float> pair in all.Efficiency)
             {
@@ -147,6 +148,10 @@ namespace Game.Editor
                 text.Append(Invariant($"{pair.Key,-14} {pair.Value,10:0.000} {dealt,7:0} {capacity,10:0} {waves,6}\n"));
             }
 
+            text.Append(Invariant($"\nLeak factor {all.LeakFactor:0.000}: base lost {all.BaseLost:0} over paper damage {all.PaperBaseDamage:0} on {all.LeakWaves} waves with a leak.\n"));
+            text.Append(all.RepairDroneBusyShare >= 0f
+                ? Invariant($"Repair drone busy share {all.RepairDroneBusyShare:0.000} over {all.RepairDroneSeconds:0} drone-seconds on the field.\n")
+                : "Repair drone busy share: no run had a repair drone (the rules' default stays).\n");
             text.Append(Invariant($"\nSelf check (fitted on all): verdict agreement {self.Agreed}/{self.Runs} ({self.Share:P0}), mono rows {self.MonoAgreed}/{self.MonoRuns} ({self.MonoShare:P0}), ranking Spearman {self.MeanSpearman:0.00} over cells with 4+ runs.\n"));
             text.Append(Invariant($"Hold-out (odd levels judge even and back): agreement {holdOut.Agreed}/{holdOut.Runs} ({holdOut.Share:P0}), mono {holdOut.MonoAgreed}/{holdOut.MonoRuns} ({holdOut.MonoShare:P0}), Spearman {holdOut.MeanSpearman:0.00}.\n"));
             text.Append("Rankings per cell (hold-out): ").Append(string.Join("; ", holdOut.Rankings.ConvertAll(r => Invariant($"{r.Cell} {r.Spearman:0.00} ({r.Plans})")))).Append('\n');
@@ -162,7 +167,12 @@ namespace Game.Editor
                 text.Append(Invariant($"factor {pair.Key} {pair.Value:0.000}\n"));
             }
 
-            text.Append(Invariant($"utilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
+            if (all.RepairDroneBusyShare >= 0f)
+            {
+                text.Append(Invariant($"repairbusy {all.RepairDroneBusyShare:0.000}\n"));
+            }
+
+            text.Append(Invariant($"leak {all.LeakFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
             Directory.CreateDirectory(Path.GetDirectoryName(CalibrationTablePath));
             File.WriteAllText(CalibrationTablePath, text.ToString());
 
@@ -278,6 +288,16 @@ namespace Game.Editor
                     element.FindPropertyRelative("Efficiency").floatValue = float.Parse(parts[2], CultureInfo.InvariantCulture);
                     report.Append(parts[1]).Append(' ').Append(parts[2]).Append("; ");
                 }
+                else if (parts.Length == 2 && parts[0] == "repairbusy")
+                {
+                    so.FindProperty("_repairDroneBusyShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    report.Append("repair drone busy ").Append(parts[1]).Append("; ");
+                }
+                else if (parts.Length == 2 && parts[0] == "leak")
+                {
+                    so.FindProperty("_leakFactor").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    report.Append("leak ").Append(parts[1]).Append("; ");
+                }
                 else if (parts.Length == 3 && parts[0] == "utilisation")
                 {
                     so.FindProperty(parts[1] == "human" ? "_humanUtilisation" : "_botUtilisation").floatValue = float.Parse(parts[2], CultureInfo.InvariantCulture);
@@ -322,10 +342,13 @@ namespace Game.Editor
             var report = new SearchReport { Stale = loaded.Stale };
             Directory.CreateDirectory(PlansFolder);
             var summary = new StringBuilder();
+            var readme = new StringBuilder();
             summary.Append(Invariant($"Plan search (stage A) {DateTime.Now:yyyy-MM-dd HH:mm}, {samples} samples per cell. {loaded.CalibrationNote}\n"));
-            summary.Append("Per cell: the best plan's margin (worst wave's cap over pressure; 1+ holds), how many of the top plans hold, the distinct winners,\n");
-            summary.Append("and the obvious family on the same paper. Details and the plans a player can follow: Tools/PlayTest/Plans/<level>_<difficulty>.txt.\n\n");
-            summary.Append("level        diff    best margin  holding/top  distinct  obvious (margin, first break)\n");
+            summary.Append("Per cell: the best plan's stars and base left on paper (the leak model: a plan holds when the base survives), its worst-wave margin,\n");
+            summary.Append("how many of the top plans hold, the distinct winners, and the obvious family on the same paper (stars and base left, or the fall wave).\n");
+            summary.Append("Details and the plans a player can follow: Tools/PlayTest/Plans/<level>_<difficulty>.txt.\n\n");
+            summary.Append("Repairs: coins the best plan spends on gate repairs by hand; 'drone' winners are distinct winning plans that buy a repair drone.\n");
+            summary.Append("level        diff    best plan        margin  holding/top  distinct  repairs  drone  obvious\n");
             BalanceRules rules = loaded.Model.Rules;
             BalanceRules judge = rules.HumanWithHero();
             int index = 0;
@@ -359,17 +382,107 @@ namespace Game.Editor
                     });
                     report.Cells++;
                     WriteCell(map.Level, d, result, loaded);
-                    string obvious = string.Join(", ", result.Obvious.ConvertAll(o => Invariant($"{o.Plan.Name} {o.Margin:0.00}{(o.FirstBreak > 0 ? " w" + o.FirstBreak : string.Empty)}")));
-                    summary.Append(Invariant($"{map.Level.name,-12} {DifficultyName(d),-7} {(result.Top.Count > 0 ? result.Top[0].Margin : 0f),11:0.00}  {result.Top.FindAll(t => t.Holds).Count,4}/{result.Top.Count,-7} {result.DistinctWinners.Count,8}  {obvious}\n"));
+                    readme.Append(ReadmeCell(map.Level, d, result));
+                    string obvious = string.Join(", ", result.Obvious.ConvertAll(o => o.Plan.Name + " " + Outcome(o)));
+                    PlanOutcome top = result.Top.Count > 0 ? result.Top[0] : null;
+                    int droneWinners = result.DistinctWinners.FindAll(w => UsesRepairDrone(w.Plan, result.Input.Level)).Count;
+                    summary.Append(Invariant($"{map.Level.name,-12} {DifficultyName(d),-7} {(top != null ? Outcome(top) : "-"),-16} {(top != null ? top.Margin : 0f),6:0.00}  {result.Top.FindAll(t => t.Holds).Count,4}/{result.Top.Count,-7} {result.DistinctWinners.Count,8} {(top != null ? top.RepairSpent : 0),8} {droneWinners,6}  {obvious}\n"));
                 }
 
                 index++;
             }
 
             File.WriteAllText(PlansSummaryPath, summary.ToString());
+            File.WriteAllText(Path.Combine(PlansFolder, "README.md"), ReadmeHeader(loaded) + readme);
             report.Summary = summary.ToString();
             return report;
         }
+
+        public const int ReadmePlans = 2;
+        public const int ReadmeSpots = 3;
+
+        // The plans for Remco: per level and difficulty the one or two best winning plans on paper (which tower where, from which wave,
+        // what to upgrade) and the best spots per tower type. Written by the search stage, never typed; the replay table says which won in play.
+        private static string ReadmeHeader(Loaded loaded) =>
+            Invariant($"# Winning plans per level and difficulty\n\nWritten by the plan search (stage A, `Tools/Generate/Balance/5` or `PlanSearchTests`) on {DateTime.Now:yyyy-MM-dd HH:mm}; {loaded.CalibrationNote}.\n\n")
+            + "Each plan is a priority list: a step is taken from its wave on, as soon as the money is there (an earlier step blocks the later ones).\n"
+            + "Cells are (x,y) on the level grid. The paper verdict comes from the leak model (the base survives, stars by the base left); what the\n"
+            + "same plans did in play is in `Tools/PlayTest/plan_replay.txt`, the obvious family in `Tools/PlayTest/yardstick.txt`. A cell without a\n"
+            + "winning plan shows the best plan found and where it falls: a design question, not a plan to follow.\n";
+
+        private static string ReadmeCell(LevelDefinition level, int difficulty, PlanSearchResult result)
+        {
+            string Name(string id)
+            {
+                foreach (TowerDefinition tower in level.AvailableTowers)
+                {
+                    if (tower.Id == id)
+                    {
+                        return tower.DisplayName;
+                    }
+                }
+
+                return id;
+            }
+
+            var text = new StringBuilder();
+            text.Append(Invariant($"\n## {level.DisplayName} ({level.name}) on {DifficultyName(difficulty)}\n\n"));
+            text.Append("Best spots per tower: ");
+            var spots = new List<string>();
+            foreach (KeyValuePair<string, List<(Cell Cell, SpotCover Cover)>> pair in result.BestSpots)
+            {
+                var cells = new List<string>();
+                for (int i = 0; i < pair.Value.Count && i < ReadmeSpots; i++)
+                {
+                    cells.Add(Invariant($"({pair.Value[i].Cell.X},{pair.Value[i].Cell.Y})"));
+                }
+
+                spots.Add(Name(pair.Key) + " " + string.Join(" ", cells));
+            }
+
+            text.Append(string.Join("; ", spots)).Append(".\n\n");
+            var plans = new List<PlanOutcome>();
+            foreach (PlanOutcome outcome in result.DistinctWinners)
+            {
+                if (plans.Count < ReadmePlans)
+                {
+                    plans.Add(outcome);
+                }
+            }
+
+            if (plans.Count == 0 && result.Top.Count > 0)
+            {
+                text.Append(Invariant($"No plan holds on paper; the best found ({Outcome(result.Top[0])}, margin {result.Top[0].Margin:0.00}):\n\n"));
+                plans.Add(result.Top[0]);
+            }
+
+            foreach (PlanOutcome outcome in plans)
+            {
+                text.Append(Invariant($"**{outcome.Plan.Name}** ({Outcome(outcome)}, margin {outcome.Margin:0.00}, {outcome.CoinsLeft} coins left, {outcome.RepairSpent} coins on gate repairs{(UsesRepairDrone(outcome.Plan, result.Input.Level) ? ", repair drone" : string.Empty)})\n\n```\n"));
+                text.Append(outcome.Plan.Describe(Name));
+                text.Append("```\n\n");
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>Whether a plan buys a repair drone (by the level's drone data, never by name).</summary>
+        public static bool UsesRepairDrone(PlanSpec plan, LevelInput level)
+        {
+            foreach (PlanStep step in plan.Steps)
+            {
+                if (step.Kind == PlanStep.Drone && level.Drones.Exists(d => d.Id == step.Item && d.Role == DroneRole.Repair))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>A plan's paper outcome in a few characters: "3* base 540" or "falls w9".</summary>
+        public static string Outcome(PlanOutcome outcome) =>
+            outcome.Holds ? Invariant($"{outcome.Stars}* base {outcome.BaseLeft:0}") : Invariant($"falls w{outcome.FallWave}");
 
         private static void WriteCell(LevelDefinition level, int difficulty, PlanSearchResult result, Loaded loaded)
         {
@@ -387,17 +500,19 @@ namespace Game.Editor
             }
 
             var text = new StringBuilder();
-            text.Append(Invariant($"{level.DisplayName} ({level.name}) on {DifficultyName(difficulty)}: plan search, {result.Sampled} plans sampled, {result.Holding} hold on paper, cap {result.Input.Cap:0.00}. {loaded.CalibrationNote}\n"));
+            text.Append(Invariant($"{level.DisplayName} ({level.name}) on {DifficultyName(difficulty)}: plan search, {result.Sampled} plans sampled, {result.Holding} hold on paper, base {result.Input.Level.BaseHealth:0}, cap {result.Input.Cap:0.00}. {loaded.CalibrationNote}\n"));
             text.Append("Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),\n");
-            text.Append("'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,\n");
-            text.Append("as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).\n\n");
+            text.Append("'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.\n");
+            text.Append("A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base\n");
+            text.Append("until the guns at the doorstep and the hero kill it; a plan holds when the base survives the level, its stars follow the base left.\n");
+            text.Append("The margin is the worst wave's cap over pressure (below 1 something leaks there).\n\n");
             text.Append("Best spots per tower (first is best):\n");
             foreach (KeyValuePair<string, List<(Cell Cell, SpotCover Cover)>> pair in result.BestSpots)
             {
                 text.Append(Invariant($"  {Name(pair.Key),-14}"));
                 foreach ((Cell cell, SpotCover cover) in pair.Value)
                 {
-                    text.Append(Invariant($" ({cell.X},{cell.Y}) cover {cover.GroundPass:0.0}{(cover.AirPass > 0f ? "/" + cover.AirPass.ToString("0.0", CultureInfo.InvariantCulture) + " air" : string.Empty)}{(cover.Gate ? " gate" : string.Empty)}{(cover.Bunch > 0.2f ? " bunch " + cover.Bunch.ToString("0.0", CultureInfo.InvariantCulture) : string.Empty)};"));
+                    text.Append(Invariant($" ({cell.X},{cell.Y}) cover {cover.GroundPass:0.0}{(cover.AirPass > 0f ? "/" + cover.AirPass.ToString("0.0", CultureInfo.InvariantCulture) + " air" : string.Empty)}{(cover.Gate ? " gate" : string.Empty)}{(cover.Base ? " door" : string.Empty)}{(cover.Bunch > 0.2f ? " bunch " + cover.Bunch.ToString("0.0", CultureInfo.InvariantCulture) : string.Empty)};"));
                 }
 
                 text.Append('\n');
@@ -406,7 +521,7 @@ namespace Game.Editor
             text.Append("\nObvious plans on paper:\n");
             foreach (PlanOutcome outcome in result.Obvious)
             {
-                text.Append(Invariant($"  {outcome.Plan.Name,-18} margin {outcome.Margin:0.00} {(outcome.Holds ? "holds" : "falls at wave " + outcome.FirstBreak)}, coins left {outcome.CoinsLeft}, steps taken {outcome.StepsTaken}{(outcome.StepsBlocked > 0 ? ", " + outcome.StepsBlocked + " never affordable" : string.Empty)}\n"));
+                text.Append(Invariant($"  {outcome.Plan.Name,-18} {Outcome(outcome)}, margin {outcome.Margin:0.00}{(outcome.FirstBreak > 0 ? " (leaks from wave " + outcome.FirstBreak + ")" : string.Empty)}, coins left {outcome.CoinsLeft}, steps taken {outcome.StepsTaken}{(outcome.StepsBlocked > 0 ? ", " + outcome.StepsBlocked + " never affordable" : string.Empty)}\n"));
             }
 
             text.Append(Invariant($"\nDistinct winning plans ({result.DistinctWinners.Count}; different spots, mixes or timing):\n"));
@@ -418,12 +533,12 @@ namespace Game.Editor
                     break;
                 }
 
-                text.Append(Invariant($"\n{outcome.Plan.Name}: margin {outcome.Margin:0.00}, mean cover {outcome.MeanCover:0.00}, coins left {outcome.CoinsLeft}, {outcome.Plan.Steps.Length} steps\n"));
+                text.Append(Invariant($"\n{outcome.Plan.Name}: {Outcome(outcome)}, margin {outcome.Margin:0.00}, mean cover {outcome.MeanCover:0.00}, coins left {outcome.CoinsLeft}, gate repairs {outcome.Repairs} ({outcome.RepairSpent} coins), gates left {outcome.GateLeft:0}, {outcome.Plan.Steps.Length} steps\n"));
                 text.Append(outcome.Plan.Describe(Name));
                 text.Append("  waves: ");
                 foreach (PlanWaveLine line in outcome.Lines)
                 {
-                    text.Append(Invariant($"w{line.Wave}{(line.Boss ? "B" : string.Empty)} {line.Pressure:0.00}  "));
+                    text.Append(Invariant($"w{line.Wave}{(line.Boss ? "B" : string.Empty)} {line.Pressure:0.00}{(line.BaseDamage > 0.5f ? " (-" + line.BaseDamage.ToString("0", CultureInfo.InvariantCulture) + " base)" : string.Empty)}  "));
                 }
 
                 text.Append('\n');
@@ -432,7 +547,7 @@ namespace Game.Editor
             if (result.DistinctWinners.Count == 0 && result.Top.Count > 0)
             {
                 PlanOutcome best = result.Top[0];
-                text.Append(Invariant($"\nNo plan holds on paper. Best found: margin {best.Margin:0.00}, falls at wave {best.FirstBreak}\n"));
+                text.Append(Invariant($"\nNo plan holds on paper. Best found: {Outcome(best)}, margin {best.Margin:0.00}{(best.FirstBreak > 0 ? ", leaks from wave " + best.FirstBreak : string.Empty)}\n"));
                 text.Append(best.Plan.Describe(Name));
             }
 
@@ -624,7 +739,7 @@ namespace Game.Editor
                         bool nobodyHolds = result.DistinctWinners.Count == 0;
                         float scale = scales.TryGetValue((key, d), out float s) ? s : 1f;
                         string state = obviousHolds ? "too easy (an obvious plan holds)" : nobodyHolds ? "too hard (no searched plan holds)" : "ok";
-                        text.Append(Invariant($"  {map.Level.name} {DifficultyName(d),-7} scale {scale:0.###}: {state}; distinct winners {result.DistinctWinners.Count}, obvious {string.Join(", ", result.Obvious.ConvertAll(o => o.Plan.Name + " " + o.Margin.ToString("0.00", CultureInfo.InvariantCulture)))}\n"));
+                        text.Append(Invariant($"  {map.Level.name} {DifficultyName(d),-7} scale {scale:0.###}: {state}; distinct winners {result.DistinctWinners.Count}, obvious {string.Join(", ", result.Obvious.ConvertAll(o => o.Plan.Name + " " + Outcome(o)))}\n"));
                         if (iteration < iterations && (obviousHolds || nobodyHolds) && !(obviousHolds && nobodyHolds))
                         {
                             scales[(key, d)] = (float)Math.Round(obviousHolds ? scale * BuilderStep : scale / BuilderStep, 3);

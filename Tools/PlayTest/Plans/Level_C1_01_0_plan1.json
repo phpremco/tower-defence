@@ -20,73 +20,38 @@
         },
         {
             "Kind": "build",
-            "Item": "Cannon",
-            "X": 13,
-            "Y": 7,
-            "Wave": 1
-        },
-        {
-            "Kind": "build",
             "Item": "PulseRifle",
-            "X": 31,
+            "X": 32,
             "Y": 8,
-            "Wave": 1
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 13,
-            "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 13,
-            "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 31,
-            "Y": 8,
-            "Wave": 7
-        },
-        {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 6,
-            "Y": 14,
-            "Wave": 8
+            "Wave": 2
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
             "Y": 15,
-            "Wave": 9
+            "Wave": 2
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
             "Y": 15,
-            "Wave": 10
+            "Wave": 6
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 6,
-            "Y": 14,
+            "X": 32,
+            "Y": 8,
+            "Wave": 6
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
             "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 14,
-            "Wave": 12
         }
     ]
 }

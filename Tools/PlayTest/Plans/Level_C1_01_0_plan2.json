@@ -6,66 +6,38 @@
     "Steps": [
         {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 5,
-            "Y": 14,
+            "Item": "Cannon",
+            "X": 13,
+            "Y": 7,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "PulseRifle",
             "X": 5,
-            "Y": 15,
+            "Y": 13,
             "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 32,
-            "Y": 8,
-            "Wave": 2
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
-            "Y": 14,
+            "Y": 13,
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 31,
+            "Y": 8,
             "Wave": 4
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
-            "Y": 15,
+            "Y": 13,
             "Wave": 5
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 15,
-            "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
-            "Y": 8,
-            "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 14,
-            "Wave": 9
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
-            "Y": 8,
-            "Wave": 12
         }
     ]
 }

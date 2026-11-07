@@ -118,6 +118,10 @@ namespace Game.Balance
         /// <summary>The wave after a boss is a breather.</summary>
         public float AfterBossFactor = 0.8f;
 
+        /// <summary>Seconds before the first wave and between waves, as the generator writes them: the model's purse runs on the same clock.</summary>
+        public float FirstWaveDelay = 10f;
+        public float WaveDelay = 8f;
+
         /// <summary>The solver may change the budget from one wave to the next by at most this factor either way.</summary>
         public float MaxBudgetStep = 1.45f;
 
@@ -251,6 +255,20 @@ namespace Game.Balance
 
         /// <summary>The cap a wave is judged at: the hero cap, or the boss cap on a boss wave.</summary>
         public float CapFor(float cap, bool bossWave) => bossWave ? System.Math.Min(cap, BossWaveCap) : cap;
+
+        /// <summary>
+        /// The leak model (round 22b): what a wave's creatures the defence does not stop do to the base. The share of a wave over
+        /// pressure one gets through, stands at the doorstep and hammers the base with its structure damage (<see cref="Leak"/>) for
+        /// this many seconds each (the measured life of a leaker at the doorstep: the hero, the base turret and the guns in reach kill
+        /// it eventually; none of that is in the model). Fitted on recorded runs and kept on the BalanceCalibration asset, never typed.
+        /// </summary>
+        public float LeakFactor = 10f;
+
+        /// <summary>
+        /// Share of a wave a repair drone really spends restoring something (the rest is flying between its bay and the structures);
+        /// measured from the probe's drone records and kept on the BalanceCalibration asset.
+        /// </summary>
+        public float RepairDroneBusyShare = 0.5f;
 
         /// <summary>
         /// "Beatable" with the hero and the upgrades the campaign expects (<see cref="BalanceChecks.CheckBeatable"/>): the plain

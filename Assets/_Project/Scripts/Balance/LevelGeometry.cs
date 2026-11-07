@@ -18,6 +18,9 @@ namespace Game.Balance
         /// <summary>Share of the ground route in reach where walkers bunch (the queue before a gate, the inside of a bend).</summary>
         public float Bunch;
 
+        /// <summary>True when the base's doorstep (the last road cells) is in reach: the gun shoots what lays siege to the base.</summary>
+        public bool Base;
+
         /// <summary>The ledger's spotless assumption: a straight pass through the whole reach, the gate queue in reach.</summary>
         public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f };
     }
@@ -35,6 +38,9 @@ namespace Game.Balance
         public const float QueueCells = 3f;
         public const float BendCos = 0.707f;
         public const float BendReachCells = 1.5f;
+
+        /// <summary>Road cells before the base where leaked walkers stand and hammer it.</summary>
+        public const int DoorstepCells = 3;
 
         private struct Sample
         {
@@ -127,6 +133,11 @@ namespace Game.Balance
 
             cover.Bunch = cover.GroundPass > 0f ? bunched / cover.GroundPass : 0f;
             cover.Gate = DefenceGate.HasValue && Distance(spot, DefenceGate.Value) <= (cells + QueueCells) * (cells + QueueCells);
+            foreach (Cell door in Doorstep())
+            {
+                cover.Base |= Distance(spot, door) <= radius;
+            }
+
             return cover;
         }
 
@@ -154,6 +165,7 @@ namespace Game.Balance
 
             var mean = new SpotCover();
             int gates = 0;
+            int bases = 0;
             for (int i = 0; i < n; i++)
             {
                 SpotCover cover = CoverAt(ranked[i], reach);
@@ -161,9 +173,11 @@ namespace Game.Balance
                 mean.AirPass += cover.AirPass / n;
                 mean.Bunch += cover.Bunch / n;
                 gates += cover.Gate ? 1 : 0;
+                bases += cover.Base ? 1 : 0;
             }
 
             mean.Gate = gates * 2 >= n;
+            mean.Base = bases * 2 >= n;
             _typical[key] = mean;
             return mean;
         }
@@ -200,6 +214,18 @@ namespace Game.Balance
             }
 
             return result;
+        }
+
+        /// <summary>The last cells of the main road: where walkers that got through stand and hit the base.</summary>
+        public List<Cell> Doorstep()
+        {
+            var cells = new List<Cell>();
+            for (int k = 1; k <= DoorstepCells && MainRoad.Count - k >= 0; k++)
+            {
+                cells.Add(MainRoad[MainRoad.Count - k]);
+            }
+
+            return cells;
         }
 
         /// <summary>Road cells of the main road within a few cells before the defence gate (the queue), nearest the gate first.</summary>

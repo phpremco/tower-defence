@@ -29,6 +29,12 @@ namespace Game.Levels
         [SerializeField] [Min(0.01f)] private float _humanUtilisation = 0.34f;
         [SerializeField] [Min(0.01f)] private float _botUtilisation = 0.27f;
 
+        [Tooltip("Seconds a leaked creature hammers the base before it dies (BalanceRules.LeakFactor); fitted on the records.")]
+        [SerializeField] [Min(0f)] private float _leakFactor = 10f;
+
+        [Tooltip("Share of a wave a repair drone really spends repairing (BalanceRules.RepairDroneBusyShare); measured from the probe's drone records.")]
+        [SerializeField] [Range(0f, 1f)] private float _repairDroneBusyShare = 0.5f;
+
         [Tooltip("InputHash of the data the fit was made on; stale when it differs from the current data's hash.")]
         [SerializeField] private string _inputHash = string.Empty;
         [SerializeField] private string _measuredOn = string.Empty;
@@ -38,6 +44,8 @@ namespace Game.Levels
         public IReadOnlyList<TowerEfficiency> Towers => _towers;
         public float HumanUtilisation => _humanUtilisation;
         public float BotUtilisation => _botUtilisation;
+        public float LeakFactor => _leakFactor;
+        public float RepairDroneBusyShare => _repairDroneBusyShare;
         public string InputHashValue => _inputHash;
         public string MeasuredOn => _measuredOn;
         public string Seeds => _seeds;
@@ -68,6 +76,8 @@ namespace Game.Levels
             model.Rules = model.Rules.Copy();
             model.Rules.Utilisation = _botUtilisation;
             model.Rules.HumanUtilisation = _humanUtilisation;
+            model.Rules.LeakFactor = _leakFactor;
+            model.Rules.RepairDroneBusyShare = _repairDroneBusyShare;
         }
 
         /// <summary>True when the data differs from what the fit was made on (or nothing was ever fitted).</summary>

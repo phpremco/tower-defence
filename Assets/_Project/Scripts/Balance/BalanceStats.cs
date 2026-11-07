@@ -267,5 +267,8 @@ namespace Game.Balance
         public int Cost;
         public float Dps;
         public int Targets = Layer.Ground;
+
+        /// <summary>Hit points a repair drone restores per second while it works on a structure (DroneDefinition.RepairPerSecond).</summary>
+        public float RepairPerSecond;
     }
 }

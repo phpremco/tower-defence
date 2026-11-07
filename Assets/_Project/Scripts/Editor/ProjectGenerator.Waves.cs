@@ -17,8 +17,6 @@ namespace Game.Editor
     /// </summary>
     public static partial class ProjectGenerator
     {
-        private const float FirstWaveDelay = 10f;
-        private const float WaveDelay = 8f;
         private const string WavesFolder = DataRoot + "/Waves";
 
         private static void GenerateCampaignWaves(CampaignCatalog campaign, UpgradeCatalog upgrades, UnlockTable unlocks, Bestiary bestiary)
@@ -169,7 +167,7 @@ namespace Game.Editor
                 waves.arraySize = sets[d].Count;
                 for (int i = 0; i < sets[d].Count; i++)
                 {
-                    WriteWave(waves.GetArrayElementAtIndex(i), i, sets[d][i], bestiary);
+                    WriteWave(waves.GetArrayElementAtIndex(i), sets[d][i], bestiary);
                 }
             }
 
@@ -191,9 +189,9 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void WriteWave(SerializedProperty wave, int index, WaveSpec spec, Bestiary bestiary)
+        private static void WriteWave(SerializedProperty wave, WaveSpec spec, Bestiary bestiary)
         {
-            wave.FindPropertyRelative("_startDelay").floatValue = index == 0 ? FirstWaveDelay : WaveDelay;
+            wave.FindPropertyRelative("_startDelay").floatValue = spec.StartDelay;
             wave.FindPropertyRelative("_spawnJitter").floatValue = WaveDefinition.DefaultSpawnJitter;
             wave.FindPropertyRelative("_healthMultiplier").floatValue = spec.HealthMultiplier;
             SerializedProperty array = wave.FindPropertyRelative("_groups");

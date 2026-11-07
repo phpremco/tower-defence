@@ -34,6 +34,8 @@ namespace Game.Balance
         public readonly HashSet<string> HeroPerks = new HashSet<string>();
         public float HeroDamage = 1f;
         public float GateHealth = 1f;
+        /// <summary>Flat base health the "Base armour" upgrades add (the game adds it to the level's base health).</summary>
+        public float BaseHealthBonus;
         public int ResearchEarned;
         public int ResearchSpent;
 
@@ -201,6 +203,10 @@ namespace Game.Balance
                 else if (upgrade.Kind == UpgradeKind.GateHealth)
                 {
                     state.GateHealth += bonus;
+                }
+                else if (upgrade.Kind == UpgradeKind.BaseHealth)
+                {
+                    state.BaseHealthBonus += bonus;
                 }
             }
 

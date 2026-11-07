@@ -1,33 +1,33 @@
-Quartz Flats (Level_C1_05) on Hard: plan search, 3000 plans sampled, 0 hold on paper, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (current)
+Quartz Flats (Level_C1_05) on Hard: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
-'gate' when the defence gate's queue is in reach, 'bunch' the share of that route where walkers bunch. A step is taken from its wave on,
-as soon as the purse has the price; the margin is the worst wave's cap over pressure (above 1 the plan holds on paper).
+'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
+A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
+until the guns at the doorstep and the hero kill it; a plan holds when the base survives the level, its stars follow the base left.
+The margin is the worst wave's cap over pressure (below 1 something leaks there).
 
 Best spots per tower (first is best):
   Gun Turret     (7,5) cover 15.0 gate bunch 0.6; (7,4) cover 13.0/0.5 air gate bunch 0.6; (20,5) cover 16.0/0.5 air bunch 0.5; (21,5) cover 16.0/0.5 air bunch 0.4; (6,5) cover 12.0 gate bunch 0.7; (6,6) cover 12.0 gate bunch 0.7;
   Cannon         (7,5) cover 15.0 gate bunch 0.6; (7,4) cover 13.0/0.5 air gate bunch 0.6; (20,5) cover 16.0/0.5 air bunch 0.5; (6,5) cover 12.0 gate bunch 0.7; (6,6) cover 12.0 gate bunch 0.7; (20,4) cover 15.0/2.5 air bunch 0.5;
   Laser Turret   (7,5) cover 17.0 gate bunch 0.6; (6,6) cover 15.0 gate bunch 0.6; (7,4) cover 15.0/1.5 air gate bunch 0.6; (8,6) cover 15.0 gate bunch 0.5; (20,5) cover 18.0/1.5 air bunch 0.5; (21,5) cover 18.0/1.5 air bunch 0.5;
-  Flak Turret    (34,4) cover 14.0/9.0 air bunch 0.8; (34,5) cover 15.0/9.0 air bunch 0.8; (35,4) cover 13.0/8.5 air bunch 0.8; (33,4) cover 14.0/8.0 air bunch 0.9; (33,5) cover 15.0/8.0 air bunch 0.9; (35,5) cover 14.0/8.0 air bunch 0.8;
+  Flak Turret    (34,4) cover 14.0/9.0 air door bunch 0.8; (34,5) cover 15.0/9.0 air door bunch 0.8; (35,4) cover 13.0/8.5 air door bunch 0.8; (33,4) cover 14.0/8.0 air door bunch 0.9; (33,5) cover 15.0/8.0 air door bunch 0.9; (35,5) cover 14.0/8.0 air door bunch 0.8;
 
 Obvious plans on paper:
-  mono PulseRifle    margin 0.05 falls at wave 4, coins left 130, steps taken 18
-  mono Cannon        margin 0.00 falls at wave 4, coins left 5, steps taken 8, 12 never affordable
-  mono Laser         margin 0.00 falls at wave 4, coins left 26, steps taken 5, 15 never affordable
-  naive              margin 0.06 falls at wave 3, coins left 75, steps taken 9, 9 never affordable
+  mono PulseRifle    falls w8, margin 0.05 (leaks from wave 4), coins left 9, steps taken 18
+  mono Cannon        falls w9, margin 0.00 (leaks from wave 4), coins left 31, steps taken 7, 13 never affordable
+  mono Laser         falls w8, margin 0.00 (leaks from wave 3), coins left 3, steps taken 4, 16 never affordable
+  naive              falls w7, margin 0.06 (leaks from wave 3), coins left 17, steps taken 8, 10 never affordable
 
 Distinct winning plans (0; different spots, mixes or timing):
 
-No plan holds on paper. Best found: margin 0.44, falls at wave 3
-  from wave  1: build Gun Turret at (21,5); build Cannon at (6,6)
-  from wave  2: build Flak Turret at (34,5)
-  from wave  4: build Cannon at (6,5)
-  from wave  5: build Flak Turret at (33,4); upgrade the tower at (21,5)
-  from wave  6: upgrade the tower at (21,5); upgrade the tower at (34,5)
-  from wave  7: build Cannon at (20,5); build Flak Turret at (35,4); upgrade the tower at (6,5)
-  from wave  8: upgrade the tower at (6,6); buy the AttackDrone
-  from wave  9: build Cannon at (20,4); build Laser Turret at (8,6); build Flak Turret at (34,4)
-  from wave 11: upgrade the tower at (8,6)
-  from wave 12: build Cannon at (7,4); upgrade the tower at (6,6); upgrade the tower at (20,4)
-  from wave 15: build Cannon at (7,5); upgrade the tower at (33,4)
-  from wave 16: upgrade the tower at (7,4)
+No plan holds on paper. Best found: falls w10, margin 0.26, leaks from wave 5
+  from wave  1: build Gun Turret at (7,5); build Cannon at (6,6); build Cannon at (6,5)
+  from wave  3: build Flak Turret at (35,4); build Flak Turret at (34,4); upgrade the tower at (6,5)
+  from wave  4: build Laser Turret at (7,4); build Flak Turret at (34,5)
+  from wave  7: build Gun Turret at (20,5); build Gun Turret at (21,5); upgrade the tower at (6,6)
+  from wave  9: build Laser Turret at (8,6); upgrade the tower at (21,5)
+  from wave 11: upgrade the tower at (20,5)
+  from wave 13: build Cannon at (20,4); upgrade the tower at (34,5)
+  from wave 14: upgrade the tower at (20,4)
+  from wave 15: upgrade the tower at (20,5)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; repair the gates when they would fall or it is cheaper than a gun; repair the gates when they would fall or it is cheaper than a gun
   from wave 17: upgrade the tower at (20,4)

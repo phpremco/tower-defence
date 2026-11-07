@@ -47,7 +47,7 @@ namespace Game.Balance
             text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds));
             foreach (LevelFacts facts in model.Facts)
             {
-                text.Append(facts.Key).Append(facts.StartingMoney).Append(F(facts.HealthScale)).Append(facts.MineCount).Append(facts.MineStock).Append(facts.Harvest).Append(F(facts.GateHealth));
+                text.Append(facts.Key).Append(facts.StartingMoney).Append(F(facts.HealthScale)).Append(facts.MineCount).Append(facts.MineStock).Append(facts.Harvest).Append(F(facts.GateHealth)).Append(F(facts.BaseHealth)).Append(F(facts.GateRepairCostPerHealth)).Append(facts.GateRebuildCost);
                 text.Append(F(facts.Shape.MainLength)).Append(facts.Shape.Lanes.Count).Append(facts.Shape.Gates.Count);
                 foreach (GadgetStats g in facts.Gadgets)
                 {
@@ -56,7 +56,7 @@ namespace Game.Balance
 
                 foreach (DroneStats d in facts.Drones)
                 {
-                    text.Append(d.Id).Append(d.Role).Append(d.Cost).Append(F(d.Dps)).Append(d.Targets);
+                    text.Append(d.Id).Append(d.Role).Append(d.Cost).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond));
                 }
 
                 if (facts.Geometry != null)
@@ -70,7 +70,7 @@ namespace Game.Balance
             }
 
             BalanceRules r = model.Rules;
-            text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference));
+            text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap));
             return Fnv(text.ToString());
         }
 

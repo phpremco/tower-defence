@@ -1,0 +1,78 @@
+{
+    "Level": "Level_C1_02",
+    "Difficulty": 1,
+    "Name": "Level_C1_02_1_plan4",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 5,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 4,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 31,
+            "Y": 16,
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 30,
+            "Y": 16,
+            "Wave": 3
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 7,
+            "Wave": 7
+        },
+        {
+            "Kind": "drone",
+            "Item": "RepairDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 8
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 8,
+            "Y": 7,
+            "Wave": 9
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 5,
+            "Y": 6,
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 7,
+            "Wave": 11
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 8,
+            "Y": 7,
+            "Wave": 12
+        }
+    ]
+}

@@ -522,7 +522,7 @@ namespace Game.Tests
 
                         trace.Sample(towers, note, watch.RepairSpent);
                         MeasureWear(watch, towers, gates);
-                        run.Sample(context, towers, Time.deltaTime);
+                        run.Sample(context, towers, gates, Time.deltaTime);
                         nextBuy -= Time.deltaTime;
                         if (nextBuy <= 0f)
                         {
@@ -1004,14 +1004,15 @@ namespace Game.Tests
             }
 
             UseHero(context, gates, watch);
-            if (Maintain(context, towers, watch, CheapestBuild(context, owned, t => !t.IsSupport && !t.BlocksGroundEnemies && (run.Strategy.Allowed == null || run.Strategy.Allowed(t)))))
+            int cheapestStep = CheapestBuild(context, owned, t => !t.IsSupport && !t.BlocksGroundEnemies && (run.Strategy.Allowed == null || run.Strategy.Allowed(t)));
+            if (Maintain(context, towers, watch, cheapestStep, run))
             {
                 return;
             }
 
             if (run.Strategy.Style == PlayStyle.Scripted)
             {
-                ScriptedAct(context, towers, run);
+                ScriptedAct(context, towers, watch, cheapestStep, run);
                 return;
             }
 
@@ -1205,7 +1206,7 @@ namespace Game.Tests
 
         // A player keeps the defence standing before buying more: a badly hurt gun is repaired, a wrecked gun scrapped so its
         // spot takes a new one. True when the money went to that this round.
-        private static bool Maintain(LevelContext context, List<Tower> towers, GateWatch watch, int cheapestStep)
+        private static bool Maintain(LevelContext context, List<Tower> towers, GateWatch watch, int cheapestStep, BotRun run)
         {
             for (int i = towers.Count - 1; i >= 0; i--)
             {
@@ -1237,7 +1238,9 @@ namespace Game.Tests
                 watch.LossThisWave.Clear();
             }
 
-            if (gate != null && watch.Repairs < GateRepairsPerWave && gate.NeedsRepair && (gate.IsWrecked || gate.HealthFraction < RepairBelow)
+            // A scripted plan repairs its gates only where it says so (a "repair" step; round 22b): the repair is one of its trades.
+            bool gatesByPlan = run.Strategy.Style == PlayStyle.Scripted;
+            if (!gatesByPlan && gate != null && watch.Repairs < GateRepairsPerWave && gate.NeedsRepair && (gate.IsWrecked || gate.HealthFraction < RepairBelow)
                 && WorthRepair(context, watch, gate, cheapestStep) && Spend(context, watch, gate.RepairCost))
             {
                 gate.RepairFully();
@@ -2149,7 +2152,7 @@ namespace Game.Tests
 
         // ---- Scripted plans (round 22, the tester's stage B): the steps in order, each as soon as the purse has it ------------
 
-        private static void ScriptedAct(LevelContext context, List<Tower> towers, BotRun run)
+        private static void ScriptedAct(LevelContext context, List<Tower> towers, GateWatch watch, int cheapestStep, BotRun run)
         {
             Game.Balance.PlanSpec plan = run.Strategy.Plan;
             int wave = Mathf.Max(1, context.WaveNumber);
@@ -2189,6 +2192,18 @@ namespace Game.Tests
                         Game.Drones.DroneDefinition drone = DroneById(context, step.Item);
                         possible = drone != null && context.ActiveDrones(drone) < context.MaxDrones(drone);
                         done = possible && context.Wallet.CanAfford(drone.Cost) && BuyDrone(context, drone, run);
+                        break;
+                    case Game.Balance.PlanStep.Repair:
+                        // The plan's repair goes through the same rule as the bots' (WorthRepair): a gate that is whole or not worth it is skipped.
+                        Tower gate = watch.Gate;
+                        possible = gate != null && gate.NeedsRepair && WorthRepair(context, watch, gate, cheapestStep);
+                        done = possible && Spend(context, watch, gate.RepairCost);
+                        if (done)
+                        {
+                            gate.RepairFully();
+                            run.Repairs++;
+                        }
+
                         break;
                     default:
                         PathObjectDefinition item = GadgetById(context, step.Item);

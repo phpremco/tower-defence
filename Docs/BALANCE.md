@@ -891,3 +891,48 @@ per type (`LevelGeometry.TypicalCover`, `Ledger.TypicalSpots`), so the solver re
 fitted on. The obvious family loses every measured cell from C1_02 on (Medium and Hard), the searched plans hold on paper on
 the Easy cells and C1_01 Medium, and 5 of 7 replayed plans won with 3 stars; from C1_02 Medium on no searched plan holds on
 paper although the spotless ledger puts a competent player on the curve there: the round's open point (STATUS, round 22).
+
+## Leaks, gates and repairs in the plan model (2026-11-06, round 22b)
+
+The curator's decision on round 22's open question: the plan model must not judge a wave by a cap alone. A wave over
+pressure one is a wave that leaks, and whether the level is lost depends on what the leak does to the base. So:
+
+- **Leak** (`Leak`, `BalanceRules.LeakFactor`): the share of a wave over pressure one gets past the defence
+  (`1 - 1/pressure`). Those creatures stand at the base's doorstep and hammer it with their structure damage
+  (`WaveLoad.GroundStrike`, bosses `BossStrike`, flyers `AirStrike`; at most `AttackersPerGate` at once) for `LeakFactor`
+  seconds each: the measured life of a leaker at the doorstep (the hero, the base turret and the guns in reach kill it
+  eventually; none of that is in the model). Fitted on the records as base health really lost over the paper siege per second
+  (`CalibrationFit.FitLeak`, line `leak`, asset `_leakFactor`); the wave records carry `BaseLost` and `GateLost` per wave
+  (BotRun). A guard-based variant (damage over the hit points per second of the guns reaching the doorstep, `SpotCover.Base`,
+  `LevelGeometry.Doorstep`) was tried first and dropped: see STATUS round 22b for both fits; the doorstep cover stays in the
+  geometry as data for a better model.
+- **A plan holds when the base survives the level** (`PlanOutcome.Holds`); its stars follow the base left by the game's
+  thresholds (`LevelInput.StarFractions`), and `PlanOutcome.AnalyticScore` is the same formula as a recorded run's
+  `RealisedScore` (`Leak.Score`), so the fit's Spearman compares like with like. The hero cap is still reported as the
+  margin (`Margin`, `FirstBreak` = the first wave that leaks).
+- **Gates wear** (`PlanEvaluator.GateLoss`): the share of the stream the guns on the walk do not kill before the queue
+  (`beforeGate`, the same spots without the gate's hold) hits the trunk gates at the attackers' strike over the hold;
+  the bosses at theirs. The next wave's load is built with the worn gates (`WaveLoad.Of(..., gateHealth)`), so a broken
+  gate holds nothing. The spotless ledger (solver, bands) keeps full gates every wave, as before.
+- **Repairs are plan actions** (Remco): a `repair` step (`PlanStep.Repair`, item `gates`) restores the trunk gates at the
+  Blockade's `RepairCostPerHealth` (a wrecked gate at its build cost; `LevelInput.GateRepairCostPerHealth`,
+  `GateRebuildCost`), and is taken only by the bots' rule (`PlanEvaluator.RepairPrice`): when a gate would fall in the
+  coming wave, or when a hit point is cheaper to restore than to stop with the cheapest gun over the waves left;
+  otherwise the step is skipped. The replay plays it the same way (`ScriptedAct`, `WorthRepair`), and a scripted plan
+  repairs gates only where it says so (`Maintain` leaves gates to the plan; guns are still repaired by the bots' rule).
+  A **repair drone** (`DroneStats.RepairPerSecond`) restores `rate x RepairDroneBusyShare x wave seconds` per wave, gates
+  first, then the base. Its busy share is measured: the probe records the seconds a repair drone is on the field and the
+  seconds it spends repairing (`RepairDroneSeconds`, `RepairDroneBusy`; line `repairbusy`, asset `_repairDroneBusyShare`).
+  The search samples repair drones and gate repairs; the constructive family has a variant with a repair drone and one
+  that repairs by hand before every boss. plans_summary.txt reports the best plan's repair coins and how many distinct
+  winners buy a repair drone; the README lists both per plan.
+- **Constructive plans** (`PlanSearch.ConstructivePlans`): what a player who read the preview does, a primary and a
+  secondary type on their best spots and a priority list (upgrade the best-placed gun, add a gun, in turn), a sky gun the
+  wave before the flyers, the harvester early, a mine before each boss; two orders each. They join the random sample.
+- **Base armour** is a flat bonus in the game (`+100` per level): `PlayerState.BaseHealthBonus`, `LevelInput.BaseHealth`.
+- **The cap trim** (`CampaignModel.CalibrateToHuman`): the last pass's rescale could lift a capped wave back over the cap
+  through the creatures of earlier waves that arrive with it; a final cap-only sweep (`CapSweeps`) now runs until every
+  wave fits. The composed waves carry the generator's countdown clock (`BalanceRules.FirstWaveDelay`, `WaveDelay`), so the
+  model judges the stored waves exactly.
+- `Tools/PlayTest/Plans/README.md` is written by the search stage: per level and difficulty the best one or two winning
+  plans in words, the best spots per tower, and the repair use of each plan.

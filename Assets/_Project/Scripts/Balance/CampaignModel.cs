@@ -17,6 +17,12 @@ namespace Game.Balance
         public bool Harvest = true;
         public int SecondRoad = -1;
         public float GateHealth;
+        public float GateRepairCostPerHealth;
+        public int GateRebuildCost;
+
+        /// <summary>The base's health and the base shares that earn the stars (LevelDefinition), for the leak model.</summary>
+        public float BaseHealth;
+        public float[] StarFractions = { 0.5f, 0.9f };
 
         /// <summary>The gadgets the level sells and the drones it offers, and its map for placement (null = ideal placement).</summary>
         public List<GadgetStats> Gadgets = new List<GadgetStats>();
@@ -37,6 +43,7 @@ namespace Game.Balance
         private const int CalibrationPasses = 3;
         private const float CapStep = 0.92f;
         private const int CapRefinements = 8;
+        private const int CapSweeps = 4;
 
         public readonly List<CampaignLevel> Levels = new List<CampaignLevel>();
         public readonly List<LevelFacts> Facts = new List<LevelFacts>();
@@ -75,6 +82,10 @@ namespace Game.Balance
                 HeroDamage = player.HeroDamage,
                 HeroPerks = player.HeroPerks,
                 GateHealth = facts.GateHealth * player.GateHealth,
+                GateRepairCostPerHealth = facts.GateRepairCostPerHealth,
+                GateRebuildCost = facts.GateRebuildCost,
+                BaseHealth = facts.BaseHealth + player.BaseHealthBonus,
+                StarFractions = facts.StarFractions,
                 Gadgets = facts.Gadgets,
                 Drones = facts.Drones,
                 Geometry = facts.Geometry,
@@ -125,13 +136,22 @@ namespace Game.Balance
                 var waves = new List<WaveSpec>();
                 for (int i = 0; i < script.Waves; i++)
                 {
-                    waves.Add(WaveComposer.Compose(script, Enemies, d, i + 1, own[i], facts.SecondRoad, Rules));
+                    waves.Add(Composed(script, d, i, own[i], facts.SecondRoad));
                 }
 
                 sets.Add(waves);
             }
 
             return sets;
+        }
+
+        // A wave as the generator stores it: composed, on the clock the assets carry (the first wave's longer countdown included), so
+        // the calibration judges exactly the waves the ledger will read back (round 22b: a 2 s purse shift put C1_04 Hard w3 over its cap).
+        private WaveSpec Composed(WaveScriptSpec script, int difficulty, int index, float health, int secondRoad)
+        {
+            WaveSpec wave = WaveComposer.Compose(script, Enemies, difficulty, index + 1, health, secondRoad, Rules);
+            wave.StartDelay = index == 0 ? Rules.FirstWaveDelay : Rules.WaveDelay;
+            return wave;
         }
 
         /// <summary>Index of a level within its continent (0 for the continent's first level).</summary>
@@ -177,7 +197,7 @@ namespace Game.Balance
                 var waves = new List<WaveSpec>(script.Waves);
                 for (int i = 0; i < script.Waves; i++)
                 {
-                    waves.Add(WaveComposer.Compose(script, Enemies, difficulty, i + 1, health[i], secondRoad, Rules));
+                    waves.Add(Composed(script, difficulty, i, health[i], secondRoad));
                 }
 
                 return Ledger.Evaluate(input, waves, stats, rules);
@@ -219,6 +239,37 @@ namespace Game.Balance
                         return Evaluate(trimmed, withHero)[wave].Pressure;
                     }, cap);
                     capped[i] = true;
+                }
+            }
+
+            // The last pass's rescale can lift a capped wave back over the cap through the creatures of the waves before it that
+            // arrive with it (KillPurse.Carried): sweep the cap alone until every wave fits (round 22b; C1_04 Hard waves 3 and 6).
+            for (int sweep = 0; sweep < CapSweeps; sweep++)
+            {
+                bool over = false;
+                List<WaveLine> lines = Evaluate(trimmed, withHero);
+                for (int i = 0; i < trimmed.Length; i++)
+                {
+                    if (lines[i].Pressure <= cap)
+                    {
+                        continue;
+                    }
+
+                    over = true;
+                    int wave = i;
+                    float full = trimmed[i];
+                    trimmed[i] = full * CapScale(scale =>
+                    {
+                        trimmed[wave] = full * scale;
+                        return Evaluate(trimmed, withHero)[wave].Pressure;
+                    }, cap);
+                    capped[i] = true;
+                    lines = Evaluate(trimmed, withHero);
+                }
+
+                if (!over)
+                {
+                    break;
                 }
             }
 
