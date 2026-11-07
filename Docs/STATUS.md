@@ -3647,3 +3647,10 @@ on this round's waves). 2. `run_tests --mode PlayMode --filter Measure_Continent
 --async_tests true` (narrow with `probe_arg.txt` `bosses=0` for Gravemaw first), then EditMode `ContinentFinaleTests`, then
 `balance_pipeline.sh finale` only on the curator's say (it stales the calibration). 3. The builder has used both moves on most
 cells (`builder_iterations.txt`): the next pass is design decisions, not a third move.
+
+### Curator notes after round 22f (2026-11-07, Remco's answers)
+
+- Easy raid rule as built (first raid ~wave 9-10) is accepted for now; Remco judges it in play. Early waves doable with Gun Turrets only is also fine.
+- Script levers (plated, fast runners) on Medium cells are approved.
+- C1_05 Quartz Flats: fix by changing the map (build spots, road, positions), not by removing a tower from the bar unless the unlock flow makes that logical.
+- Next round starts with `bash Tools/PlayTest/round22f_chain.sh "levels=3;difficulties=0,2,3"` (C1_04 was not re-measured), then a builder pass; finale probe still to be run.
