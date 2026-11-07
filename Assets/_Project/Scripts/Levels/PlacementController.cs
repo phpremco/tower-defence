@@ -15,7 +15,7 @@ namespace Game.Levels
     public sealed class PlacementController : MonoBehaviour
     {
         private const float StickThreshold = 0.5f;
-        private const int BaseTurretSides = 2;
+        public const int BaseTurretSides = 2;
         private const int BaseTurretSearchCells = 4;
         private const float StickRepeatSeconds = 0.16f;
         private const float PointerMovedPixels = 1f;

@@ -1,7 +1,7 @@
 {
     "Level": "Level_C1_02",
     "Difficulty": 2,
-    "Name": "Level_C1_02_2_best",
+    "Name": "Level_C1_02_2_plan3",
     "Family": "searched",
     "Steps": [
         {
@@ -33,17 +33,10 @@
             "Wave": 3
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 7,
-            "Wave": 3
-        },
-        {
             "Kind": "build",
             "Item": "Laser",
-            "X": 7,
-            "Y": 6,
+            "X": 8,
+            "Y": 7,
             "Wave": 5
         },
         {
@@ -61,39 +54,11 @@
             "Wave": 8
         },
         {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 8
-        },
-        {
             "Kind": "upgrade",
             "Item": "",
             "X": 6,
             "Y": 5,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 6,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 5,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 6,
-            "Wave": 11
+            "Wave": 9
         },
         {
             "Kind": "repair",

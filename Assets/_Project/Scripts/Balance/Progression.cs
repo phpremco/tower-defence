@@ -36,11 +36,27 @@ namespace Game.Balance
         public float GateHealth = 1f;
         /// <summary>Flat base health the "Base armour" upgrades add (the game adds it to the level's base health).</summary>
         public float BaseHealthBonus;
+
+        /// <summary>Levels of the permanent base weapon upgrade: each adds a turret beside the base or strengthens them (PlacementController).</summary>
+        public int BaseWeaponLevel;
         public int ResearchEarned;
         public int ResearchSpent;
 
         /// <summary>Mean damage times fire rate over the owned guns: the old "expected upgrade bonus", for reports.</summary>
         public float MeanTowerBonus;
+
+        /// <summary>The same towers without any permanent upgrade or perk: a fresh save, as the probe bots play (round 22c).</summary>
+        public PlayerState Plain()
+        {
+            var plain = new PlayerState();
+            foreach (string id in OwnedTowers)
+            {
+                plain.OwnedTowers.Add(id);
+                plain.Boosts[id] = TowerBoost.None;
+            }
+
+            return plain;
+        }
     }
 
     /// <summary>
@@ -207,6 +223,10 @@ namespace Game.Balance
                 else if (upgrade.Kind == UpgradeKind.BaseHealth)
                 {
                     state.BaseHealthBonus += bonus;
+                }
+                else if (upgrade.Kind == UpgradeKind.BaseWeapon)
+                {
+                    state.BaseWeaponLevel += levels[i];
                 }
             }
 

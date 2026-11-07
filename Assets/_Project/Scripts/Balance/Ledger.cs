@@ -37,6 +37,11 @@ namespace Game.Balance
         public HeroStats Hero;
         public float HeroDamage = 1f;
 
+        /// <summary>The base's own turret (the permanent base weapon upgrade): how many stand at the doorstep and at which level; null or zero without the upgrade.</summary>
+        public TowerStats BaseTurret;
+        public int BaseTurrets;
+        public int BaseTurretLevel;
+
         /// <summary>The hero perks the player has unlocked by this level.</summary>
         public HashSet<string> HeroPerks = new HashSet<string>();
 
@@ -204,17 +209,21 @@ namespace Game.Balance
         }
 
         // The blade at a gate and half the blaster for the lulls, over half the window.
-        internal static float HeroDps(LevelInput level)
+        internal static float HeroDps(LevelInput level) => HeroBladeDps(level) + HeroGunDps(level);
+
+        internal static float HeroBladeDps(LevelInput level) =>
+            level.Hero != null && level.Hero.BladeInterval > 0f ? level.Hero.BladeDamage * level.HeroDamage / level.Hero.BladeInterval : 0f;
+
+        /// <summary>Half the blaster: what the hero fires between blade strikes, and all he has against flyers.</summary>
+        internal static float HeroGunDps(LevelInput level)
         {
             if (level.Hero == null)
             {
                 return 0f;
             }
 
-            float blade = level.Hero.BladeInterval > 0f ? level.Hero.BladeDamage * level.HeroDamage / level.Hero.BladeInterval : 0f;
             float interval = level.Hero.EffectiveGunInterval(level.HeroPerks);
-            float gun = interval > 0f ? level.Hero.GunDamage / interval * 0.5f : 0f;
-            return blade + gun;
+            return interval > 0f ? level.Hero.GunDamage / interval * 0.5f : 0f;
         }
 
         internal static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.Window * rules.HeroShare;

@@ -44,11 +44,20 @@ namespace Game.Balance
                 text.Append(u.Id).Append(u.Kind).Append(u.TowerId).Append(F(u.BonusPerLevel)).Append(u.Costs.Length);
             }
 
-            text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds));
+            text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds)).Append(F(model.Hero.MaxHealth)).Append(F(model.Hero.GuardShare)).Append(F(model.Hero.ReviveSeconds));
             foreach (LevelFacts facts in model.Facts)
             {
                 text.Append(facts.Key).Append(facts.StartingMoney).Append(F(facts.HealthScale)).Append(facts.MineCount).Append(facts.MineStock).Append(facts.Harvest).Append(F(facts.GateHealth)).Append(F(facts.BaseHealth)).Append(F(facts.GateRepairCostPerHealth)).Append(facts.GateRebuildCost);
                 text.Append(F(facts.Shape.MainLength)).Append(facts.Shape.Lanes.Count).Append(facts.Shape.Gates.Count);
+                if (facts.BaseTurret != null)
+                {
+                    text.Append(facts.BaseTurret.Id).Append(facts.BaseTurretSides).Append(facts.BaseTurret.Targets);
+                    foreach (TowerLevelStats level in facts.BaseTurret.Levels)
+                    {
+                        text.Append(F(level.Damage)).Append(F(level.Range)).Append(F(level.Interval));
+                    }
+                }
+
                 foreach (GadgetStats g in facts.Gadgets)
                 {
                     text.Append(g.Id).Append(g.Kind).Append(g.Cost).Append(F(g.Damage)).Append(F(g.Radius)).Append(F(g.SlowFactor));

@@ -7,13 +7,6 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 4,
-            "Y": 7,
-            "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
             "X": 5,
             "Y": 7,
             "Wave": 1
@@ -21,15 +14,22 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
+            "X": 6,
+            "Y": 5,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
             "X": 7,
-            "Y": 6,
-            "Wave": 2
+            "Y": 5,
+            "Wave": 1
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 5,
-            "Y": 7,
+            "X": 6,
+            "Y": 5,
             "Wave": 2
         },
         {
@@ -40,116 +40,53 @@
             "Wave": 3
         },
         {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 31,
-            "Y": 16,
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 5,
             "Wave": 4
         },
         {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 7,
-            "Y": 5,
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 7,
+            "Wave": 4
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 7,
             "Wave": 5
         },
         {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 6,
-            "Y": 5,
-            "Wave": 6
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 30,
-            "Y": 15,
-            "Wave": 6
-        },
-        {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 8,
-            "Y": 7,
-            "Wave": 6
-        },
-        {
             "Kind": "repair",
             "Item": "gates",
             "X": 0,
             "Y": 0,
             "Wave": 6
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 5,
-            "Y": 6,
-            "Wave": 7
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 7,
             "Y": 5,
-            "Wave": 7
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 31,
-            "Y": 16,
             "Wave": 8
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 6,
-            "Wave": 9
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 30,
-            "Y": 15,
-            "Wave": 9
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 30,
-            "Y": 16,
-            "Wave": 10
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 31,
-            "Y": 16,
-            "Wave": 10
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 30,
-            "Y": 15,
-            "Wave": 10
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 4,
-            "Y": 7,
-            "Wave": 11
+            "Kind": "drone",
+            "Item": "RepairDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 8
         },
         {
             "Kind": "repair",
             "Item": "gates",
             "X": 0,
             "Y": 0,
-            "Wave": 12
+            "Wave": 8
         }
     ]
 }

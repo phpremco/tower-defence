@@ -1,0 +1,155 @@
+{
+    "Level": "Level_C1_05",
+    "Difficulty": 1,
+    "Name": "Level_C1_05_1_plan5",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 6,
+            "Y": 6,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 6,
+            "Y": 5,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 34,
+            "Y": 5,
+            "Wave": 1
+        },
+        {
+            "Kind": "drone",
+            "Item": "HarvestDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 2
+        },
+        {
+            "Kind": "drone",
+            "Item": "RepairDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 2
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 3
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 4
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 7,
+            "Y": 4,
+            "Wave": 6
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 20,
+            "Y": 5,
+            "Wave": 7
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 35,
+            "Y": 4,
+            "Wave": 8
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 7,
+            "Y": 5,
+            "Wave": 9
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 34,
+            "Y": 4,
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 5,
+            "Wave": 10
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 21,
+            "Y": 5,
+            "Wave": 13
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 8,
+            "Y": 6,
+            "Wave": 14
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 35,
+            "Y": 4,
+            "Wave": 14
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 20,
+            "Y": 5,
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 35,
+            "Y": 4,
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 8,
+            "Y": 6,
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 20,
+            "Y": 5,
+            "Wave": 17
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 8,
+            "Y": 6,
+            "Wave": 17
+        }
+    ]
+}

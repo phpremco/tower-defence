@@ -6,108 +6,24 @@
     "Steps": [
         {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 7,
+            "Item": "Cannon",
+            "X": 5,
             "Y": 6,
             "Wave": 1
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 6,
-            "Wave": 2
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 6,
-            "Wave": 2
-        },
-        {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 5,
-            "Y": 6,
-            "Wave": 3
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 6,
+            "Item": "Cannon",
+            "X": 4,
+            "Y": 7,
             "Wave": 3
         },
         {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 5,
-            "Y": 7,
-            "Wave": 4
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 6,
-            "Wave": 4
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 7,
-            "Wave": 5
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 7,
-            "Wave": 5
-        },
-        {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 8,
-            "Y": 6,
-            "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 5,
-            "Wave": 6
-        },
-        {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 7,
-            "Y": 5,
-            "Wave": 7
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 5,
-            "Wave": 7
-        },
-        {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 8
-        },
-        {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 11
+            "Item": "Cannon",
+            "X": 30,
+            "Y": 15,
+            "Wave": 3
         }
     ]
 }

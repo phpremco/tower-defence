@@ -64,6 +64,9 @@ namespace Game.Balance
         /// <summary>Stars first, then base health, then coins; a loss ranks by how far it got.</summary>
         public float RealisedScore => Leak.Score(Won, Stars, BaseHealth, Coins, WaveCount, WaveReached);
 
+        /// <summary>A replayed plan (no decisions at run time: gates are repaired only where the plan says so), not a bot.</summary>
+        public bool Scripted => Strategy.StartsWith("plan", StringComparison.Ordinal);
+
         public string Cell => Level + " " + Difficulty.ToString(CultureInfo.InvariantCulture);
     }
 
@@ -93,8 +96,9 @@ namespace Game.Balance
         private const float MinEfficiency = 0.05f;
         private const float MaxEfficiency = 4f;
 
-        /// <summary>Longest a leaker is allowed to live at the doorstep in the fit (a whole wave).</summary>
-        private const float MaxLeakSeconds = 300f;
+        /// <summary>Bounds of the siege factor the fit may return (<see cref="BalanceRules.SiegeFactor"/>).</summary>
+        private const float MinSiegeFactor = 0.1f;
+        private const float MaxSiegeFactor = 10f;
 
         public sealed class Result
         {
@@ -102,11 +106,11 @@ namespace Game.Balance
             public readonly SortedDictionary<string, (float Dealt, float Capacity, int Waves)> Sums = new SortedDictionary<string, (float, float, int)>(StringComparer.Ordinal);
             public int Runs;
 
-            /// <summary>Base health really lost over the leak model's paper damage at factor one (<see cref="BalanceRules.LeakFactor"/>).</summary>
-            public float LeakFactor = 1f;
-            public float BaseLost;
-            public float PaperBaseDamage;
-            public int LeakWaves;
+            /// <summary>Structure health (gates and base) the runs really lost over the siege model's paper damage at factor one (<see cref="BalanceRules.SiegeFactor"/>).</summary>
+            public float SiegeFactor = 1f;
+            public float StructureLost;
+            public float PaperStructureDamage;
+            public int SiegeWaves;
 
             /// <summary>Share of its field time a repair drone spent repairing, over every recorded wave with one (<see cref="BalanceRules.RepairDroneBusyShare"/>); -1 when none was seen.</summary>
             public float RepairDroneBusyShare = -1f;
@@ -230,14 +234,15 @@ namespace Game.Balance
                 result.Efficiency[pair.Key] = (float)Math.Round(pair.Value, 3);
             }
 
-            FitLeak(runs, cellOf, result);
+            FitSiege(runs, cellOf, result);
             FitRepairDrone(runs, result);
             return result;
         }
 
-        // The leak factor: over every recorded wave, the base health really lost against the leak model's paper damage with the
-        // fitted efficiencies at factor one; a wave's paper damage counts only up to the base there was (a wave cannot kill the base twice).
-        private static void FitLeak(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
+        // The siege factor: over every recorded run, the gate and base health really lost against the siege model's paper damage
+        // with the fitted efficiencies at factor one, each run capped at the structures it had (the recorder's gate sum can jump
+        // when a gate is rebuilt, and a run cannot lose more than stood).
+        private static void FitSiege(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
         {
             foreach (RunRecord run in runs)
             {
@@ -248,7 +253,12 @@ namespace Game.Balance
                 }
 
                 BalanceRules judge = JudgeOf(cell).Copy();
-                judge.LeakFactor = 1f;
+                judge.SiegeFactor = 1f;
+                int trunkGates = PlanEvaluator.TrunkGates(cell.Input);
+                float structures = cell.Input.BaseHealth + cell.Input.GateHealth * trunkGates;
+                SiegeState state = SiegeState.Start(cell.Input, trunkGates);
+                float paper = 0f;
+                float lost = 0f;
                 foreach (WaveRecord wave in run.Waves)
                 {
                     if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
@@ -256,15 +266,19 @@ namespace Game.Balance
                         continue;
                     }
 
-                    LeakLine leak = LeakOf(wave, cell, judge, result.Efficiency);
-                    float paper = leak.BaseDamage;
-                    result.PaperBaseDamage += paper;
-                    result.BaseLost += Math.Min(wave.BaseLost, cell.Input.BaseHealth);
-                    result.LeakWaves += paper > 0f || wave.BaseLost > 0f ? 1 : 0;
+                    SiegeLine siege = SiegeOf(wave, cell, judge, result.Efficiency, state);
+                    paper += siege.GateDamage + siege.BaseDamage;
+                    lost += Math.Min(wave.GateLost, cell.Input.GateHealth * trunkGates) + Math.Min(wave.BaseLost, cell.Input.BaseHealth);
+                    result.SiegeWaves += siege.GateDamage + siege.BaseDamage > 0f || wave.GateLost + wave.BaseLost > 0f ? 1 : 0;
                 }
+
+                result.PaperStructureDamage += Math.Min(paper, structures);
+                result.StructureLost += Math.Min(lost, structures);
             }
 
-            result.LeakFactor = result.PaperBaseDamage > 0f && result.BaseLost > 0f ? (float)Math.Round(Math.Min(MaxLeakSeconds, result.BaseLost / result.PaperBaseDamage), 2) : new BalanceRules().LeakFactor;
+            result.SiegeFactor = result.PaperStructureDamage > 0f && result.StructureLost > 0f
+                ? (float)Math.Round(Math.Max(MinSiegeFactor, Math.Min(MaxSiegeFactor, result.StructureLost / result.PaperStructureDamage)), 3)
+                : new BalanceRules().SiegeFactor;
         }
 
         // The repair drone's busy share: over every recorded wave a repair drone was on the field, the seconds it repaired over the seconds it was there.
@@ -283,21 +297,23 @@ namespace Game.Balance
             result.RepairDroneBusyShare = result.RepairDroneSeconds > 0f ? (float)Math.Round(Math.Min(1f, busy / result.RepairDroneSeconds), 3) : -1f;
         }
 
-        // The leak of one recorded wave from its realised standing set (the paper capacities at the given efficiencies).
-        private static LeakLine LeakOf(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency)
+        // The siege of one recorded wave from its realised standing set (the paper guards at the given efficiencies), wearing the state.
+        private static SiegeLine SiegeOf(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency, SiegeState state)
         {
             WaveLoad load = cell.Loads[wave.Wave - 1];
-            Pressures(wave, cell, judge, efficiency, out float ground, out float air);
-            return Leak.Of(load, judge, ground, air);
+            Pressures(wave, cell, judge, efficiency, out _, out _, out SiegeGuards guards);
+            return Leak.Resolve(cell.Input, load, judge, guards, state, judge.WaveDelay + load.Window);
         }
 
-        // Ground and air pressure of a recorded wave against its standing towers and the hero.
-        private static void Pressures(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency, out float ground, out float air)
+        // Ground and air pressure of a recorded wave against its standing towers and the hero, and the same towers as siege guards.
+        private static void Pressures(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency, out float ground, out float air, out SiegeGuards guards)
         {
             WaveLoad load = cell.Loads[wave.Wave - 1];
             float stream = Ledger.HeroStream(cell.Input, load, judge);
             float single = Ledger.HeroSingle(cell.Input, load, judge);
             float sky = 0f;
+            guards = new SiegeGuards();
+            Leak.AddBaseTurrets(ref guards, cell.Input, load, judge);
             foreach ((string id, int level, Cell spot) in wave.Standing)
             {
                 int index = cell.Input.Towers.FindIndex(t => t.Id == id);
@@ -314,6 +330,7 @@ namespace Game.Balance
                 stream += option.Stream;
                 single += option.Single;
                 sky += option.Air;
+                Leak.AddTower(ref guards, cell.Input, load, judge, index, level, cover, own, 1f);
             }
 
             ground = load.GroundPressure(stream, single);
@@ -324,7 +341,7 @@ namespace Game.Balance
         /// With these efficiencies, the ledger's verdict on every run (its standing towers hold every wave inside the cap)
         /// against what happened, and per cell the Spearman correlation of the analytic and the realised ranking of the runs.
         /// </summary>
-        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float leakFactor = 1f)
+        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor = 1f)
         {
             var agreement = new Agreement();
             var cells = new Dictionary<string, List<(float Analytic, float Realised)>>();
@@ -336,7 +353,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                Prediction predicted = Predict(run, cell, efficiency, leakFactor);
+                Prediction predicted = Predict(run, cell, efficiency, siegeFactor);
                 bool holds = predicted.Holds;
                 bool mono = run.Strategy.StartsWith("mono", StringComparison.Ordinal);
                 agreement.Runs++;
@@ -371,14 +388,16 @@ namespace Game.Balance
         }
 
         /// <summary>
-        /// The leak model's verdict on a recorded run from its realised standing sets, with the given efficiencies (1 for types not
-        /// listed) and leak factor: the base left after every wave, the wave it falls in, the stars, and the worst wave's cap over pressure.
+        /// The siege model's verdict on a recorded run from its realised standing sets, with the given efficiencies (1 for types not
+        /// listed) and siege factor: the base left after every wave, the wave it falls in, the stars, and the worst wave's cap over pressure.
         /// </summary>
-        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float leakFactor)
+        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float siegeFactor)
         {
             var prediction = new Prediction { BaseLeft = cell.Input.BaseHealth, Margin = float.MaxValue };
             BalanceRules judge = JudgeOf(cell).Copy();
-            judge.LeakFactor = leakFactor;
+            judge.SiegeFactor = siegeFactor;
+            SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
+            int cheapestGun = PlanEvaluator.CheapestGun(cell.Input);
             foreach (WaveRecord wave in run.Waves)
             {
                 if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
@@ -387,9 +406,15 @@ namespace Game.Balance
                 }
 
                 WaveLoad load = cell.Loads[wave.Wave - 1];
-                Pressures(wave, cell, judge, efficiency, out float ground, out float air);
-                LeakLine leak = Leak.Of(load, judge, ground, air);
-                prediction.BaseLeft = Math.Max(0f, prediction.BaseLeft - leak.BaseDamage);
+                // The bots repair their gates by their rule (a gate at risk, or cheaper than a gun); a scripted plan only where it says so.
+                if (!run.Scripted && PlanEvaluator.RepairPrice(cell.Input, load, state, cheapestGun, cell.Loads.Count - wave.Wave + 1) >= 0)
+                {
+                    state.RepairGates(cell.Input);
+                }
+
+                Pressures(wave, cell, judge, efficiency, out float ground, out float air, out SiegeGuards guards);
+                Leak.Resolve(cell.Input, load, judge, guards, state, judge.WaveDelay + load.Window);
+                prediction.BaseLeft = state.BaseLeft;
                 if (prediction.BaseLeft <= 0f && prediction.FallWave == 0)
                 {
                     prediction.FallWave = wave.Wave;
@@ -469,6 +494,52 @@ namespace Game.Balance
         }
 
         private static BalanceRules JudgeOf(RecordedCell cell) => cell.Judge ?? BalanceRules.Default.HumanWithHero();
+
+        // ---- Wave table: paper beside play for every recorded wave, so a model term can be checked offline -------------------
+
+        public const string WaveTableHeader = "level|d|strategy|seed|won|reached|count|wave|boss|recHealth|paperStream|paperBoss|paperAir|walkStream|walkSingle|walkAir|queueStream|queueSingle|doorStream|doorAir|heroDps|gPressure|aPressure|towerDealt|otherDealt|baseLost|gateLost|towers|paperGroundLeak|paperRestLeak|paperAirLeak|paperGateDamage|paperBaseDamage|heroFell|gatesLeft|baseLeft|groundCount|bossCount|airCount|groundStrike|bossStrike|airStrike|window|baseHealth|gateHealth";
+
+        /// <summary>
+        /// One line per recorded wave with the paper side at the given efficiencies and siege factor (pressures, walk kills, the
+        /// queue and doorstep guards, the siege's gate and base damage and the state after it) beside what the game recorded
+        /// (damage by type, base and gate losses): the fit's working table, written by the fit stage.
+        /// </summary>
+        public static string WaveTable(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor)
+        {
+            var text = new StringBuilder(WaveTableHeader).Append('\n');
+            foreach (RunRecord run in runs)
+            {
+                RecordedCell cell = cellOf(run);
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                BalanceRules judge = JudgeOf(cell).Copy();
+                judge.SiegeFactor = siegeFactor;
+                SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
+                foreach (WaveRecord wave in run.Waves)
+                {
+                    if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
+                    {
+                        continue;
+                    }
+
+                    WaveLoad load = cell.Loads[wave.Wave - 1];
+                    Pressures(wave, cell, judge, efficiency, out float ground, out float air, out SiegeGuards guards);
+                    SiegeLine siege = Leak.Resolve(cell.Input, load, judge, guards, state, judge.WaveDelay + load.Window);
+                    text.Append(string.Join("|", run.Level, I(run.Difficulty), run.Strategy, I(run.Seed), run.Won ? "1" : "0", I(run.WaveReached), I(run.WaveCount), I(wave.Wave), load.HasBoss ? "1" : "0",
+                        F(wave.Health), F(load.StreamHealth), F(load.BossHealth), F(load.AirHealth), F(guards.WalkStream), F(guards.WalkSingle), F(guards.WalkAir),
+                        F(guards.QueueStream), F(guards.QueueSingle), F(guards.DoorStream), F(guards.DoorAir), F(Ledger.HeroDps(cell.Input)), F(ground), F(air),
+                        F(wave.TowerDealt), F(wave.OtherDealt), F(wave.BaseLost), F(wave.GateLost), I(wave.Standing.Count),
+                        F(siege.GroundLeak), F(siege.RestLeak), F(siege.AirLeak), F(siege.GateDamage), F(siege.BaseDamage), siege.HeroFell ? "1" : "0", F(state.GatesLeft), F(state.BaseLeft),
+                        I(load.GroundCount), I(load.BossCount), I(load.AirCount), F(load.GroundStrike), F(load.BossStrike), F(load.AirStrike), F(load.Window),
+                        F(cell.Input.BaseHealth), F(cell.Input.GateHealth))).Append('\n');
+                }
+            }
+
+            return text.ToString();
+        }
 
         // ---- Text form, so stage B can add its runs and the fit can be re-run offline ----------------------------------------
 

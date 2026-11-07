@@ -11,7 +11,7 @@ namespace Game.Balance
     public static class BalanceChecks
     {
         private const int CliffMemory = 3;
-        private const int OpeningWaves = 4;
+        public const int OpeningWaves = 4;
         private const float LateShare = 0.65f;
 
         public static List<string> Check(string level, string difficultyName, int difficulty, IReadOnlyList<WaveLine> lines, BalanceRules rules)

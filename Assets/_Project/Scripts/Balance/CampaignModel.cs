@@ -24,6 +24,10 @@ namespace Game.Balance
         public float BaseHealth;
         public float[] StarFractions = { 0.5f, 0.9f };
 
+        /// <summary>The base's own turret and how many sides of the base it can stand on (the permanent base weapon upgrade); null without one.</summary>
+        public TowerStats BaseTurret;
+        public int BaseTurretSides;
+
         /// <summary>The gadgets the level sells and the drones it offers, and its map for placement (null = ideal placement).</summary>
         public List<GadgetStats> Gadgets = new List<GadgetStats>();
         public List<DroneStats> Drones = new List<DroneStats>();
@@ -41,6 +45,10 @@ namespace Game.Balance
         private const float CalibrationMaxScale = 4f;
         private const int CalibrationIterations = 22;
         private const int CalibrationPasses = 3;
+
+        /// <summary>When the bisection misses the target by more than this share, the whole scale range is scanned in this many steps.</summary>
+        private const float ScanTolerance = 0.005f;
+        private const int ScanSteps = 160;
         private const float CapStep = 0.92f;
         private const int CapRefinements = 8;
         private const int CapSweeps = 4;
@@ -61,10 +69,17 @@ namespace Game.Balance
         public PlayerState PlayerAt(int levelIndex, int difficulty) =>
             Progression.StateAt(Levels, levelIndex, difficulty, StartingTowers, Upgrades, Rules);
 
-        public LevelInput InputFor(int levelIndex, int difficulty)
+        public LevelInput InputFor(int levelIndex, int difficulty) => InputFor(levelIndex, difficulty, PlayerAt(levelIndex, difficulty));
+
+        /// <summary>
+        /// As above for a player without permanent upgrades or perks (a fresh save), owning the towers the campaign has rewarded so far:
+        /// what the probe bots play with, so the calibration judges the recorded runs against the player that really played them.
+        /// </summary>
+        public LevelInput InputForFreshPlayer(int levelIndex, int difficulty) => InputFor(levelIndex, difficulty, PlayerAt(levelIndex, difficulty).Plain());
+
+        public LevelInput InputFor(int levelIndex, int difficulty, PlayerState player)
         {
             LevelFacts facts = Facts[levelIndex];
-            PlayerState player = PlayerAt(levelIndex, difficulty);
             DifficultyStats stats = difficulty >= 0 && difficulty < Difficulties.Count ? Difficulties[difficulty] : new DifficultyStats();
             var input = new LevelInput
             {
@@ -86,6 +101,9 @@ namespace Game.Balance
                 GateRebuildCost = facts.GateRebuildCost,
                 BaseHealth = facts.BaseHealth + player.BaseHealthBonus,
                 StarFractions = facts.StarFractions,
+                BaseTurret = facts.BaseTurret,
+                BaseTurrets = facts.BaseTurret != null ? Math.Min(facts.BaseTurretSides, player.BaseWeaponLevel) : 0,
+                BaseTurretLevel = facts.BaseTurret != null ? Math.Max(0, player.BaseWeaponLevel - facts.BaseTurretSides) : 0,
                 Gadgets = facts.Gadgets,
                 Drones = facts.Drones,
                 Geometry = facts.Geometry,
@@ -335,6 +353,8 @@ namespace Game.Balance
                 return Math.Exp(hi);
             }
 
+            double floor = lo;
+            double ceiling = hi;
             for (int i = 0; i < CalibrationIterations; i++)
             {
                 double mid = (lo + hi) * 0.5;
@@ -348,7 +368,26 @@ namespace Game.Balance
                 }
             }
 
-            return Math.Abs(pressure(lo) - target) <= Math.Abs(pressure(hi) - target) ? Math.Exp(lo) : Math.Exp(hi);
+            double chosen = Math.Abs(pressure(lo) - target) <= Math.Abs(pressure(hi) - target) ? lo : hi;
+            float miss = Math.Abs(pressure(chosen) - target);
+            if (miss > target * ScanTolerance)
+            {
+                // The mean is not monotone in the scale (the ledger re-chooses its guns per wave and the purse rounds to coins), so
+                // the bisection can land on a jump (round 22c: Quartz Flats Easy came out 5% harder than its target). A scan of the
+                // whole range finds the scale whose mean comes closest.
+                for (int i = 0; i <= ScanSteps; i++)
+                {
+                    double scale = floor + (ceiling - floor) * i / ScanSteps;
+                    float value = Math.Abs(pressure(scale) - target);
+                    if (value < miss)
+                    {
+                        miss = value;
+                        chosen = scale;
+                    }
+                }
+            }
+
+            return Math.Exp(chosen);
         }
 
         /// <summary>

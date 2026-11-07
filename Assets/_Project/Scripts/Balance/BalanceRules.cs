@@ -257,12 +257,11 @@ namespace Game.Balance
         public float CapFor(float cap, bool bossWave) => bossWave ? System.Math.Min(cap, BossWaveCap) : cap;
 
         /// <summary>
-        /// The leak model (round 22b): what a wave's creatures the defence does not stop do to the base. The share of a wave over
-        /// pressure one gets through, stands at the doorstep and hammers the base with its structure damage (<see cref="Leak"/>) for
-        /// this many seconds each (the measured life of a leaker at the doorstep: the hero, the base turret and the guns in reach kill
-        /// it eventually; none of that is in the model). Fitted on recorded runs and kept on the BalanceCalibration asset, never typed.
+        /// The siege model (round 22c, <see cref="Leak"/>): creatures the guns do not kill on the walk hammer the gates and the base
+        /// at their structure damage times this factor, while the guards there kill them. The structure damage the recorded runs
+        /// really took over the paper hammer; fitted on recorded runs and kept on the BalanceCalibration asset, never typed.
         /// </summary>
-        public float LeakFactor = 10f;
+        public float SiegeFactor = 1f;
 
         /// <summary>
         /// Share of a wave a repair drone really spends restoring something (the rest is flying between its bay and the structures);

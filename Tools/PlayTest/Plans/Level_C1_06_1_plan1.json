@@ -1,0 +1,57 @@
+{
+    "Level": "Level_C1_06",
+    "Difficulty": 1,
+    "Name": "Level_C1_06_1_plan1",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 12,
+            "Y": 10,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 17,
+            "Y": 10,
+            "Wave": 1
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 36,
+            "Y": 10,
+            "Wave": 5
+        },
+        {
+            "Kind": "drone",
+            "Item": "RepairDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 5
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 16,
+            "Y": 11,
+            "Wave": 10
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 11
+        }
+    ]
+}

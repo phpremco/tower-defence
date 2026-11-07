@@ -936,3 +936,75 @@ pressure one is a wave that leaks, and whether the level is lost depends on what
   model judges the stored waves exactly.
 - `Tools/PlayTest/Plans/README.md` is written by the search stage: per level and difficulty the best one or two winning
   plans in words, the best spots per tower, and the repair use of each plan.
+
+## The siege model: leaks at the gates and the doorstep (2026-11-07, round 22c)
+
+Round 22b's leak model (a share of a wave over pressure one hammers the base for a fitted number of seconds) could not be
+calibrated: hold-out agreement 35%, Spearman -0.05. The per-wave table of paper beside play (`Tools/PlayTest/calibration_waves.txt`,
+written by the fit stage) showed three model errors, and the fix is the siege model in `Leak.cs`:
+
+1. **Leakers do not vanish.** Where the paper said a wave leaked 50%, the game's towers plus hero killed 86%; where it said
+   everything leaked, they still killed about half. A creature the guns do not kill on the walk stands at the defence gate's
+   queue and keeps being shot until it dies or the gate falls. The paper now resolves that fight in time: the leak L (health
+   not killed on the walk, `Ledger.Capacity` from the spot without the gate's hold) hammers the gate at attackers x strike x
+   `SiegeFactor` (at most `AttackersPerGate` at once) while the guns that reach the queue and the hero kill it at their damage per
+   second; the gate falls after gate / hammer seconds or the leak is cleared after L / (guns + hero) seconds, whichever first.
+   Guards fight at full damage per second (times the calibrated efficiency): the utilisation of the pressure model is the share
+   of a pass a gun spends hurting something, and a creature hammering a structure stands in reach until it dies.
+2. **The gates shield the base.** On C1_01 Psycho the obvious bots lost 1000 gate health in wave 8 with the base untouched and
+   the base in wave 9. What gets past the defence gate walks on to the other trunk gates (nothing shoots there but the hero,
+   who falls back once his gate is gone), and only then to the base's doorstep, where the guns in reach of the last road cells
+   (`SpotCover.Base`), the base's own turrets and the hero (when no gate stands) meet it. Flyers pass the gates and lay siege to
+   the base directly. A fight at the base with no guard at all means the base falls, as it does in play.
+3. **Bosses that survive the walk kill the base.** A boss wave inside the hero cap (total capacity above its health) still lost
+   the game on C1_01 and C1_02 Medium: the boss broke two gates and the base before the towers around the first gate had worn
+   it down. The siege resolves the boss as a single attacker with its own strike, at the gate, the rest and the doorstep.
+
+**The hero is explicit data** (the curator's decision): `HeroStats.MaxHealth`, `GuardShare`, `ReviveSeconds` from the
+`HeroDefinition`, beside his blade and blaster. At his post (the defence gate, as the bots play him) he kills at
+`Ledger.HeroDps` and takes his guard share of the hammer instead of the gate (the gate takes 1 - GuardShare while he stands);
+when the hammer has taken his health he goes down for his revive time (the clock runs on through the following waves,
+`SiegeState.HeroDownLeft`). Against flyers at the base he has the blaster only. **The base turrets** are explicit data too:
+`LevelInput.BaseTurret` (the level's turret as `TowerStats`), the count and level from the permanent base weapon upgrade
+(`PlayerState.BaseWeaponLevel`, `PlacementController.BaseTurretSides`), at the doorstep for both layers. No hidden terms are
+fitted; the one measured number is `BalanceRules.SiegeFactor`: the gate and base health the recorded runs really lost over the
+paper hammer at factor one, per run capped at the structures it had (1.19 on the 427 runs; line `siege` in calibration.txt,
+`_siegeFactor` on the asset, applied by the apply stage).
+
+**The fit judges the player who really played.** The yardstick and the replays run on a fresh save: no permanent upgrades, no
+perks, no base turrets. Until round 22c the fit's paper side used the campaign's expected player (research spent on tower
+boosts, hero damage, gate and base bonuses), so every capacity was overstated on later levels and the efficiencies came out
+low (0.53-0.58). `CampaignModel.InputForFreshPlayer` (`PlayerState.Plain`) is the fit's input now; the solver and the plan
+search keep the expected player, which is the player the waves are for. For the recorded bot runs the prediction repairs the
+gates by the bots' own rule (`PlanEvaluator.RepairPrice`: a gate at risk, or a hit point cheaper to restore than to stop);
+a replayed plan repairs only where it says so.
+
+**Result (`Tools/PlayTest/calibration.txt`, 427 runs, 3 seeds).** Efficiencies Cannon 0.748, Gun Turret 0.708, Laser 0.658,
+Flak 0.816; siege factor 1.189; repair-drone busy share 0.967. Hold-out verdict agreement 92% (mono rows 96%), Spearman 0.84 of
+the plan ranking per cell: both bars met, the asset applied. Iteration one (siege model, fresh player, guards at the pressure
+model's utilisation) gave 91% / 0.71; iteration two (guards at full damage per second, the hero's guard share, the bots' repair
+rule) 92% / 0.84. The 29 disagreements left are nearly all "paper survives, game lost" on C1_02 Hard mono rows (lost at wave
+10-12, paper base untouched) and C1_06 Hard creative (lost at wave 7): the paper is now a little lenient where a run falls to
+a late crowd, which is the side that keeps the plan search honest (a plan that holds on paper is replayed, not trusted).
+
+**Per wave in the plan model** (`PlanEvaluator`): `SiegeState` carries the defence gate, the other trunk gates together, the
+base and the hero's down time between waves; a `repair` step restores every trunk gate; the repair drone restores the defence
+gate first, then the rest, then the base. `PlanWaveLine` reports the leak, the gate and base damage and whether the hero fell.
+`SpotCover.Ideal` (a level without a map) reaches the doorstep as well as the queue.
+
+**Solver note.** The human-target bisection (`CampaignModel.Bisect`) now scans the whole scale range when the bisection
+misses by more than 0.5%: the plain mean is not a smooth function of one scale, because the ledger's purchase for a wave can
+flip between scales a few percent apart (Quartz Flats Easy wave 9 goes from pressure 0.62 to 0.97 between scales 0.95 and
+1.00, the mean from 0.72 to 0.79 around a target of 0.757). The scan cannot close such a jump; see STATUS round 22c for the
+open ramp failure it leaves (C1_05 Easy 1.26x against the curve's 1.32x, C1_06 Easy 1.33x).
+
+**Stage B's verdict on the siege model (same day, after the replay).** The 71 searched plans replayed over seeds 1-3 (213 runs,
+`plan_replay.txt`) win on Easy (C1_01-C1_06, mostly 3/3 with 3 stars), on C1_01 Medium and Hard and on C1_04 Medium, and lose
+every other cell from C1_02 Medium on, where they held on paper with margins of 0.2-0.5 (pressure two to five times the cap,
+"cleared" by the queue guards). Refitted with those runs (633 runs) the calibration falls below its bar: hold-out agreement 84%
+(mono 97%), Spearman 0.66, with 73 "paper survives, game lost" of which 45 are plans. So the siege model is right about the bot
+family (clear wins and clear losses) and too lenient exactly where a plan is thin: guards at the queue at full damage per second
+clear leaks that in play slip past, spread out, or break the gate before the guns are done. A third term would be the queue
+guards' real share of their damage per second (iteration one at utilisation 0.34 gave 91% / 0.71 on the bots; the truth sits
+between), fitted on bot and plan runs together. Until a fit passes with the plan runs included, the analytic stage is a
+pre-screen and stage B is the judge: a plan counts as a winner only when it wins in the replay.

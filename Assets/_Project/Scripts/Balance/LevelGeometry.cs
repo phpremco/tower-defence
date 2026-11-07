@@ -21,8 +21,8 @@ namespace Game.Balance
         /// <summary>True when the base's doorstep (the last road cells) is in reach: the gun shoots what lays siege to the base.</summary>
         public bool Base;
 
-        /// <summary>The ledger's spotless assumption: a straight pass through the whole reach, the gate queue in reach.</summary>
-        public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f };
+        /// <summary>The ledger's spotless assumption: a straight pass through the whole reach, the gate queue and the doorstep in reach.</summary>
+        public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f, Base = true };
     }
 
     /// <summary>

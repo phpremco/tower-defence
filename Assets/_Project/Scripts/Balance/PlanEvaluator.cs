@@ -15,14 +15,18 @@ namespace Game.Balance
         public float AirPressure;
         public int KillMoney;
 
-        /// <summary>Health that got past the defence, what it took off the base, and the base left after the wave (the leak model).</summary>
+        /// <summary>Health that reached the gate's queue or the base alive, what the siege took off the gates and the base, and the base left after the wave.</summary>
         public float Leaked;
+        public float GateDamage;
         public float BaseDamage;
         public float BaseLeft;
 
-        /// <summary>The trunk gates' health after the wave, and what a repair drone restored during it.</summary>
+        /// <summary>The trunk gates' health together after the wave, and what a repair drone restored during it.</summary>
         public float GateLeft;
         public float DroneRepaired;
+
+        /// <summary>True when the hero went down in this wave's siege.</summary>
+        public bool HeroFell;
 
         public float Pressure => Math.Max(GroundPressure, AirPressure);
 
@@ -107,8 +111,8 @@ namespace Game.Balance
             int spent = 0;
             int next = 0;
             int harvestWave = 0;
-            float gateHealth = level.GateHealth;
             int trunkGates = TrunkGates(level);
+            SiegeState siege = SiegeState.Start(level, trunkGates);
             float repairRate = 0f;
             int cheapestGun = CheapestGun(level);
             float attackDps = 0f;
@@ -116,7 +120,6 @@ namespace Game.Balance
             float coverSum = 0f;
             int covered = 0;
             float margin = float.MaxValue;
-            float baseLeft = level.BaseHealth;
             outcome.BaseStart = level.BaseHealth;
             outcome.WaveCount = waves.Count;
 
@@ -124,7 +127,7 @@ namespace Game.Balance
             {
                 int wave = i + 1;
                 purse.Begin(waves[i]);
-                WaveLoad load = Ledger.LoadOf(level, waves[i], difficulty, rules, purse.Carried(waves[i]), trunkGates > 0 ? gateHealth : -1f);
+                WaveLoad load = Ledger.LoadOf(level, waves[i], difficulty, rules, purse.Carried(waves[i]), trunkGates > 0 ? siege.GatesLeft / trunkGates : -1f);
                 int money = level.StartingMoney + (int)purse.Paid + MineIncome(level, i, waves.Count, rules, harvestWave) - spent;
                 var line = new PlanWaveLine { Wave = wave, Boss = load.HasBoss, Money = money, KillMoney = load.KillMoney };
                 var mines = new List<GadgetStats>();
@@ -136,7 +139,7 @@ namespace Game.Balance
                     PlanStep step = plan.Steps[next];
                     int towerIndex = -1;
                     int price = step.Kind == PlanStep.Repair
-                        ? RepairPrice(level, load, rules, gateHealth, trunkGates, cheapestGun, waves.Count - i)
+                        ? RepairPrice(level, load, siege, cheapestGun, waves.Count - i)
                         : Price(level, standing, step, out towerIndex);
                     if (price < 0)
                     {
@@ -184,7 +187,7 @@ namespace Game.Balance
                         case PlanStep.Repair:
                             outcome.RepairSpent += price;
                             outcome.Repairs++;
-                            gateHealth = level.GateHealth;
+                            siege.RepairGates(level);
                             break;
                     }
                 }
@@ -198,7 +201,8 @@ namespace Game.Balance
                 float stream = Ledger.HeroStream(level, load, rules);
                 float single = Ledger.HeroSingle(level, load, rules);
                 float air = 0f;
-                float beforeGate = 0f;
+                var guards = new SiegeGuards();
+                Leak.AddBaseTurrets(ref guards, level, load, rules);
                 foreach (Standing tower in standing)
                 {
                     TowerStats stats = level.Towers[tower.Tower];
@@ -209,47 +213,43 @@ namespace Game.Balance
                     stream += option.Stream * slow;
                     single += option.Single * slow;
                     air += option.Air;
-                    // What the gun takes off the stream before the queue: the same spot without the gate's hold.
-                    SpotCover walk = cover;
-                    walk.Gate = false;
-                    beforeGate += Ledger.Capacity(level, load, rules, tower.Tower, tower.Level, walk).Stream * slow;
+                    Leak.AddTower(ref guards, level, load, rules, tower.Tower, tower.Level, cover, -1f, slow);
                 }
 
                 if (attackDps > 0f)
                 {
+                    // The attack drone fires everywhere: its kills count on the walk.
                     float drone = attackDps * rules.Utilisation;
-                    stream += Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window : 0f;
-                    single += Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) : 0f;
-                    air += Layer.Has(attackTargets, Layer.Air) ? drone * load.AirWindow : 0f;
+                    float droneStream = Layer.Has(attackTargets, Layer.Ground) ? drone * load.Window : 0f;
+                    float droneSingle = Layer.Has(attackTargets, Layer.Ground) ? drone * load.BossSeconds(load.BossWindow + load.BossFight, rules) : 0f;
+                    float droneAir = Layer.Has(attackTargets, Layer.Air) ? drone * load.AirWindow : 0f;
+                    stream += droneStream;
+                    single += droneSingle;
+                    air += droneAir;
+                    guards.WalkStream += droneStream;
+                    guards.WalkSingle += droneSingle;
+                    guards.WalkAir += droneAir;
                 }
 
                 line.Towers = standing.Count;
                 line.GroundPressure = load.GroundPressure(stream, single);
                 line.AirPressure = load.AirPressure(air);
-                LeakLine leak = Leak.Of(load, rules, line.GroundPressure, line.AirPressure);
-                line.Leaked = leak.GroundHealth + leak.AirHealth;
+                float waveSeconds = waves[i].StartDelay + load.Window;
+                SiegeLine leak = Leak.Resolve(level, load, rules, guards, siege, waveSeconds);
+                line.Leaked = leak.GroundLeak + leak.AirLeak;
+                line.GateDamage = leak.GateDamage;
                 line.BaseDamage = leak.BaseDamage;
-                baseLeft = Math.Max(0f, baseLeft - leak.BaseDamage);
-                // The queue wears the gates down while they hold it; a repair drone restores the gates first, then the base.
-                if (trunkGates > 0)
+                line.HeroFell = leak.HeroFell;
+
+                // A repair drone restores the gates first, then the base.
+                if (repairRate > 0f && siege.BaseLeft > 0f)
                 {
-                    // Only the share of the stream the guns on the walk did not kill reaches the queue and hits the gates.
-                    float arrival = load.StreamHealth > 0f ? Math.Max(0f, 1f - beforeGate / load.StreamHealth) : 0f;
-                    gateHealth = Math.Max(0f, gateHealth - GateLoss(load, gateHealth, trunkGates, arrival));
+                    line.DroneRepaired = siege.Restore(level, repairRate * rules.RepairDroneBusyShare * waveSeconds);
                 }
 
-                if (repairRate > 0f)
-                {
-                    float budget = repairRate * rules.RepairDroneBusyShare * (waves[i].StartDelay + load.Window);
-                    float gates = trunkGates > 0 ? Math.Min(budget, level.GateHealth - gateHealth) : 0f;
-                    gateHealth += gates;
-                    baseLeft = baseLeft > 0f ? Math.Min(outcome.BaseStart, baseLeft + (budget - gates)) : baseLeft;
-                    line.DroneRepaired = budget;
-                }
-
-                line.GateLeft = gateHealth;
-                line.BaseLeft = baseLeft;
-                if (baseLeft <= 0f && outcome.FallWave == 0)
+                line.GateLeft = siege.GatesLeft;
+                line.BaseLeft = siege.BaseLeft;
+                if (siege.BaseLeft <= 0f && outcome.FallWave == 0)
                 {
                     outcome.FallWave = wave;
                 }
@@ -275,9 +275,9 @@ namespace Game.Balance
             outcome.StepsBlocked = plan.Steps.Length - next;
             outcome.Margin = margin == float.MaxValue ? 0f : margin;
             outcome.MeanCover = covered > 0 ? coverSum / covered : 0f;
-            outcome.BaseLeft = baseLeft;
-            outcome.GateLeft = gateHealth;
-            outcome.Stars = Leak.Stars(baseLeft, outcome.BaseStart, level.StarFractions);
+            outcome.BaseLeft = siege.BaseLeft;
+            outcome.GateLeft = siege.GatesLeft;
+            outcome.Stars = Leak.Stars(siege.BaseLeft, outcome.BaseStart, level.StarFractions);
             return outcome;
         }
 
@@ -387,38 +387,39 @@ namespace Game.Balance
             return level.GateHealth > 0f ? gates : 0;
         }
 
-        /// <summary>
-        /// What the queue takes off each trunk gate in a wave: the share of the walkers that reach it (<paramref name="arrival"/>) at the
-        /// attackers' strike over the hold, the bosses at theirs, never more than the gate has.
-        /// </summary>
-        public static float GateLoss(WaveLoad load, float gateHealth, int trunkGates, float arrival)
+        /// <summary>What a whole queue takes off one trunk gate over a full hold: the bots' yardstick for "the gate falls in the coming wave".</summary>
+        public static float ExpectedGateLoss(WaveLoad load, int trunkGates)
         {
             float perGate = Math.Max(1, trunkGates);
-            return Math.Min(gateHealth, arrival * load.GateStrike * load.GateHold / perGate + load.BossGateStrike * load.BossGateHold / perGate);
+            return (load.GateStrike * load.GateHold + load.BossGateStrike * load.BossGateHold) / perGate;
         }
 
         /// <summary>
         /// The price of repairing the gates now, or -1 when the step is not taken: nothing to repair, or not worth it by the bot's rule
-        /// (Remco 2026-11-06): repair only when a gate would fall in the coming wave, or when a hit point is cheaper to restore than to
-        /// stop with the cheapest gun over the waves left.
+        /// (Remco 2026-11-06): repair only when the defence gate would fall in the coming wave, or when a hit point is cheaper to
+        /// restore than to stop with the cheapest gun over the waves left. A wrecked gate costs its build price.
         /// </summary>
-        public static int RepairPrice(LevelInput level, WaveLoad load, BalanceRules rules, float gateHealth, int trunkGates, int cheapestGun, int wavesLeft)
+        public static int RepairPrice(LevelInput level, WaveLoad load, SiegeState siege, int cheapestGun, int wavesLeft)
         {
-            if (trunkGates == 0 || gateHealth >= level.GateHealth)
+            float full = level.GateHealth * siege.TrunkGates;
+            if (siege.TrunkGates == 0 || siege.GatesLeft >= full)
             {
                 return -1;
             }
 
-            float missing = level.GateHealth - gateHealth;
-            int price = gateHealth <= 0f ? level.GateRebuildCost : (int)Math.Ceiling(missing * level.GateRepairCostPerHealth);
-            float expected = GateLoss(load, level.GateHealth, trunkGates, 1f);
-            bool falls = gateHealth <= expected;
+            int wrecked = (siege.DefenceGate <= 0f ? 1 : 0) + (siege.TrunkGates > 1 && siege.RestGates <= 0f ? siege.TrunkGates - 1 : 0);
+            float missing = full - siege.GatesLeft;
+            float repairable = Math.Max(0f, missing - wrecked * level.GateHealth);
+            int price = wrecked * level.GateRebuildCost + (int)Math.Ceiling(repairable * level.GateRepairCostPerHealth);
+            float expected = ExpectedGateLoss(load, siege.TrunkGates);
+            bool falls = siege.DefenceGate <= expected;
             float repairPerPoint = price / Math.Max(1f, missing);
             float gunPerPoint = cheapestGun / Math.Max(1f, expected * Math.Max(1, wavesLeft));
             return falls || (cheapestGun > 0 && repairPerPoint < gunPerPoint) ? price : -1;
         }
 
-        private static int CheapestGun(LevelInput level)
+        /// <summary>The cheapest gun the level sells (the bots' yardstick for a repair's worth), zero without one.</summary>
+        public static int CheapestGun(LevelInput level)
         {
             int cheapest = 0;
             foreach (TowerStats tower in level.Towers)

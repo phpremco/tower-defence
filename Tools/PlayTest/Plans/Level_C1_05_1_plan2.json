@@ -1,0 +1,113 @@
+{
+    "Level": "Level_C1_05",
+    "Difficulty": 1,
+    "Name": "Level_C1_05_1_plan2",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 7,
+            "Y": 4,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 6,
+            "Y": 6,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 35,
+            "Y": 5,
+            "Wave": 3
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 5
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 4,
+            "Wave": 6
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 35,
+            "Y": 5,
+            "Wave": 6
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 35,
+            "Y": 4,
+            "Wave": 8
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 33,
+            "Y": 5,
+            "Wave": 11
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 8,
+            "Y": 6,
+            "Wave": 11
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 33,
+            "Y": 5,
+            "Wave": 12
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 13
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 21,
+            "Y": 5,
+            "Wave": 14
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 4,
+            "Wave": 15
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 33,
+            "Y": 5,
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 21,
+            "Y": 5,
+            "Wave": 17
+        }
+    ]
+}

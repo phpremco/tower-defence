@@ -7,58 +7,37 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 5,
-            "Y": 6,
-            "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
             "X": 4,
             "Y": 7,
             "Wave": 1
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
+            "Kind": "build",
+            "Item": "Cannon",
             "X": 5,
             "Y": 6,
-            "Wave": 4
+            "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 5,
             "Y": 7,
-            "Wave": 6
+            "Wave": 3
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 5,
+            "X": 4,
             "Y": 7,
             "Wave": 7
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 30,
-            "Y": 15,
-            "Wave": 9
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 7,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 5,
-            "Y": 6,
-            "Wave": 12
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 8
         }
     ]
 }

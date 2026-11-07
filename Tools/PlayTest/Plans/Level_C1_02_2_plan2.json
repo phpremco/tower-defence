@@ -1,0 +1,50 @@
+{
+    "Level": "Level_C1_02",
+    "Difficulty": 2,
+    "Name": "Level_C1_02_2_plan2",
+    "Family": "searched",
+    "Steps": [
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 4,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 5,
+            "Y": 6,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 30,
+            "Y": 15,
+            "Wave": 3
+        },
+        {
+            "Kind": "drone",
+            "Item": "RepairDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 3
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 4,
+            "Y": 7,
+            "Wave": 8
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 6,
+            "Wave": 8
+        }
+    ]
+}

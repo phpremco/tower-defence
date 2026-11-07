@@ -369,6 +369,8 @@ namespace Game.Levels
                 GateRebuildCost = blockade != null ? blockade.BuildCost : 0,
                 BaseHealth = level.BaseHealth,
                 StarFractions = level.StarBaseHealthFractions,
+                BaseTurret = level.BaseTurret != null ? Stats(level.BaseTurret) : null,
+                BaseTurretSides = PlacementController.BaseTurretSides,
                 Gadgets = Gadgets(level),
                 Drones = Drones(level),
                 Geometry = Geometry(level),
@@ -388,6 +390,9 @@ namespace Game.Levels
                     GunInterval = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.AttackInterval : 1f,
                     Magazine = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.Magazine : 0,
                     ReloadSeconds = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ReloadSeconds : 0f,
+                    MaxHealth = level.Hero.MaxHealth,
+                    GuardShare = level.Hero.GuardShare,
+                    ReviveSeconds = level.Hero.ReviveSeconds,
                 };
                 foreach (Game.Hero.HeroPerkDefinition perk in level.Hero.Perks)
                 {

@@ -1,396 +1,396 @@
 level        | human surplus E M H P   | with hero E M H P       | worst wave w/ hero E M H P | trim E M H P
-C1_01        | 1.40 1.15 0.95 0.81     | 1.87 1.42 1.11 1.00     | 0.71 0.96 1.14 1.35        | 0.73/1.03 0.88/1.76 0.90/1.80 0.87/2.42
-C1_02        | 1.38 1.13 0.94 0.79     | 1.71 1.35 1.08 0.88     | 0.79 0.93 1.25 1.35        | 0.91/0.99 0.86/1.34 0.69/1.24 0.83/1.93
-C1_03        | 1.36 1.12 0.92 0.78     | 1.68 1.27 1.07 0.90     | 1.00 1.12 1.19 1.35        | 0.91/0.80 0.99/1.30 0.82/1.11 0.91/1.44
-C1_04        | 1.34 1.10 0.91 0.77     | 1.61 1.25 1.04 0.85     | 0.90 1.15 1.25 1.35        | 0.98/0.86 1.11/1.37 1.13/1.36 1.12/1.75
-C1_05        | 1.32 1.09 0.90 0.75     | 1.50 1.21 1.05 0.87     | 0.90 1.15 1.25 1.35        | 1.17/1.45 1.10/1.96 1.22/2.12 0.80/2.64
-C1_06        | 1.30 1.07 0.90 0.74     | 1.54 1.18 1.01 0.87     | 0.84 1.15 1.25 1.35        | 0.94/1.15 1.15/1.79 1.12/1.89 0.76/2.19
+C1_01        | 1.40 1.15 0.94 0.80     | 1.85 1.40 1.11 1.06     | 0.69 0.88 1.25 1.35        | 0.71/1.10 0.81/1.88 1.00/2.42 1.07/4.01
+C1_02        | 1.38 1.13 0.94 0.79     | 1.64 1.28 1.07 0.88     | 0.96 1.15 1.25 1.35        | 0.92/2.22 0.97/3.46 0.85/3.60 0.99/5.51
+C1_03        | 1.36 1.12 0.92 0.78     | 1.59 1.24 0.98 0.90     | 0.75 1.09 1.56 1.32        | 0.93/1.40 1.00/2.19 0.99/2.44 0.59/2.74
+C1_04        | 1.34 1.10 0.91 0.79     | 1.61 1.23 1.03 0.84     | 0.93 1.08 1.25 1.35        | 0.86/1.00 1.00/1.70 1.08/2.16 1.81/3.14
+C1_05        | 1.32 1.09 0.90 0.76     | 1.59 1.31 1.01 0.86     | 0.78 1.01 1.25 1.35        | 0.93/1.80 0.97/2.71 1.30/4.17 1.00/5.64
+C1_06        | 1.30 1.07 0.92 0.75     | 1.57 1.18 1.01 0.82     | 0.90 1.15 1.25 1.35        | 0.88/1.39 1.18/2.66 0.68/3.52 1.23/3.90
 
-C1_01 Easy: human 1.40x (target 1.40), with hero 1.87x, worst wave with hero 0.71 (w9); bot plain max 0.84 boss 0.73 band 1.24/1.98; trim 0.73; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
-      hero w1   money   160 towers  3 hp     73/    0 window   16s pressure 0.15/0.00
-      hero w2   money   166 towers  3 hp    113/    0 window   20s pressure 0.20/0.00
-      hero w3   money   179 towers  3 hp    161/    0 window   22s pressure 0.25/0.00
-      hero w4   money   197 towers  3 hp    210/    0 window   21s pressure 0.35/0.00
-      hero w5   money   219 towers  4 hp    335/    0 window   28s pressure 0.36/0.00
-      hero w6   money   244 towers  4 hp    544/    0 window   27s pressure 0.60/0.00
-      hero w7   money   277 towers  5 hp    498/    0 window   37s pressure 0.35/0.00
-      hero w8   money   317 towers  5 hp    957/    0 window   35s pressure 0.59/0.00
-      hero w9   money   361 towers  7 hp   1044/    0 window   30s pressure 0.71/0.00
-      hero w10  money   412 towers  7 hp   1223/    0 window   42s pressure 0.52/0.00
-      hero w11  money   463 towers  9 hp   1810/    0 window   51s pressure 0.61/0.00
-      hero w12B money   563 towers 11 hp   1124/    0 window   42s pressure 0.60/0.00
-C1_01 Medium: human 1.15x (target 1.15), with hero 1.42x, worst wave with hero 0.96 (w12); bot plain max 1.13 boss 1.18 band 1.55/2.47; trim 0.88; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
-      hero w1   money   200 towers  4 hp    129/    0 window   16s pressure 0.23/0.00
-      hero w2   money   207 towers  4 hp    200/    0 window   18s pressure 0.31/0.00
-      hero w3   money   223 towers  4 hp    284/    0 window   21s pressure 0.40/0.00
-      hero w4   money   244 towers  4 hp    370/    0 window   20s pressure 0.54/0.00
-      hero w5   money   271 towers  4 hp    590/    0 window   25s pressure 0.58/0.00
-      hero w6   money   300 towers  4 hp    959/    0 window   24s pressure 0.72/0.00
-      hero w7   money   339 towers  6 hp    877/    0 window   31s pressure 0.65/0.00
-      hero w8   money   387 towers  4 hp   1361/    0 window   33s pressure 0.62/0.00
-      hero w9   money   443 towers  4 hp   1841/    0 window   24s pressure 0.93/0.00
-      hero w10  money   500 towers  5 hp   2155/    0 window   35s pressure 0.65/0.00
-      hero w11  money   561 towers  6 hp   3190/    0 window   42s pressure 0.77/0.00
-      hero w12B money   677 towers 13 hp   1981/    0 window   35s pressure 0.96/0.00
-C1_01 Hard: human 0.95x (target 0.95), with hero 1.11x, worst wave with hero 1.14 (w6); bot plain max 1.38 boss 1.32 band 2.09/3.34; trim 0.90; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
-      hero w1   money   200 towers  4 hp    203/    0 window   15s pressure 0.36/0.00
-      hero w2   money   212 towers  4 hp    323/    0 window   17s pressure 0.52/0.00
-      hero w3   money   237 towers  4 hp    467/    0 window   19s pressure 0.69/0.00
-      hero w4   money   270 towers  5 hp    594/    0 window   18s pressure 0.80/0.00
-      hero w5   money   312 towers  4 hp    954/    0 window   22s pressure 0.80/0.00
-      hero w6   money   360 towers  4 hp   1551/    0 window   19s pressure 1.14/0.00
-      hero w7   money   415 towers  6 hp   1416/    0 window   25s pressure 0.90/0.00
-      hero w8 B money   490 towers  8 hp   1512/    0 window   33s pressure 1.08/0.00
-      hero w9   money   540 towers 10 hp   1008/    0 window   20s pressure 0.71/0.00
-      hero w10  money   796 towers  8 hp   3486/    0 window   29s pressure 0.87/0.00
-      hero w11  money   893 towers  9 hp   5157/    0 window   36s pressure 0.96/0.00
-      hero w12B money  1079 towers 16 hp   2714/    0 window   29s pressure 0.84/0.00
-C1_01 Psycho: human 0.81x (target 0.80), with hero 1.00x, worst wave with hero 1.35 (w6); bot plain max 1.64 boss 1.64 band 2.63/4.20; trim 0.87; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   200 towers  2 hp    355/    0 window   15s pressure 0.49/0.00
-      hero w2   money   215 towers  2 hp    555/    0 window   17s pressure 0.71/0.00
-      hero w3   money   246 towers  3 hp    793/    0 window   18s pressure 0.82/0.00
-      hero w4   money   286 towers  4 hp   1034/    0 window   17s pressure 0.95/0.00
-      hero w5 B money   335 towers  5 hp   1595/    0 window   17s pressure 1.17/0.00
-      hero w6   money   375 towers  4 hp   2428/    0 window   17s pressure 1.35/0.00
-      hero w7   money   426 towers  5 hp   2462/    0 window   22s pressure 1.04/0.00
-      hero w8 B money   667 towers 12 hp   3608/    0 window   35s pressure 1.15/0.00
-      hero w9   money   735 towers 13 hp   1825/    0 window   18s pressure 0.71/0.00
-      hero w10  money  1003 towers 10 hp   6039/    0 window   25s pressure 0.89/0.00
-      hero w11  money  1124 towers 11 hp   8959/    0 window   30s pressure 1.03/0.00
-      hero w12B money  1349 towers 16 hp   4262/    0 window   25s pressure 0.77/0.00
-C1_02 Easy: human 1.38x (target 1.38), with hero 1.71x, worst wave with hero 0.79 (w12); bot plain max 0.93 boss 0.97 band 1.24/1.98; trim 0.91; research 6 earned 4 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
-      hero w1   money   176 towers  1 hp    103/    0 window   21s pressure 0.18/0.00
-      hero w2   money   186 towers  2 hp    174/    0 window   21s pressure 0.25/0.00
-      hero w3   money   201 towers  2 hp    235/    0 window   25s pressure 0.28/0.00
-      hero w4   money   218 towers  2 hp    308/    0 window   27s pressure 0.35/0.00
-      hero w5   money   239 towers  3 hp    455/    0 window   27s pressure 0.44/0.00
-      hero w6   money   272 towers  3 hp    621/    0 window   28s pressure 0.44/0.00
-      hero w7   money   301 towers  4 hp    673/    0 window   23s pressure 0.65/0.00
-      hero w8   money   354 towers  4 hp    850/    0 window   25s pressure 0.50/0.00
-      hero w9   money   388 towers  4 hp   1151/    0 window   25s pressure 0.66/0.00
-      hero w10  money   448 towers  7 hp   1131/    0 window   23s pressure 0.77/0.00
-      hero w11  money   548 towers  5 hp   1639/    0 window   26s pressure 0.63/0.00
-      hero w12B money   623 towers  9 hp   1586/    0 window   23s pressure 0.79/0.00
-C1_02 Medium: human 1.13x (target 1.13), with hero 1.35x, worst wave with hero 0.93 (w12); bot plain max 1.12 boss 1.23 band 1.55/2.47; trim 0.86; research 12 earned 8 spent, tower bonus 0.00, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   220 towers  2 hp    153/    0 window   20s pressure 0.23/0.00
-      hero w2   money   233 towers  3 hp    265/    0 window   20s pressure 0.33/0.00
-      hero w3   money   253 towers  3 hp    354/    0 window   24s pressure 0.39/0.00
-      hero w4   money   275 towers  3 hp    456/    0 window   25s pressure 0.48/0.00
-      hero w5   money   302 towers  4 hp    691/    0 window   25s pressure 0.62/0.00
-      hero w6   money   344 towers  3 hp    897/    0 window   24s pressure 0.58/0.00
-      hero w7   money   378 towers  5 hp    985/    0 window   21s pressure 0.93/0.00
-      hero w8   money   447 towers  4 hp   1219/    0 window   23s pressure 0.64/0.00
-      hero w9   money   491 towers  5 hp   1374/    0 window   22s pressure 0.70/0.00
-      hero w10  money   564 towers  7 hp   1640/    0 window   20s pressure 0.91/0.00
-      hero w11  money   687 towers  7 hp   2309/    0 window   23s pressure 0.80/0.00
-      hero w12B money   772 towers  9 hp   2219/    0 window   21s pressure 0.93/0.00
-C1_02 Hard: human 0.94x (target 0.94), with hero 1.08x, worst wave with hero 1.25 (w7); bot plain max 1.60 boss 1.18 band 2.09/3.34; trim 0.69; research 30 earned 28 spent, tower bonus 0.07, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   220 towers  2 hp    208/    0 window   20s pressure 0.30/0.00
-      hero w2   money   240 towers  3 hp    354/    0 window   20s pressure 0.43/0.00
-      hero w3   money   271 towers  5 hp    479/    0 window   23s pressure 0.49/0.00
-      hero w4   money   305 towers  6 hp    615/    0 window   24s pressure 0.52/0.00
-      hero w5   money   348 towers  6 hp    928/    0 window   24s pressure 0.78/0.00
-      hero w6   money   413 towers  4 hp   1312/    0 window   16s pressure 0.83/0.00
-      hero w7   money   474 towers  7 hp   1296/    0 window   14s pressure 1.25/0.00
-      hero w8   money   563 towers  6 hp   1772/    0 window   16s pressure 0.89/0.00
-      hero w9 B money   634 towers 12 hp   1349/    0 window   15s pressure 0.87/0.00
-      hero w10  money   724 towers  9 hp   2429/    0 window   17s pressure 1.20/0.00
-      hero w11  money  1020 towers 10 hp   2535/    0 window   18s pressure 0.62/0.00
-      hero w12B money  1159 towers 14 hp   2995/    0 window   16s pressure 0.87/0.00
-C1_02 Psycho: human 0.79x (target 0.79), with hero 0.88x, worst wave with hero 1.35 (w6); bot plain max 1.68 boss 1.58 band 2.63/4.20; trim 0.83; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   220 towers  2 hp    421/    0 window   19s pressure 0.47/0.00
-      hero w2   money   246 towers  3 hp    728/    0 window   20s pressure 0.67/0.00
-      hero w3   money   285 towers  4 hp    987/    0 window   22s pressure 0.74/0.00
-      hero w4   money   329 towers  4 hp   1260/    0 window   23s pressure 0.73/0.00
-      hero w5 B money   385 towers  6 hp   2002/    0 window   20s pressure 1.14/0.00
-      hero w6   money   429 towers  4 hp   2421/    0 window   13s pressure 1.35/0.00
-      hero w7   money   642 towers  6 hp   2761/    0 window   12s pressure 1.17/0.00
-      hero w8   money   757 towers  8 hp   3591/    0 window   13s pressure 1.15/0.00
-      hero w9 B money   831 towers 10 hp   3007/    0 window   13s pressure 1.09/0.00
-      hero w10  money   935 towers  9 hp   4697/    0 window   14s pressure 1.21/0.00
-      hero w11  money  1243 towers 12 hp   4446/    0 window   15s pressure 0.82/0.00
-      hero w12B money  1392 towers 15 hp   5378/    0 window   13s pressure 1.05/0.00
-C1_03 Easy: human 1.36x (target 1.36), with hero 1.68x, worst wave with hero 1.00 (w16); bot plain max 0.84 boss 1.22 band 1.24/1.98; trim 0.91; research 12 earned 8 spent, tower bonus 0.00, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   192 towers  2 hp    137/    0 window   23s pressure 0.19/0.00
-      hero w2   money   192 towers  2 hp    199/    0 window   22s pressure 0.29/0.00
-      hero w3   money   197 towers  3 hp    238/    0 window   26s pressure 0.33/0.00
-      hero w4   money   211 towers  3 hp    375/    0 window   20s pressure 0.48/0.00
-      hero w5   money   220 towers  2 hp    421/    0 window   26s pressure 0.51/0.00
-      hero w6   money   238 towers  3 hp    460/    0 window   23s pressure 0.53/0.00
-      hero w7   money   258 towers  3 hp    551/    0 window   27s pressure 0.56/0.00
-      hero w8   money   290 towers  4 hp    711/    0 window   26s pressure 0.64/0.00
-      hero w9   money   334 towers  3 hp    955/    0 window   24s pressure 0.63/0.00
-      hero w10  money   396 towers  7 hp    749/    0 window   25s pressure 0.62/0.00
-      hero w11  money   499 towers  7 hp   1125/    0 window   26s pressure 0.66/0.00
-      hero w12  money   573 towers 11 hp    794/  299 window   23s pressure 0.47/0.66
-      hero w13  money   649 towers  6 hp   1564/    0 window   26s pressure 0.53/0.00
-      hero w14  money   746 towers 11 hp   1776/    0 window   32s pressure 0.62/0.00
-      hero w15  money   900 towers 14 hp   1347/  563 window   26s pressure 0.58/0.57
-      hero w16B money   936 towers 12 hp   2167/    0 window   25s pressure 1.00/0.00
-C1_03 Medium: human 1.12x (target 1.12), with hero 1.27x, worst wave with hero 1.12 (w16); bot plain max 1.18 boss 1.39 band 1.55/2.47; trim 0.99; research 24 earned 23 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   240 towers  3 hp    218/    0 window   22s pressure 0.26/0.00
-      hero w2   money   240 towers  3 hp    317/    0 window   21s pressure 0.38/0.00
-      hero w3   money   246 towers  4 hp    379/    0 window   25s pressure 0.44/0.00
-      hero w4   money   262 towers  3 hp    618/    0 window   20s pressure 0.55/0.00
-      hero w5   money   274 towers  4 hp    705/    0 window   24s pressure 0.67/0.00
-      hero w6   money   297 towers  4 hp    731/    0 window   22s pressure 0.73/0.00
-      hero w7   money   321 towers  3 hp   1068/    0 window   25s pressure 0.65/0.00
-      hero w8   money   372 towers  4 hp   1157/    0 window   24s pressure 0.66/0.00
-      hero w9   money   439 towers  4 hp   1602/    0 window   22s pressure 0.82/0.00
-      hero w10  money   500 towers 10 hp   1152/    0 window   20s pressure 0.76/0.00
-      hero w11  money   592 towers  6 hp   1956/    0 window   22s pressure 0.77/0.00
-      hero w12  money   706 towers 11 hp   1459/  574 window   24s pressure 0.71/0.88
-      hero w13  money   795 towers  8 hp   2646/    0 window   21s pressure 0.91/0.00
-      hero w14  money   904 towers 10 hp   3046/    0 window   26s pressure 0.94/0.00
-      hero w15  money  1099 towers 18 hp   2072/ 1143 window   22s pressure 0.75/0.90
-      hero w16B money  1173 towers 14 hp   3360/   83 window   21s pressure 1.12/0.07
-C1_03 Hard: human 0.92x (target 0.92), with hero 1.07x, worst wave with hero 1.19 (w8); bot plain max 1.45 boss 1.30 band 2.09/3.34; trim 0.82; research 60 earned 58 spent, tower bonus 0.10, hero dmg 1.15, gate 1.20; failures 0
-      hero w1   money   240 towers  3 hp    287/    0 window   21s pressure 0.32/0.00
-      hero w2   money   240 towers  3 hp    405/    0 window   21s pressure 0.46/0.00
-      hero w3   money   253 towers  3 hp    484/    0 window   24s pressure 0.49/0.00
-      hero w4   money   270 towers  3 hp    984/    0 window   19s pressure 0.85/0.00
-      hero w5   money   288 towers  4 hp   1144/    0 window   23s pressure 1.05/0.00
-      hero w6   money   320 towers  4 hp   1137/    0 window   22s pressure 1.09/0.00
-      hero w7   money   373 towers  4 hp   1342/    0 window   24s pressure 0.72/0.00
-      hero w8   money   469 towers  5 hp   1988/    0 window   16s pressure 1.19/0.00
-      hero w9   money   558 towers  9 hp   1086/    0 window   14s pressure 0.84/0.00
-      hero w10B money   663 towers 11 hp   1453/    0 window   13s pressure 1.00/0.00
-      hero w11  money   801 towers  8 hp   2495/    0 window   17s pressure 0.82/0.00
-      hero w12  money   939 towers 15 hp   1837/  767 window   18s pressure 0.78/0.90
-      hero w13  money  1057 towers 16 hp   1974/    0 window   17s pressure 0.83/0.00
-      hero w14  money  1193 towers 21 hp   1769/  931 window   17s pressure 0.64/0.76
-      hero w15  money  1314 towers 23 hp   2759/ 1576 window   17s pressure 0.92/1.10
-      hero w16B money  1606 towers 16 hp   4577/  237 window   17s pressure 0.97/0.47
-C1_03 Psycho: human 0.78x (target 0.78), with hero 0.90x, worst wave with hero 1.35 (w10); bot plain max 1.78 boss 1.78 band 2.63/4.20; trim 0.91; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   240 towers  3 hp    561/    0 window   20s pressure 0.52/0.00
-      hero w2   money   240 towers  3 hp    785/    0 window   20s pressure 0.74/0.00
-      hero w3   money   256 towers  3 hp    943/    0 window   22s pressure 0.82/0.00
-      hero w4   money   277 towers  3 hp   1787/    0 window   19s pressure 1.28/0.00
-      hero w5   money   298 towers  3 hp   2057/    0 window   21s pressure 1.33/0.00
-      hero w6 B money   320 towers  6 hp   1678/    0 window   19s pressure 1.35/0.00
-      hero w7   money   392 towers  4 hp   1690/    0 window   21s pressure 0.80/0.00
-      hero w8   money   443 towers  7 hp   1246/    0 window   14s pressure 0.93/0.00
-      hero w9   money   531 towers  9 hp   1587/    0 window   12s pressure 1.13/0.00
-      hero w10B money   648 towers 12 hp   2013/    0 window   11s pressure 1.35/0.00
-      hero w11  money   788 towers  8 hp   4388/    0 window   14s pressure 1.35/0.00
-      hero w12  money   926 towers 18 hp   3454/ 1573 window   15s pressure 1.30/1.33
-      hero w13  money  1052 towers 11 hp   4534/    0 window   14s pressure 1.04/0.00
-      hero w14  money  1206 towers 24 hp   3476/ 1709 window   15s pressure 0.99/1.05
-      hero w15  money  1319 towers 23 hp   4256/ 1563 window   14s pressure 1.04/1.08
-      hero w16B money  1703 towers 19 hp   8095/  881 window   14s pressure 1.26/1.01
-C1_04 Easy: human 1.34x (target 1.34), with hero 1.61x, worst wave with hero 0.90 (w16); bot plain max 1.07 boss 1.14 band 1.24/1.98; trim 0.98; research 18 earned 18 spent, tower bonus 0.03, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   208 towers  4 hp    129/    0 window   23s pressure 0.19/0.00
-      hero w2   money   208 towers  4 hp    185/    0 window   22s pressure 0.28/0.00
-      hero w3   money   212 towers  4 hp    116/   37 window   19s pressure 0.20/0.31
-      hero w4   money   216 towers  4 hp    270/    0 window   26s pressure 0.34/0.00
-      hero w5   money   227 towers  4 hp    385/    0 window   25s pressure 0.51/0.00
-      hero w6   money   245 towers  4 hp    256/   67 window   22s pressure 0.38/0.55
-      hero w7   money   264 towers  5 hp    507/  102 window   23s pressure 0.60/0.15
-      hero w8   money   292 towers  5 hp    686/    0 window   29s pressure 0.68/0.00
-      hero w9   money   345 towers  6 hp    418/  122 window   21s pressure 0.47/0.47
-      hero w10  money   391 towers  4 hp    878/    0 window   23s pressure 0.65/0.00
-      hero w11  money   445 towers  6 hp   1049/    0 window   26s pressure 0.71/0.00
-      hero w12  money   496 towers  8 hp    814/  206 window   21s pressure 0.65/0.67
-      hero w13  money   552 towers 11 hp    741/    0 window   24s pressure 0.50/0.00
-      hero w14  money   644 towers 12 hp   1124/    0 window   26s pressure 0.61/0.00
-      hero w15  money   721 towers  8 hp   2397/    0 window   26s pressure 0.87/0.00
-      hero w16B money   791 towers 11 hp   2077/  698 window   23s pressure 0.85/0.90
-C1_04 Medium: human 1.10x (target 1.10), with hero 1.25x, worst wave with hero 1.15 (w16); bot plain max 1.26 boss 1.45 band 1.55/2.47; trim 1.11; research 36 earned 33 spent, tower bonus 0.08, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   260 towers  3 hp    215/    0 window   22s pressure 0.29/0.00
-      hero w2   money   260 towers  3 hp    310/    0 window   21s pressure 0.43/0.00
-      hero w3   money   260 towers  5 hp    206/   63 window   19s pressure 0.30/0.41
-      hero w4   money   266 towers  3 hp    503/    0 window   25s pressure 0.60/0.00
-      hero w5   money   281 towers  4 hp    653/    0 window   24s pressure 0.70/0.00
-      hero w6   money   301 towers  6 hp    450/  112 window   21s pressure 0.52/0.62
-      hero w7   money   325 towers  5 hp    741/  356 window   21s pressure 0.73/0.59
-      hero w8   money   377 towers  4 hp   1146/    0 window   25s pressure 0.74/0.00
-      hero w9   money   441 towers  5 hp    662/  205 window   21s pressure 0.60/0.66
-      hero w10  money   498 towers  5 hp   1406/    0 window   22s pressure 0.98/0.00
-      hero w11  money   570 towers  6 hp   1761/    0 window   21s pressure 1.03/0.00
-      hero w12  money   623 towers  9 hp   1116/  344 window   21s pressure 0.69/0.70
-      hero w13  money   706 towers 11 hp   1346/    0 window   20s pressure 0.93/0.00
-      hero w14  money   778 towers  8 hp   2195/    0 window   21s pressure 0.88/0.00
-      hero w15  money   859 towers 12 hp   1796/  488 window   24s pressure 0.76/0.81
-      hero w16B money   913 towers 11 hp   2629/ 1106 window   20s pressure 1.06/1.15
-C1_04 Hard: human 0.91x (target 0.91), with hero 1.04x, worst wave with hero 1.25 (w16); bot plain max 1.41 boss 1.61 band 2.09/3.34; trim 1.13; research 90 earned 90 spent, tower bonus 0.21, hero dmg 1.15, gate 1.20; failures 0
-      hero w1   money   260 towers  3 hp    346/    0 window   21s pressure 0.43/0.00
-      hero w2   money   260 towers  3 hp    492/    0 window   20s pressure 0.62/0.00
-      hero w3   money   260 towers  4 hp    321/  146 window   19s pressure 0.41/0.78
-      hero w4   money   271 towers  5 hp    755/  229 window   24s pressure 0.82/0.65
-      hero w5   money   295 towers  4 hp   1127/    0 window   23s pressure 1.12/0.00
-      hero w6   money   321 towers  4 hp    698/  261 window   21s pressure 0.72/1.12
-      hero w7   money   354 towers  6 hp   1004/  695 window   20s pressure 0.85/0.77
-      hero w8   money   464 towers  6 hp    772/  331 window   20s pressure 0.73/0.88
-      hero w9   money   556 towers  8 hp   1024/  478 window   22s pressure 0.73/0.80
-      hero w10B money   622 towers  7 hp   1718/    0 window   19s pressure 1.25/0.00
-      hero w11  money   715 towers  9 hp   1202/   83 window   14s pressure 0.95/0.11
-      hero w12  money   788 towers 13 hp   1315/  671 window   18s pressure 0.73/0.79
-      hero w13  money   891 towers 14 hp   1728/    0 window   16s pressure 1.03/0.00
-      hero w14  money   992 towers 15 hp   2212/  166 window   17s pressure 1.05/0.12
-      hero w15  money  1102 towers 15 hp   2692/  797 window   16s pressure 1.00/1.03
-      hero w16B money  1217 towers 14 hp   3855/ 1600 window   16s pressure 1.21/1.25
-C1_04 Psycho: human 0.77x (target 0.77), with hero 0.85x, worst wave with hero 1.35 (w16); bot plain max 1.71 boss 1.87 band 2.63/4.20; trim 1.12; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   260 towers  4 hp    603/    0 window   20s pressure 0.61/0.00
-      hero w2   money   260 towers  3 hp    864/    0 window   20s pressure 0.98/0.00
-      hero w3   money   260 towers  4 hp    570/  208 window   18s pressure 0.65/0.90
-      hero w4   money   273 towers  5 hp   1073/  224 window   23s pressure 1.02/0.53
-      hero w5 B money   291 towers  4 hp   1303/    0 window   19s pressure 1.35/0.00
-      hero w6   money   335 towers  4 hp    867/  370 window   20s pressure 0.77/1.30
-      hero w7   money   368 towers  6 hp   1377/ 1325 window   17s pressure 1.11/1.20
-      hero w8   money   497 towers  6 hp   1216/  387 window   17s pressure 0.88/0.98
-      hero w9   money   559 towers  7 hp   1623/  680 window   17s pressure 1.01/1.18
-      hero w10B money   617 towers  9 hp   1965/    0 window   15s pressure 1.35/0.00
-      hero w11  money   718 towers 11 hp   1740/  118 window   12s pressure 1.27/0.11
-      hero w12  money   896 towers  9 hp   2246/ 1144 window   16s pressure 0.98/1.07
-      hero w13  money   996 towers 16 hp   2548/    0 window   13s pressure 1.31/0.00
-      hero w14  money  1132 towers 17 hp   3173/ 1231 window   15s pressure 1.03/1.08
-      hero w15  money  1206 towers 18 hp   3454/ 1458 window   14s pressure 1.14/1.21
-      hero w16B money  1315 towers 15 hp   4992/ 1963 window   13s pressure 1.35/1.11
-C1_05 Easy: human 1.32x (target 1.32), with hero 1.50x, worst wave with hero 0.90 (w17); bot plain max 1.10 boss 1.11 band 1.24/1.98; trim 1.17; research 24 earned 23 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   224 towers  4 hp    223/    0 window   23s pressure 0.26/0.00
-      hero w2   money   234 towers  4 hp    360/    0 window   26s pressure 0.38/0.00
-      hero w3   money   250 towers  3 hp    550/    0 window   21s pressure 0.45/0.00
-      hero w4   money   261 towers  4 hp     68/   71 window   19s pressure 0.08/0.44
-      hero w5   money   271 towers  3 hp    650/    0 window   23s pressure 0.49/0.00
-      hero w6   money   298 towers  3 hp    952/    0 window   27s pressure 0.64/0.00
-      hero w7   money   324 towers  3 hp   1200/    0 window   25s pressure 0.69/0.00
-      hero w8   money   355 towers  7 hp    534/  156 window   20s pressure 0.46/0.51
-      hero w9   money   382 towers  4 hp   1207/    0 window   24s pressure 0.66/0.00
-      hero w10  money   457 towers  5 hp   1497/    0 window   26s pressure 0.60/0.00
-      hero w11  money   562 towers 11 hp   1613/    0 window   25s pressure 0.79/0.00
-      hero w12  money   697 towers  7 hp   1964/    0 window   26s pressure 0.57/0.00
-      hero w13  money   797 towers 12 hp   1092/  610 window   26s pressure 0.48/0.65
-      hero w14  money   916 towers  9 hp   2960/    0 window   28s pressure 0.80/0.00
-      hero w15  money  1007 towers 10 hp   4218/    0 window   40s pressure 0.73/0.00
-      hero w16  money  1197 towers  8 hp   5845/    0 window   36s pressure 0.89/0.00
-      hero w17B money  1330 towers 16 hp   3957/    0 window   32s pressure 0.90/0.00
-C1_05 Medium: human 1.09x (target 1.08), with hero 1.21x, worst wave with hero 1.15 (w17); bot plain max 1.28 boss 1.61 band 1.55/2.47; trim 1.10; research 48 earned 48 spent, tower bonus 0.10, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   280 towers  4 hp    310/    0 window   22s pressure 0.28/0.00
-      hero w2   money   290 towers  4 hp    450/    0 window   24s pressure 0.38/0.00
-      hero w3   money   309 towers  3 hp    765/    0 window   20s pressure 0.52/0.00
-      hero w4   money   322 towers  4 hp     95/   99 window   19s pressure 0.10/0.50
-      hero w5   money   334 towers  3 hp    906/    0 window   22s pressure 0.58/0.00
-      hero w6   money   366 towers  4 hp   1325/    0 window   25s pressure 0.70/0.00
-      hero w7   money   397 towers  4 hp   1670/    0 window   24s pressure 0.92/0.00
-      hero w8   money   438 towers  5 hp    744/  217 window   20s pressure 0.58/0.63
-      hero w9   money   495 towers  5 hp   1680/    0 window   21s pressure 1.00/0.00
-      hero w10  money   585 towers  6 hp   2084/    0 window   23s pressure 0.93/0.00
-      hero w11  money   713 towers  7 hp   2246/    0 window   21s pressure 0.96/0.00
-      hero w12  money   864 towers  6 hp   2733/    0 window   22s pressure 0.76/0.00
-      hero w13  money   987 towers 13 hp   1658/  850 window   24s pressure 0.63/0.74
-      hero w14  money  1122 towers  6 hp   4122/    0 window   23s pressure 0.93/0.00
-      hero w15  money  1224 towers 12 hp   6038/    0 window   34s pressure 0.97/0.00
-      hero w16  money  1464 towers 16 hp   2641/ 1462 window   22s pressure 0.71/0.77
-      hero w17B money  1569 towers 11 hp   5413/  148 window   26s pressure 1.15/0.12
-C1_05 Hard: human 0.90x (target 0.90), with hero 1.05x, worst wave with hero 1.25 (w7); bot plain max 1.51 boss 1.70 band 2.09/3.34; trim 1.22; research 120 earned 118 spent, tower bonus 0.24, hero dmg 1.15, gate 1.40; failures 0
-      hero w1   money   280 towers  4 hp    554/    0 window   21s pressure 0.47/0.00
-      hero w2   money   294 towers  4 hp    736/    0 window   23s pressure 0.57/0.00
-      hero w3   money   326 towers  4 hp   1592/    0 window   20s pressure 1.08/0.00
-      hero w4   money   347 towers  4 hp    172/  250 window   18s pressure 0.20/0.59
-      hero w5   money   364 towers  4 hp   1349/    0 window   21s pressure 1.25/0.00
-      hero w6   money   421 towers  5 hp   1072/  244 window   20s pressure 0.73/0.75
-      hero w7   money   437 towers  5 hp   1965/    0 window   22s pressure 1.25/0.00
-      hero w8   money   531 towers  8 hp   1280/  549 window   20s pressure 0.78/0.84
-      hero w9   money   620 towers  7 hp   2073/    0 window   16s pressure 1.03/0.00
-      hero w10  money   756 towers  8 hp   2541/  244 window   19s pressure 0.94/0.61
-      hero w11B money   957 towers 13 hp   3167/ 1616 window   14s pressure 1.25/1.21
-      hero w12  money  1164 towers 12 hp   3401/  433 window   19s pressure 0.78/0.84
-      hero w13  money  1495 towers 16 hp   3114/ 1508 window   18s pressure 0.68/0.74
-      hero w14  money  1726 towers  7 hp   7690/    0 window   18s pressure 1.04/0.00
-      hero w15  money  1877 towers 11 hp  11369/    0 window   29s pressure 1.04/0.00
-      hero w16  money  2272 towers 16 hp   5439/ 2779 window   18s pressure 0.74/0.77
-      hero w17B money  2458 towers 11 hp  11169/  610 window   23s pressure 0.97/0.56
-C1_05 Psycho: human 0.75x (target 0.75), with hero 0.87x, worst wave with hero 1.35 (w11); bot plain max 2.03 boss 2.09 band 2.63/4.20; trim 0.80; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   280 towers  3 hp    956/    0 window   21s pressure 0.61/0.00
-      hero w2   money   293 towers  4 hp    951/    0 window   22s pressure 0.69/0.00
-      hero w3   money   336 towers  3 hp   2523/    0 window   20s pressure 1.35/0.00
-      hero w4   money   357 towers  4 hp    295/  357 window   18s pressure 0.32/0.77
-      hero w5 B money   377 towers  5 hp   1597/    0 window   19s pressure 1.35/0.00
-      hero w6   money   436 towers  6 hp   1238/  408 window   19s pressure 0.83/0.90
-      hero w7   money   459 towers  6 hp   1538/    0 window   16s pressure 1.31/0.00
-      hero w8   money   672 towers 11 hp   1614/  785 window   19s pressure 0.69/0.87
-      hero w9   money   767 towers  5 hp   3561/    0 window   12s pressure 1.35/0.00
-      hero w10  money   909 towers 14 hp   2415/  960 window   16s pressure 0.86/0.93
-      hero w11B money  1064 towers 13 hp   3642/ 1575 window   11s pressure 1.25/1.35
-      hero w12  money  1304 towers 14 hp   5041/  533 window   16s pressure 0.99/0.79
-      hero w13  money  1626 towers 16 hp   5589/ 2768 window   15s pressure 1.17/1.20
-      hero w14  money  1874 towers  7 hp  13433/    0 window   16s pressure 1.35/0.00
-      hero w15  money  2043 towers 11 hp  16969/    0 window   24s pressure 1.35/0.00
-      hero w16  money  2403 towers 16 hp   9093/ 4631 window   14s pressure 1.21/1.24
-      hero w17B money  2574 towers 11 hp  16966/ 1868 window   17s pressure 1.35/1.28
-C1_06 Easy: human 1.30x (target 1.30), with hero 1.54x, worst wave with hero 0.84 (w18); bot plain max 0.97 boss 1.03 band 1.24/1.98; trim 0.94; research 30 earned 28 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
-      hero w1   money   240 towers  4 hp    217/    0 window   26s pressure 0.23/0.00
-      hero w2   money   240 towers  2 hp    456/    0 window   27s pressure 0.35/0.00
-      hero w3   money   254 towers  3 hp    521/    0 window   29s pressure 0.34/0.00
-      hero w4   money   263 towers  3 hp    611/    0 window   24s pressure 0.47/0.00
-      hero w5   money   275 towers  4 hp    762/    0 window   27s pressure 0.67/0.00
-      hero w6   money   297 towers  3 hp    884/    0 window   29s pressure 0.56/0.00
-      hero w7   money   322 towers  5 hp    898/  208 window   26s pressure 0.65/0.34
-      hero w8   money   367 towers  4 hp    498/  124 window   26s pressure 0.48/0.40
-      hero w9   money   373 towers  4 hp   1006/    0 window   28s pressure 0.70/0.00
-      hero w10  money   438 towers  4 hp   1328/    0 window   30s pressure 0.70/0.00
-      hero w11  money   500 towers  6 hp    692/  167 window   28s pressure 0.39/0.47
-      hero w12  money   568 towers  6 hp   1727/  434 window   29s pressure 0.76/0.51
-      hero w13  money   672 towers  7 hp   2257/    0 window   30s pressure 0.71/0.00
-      hero w14  money   753 towers 12 hp   1298/  439 window   29s pressure 0.52/0.54
-      hero w15  money   826 towers 10 hp   2423/    0 window   31s pressure 0.75/0.00
-      hero w16  money   937 towers  9 hp   3185/    0 window   29s pressure 0.71/0.00
-      hero w17  money  1071 towers  7 hp   3833/  809 window   30s pressure 0.74/0.77
-      hero w18B money  1281 towers 14 hp   3979/    0 window   35s pressure 0.84/0.00
-C1_06 Medium: human 1.07x (target 1.07), with hero 1.18x, worst wave with hero 1.15 (w18); bot plain max 1.37 boss 1.47 band 1.55/2.47; trim 1.15; research 60 earned 58 spent, tower bonus 0.10, hero dmg 1.15, gate 1.20; failures 0
-      hero w1   money   300 towers  4 hp    392/    0 window   25s pressure 0.33/0.00
-      hero w2   money   300 towers  3 hp    689/    0 window   26s pressure 0.39/0.00
-      hero w3   money   314 towers  3 hp    943/    0 window   28s pressure 0.49/0.00
-      hero w4   money   325 towers  3 hp   1105/    0 window   24s pressure 0.69/0.00
-      hero w5   money   338 towers  3 hp   1350/    0 window   26s pressure 0.78/0.00
-      hero w6   money   368 towers  4 hp   1429/    0 window   28s pressure 0.73/0.00
-      hero w7   money   392 towers  5 hp   1416/  348 window   26s pressure 0.81/0.70
-      hero w8   money   448 towers  5 hp    906/  224 window   26s pressure 0.59/0.65
-      hero w9   money   493 towers  5 hp   1625/    0 window   26s pressure 0.89/0.00
-      hero w10  money   555 towers  5 hp   2072/  139 window   29s pressure 0.86/1.05
-      hero w11  money   632 towers  8 hp   1443/  301 window   28s pressure 0.58/0.69
-      hero w12  money   702 towers  8 hp   2220/  829 window   28s pressure 0.78/0.65
-      hero w13  money   844 towers  9 hp   2939/  284 window   26s pressure 0.86/0.77
-      hero w14  money   937 towers 16 hp   1912/  792 window   28s pressure 0.60/0.77
-      hero w15  money  1016 towers 10 hp   4453/    0 window   26s pressure 1.05/0.00
-      hero w16  money  1146 towers  7 hp   5218/  317 window   25s pressure 1.10/0.79
-      hero w17  money  1289 towers 20 hp   3548/  942 window   27s pressure 0.76/0.81
-      hero w18B money  1426 towers 11 hp   6121/  127 window   29s pressure 1.15/0.11
-C1_06 Hard: human 0.90x (target 0.88), with hero 1.01x, worst wave with hero 1.25 (w6); bot plain max 1.74 boss 1.64 band 2.09/3.34; trim 1.12; research 150 earned 148 spent, tower bonus 0.29, hero dmg 1.15, gate 1.40; failures 0
-      hero w1   money   300 towers  4 hp    604/    0 window   24s pressure 0.45/0.00
-      hero w2   money   300 towers  3 hp   1020/    0 window   26s pressure 0.51/0.00
-      hero w3   money   314 towers  3 hp   1870/    0 window   27s pressure 0.86/0.00
-      hero w4   money   349 towers  3 hp   1801/    0 window   24s pressure 0.94/0.00
-      hero w5   money   381 towers  5 hp   1016/  295 window   25s pressure 0.74/0.80
-      hero w6   money   409 towers  4 hp   2092/    0 window   27s pressure 1.25/0.00
-      hero w7   money   442 towers  5 hp   1381/  164 window   26s pressure 0.97/0.13
-      hero w8   money   539 towers  8 hp   1389/  499 window   26s pressure 0.71/0.76
-      hero w9   money   619 towers  6 hp   2527/    0 window   25s pressure 0.95/0.00
-      hero w10  money   714 towers  6 hp   3432/  311 window   22s pressure 1.17/0.96
-      hero w11  money   807 towers 12 hp   1970/  561 window   29s pressure 0.57/0.68
-      hero w12B money   914 towers 12 hp   4284/ 1019 window   29s pressure 1.24/0.36
-      hero w13  money  1122 towers  7 hp   5849/  620 window   20s pressure 1.25/1.20
-      hero w14  money  1276 towers 20 hp   4125/ 1178 window   24s pressure 0.84/0.88
-      hero w15  money  1376 towers 14 hp   6878/    0 window   22s pressure 1.06/0.00
-      hero w16  money  1541 towers  9 hp   9072/  558 window   22s pressure 1.25/1.01
-      hero w17  money  1873 towers 28 hp   6093/ 1520 window   22s pressure 0.83/0.84
-      hero w18B money  2082 towers 10 hp  11615/  501 window   26s pressure 1.14/0.46
-C1_06 Psycho: human 0.74x (target 0.74), with hero 0.87x, worst wave with hero 1.35 (w7); bot plain max 2.00 boss 2.08 band 2.63/4.20; trim 0.76; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
-      hero w1   money   300 towers  4 hp    981/    0 window   24s pressure 0.55/0.00
-      hero w2   money   300 towers  3 hp   1272/    0 window   26s pressure 0.59/0.00
-      hero w3   money   317 towers  3 hp   2660/    0 window   27s pressure 1.14/0.00
-      hero w4   money   353 towers  4 hp   2971/    0 window   23s pressure 1.33/0.00
-      hero w5   money   384 towers  5 hp   1474/  178 window   25s pressure 1.00/0.44
-      hero w6   money   429 towers  4 hp   2591/    0 window   22s pressure 1.35/0.00
-      hero w7 B money   454 towers  6 hp    229/ 2042 window   21s pressure 0.17/1.35
-      hero w8   money   532 towers  8 hp   1639/  653 window   25s pressure 0.77/0.91
-      hero w9   money   612 towers  6 hp   2422/    0 window   16s pressure 1.22/0.00
-      hero w10  money   735 towers  6 hp   3600/  305 window   17s pressure 1.35/0.85
-      hero w11  money   806 towers 12 hp   2864/  880 window   22s pressure 0.99/0.97
-      hero w12B money   895 towers 13 hp   4526/ 2066 window   26s pressure 1.31/0.50
-      hero w13  money  1242 towers  7 hp   6836/  768 window   16s pressure 1.26/1.35
-      hero w14  money  1417 towers 22 hp   5359/ 1927 window   19s pressure 1.11/1.17
-      hero w15  money  1515 towers 21 hp   4430/ 1188 window   18s pressure 0.85/0.88
-      hero w16  money  1601 towers  9 hp   9806/  714 window   19s pressure 1.35/1.30
-      hero w17  money  1904 towers 30 hp   6630/ 2448 window   17s pressure 1.08/1.06
-      hero w18B money  2058 towers  8 hp  13336/ 1141 window   20s pressure 1.35/1.12
+C1_01 Easy: human 1.40x (target 1.40), with hero 1.85x, worst wave with hero 0.69 (w11); bot plain max 0.83 boss 0.61 band 1.24/1.98; trim 0.71; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
+      hero w1   money   160 towers  3 hp     60/    0 window   16s pressure 0.16/0.00
+      hero w2   money   166 towers  2 hp    103/    0 window   20s pressure 0.24/0.00
+      hero w3   money   179 towers  2 hp    172/    0 window   22s pressure 0.35/0.00
+      hero w4   money   199 towers  2 hp    233/    0 window   23s pressure 0.34/0.00
+      hero w5   money   219 towers  2 hp    391/    0 window   31s pressure 0.39/0.00
+      hero w6   money   244 towers  3 hp    457/    0 window   30s pressure 0.45/0.00
+      hero w7   money   280 towers  3 hp    624/    0 window   31s pressure 0.56/0.00
+      hero w8   money   308 towers  3 hp    886/    0 window   29s pressure 0.62/0.00
+      hero w9   money   351 towers  2 hp   1403/    0 window   45s pressure 0.60/0.00
+      hero w10  money   425 towers  4 hp   1193/    0 window   40s pressure 0.47/0.00
+      hero w11  money   485 towers  3 hp   2202/    0 window   46s pressure 0.69/0.00
+      hero w12B money   563 towers  4 hp   1189/    0 window   34s pressure 0.50/0.00
+C1_01 Medium: human 1.15x (target 1.15), with hero 1.40x, worst wave with hero 0.88 (w12); bot plain max 1.01 boss 1.08 band 1.55/2.47; trim 0.81; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
+      hero w1   money   200 towers  2 hp     99/    0 window   16s pressure 0.23/0.00
+      hero w2   money   207 towers  2 hp    171/    0 window   18s pressure 0.32/0.00
+      hero w3   money   223 towers  2 hp    298/    0 window   21s pressure 0.45/0.00
+      hero w4   money   247 towers  2 hp    403/    0 window   22s pressure 0.45/0.00
+      hero w5   money   272 towers  2 hp    671/    0 window   30s pressure 0.54/0.00
+      hero w6   money   302 towers  3 hp    792/    0 window   28s pressure 0.62/0.00
+      hero w7   money   347 towers  3 hp   1228/    0 window   31s pressure 0.78/0.00
+      hero w8   money   377 towers  1 hp   1506/    0 window   28s pressure 0.75/0.00
+      hero w9   money   429 towers  4 hp   2429/    0 window   40s pressure 0.84/0.00
+      hero w10  money   522 towers  3 hp   2034/    0 window   37s pressure 0.68/0.00
+      hero w11  money   595 towers  3 hp   3730/    0 window   40s pressure 0.80/0.00
+      hero w12B money   690 towers  6 hp   1987/    0 window   32s pressure 0.88/0.00
+C1_01 Hard: human 0.94x (target 0.95), with hero 1.11x, worst wave with hero 1.25 (w8); bot plain max 1.48 boss 1.62 band 2.09/3.34; trim 1.00; research 0 earned 0 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
+      hero w1   money   200 towers  1 hp    189/    0 window   15s pressure 0.46/0.00
+      hero w2   money   212 towers  2 hp    336/    0 window   17s pressure 0.55/0.00
+      hero w3   money   237 towers  2 hp    568/    0 window   22s pressure 0.73/0.00
+      hero w4   money   274 towers  2 hp    807/    0 window   24s pressure 0.79/0.00
+      hero w5   money   314 towers  3 hp   1288/    0 window   32s pressure 0.78/0.00
+      hero w6   money   361 towers  4 hp   1533/    0 window   29s pressure 0.94/0.00
+      hero w7   money   432 towers  2 hp   3172/    0 window   32s pressure 0.92/0.00
+      hero w8 B money   502 towers  4 hp   1840/    0 window   24s pressure 1.25/0.00
+      hero w9   money   539 towers  5 hp   4643/    0 window   41s pressure 1.21/0.00
+      hero w10  money   823 towers  3 hp   4645/    0 window   36s pressure 0.74/0.00
+      hero w11  money   956 towers  4 hp   7909/    0 window   40s pressure 0.83/0.00
+      hero w12B money  1119 towers  5 hp   3838/    0 window   29s pressure 0.92/0.00
+C1_01 Psycho: human 0.80x (target 0.80), with hero 1.06x, worst wave with hero 1.35 (w8); bot plain max 1.54 boss 1.83 band 2.63/4.20; trim 1.07; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   200 towers  1 hp    363/    0 window   15s pressure 0.56/0.00
+      hero w2   money   215 towers  1 hp    633/    0 window   17s pressure 0.88/0.00
+      hero w3   money   246 towers  2 hp   1090/    0 window   22s pressure 0.97/0.00
+      hero w4   money   293 towers  2 hp   1523/    0 window   25s pressure 0.84/0.00
+      hero w5 B money   340 towers  2 hp   3079/    0 window   24s pressure 1.35/0.00
+      hero w6   money   367 towers  3 hp   2936/    0 window   30s pressure 1.13/0.00
+      hero w7   money   576 towers  2 hp   5115/    0 window   33s pressure 0.93/0.00
+      hero w8 B money   630 towers  3 hp   4862/    0 window   24s pressure 1.35/0.00
+      hero w9   money   654 towers  4 hp   8930/    0 window   42s pressure 1.03/0.00
+      hero w10  money   981 towers  4 hp   8066/    0 window   37s pressure 0.70/0.00
+      hero w11  money  1132 towers  4 hp  14937/    0 window   41s pressure 0.93/0.00
+      hero w12B money  1332 towers  7 hp   6222/    0 window   30s pressure 0.68/0.00
+C1_02 Easy: human 1.38x (target 1.38), with hero 1.64x, worst wave with hero 0.96 (w12); bot plain max 0.92 boss 1.18 band 1.24/1.98; trim 0.92; research 6 earned 4 spent, tower bonus 0.00, hero dmg 1.00, gate 1.00; failures 0
+      hero w1   money   176 towers  1 hp    178/    0 window   30s pressure 0.21/0.00
+      hero w2   money   186 towers  1 hp    307/    0 window   29s pressure 0.26/0.00
+      hero w3   money   201 towers  1 hp    440/    0 window   40s pressure 0.28/0.00
+      hero w4   money   218 towers  2 hp    763/    0 window   40s pressure 0.41/0.00
+      hero w5   money   240 towers  2 hp    978/    0 window   36s pressure 0.57/0.00
+      hero w6   money   273 towers  2 hp   1015/    0 window   34s pressure 0.60/0.00
+      hero w7   money   308 towers  2 hp   1406/    0 window   30s pressure 0.62/0.00
+      hero w8   money   341 towers  3 hp   2020/    0 window   57s pressure 0.56/0.00
+      hero w9   money   408 towers  2 hp   2021/    0 window   44s pressure 0.48/0.00
+      hero w10  money   470 towers  3 hp   2827/    0 window   43s pressure 0.67/0.00
+      hero w11  money   543 towers  5 hp   4276/    0 window   57s pressure 0.75/0.00
+      hero w12B money   631 towers  4 hp   3104/    0 window   39s pressure 0.96/0.00
+C1_02 Medium: human 1.13x (target 1.13), with hero 1.28x, worst wave with hero 1.15 (w12); bot plain max 1.15 boss 1.50 band 1.55/2.47; trim 0.97; research 12 earned 8 spent, tower bonus 0.00, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   220 towers  1 hp    299/    0 window   29s pressure 0.25/0.00
+      hero w2   money   233 towers  2 hp    527/    0 window   28s pressure 0.37/0.00
+      hero w3   money   253 towers  3 hp    751/    0 window   38s pressure 0.43/0.00
+      hero w4   money   275 towers  2 hp   1231/    0 window   37s pressure 0.60/0.00
+      hero w5   money   302 towers  3 hp   1634/    0 window   35s pressure 0.69/0.00
+      hero w6   money   344 towers  2 hp   1616/    0 window   32s pressure 0.69/0.00
+      hero w7   money   387 towers  3 hp   2242/    0 window   29s pressure 0.90/0.00
+      hero w8   money   427 towers  4 hp   3373/    0 window   54s pressure 0.76/0.00
+      hero w9   money   511 towers  3 hp   3224/    0 window   41s pressure 0.70/0.00
+      hero w10  money   587 towers  3 hp   4494/    0 window   40s pressure 0.83/0.00
+      hero w11  money   676 towers  4 hp   7086/    0 window   54s pressure 0.89/0.00
+      hero w12B money   787 towers  5 hp   4865/    0 window   36s pressure 1.15/0.00
+C1_02 Hard: human 0.94x (target 0.94), with hero 1.07x, worst wave with hero 1.25 (w7); bot plain max 1.64 boss 1.70 band 2.09/3.34; trim 0.85; research 30 earned 28 spent, tower bonus 0.07, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   220 towers  2 hp    467/    0 window   31s pressure 0.34/0.00
+      hero w2   money   240 towers  2 hp    811/    0 window   30s pressure 0.50/0.00
+      hero w3   money   271 towers  3 hp   1129/    0 window   41s pressure 0.48/0.00
+      hero w4   money   304 towers  3 hp   1908/    0 window   40s pressure 0.65/0.00
+      hero w5   money   347 towers  3 hp   2526/    0 window   37s pressure 0.92/0.00
+      hero w6   money   412 towers  4 hp   2947/    0 window   34s pressure 0.96/0.00
+      hero w7   money   490 towers  5 hp   3777/    0 window   28s pressure 1.25/0.00
+      hero w8   money   552 towers  6 hp   5156/    0 window   58s pressure 0.76/0.00
+      hero w9 B money   682 towers  5 hp   3521/    0 window   30s pressure 1.08/0.00
+      hero w10  money   755 towers  5 hp   4357/    0 window   36s pressure 0.76/0.00
+      hero w11  money  1044 towers 10 hp  10845/    0 window   55s pressure 0.94/0.00
+      hero w12B money  1214 towers 11 hp   7332/    0 window   33s pressure 1.21/0.00
+C1_02 Psycho: human 0.79x (target 0.79), with hero 0.88x, worst wave with hero 1.35 (w7); bot plain max 1.73 boss 1.91 band 2.63/4.20; trim 0.99; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   220 towers  2 hp    878/    0 window   32s pressure 0.38/0.00
+      hero w2   money   246 towers  2 hp   1508/    0 window   30s pressure 0.69/0.00
+      hero w3   money   284 towers  3 hp   2128/    0 window   42s pressure 0.66/0.00
+      hero w4   money   326 towers  3 hp   3639/    0 window   41s pressure 0.91/0.00
+      hero w5 B money   381 towers  2 hp   3607/    0 window   29s pressure 1.09/0.00
+      hero w6   money   427 towers  4 hp   5122/    0 window   31s pressure 1.34/0.00
+      hero w7   money   658 towers  7 hp   6969/    0 window   27s pressure 1.35/0.00
+      hero w8   money   722 towers  7 hp   9684/    0 window   60s pressure 0.82/0.00
+      hero w9 B money   886 towers  7 hp   6973/    0 window   27s pressure 1.30/0.00
+      hero w10  money   959 towers  4 hp  14545/    0 window   36s pressure 1.15/0.00
+      hero w11  money  1223 towers 10 hp  20429/    0 window   55s pressure 1.03/0.00
+      hero w12B money  1431 towers 10 hp  12341/    0 window   33s pressure 1.17/0.00
+C1_03 Easy: human 1.36x (target 1.36), with hero 1.59x, worst wave with hero 0.75 (w9); bot plain max 0.92 boss 0.83 band 1.24/1.98; trim 0.93; research 12 earned 8 spent, tower bonus 0.00, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   192 towers  1 hp    170/    0 window   23s pressure 0.20/0.00
+      hero w2   money   192 towers  1 hp    270/    0 window   25s pressure 0.31/0.00
+      hero w3   money   201 towers  1 hp    350/    0 window   29s pressure 0.32/0.00
+      hero w4   money   212 towers  2 hp    518/    0 window   25s pressure 0.45/0.00
+      hero w5   money   231 towers  1 hp    568/    0 window   29s pressure 0.58/0.00
+      hero w6   money   251 towers  2 hp    955/    0 window   32s pressure 0.68/0.00
+      hero w7   money   284 towers  3 hp   1057/    0 window   33s pressure 0.66/0.00
+      hero w8   money   308 towers  3 hp    962/    0 window   32s pressure 0.50/0.00
+      hero w9   money   361 towers  3 hp   1668/    0 window   29s pressure 0.75/0.00
+      hero w10  money   432 towers  3 hp   2276/    0 window   46s pressure 0.73/0.00
+      hero w11  money   563 towers  4 hp   2904/    0 window   35s pressure 0.71/0.00
+      hero w12  money   655 towers  5 hp    651/   81 window   27s pressure 0.49/0.66
+      hero w13  money   736 towers  7 hp   1997/    0 window   34s pressure 0.45/0.00
+      hero w14  money   815 towers  8 hp   4088/    0 window   56s pressure 0.50/0.00
+      hero w15  money   941 towers  5 hp   1903/  975 window   31s pressure 0.61/0.70
+      hero w16B money  1002 towers  5 hp   2093/    0 window   33s pressure 0.68/0.00
+C1_03 Medium: human 1.12x (target 1.12), with hero 1.24x, worst wave with hero 1.09 (w16); bot plain max 1.23 boss 1.42 band 1.55/2.47; trim 1.00; research 24 earned 23 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   240 towers  2 hp    266/    0 window   22s pressure 0.26/0.00
+      hero w2   money   240 towers  2 hp    424/    0 window   24s pressure 0.38/0.00
+      hero w3   money   247 towers  2 hp    548/    0 window   28s pressure 0.44/0.00
+      hero w4   money   263 towers  2 hp    812/    0 window   24s pressure 0.60/0.00
+      hero w5   money   281 towers  3 hp    891/    0 window   28s pressure 0.65/0.00
+      hero w6   money   302 towers  3 hp   1556/    0 window   31s pressure 0.70/0.00
+      hero w7   money   349 towers  3 hp   1430/    0 window   31s pressure 0.69/0.00
+      hero w8   money   391 towers  4 hp   1694/    0 window   29s pressure 0.72/0.00
+      hero w9   money   468 towers  3 hp   2479/    0 window   26s pressure 0.82/0.00
+      hero w10  money   536 towers  5 hp   3444/    0 window   41s pressure 0.89/0.00
+      hero w11  money   682 towers  3 hp   1816/  747 window   25s pressure 0.87/0.72
+      hero w12  money   755 towers  4 hp   1947/  998 window   26s pressure 0.68/0.84
+      hero w13  money   845 towers  5 hp   3136/    0 window   29s pressure 0.84/0.00
+      hero w14  money   948 towers  5 hp   6491/    0 window   50s pressure 0.95/0.00
+      hero w15  money  1159 towers  6 hp   3036/ 1819 window   25s pressure 0.72/0.88
+      hero w16B money  1224 towers  9 hp   3332/   81 window   28s pressure 1.09/0.05
+C1_03 Hard: human 0.92x (target 0.92), with hero 0.98x, worst wave with hero 1.56 (w16); bot plain max 1.68 boss 1.98 band 2.09/3.34; trim 0.99; research 60 earned 58 spent, tower bonus 0.10, hero dmg 1.15, gate 1.20; failures 0
+      hero w1   money   240 towers  2 hp    417/    0 window   21s pressure 0.37/0.00
+      hero w2   money   240 towers  2 hp    637/    0 window   25s pressure 0.50/0.00
+      hero w3   money   262 towers  2 hp    830/    0 window   30s pressure 0.57/0.00
+      hero w4   money   281 towers  2 hp   1509/    0 window   24s pressure 0.93/0.00
+      hero w5   money   314 towers  3 hp   1681/    0 window   30s pressure 0.80/0.00
+      hero w6   money   349 towers  3 hp   2709/    0 window   32s pressure 1.14/0.00
+      hero w7   money   455 towers  3 hp   2978/    0 window   32s pressure 0.83/0.00
+      hero w8   money   537 towers  3 hp   2917/    0 window   25s pressure 0.98/0.00
+      hero w9   money   667 towers  3 hp   3833/    0 window   22s pressure 0.88/0.00
+      hero w10B money   767 towers  4 hp   4730/    0 window   34s pressure 1.15/0.00
+      hero w11  money   930 towers  5 hp   2431/ 1515 window   23s pressure 0.77/0.97
+      hero w12  money  1008 towers  6 hp   3515/ 1964 window   21s pressure 1.12/1.00
+      hero w13  money  1117 towers  6 hp   5853/    0 window   28s pressure 1.18/0.00
+      hero w14  money  1303 towers  7 hp   4210/ 2740 window   21s pressure 0.98/1.08
+      hero w15  money  1565 towers  6 hp   5982/ 4561 window   22s pressure 1.09/1.18
+      hero w16B money  1622 towers 12 hp   3939/   62 window   27s pressure 1.56/0.03
+C1_03 Psycho: human 0.78x (target 0.78), with hero 0.90x, worst wave with hero 1.32 (w16); bot plain max 1.90 boss 1.98 band 2.63/4.20; trim 0.59; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   240 towers  3 hp    705/    0 window   20s pressure 0.49/0.00
+      hero w2   money   240 towers  3 hp   1104/    0 window   26s pressure 0.66/0.00
+      hero w3   money   268 towers  3 hp   1440/    0 window   30s pressure 0.65/0.00
+      hero w4   money   292 towers  2 hp   2266/    0 window   24s pressure 1.01/0.00
+      hero w5   money   334 towers  3 hp   2590/    0 window   28s pressure 1.00/0.00
+      hero w6 B money   379 towers  2 hp   3702/    0 window   26s pressure 1.29/0.00
+      hero w7   money   414 towers  4 hp   1792/    0 window   30s pressure 0.81/0.00
+      hero w8   money   503 towers  3 hp   4301/    0 window   22s pressure 1.06/0.00
+      hero w9   money   595 towers  3 hp   5848/    0 window   21s pressure 1.25/0.00
+      hero w10B money   730 towers  4 hp   5776/    0 window   33s pressure 1.12/0.00
+      hero w11  money   942 towers  5 hp   3177/ 2230 window   19s pressure 0.95/1.13
+      hero w12  money  1064 towers  5 hp   4547/ 3659 window   19s pressure 1.23/1.22
+      hero w13  money  1176 towers  7 hp   3648/    0 window   28s pressure 1.12/0.00
+      hero w14  money  1545 towers  6 hp   6794/ 6328 window   20s pressure 1.20/1.22
+      hero w15  money  1794 towers  7 hp   8895/ 6242 window   21s pressure 1.11/1.16
+      hero w16B money  1893 towers 11 hp   8997/  890 window   28s pressure 1.32/0.17
+C1_04 Easy: human 1.34x (target 1.34), with hero 1.61x, worst wave with hero 0.93 (w10); bot plain max 1.11 boss 1.06 band 1.24/1.98; trim 0.86; research 18 earned 18 spent, tower bonus 0.03, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   208 towers  2 hp    134/    0 window   23s pressure 0.21/0.00
+      hero w2   money   208 towers  2 hp    217/    0 window   25s pressure 0.31/0.00
+      hero w3   money   213 towers  4 hp    108/   19 window   22s pressure 0.24/0.53
+      hero w4   money   220 towers  1 hp    330/    0 window   32s pressure 0.35/0.00
+      hero w5   money   235 towers  2 hp    484/    0 window   30s pressure 0.43/0.00
+      hero w6   money   255 towers  5 hp    158/   20 window   22s pressure 0.32/0.46
+      hero w7   money   266 towers  2 hp    456/   69 window   25s pressure 0.43/0.26
+      hero w8   money   296 towers  2 hp    947/    0 window   29s pressure 0.69/0.00
+      hero w9   money   339 towers  3 hp    286/  170 window   22s pressure 0.37/0.65
+      hero w10  money   389 towers  4 hp   1071/    0 window   28s pressure 0.93/0.00
+      hero w11  money   447 towers  4 hp    977/    0 window   34s pressure 0.61/0.00
+      hero w12  money   518 towers  8 hp    533/   56 window   25s pressure 0.62/0.16
+      hero w13  money   577 towers  5 hp   1922/    0 window   53s pressure 0.61/0.00
+      hero w14  money   698 towers  7 hp   1428/    0 window   34s pressure 0.63/0.00
+      hero w15  money   781 towers  5 hp   2926/    0 window   34s pressure 0.76/0.00
+      hero w16B money   833 towers  6 hp   1991/  870 window   32s pressure 0.72/0.84
+C1_04 Medium: human 1.10x (target 1.10), with hero 1.23x, worst wave with hero 1.08 (w16); bot plain max 1.26 boss 1.41 band 1.55/2.47; trim 1.00; research 36 earned 33 spent, tower bonus 0.08, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   260 towers  2 hp    229/    0 window   22s pressure 0.26/0.00
+      hero w2   money   260 towers  2 hp    371/    0 window   24s pressure 0.38/0.00
+      hero w3   money   266 towers  3 hp    185/   32 window   22s pressure 0.34/0.70
+      hero w4   money   274 towers  2 hp    587/    0 window   30s pressure 0.50/0.00
+      hero w5   money   290 towers  2 hp    828/    0 window   28s pressure 0.63/0.00
+      hero w6   money   316 towers  4 hp    281/   36 window   22s pressure 0.43/0.66
+      hero w7   money   329 towers  3 hp    537/  330 window   23s pressure 0.60/0.70
+      hero w8   money   381 towers  3 hp   1520/    0 window   28s pressure 1.01/0.00
+      hero w9   money   438 towers  3 hp    641/  164 window   22s pressure 0.61/0.76
+      hero w10  money   496 towers  4 hp   1820/    0 window   26s pressure 1.03/0.00
+      hero w11  money   555 towers  5 hp   1845/    0 window   29s pressure 0.86/0.00
+      hero w12  money   647 towers  4 hp   1160/  401 window   24s pressure 0.64/0.79
+      hero w13  money   706 towers  6 hp   3337/    0 window   47s pressure 0.92/0.00
+      hero w14  money   853 towers  8 hp   2378/    0 window   28s pressure 0.76/0.00
+      hero w15  money   942 towers  5 hp   1944/ 1043 window   26s pressure 0.61/0.80
+      hero w16B money   994 towers  6 hp   2598/ 1658 window   26s pressure 0.88/1.08
+C1_04 Hard: human 0.91x (target 0.91), with hero 1.03x, worst wave with hero 1.25 (w16); bot plain max 1.53 boss 1.73 band 2.09/3.34; trim 1.08; research 90 earned 90 spent, tower bonus 0.21, hero dmg 1.15, gate 1.20; failures 0
+      hero w1   money   260 towers  2 hp    391/    0 window   21s pressure 0.41/0.00
+      hero w2   money   260 towers  2 hp    625/    0 window   25s pressure 0.55/0.00
+      hero w3   money   271 towers  2 hp    313/   79 window   23s pressure 0.51/1.18
+      hero w4   money   285 towers  2 hp    522/  155 window   31s pressure 0.63/0.73
+      hero w5   money   310 towers  3 hp   1306/    0 window   31s pressure 1.01/0.00
+      hero w6   money   347 towers  3 hp    511/  403 window   23s pressure 0.57/1.07
+      hero w7   money   371 towers  4 hp    840/  611 window   23s pressure 0.78/0.81
+      hero w8   money   485 towers  3 hp    828/  874 window   23s pressure 0.62/1.12
+      hero w9   money   540 towers  3 hp    788/  941 window   23s pressure 0.80/0.68
+      hero w10B money   623 towers  2 hp   1726/    0 window   21s pressure 1.25/0.00
+      hero w11  money   716 towers  5 hp   1817/  253 window   26s pressure 0.83/0.31
+      hero w12  money   831 towers  4 hp   2801/ 1602 window   21s pressure 1.05/0.95
+      hero w13  money   958 towers  8 hp   5638/    0 window   49s pressure 0.96/0.00
+      hero w14  money  1173 towers  6 hp   4818/  813 window   27s pressure 0.91/0.72
+      hero w15  money  1327 towers  6 hp   5052/ 2647 window   21s pressure 1.07/1.18
+      hero w16B money  1382 towers  6 hp   5806/ 3154 window   24s pressure 1.20/1.25
+C1_04 Psycho: human 0.79x (target 0.77), with hero 0.84x, worst wave with hero 1.35 (w3); bot plain max 2.04 boss 1.93 band 2.63/4.20; trim 1.81; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   260 towers  3 hp   1156/    0 window   20s pressure 0.85/0.00
+      hero w2   money   260 towers  3 hp   1901/    0 window   26s pressure 1.14/0.00
+      hero w3   money   273 towers  2 hp    865/  121 window   23s pressure 1.00/1.35
+      hero w4   money   290 towers  2 hp   1340/  293 window   32s pressure 0.75/1.35
+      hero w5 B money   311 towers  1 hp   2099/    0 window   25s pressure 1.35/0.00
+      hero w6   money   347 towers  3 hp    459/  216 window   23s pressure 0.45/0.52
+      hero w7   money   372 towers  4 hp   1072/ 1232 window   23s pressure 0.81/1.35
+      hero w8   money   473 towers  3 hp   1325/ 1258 window   23s pressure 0.87/1.35
+      hero w9   money   538 towers  4 hp   1130/  981 window   23s pressure 0.62/1.03
+      hero w10B money   616 towers  3 hp   2456/    0 window   17s pressure 1.35/0.00
+      hero w11  money   683 towers  6 hp   2902/  329 window   24s pressure 1.12/0.62
+      hero w12  money   894 towers  4 hp   3922/ 2378 window   18s pressure 1.35/1.29
+      hero w13  money  1044 towers  8 hp  10695/    0 window   50s pressure 1.35/0.00
+      hero w14  money  1224 towers  5 hp   5444/ 3754 window   18s pressure 1.35/1.25
+      hero w15  money  1339 towers  6 hp   5826/ 3958 window   19s pressure 1.13/1.35
+      hero w16B money  1392 towers  7 hp   7165/ 4599 window   22s pressure 1.22/1.31
+C1_05 Easy: human 1.32x (target 1.32), with hero 1.59x, worst wave with hero 0.78 (w9); bot plain max 0.93 boss 0.74 band 1.24/1.98; trim 0.93; research 24 earned 23 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   224 towers  1 hp    232/    0 window   23s pressure 0.22/0.00
+      hero w2   money   234 towers  2 hp    516/    0 window   28s pressure 0.34/0.00
+      hero w3   money   251 towers  3 hp    612/    0 window   27s pressure 0.43/0.00
+      hero w4   money   273 towers  4 hp     52/   38 window   22s pressure 0.07/0.66
+      hero w5   money   287 towers  3 hp    466/    0 window   27s pressure 0.48/0.00
+      hero w6   money   301 towers  3 hp    614/    0 window   32s pressure 0.58/0.00
+      hero w7   money   334 towers  2 hp    886/    0 window   37s pressure 0.58/0.00
+      hero w8   money   392 towers  3 hp    322/  158 window   26s pressure 0.32/0.41
+      hero w9   money   431 towers  2 hp   1249/    0 window   29s pressure 0.78/0.00
+      hero w10  money   498 towers  3 hp   1711/    0 window   38s pressure 0.67/0.00
+      hero w11  money   597 towers  4 hp   2770/    0 window   56s pressure 0.69/0.00
+      hero w12  money   736 towers  4 hp   3421/    0 window   38s pressure 0.70/0.00
+      hero w13  money   843 towers  6 hp   1313/ 1002 window   28s pressure 0.57/0.68
+      hero w14  money   931 towers  5 hp   3004/    0 window   38s pressure 0.68/0.00
+      hero w15  money  1054 towers  8 hp   4424/    0 window   55s pressure 0.60/0.00
+      hero w16  money  1177 towers  7 hp   5855/    0 window   47s pressure 0.70/0.00
+      hero w17B money  1337 towers 10 hp   2938/    0 window   37s pressure 0.60/0.00
+C1_05 Medium: human 1.09x (target 1.08), with hero 1.31x, worst wave with hero 1.01 (w7); bot plain max 1.19 boss 1.32 band 1.55/2.47; trim 0.97; research 48 earned 48 spent, tower bonus 0.10, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   280 towers  2 hp    358/    0 window   22s pressure 0.25/0.00
+      hero w2   money   290 towers  3 hp    575/    0 window   28s pressure 0.29/0.00
+      hero w3   money   313 towers  3 hp    977/    0 window   26s pressure 0.46/0.00
+      hero w4   money   339 towers  2 hp     80/   58 window   22s pressure 0.12/0.44
+      hero w5   money   357 towers  3 hp    719/    0 window   26s pressure 0.75/0.00
+      hero w6   money   374 towers  3 hp   1135/    0 window   31s pressure 0.99/0.00
+      hero w7   money   413 towers  2 hp   1601/    0 window   36s pressure 1.01/0.00
+      hero w8   money   490 towers  4 hp    496/  244 window   25s pressure 0.30/0.56
+      hero w9   money   559 towers  4 hp   1956/    0 window   29s pressure 0.75/0.00
+      hero w10  money   639 towers  3 hp   2675/    0 window   33s pressure 0.70/0.00
+      hero w11  money   757 towers  7 hp   4486/    0 window   50s pressure 0.75/0.00
+      hero w12  money   927 towers  3 hp   5366/    0 window   33s pressure 0.72/0.00
+      hero w13  money  1045 towers  6 hp   2067/ 1546 window   28s pressure 0.57/0.76
+      hero w14  money  1164 towers  6 hp   4696/    0 window   34s pressure 0.80/0.00
+      hero w15  money  1298 towers  6 hp   7089/    0 window   50s pressure 0.69/0.00
+      hero w16  money  1462 towers  7 hp   3540/ 2616 window   27s pressure 0.68/0.73
+      hero w17B money  1551 towers  8 hp   4906/  170 window   33s pressure 1.01/0.07
+C1_05 Hard: human 0.90x (target 0.90), with hero 1.01x, worst wave with hero 1.25 (w9); bot plain max 1.60 boss 1.83 band 2.09/3.34; trim 1.30; research 120 earned 118 spent, tower bonus 0.24, hero dmg 1.15, gate 1.40; failures 0
+      hero w1   money   280 towers  2 hp    830/    0 window   21s pressure 0.47/0.00
+      hero w2   money   294 towers  2 hp   1407/    0 window   29s pressure 0.55/0.00
+      hero w3   money   332 towers  2 hp   2190/    0 window   28s pressure 0.79/0.00
+      hero w4   money   375 towers  2 hp    185/  192 window   23s pressure 0.22/0.30
+      hero w5   money   408 towers  2 hp   1947/    0 window   27s pressure 0.99/0.00
+      hero w6   money   434 towers  3 hp    957/  665 window   24s pressure 0.69/1.03
+      hero w7   money   495 towers  3 hp   3140/    0 window   38s pressure 1.14/0.00
+      hero w8   money   606 towers  3 hp   1379/  801 window   26s pressure 0.55/0.66
+      hero w9   money   706 towers  3 hp   4676/    0 window   25s pressure 1.25/0.00
+      hero w10  money   827 towers  4 hp   5396/  746 window   31s pressure 1.08/0.93
+      hero w11B money   998 towers  5 hp   4076/ 2447 window   41s pressure 1.12/1.25
+      hero w12  money  1324 towers  4 hp   6684/ 1120 window   33s pressure 0.90/0.53
+      hero w13  money  1559 towers  7 hp   5579/ 3550 window   23s pressure 0.85/0.94
+      hero w14  money  1704 towers  7 hp  12065/    0 window   35s pressure 1.10/0.00
+      hero w15  money  1960 towers  8 hp  15608/    0 window   53s pressure 0.83/0.00
+      hero w16  money  2187 towers  8 hp   8660/ 6440 window   25s pressure 0.91/0.92
+      hero w17B money  2349 towers  9 hp  10499/  835 window   33s pressure 1.08/0.16
+C1_05 Psycho: human 0.76x (target 0.75), with hero 0.86x, worst wave with hero 1.35 (w17); bot plain max 2.15 boss 2.10 band 2.63/4.20; trim 1.00; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   280 towers  2 hp   1553/    0 window   21s pressure 0.75/0.00
+      hero w2   money   293 towers  2 hp   2454/    0 window   30s pressure 0.78/0.00
+      hero w3   money   347 towers  3 hp   4221/    0 window   28s pressure 1.17/0.00
+      hero w4   money   392 towers  3 hp    348/  298 window   23s pressure 0.30/0.41
+      hero w5 B money   429 towers  3 hp   1799/    0 window   24s pressure 1.35/0.00
+      hero w6   money   449 towers  4 hp   1069/  819 window   24s pressure 0.57/1.12
+      hero w7   money   500 towers  4 hp   3492/    0 window   35s pressure 0.96/0.00
+      hero w8   money   776 towers  5 hp   2351/ 1241 window   26s pressure 0.74/0.70
+      hero w9   money   883 towers  4 hp   6502/    0 window   22s pressure 1.35/0.00
+      hero w10  money  1008 towers  5 hp   5223/ 3343 window   20s pressure 1.12/1.24
+      hero w11B money  1159 towers  7 hp   7034/ 2854 window   38s pressure 1.16/1.32
+      hero w12  money  1499 towers  6 hp  11450/ 1509 window   32s pressure 1.02/0.64
+      hero w13  money  1791 towers  8 hp   9863/ 7073 window   20s pressure 1.34/1.21
+      hero w14  money  1920 towers  7 hp  19058/    0 window   34s pressure 1.35/0.00
+      hero w15  money  2163 towers  7 hp  30228/    0 window   52s pressure 1.21/0.00
+      hero w16  money  2383 towers  9 hp  16171/11341 window   23s pressure 1.35/1.30
+      hero w17B money  2532 towers  9 hp  17670/ 2819 window   33s pressure 1.35/0.35
+C1_06 Easy: human 1.30x (target 1.30), with hero 1.57x, worst wave with hero 0.90 (w9); bot plain max 1.05 boss 0.94 band 1.24/1.98; trim 0.88; research 30 earned 28 spent, tower bonus 0.05, hero dmg 1.00, gate 1.20; failures 0
+      hero w1   money   240 towers  3 hp    290/    0 window   26s pressure 0.25/0.00
+      hero w2   money   240 towers  3 hp    363/    0 window   27s pressure 0.29/0.00
+      hero w3   money   254 towers  3 hp    559/    0 window   32s pressure 0.36/0.00
+      hero w4   money   268 towers  3 hp    737/    0 window   27s pressure 0.48/0.00
+      hero w5   money   283 towers  2 hp    947/    0 window   34s pressure 0.55/0.00
+      hero w6   money   310 towers  3 hp   1042/    0 window   32s pressure 0.47/0.00
+      hero w7   money   333 towers  3 hp    888/  133 window   30s pressure 0.58/0.42
+      hero w8   money   379 towers  3 hp    224/  153 window   27s pressure 0.27/0.39
+      hero w9   money   390 towers  3 hp   1056/    0 window   30s pressure 0.90/0.00
+      hero w10  money   445 towers  3 hp   1300/    0 window   35s pressure 0.78/0.00
+      hero w11  money   496 towers  4 hp    824/  201 window   30s pressure 0.45/0.40
+      hero w12  money   575 towers  4 hp   1859/  463 window   33s pressure 0.70/0.48
+      hero w13  money   692 towers  4 hp   2852/    0 window   35s pressure 0.70/0.00
+      hero w14  money   789 towers  5 hp   1578/  551 window   31s pressure 0.57/0.46
+      hero w15  money   840 towers  6 hp   2743/    0 window   36s pressure 0.73/0.00
+      hero w16  money   961 towers  8 hp   5689/    0 window   59s pressure 0.75/0.00
+      hero w17  money  1129 towers  5 hp   4511/  952 window   33s pressure 0.73/0.36
+      hero w18B money  1269 towers  6 hp   2801/    0 window   31s pressure 0.76/0.00
+C1_06 Medium: human 1.07x (target 1.07), with hero 1.18x, worst wave with hero 1.15 (w15); bot plain max 1.42 boss 1.50 band 1.55/2.47; trim 1.18; research 60 earned 58 spent, tower bonus 0.10, hero dmg 1.15, gate 1.20; failures 0
+      hero w1   money   300 towers  3 hp    568/    0 window   25s pressure 0.31/0.00
+      hero w2   money   300 towers  3 hp    774/    0 window   26s pressure 0.40/0.00
+      hero w3   money   314 towers  2 hp   1139/    0 window   31s pressure 0.49/0.00
+      hero w4   money   331 towers  2 hp   1471/    0 window   27s pressure 0.70/0.00
+      hero w5   money   346 towers  3 hp   1854/    0 window   32s pressure 0.80/0.00
+      hero w6   money   378 towers  3 hp   1942/    0 window   31s pressure 0.74/0.00
+      hero w7   money   402 towers  3 hp   1149/  506 window   28s pressure 0.70/0.73
+      hero w8   money   458 towers  4 hp    643/  299 window   27s pressure 0.46/0.67
+      hero w9   money   506 towers  3 hp   2038/    0 window   29s pressure 0.91/0.00
+      hero w10  money   559 towers  4 hp   2108/  160 window   32s pressure 0.81/0.66
+      hero w11  money   628 towers  3 hp   1641/  394 window   30s pressure 0.54/0.72
+      hero w12  money   734 towers  5 hp   2705/ 1419 window   31s pressure 0.82/0.85
+      hero w13  money   834 towers  4 hp   4337/  361 window   29s pressure 0.97/0.91
+      hero w14  money   972 towers  5 hp   2795/ 1079 window   30s pressure 0.64/0.76
+      hero w15  money  1024 towers  5 hp   5821/  513 window   30s pressure 1.15/0.60
+      hero w16  money  1185 towers  5 hp  11479/    0 window   53s pressure 1.11/0.00
+      hero w17  money  1377 towers  6 hp   5341/ 1385 window   28s pressure 0.78/0.82
+      hero w18B money  1441 towers  7 hp   5626/  113 window   26s pressure 1.13/0.10
+C1_06 Hard: human 0.92x (target 0.88), with hero 1.01x, worst wave with hero 1.25 (w15); bot plain max 1.68 boss 1.66 band 2.09/3.34; trim 0.68; research 150 earned 148 spent, tower bonus 0.29, hero dmg 1.15, gate 1.40; failures 0
+      hero w1   money   300 towers  3 hp   1106/    0 window   24s pressure 0.52/0.00
+      hero w2   money   300 towers  2 hp   1425/    0 window   26s pressure 0.60/0.00
+      hero w3   money   314 towers  2 hp   2757/    0 window   34s pressure 0.89/0.00
+      hero w4   money   359 towers  1 hp   2961/    0 window   28s pressure 0.81/0.00
+      hero w5   money   402 towers  2 hp   3578/    0 window   34s pressure 0.94/0.00
+      hero w6   money   447 towers  2 hp   3964/    0 window   32s pressure 0.92/0.00
+      hero w7   money   485 towers  3 hp   2631/  991 window   28s pressure 0.91/1.07
+      hero w8   money   572 towers  3 hp   1734/  842 window   28s pressure 0.89/0.65
+      hero w9   money   660 towers  2 hp   4249/    0 window   26s pressure 1.22/0.00
+      hero w10  money   730 towers  5 hp   3541/  214 window   27s pressure 1.25/0.27
+      hero w11  money   832 towers  4 hp   3298/  926 window   30s pressure 0.76/0.62
+      hero w12B money   969 towers  4 hp   5145/ 1058 window   31s pressure 1.22/0.39
+      hero w13  money  1201 towers  4 hp   7855/ 1018 window   29s pressure 0.91/0.95
+      hero w14  money  1380 towers  7 hp   5160/ 2027 window   26s pressure 0.74/0.85
+      hero w15  money  1433 towers  6 hp  12166/ 1255 window   30s pressure 1.25/0.83
+      hero w16  money  1796 towers  7 hp  23282/    0 window   56s pressure 1.01/0.00
+      hero w17  money  2157 towers  8 hp  10078/ 2821 window   24s pressure 0.85/0.69
+      hero w18B money  2263 towers  9 hp  11498/  558 window   23s pressure 1.25/0.19
+C1_06 Psycho: human 0.75x (target 0.74), with hero 0.82x, worst wave with hero 1.35 (w10); bot plain max 2.03 boss 2.00 band 2.63/4.20; trim 1.23; research 222 earned 222 spent, tower bonus 0.38, hero dmg 1.30, gate 1.40; failures 0
+      hero w1   money   300 towers  2 hp   1852/    0 window   24s pressure 0.79/0.00
+      hero w2   money   300 towers  2 hp   1832/    0 window   26s pressure 0.72/0.00
+      hero w3   money   317 towers  2 hp   4091/    0 window   32s pressure 1.27/0.00
+      hero w4   money   360 towers  1 hp   4921/    0 window   25s pressure 1.35/0.00
+      hero w5   money   405 towers  3 hp   2265/  430 window   30s pressure 0.82/1.22
+      hero w6   money   439 towers  3 hp   3561/    0 window   26s pressure 1.35/0.00
+      hero w7 B money   474 towers  3 hp     66/ 2933 window   21s pressure 0.06/1.35
+      hero w8   money   553 towers  3 hp   1713/ 1137 window   29s pressure 0.69/0.80
+      hero w9   money   620 towers  3 hp   2836/    0 window   20s pressure 1.35/0.00
+      hero w10  money   690 towers  5 hp   3175/  199 window   24s pressure 1.35/0.22
+      hero w11  money   826 towers  4 hp   3908/ 1501 window   23s pressure 0.97/0.84
+      hero w12B money  1088 towers  5 hp   6333/ 3436 window   27s pressure 1.35/0.77
+      hero w13  money  1267 towers  5 hp  11786/ 1374 window   26s pressure 1.31/1.13
+      hero w14  money  1447 towers  5 hp   8917/ 3420 window   21s pressure 1.23/1.08
+      hero w15  money  1510 towers  6 hp   9612/ 4670 window   22s pressure 1.35/1.14
+      hero w16  money  1634 towers  6 hp  22961/    0 window   54s pressure 1.35/0.00
+      hero w17  money  2103 towers  7 hp  13982/ 4687 window   20s pressure 1.20/1.05
+      hero w18B money  2202 towers  8 hp  13407/ 1197 window   21s pressure 1.35/0.29

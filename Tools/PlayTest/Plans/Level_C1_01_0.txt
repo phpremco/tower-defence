@@ -1,4 +1,4 @@
-Landing Site (Level_C1_01) on Easy: plan search, 3008 plans sampled, 3008 hold on paper, base 600, cap 1.04. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
+Landing Site (Level_C1_01) on Easy: plan search, 3008 plans sampled, 3008 hold on paper, base 600, cap 1.04. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -10,29 +10,20 @@ Best spots per tower (first is best):
   Cannon         (5,14) cover 15.0 bunch 0.4; (31,8) cover 15.0/1.0 air bunch 0.4; (6,14) cover 15.0 bunch 0.3; (32,8) cover 13.0 bunch 0.5; (14,7) cover 8.0 gate bunch 0.9; (13,7) cover 8.0 gate bunch 0.8;
 
 Obvious plans on paper:
-  mono PulseRifle    3* base 600, margin 1.53, coins left 13, steps taken 11, 9 never affordable
-  mono Cannon        2* base 495, margin 0.89 (leaks from wave 12), coins left 68, steps taken 5, 15 never affordable
-  naive              2* base 479, margin 0.82 (leaks from wave 12), coins left 18, steps taken 7, 11 never affordable
+  mono PulseRifle    3* base 600, margin 1.50, coins left 13, steps taken 11, 9 never affordable
+  mono Cannon        3* base 600, margin 1.06, coins left 68, steps taken 5, 15 never affordable
+  naive              3* base 600, margin 1.25, coins left 18, steps taken 7, 11 never affordable
 
-Distinct winning plans (3; different spots, mixes or timing):
+Distinct winning plans (2; different spots, mixes or timing):
 
-Level_C1_01_0_plan1: 3* base 600, margin 1.11, mean cover 2.59, coins left 268, gate repairs 0 (0 coins), gates left 224, 7 steps
-  from wave  1: build Gun Turret at (5,14); build Gun Turret at (5,15)
-  from wave  2: build Gun Turret at (32,8); upgrade the tower at (5,15)
-  from wave  6: upgrade the tower at (5,15); upgrade the tower at (32,8)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun
-  waves: w1 0.16  w2 0.19  w3 0.25  w4 0.29  w5 0.33  w6 0.45  w7 0.49  w8 0.43  w9 0.54  w10 0.55  w11 0.82  w12B 0.90  
+Level_C1_01_0_plan1: 3* base 600, margin 0.95, mean cover 2.49, coins left 329, gate repairs 0 (0 coins), gates left 1348, 5 steps
+  from wave  1: build Gun Turret at (5,14); build Gun Turret at (6,14)
+  from wave  2: build Gun Turret at (31,8)
+  from wave  4: upgrade the tower at (5,14)
+  from wave  6: upgrade the tower at (6,14)
+  waves: w1 0.16  w2 0.18  w3 0.25  w4 0.28  w5 0.32  w6 0.41  w7 0.57  w8 0.53  w9 0.56  w10 0.69  w11 1.07  w12B 1.05  
 
-Level_C1_01_0_plan2: 3* base 600, margin 1.02, mean cover 2.49, coins left 258, gate repairs 0 (0 coins), gates left 140, 5 steps
-  from wave  1: build Cannon at (13,7); build Gun Turret at (5,13)
-  from wave  3: upgrade the tower at (5,13)
-  from wave  4: build Gun Turret at (31,8)
-  from wave  5: upgrade the tower at (5,13)
-  waves: w1 0.16  w2 0.21  w3 0.29  w4 0.33  w5 0.36  w6 0.44  w7 0.49  w8 0.42  w9 0.60  w10 0.54  w11 0.75  w12B 0.98  
-
-Level_C1_01_0_plan3: 3* base 600, margin 1.13, mean cover 2.58, coins left 208, gate repairs 0 (0 coins), gates left 185, 7 steps
-  from wave  1: build Gun Turret at (31,8); build Gun Turret at (5,15)
-  from wave  2: build Gun Turret at (32,8)
-  from wave  5: build Gun Turret at (5,14); upgrade the tower at (31,8); upgrade the tower at (31,8)
-  from wave 11: build Gun Turret at (5,13)
-  waves: w1 0.16  w2 0.19  w3 0.25  w4 0.30  w5 0.31  w6 0.39  w7 0.60  w8 0.45  w9 0.53  w10 0.57  w11 0.80  w12B 0.88  
+Level_C1_01_0_plan2: 3* base 600, margin 0.65, mean cover 2.25, coins left 360, gate repairs 0 (0 coins), gates left 1239, 3 steps
+  from wave  1: build Gun Turret at (5,13); build Gun Turret at (6,14)
+  from wave  2: build Cannon at (14,7)
+  waves: w1 0.16  w2 0.21  w3 0.29  w4 0.36  w5 0.35  w6 0.48  w7 0.56  w8 0.58  w9 0.68  w10 0.75  w11 1.04  w12B 1.54  

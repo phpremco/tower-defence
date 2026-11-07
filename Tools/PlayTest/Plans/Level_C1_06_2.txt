@@ -1,4 +1,4 @@
-Crysium Vein (Level_C1_06) on Hard: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
+Crysium Vein (Level_C1_06) on Hard: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.30. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -12,22 +12,26 @@ Best spots per tower (first is best):
   Flak Turret    (36,10) cover 12.5/9.0 air door bunch 0.6; (36,7) cover 11.0/8.5 air door bunch 0.6; (36,11) cover 13.5/8.5 air door bunch 0.7; (34,10) cover 13.5/8.0 air door bunch 0.7; (35,10) cover 13.0/8.0 air door bunch 0.7; (35,11) cover 14.0/8.0 air door bunch 0.7;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w7, margin 0.09 (leaks from wave 3), coins left 19, steps taken 15, 3 never affordable
-  mono Cannon        falls w8, margin 0.00 (leaks from wave 4), coins left 61, steps taken 5, 15 never affordable
-  mono Laser         falls w7, margin 0.00 (leaks from wave 3), coins left 63, steps taken 3, 17 never affordable
-  naive              falls w7, margin 0.05 (leaks from wave 3), coins left 15, steps taken 8, 10 never affordable
+  mono PulseRifle    falls w7, margin 0.14 (leaks from wave 4), coins left 37, steps taken 18
+  mono Cannon        falls w7, margin 0.00 (leaks from wave 7), coins left 79, steps taken 6, 14 never affordable
+  mono Laser         falls w7, margin 0.00 (leaks from wave 3), coins left 126, steps taken 3, 17 never affordable
+  naive              falls w7, margin 0.04 (leaks from wave 3), coins left 24, steps taken 9, 9 never affordable
 
 Distinct winning plans (0; different spots, mixes or timing):
 
-No plan holds on paper. Best found: falls w8, margin 0.13, leaks from wave 4
-  from wave  1: build Cannon at (18,11); build Cannon at (17,10); build Cannon at (12,10)
-  from wave  3: build Flak Turret at (35,10)
-  from wave  5: upgrade the tower at (18,11); buy the RepairDrone
-  from wave  6: upgrade the tower at (18,11)
-  from wave  7: lay a Mine on the road at (13,9)
-  from wave  9: build Flak Turret at (36,10)
-  from wave 10: upgrade the tower at (35,10)
-  from wave 11: lay a SlowField on the road at (15,9)
-  from wave 13: upgrade the tower at (35,10)
-  from wave 14: build Cannon at (17,11)
-  from wave 15: buy the AttackDrone
+No plan holds on paper. Best found: falls w12, margin 0.07, leaks from wave 4
+  from wave  1: build Cannon at (17,11); build Gun Turret at (13,11); build Cannon at (18,11)
+  from wave  2: build Gun Turret at (14,11)
+  from wave  4: build Flak Turret at (36,7); repair the gates when they would fall or it is cheaper than a gun
+  from wave  5: build Gun Turret at (14,7); build Flak Turret at (36,10)
+  from wave  6: build Laser Turret at (11,10); build Gun Turret at (12,10); build Laser Turret at (14,10); build Flak Turret at (36,11)
+  from wave  7: upgrade the tower at (36,11); repair the gates when they would fall or it is cheaper than a gun
+  from wave  8: upgrade the tower at (36,10); buy the HarvestDrone
+  from wave  9: upgrade the tower at (12,10)
+  from wave 10: build Flak Turret at (34,10)
+  from wave 13: build Cannon at (17,7)
+  from wave 14: build Gun Turret at (12,11); upgrade the tower at (14,10)
+  from wave 15: upgrade the tower at (36,10)
+  from wave 16: build Gun Turret at (13,10)
+  from wave 17: upgrade the tower at (13,10)
+  from wave 18: upgrade the tower at (17,11); upgrade the tower at (14,10)

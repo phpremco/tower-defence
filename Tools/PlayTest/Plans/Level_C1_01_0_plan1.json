@@ -14,14 +14,14 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 5,
-            "Y": 15,
+            "X": 6,
+            "Y": 14,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 32,
+            "X": 31,
             "Y": 8,
             "Wave": 2
         },
@@ -29,29 +29,15 @@
             "Kind": "upgrade",
             "Item": "",
             "X": 5,
-            "Y": 15,
-            "Wave": 2
+            "Y": 14,
+            "Wave": 4
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 5,
-            "Y": 15,
+            "X": 6,
+            "Y": 14,
             "Wave": 6
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
-            "Y": 8,
-            "Wave": 6
-        },
-        {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 11
         }
     ]
 }

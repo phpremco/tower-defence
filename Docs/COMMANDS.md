@@ -644,3 +644,14 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
 - EditMode `LeakModelTests` covers the leak model without assets.
 - Timing: one probe run at step 0.2 s takes about 20-25 s on this machine when the editor is unfocused; the full
   yardstick (6 levels x 4 difficulties x 3 seeds x 5-6 strategies, about 430 runs) about 3 hours.
+
+### Round 22c additions (2026-11-07)
+
+- The fit stage also writes `Tools/PlayTest/calibration_waves.txt`: one line per recorded wave with the paper side (pressures,
+  walk kills, queue and doorstep guards, the siege's gate and base damage, the state after it) beside what the game recorded
+  (damage by type, base and gate losses). Read it with a script when a model term is in doubt; it is the fit's working table.
+- `calibration.txt` carries `siege <factor>` instead of `leak`; the apply stage writes it to `_siegeFactor` on the asset.
+- The fit judges the recorded runs against the fresh player the yardstick plays with (`CampaignModel.InputForFreshPlayer`).
+- A scratch check of the solver against the stored waves is a few lines in an `eval_file` script: build the calibrated model,
+  `BalanceLedger.Evaluate(model, index, level, profile, d, null, model.Rules.HumanTowersOnly())` for the stored waves,
+  `model.BuildWaves(index, WaveScripts.ByKey(key), out _)` for the in-memory solve, `BalanceChecks.PlainMean` of both.

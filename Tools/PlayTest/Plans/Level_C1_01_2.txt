@@ -1,4 +1,4 @@
-Landing Site (Level_C1_01) on Hard: plan search, 3008 plans sampled, 0 hold on paper, base 600, cap 1.30. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
+Landing Site (Level_C1_01) on Hard: plan search, 3008 plans sampled, 693 hold on paper, base 600, cap 1.30. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -10,19 +10,15 @@ Best spots per tower (first is best):
   Cannon         (5,14) cover 15.0 bunch 0.4; (31,8) cover 15.0/1.0 air bunch 0.4; (6,14) cover 15.0 bunch 0.3; (32,8) cover 13.0 bunch 0.5; (14,7) cover 8.0 gate bunch 0.9; (13,7) cover 8.0 gate bunch 0.8;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w9, margin 0.43 (leaks from wave 7), coins left 1, steps taken 18
-  mono Cannon        falls w8, margin 0.39 (leaks from wave 7), coins left 17, steps taken 9, 11 never affordable
-  naive              falls w8, margin 0.26 (leaks from wave 6), coins left 25, steps taken 10, 8 never affordable
+  mono PulseRifle    falls w7, margin 0.46 (leaks from wave 7), coins left 2, steps taken 18
+  mono Cannon        falls w8, margin 0.48 (leaks from wave 7), coins left 62, steps taken 9, 11 never affordable
+  naive              falls w10, margin 0.44 (leaks from wave 7), coins left 74, steps taken 12, 6 never affordable
 
-Distinct winning plans (0; different spots, mixes or timing):
+Distinct winning plans (1; different spots, mixes or timing):
 
-No plan holds on paper. Best found: falls w11, margin 0.68, leaks from wave 7
-  from wave  1: build Gun Turret at (5,14); build Gun Turret at (6,14); upgrade the tower at (5,14); upgrade the tower at (5,14)
-  from wave  2: upgrade the tower at (6,14)
-  from wave  3: upgrade the tower at (6,14)
-  from wave  4: build Gun Turret at (31,8)
-  from wave  5: upgrade the tower at (31,8); upgrade the tower at (31,8)
-  from wave  6: build Gun Turret at (32,8); upgrade the tower at (32,8)
-  from wave  7: build Gun Turret at (5,13); upgrade the tower at (32,8); repair the gates when they would fall or it is cheaper than a gun
-  from wave  8: repair the gates when they would fall or it is cheaper than a gun
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun
+Level_C1_01_2_plan1: 3* base 600, margin 0.45, mean cover 1.14, coins left 283, gate repairs 1 (142 coins), gates left 848, 7 steps
+  from wave  1: build Cannon at (14,7); build Cannon at (13,7)
+  from wave  3: build Cannon at (31,8); build Cannon at (5,14)
+  from wave  4: build Cannon at (6,14)
+  from wave  6: build Gun Turret at (32,8); repair the gates when they would fall or it is cheaper than a gun
+  waves: w1 0.40  w2 0.56  w3 0.68  w4 0.78  w5 0.65  w6 1.01  w7 1.33  w8B 1.96  w9 1.02  w10 1.14  w11 1.59  w12B 2.20  

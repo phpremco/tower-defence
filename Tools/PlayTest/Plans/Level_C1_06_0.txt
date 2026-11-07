@@ -1,4 +1,4 @@
-Crysium Vein (Level_C1_06) on Easy: plan search, 3036 plans sampled, 0 hold on paper, base 700, cap 1.04. calibration 2026-11-06 21:30, seeds 1, step 0.2, inputs 9b275f8f (STALE, data now 9e849721)
+Crysium Vein (Level_C1_06) on Easy: plan search, 3036 plans sampled, 215 hold on paper, base 700, cap 1.04. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -12,24 +12,54 @@ Best spots per tower (first is best):
   Flak Turret    (36,10) cover 12.5/9.0 air door bunch 0.6; (36,7) cover 11.0/8.5 air door bunch 0.6; (36,11) cover 13.5/8.5 air door bunch 0.7; (34,10) cover 13.5/8.0 air door bunch 0.7; (35,10) cover 13.0/8.0 air door bunch 0.7; (35,11) cover 14.0/8.0 air door bunch 0.7;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w14, margin 0.21 (leaks from wave 8), coins left 26, steps taken 17, 1 never affordable
-  mono Cannon        falls w14, margin 0.00 (leaks from wave 7), coins left 82, steps taken 6, 14 never affordable
-  mono Laser         falls w11, margin 0.00 (leaks from wave 6), coins left 45, steps taken 4, 16 never affordable
-  naive              falls w11, margin 0.12 (leaks from wave 5), coins left 39, steps taken 7, 11 never affordable
+  mono PulseRifle    falls w8, margin 0.27 (leaks from wave 8), coins left 52, steps taken 18
+  mono Cannon        falls w7, margin 0.00 (leaks from wave 7), coins left 71, steps taken 7, 13 never affordable
+  mono Laser         falls w7, margin 0.00 (leaks from wave 7), coins left 7, steps taken 6, 14 never affordable
+  naive              falls w8, margin 0.13 (leaks from wave 8), coins left 47, steps taken 10, 8 never affordable
 
-Distinct winning plans (0; different spots, mixes or timing):
+Distinct winning plans (26; different spots, mixes or timing):
 
-No plan holds on paper. Best found: falls w16, margin 0.16, leaks from wave 8
-  from wave  1: build Gun Turret at (13,10); build Gun Turret at (13,11)
-  from wave  2: build Cannon at (18,11)
-  from wave  4: upgrade the tower at (13,11)
-  from wave  6: upgrade the tower at (13,11)
-  from wave  7: build Gun Turret at (12,10); build Flak Turret at (36,10); repair the gates when they would fall or it is cheaper than a gun
+Level_C1_06_0_plan1: 3* base 700, margin 0.59, mean cover 1.54, coins left 429, gate repairs 0 (0 coins), gates left 1831, 7 steps
+  from wave  1: build Cannon at (12,10); build Gun Turret at (13,11); upgrade the tower at (13,11)
+  from wave  6: build Flak Turret at (35,10)
+  from wave  8: upgrade the tower at (13,11)
+  from wave 13: upgrade the tower at (35,10)
+  from wave 15: build Laser Turret at (13,10)
+  waves: w1 0.27  w2 0.31  w3 0.38  w4 0.56  w5 0.70  w6 0.68  w7 0.64  w8 0.69  w9 0.64  w10 0.66  w11 0.73  w12 0.92  w13 1.24  w14 0.83  w15 1.04  w16 1.23  w17 1.69  w18B 1.69  
+
+Level_C1_06_0_plan2: 3* base 700, margin 0.48, mean cover 1.33, coins left 426, gate repairs 0 (0 coins), gates left 3000, 7 steps
+  from wave  1: build Gun Turret at (13,11); build Gun Turret at (12,10); build Gun Turret at (13,10)
+  from wave  4: build Flak Turret at (36,10)
+  from wave  7: build Cannon at (17,10)
   from wave  8: upgrade the tower at (12,10)
-  from wave  9: upgrade the tower at (36,10)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun
-  from wave 12: build Flak Turret at (34,10)
-  from wave 13: upgrade the tower at (12,10)
-  from wave 15: upgrade the tower at (36,10)
-  from wave 16: lay a Mine on the road at (14,9)
-  from wave 18: lay a Mine on the road at (12,9)
+  from wave 11: buy the RepairDrone
+  waves: w1 0.26  w2 0.37  w3 0.46  w4 0.83  w5 0.80  w6 0.91  w7 0.88  w8 0.66  w9 0.79  w10 0.72  w11 0.68  w12 0.97  w13 1.33  w14 1.37 (-9 base)  w15 1.20  w16 1.48  w17 2.04  w18B 2.07  
+
+Level_C1_06_0_plan3: 3* base 700, margin 0.51, mean cover 1.30, coins left 401, gate repairs 0 (0 coins), gates left 3000, 6 steps
+  from wave  1: build Gun Turret at (13,10); build Cannon at (12,10)
+  from wave  4: build Flak Turret at (36,7)
+  from wave  6: build Laser Turret at (14,10)
+  from wave  7: buy the RepairDrone
+  from wave  8: upgrade the tower at (13,10)
+  waves: w1 0.32  w2 0.38  w3 0.46  w4 0.66  w5 0.85  w6 0.81  w7 0.76  w8 0.73  w9 0.95  w10 0.68  w11 0.76  w12 1.04  w13 1.28  w14 1.50 (-13 base)  w15 1.14  w16 1.43  w17 1.95  w18B 1.98  
+
+Level_C1_06_0_plan4: 3* base 700, margin 0.49, mean cover 1.35, coins left 382, gate repairs 0 (0 coins), gates left 3000, 8 steps
+  from wave  1: build Laser Turret at (15,10); build Gun Turret at (14,11); build Flak Turret at (36,10)
+  from wave  4: build Gun Turret at (13,10)
+  from wave  5: repair the gates when they would fall or it is cheaper than a gun
+  from wave  9: build Cannon at (17,10)
+  from wave 10: buy the RepairDrone
+  from wave 16: upgrade the tower at (12,11)
+  waves: w1 0.25  w2 0.35  w3 0.43  w4 0.78  w5 0.75  w6 0.85  w7 0.83  w8 0.68  w9 1.08  w10 0.75  w11 0.71  w12 0.95  w13 1.31  w14 1.45 (-12 base)  w15 1.21  w16 1.45  w17 2.00  w18B 2.04  
+
+Level_C1_06_0_plan5: 3* base 691, margin 0.58, mean cover 1.37, coins left 411, gate repairs 1 (101 coins), gates left 2517, 10 steps
+  from wave  1: build Gun Turret at (13,10); build Cannon at (17,7)
+  from wave  2: build Flak Turret at (35,11)
+  from wave  4: repair the gates when they would fall or it is cheaper than a gun
+  from wave  5: build Gun Turret at (12,10)
+  from wave  8: upgrade the tower at (12,10)
+  from wave  9: upgrade the tower at (13,10)
+  from wave 11: build Gun Turret at (13,11)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun
+  from wave 14: upgrade the tower at (13,11)
+  waves: w1 0.32  w2 0.39  w3 0.47  w4 0.67  w5 0.86  w6 0.82  w7 0.67  w8 0.71  w9 0.76  w10 0.61  w11 0.73  w12 0.88  w13 1.20  w14 1.37 (-9 base)  w15 0.95  w16 1.24  w17 1.71  w18B 1.71  

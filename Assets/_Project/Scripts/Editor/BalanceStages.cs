@@ -28,6 +28,7 @@ namespace Game.Editor
         public const string PlanRecordsPath = "Tools/PlayTest/plan_records.txt";
         public const string StepRecordsPath = "Tools/PlayTest/calibration_records_step.txt";
         public const string CalibrationTablePath = "Tools/PlayTest/calibration.txt";
+        public const string WaveTablePath = "Tools/PlayTest/calibration_waves.txt";
         public const string PlansFolder = "Tools/PlayTest/Plans";
         public const string PlansSummaryPath = "Tools/PlayTest/plans_summary.txt";
         public const string AcceptancePath = "Tools/PlayTest/acceptance.txt";
@@ -105,7 +106,7 @@ namespace Game.Editor
             var cells = new Dictionary<string, RecordedCell>();
             RecordedCell CellOf(RunRecord run) => CellFor(run, loaded, cells);
             CalibrationFit.Result all = CalibrationFit.Fit(runs, CellOf);
-            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.LeakFactor);
+            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.SiegeFactor);
 
             // Hold-out over the levels: fit on the odd ones, judge the even ones, and the other way round.
             var holdOut = new CalibrationFit.Agreement();
@@ -119,7 +120,7 @@ namespace Game.Editor
                 }
 
                 CalibrationFit.Result trained = CalibrationFit.Fit(train, CellOf);
-                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.LeakFactor);
+                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.SiegeFactor);
                 holdOut.Runs += check.Runs;
                 holdOut.Agreed += check.Agreed;
                 holdOut.MonoRuns += check.MonoRuns;
@@ -139,8 +140,9 @@ namespace Game.Editor
             var text = new StringBuilder();
             text.Append(Invariant($"Calibration fit {DateTime.Now:yyyy-MM-dd HH:mm}: {runs.Count} runs ({planRuns} replayed plans), seeds {string.Join(",", seeds)}, step {string.Join(",", steps)}, inputs {loaded.Hash}.\n"));
             text.Append("Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health\n");
-            text.Append("there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, \"The balance pipeline\"). The leak factor is the base\n");
-            text.Append("health the runs really lost over the leak model's paper damage (round 22b). ApplyCalibration writes the factor, leak and utilisation lines into the asset.\n\n");
+            text.Append("there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, \"The balance pipeline\"). The siege factor is the gate and base\n");
+            text.Append("health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the fresh player the yardstick plays\n");
+            text.Append("with (no permanent upgrades, perks or base turrets). ApplyCalibration writes the factor, siege and utilisation lines into the asset.\n\n");
             text.Append("tower          efficiency   dealt   capacity  waves\n");
             foreach (KeyValuePair<string, float> pair in all.Efficiency)
             {
@@ -148,7 +150,7 @@ namespace Game.Editor
                 text.Append(Invariant($"{pair.Key,-14} {pair.Value,10:0.000} {dealt,7:0} {capacity,10:0} {waves,6}\n"));
             }
 
-            text.Append(Invariant($"\nLeak factor {all.LeakFactor:0.000}: base lost {all.BaseLost:0} over paper damage {all.PaperBaseDamage:0} on {all.LeakWaves} waves with a leak.\n"));
+            text.Append(Invariant($"\nSiege factor {all.SiegeFactor:0.000}: gate and base health lost {all.StructureLost:0} over the siege model's paper damage {all.PaperStructureDamage:0} at factor one, on {all.SiegeWaves} waves with a siege.\n"));
             text.Append(all.RepairDroneBusyShare >= 0f
                 ? Invariant($"Repair drone busy share {all.RepairDroneBusyShare:0.000} over {all.RepairDroneSeconds:0} drone-seconds on the field.\n")
                 : "Repair drone busy share: no run had a repair drone (the rules' default stays).\n");
@@ -172,9 +174,10 @@ namespace Game.Editor
                 text.Append(Invariant($"repairbusy {all.RepairDroneBusyShare:0.000}\n"));
             }
 
-            text.Append(Invariant($"leak {all.LeakFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
+            text.Append(Invariant($"siege {all.SiegeFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
             Directory.CreateDirectory(Path.GetDirectoryName(CalibrationTablePath));
             File.WriteAllText(CalibrationTablePath, text.ToString());
+            File.WriteAllText(WaveTablePath, CalibrationFit.WaveTable(runs, CellOf, all.Efficiency, all.SiegeFactor));
 
             var report = new FitReport { Text = text.ToString() };
             report.Accepted = holdOut.Share >= MinAgreement && holdOut.MonoShare >= MinAgreement && holdOut.MeanSpearman >= MinSpearman;
@@ -242,8 +245,9 @@ namespace Game.Editor
 
                 if (node.Level.name == run.Level && run.Difficulty >= 0 && run.Difficulty < loaded.Catalog.Difficulties.Count)
                 {
-                    cell = new RecordedCell { Input = loaded.Model.InputFor(index, run.Difficulty), Judge = rules.HumanWithHero(), Cap = rules.HeroCapFor(run.Difficulty) * (1f + rules.BeatableTolerance) };
-                    BalanceLedger.Evaluate(loaded.Model, index, node.Level, loaded.Catalog.Difficulties[run.Difficulty], run.Difficulty, cell.Loads, cell.Judge);
+                    // The yardstick and the replays play on a fresh save (no permanent upgrades, perks or base turrets): the paper side must too.
+                    cell = new RecordedCell { Input = loaded.Model.InputForFreshPlayer(index, run.Difficulty), Judge = rules.HumanWithHero(), Cap = rules.HeroCapFor(run.Difficulty) * (1f + rules.BeatableTolerance) };
+                    Ledger.Evaluate(cell.Input, Waves(loaded.Model, node.Level, loaded.Catalog.Difficulties[run.Difficulty]), loaded.Model.Difficulties[run.Difficulty], cell.Judge, cell.Loads);
                     cache[run.Cell] = cell;
                     return cell;
                 }
@@ -293,10 +297,10 @@ namespace Game.Editor
                     so.FindProperty("_repairDroneBusyShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
                     report.Append("repair drone busy ").Append(parts[1]).Append("; ");
                 }
-                else if (parts.Length == 2 && parts[0] == "leak")
+                else if (parts.Length == 2 && parts[0] == "siege")
                 {
-                    so.FindProperty("_leakFactor").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
-                    report.Append("leak ").Append(parts[1]).Append("; ");
+                    so.FindProperty("_siegeFactor").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    report.Append("siege ").Append(parts[1]).Append("; ");
                 }
                 else if (parts.Length == 3 && parts[0] == "utilisation")
                 {

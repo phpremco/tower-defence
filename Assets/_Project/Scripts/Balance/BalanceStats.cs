@@ -119,6 +119,11 @@ namespace Game.Balance
         public int Magazine;
         public float ReloadSeconds;
 
+        /// <summary>The hero in a siege (round 22c): his health against the guard share of the hits on the gate he guards, and the seconds he is down after a fall.</summary>
+        public float MaxHealth = 200f;
+        public float GuardShare = 0.4f;
+        public float ReviveSeconds = 120f;
+
         /// <summary>The perks the hero can earn that change the blaster.</summary>
         public List<HeroPerkStats> Perks = new List<HeroPerkStats>();
 

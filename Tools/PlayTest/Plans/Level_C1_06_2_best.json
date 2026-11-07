@@ -7,100 +7,184 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 18,
+            "X": 17,
+            "Y": 11,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 13,
             "Y": 11,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 17,
-            "Y": 10,
+            "X": 18,
+            "Y": 11,
             "Wave": 1
         },
         {
             "Kind": "build",
-            "Item": "Cannon",
-            "X": 12,
-            "Y": 10,
-            "Wave": 1
+            "Item": "PulseRifle",
+            "X": 14,
+            "Y": 11,
+            "Wave": 2
         },
         {
             "Kind": "build",
             "Item": "Rocket",
-            "X": 35,
-            "Y": 10,
-            "Wave": 3
+            "X": 36,
+            "Y": 7,
+            "Wave": 4
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 18,
-            "Y": 11,
-            "Wave": 5
-        },
-        {
-            "Kind": "drone",
-            "Item": "RepairDrone",
+            "Kind": "repair",
+            "Item": "gates",
             "X": 0,
             "Y": 0,
+            "Wave": 4
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 14,
+            "Y": 7,
             "Wave": 5
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 18,
-            "Y": 11,
-            "Wave": 6
-        },
-        {
-            "Kind": "mine",
-            "Item": "Mine",
-            "X": 13,
-            "Y": 9,
-            "Wave": 7
         },
         {
             "Kind": "build",
             "Item": "Rocket",
             "X": 36,
             "Y": 10,
+            "Wave": 5
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 11,
+            "Y": 10,
+            "Wave": 6
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 12,
+            "Y": 10,
+            "Wave": 6
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 14,
+            "Y": 10,
+            "Wave": 6
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 36,
+            "Y": 11,
+            "Wave": 6
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 36,
+            "Y": 11,
+            "Wave": 7
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 7
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 36,
+            "Y": 10,
+            "Wave": 8
+        },
+        {
+            "Kind": "drone",
+            "Item": "HarvestDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 8
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 12,
+            "Y": 10,
             "Wave": 9
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 35,
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 34,
             "Y": 10,
             "Wave": 10
-        },
-        {
-            "Kind": "field",
-            "Item": "SlowField",
-            "X": 15,
-            "Y": 9,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 35,
-            "Y": 10,
-            "Wave": 13
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 17,
+            "Y": 7,
+            "Wave": 13
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 12,
             "Y": 11,
             "Wave": 14
         },
         {
-            "Kind": "drone",
-            "Item": "AttackDrone",
-            "X": 0,
-            "Y": 0,
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 14,
+            "Y": 10,
+            "Wave": 14
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 36,
+            "Y": 10,
             "Wave": 15
+        },
+        {
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 13,
+            "Y": 10,
+            "Wave": 16
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 13,
+            "Y": 10,
+            "Wave": 17
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 17,
+            "Y": 11,
+            "Wave": 18
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 14,
+            "Y": 10,
+            "Wave": 18
         }
     ]
 }
