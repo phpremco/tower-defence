@@ -3654,3 +3654,10 @@ cells (`builder_iterations.txt`): the next pass is design decisions, not a third
 - Script levers (plated, fast runners) on Medium cells are approved.
 - C1_05 Quartz Flats: fix by changing the map (build spots, road, positions), not by removing a tower from the bar unless the unlock flow makes that logical.
 - Next round starts with `bash Tools/PlayTest/round22f_chain.sh "levels=3;difficulties=0,2,3"` (C1_04 was not re-measured), then a builder pass; finale probe still to be run.
+
+### Playtest bugs from Remco (2026-11-07 night, C1_02)
+
+1. Enemy menu (Codex) open in a level: the scroll wheel also zooms the level camera. Input must not reach the game while the overlay is open.
+2. After closing the enemy menu the level lighting is far too bright: the mood (theme grading/fog/exposure) is lost. Restore the level's lighting state on close.
+3. The in-level enemy menu lists every enemy; it must list only the enemies present in this level (see the tutorial-hints decision; the full list belongs in a general Codex in the main menu).
+4. Some animations need fixes; Remco writes them down tomorrow.
