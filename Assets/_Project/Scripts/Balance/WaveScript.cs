@@ -99,6 +99,15 @@ namespace Game.Balance
         public int AirSprinkleFrom = 4;
 
         /// <summary>
+        /// Per difficulty, the earliest wave the first air raid may come on (0 = as written): the difficulty's raids shift together
+        /// until the first reaches it, and a floor past the last wave removes them. The solver owns it (the Easy raid rule, round
+        /// 22f, <see cref="CampaignModel.EasyRaidFloor"/>: no raid before the expected player can afford a sky gun, plus a wave).
+        /// </summary>
+        public int[] FirstAirWaveFloor = { 0 };
+
+        public int FirstAirWaveFloorFor(int difficulty) => FirstAirWaveFloor == null || FirstAirWaveFloor.Length == 0 ? 0 : FirstAirWaveFloor[difficulty < FirstAirWaveFloor.Length ? difficulty : FirstAirWaveFloor.Length - 1];
+
+        /// <summary>
         /// The builder bot's lever (round 22, WaveTuning): a scale on the human target pressure per difficulty (Easy to Psycho; a
         /// shorter array repeats its last entry). 1 is the curve; the builder moves a failing cell by small steps, at most twice.
         /// </summary>

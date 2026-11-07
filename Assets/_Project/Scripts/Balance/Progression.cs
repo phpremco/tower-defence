@@ -69,9 +69,10 @@ namespace Game.Balance
     /// path a player of that difficulty takes (<see cref="PathOf"/>: an Easy player clears each level on Easy; a Medium player
     /// on Medium; a Hard player on Medium and Hard; a Psycho player on all four), plus the level itself cleared on the lower
     /// difficulties of that path (<see cref="OwnLevelPathOf"/>: a Hard player has beaten the level on Medium first, a Psycho
-    /// player on Easy, Medium and Hard). So C1_01 Psycho is a player with the first level's research three times over and few
-    /// upgrades, not one with the whole continent behind them. The research is spent cheapest first on upgrades of the owned
-    /// guns, the hero, the gates and the base, which is roughly how a player spreads it.
+    /// player on Easy, Medium and Hard, and so owns the level's own reward weapon and perk too). So C1_01 Psycho is a player with
+    /// the first level's research three times over and few upgrades, not one with the whole continent behind them. The research
+    /// is spent cheapest first on upgrades of the owned guns, the hero, the gates and the base, which is roughly how a player
+    /// spreads it.
     /// </summary>
     public static class Progression
     {
@@ -144,17 +145,30 @@ namespace Game.Balance
                 state.ResearchEarned += (int)Math.Round(campaign[i].Research * multiplier, MidpointRounding.AwayFromZero);
             }
 
-            // The level itself, beaten on the lower difficulties of the path before this attempt (its tower reward is not counted:
-            // the bar sells the level's own towers whatever the player owns, and the PlayMode probe owns the levels before only).
+            // The level itself, beaten on the lower difficulties of the path before this attempt: its research, and its own reward
+            // weapon and perk, which that first clear handed out (the curator, round 22f; the PlayMode probe owns the same).
             if (levelIndex >= 0 && levelIndex < campaign.Count)
             {
+                int[] ownPath = OwnLevelPathOf(difficulty);
                 float own = 0f;
-                foreach (int d in OwnLevelPathOf(difficulty))
+                foreach (int d in ownPath)
                 {
                     own += rules.ResearchMultipliers[Math.Min(d, rules.ResearchMultipliers.Length - 1)];
                 }
 
                 state.ResearchEarned += (int)Math.Round(campaign[levelIndex].Research * own, MidpointRounding.AwayFromZero);
+                if (ownPath.Length > 0)
+                {
+                    if (!string.IsNullOrEmpty(campaign[levelIndex].RewardTowerId))
+                    {
+                        state.OwnedTowers.Add(campaign[levelIndex].RewardTowerId);
+                    }
+
+                    if (!string.IsNullOrEmpty(campaign[levelIndex].RewardHeroPerkId))
+                    {
+                        state.HeroPerks.Add(campaign[levelIndex].RewardHeroPerkId);
+                    }
+                }
             }
 
             Spend(state, upgrades);

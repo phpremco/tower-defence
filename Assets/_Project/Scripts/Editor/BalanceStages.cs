@@ -592,6 +592,23 @@ namespace Game.Editor
             }
         }
 
+        /// <summary>The part of a plan file name that marks a strategy (played adaptively) rather than a fixed plan.</summary>
+        public const string StrategyFileMark = "_strategy";
+
+        /// <summary>True when the level sells at least one drone: the Psycho drone rule applies there only (C1_01 introduces none).</summary>
+        private static bool SellsDrones(Loaded loaded, string levelName)
+        {
+            foreach (MapNode map in loaded.Catalog.Nodes)
+            {
+                if (map.Level != null && map.Level.name == levelName)
+                {
+                    return map.Level.Drones != null && Array.Exists(map.Level.Drones, d => d != null);
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>The searched plans of a cell written by the last search, in file order.</summary>
         public static List<PlanSpec> LoadPlans(string levelName, int difficulty)
         {
@@ -605,6 +622,13 @@ namespace Game.Editor
             files.Sort(StringComparer.Ordinal);
             foreach (string file in files)
             {
+                // A strategy file (round 22e) parses as a plan with no steps and would hide the moves its runs really took from the
+                // feature checks (round 22f: every Hard and Psycho cell read "uses 0 of the game's features" for that reason).
+                if (Path.GetFileName(file).Contains(StrategyFileMark))
+                {
+                    continue;
+                }
+
                 PlanSpec plan = JsonUtility.FromJson<PlanSpec>(File.ReadAllText(file));
                 if (plan != null && plan.Steps != null)
                 {
@@ -678,7 +702,7 @@ namespace Game.Editor
                 }
 
                 List<RunRecord> mediumObvious = obvious.FindAll(r => r.Level == parts[0] && r.Difficulty == AcceptanceRules.Medium && !r.FreshPlayer);
-                AcceptanceRules.Verdict verdict = AcceptanceRules.Judge(parts[0], difficulty, obvious.FindAll(r => r.Cell == cell), plans.FindAll(r => r.Cell == cell), specs, mediumObvious);
+                AcceptanceRules.Verdict verdict = AcceptanceRules.Judge(parts[0], difficulty, obvious.FindAll(r => r.Cell == cell), plans.FindAll(r => r.Cell == cell), specs, mediumObvious, SellsDrones(loaded, parts[0]));
                 report.Cells++;
                 text.Append(Invariant($"{parts[0]} {DifficultyName(difficulty)}: {(verdict.Passed ? "PASS" : "FAIL")}{(verdict.Tutorial ? " (tutorial cell)" : string.Empty)}\n"));
                 foreach (string note in verdict.Notes)

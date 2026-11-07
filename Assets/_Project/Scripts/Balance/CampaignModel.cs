@@ -140,27 +140,110 @@ namespace Game.Balance
             LevelFacts facts = Facts[levelIndex];
             // The script (with the builder's tuning) is the source of the target scale at generation; the asset records it for the checks.
             Levels[levelIndex].TargetScale = script.TargetScale;
+            // The raid floor is this solve's to set (the Easy raid rule below), never the script's.
+            script.FirstAirWaveFloor = new[] { 0 };
             int medium = Math.Min(WaveSolver.SolveDifficulty, Difficulties.Count - 1);
             healths = WaveSolver.Solve(script, Enemies, ReferenceInputFor(levelIndex, medium), Difficulties[medium], facts.SecondRoad, Rules);
             var sets = new List<List<WaveSpec>>();
             for (int d = 0; d < Difficulties.Count; d++)
             {
-                float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, facts.SecondRoad, Rules);
-                if (Rules.CalibrateToHuman)
+                float[] own = SolveDifficulty(levelIndex, script, d, medium, healths);
+                if (d == EasyDifficulty)
                 {
-                    own = CalibrateToHuman(levelIndex, script, d, own, facts.SecondRoad);
+                    // The Easy raid rule (the curator, round 22f): the first raid waits until the expected player's kills have paid for
+                    // a sky gun, plus a wave. Judged on the waves as solved; when it moves the raids, Easy is solved again with them moved.
+                    int first = WaveComposer.FirstAirWave(script, d);
+                    int floor = EasyRaidFloor(levelIndex, ComposedWaves(script, d, own, facts.SecondRoad));
+                    if (first != int.MaxValue && floor > first)
+                    {
+                        script.FirstAirWaveFloor = FloorPerDifficulty(floor);
+                        own = SolveDifficulty(levelIndex, script, d, medium, healths);
+                    }
                 }
 
-                var waves = new List<WaveSpec>();
-                for (int i = 0; i < script.Waves; i++)
-                {
-                    waves.Add(Composed(script, d, i, own[i], facts.SecondRoad));
-                }
-
-                sets.Add(waves);
+                sets.Add(ComposedWaves(script, d, own, facts.SecondRoad));
             }
 
             return sets;
+        }
+
+        /// <summary>The first difficulty, where the raid rule applies.</summary>
+        public const int EasyDifficulty = 0;
+
+        /// <summary>
+        /// The Easy raid rule's floor for a level: the first wave (1-based) by which the expected Easy player's kill money (the purse
+        /// above the start money, the ledger's walk over <paramref name="easyWaves"/>) covers the cheapest owned sky gun, plus
+        /// <see cref="BalanceRules.EasyRaidMarginWaves"/>. A gun made for the air counts first, else any gun that reaches it; with
+        /// neither, or when the kills never cover it, the floor lies past the last wave and Easy has no raid.
+        /// </summary>
+        public int EasyRaidFloor(int levelIndex, IReadOnlyList<WaveSpec> easyWaves)
+        {
+            LevelInput input = InputFor(levelIndex, EasyDifficulty);
+            int cost = CheapestSkyGunCost(input);
+            int none = easyWaves.Count + 1;
+            if (cost < 0)
+            {
+                return none;
+            }
+
+            List<WaveLine> lines = Ledger.Evaluate(input, easyWaves, Difficulties[EasyDifficulty], Rules.HumanTowersOnly());
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].Money - lines[0].Money >= cost)
+                {
+                    return Math.Min(none, i + 1 + Rules.EasyRaidMarginWaves);
+                }
+            }
+
+            return none;
+        }
+
+        // The cheapest sky gun the player brings: an air-only gun when owned, else the cheapest gun that reaches the air; -1 for none.
+        private static int CheapestSkyGunCost(LevelInput input)
+        {
+            int airOnly = -1;
+            int reaches = -1;
+            foreach (TowerStats tower in input.Towers)
+            {
+                if (!tower.IsGun || !Layer.Has(tower.Targets, Layer.Air) || tower.Levels.Length == 0)
+                {
+                    continue;
+                }
+
+                int cost = tower.Levels[0].Cost;
+                if (tower.Targets == Layer.Air)
+                {
+                    airOnly = airOnly < 0 ? cost : Math.Min(airOnly, cost);
+                }
+
+                reaches = reaches < 0 ? cost : Math.Min(reaches, cost);
+            }
+
+            return airOnly >= 0 ? airOnly : reaches;
+        }
+
+        private int[] FloorPerDifficulty(int easyFloor)
+        {
+            var floors = new int[Math.Max(1, Difficulties.Count)];
+            floors[EasyDifficulty] = easyFloor;
+            return floors;
+        }
+
+        private float[] SolveDifficulty(int levelIndex, WaveScriptSpec script, int d, int medium, float[] healths)
+        {
+            float[] own = d == medium ? healths : WaveSolver.SolveVariant(script, Enemies, ReferenceInputFor(levelIndex, d), Difficulties[d], healths, Facts[levelIndex].SecondRoad, Rules);
+            return Rules.CalibrateToHuman ? CalibrateToHuman(levelIndex, script, d, own, Facts[levelIndex].SecondRoad) : own;
+        }
+
+        private List<WaveSpec> ComposedWaves(WaveScriptSpec script, int d, float[] healths, int secondRoad)
+        {
+            var waves = new List<WaveSpec>(script.Waves);
+            for (int i = 0; i < script.Waves; i++)
+            {
+                waves.Add(Composed(script, d, i, healths[i], secondRoad));
+            }
+
+            return waves;
         }
 
         // A wave as the generator stores it: composed, on the clock the assets carry (the first wave's longer countdown included), so

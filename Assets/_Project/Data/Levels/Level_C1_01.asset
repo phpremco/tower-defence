@@ -197,7 +197,7 @@ MonoBehaviour:
   - 1.15
   - 1
   - 1.15
-  - 1
+  - 1.15
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 0}

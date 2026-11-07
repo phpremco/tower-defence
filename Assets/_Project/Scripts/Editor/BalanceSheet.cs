@@ -115,7 +115,7 @@ namespace Game.Editor
         /// </summary>
         public static readonly Continent[] Continents =
         {
-            new Continent("C1", 748, 186),
+            new Continent("C1", FinalePlan.CrystalPlainsResearchBudget, 186),
             new Continent("C2", 0, 0),
             new Continent("C3", 0, 0),
             new Continent("C4", 0, 0),
@@ -129,43 +129,10 @@ namespace Game.Editor
         /// working assumption (one new gun a few levels apart), not built content; the Acid Sprayer, the continent-3 combos and
         /// the continent-5 superweapons have no data yet and are not counted.
         /// </summary>
-        public static readonly PlannedTower[] PlannedTowers =
-        {
-            new PlannedTower("Tesla", 0, 9),
-            new PlannedTower("Railgun", 0, 13),
-            new PlannedTower("Cryo", 1, 4),
-        };
+        public static PlannedTower[] PlannedTowers => FinalePlan.PlannedTowers;
 
-        /// <summary>One continent finale: its boss and what its counterplay needs, each with the continent it arrives in.</summary>
-        public readonly struct ContinentFinale
-        {
-            public ContinentFinale(string boss, int continent, params (string What, int Continent, bool Built)[] counters)
-            {
-                Boss = boss;
-                Continent = continent;
-                Counters = counters;
-            }
-
-            /// <summary>The boss's enemy asset name.</summary>
-            public string Boss { get; }
-
-            /// <summary>Index of the continent whose level 20 it ends.</summary>
-            public int Continent { get; }
-
-            /// <summary>The tools its Codex counterplay names, the continent each is first owned in, and whether it exists as data.</summary>
-            public (string What, int Continent, bool Built)[] Counters { get; }
-        }
-
-        /// <summary>The six continent bosses at their finales (Docs/BOSSES.md) and the tools their counterplay relies on.</summary>
-        public static readonly ContinentFinale[] Finales =
-        {
-            new ContinentFinale("Gravemaw", 0, ("Mine", 0, true), ("spread towers", 0, true)),
-            new ContinentFinale("CinderMatriarch", 1, ("Cryo (bait)", 1, true), ("long road without cold towers", 0, true)),
-            new ContinentFinale("FrostWarden", 2, ("LavaBall (fire cracks the armour)", 0, true), ("hero Repair thaws a gate", 0, true)),
-            new ContinentFinale("Rotbloom", 3, ("Cannon (splash burns pads)", 0, true), ("Rocket/Flak (shoot pods)", 0, true), ("hero Repair burns vines", 0, true)),
-            new ContinentFinale("Shattered", 4, ("Rocket/Flak (air shard)", 0, true), ("towers on the second road", 0, true)),
-            new ContinentFinale("SealedOne", 5, ("three or four tower types", 0, true)),
-        };
+        /// <summary>The six continent bosses at their finales and the tools their counterplay relies on (the data lives in FinalePlan since round 22f).</summary>
+        public static ContinentFinale[] Finales => FinalePlan.Finales;
 
         /// <summary>Base research of the level at an index of a continent (see <see cref="ContinentEconomy.Research"/>).</summary>
         public static int Research(int continent, int index) =>

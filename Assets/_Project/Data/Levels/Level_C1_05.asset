@@ -265,9 +265,9 @@ MonoBehaviour:
   _expectedUpgradeBonus: 0.1
   _balanceTargetScale:
   - 0.87
-  - 0.87
-  - 0.87
-  - 0.87
+  - 0.757
+  - 0.757
+  - 0.757
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

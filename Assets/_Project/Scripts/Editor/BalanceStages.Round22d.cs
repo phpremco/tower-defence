@@ -54,6 +54,7 @@ namespace Game.Editor
             bool changed = false;
             // The in-play ramp (round 22e): a cell the verdicts leave alone but that plays easier than the level before is nudged harder.
             text.Append(InPlayRamp(loaded, obvious, plans, out List<(string Level, int Difficulty, string Reason)> dips)).Append('\n');
+            int index = 0;
             foreach (MapNode map in loaded.Catalog.Nodes)
             {
                 if (map.Level == null)
@@ -63,6 +64,8 @@ namespace Game.Editor
 
                 string key = map.Level.name.StartsWith("Level_", StringComparison.Ordinal) ? map.Level.name.Substring(6) : map.Level.name;
                 List<RunRecord> medium = obvious.FindAll(r => r.Level == map.Level.name && r.Difficulty == AcceptanceRules.Medium);
+                float[] paper = PaperPlainMeans(loaded, index, map.Level);
+                string raidNote = EasyRaidRuleNote(loaded, index, key, map.Level);
                 for (int d = 0; d < loaded.Catalog.Difficulties.Count; d++)
                 {
                     string cell = map.Level.name + " " + d.ToString(CultureInfo.InvariantCulture);
@@ -85,6 +88,42 @@ namespace Game.Editor
                     int used = moves.TryGetValue(cell, out int m) ? m : 0;
                     string state = lever == AcceptanceRules.Lever.Harder ? "too easy" : lever == AcceptanceRules.Lever.Easier ? "too hard" : string.IsNullOrEmpty(reason) ? "ok" : "pulls both ways";
                     text.Append(Invariant($"  {map.Level.name} {DifficultyName(d),-7} scale {scale:0.###}, moves used {used}/{BuilderIterations}: {state}{(reason.Length > 0 ? " (" + reason + ")" : string.Empty)}\n"));
+
+                    // The Easy raid rule (the curator, round 22f) moves this cell's waves at the coming solve: its verdict was played on
+                    // other waves, so no lever on top of it this round; the next measurement judges the rule's waves.
+                    if (d == CampaignModel.EasyDifficulty && raidNote != null)
+                    {
+                        text.Append("    -> ").Append(raidNote).Append('\n');
+                        changed = true;
+                        continue;
+                    }
+
+                    // One script lever, counted as a move: the next of plated troops, tempo, an early raid; null when all are in.
+                    bool ScriptLeverMove(string why)
+                    {
+                        ScriptLever current = levers.TryGetValue((key, d), out ScriptLever l) ? l : ScriptLever.None;
+                        string applied = used < BuilderIterations ? NextScriptLever(ref current) : null;
+                        if (applied == null)
+                        {
+                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after {used} moves (plated {current.Plated:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({why}); a design choice is needed."));
+                            return false;
+                        }
+
+                        levers[(key, d)] = current;
+                        moves[cell] = used + 1;
+                        changed = true;
+                        text.Append(Invariant($"    -> script lever: {applied} ({why})\n"));
+                        return true;
+                    }
+
+                    // Psycho must ask more than Hard (the curator's answer 4, round 22f): where the paper says it does not, the solver's
+                    // scale cannot reach the Psycho curve there, so a script lever goes on the Psycho cell and the target is not lowered.
+                    if (d == AcceptanceRules.Psycho && paper != null && paper[d] <= paper[d - 1])
+                    {
+                        ScriptLeverMove(Invariant($"on paper Psycho asks no more than Hard: plain {paper[d]:0.00} against {paper[d - 1]:0.00}"));
+                        continue;
+                    }
+
                     if (lever == AcceptanceRules.Lever.None)
                     {
                         if (reason.Length > 0)
@@ -99,18 +138,7 @@ namespace Game.Editor
                     // the scale evidently does not bite there (C1_01 Easy and Hard keep the base whole at any scale).
                     if (lever == AcceptanceRules.Lever.Harder && used >= 1)
                     {
-                        ScriptLever current = levers.TryGetValue((key, d), out ScriptLever l) ? l : ScriptLever.None;
-                        string applied = NextScriptLever(ref current);
-                        if (applied == null)
-                        {
-                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after the scale and every script lever (plated {current.Plated:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({reason}); a design choice is needed."));
-                            continue;
-                        }
-
-                        levers[(key, d)] = current;
-                        moves[cell] = used + 1;
-                        changed = true;
-                        text.Append(Invariant($"    -> script lever: {applied}\n"));
+                        ScriptLeverMove(reason);
                         continue;
                     }
 
@@ -125,6 +153,8 @@ namespace Game.Editor
                     changed = true;
                     text.Append(Invariant($"    -> scale {scales[(key, d)]:0.###}\n"));
                 }
+
+                index++;
             }
 
             if (changed)
@@ -143,6 +173,53 @@ namespace Game.Editor
             text.Append(questions.Count == 0 ? "  none\n" : "  " + string.Join("\n  ", questions) + "\n");
             File.WriteAllText(BuilderReportPath, text.ToString());
             return text.ToString();
+        }
+
+        // The human lens on the stored waves per difficulty (BalanceChecks.CheckHuman's input): the paper check the builder reads
+        // "Psycho asks no more than Hard" from. Null when the level has no waves yet.
+        private static float[] PaperPlainMeans(Loaded loaded, int index, LevelDefinition level)
+        {
+            var means = new float[loaded.Catalog.Difficulties.Count];
+            BalanceRules human = loaded.Model.Rules.HumanTowersOnly();
+            for (int d = 0; d < means.Length; d++)
+            {
+                if (level.GetWaves(loaded.Catalog.Difficulties[d]) == null)
+                {
+                    return null;
+                }
+
+                means[d] = BalanceChecks.PlainMean(Ledger.Evaluate(loaded.Model.InputFor(index, d), Waves(loaded.Model, level, loaded.Catalog.Difficulties[d]), loaded.Model.Difficulties[d], human));
+            }
+
+            return means;
+        }
+
+        // The Easy raid rule's effect on the level at the next solve, in words, or null when its first raid already sits at or past the floor.
+        private static string EasyRaidRuleNote(Loaded loaded, int index, string key, LevelDefinition level)
+        {
+            WaveScriptSpec script = WaveScripts.ByKey(key);
+            DifficultyProfile easy = loaded.Catalog.Difficulties[CampaignModel.EasyDifficulty];
+            if (script == null || level.GetWaves(easy) == null)
+            {
+                return null;
+            }
+
+            int written = WaveComposer.FirstAirWave(script, CampaignModel.EasyDifficulty);
+            if (written == int.MaxValue)
+            {
+                return null;
+            }
+
+            List<WaveSpec> waves = Waves(loaded.Model, level, easy);
+            int floor = loaded.Model.EasyRaidFloor(index, waves);
+            if (floor <= written)
+            {
+                return null;
+            }
+
+            return floor > waves.Count
+                ? "the Easy raid rule removes the raids (the kills never pay for a sky gun); no lever this round"
+                : Invariant($"the Easy raid rule moves the first raid from wave {written} to wave {floor} at this solve; no lever this round");
         }
 
         // The script levers in order (the curator's decision 4): plated troops against a light row, a faster tempo, then a small early

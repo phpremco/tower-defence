@@ -64,8 +64,11 @@ namespace Game.Balance
         public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs) =>
             Judge(level, difficulty, obvious, plans, specs, null);
 
-        /// <summary>As above; <paramref name="mediumObvious"/> are the same level's Medium yardstick runs, which the forgiving Hard cell is judged against.</summary>
-        public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs, IReadOnlyList<RunRecord> mediumObvious)
+        /// <summary>
+        /// As above; <paramref name="mediumObvious"/> are the same level's Medium yardstick runs, which the forgiving Hard cell is judged
+        /// against, and <paramref name="dronesOffered"/> says whether the level sells a drone at all (the Psycho drone rule needs one).
+        /// </summary>
+        public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs, IReadOnlyList<RunRecord> mediumObvious, bool dronesOffered = true)
         {
             var verdict = new Verdict { Cell = level + " " + difficulty.ToString(CultureInfo.InvariantCulture) };
             verdict.Tutorial = TutorialCells.Contains(verdict.Cell);
@@ -115,7 +118,7 @@ namespace Game.Balance
                     JudgeForgivingHard(verdict, families, Group(mediumObvious ?? new List<RunRecord>(), r => !r.Strategy.StartsWith("creative", StringComparison.Ordinal)), bestRuns);
                     break;
                 default:
-                    JudgeHard(verdict, families, byPlan, bestRuns, specs, difficulty);
+                    JudgeHard(verdict, families, byPlan, bestRuns, specs, difficulty, dronesOffered);
                     break;
             }
 
@@ -227,7 +230,7 @@ namespace Game.Balance
         // Hard and Psycho: every obvious plan loses on every seed and falls before the last third; the best plan wins its share
         // of seeds using at least two of the game's features; Psycho plans differ among themselves and one reaches the finale on
         // every seed.
-        private static void JudgeHard(Verdict verdict, Dictionary<string, List<RunRecord>> families, Dictionary<string, List<RunRecord>> byPlan, List<RunRecord> best, IReadOnlyDictionary<string, PlanSpec> specs, int difficulty)
+        private static void JudgeHard(Verdict verdict, Dictionary<string, List<RunRecord>> families, Dictionary<string, List<RunRecord>> byPlan, List<RunRecord> best, IReadOnlyDictionary<string, PlanSpec> specs, int difficulty, bool dronesOffered)
         {
             string name = difficulty == Psycho ? "Psycho" : "Hard";
             foreach (KeyValuePair<string, List<RunRecord>> family in families)
@@ -260,7 +263,7 @@ namespace Game.Balance
                     verdict.Failures.Add(Invariant($"{name}: the best plan uses {features} of the game's features (gadgets, a drone, a sale, three or more upgrades; needs {HardFeatures})"));
                 }
 
-                if (difficulty == Psycho && !spec.Uses(PlanStep.Drone))
+                if (difficulty == Psycho && dronesOffered && !spec.Uses(PlanStep.Drone))
                 {
                     verdict.Failures.Add("Psycho: the best plan buys no drone (no plan without drones should win)");
                 }

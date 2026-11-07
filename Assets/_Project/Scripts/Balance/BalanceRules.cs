@@ -290,6 +290,19 @@ namespace Game.Balance
         public float SkyHoldPressure = 1f;
 
         /// <summary>
+        /// The Easy raid rule (the curator, round 22f): on Easy the first air raid comes no earlier than the wave by which the
+        /// expected player's kills have paid for the cheapest owned sky gun, plus this many waves; a player who owns no sky gun
+        /// gets no raid. <see cref="CampaignModel.EasyRaidFloor"/> derives the floor from the ledger's purse walk at every solve.
+        /// </summary>
+        public int EasyRaidMarginWaves = 1;
+
+        /// <summary>
+        /// The finale probe (round 22f) finds the boss health multiple the creative reference bot just beats on Medium; the data
+        /// carries this share of it, so a competent human has margin at the finale (FinaleProbeReport.DerivedHealth).
+        /// </summary>
+        public float FinaleHoldShare = 0.85f;
+
+        /// <summary>
         /// Waves before a level's end at which a repair drone bought then still earns its price back (Remco 2026-11-07: a real
         /// investment; the last two waves never pay). BalanceSheet.RepairDronePrice derives the drone's price from it.
         /// </summary>

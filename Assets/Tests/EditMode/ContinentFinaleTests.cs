@@ -34,7 +34,8 @@ namespace Game.Tests
         {
             var failures = new List<string>();
             var table = new StringBuilder("Continent bosses at their finales (level 20, stand-in field, human lens)\n");
-            foreach (BalanceSheet.ContinentFinale finale in BalanceSheet.Finales)
+            List<FinaleProbeCell> probe = ProbeReport();
+            foreach (ContinentFinale finale in BalanceSheet.Finales)
             {
                 Setup setup = Prepare(finale);
                 for (int d = 0; d < setup.Catalog.Difficulties.Count; d++)
@@ -43,13 +44,15 @@ namespace Game.Tests
                     var loads = new List<WaveLoad>();
                     FinaleLine line = FinaleModel.Judge(setup.Planned, waves, boss, d, setup.Extra, loads);
                     string name = setup.Catalog.Difficulties[d].name;
+                    // The finale probe (round 22f) is the judge where it played: a boss the bot beat as the data has it is not too hard.
+                    bool beatenInPlay = probe != null && FinaleProbeReport.HoldsAsIs(probe, finale.Boss, d);
                     table.AppendLine($"{finale.Boss,-16} C{finale.Continent + 1} {name,-7} towers {line.Towers} research {line.ResearchEarned,4} money {line.Money,5} "
                         + $"scale {line.PlainScale:0.00} plain {line.PlainTowers:0.00}/{line.PlainHero:0.00} wave {line.BossTowers:0.00}/{line.BossHero:0.00} boss {line.BossAlone:0.00} cap {line.Cap:0.00} "
-                        + $"mechanic {line.MechanicShare:0.00} -> {Verdict(line)}");
+                        + $"mechanic {line.MechanicShare:0.00} -> {Verdict(line)}{(line.TooHard && beatenInPlay ? $" (the finale probe beat it, holds x{FinaleProbeReport.Find(probe, finale.Boss, d).Holds:0.00})" : string.Empty)}");
                     // Killable everywhere. "Too easy" is reported, not failed: the ledger counts a lone boss as easier to stop
                     // than the finale probe finds it (a boss at the base ends the level in seconds), so the health was set by
                     // the probe and the ledger only guards the top (Docs/BALANCE.md, "Continent bosses as played").
-                    if (line.TooHard)
+                    if (line.TooHard && !beatenInPlay)
                     {
                         failures.Add($"{finale.Boss} {name}: the boss alone asks {line.BossAlone:0.00} with the hero against plain {line.PlainHero:0.00} and cap {line.Cap:0.00} ({line.Verdict})");
                     }
@@ -77,7 +80,8 @@ namespace Game.Tests
         {
             var failures = new List<string>();
             var table = new StringBuilder("\nBoss health share per difficulty (boss alone / cap; share needed for Medium's ratio, linear)\n");
-            foreach (BalanceSheet.ContinentFinale finale in BalanceSheet.Finales)
+            List<FinaleProbeCell> probe = ProbeReport();
+            foreach (ContinentFinale finale in BalanceSheet.Finales)
             {
                 Setup setup = Prepare(finale);
                 int count = setup.Catalog.Difficulties.Count;
@@ -97,7 +101,17 @@ namespace Game.Tests
                     float needed = profile.BossHealthShare * medium / ratios[d];
                     row.Append($" {profile.name} {ratios[d]:0.00} (share {profile.BossHealthShare:0.00}, needs {needed:0.00})");
                     float relative = ratios[d] / medium;
-                    if (d > MediumIndex && System.Math.Abs(relative - 1f) > ShareTolerance)
+                    // Where the finale probe played the difficulty, its derived share judges instead of the ledger's ratio (round 22f).
+                    float probed = probe != null ? FinaleProbeReport.DerivedShare(probe, d) : -1f;
+                    if (d > MediumIndex && probed > 0f)
+                    {
+                        row.Append($" [probe needs {probed:0.00}]");
+                        if (System.Math.Abs(profile.BossHealthShare / probed - 1f) > ShareTolerance)
+                        {
+                            failures.Add($"{profile.name}: the boss health share is {profile.BossHealthShare:0.00}, the finale probe derives {probed:0.00} (run the finale stage)");
+                        }
+                    }
+                    else if (d > MediumIndex && System.Math.Abs(relative - 1f) > ShareTolerance)
                     {
                         failures.Add($"{finale.Boss} {profile.name}: the boss alone asks {relative:0.00}x Medium's share of the cap (share {profile.BossHealthShare:0.00}, needs about {needed:0.00})");
                     }
@@ -119,7 +133,7 @@ namespace Game.Tests
         public void EveryBossCounterplay_IsOwnedByItsFinale()
         {
             var failures = new List<string>();
-            foreach (BalanceSheet.ContinentFinale finale in BalanceSheet.Finales)
+            foreach (ContinentFinale finale in BalanceSheet.Finales)
             {
                 foreach ((string what, int continent, bool built) in finale.Counters)
                 {
@@ -169,6 +183,48 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>
+        /// The finale probe's derived boss health (Medium's holding multiple with the hold share) against the data, per boss
+        /// (round 22f); ignored until the probe has run. The finale stage writes the derived numbers.
+        /// </summary>
+        [Test]
+        public void FinaleProbe_DerivedBossHealth_MatchesTheData()
+        {
+            List<FinaleProbeCell> probe = ProbeReport();
+            if (probe == null)
+            {
+                Assert.Ignore("no finale probe report yet: run FinaleProbeTests (PlayMode, explicit) first");
+            }
+
+            var failures = new List<string>();
+            var table = new StringBuilder("\nBoss health from the finale probe (data / derived)\n");
+            BalanceRules rules = BalanceRules.Default;
+            foreach (ContinentFinale finale in BalanceSheet.Finales)
+            {
+                float derived = FinaleProbeReport.DerivedHealth(probe, finale.Boss, rules);
+                var boss = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"Assets/_Project/Data/Enemies/{finale.Boss}.asset");
+                if (derived <= 0f || boss == null)
+                {
+                    table.AppendLine($"{finale.Boss,-16} not probed on Medium");
+                    continue;
+                }
+
+                table.AppendLine($"{finale.Boss,-16} {boss.MaxHealth:0} / {derived:0}");
+                if (System.Math.Abs(boss.MaxHealth / derived - 1f) > HealthTolerance)
+                {
+                    failures.Add($"{finale.Boss}: health {boss.MaxHealth:0} against the probe's {derived:0} (run the finale stage)");
+                }
+            }
+
+            System.IO.File.AppendAllText(ShareFile, table.ToString());
+            Assert.IsEmpty(failures, string.Join("\n", failures) + table);
+        }
+
+        private const float HealthTolerance = 0.1f;
+
+        private static List<FinaleProbeCell> ProbeReport() =>
+            System.IO.File.Exists(FinaleProbeReport.Path) ? FinaleProbeReport.Read(System.IO.File.ReadAllLines(FinaleProbeReport.Path)) : null;
+
         private static string Verdict(FinaleLine line) =>
             line.TooEasy ? "boss alone under a plain wave (see the probe)" : line.Verdict;
 
@@ -182,7 +238,7 @@ namespace Game.Tests
             public readonly List<TowerStats> Extra = new List<TowerStats>();
         }
 
-        private static Setup Prepare(BalanceSheet.ContinentFinale finale)
+        private static Setup Prepare(ContinentFinale finale)
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CampaignCatalog>(CampaignPath);
             var upgrades = AssetDatabase.LoadAssetAtPath<UpgradeCatalog>(UpgradesPath);

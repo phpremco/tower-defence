@@ -98,7 +98,7 @@ namespace Game.Tests
                     var run = new List<(int, int)> { (node, difficulty) };
                     foreach (int seed in seeds)
                     {
-                        foreach (string tower in MonoTypes(node))
+                        foreach (string tower in MonoTypes(node, difficulty))
                         {
                             yield return BalanceProbeTests.Probe(run, ProbeStrategy.Mono(tower), results, seed);
                         }
@@ -143,7 +143,7 @@ namespace Game.Tests
                 foreach (float step in new[] { 0f, FineStep })
                 {
                     BalanceProbeTests.StepOverride = step > 0f ? step : (float?)null;
-                    foreach (string tower in MonoTypes(node))
+                    foreach (string tower in MonoTypes(node, Medium))
                     {
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.Mono(tower), results, 1);
                     }
@@ -267,7 +267,7 @@ namespace Game.Tests
         }
 
         // The owned guns that can hold a ground wave alone at this point of the campaign (sky-only guns and masts cannot).
-        internal static List<string> MonoTypes(int node)
+        internal static List<string> MonoTypes(int node, int difficulty)
         {
             var types = new List<string>();
             CampaignCatalog catalog = Catalog();
@@ -276,7 +276,7 @@ namespace Game.Tests
                 return types;
             }
 
-            List<string> owned = BalanceProbeTests.OwnedTowers(catalog, node);
+            List<string> owned = BalanceProbeTests.OwnedTowers(catalog, node, difficulty);
             foreach (TowerDefinition tower in catalog.Nodes[node].Level.AvailableTowers)
             {
                 if (owned.Contains(tower.Id) && !tower.IsSupport && !tower.BlocksGroundEnemies && (tower.Targets & TargetLayers.Ground) != 0)

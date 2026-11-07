@@ -10,59 +10,59 @@ Best spots per tower (first is best):
   Flak Turret    (34,4) cover 14.0/9.0 air door; (34,5) cover 15.0/9.0 air door; (35,4) cover 13.0/8.5 air door; (33,4) cover 14.0/8.0 air door; (33,5) cover 15.0/8.0 air door; (35,5) cover 14.0/8.0 air door;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w8, margin 0.07 (leaks from wave 4)
+  mono PulseRifle    falls w8, margin 0.08 (leaks from wave 4)
   mono Cannon        falls w7, margin 0.00 (leaks from wave 4)
-  mono Laser         falls w7, margin 0.00 (leaks from wave 3)
-  naive              falls w5, margin 0.06 (leaks from wave 3)
+  mono Laser         falls w10, margin 0.00 (leaks from wave 3)
+  naive              falls w5, margin 0.07 (leaks from wave 3)
 
-The creative reference on paper: falls w9, margin 0.08
+The creative reference on paper: falls w10, margin 0.09
   from wave  1: build Cannon at (7,5); build Flak Turret at (34,4); build Gun Turret at (7,4)
   from wave  3: upgrade the tower at (7,4)
   from wave  4: upgrade the tower at (7,4)
   from wave  5: repair the gates when they would fall or it is cheaper than a gun
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (20,5)
+  from wave  6: repair the gates when they would fall or it is cheaper than a gun
   from wave  7: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave  8: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); upgrade the tower at (34,4); build Gun Turret at (20,5)
-  from wave  9: repair the gates when they would fall or it is cheaper than a gun
-  from wave 10: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (20,5)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); build Gun Turret at (20,5); upgrade the tower at (20,5)
-  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); upgrade the tower at (34,4); build Gun Turret at (20,5)
-  from wave 14: repair the gates when they would fall or it is cheaper than a gun
-  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (20,5)
-  from wave 16: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave 17: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5)
+  from wave  8: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); upgrade the tower at (34,4); build Cannon at (20,5)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); build Gun Turret at (20,5)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); upgrade the tower at (34,4)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); upgrade the tower at (34,4); build Cannon at (20,5)
+  from wave 14: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (20,5)
+  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (20,5); upgrade the tower at (20,5)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); build Gun Turret at (20,5)
+  from wave 17: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); build Gun Turret at (20,5)
 
 Distinct winning strategies (0; different spots, mixes or timing):
 
-No strategy holds on paper. Best found: falls w10, margin 0.12, leaks from wave 3
-  Towers per threat: swarm: Gun Turret; pack: Gun Turret; plated: Gun Turret; air: whatever the ledger rates best; boss: Laser Turret.
-  Gun Turret spots, best first: (7,5) (6,6) (7,4).
-  Cannon spots, best first: (7,5) (7,4) (20,5).
+No strategy holds on paper. Best found: falls w10, margin 0.10, leaks from wave 5
+  Towers per threat: swarm: whatever the ledger rates best; pack: whatever the ledger rates best; plated: Gun Turret; air: Cannon; boss: whatever the ledger rates best.
+  Gun Turret spots, best first: (7,4) (21,5) (7,5).
+  Cannon spots, best first: (6,6) (7,5) (7,4).
   Laser Turret spots, best first: (7,5) (6,6) (7,4).
-  Flak Turret spots, best first: (34,4) (34,5) (35,5).
-  Upgrades: 3 guns down first, then an upgrade is worth 0.91x its value per coin against a new gun.
-  Mines: before every boss wave, never for crowds.
+  Flak Turret spots, best first: (34,4) (34,5) (35,4).
+  Upgrades: 3 guns down first, then an upgrade is worth 0.69x its value per coin against a new gun.
+  Mines: not for bosses, and before a crowd wave when the guns would not hold it (cover under 1.30).
   Slow field: when the guns would not hold the wave (cover under 1.00) or the slow pays by the damage rule.
-  Harvester: in the first 30 % of the level, once the guns hold the waves at hand with cover 1.00.
+  Harvester: never.
   Repair drone: once a gun or gate has lost 25 % of its health.
   Attack drone: once 6 guns stand.
   Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
   Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
   Selling: the weakest ground gun may go for a sky gun the preview asks for (Psycho).
-  from wave  1: build Cannon at (7,5); build Flak Turret at (34,4); build Gun Turret at (6,6)
-  from wave  3: upgrade the tower at (6,6)
-  from wave  4: upgrade the tower at (6,6)
+  from wave  1: build Cannon at (6,6); build Flak Turret at (34,4); build Gun Turret at (7,4)
+  from wave  3: upgrade the tower at (7,4)
+  from wave  4: upgrade the tower at (7,4)
   from wave  5: repair the gates when they would fall or it is cheaper than a gun
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (7,4)
+  from wave  6: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (21,5)
   from wave  7: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave  8: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5); upgrade the tower at (34,4); build Gun Turret at (7,4)
-  from wave  9: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave 10: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); build Gun Turret at (7,4)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); upgrade the tower at (34,4)
-  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); upgrade the tower at (7,5); build Gun Turret at (7,4); upgrade the tower at (7,4)
-  from wave 14: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (7,4)
-  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (7,4)
-  from wave 16: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (7,4); build Gun Turret at (20,5)
-  from wave 17: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (7,5)
+  from wave  8: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (7,5); build Gun Turret at (21,5); upgrade the tower at (34,4); upgrade the tower at (21,5)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (21,5)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (21,5)
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (21,5)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4); upgrade the tower at (21,5)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (7,5); upgrade the tower at (21,5); upgrade the tower at (34,4)
+  from wave 14: repair the gates when they would fall or it is cheaper than a gun
+  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (7,5)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (34,4)
+  from wave 17: repair the gates when they would fall or it is cheaper than a gun; build Cannon at (7,5); upgrade the tower at (21,5)

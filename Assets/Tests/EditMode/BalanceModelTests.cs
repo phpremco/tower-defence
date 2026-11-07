@@ -141,7 +141,7 @@ namespace Game.Tests
 
             CollectionAssert.AreEquivalent(new[] { "Rifle" }, first.OwnedTowers);
             CollectionAssert.AreEquivalent(new[] { "Rifle", "Cannon", "Laser" }, third.OwnedTowers);
-            Assert.IsFalse(endGame.OwnedTowers.Contains("Cannon"), "Psycho on the first level is a player who has not been further (round 22e)");
+            CollectionAssert.AreEquivalent(new[] { "Rifle", "Cannon" }, endGame.OwnedTowers, "Psycho on the first level has beaten it on the lower difficulties (its own reward, round 22f) but has not been further (round 22e)");
         }
 
         [Test]

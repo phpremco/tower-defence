@@ -1117,3 +1117,54 @@ builder applies, in order and one per round, `WaveScriptSpec.PlatedBias` (plated
 difficulty), `Tempo` (every group's interval x0.85) and `RaidWave` (wave 3 opens with five fast, spread runners of the cheapest
 troop). They live in `wave_tuning.txt` beside the scales (`WaveTuning.ReadLevers`) and the composer applies them per difficulty.
 An air lever is not used on a level whose player owns no sky gun.
+
+## The own reward, the Easy raid rule, Psycho above Hard (2026-11-07, round 22f)
+
+**The first-attempt player owns the level's own reward (the curator's answer 1).** `Progression.StateAt` adds the level's
+`RewardTowerId` and `RewardHeroPerkId` when `OwnLevelPathOf(d)` is not empty: a Hard player beat the level on Medium first, a
+Psycho player on Easy, Medium and Hard, so the weapon that clear handed out is on their bar. The PlayMode probe owns the same
+(`BalanceProbeTests.OwnedTowers(catalog, level, difficulty)`; the mono family gains the reward's row on those difficulties).
+In Crystal Plains this touches C1_01 Hard/Psycho (the Laser) and C1_02 Hard/Psycho (the Flak); those waves were re-solved.
+
+**The Easy raid rule (answer 3).** On Easy the first air raid comes no earlier than the wave by which the expected Easy player's
+kill money (the ledger's purse above the start money, which the opening ground defence takes) covers the cheapest owned sky
+gun (an air-only gun when owned, else any gun that reaches the air), plus `BalanceRules.EasyRaidMarginWaves` (1). A player who
+owns no sky gun, or whose kills never cover one, gets no raid on Easy. It is a solver rule, not a script edit:
+`CampaignModel.EasyRaidFloor` walks the ledger over the Easy waves as solved, `WaveScriptSpec.FirstAirWaveFloor` carries the
+floor per difficulty, `WaveComposer` shifts the difficulty's raids together until the first reaches it (a raid pushed past
+the last wave is gone; `FirstAirWave` and the sprinkle follow), and `BuildWaves` solves Easy again with the raids moved.
+With the data of this round the floor moved Fault Line's first Easy raid from wave 3 to 10 (raids 10, 13, 16), Quartz Flats'
+from 4 to 9 (9, 13) and Crysium Vein's from 8 to 9 (9, 12, 15); Shard Ridge's raids (12, 15) already sat past it. Easy kill
+money is thin (income 0.8, small early waves), which is why the floor lands late; whether the start money above the opening
+defence should count is a design question (below). The builder reports the rule's effect per Easy cell and makes no lever
+move on a cell the rule is about to change, so the next measurement judges the rule's waves alone.
+
+**Psycho must ask more than Hard (answer 4).** `BuildFromVerdicts` computes the human lens on the stored waves per difficulty
+(`BalanceChecks.CheckHuman`'s input) and, where Psycho's plain mean is at or under Hard's, applies the next script lever to the
+Psycho cell (plated, tempo, raid; counted as a move, the target not lowered) instead of a scale move. This round: Crysium Vein
+Psycho (0.96 against 0.98) got plated troops x1.5.
+
+**The acceptance's feature check was blind (a bug of round 22e, fixed).** `BalanceStages.LoadPlans` parsed the strategy files
+(`*_strategy*.json`) as fixed plans with no steps; by name they shadowed the moves the runs really took, so every Hard and
+Psycho cell read "uses 0 of the game's features" and "buys no drone". The strategy files are skipped now and the moves judge:
+on the 22e records C1_04 Hard and C1_06 Hard pass (the winners used 13-14 upgrades, drones, and on Crysium Vein 13 gadgets),
+Shard Ridge Psycho's winner used 19 upgrades, a repair drone and sales. The Psycho drone rule applies only where the level sells
+a drone (Landing Site sells none). When no strategy holds on paper the search now hands the replay its best three by paper
+score instead of one (the paper is pessimistic on the hard cells; the replay judges).
+
+**The finale probe (`FinaleProbeTests`, PlayMode, explicit; built and compiling in round 22f, not yet run).** Every continent
+boss on its arena field, per difficulty, against the finale player of `FinaleModel` (level 20: the planned towers on a runtime
+copy of the arena level's bar, that difficulty path's research spent, the finale's money as the start purse), played by the
+creative reference bot with the arena's waves at a boss health multiple the test bisects (from the data outward by 1.4 until
+the verdict flips, then three halvings) to the largest the bot still beats. It writes `Tools/PlayTest/finale_probe.txt`
+(`FinaleProbeReport`, pure): per boss and difficulty the holding multiple, the as-is verdict, the share and health probed.
+Derived from it: the boss's data health = health x Medium's holding multiple x `BalanceRules.FinaleHoldShare` (0.85: the bot is
+the reference, a human gets margin), and the boss health share per difficulty = the probed share x that difficulty's holding
+multiple over Medium's, averaged over the bosses. `ContinentFinaleTests` reads the report when it exists: a ledger "too hard"
+becomes a note where the probe beat the boss as the data has it, the share test judges the probe's derived shares, and a third
+test holds the data health to the derived one (10 %); without the report the ledger judges as before (its two known failures
+stay). The stage `finale` (`ApplyFinale.cs`, menu `Tools/Generate/Balance/10`) writes both into the assets; because health and
+shares are calibration inputs the pipeline reports the calibration stale afterwards and measure, fit and apply follow. The
+probe plugs into the ordinary probe through `BalanceProbeTests.ProbeOverride` (field, waves, purse, player, owned towers,
+ledger view), so hero use, repairs, drones and the records come free; the plan data moved to `FinalePlan` (Game.Balance) so the
+PlayMode assembly can read it (`BalanceSheet.PlannedTowers/Finales` forward to it).

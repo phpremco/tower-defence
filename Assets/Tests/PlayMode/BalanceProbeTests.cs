@@ -319,7 +319,33 @@ namespace Game.Tests
         }
 
         /// <summary>The ledger's view of one run: its lines for the trace, and the wave loads and level input the bot judges its own towers with.</summary>
-        private sealed class LedgerView
+        /// <summary>
+        /// Another field, waves, purse and player for one probe run (the finale probe, round 22f): set before <see cref="Probe"/>
+        /// and cleared after. The node index then only names the run; the level, its waves, the start money, the player state,
+        /// the owned towers and the bot's ledger view all come from here.
+        /// </summary>
+        internal sealed class ProbeOverride
+        {
+            public LevelDefinition Level;
+            public WaveDefinition[] Waves;
+            public int StartingMoney;
+            public Game.Balance.PlayerState Player;
+            public List<string> Owned = new List<string>();
+            public LedgerView Ledger;
+        }
+
+        internal static ProbeOverride Override;
+
+        /// <summary>A ledger view for given waves and player input, as the bot judges its towers by (the finale probe's).</summary>
+        internal static LedgerView LedgerFor(Game.Balance.LevelInput input, IReadOnlyList<Game.Balance.WaveSpec> waves, Game.Balance.DifficultyStats stats)
+        {
+            var view = new LedgerView { Rules = Game.Balance.BalanceRules.Default, Input = input };
+            view.Judge = view.Rules.HumanWithHero();
+            view.Lines.AddRange(Game.Balance.Ledger.Evaluate(input, waves, stats, view.Rules, view.Loads));
+            return view;
+        }
+
+        internal sealed class LedgerView
         {
             public readonly List<Game.Balance.WaveLine> Lines = new List<Game.Balance.WaveLine>();
             public readonly List<Game.Balance.WaveLoad> Loads = new List<Game.Balance.WaveLoad>();
@@ -450,24 +476,27 @@ namespace Game.Tests
                 yield return null;
 
                 var catalog = Services.Get<CampaignCatalog>();
-                LevelDefinition definition = catalog.Nodes[level].Level;
-                List<string> owned = OwnedTowers(catalog, level);
+                ProbeOverride over = Override;
+                LevelDefinition definition = over?.Level ?? catalog.Nodes[level].Level;
+                List<string> owned = over != null ? new List<string>(over.Owned) : OwnedTowers(catalog, level, difficulty);
                 if (strategy.Allowed != null)
                 {
                     owned.RemoveAll(id => !Allows(strategy, definition, id));
                 }
 
-                Game.Balance.PlayerState player = ProbePlayer.Install(catalog, level, difficulty, freshPlayer, owned);
+                Game.Balance.PlayerState player = over != null ? ProbePlayer.Install(catalog, over.Player, owned) : ProbePlayer.Install(catalog, level, difficulty, freshPlayer, owned);
                 Debug.Log("[Probe] player: " + ProbePlayer.Describe(player, freshPlayer));
                 int seed = seedOverride ?? Seed();
                 float step = Step();
                 UnityEngine.Random.InitState(seed);
-                Services.Register(new LevelSession(definition, catalog.Difficulties[difficulty], seed: seed));
+                Services.Register(over != null
+                    ? new LevelSession(definition, catalog.Difficulties[difficulty], false, null, over.Waves, over.StartingMoney, seed)
+                    : new LevelSession(definition, catalog.Difficulties[difficulty], seed: seed));
                 SceneManager.LoadScene(SceneNames.Level);
                 yield return null;
                 yield return null;
 
-                LedgerView ledger = LedgerFor(level, difficulty);
+                LedgerView ledger = over?.Ledger ?? LedgerFor(level, difficulty);
                 foreach (TowerDefinition tower in definition.AvailableTowers)
                 {
                     if (AirOnly(tower))
@@ -1582,17 +1611,20 @@ namespace Game.Tests
 
         internal static bool AirOnly(TowerDefinition tower) => tower.Targets == TargetLayers.Air;
 
-        // The starting set plus every tower granted by the levels before this one.
-        internal static List<string> OwnedTowers(CampaignCatalog catalog, int level)
+        // The starting set, every tower granted by the levels before this one, and the level's own reward when a player of the
+        // difficulty has cleared it on a lower difficulty first (Progression.OwnLevelPathOf; the curator, round 22f): the same
+        // player the paper plans for.
+        internal static List<string> OwnedTowers(CampaignCatalog catalog, int level, int difficulty)
         {
             var owned = new List<string>();
 #if UNITY_EDITOR
             var unlocks = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Economy.UnlockTable>(UnlocksPath);
             owned.AddRange(unlocks.StartingTowerIds);
 #endif
-            for (int i = 0; i < level; i++)
+            int last = Game.Balance.Progression.OwnLevelPathOf(difficulty).Length > 0 ? level : level - 1;
+            for (int i = 0; i <= last; i++)
             {
-                if (catalog.Nodes[i].Level != null && catalog.Nodes[i].Level.Reward.NewTower != null)
+                if (catalog.Nodes[i].Level != null && catalog.Nodes[i].Level.Reward.NewTower != null && !owned.Contains(catalog.Nodes[i].Level.Reward.NewTower.Id))
                 {
                     owned.Add(catalog.Nodes[i].Level.Reward.NewTower.Id);
                 }

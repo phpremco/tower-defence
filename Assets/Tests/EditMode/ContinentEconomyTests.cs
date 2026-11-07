@@ -96,7 +96,12 @@ namespace Game.Tests
             Assert.AreEqual(10 * 11 + 10 * 6, crazy.ResearchEarned, "A1 on all four difficulties plus A2 on the three below Psycho");
             PlayerState first = Progression.StateAt(campaign, 0, Progression.EndGameDifficulty, new[] { "Rifle" }, upgrades, Rules);
             Assert.AreEqual(10 * 6, first.ResearchEarned, "the first level on Psycho: its own research on Easy, Medium and Hard, nothing more");
-            Assert.IsFalse(first.OwnedTowers.Contains("Laser"), "no reward of a level not yet beaten counts");
+            // The curator (round 22f): a Hard or Psycho player has cleared the level itself before, so its own reward is in hand;
+            // an Easy or Medium player tries it for the first time and has not earned it yet.
+            Assert.IsTrue(first.OwnedTowers.Contains("Laser"), "the level's own reward, earned on the lower difficulties");
+            Assert.IsTrue(Progression.StateAt(campaign, 0, 2, new[] { "Rifle" }, upgrades, Rules).OwnedTowers.Contains("Laser"), "a Hard player cleared the level on Medium first");
+            Assert.IsFalse(Progression.StateAt(campaign, 0, 0, new[] { "Rifle" }, upgrades, Rules).OwnedTowers.Contains("Laser"), "an Easy player has not beaten the level yet");
+            Assert.IsFalse(Progression.StateAt(campaign, 0, 1, new[] { "Rifle" }, upgrades, Rules).OwnedTowers.Contains("Laser"), "a Medium player has not beaten the level yet");
             PlayerState hard = Progression.StateAt(campaign, 1, 2, new[] { "Rifle" }, upgrades, Rules);
             Assert.AreEqual(10 * 5 + 10 * 2, hard.ResearchEarned, "a Hard player: the level before on Medium and Hard, the level itself on Medium");
             for (int d = 0; d < 4; d++)

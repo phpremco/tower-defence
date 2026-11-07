@@ -58,6 +58,7 @@ for stage in "$@"; do
     build)      echo "== build: lever from the stage-B verdicts, then solve (round 22d)"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/BuildFromVerdicts.cs --entry BuildFromVerdicts.Run --timeout_ms 900000 --timeout 960 | tail -1; cat Tools/PlayTest/builder.txt ;;
     readme)     echo "== readme: the plans that won in stage B"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/ReadmePlans.cs --entry ReadmePlans.Run --timeout_ms 300000 --timeout 360 | tail -1 ;;
     droneprice) echo "== drone price: the repair drone by the investment rule"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/ApplyDronePrice.cs --entry ApplyDronePrice.Run --timeout_ms 120000 --timeout 180 | tail -1 ;;
+    finale)     echo "== finale: boss health and shares from the finale probe (round 22f)"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/ApplyFinale.cs --entry ApplyFinale.Run --timeout_ms 120000 --timeout 180 | tail -1 ;;
     *) echo "unknown stage $stage" >&2; exit 1 ;;
   esac
 done

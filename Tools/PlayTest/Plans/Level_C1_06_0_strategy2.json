@@ -8,19 +8,19 @@
             "Tower": "PulseRifle",
             "X": [
                 12,
+                13,
                 12,
-                13,
-                13,
                 14,
+                13,
                 14
             ],
             "Y": [
                 10,
                 11,
-                10,
                 11,
-                7,
-                11
+                11,
+                10,
+                7
             ]
         },
         {
@@ -34,9 +34,9 @@
                 12
             ],
             "Y": [
-                11,
-                7,
                 10,
+                7,
+                11,
                 11,
                 11,
                 10
@@ -72,9 +72,9 @@
                 35
             ],
             "Y": [
+                11,
                 10,
                 7,
-                11,
                 10,
                 10,
                 11
@@ -83,24 +83,29 @@
     ],
     "Weights": [
         {
-            "Threat": "swarm",
-            "Tower": "Cannon",
-            "Weight": 1.620161771774292
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 1.5447722673416138
         },
         {
             "Threat": "air",
             "Tower": "Laser",
-            "Weight": 0.8630832433700562
+            "Weight": 1.3390731811523438
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 2.1906991004943848
         }
     ],
-    "UpgradeBias": 1.4299999475479126,
-    "TowersBeforeUpgrades": 2,
-    "MineCoverBelow": 0.0,
-    "MineOnBoss": false,
-    "FieldCoverBelow": 1.0,
+    "UpgradeBias": 1.2699999809265137,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.2000000476837158,
     "HarvesterCover": 0.0,
-    "HarvesterShare": 0.30000001192092896,
+    "HarvesterShare": 0.6000000238418579,
     "RepairDroneWear": 0.25,
-    "AttackDroneAfterTowers": 8,
+    "AttackDroneAfterTowers": 6,
     "AllowSell": false
 }

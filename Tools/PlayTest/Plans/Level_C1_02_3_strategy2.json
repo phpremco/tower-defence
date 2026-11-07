@@ -1,97 +1,111 @@
 {
     "Level": "Level_C1_02",
-    "Difficulty": 2,
-    "Name": "Level_C1_02_2_strategy4",
+    "Difficulty": 3,
+    "Name": "Level_C1_02_3_strategy2",
     "Family": "searched",
     "Spots": [
         {
             "Tower": "PulseRifle",
             "X": [
-                5,
                 7,
                 6,
                 5,
-                8,
-                7
-            ],
-            "Y": [
-                6,
-                6,
                 5,
                 7,
-                6,
-                5
-            ]
-        },
-        {
-            "Tower": "Cannon",
-            "X": [
-                4,
-                30,
-                30,
-                5,
-                5,
-                31
-            ],
-            "Y": [
-                7,
-                15,
-                16,
-                7,
-                6,
-                16
-            ]
-        },
-        {
-            "Tower": "Laser",
-            "X": [
-                7,
-                7,
-                5,
-                6,
-                4,
                 8
             ],
             "Y": [
                 6,
                 5,
                 7,
+                6,
+                5,
+                6
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                5,
+                30,
+                31,
+                30,
+                4,
+                5
+            ],
+            "Y": [
+                7,
+                15,
+                16,
+                16,
+                7,
+                6
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                7,
+                7,
+                6,
+                4,
+                8,
+                5
+            ],
+            "Y": [
+                5,
+                6,
                 5,
                 7,
+                7,
                 7
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                32,
+                31,
+                32,
+                33,
+                33,
+                31
+            ],
+            "Y": [
+                16,
+                16,
+                19,
+                15,
+                16,
+                15
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "swarm",
-            "Tower": "PulseRifle",
-            "Weight": 1.267931580543518
-        },
-        {
             "Threat": "pack",
-            "Tower": "Cannon",
-            "Weight": 2.3954720497131348
-        },
-        {
-            "Threat": "plated",
             "Tower": "Laser",
-            "Weight": 2.158047676086426
+            "Weight": 0.6917096972465515
         },
         {
             "Threat": "air",
+            "Tower": "Cannon",
+            "Weight": 1.529391884803772
+        },
+        {
+            "Threat": "boss",
             "Tower": "PulseRifle",
-            "Weight": 0.6043969392776489
+            "Weight": 1.6319870948791504
         }
     ],
-    "UpgradeBias": 1.0399999618530273,
-    "TowersBeforeUpgrades": 1,
+    "UpgradeBias": 0.800000011920929,
+    "TowersBeforeUpgrades": 2,
     "MineCoverBelow": 1.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
+    "HarvesterCover": 0.0,
     "HarvesterShare": 0.6000000238418579,
-    "RepairDroneWear": 9.0,
+    "RepairDroneWear": 0.25,
     "AttackDroneAfterTowers": 0,
-    "AllowSell": false
+    "AllowSell": true
 }

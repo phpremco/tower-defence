@@ -1,7 +1,7 @@
 {
     "Level": "Level_C1_02",
-    "Difficulty": 2,
-    "Name": "Level_C1_02_2_strategy5",
+    "Difficulty": 3,
+    "Name": "Level_C1_02_3_strategy3",
     "Family": "searched",
     "Spots": [
         {
@@ -10,17 +10,17 @@
                 7,
                 5,
                 5,
-                8,
+                6,
                 7,
-                6
+                8
             ],
             "Y": [
                 6,
                 6,
                 7,
-                6,
                 5,
-                5
+                5,
+                6
             ]
         },
         {
@@ -28,60 +28,68 @@
             "X": [
                 5,
                 30,
-                31,
                 30,
-                5,
-                4
+                31,
+                4,
+                5
             ],
             "Y": [
                 7,
                 15,
                 16,
                 16,
-                6,
-                7
+                7,
+                6
             ]
         },
         {
             "Tower": "Laser",
             "X": [
-                7,
                 6,
-                8,
                 7,
+                7,
+                4,
                 5,
-                4
+                8
             ],
             "Y": [
+                5,
                 6,
                 5,
                 7,
-                5,
                 7,
                 7
             ]
-        }
-    ],
-    "Weights": [
-        {
-            "Threat": "air",
-            "Tower": "Cannon",
-            "Weight": 1.0887668132781982
         },
         {
-            "Threat": "boss",
-            "Tower": "PulseRifle",
-            "Weight": 1.4166920185089111
+            "Tower": "Rocket",
+            "X": [
+                32,
+                31,
+                33,
+                32,
+                33,
+                31
+            ],
+            "Y": [
+                16,
+                16,
+                15,
+                19,
+                16,
+                15
+            ]
         }
     ],
-    "UpgradeBias": 1.5299999713897705,
-    "TowersBeforeUpgrades": 3,
-    "MineCoverBelow": 1.2999999523162842,
+    "Weights": [],
+    "UpgradeBias": 1.340000033378601,
+    "TowersBeforeUpgrades": 2,
+    "MineCoverBelow": 1.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.10000000149011612,
-    "AttackDroneAfterTowers": 12,
-    "AllowSell": false
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.25,
+    "AttackDroneAfterTowers": 8,
+    "AllowSell": true
 }

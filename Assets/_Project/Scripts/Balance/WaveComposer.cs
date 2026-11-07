@@ -251,10 +251,11 @@ namespace Game.Balance
 
         private static bool IsAirWave(WaveScriptSpec script, int difficulty, int number)
         {
-            int allowed = Math.Min(script.AirWavesPerDifficulty[Math.Min(difficulty, script.AirWavesPerDifficulty.Length - 1)], script.AirWaves.Length);
+            int allowed = AllowedAirWaves(script, difficulty);
+            int shift = AirShift(script, difficulty);
             for (int i = 0; i < allowed; i++)
             {
-                if (script.AirWaves[i] == number)
+                if (script.AirWaves[i] + shift == number)
                 {
                     return true;
                 }
@@ -263,8 +264,37 @@ namespace Game.Balance
             return false;
         }
 
-        private static int FirstAirWave(WaveScriptSpec script, int difficulty) =>
-            script.AirWavesPerDifficulty[Math.Min(difficulty, script.AirWavesPerDifficulty.Length - 1)] > 0 && script.AirWaves.Length > 0 ? script.AirWaves[0] : int.MaxValue;
+        /// <summary>The wave of the difficulty's first air raid (int.MaxValue when it has none), the script's floor applied.</summary>
+        public static int FirstAirWave(WaveScriptSpec script, int difficulty)
+        {
+            int first = FirstWrittenAirWave(script, difficulty);
+            return first == int.MaxValue ? first : first + AirShift(script, difficulty);
+        }
+
+        private static int AllowedAirWaves(WaveScriptSpec script, int difficulty) =>
+            Math.Min(script.AirWavesPerDifficulty[Math.Min(difficulty, script.AirWavesPerDifficulty.Length - 1)], script.AirWaves.Length);
+
+        // The earliest raid wave the script writes for the difficulty, before any floor.
+        private static int FirstWrittenAirWave(WaveScriptSpec script, int difficulty)
+        {
+            int first = int.MaxValue;
+            int allowed = AllowedAirWaves(script, difficulty);
+            for (int i = 0; i < allowed; i++)
+            {
+                first = Math.Min(first, script.AirWaves[i]);
+            }
+
+            return first;
+        }
+
+        // The raids of a difficulty move together so the first comes no earlier than the script's floor (WaveScriptSpec.FirstAirWaveFloor);
+        // a raid pushed past the last wave is simply gone.
+        private static int AirShift(WaveScriptSpec script, int difficulty)
+        {
+            int floor = script.FirstAirWaveFloorFor(difficulty);
+            int first = FirstWrittenAirWave(script, difficulty);
+            return floor > 0 && first != int.MaxValue ? Math.Max(0, floor - first) : 0;
+        }
 
         private static List<TroopSpec> Unlocked(TroopSpec[] troops, int number, int difficulty, bool pools)
         {

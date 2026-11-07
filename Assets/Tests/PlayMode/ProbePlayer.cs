@@ -40,9 +40,12 @@ namespace Game.Tests
         /// Installs the player for a run: the expected player of the cell (or a plain one), owning <paramref name="owned"/>.
         /// Call after the Boot scene registered its services and before the level scene loads. Returns the state installed.
         /// </summary>
-        public static PlayerState Install(CampaignCatalog catalog, int node, int difficulty, bool fresh, IEnumerable<string> owned)
+        public static PlayerState Install(CampaignCatalog catalog, int node, int difficulty, bool fresh, IEnumerable<string> owned) =>
+            Install(catalog, StateFor(catalog, node, difficulty, fresh), owned);
+
+        /// <summary>Installs a given player state (the finale probe's level-20 player, round 22f), owning <paramref name="owned"/>.</summary>
+        public static PlayerState Install(CampaignCatalog catalog, PlayerState state, IEnumerable<string> owned)
         {
-            PlayerState state = StateFor(catalog, node, difficulty, fresh);
             var progress = new ProgressService(new MemorySave(), StartingTowers());
             foreach (string id in owned)
             {

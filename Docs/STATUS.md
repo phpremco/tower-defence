@@ -3542,3 +3542,108 @@ strategy executor on both sides. The design of 22c/22d stands; nothing of it is 
    the script levers (plated, tempo, raid) on Psycho; the target is not lowered. Extend `BuildFromVerdicts` with a paper check:
    `CheckHuman`'s "difficulty 3 asks no more than difficulty 2" line for a level -> next script lever on its Psycho cell.
 Continuation rule: carry on with the STATUS steps only while the context stays under about 500k; otherwise a fresh agent continues.
+
+## Round 22f: the own reward, the Easy raid rule, Psycho above Hard, the builder's second move, the finale probe (2026-11-07)
+
+Not committed (the curator commits). Continues round 22e with the curator's answers (1), (3) and (4), the builder's second move
+on the 22e verdicts, and the finale probe. Docs/BALANCE.md "The own reward, the Easy raid rule, Psycho above Hard, the finale
+probe"; Docs/COMMANDS.md "Round 22f additions". Hard deadline tonight: no PlayMode run after the chain (the finale probe is built
+and compiles but has not run; no smoke run).
+
+**A bug of 22e found first: the acceptance's feature check was blind.** `BalanceStages.LoadPlans` parsed the strategy files as
+fixed plans with no steps; by name they shadowed the recorded moves, so every Hard/Psycho cell read "uses 0 features" and "buys
+no drone". Fixed (strategy files skipped; the moves judge). The Hard/Psycho winners do use the game: C1_03 Psycho 22 upgrades,
+a repair drone, 8-9 sales per run; C1_04 Hard 14 upgrades, drones; C1_06 Hard 18 upgrades, 6 drones, 14 gadgets; C1_02 Hard 12
+upgrades, repair drone. The Psycho drone rule now applies only where the level sells a drone (C1_01 none). On the 22e records
+the fix alone turned C1_04 Hard and C1_06 Hard to PASS.
+
+**Built.**
+- (1) `Progression.StateAt` adds the level's own reward tower/perk when `OwnLevelPathOf(d)` is not empty; `BalanceProbeTests.
+  OwnedTowers(catalog, level, difficulty)` and `BalancePipelineTests.MonoTypes(node, difficulty)` the same (mono Laser on C1_01
+  Hard/Psycho). Tests `ContinentEconomyTests.Psycho_IsTheFirstAttemptPlayer_NotTheEndGame` and
+  `BalanceModelTests.Progression_OwnsOnlyStartingAndEarnedTowers` updated. C1_01 and C1_02 Hard/Psycho waves re-solved.
+- (3) The Easy raid rule: `BalanceRules.EasyRaidMarginWaves` (1), `WaveScriptSpec.FirstAirWaveFloor`, `WaveComposer.FirstAirWave`
+  and `AirShift` (raids shift together; `IsAirWave`, the sprinkle and the solver's kind follow), `CampaignModel.EasyRaidFloor`
+  (kill money above the start purse covers the cheapest owned sky gun: air-only first, else any gun that reaches the air; none =
+  no raid), applied in `BuildWaves` (Easy solved again when the floor moves the raids). Effect: C1_04 Easy first raid 3 -> 10
+  (10, 13, 16), C1_05 4 -> 9 (9, 13), C1_06 8 -> 9 (9, 12, 15); C1_03 unchanged (12, 15). The builder prints the rule's effect
+  per Easy cell and makes no lever move there that round.
+- (4) `BuildFromVerdicts`: paper check per level (`PaperPlainMeans`, the `CheckHuman` input); Psycho at or under Hard -> the next
+  script lever on the Psycho cell (a move; the target not lowered). Applied: C1_06 Psycho plated x1.5 (0.96 vs 0.98).
+- Search: when nothing holds on paper the replay gets the best three by paper score (`NoHoldCandidates`), not one.
+- `Tools/PlayTest/replay_cells.sh` (filtered replay, records merged per cell), `round22f_chain.sh` (per group: measure, search,
+  replay; then acceptance, readme).
+- Finale probe: `FinalePlan` (Game.Balance; `BalanceSheet.PlannedTowers/Finales` forward to it), `FinaleProbeReport` (pure: the
+  report file, `DerivedHealth`, `DerivedShare`), `BalanceRules.FinaleHoldShare` 0.85, `FinaleProbeTests.Measure_ContinentFinales_
+  AsPlayed` (PlayMode, explicit: arena field with the planned towers on a runtime copy of the bar, finale player and purse from
+  `FinaleModel`, creative bot, boss health multiple bisected 1 -> x1.4 steps -> three halvings; writes `finale_probe.txt`),
+  `BalanceProbeTests.ProbeOverride` + `LedgerFor(input, waves, stats)`, `ProbePlayer.Install(catalog, state, owned)`,
+  `ContinentFinaleTests` read the report (a ledger "too hard" the probe beat becomes a note; the share test judges the probe's
+  derived shares; new `FinaleProbe_DerivedBossHealth_MatchesTheData`, ignored until the report exists), stage `finale`
+  (`BalanceStages.ApplyFinale`, `ApplyFinale.cs`, menu `Tools/Generate/Balance/10`; writes boss health and Hard/Psycho shares;
+  both are hash inputs, so measure, fit and apply follow). NOT RUN: it compiles; no PlayMode run tonight.
+
+**The builder's second move (`builder.txt`, 18:01, on the 22e verdicts).** Harder x1.15: C1_01 Psycho (obvious wins), C1_02
+Medium and Hard (mono Cannon, naive win), C1_03 Psycho (obvious reach the last third), C1_04 Hard (in-play ramp dip). Script lever
+plated x1.5: C1_01 Hard (forgiving rule still failing after the scale), C1_06 Medium and Hard (in-play ramp dips against C1_05),
+C1_06 Psycho (paper: Psycho asks no more than Hard). Easier /1.15 (to 0.757): C1_03 Easy, C1_04 Psycho, C1_05 Medium, Hard,
+Psycho. Raid rule, no lever: C1_04, C1_05, C1_06 Easy. Questions: C1_02 Psycho and C1_03 Hard pull both ways. C1_01 Easy (1.15)
+is "ok" by the lever but still fails the Easy rule (no visible margin for the plan over the obvious family).
+
+**Measured (chain 18:04-22:15, seeds 1-3, step 0.2; `round22f_chain.log`).** Re-measured, re-searched and replayed: C1_01 Hard
+and Psycho, C1_02 Medium, Hard and Psycho, C1_03 Easy and Psycho, C1_05 and C1_06 all four. **C1_04 Easy, Hard and Psycho were
+NOT re-measured** (the curator skipped that group for time): their records and verdicts are 22e's, played on the waves before this
+round's solve (C1_04 Easy's raid rule, Hard's x1.15, Psycho's 0.757). First thing next round:
+`bash Tools/PlayTest/round22f_chain.sh "levels=3;difficulties=0,2,3"`.
+
+In-play margins before (22e) and after (22f):
+
+| Level | Easy | Medium | Hard | Psycho |
+|---|---|---|---|---|
+| C1_01 | 1.00 -> 1.00 | 1.00 -> 1.00 | 1.00 -> 1.00 | 0.91 -> 0.83 |
+| C1_02 | 1.00 -> 1.00 | 1.00 -> 0.75 | 1.00 -> 1.00 | 0.48 -> 0.40 |
+| C1_03 | 1.00 -> 0.83 | 1.00 -> 1.00 | 0.58 -> 0.58 | 1.00 -> 1.00 |
+| C1_04 | 1.00 (stale) | 1.00 | 0.97 (stale) | 0.40 (stale) |
+| C1_05 | 0.90 -> 0.72 | 0.50 -> 0.92 | 0.39 -> 0.38 | 0.29 -> 0.31 |
+| C1_06 | 1.00 -> 1.00 | 1.00 -> 1.00 | 0.88 -> 0.94 | 0.44 -> 0.33 |
+
+Acceptance (`acceptance.txt`): 6 of 24 PASS: C1_01 Medium (tutorial), C1_03 Medium, C1_04 Medium, C1_04 Hard (stale), C1_06
+Medium, C1_06 Hard. Failing, by cell: C1_01 Easy (no visible margin over the obvious family, all at base 600); C1_01 Hard
+(forgiving: mono Cannon and affordable do exactly as well as on Medium even with plated x1.5; mono Pulse and naive now worse);
+C1_01 Psycho (plans win 2/3 but use 1 feature, the level sells no drones or gadgets; the plans are alike); C1_02 Medium (x1.15
+broke the plans: 0/5 win, mono Cannon and naive still 2/3); C1_02 Hard (mono Cannon wins 3/3; two plans win with 12 upgrades and
+a repair drone); C1_02 Psycho (0/3, 5-6 upgrades, no drone); C1_03 Easy (plans 5/5 but no obvious kind wins at 0.757); C1_03
+Hard (1/3); C1_03 Psycho (3 winners, all alike; obvious reach the last third); C1_05 Easy (0/5 plans win at 0.87 with the raid at
+9: worse than 22e's 2/3); C1_05 Medium (best 2/3 at 0.757); C1_05 Hard and Psycho (0/5, 0/3; the strategies make 2-5 upgrades
+and buy no drone: the paper picks thin plans there); C1_06 Easy (plans 5/5, 1 of 3 obvious kinds); C1_06 Psycho (0/3 with
+plated; 0.33). Distinct winners (`Plans/README.md`, 17 of 24 cells have one): Psycho winners only on C1_01 (upgrades only) and
+C1_03 (upgrades, a repair drone, sales).
+
+**Reading.** The scale lever does little where it is needed: C1_05 stays the hardest level on Hard and Psycho at 0.757 and got
+harder on Easy (the raid at 9 meets bigger waves; 0/5 plans), and C1_02 Medium flipped from "obvious wins" to "nobody wins" in
+one step. The search's Hard/Psycho strategies on C1_05 and C1_06 Psycho are thin (2-5 upgrades, no drones) although the space
+allows more: the paper executor prefers them there and the replay confirms they lose; the creative reference is no better on
+those cells (0.31, 0.33). Design decisions, not a third scale move, are the next step (questions below).
+
+**Test totals.** EditMode whole suite after the round: 674 tests, 618 passed, 3 failed (`BalanceAcceptanceTests` 18/24 cells, `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`: the builder's moves broke the paper bands, C1_03 Easy surplus 1.81x, C1_04 Psycho asks no more than Hard on paper after its 0.757 ease, C1_04 Hard 0.90x; and one `ContinentFinaleTests` ledger check, known), 53 skipped (reported checks and the new `FinaleProbe_DerivedBossHealth_MatchesTheData`, ignored until the probe ran).. No PlayMode smoke run tonight (deadline); the chain's PlayMode runs logged no level errors.
+0 compile errors, 0 warnings. Save: `progress.json` absent throughout; dev backup untouched; `probe_arg.txt` absent;
+no `InitTestScene*`.
+
+**Design questions for Remco (plain).**
+1. The Easy raid rule counts kill money only (the start money goes into the opening ground defence). That puts Fault Line's first
+   Easy raid at wave 10 of 16 and Quartz Flats' at 9 of 17, and Quartz Flats Easy got harder, not easier. Should the start money
+   above the opening defence count too (earlier raids, closer to the written 3 and 4), or is a late first raid on Easy fine?
+2. C1_01 Hard: with plated x1.5 the Cannon row and the affordable buyer still finish exactly as on Medium (3 stars, base whole).
+   The next lever is tempo x0.85, then an early raid. Or accept that a Cannon row holds Landing Site Hard?
+3. C1_01 Psycho needs 2 "features" but the level sells no drones or gadgets: should the feature bar count only what the level offers?
+4. C1_02 Medium at x1.15: the row and the careless player still win 2/3, the thought-out plans 0/5. The level needs an enemy that
+   punishes a Cannon row (a script lever: plated or loose runners), not more health. Approve script levers on Medium cells?
+5. Quartz Flats (C1_05) is the hardest level on every difficulty after two eases; its position or its roster is a design choice,
+   not a scale.
+6. The finale probe's hold share (0.85: the bot beats the boss with 15% health to spare on Medium) is a guess to confirm.
+
+**Commands to continue (editor_status first).** 1. `bash Tools/PlayTest/round22f_chain.sh "levels=3;difficulties=0,2,3"` (C1_04
+on this round's waves). 2. `run_tests --mode PlayMode --filter Measure_ContinentFinales_AsPlayed --include_explicit true
+--async_tests true` (narrow with `probe_arg.txt` `bosses=0` for Gravemaw first), then EditMode `ContinentFinaleTests`, then
+`balance_pipeline.sh finale` only on the curator's say (it stales the calibration). 3. The builder has used both moves on most
+cells (`builder_iterations.txt`): the next pass is design decisions, not a third move.

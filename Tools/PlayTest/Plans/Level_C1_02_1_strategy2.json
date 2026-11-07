@@ -8,18 +8,18 @@
             "Tower": "PulseRifle",
             "X": [
                 5,
-                6,
-                7,
                 7,
                 5,
+                6,
+                7,
                 8
             ],
             "Y": [
+                6,
+                6,
                 7,
                 5,
-                6,
                 5,
-                6,
                 6
             ]
         },
@@ -28,8 +28,8 @@
             "X": [
                 5,
                 30,
-                31,
                 30,
+                31,
                 5,
                 4
             ],
@@ -64,34 +64,39 @@
     ],
     "Weights": [
         {
+            "Threat": "swarm",
+            "Tower": "PulseRifle",
+            "Weight": 1.281622290611267
+        },
+        {
             "Threat": "pack",
-            "Tower": "Laser",
-            "Weight": 1.0334786176681519
+            "Tower": "Cannon",
+            "Weight": 0.9453058242797852
         },
         {
             "Threat": "plated",
             "Tower": "Laser",
-            "Weight": 0.6112480163574219
+            "Weight": 0.5368841290473938
         },
         {
             "Threat": "air",
             "Tower": "Cannon",
-            "Weight": 2.2606592178344727
+            "Weight": 0.8542141914367676
         },
         {
             "Threat": "boss",
             "Tower": "Laser",
-            "Weight": 0.5527265667915344
+            "Weight": 2.30228853225708
         }
     ],
-    "UpgradeBias": 1.5,
-    "TowersBeforeUpgrades": 3,
-    "MineCoverBelow": 1.0,
-    "MineOnBoss": false,
+    "UpgradeBias": 1.2100000381469727,
+    "TowersBeforeUpgrades": 4,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 0.0,
-    "HarvesterShare": 0.5,
-    "RepairDroneWear": 0.10000000149011612,
-    "AttackDroneAfterTowers": 0,
+    "HarvesterCover": 1.2000000476837158,
+    "HarvesterShare": 0.6000000238418579,
+    "RepairDroneWear": 0.5,
+    "AttackDroneAfterTowers": 6,
     "AllowSell": false
 }

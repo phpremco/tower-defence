@@ -19,6 +19,9 @@ namespace Game.Editor
     {
         private const int StrategySamples = 1500;
 
+        /// <summary>How many of the best paper strategies the replay gets when none holds on paper (round 22f).</summary>
+        private const int NoHoldCandidates = 3;
+
         /// <summary>The number of paper plans a strategy search samples per cell when the caller gives none.</summary>
         public static int DefaultStrategySamples => StrategySamples;
 
@@ -160,17 +163,21 @@ namespace Game.Editor
                 File.Delete(stale);
             }
 
-            // The strategies the replay plays: the distinct winners, or the best found when none holds (the replay is the judge).
+            // The strategies the replay plays: the distinct winners, or the best few found when none holds (the replay is the judge, and
+            // the paper is pessimistic on the hard cells: round 22f replays more than one candidate there).
             var toWrite = new List<StrategySpec>();
             for (int i = 0; i < result.DistinctWinners.Count && i < result.Input.ShowPlans; i++)
             {
                 toWrite.Add(result.DistinctWinners[i].Strategy);
             }
 
-            if (toWrite.Count == 0 && result.Top.Count > 0)
+            if (toWrite.Count == 0)
             {
-                result.Top[0].Strategy.Name = $"{level.name}_{difficulty}_strategy1";
-                toWrite.Add(result.Top[0].Strategy);
+                for (int i = 0; i < Math.Min(NoHoldCandidates, result.Top.Count); i++)
+                {
+                    result.Top[i].Strategy.Name = $"{level.name}_{difficulty}_strategy{i + 1}";
+                    toWrite.Add(result.Top[i].Strategy);
+                }
             }
 
             foreach (StrategySpec strategy in toWrite)

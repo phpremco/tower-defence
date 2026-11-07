@@ -684,3 +684,18 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
   (`WaveTuning.ReadLevers`, applied by the composer per difficulty). The builder applies them in that order to a cell still too easy
   after a scale move.
 - `acceptance.txt` and `builder.txt` end with the in-play ramp table (`BalanceStages.InPlayRamp`).
+
+### Round 22f additions (2026-11-07)
+
+- `bash Tools/PlayTest/replay_cells.sh "levels=2,3" "difficulties=3"` replays the searched strategies for a filter and merges
+  `plan_records.txt` with the cells outside it (the replay writes the file whole). Run `balance_pipeline.sh search` with the
+  same filter in `probe_arg.txt` first when the strategies must be fresh. `bash Tools/PlayTest/round22f_chain.sh
+  "levels=0;difficulties=2,3" "levels=4,5;difficulties=0,1,2,3"` chains measure, search and replay per cell group, then
+  acceptance and readme; start it in the background with a log.
+- The builder (`build`) prints per Easy cell what the Easy raid rule does at the solve ("moves the first raid from wave 3 to
+  wave 10") and skips the lever there; per Psycho cell a script lever when the paper says Psycho asks no more than Hard.
+- Finale probe (built, not yet run): `run_tests --mode PlayMode --filter Measure_ContinentFinales_AsPlayed --include_explicit true
+  --async_tests true`, narrowed by `probe_arg.txt` lines `bosses=0` (index in `FinalePlan.Finales`: Gravemaw 0 ... SealedOne 5),
+  `difficulties=1`, `seed=1`, `step=0.2`; writes `Tools/PlayTest/finale_probe.txt`. Then `ContinentFinaleTests` (EditMode) reads
+  it, and `bash Tools/PlayTest/balance_pipeline.sh finale` (or menu `Tools/Generate/Balance/10`) writes the derived boss health
+  and shares into the assets (calibration inputs: the pipeline then says STALE until measure, fit and apply ran).

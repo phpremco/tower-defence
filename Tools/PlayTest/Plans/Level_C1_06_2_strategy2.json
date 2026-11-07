@@ -1,0 +1,111 @@
+{
+    "Level": "Level_C1_06",
+    "Difficulty": 2,
+    "Name": "Level_C1_06_2_strategy2",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                13,
+                13,
+                12,
+                12,
+                14,
+                14
+            ],
+            "Y": [
+                10,
+                11,
+                10,
+                11,
+                11,
+                7
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                17,
+                17,
+                17,
+                12,
+                16,
+                18
+            ],
+            "Y": [
+                11,
+                7,
+                10,
+                10,
+                11,
+                11
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                13,
+                11,
+                12,
+                13,
+                14,
+                15
+            ],
+            "Y": [
+                10,
+                10,
+                10,
+                11,
+                10,
+                10
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                36,
+                36,
+                35,
+                36,
+                34,
+                35
+            ],
+            "Y": [
+                10,
+                11,
+                11,
+                7,
+                10,
+                10
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "swarm",
+            "Tower": "Laser",
+            "Weight": 1.028842806816101
+        },
+        {
+            "Threat": "air",
+            "Tower": "Laser",
+            "Weight": 2.0502371788024902
+        },
+        {
+            "Threat": "boss",
+            "Tower": "PulseRifle",
+            "Weight": 1.5969489812850952
+        }
+    ],
+    "UpgradeBias": 0.6100000143051147,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.4000000059604645,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 0,
+    "AllowSell": false
+}
