@@ -25,7 +25,8 @@ MonoBehaviour:
   _botUtilisation: 0.27
   _siegeFactor: 1.189
   _repairDroneBusyShare: 0.967
-  _inputHash: 551e7c40
+  _queueGuardShare: 1
+  _inputHash: 956d2750
   _measuredOn: 2026-11-07 01:56
   _seeds: 1,2,3
   _step: 0.2

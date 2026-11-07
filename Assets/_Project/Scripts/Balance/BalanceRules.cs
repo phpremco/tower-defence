@@ -270,6 +270,26 @@ namespace Game.Balance
         public float RepairDroneBusyShare = 0.5f;
 
         /// <summary>
+        /// Share of their damage per second the guards at a gate's queue and the base's doorstep really land on a siege (round 22d):
+        /// leakers spread out, slip past and break structures before the guns are done, so full rate overstated thin plans.
+        /// Fitted on recorded bot and plan runs (the share with the best verdict agreement), kept on the BalanceCalibration asset.
+        /// </summary>
+        public float QueueGuardShare = 1f;
+
+        /// <summary>
+        /// The ledger buys sky guns only while the flyers' pressure is above this (round 22d): a sky gun does nothing for the ground and
+        /// its price leaves every later purse, so one more bought on a hair starved the waves after and the solver could not land
+        /// (Quartz Flats Easy wave 8). One means "until they are held".
+        /// </summary>
+        public float SkyHoldPressure = 1f;
+
+        /// <summary>
+        /// Waves before a level's end at which a repair drone bought then still earns its price back (Remco 2026-11-07: a real
+        /// investment; the last two waves never pay). BalanceSheet.RepairDronePrice derives the drone's price from it.
+        /// </summary>
+        public float RepairDroneBreakEvenWaves = 3f;
+
+        /// <summary>
         /// "Beatable" with the hero and the upgrades the campaign expects (<see cref="BalanceChecks.CheckBeatable"/>): the plain
         /// waves must leave at least this surplus (Easy to Psycho), and no wave may ask more than its <see cref="HeroCap"/> plus
         /// <see cref="BeatableTolerance"/>. Psycho below one: the end-game player also brings what the model leaves out.

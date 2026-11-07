@@ -3349,3 +3349,128 @@ backup untouched. `probe_arg.txt` absent (every level, difficulty, seeds 1-3).
 **Test totals at handover (2026-11-07 03:50).** EditMode, whole suite: 670 tests, 615 passed, 3 failed, 52 skipped. The three failures: `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (the C1_05/C1_06 Easy ramp only; the four cap failures of 22b are gone) and the two known `ContinentFinaleTests`. The skips are the reported checks (the calibration test skips again because the fit now includes the plan runs and sits below the bar; acceptance cells; lens reports). PlayMode: the replay (213 runs) ran clean. 0 compile errors, 0 warnings; no `InitTestScene*` left; `Tools/PlayTest/Plans/*` regenerated (old `*_best.json` files gone, `planN.json` in their place).
 
 **Commands to continue.** `editor_status` first. Fit: `run_tests --mode EditMode --filter CalibrationFitTests`, read `calibration.txt` and `calibration_waves.txt` (the fit now includes `plan_records.txt`); the next model term is the queue guards' damage share, fitted on bots and plans together. Then `bash Tools/PlayTest/balance_pipeline.sh apply solve search replay acceptance`. Re-measure the yardstick (3 h) before trusting a fit on the new waves: the bot records were played on the 22b waves.
+
+## Round 22d: player-state parity, the builder on stage-B verdicts, the sky-hold rule (2026-11-07)
+
+Not committed (the curator commits). Continues round 22c with the curator's decisions (stage A and B judge the same player; re-measure
+before any fit; fix the purchase flip at its root; keep the 22c calibration and let stage B judge) and Remco's two answers of the day
+(C1_01 Hard as an explicit forgiving rule; the repair drone priced as an investment). Docs/BALANCE.md "Player-state parity, the
+sky-hold rule and the guard share" has the model side; Docs/COMMANDS.md "Round 22d additions" the stages and files.
+
+**Built.**
+- Player state: `PlayerState.UpgradeLevels` (what the paper bought, by upgrade id), `ProbePlayer` (PlayMode: writes the cell's expected
+  player into an in-memory `ProgressService` before the level loads and registers it in place of the file-backed one; `Describe` for the
+  log), `BalanceProbeTests.Probe(..., freshPlayer)`, `ProbeResult.FreshPlayer`, `RunRecord.FreshPlayer` (13th field of the `run` line,
+  `Cell` gets " fresh"), `BalanceStages.CellFor` judges each run by its player, the yardstick's fresh-save sanity runs (C1_01 Easy,
+  `affordable` + `naive`), acceptance.txt reports them. EditMode `PlayerStateParityTests` (2, pass): the save gives the game the paper's
+  modifiers on every cell; the second level's Medium player holds upgrades, the first level's none.
+- `Ledger.Buy`: `Fill` (the greedy), `Improve` (take one tower away, let the greedy spend the refund, keep the best trial),
+  `BalanceRules.SkyHoldPressure` (sky guns only until the flyers are held), `WaveLine.Purchase`.
+- `BalanceRules.QueueGuardShare`, `Leak.Fight` applies it, `CalibrationFit.FitGuards` (grid 0.3..1.0 by verdict agreement, `Result.QueueGuardShare`),
+  `Check`/`Predict` take the share, `calibration.txt` line `queueguard`, `BalanceCalibration._queueGuardShare` (apply reads it, `Apply` sets the rule).
+- `AcceptanceRules.ForgivingHardCells` (C1_01 Hard) + `JudgeForgivingHard` (judged with the level's Medium obvious runs, `Judge(..., mediumObvious)`),
+  `AcceptanceRules.Lever`/`LeverFor` (the builder's reading of a cell's records), `BalanceStages.BuildFromVerdicts` (stage `build`, menu 6b,
+  `builder_iterations.txt`), `BalanceStages.WriteWinningPlans` (stage `readme`, menu 8), `BalanceStages.ApplyDronePrices` +
+  `DronePriceReport` (stage `droneprice`, menu 9, `drone_price.txt`), `BalanceSheet.RepairDronePrice/SavingPerWave/BreakEvenWave/
+  RepairDronePriceFromData/RepairDroneInputs`, `BalanceRules.RepairDroneBreakEvenWaves` (3), `WaveTiming` (Editor; the drone lens uses it),
+  `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule`, the generator's `GenerateDrones` reads the rule, `PlanSearch.BestSpots` public.
+  Scripts `BuildFromVerdicts.cs`, `ReadmePlans.cs`, `ApplyDronePrice.cs`; `balance_pipeline.sh` stages `build`, `readme`, `droneprice`.
+- `InputHash` no longer covers drone prices (a plan input); the applied calibration's hash was re-stamped 551e7c40 -> 956d2750 (numbers untouched).
+
+**Goal 1, the player-state finding: it did not explain the gap.** Re-measure with the expected player on the 22c waves (yardstick 426 runs
+04:05-07:20, replay 213 runs 07:20-09:02, seeds 1-3, step 0.2; files in the scratchpad `22d_a/`, superseded in Tools/PlayTest by the
+builder chain below). The plans that held on paper (margins 1.00-1.15) still lost in play on C1_02 Medium (5 plans, 0/3 each), C1_02 Hard
+(5, 0/3), C1_03 Medium (best 1/3), C1_05 Medium (5, 0/3) and C1_06 Medium (best 1/3). What the expected player changed: C1_01 Psycho became
+an obvious win (base 800: `affordable` 3/3, mono Pulse/Cannon 2/3, creative 2/3), C1_04 Hard plan3 won 3/3 (2.3 stars; was 0/3), C1_06
+Medium creative 3/3 (was 1/3), C1_03 Hard and Psycho creative 3/3. Fresh-save sanity C1_01 Easy: 6/6 won. Obvious family vs plans, 22c waves:
+
+| level | Easy obvious / best plan | Medium obvious / best plan | Hard obvious / best plan | Psycho obvious / best plan |
+| --- | --- | --- | --- | --- |
+| C1_01 | all 3/3 / 3/3 (2 winners) | all 3/3, naive 2/3 (tutorial) / 3/3 (3 winners) | all 3/3, naive 2/3 / 3/3 (1) | affordable 3/3, mono 2/3 / 0/3 |
+| C1_02 | all 3/3, mono Laser 2/3 / 3/3 (plan1; plan4 2/3) | mono Cannon 3/3, naive 3/3 / 0/3 | mono Cannon 3/3 / 0/3 | all 0/3 / 0/3 |
+| C1_03 | all 0/3 (14/16) / 3/3 (3 winners) | all 0/3 / 1/3 | all 0/3 / 0/3 | all 0/3 / 0/3 |
+| C1_04 | naive 2/3, mono Pulse 2/3 / 3/3 (1.7*) | all 0/3 / 3/3 (plan2) | all 0/3 / 3/3 (plan3, 2.3*) + 2/3 | all 0/3 / 0/3 |
+| C1_05 | all 0/3 (10/17) / 3/3 (plan3 only) | all 0/3 / 0/3 | all 0/3 / 0/3 | all 0/3 / 0/3 |
+| C1_06 | all 0/3 (12/18) / 3/3 (4 winners) | all 0/3 / 1/3 | all 0/3 / 0/3 | all 0/3 / 0/3 |
+
+**Calibration (decision 4, one iteration, not applied).** Fit on 639 runs with the queue-guard share: share 0.30 (grid bottom), Cannon 0.740,
+Gun Turret 0.780, Laser 0.671, Flak 0.851, siege 1.261, repair drone busy 0.940; hold-out agreement 81% (mono 94%), Spearman 0.62; self 82%.
+Below the bar: the 22c asset (guards at full rate) stays. The disagreements pull both ways (BALANCE.md): fewer guards fix C1_02 Medium's plans
+and C1_02/C1_04 Easy ("paper survives, game lost") and break C1_01 Hard/Psycho and C1_06 Easy ("paper falls, game won": 10/9/14 runs).
+
+**Goal 3, the purchase flip: fixed.** Quartz Flats Easy wave 8 bought a second Flak step on a hair while the air was already held; AirHoldings
+carried the 80 coins into every later purse. Sky guns are now bought only until the flyers are held, and an improvement pass makes the purchase
+a local optimum. The plain mean is monotone across scales (0.717 .. 0.783 for 0.90 .. 1.05; was 0.739 -> 0.794 at 0.99 -> 1.00).
+
+**Remco's answers.** (1) C1_01 Hard: `ForgivingHardCells`; on the 22c waves the cell FAILs (mono Pulse, mono Cannon, naive do exactly as well as
+on Medium: 3/3, 3 stars, base 600); the builder moved its scale to 1.15. (2) Repair drone: old price 120, new price 170 = 3 waves x 56.4 coins of
+repairs saved per wave (8 hp/s x busy 0.967 x 0.30 coins/hp x 24.3 s mean wave spacing); break-even two waves before the end on every level
+(C1_02 wave 10/12, C1_03-04 13/16, C1_05 15/17, C1_06 15-16/18), payback 2.3-3.6 waves when bought at wave 1; rate unchanged.
+
+**Goal 2, the builder (one iteration, on the stage-B verdicts of the 22c waves; `Tools/PlayTest/builder.txt`).** Harder (x1.15): C1_01 Easy
+(every obvious run wins with three stars), C1_01 Hard (the obvious family does as well as on Medium). Easier (/1.15): C1_03 Easy and Medium,
+C1_04 Easy and Psycho, C1_05 all four, C1_06 all four (no obvious kind wins Easy; the best plan misses its bar). No move: C1_01 Medium
+(tutorial, plans win), C1_02 Easy, C1_04 Medium and Hard (ok). Pulls both ways (design questions, no lever): C1_01 Psycho, C1_02 Medium, Hard
+and Psycho, C1_03 Hard and Psycho (the obvious family wins or reaches the last third AND no plan wins). Then the waves were re-solved with
+the new `Buy` (every level changed; the Buy fix alone makes C1_05 lighter-than-curve waves heavier). Search, yardstick and replay on the
+new waves ran after it:
+
+**Results on the builder's waves (yardstick 426 runs 09:25-12:45, replay 204 runs to about 14:20, seeds 1-3, step 0.2, expected player;
+`Tools/PlayTest/yardstick.txt`, `plan_replay.txt`, `acceptance.txt`, `Plans/README.md`).** Obvious = best kind of the yardstick (creative in
+brackets); plans = replayed searched plans: wins/seeds of the best, distinct winners (won on most seeds).
+
+| level | Easy obvious / plans | Medium obvious / plans | Hard obvious / plans | Psycho obvious / plans |
+| --- | --- | --- | --- | --- |
+| C1_01 | all 3/3, naive 2/3 (3/3) / 3/3, 2 winners | mono+affordable 3/3, naive 2/3 (3/3) / 3/3, 2 winners (plan1 1/3) | mono+affordable 3/3, naive 1/3 (3/3) / 3/3, 1 | affordable 3/3, mono 2/3 (3/3) / 0/3 (w8) |
+| C1_02 | all 3/3, Laser 2/3 (3/3) / 3/3, 1 winner + plan5 2/3 | mono Cannon 3/3, naive 3/3 (3/3) / plan4 3/3 (repair drone), 1 winner | mono Cannon 3/3 (3/3) / 0/3 | all 0/3 (0/3) / 0/3 |
+| C1_03 | all 0/3, Pulse+affordable reach 16/16 (3/3) / 3/3, 5 winners | all 0/3 (3/3) / plan3 3/3, 3 winners (2/3, 2/3) | all 0/3 (3/3, 2.3*) / 0/3 (w13) | all 0/3 (3/3, 2.7*) / 0/3 |
+| C1_04 | mono Pulse 3/3, naive 3/3 (3/3) / 3/3, 3 winners | all 0/3, naive 14/16 (3/3) / plan2 3/3, 1 winner | all 0/3 (3/3) / 0/3 (w11) | all 0/3 (0/3, 16/16) / 0/3 (reaches 16/16) |
+| C1_05 | all 0/3 (3/3) / plan5 3/3, 1 winner | all 0/3 (1/3) / 0/3 | all 0/3 (0/3, 15/17) / 0/3 | all 0/3 (0/3) / 0/3 |
+| C1_06 | all 0/3, Pulse 16/18 (3/3) / 3/3, 5 winners | all 0/3 (3/3) / plan5 3/3, 4 winners | all 0/3 (3/3, base 800) / 0/3 | all 0/3 (2/3) / 0/3 |
+
+Acceptance: C1_03 Medium and C1_06 Medium PASS; the other 22 cells FAIL (`acceptance.txt`): C1_01 Easy and Hard because the obvious family
+keeps full base (no visible margin for the plan; C1_01 Hard's forgiving rule fails on the same point: mono Pulse, mono Cannon and affordable
+do exactly as well as on Medium, 3/3 at base 600); C1_02 Medium and Hard because mono Cannon and naive win; the Easy cells from C1_03 on
+because no obvious kind wins (the plans do, 3-5 winners on C1_03/C1_06 Easy); every Hard from C1_02 and every Psycho because no replayed plan
+wins (the creative reference does win C1_03 Hard/Psycho, C1_04 Hard and C1_06 Hard, so those cells are winnable by a ledger-driven player;
+the searched plans are not that player yet). README: 12 of 24 cells have a plan that won in play.
+
+**What the builder's one move did.** C1_01 Easy/Hard x1.15: no visible change (the obvious family still keeps base 600, naive drops to 2/3 and
+1/3). C1_03-C1_06 /1.15 plus the Buy fix (which sizes the waves heavier again): the Easy obvious family still loses (reaches 16/16 on C1_03
+now), but the plans turned: C1_02 Medium, C1_03 Medium and C1_06 Medium gained real winners. The second move was not run (another five hours;
+the next round's first step after reading this). The band test now fails on the campaign ramp (C1_02 Easy/Hard, C1_03 Easy/Medium, C1_04 Psycho,
+C1_05 Medium/Hard are "easier than the level before" on paper, and C1_01 Easy asks 0.94 of Medium): the builder's stage-B lever and the paper
+ramp rule pull against each other; a design question below.
+
+**Test totals (2026-11-07, after the chain).** EditMode whole suite: 673 tests, 618 passed, 3 failed, 52 skipped. Failed: `EveryWave_StaysInsideItsDifficultyBand`
+(the ramp, above) and the two known `ContinentFinaleTests` (Gravemaw/Rotbloom/Frost Warden too hard at the finale on the ledger; Psycho share
+1.22x Medium's, needs about 1.43). Skipped: the reported checks (calibration below its bar, acceptance cells, the lens rows). PlayMode: smoke
+(2 runs), yardstick (2x), replay (2x) ran clean (no level errors); 0 compile errors, 0 warnings; no `InitTestScene*`; `probe_arg.txt` absent.
+
+**Open design questions for Remco / the curator.**
+1. The builder's stage-B lever (C1_03-C1_06 easier, C1_01 harder) breaks the paper ramp rule (each level harder than the one before on paper).
+   Which rule wins: the ramp (then the Easy cells from C1_03 stay unwinnable for the obvious family) or the verdicts (then the ramp test
+   should read the target scales, or compare stage-B outcomes instead of paper means)?
+2. C1_01 Easy and Hard: the obvious family keeps the base untouched whatever the scale (1.0 and 1.15); a visible margin for a thought-out plan
+   needs a script-level lever (a raid or a boss that reaches the base against a careless row), not the scale.
+3. C1_01 Psycho is won by the obvious family with the end-game player's base armour (base 800) and no searched plan wins it: the Psycho
+   expected player (whole continent's research) may be too strong for level 1, or Psycho should not be offered there.
+4. The Hard/Psycho cells from C1_02: the creative reference wins C1_03 Hard/Psycho, C1_04 Hard, C1_06 Hard, the searched plans none. The
+   search's plans lack what the creative bot does at run time (repairs by rule, gadgets when pressed, a sky gun when the raid shows): a
+   plan with conditional steps, or the paper's queue model fixed so the search stops preferring thin plans.
+5. The guard-share fit wants the guards at 0.3 of their rate for C1_02 Medium's plans and at full rate for C1_01 Hard: the model term that
+   separates those is not a global share. Candidate: the leak's spread along the queue cells (how many guns really reach the leakers).
+
+**Commands to continue.** `editor_status` first. Second builder move: `bash Tools/PlayTest/balance_pipeline.sh build search measure replay
+acceptance readme` (about five hours; the builder refuses a third move per cell). Only the plans: `search replay acceptance readme`. Drone
+price after a data change: `droneprice`, then `DroneLensTests`.
+
+**Goal 4, `FinaleProbeTests`: not built** (the two measurement chains took the editor for eight hours and the round's budget). Design as in
+22c, refined: `LevelSession(level, difficulty, waves: <stand-in waves with the boss swapped in>, startingMoney)` already takes a wave
+override and a purse, so the probe needs no new game hook for the waves; the boss's health per run is the open point (a runtime copy of the
+`EnemyDefinition` with its health set, so the bisection never writes the asset), and the finale loadout needs the planned towers (Tesla,
+Railgun) on the stand-in level's bar (a runtime copy of the `LevelDefinition` with `AvailableTowers` extended). `ContinentFinaleTests`
+keeps its two known failures.
+
+**Save state.** `progress.json` absent before the round and absent after it: the probe plays an in-memory save now, so the PlayMode runs
+no longer create the file (checked after the smoke run, the yardstick and the replay). The dev backup untouched. `probe_arg.txt` absent.

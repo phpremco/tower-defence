@@ -7,6 +7,13 @@
         {
             "Kind": "build",
             "Item": "Cannon",
+            "X": 13,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
+            "Item": "Cannon",
             "X": 14,
             "Y": 7,
             "Wave": 1
@@ -14,23 +21,16 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 32,
-            "Y": 8,
-            "Wave": 1
+            "X": 6,
+            "Y": 14,
+            "Wave": 3
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
-            "Y": 8,
-            "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 13,
-            "Y": 7,
-            "Wave": 6
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 3
         }
     ]
 }

@@ -12,6 +12,13 @@
             "Wave": 1
         },
         {
+            "Kind": "build",
+            "Item": "Cannon",
+            "X": 33,
+            "Y": 9,
+            "Wave": 1
+        },
+        {
             "Kind": "upgrade",
             "Item": "",
             "X": 33,
@@ -20,24 +27,10 @@
         },
         {
             "Kind": "drone",
-            "Item": "HarvestDrone",
-            "X": 0,
-            "Y": 0,
-            "Wave": 2
-        },
-        {
-            "Kind": "drone",
             "Item": "RepairDrone",
             "X": 0,
             "Y": 0,
             "Wave": 2
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 33,
-            "Y": 10,
-            "Wave": 3
         },
         {
             "Kind": "build",
@@ -56,9 +49,9 @@
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 33,
-            "Y": 10,
-            "Wave": 8
+            "X": 34,
+            "Y": 6,
+            "Wave": 10
         },
         {
             "Kind": "repair",

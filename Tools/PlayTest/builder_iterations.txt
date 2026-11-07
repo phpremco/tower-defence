@@ -1,0 +1,14 @@
+Level_C1_01 0|1
+Level_C1_01 2|1
+Level_C1_03 0|1
+Level_C1_03 1|1
+Level_C1_04 0|1
+Level_C1_04 3|1
+Level_C1_05 0|1
+Level_C1_05 1|1
+Level_C1_05 2|1
+Level_C1_05 3|1
+Level_C1_06 0|1
+Level_C1_06 1|1
+Level_C1_06 2|1
+Level_C1_06 3|1

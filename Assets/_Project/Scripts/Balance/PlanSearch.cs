@@ -77,21 +77,35 @@ namespace Game.Balance
         private const int MonoUpgradeAfterTowers = 4;
         private const int NaiveSkyEvery = 3;
 
-        public static PlanSearchResult Run(PlanSearchInput input)
+        /// <summary>The best spots per owned tower type with their cover (what the plan files and the README list), without a search.</summary>
+        public static Dictionary<string, List<(Cell Cell, SpotCover Cover)>> BestSpots(PlanSearchInput input) => BestSpots(input, new Context(input));
+
+        private static Dictionary<string, List<(Cell Cell, SpotCover Cover)>> BestSpots(PlanSearchInput input, Context context)
         {
-            var result = new PlanSearchResult { Input = input };
-            var random = new Random(input.Seed * 7919 + input.Difficulty);
-            var context = new Context(input);
+            var spots = new Dictionary<string, List<(Cell Cell, SpotCover Cover)>>();
             foreach (KeyValuePair<string, List<Cell>> pair in context.Spots)
             {
-                var list = new List<(Cell, SpotCover)>();
+                var list = new List<(Cell Cell, SpotCover Cover)>();
                 TowerStats stats = input.Level.Towers.Find(t => t.Id == pair.Key);
                 foreach (Cell cell in pair.Value)
                 {
                     list.Add((cell, PlanEvaluator.CoverOf(input.Level, cell, stats.Levels[0].Range)));
                 }
 
-                result.BestSpots[pair.Key] = list;
+                spots[pair.Key] = list;
+            }
+
+            return spots;
+        }
+
+        public static PlanSearchResult Run(PlanSearchInput input)
+        {
+            var result = new PlanSearchResult { Input = input };
+            var random = new Random(input.Seed * 7919 + input.Difficulty);
+            var context = new Context(input);
+            foreach (KeyValuePair<string, List<(Cell Cell, SpotCover Cover)>> pair in BestSpots(input, context))
+            {
+                result.BestSpots[pair.Key] = pair.Value;
             }
 
             var top = new List<PlanOutcome>();

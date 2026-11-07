@@ -23,6 +23,16 @@ namespace Game.Balance
         /// </summary>
         public static readonly HashSet<string> TutorialCells = new HashSet<string> { "Level_C1_01 1" };
 
+        /// <summary>
+        /// Cells that may stay forgiving on Hard (Remco 2026-11-07: C1_01 Hard): the obvious family may still win there, but
+        /// clearly worse than on Medium (fewer wins, fewer stars or less base left), a thought-out plan does visibly better, and the
+        /// level is measurably harder than its Medium cell for the same plan. Judged with the Medium cell's obvious runs beside.
+        /// </summary>
+        public static readonly HashSet<string> ForgivingHardCells = new HashSet<string> { "Level_C1_01 2" };
+
+        // The forgiving Hard cell: how much less base the same obvious plan must keep than on Medium when it still wins with the same stars.
+        private const float ForgivingHardLessBase = 0.85f;
+
         // Win-rate bars per difficulty (critic of round 21, section 6).
         private const float EasyBestWinRate = 1f;
         private const float MediumBestWinRate = 0.8f;
@@ -51,7 +61,11 @@ namespace Game.Balance
         /// "affordable"; "creative" is a reference and ignored), <paramref name="plans"/> the replayed searched plans (strategy
         /// "plan NAME"), <paramref name="specs"/> the plans by name for the feature checks.
         /// </summary>
-        public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs)
+        public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs) =>
+            Judge(level, difficulty, obvious, plans, specs, null);
+
+        /// <summary>As above; <paramref name="mediumObvious"/> are the same level's Medium yardstick runs, which the forgiving Hard cell is judged against.</summary>
+        public static Verdict Judge(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyDictionary<string, PlanSpec> specs, IReadOnlyList<RunRecord> mediumObvious)
         {
             var verdict = new Verdict { Cell = level + " " + difficulty.ToString(CultureInfo.InvariantCulture) };
             verdict.Tutorial = TutorialCells.Contains(verdict.Cell);
@@ -96,6 +110,9 @@ namespace Game.Balance
                     break;
                 case Medium:
                     JudgeMedium(verdict, families, byPlan, bestRuns, winningPlans);
+                    break;
+                case Hard when ForgivingHardCells.Contains(verdict.Cell):
+                    JudgeForgivingHard(verdict, families, Group(mediumObvious ?? new List<RunRecord>(), r => !r.Strategy.StartsWith("creative", StringComparison.Ordinal)), bestRuns);
                     break;
                 default:
                     JudgeHard(verdict, families, byPlan, bestRuns, specs, difficulty);
@@ -293,6 +310,237 @@ namespace Game.Balance
                     verdict.Failures.Add(Invariant($"Psycho: the replayed plans are alike ({distinct} distinct pairs; the fight must be a puzzle, not one trick)"));
                 }
             }
+        }
+
+        // The forgiving Hard cell (C1_01 Hard): obvious plans may win, but worse than on Medium for the same plan; the best plan
+        // wins every seed and visibly beats every obvious run; the level is measurably harder than Medium for the same plan.
+        private static void JudgeForgivingHard(Verdict verdict, Dictionary<string, List<RunRecord>> families, Dictionary<string, List<RunRecord>> medium, List<RunRecord> best)
+        {
+            verdict.Notes.Add("forgiving Hard cell (Remco 2026-11-07): obvious plans may win, but worse than on Medium");
+            int compared = 0;
+            foreach (KeyValuePair<string, List<RunRecord>> family in families)
+            {
+                if (!medium.TryGetValue(family.Key, out List<RunRecord> onMedium) || onMedium.Count == 0)
+                {
+                    continue;
+                }
+
+                compared++;
+                float hardScore = MeanScore(family.Value);
+                float mediumScore = MeanScore(onMedium);
+                if (hardScore >= mediumScore)
+                {
+                    verdict.Failures.Add(Invariant($"Hard (forgiving): {family.Key} scores {hardScore:0.00} on Hard against {mediumScore:0.00} on Medium (Hard must be measurably harder for the same plan)"));
+                }
+
+                bool worse = Wins(family.Value) < Wins(onMedium)
+                    || MeanStars(family.Value) < MeanStars(onMedium)
+                    || MeanBase(family.Value) <= MeanBase(onMedium) * ForgivingHardLessBase;
+                if (!worse)
+                {
+                    verdict.Failures.Add(Invariant($"Hard (forgiving): {family.Key} does as well as on Medium ({Wins(family.Value)}/{family.Value.Count} wins, {MeanStars(family.Value):0.0} stars, base {MeanBase(family.Value):0} vs {Wins(onMedium)}/{onMedium.Count}, {MeanStars(onMedium):0.0}, base {MeanBase(onMedium):0}); it must win less, with fewer stars or less base"));
+                }
+            }
+
+            if (compared == 0)
+            {
+                verdict.Failures.Add("Hard (forgiving): no Medium runs of the same obvious plans to compare with (run the yardstick on Medium too)");
+            }
+
+            if (WinRate(best) < EasyBestWinRate)
+            {
+                verdict.Failures.Add(Invariant($"Hard (forgiving): the best plan wins {Wins(best)}/{best.Count} (needs every seed)"));
+            }
+
+            foreach (KeyValuePair<string, List<RunRecord>> family in families)
+            {
+                foreach (RunRecord run in family.Value)
+                {
+                    RunRecord same = best.Find(b => b.Seed == run.Seed);
+                    if (same == null || !same.Won)
+                    {
+                        continue;
+                    }
+
+                    bool beats = !run.Won || same.Stars > run.Stars || same.BaseHealth >= run.BaseHealth * EasyMoreBase;
+                    if (!beats)
+                    {
+                        verdict.Failures.Add(Invariant($"Hard (forgiving): the best plan does not visibly beat {run.Strategy} on seed {run.Seed} ({same.Stars}* base {same.BaseHealth:0} vs {run.Stars}* base {run.BaseHealth:0})"));
+                    }
+                }
+            }
+        }
+
+        // Mean base health left over the wins (0 when none won).
+        private static float MeanBase(List<RunRecord> runs)
+        {
+            int wins = Wins(runs);
+            if (wins == 0)
+            {
+                return 0f;
+            }
+
+            float sum = 0f;
+            foreach (RunRecord run in runs)
+            {
+                sum += run.Won ? run.BaseHealth : 0f;
+            }
+
+            return sum / wins;
+        }
+
+        /// <summary>Which way the builder's one lever (the cell's target scale) should move after a stage-B verdict.</summary>
+        public enum Lever
+        {
+            None = 0,
+            Harder = 1,
+            Easier = 2,
+        }
+
+        /// <summary>
+        /// The builder's reading of a cell's recorded runs (round 22d: the builder moves on stage-B verdicts, not on paper). Too easy
+        /// when the obvious family wins where the rule says it must lose (or, on Easy, wins so comfortably that no plan can visibly
+        /// beat it); too hard when the best replayed plan misses its win-rate bar or, on Easy, fewer than two obvious kinds win.
+        /// Both at once is a design question, not a lever move. The tutorial and forgiving cells keep their exceptions.
+        /// </summary>
+        public static Lever LeverFor(string level, int difficulty, IReadOnlyList<RunRecord> obvious, IReadOnlyList<RunRecord> plans, IReadOnlyList<RunRecord> mediumObvious, out string reason)
+        {
+            string cell = level + " " + difficulty.ToString(CultureInfo.InvariantCulture);
+            Dictionary<string, List<RunRecord>> families = Group(obvious, r => !r.Strategy.StartsWith("creative", StringComparison.Ordinal));
+            Dictionary<string, List<RunRecord>> byPlan = Group(plans, r => true);
+            float bestRate = 0f;
+            List<RunRecord> best = null;
+            foreach (List<RunRecord> plan in byPlan.Values)
+            {
+                float rate = WinRate(plan);
+                if (best == null || rate > bestRate || (rate == bestRate && MeanScore(plan) > MeanScore(best)))
+                {
+                    best = plan;
+                    bestRate = rate;
+                }
+            }
+
+            bool tooEasy = false;
+            bool tooHard = false;
+            var why = new List<string>();
+            if (difficulty == Easy)
+            {
+                int kindsWinning = 0;
+                int kinds = 0;
+                bool allComfortable = families.Count > 0;
+                foreach (KeyValuePair<string, List<RunRecord>> kind in Kinds(families))
+                {
+                    kinds++;
+                    kindsWinning += WinRate(kind.Value) > 0.5f ? 1 : 0;
+                }
+
+                foreach (List<RunRecord> family in families.Values)
+                {
+                    foreach (RunRecord run in family)
+                    {
+                        allComfortable &= run.Won && run.Stars >= 3;
+                    }
+                }
+
+                if (kinds > 0 && kindsWinning < Math.Min(2, kinds))
+                {
+                    tooHard = true;
+                    why.Add(Invariant($"only {kindsWinning} of {kinds} obvious kinds win"));
+                }
+
+                if (best != null && (bestRate < EasyBestWinRate || MinStars(best) < 3))
+                {
+                    tooHard = true;
+                    why.Add(Invariant($"the best plan wins {Wins(best)}/{best.Count} with {MinStars(best)} stars at least"));
+                }
+
+                if (!tooHard && allComfortable)
+                {
+                    tooEasy = true;
+                    why.Add("every obvious run wins with three stars (no plan can visibly beat that)");
+                }
+            }
+            else if (difficulty == Medium && TutorialCells.Contains(cell))
+            {
+                if (best != null && bestRate < MediumBestWinRate)
+                {
+                    tooHard = true;
+                    why.Add(Invariant($"the best plan wins {Wins(best)}/{best.Count}"));
+                }
+            }
+            else if (difficulty == Medium)
+            {
+                foreach (KeyValuePair<string, List<RunRecord>> family in families)
+                {
+                    string kind = KindOf(family.Key);
+                    bool wins = (kind == "mono" && Wins(family.Value) > 0) || (kind == "naive" && WinRate(family.Value) > MediumNaiveMaxWinRate) || (kind == "affordable" && WinRate(family.Value) > 0.5f);
+                    if (wins)
+                    {
+                        tooEasy = true;
+                        why.Add(Invariant($"{family.Key} wins {Wins(family.Value)}/{family.Value.Count}"));
+                    }
+                }
+
+                if (best != null && bestRate < MediumBestWinRate)
+                {
+                    tooHard = true;
+                    why.Add(Invariant($"the best plan wins {Wins(best)}/{best.Count}"));
+                }
+            }
+            else if (difficulty == Hard && ForgivingHardCells.Contains(cell))
+            {
+                Dictionary<string, List<RunRecord>> medium = Group(mediumObvious ?? new List<RunRecord>(), r => !r.Strategy.StartsWith("creative", StringComparison.Ordinal));
+                foreach (KeyValuePair<string, List<RunRecord>> family in families)
+                {
+                    if (!medium.TryGetValue(family.Key, out List<RunRecord> onMedium) || onMedium.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    bool worse = Wins(family.Value) < Wins(onMedium) || MeanStars(family.Value) < MeanStars(onMedium) || MeanBase(family.Value) <= MeanBase(onMedium) * ForgivingHardLessBase;
+                    if (!worse || MeanScore(family.Value) >= MeanScore(onMedium))
+                    {
+                        tooEasy = true;
+                        why.Add(Invariant($"{family.Key} does as well as on Medium"));
+                    }
+                }
+
+                if (best != null && bestRate < EasyBestWinRate)
+                {
+                    tooHard = true;
+                    why.Add(Invariant($"the best plan wins {Wins(best)}/{best.Count}"));
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<string, List<RunRecord>> family in families)
+                {
+                    foreach (RunRecord run in family.Value)
+                    {
+                        if (run.Won || run.WaveReached >= run.WaveCount * LastThird)
+                        {
+                            tooEasy = true;
+                            why.Add(Invariant($"{run.Strategy} seed {run.Seed} {(run.Won ? "wins" : "reaches wave " + run.WaveReached.ToString(CultureInfo.InvariantCulture))}"));
+                            break;
+                        }
+                    }
+                }
+
+                float bar = difficulty == Psycho ? PsychoBestWinRate : HardBestWinRate;
+                if (best == null || bestRate < bar)
+                {
+                    tooHard = true;
+                    why.Add(best == null ? "no plan replayed" : Invariant($"the best plan wins {Wins(best)}/{best.Count} (bar {bar:P0})"));
+                }
+            }
+
+            reason = string.Join("; ", why);
+            if (tooEasy && tooHard)
+            {
+                return Lever.None;
+            }
+
+            return tooEasy ? Lever.Harder : tooHard ? Lever.Easier : Lever.None;
         }
 
         private static Dictionary<string, List<RunRecord>> Group(IReadOnlyList<RunRecord> runs, Predicate<RunRecord> keep)

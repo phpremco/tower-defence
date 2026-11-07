@@ -865,6 +865,7 @@ difficulty; only the margin grows. Judged on recorded runs; the one exception is
 | Easy | two of the three kinds win on most seeds; nobody dies before the last third | wins every seed with 3 stars | beats every obvious run on every seed: a star more, or 25% more base and 20% more coins |
 | Medium | mono rows never win; naive at most 1 in 5 with 1 star; affordable loses on most seeds | wins 4 of 5 with 2 stars; 3 distinct plans win | the obvious plans' best outcome two stars below |
 | Hard | every obvious run loses and falls before the last third | wins 3 of 5 using two of: gadgets, a drone, a sale, three or more upgrades | as Hard |
+| C1_01 Hard (forgiving, Remco 2026-11-07; `ForgivingHardCells`) | may win, but for the same strategy worse than on C1_01 Medium: fewer wins, fewer stars or at most 85% of the base, and a lower score | wins every seed | visibly beats every obvious run: a star more, or 25% more base |
 | Psycho | as Hard | wins 2 of 5, buys a drone; a plan reaches the finale on every seed; the replayed plans differ in spots, mix or timing | as Hard |
 
 **Data changes of round 22 (the swarm role in the data, the upgrade margin).**
@@ -1008,3 +1009,62 @@ clear leaks that in play slip past, spread out, or break the gate before the gun
 guards' real share of their damage per second (iteration one at utilisation 0.34 gave 91% / 0.71 on the bots; the truth sits
 between), fitted on bot and plan runs together. Until a fit passes with the plan runs included, the analytic stage is a
 pre-screen and stage B is the judge: a plan counts as a winner only when it wins in the replay.
+
+## Player-state parity, the sky-hold rule and the guard share (2026-11-07, round 22d)
+
+**Stage A and stage B judge the same player (the curator's decision).** The plan search plans for the campaign's expected player at
+a level and difficulty (`Progression.StateAt`: the research of the levels before, spent cheapest first on tower boosts, the hero, the
+gates, base armour and base turrets). Until round 22d the probe bots and the replays played a fresh save. Now `PlayerState.UpgradeLevels`
+carries the upgrades the paper bought by id and level, and `ProbePlayer` (PlayMode tests) writes that state into a `ProgressService`
+over an in-memory save before the level loads, registered in place of the file-backed one: the probe never reads or writes
+`progress.json` any more. `PlayerStateParityTests` proves that the save gives the game the same modifiers (`UpgradeEffects`) as the paper's
+boosts, hero damage, gate health, base armour and base weapon level, on every cell. The yardstick keeps one fresh-save sanity cell
+(C1_01 Easy, `affordable` and `naive`, reported as "on a fresh save" in acceptance.txt and the yardstick table). Each run record carries
+its player (`RunRecord.FreshPlayer`, 13th field; old records read as fresh) and the fit judges each run against the player who played it.
+
+**Finding.** Player state was not the gap. Re-measured with the expected player on the 22c waves (yardstick 426 runs, replay 213 runs,
+2026-11-07 07:20 and 09:02): the searched plans still lose C1_02 Medium and Hard, C1_03 Medium and C1_05 Medium on every seed and C1_06
+Medium on two of three, where they hold on paper with margins 1.0-1.15. What the expected player did change: C1_01 Psycho is won by the
+obvious family (base 800 with the end-game player's armour; `affordable` 3/3, mono rows 2/3), C1_04 Hard's plan3 wins 3/3 (2.3 stars) and
+the creative reference wins C1_06 Medium 3/3 (was 1/3). The Easy cells from C1_03 on are still lost by every obvious kind (the Easy rule
+wants two of three to win).
+
+**The queue-guard share (one model iteration, not applied).** `BalanceRules.QueueGuardShare` scales the damage per second the guards at
+the queue and the doorstep land on a siege (`Leak.Fight`); the fit tries 0.3..1.0 (`CalibrationFit.FitGuards`, refitting the siege factor
+for each) and keeps the share with the best verdict agreement (`queueguard` line, `_queueGuardShare` on the asset). On the 639 runs of
+this round it picked 0.30, the bottom of the grid, for hold-out agreement 81% (mono 94%), Spearman 0.62: below the bar, so the 22c
+calibration stays applied (guards at full rate). The disagreements pull both ways: lowering the guards fixes "paper survives, game lost"
+on C1_02 Medium's plans (13 runs, margins 1.00-1.15) and C1_02/C1_04 Easy, and creates "paper falls, game won" on C1_01 Hard and Psycho
+and C1_06 Easy (10, 9 and 14 runs). One global share cannot carry both; the analytic stage stays the pre-screen and stage B the judge.
+
+**The purchase flip (decision 3) is fixed in `Ledger.Buy`.** The cause was not the greedy's path alone but the sky guns: on Quartz Flats Easy
+wave 8 the ledger bought a second Flak step (80 coins) when the air was already held, because it was the only step that lowered the
+worse pressure; a hair of health decided it, and `AirHoldings` carried the 80 coins out of every later purse (wave 9: 0.64 -> 0.97). Two
+changes: sky guns are bought only while the flyers' pressure is above `BalanceRules.SkyHoldPressure` (1: until they are held; a sky gun
+does nothing for the ground), and after the greedy an improvement pass (`Improve`) takes each bought tower away in turn, lets the greedy
+spend the refund again and keeps the trial with the lowest worse pressure (ties to the cheaper sky spend). The plain mean of C1_05 Easy is
+now 0.717 / 0.738 / 0.747 / 0.752 / 0.756 / 0.760 / 0.769 / 0.783 at scales 0.90 to 1.05 (was 0.739 -> 0.794 between 0.99 and 1.00).
+`WaveLine.Purchase` names the ledger's purchase per wave (type:level x count) so a scan can see such a flip. The stored waves are re-solved
+by the builder stage.
+
+**C1_01 Hard is its own explicit rule (Remco 2026-11-07).** `AcceptanceRules.ForgivingHardCells` = C1_01 Hard: the obvious family may win,
+but for the same strategy it must do worse than on C1_01 Medium (fewer wins, fewer stars or at most 85% of the base left) and score lower;
+the best plan wins every seed and visibly beats every obvious run (a star more, or 25% more base). The acceptance stage passes the level's
+Medium yardstick runs beside the Hard cell for this. On the 22c waves the cell fails: mono Pulse, mono Cannon and naive do exactly as well
+on Hard as on Medium (3/3, 3 stars, base 600).
+
+**The repair drone is an investment (Remco 2026-11-07).** `BalanceSheet.RepairDronePrice` = repair rate x the calibration's measured busy
+share x the cheapest repair cost per hit point of the guns the selling levels offer x their mean wave spacing on Medium x
+`BalanceRules.RepairDroneBreakEvenWaves` (3), rounded to 5. From the data: 8 hp/s x 0.967 x 0.30 coins/hp x 24.3 s = 56.4 coins of repairs
+saved per wave; price 170 (was 120). Per level the break-even is two waves before the end (C1_02: wave 10 of 12; C1_03/C1_04: 13 of 16;
+C1_05: 15 of 17; C1_06: 15-16 of 18) and a drone bought at wave 1 pays back in 2.3-3.6 waves (`Tools/PlayTest/drone_price.txt`,
+`Tools/Generate/Balance/9`, `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule`). The rate is unchanged. The generator reads the same
+rule (`RepairDronePriceFromData`, 120 before any level exists). Drone prices left the `InputHash` (a price is a plan input, not a capacity
+input), so the applied calibration's hash was re-stamped to the current data (551e7c40 -> 956d2750); its numbers were not touched.
+
+**The builder moves on stage-B verdicts.** `AcceptanceRules.LeverFor` reads a cell's recorded runs by the difficulty's rule (too easy: the
+obvious family wins where it must lose, or on Easy wins so comfortably that no plan can beat it; too hard: the best replayed plan misses
+its bar, or on Easy fewer than two obvious kinds win; both at once: a design question) and `BalanceStages.BuildFromVerdicts` moves the
+cell's target scale one step (1.15) that way, at most twice per cell over the rounds (`Tools/PlayTest/builder_iterations.txt`), then solves.
+The search and the replay then judge the new waves. `Tools/PlayTest/Plans/README.md` is now written from the replay
+(`BalanceStages.WriteWinningPlans`, stage `readme`): the plans that won in play, one or two per cell, with the best spots.

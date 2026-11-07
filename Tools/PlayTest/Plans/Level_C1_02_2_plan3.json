@@ -14,8 +14,8 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 5,
-            "Y": 7,
+            "X": 30,
+            "Y": 16,
             "Wave": 1
         },
         {
@@ -35,8 +35,8 @@
         {
             "Kind": "build",
             "Item": "Laser",
-            "X": 8,
-            "Y": 7,
+            "X": 7,
+            "Y": 5,
             "Wave": 5
         },
         {
@@ -54,18 +54,11 @@
             "Wave": 8
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 5,
-            "Wave": 9
-        },
-        {
             "Kind": "repair",
             "Item": "gates",
             "X": 0,
             "Y": 0,
-            "Wave": 12
+            "Wave": 8
         }
     ]
 }

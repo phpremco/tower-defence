@@ -40,18 +40,11 @@
             "Wave": 12
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 16,
-            "Y": 11,
-            "Wave": 12
-        },
-        {
             "Kind": "build",
             "Item": "PulseRifle",
             "X": 14,
             "Y": 11,
-            "Wave": 14
+            "Wave": 12
         }
     ]
 }

@@ -1,4 +1,4 @@
-Quartz Flats (Level_C1_05) on Medium: plan search, 3036 plans sampled, 32 hold on paper, base 700, cap 1.20. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
+Quartz Flats (Level_C1_05) on Medium: plan search, 3036 plans sampled, 13 hold on paper, base 700, cap 1.20. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -12,85 +12,64 @@ Best spots per tower (first is best):
   Flak Turret    (34,4) cover 14.0/9.0 air door bunch 0.8; (34,5) cover 15.0/9.0 air door bunch 0.8; (35,4) cover 13.0/8.5 air door bunch 0.8; (33,4) cover 14.0/8.0 air door bunch 0.9; (33,5) cover 15.0/8.0 air door bunch 0.9; (35,5) cover 14.0/8.0 air door bunch 0.8;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w4, margin 0.19 (leaks from wave 4), coins left 130, steps taken 18
-  mono Cannon        falls w4, margin 0.00 (leaks from wave 4), coins left 124, steps taken 9, 11 never affordable
-  mono Laser         falls w4, margin 0.00 (leaks from wave 4), coins left 20, steps taken 8, 12 never affordable
-  naive              falls w4, margin 0.00 (leaks from wave 4), coins left 67, steps taken 10, 8 never affordable
+  mono PulseRifle    falls w4, margin 0.27 (leaks from wave 4), coins left 113, steps taken 18
+  mono Cannon        falls w4, margin 0.00 (leaks from wave 4), coins left 101, steps taken 9, 11 never affordable
+  mono Laser         falls w4, margin 0.00 (leaks from wave 4), coins left 16, steps taken 8, 12 never affordable
+  naive              falls w4, margin 0.00 (leaks from wave 4), coins left 55, steps taken 10, 8 never affordable
 
-Distinct winning plans (9; different spots, mixes or timing):
+Distinct winning plans (4; different spots, mixes or timing):
 
-Level_C1_05_1_plan1: 3* base 700, margin 0.25, mean cover 1.17, coins left 337, gate repairs 0 (0 coins), gates left 2400, 11 steps
-  from wave  1: build Cannon at (7,4); build Cannon at (7,5); build Flak Turret at (34,4)
-  from wave  3: buy the RepairDrone
-  from wave  4: build Gun Turret at (6,5)
-  from wave  6: build Cannon at (6,6)
+Level_C1_05_1_plan1: 3* base 700, margin 0.32, mean cover 1.18, coins left 129, gate repairs 0 (0 coins), gates left 2400, 25 steps
+  from wave  1: build Cannon at (7,5); build Cannon at (6,5); build Flak Turret at (35,4)
+  from wave  3: build Cannon at (20,4)
+  from wave  4: build Cannon at (20,5); buy the RepairDrone
+  from wave  5: build Cannon at (7,4)
+  from wave  6: build Laser Turret at (21,5); build Laser Turret at (6,6); upgrade the tower at (7,5)
   from wave  7: upgrade the tower at (7,4)
-  from wave  8: upgrade the tower at (21,5)
-  from wave 11: build Gun Turret at (20,5)
-  from wave 12: upgrade the tower at (21,5)
+  from wave  8: upgrade the tower at (20,4)
+  from wave  9: upgrade the tower at (6,6)
+  from wave 10: upgrade the tower at (6,5); upgrade the tower at (20,4)
+  from wave 12: build Laser Turret at (8,6)
+  from wave 13: upgrade the tower at (21,5)
+  from wave 14: upgrade the tower at (7,4); upgrade the tower at (8,6)
+  from wave 15: upgrade the tower at (35,4); upgrade the tower at (21,5); upgrade the tower at (6,6)
+  from wave 16: upgrade the tower at (7,5)
+  from wave 17: upgrade the tower at (6,5); upgrade the tower at (8,6)
+  waves: w1 0.35  w2 0.40  w3 0.61  w4 0.53  w5 0.72  w6 0.74  w7 1.07  w8 1.11  w9 0.88  w10 0.70  w11 1.00  w12 1.29  w13 2.30 (-56 base)  w14 1.58  w15 2.01  w16 3.71 (-253 base)  w17B 2.30  
+
+Level_C1_05_1_plan2: 3* base 700, margin 0.41, mean cover 1.00, coins left 88, gate repairs 0 (0 coins), gates left 2146, 15 steps
+  from wave  1: build Cannon at (6,6); build Gun Turret at (7,4)
+  from wave  3: build Flak Turret at (33,5); upgrade the tower at (6,6); buy the RepairDrone
+  from wave  4: build Laser Turret at (7,5)
+  from wave  8: build Cannon at (20,4); build Flak Turret at (34,4); buy the HarvestDrone
+  from wave  9: build Cannon at (20,5); upgrade the tower at (6,5)
+  from wave 10: upgrade the tower at (6,5)
+  from wave 11: upgrade the tower at (20,5)
+  from wave 13: upgrade the tower at (20,5)
   from wave 15: repair the gates when they would fall or it is cheaper than a gun
-  waves: w1 0.36  w2 0.41  w3 0.62  w4 0.82  w5 0.47  w6 0.67  w7 0.97  w8 1.05  w9 1.06  w10 1.03  w11 1.09  w12 1.06  w13 3.14 (-121 base)  w14 1.26  w15 1.80  w16 4.76 (-384 base)  w17B 1.82  
+  waves: w1 0.40  w2 0.49  w3 0.78  w4 0.54  w5 1.03  w6 0.89  w7 1.19  w8 1.11  w9 0.98  w10 1.23  w11 1.87  w12 1.39  w13 2.32 (-57 base)  w14 1.74  w15 2.45  w16 1.83 (-57 base)  w17B 2.46  
 
-Level_C1_05_1_plan2: 3* base 698, margin 0.57, mean cover 1.28, coins left 119, gate repairs 0 (0 coins), gates left 1455, 15 steps
-  from wave  1: build Cannon at (7,4); build Cannon at (6,6)
-  from wave  3: build Flak Turret at (35,5)
-  from wave  5: upgrade the tower at (6,6)
-  from wave  6: upgrade the tower at (7,4); upgrade the tower at (35,5)
-  from wave  8: build Flak Turret at (35,4)
-  from wave 11: build Flak Turret at (33,5); build Laser Turret at (8,6)
-  from wave 12: upgrade the tower at (33,5)
-  from wave 13: upgrade the tower at (6,6)
-  from wave 14: upgrade the tower at (21,5)
-  from wave 15: upgrade the tower at (7,4)
-  from wave 16: upgrade the tower at (33,5)
-  from wave 17: upgrade the tower at (21,5)
-  waves: w1 0.36  w2 0.41  w3 0.62  w4 0.92  w5 0.47  w6 0.67  w7 0.98  w8 1.15  w9 0.60  w10 0.82  w11 1.40  w12 1.09  w13 1.13 (-1 base)  w14 1.27  w15 1.67  w16 1.04  w17B 1.74  
+Level_C1_05_1_plan3: 3* base 684, margin 0.36, mean cover 1.06, coins left 71, gate repairs 0 (0 coins), gates left 2228, 18 steps
+  from wave  1: build Cannon at (6,6); build Gun Turret at (7,5); build Gun Turret at (21,5); build Flak Turret at (33,4)
+  from wave  7: build Gun Turret at (20,5)
+  from wave  8: build Cannon at (6,5); buy the RepairDrone
+  from wave  9: build Laser Turret at (7,4)
+  from wave 10: build Cannon at (20,4); upgrade the tower at (20,5)
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun
+  from wave 13: build Laser Turret at (8,6)
+  from wave 14: upgrade the tower at (7,4); upgrade the tower at (7,4)
+  from wave 15: upgrade the tower at (8,6)
+  from wave 16: upgrade the tower at (20,5); upgrade the tower at (8,6); repair the gates when they would fall or it is cheaper than a gun
+  waves: w1 0.36  w2 0.44  w3 0.70  w4 0.54  w5 0.97  w6 0.96  w7 1.06  w8 1.03  w9 0.93  w10 0.89  w11 1.22  w12 1.70  w13 2.20 (-52 base)  w14 2.18  w15 2.39  w16 3.35 (-243 base)  w17B 2.23  
 
-Level_C1_05_1_plan3: 3* base 700, margin 0.41, mean cover 0.91, coins left 114, gate repairs 0 (0 coins), gates left 2400, 20 steps
-  from wave  1: build Gun Turret at (6,5); build Gun Turret at (7,4)
-  from wave  4: build Cannon at (6,6); build Flak Turret at (33,5); buy the RepairDrone
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun
-  from wave  8: build Flak Turret at (33,4); repair the gates when they would fall or it is cheaper than a gun
-  from wave  9: build Gun Turret at (7,5); repair the gates when they would fall or it is cheaper than a gun
-  from wave 10: upgrade the tower at (6,6)
-  from wave 11: build Flak Turret at (35,5)
-  from wave 12: upgrade the tower at (6,6)
-  from wave 13: build Gun Turret at (20,5)
-  from wave 14: upgrade the tower at (7,5); upgrade the tower at (20,5)
-  from wave 15: build Gun Turret at (21,5); upgrade the tower at (6,5)
-  from wave 16: upgrade the tower at (21,5)
-  from wave 17: upgrade the tower at (21,5)
-  waves: w1 0.50  w2 0.66  w3 1.05  w4 0.88  w5 0.61  w6 0.77  w7 0.93  w8 1.07  w9 1.47  w10 1.38  w11 1.84  w12 2.40  w13 1.72 (-23 base)  w14 1.80  w15 2.53  w16 1.74 (-47 base)  w17B 2.47  
-
-Level_C1_05_1_plan4: 3* base 700, margin 0.49, mean cover 1.04, coins left 35, gate repairs 1 (69 coins), gates left 2400, 22 steps
-  from wave  1: build Gun Turret at (7,4); build Cannon at (7,5); build Flak Turret at (35,4)
-  from wave  2: build Cannon at (20,4)
-  from wave  3: build Flak Turret at (34,5)
-  from wave  4: build Cannon at (6,5)
-  from wave  5: upgrade the tower at (7,4)
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun
-  from wave  7: build Gun Turret at (20,5); buy the RepairDrone
-  from wave  8: build Flak Turret at (33,4); upgrade the tower at (7,5)
-  from wave  9: build Laser Turret at (8,6)
-  from wave 11: build Flak Turret at (33,5); upgrade the tower at (7,4); upgrade the tower at (7,5)
-  from wave 13: upgrade the tower at (8,6); buy the AttackDrone
-  from wave 15: build Cannon at (6,6)
-  from wave 16: upgrade the tower at (8,6)
-  from wave 17: upgrade the tower at (20,4); upgrade the tower at (6,6)
-  waves: w1 0.42  w2 0.50  w3 0.77  w4 0.83  w5 0.66  w6 0.68  w7 0.91  w8 1.06  w9 1.23  w10 1.17  w11 1.16  w12 1.49  w13 1.60 (-18 base)  w14 1.63  w15 2.28  w16 2.43 (-134 base)  w17B 2.00  
-
-Level_C1_05_1_plan5: 3* base 700, margin 0.48, mean cover 0.85, coins left 67, gate repairs 0 (0 coins), gates left 2400, 21 steps
-  from wave  1: build Gun Turret at (6,6); build Gun Turret at (6,5); build Flak Turret at (34,5)
-  from wave  2: buy the HarvestDrone; buy the RepairDrone
-  from wave  3: upgrade the tower at (6,6)
-  from wave  4: upgrade the tower at (6,6)
-  from wave  6: build Gun Turret at (7,4)
-  from wave  7: build Cannon at (20,5)
-  from wave  8: build Flak Turret at (35,4)
-  from wave  9: build Gun Turret at (7,5)
-  from wave 10: build Flak Turret at (34,4); upgrade the tower at (7,5)
-  from wave 13: build Gun Turret at (21,5)
-  from wave 14: build Laser Turret at (8,6); upgrade the tower at (35,4)
-  from wave 16: upgrade the tower at (20,5); upgrade the tower at (35,4); upgrade the tower at (8,6)
-  from wave 17: upgrade the tower at (20,5); upgrade the tower at (8,6)
-  waves: w1 0.50  w2 0.66  w3 1.05  w4 0.82  w5 1.15  w6 1.25  w7 1.30  w8 1.00  w9 2.14  w10 1.40  w11 1.60  w12 1.80  w13 1.55 (-17 base)  w14 2.03  w15 2.47  w16 1.56 (-33 base)  w17B 1.45  
+Level_C1_05_1_plan4: 3* base 638, margin 0.54, mean cover 1.19, coins left 44, gate repairs 1 (163 coins), gates left 2063, 15 steps
+  from wave  1: build Cannon at (6,6); build Cannon at (7,4); build Flak Turret at (35,5)
+  from wave  2: upgrade the tower at (7,4)
+  from wave  3: repair the gates when they would fall or it is cheaper than a gun
+  from wave  4: upgrade the tower at (7,4)
+  from wave  7: build Gun Turret at (6,5)
+  from wave 10: build Flak Turret at (33,5)
+  from wave 11: upgrade the tower at (6,5); repair the gates when they would fall or it is cheaper than a gun
+  from wave 15: upgrade the tower at (6,6); upgrade the tower at (35,5); repair the gates when they would fall or it is cheaper than a gun
+  from wave 17: upgrade the tower at (6,6); upgrade the tower at (33,5)
+  waves: w1 0.35  w2 0.40  w3 0.62  w4 0.56  w5 0.73  w6 0.75  w7 1.08  w8 1.15  w9 0.78  w10 0.94  w11 1.27  w12 1.24  w13 1.17 (-2 base)  w14 1.48  w15 2.11  w16 1.87 (-60 base)  w17B 1.85  

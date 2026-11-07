@@ -7,51 +7,44 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 13,
+            "X": 12,
             "Y": 11,
             "Wave": 1
         },
         {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 17,
-            "Y": 11,
-            "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 14,
-            "Y": 11,
-            "Wave": 3
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
+            "Item": "Laser",
             "X": 13,
-            "Y": 11,
-            "Wave": 4
-        },
-        {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 33,
             "Y": 10,
-            "Wave": 5
+            "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 16,
             "Y": 11,
-            "Wave": 11
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 34,
+            "Y": 11,
+            "Wave": 3
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 33,
-            "Y": 10,
-            "Wave": 15
+            "X": 14,
+            "Y": 11,
+            "Wave": 6
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 34,
+            "Y": 11,
+            "Wave": 7
         }
     ]
 }

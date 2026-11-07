@@ -40,18 +40,18 @@
             "Wave": 8
         },
         {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 15,
+            "Y": 10,
+            "Wave": 13
+        },
+        {
             "Kind": "upgrade",
             "Item": "",
             "X": 35,
             "Y": 10,
             "Wave": 13
-        },
-        {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 13,
-            "Y": 10,
-            "Wave": 15
         }
     ]
 }

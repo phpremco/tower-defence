@@ -80,6 +80,9 @@ namespace Game.Balance
         public float AirPressure;
         public int KillMoney;
 
+        /// <summary>The ledger's purchase for the wave as "type:level x count" pairs (round 22d), so a scan can see a flip.</summary>
+        public string Purchase;
+
         /// <summary>The worse of ground and air: what the player must survive.</summary>
         public float Pressure => Math.Max(GroundPressure, AirPressure);
 
@@ -179,9 +182,10 @@ namespace Game.Balance
         private static WaveLine EvaluateLoad(LevelInput level, WaveLoad load, int money, BalanceRules rules, AirHoldings held, AirHoldings next)
         {
             List<Option> options = Options(level, load, rules);
-            Defence defence = Buy(options, load, money - (held?.Cost ?? 0), Cap(level, rules), held, next);
+            Defence defence = Buy(options, load, rules, money - (held?.Cost ?? 0), Cap(level, rules), held, next);
             return new WaveLine
             {
+                Purchase = defence.Purchase,
                 Boss = load.HasBoss,
                 Money = money,
                 Towers = defence.Towers,
@@ -282,6 +286,9 @@ namespace Game.Balance
             public float Single;
             public float Air;
             public int Towers;
+
+            /// <summary>What was bought, for the lens: "Cannon:1x2 Flak:0x1" (type:level x count).</summary>
+            public string Purchase;
         }
 
         /// <summary>
@@ -363,7 +370,7 @@ namespace Game.Balance
 
         // Greedy purchase, step by step: build a new tower or raise one already built by a level, whichever lowers the
         // wave's worse pressure most per coin. Raising needs a tower at the level below, so steps are never bought alone.
-        private static Defence Buy(List<Option> options, WaveLoad load, int money, int cap, AirHoldings held, AirHoldings after)
+        private static Defence Buy(List<Option> options, WaveLoad load, BalanceRules rules, int money, int cap, AirHoldings held, AirHoldings after)
         {
             var built = new Dictionary<(int, int), int>();
             var defence = new Defence();
@@ -385,6 +392,77 @@ namespace Game.Balance
                 }
             }
 
+            Fill(options, load, rules, ref money, cap, built, ref defence);
+            Improve(options, load, rules, ref money, cap, built, held?.Steps, ref defence);
+            after?.Keep(built, options);
+            defence.Purchase = Describe(built, options);
+            return defence;
+        }
+
+        // Round 22d, the purchase flip: the greedy's path can leave a better defence unbought when two steps score within a
+        // hair of each other (Quartz Flats Easy wave 8: an 80-coin sky-gun upgrade against a fourth ground gun), and the sky
+        // guns it keeps (AirHoldings) carry that hair into every later wave's purse, so the plain mean jumped 0.74 -> 0.79 between
+        // health scales 0.99 and 1.00 and the solver could not land on its target. After the greedy, every built tower is tried
+        // taken away with the greedy spending its refund again (a step on another tower, or a different tower); the trial that
+        // lowers the worse pressure most is taken, a tie goes to the cheaper sky spend. The purchase is then a local optimum, not a path.
+        private const int SwapPasses = 6;
+        private const float SwapGain = 1e-4f;
+
+        private static void Improve(List<Option> options, WaveLoad load, BalanceRules rules, ref int money, int cap, Dictionary<(int, int), int> built, Dictionary<(int, int), int> held, ref Defence defence)
+        {
+            for (int pass = 0; pass < SwapPasses; pass++)
+            {
+                float bestWorst = Worst(load, defence);
+                int bestAir = AirCost(built, options);
+                Dictionary<(int, int), int> bestBuilt = null;
+                Defence bestDefence = defence;
+                int bestMoney = money;
+                foreach (KeyValuePair<(int Tower, int Level), int> step in built)
+                {
+                    int fixedCount = held != null && held.TryGetValue(step.Key, out int kept) ? kept : 0;
+                    Option gone = Find(options, step.Key.Tower, step.Key.Level);
+                    if (step.Value <= fixedCount || gone == null)
+                    {
+                        continue;
+                    }
+
+                    // Take this tower away, refund what it cost, and let the greedy spend again: it may now afford a step on another tower.
+                    var trial = new Dictionary<(int, int), int>(built);
+                    trial[step.Key]--;
+                    Defence without = Remove(defence, gone);
+                    int purse = money + Price(options, step.Key.Tower, step.Key.Level);
+                    Fill(options, load, rules, ref purse, cap, trial, ref without);
+                    float worst = Worst(load, without);
+                    int air = AirCost(trial, options);
+                    if (worst < bestWorst - SwapGain || (worst <= bestWorst + SwapGain && air < bestAir))
+                    {
+                        bestWorst = worst;
+                        bestAir = air;
+                        bestBuilt = trial;
+                        bestDefence = without;
+                        bestMoney = purse;
+                    }
+                }
+
+                if (bestBuilt == null)
+                {
+                    return;
+                }
+
+                built.Clear();
+                foreach (KeyValuePair<(int, int), int> pair in bestBuilt)
+                {
+                    built[pair.Key] = pair.Value;
+                }
+
+                defence = bestDefence;
+                money = bestMoney;
+            }
+        }
+
+        // The greedy's steps (a new tower or one level on a built tower), as the main loop takes them, on what is standing.
+        private static void Fill(List<Option> options, WaveLoad load, BalanceRules rules, ref int money, int cap, Dictionary<(int, int), int> built, ref Defence defence)
+        {
             while (true)
             {
                 float current = Worst(load, defence);
@@ -404,6 +482,13 @@ namespace Game.Balance
                         continue;
                     }
 
+                    // Sky guns only until the flyers are held (BalanceRules.SkyHoldPressure): a sky gun does nothing for the ground, its
+                    // price stays out of every later purse (AirHoldings), and buying one more on a hair starved the waves after (round 22d).
+                    if (option.AirOnly && load.AirPressure(defence.Air) <= rules.SkyHoldPressure)
+                    {
+                        continue;
+                    }
+
                     Defence next = Add(defence, options, option);
                     float score = Score(load, defence, next, current) / cost;
                     if (score > bestScore)
@@ -415,8 +500,7 @@ namespace Game.Balance
 
                 if (best == null)
                 {
-                    after?.Keep(built, options);
-                    return defence;
+                    return;
                 }
 
                 money -= best.Cost;
@@ -433,6 +517,49 @@ namespace Game.Balance
             }
         }
 
+        // What a tower at a level has cost in all: its build and every step up to that level.
+        private static int Price(List<Option> options, int tower, int level)
+        {
+            int price = 0;
+            for (int l = 0; l <= level; l++)
+            {
+                Option step = Find(options, tower, l);
+                if (step == null)
+                {
+                    return 0;
+                }
+
+                price += step.Cost;
+            }
+
+            return price;
+        }
+
+        private static int AirCost(Dictionary<(int, int), int> built, List<Option> options)
+        {
+            int cost = 0;
+            foreach (KeyValuePair<(int Tower, int Level), int> step in built)
+            {
+                Option option = Find(options, step.Key.Tower, step.Key.Level);
+                if (option != null && option.AirOnly && step.Value > 0)
+                {
+                    cost += Price(options, step.Key.Tower, step.Key.Level) * step.Value;
+                }
+            }
+
+            return cost;
+        }
+
+        // A whole tower at its level taken away (not a step down to the level below).
+        private static Defence Remove(Defence defence, Option option)
+        {
+            defence.Stream -= option.Stream;
+            defence.Single -= option.Single;
+            defence.Air -= option.Air;
+            defence.Towers--;
+            return defence;
+        }
+
         private static Defence Add(Defence defence, List<Option> options, Option option)
         {
             Option below = option.Level > 0 ? Find(options, option.Tower, option.Level - 1) : null;
@@ -440,6 +567,21 @@ namespace Game.Balance
             defence.Single += option.Single - (below?.Single ?? 0f);
             defence.Air += option.Air - (below?.Air ?? 0f);
             return defence;
+        }
+
+        private static string Describe(Dictionary<(int, int), int> built, List<Option> options)
+        {
+            var parts = new List<string>();
+            foreach (KeyValuePair<(int Tower, int Level), int> step in built)
+            {
+                if (step.Value > 0)
+                {
+                    parts.Add(step.Key.Tower.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + step.Key.Level.ToString(System.Globalization.CultureInfo.InvariantCulture) + "x" + step.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+            }
+
+            parts.Sort(StringComparer.Ordinal);
+            return string.Join(" ", parts);
         }
 
         private static Option Find(List<Option> options, int tower, int level)

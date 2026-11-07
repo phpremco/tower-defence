@@ -33,6 +33,13 @@
             "Wave": 5
         },
         {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 12,
+            "Y": 11,
+            "Wave": 7
+        },
+        {
             "Kind": "build",
             "Item": "Rocket",
             "X": 34,
@@ -40,16 +47,9 @@
             "Wave": 9
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 12,
-            "Y": 11,
-            "Wave": 10
-        },
-        {
             "Kind": "build",
             "Item": "Laser",
-            "X": 13,
+            "X": 12,
             "Y": 10,
             "Wave": 11
         },

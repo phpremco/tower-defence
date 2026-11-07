@@ -14,7 +14,7 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 14,
+            "X": 12,
             "Y": 11,
             "Wave": 1
         },
@@ -54,11 +54,11 @@
             "Wave": 10
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 12,
-            "Y": 11,
-            "Wave": 16
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 13
         }
     ]
 }

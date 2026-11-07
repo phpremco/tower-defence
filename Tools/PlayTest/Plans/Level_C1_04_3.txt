@@ -1,4 +1,4 @@
-Fault Line (Level_C1_04) on Psycho: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
+Fault Line (Level_C1_04) on Psycho: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -12,21 +12,23 @@ Best spots per tower (first is best):
   Flak Turret    (34,9) cover 13.0/9.0 air gate door bunch 0.7; (33,9) cover 13.5/8.5 air gate door bunch 0.7; (34,6) cover 13.0/8.5 air gate door bunch 0.7; (34,10) cover 13.5/8.5 air gate door bunch 0.7; (31,9) cover 13.5/8.0 air gate bunch 0.7; (32,9) cover 14.0/8.0 air gate door bunch 0.7;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w3, margin 0.13 (leaks from wave 3), coins left 22, steps taken 15, 3 never affordable
-  mono Cannon        falls w3, margin 0.00 (leaks from wave 3), coins left 12, steps taken 5, 15 never affordable
-  mono Laser         falls w3, margin 0.00 (leaks from wave 3), coins left 92, steps taken 3, 17 never affordable
-  naive              falls w11, margin 0.24 (leaks from wave 5), coins left 19, steps taken 8, 10 never affordable
+  mono PulseRifle    falls w3, margin 0.14 (leaks from wave 3), coins left 56, steps taken 15, 3 never affordable
+  mono Cannon        falls w3, margin 0.00 (leaks from wave 3), coins left 14, steps taken 5, 15 never affordable
+  mono Laser         falls w3, margin 0.00 (leaks from wave 3), coins left 86, steps taken 3, 17 never affordable
+  naive              falls w10, margin 0.25 (leaks from wave 5), coins left 26, steps taken 8, 10 never affordable
 
 Distinct winning plans (0; different spots, mixes or timing):
 
-No plan holds on paper. Best found: falls w12, margin 0.29, leaks from wave 5
-  from wave  1: build Cannon at (33,10); build Gun Turret at (33,6); build Flak Turret at (32,9)
-  from wave  2: upgrade the tower at (33,6)
-  from wave  4: build Gun Turret at (29,6)
-  from wave  5: build Gun Turret at (32,5); upgrade the tower at (29,6)
-  from wave  6: upgrade the tower at (33,10); upgrade the tower at (32,9)
-  from wave  8: build Cannon at (32,6); build Flak Turret at (34,9); buy the HarvestDrone; buy the AttackDrone; repair the gates when they would fall or it is cheaper than a gun
-  from wave 11: build Cannon at (33,9); upgrade the tower at (32,9)
-  from wave 13: build Laser Turret at (28,5); upgrade the tower at (32,5); upgrade the tower at (32,5)
-  from wave 14: build Laser Turret at (33,5); upgrade the tower at (34,9); upgrade the tower at (33,9); upgrade the tower at (28,5)
-  from wave 16: upgrade the tower at (34,9); upgrade the tower at (33,9); upgrade the tower at (28,5)
+No plan holds on paper. Best found: falls w11, margin 0.29, leaks from wave 5
+  from wave  1: build Gun Turret at (33,6); build Cannon at (32,6)
+  from wave  3: build Flak Turret at (34,10)
+  from wave  4: build Gun Turret at (32,5)
+  from wave  5: upgrade the tower at (33,6)
+  from wave  7: build Gun Turret at (29,5); upgrade the tower at (32,5)
+  from wave 10: build Cannon at (29,6); upgrade the tower at (34,10)
+  from wave 11: upgrade the tower at (29,6)
+  from wave 12: upgrade the tower at (33,6)
+  from wave 13: upgrade the tower at (29,5)
+  from wave 14: build Cannon at (33,9); build Gun Turret at (28,5); upgrade the tower at (32,5)
+  from wave 15: upgrade the tower at (28,5)
+  from wave 16: upgrade the tower at (33,9); upgrade the tower at (33,9); upgrade the tower at (28,5)

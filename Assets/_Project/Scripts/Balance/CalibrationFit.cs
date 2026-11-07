@@ -59,6 +59,9 @@ namespace Game.Balance
         public int WaveCount;
         public float BaseHealth;
         public int Coins;
+
+        /// <summary>Played on a fresh save (no permanent upgrades, perks or base turrets) instead of the campaign's expected player for the cell (round 22d).</summary>
+        public bool FreshPlayer;
         public readonly List<WaveRecord> Waves = new List<WaveRecord>();
 
         /// <summary>Stars first, then base health, then coins; a loss ranks by how far it got.</summary>
@@ -67,7 +70,7 @@ namespace Game.Balance
         /// <summary>A replayed plan (no decisions at run time: gates are repaired only where the plan says so), not a bot.</summary>
         public bool Scripted => Strategy.StartsWith("plan", StringComparison.Ordinal);
 
-        public string Cell => Level + " " + Difficulty.ToString(CultureInfo.InvariantCulture);
+        public string Cell => Level + " " + Difficulty.ToString(CultureInfo.InvariantCulture) + (FreshPlayer ? " fresh" : string.Empty);
     }
 
     /// <summary>What the fit needs of a level and difficulty: the ledger input and the loads of its waves, as the probe met them.</summary>
@@ -114,6 +117,9 @@ namespace Game.Balance
 
             /// <summary>Share of its field time a repair drone spent repairing, over every recorded wave with one (<see cref="BalanceRules.RepairDroneBusyShare"/>); -1 when none was seen.</summary>
             public float RepairDroneBusyShare = -1f;
+
+            /// <summary>The queue and doorstep guards' share of their damage per second with the best verdict agreement (<see cref="BalanceRules.QueueGuardShare"/>).</summary>
+            public float QueueGuardShare = 1f;
             public float RepairDroneSeconds;
         }
 
@@ -234,9 +240,37 @@ namespace Game.Balance
                 result.Efficiency[pair.Key] = (float)Math.Round(pair.Value, 3);
             }
 
-            FitSiege(runs, cellOf, result);
+            FitGuards(runs, cellOf, result);
             FitRepairDrone(runs, result);
             return result;
+        }
+
+        // The guard shares the fit tries (round 22d): the siege factor is refitted for each, and the share whose verdicts agree best with
+        // the recorded outcomes (ties by the mean ranking) is kept. Bots and plans count alike: the thin plans are where full rate failed.
+        private static readonly float[] GuardShares = { 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
+
+        private static void FitGuards(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
+        {
+            float bestShare = 1f;
+            float bestAgreement = -1f;
+            float bestRanking = -2f;
+            foreach (float share in GuardShares)
+            {
+                result.QueueGuardShare = share;
+                FitSiege(runs, cellOf, result);
+                Agreement check = Check(runs, cellOf, result.Efficiency, result.SiegeFactor, share);
+                float agreement = check.Runs > 0 ? check.Agreed / (float)check.Runs : 0f;
+                float ranking = check.MeanSpearman;
+                if (agreement > bestAgreement + 1e-6f || (Math.Abs(agreement - bestAgreement) <= 1e-6f && ranking > bestRanking))
+                {
+                    bestShare = share;
+                    bestAgreement = agreement;
+                    bestRanking = ranking;
+                }
+            }
+
+            result.QueueGuardShare = bestShare;
+            FitSiege(runs, cellOf, result);
         }
 
         // The siege factor: over every recorded run, the gate and base health really lost against the siege model's paper damage
@@ -254,6 +288,7 @@ namespace Game.Balance
 
                 BalanceRules judge = JudgeOf(cell).Copy();
                 judge.SiegeFactor = 1f;
+                judge.QueueGuardShare = result.QueueGuardShare;
                 int trunkGates = PlanEvaluator.TrunkGates(cell.Input);
                 float structures = cell.Input.BaseHealth + cell.Input.GateHealth * trunkGates;
                 SiegeState state = SiegeState.Start(cell.Input, trunkGates);
@@ -341,7 +376,7 @@ namespace Game.Balance
         /// With these efficiencies, the ledger's verdict on every run (its standing towers hold every wave inside the cap)
         /// against what happened, and per cell the Spearman correlation of the analytic and the realised ranking of the runs.
         /// </summary>
-        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor = 1f)
+        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor = 1f, float queueGuardShare = 1f)
         {
             var agreement = new Agreement();
             var cells = new Dictionary<string, List<(float Analytic, float Realised)>>();
@@ -353,7 +388,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                Prediction predicted = Predict(run, cell, efficiency, siegeFactor);
+                Prediction predicted = Predict(run, cell, efficiency, siegeFactor, queueGuardShare);
                 bool holds = predicted.Holds;
                 bool mono = run.Strategy.StartsWith("mono", StringComparison.Ordinal);
                 agreement.Runs++;
@@ -391,11 +426,12 @@ namespace Game.Balance
         /// The siege model's verdict on a recorded run from its realised standing sets, with the given efficiencies (1 for types not
         /// listed) and siege factor: the base left after every wave, the wave it falls in, the stars, and the worst wave's cap over pressure.
         /// </summary>
-        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float siegeFactor)
+        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float siegeFactor, float queueGuardShare = 1f)
         {
             var prediction = new Prediction { BaseLeft = cell.Input.BaseHealth, Margin = float.MaxValue };
             BalanceRules judge = JudgeOf(cell).Copy();
             judge.SiegeFactor = siegeFactor;
+            judge.QueueGuardShare = queueGuardShare;
             SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
             int cheapestGun = PlanEvaluator.CheapestGun(cell.Input);
             foreach (WaveRecord wave in run.Waves)
@@ -548,7 +584,7 @@ namespace Game.Balance
             var text = new StringBuilder();
             foreach (RunRecord run in runs)
             {
-                text.Append(string.Join("|", "run", run.Level, I(run.Difficulty), run.Strategy, I(run.Seed), F(run.Step), run.Won ? "won" : "lost", I(run.Stars), I(run.WaveReached), I(run.WaveCount), F(run.BaseHealth), I(run.Coins))).Append('\n');
+                text.Append(string.Join("|", "run", run.Level, I(run.Difficulty), run.Strategy, I(run.Seed), F(run.Step), run.Won ? "won" : "lost", I(run.Stars), I(run.WaveReached), I(run.WaveCount), F(run.BaseHealth), I(run.Coins), run.FreshPlayer ? "fresh" : "expected")).Append('\n');
                 foreach (WaveRecord wave in run.Waves)
                 {
                     var dealt = new List<string>();
@@ -592,6 +628,8 @@ namespace Game.Balance
                         WaveCount = int.Parse(parts[9], CultureInfo.InvariantCulture),
                         BaseHealth = float.Parse(parts[10], CultureInfo.InvariantCulture),
                         Coins = int.Parse(parts[11], CultureInfo.InvariantCulture),
+                        // Records before round 22d carry no player field; they were played on a fresh save.
+                        FreshPlayer = parts.Length < 13 || parts[12] == "fresh",
                     };
                     runs.Add(current);
                 }

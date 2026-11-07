@@ -65,7 +65,8 @@ namespace Game.Balance
 
                 foreach (DroneStats d in facts.Drones)
                 {
-                    text.Append(d.Id).Append(d.Role).Append(d.Cost).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond));
+                    // A drone's price is a plan input, not a capacity input (round 22d: the repair drone is priced from the fit's own busy share).
+                    text.Append(d.Id).Append(d.Role).Append(F(d.Dps)).Append(d.Targets).Append(F(d.RepairPerSecond));
                 }
 
                 if (facts.Geometry != null)

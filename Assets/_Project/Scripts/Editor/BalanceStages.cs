@@ -19,7 +19,7 @@ namespace Game.Editor
     /// acceptance rules. The tests call these; the Tools/Generate/Balance menu and Tools/PlayTest/Scripts call the same code.
     /// Every report starts with the calibration's state against the current inputs, so a stale calibration is never reused silently.
     /// </summary>
-    public static class BalanceStages
+    public static partial class BalanceStages
     {
         public const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
         public const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
@@ -106,7 +106,7 @@ namespace Game.Editor
             var cells = new Dictionary<string, RecordedCell>();
             RecordedCell CellOf(RunRecord run) => CellFor(run, loaded, cells);
             CalibrationFit.Result all = CalibrationFit.Fit(runs, CellOf);
-            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.SiegeFactor);
+            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.SiegeFactor, all.QueueGuardShare);
 
             // Hold-out over the levels: fit on the odd ones, judge the even ones, and the other way round.
             var holdOut = new CalibrationFit.Agreement();
@@ -120,7 +120,7 @@ namespace Game.Editor
                 }
 
                 CalibrationFit.Result trained = CalibrationFit.Fit(train, CellOf);
-                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.SiegeFactor);
+                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.SiegeFactor, trained.QueueGuardShare);
                 holdOut.Runs += check.Runs;
                 holdOut.Agreed += check.Agreed;
                 holdOut.MonoRuns += check.MonoRuns;
@@ -141,8 +141,8 @@ namespace Game.Editor
             text.Append(Invariant($"Calibration fit {DateTime.Now:yyyy-MM-dd HH:mm}: {runs.Count} runs ({planRuns} replayed plans), seeds {string.Join(",", seeds)}, step {string.Join(",", steps)}, inputs {loaded.Hash}.\n"));
             text.Append("Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health\n");
             text.Append("there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, \"The balance pipeline\"). The siege factor is the gate and base\n");
-            text.Append("health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the fresh player the yardstick plays\n");
-            text.Append("with (no permanent upgrades, perks or base turrets). ApplyCalibration writes the factor, siege and utilisation lines into the asset.\n\n");
+            text.Append("health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the player who played each run (the\n");
+            text.Append("campaign's expected player, or a plain save for the fresh-save sanity runs; round 22d). ApplyCalibration writes the factor, siege and utilisation lines into the asset.\n\n");
             text.Append("tower          efficiency   dealt   capacity  waves\n");
             foreach (KeyValuePair<string, float> pair in all.Efficiency)
             {
@@ -150,6 +150,7 @@ namespace Game.Editor
                 text.Append(Invariant($"{pair.Key,-14} {pair.Value,10:0.000} {dealt,7:0} {capacity,10:0} {waves,6}\n"));
             }
 
+            text.Append(Invariant($"\nQueue guard share {all.QueueGuardShare:0.00}: the share of their damage per second the queue and doorstep guards land on a siege, the one of 0.3..1.0 with the best verdict agreement (round 22d).\n"));
             text.Append(Invariant($"\nSiege factor {all.SiegeFactor:0.000}: gate and base health lost {all.StructureLost:0} over the siege model's paper damage {all.PaperStructureDamage:0} at factor one, on {all.SiegeWaves} waves with a siege.\n"));
             text.Append(all.RepairDroneBusyShare >= 0f
                 ? Invariant($"Repair drone busy share {all.RepairDroneBusyShare:0.000} over {all.RepairDroneSeconds:0} drone-seconds on the field.\n")
@@ -174,6 +175,7 @@ namespace Game.Editor
                 text.Append(Invariant($"repairbusy {all.RepairDroneBusyShare:0.000}\n"));
             }
 
+            text.Append(Invariant($"queueguard {all.QueueGuardShare:0.00}\n"));
             text.Append(Invariant($"siege {all.SiegeFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
             Directory.CreateDirectory(Path.GetDirectoryName(CalibrationTablePath));
             File.WriteAllText(CalibrationTablePath, text.ToString());
@@ -245,8 +247,9 @@ namespace Game.Editor
 
                 if (node.Level.name == run.Level && run.Difficulty >= 0 && run.Difficulty < loaded.Catalog.Difficulties.Count)
                 {
-                    // The yardstick and the replays play on a fresh save (no permanent upgrades, perks or base turrets): the paper side must too.
-                    cell = new RecordedCell { Input = loaded.Model.InputForFreshPlayer(index, run.Difficulty), Judge = rules.HumanWithHero(), Cap = rules.HeroCapFor(run.Difficulty) * (1f + rules.BeatableTolerance) };
+                    // The paper judges the player who really played: the campaign's expected player (the probe writes that state into
+                    // its in-memory save, round 22d) or, for the fresh-save sanity runs, a plain save.
+                    cell = new RecordedCell { Input = run.FreshPlayer ? loaded.Model.InputForFreshPlayer(index, run.Difficulty) : loaded.Model.InputFor(index, run.Difficulty), Judge = rules.HumanWithHero(), Cap = rules.HeroCapFor(run.Difficulty) * (1f + rules.BeatableTolerance) };
                     Ledger.Evaluate(cell.Input, Waves(loaded.Model, node.Level, loaded.Catalog.Difficulties[run.Difficulty]), loaded.Model.Difficulties[run.Difficulty], cell.Judge, cell.Loads);
                     cache[run.Cell] = cell;
                     return cell;
@@ -296,6 +299,11 @@ namespace Game.Editor
                 {
                     so.FindProperty("_repairDroneBusyShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
                     report.Append("repair drone busy ").Append(parts[1]).Append("; ");
+                }
+                else if (parts.Length == 2 && parts[0] == "queueguard")
+                {
+                    so.FindProperty("_queueGuardShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    report.Append("queue guard ").Append(parts[1]).Append("; ");
                 }
                 else if (parts.Length == 2 && parts[0] == "siege")
                 {
@@ -650,13 +658,24 @@ namespace Game.Editor
             {
                 string[] parts = cell.Split(' ');
                 int difficulty = int.Parse(parts[1], CultureInfo.InvariantCulture);
+                if (parts.Length > 2)
+                {
+                    // The fresh-save sanity runs (round 22d): a new player can start; not judged by the rule.
+                    List<RunRecord> fresh = obvious.FindAll(r => r.Cell == cell);
+                    int freshWins = fresh.FindAll(r => r.Won).Count;
+                    string freshRuns = string.Join(", ", fresh.ConvertAll(r => Invariant($"{r.Strategy} seed {r.Seed} {(r.Won ? "won" : "lost")}")));
+                    text.Append(Invariant($"{parts[0]} {DifficultyName(difficulty)} on a fresh save: {freshWins}/{fresh.Count} runs won ({freshRuns}).\n"));
+                    continue;
+                }
+
                 var specs = new Dictionary<string, PlanSpec>();
                 foreach (PlanSpec plan in LoadPlans(parts[0], difficulty))
                 {
                     specs[plan.Name] = plan;
                 }
 
-                AcceptanceRules.Verdict verdict = AcceptanceRules.Judge(parts[0], difficulty, obvious.FindAll(r => r.Cell == cell), plans.FindAll(r => r.Cell == cell), specs);
+                List<RunRecord> mediumObvious = obvious.FindAll(r => r.Level == parts[0] && r.Difficulty == AcceptanceRules.Medium && !r.FreshPlayer);
+                AcceptanceRules.Verdict verdict = AcceptanceRules.Judge(parts[0], difficulty, obvious.FindAll(r => r.Cell == cell), plans.FindAll(r => r.Cell == cell), specs, mediumObvious);
                 report.Cells++;
                 text.Append(Invariant($"{parts[0]} {DifficultyName(difficulty)}: {(verdict.Passed ? "PASS" : "FAIL")}{(verdict.Tutorial ? " (tutorial cell)" : string.Empty)}\n"));
                 foreach (string note in verdict.Notes)

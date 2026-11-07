@@ -1,4 +1,4 @@
-Glass Meadows (Level_C1_02) on Psycho: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 551e7c40 (current)
+Glass Meadows (Level_C1_02) on Psycho: plan search, 3036 plans sampled, 0 hold on paper, base 800, cap 1.40. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
 Cells are (x,y) on the level grid; a tower's cover is the route cells in its reach (weighted by the share of creatures that walk them),
 'gate' when the defence gate's queue is in reach, 'door' when the base's doorstep is, 'bunch' the share of that route where walkers bunch.
 A step is taken from its wave on, as soon as the purse has the price. A wave over pressure one leaks: what gets through hammers the base
@@ -12,14 +12,14 @@ Best spots per tower (first is best):
   Flak Turret    (32,16) cover 15.0/9.0 air door bunch 0.8; (31,16) cover 15.0/8.0 air door bunch 0.9; (32,19) cover 12.0/8.0 air door bunch 0.8; (33,15) cover 14.0/8.0 air door bunch 0.8; (33,16) cover 14.0/8.0 air door bunch 0.8; (31,15) cover 15.0/7.5 air door bunch 0.9;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w6, margin 0.39 (leaks from wave 5), coins left 22, steps taken 18
-  mono Cannon        falls w5, margin 0.21 (leaks from wave 5), coins left 73, steps taken 8, 12 never affordable
-  mono Laser         falls w5, margin 0.26 (leaks from wave 5), coins left 25, steps taken 6, 14 never affordable
-  naive              falls w5, margin 0.16 (leaks from wave 5), coins left 60, steps taken 9, 9 never affordable
+  mono PulseRifle    falls w6, margin 0.39 (leaks from wave 5), coins left 20, steps taken 18
+  mono Cannon        falls w5, margin 0.21 (leaks from wave 5), coins left 74, steps taken 8, 12 never affordable
+  mono Laser         falls w5, margin 0.26 (leaks from wave 5), coins left 24, steps taken 6, 14 never affordable
+  naive              falls w5, margin 0.16 (leaks from wave 5), coins left 59, steps taken 9, 9 never affordable
 
 Distinct winning plans (0; different spots, mixes or timing):
 
-No plan holds on paper. Best found: falls w10, margin 0.36, leaks from wave 5
+No plan holds on paper. Best found: falls w8, margin 0.27, leaks from wave 5
   from wave  1: build Cannon at (5,7); build Gun Turret at (6,5); build Gun Turret at (7,5)
   from wave  2: upgrade the tower at (6,5)
   from wave  3: repair the gates when they would fall or it is cheaper than a gun

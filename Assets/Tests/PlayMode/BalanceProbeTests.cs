@@ -119,8 +119,8 @@ namespace Game.Tests
         private const int TowersBeforeUpgrades = 2;
         private const string FilterPath = "Tools/PlayTest/probe_arg.txt";
         internal const string CampaignPath = "Assets/_Project/Data/Levels/CampaignCatalog.asset";
-        private const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
-        private const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
+        internal const string UnlocksPath = "Assets/_Project/Data/Unlocks/UnlockTable.asset";
+        internal const string UpgradesPath = "Assets/_Project/Data/Upgrades/UpgradeCatalog.asset";
         private const string TracePath = "Logs/probe_trace.txt";
         private const string ResultsPath = "Logs/probe_results.txt";
 
@@ -350,6 +350,9 @@ namespace Game.Tests
             public int Difficulty;
             public string Strategy;
             public LevelOutcome Outcome;
+
+            /// <summary>Played on a plain save instead of the cell's expected player (the fresh-save sanity runs).</summary>
+            public bool FreshPlayer;
             public int Wave;
             public int WaveCount;
             public int Stars;
@@ -400,6 +403,7 @@ namespace Game.Tests
                     WaveCount = WaveCount,
                     BaseHealth = BaseHealth,
                     Coins = CoinsUnspent,
+                    FreshPlayer = FreshPlayer,
                 };
                 record.Waves.AddRange(Records);
                 return record;
@@ -418,7 +422,14 @@ namespace Game.Tests
             Probe(runs, strategy, results, null);
 
         /// <summary>Plays each run with a strategy on a given seed (null: the filter file's or the default).</summary>
-        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results, int? seedOverride)
+        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results, int? seedOverride) =>
+            Probe(runs, strategy, results, seedOverride, false);
+
+        /// <summary>
+        /// As above; <paramref name="freshPlayer"/> plays a plain save instead of the campaign's expected player for the cell (the
+        /// permanent upgrades, perks and base turrets the plan search plans for; see <see cref="ProbePlayer"/>).
+        /// </summary>
+        internal static IEnumerator Probe(List<(int Level, int Difficulty)> runs, ProbeStrategy strategy, List<ProbeResult> results, int? seedOverride, bool freshPlayer)
         {
             var report = new List<string>();
             var traces = new List<string>();
@@ -449,6 +460,8 @@ namespace Game.Tests
                     owned.RemoveAll(id => !Allows(strategy, definition, id));
                 }
 
+                Game.Balance.PlayerState player = ProbePlayer.Install(catalog, level, difficulty, freshPlayer, owned);
+                Debug.Log("[Probe] player: " + ProbePlayer.Describe(player, freshPlayer));
                 int seed = seedOverride ?? Seed();
                 float step = Step();
                 UnityEngine.Random.InitState(seed);
@@ -556,6 +569,7 @@ namespace Game.Tests
                     Difficulty = difficulty,
                     Strategy = strategy.Name,
                     Outcome = context.Outcome,
+                    FreshPlayer = freshPlayer,
                     Wave = context.WaveNumber,
                     WaveCount = context.WaveCount,
                     Stars = context.Outcome == LevelOutcome.Won ? RewardCalculator.StarsFor(definition, baseFraction) : 0,

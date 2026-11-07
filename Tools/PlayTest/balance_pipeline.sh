@@ -46,7 +46,7 @@ editmode_test() {
 
 for stage in "$@"; do
   case "$stage" in
-    all) exec "$0" measure fit apply solve search replay acceptance ;;
+    all) exec "$0" measure fit apply solve search replay acceptance readme ;;
     measure)    echo "== measure: yardstick (obvious family, seeds)"; playmode_test Measure_Yardstick_ObviousFamily ;;
     stepcheck)  echo "== step check"; playmode_test Measure_StepCheck_FineAgainstUsual ;;
     fit)        echo "== fit: calibration from the records"; editmode_test CalibrationFitTests; sed -n '1,40p' Tools/PlayTest/calibration.txt ;;
@@ -55,6 +55,9 @@ for stage in "$@"; do
     search)     echo "== search: plans per cell (stage A)"; editmode_test PlanSearchTests; cat Tools/PlayTest/plans_summary.txt ;;
     replay)     echo "== replay: searched plans (stage B)"; playmode_test Replay_SearchedPlans_EveryCell ;;
     acceptance) echo "== acceptance per difficulty"; editmode_test BalanceAcceptanceTests; cat Tools/PlayTest/acceptance.txt ;;
+    build)      echo "== build: lever from the stage-B verdicts, then solve (round 22d)"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/BuildFromVerdicts.cs --entry BuildFromVerdicts.Run --timeout_ms 900000 --timeout 960 | tail -1; cat Tools/PlayTest/builder.txt ;;
+    readme)     echo "== readme: the plans that won in stage B"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/ReadmePlans.cs --entry ReadmePlans.Run --timeout_ms 300000 --timeout 360 | tail -1 ;;
+    droneprice) echo "== drone price: the repair drone by the investment rule"; require_stopped; unity command run_script --file Tools/PlayTest/Scripts/ApplyDronePrice.cs --entry ApplyDronePrice.Run --timeout_ms 120000 --timeout 180 | tail -1 ;;
     *) echo "unknown stage $stage" >&2; exit 1 ;;
   esac
 done

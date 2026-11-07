@@ -7,8 +7,8 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 6,
-            "Y": 14,
+            "X": 32,
+            "Y": 8,
             "Wave": 1
         },
         {
@@ -19,10 +19,24 @@
             "Wave": 1
         },
         {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 4
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 5
+        },
+        {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 32,
-            "Y": 8,
+            "X": 14,
+            "Y": 7,
             "Wave": 7
         },
         {
@@ -30,7 +44,7 @@
             "Item": "gates",
             "X": 0,
             "Y": 0,
-            "Wave": 8
+            "Wave": 7
         }
     ]
 }

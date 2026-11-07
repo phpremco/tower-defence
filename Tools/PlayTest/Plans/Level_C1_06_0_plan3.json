@@ -21,8 +21,15 @@
         {
             "Kind": "build",
             "Item": "Rocket",
-            "X": 36,
-            "Y": 7,
+            "X": 35,
+            "Y": 10,
+            "Wave": 4
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 13,
+            "Y": 10,
             "Wave": 4
         },
         {
@@ -38,13 +45,6 @@
             "X": 0,
             "Y": 0,
             "Wave": 7
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 13,
-            "Y": 10,
-            "Wave": 8
         }
     ]
 }

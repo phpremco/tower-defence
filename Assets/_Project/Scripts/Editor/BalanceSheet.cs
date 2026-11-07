@@ -216,6 +216,75 @@ namespace Game.Editor
         /// <summary>Upgrade steps are rounded down to this many coins.</summary>
         private const int PriceStep = 5;
 
+        // ---- Drone prices (round 22d) --------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Remco 2026-11-07: the repair drone is an investment like the harvester, not a cheap convenience. Its price is what it
+        /// saves in repair coins over <see cref="BalanceRules.RepairDroneBreakEvenWaves"/> waves: repair rate x the measured busy
+        /// share (the calibration) x the repair cost per hit point (the cheapest gun's) x the mean wave spacing of the levels that
+        /// sell it (Medium). Bought early it pays back many times over, mid-level still clearly, in the last two waves never.
+        /// </summary>
+        public static int RepairDronePrice(float repairPerSecond, float busyShare, float repairCostPerHealth, float waveSeconds, BalanceRules rules) =>
+            System.Math.Max(PriceStep, (int)System.Math.Round(repairPerSecond * busyShare * repairCostPerHealth * waveSeconds * rules.RepairDroneBreakEvenWaves / PriceStep) * PriceStep);
+
+        /// <summary>
+        /// The repair drone's price from the data on disk: the calibration's busy share, the cheapest repair cost per hit point of the guns the
+        /// levels that sell the drone offer, and their mean wave spacing on Medium; <paramref name="fallback"/> before any level exists.
+        /// </summary>
+        public static int RepairDronePriceFromData(float repairPerSecond, int fallback)
+        {
+            var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.CampaignCatalog>("Assets/_Project/Data/Levels/CampaignCatalog.asset");
+            var calibration = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.BalanceCalibration>(Game.Levels.BalanceCalibration.AssetPath);
+            return catalog != null && RepairDroneInputs(catalog, calibration, out float busy, out float costPerHealth, out float waveSeconds)
+                ? RepairDronePrice(repairPerSecond, busy, costPerHealth, waveSeconds, Rules)
+                : fallback;
+        }
+
+        /// <summary>The rule's inputs from the data: false when no level sells a repair drone yet.</summary>
+        public static bool RepairDroneInputs(Game.Levels.CampaignCatalog catalog, Game.Levels.BalanceCalibration calibration, out float busyShare, out float repairCostPerHealth, out float waveSeconds)
+        {
+            busyShare = calibration != null ? calibration.RepairDroneBusyShare : Rules.RepairDroneBusyShare;
+            repairCostPerHealth = 0f;
+            waveSeconds = 0f;
+            int levels = 0;
+            Game.Levels.DifficultyProfile medium = catalog.Difficulties.Count > AcceptanceRules.Medium ? catalog.Difficulties[AcceptanceRules.Medium] : null;
+            foreach (Game.Levels.MapNode node in catalog.Nodes)
+            {
+                if (node.Level == null || medium == null || !System.Array.Exists(node.Level.Drones, d => d != null && d.Kind == Game.Drones.DroneKind.Repair))
+                {
+                    continue;
+                }
+
+                foreach (Game.Towers.TowerDefinition tower in node.Level.AvailableTowers)
+                {
+                    if (!tower.BlocksGroundEnemies && tower.RepairCostPerHealth > 0f && (repairCostPerHealth == 0f || tower.RepairCostPerHealth < repairCostPerHealth))
+                    {
+                        repairCostPerHealth = tower.RepairCostPerHealth;
+                    }
+                }
+
+                waveSeconds += WaveTiming.MeanWaveSeconds(node.Level, medium);
+                levels++;
+            }
+
+            if (levels == 0 || repairCostPerHealth <= 0f)
+            {
+                return false;
+            }
+
+            waveSeconds /= levels;
+            return true;
+        }
+
+        /// <summary>Coins of repairs the drone saves per wave on a level: what the price is weighed against, wave by wave.</summary>
+        public static float RepairDroneSavingPerWave(float repairPerSecond, float busyShare, float repairCostPerHealth, float waveSeconds) =>
+            repairPerSecond * busyShare * repairCostPerHealth * waveSeconds;
+
+        /// <summary>The last wave (1-based) a purchase still earns its price back before the level ends; 0 when it never does.</summary>
+        public static int RepairDroneBreakEvenWave(int price, float savingPerWave, int waveCount) =>
+            savingPerWave <= 0f ? 0 : System.Math.Max(0, waveCount - (int)System.Math.Ceiling(price / savingPerWave) + 1);
+
+
         /// <summary>
         /// Tower level prices (build, then each upgrade step) from the tower's DPS per level. Remco's rule (2026-11-06): an upgrade
         /// must beat more towers of the same type at equal coins on single-target DPS, by a clear margin (<see cref="BalanceRules.UpgradeMargin"/>,

@@ -21,7 +21,7 @@
         {
             "Kind": "build",
             "Item": "Rocket",
-            "X": 33,
+            "X": 35,
             "Y": 4,
             "Wave": 2
         },
@@ -33,17 +33,17 @@
             "Wave": 3
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 20,
-            "Y": 5,
-            "Wave": 3
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 8,
+            "Y": 6,
+            "Wave": 5
         },
         {
             "Kind": "build",
-            "Item": "Laser",
-            "X": 6,
-            "Y": 6,
+            "Item": "Rocket",
+            "X": 35,
+            "Y": 5,
             "Wave": 5
         },
         {
@@ -54,11 +54,11 @@
             "Wave": 5
         },
         {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 35,
-            "Y": 5,
-            "Wave": 7
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 9
         }
     ]
 }

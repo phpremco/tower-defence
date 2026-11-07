@@ -6,133 +6,77 @@
     "Steps": [
         {
             "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 7,
-            "Y": 4,
+            "Item": "Cannon",
+            "X": 6,
+            "Y": 6,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 7,
-            "Y": 5,
+            "Y": 4,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Rocket",
             "X": 35,
-            "Y": 4,
+            "Y": 5,
             "Wave": 1
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 20,
-            "Y": 4,
-            "Wave": 2
-        },
-        {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 34,
-            "Y": 5,
-            "Wave": 3
-        },
-        {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 6,
-            "Y": 5,
-            "Wave": 4
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 7,
             "Y": 4,
-            "Wave": 5
+            "Wave": 2
         },
         {
             "Kind": "repair",
             "Item": "gates",
             "X": 0,
             "Y": 0,
-            "Wave": 6
+            "Wave": 3
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 4,
+            "Wave": 4
         },
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 20,
+            "X": 6,
             "Y": 5,
-            "Wave": 7
-        },
-        {
-            "Kind": "drone",
-            "Item": "RepairDrone",
-            "X": 0,
-            "Y": 0,
             "Wave": 7
         },
         {
             "Kind": "build",
             "Item": "Rocket",
             "X": 33,
-            "Y": 4,
-            "Wave": 8
+            "Y": 5,
+            "Wave": 10
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 7,
-            "Y": 5,
-            "Wave": 8
-        },
-        {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 8,
-            "Y": 6,
-            "Wave": 9
-        },
-        {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 33,
+            "X": 6,
             "Y": 5,
             "Wave": 11
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 4,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 7,
-            "Y": 5,
-            "Wave": 11
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 8,
-            "Y": 6,
-            "Wave": 13
-        },
-        {
-            "Kind": "drone",
-            "Item": "AttackDrone",
+            "Kind": "repair",
+            "Item": "gates",
             "X": 0,
             "Y": 0,
-            "Wave": 13
+            "Wave": 11
         },
         {
-            "Kind": "build",
-            "Item": "Cannon",
+            "Kind": "upgrade",
+            "Item": "",
             "X": 6,
             "Y": 6,
             "Wave": 15
@@ -140,22 +84,29 @@
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 8,
-            "Y": 6,
-            "Wave": 16
+            "X": 35,
+            "Y": 5,
+            "Wave": 15
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 20,
-            "Y": 4,
-            "Wave": 17
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
+            "Wave": 15
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 6,
             "Y": 6,
+            "Wave": 17
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 33,
+            "Y": 5,
             "Wave": 17
         }
     ]

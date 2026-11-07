@@ -14,37 +14,51 @@
         {
             "Kind": "build",
             "Item": "PulseRifle",
-            "X": 15,
+            "X": 16,
             "Y": 11,
             "Wave": 1
         },
         {
-            "Kind": "build",
-            "Item": "Cannon",
-            "X": 12,
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 16,
             "Y": 11,
-            "Wave": 1
+            "Wave": 4
         },
         {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 35,
-            "Y": 7,
-            "Wave": 6
+            "Kind": "drone",
+            "Item": "HarvestDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 8
         },
         {
             "Kind": "build",
             "Item": "Rocket",
             "X": 34,
             "Y": 10,
-            "Wave": 6
+            "Wave": 9
         },
         {
             "Kind": "build",
-            "Item": "Rocket",
-            "X": 34,
-            "Y": 7,
-            "Wave": 9
+            "Item": "PulseRifle",
+            "X": 17,
+            "Y": 11,
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 13,
+            "Y": 10,
+            "Wave": 14
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 16,
+            "Y": 11,
+            "Wave": 14
         }
     ]
 }

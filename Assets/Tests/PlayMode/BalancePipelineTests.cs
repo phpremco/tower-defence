@@ -31,6 +31,10 @@ namespace Game.Tests
         private const float FineStep = 0.05f;
         private const string StepCheckLevel = "Level_C1_03";
 
+        // The fresh-save sanity cell: the campaign's first level on Easy, played without any permanent upgrade.
+        private const int FreshSanityNode = 0;
+        private const int FreshSanityDifficulty = 0;
+
         [SetUp]
         public void ClearTrace()
         {
@@ -103,6 +107,16 @@ namespace Game.Tests
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.AffordableBot, results, seed);
                         yield return BalanceProbeTests.Probe(run, ProbeStrategy.CreativeBot(), results, seed);
                     }
+
+                    // One fresh-save sanity cell (the curator, round 22d): a new player with no upgrades can start the campaign.
+                    if (node == FreshSanityNode && difficulty == FreshSanityDifficulty)
+                    {
+                        foreach (int seed in seeds)
+                        {
+                            yield return BalanceProbeTests.Probe(run, ProbeStrategy.AffordableBot, results, seed, true);
+                            yield return BalanceProbeTests.Probe(run, ProbeStrategy.NaiveBot(), results, seed, true);
+                        }
+                    }
                 }
             }
 
@@ -172,7 +186,7 @@ namespace Game.Tests
             var groups = new SortedDictionary<string, List<BalanceProbeTests.ProbeResult>>();
             foreach (BalanceProbeTests.ProbeResult r in results)
             {
-                string key = $"{r.Asset} {Difficulty(r.Difficulty),-7} {r.Strategy}";
+                string key = $"{r.Asset} {Difficulty(r.Difficulty),-7} {r.Strategy}{(r.FreshPlayer ? " (fresh save)" : string.Empty)}";
                 if (!groups.TryGetValue(key, out List<BalanceProbeTests.ProbeResult> group))
                 {
                     groups[key] = group = new List<BalanceProbeTests.ProbeResult>();

@@ -42,6 +42,9 @@ namespace Game.Balance
         public int ResearchEarned;
         public int ResearchSpent;
 
+        /// <summary>The permanent upgrades bought, by upgrade id and level: what a save holding this state carries (round 22d, the replay plays it).</summary>
+        public readonly Dictionary<string, int> UpgradeLevels = new Dictionary<string, int>();
+
         /// <summary>Mean damage times fire rate over the owned guns: the old "expected upgrade bonus", for reports.</summary>
         public float MeanTowerBonus;
 
@@ -188,6 +191,11 @@ namespace Game.Balance
             for (int i = 0; i < upgrades.Count; i++)
             {
                 UpgradeStats upgrade = upgrades[i];
+                if (levels[i] > 0)
+                {
+                    state.UpgradeLevels[upgrade.Id] = levels[i];
+                }
+
                 float bonus = levels[i] * upgrade.BonusPerLevel;
                 if (bonus <= 0f)
                 {

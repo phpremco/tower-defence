@@ -245,6 +245,8 @@ namespace Game.Balance
             }
 
             float hammer = attackers * strike * rules.SiegeFactor;
+            // The guards land only their fitted share on a siege (BalanceRules.QueueGuardShare); the hero fights as modelled.
+            guardDps *= rules.QueueGuardShare;
             float kill = guardDps + heroDps;
             if (hammer <= 0f)
             {

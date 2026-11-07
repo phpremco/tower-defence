@@ -13,51 +13,58 @@
         },
         {
             "Kind": "build",
-            "Item": "Cannon",
-            "X": 17,
-            "Y": 7,
+            "Item": "PulseRifle",
+            "X": 12,
+            "Y": 11,
             "Wave": 1
         },
         {
             "Kind": "build",
-            "Item": "Rocket",
-            "X": 35,
+            "Item": "Cannon",
+            "X": 18,
             "Y": 11,
             "Wave": 2
         },
         {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 4
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 36,
+            "Y": 7,
+            "Wave": 5
         },
         {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 12,
-            "Y": 10,
-            "Wave": 5
+            "Kind": "drone",
+            "Item": "HarvestDrone",
+            "X": 0,
+            "Y": 0,
+            "Wave": 6
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 12,
+            "X": 13,
             "Y": 10,
             "Wave": 8
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 13,
-            "Y": 10,
-            "Wave": 9
+            "X": 12,
+            "Y": 11,
+            "Wave": 10
         },
         {
-            "Kind": "build",
-            "Item": "PulseRifle",
+            "Kind": "upgrade",
+            "Item": "",
             "X": 13,
-            "Y": 11,
+            "Y": 10,
+            "Wave": 11
+        },
+        {
+            "Kind": "repair",
+            "Item": "gates",
+            "X": 0,
+            "Y": 0,
             "Wave": 11
         },
         {
@@ -70,9 +77,16 @@
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 13,
+            "X": 18,
             "Y": 11,
-            "Wave": 14
+            "Wave": 16
+        },
+        {
+            "Kind": "mine",
+            "Item": "Mine",
+            "X": 12,
+            "Y": 9,
+            "Wave": 18
         }
     ]
 }

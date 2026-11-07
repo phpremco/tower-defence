@@ -26,6 +26,13 @@
             "Wave": 3
         },
         {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 13,
+            "Y": 11,
+            "Wave": 3
+        },
+        {
             "Kind": "build",
             "Item": "Cannon",
             "X": 14,
@@ -33,25 +40,18 @@
             "Wave": 4
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 13,
-            "Y": 11,
-            "Wave": 5
-        },
-        {
             "Kind": "build",
             "Item": "Rocket",
             "X": 32,
             "Y": 10,
-            "Wave": 7
+            "Wave": 5
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 32,
             "Y": 10,
-            "Wave": 11
+            "Wave": 13
         }
     ]
 }

@@ -655,3 +655,16 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
 - A scratch check of the solver against the stored waves is a few lines in an `eval_file` script: build the calibrated model,
   `BalanceLedger.Evaluate(model, index, level, profile, d, null, model.Rules.HumanTowersOnly())` for the stored waves,
   `model.BuildWaves(index, WaveScripts.ByKey(key), out _)` for the in-memory solve, `BalanceChecks.PlainMean` of both.
+
+### Round 22d additions (2026-11-07)
+
+- New stages in `balance_pipeline.sh`: `build` (the builder on stage-B verdicts: lever once per cell from the records, then solve;
+  `Tools/PlayTest/Scripts/BuildFromVerdicts.cs`, menu `Tools/Generate/Balance/6b`), `readme` (`Plans/README.md` from the plans that won in
+  the replay; `ReadmePlans.cs`, menu `.../8`; run it before a new search, which rewrites the plan files) and `droneprice` (the repair
+  drone by the investment rule; `ApplyDronePrice.cs`, menu `.../9`, report `Tools/PlayTest/drone_price.txt`). `all` ends with `readme`.
+- The probe plays the campaign's expected player (`ProbePlayer`): no PlayMode balance run touches `Saves/progress.json` any more (the
+  progress lives in memory for the run). The yardstick adds the fresh-save sanity runs on C1_01 Easy.
+- Record files: the `run` line has a 13th field, `expected` or `fresh` (the player it was played with).
+- `calibration.txt` has a `queueguard <share>` line (the apply stage writes `_queueGuardShare`); the hash no longer covers drone prices.
+- `Tools/PlayTest/builder_iterations.txt` counts the builder's moves per cell (at most two).
+- Scan of the ledger's purchase per wave: `WaveLine.Purchase` (type index:level x count) in an `eval_file` script beside the pressures.

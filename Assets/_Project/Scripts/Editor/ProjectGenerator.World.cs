@@ -288,7 +288,8 @@ namespace Game.Editor
         // purse: a harvester earns its price back in a few minutes of trips.
         private static void GenerateDrones(GeneratorContext context)
         {
-            context.RepairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, 120, 3, new Color(0.4f, 0.9f, 1f), repair: 8f, skin: CreatureSkin.Kind.Plate, accent: new Color(1f, 0.22f, 0.28f));
+            // The repair drone's price follows the investment rule (BalanceSheet.RepairDronePrice, round 22d) when the level data exists.
+            context.RepairDrone = CreateDrone("RepairDrone", "Repair drone", DroneKind.Repair, 3.5f, 40f, BalanceSheet.RepairDronePriceFromData(8f, 120), 3, new Color(0.4f, 0.9f, 1f), repair: 8f, skin: CreatureSkin.Kind.Plate, accent: new Color(1f, 0.22f, 0.28f));
             context.HarvestDrone = CreateDrone("HarvestDrone", "Harvest drone", DroneKind.Harvest, 4f, 30f, 150, 2, new Color(1f, 0.85f, 0.3f), harvestSeconds: 4f, harvestValue: 10, skin: CreatureSkin.Kind.Alloy, accent: new Color(1f, 0.75f, 0.1f));
             // Azure like the model's tail glow (curator decision 2026-11-04: our colours follow the models).
             context.AttackDrone = CreateDrone("AttackDrone", "Attack drone", DroneKind.Attack, 4.5f, 35f, 180, 3, new Color(0.3f, 0.7f, 1f), damage: 6f, fireInterval: 0.5f, range: 3f, skin: CreatureSkin.Kind.Plate, accent: new Color(0.92f, 0.95f, 1f));

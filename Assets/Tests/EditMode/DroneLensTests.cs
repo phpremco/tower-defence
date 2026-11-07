@@ -4,6 +4,7 @@ using System.Text;
 using Game.Balance;
 using Game.Drones;
 using Game.Economy;
+using Game.Editor;
 using Game.Levels;
 using NUnit.Framework;
 using UnityEditor;
@@ -32,9 +33,24 @@ namespace Game.Tests
         private const int TowersPerDrone = 3;
 
         /// <summary>After the last spawn the creatures still walk the road; the level ends about this much later.</summary>
-        private const float ClearSeconds = 30f;
 
         private const int LastWaves = 2;
+
+        /// <summary>
+        /// Remco 2026-11-07: the repair drone is priced by the investment rule (BalanceSheet.RepairDronePrice) from the measured busy
+        /// share, the repair cost per hit point and the levels' wave spacing; the asset must carry that price (Tools/Generate/Balance/9).
+        /// </summary>
+        [Test]
+        public void RepairDrone_PriceFollowsTheInvestmentRule()
+        {
+            BalanceStages.Loaded loaded = BalanceStages.Load(true);
+            var drone = AssetDatabase.LoadAssetAtPath<DroneDefinition>("Assets/_Project/Data/Drones/RepairDrone.asset");
+            Assume.That(loaded.Catalog, Is.Not.Null, "Run Tools/Generate/Scenes and Starter Data first.");
+            Assume.That(drone, Is.Not.Null);
+            string report = BalanceStages.DronePriceReport(loaded, drone, out int price);
+            Debug.Log("[DroneLens] " + report);
+            Assert.AreEqual(price, drone.Cost, "the repair drone's price is off the rule: run Tools/Generate/Balance/9 (ApplyDronePrice.cs); " + report);
+        }
 
         [Test]
         public void Drones_PaybackIsReported()
@@ -86,7 +102,7 @@ namespace Game.Tests
         {
             LevelInput input = model.InputFor(index, d);
             int towerPrice = CheapestGun(input);
-            List<float> starts = WaveStarts(level, difficulty, out float end);
+            List<float> starts = WaveTiming.Starts(level, difficulty, out float end);
             float waveSeconds = starts.Count > 1 ? (starts[starts.Count - 1] - starts[0]) / (starts.Count - 1) : end;
             string head = Invariant($"  {drone.name,-12} {difficulty.name,-7} price {drone.Cost,4} vs 3 x {towerPrice} = {TowersPerDrone * towerPrice,4} ({drone.Cost / (float)Mathf.Max(1, TowersPerDrone * towerPrice):0.00}x) | ");
             switch (drone.Kind)
@@ -164,38 +180,6 @@ namespace Game.Tests
         }
 
         // When each wave starts: its start delay after the previous wave's last spawn (LevelController), and when it ends.
-        private static List<float> WaveStarts(LevelDefinition level, DifficultyProfile difficulty, out float end)
-        {
-            var starts = new List<float>();
-            float clock = 0f;
-            WaveDefinition[] waves = level.GetWaves(difficulty) ?? new WaveDefinition[0];
-            foreach (WaveDefinition wave in waves)
-            {
-                clock += wave.StartDelay;
-                starts.Add(clock);
-                clock += Span(wave, difficulty);
-            }
-
-            end = clock + ClearSeconds;
-            return starts;
-        }
-
-        private static float Span(WaveDefinition wave, DifficultyProfile difficulty)
-        {
-            var scheduler = new WaveScheduler(wave, difficulty);
-            float span = 0f;
-            for (int g = 0; g < scheduler.GroupCount; g++)
-            {
-                int total = scheduler.Total(g);
-                if (total > 0)
-                {
-                    span = Mathf.Max(span, scheduler.PlannedTime(g, total - 1));
-                }
-            }
-
-            return span;
-        }
-
         private static int CheapestGun(LevelInput input)
         {
             int cheapest = 0;

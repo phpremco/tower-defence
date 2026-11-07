@@ -1,25 +1,25 @@
 Continent bosses at their finales (level 20, stand-in field, human lens)
-Gravemaw         C1 Easy    towers 6 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 1.23/1.14 boss 0.88 cap 1.00 mechanic 0.09 -> good
-Gravemaw         C1 Medium  towers 6 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.90/1.73 boss 1.17 cap 1.15 mechanic 0.09 -> good
-Gravemaw         C1 Hard    towers 6 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 2.45/2.26 boss 1.49 cap 1.25 mechanic 0.09 -> too hard
-Gravemaw         C1 Psycho  towers 6 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 3.51/3.13 boss 2.17 cap 1.35 mechanic 0.10 -> too hard
-CinderMatriarch  C2 Easy    towers 7 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 0.78/0.73 boss 0.45 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-CinderMatriarch  C2 Medium  towers 7 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.27/1.16 boss 0.59 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-CinderMatriarch  C2 Hard    towers 7 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 1.64/1.52 boss 0.75 cap 1.25 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-CinderMatriarch  C2 Psycho  towers 7 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 2.36/2.11 boss 1.05 cap 1.35 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-FrostWarden      C3 Easy    towers 7 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 1.05/0.97 boss 0.70 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-FrostWarden      C3 Medium  towers 7 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.65/1.50 boss 0.96 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
-FrostWarden      C3 Hard    towers 7 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 2.14/1.97 boss 1.19 cap 1.25 mechanic 0.02 -> good
-FrostWarden      C3 Psycho  towers 7 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 3.06/2.73 boss 1.68 cap 1.35 mechanic 0.02 -> too hard
-Rotbloom         C4 Easy    towers 7 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 1.15/1.07 boss 0.80 cap 1.00 mechanic 0.01 -> good
-Rotbloom         C4 Medium  towers 7 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.78/1.63 boss 1.06 cap 1.15 mechanic 0.01 -> good
-Rotbloom         C4 Hard    towers 7 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 2.29/2.12 boss 1.33 cap 1.25 mechanic 0.01 -> too hard
-Rotbloom         C4 Psycho  towers 7 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 3.25/2.91 boss 1.85 cap 1.35 mechanic 0.01 -> too hard
-Shattered        C5 Easy    towers 7 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 1.10/1.01 boss 0.75 cap 1.00 mechanic 0.02 -> good
-Shattered        C5 Medium  towers 7 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.71/1.56 boss 1.02 cap 1.15 mechanic 0.02 -> good
-Shattered        C5 Hard    towers 7 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 2.21/2.04 boss 1.26 cap 1.25 mechanic 0.02 -> good
-Shattered        C5 Psycho  towers 7 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 3.16/2.82 boss 1.78 cap 1.35 mechanic 0.02 -> too hard
-SealedOne        C6 Easy    towers 7 research  138 money  1258 scale 2.32 plain 0.86/0.73 wave 1.30/1.21 boss 0.94 cap 1.00 mechanic 0.01 -> good
-SealedOne        C6 Medium  towers 7 research  276 money  1386 scale 2.18 plain 1.04/0.99 wave 1.98/1.82 boss 1.24 cap 1.15 mechanic 0.01 -> too hard
-SealedOne        C6 Hard    towers 7 research  690 money  2107 scale 2.34 plain 1.26/1.14 wave 2.54/2.36 boss 1.56 cap 1.25 mechanic 0.01 -> too hard
-SealedOne        C6 Psycho  towers 7 research  900 money  1959 scale 2.07 plain 1.51/1.38 wave 3.60/3.22 boss 2.08 cap 1.35 mechanic 0.01 -> too hard
+Gravemaw         C1 Easy    towers 6 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 1.42/1.31 boss 0.94 cap 1.00 mechanic 0.09 -> good
+Gravemaw         C1 Medium  towers 6 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 2.10/1.94 boss 1.36 cap 1.15 mechanic 0.09 -> too hard
+Gravemaw         C1 Hard    towers 6 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 2.47/2.28 boss 1.50 cap 1.25 mechanic 0.09 -> too hard
+Gravemaw         C1 Psycho  towers 6 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 3.46/3.00 boss 1.96 cap 1.35 mechanic 0.10 -> too hard
+CinderMatriarch  C2 Easy    towers 7 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 0.91/0.84 boss 0.48 cap 1.00 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Medium  towers 7 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 1.41/1.29 boss 0.67 cap 1.15 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Hard    towers 7 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 1.65/1.53 boss 0.75 cap 1.25 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+CinderMatriarch  C2 Psycho  towers 7 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 2.32/2.03 boss 0.97 cap 1.35 mechanic 0.02 -> boss alone under a plain wave (see the probe)
+FrostWarden      C3 Easy    towers 7 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 1.22/1.12 boss 0.76 cap 1.00 mechanic 0.02 -> good
+FrostWarden      C3 Medium  towers 7 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 1.83/1.69 boss 1.09 cap 1.15 mechanic 0.02 -> good
+FrostWarden      C3 Hard    towers 7 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 2.15/1.98 boss 1.21 cap 1.25 mechanic 0.02 -> good
+FrostWarden      C3 Psycho  towers 7 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 3.01/2.62 boss 1.56 cap 1.35 mechanic 0.02 -> too hard
+Rotbloom         C4 Easy    towers 7 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 1.33/1.24 boss 0.87 cap 1.00 mechanic 0.01 -> good
+Rotbloom         C4 Medium  towers 7 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 1.97/1.83 boss 1.21 cap 1.15 mechanic 0.01 -> too hard
+Rotbloom         C4 Hard    towers 7 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 2.31/2.14 boss 1.37 cap 1.25 mechanic 0.01 -> too hard
+Rotbloom         C4 Psycho  towers 7 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 3.20/2.79 boss 1.73 cap 1.35 mechanic 0.01 -> too hard
+Shattered        C5 Easy    towers 7 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 1.27/1.17 boss 0.80 cap 1.00 mechanic 0.02 -> good
+Shattered        C5 Medium  towers 7 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 1.89/1.75 boss 1.16 cap 1.15 mechanic 0.02 -> good
+Shattered        C5 Hard    towers 7 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 2.23/2.05 boss 1.28 cap 1.25 mechanic 0.02 -> good
+Shattered        C5 Psycho  towers 7 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 3.11/2.71 boss 1.65 cap 1.35 mechanic 0.02 -> too hard
+SealedOne        C6 Easy    towers 7 research  138 money  1252 scale 2.41 plain 0.86/0.75 wave 1.49/1.40 boss 1.01 cap 1.00 mechanic 0.01 -> good
+SealedOne        C6 Medium  towers 7 research  276 money  1381 scale 2.62 plain 1.04/1.00 wave 2.18/2.05 boss 1.41 cap 1.15 mechanic 0.01 -> too hard
+SealedOne        C6 Hard    towers 7 research  690 money  2067 scale 2.68 plain 1.26/1.14 wave 2.56/2.38 boss 1.60 cap 1.25 mechanic 0.01 -> too hard
+SealedOne        C6 Psycho  towers 7 research  900 money  2038 scale 3.04 plain 1.50/1.24 wave 3.54/3.09 boss 2.01 cap 1.35 mechanic 0.01 -> too hard

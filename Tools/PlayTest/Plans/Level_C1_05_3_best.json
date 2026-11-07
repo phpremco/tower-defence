@@ -13,136 +13,164 @@
         },
         {
             "Kind": "build",
-            "Item": "Cannon",
+            "Item": "PulseRifle",
             "X": 6,
-            "Y": 5,
+            "Y": 6,
             "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Rocket",
-            "X": 34,
+            "X": 35,
             "Y": 5,
-            "Wave": 2
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 6,
-            "Y": 5,
-            "Wave": 2
+            "Wave": 1
         },
         {
             "Kind": "build",
             "Item": "Laser",
-            "X": 7,
+            "X": 8,
+            "Y": 6,
+            "Wave": 3
+        },
+        {
+            "Kind": "build",
+            "Item": "Rocket",
+            "X": 34,
             "Y": 4,
             "Wave": 3
         },
         {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 3
-        },
-        {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 8,
+            "Y": 6,
             "Wave": 4
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 6,
-            "Y": 6,
-            "Wave": 5
-        },
-        {
-            "Kind": "build",
-            "Item": "Laser",
-            "X": 20,
             "Y": 5,
-            "Wave": 8
-        },
-        {
-            "Kind": "repair",
-            "Item": "gates",
-            "X": 0,
-            "Y": 0,
-            "Wave": 8
-        },
-        {
-            "Kind": "build",
-            "Item": "Rocket",
-            "X": 34,
-            "Y": 4,
-            "Wave": 10
+            "Wave": 5
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 6,
+            "X": 7,
             "Y": 5,
-            "Wave": 12
+            "Wave": 5
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 5,
+            "Wave": 6
         },
         {
             "Kind": "build",
             "Item": "Laser",
-            "X": 8,
-            "Y": 6,
-            "Wave": 13
+            "X": 7,
+            "Y": 4,
+            "Wave": 7
         },
         {
             "Kind": "build",
             "Item": "Cannon",
             "X": 20,
             "Y": 4,
-            "Wave": 13
+            "Wave": 9
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 20,
+            "Y": 5,
+            "Wave": 9
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 6,
-            "Y": 6,
-            "Wave": 13
+            "X": 35,
+            "Y": 5,
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 4,
+            "Wave": 10
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 20,
             "Y": 5,
-            "Wave": 13
+            "Wave": 10
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 7,
+            "Y": 4,
+            "Wave": 11
+        },
+        {
+            "Kind": "sell",
+            "Item": "",
+            "X": 21,
+            "Y": 5,
+            "Wave": 11
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 35,
+            "Y": 5,
+            "Wave": 12
         },
         {
             "Kind": "build",
             "Item": "Laser",
             "X": 21,
             "Y": 5,
-            "Wave": 15
+            "Wave": 14
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 8,
-            "Y": 6,
-            "Wave": 15
+            "X": 6,
+            "Y": 5,
+            "Wave": 14
         },
         {
             "Kind": "upgrade",
             "Item": "",
             "X": 20,
             "Y": 4,
-            "Wave": 16
+            "Wave": 15
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 21,
+            "X": 6,
             "Y": 5,
             "Wave": 16
+        },
+        {
+            "Kind": "build",
+            "Item": "Laser",
+            "X": 21,
+            "Y": 5,
+            "Wave": 17
+        },
+        {
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 6,
+            "Y": 6,
+            "Wave": 17
         },
         {
             "Kind": "upgrade",

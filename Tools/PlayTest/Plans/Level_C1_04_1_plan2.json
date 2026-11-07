@@ -78,13 +78,6 @@
             "Kind": "upgrade",
             "Item": "",
             "X": 32,
-            "Y": 6,
-            "Wave": 15
-        },
-        {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
             "Y": 5,
             "Wave": 15
         },

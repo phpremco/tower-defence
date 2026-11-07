@@ -1,14 +1,14 @@
 {
     "Level": "Level_C1_04",
     "Difficulty": 2,
-    "Name": "Level_C1_04_2_plan1",
+    "Name": "Level_C1_04_2_best",
     "Family": "searched",
     "Steps": [
         {
             "Kind": "build",
             "Item": "PulseRifle",
             "X": 29,
-            "Y": 5,
+            "Y": 6,
             "Wave": 1
         },
         {
@@ -35,16 +35,16 @@
         {
             "Kind": "build",
             "Item": "Cannon",
-            "X": 32,
-            "Y": 5,
+            "X": 33,
+            "Y": 10,
             "Wave": 4
         },
         {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 28,
-            "Y": 5,
-            "Wave": 7
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 29,
+            "Y": 6,
+            "Wave": 4
         },
         {
             "Kind": "upgrade",
@@ -54,18 +54,18 @@
             "Wave": 7
         },
         {
-            "Kind": "upgrade",
-            "Item": "",
-            "X": 32,
-            "Y": 5,
-            "Wave": 7
+            "Kind": "build",
+            "Item": "PulseRifle",
+            "X": 33,
+            "Y": 6,
+            "Wave": 9
         },
         {
             "Kind": "upgrade",
             "Item": "",
-            "X": 28,
-            "Y": 5,
-            "Wave": 9
+            "X": 33,
+            "Y": 6,
+            "Wave": 12
         }
     ]
 }

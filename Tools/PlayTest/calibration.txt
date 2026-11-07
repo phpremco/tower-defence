@@ -1,140 +1,173 @@
-Calibration fit 2026-11-07 03:44: 633 runs (213 replayed plans), seeds 1,2,3, step 0.2, inputs 551e7c40.
+Calibration fit 2026-11-07 13:33: 630 runs (204 replayed plans), seeds 1,2,3, step 0.2, inputs 956d2750.
 Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health
 there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, "The balance pipeline"). The siege factor is the gate and base
-health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the fresh player the yardstick plays
-with (no permanent upgrades, perks or base turrets). ApplyCalibration writes the factor, siege and utilisation lines into the asset.
+health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the player who played each run (the
+campaign's expected player, or a plain save for the fresh-save sanity runs; round 22d). ApplyCalibration writes the factor, siege and utilisation lines into the asset.
 
 tower          efficiency   dealt   capacity  waves
-Cannon              0.749 2195223    2929510   4338
-Laser               0.702  751112    1069373   1493
-PulseRifle          0.785 2149185    2736688   4563
-Rocket              0.775  217509     280552   1702
+Cannon              0.778 2978017    3829050   4740
+Laser               0.639  979454    1533146   1816
+PulseRifle          0.766 3003056    3922682   4877
+Rocket              0.805  320358     398136   1929
 
-Siege factor 1.291: gate and base health lost 1179581 over the siege model's paper damage 913537 at factor one, on 6231 waves with a siege.
-Repair drone busy share 0.888 over 36525 drone-seconds on the field.
+Queue guard share 0.40: the share of their damage per second the queue and doorstep guards land on a siege, the one of 0.3..1.0 with the best verdict agreement (round 22d).
 
-Self check (fitted on all): verdict agreement 530/633 (84 %), mono rows 198/204 (97 %), ranking Spearman 0.68 over cells with 4+ runs.
-Hold-out (odd levels judge even and back): agreement 534/633 (84 %), mono 198/204 (97 %), Spearman 0.66.
-Rankings per cell (hold-out): Level_C1_02 0 0.20 (33); Level_C1_02 1 0.64 (33); Level_C1_02 2 0.30 (33); Level_C1_02 3 0.81 (21); Level_C1_04 0 0.58 (33); Level_C1_04 1 0.81 (24); Level_C1_04 2 0.75 (30); Level_C1_04 3 0.90 (21); Level_C1_06 0 0.80 (33); Level_C1_06 1 0.13 (33); Level_C1_06 2 0.29 (21); Level_C1_06 3 0.79 (21); Level_C1_01 0 1.00 (21); Level_C1_01 1 0.65 (24); Level_C1_01 2 0.16 (18); Level_C1_01 3 0.69 (18); Level_C1_03 0 0.92 (33); Level_C1_03 1 0.78 (33); Level_C1_03 2 0.93 (21); Level_C1_03 3 0.72 (21); Level_C1_05 0 0.94 (33); Level_C1_05 1 0.96 (33); Level_C1_05 2 0.91 (21); Level_C1_05 3 0.22 (21)
+Siege factor 1.345: gate and base health lost 11983320 over the siege model's paper damage 8911065 at factor one, on 59142 waves with a siege.
+Repair drone busy share 0.717 over 16153 drone-seconds on the field.
+
+Self check (fitted on all): verdict agreement 497/630 (79 %), mono rows 193/204 (95 %), ranking Spearman 0.65 over cells with 4+ runs.
+Hold-out (odd levels judge even and back): agreement 485/630 (77 %), mono 187/204 (92 %), Spearman 0.65.
+Rankings per cell (hold-out): Level_C1_02 0 0.34 (33); Level_C1_02 1 0.59 (33); Level_C1_02 2 0.22 (33); Level_C1_02 3 0.55 (21); Level_C1_04 0 0.52 (33); Level_C1_04 1 0.45 (27); Level_C1_04 2 0.90 (21); Level_C1_04 3 0.88 (21); Level_C1_06 0 0.91 (33); Level_C1_06 1 0.70 (33); Level_C1_06 2 0.35 (21); Level_C1_06 3 0.83 (21); Level_C1_01 0 1.00 (21); Level_C1_01 0 fresh 1.00 (6); Level_C1_01 1 0.35 (24); Level_C1_01 2 0.50 (18); Level_C1_01 3 0.30 (18); Level_C1_03 0 0.96 (33); Level_C1_03 1 0.58 (33); Level_C1_03 2 0.87 (21); Level_C1_03 3 0.45 (21); Level_C1_05 0 0.87 (33); Level_C1_05 1 0.95 (30); Level_C1_05 2 1.00 (21); Level_C1_05 3 0.15 (21)
 Disagreements (self check):
+  Level_C1_01 0 naive seed 3: paper survives (base 600, margin 1.47), game lost at wave 12/12 base 0
+  Level_C1_01 0 fresh naive seed 3: paper survives (base 600, margin 1.47), game lost at wave 12/12 base 0
   Level_C1_01 1 naive seed 3: paper survives (base 600, margin 1.37), game lost at wave 12/12 base 0
-  Level_C1_01 2 naive seed 3: paper survives (base 600, margin 0.80 leaking from wave 7), game lost at wave 12/12 base 0
-  Level_C1_02 1 affordable seed 1: paper survives (base 600, margin 0.81 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 1 mono PulseRifle seed 2: paper survives (base 600, margin 0.74 leaking from wave 7), game lost at wave 12/12 base 0
-  Level_C1_02 2 mono PulseRifle seed 1: paper survives (base 600, margin 0.56 leaking from wave 6), game lost at wave 10/12 base 0
-  Level_C1_02 2 naive seed 1: paper survives (base 600, margin 0.54 leaking from wave 7), game lost at wave 10/12 base 0
-  Level_C1_02 2 affordable seed 1: paper survives (base 600, margin 0.60 leaking from wave 6), game lost at wave 12/12 base 0
-  Level_C1_02 2 mono PulseRifle seed 2: paper survives (base 600, margin 0.56 leaking from wave 6), game lost at wave 10/12 base 0
-  Level_C1_02 2 mono Cannon seed 2: paper survives (base 600, margin 0.59 leaking from wave 7), game lost at wave 12/12 base 0
-  Level_C1_02 2 naive seed 2: paper survives (base 600, margin 0.59 leaking from wave 7), game lost at wave 10/12 base 0
-  Level_C1_02 2 affordable seed 2: paper survives (base 600, margin 0.60 leaking from wave 6), game lost at wave 10/12 base 0
-  Level_C1_02 2 mono PulseRifle seed 3: paper survives (base 600, margin 0.56 leaking from wave 6), game lost at wave 10/12 base 0
-  Level_C1_02 2 naive seed 3: paper survives (base 600, margin 0.59 leaking from wave 7), game lost at wave 11/12 base 0
-  Level_C1_02 2 affordable seed 3: paper survives (base 600, margin 0.60 leaking from wave 6), game lost at wave 12/12 base 0
-  Level_C1_03 1 creative seed 3: paper survives (base 557, margin 0.61 leaking from wave 8), game lost at wave 16/16 base 534
-  Level_C1_03 2 creative seed 3: paper survives (base 146, margin 0.48 leaking from wave 4), game lost at wave 16/16 base 0
-  Level_C1_04 0 naive seed 1: paper survives (base 542, margin 0.32 leaking from wave 9), game lost at wave 16/16 base 0
-  Level_C1_04 0 mono PulseRifle seed 3: paper falls (base 0 at wave 9, margin 0.58 leaking from wave 9), game won 3* at wave 16/16 base 600
-  Level_C1_04 3 creative seed 1: paper survives (base 180, margin 0.39 leaking from wave 1), game lost at wave 10/16 base 0
-  Level_C1_04 3 creative seed 2: paper survives (base 34, margin 0.38 leaking from wave 1), game lost at wave 10/16 base 0
-  Level_C1_04 3 creative seed 3: paper survives (base 34, margin 0.38 leaking from wave 1), game lost at wave 10/16 base 0
-  Level_C1_05 1 creative seed 1: paper survives (base 578, margin 0.60 leaking from wave 9), game lost at wave 17/17 base 0
-  Level_C1_05 1 creative seed 3: paper survives (base 578, margin 0.60 leaking from wave 9), game lost at wave 17/17 base 0
-  Level_C1_05 2 creative seed 2: paper survives (base 473, margin 0.44 leaking from wave 2), game lost at wave 9/17 base 0
-  Level_C1_06 1 creative seed 2: paper survives (base 429, margin 0.43 leaking from wave 4), game lost at wave 15/18 base 0
-  Level_C1_06 1 creative seed 3: paper survives (base 458, margin 0.47 leaking from wave 4), game lost at wave 15/18 base 0
-  Level_C1_06 2 creative seed 1: paper survives (base 593, margin 0.54 leaking from wave 3), game lost at wave 7/18 base 0
-  Level_C1_06 2 creative seed 2: paper survives (base 585, margin 0.52 leaking from wave 3), game lost at wave 7/18 base 0
-  Level_C1_06 2 creative seed 3: paper survives (base 593, margin 0.54 leaking from wave 3), game lost at wave 7/18 base 0
-  Level_C1_01 1 plan Level_C1_01_1_plan3 seed 2: paper survives (base 600, margin 0.42 leaking from wave 11), game lost at wave 12/12 base 0
-  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 1: paper falls (base 0 at wave 11, margin 0.46 leaking from wave 7), game won 3* at wave 12/12 base 600
-  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 2: paper falls (base 0 at wave 11, margin 0.46 leaking from wave 7), game won 3* at wave 12/12 base 600
-  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 3: paper falls (base 0 at wave 11, margin 0.46 leaking from wave 7), game won 3* at wave 12/12 base 600
-  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 1: paper survives (base 600, margin 0.49 leaking from wave 11), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 2: paper survives (base 600, margin 0.49 leaking from wave 11), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 3: paper survives (base 600, margin 0.49 leaking from wave 11), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan3 seed 1: paper survives (base 600, margin 0.78 leaking from wave 10), game lost at wave 11/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan3 seed 2: paper survives (base 600, margin 0.72 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan3 seed 3: paper survives (base 600, margin 0.72 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan4 seed 1: paper survives (base 600, margin 1.03), game lost at wave 10/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan5 seed 1: paper survives (base 600, margin 0.61 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan5 seed 2: paper survives (base 600, margin 0.61 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 0 plan Level_C1_02_0_plan5 seed 3: paper survives (base 600, margin 0.61 leaking from wave 10), game lost at wave 12/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 1: paper survives (base 600, margin 1.16), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 2: paper survives (base 600, margin 1.16), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 3: paper survives (base 600, margin 1.16), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 1: paper survives (base 600, margin 1.00), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 2: paper survives (base 600, margin 1.00), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 3: paper survives (base 600, margin 1.00), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan3 seed 3: paper survives (base 600, margin 1.03), game lost at wave 9/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 1: paper survives (base 600, margin 1.07), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 2: paper survives (base 600, margin 1.07), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 3: paper survives (base 600, margin 1.07), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 1: paper survives (base 600, margin 1.03), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 2: paper survives (base 600, margin 1.03), game lost at wave 8/12 base 0
-  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 3: paper survives (base 600, margin 1.03), game lost at wave 8/12 base 0
-  Level_C1_02 2 plan Level_C1_02_2_plan3 seed 1: paper survives (base 600, margin 0.86 leaking from wave 7), game lost at wave 8/12 base 0
-  Level_C1_02 2 plan Level_C1_02_2_plan3 seed 2: paper survives (base 600, margin 0.86 leaking from wave 7), game lost at wave 8/12 base 0
-  Level_C1_02 2 plan Level_C1_02_2_plan3 seed 3: paper survives (base 600, margin 0.86 leaking from wave 7), game lost at wave 8/12 base 0
-  Level_C1_03 0 plan Level_C1_03_0_plan2 seed 1: paper survives (base 594, margin 0.75 leaking from wave 12), game lost at wave 15/16 base 0
-  Level_C1_03 0 plan Level_C1_03_0_plan4 seed 3: paper survives (base 600, margin 0.59 leaking from wave 9), game lost at wave 13/16 base 0
-  Level_C1_04 0 plan Level_C1_04_0_plan1 seed 1: paper falls (base 0 at wave 16, margin 0.42 leaking from wave 10), game won 1* at wave 16/16 base 58
-  Level_C1_04 0 plan Level_C1_04_0_plan1 seed 2: paper survives (base 600, margin 1.12), game lost at wave 8/16 base 0
-  Level_C1_04 0 plan Level_C1_04_0_plan1 seed 3: paper survives (base 600, margin 1.12), game lost at wave 8/16 base 0
-  Level_C1_04 0 plan Level_C1_04_0_plan2 seed 1: paper falls (base 0 at wave 3, margin 0.71 leaking from wave 8), game won 1* at wave 16/16 base 264
-  Level_C1_04 0 plan Level_C1_04_0_plan2 seed 2: paper falls (base 0 at wave 3, margin 0.71 leaking from wave 8), game won 1* at wave 16/16 base 259
-  Level_C1_04 0 plan Level_C1_04_0_plan2 seed 3: paper falls (base 0 at wave 3, margin 0.71 leaking from wave 8), game won 1* at wave 16/16 base 264
-  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 1: paper falls (base 0 at wave 3, margin 0.65 leaking from wave 8), game won 2* at wave 16/16 base 307
-  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 2: paper falls (base 0 at wave 3, margin 0.65 leaking from wave 8), game won 1* at wave 16/16 base 283
-  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 3: paper falls (base 0 at wave 3, margin 0.65 leaking from wave 8), game won 1* at wave 16/16 base 288
-  Level_C1_04 0 plan Level_C1_04_0_plan5 seed 1: paper survives (base 600, margin 0.92 leaking from wave 8), game lost at wave 8/16 base 0
-  Level_C1_04 0 plan Level_C1_04_0_plan5 seed 2: paper survives (base 600, margin 0.92 leaking from wave 8), game lost at wave 8/16 base 0
-  Level_C1_04 0 plan Level_C1_04_0_plan5 seed 3: paper survives (base 600, margin 0.92 leaking from wave 8), game lost at wave 8/16 base 0
-  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 1: paper falls (base 0 at wave 16, margin 0.60 leaking from wave 8), game won 3* at wave 16/16 base 558
-  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 2: paper falls (base 0 at wave 16, margin 0.60 leaking from wave 8), game won 3* at wave 16/16 base 588
-  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 3: paper falls (base 0 at wave 16, margin 0.60 leaking from wave 8), game won 3* at wave 16/16 base 588
-  Level_C1_04 2 plan Level_C1_04_2_plan1 seed 1: paper survives (base 332, margin 0.39 leaking from wave 8), game lost at wave 10/16 base 0
-  Level_C1_04 2 plan Level_C1_04_2_plan1 seed 2: paper survives (base 332, margin 0.39 leaking from wave 8), game lost at wave 10/16 base 0
-  Level_C1_04 2 plan Level_C1_04_2_plan1 seed 3: paper survives (base 332, margin 0.39 leaking from wave 8), game lost at wave 10/16 base 0
-  Level_C1_04 2 plan Level_C1_04_2_plan2 seed 2: paper survives (base 347, margin 0.41 leaking from wave 5), game lost at wave 11/16 base 0
-  Level_C1_04 2 plan Level_C1_04_2_plan3 seed 2: paper falls (base 0 at wave 10, margin 0.29 leaking from wave 5), game won 1* at wave 16/16 base 69
-  Level_C1_05 0 plan Level_C1_05_0_plan2 seed 2: paper survives (base 594, margin 0.60 leaking from wave 12), game lost at wave 14/17 base 0
-  Level_C1_05 0 plan Level_C1_05_0_plan3 seed 1: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 12), game won 3* at wave 17/17 base 600
-  Level_C1_05 0 plan Level_C1_05_0_plan3 seed 2: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 12), game won 3* at wave 17/17 base 600
-  Level_C1_05 0 plan Level_C1_05_0_plan3 seed 3: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 12), game won 3* at wave 17/17 base 586
-  Level_C1_05 0 plan Level_C1_05_0_plan5 seed 2: paper survives (base 597, margin 0.63 leaking from wave 11), game lost at wave 15/17 base 0
-  Level_C1_05 1 plan Level_C1_05_1_plan1 seed 3: paper survives (base 599, margin 0.98 leaking from wave 8), game lost at wave 12/17 base 0
-  Level_C1_05 1 plan Level_C1_05_1_plan2 seed 2: paper survives (base 598, margin 0.82 leaking from wave 8), game lost at wave 14/17 base 0
-  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 1: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 2: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 3: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan2 seed 3: paper falls (base 0 at wave 16, margin 0.44 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan3 seed 1: paper falls (base 0 at wave 13, margin 0.47 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan3 seed 2: paper falls (base 0 at wave 13, margin 0.47 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan3 seed 3: paper falls (base 0 at wave 13, margin 0.47 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan4 seed 1: paper falls (base 0 at wave 16, margin 0.45 leaking from wave 9), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan4 seed 3: paper falls (base 0 at wave 16, margin 0.45 leaking from wave 9), game won 3* at wave 18/18 base 600
-  Level_C1_06 0 plan Level_C1_06_0_plan5 seed 1: paper falls (base 0 at wave 16, margin 0.55 leaking from wave 13), game won 3* at wave 18/18 base 590
-  Level_C1_06 0 plan Level_C1_06_0_plan5 seed 3: paper falls (base 0 at wave 16, margin 0.55 leaking from wave 13), game won 3* at wave 18/18 base 600
-  Level_C1_06 1 plan Level_C1_06_1_plan4 seed 1: paper survives (base 595, margin 0.75 leaking from wave 4), game lost at wave 8/18 base 0
-  Level_C1_06 1 plan Level_C1_06_1_plan4 seed 2: paper falls (base 0 at wave 9, margin 0.37 leaking from wave 4), game won 3* at wave 18/18 base 600
-  Level_C1_06 1 plan Level_C1_06_1_plan5 seed 1: paper survives (base 595, margin 0.75 leaking from wave 4), game lost at wave 8/18 base 0
-  Level_C1_06 1 plan Level_C1_06_1_plan5 seed 3: paper survives (base 595, margin 0.75 leaking from wave 4), game lost at wave 8/18 base 0
+  Level_C1_01 2 mono PulseRifle seed 1: paper falls (base 0 at wave 7, margin 0.62 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 mono Cannon seed 1: paper falls (base 0 at wave 8, margin 0.54 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 creative seed 1: paper falls (base 0 at wave 7, margin 0.79 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 mono PulseRifle seed 2: paper falls (base 0 at wave 7, margin 0.62 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 mono Cannon seed 2: paper falls (base 0 at wave 8, margin 0.54 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 naive seed 2: paper falls (base 0 at wave 7, margin 0.79 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 creative seed 2: paper falls (base 0 at wave 7, margin 0.79 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 mono PulseRifle seed 3: paper falls (base 0 at wave 7, margin 0.62 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 mono Cannon seed 3: paper falls (base 0 at wave 8, margin 0.56 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 creative seed 3: paper falls (base 0 at wave 7, margin 0.79 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 3 mono PulseRifle seed 1: paper falls (base 0 at wave 7, margin 0.59 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 mono Cannon seed 1: paper falls (base 0 at wave 5, margin 0.34 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 affordable seed 1: paper falls (base 0 at wave 5, margin 0.54 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 creative seed 1: paper falls (base 0 at wave 5, margin 0.54 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 mono PulseRifle seed 2: paper falls (base 0 at wave 7, margin 0.59 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 mono Cannon seed 2: paper falls (base 0 at wave 5, margin 0.34 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 affordable seed 2: paper falls (base 0 at wave 5, margin 0.47 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 creative seed 2: paper falls (base 0 at wave 5, margin 0.47 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 affordable seed 3: paper falls (base 0 at wave 5, margin 0.47 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_01 3 creative seed 3: paper falls (base 0 at wave 5, margin 0.47 leaking from wave 5), game won 3* at wave 12/12 base 800
+  Level_C1_02 0 mono Laser seed 1: paper survives (base 700, margin 0.76 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_02 1 affordable seed 1: paper survives (base 700, margin 0.76 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_02 1 affordable seed 2: paper survives (base 700, margin 0.76 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_03 2 creative seed 1: paper falls (base 0 at wave 15, margin 0.52 leaking from wave 9), game won 2* at wave 16/16 base 396
+  Level_C1_03 2 creative seed 2: paper falls (base 0 at wave 14, margin 0.52 leaking from wave 9), game won 3* at wave 16/16 base 700
+  Level_C1_03 2 creative seed 3: paper falls (base 0 at wave 14, margin 0.52 leaking from wave 9), game won 2* at wave 16/16 base 511
+  Level_C1_03 3 creative seed 1: paper falls (base 0 at wave 9, margin 0.65 leaking from wave 6), game won 2* at wave 16/16 base 666
+  Level_C1_03 3 creative seed 2: paper falls (base 0 at wave 9, margin 0.63 leaking from wave 6), game won 3* at wave 16/16 base 755
+  Level_C1_03 3 creative seed 3: paper falls (base 0 at wave 9, margin 0.63 leaking from wave 6), game won 3* at wave 16/16 base 766
+  Level_C1_04 3 creative seed 3: paper survives (base 222, margin 0.54 leaking from wave 5), game lost at wave 14/16 base 0
+  Level_C1_05 1 creative seed 2: paper survives (base 700, margin 0.65 leaking from wave 15), game lost at wave 17/17 base 0
+  Level_C1_05 1 creative seed 3: paper survives (base 700, margin 0.67 leaking from wave 15), game lost at wave 17/17 base 0
+  Level_C1_06 1 creative seed 1: paper falls (base 0 at wave 17, margin 0.59 leaking from wave 5), game won 3* at wave 18/18 base 700
+  Level_C1_06 1 creative seed 2: paper falls (base 0 at wave 17, margin 0.60 leaking from wave 5), game won 3* at wave 18/18 base 700
+  Level_C1_06 2 creative seed 1: paper falls (base 0 at wave 7, margin 0.68 leaking from wave 4), game won 3* at wave 18/18 base 800
+  Level_C1_06 2 creative seed 2: paper falls (base 0 at wave 7, margin 0.60 leaking from wave 4), game won 3* at wave 18/18 base 800
+  Level_C1_06 2 creative seed 3: paper falls (base 0 at wave 7, margin 0.58 leaking from wave 4), game won 3* at wave 18/18 base 800
+  Level_C1_06 3 creative seed 1: paper falls (base 0 at wave 6, margin 0.55 leaking from wave 4), game won 2* at wave 18/18 base 677
+  Level_C1_06 3 creative seed 2: paper falls (base 0 at wave 6, margin 0.55 leaking from wave 4), game won 3* at wave 18/18 base 744
+  Level_C1_01 1 plan Level_C1_01_1_plan1 seed 3: paper falls (base 0 at wave 12, margin 0.42 leaking from wave 11), game won 3* at wave 12/12 base 600
+  Level_C1_01 1 plan Level_C1_01_1_plan3 seed 1: paper falls (base 0 at wave 12, margin 0.43 leaking from wave 11), game won 3* at wave 12/12 base 600
+  Level_C1_01 1 plan Level_C1_01_1_plan3 seed 2: paper falls (base 0 at wave 12, margin 0.43 leaking from wave 11), game won 3* at wave 12/12 base 600
+  Level_C1_01 1 plan Level_C1_01_1_plan3 seed 3: paper falls (base 0 at wave 12, margin 0.43 leaking from wave 11), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 1: paper falls (base 0 at wave 7, margin 0.68 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 2: paper falls (base 0 at wave 7, margin 0.68 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_01 2 plan Level_C1_01_2_plan1 seed 3: paper falls (base 0 at wave 7, margin 0.68 leaking from wave 7), game won 3* at wave 12/12 base 600
+  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 1: paper survives (base 700, margin 0.50 leaking from wave 12), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 2: paper survives (base 700, margin 0.50 leaking from wave 12), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan2 seed 3: paper survives (base 700, margin 0.50 leaking from wave 12), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan4 seed 1: paper survives (base 700, margin 1.21), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan4 seed 2: paper survives (base 700, margin 1.21), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan4 seed 3: paper survives (base 700, margin 1.21), game lost at wave 12/12 base 0
+  Level_C1_02 0 plan Level_C1_02_0_plan5 seed 2: paper falls (base 0 at wave 10, margin 0.85 leaking from wave 7), game won 3* at wave 12/12 base 700
+  Level_C1_02 0 plan Level_C1_02_0_plan5 seed 3: paper falls (base 0 at wave 10, margin 0.85 leaking from wave 7), game won 3* at wave 12/12 base 700
+  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 1: paper survives (base 700, margin 1.20), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 2: paper survives (base 700, margin 1.20), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan1 seed 3: paper survives (base 700, margin 1.20), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 1: paper survives (base 700, margin 1.03), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 2: paper survives (base 700, margin 1.03), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan2 seed 3: paper survives (base 700, margin 1.03), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan3 seed 2: paper survives (base 700, margin 1.00), game lost at wave 9/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan3 seed 3: paper survives (base 700, margin 1.00), game lost at wave 9/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 1: paper falls (base 0 at wave 11, margin 0.68 leaking from wave 12), game won 3* at wave 12/12 base 700
+  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 2: paper falls (base 0 at wave 11, margin 0.68 leaking from wave 12), game won 3* at wave 12/12 base 700
+  Level_C1_02 1 plan Level_C1_02_1_plan4 seed 3: paper falls (base 0 at wave 11, margin 0.74 leaking from wave 12), game won 3* at wave 12/12 base 700
+  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 1: paper survives (base 700, margin 1.08), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 2: paper survives (base 700, margin 1.08), game lost at wave 8/12 base 0
+  Level_C1_02 1 plan Level_C1_02_1_plan5 seed 3: paper survives (base 700, margin 1.08), game lost at wave 8/12 base 0
+  Level_C1_02 2 plan Level_C1_02_2_plan5 seed 1: paper survives (base 700, margin 1.03), game lost at wave 7/12 base 0
+  Level_C1_03 0 plan Level_C1_03_0_plan5 seed 1: paper falls (base 0 at wave 14, margin 0.76 leaking from wave 9), game won 3* at wave 16/16 base 657
+  Level_C1_03 0 plan Level_C1_03_0_plan5 seed 2: paper falls (base 0 at wave 14, margin 0.76 leaking from wave 9), game won 3* at wave 16/16 base 662
+  Level_C1_03 0 plan Level_C1_03_0_plan5 seed 3: paper falls (base 0 at wave 14, margin 0.76 leaking from wave 9), game won 2* at wave 16/16 base 628
+  Level_C1_03 1 plan Level_C1_03_1_plan2 seed 1: paper survives (base 700, margin 0.86 leaking from wave 9), game lost at wave 13/16 base 0
+  Level_C1_03 1 plan Level_C1_03_1_plan4 seed 1: paper survives (base 0, margin 0.71 leaking from wave 10), game lost at wave 13/16 base 0
+  Level_C1_03 1 plan Level_C1_03_1_plan4 seed 2: paper survives (base 698, margin 0.67 leaking from wave 10), game lost at wave 12/16 base 0
+  Level_C1_03 1 plan Level_C1_03_1_plan4 seed 3: paper survives (base 698, margin 0.67 leaking from wave 10), game lost at wave 12/16 base 0
+  Level_C1_03 1 plan Level_C1_03_1_plan5 seed 2: paper falls (base 0 at wave 10, margin 0.54 leaking from wave 9), game won 3* at wave 16/16 base 700
+  Level_C1_03 1 plan Level_C1_03_1_plan5 seed 3: paper falls (base 0 at wave 10, margin 0.70 leaking from wave 9), game won 3* at wave 16/16 base 700
+  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 1: paper survives (base 700, margin 1.12), game lost at wave 9/16 base 0
+  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 2: paper survives (base 700, margin 1.31), game lost at wave 9/16 base 0
+  Level_C1_04 0 plan Level_C1_04_0_plan3 seed 3: paper survives (base 700, margin 1.31), game lost at wave 9/16 base 0
+  Level_C1_04 0 plan Level_C1_04_0_plan4 seed 1: paper survives (base 700, margin 1.20), game lost at wave 9/16 base 0
+  Level_C1_04 0 plan Level_C1_04_0_plan4 seed 2: paper survives (base 700, margin 1.20), game lost at wave 9/16 base 0
+  Level_C1_04 0 plan Level_C1_04_0_plan4 seed 3: paper survives (base 700, margin 1.20), game lost at wave 9/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan1 seed 1: paper survives (base 168, margin 0.17 leaking from wave 3), game lost at wave 10/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan1 seed 2: paper survives (base 461, margin 0.51 leaking from wave 3), game lost at wave 7/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan1 seed 3: paper survives (base 461, margin 0.51 leaking from wave 3), game lost at wave 8/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 1: paper falls (base 0 at wave 15, margin 0.56 leaking from wave 8), game won 3* at wave 16/16 base 664
+  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 2: paper falls (base 0 at wave 15, margin 0.56 leaking from wave 8), game won 3* at wave 16/16 base 694
+  Level_C1_04 1 plan Level_C1_04_1_plan2 seed 3: paper falls (base 0 at wave 15, margin 0.56 leaking from wave 8), game won 3* at wave 16/16 base 700
+  Level_C1_04 1 plan Level_C1_04_1_plan3 seed 1: paper survives (base 691, margin 0.77 leaking from wave 3), game lost at wave 8/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan3 seed 2: paper survives (base 597, margin 0.74 leaking from wave 3), game lost at wave 7/16 base 0
+  Level_C1_04 1 plan Level_C1_04_1_plan3 seed 3: paper survives (base 691, margin 0.77 leaking from wave 3), game lost at wave 8/16 base 0
+  Level_C1_04 2 plan Level_C1_04_2_best seed 1: paper survives (base 325, margin 0.46 leaking from wave 8), game lost at wave 10/16 base 0
+  Level_C1_04 2 plan Level_C1_04_2_best seed 2: paper survives (base 325, margin 0.46 leaking from wave 8), game lost at wave 11/16 base 0
+  Level_C1_04 2 plan Level_C1_04_2_best seed 3: paper survives (base 325, margin 0.46 leaking from wave 8), game lost at wave 11/16 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan2 seed 2: paper survives (base 700, margin 0.60 leaking from wave 12), game lost at wave 14/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan2 seed 3: paper survives (base 700, margin 0.96 leaking from wave 12), game lost at wave 12/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan3 seed 3: paper survives (base 700, margin 1.18), game lost at wave 13/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan4 seed 1: paper survives (base 685, margin 0.79 leaking from wave 13), game lost at wave 17/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan4 seed 2: paper survives (base 685, margin 0.79 leaking from wave 13), game lost at wave 16/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan4 seed 3: paper survives (base 685, margin 0.79 leaking from wave 13), game lost at wave 16/17 base 0
+  Level_C1_05 0 plan Level_C1_05_0_plan5 seed 1: paper falls (base 0 at wave 16, margin 0.75 leaking from wave 13), game won 3* at wave 17/17 base 700
+  Level_C1_05 0 plan Level_C1_05_0_plan5 seed 2: paper falls (base 0 at wave 16, margin 0.75 leaking from wave 13), game won 3* at wave 17/17 base 700
+  Level_C1_05 0 plan Level_C1_05_0_plan5 seed 3: paper falls (base 0 at wave 16, margin 0.75 leaking from wave 13), game won 3* at wave 17/17 base 700
+  Level_C1_05 2 plan Level_C1_05_2_best seed 1: paper survives (base 668, margin 0.64 leaking from wave 5), game lost at wave 8/17 base 0
+  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 1: paper falls (base 0 at wave 16, margin 0.68 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 2: paper falls (base 0 at wave 16, margin 0.68 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan1 seed 3: paper falls (base 0 at wave 16, margin 0.68 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan2 seed 1: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan2 seed 2: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan2 seed 3: paper falls (base 0 at wave 16, margin 0.59 leaking from wave 16), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan3 seed 1: paper falls (base 0 at wave 16, margin 0.54 leaking from wave 13), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan3 seed 3: paper falls (base 0 at wave 16, margin 0.54 leaking from wave 13), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan4 seed 1: paper falls (base 0 at wave 16, margin 0.52 leaking from wave 13), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan4 seed 3: paper falls (base 0 at wave 16, margin 0.52 leaking from wave 13), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 plan Level_C1_06_0_plan5 seed 1: paper falls (base 0 at wave 17, margin 0.75 leaking from wave 14), game won 3* at wave 18/18 base 657
+  Level_C1_06 0 plan Level_C1_06_0_plan5 seed 2: paper falls (base 0 at wave 17, margin 0.75 leaking from wave 14), game won 3* at wave 18/18 base 657
+  Level_C1_06 0 plan Level_C1_06_0_plan5 seed 3: paper falls (base 0 at wave 17, margin 0.75 leaking from wave 14), game won 3* at wave 18/18 base 681
+  Level_C1_06 1 plan Level_C1_06_1_plan1 seed 1: paper falls (base 0 at wave 13, margin 0.27 leaking from wave 12), game won 1* at wave 18/18 base 310
+  Level_C1_06 1 plan Level_C1_06_1_plan1 seed 2: paper falls (base 0 at wave 13, margin 0.27 leaking from wave 12), game won 2* at wave 18/18 base 472
+  Level_C1_06 1 plan Level_C1_06_1_plan1 seed 3: paper falls (base 0 at wave 13, margin 0.27 leaking from wave 12), game won 2* at wave 18/18 base 400
+  Level_C1_06 1 plan Level_C1_06_1_plan3 seed 1: paper falls (base 0 at wave 12, margin 0.66 leaking from wave 8), game won 3* at wave 18/18 base 700
+  Level_C1_06 1 plan Level_C1_06_1_plan3 seed 2: paper survives (base 697, margin 0.95 leaking from wave 8), game lost at wave 10/18 base 0
+  Level_C1_06 1 plan Level_C1_06_1_plan3 seed 3: paper falls (base 0 at wave 12, margin 0.66 leaking from wave 8), game won 3* at wave 18/18 base 700
+  Level_C1_06 1 plan Level_C1_06_1_plan4 seed 2: paper falls (base 0 at wave 13, margin 0.49 leaking from wave 12), game won 2* at wave 18/18 base 610
+  Level_C1_06 1 plan Level_C1_06_1_plan4 seed 3: paper falls (base 0 at wave 13, margin 0.49 leaking from wave 12), game won 3* at wave 18/18 base 700
+  Level_C1_06 1 plan Level_C1_06_1_plan5 seed 1: paper falls (base 0 at wave 13, margin 0.49 leaking from wave 8), game won 3* at wave 18/18 base 670
+  Level_C1_06 1 plan Level_C1_06_1_plan5 seed 2: paper falls (base 0 at wave 13, margin 0.49 leaking from wave 8), game won 3* at wave 18/18 base 700
+  Level_C1_06 1 plan Level_C1_06_1_plan5 seed 3: paper falls (base 0 at wave 13, margin 0.49 leaking from wave 8), game won 3* at wave 18/18 base 700
 
 Step check (the same runs at each step, efficiency per type):
-  Cannon         step 0.2: 0.358   step 0.05: 0.383   drift 7 %
+  Cannon         step 0.2: 0.415   step 0.05: 0.443   drift 7 %
   Laser          step 0.2: 0.373   step 0.05: 0.404   drift 8 %
   PulseRifle     step 0.2: 0.419   step 0.05: 0.446   drift 6 %
   the 0.2 s step is a valid calibration step (every type within 10 %).
 
-factor Cannon 0.749
-factor Laser 0.702
-factor PulseRifle 0.785
-factor Rocket 0.775
-repairbusy 0.888
-siege 1.291
+factor Cannon 0.778
+factor Laser 0.639
+factor PulseRifle 0.766
+factor Rocket 0.805
+repairbusy 0.717
+queueguard 0.40
+siege 1.345
 utilisation human 0.340
 utilisation bot 0.270
-inputs 551e7c40
+inputs 956d2750
 seeds 1,2,3
 step 0.2

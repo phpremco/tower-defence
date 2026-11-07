@@ -6,24 +6,31 @@
     "Steps": [
         {
             "Kind": "build",
+            "Item": "Cannon",
+            "X": 13,
+            "Y": 7,
+            "Wave": 1
+        },
+        {
+            "Kind": "build",
             "Item": "PulseRifle",
             "X": 5,
             "Y": 13,
             "Wave": 1
         },
         {
-            "Kind": "build",
-            "Item": "PulseRifle",
-            "X": 6,
-            "Y": 14,
-            "Wave": 1
+            "Kind": "upgrade",
+            "Item": "",
+            "X": 5,
+            "Y": 13,
+            "Wave": 3
         },
         {
             "Kind": "build",
-            "Item": "Cannon",
-            "X": 14,
-            "Y": 7,
-            "Wave": 2
+            "Item": "PulseRifle",
+            "X": 31,
+            "Y": 8,
+            "Wave": 4
         }
     ]
 }
