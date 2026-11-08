@@ -3661,3 +3661,31 @@ cells (`builder_iterations.txt`): the next pass is design decisions, not a third
 2. After closing the enemy menu the level lighting is far too bright: the mood (theme grading/fog/exposure) is lost. Restore the level's lighting state on close.
 3. The in-level enemy menu lists every enemy; it must list only the enemies present in this level (see the tutorial-hints decision; the full list belongs in a general Codex in the main menu).
 4. Some animations need fixes; Remco writes them down tomorrow.
+
+### Remco's playtest notes (2026-11-08)
+
+Naming: the hero is renamed **Spencer** (was Mercer) everywhere: data, UI, dialogue, cutscenes, Codex, docs. Drop the generic
+label "Hero" in the UI: he is the only one, so use his name.
+
+Look and cutscenes:
+1. Spencer looks basic next to the enemies: a visual upgrade (cooler, more detail) in Blender.
+2. After the base is built the drones land on the corners; something can be in the way so a drone lands inside rock. Clear or
+   move the landing spots.
+3. The tower drill in the cutscene: a big block hides it going in, and it happens next to the road but the drill is not there
+   afterwards. Place it at its final location in the cutscene.
+4. When the enemies confront Spencer they should roar and run back inside, then the game starts (otherwise it reads as the
+   first wave).
+5. Nice to have: some eyes glowing red between the rocks, or the queen glimpsed waking up.
+6. Ship launch to the planet and the booster rockets still look basic; the scene does not feel alive.
+7. Cutscenes need sound effects (Remco tested without sound; check what exists).
+8. Ant walk animation more lifelike. More animation notes follow from Remco.
+9. Laser turret: above normal speed the firing is not visible and it looks broken (beam/flash must stay visible at x2/x3).
+10. Cragback (stone enemy) plating is not visible: armour needs a visual read (plates, sparks/ricochet on hit, Codex).
+
+Gameplay:
+11. Spencer dies too fast in fights: more HP and/or a healing ability.
+12. Gates: Dr. Voss should introduce gate upgrades and their tactical use, and tell Spencer to move to another gate when that
+    gives an advantage. Check that the balance bot weighs in-level gate upgrades (permanent gate research is in the player model).
+13. Check that the balance bot uses Spencer's pulse ability (the ledger counts his blade and gun DPS only).
+
+Remco: levels 1-2 play much better after the balance work.
