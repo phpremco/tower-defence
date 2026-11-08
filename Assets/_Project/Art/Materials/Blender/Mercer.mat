@@ -38,11 +38,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
         m_Texture: {fileID: 2800000, guid: 62ecb44d7ad78e4468c3c597b7fa6af9, type: 3}
-        m_Scale: {x: 75.8, y: 75.8}
+        m_Scale: {x: 136, y: 136}
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap2:
         m_Texture: {fileID: 2800000, guid: 41b1c2a00e16ca84aae8ea93bcd66b78, type: 3}
-        m_Scale: {x: 31.6, y: 31.6}
+        m_Scale: {x: 56.7, y: 56.7}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 2800000, guid: 33b60670de1e30042a55119c4e2cda41, type: 3}

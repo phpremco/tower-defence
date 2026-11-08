@@ -25,6 +25,7 @@ MonoBehaviour:
   _height: 1.2622681
   _lodScreenHeight: 0.02
   _upperBodyBone: 
+  _displayExposure: 1
   _deathFade: {x: 0, y: 0}
   _embers: 0
   _bleeds: 0

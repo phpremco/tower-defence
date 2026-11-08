@@ -36,6 +36,7 @@ namespace Game.Editor
         {
             { BlenderStoryCatalog.Mothership, (2048, 1024) },
             { VossAsset, (2048, 1024) },
+            { BlenderStoryCatalog.HeroAsset, (2048, 1024) },
             // The menu island: Top 2048, Cliff 4096 x 512 (Low half); the display backdrop 2048 x 1024.
             { MenuIslandAsset, (4096, 2048) },
             { UiDisplayAsset, (2048, 1024) },

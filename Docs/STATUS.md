@@ -3758,3 +3758,29 @@ Gravemaw, Rotbloom and FrostWarden are too hard on Medium/Hard/Psycho in the led
 failure; this round touched no balance data or ledger code, so the balance round should check the second one.
 `BalanceAcceptanceTests` was skipped. PlayMode smoke `BossIntroSmokeTests` passed. 0 compile errors, 0 warnings, clean
 console after the play runs. Save: `progress.json` MD5 ae9223b8 before and after every play run; dev backup untouched.
+
+## Round 23b: Spencer's new look imported, K and X in the display font (2026-11-08)
+
+Not committed. No balance data touched.
+
+1. **Spencer look (build_mercer2.py output) in Unity.** Ran `Tools/Generate/Blender Story (sync, hero, portraits,
+   cutscene)`: `Mercer.fbx` and the four maps (and Low) copied from `ArtSource/Exports/Mercer` (hashes match), materials
+   rebuilt. `BlenderModelImporter.MapSizeOverrides` now has `{ BlenderStoryCatalog.HeroAsset, (2048, 1024) }`, so his maps
+   import at 2048 like Voss. Detail tiling comes from the report (`BlenderReport` regex -> `BlenderArtBuilder.SetDetails`):
+   `Mercer.mat` now carries weave 136 and ceramic 56.7 (was 75.8/31.6), nothing hardcoded. `MercerArt` height 1.566 ->
+   1.743 (the antenna). The other story art assets only gained newly serialized default fields (`_displayExposure`,
+   `_momentSeconds`, `_burden`). Checked in play (`imp3b_hero.sh r23b`, `dialogue_shots.sh mercer`): idle, run, pistol,
+   blade slash, shockwave, Cragback fight, down and revive all animate; the look matches
+   `ArtSource/Previews/Spencer/after_game.png` (white and blue layered armour, gold crest, lit visor, power pack with cyan
+   cells, antenna); the dialogue bust frames helmet, visor and chest like `after_bust.png`. 0 errors, 0 warnings.
+2. **K drawn as H, X drawn as H (root cause: the font itself).** `KenneyFuture.ttf` and `KenneyFutureNarrow.ttf` (the
+   `UiSkin` display font for legacy `Text` at 28 px and up) draw K as an H with a tiny notch on the right and X as an H
+   with notches on both sides, upper and lower case ("SHITTER", "CODEH"). The fonts are CC0, so
+   `Tools/Fonts/patch_kenney_glyphs.py` (stdlib Python, idempotent) redraws K/k/X/x in the font's own style (128-unit stem,
+   45-degree strokes like its V, square ends) and rewrites the TTFs with fresh checksums. Verified: codex title "CODEX",
+   entry "SKITTER", main-menu "CODEX" button (`Tools/PlayTest/r23b_codex.sh`). The modified
+   `LiberationSans SDF - Fallback.asset` was only dynamic-atlas churn (the bullet glyph U+25CF dropped), unrelated; reverted.
+   Side note: in this font 5 and S are also very alike ("FIRST WAVE IN 25", money); left as is, ask Remco.
+
+Tests: EditMode 682, 626 passed, 3 failed (the known `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` and the
+two `ContinentFinaleTests`), 53 skipped. PlayMode smoke `BossIntroSmokeTests` passed; 0 errors, 0 warnings. Save `progress.json` MD5 ae9223b8 before and after every play run.
