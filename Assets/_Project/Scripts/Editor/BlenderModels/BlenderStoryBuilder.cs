@@ -29,6 +29,13 @@ namespace Game.Editor
         private const float HeroEmission = 2.5f;
         private const float StoryEmission = 2.2f;
 
+        // Spencer pass 4 report: the face "emission 1 (iris catchlight only)", the visor "emission map x2", "smoothness
+        // 0.95"; the visor's optional fresnel ("more opaque at grazing angles") as a little rim cover.
+        private const float PartEmission = 1f;
+        private const float GlassEmission = 2f;
+        private const float GlassSmoothness = 0.95f;
+        private const float GlassRimCover = 0.4f;
+
         // The hero is small at the play zoom; the cutscene's machines fill the picture.
         private const float HeroLodScreenHeight = 0.04f;
         private const float CutsceneLodScreenHeight = 0.02f;
@@ -157,6 +164,7 @@ namespace Game.Editor
                 return null;
             }
 
+            WriteOwnMaterialParts(body, folder, report);
             string weaponFolder = $"{folder}/{BlenderStoryCatalog.WeaponFolder}";
             (Material weaponHigh, Material weaponLow) = Materials(weaponFolder, BlenderStoryCatalog.WeaponMaps, HeroEmission);
             var art = BlenderArtBuilder.LoadOrCreate<HeroArtDefinition>($"{StoryArtFolder}/{asset}Art.asset");
@@ -287,7 +295,8 @@ namespace Game.Editor
                 element.FindPropertyRelative("_clip").objectReferenceValue = clip;
                 element.FindPropertyRelative("_farClip").objectReferenceValue = far.TryGetValue(clip.name, out AnimationClip farClip) ? farClip : null;
                 element.FindPropertyRelative("_distancePerLoop").floatValue = Report(report, BlenderStoryCatalog.DistanceKeys, clip.name, 1f);
-                element.FindPropertyRelative("_eventSeconds").floatValue = Report(report, BlenderStoryCatalog.EventKeys, clip.name, 1f / FramesPerSecond);
+                element.FindPropertyRelative("_eventSeconds").floatValue = Moment(report, BlenderStoryCatalog.EventKeys, clip.name);
+                element.FindPropertyRelative("_cueSeconds").floatValue = Moment(report, BlenderStoryCatalog.CueKeys, clip.name);
                 element.FindPropertyRelative("_trigger").stringValue = string.Empty;
                 element.FindPropertyRelative("_socket").stringValue = string.Empty;
                 element.FindPropertyRelative("_weight").floatValue = upper ? weight : 1f;
@@ -299,6 +308,96 @@ namespace Game.Editor
         private static float Report(BlenderReport report, IReadOnlyDictionary<string, string> keys, string clip, float unit)
         {
             return report != null && keys.TryGetValue(clip, out string key) ? report.Number(key) * unit : 0f;
+        }
+
+        // A clip's moment in seconds from the report's events block (the clip's own entry, since the draws share names).
+        private static float Moment(BlenderReport report, IReadOnlyDictionary<string, string> keys, string clip)
+        {
+            return report != null && keys.TryGetValue(clip, out string key) ? report.Event(clip, key) / FramesPerSecond : 0f;
+        }
+
+        // Spencer pass 4: the meshes the report lists with maps of their own (the face, the visor's glass) wear their own
+        // material instead of the body's: an opaque lit one with the face maps, or a see-through glass. Their emission
+        // follows the report ("emission 1" for the face's catchlights, "x2" for the visor's faint HUD ticks).
+        private static void WriteOwnMaterialParts(ModelArtDefinition body, string folder, BlenderReport report)
+        {
+            Dictionary<string, object> root = report.Root();
+            var parts = new List<ModelPart>();
+            foreach (string section in BlenderStoryCatalog.OwnMaterialMeshes)
+            {
+                Dictionary<string, object> entry = BlenderJson.Object(BlenderJson.Field(root, section));
+                string mesh = BlenderJson.Text(BlenderJson.Field(entry, "mesh"));
+                if (string.IsNullOrEmpty(mesh) || !File.Exists($"{folder}/{mesh}_Albedo.png"))
+                {
+                    continue;
+                }
+
+                string material = BlenderJson.Text(BlenderJson.Field(entry, "material")) ?? string.Empty;
+                bool seeThrough = material.IndexOf("transparent", System.StringComparison.OrdinalIgnoreCase) >= 0;
+                (Material high, Material low) = seeThrough ? GlassMaterials(folder, mesh) : PartMaterials(folder, mesh);
+                parts.Add(new ModelPart(mesh, high, low, castShadows: !seeThrough));
+            }
+
+            var so = new SerializedObject(body);
+            SerializedProperty array = so.FindProperty("_parts");
+            array.arraySize = parts.Count;
+            for (int i = 0; i < parts.Count; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("_object").stringValue = parts[i].Object;
+                element.FindPropertyRelative("_material").objectReferenceValue = parts[i].Material;
+                element.FindPropertyRelative("_lowMaterial").objectReferenceValue = parts[i].MaterialFor(true);
+                element.FindPropertyRelative("_castShadows").boolValue = parts[i].CastShadows;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(body);
+        }
+
+        // The face: the hero's lit material with its own maps; its mask carries no detail families.
+        private static (Material High, Material Low) PartMaterials(string folder, string mesh)
+        {
+            var look = new BlenderArtEntry(mesh, mesh)
+            {
+                Emission = PartEmission,
+                Rim = BlenderArtEntry.TowerRim,
+                Colony = true,
+            };
+
+            BlenderReport none = BlenderReport.Load(string.Empty);
+            string lowFolder = $"{folder}/{BlenderSync.LowFolder}";
+            Material high = BlenderArtBuilder.BuildMaterial(look, none, folder, mesh, false);
+            Material low = BlenderArtBuilder.BuildMaterial(look, none, File.Exists($"{lowFolder}/{mesh}_Albedo.png") ? lowFolder : folder, mesh + "_Low", true);
+            return (high, low);
+        }
+
+        // The visor's glass: albedo alpha is its opacity (clear in the middle, denser at the rim), glossy, a faint glow,
+        // blended after the opaque body without writing depth; the rim adds a little cover at grazing angles.
+        private static (Material High, Material Low) GlassMaterials(string folder, string mesh)
+        {
+            var look = new BlenderArtEntry(mesh, mesh)
+            {
+                Emission = GlassEmission,
+                Smoothness = GlassSmoothness,
+                Rim = BlenderArtEntry.TowerRim,
+                Colony = true,
+            };
+
+            BlenderReport none = BlenderReport.Load(string.Empty);
+            Material high = BlenderArtBuilder.BuildMaterial(look, none, folder, mesh, false);
+            Material low = BlenderArtBuilder.BuildMaterial(look, none, folder, mesh + "_Low", true);
+            foreach (Material material in new[] { high, low })
+            {
+                material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetFloat("_ZWrite", 0f);
+                material.SetFloat("_RimAlpha", GlassRimCover);
+                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                material.SetOverrideTag("RenderType", "Transparent");
+                EditorUtility.SetDirty(material);
+            }
+
+            return (high, low);
         }
 
         private static int Assign(Object owner, string field, Object art)

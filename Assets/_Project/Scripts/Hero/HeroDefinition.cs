@@ -17,6 +17,16 @@ namespace Game.Hero
         [Tooltip("A hero that flies does not stand in the road: ground creatures walk on under it.")]
         [SerializeField] private bool _flies;
 
+        [Header("Jetpack (switching gates)")]
+        [Tooltip("Ground speed of the jetpack flight to a post farther than the walking distance, in metres per second; zero walks everywhere.")]
+        [SerializeField] [Min(0f)] private float _flightSpeed = 13f;
+        [Tooltip("Posts closer than this are walked to (the lanes of one gate); farther ones are flown to.")]
+        [SerializeField] [Min(0f)] private float _walkWithin = 4f;
+        [Tooltip("Seconds on the spot before he leaves the ground (the take-off clip's liftoff).")]
+        [SerializeField] [Min(0f)] private float _takeoffSeconds = 0.4f;
+        [Tooltip("Height of the flight's arc over the field at its middle, in metres.")]
+        [SerializeField] [Min(0f)] private float _flightHeight = 2.5f;
+
         /// <summary>The weapon the hero fights with up close: damage, reach, pace, look and animation.</summary>
         [SerializeField] private HeroWeaponDefinition _weapon;
 
@@ -47,6 +57,17 @@ namespace Game.Hero
         public float MaxHealth => _maxHealth;
         public float WalkSpeed => _walkSpeed;
         public bool Flies => _flies;
+        public float FlightSpeed => _flightSpeed;
+        public float WalkWithin => _walkWithin;
+        public float TakeoffSeconds => _takeoffSeconds;
+        public float FlightHeight => _flightHeight;
+
+        /// <summary>True when a move over this ground distance is flown with the jetpack rather than walked.</summary>
+        public bool FliesBetween(float distance) => _flightSpeed > 0f && distance > _walkWithin;
+
+        /// <summary>Seconds a move between two posts this far apart takes: walking, or the take-off plus the flight.</summary>
+        public float SwitchSeconds(float distance) => FliesBetween(distance) ? _takeoffSeconds + distance / _flightSpeed : distance / _walkSpeed;
+
         public HeroWeaponDefinition Weapon => _weapon;
         public HeroWeaponDefinition RangedWeapon => _rangedWeapon;
         public float Damage => _weapon.Damage;

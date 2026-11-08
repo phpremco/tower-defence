@@ -5,7 +5,7 @@ namespace Game.Levels
 {
     /// <summary>
     /// The imported (Blender) look of the colony base: the modules (deck, command post, radar and dish, habitat, drone
-    /// bays, storage, core, landing pad and shuttle, hardpoints) with their own pivots, the damage overlay shown once the
+    /// bays, storage, core, landing pad and shuttle, hardpoints) with their own pivots, the colony flag in the courtyard, the damage overlay shown once the
     /// base is badly hurt, the wreck left after the blast, which modules turn, pulse, blink, fly or open, and the ground
     /// the model covers. A <see cref="VisualTheme"/> points at one of these; without it the level keeps its procedural
     /// outpost. Look data, plus the footprint the build grid keeps free so no tower stands inside the base.
@@ -78,6 +78,14 @@ namespace Game.Levels
             new Vector3(-0.4f, 0f, -0.6f), new Vector3(0f, 0f, 1.6f),
         };
 
+        [Header("Flag")]
+        [Tooltip("The colony's flag on its pole (the NTI flag), waving in the courtyard; empty for none.")]
+        [SerializeField] private ModelArtDefinition _flag;
+        [Tooltip("Where the flag's pole stands, in the base model's own frame (the export's, before the art's turn).")]
+        [SerializeField] private Vector3 _flagPosition = new Vector3(0.2f, 0.23f, -0.75f);
+        [Tooltip("How the flag stands, in the base model's own frame.")]
+        [SerializeField] private Vector3 _flagEuler = new Vector3(0f, 180f, 0f);
+
         [Header("Damage")]
         [Tooltip("Health share below which the damage overlay shows and the sockets smoke.")]
         [SerializeField] [Range(0.05f, 0.95f)] private float _damagedBelow = 0.5f;
@@ -131,6 +139,9 @@ namespace Game.Levels
         public Vector2 FootprintMax => _footprintMax;
         public Vector3[] TurretMounts => _turretMounts;
         public Vector3[] DockPoints => _dockPoints;
+        public ModelArtDefinition Flag => _flag;
+        public Vector3 FlagPosition => _flagPosition;
+        public Vector3 FlagEuler => _flagEuler;
         public float DamagedBelow => _damagedBelow;
         public float WreckDelay => _wreckDelay;
         public float WreckLift => _wreckLift;

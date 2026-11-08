@@ -19,7 +19,9 @@ namespace Game.Levels
 
         public Vector3 Position => _hero.transform.position;
 
-        public bool IsAlive => _hero != null && !_hero.IsDown;
+        // A hero in jetpack flight is out of every creature's reach (ground and air, a boss's laser and blast): the flight
+        // lasts a few seconds and costs him the fight meanwhile, so it is never a target nor a road block.
+        public bool IsAlive => _hero != null && !_hero.IsDown && !_hero.IsFlying;
 
         // A hero on its feet holds the road like a gate: ground creatures must get past it, flyers pass over.
         public bool BlocksGround => IsAlive && !_hero.Definition.Flies;
@@ -27,7 +29,13 @@ namespace Game.Levels
 
         public float HealthFraction => _hero.Health.Fraction;
 
-        public void TakeDamage(float amount) => _hero.Health.TakeDamage(amount);
+        public void TakeDamage(float amount)
+        {
+            if (!_hero.IsFlying)
+            {
+                _hero.Health.TakeDamage(amount);
+            }
+        }
 
         public void Repair(float amount)
         {

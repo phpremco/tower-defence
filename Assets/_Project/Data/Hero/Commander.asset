@@ -16,6 +16,10 @@ MonoBehaviour:
   _maxHealth: 200
   _walkSpeed: 5
   _flies: 0
+  _flightSpeed: 13
+  _walkWithin: 4
+  _takeoffSeconds: 0.4
+  _flightHeight: 2.5
   _weapon: {fileID: 11400000, guid: c827c2bc28773474a9c5051f025690b7, type: 2}
   _rangedWeapon: {fileID: 11400000, guid: 8a948feff967a3b49b14fb2e86f20d99, type: 2}
   _guardShare: 0.4

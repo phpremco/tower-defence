@@ -254,9 +254,10 @@ namespace Game.Core
 
         /// <summary>
         /// Loops a cycle at a playback rate (1 = as authored). A new cycle fades in over the old one; asking for the one
-        /// already playing only changes its rate.
+        /// already playing only changes its rate. A new cycle starts <paramref name="startSeconds"/> in (a flag that should
+        /// not wave in step with its neighbours).
         /// </summary>
-        public void Loop(int index, float rate)
+        public void Loop(int index, float rate, float startSeconds = 0f)
         {
             if (index < 0)
             {
@@ -273,7 +274,7 @@ namespace Game.Core
             _fadingSpeed = _cycleSpeed;
             _cycle = index;
             _cycleSpeed = rate;
-            _times[index] = 0f;
+            _times[index] = Wrap(startSeconds, _lengths[index]);
             _cycleBlend = _fadingCycle < 0 ? 1f : 0f;
         }
 

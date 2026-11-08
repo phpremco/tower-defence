@@ -35,6 +35,21 @@ namespace Game.Hero
         [Tooltip("Ground speed below which the hero walks instead of running.")]
         [SerializeField] [Min(0f)] private float _walkBelow = 1.5f;
 
+        [Header("Jetpack")]
+        [Tooltip("The pack's nozzles; each socket's Y axis points along the exhaust.")]
+        [SerializeField] private string[] _jetSockets = { "Jet_L", "Jet_R" };
+        [Tooltip("Colour of the jet flame: the colony's cool blue-white.")]
+        [SerializeField] private Color _thrustColor = new Color(0.55f, 0.85f, 1f);
+        [Tooltip("Length of the jet flame card in metres.")]
+        [SerializeField] [Min(0.05f)] private float _thrustLength = 0.55f;
+
+        [Header("Face")]
+        [Tooltip("The face mesh's blend shape that closes the eyes, or empty for none.")]
+        [SerializeField] private string _blinkShape = "Blink";
+        [SerializeField] [Min(0.05f)] private float _blinkSeconds = 0.15f;
+        [Tooltip("Seconds between two blinks: a random pick between x and y.")]
+        [SerializeField] private Vector2 _blinkEvery = new Vector2(3f, 6f);
+
         [Header("Portrait")]
         [SerializeField] private PortraitArtDefinition _bust;
 
@@ -50,6 +65,12 @@ namespace Game.Hero
         public string PackBone => _packBone;
         public Vector3 Muzzle => _muzzle;
         public float WalkBelow => _walkBelow;
+        public string[] JetSockets => _jetSockets;
+        public Color ThrustColor => _thrustColor;
+        public float ThrustLength => _thrustLength;
+        public string BlinkShape => _blinkShape;
+        public float BlinkSeconds => _blinkSeconds;
+        public Vector2 BlinkEvery => _blinkEvery;
         public PortraitArtDefinition Bust => _bust;
 
         private void OnValidate()
@@ -61,6 +82,11 @@ namespace Game.Hero
             else if (_body.IndexOf(ModelClipRole.Idle) < 0)
             {
                 Debug.LogWarning($"HeroArtDefinition '{name}' has a body without an Idle clip.", this);
+            }
+
+            if (_blinkEvery.y < _blinkEvery.x || _blinkEvery.x <= _blinkSeconds)
+            {
+                Debug.LogWarning($"HeroArtDefinition '{name}' blinks between {_blinkEvery.x} and {_blinkEvery.y} s: the range must run upwards and exceed the blink itself.", this);
             }
         }
     }

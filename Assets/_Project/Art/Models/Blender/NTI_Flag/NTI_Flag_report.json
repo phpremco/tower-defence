@@ -1,0 +1,66 @@
+{
+  "asset": "NTI_Flag",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "tris": 2082,
+  "lod1": "none (1 small prop)",
+  "bones": [
+    "Root",
+    "Flag_T1",
+    "Flag_T2",
+    "Flag_T3",
+    "Flag_T4",
+    "Flag_T5",
+    "Flag_M1",
+    "Flag_M2",
+    "Flag_M3",
+    "Flag_M4",
+    "Flag_M5",
+    "Flag_B1",
+    "Flag_B2",
+    "Flag_B3",
+    "Flag_B4",
+    "Flag_B5"
+  ],
+  "clips": {
+    "Wave": {
+      "frames": 60,
+      "fps": 30,
+      "loop": true
+    }
+  },
+  "rest_pose": "flat flag; the Wave clip is optional",
+  "pivot": "foot of the pole on the ground; the cloth flies along +X in Blender (Unity -X after the axis conversion)",
+  "size_m": {
+    "pole_height": 2.17,
+    "flag": [
+      0.95,
+      0.52
+    ]
+  },
+  "logo": "ArtSource/Exports/Brand/NTI_Logo.png",
+  "emission": "beacon on the pole top (cyan) and the logo star (faint)",
+  "two_sided": "front and back cloth faces have their own UVs; the logo reads correctly from both sides",
+  "placement": {
+    "base_local_blender": [
+      -0.2,
+      0.75,
+      0.23
+    ],
+    "yaw_deg": 180.0,
+    "base_local_unity": [
+      0.2,
+      0.23,
+      -0.75
+    ],
+    "unity_yaw_deg": 180.0,
+    "note": "free-standing in the open courtyard behind the command post, in front of the habitat (flag_placement.py); base-local Blender (x, y, z) -> Unity (-x, z, -y) with the usual FBX axis conversion"
+  }
+}

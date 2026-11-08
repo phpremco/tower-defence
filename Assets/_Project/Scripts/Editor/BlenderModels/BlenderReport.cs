@@ -84,6 +84,29 @@ namespace Game.Editor
             return values;
         }
 
+        /// <summary>
+        /// The frame of a clip's named moment from the report's <c>events</c> block (<c>events.&lt;clip&gt;.&lt;key&gt;</c>);
+        /// without that entry the first number under the key anywhere, or zero. Several clips share moment names (the grab
+        /// of both draws), so the clip's own entry comes first.
+        /// </summary>
+        public float Event(string clip, string key)
+        {
+            if (_json.Length > 0)
+            {
+                Dictionary<string, object> events = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Parse(_json)), "events"));
+                object frame = BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(events, clip)), key);
+                if (frame != null)
+                {
+                    return BlenderJson.Number(frame);
+                }
+            }
+
+            return Number(key);
+        }
+
+        /// <summary>The parsed report, or null when there is none.</summary>
+        public Dictionary<string, object> Root() => _json.Length > 0 ? BlenderJson.Object(BlenderJson.Parse(_json)) : null;
+
         /// <summary>The first number under any of the keys, or zero.</summary>
         public float Number(params string[] keys)
         {

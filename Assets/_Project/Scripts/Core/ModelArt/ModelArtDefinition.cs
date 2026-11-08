@@ -98,6 +98,20 @@ namespace Game.Core
             return null;
         }
 
+        /// <summary>The extra part a renderer of the model belongs to (by name), or null for the body.</summary>
+        public ModelPart PartFor(string rendererName)
+        {
+            foreach (ModelPart part in _parts)
+            {
+                if (part != null && part.Owns(rendererName))
+                {
+                    return part;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>The material for the active quality profile.</summary>
         public Material MaterialFor(bool lowDetail) => lowDetail ? LowMaterial : _material;
 

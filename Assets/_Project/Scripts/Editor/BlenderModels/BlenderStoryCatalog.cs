@@ -113,6 +113,14 @@ namespace Game.Editor
             { "Disbelief", ModelClipRole.Disbelief },
             { "Point_Shout", ModelClipRole.PointShout },
             { "Lower_Weapon", ModelClipRole.LowerWeapon },
+            // Spencer passes 2 and 4: drawing and stowing the weapons, the jetpack flight.
+            { "Draw_Pistol", ModelClipRole.DrawPistol },
+            { "Stow_Pistol", ModelClipRole.StowPistol },
+            { "Draw_Blade", ModelClipRole.DrawBlade },
+            { "Stow_Blade", ModelClipRole.StowBlade },
+            { "Jet_Takeoff", ModelClipRole.JetTakeoff },
+            { "Jet_Fly", ModelClipRole.JetFly },
+            { "Jet_Land", ModelClipRole.JetLand },
         };
 
         /// <summary>Mercer's clips that play on the upper body (README round 6), with how much of the pose each takes.</summary>
@@ -125,6 +133,11 @@ namespace Game.Editor
             { "Hit", 0.7f },
             // README round 35: the bark's point and shout, from Spine1 up, over Idle or Walk.
             { "Point_Shout", 1f },
+            // Spencer pass 2: the draws and stows move the arms from Spine1 up, so he can draw while he walks.
+            { "Draw_Pistol", 1f },
+            { "Stow_Pistol", 1f },
+            { "Draw_Blade", 1f },
+            { "Stow_Blade", 1f },
         };
 
         /// <summary>The report key of each Mercer clip's moment (a frame number), by take.</summary>
@@ -139,7 +152,29 @@ namespace Game.Editor
             { "Disbelief", "hand_up" },
             { "Point_Shout", "point" },
             { "Lower_Weapon", "lowered" },
+            // Spencer passes 2 and 4: where the weapon changes socket, where he leaves and meets the ground.
+            { "Draw_Pistol", "grab" },
+            { "Stow_Pistol", "release" },
+            { "Draw_Blade", "grab" },
+            { "Stow_Blade", "release" },
+            { "Jet_Takeoff", "liftoff" },
+            { "Jet_Land", "touchdown" },
         };
+
+        /// <summary>The report key of a Mercer clip's second moment (a frame number), by take: the blade and the jets.</summary>
+        public static readonly IReadOnlyDictionary<string, string> CueKeys = new Dictionary<string, string>
+        {
+            { "Draw_Blade", "ignite" },
+            { "Stow_Blade", "blade_off" },
+            { "Jet_Takeoff", "ignite" },
+            { "Jet_Land", "thrust_off" },
+        };
+
+        /// <summary>
+        /// The report sections of Mercer's meshes with maps of their own (Spencer pass 4): the face behind the visor and the
+        /// visor's glass. Each names its mesh, its maps and whether it is see-through.
+        /// </summary>
+        public static readonly string[] OwnMaterialMeshes = { "face", "visor" };
 
         /// <summary>The report key of each Mercer travel cycle's distance per loop.</summary>
         public static readonly IReadOnlyDictionary<string, string> DistanceKeys = new Dictionary<string, string>

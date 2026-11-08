@@ -253,7 +253,7 @@ namespace Game.Levels
         {
             IStructure best = _context.Structures.FindNearest(origin, range);
             Commander hero = _context.Hero;
-            if (hero == null || hero.IsDown)
+            if (hero == null || hero.IsDown || hero.IsFlying)
             {
                 return best;
             }

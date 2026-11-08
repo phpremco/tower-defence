@@ -45,7 +45,11 @@ namespace Game.Editor
         };
 
         // Exports whose shape keys (Voss's Smile, Frown, Blink, JawOpen) are imported as blend shapes.
-        private static readonly HashSet<string> BlendShapeAssets = new HashSet<string> { VossAsset };
+        // Spencer pass 4: Mercer's face carries a Blink key.
+        private static readonly HashSet<string> BlendShapeAssets = new HashSet<string> { VossAsset, BlenderStoryCatalog.HeroAsset };
+
+        // Albedos whose alpha is the surface's opacity (Spencer's visor glass), kept instead of dropped.
+        private static readonly HashSet<string> SeeThroughAlbedos = new HashSet<string> { BlenderStoryCatalog.HeroAsset + "_Visor_Albedo" };
 
         private const string VossAsset = "Voss";
         public const string MenuIslandAsset = "Menu_Island";
@@ -380,7 +384,7 @@ namespace Game.Editor
             importer.textureType = TextureImporterType.Default;
             bool mask = file.EndsWith("_Mask", StringComparison.Ordinal);
             importer.sRGBTexture = !mask;
-            importer.alphaSource = mask ? TextureImporterAlphaSource.FromInput : TextureImporterAlphaSource.None;
+            importer.alphaSource = mask || SeeThroughAlbedos.Contains(file) ? TextureImporterAlphaSource.FromInput : TextureImporterAlphaSource.None;
             if (!mask)
             {
                 importer.textureCompression = TextureImporterCompression.Compressed;

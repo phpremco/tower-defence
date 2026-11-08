@@ -10,7 +10,9 @@ namespace Game.Hero
     /// clip rate matched to his ground speed, draws the pistol from the thigh holster or the sword hilt from the pack
     /// for the weapon he uses (the blade lights up), shoots with a kick on the upper body over the legs, reloads,
     /// slashes, punches the shockwave into the ground, kneels to repair, flinches on hits, goes down with the suit's
-    /// lights dying and gets back up. The spine turns the last bit towards a target he aims at. Reacts to Commander
+    /// lights dying and gets back up, flies to another gate on his jetpack (take-off, flight, landing timed to the post,
+    /// the jets burning from ignition to thrust-off) and blinks behind his visor. Draws and stows play their own clips
+    /// with the weapon changing socket at the grab or release. The spine turns the last bit towards a target he aims at. Reacts to Commander
     /// events and getters only; <see cref="HeroView"/> keeps the beacon, the rings and the health bar.
     /// </summary>
     public sealed class HeroArtView : MonoBehaviour
@@ -51,6 +53,12 @@ namespace Game.Hero
         private const float LyingSmokeRate = 4f;
         private const float LyingSparkRate = 1.5f;
         private const float ThrusterRate = 30f;
+        private const float FramesPerSecond = 30f;
+        // Spencer pass 2: after Lower_Weapon the stow picks up at its 'lower' frame, where the gun already points down.
+        private const float StowAfterLowerFrame = 4f;
+        // A new order in the air that pushes the touchdown this far back turns a landing into flight again.
+        private const float RelandMargin = 0.2f;
+        private const float BlinkClosed = 100f;
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static readonly Color SparkColor = new Color(1f, 0.8f, 0.4f);
         private static readonly Color SmokeColor = new Color(0.25f, 0.24f, 0.24f, 0.4f);
@@ -71,6 +79,15 @@ namespace Game.Hero
             None,
             Melee,
             Ranged,
+        }
+
+        // A jetpack flight to another gate: on the spot until liftoff, the flight cycle, the landing timed to touch down at the post.
+        private enum Flight
+        {
+            None,
+            Takeoff,
+            Cruise,
+            Landing,
         }
 
         private Commander _hero;
@@ -115,6 +132,30 @@ namespace Game.Hero
         private int _startledHold;
         private int _pointShout;
         private int _lowerWeapon;
+        private int _drawPistol;
+        private int _stowPistol;
+        private int _drawBlade;
+        private int _stowBlade;
+        private int _jetTakeoff;
+        private int _jetFly;
+        private int _jetLand;
+
+        // The weapon change in progress: a draw or stow clip on the upper body, the weapon changing socket at its moment
+        // (the grab, the release) and the blade lighting or going out at its second moment.
+        private int _switchClip = -1;
+        private float _switchAge;
+        private Hand _switchTo;
+        private bool _switchSeated;
+        private bool _switchCued;
+
+        private Flight _flight;
+        private float _flightAge;
+        private JetThrust _jets;
+
+        private SkinnedMeshRenderer[] _blinkers = new SkinnedMeshRenderer[0];
+        private int[] _blinkShapes = new int[0];
+        private float _blinkWait;
+        private float _blinkAge = float.PositiveInfinity;
 
         private Hand _drawn = Hand.None;
         private float _combatUntil;
@@ -152,6 +193,8 @@ namespace Game.Hero
             _aimBones = Bones(art.AimBones);
             BuildWeapons(hero.Definition);
             BuildParticles();
+            BuildJets();
+            FindBlinkers();
 
             _lastPosition = transform.position;
             _lastHealth = hero.Health.Current;
@@ -229,6 +272,50 @@ namespace Game.Hero
             _startledHold = body.IndexOf(ModelClipRole.StartledHold);
             _pointShout = body.IndexOf(ModelClipRole.PointShout);
             _lowerWeapon = body.IndexOf(ModelClipRole.LowerWeapon);
+            _drawPistol = body.IndexOf(ModelClipRole.DrawPistol);
+            _stowPistol = body.IndexOf(ModelClipRole.StowPistol);
+            _drawBlade = body.IndexOf(ModelClipRole.DrawBlade);
+            _stowBlade = body.IndexOf(ModelClipRole.StowBlade);
+            _jetTakeoff = body.IndexOf(ModelClipRole.JetTakeoff);
+            _jetFly = body.IndexOf(ModelClipRole.JetFly);
+            _jetLand = body.IndexOf(ModelClipRole.JetLand);
+        }
+
+        private void BuildJets()
+        {
+            Transform[] nozzles = Bones(_art.JetSockets);
+            if (nozzles.Length > 0)
+            {
+                _jets = new JetThrust(transform, nozzles, _art.ThrustColor, _art.ThrustLength);
+            }
+        }
+
+        // The face meshes (near and far) that carry the blink shape; none on a model without one.
+        private void FindBlinkers()
+        {
+            if (string.IsNullOrEmpty(_art.BlinkShape))
+            {
+                return;
+            }
+
+            var blinkers = new System.Collections.Generic.List<SkinnedMeshRenderer>(2);
+            var shapes = new System.Collections.Generic.List<int>(2);
+            foreach (Renderer renderer in _body.Renderers)
+            {
+                if (renderer is SkinnedMeshRenderer skinned && skinned.sharedMesh != null)
+                {
+                    int shape = skinned.sharedMesh.GetBlendShapeIndex(_art.BlinkShape);
+                    if (shape >= 0)
+                    {
+                        blinkers.Add(skinned);
+                        shapes.Add(shape);
+                    }
+                }
+            }
+
+            _blinkers = blinkers.ToArray();
+            _blinkShapes = shapes.ToArray();
+            _blinkWait = Random.Range(_art.BlinkEvery.x, _art.BlinkEvery.y);
         }
 
         private Transform[] Bones(string[] names)
@@ -372,6 +459,12 @@ namespace Game.Hero
             bool ranged = weapon.Kind == HeroWeaponKind.Ranged;
             Draw(ranged ? Hand.Ranged : Hand.Melee);
             _combatUntil = Time.time + CombatHoldSeconds;
+            if (_switchClip >= 0)
+            {
+                // The draw plays out first (it ends in the aim or the guard); the logic's blow has landed already.
+                return;
+            }
+
             if (ranged)
             {
                 // The gun stays at aim on the last frame of the kick until the fighting is over.
@@ -388,7 +481,7 @@ namespace Game.Hero
 
         private void OnReloading(float seconds)
         {
-            if (_isDown || _player == null || _reload < 0)
+            if (_isDown || _player == null || _reload < 0 || _switchClip >= 0)
             {
                 return;
             }
@@ -429,7 +522,8 @@ namespace Game.Hero
             Vector3 to = at - transform.position;
             to.y = 0f;
             _reactFacing = to.sqrMagnitude > 0.0001f ? to.normalized : Facing();
-            Draw(Hand.Ranged);
+            // The flinch already holds the pistol at its first frame.
+            Draw(Hand.Ranged, animate: false);
             _boltAge = float.PositiveInfinity;
             _player.StopUpper();
             _player.PlayOnce(_startled);
@@ -482,8 +576,8 @@ namespace Game.Hero
                     _player.Loop(_idle, 1f);
                     if (_lowerWeapon < 0 || _reactionAge >= _body.Art.Clips[_lowerWeapon].Length)
                     {
-                        // README round 35: no holster clip yet, so the pistol snaps to Holster_R once the gun is down.
-                        Draw(Hand.None);
+                        // The gun is down: it goes back into the holster from the stow's lowered frame.
+                        Draw(Hand.None, animate: true, StowAfterLowerFrame / FramesPerSecond);
                         _reaction = Reaction.None;
                     }
 
@@ -507,7 +601,8 @@ namespace Game.Hero
             _downAge = 0f;
             _impacted = false;
             _reviveAge = float.PositiveInfinity;
-            Draw(Hand.None);
+            Draw(Hand.None, animate: false);
+            EndFlight();
             _player?.StopUpper();
             _player?.PlayOnce(_down, 0f, hold: true);
             _sparks.Emit(StaggerSparks);
@@ -522,35 +617,136 @@ namespace Game.Hero
             ParticleKit.SetRate(_sparks, 0f);
         }
 
-        // The weapon used comes to the hand; whatever else was out goes back to its holster or the pack.
-        private void Draw(Hand hand)
+        // The weapon used comes to the hand; whatever else was out goes back to its holster or the pack. Animated, the
+        // draw or stow clip plays on the upper body and the weapon changes socket at the clip's moment (the grab, the
+        // release), where hand and socket meet in the export, so the swap never pops; the blade lights up or goes out at
+        // the clip's second moment. Switching weapons puts the outgoing one away at once, so the new one is not held up.
+        private void Draw(Hand hand, bool animate = true, float startSeconds = 0f)
         {
             if (hand == _drawn)
             {
                 return;
             }
 
+            FinishSwitch();
+            Hand from = _drawn;
             _drawn = hand;
-            if (_pistol != null)
-            {
-                Seat(_pistol.Root, hand == Hand.Ranged ? _hand : _holster);
-            }
-
-            if (_hilt != null)
-            {
-                Seat(_hilt.Root, hand == Hand.Melee ? _hand : _back);
-            }
-
-            if (_blade != null)
-            {
-                _blade.SetActive(hand == Hand.Melee);
-                _ignite = 0f;
-            }
-
             if (hand != Hand.Ranged)
             {
                 _boltAge = float.PositiveInfinity;
             }
+
+            if (hand != Hand.None && from != Hand.None)
+            {
+                Seat(Hand.None);
+                SetBlade(false);
+            }
+
+            int clip = !animate || _player == null ? -1 : hand == Hand.None ? StowClip(from) : DrawClip(hand);
+            if (clip < 0)
+            {
+                Seat(hand);
+                SetBlade(hand == Hand.Melee);
+                if (hand == Hand.None)
+                {
+                    // A held aim lets go with the gun.
+                    _player?.StopUpper();
+                }
+
+                return;
+            }
+
+            _switchClip = clip;
+            _switchAge = startSeconds;
+            _switchTo = hand;
+            _switchSeated = false;
+            _switchCued = false;
+            _player.PlayUpper(clip, startSeconds);
+        }
+
+        private int DrawClip(Hand hand) => hand == Hand.Ranged ? _drawPistol : _drawBlade;
+
+        private int StowClip(Hand hand) => hand == Hand.Ranged ? _stowPistol : hand == Hand.Melee ? _stowBlade : -1;
+
+        // The draw or stow in progress, on its own clock beside the clip's (another upper-body clip may cut the clip
+        // short; the weapon still ends where it belongs).
+        private void TickSwitch(float deltaTime)
+        {
+            if (_switchClip < 0)
+            {
+                return;
+            }
+
+            _switchAge += deltaTime;
+            ModelClip clip = _body.Art.Clips[_switchClip];
+            if (!_switchSeated && _switchAge >= clip.EventSeconds)
+            {
+                Seat(_switchTo);
+                _switchSeated = true;
+            }
+
+            if (!_switchCued && clip.CueSeconds > 0f && _switchAge >= clip.CueSeconds)
+            {
+                SetBlade(_switchTo == Hand.Melee);
+                _switchCued = true;
+            }
+
+            if (_switchAge < clip.Length)
+            {
+                return;
+            }
+
+            FinishSwitch();
+            // The draw ends in the aim (Shoot frame 0): the gun stays up there while the fighting goes on.
+            if (_drawn == Hand.Ranged && Time.time < _combatUntil)
+            {
+                _player.PlayUpper(_shoot, 0f, hold: true);
+            }
+        }
+
+        // Ends a draw or stow at once: the weapon in its socket, the blade as it should be.
+        private void FinishSwitch()
+        {
+            if (_switchClip < 0)
+            {
+                return;
+            }
+
+            _switchClip = -1;
+            if (!_switchSeated)
+            {
+                Seat(_switchTo);
+            }
+
+            if (!_switchCued)
+            {
+                SetBlade(_switchTo == Hand.Melee);
+            }
+        }
+
+        // The weapon of the hand in the hand socket, the other ones in their holster and on the pack.
+        private void Seat(Hand inHand)
+        {
+            if (_pistol != null)
+            {
+                Seat(_pistol.Root, inHand == Hand.Ranged ? _hand : _holster);
+            }
+
+            if (_hilt != null)
+            {
+                Seat(_hilt.Root, inHand == Hand.Melee ? _hand : _back);
+            }
+        }
+
+        private void SetBlade(bool lit)
+        {
+            if (_blade == null || _blade.Root.gameObject.activeSelf == lit)
+            {
+                return;
+            }
+
+            _blade.SetActive(lit);
+            _ignite = 0f;
         }
 
         private static void Seat(Transform weapon, Transform socket)
@@ -582,6 +778,11 @@ namespace Game.Hero
             {
                 React(deltaTime);
             }
+            else if (_hero.IsFlying || _flight != Flight.None)
+            {
+                Turn(deltaTime);
+                Fly(deltaTime);
+            }
             else
             {
                 Turn(deltaTime);
@@ -589,9 +790,172 @@ namespace Game.Hero
                 Holster();
             }
 
+            TickSwitch(deltaTime);
             Glow(deltaTime);
             Shot(deltaTime);
+            Blink(deltaTime);
             _player.Tick(deltaTime);
+            _jets?.Tick(deltaTime);
+        }
+
+        // The jetpack flight to another gate (Spencer pass 4): the take-off on the spot, the flight cycle while the
+        // commander carries him over the field, and the landing started so its touchdown frame meets the post. The
+        // weapons are put away at once before he lifts off; the thrust burns from the take-off's ignition to the landing's
+        // thrust-off.
+        private void Fly(float deltaTime)
+        {
+            _flightAge += deltaTime;
+            ParticleKit.SetRate(_thrusters, 0f);
+            switch (_flight)
+            {
+                case Flight.None:
+                    BeginFlight();
+                    break;
+                case Flight.Takeoff:
+                    float liftoff = _jetTakeoff >= 0 ? _body.Art.Clips[_jetTakeoff].EventSeconds : 0f;
+                    if (!_hero.IsFlying && _flightAge < liftoff)
+                    {
+                        // Called off before he left the ground (a near post): he stays on his feet.
+                        EndFlight();
+                        _player.StopOnce();
+                        break;
+                    }
+
+                    Ignite(_jetTakeoff);
+                    if (_flightAge >= liftoff)
+                    {
+                        // Lifted: the flight cycle takes over underneath while the take-off plays out over it.
+                        _player.Loop(_jetFly >= 0 ? _jetFly : _idle, 1f);
+                    }
+
+                    if (_jetTakeoff < 0 || _flightAge >= _body.Art.Clips[_jetTakeoff].Length)
+                    {
+                        _flight = Flight.Cruise;
+                        _player.StopOnce();
+                    }
+
+                    LandIfDue();
+                    break;
+                case Flight.Cruise:
+                    _player.Loop(_jetFly >= 0 ? _jetFly : _idle, 1f);
+                    LandIfDue();
+                    break;
+                default:
+                    Landing();
+                    break;
+            }
+        }
+
+        private void BeginFlight()
+        {
+            _flight = Flight.Takeoff;
+            _flightAge = 0f;
+            Draw(Hand.None, animate: false);
+            _player.StopUpper();
+            _player.PlayOnce(_jetTakeoff, 0f, hold: true);
+            _jets?.Set(_jetTakeoff < 0 || _body.Art.Clips[_jetTakeoff].CueSeconds <= 0f);
+        }
+
+        // The take-off's ignition lights the jets.
+        private void Ignite(int clip)
+        {
+            if (clip >= 0 && _flightAge >= _body.Art.Clips[clip].CueSeconds)
+            {
+                _jets?.Set(true);
+            }
+        }
+
+        // The landing starts its touchdown-time before he reaches the post.
+        private void LandIfDue()
+        {
+            float touchdown = _jetLand >= 0 ? _body.Art.Clips[_jetLand].EventSeconds : 0f;
+            float left = _hero.FlightSecondsToTouchdown;
+            if (_hero.IsAirborne && left > touchdown)
+            {
+                return;
+            }
+
+            if (!_hero.IsFlying || _hero.IsAirborne)
+            {
+                _flight = Flight.Landing;
+                _flightAge = Mathf.Max(0f, touchdown - left);
+                _player.PlayOnce(_jetLand, _flightAge);
+            }
+        }
+
+        private void Landing()
+        {
+            float touchdown = _jetLand >= 0 ? _body.Art.Clips[_jetLand].EventSeconds : 0f;
+            if (_hero.IsFlying && !_hero.IsAirborne)
+            {
+                // Sent on again from the ground: a fresh take-off.
+                BeginFlight();
+                return;
+            }
+
+            if (_hero.IsFlying && _hero.FlightSecondsToTouchdown > touchdown + RelandMargin)
+            {
+                // A new order in the air: back into the flight.
+                _flight = Flight.Cruise;
+                _player.StopOnce();
+                return;
+            }
+
+            if (_flightAge >= touchdown)
+            {
+                _player.Loop(_idle, 1f);
+            }
+
+            if (_jetLand < 0 || _flightAge >= _body.Art.Clips[_jetLand].CueSeconds)
+            {
+                _jets?.Set(false);
+            }
+
+            if (_jetLand < 0 || _flightAge >= _body.Art.Clips[_jetLand].Length)
+            {
+                EndFlight();
+            }
+        }
+
+        private void EndFlight()
+        {
+            _flight = Flight.None;
+            _jets?.Set(false);
+        }
+
+        // A blink now and then; the eyes stay shut while he lies down.
+        private void Blink(float deltaTime)
+        {
+            if (_blinkers.Length == 0)
+            {
+                return;
+            }
+
+            float weight = 0f;
+            if (_isDown && _impacted)
+            {
+                weight = BlinkClosed;
+            }
+            else
+            {
+                _blinkWait -= deltaTime;
+                if (_blinkWait <= 0f)
+                {
+                    _blinkAge = 0f;
+                    _blinkWait = Random.Range(_art.BlinkEvery.x, _art.BlinkEvery.y);
+                }
+
+                if (_blinkAge < _art.BlinkSeconds)
+                {
+                    _blinkAge += deltaTime;
+                    weight = BlinkClosed * Mathf.Sin(Mathf.Clamp01(_blinkAge / _art.BlinkSeconds) * Mathf.PI);
+                }
+            }
+
+            for (int i = 0; i < _blinkers.Length; i++)
+            {
+                _blinkers[i].SetBlendShapeWeight(_blinkShapes[i], weight);
+            }
         }
 
         private void LateUpdate()
@@ -663,9 +1027,9 @@ namespace Game.Hero
         private void Holster()
         {
             // A held aim lets go when the fighting is over; a cut or a reload first plays to its end.
-            if (_drawn != Hand.None && Time.time >= _combatUntil && (_drawn == Hand.Ranged || _player.Upper < 0))
+            // The stow clip starts from the aim or the guard, so it takes over the held pose without a fade.
+            if (_drawn != Hand.None && _switchClip < 0 && Time.time >= _combatUntil && (_drawn == Hand.Ranged || _player.Upper < 0))
             {
-                _player.StopUpper();
                 Draw(Hand.None);
             }
         }

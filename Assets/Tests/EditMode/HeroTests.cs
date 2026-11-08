@@ -96,6 +96,27 @@ namespace Game.Tests
         }
 
         [Test]
+        public void SentToAnotherGate_FliesOutOfEveryCreaturesReach()
+        {
+            var target = new Game.Levels.HeroTarget(_hero);
+            Assert.IsTrue(target.IsAlive);
+
+            _hero.MoveTo(1);
+
+            Assert.IsTrue(_hero.IsFlying, "the next gate is 5 m away, past the walking distance");
+            Assert.IsFalse(_hero.IsAirborne, "first the take-off on the spot");
+            Assert.AreEqual(_definition.SwitchSeconds(5f), _hero.FlightSecondsToTouchdown, 0.001f);
+            Assert.IsFalse(target.IsAlive, "no creature targets or is blocked by him in flight");
+            Assert.IsFalse(target.BlocksGround);
+            Assert.IsFalse(_hero.CanUse(0), "no shockwave in flight");
+            float health = _hero.Health.Current;
+            _hero.TakeHazardDamage(10f);
+            target.TakeDamage(10f);
+            Assert.AreEqual(health, _hero.Health.Current, 0.001f);
+            Assert.AreEqual(100f, _hero.Absorb(100f), 0.001f, "the gate he left takes its hits alone");
+        }
+
+        [Test]
         public void HeroWithoutHealth_IsDownAndAbsorbsNothing()
         {
             _hero.Health.TakeDamage(_definition.MaxHealth);

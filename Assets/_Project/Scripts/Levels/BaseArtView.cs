@@ -9,7 +9,7 @@ namespace Game.Levels
 {
     /// <summary>
     /// The imported (Blender) colony base on the field: its modules with the radar dish turning, the core crystal breathing
-    /// and the mast beacon blinking, the shuttle on its round (<see cref="BaseShuttleView"/>), the drone bays
+    /// and the mast beacon blinking, the colony flag waving in the courtyard, the shuttle on its round (<see cref="BaseShuttleView"/>), the drone bays
     /// (<see cref="BaseDockView"/>), smoke from its sockets and the damage overlay once it is badly hurt, and the wreck that
     /// replaces it in the flash when it falls (<see cref="BaseView"/> plays the blast itself). Reacts to the base's health
     /// and its drones; changes nothing.
@@ -55,6 +55,7 @@ namespace Game.Levels
         private BaseShuttleView _shuttle;
         private BaseDockView _docks;
         private Light _fire;
+        private ArtModel _flag;
 
         /// <summary>A display copy has no health to follow: it only turns and glows, its bays shut.</summary>
         public static GameObject BuildDisplay(Transform parent, BaseArtDefinition art)
@@ -63,6 +64,11 @@ namespace Game.Levels
             root.transform.SetParent(parent, false);
             ArtModel model = ArtModel.CreateStill(root.transform, art.Model);
             AddTurning(model, art);
+            if (art.Flag != null)
+            {
+                PlaceFlag(ArtModel.CreateStill(model.Root, art.Flag), art);
+            }
+
             BaseDockView.CloseLids(art, model);
             return root;
         }
@@ -72,6 +78,7 @@ namespace Game.Levels
             _art = art;
             _model = ArtModel.Create(transform, art.Model, ownMaterial: true);
             AddTurning(_model, art);
+            AddFlag();
             AddBeacon();
             AddShuttle();
             _docks = gameObject.AddComponent<BaseDockView>();
@@ -99,6 +106,31 @@ namespace Game.Levels
             BuildParticles();
         }
 
+        // The flag flies in the courtyard, under the base model so it goes with the base when the wreck replaces it. Its wave
+        // starts at a random moment, so two bases never flutter in step.
+        private void AddFlag()
+        {
+            if (_art.Flag == null)
+            {
+                return;
+            }
+
+            _flag = ArtModel.Create(_model.Root, _art.Flag, ownMaterial: false);
+            PlaceFlag(_flag, _art);
+            int wave = _art.Flag.IndexOf(ModelClipRole.Idle);
+            if (_flag.Player != null && wave >= 0)
+            {
+                _flag.Player.Loop(wave, 1f, Random.Range(0f, _art.Flag.Clips[wave].Length));
+            }
+        }
+
+        // The report places the pole in the base export's own frame, so the art's own turn is replaced by that placement.
+        private static void PlaceFlag(ArtModel flag, BaseArtDefinition art)
+        {
+            flag.Root.localPosition = art.FlagPosition;
+            flag.Root.localRotation = Quaternion.Euler(art.FlagEuler) * art.Flag.Model.transform.localRotation;
+        }
+
         /// <summary>The socket of that name on the model (a light, smoke or spark point), or null.</summary>
         public Transform Socket(string name) => _model?.Find(name);
 
@@ -119,6 +151,7 @@ namespace Game.Levels
                 _health.Died -= OnDied;
             }
 
+            _flag?.Dispose();
             _model?.Dispose();
             _damage?.Dispose();
             _wreck?.Dispose();
@@ -287,6 +320,7 @@ namespace Game.Levels
 
         private void Update()
         {
+            _flag?.Player?.Tick(Time.deltaTime);
             if (_fire != null)
             {
                 _fire.intensity = _art.WreckFireIntensity * (1f - FlickerDepth + FlickerDepth * Mathf.PerlinNoise(Time.time * FlickerSpeed, 0f) * 2f);

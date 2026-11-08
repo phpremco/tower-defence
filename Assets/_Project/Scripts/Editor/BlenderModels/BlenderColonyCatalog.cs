@@ -20,6 +20,9 @@ namespace Game.Editor
         public const string BaseDamage = "Base_Damage";
         public const string BaseWreck = "Base_Wreck";
 
+        /// <summary>The NTI flag that flies in the base's courtyard (Spencer pass 3), placed by its report.</summary>
+        public const string FlagAsset = "NTI_Flag";
+
         /// <summary>The model each drone kind wears.</summary>
         public static readonly IReadOnlyDictionary<DroneKind, string> Drones = new Dictionary<DroneKind, string>
         {
@@ -58,6 +61,8 @@ namespace Game.Editor
             { "Drop", ModelClipRole.Deploy },
             { "Land", ModelClipRole.Deploy },
             { "Fire", ModelClipRole.Fire },
+            // The flag's cloth in the wind is its resting cycle.
+            { "Wave", ModelClipRole.Idle },
         };
 
         /// <summary>Every export folder stage 3a reads.</summary>
@@ -65,6 +70,7 @@ namespace Game.Editor
         {
             yield return GateAsset;
             yield return BaseAsset;
+            yield return FlagAsset;
             yield return ResourceNodeAsset;
             foreach (string drone in Drones.Values)
             {

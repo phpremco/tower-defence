@@ -8,7 +8,8 @@ namespace Game.Core
     /// One imported (Blender) model placed in the scene for a structure, a drone or a placed object: the instance turned
     /// and scaled by its art, its near and far meshes under a LOD group, one material for all of them (the owner's own
     /// copy when it changes the glow), and a clip player when the model has clips. The views of the gate, the base, the
-    /// drones and the path objects build on it; the creatures and towers keep their own (stage 1 and 2) wrappers.
+    /// drones, the path objects and the hero build on it; the creatures and towers keep their own (stage 1 and 2) wrappers.
+    /// The art's extra parts (<see cref="ModelPart"/>: the hero's face and visor) wear their own materials.
     /// </summary>
     public sealed class ArtModel
     {
@@ -40,7 +41,7 @@ namespace Game.Core
         /// <summary>The model instance: turned by the art's yaw and scaled by its scale under the parent.</summary>
         public Transform Root { get; }
 
-        /// <summary>The material every mesh of the model wears.</summary>
+        /// <summary>The material every mesh of the model wears, apart from the art's extra parts.</summary>
         public Material Material { get; }
 
         /// <summary>The clip player, or null for a still or a model without clips.</summary>
@@ -217,15 +218,19 @@ namespace Game.Core
         }
 
         // The near meshes and the far ones (renamed from "_LOD1" at import) share the rig: a LOD group picks one.
-        // A far mesh from its own file (<paramref name="farRenderers"/>) counts as far whatever its name.
+        // A far mesh from its own file (<paramref name="farRenderers"/>) counts as far whatever its name. Every mesh wears
+        // the given material, except the art's extra parts (a face, a visor's glass), which wear their own.
         private static void Dress(GameObject instance, Renderer[] renderers, Renderer[] farRenderers, ModelArtDefinition art, Material material, bool withFar)
         {
             var near = new List<Renderer>(renderers.Length);
             var far = new List<Renderer>(renderers.Length + farRenderers.Length);
+            bool low = ModelQuality.IsLow;
             foreach (Renderer renderer in Concat(renderers, farRenderers))
             {
-                renderer.sharedMaterial = material;
-                renderer.shadowCastingMode = ShadowCastingMode.On;
+                ModelPart part = art.PartFor(renderer.name);
+                Material worn = part != null ? part.MaterialFor(low) : null;
+                renderer.sharedMaterial = worn != null ? worn : material;
+                renderer.shadowCastingMode = part == null || part.CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                 renderer.receiveShadows = true;
                 if (renderer is SkinnedMeshRenderer skinned)
                 {

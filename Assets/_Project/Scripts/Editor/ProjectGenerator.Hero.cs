@@ -20,6 +20,14 @@ namespace Game.Editor
         // Quick Reload halves the reload: a full cycle drops from 0.35 s to 0.275 s per shot, +27% damage per second.
         private const float QuickReloadMultiplier = 0.5f;
 
+        // Round 23d: Spencer flies to another gate with his jetpack. 13 m/s is about 2.6 times his 5 m/s run, so a median
+        // gate switch (r23d_switch.cs) takes about half the time, take-off included; the 0.4 s on the spot is the take-off
+        // clip's liftoff; posts within 4 m (the lanes of one gate) are still walked to.
+        private const float HeroFlightSpeed = 13f;
+        private const float HeroWalkWithin = 4f;
+        private const float HeroTakeoffSeconds = 0.4f;
+        private const float HeroFlightHeight = 2.5f;
+
         private static void GenerateHero(GeneratorContext context)
         {
             HeroWeaponDefinition sword = CreateHeroWeapon("EnergySword", "Energy sword", HeroWeaponKind.Melee, HeroWeaponStyle.EnergySword, 18f, 1.5f, 0.7f, TargetLayers.Ground, new Color(0.3f, 0.95f, 1f));
@@ -41,6 +49,10 @@ namespace Game.Editor
             heroProps.FindProperty("_weapon").objectReferenceValue = sword;
             heroProps.FindProperty("_rangedWeapon").objectReferenceValue = blaster;
             heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;
+            heroProps.FindProperty("_flightSpeed").floatValue = HeroFlightSpeed;
+            heroProps.FindProperty("_walkWithin").floatValue = HeroWalkWithin;
+            heroProps.FindProperty("_takeoffSeconds").floatValue = HeroTakeoffSeconds;
+            heroProps.FindProperty("_flightHeight").floatValue = HeroFlightHeight;
             heroProps.FindProperty("_color").colorValue = new Color(1f, 0.85f, 0.3f);
             SerializedProperty abilities = heroProps.FindProperty("_abilities");
             abilities.arraySize = 2;

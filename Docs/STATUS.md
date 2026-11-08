@@ -3847,3 +3847,69 @@ and responding, no modal window). Next agent: once the editor answers again (foc
 `unity command run_tests --mode EditMode --detach` (or a longer timeout) and the PlayMode smoke `BossIntroSmokeTests`;
 expected new passes: `GateDamageLookTests` (8), `OverlayFitTests` (4). Revert `Tools/PlayTest/acceptance.txt`,
 `calibration.txt`, `plans_summary.txt` afterwards. Save: `progress.json` MD5 ae9223b8 before and after every play run.
+
+## Round 23d: Spencer's art wiring, the jetpack gate switch, the NTI flag (2026-11-08)
+
+Not committed. No balance data touched. **Paused before the Mercer sync** (waiting for the curator's "Mercer export ready").
+
+0. **Round 23c confirmed.** EditMode (async run, about 4 min): 694 tests, 638 passed, 3 failed (the known
+   `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` and two `ContinentFinaleTests`), 53 skipped. `GateDamageLookTests`
+   (8) and `OverlayFitTests` (4) pass. PlayMode `BossIntroSmokeTests` passed. Run-output churn reverted (acceptance,
+   calibration, plans_summary, LiberationSans fallback atlas).
+1. **Art wiring (code ready, Mercer import pending).**
+   - Per-mesh materials: `ModelPart` gains `_castShadows`; `ModelArtDefinition.PartFor`; `ArtModel.Dress` gives a part's
+     renderers (name prefix, near and far) their own material instead of the body's. `BlenderStoryBuilder.WriteOwnMaterialParts`
+     reads the report's `face` and `visor` sections (`BlenderStoryCatalog.OwnMaterialMeshes`): the face gets an opaque UnitLit
+     with the `Mercer_Face_*` maps (emission 1, no detail families). The visor gets a see-through UnitLit with alpha blend,
+     ZWrite off, the Transparent queue, smoothness 0.95, emission x2, a little rim cover and no shadows. The importer keeps
+     `Mercer_Visor_Albedo`'s alpha and imports Mercer's blend shapes.
+   - Blink: `HeroArtDefinition` blink shape, length and interval (0.15 s every 3-6 s); the eyes stay shut while he lies down.
+   - New `ModelClipRole`s 74-80 (DrawPistol, StowPistol, DrawBlade, StowBlade, JetTakeoff, JetFly, JetLand, appended). Moments
+     come from the report's `events.<clip>.<key>` (`BlenderReport.Event`, scoped, since the draws share "grab"). Main moment
+     goes in EventSeconds: grab, release, liftoff, touchdown. Second moment goes in CueSeconds: ignite, blade_off, ignite,
+     thrust_off. The draws and stows are upper-body clips. `Jet_Fly` and `Wave` loop.
+   - `HeroArtView`: draw and stow play on the upper body, the weapon changes socket at the clip's moment and the blade lights
+     or goes out at the second moment. Switching weapons stows the outgoing one at once. A finished pistol draw holds the aim.
+     After Lower_Weapon the stow starts at frame 4. The Startled flinch, a fall and a take-off still seat instantly.
+   - Jetpack: take-off, then `Jet_Fly` from liftoff, then `Jet_Land` started touchdown-seconds before the post. `JetThrust`
+     draws a rocket-exhaust card from the VfxLibrary, tinted cool, plus motes along `Jet_L`/`Jet_R` +Y, from ignition to
+     thrust-off.
+   - NTI flag: `BaseArtDefinition._flag/_flagPosition/_flagEuler`, written from `NTI_Flag_report.json` placement by the new menu
+     `Tools/Generate/Blender Colony Flag (sync, flag on the base)`. Values: (0.2, 0.23, -0.75), yaw 180, in the base export's
+     frame. `BaseArtView` hangs it under the base model (it goes with the wreck), loops Wave from a random start, and shows it
+     on the display copy too. Imported and assigned (`NTI_Flag.asset`, materials). The wall decal (optional) is not done.
+2. **Jetpack gate switch (logic).** New `HeroFlight` (plain class): take-off on the spot, then a straight run at the flight
+   speed on an arc (peak `FlightHeight`, at most 0.3 m per m of ground). `Commander.MoveTo` flies when the post is farther than
+   `WalkWithin` (4 m, the lanes of one gate), walks otherwise, and turns in the air on a new order. In flight he does not fight,
+   uses no ability and takes no hazard damage. `HeroTarget.IsAlive` is false and `TakeDamage` is ignored, so no ground or air
+   creature, boss laser or blast can reach or be blocked by him (decision: flights last 1.5-2 s and cost him the fight).
+   `HeroDefinition`: `_flightSpeed` 13 m/s, `_walkWithin` 4, `_takeoffSeconds` 0.4, `_flightHeight` 2.5, `SwitchSeconds(d)`.
+   Generator and `Commander.asset` are updated.
+   Switch times at the median post-to-post distance (`Tools/PlayTest/r23d_switch.cs`), walking at 5 m/s vs flying:
+
+   | Level | Median | Walk | Fly |
+   | --- | --- | --- | --- |
+   | C1_01 | 14.3 m | 2.87 s | 1.50 s |
+   | C1_02 | 15.0 m | 3.00 s | 1.55 s |
+   | C1_03 | 19.7 m | 3.95 s | 1.92 s |
+   | C1_04 | 13.6 m | 2.72 s | 1.45 s |
+   | C1_05 | 15.2 m | 3.05 s | 1.57 s |
+   | C1_06 | 18.0 m | 3.60 s | 1.78 s |
+
+   **Balance round:** the balance model has no hero switch-time term and reads no hero speed (the hero sits at the defence
+   gate in `Leak`/`BalanceStats`). If a switch term is added, use `HeroDefinition.SwitchSeconds(distance)`.
+   Checked in play (C1_02, old Mercer model without jet clips): post 0 to 2 flew, peaked at 2.4 m, landed on the stand and
+   resumed guarding. 0 errors, 0 warnings. Save MD5 ae9223b8 before and after.
+3. **Screenshots:** pending the Mercer sync. Script: `Tools/PlayTest/r23d_shots.sh <dir> [node] [prefix] [post]`, with
+   `r23d_hero.cs` (state, view, base, flag, move, draw, face, fps). The pre-sync flag still showed the base but the cloth was
+   not clearly identifiable at game zoom. The flag probe puts it 2.17 m tall in the courtyard front-centre; check it in the
+   close-up.
+
+Tests: new `HeroFlightTests` (4) and `HeroTests.SentToAnotherGate_FliesOutOfEveryCreaturesReach`; Hero, HeroFlight and
+HeroAbility tests (21) pass. The full EditMode suite after the changes has not been run yet.
+**Next:** after "Mercer export ready" (the export changed at 17:29, but its report shrank to 4 KB; check it still has the
+`events`, `face`, `visor` and `jet` sections first), do these in order:
+- run `Tools/Generate/Blender Story (sync, hero, portraits, cutscene)` (menu, --timeout 300);
+- check `Mercer.asset` `_parts` (Mercer_Face, Mercer_Visor) and the 23 clips with event/cue seconds;
+- run `r23d_shots.sh`;
+- run the full EditMode suite with `--async_tests` and `BossIntroSmokeTests` (save rule).

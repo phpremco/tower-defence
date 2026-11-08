@@ -10,7 +10,9 @@ namespace Game.Hero
     /// The hero. Stands at one post in front of a blockade (or at the base), hits the enemies that come within reach
     /// and takes a share of the hits on a guarded blockade. When its health runs out it is down for a while and then
     /// stands up again. Its ability buttons come from data (<see cref="HeroAbilityDefinition"/>), its gun reloads after a
-    /// magazine, and unlocked perks shorten that. Has no knowledge of how it looks.
+    /// magazine, and unlocked perks shorten that. It walks between the lanes of one gate and flies to another gate with
+    /// its jetpack (<see cref="HeroFlight"/>), out of every creature's reach until it touches down. Has no knowledge of how
+    /// it looks.
     /// </summary>
     public sealed class Commander : MonoBehaviour, IDamageGuard
     {
@@ -29,6 +31,7 @@ namespace Game.Hero
         private HeroAbilityState[] _abilities = new HeroAbilityState[0];
         private int _shotsFired;
         private float _reloadRemaining;
+        private HeroFlight _flight;
 
         public HeroDefinition Definition => _definition;
 
@@ -36,7 +39,17 @@ namespace Game.Hero
 
         public bool IsDown { get; private set; }
 
+        /// <summary>True while the hero moves between posts, walking or flying.</summary>
         public bool IsWalking { get; private set; }
+
+        /// <summary>True while the move is a jetpack flight to another gate: he neither fights nor can be reached.</summary>
+        public bool IsFlying => _flight != null;
+
+        /// <summary>True once the pack has lifted him off the ground on a flight.</summary>
+        public bool IsAirborne => _flight != null && _flight.IsAirborne;
+
+        /// <summary>Seconds until the flight touches down at its post (the take-off included), or zero when not flying.</summary>
+        public float FlightSecondsToTouchdown => _flight != null ? _flight.SecondsToTouchdown : 0f;
 
         /// <summary>Direction on the ground plane the hero currently looks in.</summary>
         public Vector3 Facing { get; private set; } = Vector3.forward;
@@ -185,7 +198,11 @@ namespace Game.Hero
             }
         }
 
-        /// <summary>Sends the hero to a post. A downed hero stands up at the new post instead of walking.</summary>
+        /// <summary>
+        /// Sends the hero to a post. A near post (a lane of the same gate) is walked to; a farther one is flown to with the
+        /// jetpack, over the field. A new order in flight turns the flight in the air. A downed hero stands up at the new
+        /// post instead.
+        /// </summary>
         public void MoveTo(int postIndex)
         {
             if (postIndex < 0 || postIndex >= _posts.Count || (postIndex == _postIndex && !IsWalking))
@@ -203,9 +220,26 @@ namespace Game.Hero
             else
             {
                 IsWalking = true;
+                StartFlightIfFar();
             }
 
             Changed?.Invoke();
+        }
+
+        private void StartFlightIfFar()
+        {
+            Vector3 stand = _posts[_postIndex].Stand;
+            Vector3 flat = stand - transform.position;
+            flat.y = 0f;
+            bool airborne = IsAirborne;
+            if (!airborne && !_definition.FliesBetween(flat.magnitude))
+            {
+                // Walking from here; a flight that had not left the ground yet is called off.
+                _flight = null;
+                return;
+            }
+
+            _flight = new HeroFlight(transform.position, stand, _definition.FlightSpeed, _definition.TakeoffSeconds, _definition.FlightHeight, airborne);
         }
 
         /// <summary>The ability in a slot, or null for an empty or locked slot.</summary>
@@ -215,7 +249,7 @@ namespace Game.Hero
         public bool CanUse(int slot)
         {
             HeroAbilityState state = AbilityAt(slot);
-            return state != null && !IsDown && state.Ready && HeroAbilityEffects.CanApply(state.Definition, _posts[_postIndex].Guarded, !IsWalking);
+            return state != null && !IsDown && !IsFlying && state.Ready && HeroAbilityEffects.CanApply(state.Definition, _posts[_postIndex].Guarded, !IsWalking);
         }
 
         /// <summary>Uses the ability in a slot when it can; the caller has paid its price already.</summary>
@@ -234,10 +268,10 @@ namespace Game.Hero
             return true;
         }
 
-        /// <summary>Hurts the hero directly, as slime or acid on the ground does. A downed hero is past hurting.</summary>
+        /// <summary>Hurts the hero directly, as slime or acid on the ground does. A downed hero is past hurting, a flying one above it.</summary>
         public void TakeHazardDamage(float damage)
         {
-            if (IsDown || damage <= 0f)
+            if (IsDown || IsFlying || damage <= 0f)
             {
                 return;
             }
@@ -277,7 +311,11 @@ namespace Game.Hero
                 return;
             }
 
-            if (IsWalking)
+            if (IsFlying)
+            {
+                Fly();
+            }
+            else if (IsWalking)
             {
                 Walk();
             }
@@ -326,6 +364,22 @@ namespace Game.Hero
 
             Facing = toTarget.normalized;
             transform.position += toTarget.normalized * step;
+        }
+
+        private void Fly()
+        {
+            transform.position = _flight.Tick(Time.deltaTime);
+            Facing = _flight.Heading;
+            if (!_flight.IsDone)
+            {
+                return;
+            }
+
+            _flight = null;
+            transform.position = _posts[_postIndex].Stand;
+            Facing = _posts[_postIndex].Facing;
+            Arrive();
+            Changed?.Invoke();
         }
 
         private void Arrive()
@@ -412,6 +466,15 @@ namespace Game.Hero
 
         private void OnDied()
         {
+            if (_flight != null)
+            {
+                // Nothing reaches him in the air, but a fall still ends on the ground under him.
+                Vector3 position = transform.position;
+                position.y = _posts[_postIndex].Stand.y;
+                transform.position = position;
+                _flight = null;
+            }
+
             IsDown = true;
             IsWalking = false;
             _reviveRemaining = _definition.ReviveSeconds;

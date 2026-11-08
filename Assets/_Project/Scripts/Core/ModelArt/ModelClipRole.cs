@@ -224,5 +224,26 @@ namespace Game.Core
 
         /// <summary>The strike of a creature settled on the ground (a grounded wisp); <see cref="Attack"/> is its floating one.</summary>
         GroundedAttack = 73,
+
+        /// <summary>Drawing the sidearm from its holster to aim (the cue: the grab, where the weapon changes socket), played once.</summary>
+        DrawPistol = 74,
+
+        /// <summary>Putting the sidearm back in its holster from the aim (the cue: the release), played once.</summary>
+        StowPistol = 75,
+
+        /// <summary>Drawing the blade from the back to the guard (the cue: the grab; the second moment: the blade lights), played once.</summary>
+        DrawBlade = 76,
+
+        /// <summary>Putting the blade back on the back from the guard (the cue: the release; the second moment: the blade goes out), played once.</summary>
+        StowBlade = 77,
+
+        /// <summary>A jetpack take-off on the spot (the cue: liftoff, where the owner starts to move; the second moment: the thrust lights), played once.</summary>
+        JetTakeoff = 78,
+
+        /// <summary>The jetpack flight, in place: the owner moves the body along the flight. Loops.</summary>
+        JetFly = 79,
+
+        /// <summary>A jetpack landing (the cue: touchdown, where the owner reaches the ground; the second moment: the thrust goes out), played once.</summary>
+        JetLand = 80,
     }
 }

@@ -853,7 +853,7 @@ namespace Game.Boot
             Vector3 position = hero.transform.position;
             float moved = Vector3.Distance(position, _heroLast);
             _heroLast = position;
-            if (!hero.IsWalking || moved <= 0f)
+            if (!hero.IsWalking || hero.IsFlying || moved <= 0f)
             {
                 _heroSinceStep = 0f;
                 return;

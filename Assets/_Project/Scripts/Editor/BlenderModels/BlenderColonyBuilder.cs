@@ -89,6 +89,33 @@ namespace Game.Editor
             return built;
         }
 
+        [MenuItem("Tools/Generate/Blender Colony Flag (sync, flag on the base)")]
+        public static void RebuildFlagMenu()
+        {
+            Debug.Log($"Blender colony flag: {(RebuildFlag() ? "the base flies the flag" : "no flag export or no base art")}.");
+        }
+
+        /// <summary>
+        /// Syncs and builds only the colony flag and points the base art at it, leaving every other colony export alone.
+        /// True when the base art flies a flag afterwards.
+        /// </summary>
+        public static bool RebuildFlag()
+        {
+            BlenderSync.Sync(new[] { BlenderColonyCatalog.FlagAsset });
+            var art = AssetDatabase.LoadAssetAtPath<BaseArtDefinition>($"{ColonyArtFolder}/{BlenderColonyCatalog.BaseAsset}Art.asset");
+            if (art == null)
+            {
+                return false;
+            }
+
+            var so = new SerializedObject(art);
+            WriteFlag(so);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(art);
+            AssetDatabase.SaveAssets();
+            return art.Flag != null;
+        }
+
         /// <summary>Points every owner at its art (or at none when the export is missing); returns how many wear one.</summary>
         public static int Apply(Built built)
         {
@@ -223,6 +250,7 @@ namespace Game.Editor
             so.FindProperty("_damage").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseDamage, $"{folder}/{BlenderColonyCatalog.BaseDamage}.fbx", high, low, StructureLodScreenHeight);
             so.FindProperty("_wreck").objectReferenceValue = BuildArt(BlenderColonyCatalog.BaseWreck, $"{folder}/{BlenderColonyCatalog.BaseWreck}.fbx", high, low, StructureLodScreenHeight);
             WriteFootprint(so, so.FindProperty("_model").objectReferenceValue as ModelArtDefinition);
+            WriteFlag(so);
             List<string> order = BlenderReport.Load($"{folder}/{asset}_report.json").Strings("timelapse_order");
             SerializedProperty modules = so.FindProperty("_timelapseOrder");
             modules.arraySize = order.Count;
@@ -234,6 +262,32 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(art);
             return art;
+        }
+
+        // The NTI flag (Spencer pass 3/4): its model and where its report puts the pole in the base export's frame (pass 4's
+        // courtyard spot behind the command post). Without the export the base flies no flag.
+        private static void WriteFlag(SerializedObject so)
+        {
+            string asset = BlenderColonyCatalog.FlagAsset;
+            ModelArtDefinition flag = BuildSingle(asset, SmallLodScreenHeight);
+            so.FindProperty("_flag").objectReferenceValue = flag;
+            if (flag == null)
+            {
+                return;
+            }
+
+            Dictionary<string, object> placement = BlenderJson.Object(BlenderJson.Field(BlenderReport.Load($"{BlenderArtBuilder.AssetFolder(asset)}/{asset}_report.json").Root(), "placement"));
+            List<object> position = BlenderJson.Array(BlenderJson.Field(placement, "base_local_unity"));
+            if (position.Count == 3)
+            {
+                so.FindProperty("_flagPosition").vector3Value = new Vector3(BlenderJson.Number(position[0]), BlenderJson.Number(position[1]), BlenderJson.Number(position[2]));
+            }
+
+            object yaw = BlenderJson.Field(placement, "unity_yaw_deg");
+            if (yaw != null)
+            {
+                so.FindProperty("_flagEuler").vector3Value = new Vector3(0f, BlenderJson.Number(yaw), 0f);
+            }
         }
 
         // The ground the model covers in the base's own frame (the art's yaw and scale applied), from its mesh bounds, so

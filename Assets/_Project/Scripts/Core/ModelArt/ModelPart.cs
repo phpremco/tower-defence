@@ -14,20 +14,24 @@ namespace Game.Core
         [SerializeField] private string _object = string.Empty;
         [SerializeField] private Material _material;
         [SerializeField] private Material _lowMaterial;
+        [Tooltip("Off for a see-through part (a visor's glass) that should not darken what lies behind it.")]
+        [SerializeField] private bool _castShadows = true;
 
         public ModelPart()
         {
         }
 
-        public ModelPart(string objectName, Material material, Material lowMaterial)
+        public ModelPart(string objectName, Material material, Material lowMaterial, bool castShadows = true)
         {
             _object = objectName;
             _material = material;
             _lowMaterial = lowMaterial;
+            _castShadows = castShadows;
         }
 
         public string Object => _object;
         public Material Material => _material;
+        public bool CastShadows => _castShadows;
 
         public Material MaterialFor(bool lowDetail) => lowDetail && _lowMaterial != null ? _lowMaterial : _material;
 

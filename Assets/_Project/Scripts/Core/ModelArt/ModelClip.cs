@@ -32,7 +32,7 @@ namespace Game.Core
         [Tooltip("For a travel clip authored with its pivot fixed: how far the body has moved by its last frame, in model units (x forward, y up). The owner moves by this much when the clip ends.")]
         [SerializeField] private Vector2 _endOffset;
 
-        [Tooltip("An earlier moment inside the clip, before the main one (a burst of earth before the throw), or zero.")]
+        [Tooltip("A second moment inside the clip besides the main one (a burst of earth before the throw, a blade lighting up after the grab, a jet's thrust), or zero.")]
         [SerializeField] [Min(0f)] private float _cueSeconds;
 
         [Tooltip("Where the clip meets the world ahead of the pivot, in model units: the hole it digs or breaks out of, the bank or ledge it starts from.")]

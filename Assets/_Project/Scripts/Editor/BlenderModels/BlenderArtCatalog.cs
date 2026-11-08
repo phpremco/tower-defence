@@ -42,6 +42,8 @@ namespace Game.Editor
             "Gate_Straddle_Loop",
             // Mercer's tense hold after the Startled flinch (README round 35).
             "Startled_Hold",
+            // Spencer pass 4: the jetpack flight, in place; the NTI flag's cloth.
+            "Jet_Fly", "Wave",
         };
 
         // A shard's burst out of the giant and its flight back into it (README round 28).
