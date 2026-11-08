@@ -1,10 +1,10 @@
 {
   "asset": "Mercer",
   "character": "Spencer",
-  "round": "spencer-pass2-2026-11-08 (build_mercer3.py)",
-  "game_tris": 17498,
+  "round": "spencer-pass3-2026-11-08 (build_mercer4.py)",
+  "game_tris": 17496,
   "lod1_tris": 6000,
-  "source_tris": 3529888,
+  "source_tris": 3845476,
   "bones": 31,
   "sockets": [
     "Back",
@@ -22,20 +22,20 @@
     "Mask"
   ],
   "uv": {
-    "islands": 953,
+    "islands": 1013,
     "unwrap": "smart, layer-weighted, concave pack",
-    "uv_coverage": 0.407,
-    "world_per_uv": 3.705016717712208
+    "uv_coverage": 0.402,
+    "world_per_uv": 3.7197257232781467
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 148.2,
+      "tiling": 148.8,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 61.8,
+      "tiling": 62.0,
       "mask": "A"
     }
   },
@@ -43,6 +43,7 @@
     "suit",
     "plates",
     "gear",
+    "insignia",
     "hands"
   ],
   "mirrored_uv": false,
@@ -306,5 +307,10 @@
     },
     "back_socket": "moved to the sword sleeve on the pack's top right (pommel up over the right shoulder)",
     "unity": "reparent the weapon (identity local transform) at the primary event; Draw_Blade shows Sword_Blade from 'ignite', Stow_Blade hides it at 'blade_off'"
+  },
+  "brand": {
+    "logo": "ArtSource/Exports/Brand/NTI_Logo.png",
+    "default_variant": "A",
+    "where": "tabard front and back (painted), raised patch on the left pauldron (star lit)"
   }
 }

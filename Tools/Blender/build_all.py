@@ -33,6 +33,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # 2026-11-08 pass 2: Spencer as a warrior (crest helm, spiked asymmetric pauldron, tabard, sword sheath across
            # the back, battle scars) + Draw/Stow clips and relaxed rest hands; overwrites the export above again.
            "build_mercer3.py",
+           # 2026-11-08 pass 3: the NTI brand mark (Exports/Brand, three variants + NTI_Logo.png = the default), then
+           # Spencer with a kitted helmet (NVG, camera, comm unit, no crest), hex patterns, the logo on a tactical
+           # tabard and a pauldron patch; overwrites the export above again.
+           "build_brand.py", "build_mercer4.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
            "build_broodmother.py", "build_packalpha.py", "build_stormmatriarch.py", "build_corewisp.py",
            # Round 10 bosses; each loads its species' .blend built above.
@@ -61,6 +65,8 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_gate.py", "build_base.py",
            # Round 37: the expanded colony base (radar, landing zone, drone bays, storage)
            "build_base2.py",
+           # 2026-11-08: the NTI flag prop for the base (needs build_brand.py; its preview places it on the Base export).
+           "build_flag.py",
            "build_drones.py", "build_gadgets.py",
            # Round 11: P2 towers, hybrids and gadgets (import build_towers/build_gadgets/build_drones read-only).
            "build_towers2.py", "build_gadgets2.py",
