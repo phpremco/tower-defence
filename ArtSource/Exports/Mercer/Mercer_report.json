@@ -1,8 +1,10 @@
 {
   "asset": "Mercer",
-  "game_tris": 9754,
-  "lod1_tris": 3998,
-  "source_tris": 1878776,
+  "character": "Spencer",
+  "round": "spencer-2026-11-08 (build_mercer2.py)",
+  "game_tris": 14998,
+  "lod1_tris": 5200,
+  "source_tris": 2894104,
   "bones": 31,
   "sockets": [
     "Back",
@@ -11,8 +13,8 @@
     "Weapon_L",
     "Weapon_R"
   ],
-  "texture_size": 1024,
-  "low_texture_size": 512,
+  "texture_size": 2048,
+  "low_texture_size": 1024,
   "maps": [
     "Albedo",
     "Normal",
@@ -20,21 +22,20 @@
     "Mask"
   ],
   "uv": {
-    "islands": 64,
-    "folded_fallback_faces": 0,
-    "mirrored_faces": 4832,
-    "uv_coverage": 0.567,
-    "world_per_uv": 1.8940938287691516
+    "islands": 829,
+    "unwrap": "smart, layer-weighted, concave pack",
+    "uv_coverage": 0.424,
+    "world_per_uv": 3.4002884978305867
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 75.8,
+      "tiling": 136.0,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 31.6,
+      "tiling": 56.7,
       "mask": "A"
     }
   },
@@ -44,6 +45,7 @@
     "gear",
     "hands"
   ],
+  "mirrored_uv": false,
   "actions": {
     "Disbelief": 84,
     "Down": 40,
