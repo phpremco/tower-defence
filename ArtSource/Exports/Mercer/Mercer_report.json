@@ -1,15 +1,17 @@
 {
   "asset": "Mercer",
   "character": "Spencer",
-  "round": "spencer-pass3-2026-11-08 (build_mercer4.py)",
-  "game_tris": 17496,
+  "round": "spencer-pass4-2026-11-08 (build_mercer5.py)",
+  "game_tris": 17494,
   "lod1_tris": 6000,
-  "source_tris": 3845476,
-  "bones": 31,
+  "source_tris": 4050100,
+  "bones": 33,
   "sockets": [
     "Back",
     "Holster_L",
     "Holster_R",
+    "Jet_L",
+    "Jet_R",
     "Weapon_L",
     "Weapon_R"
   ],
@@ -22,20 +24,20 @@
     "Mask"
   ],
   "uv": {
-    "islands": 1013,
+    "islands": 1146,
     "unwrap": "smart, layer-weighted, concave pack",
-    "uv_coverage": 0.402,
-    "world_per_uv": 3.7197257232781467
+    "uv_coverage": 0.356,
+    "world_per_uv": 4.032333369322788
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 148.8,
+      "tiling": 161.3,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 62.0,
+      "tiling": 67.2,
       "mask": "A"
     }
   },
@@ -54,6 +56,9 @@
     "Draw_Pistol": 18,
     "Hit": 12,
     "Idle": 72,
+    "Jet_Fly": 40,
+    "Jet_Land": 28,
+    "Jet_Takeoff": 30,
     "Lower_Weapon": 70,
     "Point_Shout": 42,
     "Reload": 36,
@@ -111,6 +116,18 @@
     },
     "Stow_Blade": {
       "release": 15
+    },
+    "Jet_Takeoff": {
+      "crouch": 7,
+      "ignite": 8,
+      "liftoff": 12,
+      "airborne": 30
+    },
+    "Jet_Land": {
+      "flare": 8,
+      "touchdown": 13,
+      "thrust_off": 15,
+      "rest": 28
     }
   },
   "upper_body_mask": "Spine1 and all its children",
@@ -312,5 +329,110 @@
     "logo": "ArtSource/Exports/Brand/NTI_Logo.png",
     "default_variant": "A",
     "where": "tabard front and back (painted), raised patch on the left pauldron (star lit)"
-  }
+  },
+  "jet": {
+    "clips": {
+      "Jet_Takeoff": {
+        "frames": 30,
+        "seconds": 1.0,
+        "loop": false,
+        "starts": "Idle frame 0",
+        "ends": "Jet_Fly frame 0",
+        "events": {
+          "crouch": 7,
+          "ignite": 8,
+          "liftoff": 12,
+          "airborne": 30
+        },
+        "events_normalized": {
+          "crouch": 0.233,
+          "ignite": 0.267,
+          "liftoff": 0.4,
+          "airborne": 1.0
+        }
+      },
+      "Jet_Fly": {
+        "frames": 40,
+        "seconds": 1.333,
+        "loop": true,
+        "events": {}
+      },
+      "Jet_Land": {
+        "frames": 28,
+        "seconds": 0.933,
+        "loop": false,
+        "starts": "Jet_Fly frame 0",
+        "ends": "Idle frame 0",
+        "events": {
+          "flare": 8,
+          "touchdown": 13,
+          "thrust_off": 15,
+          "rest": 28
+        },
+        "events_normalized": {
+          "flare": 0.286,
+          "touchdown": 0.464,
+          "thrust_off": 0.536,
+          "rest": 1.0
+        }
+      }
+    },
+    "root_motion": "none: the Root bone is never keyed; Unity moves the character root along the flight path",
+    "hips_lift_m": 0.3,
+    "hips_lift_note": "the hips (and so the whole body) ride JET_LIFT above the stance at the end of Jet_Takeoff, all through Jet_Fly and at the start of Jet_Land, so the feet are off the ground with the root on the ground; extra altitude is the root's job in code",
+    "thrust": "ignite (Jet_Takeoff) to thrust_off (Jet_Land): VFX on Jet_L / Jet_R (socket Y axis = exhaust direction)",
+    "sockets": {
+      "Jet_L": {
+        "parent": "Spine2",
+        "head_blender": [
+          0.161,
+          0.262,
+          1.001
+        ],
+        "y_axis": "down (exhaust)"
+      },
+      "Jet_R": {
+        "parent": "Spine2",
+        "head_blender": [
+          -0.161,
+          0.262,
+          1.001
+        ],
+        "y_axis": "down (exhaust)"
+      }
+    },
+    "unity": "Jet_Takeoff (root still) until liftoff, then move the root along the path while Jet_Fly loops; start Jet_Land so that its touchdown frame meets the ground at the target gate; the root stays on the ground plane at touchdown, so place it there before or at that frame."
+  },
+  "face": {
+    "mesh": "Mercer_Face",
+    "far_mesh": "Mercer_Face_LOD1",
+    "bone": "Head (rigid, weight 1)",
+    "tris": 6840,
+    "maps": {
+      "Albedo": "Mercer_Face_Albedo.png",
+      "Normal": "Mercer_Face_Normal.png",
+      "Emission": "Mercer_Face_Emission.png",
+      "Mask": "Mercer_Face_Mask.png"
+    },
+    "low_maps": "Low/Mercer_Face_<Map>.png (512)",
+    "mask": "R AO (1), G smoothness (skin ~0.38, eyes 0.88), B/A 0 (no detail normals)",
+    "shape_keys": {
+      "Blink": "upper lids closed (0..1); optional: a blink every 3-6 s for 0.15 s"
+    },
+    "material": "the hero's lit shader (Game/UnitLit) with these maps; opaque; emission 1 (iris catchlight only)",
+    "source": "MPFB 2 (CC0 assets: middleage_caucasian_male skin, high-poly eyes, bluegreen iris), spencer_face.py"
+  },
+  "visor": {
+    "mesh": "Mercer_Visor",
+    "far_mesh": "Mercer_Visor_LOD1",
+    "bone": "Head (rigid, weight 1)",
+    "tris": 784,
+    "maps": {
+      "Albedo": "Mercer_Visor_Albedo.png",
+      "Emission": "Mercer_Visor_Emission.png"
+    },
+    "material": "URP Lit (or Game/UnitLit) TRANSPARENT, alpha blend, base map = Mercer_Visor_Albedo (alpha = opacity 0.12 in the middle .. 0.62 at the rim), smoothness 0.95, metallic 0, emission map Mercer_Visor_Emission x2 (faint HUD ticks), cast shadows off, receive shadows on, render queue after the opaque body; optional fresnel: more opaque at grazing angles",
+    "single_sided": "normals face out; back faces culled"
+  },
+  "helmet": "shell with a visor opening (dark liner inside, gasket on the rim); quad-tube NVG flipped up on a brow mount"
 }

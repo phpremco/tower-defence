@@ -37,6 +37,10 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # Spencer with a kitted helmet (NVG, camera, comm unit, no crest), hex patterns, the logo on a tactical
            # tabard and a pauldron patch; overwrites the export above again.
            "build_brand.py", "build_mercer4.py",
+           # 2026-11-08 pass 4: a real face (MPFB, cached in ArtSource/Blend/SpencerFace_capture.npz) behind a see-through
+           # visor, a helmet-mounted quad NVG, a jetpack with Jet_L/Jet_R sockets and Jet_Takeoff/Fly/Land clips;
+           # overwrites the export above again (adds Mercer_Face, Mercer_Visor and their _LOD1 copies).
+           "build_mercer5.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
            "build_broodmother.py", "build_packalpha.py", "build_stormmatriarch.py", "build_corewisp.py",
            # Round 10 bosses; each loads its species' .blend built above.
@@ -65,8 +69,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            "build_gate.py", "build_base.py",
            # Round 37: the expanded colony base (radar, landing zone, drone bays, storage)
            "build_base2.py",
-           # 2026-11-08: the NTI flag prop for the base (needs build_brand.py; its preview places it on the Base export).
-           "build_flag.py",
+           # 2026-11-08: the NTI flag prop for the base (needs build_brand.py; its preview places it on the Base export),
+           # then the proof shots of its free-standing spot (flag_placement.py).
+           "build_flag.py", "flag_placement.py",
            "build_drones.py", "build_gadgets.py",
            # Round 11: P2 towers, hybrids and gadgets (import build_towers/build_gadgets/build_drones read-only).
            "build_towers2.py", "build_gadgets2.py",

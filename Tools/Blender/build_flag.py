@@ -412,8 +412,10 @@ def previews(arm, obj, mat, logo):
 
 
 # Where the flag stands at the base (base-local Blender metres; base pivot at the origin, -Y faces the road, the game
-# camera looks from +Y): on the deck between the habitat and the landing pad, in front of the camera.
-SPOT = (0.42, 2.16, 0.23)
+# camera looks from +Y). 2026-11-08 (Remco: "de vlag staat in een container"): moved from (0.42, 2.16), wedged between
+# the pipe run and the containers, to the open courtyard behind the command post, in front of the habitat; the foot
+# and the cloth sweep are measured free by flag_placement.py, which also renders the proof shots.
+SPOT = (-0.2, 0.75, 0.23)
 SPOT_YAW = 180.0
 
 
@@ -445,7 +447,8 @@ def main():
         "emission": "beacon on the pole top (cyan) and the logo star (faint)",
         "two_sided": "front and back cloth faces have their own UVs; the logo reads correctly from both sides",
         "placement": {"base_local_blender": SPOT, "yaw_deg": SPOT_YAW,
-                      "note": "on the base deck between the habitat and the landing pad, close to the camera side; "
+                      "base_local_unity": [-SPOT[0], SPOT[2], -SPOT[1]], "unity_yaw_deg": SPOT_YAW,
+                      "note": "free-standing in the open courtyard behind the command post, in front of the habitat (flag_placement.py); "
                               "base-local Blender (x, y, z) -> Unity (-x, z, -y) with the usual FBX axis conversion"},
     }
     with open(os.path.join(OUT, NAME + "_report.json"), "w", encoding="utf-8") as fh:

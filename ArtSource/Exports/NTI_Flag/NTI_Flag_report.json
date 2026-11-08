@@ -50,11 +50,17 @@
   "two_sided": "front and back cloth faces have their own UVs; the logo reads correctly from both sides",
   "placement": {
     "base_local_blender": [
-      0.42,
-      2.16,
+      -0.2,
+      0.75,
       0.23
     ],
     "yaw_deg": 180.0,
-    "note": "on the base deck between the habitat and the landing pad, close to the camera side; base-local Blender (x, y, z) -> Unity (-x, z, -y) with the usual FBX axis conversion"
+    "base_local_unity": [
+      0.2,
+      0.23,
+      -0.75
+    ],
+    "unity_yaw_deg": 180.0,
+    "note": "free-standing in the open courtyard behind the command post, in front of the habitat (flag_placement.py); base-local Blender (x, y, z) -> Unity (-x, z, -y) with the usual FBX axis conversion"
   }
 }
