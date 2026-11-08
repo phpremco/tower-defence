@@ -172,7 +172,7 @@ namespace Game.UI
         }
 
         // One line for the unlocks that have no picture of their own: new gadgets for the loadout and a commander perk.
-        private static string UnlockLine(LevelResult result)
+        private string UnlockLine(LevelResult result)
         {
             var parts = new System.Collections.Generic.List<string>();
             if (result.NewPathObjects.Length > 0)
@@ -188,7 +188,9 @@ namespace Game.UI
 
             if (result.HeroPerk != null)
             {
-                parts.Add($"Mercer learns {result.HeroPerk.DisplayName}");
+                // The hero is named from data (the level's hero), never written into the screen.
+                string hero = HeroNaming.Of(_context);
+                parts.Add($"{hero} learns {result.HeroPerk.DisplayName}");
             }
 
             // The weapon panel shows the credit under its heading; without a weapon it closes this line.

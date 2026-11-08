@@ -91,8 +91,8 @@ Dit zijn de grootste modellen, met de meeste aandacht en animaties.
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ☑ | P1 | **Cole "Pathfinder" Mercer** | Import stage 3b: in het spel (alle clips op rol, Shoot/Reload/Slash/Hit op het bovenlijf-masker vanaf `Spine1`, looppas op snelheid, aim via de rug, lichten doven bij Down) en in menu, portret en cutscene. Ronde 6 klaar: navy gewatteerd pak, witte keramische platen, helm met rookglas-vizier en gele kruinstreep, gelaagde schouderstukken met gele rand, rugpak met twee cyaan cellen, holsters op beide dijen, Crysium-stof op de laarzen. 9.800 driehoeken, LOD1 4.000 op hetzelfde rig (31 botten, sockets `Weapon_L/R`, `Holster_L/R`, `Back`). Clips Idle/Walk/Run/Shoot/Reload/Slash/Shockwave/Repair/Hit/Down/Revive; Shoot, Reload en Slash met bovenlijf-masker (vanaf `Spine1`). Portretbuste gerenderd. Zie README ronde 6. **Ronde 16 (polish):** platen zijn nu losse harde schalen met afgeschuinde randen en echte paneelgroeven over het gewatteerde pak (eigen remesh-laag, eigen bake per laag), handschoenen met losse vingergroepen, steunhand omvat de pistoolhand van links, grotere Shoot-terugslag en Reload-boog, Down eindigt met de heupen 0,39 naast de oorsprong (was 0,89). 9.752 driehoeken, LOD1 3.996; botten, sockets en clipnamen ongewijzigd |
-| ☑ | P1 | Mercers **pistool** en **laserzwaard** | Import stage 3b: in het spel (pistool in `Holster_R`/`Weapon_R`, gevest op `Back`/`Weapon_R`, kling additief in de wapenkleur, flits en schot uit de loop; Quick- en Wide-varianten verborgen tot de perks er zijn). Ronde 6 klaar: pistool 1.250 + los magazijn 120 (Quick Reload-magazijn 200), gevest 760 (Wide Slash-gevest 800), twee kling-meshes met UV-verloop voor een emissieve shader. Eén 512-materiaal. Alles in "grip space" van de socket: identity onder `Weapon_R`. Dual Wield via `Weapon_L`/`Holster_L`; Crysium Blade volgt |
+| ☑ | P1 | **Cole "Pathfinder" Spencer** | Import stage 3b: in het spel (alle clips op rol, Shoot/Reload/Slash/Hit op het bovenlijf-masker vanaf `Spine1`, looppas op snelheid, aim via de rug, lichten doven bij Down) en in menu, portret en cutscene. Ronde 6 klaar: navy gewatteerd pak, witte keramische platen, helm met rookglas-vizier en gele kruinstreep, gelaagde schouderstukken met gele rand, rugpak met twee cyaan cellen, holsters op beide dijen, Crysium-stof op de laarzen. 9.800 driehoeken, LOD1 4.000 op hetzelfde rig (31 botten, sockets `Weapon_L/R`, `Holster_L/R`, `Back`). Clips Idle/Walk/Run/Shoot/Reload/Slash/Shockwave/Repair/Hit/Down/Revive; Shoot, Reload en Slash met bovenlijf-masker (vanaf `Spine1`). Portretbuste gerenderd. Zie README ronde 6. **Ronde 16 (polish):** platen zijn nu losse harde schalen met afgeschuinde randen en echte paneelgroeven over het gewatteerde pak (eigen remesh-laag, eigen bake per laag), handschoenen met losse vingergroepen, steunhand omvat de pistoolhand van links, grotere Shoot-terugslag en Reload-boog, Down eindigt met de heupen 0,39 naast de oorsprong (was 0,89). 9.752 driehoeken, LOD1 3.996; botten, sockets en clipnamen ongewijzigd |
+| ☑ | P1 | Spencers **pistool** en **laserzwaard** | Import stage 3b: in het spel (pistool in `Holster_R`/`Weapon_R`, gevest op `Back`/`Weapon_R`, kling additief in de wapenkleur, flits en schot uit de loop; Quick- en Wide-varianten verborgen tot de perks er zijn). Ronde 6 klaar: pistool 1.250 + los magazijn 120 (Quick Reload-magazijn 200), gevest 760 (Wide Slash-gevest 800), twee kling-meshes met UV-verloop voor een emissieve shader. Eén 512-materiaal. Alles in "grip space" van de socket: identity onder `Weapon_R`. Dual Wield via `Weapon_L`/`Holster_L`; Crysium Blade volgt |
 | ☑ | P2 | **Dr. Elena Voss** (volledige figuur) | **Ronde 20 (MPFB 2, `build_voss3.py`):** gebouwd op een MakeHuman-basis (MPFB 2, CC0): volwassen vrouw van rond de 40 met natuurlijke vrouwelijke verhoudingen (taille, heupen, buste), zacht ovaal gezicht met natuurlijke kaak, iets grotere ogen en een fijnere neus via MakeHuman-targets, vriendelijke rustmimiek. MPFB-huid (vereenvoudigd: geen poriën of stoppels), ogen, wenkbrauwen (in de huid geschilderd), tanden, haarknot (hair01) en schoenen; kleding (labjas tot de knie, revers, kraag, zakken met de handen erin, borstzak, knopen, NTI-patch, navy col met cyaan rand, broek, headset, gele badge) opgemeten aan haar lichaam. 25.228 driehoeken, één materiaal, 2048-maps (Low 1024), zelfde 10 botten en clips, shape keys Blink/Smile/JawOpen/Frown uit faceunits01. Unity: maxTextureSize voor Voss naar 2048 en importBlendShapes aan. Zwak: het haar is MPFB's knot-schil (streep op de kruin, rafelige rand boven de oren), de huid is vrij glad, de microfoon werpt een schaduw op de kaak, geen 3D-wimpers, lage schoenen in plaats van laarzen, lengte 1,56 m (ogen op 1,44 gehouden) |
 | ☑ | P2 | **ORA** (hologram) | Import stage 3b: dialoogportret (zonder hologram-shader). Ronde 13 klaar: geen gezicht: facetkern (icosaëder met binnenste octaëder), drie gyroscoopringen van bogen, een kroon van acht scherven, één horizontale "blikbalk" die verbreedt als ze praat, en een emitterschijf. Cyaan. UV1 = banden voor een glitch-shader. 1.622 driehoeken. Clips Idle/Talk/Glitch |
 | ☑ | P2 | **NTI-embleem** | Import stage 3b: portret van het NTI-bericht (gloed x0,35, de ster gaat naar goud). Ronde 13 klaar: eigen ontwerp: afgeschuinde zeshoekige badge (gunmetal rand, koloniaal blauw veld), witte horizonboog, opkomende vierpuntige ster (lichtgevend), letters N T I. 412 driehoeken, statisch |
@@ -231,10 +231,10 @@ De code zet die neer volgens de layout. De spellogica en het raster veranderen n
 
 | Status | Prio | Model | Extra |
 | --- | --- | --- | --- |
-| ☑ | P2 | **Landingscapsule** | Import stage 3b: in de cutscene (vallend vanaf het moederschip, landing met Land, loopplank met Open, Mercer stapt uit bij `Exit`, hitteschild met eigen gloed). Ronde 13 klaar: zeshoekige capsule (wit, blauwe band, gevarenstreep), hitteschild als eigen mesh met gloeirand, vier retro-jets, drie landingspoten, loopplank die tot de grond zakt met verlicht interieur. 4.900 driehoeken. Clips **Land** en **Open** |
+| ☑ | P2 | **Landingscapsule** | Import stage 3b: in de cutscene (vallend vanaf het moederschip, landing met Land, loopplank met Open, Spencer stapt uit bij `Exit`, hitteschild met eigen gloed). Ronde 13 klaar: zeshoekige capsule (wit, blauwe band, gevarenstreep), hitteschild als eigen mesh met gloeirand, vier retro-jets, drie landingspoten, loopplank die tot de grond zakt met verlicht interieur. 4.900 driehoeken. Clips **Land** en **Open** |
 | ☑ | P2 | **Boor (derrick)** | Import stage 3b: in de cutscene (Sink op de voortgang, daarna Spin; de procedurele boorstang verborgen). Ronde 13 klaar: stalen vakwerktoren op een dek met gevarenranden, blauw motorhuis met lichtroosters, kroonblok met baken, takelblok, kelly en een grote gegroefde boorkop. 3.630 driehoeken. Clips **Spin** en **Sink** (3 eenheden de grond in) |
 | ☑ | P2 | **Moederschip** | Import stage 3b: in de orbit-shot (Spin, capsules uit `Bay`, gloed bij `Nozzle_n`). Ronde 13 klaar: vakwerkruggengraat, wit commandomodule met lichtband, draaiende woonring met ramen, vrachtcontainers, capsulebaai, radiatoren met cyaan lijnen, motorblok met drie straalpijpen. 9.302 driehoeken. Clip **Spin** (ring) |
-| ☑ | P2 | **Baken** van Mercer | Import stage 3b: in de cutscene (Deploy op de voortgang, dan Idle, licht op `Lamp`). Ronde 13 klaar: driepoot die uitklapt, telescoopmast, pulserende lamp, draaiende ring. 2.162 driehoeken. Clips **Deploy** en **Idle** |
+| ☑ | P2 | **Baken** van Spencer | Import stage 3b: in de cutscene (Deploy op de voortgang, dan Idle, licht op `Lamp`). Ronde 13 klaar: driepoot die uitklapt, telescoopmast, pulserende lamp, draaiende ring. 2.162 driehoeken. Clips **Deploy** en **Idle** |
 | ◐ | P2 | **Radarscherm / commandopost-interieur** | Import stage 3b: geïmporteerd (`CutsceneCast.ConsoleArt`), maar de radar-shot is nog een UI-overlay op het veld; een shot in de commandopost is een ontwerpkeuze (open punt). Ronde 13 klaar: radarconsole (bureau, rond radarscherm, twee zijschermen, toetsen, NTI-embleem). Schermen als eigen meshes met 0..1 UV voor een shader. 3.026 driehoeken. Geen volledig interieur |
 | ◐ | P2 | **Aarde** en **S-69-CRYS-globe** | Ronde 20: S-69-CRYS-textureset klaar (`build_planet_s69.py`, `ArtSource/Exports/Planet_S69/`, 4096 + Low 2048): albedo, hoogte (16-bit), normal, mask, regio-ID-mask, emissie en wolken, op de MapRegion-indeling. Nog: koppelen in Unity (`Game/Planet`), Aarde niet gedaan |
 | ◐ | P3 | Ogenveld ondergronds | Ronde 26: Burrower-ogen gemaakt, zie sectie 12 |
@@ -332,7 +332,7 @@ Scripts `build_menu_diorama.py`, `build_underground.py`, `build_planet_earth.py`
 
 1. **Import-pijplijn:** Skitter, Queen en het Crystal Plains-decor in Unity, plus de shader-slots (Mask, detail-normal).
    Daarna de leesbaarheid op de spelcamera bijstellen.
-2. **De rest van P1:** eerst de vijanden (Roller, Cragback, Prowler, Skyray, Shalebat, Wisp), dan Mercer, dan de torens
+2. **De rest van P1:** eerst de vijanden (Roller, Cragback, Prowler, Skyray, Shalebat, Wisp), dan Spencer, dan de torens
    (Gun, Cannon, Laser, Flak), dan de gate en de basis, dan de drones, dan de bazen van level 1–6, en tot slot het decor
    (rift, planten, rotsdecor).
 3. **P2:** de rest van continent 1, inclusief Gravemaw, en de cutscene-modellen.
@@ -409,12 +409,12 @@ leesbaarheid op de spelcamera beoordelen we pas goed op echte Unity-screenshots,
 - Toegevoegd na de basissoorten: `build_broodmother.py`, `build_packalpha.py`, `build_stormmatriarch.py`,
   `build_corewisp.py`.
 
-### Hero ronde 6 (Mercer)
+### Hero ronde 6 (Spencer)
 
 | Model | Verbeterpunt |
 | --- | --- |
-| Mercer | ✔ Ronde 16: platen als losse schalen met afgeschuinde randen en scherpe groeven; vingergroepen. Nog open: van onderaf is de holle binnenkant van een schouderstuk zichtbaar (spelcamera nooit); vizier nog steeds vrij teal. Oorspronkelijk: Platen zacht en "kussenachtig" (lijf uit simpele vormen versmolten). Paneellijnen zacht. Handschoenen wantachtig. Leest van dichtbij wat speelgoedachtig: meer harde randen, scherpere afschuiningen en echte vingers voor close-ups. Vizier vrij teal |
-| Mercer clips | ✔ Ronde 16: Shoot/Reload groter, steunhand gerepareerd, Down eindigt bij de oorsprong. Nog open: wapen-socket-oriëntatie in Unity bevestigen. Oorspronkelijk: Reload en Shoot subtiel op spelzoom. Steunhand overlapt de pistoolhand bij tweehandig richten. Down eindigt ~0,85 naast de oorsprong. Wapen-socket-oriëntatie pas in Unity te bevestigen |
+| Spencer | ✔ Ronde 16: platen als losse schalen met afgeschuinde randen en scherpe groeven; vingergroepen. Nog open: van onderaf is de holle binnenkant van een schouderstuk zichtbaar (spelcamera nooit); vizier nog steeds vrij teal. Oorspronkelijk: Platen zacht en "kussenachtig" (lijf uit simpele vormen versmolten). Paneellijnen zacht. Handschoenen wantachtig. Leest van dichtbij wat speelgoedachtig: meer harde randen, scherpere afschuiningen en echte vingers voor close-ups. Vizier vrij teal |
+| Spencer clips | ✔ Ronde 16: Shoot/Reload groter, steunhand gerepareerd, Down eindigt bij de oorsprong. Nog open: wapen-socket-oriëntatie in Unity bevestigen. Oorspronkelijk: Reload en Shoot subtiel op spelzoom. Steunhand overlapt de pistoolhand bij tweehandig richten. Down eindigt ~0,85 naast de oorsprong. Wapen-socket-oriëntatie pas in Unity te bevestigen |
 
 ### Torens ronde 7 (Gun Turret, Cannon, Laser, Flak, Gate Gun, sokkel, sterren, wrak)
 
@@ -562,16 +562,16 @@ rest 2,0 met koele rim 0,75 zoals de torens. Dit zijn de punten voor de Blender-
 | R.A.T. en carrier | Geïmporteerd, maar er is geen padobject in de data (Remco/ontwerp) |
 | Niet geïmporteerd (geen data) | Decoy Beacon, Barricade, Spike Strip, Rollback Field, de superwapens; Drone_Builder en Drone_Hauler horen bij de cutscene (latere stage, de cutscene gebruikt nog de procedurele drones en basis) |
 
-### Na import stage 3b (2026-11-04, Mercer, portretten en cutscene-modellen in Unity)
+### Na import stage 3b (2026-11-04, Spencer, portretten en cutscene-modellen in Unity)
 
-Gezien op `imp3b_*`-screenshots (Mercer in het level idle, rennend, schietend, slaand, shockwave, neer en weer op;
+Gezien op `imp3b_*`-screenshots (Spencer in het level idle, rennend, schietend, slaand, shockwave, neer en weer op;
 de vijf portretten; cutscene-frames van orbit, landing, baken, basis-timelapse, boor, haulers, kern en de gate).
 In Unity al geregeld: alles 180 graden gedraaid (zoals 3a), de wapens niet (grip space klopt: het pistool ligt in de
-hand), Mercer-buste 50 graden bijgedraaid, Voss dichterbij en meer driekwart. Punten voor de Blender-kant:
+hand), Spencer-buste 50 graden bijgedraaid, Voss dichterbij en meer driekwart. Punten voor de Blender-kant:
 
 | Model | Verbeterpunt |
 | --- | --- |
-| Mercer | Leest goed op spelzoom en in de cutscene. Idle staat zo schuin dat de buste 50 graden moet bijdraaien; het vizier blijft vrij teal en fel in het portretlicht |
+| Spencer | Leest goed op spelzoom en in de cutscene. Idle staat zo schuin dat de buste 50 graden moet bijdraaien; het vizier blijft vrij teal en fel in het portretlicht |
 | Zwaardkling | De kling-mesh is 0,04 breed: op spelzoom een dun lijntje. Unity tekent de gloed nu 2,5x breder; een bredere kling-mesh (of een aparte gloed-schil) maakt dat overbodig |
 | Voss | Het gezicht blijft het zwakste punt (zie curator na ronde 16); de witte jas brandt in het portretlicht bijna uit. Een iets donkerder albedo voor de jas helpt het gezicht |
 | ORA | Leest als belicht model; de hologram-shader op UV1 is er nog niet (Unity-kant, open) |
@@ -581,7 +581,7 @@ hand), Mercer-buste 50 graden bijgedraaid, Voss dichterbij en meer driekwart. Pu
 | Boor | Het vakwerk leest donker tegen de nacht; een paar lampjes langs de toren zouden helpen |
 | Builder | `Work` wordt niet als loop geïmporteerd (de cutscene wikkelt de tijd zelf); geen probleem |
 | Radarconsole | Geïmporteerd maar niet gebruikt: de radar-shot is een overlay op het veld (ontwerpkeuze voor Remco) |
-| Niet gebruikt | Voss/ORA Talk, Blink en Glitch (de portretten zijn stills); Mercer Repair speelt alleen bij Gate Repair |
+| Niet gebruikt | Voss/ORA Talk, Blink en Glitch (de portretten zijn stills); Spencer Repair speelt alleen bij Gate Repair |
 
 ### Na import stage 4a (2026-11-04, omgeving van Crystal Plains in Unity)
 
@@ -636,7 +636,7 @@ gloed 2,0. Punten voor de Blender-kant:
 
 ### Curator na ronde 16
 
-- **Mercer:** duidelijk beter. Harde platen, vingers en betere clips. Goed genoeg voor nu.
+- **Spencer:** duidelijk beter. Harde platen, vingers en betere clips. Goed genoeg voor nu.
 - **Voss:** de jas, het haar en de oogleden zijn een grote stap vooruit. Het gezicht blijft het zwakste punt van het hele project: lange onderkant, platte neus, een te lange hals met pezen en een mannequin-achtige huid. Procedurele gezichten zijn moeilijk. Opties voor later: een gestileerder ontwerp (grotere ogen, kortere neus en kin, minder realisme), of het gezicht in Blender opbouwen uit een basismesh met shape keys. Te bespreken met Remco. **Opgelost in ronde 19** (`build_voss2.py`): gestileerd gezicht met echte oog- en mondlussen, kortere neus en kin, natuurlijke nek, warme matte huid en shape keys; zie de Voss-rij hierboven en DESIGN_NOTES ronde 19.
 
 ### Omgeving ronde 17 (continenten 2-6)
@@ -973,11 +973,11 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Rotbloom | Kan niet over een poort zonder een ander lijf (gelede romp of langere poten) |
 
 
-### Ronde 35 (Mercers reactieclips, 2026-11-05)
+### Ronde 35 (Spencers reactieclips, 2026-11-05)
 
 Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `ArtSource/README.md` ronde 35.
 
-- **Waarom:** Mercer stond neutraal met de armen omlaag in de reactieshots. Remco wil dat hij echt "wtf???" gaat
+- **Waarom:** Spencer stond neutraal met de armen omlaag in de reactieshots. Remco wil dat hij echt "wtf???" gaat
   als een baas verschijnt.
 - **Nieuw in `Mercer.fbx`** (game-hero en cutscene-Commander zijn één export; nu 16 clips, mesh en oude clips
   ongewijzigd):
@@ -993,7 +993,7 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 
 | Onderdeel | Verbeterpunt |
 | --- | --- |
-| Mercer reactieclips (ronde 35) | Wijzen leest slecht als Mercer naar de spelcamera kijkt (arm verkort), goed als hij het scherm in kijkt. Geen wijsvinger in het rig (platte hand). De hoofdkanteling van Startled zie je van boven minder; de leun en het hoge wapen dragen het. `Holster`-clip nog niet gemaakt |
+| Spencer reactieclips (ronde 35) | Wijzen leest slecht als Spencer naar de spelcamera kijkt (arm verkort), goed als hij het scherm in kijkt. Geen wijsvinger in het rig (platte hand). De hoofdkanteling van Startled zie je van boven minder; de leun en het hoge wapen dragen het. `Holster`-clip nog niet gemaakt |
 
 ### Ronde 34 (Gravemaw-scheur als echte 3D-kloof, 2026-11-05)
 
@@ -1031,6 +1031,6 @@ Gemaakt in Blender, nog niet geïmporteerd. Details en Unity-notities staan in `
 | Onderdeel | Status / verbeterpunt |
 | --- | --- |
 | Gravemaw-kloof (ronde 34) | In het spel, gebogen langs het pad (spline-deform; de bochtstukken zijn niet nodig). De dieptepunch werkt in twee stappen (stencil, dan verre diepte). Waar de kloof onder een verhoogde terrasrand door loopt verdwijnt hij eronder; dat leest goed. Mogelijk: een korter eindstuk voor korte scheuren (nu worden Start en Head samengedrukt tot 45 %) |
-| Mercer-reacties (ronde 35) | Alle vijf clips in het spel. Een echte Holster-clip ontbreekt nog: het pistool springt na Lower_Weapon naar Holster_R |
+| Spencer-reacties (ronde 35) | Alle vijf clips in het spel. Een echte Holster-clip ontbreekt nog: het pistool springt na Lower_Weapon naar Holster_R |
 | Stripvenster (boss-intro) | Gebruikt nu een effen paneel uit de UI-kit in de bosskleur. Een getekend stripframe uit de UI-kit (rafelrand, schaduw) zou het mooier maken |
 | Vizier in het stripvenster | Het randlicht van de boss staat er; een echte weerspiegeling van de boss in het vizier zou een reflectieprobe of een getekende overlay vragen |

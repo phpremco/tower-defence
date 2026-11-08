@@ -133,8 +133,26 @@ namespace Game.Levels
                 return;
             }
 
-            bool changed = false;
+            bool changed = !_context.CameraBlocked && ApplyPlayerInput(dt);
 
+            if (_glideTime < GlideSeconds)
+            {
+                _glideTime += dt;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_glideTime / GlideSeconds));
+                _focus = Vector3.Lerp(_glideFrom, _glideTo, t);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Apply();
+            }
+        }
+
+        // Zoom by wheel or triggers, pan by stick, keys or the screen edge. Returns true when the view moved.
+        private bool ApplyPlayerInput(float dt)
+        {
+            bool changed = false;
             float zoomInput = _input.CameraZoom;
             if (Mathf.Abs(zoomInput) > ScrollThreshold)
             {
@@ -162,18 +180,7 @@ namespace Game.Levels
                 _panHeld = 0f;
             }
 
-            if (_glideTime < GlideSeconds)
-            {
-                _glideTime += dt;
-                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_glideTime / GlideSeconds));
-                _focus = Vector3.Lerp(_glideFrom, _glideTo, t);
-                changed = true;
-            }
-
-            if (changed)
-            {
-                Apply();
-            }
+            return changed;
         }
 
         /// <summary>True while the overview is held or the camera is still easing between it and the play view.</summary>

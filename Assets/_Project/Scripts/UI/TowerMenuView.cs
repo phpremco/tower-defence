@@ -203,7 +203,7 @@ namespace Game.UI
             _upgradePrice.text = tower.CanUpgrade ? $"Upgrade\n{tower.NextUpgradeCost}" : "MAX\nlevel";
             string repairVerb = tower.IsWrecked ? "Rebuild" : "Repair";
             _repairPrice.text = tower.NeedsRepair ? $"{repairVerb}\n{tower.RepairCost}" : "Repair\n-";
-            _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? "Hero\nhere" : "Send\nhero";
+            _sellPrice.text = tower.CanBeSold ? (tower.IsWrecked ? "Scrap\n+" : "Sell\n+") + tower.SellValue : IsHeroHere(tower) ? $"{HeroNaming.Of(_context)}\nhere" : $"Send\n{HeroNaming.Of(_context)}";
 
             // The combine icon only appears when a neighbouring tower forms a recipe with this one.
             CombineRecipe offer = _context.CombineOffer;

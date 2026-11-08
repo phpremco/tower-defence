@@ -7,7 +7,7 @@ Source: `Docs/STORY.md`, `Docs/STORY_ROADMAP.md` (F0, S1). Assumes F0 is merged:
 Levels cannot see UI, so all story data lives in `Game.Levels`; only views live in `Game.UI`.
 
 - **`SpeakerDefinition`** (SO, id = asset name): `_displayName`, `_roleColour` (name tag, rim light, box border), `_portrait` (`PortraitModel` enum), `_portraitOverride` (Sprite, optional; wins over the model when set, so a drawn portrait arrives later via data only), `_defaultGlitch` (bool, unused for ORA in level 1, ready for later).
-- **`enum PortraitModel { Hero, Scientist, Hologram, Emblem, Probe }`** (values only appended). Hero = Mercer from `HeroModelFactory`; Scientist = Voss; Hologram = ORA (emissive core plus orbit rings, no body); Emblem = NTI (flat emissive badge); Probe = Pioneer-1 (dish and antenna).
+- **`enum PortraitModel { Hero, Scientist, Hologram, Emblem, Probe }`** (values only appended). Hero = Spencer from `HeroModelFactory`; Scientist = Voss; Hologram = ORA (emissive core plus orbit rings, no body); Emblem = NTI (flat emissive badge); Probe = Pioneer-1 (dish and antenna).
 - **`DialogueDefinition`** (SO, id = asset name, e.g. `Dlg_L01_Start`): `_lines : DialogueLine[]`. The id is the once-per-save key.
 - **`DialogueLine`** (struct): `Speaker` (SpeakerDefinition), `Segments : DialogueSegment[]`, `Glitch : bool` (the whole line jitters and the portrait flickers).
 - **`DialogueSegment`** (struct): `Text : string`, `Style : SegmentStyle`.
@@ -17,7 +17,7 @@ Levels cannot see UI, so all story data lives in `Game.Levels`; only views live 
 
 `OnValidate`: the dialogue has lines, every line has a speaker and non-empty text, a Redacted segment has at least one character (its length sets the bar width).
 
-**Assets:** `Data/Story/Speakers/Speaker_{Ora,Voss,Mercer,Nti,Pioneer1}.asset`, `Data/Story/Dialogues/Dlg_L01_*.asset`. A new partial `Editor/ProjectGenerator.Story.cs`, registered as one F0 generator step, uses `LoadOrCreate<T>` and overwrites the fields on every run, so it never makes duplicates. It also writes the trigger arrays onto the level assets.
+**Assets:** `Data/Story/Speakers/Speaker_{Ora,Voss,Spencer,Nti,Pioneer1}.asset`, `Data/Story/Dialogues/Dlg_L01_*.asset`. A new partial `Editor/ProjectGenerator.Story.cs`, registered as one F0 generator step, uses `LoadOrCreate<T>` and overwrites the fields on every run, so it never makes duplicates. It also writes the trigger arrays onto the level assets.
 
 ## 2. Triggers
 
@@ -106,10 +106,10 @@ The script is Dutch; the in-game text is English and written here. **Proposed** 
 
 | Trigger | Lines |
 | --- | --- |
-| LevelStart (script) | ORA: "Hostile wave approaching. Place turrets along the path." / Mercer: "And whatever gets through is mine." |
-| WaveStart 2 (proposed) | ORA: "Second wave detected. Larger signature." / Mercer: "They're not testing us anymore." |
-| BossSpawn (proposed) | ORA: "Large contact on the main road." / Mercer: "That one's mine too. Keep the guns on it." |
-| LevelWon (proposed, from "the Burrowers are awake") | ORA: "Perimeter holding. Wave repelled." / Mercer: "We woke something up down there." |
+| LevelStart (script) | ORA: "Hostile wave approaching. Place turrets along the path." / Spencer: "And whatever gets through is mine." |
+| WaveStart 2 (proposed) | ORA: "Second wave detected. Larger signature." / Spencer: "They're not testing us anymore." |
+| BossSpawn (proposed) | ORA: "Large contact on the main road." / Spencer: "That one's mine too. Keep the guns on it." |
+| LevelWon (proposed, from "the Burrowers are awake") | ORA: "Perimeter holding. Wave repelled." / Spencer: "We woke something up down there." |
 
 All four are OncePerSave. ORA has no glitch in level 1: the script wants it subtle and later.
 
@@ -131,7 +131,7 @@ All four are OncePerSave. ORA has no glitch in level 1: the script wants it subt
 
 ## 8. Open questions for Remco
 
-1. Should the Level 1 lines marked "proposed" stay, or do you want to write them yourself? Should Mercer swear or stay clean?
+1. Should the Level 1 lines marked "proposed" stay, or do you want to write them yourself? Should Spencer swear or stay clean?
 2. Replay: does "always on Easy" mean that Easy always replays story (as specced), or does each dialogue get its own setting?
 3. Should a dialogue during a wave freeze the game (as specced), or should mid-wave teasers run without stopping, like a radio message?
 4. Voss has no 3D model. Should she get a quick procedural scientist bust (a new silhouette: coat, visor), or a drawn portrait later?
@@ -147,7 +147,7 @@ All four are OncePerSave. ORA has no glitch in level 1: the script wants it subt
 4. **Saving seen ids.** `MarkStorySeen` persists immediately (verify ProgressService saves); LevelWon dialogue must play BEFORE the result screen and be marked seen independently of `RewardCalculator`.
 5. **BetweenLevels / map dialogues deferred to S3** (needs a pending-story handoff from level to map). FirstUse also deferred (no content yet). Per-segment Glitch style deferred; ORA glitch is a per-line `GlitchIntensity` float (0 = none) so it can escalate across continents.
 6. **Split player from triggers.** `DialoguePlayer` (queue, reveal clock on unscaled time, skip) + `DialogueView` (needs only a root, input provider, clock) are reusable by S2 cutscenes and the world map; `LevelStoryListener` maps LevelContext events to dialogues. Extend/replace the existing `StoryDefinition` intro beats with dialogue references instead of ignoring it.
-7. **Speaker frame style** per `SpeakerDefinition`: Portrait (Mercer, Voss), Hologram (ORA), Transmission (NTI messages: no portrait, header bar, monospace feel), Log (Pioneer-1).
+7. **Speaker frame style** per `SpeakerDefinition`: Portrait (Spencer, Voss), Hologram (ORA), Transmission (NTI messages: no portrait, header bar, monospace feel), Log (Pioneer-1).
 8. **Stable line ids** on every line for a future string table; text box sized for ~25% longer (Dutch) text.
 9. **Boss alarm ordering:** if WaveStart and BossSpawn dialogues fire the same frame, BossSpawn wins and WaveStart for that wave is skipped (one stacked box, after the alarm sound starts).
 10. **Typewriter/glitch logic is pure** (reveal count from elapsed time, seeded random) and EditMode-tested. PlayMode run-to-end uses an auto-advance test hook.

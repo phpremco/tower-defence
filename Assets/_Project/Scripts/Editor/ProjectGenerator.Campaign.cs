@@ -181,9 +181,9 @@ namespace Game.Editor
         // STORY.md, hero upgrades of continent 1: the pistol at level 5, the blade at 10, an ability at 15.
         private static void GenerateHeroPerks(GeneratorContext context)
         {
-            AddPerk(context, "Perk_QuickReload", "Quick Reload", HeroPerkSlot.Pistol, "Mercer reloads his pistol in half the time.", reload: QuickReloadMultiplier);
+            AddPerk(context, "Perk_QuickReload", "Quick Reload", HeroPerkSlot.Pistol, "Spencer reloads his pistol in half the time.", reload: QuickReloadMultiplier);
             AddPerk(context, "Perk_WideSlash", "Wide Slash", HeroPerkSlot.Blade, "A wider sweep of the laser blade that hits several enemies at once.");
-            AddPerk(context, "Perk_FieldRepair", "Field Repair", HeroPerkSlot.Ability, "Mercer repairs the gate and the turrets around him.");
+            AddPerk(context, "Perk_FieldRepair", "Field Repair", HeroPerkSlot.Ability, "Spencer repairs the gate and the turrets around him.");
             AssignHeroPerks(context);
         }
 

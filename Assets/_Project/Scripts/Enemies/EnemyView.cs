@@ -203,7 +203,13 @@ namespace Game.Enemies
         // A dead flyer comes to rest with its body centre this far (times its scale) above the ground.
         private const float FlyerRestHeight = 0.15f;
         private static readonly Color BarColor = new Color(0.4f, 1f, 0.4f);
-        private static readonly Color ArmorBarColor = new Color(0.7f, 0.85f, 1f);
+        // Blue, so armour and plating read at a glance over the green health line (Remco's design).
+        private static readonly Color ArmorBarColor = new Color(0.2f, 0.5f, 1f);
+        // The line flares to this when the plates stop part of a hit, and fades back.
+        private static readonly Color PlateFlashColor = new Color(0.85f, 0.95f, 1f);
+        private static readonly Color RicochetColor = new Color(1f, 0.92f, 0.7f) * 2f;
+        private const float PlateFlashSeconds = 0.18f;
+        private const int RicochetBurst = 5;
         private static readonly Color ShadowColor = new Color(0f, 0f, 0f);
         private static readonly Color EyeColor = new Color(1f, 0.95f, 0.6f);
         private static readonly Color WaterSplash = new Color(0.6f, 0.85f, 1f);
@@ -292,6 +298,8 @@ namespace Game.Enemies
         private ParticleSystem _drips;
         private ParticleSystem _rush;
         private ParticleSystem _impact;
+        private ParticleSystem _ricochet;
+        private float _plateFlash = float.PositiveInfinity;
         private EnemyBoltView[] _bolts;
         private readonly EnemyAttachments _attachments = new EnemyAttachments();
         private float _barWidth = BarWidth;
@@ -430,7 +438,7 @@ namespace Game.Enemies
             }
             else if (_health != null)
             {
-                SetBar(_health.Fraction, _health.ArmorMax > 0f ? _health.ArmorFraction : 0f);
+                SetBar(_health.Fraction);
             }
         }
 
@@ -506,6 +514,7 @@ namespace Game.Enemies
             }
 
             _flashTime += Time.deltaTime;
+            UpdatePlateFlash();
             _reaction.Tick(Time.deltaTime);
 
             if (_shadow != null)
@@ -548,6 +557,7 @@ namespace Game.Enemies
             {
                 _health.Changed -= OnHealthChanged;
                 _health.ArmorChanged -= OnArmorChanged;
+                _health.PlatingStopped -= OnPlatingStopped;
             }
 
             _lastPosition = enemy.Position;
@@ -573,9 +583,12 @@ namespace Game.Enemies
             _footSign = 0;
             _health.Changed += OnHealthChanged;
             _health.ArmorChanged += OnArmorChanged;
+            _health.PlatingStopped += OnPlatingStopped;
+            _plateFlash = float.PositiveInfinity;
+            _worldBar?.SetArmourColour(ArmorBarColor);
             ShowPlates(_plates.Count);
             _shed?.SetShed(0);
-            SetBar(1f, _health.ArmorMax > 0f ? 1f : 0f);
+            SetBar(1f);
             _scripted = false;
             _tilt = Quaternion.identity;
             SetHidden(false);
@@ -836,6 +849,11 @@ namespace Game.Enemies
             _frost = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f), MarkerArt.ParticleCell.FrostMote));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
             _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
+            if (definition.HasPlating)
+            {
+                // Plating from data, never a species: hot sparks glance off where the plates stop part of a hit.
+                _ricochet = _attachments.Track(ParticleKit.Create(transform.parent, "Ricochet", Vector3.zero, RicochetColor, 0.12f, 0.28f, 0.02f, 0.05f, 2.5f, 5.5f, 1.4f, RicochetBurst * 8, 0.12f));
+            }
 
             if (definition.AttackStyle == AttackStyle.Bolt || definition.AttackStyle == AttackStyle.Sting)
             {
@@ -1715,7 +1733,7 @@ namespace Game.Enemies
             }
 
             _lastFraction = fraction;
-            SetBar(fraction, _health.ArmorFraction);
+            SetBar(fraction);
         }
 
         // Plates come off in order as the armour is chipped away, and grow back when a boss regrows it.
@@ -1742,7 +1760,7 @@ namespace Game.Enemies
             }
 
             _lastArmor = fraction;
-            SetBar(_health.Fraction, fraction);
+            SetBar(_health.Fraction);
         }
 
         // A modelled creature's armour parts come off in their shedding order, each throwing a burst of shards in the
@@ -1816,6 +1834,35 @@ namespace Game.Enemies
                 GroundY = DeathGroundY,
                 Style = DeathStyle.Shatter,
             });
+        }
+
+        // The plates at work: sparks glance off (more for a hit they stopped more of) and the blue line flares.
+        private void OnPlatingStopped(float share)
+        {
+            if (share <= 0f || _barHidden)
+            {
+                return;
+            }
+
+            _plateFlash = 0f;
+            if (_ricochet != null && _body != null)
+            {
+                _ricochet.transform.position = _body.position;
+                _ricochet.Emit(1 + Mathf.CeilToInt(RicochetBurst * share));
+            }
+        }
+
+        // Real time at most (FeedbackClock), so the flare still reads at x3.
+        private void UpdatePlateFlash()
+        {
+            if (_plateFlash > PlateFlashSeconds || _worldBar == null)
+            {
+                return;
+            }
+
+            _plateFlash += FeedbackClock.DeltaTime;
+            float t = Mathf.Clamp01(_plateFlash / PlateFlashSeconds);
+            _worldBar.SetArmourColour(Color.Lerp(PlateFlashColor, ArmorBarColor, t));
         }
 
         private void Bleed()
@@ -1920,18 +1967,22 @@ namespace Game.Enemies
             material.SetColor("_BaseColor", tint);
         }
 
-        private void SetBar(float fraction, float armor)
+        // A creature with armour or plating shows its bars from the start, the blue protection line over the green one
+        // (ProtectionBar); any other shows them only once it is hurt.
+        private void SetBar(float fraction)
         {
+            float armor = ProtectionBar.Line(_health);
+            bool shown = !_barHidden && (fraction < FullHealthFraction || ProtectionBar.Shows(_health));
             if (_worldBar != null)
             {
-                _worldBar.Set(fraction, armor, !_barHidden && fraction < FullHealthFraction);
+                _worldBar.Set(fraction, armor, shown);
                 return;
             }
 
             // Both lines shrink from the right, like a gauge, instead of from both ends.
             _bar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, fraction), BarHeight, BarHeight);
             _bar.localPosition = new Vector3(-_barWidth * (1f - fraction) * 0.5f, _barY, 0f);
-            bool hurt = !_barHidden && fraction < FullHealthFraction;
+            bool hurt = shown;
             _bar.gameObject.SetActive(hurt);
             _barPlate.gameObject.SetActive(hurt);
             _armorBar.localScale = new Vector3(_barWidth * Mathf.Max(0.001f, armor), BarHeight * 0.7f, BarHeight);

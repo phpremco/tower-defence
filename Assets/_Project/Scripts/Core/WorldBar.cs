@@ -78,6 +78,15 @@ namespace Game.Core
         /// <summary>Recolours the health line (a tower's line runs from orange to green with its health).</summary>
         public void SetColour(Color colour) => MarkerArt.SetTint(_fill, _block, colour);
 
+        /// <summary>Recolours the armour line (a plated creature's line flares when its plates stop part of a hit).</summary>
+        public void SetArmourColour(Color colour)
+        {
+            if (_armour != null)
+            {
+                MarkerArt.SetTint(_armour, _block, colour);
+            }
+        }
+
         public void Show(bool visible, bool armour)
         {
             _root.gameObject.SetActive(visible);

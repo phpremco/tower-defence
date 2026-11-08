@@ -156,7 +156,7 @@ namespace Game.Tests
             Assert.AreEqual("Flak Turret", Load<TowerDefinition>("Towers/Rocket").DisplayName);
             Assert.AreEqual("Land Mine", Load<PathObjectDefinition>("PathObjects/Mine").DisplayName);
             Assert.AreEqual("Chrono Field", Load<PathObjectDefinition>("PathObjects/SlowField").DisplayName);
-            Assert.AreEqual("Mercer", Load<HeroDefinition>("Hero/Commander").DisplayName);
+            Assert.AreEqual("Spencer", Load<HeroDefinition>("Hero/Commander").DisplayName);
         }
 
         [Test]

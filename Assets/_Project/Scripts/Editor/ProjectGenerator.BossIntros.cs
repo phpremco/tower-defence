@@ -51,7 +51,7 @@ namespace Game.Editor
             new IntroSpec("Gravemaw", MoltenTint,
                 "That's... that's our drill. That WAS our drill.",
                 "Subterranean contact. It tracks the turret hurting it most. Spread your fire.",
-                "It went straight for the drill. Mercer, I think it heard us digging.",
+                "It went straight for the drill. Spencer, I think it heard us digging.",
                 new[] { "Oh good. The drill-eater's back.", "It's back. Keep the guns apart." },
                 Bark(BossMoment.Throw, "Did it just THROW my turret?!"),
                 Bark(BossMoment.Burrow, "Where'd it go? ...I hate it when they go quiet.")),

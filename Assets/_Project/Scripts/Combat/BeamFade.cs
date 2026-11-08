@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Combat
@@ -46,7 +47,8 @@ namespace Game.Combat
                 return;
             }
 
-            _age += Time.deltaTime;
+            // At x2 or x3 a fade in game time was gone before the eye caught it: the laser looked broken.
+            _age += FeedbackClock.DeltaTime;
             float t = Mathf.Clamp01(_age / _seconds);
             _line.widthMultiplier = _width * (1f - t);
             if (t >= 1f)

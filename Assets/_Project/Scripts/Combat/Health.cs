@@ -66,6 +66,9 @@ namespace Game.Combat
 
         public event Action Died;
 
+        /// <summary>Raised with the share of a hit (0 to 1) the plating stopped, for views that show the plates at work.</summary>
+        public event Action<float> PlatingStopped;
+
         /// <summary>Raises the maximum and gives the extra hit points to the owner, so an upgrade also heals by its size.</summary>
         public void Extend(float extraMax)
         {
@@ -133,9 +136,11 @@ namespace Game.Combat
                 return;
             }
 
-            if (!pastPlating)
+            if (!pastPlating && Plating > 0f)
             {
-                amount = ThroughPlating(amount, Plating, PlatingFloor);
+                float through = ThroughPlating(amount, Plating, PlatingFloor);
+                PlatingStopped?.Invoke(1f - through / amount);
+                amount = through;
             }
 
             if (Armor > 0f)

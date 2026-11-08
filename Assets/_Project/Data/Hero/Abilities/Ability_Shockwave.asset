@@ -28,4 +28,4 @@ MonoBehaviour:
     _gain: 1
     _pitch: 1
   _impactVfx: {fileID: 0}
-  _description: A ring of force around Mercer that hits everything close by, on the ground and in the air.
+  _description: A ring of force around Spencer that hits everything close by, on the ground and in the air.

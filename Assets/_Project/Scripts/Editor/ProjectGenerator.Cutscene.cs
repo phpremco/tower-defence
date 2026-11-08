@@ -70,7 +70,7 @@ namespace Game.Editor
                 Say(ora, "Breathable air, liquid water, a stable climate: every ingredient for life. Yet no cities, no lights, no signals. Nothing moves. A few strange heat sources below the surface were written off as volcanic activity."));
             DialogueDefinition orbit = CreateDialogue("Dlg_Cut_Orbit",
                 Say(ora, "Nova Terra Industries sends the first expedition: Operation New Dawn. After three years in cryosleep, the mothership reaches orbit."),
-                Say(ora, "The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Mercer, call sign Pathfinder, goes down first."),
+                Say(ora, "The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Spencer, call sign Pathfinder, goes down first."),
                 Say(ora, "All systems nominal. No life forms detected. Expected complications: none. Welcome to S-69-CRYS, Commander."));
             DialogueDefinition landing = CreateDialogue("Dlg_Cut_Landing",
                 Say(mercer, "Pathfinder here. Ground's stable, crystals everywhere. This is our spot."));
@@ -81,7 +81,7 @@ namespace Game.Editor
             DialogueDefinition radar = CreateDialogue("Dlg_Cut_Radar",
                 Say(ora, "Correction. Life forms detected. Many life forms."));
             DialogueDefinition gate = CreateDialogue("Dlg_Cut_Gate",
-                Say(voss, "We can't go back. Earth is counting on us. Mercer, hold those gates!"),
+                Say(voss, "We can't go back. Earth is counting on us. Spencer, hold those gates!"),
                 Say(ora, "Standard defence systems ready. AI turrets can be deployed immediately."));
 
             CutsceneCast cast = CreateCutsceneCast(context);

@@ -453,7 +453,7 @@ namespace Game.Towers
 
             if (_muzzle != null && _paintedMuzzle == null && _muzzleTime <= MuzzleSeconds)
             {
-                _muzzleTime += Time.deltaTime;
+                _muzzleTime += FeedbackClock.DeltaTime;
                 bool lit = _muzzleTime <= MuzzleSeconds;
                 _muzzle.gameObject.SetActive(lit);
                 _muzzle.localScale = Vector3.one * ((_art != null ? ArtFlashSize : MuzzleSize) * (1.4f - _muzzleTime / MuzzleSeconds));

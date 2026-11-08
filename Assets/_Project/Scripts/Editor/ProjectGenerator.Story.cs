@@ -48,7 +48,7 @@ namespace Game.Editor
         {
             SpeakerDefinition ora = CreateSpeaker("Ora", "ORA", OraColour, SpeakerFrame.Hologram, PortraitModel.Hologram);
             SpeakerDefinition voss = CreateSpeaker("Voss", "Dr. Elena Voss", VossColour, SpeakerFrame.Portrait, PortraitModel.Scientist);
-            SpeakerDefinition mercer = CreateSpeaker("Mercer", "Mercer", MercerColour, SpeakerFrame.Portrait, PortraitModel.Hero);
+            SpeakerDefinition mercer = CreateSpeaker("Mercer", "Spencer", MercerColour, SpeakerFrame.Portrait, PortraitModel.Hero);
             CreateSpeaker("Nti", "Nova Terra Industries", NtiColour, SpeakerFrame.Transmission, PortraitModel.Emblem);
             CreateSpeaker("Pioneer1", "Pioneer-1", PioneerColour, SpeakerFrame.Log, PortraitModel.Probe);
 

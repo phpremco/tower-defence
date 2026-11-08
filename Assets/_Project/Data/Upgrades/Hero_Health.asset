@@ -16,9 +16,9 @@ MonoBehaviour:
   _target: 8
   _towerId: 
   _droneId: 
-  _groupName: Mercer
+  _groupName: Spencer
   _costs: 050000000a0000000f000000i
   _currency: 0
-  _groupDescription: Mercer, who holds the gates
+  _groupDescription: Spencer, who holds the gates
   _bonusPerLevel: 0.2
   _continent: 0

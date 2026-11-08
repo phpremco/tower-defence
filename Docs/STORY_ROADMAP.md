@@ -6,7 +6,7 @@ Versie 2, 2026-11-03. Bron: `Docs/STORY.md` (Remco). Dit plan is getoetst door t
 
 - **Het script is de bron voor verhaal en content.** `GAME_DESIGN.md` wordt per fase bijgewerkt waar het script iets anders zegt, en alleen na akkoord.
 - **Uitbreiden, niet vervangen.** Verhaal bouwt voort op `StoryDefinition`, `IntroScreen` en het `Intro`-scene. Continenten gebruiken `CampaignCatalog`, `MapRegion` en `PlanetGlobe`. Gadgets zijn `PathObjectDefinition`s. Combo's lopen via `ISupportSource` of `CombineRecipe`.
-- **Asset-id's veranderen nooit.** Hernoemen gaat alleen via `DisplayName`, zoals Gun Turret, Flak, Mercer en Crazy. Enums krijgen alleen waarden achteraan. Saves blijven geldig.
+- **Asset-id's veranderen nooit.** Hernoemen gaat alleen via `DisplayName`, zoals Gun Turret, Flak, Spencer en Crazy. Enums krijgen alleen waarden achteraan. Saves blijven geldig.
 - **Een systeem komt pas in de fase waarvan de content het nodig heeft.** We bouwen geen systemen vooruit voor continent 2 t/m 6.
 - **Look vanaf dag één.**
   - Alles wat je ziet krijgt een view-component plus een skin of definitie in data. Kale vormen bestaan niet.
@@ -30,7 +30,7 @@ De critici vonden vier dingen die anders bij 120 levels of bij verhaal-triggers 
 ## Fase S1: verhaalmotor
 
 - **Sprekers en dialogen.** `SpeakerDefinition` en `DialogueDefinition` staan in `Game.Levels` (Levels kan UI niet zien).
-  - Een `SpeakerDefinition` bevat de naam, de portretbron en de kleur. Sprekers zijn ORA, Voss, Mercer, NTI-bericht en Pioneer-1-log.
+  - Een `SpeakerDefinition` bevat de naam, de portretbron en de kleur. Sprekers zijn ORA, Voss, Spencer, NTI-bericht en Pioneer-1-log.
   - Effecten staan als data per regel: glitch, `[REDACTED]`-balk en doorgestreept woord.
 - **Triggers** in `LevelDefinition`: LevelStart, WaveStart(n), FirstSighting(soort), BossSpawn, BossDefeated, LevelWon, FirstUse(gadget) en BetweenLevels.
   - Ze lezen bestaande `LevelContext`-events.
@@ -56,7 +56,7 @@ De critici vonden vier dingen die anders bij 120 levels of bij verhaal-triggers 
 - **De 10 shots uit het script:**
   - het moederschip;
   - de capsules als vallende sterren;
-  - Mercer en het baken;
+  - Spencer en het baken;
   - de timelapse van de basis;
   - de boor;
   - de drones en de kern die oplicht;
@@ -90,7 +90,7 @@ Dit is het nieuwe moment "speel het en beslis of het leuk is". Levels 7 t/m 20 v
 
 - **Torens:** Gun (PulseRifle), Cannon, Laser en Flak (Rocket omgebouwd).
 - **Gadgets:** Land Mine (`Mine`) en Chrono Field (`SlowField`) in level 6.
-- **Hero.** Mercer op een `HeroAbilityDefinition`-raamwerk met twee knopslots. Dat vervangt de vaste shockwave- en repair-velden en de vaste input. Quick Reload komt na level 5.
+- **Hero.** Spencer op een `HeroAbilityDefinition`-raamwerk met twee knopslots. Dat vervangt de vaste shockwave- en repair-velden en de vaste input. Quick Reload komt na level 5.
 - **Teasers:** de vliegers laat in level 3 en de snelle vijand in level 5.
 - **Dialogen** van level 1 t/m 6.
 - **Element steen** (komt in continent 1 voor):

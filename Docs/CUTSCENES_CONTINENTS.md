@@ -43,16 +43,16 @@ from) and the cutscene ends on the planet shot, with the next region lit.
    cap, `CutsceneCameraFeel.Calm`). Rumbles are sound, dust and light only.
 2. **Enemies look alien and dangerous** (alien design rule): seen low and close, matte surfaces, warm glow, blades
    and maws readable. Never a cute or glossy beat, not even in the peaceful epilogue: calm is not cuddly.
-3. **Only the existing cast:** Mercer, Dr. Voss, ORA, NTI (transmission frame and emblem), Pioneer-1 (probe, wreck,
+3. **Only the existing cast:** Spencer, Dr. Voss, ORA, NTI (transmission frame and emblem), Pioneer-1 (probe, wreck,
    log). Plus Burrower species, bosses and our drones. No extra crew, no new named people.
 4. **Human reactions are front-facing.** Whenever a shot is about a human's reaction, the camera is in front of the
    face: within 40 degrees of the face's forward direction, at eye height (plus or minus 0.3 m), looking at the head.
-   Never over the reacting character's shoulder. For Mercer the "face" is the visor (the art rule says his face is
+   Never over the reacting character's shoulder. For Spencer the "face" is the visor (the art rule says his face is
    never shown; the visor carries the expression with its glow and reflections), so the visor must fill the
    framing's upper third and reflect what he sees. For Voss it is her real face (the MPFB model, shape keys
    Smile/Frown).
 5. **Dialogue in the established voices**, short, through the existing dialogue box with portraits. ORA: dry,
-   factual, glitching from continent 2 on. Voss: curious, warm, doubting. Mercer: dry humour, few words, growing
+   factual, glitching from continent 2 on. Voss: curious, warm, doubting. Spencer: dry humour, few words, growing
    doubt. NTI: cold corporate. Lines marked **[STORY]** are faithful English translations of `STORY.md`; lines marked
    **[new]** are proposals for approval. Ids: `Dlg_Cut_C<n>_<shot>`.
 6. **Light per continent palette** (round 17 moods), with the per-shot `ShotLighting` rig (moon key, rim, fill,
@@ -94,10 +94,10 @@ Palette: night, cool blue-violet moonlight, pink-magenta Crysium; Gravemaw plum-
 - Sound: Growl (weak) at 0.5 s, `BossFall` (new) at the impact, Shake 0.25 at the impact (Death frame about 40).
 - Music: Attack until the impact, then Silence.
 
-**Shot 2. Mercer lowers the gun.** Set `Field` / `HeroStandsDown` (new). Fixed 5 s.
-- Camera: anchor `Gate`. Front-facing medium close on Mercer at his guard post: 2.2 m in front of him, 25 degrees to
+**Shot 2. Spencer lowers the gun.** Set `Field` / `HeroStandsDown` (new). Fixed 5 s.
+- Camera: anchor `Gate`. Front-facing medium close on Spencer at his guard post: 2.2 m in front of him, 25 degrees to
   his right, eye height 1.4, FOV 34, a slow 0.4 m push. The dead boss is out of focus over his left shoulder.
-- On screen: Mercer stands with the blaster up, then lowers it, a long breath (Idle, shoulders drop), and holsters it.
+- On screen: Spencer stands with the blaster up, then lowers it, a long breath (Idle, shoulders drop), and holsters it.
   The fading pink glow slides across his visor.
 - Light: exposure +1.0, moon key 1.1, warm rim 1.0, `ClearView` on.
 - Sound: HeroStep at 1.2 s, a holster click (new small `Holster` sound, or BuildClank at 0.2) at 3.6 s.
@@ -115,13 +115,13 @@ Palette: night, cool blue-violet moonlight, pink-magenta Crysium; Gravemaw plum-
 
 **Shot 4. Five more.** Set `Field` / `ConsoleTalk` (new). AfterDialogue, delay 2 s, then 4 s (auto 6 s).
 - Camera: anchor `Console` (new: the radar console beside the base). Key 1: front-facing chest-up on Voss at the
-  console's `Operator` spot, 30 degrees to her left, FOV 32. Key 2 (0.6): a slow drift right until Mercer's visor
+  console's `Operator` spot, 30 degrees to her left, FOV 32. Key 2 (0.6): a slow drift right until Spencer's visor
   (front three-quarter) is in frame as he walks up opposite her; Voss stays in focus.
 - On screen: ORA's hologram turns above the console (`Ora` Idle, Talk on her line). Voss (Idle, Talk) looks up from
-  the radar disc, then at Mercer; the Frown shape key eases on her second line. Mercer walks in (Walk) and stops.
+  the radar disc, then at Spencer; the Frown shape key eases on her second line. Spencer walks in (Walk) and stops.
 - Light: exposure +0.9, the console screens as a cyan fill on Voss's face, moon key 0.8, cool rim.
 - Sound: RadarPing (soft) at 0.5 s.
-- Dialogue: Mercer: "There are five more continents, Doc." Voss: "I know. And over there, they're different." **[STORY]**
+- Dialogue: Spencer: "There are five more continents, Doc." Voss: "I know. And over there, they're different." **[STORY]**
 
 **Shot 5. Below, the eyes close.** Set `Underground` / `EyesWithdraw` (new). Fixed 7 s. Fade in 0.8 s.
 - Camera: anchor `World`. The opening's cave, the same low corridor dolly, but backwards: the camera slowly drifts back
@@ -145,7 +145,7 @@ Palette: night, cool blue-violet moonlight, pink-magenta Crysium; Gravemaw plum-
 Title card: "Ashen Reach".
 - Camera: anchor `Landing` (on the arrival field). Low wide shot across the ash plain, FOV 48; the capsules streak
   down through the smoke-brown sky; the camera tilts down to the touchdown, then a short push towards the hatch.
-- On screen: three capsules with plasma trails, legs unfold (`Land`), the first one opens (`Open`), Mercer steps out
+- On screen: three capsules with plasma trails, legs unfold (`Land`), the first one opens (`Open`), Spencer steps out
   at `Exit`, looks at the ember cracks at his feet, then at the horizon. Cinders drift.
 - Light: Ashen Reach theme (smoke-brown night, ember orange from below), exposure +0.6, warm rim.
 - Sound: Landing at 3.8 s, Shake 0.2 at the touchdown, HeroStep at 6.5 s.
@@ -162,8 +162,8 @@ Title card: "Ashen Reach".
 | Colony drill rig, `Sink` and `Spin` | Exists (`Exports/Cutscene_Drill`) |
 | **Toppled drill rig** (the smashed state, or a `Topple` clip on the drill) | **New** (also needed for the boss's in-game story beat) |
 | Builder and hauler drones | Exist (`Drone_Builder`, `Drone_Hauler`, cutscene flight code in `FieldBase`) |
-| Mercer: Idle, Walk, Run; pistol in `Holster_R` | Exist |
-| **Mercer `Holster` clip** (pistol back into the holster, upper body, about 20 frames) | **New** (fallback: the pistol snaps to the socket off-screen) |
+| Spencer: Idle, Walk, Run; pistol in `Holster_R` | Exist |
+| **Spencer `Holster` clip** (pistol back into the holster, upper body, about 20 frames) | **New** (fallback: the pistol snaps to the socket off-screen) |
 | Radar console with the `Operator` spot | Exists (`Exports/RadarConsole`), not yet placed in the cutscene field |
 | ORA hologram (Idle, Talk, Glitch) | Exists (`Exports/Ora`) |
 | Voss (MPFB, Idle, Talk, Blink, shape keys) | Exists (`Exports/Voss`); first time in 3D in a cutscene (bust rig: she stands, arms at her sides) |
@@ -199,13 +199,13 @@ Palette: smoke-brown night, ember orange cracks, lava glow; the Matriarch molten
 - Music: Attack until the splash, then Silence.
 
 **Shot 2. Easier than I thought.** Set `Field` / `HeroStandsDown`. AfterDialogue, delay 3 s, then 3 s (auto 6 s).
-- Camera: anchor `BossFall`, now across the pool looking back at the bank: front-facing on Mercer as he walks up to
+- Camera: anchor `BossFall`, now across the pool looking back at the bank: front-facing on Spencer as he walks up to
   the edge, 3 m away, eye height 1.4, FOV 32, `ClearView`.
-- On screen: Mercer (Walk, then Idle) stops at the bank, holsters the pistol (`Holster`). The cooling lava turns from
+- On screen: Spencer (Walk, then Idle) stops at the bank, holsters the pistol (`Holster`). The cooling lava turns from
   orange to black crust; steam rises between him and the lens; the last red glow sits in his visor.
 - Light: exposure +0.9, warm under-light fading over the shot, cool rim.
 - Sound: `LavaHiss` (soft loop), HeroStep at 1.5 s.
-- Dialogue: Mercer: "This is going easier than I thought." **[STORY]**
+- Dialogue: Spencer: "This is going easier than I thought." **[STORY]**
 
 **Shot 3. They leave.** Set `Field` / `SwarmRetreats` (new). Fixed 12 s.
 - Camera: anchor `Entrance`. Starts low beside the road (as the opening's swarm shot), FOV 50; at 0.4 it cranes up to
@@ -237,7 +237,7 @@ Overlay: `RadarRetreat` (new).
 **Shot 6. Arrival: Northern Crown.** Set `Arrival` / `CapsulesLand`. Fixed 9 s. Fade out 1.2 s.
 Title card: "Northern Crown".
 - Camera: anchor `Landing`. Wide and low in a snow squall, FOV 48; tilt down to the touchdown on blue-black slate.
-- On screen: capsules through the squall, landing; Mercer steps out, frost creeping over the visor's edge. Far off on
+- On screen: capsules through the squall, landing; Spencer steps out, frost creeping over the visor's edge. Far off on
   a basalt ridge, a line of dark shapes with amber glows stands still and watches (Shardbacks): they got here first.
 - Light: Northern Crown theme (blue-white cold, amber heat in the cracks), exposure +0.6.
 - Sound: Landing at 3.8 s, Shake 0.2 at the touchdown, wind (theme ambience), Growl (far) at 7 s.
@@ -257,7 +257,7 @@ Title card: "Northern Crown".
 | **Swarm route that leaves the map instead of attacking** (a retreat path for `FieldSwarm`) | **New** behaviour |
 | **Radar overlay mode "retreat"** (contacts sliding off the disc) | **New** (`RadarOverlay` variant) |
 | ORA `Glitch` clip, dialogue glitch effect | Exist |
-| Mercer `Holster` | New (see continent 1) |
+| Spencer `Holster` | New (see continent 1) |
 | Shardback (watching on the ridge) | Exists |
 | Northern Crown environment and sky | Exist (`Env/NorthernCrown`, `Sky_NorthernCrown`) |
 | Sound `LavaHiss` | **New** |
@@ -271,7 +271,7 @@ Title card: "Northern Crown".
 **Story purpose.** Continent 3 is the hard one and the home of hint B. The cutscene makes the Warden's last act say
 what its name says: dying, it does not lunge at the base; it turns back to the frozen lake it came from and plants
 its glaives there, as if guarding the spot. The ice cracks in a ring of glyphs, the same glyphs that glow on its own
-armour, and under the ice the amber veins all run down. Voss and Mercer say the STORY.md lines. Far below, out of
+armour, and under the ice the amber veins all run down. Voss and Spencer say the STORY.md lines. Far below, out of
 focus, a gold ring: the first glimpse of what the veins guard (nobody names it yet).
 
 Palette: hard dark blue-white cold, amber-gold heat under the ice; the Warden's seal glyphs amber-gold.
@@ -297,13 +297,13 @@ Palette: hard dark blue-white cold, amber-gold heat under the ice; the Warden's 
 - Music: Silence, then Wonder (low, uneasy) from 5 s.
 
 **Shot 3. A guardian of what?** Set `Field` / `HeroKneels` (new). AfterDialogue, delay 2 s, then 4 s (auto 6 s).
-- Camera: anchor `BossFall`. Low across the ice, front-facing on Mercer: 2 m in front of him at kneeling eye height
+- Camera: anchor `BossFall`. Low across the ice, front-facing on Spencer: 2 m in front of him at kneeling eye height
   (0.95 m), FOV 30, `ClearView`. The kneeling Warden behind him, out of focus.
-- On screen: Mercer kneels at the ring (`Repair` kneel pose, no beam), his glove hovering over a glyph. The amber glow
+- On screen: Spencer kneels at the ring (`Repair` kneel pose, no beam), his glove hovering over a glyph. The amber glow
   under-lights his visor; the glyph pattern reflects in it.
 - Light: exposure +1.0, amber under-light, moon key 0.7.
-- Dialogue: Voss: "He didn't fight to win, Mercer. He was standing for something. As if he was guarding something."
-  Mercer: "A Warden. A guardian. But of what?" **[STORY]**
+- Dialogue: Voss: "He didn't fight to win, Spencer. He was standing for something. As if he was guarding something."
+  Spencer: "A Warden. A guardian. But of what?" **[STORY]**
 
 **Shot 4. Down the veins.** Set `Underground` / `VeinDive` (new). Fixed 9 s. Fade in 0.6 s.
 - Camera: anchor `World`. A slow vertical dive: through the ice sheet, into dark rock, following the amber veins down,
@@ -322,7 +322,7 @@ Palette: hard dark blue-white cold, amber-gold heat under the ice; the Warden's 
 **Shot 6. Arrival: Mirewood.** Set `Arrival` / `CapsulesLand`. Fixed 9 s. Fade out 1.2 s. Title card: "Mirewood".
 - Camera: anchor `Landing`. Inside the fog bank, FOV 50; the capsules come through it as glowing smudges, then a tilt
   down to the causeway.
-- On screen: landing beside black water; reeds with lantern seed heads, a fog vent breathing. Mercer steps out, ankle
+- On screen: landing beside black water; reeds with lantern seed heads, a fog vent breathing. Spencer steps out, ankle
   deep. Far off in the bog, one cold glint of metal catches his lamp and is gone (no comment).
 - Light: Mirewood theme (teal bioluminescence, violet fungus), exposure +0.7.
 - Sound: Landing at 4 s, Shake 0.15 at the touchdown, bog ambience (bubbles, insects).
@@ -338,7 +338,7 @@ Palette: hard dark blue-white cold, amber-gold heat under the ice; the Warden's 
 | **Warden `Death` as a kneel facing away, glaives planted** (the round-16 Death is 84 frames; check it reads as a kneel, else a `Death_Kneel` variant) | **Check / maybe new clip** |
 | Frozen lake, ice origin, banks | Exist (`Origin2_Ice`, `North_Bank_*`) |
 | **Glyph ring cracks in the ice** (a decal or crack-strip texture with the seal glyphs, drawn on over time) | **New** (glyph shapes exist in `titan_kit.seal_rune`; new `FX_GlyphRing` texture) |
-| Mercer kneel (`Repair` without the beam) | Exists |
+| Spencer kneel (`Repair` without the beam) | Exists |
 | **Underground set with an ice theme and a vertical vein dive; a far gold ring** (reuse `Core_Seal_Intact`, far and blurred) | **New** shot behaviour and theme; the seal model exists (`Env/TheCore`) |
 | Mirewood environment, `FogVent`, `Reed`, sky | Exist |
 | Sounds `IceBreak`, `CrystalChime`, `SealHum` | **New** |
@@ -350,7 +350,7 @@ Palette: hard dark blue-white cold, amber-gold heat under the ice; the Warden's 
 **Plays after:** Rotbloom, level C4_20, fought at the Pioneer-1 wreck. **Next:** Southern Crown.
 
 **Story purpose.** Continent 4 is twist A: NTI knew. The fight was at the wreck. In the cutscene the wreck is freed
-from Rotbloom's roots and Mercer stands at it to say the line that turns the whole war around: we attacked them.
+from Rotbloom's roots and Spencer stands at it to say the line that turns the whole war around: we attacked them.
 Voss adds the second half (Pioneer-1 drilled too, and after the drilling the attack began), and the camera shows the
 old bore hole, so the player connects drilling and waking. The planet shot then shows the fourth vein and, for the
 first time, a faint ring where they meet. As a bridge to continent 5, heavy NTI cargo pods leave the mothership:
@@ -368,13 +368,13 @@ Palette: dark, wet, foggy; teal bioluminescence, violet fungus light; Rotbloom's
 - Music: Attack, then Silence.
 
 **Shot 2. The status light.** Set `Field` / `HeroAtWreck` (new). AfterDialogue, delay 5 s, then 3 s (auto 8 s).
-- Camera: anchor `Wreck`. Front-facing on Mercer as he walks up to the hull: starts 5 m in front of him, he walks into
+- Camera: anchor `Wreck`. Front-facing on Spencer as he walks up to the hull: starts 5 m in front of him, he walks into
   a medium close (2 m, eye height 1.4, FOV 32), `ClearView`. The wreck's hull fills the right half.
-- On screen: Mercer (Walk, then Idle) stops at the hull beside the `Log` socket. The wreck's status light still
+- On screen: Spencer (Walk, then Idle) stops at the hull beside the `Log` socket. The wreck's status light still
   blinks red at `StatusLight`; it blinks in his visor.
 - Light: exposure +1.0, the red status light as a small key on his visor, teal fill.
 - Sound: HeroStep (wet) through the walk, a faint electronic tick on every blink.
-- Dialogue: Mercer: "So they're not attacking us. We attacked them." **[STORY]**
+- Dialogue: Spencer: "So they're not attacking us. We attacked them." **[STORY]**
 
 **Shot 3. The bore hole.** Set `Field` / `BoreHole` (new). AfterDialogue, delay 2 s, then 4 s (auto 6 s).
 - Camera: anchor `Wreck`. Over the wreck's tail, then a tilt down, FOV 40.
@@ -385,8 +385,8 @@ Palette: dark, wet, foggy; teal bioluminescence, violet fungus light; Rotbloom's
 - Dialogue: Voss: "And there's something else. Pioneer-1 drilled too. After the drilling, the attack began." **[STORY]**
 
 **Shot 4. The light goes out.** Set `Field` / `HeroAtWreck`. Fixed 4 s.
-- Camera: anchor `Wreck`. Close on the status light, Mercer's glove in the foreground right.
-- On screen: Mercer pulls the log module from the `Log` socket. The status light blinks twice more and goes out after
+- Camera: anchor `Wreck`. Close on the status light, Spencer's glove in the foreground right.
+- On screen: Spencer pulls the log module from the `Log` socket. The status light blinks twice more and goes out after
   six years.
 - Sound: a soft click, then silence. Music: Silence.
 
@@ -402,7 +402,7 @@ Fixed 10 s (the set changes at 5 s through a short fade).
 Title card: "Southern Crown".
 - Camera: anchor `Landing`. Low over cracked pack ice, FOV 48.
 - On screen: the capsules land, then the three cargo pods slam down further off. With each impact the magenta veins in
-  the ice cracks pulse brighter, a wave running away from the impact (the network feels every blow). Mercer steps out
+  the ice cracks pulse brighter, a wave running away from the impact (the network feels every blow). Spencer steps out
   and looks at the pods, not at the plain.
 - Light: Southern Crown theme (pale ice, dark rock, hot magenta-white veins), exposure +0.6.
 - Sound: Landing at 3.5 s, Shake 0.2 at the first pod impact only, Earthquake (soft) after each pod.
@@ -450,17 +450,17 @@ Palette: pale shattered ice over dark rock, overcharged Crysium hot magenta to w
 - Music: Attack until the burst, then Silence.
 
 **Shot 2. What it was.** Set `Field` / `HeroKneels`. AfterDialogue, delay 3 s, then 4 s (auto 7 s).
-- Camera: anchor `BossFall`. In the crater, low, front-facing on Mercer as he kneels: 1.8 m in front, kneeling eye
+- Camera: anchor `BossFall`. In the crater, low, front-facing on Spencer as he kneels: 1.8 m in front, kneeling eye
   height, FOV 30, `ClearView`. Between him and the lens, in the soft foreground, the body.
 - On screen: in the centre of the crater lies one Burrower of normal size, curled up, dark, the last crystal growths
-  on its back dimming and falling off like dead scales. Mercer kneels beside it (`Repair` kneel), does not touch it.
+  on its back dimming and falling off like dead scales. Spencer kneels beside it (`Repair` kneel), does not touch it.
 - Light: exposure +1.0, a dying magenta glow from the body under-lighting his visor, cold key.
 - Dialogue: Voss: "That used to be a Burrower. Our weapons turned it into this." **[STORY]**
 
 **Shot 3. The ground opens.** Set `Field` / `GroundSplits` (new). AfterDialogue, delay 3 s, then 4 s (auto 7 s).
 - Camera: anchor `BossFall`. Medium wide at 4 m height, FOV 44, pulling back as the crack runs.
 - On screen: from the crater a crack races across the field along a vein, the lips heave up, white-magenta light
-  floods out. Mercer stands and steps back from the edge (the opening's reaction motion, front-facing), hand up
+  floods out. Spencer stands and steps back from the edge (the opening's reaction motion, front-facing), hand up
   against the light.
 - Light: exposure +0.9, strong magenta-white from below as the key, cool rim.
 - Sound: Earthquake at 0.5 s, Shake 0.2 at the split, Rumble after.
@@ -486,7 +486,7 @@ Palette: pale shattered ice over dark rock, overcharged Crysium hot magenta to w
 - Camera: anchor `Landing`. Looking up from the crystal plateau at the mouth of the crack far above, FOV 50, then a
   tilt down to the plateau.
 - On screen: builder drones lower base modules on cyan tethers down through the crack, one after the other, onto a
-  pale lilac crystal plateau at the edge of the abyss. Mercer rides down on the last module, steps off and looks into
+  pale lilac crystal plateau at the edge of the abyss. Spencer rides down on the last module, steps off and looks into
   the dark.
 - Light: The Core theme (lit from below by the seal), exposure +0.7.
 - Sound: DroneFans, BuildClank as modules touch down.
@@ -500,7 +500,7 @@ Palette: pale shattered ice over dark rock, overcharged Crysium hot magenta to w
 | --- | --- |
 | The Shattered: phase-3 look, `Death` (burst 46, gone 54) | Exists (`Exports/Shattered`, round 28 improvement pass, not imported) |
 | **The burnt-out Burrower in the crater** (an existing species in its `Death` end pose with a "burnt out" skin: dark, cracked, a few dimming crystal growths) | **New skin** on an existing model (species: see open questions) |
-| Mercer kneel, react step-back | Exist (`Repair` pose; `CutsceneHeroRig.React`) |
+| Spencer kneel, react step-back | Exist (`Repair` pose; `CutsceneHeroRig.React`) |
 | `South_Decor_CrackedVein`, crack strips | Exist (`Env/SouthernCrown`, `Cutscene_FX`) |
 | **A long crack that runs across the field and opens** (crack strip + heaved lips, light from below) | **New** set behaviour (textures exist) |
 | Seal `Core_Seal_Cracked`, `Core_SealVein_*` | Exist (`Env/TheCore`) |
@@ -517,7 +517,7 @@ Palette: pale shattered ice over dark rock, overcharged Crysium hot magenta to w
 
 **Story purpose.** Everything is resolved. The ring of overcharged crystals (built in levels 15 to 19) fires inwards,
 the Sealed One releases, sinks and the seal stones close over it: the weapon that caused the damage repairs it. The
-Burrowers who fought beside us stand around the seal; one of them comes to Mercer, looks at him and goes into the
+Burrowers who fought beside us stand around the seal; one of them comes to Spencer, looks at him and goes into the
 ground: a thank-you. The epilogue: the logs reached Earth, NTI lost the mission, mining continues only at the surface,
 far from the veins, in agreement with the Burrowers. Voss's closing thought mirrors the prologue's empty Earth, and
 ORA's last line mirrors her first one ("No life forms detected").
@@ -546,16 +546,16 @@ Palette: indigo-black crystal glass, gold-white seal light, sick violet corrupti
 
 **Shot 3. A thank-you.** Set `Field` / `BurrowerFarewell` (new). AfterDialogue, delay 7 s, then 3 s (auto 10 s).
 - Camera: anchor `Seal`. Key 1: low behind the Burrowers standing round the seal, FOV 46. Key 2 (0.35): reverse,
-  front-facing on Mercer over the Queen's shoulder edge (her silhouette soft at the frame's edge, Mercer's visor
+  front-facing on Spencer over the Queen's shoulder edge (her silhouette soft at the frame's edge, Spencer's visor
   clear and in focus), FOV 32. Key 3 (0.7): side two-shot as she burrows.
 - On screen: Burrowers of every continent stand around the seal, still, their glows calm. The Queen (the screamer of
-  the opening cutscene) walks out of them to Mercer and stops close, towering over him; her eye clusters look down at
-  him, her head lowers. Mercer does not raise his gun. She turns and digs into the ground beside the seal and is gone;
+  the opening cutscene) walks out of them to Spencer and stops close, towering over him; her eye clusters look down at
+  him, her head lowers. Spencer does not raise his gun. She turns and digs into the ground beside the seal and is gone;
   the others follow, one by one, into the ground. The plateau is empty and quiet.
 - Light: gold-white seal light as the key from below, cool rim, exposure +1.0, `ClearView`.
 - Sound: Growl (soft, low, not hostile) at 3 s, Emerge (reversed in feeling: a dig) at 6 s.
 - Music: Wonder, low.
-- Dialogue: Mercer: "Pretty sure that was a thank-you." **[STORY]**
+- Dialogue: Spencer: "Pretty sure that was a thank-you." **[STORY]**
 
 **Shot 4. Epilogue: Earth.** Set `Earth` / `TransmissionArrives` (new). AfterDialogue, delay 1.5 s, then 4 s
 (auto 5.5 s). Fade in 1 s.
@@ -611,14 +611,14 @@ Fade out 2 s.
 
 ---
 
-## 8. Fix note: the opening cutscene's Mercer reaction shot
+## 8. Fix note: the opening cutscene's Spencer reaction shot
 
-**What is wrong.** Shot `MercerReacts` (5.5 s, after the swarm) shows Mercer's back. The generator's keys are written
+**What is wrong.** Shot `MercerReacts` (5.5 s, after the swarm) shows Spencer's back. The generator's keys are written
 "in front of him, a little to his right" relative to anchor `Commander`, whose facing is `FieldLayout.ReactFacing`
 (the dig-site facing turned 150 degrees from the gate), and the rig then turns his head and torso back towards the
 swarm. Two likely causes, to be measured, not guessed:
 1. **Model forward vs anchor forward.** Every Blender FBX so far arrived turned 180 degrees about Y in Unity
-   (creatures, round 26 props). If Mercer's posed head faces the anchor's -Z, "in front" by the anchor is behind him.
+   (creatures, round 26 props). If Spencer's posed head faces the anchor's -Z, "in front" by the anchor is behind him.
 2. **The pose turns away from the camera.** He faces away from the gate and looks back over his shoulder at the swarm;
    with the camera on the anchor's front and the swarm behind him, any extra head or torso turn shows the helmet's
    back.
@@ -635,7 +635,7 @@ swarm. Two likely causes, to be measured, not guessed:
 - **Write the keys from the face, not the root.** Add an anchor (`CommanderFace`) resolved from the posed `Head` bone
   (position and its real forward after the import correction), so a model or import change cannot flip the shot.
 - **Guard it with a test.** In `CutsceneDataTests` (or the screenshot test): at progress 0.25, 0.5 and 0.75, the angle
-  between Mercer's visor forward and the direction from his head to the camera is under 40 degrees. The same check
+  between Spencer's visor forward and the direction from his head to the camera is under 40 degrees. The same check
   applies to every human reaction shot in the continent cutscenes (section 1, rule 4).
 - **Light:** keep the cool key from the camera side so the visor reads, warm rim from the burrows behind him. The
   current still is dark with a rock in the foreground: keep `ClearView` on.
@@ -688,7 +688,7 @@ What these scripts depend on, or extend slightly:
 6. **The Frost Warden's last act** (turning back to the lake, the glyph ring) extends STORY.md ("the name Warden is the
    first real hint") with a visual. The glyphs already exist in its emission map. BOSSES.md has it come from the
    frozen lake, which this uses.
-7. **The metal glint at the Mirewood landing** comes slightly before level 5 ("Mercer ziet metaal in het moeras"). No
+7. **The metal glint at the Mirewood landing** comes slightly before level 5 ("Spencer ziet metaal in het moeras"). No
    line; it can be cut.
 8. **Pioneer-1's bore hole** is new decor that makes STORY.md's line "Pioneer-1 drilled too" visible. STORY.md calls
    Pioneer-1 an unmanned probe; a probe with a drill is consistent with "it drilled".
@@ -701,14 +701,14 @@ What these scripts depend on, or extend slightly:
 11. **The Sealed One's end** combines STORY.md ("at its defeat the seal closes"), BOSSES.md ("the last phase is the
     release") and the round 28 clips (`Release`, then `Death` with the stones closing). The ring of overcharged
     crystals from levels 15 to 19 fires in shot 1, as STORY.md level 15 explains.
-12. **The Burrower who thanks Mercer** is proposed as the Queen from the opening (a bookend: the one who screamed the
+12. **The Burrower who thanks Spencer** is proposed as the Queen from the opening (a bookend: the one who screamed the
     first attack ends it). STORY.md only says "a Burrower".
 13. **Epilogue narration** has no speaker in STORY.md. ORA speaks it, as she narrates the prologue. "A new team takes
     over" is shown only by the NTI frame going dark; no new organisation or person is named.
 14. **First daylight in the epilogue** (a dawn theme for Crystal Plains) is new; every level so far is a night theme.
 15. **Voss in 3D.** So far she only appears as a portrait. The scripts put her at the radar console, chest-up, using
     her existing bust rig (she stands; no arm gestures).
-16. **Mercer's face.** The art rule says his face is never shown; the visor carries the expression. The scripts follow
+16. **Spencer's face.** The art rule says his face is never shown; the visor carries the expression. The scripts follow
     that and frame the visor from the front. A face reveal would need a face model (MPFB) under a clearing visor.
 17. **Out of scope here:** the continent 5, level 14 intermission (the base partly destroyed) and the level
     intermissions (`Dlg_*`) are not part of these cutscenes.
@@ -722,7 +722,7 @@ What these scripts depend on, or extend slightly:
 2. **The battlefield in the aftermath shots:** rebuild the player's own towers and wrecks from the finished run (a
    tower snapshot passed to the cutscene, which makes it feel earned), or a fixed authored layout per boss level, or
    an empty dressed field (simplest, but odd right after a battle)?
-3. **Mercer's face:** visor front only (as written), or one helmet-off or clear-visor moment in the finale (needs an
+3. **Spencer's face:** visor front only (as written), or one helmet-off or clear-visor moment in the finale (needs an
    MPFB face)?
 4. **Voss in 3D at the console** (as written), or portrait only as before?
 5. **The Shattered:** which species lies in the crater (proposal: a Cragback, the stone heavy, at normal size), and do

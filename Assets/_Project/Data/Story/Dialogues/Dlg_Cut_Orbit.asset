@@ -22,7 +22,7 @@ MonoBehaviour:
   - Id: Dlg_Cut_Orbit.02
     Speaker: {fileID: 11400000, guid: ec0783780d5f0984e914d56fe2fe7adf, type: 2}
     Segments:
-    - Text: 'The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Mercer, call sign Pathfinder, goes down first.'
+    - Text: 'The plan: build bases on several continents, mine the resources and ship them home. Field scout Cole Spencer, call sign Pathfinder, goes down first.'
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Orbit.03

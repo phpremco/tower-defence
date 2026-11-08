@@ -16,7 +16,7 @@ MonoBehaviour:
   - Id: Dlg_Cut_Gate.01
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: We can't go back. Earth is counting on us. Mercer, hold those gates!
+    - Text: We can't go back. Earth is counting on us. Spencer, hold those gates!
       Style: 0
     GlitchIntensity: 0
   - Id: Dlg_Cut_Gate.02

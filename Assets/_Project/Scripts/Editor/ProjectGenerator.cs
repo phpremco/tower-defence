@@ -339,9 +339,9 @@ namespace Game.Editor
             all.Add(CreateUpgrade("Base_Weapon", "Base turrets", UpgradeTarget.BaseWeapon, new[] { 12, 20, 32 }, 1f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
             all.Add(CreateUpgrade("BlockadeHealth", "Gate strength", UpgradeTarget.BlockadeHealth, new[] { 4, 8, 12 }, 0.2f, string.Empty, "Base", UpgradeCurrency.ResearchPoints, BaseText));
 
-            const string HeroText = "Mercer, who holds the gates";
-            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Mercer", UpgradeCurrency.ResearchPoints, HeroText));
-            all.Add(CreateUpgrade("Hero_Health", "Armour", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Mercer", UpgradeCurrency.ResearchPoints, HeroText));
+            const string HeroText = "Spencer, who holds the gates";
+            all.Add(CreateUpgrade("Hero_Damage", "Blade damage", UpgradeTarget.HeroDamage, new[] { 5, 10, 15 }, 0.15f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
+            all.Add(CreateUpgrade("Hero_Health", "Armour", UpgradeTarget.HeroHealth, new[] { 5, 10, 15 }, 0.2f, string.Empty, "Spencer", UpgradeCurrency.ResearchPoints, HeroText));
 
             // Drones are bought with money inside a level; each type has its own permanent path, paid in power currency.
             foreach (DroneDefinition drone in drones)

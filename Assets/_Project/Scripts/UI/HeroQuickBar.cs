@@ -9,7 +9,7 @@ namespace Game.UI
 {
     /// <summary>
     /// The hero's own panel on the left of the screen, styled like the drones panel so it reads as one thing: a
-    /// "Hero" header with the hero's name and health, and under it one button per ability slot (from data) and the
+    /// header with the hero's name (he is the only hero, so no generic label), the post he holds and his health, and under it one button per ability slot (from data) and the
     /// "next post" order, each with its cooldown, price and key. The player never has to find the hero in a fight and click it first;
     /// the full panel over the hero stays for the rest.
     /// </summary>
@@ -76,12 +76,12 @@ namespace Game.UI
             UiKit.CreatePanel(_root, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
 
             float y = -Padding;
-            Text header = UiKit.CreateFixedText(_root, "Hero", HeaderSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, HeaderHeight));
+            Text header = UiKit.CreateFixedText(_root, _hero.Definition.DisplayName, HeaderSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, HeaderHeight));
             // The same display face as the drones panel header, so the two panels read as a pair.
             header.font = UiKit.DefaultFont;
             header.color = HeaderColor;
             y -= HeaderHeight;
-            _name = UiKit.CreateFixedText(_root, _hero.Definition.DisplayName, NameSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, NameHeight));
+            _name = UiKit.CreateFixedText(_root, string.Empty, NameSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, NameHeight));
             y -= NameHeight + BarGap;
             _healthFill = HeroPanelStyle.CreateHealthBar(_root, new Vector2(Padding, y), new Vector2(Width - Padding * 2f, BarHeight));
             y -= BarHeight + RowGap;
@@ -102,6 +102,13 @@ namespace Game.UI
 
             Action(y, IconFactory.Get(IconType.Hero), PostTint, () => _context.HeroPostRequested.Raise((_hero.PostIndex + 1) % _hero.PostCount), out _postLabel);
             Refresh();
+        }
+
+        private string PostName()
+        {
+            string[] posts = _context.HeroPostNames;
+            int post = _hero.PostIndex;
+            return post >= 0 && post < posts.Length ? posts[post] : string.Empty;
         }
 
         private int CountSlots()
@@ -170,7 +177,8 @@ namespace Game.UI
             }
             else
             {
-                _name.text = _hero.Definition.DisplayName;
+                // He is the only hero, so the header carries his name; this line says where he stands.
+                _name.text = PostName();
                 _name.color = TextColor;
             }
 

@@ -22,7 +22,7 @@ MonoBehaviour:
   - Id: Dlg_Intro_Gravemaw.02
     Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
     Segments:
-    - Text: It went straight for the drill. Mercer, I think it heard us digging.
+    - Text: It went straight for the drill. Spencer, I think it heard us digging.
       Style: 0
     GlitchIntensity: 0
   _introducedDrones: []

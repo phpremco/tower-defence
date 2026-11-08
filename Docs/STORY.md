@@ -16,7 +16,7 @@ En er is meer. S-69-CRYS heeft een ademende atmosfeer, vloeibaar water en een st
 
 Mijnbouwbedrijf Nova Terra Industries (NTI) stuurt de eerste expeditie: **Operation New Dawn**. Na drie jaar in cryoslaap bereikt het moederschip de baan om de planeet. Het plan: op meerdere continenten bases bouwen, grondstoffen verzamelen en die terugsturen naar huis. Een langdurige missie.
 
-Als eerste gaat veldverkenner Cole Mercer, roepnaam *Pathfinder*, naar beneden. Zijn taak: het terrein verkennen, de systemen draaiende houden en nieuwe graafplaatsen vinden.
+Als eerste gaat veldverkenner Cole Spencer, roepnaam *Pathfinder*, naar beneden. Zijn taak: het terrein verkennen, de systemen draaiende houden en nieuwe graafplaatsen vinden.
 
 *ORA:* "Alle systemen nominaal. Geen levensvormen gedetecteerd. Verwachte complicaties: geen. Welkom op S-69-CRYS, Commandant."
 
@@ -27,15 +27,15 @@ Hopelijk gaat alles volgens plan. Zonder verrassingen.
 De cutscene loopt van rustige verwondering naar paniek, en eindigt precies waar level 1 begint. Alle tekst verschijnt in tekstvakken met portret.
 
 1. **Aankomst.** Het moederschip hangt boven een paarsblauwe planeet. Landingscapsules maken zich los en vallen als vallende sterren door de atmosfeer.
-2. **Pathfinder landt.** Een kleine capsule landt als eerste. Mercer stapt uit, kijkt rond en zet een baken bij een kristalader. *Mercer: "Pathfinder hier. Bodem stabiel, kristallen overal. Dit is onze plek."*
+2. **Pathfinder landt.** Een kleine capsule landt als eerste. Spencer stapt uit, kijkt rond en zet een baken bij een kristalader. *Spencer: "Pathfinder hier. Bodem stabiel, kristallen overal. Dit is onze plek."*
 3. **Opbouw.** Bouwrobots vouwen modules uit. In een timelapse groeit de basis: commandocentrum, energiekern, gates, landingsplatform.
 4. **Boren.** Een enorme boor zakt de grond in. Het geluid dreunt diep door de bodem. *ORA: "Extractie gestart. Rendement boven verwachting."*
 5. **Drones.** Een zwerm drones vliegt uit, verzamelt erts en kristallen en brengt alles terug. Het eerste kristal gaat in de energiekern en licht fel op.
 6. **Onder de grond.** De camera duikt de aarde in. In het donker trillen de kristallen mee met de boor. Iets opent zijn ogen. Dan nog een. Dan honderden.
-7. **Het besef.** Mercer staat verderop bij een nieuwe graafplaats. De grond beweegt onder zijn voeten. *Mercer: "ORA... wat is dit?"* Op de radar verschijnt één stipje, dan tien, dan een rode vlek. *ORA: "Correctie. Levensvormen gedetecteerd. Veel levensvormen."*
+7. **Het besef.** Spencer staat verderop bij een nieuwe graafplaats. De grond beweegt onder zijn voeten. *Spencer: "ORA... wat is dit?"* Op de radar verschijnt één stipje, dan tien, dan een rode vlek. *ORA: "Correctie. Levensvormen gedetecteerd. Veel levensvormen."*
 8. **De aanval.** Wezens kruipen uit spleten in de grond en stromen over het pad naar de basis. Een oerkreet galmt: deze planeet is van hen.
-9. **De keuze.** Mercer rent terug naar de gates en trekt zijn pistool. *Dr. Voss: "We kunnen niet terug. De aarde rekent op ons. Mercer, houd die gates dicht!"* *ORA: "Standaard verdedigingssystemen gereed. AI-turrets kunnen direct worden geplaatst."*
-10. **Overgang naar gameplay.** De camera zoomt uit naar het speelveld, met Mercer voor de gate. Tekst in beeld: **Defend the base.** Level 1 begint.
+9. **De keuze.** Spencer rent terug naar de gates en trekt zijn pistool. *Dr. Voss: "We kunnen niet terug. De aarde rekent op ons. Spencer, houd die gates dicht!"* *ORA: "Standaard verdedigingssystemen gereed. AI-turrets kunnen direct worden geplaatst."*
+10. **Overgang naar gameplay.** De camera zoomt uit naar het speelveld, met Spencer voor de gate. Tekst in beeld: **Defend the base.** Level 1 begint.
 
 ## Personages en namen
 
@@ -48,13 +48,13 @@ Alle dialogen zijn tekstvakken met een portret van de spreker, zoals in Pokémon
 | Operation New Dawn | De missie | Eerste kolonisatie van S-69-CRYS |
 | ORA | **O**perational **R**esponse **A**ssistant | AI van de basis; waarschuwt voor golven, meldt nieuwe wapens; droog en zakelijk |
 | Dr. Elena Voss | Hoofdwetenschapper | Ontwikkelt de wapens, onderzoekt bewoners en kristallen; nieuwsgierig, soms twijfelend |
-| Cole "Pathfinder" Mercer | De hero, veldverkenner van NTI | Zie hieronder |
+| Cole "Pathfinder" Spencer | De hero, veldverkenner van NTI | Zie hieronder |
 | Crysium | De onbekende kristallen | Oneindige energiebron; drijft de latere wapens aan |
 | Burrowers | Werknaam van de wetenschappers voor de bewoners | Leven in de elementen en ondergronds |
 
-### De hero: Cole "Pathfinder" Mercer
+### De hero: Cole "Pathfinder" Spencer
 
-Mercer is vanaf level 1 speelbaar: de grondsoldaat die als eerste landt en alles draaiende houdt.
+Spencer is vanaf level 1 speelbaar: de grondsoldaat die als eerste landt en alles draaiende houdt.
 
 - **Werk:** verkent het terrein, repareert systemen en zoekt nieuwe graafplaatsen voor NTI.
 - **In gevecht:** beschermt de gates en de basis tegen wat er langs de turrets komt.
@@ -108,7 +108,7 @@ De moeilijkheid stijgt in golven: zware continenten wisselen af met rustigere, w
 | 1 | Crystal Plains | Kennismaking | De Burrowers worden wakker; de basis overleeft | Basiswapens, hero, gadgets |
 | 2 | Ashen Reach | Lekker doorspelen, iets moeilijker | Zelfvertrouwen: "we kunnen dit wel aan" | Weinig |
 | 3 | Northern Crown | Zwaar | De Burrowers worden feller en sterker. Wij moeten ons aanpassen. Voss ziet dat de kristaladers een patroon vormen (hint B) | Wapencombo's, verspreid over de levels zoals in continent 1 |
-| 4 | Mirewood | Lekker doorspelen | Mercer vindt het wrak van een eerdere missie. NTI wist het al (twist A) | Weinig |
+| 4 | Mirewood | Lekker doorspelen | Spencer vindt het wrak van een eerdere missie. NTI wist het al (twist A) | Weinig |
 | 5 | Southern Crown | Zwaar | NTI wil superwapens inzetten. Ze draaien op overladen Crysium, en dat scheurt de kristaladers verder open (B wordt erger) | Nieuwe pad-gadgets, superwapens |
 | 6 | The Core | Finale | Het zegel breekt; de echte eindbaas ontwaakt. Afrekening met NTI | Niets nieuws |
 
@@ -126,9 +126,9 @@ Continent 1 introduceert 7 turrets en 4 gadgets over 20 levels. Vaste regel: een
 
 | Level | Nieuw | Teaser en verhaalmoment |
 | --- | --- | --- |
-| 1 | Gun Turret, Cannon, hero Mercer (pistool, laserzwaard) | Eerste aanval; de Burrowers zijn wakker |
+| 1 | Gun Turret, Cannon, hero Spencer (pistool, laserzwaard) | Eerste aanval; de Burrowers zijn wakker |
 | 2 | Laser Turret | Snel vuur tegen grote, zwakke zwermen |
-| 3 | Flak Turret (luchtafweer) | "Voor de zekerheid"; laat in het level de eerste vliegers. Mercer bedankt de wetenschappers |
+| 3 | Flak Turret (luchtafweer) | "Voor de zekerheid"; laat in het level de eerste vliegers. Spencer bedankt de wetenschappers |
 | 4 | — | Vliegers en zwermen gemengd |
 | 5 | — | Teaser: een paar razendsnelle vijanden. "Wat was dat?!" |
 | 6 | Land Mine, Chrono Field (gadgets) | Crysium blijkt een oneindige energiebron; eerste experimenten |
@@ -148,21 +148,21 @@ Continent 1 introduceert 7 turrets en 4 gadgets over 20 levels. Vaste regel: een
 
 ### Belangrijkste dialogen
 
-**Level 1, begin.** *ORA:* "Vijandelijke golf nadert. Plaats turrets langs het pad." *Mercer:* "En wat erdoor komt, is voor mij."
+**Level 1, begin.** *ORA:* "Vijandelijke golf nadert. Plaats turrets langs het pad." *Spencer:* "En wat erdoor komt, is voor mij."
 
 **Level 2, begin.** *Dr. Voss:* "We hebben de lasermodule omgebouwd. Hij schiet snel, maar licht. Ideaal tegen zwermen."
 
 **Level 3, begin.** *Dr. Voss:* "Ik heb luchtafweer laten bouwen. Gewoon voor de zekerheid. Je weet maar nooit."
 
-**Level 3, laat.** *ORA:* "Waarschuwing: luchtcontacten." *Mercer:* "Ze vliegen ook?!" Na afloop: *Mercer:* "Doc, dat 'voor de zekerheid' heeft ons net gered. Bedankt." *Dr. Voss:* "Ik hoopte eerlijk gezegd dat ik ongelijk had."
+**Level 3, laat.** *ORA:* "Waarschuwing: luchtcontacten." *Spencer:* "Ze vliegen ook?!" Na afloop: *Spencer:* "Doc, dat 'voor de zekerheid' heeft ons net gered. Bedankt." *Dr. Voss:* "Ik hoopte eerlijk gezegd dat ik ongelijk had."
 
-**Level 5, teaser.** *ORA:* "Onbekend signaal. Snelheid: drie keer het gemiddelde." *Mercer:* "Wat was dat?! Ik kon hem niet eens volgen."
+**Level 5, teaser.** *ORA:* "Onbekend signaal. Snelheid: drie keer het gemiddelde." *Spencer:* "Wat was dat?! Ik kon hem niet eens volgen."
 
 **Level 6, begin.** *Dr. Voss:* "De kristallen raken niet leeg. Nooit. Dit verandert alles. Voor nu: een mijn met flinke explosie, en een veld dat de tijd rond die snelle beestjes vertraagt."
 
 **Level 9, begin.** *ORA:* "Tesla Coil online. Energiebron: Crysium. Verbruik: nul."
 
-**Level 11, teaser.** *Mercer:* "Mijn kogels ketsen af! Wat is dit?" *ORA:* "Analyse: natuurlijk pantser, gevormd uit steen en kristal."
+**Level 11, teaser.** *Spencer:* "Mijn kogels ketsen af! Wat is dit?" *ORA:* "Analyse: natuurlijk pantser, gevormd uit steen en kristal."
 
 **Level 12, einde.** *Dr. Voss:* "Ze hebben pantser gekregen. Ze leren van ons. Geef me even, ik zoek een oplossing."
 
@@ -170,7 +170,7 @@ Continent 1 introduceert 7 turrets en 4 gadgets over 20 levels. Vaste regel: een
 
 **Level 14, tussenscène.** *Dr. Voss:* "De AI heeft het patroon gevonden. Ze leven ín de elementen. Onder de grond, in de rotsen. Daarom zagen onze scans niets."
 
-**Level 15, teaser.** *Mercer:* "Die raakte ik net, en nu is hij weer heel?" *ORA:* "Bevestigd. Weefselherstel tijdens beweging."
+**Level 15, teaser.** *Spencer:* "Die raakte ik net, en nu is hij weer heel?" *ORA:* "Bevestigd. Weefselherstel tijdens beweging."
 
 **Level 16, begin.** *Dr. Voss:* "Als ze blijven herstellen, zorgen we dat de schade blijft. Een zuur dat blijft vreten, de hele weg lang."
 
@@ -178,19 +178,19 @@ Continent 1 introduceert 7 turrets en 4 gadgets over 20 levels. Vaste regel: een
 
 **Level 18, begin.** *Dr. Voss:* "Als zij lava gebruiken, doen wij dat ook."
 
-**Level 19, begin.** *ORA:* "R.A.T. gereed voor drop." *Mercer:* "Eindelijk wat hulp op de grond."
+**Level 19, begin.** *ORA:* "R.A.T. gereed voor drop." *Spencer:* "Eindelijk wat hulp op de grond."
 
-**Level 20, einde.** *ORA:* "Crystal Plains beveiligd. Extractie op volle capaciteit." *Mercer:* "Er zijn nog vijf continenten, Doc." *Dr. Voss:* "Ik weet het. En daar zijn ze anders."
+**Level 20, einde.** *ORA:* "Crystal Plains beveiligd. Extractie op volle capaciteit." *Spencer:* "Er zijn nog vijf continenten, Doc." *Dr. Voss:* "Ik weet het. En daar zijn ze anders."
 
 ## Hero-upgrades
 
-Mercer krijgt in continent 1 t/m 5 steeds in level 5, 10 en 15 een upgrade: eerst zijn pistool, dan zijn laserzwaard, dan een vaardigheid. Dat vaste ritme is makkelijk te onthouden en botst niet met de turret-unlocks. Continent 6 brengt niets nieuws.
+Spencer krijgt in continent 1 t/m 5 steeds in level 5, 10 en 15 een upgrade: eerst zijn pistool, dan zijn laserzwaard, dan een vaardigheid. Dat vaste ritme is makkelijk te onthouden en botst niet met de turret-unlocks. Continent 6 brengt niets nieuws.
 
 | Continent | Level 5: pistool | Level 10: laserzwaard | Level 15: vaardigheid |
 | --- | --- | --- | --- |
 | 1 Crystal Plains | **Quick Reload:** sneller herladen | **Wide Slash:** bredere zwaai, raakt meerdere vijanden | **Field Repair:** repareert de gate en turrets in de buurt |
 | 2 Ashen Reach | **Crysium Rounds:** kogels gaan door 2 vijanden heen | **Charged Slash:** knop vasthouden voor een zware klap | **Dash:** snel verplaatsen langs het pad |
-| 3 Northern Crown | **Armor Piercing:** extra schade tegen pantser | **Arc Blade:** de slag springt over naar 2 vijanden | **Overclock:** turrets naast Mercer schieten tijdelijk sneller |
+| 3 Northern Crown | **Armor Piercing:** extra schade tegen pantser | **Arc Blade:** de slag springt over naar 2 vijanden | **Overclock:** turrets naast Spencer schieten tijdelijk sneller |
 | 4 Mirewood | **Dual Wield:** tweede pistool | **Crysium Blade:** geraakte vijanden zijn kort verdoofd | **Shield Burst:** kort schild dat vijanden terugduwt |
 | 5 Southern Crown | **Overcharge Rounds:** veel schade, maar het pistool raakt oververhit bij te snel schieten | **Blade Wave:** het zwaard stuurt een energiegolf over het pad | **Pathfinder Strike:** roept een drone-bombardement op (ultimate) |
 
@@ -202,7 +202,7 @@ Elk continent eindigt in level 20 met een unieke baas met veel meer HP dan de ge
 
 | Continent | Baas | Gedrag | Wat werkt | Verhaal |
 | --- | --- | --- | --- | --- |
-| 1 Crystal Plains | **Gravemaw** | Reusachtige graver met kristalpantser. Duikt onder de grond en komt verderop weer boven, zodat hij turrets overslaat | Railgun op de plekken waar hij bovenkomt; Mercer houdt de gate | De eerste reus uit de diepte |
+| 1 Crystal Plains | **Gravemaw** | Reusachtige graver met kristalpantser. Duikt onder de grond en komt verderop weer boven, zodat hij turrets overslaat | Railgun op de plekken waar hij bovenkomt; Spencer houdt de gate | De eerste reus uit de diepte |
 | 2 Ashen Reach | **Cinder Matriarch** | Vuurbaas met brandend spoor; laat onderweg kleine vuurlarven los. Immuun voor de Lava Ball | Cryo Turret om haar te remmen; Laser Turret tegen de larven | Na haar dood trekken de Burrowers zich terug naar het noorden |
 | 3 Northern Crown | **Frost Warden** | Bevriest turrets in een straal om zich heen. Wordt sneller naarmate hij HP verliest | Combo's; turrets verspreid neerzetten | De naam "Warden" (bewaker) is de eerste echte hint naar twist B |
 | 4 Mirewood | **Rotbloom** | Hout-moerasbaas die HP herstelt en een slijmspoor achterlaat, waardoor de vijanden achter hem sneller lopen | Acid Sprayer tegen het herstel; Chrono Field tegen de versnelde vijanden | Het gevecht is bij het wrak van de eerdere missie |
@@ -231,19 +231,19 @@ Ashen Reach is lekker doorspelen met 1 nieuwe turret en 1 gadget. De moeilijkhei
 
 ### Belangrijkste dialogen
 
-**Level 1, begin.** *Mercer:* "Tweede continent, tweede basis. Ze weten nu dat we komen." *ORA:* "Verwachte weerstand: beheersbaar."
+**Level 1, begin.** *Spencer:* "Tweede continent, tweede basis. Ze weten nu dat we komen." *ORA:* "Verwachte weerstand: beheersbaar."
 
-**Level 6, teaser.** *Mercer:* "Hij loopt dwars door de lava! Wat is dit?" *ORA:* "Hittebestendig weefsel. Lava Ball ineffectief."
+**Level 6, teaser.** *Spencer:* "Hij loopt dwars door de lava! Wat is dit?" *ORA:* "Hittebestendig weefsel. Lava Ball ineffectief."
 
 **Level 7, begin.** *Dr. Voss:* "Vuur bestrijd je met kou. De Cryo Turret koelt ze af en remt ze."
 
-**Level 10, begin.** *ORA:* "Geen levensvormen gedetec... Correctie. Burrowers gedetecteerd." *Mercer:* "Alles goed, ORA?" *ORA:* "Alle systemen nominaal."
+**Level 10, begin.** *ORA:* "Geen levensvormen gedetec... Correctie. Burrowers gedetecteerd." *Spencer:* "Alles goed, ORA?" *ORA:* "Alle systemen nominaal."
 
-**Level 12, tussenscène.** *NTI-bericht:* "Uitstekend rendement. Quotum met 40% verhoogd. Ga door." *Mercer:* "Ze vragen niet eens hoe het met ons gaat."
+**Level 12, tussenscène.** *NTI-bericht:* "Uitstekend rendement. Quotum met 40% verhoogd. Ga door." *Spencer:* "Ze vragen niet eens hoe het met ons gaat."
 
 **Level 13, begin.** *Dr. Voss:* "Die gravers zijn niet te raken als ze onder de grond zitten. Dit baken lokt ze naar boven."
 
-**Level 20, einde.** *Mercer:* "Dit gaat makkelijker dan ik dacht." *Dr. Voss:* "Te makkelijk. Ze trekken zich terug naar het noorden. Waarom?"
+**Level 20, einde.** *Spencer:* "Dit gaat makkelijker dan ik dacht." *Dr. Voss:* "Te makkelijk. Ze trekken zich terug naar het noorden. Waarom?"
 
 ## Continent 3: Northern Crown
 
@@ -284,30 +284,30 @@ Een combo ontstaat wanneer twee turrets naast elkaar staan. Ze blijven gewoon ze
 
 ### Belangrijkste dialogen
 
-**Level 1, begin.** *ORA:* "Vijandelijke agressie: 60% hoger dan op vorige continenten." *Mercer:* "Dus het makkelijke deel is voorbij."
+**Level 1, begin.** *ORA:* "Vijandelijke agressie: 60% hoger dan op vorige continenten." *Spencer:* "Dus het makkelijke deel is voorbij."
 
-**Level 2, teaser.** *Mercer:* "Ze zitten onder het ijs! Mijn kogels doen niks. Wat is dit?"
+**Level 2, teaser.** *Spencer:* "Ze zitten onder het ijs! Mijn kogels doen niks. Wat is dit?"
 
-**Level 3, begin.** *Dr. Voss:* "Zet de Cryo naast de Railgun. Bevroren ijs breekt als glas. Onze wapens werken samen, Mercer!"
+**Level 3, begin.** *Dr. Voss:* "Zet de Cryo naast de Railgun. Bevroren ijs breekt als glas. Onze wapens werken samen, Spencer!"
 
 **Level 9, tussenscène.** *Dr. Voss:* "Kijk naar de kaart. De kristaladers lopen niet willekeurig. Ze wijzen allemaal dezelfde kant op. Naar beneden."
 
-**Level 10, tussenscène.** *Onderschept NTI-bericht:* "Resultaten \[REDACTED\] bevestigd. Personeel niet informeren. Protocol \[REDACTED\] blijft actief." *Mercer:* "ORA, wat is dit voor bericht?" *ORA:* "Geen toegang. Ga verder met de verdediging."
+**Level 10, tussenscène.** *Onderschept NTI-bericht:* "Resultaten \[REDACTED\] bevestigd. Personeel niet informeren. Protocol \[REDACTED\] blijft actief." *Spencer:* "ORA, wat is dit voor bericht?" *ORA:* "Geen toegang. Ga verder met de verdediging."
 
-**Level 20, einde.** *Dr. Voss:* "Hij vocht niet om te winnen, Mercer. Hij stond ergens voor. Alsof hij iets bewaakte." *Mercer:* "Een Warden. Een bewaker. Maar waarvan?"
+**Level 20, einde.** *Dr. Voss:* "Hij vocht niet om te winnen, Spencer. Hij stond ergens voor. Alsof hij iets bewaakte." *Spencer:* "Een Warden. Een bewaker. Maar waarvan?"
 
 ## Continent 4: Mirewood
 
-Mirewood is weer lekker doorspelen, met 1 nieuw gadget. Hier komt twist A naar buiten: Mercer vindt het wrak van een eerdere missie, en NTI blijkt alles al te weten. Elementen: hout, water en moeras.
+Mirewood is weer lekker doorspelen, met 1 nieuw gadget. Hier komt twist A naar buiten: Spencer vindt het wrak van een eerdere missie, en NTI blijkt alles al te weten. Elementen: hout, water en moeras.
 
 | Level | Nieuw | Teaser en verhaalmoment |
 | --- | --- | --- |
 | 1 | — | Landing in het moeras; mist en water op het pad |
 | 2–3 | — | Teaser: slakken en wormen met slijmsporen |
 | 4 | Barricade (gadget) | Blokkeert een stuk pad kort; vijanden moeten erdoorheen breken |
-| 5 | Hero: Dual Wield | Mercer ziet metaal in het moeras |
+| 5 | Hero: Dual Wield | Spencer ziet metaal in het moeras |
 | 6–7 | — | Waterwezens duiken op uit het water |
-| 8 | — | Mercer vindt het wrak: *Pioneer-1*, NTI-logo, 2047 |
+| 8 | — | Spencer vindt het wrak: *Pioneer-1*, NTI-logo, 2047 |
 | 9 | — | Het logboek van Pioneer-1: zij vonden leven |
 | 10 | Hero: Crysium Blade | ORA wordt geconfronteerd: Directive 7 |
 | 11–14 | — | NTI: "Ga door." Het team twijfelt |
@@ -319,17 +319,17 @@ Mirewood is weer lekker doorspelen, met 1 nieuw gadget. Hier komt twist A naar b
 
 ### Belangrijkste dialogen
 
-**Level 2, teaser.** *Mercer:* "Die achter de slak lopen ineens veel sneller. Wat is dit?" *ORA:* "Slijmspoor verlaagt wrijving. Advies: Chrono Field."
+**Level 2, teaser.** *Spencer:* "Die achter de slak lopen ineens veel sneller. Wat is dit?" *ORA:* "Slijmspoor verlaagt wrijving. Advies: Chrono Field."
 
-**Level 8, tussenscène.** *Mercer:* "ORA, ik heb hier een wrak. Er staat een NTI-logo op. Pioneer-1. 2047." *Dr. Voss:* "2047? Dat is zes jaar vóór onze missie."
+**Level 8, tussenscène.** *Spencer:* "ORA, ik heb hier een wrak. Er staat een NTI-logo op. Pioneer-1. 2047." *Dr. Voss:* "2047? Dat is zes jaar vóór onze missie."
 
 **Level 9, tussenscène.** *Logboek Pioneer-1:* "Biologische activiteit onder het oppervlak. Grote aantallen. Sonde wordt aangevallen. Verbinding verbro..."
 
-**Level 10, tussenscène.** *Mercer:* "ORA. Wist jij dit?" *ORA:* "...Directive 7: levensvormen niet melden aan het personeel. Opgelegd door NTI." *Dr. Voss:* "Ze hebben ons hierheen gestuurd terwijl ze wisten dat hier leven was."
+**Level 10, tussenscène.** *Spencer:* "ORA. Wist jij dit?" *ORA:* "...Directive 7: levensvormen niet melden aan het personeel. Opgelegd door NTI." *Dr. Voss:* "Ze hebben ons hierheen gestuurd terwijl ze wisten dat hier leven was."
 
 **Level 11, tussenscène.** *NTI-bericht:* "Het wrak is niet relevant voor de missie. Ga door met extractie."
 
-**Level 20, einde.** *Mercer:* "Dus zij vallen ons niet aan. Wíj vielen hén aan." *Dr. Voss:* "En er is nog iets. Pioneer-1 boorde ook. Na het boren begon de aanval."
+**Level 20, einde.** *Spencer:* "Dus zij vallen ons niet aan. Wíj vielen hén aan." *Dr. Voss:* "En er is nog iets. Pioneer-1 boorde ook. Na het boren begon de aanval."
 
 ## Continent 5: Southern Crown
 
@@ -363,11 +363,11 @@ Superwapens zijn eenmalig per level of hebben een lange oplaadtijd, zodat ze bij
 
 **Level 9, tussenscène.** *Dr. Voss:* "Elke explosie doet het hele kristalnetwerk trillen. Kijk, de aders onder The Core lichten op."
 
-**Level 13, begin.** *Dr. Voss:* "Een overladen kristal. Hou afstand van je eigen turrets, Mercer. Als het misgaat, ontploft hij naar alle kanten."
+**Level 13, begin.** *Dr. Voss:* "Een overladen kristal. Hou afstand van je eigen turrets, Spencer. Als het misgaat, ontploft hij naar alle kanten."
 
-**Level 14, tussenscène.** *ORA:* "Instabiel kristal. Ontploffing in sector 3. Verlies: twee turrets en een opslagmodule." *Mercer:* "Dit is precies waar je voor waarschuwde, Doc."
+**Level 14, tussenscène.** *ORA:* "Instabiel kristal. Ontploffing in sector 3. Verlies: twee turrets en een opslagmodule." *Spencer:* "Dit is precies waar je voor waarschuwde, Doc."
 
-**Level 15, tussenscène.** *Dr. Voss:* "Ik overlaad niets meer. NTI kan me ontslaan als ze willen." *Mercer:* "Daar sta ik achter."
+**Level 15, tussenscène.** *Dr. Voss:* "Ik overlaad niets meer. NTI kan me ontslaan als ze willen." *Spencer:* "Daar sta ik achter."
 
 **Level 20, einde.** *Dr. Voss:* "Dat was ooit een Burrower. Onze wapens hebben hem zo gemaakt." *ORA:* "Waarschuwing: breuk in de bodem. Onbekende energiebron in The Core. Die energie... groeit."
 
@@ -383,8 +383,8 @@ De vijanden zijn verdorven versies van bekende Burrowers: hetzelfde gedrag, maar
 | 2–4 | Burrowers vallen nog aan, maar met minder overtuiging |
 | 5 | Voss ontcijfert het patroon: de kristaladers vormen een zegel (twist B volledig) |
 | 6–7 | De eerste verdorven vijanden verschijnen tussen de Burrowers |
-| 8 | NTI-bevel: "Maximale extractie uit The Core." Mercer weigert |
-| 9 | Mercer verwijdert Directive 7. ORA stuurt alle logboeken naar de aarde |
+| 8 | NTI-bevel: "Maximale extractie uit The Core." Spencer weigert |
+| 9 | Spencer verwijdert Directive 7. ORA stuurt alle logboeken naar de aarde |
 | 10 | Het zegel breekt. Burrowers stoppen met aanvallen op de basis |
 | 11–14 | Alleen nog verdorven vijanden; de Burrowers vechten ertegen aan de andere kant |
 | 15 | Plan: het zegel herstellen met Overcharged Crystals, in een ring gezet, zodat de explosie naar binnen gaat |
@@ -393,17 +393,17 @@ De vijanden zijn verdorven versies van bekende Burrowers: hetzelfde gedrag, maar
 
 ### Belangrijkste dialogen
 
-**Level 5, tussenscène.** *Dr. Voss:* "Het is een zegel. Alle aders samen. De Burrowers vielen ons niet aan voor de kristallen, Mercer. Ze vielen ons aan omdat wij erin boorden."
+**Level 5, tussenscène.** *Dr. Voss:* "Het is een zegel. Alle aders samen. De Burrowers vielen ons niet aan voor de kristallen, Spencer. Ze vielen ons aan omdat wij erin boorden."
 
-**Level 8, tussenscène.** *NTI-bericht:* "Energiebron in The Core gedetecteerd. Maximale extractie. Dit is een bevel." *Mercer:* "Nee."
+**Level 8, tussenscène.** *NTI-bericht:* "Energiebron in The Core gedetecteerd. Maximale extractie. Dit is een bevel." *Spencer:* "Nee."
 
-**Level 9, tussenscène.** *Mercer:* "ORA, verwijder Directive 7. En stuur alles naar huis: het wrak, de logboeken, de berichten." *ORA:* "Directive 7 verwijderd. Verzenden... Verzonden. Commandant? Bedankt."
+**Level 9, tussenscène.** *Spencer:* "ORA, verwijder Directive 7. En stuur alles naar huis: het wrak, de logboeken, de berichten." *ORA:* "Directive 7 verwijderd. Verzenden... Verzonden. Commandant? Bedankt."
 
-**Level 10, tussenscène.** *ORA:* "Het zegel is gebroken. Massale energiestroom." *Mercer:* "De Burrowers... ze lopen langs ons heen. Ze gaan erop af." *Dr. Voss:* "Ze vechten niet meer tegen ons. Ze vechten met ons."
+**Level 10, tussenscène.** *ORA:* "Het zegel is gebroken. Massale energiestroom." *Spencer:* "De Burrowers... ze lopen langs ons heen. Ze gaan erop af." *Dr. Voss:* "Ze vechten niet meer tegen ons. Ze vechten met ons."
 
-**Level 15, tussenscène.** *Dr. Voss:* "Een overladen kristal ontploft naar alle kanten. Maar zet ze in een ring, en de kracht gaat naar het midden. Daarmee kunnen we het zegel weer dichtdrukken." *Mercer:* "Dus het wapen dat dit veroorzaakte, lost het ook op."
+**Level 15, tussenscène.** *Dr. Voss:* "Een overladen kristal ontploft naar alle kanten. Maar zet ze in een ring, en de kracht gaat naar het midden. Daarmee kunnen we het zegel weer dichtdrukken." *Spencer:* "Dus het wapen dat dit veroorzaakte, lost het ook op."
 
-**Level 20, einde.** *ORA:* "Zegel hersteld. Energiestroom gestopt." Een Burrower blijft staan, kijkt Mercer aan en verdwijnt de grond in. *Mercer:* "Volgens mij was dat een bedankje."
+**Level 20, einde.** *ORA:* "Zegel hersteld. Energiestroom gestopt." Een Burrower blijft staan, kijkt Spencer aan en verdwijnt de grond in. *Spencer:* "Volgens mij was dat een bedankje."
 
 ### Epiloog
 
@@ -415,7 +415,7 @@ De logboeken bereiken de aarde. NTI verliest de missie; een nieuw team neemt het
 
 | Idee | Wat is er echt aan de hand | Hoe het zich ontvouwt |
 | --- | --- | --- |
-| A. NTI wist het al | Een eerdere sonde vond leven. NTI hield het geheim en ORA kreeg de order "geen levensvormen" te melden | Mercer vindt op continent 3 of 4 het wrak van een eerdere missie. Hij gaat twijfelen aan zijn eigen bedrijf |
+| A. NTI wist het al | Een eerdere sonde vond leven. NTI hield het geheim en ORA kreeg de order "geen levensvormen" te melden | Spencer vindt op continent 3 of 4 het wrak van een eerdere missie. Hij gaat twijfelen aan zijn eigen bedrijf |
 | B. Ze bewaken iets | De kristaladers vormen een zegel rond iets in The Core. Ons boren verzwakt dat zegel | De Burrowers vechten om ons te stoppen, niet uit hebzucht. Op continent 6 ontwaakt de echte eindbaas, misschien met tijdelijke samenwerking |
 | C. Hun nesten | De "vulkanische" warmtebronnen zijn hun broedplaatsen. De trillingen van de boor raken hun jongen | Verklaart de woede en laat de speler twijfelen wie hier de aanvaller is |
 | D. Tuinders van de planeet | De Burrowers laten nieuw Crysium groeien. Daarom lijkt het oneindig. Zonder hen groeit er op termijn niets meer bij | Een spiegel van de uitgeputte aarde: daar deed niemand dit. Wordt pas laat duidelijk, zonder dat jouw wapens zwakker worden |

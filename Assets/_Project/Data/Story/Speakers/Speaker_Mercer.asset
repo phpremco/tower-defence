@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e706d5645a1442842bfb75c7f3e12043, type: 3}
   m_Name: Speaker_Mercer
   m_EditorClassIdentifier: Game.Levels::Game.Levels.SpeakerDefinition
-  _displayName: Mercer
+  _displayName: Spencer
   _roleColour: {r: 1, g: 0.82, b: 0.3, a: 1}
   _frame: 0
   _portrait: 0

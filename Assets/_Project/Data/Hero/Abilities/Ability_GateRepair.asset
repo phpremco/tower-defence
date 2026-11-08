@@ -28,4 +28,4 @@ MonoBehaviour:
     _gain: 1
     _pitch: 1
   _impactVfx: {fileID: 0}
-  _description: Mercer welds the gate he guards, giving back 40% of its health.
+  _description: Spencer welds the gate he guards, giving back 40% of its health.

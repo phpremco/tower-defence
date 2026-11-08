@@ -1,4 +1,4 @@
-Acceptance per difficulty 2026-11-07 22:23 (Docs/BALANCE.md "Acceptance per difficulty"). calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
+Acceptance per difficulty 2026-11-08 13:48 (Docs/BALANCE.md "Acceptance per difficulty"). calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
 Obvious family from calibration_records.txt (the yardstick), searched plans from plan_records.txt (the replay). Tutorial cells: Level_C1_01 1 (their obvious wins are forgiven and noted).
 
 Level_C1_01 Easy: FAIL

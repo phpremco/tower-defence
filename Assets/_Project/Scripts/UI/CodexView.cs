@@ -77,6 +77,8 @@ namespace Game.UI
         private Text _detailText;
         private readonly List<ModelPreview> _previews = new List<ModelPreview>();
         private readonly List<EnemyDefinition> _shownEnemies = new List<EnemyDefinition>();
+        private readonly HashSet<EnemyDefinition> _levelEnemies = new HashSet<EnemyDefinition>();
+        private System.Action _closed;
         private readonly List<Text> _operators = new List<Text>();
         private readonly List<Button> _rows = new List<Button>();
         private readonly StringBuilder _builder = new StringBuilder();
@@ -89,15 +91,26 @@ namespace Game.UI
         /// <summary>True while the book is open and holds the game.</summary>
         public bool IsOpen => _open;
 
+        /// <summary>The in-level book: it holds the clock and the camera, and lists only the creatures this level sends.</summary>
         public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input)
         {
             _context = context;
-            _safeRoot = safeRoot;
             _time = time;
-            _input = input;
-            Services.TryGet(out _catalog);
-            _input.Cancelled += OnCancelled;
+            Initialize(safeRoot, input, null);
             _context.Changed.Subscribe(OnContextChanged);
+        }
+
+        /// <summary>The general book of the main menu: every creature, no level to hold; <paramref name="closed"/> runs when it closes.</summary>
+        public void Initialize(RectTransform safeRoot, IInputProvider input, System.Action closed)
+        {
+            _safeRoot = safeRoot;
+            _input = input;
+            _closed = closed;
+            Services.TryGet(out _catalog);
+            if (_input != null)
+            {
+                _input.Cancelled += OnCancelled;
+            }
         }
 
         private void OnDestroy()
@@ -113,7 +126,7 @@ namespace Game.UI
         public void Open()
         {
             // A conversation owns the screen until it ends; the book waits.
-            if (!Available || _open || _context.StoryBusy || _context.Outcome != LevelOutcome.Running)
+            if (!Available || _open || (_context != null && (_context.StoryBusy || _context.Outcome != LevelOutcome.Running)))
             {
                 return;
             }
@@ -127,7 +140,13 @@ namespace Game.UI
             _root.transform.SetAsLastSibling();
             _root.SetActive(true);
             _open = true;
-            _time.Hold(this);
+            if (_context != null)
+            {
+                _time.Hold(this);
+                _context.BlockCamera(this);
+                LevelRoster.Collect(_context.Level, _context.Difficulty, _levelEnemies);
+            }
+
             ShowPage(_page);
         }
 
@@ -140,8 +159,14 @@ namespace Game.UI
 
             _open = false;
             _root.SetActive(false);
-            _time.Release(this);
+            if (_context != null)
+            {
+                _time.Release(this);
+                _context.UnblockCamera(this);
+            }
+
             EventSystem.current.SetSelectedGameObject(null);
+            _closed?.Invoke();
         }
 
         private void OnCancelled()
@@ -309,7 +334,7 @@ namespace Game.UI
                 {
                     EnemyDefinition enemy = _shownEnemies[i];
                     name = enemy.DisplayName;
-                    note = enemy.IsBoss ? "Boss" : enemy.Flies ? "Air" : "Ground";
+                    note = (enemy.IsBoss ? "Boss" : enemy.Flies ? "Air" : "Ground") + ProtectionNote(enemy);
                 }
 
                 _rows.Add(Row(name, note, () => Show(index)));
@@ -346,6 +371,17 @@ namespace Game.UI
             }
         }
 
+        // The list already says which creatures carry protection, so the player spots the plated ones without opening each.
+        private static string ProtectionNote(EnemyDefinition enemy)
+        {
+            if (enemy.HasPlating)
+            {
+                return ", plated";
+            }
+
+            return enemy.HasArmor ? ", armoured" : string.Empty;
+        }
+
         private Button Row(string name, string note, UnityEngine.Events.UnityAction onClick)
         {
             Button button = UiKit.CreateIconButton(_content, null, RowHeight, onClick);
@@ -372,17 +408,12 @@ namespace Game.UI
         }
 
         // A boss is described only once the player has met it (Docs/BOSSES.md); every other creature is listed from the start.
+        // In a level the book lists only what this level sends; the menu's book lists every creature.
         private void ListShownEnemies()
         {
-            _shownEnemies.Clear();
             Services.TryGet(out ProgressService progress);
-            foreach (EnemyDefinition enemy in _catalog.Enemies)
-            {
-                if (enemy != null && (!enemy.IsBoss || progress == null || progress.HasSeenEnemy(enemy.name)))
-                {
-                    _shownEnemies.Add(enemy);
-                }
-            }
+            System.Func<EnemyDefinition, bool> seen = progress != null ? enemy => progress.HasSeenEnemy(enemy.name) : null;
+            LevelRoster.Filter(_catalog.Enemies, _context != null ? _levelEnemies : null, seen, _shownEnemies);
         }
 
         private void Show(int index)
@@ -613,12 +644,22 @@ namespace Game.UI
                 _builder.Append("   Plating ").Append(Mathf.RoundToInt(enemy.Plating)).Append(" (every hit loses that much, at least ").Append(Mathf.RoundToInt(enemy.PlatingFloor * 100f)).Append("% gets through: heavy shots pass it)");
             }
 
+            // The field shows the same protection as a blue line over the green health line (ProtectionBar).
+            if (enemy.HasPlating)
+            {
+                _builder.Append("\nIn the field: a full blue line over its health; it flares and sparks fly when the plates stop a hit.");
+            }
+            else if (enemy.HasArmor)
+            {
+                _builder.Append("\nIn the field: the blue line over its health is the armour left.");
+            }
+
             _builder.Append("\nSpeed ").Append(enemy.Speed.ToString("0.0")).Append("   Bounty ").Append(enemy.Reward).Append("   Base damage ").Append(enemy.BaseDamage).Append('\n');
 
             // A continent boss's own mechanic decides what it does to towers; the signature below says it.
             string towers = enemy.AttackDamage > 0f ? $"damages them ({enemy.AttackDamage:0} per hit)" : enemy.Boss != null && enemy.Boss.Signature != BossSignature.None ? "see its signature" : "leaves them alone";
             _builder.Append("Towers: ").Append(towers);
-            _builder.Append("   Gates and hero: ").Append(enemy.BlockadeDamage > 0f ? $"{enemy.BlockadeDamage:0} per hit" : "no");
+            _builder.Append("   Gates and ").Append(HeroNaming.Of(_context)).Append(": ").Append(enemy.BlockadeDamage > 0f ? $"{enemy.BlockadeDamage:0} per hit" : "no");
             if (enemy.GateStrikes > 0)
             {
                 _builder.Append("   Strikes a gate ").Append(enemy.GateStrikes).Append(" times in passing");
@@ -632,7 +673,7 @@ namespace Game.UI
 
             if (enemy.LeavesTrail)
             {
-                _builder.Append("Leaves a trail for ").Append(Mathf.RoundToInt(enemy.TrailSeconds)).Append("s that hurries others").Append(enemy.TrailDamagePerSecond > 0f ? " and burns the hero and gates" : string.Empty).Append(".\n");
+                _builder.Append("Leaves a trail for ").Append(Mathf.RoundToInt(enemy.TrailSeconds)).Append("s that hurries others").Append(enemy.TrailDamagePerSecond > 0f ? $" and burns {HeroNaming.Of(_context)} and the gates" : string.Empty).Append(".\n");
             }
 
             if (enemy.Rages)

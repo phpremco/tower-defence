@@ -36,8 +36,8 @@ namespace Game.UI
             "Cancel               B    Esc    Right click\n" +
             "Switch tower         LB / RB    Q / E\n" +
             "Tower icons          Stick / D-pad to pick, A to use, B to close\n" +
-            "Upgrade / Repair / Sell   U / R / X   (X on a blockade sends the hero)\n" +
-            "Hero: next post / shockwave / repair post   X button / LT / RT    H / F / G\n" +
+            "Upgrade / Repair / Sell   U / R / X   (X on a blockade sends {0})\n" +
+            "{0}: next post / shockwave / repair post   X button / LT / RT    H / F / G\n" +
             "Drones               Panel bottom right: click a card, or A on the base doorstep, then the stick\n" +
             "Game speed           Y    Space\n" +
             "Pause                Start    P\n" +
@@ -85,7 +85,7 @@ namespace Game.UI
 
             _controlsPanel = new GameObject("Controls", typeof(RectTransform));
             _controlsPanel.transform.SetParent(root, false);
-            Text text = UiKit.CreateFixedText(_controlsPanel.GetComponent<RectTransform>(), ControlsText, UiKit.BodySize, TextAnchor.UpperLeft, new Vector2(0.5f, 0.5f), new Vector2(-560f, 300f), new Vector2(1200f, 600f));
+            Text text = UiKit.CreateFixedText(_controlsPanel.GetComponent<RectTransform>(), string.Format(ControlsText, HeroNaming.Campaign()), UiKit.BodySize, TextAnchor.UpperLeft, new Vector2(0.5f, 0.5f), new Vector2(-560f, 300f), new Vector2(1200f, 600f));
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             Button back = UiKit.CreateButton(_controlsPanel.GetComponent<RectTransform>(), "Back", HideControls);
             RectTransform backRect = back.GetComponent<RectTransform>();

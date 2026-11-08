@@ -1,1 +1,1 @@
-arena CinderMatriarch
+node 1

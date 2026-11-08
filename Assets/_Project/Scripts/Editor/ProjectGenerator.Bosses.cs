@@ -135,7 +135,7 @@ namespace Game.Editor
                 ArmourPart = "FrostWarden_IceArmour",
                 SignatureText = "Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.",
                 TelegraphText = "It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.",
-                CounterText = "Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. The hero's repair thaws a frozen gate, and the Warden slips off without breaking it.",
+                CounterText = "Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. Spencer's repair thaws a frozen gate, and the Warden slips off without breaking it.",
                 Voice = new VoiceSpec { Enemy = "FrostWarden", Move = "Bosses/IceBeetle/ice_beetle_walk_loop_boss", Screech = "Bosses/IceBeetle/ice_beetle_screech_boss", Growl = "Bosses/IceBeetle/ice_beetle_screech_boss" },
             };
             yield return new BossSpec
@@ -153,7 +153,7 @@ namespace Game.Editor
                 Gates = GateBehaviour.Batter,
                 SignatureText = "Every twelve seconds it fires spore pods at the fullest cluster of towers within its reach: three pads at most, and never more than about a quarter of your towers overgrown at once. An overgrown pad cannot be built on, and the tower on it fires at 70% while vines grow over it, until the growth is burned away. Rooted, it creeps along the road on growing roots; below half its health it tears itself out, walks faster and leaves rot behind it. It sinks into the bog and comes up at another bank.",
                 TelegraphText = "Roots spread at the bank of a bog over the three waves before it comes, and it grows out of that bog. Before a volley the flower opens its petals with a sweet rising sound, and the target pads glow green two seconds before the pods land.",
-                CounterText = "Splash damage (cannon, mortar) that lands on a pad burns it clean, and the hero's repair burns the vines off the tower it guards. The pods fly: air towers can shoot them down before they land. Do not stack all your towers in one cluster.",
+                CounterText = "Splash damage (cannon, mortar) that lands on a pad burns it clean, and Spencer's repair burns the vines off the tower it guards. The pods fly: air towers can shoot them down before they land. Do not stack all your towers in one cluster.",
                 Voice = new VoiceSpec { Enemy = "Rotbloom", Move = "Bosses/Leech/leech_slime_loop_boss", Screech = "Bosses/Leech/leech_screech_boss", Growl = "Bosses/Leech/leech_screech_boss" },
             };
             yield return new BossSpec

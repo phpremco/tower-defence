@@ -387,6 +387,10 @@ namespace Game.Combat
         {
             if (_projectile.Style == ProjectileStyle.Laser || _projectile.Style == ProjectileStyle.Lightning)
             {
+                // At x2 or x3 a shot can spawn and land inside one frame, before LateUpdate ever drew it: the line still held
+                // the previous shot's points. It is stretched to this hit first, so every shot shows where it struck.
+                _flicker = 0f;
+                Beam(_projectile.Style == ProjectileStyle.Lightning, position);
                 float seconds = _projectile.Style == ProjectileStyle.Laser ? BeamLingerSeconds : ArcLingerSeconds;
                 _beamFade.Begin(seconds);
                 _beamGlowFade.Begin(seconds);
@@ -419,10 +423,10 @@ namespace Game.Combat
             switch (_projectile.Style)
             {
                 case ProjectileStyle.Laser:
-                    Beam(false);
+                    Beam(false, transform.position);
                     break;
                 case ProjectileStyle.Lightning:
-                    Beam(true);
+                    Beam(true, transform.position);
                     break;
                 case ProjectileStyle.Mortar:
                     _visual.localPosition = Vector3.up * (Mathf.Sin(_projectile.Progress * Mathf.PI) * MortarHeight);
@@ -480,10 +484,9 @@ namespace Game.Combat
 
         // The beam runs from the muzzle to wherever the shot has got to, so it reaches out and then snaps away.
         // Lightning jitters its middle points every few frames, or a painted arc swaps to another picture.
-        private void Beam(bool jagged)
+        private void Beam(bool jagged, Vector3 to)
         {
             Vector3 from = _projectile.Origin;
-            Vector3 to = transform.position;
             if (!jagged || _arcCard)
             {
                 _beam.SetPosition(0, from);

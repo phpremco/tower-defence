@@ -18,6 +18,8 @@ namespace Game.Levels
     public sealed class LevelContext
     {
         private readonly Dictionary<string, PlayerModifiers> _towerModifiers;
+        // The same owner set the clock uses: closing one overlay never frees the camera while another still covers it.
+        private readonly TimeHolds _cameraHolds = new TimeHolds();
 
         public LevelContext(
             LevelDefinition level,
@@ -91,6 +93,18 @@ namespace Game.Levels
         /// press meant for an overlay never also acts on the field underneath.
         /// </summary>
         public bool InputBlocked => Paused || Held;
+
+        /// <summary>
+        /// True while an overlay that covers the field (the codex) is open: the camera then ignores the player's zoom and
+        /// pan, so a scroll meant for the overlay's list never moves the view underneath. The pause menu does not block it,
+        /// so a paused player can still look around.
+        /// </summary>
+        public bool CameraBlocked => _cameraHolds.IsHeld;
+
+        /// <summary>Blocks the player's camera input under this owner until <see cref="UnblockCamera"/>; several owners may hold at once.</summary>
+        public void BlockCamera(object owner) => _cameraHolds.Acquire(owner);
+
+        public void UnblockCamera(object owner) => _cameraHolds.Release(owner);
 
         /// <summary>A practice run (the developer boss arena): winning or losing pays nothing and saves nothing.</summary>
         public bool Practice { get; set; }

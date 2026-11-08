@@ -216,7 +216,7 @@ namespace Game.UI
             }
 
             _heroSecondsShown = seconds;
-            _heroText.text = seconds < 0 ? string.Empty : $"Hero down {seconds / 60}:{seconds % 60:00}";
+            _heroText.text = seconds < 0 ? string.Empty : $"{HeroNaming.Of(_context)} down {seconds / 60}:{seconds % 60:00}";
         }
 
         // The level's dialogue player draws through this box. Without a player (a tool scene) there is no box.

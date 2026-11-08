@@ -1,4 +1,4 @@
-Strategy search (stage A, round 22e) 2026-11-07 22:24, 1500 strategies per cell. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
+Strategy search (stage A, round 22e) 2026-11-08 13:48, 1500 strategies per cell. calibration 2026-11-07 01:56, seeds 1,2,3, step 0.2, inputs 956d2750 (current)
 Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
 the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
 The paper is a pre-screen; stage B (the replay with the adaptive bot) is the judge. Details: Tools/PlayTest/Plans/<level>_<difficulty>.txt.

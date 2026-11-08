@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25523c49d0fc0b34295f5707f98a0a3d, type: 3}
   m_Name: Commander
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroDefinition
-  _displayName: Mercer
+  _displayName: Spencer
   _maxHealth: 200
   _walkSpeed: 5
   _flies: 0

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.Combat
@@ -66,7 +67,7 @@ namespace Game.Combat
                 return;
             }
 
-            _age += Time.deltaTime;
+            _age += FeedbackClock.DeltaTime;
             if (_age > _weapon.MuzzleSeconds || _mouth == null)
             {
                 _card.gameObject.SetActive(false);

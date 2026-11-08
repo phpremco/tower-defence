@@ -133,7 +133,7 @@ namespace Game.Editor
 
             b.Skitter = CreateEnemy(new Creature
             {
-                Id = "Skitter", Description = "Ant swarm. Weak alone and dangerous in crowds: a shell thins a pack, but a long stream of ants asks for rate of fire along the road. Bites gates and the hero.", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1,
+                Id = "Skitter", Description = "Ant swarm. Weak alone and dangerous in crowds: a shell thins a pack, but a long stream of ants asks for rate of fire along the road. Bites gates and Spencer.", Layer = TargetLayers.Ground, Health = 11f, Speed = 1.6f, BaseDamage = 1,
                 Attack = AttackStyle.Bite, BlockadeDamage = 3f, AttackRange = 2.5f, AttackInterval = 1.1f,
                 Color = new Color(1f, 0.5f, 0.14f), Eyes = new Color(1f, 0.95f, 0.5f), Accent = new Color(0.75f, 1f, 0.25f), Blood = VenomGreen,
                 Scale = 0.45f, Shape = EnemyShape.Skitter, Death = DeathStyle.Shatter,
@@ -199,7 +199,7 @@ namespace Game.Editor
             });
             b.Oozer = CreateEnemy(new Creature
             {
-                Id = "Oozer", BodyHalfWidth = 0.55f, GroundBody = true, Description = "Slug on a toxic slime foot. Its trail speeds up other species and burns the hero and gates, never towers.", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
+                Id = "Oozer", BodyHalfWidth = 0.55f, GroundBody = true, Description = "Slug on a toxic slime foot. Its trail speeds up other species and burns Spencer and the gates, never towers.", Layer = TargetLayers.Ground, Health = 100f, Speed = 0.75f, BaseDamage = 2,
                 Attack = AttackStyle.Slam, BlockadeDamage = 9f, AttackRange = 2.5f, AttackInterval = 1.5f,
                 TrailSeconds = 9f, TrailHaste = 1.45f, TrailDamage = 2.5f, SlimeImmune = true,
                 Color = new Color(0.55f, 0.8f, 0.15f), Eyes = new Color(1f, 1f, 0.5f), Accent = new Color(0.5f, 1f, 0.2f), Blood = SlimeGreen,

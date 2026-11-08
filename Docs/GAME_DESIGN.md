@@ -93,7 +93,7 @@ De hero is de commandant en verdedigt de blokkades: hij staat bij een blokkade, 
 - **Upgrades:** permanent upgradebaar met punten tussen levels (gezondheid, schade, vaardigheden). De hero groeit mee met het verhaal.
 - **Kwetsbaar:** gaat de hero neer, dan is hij tijdelijk uitgeschakeld en de blokkade staat open.
 
-**Mercer (S4).** De hero heet in beeld Cole "Pathfinder" Mercer (asset-id blijft `Commander`). Zijn knoppen komen uit data (`HeroAbilityDefinition`, twee slots: Shockwave op F/LT, Repair op G/RT voor 30 geld). Zijn pistool heeft een magazijn van 8 schoten en herlaadt in 1,2 s; de perk Quick Reload (beloning van level 4 van Crystal Plains) halveert het herladen, +27% schade per seconde.
+**Spencer (S4).** De hero heet in beeld Cole "Pathfinder" Spencer (tot 2026-11-08 Mercer; asset-id blijft `Commander`, interne bestands- en classnamen houden `Mercer`). Zijn knoppen komen uit data (`HeroAbilityDefinition`, twee slots: Shockwave op F/LT, Repair op G/RT voor 30 geld). Zijn pistool heeft een magazijn van 8 schoten en herlaadt in 1,2 s; de perk Quick Reload (beloning van level 4 van Crystal Plains) halveert het herladen, +27% schade per seconde.
 
 De exacte besturing van de hero (zelf lopen of aanwijzen) staat onder Open punten.
 

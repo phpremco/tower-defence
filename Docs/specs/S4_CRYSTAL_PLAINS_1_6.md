@@ -6,7 +6,7 @@ Source: `Docs/STORY.md` (continent 1 table, dialogues, hero upgrades, element ta
 
 - **`HeroAbilityKind`** (`Game.Hero`): `Shockwave = 0`, `GateRepair = 1`. Field Repair (S5) is appended later.
 - **`HeroAbilityDefinition`** (SO, id = asset name, `Data/Hero/Abilities/`): `_displayName`, `_kind`, `_cooldown`, `_moneyCost`, `_damage`, `_radius`, `_fraction`, `_targets` (TargetLayers), `_requiresPerk` (HeroPerkDefinition, null = always), `_icon` (Sprite, optional; without one the UI uses its `IconFactory` icon for the kind), `_tint`, `_sound` (SoundSet), `_impactVfx` (ImpactVfxDefinition), `_description`. `OnValidate` checks that the kind has the values it needs.
-- **`HeroDefinition`** loses the `_shockwave*`/`_repair*` fields and gains `_abilities : HeroAbilityDefinition[]` (slots 0 and 1) and `_perks : HeroPerkDefinition[]` (the perks this hero can earn). `_displayName = "Mercer"`; the asset stays `Commander`.
+- **`HeroDefinition`** loses the `_shockwave*`/`_repair*` fields and gains `_abilities : HeroAbilityDefinition[]` (slots 0 and 1) and `_perks : HeroPerkDefinition[]` (the perks this hero can earn). `_displayName = "Spencer"`; the asset stays `Commander`.
 - **Runtime.** `HeroAbilityState` (pure C#: remaining cooldown, `Ready`, `Tick`). `Commander` exposes `Abilities`, `CanUse(slot)`, `TryUse(slot)` and dispatches through a `switch` on the kind in a static `HeroAbilityEffects`, so it stays IL2CPP-plain without reflection. `AbilityUsed(slot, definition, position)` replaces `ShockwaveReleased`.
 - **Migration.** `Ability_Shockwave` (40 damage, 3.2 radius, 20 s, ground and air) and `Ability_GateRepair` (40 %, 25 s, costs 30) keep today's numbers exactly.
 - **Input.** The actions `Shockwave`/`EmergencyRepair` in `GameInput.inputactions` become `HeroAbility1`/`HeroAbility2`, keeping their GUIDs and bindings (F / LT, G / RT). `IInputProvider` gains `event Action<int> HeroAbilityPressed` and drops the two fixed events in the same step (one implementation, no test fakes). `HeroController.OnAbility(slot)` pays only when `CanUse` and `!InputBlocked`.
@@ -85,22 +85,22 @@ Speakers: `Speaker_Ora`, `Speaker_Voss`, `Speaker_Mercer`. Every dialogue is Onc
 
 | Id | Trigger | Lines |
 | --- | --- | --- |
-| Dlg_L01_Start | LevelStart | ORA: "Hostile wave approaching. Place turrets along the path." / Mercer: "And whatever gets through is mine." |
-| Dlg_L01_Wave2 | WaveStart 2 | (S1) ORA: "Second wave detected. Larger signature." / Mercer: "They're not testing us anymore." |
+| Dlg_L01_Start | LevelStart | ORA: "Hostile wave approaching. Place turrets along the path." / Spencer: "And whatever gets through is mine." |
+| Dlg_L01_Wave2 | WaveStart 2 | (S1) ORA: "Second wave detected. Larger signature." / Spencer: "They're not testing us anymore." |
 | Dlg_L01_Stone* | FirstSighting Cragback | ORA: "Heavy contact. Dense mineral hide, slow-moving." / Voss: "Use the cannon. Heavy shells for heavy hides." |
-| Dlg_L01_Boss | BossSpawn | (S1) ORA: "Large contact on the main road." / Mercer: "That one's mine too. Keep the guns on it." |
-| Dlg_L01_Won | LevelWon | (S1) ORA: "Perimeter holding. Wave repelled." / Mercer: "We woke something up down there." |
+| Dlg_L01_Boss | BossSpawn | (S1) ORA: "Large contact on the main road." / Spencer: "That one's mine too. Keep the guns on it." |
+| Dlg_L01_Won | LevelWon | (S1) ORA: "Perimeter holding. Wave repelled." / Spencer: "We woke something up down there." |
 | Dlg_L02_Start | LevelStart | Voss: "We rebuilt the laser module. It fires fast, but light. Perfect against swarms." |
-| Dlg_L02_Swarm* | WaveStart 6 | ORA: "Swarm signature. Estimated count: several hundred." / Mercer: "Light them up." |
+| Dlg_L02_Swarm* | WaveStart 6 | ORA: "Swarm signature. Estimated count: several hundred." / Spencer: "Light them up." |
 | Dlg_L03_Start | LevelStart | Voss: "I had anti-air built. Just to be safe. You never know." |
-| Dlg_L03_Air | FirstSighting Skyray | ORA: "Warning: air contacts." / Mercer: "They fly too?!" |
-| Dlg_L03_Won | LevelWon | Mercer: "Doc, that 'just to be safe' just saved us. Thanks." / Voss: "Honestly, I was hoping I'd be wrong." |
-| Dlg_L04_Start* | LevelStart | ORA: "Mixed signatures. Ground swarms and air contacts." / Mercer: "Guns low, flak high. Got it." |
+| Dlg_L03_Air | FirstSighting Skyray | ORA: "Warning: air contacts." / Spencer: "They fly too?!" |
+| Dlg_L03_Won | LevelWon | Spencer: "Doc, that 'just to be safe' just saved us. Thanks." / Voss: "Honestly, I was hoping I'd be wrong." |
+| Dlg_L04_Start* | LevelStart | ORA: "Mixed signatures. Ground swarms and air contacts." / Spencer: "Guns low, flak high. Got it." |
 | Dlg_L04_Boss* | BossSpawn StormMatriarch | ORA: "Large air contact. Smaller contacts detaching." |
-| Dlg_L05_Fast | FirstSighting Roller | ORA: "Unknown signal. Speed: three times the average." / Mercer: "What was that?! I couldn't even track it." |
+| Dlg_L05_Fast | FirstSighting Roller | ORA: "Unknown signal. Speed: three times the average." / Spencer: "What was that?! I couldn't even track it." |
 | Dlg_L06_Start | LevelStart | Voss: "The crystals never run dry. Never. This changes everything." / Voss: "For now: a mine with a serious blast, and a field that slows time around those fast little critters." |
 | Dlg_L06_Mine* | FirstUse Mine | ORA: "Land Mine armed. Proximity trigger active." |
-| Dlg_L06_Chrono* | FirstUse SlowField | ORA: "Chrono Field stable. Local time dilated." / Mercer: "Slow-motion bugs. I'll take it." |
+| Dlg_L06_Chrono* | FirstUse SlowField | ORA: "Chrono Field stable. Local time dilated." / Spencer: "Slow-motion bugs. I'll take it." |
 | Dlg_L06_Fast* | WaveStart 6 | ORA: "Fast contacts inbound. Recommend a Chrono Field on the main road." |
 
 The dialogues live in a new partial, `ProjectGenerator.Story.Crystal.cs`. The triggers go through the `CampaignLevelSpec.Story` tuples.
@@ -117,7 +117,7 @@ Each item has a view component and data (skins, `ImpactVfxDefinition`, tints), s
 | CragElder | 2.2× size, a ridge of orange crystal spires, brighter veins; Quake throws dust rings; existing boss direction cue. |
 | Shalebat | Slate membranes with an ochre edge and vein glow; slower, heavier flaps; ground shadow. |
 | Rift and nest | A sunken fissure with strata on the walls; veins at the bottom breathe slowly (7 s, no pulse); sparse dust motes; boulders, scree and warm crystals on the rims. A rift spawn splits the crack with a gravel spray and the creature claws its way up. |
-| Shockwave and Gate Repair | The existing ring, tinted from the ability's data, plus a dust ring. Repair: a 2 s beam from Mercer's wrist to the gate, green weld sparks, hex panels that rise and fade. |
+| Shockwave and Gate Repair | The existing ring, tinted from the ability's data, plus a dust ring. Repair: a 2 s beam from Spencer's wrist to the gate, green weld sparks, hex panels that rise and fade. |
 | Quick Reload | `BlasterRig` tips the pistol down, ejects a glowing cyan cell and clicks a new one in with a flash; with the perk it runs twice as fast with a yellow glint. |
 | Chrono Field | Counter-rotating blue-white rings, particles drifting up in slow motion; enemies inside get the existing slowed tint. |
 
@@ -172,7 +172,7 @@ The Low profile halves the particles and turns off the dust motes.
 ## Critic review v1 and curator decisions (2026-11-03) — override everything above
 
 1. **Stone in L1–6:** heavy and slow, no armour. Armour plates arrive in S5 (level 11), as the script reveals.
-2. **Quick Reload must not nerf Mercer.** Without the perk, the magazine and reload keep DPS equal to today (base fire interval 0.35 s → effective 0.35 s including reload). Shorten the shot interval so the reload pause is paid for. The perk then gives +25–30 % DPS. Add an EditMode test on effective DPS.
+2. **Quick Reload must not nerf Spencer.** Without the perk, the magazine and reload keep DPS equal to today (base fire interval 0.35 s → effective 0.35 s including reload). Shorten the shot interval so the reload pause is paid for. The perk then gives +25–30 % DPS. Add an EditMode test on effective DPS.
 3. **Roller teaser:** the teaser tuning gives an effective average speed of at least 2.5× Skitter (e.g. roll 3.5×, walk 1.5 s). Rewrite its Description (no "armoured"). Add a test on effective speed.
 4. **FirstUse:** S4 appends `StoryTriggerKind.FirstUse = 6` and a `PathObjectDefinition` filter on `StoryTrigger`.
 5. **Order:** S1 fully merged → S3 (pure layer + generator + C1_01–06 layouts; S3 leaves Stone OUT of its element list) → S4. S4 step 1 appends `Element.Stone`/`TerrainKind.Rift` and then adds Stone terrain to the C1 specs that use it. S4 edits S3's `LevelSpecs.Crystal.cs` content (species, unlocks, dialogue ids); S3 owns the layout fields.
@@ -201,7 +201,7 @@ Choices made while building, at curator level, for Remco or the curator to overr
    `LevelContext.HeroAbilityRequested`; `HeroController.TryAbility` checks the outcome and `InputBlocked`, readiness
    and the price, and pays only when the ability fires (EditMode-tested through that static).
 3. **Ability slots.** `Ability_Shockwave` (slot 0) and `Ability_GateRepair` (slot 1, 30 money) keep the old numbers.
-   A slot whose `_requiresPerk` is not unlocked stays empty. Repair look: a 2 s welding beam from Mercer to the gate
+   A slot whose `_requiresPerk` is not unlocked stays empty. Repair look: a 2 s welding beam from Spencer to the gate
    with green sparks (`HeroAbilityView`); shockwave adds a dust ring. Hex panels and the cell-eject animation are
    deferred (decision 12); the reload shows a short cyan glint at the gun, yellow with Quick Reload.
 4. **Air-only rule.** `TargetLayersExtensions.CanHit`: a weapon that aims only at the air never hits a creature that

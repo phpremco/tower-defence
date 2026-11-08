@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Editor
 {
-    /// <summary>Generator part for the hero (Cole "Pathfinder" Mercer; the asset id stays Commander), its weapons and its abilities.</summary>
+    /// <summary>Generator part for the hero (Cole "Pathfinder" Spencer, formerly Mercer; the asset id stays Commander), its weapons and its abilities.</summary>
     public static partial class ProjectGenerator
     {
         private const string AbilityFolder = DataRoot + "/Hero/Abilities";
@@ -31,13 +31,13 @@ namespace Game.Editor
             gun.ApplyModifiedPropertiesWithoutUndo();
 
             HeroAbilityDefinition shockwave = CreateAbility("Ability_Shockwave", "Shockwave", HeroAbilityKind.Shockwave, 20f, 0, 40f, 3.2f, 0f, new Color(0.4f, 0.8f, 1f),
-                "A ring of force around Mercer that hits everything close by, on the ground and in the air.");
+                "A ring of force around Spencer that hits everything close by, on the ground and in the air.");
             HeroAbilityDefinition repair = CreateAbility("Ability_GateRepair", "Repair", HeroAbilityKind.GateRepair, 25f, 30, 0f, 0f, 0.4f, new Color(0.35f, 0.9f, 0.5f),
-                "Mercer welds the gate he guards, giving back 40% of its health.");
+                "Spencer welds the gate he guards, giving back 40% of its health.");
 
             HeroDefinition hero = LoadOrCreate<HeroDefinition>($"{DataRoot}/Hero/Commander.asset");
             var heroProps = new SerializedObject(hero);
-            heroProps.FindProperty("_displayName").stringValue = "Mercer";
+            heroProps.FindProperty("_displayName").stringValue = "Spencer";
             heroProps.FindProperty("_weapon").objectReferenceValue = sword;
             heroProps.FindProperty("_rangedWeapon").objectReferenceValue = blaster;
             heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;

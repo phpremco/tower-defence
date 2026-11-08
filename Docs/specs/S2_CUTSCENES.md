@@ -31,20 +31,20 @@ Source: `Docs/STORY.md` ("Proloog", "Openingscutscene"), `Docs/STORY_ROADMAP.md`
 
 ## 3. Prologue and the 10 shots
 
-All text is ORA/Mercer/Voss dialogue (English, generator-written, proposed until Remco approves). Every model is a textured factory model (`ModelPalette`, `PropFactory.Dress`, the UnitLit rim shader), never a bare primitive. Glow comes from emission plus bloom, not full-screen pulses.
+All text is ORA/Spencer/Voss dialogue (English, generator-written, proposed until Remco approves). Every model is a textured factory model (`ModelPalette`, `PropFactory.Dress`, the UnitLit rim shader), never a bare primitive. Glow comes from emission plus bloom, not full-screen pulses.
 
 | # | Set / action | Reuses | New (basic-first) | Later via data |
 | --- | --- | --- | --- | --- |
 | P | Earth / `EarthDrift`, then Survey / `ScanPlanet` | `PlanetPainter.PaintClouds`/`PaintHalo`, the globe's atmosphere rim, baked globe maps for S-69-CRYS | `EarthPainter`: a grey-brown sphere, dull oceans, open-pit scars, a few dying amber city lights, a smog rim; slow orbit. Survey: scan rings sweep S-69-CRYS, crystal glints. ORA Hologram boxes, about 8 lines condensed from the prologue | `EarthSurface` texture, theme |
 | 1 | Orbit / `CapsulesFall` | S-69-CRYS globe, `DroneModelFactory` nav lights | `MothershipModelFactory` (spine, ring, engine glow, hull lights); `CapsuleModelFactory`; falling star = emissive head + `TrailRenderer` + `ParticleKit` sparks, orange→white | `Mothership`/`Capsule` prefabs |
-| 2 | Field / `PathfinderLands` | `LevelVisualBuilder.Build(FieldLevel)` (the real level 1 terrain, props, mist), `PropKind.Crystal`, `HeroView.BuildDisplayFigure` | capsule landing dust, `BeaconModel` (tripod, pulsing lamp, point light); Mercer walks and looks around via `CutsceneHeroMotion` | `Beacon` prefab, hero skin |
+| 2 | Field / `PathfinderLands` | `LevelVisualBuilder.Build(FieldLevel)` (the real level 1 terrain, props, mist), `PropKind.Crystal`, `HeroView.BuildDisplayFigure` | capsule landing dust, `BeaconModel` (tripod, pulsing lamp, point light); Spencer walks and looks around via `CutsceneHeroMotion` | `Beacon` prefab, hero skin |
 | 3 | Field / `BaseUnfolds` | `BuildBaseDisplay`, `GatePylon`/`GateBeam`, repair-drone welding sparks | staggered unfold (scale + rotation per module on `SetEvent`), fast sun sweep for the timelapse shadows | module prefabs |
 | 4 | Field / `DrillDown` | `Earthquakes` set, camera shake | `DrillModelFactory` (derrick, spinning bit), dust ring, ground cracks glow | `Drill` prefab |
 | 5 | Field / `DronesHarvest`, `CoreIgnites` | hauler drones (lit cargo pod, drill), harvest/fan loops | flock routes deposit→base; core emission and light ramp with bloom | `DroneCount`, hauler def |
 | 6 | Underground / `CrystalsTremble`, `EyesOpen` | crystal props, warm creature palette | dark cavern shell, crystals jitter on the drill's cue, `EyePairs` (≈300 High / 120 Low) emissive pairs open (scale Y) in a spreading wave; camera dives through dust | counts, theme |
-| 7 | Field / `GroundShivers` + `RadarOverlay` | `BaseAlerts`, `BossAlarms` | local dust ripple at Mercer's feet; UI radar (sweep, 1 → 10 → red blob of merging dots) | — |
+| 7 | Field / `GroundShivers` + `RadarOverlay` | `BaseAlerts`, `BossAlarms` | local dust ripple at Spencer's feet; UI radar (sweep, 1 → 10 → red blob of merging dots) | — |
 | 8 | Field / `SwarmPours` | `MenuCreature` (or `EnemyDisplayBuilder` + route mover) on the level road, `ElementNest` cracks, `CreatureVoice`/`CreatureChorus` | crack spawn points from the level's nests; the scream from `Screamer` | `Swarm` list |
-| 9 | Field / `GateStand` | `BlasterRig`, Voss Portrait, ORA Hologram | Mercer runs to the gate and draws | — |
+| 9 | Field / `GateStand` | `BlasterRig`, Voss Portrait, ORA Hologram | Spencer runs to the gate and draws | — |
 | 10 | Field / `Handoff` | — | camera to the `MatchLevelRig` pose, TMP title card, fade, load Level | — |
 
 **Hero motion:** `HeroView` animates from `Commander`. Step 3 adds a tiny `IHeroMotion` (IsWalking, velocity, weapon drawn) that `Commander` implements and `CutsceneHeroMotion` fakes. This needs review because it touches Hero.

@@ -1,4 +1,6 @@
 ﻿using Game.Core;
+using Game.Levels;
+using Game.Platform;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +26,8 @@ namespace Game.UI
 
         private GameObject _menu;
         private Button _optionsButton;
+        private Button _codexButton;
+        private CodexView _codex;
 
         // The diorama behind the menu replaces the flat starfield.
         protected override bool Starfield => false;
@@ -54,6 +58,11 @@ namespace Game.UI
             column.sizeDelta = new Vector2(ColumnWidth, 0f);
 
             Button start = UiKit.CreateButton(column, "Start", () => Go(SceneNames.WorldMap));
+            if (HasCodex())
+            {
+                _codexButton = UiKit.CreateButton(column, "Codex", OpenCodex);
+            }
+
             _optionsButton = UiKit.CreateButton(column, "Options", OpenOptions);
             if (Platform.CanQuit)
             {
@@ -74,6 +83,29 @@ namespace Game.UI
         {
             _menu.SetActive(false);
             gameObject.AddComponent<OptionsOverlay>().Open(this);
+        }
+
+        private static bool HasCodex() => Services.TryGet(out CodexCatalog catalog) && (catalog.Recipes.Count > 0 || catalog.Enemies.Count > 0);
+
+        // The general codex: the same book as in a level, with every creature, on its own canvas over the diorama.
+        private void OpenCodex()
+        {
+            if (_codex == null)
+            {
+                RectTransform root = UiKit.CreateRoot(transform, false);
+                _codex = gameObject.AddComponent<CodexView>();
+                Services.TryGet(out IInputProvider input);
+                _codex.Initialize(root, input, OnCodexClosed);
+            }
+
+            _menu.SetActive(false);
+            _codex.Open();
+        }
+
+        private void OnCodexClosed()
+        {
+            _menu.SetActive(true);
+            UiKit.Select(_codexButton);
         }
 
         private static void Quit()

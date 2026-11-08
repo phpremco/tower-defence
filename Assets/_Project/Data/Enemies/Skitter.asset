@@ -55,4 +55,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: c21501357c0b47e40975816108fbfb48, type: 2}
   _voice: {fileID: 11400000, guid: a784414339eab3c4a8902eafebda7316, type: 2}
-  _description: 'Ant swarm. Weak alone and dangerous in crowds: a shell thins a pack, but a long stream of ants asks for rate of fire along the road. Bites gates and the hero.'
+  _description: 'Ant swarm. Weak alone and dangerous in crowds: a shell thins a pack, but a long stream of ants asks for rate of fire along the road. Bites gates and Spencer.'

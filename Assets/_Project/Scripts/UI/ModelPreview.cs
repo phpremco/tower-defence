@@ -54,6 +54,7 @@ namespace Game.UI
         private Camera _camera;
         private RenderTexture _texture;
         private readonly List<Material> _owned = new List<Material>();
+        private readonly List<Light> _lights = new List<Light>(3);
         private readonly List<Vector3> _vertices = new List<Vector3>(4096);
         private readonly List<Vector3> _fitPoints = new List<Vector3>(64);
         private readonly HashSet<Renderer> _farLods = new HashSet<Renderer>();
@@ -456,6 +457,7 @@ namespace Game.UI
             AddLight("Rim", new Vector3(-20f, 160f, 0f), RimColor, RimIntensity);
             BuildStage();
             Isolate();
+            SetRigLive(isActiveAndEnabled);
         }
 
         // Lighting trial: the camera sees and the three lights touch only the preview layer, so no stage light reaches the
@@ -497,7 +499,31 @@ namespace Game.UI
             light.color = color;
             light.intensity = intensity;
             light.shadows = LightShadows.None;
+            _lights.Add(light);
             return light;
+        }
+
+        private void OnEnable() => SetRigLive(true);
+
+        private void OnDisable() => SetRigLive(false);
+
+        // A hidden window leaves the scene as it found it. Its stage lights are directional, so while they burn they
+        // reach the whole field (one can even become the main light), and its camera would render for nobody.
+        private void SetRigLive(bool live)
+        {
+            if (_camera == null)
+            {
+                return;
+            }
+
+            _camera.enabled = live;
+            foreach (Light light in _lights)
+            {
+                if (light != null)
+                {
+                    light.enabled = live;
+                }
+            }
         }
 
         private void Update()

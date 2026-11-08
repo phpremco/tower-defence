@@ -14,12 +14,13 @@ namespace Game.Core
                  "a development build also takes the -devmode command-line argument.")]
         [SerializeField] private bool _developerMode;
 
-        [Header("Lighting trial (round 15b)")]
+        // On by default since round 23a: with it off the codex's stage lights washed out the level after it closed.
+        [Header("Display stage lights (round 15b trial, default since round 23a)")]
         [Tooltip("Keeps the display stages' lights (codex, upgrade screen, drone cards) on their own layer and makes the " +
-                 "level's sun the scene's sun. Off is the look as it was: the stage lights reach the whole scene and one " +
+                 "level's sun the scene's sun. Off is the old look: the stage lights reach the whole scene and one " +
                  "of their key lights can become the main light.")]
-        [SerializeField] private bool _isolatePreviewLights;
-        [Tooltip("The layer the display stages render on while the trial is on; no other object uses it.")]
+        [SerializeField] private bool _isolatePreviewLights = true;
+        [Tooltip("The layer the display stages render on while this is on; no other object uses it.")]
         [SerializeField] [Range(8, 31)] private int _previewLayer = 31;
 
         public bool UnlockAllWeapons => _unlockAllWeapons;

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroPerkDefinition
   _displayName: Field Repair
   _slot: 2
-  _description: Mercer repairs the gate and the turrets around him.
+  _description: Spencer repairs the gate and the turrets around him.

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroPerkDefinition
   _displayName: Quick Reload
   _slot: 0
-  _description: Mercer reloads his pistol in half the time.
+  _description: Spencer reloads his pistol in half the time.
   _rangedIntervalMultiplier: 1
   _reloadMultiplier: 0.5

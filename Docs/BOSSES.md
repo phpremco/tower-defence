@@ -492,7 +492,7 @@ interpolated per frame at 30 fps). Clips stay in model metres; `BossClip` multip
 - It leaves when the gate falls (at once) or, when its mechanic calls (Gravemaw's next burrow), at the end of a loop, since
   the dismount starts in the loop's first pose. States for probes: `ClimbingGate` (mount), `OnGate`, `ClimbingDown`.
 - Fix found on the way: the structure ahead was "the nearest blocker", which can be the hero holding the post (`HeroTarget`
-  blocks walkers too). Gravemaw climbed onto Mercer in the first probe. `ContinentBossBrain.Ahead` now only takes gates
+  blocks walkers too). Gravemaw climbed onto Spencer in the first probe. `ContinentBossBrain.Ahead` now only takes gates
   (towers) and the base.
 - The Frost Warden climbs its ice block with the rock climb (a block is not a beam), as before.
 
@@ -534,7 +534,7 @@ every difficulty): Gravemaw 2300, Cinder Matriarch 1450, Frost Warden 1300, Rotb
 difficulty and costs the gates 750-2400 hp; it never reached the base against a mixed defence (round 9: it skipped the
 defence and won with 85 % left).
 
-## Round 12: Gravemaw's 3D fissure, rounded trail ends, wide bodies inside the kerbs, Mercer's boss intros (2026-11-05)
+## Round 12: Gravemaw's 3D fissure, rounded trail ends, wide bodies inside the kerbs, Spencer's boss intros (2026-11-05)
 
 **Gravemaw's fissure is real geometry** (Blender round 34, `Exports/Gravemaw_Fissure`). `FissureKitView` lays the kit along
 the drawn crack line (the smoothed, blurred `CrackPath` route): `Fissure_Start` at the dive hole, straights A/B/C behind it,
@@ -563,12 +563,12 @@ centre. A body that lies on the ground (`GroundBody`: Oozer, Slime Monarch) narr
 **Boss intros** (Docs/BOSS_INTROS.md): `BossIntroDefinition` per continent boss on the story (`Data/Story/Intros`), lines
 from the doc, curator barks for later meetings. First meeting (`ContinentBossBrain.FirstMeeting`, the Codex seen flag read
 before the spawn sets it): when the boss is out (Surfacing, Bursting, Roar or Road) the game slows to 0.25 (never pauses),
-the camera glides to the boss (with Mercer when he is within 16 m), Mercer turns to it and plays Startled, holds the aim,
+the camera glides to the boss (with Spencer when he is within 16 m), Spencer turns to it and plays Startled, holds the aim,
 lowers the gun (Lower_Weapon) and holsters; his line shows over his head, the visor cut-in (a camera on his head bone into a
 texture, rim light in the boss's tint, the visor hides his face) slides in at the right, the Codex note shows under the boss
 bar, then ORA and Voss answer in their own dialogue box (fast typing, auto-advance). Ends within 5.8 s or on any button
 (keyboard, mouse, gamepad), at once on a pause; never during a held story box. Later meetings: a bark from the pool. Mid-fight
-barks at the signature moments (`BossMoments`), with Point_Shout on Mercer's upper body, 14 s per boss and 6 s between any two
+barks at the signature moments (`BossMoments`), with Point_Shout on Spencer's upper body, 14 s per boss and 6 s between any two
 (`BarkCooldown`); none while he is down.
 
 ## Round 13a: one ribbon per trail, the Sealed One's furrow only behind it (2026-11-05)

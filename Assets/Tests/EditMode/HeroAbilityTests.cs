@@ -263,7 +263,7 @@ namespace Game.Tests
         {
             var hero = AssetDatabase.LoadAssetAtPath<HeroDefinition>(HeroPath);
             Assert.IsNotNull(hero, "run Tools/Generate/Scenes and Starter Data");
-            Assert.AreEqual("Mercer", hero.DisplayName);
+            Assert.AreEqual("Spencer", hero.DisplayName);
             Assert.AreEqual(2, hero.Abilities.Length);
 
             HeroAbilityDefinition shockwave = hero.Abilities[0];

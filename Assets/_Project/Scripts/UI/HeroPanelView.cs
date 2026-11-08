@@ -281,7 +281,7 @@ namespace Game.UI
             _postButton.gameObject.SetActive(true);
             ShowAbilities(false);
             PlaceColumns(1);
-            _postLabel.text = "Move hero here";
+            _postLabel.text = $"Move {HeroNaming.Of(_context)} here";
             _postLabel.color = TextColor;
         }
 

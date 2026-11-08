@@ -3689,3 +3689,72 @@ Gameplay:
 13. Check that the balance bot uses Spencer's pulse ability (the ledger counts his blade and gun DPS only).
 
 Remco: levels 1-2 play much better after the balance work.
+
+## Round 23a: codex, lighting, Spencer, laser at speed, armour read (2026-11-08)
+
+Not committed. Six small visible fixes from Remco's playtest notes; no balance data touched.
+
+1. **Codex holds the camera.** `LevelContext.BlockCamera/UnblockCamera/CameraBlocked` (an owner set like the clock's holds);
+   the codex blocks it while open and `CameraPanZoom` then skips the player's zoom and pan (a glide still finishes). The
+   pause menu does not block it. Checked in play (`Tools/PlayTest/r23a_codex.sh`): held zoom and pan keys with the codex
+   open leave the camera at size 7.000; after closing the same keys zoom to 18.4 and pan.
+2. **Lighting after the codex (root cause).** Each `ModelPreview` builds a rig with three *directional* lights (Key 1.6 with
+   soft shadows, Fill, Rim). Directional lights reach the whole scene wherever they stand, and the rigs stayed live after
+   the codex closed: 9 extra directional lights on the field, and URP picked a preview Key as the main light
+   (`RenderSettings.sun` reported `PreviewRig/Key`). Fix: (a) a preview switches its camera and lights off whenever it is
+   disabled (`OnEnable/OnDisable`), which covers every overlay that uses previews (codex, upgrade screen, drone cards);
+   (b) the round-15b isolation (`PlaytestSettings._isolatePreviewLights`) is now on by default: previews render and light
+   only layer 31, and the theme's sun is `RenderSettings.sun`. Measured on C1_02: before opening 2 directional lights,
+   mean RGB 5.8/6.3/11.0; codex open 5 (the 3 of the visible preview, layer 31 only); after closing 2 lights, 5.5/6.0/10.6
+   (same look). The old leak reproduced on purpose (lights on, mask everything, sun cleared): 11 lights, 19.7/16.4/28.9,
+   the washed-out purple field Remco saw. **The washed-out view Remco saw during this session was that deliberate
+   reproduction** (`r23a_oldleak.cs`, a few seconds, right after the keyboard-zoom test had zoomed out); zooming alone does
+   not change the look (`r23a_zoom.sh`: zoom 2/3.2/4.5 and 0.9 all keep 2 lights, fog 0.01, the theme sun, similar
+   brightness). Nothing else writes fog, ambient or the volumes at runtime (only `ThemeLighting`/`SkyProbe` at level build
+   and the cutscene `SpaceKit`).
+3. **In-level codex lists the level's own creatures.** `Game.Levels.LevelRoster`: the enemies of the level's waves on the
+   played difficulty (all difficulties when that one has none), plus the minions its bosses' abilities call in; the codex
+   filters the catalog with it (bosses still only once met). C1_02 Medium shows Skitter, Wisp, Brood Mother, Cragback.
+   **Main menu: new "Codex" button** (between Start and Options) opens the same `CodexView` with every creature
+   (`CodexView.Initialize(root, input, closed)`, no level, no clock). Rows now note "plated"/"armoured".
+4. **Spencer.** Every displayed string: hero display name, speaker name, upgrade group and texts, perk and ability texts,
+   cutscene/intro dialogue ("Cole Spencer, call sign Pathfinder" in the orbit cutscene: Cole kept as his first name),
+   bestiary and boss counter texts, the result line (`HeroNaming`, from data). The generic "Hero" label is gone: the left
+   panel's header is his name and its second line the post he holds; "Spencer down m:ss", "Send Spencer"/"Spencer here",
+   "Move Spencer here", controls text, codex lines all use `HeroNaming` (the name comes from `HeroDefinition`, never from
+   code). Generator sources changed with the assets, so a regeneration keeps Spencer. Docs: STORY, CUTSCENES_CONTINENTS,
+   BOSS_INTROS, BOSSES, GAME_DESIGN, MODEL_TODO, STORY_ROADMAP, specs S1/S2/S4. Internal names unchanged: `Mercer*` assets,
+   `Speaker_Mercer`, `MercerArt`, `CutsceneAction.MercerReacts`, Blender scripts, code comments, earlier STATUS rounds.
+   `Tools/PlayTest/upgrade_shots.sh` takes the subject `Spencer` now (group name).
+5. **Laser at x2/x3.** Two view causes: a shot could spawn and land inside one frame, so `LateUpdate` never drew it and
+   the line kept the previous shot's points; and the 0.3 s fade ran in game time (0.1 s at x3). Now the impact stretches
+   the beam to the hit before it fades, and beams and muzzle flashes (all towers) age on `FeedbackClock.DeltaTime` = the
+   slower of game and real time (a pause or slow-motion still holds them). No change to the shot rate or damage.
+6. **Armour read (Remco's design: a blue bar over the green one).** `Game.Combat.ProtectionBar`: armour is a pool, so the
+   blue line is the armour left; plating never wears off, so a plated creature carries a full blue line all its life; both:
+   armour first, then the plates. Creatures with armour or plating show both bars from the start (others only once hurt).
+   The line is now a clear blue (0.2, 0.5, 1). `Health.PlatingStopped(share)` lets the view react: the blue line flares
+   white-blue and hot sparks glance off (more for a hit the plates stopped more of), driven by `EnemyDefinition` plating,
+   never by species. Codex: the row says "plated", the entry explains the blue line. There are no damage numbers in the
+   game, so no number colour was added.
+
+Tests: new `LevelRosterTests` (4) and `ProtectionBarTests` (4); hero-name asserts updated to Spencer.
+Open: the laser beam and the blue line were not caught in a close still at x3 (the probe enemies died at the first gate
+before the camera framed them); Remco please look at the Laser Turret at x3 and a Cragback in C1_01/C1_02. The display
+font draws K like H ("SHITTER" for Skitter, "CODEH" for Codex in the codex headings): worth a font check.
+Scripts: `Tools/PlayTest/r23a_codex.sh`, `r23a_laser.sh`, `r23a_zoom.sh` (+ `r23a_cam.cs`, `r23a_oldleak.cs`,
+`r23a_lum.cs`, `r23a_speed.cs`, `r23a_zoomset.cs`).
+
+### Pending Unity import: Spencer look (2026-11-08)
+
+Blender output committed (build_mercer2.py, ArtSource/Exports/Mercer, previews in ArtSource/Previews/Spencer). Next Unity agent:
+re-run the story/hero Blender sync (stage 3b, BlenderStoryBuilder); add `{ BlenderStoryCatalog.HeroAsset, (2048, 1024) }` to
+the map-size dictionary in BlenderModelImporter.cs; check that detail tiling (weave 136, ceramic 56.7) comes from the report and
+is not hardcoded; check the bust framing and the 1.75 m antenna in play.
+Test totals: EditMode 682 tests, 626 passed, 3 failed, 53 skipped. The failures are balance-data checks only:
+`BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` (known) and two `ContinentFinaleTests` checks
+(`BossHealthShare_...`: the Psycho bosses ask about 1.35x Medium's share of the cap; `EveryContinentBoss_AtItsFinale_...`:
+Gravemaw, Rotbloom and FrostWarden are too hard on Medium/Hard/Psycho in the ledger). Round 22f listed one ContinentFinale
+failure; this round touched no balance data or ledger code, so the balance round should check the second one.
+`BalanceAcceptanceTests` was skipped. PlayMode smoke `BossIntroSmokeTests` passed. 0 compile errors, 0 warnings, clean
+console after the play runs. Save: `progress.json` MD5 ae9223b8 before and after every play run; dev backup untouched.
