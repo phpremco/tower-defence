@@ -3798,3 +3798,52 @@ two `ContinentFinaleTests`), 53 skipped. PlayMode smoke `BossIntroSmokeTests` pa
    the permanent plating model; the balance model (ledger, calibration) must follow, so it belongs to the balance round.
 5. Spencer still reads as basic, not a warrior: Blender pass 2 is running with that brief.
 6. Open question to Remco: the display font's 5 and S look alike.
+
+## Round 23c: gate repair flicker, result-screen text (2026-11-08)
+
+Not committed. No balance data touched.
+
+1. **Gate flicker after a repair (two root causes, both in the view).**
+   (a) *Collapsed pose as rest pose.* The gate model has no idle cycle, so between clips every mixer weight is 0 and the
+   Animator writes its default values. The collapse clip holds its last frame and the model is then switched off for the
+   wreck; an Animator re-captures its defaults from the pose it finds when it is switched on again, so a rebuilt gate's
+   "rest" was the collapsed pose: whole while the Build, Hit or Repair clip played, keeled over between them (the
+   broken/whole flicker on every hit). Seen in play: full health, no clip, pylons lying flat. Fix: `GateArtRig` sets
+   `Animator.writeDefaultValuesOnDisable` on the gate model, so the rest pose is written back when it is hidden and the
+   rebuilt gate rebinds to its whole pose.
+   (b) *One threshold, two drivers.* `GateView` flipped the damaged look (`_Damage` overlay, loose hex panels, Repair clip,
+   stuttering field) on `fraction < 0.5` at every health event; a repair drone heals every frame while creatures hit in
+   chunks, so at ~50 % the look flipped on each hit and heal tick (logged: overlay on/off and panels off/on four times in
+   16 frames). Fix: `Game.Towers.GateDamageLook` (plain class) is the one damaged state for the whole view, with a band:
+   damaged below `DamagedBelow`, whole again at `DamagedBelow + RecoverMargin` (new `GateArtDefinition._recoverMargin`,
+   default 0.15, validated) or at once when one repair (hero, bought) lifts it past the line by at least the band. Also the
+   loose panels now follow that state explicitly (`LateTick` restores their rest scale while whole and no clip plays):
+   before, a whole gate could keep its panels off after a damaged frame.
+   Checked in play (`Tools/PlayTest/r23c_gate.sh`, C1_02, waves off): full repair from 30 %; wreck and rebuild (stills
+   show the gate standing whole after the rebuild, before the fix it lay collapsed); a per-frame trickle through
+   `Tower.Repair` (what the repair drone calls) with hits every 4 frames around 50 %: the look stays damaged throughout
+   (0 flips; before: 4); the hero's `Restore(0.35)` from 22 % turns it whole at once. The real drone flight was not
+   exercised, only its repair call.
+2. **Result-screen text.** At the current Game view (1920x1080) and the 1280x720 capture the line already wrapped inside
+   its 1060-unit box and the panel; the overflow is reproducible only where the safe area is narrower than the
+   1180-unit panel (canvas scaler matches width/height halfway, so a window narrower than about 2:3 squeezes it).
+   Fix: `Game.UI.FitInsideParent` scales a fixed-size overlay panel down as a whole to fit the safe area with a margin
+   (never up); used by the result panel and the pause menu. Result texts keep a 60-unit inset from the panel edges; the
+   reward notice gets a taller box when no weapon panel sits below it and shrinks no further than 20 px. Pause menu:
+   "Progress in this level will be lost." (30 px) and the page headers (56 px) were `Overflow` texts in a 640-unit page
+   and now wrap and best-fit (`UiKit.WrapInBox`, shared with `CreateFixedText`). The other display-font texts
+   (`CreateFixedText`) already wrap in their boxes; the sweep (`r23c_texts.cs`) flagged none outside its box or the
+   screen on the result screen, the pause quit question and the codex.
+
+Tests: new `GateDamageLookTests` (8) and `OverlayFitTests` (4).
+Scripts: `Tools/PlayTest/r23c_gate.sh` (+ `r23c_gate.cs`), `r23c_result.sh` (+ `r23c_result.cs`, `r23c_texts.cs`,
+`r23c_pause.cs`, `r23c_gameview.cs`).
+
+**Tests (round 23c): not completed.** The code compiled clean after every change (0 errors, 0 warnings in the console).
+The full EditMode run (694 tests) was started through the CLI with a 1200 s client timeout; the suite took longer, the
+pipeline cancelled the run when the client gave up ("Ignoring RunFinished from cancelled run", 15:37), so no totals were
+collected, and since then the editor answers no pipeline command (`editor_status` times out; the Unity process is idle
+and responding, no modal window). Next agent: once the editor answers again (focus or restart it), run
+`unity command run_tests --mode EditMode --detach` (or a longer timeout) and the PlayMode smoke `BossIntroSmokeTests`;
+expected new passes: `GateDamageLookTests` (8), `OverlayFitTests` (4). Revert `Tools/PlayTest/acceptance.txt`,
+`calibration.txt`, `plans_summary.txt` afterwards. Save: `progress.json` MD5 ae9223b8 before and after every play run.

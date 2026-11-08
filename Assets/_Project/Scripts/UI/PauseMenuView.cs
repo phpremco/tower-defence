@@ -16,6 +16,8 @@ namespace Game.UI
     public sealed class PauseMenuView : MonoBehaviour
     {
         private const float PanelWidth = 760f;
+        // The panel keeps this far from the safe area edges and shrinks as a whole on a window narrower than it.
+        private const float SafeMargin = 24f;
         private const float PanelHeight = 720f;
         private const float ButtonGap = 20f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.65f);
@@ -64,6 +66,7 @@ namespace Game.UI
 
             Image panel = UiKit.CreatePanel(dim.rectTransform, "PausePanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, PanelTint);
             panel.rectTransform.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+            FitInsideParent.Add(panel.rectTransform, SafeMargin);
 
             _mainPage = CreatePage(panel.rectTransform, "Paused");
             RectTransform main = _mainPage.GetComponent<RectTransform>();
@@ -76,6 +79,7 @@ namespace Game.UI
             _confirmPage = CreatePage(panel.rectTransform, "Quit to the map?");
             RectTransform confirm = _confirmPage.GetComponent<RectTransform>();
             Text warning = UiKit.CreateText(confirm, "Progress in this level will be lost.", 30, TextAnchor.MiddleCenter);
+            UiKit.WrapInBox(warning);
             warning.gameObject.AddComponent<LayoutElement>().preferredHeight = 70f;
             AddButton(confirm, "Yes, quit", QuitToMap);
             _keepPlaying = AddButton(confirm, "No, keep playing", ShowMain);
@@ -135,6 +139,7 @@ namespace Game.UI
             layout.childForceExpandWidth = true;
 
             Text header = UiKit.CreateText(rect, title, 56, TextAnchor.MiddleCenter);
+            UiKit.WrapInBox(header);
             header.gameObject.AddComponent<LayoutElement>().preferredHeight = 110f;
             return page;
         }

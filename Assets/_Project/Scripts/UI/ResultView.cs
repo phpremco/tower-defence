@@ -24,6 +24,14 @@ namespace Game.UI
         private const int UnlockLineSize = 30;
         private const float ButtonWidth = 340f;
         private const float DefeatDelaySeconds = 3.2f;
+        // Text keeps this far from the panel edges, and the panel this far from the safe area edges.
+        private const float TextInset = 60f;
+        private const float SafeMargin = 24f;
+        private const float RewardTop = -400f;
+        private const float RewardHeight = 100f;
+        // Without a weapon below it the reward text may use the room down to the buttons.
+        private const float RewardHeightAlone = 200f;
+        private const int RewardMinSize = 20;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.7f);
         private static readonly Color VictoryTint = new Color(0.12f, 0.26f, 0.5f, 0.98f);
         private static readonly Color DefeatTint = new Color(0.4f, 0.12f, 0.14f, 0.98f);
@@ -34,6 +42,7 @@ namespace Game.UI
 
         private LevelContext _context;
         private RectTransform _safeRoot;
+        private FitInsideParent _fit;
         private GameObject _root;
         private bool _shown;
         private bool _waiting;
@@ -125,12 +134,13 @@ namespace Game.UI
             Image panel = UiKit.CreatePanel(dim.rectTransform, "ResultPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, result.Won ? VictoryTint : DefeatTint);
             RectTransform rect = panel.rectTransform;
             rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+            _fit = FitInsideParent.Add(rect, SafeMargin);
 
-            Text title = UiKit.CreateFixedText(rect, result.Won ? "Victory" : "Defeat", 96, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(PanelWidth, 120f));
+            Text title = UiKit.CreateFixedText(rect, result.Won ? "Victory" : "Defeat", 96, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(PanelWidth - 2f * TextInset, 120f));
             title.color = result.Won ? Gold : new Color(1f, 0.55f, 0.5f);
 
             string subtitle = $"{_context.Level.DisplayName}  -  {_context.Difficulty.DisplayName}";
-            UiKit.CreateFixedText(rect, subtitle, 36, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -150f), new Vector2(PanelWidth, 50f)).color = Muted;
+            UiKit.CreateFixedText(rect, subtitle, 36, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -150f), new Vector2(PanelWidth - 2f * TextInset, 50f)).color = Muted;
 
             Button first = result.Won ? BuildWin(rect, result) : BuildLoss(rect);
             BuildButtons(rect, result.Won);
@@ -160,7 +170,10 @@ namespace Game.UI
                 rewards += "\n" + unlocks;
             }
 
-            Text rewardText = UiKit.CreateFixedText(rect, rewards, twoLines ? UnlockLineSize : 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -400f), new Vector2(PanelWidth - 120f, 100f));
+            float rewardHeight = result.NewTower == null ? RewardHeightAlone : RewardHeight;
+            Text rewardText = UiKit.CreateFixedText(rect, rewards, twoLines ? UnlockLineSize : 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, RewardTop), new Vector2(PanelWidth - 2f * TextInset, rewardHeight));
+            // Long notices wrap first and only then shrink, never below a size the display font still reads at.
+            rewardText.resizeTextMinSize = Mathf.Min(rewardText.resizeTextMaxSize, RewardMinSize);
             rewardText.color = result.RewardsAlreadyEarned ? Muted : Color.white;
 
             if (result.NewTower != null)
@@ -204,7 +217,7 @@ namespace Game.UI
 
         private static Button BuildLoss(RectTransform rect)
         {
-            UiKit.CreateFixedText(rect, "The base has fallen.\nUpgrade your defences and try again.", 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -280f), new Vector2(PanelWidth, 200f));
+            UiKit.CreateFixedText(rect, "The base has fallen.\nUpgrade your defences and try again.", 40, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -280f), new Vector2(PanelWidth - 2f * TextInset, 200f));
             return null;
         }
 
@@ -299,11 +312,11 @@ namespace Game.UI
             {
                 t += Time.unscaledDeltaTime;
                 float eased = Mathf.SmoothStep(0.8f, 1f, Mathf.Clamp01(t / PopSeconds));
-                panel.localScale = Vector3.one * eased;
+                panel.localScale = Vector3.one * (eased * _fit.Scale);
                 yield return null;
             }
 
-            panel.localScale = Vector3.one;
+            panel.localScale = Vector3.one * _fit.Scale;
             if (!result.Won)
             {
                 yield break;

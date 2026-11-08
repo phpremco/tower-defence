@@ -14,6 +14,7 @@ namespace Game.Towers
         private const string FieldSocket = "Field";
         private const string SparkPrefix = "Spark";
         private const string DamageSuffix = "_Damage";
+        private const float LooseRestEpsilon = 0.0001f;
 
         private readonly GateArtDefinition _art;
         private readonly Transform _holder;
@@ -22,6 +23,7 @@ namespace Game.Towers
         private ArtModel _wreck;
         private Renderer[] _overlay = new Renderer[0];
         private Transform[] _loose = new Transform[0];
+        private Vector3[] _looseRest = new Vector3[0];
         private int _hit = -1;
         private int _repair = -1;
         private int _build = -1;
@@ -54,6 +56,9 @@ namespace Game.Towers
         /// <summary>Health share below which the gate shows its damage.</summary>
         public float DamagedBelow => _art.DamagedBelow;
 
+        /// <summary>How far above the damage line a damaged gate must heal before it looks whole again.</summary>
+        public float RecoverMargin => _art.RecoverMargin;
+
         /// <summary>Wears the model of a level; a new level replaces the old model.</summary>
         public void ShowLevel(int levelIndex)
         {
@@ -66,6 +71,7 @@ namespace Game.Towers
             bool hidden = _model != null && !_model.Root.gameObject.activeSelf;
             _model?.Dispose();
             _model = ArtModel.Create(_holder, wanted, ownMaterial: false);
+            WriteRestPoseOnDisable(_model.Root);
             _model.SetActive(!hidden);
             _hit = wanted.IndexOf(ModelClipRole.Hit);
             _repair = wanted.IndexOf(ModelClipRole.Repair);
@@ -73,6 +79,7 @@ namespace Game.Towers
             _collapse = wanted.IndexOf(ModelClipRole.Death);
             _overlay = _model.RenderersEndingWith(DamageSuffix);
             _loose = FindAll(_art.LooseParts);
+            _looseRest = RestScales(_loose);
             Sparks = _model.Numbered(SparkPrefix);
             Transform field = _model.Find(FieldSocket);
             FieldHeight = field != null ? _parent.InverseTransformPoint(field.position).y : FieldHeight;
@@ -163,25 +170,62 @@ namespace Game.Towers
             }
         }
 
-        // After the clips have posed the rig: the loose panels stay off while the gate is hurt, unless a clip that puts
-        // them back (repair, build) is playing.
+        // After the clips have posed the rig, the panels follow the damage state and nothing else: off while the gate is
+        // hurt (unless a clip that puts them back, repair or build, is playing), on at their rest scale while it is whole
+        // and no clip is on top. The gate has no idle cycle, so with no clip playing the animation writes nothing and the
+        // panels used to keep whatever the last clip or the last damaged frame left (round 23c: a whole gate without panels).
         public void LateTick()
         {
-            if (_model == null || !_damaged || _collapsing)
+            if (_model == null || _collapsing)
             {
                 return;
             }
 
             ModelClipPlayer player = _model.Player;
-            if (player != null && (player.IsPlaying(ModelClipRole.Repair) || player.IsPlaying(ModelClipRole.Build)))
+            if (_damaged)
             {
-                return;
+                if (player == null || !(player.IsPlaying(ModelClipRole.Repair) || player.IsPlaying(ModelClipRole.Build)))
+                {
+                    SetLoose(false);
+                }
             }
+            else if (player == null || player.Once < 0)
+            {
+                SetLoose(true);
+            }
+        }
 
+        private void SetLoose(bool shown)
+        {
             for (int i = 0; i < _loose.Length; i++)
             {
-                _loose[i].localScale = Vector3.zero;
+                _loose[i].localScale = shown ? _looseRest[i] : Vector3.zero;
             }
+        }
+
+        // The panels as the model was built, whole; a bone exported collapsed to nothing counts as unscaled.
+        // The collapse holds its last frame and the model is then switched off for the wreck. An Animator takes the pose it
+        // finds on being switched on again as its rest pose, so a rebuilt gate fell back to the collapsed pose whenever no
+        // clip was playing: whole during a build, hit or repair clip, broken between them (round 23c, the repair flicker).
+        // Writing the rest pose back on disable makes the rebuilt gate rebind to its whole pose.
+        private static void WriteRestPoseOnDisable(Transform root)
+        {
+            foreach (Animator animator in root.GetComponentsInChildren<Animator>(true))
+            {
+                animator.writeDefaultValuesOnDisable = true;
+            }
+        }
+
+        private static Vector3[] RestScales(Transform[] parts)
+        {
+            var rest = new Vector3[parts.Length];
+            for (int i = 0; i < parts.Length; i++)
+            {
+                Vector3 scale = parts[i].localScale;
+                rest[i] = scale.sqrMagnitude < LooseRestEpsilon ? Vector3.one : scale;
+            }
+
+            return rest;
         }
 
         public void Dispose()

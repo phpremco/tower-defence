@@ -24,6 +24,7 @@ namespace Game.Towers
         private const float FieldScrollSpeed = 0.6f;
         private const float FieldEmission = 1.4f;
         private const float FlickerBelow = 0.5f;
+        private const float FlickerRecoverMargin = 0.15f;
         private const float FlickerSpeed = 23f;
         private const float CollapseDelay = 0.15f;
         private const float CollapseSeconds = 1.1f;
@@ -84,6 +85,7 @@ namespace Game.Towers
         private GateArtRig _art;
         private float _lastFraction = 1f;
         private float _sparkClock;
+        private GateDamageLook _damage;
 
         public void Initialize(Tower tower, float width, Color colour, GateArtDefinition art = null)
         {
@@ -97,6 +99,7 @@ namespace Game.Towers
                 _tower.LevelChanged += OnLevelChanged;
             }
 
+            _damage = _art != null ? new GateDamageLook(_art.DamagedBelow, _art.RecoverMargin) : new GateDamageLook(FlickerBelow, FlickerRecoverMargin);
             Build();
             _tower.StateChanged += OnStateChanged;
             OnStateChanged(tower);
@@ -214,9 +217,12 @@ namespace Game.Towers
                 {
                     _art.Hit();
                 }
-
-                _art.SetDamaged(fraction < _art.DamagedBelow);
             }
+
+            // One damaged state for the whole view (overlay, panels and the stuttering field), with a band between going in and
+            // coming out so a repair trickled in against hits does not flip the look on every tick.
+            _damage.Update(fraction, tower.IsWrecked);
+            _art?.SetDamaged(_damage.IsDamaged);
 
             _lastFraction = fraction;
         }
@@ -331,7 +337,7 @@ namespace Game.Towers
             // The field weakens with the gate and starts to stutter once it is badly hurt.
             float fraction = _tower.Health.Fraction;
             float strength = 0.55f + 0.45f * fraction;
-            if (fraction < FlickerBelow)
+            if (_damage.IsDamaged)
             {
                 float stutter = Mathf.PerlinNoise(Time.time * FlickerSpeed, 0.5f);
                 strength *= stutter > 0.35f ? 1f : 0.25f;

@@ -154,13 +154,7 @@ namespace Game.UI
                 glow.effectDistance = OutlineDistance;
             }
 
-            // A fixed box is a promise: the text wraps inside it and shrinks when it still would not fit, so no
-            // line ever runs past a panel edge, whatever the copy says.
-            label.horizontalOverflow = HorizontalWrapMode.Wrap;
-            label.verticalOverflow = VerticalWrapMode.Truncate;
-            label.resizeTextForBestFit = true;
-            label.resizeTextMaxSize = size;
-            label.resizeTextMinSize = Mathf.Max(FitMinFontSize, size / 2);
+            WrapInBox(label);
 
             RectTransform rect = label.rectTransform;
             rect.anchorMin = anchor;
@@ -169,6 +163,19 @@ namespace Game.UI
             rect.anchoredPosition = offset;
             rect.sizeDelta = dimensions;
             return label;
+        }
+
+        /// <summary>
+        /// A box is a promise: the text wraps inside its rect and shrinks when it still would not fit, so no line ever runs
+        /// past a panel edge, whatever the copy says. Down to half its size, never below the smallest readable size.
+        /// </summary>
+        public static void WrapInBox(Text label)
+        {
+            label.horizontalOverflow = HorizontalWrapMode.Wrap;
+            label.verticalOverflow = VerticalWrapMode.Truncate;
+            label.resizeTextForBestFit = true;
+            label.resizeTextMaxSize = label.fontSize;
+            label.resizeTextMinSize = Mathf.Max(FitMinFontSize, label.fontSize / 2);
         }
 
         /// <summary>A vertical stack centred on screen. Navigation between children follows layout order.</summary>

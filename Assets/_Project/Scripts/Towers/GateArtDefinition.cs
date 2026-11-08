@@ -26,6 +26,8 @@ namespace Game.Towers
         [Header("Damage")]
         [Tooltip("Health share below which the damage overlay shows and the loose panels fall off.")]
         [SerializeField] [Range(0.05f, 0.95f)] private float _damagedBelow = 0.5f;
+        [Tooltip("How far above that line the health must climb before the gate looks whole again, so a repair trickled in against hits does not flip the look on every tick.")]
+        [SerializeField] [Range(0f, 0.5f)] private float _recoverMargin = 0.15f;
         [Tooltip("The panel bones that fall off when the gate is damaged (scaled to zero until the Repair clip pops them back).")]
         [SerializeField] private string[] _looseParts = new string[0];
 
@@ -33,6 +35,7 @@ namespace Game.Towers
         public float ModelWidth => _modelWidth;
         public float FieldShare => _fieldShare;
         public float DamagedBelow => _damagedBelow;
+        public float RecoverMargin => _recoverMargin;
         public string[] LooseParts => _looseParts;
 
         /// <summary>The look of a level: that level's model, or the newest one below it.</summary>
@@ -59,6 +62,11 @@ namespace Game.Towers
             if (_wreck == null)
             {
                 Debug.LogWarning($"GateArtDefinition '{name}' has no wreck.", this);
+            }
+
+            if (_damagedBelow + _recoverMargin > 1f)
+            {
+                Debug.LogWarning($"GateArtDefinition '{name}': damaged line plus recover margin is above full health; a damaged gate would only look whole at full health.", this);
             }
         }
     }
