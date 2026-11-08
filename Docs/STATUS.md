@@ -3784,3 +3784,17 @@ Not committed. No balance data touched.
 
 Tests: EditMode 682, 626 passed, 3 failed (the known `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` and the
 two `ContinentFinaleTests`), 53 skipped. PlayMode smoke `BossIntroSmokeTests` passed; 0 errors, 0 warnings. Save `progress.json` MD5 ae9223b8 before and after every play run.
+
+### Remco's playtest notes after round 23b (2026-11-08)
+
+1. Gate glitch: after a repair the gate flickers between its broken and repaired look (hard to screenshot). Find the state race
+   (repair completion vs. damage/wreck view) and fix.
+2. Result screen: the line "Points for this difficulty were earned ... beat it on a harder setting for more" overflows the
+   screen edges (display font too large / no wrapping). Keep text inside the safe area at 720p-1080p.
+3. Laser at x3 looks good now.
+4. Armour bar: after one Laser Turret hit all plated creatures' bars turn grey (view bug). DESIGN CHANGE from Remco: armour is a
+   pool shown in the blue bar. While armour remains, Laser and Gun/Pulse deal reduced damage; the Cannon (and other heavy
+   anti-armour hits) strip the armour first; once the armour is gone, every weapon hits health at full damage. This replaces
+   the permanent plating model; the balance model (ledger, calibration) must follow, so it belongs to the balance round.
+5. Spencer still reads as basic, not a warrior: Blender pass 2 is running with that brief.
+6. Open question to Remco: the display font's 5 and S look alike.
