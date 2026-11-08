@@ -277,16 +277,20 @@ namespace Game.Editor
             }
 
             Dictionary<string, object> placement = BlenderJson.Object(BlenderJson.Field(BlenderReport.Load($"{BlenderArtBuilder.AssetFolder(asset)}/{asset}_report.json").Root(), "placement"));
-            List<object> position = BlenderJson.Array(BlenderJson.Field(placement, "base_local_unity"));
+            // The report's own "base_local_unity" assumes the raw FBX frame (-x, z, -y), but under the base's root the pieces sit
+            // at Blender (x, z, y): the Command and Habitat pivots of Base_report land there (round 23e), and the unconverted
+            // spot put the pole inside the command post. So the Blender spot is mapped the way the base itself maps, and the
+            // Blender turn about +Z becomes the opposite turn about Unity's +Y (that mapping swaps handedness).
+            List<object> position = BlenderJson.Array(BlenderJson.Field(placement, "base_local_blender"));
             if (position.Count == 3)
             {
-                so.FindProperty("_flagPosition").vector3Value = new Vector3(BlenderJson.Number(position[0]), BlenderJson.Number(position[1]), BlenderJson.Number(position[2]));
+                so.FindProperty("_flagPosition").vector3Value = new Vector3(BlenderJson.Number(position[0]), BlenderJson.Number(position[2]), BlenderJson.Number(position[1]));
             }
 
-            object yaw = BlenderJson.Field(placement, "unity_yaw_deg");
+            object yaw = BlenderJson.Field(placement, "yaw_deg");
             if (yaw != null)
             {
-                so.FindProperty("_flagEuler").vector3Value = new Vector3(0f, BlenderJson.Number(yaw), 0f);
+                so.FindProperty("_flagEuler").vector3Value = new Vector3(0f, -BlenderJson.Number(yaw), 0f);
             }
         }
 

@@ -33,6 +33,8 @@ namespace Game.Levels
         private const float EmberGlow = 2.5f;
         private const float FlickerSpeed = 3.2f;
         private const float FlickerDepth = 0.35f;
+        // Below this the view looks almost straight down and gives the cloth no direction to face.
+        private const float MinViewFlatness = 0.01f;
         private static readonly Color WreckSmokeColor = new Color(0.22f, 0.18f, 0.16f, 0.4f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
@@ -129,6 +131,25 @@ namespace Game.Levels
         {
             flag.Root.localPosition = art.FlagPosition;
             flag.Root.localRotation = Quaternion.Euler(art.FlagEuler) * art.Flag.Model.transform.localRotation;
+        }
+
+        // The cloth flies along the flag's own +X, so on a map whose base stands side-on to the fixed camera it hung edge-on
+        // (round 23e). The pole turns about its foot until the cloth flies across the view and the logo reads on every map;
+        // a real flag turns with the wind anyway. Start, because the camera rig is placed after the level's visuals.
+        private void Start()
+        {
+            Camera view = Camera.main;
+            if (_flag == null || view == null)
+            {
+                return;
+            }
+
+            Vector3 across = view.transform.forward;
+            across.y = 0f;
+            if (across.sqrMagnitude > MinViewFlatness)
+            {
+                _flag.Root.rotation = Quaternion.LookRotation(across) * _art.Flag.Model.transform.localRotation;
+            }
         }
 
         /// <summary>The socket of that name on the model (a light, smoke or spark point), or null.</summary>

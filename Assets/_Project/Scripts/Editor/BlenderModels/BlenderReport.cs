@@ -86,15 +86,16 @@ namespace Game.Editor
 
         /// <summary>
         /// The frame of a clip's named moment from the report's <c>events</c> block (<c>events.&lt;clip&gt;.&lt;key&gt;</c>);
-        /// without that entry the first number under the key anywhere, or zero. Several clips share moment names (the grab
-        /// of both draws), so the clip's own entry comes first.
+        /// then a section's own clip entry (<c>&lt;section&gt;.clips.&lt;clip&gt;.events.&lt;key&gt;</c>, where the draws keep
+        /// their blade ignite); without either the first number under the key anywhere, or zero. Several clips share
+        /// moment names (the grab of both draws, the ignite of the blade and the jet), so the clip's own entries come first.
         /// </summary>
         public float Event(string clip, string key)
         {
             if (_json.Length > 0)
             {
-                Dictionary<string, object> events = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Parse(_json)), "events"));
-                object frame = BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(events, clip)), key);
+                Dictionary<string, object> root = BlenderJson.Object(BlenderJson.Parse(_json));
+                object frame = ClipEvent(BlenderJson.Object(BlenderJson.Field(root, "events")), clip, key) ?? SectionEvent(root, clip, key);
                 if (frame != null)
                 {
                     return BlenderJson.Number(frame);
@@ -102,6 +103,31 @@ namespace Game.Editor
             }
 
             return Number(key);
+        }
+
+        private static object ClipEvent(Dictionary<string, object> events, string clip, string key)
+        {
+            return BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(events, clip)), key);
+        }
+
+        private static object SectionEvent(Dictionary<string, object> root, string clip, string key)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            foreach (object section in root.Values)
+            {
+                Dictionary<string, object> clipEntry = BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(BlenderJson.Object(section), "clips")), clip));
+                object frame = BlenderJson.Field(BlenderJson.Object(BlenderJson.Field(clipEntry, "events")), key);
+                if (frame != null)
+                {
+                    return frame;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>The parsed report, or null when there is none.</summary>

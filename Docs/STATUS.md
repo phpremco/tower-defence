@@ -3913,3 +3913,33 @@ HeroAbility tests (21) pass. The full EditMode suite after the changes has not b
 - check `Mercer.asset` `_parts` (Mercer_Face, Mercer_Visor) and the 23 clips with event/cue seconds;
 - run `r23d_shots.sh`;
 - run the full EditMode suite with `--async_tests` and `BossIntroSmokeTests` (save rule).
+
+## Round 23e: Mercer sync, the blade's ignite moment, the flag out of the command post (2026-11-08)
+
+Not committed. No balance data touched. The helmet (lower-left cheek guard) is being rebuilt by the Blender agent; the curator
+re-syncs after that. Helmet geometry was not judged this round.
+
+1. **Story sync** (`Tools/Generate/Blender Story (sync, hero, portraits, cutscene)`): `Mercer.asset` has parts `Mercer_Face`
+   (opaque, casts shadows) and `Mercer_Visor` (see-through, no shadows), each with high/low materials; 23 clips incl. roles
+   74-80; `MercerArt.asset` has `Jet_L`/`Jet_R`, thrust colour/length and the blink.
+   **Fix:** `BlenderReport.Event` fell back to the first `ignite` anywhere when a clip's top-level `events` entry lacked the key,
+   so Draw_Blade's cue was Jet_Takeoff's ignite (0.267 s instead of 0.533 s). It now also reads
+   `<section>.clips.<clip>.events.<key>` (the `draw_stow`/`jet` sections) before the global fallback. Moments now: DrawPistol
+   grab 0.233; StowPistol 0.367; DrawBlade grab 0.300 / ignite 0.533; StowBlade release 0.500 / blade_off 0.133; JetTakeoff
+   liftoff 0.400 / ignite 0.267; JetLand touchdown 0.433 / thrust_off 0.500.
+2. **NTI flag fix.** The pole stood inside `Base_Command` (probe `r23e_flag_probe.cs`): the report's `base_local_unity` assumes
+   the raw FBX frame (-x, z, -y), but under the base root the pieces sit at Blender (x, z, y) (Command and Habitat pivots of
+   `Base_report.json` land there). `BlenderColonyBuilder.WriteFlag` now maps `base_local_blender` that way (yaw negated):
+   `_flagPosition` (-0.2, 0.23, 0.75), the open courtyard between command post and habitat. The cloth then hung edge-on to the
+   camera (the base's yaw differs per level, the camera does not), so `BaseArtView.Start` turns the in-level pole about its
+   foot until the cloth flies across the view. Logo readable in the close-up and a clear blue flag over the base at game zoom.
+3. **Shots** (`r23d_shots.sh`): the stepped frames ran free between CLI calls (captureFramerate 30 + an unpaused editor, so a
+   whole flight passed inside one sample). `step_frames.cs` takes an optional `hold` (stay paused); the script holds from the
+   close-ups on. `r23d_hero.cs view` now slides a raised focus down the view ray (the rig drops y), `face cam` turns him to the
+   lens. Flight sampled: ignite at frame 5, liftoff frame 7, peak 2.2 m, Jet_Land from 0.4 s before touchdown, lands on post 2.
+   Jet sockets' +Y points down/back in flight (`r23e_jet_probe.cs`); flame cards trail down and back. 0 errors, 0 warnings.
+   Face: skin-toned face visible behind the visor at the game camera and clearly in the bust portrait (dialogue portrait dump).
+   Notes for later: thrust flames are thin at game zoom; the pistol in hand is hard to read from above.
+4. **Tests.** EditMode (async): 699, 643 passed, 3 failed (known: `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`,
+   two `ContinentFinaleTests`), 53 skipped. PlayMode `BossIntroSmokeTests` passed. Save MD5 ae9223b8 before and after every run.
+   Run-output churn reverted.

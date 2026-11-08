@@ -29,4 +29,12 @@ MonoBehaviour:
   _packBone: Spine2
   _muzzle: {x: 0, y: 0.062, z: 0.192}
   _walkBelow: 1.5
+  _jetSockets:
+  - Jet_L
+  - Jet_R
+  _thrustColor: {r: 0.55, g: 0.85, b: 1, a: 1}
+  _thrustLength: 0.55
+  _blinkShape: Blink
+  _blinkSeconds: 0.15
+  _blinkEvery: {x: 3, y: 6}
   _bust: {fileID: 11400000, guid: e17b6f97f4f6ec144a4bc061530f216b, type: 2}

@@ -22,7 +22,10 @@ if (args[0] == "view" || args[0] == "base")
     float fit = UnityEngine.Camera.main.orthographicSize * rig.Zoom;
     float lift = args.Length > 2 ? float.Parse(args[2], inv) : 0.8f;
     UnityEngine.Vector3 at = args[0] == "view" ? hero.transform.position + UnityEngine.Vector3.up * lift : context.Base.Position;
-    rig.SetView(at, fit / float.Parse(args[1], inv));
+    // The rig keeps its focus on the ground: slide a raised point down the view ray so it lands in the frame centre.
+    UnityEngine.Vector3 ray = UnityEngine.Camera.main.transform.forward;
+    UnityEngine.Vector3 ground = ray.y < -0.01f ? at + ray * (at.y / -ray.y) : at;
+    rig.SetView(ground, fit / float.Parse(args[1], inv));
     report.Append("view at ").Append(at.ToString("0.0")).Append(' ');
 }
 else if (args[0] == "flag")
@@ -56,7 +59,9 @@ else if (args[0] == "draw" && art != null)
 else if (args[0] == "face" && art != null)
 {
     var figure = (UnityEngine.Transform)typeof(Game.Hero.HeroArtView).GetField("_figure", flags).GetValue(art);
-    figure.rotation = UnityEngine.Quaternion.Euler(0f, float.Parse(args[1], inv), 0f);
+    // "cam" turns him to look straight back up the view ray, so the visor faces the lens.
+    float yaw = args[1] == "cam" ? UnityEngine.Camera.main.transform.eulerAngles.y + 180f : float.Parse(args[1], inv);
+    figure.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f);
 }
 
 report.Append("pos ").Append(hero.transform.position.ToString("0.00")).Append(" post ").Append(hero.PostIndex).Append('/').Append(hero.PostCount)
