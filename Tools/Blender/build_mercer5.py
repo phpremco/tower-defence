@@ -16,6 +16,13 @@ Overrides build_mercer4.py's export on the SAME rig, bone names, sockets, all 20
    kept out of the cavity (keep_out_of_cavity), and the face is fitted against the built body (Cavity): only skin
    seen through the opening (plus two rings) is kept, visible skin keeps FIT_GAP from the rigid helmet parts and
    NECK_GAP from the neck and collar. spencer_face_check.py verifies every clip (BVH overlap, zero = pass).
+   Helmet rebuild 2026-11-08 (Remco: the lower-left cheek guard was a crude blue box with a notch, crossing the visor
+   rim): the opening is one closed outline (open_pt: a superellipse, squarer above, rounder and narrower below so its
+   lower corners pass the jaw), the shell's front a ring slab on it, the gasket one closed bead along it, and the brow
+   plate, the jaw guard (cheek pieces and chin piece in one U, panel lines between them), the respirator housing and the
+   two filters are laid out in the opening's own coordinates, starting GUARD_R0 outside the rim: nothing crosses the rim,
+   every plate follows the shell, both halves mirror. The gasket/filters and the guards have their own finer layers. The
+   face texture no longer paints sideways-turned cheek skin as fold shadow (FOLD_FACING, FOLD_NEAR).
 2. Night vision: a helmet-mounted quad-tube NVG flipped up: a shroud bolted to the brow, a mount block with a
    transverse hinge (yellow knobs), a pivot arm, the housing with four tubes (phosphor-green lit objectives up,
    rubber eyecups down) and a cable over the right side of the helmet to the battery pack at the back.
@@ -75,17 +82,67 @@ HEAT = dict(paint=np.array((0.42, 0.33, 0.5)), paint_amount=0.55, wear=0.0, roug
 HELM_E = 0.74                     # the helmet's boxy exponent
 BOXY = BM.boxy(HELM_E)
 SHELL = 0.013                     # shell thickness
-WIN_W = 50.0                      # half-width of the opening (degrees of azimuth from the front)
 PHI_BOT = -66.0                   # where the shell ends under the jaw (the collar and neck close it)
+
+# Helmet rebuild (Remco 2026-11-08: "links onderin klopt nog steeds niet ... gewoon de helm opnieuw maken"). The
+# visor opening is ONE closed outline, a rounded superellipse in (azimuth, elevation) that narrows a little towards the
+# jaw. Everything round it is laid out in the opening's own coordinates (t: angle round the opening, r: degrees out
+# from its rim): the shell's front is a ring slab on that outline, the gasket a tube along it, and the brow plate, the
+# jaw guard and the respirator are bevelled ring sectors that start a few degrees outside the rim. So no plate can
+# cross the rim, every plate follows the shell's curvature and the left and right halves are mirror images.
+OPEN_A = 47.0                     # half-width of the opening at its widest (degrees of azimuth)
+OPEN_B = 25.0                     # half-height (degrees of elevation)
+OPEN_PH = -2.0                    # elevation of its centre (eyes to upper lip; the jaw guard closes the rest)
+OPEN_N = 3.4                      # superellipse exponent: straight-ish sides, round corners
+OPEN_TAPER = 0.2                 # the lower half is this much narrower at the bottom
+OPEN_N_LOW = 1.5                  # ... and rounder: its corners rise past the jaw's corners (the face's jaw skin there is
+                                  # cut where the collar comes close in some clips: the shell hides the cut)
+WIN_W = OPEN_A
+RING_OUT = 30.0                   # the shell's front ring reaches this far out from the rim; slabs behind it overlap it
+COVER_W = 52.0                    # the back slab starts at this azimuth, the crown and jaw slabs at these elevations:
+COVER_TOP, COVER_BOT = 27.0, -30.0
+GUARD_R0 = 4.4                    # plates start this far (degrees) outside the rim: the gasket and a strip of shell show
+GASKET_R, GASKET_OUT = 0.0078, -0.0055   # gasket tube radius and its centre's height over the shell surface
+
+
+def open_pt(t, r=0.0):
+    """(azimuth, elevation) of the opening's outline at angle t (radians; 0 = his left side, pi/2 = top) moved r
+    degrees outwards."""
+    c, s = math.cos(t), math.sin(t)
+    n = OPEN_N if s >= 0.0 else OPEN_N_LOW
+    sx = math.copysign(abs(c) ** (2.0 / n), c)
+    sy = math.copysign(abs(s) ** (2.0 / n), s)
+    taper = 1.0 - OPEN_TAPER * max(0.0, -s) ** 2
+    return (OPEN_A * taper + r) * sx, OPEN_PH + (OPEN_B + r) * sy
+
+
+def _edge_table(r, n=721):
+    """Upper and lower elevation of the outline (moved r out) per azimuth, for np.interp."""
+    ts = np.linspace(0.0, math.pi, n)
+    top = np.array([open_pt(t, r) for t in ts])
+    bot = np.array([open_pt(-t, r) for t in ts])
+    return top[::-1], bot[::-1]
+
+
+_EDGE = {}
+
+
+def open_edge(th, r=0.0, upper=True):
+    if r not in _EDGE:
+        _EDGE[r] = _edge_table(r)
+    top, bot = _EDGE[r]
+    tab = top if upper else bot
+    order = np.argsort(tab[:, 0])
+    return float(np.interp(th, tab[order, 0], tab[order, 1]))
 
 
 def win_top(th):
-    """Upper edge of the opening (elevation, degrees): straight under the brow, dipping a little at the sides."""
-    return 23.0 - 5.0 * (th / WIN_W) ** 2
+    """Upper edge of the opening (elevation, degrees) at azimuth th."""
+    return open_edge(th, 0.0, True)
 
 
 def win_bot(th):
-    return -31.0 + 8.0 * (th / WIN_W) ** 2
+    return open_edge(th, 0.0, False)
 
 
 def unit_dir(th, ph):
@@ -112,6 +169,10 @@ def helm_up(th, ph):
     return nrm(b - a)
 
 
+def shell_frame():
+    return S.shell_frame(Vector(HELM_C), HELM_R, Matrix.Identity(3))
+
+
 def shell_slab(b, th_fn, ph_fn, nu, nv, style):
     inner = 1.0 - SHELL / 0.13
 
@@ -122,8 +183,7 @@ def shell_slab(b, th_fn, ph_fn, nu, nv, style):
     def inside(u, v):
         th = th_fn(u)
         return Vector(HELM_C) + helm_local(th, ph_fn(th, v)) * inner
-    b.slab("Helmet", outer, inside, nu, nv, frame=S.shell_frame(Vector(HELM_C), HELM_R, Matrix.Identity(3)), bone="Head",
-           chain=["Head"], style=style)
+    b.slab("Helmet", outer, inside, nu, nv, frame=shell_frame(), bone="Head", chain=["Head"], style=style)
 
 
 def inward(c):
@@ -148,70 +208,195 @@ def helmet_style():
     return style
 
 
+TWO_PI = 2.0 * math.pi
+RING_OVERLAP = 0.03               # radians the ring's ends overlap, so the remesh fuses them without a seam
+
+
 def helmet_shell(b):
     style = helmet_style()
-    span = 360.0 - 2 * WIN_W
+    inner = 1.0 - SHELL / 0.13
+    # The front: a ring slab round the opening, from the rim out to RING_OUT.
+    t0, t1 = -RING_OVERLAP, TWO_PI + RING_OVERLAP
+
+    def ring(ratio):
+        def fn(u, v):
+            th, ph = open_pt(t0 + (t1 - t0) * u, RING_OUT * v)
+            return Vector(HELM_C) + helm_local(th, ph) * ratio
+        return fn
+    b.slab("Helmet", ring(1.0), ring(inner), 120, 12, frame=shell_frame(), bone="Head", chain=["Head"], style=style)
+    # Back and sides, crown and jaw: plain shell slabs that reach under the ring's outer part (checked: covered()).
+    span = 360.0 - 2 * COVER_W
     top = 89.0
-    # Back and sides (round the back from the left edge of the opening to its right edge).
-    shell_slab(b, lambda u: WIN_W + span * u, lambda th, v: PHI_BOT + (top - PHI_BOT) * v, 44, 24, style)
-    w = WIN_W + 4.0
-    # Over the opening (forehead to crown) and under it (jaw).
-    shell_slab(b, lambda u: -w + 2 * w * u, lambda th, v: win_top(th) + (top - win_top(th)) * v, 20, 12, style)
-    shell_slab(b, lambda u: -w + 2 * w * u, lambda th, v: PHI_BOT + (win_bot(th) - PHI_BOT) * v, 20, 10, style)
+    shell_slab(b, lambda u: COVER_W + span * u, lambda th, v: PHI_BOT + (top - PHI_BOT) * v, 44, 24, style)
+    w = COVER_W + 3.0
+    shell_slab(b, lambda u: -w + 2 * w * u, lambda th, v: COVER_TOP + (top - COVER_TOP) * v, 20, 10, style)
+    shell_slab(b, lambda u: -w + 2 * w * u, lambda th, v: PHI_BOT + (COVER_BOT - PHI_BOT) * v, 20, 6, style)
 
 
-def visor_outline(n=48):
-    """The opening's rim as a closed loop of (th, ph)."""
-    pts = [(th, win_top(th)) for th in np.linspace(-WIN_W, WIN_W, n)]
-    pts += [(WIN_W, ph) for ph in np.linspace(win_top(WIN_W), win_bot(WIN_W), 8)[1:-1]]
-    pts += [(th, win_bot(th)) for th in np.linspace(WIN_W, -WIN_W, n)]
-    pts += [(-WIN_W, ph) for ph in np.linspace(win_bot(-WIN_W), win_top(-WIN_W), 8)[1:-1]]
-    return pts
+def covered():
+    """Every direction in front is under the ring or one of the plain slabs (a gap would be a hole in the shell)."""
+    holes = []
+    for th in np.arange(-COVER_W, COVER_W + 0.01, 1.0):
+        for ph in np.arange(COVER_BOT, COVER_TOP + 0.01, 1.0):
+            r = rim_dist(th, ph)
+            if not (r <= RING_OUT - 1.0):
+                holes.append((th, ph, r))
+    return holes
+
+
+class RimMap:
+    """(t, r) of any point, from a dense sample of the outline coordinates in (azimuth, elevation): for feature masks
+    (grooves parallel to the rim, panel lines across it)."""
+
+    def __init__(self, r_lo=-12.0, r_hi=40.0, nt=1440, dr=0.25):
+        from mathutils.kdtree import KDTree
+        ts = np.linspace(0.0, TWO_PI, nt, endpoint=False)
+        rs = np.arange(r_lo, r_hi + 1e-6, dr)
+        self.tr = [(t, r) for t in ts for r in rs]
+        self.tree = KDTree(len(self.tr))
+        for i, (t, r) in enumerate(self.tr):
+            th, ph = open_pt(t, r)
+            self.tree.insert((th, ph, 0.0), i)
+        self.tree.balance()
+
+    def __call__(self, points):
+        th, ph = helm_angles_np(points)
+        out = np.zeros((len(th), 2))
+        for i, (a, e) in enumerate(zip(th, ph)):
+            _, j, _ = self.tree.find((float(a), float(e), 0.0))
+            out[i] = self.tr[j]
+        return out[:, 0], out[:, 1]
+
+
+_RIM = []
+
+
+def rim_map():
+    if not _RIM:
+        _RIM.append(RimMap())
+    return _RIM[0]
+
+
+def rim_dist(th, ph):
+    _, j, _ = rim_map().tree.find((float(th), float(ph), 0.0))
+    return rim_map().tr[j][1]
+
+
+def helm_angles_np(points):
+    d = (np.asarray(points) - np.array(HELM_C)) / np.array(HELM_R)
+    k = np.sum(np.abs(d) ** (2.0 / HELM_E), axis=1) ** (-HELM_E / 2.0)
+    u = np.sign(d) * np.abs(d * k[:, None]) ** (1.0 / HELM_E)
+    return np.degrees(np.arctan2(u[:, 0], -u[:, 1])), np.degrees(np.arcsin(np.clip(u[:, 2], -1, 1)))
 
 
 def gasket(b):
-    """A gunmetal gasket on the rim of the opening (four overlapping runs; the remesh fuses the corners)."""
-    loop = visor_outline(24)
-    n = len(loop)
-    runs = [loop[0:24], loop[23:31], loop[30:54], loop[53:n] + [loop[0]]]
-    for run in runs:
-        pts = [helm_surf(th, ph, -SHELL * 0.35)[0] for th, ph in run]
-        b.tube("VisorFrame", pts, [0.0062] * len(pts), sides=8, chain=["Head"], cap=0.6,
-               style=metal([(lambda c: S.line(c.t * C.axis_length(c.part), 0.0, 0.002), GROOVE)], seed=93))
+    """A gunmetal gasket on the rim, one closed loop: a round bead over the shell's cut edge (it also hides the glass's
+    rim, which is tucked under it)."""
+    n = 96
+    ts = [TWO_PI * i / n for i in range(n)] + [TWO_PI * i / n for i in range(3)]
+    pts = [helm_surf(*open_pt(t, 0.0), GASKET_OUT)[0] for t in ts]
+    b.tube("VisorFrame", pts, [GASKET_R] * len(pts), sides=12, samples=3, chain=["Head"], cap=0.6,
+           style=metal(seed=93))
+
+
+PLATE_BEVEL = 0.0035              # width of a guard's bevelled rim (m), taking BEVEL_DROP of its thickness off
+BEVEL_DROP = 0.5
+TIP_MIN = 0.5                     # plate ends stay this share of their width: a blunt bevelled end (a pinched tip
+                                  # remeshes into a sliver with a crater in it)
+EMBED = 0.004                     # a plate's inner face sinks this far into the shell (never through it: SHELL)
+
+
+def _plate_rows(n, frac):
+    """Grid params 0..1 with the first and last rows a bevel's width from the edge."""
+    inner = np.linspace(frac, 1 - frac, n - 1)
+    return np.concatenate([[0.0], inner, [1.0]])
+
+
+def rim_plate(b, name, t_c, t_half, r0, width, thick, style, nu=40, nv=8, tip=6.0, chain=("Head",)):
+    """A bevelled guard plate on the shell, a ring sector of the opening's coordinates: centred on angle t_c, t_half
+    either side, from r0 degrees out to r0 + width(x) (x = -1..1 along it). The ends narrow to blunt rounded ends (the
+    width envelope (1 - |x|^tip)^0.5, never under TIP_MIN), the rim is bevelled, the inner face sinks EMBED into the shell."""
+    deg = HELM_R[1] * math.pi / 180.0            # metres per degree on the shell, near enough for the bevel width
+    w_mid = width(0.0)
+    fu = PLATE_BEVEL / (2 * t_half * HELM_R[0])
+    fv = PLATE_BEVEL / (w_mid * deg)
+    us, vs = _plate_rows(nu, fu), _plate_rows(nv, fv)
+
+    def point(u, v, out_fn):
+        i, j = int(round(u * nu)), int(round(v * nv))
+        x = -1.0 + 2.0 * us[i]
+        env = max(TIP_MIN, max(0.0, 1.0 - abs(x) ** tip) ** 0.5)
+        w = width(x) * env
+        th, ph = open_pt(t_c + t_half * x, r0 + w * vs[j])
+        edge = i in (0, nu) or j in (0, nv)
+        return helm_surf(th, ph, out_fn(edge))[0]
+    b.slab(name, lambda u, v: point(u, v, lambda e: thick * (1 - BEVEL_DROP * e)), lambda u, v: point(u, v, lambda e: -EMBED),
+           nu, nv, frame=shell_frame(), bone="Head", chain=list(chain), style=style)
+    return b.parts[-1]
+
+
+def rim_mask(fn):
+    """A feature mask on the opening's coordinates: fn(t in degrees 0..360, r in degrees) -> 0..1."""
+    def mask(c):
+        t, r = rim_map()(c.p)
+        return fn(np.degrees(t), r)
+    return mask
+
+
+JAW_T, JAW_HALF = 270.0, 80.0     # jaw guard: centred under the opening, up both sides to just below the eyes
+JAW_SEAMS = (233.0, 307.0)        # panel lines between the cheek pieces and the chin piece
+RESP_HALF = 22.0                  # respirator housing: this far either side of the bottom
+FILTER_T = (236.0, 304.0)         # the two filter canisters, on the jaw guard below the cheeks
+BROW_T, BROW_HALF = 90.0, 62.0
+
+
+def jaw_width(x):
+    """Wider under the chin (it closes the bottom of the opening), narrower up the cheeks."""
+    return 10.0 + 6.0 * (1 - x * x)
+
+
+def brow_width(x):
+    return 4.5 + 5.5 * (1 - x * x) ** 2
 
 
 def face_guards(b):
-    """Brow plate (pass 3), cheek guards that narrow the opening towards the jaw, a lower chin guard and filters."""
-    dome_patch(b, "Brow", HELM_C, HELM_R, None, lambda a, v: (a * 0.92, -1.0, 0.4 + 0.62 * (v + 1) / 2), 0.016, "Head",
-               plate([(lambda c: S.line(c.u[:, 0], 0.0, 0.03), GROOVE)], seed=32),
-               nu=22, nv=10, outline=lambda a, v: (a * (1.0 - 0.3 * (v + 1) / 2), v))
+    """Brow plate over the opening, one jaw guard round its lower half (two cheek pieces and a chin piece, split by
+    panel lines), the respirator housing on the chin and two filter canisters; ear cups as in pass 3."""
+    rim_plate(b, "Brow", math.radians(BROW_T), math.radians(BROW_HALF), GUARD_R0, brow_width, 0.0085,
+              plate([(rim_mask(lambda t, r: S.line(t, 90.0, 0.6)), GROOVE)], seed=32), nu=48, nv=8)
+    jaw_feats = [(rim_mask(lambda t, r: sum(S.line(t, s, 0.5) for s in JAW_SEAMS)), GROOVE),
+                 (rim_mask(lambda t, r: S.line(r, GUARD_R0 + 0.62 * jaw_width(0.0), 0.35) * (np.abs(t - JAW_T) > 26)), GROOVE)]
+    rim_plate(b, "Cheek", math.radians(JAW_T), math.radians(JAW_HALF), GUARD_R0, jaw_width, 0.0078,
+              M2.bplate(jaw_feats + M4.hex_features(False), seed=33), nu=120, nv=12)
+    # Respirator housing: a raised gunmetal box on the chin piece, slotted, with a yellow lip along its top edge.
+    r_top = GUARD_R0 + 1.4
+    rim_plate(b, "Chin", math.radians(JAW_T), math.radians(RESP_HALF), r_top, lambda x: 11.5 + 1.5 * (1 - x * x), 0.0165,
+              plate([(rim_mask(lambda t, r: ribs(t, 3.4, 0.24) * S.band(r, r_top + 7.4, 3.4) * S.band(t, JAW_T, 13.0)), DEEP),
+                     (rim_mask(lambda t, r: S.band(r, r_top + 1.4, 1.0)), YELLOW_CLEAN)], seed=5), nu=36, nv=12, tip=4.0)
+    for t in FILTER_T:
+        th, ph = open_pt(math.radians(t), GUARD_R0 + 8.5)
+        base, n = helm_surf(th, ph, 0.004)
+        axis = nrm(n - Vector((0, 0, 0.25)))
+        b.tube("Filter", [base, base + axis * 0.011, base + axis * 0.02], [0.0158, 0.0158, 0.0152], sides=24, chain=["Head"], cap=0.08,
+               style=metal([(lambda c: ribs(c.t, 0.2, 0.2) * (c.t < 0.62), GROOVE), (lambda c: S.band(c.t, 0.8, 0.07), YELLOW_CLEAN),
+                            (lambda c: (c.t > 0.97) * ribs(c.dist, 0.004, 0.25), DEEP)], seed=34))
     for name, sd in SIDE.items():
         sx = sd.sx
-        dome_patch(b, "Cheek", HELM_C, HELM_R, None,
-                   lambda a, v, sx=sx: (sx * (1.0 - 0.36 * (a + 1) / 2), -(0.12 + 0.88 * (a + 1) / 2), -0.12 - 0.85 * (v + 1) / 2),
-                   0.016, "Head", M2.bplate([(lambda c: S.line(c.u[:, 2], -0.72, 0.03), GROOVE)] + M4.hex_features(False), seed=33 + (sx > 0)),
-                   nu=16, nv=10)
         b.tube("Ear", [HELM_C + G(0.112 * sx, -0.02, -0.005), HELM_C + G(0.148 * sx, -0.02, -0.005)], [0.044, 0.038], sides=18,
                chain=["Head"], style=metal([(lambda c: S.band(c.t, 0.95, 0.12), GROOVE)], seed=6), cap=0.35)
-    b.ellipsoid("Chin", G(0, 1.35, 0.07), R(0.064, 0.034, 0.05), euler(pitch=14), bone="Head", deform=BM.boxy(0.55), segments=(28, 14),
-                style=metal([(lambda c: ribs(c.u[:, 0], 0.22, 0.25) * (c.u[:, 1] < -0.3) * S.band(c.u[:, 2], 0.0, 0.5), DEEP),
-                             (lambda c: S.band(c.u[:, 2], 0.75, 0.2), YELLOW_CLEAN)], seed=5))
-    for name, sd in SIDE.items():
-        sx = sd.sx
-        b.tube("Filter", [G(0.05 * sx, 1.346, 0.08), G(0.088 * sx, 1.33, 0.048)], [0.02, 0.018], sides=14, chain=["Head"], cap=0.5,
-               style=metal([(lambda c: ribs(c.t, 0.25, 0.2), GROOVE), (lambda c: S.band(c.t, 0.92, 0.1), YELLOW_CLEAN)], seed=34))
 
 
 # ------------------------------------------------------------------------------------------------------------
 # Helmet-mounted NVG (quad tube, flipped up)
 # ------------------------------------------------------------------------------------------------------------
 
-NVG_E = 29.0                         # elevation of the shroud's centre on the brow
+NVG_E = 34.0                         # elevation of the shroud's centre on the brow plate
+NVG_OUT = 0.012                      # the shroud's base sits on the brow plate (0.0085 thick), not floating over the rim
 X_AX = Vector((1, 0, 0))
 
 
 def nvg_frame():
-    s, n = helm_surf(0.0, NVG_E, 0.016)
+    s, n = helm_surf(0.0, NVG_E, NVG_OUT)
     t = helm_up(0.0, NVG_E)
     return s, n, t
 
@@ -231,7 +416,7 @@ def tube_with_glow(b, root, tip, r, style_seed):
 def nvg(b):
     s, n, t = nvg_frame()
     # Shroud: a bolted plate on the brow, a mount block with the hinge on it.
-    b.ellipsoid("NvgShroud", s + n * 0.003, (0.036, 0.03, 0.0075), frame(t, n), bone="Head", deform=BM.boxy(0.35), segments=(20, 12),
+    b.ellipsoid("NvgShroud", s + n * 0.003, (0.036, 0.025, 0.0075), frame(t, n), bone="Head", deform=BM.boxy(0.35), segments=(20, 12),
                 style=metal([(lambda c: S.line(np.abs(c.u[:, 0]), 0.62, 0.05), GROOVE),
                              (lambda c: hazard(c, 0.01, (1, 0, 1)) * S.band(c.u[:, 1], -0.75, 0.15), YELLOW_PAINT)], seed=80))
     for bx, by in ((-0.026, -0.018), (0.026, -0.018), (0.0, 0.022)):
@@ -317,6 +502,9 @@ def keep_out_of_cavity(b):
 
 
 def head(b):
+    holes = covered()
+    if holes:
+        raise RuntimeError("helmet shell: directions not covered by any slab: %s" % holes[:5])
     helmet_shell(b)
     gasket(b)
     face_guards(b)
@@ -447,10 +635,13 @@ HEAD_KIT = NVG_PARTS | {"Rail", "HelmCam", "CamLens", "CamGlow", "CamTally", "Co
 JET = {"JetPod", "JetNozzle", "FuelCell", "CoreCap", "CoreBar", "Pack", "StrapBuckle", "Sleeve", "SheathLight", "SheathClamp", "SleeveGlow"}
 OLD = {"Visor", "Nozzle", "NozzleGlow", "PackPouch", "Hose"} | M4.HEAD_KIT
 RIGID = (M4.RIGID - OLD) | HEAD_KIT | JET
-PLATES = (M4.PLATES - OLD) | {"JetPod"}
-GEAR = (M4.GEAR - OLD - {"JetPod"}) | HEAD_KIT | (JET - {"JetPod", "Sleeve"}) | {"Strap"}
+PLATES = ((M4.PLATES - OLD) | {"JetPod"}) - {"Brow", "Cheek"}
+GEAR = ((M4.GEAR - OLD - {"JetPod"}) | HEAD_KIT | (JET - {"JetPod", "Sleeve"}) | {"Strap"}) - {"VisorFrame", "Filter"}
 LAYERS = [S.Layer("suit", None, voxel=0.0034, smooth=6, density=0.7),
           S.Layer("plates", PLATES, voxel=0.0018, smooth=2, density=1.0),
+          S.Layer("gasket", {"VisorFrame", "Filter"}, voxel=0.0013, smooth=3, density=5.0),   # the visor rim reads in close-ups: finer
+          S.Layer("guards", {"Brow", "Cheek"}, voxel=0.0013, smooth=4, density=1.6),   # own surface: a clean plate seam, no
+                                                                                         # voxel stairs along the bevel
           S.Layer("gear", GEAR, voxel=0.0019, smooth=3, density=1.0),
           S.Layer("insignia", M4.INSIGNIA, voxel=0.0013, smooth=1, density=1.4, uv_scale=1.8),
           S.Layer("hands", {"Palm", "Knuckles", "Finger", "Thumb"}, voxel=0.0014, smooth=3, density=2.0)]
@@ -790,8 +981,9 @@ def build_face(cache, tex_dir, body, arm=None, actions=()):
     for i, f in enumerate(face_p.faces):
         a, b_, c = (Vector(co[j]) for j in f[:3])
         centre = Vector(co[list(f)].mean(axis=0))
-        hidden = occluders.ray_cast(centre + Vector((0, -0.0006, 0)), Vector((0, -1, 0)), 0.2)[0] is not None
-        if hidden or (b_ - a).cross(c - a).normalized().y > -0.2:
+        hit = occluders.ray_cast(centre + Vector((0, -0.0006, 0)), Vector((0, -1, 0)), 0.2)
+        hidden = hit[0] is not None and hit[3] > FOLD_NEAR      # a neighbour bump a few mm off is no fold
+        if hidden or (b_ - a).cross(c - a).normalized().y > FOLD_FACING:
             skin_uv[i] = [(F.FOLD_BOX[0] + (F.FOLD_BOX[2] - F.FOLD_BOX[0]) * (k % 2), F.FOLD_BOX[1] + (F.FOLD_BOX[3] - F.FOLD_BOX[1]) * (k // 2 % 2))
                           for k in range(len(f))]
     # Both eyeballs share one island (each projected from the front round its own centre: the iris in the middle).
@@ -829,6 +1021,9 @@ def build_face(cache, tex_dir, body, arm=None, actions=()):
 
 
 VISOR_TEX = (512, 256)
+FOLD_NEAR = 0.004                 # occluders closer than this along the projection do not make a fold
+FOLD_FACING = 0.05                # skin turned further from the visor than this (normal y) is a fold: the cheeks
+                                  # that only turn sideways keep the front projection (was -0.2: dark jagged patches)
 
 
 def visor_textures(out_dir):
@@ -868,7 +1063,8 @@ def build_visor(paths, nu=28, nv=14):
         for i in range(nu + 1):
             u, v = i / nu, j / nv
             th = -(WIN_W + m) + 2 * (WIN_W + m) * u
-            ph = (win_bot(th) - m) + ((win_top(th) + m) - (win_bot(th) - m)) * v
+            lo, hi = open_edge(th, m, False), open_edge(th, m, True)
+            ph = lo + (hi - lo) * v
             bump = max(0.0, 1 - (2 * u - 1) ** 2) * math.sin(math.pi * v)
             p = Vector(HELM_C) + helm_local(th, ph) * (1.0 - 0.022 + 0.034 * bump)
             verts.append(tuple(p))
@@ -996,7 +1192,9 @@ def patch_report(path, face_paths, visor_paths, face_obj, visor_obj):
                     "x2 (faint HUD ticks), cast shadows off, receive shadows on, render queue after the opaque body; "
                     "optional fresnel: more opaque at grazing angles",
         "single_sided": "normals face out; back faces culled"}
-    rep["helmet"] = "shell with a visor opening (dark liner inside, gasket on the rim); quad-tube NVG flipped up on a brow mount"
+    rep["helmet"] = ("shell with one closed visor opening (dark liner inside, a continuous gasket bead on the rim), bevelled brow "
+                     "plate and U-shaped jaw guard following the shell outside the rim, respirator housing with two filters; "
+                     "quad-tube NVG flipped up on a brow mount")
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(rep, fh, indent=2)
 
@@ -1023,6 +1221,10 @@ def main():
     clips = {n: BM.CLIPS[n] for n in (("Idle", "Walk", "Run", "Shoot", "Slash") if fast else BM.CLIPS)}
     clips.update(M3.draw_clip_fns())
     clips.update(jet_clip_fns())
+    if not fast:
+        # The reaction clips are keyed again (and exported) by run_reactions below; keyed here too, so the face fit
+        # samples them (Lower_Weapon's "relief" bows the head onto the collar).
+        clips.update(RX.clip_fns())
     actions = C.key_clips(poser, clips)
     switch = M3.switch_check(poser)
     # The face is fitted after the clips exist: the neck, collar and shoulders are sampled in every clip.
