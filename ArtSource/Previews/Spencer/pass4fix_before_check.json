@@ -1,0 +1,2010 @@
+{
+ "frames": 230,
+ "fails": [
+  {
+   "clip": "Disbelief",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 4,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 8,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 12,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 16,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 179,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 20,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 24,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 28,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 32,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 36,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 40,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 44,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 48,
+   "overlap": 271,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 52,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 56,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 60,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 64,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 68,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 179,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 72,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 76,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 80,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Disbelief",
+   "frame": 84,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 0,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 4,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 179,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 8,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 12,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 16,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 167,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 20,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 24,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 28,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 32,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 36,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Down",
+   "frame": 40,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 4,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 8,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 12,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 16,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 20,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Blade",
+   "frame": 22,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 4,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 8,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 12,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 179,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 16,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Draw_Pistol",
+   "frame": 18,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Hit",
+   "frame": 0,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Hit",
+   "frame": 4,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Hit",
+   "frame": 8,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Hit",
+   "frame": 12,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 4,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 8,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 12,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 16,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 20,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 24,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 28,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 32,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 36,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 40,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 44,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 48,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 52,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 56,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 60,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 185,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 64,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 68,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Idle",
+   "frame": 72,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 4,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 12,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 16,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 20,
+   "overlap": 256,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 24,
+   "overlap": 256,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 28,
+   "overlap": 256,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 32,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 36,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Fly",
+   "frame": 40,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 4,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 8,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 12,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 16,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 20,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 24,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Land",
+   "frame": 28,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 4,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 8,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 12,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 16,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 20,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 24,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 28,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Jet_Takeoff",
+   "frame": 30,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 4,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 8,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 12,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 16,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 20,
+   "overlap": 251,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 24,
+   "overlap": 253,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 28,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 32,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 36,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 40,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 44,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 48,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 52,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 56,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 60,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 64,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 68,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Lower_Weapon",
+   "frame": 70,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 4,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 8,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 12,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 16,
+   "overlap": 271,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 20,
+   "overlap": 271,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 24,
+   "overlap": 271,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 28,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 32,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 179,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 36,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 40,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Point_Shout",
+   "frame": 42,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 4,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 12,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 16,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 20,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 24,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 28,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 32,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Reload",
+   "frame": 36,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 0,
+   "overlap": 254,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 4,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Repair",
+   "frame": 8,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 164,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 12,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 16,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 20,
+   "overlap": 256,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 24,
+   "overlap": 254,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 28,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 32,
+   "overlap": 254,
+   "visor_overlap": 0,
+   "inside": 165,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Repair",
+   "frame": 36,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 40,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 44,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Repair",
+   "frame": 48,
+   "overlap": 254,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 0,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 4,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 8,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 12,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.0
+  },
+  {
+   "clip": "Revive",
+   "frame": 16,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 20,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 185,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 24,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 28,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 32,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Revive",
+   "frame": 36,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Run",
+   "frame": 0,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Run",
+   "frame": 4,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Run",
+   "frame": 8,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Run",
+   "frame": 12,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Run",
+   "frame": 16,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 0,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 4,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 12,
+   "overlap": 272,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 16,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 20,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 24,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 178,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 28,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shockwave",
+   "frame": 30,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shoot",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shoot",
+   "frame": 4,
+   "overlap": 257,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shoot",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 185,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shoot",
+   "frame": 12,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Shoot",
+   "frame": 14,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 4,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 175,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 8,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 12,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 16,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 20,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Slash",
+   "frame": 22,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 4,
+   "overlap": 272,
+   "visor_overlap": 0,
+   "inside": 177,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 8,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 12,
+   "overlap": 246,
+   "visor_overlap": 0,
+   "inside": 167,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 16,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 20,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled",
+   "frame": 24,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 0,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 4,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 8,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 12,
+   "overlap": 256,
+   "visor_overlap": 0,
+   "inside": 168,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 16,
+   "overlap": 251,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 20,
+   "overlap": 248,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 24,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 28,
+   "overlap": 258,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 32,
+   "overlap": 260,
+   "visor_overlap": 0,
+   "inside": 171,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 36,
+   "overlap": 255,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 40,
+   "overlap": 251,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 44,
+   "overlap": 249,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Startled_Hold",
+   "frame": 48,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 4,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 185,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 12,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 16,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 186,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 20,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Blade",
+   "frame": 24,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 4,
+   "overlap": 261,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 8,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 167,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 12,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 167,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 16,
+   "overlap": 272,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 20,
+   "overlap": 268,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Stow_Pistol",
+   "frame": 22,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 172,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 0,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 4,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 8,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 182,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 12,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 16,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 20,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 180,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 24,
+   "overlap": 269,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 28,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 184,
+   "clearance_mm": 0.01
+  },
+  {
+   "clip": "Walk",
+   "frame": 32,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  }
+ ],
+ "worst_clearance_mm": 0.0,
+ "clips": {
+  "Disbelief": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Down": {
+   "frame": 0,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  "Draw_Blade": {
+   "frame": 4,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.0
+  },
+  "Draw_Pistol": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Hit": {
+   "frame": 0,
+   "overlap": 267,
+   "visor_overlap": 0,
+   "inside": 174,
+   "clearance_mm": 0.01
+  },
+  "Idle": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Jet_Fly": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  "Jet_Land": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 170,
+   "clearance_mm": 0.01
+  },
+  "Jet_Takeoff": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Lower_Weapon": {
+   "frame": 20,
+   "overlap": 251,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.0
+  },
+  "Point_Shout": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Reload": {
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  "Repair": {
+   "frame": 4,
+   "overlap": 259,
+   "visor_overlap": 0,
+   "inside": 169,
+   "clearance_mm": 0.0
+  },
+  "Revive": {
+   "frame": 12,
+   "overlap": 264,
+   "visor_overlap": 0,
+   "inside": 176,
+   "clearance_mm": 0.0
+  },
+  "Run": {
+   "frame": 0,
+   "overlap": 262,
+   "visor_overlap": 0,
+   "inside": 183,
+   "clearance_mm": 0.01
+  },
+  "Shockwave": {
+   "frame": 0,
+   "overlap": 263,
+   "visor_overlap": 0,
+   "inside": 187,
+   "clearance_mm": 0.01
+  },
+  "Shoot": {
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  "Slash": {
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  "Startled": {
+   "frame": 0,
+   "overlap": 266,
+   "visor_overlap": 0,
+   "inside": 173,
+   "clearance_mm": 0.01
+  },
+  "Startled_Hold": {
+   "frame": 0,
+   "overlap": 252,
+   "visor_overlap": 0,
+   "inside": 166,
+   "clearance_mm": 0.01
+  },
+  "Stow_Blade": {
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 189,
+   "clearance_mm": 0.01
+  },
+  "Stow_Pistol": {
+   "frame": 0,
+   "overlap": 265,
+   "visor_overlap": 0,
+   "inside": 188,
+   "clearance_mm": 0.01
+  },
+  "Walk": {
+   "frame": 0,
+   "overlap": 270,
+   "visor_overlap": 0,
+   "inside": 181,
+   "clearance_mm": 0.01
+  }
+ },
+ "pass": false
+}

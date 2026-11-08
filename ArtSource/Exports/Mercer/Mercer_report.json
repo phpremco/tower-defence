@@ -2,9 +2,9 @@
   "asset": "Mercer",
   "character": "Spencer",
   "round": "spencer-pass4-2026-11-08 (build_mercer5.py)",
-  "game_tris": 17494,
+  "game_tris": 17496,
   "lod1_tris": 6000,
-  "source_tris": 4050100,
+  "source_tris": 4039568,
   "bones": 33,
   "sockets": [
     "Back",
@@ -24,20 +24,20 @@
     "Mask"
   ],
   "uv": {
-    "islands": 1146,
+    "islands": 1421,
     "unwrap": "smart, layer-weighted, concave pack",
-    "uv_coverage": 0.356,
-    "world_per_uv": 4.032333369322788
+    "uv_coverage": 0.3,
+    "world_per_uv": 4.385643043433714
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 161.3,
+      "tiling": 175.4,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 67.2,
+      "tiling": 73.1,
       "mask": "A"
     }
   },
@@ -407,7 +407,7 @@
     "mesh": "Mercer_Face",
     "far_mesh": "Mercer_Face_LOD1",
     "bone": "Head (rigid, weight 1)",
-    "tris": 6840,
+    "tris": 5098,
     "maps": {
       "Albedo": "Mercer_Face_Albedo.png",
       "Normal": "Mercer_Face_Normal.png",
@@ -420,7 +420,8 @@
       "Blink": "upper lids closed (0..1); optional: a blink every 3-6 s for 0.15 s"
     },
     "material": "the hero's lit shader (Game/UnitLit) with these maps; opaque; emission 1 (iris catchlight only)",
-    "source": "MPFB 2 (CC0 assets: middleage_caucasian_male skin, high-poly eyes, bluegreen iris), spencer_face.py"
+    "source": "MPFB 2 (CC0 assets: middleage_caucasian_male skin, high-poly eyes, bluegreen iris), spencer_face.py",
+    "fit": "only skin seen through the opening is kept; it keeps 2.5 mm from the helmet and 4 mm from the neck, collar and shoulders in every keyed clip; spencer_face_check.py: no overlap in any clip"
   },
   "visor": {
     "mesh": "Mercer_Visor",

@@ -12,6 +12,10 @@ Overrides build_mercer4.py's export on the SAME rig, bone names, sockets, all 20
    key. In front of it the glass `Mercer_Visor`: a tinted, see-through faceplate (`Mercer_Visor_Albedo.png`, alpha =
    opacity: clearer in the middle, denser at the rim; `Mercer_Visor_Emission.png`: faint HUD ticks along the edge).
    Both are rigid on the Head bone; far copies `Mercer_Face_LOD1` and `Mercer_Visor_LOD1` ride with Mercer_LOD1.
+   Fix 2026-11-08 (face and helmet ran through each other): the brow plate, the cheek guards and the chin guard are
+   kept out of the cavity (keep_out_of_cavity), and the face is fitted against the built body (Cavity): only skin
+   seen through the opening (plus two rings) is kept, visible skin keeps FIT_GAP from the rigid helmet parts and
+   NECK_GAP from the neck and collar. spencer_face_check.py verifies every clip (BVH overlap, zero = pass).
 2. Night vision: a helmet-mounted quad-tube NVG flipped up: a shroud bolted to the brow, a mount block with a
    transverse hinge (yellow knobs), a pivot arm, the housing with four tubes (phosphor-green lit objectives up,
    rubber eyecups down) and a cable over the right side of the helmet to the battery pack at the back.
@@ -68,7 +72,8 @@ HEAT = dict(paint=np.array((0.42, 0.33, 0.5)), paint_amount=0.55, wear=0.0, roug
 # Helmet: a shell with a visor opening
 # ------------------------------------------------------------------------------------------------------------
 
-BOXY = BM.boxy(0.74)
+HELM_E = 0.74                     # the helmet's boxy exponent
+BOXY = BM.boxy(HELM_E)
 SHELL = 0.013                     # shell thickness
 WIN_W = 50.0                      # half-width of the opening (degrees of azimuth from the front)
 PHI_BOT = -66.0                   # where the shell ends under the jaw (the collar and neck close it)
@@ -269,12 +274,55 @@ def nvg(b):
                     style=metal([(lambda c: np.ones(len(c.p)), dict(paint=S.PAL.yellow, wear=0.2, rough=0.5))], seed=88))
 
 
+INNER = 1.0 - SHELL / 0.13           # the shell's inner surface, as a fraction of the helmet radius
+BROW_MARGIN = 0.5                    # degrees the brow plate's lower edge stays above the opening's top edge
+CAVITY_MARGIN = 0.005                # the chin guard's inside stays this fraction of the radius outside the liner
+
+
+def helm_angles(p):
+    """(azimuth, elevation, radius ratio) of a point round the helmet centre: the exact inverse of helm_surf (the boxy
+    deform bends directions, so the angles are those of the unit-sphere point it came from) and |p - centre| over the
+    helmet surface distance in the same direction."""
+    d = Vector(p) - Vector(HELM_C)
+    if d.length < 1e-9:
+        return 0.0, 0.0, 0.0
+    w = [d[i] / HELM_R[i] for i in range(3)]
+    k = sum(abs(c) ** (2.0 / HELM_E) for c in w) ** (-HELM_E / 2.0)
+    u = Vector(tuple(math.copysign(abs(k * c) ** (1.0 / HELM_E), c) for c in w))
+    th = math.degrees(math.atan2(u.x, -u.y))
+    ph = math.degrees(math.asin(max(-1.0, min(1.0, u.z))))
+    return th, ph, 1.0 / k
+
+
+def keep_out_of_cavity(b):
+    """Outer parts must not reach into the space the face lives in (pass 4 fix, Remco 2026-11-08: the face and the
+    helmet ran through each other at the opening's corners). The brow plate's lower corners dipped a few degrees under
+    the opening's top edge (a white shard over the forehead), the chin guard, centred on the shell, put half its depth
+    inside the cavity in front of the mouth and the jaw, and the brow plate and the cheek guards reached ~7 mm under
+    the liner. Their vertices are clamped: the brow up to the opening's top edge, all three out to the liner."""
+    verts = {"Brow": set(), "Chin": set(), "Cheek": set()}
+    for f, pid in zip(b.bm.faces, b.face_pid):
+        name = b.parts[pid].name
+        if name in verts:
+            verts[name].update(f.verts)
+    for v in verts["Brow"]:
+        th, ph, r = helm_angles(v.co)
+        lo = win_top(max(-WIN_W, min(WIN_W, th))) + BROW_MARGIN
+        if ph < lo:
+            v.co = Vector(HELM_C) + helm_local(th, lo) * r
+    for v in verts["Brow"] | verts["Chin"] | verts["Cheek"]:
+        th, ph, r = helm_angles(v.co)
+        if r < INNER + CAVITY_MARGIN:
+            v.co = Vector(HELM_C) + helm_local(th, ph) * (INNER + CAVITY_MARGIN)
+
+
 def head(b):
     helmet_shell(b)
     gasket(b)
     face_guards(b)
     nvg(b)
     M4.helmet_kit(b)
+    keep_out_of_cavity(b)
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -545,27 +593,153 @@ def jet_report():
 # ------------------------------------------------------------------------------------------------------------
 
 FACE_SCALE = 1.22
-EYE_Z = 1.468
+EYE_Z = 1.480                    # pass-4 fix: 12 mm higher, so the chin clears the liner under the opening (was 1.468)
 CLEARANCE = 0.93                 # the face stays inside 93 % of the helmet's radius in every direction (glass ~99 %)
+
+
+FIT_GAP = 0.0025                 # visible skin keeps 2.5 mm from every body surface (liner, guards, gasket, neck)
+FIT_STEP = 0.001                 # the face moves back this far per fitting step
+FIT_RINGS = 2                    # polygon rings kept round the visible skin, so cut edges stay behind the helmet
+VIEW_AZ = (-90.0, 90.0, 7.5)     # view directions the visible skin is found from (degrees, head frame): every yaw in
+VIEW_EL = (-15.0, 75.0, 7.5)     # front, from a little below (cutscenes) to steeply above (the game camera, ~44)
+NEAR = 0.3
+NECK_GAP = 0.004                 # skin keeps 4 mm from the neck, collar and shoulders in every sampled pose
+POSE_STEP = 1                    # every frame of every clip is sampled (the Down clip hits the shoulder on one odd frame)
+OPENING_SLACK = 3.0              # degrees round the opening's edge a ray may still leave through
 
 
 def surface_ratio(points):
     """|p - centre| over the helmet surface distance in the same direction, per point."""
-    out = np.zeros(len(points))
-    c = Vector(HELM_C)
-    for i, p in enumerate(points):
-        d = Vector(p) - c
-        if d.length < 1e-6:
-            continue
-        dn = d.normalized()
-        th = math.degrees(math.atan2(dn.x, -dn.y))
-        ph = math.degrees(math.asin(max(-1.0, min(1.0, dn.z))))
-        s = helm_local(th, ph).length
-        out[i] = d.length / s
-    return out
+    return np.array([helm_angles(p)[2] for p in points])
 
 
-def build_face(cache, tex_dir):
+class Cavity:
+    """The body round the head in the rest pose, for fitting the face. The parts rigid on the Head bone (shell, liner,
+    guards, gasket) hide skin and must never be touched by visible skin; the neck and the collar move under the
+    helmet, so they never count as cover and skin near them goes (with a wider gap, as they move)."""
+
+    def __init__(self, body, arm=None, actions=()):
+        from mathutils.bvhtree import BVHTree
+        me = body.data
+        head = body.vertex_groups["Head"].index
+        self.co = [v.co.copy() for v in me.vertices]
+        rigid = np.array([any(g.group == head and g.weight > 0.999 for g in v.groups) for v in me.vertices])
+        c = Vector(HELM_C)
+        near = [tuple(p.vertices) for p in me.polygons if (self.co[p.vertices[0]] - c).length < NEAR]
+        self.cover = [pv for pv in near if rigid[list(pv)].all()]
+        self.helmet = BVHTree.FromPolygons(self.co, self.cover)
+        moving = [tuple(p.vertices) for p in me.polygons if not rigid[list(p.vertices)].all()]
+        near_set = set(near)
+        co, polys = self.moving_poses(body, arm, actions, moving) if arm else (self.co, [p for p in moving if p in near_set])
+        self.neck = BVHTree.FromPolygons(co, polys)
+
+    @staticmethod
+    def moving_poses(body, arm, actions, moving):
+        """Everything not rigid on the head (neck, collar, shoulder plates), posed in every POSE_STEP-th frame of every
+        clip and carried into the head's rest frame: the skin must clear all of it (the Down clip throws a shoulder
+        plate into the helmet's side at the ground hit)."""
+        rest = np.array(arm.data.bones["Head"].matrix_local)
+        hc = np.array(HELM_C)
+        poly_v = [np.array(p) for p in moving]
+        first = np.array([p[0] for p in moving])
+        co_all, polys_all, base = [np.array([v.co[:] for v in body.data.vertices])], [], 0
+        polys_all += [tuple(p) for p, f in zip(moving, first) if np.linalg.norm(co_all[0][f] - hc) < NEAR]
+        base = len(co_all[0])
+        for act in actions:
+            f0, f1 = (int(round(x)) for x in act.frame_range)
+            for f in range(f0, f1 + 1, POSE_STEP):
+                C.set_action(arm, act, f)
+                bpy.context.view_layer.update()
+                ev = body.evaluated_get(bpy.context.evaluated_depsgraph_get())
+                me = ev.to_mesh()
+                co = np.zeros(len(me.vertices) * 3)
+                me.vertices.foreach_get("co", co)
+                ev.to_mesh_clear()
+                pose = np.array(arm.matrix_world @ arm.pose.bones["Head"].matrix)
+                m = rest @ np.linalg.inv(pose) @ np.array(body.matrix_world)
+                co = co.reshape(-1, 3) @ m[:3, :3].T + m[:3, 3]
+                close = np.linalg.norm(co[first] - hc, axis=1) < NEAR
+                polys_all += [tuple(int(j) + base for j in pv) for pv, k in zip(poly_v, close) if k]
+                co_all.append(co)
+                base += len(co)
+        C.log("face fit: moving body sampled in", len(co_all) - 1, "poses,", len(polys_all), "polygons")
+        return [Vector(v) for v in np.concatenate(co_all)], polys_all
+
+    @staticmethod
+    def through_opening(c, d):
+        """Whether a ray that missed the cover leaves the helmet through the visor opening (not through the neck hole
+        or the shell's lower rim, which the collar closes: those are not cover because they move)."""
+        lo, hi = 0.0, 0.4
+        for _ in range(18):
+            mid = 0.5 * (lo + hi)
+            if helm_angles(c + d * mid)[2] < 1.0:
+                lo = mid
+            else:
+                hi = mid
+        th, ph, _ = helm_angles(c + d * hi)
+        edge = max(-WIN_W, min(WIN_W, th))
+        return abs(th) < WIN_W + OPENING_SLACK and win_bot(edge) - OPENING_SLACK < ph < win_top(edge) + OPENING_SLACK
+
+    def visible(self, face, eyes):
+        """Per face polygon: its front seen from some view direction (cover: the rigid helmet parts, the face and the
+        eyes; the ray must leave through the opening)."""
+        from mathutils.bvhtree import BVHTree
+        fco = [Vector(v) for v in face.co]
+        n, nf = len(self.co), len(fco)
+        occ = BVHTree.FromPolygons(self.co + fco + [Vector(v) for v in eyes.co],
+                                   self.cover + [tuple(j + n for j in f) for f in face.faces]
+                                   + [tuple(j + n + nf for j in f) for f in eyes.faces])
+        dirs = [unit_dir(az, el) for az in np.arange(VIEW_AZ[0], VIEW_AZ[1] + 1e-6, VIEW_AZ[2])
+                for el in np.arange(VIEW_EL[0], VIEW_EL[1] + 1e-6, VIEW_EL[2])]   # out of the visor, to the viewer
+        out = np.zeros(len(face.faces), bool)
+        for i, f in enumerate(face.faces):
+            c = sum((fco[j] for j in f), Vector()) / len(f)
+            nf_ = (fco[f[1]] - fco[f[0]]).cross(fco[f[2]] - fco[f[0]])
+            for d in dirs:
+                if nf_.dot(d) > 0.0 and occ.ray_cast(c + d * 0.0005, d, 0.6)[0] is None and self.through_opening(c, d):
+                    out[i] = True
+                    break
+        return out
+
+    @staticmethod
+    def touching(face, tree, gap):
+        """Per face polygon: a triangle overlap with `tree` or a corner closer than `gap`. No inside-a-solid test: the
+        face is one connected sheet that is mostly in the open, so any part of it inside a solid crosses its surface."""
+        from mathutils.bvhtree import BVHTree
+        fco = [Vector(v) for v in face.co]
+        near = np.array([tree.find_nearest(p, gap)[0] is not None for p in fco])
+        bad = np.array([near[list(f)].any() for f in face.faces])
+        bad[[a for a, _ in BVHTree.FromPolygons(fco, face.faces).overlap(tree)]] = True
+        return bad
+
+    def contacts(self, face, eyes):
+        """(visible, touching the helmet, touching the neck or collar) per face polygon."""
+        return (self.visible(face, eyes), self.touching(face, self.helmet, FIT_GAP),
+                self.touching(face, self.neck, NECK_GAP))
+
+
+def grow(face, keep, rings):
+    for _ in range(rings):
+        on = np.zeros(len(face.co), bool)
+        for f, k in zip(face.faces, keep):
+            if k:
+                on[list(f)] = True
+        keep = keep | np.array([on[list(f)].any() for f in face.faces])
+    return keep
+
+
+def keep_faces(piece, keep):
+    faces = [f for f, k in zip(piece.faces, keep) if k]
+    used = np.zeros(len(piece.co), bool)
+    for f in faces:
+        used[list(f)] = True
+    remap = -np.ones(len(piece.co), int)
+    remap[used] = np.arange(used.sum())
+    return F.Piece(piece.co[used], [tuple(int(remap[j]) for j in f) for f in faces],
+                   [c for c, k in zip(piece.cuv, keep) if k], piece.blink[used])
+
+
+def build_face(cache, tex_dir, body, arm=None, actions=()):
     caps, info = F.capture(cache)
     face, lm = F.face_piece(caps, info)
     eyes = F.eye_pieces(caps)
@@ -575,17 +749,36 @@ def build_face(cache, tex_dir):
     lm["eye_c"] = np.mean(centres, axis=0)
     brows = F.piece_of(caps["eyebrows"])
     lashes = F.piece_of(caps["eyelashes"])
+
+    def placed(y):
+        out = [F.Piece(p.co.copy(), p.faces, p.cuv, p.blink.copy()) for p in (face, eyes, brows, lashes)]
+        return out, F.place(out, dict(lm), Vector((0.0, y, EYE_Z)), FACE_SCALE)
+
     y = -0.07
     for _ in range(12):
-        target = Vector((0.0, y, EYE_Z))
-        pieces = [F.Piece(p.co.copy(), p.faces, p.cuv, p.blink.copy()) for p in (face, eyes, brows, lashes)]
-        lm2 = F.place(pieces, dict(lm), target, FACE_SCALE)
+        pieces, lm2 = placed(y)
         r = surface_ratio(pieces[0].co[pieces[0].co[:, 1] < y])
         worst = float(r.max())
         if worst <= CLEARANCE + 0.004:
             break
         y += (worst - CLEARANCE) * 0.13
     C.log("face placed: eye centre y", round(y, 4), "worst radius ratio", round(worst, 3))
+    # Fit against the real helmet (pass-4 fix): move back until no visible skin touches the body, then drop the skin
+    # nobody can see (scalp sides, under the chin, the back of the jaw: it ran into the neck and the chin guard).
+    cavity = Cavity(body, arm, actions)
+    for step in range(25):
+        pieces, lm2 = placed(y)
+        visible, helmet, neck = cavity.contacts(pieces[0], pieces[1])
+        if not (visible & helmet).any():
+            break
+        C.log("face fit: step", step, "y", round(y, 4), "visible polygons touching the helmet", int((visible & helmet).sum()))
+        y += FIT_STEP
+    else:
+        raise RuntimeError("face fit: visible skin still touches the helmet")
+    keep = grow(pieces[0], visible, FIT_RINGS) & ~helmet & ~neck
+    C.log("face fit: eye centre y", round(y, 4), "visible", int(visible.sum()), "kept", int(keep.sum()), "of", len(keep),
+          "visible skin dropped at the neck", int((visible & neck).sum()))
+    pieces[0] = keep_faces(pieces[0], keep)
     face_p, eyes_p, brows_p, lashes_p = pieces
     skin_uv = F.planar_uv(face_p, F.SKIN_BOX)
     # Folds that face away from the visor (inner lids, nostrils, the inner lips) would overlap the front projection and
@@ -792,7 +985,9 @@ def patch_report(path, face_paths, visor_paths, face_obj, visor_obj):
         "mask": "R AO (1), G smoothness (skin ~0.38, eyes 0.88), B/A 0 (no detail normals)",
         "shape_keys": {"Blink": "upper lids closed (0..1); optional: a blink every 3-6 s for 0.15 s"},
         "material": "the hero's lit shader (Game/UnitLit) with these maps; opaque; emission 1 (iris catchlight only)",
-        "source": "MPFB 2 (CC0 assets: middleage_caucasian_male skin, high-poly eyes, bluegreen iris), spencer_face.py"}
+        "source": "MPFB 2 (CC0 assets: middleage_caucasian_male skin, high-poly eyes, bluegreen iris), spencer_face.py",
+        "fit": "only skin seen through the opening is kept; it keeps %.1f mm from the helmet and %.0f mm from the neck, "
+               "collar and shoulders in every keyed clip; spencer_face_check.py: no overlap in any clip" % (FIT_GAP * 1000, NECK_GAP * 1000)}
     rep["visor"] = {
         "mesh": VISOR, "far_mesh": VISOR_LOD, "bone": "Head (rigid, weight 1)", "tris": C.tri_count(visor_obj),
         "maps": {k: rel(p) for k, p in visor_paths.items()},
@@ -824,19 +1019,20 @@ def main():
                                          unwrap="smart")
     arm = BM.build_armature(NAME + "_Rig", BM.bones())
     M3.skin_all(asset.low, arm, builder)
-    tex_dir = os.path.join(C.EXPORTS, NAME)
-    face, face_paths = build_face(args.get("face-cache") or FACE_CACHE, tex_dir)
-    visor_paths = visor_textures(tex_dir)
-    visor = build_visor(visor_paths)
-    for o in (face, visor):
-        rigid_on_head(o, arm)
     poser = C.Poser(arm)
     clips = {n: BM.CLIPS[n] for n in (("Idle", "Walk", "Run", "Shoot", "Slash") if fast else BM.CLIPS)}
     clips.update(M3.draw_clip_fns())
     clips.update(jet_clip_fns())
     actions = C.key_clips(poser, clips)
     switch = M3.switch_check(poser)
-    arm.animation_data.action = actions["Idle"]
+    # The face is fitted after the clips exist: the neck, collar and shoulders are sampled in every clip.
+    tex_dir = os.path.join(C.EXPORTS, NAME)
+    face, face_paths = build_face(args.get("face-cache") or FACE_CACHE, tex_dir, asset.low, arm, list(actions.values()))
+    visor_paths = visor_textures(tex_dir)
+    visor = build_visor(visor_paths)
+    for o in (face, visor):
+        rigid_on_head(o, arm)
+    C.set_action(arm, actions["Idle"], 0)
     objs = [arm, asset.low]
     lod = None
     if not fast:

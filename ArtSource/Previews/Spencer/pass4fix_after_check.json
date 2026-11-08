@@ -1,0 +1,146 @@
+{
+ "frames": 833,
+ "fails": [],
+ "worst_clearance_mm": 2.48,
+ "clips": {
+  "Disbelief": {
+   "frame": 32,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.3
+  },
+  "Down": {
+   "frame": 9,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.17
+  },
+  "Draw_Blade": {
+   "frame": 13,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.38
+  },
+  "Draw_Pistol": {
+   "frame": 8,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.52
+  },
+  "Hit": {
+   "frame": 1,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.19
+  },
+  "Idle": {
+   "frame": 14,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.39
+  },
+  "Jet_Fly": {
+   "frame": 24,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.0
+  },
+  "Jet_Land": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Jet_Takeoff": {
+   "frame": 2,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Lower_Weapon": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Point_Shout": {
+   "frame": 1,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Reload": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Repair": {
+   "frame": 15,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.57
+  },
+  "Revive": {
+   "frame": 12,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.3
+  },
+  "Run": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Shockwave": {
+   "frame": 1,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Shoot": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  },
+  "Slash": {
+   "frame": 8,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.41
+  },
+  "Startled": {
+   "frame": 11,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 2.48
+  },
+  "Startled_Hold": {
+   "frame": 42,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 3.06
+  },
+  "Stow_Blade": {
+   "frame": 10,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.39
+  },
+  "Stow_Pistol": {
+   "frame": 17,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.48
+  },
+  "Walk": {
+   "frame": 0,
+   "overlap": 0,
+   "visor_overlap": 0,
+   "clearance_mm": 4.72
+  }
+ },
+ "pass": true
+}
