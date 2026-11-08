@@ -160,5 +160,100 @@ def render_file(blend, outs, prefix, creature_blend=None):
     return render_set(arm, mesh, weapons, actions, outs, prefix)
 
 
+# ------------------------------------------------------------------------------------------------------------
+# Pass 2 (build_mercer3.py): rest hands, draw/stow frames, before/after compares
+# ------------------------------------------------------------------------------------------------------------
+
+MP.SOCKET_OF["hand_hilt"] = ("Weapon_R", ["Sword_Hilt"])
+MP.MODES["hilt"] = ("hand_hilt", "holster_pistol")
+
+
+def open_hero(blend):
+    bpy.ops.wm.open_mainfile(filepath=blend)
+    arm = bpy.data.objects["Mercer_Rig"]
+    mesh = bpy.data.objects["Mercer"]
+    weapons = {n: bpy.data.objects[n] for n in WEAPONS}
+    for o in bpy.data.objects:
+        if o.type == "MESH" and o.name != "Mercer" and o.name not in weapons:
+            o.hide_render = True
+    C.preview_world()
+    C.light_rig(scale=1.7)
+    C.ground()
+    return MP.Rig(arm, mesh, weapons), {a.name: a for a in bpy.data.actions}
+
+
+def render_hands(blend, out_path, shots=(("Idle", 0), ("Idle", 36), ("Walk", 8), ("Lower_Weapon", 70))):
+    """Both hands close up in the rest poses (one row per shot: right hand, left hand)."""
+    rig, acts = open_hero(blend)
+    paths = []
+    for name, f in shots:
+        if name not in acts:
+            continue
+        MP.pose(rig, acts[name], f, "pistol" if name == "Lower_Weapon" else "none")
+        bpy.context.view_layer.update()
+        for side, az in (("R", -70), ("L", 70)):
+            tgt = rig.arm.matrix_world @ rig.arm.pose.bones["Hand_" + side].tail
+            cam = C.closeup_camera(tgt, 0.55, azimuth=az, elevation=8, lens=60)
+            paths.append(C.render(cam, out_path.replace(".png", f"_{name}{f}_{side}.png"), 480, 480, samples=32))
+            bpy.data.objects.remove(cam)
+    C.contact_sheet(paths, out_path, 4, 360)
+    for p in paths:
+        os.remove(p)
+    return out_path
+
+
+def weapon_mode(clip, f, events):
+    if clip == "Draw_Pistol":
+        return "pistol" if f >= events["grab"] else "none"
+    if clip == "Stow_Pistol":
+        return "none" if f >= events["release"] else "pistol"
+    if clip == "Draw_Blade":
+        return "none" if f < events["grab"] else ("hilt" if f < events["ignite"] else "sword")
+    if clip == "Stow_Blade":
+        return "sword" if f < events["blade_off"] else ("hilt" if f < events["release"] else "none")
+    return "none"
+
+
+def render_draw_sheet(blend, out_path, clips, columns=7):
+    """One row per draw/stow clip: frames at its start, its events and its end, weapons on the socket they are in."""
+    rig, acts = open_hero(blend)
+    paths = []
+    for name, spec in clips:
+        frames, events = spec[0], spec[2]
+        picks = sorted({0, *events.values(), frames})
+        for f in range(1, frames):
+            if len(picks) >= columns:
+                break
+            if f not in picks and all(abs(f - q) > 1 for q in picks):
+                picks = sorted(picks + [f])
+        picks = picks[:columns]
+        az = -55 if "Pistol" in name else -125
+        for f in picks:
+            MP.pose(rig, acts[name], f, weapon_mode(name, f, events))
+            cam = C.closeup_camera(Vector((0, 0, 1.05)), 2.7, azimuth=az, elevation=14, lens=55)
+            paths.append(C.render(cam, out_path.replace(".png", f"_{name}_{f}.png"), 400, 480, samples=24))
+            bpy.data.objects.remove(cam)
+    C.contact_sheet(paths, out_path, columns, 300)
+    for p in paths:
+        os.remove(p)
+    return out_path
+
+
+def render_pass2(blend, out, prefix, creature_blend, before_blend, draw_clips):
+    paths = render_file(blend, [out], prefix, creature_blend)
+    render_hands(blend, os.path.join(out, f"{prefix}_hands_after.png"))
+    if before_blend:
+        render_hands(before_blend, os.path.join(out, f"{prefix}_hands_before.png"),
+                     shots=(("Idle", 0), ("Idle", 36), ("Walk", 8), ("Lower_Weapon", 70)))
+    render_draw_sheet(blend, os.path.join(out, f"{prefix}_draw_stow.png"), draw_clips)
+    for pass1, mine, name in (("after_game_zoom.png", f"{prefix}_game_zoom.png", "compare_game_zoom"),
+                              ("after_game.png", f"{prefix}_game.png", "compare_game"),
+                              ("after_sheet.png", f"{prefix}_sheet.png", "compare_sheet")):
+        a, b = os.path.join(out, pass1), os.path.join(out, mine)
+        if os.path.exists(a) and os.path.exists(b):
+            C.contact_sheet([a, b], os.path.join(out, f"{prefix}_{name}.png"), 2, 1280 if "sheet" not in name else 1600)
+    return paths
+
+
 if __name__ == "__main__":
     main()

@@ -30,6 +30,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # 2026-11-08: Spencer's look upgrade; overwrites the Mercer export above (same rig, clips and names, 2048
            # maps, unmirrored) and re-runs the reaction clips on it.
            "build_mercer2.py",
+           # 2026-11-08 pass 2: Spencer as a warrior (crest helm, spiked asymmetric pauldron, tabard, sword sheath across
+           # the back, battle scars) + Draw/Stow clips and relaxed rest hands; overwrites the export above again.
+           "build_mercer3.py",
            # Level bosses; their compare renders load the base species' .blend files built above.
            "build_broodmother.py", "build_packalpha.py", "build_stormmatriarch.py", "build_corewisp.py",
            # Round 10 bosses; each loads its species' .blend built above.

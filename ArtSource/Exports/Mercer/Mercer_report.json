@@ -1,10 +1,10 @@
 {
   "asset": "Mercer",
   "character": "Spencer",
-  "round": "spencer-2026-11-08 (build_mercer2.py)",
-  "game_tris": 14998,
-  "lod1_tris": 5200,
-  "source_tris": 2894104,
+  "round": "spencer-pass2-2026-11-08 (build_mercer3.py)",
+  "game_tris": 17498,
+  "lod1_tris": 6000,
+  "source_tris": 3529888,
   "bones": 31,
   "sockets": [
     "Back",
@@ -22,20 +22,20 @@
     "Mask"
   ],
   "uv": {
-    "islands": 829,
+    "islands": 953,
     "unwrap": "smart, layer-weighted, concave pack",
-    "uv_coverage": 0.424,
-    "world_per_uv": 3.4002884978305867
+    "uv_coverage": 0.407,
+    "world_per_uv": 3.705016717712208
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 136.0,
+      "tiling": 148.2,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 56.7,
+      "tiling": 61.8,
       "mask": "A"
     }
   },
@@ -49,6 +49,8 @@
   "actions": {
     "Disbelief": 84,
     "Down": 40,
+    "Draw_Blade": 22,
+    "Draw_Pistol": 18,
     "Hit": 12,
     "Idle": 72,
     "Lower_Weapon": 70,
@@ -62,6 +64,8 @@
     "Slash": 22,
     "Startled": 24,
     "Startled_Hold": 48,
+    "Stow_Blade": 24,
+    "Stow_Pistol": 22,
     "Walk": 32
   },
   "walk_distance_per_loop": 0.968,
@@ -94,6 +98,18 @@
     },
     "Lower_Weapon": {
       "lowered": 22
+    },
+    "Draw_Pistol": {
+      "grab": 7
+    },
+    "Stow_Pistol": {
+      "release": 11
+    },
+    "Draw_Blade": {
+      "grab": 9
+    },
+    "Stow_Blade": {
+      "release": 15
     }
   },
   "upper_body_mask": "Spine1 and all its children",
@@ -162,5 +178,133 @@
       "Point_Shout": "starts and ends at Idle frame 0"
     },
     "visor": "the left hand stays below and beside the visor in Disbelief; the visor is never covered"
+  },
+  "draw_stow": {
+    "clips": {
+      "Draw_Pistol": {
+        "frames": 18,
+        "seconds": 0.6,
+        "loop": false,
+        "layer": "full (feet stay in the stance)",
+        "weapon": "Pistol (+ Pistol_Mag)",
+        "from_socket": "Holster_R",
+        "to_socket": "Weapon_R",
+        "starts": "Idle frame 0",
+        "ends": "Shoot frame 0",
+        "events": {
+          "reach": 5,
+          "grab": 7,
+          "clear": 10,
+          "aimed": 18
+        },
+        "events_normalized": {
+          "reach": 0.278,
+          "grab": 0.389,
+          "clear": 0.556,
+          "aimed": 1.0
+        }
+      },
+      "Stow_Pistol": {
+        "frames": 22,
+        "seconds": 0.733,
+        "loop": false,
+        "layer": "full (feet stay in the stance)",
+        "weapon": "Pistol (+ Pistol_Mag)",
+        "from_socket": "Weapon_R",
+        "to_socket": "Holster_R",
+        "starts": "Shoot frame 0",
+        "ends": "Idle frame 0",
+        "events": {
+          "lower": 4,
+          "align": 8,
+          "release": 11,
+          "let_go": 16,
+          "rest": 22
+        },
+        "events_normalized": {
+          "lower": 0.182,
+          "align": 0.364,
+          "release": 0.5,
+          "let_go": 0.727,
+          "rest": 1.0
+        }
+      },
+      "Draw_Blade": {
+        "frames": 22,
+        "seconds": 0.733,
+        "loop": false,
+        "layer": "full (feet stay in the stance)",
+        "weapon": "Sword_Hilt (Sword_Blade from ignite)",
+        "from_socket": "Back",
+        "to_socket": "Weapon_R",
+        "starts": "Idle frame 0",
+        "ends": "Slash frame 0",
+        "events": {
+          "reach": 7,
+          "grab": 9,
+          "clear": 12,
+          "ignite": 16,
+          "guard": 22
+        },
+        "events_normalized": {
+          "reach": 0.318,
+          "grab": 0.409,
+          "clear": 0.545,
+          "ignite": 0.727,
+          "guard": 1.0
+        }
+      },
+      "Stow_Blade": {
+        "frames": 24,
+        "seconds": 0.8,
+        "loop": false,
+        "layer": "full (feet stay in the stance)",
+        "weapon": "Sword_Hilt (Sword_Blade until blade_off)",
+        "from_socket": "Weapon_R",
+        "to_socket": "Back",
+        "starts": "Slash frame 0",
+        "ends": "Idle frame 0",
+        "events": {
+          "blade_off": 4,
+          "align": 12,
+          "release": 15,
+          "rest": 24
+        },
+        "events_normalized": {
+          "blade_off": 0.167,
+          "align": 0.5,
+          "release": 0.625,
+          "rest": 1.0
+        }
+      }
+    },
+    "switch_check": {
+      "Draw_Pistol": {
+        "event": "grab",
+        "frame": 7,
+        "offset_mm": 0.0,
+        "angle_deg": 0.0
+      },
+      "Stow_Pistol": {
+        "event": "release",
+        "frame": 11,
+        "offset_mm": 0.0,
+        "angle_deg": 0.0
+      },
+      "Draw_Blade": {
+        "event": "grab",
+        "frame": 9,
+        "offset_mm": 0.0,
+        "angle_deg": 0.0
+      },
+      "Stow_Blade": {
+        "event": "release",
+        "frame": 15,
+        "offset_mm": 0.0,
+        "angle_deg": 0.0
+      }
+    },
+    "back_socket": "moved to the sword sleeve on the pack's top right (pommel up over the right shoulder)",
+    "unity": "reparent the weapon (identity local transform) at the primary event; Draw_Blade shows Sword_Blade from 'ignite', Stow_Blade hides it at 'blade_off'"
   }
 }
