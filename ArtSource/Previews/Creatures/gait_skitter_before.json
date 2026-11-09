@@ -1,0 +1,11 @@
+{
+  "frames": 24,
+  "unity_distance_per_loop": 0.36,
+  "unity_rate_wanted": 5.64,
+  "unity_rate_played": 4.0,
+  "planted_steps_measured": 8,
+  "foot_slide_per_step_model_mean": 0.104,
+  "foot_slide_per_step_model_max": 0.104,
+  "foot_slide_per_step_world_mean": 0.0655,
+  "slip_share": 0.409
+}

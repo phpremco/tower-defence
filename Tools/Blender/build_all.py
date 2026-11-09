@@ -51,6 +51,9 @@ SCRIPTS = ["detailmaps.py", "build_skitter.py", "build_queen.py", "build_props.p
            # clips for the species without one, Strike_Float/Strike_Ground for the Wisp; Stinger Strike, Skyray Dive
            # and Mireleech Latch rebuilt).
            "build_attacks36.py",
+           # Round 39: lifelike insect gaits (Skitter diagonal pairs, Shardback tripod), slide-free at Unity's speed;
+           # re-keys only Walk and overwrites their exports (needs the Strike clips above).
+           "build_insect_gait.py",
            "build_rollerking.py",
            # Round 14: spawn origins, resource node, then Gravemaw (its previews load the hole and BroodMother).
            "build_env_origins.py", "build_gravemaw.py",
