@@ -1,10 +1,10 @@
 ﻿# Credits
 
-Third-party assets in this project. All are CC0 (public domain); crediting is not required but appreciated.
+Third-party assets in this project. Most are CC0 (public domain); the UI font is SIL OFL 1.1, which asks that its licence ships with the font.
 
 | Asset | Author | License | Location |
 | --- | --- | --- | --- |
-| Kenney Fonts (Kenney Future, Kenney Future Narrow) | Kenney, www.kenney.nl | CC0 | `Assets/_Project/Art/UI/Fonts/` |
+| Chakra Petch (Regular, Medium, SemiBold, Bold), the UI display font | Cadson Demak, The Chakra Petch Project Authors (github.com/m4rc1e/Chakra-Petch), via google/fonts `ofl/chakrapetch` | SIL Open Font License 1.1 (text in `Assets/_Project/Art/UI/License_Fonts.txt`) | `Assets/_Project/Art/UI/Fonts/` |
 | Sci-fi Sounds (lasers, explosions, impacts, thrusters, force fields, slime) | Kenney, www.kenney.nl | CC0 | `Assets/_Project/Audio/Kenney_SciFi/` |
 | Sci-Fi Weapon Shots SFX (laser rifle, pistol and beam shots) | Lentikula, lentikula.itch.io | CC0 | `Assets/_Project/Audio/Lentikula/` |
 | Laser weld (looping boss laser hum, `freesound_community-laser-weld-103309.mp3`) | freesound_community via Pixabay | Pixabay Content License (free use, no attribution required) | `Assets/_Project/Audio/Freesound/` |
@@ -14,4 +14,4 @@ Third-party assets in this project. All are CC0 (public domain); crediting is no
 
 Only the pieces the game uses are imported. The license texts sit next to each asset folder.
 
-The Kenney Space Kit models and the Kenney UI Pack sprites were removed on 2026-11-04: every model, panel, button, bar and icon is now painted in Blender (`ArtSource/`, project-owned). The Kenney fonts stay.
+The Kenney Space Kit models and the Kenney UI Pack sprites were removed on 2026-11-04: every model, panel, button, bar and icon is now painted in Blender (`ArtSource/`, project-owned). The Kenney fonts were replaced by Chakra Petch on 2026-11-09 (5/S and K/X read alike in Kenney Future).

@@ -4304,3 +4304,61 @@ Not committed (the curator commits). Docs/BALANCE.md "The route-sampled kill mod
 C1_03 Hard mono rows reach 13/16: scale 0.87 -> 1 with the new strategies), `balance_pipeline.sh solve`, `impact`, then
 `measure_cells.sh`/`replay_cells.sh "cells=..."` on the workers (never while `finale_workers.sh` runs), `acceptance`, `fit`,
 `apply-force`. A full `search` is 1-2 min per cell now (route model); `snapshot`/`impact` about 2.5 min.
+
+## Round 28 (UI): Chakra Petch, insect gait import, Spencer's jet flames and pistol (2026-11-09)
+
+Not committed (the curator commits). No balance data or balance pipeline touched. Save: `progress.json` MD5 ae9223b8 before and
+after every play run (checked by `r28_shots.sh` and by hand); the dev backup untouched.
+
+1. **UI font: Chakra Petch (SIL OFL 1.1)** replaces Kenney Future / Kenney Future Narrow. Static Regular, Medium, SemiBold and
+   Bold from google/fonts `ofl/chakrapetch` in `Assets/_Project/Art/UI/Fonts/`; the OFL text (with source and designer) is now
+   `Assets/_Project/Art/UI/License_Fonts.txt`; `Docs/CREDITS.md` updated. Wiring is unchanged: legacy uGUI `Text` takes
+   `UiSkin.Font` at 28 px and up (`UiKit.DisplayFontMinSize`), smaller text keeps the built-in body face, the TMP labels
+   (dialogue, cutscene, radar) keep Liberation Sans. `ProjectGenerator.AssignSkinFonts`: display = **SemiBold** (keeps weight
+   under the glow outline), the old "narrow" slot = **Medium** (no runtime code reads `NarrowFont` today). Applied without the
+   full generator by `Tools/PlayTest/Scripts/ApplySkinFonts.cs` (run_script). The Kenney TTFs and the round-23b K/X patch
+   (`Tools/Fonts/patch_kenney_glyphs.py`) are deleted; `Tools/Blender/ui_art.py` (mockup labels) points at Chakra Petch.
+   Checked in play (`r28_shots.sh ... ui`): main menu, HUD and both codex pages render in the new face, "Codex", "Skitter",
+   "Base 600/600", "Money 245", "Spencer down 1:57" read cleanly (5/S, K/X, 0/O distinct). Fit sweep `r28_texts.cs` (every
+   display text: natural width against its box, and for wrapping best-fit texts the size at 125 % copy length as a Dutch
+   stand-in): menu 5, HUD 8, codex 11-13 texts, 0 out of box/screen, 0 tight or clipping at 125 %. The game has no Dutch
+   strings yet, so the 125 % check is the proxy.
+2. **Insect gait (commit 31d04588) imported.** `Tools/Generate/Blender Creatures (sync, materials, enemies)`: Skitter and
+   Shardback FBX + LOD1 + report copied; `Skitter.asset` `_distancePerLoop` 0.36 -> 1.32, `Shardback.asset` 0.2 -> 0.64, both from
+   the report's `walk_distance_per_loop` (`BlenderArtBuilder.MoveDistance`; the catalog's `MoveDistance` is only a fallback).
+   The playback rate is not hard-coded anywhere: `CreatureClips.Rate` = measured ground speed / (distance per loop x creature
+   scale) x clip length, clamped 0.3-4; at data speed that gives the report's 2.69 (Skitter) and 1.67 (Shardback), inside the clamp.
+   Side effects of the same step: `ShardFlyer.fbx` re-copied (the committed ArtSource export from Boss art round 29 was newer than
+   the Assets copy, same size), and the usual reserialisation churn (new default fields `_displayExposure`, `_SrcBlend/_DstBlend/
+   _ZWrite/_RimAlpha` on creature materials). Verified in play (`r28_gait.cs`: foot tips from the skinned mesh, 40 single frames
+   at 60 fps, planted = within 0.8 cm of the foot's lowest point): Skitter body 1.55 m/s (data 1.6), planted feet move a median
+   3 % of the body's motion; Shardback 0.78 m/s (data 0.75), median 6 %. (Before the import the report measured 41 % slip for the
+   Skitter.) Probe pitfall: the clip player culls rigs that are not drawn (`CullCompletely`) and a CLI-stepped editor draws
+   nothing, so the probe sets its creature's Animators to AlwaysAnimate; also hold the editor (`step N hold`) or the creature
+   reaches the first gate between CLI calls and stands biting.
+3. **Spencer's jet flames.** `JetThrust` now takes `HeroArtDefinition` and draws per nozzle a wide outer flame (rocket exhaust
+   sheet, `_thrustWidth` 0.8 of its length, was 0.45 hard-coded; HDR `_thrustGlow` 2), a hot core card over it
+   (`_thrustCoreColor`, `_thrustCoreLength` 0.6, `_thrustCoreWidth` 0.4, `_thrustCoreGlow` 4), a camera-facing radial heat glow
+   (`_heatGlowColor/Size 0.7 m/Strength 1.5`) and the motes; one point light at the pack (`_heatLightIntensity` 3, `_heatLightRange`
+   3, no shadows). **Low (Switch):** no light, half the motes, the sheet's Low material. All new fields have defaults on the class
+   (the generator never wrote the jet fields; `MercerArt.asset` picks them up as defaults). Stills during the flight: a white-hot
+   core inside a blue flame with a soft halo, reads as a bright blue flare even at the game zoom (`r28_jet_*`).
+4. **Spencer's pistol.** No new mesh needed. `HeroArtDefinition._pistolScale` 1.35 (hand and holster) and a light strip
+   (`PistolGlow`): the pulse weapons' painted bolt card laid from `_pistolStripStart` (0, 0.07, -0.02 grip space) to the muzzle,
+   turned to the camera, tinted in the ranged weapon's colour x `_pistolStripGlow` 3, `_pistolStripWidth` 0.14 m; a single card,
+   kept on Low. A first try with the GlowPool radial material did not show at all. A/B stills (strip off and art scale vs on):
+   side-on at mid zoom the pistol goes from a small grey shape to a bigger gun with an orange-gold lit barrel; at game zoom it
+   reads as a small lit barrel beside him (26 px on a 1920 frame). When he aims straight up-screen the gun sits behind his
+   helmet from this camera; that is the camera angle, not the gun. The menu display figure (`BuildDisplay`) keeps the art scale.
+
+Tests: EditMode suite (async, 7.4 min): 707, 651 passed, 4 failed, 52 skipped; the four are the known balance-data checks from
+round 27 (`BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`, `ContinentFinaleTests` x2, `DroneLensTests.RepairDrone_
+PriceFollowsTheInvestmentRule`). **The suite rewrote run output** (`Tools/PlayTest/Plans/*` incl. new `*_strategy4/5.json`,
+`acceptance.txt`, `calibration.txt`, `monoculture_ledger.txt`, `plans_summary.txt`): not reverted this round (the revert was
+blocked by a permission rule); curator, please `git checkout`/`git clean` those paths before committing. Console: 0 errors, 0 warnings in every play run; the only compile warning is the existing
+CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:601` (balance code, not touched).
+Scripts: `Tools/PlayTest/r28_shots.sh <dir> [node] [ui|hero|gait|all]` (stills via render_still.cs, restores the save and the
+arg files), `r28_texts.cs`, `r28_gait.cs`, `r28_view.cs`, `r28_pistol.cs` (report/on/off), `Scripts/ApplySkinFonts.cs`.
+Open: Remco to judge Chakra Petch in his own play (the Medium weight is unused until a screen asks for the narrow face); whether
+the TMP dialogue/cutscene labels should also move to Chakra Petch (they use Liberation Sans on purpose since round 23); the
+ShardFlyer re-copy is unreviewed in play.

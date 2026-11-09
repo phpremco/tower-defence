@@ -22,6 +22,7 @@ MonoBehaviour:
   - _object: FrostWarden_IceArmour
     _material: {fileID: 2100000, guid: 1f076b41fa6edb5489e06fbd6bf080e0, type: 2}
     _lowMaterial: {fileID: 2100000, guid: 4965b44cfc0f9e841b16fbc94d307757, type: 2}
+    _castShadows: 1
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0

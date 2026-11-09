@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8f1228c8fb4e51e4d8c0b90516398150
+guid: fd423dd6726f102439a7aa2f8347f07e
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Kenney Future
+  - Chakra Petch
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

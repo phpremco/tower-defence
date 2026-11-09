@@ -19,8 +19,8 @@ import vfx_kit as VK
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(REPO, "ArtSource", "Exports", "UI")
-FONT = os.path.join(REPO, "Assets", "_Project", "Art", "UI", "Fonts", "KenneyFuture.ttf")
-FONT_NARROW = os.path.join(REPO, "Assets", "_Project", "Art", "UI", "Fonts", "KenneyFutureNarrow.ttf")
+FONT = os.path.join(REPO, "Assets", "_Project", "Art", "UI", "Fonts", "ChakraPetch-SemiBold.ttf")
+FONT_NARROW = os.path.join(REPO, "Assets", "_Project", "Art", "UI", "Fonts", "ChakraPetch-Medium.ttf")
 
 # The light every bevel is shaded with: from the top left, 45 degrees up.
 LIGHT = (-0.5, 0.5, 0.7071)

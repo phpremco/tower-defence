@@ -31,7 +31,7 @@
     }
   },
   "actions": {
-    "Walk": 24,
+    "Walk": 42,
     "Idle": 60,
     "Hit": 12,
     "Death": 36,
@@ -81,5 +81,54 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "walk_distance_per_loop": 1.32,
+  "round39_gait": {
+    "gait": "diagonal pairs (four walking legs)",
+    "groups": [
+      [
+        "L1",
+        "R2"
+      ],
+      [
+        "R1",
+        "L2"
+      ]
+    ],
+    "hind_leads_front_by_cycle": 0.03,
+    "duty_factor": 0.58,
+    "lift_model": 0.055,
+    "cycles_per_loop": 3,
+    "frames_per_cycle": 14,
+    "distance_per_cycle_model": 0.44,
+    "stance_stroke_model": 0.255,
+    "enemy_speed": 1.6,
+    "unity_model_scale": 0.63,
+    "steps_per_second_per_leg": 5.77,
+    "stride_world": 0.277,
+    "after": {
+      "frames": 42,
+      "unity_distance_per_loop": 1.32,
+      "unity_rate_wanted": 2.69,
+      "unity_rate_played": 2.69,
+      "planted_steps_measured": 26,
+      "foot_slide_per_step_model_mean": 0.0036,
+      "foot_slide_per_step_model_max": 0.012,
+      "foot_slide_per_step_world_mean": 0.0023,
+      "slip_share": 0.016,
+      "max_planted_foot_height_model": 0.0
+    },
+    "before": {
+      "frames": 24,
+      "unity_distance_per_loop": 0.36,
+      "unity_rate_wanted": 5.64,
+      "unity_rate_played": 4.0,
+      "planted_steps_measured": 8,
+      "foot_slide_per_step_model_mean": 0.104,
+      "foot_slide_per_step_model_max": 0.104,
+      "foot_slide_per_step_world_mean": 0.0655,
+      "slip_share": 0.409
+    },
+    "note": "planted feet move back at the clip's ground speed (zero world speed); per-step timing, duty, lift and landing jitter; the report's walk_distance_per_loop replaces the catalog MoveDistance"
   }
 }

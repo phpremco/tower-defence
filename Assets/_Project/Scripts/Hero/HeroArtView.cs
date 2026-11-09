@@ -151,6 +151,7 @@ namespace Game.Hero
         private Flight _flight;
         private float _flightAge;
         private JetThrust _jets;
+        private PistolGlow _pistolGlow;
 
         private SkinnedMeshRenderer[] _blinkers = new SkinnedMeshRenderer[0];
         private int[] _blinkShapes = new int[0];
@@ -286,7 +287,7 @@ namespace Game.Hero
             Transform[] nozzles = Bones(_art.JetSockets);
             if (nozzles.Length > 0)
             {
-                _jets = new JetThrust(transform, nozzles, _art.ThrustColor, _art.ThrustLength);
+                _jets = new JetThrust(transform, nozzles, _art);
             }
         }
 
@@ -341,11 +342,13 @@ namespace Game.Hero
             if (_art.Pistol != null && definition.RangedWeapon != null)
             {
                 _pistol = ArtModel.Create(_holster, _art.Pistol, ownMaterial: false);
+                _pistol.Root.localScale *= _art.PistolScale;
                 Hide(_pistol, _art.HiddenParts);
                 _muzzle = new GameObject("Muzzle").transform;
                 _muzzle.SetParent(_pistol.Root, false);
                 _muzzle.localPosition = _art.Muzzle;
                 BuildBolt(definition.RangedWeapon.Color);
+                _pistolGlow = PistolGlow.Create(transform, _pistol.Root, _art, definition.RangedWeapon.Color);
             }
 
             if (_art.SwordHilt != null && definition.Weapon != null)
@@ -796,6 +799,7 @@ namespace Game.Hero
             Blink(deltaTime);
             _player.Tick(deltaTime);
             _jets?.Tick(deltaTime);
+            _pistolGlow?.Tick(_pistol.Root.gameObject.activeInHierarchy);
         }
 
         // The jetpack flight to another gate (Spencer pass 4): the take-off on the spot, the flight cycle while the

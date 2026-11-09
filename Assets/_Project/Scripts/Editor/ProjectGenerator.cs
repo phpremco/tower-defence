@@ -195,13 +195,25 @@ namespace Game.Editor
         {
             var skin = LoadOrCreate<UiSkin>(SkinAssetPath);
             var so = new SerializedObject(skin);
-            so.FindProperty("_font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFuture.ttf");
-            so.FindProperty("_narrowFont").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(UiFolder + "Fonts/KenneyFutureNarrow.ttf");
+            AssignSkinFonts(so);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             // Panels, buttons, bars, cards, icons and the dialogue art are painted in Blender (README round 25).
             BlenderUiBuilder.ApplyToSkin(skin, BlenderUiBuilder.SyncAndBuild());
             return skin;
+        }
+
+        // Chakra Petch (SIL OFL) replaced Kenney Future on 2026-11-09: its 5/S, K/X and 0/O stay distinct at HUD sizes.
+        // The display face is SemiBold (titles and buttons keep weight under the glow outline); the old "narrow" slot,
+        // for denser display lines, takes Medium.
+        private const string DisplayFontPath = UiFolder + "Fonts/ChakraPetch-SemiBold.ttf";
+        private const string NarrowFontPath = UiFolder + "Fonts/ChakraPetch-Medium.ttf";
+
+        /// <summary>Sets the skin's display fonts; also run alone by Tools/PlayTest/Scripts/ApplySkinFonts.cs.</summary>
+        private static void AssignSkinFonts(SerializedObject skin)
+        {
+            skin.FindProperty("_font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(DisplayFontPath);
+            skin.FindProperty("_narrowFont").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>(NarrowFontPath);
         }
 
         // A grading tint shifts hue only: scaled so its brightest channel is one, it never darkens the picture.

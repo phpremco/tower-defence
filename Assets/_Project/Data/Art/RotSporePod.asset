@@ -25,6 +25,7 @@ MonoBehaviour:
   _height: 0.18990934
   _lodScreenHeight: 0.09
   _upperBodyBone: 
+  _displayExposure: 1
   _deathFade: {x: 0.13333334, y: 0.45333338}
   _embers: 0
   _bleeds: 0
@@ -44,6 +45,8 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []
   - _role: 0
     _clip: {fileID: -1176320380790243303, guid: d9f2a6921cec37343a2bba9008c7efd3, type: 3}
     _farClip: {fileID: 0}
@@ -56,3 +59,5 @@ MonoBehaviour:
     _endOffset: {x: 0, y: 0}
     _cueSeconds: 0
     _anchorForward: 0
+    _momentSeconds: []
+    _burden: []

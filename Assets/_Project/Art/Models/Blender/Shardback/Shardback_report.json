@@ -31,7 +31,7 @@
     }
   },
   "actions": {
-    "Walk": 32,
+    "Walk": 48,
     "Idle": 72,
     "Hit": 12,
     "Death": 40,
@@ -68,7 +68,7 @@
     "Shard_5": 23,
     "Shard_6": 28
   },
-  "walk_distance_per_loop": 0.2,
+  "walk_distance_per_loop": 0.64,
   "pivot": "ground, body centre",
   "spit_origin": "Throat, about (0, 0.17, 0.46) model units, from the Head bone",
   "round36": {
@@ -110,5 +110,55 @@
       "unity": "new clip: catalog row BlenderClipSpec(\"Strike\", ModelClipRole.Attack, 10)"
     },
     "note": "anticipation coil, fast ease-out lunge of the striking part, held contact, damped spring follow-through; root planted (flyers dive and swoop on the Body bone)"
+  },
+  "round39_gait": {
+    "gait": "alternating tripod",
+    "groups": [
+      [
+        "L1",
+        "R2",
+        "L3"
+      ],
+      [
+        "R1",
+        "L2",
+        "R3"
+      ]
+    ],
+    "hind_leads_front_by_cycle": 0.025,
+    "duty_factor": 0.62,
+    "lift_model": 0.05,
+    "cycles_per_loop": 2,
+    "frames_per_cycle": 24,
+    "distance_per_cycle_model": 0.32,
+    "stance_stroke_model": 0.198,
+    "enemy_speed": 0.75,
+    "unity_model_scale": 1.12,
+    "steps_per_second_per_leg": 2.09,
+    "stride_world": 0.358,
+    "after": {
+      "frames": 48,
+      "unity_distance_per_loop": 0.64,
+      "unity_rate_wanted": 1.67,
+      "unity_rate_played": 1.67,
+      "planted_steps_measured": 29,
+      "foot_slide_per_step_model_mean": 0.0012,
+      "foot_slide_per_step_model_max": 0.0041,
+      "foot_slide_per_step_world_mean": 0.0014,
+      "slip_share": 0.007,
+      "max_planted_foot_height_model": 0.0
+    },
+    "before": {
+      "frames": 32,
+      "unity_distance_per_loop": 0.2,
+      "unity_rate_wanted": 3.57,
+      "unity_rate_played": 3.57,
+      "planted_steps_measured": 15,
+      "foot_slide_per_step_model_mean": 0.0017,
+      "foot_slide_per_step_model_max": 0.0036,
+      "foot_slide_per_step_world_mean": 0.0019,
+      "slip_share": 0.018
+    },
+    "note": "planted feet move back at the clip's ground speed (zero world speed); per-step timing, duty, lift and landing jitter; the report's walk_distance_per_loop replaces the catalog MoveDistance"
   }
 }
