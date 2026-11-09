@@ -4247,3 +4247,60 @@ gate upgrades yes (built).
 on the new data, then tune by impact and `replay_cells.sh`. 3. Finale probe: `run_tests --mode PlayMode --filter
 Measure_ContinentFinales_AsPlayed --include_explicit true --async_tests true`, then `ContinentFinaleTests`, then `balance_pipeline.sh
 finale`. 4. `balance_pipeline.sh droneprice` (the drone test fails until it runs). 5. The whole EditMode suite, async.
+
+## Round 27: the route-sampled kill model, two tuning passes, the finale probe (2026-11-09)
+
+Not committed (the curator commits). Docs/BALANCE.md "The route-sampled kill model" and "Round 27 passes"; Docs/COMMANDS.md
+"Round 27". Save: `progress.json` MD5 ae9223b8 before and after every run (checked by the worker scripts and by hand).
+
+1. **Goal 1, the route-sampled kill model (built, fitted, applied by override).** `RouteKill` walks every group of a wave along
+   its route cell by cell past every standing gun (exposure per creature, shared by the arrival rate of the creatures still alive,
+   armour share, overkill, splash at the live density; two passes); what is alive at the defence gate is the leak the siege
+   resolves, the cells behind the gate meet only what got past. Data: `WaveLoad.Groups`, `LevelGeometry.GroundRoutes/AirRoutes/
+   InReach`, `SpotCover.Spot`, `SiegeGuards.Guns/Dealt/QueueByType/DoorByType`, `SiegeLine.QueueGuardKills/DoorGuardKills`,
+   `Leak.Resolve(ref guards)`, `BalanceRules.RouteFire` (+ `_routeFire` on the asset, `routefire` in calibration.txt, grid-chosen
+   beside the queue-guard share). The pressure lens (`Ledger.Capacity`: purchases, solver, hero-cap margin) is unchanged on purpose:
+   the per-type efficiencies keep their scale. Tests: `RouteKillTests` (6), `LeakModelTests` (7) green. A fit bug fixed on the way:
+   `FitSiege` accumulated its sums across the guard-share grid since round 22d. **Fit:** 675 runs 78 % / 0.76 hold-out (self 83 % /
+   0.78) against round 26's 82 % / 0.69; on the pass-2 records (687 runs) 77 % / 0.78 (self 81 % / 0.83). Bar not met; applied by
+   override as the better of the two (ranking far better, agreement a little worse, the physical model the next continents need).
+   The paper is now lenient where the gates wear in play while the paper's blocking hero clears the queue (C1_02 Easy/Medium, C1_05).
+   Tried and dropped, numbers in BALANCE.md: a ratio-fitted route fire, per-type efficiencies on the route account, a two-biter hero.
+2. **Goal 2, two passes on continent 1** (impact first, then workers; levers in `wave_tuning.txt`, 2 moves per cell per pass).
+   In-play margins after pass 2 (E/M/H/P): C1_01 1.00/1.00/1.00/0.83; C1_02 1.00/0.92/1.00/0.53; C1_03 1.00/1.00/0.92/1.00; C1_04
+   1.00/1.00/0.75/0.63; C1_05 0.92/0.60/0.64/0.34; C1_06 1.00/0.89/0.86/0.65. **Acceptance 5/24** (unchanged in count): C1_02 Easy's
+   plans 0/3 -> 3/3, C1_03 Hard 0.41 -> 0.92 (fresh strategies win), C1_06 Psycho 0.39 -> 0.65, C1_01 Hard's mono rows at last worse
+   than on Medium (scale 1.32) but still 3 stars; C1_02 Psycho and C1_05 unmoved. The impact calculator cannot see Hard/Psycho (every
+   plan falls on paper there), so those cells were replayed by hand. The swarm lever is built (`swarm`, after plated in the builder's
+   order), not yet used. **C1_05's map change was not made:** the layout is `LayoutSpec` C1_05 (Hook, seed 105, 4 gates) and the
+   defence gate lands at 12 % of the road by `RoadGenerator.FirstGateShare`; a per-level first-gate share (say 0.3 for C1_05, so the
+   build spots of the first legs fire before the gate) needs the full generator run, then measure/search/replay of the four C1_05
+   cells (about 15 min on the workers). Left for the next agent with Remco's go on the shape of the change.
+3. **Goal 3.** `droneprice`: the rule now prices the repair drone at 60 (busy share 0.34 on records where the bots bought it at the
+   last waves); the asset was reverted to 170 and the question is below. **Finale probe** run on the clones (`finale_workers.sh`,
+   one difficulty per worker, 3.5 min; rerun with the health range widened to x16, 6 min): the bot beats every continent boss at
+   5-15x its data health except Rotbloom (x1-2.4) and Gravemaw Medium (x2.4); the `finale` stage was not applied. `ContinentFinaleTests`
+   reads the report and fails 2 of 5 on it.
+4. **Goal 4, the whole EditMode suite (async): 651/707 passed, 4 failed, 52 skipped/ignored.** The four: `ContinentFinaleTests` x2
+   (the finale report above), `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule` (asset 170 against the rule's 60),
+   `BalanceLedgerTests` x1 (the human-lens bands after the passes: C1_01 Easy asks 0.95 of Medium on plain waves, most 0.93; C1_02 Easy at scale 0.757 gives a competent player 1.86x the firepower, most 1.60x; C1_03 Psycho 0.80x with the hero). No test asserts the old 0.3 light-fire factor (ArmourPoolTests/ProtectionBarTests use
+   a local constant). A stray full `PlanSearchTests` run late in the round rewrote `Plans/*`; the files of the 20 cells not
+   re-searched this round were restored from git so they match `plan_records.txt`; `plans_summary.txt` is from that full search.
+
+**Design questions for Remco (round 27).**
+1. The calibration bar: the route model gives ranking 0.76-0.78 (bar 0.8) and agreement 77-78 % (bar 90 %). The next physical term
+   is the hero at a besieged gate (he falls at wave 7 on C1_02 Easy in play while the paper keeps him up; the game has no cap on the
+   creatures biting at once, the model's `AttackersPerGate` is 5). Also: the grid picks route fire 1.0/siege 0.91 on one record set
+   and 4.0/2.05 on the next; should the siege factor be fitted once and frozen?
+2. Continent finales: the finale player (6-7 planned towers, level-20 research, 1260-1980 money) beats most continent bosses at
+   5-15x their health. Raise the bosses by the probe (x5-12), weaken the finale player, or make the finale wave more than one boss?
+3. The repair drone's investment rule prices it at 60 now (the bots buy it at wave 16-17, so its measured busy share fell to 0.34).
+   Keep 170 (asset reverted) and change the rule's busy share to the drone's potential, or let the rule speak?
+4. C1_05: a later first gate (first-gate share 0.12 -> about 0.3 for this level) as the approved map change?
+5. Easy cells fail only on "the best plan does not clearly beat the obvious rows" (both 3 stars, base whole): is that rule right on
+   Easy, or should Easy ask for coins/score instead?
+
+**Commands to continue (editor_status first).** Pass 3: edit `wave_tuning.txt` (C1_02 Psycho and C1_01 Psycho next: the swarm lever;
+C1_03 Hard mono rows reach 13/16: scale 0.87 -> 1 with the new strategies), `balance_pipeline.sh solve`, `impact`, then
+`measure_cells.sh`/`replay_cells.sh "cells=..."` on the workers (never while `finale_workers.sh` runs), `acceptance`, `fit`,
+`apply-force`. A full `search` is 1-2 min per cell now (route model); `snapshot`/`impact` about 2.5 min.

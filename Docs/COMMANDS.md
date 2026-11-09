@@ -771,3 +771,16 @@ console and `Logs/probe_trace.txt`.
   replay (workers), acceptance, readme; stops only when a PlayMode stage fails. `apply-force` is in the chain because the fit is below
   the bar this round (its warning is in the log).
 - The gate-upgrade step: a plan file may hold `{"Kind":"gate","Item":"gates"}` steps; a strategy JSON has `GateUpgradeBias` (0 never).
+
+### Round 27 (2026-11-09)
+
+- The fit's grid now chooses the route model's `routefire` beside `queueguard` (calibration.txt lines; `_routeFire` on the asset,
+  `BalanceRules.RouteFire`); `CalibrationFitTests` takes about five minutes (56 grid points, each a siege fit and a check).
+- The paper is slower with the route model: `balance_pipeline.sh snapshot` about 2.5 min (was 6 s), `impact` the same; a plan
+  search per cell is minutes. Run `search` in the background with a log.
+- Finale probe on the clones, one difficulty per worker: `bash Tools/PlayTest/finale_workers.sh` (or `finale_workers.sh 1` for
+  Medium only) merges the four reports into `Tools/PlayTest/finale_probe.txt`; then `run_tests --mode EditMode --filter
+  ContinentFinaleTests` and `balance_pipeline.sh finale`. The clones must be idle (no measure or replay running).
+- The builder's lever order is plated, swarm, tempo, raid (`wave_tuning.txt` line `Key d swarm 1.5`: unarmoured troops no heavier
+  than twice the lightest troop weigh x1.5 in every fill of that difficulty).
+- Pass logs of this round: `Tools/PlayTest/round27_pass1.log` (measure + replay of the tuned and flagged cells on the workers).

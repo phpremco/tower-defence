@@ -358,7 +358,7 @@ namespace Game.Balance
             float totalWeight = 0f;
             foreach (TroopSpec troop in troops)
             {
-                totalWeight += Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies);
+                totalWeight += Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) * SwarmLever(troop, troops, script, difficulty, enemies);
             }
 
             int order = 0;
@@ -371,7 +371,7 @@ namespace Game.Balance
                 }
 
                 float threat = Threat.Of(enemy, rules);
-                float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) / totalWeight;
+                float share = budget * Weight(troop, bias, enemies, rules) * PlatedLever(troop, script, difficulty, enemies) * SwarmLever(troop, troops, script, difficulty, enemies) / totalWeight;
                 int wanted = (int)Math.Round(share / threat);
                 int count = Math.Min(MaxGroupCount, Math.Max(share >= threat * MinShare ? 1 : 0, wanted));
                 if (wanted > MaxGroupCount)
@@ -422,6 +422,29 @@ namespace Game.Balance
         {
             EnemyStats enemy = Get(enemies, troop.Enemy);
             return enemy != null && enemy.Armor > 0f ? script.PlatedBiasFor(difficulty) : 1f;
+        }
+
+        // Round 27, the swarm lever: troops without armour and no heavier than twice the lightest troop of the fill weigh more on the
+        // difficulty (the lever against a splash row: more small bodies than a blast can catch), the rest as written.
+        private const float SwarmHealthShare = 2f;
+
+        private static float SwarmLever(TroopSpec troop, List<TroopSpec> troops, WaveScriptSpec script, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies)
+        {
+            float bias = script.SwarmBiasFor(difficulty);
+            EnemyStats enemy = Get(enemies, troop.Enemy);
+            if (bias == 1f || enemy == null || enemy.Armor > 0f)
+            {
+                return 1f;
+            }
+
+            float lightest = float.MaxValue;
+            foreach (TroopSpec other in troops)
+            {
+                EnemyStats candidate = Get(enemies, other.Enemy);
+                lightest = candidate != null ? Math.Min(lightest, candidate.EffectiveHealth) : lightest;
+            }
+
+            return enemy.EffectiveHealth <= lightest * SwarmHealthShare ? bias : 1f;
         }
 
         // The builder's raid lever (round 22e): the wave opens with a few fast, spread runners of the cheapest troop, ahead of its fill.

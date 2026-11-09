@@ -9,12 +9,13 @@ namespace Game.Editor
     public struct ScriptLever
     {
         public float Plated;
+        public float Swarm;
         public float Tempo;
         public int Raid;
 
-        public static ScriptLever None => new ScriptLever { Plated = 1f, Tempo = 1f, Raid = 0 };
+        public static ScriptLever None => new ScriptLever { Plated = 1f, Swarm = 1f, Tempo = 1f, Raid = 0 };
 
-        public bool IsNone => Plated == 1f && Tempo == 1f && Raid == 0;
+        public bool IsNone => Plated == 1f && Swarm == 1f && Tempo == 1f && Raid == 0;
     }
 
     /// <summary>
@@ -29,6 +30,7 @@ namespace Game.Editor
     {
         public const string Path = "Tools/PlayTest/wave_tuning.txt";
         private const string PlatedKey = "plated";
+        private const string SwarmKey = "swarm";
         private const string TempoKey = "tempo";
         private const string RaidKey = "raid";
 
@@ -41,6 +43,7 @@ namespace Game.Editor
             {
                 var values = new float[4];
                 var plated = new float[4];
+                var swarm = new float[4];
                 var tempo = new float[4];
                 var raid = new int[4];
                 bool any = false;
@@ -51,6 +54,7 @@ namespace Game.Editor
                     any |= values[d] != 1f;
                     ScriptLever lever = levers.TryGetValue((script.Key, d), out ScriptLever found) ? found : ScriptLever.None;
                     plated[d] = lever.Plated;
+                    swarm[d] = lever.Swarm;
                     tempo[d] = lever.Tempo;
                     raid[d] = lever.Raid;
                     anyLever |= !lever.IsNone;
@@ -58,6 +62,7 @@ namespace Game.Editor
 
                 script.TargetScale = any ? values : new[] { 1f };
                 script.PlatedBias = anyLever ? plated : new[] { 1f };
+                script.SwarmBias = anyLever ? swarm : new[] { 1f };
                 script.Tempo = anyLever ? tempo : new[] { 1f };
                 script.RaidWave = anyLever ? raid : new[] { 0 };
             }
@@ -95,6 +100,9 @@ namespace Game.Editor
                     case PlatedKey:
                         lever.Plated = value;
                         break;
+                    case SwarmKey:
+                        lever.Swarm = value;
+                        break;
                     case TempoKey:
                         lever.Tempo = value;
                         break;
@@ -128,6 +136,11 @@ namespace Game.Editor
                 if (pair.Value.Plated != 1f)
                 {
                     lines.Add(cell + PlatedKey + " " + pair.Value.Plated.ToString("0.###", CultureInfo.InvariantCulture));
+                }
+
+                if (pair.Value.Swarm != 1f)
+                {
+                    lines.Add(cell + SwarmKey + " " + pair.Value.Swarm.ToString("0.###", CultureInfo.InvariantCulture));
                 }
 
                 if (pair.Value.Tempo != 1f)

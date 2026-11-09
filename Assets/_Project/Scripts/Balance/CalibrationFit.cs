@@ -133,6 +133,12 @@ namespace Game.Balance
             /// <summary>The queue and doorstep guards' share of their damage per second with the best verdict agreement (<see cref="BalanceRules.QueueGuardShare"/>).</summary>
             public float QueueGuardShare = 1f;
             public float RepairDroneSeconds;
+
+            /// <summary>The route model's fire factor (round 27, <see cref="BalanceRules.RouteFire"/>): realised tower damage over the route account at the fitted efficiencies, with its sums.</summary>
+            public float RouteFire = 1f;
+            public float RouteDealt;
+            public float RoutePaper;
+            public int RouteWaves;
         }
 
         /// <summary>What the leak model predicts for one recorded run from its realised standing sets: the base left, the fall wave, the stars.</summary>
@@ -184,6 +190,7 @@ namespace Game.Balance
             var result = new Result();
             var efficiency = new Dictionary<string, float>();
             var waves = new List<(WaveRecord Record, Dictionary<string, float> Capacity, float Hero)>();
+            var fitted = new List<(RunRecord Run, RecordedCell Cell)>();
             foreach (RunRecord run in runs)
             {
                 RecordedCell cell = cellOf(run);
@@ -193,6 +200,7 @@ namespace Game.Balance
                 }
 
                 result.Runs++;
+                fitted.Add((run, cell));
                 foreach (WaveRecord wave in run.Waves)
                 {
                     // The wave a lost run ends in is cut short (the base dies while creatures still walk): it says nothing about the guns.
@@ -215,6 +223,8 @@ namespace Game.Balance
                 }
             }
 
+            // The per-type efficiencies on the pressure lens (spawn span plus pass): the relative worth of each gun type, shared by
+            // the purchases, the solver and the route model, so a refit never shifts the scale the waves were solved on.
             for (int iteration = 0; iteration < Iterations; iteration++)
             {
                 var dealt = new Dictionary<string, float>();
@@ -253,8 +263,114 @@ namespace Game.Balance
             }
 
             FitGuards(runs, cellOf, result);
+            RouteSums(fitted, result);
             FitRepairDrone(runs, result);
             return result;
+        }
+
+        // The route fire factors the fit tries (round 27, with the guard shares): the walk's scale against the siege's, chosen by the verdicts.
+        private static readonly float[] RouteFires = { 1f, 1.5f, 2f, 3f, 4f, 6f, 8f };
+
+        // The route account beside the realised damage at the chosen fire (the report's line): the guns' walk and behind kills along
+        // the routes plus their share of the queue and doorstep fights, a wave capped at the health there was.
+        private static void RouteSums(List<(RunRecord Run, RecordedCell Cell)> fitted, Result result)
+        {
+            float fire = result.RouteFire;
+            {
+                float real = 0f;
+                float paper = 0f;
+                int waves = 0;
+                foreach ((RunRecord run, RecordedCell cell) in fitted)
+                {
+                    BalanceRules judge = JudgeOf(cell).Copy();
+                    judge.RouteFire = fire;
+                    SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
+                    int cheapestGun = PlanEvaluator.CheapestGun(cell.Input);
+                    foreach (WaveRecord wave in run.Waves)
+                    {
+                        if (wave.Wave < 1 || wave.Wave > cell.Loads.Count)
+                        {
+                            continue;
+                        }
+
+                        WaveLoad load = cell.Loads[wave.Wave - 1];
+                        if (!run.Scripted && PlanEvaluator.RepairPrice(cell.Input, load, state, cheapestGun, cell.Loads.Count - wave.Wave + 1) >= 0)
+                        {
+                            state.RepairGates(cell.Input);
+                        }
+
+                        Pressures(wave, cell, judge, result.Efficiency, out _, out _, out SiegeGuards guards);
+                        SiegeLine line = Leak.Resolve(cell.Input, load, judge, ref guards, state, judge.WaveDelay + load.Window);
+                        bool cutShort = !run.Won && wave.Wave >= run.WaveReached;
+                        if (wave.Health <= 0f || cutShort || guards.Dealt == null)
+                        {
+                            continue;
+                        }
+
+                        float account = 0f;
+                        foreach (float amount in Account(wave, cell, judge, result.Efficiency, guards, line).Values)
+                        {
+                            account += amount;
+                        }
+
+                        paper += Math.Min(account, Math.Max(0f, wave.Health - wave.OtherDealt));
+                        real += wave.TowerDealt;
+                        waves++;
+                    }
+                }
+
+                result.RouteWaves = waves;
+                result.RouteDealt = real;
+                result.RoutePaper = paper;
+            }
+        }
+
+
+        // The paper's damage per tower type on one recorded wave at the given efficiencies: the route model's walk account plus each
+        // type's share of what the guard guns killed at the queue and the doorstep (by its share of the guard rate there). A level
+        // the route model cannot walk (no map) is accounted the old way, the spawn-span capacity at the current efficiencies.
+        private static Dictionary<string, float> Account(WaveRecord wave, RecordedCell cell, BalanceRules judge, IReadOnlyDictionary<string, float> efficiency, SiegeGuards guards, SiegeLine line)
+        {
+            var account = new Dictionary<string, float>(StringComparer.Ordinal);
+            if (guards.Dealt == null)
+            {
+                foreach (KeyValuePair<string, float> pair in PlanEvaluator.CapacityByType(cell.Input, cell.Loads[wave.Wave - 1], judge, wave.Standing, 1f))
+                {
+                    account[pair.Key] = pair.Value * (efficiency.TryGetValue(pair.Key, out float e) ? e : 1f);
+                }
+
+                return account;
+            }
+
+            foreach (KeyValuePair<string, float> pair in guards.Dealt)
+            {
+                account[pair.Key] = pair.Value;
+            }
+
+            Share(account, guards.QueueByType, guards.QueueDps, line.QueueGuardKills);
+            Share(account, guards.DoorByType, guards.DoorDps, line.DoorGuardKills);
+            foreach ((string id, int _, Cell _) in wave.Standing)
+            {
+                if (!account.ContainsKey(id) && cell.Input.Towers.Exists(t => t.Id == id))
+                {
+                    account[id] = 0f;
+                }
+            }
+
+            return account;
+        }
+
+        private static void Share(Dictionary<string, float> account, Dictionary<string, float> byType, float total, float killed)
+        {
+            if (byType == null || total <= 0f || killed <= 0f)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<string, float> pair in byType)
+            {
+                account[pair.Key] = (account.TryGetValue(pair.Key, out float known) ? known : 0f) + killed * pair.Value / total;
+            }
         }
 
         // The guard shares the fit tries (round 22d): the siege factor is refitted for each, and the share whose verdicts agree best with
@@ -264,24 +380,31 @@ namespace Game.Balance
         private static void FitGuards(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
         {
             float bestShare = 1f;
+            float bestFire = 1f;
             float bestAgreement = -1f;
             float bestRanking = -2f;
-            foreach (float share in GuardShares)
+            foreach (float fire in RouteFires)
             {
-                result.QueueGuardShare = share;
-                FitSiege(runs, cellOf, result);
-                Agreement check = Check(runs, cellOf, result.Efficiency, result.SiegeFactor, share);
-                float agreement = check.Runs > 0 ? check.Agreed / (float)check.Runs : 0f;
-                float ranking = check.MeanSpearman;
-                if (agreement > bestAgreement + 1e-6f || (Math.Abs(agreement - bestAgreement) <= 1e-6f && ranking > bestRanking))
+                foreach (float share in GuardShares)
                 {
-                    bestShare = share;
-                    bestAgreement = agreement;
-                    bestRanking = ranking;
+                    result.RouteFire = fire;
+                    result.QueueGuardShare = share;
+                    FitSiege(runs, cellOf, result);
+                    Agreement check = Check(runs, cellOf, result);
+                    float agreement = check.Runs > 0 ? check.Agreed / (float)check.Runs : 0f;
+                    float ranking = check.MeanSpearman;
+                    if (agreement > bestAgreement + 1e-6f || (Math.Abs(agreement - bestAgreement) <= 1e-6f && ranking > bestRanking))
+                    {
+                        bestShare = share;
+                        bestFire = fire;
+                        bestAgreement = agreement;
+                        bestRanking = ranking;
+                    }
                 }
             }
 
             result.QueueGuardShare = bestShare;
+            result.RouteFire = bestFire;
             FitSiege(runs, cellOf, result);
         }
 
@@ -290,6 +413,10 @@ namespace Game.Balance
         // when a gate is rebuilt, and a run cannot lose more than stood).
         private static void FitSiege(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result result)
         {
+            // Round 27: the sums are per call (the grid search calls this for every fire and share; before, they ran on across the grid).
+            result.PaperStructureDamage = 0f;
+            result.StructureLost = 0f;
+            result.SiegeWaves = 0;
             foreach (RunRecord run in runs)
             {
                 RecordedCell cell = cellOf(run);
@@ -301,6 +428,7 @@ namespace Game.Balance
                 BalanceRules judge = JudgeOf(cell).Copy();
                 judge.SiegeFactor = 1f;
                 judge.QueueGuardShare = result.QueueGuardShare;
+                judge.RouteFire = result.RouteFire;
                 int trunkGates = PlanEvaluator.TrunkGates(cell.Input);
                 float structures = cell.Input.BaseHealth + cell.Input.GateHealth * trunkGates;
                 SiegeState state = SiegeState.Start(cell.Input, trunkGates);
@@ -349,7 +477,7 @@ namespace Game.Balance
         {
             WaveLoad load = cell.Loads[wave.Wave - 1];
             Pressures(wave, cell, judge, efficiency, out _, out _, out SiegeGuards guards);
-            return Leak.Resolve(cell.Input, load, judge, guards, state, judge.WaveDelay + load.Window);
+            return Leak.Resolve(cell.Input, load, judge, ref guards, state, judge.WaveDelay + load.Window);
         }
 
         // Ground and air pressure of a recorded wave against its standing towers and the hero, and the same towers as siege guards.
@@ -388,7 +516,11 @@ namespace Game.Balance
         /// With these efficiencies, the ledger's verdict on every run (its standing towers hold every wave inside the cap)
         /// against what happened, and per cell the Spearman correlation of the analytic and the realised ranking of the runs.
         /// </summary>
-        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor = 1f, float queueGuardShare = 1f)
+        /// <summary>The check with a fit's own numbers (efficiencies, siege factor, guard share, route fire).</summary>
+        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, Result fit) =>
+            Check(runs, cellOf, fit.Efficiency, fit.SiegeFactor, fit.QueueGuardShare, fit.RouteFire);
+
+        public static Agreement Check(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor = 1f, float queueGuardShare = 1f, float routeFire = 1f)
         {
             var agreement = new Agreement();
             var cells = new Dictionary<string, List<(float Analytic, float Realised)>>();
@@ -400,7 +532,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                Prediction predicted = Predict(run, cell, efficiency, siegeFactor, queueGuardShare);
+                Prediction predicted = Predict(run, cell, efficiency, siegeFactor, queueGuardShare, routeFire);
                 bool holds = predicted.Holds;
                 bool mono = run.Strategy.StartsWith("mono", StringComparison.Ordinal);
                 agreement.Runs++;
@@ -438,12 +570,13 @@ namespace Game.Balance
         /// The siege model's verdict on a recorded run from its realised standing sets, with the given efficiencies (1 for types not
         /// listed) and siege factor: the base left after every wave, the wave it falls in, the stars, and the worst wave's cap over pressure.
         /// </summary>
-        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float siegeFactor, float queueGuardShare = 1f)
+        public static Prediction Predict(RunRecord run, RecordedCell cell, IReadOnlyDictionary<string, float> efficiency, float siegeFactor, float queueGuardShare = 1f, float routeFire = 1f)
         {
             var prediction = new Prediction { BaseLeft = cell.Input.BaseHealth, Margin = float.MaxValue };
             BalanceRules judge = JudgeOf(cell).Copy();
             judge.SiegeFactor = siegeFactor;
             judge.QueueGuardShare = queueGuardShare;
+            judge.RouteFire = routeFire;
             SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
             int cheapestGun = PlanEvaluator.CheapestGun(cell.Input);
             foreach (WaveRecord wave in run.Waves)
@@ -552,7 +685,7 @@ namespace Game.Balance
         /// queue and doorstep guards, the siege's gate and base damage and the state after it) beside what the game recorded
         /// (damage by type, base and gate losses): the fit's working table, written by the fit stage.
         /// </summary>
-        public static string WaveTable(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor)
+        public static string WaveTable(IReadOnlyList<RunRecord> runs, Func<RunRecord, RecordedCell> cellOf, IReadOnlyDictionary<string, float> efficiency, float siegeFactor, float routeFire = 1f)
         {
             var text = new StringBuilder(WaveTableHeader).Append('\n');
             foreach (RunRecord run in runs)
@@ -565,6 +698,7 @@ namespace Game.Balance
 
                 BalanceRules judge = JudgeOf(cell).Copy();
                 judge.SiegeFactor = siegeFactor;
+                judge.RouteFire = routeFire;
                 SiegeState state = SiegeState.Start(cell.Input, PlanEvaluator.TrunkGates(cell.Input));
                 foreach (WaveRecord wave in run.Waves)
                 {
@@ -575,7 +709,7 @@ namespace Game.Balance
 
                     WaveLoad load = cell.Loads[wave.Wave - 1];
                     Pressures(wave, cell, judge, efficiency, out float ground, out float air, out SiegeGuards guards);
-                    SiegeLine siege = Leak.Resolve(cell.Input, load, judge, guards, state, judge.WaveDelay + load.Window);
+                    SiegeLine siege = Leak.Resolve(cell.Input, load, judge, ref guards, state, judge.WaveDelay + load.Window);
                     text.Append(string.Join("|", run.Level, I(run.Difficulty), run.Strategy, I(run.Seed), run.Won ? "1" : "0", I(run.WaveReached), I(run.WaveCount), I(wave.Wave), load.HasBoss ? "1" : "0",
                         F(wave.Health), F(load.StreamHealth), F(load.BossHealth), F(load.AirHealth), F(guards.WalkStream), F(guards.WalkSingle), F(guards.WalkAir),
                         F(guards.QueueStream), F(guards.QueueSingle), F(guards.DoorStream), F(guards.DoorAir), F(Ledger.HeroDps(cell.Input)), F(ground), F(air),

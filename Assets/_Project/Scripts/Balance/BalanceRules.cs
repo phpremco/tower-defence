@@ -288,6 +288,14 @@ namespace Game.Balance
         public float QueueGuardShare = 1f;
 
         /// <summary>
+        /// The route-sampled kill model's fire factor (round 27, <see cref="RouteKill"/>): the damage the recorded guns really dealt
+        /// over the route model's account of them at the per-type efficiencies. One number for the whole walk, because the per-type
+        /// efficiencies stay on the pressure lens's scale (the purchases and the solver read them); fitted on the records and kept
+        /// on the BalanceCalibration asset, never typed.
+        /// </summary>
+        public float RouteFire = 1f;
+
+        /// <summary>
         /// The ledger buys sky guns only while the flyers' pressure is above this (round 22d): a sky gun does nothing for the ground and
         /// its price leaves every later purse, so one more bought on a hair starved the waves after and the solver could not land
         /// (Quartz Flats Easy wave 8). One means "until they are held".

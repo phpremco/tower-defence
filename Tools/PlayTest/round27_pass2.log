@@ -1,0 +1,35 @@
+Mon Nov  9 16:24:40 WEST 2026
+== workers: measure, 18 units over 5 workers (16:24:40)
+  synced 5 workers in 2 s
+  w1: 4 units: 0:2:1 0:3:3 2:2:2 4:2:1
+  w2: 4 units: 0:2:2 1:3:1 2:2:3 4:2:2
+  w3: 4 units: 0:2:3 1:3:2 4:1:1 4:2:3
+  w4: 3 units: 0:3:1 1:3:3 4:1:2
+  w5: 3 units: 0:3:2 2:2:1 4:1:3
+== workers done in 5 min 19 s (16:30:00)
+  w1: result="Passed", 0 probe errors, 24 runs
+  w2: result="Passed", 0 probe errors, 24 runs
+  w3: result="Passed", 0 probe errors, 24 runs
+  w4: result="Passed", 0 probe errors, 18 runs
+  w5: result="Passed", 0 probe errors, 18 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 432 runs in Tools/PlayTest/calibration_records.txt; tables in Tools/PlayTest/yardstick_partial.txt
+== measure done Mon Nov  9 16:30:01 WEST 2026
+== workers: replay, 18 units over 5 workers (16:30:02)
+  synced 5 workers in 1 s
+  w1: 4 units: 0:2:1 0:3:3 2:2:2 4:2:1
+  w2: 4 units: 0:2:2 1:3:1 2:2:3 4:2:2
+  w3: 4 units: 0:2:3 1:3:2 4:1:1 4:2:3
+  w4: 3 units: 0:3:1 1:3:3 4:1:2
+  w5: 3 units: 0:3:2 2:2:1 4:1:3
+== workers done in 3 min 44 s (16:33:45)
+  w1: result="Passed", 0 probe errors, 14 runs
+  w2: result="Passed", 0 probe errors, 14 runs
+  w3: result="Passed", 0 probe errors, 16 runs
+  w4: result="Passed", 0 probe errors, 11 runs
+  w5: result="Passed", 0 probe errors, 11 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 255 runs in Tools/PlayTest/plan_records.txt; tables in Tools/PlayTest/plan_replay_partial.txt
+== replay done Mon Nov  9 16:33:46 WEST 2026
+ae9223b8e654ca260425521be3d4b1c7 */c/Users/remco/AppData/LocalLow/DefaultCompany/Tower defense/Saves/progress.json
+EXIT 0

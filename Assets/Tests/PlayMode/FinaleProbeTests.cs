@@ -34,7 +34,7 @@ namespace Game.Tests
         // between the last win and the first loss; the bounds keep a boss the bot never beats or never loses to from running on.
         private const float ExpandStep = 1.4f;
         private const float MinMultiple = 0.25f;
-        private const float MaxMultiple = 4f;
+        private const float MaxMultiple = 16f;
         private const int Refinements = 3;
 
         [TearDown]

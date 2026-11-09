@@ -106,7 +106,7 @@ namespace Game.Editor
             var cells = new Dictionary<string, RecordedCell>();
             RecordedCell CellOf(RunRecord run) => CellFor(run, loaded, cells);
             CalibrationFit.Result all = CalibrationFit.Fit(runs, CellOf);
-            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all.Efficiency, all.SiegeFactor, all.QueueGuardShare);
+            CalibrationFit.Agreement self = CalibrationFit.Check(runs, CellOf, all);
 
             // Hold-out over the levels: fit on the odd ones, judge the even ones, and the other way round.
             var holdOut = new CalibrationFit.Agreement();
@@ -120,7 +120,7 @@ namespace Game.Editor
                 }
 
                 CalibrationFit.Result trained = CalibrationFit.Fit(train, CellOf);
-                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained.Efficiency, trained.SiegeFactor, trained.QueueGuardShare);
+                CalibrationFit.Agreement check = CalibrationFit.Check(test, CellOf, trained);
                 holdOut.Runs += check.Runs;
                 holdOut.Agreed += check.Agreed;
                 holdOut.MonoRuns += check.MonoRuns;
@@ -150,6 +150,7 @@ namespace Game.Editor
                 text.Append(Invariant($"{pair.Key,-14} {pair.Value,10:0.000} {dealt,7:0} {capacity,10:0} {waves,6}\n"));
             }
 
+            text.Append(Invariant($"\nRoute fire {all.RouteFire:0.000}: the route-sampled kill model's one factor (round 27), the realised tower damage {all.RouteDealt:0} over the route account {all.RoutePaper:0} at the fitted efficiencies on {all.RouteWaves} waves.\n"));
             text.Append(Invariant($"\nQueue guard share {all.QueueGuardShare:0.00}: the share of their damage per second the queue and doorstep guards land on a siege, the one of 0.3..1.0 with the best verdict agreement (round 22d).\n"));
             text.Append(Invariant($"\nSiege factor {all.SiegeFactor:0.000}: gate and base health lost {all.StructureLost:0} over the siege model's paper damage {all.PaperStructureDamage:0} at factor one, on {all.SiegeWaves} waves with a siege.\n"));
             text.Append(all.RepairDroneBusyShare >= 0f
@@ -175,14 +176,14 @@ namespace Game.Editor
                 text.Append(Invariant($"repairbusy {all.RepairDroneBusyShare:0.000}\n"));
             }
 
-            text.Append(Invariant($"queueguard {all.QueueGuardShare:0.00}\n"));
+            text.Append(Invariant($"queueguard {all.QueueGuardShare:0.00}\nroutefire {all.RouteFire:0.000}\n"));
             text.Append(Invariant($"siege {all.SiegeFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
             // The bar lines the apply stage checks (round 25: before, apply wrote a fit below the bar without a word) and the shape the fit was made under.
             bool accepted = holdOut.Share >= MinAgreement && holdOut.MonoShare >= MinAgreement && holdOut.MeanSpearman >= MinSpearman;
             text.Append(Invariant($"holdout {holdOut.Share:0.000} {holdOut.MonoShare:0.000} {holdOut.MeanSpearman:0.000} {(accepted ? 1 : 0)}\nshape {ShapeHash(loaded)}\n"));
             Directory.CreateDirectory(Path.GetDirectoryName(CalibrationTablePath));
             File.WriteAllText(CalibrationTablePath, text.ToString());
-            File.WriteAllText(WaveTablePath, CalibrationFit.WaveTable(runs, CellOf, all.Efficiency, all.SiegeFactor));
+            File.WriteAllText(WaveTablePath, CalibrationFit.WaveTable(runs, CellOf, all.Efficiency, all.SiegeFactor, all.RouteFire));
 
             var report = new FitReport { Text = text.ToString() };
             report.Accepted = holdOut.Share >= MinAgreement && holdOut.MonoShare >= MinAgreement && holdOut.MeanSpearman >= MinSpearman;
@@ -316,6 +317,11 @@ namespace Game.Editor
                 {
                     so.FindProperty("_queueGuardShare").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
                     report.Append("queue guard ").Append(parts[1]).Append("; ");
+                }
+                else if (parts.Length == 2 && parts[0] == "routefire")
+                {
+                    so.FindProperty("_routeFire").floatValue = float.Parse(parts[1], CultureInfo.InvariantCulture);
+                    report.Append("route fire ").Append(parts[1]).Append("; ");
                 }
                 else if (parts.Length == 2 && parts[0] == "siege")
                 {

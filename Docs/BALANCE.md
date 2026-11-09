@@ -1343,48 +1343,71 @@ repair price of that much health (`PlanEvaluator.GateUpgradeWorth`), times the s
 gate's next level beside the gun upgrades with the same ledger, scripted plans take a "gate" step, and the move is recorded as
 `gate`; the acceptance rules count a gate upgrade as one of the game's features a Hard or Psycho plan may use.
 
-## Approach cover, the blocking hero and the gate-upgrade step (2026-11-09, round 26)
+## The route-sampled kill model (2026-11-09, round 27)
 
-**What the records say about the paper (the residuals).** The fit's disagreements are not noise around a constant: they sit in
-cells. Read with the fit's wave table (`calibration_waves.txt`, one line per recorded wave: paper pressures, walk and queue
-guards, siege damage, beside the game's damage by type and gate and base losses) and two traced runs. (1) The paper counted a gun's
-whole cover as walk cover; a gun behind the defence gate (C1_02's strategies at (5,7)-(7,6) behind the gate at road index 11) kills
-nothing before the gate, and a gun on the long stretch behind a *fallen* gate (C1_01's rows at (5,14), index 40-72, behind the gate
-at index 14) kills everything, which the siege model, where "nothing shoots at the rest gates but the hero", could not see. (2) The
-hero is a blocker in play (`HeroTarget.BlocksGround`): the creatures that reach him bite him for their full blockade damage, so at a
-besieged gate he falls in about 20 s (300 health against five biters) and is down for 120 s, three or four waves; the paper's
-`GuardShare` 0.4 gave him 54 s and the gate the rest. (3) Per tower type the realised share of the nominal rate on the paper-leaky
-waves is flat over creature health (Gun Turret about 0.40, Laser 0.30, Cannon 0.70-0.98 with its splash), except small creatures
-(Gun Turret 0.23 under 20 health): the per-type efficiency is the right shape of calibration; what varies between cells is where
-the kills happen, not how many.
+The curator's answer to round 26's question 1: not a fitted per-level walk factor but a physical model of *where* a gun kills,
+reusable on every continent. `RouteKill` (Game.Balance) replaces the spawn-span-plus-pass credit of `Ledger.Capacity` in the
+siege's walk; the pressure lens (purchases, the solver, the hero-cap margin) keeps that capacity, so a refit never shifts the
+scale the waves were solved on.
 
-**Terms built.** `SpotCover.ApproachPass` and `BehindPass` (the geometry marks every route sample past the defence gate on its road;
-a lane that does not pass the gate is all approach; the spotless ideal is all approach): `Leak.AddTower` credits the walk with the
-gun's capacity times its approach share, puts the behind share into `SiegeGuards.BehindStream/BehindSingle`, and `Leak.Resolve`
-takes that off what got past the defence gate before the rest gates. `HeroStats.Blocks` (from `HeroDefinition.Flies`): while a
-blocking hero stands the whole hammer lands on him and none on the gate (`HammerShare` 1); a flying hero absorbs his `GuardShare`.
-Two terms tried and dropped, with the numbers so the next round does not repeat them: a kill-waste factor meanHealth/(meanHealth+hit)
-on single-target guns (81 % / 0.67, the paper more pessimistic) and a siege clock (fights capped at the wave's length, the rest
-standing into the next wave: 60 % / 0.73, 234 "paper survives, game lost": the game's sieges are deadlier than a clocked model).
+- **Routes.** `LevelGeometry.GroundRoutes`/`AirRoutes` hold every road and flight path cell by cell in travel order with the
+  index of the defence gate on it (`Route.GateIndex`; a lane that never meets the gate, and every flyer, is all approach);
+  `InReach(spot, reach, route)` gives the cells of a route a gun covers (cached). `SpotCover.Spot` remembers the spot a cover
+  came from, so `Leak.AddTower` can hand the gun to the route model; a typical or ideal cover (no spot) keeps the old credit.
+- **Groups.** `WaveLoad.Groups` carries each group of a wave (count, body health and armour per creature, speed, path, source,
+  boss, flyer). Path spawns start at their road's first cell, nest and pool creatures where the nests join the main road
+  (the mean of `LevelShape.NestRemaining`), an entrance boss where the entrance meets it, flyers on their flight path or, on a
+  level without one (all of Crystal Plains), along the road itself. Carried creatures of the wave before scale the stream up.
+- **The walk.** For every group and gun: the gun's rate (dps x efficiency x `Utilisation` x `RouteFire` x layer factor x the
+  group's armour share x overkill x splash at the stream's density) times the seconds it fires at one creature: the creature's
+  time in reach (cells in reach over its speed), but at most one over the arrival rate of the creatures still alive where the gun
+  first sees them (several in reach at once share the gun). That damage is spread over the gun's cells; marching the route, a
+  creature dies where the accumulated damage reaches its body plus armour, and what is alive at the defence gate is the leak
+  the siege resolves. Two passes: the second knows where the first's kills thinned the stream (the sharing and the splash
+  density). The cells behind the gate meet only what got past it (`BehindStream/BehindSingle`). The guns' per-type account
+  (`SiegeGuards.Dealt`, plus each type's share of the queue and doorstep kills, `SiegeLine.QueueGuardKills/DoorGuardKills`
+  by `QueueByType/DoorByType`) is the paper side the fit reads.
+- **One fitted number, `BalanceRules.RouteFire`.** The per-type efficiencies are still fitted on the pressure lens (so the
+  purchases and the solver keep their scale); the route model's scale is one factor chosen with the queue-guard share on a grid
+  (`CalibrationFit.FitGuards`: fire 1..8 x share 0.3..1, the pair with the best verdict agreement, ties by the ranking), written
+  as `routefire` into calibration.txt and `_routeFire` on the asset. A ratio fit of the factor was tried first and dropped: the
+  account is dominated by the queue fights, so the ratio starved the walk (fire 0.53, 75 % / 0.70).
+- **A fit bug found on the way.** `FitSiege` added to its sums on every call, so the siege factor was a running ratio over the
+  whole guard-share grid and depended on the grid's order (round 22d onward). The sums are per call now.
+- **Tried and dropped (numbers so the next round does not repeat them):** the hero as a two-biter blocker (the gate taking the
+  rest of the hammer while he stands: the records show gates wearing while he stands, but the verdicts fell from 79 % to 77 % and
+  the ranking from 0.77 to 0.73); a per-type efficiency fitted on the route account itself (Rocket pinned at 4.0 because flyers had
+  no route yet, efficiencies 0.35 that would have doubled every pressure).
 
-**Fit after the terms:** 81 % / 0.68 (mono 93 %) against 82 % / 0.65 before on the same 696 runs: the ranking a little better, the
-agreement the same. Applied by override as the best available (the pipeline's `apply` refuses it; `apply-force` prints the warning).
-The remaining error is the walk's quality by geometry: C1_05's early gate with fast swarms leaks where the paper holds, C1_04's and
-C1_06's late trunk gates kill on the long walk where the paper leaks. The candidates are a fitted per-level walk factor (cheap,
-honest, not a mechanic) or a route-sampled kill model gun by gun along the road (the physical answer, slower). Remco decides.
+**Fit (675 runs, 243 replayed plans):** Cannon 0.737, Laser 0.693, PulseRifle 0.764, Rocket 0.878; route fire 1.0, queue guard
+0.70, siege 0.912. Self check 83 % (mono 97 %), Spearman 0.78; **hold-out 78 % (mono 91 %), Spearman 0.76** against round 26's
+82 % / 0.69 on the same shape of data. The bar (90 % / 0.8) is not met; the ranking is a good deal better and the agreement a
+little worse, the paper now lenient (89 "paper survives, game lost": C1_02 Easy/Medium and C1_05 strategies where the gates
+wear down in play while the paper's blocking hero clears the queue) rather than pessimistic. Applied by override as the better
+of the two by the distance to the bar and because it is the physical model the next continents need. Cost: the paper is slower
+(the impact baseline 149 s against 6 s; a plan search per cell is minutes, not seconds).
 
-**Light fire 0.2 (Remco, round 26):** Gun Turret, Laser, Cryo, Cryo Beam, Blockade gun, Base Turret and the hero's blaster 0.3 -> 0.2
-(`ProjectGenerator.LightFireArmourFactor`, `ApplyRoles.Run`). A Cragback (160 + 60) is now worth 460 to light fire (was 360) and 220 to
-a shell. The impact on the paper (`impact.txt`): 8 cells flagged, the plans that lean on Gun Turrets against armour fall (C1_03
-Medium 5/5 -> 0/5, C1_01 Medium's one holding plan), C1_04 Easy keeps its wins at 2 stars, C1_05/C1_06 Medium margins up with the
-re-solved waves. The play verdict comes from the round-26 chain (measure, replay) on the new data.
+**Next terms, if the bar is wanted:** the hero's realised kill rate at a besieged gate (the records say he falls at wave 7 on
+C1_02 Easy with the gates losing 400-1200 a wave; the paper keeps him up), and the attackers at a gate (the game has no cap on
+how many bite at once; `AttackersPerGate` 5 is the model's).
 
-**The gate-upgrade step.** The Blockade's levels are in the model as a tower (`LevelInput.Gate`, `TowerLevelStats.HealthBonus`): level 1
-a gun at the queue (6 damage at 0.45 s, reach 3.9, armour factor 0.2) and +300 health for 90, level 2 (11 at 0.35 s, +500) for 150.
-`SiegeState.GateLevel/GateBonus`: the bonus lands on the standing defence gate, a repair restores the upgraded full, the gun counts in
-the pressure (`Ledger.GateCapacity` from the gate's cell) and as a queue guard (`Leak.AddGate`). The step (`PlanStep.GateUpgrade`,
-"gate") is weighed by the rule every other step gets: the cover gain of the gun per coin, with the health bonus credited at the
-repair price of that much health (`PlanEvaluator.GateUpgradeWorth`), times the strategy's `UpgradeBias` and its `GateUpgradeBias`
-(0 never; sampled, mutated and counted as a distinct timing by the search). In play the creative and adaptive bots weigh the defence
-gate's next level beside the gun upgrades with the same ledger, scripted plans take a "gate" step, and the move is recorded as
-`gate`; the acceptance rules count a gate upgrade as one of the game's features a Hard or Psycho plan may use.
+**Round 27 passes on continent 1 (2026-11-09, the route model applied).** Two tuning passes by levers in `wave_tuning.txt`, each
+re-solved and judged in play on the workers (pass 1: 14 cells re-measured and replayed in 22 min; pass 2: 6 cells with a fresh
+strategy search for C1_02 Psycho, C1_03 Hard, C1_05 Medium/Hard, 9 min). Pass 1: C1_01 Hard/Psycho tempo x0.85, C1_02 Easy scale
+0.87 -> 0.757, C1_02 Psycho plated x1.5, C1_03 Hard scale 1.15 -> 1, C1_03 Psycho tempo x0.85, C1_06 Psycho scale 0.87 -> 0.757.
+Pass 2: C1_01 Hard and Psycho scale 1.15 -> 1.32 (the mono rows still won with the base whole at 1.15 after plated and tempo),
+C1_01 Psycho a raid at wave 3, C1_02 Psycho tempo x0.85, C1_03 Hard scale 1 -> 0.87. In-play margins after pass 2 (E/M/H/P):
+C1_01 1.00/1.00/1.00/0.83; C1_02 1.00/0.92/1.00/0.53; C1_03 1.00/1.00/0.92/1.00; C1_04 1.00/1.00/0.75/0.63; C1_05 0.92/0.60/0.64/0.34;
+C1_06 1.00/0.89/0.86/0.65. Acceptance stays 5/24: C1_02 Easy's plans win 3/3 now (was 0/3) but the obvious rows win with the base
+whole too (the Easy margin rule); C1_03 Hard's new strategies win (0.43 -> 0.92) while the mono rows still reach wave 13 of 16; C1_01
+Hard's mono rows finally do worse than on Medium at scale 1.32 but still win 3 stars with the base whole; C1_06 Psycho 0.39 -> 0.65.
+The swarm lever (`swarm`, unarmoured troops no heavier than twice the lightest weighted x1.5) is built and in the builder's order
+after plated; no cell got it yet. The refit on the pass-2 records (687 runs): Cannon 0.749, Laser 0.705, PulseRifle 0.790, Rocket
+0.901; hold-out 77 % (mono 92 %), Spearman 0.78; self 81 % / 0.83; the grid chose route fire 4.0, queue guard 0.8, siege 2.05 where the
+675-run fit chose 1.0 / 0.7 / 0.91: the fire and the siege factor are not well identified jointly (a design question).
+
+**Finale probe (goal 3, run twice on the clones, 3.5 and 6 min).** With the health range widened to x16 the creative bot at the
+finale player beats every continent boss far above its data: Cinder Matriarch x14.8 on Easy and Hard (x2.1 Medium), Frost Warden
+x8-11, the Sealed One x12-15 (x6.1 Psycho), the Shattered x10-15, Gravemaw x5.4/2.4/7.2/4.4, Rotbloom x2.4/1.7/2.3/1.0. The holds are
+not monotonic over the difficulties (the finale player's research and money grow faster than the boss share), and applying the
+`finale` stage would multiply most boss health by 5-12x, so it was **not** applied; Remco decides what a continent finale should ask.

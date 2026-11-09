@@ -36,6 +36,9 @@ namespace Game.Balance
         /// <summary>True when the base's doorstep (the last road cells) is in reach: the gun shoots what lays siege to the base.</summary>
         public bool Base;
 
+        /// <summary>The spot this cover was computed from (round 27: the route model walks the gun from it); none for an ideal or typical cover.</summary>
+        public Cell? Spot;
+
         /// <summary>The ledger's spotless assumption: a straight pass through the whole reach, the gate queue and the doorstep in reach.</summary>
         public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, ApproachPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f, Base = true };
     }
@@ -71,6 +74,24 @@ namespace Game.Balance
         private readonly List<Sample> _ground = new List<Sample>();
         private readonly List<Sample> _air = new List<Sample>();
 
+        /// <summary>One road or flight path in walking order, for the route-sampled kill model (round 27).</summary>
+        public sealed class Route
+        {
+            public int PathIndex;
+            public readonly List<Cell> Cells = new List<Cell>();
+
+            /// <summary>Index of the cell the defence gate stands on along this route, or -1 when the route does not pass it (all approach).</summary>
+            public int GateIndex = -1;
+
+            /// <summary>The last index walked while the defence gate stands (the gate's own cell, or the end of a route without one).</summary>
+            public int ApproachEnd => GateIndex >= 0 ? GateIndex : Cells.Count - 1;
+        }
+
+        /// <summary>The walking routes (the main road first) and the flight routes, cell by cell in travel order.</summary>
+        public readonly List<Route> GroundRoutes = new List<Route>();
+        public readonly List<Route> AirRoutes = new List<Route>();
+        private readonly Dictionary<(long, int, int), int[]> _inReach = new Dictionary<(long, int, int), int[]>();
+
         public readonly List<Cell> Gates = new List<Cell>();
         public readonly List<Cell> Spots = new List<Cell>();
         public readonly List<Cell> MainRoad = new List<Cell>();
@@ -101,7 +122,67 @@ namespace Game.Balance
 
             SampleRoutes(roads, gates, defenceGate, geometry._ground);
             SampleRoutes(flights, new List<Cell>(), null, geometry._air);
+            foreach (RoadInput road in roads)
+            {
+                var route = new Route { PathIndex = road.PathIndex };
+                route.Cells.AddRange(LevelShape.Expand(road.Waypoints));
+                route.GateIndex = GateIndex(route.Cells, defenceGate);
+                geometry.GroundRoutes.Add(route);
+            }
+
+            foreach (RoadInput flight in flights)
+            {
+                var route = new Route { PathIndex = flight.PathIndex };
+                route.Cells.AddRange(LevelShape.Expand(flight.Waypoints));
+                geometry.AirRoutes.Add(route);
+            }
+
             return geometry;
+        }
+
+        /// <summary>The walking route creatures of a path take: the route with that path index, else the main road.</summary>
+        public Route GroundRouteFor(int pathIndex) => RouteFor(GroundRoutes, pathIndex);
+
+        public Route AirRouteFor(int pathIndex) => RouteFor(AirRoutes, pathIndex);
+
+        private static Route RouteFor(List<Route> routes, int pathIndex)
+        {
+            foreach (Route route in routes)
+            {
+                if (route.PathIndex == pathIndex)
+                {
+                    return route;
+                }
+            }
+
+            return routes.Count > 0 ? routes[0] : null;
+        }
+
+        /// <summary>The indices of a route's cells within a tower's reach from a spot, in travel order (cached per spot, reach and route).</summary>
+        public int[] InReach(Cell spot, float reach, Route route)
+        {
+            int routeIndex = GroundRoutes.IndexOf(route);
+            routeIndex = routeIndex >= 0 ? routeIndex : GroundRoutes.Count + AirRoutes.IndexOf(route);
+            (long, int, int) key = (Key(spot), (int)Math.Round(reach * 1000f), routeIndex);
+            if (_inReach.TryGetValue(key, out int[] known))
+            {
+                return known;
+            }
+
+            float cells = ReachAt(spot, reach) / CellSize;
+            float radius = cells * cells;
+            var hits = new List<int>();
+            for (int i = 0; i < route.Cells.Count; i++)
+            {
+                if (Distance(spot, route.Cells[i]) <= radius)
+                {
+                    hits.Add(i);
+                }
+            }
+
+            int[] result = hits.ToArray();
+            _inReach[key] = result;
+            return result;
         }
 
         /// <summary>A spot's own reach multiplier (1 for plain ground); set by the game side from the map's terrain.</summary>
@@ -130,7 +211,7 @@ namespace Game.Balance
         {
             float cells = ReachAt(spot, reach) / CellSize;
             float radius = cells * cells;
-            var cover = new SpotCover();
+            var cover = new SpotCover { Spot = spot };
             float bunched = 0f;
             foreach (Sample sample in _ground)
             {

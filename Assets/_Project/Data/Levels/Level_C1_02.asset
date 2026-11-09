@@ -264,7 +264,7 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0
   _balanceTargetScale:
-  - 0.87
+  - 0.757
   - 1.15
   - 1.15
   - 1

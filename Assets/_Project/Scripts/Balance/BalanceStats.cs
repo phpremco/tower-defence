@@ -144,7 +144,8 @@ namespace Game.Balance
         /// <summary>
         /// A hero on foot blocks the road in front of his gate (HeroTarget.BlocksGround, round 26): the creatures that reach him bite
         /// him, not the gate, so while he stands the whole hammer of the attackers lands on him; a flying hero only absorbs his
-        /// <see cref="GuardShare"/> of the hits on the gate.
+        /// <see cref="GuardShare"/> of the hits on the gate. (Round 27 tried a two-biter share with the gate taking the rest: the
+        /// verdicts fell from 79 % to 77 % and the ranking from 0.77 to 0.73, so the whole hammer stays.)
         /// </summary>
         public bool Blocks;
 

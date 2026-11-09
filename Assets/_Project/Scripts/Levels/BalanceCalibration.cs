@@ -38,6 +38,9 @@ namespace Game.Levels
         [Tooltip("Share of their damage per second the queue and doorstep guards land on a siege (BalanceRules.QueueGuardShare); fitted on the records.")]
         [SerializeField] [Range(0.05f, 1f)] private float _queueGuardShare = 1f;
 
+        [Tooltip("The route-sampled kill model's fire factor (BalanceRules.RouteFire, round 27); fitted on the records.")]
+        [SerializeField] [Min(0.01f)] private float _routeFire = 1f;
+
         [Tooltip("InputHash of the data the fit was made on; stale when it differs from the current data's hash.")]
         [SerializeField] private string _inputHash = string.Empty;
         [Tooltip("Shape hash of the model and combat code the fit was made under (round 25); a different shape means a rule changed and a re-measure is needed.")]
@@ -52,6 +55,7 @@ namespace Game.Levels
         public float SiegeFactor => _siegeFactor;
         public float RepairDroneBusyShare => _repairDroneBusyShare;
         public float QueueGuardShare => _queueGuardShare;
+        public float RouteFire => _routeFire;
         public string InputHashValue => _inputHash;
         public string ShapeHashValue => _shapeHash;
         public string MeasuredOn => _measuredOn;
@@ -86,6 +90,7 @@ namespace Game.Levels
             model.Rules.SiegeFactor = _siegeFactor;
             model.Rules.RepairDroneBusyShare = _repairDroneBusyShare;
             model.Rules.QueueGuardShare = _queueGuardShare;
+            model.Rules.RouteFire = _routeFire;
         }
 
         /// <summary>True when the data differs from what the fit was made on (or nothing was ever fitted).</summary>

@@ -121,10 +121,15 @@ namespace Game.Balance
         /// small raid of fast, spread runners (0 = none). For cells the target scale cannot move, such as C1_01 Easy and Hard.
         /// </summary>
         public float[] PlatedBias = { 1f };
+
+        /// <summary>Round 27: the weight of swarm troops (no armour, at most twice the health of the lightest troop) in every fill (1 = as written): the runners-and-swarm lever against a splash row.</summary>
+        public float[] SwarmBias = { 1f };
         public float[] Tempo = { 1f };
         public int[] RaidWave = { 0 };
 
         public float PlatedBiasFor(int difficulty) => At(PlatedBias, difficulty, 1f);
+
+        public float SwarmBiasFor(int difficulty) => At(SwarmBias, difficulty, 1f);
 
         public float TempoFor(int difficulty) => At(Tempo, difficulty, 1f);
 

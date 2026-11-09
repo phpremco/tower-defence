@@ -1,0 +1,22 @@
+Mon Nov  9 16:21:59 WEST 2026
+run_script	true	{"diagnostics":[],"compileMs":18948,"executeMs":8562,"assemblyName":"PipelineRunScript_ApplyWaves_5c7990ab61024d958df530a463089968","success":true,"result":"Waves solved for every camp
+Mon Nov  9 16:22:30 WEST 2026
+== search: plans per cell (stage A)
+      "FullName": "Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter",
+      "Status": "Passed",
+      "Message": null,
+      "FullName": "Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell",
+      "Status": "Passed",
+      "Message": null,
+Strategy search (stage A, round 22e) 2026-11-09 16:22, 1500 strategies per cell. calibration 2026-11-09 15:54, seeds 1,2,3, step 0.2, inputs fa88200b (current)
+Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
+the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
+The paper is a pre-screen; stage B (the replay with the adaptive bot) is the judge. Details: Tools/PlayTest/Plans/<level>_<difficulty>.txt.
+
+level        diff    best strategy    margin  holding/top  distinct  creative          obvious
+Level_C1_02  Psycho  falls w5           0.15     0/30             0  falls w5          mono PulseRifle falls w5, mono Cannon falls w2, mono Laser falls w4, naive falls w5
+Level_C1_03  Hard    falls w12          0.21     0/30             0  falls w11         mono PulseRifle falls w8, mono Cannon falls w9, mono Laser falls w6, naive falls w6
+Level_C1_05  Medium  3* base 693        0.60    30/30            19  falls w17         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Hard    1* base 188        0.27     5/30             5  falls w14         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Mon Nov  9 16:23:38 WEST 2026
+EXIT

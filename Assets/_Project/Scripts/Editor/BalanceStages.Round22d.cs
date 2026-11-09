@@ -105,7 +105,7 @@ namespace Game.Editor
                         string applied = used < BuilderIterations ? NextScriptLever(ref current) : null;
                         if (applied == null)
                         {
-                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after {used} moves (plated {current.Plated:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({why}); a design choice is needed."));
+                            questions.Add(Invariant($"{map.Level.name} {DifficultyName(d)}: still {state} after {used} moves (plated {current.Plated:0.##}, swarm {current.Swarm:0.##}, tempo {current.Tempo:0.##}, raid wave {current.Raid}) ({why}); a design choice is needed."));
                             return false;
                         }
 
@@ -222,9 +222,10 @@ namespace Game.Editor
                 : Invariant($"the Easy raid rule moves the first raid from wave {written} to wave {floor} at this solve; no lever this round");
         }
 
-        // The script levers in order (the curator's decision 4): plated troops against a light row, a faster tempo, then a small early
-        // raid of spread runners against a splash row. Each is applied once; null when all three are in.
+        // The script levers in order (the curator's decision 4; round 27 adds the swarm): plated troops against a light row, swarm
+        // troops against a splash row, a faster tempo, then a small early raid of spread runners. Each is applied once; null when all are in.
         private const float PlatedLeverStep = 1.5f;
+        private const float SwarmLeverStep = 1.5f;
         private const float TempoLeverStep = 0.85f;
         private const int RaidLeverWave = 3;
 
@@ -234,6 +235,12 @@ namespace Game.Editor
             {
                 lever.Plated = PlatedLeverStep;
                 return Invariant($"plated troops weighted x{PlatedLeverStep}");
+            }
+
+            if (lever.Swarm == 1f)
+            {
+                lever.Swarm = SwarmLeverStep;
+                return Invariant($"swarm troops weighted x{SwarmLeverStep} (round 27: small, unarmoured bodies against a splash row)");
             }
 
             if (lever.Tempo == 1f)

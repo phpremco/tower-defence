@@ -1,7 +1,31 @@
 using System;
+using System.Collections.Generic;
 
 namespace Game.Balance
 {
+    /// <summary>
+    /// One group of a wave as the route-sampled kill model walks it (round 27): identical creatures on one path from one
+    /// source, each with its body health and armour after the difficulty's scaling.
+    /// </summary>
+    public sealed class WaveGroup
+    {
+        public int Count;
+
+        /// <summary>Body health and armour of one creature, scaled; <see cref="Total"/> is what a heavy weapon must deal.</summary>
+        public float Health;
+        public float Armour;
+        public float Speed = 1f;
+        public int Path;
+        public int Source;
+        public bool IsBoss;
+        public bool Flies;
+
+        public float Total => Health + Armour;
+
+        /// <summary>Share of a weapon's damage that counts against this creature, by the weapon's armour factor (<see cref="ArmourMix.Share"/>).</summary>
+        public float Share(float armourFactor) => Armour <= 0f || armourFactor <= 0f ? 1f : Total / (Health + Armour / armourFactor);
+    }
+
     /// <summary>
     /// What one wave brings, as the ledger needs it: effective health split into the ground stream, the bosses and the
     /// air, the time the towers get, how dense the streams are (for splash), the mean size of a creature (for overkill),
@@ -9,6 +33,9 @@ namespace Game.Balance
     /// </summary>
     public sealed class WaveLoad
     {
+        /// <summary>The wave's groups for the route-sampled kill model (round 27); empty for a load built by hand.</summary>
+        public readonly List<WaveGroup> Groups = new List<WaveGroup>();
+
         /// <summary>Spawn source value of a boss that comes up through the level's own boss entrance.</summary>
         public const int EntranceSource = 7;
 
@@ -140,6 +167,17 @@ namespace Game.Balance
                 load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
                 load.HasBoss |= enemy.IsBoss;
                 float strike = enemy.AttackInterval > 0f ? enemy.BlockadeDamage / enemy.AttackInterval * difficulty.StructureDamage : 0f;
+                load.Groups.Add(new WaveGroup
+                {
+                    Count = count,
+                    Health = each - armour / count,
+                    Armour = armour / count,
+                    Speed = enemy.InRangeSpeed,
+                    Path = group.Path,
+                    Source = group.Source,
+                    IsBoss = enemy.IsBoss,
+                    Flies = !Layer.Has(enemy.Layer, Layer.Ground),
+                });
 
                 if (!Layer.Has(enemy.Layer, Layer.Ground))
                 {

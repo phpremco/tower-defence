@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Game.Balance
 {
@@ -18,6 +19,10 @@ namespace Game.Balance
 
         /// <summary>True when the hero went down during this wave's siege.</summary>
         public bool HeroFell;
+
+        /// <summary>Health the guard guns (not the hero) took off the attackers at the defence gate's queue and at the base's doorstep (round 27, for the fit's per-type account).</summary>
+        public float QueueGuardKills;
+        public float DoorGuardKills;
     }
 
     /// <summary>
@@ -39,6 +44,33 @@ namespace Game.Balance
         public float DoorStream;
         public float DoorSingle;
         public float DoorAir;
+
+        /// <summary>
+        /// The standing guns for the route-sampled walk (round 27, <see cref="RouteKill"/>): filled by <see cref="Leak.AddTower"/> when
+        /// the level has routes, walked by <see cref="Leak.Resolve"/>, which then adds their kills to the walk and behind fields.
+        /// Null when the walk was credited the old way (a level without a map, a load built by hand).
+        /// </summary>
+        public List<RouteGun> Guns;
+
+        /// <summary>Health the walk took per tower type (the route model's account), and each type's damage per second at the queue and the doorstep.</summary>
+        public Dictionary<string, float> Dealt;
+        public Dictionary<string, float> QueueByType;
+        public Dictionary<string, float> DoorByType;
+
+        public float QueueDps => QueueStream + QueueSingle;
+
+        public float DoorDps => DoorStream + DoorSingle + DoorAir;
+
+        internal static void Add(ref Dictionary<string, float> table, string id, float amount)
+        {
+            if (amount <= 0f)
+            {
+                return;
+            }
+
+            table = table ?? new Dictionary<string, float>(StringComparer.Ordinal);
+            table[id] = (table.TryGetValue(id, out float known) ? known : 0f) + amount;
+        }
     }
 
     /// <summary>The structures and the hero between waves: what the siege wears down and what a repair restores.</summary>
@@ -157,13 +189,24 @@ namespace Game.Balance
             SpotCover walk = cover;
             walk.Gate = false;
             Ledger.Option option = Ledger.Capacity(level, load, rules, tower, towerLevel, walk, efficiency);
-            float approach = cover.ApproachShare;
-            float behind = cover.BehindShare;
-            guards.WalkStream += option.Stream * slow * approach;
-            guards.WalkSingle += option.Single * slow * approach;
-            guards.BehindStream += option.Stream * slow * behind;
-            guards.BehindSingle += option.Single * slow * behind;
-            guards.WalkAir += option.Air;
+            if (RouteKill.Applies(level, load) && cover.Spot.HasValue)
+            {
+                // Round 27: the walk is sampled along the routes when the siege is resolved (flyers follow the road where no flight path exists).
+                guards.Guns = guards.Guns ?? new List<RouteGun>();
+                guards.Guns.Add(new RouteGun { Tower = tower, Level = towerLevel, Spot = cover.Spot.Value, Efficiency = efficiency, Slow = slow });
+                guards.Dealt = guards.Dealt ?? new Dictionary<string, float>(StringComparer.Ordinal);
+            }
+            else
+            {
+                float approach = cover.ApproachShare;
+                float behind = cover.BehindShare;
+                guards.WalkStream += option.Stream * slow * approach;
+                guards.WalkSingle += option.Single * slow * approach;
+                guards.BehindStream += option.Stream * slow * behind;
+                guards.BehindSingle += option.Single * slow * behind;
+                guards.WalkAir += option.Air;
+            }
+
             if (!cover.Gate && !cover.Base)
             {
                 return;
@@ -174,6 +217,7 @@ namespace Game.Balance
             {
                 guards.QueueStream += stream * slow;
                 guards.QueueSingle += single * slow;
+                SiegeGuards.Add(ref guards.QueueByType, tower.Id, (stream + single) * slow);
             }
 
             if (cover.Base)
@@ -181,6 +225,31 @@ namespace Game.Balance
                 guards.DoorStream += stream * slow;
                 guards.DoorSingle += single * slow;
                 guards.DoorAir += air;
+                SiegeGuards.Add(ref guards.DoorByType, tower.Id, (stream + single) * slow + air);
+            }
+        }
+
+        /// <summary>
+        /// Walks the standing guns along the routes (round 27) and credits the walk and behind fields with what they killed, once;
+        /// a guards set without route guns is left as it is. The per-type account lands in <see cref="SiegeGuards.Dealt"/>.
+        /// </summary>
+        public static void WalkRoutes(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules)
+        {
+            if (guards.Guns == null || guards.Guns.Count == 0)
+            {
+                return;
+            }
+
+            RouteResult walked = RouteKill.Walk(level, load, rules, guards.Guns);
+            guards.Guns = null;
+            guards.WalkStream += walked.WalkStream;
+            guards.WalkSingle += walked.WalkSingle;
+            guards.WalkAir += walked.WalkAir;
+            guards.BehindStream += walked.BehindStream;
+            guards.BehindSingle += walked.BehindSingle;
+            foreach (KeyValuePair<string, float> pair in walked.Dealt)
+            {
+                SiegeGuards.Add(ref guards.Dealt, pair.Key, pair.Value);
             }
         }
 
@@ -224,8 +293,13 @@ namespace Game.Balance
         /// past at the other gates and the base, the flyers at the base. Wears the state's gates, base and hero down;
         /// <paramref name="waveSeconds"/> is the wave's length on the clock (countdown and window), for the hero's revive.
         /// </summary>
-        public static SiegeLine Resolve(LevelInput level, WaveLoad load, BalanceRules rules, SiegeGuards guards, SiegeState state, float waveSeconds)
+        public static SiegeLine Resolve(LevelInput level, WaveLoad load, BalanceRules rules, SiegeGuards guards, SiegeState state, float waveSeconds) =>
+            Resolve(level, load, rules, ref guards, state, waveSeconds);
+
+        /// <summary>As above; the caller's guards receive the route model's walk kills and per-type account (round 27).</summary>
+        public static SiegeLine Resolve(LevelInput level, WaveLoad load, BalanceRules rules, ref SiegeGuards guards, SiegeState state, float waveSeconds)
         {
+            WalkRoutes(ref guards, level, load, rules);
             var line = new SiegeLine();
             bool fell = false;
 
@@ -244,8 +318,9 @@ namespace Game.Balance
             // The defence gate: the queue guns and the hero at his post against the stream, then the bosses.
             if (state.TrunkGates > 0 && state.DefenceGate > 0f)
             {
-                stream = Fight(stream, attackers, load.GroundStrike, guards.QueueStream, heroGround, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate1);
-                bosses = Fight(bosses, bossAttackers, load.BossStrike, guards.QueueSingle, fell ? 0f : heroBoss, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate2);
+                stream = Fight(stream, attackers, load.GroundStrike, guards.QueueStream, heroGround, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate1, out float queueKills1);
+                bosses = Fight(bosses, bossAttackers, load.BossStrike, guards.QueueSingle, fell ? 0f : heroBoss, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate2, out float queueKills2);
+                line.QueueGuardKills += queueKills1 + queueKills2;
                 line.GateDamage += gate1 + gate2;
             }
 
@@ -258,19 +333,20 @@ namespace Game.Balance
             if (state.TrunkGates > 1 && state.RestGates > 0f)
             {
                 bool hero = state.DefenceGate <= 0f && !fell;
-                stream = Fight(stream, attackers, load.GroundStrike, 0f, hero ? heroGround : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest1);
-                bosses = Fight(bosses, bossAttackers, load.BossStrike, 0f, hero && !fell ? heroBoss : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest2);
+                stream = Fight(stream, attackers, load.GroundStrike, 0f, hero ? heroGround : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest1, out float _);
+                bosses = Fight(bosses, bossAttackers, load.BossStrike, 0f, hero && !fell ? heroBoss : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest2, out float _);
                 line.GateDamage += rest1 + rest2;
             }
 
             // The doorstep: the guns in reach of the last road cells, the base's turrets, the hero when no gate stands.
             bool heroAtBase = state.GatesLeft <= 0f && !fell;
-            Fight(stream, attackers, load.GroundStrike, guards.DoorStream, heroAtBase ? heroGround : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base1);
-            Fight(bosses, bossAttackers, load.BossStrike, guards.DoorSingle, heroAtBase && !fell ? heroBoss : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base2);
+            Fight(stream, attackers, load.GroundStrike, guards.DoorStream, heroAtBase ? heroGround : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base1, out float doorKills1);
+            Fight(bosses, bossAttackers, load.BossStrike, guards.DoorSingle, heroAtBase && !fell ? heroBoss : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base2, out float doorKills2);
 
             // Flyers pass the gates and lay siege to the base.
             line.AirLeak = Math.Max(0f, load.AirHealth - guards.WalkAir);
-            Fight(line.AirLeak, Attackers(line.AirLeak, load.MeanAirHealth, rules), load.AirStrike, guards.DoorAir, heroAtBase && !fell ? heroAir : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base3);
+            Fight(line.AirLeak, Attackers(line.AirLeak, load.MeanAirHealth, rules), load.AirStrike, guards.DoorAir, heroAtBase && !fell ? heroAir : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base3, out float doorKills3);
+            line.DoorGuardKills = doorKills1 + doorKills2 + doorKills3;
             line.BaseDamage = base1 + base2 + base3;
             line.HeroFell = fell;
 
@@ -312,9 +388,10 @@ namespace Game.Balance
         // through (zero when the leak was cleared), and takes the damage off the structure. A siege runs without a clock: a
         // round-26 trial of capping a fight at the wave's length (the rest standing into the next wave) dropped the verdict
         // agreement from 83 % to 60 %, so what the guards cannot clear is counted as a fall.
-        private static float Fight(float health, float attackers, float strike, float guardDps, float heroDps, HeroStats hero, BalanceRules rules, ref float structure, ref float heroHealth, ref bool fell, out float damage)
+        private static float Fight(float health, float attackers, float strike, float guardDps, float heroDps, HeroStats hero, BalanceRules rules, ref float structure, ref float heroHealth, ref bool fell, out float damage, out float guardKilled)
         {
             damage = 0f;
+            guardKilled = 0f;
             if (health <= 0f || structure <= 0f)
             {
                 return structure <= 0f ? health : 0f;
@@ -365,12 +442,13 @@ namespace Game.Balance
 
             damage = Math.Min(structure, hammer * (shield * Math.Min(seconds, heroDown) + Math.Max(0f, seconds - heroDown)));
             structure -= damage;
+            float killed = Math.Min(health, kill * Math.Min(seconds, heroDown) + guardDps * Math.Max(0f, seconds - heroDown));
+            guardKilled = Math.Min(killed, guardDps * seconds);
             if (killAt <= breakAt)
             {
                 return 0f;
             }
 
-            float killed = kill * Math.Min(seconds, heroDown) + guardDps * Math.Max(0f, seconds - heroDown);
             return Math.Max(0f, health - killed);
         }
 

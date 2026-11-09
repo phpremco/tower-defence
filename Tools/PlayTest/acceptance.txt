@@ -1,4 +1,4 @@
-Acceptance per difficulty 2026-11-09 15:12 (Docs/BALANCE.md "Acceptance per difficulty"). calibration 2026-11-09 14:52, seeds 1,2,3, step 0.2, inputs fa88200b (current)
+Acceptance per difficulty 2026-11-09 16:40 (Docs/BALANCE.md "Acceptance per difficulty"). calibration 2026-11-09 16:40, seeds 1,2,3, step 0.2, inputs fa88200b (current)
 Obvious family from calibration_records.txt (the yardstick), searched plans from plan_records.txt (the replay). Tutorial cells: Level_C1_01 1 (their obvious wins are forgiven and noted).
 
 Level_C1_01 Easy: FAIL
@@ -24,15 +24,17 @@ Level_C1_01 Medium: PASS (tutorial cell)
   note: tutorial, forgiven: Medium: naive wins 2/3 with up to 3 stars (at most one in five, one star)
   note: tutorial, forgiven: Medium: the affordable buyer wins 3/3 (must lose on most seeds)
 Level_C1_01 Hard: FAIL
-  note: best plan strategy Level_C1_01_2_strategy2: wins 3/3, stars 3.0
+  note: best plan strategy Level_C1_01_2_strategy3: wins 3/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
   note: forgiving Hard cell (Remco 2026-11-07): obvious plans may win, but worse than on Medium
-  fail: Hard (forgiving): mono PulseRifle scores 3706.30 on Hard against 3614.50 on Medium (Hard must be measurably harder for the same plan)
+  fail: Hard (forgiving): mono PulseRifle scores 3707.63 on Hard against 3614.50 on Medium (Hard must be measurably harder for the same plan)
   fail: Hard (forgiving): mono PulseRifle does as well as on Medium (3/3 wins, 3.0 stars, base 700 vs 3/3, 3.0, base 600); it must win less, with fewer stars or less base
-  fail: Hard (forgiving): mono Cannon scores 3719.00 on Hard against 3624.50 on Medium (Hard must be measurably harder for the same plan)
+  fail: Hard (forgiving): mono Cannon scores 3718.93 on Hard against 3624.50 on Medium (Hard must be measurably harder for the same plan)
   fail: Hard (forgiving): mono Cannon does as well as on Medium (3/3 wins, 3.0 stars, base 700 vs 3/3, 3.0, base 600); it must win less, with fewer stars or less base
-  fail: Hard (forgiving): naive scores 2480.27 on Hard against 2411.00 on Medium (Hard must be measurably harder for the same plan)
+  fail: Hard (forgiving): naive scores 2482.63 on Hard against 2411.00 on Medium (Hard must be measurably harder for the same plan)
   fail: Hard (forgiving): naive does as well as on Medium (2/3 wins, 3.0 stars, base 700 vs 2/3, 3.0, base 600); it must win less, with fewer stars or less base
+  fail: Hard (forgiving): affordable scores 3703.63 on Hard against 3618.33 on Medium (Hard must be measurably harder for the same plan)
+  fail: Hard (forgiving): affordable does as well as on Medium (3/3 wins, 3.0 stars, base 700 vs 3/3, 3.0, base 600); it must win less, with fewer stars or less base
   fail: Hard (forgiving): the best plan does not visibly beat mono PulseRifle on seed 1 (3* base 700 vs 3* base 700)
   fail: Hard (forgiving): the best plan does not visibly beat mono PulseRifle on seed 2 (3* base 700 vs 3* base 700)
   fail: Hard (forgiving): the best plan does not visibly beat mono PulseRifle on seed 3 (3* base 700 vs 3* base 700)
@@ -43,32 +45,47 @@ Level_C1_01 Hard: FAIL
   fail: Hard (forgiving): the best plan does not visibly beat naive on seed 1 (3* base 700 vs 3* base 700)
   fail: Hard (forgiving): the best plan does not visibly beat naive on seed 2 (3* base 700 vs 3* base 700)
   fail: Hard (forgiving): the best plan does not visibly beat affordable on seed 1 (3* base 700 vs 3* base 700)
+  fail: Hard (forgiving): the best plan does not visibly beat affordable on seed 2 (3* base 700 vs 3* base 700)
   fail: Hard (forgiving): the best plan does not visibly beat affordable on seed 3 (3* base 700 vs 3* base 700)
 Level_C1_01 Psycho: FAIL
-  note: best plan strategy Level_C1_01_3_strategy1: wins 3/3, stars 3.0
+  note: best plan strategy Level_C1_01_3_strategy2: wins 3/3, stars 3.0
   note: 2 of 3 replayed plans win on most seeds
-  fail: Psycho: mono PulseRifle seed 2 reaches wave 11/12 (obvious plans fall before the last third)
   fail: Psycho: mono PulseRifle seed 3 reaches wave 11/12 (obvious plans fall before the last third)
   fail: Psycho: mono PulseRifle seed 1 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 2 reaches wave 11/12 (obvious plans fall before the last third)
+  fail: Psycho: mono PulseRifle seed 2 reaches wave 11/12 (obvious plans fall before the last third)
   fail: Psycho: mono Cannon seed 3 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 1 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Laser seed 3 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Laser seed 1 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: naive seed 2 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 1 reaches wave 12/12 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 2 reaches wave 11/12 (obvious plans fall before the last third)
   fail: Psycho: naive seed 3 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: naive seed 1 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: affordable seed 2 reaches wave 12/12 (obvious plans fall before the last third)
+  fail: Psycho: naive seed 1 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: naive seed 2 reaches wave 9/12 (obvious plans fall before the last third)
   fail: Psycho: affordable seed 3 reaches wave 11/12 (obvious plans fall before the last third)
-  fail: Psycho: affordable seed 1 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: affordable wins on seed 1 (every obvious plan must lose)
+  fail: Psycho: affordable seed 2 reaches wave 12/12 (obvious plans fall before the last third)
   fail: Psycho: the best plan uses 1 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
+  fail: Psycho: the replayed plans are alike (0 distinct pairs; the fight must be a puzzle, not one trick)
 Level_C1_02 Easy: FAIL
-  note: best plan strategy Level_C1_02_0_strategy1: wins 0/3, stars 0.0
-  note: 0 of 5 replayed plans win on most seeds
-  fail: Easy: the best plan wins 0/3 with 0 stars at least (needs every seed, 3 stars)
+  note: best plan strategy Level_C1_02_0_strategy2: wins 3/3, stars 3.0
+  note: 1 of 5 replayed plans win on most seeds
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 1 (3* base 700 coins 166 vs 3* base 700 coins 70)
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 2 (3* base 700 coins 162 vs 3* base 700 coins 30)
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 3 (3* base 700 coins 0 vs 3* base 700 coins 160)
+  fail: Easy: the best plan does not clearly beat mono Cannon on seed 1 (3* base 700 coins 166 vs 3* base 700 coins 150)
+  fail: Easy: the best plan does not clearly beat mono Cannon on seed 2 (3* base 700 coins 162 vs 3* base 700 coins 60)
+  fail: Easy: the best plan does not clearly beat mono Cannon on seed 3 (3* base 700 coins 0 vs 3* base 700 coins 150)
+  fail: Easy: the best plan does not clearly beat mono Laser on seed 1 (3* base 700 coins 166 vs 3* base 700 coins 96)
+  fail: Easy: the best plan does not clearly beat mono Laser on seed 2 (3* base 700 coins 162 vs 3* base 700 coins 0)
+  fail: Easy: the best plan does not clearly beat mono Laser on seed 3 (3* base 700 coins 0 vs 3* base 700 coins 96)
+  fail: Easy: the best plan does not clearly beat naive on seed 1 (3* base 700 coins 166 vs 3* base 700 coins 124)
+  fail: Easy: the best plan does not clearly beat naive on seed 2 (3* base 700 coins 162 vs 3* base 700 coins 5)
+  fail: Easy: the best plan does not clearly beat naive on seed 3 (3* base 700 coins 0 vs 3* base 700 coins 120)
+  fail: Easy: the best plan does not clearly beat affordable on seed 1 (3* base 700 coins 166 vs 3* base 700 coins 25)
+  fail: Easy: the best plan does not clearly beat affordable on seed 2 (3* base 700 coins 162 vs 3* base 700 coins 25)
+  fail: Easy: the best plan does not clearly beat affordable on seed 3 (3* base 700 coins 0 vs 3* base 700 coins 140)
 Level_C1_02 Medium: FAIL
   note: best plan strategy Level_C1_02_1_strategy3: wins 2/3, stars 3.0
   note: 1 of 3 replayed plans win on most seeds
+  fail: Medium: mono PulseRifle wins 2/3 (a row of one type must lose)
   fail: Medium: mono Cannon wins 3/3 (a row of one type must lose)
   fail: Medium: naive wins 2/3 with up to 3 stars (at most one in five, one star)
   fail: Medium: the best plan wins 2/3 with 3.0 stars (needs 4 of 5, 2 stars)
@@ -94,70 +111,69 @@ Level_C1_02 Hard: FAIL
   fail: Hard: affordable seed 2 reaches wave 11/12 (obvious plans fall before the last third)
   fail: Hard: the best plan uses 1 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
 Level_C1_02 Psycho: FAIL
-  note: best plan strategy Level_C1_02_3_strategy2: wins 0/3, stars 0.0
+  note: best plan strategy Level_C1_02_3_strategy1: wins 0/3, stars 0.0
   note: 0 of 3 replayed plans win on most seeds
-  fail: Psycho: mono PulseRifle seed 1 reaches wave 12/12 (obvious plans fall before the last third)
+  fail: Psycho: mono PulseRifle seed 1 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: mono PulseRifle seed 2 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: mono PulseRifle seed 3 reaches wave 9/12 (obvious plans fall before the last third)
   fail: Psycho: mono Cannon seed 1 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 2 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 3 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 2 reaches wave 10/12 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 3 reaches wave 10/12 (obvious plans fall before the last third)
+  fail: Psycho: mono Laser seed 3 reaches wave 9/12 (obvious plans fall before the last third)
   fail: Psycho: naive seed 1 reaches wave 10/12 (obvious plans fall before the last third)
   fail: Psycho: naive seed 2 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: naive seed 3 reaches wave 9/12 (obvious plans fall before the last third)
-  fail: Psycho: affordable seed 1 reaches wave 10/12 (obvious plans fall before the last third)
+  fail: Psycho: naive seed 3 reaches wave 10/12 (obvious plans fall before the last third)
+  fail: Psycho: affordable seed 1 reaches wave 9/12 (obvious plans fall before the last third)
   fail: Psycho: affordable seed 2 reaches wave 10/12 (obvious plans fall before the last third)
-  fail: Psycho: affordable seed 3 reaches wave 9/12 (obvious plans fall before the last third)
+  fail: Psycho: affordable seed 3 reaches wave 10/12 (obvious plans fall before the last third)
   fail: Psycho: the best plan wins 0/3 (needs 40 %)
-  fail: Psycho: the best plan uses 1 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
-  fail: Psycho: the best plan buys no drone (no plan without drones should win)
   fail: Psycho: no plan reaches the finale on seed 1
   fail: Psycho: no plan reaches the finale on seed 2
   fail: Psycho: no plan reaches the finale on seed 3
   fail: Psycho: the replayed plans are alike (0 distinct pairs; the fight must be a puzzle, not one trick)
 Level_C1_03 Easy: FAIL
-  note: best plan strategy Level_C1_03_0_strategy2: wins 3/3, stars 3.0
+  note: best plan strategy Level_C1_03_0_strategy3: wins 3/3, stars 3.0
   note: 5 of 5 replayed plans win on most seeds
   fail: Easy: only 0 of 3 obvious kinds win on most seeds (a reasonable plan must win)
 Level_C1_03 Medium: PASS
   note: best plan strategy Level_C1_03_1_strategy2: wins 3/3, stars 3.0
   note: 5 of 5 replayed plans win on most seeds
 Level_C1_03 Hard: FAIL
-  note: best plan strategy Level_C1_03_2_strategy1: wins 0/3, stars 0.0
-  note: 0 of 3 replayed plans win on most seeds
-  fail: Hard: mono PulseRifle seed 1 reaches wave 13/16 (obvious plans fall before the last third)
+  note: best plan strategy Level_C1_03_2_strategy3: wins 3/3, stars 2.3
+  note: 2 of 3 replayed plans win on most seeds
   fail: Hard: mono PulseRifle seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: mono PulseRifle seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Hard: mono Cannon seed 1 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Hard: mono PulseRifle seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: mono Cannon seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: mono Cannon seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Hard: mono Laser seed 1 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Hard: mono Cannon seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: mono Laser seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: mono Laser seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Hard: naive seed 1 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Hard: mono Laser seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: naive seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: naive seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Hard: affordable seed 1 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Hard: naive seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: affordable seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Hard: affordable seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Hard: the best plan wins 0/3 (needs 60 %)
-  fail: Hard: the best plan uses 1 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
+  fail: Hard: affordable seed 1 reaches wave 13/16 (obvious plans fall before the last third)
 Level_C1_03 Psycho: FAIL
-  note: best plan strategy Level_C1_03_3_strategy3: wins 3/3, stars 3.0
+  note: best plan strategy Level_C1_03_3_strategy2: wins 3/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
-  fail: Psycho: mono PulseRifle seed 3 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: mono PulseRifle seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: mono PulseRifle seed 2 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 3 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Psycho: mono PulseRifle seed 3 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: mono Cannon seed 1 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: mono Cannon seed 2 reaches wave 11/16 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 2 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Psycho: mono Cannon seed 3 reaches wave 11/16 (obvious plans fall before the last third)
+  fail: Psycho: mono Laser seed 2 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: mono Laser seed 3 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: mono Laser seed 1 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: naive seed 3 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: naive seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: naive seed 2 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: affordable seed 3 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Psycho: naive seed 3 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: affordable seed 1 reaches wave 13/16 (obvious plans fall before the last third)
   fail: Psycho: affordable seed 2 reaches wave 13/16 (obvious plans fall before the last third)
-  fail: Psycho: the replayed plans are alike (0 distinct pairs; the fight must be a puzzle, not one trick)
+  fail: Psycho: affordable seed 3 reaches wave 13/16 (obvious plans fall before the last third)
+  fail: Psycho: the replayed plans are alike (1 distinct pairs; the fight must be a puzzle, not one trick)
 Level_C1_04 Easy: FAIL
   note: best plan strategy Level_C1_04_0_strategy4: wins 3/3, stars 3.0
   note: 5 of 5 replayed plans win on most seeds
@@ -168,7 +184,7 @@ Level_C1_04 Easy: FAIL
   fail: Easy: the best plan does not clearly beat affordable on seed 2 (3* base 700 coins 106 vs 3* base 700 coins 51)
   fail: Easy: the best plan does not clearly beat affordable on seed 3 (3* base 700 coins 67 vs 3* base 700 coins 45)
 Level_C1_04 Medium: PASS
-  note: best plan strategy Level_C1_04_1_strategy2: wins 3/3, stars 3.0
+  note: best plan strategy Level_C1_04_1_strategy1: wins 3/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
 Level_C1_04 Hard: PASS
   note: best plan strategy Level_C1_04_2_strategy1: wins 2/3, stars 2.0
@@ -182,32 +198,32 @@ Level_C1_05 Easy: FAIL
   note: best plan strategy Level_C1_05_0_strategy1: wins 2/3, stars 3.0
   note: 1 of 3 replayed plans win on most seeds
   fail: Easy: only 0 of 3 obvious kinds win on most seeds (a reasonable plan must win)
-  fail: Easy: mono PulseRifle seed 3 dies at wave 11/17, before the last third
   fail: Easy: mono PulseRifle seed 1 dies at wave 11/17, before the last third
   fail: Easy: mono PulseRifle seed 2 dies at wave 11/17, before the last third
-  fail: Easy: mono Cannon seed 3 dies at wave 11/17, before the last third
+  fail: Easy: mono PulseRifle seed 3 dies at wave 11/17, before the last third
   fail: Easy: mono Cannon seed 1 dies at wave 11/17, before the last third
   fail: Easy: mono Cannon seed 2 dies at wave 11/17, before the last third
-  fail: Easy: mono Laser seed 3 dies at wave 11/17, before the last third
+  fail: Easy: mono Cannon seed 3 dies at wave 11/17, before the last third
   fail: Easy: mono Laser seed 1 dies at wave 11/17, before the last third
   fail: Easy: mono Laser seed 2 dies at wave 11/17, before the last third
-  fail: Easy: naive seed 3 dies at wave 11/17, before the last third
+  fail: Easy: mono Laser seed 3 dies at wave 11/17, before the last third
   fail: Easy: naive seed 1 dies at wave 11/17, before the last third
   fail: Easy: naive seed 2 dies at wave 11/17, before the last third
-  fail: Easy: affordable seed 3 dies at wave 11/17, before the last third
+  fail: Easy: naive seed 3 dies at wave 11/17, before the last third
   fail: Easy: affordable seed 1 dies at wave 11/17, before the last third
   fail: Easy: affordable seed 2 dies at wave 11/17, before the last third
+  fail: Easy: affordable seed 3 dies at wave 11/17, before the last third
   fail: Easy: the best plan wins 2/3 with 0 stars at least (needs every seed, 3 stars)
 Level_C1_05 Medium: FAIL
   note: best plan strategy Level_C1_05_1_strategy1: wins 0/3, stars 0.0
-  note: 0 of 3 replayed plans win on most seeds
+  note: 0 of 5 replayed plans win on most seeds
   fail: Medium: the best plan wins 0/3 with 0.0 stars (needs 4 of 5, 2 stars)
   fail: Medium: 0 replayed plans win (at least 3 distinct answers wanted)
 Level_C1_05 Hard: FAIL
-  note: best plan strategy Level_C1_05_2_strategy1: wins 0/3, stars 0.0
-  note: 0 of 3 replayed plans win on most seeds
+  note: best plan strategy Level_C1_05_2_strategy2: wins 0/3, stars 0.0
+  note: 0 of 5 replayed plans win on most seeds
   fail: Hard: the best plan wins 0/3 (needs 60 %)
-  fail: Hard: the best plan uses 0 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
+  fail: Hard: the best plan uses 1 of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs 2)
 Level_C1_05 Psycho: FAIL
   note: best plan strategy Level_C1_05_3_strategy1: wins 0/3, stars 0.0
   note: 0 of 3 replayed plans win on most seeds
@@ -219,7 +235,7 @@ Level_C1_05 Psycho: FAIL
 Level_C1_06 Easy: FAIL
   note: best plan strategy Level_C1_06_0_strategy3: wins 3/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
-  fail: Easy: only 0 of 3 obvious kinds win on most seeds (a reasonable plan must win)
+  fail: Easy: only 1 of 3 obvious kinds win on most seeds (a reasonable plan must win)
   fail: Easy: mono Cannon seed 1 dies at wave 12/18, before the last third
   fail: Easy: mono Cannon seed 2 dies at wave 12/18, before the last third
   fail: Easy: mono Cannon seed 3 dies at wave 12/18, before the last third
@@ -229,6 +245,12 @@ Level_C1_06 Easy: FAIL
   fail: Easy: naive seed 1 dies at wave 12/18, before the last third
   fail: Easy: naive seed 2 dies at wave 12/18, before the last third
   fail: Easy: naive seed 3 dies at wave 12/18, before the last third
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 1 (3* base 700 coins 48 vs 3* base 700 coins 13)
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 2 (3* base 700 coins 48 vs 3* base 700 coins 13)
+  fail: Easy: the best plan does not clearly beat mono PulseRifle on seed 3 (3* base 700 coins 48 vs 3* base 700 coins 13)
+  fail: Easy: the best plan does not clearly beat affordable on seed 1 (3* base 700 coins 48 vs 3* base 700 coins 48)
+  fail: Easy: the best plan does not clearly beat affordable on seed 2 (3* base 700 coins 48 vs 3* base 700 coins 48)
+  fail: Easy: the best plan does not clearly beat affordable on seed 3 (3* base 700 coins 48 vs 3* base 700 coins 23)
 Level_C1_06 Medium: FAIL
   note: best plan strategy Level_C1_06_1_strategy2: wins 2/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
@@ -237,17 +259,16 @@ Level_C1_06 Hard: PASS
   note: best plan strategy Level_C1_06_2_strategy1: wins 3/3, stars 3.0
   note: 3 of 3 replayed plans win on most seeds
 Level_C1_06 Psycho: FAIL
-  note: best plan strategy Level_C1_06_3_strategy3: wins 1/3, stars 1.0
-  note: 0 of 3 replayed plans win on most seeds
-  fail: Psycho: the best plan wins 1/3 (needs 40 %)
-  fail: Psycho: no plan reaches the finale on seed 2
-  fail: Psycho: no plan reaches the finale on seed 3
+  note: best plan strategy Level_C1_06_3_strategy2: wins 2/3, stars 1.0
+  note: 1 of 3 replayed plans win on most seeds
+  fail: Psycho: mono PulseRifle seed 1 reaches wave 16/18 (obvious plans fall before the last third)
+  fail: Psycho: no plan reaches the finale on seed 1
 
 In-play ramp (tolerance 0.15): per level the cell margin per difficulty (Easy Medium Hard Psycho; a win is 0.5 plus half its stars share, a loss half of how far it got; the mean of the best replayed plan and the creative reference).
-  Level_C1_01   1.00  1.00  1.00  0.91  (best: Level_C1_01_0_strategy1, Level_C1_01_1_strategy1, Level_C1_01_2_strategy1, Level_C1_01_3_strategy1)
-  Level_C1_02   0.75  0.92  1.00  0.49  (best: Level_C1_02_0_strategy1, Level_C1_02_1_strategy3, Level_C1_02_2_strategy2, Level_C1_02_3_strategy2)
-  Level_C1_03   1.00  1.00  0.41  0.89  (best: Level_C1_03_0_strategy1, Level_C1_03_1_strategy2, Level_C1_03_2_strategy1, Level_C1_03_3_strategy2)
+  Level_C1_01   1.00  1.00  1.00  0.83  (best: Level_C1_01_0_strategy1, Level_C1_01_1_strategy1, Level_C1_01_2_strategy1, Level_C1_01_3_strategy2)
+  Level_C1_02   1.00  0.92  1.00  0.53  (best: Level_C1_02_0_strategy2, Level_C1_02_1_strategy3, Level_C1_02_2_strategy2, Level_C1_02_3_strategy1)
+  Level_C1_03   1.00  1.00  0.92  1.00  (best: Level_C1_03_0_strategy1, Level_C1_03_1_strategy2, Level_C1_03_2_strategy3, Level_C1_03_3_strategy1)
   Level_C1_04   1.00  1.00  0.75  0.63  (best: Level_C1_04_0_strategy1, Level_C1_04_1_strategy1, Level_C1_04_2_strategy1, Level_C1_04_3_strategy1)
-  Level_C1_05   0.92  0.74  0.51  0.34  (best: Level_C1_05_0_strategy1, Level_C1_05_1_strategy1, Level_C1_05_2_strategy1, Level_C1_05_3_strategy1)
-  Level_C1_06   1.00  0.89  0.86  0.39  (best: Level_C1_06_0_strategy1, Level_C1_06_1_strategy2, Level_C1_06_2_strategy1, Level_C1_06_3_strategy1)
-  dips: Level_C1_03 Easy easier in play than Level_C1_02 (margin 1.00 against 0.75); Level_C1_03 Psycho easier in play than Level_C1_02 (margin 0.89 against 0.49); Level_C1_04 Hard easier in play than Level_C1_03 (margin 0.75 against 0.41); Level_C1_06 Hard easier in play than Level_C1_05 (margin 0.86 against 0.51)
+  Level_C1_05   0.92  0.60  0.64  0.34  (best: Level_C1_05_0_strategy1, Level_C1_05_1_strategy1, Level_C1_05_2_strategy2, Level_C1_05_3_strategy1)
+  Level_C1_06   1.00  0.89  0.86  0.65  (best: Level_C1_06_0_strategy1, Level_C1_06_1_strategy2, Level_C1_06_2_strategy1, Level_C1_06_3_strategy2)
+  dips: Level_C1_03 Psycho easier in play than Level_C1_02 (margin 1.00 against 0.53); Level_C1_06 Medium easier in play than Level_C1_05 (margin 0.89 against 0.60); Level_C1_06 Hard easier in play than Level_C1_05 (margin 0.86 against 0.64); Level_C1_06 Psycho easier in play than Level_C1_05 (margin 0.65 against 0.34)
