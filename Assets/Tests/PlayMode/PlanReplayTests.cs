@@ -52,7 +52,7 @@ namespace Game.Tests
             {
                 for (int difficulty = 0; difficulty < catalog.Difficulties.Count; difficulty++)
                 {
-                    if (!BalanceProbeTests.Wanted("levels", node) || !BalanceProbeTests.Wanted("difficulties", difficulty))
+                    if (!BalanceProbeTests.WantedCell(node, difficulty))
                     {
                         continue;
                     }
@@ -62,7 +62,10 @@ namespace Game.Tests
                     {
                         foreach (int seed in seeds)
                         {
-                            yield return BalanceProbeTests.Probe(run, strategy, results, seed);
+                            if (BalanceProbeTests.WantedSeed(node, difficulty, seed))
+                            {
+                                yield return BalanceProbeTests.Probe(run, strategy, results, seed);
+                            }
                         }
                     }
                 }

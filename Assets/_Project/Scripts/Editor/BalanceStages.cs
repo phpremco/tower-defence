@@ -177,6 +177,9 @@ namespace Game.Editor
 
             text.Append(Invariant($"queueguard {all.QueueGuardShare:0.00}\n"));
             text.Append(Invariant($"siege {all.SiegeFactor:0.000}\nutilisation human {rules.HumanUtilisation:0.000}\nutilisation bot {rules.Utilisation:0.000}\ninputs {loaded.Hash}\nseeds {string.Join(",", seeds)}\nstep {(steps.Count > 0 ? Min(steps) : 0f):0.###}\n"));
+            // The bar lines the apply stage checks (round 25: before, apply wrote a fit below the bar without a word) and the shape the fit was made under.
+            bool accepted = holdOut.Share >= MinAgreement && holdOut.MonoShare >= MinAgreement && holdOut.MeanSpearman >= MinSpearman;
+            text.Append(Invariant($"holdout {holdOut.Share:0.000} {holdOut.MonoShare:0.000} {holdOut.MeanSpearman:0.000} {(accepted ? 1 : 0)}\nshape {ShapeHash(loaded)}\n"));
             Directory.CreateDirectory(Path.GetDirectoryName(CalibrationTablePath));
             File.WriteAllText(CalibrationTablePath, text.ToString());
             File.WriteAllText(WaveTablePath, CalibrationFit.WaveTable(runs, CellOf, all.Efficiency, all.SiegeFactor));
@@ -264,12 +267,21 @@ namespace Game.Editor
 
         // ---- Stage: apply -------------------------------------------------------------------------------------------------
 
-        /// <summary>Writes calibration.txt's fit into the BalanceCalibration asset, creating it when absent.</summary>
-        public static string ApplyCalibration()
+        /// <summary>
+        /// Writes calibration.txt's fit into the BalanceCalibration asset, creating it when absent. A fit below the bar (the hold-out
+        /// line the fit writes; round 25) is refused unless <paramref name="force"/>: round 24 applied one without a word.
+        /// </summary>
+        public static string ApplyCalibration(bool force = false)
         {
             if (!File.Exists(CalibrationTablePath))
             {
                 return "No " + CalibrationTablePath + ": run the fit stage first.";
+            }
+
+            string bar = BarVerdict(File.ReadAllLines(CalibrationTablePath), out bool belowBar);
+            if (belowBar && !force)
+            {
+                return "REFUSED: " + bar + " Re-measure or refit, or apply with the override (balance_pipeline.sh apply-force) if the curator lowered the bar.";
             }
 
             var calibration = AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath);
@@ -318,6 +330,10 @@ namespace Game.Editor
                 {
                     so.FindProperty("_inputHash").stringValue = parts[1];
                 }
+                else if (parts.Length == 2 && parts[0] == "shape")
+                {
+                    so.FindProperty("_shapeHash").stringValue = parts[1];
+                }
                 else if (parts.Length == 2 && parts[0] == "seeds")
                 {
                     so.FindProperty("_seeds").stringValue = parts[1];
@@ -332,7 +348,24 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(calibration);
             AssetDatabase.SaveAssets();
-            return "Calibration written to " + BalanceCalibration.AssetPath + ": " + report;
+            return (belowBar ? "WARNING, applied by override: " + bar + " " : string.Empty) + "Calibration written to " + BalanceCalibration.AssetPath + ": " + report;
+        }
+
+        // The fit's hold-out line against the bar; a table without one (written before round 25) counts as below the bar.
+        private static string BarVerdict(string[] lines, out bool belowBar)
+        {
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(' ');
+                if (parts.Length == 5 && parts[0] == "holdout")
+                {
+                    belowBar = parts[4] != "1";
+                    return Invariant($"the fit's hold-out is agreement {float.Parse(parts[1], CultureInfo.InvariantCulture):P0} (mono {float.Parse(parts[2], CultureInfo.InvariantCulture):P0}), Spearman {float.Parse(parts[3], CultureInfo.InvariantCulture):0.00} against the bar {MinAgreement:P0} / {MinSpearman:0.00}: {(belowBar ? "BELOW the bar." : "met.")}");
+                }
+            }
+
+            belowBar = true;
+            return "the fit table has no hold-out line (written before round 25): refit first.";
         }
 
         // ---- Stage: plan search (the tester's stage A) ---------------------------------------------------------------------
@@ -378,7 +411,7 @@ namespace Game.Editor
 
                 for (int d = 0; d < loaded.Catalog.Difficulties.Count; d++)
                 {
-                    if (!Wanted("levels", node) || !Wanted("difficulties", d))
+                    if (!WantedCell(node, d))
                     {
                         continue;
                     }
@@ -843,6 +876,35 @@ namespace Game.Editor
         }
 
         /// <summary>The optional filter file narrows a stage: "levels=0,1" (node indices) and "difficulties=1,2" lines; no file means everything.</summary>
+        /// <summary>The filter file's levels, difficulties and "cells=level:difficulty,..." lines together (round 25).</summary>
+        public static bool WantedCell(int level, int difficulty)
+        {
+            if (!Wanted("levels", level) || !Wanted("difficulties", difficulty) || !File.Exists(FilterPath))
+            {
+                return Wanted("levels", level) && Wanted("difficulties", difficulty);
+            }
+
+            foreach (string line in File.ReadAllLines(FilterPath))
+            {
+                string[] parts = line.Split('=');
+                if (parts.Length == 2 && parts[0].Trim() == "cells")
+                {
+                    foreach (string item in parts[1].Split(','))
+                    {
+                        string[] pair = item.Split(':');
+                        if (pair.Length == 2 && int.TryParse(pair[0].Trim(), out int l) && int.TryParse(pair[1].Trim(), out int d) && l == level && d == difficulty)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool Wanted(string key, int value)
         {
             if (!File.Exists(FilterPath))

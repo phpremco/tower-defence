@@ -521,6 +521,7 @@ namespace Game.Levels
 
             enemy.Killed += OnKilled;
             enemy.ReachedEnd += OnReachedEnd;
+            enemy.GaveUp += Withdraw;
             enemy.Attacked += OnAttacked;
             enemy.TrailDropped += Slime.Add;
             return enemy;

@@ -84,6 +84,23 @@ namespace Game.Levels
             }
         }
 
+        /// <summary>
+        /// Why the level has not ended yet, for a stalled run (round 25): whether the wave is still spawning, the nest spawns
+        /// held for an origin, and every creature still counted alive with its state.
+        /// </summary>
+        public string SpawnDiagnostic()
+        {
+            var text = new System.Text.StringBuilder();
+            text.Append(_scheduler == null ? "no wave spawning" : _scheduler.IsFinished ? "wave spawned" : "wave still spawning");
+            text.Append(", held ").Append(_held.Count).Append(", alive ").Append(_spawner.Alive).Append(" (living ").Append(_spawner.Living.Count).Append(')');
+            foreach (Enemy enemy in _spawner.Living)
+            {
+                text.Append(System.FormattableString.Invariant($"; {enemy.Definition.name} {(enemy.IsAlive ? "alive" : "dead")} hp {enemy.Health.Current:0}/{enemy.Health.Max:0} at {enemy.Position.x:0.0},{enemy.Position.z:0.0} progress {enemy.PathProgress:0.0}{(enemy.IsDirected ? " directed" : string.Empty)}"));
+            }
+
+            return text.ToString();
+        }
+
         // A wave called early (force) sends every creature out at once, opening their origins on the spot.
         private void SpawnDueEnemies(float deltaTime, bool force = false)
         {

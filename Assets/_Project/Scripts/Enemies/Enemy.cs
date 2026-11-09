@@ -18,6 +18,9 @@ namespace Game.Enemies
 
         // One cell is kept free in front of a blockade for the hero, so enemies halt just before that cell.
         private const float BlockadeStopDistance = 1.4f;
+        /// <summary>Seconds a creature keeps biting a gate that loses no health before it gives up and burrows away.</summary>
+        public const float GateStalemateSeconds = 45f;
+        private const float StalemateHeadway = 0.001f;
 
         // Distance between two patches of a trail, so a slow crawler still leaves an unbroken smear.
         private const float TrailSpacing = 0.55f;
@@ -30,6 +33,12 @@ namespace Game.Enemies
         private TargetRegistry _registry;
         private StructureRegistry _structures;
         private float _attackCooldown;
+
+        // The gate a held creature is gnawing at, how long, and the health it found there: no headway for GateStalemateSeconds and
+        // it gives up (round 25: a lone Skitter at a drone-repaired gate out of every gun's reach held Shard Ridge Easy open for ever).
+        private IStructure _heldBlocker;
+        private float _heldSeconds;
+        private float _heldHealthFraction;
         private bool _active;
         private float _slowFactor = 1f;
         private float _slowRemaining;
@@ -123,6 +132,9 @@ namespace Game.Enemies
         /// <summary>Raised every step a living gate holds a walker up, with that gate.</summary>
         public event Action<Enemy, IStructure> HeldByGate;
 
+        /// <summary>Raised when the creature gives up on a gate it makes no headway against (see GateStalemateSeconds).</summary>
+        public event Action<Enemy> GaveUp;
+
         /// <summary>True while a boss mechanic moves the creature itself: its own walk, siege and attacks wait.</summary>
         public bool IsDirected => _directed;
 
@@ -167,6 +179,8 @@ namespace Game.Enemies
             _registry = registry;
             _structures = structures;
             _attackCooldown = 0f;
+            _heldBlocker = null;
+            _heldSeconds = 0f;
             _slowFactor = 1f;
             _slowRemaining = 0f;
             _hasteFactor = 1f;
@@ -486,12 +500,19 @@ namespace Game.Enemies
             IStructure blocker = _structures.FindBlocker(transform.position, BlockadeStopDistance);
             if (blocker == null)
             {
+                _heldBlocker = null;
                 return false;
             }
 
             HeldByGate?.Invoke(this, blocker);
             if (_directed)
             {
+                return true;
+            }
+
+            if (IsStalemate(blocker, deltaTime))
+            {
+                GaveUp?.Invoke(this);
                 return true;
             }
 
@@ -507,6 +528,22 @@ namespace Game.Enemies
         }
 
         // A flyer with strikes left hovers over a gate it reaches and hits it a few times before flying on.
+        // A gate whose health has not dropped since the creature arrived (a repair crew keeps up with its bites) is a stalemate after
+        // GateStalemateSeconds; any headway, or another gate, starts the clock again.
+        private bool IsStalemate(IStructure blocker, float deltaTime)
+        {
+            if (!ReferenceEquals(blocker, _heldBlocker) || blocker.HealthFraction < _heldHealthFraction - StalemateHeadway)
+            {
+                _heldBlocker = blocker;
+                _heldSeconds = 0f;
+                _heldHealthFraction = blocker.HealthFraction;
+                return false;
+            }
+
+            _heldSeconds += deltaTime;
+            return _heldSeconds >= GateStalemateSeconds;
+        }
+
         private bool IsStrikingGate(float deltaTime)
         {
             if (_gateStrikesLeft <= 0)

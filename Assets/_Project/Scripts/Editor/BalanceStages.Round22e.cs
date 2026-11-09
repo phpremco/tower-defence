@@ -58,7 +58,7 @@ namespace Game.Editor
 
                 for (int d = 0; d < loaded.Catalog.Difficulties.Count; d++)
                 {
-                    if (!Wanted("levels", node) || !Wanted("difficulties", d))
+                    if (!WantedCell(node, d))
                     {
                         continue;
                     }

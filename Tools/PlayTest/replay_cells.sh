@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
-# Replays the searched strategies for a subset of cells and merges the records (round 22f). The replay stage writes
-# plan_records.txt whole, so a narrowed run (Tools/PlayTest/probe_arg.txt with levels= / difficulties=) would drop the
-# cells it did not play; this script keeps the old records of every cell outside the filter and adds the new ones.
+# Replays the searched strategies for a subset of cells and merges the records (round 22f; parallel workers since round 25).
+# The replay stage writes plan_records.txt whole, so a narrowed run would drop the cells it did not play; the merge keeps the
+# old records of every cell outside the filter and adds the new ones. By default the units run on headless workers
+# (Tools/PlayTest/workers.sh: clones of the project, the open editor stays free); --serial runs them in the open editor.
 # The search stage honours the same filter, so run it with the filter in place first when the strategies must be fresh:
 #
 #   printf 'levels=2,3\ndifficulties=3\n' > Tools/PlayTest/probe_arg.txt
 #   bash Tools/PlayTest/balance_pipeline.sh search
 #   bash Tools/PlayTest/replay_cells.sh "levels=2,3" "difficulties=3"
+#   bash Tools/PlayTest/replay_cells.sh "cells=2:0,3:2"            # the cells an impact report flagged (node:difficulty)
+#   bash Tools/PlayTest/replay_cells.sh --serial "levels=2"
 #
-# Run from the project root with the editor open; the replay table of the narrowed run goes to plan_replay_partial.txt.
+# Run from the project root; the replay table of the narrowed run goes to plan_replay_partial.txt.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+if [ "${1:-}" != "--serial" ]; then
+  exec bash Tools/PlayTest/workers.sh run replay "$@"
+fi
+shift
 RECORDS=Tools/PlayTest/plan_records.txt
 ARG=Tools/PlayTest/probe_arg.txt
 printf '%s\n' "$@" > "$ARG"
 cp "$RECORDS" "$RECORDS.before"
-bash Tools/PlayTest/balance_pipeline.sh replay
+bash Tools/PlayTest/balance_pipeline.sh --serial replay
 rm -f "$ARG"
 cp Tools/PlayTest/plan_replay.txt Tools/PlayTest/plan_replay_partial.txt
 

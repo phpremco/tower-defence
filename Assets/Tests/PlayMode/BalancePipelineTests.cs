@@ -90,7 +90,7 @@ namespace Game.Tests
             {
                 for (int difficulty = 0; difficulty < 4; difficulty++)
                 {
-                    if (!BalanceProbeTests.Wanted("levels", node) || !BalanceProbeTests.Wanted("difficulties", difficulty))
+                    if (!BalanceProbeTests.WantedCell(node, difficulty))
                     {
                         continue;
                     }
@@ -98,6 +98,11 @@ namespace Game.Tests
                     var run = new List<(int, int)> { (node, difficulty) };
                     foreach (int seed in seeds)
                     {
+                        if (!BalanceProbeTests.WantedSeed(node, difficulty, seed))
+                        {
+                            continue;
+                        }
+
                         foreach (string tower in MonoTypes(node, difficulty))
                         {
                             yield return BalanceProbeTests.Probe(run, ProbeStrategy.Mono(tower), results, seed);
@@ -113,6 +118,11 @@ namespace Game.Tests
                     {
                         foreach (int seed in seeds)
                         {
+                            if (!BalanceProbeTests.WantedSeed(node, difficulty, seed))
+                            {
+                                continue;
+                            }
+
                             yield return BalanceProbeTests.Probe(run, ProbeStrategy.AffordableBot, results, seed, true);
                             yield return BalanceProbeTests.Probe(run, ProbeStrategy.NaiveBot(), results, seed, true);
                         }

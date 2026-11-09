@@ -1220,3 +1220,79 @@ defence gate, so no switch happens in the measured runs.
 
 All of this is in the `InputHash` (armour factors, hero pulse and regeneration, the two rules), so the round's pipeline run
 starts with measure, fit and apply.
+
+## Impact in minutes, parallel workers, the C1_03 stall (2026-11-09, round 25)
+
+Remco, after round 24's eight hours of machine time: "als ik straks nog iets wil aanpassen wil ik niet dat het weer een hele dag
+duurt; het zou fijn zijn als er dan gewoon berekend kan worden wat de impact is." Commands: Docs/COMMANDS.md "Round 25".
+
+**The impact calculator (`BalanceStages.Impact`, stage `impact`; baseline `snapshot`).** The pipeline's expensive part is play;
+its cheap part is the paper, and after round 24 the paper carries a calibration. A number tweak (an armour factor, a price, a
+health) changes paper and play alike, so the calibration's per-tower efficiencies stay valid and the paper can be re-evaluated
+at once. The baseline (`Tools/PlayTest/impact_baseline/paper.txt`) holds, per cell, the paper outcome of every searched strategy
+(`Plans/*_strategyN.json` through `StrategyExecutor`), the fixed plans, the creative reference and the obvious family
+(`PlanSearch.ObviousPlans`): holds or falls, stars, base left, fall wave, margin and score; plus the input hash, the shape hash,
+the calibration date and the band. The impact stage evaluates the same plans on the current data and writes `impact.txt`: per
+cell the best plan before -> after, how many plans and obvious kinds hold, the creative reference, and a flag with its reasons.
+A cell is flagged when a row's verdict flipped (holds <-> falls), the best plan's stars moved, or a margin moved by the band or
+more; the Psycho-above-Hard ordering per level (the best plan's margin on Psycho below the one on Hard) flags both cells when
+it flips; the upgrade rule per gun (DPS per coin of a level at least `UpgradeMargin` times the level below, the worst step) is
+reported before -> after. The output ends with the exact replay filter (`cells=node:difficulty,...`).
+
+*The band* is the calibration's own error: the per-tower efficiencies fitted on the odd levels against those fitted on the even
+ones, relative to the fit on all, weighted by capacity (a margin is capacity over pressure, so a relative error in the
+efficiencies is the same relative error in the margin). On round 24's records: Cannon 0.79/0.61, Laser 0.72/0.68, PulseRifle
+0.77/0.80, Rocket 1.03/0.83, band 0.12. A smaller move than that is inside what the calibration cannot tell apart.
+
+*Numbers against rules.* `InputHash` fingerprints the numbers the model reads; it changes on every tweak, and the calibration
+asset still reports STALE on it (PlanSearchTests is ignored then, as before). The new `ShapeHash` fingerprints the rules: the
+sources of `Scripts/Balance` (the paper) and `Scripts/Combat` (how a hit lands), the field names of `BalanceRules` (not their
+values), the tower and creature types, the difficulties and the level keys. The fit writes the shape into calibration.txt and
+apply into the asset (`BalanceCalibration.ShapeHashValue`); the impact report says STALE only when the shape differs from the
+calibrated one (or, for an asset applied before this round, from the baseline's), and then the paper is indicative and a
+re-measure is the next step. A number tweak keeps the shape and gets a real impact.
+
+*Apply bar.* Round 24's apply stage wrote a fit below the 90 % / 0.8 bar without a word. The fit now writes a `holdout` line
+(agreement, mono agreement, Spearman, accepted) and `ApplyCalibration` refuses a fit below the bar unless forced
+(`apply-force`), which prints a warning into the result.
+
+**Parallel workers (`Tools/PlayTest/workers.sh`).** The robust option on this machine is N batchmode editors on clones of the
+project (a Unity instance locks its project folder; clones with a copied Library start in about 45 s, compile their scripts
+once, and import nothing). Each worker gets its own `probe_arg.txt` with `cells=node:difficulty:seed` units (the filter learnt
+single cells and single seeds this round, in the probe and in the editor stages), runs the measure or replay test, and the
+records are merged by whole cells as `measure_cells.sh`/`replay_cells.sh` always did. Three things made it fast and honest:
+the probe turns the cameras off in batch mode (a frame then costs the simulation only; `-nographics` is not usable, URP logs
+render errors without a device), `-job-worker-count 2` (six editors each spinning sixteen job threads ran twenty times slower),
+and N from the RAM (a worker grows to about 4 GB over a long run; six of them on 32 GB paged). Each clone's product name is
+"Tower defense worker wN", so its save folder is its own; the live save's MD5 is checked before and after as well.
+
+*Determinism.* The same 54 runs (C1_01-C1_03 Hard and Psycho, seeds 1-3) were played four times headless and once in the open
+editor (`--serial`, rendered): headless runs are identical to the byte across workers and repeats, and identical to the editor's
+run (0 of 54 lines differ). The one run that differed (10 lines: coins left, and two Psycho outcomes) was the first parallel
+attempt, six editors each spinning sixteen job threads on eight cores while the machine paged: the fixed-step probe is
+deterministic unless the machine thrashes, which is what round 4d saw with editor hitches. `ModelClipPlayer.AlwaysAnimate` keeps
+every rig evaluated headless so sockets stay where a drawn frame puts them; it changed no result, and stays as the faithful
+setting.
+
+**The C1_03 Easy stall (round 24's question 6), found and fixed.** Reproduced on a worker (`cells=2:0:1`, the measure test):
+the creative bot's run hit the 900 s wall clock at wave 16 with the base whole, and the new `[Probe] wall clock ran out`
+diagnostic (`LevelController.SpawnDiagnostic`) said: no wave spawning, held 0, alive 1: one Skitter, 4 of 13 health, at cell
+(7,8) with progress 76.8, that is at the gate on the second road (cell 8,9), where the creative bot had no tower in reach
+and a repair drone (8 health a second) on duty. A Skitter bites a gate for 3 every 1.1 s: the drone out-repairs it for ever,
+no gun reaches it, the hero stands at the defence gate, and the level cannot end. A player with a repair drone and an
+uncovered gate can meet exactly this (one straggler, the last wave spawned, nothing to do but wait), so the fix is in the
+game: a creature held at a gate whose health has not dropped since it arrived gives up after `Enemy.GateStalemateSeconds`
+(45 s) and burrows away (`Enemy.GaveUp` -> `EnemySpawner.Withdraw`: no reward, counted out). Any headway, or another gate,
+restarts its clock, so sieges that wear a gate down are untouched. `EnemyBehaviourTests.Walker_GivesUpOnAGateItMakesNoHeadway
+Against_ButBitesOnWhenTheGateWears` covers both halves; the re-run of the cell (same seed, same bot) wins 16/16 with the base
+whole in 14 s of wall clock instead of timing out. The 22f/24 records of C1_03 Easy creative seeds 1 and 3 (and the three
+C1_03 strategy replays that timed out) are losses that should be re-measured: `bash Tools/PlayTest/measure_cells.sh "cells=2:0"`.
+
+**Timings (this machine: i9-9900K, 8 cores, 32 GB; the editor open beside the workers).** One headless worker plays a run in
+about 15-20 s (a Hard/Psycho replay run), against about 25-30 s in the open editor and 44 s in the editor while workers ran
+beside it; a worker starts in about 45 s (Unity boot and a script compile on the clone). 54 replay runs (six cells, three
+seeds): editor serial 40 min 7 s; 5 workers 19 min 37 s, of which 15 min were one run sitting out the 900 s wall clock on
+the Shard Ridge stall (the other four workers were done in 4 min 20 s); 6 workers with sixteen job threads each 22 min 48 s
+(paging), with two job threads 1 min 57 s for the first 18 runs. With the stall fixed, a full measure (432 runs) projects to
+about 25-30 min and a full replay (264 runs) to about 15-20 min on five workers, against 2 h 50 and 2 h 15 in round 24; a
+tweak's impact table takes 6 s (snapshot 6 s, three fits included) and the replay of its flagged cells a few minutes.

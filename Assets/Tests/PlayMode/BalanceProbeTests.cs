@@ -246,7 +246,7 @@ namespace Game.Tests
             {
                 for (int difficulty = 0; difficulty < 4; difficulty++)
                 {
-                    if (Wanted("levels", level) && Wanted("difficulties", difficulty))
+                    if (WantedCell(level, difficulty))
                     {
                         runs.Add((level, difficulty));
                     }
@@ -469,6 +469,8 @@ namespace Game.Tests
                 }
             };
             Application.logMessageReceived += onLog;
+            // A headless worker keeps every rig evaluated although nothing is drawn (see the camera switch below).
+            ModelClipPlayer.AlwaysAnimate = Application.isBatchMode;
             foreach ((int level, int difficulty) in runs)
             {
                 SceneManager.LoadScene(SceneNames.Boot);
@@ -495,6 +497,15 @@ namespace Game.Tests
                 SceneManager.LoadScene(SceneNames.Level);
                 yield return null;
                 yield return null;
+                if (Application.isBatchMode)
+                {
+                    // A headless worker (round 25) measures the game, not the picture: with the cameras off a frame costs the
+                    // simulation only, six workers do not queue at one GPU, and -nographics raises no render errors.
+                    foreach (Camera camera in Object.FindObjectsByType<Camera>(FindObjectsInactive.Include))
+                    {
+                        camera.enabled = false;
+                    }
+                }
 
                 LedgerView ledger = over?.Ledger ?? LedgerFor(level, difficulty);
                 foreach (TowerDefinition tower in definition.AvailableTowers)
@@ -584,6 +595,14 @@ namespace Game.Tests
                 trace.Detach();
                 run.Detach(context);
                 traces.Add($"{definition.DisplayName} on difficulty {difficulty}, seed {seed}, strategy {strategy.Name}");
+                if (context != null && context.Outcome == LevelOutcome.Running)
+                {
+                    // The wall clock ran out with the level still running: say what the level is waiting for (round 25, the C1_03 stall).
+                    string stall = "[Probe] wall clock ran out at wave " + context.WaveNumber + "/" + context.WaveCount + ": " + (Object.FindFirstObjectByType<LevelController>()?.SpawnDiagnostic() ?? "no controller");
+                    Debug.Log(stall);
+                    traces.Add(stall);
+                }
+
                 traces.AddRange(trace.Lines);
                 traces.Add(ProbeTrace.Layout(definition, towers));
                 Assert.AreEqual(0, errors, "the level logged errors");
@@ -795,6 +814,53 @@ namespace Game.Tests
             }
 
             return fallback;
+        }
+
+        /// <summary>
+        /// Whether the filter file wants a cell: its level and difficulty lines, and a "cells=2:0,3:2" line (level:difficulty) that
+        /// names single cells, so a replay of the cells an impact report flagged needs no product of levels and difficulties
+        /// (round 25). Every parallel worker gets its own filter file with the cells and seeds it plays.
+        /// </summary>
+        internal static bool WantedCell(int level, int difficulty) =>
+            Wanted("levels", level) && Wanted("difficulties", difficulty) && WantedUnit(level, difficulty, null);
+
+        /// <summary>
+        /// Whether a cell's seed is wanted: a "cells=" entry may carry its seed ("2:0:3"), so a worker plays exactly the (cell, seed)
+        /// units it was given and no product of cells and seeds. An entry without a seed wants every seed.
+        /// </summary>
+        internal static bool WantedSeed(int level, int difficulty, int seed) => WantedUnit(level, difficulty, seed);
+
+        private static bool WantedUnit(int level, int difficulty, int? seed)
+        {
+            if (!System.IO.File.Exists(FilterPath))
+            {
+                return true;
+            }
+
+            foreach (string line in System.IO.File.ReadAllLines(FilterPath))
+            {
+                string[] parts = line.Split('=');
+                if (parts.Length == 2 && parts[0].Trim() == "cells")
+                {
+                    foreach (string item in parts[1].Split(','))
+                    {
+                        string[] unit = item.Split(':');
+                        if (unit.Length < 2 || !int.TryParse(unit[0].Trim(), out int l) || !int.TryParse(unit[1].Trim(), out int d) || l != level || d != difficulty)
+                        {
+                            continue;
+                        }
+
+                        if (!seed.HasValue || unit.Length < 3 || (int.TryParse(unit[2].Trim(), out int s) && s == seed.Value))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // An optional filter file narrows a run, one "levels=0,1" or "difficulties=1,2" line each (and "seed=N" for the draws, "step=S" for the game seconds per frame); no file means everything.

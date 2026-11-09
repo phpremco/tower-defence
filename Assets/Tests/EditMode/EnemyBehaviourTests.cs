@@ -25,7 +25,11 @@ namespace Game.Tests
             public bool BlocksGround { get; set; }
             public bool IsBase => false;
             public float Damage { get; private set; }
-            public float HealthFraction => 1f;
+
+            /// <summary>Whether bites show in the health fraction (a gate without a repair crew); a full fraction stands for one kept repaired.</summary>
+            public bool Wearing { get; set; }
+
+            public float HealthFraction => Wearing ? Mathf.Max(0f, 1f - Damage / 1000f) : 1f;
 
             public void TakeDamage(float amount) => Damage += amount;
 
@@ -413,6 +417,45 @@ namespace Game.Tests
             _enemy.Deactivate();
             _enemy.Deactivate();
             Assert.AreEqual(1, calls, "a second call does nothing");
+        }
+
+        /// <summary>
+        /// Round 25, the Shard Ridge stall: a lone creature biting a gate a repair crew keeps whole, out of every gun's reach, held the
+        /// level open for ever. No headway for GateStalemateSeconds and it gives up; a gate that loses health is bitten on.
+        /// </summary>
+        [Test]
+        public void Walker_GivesUpOnAGateItMakesNoHeadwayAgainst_ButBitesOnWhenTheGateWears()
+        {
+            Configure(speed: 1f);
+            var structures = new StructureRegistry();
+            var repaired = new FakeStructure(new Vector3(0f, 0f, 1f), true);
+            structures.Add(repaired);
+            Launch(new TargetRegistry(), structures);
+            bool gaveUp = false;
+            _enemy.GaveUp += _ => gaveUp = true;
+            for (float t = 0f; t < Enemy.GateStalemateSeconds - 1f; t += 0.5f)
+            {
+                _enemy.Step(0.5f);
+            }
+
+            Assert.IsFalse(gaveUp, "it keeps biting while the stalemate clock runs");
+            Assert.Greater(repaired.Damage, 0f, "and the bites land");
+            _enemy.Step(1.5f);
+            Assert.IsTrue(gaveUp, "a gate that loses no health for GateStalemateSeconds is given up on");
+
+            var wearing = new FakeStructure(new Vector3(0f, 0f, 1f), true) { Wearing = true };
+            var worn = new StructureRegistry();
+            worn.Add(wearing);
+            Launch(new TargetRegistry(), worn);
+            gaveUp = false;
+            _enemy.GaveUp += _ => gaveUp = true;
+            for (float t = 0f; t < Enemy.GateStalemateSeconds * 2f; t += 0.5f)
+            {
+                _enemy.Step(0.5f);
+            }
+
+            Assert.IsFalse(gaveUp, "a gate that loses health is bitten on");
+            Assert.Greater(wearing.Damage, repaired.Damage, "for twice as long");
         }
 
         private void Launch(TargetRegistry targets, StructureRegistry structures, float structureDamage = 1f)

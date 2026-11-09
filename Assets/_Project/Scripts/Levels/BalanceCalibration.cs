@@ -40,6 +40,8 @@ namespace Game.Levels
 
         [Tooltip("InputHash of the data the fit was made on; stale when it differs from the current data's hash.")]
         [SerializeField] private string _inputHash = string.Empty;
+        [Tooltip("Shape hash of the model and combat code the fit was made under (round 25); a different shape means a rule changed and a re-measure is needed.")]
+        [SerializeField] private string _shapeHash = string.Empty;
         [SerializeField] private string _measuredOn = string.Empty;
         [SerializeField] private string _seeds = string.Empty;
         [SerializeField] [Min(0f)] private float _step;
@@ -51,6 +53,7 @@ namespace Game.Levels
         public float RepairDroneBusyShare => _repairDroneBusyShare;
         public float QueueGuardShare => _queueGuardShare;
         public string InputHashValue => _inputHash;
+        public string ShapeHashValue => _shapeHash;
         public string MeasuredOn => _measuredOn;
         public string Seeds => _seeds;
         public float Step => _step;

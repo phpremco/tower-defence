@@ -4086,3 +4086,79 @@ known `ContinentFinaleTests` ledger check. `ArmourPoolTests` 10/10. 0 compile er
 --include_explicit true --async_tests true` (narrow with `probe_arg.txt` `bosses=0`), then EditMode `ContinentFinaleTests`,
 then `balance_pipeline.sh finale` only on the curator's say. 3. `fit` again on the second pass's records; apply only if the bar
 (or the curator's lowered bar) is met. 4. The C1_03 stall (question 6).
+
+## Round 25: impact in minutes, parallel workers, the C1_03 stall (2026-11-09)
+
+Not committed (the curator commits). Docs/BALANCE.md "Impact in minutes, parallel workers, the C1_03 stall"; Docs/COMMANDS.md
+"Round 25: impact and parallel runs" (the how-to Remco can follow). Save: `progress.json` MD5 ae9223b8 before, after every run
+and at the end; every worker clone carries its own product name, so its persistentDataPath is its own.
+
+1. **Impact calculator (goal 1).** `bash Tools/PlayTest/balance_pipeline.sh snapshot` takes the paper baseline
+   (`Tools/PlayTest/impact_baseline/paper.txt`: 206 rows for the 24 cells, inputs 6c23462e, shape 6ff32c45, band 0.12 from the
+   odd/even hold-out efficiencies; 6 s); `balance_pipeline.sh impact` (menu `Tools/Generate/Balance/8 Impact`, 6 s) writes
+   `Tools/PlayTest/impact.txt`: per cell the best plan before -> after, plans and obvious kinds holding, the creative reference, a
+   FLAG with its reasons (verdict flipped, stars moved, margin moved by the band or more), the Psycho-above-Hard ordering per
+   level, the upgrade rule per gun, and the exact `replay_cells.sh "cells=..."` line. STALE is reported only when the model's
+   shape changed (`BalanceStages.ShapeHash`: the Balance and Combat sources, the rule field names, the tower and creature types,
+   the difficulties, the level keys); the fit now writes `holdout` and `shape` lines into calibration.txt, apply writes the
+   shape into the asset (`BalanceCalibration.ShapeHashValue`) and **refuses a fit below the 90 % / 0.8 bar** (round 24 applied
+   one silently); `apply-force` overrides with a warning. New files: `Assets/_Project/Scripts/Editor/BalanceStages.Impact.cs`,
+   `Tools/PlayTest/Scripts/Impact.cs`; the filter learnt `cells=node:difficulty[:seed]` (`BalanceProbeTests.WantedCell` and
+   `WantedSeed`, `BalanceStages.WantedCell`) in the measure, replay and search stages.
+2. **Parallel headless workers (goal 2).** `Tools/PlayTest/workers.sh` (count, sync, run): clones of the project under
+   `C:\Users\remco\TowerDefenseWorkers\wN` (about 6 GB each; a sync of a clone that exists takes a second, a first Library copy
+   about 20 s), each a `Unity -batchmode -runTests PlayMode` with its own probe_arg units dealt round robin, `-job-worker-count 2`,
+   the probe's cameras off in batch mode and every rig evaluated (`ModelClipPlayer.AlwaysAnimate`); records merged by whole
+   cells. `balance_pipeline.sh measure|replay`, `measure_cells.sh` and `replay_cells.sh` use the workers by default, `--serial`
+   runs the open editor as before. Five workers on this machine (`workers.sh count`: 4 GB each, 10 GB kept). Learnt the hard
+   way: `-nographics` makes URP log render errors (the probe counts errors, the run fails), so the device stays and the cameras
+   go; six editors with sixteen job threads each ran twenty times slower (22 min 48 s for 54 runs, paging); with two job threads
+   and the RAM-based count four of five workers finished the same 54 runs in 4 min 20 s. **Determinism:** headless runs are
+   identical to the byte across workers and repeats and identical to the editor's serial run (0 of 54 lines differ); the only
+   divergent run was the thrashing first attempt. Timings in Docs/BALANCE.md: editor serial 40 min 7 s for the 54 runs against
+   about 4.5 min on five workers once the stall below is fixed; a full measure projects to 25-30 min (was 2 h 50) and a full
+   replay to 15-20 min (was 2 h 15).
+3. **The C1_03 stall (goal 3), root cause and fix.** Reproduced on a worker (`cells=2:0:1`); the new `[Probe] wall clock ran out`
+   diagnostic (`LevelController.SpawnDiagnostic`) said: no wave spawning, held 0, alive 1: a Skitter with 4 of 13 health at the
+   second road's gate (cell 8,9), out of every gun's reach, biting a gate the creative bot's repair drone (8 health a second)
+   kept whole for ever. Not `_held`, not `Alive` bookkeeping: a stalemate at a gate. The 5-worker run showed the same stall on
+   C1_03 Psycho strategy1 seed 3 (a Skitter with 1 of 22 health at the same gate), so round 24's timed-out strategy replays are
+   the same bug. Fix in the game: `Enemy.GateStalemateSeconds` (45 s) of biting a gate whose health never drops and the creature
+   gives up (`Enemy.GaveUp` -> `EnemySpawner.Withdraw`, no reward); any headway or another gate restarts its clock. Test:
+   `EnemyBehaviourTests.Walker_GivesUpOnAGateItMakesNoHeadwayAgainst_ButBitesOnWhenTheGateWears` (the class passes 18/18). The
+   re-run of C1_03 Easy seed 1 creative wins 16/16 with the base whole in 14 s instead of 900 s. **Records to refresh:** the
+   committed records still hold the stalled runs as losses: `bash Tools/PlayTest/measure_cells.sh "cells=2:0"` and
+   `bash Tools/PlayTest/replay_cells.sh "cells=2:0,2:3"`, then fit and acceptance (C1_03 Easy's verdict may change).
+4. **Demo (goal 4), the Gun Turret's armour factor 0.3 -> 0.25** (`set_serialized_field` on PulseRifle.asset, reverted afterwards;
+   the asset is unchanged in git). `impact` in 6 s: 3 of 24 cells flagged, `cells=4:2,5:0,5:1`. The table (margins are the best
+   plan's; plans and obvious kinds holding before -> after):
+
+   | Cell | Best plan before -> after | Plans hold | Obvious hold | Flag |
+   |---|---|---|---|---|
+   | C1_01 all, C1_02 all, C1_03 all, C1_04 all | margins move by 0.00-0.02 | unchanged | unchanged | - |
+   | C1_05 Easy | falls w16 0.37 -> falls w16 0.33 | 0/3 | 0/4 | - |
+   | C1_05 Medium | 3* base 698 0.78 -> 3* base 700 0.70 | 5/5 | 0/4 | - |
+   | C1_05 Hard | falls w14 0.31 -> falls w10 0.17 | 0/3 | 0/4 | FLAG: all three plans -0.13 (band 0.12) |
+   | C1_06 Easy | 3* base 700 0.68 -> 3* base 700 0.67 | 5/5 | 0/4 | FLAG: creative 0.85 -> 0.62 |
+   | C1_06 Medium | falls w15 0.06 -> falls w13 0.29 | 0/3 | 0/4 | FLAG: strategy1 +0.23, creative -0.17 |
+
+   Psycho above Hard stays ordered on every level; the upgrade rule stays met for every gun (1.00-1.02). Reading: the light
+   gun's weaker bite on armour hardly moves the paper where Cannons carry the plans (C1_01-C1_04); it hurts most on Quartz Flats
+   Hard and Glass Reach Medium, where the plans lean on Gun Turrets against the armoured troops. The replay of the three flagged cells on five workers (33 runs, 9 units): **4 min 34 s**, 0 probe errors, no stall. In play at 0.25 against the committed records: C1_05 Hard plans still 0/3 (lost at 14/17 on every seed), C1_06 Easy plans still 5/5 with 3 stars, C1_06 Medium strategy1 3/3 as before and strategy2 2/3 (was 1/3: seed 2 flipped to a win). So the tweak moves the paper on three cells and the play on one run: a question Remco gets answered in about five minutes (6 s impact, 4.5 min replay) instead of a day.
+5. **EditMode, whole suite (async, 07:27):** 700 tests, 643 passed, 4 failed, 53 skipped. Known: `BalanceLedgerTests.EveryWave_
+   StaysInsideItsDifficultyBand`, `ContinentFinaleTests` (two: the boss-share and the finale ledger checks). Also failing,
+   pre-existing and not of this round: `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule` ("the repair drone's price is
+   off the rule: run ApplyDronePrice"): round 24's chain applied a calibration with repair-drone busy share 0.75 and the drone's
+   price (170) was never re-derived from it; `balance_pipeline.sh droneprice` is the fix (the curator's call, it is a data change).
+   0 compile errors, 0 warnings. `EnemyBehaviourTests` 18/18, `Smoke_Yardstick_ShardRidgeMedium` headless passed.
+
+**Left as found.** `Tools/PlayTest/plan_records.txt` and `calibration_records.txt` are restored to the committed state (the
+runs of this round were measurements of the tooling on identical data, and the demo's three cells were played at 0.25);
+`impact.txt` holds the demo table, `plan_replay_partial.txt` the last worker tables. The worker clones under
+`C:\Users\remco\TowerDefenseWorkers` (w1-w6, about 36 GB) can be deleted at any time; `workers.sh sync` makes them again.
+
+**Follow-ups for the curator.** (a) Refresh the stalled records (item 3) and run `fit`; apply only if the bar is met, or
+`apply-force` if Remco accepts a lower bar for Crystal Plains (round 24's question 4). (b) `droneprice` for the failing drone
+test. (c) With the stalemate rule a gate out of reach no longer soft-locks a level; Dr. Voss could still hint at a straggler.
+(d) A worker's memory grows over a long run (to about 4 GB after a dozen runs): if a full measure on five workers pages,
+`TD_WORKERS=4`.

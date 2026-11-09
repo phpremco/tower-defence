@@ -14,6 +14,12 @@ namespace Game.Core
     /// </summary>
     public sealed class ModelClipPlayer
     {
+        /// <summary>
+        /// Evaluate every rig every frame, drawn or not. A headless balance worker (round 25) runs with its cameras off, and a culled
+        /// rig would leave its sockets (muzzles, hands) at the bind pose, so the game it measures would differ from the one on screen.
+        /// </summary>
+        public static bool AlwaysAnimate;
+
         private const float CycleFadeSeconds = 0.2f;
         private const float OnceFadeInSeconds = 0.08f;
         private const float OnceFadeOutSeconds = 0.15f;
@@ -81,7 +87,7 @@ namespace Game.Core
                 animator.runtimeAnimatorController = null;
                 animator.applyRootMotion = false;
                 // The far LOD's rig only evaluates while its mesh is drawn.
-                animator.cullingMode = AnimatorCullingMode.CullCompletely;
+                animator.cullingMode = AlwaysAnimate ? AnimatorCullingMode.AlwaysAnimate : AnimatorCullingMode.CullCompletely;
                 PlayableGraph graph = PlayableGraph.Create(art.name);
                 graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
                 var output = AnimationPlayableOutput.Create(graph, "Model", animator);

@@ -712,3 +712,46 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
 - `bash Tools/PlayTest/r24_face.sh <out dir> [node] [prefix]`: one idle and one face close-up still of Spencer after a Mercer
   re-sync (round 23d's probe scripts; the editor is stopped afterwards).
 - `unity command get_console_logs` does not exist in this CLI build: use `console_status` (counts) and `recompile_status`.
+
+### Round 25: impact and parallel runs (2026-11-09)
+
+Remco's wish: change a number and see the impact without a day of machine time. Three pieces (Docs/BALANCE.md "Impact in
+minutes"): an analytic impact calculator against a saved baseline, headless parallel workers for the PlayMode stages, and a
+`cells=` filter so only the flagged cells are replayed. The editor must be stopped (`unity command editor_status`) for the
+editor stages; the workers never touch the open editor.
+
+**The how-to (change a number, see the impact, replay what might flip):**
+
+1. Baseline first, on the data before the change (once after every committed pipeline run; seconds):
+   `bash Tools/PlayTest/balance_pipeline.sh snapshot` -> `Tools/PlayTest/impact_baseline/paper.txt` (the paper verdict of every
+   searched plan, the creative reference and the obvious family in every cell, the input and shape hashes, and the band: the
+   calibration's own error, from the odd/even hold-out efficiencies).
+2. Change the number (data or generator: e.g. the Gun Turret's armour factor 0.3 -> 0.25 in `BalanceSheet`/`ApplyRoles.cs`).
+3. `bash Tools/PlayTest/balance_pipeline.sh impact` (seconds; menu `Tools/Generate/Balance/8 Impact`) -> `Tools/PlayTest/impact.txt`:
+   per cell the best plan, the plans and obvious kinds holding and the creative reference, before -> after; the cells flagged
+   (a verdict flipped, stars moved, or a margin moved by the band or more; the Psycho-above-Hard ordering; the upgrade rule
+   per gun); and the exact replay filter. `STALE` at the top means the model's shape changed (a rule, a term, a tower or
+   creature type, the combat code), and then measure, fit and apply come first; a number inside the calibrated model reuses
+   the calibration's efficiencies, which is the point.
+4. Replay only the flagged cells, in parallel: `bash Tools/PlayTest/replay_cells.sh "cells=2:0,3:2"` (the line impact.txt
+   prints; `measure_cells.sh` for the yardstick), then `balance_pipeline.sh acceptance` (and `fit` when the records changed
+   enough to matter). Revert the number if the impact is not what you wanted.
+
+**Workers** (`Tools/PlayTest/workers.sh`): clones of the project (Assets, Packages, ProjectSettings, Library, Tools) under
+`C:\Users\remco\TowerDefenseWorkers\wN`, each running `Unity -batchmode -runTests PlayMode` headless with its own
+`probe_arg.txt` (`cells=node:difficulty:seed` units dealt round robin) and `-job-worker-count 2`; the probe turns the cameras
+off in batch mode (and keeps every rig evaluated, `ModelClipPlayer.AlwaysAnimate`). Each clone's product name is "Tower
+defense worker wN", so its persistentDataPath is its own and Remco's save is never read or written (the script checks the
+save's MD5 before and after as well). `workers.sh count` gives N from the cores and the RAM (4 GB per worker, 10 GB kept:
+5 on this machine); `workers.sh sync [N] [--library]` refreshes the clones (the Library only when missing or on `--library`);
+`workers.sh run replay|measure [N] [filter lines]` runs and merges. `balance_pipeline.sh measure|replay` use the workers by
+default; `--serial` (first argument) runs them in the open editor as before. Env: `TD_WORKERS`, `TD_WORKERS_ROOT`,
+`TD_LEVELS` (the campaign nodes, default 0..5), `TD_JOB_WORKERS`, `TD_GRAPHICS=0` for `-nographics` (URP then logs render
+errors, so it is off by default). The clones are disposable (about 6 GB each); delete the folder to start clean.
+
+**Apply bar**: `balance_pipeline.sh apply` refuses a fit whose hold-out line is below the bar (90 % / 0.8; the fit writes
+`holdout` and `shape` lines into calibration.txt since this round); `apply-force` applies it anyway, with a warning.
+
+**Stall diagnostic**: when the probe's 900 s wall clock runs out, it logs `[Probe] wall clock ran out at wave N: ...` with
+`LevelController.SpawnDiagnostic()` (wave spawning or not, held nest spawns, every creature still counted alive) into the
+console and `Logs/probe_trace.txt`.
