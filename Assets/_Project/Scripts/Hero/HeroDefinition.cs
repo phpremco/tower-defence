@@ -42,6 +42,12 @@ namespace Game.Hero
         /// <summary>Seconds a downed hero needs before it stands up again at its post.</summary>
         [SerializeField] [Min(1f)] private float _reviveSeconds = 15f;
 
+        [Header("Recovery")]
+        [Tooltip("Hit points per second he regains while nothing has hurt him for the delay below; zero never heals in a level (round 24: he died too fast in fights).")]
+        [SerializeField] [Min(0f)] private float _regenPerSecond;
+        [Tooltip("Seconds without a hit before the regeneration starts.")]
+        [SerializeField] [Min(0f)] private float _regenDelaySeconds = 4f;
+
         /// <summary>The ability buttons, by slot: slot 0 is the first button (F, left trigger), slot 1 the second (G, right trigger).</summary>
         [SerializeField] private HeroAbilityDefinition[] _abilities = new HeroAbilityDefinition[0];
 
@@ -75,6 +81,8 @@ namespace Game.Hero
         public float StrikeInterval => _weapon.AttackInterval;
         public float GuardShare => _guardShare;
         public float ReviveSeconds => _reviveSeconds;
+        public float RegenPerSecond => _regenPerSecond;
+        public float RegenDelaySeconds => _regenDelaySeconds;
         public HeroAbilityDefinition[] Abilities => _abilities;
         public HeroPerkDefinition[] Perks => _perks;
         public Color Color => _color;

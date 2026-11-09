@@ -4,35 +4,26 @@ using UnityEngine;
 namespace Game.Combat
 {
     /// <summary>
-    /// Hit points with events. Plain class so enemies, the base and towers can share it. An optional layer of
-    /// armour sits in front of the hit points: while any armour is left it soaks up a share of every hit, and the
-    /// rest goes through to the body. Once the armour is chipped away every hit lands in full. Plating is different: it never
-    /// wears off and takes the same number of points off every hit, never more than all but a floor share of it, so a few
-    /// heavy hits pass it far better than many light ones (Docs/BALANCE.md, "Roles by enemy").
+    /// Hit points with events. Plain class so enemies, the base and towers can share it. An optional pool of armour sits
+    /// in front of the hit points (Remco's design, round 24): while any armour is left, a hit works on the armour at the
+    /// weapon's armour factor (a heavy shell at one or more strips it point for point, a light pulse at a fraction chips
+    /// it slowly), and nothing reaches the body; the part of a hit the armour did not need carries on to the body in
+    /// full. Once the armour is gone every weapon lands in full. The balance model uses the same rule
+    /// (<c>Game.Balance.ArmourMix</c>).
     /// </summary>
     public sealed class Health
     {
-        public Health(float max) : this(max, 0f, 0f)
+        public Health(float max) : this(max, 0f)
         {
         }
 
-        /// <param name="armor">Hit points of the armour layer; zero for creatures without one.</param>
-        /// <param name="armorReduction">Share of each hit the armour absorbs while it lasts, from 0 to 1.</param>
-        public Health(float max, float armor, float armorReduction) : this(max, armor, armorReduction, 0f, 0f)
-        {
-        }
-
-        /// <param name="plating">Points every hit loses to the plates; zero for creatures without plating.</param>
-        /// <param name="platingFloor">Share of a hit that always gets through the plates, from 0 to 1.</param>
-        public Health(float max, float armor, float armorReduction, float plating, float platingFloor)
+        /// <param name="armor">Hit points of the armour pool; zero for creatures without one.</param>
+        public Health(float max, float armor)
         {
             Max = Mathf.Max(1f, max);
             Current = Max;
             ArmorMax = Mathf.Max(0f, armor);
             Armor = ArmorMax;
-            ArmorReduction = Mathf.Clamp01(armorReduction);
-            Plating = Mathf.Max(0f, plating);
-            PlatingFloor = Mathf.Clamp01(platingFloor);
         }
 
         public float Max { get; private set; }
@@ -42,13 +33,6 @@ namespace Game.Combat
         public float ArmorMax { get; }
 
         public float Armor { get; private set; }
-
-        public float ArmorReduction { get; }
-
-        /// <summary>Points every hit loses to the plates (see <see cref="ThroughPlating"/>).</summary>
-        public float Plating { get; }
-
-        public float PlatingFloor { get; }
 
         public bool IsDead => Current <= 0f;
 
@@ -64,10 +48,10 @@ namespace Game.Combat
         /// <summary>Raised with the armour left whenever a hit chips it or something restores it.</summary>
         public event Action<float> ArmorChanged;
 
-        public event Action Died;
+        /// <summary>Raised once when a hit takes the last of the armour, for views that show it breaking.</summary>
+        public event Action ArmorBroken;
 
-        /// <summary>Raised with the share of a hit (0 to 1) the plating stopped, for views that show the plates at work.</summary>
-        public event Action<float> PlatingStopped;
+        public event Action Died;
 
         /// <summary>Raises the maximum and gives the extra hit points to the owner, so an upgrade also heals by its size.</summary>
         public void Extend(float extraMax)
@@ -120,44 +104,67 @@ namespace Game.Combat
         }
 
         /// <summary>
-        /// What one hit leaves after a flat plating: the hit less the plating, but never less than the floor share of the hit.
-        /// The balance model uses the same rule (<c>Game.Balance.Plating.Through</c>).
+        /// The share of a hit the armour takes before the body is reached: all of it while the armour can absorb the whole
+        /// hit at the weapon's factor, less once the hit is bigger than what is left. Zero without armour.
         /// </summary>
-        public static float ThroughPlating(float hit, float plating, float floor) =>
-            plating <= 0f ? hit : Mathf.Max(hit - plating, hit * floor);
+        public static float ArmourShareOfHit(float hit, float armor, float armourFactor)
+        {
+            if (armor <= 0f || hit <= 0f)
+            {
+                return 0f;
+            }
 
-        public void TakeDamage(float amount) => TakeDamage(amount, false);
+            // A weapon that cannot work on armour at all is swallowed whole while any is left.
+            return armourFactor <= 0f ? 1f : Mathf.Min(1f, armor / (hit * armourFactor));
+        }
 
-        /// <param name="pastPlating">True for damage dealt a little every frame, which has no single hit for the plates to stop.</param>
-        public void TakeDamage(float amount, bool pastPlating)
+        /// <summary>A hit from a weapon that works on armour as well as it does on the body.</summary>
+        public float TakeDamage(float amount) => TakeDamage(amount, 1f);
+
+        /// <summary>
+        /// One hit. Returns the points it took off the creature in all: armour chipped plus body hurt, which is what the
+        /// damage of the hit was worth (a light pulse on armour is worth a fraction of itself).
+        /// </summary>
+        /// <param name="armourFactor">Share of the hit that works on armour; one for a heavy shell, under one for light fire.</param>
+        public float TakeDamage(float amount, float armourFactor)
         {
             if (IsDead || amount <= 0f)
             {
-                return;
+                return 0f;
             }
 
-            if (!pastPlating && Plating > 0f)
-            {
-                float through = ThroughPlating(amount, Plating, PlatingFloor);
-                PlatingStopped?.Invoke(1f - through / amount);
-                amount = through;
-            }
-
+            float dealt = 0f;
             if (Armor > 0f)
             {
-                float absorbed = Mathf.Min(Armor, amount * ArmorReduction);
-                Armor -= absorbed;
-                amount -= absorbed;
+                float share = ArmourShareOfHit(amount, Armor, armourFactor);
+                float chipped = Mathf.Min(Armor, share * amount * armourFactor);
+                Armor -= chipped;
+                dealt += chipped;
+                amount *= 1f - share;
                 ArmorChanged?.Invoke(Armor);
+                if (Armor <= 0f)
+                {
+                    Armor = 0f;
+                    ArmorBroken?.Invoke();
+                }
             }
 
-            Current = Mathf.Max(0f, Current - amount);
+            if (amount <= 0f)
+            {
+                return dealt;
+            }
+
+            float hurt = Mathf.Min(Current, amount);
+            Current -= hurt;
+            dealt += hurt;
             Changed?.Invoke(Current);
 
             if (IsDead)
             {
                 Died?.Invoke();
             }
+
+            return dealt;
         }
     }
 }

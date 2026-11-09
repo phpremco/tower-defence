@@ -21,7 +21,7 @@ namespace Game.Balance
             foreach (KeyValuePair<string, TowerStats> pair in Sorted(model.Towers))
             {
                 TowerStats t = pair.Value;
-                text.Append(t.Id).Append(t.Targets).Append(F(t.Splash)).Append(t.SplashTargets).Append(F(t.GroundFactor)).Append(F(t.AirFactor)).Append(F(t.SellRefund)).Append(t.IsSupport).Append(t.BlocksGround).Append(t.IsBaseDefence);
+                text.Append(t.Id).Append(t.Targets).Append(F(t.Splash)).Append(t.SplashTargets).Append(F(t.GroundFactor)).Append(F(t.AirFactor)).Append(F(t.ArmourFactor)).Append(F(t.SellRefund)).Append(t.IsSupport).Append(t.BlocksGround).Append(t.IsBaseDefence);
                 foreach (TowerLevelStats level in t.Levels)
                 {
                     text.Append(level.Cost).Append(F(level.Damage)).Append(F(level.Range)).Append(F(level.Interval)).Append(F(level.Slow));
@@ -31,7 +31,7 @@ namespace Game.Balance
             foreach (KeyValuePair<string, EnemyStats> pair in Sorted(model.Enemies))
             {
                 EnemyStats e = pair.Value;
-                text.Append(e.Id).Append(e.Layer).Append(F(e.Health)).Append(F(e.Armor)).Append(F(e.Plating)).Append(F(e.PlatingFloor)).Append(F(e.Speed)).Append(F(e.FightSpeed)).Append(e.Reward).Append(F(e.BlockadeDamage)).Append(F(e.AttackInterval)).Append(e.IsBoss).Append(F(e.MechanicLossSeconds));
+                text.Append(e.Id).Append(e.Layer).Append(F(e.Health)).Append(F(e.Armor)).Append(F(e.Speed)).Append(F(e.FightSpeed)).Append(e.Reward).Append(F(e.BlockadeDamage)).Append(F(e.AttackInterval)).Append(e.IsBoss).Append(F(e.MechanicLossSeconds));
             }
 
             foreach (DifficultyStats d in model.Difficulties)
@@ -45,6 +45,7 @@ namespace Game.Balance
             }
 
             text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds)).Append(F(model.Hero.MaxHealth)).Append(F(model.Hero.GuardShare)).Append(F(model.Hero.ReviveSeconds));
+            text.Append(F(model.Hero.BladeArmourFactor)).Append(F(model.Hero.GunArmourFactor)).Append(F(model.Hero.PulseDamage)).Append(F(model.Hero.PulseCooldown)).Append(F(model.Hero.PulseArmourFactor)).Append(F(model.Hero.RegenPerSecond)).Append(F(model.Hero.RegenDelaySeconds));
             foreach (LevelFacts facts in model.Facts)
             {
                 text.Append(facts.Key).Append(facts.StartingMoney).Append(F(facts.HealthScale)).Append(facts.MineCount).Append(facts.MineStock).Append(facts.Harvest).Append(F(facts.GateHealth)).Append(F(facts.BaseHealth)).Append(F(facts.GateRepairCostPerHealth)).Append(facts.GateRebuildCost);
@@ -80,7 +81,7 @@ namespace Game.Balance
             }
 
             BalanceRules r = model.Rules;
-            text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap));
+            text.Append(F(r.Utilisation)).Append(F(r.HumanUtilisation)).Append(F(r.MaxSplashTargets)).Append(F(r.HeroShare)).Append(F(r.GateWindowShare)).Append(F(r.MaxGateHoldSeconds)).Append(F(r.CarriedShare)).Append(F(r.FrontEfficiency)).Append(F(r.TrunkReference)).Append(r.AttackersPerGate).Append(F(r.BossWaveCap)).Append(r.ShockwaveCrowd).Append(F(r.ArmorThreatShare));
             return Fnv(text.ToString());
         }
 

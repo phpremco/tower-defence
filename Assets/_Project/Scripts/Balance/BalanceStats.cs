@@ -18,11 +18,8 @@ namespace Game.Balance
         public int Layer = Balance.Layer.Ground;
         public bool Flies;
         public float Health = 1f;
+        /// <summary>The armour pool in front of the body (round 24): a weapon works on it at its <see cref="TowerStats.ArmourFactor"/> before the body is hurt.</summary>
         public float Armor;
-
-        /// <summary>Flat per-hit plating and the share of a hit that always gets through it (see <see cref="Balance.Plating"/>).</summary>
-        public float Plating;
-        public float PlatingFloor = 0.2f;
         public float Speed = 1f;
 
         /// <summary>
@@ -48,7 +45,7 @@ namespace Game.Balance
         /// <summary>True for a continent boss: its health takes the difficulty's boss share (<see cref="DifficultyStats.BossHealth"/>).</summary>
         public bool IsContinentBoss;
 
-        /// <summary>Health plus armour: armour soaks that many points before it is gone, whatever its share per hit.</summary>
+        /// <summary>Health plus armour: what a heavy weapon (armour factor one) must deal to kill it; light fire pays more for the armour (<see cref="ArmourMix"/>).</summary>
         public float EffectiveHealth => Health + Armor;
     }
 
@@ -84,6 +81,9 @@ namespace Game.Balance
         public float GroundFactor = 1f;
         public float AirFactor = 1f;
 
+        /// <summary>Share of a hit that works on a creature's armour while it has any (TowerDefinition.ArmourFactor): one strips it point for point, light fire sits well under one.</summary>
+        public float ArmourFactor = 1f;
+
         /// <summary>
         /// Absolute in-play efficiency of the ledger's capacity for this tower (realised damage over the paper capacity at one),
         /// fitted on replayed plans and kept on the BalanceCalibration asset, never on the tower (round 22).
@@ -111,6 +111,19 @@ namespace Game.Balance
         public float BladeDamage;
         public float BladeInterval = 1f;
         public float GunDamage;
+
+        /// <summary>How the blade and the blaster work on armour (HeroWeaponDefinition.ArmourFactor): the blade is heavy, the blaster light.</summary>
+        public float BladeArmourFactor = 1f;
+        public float GunArmourFactor = 1f;
+
+        /// <summary>The shockwave (round 24): damage to everything within reach every cooldown, as the bot and a player use it in a crowd or on a boss; zero without the ability.</summary>
+        public float PulseDamage;
+        public float PulseCooldown = 20f;
+        public float PulseArmourFactor = 1f;
+
+        /// <summary>Hit points a second he regains after the delay without a hit (HeroDefinition, round 24); zero never heals.</summary>
+        public float RegenPerSecond;
+        public float RegenDelaySeconds = 4f;
 
         /// <summary>Seconds between two shots of the blaster, without its reload.</summary>
         public float GunInterval = 1f;

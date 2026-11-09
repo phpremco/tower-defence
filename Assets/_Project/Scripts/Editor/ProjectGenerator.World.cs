@@ -92,18 +92,18 @@ namespace Game.Editor
             // die at the rate the beam can swing, not at its pulse rate; on a big creature it is a plain 40 DPS.
             // Cyan like the model's lens (curator decision 2026-11-04: our colours follow the models; warm is for the aliens).
             roster.Laser = CreateTower("Laser", "Laser Turret", TargetLayers.Ground, BeamSpeed, 0f, new Color(0.35f, 0.9f, 1f),
-                new[] { Lvl(110, 8f, LightGunReach + 0.3f, 0.2f), Lvl(130, 12f, LightGunReach + 0.5f, 0.18f), Lvl(190, 18f, LightGunReach + 0.8f, 0.15f) }, 160f);
+                new[] { Lvl(110, 8f, LightGunReach + 0.3f, 0.2f), Lvl(130, 12f, LightGunReach + 0.5f, 0.18f), Lvl(190, 18f, LightGunReach + 0.8f, 0.15f) }, 160f, armourFactor: LightFireArmourFactor);
             SetBeam(roster.Laser, LaserSweepSeconds);
 
             roster.Cryo = CreateTower("Cryo", "Cryo", TargetLayers.Ground | TargetLayers.Air, 12f, 0f, new Color(0.55f, 0.95f, 1f),
-                new[] { Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Lvl(110, 2f, 4f, 0.45f, 0f, 0.42f, 3f), Lvl(160, 2f, 4.3f, 0.4f, 0f, 0.35f, 4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f);
+                new[] { Lvl(90, 2f, 3.7f, 0.5f, 0f, 0.5f, 2f), Lvl(110, 2f, 4f, 0.45f, 0f, 0.42f, 3f), Lvl(160, 2f, 4.3f, 0.4f, 0f, 0.35f, 4f) }, 140f, slowFactor: 0.5f, slowSeconds: 2f, armourFactor: LightFireArmourFactor);
 
             // Lightning is approximated by a small splash, so it works well on groups.
             roster.Tesla = CreateTower("Tesla", "Tesla", TargetLayers.Ground, 40f, 1.3f, new Color(0.7f, 0.5f, 1f),
-                new[] { Lvl(140, 16f, 3.5f, 0.5f), Lvl(160, 26f, 3.7f, 0.45f), Lvl(230, 40f, 4f, 0.4f) }, 160f);
+                new[] { Lvl(140, 16f, 3.5f, 0.5f), Lvl(160, 26f, 3.7f, 0.45f), Lvl(230, 40f, 4f, 0.4f) }, 160f, armourFactor: MediumFireArmourFactor);
 
             roster.Railgun = CreateTower("Railgun", "Railgun", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(1f, 1f, 1f),
-                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f);
+                new[] { Lvl(220, 80f, 6f, 2.2f), Lvl(260, 120f, 6.5f, 2f), Lvl(360, 180f, 7f, 1.8f) }, 180f, armourFactor: PiercingArmourFactor);
 
             // Signal yellow like the model's halos (was green).
             roster.Support = CreateTower("Support", "Support", TargetLayers.Ground, 1f, 0f, new Color(1f, 0.74f, 0.2f),
@@ -117,10 +117,10 @@ namespace Game.Editor
                 new[] { Lvl(0, 70f, 5.1f, 1.6f), Lvl(220, 130f, 5.5f, 1.4f), Lvl(320, 220f, 5.9f, 1.2f) }, 240f);
 
             roster.StormRifle = CreateTower("StormRifle", "Storm Rifle", TargetLayers.Ground | TargetLayers.Air, 20f, 0.8f, new Color(0.6f, 0.8f, 1f),
-                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(200, 20f, 4.4f, 0.18f), Lvl(300, 28f, 4.7f, 0.15f) }, 190f);
+                new[] { Lvl(0, 14f, 4.1f, 0.2f), Lvl(200, 20f, 4.4f, 0.18f), Lvl(300, 28f, 4.7f, 0.15f) }, 190f, armourFactor: MediumFireArmourFactor);
 
             roster.CryoBeam = CreateTower("CryoBeam", "Cryo Beam", TargetLayers.Ground | TargetLayers.Air, 40f, 0f, new Color(0.7f, 1f, 1f),
-                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(210, 13f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(310, 20f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f);
+                new[] { Lvl(0, 8f, 4.3f, 0.15f, 0f, 0.4f, 2.5f), Lvl(210, 13f, 4.6f, 0.13f, 0f, 0.33f, 3.5f), Lvl(310, 20f, 4.9f, 0.11f, 0f, 0.27f, 4.5f) }, 180f, slowFactor: 0.4f, slowSeconds: 2.5f, armourFactor: LightFireArmourFactor);
 
             return roster;
         }

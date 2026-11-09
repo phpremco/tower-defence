@@ -16,12 +16,9 @@ MonoBehaviour:
   _layer: 1
   _flies: 0
   _maxHealth: 200
-  _armor: 0
-  _armorReduction: 0.6
-  _plating: 6
-  _platingFloor: 0.2
+  _armor: 90
   _speed: 0.9
-  _reward: 19
+  _reward: 18
   _baseDamage: 3
   _element: 0
   _attackStyle: 1
@@ -55,4 +52,4 @@ MonoBehaviour:
   _deathStyle: 0
   _art: {fileID: 11400000, guid: c0e76813f175eca4a831672ab4a69458, type: 2}
   _voice: {fileID: 11400000, guid: 754f95f33aa3b104fbf29d77b68a2e21, type: 2}
-  _description: Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots crack the plates.
+  _description: Scorpion in glowing armour plates. Its acid tail stings the towers it passes; heavy single shots strip the armour.

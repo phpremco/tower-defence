@@ -50,6 +50,9 @@ namespace Game.Balance
         /// <summary>Seconds before a downed hero stands again (zero: he is up).</summary>
         public float HeroDownLeft;
 
+        /// <summary>The hero's health carried from wave to wave (round 24): a siege wears it down, the quiet between waves heals it.</summary>
+        public float HeroHealth;
+
         public float GatesLeft => DefenceGate + RestGates;
 
         public bool HeroUp => HeroDownLeft <= 0f;
@@ -60,6 +63,7 @@ namespace Game.Balance
             DefenceGate = trunkGates > 0 ? level.GateHealth : 0f,
             RestGates = trunkGates > 1 ? level.GateHealth * (trunkGates - 1) : 0f,
             BaseLeft = level.BaseHealth,
+            HeroHealth = level.Hero != null ? level.Hero.MaxHealth : 0f,
         };
 
         /// <summary>Every trunk gate back to full (a repair step).</summary>
@@ -162,9 +166,9 @@ namespace Game.Balance
             float groundHit = damage * tower.GroundFactor;
             float airHit = damage * tower.AirFactor;
             float splash = tower.Splash > 0f ? Ledger.SplashCap(tower, rules) : 1f;
-            stream = ground ? field * tower.GroundFactor * load.StreamPlates.Share(groundHit) * Ledger.Overkill(groundHit, load.MeanHealth) * splash : 0f;
-            single = ground ? field * tower.GroundFactor * load.BossPlates.Share(groundHit) : 0f;
-            air = sky ? field * tower.AirFactor * load.AirPlates.Share(airHit) * Ledger.Overkill(airHit, load.MeanAirHealth) * splash : 0f;
+            stream = ground ? field * tower.GroundFactor * load.StreamArmour.Share(tower.ArmourFactor) * Ledger.Overkill(groundHit, load.MeanHealth) * splash : 0f;
+            single = ground ? field * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor) : 0f;
+            air = sky ? field * tower.AirFactor * load.AirArmour.Share(tower.ArmourFactor) * Ledger.Overkill(airHit, load.MeanAirHealth) * splash : 0f;
         }
 
         /// <summary>
@@ -175,8 +179,6 @@ namespace Game.Balance
         public static SiegeLine Resolve(LevelInput level, WaveLoad load, BalanceRules rules, SiegeGuards guards, SiegeState state, float waveSeconds)
         {
             var line = new SiegeLine();
-            float heroGround = state.HeroUp ? Ledger.HeroDps(level) : 0f;
-            float heroAir = state.HeroUp ? Ledger.HeroGunDps(level) : 0f;
             bool fell = false;
 
             float stream = Math.Max(0f, load.StreamHealth - guards.WalkStream);
@@ -185,11 +187,17 @@ namespace Game.Balance
             float attackers = Attackers(stream, load.MeanHealth, rules);
             float bossAttackers = bosses > 0f ? Math.Min(Math.Max(1, load.BossCount), rules.AttackersPerGate) : 0f;
 
+            // The hero against each group: blade, blaster and the pulse on the attackers in front of him, at the share the
+            // group's armour lets each of them land (round 24); against flyers at the base the blaster only.
+            float heroGround = state.HeroUp ? Ledger.HeroDps(level, load.StreamArmour, attackers) : 0f;
+            float heroBoss = state.HeroUp ? Ledger.HeroDps(level, load.BossArmour, bossAttackers) : 0f;
+            float heroAir = state.HeroUp && level.Hero != null ? Ledger.HeroGunDps(level) * load.AirArmour.Share(level.Hero.GunArmourFactor) : 0f;
+
             // The defence gate: the queue guns and the hero at his post against the stream, then the bosses.
             if (state.TrunkGates > 0 && state.DefenceGate > 0f)
             {
-                stream = Fight(stream, attackers, load.GroundStrike, guards.QueueStream, heroGround, level.Hero, rules, ref state.DefenceGate, ref fell, out float gate1);
-                bosses = Fight(bosses, bossAttackers, load.BossStrike, guards.QueueSingle, fell ? 0f : heroGround, level.Hero, rules, ref state.DefenceGate, ref fell, out float gate2);
+                stream = Fight(stream, attackers, load.GroundStrike, guards.QueueStream, heroGround, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate1);
+                bosses = Fight(bosses, bossAttackers, load.BossStrike, guards.QueueSingle, fell ? 0f : heroBoss, level.Hero, rules, ref state.DefenceGate, ref state.HeroHealth, ref fell, out float gate2);
                 line.GateDamage += gate1 + gate2;
             }
 
@@ -198,34 +206,49 @@ namespace Game.Balance
             // The other trunk gates: nothing shoots there but the hero, fallen back from his wrecked gate.
             if (state.TrunkGates > 1 && state.RestGates > 0f)
             {
-                float hero = state.DefenceGate <= 0f && !fell ? heroGround : 0f;
-                stream = Fight(stream, attackers, load.GroundStrike, 0f, hero, level.Hero, rules, ref state.RestGates, ref fell, out float rest1);
-                bosses = Fight(bosses, bossAttackers, load.BossStrike, 0f, fell ? 0f : hero, level.Hero, rules, ref state.RestGates, ref fell, out float rest2);
+                bool hero = state.DefenceGate <= 0f && !fell;
+                stream = Fight(stream, attackers, load.GroundStrike, 0f, hero ? heroGround : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest1);
+                bosses = Fight(bosses, bossAttackers, load.BossStrike, 0f, hero && !fell ? heroBoss : 0f, level.Hero, rules, ref state.RestGates, ref state.HeroHealth, ref fell, out float rest2);
                 line.GateDamage += rest1 + rest2;
             }
 
             // The doorstep: the guns in reach of the last road cells, the base's turrets, the hero when no gate stands.
             bool heroAtBase = state.GatesLeft <= 0f && !fell;
-            Fight(stream, attackers, load.GroundStrike, guards.DoorStream, heroAtBase ? heroGround : 0f, level.Hero, rules, ref state.BaseLeft, ref fell, out float base1);
-            Fight(bosses, bossAttackers, load.BossStrike, guards.DoorSingle, heroAtBase && !fell ? heroGround : 0f, level.Hero, rules, ref state.BaseLeft, ref fell, out float base2);
+            Fight(stream, attackers, load.GroundStrike, guards.DoorStream, heroAtBase ? heroGround : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base1);
+            Fight(bosses, bossAttackers, load.BossStrike, guards.DoorSingle, heroAtBase && !fell ? heroBoss : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base2);
 
             // Flyers pass the gates and lay siege to the base.
             line.AirLeak = Math.Max(0f, load.AirHealth - guards.WalkAir);
-            Fight(line.AirLeak, Attackers(line.AirLeak, load.MeanAirHealth, rules), load.AirStrike, guards.DoorAir, heroAtBase && !fell ? heroAir : 0f, level.Hero, rules, ref state.BaseLeft, ref fell, out float base3);
+            Fight(line.AirLeak, Attackers(line.AirLeak, load.MeanAirHealth, rules), load.AirStrike, guards.DoorAir, heroAtBase && !fell ? heroAir : 0f, level.Hero, rules, ref state.BaseLeft, ref state.HeroHealth, ref fell, out float base3);
             line.BaseDamage = base1 + base2 + base3;
             line.HeroFell = fell;
 
-            // The clock: a hero who fell midway through the wave has the rest of it to recover.
+            // The clock: a hero who fell midway through the wave has the rest of it to recover, and stands up whole.
             if (fell && level.Hero != null)
             {
                 state.HeroDownLeft = Math.Max(0f, level.Hero.ReviveSeconds - 0.5f * waveSeconds);
+                state.HeroHealth = level.Hero.MaxHealth;
             }
             else
             {
                 state.HeroDownLeft = Math.Max(0f, state.HeroDownLeft - waveSeconds);
+                Recover(level, load, state, waveSeconds);
             }
 
             return line;
+        }
+
+        // The quiet between the wave's fight and the next wave (the clock less the window, less the delay before the
+        // regeneration starts) heals the hero at his rate, as Commander.Recover does; a hero who never fights is whole.
+        private static void Recover(LevelInput level, WaveLoad load, SiegeState state, float waveSeconds)
+        {
+            if (level.Hero == null || level.Hero.RegenPerSecond <= 0f)
+            {
+                return;
+            }
+
+            float quiet = Math.Max(0f, waveSeconds - load.Window - level.Hero.RegenDelaySeconds);
+            state.HeroHealth = Math.Min(level.Hero.MaxHealth, state.HeroHealth + level.Hero.RegenPerSecond * quiet);
         }
 
         /// <summary>Leakers hammering a structure at once: as many as the leak holds, at most the rules' attackers.</summary>
@@ -236,7 +259,7 @@ namespace Game.Balance
         // hero kill them. The hero in front of the structure takes his guard share of the hammer instead of it, and goes down when
         // his health is gone; from then on the structure takes the whole hammer. Returns the health the structure's fall let
         // through (zero when the leak was cleared), and takes the damage off the structure.
-        private static float Fight(float health, float attackers, float strike, float guardDps, float heroDps, HeroStats hero, BalanceRules rules, ref float structure, ref bool fell, out float damage)
+        private static float Fight(float health, float attackers, float strike, float guardDps, float heroDps, HeroStats hero, BalanceRules rules, ref float structure, ref float heroHealth, ref bool fell, out float damage)
         {
             damage = 0f;
             if (health <= 0f || structure <= 0f)
@@ -254,8 +277,9 @@ namespace Game.Balance
                 return 0f;
             }
 
+            // He goes down when the health he carries into this fight (round 24: worn by the sieges before it) is spent.
             bool guarded = heroDps > 0f && hero != null;
-            float heroDown = guarded && hero.GuardShare * hammer > 0f ? hero.MaxHealth / (hero.GuardShare * hammer) : float.PositiveInfinity;
+            float heroDown = guarded && hero.GuardShare * hammer > 0f ? heroHealth / (hero.GuardShare * hammer) : float.PositiveInfinity;
             float shield = guarded ? 1f - hero.GuardShare : 1f;
             float killAt;
             if (kill <= 0f)
@@ -275,9 +299,13 @@ namespace Game.Balance
             float shielded = structure - hammer * shield * heroDown;
             float breakAt = shielded <= 0f || float.IsInfinity(heroDown) ? structure / (hammer * shield) : heroDown + shielded / hammer;
             float seconds = Math.Min(killAt, breakAt);
-            if (guarded && heroDown < seconds)
+            if (guarded)
             {
-                fell = true;
+                heroHealth = Math.Max(0f, heroHealth - hero.GuardShare * hammer * Math.Min(seconds, heroDown));
+                if (heroDown < seconds)
+                {
+                    fell = true;
+                }
             }
 
             damage = Math.Min(structure, hammer * (shield * Math.Min(seconds, heroDown) + Math.Max(0f, seconds - heroDown)));

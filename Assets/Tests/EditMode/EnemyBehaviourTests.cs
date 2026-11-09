@@ -142,23 +142,23 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Armor_SoaksItsShareUntilTheplatesAreGone()
+        public void Armor_TakesEveryHitUntilItIsGone()
         {
-            var health = new Health(100f, 30f, 0.6f);
+            var health = new Health(100f, 30f);
             float armorLeft = -1f;
             health.ArmorChanged += a => armorLeft = a;
 
             health.TakeDamage(20f);
-            Assert.AreEqual(18f, health.Armor, 0.001f, "the plates soak sixty percent");
-            Assert.AreEqual(92f, health.Current, 0.001f, "the rest goes through");
-            Assert.AreEqual(18f, armorLeft, 0.001f);
+            Assert.AreEqual(10f, health.Armor, 0.001f, "a heavy hit strips the armour point for point");
+            Assert.AreEqual(100f, health.Current, 0.001f, "nothing reaches the body while armour is left");
+            Assert.AreEqual(10f, armorLeft, 0.001f);
 
             health.TakeDamage(50f);
-            Assert.AreEqual(0f, health.Armor, 0.001f, "the last plates go");
-            Assert.AreEqual(60f, health.Current, 0.001f, "what the plates could not take lands on the body");
+            Assert.AreEqual(0f, health.Armor, 0.001f, "the last of the armour goes");
+            Assert.AreEqual(60f, health.Current, 0.001f, "what the armour did not need lands on the body");
 
             health.TakeDamage(10f);
-            Assert.AreEqual(50f, health.Current, 0.001f, "without plates every hit lands in full");
+            Assert.AreEqual(50f, health.Current, 0.001f, "without armour every hit lands in full");
 
             health.RestoreArmor(100f);
             Assert.AreEqual(30f, health.Armor, 0.001f, "regrown armour never exceeds the original");
@@ -264,10 +264,11 @@ namespace Game.Tests
             Assert.AreEqual(14f, mid.Damage, 0.001f);
             Assert.AreEqual(0f, far.Damage, 0.001f);
             Assert.AreEqual(1.8f, rallied, 0.001f, "the rally reaches the spawner");
-            Assert.AreEqual(45f, _enemy.Health.Armor, 0.001f, "the plates grew back by the regrow amount");
+            Assert.AreEqual(25f, _enemy.Health.Armor, 0.001f, "the 60 hit stripped all 50 armour; the plates grew back by the regrow amount");
             Assert.AreEqual(0, spawned, "the split waits for half the health to go");
 
-            _enemy.Health.TakeDamage(60f);
+            // The regrown 25 armour takes the first 25 of this hit; the other 65 leave 35 of 100 health.
+            _enemy.Health.TakeDamage(90f);
             abilities.Step(0.1f);
             Assert.AreEqual(2, spawned, "half the health gone, two minions break off");
             abilities.Step(0.1f);
@@ -460,7 +461,6 @@ namespace Game.Tests
             so.FindProperty("_flies").boolValue = flies;
             so.FindProperty("_maxHealth").floatValue = 100f;
             so.FindProperty("_armor").floatValue = armor;
-            so.FindProperty("_armorReduction").floatValue = 0.5f;
             so.FindProperty("_speed").floatValue = Mathf.Max(0.1f, speed);
             so.FindProperty("_walkSeconds").floatValue = walkSeconds;
             so.FindProperty("_rollSeconds").floatValue = rollSeconds;

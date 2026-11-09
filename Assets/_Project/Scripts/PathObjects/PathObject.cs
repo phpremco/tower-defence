@@ -108,7 +108,7 @@ namespace Game.PathObjects
             float damage = _definition.Damage * Time.deltaTime;
             for (int i = 0; i < _buffer.Count; i++)
             {
-                Hit(_buffer[i], damage, true);
+                Hit(_buffer[i], damage);
             }
         }
 
@@ -138,12 +138,13 @@ namespace Game.PathObjects
             }
         }
 
-        // The blast or the roll is passed with its definition as the source, so a boss knows a lava ball burned it.
-        private void Hit(ITargetable target, float damage, bool continuous = false)
+        // The blast or the roll is passed with its definition as the source, so a boss knows a lava ball burned it. A mine's blast
+        // and a lava ball's burn are heavy: they work on armour in full.
+        private void Hit(ITargetable target, float damage)
         {
             if (target is ISourcedTarget sourced)
             {
-                sourced.TakeDamageFrom(damage, _definition, true, continuous);
+                sourced.TakeDamageFrom(damage, _definition, true);
             }
             else
             {

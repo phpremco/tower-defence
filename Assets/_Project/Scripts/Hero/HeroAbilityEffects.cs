@@ -33,7 +33,7 @@ namespace Game.Hero
                     targets.FindInRadius(position, ability.Radius, ability.Targets, buffer);
                     for (int i = 0; i < buffer.Count; i++)
                     {
-                        buffer[i].TakeDamage(ability.Damage);
+                        Hits.Deal(buffer[i], ability.Damage, ability.ArmourFactor);
                     }
 
                     break;

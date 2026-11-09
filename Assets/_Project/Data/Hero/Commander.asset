@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Commander
   m_EditorClassIdentifier: Game.Hero::Game.Hero.HeroDefinition
   _displayName: Spencer
-  _maxHealth: 200
+  _maxHealth: 300
   _walkSpeed: 5
   _flies: 0
   _flightSpeed: 13
@@ -24,6 +24,8 @@ MonoBehaviour:
   _rangedWeapon: {fileID: 11400000, guid: 8a948feff967a3b49b14fb2e86f20d99, type: 2}
   _guardShare: 0.4
   _reviveSeconds: 120
+  _regenPerSecond: 6
+  _regenDelaySeconds: 4
   _abilities:
   - {fileID: 11400000, guid: 6c86719c76ccc674ea960667d9cd81b0, type: 2}
   - {fileID: 11400000, guid: 1bf102b7c64980b459f1d265e74692ee, type: 2}

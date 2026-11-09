@@ -24,6 +24,9 @@ namespace Game.Hero
 
         [SerializeField] private TargetLayers _targets = TargetLayers.Ground;
 
+        [Tooltip("Share of a hit that works on a creature's armour while it has any: the blade is heavy (one), the blaster light.")]
+        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+
         /// <summary>Shots before the weapon must reload; zero means it never reloads.</summary>
         [SerializeField] [Min(0)] private int _magazine;
 
@@ -39,6 +42,7 @@ namespace Game.Hero
         public float Reach => _reach;
         public float AttackInterval => _attackInterval;
         public TargetLayers Targets => _targets;
+        public float ArmourFactor => _armourFactor;
         public int Magazine => _magazine;
         public float ReloadSeconds => _reloadSeconds;
         public Color Color => _color;

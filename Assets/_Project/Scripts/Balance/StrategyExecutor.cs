@@ -35,7 +35,7 @@ namespace Game.Balance
         private const int PurchasesPerWave = 8;
         private const int QueueCells = 4;
 
-        /// <summary>The typical light hit the plating is judged against: the cheapest gun's first-level damage.</summary>
+        /// <summary>Ground creatures that make a wave a swarm for the threat shares.</summary>
         private const float SwarmCount = 12f;
 
         private sealed class Context
@@ -359,17 +359,17 @@ namespace Game.Balance
             return sum > 0f ? weight / sum : 1f;
         }
 
-        /// <summary>How much of a wave is each threat (0 to 1 each): a swarm by count, packs by density, plating by the share a light hit loses, air and boss by presence.</summary>
+        /// <summary>How much of a wave is each threat (0 to 1 each): a swarm by count, packs by density, armour by the share of its damage the cheapest gun loses to it, air and boss by presence.</summary>
         private static List<(string Threat, float Share)> ThreatShares(Context context, WaveLoad load) => ThreatShares(context.Level, load, context.CheapestGun);
 
         public static List<(string Threat, float Share)> ThreatShares(LevelInput level, WaveLoad load, int cheapestGun)
         {
-            float lightHit = 1f;
+            float lightFactor = 1f;
             foreach (TowerStats tower in level.Towers)
             {
                 if (tower.IsGun && tower.Levels[0].Cost == cheapestGun)
                 {
-                    lightHit = Math.Max(1f, tower.Levels[0].Damage);
+                    lightFactor = tower.ArmourFactor;
                 }
             }
 
@@ -379,7 +379,7 @@ namespace Game.Balance
             {
                 (StrategySpec.Swarm, groundShare * Math.Min(1f, load.GroundCount / SwarmCount)),
                 (StrategySpec.Pack, groundShare * Math.Min(1f, 1.5f * load.GroundDensity)),
-                (StrategySpec.Plated, groundShare * (load.StreamPlates.IsSoft ? 0f : 1f - load.StreamPlates.Share(lightHit))),
+                (StrategySpec.Plated, groundShare * (load.StreamArmour.IsSoft ? 0f : 1f - load.StreamArmour.Share(lightFactor))),
                 (StrategySpec.Air, total > 0f ? load.AirHealth / total : 0f),
                 (StrategySpec.Boss, total > 0f ? load.BossHealth / total : 0f),
             };

@@ -22,8 +22,6 @@ namespace Game.Levels
             // An ice armour that soaks part of each hit counts as that much more health to burn through.
             Health = enemy.MaxHealth * (enemy.Boss != null ? enemy.Boss.EffectiveHealthFactor() : 1f),
             Armor = enemy.Armor,
-            Plating = enemy.Plating,
-            PlatingFloor = enemy.PlatingFloor,
             Speed = enemy.AverageSpeed,
             FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,
             Reward = enemy.Reward,
@@ -52,6 +50,7 @@ namespace Game.Levels
                 Splash = tower.SplashRadius,
                 GroundFactor = tower.GroundDamageFactor,
                 AirFactor = tower.AirDamageFactor,
+                ArmourFactor = tower.ArmourFactor,
                 SplashTargets = tower.SplashTargets,
                 SellRefund = tower.SellRefundFraction,
                 IsSupport = tower.IsSupport,
@@ -393,7 +392,21 @@ namespace Game.Levels
                     MaxHealth = level.Hero.MaxHealth,
                     GuardShare = level.Hero.GuardShare,
                     ReviveSeconds = level.Hero.ReviveSeconds,
+                    BladeArmourFactor = level.Hero.Weapon.ArmourFactor,
+                    GunArmourFactor = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ArmourFactor : 1f,
+                    RegenPerSecond = level.Hero.RegenPerSecond,
+                    RegenDelaySeconds = level.Hero.RegenDelaySeconds,
                 };
+                foreach (Game.Hero.HeroAbilityDefinition ability in level.Hero.Abilities)
+                {
+                    // The pulse is the one ability that kills; the gate repair is the plan model's repair step.
+                    if (ability != null && ability.Kind == Game.Hero.HeroAbilityKind.Shockwave && ability.RequiresPerk == null)
+                    {
+                        model.Hero.PulseDamage = ability.Damage;
+                        model.Hero.PulseCooldown = ability.Cooldown;
+                        model.Hero.PulseArmourFactor = ability.ArmourFactor;
+                    }
+                }
                 foreach (Game.Hero.HeroPerkDefinition perk in level.Hero.Perks)
                 {
                     if (perk != null)

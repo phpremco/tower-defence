@@ -12,14 +12,13 @@ namespace Game.Balance
         /// <summary>One threat point is this much effective health (health plus armour).</summary>
         public float HealthPerThreat = 20f;
         public float AirThreatFactor = 1.2f;
-        public float ArmorThreatShare = 0.8f;
 
         /// <summary>
-        /// The hit size plating is priced against in threat: a plated creature counts as its health over the share of such a
-        /// hit that gets through (a middling gun, between the Pulse Rifle and the Cannon), so its kill money pays for the
-        /// heavier gun it asks for.
+        /// A point of armour is priced at this many points of health (round 24: armour is a pool a heavy gun strips point for
+        /// point and light fire chips at a third of its damage, so it costs the player more than health does, and its kill
+        /// money should pay for the heavier gun it asks for). 0.8 until round 24, when armour soaked a share of every hit.
         /// </summary>
-        public float PlatingReferenceHit = 15f;
+        public float ArmorThreatShare = 1.25f;
         public float BaseDamageThreat = 0.04f;
         public float AttackDamageThreat = 0.03f;
 
@@ -62,6 +61,12 @@ namespace Game.Balance
         /// the busiest gate the hero falls and is out for two minutes (four or five waves), so it fights less than half the time.
         /// </summary>
         public float HeroShare = 0.35f;
+
+        /// <summary>
+        /// Creatures within reach of the hero's shockwave when he fires it (round 24): the bot fires at this crowd or at a boss, and
+        /// the ledger counts the pulse on that many creatures in a wave's window; at a siege it hits the attackers at the gate.
+        /// </summary>
+        public int ShockwaveCrowd = 4;
 
         /// <summary>
         /// Share of the ground health of earlier waves that reaches the defence together with a wave (<see cref="KillPurse.Carried"/>)

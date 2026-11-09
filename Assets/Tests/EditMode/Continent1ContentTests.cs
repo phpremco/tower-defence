@@ -25,8 +25,9 @@ namespace Game.Tests
         private const int SliceLevels = 6;
         private const int FirstAirLevel = 2;
 
-        // The most plating a slice creature may wear: a light hide a shell passes; heavy plates wait for level 11 (Docs/STORY.md).
-        private const float LightHide = 5f;
+        // The most armour a slice creature may wear, as a share of its health: a light hide a shell strips in a few hits; the heavy
+        // armour of the later species (around half their health) waits for level 11 (Docs/STORY.md).
+        private const float LightHideShare = 0.4f;
         private const float FastTeaserShare = 2.5f;
 
         private static readonly string[] SliceTowers = { "PulseRifle", "Cannon", "Laser", "Rocket" };
@@ -84,8 +85,7 @@ namespace Game.Tests
             {
                 foreach (SpawnGroup group in Groups(level))
                 {
-                    Assert.AreEqual(0f, group.Enemy.Armor, $"{level.name}: {group.Enemy.name} has armour, which waits for level 11");
-                    Assert.LessOrEqual(group.Enemy.Plating, LightHide, $"{level.name}: {group.Enemy.name} wears heavy plates, which wait for level 11");
+                    Assert.LessOrEqual(group.Enemy.Armor, group.Enemy.MaxHealth * LightHideShare, $"{level.name}: {group.Enemy.name} wears heavy armour, which waits for level 11");
                 }
             }
         }
@@ -200,10 +200,9 @@ namespace Game.Tests
             EnemyDefinition bat = Load<EnemyDefinition>("Enemies/Shalebat");
             Assert.AreEqual(Element.Stone, crag.Element);
             Assert.AreEqual(Element.Stone, bat.Element);
-            Assert.AreEqual(0f, crag.Armor);
-            // Round 21a: the Cragback's dense hide is a light plating ("heavy shells for heavy hides"), so the Cannon is wanted.
-            Assert.That(crag.Plating, Is.GreaterThan(0f).And.LessThanOrEqualTo(LightHide));
-            Assert.AreEqual(0f, bat.Plating, "the Flak's air targets stay soft");
+            // Round 24: the Cragback's dense hide is a light armour pool ("heavy shells for heavy hides"), so the Cannon is wanted.
+            Assert.That(crag.Armor, Is.GreaterThan(0f).And.LessThanOrEqualTo(crag.MaxHealth * LightHideShare));
+            Assert.AreEqual(0f, bat.Armor, "the Flak's air targets stay soft");
             Assert.AreEqual(160f, crag.MaxHealth, 0.001f);
             Assert.AreEqual(0.6f, crag.Speed, 0.001f);
             Assert.IsTrue(bat.Flies);

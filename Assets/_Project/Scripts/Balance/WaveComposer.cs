@@ -417,11 +417,11 @@ namespace Game.Balance
         private static float Weight(TroopSpec troop, float bias, IReadOnlyDictionary<string, EnemyStats> enemies, BalanceRules rules) =>
             troop.Weight * (float)Math.Pow(ThreatOf(troop, enemies, rules), bias);
 
-        // The builder's plated lever (round 22e): plated troops weigh more in every fill of the difficulty, soft ones as written.
+        // The builder's plated lever (round 22e): armoured troops weigh more in every fill of the difficulty, soft ones as written.
         private static float PlatedLever(TroopSpec troop, WaveScriptSpec script, int difficulty, IReadOnlyDictionary<string, EnemyStats> enemies)
         {
             EnemyStats enemy = Get(enemies, troop.Enemy);
-            return enemy != null && enemy.Plating > 0f ? script.PlatedBiasFor(difficulty) : 1f;
+            return enemy != null && enemy.Armor > 0f ? script.PlatedBiasFor(difficulty) : 1f;
         }
 
         // The builder's raid lever (round 22e): the wave opens with a few fast, spread runners of the cheapest troop, ahead of its fill.

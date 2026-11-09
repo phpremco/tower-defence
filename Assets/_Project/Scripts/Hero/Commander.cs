@@ -32,6 +32,7 @@ namespace Game.Hero
         private int _shotsFired;
         private float _reloadRemaining;
         private HeroFlight _flight;
+        private float _sinceHurt = float.PositiveInfinity;
 
         public HeroDefinition Definition => _definition;
 
@@ -150,6 +151,7 @@ namespace Game.Hero
             _perks = HeroPerkModifiers.From(unlockedPerks);
             _abilities = BuildAbilities(definition.Abilities, unlockedPerks);
             Health = new Health(definition.MaxHealth * modifiers.HeroHealthMultiplier);
+            _sinceHurt = float.PositiveInfinity;
             Health.Died += OnDied;
             Health.Changed += OnHealthChanged;
             _postIndex = Mathf.Clamp(startPost, 0, posts.Count - 1);
@@ -276,7 +278,7 @@ namespace Game.Hero
                 return;
             }
 
-            Health.TakeDamage(damage);
+            Hurt(damage);
         }
 
         /// <summary>Takes the hero's share of a hit on the guarded structure and returns what goes through.</summary>
@@ -288,7 +290,7 @@ namespace Game.Hero
             }
 
             float taken = damage * _definition.GuardShare;
-            Health.TakeDamage(taken);
+            Hurt(taken);
             return damage - taken;
         }
 
@@ -311,6 +313,7 @@ namespace Game.Hero
                 return;
             }
 
+            Recover(Time.deltaTime);
             if (IsFlying)
             {
                 Fly();
@@ -323,6 +326,25 @@ namespace Game.Hero
             {
                 Strike();
             }
+        }
+
+        private void Hurt(float damage)
+        {
+            _sinceHurt = 0f;
+            Health.TakeDamage(damage);
+        }
+
+        // Out of a fight he patches himself up: a few seconds after the last hit his health climbs back, so he arrives at
+        // the next wave whole instead of carrying every earlier siege with him (round 24; the rate and delay are data).
+        private void Recover(float seconds)
+        {
+            _sinceHurt += seconds;
+            if (_definition.RegenPerSecond <= 0f || _sinceHurt < _definition.RegenDelaySeconds || Health.Current >= Health.Max)
+            {
+                return;
+            }
+
+            Health.Heal(_definition.RegenPerSecond * seconds);
         }
 
         private void TickCooldowns(float seconds)
@@ -437,7 +459,8 @@ namespace Game.Hero
                 Facing = toTarget.normalized;
             }
 
-            target.TakeDamage(weapon.Damage * _damageMultiplier);
+            // Without a tower as source his blow counts as a blast, as it did before: it still reaches a hidden boss in part.
+            Hits.Deal(target, weapon.Damage * _damageMultiplier, weapon.ArmourFactor);
             Struck?.Invoke(target.Position, weapon);
             _strikeCooldown = Cadence.Rearm(_strikeCooldown, ranged ? RangedInterval : weapon.AttackInterval);
             if (ranged)

@@ -17,9 +17,6 @@ MonoBehaviour:
   _flies: 0
   _maxHealth: 36
   _armor: 0
-  _armorReduction: 0.6
-  _plating: 0
-  _platingFloor: 0.2
   _speed: 1.2
   _reward: 3
   _baseDamage: 4

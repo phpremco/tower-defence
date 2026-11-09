@@ -32,7 +32,7 @@ namespace Game.Editor
         {
             HeroWeaponDefinition sword = CreateHeroWeapon("EnergySword", "Energy sword", HeroWeaponKind.Melee, HeroWeaponStyle.EnergySword, 18f, 1.5f, 0.7f, TargetLayers.Ground, new Color(0.3f, 0.95f, 1f));
             // The sidearm: the damage of a level-one pulse rifle, so the hero is worth one simple turret at range.
-            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, BlasterInterval, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f));
+            HeroWeaponDefinition blaster = CreateHeroWeapon("Blaster", "Blaster", HeroWeaponKind.Ranged, HeroWeaponStyle.Blaster, 4f, 3.5f, BlasterInterval, TargetLayers.Ground | TargetLayers.Air, new Color(1f, 0.6f, 0.25f), LightFireArmourFactor);
             var gun = new SerializedObject(blaster);
             gun.FindProperty("_magazine").intValue = BlasterMagazine;
             gun.FindProperty("_reloadSeconds").floatValue = BlasterReload;
@@ -48,6 +48,9 @@ namespace Game.Editor
             heroProps.FindProperty("_displayName").stringValue = "Spencer";
             heroProps.FindProperty("_weapon").objectReferenceValue = sword;
             heroProps.FindProperty("_rangedWeapon").objectReferenceValue = blaster;
+            heroProps.FindProperty("_maxHealth").floatValue = HeroMaxHealth;
+            heroProps.FindProperty("_regenPerSecond").floatValue = HeroRegenPerSecond;
+            heroProps.FindProperty("_regenDelaySeconds").floatValue = HeroRegenDelaySeconds;
             heroProps.FindProperty("_reviveSeconds").floatValue = HeroReviveSeconds;
             heroProps.FindProperty("_flightSpeed").floatValue = HeroFlightSpeed;
             heroProps.FindProperty("_walkWithin").floatValue = HeroWalkWithin;

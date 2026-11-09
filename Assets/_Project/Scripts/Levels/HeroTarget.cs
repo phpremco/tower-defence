@@ -31,10 +31,7 @@ namespace Game.Levels
 
         public void TakeDamage(float amount)
         {
-            if (!_hero.IsFlying)
-            {
-                _hero.Health.TakeDamage(amount);
-            }
+            _hero.TakeHazardDamage(amount);
         }
 
         public void Repair(float amount)

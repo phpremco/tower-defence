@@ -7,37 +7,37 @@
         {
             "Tower": "PulseRifle",
             "X": [
-                32,
                 33,
                 28,
                 29,
-                29,
-                32
+                32,
+                32,
+                29
             ],
             "Y": [
                 6,
-                6,
                 5,
                 5,
                 6,
-                5
+                5,
+                6
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
+                33,
                 32,
                 33,
-                33,
-                33,
                 29,
+                33,
                 32
             ],
             "Y": [
-                6,
-                6,
                 9,
+                6,
                 10,
+                6,
                 6,
                 5
             ]
@@ -83,24 +83,24 @@
     ],
     "Weights": [
         {
-            "Threat": "plated",
+            "Threat": "pack",
             "Tower": "Cannon",
-            "Weight": 1.8005757331848145
+            "Weight": 0.9887288808822632
         },
         {
-            "Threat": "boss",
-            "Tower": "Laser",
-            "Weight": 1.7004543542861938
+            "Threat": "plated",
+            "Tower": "Cannon",
+            "Weight": 1.6918050050735474
         }
     ],
-    "UpgradeBias": 1.100000023841858,
-    "TowersBeforeUpgrades": 1,
-    "MineCoverBelow": 0.0,
+    "UpgradeBias": 0.6499999761581421,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.0,
     "MineOnBoss": true,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.25,
-    "AttackDroneAfterTowers": 8,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.5,
+    "HarvesterShare": 0.6000000238418579,
+    "RepairDroneWear": 0.05000000074505806,
+    "AttackDroneAfterTowers": 0,
     "AllowSell": false
 }

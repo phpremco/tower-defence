@@ -213,7 +213,25 @@ namespace Game.Balance
         }
 
         // The blade at a gate and half the blaster for the lulls, over half the window.
-        internal static float HeroDps(LevelInput level) => HeroBladeDps(level) + HeroGunDps(level);
+        /// <summary>The hero's blade and blaster against soft creatures, without the pulse (the report's plain number).</summary>
+        internal static float HeroDps(LevelInput level) => HeroDps(level, null, 0f);
+
+        /// <summary>
+        /// The hero's damage per second against a group of this armour (null: soft): the blade and half the blaster, each at the
+        /// share its armour factor lands, plus the shockwave on <paramref name="pulseTargets"/> creatures every cooldown (round 24:
+        /// the bot fires it at a crowd of <see cref="BalanceRules.ShockwaveCrowd"/> or at a boss, so a plan counts it).
+        /// </summary>
+        internal static float HeroDps(LevelInput level, ArmourMix armour, float pulseTargets)
+        {
+            if (level.Hero == null)
+            {
+                return 0f;
+            }
+
+            return HeroBladeDps(level) * Share(armour, level.Hero.BladeArmourFactor)
+                + HeroGunDps(level) * Share(armour, level.Hero.GunArmourFactor)
+                + HeroPulseDps(level, pulseTargets) * Share(armour, level.Hero.PulseArmourFactor);
+        }
 
         internal static float HeroBladeDps(LevelInput level) =>
             level.Hero != null && level.Hero.BladeInterval > 0f ? level.Hero.BladeDamage * level.HeroDamage / level.Hero.BladeInterval : 0f;
@@ -227,12 +245,23 @@ namespace Game.Balance
             }
 
             float interval = level.Hero.EffectiveGunInterval(level.HeroPerks);
-            return interval > 0f ? level.Hero.GunDamage / interval * 0.5f : 0f;
+            return interval > 0f ? level.Hero.GunDamage * level.HeroDamage / interval * 0.5f : 0f;
         }
 
-        internal static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.Window * rules.HeroShare;
+        /// <summary>The shockwave spread over its cooldown, on this many creatures; the ability's damage takes no permanent hero boost (HeroAbilityEffects).</summary>
+        internal static float HeroPulseDps(LevelInput level, float targets) =>
+            level.Hero != null && level.Hero.PulseCooldown > 0f && targets > 0f ? level.Hero.PulseDamage * targets / level.Hero.PulseCooldown : 0f;
 
-        internal static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) => HeroDps(level) * load.BossSeconds(load.BossWindow, rules) * rules.HeroShare;
+        private static float Share(ArmourMix armour, float factor) => armour == null ? 1f : armour.Share(factor);
+
+        /// <summary>Creatures the pulse catches in a wave's stream: the bot's crowd, or fewer when the wave has fewer.</summary>
+        internal static float PulseCrowd(WaveLoad load, BalanceRules rules) => Math.Min(rules.ShockwaveCrowd, load.GroundCount);
+
+        internal static float HeroStream(LevelInput level, WaveLoad load, BalanceRules rules) =>
+            HeroDps(level, load.StreamArmour, PulseCrowd(load, rules)) * load.Window * rules.HeroShare;
+
+        internal static float HeroSingle(LevelInput level, WaveLoad load, BalanceRules rules) =>
+            HeroDps(level, load.BossArmour, load.BossCount) * load.BossSeconds(load.BossWindow, rules) * rules.HeroShare;
 
         // ---- Buying ------------------------------------------------------------------------------------------------
 
@@ -311,9 +340,9 @@ namespace Game.Balance
             float groundHit = damage * tower.GroundFactor;
             float airHit = damage * tower.AirFactor;
             float field = dps * (efficiency >= 0f ? efficiency : tower.Efficiency) * rules.Utilisation;
-            float stream = field * tower.GroundFactor * load.StreamPlates.Share(groundHit);
-            float single = field * tower.GroundFactor * load.BossPlates.Share(groundHit);
-            float sky = field * tower.AirFactor * load.AirPlates.Share(airHit);
+            float stream = field * tower.GroundFactor * load.StreamArmour.Share(tower.ArmourFactor);
+            float single = field * tower.GroundFactor * load.BossArmour.Share(tower.ArmourFactor);
+            float sky = field * tower.AirFactor * load.AirArmour.Share(tower.ArmourFactor);
             float cap = SplashCap(tower, rules);
             float pass = cover.GroundPass / Math.Max(0.01f, load.GroundSpeed);
             float queue = cover.Gate ? load.GateSeconds : 0f;

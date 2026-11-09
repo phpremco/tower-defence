@@ -3943,3 +3943,146 @@ re-syncs after that. Helmet geometry was not judged this round.
 4. **Tests.** EditMode (async): 699, 643 passed, 3 failed (known: `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`,
    two `ContinentFinaleTests`), 53 skipped. PlayMode `BossIntroSmokeTests` passed. Save MD5 ae9223b8 before and after every run.
    Run-output churn reverted.
+
+## Round 24: armour as a pool, Spencer's pulse and health in the model, the pipeline re-run (2026-11-08)
+
+Not committed (the curator commits). Docs/BALANCE.md "Armour as a pool, the hero's pulse and his health in the model";
+Docs/COMMANDS.md "Round 24 additions". Save: `progress.json` MD5 ae9223b8 before every run (checked again at the end of
+the round; the pipeline restores what it finds).
+
+0. **Spencer's rebuilt helmet synced** (`Tools/Generate/Blender Story (sync, hero, portraits, cutscene)` after commit
+   b6afee69): `Mercer.asset` keeps parts `Mercer_Face`/`Mercer_Visor` and the 23 clips; only the detail tiling (weave
+   175.4 -> 162.4, ceramic 73.1 -> 67.6, from the report) and the height (1.6166 -> 1.6236) changed. Face close-up in
+   play (`Tools/PlayTest/r24_face.sh`, C1_02): one-piece helmet around a single visor outline, the face visible behind the
+   tinted glass, the quad-tube NVG on the helmet, 0 errors.
+1. **Armour design (Remco, goal 1), built in gameplay, data, view and model.** Armour is a pool (the blue line); a hit works
+   on it at the weapon's armour factor and nothing hurts the body while it lasts; the part of a hit the armour did not
+   need lands in full; once it is gone every weapon lands in full. `Health(max, armor)`, `Health.TakeDamage(amount,
+   armourFactor)` (returns the points the hit was worth), `Health.ArmorBroken`; `ISourcedTarget.TakeDamageFrom(amount,
+   source, splash, armourFactor)` (the `continuous` flag is gone: a lava ball's burn is heavy); `Projectile`/`ProjectilePool.
+   Fire` carry the factor from `TowerDefinition.ArmourFactor`; `Game.Combat.Hits.Deal` lands the hero's blows
+   (`HeroWeaponDefinition.ArmourFactor`) and the shockwave (`HeroAbilityDefinition.ArmourFactor`). Removed: plating
+   (`Plating`, `PlatingFloor`, `HasPlating`, `ThroughPlating`, `PlatingStopped`), `ArmorReduction`, `IPlated`, the light guns'
+   soft-target `FindBest` overload, `Game.Balance.Plating`/`PlateMix`, `PlatingTests`. Data (generator, applied with
+   `ApplyRoles.cs`, which now also runs the Hero step): factors Gun Turret/Laser/Cryo/Cryo Beam/Blockade gun/Base Turret
+   0.3, Flak/Tesla/Storm Rifle 0.5, Cannon/Artillery 1, Railgun 1.5, blade 1, blaster 0.3, shockwave 1; Cragback 160 + 60
+   armour (360 to light fire, 220 to a shell; the old plating made it 800 to a fresh Gun Turret), Stinger 200 + 90,
+   Shardback 220 + 110, Bulwark 380 + 180; `ArmorThreatShare` 1.25 (Cragback reward 25 -> 22; the armoured bosses of
+   later continents about +15%). **View:** the blue line is `Health.ArmorFraction`; sparks glance off while a hit works on
+   the armour and burst when it breaks (`EnemyView.Ricochet`, from `HasArmor` in data); the bar is never recoloured any
+   more. **The grey-bar bug** (Remco, after 23b) was the plating flare: it reset on every `PlatingStopped` and the laser
+   beam hit every frame, so every plated bar sat at the near-white flash colour. Gone with the flare. Codex rows say
+   "armoured", the entry explains the pool. **Model:** `ArmourMix` (H and A per wave group; a weapon of factor f counts at
+   (H + A)/(H + A/f)) in `WaveLoad`, `Ledger.Capacity`, `Leak.Dps`, the strategy threat share and the builder's `plated`
+   lever (armoured troops); `InputHash` covers the factors and the new rules, so the calibration is STALE.
+   Tests: new `ArmourPoolTests` (10: the game's rule, events, the paper's share, game and paper agree to within one pulse,
+   threat); `ProtectionBarTests` (4), `EnemyBehaviourTests` armour and boss-regrow cases, `Continent1ContentTests` (light
+   armour <= 0.4 of health on the slice), `TowerRolesTests` (armoured columns at the gun's factor) updated.
+2. **Spencer in the model (goal 2).** (a) The bot already fired the shockwave (crowd of 4 or a boss); the ledger now counts
+   it: `HeroStats.PulseDamage/PulseCooldown/PulseArmourFactor`, `Ledger.HeroPulseDps`, `BalanceRules.ShockwaveCrowd` (4)
+   in a wave's window, the attackers at the gate in a siege; blade, blaster and pulse each at the group's armour share;
+   the blaster now takes the permanent hero damage boost like the blade. (b) Survivability, in data: health 200 -> 300,
+   regeneration 6/s from 4 s after the last hit (`HeroDefinition._regenPerSecond/_regenDelaySeconds`, `Commander.Recover`;
+   `HeroTarget` hits go through the commander). The siege model carries his health from wave to wave (`SiegeState.
+   HeroHealth`, `Leak.Recover` heals it in the quiet of a wave; before, every fight assumed him fresh). Not yet checked in
+   play (the pipeline's runs are the first; a hero-down count per run is in the records). (c) The jetpack switch time is not
+   a model term: bots and plans keep him at the defence gate.
+3. **Gates (goal 3, checked).** Repairs are weighed by one rule on paper and in play (`PlanEvaluator.RepairPrice`,
+   `WorthRepair`: the gate would fall, or a hit point is cheaper to restore than to stop with the cheapest gun step over the
+   waves left). In-level gate upgrades (Blockade level 1 gun, level 2 health) are bought by nobody: not a paper step
+   (`TowerStats.IsGun` excludes gates), and the bots upgrade towers only. Note for the next round: a gate-upgrade step
+   (the gate's extra hold plus its gun at the queue) before Dr. Voss's gate guidance.
+4. **Pipeline (goal 4), first pass: `balance_pipeline.sh all`** (20:50 -> 02:09, `Tools/PlayTest/round24_chain.log`; measure
+   432 runs in 2 h 50, fit, apply, solve, search, replay 264 runs in 2 h 15, acceptance, readme; 0 console errors; save MD5
+   ae9223b8 before and after).
+   - *Fit* (`calibration.txt`): Cannon 0.747, Laser 0.719, Gun Turret 0.806, Flak 0.916, siege 1.097, queue-guard share 0.50,
+     repair-drone busy 0.75; hold-out agreement 78 % (mono 92 %), Spearman 0.73: **below the bar** (90 / 0.8). The pipeline's
+     `apply` stage applied it anyway (the script does not check the bar; the old calibration was stale after the mechanic
+     change, so this is the best available). A refit after the replay on all-fresh records (02:11) gives Cannon 0.730, Laser
+     0.728, Gun 0.827, Flak 0.966, queue 0.60, hold-out 80 % / 0.78: nearer the bar, not applied (the search and the replay ran
+     on the 23:41 numbers). The disagreements are "paper falls, game won 3*" on C1_01 Hard and Psycho (mono Pulse, affordable,
+     mono Cannon, creative: the paper is pessimistic on Landing Site with the armour pool) and "paper survives, game lost at the
+     last wave" for naive on C1_01/C1_02 (the final boss reaches the base).
+   - *Yardstick*: the obvious family lands where 22f left it (C1_02-C1_06 Medium: every obvious kind loses; C1_03 and C1_05
+     Easy: no obvious kind wins; C1_01 Hard: mono Pulse, mono Cannon, affordable 3/3 with base 700 as on Medium). Two C1_03
+     Easy `creative` runs (seeds 1 and 3) hit the probe's 900 s wall clock at wave 16 with the base whole and every creature's
+     health dealt: **a pre-existing stall** (the same two runs timed out in 22f's records, as did three C1_03 strategy replays),
+     on the Brood Mother's wave; a held nest request (`LevelController._held`) or a lingering `EnemySpawner.Alive` is the place
+     to look. Not caused by this round; not fixed.
+   - *Search*: the paper holds nothing on any Hard or Psycho cell (0/30) and on C1_02/C1_04/C1_06 Medium and C1_05 Easy; the
+     replay judges (the best three by paper score go through).
+   - *Replay and acceptance* (`acceptance.txt`): **4 of 24 PASS** (C1_01 Medium tutorial, C1_03 Medium, C1_04 Medium, C1_06
+     Hard; 22f had 6, with C1_04 Hard stale). In-play margins (best plan and creative, 0-1):
+
+     | Level | Easy | Medium | Hard | Psycho |
+     |---|---|---|---|---|
+     | C1_01 | 1.00 | 1.00 | 1.00 | 0.83 |
+     | C1_02 | 0.83 | 1.00 | 1.00 | 0.42 |
+     | C1_03 | 0.83 | 1.00 | 0.56 | 0.94 |
+     | C1_04 | 1.00 | 1.00 | 0.72 | 0.52 |
+     | C1_05 | 0.68 | 0.75 | 0.53 | 0.30 |
+     | C1_06 | 1.00 | 1.00 | 0.69 | 0.39 |
+
+     Changes against 22f worth a look: C1_02 Easy's best plan wins 1/3 (was 3/3) on the re-solved waves; C1_05 Medium's plans
+     0/3 (was 2/3); C1_02 Medium's plans 3/3 again (22f: 0/5) but mono Cannon still 3/3; C1_01 Hard mono rows win with base
+     700 as on Medium; C1_03 Psycho plans 3/3 (too easy in play, as Remco found); C1_05 is still the hardest level everywhere.
+     Hard/Psycho winners use one feature only (the thin paper picks); Psycho winners on C1_01 and C1_03 only.
+   - *Builder* (`builder.txt`, 02:11): script lever plated x1.5 on C1_01 Psycho, C1_02 Medium (Remco approved Medium
+     levers), C1_02 Hard, C1_03 Psycho, C1_04 Hard; scale 0.87 on C1_02 Easy; scale 1.15 on C1_03 Hard; the Easy raid rule
+     moves C1_04 Easy's first raid to wave 10, C1_05 Easy's to 8, C1_06 Easy's to 9 (no lever there). Out of moves (design
+     questions, below): C1_01 Hard, C1_02 Psycho (pulls both ways), C1_03 Easy, C1_04 Psycho, C1_05 Medium/Hard/Psycho, C1_06
+     Medium/Hard/Psycho. Waves re-solved (`wave_tuning.txt`).
+   - **Second pass** (`round22f_chain.sh` on the builder's cells: C1_01 Psycho; C1_02 Easy/Medium/Hard; C1_03 Hard/Psycho;
+     C1_04 Easy/Hard; C1_05 Easy; C1_06 Easy; 02:11 -> 05:06, `round24_chain2.log`, 0 console errors, save MD5 ae9223b8,
+     no `InitTestScene*` left). **Still 4 of 24 PASS** (the same four). Margins after the pass:
+
+     | Level | Easy | Medium | Hard | Psycho |
+     |---|---|---|---|---|
+     | C1_01 | 1.00 | 1.00 | 1.00 | 0.83 -> 0.73 |
+     | C1_02 | 0.83 | 1.00 | 1.00 -> 0.67 | 0.42 |
+     | C1_03 | 0.83 | 1.00 | 0.56 -> 0.41 | 0.94 -> 0.89 |
+     | C1_04 | 1.00 | 1.00 | 0.72 -> 0.75 | 0.52 |
+     | C1_05 | 0.68 | 0.75 | 0.53 | 0.30 |
+     | C1_06 | 1.00 | 1.00 | 0.69 | 0.39 |
+
+     What the levers did: the plated x1.5 lever on **C1_02 Hard** left mono Cannon at 3/3 (and naive 2/3) while the plans fell
+     to 0/3 (was 3/3): with the armour pool, more armoured troops reward exactly the Cannon row and punish the mixed plans
+     and light guns; the lever is the wrong tool for a cell where the Cannon row is the obvious winner (a fast-runner or
+     crowd lever would be). **C1_02 Medium** plated: mono Cannon still 3/3, mono Laser 1/3, plans 3/3. **C1_03 Hard** x1.15:
+     the obvious family falls before the last third (good) but the plans 0/3 (was 2/3): overshot. **C1_03 Psycho** plated:
+     plans 2/3, every obvious run falls early; only "the plans are alike" fails: nearly there. **C1_01 Psycho** plated: plans
+     1/3, affordable still wins one seed. **C1_02 Easy** 0.87: plans still 1/3 (0 of 5 on most seeds); the C1_02 Easy waves
+     deserve a look (the plans lose with three stars' worth of towers: a boss or a raid). **C1_04 Hard** plated: 2/3, one
+     feature. The Easy raid rule cells: C1_04 Easy plans 5/5, C1_06 Easy plans 5/5 but 0 of 3 obvious kinds (mono Pulse lost
+     its 3/3 with the raid at 9), C1_05 Easy everything loses (0/3 plans, 0/3 obvious at 11/17).
+     `builder_iterations.txt` now has most cells at 2/2 moves: the next pass is design decisions (questions below), not a
+     third move; the one mechanical follow-up is a lever for "the Cannon row wins" cells (runners or a crowd, not armour).
+
+EditMode before the chain (whole suite, async, 240 s): 699 tests, 631 passed, 14 failed, 54 skipped; the 12
+`EnemyBehaviourTests` failures were the test helper writing the removed `_armorReduction` field and two expectations of
+the old soak rule (fixed; the class passes 17/17), the other two are the known `BalanceLedgerTests.EveryWave_
+StaysInsideItsDifficultyBand` (its messages now read with the armour pool; the solve stage reshapes the waves) and the
+known `ContinentFinaleTests` ledger check. `ArmourPoolTests` 10/10. 0 compile errors, 0 warnings.
+
+**Design questions for Remco (round 24).**
+1. Armour factors are data; the chosen set (light 0.3, medium 0.5, shell 1, Railgun 1.5) makes a Cragback worth 360 to a Gun
+   Turret and 220 to a Cannon. Is 0.3 the feel you want for the Laser and the Gun on armour, or should light fire be even
+   weaker (0.2) so the Cannon is unavoidable?
+2. Spencer: 300 health and 6/s regeneration after 4 s is in data and in the model; the probe runs are the first play. Judge it
+   when you play C1_02/C1_03; the alternatives are a heal ability in a slot (he has Shockwave and Repair) or a bigger health step.
+3. Gate upgrades: nobody buys the Blockade's gun and health upgrades in a level. Should the bot (and the plan model) get a
+   gate-upgrade step before Dr. Voss introduces them?
+4. The calibration bar (90 % / 0.8) is not met with the armour pool (80 % / 0.78 on fresh records): the paper is pessimistic on
+   C1_01 Hard/Psycho. Options: accept the bar at 80/0.75 for Crystal Plains, or a model term for the light guns' real worth on
+   armour in play (the probe's `Dealt` per type against `ArmourMix` could be fitted per factor).
+5. The builder's open cells need design, not scale: C1_05 (the map, as agreed), C1_03 Easy (0.757 and still no obvious kind
+   wins: its roster or its raids), C1_06 Medium/Hard (easier in play than C1_05 only because C1_05 is so hard), C1_02 Psycho.
+6. The C1_03 wave-16 stall (two of three creative runs, and strategy replays, time out at the Brood Mother's wave with the base
+   whole) is a game bug to reproduce: `probe_arg.txt` `levels=2`, `difficulties=0`, `seeds=1`, then the trace.
+
+**Commands to continue (editor_status first).** 1. When `round24_chain2.log` ends with `EXIT 0`: read `acceptance.txt` and
+`builder.txt`, delete `Assets/InitTestScene*.unity(.meta)` and `calibration_records.txt.before` if left, check the save MD5
+(ae9223b8). 2. Finale probe (goal 5, not run this round): `run_tests --mode PlayMode --filter Measure_ContinentFinales_AsPlayed
+--include_explicit true --async_tests true` (narrow with `probe_arg.txt` `bosses=0`), then EditMode `ContinentFinaleTests`,
+then `balance_pipeline.sh finale` only on the curator's say. 3. `fit` again on the second pass's records; apply only if the bar
+(or the curator's lowered bar) is met. 4. The C1_03 stall (question 6).

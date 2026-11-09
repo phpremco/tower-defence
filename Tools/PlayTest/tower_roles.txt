@@ -3,67 +3,67 @@ in EveryUpgradeStep_BeatsMoreTowersOfTheSameType; the role matrix and the spots 
 
 1. Upgrade vs more towers of the same type at equal coins
    step: one tower at L+1 (upgrade) vs n towers at L for the same coins. hit = damage per hit; single = DPS on one
-   target (no armour); plated8 = single-target DPS through a flat 8 plating (20% floor); multi = DPS into a
+   target (no armour); armoured = single-target DPS on a creature whose armour pool is half its health, at the gun's armour factor; multi = DPS into a
    clustered group (splash); targets = creatures hit per volley; risk = share of that damage lost when one tower is wrecked.
    Remco's rule: the upgrade wins on hit and single; n towers win only on targets/rate. 'rule' = upgrade single >= 1.15 x n towers single.
-   Artillery   L0->L1 coins  545 | upgrade: hit    130 single   92.9 plated8   87.1 multi  222.9 targets 2.4 rate 0.71/s risk 100% | 1.47 x L0: hit     70 single   64.4 plated8   57.1 multi  154.7 targets 3.5 rate 0.92/s risk  68% | single ratio 1.44 plated8 ratio 1.53 rule met
-   Artillery   L1->L2 coins  805 | upgrade: hit    220 single  183.3 plated8  176.7 multi    440 targets 2.4 rate 0.83/s risk 100% | 1.48 x L1: hit    130 single  137.2 plated8  128.7 multi  329.2 targets 3.5 rate 1.06/s risk  68% | single ratio 1.34 plated8 ratio 1.37 rule met
-   CryoBeam    L0->L1 coins  525 | upgrade: hit     13 single    100 plated8   38.5 multi    100 targets   1 rate 7.69/s risk 100% | 1.46 x L0: hit      8 single   77.8 plated8   15.6 multi   77.8 targets 1.5 rate 9.72/s risk  69% | single ratio 1.29 plated8 ratio 2.47 rule met
-   CryoBeam    L1->L2 coins  785 | upgrade: hit     20 single  181.8 plated8  109.1 multi  181.8 targets   1 rate 9.09/s risk 100% | 1.50 x L1: hit     13 single  149.5 plated8   57.5 multi  149.5 targets 1.5 rate 11.5/s risk  67% | single ratio 1.22 plated8 ratio 1.90 rule met
-   StormRifle  L0->L1 coins  425 | upgrade: hit     20 single  111.1 plated8   66.7 multi  266.7 targets 2.4 rate 5.56/s risk 100% | 1.37 x L0: hit     14 single     96 plated8   41.1 multi  230.3 targets 3.3 rate 6.85/s risk  73% | single ratio 1.16 plated8 ratio 1.62 rule met
-   StormRifle  L1->L2 coins  595 | upgrade: hit     28 single  186.7 plated8  133.3 multi    448 targets 2.4 rate 6.67/s risk 100% | 1.40 x L1: hit     20 single  155.6 plated8   93.3 multi  373.3 targets 3.4 rate 7.78/s risk  71% | single ratio 1.20 plated8 ratio 1.43 rule met
-   PulseRifle  L0->L1 coins   90 | upgrade: hit      9 single     30 plated8      6 multi     30 targets   1 rate 3.33/s risk 100% | 1.80 x L0: hit      5 single   25.7 plated8    5.1 multi   25.7 targets 1.8 rate 5.14/s risk  56% | single ratio 1.17 plated8 ratio 1.17 rule met
-   PulseRifle  L1->L2 coins  155 | upgrade: hit     15 single     60 plated8     28 multi     60 targets   1 rate    4/s risk 100% | 1.72 x L1: hit      9 single   51.7 plated8   10.3 multi   51.7 targets 1.7 rate 5.74/s risk  58% | single ratio 1.16 plated8 ratio 2.71 rule met
-   Cryo        L0->L1 coins  200 | upgrade: hit      2 single    4.4 plated8    0.9 multi    4.4 targets   1 rate 2.22/s risk 100% | 2.22 x L0: hit      2 single    8.9 plated8    1.8 multi    8.9 targets 2.2 rate 4.44/s risk  45% | single ratio 0.50 plated8 ratio 0.50 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
-   Cryo        L1->L2 coins  360 | upgrade: hit      2 single      5 plated8      1 multi      5 targets   1 rate  2.5/s risk 100% | 1.80 x L1: hit      2 single      8 plated8    1.6 multi      8 targets 1.8 rate    4/s risk  56% | single ratio 0.63 plated8 ratio 0.63 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
-   Cannon      L0->L1 coins  195 | upgrade: hit     48 single   35.6 plated8   29.6 multi  106.7 targets   3 rate 0.74/s risk 100% | 1.95 x L0: hit     25 single   30.5 plated8   20.7 multi   91.4 targets 5.9 rate 1.22/s risk  51% | single ratio 1.17 plated8 ratio 1.43 rule met
-   Cannon      L1->L2 coins  350 | upgrade: hit     85 single   73.9 plated8     67 multi  221.7 targets   3 rate 0.87/s risk 100% | 1.79 x L1: hit     48 single   63.8 plated8   53.2 multi  191.5 targets 5.4 rate 1.33/s risk  56% | single ratio 1.16 plated8 ratio 1.26 rule met
-   Rocket      L0->L1 coins  200 | upgrade: hit     25 single     50 plated8     34 multi    200 targets   4 rate    2/s risk 100% | 1.67 x L0: hit     14 single   42.4 plated8   18.2 multi  169.7 targets 6.7 rate 3.03/s risk  60% | single ratio 1.18 plated8 ratio 1.87 rule met
-   Rocket      L1->L2 coins  305 | upgrade: hit     40 single   88.9 plated8   71.1 multi  355.6 targets   4 rate 2.22/s risk 100% | 1.53 x L1: hit     25 single   76.3 plated8   51.9 multi    305 targets 6.1 rate 3.05/s risk  66% | single ratio 1.17 plated8 ratio 1.37 rule met
-   Laser       L0->L1 coins  185 | upgrade: hit     12 single   66.7 plated8   22.2 multi   66.7 targets   1 rate 5.56/s risk 100% | 1.42 x L0: hit      8 single   56.9 plated8   11.4 multi   56.9 targets 1.4 rate 7.12/s risk  70% | single ratio 1.17 plated8 ratio 1.95 rule met
-   Laser       L1->L2 coins  285 | upgrade: hit     18 single    120 plated8   66.7 multi    120 targets   1 rate 6.67/s risk 100% | 1.54 x L1: hit     12 single  102.7 plated8   34.2 multi  102.7 targets 1.5 rate 8.56/s risk  65% | single ratio 1.17 plated8 ratio 1.95 rule met
-   Tesla       L0->L1 coins  215 | upgrade: hit     26 single   57.8 plated8     40 multi  138.7 targets 2.4 rate 2.22/s risk 100% | 1.54 x L0: hit     16 single   49.1 plated8   24.6 multi  117.9 targets 3.7 rate 3.07/s risk  65% | single ratio 1.18 plated8 ratio 1.63 rule met
-   Tesla       L1->L2 coins  320 | upgrade: hit     40 single    100 plated8     80 multi    240 targets 2.4 rate  2.5/s risk 100% | 1.49 x L1: hit     26 single     86 plated8   59.5 multi  206.4 targets 3.6 rate 3.31/s risk  67% | single ratio 1.16 plated8 ratio 1.34 rule met
-   Railgun     L0->L1 coins  315 | upgrade: hit    120 single     60 plated8     56 multi     60 targets   1 rate  0.5/s risk 100% | 1.43 x L0: hit     80 single   52.1 plated8   46.9 multi   52.1 targets 1.4 rate 0.65/s risk  70% | single ratio 1.15 plated8 ratio 1.20 rule met
-   Railgun     L1->L2 coins  455 | upgrade: hit    180 single    100 plated8   95.6 multi    100 targets   1 rate 0.56/s risk 100% | 1.44 x L1: hit    120 single   86.7 plated8   80.9 multi   86.7 targets 1.4 rate 0.72/s risk  69% | single ratio 1.15 plated8 ratio 1.18 rule met
+   Artillery   L0->L1 coins  545 | upgrade: hit    130 single   92.9 armoured   92.9 multi  222.9 targets 2.4 rate 0.71/s risk 100% | 1.47 x L0: hit     70 single   64.4 armoured   64.4 multi  154.7 targets 3.5 rate 0.92/s risk  68% | single ratio 1.44 rule met
+   Artillery   L1->L2 coins  805 | upgrade: hit    220 single  183.3 armoured  183.3 multi    440 targets 2.4 rate 0.83/s risk 100% | 1.48 x L1: hit    130 single  137.2 armoured  137.2 multi  329.2 targets 3.5 rate 1.06/s risk  68% | single ratio 1.34 rule met
+   CryoBeam    L0->L1 coins  525 | upgrade: hit     13 single    100 armoured   56.3 multi    100 targets   1 rate 7.69/s risk 100% | 1.46 x L0: hit      8 single   77.8 armoured   43.8 multi   77.8 targets 1.5 rate 9.72/s risk  69% | single ratio 1.29 rule met
+   CryoBeam    L1->L2 coins  785 | upgrade: hit     20 single  181.8 armoured  102.3 multi  181.8 targets   1 rate 9.09/s risk 100% | 1.50 x L1: hit     13 single  149.5 armoured   84.1 multi  149.5 targets 1.5 rate 11.5/s risk  67% | single ratio 1.22 rule met
+   StormRifle  L0->L1 coins  425 | upgrade: hit     20 single  111.1 armoured   83.3 multi  266.7 targets 2.4 rate 5.56/s risk 100% | 1.37 x L0: hit     14 single     96 armoured     72 multi  230.3 targets 3.3 rate 6.85/s risk  73% | single ratio 1.16 rule met
+   StormRifle  L1->L2 coins  595 | upgrade: hit     28 single  186.7 armoured    140 multi    448 targets 2.4 rate 6.67/s risk 100% | 1.40 x L1: hit     20 single  155.6 armoured  116.7 multi  373.3 targets 3.4 rate 7.78/s risk  71% | single ratio 1.20 rule met
+   PulseRifle  L0->L1 coins   90 | upgrade: hit      9 single     30 armoured   16.9 multi     30 targets   1 rate 3.33/s risk 100% | 1.80 x L0: hit      5 single   25.7 armoured   14.5 multi   25.7 targets 1.8 rate 5.14/s risk  56% | single ratio 1.17 rule met
+   PulseRifle  L1->L2 coins  155 | upgrade: hit     15 single     60 armoured   33.8 multi     60 targets   1 rate    4/s risk 100% | 1.72 x L1: hit      9 single   51.7 armoured   29.1 multi   51.7 targets 1.7 rate 5.74/s risk  58% | single ratio 1.16 rule met
+   Cryo        L0->L1 coins  200 | upgrade: hit      2 single    4.4 armoured    2.5 multi    4.4 targets   1 rate 2.22/s risk 100% | 2.22 x L0: hit      2 single    8.9 armoured      5 multi    8.9 targets 2.2 rate 4.44/s risk  45% | single ratio 0.50 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
+   Cryo        L1->L2 coins  360 | upgrade: hit      2 single      5 armoured    2.8 multi      5 targets   1 rate  2.5/s risk 100% | 1.80 x L1: hit      2 single      8 armoured    4.5 multi      8 targets 1.8 rate    4/s risk  56% | single ratio 0.63 rule exception (a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2)
+   Cannon      L0->L1 coins  195 | upgrade: hit     48 single   35.6 armoured   35.6 multi  106.7 targets   3 rate 0.74/s risk 100% | 1.95 x L0: hit     25 single   30.5 armoured   30.5 multi   91.4 targets 5.9 rate 1.22/s risk  51% | single ratio 1.17 rule met
+   Cannon      L1->L2 coins  350 | upgrade: hit     85 single   73.9 armoured   73.9 multi  221.7 targets   3 rate 0.87/s risk 100% | 1.79 x L1: hit     48 single   63.8 armoured   63.8 multi  191.5 targets 5.4 rate 1.33/s risk  56% | single ratio 1.16 rule met
+   Rocket      L0->L1 coins  200 | upgrade: hit     25 single     50 armoured   37.5 multi    200 targets   4 rate    2/s risk 100% | 1.67 x L0: hit     14 single   42.4 armoured   31.8 multi  169.7 targets 6.7 rate 3.03/s risk  60% | single ratio 1.18 rule met
+   Rocket      L1->L2 coins  305 | upgrade: hit     40 single   88.9 armoured   66.7 multi  355.6 targets   4 rate 2.22/s risk 100% | 1.53 x L1: hit     25 single   76.3 armoured   57.2 multi    305 targets 6.1 rate 3.05/s risk  66% | single ratio 1.17 rule met
+   Laser       L0->L1 coins  185 | upgrade: hit     12 single   66.7 armoured   37.5 multi   66.7 targets   1 rate 5.56/s risk 100% | 1.42 x L0: hit      8 single   56.9 armoured     32 multi   56.9 targets 1.4 rate 7.12/s risk  70% | single ratio 1.17 rule met
+   Laser       L1->L2 coins  285 | upgrade: hit     18 single    120 armoured   67.5 multi    120 targets   1 rate 6.67/s risk 100% | 1.54 x L1: hit     12 single  102.7 armoured   57.8 multi  102.7 targets 1.5 rate 8.56/s risk  65% | single ratio 1.17 rule met
+   Tesla       L0->L1 coins  215 | upgrade: hit     26 single   57.8 armoured   43.3 multi  138.7 targets 2.4 rate 2.22/s risk 100% | 1.54 x L0: hit     16 single   49.1 armoured   36.9 multi  117.9 targets 3.7 rate 3.07/s risk  65% | single ratio 1.18 rule met
+   Tesla       L1->L2 coins  320 | upgrade: hit     40 single    100 armoured     75 multi    240 targets 2.4 rate  2.5/s risk 100% | 1.49 x L1: hit     26 single     86 armoured   64.5 multi  206.4 targets 3.6 rate 3.31/s risk  67% | single ratio 1.16 rule met
+   Railgun     L0->L1 coins  315 | upgrade: hit    120 single     60 armoured   67.5 multi     60 targets   1 rate  0.5/s risk 100% | 1.43 x L0: hit     80 single   52.1 armoured   58.6 multi   52.1 targets 1.4 rate 0.65/s risk  70% | single ratio 1.15 rule met
+   Railgun     L1->L2 coins  455 | upgrade: hit    180 single    100 armoured  112.5 multi    100 targets   1 rate 0.56/s risk 100% | 1.44 x L1: hit    120 single   86.7 armoured   97.5 multi   86.7 targets 1.4 rate 0.72/s risk  69% | single ratio 1.15 rule met
    rule met on 18 of 20 steps
 
 2. Role matrix: effective DPS per 100 coins (cost to reach the level)
    swarm = 40 hp, 1.2/cell (overkill + splash); group = 150 hp, 2/cell; air = 45 hp, 0.8/cell, at the gun's air share;
-   armour: 'pool' is the bosses' armour layer (it soaks a share of every hit until it is gone, the same for every hit
-   size, so per coin it ranks like single) and 'plate A' the species' flat per-hit plating (hit - A, at least 20%);
+   armour: 'arm S' is a creature whose armour pool is S times its health; the gun works on the pool at its armour factor
+   (TowerDefinition.ArmourFactor) before the body, so light fire pays far more for the same creature than a shell;
    single = one high-health target (no overkill, no splash). splash cap per gun (TowerDefinition.SplashTargets, else 2.4).
-   tower       lvl  coins   swarm   group     air    pool  plate4  plate8 plate12  single
-   Artillery   L0    370    16.2    28.4    18.2    11.8    11.1    10.5     9.8    11.8
-   Artillery   L1    545    12.6    40.9    14.2    17.0    16.5    16.0    15.5    17.0
-   Artillery   L2    805     9.9    37.3    11.2    22.8    22.4    21.9    21.5    22.8
-   CryoBeam    L0    360    14.8    14.8    14.8    14.8     7.4     3.0     3.0    14.8
-   CryoBeam    L1    525    19.0    19.0    19.0    19.0    13.2     7.3     3.8    19.0
-   CryoBeam    L2    785    23.2    23.2    23.2    23.2    18.5    13.9     9.3    23.2
-   StormRifle  L0    310    54.2    54.2    51.5    22.6    16.1     9.7     4.5    22.6
-   StormRifle  L1    425    62.7    62.7    59.6    26.1    20.9    15.7    10.5    26.1
-   StormRifle  L2    595    75.3    75.3    71.5    31.4    26.9    22.4    17.9    31.4
-   PulseRifle  L0     50    28.6    28.6    14.3    28.6     5.7     5.7     5.7    28.6
-   PulseRifle  L1     90    33.3    33.3    16.7    33.3    18.5     6.7     6.7    33.3
-   PulseRifle  L2    155    38.7    38.7    19.4    38.7    28.4    18.1     7.7    38.7
-   Cryo        L0     90     4.4     4.4     4.4     4.4     0.9     0.9     0.9     4.4
-   Cryo        L1    200     2.2     2.2     2.2     2.2     0.4     0.4     0.4     2.2
-   Cryo        L2    360     1.4     1.4     1.4     1.4     0.3     0.3     0.3     1.4
-   Cannon      L0    100    46.9    46.9       -    15.6    13.1    10.6     8.1    15.6
-   Cannon      L1    195    45.6    54.7       -    18.2    16.7    15.2    13.7    18.2
-   Cannon      L2    350    29.8    63.4       -    21.1    20.1    19.1    18.1    21.1
-   Rocket      L0    120       -       -    58.5       -       -       -       -    21.2
-   Rocket      L1    200       -       -    69.0       -       -       -       -    25.0
-   Rocket      L2    305       -       -    80.4       -       -       -       -    29.1
-   Laser       L0    130    30.8    30.8       -    30.8    15.4     6.2     6.2    30.8
-   Laser       L1    185    36.0    36.0       -    36.0    24.0    12.0     7.2    36.0
-   Laser       L2    285    42.1    42.1       -    42.1    32.7    23.4    14.0    42.1
-   Tesla       L0    140    54.9    54.9       -    22.9    17.1    11.4     5.7    22.9
-   Tesla       L1    215    64.5    64.5       -    26.9    22.7    18.6    14.5    26.9
-   Tesla       L2    320    75.0    75.0       -    31.3    28.1    25.0    21.9    31.3
-   Railgun     L0    220     8.3    16.5     9.3    16.5    15.7    14.9    14.0    16.5
-   Railgun     L1    315     6.3    19.0     7.1    19.0    18.4    17.8    17.1    19.0
-   Railgun     L2    455     4.9    18.3     5.5    22.0    21.5    21.0    20.5    22.0
+   tower       lvl  coins   swarm   group     air  factor arm.25  arm.50   arm 1  single
+   Artillery   L0    370    16.2    28.4    18.2    1.00    11.8    11.8    11.8    11.8
+   Artillery   L1    545    12.6    40.9    14.2    1.00    17.0    17.0    17.0    17.0
+   Artillery   L2    805     9.9    37.3    11.2    1.00    22.8    22.8    22.8    22.8
+   CryoBeam    L0    360    14.8    14.8    14.8    0.30    10.1     8.3     6.8    14.8
+   CryoBeam    L1    525    19.0    19.0    19.0    0.30    13.0    10.7     8.8    19.0
+   CryoBeam    L2    785    23.2    23.2    23.2    0.30    15.8    13.0    10.7    23.2
+   StormRifle  L0    310    54.2    54.2    51.5    0.50    18.8    16.9    15.1    22.6
+   StormRifle  L1    425    62.7    62.7    59.6    0.50    21.8    19.6    17.4    26.1
+   StormRifle  L2    595    75.3    75.3    71.5    0.50    26.1    23.5    20.9    31.4
+   PulseRifle  L0     50    28.6    28.6    14.3    0.30    19.5    16.1    13.2    28.6
+   PulseRifle  L1     90    33.3    33.3    16.7    0.30    22.7    18.8    15.4    33.3
+   PulseRifle  L2    155    38.7    38.7    19.4    0.30    26.4    21.8    17.9    38.7
+   Cryo        L0     90     4.4     4.4     4.4    0.30     3.0     2.5     2.1     4.4
+   Cryo        L1    200     2.2     2.2     2.2    0.30     1.5     1.3     1.0     2.2
+   Cryo        L2    360     1.4     1.4     1.4    0.30     0.9     0.8     0.6     1.4
+   Cannon      L0    100    46.9    46.9       -    1.00    15.6    15.6    15.6    15.6
+   Cannon      L1    195    45.6    54.7       -    1.00    18.2    18.2    18.2    18.2
+   Cannon      L2    350    29.8    63.4       -    1.00    21.1    21.1    21.1    21.1
+   Rocket      L0    120       -       -    58.5    0.50       -       -       -    21.2
+   Rocket      L1    200       -       -    69.0    0.50       -       -       -    25.0
+   Rocket      L2    305       -       -    80.4    0.50       -       -       -    29.1
+   Laser       L0    130    30.8    30.8       -    0.30    21.0    17.3    14.2    30.8
+   Laser       L1    185    36.0    36.0       -    0.30    24.6    20.3    16.6    36.0
+   Laser       L2    285    42.1    42.1       -    0.30    28.7    23.7    19.4    42.1
+   Tesla       L0    140    54.9    54.9       -    0.50    19.0    17.1    15.2    22.9
+   Tesla       L1    215    64.5    64.5       -    0.50    22.4    20.2    17.9    26.9
+   Tesla       L2    320    75.0    75.0       -    0.50    26.0    23.4    20.8    31.3
+   Railgun     L0    220     8.3    16.5     9.3    1.50    17.7    18.6    19.8    16.5
+   Railgun     L1    315     6.3    19.0     7.1    1.50    20.4    21.4    22.9    19.0
+   Railgun     L2    455     4.9    18.3     5.5    1.50    23.5    24.7    26.4    22.0
 
 3. Build spots on Shard Ridge (C1_03): road in reach (cells of walking route,
    every route counted, so the shared trunk weighs more) and bunched road (within 3 cells before a gate or 1.5 of a bend),

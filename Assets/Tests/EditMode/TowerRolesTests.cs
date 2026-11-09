@@ -16,8 +16,8 @@ namespace Game.Tests
     /// (1) upgrade against a second tower of the same type at equal coins (Remco: an upgrade must hit harder, per hit
     /// and single-target, than two side by side; more towers only win on targets and rate of fire, and spread the risk; asserted
     /// per step with documented exceptions);
-    /// (2) a role matrix, effective DPS per 100 coins against swarm, clustered group, air, armour (the bosses' pool armour
-    /// and the species' flat per-hit plating with 20% minimum) and one high-health target; (3) how much a good build spot is worth
+    /// (2) a role matrix, effective DPS per 100 coins against swarm, clustered group, air, armour (a pool the gun works on at its
+    /// armour factor, round 24) and one high-health target; (3) how much a good build spot is worth
     /// against a median one on Shard Ridge (C1_03). Written to Tools/PlayTest/tower_roles.txt. The in-game DPS per tower
     /// (the Laser question) comes from the PlayMode monoculture probe: Tools/PlayTest/monoculture.txt.
     /// </summary>
@@ -36,7 +36,8 @@ namespace Game.Tests
         private const float GroupDensity = 2f;
         private const float AirHealth = 45f;
         private const float AirDensity = 0.8f;
-        private static readonly float[] ArmourPerHit = { 4f, 8f, 12f };
+        // Armoured targets of the role matrix: the armour pool as a share of a creature's health (round 24; the Cragback wears 0.375).
+        private static readonly float[] ArmourShares = { 0.25f, 0.5f, 1f };
 
 
         // A level of the first continent runs about this many waves: what a gun bought instead of a slow field serves.
@@ -47,9 +48,6 @@ namespace Game.Tests
         {
             ["Cryo"] = "a slow mast: its stars buy a stronger, longer chill (Remco 2026-11-01), its damage stays a token 2",
         };
-
-        /// <summary>A flat plating lets at least this share of a hit through.</summary>
-        private const float PlatingFloor = 0.2f;
 
         // The spot lens: cells beside the road a tower may stand on, the road sampled every half cell, and what counts as
         // bunched (the queue in front of a gate, or a bend sharper than 45 degrees).
@@ -117,7 +115,7 @@ namespace Game.Tests
         {
             report.Append("1. Upgrade vs more towers of the same type at equal coins\n");
             report.Append("   step: one tower at L+1 (upgrade) vs n towers at L for the same coins. hit = damage per hit; single = DPS on one\n");
-            report.Append("   target (no armour); plated8 = single-target DPS through a flat 8 plating (20% floor); multi = DPS into a\n");
+            report.Append("   target (no armour); armoured = single-target DPS on a creature whose armour pool is half its health, at the gun's armour factor; multi = DPS into a\n");
             report.Append("   clustered group (splash); targets = creatures hit per volley; risk = share of that damage lost when one tower is wrecked.\n");
             report.Append("   Remco's rule: the upgrade wins on hit and single; n towers win only on targets/rate. 'rule' = upgrade single >= " + rules.UpgradeMargin + " x n towers single.\n");
             int met = 0;
@@ -134,9 +132,9 @@ namespace Game.Tests
                     bool rule = high.Dps >= n * low.Dps * rules.UpgradeMargin;
                     met += rule ? 1 : 0;
                     steps++;
-                    report.Append(Invariant($"   {gun.name,-11} L{level}->L{level + 1} coins {CostTo(gun, level + 1),4} | upgrade: hit {high.Damage,6:0.#} single {high.Dps,6:0.#} plated8 {Plated(high, 8f),6:0.#} multi {high.Dps * splash,6:0.#} targets {splash,3:0.#} rate {1f / high.Interval,4:0.##}/s risk 100%"));
-                    report.Append(Invariant($" | {n:0.00} x L{level}: hit {low.Damage,6:0.#} single {n * low.Dps,6:0.#} plated8 {n * Plated(low, 8f),6:0.#} multi {n * low.Dps * splash,6:0.#} targets {n * splash,3:0.#} rate {n / low.Interval,4:0.##}/s risk {100f / n,3:0}%"));
-                    report.Append(Invariant($" | single ratio {high.Dps / Mathf.Max(0.01f, n * low.Dps):0.00} plated8 ratio {Plated(high, 8f) / Mathf.Max(0.01f, n * Plated(low, 8f)):0.00} rule {(rule ? "met" : UpgradeExceptions.TryGetValue(gun.name, out string why) ? "exception (" + why + ")" : "NOT met")}\n"));
+                    report.Append(Invariant($"   {gun.name,-11} L{level}->L{level + 1} coins {CostTo(gun, level + 1),4} | upgrade: hit {high.Damage,6:0.#} single {high.Dps,6:0.#} armoured {Armoured(stats, high, 0.5f),6:0.#} multi {high.Dps * splash,6:0.#} targets {splash,3:0.#} rate {1f / high.Interval,4:0.##}/s risk 100%"));
+                    report.Append(Invariant($" | {n:0.00} x L{level}: hit {low.Damage,6:0.#} single {n * low.Dps,6:0.#} armoured {n * Armoured(stats, low, 0.5f),6:0.#} multi {n * low.Dps * splash,6:0.#} targets {n * splash,3:0.#} rate {n / low.Interval,4:0.##}/s risk {100f / n,3:0}%"));
+                    report.Append(Invariant($" | single ratio {high.Dps / Mathf.Max(0.01f, n * low.Dps):0.00} rule {(rule ? "met" : UpgradeExceptions.TryGetValue(gun.name, out string why) ? "exception (" + why + ")" : "NOT met")}\n"));
                 }
             }
 
@@ -149,10 +147,10 @@ namespace Game.Tests
         {
             report.Append("2. Role matrix: effective DPS per 100 coins (cost to reach the level)\n");
             report.Append(Invariant($"   swarm = {SwarmHealth} hp, {SwarmDensity}/cell (overkill + splash); group = {GroupHealth} hp, {GroupDensity}/cell; air = {AirHealth} hp, {AirDensity}/cell, at the gun's air share;\n"));
-            report.Append("   armour: 'pool' is the bosses' armour layer (it soaks a share of every hit until it is gone, the same for every hit\n");
-            report.Append("   size, so per coin it ranks like single) and 'plate A' the species' flat per-hit plating (hit - A, at least 20%);\n");
+            report.Append("   armour: 'arm S' is a creature whose armour pool is S times its health; the gun works on the pool at its armour factor\n");
+            report.Append("   (TowerDefinition.ArmourFactor) before the body, so light fire pays far more for the same creature than a shell;\n");
             report.Append(Invariant($"   single = one high-health target (no overkill, no splash). splash cap per gun (TowerDefinition.SplashTargets, else {rules.MaxSplashTargets}).\n"));
-            report.Append("   tower       lvl  coins   swarm   group     air    pool  plate4  plate8 plate12  single\n");
+            report.Append("   tower       lvl  coins   swarm   group     air  factor arm.25  arm.50   arm 1  single\n");
             foreach (TowerDefinition gun in guns)
             {
                 TowerStats stats = BalanceLedger.Stats(gun);
@@ -166,10 +164,10 @@ namespace Game.Tests
                     report.Append(Cell(ground, at.Dps * Overkill(at.Damage, SwarmHealth) * Splash(stats, SwarmDensity, rules) * per));
                     report.Append(Cell(ground, at.Dps * Overkill(at.Damage, GroupHealth) * Splash(stats, GroupDensity, rules) * per));
                     report.Append(Cell(air, at.Dps * stats.AirFactor * Overkill(at.Damage * stats.AirFactor, AirHealth) * Splash(stats, AirDensity, rules) * per));
-                    report.Append(Cell(ground, at.Dps * per));
-                    foreach (float armour in ArmourPerHit)
+                    report.Append(Invariant($" {stats.ArmourFactor,7:0.00}"));
+                    foreach (float share in ArmourShares)
                     {
-                        report.Append(Cell(ground, Plated(at, armour) * per));
+                        report.Append(Cell(ground, Armoured(stats, at, share) * per));
                     }
 
                     report.Append(Cell(ground || air, at.Dps * per)).Append('\n');
@@ -420,9 +418,19 @@ namespace Game.Tests
             return recipes;
         }
 
-        // The same rule the creatures' Health applies (Game.Balance.Plating, checked against Health.ThroughPlating).
-        private static float Plated(TowerLevelStats stats, float armour) =>
-            stats.Damage <= 0f ? 0f : stats.Dps * Plating.Share(stats.Damage, armour, PlatingFloor);
+        // Effective DPS on a creature whose armour pool is this share of its health: the share of the gun's damage that counts
+        // against health plus armour at its armour factor (Game.Balance.ArmourMix, the same rule as the creatures' Health).
+        private static float Armoured(TowerStats tower, TowerLevelStats stats, float armourShare)
+        {
+            if (stats.Damage <= 0f)
+            {
+                return 0f;
+            }
+
+            var mix = new ArmourMix();
+            mix.Add(1f, armourShare);
+            return stats.Dps * mix.Share(tower.ArmourFactor);
+        }
 
         private static float Overkill(float damage, float health) => damage <= health ? 1f : health / damage;
 

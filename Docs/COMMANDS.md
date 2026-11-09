@@ -699,3 +699,16 @@ named by the filter), `-testPlatform EditMode -testFilter CalibrationFitTests` a
   `difficulties=1`, `seed=1`, `step=0.2`; writes `Tools/PlayTest/finale_probe.txt`. Then `ContinentFinaleTests` (EditMode) reads
   it, and `bash Tools/PlayTest/balance_pipeline.sh finale` (or menu `Tools/Generate/Balance/10`) writes the derived boss health
   and shares into the assets (calibration inputs: the pipeline then says STALE until measure, fit and apply ran).
+
+### Round 24 additions (2026-11-08)
+
+- `unity command run_script --file Tools/PlayTest/Scripts/ApplyRoles.cs --entry ApplyRoles.Run --timeout_ms 600000 --timeout 660`
+  now also runs the generator's Hero step (health, regeneration, the weapons' armour factors) beside Towers, Roster and
+  Bestiary; its result line prints the Gun Turret's armour factor and the Cragback's armour and reward.
+- Armour is a pool with per-weapon factors (Docs/BALANCE.md, round 24): a mechanic change, so the calibration is STALE until
+  `bash Tools/PlayTest/balance_pipeline.sh all` has run (measure, fit, apply, solve, search, replay, acceptance, readme; about
+  five to six hours of machine time). Start it in the background with a log: `bash Tools/PlayTest/balance_pipeline.sh all >
+  Tools/PlayTest/round24_chain.log 2>&1 &`, then `build` and `round22f_chain.sh` on the cells the builder changed.
+- `bash Tools/PlayTest/r24_face.sh <out dir> [node] [prefix]`: one idle and one face close-up still of Spencer after a Mercer
+  re-sync (round 23d's probe scripts; the editor is stopped afterwards).
+- `unity command get_console_logs` does not exist in this CLI build: use `console_status` (counts) and `recompile_status`.

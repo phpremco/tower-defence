@@ -8,61 +8,71 @@
             "Tower": "PulseRifle",
             "X": [
                 6,
+                5,
                 31,
+                5,
                 32,
-                5,
-                5,
                 5
             ],
             "Y": [
                 14,
-                8,
-                8,
                 14,
+                8,
                 13,
+                8,
                 15
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
-                14,
                 5,
-                6,
                 31,
-                13,
-                32
+                6,
+                32,
+                14,
+                13
             ],
             "Y": [
-                7,
                 14,
+                8,
                 14,
                 8,
                 7,
-                8
+                7
             ]
         }
     ],
     "Weights": [
         {
+            "Threat": "pack",
+            "Tower": "PulseRifle",
+            "Weight": 1.2048964500427246
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Cannon",
+            "Weight": 1.1548612117767334
+        },
+        {
             "Threat": "air",
             "Tower": "PulseRifle",
-            "Weight": 0.9971953630447388
+            "Weight": 1.7417206764221191
         },
         {
             "Threat": "boss",
             "Tower": "Cannon",
-            "Weight": 1.328878402709961
+            "Weight": 1.832442045211792
         }
     ],
-    "UpgradeBias": 0.8399999737739563,
+    "UpgradeBias": 0.7799999713897705,
     "TowersBeforeUpgrades": 2,
-    "MineCoverBelow": 0.0,
+    "MineCoverBelow": 1.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 0.0,
     "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.10000000149011612,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.05000000074505806,
     "AttackDroneAfterTowers": 6,
     "AllowSell": false
 }

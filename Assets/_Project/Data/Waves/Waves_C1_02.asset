@@ -25,7 +25,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.228
+      _healthMultiplier: 1.279
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -36,7 +36,7 @@ MonoBehaviour:
         Interval: 0.6
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.183
+      _healthMultiplier: 1.394
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -47,7 +47,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.596
+      _healthMultiplier: 1.812
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -72,7 +72,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.8
-      _healthMultiplier: 2.074
+      _healthMultiplier: 2.355
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -97,7 +97,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 1.6800001
-      _healthMultiplier: 2.222
+      _healthMultiplier: 2.118
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -129,7 +129,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 0
-      _healthMultiplier: 2.019
+      _healthMultiplier: 1.775
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -168,7 +168,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 1.3
-      _healthMultiplier: 2.888
+      _healthMultiplier: 2.105
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -200,12 +200,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 3.5700002
-      _healthMultiplier: 2.2369895
+      _healthMultiplier: 2.1120763
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 27
+        Count: 28
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -253,7 +253,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 3.8999999
-      _healthMultiplier: 2.284
+      _healthMultiplier: 2.004
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -320,7 +320,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 2.687
+      _healthMultiplier: 2.207
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -373,12 +373,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 9.03
-      _healthMultiplier: 3.542331
+      _healthMultiplier: 2.917103
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 25
+        Count: 26
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -447,7 +447,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.302
+      _healthMultiplier: 1.251
   - Difficulty: {fileID: 11400000, guid: 669feb29d624f344db8b9e64fd451a0e, type: 2}
     Waves:
     - _startDelay: 10
@@ -460,7 +460,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.607
+      _healthMultiplier: 1.829
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -471,7 +471,7 @@ MonoBehaviour:
         Interval: 0.6
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.549
+      _healthMultiplier: 1.994
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -482,7 +482,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 2.089
+      _healthMultiplier: 2.592
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -507,7 +507,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.8
-      _healthMultiplier: 2.715
+      _healthMultiplier: 3.369
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -532,12 +532,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 1.6800001
-      _healthMultiplier: 2.908
+      _healthMultiplier: 3.03
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 17
+        Count: 14
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -571,7 +571,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 1.3
-      _healthMultiplier: 2.642
+      _healthMultiplier: 2.539
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -603,7 +603,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 0
-      _healthMultiplier: 3.78
+      _healthMultiplier: 3.011
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -635,12 +635,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 3.5700002
-      _healthMultiplier: 2.927136
+      _healthMultiplier: 3.021862
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 27
+        Count: 23
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -654,7 +654,7 @@ MonoBehaviour:
         Delay: 2.5
         Stagger: 0
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
+        Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.2
@@ -695,14 +695,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 3.8999999
-      - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-        Count: 1
-        PathIndex: 0
-        Source: 0
-        Interval: 0.65
-        Delay: 7.5
-        Stagger: 5.2
-      _healthMultiplier: 2.989
+      _healthMultiplier: 2.867
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -769,7 +762,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 3.517
+      _healthMultiplier: 3.157
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -822,12 +815,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 9.03
-      _healthMultiplier: 4.63648
+      _healthMultiplier: 4.1750917
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 25
+        Count: 20
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -840,13 +833,6 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 2.5
-        Stagger: 2.8
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 2
         PathIndex: 0
@@ -876,7 +862,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 3.8999999
       - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-        Count: 2
+        Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.65
@@ -889,7 +875,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.703
+      _healthMultiplier: 1.788
   - Difficulty: {fileID: 11400000, guid: 6de3e0655bb4a7d48bde2842156a2f73, type: 2}
     Waves:
     - _startDelay: 10
@@ -902,7 +888,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.632
+      _healthMultiplier: 1.789
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -913,7 +899,7 @@ MonoBehaviour:
         Interval: 0.6
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.573
+      _healthMultiplier: 1.95
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -924,7 +910,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 2.122
+      _healthMultiplier: 2.535
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -949,7 +935,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.8
-      _healthMultiplier: 2.758
+      _healthMultiplier: 3.296
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -974,12 +960,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 1.6800001
-      _healthMultiplier: 2.954
+      _healthMultiplier: 2.963
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 17
+        Count: 14
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -1006,7 +992,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 0
-      _healthMultiplier: 2.684
+      _healthMultiplier: 2.483
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1045,7 +1031,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 1.3
-      _healthMultiplier: 2.983
+      _healthMultiplier: 2.866
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1077,12 +1063,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 3.5700002
-      _healthMultiplier: 2.9739785
+      _healthMultiplier: 2.9552414
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 16
+        Count: 14
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -1103,7 +1089,7 @@ MonoBehaviour:
         Delay: 5
         Stagger: 0
       - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-        Count: 3
+        Count: 2
         PathIndex: 0
         Source: 0
         Interval: 0.65
@@ -1116,7 +1102,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.855
+      _healthMultiplier: 1.886
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1183,7 +1169,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 3.8999999
-      _healthMultiplier: 1.784
+      _healthMultiplier: 1.505
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1236,12 +1222,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 9.03
-      _healthMultiplier: 4.709925
+      _healthMultiplier: 4.082814
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 25
+        Count: 20
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -1254,13 +1240,6 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 0
-      - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 2
-        PathIndex: 0
-        Source: 0
-        Interval: 0.2
-        Delay: 2.5
-        Stagger: 2.8
       - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
         Count: 2
         PathIndex: 0
@@ -1297,7 +1276,7 @@ MonoBehaviour:
         Delay: 7.5
         Stagger: 2.6
       - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
-        Count: 2
+        Count: 1
         PathIndex: 0
         Source: 0
         Interval: 0.65
@@ -1310,7 +1289,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.73
+      _healthMultiplier: 1.751
   - Difficulty: {fileID: 11400000, guid: 2d7d67a99b6a2364e84932a937d2a887, type: 2}
     Waves:
     - _startDelay: 10
@@ -1323,7 +1302,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.339
+      _healthMultiplier: 1.441
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1334,7 +1313,7 @@ MonoBehaviour:
         Interval: 0.6
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.29
+      _healthMultiplier: 1.57
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1345,7 +1324,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 0
         Stagger: 0
-      _healthMultiplier: 1.74
+      _healthMultiplier: 2.041
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1370,7 +1349,7 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 0
         Stagger: 2.8
-      _healthMultiplier: 2.262
+      _healthMultiplier: 2.654
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1395,7 +1374,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.059
+      _healthMultiplier: 1.084
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1434,7 +1413,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 7.5
         Stagger: 1.3
-      _healthMultiplier: 2.147
+      _healthMultiplier: 2
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1466,7 +1445,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 0
-      _healthMultiplier: 2.935
+      _healthMultiplier: 2.371
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1498,12 +1477,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 3.5700002
-      _healthMultiplier: 2.438933
+      _healthMultiplier: 2.379599
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 16
+        Count: 17
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -1551,7 +1530,7 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.333
+      _healthMultiplier: 1.273
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1618,7 +1597,7 @@ MonoBehaviour:
         Interval: 0.65
         Delay: 5
         Stagger: 5.2
-      _healthMultiplier: 1.384
+      _healthMultiplier: 2.486
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
@@ -1671,12 +1650,12 @@ MonoBehaviour:
         Interval: 0.2
         Delay: 2.5
         Stagger: 9.03
-      _healthMultiplier: 3.862478
+      _healthMultiplier: 3.2880967
     - _startDelay: 8
       _spawnJitter: 0.45
       _groups:
       - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
-        Count: 25
+        Count: 26
         PathIndex: 0
         Source: 0
         Interval: 1
@@ -1745,4 +1724,4 @@ MonoBehaviour:
         Interval: 1
         Delay: 14
         Stagger: 0
-      _healthMultiplier: 1.419
+      _healthMultiplier: 1.41

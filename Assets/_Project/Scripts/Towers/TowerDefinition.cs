@@ -29,6 +29,9 @@ namespace Game.Towers
         [SerializeField] [Range(0f, 1f)] private float _groundDamageFactor = 1f;
         [SerializeField] [Range(0f, 1f)] private float _airDamageFactor = 1f;
 
+        [Tooltip("Share of a hit that works on a creature's armour while it has any: one for a heavy shell that strips it point for point, a fraction for light fire that only chips it (round 24).")]
+        [SerializeField] [Range(0.05f, 2f)] private float _armourFactor = 1f;
+
         /// <summary>
         /// A guided shot whose creature dies in flight turns to the nearest live creature of the same layer this close to where
         /// it was heading (cells); zero lets it land on nothing. Remco (2026-11-06), the genre's convention: guided missiles (the
@@ -100,6 +103,9 @@ namespace Game.Towers
         public int SplashTargets => _splashTargets;
         public float GroundDamageFactor => _groundDamageFactor;
         public float AirDamageFactor => _airDamageFactor;
+
+        /// <summary>Share of a hit that works on armour while the creature has any (Health.TakeDamage); light fire sits well under one.</summary>
+        public float ArmourFactor => _armourFactor;
 
         /// <summary>The damage share against a target of this layer: air only takes the air share, anything on the ground the ground share.</summary>
         public float DamageFactorAgainst(TargetLayers layer) => (layer & TargetLayers.Ground) != 0 ? _groundDamageFactor : _airDamageFactor;

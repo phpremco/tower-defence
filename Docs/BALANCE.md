@@ -1168,3 +1168,55 @@ shares are calibration inputs the pipeline reports the calibration stale afterwa
 probe plugs into the ordinary probe through `BalanceProbeTests.ProbeOverride` (field, waves, purse, player, owned towers,
 ledger view), so hero use, repairs, drones and the records come free; the plan data moved to `FinalePlan` (Game.Balance) so the
 PlayMode assembly can read it (`BalanceSheet.PlannedTowers/Finales` forward to it).
+
+## Armour as a pool, the hero's pulse and his health in the model (2026-11-08, round 24)
+
+**Remco's armour design replaces the per-hit plating.** Armour is a pool in front of the body, shown as the blue line over
+the green one. While any is left, a hit works on the armour at the weapon's *armour factor* and nothing reaches the body;
+the part of a hit the armour did not need carries on to the body in full; once the armour is gone every weapon lands in
+full. The factor is data on the weapon, never a name in logic: `TowerDefinition._armourFactor` (Gun Turret, Laser, Cryo,
+Cryo Beam, Blockade gun, Base Turret 0.3; Flak, Tesla, Storm Rifle 0.5; Cannon, Artillery 1; Railgun 1.5),
+`HeroWeaponDefinition._armourFactor` (blade 1, blaster 0.3), `HeroAbilityDefinition._armourFactor` (shockwave 1); mines
+and lava balls are heavy (1). `Health(max, armor)` applies it (`Health.TakeDamage(amount, armourFactor)` returns the points
+the hit was worth: armour chipped plus body hurt, which is what the probe records and what a boss's tally sees). Plating,
+`PlatingFloor`, `ArmorReduction`, `IPlated` and the light guns' soft targeting are gone; the one `_armor` field remains and the
+bosses that had an armour pool (Acid Empress, Crystal Warlord, Roller King, the titans) keep it with the new rule.
+
+Species converted (Bestiary): Cragback 160 health + 60 armour (worth 360 to light fire, 220 to a shell; the old plating made
+it 800 to a fresh Gun Turret and 200 to a shell), Stinger 200 + 90, Shardback 220 + 110, Bulwark 380 + 180. Kill money
+follows threat as before; `BalanceRules.ArmorThreatShare` is 1.25 now (a point of armour costs a light gun more than a point
+of health; 0.8 when armour soaked a share of every hit) and `PlatingReferenceHit` is gone. Rewards moved a little (Cragback
+25 -> 22; the armoured bosses of later continents up by about 15%).
+
+**The paper side is `ArmourMix`** (replaces `PlateMix`): per wave and layer group the body health H and the armour A; a weapon
+of factor f pays H + A/f for a group the ledger counts as H + A, so its damage counts at the share (H + A) / (H + A/f): one
+for a shell or a soft wave, 0.61 for light fire on a Cragback wave, over one for the Railgun. `Ledger.Capacity`, `Leak.Dps`
+and the hero use it; the strategy threat share "plated" is the share of its damage the cheapest gun loses to the wave's
+armour; the builder's `plated` lever weighs armoured troops. `ArmourPoolTests` holds the game and the paper to each other
+(a light gun that kills a Cragback fires what the paper says, to within one pulse).
+
+**The hero's pulse counts (goal 2a).** The bot already fired the shockwave at a crowd of four or at a boss
+(`BalanceProbeTests.ShockwaveCrowd`); the ledger now counts it: `HeroStats.PulseDamage/PulseCooldown/PulseArmourFactor` from
+the Shockwave ability, `Ledger.HeroPulseDps(level, targets)` = damage x targets / cooldown, on `BalanceRules.ShockwaveCrowd`
+(4, or fewer when the wave has fewer) in a wave's window and on the attackers in front of him at a siege. The blade, the
+blaster and the pulse each land at the share the group's armour lets them (`Ledger.HeroDps(level, armour, pulseTargets)`);
+the blaster now takes the permanent hero damage boost like the blade.
+
+**Spencer's survivability (goal 2b, in data).** `HeroDefinition`: health 200 -> 300, and he regenerates 6 a second from 4 s
+after the last hit (`_regenPerSecond`, `_regenDelaySeconds`; `Commander.Recover`, every hit on him goes through
+`Commander.Hurt`, the hero target included). The siege model carries his health from wave to wave (`SiegeState.HeroHealth`:
+each fight wears it by his guard share of the hammer, a fall resets it, and the quiet of a wave - the clock less the window
+less the delay - heals it at his rate, `Leak.Recover`). Before, every fight assumed a fresh hero at full health.
+
+**Gates (goal 3, checked, nothing built).** Repairs are weighed, on paper and in play, by one rule (`PlanEvaluator.RepairPrice`,
+`BalanceProbeTests.WorthRepair`): repair when the gate would fall in the coming wave, or when a hit point is cheaper to restore
+than to stop with the cheapest gun step over the waves left; a plan's `repair` step goes through the same rule. In-level gate
+upgrades (the Blockade's gun at level 1, more health at level 2) are bought by nobody: the paper's `TowerStats.IsGun` excludes
+gates from its steps and the bots upgrade only towers. A gate-upgrade step (value: the gate's extra hold and its gun at the
+queue) is the next model term if Remco wants the bot to use them; Dr. Voss's gate guidance is a later round.
+
+The jetpack switch time (`HeroDefinition.SwitchSeconds`) is not a model term: the bots and the plans keep the hero at the
+defence gate, so no switch happens in the measured runs.
+
+All of this is in the `InputHash` (armour factors, hero pulse and regeneration, the two rules), so the round's pipeline run
+starts with measure, fit and apply.

@@ -9,9 +9,9 @@
             "X": [
                 12,
                 13,
-                14,
                 15,
                 16,
+                14,
                 17
             ],
             "Y": [
@@ -28,9 +28,9 @@
             "X": [
                 12,
                 16,
-                13,
-                13,
                 12,
+                13,
+                13,
                 14
             ],
             "Y": [
@@ -64,38 +64,53 @@
         {
             "Tower": "Rocket",
             "X": [
-                32,
                 33,
+                32,
                 34,
                 34,
-                34,
-                35
+                35,
+                34
             ],
             "Y": [
                 10,
                 10,
                 7,
                 10,
-                11,
-                7
+                7,
+                11
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "pack",
+            "Threat": "swarm",
             "Tower": "PulseRifle",
-            "Weight": 1.658420205116272
+            "Weight": 1.893078327178955
+        },
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 1.3183459043502808
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Cannon",
+            "Weight": 1.4909600019454956
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 1.2192721366882324
         }
     ],
-    "UpgradeBias": 1.0199999809265137,
+    "UpgradeBias": 1.0700000524520874,
     "TowersBeforeUpgrades": 1,
     "MineCoverBelow": 1.0,
-    "MineOnBoss": true,
-    "FieldCoverBelow": 1.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 0.0,
     "HarvesterCover": 1.0,
     "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.25,
-    "AttackDroneAfterTowers": 6,
+    "RepairDroneWear": 0.5,
+    "AttackDroneAfterTowers": 12,
     "AllowSell": true
 }

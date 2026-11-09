@@ -38,6 +38,18 @@ namespace Game.Editor
         // A downed hero is gone long enough to hurt: two minutes, shown as a countdown in the HUD.
         private const float HeroReviveSeconds = 120f;
 
+        // Round 24, the armour pool: the share of a hit that works on armour. Light fire (pulses, beams, chill) only chips it,
+        // medium shells and arcs do half, a shell or a blade strips it point for point, the Railgun's slug over-penetrates.
+        private const float LightFireArmourFactor = 0.3f;
+        private const float MediumFireArmourFactor = 0.5f;
+        private const float PiercingArmourFactor = 1.5f;
+
+        // Round 24, Spencer's survivability (Remco: he died too fast in fights): half again the health, and he patches himself
+        // up out of a fight (6 a second from 4 s after the last hit: whole again within a wave gap after most sieges).
+        private const float HeroMaxHealth = 300f;
+        private const float HeroRegenPerSecond = 6f;
+        private const float HeroRegenDelaySeconds = 4f;
+
         // The base is besieged like a gate, so it needs gate-sized health: a few gates' worth, grown by the armour upgrade.
         private const int BaseHealth = 600;
         private const float BaseHealthUpgradeStep = 100f;
@@ -82,7 +94,7 @@ namespace Game.Editor
             context.Unlocks = unlocks;
         }
 
-        private static HeroWeaponDefinition CreateHeroWeapon(string id, string displayName, HeroWeaponKind kind, HeroWeaponStyle style, float damage, float reach, float interval, TargetLayers targets, Color color)
+        private static HeroWeaponDefinition CreateHeroWeapon(string id, string displayName, HeroWeaponKind kind, HeroWeaponStyle style, float damage, float reach, float interval, TargetLayers targets, Color color, float armourFactor = 1f)
         {
             var weapon = LoadOrCreate<HeroWeaponDefinition>($"{DataRoot}/Hero/Weapon_{id}.asset");
             var so = new SerializedObject(weapon);
@@ -94,6 +106,7 @@ namespace Game.Editor
             so.FindProperty("_attackInterval").floatValue = interval;
             so.FindProperty("_targets").intValue = (int)targets;
             so.FindProperty("_color").colorValue = color;
+            so.FindProperty("_armourFactor").floatValue = armourFactor;
             so.ApplyModifiedPropertiesWithoutUndo();
             return weapon;
         }
@@ -108,7 +121,7 @@ namespace Game.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, bool homing = true, float retargetRadius = 0f, int splashTargets = 0)
+        private static TowerDefinition CreateTower(string id, string displayName, TargetLayers targets, float projectileSpeed, float splash, Color color, TowerLevel[] levels, float health, bool blocksGround = false, float slowFactor = 1f, float slowSeconds = 0f, bool support = false, float rangeBonus = 0f, float rateBonus = 0f, bool baseDefence = false, float airDamageFactor = 1f, bool homing = true, float retargetRadius = 0f, int splashTargets = 0, float armourFactor = 1f)
         {
             var tower = LoadOrCreate<TowerDefinition>($"{DataRoot}/Towers/{id}.asset");
             var so = new SerializedObject(tower);
@@ -127,6 +140,7 @@ namespace Game.Editor
             so.FindProperty("_airDamageFactor").floatValue = airDamageFactor;
             so.FindProperty("_retargetRadius").floatValue = retargetRadius;
             so.FindProperty("_splashTargets").intValue = splashTargets;
+            so.FindProperty("_armourFactor").floatValue = armourFactor;
             so.FindProperty("_homing").boolValue = homing;
             so.FindProperty("_color").colorValue = color;
             so.FindProperty("_maxHealth").floatValue = health;

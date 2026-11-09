@@ -9,65 +9,65 @@
             "X": [
                 6,
                 5,
-                31,
                 5,
                 32,
+                31,
                 5
             ],
             "Y": [
                 14,
                 14,
+                15,
                 8,
-                13,
                 8,
-                15
+                13
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
-                14,
-                5,
                 31,
                 6,
-                13,
-                32
+                32,
+                14,
+                5,
+                13
             ],
             "Y": [
-                7,
-                14,
                 8,
                 14,
+                8,
                 7,
-                8
+                14,
+                7
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "swarm",
-            "Tower": "PulseRifle",
-            "Weight": 1.265519380569458
-        },
-        {
             "Threat": "pack",
-            "Tower": "PulseRifle",
-            "Weight": 2.0777974128723145
+            "Tower": "Cannon",
+            "Weight": 1.3430540561676025
         },
         {
-            "Threat": "boss",
+            "Threat": "plated",
             "Tower": "Cannon",
-            "Weight": 1.3710277080535889
+            "Weight": 1.61299467086792
+        },
+        {
+            "Threat": "air",
+            "Tower": "PulseRifle",
+            "Weight": 0.6040271520614624
         }
     ],
-    "UpgradeBias": 1.0499999523162842,
-    "TowersBeforeUpgrades": 2,
-    "MineCoverBelow": 0.0,
+    "UpgradeBias": 0.7099999785423279,
+    "TowersBeforeUpgrades": 1,
+    "MineCoverBelow": 1.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
     "HarvesterCover": 1.5,
-    "HarvesterShare": 0.30000001192092896,
-    "RepairDroneWear": 0.05000000074505806,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.10000000149011612,
     "AttackDroneAfterTowers": 6,
     "AllowSell": false
 }

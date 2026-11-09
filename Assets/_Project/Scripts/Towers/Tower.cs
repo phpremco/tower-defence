@@ -524,7 +524,7 @@ namespace Game.Towers
             // A chilling tower grows its slow with its stars instead of its damage.
             float slowFactor = level.SlowFactor > 0f ? level.SlowFactor : _definition.SlowFactor;
             float slowSeconds = level.SlowSeconds > 0f ? level.SlowSeconds : _definition.SlowSeconds;
-            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this, _definition.RetargetRadius, _definition.Homing, _definition.SplashTargets);
+            _projectiles.Fire(muzzle, target, damage, _definition.ProjectileSpeed, _definition.SplashRadius, _definition.Targets, slowFactor, slowSeconds, _definition.ProjectileStyle, _definition.Color, _definition.FuseRadius, this, _definition.RetargetRadius, _definition.Homing, _definition.SplashTargets, _definition.ArmourFactor);
             Fired?.Invoke(target.Position);
         }
 

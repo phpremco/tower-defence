@@ -257,7 +257,7 @@ namespace Game.Tests
 
             int wave = _context != null ? Mathf.Max(1, _context.WaveNumber) : 1;
             _spawnWave[enemy] = wave;
-            _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current : 0f;
+            _lastHealth[enemy] = enemy.Health != null ? enemy.Health.Current + enemy.Health.Armor : 0f;
             // A boss's own minions and the like spawn mid-wave and count with the wave they appear in.
             RecordOf(wave).Health += enemy.Health != null ? enemy.Health.Max + enemy.Health.ArmorMax : 0f;
         }
@@ -265,10 +265,12 @@ namespace Game.Tests
         private void OnDamaged(Enemy enemy, object source, float amount)
         {
             WaveRecord record = RecordOf(_spawnWave.TryGetValue(enemy, out int wave) ? wave : Mathf.Max(1, _context.WaveNumber));
-            // What the hit really took off the creature: plating and overkill are the paper model's business, not realised damage.
-            float before = _lastHealth.TryGetValue(enemy, out float last) ? last : enemy.Health.Max;
-            float dealt = Mathf.Max(0f, before - enemy.Health.Current);
-            _lastHealth[enemy] = enemy.Health.Current;
+            // What the hit really took off the creature, armour chipped and body hurt (the paper counts both as effective health);
+            // the armour factor and overkill are the paper model's business, not realised damage.
+            float left = enemy.Health.Current + enemy.Health.Armor;
+            float before = _lastHealth.TryGetValue(enemy, out float last) ? last : enemy.Health.Max + enemy.Health.ArmorMax;
+            float dealt = Mathf.Max(0f, before - left);
+            _lastHealth[enemy] = left;
             if (source is Tower tower && !tower.Definition.IsBaseDefence)
             {
                 (float damage, float seconds, float data) = Fire.TryGetValue(tower.Definition.Id, out var known) ? known : (0f, 0f, 0f);
@@ -300,7 +302,7 @@ namespace Game.Tests
                 return "air";
             }
 
-            if (kind.HasPlating)
+            if (kind.HasArmor)
             {
                 return "plated";
             }

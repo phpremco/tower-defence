@@ -2,9 +2,9 @@
   "asset": "Mercer",
   "character": "Spencer",
   "round": "spencer-pass4-2026-11-08 (build_mercer5.py)",
-  "game_tris": 17496,
+  "game_tris": 17494,
   "lod1_tris": 6000,
-  "source_tris": 4039568,
+  "source_tris": 4130488,
   "bones": 33,
   "sockets": [
     "Back",
@@ -24,26 +24,28 @@
     "Mask"
   ],
   "uv": {
-    "islands": 1421,
+    "islands": 1181,
     "unwrap": "smart, layer-weighted, concave pack",
-    "uv_coverage": 0.3,
-    "world_per_uv": 4.385643043433714
+    "uv_coverage": 0.352,
+    "world_per_uv": 4.058920944918133
   },
   "detail": {
     "weave": {
       "map": "Detail_Weave_Normal.png",
-      "tiling": 175.4,
+      "tiling": 162.4,
       "mask": "B"
     },
     "ceramic": {
       "map": "Detail_Ceramic_Normal.png",
-      "tiling": 73.1,
+      "tiling": 67.6,
       "mask": "A"
     }
   },
   "layers": [
     "suit",
     "plates",
+    "gasket",
+    "guards",
     "gear",
     "insignia",
     "hands"
@@ -407,7 +409,7 @@
     "mesh": "Mercer_Face",
     "far_mesh": "Mercer_Face_LOD1",
     "bone": "Head (rigid, weight 1)",
-    "tris": 5098,
+    "tris": 5064,
     "maps": {
       "Albedo": "Mercer_Face_Albedo.png",
       "Normal": "Mercer_Face_Normal.png",
@@ -435,5 +437,5 @@
     "material": "URP Lit (or Game/UnitLit) TRANSPARENT, alpha blend, base map = Mercer_Visor_Albedo (alpha = opacity 0.12 in the middle .. 0.62 at the rim), smoothness 0.95, metallic 0, emission map Mercer_Visor_Emission x2 (faint HUD ticks), cast shadows off, receive shadows on, render queue after the opaque body; optional fresnel: more opaque at grazing angles",
     "single_sided": "normals face out; back faces culled"
   },
-  "helmet": "shell with a visor opening (dark liner inside, gasket on the rim); quad-tube NVG flipped up on a brow mount"
+  "helmet": "shell with one closed visor opening (dark liner inside, a continuous gasket bead on the rim), bevelled brow plate and U-shaped jaw guard following the shell outside the rim, respirator housing with two filters; quad-tube NVG flipped up on a brow mount"
 }

@@ -192,7 +192,7 @@ namespace Game.Editor
 
         private static Creature Titan(string id, string description, float health, float armor, float speed, Color body, Color glow) => new Creature
         {
-            Id = id, Description = description, Layer = TargetLayers.Ground, Health = health, Armor = armor, ArmorReduction = 0.6f, Speed = speed, BaseDamage = 25, Boss = true,
+            Id = id, Description = description, Layer = TargetLayers.Ground, Health = health, Armor = armor, Speed = speed, BaseDamage = 25, Boss = true,
             Attack = AttackStyle.Slam, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
             Color = body, Eyes = glow, Accent = glow, Blood = glow, Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,
         };

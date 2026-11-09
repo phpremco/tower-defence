@@ -371,16 +371,8 @@ namespace Game.UI
             }
         }
 
-        // The list already says which creatures carry protection, so the player spots the plated ones without opening each.
-        private static string ProtectionNote(EnemyDefinition enemy)
-        {
-            if (enemy.HasPlating)
-            {
-                return ", plated";
-            }
-
-            return enemy.HasArmor ? ", armoured" : string.Empty;
-        }
+        // The list already says which creatures carry armour, so the player spots them without opening each.
+        private static string ProtectionNote(EnemyDefinition enemy) => enemy.HasArmor ? ", armoured" : string.Empty;
 
         private Button Row(string name, string note, UnityEngine.Events.UnityAction onClick)
         {
@@ -636,22 +628,9 @@ namespace Game.UI
             _builder.Append("Health ").Append(Mathf.RoundToInt(enemy.MaxHealth));
             if (enemy.HasArmor)
             {
-                _builder.Append("   Armour ").Append(Mathf.RoundToInt(enemy.Armor)).Append(" (takes ").Append(Mathf.RoundToInt(enemy.ArmorReduction * 100f)).Append("% less until it is chipped away)");
-            }
-
-            if (enemy.HasPlating)
-            {
-                _builder.Append("   Plating ").Append(Mathf.RoundToInt(enemy.Plating)).Append(" (every hit loses that much, at least ").Append(Mathf.RoundToInt(enemy.PlatingFloor * 100f)).Append("% gets through: heavy shots pass it)");
-            }
-
-            // The field shows the same protection as a blue line over the green health line (ProtectionBar).
-            if (enemy.HasPlating)
-            {
-                _builder.Append("\nIn the field: a full blue line over its health; it flares and sparks fly when the plates stop a hit.");
-            }
-            else if (enemy.HasArmor)
-            {
-                _builder.Append("\nIn the field: the blue line over its health is the armour left.");
+                _builder.Append("   Armour ").Append(Mathf.RoundToInt(enemy.Armor)).Append(" (nothing hurts the body while it lasts: heavy shells strip it, light fire only chips it)");
+                // The field shows the armour as a blue line over the green health line (ProtectionBar).
+                _builder.Append("\nIn the field: the blue line over its health is the armour left; sparks fly while a hit works on it.");
             }
 
             _builder.Append("\nSpeed ").Append(enemy.Speed.ToString("0.0")).Append("   Bounty ").Append(enemy.Reward).Append("   Base damage ").Append(enemy.BaseDamage).Append('\n');

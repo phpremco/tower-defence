@@ -206,9 +206,7 @@ namespace Game.Enemies
         // Blue, so armour and plating read at a glance over the green health line (Remco's design).
         private static readonly Color ArmorBarColor = new Color(0.2f, 0.5f, 1f);
         // The line flares to this when the plates stop part of a hit, and fades back.
-        private static readonly Color PlateFlashColor = new Color(0.85f, 0.95f, 1f);
         private static readonly Color RicochetColor = new Color(1f, 0.92f, 0.7f) * 2f;
-        private const float PlateFlashSeconds = 0.18f;
         private const int RicochetBurst = 5;
         private static readonly Color ShadowColor = new Color(0f, 0f, 0f);
         private static readonly Color EyeColor = new Color(1f, 0.95f, 0.6f);
@@ -299,7 +297,6 @@ namespace Game.Enemies
         private ParticleSystem _rush;
         private ParticleSystem _impact;
         private ParticleSystem _ricochet;
-        private float _plateFlash = float.PositiveInfinity;
         private EnemyBoltView[] _bolts;
         private readonly EnemyAttachments _attachments = new EnemyAttachments();
         private float _barWidth = BarWidth;
@@ -514,7 +511,6 @@ namespace Game.Enemies
             }
 
             _flashTime += Time.deltaTime;
-            UpdatePlateFlash();
             _reaction.Tick(Time.deltaTime);
 
             if (_shadow != null)
@@ -557,7 +553,7 @@ namespace Game.Enemies
             {
                 _health.Changed -= OnHealthChanged;
                 _health.ArmorChanged -= OnArmorChanged;
-                _health.PlatingStopped -= OnPlatingStopped;
+                _health.ArmorBroken -= OnArmorBroken;
             }
 
             _lastPosition = enemy.Position;
@@ -583,9 +579,7 @@ namespace Game.Enemies
             _footSign = 0;
             _health.Changed += OnHealthChanged;
             _health.ArmorChanged += OnArmorChanged;
-            _health.PlatingStopped += OnPlatingStopped;
-            _plateFlash = float.PositiveInfinity;
-            _worldBar?.SetArmourColour(ArmorBarColor);
+            _health.ArmorBroken += OnArmorBroken;
             ShowPlates(_plates.Count);
             _shed?.SetShed(0);
             SetBar(1f);
@@ -849,9 +843,9 @@ namespace Game.Enemies
             _frost = _attachments.Track(ParticleKit.UseCell(ParticleKit.Create(transform.parent, "Frost", Vector3.zero, FrostColor, 0.5f, 1f, 0.03f, 0.07f, 0.15f, 0.5f, -0.1f, 40, 0.2f), MarkerArt.ParticleCell.FrostMote));
             // Sparks in the creature's colour where its blow lands, or a ring of dust when it slams the ground.
             _impact = _attachments.Track(ParticleKit.Create(transform.parent, "Impact", Vector3.zero, rush, 0.25f, 0.5f, 0.03f, 0.07f, 0.6f, 1.8f, 0.6f, SlamDustBurst * 2, 0.1f));
-            if (definition.HasPlating)
+            if (definition.HasArmor)
             {
-                // Plating from data, never a species: hot sparks glance off where the plates stop part of a hit.
+                // Armour from data, never a species: hot sparks glance off while a hit works on the armour, a burst when it breaks.
                 _ricochet = _attachments.Track(ParticleKit.Create(transform.parent, "Ricochet", Vector3.zero, RicochetColor, 0.12f, 0.28f, 0.02f, 0.05f, 2.5f, 5.5f, 1.4f, RicochetBurst * 8, 0.12f));
             }
 
@@ -1740,6 +1734,11 @@ namespace Game.Enemies
         private void OnArmorChanged(float _)
         {
             float fraction = _health.ArmorFraction;
+            if (fraction < _lastArmor && fraction > 0f)
+            {
+                Ricochet(RicochetBurst);
+            }
+
             if (_shed != null)
             {
                 ShedModelParts(fraction);
@@ -1836,34 +1835,20 @@ namespace Game.Enemies
             });
         }
 
-        // The plates at work: sparks glance off (more for a hit they stopped more of) and the blue line flares.
-        private void OnPlatingStopped(float share)
+        // Hot sparks glance off while a hit works on the armour, a bigger burst when the last of it breaks. The bar itself is
+        // never recoloured: round 23b's flare reset on every hit, so a beam that hit every frame held every bar near-white.
+        private void Ricochet(int count)
         {
-            if (share <= 0f || _barHidden)
+            if (_ricochet == null || _body == null || _barHidden)
             {
                 return;
             }
 
-            _plateFlash = 0f;
-            if (_ricochet != null && _body != null)
-            {
-                _ricochet.transform.position = _body.position;
-                _ricochet.Emit(1 + Mathf.CeilToInt(RicochetBurst * share));
-            }
+            _ricochet.transform.position = _body.position;
+            _ricochet.Emit(count);
         }
 
-        // Real time at most (FeedbackClock), so the flare still reads at x3.
-        private void UpdatePlateFlash()
-        {
-            if (_plateFlash > PlateFlashSeconds || _worldBar == null)
-            {
-                return;
-            }
-
-            _plateFlash += FeedbackClock.DeltaTime;
-            float t = Mathf.Clamp01(_plateFlash / PlateFlashSeconds);
-            _worldBar.SetArmourColour(Color.Lerp(PlateFlashColor, ArmorBarColor, t));
-        }
+        private void OnArmorBroken() => Ricochet(RicochetBurst * 3);
 
         private void Bleed()
         {

@@ -69,10 +69,10 @@ namespace Game.Balance
         public float GateHold;
         public float BossGateHold;
 
-        /// <summary>The plating of the ground stream, the bosses and the flyers, by health: how much of a hit of each size lands.</summary>
-        public readonly PlateMix StreamPlates = new PlateMix();
-        public readonly PlateMix BossPlates = new PlateMix();
-        public readonly PlateMix AirPlates = new PlateMix();
+        /// <summary>The armour of the ground stream, the bosses and the flyers beside their health: how much of a weapon's damage counts, by its armour factor.</summary>
+        public readonly ArmourMix StreamArmour = new ArmourMix();
+        public readonly ArmourMix BossArmour = new ArmourMix();
+        public readonly ArmourMix AirArmour = new ArmourMix();
 
         /// <summary>
         /// The seconds a gun gets on the bosses out of the time they spend in its reach: the mechanics take away their share
@@ -135,6 +135,7 @@ namespace Game.Balance
                 int count = enemy.IsBoss ? group.Count : Math.Max(1, (int)Math.Ceiling(group.Count * difficulty.Count));
                 float each = enemy.EffectiveHealth * scale * difficulty.ShareFor(enemy);
                 float health = each * count;
+                float armour = enemy.Armor * scale * difficulty.ShareFor(enemy) * count;
                 float end = group.Delay + (group.Stagger + (count - 1) * group.Interval) * difficulty.Interval;
                 load.KillMoney += (int)Math.Round(enemy.Reward * count * level.Income);
                 load.HasBoss |= enemy.IsBoss;
@@ -143,7 +144,7 @@ namespace Game.Balance
                 if (!Layer.Has(enemy.Layer, Layer.Ground))
                 {
                     load.AirHealth += health;
-                    load.AirPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
+                    load.AirArmour.Add(health - armour, armour);
                     airSpan = Math.Max(airSpan, end);
                     airSpeed += enemy.InRangeSpeed * count;
                     air += count;
@@ -156,7 +157,7 @@ namespace Game.Balance
                 if (enemy.IsBoss)
                 {
                     load.BossHealth += health;
-                    load.BossPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
+                    load.BossArmour.Add(health - armour, armour);
                     bossReachWeighted += reach * health;
                     bossSpeed += enemy.InRangeSpeed * count;
                     bosses += count;
@@ -167,7 +168,7 @@ namespace Game.Balance
                 }
 
                 load.StreamHealth += health;
-                load.StreamPlates.Add(enemy.Plating, enemy.PlatingFloor, health);
+                load.StreamArmour.Add(health - armour, armour);
                 reachWeighted += reach * health;
                 span = Math.Max(span, end);
                 speed += enemy.InRangeSpeed * count;

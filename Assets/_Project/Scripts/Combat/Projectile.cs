@@ -29,6 +29,7 @@ namespace Game.Combat
         private float _fuseRadius;
         private Vector3 _impactPoint;
         private object _source;
+        private float _armourFactor = 1f;
 
         /// <summary>Raised when the projectile leaves the barrel, so the view can dress it.</summary>
         public event Action<Projectile> Launched;
@@ -87,7 +88,8 @@ namespace Game.Combat
             object source = null,
             float retargetRadius = 0f,
             bool homing = true,
-            int splashTargets = 0)
+            int splashTargets = 0,
+            float armourFactor = 1f)
         {
             transform.position = from;
             _source = source;
@@ -98,6 +100,7 @@ namespace Game.Combat
             _retargetRadius = retargetRadius;
             _homing = homing;
             _splashTargets = splashTargets;
+            _armourFactor = armourFactor;
             _startDistance = (_lastTargetPosition - from).magnitude;
             _damage = damage;
             _speed = speed;
@@ -223,7 +226,7 @@ namespace Game.Combat
         {
             if (target is ISourcedTarget sourced)
             {
-                sourced.TakeDamageFrom(_damage, _source, splash);
+                sourced.TakeDamageFrom(_damage, _source, splash, _armourFactor);
                 return;
             }
 
