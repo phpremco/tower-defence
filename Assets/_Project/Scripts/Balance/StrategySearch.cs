@@ -37,6 +37,7 @@ namespace Game.Balance
         private static readonly float[] HarvesterShares = { 0.3f, 0.4f, 0.5f, 0.6f };
         private static readonly float[] RepairWears = { 0.05f, 0.1f, 0.25f, 0.5f, 9f };
         private static readonly int[] AttackAfter = { 0, 6, 8, 12 };
+        private static readonly float[] GateBiases = { 0f, 0f, 0.8f, 1.2f };
 
         public static StrategySearchResult Run(PlanSearchInput input)
         {
@@ -187,6 +188,7 @@ namespace Game.Balance
             strategy.HarvesterShare = Pick(HarvesterShares, random);
             strategy.RepairDroneWear = Pick(RepairWears, random);
             strategy.AttackDroneAfterTowers = Pick(AttackAfter, random);
+            strategy.GateUpgradeBias = Pick(GateBiases, random);
             return strategy;
         }
 
@@ -236,6 +238,7 @@ namespace Game.Balance
                 default:
                     strategy.RepairDroneWear = Pick(RepairWears, random);
                     strategy.AttackDroneAfterTowers = Pick(AttackAfter, random);
+                    strategy.GateUpgradeBias = Pick(GateBiases, random);
                     break;
             }
 
@@ -259,6 +262,7 @@ namespace Game.Balance
                 HarvesterShare = from.HarvesterShare,
                 RepairDroneWear = from.RepairDroneWear,
                 AttackDroneAfterTowers = from.AttackDroneAfterTowers,
+                GateUpgradeBias = from.GateUpgradeBias,
                 AllowSell = from.AllowSell,
             };
             var spots = new List<SpotPriority>();

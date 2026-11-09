@@ -1167,7 +1167,7 @@ namespace Game.Tests
                 return;
             }
 
-            List<(string, int)> standing = Standing(towers);
+            List<(string, int)> standing = StandingWithGate(towers, watch);
             float groundCover = Cover(ledger, standing, current, true);
             bool groundHolds = groundCover >= 1f / GroundCeiling;
             if (run.Strategy.Creative && SavesForHarvester(context, towers, run, groundCover))
@@ -1242,6 +1242,29 @@ namespace Game.Tests
                 }
             }
 
+            // The defence gate's next level (round 26, Remco: gates are a feature the plans should use): weighed like a gun upgrade by
+            // the same ledger, the health bonus credited at the repair price, the strategy's own weight on it.
+            Tower gateTower = watch.Gate;
+            if (run.Strategy.Creative && run.Strategy.Spec.GateUpgradeBias > 0f && gateTower != null && gateTower.IsAlive && !gateTower.IsWrecked && gateTower.CanUpgrade
+                && gateTower.NextUpgradeCost <= reach && towers.Count >= run.Strategy.Spec.TowersBeforeUpgrades)
+            {
+                var next = new List<(string, int)>(standing);
+                next.RemoveAll(t => t.Item1 == gateTower.Definition.Id);
+                next.Add((gateTower.Definition.Id, gateTower.LevelIndex + 1));
+                int worth = Game.Balance.PlanEvaluator.GateUpgradeWorth(ledger.Input, gateTower.LevelIndex);
+                float value = Gain(ledger, next, current, now, nowGround, nowAir) / Mathf.Max(1, gateTower.NextUpgradeCost - worth) * run.Strategy.Spec.UpgradeBias * run.Strategy.Spec.GateUpgradeBias;
+                if (gateTower.NextUpgradeCost > purse)
+                {
+                    waitValue = Mathf.Max(waitValue, value);
+                }
+                else if (value > bestValue)
+                {
+                    bestValue = value;
+                    upgrade = gateTower;
+                    build = null;
+                }
+            }
+
             if (towers.Count < spots.Ground.Count)
             {
                 foreach (TowerDefinition candidate in context.AllTowers)
@@ -1280,13 +1303,37 @@ namespace Game.Tests
             if (upgrade != null && context.Wallet.TrySpend(upgrade.NextUpgradeCost))
             {
                 upgrade.Upgrade();
-                run.Upgrades++;
-                run.Note(Game.Balance.PlanStep.Upgrade, null, context.Level.Grid.WorldToCell(upgrade.Position));
+                NoteUpgrade(context, upgrade, run);
             }
             else if (build != null)
             {
                 TryBuy(context, spots, towers, owned, t => t == build, run);
             }
+        }
+
+        // A gun's upgrade counts as one; the defence gate's is its own move kind (round 26), so the plans and the acceptance rules see it.
+        private static void NoteUpgrade(LevelContext context, Tower upgraded, BotRun run)
+        {
+            if (upgraded.Definition.BlocksGroundEnemies)
+            {
+                run.Note(Game.Balance.PlanStep.GateUpgrade, Game.Balance.PlanStep.Gates, context.Level.Grid.WorldToCell(upgraded.Position));
+                return;
+            }
+
+            run.Upgrades++;
+            run.Note(Game.Balance.PlanStep.Upgrade, null, context.Level.Grid.WorldToCell(upgraded.Position));
+        }
+
+        // The bot's towers as the ledger names them, with the defence gate's gun once it has one (round 26).
+        private static List<(string, int)> StandingWithGate(List<Tower> towers, GateWatch watch)
+        {
+            List<(string, int)> standing = Standing(towers);
+            if (watch.Gate != null && watch.Gate.IsAlive && !watch.Gate.IsWrecked && watch.Gate.LevelIndex > 0)
+            {
+                standing.Add((watch.Gate.Definition.Id, watch.Gate.LevelIndex));
+            }
+
+            return standing;
         }
 
         // The hero's abilities as a player uses them: the shockwave when a crowd or a boss is in its ring, the gate repair when
@@ -2366,6 +2413,18 @@ namespace Game.Tests
                         Game.Drones.DroneDefinition drone = DroneById(context, step.Item);
                         possible = drone != null && context.ActiveDrones(drone) < context.MaxDrones(drone);
                         done = possible && context.Wallet.CanAfford(drone.Cost) && BuyDrone(context, drone, run);
+                        break;
+                    case Game.Balance.PlanStep.GateUpgrade:
+                        Tower defence = watch.Gate;
+                        possible = defence != null && defence.IsAlive && !defence.IsWrecked && defence.CanUpgrade;
+                        done = possible && context.Wallet.TrySpend(defence.NextUpgradeCost);
+                        if (done)
+                        {
+                            defence.Upgrade();
+                            run.Purchases++;
+                            NoteUpgrade(context, defence, run);
+                        }
+
                         break;
                     case Game.Balance.PlanStep.Repair:
                         // The plan's repair goes through the same rule as the bots' (WorthRepair): a gate that is whole or not worth it is skipped.

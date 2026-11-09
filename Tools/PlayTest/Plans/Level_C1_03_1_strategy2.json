@@ -7,11 +7,11 @@
         {
             "Tower": "PulseRifle",
             "X": [
-                14,
-                13,
                 12,
-                16,
+                13,
+                14,
                 15,
+                16,
                 17
             ],
             "Y": [
@@ -64,53 +64,54 @@
         {
             "Tower": "Rocket",
             "X": [
-                32,
                 33,
                 34,
+                32,
+                35,
                 34,
-                34,
-                35
+                34
             ],
             "Y": [
                 10,
-                10,
                 7,
                 10,
+                7,
                 11,
-                7
+                10
             ]
         }
     ],
     "Weights": [
         {
             "Threat": "pack",
-            "Tower": "Laser",
-            "Weight": 1.0852515697479248
+            "Tower": "PulseRifle",
+            "Weight": 2.1464462280273438
         },
         {
             "Threat": "plated",
-            "Tower": "Cannon",
-            "Weight": 2.2197563648223877
+            "Tower": "Laser",
+            "Weight": 1.231027364730835
         },
         {
             "Threat": "air",
-            "Tower": "Cannon",
-            "Weight": 2.1914331912994385
+            "Tower": "Laser",
+            "Weight": 2.024502992630005
         },
         {
             "Threat": "boss",
-            "Tower": "Laser",
-            "Weight": 1.1798713207244873
+            "Tower": "PulseRifle",
+            "Weight": 0.8880069255828857
         }
     ],
-    "UpgradeBias": 1.5499999523162842,
+    "UpgradeBias": 1.2599999904632568,
     "TowersBeforeUpgrades": 1,
-    "MineCoverBelow": 1.0,
+    "MineCoverBelow": 0.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
     "HarvesterCover": 0.0,
     "HarvesterShare": 0.30000001192092896,
     "RepairDroneWear": 0.5,
     "AttackDroneAfterTowers": 8,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

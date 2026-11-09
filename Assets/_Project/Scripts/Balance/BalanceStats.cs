@@ -58,13 +58,17 @@ namespace Game.Balance
         public float Interval;
         public float Slow;
 
-        public TowerLevelStats(int cost, float damage, float range, float interval, float slow = 0f)
+        /// <summary>Health the level adds to the structure (a gate's upgrade, TowerLevel.HealthBonus); zero for a gun.</summary>
+        public float HealthBonus;
+
+        public TowerLevelStats(int cost, float damage, float range, float interval, float slow = 0f, float healthBonus = 0f)
         {
             Cost = cost;
             Damage = damage;
             Range = range;
             Interval = interval;
             Slow = slow;
+            HealthBonus = healthBonus;
         }
 
         public float Dps => Interval > 0f ? Damage / Interval : 0f;
@@ -136,6 +140,15 @@ namespace Game.Balance
         public float MaxHealth = 200f;
         public float GuardShare = 0.4f;
         public float ReviveSeconds = 120f;
+
+        /// <summary>
+        /// A hero on foot blocks the road in front of his gate (HeroTarget.BlocksGround, round 26): the creatures that reach him bite
+        /// him, not the gate, so while he stands the whole hammer of the attackers lands on him; a flying hero only absorbs his
+        /// <see cref="GuardShare"/> of the hits on the gate.
+        /// </summary>
+        public bool Blocks;
+
+        public float HammerShare => Blocks ? 1f : GuardShare;
 
         /// <summary>The perks the hero can earn that change the blaster.</summary>
         public List<HeroPerkStats> Perks = new List<HeroPerkStats>();

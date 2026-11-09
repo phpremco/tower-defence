@@ -1296,3 +1296,95 @@ the Shard Ridge stall (the other four workers were done in 4 min 20 s); 6 worker
 (paging), with two job threads 1 min 57 s for the first 18 runs. With the stall fixed, a full measure (432 runs) projects to
 about 25-30 min and a full replay (264 runs) to about 15-20 min on five workers, against 2 h 50 and 2 h 15 in round 24; a
 tweak's impact table takes 6 s (snapshot 6 s, three fits included) and the replay of its flagged cells a few minutes.
+
+## Approach cover, the blocking hero and the gate-upgrade step (2026-11-09, round 26)
+
+**What the records say about the paper (the residuals).** The fit's disagreements are not noise around a constant: they sit in
+cells. Read with the fit's wave table (`calibration_waves.txt`, one line per recorded wave: paper pressures, walk and queue
+guards, siege damage, beside the game's damage by type and gate and base losses) and two traced runs. (1) The paper counted a gun's
+whole cover as walk cover; a gun behind the defence gate (C1_02's strategies at (5,7)-(7,6) behind the gate at road index 11) kills
+nothing before the gate, and a gun on the long stretch behind a *fallen* gate (C1_01's rows at (5,14), index 40-72, behind the gate
+at index 14) kills everything, which the siege model, where "nothing shoots at the rest gates but the hero", could not see. (2) The
+hero is a blocker in play (`HeroTarget.BlocksGround`): the creatures that reach him bite him for their full blockade damage, so at a
+besieged gate he falls in about 20 s (300 health against five biters) and is down for 120 s, three or four waves; the paper's
+`GuardShare` 0.4 gave him 54 s and the gate the rest. (3) Per tower type the realised share of the nominal rate on the paper-leaky
+waves is flat over creature health (Gun Turret about 0.40, Laser 0.30, Cannon 0.70-0.98 with its splash), except small creatures
+(Gun Turret 0.23 under 20 health): the per-type efficiency is the right shape of calibration; what varies between cells is where
+the kills happen, not how many.
+
+**Terms built.** `SpotCover.ApproachPass` and `BehindPass` (the geometry marks every route sample past the defence gate on its road;
+a lane that does not pass the gate is all approach; the spotless ideal is all approach): `Leak.AddTower` credits the walk with the
+gun's capacity times its approach share, puts the behind share into `SiegeGuards.BehindStream/BehindSingle`, and `Leak.Resolve`
+takes that off what got past the defence gate before the rest gates. `HeroStats.Blocks` (from `HeroDefinition.Flies`): while a
+blocking hero stands the whole hammer lands on him and none on the gate (`HammerShare` 1); a flying hero absorbs his `GuardShare`.
+Two terms tried and dropped, with the numbers so the next round does not repeat them: a kill-waste factor meanHealth/(meanHealth+hit)
+on single-target guns (81 % / 0.67, the paper more pessimistic) and a siege clock (fights capped at the wave's length, the rest
+standing into the next wave: 60 % / 0.73, 234 "paper survives, game lost": the game's sieges are deadlier than a clocked model).
+
+**Fit after the terms:** 81 % / 0.68 (mono 93 %) against 82 % / 0.65 before on the same 696 runs: the ranking a little better, the
+agreement the same. Applied by override as the best available (the pipeline's `apply` refuses it; `apply-force` prints the warning).
+The remaining error is the walk's quality by geometry: C1_05's early gate with fast swarms leaks where the paper holds, C1_04's and
+C1_06's late trunk gates kill on the long walk where the paper leaks. The candidates are a fitted per-level walk factor (cheap,
+honest, not a mechanic) or a route-sampled kill model gun by gun along the road (the physical answer, slower). Remco decides.
+
+**Light fire 0.2 (Remco, round 26):** Gun Turret, Laser, Cryo, Cryo Beam, Blockade gun, Base Turret and the hero's blaster 0.3 -> 0.2
+(`ProjectGenerator.LightFireArmourFactor`, `ApplyRoles.Run`). A Cragback (160 + 60) is now worth 460 to light fire (was 360) and 220 to
+a shell. The impact on the paper (`impact.txt`): 8 cells flagged, the plans that lean on Gun Turrets against armour fall (C1_03
+Medium 5/5 -> 0/5, C1_01 Medium's one holding plan), C1_04 Easy keeps its wins at 2 stars, C1_05/C1_06 Medium margins up with the
+re-solved waves. The play verdict comes from the round-26 chain (measure, replay) on the new data.
+
+**The gate-upgrade step.** The Blockade's levels are in the model as a tower (`LevelInput.Gate`, `TowerLevelStats.HealthBonus`): level 1
+a gun at the queue (6 damage at 0.45 s, reach 3.9, armour factor 0.2) and +300 health for 90, level 2 (11 at 0.35 s, +500) for 150.
+`SiegeState.GateLevel/GateBonus`: the bonus lands on the standing defence gate, a repair restores the upgraded full, the gun counts in
+the pressure (`Ledger.GateCapacity` from the gate's cell) and as a queue guard (`Leak.AddGate`). The step (`PlanStep.GateUpgrade`,
+"gate") is weighed by the rule every other step gets: the cover gain of the gun per coin, with the health bonus credited at the
+repair price of that much health (`PlanEvaluator.GateUpgradeWorth`), times the strategy's `UpgradeBias` and its `GateUpgradeBias`
+(0 never; sampled, mutated and counted as a distinct timing by the search). In play the creative and adaptive bots weigh the defence
+gate's next level beside the gun upgrades with the same ledger, scripted plans take a "gate" step, and the move is recorded as
+`gate`; the acceptance rules count a gate upgrade as one of the game's features a Hard or Psycho plan may use.
+
+## Approach cover, the blocking hero and the gate-upgrade step (2026-11-09, round 26)
+
+**What the records say about the paper (the residuals).** The fit's disagreements are not noise around a constant: they sit in
+cells. Read with the fit's wave table (`calibration_waves.txt`, one line per recorded wave: paper pressures, walk and queue
+guards, siege damage, beside the game's damage by type and gate and base losses) and two traced runs. (1) The paper counted a gun's
+whole cover as walk cover; a gun behind the defence gate (C1_02's strategies at (5,7)-(7,6) behind the gate at road index 11) kills
+nothing before the gate, and a gun on the long stretch behind a *fallen* gate (C1_01's rows at (5,14), index 40-72, behind the gate
+at index 14) kills everything, which the siege model, where "nothing shoots at the rest gates but the hero", could not see. (2) The
+hero is a blocker in play (`HeroTarget.BlocksGround`): the creatures that reach him bite him for their full blockade damage, so at a
+besieged gate he falls in about 20 s (300 health against five biters) and is down for 120 s, three or four waves; the paper's
+`GuardShare` 0.4 gave him 54 s and the gate the rest. (3) Per tower type the realised share of the nominal rate on the paper-leaky
+waves is flat over creature health (Gun Turret about 0.40, Laser 0.30, Cannon 0.70-0.98 with its splash), except small creatures
+(Gun Turret 0.23 under 20 health): the per-type efficiency is the right shape of calibration; what varies between cells is where
+the kills happen, not how many.
+
+**Terms built.** `SpotCover.ApproachPass` and `BehindPass` (the geometry marks every route sample past the defence gate on its road;
+a lane that does not pass the gate is all approach; the spotless ideal is all approach): `Leak.AddTower` credits the walk with the
+gun's capacity times its approach share, puts the behind share into `SiegeGuards.BehindStream/BehindSingle`, and `Leak.Resolve`
+takes that off what got past the defence gate before the rest gates. `HeroStats.Blocks` (from `HeroDefinition.Flies`): while a
+blocking hero stands the whole hammer lands on him and none on the gate (`HammerShare` 1); a flying hero absorbs his `GuardShare`.
+Two terms tried and dropped, with the numbers so the next round does not repeat them: a kill-waste factor meanHealth/(meanHealth+hit)
+on single-target guns (81 % / 0.67, the paper more pessimistic) and a siege clock (fights capped at the wave's length, the rest
+standing into the next wave: 60 % / 0.73, 234 "paper survives, game lost": the game's sieges are deadlier than a clocked model).
+
+**Fit after the terms:** 81 % / 0.68 (mono 93 %) against 82 % / 0.65 before on the same 696 runs: the ranking a little better, the
+agreement the same. Applied by override as the best available (the pipeline's `apply` refuses it; `apply-force` prints the warning).
+The remaining error is the walk's quality by geometry: C1_05's early gate with fast swarms leaks where the paper holds, C1_04's and
+C1_06's late trunk gates kill on the long walk where the paper leaks. The candidates are a fitted per-level walk factor (cheap,
+honest, not a mechanic) or a route-sampled kill model gun by gun along the road (the physical answer, slower). Remco decides.
+
+**Light fire 0.2 (Remco, round 26):** Gun Turret, Laser, Cryo, Cryo Beam, Blockade gun, Base Turret and the hero's blaster 0.3 -> 0.2
+(`ProjectGenerator.LightFireArmourFactor`, `ApplyRoles.Run`). A Cragback (160 + 60) is now worth 460 to light fire (was 360) and 220 to
+a shell. The impact on the paper (`impact.txt`): 8 cells flagged, the plans that lean on Gun Turrets against armour fall (C1_03
+Medium 5/5 -> 0/5, C1_01 Medium's one holding plan), C1_04 Easy keeps its wins at 2 stars, C1_05/C1_06 Medium margins up with the
+re-solved waves. The play verdict comes from the round-26 chain (measure, replay) on the new data.
+
+**The gate-upgrade step.** The Blockade's levels are in the model as a tower (`LevelInput.Gate`, `TowerLevelStats.HealthBonus`): level 1
+a gun at the queue (6 damage at 0.45 s, reach 3.9, armour factor 0.2) and +300 health for 90, level 2 (11 at 0.35 s, +500) for 150.
+`SiegeState.GateLevel/GateBonus`: the bonus lands on the standing defence gate, a repair restores the upgraded full, the gun counts in
+the pressure (`Ledger.GateCapacity` from the gate's cell) and as a queue guard (`Leak.AddGate`). The step (`PlanStep.GateUpgrade`,
+"gate") is weighed by the rule every other step gets: the cover gain of the gun per coin, with the health bonus credited at the
+repair price of that much health (`PlanEvaluator.GateUpgradeWorth`), times the strategy's `UpgradeBias` and its `GateUpgradeBias`
+(0 never; sampled, mutated and counted as a distinct timing by the search). In play the creative and adaptive bots weigh the defence
+gate's next level beside the gun upgrades with the same ledger, scripted plans take a "gate" step, and the move is recorded as
+`gate`; the acceptance rules count a gate upgrade as one of the game's features a Hard or Psycho plan may use.

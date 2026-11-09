@@ -52,6 +52,17 @@ namespace Game.Balance
         public float GateRepairCostPerHealth;
         public int GateRebuildCost;
 
+        /// <summary>
+        /// The gate as a tower (round 26): level 0 is the plain gate, each level above it a gun at the queue (Damage, Interval, Range)
+        /// and extra health (HealthBonus), bought in the level like a tower upgrade. Null without gates. <see cref="GateCell"/> is the
+        /// defence gate's cell, where its gun stands.
+        /// </summary>
+        public TowerStats Gate;
+        public Cell? GateCell;
+
+        /// <summary>True when the defence gate can be upgraded in the level (a gate with upgrade levels and a known cell).</summary>
+        public bool HasGateUpgrades => Gate != null && Gate.Levels.Length > 1 && GateCell.HasValue && GateHealth > 0f;
+
         /// <summary>Health of the base with the permanent base upgrades, and the base shares that earn the second and third star.</summary>
         public float BaseHealth;
         public float[] StarFractions = { 0.5f, 0.9f };
@@ -159,6 +170,15 @@ namespace Game.Balance
             var defence = new Defence();
             foreach ((string towerId, int towerLevel) in standing)
             {
+                // The defence gate's gun (round 26) stands at the gate, not on a typical spot.
+                if (level.Gate != null && towerId == level.Gate.Id)
+                {
+                    Option gate = GateCapacity(level, load, rules, towerLevel);
+                    defence.Stream += gate.Stream;
+                    defence.Single += gate.Single;
+                    continue;
+                }
+
                 int index = level.Towers.FindIndex(t => t.Id == towerId);
                 Option option = index >= 0 ? Find(options, index, towerLevel) : null;
                 if (option != null)
@@ -328,7 +348,25 @@ namespace Game.Balance
         /// </summary>
         public static Option Capacity(LevelInput level, WaveLoad load, BalanceRules rules, int towerIndex, int towerLevel, SpotCover cover, float efficiency = -1f)
         {
-            TowerStats tower = level.Towers[towerIndex];
+            Option option = Capacity(level, load, rules, level.Towers[towerIndex], towerLevel, cover, efficiency);
+            option.Tower = towerIndex;
+            return option;
+        }
+
+        /// <summary>The defence gate's gun at its level (round 26), from the gate's cell; nothing at level zero or without gate upgrades.</summary>
+        public static Option GateCapacity(LevelInput level, WaveLoad load, BalanceRules rules, int gateLevel)
+        {
+            if (!level.HasGateUpgrades || gateLevel <= 0 || gateLevel >= level.Gate.Levels.Length)
+            {
+                return new Option { Tower = -1, Level = gateLevel };
+            }
+
+            return Capacity(level, load, rules, level.Gate, gateLevel, PlanEvaluator.CoverOf(level, level.GateCell.Value, level.Gate.Levels[gateLevel].Range));
+        }
+
+        /// <summary>As <see cref="Capacity(LevelInput, WaveLoad, BalanceRules, int, int, SpotCover, float)"/> for a tower outside the level's list (the gate's gun).</summary>
+        public static Option Capacity(LevelInput level, WaveLoad load, BalanceRules rules, TowerStats tower, int towerLevel, SpotCover cover, float efficiency = -1f)
+        {
             TowerLevelStats stats = tower.Levels[towerLevel];
             TowerBoost boost = level.BoostOf(tower.Id);
             bool ground = Layer.Has(tower.Targets, Layer.Ground);
@@ -349,7 +387,7 @@ namespace Game.Balance
             float bossQueue = cover.Gate ? load.BossWindow : 0f;
             return new Option
             {
-                Tower = towerIndex,
+                Tower = -1,
                 Level = towerLevel,
                 Cost = stats.Cost,
                 AirOnly = air && !ground,

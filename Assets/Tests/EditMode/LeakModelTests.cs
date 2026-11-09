@@ -110,6 +110,45 @@ namespace Game.Tests
         }
 
         [Test]
+        public void GateUpgrade_AddsHealthAndAGunAtTheQueue()
+        {
+            LevelInput level = Gated(2, false);
+            level.Gate = new TowerStats
+            {
+                Id = "Gate",
+                Targets = Layer.Ground,
+                BlocksGround = true,
+                ArmourFactor = 0.2f,
+                Levels = new[] { new TowerLevelStats(60, 0f, 3.7f, 0.5f), new TowerLevelStats(90, 6f, 3.9f, 0.45f, 0f, 300f), new TowerLevelStats(150, 11f, 4.2f, 0.35f, 0f, 500f) },
+            };
+            level.GateCell = new Cell(3, 3);
+            level.GateRepairCostPerHealth = 0.1f;
+            Assert.IsTrue(level.HasGateUpgrades);
+
+            SiegeState siege = SiegeState.Start(level, 2);
+            Assert.AreEqual(90, PlanEvaluator.GateUpgradePrice(level, siege));
+            Assert.AreEqual(30, PlanEvaluator.GateUpgradeWorth(level, 0), "300 health at 0.1 a point");
+            siege.UpgradeGate(level);
+            Assert.AreEqual(1, siege.GateLevel);
+            Assert.AreEqual(800f, siege.DefenceGate, 0.01f, "the bonus lands on the standing gate");
+            Assert.AreEqual(500f, siege.RestGates, 0.01f, "the other gates are untouched");
+            siege.DefenceGate = 100f;
+            siege.RepairGates(level);
+            Assert.AreEqual(800f, siege.DefenceGate, 0.01f, "a repair restores the upgraded gate whole");
+
+            Ledger.Option none = Ledger.GateCapacity(level, Load(), BalanceRules.Default, 0);
+            Ledger.Option gun = Ledger.GateCapacity(level, Load(), BalanceRules.Default, 1);
+            Assert.AreEqual(0f, none.Stream);
+            Assert.Greater(gun.Stream, 0f, "level one is a gun at the queue");
+            var guards = new SiegeGuards();
+            Leak.AddGate(ref guards, level, Load(), BalanceRules.Default, 1);
+            Assert.Greater(guards.QueueStream, 0f);
+
+            siege.UpgradeGate(level);
+            Assert.AreEqual(-1, PlanEvaluator.GateUpgradePrice(level, siege), "the top level has no next step");
+        }
+
+        [Test]
         public void Stars_FollowTheBaseLeft()
         {
             float[] thresholds = { 0.5f, 0.9f };

@@ -9,6 +9,21 @@ namespace Game.Balance
         /// <summary>Cells of walking route in reach, weighted by the share of the creatures that walk each cell.</summary>
         public float GroundPass;
 
+        /// <summary>
+        /// The part of <see cref="GroundPass"/> that lies before the defence gate (round 26): the only road a walker walks while
+        /// the gate stands, so the only cover a gun kills on the walk from. The rest of its reach is the queue and the road behind
+        /// the gate (<see cref="BehindPass"/>), walked only once the gate is down. Without a defence gate the whole route is approach.
+        /// </summary>
+        public float ApproachPass;
+
+        /// <summary>Weighted route cells in reach past the defence gate: a gun there shoots what gets through, on the way to the next gate.</summary>
+        public float BehindPass;
+
+        /// <summary>Share of the ground cover that is approach (one without a defence gate or with nothing in reach).</summary>
+        public float ApproachShare => GroundPass > 0f ? ApproachPass / GroundPass : 1f;
+
+        public float BehindShare => GroundPass > 0f ? BehindPass / GroundPass : 0f;
+
         /// <summary>Cells of flight route in reach, weighted the same way.</summary>
         public float AirPass;
 
@@ -22,7 +37,7 @@ namespace Game.Balance
         public bool Base;
 
         /// <summary>The ledger's spotless assumption: a straight pass through the whole reach, the gate queue and the doorstep in reach.</summary>
-        public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f, Base = true };
+        public static SpotCover Ideal(float reach) => new SpotCover { GroundPass = 2f * reach, ApproachPass = 2f * reach, AirPass = 2f * reach, Gate = true, Bunch = 0f, Base = true };
     }
 
     /// <summary>
@@ -48,6 +63,9 @@ namespace Game.Balance
             public float Y;
             public float Weight;
             public bool Bunched;
+
+            /// <summary>Past the defence gate along its road: not walked while that gate stands.</summary>
+            public bool Behind;
         }
 
         private readonly List<Sample> _ground = new List<Sample>();
@@ -81,8 +99,8 @@ namespace Game.Balance
                 geometry.MainRoad.AddRange(LevelShape.Expand(roads[0].Waypoints));
             }
 
-            SampleRoutes(roads, gates, geometry._ground);
-            SampleRoutes(flights, new List<Cell>(), geometry._air);
+            SampleRoutes(roads, gates, defenceGate, geometry._ground);
+            SampleRoutes(flights, new List<Cell>(), null, geometry._air);
             return geometry;
         }
 
@@ -119,6 +137,8 @@ namespace Game.Balance
                 if (Distance(spot, sample) <= radius)
                 {
                     cover.GroundPass += sample.Weight;
+                    cover.ApproachPass += sample.Behind ? 0f : sample.Weight;
+                    cover.BehindPass += sample.Behind ? sample.Weight : 0f;
                     bunched += sample.Bunched ? sample.Weight : 0f;
                 }
             }
@@ -170,6 +190,8 @@ namespace Game.Balance
             {
                 SpotCover cover = CoverAt(ranked[i], reach);
                 mean.GroundPass += cover.GroundPass / n;
+                mean.ApproachPass += cover.ApproachPass / n;
+                mean.BehindPass += cover.BehindPass / n;
                 mean.AirPass += cover.AirPass / n;
                 mean.Bunch += cover.Bunch / n;
                 gates += cover.Gate ? 1 : 0;
@@ -258,7 +280,7 @@ namespace Game.Balance
             return Distance(spot, road) <= cells * cells;
         }
 
-        private static void SampleRoutes(IReadOnlyList<RoadInput> roads, IReadOnlyList<Cell> gates, List<Sample> output)
+        private static void SampleRoutes(IReadOnlyList<RoadInput> roads, IReadOnlyList<Cell> gates, Cell? defenceGate, List<Sample> output)
         {
             if (roads.Count == 0)
             {
@@ -287,6 +309,7 @@ namespace Game.Balance
             for (int r = 0; r < roads.Count; r++)
             {
                 List<Cell> cells = expanded[r];
+                int gateAt = GateIndex(cells, defenceGate);
                 for (int i = 0; i < cells.Count; i++)
                 {
                     Cell cell = cells[i];
@@ -301,9 +324,34 @@ namespace Game.Balance
                         Y = cell.Y,
                         Weight = lanes[Key(cell)] / (float)roads.Count,
                         Bunched = NearGate(cell, gates) || NearBend(roads[r].Waypoints, cell),
+                        Behind = gateAt >= 0 && i > gateAt,
                     });
                 }
             }
+        }
+
+        // The index of the road cell the defence gate stands on (the nearest within a cell), or -1 when the road does not pass it:
+        // a lane that joins the trunk behind the gate, or a level without one.
+        private static int GateIndex(List<Cell> cells, Cell? defenceGate)
+        {
+            if (!defenceGate.HasValue)
+            {
+                return -1;
+            }
+
+            int at = -1;
+            float best = float.MaxValue;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                float distance = Distance(cells[i], defenceGate.Value);
+                if (distance < best)
+                {
+                    best = distance;
+                    at = i;
+                }
+            }
+
+            return best <= QueueCells * QueueCells ? at : -1;
         }
 
         private static bool NearGate(Cell cell, IReadOnlyList<Cell> gates)

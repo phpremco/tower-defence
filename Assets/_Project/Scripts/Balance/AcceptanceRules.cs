@@ -257,10 +257,10 @@ namespace Game.Balance
             PlanSpec spec = SpecOf(best, specs);
             if (spec != null)
             {
-                int features = (spec.Uses(PlanStep.Mine) || spec.Uses(PlanStep.Field) ? 1 : 0) + (spec.Uses(PlanStep.Drone) ? 1 : 0) + (spec.Uses(PlanStep.Sell) ? 1 : 0) + (spec.Upgrades >= 3 ? 1 : 0);
+                int features = (spec.Uses(PlanStep.Mine) || spec.Uses(PlanStep.Field) ? 1 : 0) + (spec.Uses(PlanStep.Drone) ? 1 : 0) + (spec.Uses(PlanStep.Sell) ? 1 : 0) + (spec.Upgrades >= 3 ? 1 : 0) + (spec.Uses(PlanStep.GateUpgrade) ? 1 : 0);
                 if (features < HardFeatures)
                 {
-                    verdict.Failures.Add(Invariant($"{name}: the best plan uses {features} of the game's features (gadgets, a drone, a sale, three or more upgrades; needs {HardFeatures})"));
+                    verdict.Failures.Add(Invariant($"{name}: the best plan uses {features} of the game's features (gadgets, a drone, a sale, a gate upgrade, three or more upgrades; needs {HardFeatures})"));
                 }
 
                 if (difficulty == Psycho && dronesOffered && !spec.Uses(PlanStep.Drone))

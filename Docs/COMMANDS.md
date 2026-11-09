@@ -755,3 +755,19 @@ errors, so it is off by default). The clones are disposable (about 6 GB each); d
 **Stall diagnostic**: when the probe's 900 s wall clock runs out, it logs `[Probe] wall clock ran out at wave N: ...` with
 `LevelController.SpawnDiagnostic()` (wave spawning or not, held nest spawns, every creature still counted alive) into the
 console and `Logs/probe_trace.txt`.
+
+### Round 26 (2026-11-09)
+
+- `unity command eval_file --file Tools/PlayTest/r26_geometry.cs --result-only` (reads `Tools/PlayTest/geometry_arg.txt`: one line per
+  level, `C1_02 5,7 7,6`): the plan model's defence gate, its index on the main road, and per spot the ground, approach and behind cover
+  at two reaches, into `geometry_dump.txt`. Use it when a paper verdict and a play record disagree about where a tower kills.
+- A worker run's per-wave trace is in its clone: `C:\Users\remco\TowerDefenseWorkers\wN\Logs\probe_trace.txt` (one unit, e.g.
+  `bash Tools/PlayTest/workers.sh run replay "cells=1:0:1"`, puts the cell's five strategies on w1). Mind: the merge replaces the
+  whole cell's records (all seeds) with the unit's runs; `git checkout Tools/PlayTest/plan_records.txt` afterwards.
+- Residuals of the fit with awk on `calibration_waves.txt` (columns in `CalibrationFit.WaveTableHeader`): waves with `gPressure > 1.05`
+  and no gate or base loss in play are the paper's pessimism, waves with `gPressure <= 1` and a loss its optimism; group by level,
+  difficulty, mean health (`recHealth/groundCount`), arrival rate (`groundCount/window`).
+- `bash Tools/PlayTest/round26_chain.sh > Tools/PlayTest/round26_chain.log 2>&1 &`: measure (workers), fit, `apply-force`, solve, search,
+  replay (workers), acceptance, readme; stops only when a PlayMode stage fails. `apply-force` is in the chain because the fit is below
+  the bar this round (its warning is in the log).
+- The gate-upgrade step: a plan file may hold `{"Kind":"gate","Item":"gates"}` steps; a strategy JSON has `GateUpgradeBias` (0 never).

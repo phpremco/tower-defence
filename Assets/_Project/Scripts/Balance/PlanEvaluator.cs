@@ -182,8 +182,8 @@ namespace Game.Balance
                 {
                     PlanStep step = steps[next];
                     int towerIndex = -1;
-                    int price = step.Kind == PlanStep.Repair
-                        ? RepairPrice(level, load, siege, cheapestGun, waves.Count - i)
+                    int price = step.Kind == PlanStep.Repair ? RepairPrice(level, load, siege, cheapestGun, waves.Count - i)
+                        : step.Kind == PlanStep.GateUpgrade ? GateUpgradePrice(level, siege)
                         : Price(level, standing, step, out towerIndex);
                     if (price < 0)
                     {
@@ -243,6 +243,9 @@ namespace Game.Balance
                             outcome.Repairs++;
                             siege.RepairGates(level);
                             break;
+                        case PlanStep.GateUpgrade:
+                            siege.UpgradeGate(level);
+                            break;
                     }
                 }
 
@@ -268,6 +271,15 @@ namespace Game.Balance
                     single += option.Single * slow;
                     air += option.Air;
                     Leak.AddTower(ref guards, level, load, rules, tower.Tower, tower.Level, cover, -1f, slow);
+                }
+
+                // The defence gate's own gun (round 26): a queue guard that also fires on the approach in its reach.
+                if (siege.GateLevel > 0 && siege.DefenceGate > 0f)
+                {
+                    Ledger.Option gateGun = Ledger.GateCapacity(level, load, rules, siege.GateLevel);
+                    stream += gateGun.Stream;
+                    single += gateGun.Single;
+                    Leak.AddGate(ref guards, level, load, rules, siege.GateLevel);
                 }
 
                 if (attackDps > 0f)
@@ -461,9 +473,29 @@ namespace Game.Balance
         /// (Remco 2026-11-06): repair only when the defence gate would fall in the coming wave, or when a hit point is cheaper to
         /// restore than to stop with the cheapest gun over the waves left. A wrecked gate costs its build price.
         /// </summary>
+        /// <summary>
+        /// The price of raising the defence gate a level (round 26), or -1 when it cannot be raised: no gate upgrades, the top level
+        /// reached, or the gate wrecked (a rebuild first). The bots and the strategies weigh it like a tower upgrade: the gun's gain
+        /// per coin, with the health bonus credited at the repair price of that much health (<see cref="GateUpgradeWorth"/>).
+        /// </summary>
+        public static int GateUpgradePrice(LevelInput level, SiegeState siege) =>
+            level.HasGateUpgrades && siege.TrunkGates > 0 && siege.DefenceGate > 0f && siege.GateLevel + 1 < level.Gate.Levels.Length ? level.Gate.Levels[siege.GateLevel + 1].Cost : -1;
+
+        /// <summary>The coins the next gate level's health bonus would cost as a repair: what the step is worth before its gun counts.</summary>
+        public static int GateUpgradeWorth(LevelInput level, int gateLevel)
+        {
+            if (!level.HasGateUpgrades || gateLevel + 1 >= level.Gate.Levels.Length)
+            {
+                return 0;
+            }
+
+            float bonus = level.Gate.Levels[gateLevel + 1].HealthBonus - level.Gate.Levels[gateLevel].HealthBonus;
+            return Math.Max(0, (int)Math.Round(bonus * level.GateRepairCostPerHealth));
+        }
+
         public static int RepairPrice(LevelInput level, WaveLoad load, SiegeState siege, int cheapestGun, int wavesLeft)
         {
-            float full = level.GateHealth * siege.TrunkGates;
+            float full = level.GateHealth * siege.TrunkGates + siege.GateBonus;
             if (siege.TrunkGates == 0 || siege.GatesLeft >= full)
             {
                 return -1;
@@ -471,7 +503,7 @@ namespace Game.Balance
 
             int wrecked = (siege.DefenceGate <= 0f ? 1 : 0) + (siege.TrunkGates > 1 && siege.RestGates <= 0f ? siege.TrunkGates - 1 : 0);
             float missing = full - siege.GatesLeft;
-            float repairable = Math.Max(0f, missing - wrecked * level.GateHealth);
+            float repairable = Math.Max(0f, missing - wrecked * level.GateHealth - (siege.DefenceGate <= 0f ? siege.GateBonus : 0f));
             int price = wrecked * level.GateRebuildCost + (int)Math.Ceiling(repairable * level.GateRepairCostPerHealth);
             float expected = ExpectedGateLoss(load, siege.TrunkGates);
             bool falls = siege.DefenceGate <= expected;

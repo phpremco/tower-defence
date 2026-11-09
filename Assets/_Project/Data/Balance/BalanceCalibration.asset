@@ -14,19 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels::Game.Levels.BalanceCalibration
   _towers:
   - TowerId: Cannon
-    Efficiency: 0.747
+    Efficiency: 0.706
   - TowerId: Laser
-    Efficiency: 0.719
+    Efficiency: 0.682
   - TowerId: PulseRifle
-    Efficiency: 0.806
+    Efficiency: 0.815
   - TowerId: Rocket
-    Efficiency: 0.916
+    Efficiency: 0.898
   _humanUtilisation: 0.34
   _botUtilisation: 0.27
-  _siegeFactor: 1.097
-  _repairDroneBusyShare: 0.75
-  _queueGuardShare: 0.5
-  _inputHash: 6c23462e
-  _measuredOn: 2026-11-08 23:42
+  _siegeFactor: 0.876
+  _repairDroneBusyShare: 0.67
+  _queueGuardShare: 0.3
+  _inputHash: fa88200b
+  _shapeHash: 601bc21e
+  _measuredOn: 2026-11-09 14:52
   _seeds: 1,2,3
   _step: 0.2

@@ -107,5 +107,6 @@
     "HarvesterShare": 0.5,
     "RepairDroneWear": 0.05000000074505806,
     "AttackDroneAfterTowers": 8,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

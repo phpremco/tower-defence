@@ -19,7 +19,7 @@ MonoBehaviour:
   _reach: 3.5
   _attackInterval: 0.19999999
   _targets: 3
-  _armourFactor: 0.3
+  _armourFactor: 0.2
   _magazine: 8
   _reloadSeconds: 1.2
   _color: {r: 1, g: 0.6, b: 0.25, a: 1}

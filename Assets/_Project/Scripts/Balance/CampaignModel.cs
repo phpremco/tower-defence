@@ -20,6 +20,9 @@ namespace Game.Balance
         public float GateRepairCostPerHealth;
         public int GateRebuildCost;
 
+        /// <summary>The gate as a tower (round 26): its in-level upgrade levels, each a gun at the queue and extra health; null without gates.</summary>
+        public TowerStats Gate;
+
         /// <summary>The base's health and the base shares that earn the stars (LevelDefinition), for the leak model.</summary>
         public float BaseHealth;
         public float[] StarFractions = { 0.5f, 0.9f };
@@ -99,6 +102,8 @@ namespace Game.Balance
                 GateHealth = facts.GateHealth * player.GateHealth,
                 GateRepairCostPerHealth = facts.GateRepairCostPerHealth,
                 GateRebuildCost = facts.GateRebuildCost,
+                Gate = facts.Gate,
+                GateCell = facts.Geometry?.DefenceGate,
                 BaseHealth = facts.BaseHealth + player.BaseHealthBonus,
                 StarFractions = facts.StarFractions,
                 BaseTurret = facts.BaseTurret,

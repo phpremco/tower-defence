@@ -40,7 +40,7 @@ namespace Game.Editor
 
         // Round 24, the armour pool: the share of a hit that works on armour. Light fire (pulses, beams, chill) only chips it,
         // medium shells and arcs do half, a shell or a blade strips it point for point, the Railgun's slug over-penetrates.
-        private const float LightFireArmourFactor = 0.3f;
+        private const float LightFireArmourFactor = 0.2f;
         private const float MediumFireArmourFactor = 0.5f;
         private const float PiercingArmourFactor = 1.5f;
 

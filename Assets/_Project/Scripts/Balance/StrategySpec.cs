@@ -78,6 +78,12 @@ namespace Game.Balance
         /// <summary>The attack drone once this many guns stand (0 never).</summary>
         public int AttackDroneAfterTowers = 8;
 
+        /// <summary>
+        /// Multiplies a gate upgrade's value per coin against the other steps (round 26, Remco: gates are a feature the plans should
+        /// use): its gun's gain plus the health bonus at the repair price; 0 never buys one. The bot in play uses the same knob.
+        /// </summary>
+        public float GateUpgradeBias;
+
         /// <summary>Selling a gun for a sky gun the preview calls for: a last resort, Psycho only for searched strategies (Remco).</summary>
         public bool AllowSell;
 
@@ -177,7 +183,8 @@ namespace Game.Balance
                 || Timing(HarvesterCover <= 0f ? 9f : HarvesterShare, 9f, 0.4f) != Timing(other.HarvesterCover <= 0f ? 9f : other.HarvesterShare, 9f, 0.4f)
                 || Timing(RepairDroneWear, 1f, 0.15f) != Timing(other.RepairDroneWear, 1f, 0.15f)
                 || (FieldCoverBelow <= 0f) != (other.FieldCoverBelow <= 0f)
-                || (AttackDroneAfterTowers <= 0) != (other.AttackDroneAfterTowers <= 0);
+                || (AttackDroneAfterTowers <= 0) != (other.AttackDroneAfterTowers <= 0)
+                || (GateUpgradeBias <= 0f) != (other.GateUpgradeBias <= 0f);
             differences += timingDiffers ? 1 : 0;
             return differences >= 2;
         }
@@ -213,6 +220,7 @@ namespace Game.Balance
             text.Append("  Harvester: ").Append(HarvesterCover > 0f ? string.Format(CultureInfo.InvariantCulture, "in the first {0:P0} of the level, once the guns hold the waves at hand with cover {1:0.00}", HarvesterShare, HarvesterCover) : "never").Append(".\n");
             text.Append("  Repair drone: ").Append(RepairDroneWear < 1f ? string.Format(CultureInfo.InvariantCulture, "once a gun or gate has lost {0:P0} of its health", RepairDroneWear) : "never").Append(".\n");
             text.Append("  Attack drone: ").Append(AttackDroneAfterTowers > 0 ? string.Format(CultureInfo.InvariantCulture, "once {0} guns stand", AttackDroneAfterTowers) : "never").Append(".\n");
+            text.Append("  Gate upgrades: ").Append(GateUpgradeBias > 0f ? string.Format(CultureInfo.InvariantCulture, "the defence gate's gun and health, weighed at {0:0.00}x against a tower step", GateUpgradeBias) : "never").Append(".\n");
             text.Append("  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.\n");
             text.Append("  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.\n");
             text.Append(AllowSell ? "  Selling: the weakest ground gun may go for a sky gun the preview asks for (Psycho).\n" : "  Selling: never.\n");

@@ -30,6 +30,10 @@ namespace Game.Balance
         public float WalkStream;
         public float WalkSingle;
         public float WalkAir;
+
+        /// <summary>What the guns kill on the road behind the defence gate (round 26): met only by what got past it.</summary>
+        public float BehindStream;
+        public float BehindSingle;
         public float QueueStream;
         public float QueueSingle;
         public float DoorStream;
@@ -53,7 +57,28 @@ namespace Game.Balance
         /// <summary>The hero's health carried from wave to wave (round 24): a siege wears it down, the quiet between waves heals it.</summary>
         public float HeroHealth;
 
+        /// <summary>The defence gate's in-level upgrade level (round 26) and the health its upgrades added to the gate's full health.</summary>
+        public int GateLevel;
+        public float GateBonus;
+
         public float GatesLeft => DefenceGate + RestGates;
+
+        /// <summary>The defence gate's full health with its upgrades.</summary>
+        public float DefenceGateFull(LevelInput level) => level.GateHealth + GateBonus;
+
+        /// <summary>Raises the defence gate a level (the step's price is the caller's): the health bonus is added to the gate standing.</summary>
+        public void UpgradeGate(LevelInput level)
+        {
+            if (!level.HasGateUpgrades || GateLevel + 1 >= level.Gate.Levels.Length)
+            {
+                return;
+            }
+
+            float bonus = level.Gate.Levels[GateLevel + 1].HealthBonus - level.Gate.Levels[GateLevel].HealthBonus;
+            GateLevel++;
+            GateBonus += bonus;
+            DefenceGate += DefenceGate > 0f ? bonus : 0f;
+        }
 
         public bool HeroUp => HeroDownLeft <= 0f;
 
@@ -69,14 +94,14 @@ namespace Game.Balance
         /// <summary>Every trunk gate back to full (a repair step).</summary>
         public void RepairGates(LevelInput level)
         {
-            DefenceGate = TrunkGates > 0 ? level.GateHealth : 0f;
+            DefenceGate = TrunkGates > 0 ? DefenceGateFull(level) : 0f;
             RestGates = TrunkGates > 1 ? level.GateHealth * (TrunkGates - 1) : 0f;
         }
 
         /// <summary>Restores <paramref name="budget"/> health: the defence gate first, then the other gates, then the base (the repair drone).</summary>
         public float Restore(LevelInput level, float budget)
         {
-            float gate = TrunkGates > 0 ? Math.Min(budget, level.GateHealth - DefenceGate) : 0f;
+            float gate = TrunkGates > 0 ? Math.Min(budget, DefenceGateFull(level) - DefenceGate) : 0f;
             DefenceGate += gate;
             budget -= gate;
             float rest = TrunkGates > 1 ? Math.Min(budget, level.GateHealth * (TrunkGates - 1) - RestGates) : 0f;
@@ -106,21 +131,44 @@ namespace Game.Balance
         /// Adds one standing gun to the guards: what it kills on the walk from its spot (the cover without the gate's hold), and its
         /// damage per second at the queue when it reaches the defence gate and at the doorstep when it reaches the base.
         /// <paramref name="efficiency"/> below zero takes the tower's calibrated value; <paramref name="slow"/> is a slow field's gain.
+        /// Round 26: only the approach before the defence gate is walked while it stands, so a gun's walk kill is its capacity at
+        /// the share of its cover that lies before the gate (<see cref="SpotCover.ApproachShare"/>); the share behind the gate
+        /// meets what gets through (<see cref="SiegeGuards.BehindStream"/>), and the queue is the siege's at full rate.
         /// </summary>
-        public static void AddTower(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules, int towerIndex, int towerLevel, SpotCover cover, float efficiency, float slow)
+        public static void AddTower(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules, int towerIndex, int towerLevel, SpotCover cover, float efficiency, float slow) =>
+            AddTower(ref guards, level, load, rules, level.Towers[towerIndex], towerLevel, cover, efficiency, slow);
+
+        /// <summary>The defence gate's gun as a guard (round 26): at the queue by definition, nothing at level zero.</summary>
+        public static void AddGate(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules, int gateLevel)
+        {
+            if (!level.HasGateUpgrades || gateLevel <= 0 || gateLevel >= level.Gate.Levels.Length)
+            {
+                return;
+            }
+
+            SpotCover cover = PlanEvaluator.CoverOf(level, level.GateCell.Value, level.Gate.Levels[gateLevel].Range);
+            cover.Gate = true;
+            AddTower(ref guards, level, load, rules, level.Gate, gateLevel, cover, -1f, 1f);
+        }
+
+        /// <summary>As <see cref="AddTower(ref SiegeGuards, LevelInput, WaveLoad, BalanceRules, int, int, SpotCover, float, float)"/> for a tower outside the level's list.</summary>
+        public static void AddTower(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules, TowerStats tower, int towerLevel, SpotCover cover, float efficiency, float slow)
         {
             SpotCover walk = cover;
             walk.Gate = false;
-            Ledger.Option option = Ledger.Capacity(level, load, rules, towerIndex, towerLevel, walk, efficiency);
-            guards.WalkStream += option.Stream * slow;
-            guards.WalkSingle += option.Single * slow;
+            Ledger.Option option = Ledger.Capacity(level, load, rules, tower, towerLevel, walk, efficiency);
+            float approach = cover.ApproachShare;
+            float behind = cover.BehindShare;
+            guards.WalkStream += option.Stream * slow * approach;
+            guards.WalkSingle += option.Single * slow * approach;
+            guards.BehindStream += option.Stream * slow * behind;
+            guards.BehindSingle += option.Single * slow * behind;
             guards.WalkAir += option.Air;
             if (!cover.Gate && !cover.Base)
             {
                 return;
             }
 
-            TowerStats tower = level.Towers[towerIndex];
             Dps(level, load, rules, tower, towerLevel, efficiency >= 0f ? efficiency : tower.Efficiency, out float stream, out float single, out float air);
             if (cover.Gate)
             {
@@ -201,6 +249,9 @@ namespace Game.Balance
                 line.GateDamage += gate1 + gate2;
             }
 
+            // The road behind the defence gate: the guns that reach it meet what got through (nothing while the gate held).
+            stream = Math.Max(0f, stream - guards.BehindStream);
+            bosses = Math.Max(0f, bosses - guards.BehindSingle);
             line.RestLeak = stream + bosses;
 
             // The other trunk gates: nothing shoots there but the hero, fallen back from his wrecked gate.
@@ -258,7 +309,9 @@ namespace Game.Balance
         // One fight at one structure: the attackers hammer it at their strike (times the siege factor) while the guard guns and the
         // hero kill them. The hero in front of the structure takes his guard share of the hammer instead of it, and goes down when
         // his health is gone; from then on the structure takes the whole hammer. Returns the health the structure's fall let
-        // through (zero when the leak was cleared), and takes the damage off the structure.
+        // through (zero when the leak was cleared), and takes the damage off the structure. A siege runs without a clock: a
+        // round-26 trial of capping a fight at the wave's length (the rest standing into the next wave) dropped the verdict
+        // agreement from 83 % to 60 %, so what the guards cannot clear is counted as a fall.
         private static float Fight(float health, float attackers, float strike, float guardDps, float heroDps, HeroStats hero, BalanceRules rules, ref float structure, ref float heroHealth, ref bool fell, out float damage)
         {
             damage = 0f;
@@ -279,8 +332,9 @@ namespace Game.Balance
 
             // He goes down when the health he carries into this fight (round 24: worn by the sieges before it) is spent.
             bool guarded = heroDps > 0f && hero != null;
-            float heroDown = guarded && hero.GuardShare * hammer > 0f ? heroHealth / (hero.GuardShare * hammer) : float.PositiveInfinity;
-            float shield = guarded ? 1f - hero.GuardShare : 1f;
+            float guardShare = guarded ? hero.HammerShare : 0f;
+            float heroDown = guarded && guardShare * hammer > 0f ? heroHealth / (guardShare * hammer) : float.PositiveInfinity;
+            float shield = guarded ? 1f - guardShare : 1f;
             float killAt;
             if (kill <= 0f)
             {
@@ -295,13 +349,14 @@ namespace Game.Balance
                 killAt = guardDps > 0f ? heroDown + (health - kill * heroDown) / guardDps : float.PositiveInfinity;
             }
 
-            // The structure falls while the hero still shields it, or after he is down.
+            // The structure falls while the hero still shields it, or after he is down (never while a blocking hero stands).
             float shielded = structure - hammer * shield * heroDown;
-            float breakAt = shielded <= 0f || float.IsInfinity(heroDown) ? structure / (hammer * shield) : heroDown + shielded / hammer;
+            float breakAt = shield <= 0f && float.IsInfinity(heroDown) ? float.PositiveInfinity
+                : shielded <= 0f || float.IsInfinity(heroDown) ? structure / (hammer * shield) : heroDown + shielded / hammer;
             float seconds = Math.Min(killAt, breakAt);
             if (guarded)
             {
-                heroHealth = Math.Max(0f, heroHealth - hero.GuardShare * hammer * Math.Min(seconds, heroDown));
+                heroHealth = Math.Max(0f, heroHealth - guardShare * hammer * Math.Min(seconds, heroDown));
                 if (heroDown < seconds)
                 {
                     fell = true;

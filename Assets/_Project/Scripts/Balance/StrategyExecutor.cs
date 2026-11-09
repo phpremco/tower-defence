@@ -61,6 +61,10 @@ namespace Game.Balance
             public int MinesThisWave;
             public int FieldWave = -1;
             public bool Air;
+
+            /// <summary>The defence gate's upgrade level this wave (round 26), from the evaluator's siege state; its gun counts in every cover.</summary>
+            public int GateLevel;
+            public PlanEvaluator.PolicyView View;
         }
 
         /// <summary>Judges a strategy on paper; the outcome's plan is the build order it took.</summary>
@@ -163,6 +167,9 @@ namespace Game.Balance
                 context.MinesThisWave = 0;
             }
 
+            context.View = view;
+            context.GateLevel = view.Siege != null ? view.Siege.GateLevel : 0;
+
             // Repairs by the bots' rule: the evaluator takes the step only when the gate would fall or a hit point is cheaper to restore.
             steps.Add(new PlanStep { Kind = PlanStep.Repair, Item = PlanStep.Gates });
 
@@ -249,7 +256,12 @@ namespace Game.Balance
                 }
 
                 Take(step, price);
-                if (step.Kind == PlanStep.Build)
+                if (step.Kind == PlanStep.GateUpgrade)
+                {
+                    // The evaluator raises the siege state when it pays the step; the rest of this wave's choices see the new gun.
+                    context.GateLevel++;
+                }
+                else if (step.Kind == PlanStep.Build)
                 {
                     standing.Add((tower, 0, cell));
                     used.Add(Key(cell));
@@ -308,6 +320,31 @@ namespace Game.Balance
                     price = stats.Levels[l + 1].Cost;
                     tower = t;
                     cell = c;
+                }
+            }
+
+            // The defence gate's next level (round 26): its gun's gain per coin, the health bonus credited at the repair price, the
+            // strategy's own weight on it; the gate stands in front of the queue, so no spot quality applies.
+            bool gateStands = context.View != null && context.View.Siege != null && context.View.Siege.TrunkGates > 0 && context.View.Siege.DefenceGate > 0f;
+            int gatePrice = context.Spec.GateUpgradeBias > 0f && gateStands && level.HasGateUpgrades && context.GateLevel + 1 < level.Gate.Levels.Length ? level.Gate.Levels[context.GateLevel + 1].Cost : -1;
+            if (gatePrice > 0 && gatePrice <= reach && standing.Count >= spec.TowersBeforeUpgrades)
+            {
+                context.GateLevel++;
+                float gain = Gain(context, standing, wave, now, nowGround, nowAir);
+                context.GateLevel--;
+                int worth = PlanEvaluator.GateUpgradeWorth(level, context.GateLevel);
+                float value = gain / Math.Max(1, gatePrice - worth) * spec.UpgradeBias * spec.GateUpgradeBias;
+                if (gatePrice > purse)
+                {
+                    waitValue = Math.Max(waitValue, value);
+                }
+                else if (value > bestValue)
+                {
+                    bestValue = value;
+                    step = new PlanStep { Kind = PlanStep.GateUpgrade, Item = PlanStep.Gates, X = level.GateCell.Value.X, Y = level.GateCell.Value.Y };
+                    price = gatePrice;
+                    tower = -1;
+                    cell = level.GateCell.Value;
                 }
             }
 
@@ -543,13 +580,16 @@ namespace Game.Balance
 
         /// <summary>The pressure of a wave against a standing set from its own spots: ground from every gun, air from the sky guns only (as the bot judges).</summary>
         private static (float Ground, float Air) Pressure(Context context, List<(int, int, Cell)> standing, int wave) =>
-            Pressure(context.Level, context.Loads[wave], context.Rules, standing, context.Sky);
+            Pressure(context.Level, context.Loads[wave], context.Rules, standing, context.Sky, context.GateLevel);
 
-        public static (float Ground, float Air) Pressure(LevelInput level, WaveLoad load, BalanceRules rules, List<(int Tower, int Level, Cell Cell)> standing, List<int> sky)
+        public static (float Ground, float Air) Pressure(LevelInput level, WaveLoad load, BalanceRules rules, List<(int Tower, int Level, Cell Cell)> standing, List<int> sky, int gateLevel = 0)
         {
             float stream = Ledger.HeroStream(level, load, rules);
             float single = Ledger.HeroSingle(level, load, rules);
             float air = 0f;
+            Ledger.Option gate = Ledger.GateCapacity(level, load, rules, gateLevel);
+            stream += gate.Stream;
+            single += gate.Single;
             foreach ((int t, int l, Cell cell) in standing)
             {
                 TowerStats stats = level.Towers[t];

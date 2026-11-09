@@ -9,37 +9,37 @@
             "X": [
                 7,
                 7,
-                6,
                 20,
+                21,
                 6,
-                21
+                6
             ],
             "Y": [
                 5,
                 4,
-                6,
                 5,
                 5,
-                5
+                5,
+                6
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
-                6,
                 7,
                 7,
                 20,
+                20,
                 6,
-                20
+                6
             ],
             "Y": [
-                6,
                 5,
                 4,
                 5,
-                5,
-                4
+                4,
+                6,
+                5
             ]
         },
         {
@@ -65,17 +65,17 @@
             "Tower": "Rocket",
             "X": [
                 34,
+                34,
                 33,
                 35,
                 33,
-                34,
                 35
             ],
             "Y": [
                 4,
-                4,
-                4,
                 5,
+                4,
+                4,
                 5,
                 5
             ]
@@ -83,29 +83,35 @@
     ],
     "Weights": [
         {
-            "Threat": "swarm",
+            "Threat": "pack",
             "Tower": "Cannon",
-            "Weight": 0.9699952006340027
+            "Weight": 1.7200005054473877
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 0.6067433953285217
         },
         {
             "Threat": "air",
             "Tower": "Laser",
-            "Weight": 1.8816901445388794
+            "Weight": 1.2589845657348633
         },
         {
             "Threat": "boss",
-            "Tower": "Cannon",
-            "Weight": 0.7065183520317078
+            "Tower": "PulseRifle",
+            "Weight": 1.8367012739181519
         }
     ],
-    "UpgradeBias": 1.1799999475479126,
-    "TowersBeforeUpgrades": 3,
+    "UpgradeBias": 0.6399999856948853,
+    "TowersBeforeUpgrades": 2,
     "MineCoverBelow": 1.0,
-    "MineOnBoss": false,
-    "FieldCoverBelow": 1.2000000476837158,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 0.0,
     "HarvesterCover": 1.2000000476837158,
     "HarvesterShare": 0.5,
-    "RepairDroneWear": 0.05000000074505806,
-    "AttackDroneAfterTowers": 0,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 6,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

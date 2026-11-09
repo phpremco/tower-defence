@@ -4162,3 +4162,88 @@ runs of this round were measurements of the tooling on identical data, and the d
 test. (c) With the stalemate rule a gate out of reach no longer soft-locks a level; Dr. Voss could still hint at a straggler.
 (d) A worker's memory grows over a long run (to about 4 GB after a dozen runs): if a full measure on five workers pages,
 `TD_WORKERS=4`.
+
+## Round 26: the calibration's residuals, the blocking hero, light fire 0.2, the gate-upgrade step (2026-11-09)
+
+Not committed (the curator commits). Docs/BALANCE.md "Approach cover, the blocking hero and the gate-upgrade step"; Docs/COMMANDS.md
+"Round 26". Save: `progress.json` MD5 ae9223b8 before every run and after each (the workers' clones have their own save folders).
+Curator defaults used without an answer at the start (armour factors unchanged, Spencer 300 + regen, a gate-upgrade step for bot
+and model); Remco's answers came mid-round: light fire against armour 0.3 -> 0.2 (done, in generator and assets), Spencer stays,
+gate upgrades yes (built).
+
+1. **Why the fit misses the bar (goal 1, the forensic part).** Fit on the committed records (the curator's refreshed C1_03): 82 % /
+   0.65 (self 82 %, mono 96 %); 122 disagreements: 51 "paper falls, game won" (C1_01 Hard 14, C1_03 Psycho 9, C1_06 Hard 5), 32
+   "paper survives, game lost at the last wave" (C1_02 Easy 14: the final Brood Mother wave), 39 "paper survives, game lost earlier"
+   (C1_05 Easy/Medium 13). Two runs were traced on a worker (`workers.sh run replay "cells=1:0:1"`, the clone's
+   `Logs/probe_trace.txt`) and the fit's wave table was read per cell (`calibration_waves.txt`, awk). Findings:
+   - *C1_02 Easy strategy1 (paper margin 1.08, game lost at the finale):* three towers at (5,7), (7,6), (6,5), which stand **behind**
+     the defence gate (3,10) at road index 11 of 96 (`geometry_dump.txt`): their reach covers the gate's queue and the road after it,
+     almost nothing before it. The paper credited them with the whole spawn span as walk cover, so no leak; in play every wave
+     reached the gate, the hero (300 health, a blocker the creatures bite directly, `HeroTarget.BlocksGround`) fell at wave 7 and was
+     down for 120 s in waves 7-9 and 11-12, the gates took 1119 then 1840 damage and the boss walked to the base. The paper's
+     `GuardShare` 0.4 let him take 40 % of the hammer; in play he takes all of it from the attackers that reach him first.
+   - *C1_01 (42 of the 51 "paper falls, game won"):* the defence gate (14,5) is at road index 14 of 108; the mono rows and the
+     strategies stand on the serpentine behind it ((5,14), (31,8): index 40-72). In play gate 1 falls at wave 6-7 and from then on
+     everything dies on the long stretch behind it with zero gate or base damage (C1_01 Hard mono Pulse: 4212 of 4244 dealt at wave
+     10, gate loss 0); the paper sent the leak to "the rest gates, where nothing shoots but the hero" and felled gates and base in one
+     wave. Towers behind the defence gate were worth nothing to the siege model.
+   - *Per-type realised share of the nominal rate* (unsaturated waves, boosts not removed): Cannon 0.70-0.98 (splash), Gun Turret
+     about 0.40 flat over creature health except 0.23 under 20 health, Laser about 0.30. So a per-type efficiency is the right shape; a
+     "kill waste" term (one hit lost per kill, meanHealth/(meanHealth+hit)) fitted the swarm end but made the verdicts worse (81 % /
+     0.67, 101 "paper falls, game won") and was dropped. A **siege clock** (a fight capped at the wave's length, the rest standing into
+     the next wave) was tried and dropped: 60 % / 0.73, 234 "paper survives, game lost": the game's sieges are deadlier than a
+     clocked model, not gentler.
+   - Pessimism and optimism per cell (a paper leak with no loss in play; a paper hold with a loss in play) are bimodal by level: C1_04
+     Easy/Medium and C1_06 Easy pessimistic in 90-100 % of the leaky waves, C1_05 optimistic in 80-97 %. C1_05's early gate (index 17
+     of 121) with fast Rollers and swarms against C1_04's and C1_06's late trunk gate (index 100 of 107, 92 of 117) is the geometry the
+     model gets wrong: the quality of the walk, not the quantity of damage.
+2. **Model terms built (goal 1, the fix part):** (a) `SpotCover.ApproachPass` / `BehindPass` (`LevelGeometry`: route samples past the
+   defence gate on their road are "behind"; `Ideal` is all approach): a gun's walk kill is its capacity at its approach share, the
+   behind share is `SiegeGuards.BehindStream/BehindSingle` and meets what gets past the defence gate (`Leak.Resolve`), the queue is
+   the siege's as before. (b) `HeroStats.Blocks` (from `HeroDefinition.Flies`): a hero on foot takes the whole hammer while he stands
+   (`HammerShare` 1, the structure none), a flying hero his `GuardShare`. Both in `InputHash` and in the shape. **Fit after the terms:
+   81 % / 0.68 (mono 93 %)** on the full 696 runs (83 % / 0.69 on records with one cell thin): the agreement unchanged within noise,
+   Spearman +0.03, far below the bar. The paper is now mostly pessimistic (101 "falls, game won" against 41 "survives, game lost") and
+   the searched strategies fall on paper in nearly every cell (the impact baseline): the next term is the walk's quality by geometry
+   (the C1_01/C1_04/C1_06 long stretches against C1_05's early gate), not another constant.
+3. **Applied by override** (`apply-force`, the warning in the result): Cannon 0.701, Laser 0.697, PulseRifle 0.788, Rocket 0.923, queue
+   guard 0.50, siege 0.902, repair-drone busy 0.666; `BalanceCalibration.asset`. The impact baseline was taken on it (light fire 0.3).
+4. **Light fire 0.3 -> 0.2 (Remco's answer):** `ProjectGenerator.LightFireArmourFactor` 0.2, `ApplyRoles.Run` wrote Gun Turret, Laser,
+   Cryo, Cryo Beam, Blockade gun, Base Turret and the hero's blaster. Impact (6 s, `impact.txt`): 8 cells flagged
+   (`cells=0:1,1:0,1:1,2:1,3:0,4:1,5:0,5:1`). On the paper of the current model: C1_01 Medium's one holding plan and naive fall;
+   C1_02 Easy 5/5 -> 4/5 plans; C1_03 Medium 5/5 -> 0/5 (the plans there lean on Gun Turrets against armour); C1_04 Easy's plans keep
+   their wins at 2 stars instead of 3; C1_05 Medium and C1_06 Medium margins +0.16/+0.22; Psycho above Hard ordered everywhere but
+   C1_02 (0.13 against 0.14, as before); the upgrade rule met for every gun. The play verdict is the chain below.
+5. **Gate-upgrade step (Remco yes).** Data side: `TowerLevelStats.HealthBonus`, `LevelFacts.Gate` / `LevelInput.Gate` (the Blockade as a
+   tower: level 1 a 6-damage gun at 0.45 s and +300 health for 90, level 2 11 at 0.35 s and +500 for 150), `LevelInput.GateCell` (the
+   geometry's defence gate), `HasGateUpgrades`. Model: `SiegeState.GateLevel/GateBonus/UpgradeGate` (the bonus lands on the standing
+   gate, repairs restore to the upgraded full), `Ledger.GateCapacity` (the gate's gun from the gate cell, armour factor 0.2) in the
+   pressure (`StrategyExecutor.Pressure`, `Ledger.PressureOf` for the bot) and as a queue guard (`Leak.AddGate`), `PlanStep.GateUpgrade`
+   ("gate", item "gates") priced by `PlanEvaluator.GateUpgradePrice` and valued by the same rule as a tower upgrade: the gun's cover
+   gain per coin, the health bonus credited at the repair price of that health (`GateUpgradeWorth`), times `UpgradeBias` and the
+   strategy's new `GateUpgradeBias` (0 never; the search samples {0, 0, 0.8, 1.2}, mutates and copies it, `DistinctFrom` counts it as
+   a timing difference, `Describe` prints it). Acceptance: a gate upgrade is one of the game's features (`AcceptanceRules`, "uses two
+   of"). Play: the creative and adaptive bots weigh the defence gate's next level beside the gun upgrades with the same ledger
+   (`BalanceProbeTests`, `StandingWithGate` so its gun counts in the cover), a scripted plan's "gate" step upgrades `watch.Gate`; the
+   move is recorded as kind `gate`, the README says "upgrade the defence gate". Test:
+   `LeakModelTests.GateUpgrade_AddsHealthAndAGunAtTheQueue` (7/7 in the class).
+6. **Pipeline (running at the hand-over):** `bash Tools/PlayTest/round26_chain.sh > Tools/PlayTest/round26_chain.log` (started 14:33:
+   measure on 5 workers, fit, apply-force, solve, search, replay, acceptance, readme). The yardstick and the plans are re-measured
+   against the new shape and 0.2; read `acceptance.txt` when the log ends with `EXIT 0`. Measure: 432 runs on 5 workers in 18 min 57 s, 0 probe errors, save untouched; fit on them 82 % / 0.69 (mono 94 %), applied by override (Cannon 0.706, Laser 0.682, PulseRifle 0.815, Rocket 0.898, queue guard 0.30, siege 0.876); with light fire at 0.2 the mono Gun Turret row wins only C1_01 Easy/Medium/Hard and C1_02 Easy (3/3 each), 1/3 on C1_04 Easy, nowhere else. The finale probe (goal 3) was not run; the
+   continent-1 tuning passes (goal 2) wait for the chain's acceptance.
+
+**Design questions for Remco (round 26).**
+1. The calibration bar (90 % / 0.8) is not met by constants: the paper is wrong about *where* a walk kills (an early gate with fast
+   swarms leaks; a long stretch behind a fallen gate kills everything). Options: a per-level "walk quality" fitted term (one number
+   per level from the records: honest, not a mechanic) or a route-sampled kill model (each creature's exposure gun by gun along the
+   road, about a minute of CPU per search) that replaces `Span + pass`. A fast fitted level factor, or the slower physical model?
+2. With light fire at 0.2 the paper says C1_03 Medium's plans fall and C1_04 Easy drops to 2 stars: if the replay agrees, those cells
+   get the runners/swarm lever (the Cannon rows are not the problem there) or a Cannon earlier in the unlock flow.
+3. The gate upgrade's health bonus is valued at the repair price of that health. Is a gate level also worth something as *time* (a
+   longer hold at the queue for every gun), or is the gun plus the health the whole value?
+
+**Commands to continue (editor_status first).** 1. When `round26_chain.log` ends with `EXIT 0`: `acceptance.txt`, `calibration.txt`
+(the hold-out line), `Plans/README.md`; check `Assets/InitTestScene*` and the save MD5 (ae9223b8). 2. `balance_pipeline.sh snapshot`
+on the new data, then tune by impact and `replay_cells.sh`. 3. Finale probe: `run_tests --mode PlayMode --filter
+Measure_ContinentFinales_AsPlayed --include_explicit true --async_tests true`, then `ContinentFinaleTests`, then `balance_pipeline.sh
+finale`. 4. `balance_pipeline.sh droneprice` (the drone test fails until it runs). 5. The whole EditMode suite, async.

@@ -7,11 +7,11 @@
         {
             "Tower": "PulseRifle",
             "X": [
+                5,
                 7,
                 5,
-                5,
+                7,
                 6,
-                7,
                 8
             ],
             "Y": [
@@ -27,18 +27,18 @@
             "Tower": "Cannon",
             "X": [
                 5,
-                30,
+                5,
                 30,
                 31,
-                5,
+                30,
                 4
             ],
             "Y": [
                 7,
-                15,
-                16,
-                16,
                 6,
+                16,
+                16,
+                15,
                 7
             ]
         },
@@ -47,51 +47,37 @@
             "X": [
                 7,
                 6,
-                7,
-                4,
                 5,
-                8
+                8,
+                7,
+                4
             ],
             "Y": [
                 6,
                 5,
+                7,
+                7,
                 5,
-                7,
-                7,
                 7
             ]
         }
     ],
     "Weights": [
         {
-            "Threat": "swarm",
-            "Tower": "Laser",
-            "Weight": 1.5369995832443237
-        },
-        {
             "Threat": "pack",
             "Tower": "Cannon",
-            "Weight": 1.1631669998168945
-        },
-        {
-            "Threat": "air",
-            "Tower": "Cannon",
-            "Weight": 1.7900829315185547
-        },
-        {
-            "Threat": "boss",
-            "Tower": "Laser",
-            "Weight": 1.028069019317627
+            "Weight": 1.4280534982681274
         }
     ],
-    "UpgradeBias": 0.6100000143051147,
-    "TowersBeforeUpgrades": 1,
+    "UpgradeBias": 1.309999942779541,
+    "TowersBeforeUpgrades": 2,
     "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 0.0,
-    "HarvesterShare": 0.6000000238418579,
+    "HarvesterCover": 1.5,
+    "HarvesterShare": 0.4000000059604645,
     "RepairDroneWear": 0.05000000074505806,
-    "AttackDroneAfterTowers": 0,
+    "AttackDroneAfterTowers": 6,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

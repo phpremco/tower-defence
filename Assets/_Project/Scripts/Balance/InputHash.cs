@@ -44,7 +44,7 @@ namespace Game.Balance
                 text.Append(u.Id).Append(u.Kind).Append(u.TowerId).Append(F(u.BonusPerLevel)).Append(u.Costs.Length);
             }
 
-            text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds)).Append(F(model.Hero.MaxHealth)).Append(F(model.Hero.GuardShare)).Append(F(model.Hero.ReviveSeconds));
+            text.Append(F(model.Hero.BladeDamage)).Append(F(model.Hero.BladeInterval)).Append(F(model.Hero.GunDamage)).Append(F(model.Hero.GunInterval)).Append(model.Hero.Magazine).Append(F(model.Hero.ReloadSeconds)).Append(F(model.Hero.MaxHealth)).Append(F(model.Hero.GuardShare)).Append(model.Hero.Blocks).Append(F(model.Hero.ReviveSeconds));
             text.Append(F(model.Hero.BladeArmourFactor)).Append(F(model.Hero.GunArmourFactor)).Append(F(model.Hero.PulseDamage)).Append(F(model.Hero.PulseCooldown)).Append(F(model.Hero.PulseArmourFactor)).Append(F(model.Hero.RegenPerSecond)).Append(F(model.Hero.RegenDelaySeconds));
             foreach (LevelFacts facts in model.Facts)
             {

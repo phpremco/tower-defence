@@ -29,17 +29,17 @@
                 32,
                 33,
                 33,
-                32,
+                33,
                 29,
-                33
+                32
             ],
             "Y": [
                 6,
                 6,
+                9,
                 10,
-                5,
                 6,
-                9
+                5
             ]
         },
         {
@@ -68,8 +68,8 @@
                 33,
                 34,
                 34,
-                32,
-                31
+                31,
+                32
             ],
             "Y": [
                 9,
@@ -83,34 +83,20 @@
     ],
     "Weights": [
         {
-            "Threat": "pack",
-            "Tower": "Laser",
-            "Weight": 1.1896278858184814
-        },
-        {
             "Threat": "plated",
-            "Tower": "Cannon",
-            "Weight": 2.3430473804473877
-        },
-        {
-            "Threat": "air",
             "Tower": "Laser",
-            "Weight": 1.872184157371521
-        },
-        {
-            "Threat": "boss",
-            "Tower": "Laser",
-            "Weight": 2.1543917655944824
+            "Weight": 1.1247434616088867
         }
     ],
-    "UpgradeBias": 1.5199999809265137,
-    "TowersBeforeUpgrades": 1,
-    "MineCoverBelow": 0.0,
+    "UpgradeBias": 1.7799999713897705,
+    "TowersBeforeUpgrades": 4,
+    "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": true,
-    "FieldCoverBelow": 0.0,
-    "HarvesterCover": 1.5,
-    "HarvesterShare": 0.4000000059604645,
-    "RepairDroneWear": 0.05000000074505806,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.5,
     "AttackDroneAfterTowers": 8,
+    "GateUpgradeBias": 0.0,
     "AllowSell": false
 }

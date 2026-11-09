@@ -40,7 +40,7 @@ namespace Game.Levels
             for (int i = 0; i < levels.Length; i++)
             {
                 TowerLevel level = tower.GetLevel(i);
-                levels[i] = new TowerLevelStats(level.Cost, level.Damage, level.Range, level.FireInterval, level.SlowFactor);
+                levels[i] = new TowerLevelStats(level.Cost, level.Damage, level.Range, level.FireInterval, level.SlowFactor, level.HealthBonus);
             }
 
             return new TowerStats
@@ -366,6 +366,7 @@ namespace Game.Levels
                 GateHealth = gateHealth,
                 GateRepairCostPerHealth = blockade != null ? blockade.RepairCostPerHealth : 0f,
                 GateRebuildCost = blockade != null ? blockade.BuildCost : 0,
+                Gate = blockade != null ? Stats(blockade) : null,
                 BaseHealth = level.BaseHealth,
                 StarFractions = level.StarBaseHealthFractions,
                 BaseTurret = level.BaseTurret != null ? Stats(level.BaseTurret) : null,
@@ -391,6 +392,7 @@ namespace Game.Levels
                     ReloadSeconds = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ReloadSeconds : 0f,
                     MaxHealth = level.Hero.MaxHealth,
                     GuardShare = level.Hero.GuardShare,
+                    Blocks = !level.Hero.Flies,
                     ReviveSeconds = level.Hero.ReviveSeconds,
                     BladeArmourFactor = level.Hero.Weapon.ArmourFactor,
                     GunArmourFactor = level.Hero.RangedWeapon != null ? level.Hero.RangedWeapon.ArmourFactor : 1f,
