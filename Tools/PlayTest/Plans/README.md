@@ -1,6 +1,6 @@
 # Winning plans per level and difficulty
 
-Written from the stage-B replay (`Tools/PlayTest/plan_records.txt`, `bash Tools/PlayTest/balance_pipeline.sh readme`) on 2026-11-09 05:06; calibration 2026-11-08 23:42, seeds 1,2,3, step 0.2, inputs 6c23462e (current).
+Written from the stage-B replay (`Tools/PlayTest/plan_records.txt`, `bash Tools/PlayTest/balance_pipeline.sh readme`) on 2026-11-09 07:56; calibration 2026-11-08 23:42, seeds 1,2,3, step 0.2, inputs 6c23462e (current).
 
 A plan counts as a winner only when it won in play on most seeds (the paper verdict is a pre-screen). Each plan is a priority list: a step is
 taken from its wave on, as soon as the money is there (an earlier step blocks the later ones). Cells are (x,y) on the level grid. The obvious
@@ -527,7 +527,7 @@ No replayed plan won in play. The best, **Level_C1_03_2_strategy1**, won 0/3 and
 
 Best spots per tower: Gun Turret (12,11) (13,11) (14,11); Cannon (16,11) (12,10) (12,11); Laser Turret (13,10) (9,10) (11,10); Flak Turret (32,10) (33,10) (34,7).
 
-**Level_C1_03_3_strategy1** (won 2/3 seeds, 3.0 stars, base 800 left, repair drone)
+**Level_C1_03_3_strategy1** (won 3/3 seeds, 3.0 stars, base 796 left, repair drone)
 
 ```
   Towers per threat: swarm: Gun Turret; pack: Gun Turret; plated: whatever the ledger rates best; air: whatever the ledger rates best; boss: Laser Turret.
@@ -585,13 +585,13 @@ Best spots per tower: Gun Turret (12,11) (13,11) (14,11); Cannon (16,11) (12,10)
   from wave  7: upgrade the tower at (13,11); build Gun Turret at (16,11)
   from wave  8: upgrade the tower at (16,11)
   from wave  9: sell the tower at (12,11); build Flak Turret at (32,10); build Gun Turret at (12,11); upgrade the tower at (12,11)
-  from wave 10: build Gun Turret at (15,11); upgrade the tower at (15,11); build Gun Turret at (17,11); sell the tower at (17,11); build Flak Turret at (34,10)
-  from wave 11: upgrade the tower at (32,10); upgrade the tower at (34,10); upgrade the tower at (14,11)
-  from wave 12: sell the tower at (16,11); build Flak Turret at (35,7)
-  from wave 13: upgrade the tower at (12,10); build Gun Turret at (16,11); upgrade the tower at (16,11); build Gun Turret at (17,11); build Cannon at (13,10); build Gun Turret at (31,10); upgrade the tower at (31,10)
+  from wave 10: build Gun Turret at (15,11); upgrade the tower at (14,11); sell the tower at (15,11); build Flak Turret at (34,10)
+  from wave 11: sell the tower at (16,11); build Flak Turret at (35,7); buy the RepairDrone; build Gun Turret at (16,11)
+  from wave 12: upgrade the tower at (16,11); upgrade the tower at (32,10)
+  from wave 13: build Gun Turret at (15,11); upgrade the tower at (15,11); build Gun Turret at (17,11); upgrade the tower at (12,10); build Gun Turret at (13,10); upgrade the tower at (13,10); build Gun Turret at (31,10)
   from wave 14: upgrade the tower at (31,10); upgrade the tower at (17,11)
-  from wave 15: upgrade the tower at (12,11); build Gun Turret at (14,10); upgrade the tower at (14,10); sell the tower at (13,10); build Flak Turret at (33,10)
-  from wave 16: buy the RepairDrone; build Gun Turret at (13,10); upgrade the tower at (13,10); upgrade the tower at (13,10); upgrade the tower at (14,10); upgrade the tower at (15,11); upgrade the tower at (16,11); build Cannon at (32,12)
+  from wave 15: build Gun Turret at (14,10); upgrade the tower at (14,10); build Gun Turret at (14,12); upgrade the tower at (14,12); build Gun Turret at (31,11)
+  from wave 16: upgrade the tower at (31,11); build Gun Turret at (31,11); upgrade the tower at (31,11); upgrade the tower at (13,10); upgrade the tower at (31,10); upgrade the tower at (31,11); upgrade the tower at (14,10); upgrade the tower at (14,12); upgrade the tower at (12,11); upgrade the tower at (15,11)
 ```
 
 
