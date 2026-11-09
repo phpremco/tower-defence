@@ -31,7 +31,7 @@ namespace Game.Balance
             foreach (KeyValuePair<string, EnemyStats> pair in Sorted(model.Enemies))
             {
                 EnemyStats e = pair.Value;
-                text.Append(e.Id).Append(e.Layer).Append(F(e.Health)).Append(F(e.Armor)).Append(F(e.Speed)).Append(F(e.FightSpeed)).Append(e.Reward).Append(F(e.BlockadeDamage)).Append(F(e.AttackInterval)).Append(e.IsBoss).Append(F(e.MechanicLossSeconds));
+                text.Append(e.Id).Append(e.Layer).Append(F(e.Health)).Append(F(e.Armor)).Append(F(e.Speed)).Append(F(e.FightSpeed)).Append(e.Reward).Append(F(e.BlockadeDamage)).Append(F(e.AttackInterval)).Append(e.IsBoss).Append(F(e.MechanicLossSeconds)).Append(F(e.WardShare)).Append(F(e.SummonsPerSecond)).Append(F(e.SummonHealth)).Append(F(e.SummonArmor));
             }
 
             foreach (DifficultyStats d in model.Difficulties)

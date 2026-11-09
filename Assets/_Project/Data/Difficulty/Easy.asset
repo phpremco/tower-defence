@@ -21,3 +21,4 @@ MonoBehaviour:
   _structureDamageMultiplier: 0.6
   _incomeMultiplier: 0.8
   _startingMoneyMultiplier: 0.8
+  _bossHealthShare: 0.8

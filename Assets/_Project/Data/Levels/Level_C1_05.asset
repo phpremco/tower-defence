@@ -82,9 +82,9 @@ MonoBehaviour:
   - {x: 38, y: 8}
   - {x: 38, y: 9}
   _blockades:
-  - Cell: {x: 4, y: 7}
+  - Cell: {x: 10, y: 14}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 18, y: 9}
+  - Cell: {x: 23, y: 5}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   - Cell: {x: 30, y: 6}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
@@ -127,27 +127,27 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 5, y: 1}
     Kind: 1
+  - Cell: {x: 6, y: 7}
+    Kind: 7
+  - Cell: {x: 6, y: 9}
+    Kind: 7
   - Cell: {x: 6, y: 12}
     Kind: 7
-  - Cell: {x: 6, y: 14}
+  - Cell: {x: 6, y: 13}
     Kind: 7
-  - Cell: {x: 7, y: 0}
-    Kind: 1
-  - Cell: {x: 7, y: 1}
-    Kind: 1
-  - Cell: {x: 7, y: 12}
+  - Cell: {x: 7, y: 8}
+    Kind: 7
+  - Cell: {x: 7, y: 11}
     Kind: 7
   - Cell: {x: 7, y: 13}
     Kind: 7
+  - Cell: {x: 7, y: 14}
+    Kind: 7
   - Cell: {x: 8, y: 0}
     Kind: 1
-  - Cell: {x: 8, y: 7}
-    Kind: 7
-  - Cell: {x: 8, y: 8}
-    Kind: 7
-  - Cell: {x: 8, y: 12}
-    Kind: 7
-  - Cell: {x: 8, y: 13}
+  - Cell: {x: 8, y: 1}
+    Kind: 1
+  - Cell: {x: 13, y: 13}
     Kind: 7
   - Cell: {x: 13, y: 14}
     Kind: 7
@@ -161,7 +161,7 @@ MonoBehaviour:
     Kind: 7
   - Cell: {x: 14, y: 14}
     Kind: 7
-  - Cell: {x: 14, y: 15}
+  - Cell: {x: 15, y: 13}
     Kind: 7
   - Cell: {x: 15, y: 14}
     Kind: 7
@@ -173,23 +173,23 @@ MonoBehaviour:
     Kind: 1
   - Cell: {x: 32, y: 11}
     Kind: 1
-  - Cell: {x: 32, y: 12}
-    Kind: 1
   - Cell: {x: 32, y: 13}
     Kind: 1
-  - Cell: {x: 33, y: 12}
+  - Cell: {x: 32, y: 14}
     Kind: 1
-  - Cell: {x: 33, y: 14}
+  - Cell: {x: 33, y: 13}
     Kind: 1
-  - Cell: {x: 35, y: 11}
+  - Cell: {x: 35, y: 10}
     Kind: 2
-  - Cell: {x: 36, y: 10}
+  - Cell: {x: 35, y: 17}
     Kind: 2
   - Cell: {x: 36, y: 11}
     Kind: 2
   - Cell: {x: 36, y: 12}
     Kind: 2
   - Cell: {x: 36, y: 13}
+    Kind: 2
+  - Cell: {x: 36, y: 15}
     Kind: 2
   - Cell: {x: 36, y: 16}
     Kind: 2
@@ -217,13 +217,13 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 37, y: 19}
     Kind: 2
-  - Cell: {x: 38, y: 7}
-    Kind: 2
   - Cell: {x: 38, y: 11}
     Kind: 2
   - Cell: {x: 38, y: 12}
     Kind: 2
   - Cell: {x: 38, y: 13}
+    Kind: 2
+  - Cell: {x: 38, y: 14}
     Kind: 2
   - Cell: {x: 38, y: 15}
     Kind: 2
@@ -235,11 +235,11 @@ MonoBehaviour:
     Kind: 2
   - Cell: {x: 38, y: 19}
     Kind: 2
-  - Cell: {x: 38, y: 20}
+  - Cell: {x: 39, y: 7}
     Kind: 2
   - Cell: {x: 39, y: 11}
     Kind: 2
-  - Cell: {x: 39, y: 12}
+  - Cell: {x: 39, y: 17}
     Kind: 2
   - Cell: {x: 39, y: 18}
     Kind: 2
@@ -254,7 +254,7 @@ MonoBehaviour:
     Kind: 0
     Cell: {x: 0, y: 0}
   _nests:
-  - Cell: {x: 8, y: 8}
+  - Cell: {x: 7, y: 8}
     Element: 7
   - Cell: {x: 7, y: 13}
     Element: 7
@@ -264,10 +264,10 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0.1
   _balanceTargetScale:
-  - 0.87
-  - 0.757
-  - 0.757
-  - 0.757
+  - 0.66
+  - 0.57
+  - 0.57
+  - 0.5
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

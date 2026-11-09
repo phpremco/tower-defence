@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Frost Warden
   _layer: 1
   _flies: 0
-  _maxHealth: 1300
-  _armor: 0
-  _armorReduction: 0.6
+  _maxHealth: 10850
+  _armor: 1200
   _speed: 0.5
-  _reward: 312
+  _reward: 2364
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -40,7 +39,8 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: c6ee5c946241db64a81a11bcd7c111ca, type: 2}
   _boss: {fileID: 11400000, guid: 8391cd33dfc5d6f4f9cc2923c6ed9553, type: 2}
   _color: {r: 0.55, g: 0.75, b: 0.9, a: 1}
   _eyeColor: {r: 0.6, g: 0.9, b: 1, a: 1}

@@ -17,7 +17,6 @@ MonoBehaviour:
   _flies: 0
   _maxHealth: 300
   _armor: 0
-  _armorReduction: 0.6
   _speed: 0.6
   _reward: 19
   _baseDamage: 8

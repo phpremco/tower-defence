@@ -20,6 +20,9 @@ namespace Game.Balance
         public bool IsBoss;
         public bool Flies;
 
+        /// <summary>Share of the route already behind the group where it joins (a boss's escorts come out mid-road); zero for a normal spawn.</summary>
+        public float StartShare;
+
         public float Total => Health + Armour;
 
         /// <summary>Share of a weapon's damage that counts against this creature, by the weapon's armour factor (<see cref="ArmourMix.Share"/>).</summary>
@@ -127,6 +130,9 @@ namespace Game.Balance
 
         private static float Ratio(float health, float capacity) => capacity <= 0f ? float.PositiveInfinity : health / capacity;
 
+        /// <summary>Where a boss's escorts join its road on average: halfway down the walk they are spread over.</summary>
+        public const float SummonStartShare = 0.5f;
+
         public static WaveLoad Of(LevelInput level, WaveSpec wave, DifficultyStats difficulty, BalanceRules rules) => Of(level, wave, difficulty, rules, -1f);
 
         /// <summary>As above with the gates at <paramref name="gateHealth"/> each instead of the level's full gate health (the plan model's worn gates; below zero = full).</summary>
@@ -201,7 +207,36 @@ namespace Game.Balance
                     bosses += count;
                     bossGateDps += strike;
                     bossStrikeSum += strike * count;
-                    load.BossMechanicLoss += enemy.MechanicLossSeconds * count;
+                    // Its walk down the main road is the fight its timed powers run over (the gate hold is not known yet; conservative).
+                    float walk = level.Shape.MainLength / Math.Max(0.01f, enemy.InRangeSpeed);
+                    load.BossMechanicLoss += (enemy.MechanicLossSeconds + enemy.WardShare * walk) * count;
+                    int summons = (int)Math.Ceiling(enemy.SummonsPerSecond * walk) * count;
+                    if (summons > 0)
+                    {
+                        // Escorts out of its body: a stream that joins mid-road and keeps coming for the whole walk.
+                        float eachSummon = (enemy.SummonHealth + enemy.SummonArmor) * scale;
+                        float summonArmour = enemy.SummonArmor * scale * summons;
+                        float summonStrike = enemy.SummonAttackInterval > 0f ? enemy.SummonBlockadeDamage / enemy.SummonAttackInterval * difficulty.StructureDamage : 0f;
+                        load.Groups.Add(new WaveGroup
+                        {
+                            Count = summons,
+                            Health = eachSummon - enemy.SummonArmor * scale,
+                            Armour = enemy.SummonArmor * scale,
+                            Speed = enemy.SummonSpeed,
+                            Path = group.Path,
+                            Source = group.Source,
+                            StartShare = SummonStartShare,
+                        });
+                        load.StreamHealth += eachSummon * summons;
+                        load.StreamArmour.Add(eachSummon * summons - summonArmour, summonArmour);
+                        reachWeighted += reach * SummonStartShare * eachSummon * summons;
+                        span = Math.Max(span, end + walk);
+                        speed += enemy.SummonSpeed * summons;
+                        ground += summons;
+                        gateDps += summonStrike * Math.Min(summons, rules.AttackersPerGate);
+                        strikeSum += summonStrike * summons;
+                    }
+
                     continue;
                 }
 

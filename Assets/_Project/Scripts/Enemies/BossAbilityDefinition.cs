@@ -36,8 +36,16 @@ namespace Game.Enemies
         /// <summary>Reach of a pulse.</summary>
         public float Radius => _radius;
 
-        /// <summary>How long one laser burn or one rally lasts.</summary>
+        /// <summary>How long one laser burn, one rally or one ward lasts.</summary>
         public float SweepSeconds => _sweepSeconds;
+
+        /// <summary>
+        /// For the balance ledger: the share of a fight a ward keeps the boss sealed (its duration over its interval), and the
+        /// creatures a spawn power sends out per second of the fight. Both read only the timing fields.
+        /// </summary>
+        public float WardShare => _kind == BossAbilityKind.Ward && _interval > 0f ? Mathf.Clamp01(_sweepSeconds / _interval) : 0f;
+
+        public float MinionsPerSecond => _kind == BossAbilityKind.Spawn && _minion != null && _interval > 0f ? _minionCount / _interval : 0f;
 
         /// <summary>How far a laser or a volley reaches.</summary>
         public float Range => _range;
@@ -62,6 +70,11 @@ namespace Game.Enemies
             if ((_kind == BossAbilityKind.Spawn || _kind == BossAbilityKind.Split) && _minion == null)
             {
                 Debug.LogWarning($"BossAbility '{name}' spawns minions but names no enemy.", this);
+            }
+
+            if (_kind == BossAbilityKind.Ward && _sweepSeconds >= _interval)
+            {
+                Debug.LogWarning($"BossAbility '{name}': a ward must be down longer than it is up (duration {_sweepSeconds} s, interval {_interval} s).", this);
             }
         }
     }

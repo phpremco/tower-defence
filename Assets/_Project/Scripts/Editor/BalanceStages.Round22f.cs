@@ -15,6 +15,7 @@ namespace Game.Editor
     public static partial class BalanceStages
     {
         public const string FinaleApplyPath = "Tools/PlayTest/finale_apply.txt";
+        private const float MaxHealthStep = 3f;
         private const string EnemiesFolder = "Assets/_Project/Data/Enemies/";
         private const string DifficultiesFolder = "Assets/_Project/Data/Difficulty/";
         private const int HealthRounding = 50;
@@ -47,7 +48,10 @@ namespace Game.Editor
                     continue;
                 }
 
-                int health = Math.Max(HealthRounding, (int)Math.Round(derived / HealthRounding) * HealthRounding);
+                // Round 29: the probe scales a boss's escorts with its health multiple, so a huge hold says as much about the escorts
+                // as about the body; the health moves at most a step per apply and the next probe judges again.
+                float stepped = Math.Min(derived, boss.MaxHealth * MaxHealthStep);
+                int health = Math.Max(HealthRounding, (int)Math.Round(stepped / HealthRounding) * HealthRounding);
                 text.Append(Invariant($"  {finale.Boss,-16} health {boss.MaxHealth:0} -> {health} (probe: holds x{FinaleProbeReport.Find(cells, finale.Boss, FinaleProbeReport.Medium).Holds:0.00} on Medium)\n"));
                 if (Math.Abs(health - boss.MaxHealth) >= 1f)
                 {
@@ -90,6 +94,19 @@ namespace Game.Editor
             File.WriteAllText(FinaleApplyPath, text.ToString());
             return Invariant($"finale apply: {changed} assets changed; see {FinaleApplyPath}");
         }
+
+        /// <summary>Round 29: the continent bosses' data again (health, armour, powers, Codex text) without the full generator.</summary>
+        public static string ApplyContinentBosses()
+        {
+            int count = ProjectGenerator.ApplyContinentBosses().Count;
+            return Invariant($"continent bosses written: {count}");
+        }
+
+        /// <summary>Round 29: one campaign level's map again from its spec (Tools/PlayTest/relayout_arg.txt names the key).</summary>
+        public static string RelayoutLevel(string key) => ProjectGenerator.RelayoutCampaignLevel(key);
+
+        [MenuItem("Tools/Generate/Balance/11 Continent bosses (data and powers)")]
+        private static void MenuApplyContinentBosses() => Debug.Log("[Balance] " + ApplyContinentBosses());
 
         [MenuItem("Tools/Generate/Balance/10 Finale from the probe (boss health, shares)")]
         private static void MenuApplyFinale() => Debug.Log("[Balance] " + ApplyFinale());

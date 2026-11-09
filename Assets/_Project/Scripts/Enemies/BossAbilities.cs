@@ -8,7 +8,8 @@ namespace Game.Enemies
     /// <summary>
     /// Runs the special powers of a boss: pulses that damage every structure around it, a laser that locks onto the
     /// nearest tower, gate or hero and burns it, bursts of minions, volleys of bolts at several structures, rallying
-    /// calls that hurry the whole field, regrowing armour, and splitting off minions as its health falls. Timing and
+    /// calls that hurry the whole field, regrowing armour, wards that turn every hit away for a few seconds, and splitting
+    /// off minions as its health falls. Timing and
     /// strength come from the ability definitions. Pure logic; the view reads the laser state and listens for the rest.
     /// </summary>
     [RequireComponent(typeof(Enemy))]
@@ -34,6 +35,8 @@ namespace Game.Enemies
         private float _damageMultiplier = 1f;
         private int _laserIndex = -1;
         private float _laserElapsed;
+        private int _wardIndex = -1;
+        private float _wardRemaining;
 
         /// <summary>True while the laser beam is on.</summary>
         public bool LaserActive => _laserIndex >= 0;
@@ -61,6 +64,12 @@ namespace Game.Enemies
 
         /// <summary>Raised with the colour whenever armour grows back.</summary>
         public event Action<Color> Regrown;
+
+        /// <summary>Raised when a ward goes up (true) and when it drops (false), with the power's colour.</summary>
+        public event Action<bool, Color> Warded;
+
+        /// <summary>True while a ward seals the boss.</summary>
+        public bool WardActive => _wardIndex >= 0;
 
         /// <param name="findTarget">The nearest thing worth a laser within a range of a point, or null.</param>
         /// <param name="rally">Hurries every living creature but the caller by a speed factor for a time.</param>
@@ -136,12 +145,22 @@ namespace Game.Enemies
             if (_enemy == null || !_enemy.IsAlive)
             {
                 StopLaser();
+                DropWard();
                 return;
             }
 
             if (_laserIndex >= 0)
             {
                 BurnTarget(dt);
+            }
+
+            if (_wardIndex >= 0)
+            {
+                _wardRemaining -= dt;
+                if (_wardRemaining <= 0f)
+                {
+                    DropWard();
+                }
             }
 
             for (int i = 0; i < _abilities.Length; i++)
@@ -217,6 +236,13 @@ namespace Game.Enemies
                     }
 
                     break;
+                case BossAbilityKind.Ward:
+                    // A ward never stacks: a second one while sealed only restarts the clock.
+                    _wardIndex = index;
+                    _wardRemaining = ability.SweepSeconds;
+                    _enemy.SetWarded(true);
+                    Warded?.Invoke(true, ability.Color);
+                    break;
                 default:
                     ReleaseMinions(ability);
                     break;
@@ -262,6 +288,24 @@ namespace Game.Enemies
             LaserOrigin = _enemy.Position + Vector3.up * BeamHeight;
             LaserEnd = aim + Vector3.up * TargetHeight;
             _laserTarget.TakeDamage(ability.Damage * _damageMultiplier * dt);
+        }
+
+        private void DropWard()
+        {
+            if (_wardIndex < 0)
+            {
+                return;
+            }
+
+            Color color = _abilities[_wardIndex].Color;
+            _wardIndex = -1;
+            _wardRemaining = 0f;
+            if (_enemy != null)
+            {
+                _enemy.SetWarded(false);
+            }
+
+            Warded?.Invoke(false, color);
         }
 
         private void StopLaser()

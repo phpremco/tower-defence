@@ -20,6 +20,12 @@ namespace Game.Balance
         /// <summary>Blockades along the road, three to five, spread over the whole walk.</summary>
         public int Gates = 4;
 
+        /// <summary>
+        /// Share of the walk before the first free gate (the defence gate of the plan model). 0.12 puts it just past the first
+        /// legs; a later share (Quartz Flats 0.3) lets the build spots of the opening legs fire before anything is held.
+        /// </summary>
+        public double FirstGateShare = 0.12;
+
         /// <summary>Plazas where roads meet: zero or one, only on templates with a second road.</summary>
         public int Plazas;
 

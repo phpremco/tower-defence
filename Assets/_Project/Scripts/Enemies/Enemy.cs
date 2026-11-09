@@ -54,6 +54,7 @@ namespace Game.Enemies
         private float _concealedShare = -1f;
         private float _pace = 1f;
         private float _damageScale = 1f;
+        private bool _warded;
         private float _bridgeLift;
 
         // A walker passing a gate a boss stands on climbs over it within this distance of the gate's middle.
@@ -141,6 +142,9 @@ namespace Game.Enemies
         /// <summary>True while it is hidden under the ground or a liquid: towers cannot aim at it.</summary>
         public bool IsConcealed => _concealedShare >= 0f;
 
+        /// <summary>True while a boss ward seals it: every hit, aimed or blast, is turned away (towers still aim and fire).</summary>
+        public bool IsWarded => _warded;
+
         /// <summary>World units per second it walks right now, before slows and hastes.</summary>
         public float GroundSpeed => _definition.Speed * _speedMultiplier * _pace;
 
@@ -191,6 +195,7 @@ namespace Game.Enemies
             _sinceTrailDrop = 0f;
             _directed = false;
             _concealedShare = -1f;
+            _warded = false;
             _pace = 1f;
             _damageScale = 1f;
             _bridgeLift = 0f;
@@ -212,7 +217,7 @@ namespace Game.Enemies
 
         public void TakeDamageFrom(float amount, object source, bool splash, float armourFactor = 1f)
         {
-            if (Health == null || !_active)
+            if (Health == null || !_active || _warded)
             {
                 return;
             }
@@ -257,6 +262,9 @@ namespace Game.Enemies
             _concealedShare = concealed ? Mathf.Clamp01(blastShare) : -1f;
             _registry?.SetConcealed(this, concealed);
         }
+
+        /// <summary>Seals the creature against every hit (a boss ward) or opens it again.</summary>
+        public void SetWarded(bool warded) => _warded = warded;
 
         /// <summary>A speed factor of its own on top of its kind's (an enraged boss).</summary>
         public void SetPace(float pace) => _pace = Mathf.Max(MinSpeedFactor, pace);
@@ -340,6 +348,7 @@ namespace Game.Enemies
 
             _active = false;
             _concealedShare = -1f;
+            _warded = false;
             _directed = false;
             _registry.Remove(this);
             Health.Died -= OnDied;

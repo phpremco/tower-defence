@@ -23,5 +23,8 @@ namespace Game.Enemies
 
         /// <summary>Sheds minions each time its health drops past another share of the whole.</summary>
         Split = 6,
+
+        /// <summary>Seals itself for a few seconds: no hit lands while the ward is up, and the field fires at nothing (round 29).</summary>
+        Ward = 7,
     }
 }

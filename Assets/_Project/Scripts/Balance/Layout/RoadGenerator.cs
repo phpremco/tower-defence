@@ -44,7 +44,6 @@ namespace Game.Balance
 
         /// <summary>Walk cells downstream of a junction within which a gate still covers both roads from one screen.</summary>
         public const int JunctionGateReach = 10;
-        private const double FirstGateShare = 0.12;
         private const int GateJitter = 2;
 
         private const int NestRoadMin = 3;
@@ -288,7 +287,7 @@ namespace Game.Balance
             }
 
             int rest = Math.Max(0, spec.Gates - chosen.Count);
-            double from = count * FirstGateShare;
+            double from = count * spec.FirstGateShare;
             double to = Math.Max(from, earliestFixed - GateSpacing);
             for (int r = 0; r < rest; r++)
             {

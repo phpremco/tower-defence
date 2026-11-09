@@ -784,3 +784,20 @@ console and `Logs/probe_trace.txt`.
 - The builder's lever order is plated, swarm, tempo, raid (`wave_tuning.txt` line `Key d swarm 1.5`: unarmoured troops no heavier
   than twice the lightest troop weigh x1.5 in every fill of that difficulty).
 - Pass logs of this round: `Tools/PlayTest/round27_pass1.log` (measure + replay of the tuned and flagged cells on the workers).
+
+### Round 29 (2026-11-09)
+
+- Continent bosses' data again (health, armour pool, ward and escort powers, Codex text) without the full generator:
+  `unity command run_script --file Tools/PlayTest/Scripts/ApplyBossData.cs --entry ApplyBossData.Run --timeout_ms 300000 --timeout 360`
+  (menu `Tools/Generate/Balance/11 Continent bosses (data and powers)`). `ApplyBosses.cs` (round 28) stays the art import.
+- One campaign level's map again from its spec (layout, terrain bake, the arena copies that borrow its map): write the key into
+  `Tools/PlayTest/relayout_arg.txt` (one line, `C1_05`), then
+  `unity command run_script --file Tools/PlayTest/Scripts/RelayoutLevel.cs --entry RelayoutLevel.Run --timeout_ms 600000 --timeout 660`.
+  The result line gives the gate indices and shares on the walked road. Solve the waves afterwards (`balance_pipeline.sh solve`);
+  the other levels are byte-stable (check `git status Assets/_Project/Data/Levels`).
+- A layout spec may carry `FirstGateShare` (default 0.12; Quartz Flats 0.3).
+- The ward power: `BossAbilityKind.Ward` (`SweepSeconds` up, `Interval` between); `Enemy.IsWarded` turns every hit away; the
+  ability view rings and shimmers it. Escorts: the existing `Spawn` kind on the continent bosses (`<Boss>Call.asset`).
+- The ledger reads both through `EnemyStats.WardShare` / `SummonsPerSecond` (`BalanceLedger.AddPowers`, `WaveLoad` boss branch,
+  `WaveGroup.StartShare` for the route model). Changing them changes the model's shape: `fit` and `apply-force` before `impact`.
+- Logs of this round: `Tools/PlayTest/r29_*.log`.

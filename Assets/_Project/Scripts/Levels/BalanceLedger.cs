@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Balance;
 using Game.Economy;
@@ -14,25 +15,67 @@ namespace Game.Levels
     /// </summary>
     public static class BalanceLedger
     {
-        public static EnemyStats Stats(EnemyDefinition enemy) => new EnemyStats
+        public static EnemyStats Stats(EnemyDefinition enemy)
         {
-            Id = enemy.name,
-            Layer = (int)enemy.Layer,
-            Flies = enemy.Flies,
-            // An ice armour that soaks part of each hit counts as that much more health to burn through.
-            Health = enemy.MaxHealth * (enemy.Boss != null ? enemy.Boss.EffectiveHealthFactor() : 1f),
-            Armor = enemy.Armor,
-            Speed = enemy.AverageSpeed,
-            FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,
-            Reward = enemy.Reward,
-            BaseDamage = enemy.BaseDamage,
-            AttackDamage = enemy.AttackDamage,
-            AttackInterval = enemy.AttackInterval,
-            BlockadeDamage = enemy.BlockadeDamage,
-            IsBoss = enemy.IsBoss,
-            MechanicLossSeconds = enemy.Boss != null ? enemy.Boss.FirepowerLossSeconds() : 0f,
-            IsContinentBoss = enemy.Boss != null,
-        };
+            var stats = new EnemyStats
+            {
+                Id = enemy.name,
+                Layer = (int)enemy.Layer,
+                Flies = enemy.Flies,
+                // An ice armour that soaks part of each hit counts as that much more health to burn through.
+                Health = enemy.MaxHealth * (enemy.Boss != null ? enemy.Boss.EffectiveHealthFactor() : 1f),
+                Armor = enemy.Armor,
+                Speed = enemy.AverageSpeed,
+                FightSpeed = enemy.Rages ? enemy.AverageSpeed * enemy.RageSpeedMultiplier : 0f,
+                Reward = enemy.Reward,
+                BaseDamage = enemy.BaseDamage,
+                AttackDamage = enemy.AttackDamage,
+                AttackInterval = enemy.AttackInterval,
+                BlockadeDamage = enemy.BlockadeDamage,
+                IsBoss = enemy.IsBoss,
+                MechanicLossSeconds = enemy.Boss != null ? enemy.Boss.FirepowerLossSeconds() : 0f,
+                IsContinentBoss = enemy.Boss != null,
+            };
+            if (enemy.Boss != null)
+            {
+                AddPowers(stats, enemy.Abilities);
+            }
+
+            return stats;
+        }
+
+        // The timed powers of a continent boss as the ledger sees them: wards seal it for a share of the fight, spawn powers send
+        // escorts down its road at a rate (the heaviest escort's body stands for the mix when a boss carries several).
+        private static void AddPowers(EnemyStats stats, BossAbilityDefinition[] abilities)
+        {
+            foreach (BossAbilityDefinition ability in abilities)
+            {
+                if (ability == null)
+                {
+                    continue;
+                }
+
+                stats.WardShare = Math.Min(1f, stats.WardShare + ability.WardShare);
+                float rate = ability.MinionsPerSecond;
+                if (rate <= 0f)
+                {
+                    continue;
+                }
+
+                EnemyDefinition minion = ability.Minion;
+                float body = minion.MaxHealth - minion.Armor;
+                if (minion.MaxHealth >= stats.SummonHealth + stats.SummonArmor)
+                {
+                    stats.SummonHealth = body;
+                    stats.SummonArmor = minion.Armor;
+                    stats.SummonSpeed = minion.AverageSpeed;
+                    stats.SummonBlockadeDamage = minion.BlockadeDamage;
+                    stats.SummonAttackInterval = minion.AttackInterval;
+                }
+
+                stats.SummonsPerSecond += rate;
+            }
+        }
 
         public static TowerStats Stats(TowerDefinition tower)
         {

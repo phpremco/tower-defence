@@ -45,6 +45,19 @@ namespace Game.Balance
         /// <summary>True for a continent boss: its health takes the difficulty's boss share (<see cref="DifficultyStats.BossHealth"/>).</summary>
         public bool IsContinentBoss;
 
+        /// <summary>
+        /// A boss's timed powers for the ledger (round 29): the share of its fight a ward seals it (no hit lands, the field fires
+        /// at nothing), and the escorts it sends out of its body per second of the fight: their count, body health and armour
+        /// each, speed and gate strike. They walk the rest of the boss's road, so they join the stream from mid-road.
+        /// </summary>
+        public float WardShare;
+        public float SummonsPerSecond;
+        public float SummonHealth;
+        public float SummonArmor;
+        public float SummonSpeed = 1f;
+        public float SummonBlockadeDamage;
+        public float SummonAttackInterval = 1f;
+
         /// <summary>Health plus armour: what a heavy weapon (armour factor one) must deal to kill it; light fire pays more for the armour (<see cref="ArmourMix"/>).</summary>
         public float EffectiveHealth => Health + Armor;
     }

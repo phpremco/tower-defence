@@ -124,6 +124,14 @@ namespace Game.Editor
 
         private static string Hash(string text) => Game.Balance.LayoutRandom.Fnv(text).ToString("x16");
 
+        // Marks one level's bake as current in the cache, so the next full generator run does not bake it again.
+        private static void RememberBake(LevelDefinition level)
+        {
+            Dictionary<string, string> cache = ReadBakeCache();
+            cache[level.name] = BakeHash(level, PainterHash());
+            File.WriteAllLines(BakeCachePath, cache.Select(pair => $"{pair.Key}={pair.Value}"));
+        }
+
         private static void BakeTerrain(LevelDefinition level)
         {
             var road = new RoadShape(level);

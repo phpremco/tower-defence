@@ -233,6 +233,8 @@ namespace Game.Editor
                 Layout = new LayoutSpec
                 {
                     Key = "C1_05", Template = RoadTemplate.Hook, Seed = 105, Width = 40, Height = 22, Legs = 5, Gates = 4,
+                    // Remco 2026-11-09: the first gate at about 30 % of the road, so the opening legs' spots fire before anything is held.
+                    FirstGateShare = 0.3,
                     Terrain = new[] { new TerrainShare("Water", 0.06f), new TerrainShare("Stone", 0.03f), new TerrainShare(LayoutTerrain.RaisedName, 0.03f) },
                     Nests = new[] { new NestCount("Stone", 2) },
                 },

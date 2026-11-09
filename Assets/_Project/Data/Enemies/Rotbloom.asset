@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Rotbloom
   _layer: 1
   _flies: 0
-  _maxHealth: 3100
+  _maxHealth: 3550
   _armor: 0
-  _armorReduction: 0.6
   _speed: 0.3
-  _reward: 681
+  _reward: 770
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -40,7 +39,9 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: e427be9d9fac0ba4d84f827b0f3e9a24, type: 2}
+  - {fileID: 11400000, guid: c0c2ad5ac51c8724e974d05058fed667, type: 2}
   _boss: {fileID: 11400000, guid: f113f8a06ba398e4c8a936e50f169d58, type: 2}
   _color: {r: 0.35, g: 0.45, b: 0.15, a: 1}
   _eyeColor: {r: 0.75, g: 1, b: 0.3, a: 1}

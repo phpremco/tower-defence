@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Sealed One
   _layer: 1
   _flies: 0
-  _maxHealth: 3350
-  _armor: 0
-  _armorReduction: 0.6
+  _maxHealth: 26900
+  _armor: 3500
   _speed: 0.25
-  _reward: 730
+  _reward: 5454
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -40,7 +39,9 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: 44dab21e5e45e4445aff914bc5b7b586, type: 2}
+  - {fileID: 11400000, guid: c06169b9349de3047a40de8cc6b3722e, type: 2}
   _boss: {fileID: 11400000, guid: cb6a708e4e3ea9846aab1c2c4834bd7b, type: 2}
   _color: {r: 0.85, g: 0.85, b: 0.95, a: 1}
   _eyeColor: {r: 1, g: 1, b: 1, a: 1}

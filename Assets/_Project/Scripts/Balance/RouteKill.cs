@@ -376,6 +376,11 @@ namespace Game.Balance
                     route = geometry.GroundRouteFor(group.Path);
                 }
 
+                if (route != null && group.StartShare > 0f)
+                {
+                    start = Math.Max(start, (int)(route.Cells.Count * group.StartShare));
+                }
+
                 if (route == null || route.Cells.Count == 0)
                 {
                     continue;

@@ -73,13 +73,25 @@ namespace Game.Editor
 
             // The victory panel waits for its death clip (the Sealed One's white Release) when true.
             public bool HoldResultForDeath;
+
+            // Remco 2026-11-09 (round 29): the finale player beat every boss at 5-15x its health, so each carries timed powers on
+            // top of its signature: a ward that turns every hit away for a few seconds (telegraphed by the ability view), escorts
+            // sent out of its body down the rest of its road to keep the turrets busy, and for the plated ones an armour pool
+            // (Creature.Armor) that heavy fire must strip first. The ledger reads them through EnemyStats (BalanceLedger.AddPowers).
+            public float WardSeconds;
+            public float WardInterval = 18f;
+            public string SummonMinion = string.Empty;
+            public int SummonCount;
+            public float SummonInterval = 20f;
             public string SignatureText;
             public string TelegraphText;
             public string CounterText;
             public VoiceSpec Voice;
         }
 
-        // Health (2026-11-05, Docs/BALANCE.md "Continent bosses as played"): set at each boss's continent finale (level 20,
+        // Health (round 29, 2026-11-09, Docs/BALANCE.md "Round 29"): the finale probe on the clones sets it (the `finale` stage,
+        // Medium's holding multiple x the hold share 0.85) with the timed powers below in place; these numbers mirror the assets.
+        // Earlier (2026-11-05, Docs/BALANCE.md "Continent bosses as played"): set at each boss's continent finale (level 20,
         // the roadmap's loadout, Medium money). The ledger's human lens keeps every boss alone under the hero cap
         // (ContinentFinaleTests); the finale probe on its arena field (a plain builder: level-1 guns spread along the road, no
         // upgrades, no hero play) set the numbers: it just beats Gravemaw, Rotbloom, the Warden and the Shattered, and beats the
@@ -92,7 +104,7 @@ namespace Game.Editor
                 Creature = new Creature
                 {
                     Id = "Gravemaw", Description = "The planet's digging maw: it answers the colony's drill with a drill of its own.",
-                    Layer = TargetLayers.Ground, Health = 2300f, Speed = 0.55f, BaseDamage = 25, Boss = true,
+                    Layer = TargetLayers.Ground, Health = 48000f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
                     Attack = AttackStyle.Bite, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
                     Color = new Color(0.55f, 0.2f, 0.4f), Eyes = new Color(1f, 0.45f, 0.75f), Accent = new Color(1f, 0.4f, 0.8f), Blood = new Color(1f, 0.45f, 0.7f),
                     Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,
@@ -101,7 +113,8 @@ namespace Game.Editor
                 Signature = BossSignature.Burrow,
                 Arrival = BossArrival.ColonyRig,
                 Pools = PoolKinds.Quicksand | PoolKinds.Water | PoolKinds.Bog,
-                SignatureText = "At three quarters, half and a quarter of its health it dives under the ground. A crack line runs round your towers to the tower that hurt it most; it breaks out beside it and throws that tower. The tower lands tilted, loses 40% of its health and stays silent for a few seconds, but it is not destroyed. It takes quicksand as a shortcut, climbs over rocks and onto gates, and can hide in a pool for a few seconds.",
+                SummonMinion = "Skitter", SummonCount = 5, SummonInterval = 26f,
+                SignatureText = "Rock plates cover it: heavy fire must strip the armour before anything reaches the body, and now and then Skitters pour out of its flanks. At three quarters, half and a quarter of its health it dives under the ground. A crack line runs round your towers to the tower that hurt it most; it breaks out beside it and throws that tower. The tower lands tilted, loses 40% of its health and stays silent for a few seconds, but it is not destroyed. It takes quicksand as a shortcut, climbs over rocks and onto gates, and can hide in a pool for a few seconds.",
                 TelegraphText = "The crack glows warm orange and runs ahead of it, the ground rumbles louder as it comes up, and the tower it is after gets a pulsing red ring three seconds before it breaks out.",
                 CounterText = "Spread your damage over several towers, so no single tower draws it. Sell or move the ringed tower in time, or put a mine on the crack line: a mine that goes off while it burrows leaves it stunned on the surface. Below a quarter it moves faster and its cracks send up Skitters.",
                 Voice = new VoiceSpec { Enemy = "Gravemaw", Move = "Bosses/Scorpion/scorpion_walk_loop_boss", Screech = "Bosses/Scorpion/scorpion_screech_boss", Growl = "Bosses/Scorpion/scorpion_screech_boss", Pulse = EnvironmentFolder + "earthquake" },
@@ -109,14 +122,16 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "CinderMatriarch",
-                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 1450f, 0f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
+                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 10250f, 1800f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
                 Phases = new[] { new BossPhase("Hunting", 1f), new BossPhase("Brood", 0.5f) },
                 Signature = BossSignature.HuntTheCold,
                 Arrival = BossArrival.Pool,
                 Pools = PoolKinds.Lava,
                 WakeGlow = new Color(1f, 0.45f, 0.1f, 0.9f),
                 BodyHalfWidth = 1.8f,
-                SignatureText = "She leaves the road to hunt your cold towers (every tower that slows), the nearest first, and smashes it into a wreck you can rebuild: one tower each time she sets out, never more than about a quarter of your towers. She walks between the pads round your towers and climbs the rock ridges, and a lava pool nearer her prey is her shortcut. Without cold towers she walks the road. Her trail of lava burns the towers it touches, and walkers less. Below half her health she lays eggs in the lava that hatch into fire larvae after ten seconds.",
+                WardSeconds = 5f, WardInterval = 16f,
+                SummonMinion = "FireLarva", SummonCount = 4, SummonInterval = 20f,
+                SignatureText = "Her shell is plated lava that heavy fire must break; every so often it goes molten for five seconds and nothing hurts her; fire larvae crawl out of her trail to keep your guns busy. She leaves the road to hunt your cold towers (every tower that slows), the nearest first, and smashes it into a wreck you can rebuild: one tower each time she sets out, never more than about a quarter of your towers. She walks between the pads round your towers and climbs the rock ridges, and a lava pool nearer her prey is her shortcut. Without cold towers she walks the road. Her trail of lava burns the towers it touches, and walkers less. Below half her health she lays eggs in the lava that hatch into fire larvae after ten seconds.",
                 TelegraphText = "She rises out of the largest lava pool. When she sets out she rears up, a thin line of heat runs from her to the tower she hunts, and that tower starts to glow warm.",
                 CounterText = "Use a cheap cold tower far from the road as bait so she walks a long way past your firepower, or build no cold at all and let her take the long road. Keep towers off the banks of the lava pools, and shoot her eggs before they hatch.",
                 Voice = new VoiceSpec { Enemy = "CinderMatriarch", Move = "Bosses/Ant/ant_walk_loop_boss", Screech = "Bosses/Ant/ant_screech_boss", Growl = "Bosses/Ant/ant_screech_boss" },
@@ -124,8 +139,8 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "FrostWarden",
-                // No armour layer on its health: its ice armour is the mechanic (a share of each hit lands until it breaks).
-                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 1300f, 0f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
+                // Its ice armour is the mechanic (a share of each hit lands until it breaks); round 29 adds a frost crust pool on top.
+                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 10850f, 1200f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
                 Phases = new[] { new BossPhase("Armoured", 1f), new BossPhase("Exposed", 0.4f) },
                 Signature = BossSignature.GateBreaker,
                 Arrival = BossArrival.Pool,
@@ -133,7 +148,8 @@ namespace Game.Editor
                 WakeGlow = new Color(0.55f, 0.85f, 1f, 0.8f),
                 BodyHalfWidth = 2.0f,
                 ArmourPart = "FrostWarden_IceArmour",
-                SignatureText = "Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.",
+                SummonMinion = "Cragback", SummonCount = 2, SummonInterval = 25f,
+                SignatureText = "A frost crust armours it until heavy fire has broken it, and it calls Cragbacks out of the frost around it as it walks. Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.",
                 TelegraphText = "It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.",
                 CounterText = "Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. Spencer's repair thaws a frozen gate, and the Warden slips off without breaking it.",
                 Voice = new VoiceSpec { Enemy = "FrostWarden", Move = "Bosses/IceBeetle/ice_beetle_walk_loop_boss", Screech = "Bosses/IceBeetle/ice_beetle_screech_boss", Growl = "Bosses/IceBeetle/ice_beetle_screech_boss" },
@@ -141,7 +157,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Rotbloom",
-                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 3100f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
+                Creature = Titan("Rotbloom", "A walking flower of rot that makes the map itself hostile.", 3550f, 0f, 0.3f, new Color(0.35f, 0.45f, 0.15f), new Color(0.75f, 1f, 0.3f)),
                 Phases = new[] { new BossPhase("Rooted", 1f), new BossPhase("Uprooted", 0.5f) },
                 Signature = BossSignature.Overgrowth,
                 Arrival = BossArrival.Pool,
@@ -151,7 +167,9 @@ namespace Game.Editor
                 // A rigid round body on short legs cannot drape over a beam (ArtSource README round 33): it rams the gate with
                 // its maw instead (Roar, the jaw wide at frame 16).
                 Gates = GateBehaviour.Batter,
-                SignatureText = "Every twelve seconds it fires spore pods at the fullest cluster of towers within its reach: three pads at most, and never more than about a quarter of your towers overgrown at once. An overgrown pad cannot be built on, and the tower on it fires at 70% while vines grow over it, until the growth is burned away. Rooted, it creeps along the road on growing roots; below half its health it tears itself out, walks faster and leaves rot behind it. It sinks into the bog and comes up at another bank.",
+                WardSeconds = 3f, WardInterval = 20f,
+                SummonMinion = "Oozer", SummonCount = 2, SummonInterval = 60f,
+                SignatureText = "It closes its petals for three seconds at a time and takes nothing, and now and then Oozers drip out of it onto the road. Every twelve seconds it fires spore pods at the fullest cluster of towers within its reach: three pads at most, and never more than about a quarter of your towers overgrown at once. An overgrown pad cannot be built on, and the tower on it fires at 70% while vines grow over it, until the growth is burned away. Rooted, it creeps along the road on growing roots; below half its health it tears itself out, walks faster and leaves rot behind it. It sinks into the bog and comes up at another bank.",
                 TelegraphText = "Roots spread at the bank of a bog over the three waves before it comes, and it grows out of that bog. Before a volley the flower opens its petals with a sweet rising sound, and the target pads glow green two seconds before the pods land.",
                 CounterText = "Splash damage (cannon, mortar) that lands on a pad burns it clean, and Spencer's repair burns the vines off the tower it guards. The pods fly: air towers can shoot them down before they land. Do not stack all your towers in one cluster.",
                 Voice = new VoiceSpec { Enemy = "Rotbloom", Move = "Bosses/Leech/leech_slime_loop_boss", Screech = "Bosses/Leech/leech_screech_boss", Growl = "Bosses/Leech/leech_screech_boss" },
@@ -159,14 +177,16 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Shattered",
-                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 2200f, 0f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
+                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 13800f, 2000f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
                 Phases = new[] { new BossPhase("Whole", 1f), new BossPhase("Split", 0.66f), new BossPhase("Rejoined", 0.33f) },
                 Signature = BossSignature.Splitting,
                 Arrival = BossArrival.Ruins,
                 Pools = PoolKinds.Water,
                 WakeGlow = new Color(0.7f, 0.88f, 1f, 0.8f),
                 BodyHalfWidth = 1.4f,
-                SignatureText = "At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.",
+                WardSeconds = 5f, WardInterval = 16f,
+                SummonMinion = "ShardCrawler", SummonCount = 3, SummonInterval = 22f,
+                SignatureText = "A crystal lattice shields it: heavy fire strips it first, and every so often the lattice locks for five seconds and turns every hit away; shard crawlers break off it as it walks. At two thirds of its health it bursts into three shards that each take a different route: one runs its own road, one flies the air route and one takes the second road, each with a third of what it had left. At a third the surviving shards pull back together where the one nearest your base stands. Each shard you killed takes 30% off the giant that forms.",
                 TelegraphText = "It breaks out of a sealed gate in the old ruins. Near its split point cracks of light pulse on its body, and when it bursts each shard's route lights up briefly.",
                 CounterText = "Cover every route: air defence and the second front matter. Kill one shard fast and the rejoined giant is weaker; let them run and it forms closer to your base.",
                 Voice = new VoiceSpec { Enemy = "Shattered", Steps = "Bosses/DinoSoldier/dino_soldier_step_boss", StepSpacing = 1f, Screech = "Bosses/DinoSoldier/dino_soldier_death_boss" },
@@ -174,7 +194,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "SealedOne",
-                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 3350f, 0f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
+                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 26900f, 3500f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
                 Phases = new[] { new BossPhase("First seal", 1f), new BossPhase("Second seal", 0.75f), new BossPhase("Third seal", 0.5f), new BossPhase("Release", 0.25f) },
                 Signature = BossSignature.Recognition,
                 Arrival = BossArrival.Rift,
@@ -182,7 +202,9 @@ namespace Game.Editor
                 WakeGlow = new Color(0.7f, 0.4f, 1f, 0.9f),
                 BodyHalfWidth = 2.4f,
                 Gates = GateBehaviour.Besiege,
-                SignatureText = "It does not come to you: the ground near the start of the road cracks open and it rises out of the rift. It hauls itself down your road past your whole defence, ploughing a violet furrow behind it, biting through your gates, and climbs onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
+                WardSeconds = 5f, WardInterval = 18f,
+                SummonMinion = "Bulwark", SummonCount = 2, SummonInterval = 30f,
+                SignatureText = "Its seal is an armour heavy fire must break, it closes for five seconds at a time and nothing lands, and Bulwarks are pushed out of it to hold your guns. It does not come to you: the ground near the start of the road cracks open and it rises out of the rift. It hauls itself down your road past your whole defence, ploughing a violet furrow behind it, biting through your gates, and climbs onto the base. It learns: the tower type that hurt it most in one phase does half damage in the next. Each phase drains one gate's gun (the gate still blocks) until the phase ends.",
                 TelegraphText = "The ground rumbles and violet cracks open near the start of the road before it rises. At each phase change ORA names the dampened weapon, the boss bar shows its icon greyed out, and the sealed crystals at the rift turn that weapon's colour. A violet haze hangs over the drained gate.",
                 CounterText = "Build a mix of three or four tower types; a single kind loses half its punch every phase. Do not lean on one gate's gun. Its last breath is a white release.",
                 HoldResultForDeath = true,
@@ -223,6 +245,7 @@ namespace Game.Editor
             foreach (BossSpec spec in ContinentBosses())
             {
                 BossDefinition boss = CreateBossData(spec, skitter, egg, larva, pod, shards);
+                spec.Creature.Abilities = CreatePowers(spec);
 
                 EnemyDefinition enemy = CreateEnemy(spec.Creature);
                 var so = new SerializedObject(enemy);
@@ -236,6 +259,48 @@ namespace Game.Editor
 
             AssetDatabase.SaveAssets();
             return made;
+        }
+
+        // The boss's timed powers as ability assets (round 29): a ward and an escort call, each named after the boss; the
+        // escort is a creature of the bestiary by name (the brood larva included, which CreateBrood wrote before this runs).
+        private static BossAbilityDefinition[] CreatePowers(BossSpec spec)
+        {
+            var powers = new List<BossAbilityDefinition>();
+            Color color = spec.Creature.Accent;
+            if (spec.WardSeconds > 0f)
+            {
+                powers.Add(CreateAbility($"{spec.Id}Ward", BossAbilityKind.Ward, spec.WardInterval, spec.WardInterval * 0.5f, 0f, 1f, spec.WardSeconds, 1f, null, 1, color));
+            }
+
+            if (spec.SummonCount > 0 && !string.IsNullOrEmpty(spec.SummonMinion))
+            {
+                var minion = AssetDatabase.LoadAssetAtPath<EnemyDefinition>($"{DataRoot}/Enemies/{spec.SummonMinion}.asset");
+                if (minion == null)
+                {
+                    Debug.LogWarning($"Continent boss {spec.Id}: escort creature {spec.SummonMinion} has no asset; the call is skipped.");
+                }
+                else
+                {
+                    powers.Add(CreateAbility($"{spec.Id}Call", BossAbilityKind.Spawn, spec.SummonInterval, spec.SummonInterval * 0.5f, 0f, 1f, 1f, 1f, minion, spec.SummonCount, color));
+                }
+            }
+
+            return powers.ToArray();
+        }
+
+        /// <summary>Rebuilds the arena copies that take their map from a campaign level (after a relayout of that level).</summary>
+        internal static int RebuildArenaCopiesOf(string sourceLevelName)
+        {
+            int rebuilt = 0;
+            foreach (var arena in ArenaLevels)
+            {
+                if (arena.Source == sourceLevelName && CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins) != null)
+                {
+                    rebuilt++;
+                }
+            }
+
+            return rebuilt;
         }
 
         // The Cinder Matriarch's brood (Docs/BOSSES.md): the egg she lays in the lava (it lies still, shootable, and hatches

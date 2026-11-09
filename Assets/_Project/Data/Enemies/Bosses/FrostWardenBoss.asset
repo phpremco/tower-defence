@@ -171,6 +171,6 @@ MonoBehaviour:
   _impactKick: 0.35
   _mechanicClipRate: 1.4
   _resultHoldSeconds: 0
-  _signatureText: 'Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.'
+  _signatureText: 'A frost crust armours it until heavy fire has broken it, and it calls Cragbacks out of the frost around it as it walks. Every gate it reaches it breathes into an ice block: the gate keeps standing but holds its fire for eight seconds. It climbs onto the block, and the creatures behind it follow over, then it breaks down through it and the gate is a wreck you can rebuild. Each gate it breaks makes it angrier and faster. Its ice armour lets only half of every hit through; below 40% of its health the armour bursts off and it runs.'
   _telegraphText: It breaks out of a frozen lake. Frost creeps over the ground in front of it, the gate it heads for gets a blue haze and the ice cracks, and icicles grow on its back as its rage rises.
   _counterText: 'Do not lean on gates: spread towers along the long road. A lava ball cracks its ice armour, and for five seconds every hit lands double. Spencer''s repair thaws a frozen gate, and the Warden slips off without breaking it.'

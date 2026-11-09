@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Gravemaw
   _layer: 1
   _flies: 0
-  _maxHealth: 2300
-  _armor: 0
-  _armorReduction: 0.6
+  _maxHealth: 48000
+  _armor: 1200
   _speed: 0.55
-  _reward: 521
+  _reward: 8245
   _baseDamage: 25
   _element: 0
   _attackStyle: 0
@@ -40,7 +39,8 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: 71bd27906822dfb4b83d916bc848da12, type: 2}
   _boss: {fileID: 11400000, guid: 347ee501fc3a46848828bf818c12780a, type: 2}
   _color: {r: 0.55, g: 0.2, b: 0.4, a: 1}
   _eyeColor: {r: 1, g: 0.45, b: 0.75, a: 1}

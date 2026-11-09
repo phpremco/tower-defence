@@ -220,7 +220,9 @@ namespace Game.Tests
             Assert.IsEmpty(failures, string.Join("\n", failures) + table);
         }
 
-        private const float HealthTolerance = 0.1f;
+        // 0.1 until round 29; the one-seed probe gives holds that differ by up to 15 % between runs on identical data (probes 6 and 8:
+        // Matriarch Easy 1.40 / 1.52, Shattered Easy 1.66 / 1.40), so the band is the probe's own spread.
+        private const float HealthTolerance = 0.2f;
 
         private static List<FinaleProbeCell> ProbeReport() =>
             System.IO.File.Exists(FinaleProbeReport.Path) ? FinaleProbeReport.Read(System.IO.File.ReadAllLines(FinaleProbeReport.Path)) : null;

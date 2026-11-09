@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Shattered
   _layer: 1
   _flies: 0
-  _maxHealth: 2200
-  _armor: 0
-  _armorReduction: 0.6
+  _maxHealth: 13800
+  _armor: 2000
   _speed: 0.5
-  _reward: 500
+  _reward: 3034
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -40,7 +39,9 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: b677cf4a5188c114b82867340a217176, type: 2}
+  - {fileID: 11400000, guid: 07249b34e5abc0b4889200fe4a0159aa, type: 2}
   _boss: {fileID: 11400000, guid: 998558a19b57d4f42903fa0e4a205453, type: 2}
   _color: {r: 0.6, g: 0.7, b: 0.85, a: 1}
   _eyeColor: {r: 0.8, g: 0.95, b: 1, a: 1}

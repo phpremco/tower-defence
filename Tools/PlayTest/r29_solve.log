@@ -1,0 +1,2 @@
+== solve: waves against the calibration
+run_script	true	{"diagnostics":[],"compileMs":283,"executeMs":6968,"assemblyName":"PipelineRunScript_ApplyWaves_da116313c152487dbc47927dcfd5bd68","success":true,"result":"Waves solved for every campaign level; calibration 2026-11-09 18:39, seeds 1,2,3, step 0.2, inputs eee5c28a (current)"}	{"file":"Tools/PlayTest/Scripts/ApplyWaves.cs","entry":"ApplyWaves.Run","timeout_ms":"900000"}

@@ -1,0 +1,17 @@
+== search: plans per cell (stage A)
+      "FullName": "Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter",
+      "Status": "Passed",
+      "Message": null,
+      "FullName": "Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell",
+      "Status": "Skipped",
+      "Message": "The calibration is stale for the current data: re-run the measure, fit and apply stages before trusting these plans.",
+Strategy search (stage A, round 22e) 2026-11-09 19:23, 1500 strategies per cell. calibration 2026-11-09 19:13, seeds 1,2,3, step 0.2, inputs 63b39a09 (STALE, data now 915aae5e)
+Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
+the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
+The paper is a pre-screen; stage B (the replay with the adaptive bot) is the judge. Details: Tools/PlayTest/Plans/<level>_<difficulty>.txt.
+
+level        diff    best strategy    margin  holding/top  distinct  creative          obvious
+Level_C1_05  Easy    3* base 700        0.60    30/30            22  falls w7          mono PulseRifle falls w8, mono Cannon falls w7, mono Laser falls w7, naive falls w8
+Level_C1_05  Medium  3* base 700        0.62    30/30            23  falls w13         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Hard    3* base 800        0.58    30/30            22  falls w10         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Psycho  2* base 802        0.48    30/30            25  1* base 258       mono PulseRifle falls w11, mono Cannon falls w8, mono Laser falls w8, naive falls w11

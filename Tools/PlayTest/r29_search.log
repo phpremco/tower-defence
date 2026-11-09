@@ -1,0 +1,19 @@
+== drone price: the repair drone by the investment rule
+run_script	true	{"diagnostics":[],"compileMs":267,"executeMs":782,"assemblyName":"PipelineRunScript_ApplyDronePrice_98e5fafc27cd4e6ab008b2585837c2af","success":true,"result":"repair drone price 100 (was 100); see Tools/PlayTest/drone_price.txt"}	{"file":"Tools/PlayTest/Scripts/ApplyDronePrice.cs","entry":"ApplyDronePrice.Run","timeout_ms":"120000"}
+== search: plans per cell (stage A)
+      "FullName": "Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter",
+      "Status": "Passed",
+      "Message": null,
+      "FullName": "Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell",
+      "Status": "Skipped",
+      "Message": "The calibration is stale for the current data: re-run the measure, fit and apply stages before trusting these plans.",
+Strategy search (stage A, round 22e) 2026-11-09 18:56, 1500 strategies per cell. calibration 2026-11-09 18:39, seeds 1,2,3, step 0.2, inputs eee5c28a (STALE, data now 6fbbd8ec)
+Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
+the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
+The paper is a pre-screen; stage B (the replay with the adaptive bot) is the judge. Details: Tools/PlayTest/Plans/<level>_<difficulty>.txt.
+
+level        diff    best strategy    margin  holding/top  distinct  creative          obvious
+Level_C1_05  Easy    3* base 700        0.70     8/30             8  falls w7          mono PulseRifle falls w8, mono Cannon falls w7, mono Laser falls w7, naive falls w8
+Level_C1_05  Medium  3* base 700        0.74    30/30            21  falls w11         mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Hard    2* base 707        0.39     2/30             2  falls w5          mono PulseRifle falls w4, mono Cannon falls w4, mono Laser falls w4, naive falls w4
+Level_C1_05  Psycho  falls w9           0.11     0/30             0  falls w5          mono PulseRifle falls w5, mono Cannon falls w6, mono Laser falls w5, naive falls w9

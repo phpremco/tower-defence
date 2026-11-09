@@ -33,6 +33,7 @@ namespace Game.Enemies
         private const int VolleyBolts = 6;
         private const float VolleyBoltSize = 1.4f;
         private const int RegrowSparks = 40;
+        private const float WardRingRadius = 2.6f;
 
         private BossAbilities _abilities;
         private Enemy _enemy;
@@ -69,6 +70,7 @@ namespace Game.Enemies
             _abilities.Volleyed += OnVolleyed;
             _abilities.Rallied += OnRallied;
             _abilities.Regrown += OnRegrown;
+            _abilities.Warded += OnWarded;
             _beam = _attachments.Track(Line("BossBeam", BeamWidth));
             _beamGlow = _attachments.Track(Line("BossBeamGlow", BeamGlowWidth));
             _beamTip = BuildTip();
@@ -87,6 +89,7 @@ namespace Game.Enemies
                 _abilities.Volleyed -= OnVolleyed;
                 _abilities.Rallied -= OnRallied;
                 _abilities.Regrown -= OnRegrown;
+                _abilities.Warded -= OnWarded;
             }
 
             if (_enemy != null)
@@ -215,6 +218,17 @@ namespace Game.Enemies
         {
             OnPulsed(centre, 6f, color);
             OnMinionsReleased(centre, color);
+        }
+
+        // A ward reads as a ring that snaps round the body and a shimmer; when it drops, a second burst of sparks says "open".
+        private void OnWarded(bool up, Color color)
+        {
+            if (up)
+            {
+                OnPulsed(_enemy.Position, WardRingRadius, color);
+            }
+
+            OnRegrown(color);
         }
 
         // Regrowing armour shimmers: a burst of sparks that hang around the body.

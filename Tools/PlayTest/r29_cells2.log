@@ -1,0 +1,30 @@
+== workers: measure, 18 units over 5 workers (19:33:25)
+  synced 5 workers in 1 s
+  w1: 4 units: 3:2:1 3:3:3 4:1:2 4:3:1
+  w2: 4 units: 3:2:2 4:0:1 4:1:3 4:3:2
+  w3: 4 units: 3:2:3 4:0:2 4:2:1 4:3:3
+  w4: 3 units: 3:3:1 4:0:3 4:2:2
+  w5: 3 units: 3:3:2 4:1:1 4:2:3
+== workers done in 5 min 31 s (19:38:56)
+  w1: result="Passed", 0 probe errors, 24 runs
+  w2: result="Passed", 0 probe errors, 24 runs
+  w3: result="Passed", 0 probe errors, 24 runs
+  w4: result="Passed", 0 probe errors, 18 runs
+  w5: result="Passed", 0 probe errors, 18 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 432 runs in Tools/PlayTest/calibration_records.txt; tables in Tools/PlayTest/yardstick_partial.txt
+== workers: replay, 18 units over 5 workers (19:39:18)
+  synced 5 workers in 1 s
+  w1: 4 units: 3:2:1 3:3:3 4:1:2 4:3:1
+  w2: 4 units: 3:2:2 4:0:1 4:1:3 4:3:2
+  w3: 4 units: 3:2:3 4:0:2 4:2:1 4:3:3
+  w4: 3 units: 3:3:1 4:0:3 4:2:2
+  w5: 3 units: 3:3:2 4:1:1 4:2:3
+== workers done in 25 min 31 s (20:04:49)
+  w1: result="Passed", 0 probe errors, 84 runs
+  w2: result="Passed", 0 probe errors, 63 runs
+  w3: result="Passed", 0 probe errors, 66 runs
+  w4: result="Passed", 0 probe errors, 33 runs
+  w5: result="Passed", 0 probe errors, 13 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 313 runs in Tools/PlayTest/plan_records.txt; tables in Tools/PlayTest/plan_replay_partial.txt

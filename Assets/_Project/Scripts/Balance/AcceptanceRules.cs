@@ -42,7 +42,7 @@ namespace Game.Balance
         private const int MediumDistinctWinners = 3;
         private const float MediumNaiveMaxWinRate = 0.2f;
         private const float EasyMoreBase = 1.25f;
-        private const float EasyMoreCoins = 1.2f;
+        private const float EasyPerfectBaseShare = 0.95f;
         private const float LastThird = 2f / 3f;
         private const int HardFeatures = 2;
         private const int PsychoDistinct = 2;
@@ -126,7 +126,9 @@ namespace Game.Balance
         }
 
         // Easy: a reasonable plan wins (two of the three obvious kinds), nobody dies before the last third, the best plan wins
-        // every seed with three stars and beats every obvious plan on score on every seed.
+        // every seed with three stars and does at least as well as every obvious plan; where an obvious plan left something on the
+        // table (a star, base health) the best plan must visibly pay off there. Remco 2026-11-09: a plain row may win on Easy,
+        // even with three stars and the base whole; coins no longer decide.
         private static void JudgeEasy(Verdict verdict, Dictionary<string, List<RunRecord>> families, List<RunRecord> best)
         {
             int kindsWinning = 0;
@@ -168,13 +170,35 @@ namespace Game.Balance
                         continue;
                     }
 
-                    bool beats = !run.Won || same.Stars > run.Stars || (same.BaseHealth >= run.BaseHealth * EasyMoreBase && same.Coins >= run.Coins * EasyMoreCoins);
-                    if (!beats)
+                    if (!EasyPaysOff(same, run))
                     {
-                        verdict.Failures.Add(Invariant($"Easy: the best plan does not clearly beat {run.Strategy} on seed {run.Seed} ({same.Stars}* base {same.BaseHealth:0} coins {same.Coins} vs {run.Stars}* base {run.BaseHealth:0} coins {run.Coins})"));
+                        verdict.Failures.Add(Invariant($"Easy: the best plan does not visibly pay off against {run.Strategy} on seed {run.Seed} ({same.Stars}* base {same.BaseHealth:0} vs {run.Stars}* base {run.BaseHealth:0})"));
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Easy's pay-off rule (Remco 2026-11-09): the best plan is never worse than an obvious run in stars or base health, and
+        /// where that run lost a star or base health the best plan shows it: a star more, or the base held at
+        /// <see cref="EasyMoreBase"/> times what the obvious run kept. An obvious run that ended perfect (three stars, no base
+        /// loss) can only be matched, and that is allowed on Easy.
+        /// </summary>
+        public static bool EasyPaysOff(RunRecord best, RunRecord obvious)
+        {
+            if (!obvious.Won)
+            {
+                return true;
+            }
+
+            if (best.Stars < obvious.Stars || best.BaseHealth < obvious.BaseHealth)
+            {
+                return false;
+            }
+
+            // A scratch on the base (a few hit points) leaves no room to pay off in: three stars and the base nearly whole is perfect.
+            bool obviousPerfect = obvious.Stars >= 3 && obvious.BaseHealth >= best.BaseHealth * EasyPerfectBaseShare;
+            return obviousPerfect || best.Stars > obvious.Stars || best.BaseHealth >= obvious.BaseHealth * EasyMoreBase;
         }
 
         // Medium: the obvious plans lose (mono rows never, the careless mix at most one seed in five with one star, the
@@ -537,19 +561,10 @@ namespace Game.Balance
             {
                 int kindsWinning = 0;
                 int kinds = 0;
-                bool allComfortable = families.Count > 0;
                 foreach (KeyValuePair<string, List<RunRecord>> kind in Kinds(families))
                 {
                     kinds++;
                     kindsWinning += WinRate(kind.Value) > 0.5f ? 1 : 0;
-                }
-
-                foreach (List<RunRecord> family in families.Values)
-                {
-                    foreach (RunRecord run in family)
-                    {
-                        allComfortable &= run.Won && run.Stars >= 3;
-                    }
                 }
 
                 if (kinds > 0 && kindsWinning < Math.Min(2, kinds))
@@ -564,11 +579,7 @@ namespace Game.Balance
                     why.Add(Invariant($"the best plan wins {Wins(best)}/{best.Count} with {MinStars(best)} stars at least"));
                 }
 
-                if (!tooHard && allComfortable)
-                {
-                    tooEasy = true;
-                    why.Add("every obvious run wins with three stars (no plan can visibly beat that)");
-                }
+                // Remco 2026-11-09: every obvious run winning with three stars is allowed on Easy; the builder no longer pushes harder for it.
             }
             else if (difficulty == Medium && TutorialCells.Contains(cell))
             {

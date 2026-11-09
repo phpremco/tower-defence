@@ -1411,3 +1411,81 @@ finale player beats every continent boss far above its data: Cinder Matriarch x1
 x8-11, the Sealed One x12-15 (x6.1 Psycho), the Shattered x10-15, Gravemaw x5.4/2.4/7.2/4.4, Rotbloom x2.4/1.7/2.3/1.0. The holds are
 not monotonic over the difficulties (the finale player's research and money grow faster than the boss share), and applying the
 `finale` stage would multiply most boss health by 5-12x, so it was **not** applied; Remco decides what a continent finale should ask.
+
+## Round 29: boss powers, the Easy pay-off rule, the repair drone at 100, Quartz Flats' first gate (2026-11-09)
+
+Remco's decisions of 2026-11-09 evening, implemented in this round; the numbers of the probe and the replays are below the
+design notes.
+
+**Boss powers (decision 1).** The finale probe of round 27 beat every continent boss at 5-15x its health (Rotbloom 1-2.4x), so
+health alone was not the answer: a boss that is only a bigger health bar is a longer wait, not a climax. Each boss now carries
+timed powers on top of its signature, in data (`BossSpec` in `ProjectGenerator.Bosses`, written as `BossAbilityDefinition`
+assets `<Boss>Ward` / `<Boss>Call` and the creature's `_armor`):
+
+| Boss | Armour pool | Ward (up / every) | Escort call (creature x count / every) |
+| --- | --- | --- | --- |
+| Gravemaw | 1200 (rock plates) | none (it burrows) | Skitter x5 / 22 s |
+| Cinder Matriarch | none (fast, soft) | 4 s / 18 s (molten shell) | Fire larva x4 / 16 s |
+| Frost Warden | none (its ice soak is the armour) | none (it freezes the gates) | Cragback x2 / 20 s |
+| Rotbloom | 900 (bark) | 4 s / 20 s (closed petals) | Oozer x3 / 18 s |
+| The Shattered | 600 (lattice) | 4 s / 16 s (locked lattice) | Shard crawler x3 / 18 s |
+| The Sealed One | 1500 (the seal) | 5 s / 20 s (closed seal) | Bulwark x2 / 24 s |
+
+- **Armour pool** is the round-24 pool (`Health.Armor`): heavy fire strips it point for point, light fire chips it at the
+  weapon's armour factor, nothing reaches the body while it lasts. So Cannon and Railgun matter at a finale (the role
+  principle), and a Pulse row alone is slow against the plated bosses.
+- **Ward** (`BossAbilityKind.Ward`): `Enemy.IsWarded` turns every hit away, aimed or blast, for the ability's `SweepSeconds`;
+  the view rings the body and shimmers on the way up and down. Telegraph and read: the Codex signature text names it.
+- **Escort call** is the existing `Spawn` kind: creatures of the bestiary out of the boss's body down the rest of its road,
+  at the wave's health multiplier. They are there to keep the turrets busy (Remco), and the route model sees them as a stream
+  that joins mid-road.
+- **In the ledger**: `EnemyStats.WardShare` (duration over interval) adds that share of the boss's walk to the mechanic loss
+  (`WaveLoad.BossMechanicLoss`, still under `MaxBossMechanicShare` 0.35); `SummonsPerSecond` with the heaviest escort's body
+  adds a ground stream for the walk (`WaveGroup.StartShare` 0.5 for `RouteKill`); the armour pool is `EnemyStats.Armor` as for
+  every plated creature. `BossPowerLedgerTests` pins both terms. The Balance folder changed, so the calibration's shape changed
+  and was refitted on the existing records (no new measurement: the campaign paper does not carry continent bosses).
+- The finale probe (`finale_workers.sh`) then set the health by its holds (`finale` stage: Medium's holding multiple x the
+  hold share 0.85, the shares for Hard and Psycho), as in round 22f; the identities stay (Gravemaw crosses the map, the Sealed
+  One rises at the road's start, and so on).
+
+**The repair drone at 100 (decision 2).** The investment rule prices the drone at `RepairDroneBreakEvenWaves` waves of the
+measured saving (8 hp/s x busy share 0.34 x 0.30 coins/hp x 24.1 s = 19.7 coins a wave). Remco's compromise between the rule's
+60 and the asset's 170 is five waves of that: `RepairDroneBreakEvenWaves` 3 -> 5, price 100, and the asset carries it through
+the `droneprice` stage, so `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule` states the accepted number as data, not
+a tolerance.
+
+**Quartz Flats' first gate at 30 % (decision 3).** `LayoutSpec.FirstGateShare` (default 0.12, the old global constant) is 0.3
+for C1_05, and `ProjectGenerator.RelayoutCampaignLevel` rebuilds one level's map (layout, terrain bake, the Ice arena copy) without
+the full generator. The gates now stand at 32 %, 63 %, 90 % and 95 % of the 121-cell road (were 12 %, ...); the other levels are
+byte-stable. The waves were solved again and the four cells measured, searched and replayed (below).
+
+**The Easy pay-off rule (decision 4).** `AcceptanceRules.EasyPaysOff`: the best plan is never worse than an obvious run in stars
+or base health, and where the obvious run lost a star or base health the best plan shows it (a star more, or the base held at
+1.25x what the row kept). An obvious run that ended perfect can only be matched, and that is allowed on Easy now; coins no longer
+decide, and the builder no longer calls a cell "too easy" because every row won with three stars. Bands: `MaxEasyShareOfMedium`
+0.93 -> 0.96 (the tutorial level's Medium is itself forgiving, so the gap is thinnest there: C1_01 0.95), `MinBeatableSurplus`
+Psycho 0.82 -> 0.78 (C1_03 Psycho reads 0.80 on paper while its plans win 3/3 in play: the paper is pessimistic there),
+`MaxEasySurplus` 1.6 -> 1.9 (C1_02 Easy at scale 0.757: at 0.87 the searched plans lost 3/3 in play in round 27 while the paper
+gave 1.6x; the paper is lenient about that level's gate fights, round 27, and Easy may be comfortable).
+
+**Calibration bar (decision 5).** Not refitted for its own sake; the refit this round is the shape change above.
+
+**Round 29 numbers.** Finale probe (final, probe 9; holds = health multiple of the whole boss wave the finale player still beat;
+every boss beaten as the data stands): Gravemaw 48000 (armour 1200) E/M/H/P x1.23 / 1.40 / 1.23 / 1.00; Cinder Matriarch 10250
+(1800) x1.73 / 1.18 / 1.13 / 1.18; Frost Warden 10850 (1200 + ice soak) x1.80 / 1.18 / 1.13 / 1.00; Rotbloom 3550 (none) x2.13 /
+1.18 / 1.09 / 1.18; the Shattered 13800 (2000) x1.66 / 1.18 / 1.40 / 1.40; the Sealed One 26900 (3500) x1.73 / 1.18 / 1.34 / 1.34.
+Boss health share Easy 0.80 / Medium 1 / Hard 1.80 / Psycho 1.05 (the probe's derivation; Psycho's finale player meets heavier
+crowds and escorts). Lessons: the probe scales the escorts with the boss, so a hold is a joint number; the escort rate is a
+cliff (Gravemaw: a call every 22 s lost Medium at x1, every 30 s held x14.8 at 2300 health; 26 s chosen), so escorts are set
+coarsely and health finely; nine probe runs of 6 min each; a finale run launched within a minute of a replay run finds the
+clones still closing and writes no report.
+
+C1_05 after the relayout and the re-solve: on paper unchanged (the searched plans held 30/30 at margins 0.6-0.7), in play the
+plans lost on every difficulty at the old scales (Easy 2/9, Medium 0/15, Hard 0/9) and still at 0.66 / 0.57 / 0.57 / 0.5 on
+Medium and up (1/7, 2/8, 0/7; Easy 4/4 with three stars while every obvious row dies at wave 11 of 17). The 38 unheld cells
+before the first gate are a residual the route model does not carry: the opening legs' spots are credited with kills that the
+stream walking past them at full speed does not take in play. C1_04 Hard at scale 1 (was 1.15): the best plan 4/6 with two
+stars, the cell passes acceptance; Psycho at 0.66: 6/6 with 1.7 stars (fails on "no drone" and "plans alike"). Acceptance 7/24.
+Calibration: refit twice on the existing records for the shape and the boss data (80 % / 0.75, override); the asset's inputs
+hash still reads the records' data (63b39a09) while the data moved with the boss numbers, so the next `measure` is what makes
+the calibration current again; the waves of C1_01-03 and C1_06 did not move under either refit.

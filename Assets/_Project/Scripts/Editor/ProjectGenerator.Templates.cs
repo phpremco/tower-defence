@@ -60,6 +60,13 @@ namespace Game.Editor
             ConfigureLevelExtras(level, forSale, new CombineRecipe[0]);
             ConfigureLevelDrones(level, spec.Key, context);
 
+            WriteBestLayout(level, spec, context.Blockade);
+            return level;
+        }
+
+        // The first layout attempt that passes the pure checks and the game's validator is written and stays.
+        private static RoadLayout WriteBestLayout(LevelDefinition level, CampaignLevelSpec spec, TowerDefinition blockade)
+        {
             var failures = new List<string>();
             for (int attempt = 0; attempt < RoadGenerator.Attempts; attempt++)
             {
@@ -67,12 +74,12 @@ namespace Game.Editor
                 List<string> errors = LayoutChecks.Check(layout, spec.Layout, BalanceSheet.Rules);
                 if (errors.Count == 0)
                 {
-                    WriteLayout(level, spec, layout, context.Blockade);
+                    WriteLayout(level, spec, layout, blockade);
                     errors = ValidateLayoutCopy(level);
                     if (errors.Count == 0)
                     {
                         EditorUtility.SetDirty(level);
-                        return level;
+                        return layout;
                     }
                 }
 
@@ -80,6 +87,50 @@ namespace Game.Editor
             }
 
             throw new InvalidOperationException($"Level {spec.Key}: none of {RoadGenerator.Attempts} layout attempts passed.\n{string.Join("\n", failures)}");
+        }
+
+        /// <summary>
+        /// Round 29: one campaign level's map again from its spec (layout, terrain bake, the arena copies that borrow its map),
+        /// for a spec change to a single level while the full generator must not run. Everything else about the level stays;
+        /// its waves must be solved again afterwards (the geometry changed).
+        /// </summary>
+        internal static string RelayoutCampaignLevel(string key)
+        {
+            CampaignLevelSpec spec = null;
+            foreach (CampaignLevelSpec[] continent in LevelSpecs.Continents)
+            {
+                foreach (CampaignLevelSpec candidate in continent)
+                {
+                    spec = candidate.Key == key ? candidate : spec;
+                }
+            }
+
+            if (spec == null)
+            {
+                return $"no level spec {key}";
+            }
+
+            var level = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/Level_{key}.asset");
+            var blockade = AssetDatabase.LoadAssetAtPath<TowerDefinition>($"{DataRoot}/Towers/Blockade.asset");
+            if (level == null || blockade == null)
+            {
+                return $"Level_{key} or the Blockade tower is missing: run the full generator first";
+            }
+
+            RoadLayout layout = WriteBestLayout(level, spec, blockade);
+            BakeTerrain(level);
+            RememberBake(level);
+            int arenas = RebuildArenaCopiesOf(level.name);
+            AssetDatabase.SaveAssets();
+            List<Cell> walk = LayoutGeometry.Walk(layout.Road);
+            var gates = new List<string>();
+            foreach (Cell gate in layout.Gates)
+            {
+                int index = LayoutGeometry.IndexOf(walk, gate);
+                gates.Add($"{index} ({(float)index / Math.Max(1, walk.Count - 1):P0})");
+            }
+
+            return $"{key}: attempt {layout.Attempt}, road {walk.Count} cells, gates at {string.Join(", ", gates)}, first gate share {spec.Layout.FirstGateShare:0.00}, {arenas} arena copies rebuilt";
         }
 
         // The validator runs on a fresh copy: the asset caches its road and terrain, which the write just changed.

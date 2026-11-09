@@ -1,0 +1,12 @@
+== finale probe: difficulties 0 1 2 3 on 4 workers (18:48:12)
+  w1: difficulty 0
+  w2: difficulty 1
+  w3: difficulty 2
+  w4: difficulty 3
+== finale workers done in 5 min 50 s (18:54:02)
+  w1: result="Passed", 6 cells
+  w2: result="Passed", 6 cells
+  w3: result="Passed", 6 cells
+  w4: result="Passed", 6 cells
+merged 24 cells into Tools/PlayTest/finale_probe.txt
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)

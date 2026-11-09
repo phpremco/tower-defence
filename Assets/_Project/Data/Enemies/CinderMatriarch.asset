@@ -15,11 +15,10 @@ MonoBehaviour:
   _displayName: Cinder Matriarch
   _layer: 1
   _flies: 0
-  _maxHealth: 1450
-  _armor: 0
-  _armorReduction: 0.6
+  _maxHealth: 10250
+  _armor: 1800
   _speed: 0.4
-  _reward: 344
+  _reward: 2389
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
@@ -40,7 +39,9 @@ MonoBehaviour:
   _rageSpeedMultiplier: 1.5
   _rageRadius: 3
   _isBoss: 1
-  _abilities: []
+  _abilities:
+  - {fileID: 11400000, guid: 40893c0ff565ba044b59d1012237ee20, type: 2}
+  - {fileID: 11400000, guid: 69376180b81976c4ba34c7e2cb92754d, type: 2}
   _boss: {fileID: 11400000, guid: 0b22b36fdbc1dae438a626eef6e3e0c5, type: 2}
   _color: {r: 0.8, g: 0.25, b: 0.08, a: 1}
   _eyeColor: {r: 1, g: 0.6, b: 0.2, a: 1}

@@ -92,10 +92,14 @@ namespace Game.Editor
         // damage in the air) the derived Psycho share fell from 1.7 to about 1.1-1.15; round 21a2 (the Cannon reloads slower)
         // moved it again (Hard about 1.76, Psycho 1.49); round 21a3 (the ledger counts in-play efficiency) back to Hard about
         // 1.43, Psycho 1.78.
-        private const float EasyBossHealth = 1f;
+        // Round 29: 0.8 since the Easy finale player (138 research, 1266 money) lost to Rotbloom as the data stood (holds x0.92, also at a share of 0.9)
+        // while beating every other boss; Easy forgives, and the stage reports Easy only.
+        private const float EasyBossHealth = 0.8f;
         private const float MediumBossHealth = 1f;
-        private const float HardBossHealth = 1.45f;
-        private const float PsychoBossHealth = 1.75f;
+        // Round 29 (2026-11-09): the finale probe with the boss powers derives Hard 1.80 and Psycho 1.05 (Psycho's finale
+        // player meets heavier crowds and escorts, so its boss carries less; a design question for Remco in STATUS).
+        private const float HardBossHealth = 1.8f;
+        private const float PsychoBossHealth = 1.05f;
 
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its

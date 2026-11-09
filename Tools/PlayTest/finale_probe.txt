@@ -1,34 +1,34 @@
-Finale probe as played 2026-11-09 16:41 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-09 15:54, seeds 1,2,3, step 0.2, inputs fa88200b (current)
+Finale probe as played 2026-11-09 20:12 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-09 20:06, seeds 1,2,3, step 0.2, inputs 63b39a09 (STALE, data now d62c1c91)
 Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
 share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
 
-  Gravemaw         Easy    money  1260 research  138 towers 6: holds x5.38 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 lost base 0/800, x6.36 lost base 0/800, x5.85 lost base 0/800)
-  CinderMatriarch  Easy    money  1260 research  138 towers 7: holds x14.76 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 won base 800/800, x10.54 won base 800/800, x14.76 won base 800/800)
-  FrostWarden      Easy    money  1260 research  138 towers 7: holds x11.47 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 won base 800/800, x10.54 won base 800/800, x14.76 lost base 0/800, x12.47 lost base 0/800, x11.47 won base 800/800, x11.96 lost base 0/800)
-  Rotbloom         Easy    money  1260 research  138 towers 7: holds x2.42 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 lost base 0/800, x2.32 won base 800/800, x2.52 lost base 0/800, x2.42 won base 800/800)
-  Shattered        Easy    money  1260 research  138 towers 7: holds x12.47 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 won base 800/800, x10.54 won base 800/800, x14.76 lost base 0/800, x12.47 won base 800/800, x13.57 lost base 0/800, x13.01 lost base 0/800)
-  SealedOne        Easy    money  1260 research  138 towers 7: holds x14.76 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 won base 800/800, x3.84 won base 800/800, x5.38 won base 800/800, x7.53 won base 800/800, x10.54 won base 800/800, x14.76 won base 800/800)
-cell|CinderMatriarch|0|14.758|won|1|1|1450|9
-cell|CinderMatriarch|1|2.132|won|1|1|1450|7
-cell|CinderMatriarch|2|14.758|won|1|1.45|1450|9
-cell|CinderMatriarch|3|9.691|won|1|1.75|1450|11
-cell|FrostWarden|0|11.466|won|1|1|1300|12
-cell|FrostWarden|1|8.19|won|1|1|1300|11
-cell|FrostWarden|2|10.107|won|1|1.45|1300|11
-cell|FrostWarden|3|5.378|won|1|1.75|1300|9
-cell|Gravemaw|0|5.378|won|1|1|2300|9
-cell|Gravemaw|1|2.419|won|1|1|2300|7
-cell|Gravemaw|2|7.219|won|1|1.45|2300|10
-cell|Gravemaw|3|4.358|won|1|1.75|2300|9
-cell|Rotbloom|0|2.419|won|1|1|3100|7
-cell|Rotbloom|1|1.657|won|1|1|3100|6
-cell|Rotbloom|2|2.319|won|1|1.45|3100|7
-cell|Rotbloom|3|1|won|1|1.75|3100|4
-cell|SealedOne|0|14.758|won|1|1|3350|9
-cell|SealedOne|1|12.473|won|1|1|3350|12
-cell|SealedOne|2|12.473|won|1|1.45|3350|12
-cell|SealedOne|3|6.102|won|1|1.75|3350|10
-cell|Shattered|0|12.473|won|1|1|2200|12
-cell|Shattered|1|10.541|won|1|1|2200|11
-cell|Shattered|2|14.758|won|1|1.45|2200|9
-cell|Shattered|3|7.219|won|1|1.75|2200|10
+  Gravemaw         Easy    money  1263 research  138 towers 6: holds x1.23 (x1.00 won base 800/800, x1.40 lost base 0/800, x1.18 won base 170/800, x1.29 lost base 0/800, x1.23 won base 166/800)
+  CinderMatriarch  Easy    money  1263 research  138 towers 7: holds x1.73 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 won base 800/800)
+  FrostWarden      Easy    money  1263 research  138 towers 7: holds x1.80 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 won base 800/800, x1.88 lost base 0/800)
+  Rotbloom         Easy    money  1263 research  138 towers 7: holds x2.13 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 lost base 0/800, x2.32 lost base 0/800, x2.13 won base 800/800, x2.22 lost base 0/800)
+  Shattered        Easy    money  1263 research  138 towers 7: holds x1.66 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 lost base 0/800)
+  SealedOne        Easy    money  1263 research  138 towers 7: holds x1.73 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 won base 800/800)
+cell|CinderMatriarch|0|1.728|won|1|0.8|10250|6
+cell|CinderMatriarch|1|1.183|won|1|1|10250|5
+cell|CinderMatriarch|2|1.134|won|1|1.8|10250|5
+cell|CinderMatriarch|3|1.183|won|1|1.05|10250|5
+cell|FrostWarden|0|1.802|won|1|0.8|10850|6
+cell|FrostWarden|1|1.183|won|1|1|10850|5
+cell|FrostWarden|2|1.134|won|1|1.8|10850|5
+cell|FrostWarden|3|1|won|1|1.05|10850|4
+cell|Gravemaw|0|1.234|won|1|0.8|48000|5
+cell|Gravemaw|1|1.4|won|1|1|48000|5
+cell|Gravemaw|2|1.234|won|1|1.8|48000|5
+cell|Gravemaw|3|1|won|1|1.05|48000|4
+cell|Rotbloom|0|2.132|won|1|0.8|3550|7
+cell|Rotbloom|1|1.183|won|1|1|3550|5
+cell|Rotbloom|2|1.088|won|1|1.8|3550|5
+cell|Rotbloom|3|1.183|won|1|1.05|3550|5
+cell|SealedOne|0|1.728|won|1|0.8|26900|6
+cell|SealedOne|1|1.183|won|1|1|26900|5
+cell|SealedOne|2|1.342|won|1|1.8|26900|5
+cell|SealedOne|3|1.342|won|1|1.05|26900|5
+cell|Shattered|0|1.657|won|1|0.8|13800|6
+cell|Shattered|1|1.183|won|1|1|13800|5
+cell|Shattered|2|1.4|won|1|1.8|13800|5
+cell|Shattered|3|1.4|won|1|1.05|13800|5
