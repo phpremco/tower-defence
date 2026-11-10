@@ -54,6 +54,9 @@ namespace Game.UI
         public RectTransform Panel => _panel;
         private DroneButton[] _buttons;
         private bool _wasFocused;
+        private bool _tending;
+        private int _openedFrame;
+        private GameObject _lastCard;
 
         private struct DroneButton
         {
@@ -192,6 +195,8 @@ namespace Game.UI
                 return;
             }
 
+            TendFocus();
+
             DialogueDefinition current = _context.Dialogue != null ? _context.Dialogue.Current : null;
             float now = Time.unscaledTime;
             float pulse = Mathf.Lerp(HighlightMinAlpha, 1f, 0.5f + 0.5f * Mathf.Sin(now * HighlightPulseRate));
@@ -285,11 +290,7 @@ namespace Game.UI
             }
 
             bool focused = _context.BaseMenuOpen;
-            if (focused && !_wasFocused)
-            {
-                FocusFirstAvailable();
-            }
-            else if (!focused && _wasFocused)
+            if (!focused && _wasFocused)
             {
                 ReleaseFocus();
             }
@@ -308,6 +309,65 @@ namespace Game.UI
             entry.Label.text = full ? $"max {active}/{max}" : $"{entry.Drone.Cost}   {active}/{max}";
             // Grey when the limit is reached, red when there is room but not enough money.
             entry.Label.color = full ? Unavailable : affordable ? TextColor : TooExpensive;
+        }
+
+        // A on the base doorstep opens the panel, and that press still counts as "submitted this frame" for the UI: a card
+        // focused in the same frame was bought at once. The focus waits for the next frame. After that it stays on the
+        // panel while it is open: a card that greys out under it (the last drone of its kind bought) drops the focus, and
+        // it goes back to that card. While the pause menu, a dialogue or the codex holds the game, the focus is theirs.
+        private void TendFocus()
+        {
+            if (!_context.BaseMenuOpen)
+            {
+                _tending = false;
+                return;
+            }
+
+            // The opening is noticed here rather than in Refresh, so the frame count is right however the panel was opened.
+            if (!_tending)
+            {
+                _tending = true;
+                _openedFrame = Time.frameCount;
+                _lastCard = null;
+            }
+
+            EventSystem events = EventSystem.current;
+            if (events == null || Time.frameCount <= _openedFrame || _context.InputBlocked)
+            {
+                return;
+            }
+
+            GameObject current = events.currentSelectedGameObject;
+            if (IsCard(current))
+            {
+                _lastCard = current;
+            }
+            else if (_lastCard != null && _lastCard.activeInHierarchy)
+            {
+                events.SetSelectedGameObject(_lastCard);
+            }
+            else
+            {
+                FocusFirstAvailable();
+            }
+        }
+
+        private bool IsCard(GameObject candidate)
+        {
+            if (candidate == null || !candidate.activeInHierarchy)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < _buttons.Length; i++)
+            {
+                if (candidate == _buttons[i].Button.gameObject)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void FocusFirstAvailable()

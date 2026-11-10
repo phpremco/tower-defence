@@ -140,7 +140,8 @@ namespace Game.UI
             _source.PlayOneShot(clip, 1f);
         }
 
-        private void Close()
+        /// <summary>Closes the board and hands the options column back (Back, or B / Esc through the options panel).</summary>
+        public void Close()
         {
             _source.Stop();
             Destroy(_panel);

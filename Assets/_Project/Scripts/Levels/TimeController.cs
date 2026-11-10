@@ -78,6 +78,40 @@ namespace Game.Levels
         }
 
         /// <summary>
+        /// Pauses for an interruption (the window lost its focus, the platform suspended the game): the pause menu opens,
+        /// and the game waits there until the player resumes it. Already paused or ended, nothing changes.
+        /// </summary>
+        public void PauseForInterruption()
+        {
+            if (_context == null || _paused || Ended)
+            {
+                return;
+            }
+
+            _paused = true;
+            Apply();
+        }
+
+        // The player build runs in the background (BuildScript), so without this an alt-tab left the waves running. The
+        // editor is skipped: it loses its focus all the time while tools and tests drive it, and a pause there would
+        // stall a play test or a balance run.
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus && !Application.isEditor)
+            {
+                PauseForInterruption();
+            }
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus && !Application.isEditor)
+            {
+                PauseForInterruption();
+            }
+        }
+
+        /// <summary>
         /// Freezes time without opening the pause menu while a panel such as the briefing is up. Each panel holds
         /// under its own owner, so several can be open at once and time resumes only after the last one releases.
         /// </summary>

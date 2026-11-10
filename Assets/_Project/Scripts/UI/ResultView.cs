@@ -46,6 +46,7 @@ namespace Game.UI
         private GameObject _root;
         private bool _shown;
         private bool _waiting;
+        private GameObject _lastFocus;
         // Game time until which a victory waits for a fallen boss's end (BossDefinition.ResultHoldSeconds).
         private float _holdUntil;
 
@@ -89,6 +90,16 @@ namespace Game.UI
             }
 
             Show();
+        }
+
+        // The result panel is the end of the level: a mouse click beside its buttons must not leave a gamepad with nothing
+        // to move from.
+        private void Update()
+        {
+            if (_root != null && _root.activeInHierarchy)
+            {
+                UiKit.KeepFocus(ref _lastFocus);
+            }
         }
 
         private void OnKilled(Enemy enemy)

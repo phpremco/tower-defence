@@ -78,5 +78,30 @@ namespace Game.Tests
             Assert.IsFalse(_context.Held, "a dialogue that ends after the victory still opens the input gate");
             Assert.AreEqual(0f, Time.timeScale, "but the time scale is left to the result screen");
         }
+
+        [Test]
+        public void AnInterruption_PausesWithTheMenuAndStaysPaused()
+        {
+            _time.PauseForInterruption();
+            Assert.IsTrue(_context.Paused, "the pause menu opens while the player is away");
+            Assert.AreEqual(0f, Time.timeScale);
+
+            _time.PauseForInterruption();
+            Assert.IsTrue(_context.Paused, "a second interruption does not toggle the pause off again");
+
+            _input.Pause();
+            Assert.IsFalse(_context.Paused, "the player resumes as from any pause");
+            Assert.AreEqual(1f, Time.timeScale);
+        }
+
+        [Test]
+        public void AnInterruption_AfterTheOutcome_ChangesNothing()
+        {
+            _context.Outcome = LevelOutcome.Lost;
+
+            _time.PauseForInterruption();
+
+            Assert.IsFalse(_context.Paused, "no pause menu after the end, so no pause may freeze the result screen");
+        }
     }
 }

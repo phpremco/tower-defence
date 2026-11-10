@@ -20,6 +20,7 @@ namespace Game.UI
     public sealed class WorldMapScreen : ScreenBase
     {
         private const string Title = "Choose a region";
+        private const string RegionTitle = "Choose a level";
         private const float GlobeSize = 1100f;
         private const int GlobeTexture = 2048;
         private const int CloudTexture = 1024;
@@ -130,6 +131,7 @@ namespace Game.UI
         private RawImage _haloImage;
         private PlanetGlobe _globe;
         private CanvasGroup _overview;
+        private Text _title;
         private Text _caption;
         private Text _hint;
         private Button _planet;
@@ -147,6 +149,9 @@ namespace Game.UI
         private int _heldDirection;
         private bool _rowFocused;
 
+        // An empty focus is how the map hands the stick to the globe, so it must not be filled back in.
+        protected override bool KeepsFocus => false;
+
         protected override void Build(RectTransform root)
         {
             if (!Services.TryGet(out _catalog))
@@ -160,8 +165,8 @@ namespace Game.UI
             {
                 _input.Cancelled += OnCancel;
                 _input.Confirmed += OnConfirm;
-                _input.NextTower += () => Step(1);
-                _input.PreviousTower += () => Step(-1);
+                _input.NextTower += OnNext;
+                _input.PreviousTower += OnPrevious;
             }
 
             _view = CreateRect("View", root, new Vector2(GlobeSize, GlobeSize));
@@ -185,7 +190,7 @@ namespace Game.UI
             chrome.offsetMin = Vector2.zero;
             chrome.offsetMax = Vector2.zero;
             _overview = chrome.gameObject.AddComponent<CanvasGroup>();
-            UiKit.CreateFixedText(chrome, Title, UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
+            _title = UiKit.CreateFixedText(chrome, Title, UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
             _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1200f, 50f));
             _hint = UiKit.CreateFixedText(chrome, PlanetHint, HintSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 118f), new Vector2(1700f, 34f));
             _hint.color = Muted;
@@ -206,8 +211,16 @@ namespace Game.UI
             {
                 _input.Cancelled -= OnCancel;
                 _input.Confirmed -= OnConfirm;
+                _input.NextTower -= OnNext;
+                _input.PreviousTower -= OnPrevious;
             }
         }
+
+        // Named, so OnDestroy can let go of them: the input provider outlives the scene, and a lambda left behind would
+        // step a destroyed map whenever LB / RB or Q / E is pressed later (in a level or on the upgrade screen).
+        private void OnNext() => Step(1);
+
+        private void OnPrevious() => Step(-1);
 
         private int FurthestOpenNode()
         {
@@ -738,6 +751,7 @@ namespace Game.UI
             }
 
             _entered = true;
+            _title.text = RegionTitle;
             FocusRegion(index);
             foreach (Marker badge in _badges)
             {
@@ -767,6 +781,7 @@ namespace Game.UI
         private void LeaveRegion()
         {
             _entered = false;
+            _title.text = Title;
             _focused = -1;
             foreach (Marker marker in _markers)
             {

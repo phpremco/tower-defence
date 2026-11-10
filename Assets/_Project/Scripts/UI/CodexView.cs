@@ -85,6 +85,7 @@ namespace Game.UI
         private Page _page = Page.Recipes;
         private int _selected = -1;
         private bool _open;
+        private GameObject _lastFocus;
 
         public bool Available => _catalog != null && (_catalog.Recipes.Count > 0 || _catalog.Enemies.Count > 0);
 
@@ -167,6 +168,15 @@ namespace Game.UI
 
             EventSystem.current.SetSelectedGameObject(null);
             _closed?.Invoke();
+        }
+
+        // A mouse click beside the list clears the focus; give it back so the stick can still walk the book.
+        private void Update()
+        {
+            if (_open)
+            {
+                UiKit.KeepFocus(ref _lastFocus);
+            }
         }
 
         private void OnCancelled()
@@ -351,9 +361,14 @@ namespace Game.UI
                 };
             }
 
-            _close.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = _rows.Count > 0 ? _rows[0] : null, selectOnLeft = _enemiesTab };
-            _enemiesTab.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnLeft = _recipesTab, selectOnRight = _close, selectOnDown = _rows.Count > 0 ? _rows[0] : null };
-            _recipesTab.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnRight = _enemiesTab, selectOnDown = _rows.Count > 0 ? _rows[0] : null };
+            // The tab of the page on show is greyed out and takes no focus (focus parked on it was lost for good), so the
+            // close button and the rows lead to the other tab only.
+            Button first = _rows.Count > 0 ? _rows[0] : null;
+            Button otherTab = page == Page.Recipes ? _enemiesTab : _recipesTab;
+            Button shownTab = page == Page.Recipes ? _recipesTab : _enemiesTab;
+            _close.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = first, selectOnLeft = otherTab };
+            otherTab.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnRight = _close, selectOnDown = first };
+            shownTab.navigation = new Navigation { mode = Navigation.Mode.None };
 
             // The rows were only just added: lay them out now, so the first scroll knows the list's height.
             LayoutRebuilder.ForceRebuildLayoutImmediate(_content);

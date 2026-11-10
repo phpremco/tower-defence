@@ -4695,3 +4695,218 @@ the last two scale passes: take a new `snapshot` before the next number change).
 **Commands to continue (editor_status first).** Remco's answers above; then `wave_tuning.txt` levers for the open cells and
 `replay_cells.sh "cells=..."`; a `snapshot` before the next number change; if the share decision changes, `finale_workers.sh`,
 `ContinentFinaleTests`, `balance_pipeline.sh finale`.
+
+## Round 32 (QA): menus, options, gamepad and keyboard, the flow, the introductions (2026-11-10)
+
+Nothing here is committed; the curator commits.
+
+### Save, settings and editor state
+
+- **Save:** Remco's save `progress.json` (MD5 ae9223b8) was copied aside before every Play Mode run and restored after each. I checked the MD5 by hand after every session. The dev backup was not touched.
+- **Settings:** every setting lives in `progress.json`: volumes, camera speed, edge scrolling and radar. There are no PlayerPrefs (no registry key), so restoring the save restores the settings too.
+- **Editor:** the editor is stopped and there is no `Assets/InitTestScene*`. The Game view size was not changed. No balance data or pipeline output was touched.
+
+### How the game was driven
+
+The new QA tools are in `Tools/PlayTest/qa/`. `lib.sh` provides `pad`, `key`, `probe`, `shot` and `still`.
+
+Two editor limits shaped the tools:
+- `EditorApplication.Step` runs no input update.
+- `simulate_key` does not reach the game once the editor has lost its focus.
+
+So `pad.cs` (a virtual gamepad called "QAPad") and `kbd.cs` (the keyboard) queue their state events from an `InputSystem.onBeforeUpdate` hook in a Dynamic update. Play Mode must run unpaused for this to work.
+
+The helper scripts:
+
+| Script | What it does |
+| --- | --- |
+| `ui_probe.cs` | Lists the focus and every active Selectable. |
+| `level_probe.cs` | Shows the placement state. |
+| `cursor_to.cs`, `cursor_build.cs` | Put the cursor on the base, a hero post or a free cell. |
+| `gadgets_in.cs` | Hands the level two street weapons, in memory only. |
+| `interrupt.cs` | Calls the focus-loss pause. |
+| `texts_fit.cs` | Runs the round-28 text-fit sweep. |
+| `still.cs` | Renders a still with the canvases laid out at a given size (for example 1280x720), with the tilt-shift off. |
+
+Stills from `still.cs` come out darker than the screen because there is no final blit.
+
+### What was tested
+
+I tested with gamepad and keyboard throughout. Mouse clicks were tested on the UI only: in this setup, simulated clicks on the field do not move the build cursor.
+
+**Main menu**
+- Start, Codex and Options.
+- Quit is shown on PC only, through `IPlatformSettings.CanQuit`.
+
+**Options**
+- Every slider and toggle applies at once (listener, mix and camera controls) and is written to the save.
+- The Controls, Sound test and Replay intro pages work. The Story viewer only shows in developer mode.
+- Settings survive a restart. I set Music to 60 and Radar to Off, stopped Play Mode, played again and read the values back.
+- There are no in-game options for language, quality profile or the audio mixer. The High/Low profile is a Boot switch per platform.
+
+**Codex in the main menu**
+- Both tabs and scrolling through the list.
+
+**Planet map**
+- The planet layer and the region layer.
+- A locked level: A does nothing and the caption says "locked".
+- Open and completed level markers, with their stars.
+- The difficulty panel and its Back button.
+
+**Levels: C1_01 (Medium and Easy) and C1_02 (Easy)**
+- Briefing (Deploy), building, the tower menu, upgrading to max and selling.
+- The drone panel and LB/RB.
+- Spencer's controls: X, LT and RT.
+- Speed (Y), and pause (Start) with its Sound and Camera pages.
+- The level codex.
+- Camera pan (right stick) and zoom (L3/R3).
+- Keyboard: Q/E, Enter, U, X, Esc and P.
+
+**After a level**
+- The victory and defeat screens.
+- The upgrade screen: selecting a tile, buying an upgrade (research is spent and saved), a locked tile, and B back to the map.
+- The whole loop: menu → map → level → result → upgrades → map → menu.
+
+**Fresh save**
+- **Intro cutscene:** A reads the line. B skips the conversation. Two quick B presses skip the whole scene. Start only arms the skip between conversations.
+- **C1_01 opening dialogue:** the game clock is held while it is open. The A press that closes it does not also act on the field.
+- **Wave-2 dialogue:** shown.
+- **Cragback first sighting:** ORA speaks, then Voss says "Use the cannon". It fires the moment the creature appears in wave 7, and A or B dismisses it.
+
+**Layout and text fit**
+- Stills at 1080p (`capture_game_view`) and at 720p (`still.cs`), with a text-fit check at both.
+- No text leaves its box or the screen in the menu, options, HUD, pause menu, result screen, upgrade screen or map.
+
+**Tests**
+- PlayMode: `OverviewRadarSmokeTests` 1/1, and the save was intact afterwards.
+- EditMode, all green:
+  - SelectionCycleTests 6/6 (new) and TimeControllerTests 5/5 (two of them new).
+  - InputGateTests, CutsceneInputTests, DialoguePlayerTests, MenuStageTests, ProgressTests and StoryTests.
+  - StoryTriggerSelectorTests, CampaignTests, DeveloperModeTests, ProgressMigrationTests and CameraPathTests.
+- I did not run the full EditMode suite, because PlanSearchTests and CalibrationFitTests rewrite the pipeline output.
+
+### Bugs fixed, file by file
+
+Every fix compiles clean.
+
+**`UI/TowerMenuView.cs`**
+- **Bug:** A or Enter on a built tower opened its menu and bought the upgrade with the same press.
+  - The menu focused the Upgrade icon in the same frame, and the UI still counted that press as "submitted".
+- **Fix:** the focus now waits one frame.
+- **Also fixed:** while the menu is open, an icon that greys out (max level, or money spent) now keeps the focus.
+  - Before, the gamepad lost the menu after maxing a tower.
+  - Mashing A no longer jumps on to Sell.
+- The menu never takes the focus from the pause menu, a dialogue or the codex.
+
+**`UI/BaseMenuView.cs`**
+- **Bug:** the same double press on the base doorstep: A opened the drone panel and bought a drone.
+- **Fix:** the same focus delay. The panel also notices its own opening in Update.
+
+**`Levels/PlacementController.cs` and the new `Levels/SelectionCycle.cs`**
+- **Bug:** LB/RB and Q/E only cycled through the towers. Street weapons (gadgets) could not be picked with a gamepad, because their cards take no focus.
+- **Fix:** the cycle now walks the towers, then the street weapons.
+- **Tests:** `SelectionCycleTests`.
+
+**`UI/PauseMenuView.cs` and `UI/HudView.cs`**
+- **Bug:** a gamepad could not open the in-level Codex, because the book icon takes no focus.
+  - **Fix:** a "Codex" button in the pause menu. It unpauses and opens the book, and B returns to the game.
+  - The button is disabled while a story scene runs.
+- **Bug:** the pause panel was too short and "Quit to map" hung over its bottom edge.
+  - **Fix:** the panel is now 920 high, enough for six buttons.
+- **Bug:** a mouse click on the dim background left the menu without a focus.
+  - **Fix:** the focus now comes back (see `KeepFocus` below).
+
+**`UI/UiKit.cs` (`KeepFocus`), `UI/ScreenBase.cs`, `UI/ResultView.cs` and `UI/CodexView.cs`**
+- **Bug:** a mouse click on empty space cleared the focus, and neither the stick nor the arrow keys could bring it back.
+  - For a gamepad player who touched the mouse, this was a soft-lock. I saw it in the main menu and the pause menu.
+- **Fix:** the focus now returns to the last element that held it, in:
+  - the main menu, options and upgrade screen;
+  - the result panel, pause menu and codex.
+- The planet map opts out (`KeepsFocus => false`): there, an empty focus is how the stick is handed to the globe.
+
+**`UI/CodexView.cs`**
+- **Bug:** the tab of the page on show is greyed out, but navigation could still land on it (Close → left → left). From there the focus was lost for good.
+- **Fix:** only the other tab is reachable now.
+
+**`UI/OptionsOverlay.cs`**
+- **Bug:** B and Esc did nothing in Options, Controls or the Sound test.
+  - **Fix:** they now step back one page.
+- **Bug:** the Controls page was broken.
+  - Its panel was a 100x100 box in the middle of the screen, so the table ran off the left edge and Back sat mid-screen.
+  - **Fix:** a full-page table with three columns: Action, Gamepad, and Keyboard and mouse.
+  - It lists the current bindings, including street weapons, the way to the Codex and the drone panel.
+- **Bug:** the "Options" title showed through the Sound test's dim.
+  - **Fix:** the title is hidden on the Sound test page.
+
+**`UI/SoundBoardOverlay.cs`**
+- `Close()` is now public, so B can call it.
+
+**`UI/FocusLabel.cs` (new) and `UiKit.CreateSlider`**
+- **Bug:** you could barely see which slider had the focus; only the small handle changed.
+- **Fix:** the slider's label turns gold while it has the focus, in the options and in the pause menu.
+
+**`UI/WorldMapScreen.cs`**
+- **Bug:** the title said "Choose a region" inside a region.
+  - **Fix:** it now says "Choose a level" there.
+- **Bug:** the LB/RB handlers were lambdas that were never unsubscribed. Every visit to the map left a dead map listening on the input provider.
+  - **Fix:** they are now named handlers, removed in OnDestroy.
+
+**`Levels/TimeController.cs`**
+- **Bug:** the game did not pause on interruptions, which CLAUDE.md requires. The player build also keeps running in the background.
+- **Fix:**
+  - `OnApplicationFocus(false)` and `OnApplicationPause(true)` now call `PauseForInterruption()`.
+  - The pause menu opens and stays open until the player resumes.
+- This is skipped in the editor, which loses its focus all the time under the tools and tests.
+- **Tests:** two new `TimeControllerTests`. I also checked it in play with `interrupt.cs`.
+
+### Open findings, most severe first
+
+These are not built. Some of them are design choices for Remco.
+
+1. **No console safe area.**
+   - `UiKit.CreateRoot` uses `Screen.safeArea`, which is the full screen on both PC and Switch.
+   - HUD text (Base, Money, the icons top right) sits about 20 px from the screen edges at 1080p.
+   - CLAUDE.md asks for a safe margin, and a TV title-safe inset (about 5%) is missing. A platform setting should decide its size.
+2. **Voss's scan hints have no Codex link** (approved on 2026-11-06).
+   - C1_01 (Cragback) and C1_03 (Skyray) have first-sighting dialogues that advise the counter tower, but nothing opens the Codex at that creature.
+   - C1_02's new creatures have no sighting hint at all.
+3. **The prompts never show gamepad buttons.**
+   - The HUD quick bar shows keyboard keys only: "Shockwave F", "Repair 30 G", "Next post H".
+   - The dialogue buttons say SKIP and NEXT.
+   - A gamepad player never sees X, LT, RT, A or B.
+   - The cutscene skip says "Esc / B", although B first skips the conversation.
+4. **Small text at 720p handheld.**
+   - The quick-bar labels and card badges draw at about 13 px: readable, but tight.
+5. **The hero panel is a dead end for the gamepad.**
+   - A on a hero post opens the hero panel, but its icon cannot take the focus.
+   - X still cycles through the posts, so nothing is unreachable.
+6. **No gamepad route from the region view to the action row** (Planet, Upgrades).
+   - You get there with B (back to the planet) and then B again to focus the row.
+   - D-pad down could focus the row instead. This is a design choice.
+7. **No pause when the controller disconnects.**
+   - Consoles require this.
+   - It needs a "device lost" event on `IInputProvider`. That is an interface change, so I left it for a decision.
+8. **Upgrade screen.**
+   - The detail panel follows the tile only when you press A; the Codex follows the focus.
+   - Locked tiles (Tesla, Railgun) look almost the same as owned ones, with no lock icon.
+9. **The result screen buttons change order.**
+   - Victory: Upgrades / Play again / Back to map.
+   - Defeat: Play again / Upgrades / Back to map.
+10. **The focus frame is weak on dark buttons.** In the main menu it is only a thin blue border; the gold corner brackets read better.
+11. **A compiler warning that was already there:** CS0618 at `Tests/PlayMode/BalanceProbeTests.cs:601`, where `FindFirstObjectByType` is obsolete. It is a balance file, so I left it alone.
+12. **No in-game quality (High/Low) or language option.** The profile is a Boot switch per platform, and this needs a decision before Steam.
+
+### Screenshots
+
+All shots are in `ArtSource/Previews/QA/`: 43 shots plus `contact_sheet.png`.
+
+- **The bugs as found:** files whose names start with `before_`, plus `level2_base_menu_autobuy` (a drone bought by the same A press).
+- **The fixed screens** (`fixed_*`):
+  - options, the sound test and the map title;
+  - the controls page and the pause menu, each at 1080p and 720p;
+  - the tower menu at max level.
+- **The rest of the flow:**
+  - main menu and codex: `main_menu_*`, `menu_codex_*`;
+  - the planet map: `map_*`;
+  - levels: `level_*`, `first_*` (the fresh-save dialogues), `intro_*`;
+  - after a level: `result_win`, `result_defeat`, `base_*`.

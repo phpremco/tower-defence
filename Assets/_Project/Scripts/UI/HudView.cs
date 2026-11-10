@@ -145,7 +145,7 @@ namespace Game.UI
             // Over the HUD and the result screen, under the pause menu, which may open on top of a conversation.
             BuildDialogue(safe, keepOut);
             BuildBossIntros(safe, worldLabels, camera, keepOut);
-            gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input);
+            gameObject.AddComponent<PauseMenuView>().Initialize(context, safe, time, _input, _codex);
             gameObject.AddComponent<BriefingView>().Initialize(context, safe, time);
 
             _context.Changed.Subscribe(Refresh);

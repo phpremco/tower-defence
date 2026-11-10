@@ -757,25 +757,54 @@ namespace Game.Levels
 
         private void OnPreviousTower() => CycleSelection(-1);
 
+        // The shoulder buttons walk the whole build bar, street weapons included: the cards themselves take no focus, so
+        // without this a gamepad could never pick a street weapon.
         private void CycleSelection(int direction)
         {
-            int count = _context.AvailableTowers.Count;
-            if (count == 0)
+            IReadOnlyList<TowerDefinition> towers = _context.AvailableTowers;
+            IReadOnlyList<PathObjectDefinition> streetWeapons = _context.AvailablePathObjects;
+            int next = SelectionCycle.Next(CurrentBarPosition(), towers.Count, streetWeapons.Count, direction);
+            if (next < 0)
             {
                 return;
             }
 
-            int current = 0;
-            for (int i = 0; i < count; i++)
+            if (next < towers.Count)
             {
-                if (_context.AvailableTowers[i] == _context.SelectedTower)
+                _context.SelectTower(towers[next]);
+            }
+            else
+            {
+                _context.SelectPathObject(streetWeapons[next - towers.Count]);
+            }
+
+            Refresh();
+        }
+
+        private int CurrentBarPosition()
+        {
+            IReadOnlyList<TowerDefinition> towers = _context.AvailableTowers;
+            if (_context.SelectedPathObject != null)
+            {
+                IReadOnlyList<PathObjectDefinition> streetWeapons = _context.AvailablePathObjects;
+                for (int i = 0; i < streetWeapons.Count; i++)
                 {
-                    current = i;
+                    if (streetWeapons[i] == _context.SelectedPathObject)
+                    {
+                        return towers.Count + i;
+                    }
                 }
             }
 
-            _context.SelectTower(_context.AvailableTowers[(current + direction + count) % count]);
-            Refresh();
+            for (int i = 0; i < towers.Count; i++)
+            {
+                if (towers[i] == _context.SelectedTower)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>Updates the cursor marker, the placement preview, the range ring and the status text.</summary>

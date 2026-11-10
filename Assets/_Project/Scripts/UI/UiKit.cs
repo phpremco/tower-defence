@@ -282,6 +282,32 @@ namespace Game.UI
             }
         }
 
+        /// <summary>
+        /// Keeps a menu's focus alive for the gamepad and keyboard. A mouse click on empty space clears the focus, and with
+        /// nothing focused the stick and the arrow keys have nothing to move from; so while the focus is empty or hidden it
+        /// goes back to the last element that held it. Call every frame from a menu that is open; no allocations.
+        /// </summary>
+        public static void KeepFocus(ref GameObject last)
+        {
+            EventSystem events = EventSystem.current;
+            if (events == null)
+            {
+                return;
+            }
+
+            GameObject current = events.currentSelectedGameObject;
+            if (current != null && current.activeInHierarchy)
+            {
+                last = current;
+                return;
+            }
+
+            if (last != null && last.activeInHierarchy)
+            {
+                events.SetSelectedGameObject(last);
+            }
+        }
+
         private static void AddStarfield(Transform canvas)
         {
             // The menu sky painted in Blender (README round 25: alpha = 3 x brightness over the camera's dark clear colour).
@@ -356,6 +382,8 @@ namespace Game.UI
             slider.maxValue = 1f;
             slider.value = value;
             slider.onValueChanged.AddListener(onChanged);
+            // The handle's focus frame is too small to find on a full options page, so the label lights up as well.
+            go.AddComponent<FocusLabel>().Initialize(text);
             return slider;
         }
 

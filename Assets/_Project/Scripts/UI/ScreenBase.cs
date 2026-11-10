@@ -14,6 +14,7 @@ namespace Game.UI
     public abstract class ScreenBase : MonoBehaviour
     {
         private Button _firstSelected;
+        private GameObject _lastFocus;
 
         protected ProgressService Progress { get; private set; }
 
@@ -27,6 +28,10 @@ namespace Game.UI
 
         /// <summary>Whether the screen gets the flat starfield behind its canvas; a screen with its own scenery turns it off.</summary>
         protected virtual bool Starfield => true;
+
+        /// <summary>Whether the screen gives the focus back after a mouse click on empty space (see UiKit.KeepFocus). A screen
+        /// that hands the stick to something other than its buttons, such as the planet map, turns it off.</summary>
+        protected virtual bool KeepsFocus => true;
 
         private void Start()
         {
@@ -50,6 +55,14 @@ namespace Game.UI
             RectTransform root = UiKit.CreateRoot(transform, Starfield);
             Build(root);
             UiKit.Select(_firstSelected);
+        }
+
+        private void Update()
+        {
+            if (KeepsFocus)
+            {
+                UiKit.KeepFocus(ref _lastFocus);
+            }
         }
     }
 }

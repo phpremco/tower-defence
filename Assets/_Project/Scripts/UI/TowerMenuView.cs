@@ -58,6 +58,8 @@ namespace Game.UI
         private Text _combinePrice;
         private bool _wasOpen;
         private float _nextRefresh;
+        private int _openedFrame;
+        private GameObject _lastIcon;
 
         public void Initialize(LevelContext context, RectTransform root, Camera camera, Font font)
         {
@@ -84,6 +86,11 @@ namespace Game.UI
 
         private void Update()
         {
+            if (_wasOpen)
+            {
+                TendFocus();
+            }
+
             if (_wasOpen && Time.unscaledTime >= _nextRefresh)
             {
                 _nextRefresh = Time.unscaledTime + RefreshSeconds;
@@ -230,7 +237,8 @@ namespace Game.UI
             {
                 _wasOpen = true;
                 _nextRefresh = Time.unscaledTime + RefreshSeconds;
-                FocusFirstAvailable();
+                _openedFrame = Time.frameCount;
+                _lastIcon = null;
             }
         }
 
@@ -254,14 +262,36 @@ namespace Game.UI
             return $"\nNext: {effect}   range {now.Range:0.0} > {next.Range:0.0}   shots/s {1f / now.FireInterval:0.0} > {1f / next.FireInterval:0.0}{health}";
         }
 
-        private void FocusFirstAvailable()
+        // The press that opened the menu (A or Enter on the tower) still counts as "submitted this frame" for the UI, so
+        // an icon focused in that frame was bought at once: the focus waits for the next frame. After that the focus is
+        // kept on the strip: an icon that greys out under it (a tower upgraded to the top, money spent) drops the focus,
+        // and it goes back to that same icon rather than jumping on to Sell, so a quick second press never sells. While
+        // the pause menu, a dialogue or the codex holds the game, the focus is theirs.
+        private void TendFocus()
         {
-            Button first = _upgrade.interactable ? _upgrade : _repair.interactable ? _repair : _sell;
-            if (EventSystem.current != null)
+            EventSystem events = EventSystem.current;
+            if (events == null || Time.frameCount <= _openedFrame || _context.InputBlocked)
             {
-                EventSystem.current.SetSelectedGameObject(first.gameObject);
+                return;
             }
+
+            GameObject current = events.currentSelectedGameObject;
+            if (IsIcon(current))
+            {
+                _lastIcon = current;
+                return;
+            }
+
+            events.SetSelectedGameObject(_lastIcon != null && _lastIcon.activeInHierarchy ? _lastIcon : FirstAvailable().gameObject);
         }
+
+        private bool IsIcon(GameObject candidate)
+        {
+            return candidate != null && candidate.activeInHierarchy &&
+                (candidate == _upgrade.gameObject || candidate == _repair.gameObject || candidate == _sell.gameObject || candidate == _combine.gameObject);
+        }
+
+        private Button FirstAvailable() => _upgrade.interactable ? _upgrade : _repair.interactable ? _repair : _sell;
 
         // The menu hangs just over the tower's drawn top when there is room under the top bar, else just under its
         // foot, kept clear of the HUD bars; both sides follow the model's real size on screen at any zoom.

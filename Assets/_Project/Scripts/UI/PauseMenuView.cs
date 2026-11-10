@@ -18,7 +18,8 @@ namespace Game.UI
         private const float PanelWidth = 760f;
         // The panel keeps this far from the safe area edges and shrinks as a whole on a window narrower than it.
         private const float SafeMargin = 24f;
-        private const float PanelHeight = 720f;
+        // Header plus six buttons (Resume, Codex, Sound, Camera, Restart, Quit) with their gaps and the page margins.
+        private const float PanelHeight = 920f;
         private const float ButtonGap = 20f;
         private static readonly Color Dim = new Color(0f, 0f, 0f, 0.65f);
         private static readonly Color PanelTint = new Color(0.14f, 0.22f, 0.4f, 0.97f);
@@ -35,13 +36,18 @@ namespace Game.UI
         private Selectable _cameraFirst;
         private Button _resume;
         private Button _keepPlaying;
+        private Button _codexButton;
+        private CodexView _codex;
+        private GameObject _lastFocus;
         private bool _wasOpen;
 
-        public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input)
+        /// <param name="codex">The level codex, or null when the level has none; the pause menu is how a gamepad reaches it.</param>
+        public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input, CodexView codex)
         {
             _context = context;
             _time = time;
             _input = input;
+            _codex = codex != null && codex.Available ? codex : null;
             Build(safeRoot);
             _context.Changed.Subscribe(Refresh);
             _input.Cancelled += OnCancelled;
@@ -71,6 +77,11 @@ namespace Game.UI
             _mainPage = CreatePage(panel.rectTransform, "Paused");
             RectTransform main = _mainPage.GetComponent<RectTransform>();
             _resume = AddButton(main, "Resume", () => _time.TogglePause());
+            if (_codex != null)
+            {
+                _codexButton = AddButton(main, "Codex", OpenCodex);
+            }
+
             AddButton(main, "Sound", ShowSound);
             AddButton(main, "Camera", ShowCamera);
             AddButton(main, "Restart level", Restart);
@@ -156,12 +167,34 @@ namespace Game.UI
             bool open = _context.Paused && _context.Outcome == LevelOutcome.Running;
             _root.SetActive(open);
 
+            if (_codexButton != null)
+            {
+                // As the HUD book: not while a story scene owns the screen.
+                _codexButton.interactable = !_context.StoryBusy;
+            }
+
             if (open && !_wasOpen)
             {
                 ShowMain();
             }
 
             _wasOpen = open;
+        }
+
+        // A mouse click on the dim clears the focus; give it back so the gamepad can still move through the menu.
+        private void Update()
+        {
+            if (_root.activeSelf)
+            {
+                UiKit.KeepFocus(ref _lastFocus);
+            }
+        }
+
+        // The codex holds the clock itself, like the HUD book, and B closes it straight back into the game.
+        private void OpenCodex()
+        {
+            _time.TogglePause();
+            _codex.Open();
         }
 
         private void ShowSound()

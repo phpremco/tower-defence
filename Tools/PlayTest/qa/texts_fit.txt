@@ -1,0 +1,60 @@
+== Level checked 7, out 0, tight/clipping at 125% 0
+ok <Money 595> ChakraPetch-SemiBold 30 px, line 158 box 960 room x6.08
+ok <Base 600/600> ChakraPetch-SemiBold 30 px, line 205 box 960 room x4.68
+ok <100> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <50> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <120> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <130> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Wave 0/12> ChakraPetch-SemiBold 30 px, line 145 box 960 room x6.62
+
+== Level checked 14, out 0, tight/clipping at 125% 0
+ok <Money 595> ChakraPetch-SemiBold 30 px, line 158 box 960 room x6.08
+ok <Camera> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Base 600/600> ChakraPetch-SemiBold 30 px, line 205 box 960 room x4.68
+ok <Restart level> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <100> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <50> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Sound> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Quit to map> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <120> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Codex> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <130> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Wave 0/12> ChakraPetch-SemiBold 30 px, line 145 box 960 room x6.62
+ok <Paused> ChakraPetch-SemiBold 56 px wraps, draws 56, at 125% 56
+ok <Resume> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+
+== Level checked 13, out 0, tight/clipping at 125% 0
+ok <Money 595> ChakraPetch-SemiBold 30 px, line 158 box 960 room x6.08
+ok <Defeat> ChakraPetch-SemiBold 96 px wraps, draws 92, at 125% 92
+ok <Base 0/600> ChakraPetch-SemiBold 30 px, line 168 box 960 room x5.71
+ok <Play again> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <100> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Landing Site  -  Medium> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <50> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <120> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Upgrades> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <The base has fallen./Upgrade your defences and try> ChakraPetch-SemiBold 40 px wraps, draws 40, at 125% 40
+ok <130> ChakraPetch-SemiBold 36 px wraps, draws 20, at 125% 20
+ok <Wave 0/12> ChakraPetch-SemiBold 30 px, line 145 box 960 room x6.62
+ok <Back to map> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+
+== Base checked 5, out 0, tight/clipping at 125% 0
+ok <Gun Turret> ChakraPetch-SemiBold 46 px wraps, draws 46, at 125% 46
+ok <Power 3> ChakraPetch-SemiBold 30 px wraps, draws 30, at 125% 30
+ok <Research 18> ChakraPetch-SemiBold 30 px wraps, draws 30, at 125% 30
+ok <Back to map> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Base upgrades> ChakraPetch-SemiBold 56 px wraps, draws 69, at 125% 69
+
+== WorldMap checked 5, out 0, tight/clipping at 125% 0
+ok <Planet> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Upgrades> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Choose a level> ChakraPetch-SemiBold 72 px wraps, draws 72, at 125% 72
+ok <Play level> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <3. Shard Ridge> ChakraPetch-SemiBold 34 px wraps, draws 34, at 125% 34
+
+== WorldMap checked 4, out 0, tight/clipping at 125% 0
+ok <Main menu> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Upgrades> ChakraPetch-SemiBold 36 px wraps, draws 36, at 125% 36
+ok <Choose a region> ChakraPetch-SemiBold 72 px wraps, draws 72, at 125% 72
+ok <Crystal Plains   -   2 / 20 levels> ChakraPetch-SemiBold 34 px wraps, draws 34, at 125% 34
+
