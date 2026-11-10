@@ -477,6 +477,8 @@ namespace Game.Editor
                 KeeperShader("PlanetClouds", Game.UI.PlanetMaterials.CloudShader),
                 KeeperShader("PlanetAtmosphere", Game.UI.PlanetMaterials.AtmosphereShader),
                 KeeperShader("SpaceSky", Game.UI.SpaceBackdrop.SkyShader),
+                KeeperShader("ExhaustPlume", Game.UI.ExhaustPlume.ShaderName),
+                KeeperShader("CutsceneSprites", Game.UI.SpriteBatch.ShaderName),
                 KeeperShader("TiltShift", TiltShiftShaderName),
                 KeeperShader("UnitLit", Game.Core.SurfaceMaterials.UnitShaderName),
                 KeeperShader("UnitLit_Emission", Game.Core.SurfaceMaterials.UnitShaderName, "_EMISSION"),

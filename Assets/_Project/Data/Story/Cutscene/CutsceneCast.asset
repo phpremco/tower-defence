@@ -74,6 +74,7 @@ MonoBehaviour:
     LowOctaves: 3
   _mothershipArt: {fileID: 11400000, guid: 10995a70510b0844aa6b6fd676102704, type: 2}
   _capsuleArt: {fileID: 11400000, guid: 1271af7143d3e874f913949918439f1f, type: 2}
+  _boosterArt: {fileID: 11400000, guid: d3d079089239e3943ab67a0a0661ae33, type: 2}
   _drillArt: {fileID: 11400000, guid: 7bbb734a1a262c24489e47f98e2094cb, type: 2}
   _beaconArt: {fileID: 11400000, guid: c8c4d255504b71346894afcd76aed79a, type: 2}
   _builderArt: {fileID: 11400000, guid: 8e1539871616b2b43b7d9cd87bf7e352, type: 2}

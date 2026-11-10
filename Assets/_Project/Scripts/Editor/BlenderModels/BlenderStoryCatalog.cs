@@ -22,6 +22,7 @@ namespace Game.Editor
         public const string UpperBodyBone = "Spine1";
 
         public const string Capsule = "Cutscene_Capsule";
+        public const string Booster = "Cutscene_Booster";
         public const string Drill = "Cutscene_Drill";
         public const string Mothership = "Cutscene_Mothership";
         public const string Beacon = "Cutscene_Beacon";
@@ -184,7 +185,7 @@ namespace Game.Editor
         };
 
         /// <summary>The cutscene's machines and drones, and the ready decor.</summary>
-        public static readonly string[] CutsceneModels = { Capsule, Drill, Mothership, Beacon, Builder, Hauler, Console, Wreck };
+        public static readonly string[] CutsceneModels = { Capsule, Booster, Drill, Mothership, Beacon, Builder, Hauler, Console, Wreck };
 
         /// <summary>Every export folder stage 3b reads.</summary>
         public static IEnumerable<string> SyncedAssets()

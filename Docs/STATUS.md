@@ -5452,3 +5452,113 @@ aside before the suite; Game view size unchanged; no `Assets/InitTestScene*`.
 4. The brood's retreat makes the handoff 1.5 s longer (8.5 s): fine, or cut it tighter?
 5. Chakra Petch Medium now also sets the dialogue, cutscene and radar labels: keep it, or back to Liberation Sans?
 6. Note 6 (ship launch and boosters) is still open.
+
+## Round 36: the orbit launch alive (Remco's playtest note 6 of 2026-11-08) (2026-11-10)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 ae9223b8 copied aside before the round and
+checked after every Play Mode run (never changed); the dev backup untouched; `Tools/PlayTest` copied aside before the suite; Game
+view size unchanged. The Blender key-art agent's files (`ArtSource/Previews/Steam/`, `Tools/Blender/steam_*.py`) untouched.
+
+Note 6: "The ship launch to the planet and the booster rockets still look basic; the scene does not feel alive." The launch is the
+orbit shot (shot 2, `CapsulesFall`); its "boosters" were two static glow sprites on the mothership's bells, and the capsules had no
+booster at all. Shot timing is unchanged (same seconds, dialogue and cues); only the camera's end key moved (section 3).
+
+### 1. A Blender deorbit booster on every capsule
+
+- `Tools/Blender/build_booster36.py` (round-13 hard-surface kit, self-bake, 1024 maps + 512 Low, 6.6k tris): an interstage skirt
+  over the capsule's chute with eight ribs and four yellow separation clamps (bones `Clamp_1..4`, clip `Deploy`: blown off, out
+  and back, tumbling), an octagonal tank with three stiffener bands, stringers, a hazard band, conduits and a cable tray, two
+  pressurant spheres in cradles, four RCS quads with their own bells, an emissive status strip, the NTI mark, two strobes
+  (`Light_1/2`), a thrust plate with struts, a turbopump and its duct, a gimbal ring and a banded engine bell with a hot throat
+  (`Nozzle_1`). Blender previews checked (side, bell, separation).
+- Imported with `Tools/PlayTest/r36_booster_import.cs` (only this export). `BlenderStoryCatalog.Booster` is now one of the
+  `CutsceneModels`, so a full generator run builds it, and `BlenderStoryBuilder.Apply` points `CutsceneCast._boosterArt` at it.
+
+### 2. The burn, the separation and the re-entry (`CapsuleDrop`, new `CapsuleStage`)
+
+Per capsule, all from the shot clock (a seek gives the same frame): a ring of cold-gas steam puffs at the bay as it leaves; the
+booster lights 1 s after release (`ExhaustPlume`: white-hot core in a pale blue edge, flicker, shock diamonds, heat shimmer on High)
+and leaves a trail of exhaust smoke puffs (alpha sprites drifting back and spreading); at 2.6 s the separation: a white flash,
+sparks thrown out round the joint, the clamps fly off (Deploy), the booster keeps half the capsule's speed, drifts back and tumbles
+end over end while its flame coughs out; strobes blink on it. Re-entry: besides the old hot head and trail, a plasma sheath (a
+reversed plume from just ahead of the shield, orange-red edge) grows with the heat, a wide dim halo trail runs round the hot trail
+and a soft glow lights the air round the capsule. The capsules are drawn at 0.85 (was 0.6) of their model size, a little above
+true scale against the ship, so the booster and the separation read from the orbit lens.
+
+### 3. The mothership, the planet and the depth (`OrbitSet`, new `SpaceDepth`)
+
+- **Engines:** the two glow sprites became 7.5 m plumes (core + soft blue edge, flicker on the cutscene clock, a bell flare, heat
+  shimmer on High); the engine light flickers with them.
+- **Hull lights:** two of the white strobes (boom tip and nose) now fire a point light (Low: one) that flashes the hull round them.
+- **Atmosphere:** a second, wider air shell (lift 1.14, 0.45 of the style's strength, falloff 2.6) spreads a soft glow past the
+  bright rim.
+- **Depth:** 520 near stars (Low 220) in a shell 70-320 m round the ship that stand still in the world, so they slide against the
+  painted sky as the camera moves, and twinkle; 110 dust motes (Low 40) that wrap round the camera on their own clock and fade with
+  distance.
+- **Camera:** a set-driven rumble (`CutsceneContext.Rumble`: a kick as each booster lights, a low rumble while it burns, a jolt at
+  the separation; up to 0.35 degrees of lens turn) and a slow handheld float (`CutsceneContext.Float`, 0.3 degrees). The player
+  resets both before each pose and hands them to `CutsceneCamera.Apply`, which turns the lens from its drift clock (deterministic
+  on a seek). The orbit shot's end key pushes in a little and tips down into the drop ((1.5, 1.6, -4) fov 44 to (1, 1.2, -0.5)
+  fov 43, written by `ProjectGenerator.Cutscene`, applied with `ApplyCutsceneShots.cs`).
+
+### 4. The landing's retro jets (`FieldSet`)
+
+The four retro pods of the falling capsule now fire small plumes (core + edge, shimmer on High) over the last of the fall, and the
+fall buffets the lens (rumble 0.3, 0.75 while the jets burn); the touchdown kick cue is unchanged.
+
+### 5. Code, shaders and the Low budget
+
+- New shaders: `Game/ExhaustPlume` (additive flared cone, facing-based soft edge, core share, shock diamonds, flicker on `_Clock`)
+  and `Game/CutsceneSprites` (camera-facing sprite batch spread in the vertex shader; additive or alpha). Heat shimmer reuses
+  `Game/VfxDistortion` with a tiling noise painted in code, built only where `ParticleScale >= 1` (High renders the opaque
+  texture). Both new shaders have keeper materials in `ProjectGenerator.CreateShaderKeepers` (written on the next full generator
+  run, which also puts them in the Boot scene's keeper list for player builds).
+- New classes (`Game.UI`): `ExhaustPlume`, `SpriteBatch` (one mesh, arrays made once, no per-frame allocation), `SpaceDepth`,
+  `CapsuleStage`, `SmokeTexture`.
+- **Low (Switch):** no shimmer, smoke puffs every 0.14 s instead of 0.07 s, 5 steam puffs (10), 8 sparks (16), 220 stars (520),
+  40 motes (110), one hull strobe light (two); the capsule count already follows `ParticleScale`. One draw each for smoke, sparks,
+  stars and dust; three draws per plume. Low was not rendered this round (no Low switch in the still script).
+
+### 6. Missing cutscene sounds (round 35 list) that existing approved files could cover (nothing wired, no new audio)
+
+| Missing | Could be covered by | Fit |
+| --- | --- | --- |
+| Generic rumble, drill rumble loop | `Environment/earthquake.wav` (already the contact hit), `Bosses/Armadillo/armadillo_roll_heavy_loop.wav` pitched down | good |
+| Drill motor | `Environment/rc_cart_loop.wav` pitched down, or `Drones/drone_harvest_loop.wav` | fair |
+| Capsule re-entry roar | `raket_lancering.wav` pitched down, or `Environment/fireball_roll_loop.wav` | good |
+| Booster burn and separation (new this round) | burn: `raket_lancering.wav` (cued once already) + `Environment/steam_loop.wav`; separation: `Environment/metal_dull_hit_*` + `steam_burst.wav` | good |
+| Ramp hydraulics | `Environment/steam_burst.wav` (short) + `metal_dull_hit_*` at the stop | fair |
+| Burrows bursting open | `Explosions/explosion_mine_01/02.wav` or `explosion_cannon_shell_*` layered with `earthquake.wav` | good |
+| Crystal hum (cave) | `Bosses/EnergyBall/energy_ball_static_loop_boss.wav` or `laser_beam_loop.wav` pitched down | fair |
+| Eyes opening | `Bosses/Leech/leech_slime_loop_boss.wav` (a short wet slice), `Bosses/Special/boss_armor_regrow.wav` | fair |
+| Space ambience in orbit | `Environment/icy_wind_loop.wav` pitched far down as a low bed | weak |
+| Drips in the cave | `Environment/water_bubbling_loop.wav` | weak |
+| Radar ping, beacon beep | `Environment/upgrade_01/02.wav` | weak: no real ping or beep exists |
+| A voice for Spencer | none | none |
+
+### Stills (`ArtSource/Previews/QA/`)
+
+Before: `r36_before_2_0p2.png`, `r36_before_2_0p4.png`, `r36_before_2_0p7.png` (orbit), `r36_before_3_0p15.png` (landing). After:
+`r36_after_2_0p2.png` (engine plumes with core and edge, the wide air glow), `r36_after_2_0p3.png` (the first booster burning
+under the hull, steam and smoke at the bay), `r36_after_2_0p45.png` (a separation flash behind the ring, capsules with boosters,
+the first trails), `r36_after_2_0p65.png` (a booster tumbling away, its clamps off, a capsule going in, a re-entry streak at the
+limb, the camera pushed in), `r36_after_3_0p17.png` (the retro jets in the landing). Scratch iterations stayed in the scratchpad.
+
+### Tests and state
+
+- New `OrbitLaunchTests` (2: the cast's booster has its nozzle, two strobes and the Deploy clip; the plume, sprite and shimmer
+  shaders are found).
+- **EditMode suite headless on clone w6 (23:01-23:11, `r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 759 tests, 707 passed, 52
+  skipped (the explicit probe and fit tests, the acceptance report), 0 failed.** New: `OrbitLaunchTests` 2/2.
+- Recompile: 0 errors, 0 warnings. Console clean in every play run.
+- Scripts: `Tools/Blender/build_booster36.py`, `Tools/PlayTest/r36_booster_import.cs`; Docs/COMMANDS.md "Round 36".
+
+### Open points for Remco (round 36)
+
+1. The capsules stay small in the wide orbit frame even at 0.85 scale: the burn, the separation and the re-entry read as glows,
+   smoke and streaks rather than as a close look at the booster. A short close insert on the first capsule (a new 3-4 s shot)
+   would show the Blender booster off; that changes the shot list, so it waits for a yes.
+2. The booster plumes are cool white-blue (the human-tech colour code), not a realistic orange: right?
+3. Camera rumble up to 0.35 degrees and a 0.3 degree handheld float in orbit: too much or too little?
+4. Sound for the burn and the separation is still the single booster cue of round 35; section 6 lists approved files that could
+   be wired after an ear check.

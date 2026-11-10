@@ -256,7 +256,9 @@ namespace Game.Editor
                 {
                     Set = CutsceneSet.Orbit, Action = CutsceneAction.CapsulesFall, Timing = ShotTiming.AfterDialogue, Seconds = 4f, CameraSeconds = 14f,
                     Dialogue = orbit, DialogueDelay = 1.5f, FadeIn = 1f, FadeOut = 1.5f,
-                    Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1.5f, 1.6f, -4f), new Vector3(0.5f, -9.5f, 40f), 44f) },
+                    // Round 36: the lens pushes in a little and tips down into the drop over the shot, so the boosters, their smoke and
+                    // the separations read at the bay instead of as specks.
+                    Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1f, 1.2f, -0.5f), new Vector3(-0.5f, -9.4f, 40f), 43f) },
                     // Each capsule leaves the bay with a hiss of its separation jets, the first one lights its booster.
                     Cues = new[] { Sound(CapsuleRelease[0], CutsceneSound.Thrusters, 0.4f), Sound(CapsuleRelease[0] + 0.3f, CutsceneSound.RocketLaunch, 0.45f), Sound(CapsuleRelease[1], CutsceneSound.Thrusters, 0.35f), Sound(CapsuleRelease[2], CutsceneSound.Thrusters, 0.3f) },
                 },

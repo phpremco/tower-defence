@@ -890,3 +890,8 @@ console and `Logs/probe_trace.txt`.
 - **Cutscene data only:** `unity command run_script --file Tools/PlayTest/Scripts/ApplyCutsceneShots.cs --entry ApplyCutsceneShots.Run --timeout_ms 600000 --timeout 660` (the generator's Cutscene step without the Blender art hand-outs, so no material reserialisation). **Sound library only:** `Tools/PlayTest/Scripts/ApplySounds.cs` (`ApplySounds.Run`).
 - **TMP font trial (nothing saved):** `bash Tools/PlayTest/r35_font.sh` (`r35_tmp_font.cs`, weight in `r35_tmp_font_arg.txt`): the dialogue box at 720p/1080p in Liberation Sans and in runtime Chakra Petch faces.
 - **Full EditMode suite headless:** `bash Tools/PlayTest/r34b_editmode_worker.sh 6 "Game\.Tests\..*"` (the regex filter runs every class; explicit tests stay skipped).
+
+### Round 36 (2026-11-10)
+
+- **Deorbit booster model:** `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background --factory-startup --threads 6 --python Tools/Blender/build_booster36.py -- --preview <dir>` (out: `ArtSource/Exports/Cutscene_Booster/`), then with Play Mode stopped `unity command eval_file --file Tools/PlayTest/r36_booster_import.cs` (syncs and builds only `Cutscene_Booster` and points the cast's `_boosterArt` at it; a full generator run does the same through `BlenderStoryBuilder.Apply`).
+- **Orbit and landing stills:** `CUT_OUT=<dir> bash Tools/PlayTest/n2_cut.sh <prefix> "2 0.2" "2 0.45" "3 0.17"` (shot 2 is the orbit, shot 3 the landing). With another agent rendering in Blender a still can take a minute; run it in the background rather than under a short `timeout`, which kills the script before its `editor_stop`.

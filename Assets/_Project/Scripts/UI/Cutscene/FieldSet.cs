@@ -33,6 +33,17 @@ namespace Game.UI
         private const int LandingDust = 90;
         private const float SparkRate = 160f;
         private const float RetroRate = 120f;
+        // The retro jets' plumes over the last of the fall (round 36): small hot cones from the four pods, and the buffeting they give the lens.
+        private const float RetroFrom = 0.55f;
+        private const float RetroFull = 0.62f;
+        private const float RetroRadius = 0.04f;
+        private const float RetroLength = 1.1f;
+        private const float RetroSplay = 0.35f;
+        private const float FallRumble = 0.3f;
+        private const float RetroRumble = 0.45f;
+        private const string CapsuleJet = "Jet";
+        private static readonly Color RetroCore = new Color(0.9f, 0.96f, 1f) * 6f;
+        private static readonly Color RetroEdge = new Color(0.35f, 0.65f, 1f) * 2.2f;
         private const float SunSweepDegrees = 140f;
         // The brood's last roar this far into the handoff shot, before it runs back into the ground (the generator's cue matches).
         private const float HandoffRoarSeconds = 0.3f;
@@ -96,6 +107,8 @@ namespace Game.UI
         private LineRenderer _streak;
         private ParticleSystem _sparks;
         private ParticleSystem _retro;
+        private ExhaustPlume[] _retroPlumes = new ExhaustPlume[0];
+        private Transform[] _jets = new Transform[0];
         private ParticleSystem _landingDust;
         private Vector3 _fallStart;
         private Vector3 _door;
@@ -226,6 +239,7 @@ namespace Game.UI
 
             ParticleKit.SetRate(_sparks, falling && fall < 0.9f ? SparkRate : 0f);
             ParticleKit.SetRate(_retro, falling && fall > 0.55f ? RetroRate : 0f);
+            PoseRetroPlumes(time, falling ? CutsceneMath.Smooth(CutsceneMath.Span(fall, RetroFrom, RetroFull)) : 0f, falling);
             if (landing && _lastProgress < FallShare && progress >= FallShare && progress - _lastProgress < FallShare)
             {
                 _landingDust.Emit(LandingDust);
@@ -242,6 +256,37 @@ namespace Game.UI
             }
 
             _beacon.Pose(landing ? CutsceneMath.Span(progress, 0.7f, 0.8f) : 1f, time);
+        }
+
+        // Each pod's plume leans out from the capsule's axis and down; the fall itself buffets the lens, the burn more.
+        private void PoseRetroPlumes(float time, float throttle, bool falling)
+        {
+            Transform view = _context.Camera.transform;
+            Vector3 axis = _capsule.position;
+            for (int i = 0; i < _retroPlumes.Length; i++)
+            {
+                Vector3 mouth = _jets.Length > i ? _jets[i].position : _capsule.position + Vector3.up * 0.2f;
+                Vector3 outward = mouth - axis;
+                outward.y = 0f;
+                Vector3 direction = Vector3.down + (outward.sqrMagnitude > 1e-4f ? outward.normalized * RetroSplay : Vector3.zero);
+                _retroPlumes[i].Pose(mouth, direction, RetroRadius, RetroLength, throttle, time + i * 0.37f, view);
+            }
+
+            if (falling)
+            {
+                _context.Rumble = FallRumble + RetroRumble * throttle;
+            }
+        }
+
+        private void BuildRetroPlumes(Transform root)
+        {
+            _jets = _capsuleArt != null ? _capsuleArt.Numbered(CapsuleJet) : new Transform[0];
+            int count = Mathf.Max(1, _jets.Length);
+            _retroPlumes = new ExhaustPlume[count];
+            for (int i = 0; i < count; i++)
+            {
+                _retroPlumes[i] = new ExhaustPlume(root, $"Retro{i}", RetroCore, RetroEdge, 0.45f, _context.ParticleScale >= 1f);
+            }
         }
 
         // The legs unfold over the last of the fall (Land), then the ramp comes down (Open, which starts where Land ends).
@@ -540,6 +585,7 @@ namespace Game.UI
 
             _sparks = ParticleKit.Create(_capsule, "Sparks", Vector3.up * 0.4f, SparkColour * 3f, 0.3f, 0.9f, 0.05f, 0.14f, 1f, 4f, 0.4f, _context.Scaled(300), 0.4f);
             _retro = ParticleKit.Create(_capsule, "Retro", Vector3.up * 0.2f, new Color(0.6f, 0.85f, 1f) * 2.5f, 0.15f, 0.35f, 0.12f, 0.3f, 3f, 6f, 1.5f, _context.Scaled(200), 0.15f);
+            BuildRetroPlumes(root);
             _landingDust = ParticleKit.Create(root, "LandingDust", _layout.Landing + Vector3.up * 0.2f, DustColour, 1.2f, 2.6f, 0.5f, 1.2f, 1.5f, 4.5f, -0.03f, _context.Scaled(200), 1f);
         }
 

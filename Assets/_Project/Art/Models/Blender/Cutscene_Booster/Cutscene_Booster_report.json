@@ -1,0 +1,74 @@
+{
+  "asset": "Cutscene_Booster",
+  "texture_size": 1024,
+  "low_size": 512,
+  "maps": [
+    "Albedo",
+    "Normal",
+    "Emission",
+    "Mask"
+  ],
+  "mask": "R AO, G smoothness, B metal detail mask, A ceramic detail mask",
+  "uv": {
+    "coverage": 0.557,
+    "world_per_uv": 5.5133
+  },
+  "detail": {
+    "metal": {
+      "map": "Detail_Metal_Normal.png",
+      "tiling": 110.3,
+      "mask": "B"
+    },
+    "ceramic": {
+      "map": "Detail_Ceramic_Normal.png",
+      "tiling": 91.9,
+      "mask": "A"
+    }
+  },
+  "fbx": "Cutscene_Booster.fbx",
+  "meshes": {
+    "Cutscene_Booster": 6094
+  },
+  "tris": 6094,
+  "lod1": "none: cutscene only",
+  "bones": [
+    "Root",
+    "Clamp_1",
+    "Clamp_2",
+    "Clamp_3",
+    "Clamp_4"
+  ],
+  "deform_bones": [
+    "Root",
+    "Clamp_1",
+    "Clamp_2",
+    "Clamp_3",
+    "Clamp_4"
+  ],
+  "clips": {
+    "Deploy": 30
+  },
+  "sockets": {
+    "Light_1": [
+      0.476,
+      0.0,
+      1.365
+    ],
+    "Light_2": [
+      -0.476,
+      0.0,
+      1.365
+    ],
+    "Nozzle_1": [
+      0.0,
+      0.0,
+      2.08
+    ],
+    "Mount": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "pivot": "centre on the ground (mothership: its centre); faces -Y in Blender (Unity +Z)"
+}

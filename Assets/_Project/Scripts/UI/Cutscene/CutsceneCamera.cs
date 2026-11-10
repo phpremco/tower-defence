@@ -12,6 +12,14 @@ namespace Game.UI
     {
         private const float DriftSeedX = 7.3f;
         private const float DriftSeedY = 19.1f;
+        // The set-driven rumble turns the lens (a far subject shows no shake from a shift): this many degrees at full rumble.
+        private const float RumbleDegrees = 0.35f;
+        private const float RumbleHertz = 13f;
+        // The handheld float wanders well under a cycle per second.
+        private const float FloatHertz = 0.18f;
+        private const float RumbleSeedPitch = 3.7f;
+        private const float RumbleSeedYaw = 11.9f;
+        private const float RumbleSeedRoll = 23.3f;
 
         private readonly Camera _camera;
         private readonly CutsceneCameraFeel _feel;
@@ -48,8 +56,12 @@ namespace Game.UI
             _shake = 0f;
         }
 
-        /// <summary>Places the camera at the sample, plus the drift and any kick, after <paramref name="deltaTime"/> seconds of cutscene time.</summary>
-        public void Apply(CameraSample sample, float deltaTime)
+        /// <summary>
+        /// Places the camera at the sample, plus the drift and any kick, after <paramref name="deltaTime"/> seconds of cutscene time.
+        /// <paramref name="rumble"/> (0..1) and <paramref name="floatDegrees"/> are the set's own camera feel for this moment: a
+        /// fast turn of the lens and a slow handheld wander, both from the drift clock alone.
+        /// </summary>
+        public void Apply(CameraSample sample, float deltaTime, float rumble = 0f, float floatDegrees = 0f)
         {
             _clock += deltaTime;
             Vector3 forward = sample.LookAt - sample.Position;
@@ -79,8 +91,27 @@ namespace Game.UI
                 offset += right * kick.x + up * kick.y;
             }
 
+            rotation *= Turn(rumble, floatDegrees);
             _camera.transform.SetPositionAndRotation(sample.Position + offset, rotation);
             _camera.fieldOfView = sample.FieldOfView;
         }
+
+        private Quaternion Turn(float rumble, float floatDegrees)
+        {
+            if (rumble <= 0f && floatDegrees <= 0f)
+            {
+                return Quaternion.identity;
+            }
+
+            float fast = _clock * RumbleHertz;
+            float slow = _clock * FloatHertz;
+            float shake = Mathf.Clamp01(rumble) * RumbleDegrees;
+            float pitch = Wobble(fast, RumbleSeedPitch) * shake + Wobble(slow, RumbleSeedPitch) * floatDegrees;
+            float yaw = Wobble(fast, RumbleSeedYaw) * shake + Wobble(slow, RumbleSeedYaw) * floatDegrees;
+            float roll = Wobble(fast, RumbleSeedRoll) * shake * 0.5f + Wobble(slow, RumbleSeedRoll) * floatDegrees * 0.6f;
+            return Quaternion.Euler(pitch, yaw, roll);
+        }
+
+        private static float Wobble(float t, float seed) => Mathf.PerlinNoise(t, seed) * 2f - 1f;
     }
 }

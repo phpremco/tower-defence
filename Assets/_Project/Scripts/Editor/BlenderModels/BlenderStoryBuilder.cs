@@ -134,6 +134,7 @@ namespace Game.Editor
             {
                 assigned += Assign(cast, "_mothershipArt", Cutscene(built, BlenderStoryCatalog.Mothership));
                 assigned += Assign(cast, "_capsuleArt", Cutscene(built, BlenderStoryCatalog.Capsule));
+                assigned += Assign(cast, "_boosterArt", Cutscene(built, BlenderStoryCatalog.Booster));
                 assigned += Assign(cast, "_drillArt", Cutscene(built, BlenderStoryCatalog.Drill));
                 assigned += Assign(cast, "_beaconArt", Cutscene(built, BlenderStoryCatalog.Beacon));
                 assigned += Assign(cast, "_builderArt", Cutscene(built, BlenderStoryCatalog.Builder));

@@ -7,11 +7,13 @@ using UnityEngine;
 namespace Game.UI
 {
     /// <summary>
-    /// Landing capsules leaving the mothership's bay one after another and falling to the planet: a small push
-    /// clear of the hull, then a long curve down that speeds up into the atmosphere, where the heat shield glows,
-    /// a white-hot head flares and a burning trail stretches out behind, so each capsule ends as a falling star.
-    /// The drop repeats for as long as the shot holds. Every pose follows from time alone; the trail is the path
-    /// itself sampled back in time, never a history of frames.
+    /// Landing capsules leaving the mothership's bay one after another and falling to the planet: a puff of cold gas
+    /// pushes each clear of the hull, its deorbit booster (<see cref="CapsuleStage"/>) lights and burns it down with a hot
+    /// plume and a trail of exhaust smoke, then blows off in a flash, a spray of sparks and its tumbling clamps. The
+    /// capsule goes on alone into the air, where the heat shield glows, a sheath of plasma wraps it and a white-hot head
+    /// with a layered burning trail lights up the air round it, so each capsule ends as a falling star. The drop repeats
+    /// for as long as the shot holds. Every pose follows from time alone; trails and smoke are the path itself sampled
+    /// back in time, never a history of frames.
     /// </summary>
     public sealed class CapsuleDrop
     {
@@ -19,19 +21,59 @@ namespace Game.UI
         private const float ReleaseGap = 1.15f;
         private const float FallSeconds = 6.5f;
         private const float CycleRest = 2.5f;
-        private const float CapsuleScale = 0.6f;
+        // Round 36: a little larger than true scale against the ship, so the booster, its burn and the separation read from the orbit lens.
+        private const float CapsuleScale = 0.85f;
         private const float AtmosphereDepth = 0.35f;
         private const int TrailPoints = 22;
         private const float TrailStep = 0.07f;
         private const float TrailWidth = 0.7f;
+        private const float HaloWidth = 2.4f;
         private const float HeadSize = 3f;
         private const float ShieldEmission = 5f;
         private const float TrailIntensity = 3f;
+        private const float HaloIntensity = 1.2f;
         private const float ColdHead = 0.25f;
         private const float BayWarmUp = 0.4f;
         private const float BayFade = 1.6f;
+
+        // The booster's burn (seconds after release): the cold-gas push first, then the burn until the separation.
+        private const float IgniteAge = 1f;
+        private const float SeparateAge = 2.6f;
+
+        // Exhaust smoke left behind the bell while it burns, and the cold gas of the push out of the bay.
+        private const float SmokeGap = 0.07f;
+        private const float LowSmokeGap = 0.14f;
+        private const float SmokeLife = 1.8f;
+        private const float SmokeSpeed = 2.4f;
+        private const float SmokeGrowth = 1.3f;
+        private const float SmokeAlpha = 0.42f;
+        private const int SteamPuffs = 10;
+        private const int LowSteamPuffs = 5;
+        private const float SteamLife = 1.3f;
+        private const float SteamSpeed = 1.4f;
+
+        // The separation: a flash and sparks thrown out round the joint.
+        private const int Sparks = 16;
+        private const int LowSparks = 8;
+        private const float SparkLife = 0.9f;
+        private const float FlashSize = 5f;
+        private const float FlashDecay = 7f;
+
+        // Re-entry: the plasma sheath and the glow it throws on the air round the capsule.
+        private const float SheathAhead = 0.45f;
+        private const float SheathRadius = 0.42f;
+        private const float SheathLength = 6f;
+        private const float AirGlowSize = 14f;
+
         private static readonly Color HotColour = new Color(1f, 0.5f, 0.15f);
         private static readonly Color CoreColour = new Color(1f, 0.85f, 0.6f) * 3f;
+        private static readonly Color SheathCore = new Color(1f, 0.9f, 0.75f) * 5f;
+        private static readonly Color SheathEdge = new Color(1f, 0.32f, 0.2f) * 2.4f;
+        private static readonly Color AirGlow = new Color(1f, 0.42f, 0.22f) * 0.55f;
+        private static readonly Color SmokeColour = new Color(0.72f, 0.76f, 0.84f, 1f);
+        private static readonly Color SteamColour = new Color(0.9f, 0.95f, 1f, 1f);
+        private static readonly Color SparkColour = new Color(1f, 0.75f, 0.4f) * 4f;
+        private static readonly Color FlashColour = new Color(1f, 0.95f, 0.85f) * 5f;
 
         private readonly List<Capsule> _capsules = new List<Capsule>();
         private readonly Vector3[] _trail = new Vector3[TrailPoints];
@@ -40,6 +82,11 @@ namespace Game.UI
         private readonly float _planetRadius;
         private readonly Transform _view;
         private readonly float _cycle;
+        private readonly float _smokeGap;
+        private readonly int _steamPuffs;
+        private readonly int _sparks;
+        private readonly SpriteBatch _smoke;
+        private readonly SpriteBatch _glints;
 
         /// <param name="bayAt">Where the bay opening is at a moment of the shot (the ship moves).</param>
         public CapsuleDrop(Transform parent, CutsceneContext context, Color glow, Func<float, Vector3> bayAt, Vector3 planetCentre, float planetRadius)
@@ -50,53 +97,71 @@ namespace Game.UI
             _view = context.Camera.transform;
             int count = context.Scaled(context.Cast != null ? context.Cast.CapsuleCount : 6);
             _cycle = FirstRelease + count * ReleaseGap + FallSeconds + CycleRest;
+            bool low = context.ParticleScale < 1f;
+            _smokeGap = low ? LowSmokeGap : SmokeGap;
+            _steamPuffs = low ? LowSteamPuffs : SteamPuffs;
+            _sparks = low ? LowSparks : Sparks;
 
             GameObject custom = context.Cast != null ? context.Cast.Capsule : null;
             ModelArtDefinition art = context.Cast != null ? context.Cast.CapsuleArt : null;
+            ModelArtDefinition booster = context.Cast != null ? context.Cast.BoosterArt : null;
             CapsuleModelFactory.Parts parts = CapsuleModelFactory.Create();
             Material[] materials = ModelPalette.Create(glow);
             var gradient = new Gradient();
             gradient.SetKeys(
                 new[] { new GradientColorKey(new Color(1f, 0.95f, 0.85f), 0f), new GradientColorKey(HotColour, 0.25f), new GradientColorKey(new Color(0.8f, 0.2f, 0.05f), 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.7f, 0.3f), new GradientAlphaKey(0f, 1f) });
+            var halo = new Gradient();
+            halo.SetKeys(
+                new[] { new GradientColorKey(new Color(1f, 0.6f, 0.35f), 0f), new GradientColorKey(new Color(1f, 0.3f, 0.25f), 0.4f), new GradientColorKey(new Color(0.5f, 0.15f, 0.3f), 1f) },
+                new[] { new GradientAlphaKey(0.6f, 0f), new GradientAlphaKey(0.35f, 0.35f), new GradientAlphaKey(0f, 1f) });
             for (int i = 0; i < count; i++)
             {
-                _capsules.Add(BuildCapsule(parent, i, art, custom, parts, materials, gradient));
+                _capsules.Add(BuildCapsule(parent, i, art, custom, parts, materials, gradient, halo, booster, !low));
             }
+
+            int puffs = Mathf.CeilToInt((SeparateAge - IgniteAge + SmokeLife) / _smokeGap) + 1;
+            Texture2D dot = SpaceKit.Sprite(CutsceneSprite.GlowSoft, SpaceKit.SoftDotTexture);
+            _smoke = new SpriteBatch(parent, "CapsuleSmoke", count * (puffs + _steamPuffs), SmokeTexture.Puff, false, Color.white);
+            _glints = new SpriteBatch(parent, "CapsuleSparks", count * (_sparks + 1), dot, true, Color.white);
         }
 
         public void Pose(float time)
         {
+            _smoke.Begin();
+            _glints.Begin();
             for (int i = 0; i < _capsules.Count; i++)
             {
-                Capsule capsule = _capsules[i];
-                float release = Release(i);
-                float age = time < release ? -1f : Mathf.Repeat(time - release, _cycle);
-                bool falling = age >= 0f && age < FallSeconds;
-                capsule.Root.gameObject.SetActive(falling);
-                capsule.Trail.enabled = falling;
-                capsule.Head.gameObject.SetActive(falling);
-                if (!falling)
+                PoseCapsule(i, time);
+            }
+
+            _smoke.End(time);
+            _glints.End(time);
+        }
+
+        /// <summary>
+        /// How hard the camera should rumble at a moment, 0..1: a kick as each booster lights, a low rumble while it burns
+        /// and a jolt at the separation, strongest for the first capsule (the one the shot follows).
+        /// </summary>
+        public float Rumble(float time)
+        {
+            float rumble = 0f;
+            for (int i = 0; i < _capsules.Count; i++)
+            {
+                float age = Age(i, time);
+                if (age < IgniteAge || age > FallSeconds)
                 {
                     continue;
                 }
 
-                float launched = time - age;
-                Vector3 position = PathPoint(i, launched, age);
-                Vector3 ahead = PathPoint(i, launched, age + 0.05f);
-                float heat = Heat(position);
-                capsule.Root.SetPositionAndRotation(position, Quaternion.LookRotation(ahead - position) * Quaternion.Euler(-90f, 0f, 0f));
-                capsule.Shield.SetColor("_EmissionColor", HotColour * (ShieldEmission * heat * heat));
-                capsule.Head.SetPositionAndRotation(position, _view.rotation);
-                capsule.Head.localScale = Vector3.one * (HeadSize * heat + ColdHead);
-                for (int p = 0; p < TrailPoints; p++)
-                {
-                    _trail[p] = PathPoint(i, launched, Mathf.Max(0f, age - p * TrailStep));
-                }
-
-                capsule.Trail.SetPositions(_trail);
-                capsule.Trail.widthMultiplier = TrailWidth * Mathf.Max(0.1f, heat);
+                float weight = i == 0 ? 1f : 0.45f;
+                float lit = age - IgniteAge;
+                float burn = age < SeparateAge ? 0.25f + 0.6f * Mathf.Exp(-lit * 3f) : 0f;
+                float jolt = age >= SeparateAge ? 0.7f * Mathf.Exp(-(age - SeparateAge) * 5f) : 0f;
+                rumble = Mathf.Max(rumble, (burn + jolt) * weight);
             }
+
+            return Mathf.Clamp01(rumble);
         }
 
         /// <summary>
@@ -122,6 +187,151 @@ namespace Game.UI
             return glow;
         }
 
+        private float Age(int index, float time)
+        {
+            float release = Release(index);
+            return time < release ? -1f : Mathf.Repeat(time - release, _cycle);
+        }
+
+        private void PoseCapsule(int i, float time)
+        {
+            Capsule capsule = _capsules[i];
+            float age = Age(i, time);
+            bool falling = age >= 0f && age < FallSeconds;
+            capsule.Root.gameObject.SetActive(falling);
+            capsule.Trail.enabled = falling;
+            capsule.Halo.enabled = falling;
+            capsule.Head.gameObject.SetActive(falling);
+            capsule.AirGlow.gameObject.SetActive(falling);
+            if (!falling)
+            {
+                capsule.Stage?.Hide();
+                capsule.Sheath.Pose(Vector3.zero, Vector3.zero, 0f, 0f, 0f, 0f, _view);
+                return;
+            }
+
+            float launched = time - age;
+            Vector3 position = PathPoint(i, launched, age);
+            Vector3 ahead = PathPoint(i, launched, age + 0.05f);
+            Vector3 forward = (ahead - position).normalized;
+            float heat = Heat(position);
+            capsule.Root.SetPositionAndRotation(position, Facing(position, ahead));
+            capsule.Shield.SetColor("_EmissionColor", HotColour * (ShieldEmission * heat * heat));
+            capsule.Head.SetPositionAndRotation(position, _view.rotation);
+            capsule.Head.localScale = Vector3.one * (HeadSize * heat + ColdHead);
+            for (int p = 0; p < TrailPoints; p++)
+            {
+                _trail[p] = PathPoint(i, launched, Mathf.Max(0f, age - p * TrailStep));
+            }
+
+            capsule.Trail.SetPositions(_trail);
+            capsule.Trail.widthMultiplier = TrailWidth * Mathf.Max(0.1f, heat);
+            capsule.Halo.SetPositions(_trail);
+            capsule.Halo.widthMultiplier = HaloWidth * heat;
+            capsule.AirGlow.SetPositionAndRotation(position - forward * 1.2f, _view.rotation);
+            capsule.AirGlow.localScale = Vector3.one * (AirGlowSize * heat * heat);
+            float plasma = heat * Mathf.Sqrt(heat);
+            capsule.Sheath.Pose(position + forward * SheathAhead, -forward, SheathRadius * (0.7f + 0.5f * heat), SheathLength * (0.4f + heat), plasma, time, _view);
+
+            PoseStage(capsule, i, launched, age, time);
+            AddSteam(i, launched, age);
+            AddSmoke(i, launched, age);
+            AddSeparation(i, launched, age);
+        }
+
+        private void PoseStage(Capsule capsule, int i, float launched, float age, float time)
+        {
+            if (capsule.Stage == null)
+            {
+                return;
+            }
+
+            Pose mount = Mount(i, launched, age);
+            Pose separation = Mount(i, launched, SeparateAge);
+            Vector3 velocity = (PathPoint(i, launched, SeparateAge + 0.05f) - PathPoint(i, launched, SeparateAge)) / 0.05f;
+            capsule.Stage.Pose(mount, separation, velocity, age - IgniteAge, age - SeparateAge, time, _view);
+        }
+
+        // The cold gas of the push: a ring of puffs round the bay as the capsule leaves it.
+        private void AddSteam(int i, float launched, float age)
+        {
+            if (age > SteamLife)
+            {
+                return;
+            }
+
+            Vector3 bay = _bayAt(launched);
+            float u = age / SteamLife;
+            for (int p = 0; p < _steamPuffs; p++)
+            {
+                float angle = (p + CutsceneMath.Hash(i * 31 + p, 81)) / _steamPuffs * Mathf.PI * 2f;
+                var outward = new Vector3(Mathf.Cos(angle), -0.35f, Mathf.Sin(angle));
+                Vector3 centre = bay + outward * (SteamSpeed * age * (0.7f + 0.6f * CutsceneMath.Hash(p, 83)));
+                Color colour = SteamColour;
+                colour.a = 0.4f * (1f - u) * (1f - u);
+                _smoke.Add(centre, 0.15f + 0.7f * age, colour, angle);
+            }
+        }
+
+        // Puffs of exhaust left behind the bell on the path, drifting back along the plume and spreading as they thin.
+        private void AddSmoke(int i, float launched, float age)
+        {
+            float last = Mathf.Min(age, SeparateAge);
+            for (float emitted = IgniteAge; emitted <= last; emitted += _smokeGap)
+            {
+                float puff = age - emitted;
+                if (puff > SmokeLife)
+                {
+                    continue;
+                }
+
+                Pose mount = Mount(i, launched, emitted);
+                Vector3 back = mount.rotation * Vector3.up;
+                int seed = i * 977 + Mathf.RoundToInt(emitted * 100f);
+                var spread = new Vector3(CutsceneMath.Hash(seed, 85) - 0.5f, CutsceneMath.Hash(seed, 87) - 0.5f, CutsceneMath.Hash(seed, 89) - 0.5f);
+                Vector3 centre = CapsuleStage.MouthOf(mount, CapsuleScale) + back * (SmokeSpeed * puff) + spread * (0.8f * puff);
+                float u = puff / SmokeLife;
+                Color colour = SmokeColour;
+                colour.a = SmokeAlpha * Mathf.Pow(1f - u, 1.5f) * Mathf.Clamp01(puff * 8f);
+                _smoke.Add(centre, 0.12f + SmokeGrowth * puff, colour, CutsceneMath.Hash(seed, 91) * Mathf.PI * 2f);
+            }
+        }
+
+        // The separation: a white flash at the joint and sparks thrown out round it, carried on with the capsule's speed.
+        private void AddSeparation(int i, float launched, float age)
+        {
+            float since = age - SeparateAge;
+            if (since < 0f || since > SparkLife)
+            {
+                return;
+            }
+
+            Pose joint = Mount(i, launched, SeparateAge);
+            Vector3 velocity = (PathPoint(i, launched, SeparateAge + 0.05f) - PathPoint(i, launched, SeparateAge)) / 0.05f;
+            _glints.Add(joint.position + velocity * since, FlashSize * Mathf.Exp(-since * FlashDecay), FlashColour);
+            float fade = 1f - since / SparkLife;
+            for (int s = 0; s < _sparks; s++)
+            {
+                int seed = i * 131 + s;
+                var direction = new Vector3(CutsceneMath.Hash(seed, 93) - 0.5f, CutsceneMath.Hash(seed, 95) - 0.5f, CutsceneMath.Hash(seed, 97) - 0.5f).normalized;
+                float speed = 2f + 3.5f * CutsceneMath.Hash(seed, 99);
+                Vector3 centre = joint.position + velocity * (since * 0.8f) + direction * (speed * since);
+                _glints.Add(centre, 0.09f * fade + 0.02f, SparkColour * fade);
+            }
+        }
+
+        // The capsule's mount for its booster at an age: the apex of the capsule model, up pointing away from the shield.
+        private Pose Mount(int index, float launched, float age)
+        {
+            Vector3 position = PathPoint(index, launched, age);
+            Quaternion facing = Facing(position, PathPoint(index, launched, age + 0.05f));
+            Vector3 up = facing * Vector3.up;
+            return new Pose(position + up * (CapsuleScale * (CapsuleStage.MountHeight - 0.9f)), facing);
+        }
+
+        // The shield leads: the capsule's up points back along its path.
+        private static Quaternion Facing(Vector3 position, Vector3 ahead) => Quaternion.LookRotation(ahead - position) * Quaternion.Euler(-90f, 0f, 0f);
+
         private static float Release(int index) => FirstRelease + index * ReleaseGap + CutsceneMath.Hash(index, 61) * 0.4f;
 
         // Out of the bay with a small push down and ahead, then a falling curve that keeps speeding up into the air.
@@ -145,7 +355,7 @@ namespace Game.UI
             return CutsceneMath.Smooth(1f - Mathf.Clamp01(altitude / (_planetRadius * AtmosphereDepth)));
         }
 
-        private Capsule BuildCapsule(Transform parent, int index, ModelArtDefinition art, GameObject custom, CapsuleModelFactory.Parts parts, Material[] materials, Gradient gradient)
+        private Capsule BuildCapsule(Transform parent, int index, ModelArtDefinition art, GameObject custom, CapsuleModelFactory.Parts parts, Material[] materials, Gradient gradient, Gradient halo, ModelArtDefinition booster, bool shimmer)
         {
             var root = new GameObject($"Capsule{index}").transform;
             root.SetParent(parent, false);
@@ -179,8 +389,15 @@ namespace Game.UI
             LineRenderer trail = SpaceKit.Line(parent, $"Trail{index}", TrailPoints, false, TrailIntensity, CutsceneSprite.PlasmaTrail);
             trail.colorGradient = gradient;
             trail.widthCurve = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f));
+            // A wide, dim second trail round the hot one: the air the capsule has set glowing.
+            LineRenderer haloTrail = SpaceKit.Line(parent, $"TrailHalo{index}", TrailPoints, false, HaloIntensity, CutsceneSprite.PlasmaTrail);
+            haloTrail.colorGradient = halo;
+            haloTrail.widthCurve = new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(0.25f, 1f), new Keyframe(1f, 0.15f));
             Transform head = SpaceKit.Glow(parent, $"Head{index}", CoreColour);
-            return new Capsule { Root = root, Shield = shield, Trail = trail, Head = head };
+            Transform air = SpaceKit.Glow(parent, $"AirGlow{index}", AirGlow);
+            var sheath = new ExhaustPlume(parent, $"Sheath{index}", SheathCore, SheathEdge, 1f, false);
+            CapsuleStage stage = booster != null ? new CapsuleStage(parent, index, booster, CapsuleScale, shimmer) : null;
+            return new Capsule { Root = root, Shield = shield, Trail = trail, Halo = haloTrail, Head = head, AirGlow = air, Sheath = sheath, Stage = stage };
         }
 
         private static void AddMesh(string name, Transform parent, Mesh mesh, Material[] materials)
@@ -196,7 +413,11 @@ namespace Game.UI
             public Transform Root;
             public Material Shield;
             public LineRenderer Trail;
+            public LineRenderer Halo;
             public Transform Head;
+            public Transform AirGlow;
+            public ExhaustPlume Sheath;
+            public CapsuleStage Stage;
         }
     }
 }

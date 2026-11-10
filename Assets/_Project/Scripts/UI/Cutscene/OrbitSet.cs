@@ -20,8 +20,19 @@ namespace Game.UI
         private const float RingDegreesPerSecond = 7f;
         private const float EngineLight = 6f;
         private const float EngineRange = 9f;
-        private const float EngineGlowSize = 1.5f;
         private const float EnginePulse = 0.08f;
+        private const float PlumeRadius = 0.42f;
+        private const float PlumeLength = 7.5f;
+        private const float PlumeThrottle = 0.8f;
+        private const float PlumeIntensity = 0.85f;
+        // The hand-held float of the orbit camera, in degrees.
+        private const float CameraFloat = 0.3f;
+        // A second, wider shell of air round the planet: the soft glow that spreads past the bright rim.
+        private const float HaloLift = 1.14f;
+        private const float HaloStrength = 0.45f;
+        private const float HaloFalloff = 2.6f;
+        private const float StrobeRange = 4.5f;
+        private const float StrobePeak = 7f;
         private const string ShipBay = "Bay";
         private const string ShipNozzle = "Nozzle";
         private const string ShipLight = "Light";
@@ -40,6 +51,10 @@ namespace Game.UI
         private static readonly Vector3 SiteFacing = new Vector3(0f, 1f, -0.35f);
         private static readonly Vector3 SunDirection = new Vector3(0.35f, -0.75f, 0.55f);
         private static readonly Color EngineColour = new Color(0.55f, 0.8f, 1f);
+        private static readonly Color PlumeCore = new Color(0.85f, 0.95f, 1f) * 6f;
+        private static readonly Color PlumeEdge = new Color(0.22f, 0.45f, 1f) * 2f;
+        // The white strobes that also light the hull round them (boom tips and nose; README round 19 sockets).
+        private static readonly int[] HullStrobes = { 0, 3 };
         private static readonly Color BayColour = new Color(0.65f, 0.85f, 1f);
 
         // README round 19, sockets Light_1..10: boom tips white, dorsal beacon yellow, nose white, bay corners amber,
@@ -58,7 +73,11 @@ namespace Game.UI
             (new Color(1f, 1f, 1f) * 4f, 2f, 0.15f, 0.07f),
         };
 
-        private Transform[] _engineGlows = new Transform[0];
+        private ExhaustPlume[] _plumes = new ExhaustPlume[0];
+        private Vector3[] _nozzles = new Vector3[0];
+        private Light[] _strobeLights = new Light[0];
+        private Light _engineLight;
+        private SpaceDepth _depth;
         private Transform[] _runningLights = new Transform[0];
         private Light _bayLight;
         private VisualTheme _theme;
@@ -80,8 +99,12 @@ namespace Game.UI
             _theme = context.FieldLevel.Theme;
             SpaceStyle space = CrysPlanet.SpaceOf(context.Catalog);
             _planet = CrysPlanet.Create(root, context.Catalog, SiteFacing, PlanetCentre, PlanetRadius, CloudAlpha, StartTurn, DegreesPerSecond);
-            _planet.SetSun(SpaceKit.Sun(root, SunDirection, _theme));
-            _backdrop = new SpaceBackdrop(root, space, SunDirection, context.ParticleScale < 1f);
+            Light sun = SpaceKit.Sun(root, SunDirection, _theme);
+            _planet.SetSun(sun);
+            BuildHalo(CrysPlanet.StyleOf(context.Catalog), sun);
+            bool low = context.ParticleScale < 1f;
+            _backdrop = new SpaceBackdrop(root, space, SunDirection, low);
+            _depth = new SpaceDepth(root, ShipStart, low);
             BuildShip(root);
             _capsules = new CapsuleDrop(root, context, _theme.BaseColor, BayAt, PlanetCentre, PlanetRadius);
         }
@@ -102,14 +125,22 @@ namespace Game.UI
 
             Transform view = _context.Camera.transform;
             float pulse = 1f + EnginePulse * Mathf.Sin(time * 11f);
-            foreach (Transform glow in _engineGlows)
+            Vector3 back = _ship.rotation * Vector3.back;
+            for (int i = 0; i < _plumes.Length; i++)
             {
-                glow.rotation = view.rotation;
-                glow.localScale = Vector3.one * (EngineGlowSize * pulse);
+                _plumes[i].Pose(_ship.TransformPoint(_nozzles[i]), back, PlumeRadius, PlumeLength, PlumeThrottle * pulse, time + i * 0.71f, view);
+            }
+
+            if (_engineLight != null)
+            {
+                _engineLight.intensity = EngineLight * (pulse + 0.06f * Mathf.Sin(time * 37f));
             }
 
             _capsules.Pose(time);
             PoseLights(time, view);
+            _depth.Pose(time, view);
+            _context.Rumble = _capsules.Rumble(time);
+            _context.Float = CameraFloat;
         }
 
         public void Exit()
@@ -142,6 +173,31 @@ namespace Game.UI
                 _runningLights[i].rotation = view.rotation;
                 _runningLights[i].localScale = Vector3.one * (RunningLightSize * (on ? 1f : RunningLightDim));
             }
+
+            for (int s = 0; s < _strobeLights.Length; s++)
+            {
+                var blink = RunningLights[HullStrobes[s]];
+                float phase = Mathf.Repeat(time / blink.Period + blink.Phase, 1f);
+                // A hard flash that dies quickly, so the hull round the strobe is lit for a blink.
+                _strobeLights[s].intensity = phase < blink.Lit ? StrobePeak * (1f - phase / blink.Lit) : 0f;
+            }
+        }
+
+        // The wide, faint glow of the air spreading past the bright rim, lit by the same sun.
+        private void BuildHalo(PlanetStyle style, Light sun)
+        {
+            Material material = PlanetMaterials.Atmosphere(style, HaloLift);
+            material.SetFloat("_Strength", style.AtmosphereStrength * HaloStrength);
+            material.SetFloat("_Falloff", HaloFalloff);
+            PlanetMaterials.SetSun(material, sun);
+            var go = new GameObject("AtmosphereHalo");
+            go.transform.SetParent(_planet.Root, false);
+            go.transform.localScale = Vector3.one * HaloLift;
+            go.AddComponent<MeshFilter>().sharedMesh = PlanetGlobe.SphereMesh();
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
         }
 
         private static Vector3 ShipAt(float time) => ShipStart + ShipVelocity * time;
@@ -188,23 +244,24 @@ namespace Game.UI
                 _ringCentre = parts.RingCentre;
             }
 
-            _engineGlows = new Transform[nozzles.Length];
+            bool shimmer = _context.ParticleScale >= 1f;
+            _nozzles = new Vector3[nozzles.Length];
+            _plumes = new ExhaustPlume[nozzles.Length];
             for (int i = 0; i < nozzles.Length; i++)
             {
-                Transform glow = SpaceKit.Glow(_ship, $"Exhaust{i}", EngineColour * 3f, CutsceneSprite.EngineGlow);
-                glow.localPosition = nozzles[i] + Vector3.back * 0.15f;
-                _engineGlows[i] = glow;
+                _nozzles[i] = nozzles[i] + Vector3.back * 0.1f;
+                _plumes[i] = new ExhaustPlume(_ship.parent, $"Engine{i}", PlumeCore, PlumeEdge, PlumeIntensity, shimmer);
             }
 
             var lightGo = new GameObject("EngineLight");
             lightGo.transform.SetParent(_ship, false);
             lightGo.transform.localPosition = nozzles[0] + Vector3.back * 1.2f;
-            var light = lightGo.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = EngineColour;
-            light.intensity = EngineLight;
-            light.range = EngineRange;
-            light.shadows = LightShadows.None;
+            _engineLight = lightGo.AddComponent<Light>();
+            _engineLight.type = LightType.Point;
+            _engineLight.color = EngineColour;
+            _engineLight.intensity = EngineLight;
+            _engineLight.range = EngineRange;
+            _engineLight.shadows = LightShadows.None;
         }
 
         private void BuildBayLight(Transform bay)
@@ -235,6 +292,24 @@ namespace Game.UI
                 glow.localPosition = Local(sockets[i], Vector3.zero);
                 _runningLights[i] = glow;
             }
+
+            int strobes = _context.ParticleScale < 1f ? 1 : HullStrobes.Length;
+            var lights = new List<Light>();
+            for (int s = 0; s < strobes && HullStrobes[s] < count; s++)
+            {
+                var go = new GameObject($"StrobeLight{s + 1}");
+                go.transform.SetParent(_ship, false);
+                go.transform.localPosition = _runningLights[HullStrobes[s]].localPosition;
+                var light = go.AddComponent<Light>();
+                light.type = LightType.Point;
+                light.color = Color.white;
+                light.intensity = 0f;
+                light.range = StrobeRange;
+                light.shadows = LightShadows.None;
+                lights.Add(light);
+            }
+
+            _strobeLights = lights.ToArray();
         }
 
         // A socket of the imported ship in the ship's own space (where the procedural parts are given), or the fallback.

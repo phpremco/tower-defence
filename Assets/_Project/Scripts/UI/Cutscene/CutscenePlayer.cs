@@ -191,8 +191,10 @@ namespace Game.UI
             CutsceneShot shot = _sequencer.Current;
             float time = _sequencer.LocalTime;
             float progress = _sequencer.Progress;
+            _context.Rumble = 0f;
+            _context.Float = 0f;
             _current.Tick(time, progress);
-            _camera.Apply(CameraPath.Sample(_keys, progress), delta);
+            _camera.Apply(CameraPath.Sample(_keys, progress), delta, _context.Rumble, _context.Float);
             PoseRig();
             _overlay.SetFade(ShotFade(shot, time));
             _overlay.SetTitle(shot.TitleCard, TitleAlpha(shot, time));

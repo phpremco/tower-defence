@@ -43,6 +43,15 @@ namespace Game.UI
         public bool FogEnabled { get; }
         public CutsceneAudio Audio { get; }
 
+        /// <summary>
+        /// How hard the camera rumbles this frame, 0..1 (a burn, a re-entry): the set writes it in each pose, the player resets it
+        /// before the pose and hands it to the camera, so it follows the shot clock alone and a sought frame shows the same rumble.
+        /// </summary>
+        public float Rumble { get; set; }
+
+        /// <summary>A slow handheld float of the camera in degrees for this frame (zero holds it on its mount); written like <see cref="Rumble"/>.</summary>
+        public float Float { get; set; }
+
         /// <summary>A count from the cast scaled by the quality profile, never below one.</summary>
         public int Scaled(int count) => Mathf.Max(1, Mathf.RoundToInt(count * ParticleScale));
     }

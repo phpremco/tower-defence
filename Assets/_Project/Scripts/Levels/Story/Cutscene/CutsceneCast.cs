@@ -50,6 +50,8 @@ namespace Game.Levels
         [Header("Imported (Blender) models: worn before the prefab overrides above and the procedural models")]
         [SerializeField] private ModelArtDefinition _mothershipArt;
         [SerializeField] private ModelArtDefinition _capsuleArt;
+        [Tooltip("The deorbit stage on each capsule in the orbit shot; empty drops the capsules without one.")]
+        [SerializeField] private ModelArtDefinition _boosterArt;
         [SerializeField] private ModelArtDefinition _drillArt;
         [SerializeField] private ModelArtDefinition _beaconArt;
         [Tooltip("The welding drones that fly round the base as it goes up.")]
@@ -93,6 +95,7 @@ namespace Game.Levels
         public PlanetStyle EarthPlanet => _earthPlanet ?? (_earthPlanet = PlanetStyle.Earth());
         public ModelArtDefinition MothershipArt => _mothershipArt;
         public ModelArtDefinition CapsuleArt => _capsuleArt;
+        public ModelArtDefinition BoosterArt => _boosterArt;
         public ModelArtDefinition DrillArt => _drillArt;
         public ModelArtDefinition BeaconArt => _beaconArt;
         public ModelArtDefinition BuilderArt => _builderArt;
