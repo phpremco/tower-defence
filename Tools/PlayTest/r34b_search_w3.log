@@ -1,0 +1,4 @@
+== w3: EditMode PlanSearchTests, filter: cells=3:2,4:0 (14:56:28)
+== w3 done in 3 min 27 s: result="Passed"
+name="Evaluator_EmptyPlanFalls_AndSpotsMatter" fullname="Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter" result="Passed"
+name="Search_WritesPlansForEveryCell" fullname="Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell" result="Passed"

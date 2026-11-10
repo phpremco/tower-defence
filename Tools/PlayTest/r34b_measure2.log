@@ -1,0 +1,15 @@
+== workers: measure, 12 units over 5 workers (16:09:07)
+  synced 5 workers in 1 s
+  w1: 3 units: 1:2:1 1:3:3 2:3:2
+  w2: 3 units: 1:2:2 2:2:1 2:3:3
+  w3: 2 units: 1:2:3 2:2:2
+  w4: 2 units: 1:3:1 2:2:3
+  w5: 2 units: 1:3:2 2:3:1
+== workers done in 5 min 5 s (16:14:12)
+  w1: result="Passed", 0 probe errors, 18 runs
+  w2: result="Passed", 0 probe errors, 18 runs
+  w3: result="Passed", 0 probe errors, 12 runs
+  w4: result="Passed", 0 probe errors, 12 runs
+  w5: result="Passed", 0 probe errors, 12 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 432 runs in Tools/PlayTest/calibration_records.txt; tables in Tools/PlayTest/yardstick_partial.txt

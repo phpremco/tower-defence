@@ -106,6 +106,9 @@ namespace Game.Editor
                     {
                         Join("Skitter", 1, 4f, LooseRunners, loose: true), Join("Skitter", 4, 1.5f, 0.35f, pack: 8), Join("Cragback", 5, 1.5f, 2.6f),
                         Join("Wisp", 6, 1.5f, 1.3f),
+                        // Round 34b (Remco): from Hard on, a tight pack of three plated Cragbacks walks in from wave 3, so a row of light guns
+                        // (Gun, Laser) breaks before the last third and anti-armour (Cannon, Railgun) is needed.
+                        Join("Cragback", 3, 2.5f, 2f, minDifficulty: Hard, pack: 3),
                     },
                     Rhythm = "PRPHRPHRPHRP",
                     AirSprinkleFrom = 4,
@@ -151,6 +154,8 @@ namespace Game.Editor
                     {
                         Join("Skitter", 1, 2.4f, 0.42f, pack: 6), Join("Skitter", 2, 2f, LooseRunners, loose: true), Join("Cragback", 4, 1.3f, 2.5f),
                         Join("Wisp", 8, 1.4f, 1.3f),
+                        // Round 34b (Remco): the plated pack from wave 3 on Hard and Psycho, as on Glass Meadows.
+                        Join("Cragback", 3, 1.5f, 2f, minDifficulty: Hard, pack: 3),
                     },
                     Flyer = "Skyray",
                     FlyerInterval = PackedFlyers,

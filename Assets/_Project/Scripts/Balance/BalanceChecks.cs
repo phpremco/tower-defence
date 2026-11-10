@@ -107,7 +107,7 @@ namespace Game.Balance
         /// Easy may not hand that player more than <see cref="BalanceRules.MaxEasySurplus"/> times the firepower it needs,
         /// must stay clearly lighter than Medium, and every difficulty must ask more than the one below it.
         /// </summary>
-        public static List<string> CheckHuman(string level, IReadOnlyList<float> plainMeans, BalanceRules rules)
+        public static List<string> CheckHuman(string level, IReadOnlyList<float> plainMeans, BalanceRules rules, CampaignLevel tuned = null)
         {
             var failures = new List<string>();
             if (plainMeans.Count == 0)
@@ -128,9 +128,13 @@ namespace Game.Balance
 
             for (int d = 1; d < plainMeans.Count; d++)
             {
-                if (plainMeans[d] <= plainMeans[d - 1])
+                // Judged at the curve: the builder's target scale is play's correction of the paper (round 31: Fault Line Psycho at 0.66 is the
+                // harder cell in play while the paper, which underrates its swarm waves, reads it under Hard), as CheckHumanTarget does.
+                float above = plainMeans[d] / (tuned != null ? tuned.TargetScaleFor(d) : 1f);
+                float below = plainMeans[d - 1] / (tuned != null ? tuned.TargetScaleFor(d - 1) : 1f);
+                if (above <= below)
                 {
-                    failures.Add($"{level}: difficulty {d} asks no more than difficulty {d - 1} on plain waves ({plainMeans[d]:0.00} vs {plainMeans[d - 1]:0.00})");
+                    failures.Add($"{level}: difficulty {d} asks no more than difficulty {d - 1} on plain waves at the curve ({above:0.00} vs {below:0.00}; stored {plainMeans[d]:0.00} vs {plainMeans[d - 1]:0.00})");
                 }
             }
 

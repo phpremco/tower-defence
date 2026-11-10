@@ -1,0 +1,4 @@
+== w5: EditMode BalanceLedgerTests, filter:  (14:56:28)
+== w5 done in 2 min 43 s: result="Passed"
+name="EveryWave_StaysInsideItsDifficultyBand" fullname="Game.Tests.BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand" result="Passed"
+name="MetaEconomy_FollowsTheDesign" fullname="Game.Tests.BalanceLedgerTests.MetaEconomy_FollowsTheDesign" result="Passed"

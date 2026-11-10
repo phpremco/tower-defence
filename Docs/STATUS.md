@@ -5155,3 +5155,165 @@ aside, verified, never written); the dev backup untouched; `Tools/PlayTest` copi
 - The warning names any nest past the defence gate (all C1 nests are stone rifts); a pond or burrow nest on a later map would get
   the same "rift" line.
 - Should the camera also glide to the rift while Voss speaks (`LevelContext.CameraFocusRequested` exists)? Not built.
+
+## Round 34b: the band green, armour packs on Hard and Psycho, the Easy and Psycho scales by play (2026-11-10)
+
+Not committed (the curator commits). Save `progress.json` MD5 ae9223b8 copied aside before the round, checked after every worker run
+(the scripts check it too) and at the end (ae9223b8); the dev backup untouched; no `Assets/InitTestScene*`; `probe_arg.txt` absent.
+`Tools/PlayTest` was copied aside before the round and again before the suite; the suite's rewrites (`calibration.txt`,
+`calibration_waves.txt`, `drone_lens.txt`, `finale_balance.txt`, `finale_boss_share.txt`, `monoculture_ledger.txt`, `plans_summary.txt`, the
+Plans of unchanged cells) were restored, and this round's results stay: the Plans of the ten searched cells (`r34b_plans_summary.txt` has their
+search rows), `calibration_records.txt` (432 runs), `plan_records.txt` (303 runs), `plan_replay_partial.txt`, `yardstick_partial.txt`,
+`acceptance.txt` (+ `acceptance_r34b_pass1/2.txt`), `balance_ledger.txt`, `finale_probe.txt`, `impact_baseline/` (14:03), `wave_tuning.txt`,
+the `r34b_*` logs and the two helper scripts. Remco's decisions of 2026-11-10 (rifts behind a gate stay; armoured groups on C1_02/C1_03 Hard
+and Psycho; Psycho doable but hard at x3 money; the strategy rule per difficulty; levers before map changes) were the brief.
+
+### 1. `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand` is green (goal 1)
+
+Each of the five failures and what fixed it:
+
+- **C1_02 Easy 2.10x and C1_03 Easy 2.06x over `MaxEasySurplus` 1.9.** Not a wave problem: `CampaignModel.CalibrateToHuman` trims every
+  difficulty so the human lens meets `scale / HumanSurplusAt`, so an Easy cell at the builder's scale 0.658 reads 1.4 / 0.658 = 2.1x by
+  construction. The scale is play's verdict (the Easy pay-off rule, round 29; Remco: a reasonable plan wins, three stars allowed), so the
+  band follows it: `BalanceRules.MaxEasySurplus` 1.9 -> **2.4** (Shard Ridge now sits at scale 0.6 = 2.3x). The band only catches a
+  runaway scale now; `BalanceModelTests.HumanLens` builds its case from the rule and stays green.
+- **C1_04 Psycho asks less than Hard on plain waves (0.86 vs 1.10).** The same construction: the ordering check compared stored pressures
+  while the trim had put Psycho at scale 0.66 (play: 0/3 at 0.757, 3/3 at 0.66 + swarm) and Hard at 1.0. `BalanceChecks.CheckHuman` now
+  takes the tuned level and judges the order **at the curve** (pressure / target scale), as `CheckHumanTarget` already did; the message prints
+  both figures. Without a tuned level the check is unchanged (the synthetic cases in `BalanceModelTests`). The scales themselves stayed.
+- **C1_04 Hard boss wave 10: 1.52 with the hero (cap 1.30).** The cap could not trim the boss wave's own health below the slow Cragbacks
+  carried into it from the heavy wave 9 (the round-22b note on this level). `C1_04 2 plated` 1.5 -> **1.25**: wave 10 reads 1.48 / under the
+  cap with the hero; in play the Hard cell went from 3/3 with 1.3 stars to 3/3 with 2.7.
+- **C1_06 Psycho 1.05x against the curve's 1.13x.** Gone with the re-solve at the new scale 0.57 (below).
+- **New on the way, then fixed: C1_03 Psycho wave 13 at 2.07 and then 1.68 with the hero.** The first armour pack (weight 2.5, 1.2 s
+  apart) on the heavy wave 13 of Psycho, with the tempo lever 0.85, made a 15-second wall the cap could not trim (the carried Cragbacks
+  again). The tempo lever of C1_03 Psycho is dropped (its scale went to 0.87 and then 0.757 anyway), the packs walk 2 s apart and Shard
+  Ridge's pack weighs 1.5 (Glass Meadows' 2.5): green, on the final data too (`r34b_band3_w6.log`).
+
+### 2. Data changes per level (`LevelSpecs.Crystal.cs`, `wave_tuning.txt`; waves re-solved)
+
+| Level | Change | Why |
+| --- | --- | --- |
+| C1_02 Glass Meadows | Hard and Psycho: `Join("Cragback", 3, 2.5, 2.0, minDifficulty: Hard, pack: 3)`, a pack of three plated Cragbacks from wave 3 | Remco: armoured groups so a row of light guns loses and anti-armour is needed |
+| C1_02 | Medium swarm 1.5 -> 2 | mono Cannon won 3/3 on Medium (it still does, below) |
+| C1_02 | Hard scale 1.15 -> 1 (via 0.87: every plan and the Cannon row won 3/3 there) | with the pack at 1.15 every plan lost 0/3 |
+| C1_02 | Psycho scale 1 -> 0.757 (via 0.87: 0/3) | every plan lost 0/3 at the final boss wave |
+| C1_03 Shard Ridge | Hard and Psycho: the same pack at weight 1.5 | as above; 2.5 walled wave 13 on Psycho |
+| C1_03 | Easy scale 0.66 -> 0.6 | one obvious kind won; now the Gun row and the affordable buyer win (still one kind by the rule's count) |
+| C1_03 | Hard scale 0.87 -> 0.66 (via 0.757: best 1/3); Psycho scale 1 -> 0.757 (via 0.87: 0/3), tempo 0.85 dropped | with the pack the plans died at the heavy wave 13 |
+| C1_04 Fault Line | Hard plated 1.5 -> 1.25 | the boss wave's hero cap |
+| C1_05 Quartz Flats | Easy scale 0.757 -> 0.66 | no obvious kind won; it bought nothing (the air note below), can go back |
+| C1_06 Crysium Vein | Easy scale 0.757 -> 0.66; Psycho 0.66 -> 0.57 | Easy as C1_05; Psycho 1/3 -> 3/3 |
+
+Only the wave assets of C1_02-C1_06 and the level assets of C1_02/03/05/06 (their stored target scales) moved; C1_01 is byte-stable. The
+budget of a wave is fixed by the script, so a pack shifts threat into armour rather than adding it: against the Gun and the Laser a
+Cragback is worth 1.6x its threat (armour 60 at the light-fire factor), against the Cannon 1x. That is what the pack does in play: on
+C1_02 Hard at scale 0.87 the Cannon row won 3/3 and the Gun/Laser rows died at wave 10; at 1.0 every row dies at 10-12 while all three
+searched plans win 3/3.
+
+### 3. How the round ran (the editor and the clones)
+
+- **The Pipeline stopped answering after every EditMode test run in the open editor** (three times: the `solve` after
+  `BalanceLedgerTests`, `editor_status` after the second run, `test_status` after an async run), and each time the editor was restarted
+  from the command line (COMMANDS "Round 31"). The third relaunch was too quick (8 s after `Stop-Process`, while the AssetImportWorkers
+  and `Temp/UnityLockfile` were still there): that editor exited at once with the "another instance" dialog Remco saw, and the curator and
+  I both started one at 14:46 (one survived). The lesson is in COMMANDS "Round 34b": wait for the old process and the lockfile to be gone,
+  then one relaunch. From then on every EditMode stage ran headless in the worker clones: `Tools/PlayTest/r34b_editmode_worker.sh <N>
+  <TestClass> [filter lines]` (sync, `probe_arg.txt`, `Unity -batchmode -nographics -runTests EditMode`), and once the solve
+  (`r34b_solve_worker.sh`, `-executeMethod Game.Editor.BalanceStages.SolveWaves`; it writes the waves but not the level asset's stored
+  scale, so the editor solved once more and reproduced the clone's waves byte for byte). The plan search of ten cells took 3.5 minutes on
+  four clones (15-30 s a cell against minutes in the editor). Mind: a later `workers.sh run` syncs the project's Tools over the clones, so a
+  clone's plans must be copied back first (lost once; the search was repeated on the spare clone w6). The main editor solved the waves and
+  ran the final suite (no hang after an async suite read from `Temp/pipeline_test_status.json`).
+- Stages: snapshot (14:03, 9 min) -> solve -> band test -> search (clones) -> measure (ten cells, 19 min) -> replay (all 24 cells, 40 min)
+  -> finale probe (6 min) -> acceptance (w6) -> the Hard/Psycho cells of C1_02/C1_03 twice more (search, measure, replay, acceptance) ->
+  the suite -> the band test on the final data.
+
+### 4. In play (best replayed plan per cell: wins over the three seeds, mean stars; then the obvious family from the yardstick)
+
+| Cell | Best plan | Plans winning 2+ seeds | Gun row | Cannon row | Laser row | naive | affordable |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C1_01 Easy | 3/3, 3.0 | 4/4 | 3/3 | 3/3 | - | 4/6 | 6/6 |
+| C1_01 Medium | 2/3, 3.0 | 5/5 | 3/3 | 3/3 | - | 2/3 | 3/3 |
+| C1_01 Hard | 2/3, 2.5 | 1/5 | 3/3 | 1/3 | 0/3 | 0/3 | 3/3 |
+| C1_01 Psycho | 2/3, 2.5 | 1/5 | 0/3 | 0/3 | 1/3 | 0/3 | 0/3 |
+| C1_02 Easy | 3/3, 3.0 | 5/5 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+| C1_02 Medium | 3/3, 3.0 | 5/5 | 0/3 | **3/3** | 0/3 | 1/3 | 0/3 |
+| C1_02 Hard (was 2/3) | 3/3, 3.0 | 3/3 | 0/3 (w10-11) | 0/3 (w11-12) | 0/3 (w10) | 0/3 | 0/3 |
+| C1_02 Psycho (was 0/3) | 3/3, 3.0 | 1/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_03 Easy | 3/3, 3.0 | 5/5 | 3/3 | 0/3 | 0/3 | 0/3 | 3/3 |
+| C1_03 Medium | 3/3, 3.0 | 3/5 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_03 Hard (was 2/3, 1.0) | 3/3, 3.0 | 3/3 | 0/3 (w13) | 0/3 (w13) | 0/3 (w13) | 0/3 | 0/3 |
+| C1_03 Psycho (was 0/3) | 2/3, 2.5 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_04 Easy | 3/3, 3.0 | 5/5 | 1/3 | 0/3 | 0/3 | 3/3 | 2/3 |
+| C1_04 Medium | 3/3, 2.7 | 3/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_04 Hard (was 1.3 stars) | 3/3, 2.7 | 2/3 | 0/3 (w5-7) | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_04 Psycho | 3/3, 1.7 | 4/5 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_05 Easy | 3/3, 3.0 | 5/5 | 0/3 (w11) | 0/3 (w11) | 0/3 (w11) | 0/3 | 0/3 |
+| C1_05 Medium | 3/3, 3.0 | 5/5 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_05 Hard | 3/3, 2.3 | 3/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_05 Psycho | 2/3, 2.0 | 1/5 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_06 Easy | 3/3, 3.0 | 5/5 | 0/3 (w14-15) | 0/3 (w12) | 0/3 (w12) | 0/3 | 0/3 |
+| C1_06 Medium | 3/3, 3.0 | 3/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_06 Hard | 3/3, 3.0 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+| C1_06 Psycho (was 1/3) | 3/3, 3.0 | 5/5 | 0/3 (w10-12) | 0/3 (w7) | 0/3 (w7) | 0/3 | 0/3 |
+
+The unchanged cells replayed byte-identical to round 31 (the probe is deterministic). Psycho: the discovered plan now wins 2 of 3 or
+better on every level (C1_02 3/3, C1_03 2/3, C1_06 3/3; C1_01 2/3, C1_04 3/3, C1_05 2/3) while every obvious row and the naive and
+affordable buyers lose on all of them (one Laser-row seed on C1_01). Hard: C1_02 and C1_03 now have three winning plans each and no
+winning row (the rows die at 10-12 of 12 and at 13 of 16, not before the last third the rule asks for).
+
+**Acceptance 11/24** (round 31: 11/24, a different eleven): C1_01 Easy, C1_02 Easy, C1_03 Medium, C1_04 Easy/Medium, C1_05 Medium/Hard/
+Psycho, C1_06 Medium/Hard/Psycho (new). Lost: C1_04 Hard, only because the new best plan uses one feature (the rule wants two: a drone,
+a gadget, a sale, a gate upgrade or three upgrades); its play improved. What remains, per rule:
+- "obvious plans fall before the last third" (C1_01 Psycho, C1_02 Hard/Psycho, C1_03 Hard/Psycho, C1_06 Psycho): the rows die at
+  10-12 of 12 (C1_02) and 13 of 16 (C1_03) on every scale tried (1.15, 1.0, 0.87 on C1_02 Hard; 0.87, 0.757, 0.66 on C1_03 Hard). The
+  budget is trimmed to the curve, so composition decides which row dies, not when; the pack made the Gun and Laser rows lose and the
+  Cannon row with them once the scale was right. Killing a row by wave 7 of 12 would need a cliff the band forbids, or a rule change.
+- "the replayed plans are alike" (C1_02/C1_03/C1_04 Psycho): the search returns one trick per cell; a search-side matter.
+- C1_02 Medium: the Cannon row wins 3/3 at swarm 2 (and 1.5): Glass Meadows' swarm is the Cannon's food too; the raid lever (5) is on.
+- Easy "two of three obvious kinds win" (C1_03/05/06): on the three levels with air (and Shalebat nests on C1_05/06) the Cannon and
+  Laser rows cannot shoot the sky and die at the same wave on every scale (C1_05 wave 11, C1_06 wave 12: the base falls to flyers with
+  the gates whole); the Gun row and the affordable buyer win C1_03 and C1_06's Gun row reaches 14-15. The scale cannot move this; it is the
+  rule meeting the air design (question 1 below). C1_05/C1_06 Easy at 0.66 bought nothing and can go back to 0.757.
+- C1_01 Medium/Hard: unchanged (the rear rift, by Remco's decision; the forgiving Hard cell).
+
+### 5. Finale probe (16:02-16:08 on the clones; holds = largest health multiple the finale player still beat; every boss beaten as the data stands)
+
+| Boss (health) | Easy (0.80) | Medium (1.00) | Hard (1.25) | Psycho (1.25) |
+| --- | --- | --- | --- | --- |
+| Gravemaw (39540) | x2.42 | x1.29 (round 31: x0.85 at 55050) | x1.80 | x1.66 |
+| Cinder Matriarch (10350) | x1.73 | x1.18 | x1.96 | x1.73 |
+| Frost Warden (7500) | x1.52 | x1.09 | x1.52 | x1.40 |
+| Rotbloom (3550) | x2.13 | x1.18 | x1.52 | x1.88 |
+| The Shattered (14000) | x1.80 | x1.18 | x1.96 | x1.52 |
+| The Sealed One (27200) | x1.96 | x1.18 | x1.73 | x1.23 |
+
+Gravemaw's hand-set Medium health (round 31) is confirmed by this probe. Goal 4 (the finale ledger's boss-alone term at 3-20x the cap
+while the probe beats every boss at x1.1-2.4) was not touched: it is a model term under `Scripts/Balance` (a shape change and a refit),
+not a quick fix; `ContinentFinaleTests` already defers to the probe there.
+
+### 6. Tests and state
+
+- **EditMode suite (16:15-16:26, async, read from `Temp/pipeline_test_status.json`): 750 tests, 698 passed, 52 skipped (the explicit
+  probe and fit tests, the acceptance report), 0 failed.** It ran on the data of 16:04 (two Hard scales moved after it: C1_02 1.0, C1_03
+  0.66); on the final data `BalanceLedgerTests` 2/2 green headless on w6 (`r34b_band3_w6.log`, `balance_ledger.txt` copied back) and
+  `BalanceAcceptanceTests` skipped with its report (13/24 failing cells, as designed). Console after the recompile: 0 errors.
+- The calibration is current (inputs 0e507ead; `MaxEasySurplus` is not in the inputs hash); the impact stage would call the shape STALE
+  because `BalanceChecks.cs` changed (a check, not a model term).
+- Editor stopped and answering, save MD5 ae9223b8, clones idle.
+
+### Open points for Remco (round 34b)
+
+1. The Easy rule "two of three obvious kinds win" cannot be met on Shard Ridge, Quartz Flats and Crysium Vein by any scale: the Cannon
+   and Laser rows have no answer to the sky and die to the raids and the Shalebat nests. Keep the rule as a reminder that air needs Flak
+   (the Easy cells play well: five plans, the Gun row or the affordable buyer win), or count only the rows that can shoot what the level
+   sends?
+2. The Hard/Psycho rule "obvious plans fall before the last third": on a 12-wave level that is wave 7. With the budget trimmed to the
+   curve, the rows reach wave 10-12 and lose; the pack decides which rows lose, not when. Is "every obvious plan loses while several plans
+   win" (now true on C1_02/C1_03 Hard and every Psycho cell) the rule you mean, or do you want a late cliff?
+3. Hard on C1_02/C1_03 now has three winning plans at 3.0 / 2.0-3.0 stars: comfortable for Hard? The scales sit at 1.0 and 0.66; a step
+   up (1.15 / 0.757) lost every plan with the packs in place.
+4. C1_05/C1_06 Easy at 0.66 bought nothing: put them back to 0.757?
+5. `MaxEasySurplus` 2.4 and the ordering check at the curve are band alignments with your rules (play sets the scales): fine, or do you
+   want the paper to keep an absolute Easy ceiling?

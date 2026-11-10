@@ -1,0 +1,25 @@
+Round 34b strategy search: the ten changed cells, searched headless on worker clone w6 (r34b_editmode_worker.sh), 2026-11-10 15:12. The other cells keep their round-31 plans.
+Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
+the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
+
+level        diff    best strategy    margin  holding/top  distinct  creative          obvious
+Level_C1_02  Medium  3* base 700        0.42    30/30            24  3* base 700       mono PulseRifle falls w9, mono Cannon 3* base 700, mono Laser falls w7, naive falls w10
+Level_C1_02  Hard    falls w7           0.17     0/30             0  falls w7          mono PulseRifle falls w6, mono Cannon falls w7, mono Laser falls w6, naive falls w7
+Level_C1_02  Psycho  falls w9           0.18     0/30             0  falls w7          mono PulseRifle falls w6, mono Cannon falls w7, mono Laser falls w6, naive falls w7
+Level_C1_03  Easy    3* base 700        1.55    30/30            23  3* base 700       mono PulseRifle falls w12, mono Cannon falls w12, mono Laser falls w12, naive falls w12
+Level_C1_03  Hard    falls w11          0.02     0/30             0  falls w9          mono PulseRifle falls w7, mono Cannon falls w9, mono Laser falls w7, naive falls w8
+Level_C1_03  Psycho  falls w11          0.10     0/30             0  falls w8          mono PulseRifle falls w4, mono Cannon falls w8, mono Laser falls w4, naive falls w5
+Level_C1_04  Hard    falls w12          0.15     0/30             0  falls w10         mono PulseRifle falls w3, mono Cannon falls w3, mono Laser falls w3, naive falls w12
+Level_C1_05  Easy    3* base 700        1.00    30/30            21  3* base 700       mono PulseRifle falls w8, mono Cannon falls w8, mono Laser falls w8, naive falls w8
+Level_C1_06  Easy    3* base 700        1.21    30/30            23  3* base 700       mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w7, naive falls w7
+Level_C1_06  Psycho  3* base 900        0.42    30/30            20  falls w12         mono PulseRifle falls w5, mono Cannon falls w5, mono Laser falls w5, naive falls w5
+
+Second search (16:05) after the Hard/Psycho scales of C1_02 and C1_03 were eased (0.87 / 0.757 / 0.757 / 0.757):
+Level_C1_02  Hard    falls w9           0.28     0/30             0  falls w7          mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w6, naive falls w7
+Level_C1_02  Psycho  falls w10          0.24     0/30             0  falls w7          mono PulseRifle falls w6, mono Cannon falls w7, mono Laser falls w6, naive falls w7
+Level_C1_03  Hard    falls w12          0.26     0/30             0  falls w9          mono PulseRifle falls w8, mono Cannon falls w11, mono Laser falls w8, naive falls w8
+Level_C1_03  Psycho  falls w12          0.25     0/30             0  falls w12         mono PulseRifle falls w5, mono Cannon falls w9, mono Laser falls w5, naive falls w5
+
+Third search (16:24) after the Hard scales went to C1_02 1.0 and C1_03 0.66:
+Level_C1_02  Hard    falls w9           0.19     0/30             0  falls w9          mono PulseRifle falls w7, mono Cannon falls w7, mono Laser falls w7, naive falls w7
+Level_C1_03  Hard    falls w15          0.33     0/30             0  falls w11         mono PulseRifle falls w9, mono Cannon falls w11, mono Laser falls w8, naive falls w9

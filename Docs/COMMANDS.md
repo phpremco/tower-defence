@@ -860,3 +860,24 @@ console and `Logs/probe_trace.txt`.
   `unity command run_script --file Tools/PlayTest/Scripts/ApplyBossData.cs --entry ApplyBossData.Run --timeout_ms 300000 --timeout 360`
   (Gravemaw 55050 -> 39540 this round). `unity command test_status --result-only` lists every test of the last run with its
   status and message (the way to find the suite's failures).
+
+### Round 34b (2026-11-10)
+
+- **EditMode stages headless on a clone** (the Pipeline stopped answering after every EditMode run in the open editor this round):
+  `bash Tools/PlayTest/r34b_editmode_worker.sh <N> <TestClass> [filter lines]` syncs clone wN from the project (Assets, Packages,
+  ProjectSettings, Tools; the clone's own product name), writes its `probe_arg.txt` from the filter lines (`cells=1:2,2:3`), runs
+  `Unity -batchmode -nographics -runTests EditMode -testFilter <TestClass>` and prints the result line per test. Outputs stay in the
+  clone: copy back `Tools/PlayTest/Plans/<cell>.txt` and `<cell>_strategyN.json` after a `PlanSearchTests` run (delete the project's old
+  JSONs of that cell first; the search deletes stale ones only in its own folder), `acceptance.txt` after `BalanceAcceptanceTests`,
+  `balance_ledger.txt` after `BalanceLedgerTests`. A plan search of ten cells on four clones took 3.5 minutes (15-30 s a cell). Clone w6
+  is spare: the measure/replay/finale runs use w1..w5 and overwrite their Tools from the project, so copy a clone's plans back before the
+  next `workers.sh run`. The clones must be idle (no measure, replay or finale on that clone).
+- **Restarting the editor:** `Stop-Process` the editor, then wait until `Get-Process Unity` shows no process with the project's
+  `-projectPath` (the AssetImportWorkers exit a few seconds after the editor) and `Temp\UnityLockfile` is gone (delete it only then), and
+  start **one** editor. Starting 8 s after the kill left the lockfile in place: the new editor exited at once with the "another Unity
+  instance is running" dialog. Never run batchmode on the main project while it is open; the clones are for that.
+- **An async EditMode run** (`run_tests --async_tests true`) writes `Temp/pipeline_test_status.json` (`"status": "completed"`, the
+  summary and every result); read that file instead of calling `test_status` while the run is on, and after it (the call hung the
+  Pipeline this round).
+- Logs of this round: `Tools/PlayTest/r34b_*.log`; the search summaries in `r34b_plans_summary.txt`, the first acceptance in
+  `acceptance_r34b_pass1.txt`.

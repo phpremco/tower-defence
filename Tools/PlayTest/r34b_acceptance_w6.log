@@ -1,0 +1,3 @@
+== w6: EditMode BalanceAcceptanceTests, filter:  (16:02:45)
+== w6 done in 0 min 59 s: result="Skipped"
+name="Acceptance_EveryRecordedCell_MeetsItsDifficultyRule" fullname="Game.Tests.BalanceAcceptanceTests.Acceptance_EveryRecordedCell_MeetsItsDifficultyRule" result="Skipped"

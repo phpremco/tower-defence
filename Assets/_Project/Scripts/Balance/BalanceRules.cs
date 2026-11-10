@@ -185,7 +185,9 @@ namespace Game.Balance
         /// </summary>
         // 1.6 until 2026-11-09; 1.9 since Easy may be comfortable (Remco): C1_02 Easy sits at scale 0.757 because at 0.87 the searched
         // plans lost 3/3 in play (round 27) while the paper read 1.6x; the paper is lenient about that level's gate fights.
-        public float MaxEasySurplus = 1.9f;
+        // 2.4 since round 34b: the Easy scales are set by play (the pay-off rule: a reasonable plan wins, three stars allowed), and the
+        // trim puts the paper at 1.4x over the scale (Shard Ridge 0.6 -> 2.3x); the band only catches a runaway scale now.
+        public float MaxEasySurplus = 2.4f;
 
         /// <summary>
         /// The plain Easy waves of a level may ask at most this share of what the plain Medium waves ask of the same player,

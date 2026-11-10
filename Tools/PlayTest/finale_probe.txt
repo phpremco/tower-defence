@@ -1,8 +1,8 @@
-Finale probe as played 2026-11-10 04:48 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Finale probe as played 2026-11-10 16:08 (round 22f): creative bot, seed 1, the finale player of FinaleModel on the boss's arena field. calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
 Per boss and difficulty: holds = the largest boss health multiple (1 = the data) the finale player still beat; as-is = the run at the data's health;
 share and health as the data had them when the probe ran. Lines starting with 'cell' are read by ContinentFinaleTests and the finale apply stage.
 
-  Gravemaw         Easy    money  1278 research  138 towers 6: holds x1.40 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 lost base 0/800)
+  Gravemaw         Easy    money  1278 research  138 towers 6: holds x2.42 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 lost base 0/800, x2.32 won base 800/800, x2.52 lost base 0/800, x2.42 won base 800/800)
   CinderMatriarch  Easy    money  1278 research  138 towers 7: holds x1.73 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 won base 800/800, x1.80 lost base 0/800, x1.73 won base 800/800)
   FrostWarden      Easy    money  1278 research  138 towers 7: holds x1.52 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 lost base 0/800, x1.66 lost base 0/800, x1.52 won base 800/800)
   Rotbloom         Easy    money  1278 research  138 towers 7: holds x2.13 (x1.00 won base 800/800, x1.40 won base 800/800, x1.96 won base 800/800, x2.74 lost base 0/800, x2.32 lost base 0/800, x2.13 won base 800/800, x2.22 lost base 0/800)
@@ -16,10 +16,10 @@ cell|FrostWarden|0|1.523|won|1|0.8|7500|5
 cell|FrostWarden|1|1.088|won|1|1|7500|5
 cell|FrostWarden|2|1.523|won|1|1.25|7500|5
 cell|FrostWarden|3|1.4|won|1|1.25|7500|5
-cell|Gravemaw|0|1.4|won|1|0.8|55050|5
-cell|Gravemaw|1|0.845|lost|0|1|55050|4
-cell|Gravemaw|2|1.287|won|1|1.25|55050|5
-cell|Gravemaw|3|1.234|won|1|1.25|55050|5
+cell|Gravemaw|0|2.419|won|1|0.8|39540|7
+cell|Gravemaw|1|1.287|won|1|1|39540|5
+cell|Gravemaw|2|1.802|won|1|1.25|39540|6
+cell|Gravemaw|3|1.657|won|1|1.25|39540|6
 cell|Rotbloom|0|2.132|won|1|0.8|3550|7
 cell|Rotbloom|1|1.183|won|1|1|3550|5
 cell|Rotbloom|2|1.523|won|1|1.25|3550|5

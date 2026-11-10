@@ -1,0 +1,4 @@
+== w5: EditMode PlanSearchTests, filter: cells=1:2 (16:23:44)
+== w5 done in 0 min 25 s: result="Passed"
+name="Evaluator_EmptyPlanFalls_AndSpotsMatter" fullname="Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter" result="Passed"
+name="Search_WritesPlansForEveryCell" fullname="Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell" result="Passed"

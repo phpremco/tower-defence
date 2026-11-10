@@ -1,0 +1,2 @@
+== snapshot: the impact baseline (paper of every cell on the current data and calibration)
+run_script	true	{"diagnostics":[],"compileMs":2385,"executeMs":557738,"assemblyName":"PipelineRunScript_Impact_61abf767da894c938f16fb940a184f4a","success":true,"result":"Baseline written to Tools/PlayTest/impact_baseline/paper.txt: 218 paper rows, inputs 0e507ead, band 0.06 (odd/even hold-out efficiencies Cannon 0.95/0.87, Laser 0.83/0.81, PulseRifle 1.03/0.98, Rocket 1.10/1.13 on 732 runs)."}	{"file":"Tools/PlayTest/Scripts/Impact.cs","entry":"Impact.Snapshot","timeout_ms":"900000"}

@@ -75,7 +75,7 @@ namespace Game.Tests
                 }
 
                 report.Append(BalanceChecks.DescribeHuman(node.Level.name, plainMeans)).Append('\n');
-                failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules));
+                failures.AddRange(BalanceChecks.CheckHuman(node.Level.name, plainMeans, rules, model.Levels[index]));
                 failures.AddRange(BalanceChecks.CheckHumanTarget(node.Level.name, model.ContinentIndexOf(index), plainMeans, rules, model.Levels[index]));
                 curve.Append($"  {node.Level.name}: {surplus[0]:0.00}x {surplus[1]:0.00}x {surplus[2]:0.00}x {surplus[3]:0.00}x | with hero{heroLine}\n");
                 if (!rampLevels.ContainsKey(node.Region))
