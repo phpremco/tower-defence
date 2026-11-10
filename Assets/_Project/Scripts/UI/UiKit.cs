@@ -36,6 +36,14 @@ namespace Game.UI
         /// <summary>Display text (titles, buttons, big numbers) keeps the sci-fi font; anything smaller than this reads better in a plain face.</summary>
         private const int DisplayFontMinSize = 28;
         private const int FitMinFontSize = 14;
+        private const int DefaultReadableSize = 27;
+        private const string KeyColour = "#FFD45C";
+
+        /// <summary>
+        /// The title-safe margin on every screen edge, in percent: the platform's default or the player's HUD margin option.
+        /// Set by the bootstrapper and the option; every HUD frame follows it at once.
+        /// </summary>
+        public static float SafeMarginPercent { get; set; }
 
         /// <summary>The sprites and fonts everything is drawn with. Set by the bootstrapper.</summary>
         public static UiSkin Skin { get; set; }
@@ -118,11 +126,7 @@ namespace Game.UI
 
             var safe = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
             safe.SetParent(canvasGo.transform, false);
-            Rect area = Screen.safeArea;
-            safe.anchorMin = new Vector2(area.xMin / Screen.width, area.yMin / Screen.height);
-            safe.anchorMax = new Vector2(area.xMax / Screen.width, area.yMax / Screen.height);
-            safe.offsetMin = Vector2.zero;
-            safe.offsetMax = Vector2.zero;
+            SafeAreaFitter.Attach(safe);
             return safe;
         }
 
@@ -213,6 +217,7 @@ namespace Game.UI
             button.targetGraphic = image;
             button.colors = ButtonColors();
             UseButtonArt(button, image, WidePrefix);
+            FocusFrame.Add(button);
             if (onClick != null)
             {
                 button.onClick.AddListener(onClick);
@@ -267,6 +272,24 @@ namespace Game.UI
             iconRect.offsetMin = new Vector2(12f, 12f);
             iconRect.offsetMax = new Vector2(-12f, -12f);
             return button;
+        }
+
+        /// <summary>The smallest size (1080p canvas units) for text read during play: the skin's value, about 18 px at 720p.</summary>
+        public static int ReadableSize => Skin != null ? Skin.MinReadableFontSize : DefaultReadableSize;
+
+        /// <summary>Raises a label to the readable size, and keeps a best-fit label from shrinking below it.</summary>
+        public static void KeepReadable(Text label)
+        {
+            int readable = ReadableSize;
+            label.fontSize = Mathf.Max(label.fontSize, readable);
+            label.resizeTextMaxSize = Mathf.Max(label.resizeTextMaxSize, readable);
+            label.resizeTextMinSize = Mathf.Max(label.resizeTextMinSize, readable);
+        }
+
+        /// <summary>A prompt: the key or pad button in gold, then what it does ("LT  Shockwave"); the text alone without a key.</summary>
+        public static string Keyed(string key, string text)
+        {
+            return string.IsNullOrEmpty(key) ? text : $"<color={KeyColour}>{key}</color>  {text}";
         }
 
         public static void SetLabel(Button button, string label)

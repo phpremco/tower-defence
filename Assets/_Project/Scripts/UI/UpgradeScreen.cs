@@ -31,6 +31,7 @@ namespace Game.UI
         private const float TileProgressHeight = 8f;
         private const float TileStarSize = 34f;
         private const int TileNameSize = 18;
+        private const float TileLockSize = 46f;
         private const float PanelX = 990f;
         private const float PanelTop = 150f;
         private const float PanelWidth = 870f;
@@ -78,7 +79,9 @@ namespace Game.UI
         private static readonly Color Gold = new Color(1f, 0.85f, 0.3f);
         private static readonly Color Better = new Color(0.55f, 1f, 0.6f);
         private static readonly Color TooPoor = new Color(1f, 0.5f, 0.45f);
-        private static readonly Color LockedIcon = new Color(0.35f, 0.38f, 0.45f, 1f);
+        private static readonly Color LockedIcon = new Color(0.22f, 0.24f, 0.3f, 1f);
+        private static readonly Color LockTint = new Color(1f, 0.78f, 0.35f, 1f);
+        private static readonly Color LockedName = new Color(0.5f, 0.55f, 0.65f, 1f);
 
         private enum SubjectKind
         {
@@ -118,6 +121,8 @@ namespace Game.UI
             public Image TileIcon;
             public RectTransform TileProgress;
             public Image TileStar;
+            public Image TileLock;
+            public Text TileName;
         }
 
         private sealed class StatWidget
@@ -447,6 +452,10 @@ namespace Game.UI
         private void BuildTile(RectTransform root, Subject subject, Vector2 position)
         {
             Button tile = UiKit.CreateButton(root, string.Empty, () => Select(subject));
+            // The details follow the focus as the stick walks the grid, not only a press of A (the Codex works the same).
+            var notifier = tile.gameObject.AddComponent<SelectNotifier>();
+            notifier.FollowPointer = false;
+            notifier.Selected = () => Select(subject);
             Destroy(tile.GetComponent<LayoutElement>());
             RectTransform rect = tile.GetComponent<RectTransform>();
             PlaceTopLeft(rect, position, new Vector2(TileSize, TileSize));
@@ -474,6 +483,7 @@ namespace Game.UI
             name.resizeTextMinSize = 12;
             name.resizeTextMaxSize = TileNameSize;
             name.raycastTarget = false;
+            subject.TileName = name;
 
             RectTransform bar = UiKit.CreateBar(rect, UiKit.Skin != null ? UiKit.Skin.BarBlue : null, 0f);
             bar.anchorMin = new Vector2(0f, 0f);
@@ -489,6 +499,14 @@ namespace Game.UI
             star.rectTransform.anchoredPosition = new Vector2(-6f - TileStarSize * 0.5f, -6f - TileStarSize * 0.5f);
             star.enabled = false;
             subject.TileStar = star;
+
+            // A weapon not found yet wears a padlock over its darkened picture, so it never reads as one already owned.
+            Image padlock = CreateIcon("Lock", rect, IconType.Lock, LockTint, TileLockSize);
+            padlock.rectTransform.anchorMin = new Vector2(0.5f, 1f);
+            padlock.rectTransform.anchorMax = new Vector2(0.5f, 1f);
+            padlock.rectTransform.anchoredPosition = new Vector2(0f, -10f - TileIconSize * 0.5f);
+            padlock.enabled = false;
+            subject.TileLock = padlock;
         }
 
         // The tile shows the thing itself, rendered once from the same model the level uses.
@@ -679,6 +697,8 @@ namespace Game.UI
             {
                 subject.Locked = subject.Tower != null && !Progress.IsTowerUnlocked(subject.Tower.Id);
                 subject.TileIcon.color = subject.Locked ? LockedIcon : Color.white;
+                subject.TileLock.enabled = subject.Locked;
+                subject.TileName.color = subject.Locked ? LockedName : Color.white;
                 subject.TileBack.color = subject == _selected ? TileChosen : subject.Locked ? TileLocked : TileTint;
                 int bought = 0;
                 int total = 0;

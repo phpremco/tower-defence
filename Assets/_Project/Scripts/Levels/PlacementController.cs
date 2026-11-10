@@ -172,8 +172,9 @@ namespace Game.Levels
             {
                 Refresh();
             }
-            // While the overview is held the stick aims the overview, not the build cursor.
-            if (_context.Mode != PlacementMode.TowerMenu && !_context.OverviewActive)
+            // While the overview is held the stick aims the overview, not the build cursor; while the hero panel is open the
+            // stick walks its buttons (the cursor would otherwise wander off the post under an open panel).
+            if (_context.Mode != PlacementMode.TowerMenu && _context.HeroMenuPost < 0 && !_context.OverviewActive)
             {
                 UpdateStick();
             }

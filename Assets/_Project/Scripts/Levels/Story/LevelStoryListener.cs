@@ -31,6 +31,7 @@ namespace Game.Levels
         private DialogueInput _dialogueInput;
         private System.Func<string, bool> _isSeen;
         private StoryTrigger[] _triggers;
+        private IReadOnlyList<ScanHint> _scanHints;
         private bool[] _fired;
         private bool _levelStartRaised;
         private bool _levelEndHandled;
@@ -40,8 +41,10 @@ namespace Game.Levels
 
         public DialoguePlayer Player => _player;
 
-        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled)
+        /// <param name="scanHints">Dr. Voss's creature scans (the campaign story); null plays none.</param>
+        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null)
         {
+            _scanHints = scanHints;
             _context = context;
             _time = time;
             _progress = progress;
@@ -206,6 +209,12 @@ namespace Game.Levels
             if (_sighted.Add(enemy.Definition))
             {
                 Select(StoryEvent.FirstSighting(enemy.Definition), _pending);
+                // The scan follows the level's own sighting lines, once per campaign rather than once per level.
+                DialogueDefinition scan = SightingHints.Pick(_scanHints, enemy.Definition, _isSeen, _pending);
+                if (scan != null)
+                {
+                    _pending.Add(scan);
+                }
             }
 
             if (enemy.Definition.IsBoss)

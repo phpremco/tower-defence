@@ -4910,3 +4910,176 @@ All shots are in `ArtSource/Previews/QA/`: 43 shots plus `contact_sheet.png`.
   - the planet map: `map_*`;
   - levels: `level_*`, `first_*` (the fresh-save dialogues), `intro_*`;
   - after a level: `result_win`, `result_defeat`, `base_*`.
+
+
+## Round 33: Voss's scans, device-aware prompts, the safe margin, readable text, the pad fixes (2026-11-10)
+
+Nothing here is committed; the curator commits.
+
+### Save and editor state
+
+- **Save:** Remco's save `progress.json` (MD5 ae9223b8) was copied aside before every Play Mode run and restored after each. It is intact.
+- **Editor:** the editor is stopped and there is no `Assets/InitTestScene*`. The Game view size was not changed. No balance data or pipeline output was touched.
+
+### 1. Voss scans new creatures, with a Codex link
+
+**Data**
+- `StoryDefinition._scanHints` is a new list of `ScanHint` entries (creature + dialogue).
+- `DialogueDefinition._codexEntry` is new: the creature the box links to.
+
+**Rule**
+- `SightingHints.Pick` (pure): a creature's scan plays the first time it appears in the campaign.
+- "First" uses the save's seen-dialogue flag, which is set when the scan ends or is skipped. A scan lost with a lost level therefore comes back.
+- A scan that a level trigger already plays at that moment is not queued twice.
+- `LevelStoryListener` queues the scan after the level's own sighting lines, so it holds the clock like every other dialogue.
+
+**Codex link**
+- While a scan shows, the box has a CODEX button. Y on the pad, C on the keyboard, or a click.
+- `DialoguePlayer.RequestCodex` ends the scan as seen and raises `CodexRequested`. `CodexView.OpenAt` then opens the book on the Enemies page at that creature, waiting until any queued conversations are done.
+- A advances and B skips, as before. B closes the book.
+
+**Input**
+- New action `Codex` (`<Gamepad>/buttonNorth`, `<Keyboard>/c`).
+- Y is still Speed outside a dialogue, and speed is gated while a dialogue holds the game.
+
+**Lines**
+- The lines are proposed copy in Voss's voice. They come from the generator `ProjectGenerator.ScanHints.cs`: the menu item `Tools/Generate/Scan Hints and Button Prompts`, also a step of the full run.
+- The scans and the tower each one names:
+
+| Creature | Tower named |
+| --- | --- |
+| Skitter | Cannon for packs, Gun Turret for loose runners |
+| Cragback | Cannon (reuses `Dlg_L01_Stone`) |
+| Wisp | Laser Turret |
+| Skyray | Flak Turret |
+| Shalebat | Flak Turret |
+| Mossbat | Flak Turret |
+| Roller | Laser Turret, and "slow it" |
+| Prowler | Cannon splash |
+
+- These are every non-boss creature that C1_01-C1_06 send on any difficulty. C1_02's Wisp is now covered.
+- Bosses keep their own intros.
+
+**Tests and play**
+- `SightingHintsTests` (7) includes a data check: every creature of C1_01-06 has a Voss scan that links to its own Codex page.
+- In play (C1_02 with its briefing):
+  - the Skitter scan came at wave 1, the Wisp scan at wave 6;
+  - Y opened the Codex on Wisp;
+  - B closed it and the clock ran again.
+
+### 2. Device-aware prompts
+
+**Provider**
+- `IInputProvider` gained `ActiveDevice`, `ActiveDeviceChanged` and `PromptFor(GameAction[, device])`.
+- `InputSystemProvider` follows the last device used (any button press, or the sticks) through the pure `ActiveDeviceTracker`.
+- It names an action from its first binding on that device: the glyph table first, otherwise the Input System's binding display string.
+
+**Data**
+- The new `ButtonGlyphTable` assets are in `Settings/Input`, and the UI skin holds them:
+  - `Glyphs_Xbox` (the default);
+  - `Glyphs_Nintendo` (south is B, ZL/ZR, +/-);
+  - `Glyphs_Keyboard` (Esc, Enter, Click).
+- `IPlatformSettings.PadLayout` picks the table: Xbox on PC, Nintendo for the Switch profile.
+
+**Where the prompts follow the device**
+- The quick bar: `LT Shockwave`, `RT Repair 30`, `X Next post`, or F/G/H.
+- The dialogue: `A NEXT`, `B SKIP`, `Y CODEX`, or Enter/Esc/C.
+- The cutscene skip chip shows Menu on the pad and Esc on the keyboard. B is not shown on the pad, because B first skips the conversation.
+- The planet map's help line.
+- The Controls table now mentions Y/C on a scan.
+
+**Tests:** `Round33PromptTests` (8).
+
+### 3. Safe area
+
+- `IPlatformSettings.SafeMarginPercent` is new: 0 on PC, 5 for the Switch profile.
+- `UiKit.CreateRoot` now uses `SafeAreaFitter`: every frame stays inside `Screen.safeArea` and the margin, and follows changes live.
+- `CoverScreen` stretches the full-screen dims back to the screen edges (pause, codex, result, briefing, dialogue, options, sound test, story viewer).
+- **New option "HUD margin"** (0-10 %) in Options, saved as `ProgressData.HudMarginPercent`. Its default is -1, meaning "use the platform's margin"; older saves load that default.
+- **Tests:** `SafeFrame` (pure math), `SafeFrameTests` (7).
+
+### 4. Readable text at 720p
+
+- `UiSkin.MinReadableFontSize = 27` (data) gives about 18 px at 720p. `UiKit.ReadableSize` and `KeepReadable` apply it to:
+  - the quick bar (now 236 wide), the card prices and damage tags, and the countdown and status lines;
+  - the hero panel and the tower and drone menus;
+  - the map hint, and the dialogue buttons and header (26, TMP).
+- **Check:** the new probe `qa/small_texts.cs` reports 0 texts under 18 px at 720p in the HUD, the tower menu, the hero panel and the pause menu. I also checked the stills at 1280x720 and 1920x1080 by eye.
+- **Not raised (menu text):** the upgrade-tile names (18) and the Codex row notes (18).
+
+### 5. Gamepad: hero panel and region view
+
+**Hero panel**
+- A on a hero post focuses the panel's first button, one frame later, like the tower menu.
+- Left and right walk the buttons, A presses one, B closes the panel. The focus is kept while the panel is open and handed back when it closes.
+- The stick no longer moves the build cursor while the panel is open.
+
+**Region view**
+- Down (stick, d-pad or arrow key) focuses the button row in one press: Play, or Planet when the level is locked.
+- The hint now says "Down: buttons".
+
+### 6. Pause on controller disconnect
+
+- `IInputProvider.DeviceLost` and `DeviceRegained` come from `InputSystem.onDeviceChange`, through the tracker. Only the pad in use counts, and only while the pad is the active device.
+- `TimeController` pauses on `DeviceLost`, in the editor too.
+- **Seen in play:** unplugging the virtual pad opened the pause menu. After plugging it back in, A resumed.
+- **Test:** a new `TimeControllerTests` case.
+
+### 7. Lower findings
+
+- **Upgrade screen:**
+  - The detail follows the focus (`SelectNotifier.FollowPointer = false`, so a passing mouse does not change it).
+  - Locked tiles carry a gold padlock, a darker picture and a dimmed name.
+- **Result screen:** the buttons keep one order, Play again / Upgrades / Back to map. The focus starts on Upgrades after a win and on Play again after a loss.
+- **Focus frame:** `FocusFrame` draws a breathing gold frame round every focused wide button.
+
+### Tests
+
+EditMode, all green:
+- New: `Round33PromptTests` 8/8, `SafeFrameTests` 7/7, `SightingHintsTests` 7/7.
+- Existing: `TimeControllerTests` 6/6 (one new case), `DialoguePlayerTests` 6/6, `StoryTriggerSelectorTests` 10/10, `InputGateTests`, `CutsceneInputTests`, `SelectionCycleTests`, `ProgressTests`, `ProgressMigrationTests`, `MenuStageTests`, `StoryTests`.
+- I did not run the full suite (pipeline tests).
+
+The console showed 0 errors in the final play session.
+
+**A mistake, fixed:** I once edited `HudView.cs` while Play Mode ran. The domain reloaded and that session filled with NullReference spam. I stopped Play Mode, restored the save (verified), recompiled and replayed; the run was clean.
+
+### New QA tools (`Tools/PlayTest/qa/`)
+
+| Script | What it does |
+| --- | --- |
+| `dlg_state.cs` | Dialogue, hold and Codex state. |
+| `margin.cs` | Sets the session's HUD margin. |
+| `pad_unplug.cs` | Unplugs or replugs the virtual pad (`unplug_arg.txt`). |
+| `upgrade_header.cs` | The upgrade detail versus the focus. |
+| `small_texts.cs` | Lists texts under 18 px at 720p. |
+| `contact_sheet.cs` | Builds the before/after sheet from `sheet_arg.txt`. |
+
+`kbd.cs` takes Key enum names: `U`, not `u`.
+
+### Screenshots
+
+The shots are in `ArtSource/Previews/QA/r33_*`. `r33_contact_sheet.png` puts each round-32 before shot on the left and the after shot on the right. Rows, from the top:
+
+1. HUD at 720p, pad
+2. HUD at 720p, keyboard
+3. Scan with pad prompts
+4. Scan with keyboard prompts
+5. Codex opened from a scan
+6. Main-menu focus frame
+7. Victory
+8. Defeat
+9. Upgrade screen with padlocks
+10. Region view with the button row focused
+11. Hero panel with the focus
+12. Scan at a 5 % margin
+13. Options with the HUD margin
+14. Pause on pad loss
+15. Cutscene skip chip
+
+### Open points for Remco
+
+- The scan lines are proposed copy.
+- Is Y right for "open the scan in the Codex"?
+- The Switch profile shows Nintendo letters, so toggling the low profile on PC shows them too.
+- The upgrade-tile names are still 18.

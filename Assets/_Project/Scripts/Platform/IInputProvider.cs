@@ -40,6 +40,27 @@ namespace Game.Platform
         event Action HeroPostPressed;
         /// <summary>A hero ability button with its slot: 0 is the first (F, left trigger), 1 the second (G, right trigger).</summary>
         event Action<int> HeroAbilityPressed;
+
+        /// <summary>The Codex button (Y, C): a scan hint opens its creature in the Codex. Nothing else listens yet.</summary>
+        event Action CodexPressed;
+
+        /// <summary>The kind of device the player used last; prompts show its buttons.</summary>
+        InputDeviceKind ActiveDevice { get; }
+
+        /// <summary>Raised when the player switches between the keyboard and mouse and a gamepad.</summary>
+        event Action ActiveDeviceChanged;
+
+        /// <summary>The printed key or button of an action on the active device ("A", "F", "LT"); empty when it has none there.</summary>
+        string PromptFor(GameAction action);
+
+        /// <summary>The printed key or button of an action on the given device.</summary>
+        string PromptFor(GameAction action, InputDeviceKind device);
+
+        /// <summary>The gamepad in use disconnected. Gameplay pauses on it (consoles require that).</summary>
+        event Action DeviceLost;
+
+        /// <summary>The lost gamepad is connected again.</summary>
+        event Action DeviceRegained;
     }
 }
 

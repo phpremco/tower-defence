@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Drones;
+using Game.Enemies;
 using UnityEngine;
 
 namespace Game.Levels
@@ -13,10 +14,16 @@ namespace Game.Levels
         [Tooltip("Drone kinds this conversation introduces: the drone panel lights their cards up while it plays and until one is bought.")]
         [SerializeField] private DroneDefinition[] _introducedDrones = new DroneDefinition[0];
 
+        [Tooltip("The creature this conversation scans: while it shows, the box offers to open the creature in the Codex.")]
+        [SerializeField] private EnemyDefinition _codexEntry;
+
         public string Id => name;
         public IReadOnlyList<DialogueLine> Lines => _lines;
 
         public IReadOnlyList<DroneDefinition> IntroducedDrones => _introducedDrones ?? NoDrones;
+
+        /// <summary>The Codex entry the box links to, or null for a conversation without one.</summary>
+        public EnemyDefinition CodexEntry => _codexEntry;
 
         public bool Introduces(DroneDefinition drone) => drone != null && _introducedDrones != null && System.Array.IndexOf(_introducedDrones, drone) >= 0;
 

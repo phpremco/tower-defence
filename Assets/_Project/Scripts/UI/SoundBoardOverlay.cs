@@ -48,7 +48,7 @@ namespace Game.UI
 
             RectTransform root = UiKit.CreateRoot(transform);
             _panel = root.parent.gameObject;
-            UiKit.CreatePanel(root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0.04f, 0.05f, 0.08f, 0.92f));
+            CoverScreen.Add(UiKit.CreatePanel(root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Color(0.04f, 0.05f, 0.08f, 0.92f)).rectTransform);
             UiKit.CreateFixedText(root, "Sound test", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, 120f));
             _pageText = UiKit.CreateFixedText(root, string.Empty, UiKit.BodySize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop - 90f), new Vector2(1200f, 60f));
             _column = UiKit.CreateColumn(root, RowSpacing);

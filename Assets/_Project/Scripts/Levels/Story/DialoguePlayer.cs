@@ -122,6 +122,28 @@ namespace Game.Levels
             }
         }
 
+        /// <summary>Raised with the creature when the player asks to open the current scan in the Codex.</summary>
+        public event Action<Game.Enemies.EnemyDefinition> CodexRequested;
+
+        /// <summary>True while the conversation on show links to a Codex entry and someone can open the Codex.</summary>
+        public bool CanOpenCodex => IsPlaying && Current.CodexEntry != null && CodexRequested != null;
+
+        /// <summary>
+        /// "Open in Codex": ends the scan as seen (what follows in the queue still plays) and asks for the creature's page.
+        /// The Codex opens once the conversations are over, so the clock is never released in between.
+        /// </summary>
+        public void RequestCodex()
+        {
+            if (!CanOpenCodex)
+            {
+                return;
+            }
+
+            Game.Enemies.EnemyDefinition entry = Current.CodexEntry;
+            SkipConversation();
+            CodexRequested?.Invoke(entry);
+        }
+
         /// <summary>Drops everything without marking it seen, as when the level is lost.</summary>
         public void Clear()
         {

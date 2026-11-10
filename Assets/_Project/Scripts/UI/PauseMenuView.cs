@@ -67,6 +67,7 @@ namespace Game.UI
         {
             // A full-screen dim that also blocks clicks on the field underneath.
             Image dim = UiKit.CreatePanel(safeRoot, "PauseDim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim);
+            CoverScreen.Add(dim.rectTransform);
             dim.raycastTarget = true;
             _root = dim.gameObject;
 

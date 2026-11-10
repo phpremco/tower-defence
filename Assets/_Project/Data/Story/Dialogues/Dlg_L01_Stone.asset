@@ -25,3 +25,5 @@ MonoBehaviour:
     - Text: Use the cannon. Heavy shells for heavy hides.
       Style: 0
     GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}

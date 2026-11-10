@@ -31,5 +31,14 @@
         float LodBias { get; }
 
         bool CanQuit { get; }
+
+        /// <summary>
+        /// The title-safe margin on every screen edge, as a percent of the screen size (0 on a monitor, about 5 on a TV).
+        /// The HUD keeps inside it on top of <c>Screen.safeArea</c>; the player can widen or narrow it under Options.
+        /// </summary>
+        float SafeMarginPercent { get; }
+
+        /// <summary>The face-button names prompts print on this platform.</summary>
+        PadLayout PadLayout { get; }
     }
 }

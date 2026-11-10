@@ -1,0 +1,16 @@
+ArtSource/Previews/QA/r33_contact_sheet.png
+level_hud_720.png|r33_hud_pad_720.png
+level_hud_720.png|r33_hud_kbd_720.png
+first_cragback_sighting.png|r33_scan_wisp_pad.png
+first_cragback_sighting.png|r33_scan_wisp_kbd.png
+-|r33_scan_codex_wisp.png
+main_menu_1080.png|r33_main_menu_focus.png
+result_win.png|r33_result_victory.png
+result_defeat.png|r33_result_defeat.png
+base_upgrades.png|r33_upgrade_locked_focus.png
+map_region_720.png|r33_map_region_row_pad.png
+-|r33_hero_panel_720.png
+-|r33_scan_skitter_kbd.png
+-|r33_options_hud_margin.png
+-|r33_pad_lost_pause.png
+intro_skip_armed.png|r33_cutscene_skip_pad.png

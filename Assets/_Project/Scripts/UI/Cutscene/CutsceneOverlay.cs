@@ -1,4 +1,6 @@
 using System;
+using Game.Core;
+using Game.Platform;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +41,6 @@ namespace Game.UI
         private const float HintGap = 12f;
         private const float HintFadeSpeed = 6f;
         private const float SkipIdleAlpha = 0.85f;
-        private const string SkipKeys = "Esc / B";
 
         private static readonly Color TitleColour = new Color(0.86f, 0.95f, 1f);
         private static readonly Color TitleGlow = new Color(0.3f, 0.75f, 1f, 0.35f);
@@ -56,6 +57,8 @@ namespace Game.UI
         private CanvasGroup _title;
         private RectTransform _titleRect;
         private TextMeshProUGUI _hint;
+        private TextMeshProUGUI _keys;
+        private IInputProvider _input;
         private CanvasGroup _skipGroup;
         private Image _skipFrame;
         private Sprite _skipNormal;
@@ -299,7 +302,7 @@ namespace Game.UI
         }
 
         // The keys that skip, printed on a small light key cap at the button's left end.
-        private static void BuildKeyChip(RectTransform button, UiArtSet art)
+        private void BuildKeyChip(RectTransform button, UiArtSet art)
         {
             Image chip = NewChild<Image>(button, "Keys");
             // The light neutral frame takes the tint as it is, so the cap reads as a lit key with white letters.
@@ -313,10 +316,35 @@ namespace Game.UI
             rect.sizeDelta = new Vector2(KeyWidth, KeyHeight);
             rect.anchoredPosition = new Vector2(SkipInset, 0f);
 
-            TextMeshProUGUI keys = NewText(rect, "Label", KeySize, TextAlignmentOptions.Center);
-            keys.text = SkipKeys;
-            keys.color = KeyText;
-            Stretch(keys.rectTransform);
+            _keys = NewText(rect, "Label", KeySize, TextAlignmentOptions.Center);
+            _keys.color = KeyText;
+            Stretch(_keys.rectTransform);
+            if (Services.TryGet(out _input))
+            {
+                _input.ActiveDeviceChanged += RefreshKeys;
+            }
+
+            RefreshKeys();
+        }
+
+        // The key that skips on the device in use: the pad's menu button (B would first skip the conversation), Esc on the keyboard.
+        private void RefreshKeys()
+        {
+            if (_keys == null || _input == null)
+            {
+                return;
+            }
+
+            GameAction skip = _input.ActiveDevice == InputDeviceKind.Gamepad ? GameAction.Pause : GameAction.Cancel;
+            _keys.text = _input.PromptFor(skip);
+        }
+
+        private void OnDestroy()
+        {
+            if (_input != null)
+            {
+                _input.ActiveDeviceChanged -= RefreshKeys;
+            }
         }
 
         private static RectTransform NewRect(string name, RectTransform parent)

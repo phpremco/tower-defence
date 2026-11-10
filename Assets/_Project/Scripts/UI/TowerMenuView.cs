@@ -170,7 +170,7 @@ namespace Game.UI
             go.transform.SetParent(_panel, false);
             var text = go.AddComponent<Text>();
             text.font = _font;
-            text.fontSize = LabelSize;
+            text.fontSize = Mathf.Max(LabelSize, UiKit.ReadableSize);
             text.alignment = alignment;
             text.color = TextColor;
             text.raycastTarget = false;

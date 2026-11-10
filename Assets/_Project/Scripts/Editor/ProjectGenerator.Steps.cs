@@ -55,6 +55,8 @@ namespace Game.Editor
             new GeneratorStep("Upgrades", c => c.Upgrades = CreateUpgrades(c.Roster.Standard, c.Roster.Hybrids, c.Drones)),
             new GeneratorStep("Codex", c => c.Codex = CreateCodex(c.Recipes, c.Bestiary)),
             new GeneratorStep("UI skin", c => c.Skin = CreateSkin()),
+            // Round 33: what prompts print for pad buttons and keys, on the skin.
+            new GeneratorStep("Button prompts", _ => GenerateButtonGlyphs()),
             // The upgrade screen's display stage from Blender (README round 27), worn through the UI skin.
             new GeneratorStep("Display stage art", _ => BlenderDisplayStageBuilder.Apply(BlenderDisplayStageBuilder.SyncAndBuild())),
             new GeneratorStep("Campaign", c => c.Campaign = CreateCampaign(c)),
@@ -69,6 +71,8 @@ namespace Game.Editor
             new GeneratorStep("Menu art", _ => BlenderMenuBuilder.Apply(BlenderMenuBuilder.SyncAndBuild())),
             new GeneratorStep("Story", c => CreateStory(c.Campaign)),
             new GeneratorStep("Level story", GenerateLevelStory),
+            // Round 33: Dr. Voss's creature scans with their Codex links, after the speakers.
+            new GeneratorStep("Scan hints", _ => GenerateScanHints()),
             // Docs/BOSS_INTROS.md: after the speakers (level story) and the bosses.
             new GeneratorStep("Boss intros", _ => GenerateBossIntros()),
             new GeneratorStep("Cutscene", GenerateCutscene),

@@ -9,8 +9,17 @@ namespace Game.UI
     {
         public Action Selected;
 
+        /// <summary>False when only the focus counts, so a mouse crossing other buttons on its way does not change the details.</summary>
+        public bool FollowPointer = true;
+
         public void OnSelect(BaseEventData eventData) => Selected?.Invoke();
 
-        public void OnPointerEnter(PointerEventData eventData) => Selected?.Invoke();
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (FollowPointer)
+            {
+                Selected?.Invoke();
+            }
+        }
     }
 }

@@ -24,5 +24,10 @@ namespace Game.Platform
         public float LodBias => 0.6f;
 
         public bool CanQuit => false;
+
+        // Docked on a TV the edges may be cut off: keep the HUD inside the usual title-safe frame.
+        public float SafeMarginPercent => 5f;
+
+        public PadLayout PadLayout => PadLayout.Nintendo;
     }
 }

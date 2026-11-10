@@ -95,6 +95,17 @@ namespace Game.Tests
         }
 
         [Test]
+        public void TheGamepadInUseDisconnecting_OpensThePauseMenu()
+        {
+            _input.LoseDevice();
+            Assert.IsTrue(_context.Paused, "consoles require a pause when the controller drops out");
+            Assert.AreEqual(0f, Time.timeScale);
+
+            _input.Pause();
+            Assert.IsFalse(_context.Paused, "the player resumes from the pause menu as from any pause");
+        }
+
+        [Test]
         public void AnInterruption_AfterTheOutcome_ChangesNothing()
         {
             _context.Outcome = LevelOutcome.Lost;

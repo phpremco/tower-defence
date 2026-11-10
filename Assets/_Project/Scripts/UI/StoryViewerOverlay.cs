@@ -60,7 +60,7 @@ namespace Game.UI
 
             _root = UiKit.CreateRoot(transform);
             _panel = _root.parent.gameObject;
-            UiKit.CreatePanel(_root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim);
+            CoverScreen.Add(UiKit.CreatePanel(_root, "Dim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim).rectTransform);
             _list = NewLayer("List");
             UiKit.CreateFixedText(_list, "Story viewer", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
             _pageText = UiKit.CreateFixedText(_list, string.Empty, UiKit.BodySize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -PageTop), new Vector2(1400f, PageHeight));

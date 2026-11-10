@@ -26,8 +26,22 @@ namespace Game.Tests
         public event Action RepairPressed;
         public event Action SellPressed;
         public event Action HeroPostPressed;
+        public event Action ActiveDeviceChanged;
+        public event Action DeviceRegained;
 #pragma warning restore 67
         public event Action<int> HeroAbilityPressed;
+        public event Action CodexPressed;
+        public event Action DeviceLost;
+
+        public InputDeviceKind ActiveDevice { get; set; }
+
+        public string PromptFor(GameAction action) => PromptFor(action, ActiveDevice);
+
+        public string PromptFor(GameAction action, InputDeviceKind device) => device == InputDeviceKind.Gamepad ? "Pad" + action : "Key" + action;
+
+        public void Codex() => CodexPressed?.Invoke();
+
+        public void LoseDevice() => DeviceLost?.Invoke();
 
         public void Confirm() => Confirmed?.Invoke();
 

@@ -166,6 +166,15 @@
                                          "processors":  "",
                                          "interactions":  "",
                                          "initialStateCheck":  false
+                                     },
+                                     {
+                                         "name":  "Codex",
+                                         "type":  "Button",
+                                         "id":  "8a41c3d2-5e6f-4b70-9c81-2d3e4f5a6b70",
+                                         "expectedControlType":  "Button",
+                                         "processors":  "",
+                                         "interactions":  "",
+                                         "initialStateCheck":  false
                                      }
                                  ],
                      "bindings":  [
@@ -694,6 +703,28 @@
                                           "processors":  "",
                                           "groups":  "",
                                           "action":  "Overview",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "8a41c3d2-5e6f-4b70-9c81-2d3e4f5a6b71",
+                                          "path":  "<Gamepad>/buttonNorth",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Codex",
+                                          "isComposite":  false,
+                                          "isPartOfComposite":  false
+                                      },
+                                      {
+                                          "name":  "",
+                                          "id":  "8a41c3d2-5e6f-4b70-9c81-2d3e4f5a6b72",
+                                          "path":  "<Keyboard>/c",
+                                          "interactions":  "",
+                                          "processors":  "",
+                                          "groups":  "",
+                                          "action":  "Codex",
                                           "isComposite":  false,
                                           "isPartOfComposite":  false
                                       }

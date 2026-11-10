@@ -16,8 +16,16 @@ namespace Game.Levels
         [Tooltip("The hero's first meeting with each continent boss and his barks in the fight (Docs/BOSS_INTROS.md).")]
         [SerializeField] private BossIntroDefinition[] _bossIntros = new BossIntroDefinition[0];
 
+        [Tooltip("Dr. Voss's scan of each creature: plays the first time it appears in the campaign and names its counter tower.")]
+        [SerializeField] private ScanHint[] _scanHints = new ScanHint[0];
+
         /// <summary>The opening cutscene; null while there is none.</summary>
         public CutsceneDefinition OpeningCutscene => _openingCutscene;
+
+        /// <summary>The creature scans, in the order the generator wrote them.</summary>
+        public System.Collections.Generic.IReadOnlyList<ScanHint> ScanHints => _scanHints ?? NoHints;
+
+        private static readonly ScanHint[] NoHints = new ScanHint[0];
 
         /// <summary>The intro of a boss, or null when it has none.</summary>
         public BossIntroDefinition IntroFor(EnemyDefinition boss)

@@ -24,5 +24,10 @@
         public float LodBias => 1f;
 
         public bool CanQuit => true;
+
+        // A monitor shows every pixel; the player can still add a margin under Options.
+        public float SafeMarginPercent => 0f;
+
+        public PadLayout PadLayout => PadLayout.Xbox;
     }
 }

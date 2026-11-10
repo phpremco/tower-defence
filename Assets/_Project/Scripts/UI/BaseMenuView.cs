@@ -20,7 +20,7 @@ namespace Game.UI
         private const float CardHeight = 104f;
         private const float CardGap = 8f;
         private const float LabelHeight = 46f;
-        private const float HeaderHeight = 30f;
+        private const float HeaderHeight = 36f;
         private const int LabelSize = 20;
         private const int HeaderSize = 22;
         private const float Padding = 10f;
@@ -40,7 +40,7 @@ namespace Game.UI
         private const float HighlightPulseRate = 4f;
         private const float HighlightMinAlpha = 0.35f;
         private const float HighlightPad = 7f;
-        private const float NewTagHeight = 26f;
+        private const float NewTagHeight = 32f;
         private const int NewTagSize = 20;
         private const string NewTagText = "NEW";
         private static readonly Color HighlightColour = new Color(1f, 0.82f, 0.25f);
@@ -112,7 +112,7 @@ namespace Game.UI
             _panel.sizeDelta = new Vector2(width, height);
 
             UiKit.CreatePanel(_panel, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
-            Text header = CreateLabel(new Vector2(0f, 1f), new Vector2(Padding, -Padding - HeaderHeight * 0.5f), TextAnchor.MiddleLeft, new Vector2(width - Padding * 2f, HeaderHeight), HeaderSize);
+            Text header = CreateLabel(new Vector2(0f, 1f), new Vector2(Padding, -Padding - HeaderHeight * 0.5f), TextAnchor.MiddleLeft, new Vector2(width - Padding * 2f, HeaderHeight), Mathf.Max(HeaderSize, UiKit.ReadableSize));
             header.rectTransform.pivot = new Vector2(0f, 0.5f);
             header.text = "Drones";
             header.color = HeaderColor;
@@ -177,8 +177,8 @@ namespace Game.UI
             });
 
             var entry = new DroneButton { Drone = drone, Button = button, Highlight = highlight };
-            entry.Label = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth + CardGap, LabelHeight), LabelSize);
-            entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight - NewTagHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), NewTagSize);
+            entry.Label = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth + CardGap, LabelHeight), Mathf.Max(LabelSize, UiKit.ReadableSize));
+            entry.NewTag = CreateLabel(new Vector2(0f, 0f), new Vector2(x + CardWidth * 0.5f, Padding + LabelHeight + CardHeight - NewTagHeight * 0.5f), TextAnchor.MiddleCenter, new Vector2(CardWidth, NewTagHeight), Mathf.Max(NewTagSize, UiKit.ReadableSize));
             entry.NewTag.text = NewTagText;
             entry.NewTag.color = HighlightColour;
             entry.NewTag.fontStyle = FontStyle.Bold;

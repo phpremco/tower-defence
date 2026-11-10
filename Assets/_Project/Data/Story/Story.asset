@@ -20,3 +20,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15921a1cb1b1bc441a4b3e2050a1119f, type: 2}
   - {fileID: 11400000, guid: da02f49f1fbb20d489ab112ca2966cc7, type: 2}
   - {fileID: 11400000, guid: 68bf32e0f7629524d9cc3941a171503f, type: 2}
+  _scanHints:
+  - Enemy: {fileID: 11400000, guid: aadd168739ca7134a89b58949675efc3, type: 2}
+    Dialogue: {fileID: 11400000, guid: 673aeffbfac57794d8802a5e9bde9254, type: 2}
+  - Enemy: {fileID: 11400000, guid: a98d8258582b94c4ba479c1150375bcd, type: 2}
+    Dialogue: {fileID: 11400000, guid: fad20f8c45648f94e82cdbdbda15fbac, type: 2}
+  - Enemy: {fileID: 11400000, guid: 5cc35a59ea77e874c8b7b50dab908bc2, type: 2}
+    Dialogue: {fileID: 11400000, guid: 3207aad0e59d0b941941b05c6e945530, type: 2}
+  - Enemy: {fileID: 11400000, guid: 892c4a380bece3a478c63202c6d940c9, type: 2}
+    Dialogue: {fileID: 11400000, guid: a50f8010483f2784b98e789a47faccb5, type: 2}
+  - Enemy: {fileID: 11400000, guid: 2e64d27e5f86a5f44b833ee41cf3e795, type: 2}
+    Dialogue: {fileID: 11400000, guid: 81c72bf9bae66704cbc1a4a789967511, type: 2}
+  - Enemy: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}
+    Dialogue: {fileID: 11400000, guid: bc1e53892c27452488101c846cbce52e, type: 2}
+  - Enemy: {fileID: 11400000, guid: 92fb551ff76be8f4ab4ecfbd0f621e77, type: 2}
+    Dialogue: {fileID: 11400000, guid: 2b3ec5d60ee11a64e9296fad7841fe02, type: 2}
+  - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
+    Dialogue: {fileID: 11400000, guid: 79b1e7ec1ff3ad24988e800d6fb64449, type: 2}

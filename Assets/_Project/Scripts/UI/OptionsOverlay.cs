@@ -57,7 +57,7 @@ namespace Game.UI
             { "{0}: next post", "X", "H" },
             { "{0}: shockwave / repair", "LT / RT", "F / G" },
             { "Drones", "A on the base doorstep", "Click a card (bottom right)" },
-            { "Codex", "Start, then Codex", "Book icon (top right)" },
+            { "Codex", "Start, then Codex;  Y on a scan", "Book icon (top right);  C on a scan" },
             { "Game speed", "Y", "Space" },
             { "Pause", "Start", "P" },
             { "Skip wave (test)", "View (tap)", "N" },
@@ -81,6 +81,7 @@ namespace Game.UI
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            CoverScreen.Add(rect);
 
             _title = UiKit.CreateFixedText(root, "Options", UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TitleTop), new Vector2(1200f, TitleHeight));
             _column = UiKit.CreateColumn(root, 24f);
@@ -89,6 +90,7 @@ namespace Game.UI
             volumes.Build(_column);
             Services.TryGet(out CameraControls cameraControls);
             new CameraOptionControls(progress, cameraControls ?? new CameraControls()).Build(_column);
+            new HudMarginControl(progress).Build(_column);
             _controlsButton = UiKit.CreateButton(_column, "Controls", ShowControls);
             _soundButton = UiKit.CreateButton(_column, "Sound test", ShowSoundBoard);
             if (OpeningCutscene() != null)

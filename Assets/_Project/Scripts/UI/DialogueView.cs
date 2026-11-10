@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
+using Game.Core;
 using Game.Levels;
+using Game.Platform;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -29,12 +31,12 @@ namespace Game.UI
         private const float TextGap = 34f;
         private const float TextRight = 44f;
         private const float TextTop = 34f;
-        private const float FooterHeight = 70f;
+        private const float FooterHeight = 80f;
         private const float NameTagHeight = 48f;
         private const float NameTagPadding = 26f;
         private const float NameTagOverlap = 10f;
-        private const float ButtonWidth = 150f;
-        private const float ButtonHeight = 46f;
+        private const float ButtonWidth = 230f;
+        private const float ButtonHeight = 54f;
         private const float ButtonGap = 12f;
         private const float ButtonBottom = 18f;
         private const float ArrowSize = 22f;
@@ -42,10 +44,15 @@ namespace Game.UI
         private const int BodySize = 34;
         private const int BodyMinSize = 25;
         private const int NameSize = 26;
-        private const int HeaderSize = 20;
-        private const int ButtonTextSize = 20;
+        private const int HeaderSize = 26;
+        private const int ButtonTextSize = 26;
+        private const int ButtonTextMinSize = 22;
+        private const int NextSlot = 0;
+        private const int SkipSlot = 1;
+        private const int CodexSlot = 2;
+        private const string KeyColour = "#FFD45C";
         private const float NameSpacing = 8f;
-        private const float HeaderSpacing = 6f;
+        private const float HeaderSpacing = 3f;
         private const float SmallSpacing = 4f;
         private const float SmallSliceMultiplier = 2.2f;
         private const float MachineTint = 0.3f;
@@ -116,6 +123,13 @@ namespace Game.UI
         private Image _arrow;
         private Image[] _buttonEdges;
         private TextMeshProUGUI[] _buttonLabels;
+        private Button[] _buttons;
+        private IInputProvider _input;
+        private int _visibleButtons;
+
+        // What each footer button says and which action it names, so its prompt follows the device in use.
+        private static readonly string[] ButtonWords = { "NEXT", "SKIP", "CODEX" };
+        private static readonly GameAction[] ButtonActions = { GameAction.Confirm, GameAction.Cancel, GameAction.Codex };
 
         private SpeakerDefinition _speaker;
         private SpeakerFrame _frame;
@@ -161,6 +175,11 @@ namespace Game.UI
             _portraits = portraits;
             Build(safeRoot);
             _root.SetActive(false);
+            if (Services.TryGet(out _input))
+            {
+                _input.ActiveDeviceChanged += RefreshButtons;
+            }
+
         }
 
         /// <summary>Renders the busts of everyone who speaks in these triggers now, so the first line never waits for a picture.</summary>
@@ -184,6 +203,40 @@ namespace Game.UI
             }
         }
 
+        private void OnDestroy()
+        {
+            if (_input != null)
+            {
+                _input.ActiveDeviceChanged -= RefreshButtons;
+            }
+        }
+
+        /// <summary>Renders the busts of everyone who speaks in these conversations now (the creature scans, for one).</summary>
+        public void Prewarm(IReadOnlyList<ScanHint> hints)
+        {
+            if (hints == null)
+            {
+                return;
+            }
+
+            var speakers = new HashSet<SpeakerDefinition>();
+            foreach (ScanHint hint in hints)
+            {
+                if (hint.Dialogue == null)
+                {
+                    continue;
+                }
+
+                foreach (DialogueLine line in hint.Dialogue.Lines)
+                {
+                    if (line.Speaker != null && speakers.Add(line.Speaker))
+                    {
+                        _portraits.Get(line.Speaker, IgnorePicture);
+                    }
+                }
+            }
+        }
+
         public void Open(DialogueDefinition dialogue)
         {
             if (!_root.activeSelf)
@@ -195,6 +248,7 @@ namespace Game.UI
             _root.transform.SetAsLastSibling();
             _open = true;
             TakeSelection();
+            RefreshButtons();
         }
 
         public void ShowLine(DialogueLine line, int lineIndex)
@@ -758,6 +812,7 @@ namespace Game.UI
             dim.color = DimColour;
             dim.raycastTarget = true;
             Stretch(dim.rectTransform);
+            CoverScreen.Add(dim.rectTransform);
 
             BuildBox(rootRect);
             BuildNameTag();
@@ -931,10 +986,12 @@ namespace Game.UI
 
         private void BuildFooter()
         {
-            _buttonEdges = new Image[2];
-            _buttonLabels = new TextMeshProUGUI[2];
-            FooterButton(0, "NEXT", Advance, 0);
-            FooterButton(1, "SKIP", Skip, 1);
+            _buttonEdges = new Image[ButtonWords.Length];
+            _buttonLabels = new TextMeshProUGUI[ButtonWords.Length];
+            _buttons = new Button[ButtonWords.Length];
+            FooterButton(NextSlot, Advance);
+            FooterButton(SkipSlot, Skip);
+            FooterButton(CodexSlot, OpenCodex);
 
             _arrow = NewChild<Image>(_box, "NextArrow");
             _arrow.sprite = DialogueArt.Arrow;
@@ -943,11 +1000,35 @@ namespace Game.UI
             arrow.anchorMin = arrow.anchorMax = new Vector2(1f, 0f);
             arrow.pivot = new Vector2(0.5f, 0.5f);
             arrow.sizeDelta = new Vector2(ArrowSize, ArrowSize);
-            arrow.anchoredPosition = new Vector2(-(Overhang + Inset + (ButtonWidth + ButtonGap) * 2f + ArrowSize), FooterCentre());
+            RefreshButtons();
         }
 
-        private void FooterButton(int slot, string label, UnityEngine.Events.UnityAction action, int fromRight)
+        // Each button names its key or pad button for the device in use ("A  NEXT", "Esc  SKIP"); the Codex button only shows
+        // on a scan. Called on every opening and whenever the player switches between keyboard and gamepad.
+        private void RefreshButtons()
         {
+            if (_buttons == null)
+            {
+                return;
+            }
+
+            bool codex = _player != null && _player.CanOpenCodex;
+            _buttons[CodexSlot].gameObject.SetActive(codex);
+            _visibleButtons = codex ? ButtonWords.Length : CodexSlot;
+            for (int slot = 0; slot < _buttons.Length; slot++)
+            {
+                string key = _input != null ? _input.PromptFor(ButtonActions[slot]).ToUpperInvariant() : string.Empty;
+                _buttonLabels[slot].text = key.Length > 0 ? $"<color={KeyColour}>{key}</color>  {ButtonWords[slot]}" : ButtonWords[slot];
+            }
+
+            RectTransform arrow = _arrow.rectTransform;
+            arrow.anchoredPosition = new Vector2(-(Overhang + Inset + (ButtonWidth + ButtonGap) * _visibleButtons + ArrowSize), FooterCentre());
+        }
+
+        private void FooterButton(int slot, UnityEngine.Events.UnityAction action)
+        {
+            int fromRight = slot;
+            string label = ButtonWords[slot];
             var fill = NewChild<Image>(_box, label + "Button");
             fill.sprite = DialogueArt.Panel;
             fill.type = Image.Type.Sliced;
@@ -981,15 +1062,22 @@ namespace Game.UI
             _buttonEdges[slot] = edge;
 
             TextMeshProUGUI text = NewText(rect, "Label", ButtonTextSize, TextAlignmentOptions.Center);
+            // A long key name ("ENTER") shrinks a little rather than run past the button.
+            text.enableAutoSizing = true;
+            text.fontSizeMax = ButtonTextSize;
+            text.fontSizeMin = ButtonTextMinSize;
             text.characterSpacing = SmallSpacing;
             Stretch(text.rectTransform, overhang);
             text.text = label;
             _buttonLabels[slot] = text;
+            _buttons[slot] = button;
         }
 
         private void Advance() => _player?.Advance();
 
         private void Skip() => _player?.SkipConversation();
+
+        private void OpenCodex() => _player?.RequestCodex();
 
         private static T NewChild<T>(RectTransform parent, string name) where T : Component
         {

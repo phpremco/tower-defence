@@ -48,6 +48,15 @@ namespace Game.Tests
             public event Action SellPressed { add { } remove { } }
             public event Action HeroPostPressed { add { } remove { } }
             public event Action<int> HeroAbilityPressed { add { } remove { } }
+            public event Action CodexPressed { add { } remove { } }
+            public event Action ActiveDeviceChanged { add { } remove { } }
+            public event Action DeviceLost { add { } remove { } }
+            public event Action DeviceRegained { add { } remove { } }
+            public InputDeviceKind ActiveDevice => InputDeviceKind.KeyboardMouse;
+
+            public string PromptFor(GameAction action) => string.Empty;
+
+            public string PromptFor(GameAction action, InputDeviceKind device) => string.Empty;
 
             public void Confirm() => Confirmed?.Invoke();
 

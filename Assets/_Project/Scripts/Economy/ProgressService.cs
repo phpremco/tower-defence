@@ -251,6 +251,12 @@ namespace Game.Economy
             Save();
         }
 
+        public void SetHudMargin(int percent)
+        {
+            Data.HudMarginPercent = percent;
+            Save();
+        }
+
         /// <summary>The street weapons chosen last time, by asset name.</summary>
         public IReadOnlyList<string> Loadout => Data.LoadoutIds;
 

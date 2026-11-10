@@ -28,6 +28,12 @@ namespace Game.Economy
         /// <summary>The radar size as a percent of the default; older saves load the default.</summary>
         public int RadarSizePercent = 100;
 
+        /// <summary>
+        /// The HUD margin on every screen edge as a percent of the screen, chosen under Options; -1 (the default, also for
+        /// older saves) keeps the platform's own title-safe margin.
+        /// </summary>
+        public int HudMarginPercent = -1;
+
         public bool IntroSeen;
 
         /// <summary>Ids of story moments already shown, so a story trigger plays once per save.</summary>

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d739c3f664720374da6d2402ae0ff1fc, type: 3}
+  m_Name: Dlg_Scan_Mossbat
+  m_EditorClassIdentifier: Game.Levels::Game.Levels.DialogueDefinition
+  _lines:
+  - Id: Dlg_Scan_Mossbat.01
+    Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
+    Segments:
+    - Text: That big flyer is shedding bats. Same species as the stone ones, I think. Fascinating.
+      Style: 0
+    GlitchIntensity: 0
+  - Id: Dlg_Scan_Mossbat.02
+    Speaker: {fileID: 11400000, guid: e89dfee39866cb34fb15a2a8657f5b41, type: 2}
+    Segments:
+    - Text: Air only as well. Keep a Flak Turret in reach of wherever it goes.
+      Style: 0
+    GlitchIntensity: 0
+  _introducedDrones: []
+  _codexEntry: {fileID: 11400000, guid: e7eac3a0449156148a0d557255fa8f98, type: 2}

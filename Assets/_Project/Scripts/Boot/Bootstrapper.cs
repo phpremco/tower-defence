@@ -50,14 +50,15 @@ namespace Game.Boot
             _input?.Dispose();
             Services.Clear();
 
-            _input = new InputSystemProvider(_inputActions);
+            IPlatformSettings platform = _lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings();
+            _input = new InputSystemProvider(_inputActions, _uiSkin.PadGlyphs(platform.PadLayout), _uiSkin.KeyGlyphs);
             var save = new FileSaveService(System.IO.Path.Combine(Application.persistentDataPath, SaveFolderName));
             var progress = new ProgressService(save, _unlockTable.StartingTowerIds);
 
             Services.Register(_input);
             Services.Register<ISaveService>(save);
             Services.Register<IAchievementService>(new NullAchievementService());
-            Services.Register<IPlatformSettings>(_lowQuality ? new SwitchPlatformSettings() : new PcPlatformSettings());
+            Services.Register(platform);
             IPlatformSettings quality = Services.Get<IPlatformSettings>();
             Services.Register(new ModelQuality(quality.LowDetailModels));
             QualitySettings.lodBias = quality.LodBias;
@@ -95,6 +96,7 @@ namespace Game.Boot
             }
 
             UiKit.Skin = _uiSkin;
+            UiKit.SafeMarginPercent = SafeFrame.Effective(progress.Data.HudMarginPercent, platform.SafeMarginPercent);
             MoneyPopup.Font = _uiSkin.Font;
 
             // The listener carries the master level; the players multiply their own group in from the mix.

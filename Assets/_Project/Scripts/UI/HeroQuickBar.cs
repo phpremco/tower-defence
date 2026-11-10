@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Hero;
 using Game.Levels;
+using Game.Platform;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,22 +18,19 @@ namespace Game.UI
     public sealed class HeroQuickBar : MonoBehaviour
     {
         private const float Left = 18f;
-        private const float Width = 176f;
+        private const float Width = 236f;
         private const float Padding = 10f;
-        private const float HeaderHeight = 30f;
-        private const float NameHeight = 24f;
+        private const float HeaderHeight = 38f;
+        private const float NameHeight = 32f;
         private const float BarHeight = 10f;
         private const float BarGap = 6f;
         private const float IconSize = 68f;
-        private const float LabelHeight = 24f;
+        private const float LabelHeight = 34f;
         private const float RowGap = 10f;
-        private const int HeaderSize = 22;
-        private const int NameSize = 18;
-        private const int LabelSize = 18;
+        private const int HeaderSize = 28;
         private const float RefreshSeconds = 0.1f;
         private const float LowHealthFraction = 0.35f;
         private const float MidHealthFraction = 0.65f;
-        private const string PostKey = "H";
         private static readonly Color TextColor = new Color(0.9f, 0.95f, 1f);
         private static readonly Color DimColor = new Color(0.55f, 0.6f, 0.7f);
         private static readonly Color HeaderColor = new Color(0.7f, 0.8f, 0.95f);
@@ -44,6 +43,7 @@ namespace Game.UI
 
         private LevelContext _context;
         private Commander _hero;
+        private IInputProvider _input;
         private RectTransform _root;
 
         /// <summary>The panel on the left, for the HUD keep-out; null in a level without a hero.</summary>
@@ -58,6 +58,7 @@ namespace Game.UI
         {
             _context = context;
             _hero = context.Hero;
+            Services.TryGet(out _input);
             if (_hero == null)
             {
                 return;
@@ -80,8 +81,10 @@ namespace Game.UI
             // The same display face as the drones panel header, so the two panels read as a pair.
             header.font = UiKit.DefaultFont;
             header.color = HeaderColor;
+            UiKit.KeepReadable(header);
             y -= HeaderHeight;
-            _name = UiKit.CreateFixedText(_root, string.Empty, NameSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, NameHeight));
+            _name = UiKit.CreateFixedText(_root, string.Empty, UiKit.ReadableSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, y), new Vector2(Width - Padding * 2f, NameHeight));
+            UiKit.KeepReadable(_name);
             y -= NameHeight + BarGap;
             _healthFill = HeroPanelStyle.CreateHealthBar(_root, new Vector2(Padding, y), new Vector2(Width - Padding * 2f, BarHeight));
             y -= BarHeight + RowGap;
@@ -142,8 +145,9 @@ namespace Game.UI
             rect.anchoredPosition = new Vector2(0f, top);
             rect.sizeDelta = new Vector2(IconSize, IconSize);
 
-            label = UiKit.CreateFixedText(_root, string.Empty, LabelSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, top - IconSize), new Vector2(Width - Padding * 2f, LabelHeight));
+            label = UiKit.CreateFixedText(_root, string.Empty, UiKit.ReadableSize, TextAnchor.MiddleCenter, Top, new Vector2(0f, top - IconSize), new Vector2(Width - Padding * 2f, LabelHeight));
             label.color = TextColor;
+            UiKit.KeepReadable(label);
             return button;
         }
 
@@ -189,11 +193,12 @@ namespace Game.UI
                 bool ready = _hero.CanUse(ability.Slot);
                 bool affordable = HeroAbilityHud.Affordable(ability.State, _context.Wallet);
                 ability.Button.interactable = ready && affordable;
-                ability.Label.text = HeroAbilityHud.Label(ability.State, ability.Slot, true);
+                ability.Label.text = HeroAbilityHud.Label(ability.State, HeroAbilityHud.KeyFor(ability.Slot, _input));
                 ability.Label.color = !ready ? DimColor : affordable ? TextColor : Unaffordable;
             }
 
-            _postLabel.text = $"Next post  {PostKey}";
+            // The key follows the device in use, so a pad player reads X where a keyboard player reads H.
+            _postLabel.text = UiKit.Keyed(_input != null ? _input.PromptFor(GameAction.HeroPost) : string.Empty, "Next post");
             _postLabel.color = _hero.IsDown ? DimColor : TextColor;
         }
     }

@@ -140,6 +140,7 @@ namespace Game.UI
         private GameObject Build(LevelResult result)
         {
             Image dim = UiKit.CreatePanel(_safeRoot, "ResultDim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim);
+            CoverScreen.Add(dim.rectTransform);
             dim.raycastTarget = true;
 
             Image panel = UiKit.CreatePanel(dim.rectTransform, "ResultPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, result.Won ? VictoryTint : DefeatTint);
@@ -301,10 +302,11 @@ namespace Game.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            Button primary = AddButton(row, won ? "Upgrades" : "Play again", won ? (UnityEngine.Events.UnityAction)(() => Go(SceneNames.Base)) : PlayAgain);
-            AddButton(row, won ? "Play again" : "Upgrades", won ? (UnityEngine.Events.UnityAction)PlayAgain : () => Go(SceneNames.Base));
+            // One order on victory and defeat, so the hands learn it; the focus starts on what this outcome most likely wants.
+            Button again = AddButton(row, "Play again", PlayAgain);
+            Button upgrades = AddButton(row, "Upgrades", () => Go(SceneNames.Base));
             AddButton(row, "Back to map", () => Go(SceneNames.WorldMap));
-            UiKit.Select(primary);
+            UiKit.Select(won ? upgrades : again);
         }
 
         private static Button AddButton(RectTransform row, string label, UnityEngine.Events.UnityAction action)

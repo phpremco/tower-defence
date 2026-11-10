@@ -1,5 +1,6 @@
 using Game.Economy;
 using Game.Hero;
+using Game.Platform;
 using UnityEngine;
 
 namespace Game.UI
@@ -10,8 +11,8 @@ namespace Game.UI
     /// </summary>
     public static class HeroAbilityHud
     {
-        // Keyboard hints by slot; the gamepad uses the left and right trigger for the same two slots.
-        private static readonly string[] Keys = { "F", "G" };
+        // The ability slots in order: the first is F or the left trigger, the second G or the right trigger.
+        private static readonly GameAction[] SlotActions = { GameAction.HeroAbility1, GameAction.HeroAbility2 };
 
         public static Sprite IconFor(HeroAbilityDefinition ability)
         {
@@ -23,10 +24,14 @@ namespace Game.UI
             return IconFactory.Get(ability.Kind == HeroAbilityKind.GateRepair ? IconType.Repair : IconType.Shockwave);
         }
 
-        public static string KeyFor(int slot) => slot >= 0 && slot < Keys.Length ? Keys[slot] : string.Empty;
+        /// <summary>The key or pad button of a slot on the device in use ("F" or "LT"); empty without input or slot.</summary>
+        public static string KeyFor(int slot, IInputProvider input)
+        {
+            return input != null && slot >= 0 && slot < SlotActions.Length ? input.PromptFor(SlotActions[slot]) : string.Empty;
+        }
 
         /// <summary>The ability's name and key when ready, its cooldown while cooling, its price when it costs money.</summary>
-        public static string Label(HeroAbilityState state, int slot, bool withKey)
+        public static string Label(HeroAbilityState state, string key)
         {
             HeroAbilityDefinition ability = state.Definition;
             if (!state.Ready)
@@ -35,7 +40,7 @@ namespace Game.UI
             }
 
             string price = ability.MoneyCost > 0 ? $" {ability.MoneyCost}" : string.Empty;
-            return withKey ? $"{ability.DisplayName}{price}  {KeyFor(slot)}" : $"{ability.DisplayName}{price}";
+            return UiKit.Keyed(key, $"{ability.DisplayName}{price}");
         }
 
         public static bool Affordable(HeroAbilityState state, Wallet wallet) => wallet.CanAfford(state.Definition.MoneyCost);

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using Game.Platform;
+using UnityEngine;
 
 namespace Game.UI
 {
@@ -26,6 +27,15 @@ namespace Game.UI
         [Tooltip("The icons, nine-slice kit, dialogue pieces and pictures painted in Blender (round 25).")]
         [SerializeField] private UiArtSet _art;
 
+        [Tooltip("What prompts print for pad buttons, one table per pad layout; the platform settings pick one.")]
+        [SerializeField] private ButtonGlyphTable[] _padGlyphs = new ButtonGlyphTable[0];
+
+        [Tooltip("Short names prompts print for keys and mouse buttons (\"Esc\", \"Click\").")]
+        [SerializeField] private ButtonGlyphTable _keyGlyphs;
+
+        [Tooltip("The smallest font size (in 1080p canvas units) for labels the player must read in play, such as the quick bar: 27 draws about 18 px on a 720p handheld.")]
+        [SerializeField, Min(1)] private int _minReadableFontSize = 27;
+
         public Font Font => _font;
         public Font NarrowFont => _narrowFont != null ? _narrowFont : _font;
         public Sprite Panel => _panel;
@@ -47,5 +57,29 @@ namespace Game.UI
 
         /// <summary>The Blender interface art; null on data generated before it existed.</summary>
         public UiArtSet Art => _art;
+
+        /// <summary>Short key names for prompts; null on data generated before it existed.</summary>
+        public ButtonGlyphTable KeyGlyphs => _keyGlyphs;
+
+        public int MinReadableFontSize => _minReadableFontSize;
+
+        /// <summary>The pad table of a layout, else the first table, else null (prompts then print the Input System's names).</summary>
+        public ButtonGlyphTable PadGlyphs(PadLayout layout)
+        {
+            if (_padGlyphs == null || _padGlyphs.Length == 0)
+            {
+                return null;
+            }
+
+            foreach (ButtonGlyphTable table in _padGlyphs)
+            {
+                if (table != null && table.Layout == layout)
+                {
+                    return table;
+                }
+            }
+
+            return _padGlyphs[0];
+        }
     }
 }

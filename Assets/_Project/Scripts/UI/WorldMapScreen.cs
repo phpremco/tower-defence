@@ -31,6 +31,7 @@ namespace Game.UI
         private const float SpinDegreesPerSecond = 70f;
         private const float TiltDegreesPerSecond = 45f;
         private const float StepDeadzone = 0.5f;
+        private const float RowDeadzone = 0.5f;
         private const float StepRepeatSeconds = 0.32f;
         private const float BadgeSize = 64f;
         private const float BadgeRingSize = 94f;
@@ -69,8 +70,7 @@ namespace Game.UI
         private const int BriefingSize = 26;
         private const int CaptionSize = 34;
         private const int HintSize = 24;
-        private const string PlanetHint = "Stick or arrow keys: turn the planet     LB / RB or Q / E: previous and next region     A / Enter: enter the region     B / Esc: back";
-        private const string RegionHint = "Left / Right, LB / RB or Q / E: previous and next level     A / Enter: play     B / Esc: back to the planet     Click a level to select it, click again to play";
+        private const string HintGap = "     ";
         private static readonly Vector2 ViewHome = new Vector2(0f, 56f);
         private static readonly Color LockedColor = new Color(0.4f, 0.43f, 0.5f);
         private static readonly Color LockedPlate = new Color(0.22f, 0.24f, 0.3f);
@@ -167,6 +167,7 @@ namespace Game.UI
                 _input.Confirmed += OnConfirm;
                 _input.NextTower += OnNext;
                 _input.PreviousTower += OnPrevious;
+                _input.ActiveDeviceChanged += RefreshHint;
             }
 
             _view = CreateRect("View", root, new Vector2(GlobeSize, GlobeSize));
@@ -192,8 +193,9 @@ namespace Game.UI
             _overview = chrome.gameObject.AddComponent<CanvasGroup>();
             _title = UiKit.CreateFixedText(chrome, Title, UiKit.TitleSize, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1200f, 100f));
             _caption = UiKit.CreateFixedText(chrome, string.Empty, CaptionSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1200f, 50f));
-            _hint = UiKit.CreateFixedText(chrome, PlanetHint, HintSize, TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 118f), new Vector2(1700f, 34f));
+            _hint = UiKit.CreateFixedText(chrome, string.Empty, Mathf.Max(HintSize, UiKit.ReadableSize), TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, 114f), new Vector2(1760f, 40f));
             _hint.color = Muted;
+            RefreshHint();
             BuildSideButtons(chrome);
             BuildActionRow(chrome);
 
@@ -213,6 +215,7 @@ namespace Game.UI
                 _input.Confirmed -= OnConfirm;
                 _input.NextTower -= OnNext;
                 _input.PreviousTower -= OnPrevious;
+                _input.ActiveDeviceChanged -= RefreshHint;
             }
         }
 
@@ -612,6 +615,15 @@ namespace Game.UI
 
             if (_entered)
             {
+                // Down hands the focus to the button row in one press (Play, or Planet while the level is locked); up
+                // from the row gives the stick back to the levels.
+                if (move.y < -RowDeadzone)
+                {
+                    UiKit.Select(_play.interactable ? _play : _planet);
+                    _rowFocused = true;
+                    return;
+                }
+
                 // Inside a region the levels are what matters: left and right walk them, nothing turns freely.
                 StepInput(move.x, dt);
                 return;
@@ -773,9 +785,30 @@ namespace Game.UI
             FocusNode(focusNode);
             _globe.TurnTo(_catalog.Regions[index].Direction);
             _globe.ZoomTarget = PlanetGlobe.RegionZoom;
-            _hint.text = RegionHint;
+            RefreshHint();
             UpdateRow();
         }
+
+        // The help line under the globe names the keys of the device in use, so a pad player reads A and B, not Enter and Esc.
+        private void RefreshHint()
+        {
+            if (_hint == null)
+            {
+                return;
+            }
+
+            bool pad = _input != null && _input.ActiveDevice == InputDeviceKind.Gamepad;
+            string turn = pad ? "Stick" : "Arrow keys";
+            string cycle = $"{Prompt(GameAction.PreviousTower)} / {Prompt(GameAction.NextTower)}";
+            string confirm = Prompt(GameAction.Confirm);
+            string back = Prompt(GameAction.Cancel);
+            _hint.text = _entered
+                ? $"{turn} left / right or {cycle}: previous and next level{HintGap}{confirm}: play{HintGap}{back}: back to the planet{HintGap}Down: buttons" +
+                  (pad ? string.Empty : $"{HintGap}Click a level to select it, click again to play")
+                : $"{turn}: turn the planet{HintGap}{cycle}: previous and next region{HintGap}{confirm}: enter the region{HintGap}{back}: back";
+        }
+
+        private string Prompt(GameAction action) => _input != null ? _input.PromptFor(action) : string.Empty;
 
         // Back out to the whole planet, with the region just left still focused.
         private void LeaveRegion()
@@ -791,7 +824,7 @@ namespace Game.UI
             FocusRegion(_region);
             _globe.TurnTo(_catalog.Regions[_region].Direction);
             _globe.ZoomTarget = 0f;
-            _hint.text = PlanetHint;
+            RefreshHint();
             UpdateRow();
             if (EventSystem.current != null)
             {

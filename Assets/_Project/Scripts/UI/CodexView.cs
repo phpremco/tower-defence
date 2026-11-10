@@ -86,6 +86,7 @@ namespace Game.UI
         private int _selected = -1;
         private bool _open;
         private GameObject _lastFocus;
+        private EnemyDefinition _pendingEntry;
 
         public bool Available => _catalog != null && (_catalog.Recipes.Count > 0 || _catalog.Enemies.Count > 0);
 
@@ -151,6 +152,51 @@ namespace Game.UI
             ShowPage(_page);
         }
 
+        /// <summary>
+        /// Opens the book on a creature's page (a scan's "Open in Codex"). While a conversation still holds the screen the
+        /// request waits and opens the book as soon as the story is done; the level ending drops it.
+        /// </summary>
+        public void OpenAt(EnemyDefinition enemy)
+        {
+            if (enemy == null || !Available)
+            {
+                return;
+            }
+
+            _pendingEntry = enemy;
+            TryOpenPending();
+        }
+
+        private void TryOpenPending()
+        {
+            if (_pendingEntry == null || _open)
+            {
+                return;
+            }
+
+            if (_context != null && _context.Outcome != LevelOutcome.Running)
+            {
+                _pendingEntry = null;
+                return;
+            }
+
+            if (_context != null && _context.StoryBusy)
+            {
+                return;
+            }
+
+            EnemyDefinition entry = _pendingEntry;
+            _pendingEntry = null;
+            _page = Page.Enemies;
+            Open();
+            int index = _open ? _shownEnemies.IndexOf(entry) : -1;
+            if (index >= 0)
+            {
+                Show(index);
+                UiKit.Select(_rows[index]);
+            }
+        }
+
         public void Close()
         {
             if (!_open)
@@ -177,6 +223,10 @@ namespace Game.UI
             {
                 UiKit.KeepFocus(ref _lastFocus);
             }
+            else if (_pendingEntry != null)
+            {
+                TryOpenPending();
+            }
         }
 
         private void OnCancelled()
@@ -199,6 +249,7 @@ namespace Game.UI
         private void Build()
         {
             Image dim = UiKit.CreatePanel(_safeRoot, "CodexDim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim);
+            CoverScreen.Add(dim.rectTransform);
             dim.raycastTarget = true;
             _root = dim.gameObject;
 

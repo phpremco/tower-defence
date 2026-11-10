@@ -29,3 +29,8 @@ MonoBehaviour:
   _cardRed: {fileID: 4688250811747412987, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
   _displayStage: {fileID: 11400000, guid: 182f4d9e06967be45946cbe76f5c7992, type: 2}
   _art: {fileID: 11400000, guid: 1f8086745399c0a4aa9ff9a68349832e, type: 2}
+  _padGlyphs:
+  - {fileID: 11400000, guid: c6d0a739d07b1cd45b8e38f62ee4388e, type: 2}
+  - {fileID: 11400000, guid: 70c62eea3fef07b4e9d096fb781ab10c, type: 2}
+  _keyGlyphs: {fileID: 11400000, guid: 6bb391864dcbaa44897ba30bbba7ad78, type: 2}
+  _minReadableFontSize: 27

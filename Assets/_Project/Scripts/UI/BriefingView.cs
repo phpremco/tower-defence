@@ -37,6 +37,7 @@ namespace Game.UI
 
             LevelDefinition level = context.Level;
             Image dim = UiKit.CreatePanel(root, "BriefingDim", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Dim);
+            CoverScreen.Add(dim.rectTransform);
             dim.raycastTarget = true;
             _panel = dim.gameObject;
 

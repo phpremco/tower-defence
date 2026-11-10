@@ -20,25 +20,25 @@ namespace Game.UI
     {
         private const float ReferenceWidth = 1920f;
         private const int FontSize = 30;
-        private const int SmallFontSize = 24;
         private const float Margin = 20f;
         private const float LineHeight = 44f;
         private const float TopBarHeight = 72f;
         private const float RadarGap = 12f;
         private const float TopTextY = -16f;
         private const float HeroTextGap = 40f;
-        private const float BottomBarHeight = 156f;
+        private const float BottomBarHeight = 166f;
         private const float BarBottom = 8f;
         private const float AboveBarY = BottomBarHeight + 6f;
         private const float BarButtonWidth = 136f;
-        private const float BarButtonHeight = 140f;
+        private const float BarButtonHeight = 150f;
         private const float BarSpacing = 10f;
         private const float MinBarButtonWidth = 100f;
         private const float IconSize = 56f;
         private const float CardInset = 5f;
-        private const float CardPriceHeight = 28f;
-        private const float BadgeRow = 26f;
-        private const float BadgeSize = 24f;
+        private const float CardPriceHeight = 38f;
+        private const float BadgeRow = 32f;
+        private const float BadgeSize = 28f;
+        private const float DamageTagWidth = 116f;
         private const float BadgeGap = 4f;
         private static readonly Color GroundBadge = new Color(1f, 0.78f, 0.35f);
         private static readonly Color AirBadge = new Color(0.55f, 0.85f, 1f);
@@ -164,6 +164,10 @@ namespace Game.UI
             _context.Changed.Unsubscribe(Refresh);
             _context.Wallet.Changed -= OnMoneyChanged;
             _context.BaseHealth.Changed -= OnBaseChanged;
+            if (_context.Dialogue != null && _codex != null)
+            {
+                _context.Dialogue.CodexRequested -= _codex.OpenAt;
+            }
         }
 
         // Only an interactive element (a button) under the pointer blocks the field. Plain text or backdrops never do.
@@ -233,9 +237,15 @@ namespace Game.UI
             view.Initialize(safe, player, _portraits);
             keepOut.Add(view.Box);
             player.Presenter = view;
+            // A scan's "Open in Codex" ends the conversation and opens the book at the creature, once the story is done.
+            player.CodexRequested += _codex.OpenAt;
             if (_context.StoryEnabled)
             {
                 view.Prewarm(_context.Level.StoryTriggers);
+                if (Services.TryGet(out CampaignCatalog campaign) && campaign.Story != null)
+                {
+                    view.Prewarm(campaign.Story.ScanHints);
+                }
             }
         }
 
@@ -280,10 +290,10 @@ namespace Game.UI
             _heroText.color = BossWarning;
             _heroText.text = string.Empty;
             _waveText = CreateText(safe, "Wave", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY), FontSize);
-            _countdownText = CreateText(safe, "Countdown", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY - LineHeight), SmallFontSize);
+            _countdownText = CreateText(safe, "Countdown", TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0f, TopTextY - LineHeight), UiKit.ReadableSize);
             _countdownText.text = string.Empty;
             _moneyText = CreateText(safe, "Money", TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(Margin, AboveBarY), FontSize);
-            _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), SmallFontSize);
+            _statusText = CreateText(safe, "Status", TextAnchor.LowerCenter, new Vector2(0.5f, 0f), new Vector2(0f, AboveBarY), UiKit.ReadableSize);
         }
 
         // Speed, pause and (in the test mode) skip wave. The keys remain as shortcuts.
@@ -414,7 +424,9 @@ namespace Game.UI
             pictureRect.offsetMax = new Vector2(-CardInset, -(CardInset + BadgeRow));
 
             label = button.GetComponentInChildren<Text>();
-            label.resizeTextMaxSize = SmallFontSize;
+            // The price is what the player reads mid-fight: never below the readable size, even on a 720p handheld.
+            label.resizeTextMaxSize = UiKit.ReadableSize;
+            label.resizeTextMinSize = UiKit.ReadableSize;
             label.transform.SetAsLastSibling();
             return button;
         }
@@ -442,7 +454,8 @@ namespace Game.UI
         // A one-shot trap is bought for one number, so the card says how hard it hits, next to the effect badge.
         private static void DamageTag(RectTransform card, float damage)
         {
-            Text tag = UiKit.CreateFixedText(card, $"{damage:0} DMG", SmallFontSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-CardInset, -CardInset), new Vector2(90f, BadgeRow));
+            Text tag = UiKit.CreateFixedText(card, $"{damage:0} DMG", UiKit.ReadableSize, TextAnchor.UpperRight, new Vector2(1f, 1f), new Vector2(-CardInset, -CardInset), new Vector2(DamageTagWidth, BadgeRow));
+            UiKit.KeepReadable(tag);
             tag.color = new Color(1f, 0.75f, 0.35f);
             tag.raycastTarget = false;
         }
@@ -486,6 +499,8 @@ namespace Game.UI
             rect.offsetMin = new Vector2(4f, 2f);
             rect.offsetMax = hasPicture ? new Vector2(-4f, CardPriceHeight) : new Vector2(-4f, -(CardInset + BadgeRow));
             label.alignment = hasPicture ? TextAnchor.LowerCenter : TextAnchor.MiddleCenter;
+            // The display face's line is taller than the strip at the readable size; a clipped line would vanish whole.
+            label.verticalOverflow = hasPicture ? VerticalWrapMode.Overflow : VerticalWrapMode.Truncate;
         }
 
         private void OnPathObjectClicked(PathObjectDefinition definition)

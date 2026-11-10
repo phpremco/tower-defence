@@ -182,7 +182,9 @@ namespace Game.Boot
             time.Initialize(context, input);
             controllers.AddComponent<ReconView>().Initialize(context, panZoom, time, input, routes);
             // Before the HUD: the story must see the level end before the result screen does.
-            controllers.AddComponent<LevelStoryListener>().Initialize(context, time, input, progress, briefing);
+            Services.TryGet(out CampaignCatalog campaign);
+            StoryDefinition story = campaign != null ? campaign.Story : null;
+            controllers.AddComponent<LevelStoryListener>().Initialize(context, time, input, progress, briefing, story != null ? story.ScanHints : null);
             var mix = Services.Get<AudioMix>();
             controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig, spawner.Living, drones.Drones);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);

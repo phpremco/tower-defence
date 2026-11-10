@@ -51,6 +51,7 @@ namespace Game.Levels
             _input = input;
             _input.SpeedToggled += CycleSpeed;
             _input.PauseToggled += TogglePause;
+            _input.DeviceLost += PauseForInterruption;
             Apply();
         }
 
@@ -77,8 +78,11 @@ namespace Game.Levels
             Apply();
         }
 
+        // The gamepad in use dropping out (IInputProvider.DeviceLost) pauses in the editor too: unlike the focus, it never
+        // goes away by itself under the tools.
         /// <summary>
-        /// Pauses for an interruption (the window lost its focus, the platform suspended the game): the pause menu opens,
+        /// Pauses for an interruption (the window lost its focus, the platform suspended the game, the
+        /// gamepad in use disconnected): the pause menu opens,
         /// and the game waits there until the player resumes it. Already paused or ended, nothing changes.
         /// </summary>
         public void PauseForInterruption()
@@ -137,6 +141,7 @@ namespace Game.Levels
             {
                 _input.SpeedToggled -= CycleSpeed;
                 _input.PauseToggled -= TogglePause;
+                _input.DeviceLost -= PauseForInterruption;
             }
 
             Time.timeScale = 1f;

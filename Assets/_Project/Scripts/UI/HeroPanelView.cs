@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Game.Core;
 using Game.Hero;
 using Game.Levels;
+using Game.Platform;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,13 +19,14 @@ namespace Game.UI
     {
         private const float FullWidth = 600f;
         private const float FullHeight = 250f;
-        private const float PromptWidth = 260f;
+        private const float PromptWidth = 340f;
         private const float PromptHeight = 180f;
         private const float IconSize = 84f;
         private const float ColumnWidth = 190f;
         private const float Padding = 16f;
-        private const float HeaderHeight = 32f;
-        private const float StateHeight = 28f;
+        private const float HeaderHeight = 36f;
+        private const float StateHeight = 32f;
+        private const float LabelHeight = 36f;
         private const float BarHeight = 10f;
         private const float BarGap = 6f;
         private const float ButtonBottom = 46f;
@@ -32,9 +35,6 @@ namespace Game.UI
         private const float BelowHero = 40f;
         private const float TopReserve = 90f;
         private const float BottomReserve = 165f;
-        private const int HeaderSize = 24;
-        private const int StateSize = 22;
-        private const int LabelSize = 22;
         private const float LowHealthFraction = 0.35f;
         private const float MidHealthFraction = 0.65f;
         // The panel also follows what raises no event of its own, such as the guarded gate's health for the repair.
@@ -64,13 +64,19 @@ namespace Game.UI
         private Button _postButton;
         private Text _postLabel;
         private readonly List<HeroAbilityButton> _abilities = new List<HeroAbilityButton>();
+        private IInputProvider _input;
         private Font _font;
         private float _nextRefresh;
+        private bool _tending;
+        private int _openedFrame;
+        private GameObject _lastButton;
+        private Selectable[] _row;
 
         public void Initialize(LevelContext context, RectTransform root, Camera camera, Font font)
         {
             _context = context;
             _hero = context.Hero;
+            Services.TryGet(out _input);
             _root = root;
             _camera = camera;
             _font = font;
@@ -86,9 +92,9 @@ namespace Game.UI
             _panel.anchorMax = new Vector2(0.5f, 0.5f);
 
             UiKit.CreatePanel(_panel, "Backdrop", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Backdrop);
-            _header = CreateText("Header", TextAnchor.MiddleCenter, HeaderSize, -Padding, HeaderHeight);
+            _header = CreateText("Header", TextAnchor.MiddleCenter, UiKit.ReadableSize, -Padding, HeaderHeight);
             _header.color = HeaderColor;
-            _state = CreateText("State", TextAnchor.MiddleCenter, StateSize, -Padding - HeaderHeight, StateHeight);
+            _state = CreateText("State", TextAnchor.MiddleCenter, UiKit.ReadableSize, -Padding - HeaderHeight, StateHeight);
             _healthFill = HeroPanelStyle.CreateHealthBar(_panel, new Vector2(Padding, -Padding - HeaderHeight - StateHeight - BarGap), new Vector2(FullWidth - Padding * 2f, BarHeight));
             _healthBar = _healthFill.transform.parent.GetComponent<RectTransform>();
 
@@ -146,10 +152,14 @@ namespace Game.UI
 
         private Button CreateAction(Sprite icon, Color tint, UnityEngine.Events.UnityAction action, out Text label)
         {
+            // A gamepad keeps the focus on the panel while it stays open (TendFocus); a click leaves nothing focused.
             Button button = UiKit.CreateIconButton(_panel, icon, IconSize, () =>
             {
                 action();
-                EventSystem.current.SetSelectedGameObject(null);
+                if (_input == null || _input.ActiveDevice != InputDeviceKind.Gamepad)
+                {
+                    EventSystem.current.SetSelectedGameObject(null);
+                }
             });
             button.navigation = new Navigation { mode = Navigation.Mode.None };
             Destroy(button.GetComponent<LayoutElement>());
@@ -160,12 +170,12 @@ namespace Game.UI
             rect.pivot = Bottom;
             rect.sizeDelta = new Vector2(IconSize, IconSize);
 
-            label = CreateText("Label", TextAnchor.MiddleCenter, LabelSize, 0f, 32f);
+            label = CreateText("Label", TextAnchor.MiddleCenter, UiKit.ReadableSize, 0f, LabelHeight);
             RectTransform labelRect = label.rectTransform;
             labelRect.anchorMin = Bottom;
             labelRect.anchorMax = Bottom;
             labelRect.pivot = Bottom;
-            labelRect.sizeDelta = new Vector2(ColumnWidth - 6f, 32f);
+            labelRect.sizeDelta = new Vector2(ColumnWidth - 6f, LabelHeight);
             return button;
         }
 
@@ -193,7 +203,13 @@ namespace Game.UI
 
         private void Update()
         {
-            if (_panel == null || !_panel.gameObject.activeSelf)
+            if (_panel == null)
+            {
+                return;
+            }
+
+            TendFocus();
+            if (!_panel.gameObject.activeSelf)
             {
                 return;
             }
@@ -243,6 +259,101 @@ namespace Game.UI
             }
         }
 
+        // A on a hero post opens the panel, and that press still counts as "submitted this frame" for the UI, so the focus
+        // waits a frame (as the tower menu's). While the panel is open the focus stays on its buttons, left and right walk
+        // them, A presses one and B closes the panel; an icon that greys out (cooldown, money) keeps the focus. While the
+        // pause menu, a dialogue or the codex holds the game, the focus is theirs. Closing hands a focus on us back.
+        private void TendFocus()
+        {
+            EventSystem events = EventSystem.current;
+            if (!_panel.gameObject.activeSelf)
+            {
+                if (_tending)
+                {
+                    _tending = false;
+                    if (events != null && IsOurs(events.currentSelectedGameObject))
+                    {
+                        events.SetSelectedGameObject(null);
+                    }
+                }
+
+                return;
+            }
+
+            if (!_tending)
+            {
+                _tending = true;
+                _openedFrame = Time.frameCount;
+                _lastButton = null;
+            }
+
+            if (events == null || Time.frameCount <= _openedFrame || _context.InputBlocked)
+            {
+                return;
+            }
+
+            GameObject current = events.currentSelectedGameObject;
+            if (IsOurs(current) && current.activeInHierarchy)
+            {
+                _lastButton = current;
+                return;
+            }
+
+            events.SetSelectedGameObject(_lastButton != null && _lastButton.activeInHierarchy ? _lastButton : _postButton.gameObject);
+        }
+
+        private bool IsOurs(GameObject candidate)
+        {
+            if (candidate == null)
+            {
+                return false;
+            }
+
+            if (candidate == _postButton.gameObject)
+            {
+                return true;
+            }
+
+            foreach (HeroAbilityButton ability in _abilities)
+            {
+                if (candidate == ability.Button.gameObject)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Left and right walk the visible buttons in their order on screen: the post button, then the abilities.
+        private void LinkNavigation(bool full)
+        {
+            Selectable previous = null;
+            if (_row == null)
+            {
+                _row = new Selectable[1 + _abilities.Count];
+                _row[0] = _postButton;
+                for (int i = 0; i < _abilities.Count; i++)
+                {
+                    _row[i + 1] = _abilities[i].Button;
+                }
+            }
+
+            Selectable[] row = _row;
+
+            int visible = full ? row.Length : 1;
+            for (int i = 0; i < visible; i++)
+            {
+                row[i].navigation = new Navigation
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnLeft = previous,
+                    selectOnRight = i + 1 < visible ? row[i + 1] : null,
+                };
+                previous = row[i];
+            }
+        }
+
         private void ShowAbilities(bool show)
         {
             foreach (HeroAbilityButton ability in _abilities)
@@ -281,6 +392,7 @@ namespace Game.UI
             _postButton.gameObject.SetActive(true);
             ShowAbilities(false);
             PlaceColumns(1);
+            LinkNavigation(false);
             _postLabel.text = $"Move {HeroNaming.Of(_context)} here";
             _postLabel.color = TextColor;
         }
@@ -296,6 +408,7 @@ namespace Game.UI
             _postButton.gameObject.SetActive(true);
             ShowAbilities(true);
             PlaceColumns(1 + _abilities.Count);
+            LinkNavigation(true);
 
             string postName = _context.HeroPostNames[_hero.PostIndex];
             if (_hero.IsDown)
@@ -321,7 +434,7 @@ namespace Game.UI
                 bool ready = _hero.CanUse(ability.Slot);
                 bool affordable = HeroAbilityHud.Affordable(ability.State, _context.Wallet);
                 ability.Button.interactable = ready && affordable;
-                ability.Label.text = HeroAbilityHud.Label(ability.State, ability.Slot, false);
+                ability.Label.text = HeroAbilityHud.Label(ability.State, string.Empty);
                 ability.Label.color = !ready ? DimColor : affordable ? TextColor : Unaffordable;
             }
         }
