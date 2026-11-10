@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Game.Economy;
 using Game.Enemies;
+using Game.Hero;
 using Game.PathObjects;
 using Game.Platform;
+using Game.Towers;
 using UnityEngine;
 
 namespace Game.Levels
@@ -34,6 +36,11 @@ namespace Game.Levels
         private IReadOnlyList<ScanHint> _scanHints;
         private DialogueDefinition _rearNestWarning;
         private RearNestWatch _rearNests;
+        private IReadOnlyList<GateTip> _gateTips;
+        private IReadOnlyList<Tower> _gates;
+        private GateTipGate[] _gateStates;
+        // A tip is marked seen only when it ends, so one already queued in this level must not be queued again.
+        private readonly HashSet<DialogueDefinition> _tipsQueued = new HashSet<DialogueDefinition>();
         private OriginDirector _origins;
         private bool[] _fired;
         private bool _levelStartRaised;
@@ -46,7 +53,9 @@ namespace Game.Levels
 
         /// <param name="scanHints">Dr. Voss's creature scans (the campaign story); null plays none.</param>
         /// <param name="rearNestWarning">Voss's warning for a rift behind the defence gate (once per save); null plays none.</param>
-        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null, DialogueDefinition rearNestWarning = null)
+        /// <param name="gateTips">Voss's gate tips (once per save each); null plays none.</param>
+        /// <param name="gates">The level's gates in the order of its data, which the hero's posts follow.</param>
+        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null, DialogueDefinition rearNestWarning = null, IReadOnlyList<GateTip> gateTips = null, IReadOnlyList<Tower> gates = null)
         {
             _scanHints = scanHints;
             _context = context;
@@ -68,6 +77,7 @@ namespace Game.Levels
             _context.EnemyKilled.Subscribe(OnEnemyKilled);
             _context.PathObjectSpawned.Subscribe(OnPathObjectSpawned);
             WatchRearNests(rearNestWarning);
+            WatchGates(gateTips, gates);
         }
 
         // Only while the warning is still unseen in this save and the level has a rift behind its gate is the map read at all.
@@ -90,6 +100,62 @@ namespace Game.Levels
             _origins.Signalled += OnOriginSignalled;
         }
 
+        // Only while a tip is still unseen in this save are the gates weighed, and then only when one is hit or the money changes.
+        private void WatchGates(IReadOnlyList<GateTip> tips, IReadOnlyList<Tower> gates)
+        {
+            if (tips == null || gates == null || gates.Count == 0 || !_context.StoryEnabled || !AnyUnseen(tips))
+            {
+                return;
+            }
+
+            _gateTips = tips;
+            _gates = gates;
+            _gateStates = new GateTipGate[gates.Count];
+            _context.StructureHit.Subscribe(OnStructureHit);
+            _context.Wallet.Changed += OnMoneyChanged;
+        }
+
+        private bool AnyUnseen(IReadOnlyList<GateTip> tips)
+        {
+            for (int i = 0; i < tips.Count; i++)
+            {
+                if (tips[i].Dialogue != null && !_isSeen(tips[i].Dialogue.Id))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void OnStructureHit(Vector3 _) => WeighGateTips();
+
+        private void OnMoneyChanged(int _) => WeighGateTips();
+
+        private void WeighGateTips()
+        {
+            if (!Active || _context.Outcome != LevelOutcome.Running)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _gates.Count; i++)
+            {
+                Tower gate = _gates[i];
+                bool affordable = gate.CanUpgrade && _context.Wallet.CanAfford(gate.NextUpgradeCost);
+                _gateStates[i] = new GateTipGate(gate.HealthFraction, !gate.IsWrecked, affordable);
+            }
+
+            Commander hero = _context.Hero;
+            int heroGate = hero != null && hero.PostIndex < _gates.Count ? hero.PostIndex : -1;
+            bool heroReady = hero != null && !hero.IsDown && !hero.IsFlying;
+            DialogueDefinition tip = GateTipRule.Pick(_gateTips, _gateStates, heroGate, heroReady, _isSeen, _pending);
+            if (tip != null && _tipsQueued.Add(tip))
+            {
+                _pending.Add(tip);
+            }
+        }
+
         // Releasing the hold here would restart time after the level scene is gone; the time controller resets it.
         private void OnDestroy()
         {
@@ -110,6 +176,11 @@ namespace Game.Levels
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
             _context.EnemyKilled.Unsubscribe(OnEnemyKilled);
             _context.PathObjectSpawned.Unsubscribe(OnPathObjectSpawned);
+            if (_gates != null)
+            {
+                _context.StructureHit.Unsubscribe(OnStructureHit);
+                _context.Wallet.Changed -= OnMoneyChanged;
+            }
         }
 
         private bool Active => _context.StoryEnabled && _player.Presenter != null;

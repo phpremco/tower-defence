@@ -82,6 +82,7 @@ namespace Game.Editor
             }
 
             so.FindProperty("_rearNestWarning").objectReferenceValue = CreateRearNestWarning(voss);
+            WriteGateTips(so.FindProperty("_gateTips"), CreateGateTips(voss));
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(story);
         }
@@ -96,6 +97,45 @@ namespace Game.Editor
                 Say(voss, "Wait, that reading is behind our gate. A rift is opening past the defences."),
                 Say(voss, "Whatever crawls out never meets the gate. Keep a turret in reach of it, or near the base."),
                 Say(voss, "And watch the whole map. I doubt this is the last one that opens where we don't expect it."));
+
+        // Remco 2026-11-08 (playtest note 12): Voss teaches the in-level gate upgrade and tells Spencer to move to the gate under
+        // pressure, each once per save at the moment it can be acted on (GateTipRule). Proposed lines in Voss's voice.
+        public const string GateUpgradeTipId = "Dlg_Tip_GateUpgrade";
+        public const string MoveHeroTipId = "Dlg_Tip_MoveSpencer";
+
+        // The upgrade tip: a gate below this share of its health that the player can pay to upgrade.
+        private const float UpgradeTipHurtBelow = 0.75f;
+
+        // The move tip: another gate below this share while Spencer's own gate is still at or above the second one.
+        private const float MoveTipHurtBelow = 0.6f;
+        private const float MoveTipQuietAbove = 0.9f;
+
+        private static GateTip[] CreateGateTips(SpeakerDefinition voss) => new[]
+        {
+            new GateTip(GateTipKind.UpgradeGate, CreateDialogue(GateUpgradeTipId,
+                Say(voss, "That gate is taking hits. You can reinforce it right now: select the gate and upgrade it."),
+                Say(voss, "Every gate level makes it tougher and adds a small turret of its own. A gate that holds longer gives every gun around it more time to shoot."),
+                Say(voss, "Upgrade the gate where they pile up first. A repair patches it; an upgrade makes it worth defending.")),
+                UpgradeTipHurtBelow, 0f),
+            new GateTip(GateTipKind.MoveHero, CreateDialogue(MoveHeroTipId,
+                Say(voss, "Spencer, your gate is quiet, but another one is being hammered."),
+                Say(voss, "Go where the fight is. The jetpack gets you there in seconds: Next post, or select that gate and send Spencer."),
+                Say(voss, "When the pressure shifts, shift with it. A blade at the right gate beats a turret at the wrong one.")),
+                MoveTipHurtBelow, MoveTipQuietAbove),
+        };
+
+        private static void WriteGateTips(SerializedProperty array, GateTip[] tips)
+        {
+            array.arraySize = tips.Length;
+            for (int i = 0; i < tips.Length; i++)
+            {
+                SerializedProperty element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("Kind").intValue = (int)tips[i].Kind;
+                element.FindPropertyRelative("Dialogue").objectReferenceValue = tips[i].Dialogue;
+                element.FindPropertyRelative("HurtBelow").floatValue = tips[i].HurtBelow;
+                element.FindPropertyRelative("QuietAbove").floatValue = tips[i].QuietAbove;
+            }
+        }
 
         private static ScanHint Scan(string enemyId, string dialogueId, params LineSpec[] lines)
         {

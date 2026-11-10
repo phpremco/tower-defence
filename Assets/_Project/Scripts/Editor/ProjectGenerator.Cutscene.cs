@@ -31,9 +31,21 @@ namespace Game.Editor
         // and when the Queen screams at the head of her brood (FieldSwarm.ScreamAt).
         private static readonly float[] BurstSeconds = { 2.2f, 3f, 3.8f };
         private const float QueenScreamSeconds = 7.8f;
+        // The last roar in the handoff shot, before the brood runs back into the ground (FieldSet.HandoffRoarSeconds).
+        private const float HandoffRoarSeconds = 0.3f;
         // Remco, 2026-11-05: no horde. The angry Queen and a few of her brood standing and glaring at the colony are enough.
         private const int BroodWalkers = 5;
         private const int BroodFlyers = 1;
+
+        // When the capsules leave the mothership's bay in the orbit shot (CapsuleDrop: the first at 1.2 s, then 1.15 s apart).
+        private static readonly float[] CapsuleRelease = { 1.2f, 2.35f, 3.5f };
+
+        // Spencer's footfalls (seconds of the shot, from, to and the gap): out of the capsule and over to the crystals in the
+        // landing shot (FieldSet: walks at 0.3-0.4 and 0.58-0.68 of 12 s), the run back to the gate (0-0.42 of 10 s).
+        private static readonly (float From, float To, float Gap) LandingWalkOut = (3.7f, 4.7f, 0.45f);
+        private static readonly (float From, float To, float Gap) LandingWalkOver = (7f, 8.1f, 0.45f);
+        private static readonly (float From, float To, float Gap) GateRun = (0.5f, 4.1f, 0.32f);
+        private const float HeroStepVolume = 0.3f;
 
         /// <summary>One shot as the generator writes it.</summary>
         private sealed class ShotSpec
@@ -245,6 +257,8 @@ namespace Game.Editor
                     Set = CutsceneSet.Orbit, Action = CutsceneAction.CapsulesFall, Timing = ShotTiming.AfterDialogue, Seconds = 4f, CameraSeconds = 14f,
                     Dialogue = orbit, DialogueDelay = 1.5f, FadeIn = 1f, FadeOut = 1.5f,
                     Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1.5f, 1.6f, -4f), new Vector3(0.5f, -9.5f, 40f), 44f) },
+                    // Each capsule leaves the bay with a hiss of its separation jets, the first one lights its booster.
+                    Cues = new[] { Sound(CapsuleRelease[0], CutsceneSound.Thrusters, 0.4f), Sound(CapsuleRelease[0] + 0.3f, CutsceneSound.RocketLaunch, 0.45f), Sound(CapsuleRelease[1], CutsceneSound.Thrusters, 0.35f), Sound(CapsuleRelease[2], CutsceneSound.Thrusters, 0.3f) },
                 },
                 new ShotSpec
                 {
@@ -257,12 +271,16 @@ namespace Game.Editor
                         Key(0.5f, CameraAnchor.Landing, new Vector3(-1.2f, 1.3f, 3.6f), new Vector3(1f, 1f, 0.4f), 42f),
                         Key(1f, CameraAnchor.Landing, new Vector3(0.2f, 1.35f, 3f), new Vector3(2.3f, 0.9f, 0.3f), 38f),
                     },
-                    Cues = new[] { Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
+                    // The retro jets fire over the last of the fall, the touchdown, the ramp, his boots on the ground, the beacon.
+                    Cues = Join(
+                        new[] { Sound(1.4f, CutsceneSound.Thrusters, 0.6f), Sound(2.4f, CutsceneSound.Landing, 0.9f), Shake(2.4f, LandingKick), Sound(3.2f, CutsceneSound.BuildClank, 0.5f), Sound(8.6f, CutsceneSound.CoreIgnite, 0.45f) },
+                        Footfalls(LandingWalkOut, HeroStepVolume), Footfalls(LandingWalkOver, HeroStepVolume)),
                 },
                 new ShotSpec
                 {
                     // The builders bring every module down from above; FieldBase sounds the clank as each one touches down.
                     Set = CutsceneSet.Field, Action = CutsceneAction.BaseUnfolds, Seconds = 18f, FadeIn = 0.6f, FadeOut = 0.6f,
+                    Cues = new[] { Sound(0.3f, CutsceneSound.DroneFans, 0.3f) },
                     Keys = new[]
                     {
                         Key(0f, CameraAnchor.Base, new Vector3(-5f, 4.2f, 6.5f), new Vector3(0f, 1.2f, 0f), 46f),
@@ -276,10 +294,12 @@ namespace Game.Editor
                     Dialogue = drill, DialogueDelay = 4f, FadeIn = 0.4f,
                     Keys = new[]
                     {
-                        Key(0f, CameraAnchor.Drill, new Vector3(-3.5f, 0.8f, -3f), new Vector3(0f, 3.2f, 0f), 52f),
-                        Key(1f, CameraAnchor.Drill, new Vector3(-5.5f, 2.6f, -5.5f), new Vector3(0f, 1f, 0f), 45f),
+                        // The drill stands at the colony rig beside the field (playtest note 3), with the border rocks behind it, so
+                        // the lens stays on the base side: low under the derrick as it rises, then back to watch the string go in.
+                        Key(0f, CameraAnchor.Drill, new Vector3(-3f, 0.7f, 3.2f), new Vector3(0f, 2.2f, 0f), 52f),
+                        Key(1f, CameraAnchor.Drill, new Vector3(-4.4f, 2.1f, 4.6f), new Vector3(0f, 0.7f, 0f), 45f),
                     },
-                    Cues = new[] { Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) },
+                    Cues = new[] { Sound(0.6f, CutsceneSound.BuildClank, 0.45f), Sound(DrillContactSeconds, CutsceneSound.Earthquake, 0.8f), Shake(DrillContactSeconds, DrillKick) },
                 },
                 new ShotSpec
                 {
@@ -354,6 +374,7 @@ namespace Game.Editor
                     {
                         Sound(BurstSeconds[0], CutsceneSound.Emerge, 0.9f), Shake(BurstSeconds[0], BurstKick), Sound(BurstSeconds[1], CutsceneSound.Emerge, 0.75f),
                         Sound(BurstSeconds[2], CutsceneSound.Emerge, 0.8f), Sound(5.2f, CutsceneSound.Growl, 0.6f), Sound(6.4f, CutsceneSound.Growl, 0.5f),
+                        Sound(4.6f, CutsceneSound.HeavySteps, 0.45f), Sound(5.9f, CutsceneSound.HeavySteps, 0.4f),
                         Sound(QueenScreamSeconds, CutsceneSound.Scream, 1f), Sound(9.6f, CutsceneSound.Drums, 0.7f),
                     },
                 },
@@ -368,7 +389,7 @@ namespace Game.Editor
                         Key(0f, CameraAnchor.Commander, new Vector3(1.2f, 1.4f, 2.3f), new Vector3(0f, 1.3f, 0f), 32f),
                         Key(1f, CameraAnchor.Commander, new Vector3(1f, 1.4f, 0.9f), new Vector3(0f, 1.3f, -1.1f), 30f),
                     },
-                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(3.2f, CutsceneSound.Growl, 0.6f) },
+                    Cues = new[] { Sound(0.6f, CutsceneSound.Growl, 0.7f), Sound(1.8f, CutsceneSound.HeavySteps, 0.4f), Sound(3.2f, CutsceneSound.Growl, 0.6f) },
                 },
                 new ShotSpec
                 {
@@ -381,11 +402,18 @@ namespace Game.Editor
                         Key(0.5f, CameraAnchor.Gate, new Vector3(1.8f, 2.1f, -5.2f), new Vector3(-0.2f, 1.1f, 0.5f), 44f),
                         Key(1f, CameraAnchor.Gate, new Vector3(1.1f, 1.9f, -4.8f), new Vector3(-0.3f, 1.1f, 2.5f), 42f),
                     },
-                    Cues = new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) },
+                    Cues = Join(new[] { Sound(0.4f, CutsceneSound.BossAlarm, 0.5f), Sound(5.4f, CutsceneSound.BuildClank, 0.35f) }, Footfalls(GateRun, HeroStepVolume)),
                 },
                 new ShotSpec
                 {
-                    Set = CutsceneSet.Field, Action = CutsceneAction.Handoff, Seconds = 7f, FadeOut = 1.4f, Letterbox = false, Title = "Defend the base",
+                    // Playtest note 4: the Queen roars once more and the brood runs back into the ground before play starts
+                    // (FieldSwarm retreat, the roar FieldSet.HandoffRoarSeconds in); then the burrows close and the view pulls out.
+                    Set = CutsceneSet.Field, Action = CutsceneAction.Handoff, Seconds = 8.5f, FadeOut = 1.4f, Letterbox = false, Title = "Defend the base",
+                    Cues = new[]
+                    {
+                        Sound(HandoffRoarSeconds, CutsceneSound.Scream, 1f), Sound(0.8f, CutsceneSound.Growl, 0.7f), Sound(1.7f, CutsceneSound.HeavySteps, 0.6f),
+                        Sound(2.2f, CutsceneSound.HeavySteps, 0.55f), Sound(2.7f, CutsceneSound.HeavySteps, 0.5f), Sound(3.5f, CutsceneSound.Emerge, 0.65f), Sound(4.8f, CutsceneSound.Rumble, 0.5f),
+                    },
                     Keys = new[]
                     {
                         Key(0f, CameraAnchor.Gate, new Vector3(1.1f, 1.9f, -4.8f), new Vector3(-0.3f, 1.1f, 2.5f), 42f),
@@ -403,6 +431,30 @@ namespace Game.Editor
         private static CutsceneCue Sound(float at, CutsceneSound sound, float strength) => new CutsceneCue { At = at, Kind = CueKind.Sound, Sound = sound, Strength = strength };
 
         private static CutsceneCue Shake(float at, float strength) => new CutsceneCue { At = at, Kind = CueKind.Shake, Strength = strength };
+
+        private static CutsceneCue[] Footfalls((float From, float To, float Gap) walk, float strength)
+        {
+            var steps = new System.Collections.Generic.List<CutsceneCue>();
+            for (float at = walk.From; at <= walk.To; at += walk.Gap)
+            {
+                steps.Add(Sound(at, CutsceneSound.HeroStep, strength));
+            }
+
+            return steps.ToArray();
+        }
+
+        // Cue lists in time order, as the sequencer plays them.
+        private static CutsceneCue[] Join(params CutsceneCue[][] parts)
+        {
+            var all = new System.Collections.Generic.List<CutsceneCue>();
+            foreach (CutsceneCue[] part in parts)
+            {
+                all.AddRange(part);
+            }
+
+            all.Sort((a, b) => a.At.CompareTo(b.At));
+            return all.ToArray();
+        }
 
         private static void WriteShots(SerializedProperty array, ShotSpec[] shots)
         {
@@ -446,10 +498,12 @@ namespace Game.Editor
                 case CutsceneAction.PathfinderLands:
                     return Night(0.5f, 0.6f, CoolRim, 0.9f, false);
                 case CutsceneAction.BaseUnfolds:
-                case CutsceneAction.DrillDown:
                 case CutsceneAction.DronesHarvest:
                 case CutsceneAction.CoreIgnites:
                     return Night(0.8f, 0.8f, CoolRim, 1f, false);
+                case CutsceneAction.DrillDown:
+                    // Rocks stand round the colony rig's ground: the ones on the line of sight make way.
+                    return Night(0.8f, 0.8f, CoolRim, 1f, true);
                 case CutsceneAction.CrystalsTremble:
                 case CutsceneAction.EyesOpen:
                     return new ShotLighting { Exposure = 1.2f, KeyColour = Moon, KeyIntensity = 0.25f, RimColour = CaveRim, RimIntensity = 0.7f };

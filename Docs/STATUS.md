@@ -5317,3 +5317,138 @@ not a quick fix; `ContinentFinaleTests` already defers to the probe there.
 4. C1_05/C1_06 Easy at 0.66 bought nothing: put them back to 0.757?
 5. `MaxEasySurplus` 2.4 and the ordering check at the curve are band alignments with your rules (play sets the scales): fine, or do you
    want the paper to keep an absolute Easy ceiling?
+
+## Round 35: Remco's playtest notes of 2026-11-08 worked through (2026-11-10)
+
+Not committed (the curator commits). No balance data or balance pipeline touched. Save `progress.json` MD5 ae9223b8 copied aside
+before the round and checked after every Play Mode run (restored by the scripts); the dev backup untouched; `Tools/PlayTest` copied
+aside before the suite; Game view size unchanged; no `Assets/InitTestScene*`.
+
+### 0. Already solved by earlier rounds
+
+| Note | Status | Where |
+| --- | --- | --- |
+| 1 Spencer looks basic | done | Blender passes 2-4 and the Unity syncs (23b, 23d, 23e, 24, 28: armour, one-piece helmet and face, jetpack, pistol strip) |
+| 8 ant walk | done for the gait | round 28 insect gait import (Skitter 3 % foot slip); Remco's further animation notes never arrived in STATUS |
+| 9 Laser at x2/x3 | done | round 23a (beam stretched to the hit, beams and flashes on `FeedbackClock`); Remco after 23b: "Laser at x3 looks good now". Re-checked: `r35_laser_x3_*.png` |
+| 10 Cragback armour read | done | round 23a blue bar, round 24 armour pool (blue line = armour left, sparks glance off while a hit works on the armour, a burst when it breaks, Codex "armoured"). Re-checked: `r35_laser_x3_*.png` |
+| 11 Spencer dies too fast | done | round 24: health 200 -> 300, regeneration 6/s from 4 s after the last hit |
+| 12 bot weighs gate upgrades | done (bot and model) | round 26 gate-upgrade step (`PlanStep.GateUpgrade`; the bots weigh the defence gate's next level) |
+| 13 pulse in the bot and the ledger | done in round 24 | see section 3 |
+| 12 Voss's gate guidance | open, built now | section 1 |
+| 2, 3, 4, 5, 7 cutscene | open, built now | section 2 |
+| 6 ship launch liveliness | open | not done this round |
+
+### 1. Voss's gate tips (note 12), data-driven, once per save
+
+- **Data:** `StoryDefinition._gateTips` (`GateTip`: kind, dialogue, `HurtBelow`, `QuietAbove`; checked in `OnValidate`), written by
+  the scan step of `Tools/Generate/Scan Hints and Button Prompts` (`ProjectGenerator.ScanHints.cs`). Two dialogues in Voss's voice,
+  proposed copy:
+  - `Dlg_Tip_GateUpgrade` (a gate below 75 % that the player can pay to upgrade now): "That gate is taking hits. You can reinforce
+    it right now: select the gate and upgrade it." / "Every gate level makes it tougher and adds a small turret of its own. A gate
+    that holds longer gives every gun around it more time to shoot." / "Upgrade the gate where they pile up first. A repair patches
+    it; an upgrade makes it worth defending."
+  - `Dlg_Tip_MoveSpencer` (another gate below 60 % while Spencer's own gate stands at 90 % or more, Spencer up and not in flight):
+    "Spencer, your gate is quiet, but another one is being hammered." / "Go where the fight is. The jetpack gets you there in
+    seconds: Next post, or select that gate and send Spencer." / "When the pressure shifts, shift with it. A blade at the right gate
+    beats a turret at the wrong one."
+- **Rule:** `Game.Levels.GateTipRule` (pure, allocation-free; one `GateTipGate` per gate). `LevelStoryListener` weighs it on
+  `StructureHit` and on money changes, and only while a tip is still unseen in the save. A tip queues like the scans: it holds the
+  clock, is marked seen when it ends or is skipped, and a level lost before it played brings it back. The bootstrapper passes the
+  story's tips and the level's gates.
+- **Story viewer:** listed on the "Voss scans" page as "Gate tip (UpgradeGate)" and "Gate tip (MoveHero)".
+- **Checked in play** (`Tools/PlayTest/r35_tips.sh`, C1_02): gate 0 hurt with money for its level -> the upgrade tip; gate 1 hurt
+  while Spencer stands at a whole gate 0 -> the move tip; each marked seen afterwards, nothing queued twice, console clean.
+  `r35_tip_upgrade.png`, `r35_tip_move.png` (Liberation Sans), `r35_tip_upgrade_chakra.png`, `r35_tip_move_chakra.png` (section 4).
+- Tests: new `GateTipTests` (4: the upgrade moment, the move moment, seen and already-picked tips, the story data and the viewer).
+
+### 2. The opening cutscene (notes 2, 3, 4, 5, 7)
+
+- **2, no drone lands inside rock.** `FieldBase.Park` tries each builder's own corner first, then turns (12-degree steps either
+  side) and steps out (0.6 m rings) until the spot is level with the base (within 0.3 m), clear of every module's reach + 0.8 m, of
+  the builders that landed before it (1.6 m) and of every drawn decor piece taller than 0.25 m (`EnvironmentInstancer.IsClear`:
+  mesh bounds through each matrix; ground cover does not count). Probe (`r35_cut_probe.cs`): all four builders clear on C1_01.
+  `r35_cut_4_1.png`.
+- **3, the drill where it stays.** `FieldLayout` puts the drill at the level's colony rig (`StructureClearance.ColonyRigPosition`
+  and `ColonyRigFacing`: the derrick the level shows beside the base in play), at the rig's size (`ColonyRigDefinition.DrillScale`
+  0.7). Only a continent without a rig still drills the deposit nearest the base. Off the grid the layout now reads the landscape's
+  own height (`TerrainField`; the rig stands on the border at y 2.8). The drill shot's camera moved to the base side (the border
+  rocks stand behind the rig) and clears its line of sight: the string is seen going into the deck, and the motor block stands
+  beside it, not in front. `r35_cut2_5_0p35.png`, `r35_cut2_5_0p95.png`; the harvest shot at the rig `r35_cut_6_0p5.png`.
+  Before: `r35_before_5_*.png`.
+- **4, roar and retreat.** In the handoff shot (now 8.5 s, was 7) the Queen screams once more 0.3 s in (her Power clip, the scream
+  ring at her feet) and the brood roars (Power clip, else Attack). They turn away by yaw, run back to the maw they came out of
+  (3.2 m/s, staggered), dive 1.6 m into the ground and are gone; the flyer comes down into its maw; then the burrows close (their
+  opening clip run backwards, the glow dying) while the view pulls out to the level. Everything is a pure function of the swarm
+  clock, so a seek shows the right moment. `r35_cut_15_0p2.png` (running back), `r35_cut_15_0p5.png` (gone),
+  `r35_cut_15_0p7.png` (closed). Before: `r35_before_15_0p99.png` (the brood still glaring at the hand-off).
+- **5, red eyes between the rocks.** `UI/Cutscene/FieldEyes`: up to 12 pairs (6 on Low) of small, slanted red glow cards, low on the
+  road-facing side of the big formations and of every decor piece at least 0.5 m tall, from the entrance to 6 m past the first
+  gate, 2.4 m apart. They open pair by pair in the shiver shot (again in the radar shot, as more of them wake), blink, watch through
+  the attack and shut at the last roar. 12 pairs on C1_01. `r35_cut2_11_0p6.png`, `r35_cut2_14_0p6.png`.
+- **7, sound.** What exists and is now wired (all approved recordings, through the sound library with its measured gains; a borrowed
+  set's pitch now carries into the cutscene too):
+
+  | Shot | Before | Now |
+  | --- | --- | --- |
+  | Earth (prologue music) | procedural "calm" track | the approved menu theme (`menu_loop`), procedural fallback |
+  | Orbit (capsules) | no cue | a separation hiss per capsule (`steam_burst`), the booster (`raket_lancering`) |
+  | Landing | procedural blast | retro hiss (`steam_burst`); the touchdown is the new library set `DistantBlasts` (`Approved/explosie_afstand.wav`, unused until now); Spencer's footsteps (`hero_run_step`) |
+  | Base timelapse | clanks | + the builders' fans (`drone_fan_loop`) |
+  | Drill | earthquake at contact | + a rig clank at the start (`metal_dull_hit`) |
+  | Attack, reaction | bursts, growls, scream, drums | + the brood's heavy steps (`monster_heavy_step`) |
+  | Gate stand | alarm, clank | + Spencer's running steps |
+  | Handoff | nothing | scream, growl, heavy running steps, a ground burst as they dive, a rumble as the burrows close |
+
+  New `CutsceneSound` values (appended): RocketLaunch, Thrusters, HeavySteps, DistantBlast. **Still procedural or missing (no
+  approved recording):** the radar ping (survey and radar shots), the burrows bursting open, the drill's motor and rumble loop, the
+  generic rumble, space ambience in orbit, the capsule's re-entry roar, the ramp hydraulics, the beacon beep, crystal hum and drips
+  in the cave, the eyes opening, any voice for Spencer. Remco tested without sound: all of the above wants an ear check.
+- Regenerated with `Tools/PlayTest/Scripts/ApplyCutsceneShots.cs` (the generator's Cutscene step only) and
+  `Tools/PlayTest/Scripts/ApplySounds.cs` (the Sound library step only).
+- Tests: new `OpeningFieldTests` (3: the drill at the rig, the handoff roar and run, the orbit and landing sounds and the library set).
+
+### 3. Spencer's pulse in the bot and the ledger (note 13, report only)
+
+- The balance bot fires the shockwave like a player (`BalanceProbeTests.UseHero`): when `ShockwaveCrowd` (4) creatures are in its
+  ring, or any creature while a boss is alive, through the same path as the HUD button. It also uses the gate repair and follows the
+  defence gate's queue to the next gate when that gate falls.
+- The ledger counts it since round 24: `Ledger.HeroDps` = blade + half the blaster + `HeroPulseDps` (damage x targets / cooldown),
+  each at the group's armour share (`PulseArmourFactor`). Targets = `PulseCrowd` = min(`BalanceRules.ShockwaveCrowd`, the wave's
+  ground count) in a wave's window, the attackers at the gate in a siege. Inputs come from the hero's shockwave ability
+  (`BalanceLedger`, perk-locked abilities excluded) and are in `InputHash`.
+- Small gaps, not retuned: the pulse reaches ground and air but the ledger's crowd counts ground only; the bot's boss rule (any
+  creature in the ring while a boss lives) is no ledger term; the jetpack switch time is still no model term (round 23d).
+
+### 4. TMP dialogue and cutscene labels in Chakra Petch
+
+- A/B at 720p and 1080p (`Tools/PlayTest/r35_font.sh`, a runtime face, nothing saved): `r35_font_liberation_720.png`,
+  `r35_font_liberation_1080.png`, `r35_font_chakra_medium_720.png`, `r35_font_chakra_medium_1080.png`,
+  `r35_font_chakra_semibold_720.png`. Medium reads cleanly at 720p (body, speaker plate, button chips), matches the HUD's face and
+  wraps the same lines; SemiBold is heavier than it needs to be.
+- Built: `UiKit.LabelFont` turns the skin's narrow display weight (Chakra Petch **Medium**, `UiSkin.NarrowFont`) into a dynamic TMP
+  font once at runtime (so no atlas asset churns in git), with TextMeshPro's default face as the fallback for missing glyphs.
+  `DialogueView`, `CutsceneOverlay` and `RadarOverlay` labels take it (`UiKit.UseLabelFont`); without a skin (tests, tools) the
+  default face stays.
+
+### Tests and state
+
+- **EditMode suite headless on clone w6 (20:42-21:04, `r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 757 tests, 705 passed, 52
+  skipped (the explicit probe and fit tests, the acceptance report), 0 failed.** New: `GateTipTests` 4/4, `OpeningFieldTests` 3/3.
+- Recompile: 0 errors; the only warning is the existing CS0618 in `Tests/PlayMode/BalanceProbeTests.cs:601`. Console clean in every
+  play run (tips, laser, cutscene stills, font trial).
+- Save `progress.json` MD5 ae9223b8 at the end; editor stopped; `Tools/PlayTest` unchanged by the suite (it ran in the clone);
+  the arg-file churn of the play scripts reverted.
+- Scripts: `Tools/PlayTest/r35_tips.sh` (+ `r35_tip.cs`), `r35_laser.sh` (+ `r35_laser.cs`, `r35_armour.cs`), `r35_cut_probe.cs`,
+  `r35_font.sh` (+ `r35_tmp_font.cs`), `Scripts/ApplyCutsceneShots.cs`, `Scripts/ApplySounds.cs`; Docs/COMMANDS.md "Round 35".
+
+### Open points for Remco (round 35)
+
+1. The two gate tips (six Voss lines) are proposed copy; the tips fire at 75 % (upgrade, money in hand) and at 60 %
+   against a 90 % quiet gate (move): the right moments?
+2. Cutscene sound needs an ear: the menu theme now opens the prologue (was a procedural track), the distant blast is the
+   capsule touchdown, and the list of still-missing recordings is in section 2.
+3. The eyes are deliberately small and subtle (12 pairs on C1_01): bigger, more, or a glimpse of the Queen waking as well?
+4. The brood's retreat makes the handoff 1.5 s longer (8.5 s): fine, or cut it tighter?
+5. Chakra Petch Medium now also sets the dialogue, cutscene and radar labels: keep it, or back to Liberation Sans?
+6. Note 6 (ship launch and boosters) is still open.

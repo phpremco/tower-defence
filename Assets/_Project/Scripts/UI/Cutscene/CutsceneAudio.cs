@@ -48,13 +48,14 @@ namespace Game.UI
         public void Play(CutsceneCue cue)
         {
             float gain = 1f;
-            AudioClip clip = cue.Clip != null ? cue.Clip : ClipFor(cue.Sound, out gain);
+            float pitch = 1f;
+            AudioClip clip = cue.Clip != null ? cue.Clip : ClipFor(cue.Sound, out gain, out pitch);
             float strength = cue.Strength > 0f ? cue.Strength : 1f;
-            Play(clip, strength * gain);
+            Play(clip, strength * gain, pitch);
         }
 
         /// <summary>Plays a clip once at a volume relative to the effects mix (a library gain may lift it above one).</summary>
-        public void Play(AudioClip clip, float volume)
+        public void Play(AudioClip clip, float volume, float pitch = 1f)
         {
             if (clip == null || _voices == null)
             {
@@ -63,7 +64,7 @@ namespace Game.UI
 
             AudioSource voice = _voices[_nextVoice];
             _nextVoice = (_nextVoice + 1) % _voices.Length;
-            voice.pitch = 1f;
+            voice.pitch = pitch;
             voice.PlayOneShot(clip, Mathf.Clamp(volume, 0f, SoundSet.MaxGain) * EffectsGain);
         }
 
@@ -71,7 +72,8 @@ namespace Game.UI
         public AudioSource CreateLoop(string name, CutsceneSound sound)
         {
             AudioSource source = NewSource(name, true);
-            source.clip = ClipFor(sound, out float _);
+            source.clip = ClipFor(sound, out float _, out float pitch);
+            source.pitch = pitch;
             source.volume = 0f;
             if (source.clip != null)
             {
@@ -144,7 +146,8 @@ namespace Game.UI
             {
                 case CutsceneMusic.Wonder:
                     volume = WonderVolume;
-                    return ProceduralMusic.Calm();
+                    // The prologue opens on the recorded menu theme (approved), so the first launch and the menu share one voice.
+                    return OrElse(Recorded(_library != null ? _library.MenuMusic : null), () => ProceduralMusic.Calm());
                 case CutsceneMusic.Tension:
                     volume = TensionVolume;
                     return OrElse(Recorded(_library != null ? _library.GameMusic : null), () => ProceduralMusic.Intense());
@@ -157,9 +160,9 @@ namespace Game.UI
             }
         }
 
-        private AudioClip ClipFor(CutsceneSound sound, out float gain)
+        private AudioClip ClipFor(CutsceneSound sound, out float gain, out float pitch)
         {
-            AudioClip clip = LibraryClip(sound, out gain);
+            AudioClip clip = LibraryClip(sound, out gain, out pitch);
             if (clip == null)
             {
                 clip = Generated(sound);
@@ -173,9 +176,11 @@ namespace Game.UI
             return clip;
         }
 
-        private AudioClip LibraryClip(CutsceneSound sound, out float gain)
+        // A borrowed set plays at its own pitch, as in the level (SfxLibrary pitches).
+        private AudioClip LibraryClip(CutsceneSound sound, out float gain, out float pitch)
         {
             gain = 1f;
+            pitch = 1f;
             SoundSet set = LibrarySet(sound);
             if (set == null || set.IsEmpty)
             {
@@ -183,6 +188,7 @@ namespace Game.UI
             }
 
             gain = set.Gain;
+            pitch = set.Pitch;
             return set.Pick(ref _cursor);
         }
 
@@ -214,6 +220,12 @@ namespace Game.UI
                 case CutsceneSound.HeroStep: return _library.HeroSteps;
                 case CutsceneSound.Blaster: return _library.HeroBlasters;
                 case CutsceneSound.Drums: return _library.WaveDrums;
+                case CutsceneSound.RocketLaunch: return _library.RocketLaunches;
+                case CutsceneSound.Thrusters: return _library.SteamBursts;
+                case CutsceneSound.HeavySteps: return _library.HeavySteps;
+                // The capsule touching down and any far explosion: Remco's recorded distant blast.
+                case CutsceneSound.Landing:
+                case CutsceneSound.DistantBlast: return _library.DistantBlasts;
                 default: return null;
             }
         }
@@ -224,7 +236,9 @@ namespace Game.UI
             {
                 case CutsceneSound.Earthquake:
                 case CutsceneSound.Rumble: return ProceduralSfx.QuakeRumble();
-                case CutsceneSound.Landing: return ProceduralSfx.BigExplosion();
+                case CutsceneSound.Landing:
+                case CutsceneSound.DistantBlast: return ProceduralSfx.BigExplosion();
+                case CutsceneSound.RocketLaunch: return ProceduralSfx.RocketLaunch();
                 case CutsceneSound.BuildClank: return ProceduralSfx.Build();
                 case CutsceneSound.CoreIgnite: return ProceduralSfx.Upgrade();
                 case CutsceneSound.BossAlarm: return ProceduralSfx.BossAlarm();

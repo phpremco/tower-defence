@@ -359,6 +359,7 @@ namespace Game.UI
         private static TextMeshProUGUI NewText(RectTransform parent, string name, int size, TextAlignmentOptions alignment)
         {
             TextMeshProUGUI text = NewChild<TextMeshProUGUI>(parent, name);
+            UiKit.UseLabelFont(text);
             text.fontSize = size;
             text.alignment = alignment;
             text.raycastTarget = false;

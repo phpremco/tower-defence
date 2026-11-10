@@ -1,4 +1,5 @@
 ﻿using Game.Levels;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -32,6 +33,8 @@ namespace Game.UI
         private static readonly Vector2 OutlineDistance = new Vector2(2f, -2f);
 
         private static Font _fallbackFont;
+        private static TMP_FontAsset _labelFont;
+        private static Font _labelSource;
 
         /// <summary>Display text (titles, buttons, big numbers) keeps the sci-fi font; anything smaller than this reads better in a plain face.</summary>
         private const int DisplayFontMinSize = 28;
@@ -59,6 +62,46 @@ namespace Game.UI
                 }
 
                 return _fallbackFont;
+            }
+        }
+
+        /// <summary>
+        /// The TextMeshPro face of the dialogue, cutscene and radar labels (round 35: Chakra Petch, the skin's narrow display
+        /// weight, Medium), made once at runtime as a dynamic SDF so no atlas asset changes as glyphs are added; glyphs it lacks
+        /// come from TextMeshPro's default face. Null without a skin, and the labels keep the default face.
+        /// </summary>
+        public static TMP_FontAsset LabelFont
+        {
+            get
+            {
+                Font source = Skin != null ? Skin.NarrowFont : null;
+                if (source == null)
+                {
+                    return null;
+                }
+
+                if (_labelFont == null || _labelSource != source)
+                {
+                    _labelSource = source;
+                    _labelFont = TMP_FontAsset.CreateFontAsset(source);
+                    TMP_FontAsset fallback = TMP_Settings.defaultFontAsset;
+                    if (_labelFont != null && fallback != null)
+                    {
+                        _labelFont.fallbackFontAssetTable = new System.Collections.Generic.List<TMP_FontAsset> { fallback };
+                    }
+                }
+
+                return _labelFont;
+            }
+        }
+
+        /// <summary>Gives a TextMeshPro label the <see cref="LabelFont"/> when there is one.</summary>
+        public static void UseLabelFont(TMP_Text text)
+        {
+            TMP_FontAsset font = LabelFont;
+            if (font != null)
+            {
+                text.font = font;
             }
         }
 

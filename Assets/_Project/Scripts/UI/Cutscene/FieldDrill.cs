@@ -59,6 +59,12 @@ namespace Game.UI
             Root = new GameObject("Drill").transform;
             Root.SetParent(parent, false);
             Root.SetPositionAndRotation(layout.Drill, layout.DrillFacing);
+            // At the colony rig it is the rig the level shows afterwards, so it takes the rig's size too.
+            ColonyRigDefinition colonyRig = theme.Environment != null ? theme.Environment.ColonyRig : null;
+            if (layout.HasColonyRig && colonyRig != null)
+            {
+                Root.localScale = Vector3.one * colonyRig.DrillScale;
+            }
             _crackColour = Color.Lerp(theme.AccentColor, new Color(1f, 0.55f, 0.2f), 0.5f);
 
             GameObject custom = context.Cast != null ? context.Cast.Drill : null;

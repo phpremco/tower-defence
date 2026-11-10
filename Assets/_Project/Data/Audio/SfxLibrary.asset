@@ -172,6 +172,11 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a856d20eed61b7d4d8f5ab2b8e8af6e9, type: 3}
     _gain: 0.29146495
     _pitch: 1
+  _distantBlasts:
+    _clips:
+    - {fileID: 8300000, guid: 27940f23c6e62de44be39afd9c62a8f2, type: 3}
+    _gain: 0.19433452
+    _pitch: 1
   _cartLoops:
     _clips:
     - {fileID: 8300000, guid: 8baa4020286de0e4c898c30c34c150f0, type: 3}

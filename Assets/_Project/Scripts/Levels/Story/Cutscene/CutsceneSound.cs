@@ -20,5 +20,9 @@ namespace Game.Levels
         Emerge = 14,
         Drums = 15,
         RadarPing = 16,
+        RocketLaunch = 17,
+        Thrusters = 18,
+        HeavySteps = 19,
+        DistantBlast = 20,
     }
 }

@@ -122,10 +122,10 @@ namespace Game.Levels
         }
 
         // Voss's first-sighting scans play in whichever level a creature first shows up, so they get their own page; his warning
-        // for the first rift behind a gate plays wherever that happens first, so it is listed there too.
+        // for the first rift behind a gate and his gate tips play wherever that happens first, so they are listed there too.
         private void AddScans(StoryDefinition story)
         {
-            if (story == null || (story.ScanHints.Count == 0 && story.RearNestWarning == null))
+            if (story == null || (story.ScanHints.Count == 0 && story.RearNestWarning == null && story.GateTips.Count == 0))
             {
                 return;
             }
@@ -143,6 +143,14 @@ namespace Game.Levels
             if (story.RearNestWarning != null)
             {
                 page.Entries.Add(new Entry($"First rift behind a gate: {story.RearNestWarning.Id}", EntryKind.Dialogue, null, story.RearNestWarning, null));
+            }
+
+            foreach (GateTip tip in story.GateTips)
+            {
+                if (tip.Dialogue != null)
+                {
+                    page.Entries.Add(new Entry($"Gate tip ({tip.Kind}): {tip.Dialogue.Id}", EntryKind.Dialogue, null, tip.Dialogue, null));
+                }
             }
 
             _pages.Add(page);

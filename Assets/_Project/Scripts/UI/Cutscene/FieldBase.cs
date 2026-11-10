@@ -71,6 +71,17 @@ namespace Game.UI
         private const float RotorDegreesPerSecond = 2400f;
         private const float ParkRing = 3.2f;
         private const float ParkHeight = 0.2f;
+        // The search for open ground when a corner is taken: steps of the ring and of the turn either side of the corner.
+        private const int ParkRings = 5;
+        private const float ParkRingStep = 0.6f;
+        private const int ParkTurns = 9;
+        private const float ParkTurnStep = 12f;
+        // A landed builder needs this much free ground round it (its rotors), level with the base, apart from the others;
+        // ground cover lower than the height does not count.
+        private const float ParkClearance = 0.8f;
+        private const float ParkSpacing = 1.6f;
+        private const float ParkLevelTolerance = 0.3f;
+        private const float ParkDecorHeight = 0.25f;
         private const int Builders = 4;
 
         // The crystal rides under the hauler at this share of its size and settles into the core as it is inserted.
@@ -93,6 +104,8 @@ namespace Game.UI
         private readonly List<CrystalPart> _crystalParts = new List<CrystalPart>();
         private readonly CutsceneAudio _audio;
         private readonly Vector3 _baseCentre;
+        private readonly IReadOnlyList<EnvironmentInstancer> _decor;
+        private readonly List<Vector3> _parks = new List<Vector3>();
         private Material _crystal;
         private Color _crystalLit;
         private Color _coreColour;
@@ -157,8 +170,10 @@ namespace Game.UI
             public readonly List<Leg> Legs = new List<Leg>();
         }
 
-        public FieldBase(Transform parent, FieldLayout layout, CutsceneContext context)
+        /// <param name="decor">The field's drawn decoration, so the builders land clear of every rock and crystal.</param>
+        public FieldBase(Transform parent, FieldLayout layout, CutsceneContext context, IReadOnlyList<EnvironmentInstancer> decor)
         {
+            _decor = decor ?? new EnvironmentInstancer[0];
             LevelDefinition level = layout.Level;
             VisualTheme theme = level.Theme;
             Color glow = theme.BaseColor;
@@ -423,13 +438,68 @@ namespace Game.UI
             return new Vector3(module.Centre.x + Mathf.Cos(angle) * reach, height, module.Centre.z + Mathf.Sin(angle) * reach);
         }
 
-        // Where a drone lands when the base stands: evenly round the command post, on the ground.
+        // Where a drone lands when the base stands: round the command post, on the ground. Remco (playtest note 2): a corner
+        // can hold a rock, so each drone tries its own corner first and then turns and steps out until it finds open, level
+        // ground clear of every module, rock and crystal and of the drones that landed before it.
         private Vector3 Park(FieldLayout layout, int drone)
         {
-            float angle = (drone + 0.5f) / Builders * Mathf.PI * 2f;
-            Vector3 spot = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * ParkRing);
-            return spot + Vector3.up * ParkHeight;
+            float preferred = (drone + 0.5f) / Builders * Mathf.PI * 2f;
+            for (int ring = 0; ring < ParkRings; ring++)
+            {
+                for (int turn = 0; turn < ParkTurns; turn++)
+                {
+                    // 0, +1, -1, +2, -2 ... steps either side of the drone's own corner.
+                    int side = (turn + 1) / 2 * (turn % 2 == 0 ? -1 : 1);
+                    float angle = preferred + side * ParkTurnStep * Mathf.Deg2Rad;
+                    Vector3 spot = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * (ParkRing + ring * ParkRingStep));
+                    if (IsOpenGround(spot))
+                    {
+                        _parks.Add(spot);
+                        return spot + Vector3.up * ParkHeight;
+                    }
+                }
+            }
+
+            Vector3 fallback = layout.Ground(_baseCentre + new Vector3(Mathf.Cos(preferred), 0f, Mathf.Sin(preferred)) * ParkRing);
+            _parks.Add(fallback);
+            return fallback + Vector3.up * ParkHeight;
         }
+
+        private bool IsOpenGround(Vector3 spot)
+        {
+            if (Mathf.Abs(spot.y - _baseCentre.y) > ParkLevelTolerance)
+            {
+                return false;
+            }
+
+            foreach (Module module in _modules)
+            {
+                if (FlatDistance(spot, module.Centre) < module.Reach + ParkClearance)
+                {
+                    return false;
+                }
+            }
+
+            foreach (Vector3 other in _parks)
+            {
+                if (FlatDistance(spot, other) < ParkSpacing)
+                {
+                    return false;
+                }
+            }
+
+            foreach (EnvironmentInstancer decor in _decor)
+            {
+                if (decor != null && !decor.IsClear(spot, ParkClearance, ParkDecorHeight))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static float FlatDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;
 
         private static Vector3 Position(Builder builder, float progress)
         {

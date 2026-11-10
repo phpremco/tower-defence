@@ -34,6 +34,11 @@ namespace Game.UI
         private const float SparkRate = 160f;
         private const float RetroRate = 120f;
         private const float SunSweepDegrees = 140f;
+        // The brood's last roar this far into the handoff shot, before it runs back into the ground (the generator's cue matches).
+        private const float HandoffRoarSeconds = 0.3f;
+        private const float EyesOpenAfter = 1f;
+        private const float EyesFullyOpen = 60f;
+        private const float EyesShutSeconds = 0.6f;
         private const float RunShare = 0.42f;
         private const float TurnShare = 0.5f;
         private const float DrawFrom = 0.5f;
@@ -103,6 +108,7 @@ namespace Game.UI
         private FieldDrill _drill;
         private FieldDrones _drones;
         private FieldSwarm _swarm;
+        private FieldEyes _eyes;
         private ParticleSystem _shiverDust;
         private Light _heroLight;
         private EnvironmentInstancer[] _instancers = new EnvironmentInstancer[0];
@@ -135,12 +141,13 @@ namespace Game.UI
             BuildVein(root);
             _beacon = new BeaconModel(root, _theme.BaseColor, context.Cast != null ? context.Cast.Beacon : null, context.Cast != null ? context.Cast.BeaconArt : null);
             _beacon.Root.SetPositionAndRotation(_layout.BeaconSpot, _layout.LandingFacing);
-            _base = new FieldBase(root, _layout, context);
+            // The decor is drawn by now: the builders pick their landing spots clear of it.
+            _base = new FieldBase(root, _layout, context, root.GetComponentsInChildren<EnvironmentInstancer>(true));
             _layout.PlaceCore(_base.CoreSocket);
             float contact = (DrillSinkFrom + FieldDrill.ContactShareOfSink * (DrillSinkTo - DrillSinkFrom)) * cutscene.CameraLengthOf(CutsceneAction.DrillDown);
             _drill = new FieldDrill(root, _layout, context, contact);
             _drones = new FieldDrones(root, _base.PadTop, _layout.Ground(_drill.Pickup), context, _theme, _base.CrystalTop);
-            _swarm = new FieldSwarm(root, _layout, context);
+            _swarm = new FieldSwarm(root, _layout, context, _swarmShotSeconds + _reactShotSeconds + _standShotSeconds + HandoffRoarSeconds);
             if (context.Cast != null && context.Cast.Hero != null)
             {
                 _hero = new CutsceneHeroRig(root, context.Cast.Hero);
@@ -149,6 +156,7 @@ namespace Game.UI
 
             BuildShiver(root);
             _instancers = root.GetComponentsInChildren<EnvironmentInstancer>(true);
+            _eyes = new FieldEyes(root, _layout, _instancers, context.ParticleScale < 1f);
         }
 
         public void Enter(CutsceneAction action)
@@ -187,6 +195,7 @@ namespace Game.UI
             PoseSwarm(time);
             PoseHero(time, progress);
             PoseShiver(time, progress);
+            PoseEyes(time);
             _lastProgress = progress;
         }
 
@@ -448,6 +457,15 @@ namespace Game.UI
         {
             _hero.Root.gameObject.SetActive(true);
             _hero.Pose(position, facing.eulerAngles.y, 0f, 0f, 0f, headYaw, draw, time);
+        }
+
+        // The eyes between the rocks open with the shiver (again in the radar shot, as more of them wake), watch through
+        // the attack and shut at the last roar of the handoff.
+        private void PoseEyes(float time)
+        {
+            float opening = At(CutsceneAction.GroundShivers) ? time - EyesOpenAfter : AtOrAfter(CutsceneAction.SwarmPours) ? EyesFullyOpen : -1f;
+            float shut = At(CutsceneAction.Handoff) ? CutsceneMath.Span(time, HandoffRoarSeconds, HandoffRoarSeconds + EyesShutSeconds) : 0f;
+            _eyes.Pose(opening, shut, time, _context.Camera);
         }
 
         // The ground trembles under the commander's boots: dust rises and loose stones jump.

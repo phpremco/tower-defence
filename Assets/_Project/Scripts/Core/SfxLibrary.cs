@@ -41,6 +41,7 @@ namespace Game.Core
         [SerializeField] private SoundSet _acidSizzles = new SoundSet();
         [SerializeField] private SoundSet _steamBursts = new SoundSet();
         [SerializeField] private SoundSet _earthquakes = new SoundSet();
+        [SerializeField] private SoundSet _distantBlasts = new SoundSet();
 
         [Header("Path objects (loops)")]
         [SerializeField] private SoundSet _cartLoops = new SoundSet();
@@ -115,6 +116,7 @@ namespace Game.Core
         public SoundSet AcidSizzles => _acidSizzles;
         public SoundSet SteamBursts => _steamBursts;
         public SoundSet Earthquakes => _earthquakes;
+        public SoundSet DistantBlasts => _distantBlasts;
         public SoundSet CartLoops => _cartLoops;
         public SoundSet FireballLoops => _fireballLoops;
         public SoundSet HeroBlasters => _heroBlasters;
@@ -159,7 +161,7 @@ namespace Game.Core
             ("Base explosion", _baseExplosions), ("Tower break", _towerBreaks), ("Structure hit", _structureHits), ("Decor smash", _decorSmashes),
             ("Base alert", _baseAlerts), ("Upgrade", _upgrades), ("Scrap pickup", _scrapPickups), ("Cash", _cash),
             ("Freeze", _freezes), ("Acid sizzle", _acidSizzles), ("Steam burst", _steamBursts),
-            ("Earthquake", _earthquakes), ("Cart loop", _cartLoops), ("Fireball loop", _fireballLoops),
+            ("Earthquake", _earthquakes), ("Distant blast", _distantBlasts), ("Cart loop", _cartLoops), ("Fireball loop", _fireballLoops),
             ("Hero blaster", _heroBlasters), ("Saber swing", _saberSwings), ("Saber hit", _saberHits), ("Saber hum", _saberHums),
             ("Hero pulse", _heroPulses), ("Hero step", _heroSteps), ("Hero death", _heroDeaths), ("Hero fall", _heroFalls),
             ("Drone fan", _droneFanLoops), ("Drone repair", _droneRepairLoops), ("Drone harvest", _droneHarvestLoops),

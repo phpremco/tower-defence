@@ -23,6 +23,8 @@ namespace Game.UI
         private const float DigSideOffset = 3f;
         private const float GuardBehindGate = 1.3f;
 
+        private TerrainField _border;
+
         public FieldLayout(LevelDefinition level)
         {
             Level = level;
@@ -48,8 +50,20 @@ namespace Game.UI
             Vein = Ground(Landing + side * VeinOffset);
             BeaconSpot = Ground(Landing + side * BeaconOffset + (LandingFacing * Vector3.forward) * 0.4f);
 
-            Drill = Ground(NearestDeposit(level, Base, Landing + side * -DepositFallback));
-            DrillFacing = Facing(Base - Drill);
+            // Playtest note 3 (Remco 2026-11-08): the drill goes up where the level keeps it afterwards, the colony rig beside the
+            // field; only a continent without a rig drills the deposit nearest the base.
+            var clearance = new StructureClearance(level);
+            HasColonyRig = clearance.HasColonyRig;
+            if (HasColonyRig)
+            {
+                Drill = Ground(clearance.ColonyRigPosition);
+                DrillFacing = clearance.ColonyRigFacing;
+            }
+            else
+            {
+                Drill = Ground(NearestDeposit(level, Base, Landing + side * -DepositFallback));
+                DrillFacing = Facing(Base - Drill);
+            }
             // The new dig site lies past the first gate on the base side, so the swarm pours in between it and the entrance.
             GateCentre = level.Blockades != null && level.Blockades.Length > 0 ? Ground(LevelPlayPose.GatePosition(level, level.Blockades[0].Cell)) : Gate;
             GateCentreDistance = DistanceAlong(Road, GateCentre);
@@ -83,6 +97,9 @@ namespace Game.UI
         public Vector3 Core { get; private set; }
         public Vector3 Drill { get; }
         public Quaternion DrillFacing { get; }
+
+        /// <summary>True when the drill stands at the level's colony rig (and takes the rig's size), false on a deposit.</summary>
+        public bool HasColonyRig { get; }
         public Vector3 DigSite { get; }
         public Quaternion DigFacing { get; }
         public Vector3 Gate { get; }
@@ -136,15 +153,18 @@ namespace Game.UI
             }
         }
 
-        /// <summary>The point on the ground under a position, at the terrain's height.</summary>
         /// <summary>Moves the core to where the base model really has it (the imported base carries its own core).</summary>
         public void PlaceCore(Vector3 core) => Core = Ground(core);
 
+        // On the grid the cell's own height; off it (the colony rig stands beside the field) the landscape's rolling border.
         public Vector3 Ground(Vector3 position)
         {
             Vector2Int cell = Level.Grid.WorldToCell(position);
-            return new Vector3(position.x, Level.Terrain.HeightAt(cell), position.z);
+            float height = Level.Grid.Contains(cell) ? Level.Terrain.HeightAt(cell) : Border.HeightAt(position.x, position.z);
+            return new Vector3(position.x, height, position.z);
         }
+
+        private TerrainField Border => _border ??= new TerrainField(Level, new RoadShape(Level));
 
         /// <summary>The point a distance along a polyline, clamped to its ends.</summary>
         public static Vector3 PointAlong(IReadOnlyList<Vector3> line, float distance)

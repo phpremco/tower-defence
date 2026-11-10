@@ -22,6 +22,9 @@ namespace Game.Levels
         [Tooltip("Dr. Voss's warning the first time a rift opens behind the defence gate (once per save; Remco 2026-11-10).")]
         [SerializeField] private DialogueDefinition _rearNestWarning;
 
+        [Tooltip("Dr. Voss's gate tips: the in-level gate upgrade and moving the hero to the gate under pressure (once per save; Remco 2026-11-08).")]
+        [SerializeField] private GateTip[] _gateTips = new GateTip[0];
+
         /// <summary>The opening cutscene; null while there is none.</summary>
         public CutsceneDefinition OpeningCutscene => _openingCutscene;
 
@@ -31,7 +34,34 @@ namespace Game.Levels
         /// <summary>The warning for a nest that joins the road behind the defence gate; null while there is none.</summary>
         public DialogueDefinition RearNestWarning => _rearNestWarning;
 
+        /// <summary>The gate tips, in the order they are weighed.</summary>
+        public System.Collections.Generic.IReadOnlyList<GateTip> GateTips => _gateTips ?? NoTips;
+
         private static readonly ScanHint[] NoHints = new ScanHint[0];
+        private static readonly GateTip[] NoTips = new GateTip[0];
+
+        private void OnValidate()
+        {
+            if (_gateTips == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _gateTips.Length; i++)
+            {
+                GateTip tip = _gateTips[i];
+                if (tip.Dialogue == null)
+                {
+                    Debug.LogWarning($"Story '{name}': gate tip {i} ({tip.Kind}) has no dialogue.", this);
+                }
+
+                // A quiet gate that also counts as hurt would send the hero away from a gate under attack.
+                if (tip.Kind == GateTipKind.MoveHero && tip.QuietAbove <= tip.HurtBelow)
+                {
+                    Debug.LogWarning($"Story '{name}': gate tip {i} needs QuietAbove above HurtBelow.", this);
+                }
+            }
+        }
 
         /// <summary>The intro of a boss, or null when it has none.</summary>
         public BossIntroDefinition IntroFor(EnemyDefinition boss)

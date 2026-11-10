@@ -70,6 +70,17 @@ namespace Game.UI
         private const float ScreamRadius = 6f;
         private const float RearHeight = 0.2f;
         private const float QueenScale = 0.8f;
+
+        // Playtest note 4 (Remco 2026-11-08): before the game starts they roar once more, turn and run back into the ground,
+        // so the first wave reads as the first wave. From the roar: a beat of rage, the run (staggered), the dive, the burrows close.
+        private const float RoarSeconds = 1.1f;
+        private const float RetreatStagger = 0.45f;
+        private const float RetreatTurnSeconds = 0.35f;
+        private const float RetreatPace = 3.2f;
+        private const float SinkSeconds = 0.7f;
+        private const float SinkDepth = 1.6f;
+        private const float CloseDelay = 0.2f;
+        private const float CloseSpeed = 1.6f;
         private static readonly Color CrackColour = new Color(1f, 0.32f, 0.12f);
         private static readonly Color RingColour = new Color(1f, 0.35f, 0.2f);
         private static readonly Color FlashColour = new Color(1f, 0.45f, 0.18f);
@@ -98,6 +109,8 @@ namespace Game.UI
         private readonly Material _crackMaterial;
         private Creature _queen;
         private float _lastClock = -1f;
+        private readonly float _retreatAt;
+        private readonly float _closeAt;
 
         /// <summary>One creature of the brood and its choreography: out of the ground, to its place, later a little closer.</summary>
         private sealed class Creature
@@ -112,6 +125,7 @@ namespace Game.UI
             public Vector3 Advance;
             public float Pace;
             public float AdvanceFrom;
+            public float RetreatFrom = float.MaxValue;
             public float Hover;
             public float SnapUntil = -1f;
             public float NextSnap;
@@ -120,6 +134,8 @@ namespace Game.UI
             public float WalkFrom => Emerge + RiseSeconds;
             public float WalkTo => WalkFrom + Vector3.Distance(Flat(From), Flat(Stand)) / Pace;
             public float AdvanceTo => AdvanceFrom + Vector3.Distance(Flat(Stand), Flat(Advance)) / AdvancePace;
+            public float RetreatTo => RetreatFrom + Vector3.Distance(Flat(Advance), Flat(From)) / RetreatPace;
+            public float GoneAt => RetreatTo + SinkSeconds;
         }
 
         private sealed class Burrow
@@ -136,9 +152,11 @@ namespace Game.UI
             public ImpactFlash Flash;
         }
 
-        public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context)
+        /// <param name="retreatAt">Swarm clock of the last roar, after which the brood runs back into the ground.</param>
+        public FieldSwarm(Transform parent, FieldLayout layout, CutsceneContext context, float retreatAt)
         {
             _context = context;
+            _retreatAt = retreatAt;
             _layout = layout;
             Root = new GameObject("Swarm").transform;
             Root.SetParent(parent, false);
@@ -146,11 +164,24 @@ namespace Game.UI
             _ringMaterial = Additive(CutsceneSprite.ScreamRing, RingColour);
             BuildBurrows(context);
             BuildCreatures(context);
+            _closeAt = LastGone() + CloseDelay;
             Vector3 ringAt = _queen != null ? _queen.Stand : OnRoad(QueenStand);
             _ring = Decal("ScreamRing", _ringMaterial, ringAt + Vector3.up * 0.06f);
         }
 
         public Transform Root { get; }
+
+        // The moment the last of them is under the ground, when the burrows close behind them.
+        private float LastGone()
+        {
+            float last = _retreatAt;
+            foreach (Creature creature in _creatures)
+            {
+                last = Mathf.Max(last, creature.GoneAt);
+            }
+
+            return last;
+        }
 
         /// <summary>The shot of the attack begins: its burst effects start their clock; in any other shot they rest.</summary>
         public void Enter(bool bursting)
@@ -219,6 +250,15 @@ namespace Game.UI
             }
 
             float glow = CutsceneMath.Span(since, 0f, GlowRampSeconds);
+            // Once the last of them has dived in, the opening runs backwards: the slabs fold shut and the glow dies.
+            float closing = (clock - _closeAt) * CloseSpeed;
+            if (closing > 0f)
+            {
+                float openLength = model.LengthOf(ModelClipRole.Open);
+                model.Sample(ModelClipRole.Open, Mathf.Max(0f, openLength - closing), loop: false);
+                glow *= 1f - CutsceneMath.Span(closing, 0f, openLength);
+            }
+
             model.Material.SetColor(EmissionColorId, burrow.Glow * glow);
             float flash = Mathf.Exp(-Mathf.Max(0f, since - BurstAt) / FlashSeconds) * (since >= BurstAt ? 1f : 0f);
             burrow.Light.enabled = since > 0f;
@@ -251,9 +291,15 @@ namespace Game.UI
         // (a seek shows her standing). Size, not height: a lift would read as walking to the view.
         private void PoseQueen(float clock, bool played)
         {
-            float since = clock - ScreamAt;
+            // Two screams: the first at the head of her brood, the last one before they all go back into the ground.
+            float since = clock >= _retreatAt ? clock - _retreatAt : clock - ScreamAt;
             float ring = CutsceneMath.Span(since, 0f, RingSecondsScream);
             _ring.gameObject.SetActive(since > 0f && ring < 1f);
+            if (_queen != null && _queen.Active)
+            {
+                _ring.position = _queen.Enemy.transform.position + Vector3.up * 0.06f;
+            }
+
             float radius = ScreamRadius * CutsceneMath.Smooth(ring);
             _ring.localScale = new Vector3(Mathf.Max(0.001f, radius * 2f), Mathf.Max(0.001f, radius * 2f), 1f);
             GlowDecal.SetColour(_ringMaterial, RingColour * (1.5f * (1f - ring)));
@@ -262,7 +308,7 @@ namespace Game.UI
                 return;
             }
 
-            if (played && _lastClock < ScreamAt && clock >= ScreamAt)
+            if (played && ((_lastClock < ScreamAt && clock >= ScreamAt) || (_lastClock < _retreatAt && clock >= _retreatAt)))
             {
                 Strike(_queen, ModelClipRole.Power, clock);
             }
@@ -276,7 +322,7 @@ namespace Game.UI
         private void Place(Creature creature, float clock, bool played)
         {
             GameObject go = creature.Enemy.gameObject;
-            if (clock < creature.Emerge)
+            if (clock < creature.Emerge || clock >= creature.GoneAt)
             {
                 if (creature.Active)
                 {
@@ -306,12 +352,18 @@ namespace Game.UI
             }
 
             creature.Enemy.Place(position, heading);
-            if (creature.SnapUntil >= 0f && clock >= creature.SnapUntil)
+            // A strike ends with its clip, and at the latest when the run back begins.
+            if (creature.SnapUntil >= 0f && (clock >= creature.SnapUntil || clock >= creature.RetreatFrom))
             {
                 EndStrike(creature);
             }
 
-            if (played && creature != _queen)
+            if (played && creature != _queen && _lastClock < _retreatAt && clock >= _retreatAt)
+            {
+                EndStrike(creature);
+                Roar(creature, clock);
+            }
+            else if (played && creature != _queen && clock < _retreatAt)
             {
                 Snap(creature, clock);
             }
@@ -321,6 +373,11 @@ namespace Game.UI
         // Standing, the head keeps searching: a slow sway of the heading round the line to the gate.
         private Vector3 PositionAt(Creature creature, float clock, out Vector3 heading)
         {
+            if (clock >= creature.RetreatFrom - RetreatTurnSeconds)
+            {
+                return RetreatAt(creature, clock, out heading);
+            }
+
             Vector3 position;
             Vector3 travel;
             float turn;
@@ -355,6 +412,36 @@ namespace Game.UI
             }
 
             return position;
+        }
+
+        // The run back: a quick turn away from the gate (by yaw, so it never flips over), a run to the maw it came out of
+        // (the Queen to where she rose), then down into the ground. A flyer comes down to the maw as it goes.
+        private Vector3 RetreatAt(Creature creature, float clock, out Vector3 heading)
+        {
+            float run = CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.RetreatFrom, creature.RetreatTo));
+            Vector3 position = _layout.Ground(Vector3.Lerp(creature.Advance, creature.From, run));
+            Vector3 back = Flat(creature.From - creature.Advance);
+            Vector3 look = Flat(_layout.GateCentre - creature.Advance);
+            float lookYaw = Mathf.Atan2(look.x, look.z) * Mathf.Rad2Deg;
+            float backYaw = back.sqrMagnitude > 0.0001f ? Mathf.Atan2(back.x, back.z) * Mathf.Rad2Deg : lookYaw + 180f;
+            float turn = CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.RetreatFrom - RetreatTurnSeconds, creature.RetreatFrom));
+            heading = Quaternion.Euler(0f, Mathf.LerpAngle(lookYaw, backYaw, turn), 0f) * Vector3.forward;
+
+            float sink = CutsceneMath.Smooth(CutsceneMath.Span(clock, creature.RetreatTo, creature.GoneAt));
+            if (creature.Hover > 0f)
+            {
+                position.y += creature.Hover * (1f - Mathf.Max(run, sink));
+            }
+
+            position.y -= SinkDepth * sink;
+            return position;
+        }
+
+        // The last roar before they go: the creature's own power clip, or its strike when it has no power of its own.
+        private static void Roar(Creature creature, float clock)
+        {
+            ModelClipRole role = creature.View.ClipOf(ModelClipRole.Power) != null ? ModelClipRole.Power : ModelClipRole.Attack;
+            Strike(creature, role, clock);
         }
 
         private static bool IsStanding(Creature creature, float clock) => clock >= creature.WalkTo && (clock < creature.AdvanceFrom || clock >= creature.AdvanceTo);
@@ -537,6 +624,7 @@ namespace Game.UI
                 Advance = OnRoad(spot + Vector2.right * AdvanceDistance),
                 Pace = pace,
                 AdvanceFrom = advance,
+                RetreatFrom = _retreatAt + RoarSeconds + CutsceneMath.Hash(index, 47) * RetreatStagger,
                 Hover = hover,
             };
             creature.Enemy = Spawn(definition, index);

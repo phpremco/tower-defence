@@ -205,6 +205,62 @@ namespace Game.Levels
             }
         }
 
+        /// <summary>
+        /// True when no drawn piece taller than <paramref name="minHeight"/> stands (in plan) within <paramref name="radius"/>
+        /// of <paramref name="point"/>, each piece measured by its mesh bounds through its matrix. Ground cover lower than
+        /// that does not count, so a cutscene drone may set down in grass but never inside a rock.
+        /// </summary>
+        public bool IsClear(Vector3 point, float radius, float minHeight)
+        {
+            foreach (Batch batch in _batches)
+            {
+                if (batch.All == null || batch.Mesh == null || !NearInPlan(batch.Bounds, point, radius))
+                {
+                    continue;
+                }
+
+                foreach (Matrix4x4 matrix in batch.All)
+                {
+                    Bounds piece = Transform(batch.Mesh.bounds, matrix);
+                    if (piece.size.y >= minHeight && NearInPlan(piece, point, radius))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Adds the world bounds of every drawn piece at least <paramref name="minHeight"/> tall (rocks, boulders, crystals; no ground cover).</summary>
+        public void CollectTall(float minHeight, List<Bounds> into)
+        {
+            foreach (Batch batch in _batches)
+            {
+                if (batch.All == null || batch.Mesh == null)
+                {
+                    continue;
+                }
+
+                foreach (Matrix4x4 matrix in batch.All)
+                {
+                    Bounds piece = Transform(batch.Mesh.bounds, matrix);
+                    if (piece.size.y >= minHeight)
+                    {
+                        into.Add(piece);
+                    }
+                }
+            }
+        }
+
+        // Whether a circle on the ground touches a box seen from above.
+        private static bool NearInPlan(Bounds bounds, Vector3 point, float radius)
+        {
+            float dx = Mathf.Max(0f, Mathf.Abs(point.x - bounds.center.x) - bounds.extents.x);
+            float dz = Mathf.Max(0f, Mathf.Abs(point.z - bounds.center.z) - bounds.extents.z);
+            return dx * dx + dz * dz < radius * radius;
+        }
+
         /// <summary>The formations on the field's blocked cells as drawn: where, how big, and what a boss does with them.</summary>
         public IReadOnlyList<DecorFormation> Formations => _formations;
 

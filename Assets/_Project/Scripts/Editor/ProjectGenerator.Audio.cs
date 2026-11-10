@@ -59,6 +59,8 @@ namespace Game.Editor
             ("_acidSizzles", ApprovedFolder + "/Environment", "acid_sizzle"),
             ("_steamBursts", ApprovedFolder + "/Environment", "steam_burst"),
             ("_earthquakes", ApprovedFolder + "/Environment", "earthquake"),
+            // A far-off explosion: the landing capsule hitting the ground in the opening cutscene.
+            ("_distantBlasts", ApprovedFolder, "explosie_afstand"),
             ("_cartLoops", ApprovedFolder + "/Environment", "rc_cart_loop"),
             ("_fireballLoops", ApprovedFolder + "/Environment", "fireball_roll_loop"),
             ("_heroBlasters", ApprovedFolder + "/Hero", "hero_laser_gun"),

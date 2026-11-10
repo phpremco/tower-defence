@@ -216,6 +216,7 @@ namespace Game.UI
         private static TextMeshProUGUI Text(RectTransform parent, string name, int size, string text)
         {
             TextMeshProUGUI label = NewRect(name, parent).gameObject.AddComponent<TextMeshProUGUI>();
+            UiKit.UseLabelFont(label);
             label.fontSize = size;
             label.fontStyle = FontStyles.Bold;
             label.characterSpacing = 8f;

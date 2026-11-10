@@ -881,3 +881,12 @@ console and `Logs/probe_trace.txt`.
   Pipeline this round).
 - Logs of this round: `Tools/PlayTest/r34b_*.log`; the search summaries in `r34b_plans_summary.txt`, the first acceptance in
   `acceptance_r34b_pass1.txt`.
+
+### Round 35 (2026-11-10)
+
+- **Gate tips in play:** `bash Tools/PlayTest/r35_tips.sh [campaign index]` plays C1_02 from Boot with the story on, deploys the briefing, finishes the recon (`r35_tip.cs` modes `deploy`, `setup`, `upgrade`, `move`, `skip`, `state`), triggers both Voss tips and captures them (`ArtSource/Previews/QA/r35_tip_*.png`); restores the save from the scratchpad copy.
+- **Laser at x3 on armour:** `bash Tools/PlayTest/r35_laser.sh [node]`: a probe Laser Turret, a Cragback held 2.5 m from it (`r35_armour.cs`, walk off) at time scale 3, stills `r35_laser_x3_*.png`. Editor steps are long at x3: the armour of a held Cragback is gone within two steps.
+- **Cutscene field probe:** `probe:r35_cut_probe.cs` inside `n2_cut.sh` (eye pairs, drill against the colony rig, each landed builder clear of decor).
+- **Cutscene data only:** `unity command run_script --file Tools/PlayTest/Scripts/ApplyCutsceneShots.cs --entry ApplyCutsceneShots.Run --timeout_ms 600000 --timeout 660` (the generator's Cutscene step without the Blender art hand-outs, so no material reserialisation). **Sound library only:** `Tools/PlayTest/Scripts/ApplySounds.cs` (`ApplySounds.Run`).
+- **TMP font trial (nothing saved):** `bash Tools/PlayTest/r35_font.sh` (`r35_tmp_font.cs`, weight in `r35_tmp_font_arg.txt`): the dialogue box at 720p/1080p in Liberation Sans and in runtime Chakra Petch faces.
+- **Full EditMode suite headless:** `bash Tools/PlayTest/r34b_editmode_worker.sh 6 "Game\.Tests\..*"` (the regex filter runs every class; explicit tests stay skipped).

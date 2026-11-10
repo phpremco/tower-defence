@@ -1086,11 +1086,12 @@ namespace Game.UI
             return go.AddComponent<T>();
         }
 
-        // Every label uses the default TextMeshPro face (Liberation Sans with its fallback): the display font's letters
-        // blur together at label sizes. Small labels are bold capitals with wide spacing instead.
+        // Every label uses the skin's TextMeshPro face (round 35: Chakra Petch Medium, checked at 720p; Liberation Sans
+        // without a skin). Small labels are bold capitals with wide spacing.
         private static TextMeshProUGUI NewText(RectTransform parent, string name, int size, TextAlignmentOptions alignment)
         {
             var text = NewChild<TextMeshProUGUI>(parent, name);
+            UiKit.UseLabelFont(text);
 
             text.fontSize = size;
             text.alignment = alignment;
