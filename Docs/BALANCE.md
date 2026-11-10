@@ -1560,3 +1560,54 @@ gate with walk kills the gate never lets through; round 29's Quartz Flats showed
 kills a stream at full speed does not give). The spot cover needs the gate hold: a spot downstream of the defence gate covers
 what leaks, not the walk. This is the next model term; until it is in, the searched plans of cells whose spots lie past the first
 gate are suspect, and the acceptance of C1_02 Easy is not a wave problem.
+
+## Round 31: the queue in the spot cover, the repair drone's chosen price (2026-11-10)
+
+**The gate-hold spot cover (round 30's question 3).** Glass Meadows Easy lost 0/3 with every searched plan while the paper held
+1.66x: the plans stood their towers at 15-22 % of the road, past the defence gate at 12 %, and fired nothing for six waves while
+the gate held the stream. The cause was one line in `LevelGeometry.Compute`: a spot counted as a queue guard (`SpotCover.Gate`)
+when the **gate cell** lay within its reach plus `QueueCells` (three cells). A tower three cells beyond its reach from the gate was
+credited with the whole queue fight at `QueueGuardShare`, and the held creatures stand on the *approach* side of the gate, out
+of its reach. Now:
+
+- `LevelGeometry.QueuePoints()` gives where the held walkers stand: the stop point `StandDistance` (1.4 world units, the game's
+  `Enemy.BlockadeStopDistance`) back along the main road from the gate, and the road cell behind it where the queue bunches.
+  `SpotCover.Gate` is true only when one of those points is within the gun's reach. On Glass Meadows the spots at (5,7), (7,6)
+  and (6,5) lost the flag at reach 3.5 and 4.5 (`geometry_dump.txt`); (4,13), (2,12), (1,13) keep it; (1,15) keeps it at 4.5.
+- `LevelGeometry.Rank` scores a spot by its approach cells plus `BehindRankWeight` (0.25) per cell behind the gate, plus the
+  queue bonus: the road behind the gate is walked only once the gate has fallen, so a gun there is insurance, not the defence.
+  The strategy search and the executor draw their spots from this ranking (same ranking on paper and in the replay), and the
+  solver's typical cover (the best six spots) follows it, so the solve sees the queue the way the player's towers do.
+- The route model (`RouteKill`) and the siege (`Leak.Resolve`) needed no change: a spot with no approach cover and no queue
+  already killed nothing while the gate held; it was the flag that credited it with the queue fight.
+- `RouteKillTests` pins both (`QueueGuard_ReachesWhereTheHeldWalkersStand_NotTheGateCell`, `Rank_PrefersTheApproachAndTheQueue_
+  OverTheRoadBehindTheGate`).
+
+**The fit on the new shape (existing 786 runs):** Cannon 0.773, Laser 0.799, PulseRifle 0.944, Rocket 1.084; grid **route fire
+2.0, queue guard 0.50, siege 1.10** (round 30: 8.0 / 0.30 / 1.57); self check 85 % (mono 92 %), Spearman 0.77; **hold-out 79 %
+(mono 90 %), Spearman 0.75** (round 30: 81 % / 0.68). The ranking is a good deal better and the agreement a little worse;
+applied by override. The efficiencies rose because the guns that never fired no longer dilute them (a dead gun's queue seconds
+were capacity at one in the old lens), so the solver's view of a competent player's capacity rose with them: every wave's
+health multiplier moved up by about 40 % at the same scale (Crystal Plains Easy wave 1: 0.80 -> 1.12). In play that made the
+late waves of several cells too hard at the round-30 scales (Crystal Plains Hard 3/3 -> 0/3, Shard Ridge Medium 3/3 -> 1/3),
+while the cells whose plans now stand on the approach improved (Glass Meadows Easy 0/3 -> 3/3, Shard Ridge Hard 1/3 -> 3/3,
+Quartz Flats Hard 0/3 -> 3/3). The scales then moved by play (the builder's two moves and a manual pass; STATUS "Round 31").
+
+**The repair drone at 100 (goal 2).** Round 30's `droneprice` stage moved the asset to 120 because the re-measured busy share
+(0.416) raised the rule's five-wave figure. Remco chose about 100, so the chosen price is data now: `BalanceRules.RepairDronePrice`
+(100; 0 = follow the rule). `BalanceSheet.ChosenRepairDronePrice` picks it, the stage writes it and reports the rule's figure as
+advice (`drone_price.txt`: "the rule's price = 5 waves of that, rounded: 120 ... the asset carries the designer's price ... 100"),
+`DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule` asserts the asset against the chosen number, and the generator's
+`RepairDronePriceFromData` follows the same choice.
+
+**Nests behind the defence gate (round 31, second term).** Crystal Plains' rift nest at (17,1) joins the road at index 17, three
+cells behind the defence gate; its Cragback walked to the rear gates past every gun at the first gate while the paper placed all
+nest groups at the mean nest join (14, the gate itself) and resolved them in the defence gate's queue. `RouteKill.Place` now walks
+a nest group from every nest in equal shares (`Walker.Share`; the game draws a nest per creature), and a walker that joins behind
+the gate (`Walker.PassesGate`, also a lane that never meets the gate) has its survivors reported as `RouteResult.PassedStream/
+PassedSingle`; `Leak.Resolve` keeps them out of the defence gate's fight and adds them to the rest-gate and doorstep fights (with
+the attackers recounted there). The routes are walked even with no gun standing. `StrategyExecutor.RankedSpots` adds the two rear
+spots (the most road behind the gate; the best doorstep spot) to the search's candidates. The second refit (726 runs after a full
+re-measure): Cannon 0.853, Laser 0.759, PulseRifle 0.878, Rocket 1.041; route fire 4.0, queue guard 0.30, siege 1.19; hold-out
+78 % (mono 90 %), Spearman 0.70; applied by override. In play (STATUS "Round 31"): acceptance 11/24, C1_02 Easy 3/3, C1_05 Hard
+3/3, C1_04 Psycho 3/3; C1_01 Medium still loses the seed whose Cragback takes the rear nest.

@@ -7,37 +7,45 @@
         {
             "Tower": "PulseRifle",
             "X": [
-                14,
                 12,
                 13,
-                17,
-                15,
-                16
+                11,
+                21,
+                12,
+                14,
+                13,
+                34
             ],
             "Y": [
                 11,
                 11,
                 11,
                 11,
+                10,
                 11,
+                10,
                 11
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
-                16,
                 12,
                 12,
                 13,
                 13,
-                14
+                11,
+                33,
+                11,
+                34
             ],
             "Y": [
                 11,
                 10,
+                10,
                 11,
                 10,
+                11,
                 11,
                 11
             ]
@@ -45,18 +53,22 @@
         {
             "Tower": "Laser",
             "X": [
+                11,
+                12,
+                13,
+                10,
                 13,
                 11,
-                9,
-                12,
-                15,
-                14
+                21,
+                33
             ],
             "Y": [
                 10,
                 10,
                 10,
                 10,
+                12,
+                12,
                 10,
                 10
             ]
@@ -64,44 +76,49 @@
         {
             "Tower": "Rocket",
             "X": [
-                32,
                 33,
+                32,
+                35,
                 34,
                 34,
-                34,
-                35
+                34
             ],
             "Y": [
                 10,
                 10,
                 7,
                 10,
-                11,
-                7
+                7,
+                11
             ]
         }
     ],
     "Weights": [
         {
             "Threat": "swarm",
+            "Tower": "Cannon",
+            "Weight": 1.9479013681411743
+        },
+        {
+            "Threat": "pack",
             "Tower": "PulseRifle",
-            "Weight": 1.5776463747024536
+            "Weight": 1.2892671823501587
         },
         {
             "Threat": "plated",
-            "Tower": "PulseRifle",
-            "Weight": 0.5572298765182495
+            "Tower": "Cannon",
+            "Weight": 1.6128385066986084
         }
     ],
-    "UpgradeBias": 1.3300000429153442,
+    "UpgradeBias": 1.059999942779541,
     "TowersBeforeUpgrades": 2,
-    "MineCoverBelow": 1.0,
+    "MineCoverBelow": 0.0,
     "MineOnBoss": true,
     "FieldCoverBelow": 1.0,
-    "HarvesterCover": 0.0,
+    "HarvesterCover": 1.0,
     "HarvesterShare": 0.30000001192092896,
     "RepairDroneWear": 0.25,
-    "AttackDroneAfterTowers": 12,
-    "GateUpgradeBias": 0.0,
+    "AttackDroneAfterTowers": 6,
+    "GateUpgradeBias": 0.800000011920929,
     "AllowSell": false
 }

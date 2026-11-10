@@ -1,0 +1,48 @@
+== fit: calibration from the records
+      "FullName": "Game.Tests.CalibrationFitTests.Fit_FromRecordedRuns_WritesCalibration",
+      "Status": "Skipped",
+      "Message": "Calibration below the bar: hold-out agreement 78 % (mono 90 %, need 90 %), Spearman 0.70 (need 0.8); self 79 %. See Tools/PlayTest/calibration.txt",
+Calibration fit 2026-11-10 03:33: 726 runs (294 replayed plans), seeds 1,2,3, step 0.2, inputs 0e507ead.
+Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health
+there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, "The balance pipeline"). The siege factor is the gate and base
+health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the player who played each run (the
+campaign's expected player, or a plain save for the fresh-save sanity runs; round 22d). ApplyCalibration writes the factor, siege and utilisation lines into the asset.
+
+tower          efficiency   dealt   capacity  waves
+Cannon              0.853 7178419    8414610   6859
+Laser               0.759 1534092    2022499   1523
+PulseRifle          0.878 6426763    7315634   6802
+Rocket              1.041 1093856    1051019   3116
+
+Route fire 4.000: the route-sampled kill model's one factor (round 27), the realised tower damage 16288450 over the route account 17328450 at the fitted efficiencies on 8762 waves.
+
+Queue guard share 0.30: the share of their damage per second the queue and doorstep guards land on a siege, the one of 0.3..1.0 with the best verdict agreement (round 22d).
+
+Siege factor 1.187: gate and base health lost 1364323 over the siege model's paper damage 1149071 at factor one, on 4817 waves with a siege.
+Repair drone busy share 0.418 over 34713 drone-seconds on the field.
+
+Self check (fitted on all): verdict agreement 571/726 (79 %), mono rows 183/210 (87 %), ranking Spearman 0.78 over cells with 4+ runs.
+Hold-out (odd levels judge even and back): agreement 566/726 (78 %), mono 189/210 (90 %), Spearman 0.70.
+Rankings per cell (hold-out): Level_C1_06 0 0.93 (33); Level_C1_06 1 0.78 (27); Level_C1_04 0 0.75 (33); Level_C1_02 0 1.00 (33); Level_C1_04 2 0.87 (27); Level_C1_02 2 0.45 (27); Level_C1_02 3 0.44 (33); Level_C1_04 1 0.94 (27); Level_C1_04 3 0.66 (27); Level_C1_06 2 0.58 (27); Level_C1_02 1 0.95 (33); Level_C1_06 3 0.94 (27); Level_C1_03 0 0.92 (33); Level_C1_05 0 1.00 (33); Level_C1_05 2 0.92 (27); Level_C1_05 1 0.81 (33); Level_C1_01 0 0.51 (30); Level_C1_01 0 fresh 0.50 (6); Level_C1_01 1 0.59 (30); Level_C1_01 3 -0.08 (27); Level_C1_03 2 0.65 (27); Level_C1_01 2 0.52 (33); Level_C1_03 1 0.67 (33); Level_C1_05 3 0.91 (33); Level_C1_03 3 0.37 (27)
+Disagreements (self check):
+  Level_C1_03 0 mono PulseRifle seed 2: paper falls (base 0 at wave 12, margin 0.70 leaking from wave 15), game won 3* at wave 16/16 base 700
+  Level_C1_05 2 creative seed 2: paper survives (base 797, margin 0.87 leaking from wave 11), game lost at wave 17/17 base 0
+  Level_C1_06 1 creative seed 3: paper falls (base 0 at wave 9, margin 0.57 leaking from wave 9), game won 3* at wave 18/18 base 700
+  Level_C1_04 0 affordable seed 2: paper falls (base 0 at wave 13, margin 0.52 leaking from wave 13), game won 3* at wave 16/16 base 700
+  Level_C1_04 2 creative seed 1: paper falls (base 0 at wave 12, margin 0.46 leaking from wave 8), game won 3* at wave 16/16 base 800
+  Level_C1_05 1 creative seed 2: paper survives (base 700, margin 0.65 leaking from wave 14), game lost at wave 17/17 base 0
+  Level_C1_04 0 mono PulseRifle seed 3: paper falls (base 0 at wave 7, margin 0.75 leaking from wave 13), game won 3* at wave 16/16 base 700
+  Level_C1_04 2 creative seed 2: paper falls (base 0 at wave 12, margin 0.48 leaking from wave 9), game won 3* at wave 16/16 base 800
+  Level_C1_05 1 creative seed 3: paper survives (base 700, margin 0.75 leaking from wave 14), game lost at wave 17/17 base 0
+  Level_C1_06 1 creative seed 1: paper falls (base 0 at wave 9, margin 0.54 leaking from wave 9), game won 3* at wave 18/18 base 700
+  Level_C1_04 2 creative seed 3: paper falls (base 0 at wave 15, margin 0.49 leaking from wave 9), game won 3* at wave 16/16 base 800
+  Level_C1_01 0 mono PulseRifle seed 1: paper falls (base 0 at wave 7, margin 1.19), game won 3* at wave 12/12 base 600
+  Level_C1_01 0 mono Cannon seed 1: paper falls (base 0 at wave 7, margin 1.13), game won 3* at wave 12/12 base 600
+  Level_C1_01 0 naive seed 1: paper falls (base 0 at wave 7, margin 1.45), game won 3* at wave 12/12 base 600
+  Level_C1_01 0 affordable seed 1: paper falls (base 0 at wave 7, margin 1.40), game won 3* at wave 12/12 base 600
+  Level_C1_01 0 creative seed 1: paper falls (base 0 at wave 7, margin 1.40), game won 3* at wave 12/12 base 600
+  Level_C1_01 0 fresh affordable seed 1: paper falls (base 0 at wave 7, margin 1.40), game won 3* at wave 12/12 base 600
+== apply: calibration asset, bar override
+run_script	true	{"diagnostics":[],"compileMs":1180,"executeMs":119,"assemblyName":"PipelineRunScript_ApplyCalibration_9c9ba145df2243bcacaa8f17367449e5","success":true,"result":"WARNING, applied by override: the fit's hold-out is agreement 78 % (mono 90 %), Spearman 0.70 against the bar 90 % / 0.80: BELOW the bar. Calibration written to Assets/_Project/Data/Balance/BalanceCalibration.asset: Cannon 0.853; Laser 0.759; PulseRifle 0.878; Rocket 1.041; repair drone busy 0.418; queue guard 0.30; route fire 4.000; siege 1.187; "}	{"file":"Tools/PlayTest/Scripts/ApplyCalibration.cs","entry":"ApplyCalibration.Force","timeout_ms":"120000"}
+== solve: waves against the calibration
+run_script	true	{"diagnostics":[],"compileMs":34,"executeMs":4657,"assemblyName":"PipelineRunScript_ApplyWaves_f49b922e005e49a8b589461aadae818c","success":true,"result":"Waves solved for every campaign level; calibration 2026-11-10 03:33, seeds 1,2,3, step 0.2, inputs 0e507ead (current)"}	{"file":"Tools/PlayTest/Scripts/ApplyWaves.cs","entry":"ApplyWaves.Run","timeout_ms":"900000"}

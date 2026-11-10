@@ -4589,3 +4589,109 @@ The suite's `PlanSearchTests` and `CalibrationFitTests` rewrote the run output; 
 suite (`Plans/*`, `plans_summary.txt`, `calibration.txt`, `acceptance.txt`, `plan_records.txt` 354 runs, finale files), so the
 files agree with the replays above. Final state: editor stopped, console 0 errors, save MD5 ae9223b8, `probe_arg.txt` absent, no
 `InitTestScene`.
+
+## Round 31: the queue in the spot cover, nests behind the gate, the repair drone at 100 (2026-11-10)
+
+Not committed (the curator commits). Docs/BALANCE.md "Round 31"; Docs/COMMANDS.md "Round 31". Save `progress.json` MD5 ae9223b8
+before and after every worker run (ten worker runs, checked by the scripts and by hand); the dev backup untouched; no
+`Assets/InitTestScene*`; `probe_arg.txt` removed. The editor hung twice after long EditMode runs (the Pipeline stops answering
+while its heartbeat goes on, as in round 29) and was restarted from the command line both times (COMMANDS "Round 31").
+
+1. **Gate-hold spot cover (goal 1).** Round 30's C1_02 Easy residual had one cause: `SpotCover.Gate` counted a spot as a queue
+   guard when the *gate cell* lay within its reach plus three cells, while the held creatures stand on the approach side of the
+   gate (`Enemy.BlockadeStopDistance` 1.4). Now `LevelGeometry.QueuePoints()` (the stop point 1.4 cells before the gate and
+   the cell behind it) must be in reach (`StandDistance`), and `Rank` scores the road behind the gate at `BehindRankWeight`
+   0.25 per cell. On Glass Meadows the plans' spots (5,7), (7,6), (6,5) lost the flag; the search now stands at (1,13)-(4,15).
+   **C1_02 Easy: 5/5 plans win 3/3 with three stars; the cell passes acceptance.**
+2. **Nests behind the defence gate (found on the way, C1_01).** Every C1_01 Easy/Medium plan lost one seed at the boss wave
+   while the mono rows won 3/3. The trace: Crystal Plains' rift nest at (17,1) joins the road at index 17, behind the defence
+   gate (14); its Cragback (the game draws a nest per creature) walked the whole road past the plans' guns at the gate, broke
+   the two rear gates over four waves, and the base fell with the boss wave. The paper had put every nest group at the *mean*
+   nest join (14 = the gate) and sent all of it to the defence gate's queue, where the plan's guns and the hero killed it.
+   Now `RouteKill.Place` walks a nest group from every nest in equal shares; a walker that joins behind the gate passes it
+   (`RouteResult.PassedStream/PassedSingle` -> `SiegeGuards.Passed*` -> `Leak.Resolve` sends it to the other gates and the
+   doorstep; the routes are walked even with no gun standing). `StrategyExecutor.RankedSpots` offers two rear spots (the most
+   road behind the gate; the best doorstep spot) beside the ranked few, so the search can find a rear gun; the paper's passed
+   term decides whether it pays. C1_01 Easy's paper went from "every strategy falls w7" to holding plans; in play the best
+   plan wins 3/3 (three others 2/3: the seed whose Cragback takes the rear nest still breaks through on the boss wave).
+3. **Repair drone 100 (goal 2).** `BalanceRules.RepairDronePrice` = 100 (0 = the rule); `BalanceSheet.ChosenRepairDronePrice`;
+   the `droneprice` stage writes the chosen price and reports the rule's 120 as advice; `DroneLensTests` 2/2 green; the
+   generator follows the same choice. Asset 120 -> 100.
+4. **Calibration (two refits for the two shape changes):** fit 1 (786 existing runs) 79 % (mono 90 %) / Spearman 0.75, grid
+   route fire 2.0 / queue guard 0.50 / siege 1.10; fit 2 (726 runs after a full re-measure at the new waves) **78 % (mono
+   90 %), Spearman 0.70; Cannon 0.853, Laser 0.759, PulseRifle 0.878, Rocket 1.041; route fire 4.0, queue guard 0.30, siege
+   1.19**; both applied by override. The efficiencies rose (dead guns no longer dilute them), so every wave's health multiplier
+   rose about 40 % at the same scale; the scales then moved by play (builder: C1_01 Easy 1.15 -> 1, Medium 1 -> 0.87, C1_03
+   Medium 0.87 -> 0.757, C1_04 Medium 1 -> 1.15; manual passes by the role principle: C1_01 Hard 1.32 -> 1, Psycho 1.15 -> 0.87
+   + swarm 1.5, C1_01 Easy 1 -> 0.87 and Medium 0.87 -> 0.757 (the boss-wave seed), C1_02 Medium/Hard raid 5, C1_02 Psycho
+   swarm 1.5, C1_03 Hard swarm 1.5, C1_03 Psycho 1.15 -> 1 and swarm 1.5 -> 1.25, C1_04 Psycho 0.757 -> 0.66 + swarm 1.5,
+   C1_05 Psycho 0.66 -> 0.57, C1_06 Hard 0.757 (via 0.66), C1_06 Psycho 0.87 -> 0.66). `wave_tuning.txt` holds it all.
+5. **Tests (goal 4).** `BalanceModelTests.HumanLens`: the synthetic "generous Easy" case (1.8x) sat under the round-29 band
+   (`MaxEasySurplus` 1.9), not under the grid; it now builds its case from the rule (`1 / (MaxEasySurplus x 1.05)`); 17/17.
+   `BalanceLedgerTests` band: still red, explained below. `RouteKillTests` 9/9 (three new), `LeakModelTests` 7/7,
+   `DroneLensTests` 2/2, `BossPowerLedgerTests` 2/2.
+
+**In play after round 31 (best replayed plan per cell: wins over the three seeds, mean stars; acceptance.txt 04:59).**
+
+| Level | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- |
+| C1_01 | 3/3, 3.0 (three other plans 2/3) | 2/3, 3.0 | 2/3, 2.5 | 2/3, 2.5 |
+| C1_02 | 3/3, 3.0 (was 0/3) | 3/3, 3.0 | 2/3, 3.0 | 0/3 |
+| C1_03 | 3/3, 3.0 | 3/3, 3.0 | 2/3, 1.0 | 0/3 |
+| C1_04 | 3/3, 3.0 | 3/3, 2.7 | 3/3, 1.3 | 3/3, 1.7 (was 1/3) |
+| C1_05 | 3/3, 3.0 | 3/3, 3.0 | 3/3, 2.3 (was 0/3) | 2/3, 2.0 (was 0/3) |
+| C1_06 | 3/3, 3.0 | 3/3, 3.0 | 3/3, 3.0 | 1/3, 2.0 |
+
+**Acceptance 11/24** (round 30: 9/24): C1_01 Easy, C1_02 Easy, C1_03 Medium, C1_04 Easy/Medium/Hard, C1_05 Medium/Hard/Psycho,
+C1_06 Medium/Hard. Still failing: C1_01 Medium (every plan loses one seed at the boss wave: the rear Cragback), C1_01 Hard
+(forgiving: the mono rows do as well as on Medium), the Psycho cells of C1_01/02/03/06 and C1_02/C1_03 Hard on "the mono Pulse
+row reaches the last third" (Pulse rows reach wave 9-13 and then die; the rule wants them dead before the last third), C1_02
+Medium (mono Cannon 3/3 even with swarm 1.5 and raid 5), C1_04 Psycho ("plans alike" only; 3/3 now), C1_06 Psycho 1/3, and the
+Easy cells of C1_03/05/06 ("two of three obvious kinds must win": only the creative bot wins them).
+
+**Finale (re-checked once on the workers at the new waves, probe 2026-11-10 04:50; holds = largest health multiple the finale
+player still beat).**
+
+| Boss | Easy (0.80) | Medium (1.00) | Hard (1.25) | Psycho (1.25) |
+| --- | --- | --- | --- | --- |
+| Gravemaw (55050 -> 39540) | x1.40 | **x0.85 (lost as-is at 55050)** | x1.29 | x1.23 |
+| Cinder Matriarch (10350) | x1.73 | x1.18 | x1.96 | x1.73 |
+| Frost Warden (7500) | x1.52 | x1.09 | x1.52 | x1.40 |
+| Rotbloom (3550) | x2.13 | x1.18 | x1.52 | x1.88 |
+| The Shattered (14000) | x1.80 | x1.18 | x1.96 | x1.52 |
+| The Sealed One (27200) | x1.96 | x1.18 | x1.73 | x1.23 |
+
+The campaign re-solve moved the finale player's waves, and Gravemaw on Medium fell under x1: its health was set to the probe's
+Medium derivation by hand (55050 -> 39540, `ProjectGenerator.Bosses` + `ApplyBossData`), a one-probe number to verify. The
+Hard/Psycho share stayed at 1.25 (Remco's open decision); the probe now derives a Psycho ceiling of 1.53, so
+`ContinentFinaleTests` is **2/5 red, explained**: the share line (1.25 vs 1.53: awaiting Remco) and the finale ledger's "Gravemaw
+Medium asks 19.7x the cap" (the paper's hero-cap lens at the new efficiencies; the probe beats it at x1.0 after the health move).
+
+**EditMode suite (04:26-04:37, 712 tests): 659 passed, 52 skipped, 1 failed:** `BalanceLedgerTests.EveryWave_StaysInsideIts
+DifficultyBand`, **explained, not fixed**: C1_02 Easy 2.10x and C1_03 Easy 2.06x on paper (band 1.90) are the Easy scales play
+asked for (0.658 / 0.66; the plans and rows win perfectly, the pay-off rule is met); C1_04 Hard boss wave 1.52 with the hero (cap
+1.30; in play 3/3 with 1.3 stars); C1_04 Psycho asks less than Hard on paper (0.86 vs 1.10) while in play Psycho at 0.66 + swarm is
+the harder cell (0/3 at 0.757, 3/3 with 1.7 stars at 0.66): the paper underrates swarm waves against the Psycho player; C1_06
+Psycho 1.05x against the curve's 0.68x on paper while the plans win 1/3 in play (same lens). The run output was copied aside
+before the suite and restored after it (the suite's PlanSearchTests/CalibrationFitTests rewrite it). The suite ran before the
+last scale pass and the Gravemaw move; `ContinentFinaleTests` was green in the suite and is 2/5 after the probe (above).
+
+**Design questions for Remco (round 31).**
+1. Crystal Plains' rift nest at (17,1) joins the road *behind* the first gate: on the seeds where its Cragback takes that nest it
+   walks to the rear gates unopposed unless the player keeps a gun at the rear. A nice lesson for level 1 (cover the rear) or
+   an unfair ambush for a tutorial level? Keep it, or move the nest before the gate (a layout spec change)?
+2. The paper (human lens) says the Psycho cells of C1_04 and C1_06 are comfortable while the bots lose them; the lens plays the
+   expected Psycho player (research 234-372) and the bots the first-attempt player. Which player should the Psycho bands judge?
+3. The finale probe at the new campaign waves derives a Psycho ceiling of 1.53 (was 1.25) and Gravemaw's Medium health 39540
+   (was 55050). The health moved by hand; the share waits for your answer to round 30's question 1.
+4. The mono Pulse row reaches the last third on Hard/Psycho of C1_02/C1_03 (and wins C1_01 Hard as on Medium): the swarm and
+   plated levers do not stop a Pulse row; only air (Flak) or armour pools would. Add an armour group (Cragback) to those scripts?
+
+**Housekeeping.** Run output consistent: `Plans/*` and `plans_summary.txt` (the last 2-cell search; the full searches are in
+`r31_search3/4.log`), `plan_records.txt` (300 runs), `calibration_records.txt` (432 runs; the cells re-solved after 04:49 were
+re-measured), `acceptance.txt`, `calibration.txt` (fit 2), `finale_probe.txt` (the re-check), `impact_baseline/` (04:06, before
+the last two scale passes: take a new `snapshot` before the next number change). Logs: `Tools/PlayTest/r31_*.log`.
+
+**Commands to continue (editor_status first).** Remco's answers above; then `wave_tuning.txt` levers for the open cells and
+`replay_cells.sh "cells=..."`; a `snapshot` before the next number change; if the share decision changes, `finale_workers.sh`,
+`ContinentFinaleTests`, `balance_pipeline.sh finale`.

@@ -1,0 +1,44 @@
+== fit: calibration from the records
+      "FullName": "Game.Tests.CalibrationFitTests.Fit_FromRecordedRuns_WritesCalibration",
+      "Status": "Skipped",
+      "Message": "Calibration below the bar: hold-out agreement 79 % (mono 90 %, need 90 %), Spearman 0.75 (need 0.8); self 85 %. See Tools/PlayTest/calibration.txt",
+Calibration fit 2026-11-10 02:04: 786 runs (354 replayed plans), seeds 1,2,3, step 0.2, inputs 0e507ead.
+Per tower type: efficiency = realised damage / paper capacity at one (from the towers' own spots, waves saturated at the health
+there was to take), absolute in the human lens with the hero (Docs/BALANCE.md, "The balance pipeline"). The siege factor is the gate and base
+health the runs really lost over the siege model's paper damage (round 22c). The cells are judged against the player who played each run (the
+campaign's expected player, or a plain save for the fresh-save sanity runs; round 22d). ApplyCalibration writes the factor, siege and utilisation lines into the asset.
+
+tower          efficiency   dealt   capacity  waves
+Cannon              0.773 5953791    7699355   7555
+Laser               0.799 1361865    1705450   1461
+PulseRifle          0.944 7500357    7947579   7490
+Rocket              1.084 1400269    1291865   3736
+
+Route fire 2.000: the route-sampled kill model's one factor (round 27), the realised tower damage 16274440 over the route account 17439290 at the fitted efficiencies on 9433 waves.
+
+Queue guard share 0.50: the share of their damage per second the queue and doorstep guards land on a siege, the one of 0.3..1.0 with the best verdict agreement (round 22d).
+
+Siege factor 1.103: gate and base health lost 1718086 over the siege model's paper damage 1558310 at factor one, on 6050 waves with a siege.
+Repair drone busy share 0.415 over 35825 drone-seconds on the field.
+
+Self check (fitted on all): verdict agreement 666/786 (85 %), mono rows 194/210 (92 %), ranking Spearman 0.77 over cells with 4+ runs.
+Hold-out (odd levels judge even and back): agreement 621/786 (79 %), mono 189/210 (90 %), Spearman 0.75.
+Rankings per cell (hold-out): Level_C1_02 2 0.57 (33); Level_C1_06 1 0.91 (33); Level_C1_04 0 0.89 (33); Level_C1_06 2 0.36 (33); Level_C1_02 1 0.61 (33); Level_C1_04 1 0.77 (33); Level_C1_02 0 1.00 (33); Level_C1_06 0 0.86 (33); Level_C1_04 2 0.72 (33); Level_C1_02 3 0.72 (33); Level_C1_04 3 0.62 (33); Level_C1_06 3 0.87 (33); Level_C1_01 0 1.00 (30); Level_C1_01 0 fresh 0.94 (6); Level_C1_01 1 1.00 (30); Level_C1_03 1 1.00 (33); Level_C1_03 0 0.85 (33); Level_C1_01 2 0.85 (33); Level_C1_03 2 0.66 (33); Level_C1_01 3 -0.53 (33); Level_C1_05 0 0.97 (33); Level_C1_05 2 0.89 (33); Level_C1_03 3 0.41 (27); Level_C1_05 1 0.98 (33); Level_C1_05 3 0.91 (33)
+Disagreements (self check):
+  Level_C1_01 1 naive seed 3: paper survives (base 600, margin 1.45), game lost at wave 12/12 base 0
+  Level_C1_02 2 naive seed 3: paper survives (base 700, margin 0.81 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_01 0 naive seed 3: paper survives (base 600, margin 1.50), game lost at wave 12/12 base 0
+  Level_C1_01 0 fresh naive seed 3: paper survives (base 600, margin 1.50), game lost at wave 12/12 base 0
+  Level_C1_04 0 affordable seed 2: paper falls (base 0 at wave 10, margin 0.64 leaking from wave 13), game won 3* at wave 16/16 base 700
+  Level_C1_06 2 creative seed 2: paper survives (base 798, margin 0.65 leaking from wave 9), game lost at wave 11/18 base 0
+  Level_C1_04 0 mono PulseRifle seed 3: paper falls (base 0 at wave 7, margin 0.92 leaking from wave 13), game won 3* at wave 16/16 base 700
+  Level_C1_04 0 affordable seed 3: paper falls (base 0 at wave 13, margin 0.64 leaking from wave 13), game won 3* at wave 16/16 base 700
+  Level_C1_02 2 naive seed 2: paper survives (base 700, margin 0.67 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_02 1 affordable seed 2: paper survives (base 700, margin 0.72 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_02 1 mono PulseRifle seed 3: paper survives (base 700, margin 0.73 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_02 1 mono Laser seed 3: paper survives (base 700, margin 0.63 leaking from wave 6), game lost at wave 12/12 base 0
+  Level_C1_02 1 naive seed 3: paper survives (base 700, margin 0.82 leaking from wave 12), game lost at wave 12/12 base 0
+  Level_C1_02 1 affordable seed 3: paper survives (base 700, margin 0.72 leaking from wave 7), game lost at wave 12/12 base 0
+  Level_C1_06 0 mono PulseRifle seed 1: paper falls (base 0 at wave 7, margin 0.69 leaking from wave 14), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 affordable seed 1: paper falls (base 0 at wave 7, margin 0.75 leaking from wave 14), game won 3* at wave 18/18 base 700
+  Level_C1_06 0 mono PulseRifle seed 2: paper falls (base 0 at wave 7, margin 0.69 leaking from wave 14), game won 3* at wave 18/18 base 700

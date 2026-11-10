@@ -827,3 +827,36 @@ console and `Logs/probe_trace.txt`.
 - The fit after a difficulty's money changed is wrong until the Psycho cells are re-measured: the records were played at the
   old money and the model judges them at the new (round 30's first fit fell to 74 % / 0.73 for that reason; not applied).
 - Logs of this round: `Tools/PlayTest/r30_*.log`.
+
+### Round 31 (2026-11-10)
+
+- `SpotCover.Gate` (a gun guards the defence gate's queue) is true only when the gun reaches where the held walkers stand:
+  `LevelGeometry.QueuePoints()` (the stop point `StandDistance` 1.4 cells before the gate along the main road, and the road cell
+  behind it). `LevelGeometry.Rank` scores approach cells in full and cells behind the gate at `BehindRankWeight` 0.25. Check a
+  level's spots with `r26_geometry.cs` (`geometry_arg.txt`, one line `C1_02 5,7 7,6 ...`) -> `geometry_dump.txt`.
+- Nest groups walk from every nest of the level in equal shares (the game draws a nest per creature); a walker that joins the
+  road behind the defence gate passes its queue: `RouteResult.PassedStream/PassedSingle` -> `SiegeGuards.PassedStream/
+  PassedSingle`, which `Leak.Resolve` sends to the other gates and the doorstep. The routes are walked even with no gun standing
+  (`Leak.WalkRoutes` on every level with routes). Both are shape changes: `fit`, `apply-force`, `solve`, `search`, `replay`.
+- `BalanceRules.RepairDronePrice` (100) is the designer's price; the `droneprice` stage writes it and reports the rule's figure
+  as advice (`drone_price.txt`). Set it to 0 to let the investment rule price the drone again.
+- A per-cell view of the replays and the yardstick from the record files, without the editor:
+  `awk -F'|' '$1=="run"{...}' Tools/PlayTest/plan_records.txt` (fields: run|level|difficulty|strategy|seed|step|won/lost|stars|
+  waveReached|waveCount|baseLeft|coins|player); the `wave|n|dealt|...|gateDamage|baseDamage` lines follow each run.
+- A worker trace of one unit (`workers.sh run replay "cells=0:0:3"`) merges that unit's runs over the cell: copy
+  `plan_records.txt` aside first and restore it after (the trace in `C:\Users\remco\TowerDefenseWorkers\w1\Logs\probe_trace.txt`
+  lists per wave start which creatures are alive and where: `where Rift:1@22` = one creature out of a rift nest at 22 % of the road).
+- The `run_tests --filter` takes one class name; `A|B` matches nothing. Run the classes one after another.
+- Logs of this round: `Tools/PlayTest/r31_*.log`.
+- **The Pipeline stops answering after a long EditMode run** (round 29 and twice this round: the HTTP server answers 401 and the
+  heartbeat in `Library/Pipeline/.unity-pipeline-port` goes on, but every command times out after the test runner's
+  `IPostBuildCleanup`). Restart the editor from the command line: find the editor's PID (`Get-Process Unity`, the one with the
+  project's `-projectPath` and no `-batchmode`), `Stop-Process -Id <pid> -Force`, delete `Temp\UnityLockfile`, then
+  `Start-Process "C:\Program Files\Unity\Hub\Editor\6000.6.5f1\Editor\Unity.exe" -ArgumentList '-projectPath "C:\Users\remco\Tower defense"'`;
+  `editor_status` answers again after about a minute. Assets written by run_scripts are saved on disk already.
+- Do not call `unity command` inside a poll loop while a long EditMode test runs: the call blocks until the Pipeline answers.
+  Poll files (`plans_summary.txt`, the worker logs, `Logs/Editor.log`) instead.
+- Continent boss numbers by hand: change the `BossSpec` in `ProjectGenerator.Bosses.cs`, recompile, then
+  `unity command run_script --file Tools/PlayTest/Scripts/ApplyBossData.cs --entry ApplyBossData.Run --timeout_ms 300000 --timeout 360`
+  (Gravemaw 55050 -> 39540 this round). `unity command test_status --result-only` lists every test of the last run with its
+  status and message (the way to find the suite's failures).

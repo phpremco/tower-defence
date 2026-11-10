@@ -39,6 +39,10 @@ namespace Game.Balance
         /// <summary>What the guns kill on the road behind the defence gate (round 26): met only by what got past it.</summary>
         public float BehindStream;
         public float BehindSingle;
+
+        /// <summary>Health that joined the road behind the defence gate and outlived the walk (round 31, <see cref="RouteResult.PassedStream"/>): it skips the queue.</summary>
+        public float PassedStream;
+        public float PassedSingle;
         public float QueueStream;
         public float QueueSingle;
         public float DoorStream;
@@ -235,7 +239,8 @@ namespace Game.Balance
         /// </summary>
         public static void WalkRoutes(ref SiegeGuards guards, LevelInput level, WaveLoad load, BalanceRules rules)
         {
-            if (guards.Guns == null || guards.Guns.Count == 0)
+            // Round 31: a level with routes is walked even with no gun standing, so a nest behind the defence gate passes it on paper from wave one.
+            if ((guards.Guns == null || guards.Guns.Count == 0) && !RouteKill.Applies(level, load))
             {
                 return;
             }
@@ -247,6 +252,8 @@ namespace Game.Balance
             guards.WalkAir += walked.WalkAir;
             guards.BehindStream += walked.BehindStream;
             guards.BehindSingle += walked.BehindSingle;
+            guards.PassedStream += walked.PassedStream;
+            guards.PassedSingle += walked.PassedSingle;
             foreach (KeyValuePair<string, float> pair in walked.Dealt)
             {
                 SiegeGuards.Add(ref guards.Dealt, pair.Key, pair.Value);
@@ -303,9 +310,10 @@ namespace Game.Balance
             var line = new SiegeLine();
             bool fell = false;
 
-            float stream = Math.Max(0f, load.StreamHealth - guards.WalkStream);
-            float bosses = Math.Max(0f, load.BossHealth - guards.WalkSingle);
-            line.GroundLeak = stream + bosses;
+            // Round 31: what joined behind the defence gate never stands in its queue; it meets the other gates and the doorstep below.
+            float stream = Math.Max(0f, load.StreamHealth - guards.WalkStream - guards.PassedStream);
+            float bosses = Math.Max(0f, load.BossHealth - guards.WalkSingle - guards.PassedSingle);
+            line.GroundLeak = stream + bosses + guards.PassedStream + guards.PassedSingle;
             float attackers = Attackers(stream, load.MeanHealth, rules);
             float bossAttackers = bosses > 0f ? Math.Min(Math.Max(1, load.BossCount), rules.AttackersPerGate) : 0f;
 
@@ -325,9 +333,11 @@ namespace Game.Balance
             }
 
             // The road behind the defence gate: the guns that reach it meet what got through (nothing while the gate held).
-            stream = Math.Max(0f, stream - guards.BehindStream);
-            bosses = Math.Max(0f, bosses - guards.BehindSingle);
+            stream = Math.Max(0f, stream - guards.BehindStream) + guards.PassedStream;
+            bosses = Math.Max(0f, bosses - guards.BehindSingle) + guards.PassedSingle;
             line.RestLeak = stream + bosses;
+            attackers = Attackers(stream, load.MeanHealth, rules);
+            bossAttackers = bosses > 0f ? Math.Min(Math.Max(1, load.BossCount), rules.AttackersPerGate) : 0f;
 
             // The other trunk gates: nothing shoots there but the hero, fallen back from his wrecked gate.
             if (state.TrunkGates > 1 && state.RestGates > 0f)

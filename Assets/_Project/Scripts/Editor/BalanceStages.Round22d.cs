@@ -537,10 +537,14 @@ namespace Game.Editor
                 return "no level sells a repair drone yet\n";
             }
 
-            price = BalanceSheet.RepairDronePrice(drone.RepairPerSecond, busy, costPerHealth, waveSeconds, rules);
+            int rulePrice = BalanceSheet.RepairDronePrice(drone.RepairPerSecond, busy, costPerHealth, waveSeconds, rules);
+            price = BalanceSheet.ChosenRepairDronePrice(rulePrice, rules);
             text.Append(Invariant($"Repair drone price by the investment rule {DateTime.Now:yyyy-MM-dd HH:mm} (Remco 2026-11-07). {loaded.CalibrationNote}\n"));
             text.Append(Invariant($"Inputs: {drone.RepairPerSecond:0.#} hp/s x busy share {busy:0.000} (measured) x {costPerHealth:0.00} coins/hp x mean wave spacing {waveSeconds:0.0} s = {BalanceSheet.RepairDroneSavingPerWave(drone.RepairPerSecond, busy, costPerHealth, waveSeconds):0.0} coins of repairs saved per wave;\n"));
-            text.Append(Invariant($"price = {rules.RepairDroneBreakEvenWaves:0.#} waves of that, rounded: {price} (asset before this run: {drone.Cost}).\n\n"));
+            text.Append(Invariant($"the rule's price = {rules.RepairDroneBreakEvenWaves:0.#} waves of that, rounded: {rulePrice}.\n"));
+            text.Append(price == rulePrice
+                ? Invariant($"The asset carries the rule's price: {price} (asset before this run: {drone.Cost}).\n\n")
+                : Invariant($"The asset carries the designer's price (BalanceRules.RepairDronePrice, Remco 2026-11-09): {price} (asset before this run: {drone.Cost}); the rule's {rulePrice} is advice.\n\n"));
             text.Append("Per level and difficulty: coins saved per wave in that level's own clock, the last wave a purchase still pays back before the end (0: never), and the payback in waves when bought at wave 1.\n");
             foreach (MapNode node in loaded.Catalog.Nodes)
             {

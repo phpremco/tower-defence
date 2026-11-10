@@ -214,6 +214,9 @@ namespace Game.Editor
         public static int RepairDronePrice(float repairPerSecond, float busyShare, float repairCostPerHealth, float waveSeconds, BalanceRules rules) =>
             System.Math.Max(PriceStep, (int)System.Math.Round(repairPerSecond * busyShare * repairCostPerHealth * waveSeconds * rules.RepairDroneBreakEvenWaves / PriceStep) * PriceStep);
 
+        /// <summary>The price the asset carries (round 31): the designer's <see cref="BalanceRules.RepairDronePrice"/> when set, else the rule's.</summary>
+        public static int ChosenRepairDronePrice(int rulePrice, BalanceRules rules) => rules.RepairDronePrice > 0 ? rules.RepairDronePrice : rulePrice;
+
         /// <summary>
         /// The repair drone's price from the data on disk: the calibration's busy share, the cheapest repair cost per hit point of the guns the
         /// levels that sell the drone offer, and their mean wave spacing on Medium; <paramref name="fallback"/> before any level exists.
@@ -223,7 +226,7 @@ namespace Game.Editor
             var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.CampaignCatalog>("Assets/_Project/Data/Levels/CampaignCatalog.asset");
             var calibration = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Levels.BalanceCalibration>(Game.Levels.BalanceCalibration.AssetPath);
             return catalog != null && RepairDroneInputs(catalog, calibration, out float busy, out float costPerHealth, out float waveSeconds)
-                ? RepairDronePrice(repairPerSecond, busy, costPerHealth, waveSeconds, Rules)
+                ? ChosenRepairDronePrice(RepairDronePrice(repairPerSecond, busy, costPerHealth, waveSeconds, Rules), Rules)
                 : fallback;
         }
 

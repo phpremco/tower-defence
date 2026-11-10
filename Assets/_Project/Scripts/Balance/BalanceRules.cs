@@ -334,6 +334,14 @@ namespace Game.Balance
         public float RepairDroneBreakEvenWaves = 5f;
 
         /// <summary>
+        /// The repair drone's price as the designer chose it (Remco 2026-11-09: about 100). Zero lets the investment rule
+        /// (<see cref="RepairDroneBreakEvenWaves"/>) set the price; with a number here the droneprice stage writes this one and
+        /// reports the rule's figure as advice, so a re-measured busy share does not move a chosen number (round 30 moved it
+        /// to 120 that way).
+        /// </summary>
+        public int RepairDronePrice = 100;
+
+        /// <summary>
         /// "Beatable" with the hero and the upgrades the campaign expects (<see cref="BalanceChecks.CheckBeatable"/>): the plain
         /// waves must leave at least this surplus (Easy to Psycho), and no wave may ask more than its <see cref="HeroCap"/> plus
         /// <see cref="BeatableTolerance"/>. Psycho below one: the end-game player also brings what the model leaves out.

@@ -116,6 +116,61 @@ namespace Game.Tests
             Assert.AreEqual(600f, result.BehindStream, 1f, "behind the gate it meets what got past");
         }
 
+        // Round 31: a gun guards the queue only when it reaches where the held walkers stand (1.4 cells before the gate and the cell
+        // behind that), not when the gate cell is within reach plus three cells. Glass Meadows Easy stood its towers past the gate.
+        [Test]
+        public void QueueGuard_ReachesWhereTheHeldWalkersStand_NotTheGateCell()
+        {
+            LevelInput level = Level();
+            float reach = Gun.Levels[0].Range;
+            Assert.IsTrue(level.Geometry.CoverAt(new Cell(GateAt - 2, 7), reach).Gate, "a gun beside the queue guards it");
+            Assert.IsFalse(level.Geometry.CoverAt(new Cell(GateAt + 4, 7), reach).Gate, "a gun past the gate within reach plus three cells of the gate cell does not reach the queue");
+            Assert.IsFalse(level.Geometry.CoverAt(new Cell(GateAt + 1, 7), reach).Gate, "a gun just downstream of the gate does not reach the stand point either");
+            IReadOnlyList<(float X, float Y)> points = level.Geometry.QueuePoints();
+            Assert.AreEqual(2, points.Count);
+            Assert.AreEqual(GateAt - LevelGeometry.StandDistance, points[0].X, 0.01f, "the stop point lies 1.4 cells before the gate");
+            Assert.AreEqual(GateAt - 2, points[1].X, 0.01f, "the queue bunches on the cell behind it");
+        }
+
+        [Test]
+        public void Rank_PrefersTheApproachAndTheQueue_OverTheRoadBehindTheGate()
+        {
+            LevelInput level = Level();
+            List<Cell> ranked = level.Geometry.Rank(Gun.Levels[0].Range, false, false);
+            Assert.That(ranked[0].X, Is.InRange(GateAt - 4, GateAt - 1), "the best spot stands at the queue");
+            int firstBehind = ranked.FindIndex(cell => cell.X > GateAt + 2);
+            int lastApproach = ranked.FindLastIndex(cell => cell.X < GateAt - 2);
+            Assert.Less(lastApproach, firstBehind, "every approach spot ranks above every spot whose cover lies behind the gate");
+        }
+
+        // Round 31: a nest that joins the road behind the defence gate never meets its queue (Crystal Plains' rift nest at 17 % behind
+        // the gate at 13 % walked a creature to the base past the plans' towers at the gate). The game draws a nest per creature, so a
+        // nest group walks from every nest in equal shares.
+        [Test]
+        public void NestBehindTheGate_PassesTheQueue_AndMeetsTheOtherGates()
+        {
+            LevelInput level = Level();
+            level.Shape.NestRemaining.Add(0.2f);
+            WaveLoad load = Wave(10, 100f, 1f, 90f);
+            load.Groups[0].Source = 4;
+            RouteResult alone = RouteKill.Walk(level, load, Rules(), Guns(36));
+            Assert.Greater(alone.WalkStream, 0f, $"a gun past the join point fires on the walk (walk {alone.WalkStream} passed {alone.PassedStream} behind {alone.BehindStream} single {alone.WalkSingle} air {alone.WalkAir})");
+            Assert.AreEqual(1000f, alone.WalkStream + alone.PassedStream, 1f, "what the gun did not kill passes the gate alive");
+            Assert.AreEqual(0f, alone.BehindStream, "nothing is walked twice");
+
+            var guards = new SiegeGuards();
+            Leak.AddTower(ref guards, level, load, Rules(), 0, 0, level.Geometry.CoverAt(new Cell(28, 7), Gun.Levels[0].Range), 1f, 1f);
+            SiegeState state = SiegeState.Start(level, 2);
+            SiegeLine line = Leak.Resolve(level, load, Rules(), ref guards, state, 100f);
+            Assert.AreEqual(500f, state.DefenceGate, "the queue guard at the defence gate never sees the nest's creatures");
+            Assert.AreEqual(1000f, line.GroundLeak, 1f, "the passed health is leak all the same");
+            Assert.Less(state.RestGates + state.BaseLeft, 500f + 600f, "it hammers the other gate and the base instead");
+
+            level.Shape.NestRemaining.Add(0.9f);
+            RouteResult split = RouteKill.Walk(level, load, Rules(), new List<RouteGun>());
+            Assert.AreEqual(500f, split.PassedStream, 1f, "half the nest group joins at the nest behind the gate, half before it");
+        }
+
         [Test]
         public void Siege_WalksTheGunsFromTheGuardList()
         {

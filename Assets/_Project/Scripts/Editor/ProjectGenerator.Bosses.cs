@@ -104,7 +104,7 @@ namespace Game.Editor
                 Creature = new Creature
                 {
                     Id = "Gravemaw", Description = "The planet's digging maw: it answers the colony's drill with a drill of its own.",
-                    Layer = TargetLayers.Ground, Health = 55050f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
+                    Layer = TargetLayers.Ground, Health = 39540f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
                     Attack = AttackStyle.Bite, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
                     Color = new Color(0.55f, 0.2f, 0.4f), Eyes = new Color(1f, 0.45f, 0.75f), Accent = new Color(1f, 0.4f, 0.8f), Blood = new Color(1f, 0.45f, 0.7f),
                     Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,

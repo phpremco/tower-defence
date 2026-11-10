@@ -74,12 +74,60 @@ namespace Game.Balance
             return PlanEvaluator.Evaluate(input.Level, input.Waves, input.Stats, input.Judge, plan, input.Cap, Policy(input, spec));
         }
 
-        /// <summary>The ranked spots per tower type the search draws from and the executor falls back on (the geometry's best few).</summary>
+        /// <summary>
+        /// The spots per tower type the search draws from and the executor falls back on: the geometry's best few by the ranking
+        /// (approach and queue first), plus the rear spots (round 31): the spot with the most road behind the defence gate and the
+        /// best doorstep spot. A nest or an entrance that joins the road behind the gate walks past the gate's guns (Crystal
+        /// Plains' rift nest), so a thought-out plan may need one gun at the rear, and the search can only find it when the spot
+        /// is on offer; the paper's passed-stream term decides whether it pays.
+        /// </summary>
         public static List<Cell> RankedSpots(LevelInput level, TowerStats tower, int count)
         {
             bool airOnly = Layer.Has(tower.Targets, Layer.Air) && !Layer.Has(tower.Targets, Layer.Ground);
-            List<Cell> ranked = level.Geometry != null ? level.Geometry.Rank(tower.Levels[0].Range, airOnly, tower.Splash > 0f) : new List<Cell>();
-            return ranked.GetRange(0, Math.Min(count, ranked.Count));
+            if (level.Geometry == null)
+            {
+                return new List<Cell>();
+            }
+
+            float reach = tower.Levels[0].Range;
+            List<Cell> ranked = level.Geometry.Rank(reach, airOnly, tower.Splash > 0f);
+            List<Cell> spots = ranked.GetRange(0, Math.Min(count, ranked.Count));
+            if (airOnly || !level.Geometry.DefenceGate.HasValue)
+            {
+                return spots;
+            }
+
+            Cell? rear = null;
+            Cell? door = null;
+            float rearPass = 0f;
+            float doorPass = 0f;
+            foreach (Cell spot in ranked)
+            {
+                SpotCover cover = level.Geometry.CoverAt(spot, reach);
+                if (cover.BehindPass > rearPass)
+                {
+                    rearPass = cover.BehindPass;
+                    rear = spot;
+                }
+
+                if (cover.Base && cover.GroundPass > doorPass)
+                {
+                    doorPass = cover.GroundPass;
+                    door = spot;
+                }
+            }
+
+            AddSpot(spots, rear);
+            AddSpot(spots, door);
+            return spots;
+        }
+
+        private static void AddSpot(List<Cell> spots, Cell? spot)
+        {
+            if (spot.HasValue && !spots.Exists(c => c.X == spot.Value.X && c.Y == spot.Value.Y))
+            {
+                spots.Add(spot.Value);
+            }
         }
 
         private static PlanEvaluator.PlanPolicy Policy(PlanSearchInput input, StrategySpec spec)

@@ -26,6 +26,14 @@ namespace Game.Balance
         public float BehindStream;
         public float BehindSingle;
 
+        /// <summary>
+        /// Health of the walkers and bosses that joined the road behind the defence gate (a nest or an entrance past it) and were
+        /// still alive at the road's end (round 31): they never meet the defence gate's queue, so the siege sends them to the
+        /// other gates and the doorstep.
+        /// </summary>
+        public float PassedStream;
+        public float PassedSingle;
+
         /// <summary>Health taken off the wave's creatures per tower type, walk and behind together.</summary>
         public readonly Dictionary<string, float> Dealt = new Dictionary<string, float>(StringComparer.Ordinal);
 
@@ -75,6 +83,14 @@ namespace Game.Balance
             /// <summary>The route cell the group dies on in the last pass, or -1 while it reaches the gate alive.</summary>
             public int KillIndex = -1;
             public float Scale = 1f;
+
+            /// <summary>The share of the group this walker carries (round 31: a nest group is split over the level's nests).</summary>
+            public float Share = 1f;
+
+            /// <summary>True when the walker joins the road behind the defence gate: its whole walk is approach and it never meets the gate's queue.</summary>
+            public bool PassesGate;
+
+            public float Count => Group.Count * Share;
         }
 
         /// <summary>True when the level has a map with routes and the load carries its groups: the route model can walk the wave.</summary>
@@ -85,9 +101,10 @@ namespace Game.Balance
         {
             var result = new RouteResult();
             LevelGeometry geometry = level.Geometry;
-            List<Gun> armed = Arm(level, rules, guns);
+            // Round 31: walked even without guns, so the health that joins behind the defence gate is reported (PassedStream) whatever stands.
+            List<Gun> armed = Arm(level, rules, guns ?? new List<RouteGun>());
             List<Walker> walkers = Place(level, load);
-            if (armed.Count == 0 || walkers.Count == 0)
+            if (walkers.Count == 0)
             {
                 return result;
             }
@@ -114,7 +131,7 @@ namespace Game.Balance
                     float dealt = March(walker, perCell, walker.Start, walker.ApproachEnd, out int killIndex, out float lastShare);
                     Credit(result, armed, walker, geometry, walker.Start, walker.ApproachEnd, perGun, killIndex, lastShare);
                     walker.KillIndex = killIndex;
-                    float killed = group.Count * dealt * walker.Scale;
+                    float killed = walker.Count * dealt * walker.Scale;
                     if (group.Flies)
                     {
                         result.WalkAir += killed;
@@ -126,6 +143,20 @@ namespace Game.Balance
                     else
                     {
                         result.WalkStream += killed;
+                    }
+
+                    // Round 31: a walker that joined behind the defence gate and is still alive at the road's end never met the queue.
+                    if (killIndex < 0 && walker.PassesGate && !group.Flies)
+                    {
+                        float passed = walker.Count * (group.Total - dealt) * walker.Scale;
+                        if (group.IsBoss)
+                        {
+                            result.PassedSingle += passed;
+                        }
+                        else
+                        {
+                            result.PassedStream += passed;
+                        }
                     }
 
                     // Alive past the defence gate: the guns whose reach lies behind it meet what the gate let through.
@@ -144,11 +175,11 @@ namespace Game.Balance
                     Credit(result, armed, walker, geometry, walker.ApproachEnd + 1, end, perGun, behindKill, behindShare);
                     if (group.IsBoss)
                     {
-                        result.BehindSingle += group.Count * behind * walker.Scale;
+                        result.BehindSingle += walker.Count * behind * walker.Scale;
                     }
                     else
                     {
-                        result.BehindStream += group.Count * behind * walker.Scale;
+                        result.BehindStream += walker.Count * behind * walker.Scale;
                     }
                 }
             }
@@ -233,7 +264,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                count += other.Group.Count;
+                count += other.Count;
             }
 
             return count / Math.Max(1f, span);
@@ -301,7 +332,7 @@ namespace Game.Balance
                     }
                 }
 
-                result.Credit(armed[g].Spec.Tower.Id, sum * walker.Group.Count * walker.Scale);
+                result.Credit(armed[g].Spec.Tower.Id, sum * walker.Count * walker.Scale);
             }
         }
 
@@ -368,7 +399,21 @@ namespace Game.Balance
                 }
                 else if (group.Source != 0)
                 {
+                    // Round 31: the game draws a nest at random per creature, so the group walks from every nest in equal shares; a
+                    // nest that joins behind the defence gate sends its share past the queue (the mean of the nests put them all on one side).
                     route = geometry.GroundRoutes[0];
+                    List<float> nests = level.Shape.NestRemaining;
+                    if (nests.Count > 1)
+                    {
+                        foreach (float remaining in nests)
+                        {
+                            Add(walkers, group, route, JoinIndex(route, remaining), 1f / nests.Count, geometry.DefenceGate.HasValue);
+                        }
+
+                        streamTotal += !group.IsBoss ? group.Count * group.Total : 0f;
+                        continue;
+                    }
+
                     start = JoinIndex(route, MeanNestRemaining(level.Shape));
                 }
                 else
@@ -386,8 +431,7 @@ namespace Game.Balance
                     continue;
                 }
 
-                int approachEnd = !group.Flies && route.GateIndex >= 0 && start <= route.GateIndex ? route.GateIndex : route.Cells.Count - 1;
-                walkers.Add(new Walker { Group = group, Route = route, Start = start, ApproachEnd = approachEnd });
+                Add(walkers, group, route, start, 1f, geometry.DefenceGate.HasValue);
                 streamTotal += !group.Flies && !group.IsBoss ? group.Count * group.Total : 0f;
             }
 
@@ -398,6 +442,15 @@ namespace Game.Balance
             }
 
             return walkers;
+        }
+
+        // One walker of the group from a start cell: the approach ends at the defence gate when it lies ahead; a walker that joins behind it passes the gate.
+        private static void Add(List<Walker> walkers, WaveGroup group, LevelGeometry.Route route, int start, float share, bool hasGate)
+        {
+            // A lane that never meets the defence gate joins the trunk behind it (LevelGeometry.GateIndex), so it passes the gate too.
+            bool passes = !group.Flies && hasGate && (route.GateIndex < 0 || start > route.GateIndex);
+            int approachEnd = !group.Flies && route.GateIndex >= 0 && !passes ? route.GateIndex : route.Cells.Count - 1;
+            walkers.Add(new Walker { Group = group, Route = route, Start = start, ApproachEnd = approachEnd, Share = share, PassesGate = passes });
         }
 
         private static int JoinIndex(LevelGeometry.Route route, float remaining) =>

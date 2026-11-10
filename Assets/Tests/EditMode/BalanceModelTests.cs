@@ -258,7 +258,9 @@ namespace Game.Tests
         {
             // The curve of 2026-11-04: Easy 1.4x, Medium 1.15x, Hard 0.95x, Psycho 0.8x.
             Assert.IsEmpty(BalanceChecks.CheckHuman("Fair", new[] { 0.71f, 0.87f, 1.05f, 1.25f }, Rules));
-            Assert.IsNotEmpty(BalanceChecks.CheckHuman("Generous", new[] { 0.55f, 0.87f, 1.05f, 1.25f }, Rules), "1.8x the firepower on Easy");
+            // The Easy band is data (MaxEasySurplus, 1.9 since round 29), so the generous case sits just over it rather than at a fixed 1.8x.
+            float generous = 1f / (Rules.MaxEasySurplus * 1.05f);
+            Assert.IsNotEmpty(BalanceChecks.CheckHuman("Generous", new[] { generous, 0.87f, 1.05f, 1.25f }, Rules), "more firepower on Easy than the band allows");
             Assert.IsNotEmpty(BalanceChecks.CheckHuman("Flat", new[] { 0.86f, 0.87f, 1.05f, 1.25f }, Rules), "Easy as hard as Medium");
             Assert.IsNotEmpty(BalanceChecks.CheckHuman("Inverted", new[] { 0.71f, 0.87f, 0.8f, 1.25f }, Rules), "Hard easier than Medium");
         }

@@ -1,25 +1,26 @@
-Repair drone price by the investment rule 2026-11-10 01:49 (Remco 2026-11-07). calibration 2026-11-10 00:48, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Repair drone price by the investment rule 2026-11-10 02:00 (Remco 2026-11-07). calibration 2026-11-10 00:48, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
 Inputs: 8 hp/s x busy share 0.416 (measured) x 0.30 coins/hp x mean wave spacing 24.4 s = 24.3 coins of repairs saved per wave;
-price = 5 waves of that, rounded: 120 (asset before this run: 100).
+the rule's price = 5 waves of that, rounded: 120.
+The asset carries the designer's price (BalanceRules.RepairDronePrice, Remco 2026-11-09): 100 (asset before this run: 120); the rule's 120 is advice.
 
 Per level and difficulty: coins saved per wave in that level's own clock, the last wave a purchase still pays back before the end (0: never), and the payback in waves when bought at wave 1.
-  Level_C1_02 Easy    waves 12, 32.4 s each: saves 32.3 coins/wave; break-even at wave 9 of 12; payback 3.7 waves
-  Level_C1_02 Medium  waves 12, 30.7 s each: saves 30.7 coins/wave; break-even at wave 9 of 12; payback 3.9 waves
-  Level_C1_02 Hard    waves 12, 32.6 s each: saves 32.6 coins/wave; break-even at wave 9 of 12; payback 3.7 waves
-  Level_C1_02 Psycho  waves 12, 28.5 s each: saves 28.5 coins/wave; break-even at wave 8 of 12; payback 4.2 waves
-  Level_C1_03 Easy    waves 16, 25.5 s each: saves 25.4 coins/wave; break-even at wave 12 of 16; payback 4.7 waves
-  Level_C1_03 Medium  waves 16, 22.8 s each: saves 22.8 coins/wave; break-even at wave 11 of 16; payback 5.3 waves
-  Level_C1_03 Hard    waves 16, 21.1 s each: saves 21.0 coins/wave; break-even at wave 11 of 16; payback 5.7 waves
-  Level_C1_03 Psycho  waves 16, 21.2 s each: saves 21.1 coins/wave; break-even at wave 11 of 16; payback 5.7 waves
-  Level_C1_04 Easy    waves 16, 23.7 s each: saves 23.7 coins/wave; break-even at wave 11 of 16; payback 5.1 waves
-  Level_C1_04 Medium  waves 16, 20.6 s each: saves 20.6 coins/wave; break-even at wave 11 of 16; payback 5.8 waves
-  Level_C1_04 Hard    waves 16, 21.7 s each: saves 21.6 coins/wave; break-even at wave 11 of 16; payback 5.5 waves
-  Level_C1_04 Psycho  waves 16, 21.8 s each: saves 21.7 coins/wave; break-even at wave 11 of 16; payback 5.5 waves
-  Level_C1_05 Easy    waves 17, 29.2 s each: saves 29.1 coins/wave; break-even at wave 13 of 17; payback 4.1 waves
-  Level_C1_05 Medium  waves 17, 25.3 s each: saves 25.2 coins/wave; break-even at wave 13 of 17; payback 4.8 waves
-  Level_C1_05 Hard    waves 17, 25.7 s each: saves 25.7 coins/wave; break-even at wave 13 of 17; payback 4.7 waves
-  Level_C1_05 Psycho  waves 17, 25.8 s each: saves 25.8 coins/wave; break-even at wave 13 of 17; payback 4.7 waves
-  Level_C1_06 Easy    waves 18, 25.9 s each: saves 25.9 coins/wave; break-even at wave 14 of 18; payback 4.6 waves
-  Level_C1_06 Medium  waves 18, 22.4 s each: saves 22.4 coins/wave; break-even at wave 13 of 18; payback 5.4 waves
-  Level_C1_06 Hard    waves 18, 24.0 s each: saves 23.9 coins/wave; break-even at wave 13 of 18; payback 5.0 waves
-  Level_C1_06 Psycho  waves 18, 23.4 s each: saves 23.3 coins/wave; break-even at wave 13 of 18; payback 5.1 waves
+  Level_C1_02 Easy    waves 12, 32.4 s each: saves 32.3 coins/wave; break-even at wave 9 of 12; payback 3.1 waves
+  Level_C1_02 Medium  waves 12, 30.7 s each: saves 30.7 coins/wave; break-even at wave 9 of 12; payback 3.3 waves
+  Level_C1_02 Hard    waves 12, 32.6 s each: saves 32.6 coins/wave; break-even at wave 9 of 12; payback 3.1 waves
+  Level_C1_02 Psycho  waves 12, 28.5 s each: saves 28.5 coins/wave; break-even at wave 9 of 12; payback 3.5 waves
+  Level_C1_03 Easy    waves 16, 25.5 s each: saves 25.4 coins/wave; break-even at wave 13 of 16; payback 3.9 waves
+  Level_C1_03 Medium  waves 16, 22.8 s each: saves 22.8 coins/wave; break-even at wave 12 of 16; payback 4.4 waves
+  Level_C1_03 Hard    waves 16, 21.1 s each: saves 21.0 coins/wave; break-even at wave 12 of 16; payback 4.8 waves
+  Level_C1_03 Psycho  waves 16, 21.2 s each: saves 21.1 coins/wave; break-even at wave 12 of 16; payback 4.7 waves
+  Level_C1_04 Easy    waves 16, 23.7 s each: saves 23.7 coins/wave; break-even at wave 12 of 16; payback 4.2 waves
+  Level_C1_04 Medium  waves 16, 20.6 s each: saves 20.6 coins/wave; break-even at wave 12 of 16; payback 4.9 waves
+  Level_C1_04 Hard    waves 16, 21.7 s each: saves 21.6 coins/wave; break-even at wave 12 of 16; payback 4.6 waves
+  Level_C1_04 Psycho  waves 16, 21.8 s each: saves 21.7 coins/wave; break-even at wave 12 of 16; payback 4.6 waves
+  Level_C1_05 Easy    waves 17, 29.2 s each: saves 29.1 coins/wave; break-even at wave 14 of 17; payback 3.4 waves
+  Level_C1_05 Medium  waves 17, 25.3 s each: saves 25.2 coins/wave; break-even at wave 14 of 17; payback 4.0 waves
+  Level_C1_05 Hard    waves 17, 25.7 s each: saves 25.7 coins/wave; break-even at wave 14 of 17; payback 3.9 waves
+  Level_C1_05 Psycho  waves 17, 25.8 s each: saves 25.8 coins/wave; break-even at wave 14 of 17; payback 3.9 waves
+  Level_C1_06 Easy    waves 18, 25.9 s each: saves 25.9 coins/wave; break-even at wave 15 of 18; payback 3.9 waves
+  Level_C1_06 Medium  waves 18, 22.4 s each: saves 22.4 coins/wave; break-even at wave 14 of 18; payback 4.5 waves
+  Level_C1_06 Hard    waves 18, 24.0 s each: saves 23.9 coins/wave; break-even at wave 14 of 18; payback 4.2 waves
+  Level_C1_06 Psycho  waves 18, 23.4 s each: saves 23.3 coins/wave; break-even at wave 14 of 18; payback 4.3 waves

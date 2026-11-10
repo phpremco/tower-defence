@@ -15,10 +15,10 @@ MonoBehaviour:
   _displayName: Gravemaw
   _layer: 1
   _flies: 0
-  _maxHealth: 55050
+  _maxHealth: 39540
   _armor: 1200
   _speed: 0.55
-  _reward: 8245
+  _reward: 6965
   _baseDamage: 25
   _element: 0
   _attackStyle: 0

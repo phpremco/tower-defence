@@ -7,106 +7,128 @@
         {
             "Tower": "PulseRifle",
             "X": [
-                8,
-                7,
-                8,
                 7,
                 7,
-                7
+                7,
+                3,
+                3,
+                34,
+                6,
+                20
             ],
             "Y": [
-                7,
-                7,
-                6,
-                5,
-                8,
+                11,
+                13,
+                10,
+                15,
+                16,
+                0,
+                11,
                 6
             ]
         },
         {
             "Tower": "Cannon",
             "X": [
+                3,
+                6,
+                3,
                 7,
-                7,
-                8,
-                8,
-                7,
-                8
+                3,
+                3,
+                34,
+                20
             ],
             "Y": [
-                7,
-                6,
-                7,
-                6,
-                5,
-                5
+                11,
+                11,
+                16,
+                11,
+                15,
+                10,
+                0,
+                6
             ]
         },
         {
             "Tower": "Laser",
             "X": [
-                7,
-                8,
-                7,
-                8,
-                7,
-                8
+                6,
+                6,
+                6,
+                2,
+                3,
+                6,
+                26,
+                33
             ],
             "Y": [
-                7,
-                7,
-                8,
-                8,
-                6,
-                6
+                12,
+                13,
+                14,
+                15,
+                15,
+                11,
+                16,
+                3
             ]
         },
         {
             "Tower": "Rocket",
             "X": [
-                34,
-                34,
                 33,
+                34,
+                34,
+                32,
                 35,
-                33,
-                32
+                33
             ],
             "Y": [
+                3,
+                3,
                 4,
                 3,
                 3,
-                3,
-                4,
-                3
+                4
             ]
         }
     ],
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "PulseRifle",
-            "Weight": 2.267871856689453
+            "Tower": "Cannon",
+            "Weight": 2.4115328788757324
         },
         {
             "Threat": "pack",
-            "Tower": "Cannon",
-            "Weight": 0.6657723784446716
+            "Tower": "Laser",
+            "Weight": 0.5525542497634888
+        },
+        {
+            "Threat": "plated",
+            "Tower": "Laser",
+            "Weight": 1.292266845703125
         },
         {
             "Threat": "air",
             "Tower": "PulseRifle",
-            "Weight": 1.5290682315826416
+            "Weight": 2.086118698120117
+        },
+        {
+            "Threat": "boss",
+            "Tower": "PulseRifle",
+            "Weight": 0.7038621306419373
         }
     ],
-    "UpgradeBias": 1.7999999523162842,
-    "TowersBeforeUpgrades": 4,
-    "MineCoverBelow": 1.2999999523162842,
-    "MineOnBoss": false,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 0.0,
-    "HarvesterShare": 0.4000000059604645,
-    "RepairDroneWear": 9.0,
-    "AttackDroneAfterTowers": 0,
-    "GateUpgradeBias": 1.2000000476837158,
+    "UpgradeBias": 1.649999976158142,
+    "TowersBeforeUpgrades": 2,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 0.0,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.6000000238418579,
+    "RepairDroneWear": 0.05000000074505806,
+    "AttackDroneAfterTowers": 8,
+    "GateUpgradeBias": 0.800000011920929,
     "AllowSell": false
 }

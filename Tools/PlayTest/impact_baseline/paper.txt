@@ -1,222 +1,218 @@
-baseline 2026-11-09 21:34
-inputs d62c1c91
-shape 9809b18e
-calibration 2026-11-09 20:06
-band 0.108
-bandnote odd/even hold-out efficiencies Cannon 0.80/0.65, Laser 0.67/0.66, PulseRifle 0.86/0.80, Rocket 0.88/0.82 on 745 runs
+baseline 2026-11-10 04:07
+inputs 0e507ead
+shape 2bbc7a34
+calibration 2026-11-10 03:33
+band 0.050
+bandnote odd/even hold-out efficiencies Cannon 0.87/0.86, Laser 0.83/0.72, PulseRifle 0.93/0.89, Rocket 1.04/1.05 on 726 runs
 upgrade|Cannon|1.00712276
 upgrade|Laser|1.01601827
 upgrade|PulseRifle|1.00981772
 upgrade|Railgun|1.00207043
 upgrade|Rocket|1.01370084
 upgrade|Tesla|1.01118314
-row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy1|1|3|600|0|1.12959266|3601.8
-row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy2|1|3|600|0|1.12959266|3601.8
-row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy3|1|3|600|0|1.12959266|3601.8
-row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy4|1|3|600|0|1.20414126|3610.3
-row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy5|1|3|600|0|1.12743437|3601.8
-row|Level_C1_01|0|0|creative|creative|1|3|600|0|0.7288902|3604.5
-row|Level_C1_01|0|0|obvious|mono PulseRifle|1|3|600|0|0.919682145|3600.5
-row|Level_C1_01|0|0|obvious|mono Cannon|1|3|600|0|0.860569358|3606.8
-row|Level_C1_01|0|0|obvious|naive|1|3|600|0|1.0149709|3601.8
-row|Level_C1_01|1|0|plan|Level_C1_01_1_strategy1|1|3|600|0|0.982012868|3601.8
-row|Level_C1_01|1|0|plan|Level_C1_01_1_strategy2|1|3|600|0|0.660112262|3609.5
-row|Level_C1_01|1|0|creative|creative|1|3|600|0|0.594065547|3608.4
-row|Level_C1_01|1|0|obvious|mono PulseRifle|1|3|600|0|0.8361874|3602.7
-row|Level_C1_01|1|0|obvious|mono Cannon|1|3|600|0|0.9391175|3600
-row|Level_C1_01|1|0|obvious|naive|1|3|600|0|0.992559433|3605.5
-row|Level_C1_01|2|0|plan|Level_C1_01_2_strategy1|0|0|0|10|0.2341136|-201
-row|Level_C1_01|2|0|plan|Level_C1_01_2_strategy2|0|0|0|10|0.200969875|-201
-row|Level_C1_01|2|0|plan|Level_C1_01_2_strategy3|0|0|0|10|0.224774212|-201
-row|Level_C1_01|2|0|creative|creative|0|0|0|7|0.164658874|-501
-row|Level_C1_01|2|0|obvious|mono PulseRifle|1|3|700|0|0.471612573|3704.2
-row|Level_C1_01|2|0|obvious|mono Cannon|1|3|700|0|0.5177583|3715.1
-row|Level_C1_01|2|0|obvious|mono Laser|1|3|700|0|0.359036982|3701.2
-row|Level_C1_01|2|0|obvious|naive|0|0|0|10|0.3536102|-201
-row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy1|0|0|0|6|0.099817574|-601
-row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy2|0|0|0|6|0.1270562|-601
-row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy3|0|0|0|6|0.112747535|-601
-row|Level_C1_01|3|0|creative|creative|0|0|0|8|0.114534959|-401
-row|Level_C1_01|3|0|obvious|mono PulseRifle|1|3|700|0|0.437139422|3702.1
-row|Level_C1_01|3|0|obvious|mono Cannon|1|3|700|0|0.3843984|3700.9
-row|Level_C1_01|3|0|obvious|mono Laser|0|0|0|3|0.262351483|-901
-row|Level_C1_01|3|0|obvious|naive|0|0|0|6|0.280282736|-601
-row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy1|1|3|700|0|1.59547508|3703.1
-row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy2|1|3|700|0|0.7123326|3705.8
-row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy3|1|3|700|0|1.506038|3700.1
-row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy4|1|3|700|0|1.45070744|3713.1
-row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy5|1|3|700|0|1.61097133|3703.6
-row|Level_C1_02|0|1|creative|creative|1|3|700|0|0.900721669|3700.8
-row|Level_C1_02|0|1|obvious|mono PulseRifle|1|3|700|0|1.23356068|3700.1
-row|Level_C1_02|0|1|obvious|mono Cannon|1|3|700|0|0.938763261|3703.6
-row|Level_C1_02|0|1|obvious|mono Laser|1|3|700|0|0.944542646|3705
-row|Level_C1_02|0|1|obvious|naive|1|3|700|0|1.04637432|3710.6
-row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy1|1|3|700|0|0.420523763|3709.8
-row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy2|1|3|700|0|0.418234736|3709.8
-row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy3|1|3|700|0|0.543848157|3701.4
-row|Level_C1_02|1|1|creative|creative|1|3|700|0|0.303976029|3701.4
-row|Level_C1_02|1|1|obvious|mono PulseRifle|0|0|0|7|0.341612548|-501
-row|Level_C1_02|1|1|obvious|mono Cannon|1|3|700|0|0.387278|3708.6
-row|Level_C1_02|1|1|obvious|mono Laser|0|0|0|6|0.210425213|-601
-row|Level_C1_02|1|1|obvious|naive|0|0|0|12|0.525658|-1
-row|Level_C1_02|2|1|plan|Level_C1_02_2_strategy1|0|0|0|7|0.2823425|-501
-row|Level_C1_02|2|1|plan|Level_C1_02_2_strategy2|0|0|0|7|0.2823425|-501
-row|Level_C1_02|2|1|plan|Level_C1_02_2_strategy3|0|0|0|7|0.2823425|-501
-row|Level_C1_02|2|1|creative|creative|0|0|0|7|0.157792762|-501
-row|Level_C1_02|2|1|obvious|mono PulseRifle|0|0|0|6|0.309569061|-601
-row|Level_C1_02|2|1|obvious|mono Cannon|1|3|700|0|0.334751517|3713.4
-row|Level_C1_02|2|1|obvious|mono Laser|0|0|0|6|0.210286871|-601
-row|Level_C1_02|2|1|obvious|naive|0|0|0|9|0.294249475|-301
-row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy1|1|3|800|0|0.3439985|3804.8
-row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy2|1|3|800|0|0.3439985|3804.8
-row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy3|1|3|800|0|0.3439985|3804.8
-row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy4|0|0|0|6|0.286815077|-601
-row|Level_C1_02|3|1|creative|creative|0|0|0|6|0.09341401|-601
-row|Level_C1_02|3|1|obvious|mono PulseRifle|0|0|0|6|0.363948047|-601
-row|Level_C1_02|3|1|obvious|mono Cannon|0|0|0|5|0.2226402|-701
-row|Level_C1_02|3|1|obvious|mono Laser|0|0|0|6|0.240068|-601
-row|Level_C1_02|3|1|obvious|naive|0|0|0|6|0.206339568|-601
-row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy1|1|3|700|0|1.2516197|3702.7
-row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy2|1|3|700|0|1.2464689|3707.7
-row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy3|1|3|700|0|1.40863109|3703.7
-row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy4|1|3|700|0|1.42677379|3700.2
-row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy5|1|3|700|0|1.42677379|3700.2
-row|Level_C1_03|0|2|creative|creative|1|3|700|0|1.336216|3700.2
-row|Level_C1_03|0|2|obvious|mono PulseRifle|0|0|0|12|0.437990576|-401
+row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy1|0|0|0|7|1.17469108|-501
+row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy2|0|0|0|7|1.168612|-501
+row|Level_C1_01|0|0|plan|Level_C1_01_0_strategy3|0|0|0|7|1.168612|-501
+row|Level_C1_01|0|0|creative|creative|0|0|0|7|0.931213856|-501
+row|Level_C1_01|0|0|obvious|mono PulseRifle|0|0|0|7|0.838228643|-501
+row|Level_C1_01|0|0|obvious|mono Cannon|0|0|0|7|0.827446342|-501
+row|Level_C1_01|0|0|obvious|naive|0|0|0|7|0.9840074|-501
+row|Level_C1_01|1|0|plan|Level_C1_01_1_strategy1|0|0|0|7|0.9770154|-501
+row|Level_C1_01|1|0|plan|Level_C1_01_1_strategy2|0|0|0|7|0.9770154|-501
+row|Level_C1_01|1|0|plan|Level_C1_01_1_strategy3|0|0|0|7|0.9406009|-501
+row|Level_C1_01|1|0|creative|creative|0|0|0|7|0.945806742|-501
+row|Level_C1_01|1|0|obvious|mono PulseRifle|0|0|0|7|0.698691547|-501
+row|Level_C1_01|1|0|obvious|mono Cannon|0|0|0|7|0.792770147|-501
+row|Level_C1_01|1|0|obvious|naive|0|0|0|7|0.8219851|-501
+row|Level_C1_01|2|0|plan|Level_C1_01_2_strategy1|1|1|6.10351563E-05|0|0.384267867|1011.40009
+row|Level_C1_01|2|0|plan|Level_C1_01_2_strategy2|1|1|6.10351563E-05|0|0.384267867|1011.40009
+row|Level_C1_01|2|0|creative|creative|0|0|0|7|0.358224928|-501
+row|Level_C1_01|2|0|obvious|mono PulseRifle|0|0|0|7|0.2758719|-501
+row|Level_C1_01|2|0|obvious|mono Cannon|0|0|0|7|0.3122338|-501
+row|Level_C1_01|2|0|obvious|mono Laser|0|0|0|7|0.229415223|-501
+row|Level_C1_01|2|0|obvious|naive|0|0|0|7|0.333332449|-501
+row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy1|0|0|0|7|0.376858264|-501
+row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy2|0|0|0|7|0.376858264|-501
+row|Level_C1_01|3|0|plan|Level_C1_01_3_strategy3|0|0|0|7|0.3768583|-501
+row|Level_C1_01|3|0|creative|creative|0|0|0|7|0.342039555|-501
+row|Level_C1_01|3|0|obvious|mono PulseRifle|0|0|0|7|0.22851482|-501
+row|Level_C1_01|3|0|obvious|mono Cannon|0|0|0|7|0.322356552|-501
+row|Level_C1_01|3|0|obvious|mono Laser|0|0|0|7|0.214236572|-501
+row|Level_C1_01|3|0|obvious|naive|0|0|0|7|0.274599344|-501
+row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy1|1|3|700|0|1.730714|3712.1
+row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy2|1|3|700|0|1.72453976|3712.1
+row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy3|1|3|700|0|1.72453976|3712.1
+row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy4|1|3|700|0|1.72453976|3712.1
+row|Level_C1_02|0|1|plan|Level_C1_02_0_strategy5|1|3|700|0|1.72453976|3712.1
+row|Level_C1_02|0|1|creative|creative|1|3|700|0|1.72453976|3712.1
+row|Level_C1_02|0|1|obvious|mono PulseRifle|1|3|700|0|1.37231565|3700.1
+row|Level_C1_02|0|1|obvious|mono Cannon|1|3|700|0|1.35028636|3703.6
+row|Level_C1_02|0|1|obvious|mono Laser|1|3|700|0|1.09174359|3705.6
+row|Level_C1_02|0|1|obvious|naive|1|3|700|0|1.29236257|3710.6
+row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy1|1|3|700|0|0.4357505|3721.9
+row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy2|1|3|700|0|0.4357505|3721.9
+row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy3|1|3|700|0|0.421728134|3720.6
+row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy4|1|3|700|0|0.421728134|3720.6
+row|Level_C1_02|1|1|plan|Level_C1_02_1_strategy5|1|3|700|0|0.421728134|3720.6
+row|Level_C1_02|1|1|creative|creative|0|0|0|10|0.250960767|-201
+row|Level_C1_02|1|1|obvious|mono PulseRifle|0|0|0|9|0.330695182|-301
+row|Level_C1_02|1|1|obvious|mono Cannon|1|3|700|0|0.5792651|3705.7
+row|Level_C1_02|1|1|obvious|mono Laser|0|0|0|7|0.189818919|-501
+row|Level_C1_02|1|1|obvious|naive|0|0|0|9|0.228760973|-301
+row|Level_C1_02|2|1|plan|Level_C1_02_2_strategy1|1|3|700|0|0.606734|3703.5
+row|Level_C1_02|2|1|creative|creative|0|0|0|10|0.211110815|-201
+row|Level_C1_02|2|1|obvious|mono PulseRifle|0|0|0|7|0.269877434|-501
+row|Level_C1_02|2|1|obvious|mono Cannon|0|0|0|7|0.204031438|-501
+row|Level_C1_02|2|1|obvious|mono Laser|0|0|0|6|0.1737735|-601
+row|Level_C1_02|2|1|obvious|naive|0|0|0|7|0.197066158|-501
+row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy1|0|0|0|7|0.229763016|-501
+row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy2|0|0|0|7|0.217602685|-501
+row|Level_C1_02|3|1|plan|Level_C1_02_3_strategy3|0|0|0|7|0.217602685|-501
+row|Level_C1_02|3|1|creative|creative|0|0|0|7|0.2093414|-501
+row|Level_C1_02|3|1|obvious|mono PulseRifle|0|0|0|7|0.202606708|-501
+row|Level_C1_02|3|1|obvious|mono Cannon|0|0|0|7|0.2531194|-501
+row|Level_C1_02|3|1|obvious|mono Laser|0|0|0|6|0.238130152|-601
+row|Level_C1_02|3|1|obvious|naive|0|0|0|7|0.236729681|-501
+row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy1|1|3|700|0|1.37634742|3711.7
+row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy2|1|3|700|0|1.45305848|3709.2
+row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy3|1|3|700|0|1.525759|3705.2
+row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy4|1|3|700|0|1.52757728|3705.2
+row|Level_C1_03|0|2|plan|Level_C1_03_0_strategy5|1|3|700|0|1.52128649|3705.2
+row|Level_C1_03|0|2|creative|creative|1|3|700|0|1.45404434|3702.7
+row|Level_C1_03|0|2|obvious|mono PulseRifle|0|0|0|12|0.7269882|-401
 row|Level_C1_03|0|2|obvious|mono Cannon|0|0|0|12|0|-401
 row|Level_C1_03|0|2|obvious|mono Laser|0|0|0|12|0|-401
-row|Level_C1_03|0|2|obvious|naive|0|0|0|12|1.06661355|-401
-row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy1|1|3|643.5809|0|0.6335135|3649.981
-row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy2|1|3|643.5809|0|0.6284234|3651.981
-row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy3|1|3|643.5809|0|0.6335135|3649.981
-row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy4|1|3|643.5809|0|0.6335135|3649.981
-row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy5|1|3|643.5809|0|0.6284234|3651.981
-row|Level_C1_03|1|2|creative|creative|1|3|700|0|0.6514687|3706.6
-row|Level_C1_03|1|2|obvious|mono PulseRifle|0|0|0|11|0.171742857|-501
+row|Level_C1_03|0|2|obvious|naive|0|0|0|12|1.10723066|-401
+row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy1|1|3|700|0|0.7507436|3713.1
+row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy2|1|3|700|0|0.7507436|3713.1
+row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy3|1|3|700|0|0.8812622|3711.3
+row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy4|1|3|700|0|0.8830814|3711.3
+row|Level_C1_03|1|2|plan|Level_C1_03_1_strategy5|1|3|700|0|0.8812622|3711.3
+row|Level_C1_03|1|2|creative|creative|0|0|0|12|0.3932384|-401
+row|Level_C1_03|1|2|obvious|mono PulseRifle|0|0|0|11|0.192088187|-501
 row|Level_C1_03|1|2|obvious|mono Cannon|0|0|0|11|0|-501
 row|Level_C1_03|1|2|obvious|mono Laser|0|0|0|11|0|-501
-row|Level_C1_03|1|2|obvious|naive|0|0|0|11|0.2039177|-501
-row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy1|0|0|0|9|0.0116590811|-701
-row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy2|0|0|0|11|0.0233181622|-501
-row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy3|0|0|0|11|0.0233181622|-501
-row|Level_C1_03|2|2|creative|creative|0|0|0|11|0.0233181622|-501
-row|Level_C1_03|2|2|obvious|mono PulseRifle|0|0|0|7|0.09327265|-901
+row|Level_C1_03|1|2|obvious|naive|0|0|0|11|0.239877477|-501
+row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy1|0|0|0|12|0.223058179|-401
+row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy2|0|0|0|12|0.223058179|-401
+row|Level_C1_03|2|2|plan|Level_C1_03_2_strategy3|0|0|0|12|0.223058179|-401
+row|Level_C1_03|2|2|creative|creative|0|0|0|8|0.02191561|-801
+row|Level_C1_03|2|2|obvious|mono PulseRifle|0|0|0|5|0.08192264|-1101
 row|Level_C1_03|2|2|obvious|mono Cannon|0|0|0|11|0|-501
 row|Level_C1_03|2|2|obvious|mono Laser|0|0|0|5|0|-1101
-row|Level_C1_03|2|2|obvious|naive|0|0|0|7|0.107315063|-901
-row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy1|0|0|0|7|0.00476499135|-901
-row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy2|0|0|0|7|0.00476499135|-901
-row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy3|0|0|0|7|0.00476499135|-901
-row|Level_C1_03|3|2|creative|creative|0|0|0|7|0.00476499135|-901
-row|Level_C1_03|3|2|obvious|mono PulseRifle|0|0|0|5|0.0595698655|-1101
+row|Level_C1_03|2|2|obvious|naive|0|0|0|7|0.123613432|-901
+row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy1|0|0|0|8|0|-801
+row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy2|0|0|0|8|0|-801
+row|Level_C1_03|3|2|plan|Level_C1_03_3_strategy3|0|0|0|8|0|-801
+row|Level_C1_03|3|2|creative|creative|0|0|0|7|0|-901
+row|Level_C1_03|3|2|obvious|mono PulseRifle|0|0|0|4|0.06571236|-1201
 row|Level_C1_03|3|2|obvious|mono Cannon|0|0|0|7|0|-901
 row|Level_C1_03|3|2|obvious|mono Laser|0|0|0|4|0|-1201
-row|Level_C1_03|3|2|obvious|naive|0|0|0|4|0.08556671|-1201
-row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy1|1|3|700|0|0.882246435|3708.8
-row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy2|1|3|700|0|0.882246435|3708.8
-row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy3|1|3|700|0|0.8226318|3705.8
-row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy4|1|3|700|0|0.8226318|3705.8
-row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy5|1|3|700|0|0.7966005|3700.5
-row|Level_C1_04|0|3|creative|creative|1|3|700|0|0.888564|3708.8
-row|Level_C1_04|0|3|obvious|mono PulseRifle|0|0|0|7|0.517446458|-901
+row|Level_C1_03|3|2|obvious|naive|0|0|0|4|0.138142139|-1201
+row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy1|1|3|700|0|0.9541672|3709.5
+row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy2|1|3|700|0|0.9541672|3709.5
+row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy3|1|3|700|0|0.9541672|3709.5
+row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy4|1|3|700|0|0.9541672|3709.5
+row|Level_C1_04|0|3|plan|Level_C1_04_0_strategy5|1|3|700|0|0.9541672|3709.5
+row|Level_C1_04|0|3|creative|creative|1|3|700|0|0.711898565|3708.8
+row|Level_C1_04|0|3|obvious|mono PulseRifle|0|0|0|7|0.525206447|-901
 row|Level_C1_04|0|3|obvious|mono Cannon|0|0|0|7|0|-901
 row|Level_C1_04|0|3|obvious|mono Laser|0|0|0|7|0|-901
-row|Level_C1_04|0|3|obvious|naive|1|3|700|0|0.7393232|3701.1
-row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy1|0|0|0|14|0.22544238|-201
-row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy2|0|0|0|14|0.22544238|-201
-row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy3|0|0|0|14|0.22544238|-201
-row|Level_C1_04|1|3|creative|creative|0|0|0|14|0.22544238|-201
-row|Level_C1_04|1|3|obvious|mono PulseRifle|0|0|0|3|0.2827214|-1301
+row|Level_C1_04|0|3|obvious|naive|1|3|700|0|0.939648|3701.7
+row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy1|0|0|0|11|0.205696508|-501
+row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy2|0|0|0|11|0.205696508|-501
+row|Level_C1_04|1|3|plan|Level_C1_04_1_strategy3|0|0|0|11|0.205696508|-501
+row|Level_C1_04|1|3|creative|creative|0|0|0|11|0.2044153|-501
+row|Level_C1_04|1|3|obvious|mono PulseRifle|0|0|0|3|0.229746|-1301
 row|Level_C1_04|1|3|obvious|mono Cannon|0|0|0|3|0|-1301
 row|Level_C1_04|1|3|obvious|mono Laser|0|0|0|3|0|-1301
-row|Level_C1_04|1|3|obvious|naive|0|0|0|15|0.3025063|-101
-row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy1|1|1|318.595551|0|0.2725932|1318.99561
-row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy2|1|1|314.5054|0|0.274346173|1315.4054
-row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy3|1|1|307.008179|0|0.338199228|1310.10815
-row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy4|1|1|296.4556|0|0.275222659|1297.25562
-row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy5|1|1|296.4556|0|0.274346173|1297.15564
-row|Level_C1_04|2|3|creative|creative|0|0|0|11|0.1530451|-501
-row|Level_C1_04|2|3|obvious|mono PulseRifle|0|0|0|3|0.179696962|-1301
+row|Level_C1_04|1|3|obvious|naive|0|0|0|12|0.2555649|-401
+row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy1|0|0|0|12|0.127446|-401
+row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy2|0|0|0|12|0.128110886|-401
+row|Level_C1_04|2|3|plan|Level_C1_04_2_strategy3|0|0|0|12|0.128110886|-401
+row|Level_C1_04|2|3|creative|creative|0|0|0|11|0.139907792|-501
+row|Level_C1_04|2|3|obvious|mono PulseRifle|0|0|0|3|0.162519783|-1301
 row|Level_C1_04|2|3|obvious|mono Cannon|0|0|0|3|0|-1301
 row|Level_C1_04|2|3|obvious|mono Laser|0|0|0|3|0|-1301
-row|Level_C1_04|2|3|obvious|naive|0|0|0|15|0.223315015|-101
-row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy1|0|0|0|16|0.208034381|-1
-row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy2|0|0|0|15|0.231410235|-101
-row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy3|0|0|0|15|0.187137276|-101
-row|Level_C1_04|3|3|creative|creative|0|0|0|14|0.127019227|-201
-row|Level_C1_04|3|3|obvious|mono PulseRifle|0|0|0|3|0.242764622|-1301
+row|Level_C1_04|2|3|obvious|naive|0|0|0|12|0.205226973|-401
+row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy1|0|0|0|16|0.420736521|-1
+row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy2|0|0|0|16|0.402262062|-1
+row|Level_C1_04|3|3|plan|Level_C1_04_3_strategy3|0|0|0|16|0.402262062|-1
+row|Level_C1_04|3|3|creative|creative|0|0|0|5|0.2621471|-1101
+row|Level_C1_04|3|3|obvious|mono PulseRifle|0|0|0|3|0.138767153|-1301
 row|Level_C1_04|3|3|obvious|mono Cannon|0|0|0|3|0|-1301
 row|Level_C1_04|3|3|obvious|mono Laser|0|0|0|3|0|-1301
-row|Level_C1_04|3|3|obvious|naive|0|0|0|10|0.201859325|-601
-row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy1|1|3|700|0|0.6041286|3725.8
-row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy2|1|3|700|0|0.6041286|3725.8
-row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy3|1|3|700|0|0.6041286|3725.8
-row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy4|1|3|700|0|0.6041286|3725.8
-row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy5|1|3|700|0|0.6041286|3725.8
-row|Level_C1_05|0|4|creative|creative|0|0|0|7|0.48475945|-1001
-row|Level_C1_05|0|4|obvious|mono PulseRifle|0|0|0|8|0.6643062|-901
-row|Level_C1_05|0|4|obvious|mono Cannon|0|0|0|7|0|-1001
-row|Level_C1_05|0|4|obvious|mono Laser|0|0|0|7|0|-1001
-row|Level_C1_05|0|4|obvious|naive|0|0|0|8|0.7038565|-901
-row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy1|1|3|700|0|0.620902956|3723.8
-row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy2|1|3|700|0|1.37475288|3706.8
-row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy3|1|3|700|0|1.26099145|3706.8
-row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy4|1|3|700|0|1.16240156|3711.1
-row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy5|1|3|700|0|1.11126375|3708.3
-row|Level_C1_05|1|4|creative|creative|0|0|0|13|0.685291469|-401
-row|Level_C1_05|1|4|obvious|mono PulseRifle|0|0|0|4|0.68113|-1301
+row|Level_C1_04|3|3|obvious|naive|0|0|0|12|0.296907842|-401
+row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy1|1|3|700|0|0.621711433|3725.8
+row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy2|1|3|700|0|0.621711433|3725.8
+row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy3|1|3|700|0|0.8062155|3720.5
+row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy4|1|3|700|0|0.7839822|3719.7
+row|Level_C1_05|0|4|plan|Level_C1_05_0_strategy5|1|3|700|0|0.7839822|3719.7
+row|Level_C1_05|0|4|creative|creative|1|3|700|0|0.8594233|3702.2
+row|Level_C1_05|0|4|obvious|mono PulseRifle|0|0|0|8|0.275237739|-901
+row|Level_C1_05|0|4|obvious|mono Cannon|0|0|0|8|0|-901
+row|Level_C1_05|0|4|obvious|mono Laser|0|0|0|8|0|-901
+row|Level_C1_05|0|4|obvious|naive|0|0|0|8|0.466418862|-901
+row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy1|1|3|700|0|0.5709587|3726.4
+row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy2|1|3|700|0|0.541461766|3726.1
+row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy3|1|3|700|0|0.648408949|3719.5
+row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy4|1|3|700|0|0.6175043|3718.1
+row|Level_C1_05|1|4|plan|Level_C1_05_1_strategy5|1|3|700|0|0.4972288|3715
+row|Level_C1_05|1|4|creative|creative|1|3|700|0|0.563825667|3700.6
+row|Level_C1_05|1|4|obvious|mono PulseRifle|0|0|0|4|0|-1301
 row|Level_C1_05|1|4|obvious|mono Cannon|0|0|0|4|0|-1301
 row|Level_C1_05|1|4|obvious|mono Laser|0|0|0|4|0|-1301
 row|Level_C1_05|1|4|obvious|naive|0|0|0|4|0|-1301
-row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy1|1|3|800|0|0.5833042|3817.8
-row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy2|1|3|768.5334|0|0.493866265|3774.43335
-row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy3|1|3|755.0948|0|0.49710694|3769.69482
-row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy4|1|3|758.9015|0|0.493866265|3764.10156
-row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy5|1|3|755.0948|0|0.497017682|3763.19482
-row|Level_C1_05|2|4|creative|creative|0|0|0|10|0.2462333|-701
-row|Level_C1_05|2|4|obvious|mono PulseRifle|0|0|0|4|0.2464416|-1301
+row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy1|1|3|800|0|0.54534024|3810.9
+row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy2|1|3|800|0|0.54534024|3808
+row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy3|1|3|800|0|0.53649807|3803.5
+row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy4|1|3|726.472534|0|0.53649807|3733.87256
+row|Level_C1_05|2|4|plan|Level_C1_05_2_strategy5|1|2|694.8599|0|0.491467327|2709.46
+row|Level_C1_05|2|4|creative|creative|0|0|0|9|0.1836717|-801
+row|Level_C1_05|2|4|obvious|mono PulseRifle|0|0|0|4|0.0469249561|-1301
 row|Level_C1_05|2|4|obvious|mono Cannon|0|0|0|4|0|-1301
 row|Level_C1_05|2|4|obvious|mono Laser|0|0|0|4|0|-1301
-row|Level_C1_05|2|4|obvious|naive|0|0|0|4|0.14040029|-1301
-row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy1|1|2|802.3273|0|0.4819158|2811.1272
-row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy2|1|2|762.2284|0|0.3746812|2766.52832
-row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy3|1|2|596.6698|0|0.30868426|2603.17
-row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy4|1|2|528.91|0|0.2005663|2552.31
-row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy5|1|1|412.2188|0|0.199936062|1433.0188
-row|Level_C1_05|3|4|creative|creative|1|1|257.895844|0|0.197165668|1275.49585
-row|Level_C1_05|3|4|obvious|mono PulseRifle|0|0|0|11|0.237332687|-601
-row|Level_C1_05|3|4|obvious|mono Cannon|0|0|0|8|0|-901
-row|Level_C1_05|3|4|obvious|mono Laser|0|0|0|8|0|-901
-row|Level_C1_05|3|4|obvious|naive|0|0|0|11|0.20194076|-601
-row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy1|1|3|700|0|0.774472535|3700.1
-row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy2|1|3|700|0|0.5518968|3703
-row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy3|1|3|700|0|0.651980162|3707.3
-row|Level_C1_06|0|5|creative|creative|1|3|700|0|0.628272533|3708.4
-row|Level_C1_06|0|5|obvious|mono PulseRifle|0|0|0|7|0.373124421|-1101
+row|Level_C1_05|2|4|obvious|naive|0|0|0|4|0.100101724|-1301
+row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy1|1|3|900|0|0.597085357|3949.7
+row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy2|1|3|900|0|0.6285709|3948.4
+row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy3|1|3|900|0|0.6041249|3947.8
+row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy4|1|3|900|0|0.6041249|3947.9
+row|Level_C1_05|3|4|plan|Level_C1_05_3_strategy5|1|3|900|0|0.6041249|3947.6
+row|Level_C1_05|3|4|creative|creative|0|0|0|10|0.27682972|-701
+row|Level_C1_05|3|4|obvious|mono PulseRifle|0|0|0|6|0.09929369|-1101
+row|Level_C1_05|3|4|obvious|mono Cannon|0|0|0|6|0|-1101
+row|Level_C1_05|3|4|obvious|mono Laser|0|0|0|6|0|-1101
+row|Level_C1_05|3|4|obvious|naive|0|0|0|6|0.229264632|-1101
+row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy1|1|3|700|0|0.861206234|3717.1
+row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy2|1|3|700|0|0.8474712|3716.6
+row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy3|1|3|700|0|0.7017391|3717
+row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy4|1|3|700|0|0.7567032|3716
+row|Level_C1_06|0|5|plan|Level_C1_06_0_strategy5|1|3|700|0|0.751419067|3715.7
+row|Level_C1_06|0|5|creative|creative|1|3|700|0|0.761955261|3708.6
+row|Level_C1_06|0|5|obvious|mono PulseRifle|0|0|0|7|0.5105749|-1101
 row|Level_C1_06|0|5|obvious|mono Cannon|0|0|0|7|0|-1101
 row|Level_C1_06|0|5|obvious|mono Laser|0|0|0|7|0|-1101
-row|Level_C1_06|0|5|obvious|naive|0|0|0|7|0.5203621|-1101
-row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy1|0|0|0|10|0.24302724|-801
-row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy2|0|0|0|10|0.24302724|-801
-row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy3|0|0|0|14|0.04465221|-401
-row|Level_C1_06|1|5|creative|creative|0|0|0|11|0.258812279|-701
-row|Level_C1_06|1|5|obvious|mono PulseRifle|0|0|0|7|0.238037765|-1101
+row|Level_C1_06|0|5|obvious|naive|0|0|0|7|0.549936831|-1101
+row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy1|0|0|0|15|0.07067962|-301
+row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy2|0|0|0|15|0.07067962|-301
+row|Level_C1_06|1|5|plan|Level_C1_06_1_strategy3|0|0|0|15|0.07067962|-301
+row|Level_C1_06|1|5|creative|creative|0|0|0|10|0.2539506|-801
+row|Level_C1_06|1|5|obvious|mono PulseRifle|0|0|0|7|0.215955034|-1101
 row|Level_C1_06|1|5|obvious|mono Cannon|0|0|0|7|0|-1101
 row|Level_C1_06|1|5|obvious|mono Laser|0|0|0|7|0|-1101
-row|Level_C1_06|1|5|obvious|naive|0|0|0|7|0.0769743845|-1101
-row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy1|0|0|0|6|0.0280121341|-1201
-row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy2|0|0|0|7|0.0436386727|-1101
-row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy3|0|0|0|9|0.03106348|-901
-row|Level_C1_06|2|5|creative|creative|0|0|0|9|0.03106348|-901
-row|Level_C1_06|2|5|obvious|mono PulseRifle|0|0|0|7|0.1633493|-1101
+row|Level_C1_06|1|5|obvious|naive|0|0|0|7|0.0790277943|-1101
+row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy1|0|0|0|9|0.392622918|-901
+row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy2|0|0|0|9|0.39404273|-901
+row|Level_C1_06|2|5|plan|Level_C1_06_2_strategy3|0|0|0|9|0.39404273|-901
+row|Level_C1_06|2|5|creative|creative|0|0|0|9|0.0454496443|-901
+row|Level_C1_06|2|5|obvious|mono PulseRifle|0|0|0|7|0.2524627|-1101
 row|Level_C1_06|2|5|obvious|mono Cannon|0|0|0|7|0|-1101
-row|Level_C1_06|2|5|obvious|mono Laser|0|0|0|6|0|-1201
-row|Level_C1_06|2|5|obvious|naive|0|0|0|4|0.0588722751|-1401
-row|Level_C1_06|3|5|plan|Level_C1_06_3_strategy1|0|0|0|5|0.0284224823|-1301
-row|Level_C1_06|3|5|plan|Level_C1_06_3_strategy2|0|0|0|5|0.0284224823|-1301
-row|Level_C1_06|3|5|plan|Level_C1_06_3_strategy3|0|0|0|5|0.0284224823|-1301
-row|Level_C1_06|3|5|creative|creative|0|0|0|5|0.0266344789|-1301
-row|Level_C1_06|3|5|obvious|mono PulseRifle|0|0|0|6|0.07627116|-1201
-row|Level_C1_06|3|5|obvious|mono Cannon|0|0|0|6|0|-1201
+row|Level_C1_06|2|5|obvious|mono Laser|0|0|0|7|0|-1101
+row|Level_C1_06|2|5|obvious|naive|0|0|0|6|0.0974343|-1201
+row|Level_C1_06|3|5|plan|Level_C1_06_3_strategy1|1|1|208.060181|0|0.344167769|1212.16016
+row|Level_C1_06|3|5|plan|Level_C1_06_3_strategy2|1|1|170.529541|0|0.344167769|1173.12952
+row|Level_C1_06|3|5|creative|creative|0|0|0|4|0.07923411|-1401
+row|Level_C1_06|3|5|obvious|mono PulseRifle|0|0|0|5|0.11034023|-1301
+row|Level_C1_06|3|5|obvious|mono Cannon|0|0|0|5|0|-1301
 row|Level_C1_06|3|5|obvious|mono Laser|0|0|0|5|0|-1301
-row|Level_C1_06|3|5|obvious|naive|0|0|0|5|0.08571614|-1301
+row|Level_C1_06|3|5|obvious|naive|0|0|0|5|0.09012866|-1301

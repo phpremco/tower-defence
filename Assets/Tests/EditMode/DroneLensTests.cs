@@ -39,6 +39,8 @@ namespace Game.Tests
         /// <summary>
         /// Remco 2026-11-07: the repair drone is priced by the investment rule (BalanceSheet.RepairDronePrice) from the measured busy
         /// share, the repair cost per hit point and the levels' wave spacing; the asset must carry that price (Tools/Generate/Balance/9).
+        /// Round 31: Remco chose about 100 (BalanceRules.RepairDronePrice), so the asset carries that number and the rule's figure is advice
+        /// in the report; the test follows the choice.
         /// </summary>
         [Test]
         public void RepairDrone_PriceFollowsTheInvestmentRule()
@@ -49,7 +51,7 @@ namespace Game.Tests
             Assume.That(drone, Is.Not.Null);
             string report = BalanceStages.DronePriceReport(loaded, drone, out int price);
             Debug.Log("[DroneLens] " + report);
-            Assert.AreEqual(price, drone.Cost, "the repair drone's price is off the rule: run Tools/Generate/Balance/9 (ApplyDronePrice.cs); " + report);
+            Assert.AreEqual(price, drone.Cost, "the repair drone's price is off the chosen number (or the rule when none is chosen): run Tools/Generate/Balance/9 (ApplyDronePrice.cs); " + report);
         }
 
         [Test]

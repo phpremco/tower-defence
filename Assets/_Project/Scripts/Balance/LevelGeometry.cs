@@ -60,6 +60,21 @@ namespace Game.Balance
         /// <summary>Road cells before the base where leaked walkers stand and hammer it.</summary>
         public const int DoorstepCells = 3;
 
+        /// <summary>
+        /// Where a walker the defence gate holds stands, in world units before the gate along the road (the game's
+        /// <c>Enemy.BlockadeStopDistance</c>); the queue bunches on the road cell behind that point. Round 31: a gun is a
+        /// queue guard only when it reaches one of those two points. Until then the gate cell within reach plus
+        /// <see cref="QueueCells"/> counted, and the search stood towers past the gate that never fired while it held
+        /// (Glass Meadows Easy: "shots 0" for six waves, the hero alone).
+        /// </summary>
+        public const float StandDistance = 1.4f;
+
+        /// <summary>
+        /// A spot's road cells behind the defence gate in the ranking, against one approach cell (round 31): a gun there
+        /// fires only once the gate has fallen, so it is insurance, not the defence.
+        /// </summary>
+        public const float BehindRankWeight = 0.25f;
+
         private struct Sample
         {
             public float X;
@@ -99,6 +114,7 @@ namespace Game.Balance
         // Per-spot reach multipliers from the map (a raised platform, say): the data hook every lens and the plan search respect.
         private readonly Dictionary<long, float> _spotRange = new Dictionary<long, float>();
         private readonly Dictionary<(long, int), SpotCover> _covers = new Dictionary<(long, int), SpotCover>();
+        private List<(float X, float Y)> _queuePoints;
 
         /// <summary>The first gate every walker passes (the hero's post and the ledger's kill point), or null.</summary>
         public Cell? DefenceGate;
@@ -233,7 +249,7 @@ namespace Game.Balance
             }
 
             cover.Bunch = cover.GroundPass > 0f ? bunched / cover.GroundPass : 0f;
-            cover.Gate = DefenceGate.HasValue && Distance(spot, DefenceGate.Value) <= (cells + QueueCells) * (cells + QueueCells);
+            cover.Gate = ReachesQueue(spot, radius);
             foreach (Cell door in Doorstep())
             {
                 cover.Base |= Distance(spot, door) <= radius;
@@ -292,7 +308,9 @@ namespace Game.Balance
             foreach (Cell spot in Spots)
             {
                 SpotCover cover = CoverAt(spot, reach);
-                float score = air ? cover.AirPass : cover.GroundPass * (bunch ? 1f + cover.Bunch : 1f) + (cover.Gate ? QueueCells : 0f);
+                // Round 31: the approach and the queue are the defence while the gate holds; the road behind it counts for little.
+                float ground = cover.ApproachPass + cover.BehindPass * BehindRankWeight;
+                float score = air ? cover.AirPass : ground * (bunch ? 1f + cover.Bunch : 1f) + (cover.Gate ? QueueCells : 0f);
                 scored.Add((spot, score));
             }
 
@@ -352,6 +370,65 @@ namespace Game.Balance
             }
 
             return cells;
+        }
+
+        /// <summary>
+        /// The points before the defence gate where the walkers it holds stand (round 31): the stop point
+        /// <see cref="StandDistance"/> world units back along the main road, and the road cell behind it where the queue
+        /// bunches. Empty without a defence gate on the main road.
+        /// </summary>
+        public IReadOnlyList<(float X, float Y)> QueuePoints()
+        {
+            if (_queuePoints != null)
+            {
+                return _queuePoints;
+            }
+
+            _queuePoints = new List<(float X, float Y)>();
+            if (!DefenceGate.HasValue || MainRoad.Count < 2)
+            {
+                return _queuePoints;
+            }
+
+            int at = 0;
+            for (int i = 1; i < MainRoad.Count; i++)
+            {
+                at = Distance(MainRoad[i], DefenceGate.Value) < Distance(MainRoad[at], DefenceGate.Value) ? i : at;
+            }
+
+            if (Distance(MainRoad[at], DefenceGate.Value) > QueueCells * QueueCells)
+            {
+                return _queuePoints;
+            }
+
+            float back = StandDistance / CellSize;
+            int whole = Math.Max(0, Math.Min(at, (int)Math.Floor(back)));
+            Cell near = MainRoad[at - whole];
+            Cell far = MainRoad[Math.Max(0, at - whole - 1)];
+            float frac = at - whole - 1 >= 0 ? back - whole : 0f;
+            _queuePoints.Add((near.X + (far.X - near.X) * frac, near.Y + (far.Y - near.Y) * frac));
+            if (at - whole - 1 >= 0)
+            {
+                _queuePoints.Add((far.X, far.Y));
+            }
+
+            return _queuePoints;
+        }
+
+        // True when a gun at the spot with this squared reach (in cells) covers a point where the held walkers stand.
+        private bool ReachesQueue(Cell spot, float radius)
+        {
+            foreach ((float x, float y) in QueuePoints())
+            {
+                float dx = spot.X - x;
+                float dy = spot.Y - y;
+                if (dx * dx + dy * dy <= radius)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>Whether a tower at a spot with this reach covers a road cell (a slow field there multiplies its damage).</summary>

@@ -18,7 +18,7 @@ MonoBehaviour:
   _maxHealth: 10350
   _armor: 1800
   _speed: 0.4
-  _reward: 2389
+  _reward: 2407
   _baseDamage: 25
   _element: 0
   _attackStyle: 4
