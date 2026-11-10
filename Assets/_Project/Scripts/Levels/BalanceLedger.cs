@@ -116,6 +116,7 @@ namespace Game.Levels
             Income = difficulty.IncomeMultiplier,
             StartMoney = difficulty.StartingMoneyMultiplier,
             BossHealth = difficulty.BossHealthShare,
+            BossEscort = difficulty.BossEscortShare,
         };
 
         public static UpgradeStats Stats(UpgradeDefinition upgrade)

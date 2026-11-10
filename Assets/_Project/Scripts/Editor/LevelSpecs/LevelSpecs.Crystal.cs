@@ -233,8 +233,10 @@ namespace Game.Editor
                 Layout = new LayoutSpec
                 {
                     Key = "C1_05", Template = RoadTemplate.Hook, Seed = 105, Width = 40, Height = 22, Legs = 5, Gates = 4,
-                    // Remco 2026-11-09: the first gate at about 30 % of the road, so the opening legs' spots fire before anything is held.
-                    FirstGateShare = 0.3,
+                    // Round 29 put the first gate at 30 % of the road; in play the unheld approach made the level far harder (Remco,
+                    // 2026-11-09 night), so the gate is back at the default and the opening legs get their spots another way: no
+                    // terrain patch beside the first 40 % of the walk, so every cell along the first two columns is a build spot.
+                    OpeningClearShare = 0.4,
                     Terrain = new[] { new TerrainShare("Water", 0.06f), new TerrainShare("Stone", 0.03f), new TerrainShare(LayoutTerrain.RaisedName, 0.03f) },
                     Nests = new[] { new NestCount("Stone", 2) },
                 },

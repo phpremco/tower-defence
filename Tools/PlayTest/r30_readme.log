@@ -1,0 +1,2 @@
+== readme: the plans that won in stage B
+run_script	true	{"diagnostics":[],"compileMs":16,"executeMs":272,"assemblyName":"PipelineRunScript_ReadmePlans_4133eb658444454d82400035c041afd6","success":true,"result":"README written: 20 of 24 replayed cells have a plan that won in play."}	{"file":"Tools/PlayTest/Scripts/ReadmePlans.cs","entry":"ReadmePlans.Run","timeout_ms":"300000"}

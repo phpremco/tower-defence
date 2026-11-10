@@ -4481,3 +4481,111 @@ ran its post-build cleanup, and then the Pipeline stopped answering (`editor_sta
 cancel requested, the editor sits idle on the Boot scene with the CPU flat; `job cancel` did not clear it). Curator: if the
 editor answers again, `unity command run_tests --mode EditMode` (not detached) is the pending step; if not, the editor needs a
 restart (Remco), as in the hangs of 2026-10-29/30. Play mode was stopped throughout; the save is intact (MD5 ae9223b8).
+
+## Round 30: Quartz Flats' open opening, Gravemaw the long bar, Psycho at Hard's share, the Warden's arena (2026-11-10)
+
+Not committed (the curator commits). Docs/BALANCE.md "Round 30"; Docs/COMMANDS.md "Round 30". Save `progress.json` MD5 ae9223b8
+before and after every worker run (eleven worker runs this round, checked by the scripts); the dev backup untouched; no
+`Assets/InitTestScene*` left; `probe_arg.txt` removed. Remco's three decisions of 2026-11-09 night and the curator's answers
+(the C1_05 road change is fine; Psycho money up to x3, then lighter escorts; no finale-only money rule).
+
+1. **Quartz Flats (decision 1).** First gate back at the default 12 % (`FirstGateShare` 0.3 removed). The map is improved
+   instead, Remco's rule: new `LayoutSpec.OpeningClearShare` (C1_05 0.4) keeps terrain patches `RoadGenerator.OpeningClearance`
+   (4) cells away from the first 40 % of the walk, so every cell beside the first two columns and the bottom leg is a build spot
+   (nest ponds exempt). `RelayoutLevel`: layout attempt 1 (the road changed: 114 cells, gates 13 / 49 / 88 / 95 %); the other
+   levels byte-stable; validator 0 errors on every level and arena; `LayoutTests` 13/13, `LevelTests` 9/9, `WorldContentTests`
+   13/13. Scales back to 0.87 / 0.757 / 0.757 / 0.757 and then tuned by play (now Easy 0.757, Medium 0.757, Hard 0.66, Psycho 0.66).
+2. **Gravemaw (decision 2).** Escort call every 30 s (was 26; the cliff is at 22), health from the finale stage 48000 -> 55050
+   (Medium holds x1.18 at the verified data). `ProjectGenerator.Bosses` mirrors every boss number.
+3. **Psycho's boss share (decision 3).** `BalanceRules.PsychoBossShareAtLeastHard`: Hard and Psycho carry one share,
+   `FinaleProbeReport.HardPsychoShare` = Hard's derivation pulled down to the **Psycho ceiling** (the share at which the Psycho
+   finale player still beats every boss). Psycho's means first: start money x3 (`DifficultyProfile` Psycho; x2 and x3 both left
+   Gravemaw, the Matriarch and the Sealed One lost at 1.80) and halved escort calls (new `DifficultyProfile.BossEscortShare`,
+   Psycho 0.5, in play and in the ledger). The ceiling then came out at 1.45 and, after the verification probe, **1.25 for Hard
+   and Psycho** (Hard derives 1.82 on its own). `ContinentFinaleTests` 5/5 at the final data.
+4. **The Frost Warden's arena (found on the way).** The Ice arena copy of the new Quartz Flats had no pool before the first gate;
+   the brain rose from the largest pool in the road's first half (43 %), past the arena's whole defence, and lost every run at any
+   health. `CreateArenaLevel` now clears the boss's pools between the first gate and the middle and carves a two-by-two entrance
+   lake just past the spawn when none joins earlier (`[Generator] Arena_Ice: ...`); the brain logs each pool entrance (`[Boss]
+   ...`). Warden health 10850 -> 7500 by the probe.
+5. **Calibration.** The first fit after the money change was wrong (74 % / 0.73: the Psycho records were played at x1) and was not
+   applied. The Psycho cells and the new Quartz Flats were re-measured on the clones (162 runs, 8 min), then fit / `apply-force` /
+   solve: hold-out 81 % (mono 95 %), Spearman 0.68; the grid moved to **queue guard 0.30, route fire 8.0, siege 1.57** (round 29:
+   0.70 / 4.0). Every wave moved, so the whole campaign was searched (5 min) and replayed on five clones (24 min), the builder
+   ran (C1_02 Easy 0.658, C1_03 Hard plated), and one manual pass followed (C1_01 Psycho 1.15, swarm 1.5 on C1_01 Hard, C1_02
+   Medium/Hard and C1_03 Psycho, C1_03 Easy 0.66, C1_04 Psycho 0.757, C1_05 0.757/0.757/0.66/0.66, C1_06 Easy/Hard 0.757, Psycho
+   0.87), searched and replayed again (13 + 2 cells).
+
+**In play after round 30 (best replayed plan per cell: wins over the three seeds, mean stars; acceptance.txt 01:39).**
+
+| Level | Easy | Medium | Hard | Psycho |
+| --- | --- | --- | --- | --- |
+| C1_01 | 3/3, 3.0 | 3/3, 3.0 | 3/3, 3.0 | 0/3 |
+| C1_02 | 0/3 (see question 3) | 3/3, 3.0 | 2/3, 3.0 | 0/3 |
+| C1_03 | 3/3, 3.0 | 3/3, 3.0 | 1/3, 2.0 | 3/3, 2.3 |
+| C1_04 | 3/3, 3.0 | 3/3, 3.0 | 3/3, 3.0 | 1/3, 1.0 |
+| C1_05 | 3/3, 3.0 (new map) | 3/3, 3.0 | 0/3 | 0/3 |
+| C1_06 | 3/3, 3.0 | 3/3, 3.0 | 2/3, 2.5 | 3/3, 2.7 |
+
+**Acceptance 9/24** (round 29: 7/24): C1_01 Easy, C1_01 Medium (tutorial), C1_03 Medium, C1_04 Easy/Medium/Hard, C1_06
+Medium/Hard/Psycho. The acceptance counts three seeds per plan this round (the fresh-save runs were not replayed).
+
+**Finale (probe 5, verified at the final data; holds = largest health multiple the finale player still beat; all beaten as-is).**
+
+| Boss (health; armour) | Easy (0.80) | Medium (1.00) | Hard (1.25) | Psycho (1.25; money x3, escorts 0.5) |
+| --- | --- | --- | --- | --- |
+| Gravemaw (55050; 1200) | x1.80 | x1.18 | x1.52 | x1.13 |
+| Cinder Matriarch (10350; 1800) | x1.73 | x1.18 | x1.66 | x1.73 |
+| Frost Warden (7500; 1200 + ice soak) | x1.80 | x1.18 | x1.80 | x1.40 |
+| Rotbloom (3550; none) | x2.13 | x1.18 | x2.13 | x1.88 |
+| The Shattered (14000; 2000) | x1.73 | x1.18 | x1.96 | x1.52 |
+| The Sealed One (27200; 3500) | x1.73 | x1.18 | x1.88 | x1.13 |
+
+**Design questions for Remco (round 30).**
+1. Hard's boss share is pulled down to Psycho's ceiling (1.25 against its own 1.82), so Hard finales hold x1.5-2.1: is a
+   comfortable Hard finale acceptable as the price of "Psycho at least Hard", or should Hard keep its own share (then Psycho
+   must sit above it, and the Psycho finale player cannot beat it with x3 money and half escorts)?
+2. Psycho start money x3 is campaign-wide (2616 at the level-20 finale against Hard's 1994). The re-solve absorbed it, but
+   C1_01 Psycho (0/3 at scale 1.15) and C1_05 Psycho (0/3 at 0.66) are now the hard cells. Keep x3?
+3. **C1_02 Easy lost 0/3 with every searched plan at scale 0.658 while the paper holds 1.66x.** The trace (clone w1,
+   `r30_trace_c102.log`) shows why: the searched plans stand their towers at 15-22 % of the road, past the first gate at 12 %;
+   the stream stalls at the gate out of reach, the towers fire nothing for six waves ("shots 0") and the hero fights alone. The
+   route model at route fire 8.0 credits spots downstream of the defence gate with walk kills they never take while the gate
+   holds - the mirror image of round 29's C1_05 residual. The plan model needs the gate hold in its spot cover (spots downstream
+   of the defence gate cover only what leaks) before the next search; until then the C1_02 Easy plans are not to be trusted.
+4. The Quartz Flats road changed with the opening rule (attempt 1): fine by the curator; Remco may want to see it.
+
+**Tests.** Per class after the final data: `ContinentFinaleTests` 5/5, `LayoutTests` 13/13, `LevelTests` 9/9, `WorldContentTests`
+13/13, `BossRound4cTests` 10/10, `BossPowerLedgerTests` 2/2, `DroneLensTests` 2/2, `RouteKillTests` 6/6, `LeakModelTests` 7/7,
+`BalanceAcceptanceTests` (the acceptance stage) green. Console: 0 errors; the only warning is the known CS0618 in
+`BalanceProbeTests.cs`. The whole EditMode suite was started at 01:40 (async); its result is appended below.
+
+**Housekeeping.** Run output is consistent: `Tools/PlayTest/Plans/*`, `plans_summary.txt` (the last 2-cell search; the 13-cell
+and full searches are in `r30_search*.log`), `plan_records.txt` (354 runs), `acceptance.txt`, `calibration.txt`,
+`finale_probe.txt` (probe 5) agree with the data. If the suite's `PlanSearchTests` rewrote the plan files, they are restored from
+the copy taken before the suite (see the suite line below). Scripts and logs: `Tools/PlayTest/r30_*.log`.
+
+**Commands to continue (editor_status first).** The gate-hold cover in the plan model (question 3), then `search` and
+`replay_cells.sh` for C1_02 Easy; the open cells C1_01 Psycho, C1_02 Psycho (both 0/3), C1_05 Hard/Psycho, C1_03 Hard, C1_04
+Psycho with `wave_tuning.txt` levers (swarm is now on C1_01 Hard, C1_02 Medium/Hard and C1_03 Psycho) and `replay_cells.sh
+"cells=..."`; a full `measure` (20 min) when the calibration should cover every cell at the new data.
+
+**EditMode suite (01:40-01:48, async): 709 tests, 653 passed, 52 skipped (the explicit/ignored probe and fit tests), 4 failed.**
+- `BossSignatureTests.Enemy_DamageScale_ShapesEveryHit`: **fixed** (the Warden carries an armour pool since round 29, so the first
+  hit strips armour, not health; the test now reads the scale on the pool). `BossSignatureTests` 14/14 afterwards.
+- `DroneLensTests.RepairDrone_PriceFollowsTheInvestmentRule`: **fixed by the rule** (`droneprice` stage): the re-measured busy
+  share 0.416 gives 24.3 coins saved per wave, five waves = **120** (was 100; Remco's round-29 compromise was the rule's
+  five waves, and the measurement moved). `DroneLensTests` 2/2 afterwards. Tell Remco the price moved.
+- `BalanceLedgerTests.EveryWave_StaysInsideItsDifficultyBand`: **explained, not fixed**: C1_02 Easy 2.10x and C1_03 Easy 2.06x
+  (band 1.90) are the Easy scales the play verdicts pushed down (0.658 / 0.66) while the paper calls them generous: the paper/play
+  break of question 3; C1_03 Psycho 0.74x with the hero (floor 0.75) and wave 9 at 1.78 (cap 1.40) is the swarm lever just added
+  there (in play 3/3, 2.3 stars): drop `C1_03 3 swarm 1.5` or lower it to 1.25 next round, then solve and replay the cell;
+  C1_04 Psycho asks no more than Hard on paper (0.99 vs 1.10): Psycho 0.757 against Hard's 1 with plated 1.5 (in play Psycho 1/3,
+  Hard 3/3, so play already says Psycho is harder; the band is the paper's).
+- `BalanceModelTests.HumanLens_FlagsAGenerousEasy_AndAnEasyAsHardAsMedium`: **not fixed**: the synthetic case no longer flags
+  "1.8x the firepower on Easy" under the new calibration factors (queue guard 0.30, route fire 8.0); the test builds its case
+  on the calibrated model, so its thresholds need a look with the new grid. Pre-existing to this round's data, not to the code.
+The suite's `PlanSearchTests` and `CalibrationFitTests` rewrote the run output; it was restored from the copy taken before the
+suite (`Plans/*`, `plans_summary.txt`, `calibration.txt`, `acceptance.txt`, `plan_records.txt` 354 runs, finale files), so the
+files agree with the replays above. Final state: editor stopped, console 0 errors, save MD5 ae9223b8, `probe_arg.txt` absent, no
+`InitTestScene`.

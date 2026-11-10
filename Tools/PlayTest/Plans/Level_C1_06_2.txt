@@ -1,4 +1,4 @@
-Crysium Vein (Level_C1_06) on Hard: strategy search, 1500 strategies sampled, 0 hold on paper, base 800, cap 1.30. calibration 2026-11-09 14:52, seeds 1,2,3, step 0.2, inputs fa88200b (current)
+Crysium Vein (Level_C1_06) on Hard: strategy search, 1500 strategies sampled, 357 hold on paper, base 800, cap 1.30. calibration 2026-11-10 00:48, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
 A strategy is a way of playing, not a timeline: which spots each tower takes first, which tower answers which threat, when an upgrade beats a
 new gun, when mines, the slow field and the drones come in. The adaptive bot plays it wave by wave; on paper the same rules give the build
 order shown. The paper verdict is a pre-screen (the siege model); the replay over the seeds is the judge. Cells are (x,y) on the level grid.
@@ -10,58 +10,177 @@ Best spots per tower (first is best):
   Flak Turret    (36,10) cover 12.5/9.0 air door; (36,7) cover 11.0/8.5 air door; (36,11) cover 13.5/8.5 air door; (34,10) cover 13.5/8.0 air door; (35,10) cover 13.0/8.0 air door; (35,11) cover 14.0/8.0 air door;
 
 Obvious plans on paper:
-  mono PulseRifle    falls w6, margin 0.17 (leaks from wave 6)
-  mono Cannon        falls w6, margin 0.00 (leaks from wave 6)
-  mono Laser         falls w4, margin 0.00 (leaks from wave 4)
-  naive              falls w4, margin 0.06 (leaks from wave 3)
+  mono PulseRifle    falls w7, margin 0.25 (leaks from wave 8)
+  mono Cannon        falls w7, margin 0.00 (leaks from wave 7)
+  mono Laser         falls w7, margin 0.00 (leaks from wave 7)
+  naive              falls w7, margin 0.09 (leaks from wave 4)
 
-The creative reference on paper: falls w6, margin 0.00
-  from wave  1: build Cannon at (17,11); build Cannon at (17,7); build Cannon at (17,10)
-  from wave  5: repair the gates when they would fall or it is cheaper than a gun
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10)
-  from wave  7: repair the gates when they would fall or it is cheaper than a gun; buy the HarvestDrone
-  from wave  8: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (36,10)
-  from wave  9: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11)
-  from wave 10: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); build Gun Turret at (12,10); upgrade the tower at (12,10)
-  from wave 13: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); build Gun Turret at (12,10); upgrade the tower at (12,10)
-  from wave 14: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11)
-  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11)
-  from wave 16: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11)
-  from wave 17: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (17,11); build Gun Turret at (12,10)
-  from wave 18: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); build Gun Turret at (12,10); upgrade the tower at (12,10)
+The creative reference on paper: falls w10, margin 0.09
+  from wave  1: build Cannon at (17,11); build Gun Turret at (12,10); upgrade the tower at (12,10); upgrade the tower at (12,10)
+  from wave  5: build Flak Turret at (36,10)
+  from wave  8: build Gun Turret at (12,11); upgrade the tower at (12,11); upgrade the tower at (36,10)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; buy the RepairDrone
+  from wave 12: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,11)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); build Cannon at (17,7)
+  from wave 14: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (17,11); upgrade the tower at (12,11); build Cannon at (17,7)
+  from wave 15: repair the gates when they would fall or it is cheaper than a gun
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; build Gun Turret at (13,10)
+  from wave 17: repair the gates when they would fall or it is cheaper than a gun; lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); lay a SlowField on the road at (15,9); upgrade the tower at (12,11)
+  from wave 18: repair the gates when they would fall or it is cheaper than a gun; lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); lay a SlowField on the road at (15,9); upgrade the tower at (17,11)
 
-Distinct winning strategies (0; different spots, mixes or timing):
+Distinct winning strategies (24; different spots, mixes or timing):
 
-No strategy holds on paper. Best found: falls w6, margin 0.05, leaks from wave 6
-  Towers per threat: swarm: whatever the ledger rates best; pack: Gun Turret; plated: Laser Turret; air: Cannon; boss: Cannon.
-  Gun Turret spots, best first: (14,11) (14,7) (12,10).
-  Cannon spots, best first: (12,10) (17,7) (17,10).
+Level_C1_06_2_strategy1: 3* base 800, margin 0.49, mean cover 0.99, coins left 124, gate repairs 3 (73 coins)
+  Towers per threat: swarm: Gun Turret; pack: whatever the ledger rates best; plated: Cannon; air: whatever the ledger rates best; boss: whatever the ledger rates best.
+  Gun Turret spots, best first: (12,10) (12,11) (13,10).
+  Cannon spots, best first: (17,11) (12,10) (17,10).
   Laser Turret spots, best first: (13,10) (11,10) (12,10).
   Flak Turret spots, best first: (36,10) (36,7) (36,11).
-  Upgrades: 1 guns down first, then an upgrade is worth 0.96x its value per coin against a new gun.
-  Mines: before every boss wave, and before a crowd wave when the guns would not hold it (cover under 1.00).
+  Upgrades: 1 guns down first, then an upgrade is worth 1.70x its value per coin against a new gun.
+  Mines: not for bosses, never for crowds.
   Slow field: when the guns would not hold the wave (cover under 1.00) or the slow pays by the damage rule.
-  Harvester: in the first 30 % of the level, once the guns hold the waves at hand with cover 1.00.
+  Harvester: in the first 40 % of the level, once the guns hold the waves at hand with cover 1.50.
   Repair drone: never.
   Attack drone: once 12 guns stand.
   Gate upgrades: never.
   Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
   Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
   Selling: never.
-  from wave  1: build Cannon at (12,10); build Gun Turret at (14,11); upgrade the tower at (14,11); upgrade the tower at (14,11)
-  from wave  5: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10)
-  from wave  6: repair the gates when they would fall or it is cheaper than a gun
-  from wave  7: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10)
-  from wave  8: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); build Gun Turret at (14,7)
-  from wave  9: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); build Gun Turret at (14,7)
-  from wave 10: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); build Gun Turret at (14,7)
-  from wave 11: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10)
-  from wave 12: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10)
-  from wave 13: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10)
-  from wave 14: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10); build Gun Turret at (14,7)
-  from wave 15: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10); build Gun Turret at (14,7)
-  from wave 16: repair the gates when they would fall or it is cheaper than a gun; build Flak Turret at (36,10); upgrade the tower at (12,10); build Gun Turret at (14,7); upgrade the tower at (14,7)
-  from wave 17: repair the gates when they would fall or it is cheaper than a gun
-  from wave 18: repair the gates when they would fall or it is cheaper than a gun
+  The build order the paper took:
+  from wave  1: build Cannon at (17,11); build Gun Turret at (12,10); upgrade the tower at (12,10); upgrade the tower at (12,10)
+  from wave  5: build Flak Turret at (36,10)
+  from wave  8: upgrade the tower at (17,11)
+  from wave  9: build Gun Turret at (12,11)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 12: upgrade the tower at (36,10)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 14: build Cannon at (17,10)
+  from wave 16: lay a SlowField on the road at (15,9); upgrade the tower at (17,10); build Gun Turret at (13,10)
+  from wave 17: lay a SlowField on the road at (15,9); upgrade the tower at (13,10); upgrade the tower at (13,10); upgrade the tower at (17,11)
+  from wave 18: lay a SlowField on the road at (15,9)
+  waves: w1 0.44  w2 0.46  w3 0.77  w4 0.96  w5 1.06  w6 1.13  w7 1.01  w8 1.55  w9 1.37  w10 1.57  w11 0.96  w12B 2.03  w13 1.76  w14 1.23  w15 2.01  w16 1.12  w17 1.03  w18B 1.20  
+
+Level_C1_06_2_strategy2: 3* base 800, margin 0.49, mean cover 0.96, coins left 127, gate repairs 3 (73 coins)
+  Towers per threat: swarm: whatever the ledger rates best; pack: whatever the ledger rates best; plated: whatever the ledger rates best; air: Cannon; boss: Cannon.
+  Gun Turret spots, best first: (12,10) (12,11) (13,10).
+  Cannon spots, best first: (17,11) (17,7) (17,10).
+  Laser Turret spots, best first: (11,10) (13,10) (12,10).
+  Flak Turret spots, best first: (36,10) (36,7) (36,11).
+  Upgrades: 1 guns down first, then an upgrade is worth 1.27x its value per coin against a new gun.
+  Mines: before every boss wave, and before a crowd wave when the guns would not hold it (cover under 1.00).
+  Slow field: never.
+  Harvester: in the first 60 % of the level, once the guns hold the waves at hand with cover 1.20.
+  Repair drone: never.
+  Attack drone: once 12 guns stand.
+  Gate upgrades: never.
+  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
+  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
+  Selling: never.
+  The build order the paper took:
+  from wave  1: build Cannon at (17,11); build Gun Turret at (12,10); upgrade the tower at (12,10); upgrade the tower at (12,10)
+  from wave  5: build Flak Turret at (36,10)
+  from wave  8: upgrade the tower at (17,11)
+  from wave  9: build Gun Turret at (12,11)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 12: upgrade the tower at (36,10)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 14: build Cannon at (17,7)
+  from wave 16: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); upgrade the tower at (17,7)
+  from wave 17: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); build Cannon at (17,10); upgrade the tower at (17,10)
+  from wave 18: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9)
+  waves: w1 0.44  w2 0.46  w3 0.77  w4 0.96  w5 1.06  w6 1.13  w7 1.01  w8 1.55  w9 1.37  w10 1.57  w11 0.96  w12B 2.03  w13 1.76  w14 1.23  w15 2.01  w16 1.47  w17 1.16  w18B 1.45  
+
+Level_C1_06_2_strategy3: 3* base 800, margin 0.48, mean cover 0.97, coins left 89, gate repairs 2 (91 coins)
+  Towers per threat: swarm: whatever the ledger rates best; pack: Laser Turret; plated: Cannon; air: Laser Turret; boss: whatever the ledger rates best.
+  Gun Turret spots, best first: (12,10) (13,10) (12,11).
+  Cannon spots, best first: (17,10) (17,11) (17,7).
+  Laser Turret spots, best first: (13,10) (12,10) (13,11).
+  Flak Turret spots, best first: (36,7) (36,10) (36,11).
+  Upgrades: 1 guns down first, then an upgrade is worth 0.79x its value per coin against a new gun.
+  Mines: before every boss wave, never for crowds.
+  Slow field: when the guns would not hold the wave (cover under 1.20) or the slow pays by the damage rule.
+  Harvester: never.
+  Repair drone: once a gun or gate has lost 25 % of its health.
+  Attack drone: once 12 guns stand.
+  Gate upgrades: never.
+  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
+  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
+  Selling: never.
+  The build order the paper took:
+  from wave  1: build Cannon at (17,10); build Gun Turret at (12,10); upgrade the tower at (12,10); upgrade the tower at (12,10)
+  from wave  5: build Flak Turret at (36,7)
+  from wave  7: upgrade the tower at (36,7)
+  from wave  8: build Gun Turret at (13,10); upgrade the tower at (13,10)
+  from wave  9: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun
+  from wave 12: upgrade the tower at (17,10)
+  from wave 13: build Cannon at (17,11)
+  from wave 14: upgrade the tower at (17,11)
+  from wave 16: buy the RepairDrone
+  from wave 17: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); lay a SlowField on the road at (15,9); upgrade the tower at (13,10); build Cannon at (17,7)
+  from wave 18: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9)
+  waves: w1 0.44  w2 0.46  w3 0.77  w4 0.96  w5 1.06  w6 1.13  w7 1.00  w8 0.81  w9 1.86  w10 2.16  w11 1.22  w12B 2.09  w13 1.66  w14 1.26  w15 1.82  w16 1.72  w17 0.90  w18B 1.65  
+
+Level_C1_06_2_strategy4: 3* base 800, margin 0.48, mean cover 0.91, coins left 95, gate repairs 4 (119 coins)
+  Towers per threat: swarm: Laser Turret; pack: Laser Turret; plated: whatever the ledger rates best; air: whatever the ledger rates best; boss: whatever the ledger rates best.
+  Gun Turret spots, best first: (12,10) (13,10) (12,11).
+  Cannon spots, best first: (17,11) (17,7) (17,10).
+  Laser Turret spots, best first: (13,10) (11,10) (12,10).
+  Flak Turret spots, best first: (36,10) (36,7) (36,11).
+  Upgrades: 2 guns down first, then an upgrade is worth 1.25x its value per coin against a new gun.
+  Mines: not for bosses, never for crowds.
+  Slow field: when the guns would not hold the wave (cover under 1.00) or the slow pays by the damage rule.
+  Harvester: in the first 60 % of the level, once the guns hold the waves at hand with cover 1.00.
+  Repair drone: once a gun or gate has lost 10 % of its health.
+  Attack drone: once 6 guns stand.
+  Gate upgrades: never.
+  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
+  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
+  Selling: never.
+  The build order the paper took:
+  from wave  1: build Cannon at (17,11); build Laser Turret at (13,10); upgrade the tower at (13,10)
+  from wave  6: build Flak Turret at (36,10)
+  from wave  8: upgrade the tower at (17,11)
+  from wave  9: build Gun Turret at (12,10)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun
+  from wave 12: upgrade the tower at (12,10)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (36,10); upgrade the tower at (12,10)
+  from wave 14: upgrade the tower at (13,10)
+  from wave 16: repair the gates when they would fall or it is cheaper than a gun; buy the RepairDrone
+  from wave 17: lay a SlowField on the road at (15,9); build Cannon at (17,7); upgrade the tower at (17,7)
+  from wave 18: lay a SlowField on the road at (15,9)
+  waves: w1 0.45  w2 0.47  w3 0.79  w4 0.98  w5 1.09  w6 1.16  w7 1.57  w8 1.74  w9 1.39  w10 1.59  w11 1.09  w12B 2.08  w13 1.79  w14 1.30  w15 2.05  w16 1.81  w17 1.13  w18B 1.37  
+
+Level_C1_06_2_strategy5: 3* base 800, margin 0.49, mean cover 0.96, coins left 82, gate repairs 3 (81 coins)
+  Towers per threat: swarm: whatever the ledger rates best; pack: whatever the ledger rates best; plated: whatever the ledger rates best; air: whatever the ledger rates best; boss: Laser Turret.
+  Gun Turret spots, best first: (13,10) (12,11) (14,7).
+  Cannon spots, best first: (17,11) (17,10) (17,7).
+  Laser Turret spots, best first: (11,10) (13,11) (13,10).
+  Flak Turret spots, best first: (36,10) (36,7) (36,11).
+  Upgrades: 1 guns down first, then an upgrade is worth 1.20x its value per coin against a new gun.
+  Mines: before every boss wave, and before a crowd wave when the guns would not hold it (cover under 1.00).
+  Slow field: never.
+  Harvester: in the first 40 % of the level, once the guns hold the waves at hand with cover 1.20.
+  Repair drone: never.
+  Attack drone: once 8 guns stand.
+  Gate upgrades: never.
+  Sky guns: saved for from the wave whose income covers one before a raid the standing sky guns cannot hold; a splash gun before the first crowd wave.
+  Repairs: the gate when it would fall in the coming wave or a hit point is cheaper to restore than to stop with a gun; wrecks scrapped.
+  Selling: never.
+  The build order the paper took:
+  from wave  1: build Cannon at (17,11); build Gun Turret at (13,10); upgrade the tower at (13,10); upgrade the tower at (13,10)
+  from wave  5: build Flak Turret at (36,10)
+  from wave  8: upgrade the tower at (17,11)
+  from wave  9: build Gun Turret at (12,11)
+  from wave 10: repair the gates when they would fall or it is cheaper than a gun
+  from wave 11: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 12: upgrade the tower at (36,10)
+  from wave 13: repair the gates when they would fall or it is cheaper than a gun; upgrade the tower at (12,11)
+  from wave 14: build Cannon at (17,10)
+  from wave 16: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); upgrade the tower at (17,10); build Gun Turret at (14,7)
+  from wave 17: lay a Mine on the road at (15,9); lay a Mine on the road at (14,9); upgrade the tower at (14,7); upgrade the tower at (14,7); upgrade the tower at (17,11)
+  waves: w1 0.44  w2 0.46  w3 0.76  w4 0.96  w5 1.06  w6 1.13  w7 1.00  w8 1.55  w9 1.37  w10 1.56  w11 0.96  w12B 2.02  w13 1.76  w14 1.23  w15 2.00  w16 1.42  w17 1.09  w18B 1.59  

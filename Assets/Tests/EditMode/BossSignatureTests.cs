@@ -224,8 +224,14 @@ namespace Game.Tests
                 var definition = AssetDatabase.LoadAssetAtPath<EnemyDefinition>("Assets/_Project/Data/Enemies/FrostWarden.asset");
                 enemy.Initialize(definition, new[] { Vector3.zero, Vector3.forward }, 1f, 1f, 0f, new TargetRegistry(), new StructureRegistry());
                 enemy.SetDamageScale(0.5f);
+                // Round 29 gave the Warden an armour pool: the first hits strip that, so the scale is read on the armour until it is gone.
                 enemy.TakeDamageFrom(100f, null, false);
-                Assert.AreEqual(definition.MaxHealth - 50f, enemy.Health.Current, 0.01f);
+                float expected = definition.HasArmor ? definition.MaxHealth : definition.MaxHealth - 50f;
+                Assert.AreEqual(expected, enemy.Health.Current, 0.01f);
+                if (definition.HasArmor)
+                {
+                    Assert.AreEqual(definition.Armor - 50f, enemy.Health.Armor, 0.01f, "half the hit reaches the armour pool");
+                }
             }
             finally
             {

@@ -1244,6 +1244,8 @@ namespace Game.Bosses
             BossClip burst = BossClip.Of(_view, ModelClipRole.SurfaceBurst, _boss.MechanicClipRate);
             if (!burst.Exists || !TryEntrancePool(_field, _boss.Dive.Pools, out TerrainKind kind, out IReadOnlyList<Vector2Int> cells, out int pool))
             {
+                // One line per boss: the finale probe reads where a pool boss came up (round 30: the Frost Warden's arena).
+                Debug.Log($"[Boss] {_boss.name}: no pool entrance (burst clip {burst.Exists}); it walks the road from the start.");
                 yield break;
             }
 
@@ -1263,6 +1265,7 @@ namespace Game.Bosses
                 heading = BossGeometry.Flat(OffRoadRoute.NearestRoadCellWorld(_field.Level, middle) - middle);
             }
 
+            Debug.Log($"[Boss] {_boss.name}: rises from the {kind} pool of {cells.Count} cells at {_field.Level.Grid.WorldToCell(middle)} ({RoadShareAt(_field, middle):P0} of the road), exit {_field.Level.Grid.WorldToCell(exit)}.");
             _wake.SetKind(kind, WakeSize);
             _enemy.Place(from, heading);
             _wake.Show(true, from);

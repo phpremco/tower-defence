@@ -17,5 +17,5 @@ Level_C1_02 1|2
 Level_C1_02 2|2
 Level_C1_03 3|2
 Level_C1_04 2|2
-Level_C1_02 0|1
-Level_C1_03 2|1
+Level_C1_02 0|2
+Level_C1_03 2|2

@@ -1,0 +1,107 @@
+{
+    "Level": "Level_C1_06",
+    "Difficulty": 0,
+    "Name": "Level_C1_06_0_strategy5",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                12,
+                12,
+                13,
+                13,
+                14,
+                14
+            ],
+            "Y": [
+                10,
+                11,
+                10,
+                11,
+                7,
+                11
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                17,
+                18,
+                17,
+                16,
+                17,
+                12
+            ],
+            "Y": [
+                11,
+                11,
+                10,
+                11,
+                7,
+                10
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                12,
+                13,
+                11,
+                13,
+                14,
+                15
+            ],
+            "Y": [
+                10,
+                10,
+                10,
+                11,
+                10,
+                10
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                36,
+                36,
+                36,
+                34,
+                35,
+                35
+            ],
+            "Y": [
+                10,
+                7,
+                11,
+                10,
+                10,
+                11
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 1.881868839263916
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 0.6232197880744934
+        }
+    ],
+    "UpgradeBias": 1.600000023841858,
+    "TowersBeforeUpgrades": 4,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 1.5,
+    "HarvesterShare": 0.6000000238418579,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 0,
+    "GateUpgradeBias": 1.2000000476837158,
+    "AllowSell": false
+}

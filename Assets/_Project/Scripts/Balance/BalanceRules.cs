@@ -320,6 +320,12 @@ namespace Game.Balance
         public float FinaleHoldShare = 0.85f;
 
         /// <summary>
+        /// Round 30 (Remco): Psycho's boss health share is never below Hard's, whatever the finale probe derives; the finale stage
+        /// writes the larger of the two and ContinentFinaleTests asks that the Psycho finale player still beats every boss as-is.
+        /// </summary>
+        public bool PsychoBossShareAtLeastHard = true;
+
+        /// <summary>
         /// Waves before a level's end at which a repair drone bought then still earns its price back (Remco 2026-11-07: a real
         /// investment; the last waves never pay). BalanceSheet.RepairDronePrice derives the drone's price from it. 3 until
         /// 2026-11-09; Remco then set the price at about 100 as a compromise between the rule's 60 (busy share 0.34 measured

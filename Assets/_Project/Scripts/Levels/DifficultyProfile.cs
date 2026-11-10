@@ -17,6 +17,8 @@ namespace Game.Levels
         [SerializeField] [Min(0.1f)] private float _startingMoneyMultiplier = 1f;
         [Tooltip("Extra health of a continent boss on this difficulty, on top of the health multiplier every creature gets: the boss carries its share of the finale threat (Docs/BALANCE.md). Level bosses in campaign waves are sized by the wave solver instead.")]
         [SerializeField] [Min(0.1f)] private float _bossHealthShare = 1f;
+        [Tooltip("Share of a continent boss's escort call that comes out on this difficulty (round 30: Psycho carries Hard's boss health share, so its escorts are lighter instead of the boss).")]
+        [SerializeField] [Range(0f, 1f)] private float _bossEscortShare = 1f;
 
         public string DisplayName => _displayName;
         public float HealthMultiplier => _healthMultiplier;
@@ -43,5 +45,8 @@ namespace Game.Levels
 
         /// <summary>Extra health of a continent boss (one with boss data) on this difficulty, over <see cref="HealthMultiplier"/>.</summary>
         public float BossHealthShare => _bossHealthShare;
+
+        /// <summary>Share of a continent boss's escort call (its Spawn power) released on this difficulty; splits are untouched.</summary>
+        public float BossEscortShare => _bossEscortShare;
     }
 }

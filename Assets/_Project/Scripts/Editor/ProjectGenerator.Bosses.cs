@@ -104,7 +104,7 @@ namespace Game.Editor
                 Creature = new Creature
                 {
                     Id = "Gravemaw", Description = "The planet's digging maw: it answers the colony's drill with a drill of its own.",
-                    Layer = TargetLayers.Ground, Health = 48000f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
+                    Layer = TargetLayers.Ground, Health = 55050f, Armor = 1200f, Speed = 0.55f, BaseDamage = 25, Boss = true,
                     Attack = AttackStyle.Bite, BlockadeDamage = 110f, AttackRange = 2.5f, AttackInterval = 1.4f,
                     Color = new Color(0.55f, 0.2f, 0.4f), Eyes = new Color(1f, 0.45f, 0.75f), Accent = new Color(1f, 0.4f, 0.8f), Blood = new Color(1f, 0.45f, 0.7f),
                     Scale = 0.8f, Shape = EnemyShape.None, Death = DeathStyle.Collapse,
@@ -113,7 +113,9 @@ namespace Game.Editor
                 Signature = BossSignature.Burrow,
                 Arrival = BossArrival.ColonyRig,
                 Pools = PoolKinds.Quicksand | PoolKinds.Water | PoolKinds.Bog,
-                SummonMinion = "Skitter", SummonCount = 5, SummonInterval = 26f,
+                // Round 30 (Remco): Gravemaw is the long health bar; its escorts come at a fixed, safe rate well off the cliff the
+                // round-29 probe found (a call every 22 s lost Medium, every 30 s held), so they are never the deciding threat.
+                SummonMinion = "Skitter", SummonCount = 5, SummonInterval = 30f,
                 SignatureText = "Rock plates cover it: heavy fire must strip the armour before anything reaches the body, and now and then Skitters pour out of its flanks. At three quarters, half and a quarter of its health it dives under the ground. A crack line runs round your towers to the tower that hurt it most; it breaks out beside it and throws that tower. The tower lands tilted, loses 40% of its health and stays silent for a few seconds, but it is not destroyed. It takes quicksand as a shortcut, climbs over rocks and onto gates, and can hide in a pool for a few seconds.",
                 TelegraphText = "The crack glows warm orange and runs ahead of it, the ground rumbles louder as it comes up, and the tower it is after gets a pulsing red ring three seconds before it breaks out.",
                 CounterText = "Spread your damage over several towers, so no single tower draws it. Sell or move the ringed tower in time, or put a mine on the crack line: a mine that goes off while it burrows leaves it stunned on the surface. Below a quarter it moves faster and its cracks send up Skitters.",
@@ -122,7 +124,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "CinderMatriarch",
-                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 10250f, 1800f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
+                Creature = Titan("CinderMatriarch", "The queen of the lava, and she hates the cold.", 10350f, 1800f, 0.4f, new Color(0.8f, 0.25f, 0.08f), new Color(1f, 0.6f, 0.2f)),
                 Phases = new[] { new BossPhase("Hunting", 1f), new BossPhase("Brood", 0.5f) },
                 Signature = BossSignature.HuntTheCold,
                 Arrival = BossArrival.Pool,
@@ -140,7 +142,7 @@ namespace Game.Editor
             {
                 Id = "FrostWarden",
                 // Its ice armour is the mechanic (a share of each hit lands until it breaks); round 29 adds a frost crust pool on top.
-                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 10850f, 1200f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
+                Creature = Titan("FrostWarden", "A guardian of ice that freezes your defence in place.", 7500f, 1200f, 0.5f, new Color(0.55f, 0.75f, 0.9f), new Color(0.6f, 0.9f, 1f)),
                 Phases = new[] { new BossPhase("Armoured", 1f), new BossPhase("Exposed", 0.4f) },
                 Signature = BossSignature.GateBreaker,
                 Arrival = BossArrival.Pool,
@@ -177,7 +179,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "Shattered",
-                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 13800f, 2000f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
+                Creature = Titan("Shattered", "A crystal giant that splits apart when it takes damage.", 14000f, 2000f, 0.5f, new Color(0.6f, 0.7f, 0.85f), new Color(0.8f, 0.95f, 1f)),
                 Phases = new[] { new BossPhase("Whole", 1f), new BossPhase("Split", 0.66f), new BossPhase("Rejoined", 0.33f) },
                 Signature = BossSignature.Splitting,
                 Arrival = BossArrival.Ruins,
@@ -194,7 +196,7 @@ namespace Game.Editor
             yield return new BossSpec
             {
                 Id = "SealedOne",
-                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 26900f, 3500f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
+                Creature = Titan("SealedOne", "The secret under the planet: its immune system, not an animal.", 27200f, 3500f, 0.25f, new Color(0.85f, 0.85f, 0.95f), Color.white),
                 Phases = new[] { new BossPhase("First seal", 1f), new BossPhase("Second seal", 0.75f), new BossPhase("Third seal", 0.5f), new BossPhase("Release", 0.25f) },
                 Signature = BossSignature.Recognition,
                 Arrival = BossArrival.Rift,
@@ -294,7 +296,7 @@ namespace Game.Editor
             int rebuilt = 0;
             foreach (var arena in ArenaLevels)
             {
-                if (arena.Source == sourceLevelName && CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins) != null)
+                if (arena.Source == sourceLevelName && CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins, BossPoolsOf(arena.Boss)) != null)
                 {
                     rebuilt++;
                 }
@@ -506,7 +508,7 @@ namespace Game.Editor
             {
                 if (arena.Boss == boss)
                 {
-                    return CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins);
+                    return CreateArenaLevel(arena.Source, arena.Id, arena.Name, arena.From, arena.To, arena.Ruins, BossPoolsOf(arena.Boss));
                 }
             }
 
@@ -516,7 +518,20 @@ namespace Game.Editor
         // A copy of a campaign level (same asset GUID on every run, so the arena keeps pointing at it) with some pool
         // kinds turned into another and, for a boss out of the ruins, a sealed ruin gate as its boss entrance; everything
         // else, art included, stays the source's.
-        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to, bool ruins)
+        private static PoolKinds BossPoolsOf(string boss)
+        {
+            foreach (BossSpec spec in ContinentBosses())
+            {
+                if (spec.Id == boss)
+                {
+                    return spec.Pools;
+                }
+            }
+
+            return PoolKinds.None;
+        }
+
+        private static LevelDefinition CreateArenaLevel(string source, string id, string displayName, TerrainKind[] from, TerrainKind to, bool ruins, PoolKinds pools)
         {
             var original = AssetDatabase.LoadAssetAtPath<LevelDefinition>($"{DataRoot}/Levels/{source}.asset");
             if (original == null)
@@ -563,6 +578,12 @@ namespace Game.Editor
                 }
             }
 
+            if (TerrainMap.IsLiquid(to))
+            {
+                ClearMidroadPools(original, terrain, pools, id);
+                EnsureEntrancePool(original, terrain, turned, to, id);
+            }
+
             if (ruins)
             {
                 SerializedProperty entrance = so.FindProperty("_bossEntrance");
@@ -601,6 +622,191 @@ namespace Game.Editor
                         bestScore = score;
                         best = cell;
                     }
+                }
+            }
+
+            return best;
+        }
+
+        // Round 30: a boss that rises from a pool (BossArrival.Pool) wants one that joins the road in its first half, else the
+        // brain takes the earliest pool there is and the fight skips most of the road (the Frost Warden rose beside the base on
+        // the round-30 Quartz Flats copy, whose opening is kept clear of terrain, and lost every finale run at any health). When
+        // the copied level has no pool joining the road before its first gate (the arena's plain builder stands its towers at that
+        // gate, so a boss rising past it walks to the base unopposed), the arena gets its own small lake of the boss's liquid just
+        // past the spawn, clear of the road, the gates and the field's edge. Arena only: the campaign level keeps its spots.
+        private const float EntrancePoolRoadShare = 0.05f;
+        private const float EntrancePoolLatest = 0.12f;
+        private const int EntrancePoolOffRoad = 3;
+        private const int EntrancePoolRoadClearance = 2;
+        private const int EntrancePoolGateClearance = 3;
+        private const int EntrancePoolIndexSlack = 10;
+
+        // A two-by-two lake: the opening of a level may be only a few cells wide beside the field's edge (Quartz Flats).
+        private static readonly Vector2Int[] EntrancePoolCells = { new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(0, 1), new Vector2Int(1, 1) };
+
+        // The brain rises from the largest pool of its kinds in the road's first half; a pool joining after the first gate but
+        // before the middle would win over the small entrance lake and the boss would skip the arena's whole defence, so the
+        // arena copy loses those pools (the ones past the middle stay: they are its dive shortcuts).
+        private const float MidroadPoolLatest = 0.55f;
+
+        private static void ClearMidroadPools(LevelDefinition original, SerializedProperty terrain, PoolKinds pools, string arena)
+        {
+            List<Vector2Int> walk = MainWalk(original);
+            var kinds = new HashSet<TerrainKind>();
+            if ((pools & PoolKinds.Water) != 0) kinds.Add(TerrainKind.Water);
+            if ((pools & PoolKinds.Lava) != 0) kinds.Add(TerrainKind.Lava);
+            if ((pools & PoolKinds.Quicksand) != 0) kinds.Add(TerrainKind.Quicksand);
+            if ((pools & PoolKinds.Ice) != 0) kinds.Add(TerrainKind.Ice);
+            if ((pools & PoolKinds.Bog) != 0) kinds.Add(TerrainKind.Bog);
+            int cleared = 0;
+            for (int i = terrain.arraySize - 1; i >= 0; i--)
+            {
+                SerializedProperty patch = terrain.GetArrayElementAtIndex(i);
+                if (!kinds.Contains((TerrainKind)patch.FindPropertyRelative("Kind").intValue))
+                {
+                    continue;
+                }
+
+                float share = (float)NearestWalkIndex(walk, patch.FindPropertyRelative("Cell").vector2IntValue) / Mathf.Max(1, walk.Count - 1);
+                if (share > EntrancePoolLatest && share <= MidroadPoolLatest)
+                {
+                    terrain.DeleteArrayElementAtIndex(i);
+                    cleared++;
+                }
+            }
+
+            if (cleared > 0)
+            {
+                Debug.Log($"[Generator] {arena}: {cleared} pool cells between the first gate and the road's middle turned to ground (the boss rises before the first gate).");
+            }
+        }
+
+        private static void EnsureEntrancePool(LevelDefinition original, SerializedProperty terrain, HashSet<Vector2Int> turned, TerrainKind to, string arena)
+        {
+            List<Vector2Int> walk = MainWalk(original);
+            if (walk.Count < 2)
+            {
+                return;
+            }
+
+            foreach (Vector2Int cell in turned)
+            {
+                if (NearestWalkIndex(walk, cell) <= EntrancePoolLatest * (walk.Count - 1))
+                {
+                    return;
+                }
+            }
+
+            var roadCells = new HashSet<Vector2Int>(original.Road.Cells);
+            var blocked = new HashSet<Vector2Int>(original.BlockedCells);
+            blocked.UnionWith(original.MineCells);
+            var gates = new HashSet<Vector2Int>();
+            foreach (BlockadeSpot gate in original.Blockades)
+            {
+                gates.Add(gate.Cell);
+            }
+
+            int target = Mathf.RoundToInt(EntrancePoolRoadShare * (walk.Count - 1));
+            Vector2Int best = default;
+            int bestDistance = int.MaxValue;
+            for (int x = 0; x < original.GridSize.x - 1; x++)
+            {
+                for (int y = 0; y < original.GridSize.y - 1; y++)
+                {
+                    var centre = new Vector2Int(x, y);
+                    if (!PoolCellsFree(original, centre, roadCells, blocked, gates))
+                    {
+                        continue;
+                    }
+
+                    int distance = Mathf.Abs(NearestWalkIndex(walk, centre) - target);
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        best = centre;
+                    }
+                }
+            }
+
+            if (bestDistance > EntrancePoolIndexSlack)
+            {
+                Debug.LogWarning($"[Generator] {arena}: no room for an entrance pool near {EntrancePoolRoadShare:P0} of the road; the boss rises from the earliest pool there is.");
+                return;
+            }
+
+            foreach (Vector2Int offset in EntrancePoolCells)
+            {
+                terrain.InsertArrayElementAtIndex(terrain.arraySize);
+                SerializedProperty patch = terrain.GetArrayElementAtIndex(terrain.arraySize - 1);
+                patch.FindPropertyRelative("Cell").vector2IntValue = best + offset;
+                patch.FindPropertyRelative("Kind").intValue = (int)to;
+            }
+
+            Debug.Log($"[Generator] {arena}: entrance pool of {to} carved around {best} ({(float)NearestWalkIndex(walk, best) / (walk.Count - 1):P0} of the road).");
+        }
+
+        // The pool's cells must be plain, free ground two cells off the road (the liquid clearance) yet within a tower's reach of
+        // it, away from the gates and the nests.
+        private static bool PoolCellsFree(LevelDefinition level, Vector2Int corner, HashSet<Vector2Int> roadCells, HashSet<Vector2Int> blocked, HashSet<Vector2Int> gates)
+        {
+            bool nearRoad = false;
+            foreach (Vector2Int offset in EntrancePoolCells)
+            {
+                Vector2Int cell = corner + offset;
+                if (blocked.Contains(cell) || level.Terrain.KindAt(cell) != TerrainKind.Ground || NearAny(roadCells, cell, EntrancePoolRoadClearance - 1) || NearAny(gates, cell, EntrancePoolGateClearance))
+                {
+                    return false;
+                }
+
+                nearRoad |= NearAny(roadCells, cell, EntrancePoolOffRoad);
+                foreach (ElementNest nest in level.Nests)
+                {
+                    if (Mathf.Max(Mathf.Abs(nest.Cell.x - cell.x), Mathf.Abs(nest.Cell.y - cell.y)) <= 2)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return nearRoad;
+        }
+
+        // The main road's waypoints expanded to the cells walked, in order.
+        private static List<Vector2Int> MainWalk(LevelDefinition level)
+        {
+            var walk = new List<Vector2Int>();
+            Vector2Int[] road = level.MainRoad;
+            for (int i = 0; i < road.Length; i++)
+            {
+                if (i == 0)
+                {
+                    walk.Add(road[i]);
+                    continue;
+                }
+
+                var step = new Vector2Int(System.Math.Sign(road[i].x - road[i - 1].x), System.Math.Sign(road[i].y - road[i - 1].y));
+                Vector2Int cell = road[i - 1];
+                while (cell != road[i] && step != Vector2Int.zero)
+                {
+                    cell += step;
+                    walk.Add(cell);
+                }
+            }
+
+            return walk;
+        }
+
+        private static int NearestWalkIndex(List<Vector2Int> walk, Vector2Int cell)
+        {
+            int best = 0;
+            int bestDistance = int.MaxValue;
+            for (int i = 0; i < walk.Count; i++)
+            {
+                int distance = (walk[i] - cell).sqrMagnitude;
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = i;
                 }
             }
 

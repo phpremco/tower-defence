@@ -801,3 +801,29 @@ console and `Logs/probe_trace.txt`.
 - The ledger reads both through `EnemyStats.WardShare` / `SummonsPerSecond` (`BalanceLedger.AddPowers`, `WaveLoad` boss branch,
   `WaveGroup.StartShare` for the route model). Changing them changes the model's shape: `fit` and `apply-force` before `impact`.
 - Logs of this round: `Tools/PlayTest/r29_*.log`.
+
+### Round 30 (2026-11-10)
+
+- A layout spec may carry `OpeningClearShare` (default 0; Quartz Flats 0.4): no terrain patch within `RoadGenerator.OpeningClearance`
+  (4) cells of the main road's first share of the walk, so every cell beside the opening legs is a build spot. Nest ponds are exempt.
+  Quartz Flats went back to the default `FirstGateShare` 0.12 (RelayoutLevel picked layout attempt 1: the road itself changed).
+- Boss arena copies (`CreateArenaLevel`): a pool boss rises from the largest pool of its kinds in the road's first half, and the
+  arena's plain builder stands its towers at the first gate, so the copy now loses the pools of the boss's kinds between the first
+  gate (12 %) and the middle (`MidroadPoolLatest` 0.55) and, when no pool joins before the first gate, carves a two-by-two
+  entrance lake just past the spawn (`EntrancePoolRoadShare` 0.05). The generator logs both (`[Generator] Arena_Ice: ...`).
+- `[Boss] <boss>: rises from the <kind> pool of N cells at (x, y) (P % of the road), exit (x, y)` is logged once per pool
+  entrance (`ContinentBossBrain.RiseFromPool`); read it with `unity command console --tail 400 --level log --result-only`
+  after a finale run to see where a boss came up. `unity command console` exists in this CLI build (round 24 said only
+  `console_status` did).
+- `DifficultyProfile.BossEscortShare` (Psycho 0.5): the share of a continent boss's escort call (the `Spawn` power) released on
+  that difficulty, in play (`BossAbilities.SetEscortShare`) and in the ledger (`DifficultyStats.BossEscort`, `WaveLoad`); splits
+  keep their count. In the inputs hash.
+- `BalanceRules.PsychoBossShareAtLeastHard`: the `finale` stage writes one boss health share for Hard and Psycho,
+  `FinaleProbeReport.HardPsychoShare` = Hard's derivation pulled down to `PsychoCeiling` (the share at which the Psycho finale
+  player still beats every boss once `DerivedHealth` has moved it); `ContinentFinaleTests` checks the same number.
+- Running a single-boss finale probe in the open editor: `printf 'bosses=2\ndifficulties=1\n' > Tools/PlayTest/probe_arg.txt`,
+  `run_tests --mode PlayMode --filter Measure_ContinentFinales_AsPlayed --include_explicit true --async_tests true` (about a
+  minute); it overwrites `finale_probe.txt` with that cell only, so copy the merged report aside first and restore it.
+- The fit after a difficulty's money changed is wrong until the Psycho cells are re-measured: the records were played at the
+  old money and the model judges them at the new (round 30's first fit fell to 74 % / 0.73 for that reason; not applied).
+- Logs of this round: `Tools/PlayTest/r30_*.log`.

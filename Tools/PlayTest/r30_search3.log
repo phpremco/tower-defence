@@ -1,0 +1,15 @@
+== search: plans per cell (stage A)
+      "FullName": "Game.Tests.PlanSearchTests.Evaluator_EmptyPlanFalls_AndSpotsMatter",
+      "Status": "Passed",
+      "Message": null,
+      "FullName": "Game.Tests.PlanSearchTests.Search_WritesPlansForEveryCell",
+      "Status": "Passed",
+      "Message": null,
+Strategy search (stage A, round 22e) 2026-11-10 01:23, 1500 strategies per cell. calibration 2026-11-10 00:48, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
+Per cell: the best strategy on paper (stars and base left, or the fall wave), its worst-wave margin, how many of the top strategies hold,
+the distinct winners (different spots, mix or timing), the creative reference on the same paper, and the obvious family.
+The paper is a pre-screen; stage B (the replay with the adaptive bot) is the judge. Details: Tools/PlayTest/Plans/<level>_<difficulty>.txt.
+
+level        diff    best strategy    margin  holding/top  distinct  creative          obvious
+Level_C1_02  Easy    3* base 700        1.66    30/30            25  3* base 700       mono PulseRifle 3* base 700, mono Cannon 3* base 700, mono Laser 3* base 700, naive 3* base 700
+Level_C1_03  Hard    2* base 473        0.37    30/30            27  falls w13         mono PulseRifle falls w7, mono Cannon falls w11, mono Laser falls w5, naive falls w7

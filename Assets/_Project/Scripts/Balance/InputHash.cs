@@ -36,7 +36,7 @@ namespace Game.Balance
 
             foreach (DifficultyStats d in model.Difficulties)
             {
-                text.Append(d.Id).Append(F(d.Health)).Append(F(d.Count)).Append(F(d.Interval)).Append(F(d.StructureDamage)).Append(F(d.Income)).Append(F(d.StartMoney)).Append(F(d.BossHealth));
+                text.Append(d.Id).Append(F(d.Health)).Append(F(d.Count)).Append(F(d.Interval)).Append(F(d.StructureDamage)).Append(F(d.Income)).Append(F(d.StartMoney)).Append(F(d.BossHealth)).Append(F(d.BossEscort));
             }
 
             foreach (UpgradeStats u in model.Upgrades)

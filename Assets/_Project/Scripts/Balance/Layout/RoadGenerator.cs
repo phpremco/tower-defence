@@ -63,6 +63,9 @@ namespace Game.Balance
         private const double LobeMax = 1.25;
         private const int LiquidRoadClearance = 2;
         private const int RaisedRoadClearance = 1;
+
+        /// <summary>Cells beside the opening legs (<see cref="LayoutSpec.OpeningClearShare"/>) kept free of terrain: a tower's usual reach.</summary>
+        public const int OpeningClearance = 4;
         private const int LiquidGateClearance = 3;
         private const int BaseClearance = 4;
         private const int AirJitter = 3;
@@ -472,12 +475,12 @@ namespace Game.Balance
                 for (int tries = 0; tries < TerrainTries && field.Count(kind) < target; tries++)
                 {
                     var centre = new Cell(random.Range(0, layout.Width - 1), random.Range(0, layout.Height - 1));
-                    if (field.RoadDistance(centre) < (liquid ? LiquidRoadClearance + 1 : RaisedRoadClearance + 1) || field.Kind(centre) != LayoutTerrain.Ground)
+                    if (field.RoadDistance(centre) < (liquid ? LiquidRoadClearance + 1 : RaisedRoadClearance + 1) || field.Kind(centre) != LayoutTerrain.Ground || field.InOpening(centre, spec))
                     {
                         continue;
                     }
 
-                    Blob(layout, field, centre, random.Range(BlobMin, BlobMax), kind, random);
+                    Blob(layout, field, centre, random.Range(BlobMin, BlobMax), kind, random, spec);
                 }
             }
 
@@ -495,7 +498,8 @@ namespace Game.Balance
         }
 
         // A rounded patch with a lumpy outline: the radius swells and shrinks around the centre.
-        private static void Blob(RoadLayout layout, Field field, Cell centre, double radius, int kind, LayoutRandom random)
+        // A nest's own pond (spec null) may lie in the opening: the nest needs it.
+        private static void Blob(RoadLayout layout, Field field, Cell centre, double radius, int kind, LayoutRandom random, LayoutSpec spec = null)
         {
             var lobes = new double[BlobLobes];
             for (int i = 0; i < lobes.Length; i++)
@@ -516,7 +520,7 @@ namespace Game.Balance
                         continue;
                     }
 
-                    if (field.RoadDistance(cell) < (liquid ? LiquidRoadClearance : RaisedRoadClearance) || LayoutGeometry.Chebyshev(cell, layout.Base) < BaseClearance)
+                    if (field.RoadDistance(cell) < (liquid ? LiquidRoadClearance : RaisedRoadClearance) || LayoutGeometry.Chebyshev(cell, layout.Base) < BaseClearance || field.InOpening(cell, spec))
                     {
                         continue;
                     }
@@ -608,6 +612,18 @@ namespace Game.Balance
             }
 
             public int RoadDistance(Cell cell) => Inside(cell) ? _roadDistance[cell.X * _height + cell.Y] : 0;
+
+            /// <summary>True when the cell lies within the opening clearance of the main road's first <see cref="LayoutSpec.OpeningClearShare"/> of the walk.</summary>
+            public bool InOpening(Cell cell, LayoutSpec spec)
+            {
+                if (spec == null || spec.OpeningClearShare <= 0.0)
+                {
+                    return false;
+                }
+
+                int index = LayoutGeometry.Nearest(_mainWalk, cell, out int distanceSquared);
+                return distanceSquared <= OpeningClearance * OpeningClearance && index <= spec.OpeningClearShare * (_mainWalk.Count - 1);
+            }
 
             /// <summary>Share of the main road walked where a creature from this cell would join it, and whether the main road is the nearest.</summary>
             public double MainProgress(Cell cell, out bool nearestIsMain)

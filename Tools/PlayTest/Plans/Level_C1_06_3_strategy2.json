@@ -15,12 +15,12 @@
                 14
             ],
             "Y": [
-                11,
-                10,
                 10,
                 11,
+                10,
                 11,
-                7
+                7,
+                11
             ]
         },
         {
@@ -66,57 +66,42 @@
             "X": [
                 36,
                 36,
-                36,
                 34,
+                36,
                 35,
                 35
             ],
             "Y": [
+                10,
                 11,
                 10,
                 7,
                 10,
-                11,
-                10
+                11
             ]
         }
     ],
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "Laser",
-            "Weight": 2.499271869659424
-        },
-        {
-            "Threat": "pack",
-            "Tower": "Laser",
-            "Weight": 1.953940510749817
+            "Tower": "PulseRifle",
+            "Weight": 1.7231069803237915
         },
         {
             "Threat": "plated",
             "Tower": "PulseRifle",
-            "Weight": 1.7191290855407715
-        },
-        {
-            "Threat": "air",
-            "Tower": "Cannon",
-            "Weight": 1.2834821939468384
-        },
-        {
-            "Threat": "boss",
-            "Tower": "PulseRifle",
-            "Weight": 1.0480053424835205
+            "Weight": 1.0509446859359741
         }
     ],
-    "UpgradeBias": 0.7599999904632568,
-    "TowersBeforeUpgrades": 4,
-    "MineCoverBelow": 1.0,
-    "MineOnBoss": true,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.4000000059604645,
-    "RepairDroneWear": 9.0,
+    "UpgradeBias": 1.4299999475479126,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 0.0,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 0.25,
     "AttackDroneAfterTowers": 0,
-    "GateUpgradeBias": 0.0,
+    "GateUpgradeBias": 1.2000000476837158,
     "AllowSell": true
 }

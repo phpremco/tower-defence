@@ -63,6 +63,11 @@ namespace Game.Editor
                 }
             }
 
+            // Round 30 (Remco): Psycho never carries less boss than Hard. Both take one share: Hard's derivation, pulled down to the
+            // share at which the Psycho finale player (its money and lighter escorts given) still beats every boss.
+            bool shared = loaded.Model.Rules.PsychoBossShareAtLeastHard;
+            float sharedShare = shared ? FinaleProbeReport.HardPsychoShare(cells, loaded.Model.Rules) : -1f;
+            float ceiling = shared ? FinaleProbeReport.PsychoCeiling(cells, loaded.Model.Rules) : -1f;
             for (int d = 0; d < loaded.Catalog.Difficulties.Count; d++)
             {
                 DifficultyProfile profile = loaded.Catalog.Difficulties[d];
@@ -74,7 +79,14 @@ namespace Game.Editor
 
                 float share = (float)Math.Round(derived / ShareRounding) * ShareRounding;
                 bool applied = d > FinaleProbeReport.Medium;
-                text.Append(Invariant($"  {profile.name,-7} boss health share {profile.BossHealthShare:0.00} -> {share:0.00} (derived {derived:0.000}){(applied ? string.Empty : ", reported only (Medium is the reference, Easy stays forgiving)")}\n"));
+                string note = applied ? string.Empty : ", reported only (Medium is the reference, Easy stays forgiving)";
+                if (applied && sharedShare > 0f)
+                {
+                    share = (float)Math.Round(sharedShare / ShareRounding) * ShareRounding;
+                    note = Invariant($", Hard and Psycho share one (Hard derives {FinaleProbeReport.DerivedShare(cells, FinaleProbeReport.Hard):0.00}, the Psycho ceiling is {ceiling:0.00})");
+                }
+
+                text.Append(Invariant($"  {profile.name,-7} boss health share {profile.BossHealthShare:0.00} -> {share:0.00} (derived {derived:0.000}){note}\n"));
                 if (applied && Math.Abs(share - profile.BossHealthShare) >= ShareRounding * 0.5f)
                 {
                     var serialized = new SerializedObject(profile);

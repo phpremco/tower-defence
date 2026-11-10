@@ -210,7 +210,7 @@ namespace Game.Balance
                     // Its walk down the main road is the fight its timed powers run over (the gate hold is not known yet; conservative).
                     float walk = level.Shape.MainLength / Math.Max(0.01f, enemy.InRangeSpeed);
                     load.BossMechanicLoss += (enemy.MechanicLossSeconds + enemy.WardShare * walk) * count;
-                    int summons = (int)Math.Ceiling(enemy.SummonsPerSecond * walk) * count;
+                    int summons = (int)Math.Ceiling(enemy.SummonsPerSecond * difficulty.BossEscort * walk) * count;
                     if (summons > 0)
                     {
                         // Escorts out of its body: a stream that joins mid-road and keeps coming for the whole walk.

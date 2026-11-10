@@ -1,0 +1,112 @@
+{
+    "Level": "Level_C1_06",
+    "Difficulty": 3,
+    "Name": "Level_C1_06_3_strategy4",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                12,
+                12,
+                13,
+                13,
+                14,
+                14
+            ],
+            "Y": [
+                11,
+                10,
+                10,
+                11,
+                11,
+                7
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                17,
+                17,
+                17,
+                16,
+                18,
+                12
+            ],
+            "Y": [
+                11,
+                10,
+                7,
+                11,
+                11,
+                10
+            ]
+        },
+        {
+            "Tower": "Laser",
+            "X": [
+                13,
+                11,
+                12,
+                14,
+                15,
+                13
+            ],
+            "Y": [
+                10,
+                10,
+                10,
+                10,
+                10,
+                11
+            ]
+        },
+        {
+            "Tower": "Rocket",
+            "X": [
+                34,
+                36,
+                36,
+                36,
+                35,
+                35
+            ],
+            "Y": [
+                10,
+                7,
+                10,
+                11,
+                10,
+                11
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "swarm",
+            "Tower": "Cannon",
+            "Weight": 0.5778635144233704
+        },
+        {
+            "Threat": "pack",
+            "Tower": "PulseRifle",
+            "Weight": 1.2078921794891357
+        },
+        {
+            "Threat": "boss",
+            "Tower": "Laser",
+            "Weight": 1.8016109466552734
+        }
+    ],
+    "UpgradeBias": 1.7699999809265137,
+    "TowersBeforeUpgrades": 1,
+    "MineCoverBelow": 0.0,
+    "MineOnBoss": false,
+    "FieldCoverBelow": 1.0,
+    "HarvesterCover": 1.0,
+    "HarvesterShare": 0.30000001192092896,
+    "RepairDroneWear": 0.10000000149011612,
+    "AttackDroneAfterTowers": 0,
+    "GateUpgradeBias": 0.0,
+    "AllowSell": true
+}

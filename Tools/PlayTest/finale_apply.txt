@@ -1,12 +1,12 @@
-Finale apply 2026-11-09 19:12 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
-  Gravemaw         health 44400 -> 52850 (probe: holds x1.40 on Medium)
-  CinderMatriarch  health 10200 -> 10250 (probe: holds x1.18 on Medium)
-  FrostWarden      health 10350 -> 10850 (probe: holds x1.23 on Medium)
+Finale apply 2026-11-10 00:32 from Tools/PlayTest/finale_probe.txt (24 cells); hold share 0.85.
+  Gravemaw         health 52500 -> 55050 (probe: holds x1.23 on Medium)
+  CinderMatriarch  health 10300 -> 10350 (probe: holds x1.18 on Medium)
+  FrostWarden      health 7800 -> 7500 (probe: holds x1.13 on Medium)
   Rotbloom         health 3550 -> 3550 (probe: holds x1.18 on Medium)
-  Shattered        health 12600 -> 13800 (probe: holds x1.29 on Medium)
-  SealedOne        health 25650 -> 26900 (probe: holds x1.23 on Medium)
-  Easy    boss health share 1.00 -> 1.10 (derived 1.100), reported only (Medium is the reference, Easy stays forgiving)
+  Shattered        health 13900 -> 14000 (probe: holds x1.18 on Medium)
+  SealedOne        health 27050 -> 27200 (probe: holds x1.18 on Medium)
+  Easy    boss health share 0.80 -> 1.20 (derived 1.223), reported only (Medium is the reference, Easy stays forgiving)
   Medium  boss health share 1.00 -> 1.00 (derived 1.000), reported only (Medium is the reference, Easy stays forgiving)
-  Hard    boss health share 1.85 -> 1.80 (derived 1.789)
-  Psycho  boss health share 1.10 -> 1.05 (derived 1.060)
+  Hard    boss health share 1.45 -> 1.25 (derived 1.824), Hard and Psycho share one (Hard derives 1.82, the Psycho ceiling is 1.27)
+  Psycho  boss health share 1.45 -> 1.25 (derived 1.508), Hard and Psycho share one (Hard derives 1.82, the Psycho ceiling is 1.27)
   the calibration's inputs changed: run measure, fit and apply before the next solve.

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Enemies::Game.Enemies.BossAbilityDefinition
   _displayName: Gravemaw Call
   _kind: 2
-  _interval: 26
-  _firstDelay: 13
+  _interval: 30
+  _firstDelay: 15
   _damage: 0
   _radius: 1
   _sweepSeconds: 1

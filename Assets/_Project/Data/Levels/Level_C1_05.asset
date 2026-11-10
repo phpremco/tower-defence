@@ -26,237 +26,231 @@ MonoBehaviour:
   - Name: Road
     Flying: 0
     Waypoints:
-    - {x: 0, y: 20}
-    - {x: 4, y: 20}
-    - {x: 4, y: 3}
-    - {x: 10, y: 3}
-    - {x: 10, y: 19}
-    - {x: 18, y: 19}
-    - {x: 18, y: 2}
-    - {x: 23, y: 2}
-    - {x: 23, y: 18}
-    - {x: 30, y: 18}
-    - {x: 30, y: 3}
-    - {x: 39, y: 3}
+    - {x: 0, y: 18}
+    - {x: 5, y: 18}
+    - {x: 5, y: 4}
+    - {x: 10, y: 4}
+    - {x: 10, y: 18}
+    - {x: 17, y: 18}
+    - {x: 17, y: 4}
+    - {x: 23, y: 4}
+    - {x: 23, y: 19}
+    - {x: 29, y: 19}
+    - {x: 29, y: 2}
+    - {x: 39, y: 2}
   - Name: North air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 21}
     - {x: 23, y: 20}
-    - {x: 39, y: 3}
+    - {x: 39, y: 2}
   - Name: South air route
     Flying: 1
     Waypoints:
     - {x: 0, y: 0}
-    - {x: 18, y: 1}
-    - {x: 39, y: 3}
+    - {x: 20, y: 1}
+    - {x: 39, y: 2}
   _roadWidth: 2
   _plazaCells: []
   _blockedCells:
-  - {x: 8, y: 17}
-  - {x: 8, y: 19}
-  - {x: 13, y: 4}
-  - {x: 13, y: 10}
-  - {x: 14, y: 4}
-  - {x: 20, y: 15}
-  - {x: 20, y: 20}
-  - {x: 21, y: 12}
-  - {x: 21, y: 15}
-  - {x: 21, y: 17}
-  - {x: 25, y: 20}
-  - {x: 26, y: 2}
-  - {x: 26, y: 3}
+  - {x: 1, y: 15}
+  - {x: 1, y: 20}
+  - {x: 3, y: 1}
+  - {x: 7, y: 12}
+  - {x: 7, y: 19}
+  - {x: 12, y: 1}
+  - {x: 13, y: 5}
+  - {x: 13, y: 7}
+  - {x: 13, y: 8}
+  - {x: 13, y: 9}
+  - {x: 14, y: 1}
+  - {x: 14, y: 9}
+  - {x: 14, y: 12}
+  - {x: 17, y: 20}
+  - {x: 19, y: 15}
+  - {x: 20, y: 17}
+  - {x: 23, y: 1}
+  - {x: 25, y: 1}
   - {x: 26, y: 4}
+  - {x: 26, y: 12}
   - {x: 26, y: 14}
-  - {x: 27, y: 1}
-  - {x: 27, y: 4}
-  - {x: 27, y: 5}
-  - {x: 30, y: 20}
-  - {x: 31, y: 20}
-  - {x: 32, y: 9}
-  - {x: 32, y: 15}
-  - {x: 33, y: 16}
-  - {x: 34, y: 14}
-  - {x: 35, y: 19}
-  - {x: 36, y: 5}
-  - {x: 38, y: 8}
-  - {x: 38, y: 9}
+  - {x: 31, y: 8}
+  - {x: 31, y: 9}
+  - {x: 31, y: 11}
+  - {x: 33, y: 11}
+  - {x: 33, y: 12}
+  - {x: 34, y: 13}
+  - {x: 35, y: 14}
+  - {x: 36, y: 7}
+  - {x: 36, y: 10}
+  - {x: 36, y: 12}
+  - {x: 38, y: 14}
   _blockades:
-  - Cell: {x: 10, y: 14}
+  - Cell: {x: 5, y: 8}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 23, y: 5}
+  - Cell: {x: 17, y: 8}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 30, y: 6}
+  - Cell: {x: 29, y: 5}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
-  - Cell: {x: 33, y: 3}
+  - Cell: {x: 33, y: 2}
     Blockade: {fileID: 11400000, guid: 95566cc2a4c32e74aa13274b8b3d1894, type: 2}
   _terrain:
-  - Cell: {x: 0, y: 5}
+  - Cell: {x: 0, y: 2}
     Kind: 1
-  - Cell: {x: 0, y: 6}
+  - Cell: {x: 0, y: 3}
     Kind: 1
-  - Cell: {x: 0, y: 9}
-    Kind: 1
-  - Cell: {x: 0, y: 14}
+  - Cell: {x: 0, y: 8}
     Kind: 2
-  - Cell: {x: 0, y: 15}
+  - Cell: {x: 0, y: 10}
+    Kind: 7
+  - Cell: {x: 0, y: 11}
+    Kind: 7
+  - Cell: {x: 0, y: 12}
+    Kind: 7
+  - Cell: {x: 1, y: 0}
+    Kind: 1
+  - Cell: {x: 1, y: 1}
+    Kind: 1
+  - Cell: {x: 1, y: 2}
+    Kind: 1
+  - Cell: {x: 1, y: 3}
+    Kind: 1
+  - Cell: {x: 1, y: 11}
+    Kind: 7
+  - Cell: {x: 1, y: 12}
+    Kind: 7
+  - Cell: {x: 2, y: 1}
+    Kind: 1
+  - Cell: {x: 2, y: 10}
+    Kind: 7
+  - Cell: {x: 2, y: 12}
+    Kind: 7
+  - Cell: {x: 19, y: 13}
     Kind: 2
-  - Cell: {x: 0, y: 16}
+  - Cell: {x: 19, y: 14}
     Kind: 2
-  - Cell: {x: 0, y: 17}
+  - Cell: {x: 20, y: 7}
+    Kind: 7
+  - Cell: {x: 20, y: 11}
     Kind: 2
-  - Cell: {x: 1, y: 4}
-    Kind: 1
-  - Cell: {x: 1, y: 5}
-    Kind: 1
-  - Cell: {x: 1, y: 6}
-    Kind: 1
-  - Cell: {x: 1, y: 7}
-    Kind: 1
-  - Cell: {x: 1, y: 13}
+  - Cell: {x: 20, y: 12}
     Kind: 2
-  - Cell: {x: 1, y: 14}
+  - Cell: {x: 20, y: 13}
     Kind: 2
-  - Cell: {x: 1, y: 15}
+  - Cell: {x: 20, y: 14}
     Kind: 2
-  - Cell: {x: 2, y: 6}
+  - Cell: {x: 21, y: 6}
+    Kind: 7
+  - Cell: {x: 21, y: 7}
+    Kind: 7
+  - Cell: {x: 21, y: 8}
+    Kind: 7
+  - Cell: {x: 30, y: 18}
     Kind: 1
-  - Cell: {x: 4, y: 0}
+  - Cell: {x: 31, y: 16}
     Kind: 1
-  - Cell: {x: 4, y: 1}
+  - Cell: {x: 31, y: 17}
     Kind: 1
-  - Cell: {x: 5, y: 1}
+  - Cell: {x: 31, y: 18}
     Kind: 1
-  - Cell: {x: 6, y: 7}
-    Kind: 7
-  - Cell: {x: 6, y: 9}
-    Kind: 7
-  - Cell: {x: 6, y: 12}
-    Kind: 7
-  - Cell: {x: 6, y: 13}
-    Kind: 7
-  - Cell: {x: 7, y: 8}
-    Kind: 7
-  - Cell: {x: 7, y: 11}
-    Kind: 7
-  - Cell: {x: 7, y: 13}
-    Kind: 7
-  - Cell: {x: 7, y: 14}
-    Kind: 7
-  - Cell: {x: 8, y: 0}
+  - Cell: {x: 31, y: 19}
     Kind: 1
-  - Cell: {x: 8, y: 1}
-    Kind: 1
-  - Cell: {x: 13, y: 13}
-    Kind: 7
-  - Cell: {x: 13, y: 14}
-    Kind: 7
-  - Cell: {x: 13, y: 15}
-    Kind: 7
-  - Cell: {x: 13, y: 16}
-    Kind: 7
-  - Cell: {x: 14, y: 12}
-    Kind: 7
-  - Cell: {x: 14, y: 13}
-    Kind: 7
-  - Cell: {x: 14, y: 14}
-    Kind: 7
-  - Cell: {x: 15, y: 13}
-    Kind: 7
-  - Cell: {x: 15, y: 14}
-    Kind: 7
-  - Cell: {x: 15, y: 15}
-    Kind: 7
-  - Cell: {x: 31, y: 13}
-    Kind: 1
-  - Cell: {x: 31, y: 14}
-    Kind: 1
-  - Cell: {x: 32, y: 11}
-    Kind: 1
-  - Cell: {x: 32, y: 13}
-    Kind: 1
+  - Cell: {x: 31, y: 21}
+    Kind: 2
   - Cell: {x: 32, y: 14}
     Kind: 1
-  - Cell: {x: 33, y: 13}
+  - Cell: {x: 32, y: 15}
     Kind: 1
-  - Cell: {x: 35, y: 10}
+  - Cell: {x: 32, y: 16}
+    Kind: 1
+  - Cell: {x: 32, y: 17}
+    Kind: 1
+  - Cell: {x: 32, y: 18}
+    Kind: 1
+  - Cell: {x: 32, y: 19}
+    Kind: 1
+  - Cell: {x: 33, y: 15}
+    Kind: 1
+  - Cell: {x: 33, y: 16}
+    Kind: 1
+  - Cell: {x: 33, y: 17}
+    Kind: 1
+  - Cell: {x: 33, y: 18}
+    Kind: 1
+  - Cell: {x: 33, y: 19}
+    Kind: 1
+  - Cell: {x: 33, y: 20}
+    Kind: 2
+  - Cell: {x: 34, y: 6}
+    Kind: 2
+  - Cell: {x: 34, y: 15}
+    Kind: 2
+  - Cell: {x: 34, y: 16}
+    Kind: 2
+  - Cell: {x: 34, y: 17}
+    Kind: 2
+  - Cell: {x: 34, y: 18}
+    Kind: 1
+  - Cell: {x: 34, y: 19}
+    Kind: 1
+  - Cell: {x: 34, y: 21}
+    Kind: 2
+  - Cell: {x: 35, y: 6}
+    Kind: 2
+  - Cell: {x: 35, y: 16}
     Kind: 2
   - Cell: {x: 35, y: 17}
     Kind: 2
-  - Cell: {x: 36, y: 11}
-    Kind: 2
-  - Cell: {x: 36, y: 12}
-    Kind: 2
-  - Cell: {x: 36, y: 13}
-    Kind: 2
-  - Cell: {x: 36, y: 15}
-    Kind: 2
-  - Cell: {x: 36, y: 16}
-    Kind: 2
-  - Cell: {x: 36, y: 17}
+  - Cell: {x: 36, y: 6}
     Kind: 2
   - Cell: {x: 36, y: 18}
+    Kind: 7
+  - Cell: {x: 36, y: 19}
+    Kind: 7
+  - Cell: {x: 36, y: 20}
+    Kind: 7
+  - Cell: {x: 37, y: 6}
+    Kind: 2
+  - Cell: {x: 37, y: 7}
     Kind: 2
   - Cell: {x: 37, y: 10}
     Kind: 2
-  - Cell: {x: 37, y: 11}
-    Kind: 2
-  - Cell: {x: 37, y: 12}
-    Kind: 2
-  - Cell: {x: 37, y: 13}
-    Kind: 2
-  - Cell: {x: 37, y: 14}
-    Kind: 2
-  - Cell: {x: 37, y: 15}
-    Kind: 2
-  - Cell: {x: 37, y: 16}
-    Kind: 2
   - Cell: {x: 37, y: 17}
-    Kind: 2
-  - Cell: {x: 37, y: 18}
-    Kind: 2
+    Kind: 7
   - Cell: {x: 37, y: 19}
+    Kind: 7
+  - Cell: {x: 37, y: 20}
+    Kind: 7
+  - Cell: {x: 37, y: 21}
+    Kind: 7
+  - Cell: {x: 38, y: 6}
     Kind: 2
   - Cell: {x: 38, y: 11}
     Kind: 2
   - Cell: {x: 38, y: 12}
     Kind: 2
-  - Cell: {x: 38, y: 13}
-    Kind: 2
-  - Cell: {x: 38, y: 14}
-    Kind: 2
-  - Cell: {x: 38, y: 15}
-    Kind: 2
-  - Cell: {x: 38, y: 16}
-    Kind: 2
-  - Cell: {x: 38, y: 17}
-    Kind: 2
-  - Cell: {x: 38, y: 18}
-    Kind: 2
   - Cell: {x: 38, y: 19}
+    Kind: 7
+  - Cell: {x: 38, y: 20}
+    Kind: 7
+  - Cell: {x: 39, y: 10}
     Kind: 2
-  - Cell: {x: 39, y: 7}
-    Kind: 2
-  - Cell: {x: 39, y: 11}
-    Kind: 2
-  - Cell: {x: 39, y: 17}
-    Kind: 2
-  - Cell: {x: 39, y: 18}
+  - Cell: {x: 39, y: 12}
     Kind: 2
   - Cell: {x: 39, y: 19}
     Kind: 2
   _mineCells:
-  - {x: 33, y: 19}
-  - {x: 15, y: 10}
-  - {x: 21, y: 13}
+  - {x: 13, y: 13}
+  - {x: 26, y: 7}
+  - {x: 7, y: 17}
   _mineStock: 140
   _bossEntrance:
     Kind: 0
     Cell: {x: 0, y: 0}
   _nests:
-  - Cell: {x: 7, y: 8}
+  - Cell: {x: 1, y: 11}
     Element: 7
-  - Cell: {x: 7, y: 13}
+  - Cell: {x: 20, y: 7}
     Element: 7
   _spawnOrigins: {fileID: 11400000, guid: 6e01db5cf27d96741b9b169e2c5497b2, type: 2}
   _terrainAlbedo: {fileID: 2800000, guid: 408e5d14f0d98fd41ad5ef02d2c64b3e, type: 3}
@@ -264,10 +258,10 @@ MonoBehaviour:
   _enemyHealthMultiplier: 1
   _expectedUpgradeBonus: 0.1
   _balanceTargetScale:
+  - 0.757
+  - 0.757
   - 0.66
-  - 0.57
-  - 0.57
-  - 0.5
+  - 0.66
   _baseTurret: {fileID: 11400000, guid: dcb0d44c348a74f4ca381bfdc547b2f6, type: 2}
   _hero: {fileID: 11400000, guid: 0ed3ab7e3122f3e4393e6f77b086b291, type: 2}
   _repairDrone: {fileID: 11400000, guid: 36b196f4ee3be4142b2bef6ffb8bdcf5, type: 2}

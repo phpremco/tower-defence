@@ -1,57 +1,54 @@
-Builder on stage-B verdicts 2026-11-09 02:11: step 1.15, at most 2 moves per cell. calibration 2026-11-08 23:42, seeds 1,2,3, step 0.2, inputs 6c23462e (current)
+Builder on stage-B verdicts 2026-11-10 01:19: step 1.15, at most 2 moves per cell. calibration 2026-11-10 00:48, seeds 1,2,3, step 0.2, inputs 0e507ead (current)
 In-play ramp (tolerance 0.15): per level the cell margin per difficulty (Easy Medium Hard Psycho; a win is 0.5 plus half its stars share, a loss half of how far it got; the mean of the best replayed plan and the creative reference).
-  Level_C1_01   1.00  1.00  1.00  0.83  (best: Level_C1_01_0_strategy1, Level_C1_01_1_strategy1, Level_C1_01_2_strategy1, Level_C1_01_3_strategy1)
-  Level_C1_02   0.83  1.00  1.00  0.42  (best: Level_C1_02_0_strategy5, Level_C1_02_1_strategy3, Level_C1_02_2_strategy1, Level_C1_02_3_strategy1)
-  Level_C1_03   0.83  1.00  0.56  0.94  (best: Level_C1_03_0_strategy1, Level_C1_03_1_strategy1, Level_C1_03_2_strategy1, Level_C1_03_3_strategy3)
-  Level_C1_04   1.00  1.00  0.72  0.52  (best: Level_C1_04_0_strategy1, Level_C1_04_1_strategy1, Level_C1_04_2_strategy2, Level_C1_04_3_strategy2)
-  Level_C1_05   0.68  0.75  0.53  0.30  (best: Level_C1_05_0_strategy3, Level_C1_05_1_strategy3, Level_C1_05_2_strategy1, Level_C1_05_3_strategy3)
-  Level_C1_06   1.00  1.00  0.69  0.39  (best: Level_C1_06_0_strategy1, Level_C1_06_1_strategy1, Level_C1_06_2_strategy2, Level_C1_06_3_strategy3)
-  dips: Level_C1_03 Psycho easier in play than Level_C1_02 (margin 0.94 against 0.42); Level_C1_04 Easy easier in play than Level_C1_03 (margin 1.00 against 0.83); Level_C1_04 Hard easier in play than Level_C1_03 (margin 0.72 against 0.56); Level_C1_06 Easy easier in play than Level_C1_05 (margin 1.00 against 0.68); Level_C1_06 Medium easier in play than Level_C1_05 (margin 1.00 against 0.75); Level_C1_06 Hard easier in play than Level_C1_05 (margin 0.69 against 0.53)
+  Level_C1_01   1.00  1.00  1.00  0.36  (best: Level_C1_01_0_strategy1, Level_C1_01_1_strategy1, Level_C1_01_2_strategy1, Level_C1_01_3_strategy1)
+  Level_C1_02   0.92  1.00  1.00  0.45  (best: Level_C1_02_0_strategy1, Level_C1_02_1_strategy2, Level_C1_02_2_strategy1, Level_C1_02_3_strategy1)
+  Level_C1_03   1.00  1.00  0.94  0.59  (best: Level_C1_03_0_strategy1, Level_C1_03_1_strategy1, Level_C1_03_2_strategy2, Level_C1_03_3_strategy1)
+  Level_C1_04   1.00  1.00  1.00  0.72  (best: Level_C1_04_0_strategy1, Level_C1_04_1_strategy1, Level_C1_04_2_strategy1, Level_C1_04_3_strategy2)
+  Level_C1_05   0.97  1.00  0.67  0.42  (best: Level_C1_05_0_strategy3, Level_C1_05_1_strategy3, Level_C1_05_2_strategy3, Level_C1_05_3_strategy2)
+  Level_C1_06   1.00  1.00  0.66  0.67  (best: Level_C1_06_0_strategy1, Level_C1_06_1_strategy1, Level_C1_06_2_strategy3, Level_C1_06_3_strategy4)
+  dips: Level_C1_06 Psycho easier in play than Level_C1_05 (margin 0.67 against 0.42)
 
   Level_C1_01 Easy    scale 1.15, moves used 1/2: ok
   Level_C1_01 Medium  scale 1, moves used 0/2: ok
-  Level_C1_01 Hard    scale 1.15, moves used 2/2: too easy (mono PulseRifle does as well as on Medium; mono Cannon does as well as on Medium; naive does as well as on Medium; affordable does as well as on Medium)
-  Level_C1_01 Psycho  scale 1.15, moves used 1/2: too easy (mono PulseRifle seed 1 reaches wave 9; mono Cannon seed 1 wins; mono Laser seed 1 reaches wave 9; naive seed 1 reaches wave 11; affordable seed 1 wins)
-    -> script lever: plated troops weighted x1.5 (mono PulseRifle seed 1 reaches wave 9; mono Cannon seed 1 wins; mono Laser seed 1 reaches wave 9; naive seed 1 reaches wave 11; affordable seed 1 wins)
-  Level_C1_02 Easy    scale 1, moves used 0/2: too hard (the best plan wins 1/3 with 0 stars at least)
-    -> scale 0.87
-  Level_C1_02 Medium  scale 1.15, moves used 1/2: too easy (mono Cannon wins 3/3; naive wins 2/3)
-    -> script lever: plated troops weighted x1.5 (mono Cannon wins 3/3; naive wins 2/3)
-  Level_C1_02 Hard    scale 1.15, moves used 1/2: too easy (mono PulseRifle seed 1 reaches wave 10; mono Cannon seed 1 wins; mono Laser seed 1 reaches wave 10; naive seed 1 reaches wave 12; affordable seed 1 reaches wave 12)
-    -> script lever: plated troops weighted x1.5 (mono PulseRifle seed 1 reaches wave 10; mono Cannon seed 1 wins; mono Laser seed 1 reaches wave 10; naive seed 1 reaches wave 12; affordable seed 1 reaches wave 12)
-  Level_C1_02 Psycho  scale 1, moves used 0/2: pulls both ways (mono PulseRifle seed 1 reaches wave 12; mono Cannon seed 1 reaches wave 9; mono Laser seed 1 reaches wave 10; naive seed 1 reaches wave 9; affordable seed 1 reaches wave 12; the best plan wins 0/3 (bar 40 %))
+  Level_C1_01 Hard    scale 1.32, moves used 2/2: too easy (mono PulseRifle does as well as on Medium; mono Cannon does as well as on Medium; naive does as well as on Medium; affordable does as well as on Medium)
+  Level_C1_01 Psycho  scale 1.32, moves used 2/2: too hard (the best plan wins 0/3 (bar 40 %))
+  Level_C1_02 Easy    scale 0.757, moves used 1/2: too hard (the best plan wins 2/3 with 0 stars at least)
+    -> scale 0.658
+  Level_C1_02 Medium  scale 1.15, moves used 2/2: too easy (mono PulseRifle wins 2/3; mono Cannon wins 3/3; naive wins 2/3)
+  Level_C1_02 Hard    scale 1.15, moves used 2/2: too easy (mono PulseRifle seed 3 reaches wave 12; mono Cannon seed 3 wins; mono Laser seed 3 reaches wave 10; naive seed 3 reaches wave 12; affordable seed 3 reaches wave 10)
+  Level_C1_02 Psycho  scale 1, moves used 0/2: pulls both ways (mono PulseRifle seed 3 reaches wave 10; mono Cannon seed 3 reaches wave 12; mono Laser seed 3 reaches wave 10; naive seed 3 reaches wave 10; affordable seed 3 reaches wave 11; the best plan wins 0/3 (bar 40 %))
   Level_C1_03 Easy    scale 0.757, moves used 2/2: too hard (only 0 of 3 obvious kinds win)
   Level_C1_03 Medium  scale 0.87, moves used 1/2: ok
-  Level_C1_03 Hard    scale 1, moves used 0/2: too easy (mono PulseRifle seed 1 reaches wave 13; mono Cannon seed 1 reaches wave 13; mono Laser seed 1 reaches wave 13; naive seed 1 reaches wave 13; affordable seed 1 reaches wave 13)
-    -> scale 1.15
-  Level_C1_03 Psycho  scale 1.15, moves used 1/2: too easy (mono PulseRifle seed 1 reaches wave 13; mono Cannon seed 1 reaches wave 12; mono Laser seed 2 reaches wave 13; naive seed 1 reaches wave 13; affordable seed 1 reaches wave 13)
-    -> script lever: plated troops weighted x1.5 (mono PulseRifle seed 1 reaches wave 13; mono Cannon seed 1 reaches wave 12; mono Laser seed 2 reaches wave 13; naive seed 1 reaches wave 13; affordable seed 1 reaches wave 13)
-  Level_C1_04 Easy    scale 0.87, moves used 1/2: too easy (in-play ramp: easier in play than Level_C1_03 (margin 1.00 against 0.83))
+  Level_C1_03 Hard    scale 0.87, moves used 1/2: too easy (mono PulseRifle seed 2 reaches wave 13; mono Cannon seed 2 reaches wave 13; mono Laser seed 2 reaches wave 13; naive seed 2 reaches wave 13; affordable seed 2 reaches wave 13)
+    -> script lever: plated troops weighted x1.5 (mono PulseRifle seed 2 reaches wave 13; mono Cannon seed 2 reaches wave 13; mono Laser seed 2 reaches wave 13; naive seed 2 reaches wave 13; affordable seed 2 reaches wave 13)
+  Level_C1_03 Psycho  scale 1.15, moves used 2/2: too easy (mono PulseRifle seed 2 reaches wave 13; mono Cannon seed 2 reaches wave 13; mono Laser seed 2 reaches wave 11; naive seed 1 reaches wave 13; affordable seed 2 reaches wave 13)
+  Level_C1_04 Easy    scale 0.87, moves used 1/2: ok
     -> the Easy raid rule moves the first raid from wave 3 to wave 10 at this solve; no lever this round
   Level_C1_04 Medium  scale 1, moves used 0/2: ok
-  Level_C1_04 Hard    scale 1.15, moves used 1/2: too easy (in-play ramp: easier in play than Level_C1_03 (margin 0.72 against 0.56))
-    -> script lever: plated troops weighted x1.5 (in-play ramp: easier in play than Level_C1_03 (margin 0.72 against 0.56))
-  Level_C1_04 Psycho  scale 0.757, moves used 2/2: too hard (the best plan wins 1/3 (bar 40 %))
-  Level_C1_05 Easy    scale 0.87, moves used 1/2: too hard (only 0 of 3 obvious kinds win; the best plan wins 0/3 with 0 stars at least)
+  Level_C1_04 Hard    scale 1, moves used 2/2: ok
+  Level_C1_04 Psycho  scale 0.66, moves used 2/2: too easy (mono PulseRifle seed 2 reaches wave 11)
+  Level_C1_05 Easy    scale 0.87, moves used 1/2: too hard (only 0 of 3 obvious kinds win)
     -> the Easy raid rule moves the first raid from wave 4 to wave 8 at this solve; no lever this round
-  Level_C1_05 Medium  scale 0.757, moves used 2/2: too hard (the best plan wins 0/3)
-  Level_C1_05 Hard    scale 0.757, moves used 2/2: too hard (the best plan wins 0/3 (bar 60 %))
+  Level_C1_05 Medium  scale 0.757, moves used 2/2: ok
+  Level_C1_05 Hard    scale 0.757, moves used 2/2: too hard (the best plan wins 1/3 (bar 60 %))
   Level_C1_05 Psycho  scale 0.757, moves used 2/2: too hard (the best plan wins 0/3 (bar 40 %))
   Level_C1_06 Easy    scale 0.87, moves used 1/2: too hard (only 1 of 3 obvious kinds win)
     -> the Easy raid rule moves the first raid from wave 8 to wave 9 at this solve; no lever this round
-  Level_C1_06 Medium  scale 0.87, moves used 2/2: too easy (in-play ramp: easier in play than Level_C1_05 (margin 1.00 against 0.75))
-  Level_C1_06 Hard    scale 0.87, moves used 2/2: too easy (in-play ramp: easier in play than Level_C1_05 (margin 0.69 against 0.53))
-  Level_C1_06 Psycho  scale 0.87, moves used 2/2: too hard (the best plan wins 0/3 (bar 40 %))
+  Level_C1_06 Medium  scale 0.87, moves used 2/2: ok
+  Level_C1_06 Hard    scale 0.87, moves used 2/2: too hard (the best plan wins 1/3 (bar 60 %))
+  Level_C1_06 Psycho  scale 0.757, moves used 2/2: too easy (in-play ramp: easier in play than Level_C1_05 (margin 0.67 against 0.42))
   tuning written to Tools/PlayTest/wave_tuning.txt; solving the waves.
 
 Design questions for Remco (cells the builder could not settle with its lever):
-  Level_C1_01 Hard: still too easy after 2 moves (plated 1.5, tempo 1, raid wave 0) (mono PulseRifle does as well as on Medium; mono Cannon does as well as on Medium; naive does as well as on Medium; affordable does as well as on Medium); a design choice is needed.
-  Level_C1_02 Psycho: pulls both ways (mono PulseRifle seed 1 reaches wave 12; mono Cannon seed 1 reaches wave 9; mono Laser seed 1 reaches wave 10; naive seed 1 reaches wave 9; affordable seed 1 reaches wave 12; the best plan wins 0/3 (bar 40 %)); a script-level lever or a design choice is needed.
+  Level_C1_01 Hard: still too easy after 2 moves (plated 1.5, swarm 1, tempo 0.85, raid wave 0) (mono PulseRifle does as well as on Medium; mono Cannon does as well as on Medium; naive does as well as on Medium; affordable does as well as on Medium); a design choice is needed.
+  Level_C1_01 Psycho: still too hard at scale 1.32 after 2 moves (the best plan wins 0/3 (bar 40 %)); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
+  Level_C1_02 Medium: still too easy after 2 moves (plated 1.5, swarm 1, tempo 1, raid wave 0) (mono PulseRifle wins 2/3; mono Cannon wins 3/3; naive wins 2/3); a design choice is needed.
+  Level_C1_02 Hard: still too easy after 2 moves (plated 1.5, swarm 1, tempo 1, raid wave 0) (mono PulseRifle seed 3 reaches wave 12; mono Cannon seed 3 wins; mono Laser seed 3 reaches wave 10; naive seed 3 reaches wave 12; affordable seed 3 reaches wave 10); a design choice is needed.
+  Level_C1_02 Psycho: pulls both ways (mono PulseRifle seed 3 reaches wave 10; mono Cannon seed 3 reaches wave 12; mono Laser seed 3 reaches wave 10; naive seed 3 reaches wave 10; affordable seed 3 reaches wave 11; the best plan wins 0/3 (bar 40 %)); a script-level lever or a design choice is needed.
   Level_C1_03 Easy: still too hard at scale 0.757 after 2 moves (only 0 of 3 obvious kinds win); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
-  Level_C1_04 Psycho: still too hard after 2 moves (plated 1, tempo 1, raid wave 0) (on paper Psycho asks no more than Hard: plain 0.99 against 1.26); a design choice is needed.
-  Level_C1_05 Medium: still too hard at scale 0.757 after 2 moves (the best plan wins 0/3); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
-  Level_C1_05 Hard: still too hard at scale 0.757 after 2 moves (the best plan wins 0/3 (bar 60 %)); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
+  Level_C1_03 Psycho: still too easy after 2 moves (plated 1.5, swarm 1, tempo 0.85, raid wave 0) (mono PulseRifle seed 2 reaches wave 13; mono Cannon seed 2 reaches wave 13; mono Laser seed 2 reaches wave 11; naive seed 1 reaches wave 13; affordable seed 2 reaches wave 13); a design choice is needed.
+  Level_C1_04 Psycho: still too easy after 2 moves (plated 1, swarm 1, tempo 1, raid wave 0) (on paper Psycho asks no more than Hard: plain 0.86 against 1.10); a design choice is needed.
+  Level_C1_05 Hard: still too hard at scale 0.757 after 2 moves (the best plan wins 1/3 (bar 60 %)); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
   Level_C1_05 Psycho: still too hard at scale 0.757 after 2 moves (the best plan wins 0/3 (bar 40 %)); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
-  Level_C1_06 Medium: still too easy after 2 moves (plated 1.5, tempo 1, raid wave 0) (in-play ramp: easier in play than Level_C1_05 (margin 1.00 against 0.75)); a design choice is needed.
-  Level_C1_06 Hard: still too easy after 2 moves (plated 1.5, tempo 1, raid wave 0) (in-play ramp: easier in play than Level_C1_05 (margin 0.69 against 0.53)); a design choice is needed.
-  Level_C1_06 Psycho: still too hard after 2 moves (plated 1.5, tempo 1, raid wave 0) (on paper Psycho asks no more than Hard: plain 0.97 against 0.98); a design choice is needed.
+  Level_C1_06 Hard: still too hard at scale 0.87 after 2 moves (the best plan wins 1/3 (bar 60 %)); a script-level lever (roster, packs, raids, bosses) or a design choice is needed.
+  Level_C1_06 Psycho: still too easy after 2 moves (plated 1.5, swarm 1, tempo 1, raid wave 0) (in-play ramp: easier in play than Level_C1_05 (margin 0.67 against 0.42)); a design choice is needed.

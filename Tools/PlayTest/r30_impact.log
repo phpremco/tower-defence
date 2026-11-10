@@ -1,0 +1,274 @@
+== impact: paper deltas against the baseline (round 25)
+run_script	true	{"diagnostics":[],"compileMs":56,"executeMs":941,"assemblyName":"PipelineRunScript_Impact_d51a9f1571754fdfb68e047683fd8477","success":true,"result":"STALE; 10 cells flagged (cells=0:3,1:3,3:3,4:0,4:1,4:2,4:3,3:2,5:2,5:3); see Tools/PlayTest/impact.txt"}	{"file":"Tools/PlayTest/Scripts/Impact.cs","entry":"Impact.Run","timeout_ms":"600000"}
+Impact 2026-11-09 21:39: data now 5dcbfdd0, baseline 2026-11-09 21:34 on d62c1c91 (calibration 2026-11-09 20:06). calibration 2026-11-09 20:06, seeds 1,2,3, step 0.2, inputs 63b39a09 (STALE, data now 5dcbfdd0)
+STALE: the model's shape changed (1aa70786 -> bf745400): a rule, a term, a tower or creature type, or the combat code. The calibration's
+efficiencies were fitted under other rules, so the paper below is indicative only: re-measure (measure, fit, apply) before trusting it.
+Band 0.11 (odd/even hold-out efficiencies Cannon 0.80/0.65, Laser 0.67/0.66, PulseRifle 0.86/0.80, Rocket 0.88/0.82 on 745 runs): a row whose margin moved by at least the band, or whose verdict flipped, flags its cell.
+Margin: the worst wave's hero cap over its pressure (above one every wave sits inside the cap); a plan holds when the base survives the leak model.
+
+level        diff    best plan (before -> after)                 plans hold  obvious hold  creative           flag
+Level_C1_01  Easy    strategy4  3* base 600    1.20 -> 3* base 600    1.20 5/5->5/5    3/3->3/3    3* base 600 -> 3* base 600 -
+Level_C1_01  Medium  strategy2  3* base 600    0.66 -> 3* base 600    0.66 2/2->2/2    3/3->3/3    3* base 600 -> 3* base 600 -
+Level_C1_01  Hard    strategy1  falls w10      0.23 -> falls w10      0.23 0/3->0/3    3/4->3/4    falls w7 -> falls w7 -
+Level_C1_01  Psycho  strategy1  falls w6       0.10 -> falls w3       0.13 0/3->0/3    2/4->0/4    falls w8 -> falls w7 FLAG
+  reasons: mono PulseRifle now falls (was 3* base 700); mono Cannon now falls (was 3* base 700); naive margin 0.28 -> 0.17 (moved -0.11, band 0.11)
+Level_C1_02  Easy    strategy4  3* base 700    1.45 -> 3* base 700    1.45 5/5->5/5    4/4->4/4    3* base 700 -> 3* base 700 -
+Level_C1_02  Medium  strategy1  3* base 700    0.42 -> 3* base 700    0.42 3/3->3/3    1/4->1/4    3* base 700 -> 3* base 700 -
+Level_C1_02  Hard    strategy1  falls w7       0.28 -> falls w7       0.28 0/3->0/3    1/4->1/4    falls w7 -> falls w7 -
+Level_C1_02  Psycho  strategy4  falls w6       0.29 -> 3* base 800    0.46 3/4->1/4    0/4->0/4    falls w6 -> falls w7 FLAG
+  reasons: Level_C1_02_3_strategy1 now falls (was 3* base 800); Level_C1_02_3_strategy2 now falls (was 3* base 800); Level_C1_02_3_strategy3 now falls (was 3* base 800); Level_C1_02_3_strategy4 now holds (was falls w6)
+Level_C1_03  Easy    strategy2  3* base 700    1.25 -> 3* base 700    1.25 5/5->5/5    0/4->0/4    3* base 700 -> 3* base 700 -
+Level_C1_03  Medium  strategy2  3* base 644    0.63 -> 3* base 644    0.63 5/5->5/5    0/4->0/4    3* base 700 -> 3* base 700 -
+Level_C1_03  Hard    strategy2  falls w11      0.02 -> falls w11      0.02 0/3->0/3    0/4->0/4    falls w11 -> falls w11 -
+Level_C1_03  Psycho  strategy1  falls w7       0.00 -> falls w7       0.00 0/3->0/3    0/4->0/4    falls w7 -> falls w7 -
+Level_C1_04  Easy    strategy1  3* base 700    0.88 -> 3* base 700    0.88 5/5->5/5    1/4->1/4    3* base 700 -> 3* base 700 -
+Level_C1_04  Medium  strategy1  falls w14      0.23 -> falls w14      0.23 0/3->0/3    0/4->0/4    falls w14 -> falls w14 -
+Level_C1_04  Hard    strategy1  1* base 319    0.27 -> 1* base 319    0.27 5/5->5/5    0/4->0/4    falls w11 -> falls w11 -
+Level_C1_04  Psycho  strategy2  falls w15      0.23 -> falls w16      0.28 0/3->0/3    0/4->0/4    falls w14 -> falls w14 FLAG
+  reasons: Level_C1_04_3_strategy3 margin 0.19 -> 0.31 (moved +0.12, band 0.11)
+Level_C1_05  Easy    strategy1  3* base 700    0.60 -> falls w4       0.06 5/5->0/5    0/4->0/4    falls w7 -> falls w15 FLAG
+  reasons: Level_C1_05_0_strategy1 now falls (was 3* base 700); Level_C1_05_0_strategy2 now falls (was 3* base 700); Level_C1_05_0_strategy3 now falls (was 3* base 700); Level_C1_05_0_strategy4 now falls (was 3* base 700); Level_C1_05_0_strategy5 now falls (was 3* base 700); creative margin 0.48 -> 0.33 (moved -0.16, band 0.11); mono PulseRifle margin 0.66 -> 0.21 (moved -0.46, band 0.11); naive margin 0.70 -> 0.33 (moved -0.37, band 0.11)
+Level_C1_05  Medium  strategy4  3* base 700    1.16 -> falls w14      0.14 5/5->0/5    0/4->0/4    falls w13 -> 3* base 700 FLAG
+  reasons: Level_C1_05_1_strategy1 now falls (was 3* base 700); Level_C1_05_1_strategy2 now falls (was 3* base 700); Level_C1_05_1_strategy3 now falls (was 3* base 700); Level_C1_05_1_strategy4 now falls (was 3* base 700); Level_C1_05_1_strategy5 now falls (was 3* base 700); creative now holds (was falls w13); mono PulseRifle margin 0.68 -> 0.00 (moved -0.68, band 0.11)
+Level_C1_05  Hard    strategy1  3* base 800    0.58 -> falls w5       0.10 5/5->0/5    0/4->0/4    falls w10 -> falls w14 FLAG
+  reasons: Level_C1_05_2_strategy1 now falls (was 3* base 800); Level_C1_05_2_strategy2 now falls (was 3* base 769); Level_C1_05_2_strategy3 now falls (was 3* base 755); Level_C1_05_2_strategy4 now falls (was 3* base 759); Level_C1_05_2_strategy5 now falls (was 3* base 755); mono PulseRifle margin 0.25 -> 0.05 (moved -0.20, band 0.11)
+Level_C1_05  Psycho  strategy1  2* base 802    0.48 -> falls w8       0.08 5/5->0/5    0/4->0/4    1* base 258 -> falls w10 FLAG
+  reasons: Level_C1_05_3_strategy1 now falls (was 2* base 802); Level_C1_05_3_strategy2 now falls (was 2* base 762); Level_C1_05_3_strategy3 now falls (was 2* base 597); Level_C1_05_3_strategy4 now falls (was 2* base 529); Level_C1_05_3_strategy5 now falls (was 1* base 412); creative now falls (was 1* base 258); mono PulseRifle margin 0.24 -> 0.05 (moved -0.19, band 0.11)
+Level_C1_06  Easy    strategy3  3* base 700    0.65 -> 3* base 700    0.65 3/3->3/3    0/4->0/4    3* base 700 -> 3* base 700 -
+Level_C1_06  Medium  strategy3  falls w14      0.04 -> falls w14      0.04 0/3->0/3    0/4->0/4    falls w11 -> falls w11 -
+Level_C1_06  Hard    strategy3  falls w9       0.03 -> falls w9       0.03 0/3->0/3    0/4->0/4    falls w9 -> falls w9 -
+Level_C1_06  Psycho  strategy1  falls w5       0.03 -> falls w5       0.06 0/3->0/3    0/4->0/4    falls w5 -> falls w5 -
+
+Psycho above Hard (best plan's margin, before -> after; Psycho must be the smaller):
+  Level_C1_01  Hard 0.23 -> 0.23   Psycho 0.10 -> 0.13   ordered
+  Level_C1_02  Hard 0.28 -> 0.28   Psycho 0.29 -> 0.46   NOT ordered
+  Level_C1_03  Hard 0.02 -> 0.02   Psycho 0.00 -> 0.00   ordered
+  Level_C1_04  Hard 0.27 -> 0.27   Psycho 0.23 -> 0.28   NOT ordered   <- ordering flipped
+  Level_C1_05  Hard 0.58 -> 0.10   Psycho 0.48 -> 0.08   ordered
+  Level_C1_06  Hard 0.03 -> 0.03   Psycho 0.03 -> 0.06   NOT ordered   <- ordering flipped
+
+Upgrade beats a second tower (DPS per coin of a level over 1.15 x the level below; the worst step, 1.00 = met exactly):
+  Cannon         1.01 -> 1.01   met
+  Laser          1.02 -> 1.02   met
+  PulseRifle     1.01 -> 1.01   met
+  Railgun        1.00 -> 1.00   met
+  Rocket         1.01 -> 1.01   met
+  Tesla          1.01 -> 1.01   met
+
+Flagged cells: 10. Replay only these (parallel workers):
+  bash Tools/PlayTest/replay_cells.sh "cells=0:3,1:3,3:3,4:0,4:1,4:2,4:3,3:2,5:2,5:3"
+  (the yardstick too: bash Tools/PlayTest/measure_cells.sh "cells=0:3,1:3,3:3,4:0,4:1,4:2,4:3,3:2,5:2,5:3"; then fit, acceptance)
+
+STALE: re-measure before trusting these numbers (the rules changed; see the top of this report).
+
+Per cell, every row (before -> after):
+    plan     Level_C1_01_0_strategy1      3* base 600       1.13 -> 3* base 600       1.13
+    plan     Level_C1_01_0_strategy2      3* base 600       1.13 -> 3* base 600       1.13
+    plan     Level_C1_01_0_strategy3      3* base 600       1.13 -> 3* base 600       1.13
+    plan     Level_C1_01_0_strategy4      3* base 600       1.20 -> 3* base 600       1.20
+    plan     Level_C1_01_0_strategy5      3* base 600       1.13 -> 3* base 600       1.13
+    creative creative                     3* base 600       0.73 -> 3* base 600       0.73
+    obvious  mono PulseRifle              3* base 600       0.92 -> 3* base 600       0.92
+    obvious  mono Cannon                  3* base 600       0.86 -> 3* base 600       0.86
+    obvious  naive                        3* base 600       1.01 -> 3* base 600       1.01
+    plan     Level_C1_01_1_strategy1      3* base 600       0.98 -> 3* base 600       0.98
+    plan     Level_C1_01_1_strategy2      3* base 600       0.66 -> 3* base 600       0.66
+    creative creative                     3* base 600       0.59 -> 3* base 600       0.59
+    obvious  mono PulseRifle              3* base 600       0.84 -> 3* base 600       0.84
+    obvious  mono Cannon                  3* base 600       0.94 -> 3* base 600       0.94
+    obvious  naive                        3* base 600       0.99 -> 3* base 600       0.99
+    plan     Level_C1_01_2_strategy1      falls w10         0.23 -> falls w10         0.23
+    plan     Level_C1_01_2_strategy2      falls w10         0.20 -> falls w10         0.20
+    plan     Level_C1_01_2_strategy3      falls w10         0.22 -> falls w10         0.22
+    creative creative                     falls w7          0.16 -> falls w7          0.16
+    obvious  mono PulseRifle              3* base 700       0.47 -> 3* base 700       0.47
+    obvious  mono Cannon                  3* base 700       0.52 -> 3* base 700       0.52
+    obvious  mono Laser                   3* base 700       0.36 -> 3* base 700       0.36
+    obvious  naive                        falls w10         0.35 -> falls w10         0.35
+    plan     Level_C1_01_3_strategy1      falls w6          0.10 -> falls w3          0.13
+    plan     Level_C1_01_3_strategy2      falls w6          0.13 -> falls w3          0.10
+    plan     Level_C1_01_3_strategy3      falls w6          0.11 -> falls w3          0.14
+    creative creative                     falls w8          0.11 -> falls w7          0.15
+    obvious  mono PulseRifle              3* base 700       0.44 -> falls w2          0.23   <- mono PulseRifle now falls (was 3* base 700)
+    obvious  mono Cannon                  3* base 700       0.38 -> falls w7          0.25   <- mono Cannon now falls (was 3* base 700)
+    obvious  mono Laser                   falls w3          0.26 -> falls w2          0.16
+    obvious  naive                        falls w6          0.28 -> falls w6          0.17   <- naive margin 0.28 -> 0.17 (moved -0.11, band 0.11)
+    plan     Level_C1_02_0_strategy1      3* base 700       1.60 -> 3* base 700       1.60
+    plan     Level_C1_02_0_strategy2      3* base 700       0.71 -> 3* base 700       0.71
+    plan     Level_C1_02_0_strategy3      3* base 700       1.51 -> 3* base 700       1.51
+    plan     Level_C1_02_0_strategy4      3* base 700       1.45 -> 3* base 700       1.45
+    plan     Level_C1_02_0_strategy5      3* base 700       1.61 -> 3* base 700       1.61
+    creative creative                     3* base 700       0.90 -> 3* base 700       0.90
+    obvious  mono PulseRifle              3* base 700       1.23 -> 3* base 700       1.23
+    obvious  mono Cannon                  3* base 700       0.94 -> 3* base 700       0.94
+    obvious  mono Laser                   3* base 700       0.94 -> 3* base 700       0.94
+    obvious  naive                        3* base 700       1.05 -> 3* base 700       1.05
+    plan     Level_C1_02_1_strategy1      3* base 700       0.42 -> 3* base 700       0.42
+    plan     Level_C1_02_1_strategy2      3* base 700       0.42 -> 3* base 700       0.42
+    plan     Level_C1_02_1_strategy3      3* base 700       0.54 -> 3* base 700       0.54
+    creative creative                     3* base 700       0.30 -> 3* base 700       0.30
+    obvious  mono PulseRifle              falls w7          0.34 -> falls w7          0.34
+    obvious  mono Cannon                  3* base 700       0.39 -> 3* base 700       0.39
+    obvious  mono Laser                   falls w6          0.21 -> falls w6          0.21
+    obvious  naive                        falls w12         0.53 -> falls w12         0.53
+    plan     Level_C1_02_2_strategy1      falls w7          0.28 -> falls w7          0.28
+    plan     Level_C1_02_2_strategy2      falls w7          0.28 -> falls w7          0.28
+    plan     Level_C1_02_2_strategy3      falls w7          0.28 -> falls w7          0.28
+    creative creative                     falls w7          0.16 -> falls w7          0.16
+    obvious  mono PulseRifle              falls w6          0.31 -> falls w6          0.31
+    obvious  mono Cannon                  3* base 700       0.33 -> 3* base 700       0.33
+    obvious  mono Laser                   falls w6          0.21 -> falls w6          0.21
+    obvious  naive                        falls w9          0.29 -> falls w9          0.29
+    plan     Level_C1_02_3_strategy1      3* base 800       0.34 -> falls w6          0.31   <- Level_C1_02_3_strategy1 now falls (was 3* base 800)
+    plan     Level_C1_02_3_strategy2      3* base 800       0.34 -> falls w6          0.31   <- Level_C1_02_3_strategy2 now falls (was 3* base 800)
+    plan     Level_C1_02_3_strategy3      3* base 800       0.34 -> falls w6          0.29   <- Level_C1_02_3_strategy3 now falls (was 3* base 800)
+    plan     Level_C1_02_3_strategy4      falls w6          0.29 -> 3* base 800       0.46   <- Level_C1_02_3_strategy4 now holds (was falls w6)
+    creative creative                     falls w6          0.09 -> falls w7          0.19
+    obvious  mono PulseRifle              falls w6          0.36 -> falls w6          0.29
+    obvious  mono Cannon                  falls w5          0.22 -> falls w6          0.26
+    obvious  mono Laser                   falls w6          0.24 -> falls w6          0.29
+    obvious  naive                        falls w6          0.21 -> falls w6          0.22
+    plan     Level_C1_03_0_strategy1      3* base 700       1.25 -> 3* base 700       1.25
+    plan     Level_C1_03_0_strategy2      3* base 700       1.25 -> 3* base 700       1.25
+    plan     Level_C1_03_0_strategy3      3* base 700       1.41 -> 3* base 700       1.41
+    plan     Level_C1_03_0_strategy4      3* base 700       1.43 -> 3* base 700       1.43
+    plan     Level_C1_03_0_strategy5      3* base 700       1.43 -> 3* base 700       1.43
+    creative creative                     3* base 700       1.34 -> 3* base 700       1.34
+    obvious  mono PulseRifle              falls w12         0.44 -> falls w12         0.44
+    obvious  mono Cannon                  falls w12         0.00 -> falls w12         0.00
+    obvious  mono Laser                   falls w12         0.00 -> falls w12         0.00
+    obvious  naive                        falls w12         1.07 -> falls w12         1.07
+    plan     Level_C1_03_1_strategy1      3* base 644       0.63 -> 3* base 644       0.63
+    plan     Level_C1_03_1_strategy2      3* base 644       0.63 -> 3* base 644       0.63
+    plan     Level_C1_03_1_strategy3      3* base 644       0.63 -> 3* base 644       0.63
+    plan     Level_C1_03_1_strategy4      3* base 644       0.63 -> 3* base 644       0.63
+    plan     Level_C1_03_1_strategy5      3* base 644       0.63 -> 3* base 644       0.63
+    creative creative                     3* base 700       0.65 -> 3* base 700       0.65
+    obvious  mono PulseRifle              falls w11         0.17 -> falls w11         0.17
+    obvious  mono Cannon                  falls w11         0.00 -> falls w11         0.00
+    obvious  mono Laser                   falls w11         0.00 -> falls w11         0.00
+    obvious  naive                        falls w11         0.20 -> falls w11         0.20
+    plan     Level_C1_03_2_strategy1      falls w9          0.01 -> falls w9          0.01
+    plan     Level_C1_03_2_strategy2      falls w11         0.02 -> falls w11         0.02
+    plan     Level_C1_03_2_strategy3      falls w11         0.02 -> falls w11         0.02
+    creative creative                     falls w11         0.02 -> falls w11         0.02
+    obvious  mono PulseRifle              falls w7          0.09 -> falls w7          0.09
+    obvious  mono Cannon                  falls w11         0.00 -> falls w11         0.00
+    obvious  mono Laser                   falls w5          0.00 -> falls w5          0.00
+    obvious  naive                        falls w7          0.11 -> falls w7          0.11
+    plan     Level_C1_03_3_strategy1      falls w7          0.00 -> falls w7          0.00
+    plan     Level_C1_03_3_strategy2      falls w7          0.00 -> falls w7          0.00
+    plan     Level_C1_03_3_strategy3      falls w7          0.00 -> falls w5          0.00
+    creative creative                     falls w7          0.00 -> falls w7          0.00
+    obvious  mono PulseRifle              falls w5          0.06 -> falls w4          0.07
+    obvious  mono Cannon                  falls w7          0.00 -> falls w7          0.00
+    obvious  mono Laser                   falls w4          0.00 -> falls w4          0.00
+    obvious  naive                        falls w4          0.09 -> falls w5          0.13
+    plan     Level_C1_04_0_strategy1      3* base 700       0.88 -> 3* base 700       0.88
+    plan     Level_C1_04_0_strategy2      3* base 700       0.88 -> 3* base 700       0.88
+    plan     Level_C1_04_0_strategy3      3* base 700       0.82 -> 3* base 700       0.82
+    plan     Level_C1_04_0_strategy4      3* base 700       0.82 -> 3* base 700       0.82
+    plan     Level_C1_04_0_strategy5      3* base 700       0.80 -> 3* base 700       0.80
+    creative creative                     3* base 700       0.89 -> 3* base 700       0.89
+    obvious  mono PulseRifle              falls w7          0.52 -> falls w7          0.52
+    obvious  mono Cannon                  falls w7          0.00 -> falls w7          0.00
+    obvious  mono Laser                   falls w7          0.00 -> falls w7          0.00
+    obvious  naive                        3* base 700       0.74 -> 3* base 700       0.74
+    plan     Level_C1_04_1_strategy1      falls w14         0.23 -> falls w14         0.23
+    plan     Level_C1_04_1_strategy2      falls w14         0.23 -> falls w14         0.23
+    plan     Level_C1_04_1_strategy3      falls w14         0.23 -> falls w14         0.23
+    creative creative                     falls w14         0.23 -> falls w14         0.23
+    obvious  mono PulseRifle              falls w3          0.28 -> falls w3          0.28
+    obvious  mono Cannon                  falls w3          0.00 -> falls w3          0.00
+    obvious  mono Laser                   falls w3          0.00 -> falls w3          0.00
+    obvious  naive                        falls w15         0.30 -> falls w15         0.30
+    plan     Level_C1_04_2_strategy1      1* base 319       0.27 -> 1* base 319       0.27
+    plan     Level_C1_04_2_strategy2      1* base 315       0.27 -> 1* base 315       0.27
+    plan     Level_C1_04_2_strategy3      1* base 307       0.34 -> 1* base 307       0.34
+    plan     Level_C1_04_2_strategy4      1* base 296       0.28 -> 1* base 296       0.28
+    plan     Level_C1_04_2_strategy5      1* base 296       0.27 -> 1* base 296       0.27
+    creative creative                     falls w11         0.15 -> falls w11         0.15
+    obvious  mono PulseRifle              falls w3          0.18 -> falls w3          0.18
+    obvious  mono Cannon                  falls w3          0.00 -> falls w3          0.00
+    obvious  mono Laser                   falls w3          0.00 -> falls w3          0.00
+    obvious  naive                        falls w15         0.22 -> falls w15         0.22
+    plan     Level_C1_04_3_strategy1      falls w16         0.21 -> falls w15         0.27
+    plan     Level_C1_04_3_strategy2      falls w15         0.23 -> falls w16         0.28
+    plan     Level_C1_04_3_strategy3      falls w15         0.19 -> falls w16         0.31   <- Level_C1_04_3_strategy3 margin 0.19 -> 0.31 (moved +0.12, band 0.11)
+    creative creative                     falls w14         0.13 -> falls w14         0.19
+    obvious  mono PulseRifle              falls w3          0.24 -> falls w7          0.19
+    obvious  mono Cannon                  falls w3          0.00 -> falls w3          0.00
+    obvious  mono Laser                   falls w3          0.00 -> falls w3          0.00
+    obvious  naive                        falls w10         0.20 -> falls w14         0.27
+    plan     Level_C1_05_0_strategy1      3* base 700       0.60 -> falls w4          0.06   <- Level_C1_05_0_strategy1 now falls (was 3* base 700)
+    plan     Level_C1_05_0_strategy2      3* base 700       0.60 -> falls w4          0.06   <- Level_C1_05_0_strategy2 now falls (was 3* base 700)
+    plan     Level_C1_05_0_strategy3      3* base 700       0.60 -> falls w4          0.07   <- Level_C1_05_0_strategy3 now falls (was 3* base 700)
+    plan     Level_C1_05_0_strategy4      3* base 700       0.60 -> falls w4          0.06   <- Level_C1_05_0_strategy4 now falls (was 3* base 700)
+    plan     Level_C1_05_0_strategy5      3* base 700       0.60 -> falls w4          0.06   <- Level_C1_05_0_strategy5 now falls (was 3* base 700)
+    creative creative                     falls w7          0.48 -> falls w15         0.33   <- creative margin 0.48 -> 0.33 (moved -0.16, band 0.11)
+    obvious  mono PulseRifle              falls w8          0.66 -> falls w8          0.21   <- mono PulseRifle margin 0.66 -> 0.21 (moved -0.46, band 0.11)
+    obvious  mono Cannon                  falls w7          0.00 -> falls w8          0.00
+    obvious  mono Laser                   falls w7          0.00 -> falls w8          0.00
+    obvious  naive                        falls w8          0.70 -> falls w8          0.33   <- naive margin 0.70 -> 0.33 (moved -0.37, band 0.11)
+    plan     Level_C1_05_1_strategy1      3* base 700       0.62 -> falls w10         0.13   <- Level_C1_05_1_strategy1 now falls (was 3* base 700)
+    plan     Level_C1_05_1_strategy2      3* base 700       1.37 -> falls w10         0.12   <- Level_C1_05_1_strategy2 now falls (was 3* base 700)
+    plan     Level_C1_05_1_strategy3      3* base 700       1.26 -> falls w5          0.09   <- Level_C1_05_1_strategy3 now falls (was 3* base 700)
+    plan     Level_C1_05_1_strategy4      3* base 700       1.16 -> falls w14         0.14   <- Level_C1_05_1_strategy4 now falls (was 3* base 700)
+    plan     Level_C1_05_1_strategy5      3* base 700       1.11 -> falls w14         0.14   <- Level_C1_05_1_strategy5 now falls (was 3* base 700)
+    creative creative                     falls w13         0.69 -> 3* base 700       0.57   <- creative now holds (was falls w13)
+    obvious  mono PulseRifle              falls w4          0.68 -> falls w4          0.00   <- mono PulseRifle margin 0.68 -> 0.00 (moved -0.68, band 0.11)
+    obvious  mono Cannon                  falls w4          0.00 -> falls w4          0.00
+    obvious  mono Laser                   falls w4          0.00 -> falls w4          0.00
+    obvious  naive                        falls w4          0.00 -> falls w4          0.00
+    plan     Level_C1_05_2_strategy1      3* base 800       0.58 -> falls w5          0.10   <- Level_C1_05_2_strategy1 now falls (was 3* base 800)
+    plan     Level_C1_05_2_strategy2      3* base 769       0.49 -> falls w5          0.07   <- Level_C1_05_2_strategy2 now falls (was 3* base 769)
+    plan     Level_C1_05_2_strategy3      3* base 755       0.50 -> falls w5          0.07   <- Level_C1_05_2_strategy3 now falls (was 3* base 755)
+    plan     Level_C1_05_2_strategy4      3* base 759       0.49 -> falls w5          0.07   <- Level_C1_05_2_strategy4 now falls (was 3* base 759)
+    plan     Level_C1_05_2_strategy5      3* base 755       0.50 -> falls w5          0.07   <- Level_C1_05_2_strategy5 now falls (was 3* base 755)
+    creative creative                     falls w10         0.25 -> falls w14         0.28
+    obvious  mono PulseRifle              falls w4          0.25 -> falls w4          0.05   <- mono PulseRifle margin 0.25 -> 0.05 (moved -0.20, band 0.11)
+    obvious  mono Cannon                  falls w4          0.00 -> falls w4          0.00
+    obvious  mono Laser                   falls w4          0.00 -> falls w4          0.00
+    obvious  naive                        falls w4          0.14 -> falls w4          0.09
+    plan     Level_C1_05_3_strategy1      2* base 802       0.48 -> falls w8          0.08   <- Level_C1_05_3_strategy1 now falls (was 2* base 802)
+    plan     Level_C1_05_3_strategy2      2* base 762       0.37 -> falls w8          0.11   <- Level_C1_05_3_strategy2 now falls (was 2* base 762)
+    plan     Level_C1_05_3_strategy3      2* base 597       0.31 -> falls w8          0.07   <- Level_C1_05_3_strategy3 now falls (was 2* base 597)
+    plan     Level_C1_05_3_strategy4      2* base 529       0.20 -> falls w8          0.07   <- Level_C1_05_3_strategy4 now falls (was 2* base 529)
+    plan     Level_C1_05_3_strategy5      1* base 412       0.20 -> falls w8          0.08   <- Level_C1_05_3_strategy5 now falls (was 1* base 412)
+    creative creative                     1* base 258       0.20 -> falls w10         0.17   <- creative now falls (was 1* base 258)
+    obvious  mono PulseRifle              falls w11         0.24 -> falls w6          0.05   <- mono PulseRifle margin 0.24 -> 0.05 (moved -0.19, band 0.11)
+    obvious  mono Cannon                  falls w8          0.00 -> falls w6          0.00
+    obvious  mono Laser                   falls w8          0.00 -> falls w6          0.00
+    obvious  naive                        falls w11         0.20 -> falls w6          0.10
+    plan     Level_C1_06_0_strategy1      3* base 700       0.77 -> 3* base 700       0.77
+    plan     Level_C1_06_0_strategy2      3* base 700       0.55 -> 3* base 700       0.55
+    plan     Level_C1_06_0_strategy3      3* base 700       0.65 -> 3* base 700       0.65
+    creative creative                     3* base 700       0.63 -> 3* base 700       0.63
+    obvious  mono PulseRifle              falls w7          0.37 -> falls w7          0.37
+    obvious  mono Cannon                  falls w7          0.00 -> falls w7          0.00
+    obvious  mono Laser                   falls w7          0.00 -> falls w7          0.00
+    obvious  naive                        falls w7          0.52 -> falls w7          0.52
+    plan     Level_C1_06_1_strategy1      falls w10         0.24 -> falls w10         0.24
+    plan     Level_C1_06_1_strategy2      falls w10         0.24 -> falls w10         0.24
+    plan     Level_C1_06_1_strategy3      falls w14         0.04 -> falls w14         0.04
+    creative creative                     falls w11         0.26 -> falls w11         0.26
+    obvious  mono PulseRifle              falls w7          0.24 -> falls w7          0.24
+    obvious  mono Cannon                  falls w7          0.00 -> falls w7          0.00
+    obvious  mono Laser                   falls w7          0.00 -> falls w7          0.00
+    obvious  naive                        falls w7          0.08 -> falls w7          0.08
+    plan     Level_C1_06_2_strategy1      falls w6          0.03 -> falls w6          0.03
+    plan     Level_C1_06_2_strategy2      falls w7          0.04 -> falls w7          0.04
+    plan     Level_C1_06_2_strategy3      falls w9          0.03 -> falls w9          0.03
+    creative creative                     falls w9          0.03 -> falls w9          0.03
+    obvious  mono PulseRifle              falls w7          0.16 -> falls w7          0.16
+    obvious  mono Cannon                  falls w7          0.00 -> falls w7          0.00
+    obvious  mono Laser                   falls w6          0.00 -> falls w6          0.00
+    obvious  naive                        falls w4          0.06 -> falls w4          0.06
+    plan     Level_C1_06_3_strategy1      falls w5          0.03 -> falls w5          0.06
+    plan     Level_C1_06_3_strategy2      falls w5          0.03 -> falls w5          0.04
+    plan     Level_C1_06_3_strategy3      falls w5          0.03 -> falls w5          0.05
+    creative creative                     falls w5          0.03 -> falls w5          0.06
+    obvious  mono PulseRifle              falls w6          0.08 -> falls w5          0.10
+    obvious  mono Cannon                  falls w6          0.00 -> falls w5          0.00
+    obvious  mono Laser                   falls w5          0.00 -> falls w5          0.00
+    obvious  naive                        falls w5          0.09 -> falls w5          0.08

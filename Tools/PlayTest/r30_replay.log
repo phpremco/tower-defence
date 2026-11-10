@@ -1,0 +1,15 @@
+== workers: replay, 72 units over 5 workers (00:54:58)
+  synced 5 workers in 1 s
+  w1: 15 units: 0:0:1 0:1:3 0:3:2 1:1:1 1:2:3 2:0:2 2:2:1 2:3:3 3:1:2 3:3:1 4:0:3 4:2:2 5:0:1 5:1:3 5:3:2
+  w2: 15 units: 0:0:2 0:2:1 0:3:3 1:1:2 1:3:1 2:0:3 2:2:2 3:0:1 3:1:3 3:3:2 4:1:1 4:2:3 5:0:2 5:2:1 5:3:3
+  w3: 14 units: 0:0:3 0:2:2 1:0:1 1:1:3 1:3:2 2:1:1 2:2:3 3:0:2 3:2:1 3:3:3 4:1:2 4:3:1 5:0:3 5:2:2
+  w4: 14 units: 0:1:1 0:2:3 1:0:2 1:2:1 1:3:3 2:1:2 2:3:1 3:0:3 3:2:2 4:0:1 4:1:3 4:3:2 5:1:1 5:2:3
+  w5: 14 units: 0:1:2 0:3:1 1:0:3 1:2:2 2:0:1 2:1:3 2:3:2 3:1:1 3:2:3 4:0:2 4:2:1 4:3:3 5:1:2 5:3:1
+== workers done in 24 min 19 s (01:19:17)
+  w1: result="Passed", 0 probe errors, 73 runs
+  w2: result="Passed", 0 probe errors, 75 runs
+  w3: result="Passed", 0 probe errors, 70 runs
+  w4: result="Passed", 0 probe errors, 68 runs
+  w5: result="Passed", 0 probe errors, 68 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 354 runs in Tools/PlayTest/plan_records.txt; tables in Tools/PlayTest/plan_replay_partial.txt

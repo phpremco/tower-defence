@@ -511,6 +511,7 @@ namespace Game.Levels
                 var abilities = go.AddComponent<BossAbilities>();
                 abilities.Initialize(_context.Structures, SpawnMinion, FindLaserTarget, Rally);
                 abilities.SetDamageMultiplier(_context.Difficulty.StructureDamageMultiplier);
+                abilities.SetEscortShare(_context.Difficulty.BossEscortShare);
                 abilities.Pulsed += OnBossPulsed;
                 abilities.LaserChanged += on => _context.BossLaserChanged.Raise(on);
                 abilities.MinionsReleased += (centre, color) => _context.BossMinionsReleased.Raise(centre);

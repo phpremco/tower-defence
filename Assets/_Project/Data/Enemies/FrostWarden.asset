@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Frost Warden
   _layer: 1
   _flies: 0
-  _maxHealth: 10850
+  _maxHealth: 7500
   _armor: 1200
   _speed: 0.5
   _reward: 2364

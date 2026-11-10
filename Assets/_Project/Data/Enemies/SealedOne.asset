@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Sealed One
   _layer: 1
   _flies: 0
-  _maxHealth: 26900
+  _maxHealth: 27200
   _armor: 3500
   _speed: 0.25
   _reward: 5454

@@ -34,6 +34,8 @@ namespace Game.Balance
     {
         public const string Path = "Tools/PlayTest/finale_probe.txt";
         public const int Medium = 1;
+        public const int Hard = 2;
+        public const int Psycho = 3;
         private const string CellMark = "cell";
 
         public static string Write(string header, IReadOnlyList<FinaleProbeCell> cells)
@@ -95,6 +97,40 @@ namespace Game.Balance
         {
             FinaleProbeCell cell = Find(cells, boss, difficulty);
             return cell != null && cell.Holds >= 1f;
+        }
+
+        /// <summary>
+        /// Round 30 (Remco: Psycho's boss share is never below Hard's): the largest boss share at which the Psycho finale player
+        /// still beats every boss as the data will stand after <see cref="DerivedHealth"/> moves it (its hold divided by Medium's
+        /// hold and the hold share), times the share it was probed at. -1 when no boss was probed on both Medium and Psycho.
+        /// </summary>
+        public static float PsychoCeiling(IReadOnlyList<FinaleProbeCell> cells, BalanceRules rules)
+        {
+            float ceiling = float.PositiveInfinity;
+            foreach (FinaleProbeCell cell in cells)
+            {
+                FinaleProbeCell medium = cell.Difficulty == Psycho ? Find(cells, cell.Boss, Medium) : null;
+                if (medium == null || medium.Holds <= 0f)
+                {
+                    continue;
+                }
+
+                ceiling = Math.Min(ceiling, cell.ShareNow * cell.Holds / (medium.Holds * rules.FinaleHoldShare));
+            }
+
+            return float.IsPositiveInfinity(ceiling) ? -1f : ceiling;
+        }
+
+        /// <summary>
+        /// The one share Hard and Psycho carry under <see cref="BalanceRules.PsychoBossShareAtLeastHard"/>: Hard's derived share,
+        /// pulled down to the Psycho ceiling when the Psycho finale player could not beat every boss at it. -1 without a Hard
+        /// derivation.
+        /// </summary>
+        public static float HardPsychoShare(IReadOnlyList<FinaleProbeCell> cells, BalanceRules rules)
+        {
+            float hard = DerivedShare(cells, Hard);
+            float ceiling = PsychoCeiling(cells, rules);
+            return hard <= 0f ? -1f : ceiling > 0f ? Math.Min(hard, ceiling) : hard;
         }
 
         /// <summary>

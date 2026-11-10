@@ -187,6 +187,7 @@ namespace Game.Editor
             so.FindProperty("_incomeMultiplier").floatValue = sheet.Income;
             so.FindProperty("_startingMoneyMultiplier").floatValue = sheet.StartMoney;
             so.FindProperty("_bossHealthShare").floatValue = sheet.BossHealth;
+            so.FindProperty("_bossEscortShare").floatValue = sheet.BossEscort;
             so.ApplyModifiedPropertiesWithoutUndo();
             return profile;
         }

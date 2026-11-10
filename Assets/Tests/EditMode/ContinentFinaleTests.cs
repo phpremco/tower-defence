@@ -103,12 +103,22 @@ namespace Game.Tests
                     float relative = ratios[d] / medium;
                     // Where the finale probe played the difficulty, its derived share judges instead of the ledger's ratio (round 22f).
                     float probed = probe != null ? FinaleProbeReport.DerivedShare(probe, d) : -1f;
+                    float hardShare = setup.Catalog.Difficulties[FinaleProbeReport.Hard].BossHealthShare;
+                    bool shared = BalanceRules.Default.PsychoBossShareAtLeastHard;
+                    if (shared && d == FinaleProbeReport.Psycho && profile.BossHealthShare < hardShare - 0.001f)
+                    {
+                        failures.Add($"{profile.name}: the boss health share {profile.BossHealthShare:0.00} is below Hard's {hardShare:0.00} (Psycho at least Hard, round 30)");
+                    }
+
                     if (d > MediumIndex && probed > 0f)
                     {
-                        row.Append($" [probe needs {probed:0.00}]");
-                        if (System.Math.Abs(profile.BossHealthShare / probed - 1f) > ShareTolerance)
+                        // Round 30: under the Psycho-at-least-Hard rule both carry one share, Hard's derivation pulled down to the
+                        // Psycho ceiling (the share at which the Psycho finale player still beats every boss); else each its own.
+                        float wanted = shared ? FinaleProbeReport.HardPsychoShare(probe, BalanceRules.Default) : probed;
+                        row.Append(shared ? $" [probe needs {probed:0.00}, shared {wanted:0.00}]" : $" [probe needs {probed:0.00}]");
+                        if (wanted > 0f && System.Math.Abs(profile.BossHealthShare / wanted - 1f) > ShareTolerance)
                         {
-                            failures.Add($"{profile.name}: the boss health share is {profile.BossHealthShare:0.00}, the finale probe derives {probed:0.00} (run the finale stage)");
+                            failures.Add($"{profile.name}: the boss health share is {profile.BossHealthShare:0.00}, the finale probe asks {wanted:0.00} (run the finale stage)");
                         }
                     }
                     else if (d > MediumIndex && System.Math.Abs(relative - 1f) > ShareTolerance)

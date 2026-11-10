@@ -206,6 +206,9 @@ namespace Game.Balance
         /// <summary>Extra health share of a continent boss on this difficulty, over the plain creatures' <see cref="Health"/>.</summary>
         public float BossHealth = 1f;
 
+        /// <summary>Share of a continent boss's escort call released on this difficulty (round 30).</summary>
+        public float BossEscort = 1f;
+
         /// <summary>The health factor of one creature beyond <see cref="Health"/>: the boss share for a continent boss, else one.</summary>
         public float ShareFor(EnemyStats enemy) => enemy.IsContinentBoss ? BossHealth : 1f;
     }

@@ -33,7 +33,10 @@ namespace Game.Editor
             /// <summary>Extra health of a continent boss on top of <see cref="Health"/> (Docs/BALANCE.md, "Boss health per difficulty").</summary>
             public readonly float BossHealth;
 
-            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth)
+            /// <summary>Share of a continent boss's escort call released (round 30: Psycho carries Hard's boss, lighter escorts).</summary>
+            public readonly float BossEscort;
+
+            public Difficulty(string id, string displayName, float health, float count, float interval, float research, float power, float structureDamage, float income, float startMoney, float bossHealth, float bossEscort = 1f)
             {
                 Id = id;
                 DisplayName = displayName;
@@ -46,6 +49,7 @@ namespace Game.Editor
                 Income = income;
                 StartMoney = startMoney;
                 BossHealth = bossHealth;
+                BossEscort = bossEscort;
             }
         }
 
@@ -97,9 +101,21 @@ namespace Game.Editor
         private const float EasyBossHealth = 0.8f;
         private const float MediumBossHealth = 1f;
         // Round 29 (2026-11-09): the finale probe with the boss powers derives Hard 1.80 and Psycho 1.05 (Psycho's finale
-        // player meets heavier crowds and escorts, so its boss carries less; a design question for Remco in STATUS).
-        private const float HardBossHealth = 1.8f;
-        private const float PsychoBossHealth = 1.05f;
+        // player meets heavier crowds and escorts, so its boss carries less). Round 30 (Remco): Psycho's share is never below
+        // Hard's (BalanceRules.PsychoBossShareAtLeastHard); the Psycho finale player is given the means instead (start money).
+        private const float HardBossHealth = 1.25f;
+        private const float PsychoBossHealth = 1.25f;
+
+        // Round 30 (Remco): with Psycho's boss share at Hard's, the Psycho finale player (money about 1950 at level 20, like Hard's)
+        // meets a boss body 1.7x heavier than before beside its heavier crowds; it gets more starting money rather than a lighter
+        // boss. The finale probe sets the number (Docs/BALANCE.md "Round 30"); the impact stage shows what it does to the
+        // campaign's Psycho cells.
+        private const float PsychoStartMoney = 3f;
+
+        // Round 30 (Remco): money may go to x3 at most; the Psycho finale player still lost to Gravemaw, the Matriarch and the
+        // Sealed One at Hard's boss share (holds x0.85-1.0), so Psycho's escort calls release this share of their count (the
+        // finale probe sets it; the boss itself stays Hard's).
+        private const float PsychoBossEscort = 0.5f;
 
         // Research and power multipliers come from the rules (Easy pays a fifth of a continent's research budget, Psycho all
         // of it; power only from Medium on). Health, numbers and tempo shape each difficulty before the calibration trims its
@@ -109,7 +125,7 @@ namespace Game.Editor
             new Difficulty("Easy", "Easy", 0.68f, 0.9f, 1.2f, Rules.ResearchMultipliers[0], Rules.PowerMultipliers[0], 0.6f, EasyIncome, EasyStartMoney, EasyBossHealth),
             new Difficulty("Medium", "Medium", 1f, 1f, 1f, Rules.ResearchMultipliers[1], Rules.PowerMultipliers[1], 0.75f, MediumIncome, 1f, MediumBossHealth),
             new Difficulty("Hard", "Hard", 1.15f, 1.3f, 0.85f, Rules.ResearchMultipliers[2], Rules.PowerMultipliers[2], 1f, HardIncome, 1f, HardBossHealth),
-            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, 1f, PsychoBossHealth),
+            new Difficulty("Psycho", "Crazy", 1.65f, 1.65f, 0.7f, Rules.ResearchMultipliers[3], Rules.PowerMultipliers[3], 1.4f, PsychoIncome, PsychoStartMoney, PsychoBossHealth, PsychoBossEscort),
         };
 
         /// <summary>

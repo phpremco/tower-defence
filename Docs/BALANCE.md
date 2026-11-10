@@ -1489,3 +1489,74 @@ stars, the cell passes acceptance; Psycho at 0.66: 6/6 with 1.7 stars (fails on 
 Calibration: refit twice on the existing records for the shape and the boss data (80 % / 0.75, override); the asset's inputs
 hash still reads the records' data (63b39a09) while the data moved with the boss numbers, so the next `measure` is what makes
 the calibration current again; the waves of C1_01-03 and C1_06 did not move under either refit.
+
+## Round 30: Quartz Flats' open opening, Gravemaw the long bar, Psycho at Hard's share (2026-11-10)
+
+Remco's three decisions of 2026-11-09 night and what the probes made of them.
+
+**Quartz Flats (decision 1).** The round-29 first gate at 30 % made the level far harder in play than on paper (the unheld 38-cell
+approach), so the gate is back at the default 12 % and the level is improved by its map, Remco's standing rule: `LayoutSpec.
+OpeningClearShare` (0.4 for C1_05, default 0 elsewhere) keeps every terrain patch at least `RoadGenerator.OpeningClearance` (4) cells
+away from the main road's first 40 % of the walk, so every cell beside the first two columns and the bottom leg is a build spot
+(nest ponds excepted). `RelayoutLevel` then chose layout attempt 1 (the road itself changed: 114 cells, gates at 13 / 49 / 88 /
+95 %; the hook still enters top-left and runs down the first column); every other level stayed byte-stable; validator,
+`LayoutTests`, `LevelTests` and `WorldContentTests` green. The scales went back to the pre-round-29 values (Easy 0.87, Medium and
+Hard 0.757, Psycho 0.757) as the starting point for play.
+
+**Gravemaw (decision 2).** The long health bar: escorts at a fixed, safe rate (`SummonInterval` 26 -> 30 s; the round-29 cliff was
+22 s loses / 30 s holds) and the finale stage sets the health from Medium's hold: 48000 -> 52500 -> 55050 over two verification
+probes (Medium held x1.29 then x1.23). Its identity is unchanged: the colony rig entrance, the burrows, the whole road to the base.
+
+**Psycho's boss share (decision 3).** Psycho 1.05 -> at least Hard's. At Hard's 1.80 the Psycho finale player lost to Gravemaw,
+the Matriarch and the Sealed One (holds x0.85-0.92) with start money x2 and still at x3 (the ceiling Remco set; `DifficultyProfile`
+`StartingMoneyMultiplier` Psycho 1 -> 3, i.e. 2616 money at the level-20 finale against Hard's 1994) and with Psycho's escort calls
+halved (new `DifficultyProfile.BossEscortShare`, Psycho 0.5: the `Spawn` power releases that share of its count in play and in the
+ledger, splits untouched). The Psycho crowds (count and health x1.65) already take most of its capacity, so the rule is now in data:
+`BalanceRules.PsychoBossShareAtLeastHard`. The `finale` stage writes one share for Hard and Psycho, `FinaleProbeReport.
+HardPsychoShare` = Hard's derivation (1.82) pulled down to the **Psycho ceiling** (`PsychoCeiling`: the largest share at which the
+Psycho finale player beats every boss once the health derivation has moved it): 1.45 after the first probe, 1.25 after the
+verification probe (Gravemaw Psycho sat on the x1.0 edge at 1.45). `ContinentFinaleTests` checks the same number; Hard is
+therefore more comfortable than its own derivation would make it (holds x1.5-2.1 at 1.25) - a design question for Remco.
+
+**The Frost Warden's arena (found on the way).** With Quartz Flats' opening clear of terrain, the Ice arena copy had no pool before
+the first gate; the brain rises from the largest pool in the road's first half (a six-cell lake at 43 %), past the arena's whole
+defence (the plain builder stands its towers at the first gate), and lost every run at any health. The arena builder now
+(`CreateArenaLevel`) removes the pools of the boss's kinds between the first gate and the road's middle and carves a two-by-two
+entrance lake just past the spawn when no pool joins before the first gate (`[Generator] Arena_Ice: ...` in the console; the
+campaign level is untouched). The brain logs where a pool boss comes up (`[Boss] ... rises from the Ice pool of 4 cells at (5, 20)
+(4 % of the road)`). The Warden's health followed the probe: 10850 -> 7800 -> 7500 (its whole fight now runs the first gate's
+defence once, as the other pool bosses do).
+
+**Finale, verified (probe 5, 2026-11-10 00:37, creative bot, seed 1; holds = largest health multiple of the whole boss wave the
+finale player still beat; every boss beaten as the data stands on every difficulty; `ContinentFinaleTests` 5/5).**
+
+| Boss (health; armour pool) | Easy (share 0.80) | Medium (1.00) | Hard (1.25) | Psycho (1.25; money x3, escorts 0.5) |
+| --- | --- | --- | --- | --- |
+| Gravemaw (55050; 1200) | x1.80 | x1.18 | x1.52 | x1.13 |
+| Cinder Matriarch (10350; 1800) | x1.73 | x1.18 | x1.66 | x1.73 |
+| Frost Warden (7500; 1200 + ice soak) | x1.80 | x1.18 | x1.80 | x1.40 |
+| Rotbloom (3550; none) | x2.13 | x1.18 | x2.13 | x1.88 |
+| The Shattered (14000; 2000) | x1.73 | x1.18 | x1.96 | x1.52 |
+| The Sealed One (27200; 3500) | x1.73 | x1.18 | x1.88 | x1.13 |
+
+Lessons: the one-seed probe's bisection makes holds of 1.13-1.18 "won as-is by a step" (the spread between identical probes is
+up to 15 %); the Psycho ceiling is set by Gravemaw and the Sealed One (the plated, long bosses), not by the escorts; the Warden's
+hold on Medium moved 0.85 -> 1.13 -> 1.18 as its health fell, so two verification probes were needed before the data stood still.
+
+**The campaign after the Psycho money (round 30, second half).** The first fit after the money change was wrong by construction
+(the Psycho records had been played at x1 money and the model judged them at x2: hold-out 74 % / Spearman 0.73; not applied), so
+the Psycho cells and the new Quartz Flats were measured again on the clones (27 units, 162 runs, 8 min) before the fit: hold-out
+81 % (mono 95 %), Spearman 0.68, grid queue guard 0.30, route fire 8.0, siege 1.57 (round 29: 0.70 / 4.0). Every wave moved under
+the new factors, so the whole campaign was solved, searched (1500 strategies per cell, 5 min) and replayed on five clones (72
+units, 24 min); the builder took its two levers (C1_02 Easy 0.757 -> 0.658, C1_03 Hard plated 1.5) and a manual pass by Remco's
+role principle followed (the swarm lever on C1_01 Hard, C1_02 Medium/Hard and C1_03 Psycho, where the obvious rows did as well
+as on Medium; scales down where the best plan lost, up where every row won). Acceptance 9/24 (C1_01 Easy/Medium, C1_03 Medium,
+C1_04 Easy/Medium/Hard, C1_06 Medium/Hard/Psycho). The in-play table is in Docs/STATUS.md "Round 30".
+
+**The residual the new grid shows (C1_02 Easy).** Every searched plan lost 0/3 at scale 0.658 while the paper holds 1.66x. The
+trace: the plans stand their towers at 15-22 % of the road, past the defence gate at 12 %; the stream stalls at the gate out of
+reach, "shots 0" for six waves, the hero alone. With route fire at 8.0 the route model credits spots downstream of the defence
+gate with walk kills the gate never lets through; round 29's Quartz Flats showed the mirror image (upstream spots credited with
+kills a stream at full speed does not give). The spot cover needs the gate hold: a spot downstream of the defence gate covers
+what leaks, not the walk. This is the next model term; until it is in, the searched plans of cells whose spots lie past the first
+gate are suspect, and the acceptance of C1_02 Easy is not a wave problem.

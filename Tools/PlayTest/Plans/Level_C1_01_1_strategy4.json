@@ -1,0 +1,79 @@
+{
+    "Level": "Level_C1_01",
+    "Difficulty": 1,
+    "Name": "Level_C1_01_1_strategy4",
+    "Family": "searched",
+    "Spots": [
+        {
+            "Tower": "PulseRifle",
+            "X": [
+                5,
+                6,
+                31,
+                32,
+                5,
+                5
+            ],
+            "Y": [
+                14,
+                14,
+                8,
+                8,
+                13,
+                15
+            ]
+        },
+        {
+            "Tower": "Cannon",
+            "X": [
+                14,
+                5,
+                6,
+                31,
+                13,
+                32
+            ],
+            "Y": [
+                7,
+                14,
+                14,
+                8,
+                7,
+                8
+            ]
+        }
+    ],
+    "Weights": [
+        {
+            "Threat": "swarm",
+            "Tower": "Cannon",
+            "Weight": 1.3106029033660889
+        },
+        {
+            "Threat": "pack",
+            "Tower": "Cannon",
+            "Weight": 0.5150601863861084
+        },
+        {
+            "Threat": "plated",
+            "Tower": "PulseRifle",
+            "Weight": 2.1298344135284424
+        },
+        {
+            "Threat": "boss",
+            "Tower": "PulseRifle",
+            "Weight": 2.4693636894226074
+        }
+    ],
+    "UpgradeBias": 1.3200000524520874,
+    "TowersBeforeUpgrades": 3,
+    "MineCoverBelow": 1.0,
+    "MineOnBoss": true,
+    "FieldCoverBelow": 1.2000000476837158,
+    "HarvesterCover": 1.2000000476837158,
+    "HarvesterShare": 0.5,
+    "RepairDroneWear": 9.0,
+    "AttackDroneAfterTowers": 12,
+    "GateUpgradeBias": 0.0,
+    "AllowSell": false
+}

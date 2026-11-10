@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Cinder Matriarch
   _layer: 1
   _flies: 0
-  _maxHealth: 10250
+  _maxHealth: 10350
   _armor: 1800
   _speed: 0.4
   _reward: 2389

@@ -1,0 +1,15 @@
+== workers: replay, 6 units over 5 workers (01:37:02)
+  synced 5 workers in 1 s
+  w1: 2 units: 1:0:1 2:2:3
+  w2: 1 units: 1:0:2
+  w3: 1 units: 1:0:3
+  w4: 1 units: 2:2:1
+  w5: 1 units: 2:2:2
+== workers done in 2 min 43 s (01:39:45)
+  w1: result="Passed", 0 probe errors, 10 runs
+  w2: result="Passed", 0 probe errors, 5 runs
+  w3: result="Passed", 0 probe errors, 5 runs
+  w4: result="Passed", 0 probe errors, 5 runs
+  w5: result="Passed", 0 probe errors, 5 runs
+  save untouched (MD5 \ae9223b8e654ca260425521be3d4b1c7)
+records merged: 354 runs in Tools/PlayTest/plan_records.txt; tables in Tools/PlayTest/plan_replay_partial.txt

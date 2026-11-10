@@ -33,6 +33,7 @@ namespace Game.Enemies
         private float[] _timers = new float[0];
         private float[] _splitAt = new float[0];
         private float _damageMultiplier = 1f;
+        private float _escortShare = 1f;
         private int _laserIndex = -1;
         private float _laserElapsed;
         private int _wardIndex = -1;
@@ -103,6 +104,9 @@ namespace Game.Enemies
 
         /// <summary>Scales the damage of every power, so the difficulty profile reaches the boss as well.</summary>
         public void SetDamageMultiplier(float multiplier) => _damageMultiplier = multiplier;
+
+        /// <summary>Round 30: the difficulty's share of every escort call (the Spawn power); a split brood keeps its count.</summary>
+        public void SetEscortShare(float share) => _escortShare = Mathf.Clamp01(share);
 
         private void OnDestroy()
         {
@@ -263,7 +267,8 @@ namespace Game.Enemies
 
         private void ReleaseMinions(BossAbilityDefinition ability)
         {
-            for (int i = 0; i < ability.MinionCount; i++)
+            int count = ability.Kind == BossAbilityKind.Spawn ? Mathf.Max(1, Mathf.RoundToInt(ability.MinionCount * _escortShare)) : ability.MinionCount;
+            for (int i = 0; i < count; i++)
             {
                 _spawnMinion?.Invoke(ability.Minion, _enemy);
             }

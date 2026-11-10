@@ -22,9 +22,17 @@ namespace Game.Balance
 
         /// <summary>
         /// Share of the walk before the first free gate (the defence gate of the plan model). 0.12 puts it just past the first
-        /// legs; a later share (Quartz Flats 0.3) lets the build spots of the opening legs fire before anything is held.
+        /// legs. Round 29 tried 0.3 on Quartz Flats; in play the unheld approach made the level far harder, so every level keeps
+        /// the default (round 30) and an open opening is made with <see cref="OpeningClearShare"/> instead.
         /// </summary>
         public double FirstGateShare = 0.12;
+
+        /// <summary>
+        /// Share of the main road's walk, from the spawn, that terrain patches keep clear of (within <see cref="RoadGenerator.OpeningClearance"/>
+        /// cells): every cell beside the opening legs stays buildable, so the spots there fire before the first gate holds
+        /// anything. 0 places terrain everywhere (the default); Quartz Flats 0.4 (round 30, Remco: fix a hard level by its map).
+        /// </summary>
+        public double OpeningClearShare;
 
         /// <summary>Plazas where roads meet: zero or one, only on templates with a second road.</summary>
         public int Plazas;

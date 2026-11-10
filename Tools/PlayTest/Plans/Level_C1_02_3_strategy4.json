@@ -7,11 +7,11 @@
         {
             "Tower": "PulseRifle",
             "X": [
-                5,
                 7,
                 5,
-                7,
+                5,
                 6,
+                7,
                 8
             ],
             "Y": [
@@ -26,18 +26,18 @@
         {
             "Tower": "Cannon",
             "X": [
-                5,
                 30,
                 30,
                 31,
+                5,
                 4,
                 5
             ],
             "Y": [
-                7,
                 15,
                 16,
                 16,
+                7,
                 7,
                 6
             ]
@@ -84,39 +84,34 @@
     "Weights": [
         {
             "Threat": "swarm",
-            "Tower": "Cannon",
-            "Weight": 1.0835039615631104
+            "Tower": "PulseRifle",
+            "Weight": 2.427104949951172
         },
         {
             "Threat": "pack",
             "Tower": "PulseRifle",
-            "Weight": 2.1972711086273193
+            "Weight": 1.2365498542785645
         },
         {
             "Threat": "plated",
             "Tower": "Cannon",
-            "Weight": 0.8515780568122864
+            "Weight": 1.1716316938400269
         },
         {
             "Threat": "air",
-            "Tower": "PulseRifle",
-            "Weight": 0.599906325340271
-        },
-        {
-            "Threat": "boss",
             "Tower": "Cannon",
-            "Weight": 0.6656376123428345
+            "Weight": 0.8932617902755737
         }
     ],
-    "UpgradeBias": 0.8500000238418579,
+    "UpgradeBias": 1.7599999904632568,
     "TowersBeforeUpgrades": 1,
-    "MineCoverBelow": 1.0,
+    "MineCoverBelow": 1.2999999523162842,
     "MineOnBoss": true,
-    "FieldCoverBelow": 1.0,
-    "HarvesterCover": 1.2000000476837158,
-    "HarvesterShare": 0.4000000059604645,
+    "FieldCoverBelow": 0.0,
+    "HarvesterCover": 1.5,
+    "HarvesterShare": 0.6000000238418579,
     "RepairDroneWear": 9.0,
-    "AttackDroneAfterTowers": 0,
+    "AttackDroneAfterTowers": 6,
     "GateUpgradeBias": 0.0,
     "AllowSell": true
 }
