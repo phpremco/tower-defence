@@ -45,7 +45,7 @@ namespace Game.Tests
                     FinaleLine line = FinaleModel.Judge(setup.Planned, waves, boss, d, setup.Extra, loads);
                     string name = setup.Catalog.Difficulties[d].name;
                     // The finale probe (round 22f) is the judge where it played: a boss the bot beat as the data has it is not too hard.
-                    bool beatenInPlay = probe != null && FinaleProbeReport.HoldsAsIs(probe, finale.Boss, d);
+                    bool beatenInPlay = BeatenInPlay(probe, finale.Boss, d, setup.BossHealth, setup.Catalog.Difficulties[d].BossHealthShare);
                     table.AppendLine($"{finale.Boss,-16} C{finale.Continent + 1} {name,-7} towers {line.Towers} research {line.ResearchEarned,4} money {line.Money,5} "
                         + $"scale {line.PlainScale:0.00} plain {line.PlainTowers:0.00}/{line.PlainHero:0.00} wave {line.BossTowers:0.00}/{line.BossHero:0.00} boss {line.BossAlone:0.00} cap {line.Cap:0.00} "
                         + $"mechanic {line.MechanicShare:0.00} -> {Verdict(line)}{(line.TooHard && beatenInPlay ? $" (the finale probe beat it, holds x{FinaleProbeReport.Find(probe, finale.Boss, d).Holds:0.00})" : string.Empty)}");
@@ -110,7 +110,20 @@ namespace Game.Tests
                         failures.Add($"{profile.name}: the boss health share {profile.BossHealthShare:0.00} is below Hard's {hardShare:0.00} (Psycho at least Hard, round 30)");
                     }
 
-                    if (d > MediumIndex && probed > 0f)
+                    float designer = BalanceSheet.DesignerHardBossShare;
+                    if (d > MediumIndex && designer > 0f)
+                    {
+                        // Remco 2026-11-10 (round 31, question 3): Hard carries the designer's share (1.25), lighter than the probe's
+                        // Psycho ceiling (1.53 at round 31), and Psycho at least Hard's (checked above). The probe's figure is
+                        // printed as advice, not asserted, until the designer hands the share back to it (designer share 0).
+                        float advice = probed > 0f && shared ? FinaleProbeReport.HardPsychoShare(probe, BalanceRules.Default) : probed;
+                        row.Append($" [designer {designer:0.00}, probe would ask {advice:0.00}]");
+                        if (d == FinaleProbeReport.Hard && System.Math.Abs(profile.BossHealthShare - designer) > 0.001f)
+                        {
+                            failures.Add($"{profile.name}: the boss health share is {profile.BossHealthShare:0.00}, the designer's is {designer:0.00} (BalanceSheet.DesignerHardBossShare)");
+                        }
+                    }
+                    else if (d > MediumIndex && probed > 0f)
                     {
                         // Round 30: under the Psycho-at-least-Hard rule both carry one share, Hard's derivation pulled down to the
                         // Psycho ceiling (the share at which the Psycho finale player still beats every boss); else each its own.
@@ -237,6 +250,19 @@ namespace Game.Tests
         private static List<FinaleProbeCell> ProbeReport() =>
             System.IO.File.Exists(FinaleProbeReport.Path) ? FinaleProbeReport.Read(System.IO.File.ReadAllLines(FinaleProbeReport.Path)) : null;
 
+        // The probe judged the boss as the data stood when it ran (its holding multiple is of that health and share). A health
+        // or share moved since is held against the health the probe beat: Gravemaw Medium (round 31) lost at 55050 holding
+        // x0.845, so the probe beat it up to about 46500, and the data now carries 39540 (FinaleProbeReport.HoldsAsIs reads
+        // the multiple alone and would call that a loss).
+        private static bool BeatenInPlay(List<FinaleProbeCell> probe, string boss, int difficulty, float health, float share)
+        {
+            FinaleProbeCell cell = probe != null ? FinaleProbeReport.Find(probe, boss, difficulty) : null;
+            return cell != null && cell.HealthNow > 0f && cell.Holds * cell.HealthNow * cell.ShareNow >= health * share * (1f - HealthSlack);
+        }
+
+        // Rounding of the health and share the probe report prints.
+        private const float HealthSlack = 0.001f;
+
         private static string Verdict(FinaleLine line) =>
             line.TooEasy ? "boss alone under a plain wave (see the probe)" : line.Verdict;
 
@@ -247,6 +273,7 @@ namespace Game.Tests
             public CampaignModel Planned;
             public LevelDefinition StandIn;
             public EnemyStats Boss;
+            public float BossHealth;
             public readonly List<TowerStats> Extra = new List<TowerStats>();
         }
 
@@ -259,7 +286,7 @@ namespace Game.Tests
             Assert.IsNotNull(boss, $"run the Continent bosses generator step for {finale.Boss}");
             CampaignModel real = BalanceLedger.Campaign(catalog, upgrades, unlocks.StartingTowerIds, BalanceRules.Default, AssetDatabase.LoadAssetAtPath<BalanceCalibration>(BalanceCalibration.AssetPath));
             var planned = new Dictionary<string, TowerStats>();
-            var setup = new Setup { Catalog = catalog, Real = real, Boss = BalanceLedger.Stats(boss) };
+            var setup = new Setup { Catalog = catalog, Real = real, Boss = BalanceLedger.Stats(boss), BossHealth = boss.MaxHealth };
             foreach (PlannedTower tower in BalanceSheet.PlannedTowers)
             {
                 TowerStats stats = BalanceLedger.Stats(AssetDatabase.LoadAssetAtPath<TowerDefinition>($"Assets/_Project/Data/Towers/{tower.Id}.asset"));

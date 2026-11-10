@@ -37,3 +37,4 @@ MonoBehaviour:
     Dialogue: {fileID: 11400000, guid: 2b3ec5d60ee11a64e9296fad7841fe02, type: 2}
   - Enemy: {fileID: 11400000, guid: 5ac64ca2451450d408b7c017e5b73a4e, type: 2}
     Dialogue: {fileID: 11400000, guid: 79b1e7ec1ff3ad24988e800d6fb64449, type: 2}
+  _rearNestWarning: {fileID: 11400000, guid: db54373223eb6cc40930a277db0ab90a, type: 2}

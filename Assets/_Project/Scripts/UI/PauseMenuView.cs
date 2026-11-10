@@ -28,6 +28,7 @@ namespace Game.UI
         private TimeController _time;
         private IInputProvider _input;
         private GameObject _root;
+        private GameObject _panel;
         private GameObject _mainPage;
         private GameObject _confirmPage;
         private GameObject _soundPage;
@@ -40,6 +41,8 @@ namespace Game.UI
         private CodexView _codex;
         private GameObject _lastFocus;
         private bool _wasOpen;
+        private bool _codexWasOpen;
+        private bool _codexFromMenu;
 
         /// <param name="codex">The level codex, or null when the level has none; the pause menu is how a gamepad reaches it.</param>
         public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input, CodexView codex)
@@ -74,6 +77,7 @@ namespace Game.UI
             Image panel = UiKit.CreatePanel(dim.rectTransform, "PausePanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, PanelTint);
             panel.rectTransform.sizeDelta = new Vector2(PanelWidth, PanelHeight);
             FitInsideParent.Add(panel.rectTransform, SafeMargin);
+            _panel = panel.gameObject;
 
             _mainPage = CreatePage(panel.rectTransform, "Paused");
             RectTransform main = _mainPage.GetComponent<RectTransform>();
@@ -182,19 +186,43 @@ namespace Game.UI
             _wasOpen = open;
         }
 
-        // A mouse click on the dim clears the focus; give it back so the gamepad can still move through the menu.
+        // True while the book lies over the menu, and in the frame it closed (its B press must not also close the menu).
+        private bool CodexOwnsInput => _codex != null && (_codex.IsOpen || _codex.ClosedThisFrame);
+
+        // A mouse click on the dim clears the focus; give it back so the gamepad can still move through the menu. While the
+        // book lies on top the focus is the book's; when it closes, the focus comes back to the button that opened it.
         private void Update()
         {
-            if (_root.activeSelf)
+            bool codexOpen = _codex != null && _codex.IsOpen;
+            // The book's page is partly see-through: the menu's buttons would show through it, so they step aside meanwhile.
+            if (_panel.activeSelf == codexOpen)
+            {
+                _panel.SetActive(!codexOpen);
+            }
+
+            if (_codexWasOpen && !codexOpen && _root.activeSelf)
+            {
+                UiKit.Select(_codexFromMenu && _codexButton != null ? _codexButton : _resume);
+                _lastFocus = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+            }
+
+            if (!codexOpen)
+            {
+                _codexFromMenu = false;
+            }
+
+            _codexWasOpen = codexOpen;
+            if (_root.activeSelf && !codexOpen)
             {
                 UiKit.KeepFocus(ref _lastFocus);
             }
         }
 
-        // The codex holds the clock itself, like the HUD book, and B closes it straight back into the game.
+        // Remco 2026-11-10: the book opens over the menu and the game stays paused under it, so closing it (B) lands back in
+        // the pause menu rather than in a running fight. The book's own hold changes nothing while the pause stands.
         private void OpenCodex()
         {
-            _time.TogglePause();
+            _codexFromMenu = true;
             _codex.Open();
         }
 
@@ -218,7 +246,11 @@ namespace Game.UI
             _soundPage.SetActive(false);
             _cameraPage.SetActive(false);
             _mainPage.SetActive(true);
-            UiKit.Select(_resume);
+            // A pause pressed while the book is open lies under it: the focus stays in the book until it closes.
+            if (_codex == null || !_codex.IsOpen)
+            {
+                UiKit.Select(_resume);
+            }
         }
 
         private void ShowConfirm()
@@ -231,7 +263,7 @@ namespace Game.UI
         // Back or Escape steps out of the quit question first, then closes the menu.
         private void OnCancelled()
         {
-            if (!_root.activeSelf)
+            if (!_root.activeSelf || CodexOwnsInput)
             {
                 return;
             }

@@ -87,11 +87,18 @@ namespace Game.UI
         private bool _open;
         private GameObject _lastFocus;
         private EnemyDefinition _pendingEntry;
+        private int _closedFrame = -1;
 
         public bool Available => _catalog != null && (_catalog.Recipes.Count > 0 || _catalog.Enemies.Count > 0);
 
         /// <summary>True while the book is open and holds the game.</summary>
         public bool IsOpen => _open;
+
+        /// <summary>
+        /// True in the frame the book closed: the B press that closed it also reaches the menus listening after it (the pause
+        /// menu), which must not take it as their own Back.
+        /// </summary>
+        public bool ClosedThisFrame => _closedFrame == Time.frameCount;
 
         /// <summary>The in-level book: it holds the clock and the camera, and lists only the creatures this level sends.</summary>
         public void Initialize(LevelContext context, RectTransform safeRoot, TimeController time, IInputProvider input)
@@ -164,6 +171,12 @@ namespace Game.UI
             }
 
             _pendingEntry = enemy;
+            // The clock stays held from the scan's end until the book opens, so no game time slips through in between.
+            if (_context != null && _context.Outcome == LevelOutcome.Running)
+            {
+                _time.Hold(this);
+            }
+
             TryOpenPending();
         }
 
@@ -177,6 +190,7 @@ namespace Game.UI
             if (_context != null && _context.Outcome != LevelOutcome.Running)
             {
                 _pendingEntry = null;
+                _time.Release(this);
                 return;
             }
 
@@ -205,6 +219,7 @@ namespace Game.UI
             }
 
             _open = false;
+            _closedFrame = Time.frameCount;
             _root.SetActive(false);
             if (_context != null)
             {

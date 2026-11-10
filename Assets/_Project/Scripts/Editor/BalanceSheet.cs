@@ -106,6 +106,13 @@ namespace Game.Editor
         private const float HardBossHealth = 1.25f;
         private const float PsychoBossHealth = 1.25f;
 
+        /// <summary>
+        /// Remco 2026-11-10 (round 31, question 3): Hard and Psycho keep the designer's boss share of 1.25, lighter than the
+        /// finale probe's Psycho ceiling (1.53), for now. The finale stage keeps it and reports the probe's figure as advice;
+        /// ContinentFinaleTests asserts it. 0 hands the share back to the probe (round 30's rule).
+        /// </summary>
+        public static readonly float DesignerHardBossShare = HardBossHealth;
+
         // Round 30 (Remco): with Psycho's boss share at Hard's, the Psycho finale player (money about 1950 at level 20, like Hard's)
         // meets a boss body 1.7x heavier than before beside its heavier crowds; it gets more starting money rather than a lighter
         // boss. The finale probe sets the number (Docs/BALANCE.md "Round 30"); the impact stage shows what it does to the

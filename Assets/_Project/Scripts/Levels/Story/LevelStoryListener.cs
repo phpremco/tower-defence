@@ -32,6 +32,9 @@ namespace Game.Levels
         private System.Func<string, bool> _isSeen;
         private StoryTrigger[] _triggers;
         private IReadOnlyList<ScanHint> _scanHints;
+        private DialogueDefinition _rearNestWarning;
+        private RearNestWatch _rearNests;
+        private OriginDirector _origins;
         private bool[] _fired;
         private bool _levelStartRaised;
         private bool _levelEndHandled;
@@ -42,7 +45,8 @@ namespace Game.Levels
         public DialoguePlayer Player => _player;
 
         /// <param name="scanHints">Dr. Voss's creature scans (the campaign story); null plays none.</param>
-        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null)
+        /// <param name="rearNestWarning">Voss's warning for a rift behind the defence gate (once per save); null plays none.</param>
+        public void Initialize(LevelContext context, TimeController time, IInputProvider input, ProgressService progress, bool storyEnabled, IReadOnlyList<ScanHint> scanHints = null, DialogueDefinition rearNestWarning = null)
         {
             _scanHints = scanHints;
             _context = context;
@@ -63,6 +67,27 @@ namespace Game.Levels
             _context.EnemySpawned.Subscribe(OnEnemySpawned);
             _context.EnemyKilled.Subscribe(OnEnemyKilled);
             _context.PathObjectSpawned.Subscribe(OnPathObjectSpawned);
+            WatchRearNests(rearNestWarning);
+        }
+
+        // Only while the warning is still unseen in this save and the level has a rift behind its gate is the map read at all.
+        private void WatchRearNests(DialogueDefinition warning)
+        {
+            if (warning == null || warning.Lines.Count == 0 || !_context.StoryEnabled || _isSeen(warning.Id) || _context.Origins == null)
+            {
+                return;
+            }
+
+            var watch = new RearNestWatch(RearNests.BehindGate(_context.Level));
+            if (!watch.HasAny)
+            {
+                return;
+            }
+
+            _rearNestWarning = warning;
+            _rearNests = watch;
+            _origins = _context.Origins;
+            _origins.Signalled += OnOriginSignalled;
         }
 
         // Releasing the hold here would restart time after the level scene is gone; the time controller resets it.
@@ -75,6 +100,11 @@ namespace Game.Levels
 
             _dialogueInput.Dispose();
             _player.BusyChanged -= OnBusyChanged;
+            if (_origins != null)
+            {
+                _origins.Signalled -= OnOriginSignalled;
+            }
+
             _context.Changed.Unsubscribe(OnChanged);
             _context.WaveStarted.Unsubscribe(OnWaveStarted);
             _context.EnemySpawned.Unsubscribe(OnEnemySpawned);
@@ -223,6 +253,23 @@ namespace Game.Levels
                 Select(StoryEvent.BossSpawn(enemy.Definition), _pending);
                 _bossThisFrame |= _pending.Count > before;
             }
+        }
+
+        // The rift starts to open a few seconds before its first creature: Voss speaks then, and the HUD points at the rift.
+        private void OnOriginSignalled(int origin, OriginSignal signal)
+        {
+            if (signal != OriginSignal.StateChanged || !Active || _context.Outcome != LevelOutcome.Running || !_rearNests.TryFire(origin, _origins.StateOf(origin)))
+            {
+                return;
+            }
+
+            if (!_isSeen(_rearNestWarning.Id) && !_pending.Contains(_rearNestWarning))
+            {
+                _pending.Add(_rearNestWarning);
+            }
+
+            LevelDefinition level = _context.Level;
+            _context.RearNestWarned.Raise(level.Grid.CellToWorld(level.Nests[origin].Cell));
         }
 
         private void OnPathObjectSpawned(PathObject pathObject)

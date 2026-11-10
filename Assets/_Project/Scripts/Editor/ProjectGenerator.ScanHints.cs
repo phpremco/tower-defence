@@ -81,9 +81,21 @@ namespace Game.Editor
                 element.FindPropertyRelative("Dialogue").objectReferenceValue = hints[i].Dialogue;
             }
 
+            so.FindProperty("_rearNestWarning").objectReferenceValue = CreateRearNestWarning(voss);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(story);
         }
+
+        // Remco 2026-11-10: rifts that join the road behind the defence gate stay where they are (they keep the player
+        // watchful, and later maps may open them anywhere); the first one that opens in a save gets this warning, with a ping
+        // at the rift (LevelStoryListener, RearNests). Proposed lines in Voss's voice.
+        public const string RearNestWarningId = "Dlg_Warn_RearRift";
+
+        private static DialogueDefinition CreateRearNestWarning(SpeakerDefinition voss) =>
+            CreateDialogue(RearNestWarningId,
+                Say(voss, "Wait, that reading is behind our gate. A rift is opening past the defences."),
+                Say(voss, "Whatever crawls out never meets the gate. Keep a turret in reach of it, or near the base."),
+                Say(voss, "And watch the whole map. I doubt this is the last one that opens where we don't expect it."));
 
         private static ScanHint Scan(string enemyId, string dialogueId, params LineSpec[] lines)
         {

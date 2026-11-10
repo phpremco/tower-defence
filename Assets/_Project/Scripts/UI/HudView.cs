@@ -123,6 +123,7 @@ namespace Game.UI
             RadarView radar = RadarView.Create(context, safe, camera, new Vector2(-Margin, -(TopBarHeight + RadarGap)));
             keepOut.Add(radar.Panel);
             gameObject.AddComponent<BossMarkerView>().Initialize(context, worldLabels, camera, keepOut);
+            gameObject.AddComponent<RearNestMarkerView>().Initialize(context, worldLabels, camera, keepOut);
             var bossBar = gameObject.AddComponent<BossHealthView>();
             bossBar.Initialize(context, safe);
             keepOut.Add(bossBar.Panel);

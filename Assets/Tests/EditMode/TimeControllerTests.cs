@@ -51,6 +51,32 @@ namespace Game.Tests
             Assert.AreEqual(1f, Time.timeScale);
         }
 
+        // Remco 2026-11-10: the Codex (and its combinations page) holds the clock while it is open and gives back exactly the
+        // state it found: the chosen speed, or the pause when it was opened from the pause menu.
+        [Test]
+        public void AHold_GivesBackTheSpeedItFound()
+        {
+            _input.Speed();
+            Assert.AreEqual(2f, Time.timeScale);
+
+            _time.Hold(_owner);
+            Assert.AreEqual(0f, Time.timeScale, "the book stops the fight while it is read");
+            _time.Release(_owner);
+
+            Assert.AreEqual(2f, Time.timeScale, "closing the book returns to double speed, not to normal speed");
+        }
+
+        [Test]
+        public void AHold_OverThePause_LeavesThePauseStanding()
+        {
+            _input.Pause();
+            _time.Hold(_owner);
+            _time.Release(_owner);
+
+            Assert.IsTrue(_context.Paused, "a book opened from the pause menu closes back into the pause menu");
+            Assert.AreEqual(0f, Time.timeScale);
+        }
+
         [Test]
         public void AfterTheOutcome_PauseAndSpeedAreIgnored()
         {

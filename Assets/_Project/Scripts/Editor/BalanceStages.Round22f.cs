@@ -86,6 +86,13 @@ namespace Game.Editor
                     note = Invariant($", Hard and Psycho share one (Hard derives {FinaleProbeReport.DerivedShare(cells, FinaleProbeReport.Hard):0.00}, the Psycho ceiling is {ceiling:0.00})");
                 }
 
+                // Remco 2026-11-10: the designer's share stands; the probe's figure above is advice only.
+                if (applied && BalanceSheet.DesignerHardBossShare > 0f)
+                {
+                    note = Invariant($", the designer's share {BalanceSheet.DesignerHardBossShare:0.00} stands (the probe would write {share:0.00})");
+                    share = BalanceSheet.DesignerHardBossShare;
+                }
+
                 text.Append(Invariant($"  {profile.name,-7} boss health share {profile.BossHealthShare:0.00} -> {share:0.00} (derived {derived:0.000}){note}\n"));
                 if (applied && Math.Abs(share - profile.BossHealthShare) >= ShareRounding * 0.5f)
                 {

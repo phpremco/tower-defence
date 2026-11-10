@@ -19,11 +19,17 @@ namespace Game.Levels
         [Tooltip("Dr. Voss's scan of each creature: plays the first time it appears in the campaign and names its counter tower.")]
         [SerializeField] private ScanHint[] _scanHints = new ScanHint[0];
 
+        [Tooltip("Dr. Voss's warning the first time a rift opens behind the defence gate (once per save; Remco 2026-11-10).")]
+        [SerializeField] private DialogueDefinition _rearNestWarning;
+
         /// <summary>The opening cutscene; null while there is none.</summary>
         public CutsceneDefinition OpeningCutscene => _openingCutscene;
 
         /// <summary>The creature scans, in the order the generator wrote them.</summary>
         public System.Collections.Generic.IReadOnlyList<ScanHint> ScanHints => _scanHints ?? NoHints;
+
+        /// <summary>The warning for a nest that joins the road behind the defence gate; null while there is none.</summary>
+        public DialogueDefinition RearNestWarning => _rearNestWarning;
 
         private static readonly ScanHint[] NoHints = new ScanHint[0];
 

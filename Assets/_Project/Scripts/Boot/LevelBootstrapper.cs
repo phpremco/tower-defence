@@ -184,7 +184,7 @@ namespace Game.Boot
             // Before the HUD: the story must see the level end before the result screen does.
             Services.TryGet(out CampaignCatalog campaign);
             StoryDefinition story = campaign != null ? campaign.Story : null;
-            controllers.AddComponent<LevelStoryListener>().Initialize(context, time, input, progress, briefing, story != null ? story.ScanHints : null);
+            controllers.AddComponent<LevelStoryListener>().Initialize(context, time, input, progress, briefing, story != null ? story.ScanHints : null, story != null ? story.RearNestWarning : null);
             var mix = Services.Get<AudioMix>();
             controllers.AddComponent<SfxPlayer>().Initialize(context, mix, _cameraRig, spawner.Living, drones.Drones);
             controllers.AddComponent<MusicPlayer>().Initialize(context, mix);
