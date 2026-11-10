@@ -13,6 +13,7 @@ namespace Game.Levels
     {
         public const string CutscenePageTitle = "Cutscenes";
         public const string ArenaPageTitle = "Boss arena";
+        public const string ScanPageTitle = "Voss scans";
 
         public enum EntryKind
         {
@@ -76,6 +77,7 @@ namespace Game.Levels
                 }
             }
 
+            AddScans(catalog.Story);
             AddArena(catalog.BossArena, catalog.Story);
         }
 
@@ -113,6 +115,27 @@ namespace Game.Levels
                     {
                         page.Entries.Add(new Entry($"Shot {i + 1}: {dialogue.Id}", EntryKind.Dialogue, null, dialogue, null));
                     }
+                }
+            }
+
+            _pages.Add(page);
+        }
+
+        // Voss's first-sighting scans play in whichever level a creature first shows up, so they get their own page.
+        private void AddScans(StoryDefinition story)
+        {
+            if (story == null || story.ScanHints.Count == 0)
+            {
+                return;
+            }
+
+            var page = new Page(ScanPageTitle);
+            foreach (ScanHint hint in story.ScanHints)
+            {
+                if (hint.Dialogue != null)
+                {
+                    string label = hint.Enemy != null ? $"First {hint.Enemy.DisplayName}" : "First sighting";
+                    page.Entries.Add(new Entry($"{label}: {hint.Dialogue.Id}", EntryKind.Dialogue, null, hint.Dialogue, null));
                 }
             }
 
