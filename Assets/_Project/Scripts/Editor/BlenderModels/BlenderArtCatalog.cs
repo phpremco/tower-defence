@@ -270,6 +270,9 @@ namespace Game.Editor
                 {
                     Scale = TitanFactor,
                     SecondMaterial = "Crystal",
+                    // Round 38: the worm gullet with its rows of teeth is an object of its own (Gravemaw_Maw and _LOD1)
+                    // with its own maps, so the throat does not wear the body's skin.
+                    ExtraParts = new[] { "Maw" },
                     Clips = new[]
                     {
                         new BlenderClipSpec("Roar", ModelClipRole.Roar, 12),

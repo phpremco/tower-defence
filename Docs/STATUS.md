@@ -5677,3 +5677,64 @@ plume through the hull) and `r37_after_zoom_2_0p15/0p25/0p35.png`; the livery at
    from one fight on C1_06; Gravemaw is from its boss arena (the C1_06 finale did not spawn it within the skipped waves). The game
    has no hide-HUD option (a photo-mode toggle would make clean captures easy for Remco too; not built). The planet map shot
    shows Remco's own save (2 / 20 levels).
+
+## Round 38: Gravemaw's worm maw imported (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 ae9223b8 copied aside before the round and
+checked after each of the three Play Mode runs (never changed); the dev backup untouched; Game view size unchanged (every still is
+rendered off-screen). The Blender key-art agent's files (`ArtSource/Previews/Steam/`, `Tools/Blender/steam_*.py`) untouched.
+
+### 1. Import (Blender commit 466a810e)
+
+- `BlenderArtCatalog`: the Gravemaw row has `ExtraParts = new[] { "Maw" }`. The builder now makes `Gravemaw_Maw.mat` and
+  `Gravemaw_Maw_Low.mat` from `Gravemaw_Maw_*` (1024) and `Low/Gravemaw_Maw_*` (512), with the second slot's detail block
+  (crystal on B, rock on A), as the Blender note asks. `CreatureModel.Dress` gives the maw renderers (`Gravemaw_Maw` and
+  `Gravemaw_Maw_Far`) their own slot; the body and crystals keep theirs.
+- Synced with the existing path (`BlenderArtBuilder.RebuildOnly("Gravemaw")` through `Tools/PlayTest/Scripts/ApplyGravemawMaw.cs`):
+  both FBX files, the body maps that changed in place (Albedo, Emission and Mask, and their Low copies), the eight new maw maps
+  and the report. Import settings as for the other creature maps: Albedo and Emission sRGB, Normal as a normal map, Mask linear.
+- Imported: body 23096 tris and maw 4227 (47 bones each); the far LOD is body 9542 and maw 1698 (39 bones). These match the report.
+- `Data/Art/Gravemaw.asset`: only `_parts` changed. Clips, lengths, event frames, moments, offsets, gate burden and sockets
+  are byte-identical to before the import (diffed).
+- Small builder fix: `BlenderArtBuilder.WriteParts` now also writes `_castShadows`. A newly added array element starts zeroed,
+  so the maw first came out with `_castShadows: 0`, which turns its shadow off where `ArtModel` dresses it (codex, intro,
+  cutscene). The Frost Warden's armour already had 1 and is unchanged.
+
+### 2. In play (Gravemaw arena, Level_C1_03; `Tools/PlayTest/r38_gravemaw_shots.sh`)
+
+- Renderer probe at every stage (Arriving, Surfacing, Roar, forced LOD1): `Gravemaw` and `Gravemaw_Far` wear the body plus the
+  crystals; `Gravemaw_Maw` and `Gravemaw_Maw_Far` wear `Gravemaw_Maw` (albedo `Gravemaw_Maw_Albedo`). It surfaced at the rig,
+  roared and burrowed on: no missing bones, and the console showed **0 errors and 0 warnings** in all three runs.
+- What shows: the petals open in the roar and show their dark, wet insides with the hooked petal teeth. The lip ring of teeth
+  glows yellow-orange at the base of the petals and reads even at the play zoom.
+- **Weak: the throat hardly shows from the 44° camera.** The maw points along the heading, so at the play camera the
+  open mouth faces sideways or away. Even turned straight to the camera (diagnostic `FACE=1`), we look down onto the top of
+  the head: the deep tooth rings and the hot core stay hidden, and only the lip teeth and the petal insides read. The camera
+  was not changed. A Roar that tips the head up (more pitch in the clip), or a stronger glow at the lip, would bring the
+  throat into view.
+- The Low profile was not shot. The `Gravemaw_Maw_Low` material and its 512 maps are checked by the new test.
+
+### Stills (`ArtSource/Previews/QA/`, 1920x1080, no screen-space interface)
+
+| File | What |
+| --- | --- |
+| `r38_gravemaw_play_roar.png` | the play camera during its own roar beside the base (natural heading) |
+| `r38_gravemaw_roar_close.png` | close (zoom 6), same roar, petals spread, lip teeth glowing |
+| `r38_gravemaw_roar_faced.png` | close (zoom 9), turned to the camera for the diagnostic: petal insides with hooked teeth |
+| `r38_gravemaw_roar_far_lod1.png` | the same with LOD1 forced: the far maw wears its own material too |
+
+### Tests and state
+
+- New `CreatureArtTests.Gravemaw_Maw_WearsItsOwnMaterial_InBothLodsAndProfiles` checks four things: one part, `Gravemaw_Maw`;
+  High and Low materials of its own, not the body's; the maw albedo; a maw renderer in both LODs.
+- **EditMode suite headless on clone w6 (13:44-13:55 UTC, `r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 761 tests, 709 passed,
+  52 skipped (the explicit probe and fit tests, the acceptance report), 0 failed.** The new test passed.
+- PlayMode `GravemawArenaTests` 1/1 in the main editor (async; the fight to death: three burrows, thrown towers that survive, never on a footprint).
+- Recompile: 0 errors, 0 warnings. Editor stopped. Save MD5 ae9223b8 at the end. The arg-file churn of the play scripts was reverted.
+- Scripts: `Tools/PlayTest/Scripts/ApplyGravemawMaw.cs`, `r38_gravemaw_shots.sh`, `r38_maw.cs`, `r38_still.cs`; Docs/COMMANDS.md "Round 38".
+
+### Open points for Remco (round 38)
+
+1. At the 44° camera, the new throat (rows of teeth deep in the gullet, the hot core) is mostly hidden. The petal teeth
+   and the glowing lip are what you see. Is that enough, or should the Roar tip the head up towards the camera? That is a
+   Blender clip change.

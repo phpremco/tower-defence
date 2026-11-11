@@ -389,6 +389,8 @@ namespace Game.Editor
                 element.FindPropertyRelative("_object").stringValue = parts[i].Object;
                 element.FindPropertyRelative("_material").objectReferenceValue = parts[i].Material;
                 element.FindPropertyRelative("_lowMaterial").objectReferenceValue = parts[i].MaterialFor(true);
+                // A new array element starts zeroed, so without this a part added later would cast no shadow in ArtModel.
+                element.FindPropertyRelative("_castShadows").boolValue = parts[i].CastShadows;
             }
         }
 

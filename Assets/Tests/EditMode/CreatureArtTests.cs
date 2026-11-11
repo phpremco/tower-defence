@@ -306,6 +306,36 @@ namespace Game.Tests
             }
         }
 
+        // Round 38: the worm gullet and its teeth are an object of their own with maps of their own; without the part
+        // the throat would wear the body's skin, in the near and the far LOD alike.
+        [Test]
+        public void Gravemaw_Maw_WearsItsOwnMaterial_InBothLodsAndProfiles()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<ModelArtDefinition>($"{ArtFolder}/Gravemaw.asset");
+            Assert.AreEqual(1, art.Parts.Length, "the maw is Gravemaw's one extra part");
+            ModelPart maw = art.Parts[0];
+            Assert.AreEqual("Gravemaw_Maw", maw.Object);
+            foreach (bool low in new[] { false, true })
+            {
+                Material material = maw.MaterialFor(low);
+                Assert.IsNotNull(material, $"no maw material (low {low})");
+                Assert.AreNotSame(art.MaterialFor(low), material, $"the maw wears the body material (low {low})");
+                Assert.AreEqual("Gravemaw_Maw_Albedo", material.GetTexture("_BaseMap").name, $"the maw's albedo (low {low})");
+            }
+
+            Assert.AreNotSame(maw.MaterialFor(false), maw.MaterialFor(true), "no Low maw material");
+            foreach (GameObject model in new[] { art.Model, art.Lod1 })
+            {
+                bool owned = false;
+                foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>(true))
+                {
+                    owned |= maw.Owns(renderer.name);
+                }
+
+                Assert.IsTrue(owned, $"{model.name} has no maw renderer");
+            }
+        }
+
         // Round 18: Gravemaw's spine rode paths whose uniform spline ran backwards (and whose inside corners were
         // tighter than the spine rides above them), so spine, head and limbs flipped 130-180 degrees in one frame.
         // Every clip that rides such a path is checked on every bone that shows (hidden debris collapses to scale 0).

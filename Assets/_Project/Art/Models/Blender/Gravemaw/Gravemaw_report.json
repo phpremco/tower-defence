@@ -1,6 +1,6 @@
 {
   "asset": "Gravemaw",
-  "game_tris": 24093,
+  "game_tris": 23096,
   "body_tris": 17209,
   "crystal_tris": 6884,
   "source_tris": 864444,
@@ -110,7 +110,7 @@
   ],
   "lod1": {
     "fbx": "Gravemaw_LOD1.fbx",
-    "tris": 9999,
+    "tris": 9542,
     "bones": 39
   },
   "round28": {
@@ -672,7 +672,10 @@
       "IK_Leg_R3",
       "Socket_Throw"
     ],
-    "extra_objects": [],
+    "extra_objects": [
+      "Gravemaw_Maw",
+      "Gravemaw_Maw_LOD1"
+    ],
     "climb_height_m": 1.2,
     "liquid": "quicksand (its burrow shortcut) or any pool",
     "submerged_path_depth_m": 1.844,
@@ -1015,5 +1018,69 @@
         }
       }
     }
+  },
+  "petal_insides_recoloured": true,
+  "maw": {
+    "object": "Gravemaw_Maw",
+    "material": "Gravemaw_Maw_Mat",
+    "maps": "Gravemaw_Maw_*.png (1024, Low 512)",
+    "tris": 4227,
+    "lod1_object": "Gravemaw_Maw_LOD1",
+    "lod1_tris": 1698,
+    "source_tris": 556296,
+    "uv": {
+      "islands": 59,
+      "closed_islands_cut": 0,
+      "folded_fallback_faces": 0,
+      "mirrored_faces": 2057,
+      "uv_coverage": 0.691,
+      "world_per_uv": 1.276650621903556
+    },
+    "detail": {
+      "crystal": {
+        "map": "Detail_Crystal_Normal.png",
+        "tiling": 11.6,
+        "mask": "B"
+      },
+      "rock": {
+        "map": "Detail_Rock_Normal.png",
+        "tiling": 6.8,
+        "mask": "A"
+      }
+    },
+    "rows": {
+      "petal": [
+        "PetalFang: 3 per petal at v 0.3",
+        "PetalHook: 2 per petal at v 0.54"
+      ],
+      "throat": [
+        "ToothLip: 15 at depth 0.0 m",
+        "ToothRing: 12 at depth 0.165 m",
+        "ToothDeep: 9 at depth 0.315 m"
+      ]
+    },
+    "teeth": 61,
+    "bones": [
+      "Head",
+      "Jaw_T",
+      "Jaw_UR",
+      "Jaw_UL",
+      "Jaw_LR",
+      "Jaw_LL"
+    ],
+    "petal_clearance_m": 0.0205,
+    "body_cut_tris": {
+      "Gravemaw": 997,
+      "Gravemaw_LOD1": 457
+    },
+    "petal_insides": true,
+    "tris_before": {
+      "body": 24093,
+      "body_lod1": 9999
+    },
+    "game_tris_total": 27323,
+    "lod1_tris_total": 11240,
+    "unity": "extra part 'Maw' (BlenderArtEntry.ExtraParts): object Gravemaw_Maw / Gravemaw_Maw_LOD1, maps Gravemaw_Maw_*.png and Low/Gravemaw_Maw_*.png",
+    "note": "round 38: worm gullet with five rows of hooked teeth; the body lost the round-14 plug and crystal teeth; bones, clips and events unchanged"
   }
 }

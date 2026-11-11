@@ -18,7 +18,11 @@ MonoBehaviour:
   _lowMaterial: {fileID: 2100000, guid: 0bd88578b36f6af42808a12adb7dfe8a, type: 2}
   _secondMaterial: {fileID: 2100000, guid: 9799b76f02983954a8d44129cd5f1d5a, type: 2}
   _lowSecondMaterial: {fileID: 2100000, guid: 507ac6bfab154764f9799549a34a7b20, type: 2}
-  _parts: []
+  _parts:
+  - _object: Gravemaw_Maw
+    _material: {fileID: 2100000, guid: 00b07249598d7944b90d2f92ed8489d8, type: 2}
+    _lowMaterial: {fileID: 2100000, guid: 7f9aee488af926e4fb5d38e1c3610c41, type: 2}
+    _castShadows: 1
   _scale: 1
   _yaw: 180
   _bodyCentrePivot: 0
