@@ -96,6 +96,32 @@ def vignette(img, strength=0.45):
     return Image.composite(dark, img, inv)
 
 
+def edge_falloff(img, left=0.35, right=0.5, span=0.2):
+    """Darkens the outer `span` of each side (round 4: the light gathers on the focus, the edges recede)."""
+    w, h = img.size
+    row = []
+    for x in range(w):
+        t = x / (w - 1)
+        a = left * (1 - t / span) if t < span else right * (t - (1 - span)) / span if t > 1 - span else 0.0
+        row.append(int(255 * a))
+    line = Image.new("L", (w, 1))
+    line.putdata(row)
+    dark = Image.new("RGBA", (w, h), (1, 2, 8, 255))
+    return Image.composite(dark, img, line.resize((w, h)))
+
+
+def logo_pool(img, centre, radius, strength):
+    """A soft dark pool (no text) where Steam lays the library logo, so the logo reads over the hero."""
+    w, h = img.size
+    m = Image.new("L", (w, h), 0)
+    cx, cy = centre[0] * w, centre[1] * h
+    rx, ry = radius[0] * w, radius[1] * h
+    ImageDraw.Draw(m).ellipse((cx - rx, cy - ry, cx + rx, cy + ry), fill=int(255 * strength))
+    m = m.filter(ImageFilter.GaussianBlur(min(rx, ry) * 0.6))
+    dark = Image.new("RGBA", (w, h), (2, 3, 10, 255))
+    return Image.composite(dark, img, m)
+
+
 def icon_base(emblem, n):
     bg = Image.new("RGBA", (n, n), (6, 8, 18, 255))
     glow = Image.new("L", (n, n), 0)
@@ -168,8 +194,11 @@ def build_all():
     bg = ImageEnhance.Brightness(bg).enhance(0.7)
     made["bg"] = save(vignette(bg, 0.6), "Steam_page_background_1438x810.png")
 
-    # Library hero (3840x1240): artwork only.
-    made["hero"] = save(cover(wide, 3840, 1240), "Steam_library_hero_3840x1240.png")
+    # Library hero (3840x1240): artwork only, no text. Edges recede, and the bottom-left corner (where we set the
+    # library logo in Steamworks) is a calm, darker pool.
+    hero = edge_falloff(cover(wide, 3840, 1240), *L["hero_edges"])
+    hero = logo_pool(hero, *L["hero_logo_pool"])
+    made["hero"] = save(hero, "Steam_library_hero_3840x1240.png")
 
     # Library logo (1280x720, alpha): the v4 lockup as approved.
     lib = load(os.path.join(LOGO_V4, "CrysiumField_library_logo.png"))
@@ -181,7 +210,7 @@ def build_all():
     # Event cover (800x450) and event header (1920x622).
     e = cover(std, 800, 450, L["event_focus"])
     made["ev_cover"] = save(put_logo(vignette(e, 0.35), full, *L["event_logo"]), "Steam_event_cover_800x450.png")
-    eh = cover(wide, 1920, 622, L["evh_focus"])
+    eh = edge_falloff(cover(wide, 1920, 622, L["evh_focus"]), *L["hero_edges"])
     made["ev_header"] = save(put_logo(vignette(eh, 0.3), full, *L["evh_logo"]), "Steam_event_header_1920x622.png")
 
     # Icons: the alpha emblem on a dark field with a faint Crysium glow behind it (reads cleaner at 32 px than the
@@ -210,6 +239,7 @@ LAYOUT = dict(
     bg_focus=(0.5, 0.5),
     event_focus=(0.5, 0.5), event_logo=(400, 72, 480),
     evh_focus=(0.5, 0.5), evh_logo=(470, 118, 760),
+    hero_edges=(0.35, 0.55, 0.22), hero_logo_pool=((0.2, 0.7), (0.21, 0.27), 0.55),
 )
 
 

@@ -24,6 +24,14 @@ SurfaceWave ripple (Game/UnitLit) baked into the mesh plus a little dihedral, ti
 is the full pass-4 export (body, Mercer_Face, Mercer_Visor, 2048 maps, jetpack) at 1.6x, three-quarters to camera,
 flying with the Shoot clip on his arms and the pistol in Weapon_R; less pink, cooler mist; Gravemaw's head gets a
 glowing maw, eyes and a cool rim; Skitters bigger, with a flank climbing out of the crack in front.
+Round 4 (Remco: "a notch calmer, I don't know where to look"; the right side glows too much; the gate is off; yet it
+must stay brutal): one focal point, Gravemaw with Spencer in front of it firing into its face (he turns to the boss,
+back three-quarter, 2.0x, heavy bolts and a hit flare), under a warm focus key; a calm corridor between camera and
+boss (no tall or glowing dressing there), glowing dressing thinned and dimmed towards the frame edges, no bright bog
+or crystal spires, cliffs and ridges with dim crystals; one Shalebat and two Skyrays, one repair drone, no Wisps;
+fewer sparks and stray bolts, the one big blast in the swarm at the gate; the gate's energy field switched on as
+GateView builds it (sheet + floor strip with the EnergyField texture, its light on the road) with hit ripples, arcs
+and sparks where the front of the swarm claws at it; shallow depth of field focused between Spencer and the boss.
 All game models are the real exports, posed from their own clips and baked to static meshes.
 
 The renders are text-free masters; steam_compose.py puts the logo on and cuts the final Steam sizes.
@@ -467,7 +475,7 @@ def debris(name, p, col, rng, count=14, reach=1.4):
     L2.put(ob, col)
 
 
-def explosion(name, p, col, scale=1.0, seed=0):
+def explosion(name, p, col, scale=1.0, seed=0, spark_count=70):
     """Cannon shell hit: billowing fireball low on the ground, a sooty smoke cap, sparks, flung debris, a hot lamp."""
     rng = random.Random(seed)
     p = Vector(p)
@@ -480,7 +488,7 @@ def explosion(name, p, col, scale=1.0, seed=0):
     L2.put(ob, col)
     smoke(name + "Smoke", p + Vector((0, 0.1, 1.15 * scale)), 1.1 * scale, col, density=3.5, glow=FIRE,
           glow_strength=0.0)
-    sparks(name + "Sparks", p + Vector((0, 0, 0.4 * scale)), col, rng, 70, 2.2 * scale, size=0.022)
+    sparks(name + "Sparks", p + Vector((0, 0, 0.4 * scale)), col, rng, spark_count, 2.2 * scale, size=0.022)
     debris(name + "Debris", p + Vector((0, 0, 0.4 * scale)), col, rng, 9, 0.8 * scale)
     light(name + "L", p + Vector((0, -0.4, 0.8 * scale)), FIRE, 2600.0 * scale, 0.6, col)
     # Scorched ground glow under the blast.
@@ -523,15 +531,40 @@ SEQ = ["Start", "Straight_A", "Curve_R", "Straight_B", "Curve_L", "Straight_A", 
 
 CFG = dict(V4.FIELD)
 CFG.update(label="KeyArt", series=False, seed=5, crack_start=(0.0, -6.0), crack_scale=2.2, crack_seq=SEQ,
-           lava_emit=3.5, lava_light=42.0, field_count=26, bumps=0.06,
-           frame_crystals=[(-17.0, 8.0, 3.2, "Crystal_B"), (-21.0, 20.0, 3.6, "Crystal_C"), (24.0, 30.0, 3.4, "Crystal_A")],
-           crystal_lights=[(-16.0, 8.0, 90.0), (-20.0, 20.0, 80.0), (23.0, 30.0, 70.0)],
-           towers=[(-30, 80, 1.5, 0.3), (-16, 90, 1.2, 2.0), (24, 86, 1.3, 1.0), (36, 72, 1.1, 4.0)],
+           lava_emit=3.5, lava_light=42.0, field_count=12, bumps=0.06,
+           frame_crystals=[(24.0, 30.0, 3.4, "Crystal_A")],
+           crystal_lights=[(23.0, 30.0, 30.0)],
+           towers=[],
            colony=[("base", -36, 70, 2.2, 0.6)], colony_light=1600.0, colony_emit=8.0,
            drone=None, skitters=[], eyes=[(17.0, 6.0, FLOOR + 0.35, 1.5), (19.5, 10.5, FLOOR + 0.3, 1.3),
                                          (-15.0, 14.0, FLOOR + 0.35, 1.3)],
            veins=[(-8.0, 3.0, 2.2, 0.4), (-12.0, 14.0, 2.5, 1.0), (16.0, 21.0, 2.4, 2.6)],
-           haze=0.015, embers=220, motes=80, horizon=(0.010, 0.006, 0.016))
+           haze=0.015, embers=110, motes=40, horizon=(0.010, 0.006, 0.016))
+
+# Round 4 (Remco: "too busy, I don't know where to look"; the right side glows too much): one focal point, Gravemaw
+# with Spencer in front of it. The dressing thins out in a corridor from the camera to the boss and its glowing
+# pieces fade towards the frame edges, so the light gathers on the boss, Spencer and the gate.
+QUIET_FROM = (-10.0, -12.0)   # roughly where the cameras stand
+QUIET_WIDTH = 9.0             # half-width of the calm corridor, metres
+EDGE_ANGLE = (14.0, 28.0)     # degrees off the cameras' axis where glowing dressing starts and ends thinning out
+
+
+def quiet(x, y, focus):
+    """0 outside the calm corridor between the cameras and the focus, rising to 1 on its centre line."""
+    a, b = Vector(QUIET_FROM), Vector(focus)
+    ab = b - a
+    t = max(0.0, min(1.0, (Vector((x, y)) - a).dot(ab) / ab.length_squared))
+    d = (Vector((x, y)) - a.lerp(b, t)).length
+    return max(0.0, 1.0 - d / QUIET_WIDTH)
+
+
+def edge(x, y, focus):
+    """0 near the cameras' axis (from QUIET_FROM to the focus), 1 towards the frame edges."""
+    a = Vector((x, y)) - Vector(QUIET_FROM)
+    b = Vector(focus) - Vector(QUIET_FROM)
+    ang = abs(math.degrees(a.angle_signed(b, 0.0))) if a.length > 1e-3 else 0.0
+    return max(0.0, min(1.0, (ang - EDGE_ANGLE[0]) / (EDGE_ANGLE[1] - EDGE_ANGLE[0])))
+
 
 ROAD_OFF = 5.4       # road centre right of the crack
 ROAD_HALF = 3.0      # about three game cells at the scene's 2x scale
@@ -706,7 +739,7 @@ def mat_bog_pool(name):
     s = L2.o(scum, "Color")
     col = L2.MIXC(nt, s, (0.01, 0.03, 0.012), (0.06, 0.12, 0.03))
     L2.principled(nt, out, base=col, metal=0.0, rough=L2.MR(nt, s, 0.0, 1.0, 0.05, 0.6),
-                  emit=(0.35, 1.0, 0.15), emit_s=L2.MR(nt, s, 0.0, 1.0, 1.6, 0.0))
+                  emit=(0.35, 1.0, 0.15), emit_s=L2.MR(nt, s, 0.0, 1.0, 0.45, 0.0))
     return mat
 
 
@@ -773,15 +806,15 @@ def level_dressing(path, col, rng):
     for x, y in TOWER_SPOTS(path, road):
         keep_out.append((x, y, 1.6))
     # Pools: lava by the rifts (alien side), toxic bog in the low ground.
-    pools = [("LavaPool0", (21.0, 16.0), 3.2, "lava"), ("LavaPool1", (17.5, 34.0), 3.6, "lava"),
-             ("LavaPool2", (-17.0, 30.0), 2.8, "lava"), ("BogPool0", (-13.0, 4.0), 2.6, "bog"),
-             ("BogPool1", (26.0, 4.0), 3.0, "bog")]
+    # Round 4: the bright bog at the right edge is gone; the edge pools glow less than the one behind the boss.
+    pools = [("LavaPool0", (21.0, 16.0), 3.2, "lava", 0.45), ("LavaPool1", (17.5, 34.0), 3.6, "lava", 1.0),
+             ("LavaPool2", (-17.0, 30.0), 2.8, "lava", 0.4), ("BogPool0", (-13.0, 4.0), 2.6, "bog", 0.3)]
     lava_m, bog_m = mat_lava_pool("LavaPoolM"), mat_bog_pool("BogPoolM")
-    for name, c, r, kind in pools:
+    for name, c, r, kind, glow in pools:
         pool(name, c, r, lava_m if kind == "lava" else bog_m, col, rng)
         keep_out.append((c[0], c[1], r))
         light(name + "L", (c[0], c[1], FLOOR + 1.0), V.EMBER if kind == "lava" else (0.35, 1.0, 0.2),
-              900.0 * r if kind == "lava" else 300.0 * r, r * 0.6, col)
+              (900.0 if kind == "lava" else 300.0) * r * glow, r * 0.6, col)
         # A rim of boulders and splinters so the pool sits in the ground.
         for k in range(7):
             a = rng.uniform(0, 6.28)
@@ -794,25 +827,31 @@ def level_dressing(path, col, rng):
     for k, (y, off, rz, nm) in enumerate(rifts):
         rp = Vector(road[min(range(len(road)), key=lambda i: abs(road[i][1] - y))]) + Vector((off, 0))
         put_prop(nm, col, (rp.x, rp.y, FLOOR + 0.02), rz, ENV_SCALE * 1.3, 5.0)
-        light(f"RiftGlow{k}", (rp.x, rp.y, FLOOR + 1.2), (1.0, 0.35, 0.08), 1400.0, 1.0, col)
+        light(f"RiftGlow{k}", (rp.x, rp.y, FLOOR + 1.2), (1.0, 0.35, 0.08), 1400.0 if off < 6.0 else 500.0, 1.0, col)
         keep_out.append((rp.x, rp.y, 3.0))
         for j in range(4):
             a = rng.uniform(0, 6.28)
             put_prop("Egg_Cluster", col, (rp.x + math.cos(a) * 3.4, rp.y + math.sin(a) * 2.6, FLOOR), rng.uniform(0, 6.28),
                      rng.uniform(1.8, 2.8), 4.0)
     # The logo scene's field crystals must not stand on the road, a pad or a pool.
+    focus = Vector(road[min(range(len(road)), key=lambda i: abs(road[i][1] - 26.0))]) + Vector((9.0, 0.0))
     for ob in list(col.objects):
-        if ob.name.startswith("Crystal_") and not free(ob.location.x, ob.location.y, 0.0):
+        if ob.name.startswith("Crystal_") and (not free(ob.location.x, ob.location.y, 0.0)
+                                               or quiet(ob.location.x, ob.location.y, focus) > 0.0):
             bpy.data.objects.remove(ob, do_unlink=True)
     crystals = [bpy.data.meshes[n] for n in ("Crystal_A", "Crystal_B", "Crystal_C")]
     # Dense dressing on every open patch: (prop, count, scale range, emission).
-    scatter = [("Flora_GlowTree", 40, (2.0, 3.2), 4.0), ("Flora_Frond", 90, (1.8, 3.0), 3.0),
-               ("Flora_Mushroom", 30, (1.2, 2.0), 4.0), ("Flora_Tendril", 60, (2.0, 3.4), 4.0),
-               ("Decor_Boulder", 40, (1.4, 3.2), 1.5), ("Rock_A", 26, (1.2, 2.8), 1.5), ("Rock_B", 26, (1.2, 2.8), 1.5),
-               ("Rock_C", 26, (1.2, 2.8), 1.5), ("Remains_Crystal", 30, (1.6, 2.6), 3.0),
-               ("Scatter_CrystalSplinters", 120, (2.0, 3.2), 3.0), ("Scatter_Pebbles", 120, (1.8, 3.0), 1.0),
-               ("Scatter_ShellFragments", 50, (1.8, 2.8), 1.0), ("Scree_Patch", 30, (2.0, 3.4), 1.0),
-               ("Egg_Cluster", 16, (1.6, 2.4), 3.0), ("Decor_Spire", 8, (2.2, 3.2), 3.0), ("CRYSTAL", 70, (0.7, 1.9), 0)]
+    # Round 4: the glowing pieces (canopy trees with their bulbs, tendrils, mushrooms, splinters) are fewer and glow
+    # far less, so the rocks and silhouettes carry the edges and the light stays on the focus.
+    scatter = [("Flora_GlowTree", 10, (2.0, 3.2), 0.6), ("Flora_Frond", 80, (1.8, 3.0), 0.3),
+               ("Flora_Mushroom", 8, (1.2, 2.0), 0.6), ("Flora_Tendril", 16, (2.0, 3.4), 0.4),
+               ("Decor_Boulder", 44, (1.4, 3.2), 1.0), ("Rock_A", 30, (1.2, 2.8), 1.0), ("Rock_B", 30, (1.2, 2.8), 1.0),
+               ("Rock_C", 30, (1.2, 2.8), 1.0), ("Remains_Crystal", 12, (1.6, 2.6), 1.2),
+               ("Scatter_CrystalSplinters", 60, (2.0, 3.2), 1.2), ("Scatter_Pebbles", 120, (1.8, 3.0), 0.6),
+               ("Scatter_ShellFragments", 50, (1.8, 2.8), 0.6), ("Scree_Patch", 30, (2.0, 3.4), 0.6),
+               ("Egg_Cluster", 10, (1.6, 2.4), 1.5), ("Decor_Spire", 4, (2.2, 3.2), 1.2), ("CRYSTAL", 10, (0.7, 1.9), 0)]
+    glowing = ("Flora_GlowTree", "Flora_Mushroom", "Flora_Tendril", "Remains_Crystal", "Scatter_CrystalSplinters",
+               "Egg_Cluster", "CRYSTAL", "Flora_Frond", "Decor_Spire")
     for name, count, (s0, s1), emit in scatter:
         placed = tries = 0
         while placed < count and tries < count * 30:
@@ -825,6 +864,13 @@ def level_dressing(path, col, rng):
             near_battery = any(math.hypot(x - tx, y - ty) < 5.0 for tx, ty in TOWER_SPOTS(path, road))
             if not free(x, y, 0.2) or (name == "Decor_Spire" and y < 18.0) or                     (big and (y < 8.0 and x < 4.0 or near_battery or math.hypot(x + 9.0, y + 10.0) < 16.0)):
                 continue
+            # Calm between the camera and the boss (only low scatter survives there), and few glowing pieces
+            # towards the frame edges.
+            q = quiet(x, y, focus)
+            if q > 0.0 and (big or name in glowing or rng.random() < q * 0.8):
+                continue
+            if name in glowing and rng.random() < 0.9 * edge(x, y, focus):
+                continue
             if name == "CRYSTAL":
                 V.instance_mesh(rng.choice(crystals), col, (x, y, FLOOR - 0.05), rng.uniform(0, 6.28),
                                 rng.uniform(s0, s1), (rng.uniform(-0.1, 0.1), rng.uniform(-0.1, 0.1)))
@@ -834,19 +880,19 @@ def level_dressing(path, col, rng):
     # Road shoulders: litter and splinters where the fighting is.
     for p, _ in along(road, 0.0, 1.2):
         for side in (-1, 1):
-            if rng.random() < 0.7:
-                put_prop(rng.choice(("Scatter_Pebbles", "Scatter_CrystalSplinters", "Scatter_ShellFragments")), col,
+            if rng.random() < 0.45:
+                put_prop(rng.choice(("Scatter_Pebbles", "Scatter_ShellFragments")), col,
                          (p.x + side * rng.uniform(ROAD_HALF + 0.9, ROAD_HALF + 2.2), p.y, FLOOR),
-                         rng.uniform(0, 6.28), rng.uniform(1.6, 2.6), 2.0)
+                         rng.uniform(0, 6.28), rng.uniform(1.6, 2.6), 0.6)
     # Background: cliffs and ridges closing the map, silhouettes against the mist.
     for x, y, rz, s in [(-30.0, 44.0, 0.4, 5.0), (-24.0, 56.0, 0.1, 5.5), (38.0, 46.0, -0.5, 5.0),
                         (30.0, 60.0, -0.2, 6.0), (-38.0, 30.0, 1.0, 4.5), (44.0, 30.0, -1.0, 5.0),
                         (8.0, 66.0, 0.0, 6.5), (-12.0, 64.0, 0.2, 6.0)]:
-        put_prop("Cliff_Straight", col, (x, y, FLOOR - 0.2), rz, s, 2.0)
+        put_prop("Cliff_Straight", col, (x, y, FLOOR - 0.2), rz, s, 0.5)
     for x, y, rz, s in [(-10.0, 92.0, 0.0, 5.0), (26.0, 96.0, 0.3, 6.0), (50.0, 80.0, -0.4, 5.0)]:
-        put_prop("Silhouette_Ridge", col, (x, y, FLOOR - 1.0), rz, s, 2.0)
+        put_prop("Silhouette_Ridge", col, (x, y, FLOOR - 1.0), rz, s, 0.5)
     for x, y, s in [(-40.0, 70.0, 4.0), (44.0, 66.0, 3.6)]:
-        put_prop("Silhouette_Mesa", col, (x, y, FLOOR - 1.0), 0.0, s, 2.0)
+        put_prop("Silhouette_Mesa", col, (x, y, FLOOR - 1.0), 0.0, s, 0.5)
     return road
 
 
@@ -893,6 +939,102 @@ def undulate(posed, amp, wavelength, curl, phase=0.0):
     return res
 
 
+# The gate's energy field as GateView builds it in the game: a vertical sheet between the pylons (FieldShare 0.78 of
+# the 2.05 m model width, 0.08..0.98 m high) plus a glowing strip on the road under it, both drawn with the
+# EnergyField marker texture (Exports/Decal_GlowPool/Field_Energy.png: R scanlines, G hex lattice, B shimmer,
+# A edge fade) in the gate colour, additive.
+GATE_FIELD = (0.55, 0.75, 1.0)
+GATE_FIELD_CORE = (0.85, 0.93, 1.0)
+FIELD_W, FIELD_Z0, FIELD_Z1, FIELD_FLOOR = 2.05 * 0.78, 0.08, 0.98, 0.6
+
+
+def mat_energy_field(name, strength):
+    mat, nt, out = L2.new_mat(name)
+    uv = L2.o(L2.N(nt, "ShaderNodeTexCoord"), "UV")
+    tex = L2.N(nt, "ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(os.path.join(EX, "Decal_GlowPool", "Field_Energy.png"), check_existing=True)
+    tex.image.colorspace_settings.name = "Non-Color"
+    tex.interpolation = "Cubic"
+    nt.links.new(uv, tex.inputs["Vector"])
+    sep = L2.N(nt, "ShaderNodeSeparateColor")
+    nt.links.new(L2.o(tex, "Color"), sep.inputs[0])
+    r, g, b = sep.outputs[0], sep.outputs[1], sep.outputs[2]
+    a = L2.o(tex, "Alpha")
+    # The same weights the marker builder bakes into the game's tint: scanlines, hex lattice, shimmer, over a base.
+    lines = L2.M(nt, "ADD", L2.M(nt, "MULTIPLY", r, 0.6), L2.M(nt, "MULTIPLY", g, 0.5))
+    body = L2.M(nt, "MULTIPLY", L2.M(nt, "ADD", L2.M(nt, "ADD", lines, L2.M(nt, "MULTIPLY", b, 0.2)), 0.35), a)
+    col = L2.MIXC(nt, L2.M(nt, "MINIMUM", lines, 1.0), GATE_FIELD, GATE_FIELD_CORE)
+    em = L2.N(nt, "ShaderNodeEmission", {"Color": col, "Strength": L2.M(nt, "MULTIPLY", body, strength)})
+    tr = L2.N(nt, "ShaderNodeBsdfTransparent")
+    add = L2.N(nt, "ShaderNodeAddShader")
+    nt.links.new(L2.o(em), add.inputs[0])
+    nt.links.new(L2.o(tr), add.inputs[1])
+    nt.links.new(add.outputs[0], out.inputs["Surface"])
+    return mat
+
+
+def quad_uv(name, corners, mat, col):
+    bm = bmesh.new()
+    vs = [bm.verts.new(c) for c in corners]
+    f = bm.faces.new(vs)
+    uv = bm.loops.layers.uv.new("UVMap")
+    for loop, u in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+        loop[uv].uv = u
+    return fx_obj(name, bm, mat, col)
+
+
+def ripple(name, centre, normal, radius, col, strength):
+    """Hit ripple on the field: three thin concentric rings fading outwards, a hot spot and a few crackling sparks."""
+    n = Vector(normal).normalized()
+    u = n.orthogonal().normalized()
+    v = n.cross(u)
+    bm = bmesh.new()
+    for k, (rr, w) in enumerate(((0.35, 0.08), (0.65, 0.06), (1.0, 0.045))):
+        ring_o, ring_i = [], []
+        for i in range(48):
+            ang = 2 * math.pi * i / 48
+            wob = 1.0 + 0.06 * math.sin(ang * 5 + k)
+            d = u * math.cos(ang) + v * math.sin(ang)
+            ring_o.append(bm.verts.new(Vector(centre) + d * radius * rr * wob))
+            ring_i.append(bm.verts.new(Vector(centre) + d * radius * (rr - w) * wob))
+        for i in range(48):
+            j = (i + 1) % 48
+            bm.faces.new((ring_i[i], ring_o[i], ring_o[j], ring_i[j]))
+    fx_obj(name, bm, emit_only(name + "M", GATE_FIELD, strength, GATE_FIELD_CORE, power=0.2, transparent=False), col)
+    glow_ball(name + "Core", centre, radius * 0.22, col, GATE_FIELD, GATE_FIELD_CORE, strength * 1.2,
+              light_energy=260.0, light_radius=0.2)
+
+
+def gate_field(name, gpos, scale, col, hits):
+    """The gate's barrier, switched on: the sheet between the pylons, the floor strip, its light on the road and the
+    creatures, and hit ripples with short arcs where the swarm strikes it."""
+    hw = FIELD_W * scale / 2
+    z0, z1 = FLOOR + FIELD_Z0 * scale, FLOOR + FIELD_Z1 * scale
+    x, y = gpos.x, gpos.y
+    quad_uv(name + "Sheet", [(x - hw, y, z0), (x + hw, y, z0), (x + hw, y, z1), (x - hw, y, z1)],
+            mat_energy_field(name + "M", 2.6), col)
+    # A second, softer sheet just behind: the field has some depth and glows through itself.
+    quad_uv(name + "Sheet2", [(x - hw, y + 0.06, z0), (x + hw, y + 0.06, z0), (x + hw, y + 0.06, z1),
+                              (x - hw, y + 0.06, z1)], mat_energy_field(name + "M2", 1.1), col)
+    fd = FIELD_FLOOR * scale / 2
+    zf = FLOOR + 0.07
+    quad_uv(name + "Floor", [(x - hw, y - fd, zf), (x + hw, y - fd, zf), (x + hw, y + fd, zf), (x - hw, y + fd, zf)],
+            mat_energy_field(name + "FloorM", 1.8), col)
+    for k in range(3):
+        light(f"{name}L{k}", (x - hw * 0.6 + hw * 0.6 * k, y - 0.4, (z0 + z1) / 2), GATE_FIELD, 450.0, 0.6, col)
+        light(f"{name}Back{k}", (x - hw * 0.6 + hw * 0.6 * k, y + 0.6, (z0 + z1) / 2), GATE_FIELD, 300.0, 0.6, col)
+    rng = random.Random(41)
+    for k, h in enumerate(hits):
+        px = max(x - hw * 0.85, min(x + hw * 0.85, h.x))
+        pz = max(z0 + 0.3, min(z1 - 0.3, h.z + rng.uniform(0.0, 0.5)))
+        c = Vector((px, y + 0.09, pz))
+        ripple(f"{name}Hit{k}", c, (0, 1, 0), rng.uniform(0.45, 0.7), col, 6.0)
+        arc(f"{name}Arc{k}", c, c + Vector((rng.uniform(-0.9, 0.9), 0.05, rng.uniform(-0.5, 0.6))), col, rng,
+            width=0.008, strength=4.0, branches=1)
+        sparks(f"{name}Sp{k}", c, col, rng, 10, 0.6, colour=GATE_FIELD, core=GATE_FIELD_CORE, strength=8.0,
+               up=0.2, size=0.012)
+
+
 def boss_face(name, bones, col, scale):
     """Gravemaw's head made readable: a hot glow in the open jaws, two pairs of eyes, a cool rim from behind."""
     jaws = [bones[k].to_translation() for k in ("Jaw_T", "Jaw_UL", "Jaw_UR", "Jaw_LL", "Jaw_LR") if k in bones]
@@ -903,8 +1045,8 @@ def boss_face(name, bones, col, scale):
     up = side.cross(fwd).normalized()
     if up.z < 0:
         up = -up
-    glow_ball(name + "Maw", mouth - fwd * 0.15 * scale, 0.28 * scale, col, V4.LAVA_MID, V4.LAVA_HOT, 7.0,
-              light_energy=2500.0 * scale, light_radius=0.3 * scale)
+    glow_ball(name + "Maw", mouth - fwd * 0.15 * scale, 0.3 * scale, col, V4.LAVA_MID, V4.LAVA_HOT, 10.0,
+              light_energy=4200.0 * scale, light_radius=0.3 * scale)
     bm = bmesh.new()
     for k, (s, u, f, r) in enumerate([(0.42, 0.34, -0.1, 0.075), (-0.42, 0.34, -0.1, 0.075),
                                       (0.3, 0.46, -0.3, 0.05), (-0.3, 0.46, -0.3, 0.05)]):
@@ -983,7 +1125,7 @@ def build_scene(draft=False):
     spots = tower_spots(path, road)
     mist_layer(col_env)
     light_shafts(col_lit)
-    V.sky_light(col_lit, col_env, 0.6)
+    V.sky_light(col_lit, col_env, 0.45)
     ld = bpy.data.lights.new("UnitRim", "SUN")
     ld.color = (0.5, 0.65, 1.0)
     ld.energy = 1.0
@@ -1011,6 +1153,14 @@ def build_scene(draft=False):
         po = bake_pose("Skitter/Skitter.fbx", "Skitter", "Walk", (k * 7) % 42, emit=5.0)
         place(po, col_units, p, rng.uniform(-0.35, 0.35) + 0.12, 2.3)
         targets[f"sk{k}"] = p + Vector((0, 0, 0.4))
+    # The front of the swarm already at the gate, clawing at the field (round 4: the barrier is on and takes hits).
+    for k, (off, f, rz) in enumerate([(-1.9, 5, 0.3), (-0.6, 19, -0.2), (0.7, 31, 0.15), (1.9, 11, -0.35),
+                                      (-1.2, 25, 0.1), (1.3, 2, -0.1)]):
+        p = R(gate_y + (1.5 if k < 4 else 2.6), off)
+        po = bake_pose("Skitter/Skitter.fbx", "Skitter", "Strike" if k < 4 else "Walk", 10 if k < 4 else f,
+                       emit=5.0)
+        place(po, col_units, p, rz, 2.3)
+        targets[f"gk{k}"] = p + Vector((0, 0, 0.4))
     # A flank breaking out of the crack towards the battery, close to the camera: they read as creatures.
     for k, (y, f) in enumerate([(-1.5, 3), (1.2, 17), (3.6, 29), (6.4, 9)]):
         p = B(y, -2.1, 0.05)
@@ -1036,34 +1186,31 @@ def build_scene(draft=False):
     place(bake_pose("PackAlpha/PackAlpha.fbx", "PackAlpha", "Run", 6, emit=4.0), col_units, p, 0.9, 2.4)
     for k, (y, off, f) in enumerate([(15.5, 11.0, 3), (11.0, 11.5, 9), (17.0, 8.5, 15)]):
         place(bake_pose("Prowler/Prowler.fbx", "Prowler", "Run", f, emit=4.0), col_units, R(y, off), 0.8, 2.1)
-    bats = [(8.5, -1.0, 3.8, 2, "Shalebat"), (12.0, 2.5, 4.6, 9, "Shalebat"), (15.0, -2.5, 5.2, 5, "Shalebat"),
-            (10.5, 4.5, 5.6, 13, "Shalebat"), (19.0, 1.0, 5.8, 3, "Shalebat"), (17.0, 5.5, 4.2, 7, "Shalebat")]
+    # Round 4: the air is thinned to one Shalebat and two Skyrays, so the boss owns the sky.
+    bats = [(12.0, 2.5, 4.6, 9, "Shalebat")]
     for k, (y, off, z, f, sp) in enumerate(bats):
         p = R(y, off, z)
         po = undulate(bake_pose(f"{sp}/{sp}.fbx", sp, "Fly", f, emit=4.0), 0.08, 1.0, 0.14, phase=k)
         place(po, col_units, p, rng.uniform(-0.4, 0.4) - 0.2, 2.1, (math.radians(24), rng.uniform(-0.25, 0.25)))
         targets[f"bat{k}"] = p
-    for k, (y, off, z, f) in enumerate([(14.0, -4.0, 6.2, 10), (21.0, -1.5, 7.0, 24), (25.0, -5.0, 6.0, 34),
-                                        (10.0, 10.0, 5.0, 18)]):
+    for k, (y, off, z, f) in enumerate([(12.0, -16.0, 7.5, 10), (22.0, -9.0, 8.6, 24)]):
         p = R(y, off, z)
         po = undulate(bake_pose("Skyray/Skyray.fbx", "Skyray", "Fly", f, emit=4.0), 0.14, 1.3, 0.1, phase=k * 1.7)
         place(po, col_units, p, rng.uniform(-0.3, 0.3), 2.4, (math.radians(26), rng.uniform(-0.3, 0.3)))
         targets[f"ray{k}"] = p
-    for k, (y, off, z, f) in enumerate([(9.0, 3.6, 2.6, 0), (16.0, -3.2, 3.2, 20), (23.0, 3.0, 3.0, 40)]):
-        p = R(y, off, z)
-        place(bake_pose("Wisp/Wisp.fbx", "Wisp", "Float", f, emit=5.0), col_units, p, 0.0, 1.9)
     # Gravemaw, the region boss: rearing over the road behind the wave, close enough to read at thumbnail size.
     gp = R(30.0, 15.0, -1.2)
-    gobs, gbones = place(bake_pose("Gravemaw/Gravemaw.fbx", "Gravemaw", "Gate_Mount", 80, emit=6.0), col_units, gp,
+    gobs, gbones = place(bake_pose("Gravemaw/Gravemaw.fbx", "Gravemaw", "Gate_Mount", 80, emit=3.5), col_units, gp,
                          math.radians(-68), 4.4)
-    boss_face("Gravemaw", gbones, col_fx, 4.4)
+    maw = boss_face("Gravemaw", gbones, col_fx, 4.4)
     # The clip carries the body forward off its root: light and aim at where the body really is.
     lo, hi = L2.world_bbox(gobs)
     C.log("gravemaw bbox", tuple(round(v, 1) for v in lo), tuple(round(v, 1) for v in hi))
     gp = Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, FLOOR))
-    light("GravemawFront", gp + Vector((-4, -8, 3.0)), V.EMBER, 6000.0, 3.0, col_lit)
-    light("GravemawKey", gp + Vector((-10, -14, 14.0)), (0.6, 0.72, 1.0), 26000.0, 4.0, col_lit)
-    light("GravemawCrys", gp + Vector((0, 2, 11.0)), V.CRYS_PINK, 3500.0, 4.0, col_lit)
+    light("GravemawFront", gp + Vector((-4, -8, 3.0)), V.EMBER, 9000.0, 3.0, col_lit)
+    light("GravemawKey", gp + Vector((-10, -14, 14.0)), (0.85, 0.85, 0.9), 20000.0, 4.0, col_lit)
+    # Round 4: a warm amber top light instead of the pink crystal one (no pink cast on the boss).
+    light("GravemawCrys", gp + Vector((0, 2, 11.0)), (1.0, 0.6, 0.32), 3500.0, 4.0, col_lit)
     light("GravemawBack", gp + Vector((3, 12, 7.0)), V.EMBER, 16000.0, 5.0, col_lit)
     bpy.ops.mesh.primitive_cube_add(size=1.0)
     ob = bpy.context.active_object
@@ -1090,16 +1237,17 @@ def build_scene(draft=False):
     gpos = R(gate_y, 0.0, -0.05)
     place(bake_pose("Gate/Gate_G2.fbx", "Gate", None, 0, keep=["Gate_G2"], emit=5.0), col_units, gpos, 0.0, 2.25)
     light("GateLamp", gpos + Vector((0, -2.0, 2.8)), COLONY_LAMP, 800.0, 1.0, col_lit)
+    gate_field("GateField", gpos, 2.25, col_fx, [targets["gk0"], targets["gk1"], targets["gk2"], targets["gk3"]])
     towers = [
         # (export, variant, build spot, target, pitch)
         ("Tower_Laser", "T3A", "L2", "crag0", 0.0),
         ("Tower_Gun", "T3A", "L1", "fl2", -8.0),
-        ("Tower_Cannon", "T3A", "L3", "sk6", 6.0),
-        ("Tower_Flak", "T3A", "L4", "bat1", 32.0),
+        ("Tower_Cannon", "T3A", "L3", "gk4", 4.0),
+        ("Tower_Flak", "T3A", "L4", "bat0", 32.0),
         ("Tower_Tesla", "T3A", "L0", "sk0", 0.0),
         ("Tower_Railgun", "T3A", "L5", "crag3", 0.0),
         ("Tower_Flak", "T2", "L6", "ray1", 38.0),
-        ("Tower_Gun", "T2", "R0", "sk3", -4.0),
+        ("Tower_Gun", "T2", "R0", "gk3", -6.0),
         ("Tower_Laser", "T2", "R1", "crag1", 0.0),
     ]
     shots = {}
@@ -1112,17 +1260,31 @@ def build_scene(draft=False):
         muzzles = [m.to_translation() for kk, m in sorted(bones.items()) if kk.startswith("Muzzle")]
         shots[f"{name}{k}"] = (muzzles, targets[tgt])
         light(f"{name}Lamp{k}", p + Vector((0.6, -1.2, 2.4)), COLONY_LAMP, 160.0, 0.6, col_lit)
-    sp = R(6.5, -5.2, 3.3)
+    sp = R(6.5, -6.6, 3.3)
     arms = ("Shoulder", "Arm", "Hand", "Weapon", "Fore", "Clav", "Finger", "Thumb", "Index")
     po = bake_pose("Mercer/Mercer.fbx", "Mercer", "Jet_Fly", 10, emit=3.0, overlay=("Shoot", 4, arms))
-    _, sbones = place(po, col_units, sp, math.radians(20), 1.6)
+    # Round 4: he turns to the boss (back three-quarter, jetpack to the camera) so the pistol really fires into it.
+    _, sbones = place(po, col_units, sp, yaw_to(sp, maw) + math.radians(30), 2.0)
     pistol = attach_pistol(col_units, sbones["Weapon_R"], Matrix.Rotation(-math.pi / 2, 4, "X"))
     for side in ("Jet_L", "Jet_R"):
         if side in sbones:
             jet_flame("Flame" + side, sbones[side], col_fx)
-    light("SpencerKey", sp + Vector((-1.5, -2.0, 1.5)), (0.75, 0.85, 1.0), 160.0, 0.5, col_lit)
-    for k, (dp, tgt) in enumerate([(gpos + Vector((3.4, -1.0, 3.6)), gpos + Vector((2.0, 0, 1.2))),
-                                   (B(15.0, -6.5, 4.0), B(13.2, -4.6, 0.8))]):
+    light("SpencerKey", sp + Vector((-1.5, -2.0, 1.5)), (0.75, 0.85, 1.0), 220.0, 0.5, col_lit)
+    # Round 4: a warm key from high camera-left on the focal duel (Spencer, the boss's head, the gate in front), so
+    # the eye lands there first; the edges keep only the cool sky and their own dim glows.
+    FOCUS["spencer"] = sp.lerp(maw, 0.35)
+    focus = sp.lerp(maw, 0.45)
+    ld = bpy.data.lights.new("FocusKey", "SPOT")
+    ld.energy = 60000.0
+    ld.color = (1.0, 0.78, 0.55)
+    ld.spot_size = math.radians(34)
+    ld.spot_blend = 0.85
+    ld.shadow_soft_size = 1.5
+    fk = bpy.data.objects.new("FocusKey", ld)
+    col_lit.objects.link(fk)
+    fk.location = focus + Vector((-12.0, -16.0, 18.0))
+    C.look_at(fk, focus)
+    for k, (dp, tgt) in enumerate([(gpos + Vector((3.4, -1.0, 3.6)), gpos + Vector((2.0, 0, 1.2)))]):
         V.drone(dict(drone=(dp.x, dp.y, dp.z, 1.6, tuple(tgt)), beam=0.5, beam_light=1000.0), col_units)
 
     # ---- the shots ---------------------------------------------------------------------------------------------
@@ -1133,12 +1295,10 @@ def build_scene(draft=False):
     tracers("Gun2Tracers", m[0] + d * 0.6, t, col_fx, count=5, seed=22)
     m, t = S("Tower_Laser8")
     beam("Laser2", m[0], t, col_fx, LASER, LASER_CORE, 0.07, 3.5, lights=3)
-    sparks("Laser2Sparks", t, col_fx, rng, 40, 1.0, colour=(1.0, 0.7, 0.35), core=(1.0, 0.85, 0.6), strength=8.0,
-           size=0.013)
     m, t = S("Tower_Laser0")
     beam("Laser", m[0], t, col_fx, LASER, LASER_CORE, 0.09, 4.0)
     glow_ball("LaserHit", t, 0.35, col_fx, LASER, LASER_CORE, 5.0, light_energy=400.0)
-    sparks("LaserSparks", t, col_fx, rng, 50, 1.2, colour=(1.0, 0.7, 0.35), core=(1.0, 0.85, 0.6), strength=8.0,
+    sparks("LaserSparks", t, col_fx, rng, 22, 1.0, colour=(1.0, 0.7, 0.35), core=(1.0, 0.85, 0.6), strength=8.0,
            size=0.014)
     m, t = S("Tower_Gun1")
     d = (t - m[0]).normalized()
@@ -1151,10 +1311,11 @@ def build_scene(draft=False):
         muzzle_flash(f"CannonFlash{k}", mz, d, col_fx, size=0.6, strength=7.0, energy=300.0, seed=3 + k)
         smoke(f"CannonSmoke{k}", mz + d * 0.7 + Vector((0, 0, 0.2)), 0.5, col_fx, colour=(0.12, 0.12, 0.13),
               density=2.0)
+    # Round 4: the one big blast of the picture, in the swarm just in front of the gate.
     ep = Vector((t.x + 0.3, t.y - 0.3, FLOOR + 0.1))
-    explosion("Shell", ep, col_fx, 1.8, seed=4)
-    debris("ShellRocks", ep + Vector((0, 0, 0.9)), col_fx, rng, 14, 1.6)
-    for k in range(3):
+    explosion("Shell", ep, col_fx, 1.7, seed=4, spark_count=30)
+    debris("ShellRocks", ep + Vector((0, 0, 0.9)), col_fx, rng, 8, 1.3)
+    for k in range(1):
         smoke(f"ShellColumn{k}", ep + Vector((rng.uniform(-0.6, 0.6), 0.4 * k, 2.6 + 1.5 * k)), 1.3 + 0.5 * k, col_fx,
               colour=(0.08, 0.075, 0.08), density=2.2 - 0.5 * k, glow=FIRE, glow_strength=0.5 / (k + 1))
     for key in ("Tower_Flak3", "Tower_Flak6"):
@@ -1165,37 +1326,36 @@ def build_scene(draft=False):
                          seed=6 + k)
             tracers(f"{key}Trail{k}", mz + d * 0.6, t - d * 1.0, col_fx, count=3, length=0.6, width=0.025,
                     colour=FLAK, seed=8 + k)
-        flak_burst(key + "B0", t + Vector((0.6, -0.5, 0.3)), col_fx, 1.1, seed=10)
-        flak_burst(key + "B1", t + Vector((-1.0, 0.6, -0.5)), col_fx, 0.9, seed=11)
-    flak_burst("FlakB2", targets["bat2"] + Vector((1.2, 0.0, 0.8)), col_fx, 0.8, seed=12, smoke_only=True)
-    flak_burst("FlakB3", targets["bat3"] + Vector((-0.9, -0.4, -0.5)), col_fx, 0.8, seed=13)
-    flak_burst("FlakB4", targets["ray0"] + Vector((0.8, 0.3, 0.4)), col_fx, 1.0, seed=18)
+        flak_burst(key + "B0", t + Vector((0.6, -0.5, 0.3)), col_fx, 1.0, seed=10)
     m, t = S("Tower_Tesla4")
     trng = random.Random(14)
-    arc("Tesla", m[0], t, col_fx, trng)
-    arc("TeslaChain1", t, targets["sk1"], col_fx, trng, width=0.011, branches=2)
-    arc("TeslaChain2", targets["sk1"], targets["sk3"], col_fx, trng, width=0.009, branches=1)
+    arc("Tesla", m[0], t, col_fx, trng, branches=2)
+    arc("TeslaChain1", t, targets["sk1"], col_fx, trng, width=0.011, branches=1)
+    arc("TeslaChain2", targets["sk1"], targets["sk3"], col_fx, trng, width=0.009, branches=0)
     for k, key in enumerate(("sk0", "sk1", "sk3")):
         glow_ball(f"TeslaHit{k}", targets[key], 0.25, col_fx, TESLA, TESLA_CORE, 4.0, light_energy=160.0)
     m, t = S("Tower_Railgun5")
     beam("Rail", m[0], t, col_fx, RAIL, (0.8, 0.9, 1.0), 0.035, 8.0, lights=3, light_energy=40.0)
     muzzle_flash("RailFlash", m[0], (t - m[0]).normalized(), col_fx, colour=RAIL, core=(0.8, 0.9, 1.0), size=0.4,
                  strength=6.0, energy=120.0, seed=15)
-    sparks("RailSparks", t, col_fx, rng, 60, 1.4, colour=(1.0, 0.72, 0.4), core=(1.0, 0.88, 0.6), strength=9.0,
+    sparks("RailSparks", t, col_fx, rng, 24, 1.2, colour=(1.0, 0.72, 0.4), core=(1.0, 0.88, 0.6), strength=9.0,
            size=0.014)
     glow_ball("RailHit", t, 0.3, col_fx, RAIL, (0.8, 0.9, 1.0), 5.0, light_energy=300.0)
-    # Spencer's pistol bolts into the boss's face.
+    # Spencer's pistol bolts into the boss's face (round 4: the focal duel), with a hit flare on the head.
     hand = sbones["Weapon_R"].to_translation()
     pts = [o.matrix_world @ v.co for o in pistol for v in o.data.vertices]
     hand = max(pts, key=lambda q: (q - hand).length)
-    tgt = targets["bat0"]
+    tgt = maw + Vector((0.0, -0.6, 0.9))
     d = (tgt - hand).normalized()
-    tracers("SpencerBolts", hand + d * 0.4, tgt, col_fx, count=4, length=0.8, width=0.03, colour=LASER,
-            core=LASER_CORE, seed=16)
-    muzzle_flash("SpencerFlash", hand + d * 0.15, d, col_fx, colour=LASER, core=LASER_CORE, size=0.25, strength=6.0,
-                 energy=60.0, seed=17)
+    tracers("SpencerBolts", hand + d * 0.4, tgt, col_fx, count=6, length=2.2, width=0.08, colour=LASER,
+            core=LASER_CORE, seed=16, spread=0.06, strength=14.0)
+    muzzle_flash("SpencerFlash", hand + d * 0.15, d, col_fx, colour=LASER, core=LASER_CORE, size=0.4, strength=7.0,
+                 energy=140.0, seed=17)
+    glow_ball("SpencerHit", tgt, 0.55, col_fx, LASER, LASER_CORE, 6.0, light_energy=1500.0, light_radius=0.4)
+    sparks("SpencerHitSparks", tgt, col_fx, rng, 24, 1.6, colour=(0.5, 0.8, 1.0), core=(0.85, 0.95, 1.0),
+           strength=8.0, size=0.025)
     # Battle smoke drifting over the road, catching the lava and fire light.
-    for k, (y, off, r) in enumerate([(6.5, 1.0, 1.8), (10.0, 3.0, 1.6), (16.0, -1.0, 2.0), (21.0, 2.5, 2.2)]):
+    for k, (y, off, r) in enumerate([(10.0, 3.0, 1.6), (21.0, 2.5, 2.2)]):
         smoke(f"BattleSmoke{k}", R(y, off, 1.6), r, col_fx, colour=(0.16, 0.15, 0.16), density=0.8)
     for ob in bpy.data.objects:
         if ob.type == "LIGHT":
@@ -1212,11 +1372,15 @@ GRADE.update(bloom=0.35, fog=0.14)
 
 SHOTS = {
     # name: (resolution, location, target, lens, fstop)
-    "wide": ((3840, 1240), (-12.0, -17.0, 6.8), (4.0, 15.0, 3.6), 27.0, 4.0),
-    "std": ((2876, 1620), (-9.0, -10.0, 6.5), (3.5, 14.0, 4.2), 26.0, 4.0),
-    "header": ((1840, 860), (-9.0, -10.0, 6.3), (3.5, 14.0, 5.4), 26.0, 4.0),
-    "vert": ((1500, 1800), (-5.0, -10.0, 8.0), (4.0, 14.0, 4.2), 28.0, 4.0),
+    # Round 4: focus on Spencer with a wider aperture, so the near framing goes soft and the duel stays crisp.
+    "wide": ((3840, 1240), (-12.0, -17.0, 6.8), (4.0, 15.0, 3.6), 27.0, 0.4),
+    "std": ((2876, 1620), (-9.0, -10.0, 6.5), (3.5, 14.0, 4.2), 26.0, 0.6),
+    "header": ((1840, 860), (-9.0, -10.0, 6.3), (3.5, 14.0, 5.4), 26.0, 0.6),
+    "vert": ((1500, 1800), (-5.0, -10.0, 8.0), (4.0, 14.0, 4.2), 28.0, 0.6),
 }
+
+
+FOCUS = {}   # build_scene fills "spencer": the point every shot focuses on
 
 
 def shot_camera(name, loc, target, lens, fstop):
@@ -1229,7 +1393,7 @@ def shot_camera(name, loc, target, lens, fstop):
     cam.location = loc
     C.look_at(cam, Vector(target))
     cd.dof.use_dof = True
-    cd.dof.focus_distance = (Vector(target) - Vector(loc)).length
+    cd.dof.focus_distance = (FOCUS.get("spencer", Vector(target)) - Vector(loc)).length
     cd.dof.aperture_fstop = fstop
     return cam
 
