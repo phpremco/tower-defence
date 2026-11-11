@@ -39,6 +39,12 @@ namespace Game.Editor
 
         // When the capsules leave the mothership's bay in the orbit shot (CapsuleDrop: the first at 1.2 s, then 1.15 s apart).
         private static readonly float[] CapsuleRelease = { 1.2f, 2.35f, 3.5f };
+        // Seconds after its release that a capsule's booster lights, once it has coasted clear of the hull (CapsuleDrop.IgniteAge).
+        private const float CapsuleIgnition = 1.7f;
+        // The NTI livery on the mothership's cargo frame (Tools/Blender/build_hull_livery.py), read crisp at a glancing angle.
+        private const string HullLiveryPath = "Assets/_Project/Art/Textures/Brand/NTI_Hull_Livery.png";
+        private const int HullLiveryAniso = 8;
+        private const int HullLiverySize = 2048;
 
         // Spencer's footfalls (seconds of the shot, from, to and the gap): out of the capsule and over to the crystals in the
         // landing shot (FieldSet: walks at 0.3-0.4 and 0.58-0.68 of 12 s), the run back to the gate (0-0.42 of 10 s).
@@ -145,8 +151,28 @@ namespace Game.Editor
             so.FindProperty("_earthTheme").objectReferenceValue = CreateEarthTheme();
             so.FindProperty("_undergroundTheme").objectReferenceValue = CreateUndergroundTheme();
             so.FindProperty("_earthPlanet").boxedValue = PlanetStyle.Earth();
+            so.FindProperty("_hullLivery").objectReferenceValue = HullLivery();
             so.ApplyModifiedPropertiesWithoutUndo();
             return cast;
+        }
+
+        // The livery texture with mipmaps and anisotropic filtering, so the wordmark stays sharp on the flank seen at an angle.
+        private static Texture2D HullLivery()
+        {
+            if (!(AssetImporter.GetAtPath(HullLiveryPath) is TextureImporter importer))
+            {
+                return null;
+            }
+
+            if (importer.anisoLevel != HullLiveryAniso || !importer.mipmapEnabled || importer.maxTextureSize != HullLiverySize)
+            {
+                importer.anisoLevel = HullLiveryAniso;
+                importer.mipmapEnabled = true;
+                importer.maxTextureSize = HullLiverySize;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(HullLiveryPath);
         }
 
         // Exhausted Earth: a pale, dusty sun, a brown sky, washed-out colour; space needs no fog.
@@ -260,7 +286,7 @@ namespace Game.Editor
                     // the separations read at the bay instead of as specks.
                     Keys = new[] { Key(0f, CameraAnchor.World, new Vector3(0f, 2f, -6f), new Vector3(0f, -9f, 40f), 46f), Key(1f, CameraAnchor.World, new Vector3(1f, 1.2f, -0.5f), new Vector3(-0.5f, -9.4f, 40f), 43f) },
                     // Each capsule leaves the bay with a hiss of its separation jets, the first one lights its booster.
-                    Cues = new[] { Sound(CapsuleRelease[0], CutsceneSound.Thrusters, 0.4f), Sound(CapsuleRelease[0] + 0.3f, CutsceneSound.RocketLaunch, 0.45f), Sound(CapsuleRelease[1], CutsceneSound.Thrusters, 0.35f), Sound(CapsuleRelease[2], CutsceneSound.Thrusters, 0.3f) },
+                    Cues = new[] { Sound(CapsuleRelease[0], CutsceneSound.Thrusters, 0.4f), Sound(CapsuleRelease[0] + CapsuleIgnition, CutsceneSound.RocketLaunch, 0.45f), Sound(CapsuleRelease[1], CutsceneSound.Thrusters, 0.35f), Sound(CapsuleRelease[2], CutsceneSound.Thrusters, 0.3f) },
                 },
                 new ShotSpec
                 {

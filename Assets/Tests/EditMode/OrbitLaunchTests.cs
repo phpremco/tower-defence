@@ -37,6 +37,20 @@ namespace Game.Tests
             }
         }
 
+        // Round 37: Remco could not read the company logo on the hull; the cast carries a large livery that stays sharp at an angle.
+        [Test]
+        public void TheCast_CarriesTheHullLivery_SharpAtAnAngle()
+        {
+            var cast = AssetDatabase.LoadAssetAtPath<CutsceneCast>(CastPath);
+            Assert.IsNotNull(cast, "run Tools/Generate/Scenes and Starter Data");
+            Texture2D livery = cast.HullLivery;
+            Assert.IsNotNull(livery, "the cast has no hull livery (Tools/Blender/build_hull_livery.py --unity, then the generator)");
+            Assert.AreEqual(2, livery.width / livery.height, "the livery is drawn for a 2:1 plate");
+            var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(livery));
+            Assert.IsTrue(importer.mipmapEnabled, "no mipmaps: the wordmark shimmers at orbit distance");
+            Assert.GreaterOrEqual(importer.anisoLevel, 4, "the flank is seen at an angle: anisotropic filtering keeps it sharp");
+        }
+
         [Test]
         public void TheSpaceEffects_FindTheirShaders()
         {

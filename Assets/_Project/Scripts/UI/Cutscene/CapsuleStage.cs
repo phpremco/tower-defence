@@ -16,14 +16,19 @@ namespace Game.UI
         // Where the booster sits on the capsule (the capsule model's shoulder, in its own units) and the bell's exit above it.
         public const float MountHeight = 1.4f;
         private const float NozzleHeight = 2.08f;
+        // The booster tumbles about its own middle, not about the joint, so its skirt never swings into the capsule.
+        private const float TumbleCentre = NozzleHeight * 0.5f;
         private const float NozzleRadius = 0.36f;
-        private const float PlumeLength = 5.5f;
+        // Round 37: 4 m (was 5.5), so the full plume of a booster lit under the bay stays well off the hull.
+        private const float PlumeLength = 4f;
         private const float SputterSeconds = 0.35f;
         private const float RampSeconds = 0.12f;
         private const float BackDrift = 0.9f;
         private const float KeepShare = 0.55f;
         private const float TumbleDegrees = 95f;
         private const float StrobeSize = 0.55f;
+        // The strobe glows sit this share of their size out towards the camera, so the hull does not cut them in half.
+        private const float StrobeLift = 0.5f;
         private const float StrobePeriod = 0.7f;
         private const float StrobeLit = 0.12f;
         private const string Nozzle = "Nozzle_1";
@@ -38,7 +43,7 @@ namespace Game.UI
         private readonly Transform[] _strobes;
         private readonly Vector3[] _strobeLocal;
         private readonly ExhaustPlume _plume;
-        private readonly float _scale;
+        private float _scale;
         private readonly int _index;
 
         public CapsuleStage(Transform parent, int index, ModelArtDefinition art, float scale, bool shimmer)
@@ -82,20 +87,25 @@ namespace Game.UI
         /// <summary>
         /// Poses the booster: <paramref name="mount"/> is the capsule's mount (position and facing, up away from the
         /// capsule) now, <paramref name="separationMount"/> and <paramref name="separationVelocity"/> at the separation,
-        /// <paramref name="sinceIgnition"/> and <paramref name="sinceSeparation"/> the seconds since each (negative before).
+        /// <paramref name="sinceIgnition"/> and <paramref name="sinceSeparation"/> the seconds since each (negative before),
+        /// <paramref name="scale"/> the capsule's size now (it grows as it leaves the bay).
         /// </summary>
-        public void Pose(Pose mount, Pose separationMount, Vector3 separationVelocity, float sinceIgnition, float sinceSeparation, float clock, Transform view)
+        public void Pose(Pose mount, Pose separationMount, Vector3 separationVelocity, float sinceIgnition, float sinceSeparation, float clock, Transform view, float scale)
         {
             Show(true);
+            _scale = scale;
+            _root.localScale = Vector3.one * scale;
             Pose pose = mount;
             if (sinceSeparation >= 0f)
             {
-                // Kept on much of the capsule's speed, pushed back off its apex and turning end over end.
+                // Kept on much of the capsule's speed, pushed back off its apex and turning end over end about its middle.
                 Vector3 up = separationMount.rotation * Vector3.up;
                 Vector3 axis = separationMount.rotation * (CutsceneMath.Hash(_index, 71) < 0.5f ? Vector3.right : Vector3.forward);
                 float t = sinceSeparation;
-                Vector3 position = separationMount.position + separationVelocity * (KeepShare * t) + up * (BackDrift * t);
-                pose = new Pose(position, Quaternion.AngleAxis(TumbleDegrees * t, axis) * separationMount.rotation);
+                float half = TumbleCentre * scale;
+                Vector3 middle = separationMount.position + up * half + separationVelocity * (KeepShare * t) + up * (BackDrift * t);
+                Quaternion turned = Quaternion.AngleAxis(TumbleDegrees * t, axis) * separationMount.rotation;
+                pose = new Pose(middle - turned * Vector3.up * half, turned);
                 if (_art != null)
                 {
                     _art.Sample(ModelClipRole.Deploy, Mathf.Min(t, _art.LengthOf(ModelClipRole.Deploy)), loop: false);
@@ -145,8 +155,10 @@ namespace Game.UI
             for (int i = 0; i < _strobes.Length; i++)
             {
                 bool on = Mathf.Repeat(clock / StrobePeriod + i * 0.5f + _index * 0.13f, 1f) < StrobeLit;
-                _strobes[i].SetPositionAndRotation(_root.TransformPoint(_strobeLocal[i]), view.rotation);
-                _strobes[i].localScale = Vector3.one * (StrobeSize * (on ? 1f : 0.06f));
+                float size = StrobeSize * _scale * (on ? 1f : 0.06f);
+                Vector3 socket = _root.TransformPoint(_strobeLocal[i]);
+                _strobes[i].SetPositionAndRotation(socket + (view.position - socket).normalized * (size * StrobeLift), view.rotation);
+                _strobes[i].localScale = Vector3.one * size;
             }
         }
 

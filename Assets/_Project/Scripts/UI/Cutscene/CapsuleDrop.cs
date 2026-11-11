@@ -7,13 +7,16 @@ using UnityEngine;
 namespace Game.UI
 {
     /// <summary>
-    /// Landing capsules leaving the mothership's bay one after another and falling to the planet: a puff of cold gas
-    /// pushes each clear of the hull, its deorbit booster (<see cref="CapsuleStage"/>) lights and burns it down with a hot
-    /// plume and a trail of exhaust smoke, then blows off in a flash, a spray of sparks and its tumbling clamps. The
-    /// capsule goes on alone into the air, where the heat shield glows, a sheath of plasma wraps it and a white-hot head
-    /// with a layered burning trail lights up the air round it, so each capsule ends as a falling star. The drop repeats
-    /// for as long as the shot holds. Every pose follows from time alone; trails and smoke are the path itself sampled
-    /// back in time, never a history of frames.
+    /// Landing capsules leaving the mothership's bay one after another and falling to the planet: each drops out under
+    /// the open bay in a puff of cold gas, lying along the ship, and coasts straight down, clear of the hull, while it
+    /// grows to its flight size and pitches into its burn attitude; only then does its deorbit booster
+    /// (<see cref="CapsuleStage"/>) light, aimed down and away towards the landing site so the plume points up and out,
+    /// away from the hull and the bay where the next capsule appears. It burns with a hot plume and a trail of exhaust
+    /// smoke, then blows off in a flash, a spray of sparks and its tumbling clamps. The capsule goes on alone into the
+    /// air, where the heat shield glows, a sheath of plasma wraps it and a white-hot head with a layered burning trail
+    /// lights up the air round it, so each capsule ends as a falling star. The drop repeats for as long as the shot
+    /// holds. Every pose follows from time alone; trails and smoke are the path itself sampled back in time, never a
+    /// history of frames.
     /// </summary>
     public sealed class CapsuleDrop
     {
@@ -36,21 +39,45 @@ namespace Game.UI
         private const float BayWarmUp = 0.4f;
         private const float BayFade = 1.6f;
 
-        // The booster's burn (seconds after release): the cold-gas push first, then the burn until the separation.
-        private const float IgniteAge = 1f;
-        private const float SeparateAge = 2.6f;
+        // Round 37: the release. The capsule appears lying along the ship just under the open bay (the stack is far longer
+        // than the bay is deep, so it cannot hang in it), at a size that fits between the open doors, and coasts straight
+        // down out of the bay's axis while it grows and pitches; its centre is this deep under the bay socket, then falls
+        // at this speed and acceleration (metres, m/s, m/s^2). The booster lights once the plume at full length is clear of
+        // the hull (Tools/PlayTest/r37_orbit_probe.cs checks it against the ship's mesh).
+        private const float StartScale = 0.55f;
+        private const float StartDepth = 0.6f;
+        private const float PushSpeed = 1.4f;
+        private const float PushAcceleration = 2.6f;
+        // How far the burn attitude leans from straight down towards the landing site (horizontal share of the axis).
+        private const float BurnLean = 0.6f;
+        // The stack's middle above the capsule's root, in model units (shield at -0.9, bell exit at 2.58): it pitches about it.
+        private const float StackCentre = 0.84f;
+        // How the fall leaves the coast: share of its pace at the start (the rest builds up as it falls).
+        private const float FallStartPace = 0.6f;
+        // After the separation the capsule turns its shield into the path over this long.
+        private const float AlignSeconds = 0.9f;
+
+        // The booster's burn (seconds after release): the coast first, then the burn until the separation.
+        private const float IgniteAge = 1.7f;
+        private const float SeparateAge = 3.3f;
 
         // Exhaust smoke left behind the bell while it burns, and the cold gas of the push out of the bay.
         private const float SmokeGap = 0.07f;
         private const float LowSmokeGap = 0.14f;
         private const float SmokeLife = 1.8f;
         private const float SmokeSpeed = 2.4f;
+        // Exhaust leaves a moving booster: the puffs keep this share of its speed, so they trail it instead of blowing back to the ship.
+        private const float SmokeCarry = 0.6f;
         private const float SmokeGrowth = 1.3f;
         private const float SmokeAlpha = 0.42f;
         private const int SteamPuffs = 10;
         private const int LowSteamPuffs = 5;
         private const float SteamLife = 1.3f;
         private const float SteamSpeed = 1.4f;
+        private const float SteamAlpha = 0.5f;
+        // The cold gas blows out of the bay's mouth: down, spread mostly along the bay's length, little towards its doors.
+        private const float SteamAlongBay = 0.7f;
+        private const float SteamAcrossBay = 0.25f;
 
         // The separation: a flash and sparks thrown out round the joint.
         private const int Sparks = 16;
@@ -64,6 +91,7 @@ namespace Game.UI
         private const float SheathRadius = 0.42f;
         private const float SheathLength = 6f;
         private const float AirGlowSize = 14f;
+        private const float VelocityStep = 0.05f;
 
         private static readonly Color HotColour = new Color(1f, 0.5f, 0.15f);
         private static readonly Color CoreColour = new Color(1f, 0.85f, 0.6f) * 3f;
@@ -87,11 +115,19 @@ namespace Game.UI
         private readonly int _sparks;
         private readonly SpriteBatch _smoke;
         private readonly SpriteBatch _glints;
+        // The ship's axes (it does not turn during the shot): out of the bay, along the bay, across it.
+        private readonly Vector3 _down;
+        private readonly Vector3 _along;
+        private readonly Vector3 _across;
 
         /// <param name="bayAt">Where the bay opening is at a moment of the shot (the ship moves).</param>
-        public CapsuleDrop(Transform parent, CutsceneContext context, Color glow, Func<float, Vector3> bayAt, Vector3 planetCentre, float planetRadius)
+        /// <param name="ship">How the ship lies: the bay opens along its down, its length runs along its forward.</param>
+        public CapsuleDrop(Transform parent, CutsceneContext context, Color glow, Func<float, Vector3> bayAt, Quaternion ship, Vector3 planetCentre, float planetRadius)
         {
             _bayAt = bayAt;
+            _down = ship * Vector3.down;
+            _along = ship * Vector3.forward;
+            _across = ship * Vector3.right;
             _planetCentre = planetCentre;
             _planetRadius = planetRadius;
             _view = context.Camera.transform;
@@ -199,8 +235,9 @@ namespace Game.UI
             float age = Age(i, time);
             bool falling = age >= 0f && age < FallSeconds;
             capsule.Root.gameObject.SetActive(falling);
-            capsule.Trail.enabled = falling;
-            capsule.Halo.enabled = falling;
+            bool burning = falling && age >= IgniteAge;
+            capsule.Trail.enabled = burning;
+            capsule.Halo.enabled = burning;
             capsule.Head.gameObject.SetActive(falling);
             capsule.AirGlow.gameObject.SetActive(falling);
             if (!falling)
@@ -211,17 +248,20 @@ namespace Game.UI
             }
 
             float launched = time - age;
-            Vector3 position = PathPoint(i, launched, age);
-            Vector3 ahead = PathPoint(i, launched, age + 0.05f);
-            Vector3 forward = (ahead - position).normalized;
+            Pose frame = Frame(i, launched, age);
+            float scale = ScaleAt(age);
+            Vector3 position = frame.position;
+            Vector3 forward = Velocity(i, launched, age).normalized;
             float heat = Heat(position);
-            capsule.Root.SetPositionAndRotation(position, Facing(position, ahead));
+            capsule.Root.SetPositionAndRotation(position, frame.rotation);
+            capsule.Root.localScale = Vector3.one * (scale / CapsuleScale);
             capsule.Shield.SetColor("_EmissionColor", HotColour * (ShieldEmission * heat * heat));
             capsule.Head.SetPositionAndRotation(position, _view.rotation);
-            capsule.Head.localScale = Vector3.one * (HeadSize * heat + ColdHead);
+            capsule.Head.localScale = Vector3.one * (HeadSize * heat + ColdHead) * (scale / CapsuleScale);
+            // The trail is the burning fall: nothing of it reaches back past the burn towards the ship.
             for (int p = 0; p < TrailPoints; p++)
             {
-                _trail[p] = PathPoint(i, launched, Mathf.Max(0f, age - p * TrailStep));
+                _trail[p] = PathPoint(i, launched, Mathf.Max(IgniteAge, age - p * TrailStep));
             }
 
             capsule.Trail.SetPositions(_trail);
@@ -233,13 +273,13 @@ namespace Game.UI
             float plasma = heat * Mathf.Sqrt(heat);
             capsule.Sheath.Pose(position + forward * SheathAhead, -forward, SheathRadius * (0.7f + 0.5f * heat), SheathLength * (0.4f + heat), plasma, time, _view);
 
-            PoseStage(capsule, i, launched, age, time);
+            PoseStage(capsule, i, launched, age, time, scale);
             AddSteam(i, launched, age);
             AddSmoke(i, launched, age);
             AddSeparation(i, launched, age);
         }
 
-        private void PoseStage(Capsule capsule, int i, float launched, float age, float time)
+        private void PoseStage(Capsule capsule, int i, float launched, float age, float time, float scale)
         {
             if (capsule.Stage == null)
             {
@@ -248,11 +288,11 @@ namespace Game.UI
 
             Pose mount = Mount(i, launched, age);
             Pose separation = Mount(i, launched, SeparateAge);
-            Vector3 velocity = (PathPoint(i, launched, SeparateAge + 0.05f) - PathPoint(i, launched, SeparateAge)) / 0.05f;
-            capsule.Stage.Pose(mount, separation, velocity, age - IgniteAge, age - SeparateAge, time, _view);
+            capsule.Stage.Pose(mount, separation, Velocity(i, launched, SeparateAge), age - IgniteAge, age - SeparateAge, time, _view, scale);
         }
 
-        // The cold gas of the push: a ring of puffs round the bay as the capsule leaves it.
+        // The cold gas of the push: a burst out of the bay's mouth as the capsule drops clear of it, hiding the moment it
+        // leaves; it blows down and spreads along the bay, never back into the hull or the doors.
         private void AddSteam(int i, float launched, float age)
         {
             if (age > SteamLife)
@@ -260,20 +300,21 @@ namespace Game.UI
                 return;
             }
 
-            Vector3 bay = _bayAt(launched);
+            Vector3 bay = _bayAt(launched + age);
             float u = age / SteamLife;
             for (int p = 0; p < _steamPuffs; p++)
             {
                 float angle = (p + CutsceneMath.Hash(i * 31 + p, 81)) / _steamPuffs * Mathf.PI * 2f;
-                var outward = new Vector3(Mathf.Cos(angle), -0.35f, Mathf.Sin(angle));
+                Vector3 outward = _down + _along * (Mathf.Cos(angle) * SteamAlongBay) + _across * (Mathf.Sin(angle) * SteamAcrossBay);
                 Vector3 centre = bay + outward * (SteamSpeed * age * (0.7f + 0.6f * CutsceneMath.Hash(p, 83)));
                 Color colour = SteamColour;
-                colour.a = 0.4f * (1f - u) * (1f - u);
-                _smoke.Add(centre, 0.15f + 0.7f * age, colour, angle);
+                colour.a = SteamAlpha * (1f - u) * (1f - u);
+                _smoke.Add(centre, 0.15f + 0.6f * age, colour, angle);
             }
         }
 
-        // Puffs of exhaust left behind the bell on the path, drifting back along the plume and spreading as they thin.
+        // Puffs of exhaust left behind the bell: thrown back along the plume but carried on with much of the booster's
+        // speed, so they drift behind it and spread as they thin.
         private void AddSmoke(int i, float launched, float age)
         {
             float last = Mathf.Min(age, SeparateAge);
@@ -287,9 +328,10 @@ namespace Game.UI
 
                 Pose mount = Mount(i, launched, emitted);
                 Vector3 back = mount.rotation * Vector3.up;
+                Vector3 carried = Velocity(i, launched, emitted) * SmokeCarry;
                 int seed = i * 977 + Mathf.RoundToInt(emitted * 100f);
                 var spread = new Vector3(CutsceneMath.Hash(seed, 85) - 0.5f, CutsceneMath.Hash(seed, 87) - 0.5f, CutsceneMath.Hash(seed, 89) - 0.5f);
-                Vector3 centre = CapsuleStage.MouthOf(mount, CapsuleScale) + back * (SmokeSpeed * puff) + spread * (0.8f * puff);
+                Vector3 centre = CapsuleStage.MouthOf(mount, CapsuleScale) + (back * SmokeSpeed + carried) * puff + spread * (0.8f * puff);
                 float u = puff / SmokeLife;
                 Color colour = SmokeColour;
                 colour.a = SmokeAlpha * Mathf.Pow(1f - u, 1.5f) * Mathf.Clamp01(puff * 8f);
@@ -307,7 +349,7 @@ namespace Game.UI
             }
 
             Pose joint = Mount(i, launched, SeparateAge);
-            Vector3 velocity = (PathPoint(i, launched, SeparateAge + 0.05f) - PathPoint(i, launched, SeparateAge)) / 0.05f;
+            Vector3 velocity = Velocity(i, launched, SeparateAge);
             _glints.Add(joint.position + velocity * since, FlashSize * Mathf.Exp(-since * FlashDecay), FlashColour);
             float fade = 1f - since / SparkLife;
             for (int s = 0; s < _sparks; s++)
@@ -323,30 +365,92 @@ namespace Game.UI
         // The capsule's mount for its booster at an age: the apex of the capsule model, up pointing away from the shield.
         private Pose Mount(int index, float launched, float age)
         {
-            Vector3 position = PathPoint(index, launched, age);
-            Quaternion facing = Facing(position, PathPoint(index, launched, age + 0.05f));
-            Vector3 up = facing * Vector3.up;
-            return new Pose(position + up * (CapsuleScale * (CapsuleStage.MountHeight - 0.9f)), facing);
+            Pose frame = Frame(index, launched, age);
+            Vector3 up = frame.rotation * Vector3.up;
+            return new Pose(frame.position + up * (ScaleAt(age) * (CapsuleStage.MountHeight - 0.9f)), frame.rotation);
         }
 
-        // The shield leads: the capsule's up points back along its path.
-        private static Quaternion Facing(Vector3 position, Vector3 ahead) => Quaternion.LookRotation(ahead - position) * Quaternion.Euler(-90f, 0f, 0f);
+        // Where the capsule's root is and how it lies: the coast under the bay (pitching about the stack's middle), then
+        // the fall, the shield turned into the path after the separation.
+        private Pose Frame(int index, float launched, float age)
+        {
+            Vector3 up = UpAt(index, launched, age);
+            Vector3 root = age < IgniteAge ? CoastCentre(launched, age) - up * (StackCentre * ScaleAt(age)) : PathPoint(index, launched, age);
+            return new Pose(root, Facing(up));
+        }
+
+        // The way from the shield to the booster: along the ship (booster aft) as it leaves, leaning into the burn
+        // attitude through the coast, held through the burn, then turned to trail the path.
+        private Vector3 UpAt(int index, float launched, float age)
+        {
+            Vector3 burn = BurnUp(index, launched);
+            if (age < IgniteAge)
+            {
+                return Vector3.Slerp(-_along, burn, CutsceneMath.Smooth(age / IgniteAge));
+            }
+
+            if (age < SeparateAge)
+            {
+                return burn;
+            }
+
+            Vector3 trailing = -Velocity(index, launched, age).normalized;
+            return Vector3.Slerp(burn, trailing, CutsceneMath.Smooth(Mathf.Clamp01((age - SeparateAge) / AlignSeconds)));
+        }
+
+        // The burn attitude: the shield down and leaning towards the capsule's landing site, so the plume points up and
+        // away from the site, off the hull and off the bay the next capsule leaves.
+        private Vector3 BurnUp(int index, float launched)
+        {
+            Vector3 toSite = Target(index) - _bayAt(launched);
+            Vector3 level = Vector3.ProjectOnPlane(toSite, _down).normalized;
+            return -(_down + level * BurnLean).normalized;
+        }
+
+        // The up axis never runs along the ship's width in this shot, so it is a steady roll reference for every attitude.
+        private Quaternion Facing(Vector3 up) => Quaternion.LookRotation(-up, _across) * Quaternion.Euler(-90f, 0f, 0f);
+
+        private float ScaleAt(float age) => Mathf.Lerp(StartScale, CapsuleScale, CutsceneMath.Smooth(Mathf.Clamp01(age / IgniteAge)));
 
         private static float Release(int index) => FirstRelease + index * ReleaseGap + CutsceneMath.Hash(index, 61) * 0.4f;
 
-        // Out of the bay with a small push down and ahead, then a falling curve that keeps speeding up into the air.
+        // The stack's middle through the coast: moving with the ship, straight out of the bay and gathering speed.
+        private Vector3 CoastCentre(float launched, float age) => _bayAt(launched + age) + _down * CoastDepth(age);
+
+        private static float CoastDepth(float age) => StartDepth + PushSpeed * age + 0.5f * PushAcceleration * age * age;
+
+        private Vector3 Velocity(int index, float launched, float age) => (PathPoint(index, launched, age + VelocityStep) - PathPoint(index, launched, age)) / VelocityStep;
+
+        // The root's path: the coast (stack upright at its end) and then a falling curve that keeps speeding up into the
+        // air, leaving the coast at its speed and in its direction.
         private Vector3 PathPoint(int index, float launched, float age)
         {
-            Vector3 bay = _bayAt(launched);
-            float u = Mathf.Clamp01(age / FallSeconds);
-            float eased = u * u * (1.6f - 0.6f * u);
+            if (age < IgniteAge)
+            {
+                return CoastCentre(launched, age) - UpAt(index, launched, age) * (StackCentre * ScaleAt(age));
+            }
+
+            float fall = FallSeconds - IgniteAge;
+            float s = Mathf.Clamp01((age - IgniteAge) / fall);
+            float eased = FallStartPace * s + (1f - FallStartPace) * s * s * (1.6f - 0.6f * s);
+            Vector3 bay = _bayAt(launched + IgniteAge);
+            Vector3 start = CoastCentre(launched, IgniteAge) - BurnUp(index, launched) * (StackCentre * CapsuleScale) - bay;
+            float speed = PushSpeed + PushAcceleration * IgniteAge;
+            Vector3 lead = start + _down * (speed * fall / (3f * FallStartPace));
+            Vector3 target = Target(index);
+            Vector3 swing = target + new Vector3(0f, _planetRadius * 0.25f, -_planetRadius * 0.2f) - bay;
+            target -= bay;
+            float a = 1f - eased;
+            Vector3 relative = a * a * a * start + 3f * a * a * eased * lead + 3f * a * eased * eased * swing + eased * eased * eased * target;
+            return _bayAt(launched + age) + relative;
+        }
+
+        // Where on the planet a capsule comes down, on its own lane.
+        private Vector3 Target(int index)
+        {
             float lane = (CutsceneMath.Hash(index, 63) - 0.5f) * 0.9f;
             Vector3 aim = new Vector3(lane * _planetRadius * 0.7f, 0f, _planetRadius * (0.25f + CutsceneMath.Hash(index, 65) * 0.2f));
-            Vector3 target = _planetCentre + (aim + Vector3.up * _planetRadius).normalized * (_planetRadius * 0.995f);
-            Vector3 push = bay + new Vector3(lane * 2f, -2.5f, 2f);
-            Vector3 swing = target + new Vector3(0f, _planetRadius * 0.25f, -_planetRadius * 0.2f);
-            float a = 1f - eased;
-            return a * a * a * bay + 3f * a * a * eased * push + 3f * a * eased * eased * swing + eased * eased * eased * target;
+            return _planetCentre + (aim + Vector3.up * _planetRadius).normalized * (_planetRadius * 0.995f);
         }
 
         private float Heat(Vector3 position)

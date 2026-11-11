@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Drones;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace Game.UI
 {
     /// <summary>
-    /// The hauler flock: drones lift off the landing pad one after another and fly a loop to the ore heap beside the
+    /// The hauler flock: drones lift off their places beside the base one after another and fly a loop to the ore heap beside the
     /// drill, dip down to it and come up with a chunk of ore or crystal (the level's own Blender rocks and crystals)
     /// hanging under them, carry it home and set it down on the pad. Each flies its own lane and height, so the flock
     /// reads as a stream. For the core, drone 0 leaves the stream from wherever it is, picks the first crystal off the
@@ -47,8 +48,6 @@ namespace Game.UI
         private const float GrabHeight = 0.75f;
         private const float DipWidth = 0.055f;
         private const float LaneAtHeap = 0.25f;
-        private const float ParkRing = 0.9f;
-        private const float ParkHeight = 0.15f;
 
         // The ore heap beside the drill and the chunks the haulers carry, sized from the level's decor.
         private const int HeapChunks = 9;
@@ -77,7 +76,8 @@ namespace Game.UI
         private readonly CutsceneAudio _audio;
         private readonly AudioSource _fans;
 
-        public FieldDrones(Transform parent, Vector3 pad, Vector3 heap, CutsceneContext context, VisualTheme theme, float crystalHang)
+        /// <param name="park">Where the next hauler rests before it takes off (open ground beside the base, clear of the rest).</param>
+        public FieldDrones(Transform parent, Vector3 pad, Vector3 heap, CutsceneContext context, VisualTheme theme, float crystalHang, Func<Vector3> park)
         {
             _pad = pad;
             _heap = heap;
@@ -99,8 +99,8 @@ namespace Game.UI
                     var drone = new CutsceneDrone(holder, art, hauler);
                     _drones.Add(drone);
                     _holders.Add(holder);
-                    float angle = (i + 0.5f) / count * Mathf.PI * 2f;
-                    _homes.Add(_pad + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * ParkRing + Vector3.up * ParkHeight);
+                    // Round 37: eight haulers do not fit round the pad (they stood in each other and the storage tanks).
+                    _homes.Add(park());
                     Transform grip = drone.Socket(GripSocket);
                     // Every hauler brings Crysium home: the glowing crystal reads under it from any distance.
                     Transform chunk = CutsceneProps.Decor(grip != null ? grip : holder, $"Load{i}", environment, PropKind.Crystal, i, CarriedChunk, low, true);

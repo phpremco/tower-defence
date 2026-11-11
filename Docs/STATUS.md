@@ -5562,3 +5562,118 @@ limb, the camera pushed in), `r36_after_3_0p17.png` (the retro jets in the landi
 3. Camera rumble up to 0.35 degrees and a 0.3 degree handheld float in orbit: too much or too little?
 4. Sound for the burn and the separation is still the single booster cue of round 35; section 6 lists approved files that could
    be wired after an ear check.
+
+## Round 37: nothing passes through the mothership, the NTI livery reads, a field scrub, Steam screenshots (2026-11-11)
+
+Not committed (the curator commits). No balance data touched. Save `progress.json` MD5 ae9223b8 copied aside before the round and
+checked after every Play Mode run (never changed); the dev backup untouched; `Tools/PlayTest` copied aside before the suite; Game
+view size unchanged (every still is rendered off-screen). The Blender key-art agent's files (`ArtSource/Previews/Steam/` outside
+`Screenshots/`, `Tools/Blender/steam_*.py`) untouched.
+
+### 1. The orbit shot: what clipped and the fix (`CapsuleDrop`, `CapsuleStage`, `OrbitSet`)
+
+Remco's report: the capsule's steam puff and a bright booster plume cut diagonally through the cargo frame and hull near the bay.
+A mesh-collider probe (`r37_orbit_probe.cs`, 200 steps over the shot) found it all, and more:
+
+- **The capsule itself:** the capsule plus its Blender booster (0.85 model scale, about 1.6 m wide and 3 m long) started *at* the
+  bay socket and is far larger than the bay (1.5 m wide, 0.6 m deep): for about 2 s after each release the stack stood inside the
+  cargo frame and the open doors (the booster stuck up out of the containers).
+- **The booster plume:** it lit 1 s after release, pointing straight back along the path, i.e. up and aft into the cargo frame,
+  tanks and hull (5.5 m long), and through the next capsule leaving the bay.
+- **The cold-gas puffs** spread sideways at bay level into the doors and walls; **the exhaust smoke** drifted back up into the hull.
+- Clean already: the mothership's own engine plumes (they point aft, away), the separation sparks and the tumbling booster (far
+  below by then). The glow cards of the hull and booster strobes sat half inside the hull (cut in half).
+
+Fix, still a pure function of the shot clock and with the same release times:
+- The capsule now appears lying along the ship just *under* the open bay, between the doors, at 0.55 scale, inside the bay-light
+  flash and a burst of cold gas; it coasts straight out along the bay's axis (1.4 m/s, accelerating) while it grows to 0.85 and
+  pitches about the stack's middle into its burn attitude: shield down and leaning towards its landing site.
+- The booster lights at **1.7 s** (was 1 s), when the stack's middle is 6.7 m below the bay, so the plume (now **4 m**, was 5.5)
+  points up and *away* from the site, off the hull and off the bay where the next capsule appears. Separation at 3.3 s (burn 1.6 s as
+  before); after it the capsule turns its shield into the path. The fall leaves the coast at its speed and in its direction.
+- Cold gas blows down out of the bay's mouth (spread along the bay, little towards the doors); exhaust smoke keeps 60 % of the
+  booster's speed, so it trails the booster instead of blowing back to the ship; the re-entry trail starts at the burn.
+- The booster tumbles about its own middle (its skirt no longer swings through the capsule). Booster strobes and the ship's running
+  lights sit half their size out towards the camera.
+- The generator's booster sound cue follows the ignition (release + 1.7 s, `CapsuleIgnition`; the asset's cue moved 1.5 -> 2.9 s).
+- **Probe after: 0 hits** (plumes, bodies, smoke, steam and sparks against the hull and the new livery plate).
+
+### 2. The NTI logo on the hull (Remco, during the round)
+
+The emblem decals baked into the hull (0.42-0.56 m) are 15-20 px at 1080p from the orbit lens: unreadable. Now a **livery plate**
+on the starboard side of the cargo frame (the flank the orbit camera sees throughout the shot, in the middle of the ship): a
+3 m x 1.5 m navy plate with a white chamfered border, the NTI emblem and a large "NTI" wordmark with "NOVA TERRA" under it
+(`Tools/Blender/build_hull_livery.py`, Pillow, Chakra Petch Bold from the UI fonts; `ArtSource/Exports/Brand/NTI_Hull_Livery.png`,
+in Unity `Assets/_Project/Art/Textures/Brand/`, mipmaps and aniso 8 set by the generator). It is a runtime quad on a thin plate
+(`OrbitSet.BuildLivery`, Game/UnitLit, a little emission so it reads on the shadow side), oriented to read left to right from
+starboard, nothing mirrored. `CutsceneCast._hullLivery` (new) is set by the generator's Cutscene step. The wordmark is about 30 px
+tall at 1080p and about 20 px at 720p (`r37_after_2_0p2_720p.png`).
+
+### 3. The rest of the opening cutscene (shots 3-15 scrubbed)
+
+78 stills (shots 3-15 at six moments each) and a mesh-collider probe over 120 steps per shot (`r37_field_probe.cs`: haulers,
+builders, Spencer and the brood against base modules, gates, drill and capsule, and against the decor).
+- **Fixed: the eight haulers parked on the landing pad stood inside each other and the storage tanks and core** (visible at the
+  start of the harvest shot). They now park on open, level ground round the command post on the ore heap's side, clear of every
+  module, rock and crystal and 2.1 m apart (`FieldBase.ParkingSpot`, the builders' own search widened; `FieldDrones` takes the
+  spot). Probe after: no hauler/module contact left except single-sample near misses of bounding boxes in flight.
+- **Checked, no change:** Spencer in the stand and handoff shots stands *in front of* the gate's left post (occlusion, not
+  interpenetration; checked on a crop). The capsule landing, the drill, the eyes, the brood retreat and the hauler errand at the
+  core show no visible clipping in the stills. The probe's "x decor" lines for the brood and the burrows are rock and ground-cover
+  footprints at bounding-box size (the burrows sit in the ground by design); none reads as clipping in the stills.
+
+### 4. Steam screenshots (`ArtSource/Previews/Steam/Screenshots/`)
+
+Eight 1920x1080 PNGs (rendered off-screen at 3840x2160 and downsampled, so edges are supersampled), real levels with real waves,
+the defence built through the bot's build path on buildable cells (`r37_defence.cs`), waves stacked by skipping, every frame
+1/30 s; `contact_sheet.png` beside them. The game has no "hide HUD" option, so the clean shots hide the screen-space interface for
+the render only (world-space health bars stay); shot 06 and the planet map keep the HUD (the map *is* interface; its clean render
+is black).
+
+| File | What |
+| --- | --- |
+| `shot_01_dense_wave_air_c1_06.png` | C1_06 Hard, wave 16: a column of crawlers and rollers, flyers over the road, the defence firing |
+| `shot_02_swarm_vs_defence_c1_06.png` | C1_06 Hard, wave 4: a swarm with a roller against towers along the road |
+| `shot_03_spencer_at_the_gate_c1_02.png` | C1_02 Hard: Spencer's blade at the first gate, two laser turrets crossing over him |
+| `shot_04_gravemaw_at_the_colony.png` | Gravemaw surfacing beside the colony base (its boss arena, loaded from Boot) |
+| `shot_05_flyers_over_the_road_c1_06.png` | C1_06 Hard, wave 16: flyers and burning crawlers at the bend |
+| `shot_06_hud_wave_16_c1_06.png` | the same fight with the full HUD (money set to a believable 2310) |
+| `shot_07_planet_map.png` | the planet screen ("Choose a region", Crystal Plains) with its interface |
+| `shot_08_drones_at_the_colony_c1_06.png` | repair and attack drones leaving the base with their beams, the shuttle on the pad |
+
+Tools: `r37_steam.sh` (load a node or a boss arena, build, skip, step, drones, revive, money, shots), `r37_shot.cs`, `r37_map.sh`;
+Docs/COMMANDS.md "Round 37". The 4K masters stayed in the scratchpad.
+
+### Stills (`ArtSource/Previews/QA/`)
+
+Orbit before/after: `r37_before_2_0p2/0p25/0p3/0p35.png`, `r37_after_2_0p2/0p25/0p3/0p35.png`, side by side cropped
+`r37_compare_orbit_crop.png`; magnified on the bay `r37_before_zoom_2_0p2.png`, `r37_before_zoom_2_0p25.png` (booster in the frame,
+plume through the hull) and `r37_after_zoom_2_0p15/0p25/0p35.png`; the livery at 720p `r37_before_2_0p2_720p.png`,
+`r37_after_2_0p2_720p.png`. Haulers: `r37_before_haulers_parked.png`, `r37_before_haulers_takeoff.png`,
+`r37_after_haulers_parked.png`, `r37_after_haulers_takeoff.png`, `r37_after_6_0p05.png`.
+
+### Tests and state
+
+- New in `OrbitLaunchTests`: `TheCast_CarriesTheHullLivery_SharpAtAnAngle` (the cast has the 2:1 livery with mipmaps and aniso).
+- **EditMode suite headless on clone w6 (02:00-02:10, `r34b_editmode_worker.sh 6 "Game\.Tests\..*"`): 760 tests, 708 passed, 52
+  skipped (the explicit probe and fit tests, the acceptance report), 0 failed.** `OrbitLaunchTests` 3/3.
+- Recompile: 0 errors, 0 warnings. Console clean in every play run.
+- Save `progress.json` MD5 ae9223b8 at the end; editor stopped; `Tools/PlayTest` unchanged by the suite; the arg-file churn of the
+  play scripts reverted. Data regenerated with `ApplyCutsceneShots.cs` (cast: `_hullLivery`; opening: the booster cue 1.5 -> 2.9 s).
+- Scripts: `Tools/Blender/build_hull_livery.py`; `Tools/PlayTest/r37_orbit_probe.cs`, `r37_ship_probe.cs`, `r37_zoom.cs` (+ the
+  `zoom:` mode in `n2_cut.sh`), `r37_field_probe.cs`, `r37_steam.sh`, `r37_map.sh`, `r37_load.cs`, `r37_defence.cs`, `r37_shot.cs`,
+  `r37_probe.cs`, `r37_money.cs`; Docs/COMMANDS.md "Round 37".
+
+### Open points for Remco (round 37)
+
+1. The capsules now drop out under the bay lying along the ship and coast about 6-7 m before the booster lights (1.7 s, was 1 s),
+   so the burn reads lower in the frame and further from the ship; the plume is 4 m (was 5.5). Right feel, or should the coast be
+   shorter (which needs the burn to lean further away from the ship)?
+2. The livery plate (emblem + "NTI" + "NOVA TERRA") is a design proposal: wording, colours and place (starboard cargo frame) OK?
+   The small baked emblems elsewhere on the hull are unchanged.
+3. The haulers now wait on open ground round the base before the harvest shot instead of on the landing pad (eight never fitted
+   there). If they should start from the pad, the pad needs to be bigger or fewer haulers should start there.
+4. Steam screenshots: the levels are dark by design, so the stills are dark too (nothing was brightened). Shots 01, 05 and 06 come
+   from one fight on C1_06; Gravemaw is from its boss arena (the C1_06 finale did not spawn it within the skipped waves). The game
+   has no hide-HUD option (a photo-mode toggle would make clean captures easy for Remco too; not built). The planet map shot
+   shows Remco's own save (2 / 20 levels).

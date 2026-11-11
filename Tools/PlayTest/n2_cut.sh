@@ -25,6 +25,7 @@ for moment in "$@"; do
     probe:*) run "${moment#probe:}" ;;
     step:*) step "${moment#step:}" ;;
     look:*) spec="${moment#look:}"; echo "${spec%%|*}" > Tools/PlayTest/cut_arg.txt; echo "${spec#*|}" > Tools/PlayTest/n2_look_arg.txt; name=$(echo "${spec%%|*}" | tr ' .' '_p'); echo "$out/${prefix}_look_${name}_$RANDOM.png" > Tools/PlayTest/look_arg.txt; run n2_look.cs ;;
+    zoom:*) spec="${moment#zoom:}"; echo "${spec%%|*}" > Tools/PlayTest/cut_arg.txt; echo "${spec#*|}" > Tools/PlayTest/r37_zoom_arg.txt; name=$(echo "$spec" | tr " .|" "_p_" | tr -d "-"); echo "$out/${prefix}_zoom_${name}.png" > Tools/PlayTest/look_arg.txt; run r37_zoom.cs ;;
     play:*) spec="${moment#play:}"; echo "$spec" > Tools/PlayTest/cut_arg.txt; echo "$out/${prefix}_play_$(echo "$spec" | tr " ." "_p").png" > Tools/PlayTest/look_arg.txt; run opening_play.cs ;;
     shot:*) echo "$out/${prefix}_${moment#shot:}.png" > Tools/PlayTest/look_arg.txt; run n2_render.cs ;;
     *)

@@ -52,6 +52,8 @@ namespace Game.Levels
         [SerializeField] private ModelArtDefinition _capsuleArt;
         [Tooltip("The deorbit stage on each capsule in the orbit shot; empty drops the capsules without one.")]
         [SerializeField] private ModelArtDefinition _boosterArt;
+        [Tooltip("The NTI livery plate on the mothership's starboard cargo frame, facing the orbit camera; empty leaves the hull bare.")]
+        [SerializeField] private Texture2D _hullLivery;
         [SerializeField] private ModelArtDefinition _drillArt;
         [SerializeField] private ModelArtDefinition _beaconArt;
         [Tooltip("The welding drones that fly round the base as it goes up.")]
@@ -96,6 +98,7 @@ namespace Game.Levels
         public ModelArtDefinition MothershipArt => _mothershipArt;
         public ModelArtDefinition CapsuleArt => _capsuleArt;
         public ModelArtDefinition BoosterArt => _boosterArt;
+        public Texture2D HullLivery => _hullLivery;
         public ModelArtDefinition DrillArt => _drillArt;
         public ModelArtDefinition BeaconArt => _beaconArt;
         public ModelArtDefinition BuilderArt => _builderArt;

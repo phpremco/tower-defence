@@ -43,6 +43,8 @@ namespace Game.UI
         private const float BayLightInset = 0.6f;
         private const float RunningLightSize = 0.55f;
         private const float RunningLightDim = 0.08f;
+        // A running light's glow sits this share of its size out towards the camera, so the hull it is mounted on does not cut it in half.
+        private const float RunningLightLift = 0.5f;
         private static readonly Vector3 PlanetCentre = new Vector3(0f, -75f, 70f);
         private static readonly Vector3 ShipStart = new Vector3(-9f, 1f, 30f);
         private static readonly Vector3 ShipVelocity = new Vector3(0.16f, -0.01f, 0.03f);
@@ -56,6 +58,18 @@ namespace Game.UI
         // The white strobes that also light the hull round them (boom tips and nose; README round 19 sockets).
         private static readonly int[] HullStrobes = { 0, 3 };
         private static readonly Color BayColour = new Color(0.65f, 0.85f, 1f);
+
+        // Round 37 (Remco: the logo on the hull did not read at all): the livery plate on the cargo frame's starboard side,
+        // in the ship's own space (the frame's rails stand at x 0.99, its rack rings run z -1.98..0.92, y -0.99..0.99).
+        private static readonly Vector3 LiveryCentre = new Vector3(1.06f, 0.02f, -0.54f);
+        private static readonly Vector2 LiverySize = new Vector2(3f, 1.5f);
+        private static readonly Color LiveryPlateColour = new Color(0.05f, 0.08f, 0.15f);
+        private const float LiveryPlateDepth = 0.06f;
+        private const float LiveryRim = 0.04f;
+        private const float LiveryStandOff = 0.004f;
+        private const float LiverySmoothness = 0.25f;
+        private const float LiveryMetallic = 0.3f;
+        private const float LiveryGlow = 0.45f;
 
         // README round 19, sockets Light_1..10: boom tips white, dorsal beacon yellow, nose white, bay corners amber,
         // radiator tips cyan, engine block white. Each blinks in its own rhythm: (colour, period s, phase, lit share).
@@ -79,6 +93,7 @@ namespace Game.UI
         private Light _engineLight;
         private SpaceDepth _depth;
         private Transform[] _runningLights = new Transform[0];
+        private Vector3[] _runningSockets = new Vector3[0];
         private Light _bayLight;
         private VisualTheme _theme;
         private CutsceneContext _context;
@@ -106,7 +121,7 @@ namespace Game.UI
             _backdrop = new SpaceBackdrop(root, space, SunDirection, low);
             _depth = new SpaceDepth(root, ShipStart, low);
             BuildShip(root);
-            _capsules = new CapsuleDrop(root, context, _theme.BaseColor, BayAt, PlanetCentre, PlanetRadius);
+            _capsules = new CapsuleDrop(root, context, _theme.BaseColor, BayAt, Quaternion.LookRotation(ShipFacing), PlanetCentre, PlanetRadius);
         }
 
         public void Enter(CutsceneAction action) => SpaceKit.ApplyDarkness(_theme);
@@ -170,8 +185,10 @@ namespace Game.UI
             {
                 var blink = RunningLights[i];
                 bool on = Mathf.Repeat(time / blink.Period + blink.Phase, 1f) < blink.Lit;
-                _runningLights[i].rotation = view.rotation;
-                _runningLights[i].localScale = Vector3.one * (RunningLightSize * (on ? 1f : RunningLightDim));
+                float size = RunningLightSize * (on ? 1f : RunningLightDim);
+                Vector3 socket = _ship.TransformPoint(_runningSockets[i]);
+                _runningLights[i].SetPositionAndRotation(socket + (view.position - socket).normalized * (size * RunningLightLift), view.rotation);
+                _runningLights[i].localScale = Vector3.one * size;
             }
 
             for (int s = 0; s < _strobeLights.Length; s++)
@@ -221,6 +238,7 @@ namespace Game.UI
                 _bay = Local(bay, _bay);
                 BuildBayLight(bay);
                 BuildRunningLights(_shipArt.Numbered(ShipLight));
+                BuildLivery(_context.Cast != null ? _context.Cast.HullLivery : null);
                 Transform[] found = _shipArt.Numbered(ShipNozzle);
                 if (found.Length > 0)
                 {
@@ -286,10 +304,12 @@ namespace Game.UI
         {
             int count = Mathf.Min(sockets.Length, RunningLights.Length);
             _runningLights = new Transform[count];
+            _runningSockets = new Vector3[count];
             for (int i = 0; i < count; i++)
             {
                 Transform glow = SpaceKit.Glow(_ship, $"RunningLight{i + 1}", RunningLights[i].Colour, CutsceneSprite.RunningLight);
                 glow.localPosition = Local(sockets[i], Vector3.zero);
+                _runningSockets[i] = glow.localPosition;
                 _runningLights[i] = glow;
             }
 
@@ -299,7 +319,7 @@ namespace Game.UI
             {
                 var go = new GameObject($"StrobeLight{s + 1}");
                 go.transform.SetParent(_ship, false);
-                go.transform.localPosition = _runningLights[HullStrobes[s]].localPosition;
+                go.transform.localPosition = _runningSockets[HullStrobes[s]];
                 var light = go.AddComponent<Light>();
                 light.type = LightType.Point;
                 light.color = Color.white;
@@ -310,6 +330,54 @@ namespace Game.UI
             }
 
             _strobeLights = lights.ToArray();
+        }
+
+        // The company livery: a flat navy plate on the starboard side of the cargo frame (the flank the orbit camera sees
+        // throughout the shot), carrying the NTI emblem and a large wordmark that read at 720p. The plate stands just
+        // outside the frame's rails; the livery lights itself a little so the letters read on the hull's shadow side too.
+        private void BuildLivery(Texture2D livery)
+        {
+            if (livery == null)
+            {
+                return;
+            }
+
+            Material plate = SurfaceMaterials.Create(LiveryPlateColour, 0f, LiverySmoothness, LiveryMetallic);
+            var panel = new GameObject("LiveryPlate");
+            panel.transform.SetParent(_ship, false);
+            panel.transform.localPosition = LiveryCentre;
+            var box = new PropMeshBuilder(1);
+            box.AddBox(Vector3.zero, new Vector3(LiveryPlateDepth, LiverySize.y + LiveryRim * 2f, LiverySize.x + LiveryRim * 2f), 0);
+            panel.AddComponent<MeshFilter>().sharedMesh = box.ToMesh("LiveryPlate");
+            panel.AddComponent<MeshRenderer>().sharedMaterial = plate;
+
+            Material face = SurfaceMaterials.Create(Color.white, 0f, LiverySmoothness, 0f);
+            face.SetTexture("_BaseMap", livery);
+            face.SetTexture("_EmissionMap", livery);
+            face.EnableKeyword("_EMISSION");
+            face.SetColor("_EmissionColor", Color.white * LiveryGlow);
+            var decal = new GameObject("Livery");
+            decal.transform.SetParent(_ship, false);
+            decal.transform.localPosition = LiveryCentre + Vector3.right * (LiveryPlateDepth * 0.5f + LiveryStandOff);
+            decal.AddComponent<MeshFilter>().sharedMesh = FlankQuad(LiverySize);
+            var renderer = decal.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = face;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+
+        // A quad facing the ship's starboard (+x), its text running from aft to nose (+z), so it reads the right way round
+        // from the starboard camera.
+        private static Mesh FlankQuad(Vector2 size)
+        {
+            float w = size.x * 0.5f, h = size.y * 0.5f;
+            var mesh = new Mesh { name = "LiveryQuad" };
+            mesh.vertices = new[] { new Vector3(0f, -h, -w), new Vector3(0f, h, -w), new Vector3(0f, h, w), new Vector3(0f, -h, w) };
+            mesh.uv = new[] { new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(1f, 0f) };
+            mesh.normals = new[] { Vector3.right, Vector3.right, Vector3.right, Vector3.right };
+            mesh.tangents = new[] { new Vector4(0f, 0f, 1f, 1f), new Vector4(0f, 0f, 1f, 1f), new Vector4(0f, 0f, 1f, 1f), new Vector4(0f, 0f, 1f, 1f) };
+            mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+            mesh.RecalculateBounds();
+            return mesh;
         }
 
         // A socket of the imported ship in the ship's own space (where the procedural parts are given), or the fallback.

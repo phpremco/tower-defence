@@ -127,7 +127,7 @@ MonoBehaviour:
       Sound: 18
       Clip: {fileID: 0}
       Strength: 0.4
-    - At: 1.5
+    - At: 2.9
       Kind: 0
       Sound: 17
       Clip: {fileID: 0}

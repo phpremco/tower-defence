@@ -159,7 +159,8 @@ namespace Game.UI
             _layout.PlaceCore(_base.CoreSocket);
             float contact = (DrillSinkFrom + FieldDrill.ContactShareOfSink * (DrillSinkTo - DrillSinkFrom)) * cutscene.CameraLengthOf(CutsceneAction.DrillDown);
             _drill = new FieldDrill(root, _layout, context, contact);
-            _drones = new FieldDrones(root, _base.PadTop, _layout.Ground(_drill.Pickup), context, _theme, _base.CrystalTop);
+            Vector3 heap = _layout.Ground(_drill.Pickup);
+            _drones = new FieldDrones(root, _base.PadTop, heap, context, _theme, _base.CrystalTop, () => _base.ParkingSpot(_layout, heap));
             _swarm = new FieldSwarm(root, _layout, context, _swarmShotSeconds + _reactShotSeconds + _standShotSeconds + HandoffRoarSeconds);
             if (context.Cast != null && context.Cast.Hero != null)
             {
