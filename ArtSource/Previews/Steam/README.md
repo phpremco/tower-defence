@@ -1,8 +1,9 @@
 # Steam store and library images (Far Harvest: Deepwake)
 
-Made 2026-11-10 from one key-art battle scene (`Tools/Blender/steam_keyart.py`, round 2: a dressed Landfall map
-from the game's environment kit with the road, tower terrace, gate, a mixed C1 wave and Gravemaw rearing behind it, on
-the approved CrysiumField logo environment), with the CrysiumField lockup composited on top
+Made 2026-11-10 from one key-art battle scene (`Tools/Blender/steam_keyart.py`, round 3: a densely dressed Landfall map
+from the game's environment kit, the road with the gate across it, towers on build pads on the ground beside the road,
+a mixed C1 wave with flyers and Gravemaw rearing behind it, Spencer on his jetpack, on the approved CrysiumField logo
+environment), with the CrysiumField lockup composited on top
 (`Tools/Blender/steam_compose.py`). Sizes checked against
 https://partner.steamgames.com/doc/store/assets and .../store/assets/libraryassets on 2026-11-10.
 
@@ -11,9 +12,9 @@ https://partner.steamgames.com/doc/store/assets and .../store/assets/libraryasse
 | `Steam_header_capsule_920x430.png` | Store: Header Capsule | 920x430 | yes |
 | `Steam_small_capsule_462x174.png` | Store: Small Capsule | 462x174 | yes (DEEPWAKE only, the series line is unreadable this small) |
 | `Steam_main_capsule_1232x706.png` | Store: Main Capsule | 1232x706 | yes |
-| `Steam_vertical_capsule_748x896.png` | Store: Vertical Capsule | 748x896 | yes (emblem + lockup) |
+| `Steam_vertical_capsule_748x896.png` | Store: Vertical Capsule | 748x896 | yes (lockup above the boss) |
 | `Steam_page_background_1438x810.png` | Store: Page Background (optional) | 1438x810 | no (ambient, low contrast) |
-| `Steam_library_capsule_600x900.png` | Library: Capsule | 600x900 | yes (emblem + lockup) |
+| `Steam_library_capsule_600x900.png` | Library: Capsule | 600x900 | yes (lockup above the boss) |
 | `Steam_library_header_920x430.png` | Library: Header Capsule | 920x430 | yes (same image as the store header) |
 | `Steam_library_hero_3840x1240.png` | Library: Hero | 3840x1240 | no text at all (Steam rule) |
 | `Steam_library_logo_1280x720.png` | Library: Logo | 1280x720, alpha | the logo itself (v4 `CrysiumField_library_logo.png`) |

@@ -150,17 +150,16 @@ def build_all():
     m = put_logo(vignette(m, 0.35), full, *L["main_logo"])
     made["main"] = save(m, "Steam_main_capsule_1232x706.png")
 
-    # Store: vertical capsule (748x896) and library capsule (600x900): emblem over the full lockup.
+    # Store: vertical capsule (748x896) and library capsule (600x900): the lockup in the sky above the boss (an
+    # emblem above it pushed the title down onto Gravemaw's spines).
     for key, (w, hh), fname in (("vcap", (748, 896), "Steam_vertical_capsule_748x896.png"),
                                 ("libcap", (600, 900), "Steam_library_capsule_600x900.png")):
         v = cover(vert, w, hh, L[key + "_focus"])
         v = vignette(v, 0.35)
-        lw = w * 0.88
+        lw = w * 0.9
         lh = full.height * lw / full.width
-        ew = w * 0.24
         top = hh * L[key + "_top"]
-        v = put_logo(v, emblem, w / 2, top + ew / 2, ew, scrim_strength=0.0)
-        v = put_logo(v, full, w / 2, top + ew + hh * 0.012 + lh / 2, lw, scrim_strength=0.6)
+        v = put_logo(v, full, w / 2, top + lh / 2, lw, scrim_strength=0.6)
         made[key] = save(v, fname)
 
     # Store: page background (1438x810): ambient, low contrast, no logo; Steam fades it into the page.
@@ -203,11 +202,11 @@ def build_all():
 
 # Per-slot framing: focus points are fractions of the master; logos are (cx, cy, width) in pixels.
 LAYOUT = dict(
-    header_focus=(0.5, 0.5), header_logo=(460, 72, 560),
+    header_focus=(0.5, 0.5), header_logo=(460, 60, 500),
     small_focus=(0.5, 0.55),
-    main_focus=(0.5, 0.5), main_logo=(616, 108, 760),
-    vcap_focus=(0.5, 0.5), vcap_top=0.035,
-    libcap_focus=(0.5, 0.5), libcap_top=0.03,
+    main_focus=(0.5, 0.5), main_logo=(616, 92, 690),
+    vcap_focus=(0.5, 0.5), vcap_top=0.05,
+    libcap_focus=(0.5, 0.5), libcap_top=0.06,
     bg_focus=(0.5, 0.5),
     event_focus=(0.5, 0.5), event_logo=(400, 72, 480),
     evh_focus=(0.5, 0.5), evh_logo=(470, 118, 760),
